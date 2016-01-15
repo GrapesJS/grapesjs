@@ -1,0 +1,7 @@
+.DS_Store
+.settings/
+.project
+
+private/
+libs/
+node_modules/

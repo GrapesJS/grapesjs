@@ -1,0 +1,15 @@
+<% if (hidable) { %>
+	<i id="<%= prefix %>btn-eye" class="btn fa fa-eye <%= (visible ? '' : 'fa-eye-slash') %>"></i>
+<% } %>
+<div class="<%= prefix %>title <%= addClass %>">
+	<i id="<%= prefix %>caret" class="fa fa-chevron-right"></i>
+	<%= title %>
+</div>
+
+<div id="<%= prefix %>counter"><%= (count ? count : '') %></div>
+
+<div id="<%= prefix %>move"> 
+	<i class="fa fa-arrows"></i> 
+</div>
+
+<div class="<%= prefix %>children"></div>
