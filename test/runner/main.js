@@ -3,7 +3,7 @@ requirejs.onError = function (err) {
 	throw err;
 };
 
-require(['../bundle/config/require-config.js', 'config/config.js'], function() {
+require(['../src/config/require-config.js', 'config/config.js'], function() {
 	
 	require(['chai',
 	         'specs/main.js',

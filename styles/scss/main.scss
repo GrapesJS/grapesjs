@@ -318,6 +318,7 @@ $leftWidth: 16.5%;
 	    padding: 7px 5px 7px 10px;
 	    position: absolute;
 	    color: darken($fontColor,25%);
+	    cursor:pointer;
 	    z-index: 1;
 	}
 	.#{$nv-prefix}item .#{$nv-prefix}title {
@@ -508,7 +509,6 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 		&.#{$sm-prefix}select{ padding:0; }
 		&.#{$sm-prefix}select select{ height: 20px; }
 		&.#{$sm-prefix}select option { margin: 5px 0;}
-		&.#{$sm-prefix}color input{ width:50px; }
 		&.#{$sm-prefix}composite{
 			background-color: transparent;
 			border: 1px solid darken($mainDkColor, 2.5%);
@@ -520,15 +520,15 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 			float:left;
 			
 			input{ display:none; }
-			label{ cursor:pointer; padding: 5px;}
+			label{ cursor:pointer; padding: 5px; display:block;}
 			.#{$sm-prefix}radio:checked + label{
 				background-color: lighten($mainDkColor, 13%);/*5b5b5b*/
 			}
 			.#{$sm-prefix}icon{
 				background-repeat: no-repeat;
 				background-position:center;
-				color: transparent;
 			    text-shadow: none;
+			    line-height: normal;
 			    //padding: 5px 19px;
 			}
 		}
@@ -541,7 +541,6 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 	.#{$sm-prefix}list .#{$sm-prefix}el{
 		float:left;
 		border-left: 1px solid $darkTextShadow;
-		padding: 5px 0;
 		text-shadow: 0 1px 0 darken($mainDkColor, 9%);/*232323*/
 		
 		&:first-child{border:none}
@@ -560,7 +559,7 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 		margin-bottom: 5px;
 		padding: 0 5px;
 		
-		&.#{$sm-prefix}file, &.#{$sm-prefix}composite, &.#{$sm-prefix}stack, &.#{$sm-prefix}list, &##{$sm-prefix}background-position{
+		&.#{$sm-prefix}file, &.#{$sm-prefix}composite, &.#{$sm-prefix}stack, &.#{$sm-prefix}list{
 			width:100%;
 		}
 		.#{$sm-prefix}btn{
@@ -972,7 +971,7 @@ $uploadPadding:	150px 10px;
 	font-family: FontAwesome;
 }
 .ui-resizable-se::before{
-	content: "\f0b2";
+	content: "\f065";
 }
 .ui-resizable:hover > .ui-resizable-se{ opacity: 0.3; filter: alpha(opacity=30); }
 .ui-resizable-s{

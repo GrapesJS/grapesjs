@@ -1,12 +1,27 @@
-# README #
+# Grapes
 
-This README would normally document whatever steps are necessary to get your application up and running.
+Grapes is a free and open source WTE (Web Template Editor) for building HTML templates to be used inside sites, webapps, newsletters or anything else. 
+Be aware that is not a 'Website Builder' but a tool to create HTML structure and containers for contents. The great thing about Grapes is that you 
+can customize it, extend it or even integrate with other applications.
 
-### What is this repository for? ###
+<Image>
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+### Install as stand-alone
+
+```sh
+$ npm install
+```
+
+### Usage
+
+### API
+cooming soon - Slate
+
+### Testing
+
+### Contributing
+
+usual pull request
 
 ### How do I get set up? ###
 
@@ -16,14 +31,3 @@ This README would normally document whatever steps are necessary to get your app
 * Database configuration
 * How to run tests
 * Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact

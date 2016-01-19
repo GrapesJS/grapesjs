@@ -1,5 +1,6 @@
 .DS_Store
 .settings/
+.sass-cache/
 .project
 
 private/

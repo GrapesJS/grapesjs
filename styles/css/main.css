@@ -276,6 +276,7 @@ div.wte-com-hover-move {
     padding: 7px 5px 7px 10px;
     position: absolute;
     color: #aeaeae;
+    cursor: pointer;
     z-index: 1; }
   .wte-nv-navigator .wte-nv-item .wte-nv-title {
     font-size: 11px;
@@ -466,8 +467,6 @@ div.wte-com-hover-move {
       height: 20px; }
     .wte-sm-sector .wte-sm-field.wte-sm-select option {
       margin: 5px 0; }
-    .wte-sm-sector .wte-sm-field.wte-sm-color input {
-      width: 50px; }
     .wte-sm-sector .wte-sm-field.wte-sm-composite {
       background-color: transparent;
       border: 1px solid #333333; }
@@ -480,15 +479,16 @@ div.wte-com-hover-move {
         display: none; }
       .wte-sm-sector .wte-sm-field.wte-sm-list label {
         cursor: pointer;
-        padding: 5px; }
+        padding: 5px;
+        display: block; }
       .wte-sm-sector .wte-sm-field.wte-sm-list .wte-sm-radio:checked + label {
         background-color: #5b5b5b;
         /*5b5b5b*/ }
       .wte-sm-sector .wte-sm-field.wte-sm-list .wte-sm-icon {
         background-repeat: no-repeat;
         background-position: center;
-        color: transparent;
-        text-shadow: none; }
+        text-shadow: none;
+        line-height: normal; }
     .wte-sm-sector .wte-sm-field.wte-sm-integer select {
       width: auto;
       padding: 0;
@@ -496,7 +496,6 @@ div.wte-com-hover-move {
   .wte-sm-sector .wte-sm-list .wte-sm-el {
     float: left;
     border-left: 1px solid #252525;
-    padding: 5px 0;
     text-shadow: 0 1px 0 #232323;
     /*232323*/ }
     .wte-sm-sector .wte-sm-list .wte-sm-el:first-child {
@@ -512,7 +511,7 @@ div.wte-com-hover-move {
     width: 50%;
     margin-bottom: 5px;
     padding: 0 5px; }
-    .wte-sm-sector .wte-sm-property.wte-sm-file, .wte-sm-sector .wte-sm-property.wte-sm-composite, .wte-sm-sector .wte-sm-property.wte-sm-stack, .wte-sm-sector .wte-sm-property.wte-sm-list, .wte-sm-sector .wte-sm-property#wte-sm-background-position {
+    .wte-sm-sector .wte-sm-property.wte-sm-file, .wte-sm-sector .wte-sm-property.wte-sm-composite, .wte-sm-sector .wte-sm-property.wte-sm-stack, .wte-sm-sector .wte-sm-property.wte-sm-list {
       width: 100%; }
     .wte-sm-sector .wte-sm-property .wte-sm-btn {
       background-color: #5b5b5b;
@@ -895,7 +894,7 @@ div.wte-com-hover-move {
   font-family: FontAwesome; }
 
 .ui-resizable-se::before {
-  content: "\f0b2"; }
+  content: "\f065"; }
 
 .ui-resizable:hover > .ui-resizable-se {
   opacity: 0.3;

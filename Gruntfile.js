@@ -1,6 +1,6 @@
 module.exports = function(grunt) {  
 	
-  var	appPath 	= 'bundle',
+  var	appPath 	= 'src',
   	  	buildPath 	= 'dist',
   	  	configPath 	= 'config/require-config.js';
   

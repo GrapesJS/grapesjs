@@ -1,6 +1,6 @@
 require.config({
 	
-	baseUrl : "../bundle",
+	baseUrl : "../src",
 	
 	paths : {
 		chai 	: '../test/libs/chai',

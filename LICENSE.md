@@ -1,6 +1,4 @@
-# Grapes.js
-
-Copyright (c) Artur Arseniev
+Copyright (c) 2016, Artur Arseniev
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
