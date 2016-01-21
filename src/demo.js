@@ -1,12 +1,12 @@
 require(['src/config/require-config.js'], function() {
-	
+
 	require(['editor/main'],function (Grapes){
 		var grapes	= new Grapes({
-			
+
 			container	: '#wte-app',
-			
+
 			storageType: 'local',
-			
+
 			remoteStorage: {
 				urlStore	: 'http://test.localhost/wte/index.php',
 				urlLoad		: 'http://test.localhost/wte/read.php',
@@ -27,18 +27,18 @@ require(['src/config/require-config.js'], function() {
 					      				   { type: 'image', src : 'http://placehold.it/350x250/cc4360/fff/image7.jpg', date: '2015-02-01',height:350, width:250},
 				      				   ]
 			},
-			
+
 			panels: {
 				defaults		: [{
 					id		: 'commands',
-					buttons	: [{ 
-								id			: 'select', 	
-								className	: 'fa fa-mouse-pointer', 	
-								command		: 'select-comp', 
+					buttons	: [{
+								id			: 'select',
+								className	: 'fa fa-mouse-pointer',
+								command		: 'select-comp',
 								attributes	: { title	: 'Select' }
-							},{ 
-								id			: 'create', 	
-								className	: 'fa fa-plus-square-o', 	
+							},{
+								id			: 'create',
+								className	: 'fa fa-plus-square-o',
 								command		: 'create-comp',
 								attributes	: { title	: 'Create' },
 					       	   	buttons		: [
@@ -46,10 +46,10 @@ require(['src/config/require-config.js'], function() {
 					       	   	       		   { id: 'box100',		className: 'fa fa-square-o',		command: 'insert-custom',
 					       	   	       			   attributes	: { title	: 'Create all-width box' },
 					       	   	       			   options:  {
-									       			   	content					: { style: { width: '100%', 'min-height': '75px'}}, 
-									       			   	terminateAfterInsert	: false, 
+									       			   	content					: { style: { width: '100%', 'min-height': '75px'}},
+									       			   	terminateAfterInsert	: false,
 									       			},},
-					       	   	] 
+					       	   	]
 							},
 								{ id: 'remove', 	className: 'fa fa-trash-o', 		command: 'delete-comp', attributes	: { title: 'Remove' },	},
 					       	   	{ id: 'move', 		className: 'fa fa-arrows',			command: 'move-comp',	attributes	: { title: 'Move' }, 	},
@@ -63,19 +63,19 @@ require(['src/config/require-config.js'], function() {
 				},{
 					id	: 'options',
 					buttons	: [
-					       	   { id: 'visibility', 	className: 'fa fa-eye', 	command: 'sw-visibility', 	active: true, context: 'sw-visibility', attributes: { title: 'View components' }, }, 
+					       	   { id: 'visibility', 	className: 'fa fa-eye', 	command: 'sw-visibility', 	active: true, context: 'sw-visibility', attributes: { title: 'View components' }, },
 					       	   { id: 'export', 		className: 'fa fa-code', 	command: 'export-template', attributes: { title: 'View code' }, },
 					],
 				},{
 					id	: 'views',
-					buttons	: [{ id: 'open-sm', 	className: 'fa fa-paint-brush', command: 'open-sm', 	active: true, attributes: { title: 'Open Style Manager' },}, 
+					buttons	: [{ id: 'open-sm', 	className: 'fa fa-paint-brush', command: 'open-sm', 	active: true, attributes: { title: 'Open Style Manager' },},
 					       	   { id: 'open-layers', className: 'fa fa-bars', 		command: 'open-layers',	attributes	: { title: 'Open Layer Manager' }, },],
 				}],
 			},
-			
+
 			styleManager : {
 				sectors: [{
-					name: 'General', 
+					name: 'General',
 					properties:[{
 							name		: 'Alignament',
 							property	: 'float',
@@ -156,8 +156,8 @@ require(['src/config/require-config.js'], function() {
 							units		: ['px','%'],
 							defaults 	: '0',
 						}],
-					},{ 
-						name: 'Dimension', 
+					},{
+						name: 'Dimension',
 						properties:[{
 							name		: 'Width',
 							property	: 'width',
@@ -328,7 +328,7 @@ require(['src/config/require-config.js'], function() {
 							    		   { value : 'right', 	name : 'Right', 	className: 'fa fa-align-right'},
 							    		   { value : 'justify', name : 'Justify', 	className: 'fa fa-align-justify'},],
 						}],
-					},{ 
+					},{
 						name: 'Decorations',
 						properties: [{
 							name		: 'Borders radius',
@@ -555,12 +555,12 @@ require(['src/config/require-config.js'], function() {
 						}]
 					}
 				],
-				
+
 			},
 		});
-		
+
 		grapes.render();
-		
+
 	});
 });
 

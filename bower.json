@@ -1,0 +1,40 @@
+{
+  "name": "grapes",
+  "description": "Open source web template editor",
+  "version": "0.0.5",
+  "author": "Artur Arseniev",
+  "main": [
+    "dist/grapes.min.js"
+  ],
+  "keywords": [
+    "grapes",
+    "wte",
+    "web template editor",
+    "site builder",
+    "newsletter builder",
+    "wysiwyg",
+    "template",
+    "editor"
+  ],
+  "license": "BSD-3-Clause",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "backbone": "~1.2.3",
+    "Backbone.Undo": "~0.2.5",
+    "jquery": "~2.2.0",
+    "jquery.ui": "~1.11.4",
+    "keymaster": "~1.6.3",
+    "requirejs": "~2.1.22",
+    "requirejs-text": "~2.0.14",
+    "spectrum": "~1.8.0",
+    "underscore": "~1.8.3",
+    "codemirror": "~5.10.0",
+    "codemirror-formatting": "*"
+  }
+}

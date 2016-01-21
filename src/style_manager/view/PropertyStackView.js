@@ -1,12 +1,12 @@
-define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack.html','./../model/Layers','./LayersView'], 
+define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack.html','./../model/Layers','./LayersView'],
 	function (Backbone, PropertyCompositeView, propertyTemplate, Layers, LayersView) {
-	/** 
+	/**
 	 * @class PropertyStackView
 	 * */
 	return PropertyCompositeView.extend({
-		
+
 		template: _.template(propertyTemplate),
-		
+
 		initialize: function(o) {
 			PropertyCompositeView.prototype.initialize.apply(this, arguments);
 			this.model.set('stackIndex', null);
@@ -14,23 +14,25 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 			this.listenTo( this.model ,'refreshValue', this.refreshValue);
 			this.className 	= this.pfx  + 'property '+ this.pfx +'stack';
 			this.events['click #'+this.pfx+'add']	= 'addLayer';
-			
+
 			if(!this.layers){
 				this.layers		= new Layers();
 				this.model.set('layers', this.layers);
-				this.$layers	= new LayersView({ 
+				this.$layers	= new LayersView({
 					collection	: this.layers,
 					stackModel	: this.model,
 					preview		: this.model.get('preview'),
 					config		: o.config
 				});
 			}
+
+			this.delegateEvents();
 		},
-		
+
 		/**
 		 * Triggered when another layer has been selected
 		 * @param Event
-		 * 
+		 *
 		 * @return Object
 		 * */
 		indexChanged: function(e){
@@ -38,10 +40,10 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 			layer.set('props', this.$props);
 			this.target.trigger('change:selectedComponent');
 		},
-		
+
 		/**
 		 * Get array of values from layers
-		 * 
+		 *
 		 * @return Array
 		 * */
 		getStackValues: function(){
@@ -51,18 +53,18 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 			});
 			return a;
 		},
-		
+
 		/**
 		 * Extract string from composite value
 		 * @param integer	Index
-		 * 
+		 *
 		 * @return string
 		 * */
 		valueOnIndex: function(index){
 			var result 	= null;
 			var aStack	= this.getStackValues();
 			var strVar	= aStack[this.model.get('stackIndex')];
-			
+
 			if(!strVar)
 				return;
 			var a		= strVar.split(' ');
@@ -71,7 +73,7 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 			}
 			return result;
 		},
-		
+
 		/** @inheritdoc */
 		build: function(selectedEl, propertyModel){
 			if(this.model.get('stackIndex') === null)
@@ -89,14 +91,14 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 				model.set('propertyPreview', this.property);
 				model.set('valuePreview',result);
 			}
-			
+
 			return this.createValue();
 		},
-		
+
 		/**
 		 * Change preview value. Limited integer values
 		 * @param Models
-		 * 
+		 *
 		 * @return string
 		 * */
 		onPreview: function(properties){
@@ -110,14 +112,14 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 				}
 				str	+= v + p.get('unit')+' ';
 			});
-			
+
 			return str;
 		},
-		
+
 		/**
 		 * Add layer
 		 * @param Event
-		 * 
+		 *
 		 * @return Object
 		 * */
 		addLayer: function(e){
@@ -130,16 +132,16 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 				return layer;
 			}
 		},
-		
+
 		/**
 		 * Refresh value
-		 * 
+		 *
 		 * @return void
 		 * */
 		refreshValue: function(){
 			this.model.set('value', this.createValue());
 		},
-		
+
 		/**
 		 * Create value by layers
 		 * @return string
@@ -147,10 +149,10 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 		createValue: function(){
 			return this.getStackValues().join(', ');
 		},
-		
+
 		/**
 		 * Render layers
-		 * 
+		 *
 		 * @return self
 		 * */
 		renderLayers: function() {
@@ -158,16 +160,16 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 			this.$props.hide();
 			return this;
 		},
-		
+
 		/** @inheritdoc */
 		renderInput: function() {
 			PropertyCompositeView.prototype.renderInput.apply(this, arguments);
 			this.refreshLayers();
 		},
-		
+
 		/**
 		 * Refresh layers
-		 * 
+		 *
 		 * @return void
 		 * */
 		refreshLayers: function(){
@@ -176,10 +178,10 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 			if(v){
 				var a = v.split(', ');
 				_.each(a,function(e){
-					n.push({ 	value: e, 
-								valuePreview: e, 
+					n.push({ 	value: e,
+								valuePreview: e,
 								propertyPreview: this.property,
-								patternPreview:	this.props		
+								patternPreview:	this.props
 							});
 				},this);
 			}
@@ -188,7 +190,7 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 			this.refreshValue();
 			this.model.set({stackIndex: null},{silent: true});
 		},
-		
+
 		/** @inheritdoc */
 		render : function(){
 			this.renderLabel();

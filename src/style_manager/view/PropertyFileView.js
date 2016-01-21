@@ -1,12 +1,12 @@
-define(['backbone','./PropertyView', 'text!./../templates/propertyFile.html'], 
+define(['backbone','./PropertyView', 'text!./../templates/propertyFile.html'],
 	function (Backbone, PropertyView, propertyTemplate) {
-	/** 
+	/**
 	 * @class PropertyColorView
 	 * */
 	return PropertyView.extend({
-		
+
 		template: _.template(propertyTemplate),
-		
+
 		initialize: function(options) {
 			PropertyView.prototype.initialize.apply(this, arguments);
 			this.assets		= this.target.get('assets');
@@ -15,35 +15,36 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyFile.html'],
 			this.className 	= this.className + ' '+ this.pfx +'file';
 			this.events['click #'+this.pfx+'close']		= 'removeFile';
 			this.events['click #'+this.pfx+'images']	= 'openAssetManager';
+			this.delegateEvents();
 		},
-		
+
 		/** @inheritdoc */
 		renderInput: function() {
-			
+
 			if(!this.$input){
 				this.$input 		= $('<input>', {placeholder: this.defaultValue, type: 'text' });
 			}
-			
+
 			if(!this.$preview){
 				this.$preview		= this.$el.find('#' + this.pfx + 'preview-file');
 			}
-			
+
 			if(!this.$previewBox){
 				this.$previewBox	= this.$el.find('#' + this.pfx + 'preview-box');
 			}
-			
+
 			if(!this.componentValue || this.componentValue == this.defaultValue)
 				this.setPreviewView(0);
 			else
 				this.setPreviewView(1);
-			
+
 			this.setValue(this.componentValue,0);
 		},
-		
+
 		/**
 		 * Change visibility of the preview box
 		 * @param bool Visibility
-		 * 
+		 *
 		 * @return void
 		 * */
 		setPreviewView: function(v){
@@ -54,18 +55,18 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyFile.html'],
 			else
 				this.$previewBox.removeClass(this.pfx + 'show');
 		},
-		
+
 		/**
 		 * Spread url
 		 * @param string Url
-		 * 
+		 *
 		 * @return void
 		 * */
 		spreadUrl: function(url){
 			this.setValue('url("'+url+'")');
 			this.setPreviewView(1);
 		},
-		
+
 		/**
 		 * Shows file preview
 		 * @param string Value
@@ -74,13 +75,13 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyFile.html'],
 			if(this.$preview)
 				this.$preview.css('background-image',v);
 		},
-		
+
 		/** @inheritdoc */
 		setValue: function(value, f){
 			PropertyView.prototype.setValue.apply(this, arguments);
 			this.setPreview(value);
 		},
-		
+
 		/** @inheritdoc */
 		renderTemplate: function(){
 			this.$el.append( this.template({
@@ -89,16 +90,16 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyFile.html'],
 				pfx		: this.pfx
 			}));
 		},
-		
+
 		/** @inheritdoc */
 		cleanValue: function(){
 			this.setPreviewView(0);
 			this.model.set({value: ''},{silent: true});
 		},
-		
+
 		/**
 		 * Remove file from input
-		 * 
+		 *
 		 * @return void
 		 * */
 		removeFile:function(){
@@ -106,11 +107,11 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyFile.html'],
 			PropertyView.prototype.cleanValue.apply(this, arguments);
 			this.setPreviewView(0);
 		},
-		
+
 		/**
 		 * Open dialog for image selecting
 		 * @param	{Object}	e	Event
-		 * 
+		 *
 		 * @return void
 		 * */
 		openAssetManager: function(e){
@@ -127,7 +128,7 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyFile.html'],
 				});
 			}
 		},
-		
+
 
 	});
 });

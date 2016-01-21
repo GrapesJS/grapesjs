@@ -2,41 +2,40 @@ define(function(require) {
 	/**
 	 * @class 	RichTextEditor
 	 * @param 	{Object} Configurations
-	 * 
+	 *
 	 * @return	{Object}
  	 * */
 	function RichTextEditor(config)
 	{
-		var c					= config || {},
-			rte					= require('rte'),
-			defaults			= require('./config/config'),
-			CommandButtons		= require('./model/CommandButtons'),
+		var c									= config || {},
+			defaults						= require('./config/config'),
+			rte									= require('./view/TextEditorView'),
+			CommandButtons			= require('./model/CommandButtons'),
 			CommandButtonsView	= require('./view/CommandButtonsView');
 
 		for (var name in defaults) {
 			if (!(name in c))
 				c[name] = defaults[name];
 		}
-		
+
 		this.tlbPfx			= c.stylePrefix;
 		this.commands		= new CommandButtons(c.commands);
 		var obj				= {
 				collection	: this.commands,
 		    	config		: c,
 		};
-		
+
 		this.toolbar 		= new CommandButtonsView(obj);
 		this.$toolbar 		= this.toolbar.render().$el;
 	}
-	
+
 	RichTextEditor.prototype	= {
-			
+
 			/**
 			 * Bind rich text editor to element
-			 * @param	{Object}	view
-			 * @param	{Object}	container
-			 * 
-			 * @return 	void
+			 * @param		{Object}	view
+			 * @param		{Object}	container
+			 *
 			 * */
 			bind		: function(view, container){
 				if(!this.$contaniner){
@@ -49,23 +48,22 @@ define(function(require) {
 				//Avoid closing edit mode clicking on toolbar
 				this.$toolbar.on('mousedown', this.disableProp);
 			},
-			
+
 			/**
 			 * Unbind rich text editor from element
-			 * @param	{Object}	view
-			 * 
-			 * @return 	void
+			 * @param		{Object}	view
+			 *
 			 * */
 			unbind		: function(view){
 				view.$el.wysiwyg('destroy');
 				this.hide();
 				this.$toolbar.off('mousedown', this.disableProp);
 			},
-			
+
 			/**
 			 * Bind toolbar to element
-			 * @param	{Object}	view
-			 * 
+			 * @param		{Object}	view
+			 *
 			 * @return 	this
 			 * */
 			bindToolbar	: function(view){
@@ -78,12 +76,11 @@ define(function(require) {
 				this.toolbar.updateTarget('#' + id);
 				return this;
 			},
-			
+
 			/**
 			 * Update toolbar position
-			 * @param	{Object}	$el	Element
-			 * 
-			 * @return 	void
+			 * @param 	{Object}	$el	Element
+			 *
 			 */
 			updatePosition: function($el){
 				var	cOffset	= this.$container.offset(),
@@ -95,37 +92,35 @@ define(function(require) {
 				if(!this.tlbH)
 					this.tlbH	= this.$toolbar.outerHeight();
 				this.$toolbar.css({
-					top		: (rTop - this.tlbH - 5), 
-					left	: rLeft 
+					top		: (rTop - this.tlbH - 5),
+					left	: rLeft
 				});
 			},
-			
+
 			/**
 			 * Show toolbar
-			 * 
-			 * @return void
+			 *
 			 * */
 			show	: function(){
 				this.$toolbar.show();
 			},
-			
+
 			/**
 			 * Hide toolbar
-			 * 
-			 * @return void
+			 *
 			 * */
 			hide	: function(){
 				this.$toolbar.hide();
 			},
-			
-			/** 
+
+			/**
 			 * Isolate disable propagation method
-			 * @param Event
+			 *
 			 * */
 			disableProp: function(e){
 				e.stopPropagation();
 			},
 	};
-	
+
 	return RichTextEditor;
 });

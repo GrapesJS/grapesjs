@@ -1,15 +1,15 @@
-define(['backbone', 'text!./../template/fileUploader.html'], 
+define(['backbone', 'text!./../template/fileUploader.html'],
 	function (Backbone, fileUploaderTemplate) {
-	/** 
+	/**
 	 * @class FileUploader
 	 * */
 
 	return Backbone.View.extend({
-		
+
 		template: 	_.template(fileUploaderTemplate),
-		
+
 		events: 	{},
-		
+
 		initialize: function(o) {
 			this.options 	= o || {};
 			this.config		= o.config	|| {};
@@ -18,12 +18,13 @@ define(['backbone', 'text!./../template/fileUploader.html'],
 			this.uploadId	= this.pfx + 'uploadFile';
 			this.disabled	= this.config.disableUpload;
 			this.events['change #' + this.uploadId]	= 'uploadFile';
+			this.delegateEvents();
 		},
-		
+
 		/**
 		 * Upload files
 		 * @param	{Object}	e Event
-		 * 	
+		 *
 		 * @return 	void
 		 * */
 		uploadFile : function(e){
@@ -33,10 +34,10 @@ define(['backbone', 'text!./../template/fileUploader.html'],
 		    	formData.append('files[]', files[i]);
 		    }
 			var target = this.target;
-			$.ajax({ 
+			$.ajax({
 				url			: this.config.urlUpload, //this.config.urlUpload
-				type		: 'POST', 
-				data		: formData, 
+				type		: 'POST',
+				data		: formData,
 				beforeSend	: this.config.beforeSend,
 				complete	: this.config.onComplete,
 				xhrFields	: {
@@ -49,17 +50,17 @@ define(['backbone', 'text!./../template/fileUploader.html'],
 					    //progress.value = 100;
 					}
 				},
-				cache: false, contentType: false, processData: false 
+				cache: false, contentType: false, processData: false
 			}).done(function(data){
-				target.add(data.data); 
+				target.add(data.data);
 			}).always(function(){
 				//turnOff loading
 			});
 		},
-		
+
 		/**
 		 * Make input file droppable
-		 * 
+		 *
 		 * @return 	void
 		 * */
 		initDrop: function(){
@@ -68,27 +69,27 @@ define(['backbone', 'text!./../template/fileUploader.html'],
 				this.uploadForm = this.$el.find('form').get(0);
 				if( 'draggable' in this.uploadForm ){
 					var uploadFile = this.uploadFile;
-					this.uploadForm.ondragover = function(){ 
-						this.className = that.pfx + 'hover'; 
-						return false; 
+					this.uploadForm.ondragover = function(){
+						this.className = that.pfx + 'hover';
+						return false;
 					};
-					this.uploadForm.ondragleave = function(){ 
-						this.className = ''; 
-						return false; 
+					this.uploadForm.ondragleave = function(){
+						this.className = '';
+						return false;
 					};
 					this.uploadForm.ondrop = function(e){
-						this.className = ''; 
+						this.className = '';
 						e.preventDefault();
 						that.uploadFile(e);
-						return; 
+						return;
 					};
 				}
 			}
 		},
-		
+
 		render : function(){
 			this.$el.html( this.template({
-				title		: this.config.uploadText,		
+				title		: this.config.uploadText,
 				uploadId	: this.uploadId,
 				disabled	: this.disabled,
 				pfx			: this.pfx
@@ -97,6 +98,6 @@ define(['backbone', 'text!./../template/fileUploader.html'],
 			this.$el.attr('class', this.pfx + 'file-uploader');
 			return this;
 		},
-		
+
 	});
 });

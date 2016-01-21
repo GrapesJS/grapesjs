@@ -1,17 +1,18 @@
-module.exports = function(grunt) {  
-	
-  var	appPath 	= 'src',
-  	  	buildPath 	= 'dist',
-  	  	configPath 	= 'config/require-config.js';
-  
+module.exports = function(grunt) {
+
+  var	appPath 	  = 'src',
+  	  buildPath 	= 'dist',
+  	  configPath  = 'config/require-config.js';
+
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-sass');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-requirejs');
   grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks('grunt-bowercopy');
   grunt.loadNpmTasks('grunt-mocha');
-  
+
   grunt.initConfig({
     appDir: appPath,
     builtDir: buildPath,
@@ -27,20 +28,20 @@ module.exports = function(grunt) {
     			removeCombined: 		true,
     			findNestedDependencies: true,
     			keepBuildDir: 			true,
-    			inlineText: 			true,  
+    			inlineText: 			true,
     			optimize: 				'none'
     			//paths: { "jquery": "empty:" }, //try to exclude
     		}
     	}
     },
-    
+
     jshint: {
     	all: [
     		'Gruntfile.js',
     		'<%= appDir %>/**/*.js',
     	]
     },
-    
+
     uglify: {
     	options: {
     	      banner: 	'/*! <%= pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %> */'
@@ -51,7 +52,7 @@ module.exports = function(grunt) {
     	      }
     	}
     },
-    
+
     sass: {
         dist: {
           files: [{
@@ -63,17 +64,17 @@ module.exports = function(grunt) {
           }]
         }
     },
-    
+
     mocha: {
     	  test: {
     	    src: ['test/index.html'],
     	    options: {  log: true, },
     	  },
     },
-    
+
     connect: {
     	/*
-    	app: {
+    	dist: {
     	    options: {
     	      port: 8001,
     	      open: {
@@ -91,7 +92,34 @@ module.exports = function(grunt) {
     	    }
     	}
     },
-    
+
+    bowercopy: {
+        options: {
+          srcPrefix: 'bower_components'
+        },
+        scripts: {
+            options: {
+              destPrefix: 'vendor'
+            },
+            files: {
+                'jquery/jquery.js'                : 'jquery/dist/jquery.min.js',
+                'jquery-ui/jquery-ui-core.js'     : 'jquery.ui/ui/core.js',
+                'jquery-ui/jquery-ui-mouse.js'    : 'jquery.ui/ui/mouse.js',
+                'jquery-ui/jquery-ui-widget.js'   : 'jquery.ui/ui/widget.js',
+                'jquery-ui/jquery-ui.js'          : 'jquery.ui/ui/resizable.js',
+                'underscore/underscore.js'        : 'underscore/underscore-min.js',
+                'backbone/backbone.js'            : 'backbone/backbone-min.js',
+                'backbone-undo/backbone-undo.js'  : 'Backbone.Undo/Backbone.Undo.js',
+                'keymaster/keymaster.js'          : 'keymaster/keymaster.js',
+                'require/require.js'              : 'requirejs/require.js',
+                'require-text/text.js'            : 'requirejs-text/text.js',
+                'spectrum/spectrum.js'            : 'spectrum/spectrum.js',
+                'codemirror'                      : 'codemirror',
+                'codemirror-formatting'           : 'codemirror-formatting/formatting.js',
+            },
+        }
+    },
+
     watch: {
     	script: {
     		files: [ '<%= appDir %>/**/*.js' ],
@@ -102,17 +130,17 @@ module.exports = function(grunt) {
     		tasks: ['sass']
     	},
     	test: {
-    		files: [ 'test/specs/**/*.js' ],
+    		files: ['test/specs/**/*.js'],
     		tasks: ['mocha'],
     		options: { livereload: true }, //default port 35729
     	}
     }
-    
+
   });
-  
+
   /**
    * Need to copy require configs cause r.js will try to load them from the path indicated inside
-   * main.js file. This is the only way I have found to do it and only for the pleasure of using separate config 
+   * main.js file. This is the only way I have found to do it and only for the pleasure of using separate config
    * requirejs file.
    * */
   grunt.registerTask('before-requirejs', function() {
@@ -121,17 +149,19 @@ module.exports = function(grunt) {
 	    grunt.file.mkdir(buildPath);
 	    grunt.file.copy(appPath + '/' + configPath, buildPath + '/' + appPath + '/' + configPath);
   });
-  
+
   grunt.registerTask('after-requirejs', function() {
 	  //grunt.file.copy(buildPath + '/main.js', buildPath + '/main.min.js');
   });
-  
+
+  grunt.registerTask('bower', ['bowercopy']);
+
   grunt.registerTask('dev', ['connect', 'watch']);
-  
+
   grunt.registerTask('test', ['mocha']);
-  
+
   grunt.registerTask('deploy', ['jshint', 'before-requirejs', 'requirejs', 'after-requirejs', 'uglify']);
-  
+
   grunt.registerTask('default', ['dev']);
-  
+
 };

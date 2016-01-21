@@ -1,16 +1,16 @@
-define(['backbone', 'text!./../templates/layer.html'], 
+define(['backbone', 'text!./../templates/layer.html'],
 	function (Backbone, layerTemplate) {
-	/** 
+	/**
 	 * @class LayerView
 	 * */
 	return Backbone.View.extend({
-		
+
 		events:{
 			'click'				: 'updateIndex',
 		},
-		
+
 		template: _.template(layerTemplate),
-		
+
 		initialize: function(o) {
 			this.stackModel	= o.stackModel || {};
 			this.config 	= o.config;
@@ -20,11 +20,11 @@ define(['backbone', 'text!./../templates/layer.html'],
 			this.listenTo( this.model, 'change:valuePreview', this.previewChanged );
 			this.listenTo( this.model, 'change:props', this.showProps );
 			this.events['click #' + this.pfx + 'close-layer']			= 'remove';
-			
+
 			if( !this.model.get('preview') ){
 				this.$el.addClass(this.pfx + 'no-preview');
 			}
-			
+
 			// Parse preview value if requested
 			var pPattern = this.model.get('patternPreview');
 			if(this.model.get('valuePreview') && pPattern){
@@ -32,12 +32,14 @@ define(['backbone', 'text!./../templates/layer.html'],
 				var nV	= this.formatPreviewValue(pPattern);
 				this.model.set({valuePreview: nV}, {silent: true});
 			}
+
+			this.delegateEvents();
 		},
-		
+
 		/**
 		 * Format preview value by pattern of property models
 		 * @param Objects Property models
-		 * 
+		 *
 		 * @return string
 		 * */
 		formatPreviewValue: function(props){
@@ -60,10 +62,10 @@ define(['backbone', 'text!./../templates/layer.html'],
 			});
 			return nV;
 		},
-		
+
 		/**
 		 * Show inputs on this layer
-		 * 
+		 *
 		 * @return void
 		 * */
 		showProps:function(){
@@ -71,10 +73,10 @@ define(['backbone', 'text!./../templates/layer.html'],
 			this.$el.find('#' + this.pfx + 'inputs').html(this.$props.show());
 			this.model.set({ props: null },{ silent: true });
 		},
-		
+
 		/**
 		 * Triggered when the value for the preview is changed
-		 * 
+		 *
 		 * @return void
 		 * */
 		previewChanged:function(){
@@ -86,7 +88,7 @@ define(['backbone', 'text!./../templates/layer.html'],
 					this.$preview.css(property,this.model.get('valuePreview'));
 			}
 		},
-		
+
 		/** @inheritdoc */
 		remove: function(e){
 			// Prevent from revoming all events on props
@@ -98,11 +100,11 @@ define(['backbone', 'text!./../templates/layer.html'],
 			this.stackModel.trigger('refreshValue');
 			this.stackModel.set({stackIndex: null},{silent: true});
 		},
-		
+
 		/**
 		 * Update index
 		 * @param Event
-		 * 
+		 *
 		 * @return void
 		 * */
 		updateIndex: function(e){
@@ -111,19 +113,19 @@ define(['backbone', 'text!./../templates/layer.html'],
 			this.model.collection.trigger('deselectAll');
 			this.$el.addClass(this.pfx + 'active');
 		},
-		
+
 		render : function(){
-			var index = this.model.collection.indexOf(this.model); 
+			var index = this.model.collection.indexOf(this.model);
 			this.$el.html( this.template({
 				label		: 'Layer '+index,
 				name		: this.model.get('name'),
-				vPreview	: this.model.get('valuePreview'), 
+				vPreview	: this.model.get('valuePreview'),
 				pPreview	: this.model.get('propertyPreview'),
 				pfx			: this.pfx,
 			}));
 			this.$el.attr('class', this.className);
 			return this;
 		},
-		
+
 	});
 });

@@ -71,13 +71,13 @@ html,body,#wte-app, .#{$app-prefix}editor{ height: 100%; }
  	@include user-select(none);
 }
 #wte-app{
-	height: 100%; 
+	height: 100%;
 	min-width: 1250px;
 }
 .#{$app-prefix}editor{
 	position:relative;
 	border: 3px solid $mainColor;
-	border-left:none; 
+	border-left:none;
 	border-right:none;
 	box-sizing: border-box;
 }
@@ -89,7 +89,7 @@ html,body,#wte-app, .#{$app-prefix}editor{ height: 100%; }
   top: 0; left: 3.5%;
   overflow: auto;
   z-index:1;
-  
+
   	> div {
 	    height: 100%;
 	    overflow: auto;
@@ -128,8 +128,8 @@ html,body,#wte-app, .#{$app-prefix}editor{ height: 100%; }
 
 /*********TEST**********/
 body.dragging, body.dragging * { cursor: move !important;}
-.dragged { 
-	position: absolute; 
+.dragged {
+	position: absolute;
 	@include opacity(0.50);
 	z-index: 2000;}
 ol.example li.placeholder {position: relative;}
@@ -142,7 +142,7 @@ ol.example li.placeholder:before {position: absolute;}
 /********* COMMANDS **********/
 
 .#{$com-prefix}dashed div {
-	outline: 1px dashed #888; 
+	outline: 1px dashed #888;
 	outline-offset: -2px;
   	box-sizing: border-box;
 }
@@ -162,7 +162,7 @@ div.#{$com-prefix}hover-move{
 }
 .#{$com-prefix}badge{
 	pointer-events: none;
-	background-color: $colorBlue; 
+	background-color: $colorBlue;
 	color: #fff;
 	padding: 2px 5px;
 	position: absolute; z-index: 1;
@@ -170,11 +170,11 @@ div.#{$com-prefix}hover-move{
 }
 .#{$com-prefix}badge-red{
 	@extend .#{$com-prefix}badge;
-	background-color: $colorRed; 
+	background-color: $colorRed;
 }
 .#{$com-prefix}badge-yellow{
 	@extend .#{$com-prefix}badge;
-	background-color: $colorYell; 
+	background-color: $colorYell;
 }
 .#{$com-prefix}placeholder{
 	position: absolute;
@@ -198,26 +198,26 @@ $leftWidth: 16.5%;
   box-sizing: border-box;
   text-align: center;
   z-index:3;
-  
+
   &##{$pn-prefix}commands{
   	min-width: 35px;
     height: 100%;
     width: 3.5%; left:0;
   }
-  
+
   &##{$pn-prefix}options{
   	@extend ##{$pn-prefix}commands;
   	bottom: 0;
   	height: auto;
   }
-  
+
   &##{$pn-prefix}views{
   	border-bottom: 2px solid darken($mainColor, 3%);
   	right: 0;
   	width: $leftWidth;
   	z-index: 4;
   }
-  
+
   &##{$pn-prefix}views-container{
   	height: 100%;
     padding: 50px 0 0;
@@ -240,19 +240,19 @@ $leftWidth: 16.5%;
 	cursor: pointer;
 	padding: 0 5px;
 	position: relative;
-	
+
 	&.#{$pn-prefix}active{
 		background-color: $mainDkColor;
     	box-shadow: 0 0 3px darken($mainDkColor,5%) inset;
 	}
-	
+
 	> .#{$pn-prefix}arrow-rd {
 	  	border-bottom: 5px solid $fontColor;
 	  	border-left: 5px solid transparent;
 	  	bottom: 2px; right: 2px;
 	  	position: absolute;
 	}
-	
+
 	> .#{$pn-prefix}buttons{
 		background-color: $mainColor;
 		border-radius: 2px;
@@ -261,9 +261,9 @@ $leftWidth: 16.5%;
 		left: 50px;
 		top: 0;
 		padding: 5px;
-		
+
 		&.#{$pn-prefix}visible{ display: block; }
-		
+
 		> .#{$pn-prefix}arrow-l {
 			border-bottom: 5px solid transparent;
 		    border-right: 5px solid $mainColor;
@@ -326,7 +326,7 @@ $leftWidth: 16.5%;
 		padding: 7px 10px 7px 30px;
 	}
 	.#{$nv-prefix}item ##{$nv-prefix}caret {
-		font-size: 7px; 
+		font-size: 7px;
 		width: 8px;
 	}
 }
@@ -340,8 +340,8 @@ $leftWidth: 16.5%;
   border-top: 1px solid lighten($mainDkColor,3%);/*#414141*/
   cursor:pointer;
 }
-.#{$nv-prefix}item .#{$nv-prefix}children .#{$nv-prefix}title{ 
-	border-left: 1px solid lighten($mainDkColor,2%); 
+.#{$nv-prefix}item .#{$nv-prefix}children .#{$nv-prefix}title{
+	border-left: 1px solid lighten($mainDkColor,2%);
 }
 .#{$nv-prefix}item > .#{$nv-prefix}children {
   margin-left: 15px;
@@ -372,7 +372,7 @@ $leftWidth: 16.5%;
 	border: 2px dashed #ccc;
 	outline:none !important;
 	position: absolute; z-index: 55;
-	opacity:0.55; 
+	opacity:0.55;
 	filter: alpha(opacity=55);
 }
 
@@ -389,7 +389,7 @@ $leftWidth: 16.5%;
   	text-align: center;
   	font-size: $imageCompDim/3;
   	cursor: pointer;
-  	
+
   	&.fa-picture-o::after{
 		content:  "\f03e";
 	}
@@ -406,23 +406,23 @@ $inputFontColor:	darken($fontColor,10%); /*#d5d5d5*/
 $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 
 .#{$sm-prefix}close-btn{
-	display:block; 
+	display:block;
 	font-size: 23px;
 	position: absolute;
 	cursor: pointer;
 	right: 5px;
 	top: 0;
 	@include opacity(0.2);
-	
+
 	&:hover{ @include opacity(0.7); }
 }
 .#{$sm-prefix}sector {
-	clear:both; 
+	clear:both;
 	border-bottom: 1px solid $darkBorder;
 	color:	$fontColor;
 	font-weight: lighter;
 	text-align:left;
-	
+
 	.#{$sm-prefix}title{
 	  background-color: $mainDkColor;
 	  font-size: 13px;
@@ -433,15 +433,15 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 	  border-top: 1px solid $lightBorder;
 	  cursor:pointer;
 	}
-	
-	.#{$sm-prefix}label { 
+
+	.#{$sm-prefix}label {
 		margin: 5px 5px 2px 0;
 	}
 	/*------------------Field--------------------*/
 	.#{$sm-prefix}field {
 	  width: 100%;
 	  position:relative;
-	  	
+
 	  	input {
 		  box-sizing: border-box;
 		  color: $inputFontColor;
@@ -449,20 +449,20 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 		  padding: 3px 21px 3px 0;
    	 	  width: 100%;
 		}
-		
+
 		select {
 		  background: none; border: none;
-		  color: $inputFontColor; 
+		  color: $inputFontColor;
 		  color: transparent;
 		  width: 100%; padding: 2px 0;
 		  text-shadow: 0 0 0 $inputFontColor;
-		  position: relative; 
+		  position: relative;
 		  z-index:1;
 		  @include appearance(none);
-		  
+
 		  &::-ms-expand { display: none;}
 		}
-		
+
 		.#{$sm-prefix}unit {
 		  position: absolute;
 		  right: 10px; top: 3px;
@@ -470,7 +470,7 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 		  color: $arrowColor;
 		  cursor:pointer;
 		}
-		
+
 		.#{$sm-prefix}int-arrows, .#{$sm-prefix}sel-arrow{
 		  height: 100%; width: 9px;
 		  position: absolute;
@@ -478,7 +478,7 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 		  cursor: ns-resize;
 		}
 		.#{$sm-prefix}sel-arrow{ cursor:pointer }
-		
+
 		.#{$sm-prefix}u-arrow, .#{$sm-prefix}d-arrow, .#{$sm-prefix}d-s-arrow{
 			position: absolute;
 			height: 0; width: 0;
@@ -486,7 +486,7 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 			border-right: 4px solid transparent;
 			cursor:pointer;
 		}
-		
+
 		.#{$sm-prefix}u-arrow {
 		  border-bottom: 4px solid $arrowColor;
 		  top: 4px;
@@ -514,11 +514,11 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 			border: 1px solid darken($mainDkColor, 2.5%);
 		}
 		&.#{$sm-prefix}list{
-			width:auto; 
+			width:auto;
 			padding:0;
 			overflow: hidden;
 			float:left;
-			
+
 			input{ display:none; }
 			label{ cursor:pointer; padding: 5px; display:block;}
 			.#{$sm-prefix}radio:checked + label{
@@ -532,33 +532,33 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 			    //padding: 5px 19px;
 			}
 		}
-		
+
 		&.#{$sm-prefix}integer select{ width:auto; padding: 0; color: transparent;}
-			
+
 	}
 	/*------------------END Field--------------------*/
-	
+
 	.#{$sm-prefix}list .#{$sm-prefix}el{
 		float:left;
 		border-left: 1px solid $darkTextShadow;
 		text-shadow: 0 1px 0 darken($mainDkColor, 9%);/*232323*/
-		
+
 		&:first-child{border:none}
 		&:hover{background: $mainDkColor; }
 	}
-	
+
 	.#{$sm-prefix}properties {
 		font-size: 11px;
 		padding: 10px 5px;
 	}
-	
+
 	/*------------------Property--------------------*/
 	.#{$sm-prefix}property{
 		box-sizing: border-box;
 		float:left; width:50%;
 		margin-bottom: 5px;
 		padding: 0 5px;
-		
+
 		&.#{$sm-prefix}file, &.#{$sm-prefix}composite, &.#{$sm-prefix}stack, &.#{$sm-prefix}list{
 			width:100%;
 		}
@@ -568,7 +568,7 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 			box-shadow: 1px 1px 0 lighten($mainDkColor, 2%), 1px 1px 0 lighten($mainDkColor, 17%) inset;
 			padding: 5px;
 			position: relative;
-			text-align: center;	
+			text-align: center;
 			height: auto; width: 100%;
 			cursor: pointer;
 			color: $fontColor;
@@ -583,14 +583,14 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 		  width: 100%;
 		  padding: 0 5px;
 		}
-		
+
 		&.#{$sm-prefix}file ##{$sm-prefix}preview-box {
 		  background-color: $lightBorder;
 		  border-radius: 2px;
 		  margin-top: 5px;
 		  position:relative;
 		  overflow: hidden;
-		  
+
 		  	&.#{$sm-prefix}show{
 				border: 1px solid darken($lightBorder,1%);
 				padding: 3px 5px;
@@ -606,7 +606,7 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 		  background-repeat: no-repeat;
 		  background-position: center center;
 		}
-		
+
 		.#{$sm-prefix}layers {
 		  background-color: $mainDkColor;
 		  border: 1px solid darken($mainDkColor, 2.5%);
@@ -615,7 +615,7 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 		  margin-top: 5px;
 		  min-height: 30px;
 		}
-		
+
 		.#{$sm-prefix}layer {
 		  background-color: lighten($mainDkColor, 4.5%);
 		  border-radius: 2px;
@@ -624,7 +624,7 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 		  padding: 7px;
 		  position: relative;
 		  cursor: pointer;
-		  
+
 		  	> ##{$sm-prefix}preview-box {
 			  @extend .checker-bg;
 			  height: 15px;
@@ -637,7 +637,7 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 				border-radius:2px;
 			}
 			##{$sm-prefix}close-layer{
-				display:block; 
+				display:block;
 				font-size: 23px;
 				position: absolute;
 				cursor: pointer;
@@ -659,9 +659,9 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 		}
 	}
 	/*------------------END Property--------------------*/
-	
+
 	.#{$sm-prefix}stack .#{$sm-prefix}properties{padding-top: 5px;}
-	
+
 	.#{$sm-prefix}stack ##{$sm-prefix}add {
 		  background: none;
 		  border: none;
@@ -672,10 +672,10 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 		  position: absolute;
 		  right: 0; top: -20px;
 		  opacity: 0.75;
-		  
+
 		  &:hover{  @include opacity(1); }
 	}
-	
+
 	.#{$sm-prefix}color-picker {
 		background-color: $fontColor;
 	  	border: 2px solid lighten($mainDkColor, 11.5%);
@@ -685,7 +685,7 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 		position: absolute;
 	    right: 0; top: 0;
 	}
-	
+
 	.#{$sm-prefix}btn-upload ##{$sm-prefix}upload {
 	  left: 0; top: 0;
 	  position: absolute;
@@ -694,7 +694,7 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 	  cursor: pointer;
 	}
 	.#{$sm-prefix}btn-upload ##{$sm-prefix}label { padding: 2px 0;}
-	
+
 }
 /********* END Style Manager **********/
 
@@ -727,7 +727,7 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
    	font-weight: lighter;
    	position:relative;
    	z-index: 2;
-   	
+
    	.#{$mdl-prefix}btn-close {
    		@extend .btn-cl;
    		position: absolute;
@@ -736,7 +736,7 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 }
 
 .#{$mdl-prefix}header, .#{$mdl-prefix}content{
-	padding:10px 15px; 
+	padding:10px 15px;
 	clear: both;
 }
 .#{$mdl-prefix}header{
@@ -755,20 +755,20 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
   border-radius: 3px;
   box-sizing: border-box;
   padding: 10px;
-  width: 45%; 
+  width: 45%;
   float:right;
   height: 325px;
   overflow: auto;
-  
+
   	.#{$am-prefix}highlight { background-color: $mainColor; }
-  
+
   	.#{$am-prefix}asset {
 	  border-bottom: 1px solid darken($mainDkColor, 3%);
 	  padding: 5px;
 	  cursor:pointer;
 	  position: relative;
 	  	&:hover ##{$am-prefix}close { display: block;}
-	  
+
 	  	##{$am-prefix}preview{
 			height: 70px; width: 30%;
 			background-position: center center;
@@ -786,7 +786,7 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 	  	top: 0;
 	  	display: none;
 	}
-	
+
 	##{$am-prefix}meta {
 	  width: 70%;
 	  float: left;
@@ -807,9 +807,9 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 $uploadPadding:	150px 10px;
 
 .#{$am-prefix}file-uploader {
-	width: 55%; 
+	width: 55%;
 	float:left;
-	
+
 	> form {
 	  background-color: $mainDkColor;
 	  border: 2px dashed #999999;
@@ -817,16 +817,16 @@ $uploadPadding:	150px 10px;
 	  position: relative;
 	  text-align: center;
 	  margin-bottom: 15px;
-	  
+
 	  	&.#{$am-prefix}hover {
 			border: 2px solid $colorGreen;
 			color: lighten($colorGreen, 5%); /*#7ee07e*/
 		}
-		
+
 		&.#{$am-prefix}disabled{
 			border-color: red;
 		}
-	  
+
 	  	##{$am-prefix}uploadFile{
 	  		@include opacity(0);
 	  		padding: $uploadPadding;
@@ -834,7 +834,7 @@ $uploadPadding:	150px 10px;
 		  	box-sizing: border-box;
 		}
 	}
-	
+
 	##{$am-prefix}title {
 		position: absolute;
 		padding: $uploadPadding;
@@ -852,19 +852,19 @@ $uploadPadding:	150px 10px;
 }
 .#{$cm-prefix}editor{
 	font-size: 12px;
-	
-	&##{$cm-prefix}htmlmixed { 
-		padding-right: 10px; 
+
+	&##{$cm-prefix}htmlmixed {
+		padding-right: 10px;
 		border-right: 1px solid $mainDkColor;
 		##{$cm-prefix}title { color: #a97d44;}
 	}
 	&##{$cm-prefix}css {
-		padding-left: 10px; 
+		padding-left: 10px;
 		border-left: 1px solid $mainLhColor;
 		##{$cm-prefix}title { color: #ddca7e;}
 	}
 	##{$cm-prefix}title {
-	  background-color: #353535;
+	  background-color: $mainDkColor;
 	  font-size: 12px;
 	  padding: 5px 10px 3px;
 	  text-align: right;
@@ -880,7 +880,7 @@ $uploadPadding:	150px 10px;
   border-radius: 3px;
   overflow: hidden;
   z-index: 5;
-  
+
   .#{$rte-prefix}btn {
   		color: $fontColor;
 		padding: 5px;
@@ -888,7 +888,7 @@ $uploadPadding:	150px 10px;
 		border-right: 1px solid #353535;
 		text-align: center;
 		cursor: pointer;
-	  
+
 	  	&:last-child{ border-right:none; }
 	  	&.btn-info{ background-color: darken($mainDkColor,3%); }
 	  	&:hover {  background-color: $mainLhColor;}
@@ -933,12 +933,12 @@ $uploadPadding:	150px 10px;
 }
 .sp-dragger{background:transparent; box-shadow: 0 0 0 1px #111;}
 .sp-button-container{
-	float: none; 
-	width: 100%; 
+	float: none;
+	width: 100%;
 	position: relative;
 	text-align: right;
 }
-.sp-container button, .sp-container button:hover, .sp-container button:active{ 
+.sp-container button, .sp-container button:hover, .sp-container button:active{
 	background: #333;
     border-color: #292929;
     color: #757575;

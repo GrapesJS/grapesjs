@@ -1,12 +1,10 @@
-define(['backbone'], 
+define(['backbone'],
 	function (Backbone) {
 		/**
 		 * @class RemoteStorage
 		 * */
 		return Backbone.Model.extend({
-			
-			id: 'remote',
-			
+
 			defaults: {
 				urlLoad				: 'http://localhost/load',
 				urlStore			: 'http://localhost/store',
@@ -16,12 +14,12 @@ define(['backbone'],
 				paramsLoad			: {},
 				errorLoad			: 'Response is not a valid JSON',
 			},
-			
+
 			/** @inheritdoc */
 			getId	: function() {
-				return	this.id;
+				return	'remote';
 			},
-			
+
 			/** @inheritdoc */
 			store	: function(name, value) {
 				var fd 		= new FormData(),
@@ -33,14 +31,14 @@ define(['backbone'],
 				$.ajax({
 					url: 			this.get('urlStore'),
 					beforeSend: 	this.get('beforeSend'),
-					complete:		this.get('onComplete'),	
+					complete:		this.get('onComplete'),
 					type: 			'POST',
 					processData:	false,
 					contentType: 	false,
 					data: 			fd,
 				});
 			},
-			
+
 			/** @inheritdoc */
 			load: function(name){
 				var result 	= null,
@@ -58,23 +56,23 @@ define(['backbone'],
 
 						if(typeof d !== 'object')
 							throw prx + t.get('errorLoad');
-						
+
 						result = d.data ? d.data[name] : d[name];
-						
+
 						if(!result)
 							throw prx + ' Resource was not found';
-						
+
 					}catch(err){
 						console.warn(err);
 					}
 				});
 				return result;
 			},
-			
+
 			/** @inheritdoc */
 			remove	: function(name) {
-				
+
 			},
-			
+
 		});
 });

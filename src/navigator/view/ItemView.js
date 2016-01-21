@@ -1,13 +1,13 @@
-define(['backbone', 'text!./../template/item.html','require'], 
+define(['backbone', 'text!./../template/item.html','require'],
 	function (Backbone, ItemTemplate, require) {
-	/** 
+	/**
 	 * @class ItemView
 	 * */
-	
+
 	return Backbone.View.extend({
-		
-		template: _.template(ItemTemplate), 
-		
+
+		template: _.template(ItemTemplate),
+
 		initialize: function(o){
 			this.opt 		= o;
 			this.config		= o.config;
@@ -17,20 +17,22 @@ define(['backbone', 'text!./../template/item.html','require'],
 				this.model.set('open',false);
 			this.listenTo(this.model.components, 'remove add change reset', this.checkChildren);
 			this.listenTo(this.model, 'destroy remove', this.remove);
-			//this.listenTo(this.model, 'change:status', this.updateStatus);
 			this.listenTo(this.model, 'change:open', this.updateOpening);
 			this.className	= this.pfx + 'item no-select';
 			this.events		= {};
 			this.events['click > #'+this.pfx+'btn-eye']	= 'toggleVisibility';
 			this.events['click .'+this.pfx+'title']		= 'toggleOpening';
 			this.$el.data("model", this.model);
+
 			if(o.config.sortable)
-				this.events['mousedown > #'+this.pfx+'move']	= 'startSort';						
+				this.events['mousedown > #'+this.pfx+'move']	= 'startSort';
+
+			this.delegateEvents();
 		},
-		
+
 		/**
 		 * Update item opening
-		 * 
+		 *
 		 * @return void
 		 * */
 		updateOpening: function (){
@@ -42,11 +44,11 @@ define(['backbone', 'text!./../template/item.html','require'],
 				this.$caret.removeClass('fa-chevron-down');
 			}
 		},
-		
+
 		/**
 		 * Toggle item opening
 		 * @param {Object}	e
-		 * 
+		 *
 		 * @return void
 		 * */
 		toggleOpening: function(e){
@@ -55,7 +57,7 @@ define(['backbone', 'text!./../template/item.html','require'],
 				return;
 			this.model.set('open', !this.model.get('open') );
 		},
-		
+
 		/**
 		 * Delegate to sorter
 		 * @param	Event
@@ -64,7 +66,7 @@ define(['backbone', 'text!./../template/item.html','require'],
 			if(this.sorter)
 				this.sorter.startMove(this, e);
 		},
-		
+
 		/**
 		 * Freeze item
 		 * @return	void
@@ -73,7 +75,7 @@ define(['backbone', 'text!./../template/item.html','require'],
 			this.$el.addClass(this.pfx + 'opac50');
 			this.model.set('open',0);
 		},
-		
+
 		/**
 		 * Unfreeze item
 		 * @return	void
@@ -81,11 +83,11 @@ define(['backbone', 'text!./../template/item.html','require'],
 		unfreeze: function(){
 			this.$el.removeClass(this.pfx + 'opac50');
 		},
-		
+
 		/**
 		 * Update item on status change
 		 * @param	Event
-		 * 
+		 *
 		 * @return void
 		 * */
 		updateStatus: function(e){
@@ -106,17 +108,17 @@ define(['backbone', 'text!./../template/item.html','require'],
 				pr.set('status','');
 			}
 		},
-		
+
 		/**
 		 * Toggle visibility
 		 * @param	Event
-		 * 
+		 *
 		 * @return 	void
 		 * */
 		toggleVisibility: function(e){
 			if(!this.$eye)
 				this.$eye	= this.$el.find('> #'+this.pfx+'btn-eye');
-			
+
 			var cCss		= _.clone(this.model.get('style')),
 				hClass		= this.pfx + 'hide';
 			if(this.isVisible()){
@@ -130,10 +132,10 @@ define(['backbone', 'text!./../template/item.html','require'],
 			}
 			this.model.set('style', cCss);
 		},
-		
+
 		/**
 		 * Check if component is visible
-		 * 
+		 *
 		 * @return bool
 		 * */
 		isVisible: function(){
@@ -143,10 +145,10 @@ define(['backbone', 'text!./../template/item.html','require'],
 				return;
 			return 1;
 		},
-		
+
 		/**
 		 * Update item aspect after children changes
-		 * 
+		 *
 		 * @return void
 		 * */
 		checkChildren: function(){
@@ -163,7 +165,7 @@ define(['backbone', 'text!./../template/item.html','require'],
 				this.model.set('open',0);
 			}
 		},
-		
+
 		render : function(){
 			var pfx	= this.pfx,
 				vis	= this.isVisible();
@@ -177,7 +179,7 @@ define(['backbone', 'text!./../template/item.html','require'],
 			}));
 			if(typeof ItemsView == 'undefined')
 				ItemsView = require('./ItemsView');
-			this.$components	= new ItemsView({ 
+			this.$components	= new ItemsView({
 				collection 	: this.model.components,
 				config		: this.config,
 				sorter		: this.sorter,
@@ -193,6 +195,6 @@ define(['backbone', 'text!./../template/item.html','require'],
 			this.$el.attr('class', _.result(this, 'className'));
 			return this;
 		},
-		
+
 	});
 });

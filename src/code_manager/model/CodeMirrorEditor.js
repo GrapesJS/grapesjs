@@ -1,16 +1,15 @@
 define(['backbone',
-        'text!../../../libs/codemirror/lib/codemirror.css',
-        '../../../libs/codemirror/lib/codemirror',
-        '../../../libs/codemirror/mode/htmlmixed/htmlmixed',
-        '../../../libs/codemirror/mode/css/css', 
-        '../../../libs/codemirror/lib/util/formatting'
+        'codemirror/lib/codemirror',
+        'codemirror/mode/htmlmixed/htmlmixed',
+        'codemirror/mode/css/css',
+        'formatting'
         ],
-	function(Backbone, CodeMirrorStyle, CodeMirror, htmlMode, cssMode, formatting ) {
-		/** 
+	function(Backbone, CodeMirror, htmlMode, cssMode, formatting) {
+		/**
 		 * @class CodeViewer
 		 * */
 		return Backbone.Model.extend({
-			
+
 			defaults: {
 				input		: '',
 				label		: '',
@@ -19,13 +18,13 @@ define(['backbone',
 				readOnly 	: true,
 				lineNumbers	: true,
 			},
-		
+
 			/** @inheritdoc */
 			getId	: function()
 			{
-				return 'CodeMirror'; 
+				return 'CodeMirror';
 			},
-			
+
 			/** @inheritdoc */
 			init: function(el)
 			{
@@ -36,10 +35,10 @@ define(['backbone',
 				    mode			: this.get('codeName'),
 				    theme			: this.get('theme'),
 				});
-				
+
 				return this;
 			},
-			
+
 			/** @inheritdoc */
 			setContent	: function(v)
 			{
@@ -52,6 +51,6 @@ define(['backbone',
 					CodeMirror.commands.goDocStart(this.editor);
 				}
 			},
-		
+
         });
 	});
