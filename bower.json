@@ -3,6 +3,7 @@
   "description": "Open source Web Template Editor",
   "version": "0.0.51",
   "author": "Artur Arseniev",
+  "homepage": "http://grapesjs.com",
   "main": [
     "dist/grapes.min.js",
     "dist/grapes.min.css"

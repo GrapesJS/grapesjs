@@ -29,14 +29,21 @@ Try it here: http://grapesjs.com/demo.html
 
 ### Installation
 
-You can get GrapesJS with `bower install grapesjs` and directly use it, but for development purpose you should get it via `npm install grapesjs`
+You can get GrapesJS with `bower install grapesjs` or via `git clone https://github.com/artf/grapesjs.git` to directly use it. For development purpose you should follow instructions below.
 
 
 ### Development
 
 GrapesJS uses [RequireJS](http://requirejs.org/) to organize its files inside `src` folder and [Grunt](http://gruntjs.com/) for build them to `dist`
 
-Install all necessary dependencies:
+Clone the repository and enter inside the folder
+
+```sh
+$ git clone https://github.com/artf/grapesjs.git
+$ cd grapesjs
+```
+
+Install all necessary dependencies
 
 ```sh
 $ npm install
