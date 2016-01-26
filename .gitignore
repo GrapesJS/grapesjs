@@ -1,0 +1,11 @@
+.DS_Store
+.settings/
+.sass-cache/
+.project
+grapes.sublime-project
+grapes.sublime-workspace
+
+private/
+vendor/
+node_modules/
+bower_components/
