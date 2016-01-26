@@ -53,7 +53,7 @@ require(['src/config/require-config.js'], function() {
 							},
 								{ id: 'remove', 	className: 'fa fa-trash-o', 		command: 'delete-comp', attributes	: { title: 'Remove' },	},
 					       	   	{ id: 'move', 		className: 'fa fa-arrows',			command: 'move-comp',	attributes	: { title: 'Move' }, 	},
-					       	   	{ id: 'resize', 	className: 'fa fa-arrows-alt', 		command: 'resize-comp',	attributes	: { title: 'Resize' }, 	},
+					       	   	//{ id: 'resize', 	className: 'fa fa-arrows-alt', 		command: 'resize-comp',	attributes	: { title: 'Resize' }, 	},
 					       	   	{ id: 'text', 		className: 'fa fa-font' ,			command: 'text-comp',	attributes	: { title: 'Text' }, 	},
 					       	   	{ id: 'image', 		className: 'fa fa-picture-o',		command: 'image-comp',	attributes	: { title: 'Image' }, 	},
 					       	   	{ id: 'var',		className: 'fa fa-hashtag',			command: 'insert-custom',attributes	: { title: 'Some variable' },
@@ -187,33 +187,74 @@ require(['src/config/require-config.js'], function() {
 							defaults 	: 'auto',
 							min			: 0,
 						},{
-							name		: 'Padding',
-							property	: 'padding',
+							name		: 'Margin',
+							property	: 'margin',
 							type		: 'composite',
 							properties:[{
 											name		: 'Top',
-											property	: 'mpadding-top',
+											property	: 'margin-top',
 											type		: 'integer',
 											units		: ['px','%'],
 											defaults 	: 0,
-											min			: 0,
 										},{
 											name		: 'Right',
 											property	: 'margin-right',
 											type		: 'integer',
 											units		: ['px','%'],
 											defaults 	: 0,
-											min			: 0,
 										},{
 											name		: 'Bottom',
 											property	: 'margin-bottom',
 											type		: 'integer',
 											units		: ['px','%'],
 											defaults 	: 0,
-											min			: 0,
 										},{
 											name		: 'Left',
 											property	: 'margin-Left',
+											type		: 'integer',
+											units		: ['px','%'],
+											defaults 	: 0,
+										},],
+						},{
+							name		: 'Center block',
+							property	: 'margin',
+							type		: 'select',
+							defaults 	: '0',
+							list		:	[{
+												value 		: '0',
+												name			: 'Normal',
+											},{
+												value 		: '0 auto',
+												name			: 'Center',
+											}],
+						},{
+							name		: 'Padding',
+							property	: 'padding',
+							type		: 'composite',
+							properties:[{
+											name		: 'Top',
+											property	: 'padding-top',
+											type		: 'integer',
+											units		: ['px','%'],
+											defaults 	: 0,
+											min			: 0,
+										},{
+											name		: 'Right',
+											property	: 'padding-right',
+											type		: 'integer',
+											units		: ['px','%'],
+											defaults 	: 0,
+											min			: 0,
+										},{
+											name		: 'Bottom',
+											property	: 'padding-bottom',
+											type		: 'integer',
+											units		: ['px','%'],
+											defaults 	: 0,
+											min			: 0,
+										},{
+											name		: 'Left',
+											property	: 'padding-Left',
 											type		: 'integer',
 											units		: ['px','%'],
 											defaults 	: 0,
@@ -331,14 +372,19 @@ require(['src/config/require-config.js'], function() {
 					},{
 						name: 'Decorations',
 						properties: [{
-							name		: 'Borders radius',
+							name		: 'Border radius',
 							property	: 'border-radius',
 							type		: 'integer',
 							units		: ['px'],
 							defaults 	: '0',
 							min			: 0,
 						},{
-							name		: 'Borders radius',
+							name			: 'Background',
+							property	: 'background-color',
+							type			: 'color',
+							defaults: 	'none'
+						},{
+							name		: 'Border radius',
 							property	: 'border-radius',
 							type		: 'composite',
 							properties	: [{

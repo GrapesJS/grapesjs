@@ -1,10 +1,11 @@
 {
-  "name": "grapes",
+  "name": "grapesjs",
   "description": "Open source web template editor",
   "version": "0.0.5",
   "author": "Artur Arseniev",
   "main": [
-    "dist/grapes.min.js"
+    "dist/grapes.min.js",
+    "dist/grapes.min.css"
   ],
   "keywords": [
     "grapes",
@@ -19,22 +20,33 @@
   "license": "BSD-3-Clause",
   "ignore": [
     "**/.*",
-    "node_modules",
-    "bower_components",
+    "styles",
+    "src",
     "test",
-    "tests"
+    "Gruntfile.js",
+    "index.html",
+    "README.md",
+    "package.json"
   ],
   "dependencies": {
+    "jquery": "~2.2.0"
+  },
+  "devDependencies": {
+    "mocha": "~2.3.4",
+    "chai": "~3.4.2",
+    "sinonjs": "~1.17.1",
     "backbone": "~1.2.3",
     "Backbone.Undo": "~0.2.5",
-    "jquery": "~2.2.0",
-    "jquery.ui": "~1.11.4",
     "keymaster": "~1.6.3",
     "requirejs": "~2.1.22",
     "requirejs-text": "~2.0.14",
     "spectrum": "~1.8.0",
     "underscore": "~1.8.3",
     "codemirror": "~5.10.0",
-    "codemirror-formatting": "*"
+    "codemirror-formatting": "*",
+    "almond": "~0.3.1"
+  },
+  "resolutions": {
+    "backbone": "~1.2.3"
   }
 }

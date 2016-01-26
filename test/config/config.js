@@ -1,24 +1,24 @@
 require.config({
-	
+
 	baseUrl : "../src",
-	
+
 	paths : {
-		chai 	: '../test/libs/chai',
-		sinon 	: '../test/libs/sinon',
-		mocha	: '../test/libs/mocha/mocha',
+		chai 	: '../vendor/chai/chai',
+		sinon : '../vendor/sinon/sinon',
+		mocha	: '../vendor/mocha/mocha',
 	},
-	
+
 	shim: {
 		mocha: {
             init: function () {
                 this.mocha.setup({
-                	ignoreLeaks: true, 
+                	ignoreLeaks: true,
                 	ui:'bdd'
                 });
                 return this.mocha;
             }
         }
     },
-    
+
     urlArgs : 'bust=' + (new Date()).getTime()
 });

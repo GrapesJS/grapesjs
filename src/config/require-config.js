@@ -22,10 +22,6 @@ require.config({
 
 	paths: {
 		jquery: 			'../vendor/jquery/jquery',
-		core:  				'../vendor/jquery-ui/jquery-ui-core',
-		mouse: 				'../vendor/jquery-ui/jquery-ui-mouse',
-		widget:  			'../vendor/jquery-ui/jquery-ui-widget',
-		jqueryUi: 		'../vendor/jquery-ui/jquery-ui',
 		underscore: 	'../vendor/underscore/underscore',
 		backbone: 		'../vendor/backbone/backbone',
 		backboneUndo: '../vendor/backbone-undo/backbone-undo',

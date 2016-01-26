@@ -6,7 +6,6 @@ grapes.sublime-project
 grapes.sublime-workspace
 
 private/
-libs/
 vendor/
 node_modules/
 bower_components/

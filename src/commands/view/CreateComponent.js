@@ -4,39 +4,39 @@ define(['backbone','./SelectPosition'],
 		 * @class CreateComponent
 		 * */
 		return _.extend({}, SelectPosition, {
-			
+
 			newElement : null,
-			
+
 			tempComponent: { style:{} },
-			
+
 			init: function(opt) {
 				SelectPosition.init.apply(this, arguments);
 				_.bindAll(this,'startDraw','draw','endDraw','rollback');
 				this.config		= opt;
 				this.heightType = this.config.newFixedH ? 'height' : 'min-height';
 			},
-			
-			/** 
+
+			/**
 			 * Returns creation placeholder
-			 * 
+			 *
 			 * @return 	{Object}
 			 * */
 			getCreationPlaceholder: function()
 			{
 				return this.newElem;
 			},
-			
-			/** 
+
+			/**
 			 * Removes creation placeholder
-			 * 
+			 *
 			 * @return 	void
 			 * */
 			removeCreationPlaceholder: function()
 			{
 				this.newElem.remove();
 			},
-			
-			/** 
+
+			/**
 			 * Start with enabling to select position and listening to start drawning
 			 * @return 	void
 			 * */
@@ -46,22 +46,22 @@ define(['backbone','./SelectPosition'],
 				this.$el.css('cursor','crosshair');
 				this.enableToDraw();
 			},
-			
-			/** 
+
+			/**
 			 * Enable user to draw components
-			 * 
+			 *
 			 * @return 	void
 			 * */
 			enableToDraw: function()
 			{
 				this.$el.on('mousedown', this.startDraw);
-				this.$el.disableSelection();													//Disable text selection	
+				//Need to disable selection
 			},
-			
-			/** 
+
+			/**
 			 * Start drawing component
-			 * @param 	{Object}	e	Event 
-			 * 
+			 * @param 	{Object}	e	Event
+			 *
 			 * @return 	void
 			 * */
 			startDraw : function(e)
@@ -77,16 +77,16 @@ define(['backbone','./SelectPosition'],
 				this.newElem.data('helper',1);
 				$('body').append(this.newElem);													//Show helper component
 				this.parentElem=this.newElem.parent();											//For percent count
-				this.targetC = this.outsideElem;												
+				this.targetC = this.outsideElem;
 				$(document).mousemove(this.draw);
 				$(document).mouseup(this.endDraw);
 				$(document).keypress(this.rollback);
 			},
-			
-			/** 
+
+			/**
 			 * While drawing the component
-			 * @param 	{Object}	e	Event 
-			 * 
+			 * @param 	{Object}	e	Event
+			 *
 			 * @return 	void
 			 * */
 			draw: function(e)
@@ -94,12 +94,12 @@ define(['backbone','./SelectPosition'],
 				this.isDragged = true;
 				this.updateComponentSize(e);
 			},
-			
-			/** 
+
+			/**
 			 * End drawing component
 			 * @param 	{Object}	e Event
-			 * 
-			 * @return 	void 
+			 *
+			 * @return 	void
 			 * */
 			endDraw : function(e)
 			{
@@ -118,14 +118,14 @@ define(['backbone','./SelectPosition'],
 				this.removeCreationPlaceholder();												//Remove the element used for size indication
 				this.afterDraw(model);
 			},
-			
-			/** 
+
+			/**
 			 * Create component
 			 * @param	{Object}	target	 	DOM of the target element which to push new component
 			 * @param 	{Object}	component 	New component to push
 			 * @param 	{Integer}	posIndex	Index inside the collection, 0 if no children inside
 			 * @param 	{String}	method 		Before or after of the children
-			 * 
+			 *
 			 * @return 	{Object} Created model
 			 * */
 			create: function(target, component, posIndex, method)
@@ -145,8 +145,8 @@ define(['backbone','./SelectPosition'],
 				}else
 					console.warn("Invalid target position");
 			},
-			
-			/** 
+
+			/**
 			 * Check and set basic requirements for the component
 			 * @param 	{Object}	component	New component to be created
 			 * @return 	{Object} 	Component updated
@@ -159,7 +159,7 @@ define(['backbone','./SelectPosition'],
 				if(component.style[this.heightType].replace(/\D/g,'') < c.minComponentH)		//Check min height
 					component.style[this.heightType] = c.minComponentH +'px';
 				if(c.newFixedH)															//Set overflow in case of fixed height
-					component.style.overflow = 'auto';	
+					component.style.overflow = 'auto';
 				if(!this.absoluteMode){
 					delete component.style.left;
 					delete component.style.top;
@@ -167,11 +167,11 @@ define(['backbone','./SelectPosition'],
 					component.style.position = 'absolute';
 				return component;
 			},
-			
-			/** 
+
+			/**
 			 * Update new component size while drawing
 			 * @param 	{Object} 	e	Event
-			 * 
+			 *
 			 * @return 	void
 			 * */
 			updateComponentSize : function (e)
@@ -200,12 +200,12 @@ define(['backbone','./SelectPosition'],
 		        this.tempComponent.style.left = startLeft + "px";
 		        this.tempComponent.style.top = startTop + "px";
 			},
-			
-			/** 
+
+			/**
 			 * Used to bring the previous situation before event started
 			 * @param 	{Object}	e		Event
 			 * @param 	{Boolean} 	forse	Indicates if rollback in anycase
-			 * 
+			 *
 			 * @return 	void
 			 * */
 			rollback: function(e, force)
@@ -217,50 +217,50 @@ define(['backbone','./SelectPosition'],
 				}
 				return;
 			},
-			
-			/** 
+
+			/**
 			 * This event is triggered at the beginning of a draw operation
 			 * @param 	{Object}	component	Object component before creation
-			 * 
+			 *
 			 * @return 	void
 			 * */
 			beforeDraw: function(component){
 				component.editable = false;//set this component editable
 			},
-			
-			/** 
+
+			/**
 			 * This event is triggered at the end of a draw operation
 			 * @param 	{Object}	model	Component model created
-			 * 
+			 *
 			 * @return 	void
 			 * */
 			afterDraw: function(model){},
-			
-			/** 
+
+			/**
 			 * This event is triggered just before a create operation
 			 * @param 	{Object} 	component	Object component before creation
-			 * 
+			 *
 			 * @return 	void
 			 * */
 			beforeCreation: function(component){},
-			
-			/** 
+
+			/**
 			 * This event is triggered at the end of a create operation
 			 * @param 	{Object}	model	Component model created
-			 * 
+			 *
 			 * @return 	void
 			 * */
 			afterCreation: function(model){},
-			
-			/** Run method 
+
+			/** Run method
 			 * */
 			run: function(em, sender){
 				this.sender	= sender;
 				this.$el 	= this.$wrapper;
 				this.enable();
 			},
-			
-			/** Stop method 
+
+			/** Stop method
 			 * */
 			stop: function(){
 				this.removePositionPlaceholder();											//Removes placeholder from eventSelectPosition

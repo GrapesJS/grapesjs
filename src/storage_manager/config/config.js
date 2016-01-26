@@ -2,13 +2,14 @@ define(function () {
 	return {
 		// Enable/Disable autosaving
 		autosave 			: 1,
-		
+
 		// Indicates which storage to use. Available: local | remote
 		storageType			: 'local',
-		
+
 		// If autosave enabled, indicates how many changes (general changes to structure)
+		// need to be done before save. Useful with remoteStorage to reduce remote calls
 		changesBeforeSave	: 1,
-		
+
 		// Defaults for remote storage
 		remoteStorage		: {
 			//Enable/Disable components model (JSON format)
@@ -28,10 +29,10 @@ define(function () {
 			 * */
 			urlStore: '',
 			/**
-			 * Use this url to fetch model data, does expect in response something like this: 
-			 * { data: { 
-			 * 		components: '', 
-			 * 		style: '', 
+			 * Use this url to fetch model data, does expect in response something like this:
+			 * { data: {
+			 * 		components: '',
+			 * 		style: '',
 			 * } }
 			 */
 			urlLoad: '',
@@ -44,7 +45,7 @@ define(function () {
 			beforeSend	: function(jqXHR,settings){},	//Callback before request
 			onComplete	: function(jqXHR,status){},	//Callback after request
 		},
-		
+
 		// Defaults for local storage
 		localStorage		: {},
 	};

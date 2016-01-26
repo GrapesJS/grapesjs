@@ -1,3 +1,5 @@
+@import "spectrum";
+@import "font-awesome";
 
 $app-prefix: 	'wte-';
 $nv-prefix: 	$app-prefix + 'nv-';
@@ -145,6 +147,10 @@ ol.example li.placeholder:before {position: absolute;}
 	outline: 1px dashed #888;
 	outline-offset: -2px;
   	box-sizing: border-box;
+}
+
+.#{$com-prefix}no-select{
+ 	@extend .no-select;
 }
 
 body .#{$cv-prefix}canvas .selected-component{//TODO

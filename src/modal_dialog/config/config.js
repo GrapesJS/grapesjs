@@ -1,13 +1,13 @@
 define(function () {
 	return {
-		
+
 		stylePrefix		: 'mdl-',
-		
-		title			: '',
-		
-		content			: '',
-		
-		backdrop		: true,
-		
+
+		title					: '',
+
+		content				: '',
+
+		backdrop			: true,
+
 	};
 });
