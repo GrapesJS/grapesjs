@@ -1,6 +1,7 @@
 .DS_Store
 .settings/
 .sass-cache/
+style/.sass-cache/
 .project
 grapes.sublime-project
 grapes.sublime-workspace

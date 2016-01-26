@@ -1,25 +1,26 @@
-# GrapesJS
+# <a href="http://grapesjs.com" target="_blank">GrapesJS</a>
 
-![GrapesJS](http://grapesjs.com/img/grapesjs-demo-template.png)
+<p align="center"><img src="http://grapesjs.com/img/grapesjs-demo-template2.jpg" alt="GrapesJS" width="500" align="center"/></p>
 
 GrapesJS is a free and open source Web Template Editor for building HTML templates to be used inside sites, webapps, newsletters or anything else related with HTML.
 Be aware that is not a 'Website Builder' but a tool to create only structure and containers for contents. The great thing about GrapesJS is that you can customize it, extend it or even integrate it with your applications.
 
 Try it here: http://grapesjs.com/demo.html
 
+
 ### Features
 
-* Style Manager, for component styling
-  ![GrapesJS - Style Manager](http://grapesjs.com/img/grapesjs-style-manager.png)
+* Style Manager, for component styling<br/>
+<p align="center"><img src="http://grapesjs.com/img/grapesjs-style-manager.png" alt="GrapesJS - Style Manager" height="400" align="center"/></p>
 
-* Layer Manager, that comes handy with nested elements
-  ![GrapesJS - Style Manager](http://grapesjs.com/img/grapesjs-layer-manager.png)
+* Layer Manager, that comes handy with nested elements<br/>
+<p align="center"><img src="http://grapesjs.com/img/grapesjs-layer-manager.png" alt="GrapesJS - Layer Manager" height="300" align="center"/></p>
 
-* Code viewer
-  ![GrapesJS - Style Manager](http://grapesjs.com/img/grapesjs-code-viewer.png)
+* Code Viewer <br/>
+<p align="center"><img src="http://grapesjs.com/img/grapesjs-code-viewer.png" alt="GrapesJS - Code Viewer" height="250" align="center"/></p>
 
-* Asset Manager, for uploading and managing images
-  ![GrapesJS - Style Manager](http://grapesjs.com/img/grapesjs-asset-manager.png)
+* Asset Manager, for uploading and managing images<br/>
+<p align="center"><img src="http://grapesjs.com/img/grapesjs-asset-manager.png" alt="GrapesJS - Asset Manager" height="250" align="center"/></p>
 
 * Local and remote storage
 
@@ -85,7 +86,7 @@ The section below will explain some basic configurations but for a more practica
 
 ### Configuration
 
-For now I only show up some general settings, for more details check source or demo
+For now I only show up some general settings, for more details check source or demo. Examples will be available soon
 
 ```js
 var config = {
@@ -129,9 +130,10 @@ var config = {
 };
 ```
 
+
 ### API
 
-At the moment `.render()` is the only available method but actually others will be public very soon...
+At the moment `render()` is the only available method but others will be public very soon...
 
 
 ### Testing
