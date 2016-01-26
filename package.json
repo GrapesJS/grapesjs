@@ -1,10 +1,9 @@
 {
   "name": "grapesjs",
-  "description": "Open source web template editor",
+  "description": "Open source Web Template Editor",
   "version": "0.0.5",
   "author": "Artur Arseniev",
   "license": "BSD-3-Clause",
-  "private": true,
   "dependencies": {
     "bower": "^1.7.2"
   },
