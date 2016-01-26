@@ -54,8 +54,8 @@ a {
   width:100%;
 }
 .fb-share-button{ display: inline !important; }
-.fb-share-button > span{ width:60px !important; height: 20px !important;}
-.fb-share-button iframe{ width:auto !important; height: auto !important;}
+.fb-share-button > span, .fb-share-button iframe{ width:60px !important; height: 20px !important;}
+.fb-share-button > span{vertical-align: baseline !important; }
 
 @media screen and (min-width: 64em) {
   .btn {
