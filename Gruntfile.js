@@ -108,7 +108,7 @@ module.exports = function(grunt) {
     concat: {
       css: {
         src: ['<%= builtDir %>/*.min.css'],
-        dest: '<%= builtDir %>/grapes.min.css'
+        dest: '<%= builtDir %>/css/grapes.min.css'
       }
     },
 
@@ -172,7 +172,7 @@ module.exports = function(grunt) {
     },
 
     clean: {
-      all: ["<%= builtDir %>/*", "!<%= builtDir %>/grapes.min.js", "!<%= builtDir %>/grapes.min.css"]
+      all: ["<%= builtDir %>/*", "!<%= builtDir %>/grapes.min.js", "!<%= builtDir %>/css"]
     },
 
     copy: {

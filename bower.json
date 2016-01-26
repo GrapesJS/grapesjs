@@ -1,7 +1,7 @@
 {
   "name": "grapesjs",
   "description": "Open source Web Template Editor",
-  "version": "0.0.5",
+  "version": "0.0.51",
   "author": "Artur Arseniev",
   "main": [
     "dist/grapes.min.js",
