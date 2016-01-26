@@ -1,4 +1,4 @@
-# <a href="http://grapesjs.com" target="_blank">GrapesJS</a>
+# [GrapesJS](http://grapesjs.com)
 
 <p align="center"><img src="http://grapesjs.com/img/grapesjs-demo-template2.jpg" alt="GrapesJS" width="500" align="center"/></p>
 
