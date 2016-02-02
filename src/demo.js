@@ -1,7 +1,9 @@
 require(['src/config/require-config.js'], function() {
 
 	require(['editor/main'],function (Grapes){
-		var grapes	= new Grapes({
+		var grapes	= new Grapes(
+
+		{
 
 			container	: '#wte-app',
 
@@ -46,7 +48,7 @@ require(['src/config/require-config.js'], function() {
 					       	   	       		   { id: 'box100',		className: 'fa fa-square-o',		command: 'insert-custom',
 					       	   	       			   attributes	: { title	: 'Create all-width box' },
 					       	   	       			   options:  {
-									       			   	content					: { style: { width: '100%', 'min-height': '75px'}},
+									       			   	content					: { style: { width: '100%', 'min-height': '75px', 'padding': '7px'}},
 									       			   	terminateAfterInsert	: false,
 									       			},},
 					       	   	]
@@ -158,6 +160,7 @@ require(['src/config/require-config.js'], function() {
 						}],
 					},{
 						name: 'Dimension',
+						open: false,
 						properties:[{
 							name		: 'Width',
 							property	: 'width',
@@ -263,6 +266,7 @@ require(['src/config/require-config.js'], function() {
 						},],
 					},{
 						name: 'Typography',
+						open: false,
 						properties:[{
 							name		: 'Font',
 							property	: 'font-family',
@@ -371,6 +375,7 @@ require(['src/config/require-config.js'], function() {
 						}],
 					},{
 						name: 'Decorations',
+						open: false,
 						properties: [{
 							name		: 'Border radius',
 							property	: 'border-radius',
@@ -534,6 +539,7 @@ require(['src/config/require-config.js'], function() {
 						},],
 					},{
 						name: 'Extra',
+						open: false,
 						properties: [{
 							name: 'Transition',
 							property: 'transition',
@@ -603,7 +609,9 @@ require(['src/config/require-config.js'], function() {
 				],
 
 			},
-		});
+		}
+
+		);
 
 		grapes.render();
 

@@ -1,24 +1,96 @@
 define(function() {
-		/** 
+		/**
 		 * @class SelectComponent
 		 * */
 		return {
-			
-			enable: function(){
-				this.startSelectComponent();
+
+			init: function(o){
+				_.bindAll(this, 'onHover', 'onOut', 'onClick');
 			},
-			
+
+			enable: function()
+			{
+				_.bindAll(this,'copyComp','pasteComp');
+				var confMain	= this.config.em.get('Config');
+				this.startSelectComponent();
+				if(confMain.copyPaste){
+					key('⌘+c, ctrl+c', this.copyComp);
+					key('⌘+v, ctrl+v', this.pasteComp);
+				}
+			},
+
+			/**
+			 * Copy component to clipboard
+			 */
+			copyComp: function()
+			{
+					var sel 	= this.editorModel.get('selectedComponent');
+
+					if(sel && sel.get('copyable'))
+						 this.editorModel.set('clipboard', sel);
+			},
+
+			/**
+			 * Paste component from clipboard
+			 */
+			pasteComp: function()
+			{
+					var clp 	= this.editorModel.get('clipboard'),
+							sel 	= this.editorModel.get('selectedComponent');
+					if(clp && sel && sel.collection){
+						var index = sel.collection.indexOf(sel),
+								clone		= clp.clone();
+						sel.collection.add(clone, { at: index + 1 });
+					}
+			},
+
 			/** Start select component event
 			 * @return void
 			 * */
 			startSelectComponent: function(){
 				var that = this;
-				this.$el.find('*').on('mouseover',function(e){ that.highlightComponent(e,this); })
-						.on('mouseout'	 ,function(e){ that.removeHighlightComponent(e,this); })
-						.on('click'		 ,function(e){ that.selectComponent(e,this); });
+				this.$el.find('*')
+						.on('mouseover',this.onHover)
+						.on('mouseout', this.onOut)
+						.on('click', this.onClick);
 				this.selEl = this.$el.find('*');
 			},
-			
+
+			/**
+			 * Hover command
+			 * @param {Object}	e
+			 */
+			onHover: function(e)
+			{
+				e.stopPropagation();
+			  $(e.target).addClass(this.hoverClass);
+			  this.attachBadge(e.target);
+			},
+
+			/**
+			 * Out command
+			 * @param {Object}	e
+			 */
+			onOut: function(e)
+			{
+				e.stopPropagation();
+			  $(e.target).removeClass(this.hoverClass);
+			  if(this.badge)
+			  	this.badge.css({ left: -10000, top:-10000 });
+			},
+
+			/**
+			 * Hover command
+			 * @param {Object}	e
+			 */
+			onClick: function(e)
+			{
+				var s	= $(e.target).data('model').get('stylable');
+				if(!(s instanceof Array) && !s)
+					return;
+				this.onSelect(e, e.target);
+			},
+
 			/** Stop select component event
 			 * @param Event
 			 * @return void
@@ -28,45 +100,14 @@ define(function() {
 					this.selEl.trigger('mouseout').off('mouseover mouseout click');
 				this.selEl = null;
 			},
-			
-			/** Highlight component when pointer is over it
-			 * @param Event
-			 * @param Object Component
-			 * @return void
+
+			/**
+			 * Say what to do after the component was selected
+			 * @param 	{Object}	e
+			 * @param 	{Object}	el
 			 * */
-			highlightComponent: function(e, el){
-				e.stopPropagation();
-			    $(el).addClass(this.hoverClass);
-			    this.attachBadge(el);
-			},
-			/** Remove highlight from component
-			 * @param Event
-			 * @param Object Component
-			 * @return void
-			 * */
-			removeHighlightComponent: function(e, el){
-				e.stopPropagation();
-			    $(el).removeClass(this.hoverClass);
-			    if(this.badge)										//Hide badge if possible
-			    	this.badge.css({ left: -10000, top:-10000 });	//TODO HIDE
-			},
-			/** Select highlighted component
-			 * @param Event
-			 * @param Object Component
-			 * @return void
-			 * */
-			selectComponent: function(e, el){
-				var s	= $(el).data('model').get('stylable');
-				if(!(s instanceof Array) && !s)
-					return;
-				this.onSelect(e,el);								//Callback on select
-			},
-			
-			/** Say what to do after the component was selected
-			 * @param Event
-			 * @param Object Selected element
-			 * */
-			onSelect: function(e, el){
+			onSelect: function(e, el)
+			{
 				e.stopPropagation();
 				if(this.$selected)																	//Check if already selected before
 					this.$selected.removeClass('selected-component');
@@ -78,14 +119,14 @@ define(function() {
 					this.$selected.data('model').set('status','selected');
 				}
 			},
-			
+
 			/** Removes all highlighting effects on components
 			 * @return void
 			 * */
 			clean: function(){
 				this.$el.find('*').removeClass(this.hoverClass);
 			},
-			
+
 			/** Attach badge to component
 			 * @param Object Component
 			 * @return void
@@ -111,24 +152,24 @@ define(function() {
 					relativeT -= badgeH;
 				this.badge.css({ left: relativeL, top:relativeT });
 			},
-			
+
 			/** Create badge for the component
 			 * @return void
 			 * */
 			createBadge: function (){
 				this.badge = $('<div>', {class: this.badgeClass + " no-dots"}).appendTo(this.$wrapper);
 			},
-			
+
 			/** Remove badge
 			 * @return void
 			 * */
 			removeBadge: function (){
-				if(this.badge){	
+				if(this.badge){
 					this.badge.remove();
 					delete this.badge;
 				}
 			},
-			
+
 			/** Updates badge label
 			 * @param Object Model
 			 * @return void
@@ -137,16 +178,17 @@ define(function() {
 				if(model)
 					this.badge.html( model.getName() );
 			},
-			
-			/** Run method 
+
+			/**
+			 * Run method
 			 * */
-			run: function(){
+			run: function(em, sender){
 				this.enable();
 				this.render();
-				this.active = true;
 			},
-			
-			/** Stop method 
+
+			/**
+			 * Stop method
 			 * */
 			stop: function(){
 				if(this.editorModel.get('selectedComponent'))
@@ -154,11 +196,12 @@ define(function() {
 				this.$el.unbind();												//removes all attached events
 				if(this.$selected)												//check if already selected before
 					this.$selected.removeClass('selected-component');
-				this.removeBadge();														
+				this.removeBadge();
 				this.clean();
 				this.$el.find('*').unbind('mouseover').unbind('mouseout').unbind('click');
 				this.editorModel.set('selectedComponent',null);
-				this.active = false;
+				key.unbind('⌘+c, ctrl+c');
+				key.unbind('⌘+v, ctrl+v');
 			}
 		};
 });

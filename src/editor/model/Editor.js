@@ -2,9 +2,9 @@ define([
         'backbone',
         'backboneUndo',
         'keymaster',
-        'AssetManager', 
-        'StorageManager', 
-        'ModalDialog', 
+        'AssetManager',
+        'StorageManager',
+        'ModalDialog',
         'CodeManager',
         'Commands',
         'Canvas',
@@ -15,10 +15,10 @@ define([
 			Backbone,
 			UndoManager,
 			Keymaster,
-			AssetManager, 
-			StorageManager, 
-			ModalDialog, 
-			CodeManager, 
+			AssetManager,
+			StorageManager,
+			ModalDialog,
+			CodeManager,
 			Commands,
 			Canvas,
 			RichTextEditor,
@@ -26,18 +26,19 @@ define([
 			Panels
 			){
 		return Backbone.Model.extend({
-			
+
 			defaults:{
-				selectedComponent: 	null,
-				changesCount:		0,
+				clipboard					: null,
+				selectedComponent	: null,
+				changesCount			:	0,
 			},
-			
+
 			initialize: function(c)
 			{
 				this.config		= c;
 				this.compName	= this.config.storagePrefix + 'components' + this.config.id;
 				this.set('Config', c);
-				
+
 				this.initStorage();
 				this.initModal();
 				this.initAssetManager();
@@ -48,10 +49,10 @@ define([
 				this.initComponents();
 				this.initCanvas();
 				this.initUndoManager();
-				
+
 				this.on('change:selectedComponent', this.componentSelected, this);
 			},
-			
+
 			/**
 			 * Initialize components
 			 * */
@@ -60,31 +61,31 @@ define([
 				var cfg			= this.config.components,
 					comp		= this.loadComponentsTree(),
 					cmpStylePfx	= cfg.stylePrefix || 'comp-';
-				
+
 				cfg.stylePrefix	= this.config.stylePrefix + cmpStylePfx;
 				if(comp)
 					cfg.wrapper	= comp;
-			
+
 				if(this.rte)
 					cfg.rte		= this.rte;
-			
+
 				if(this.modal)
 					cfg.modal	= this.modal;
-			
+
 				if(this.am)
 					cfg.am		= this.am;
-				
+
 				cfg.em			= this;
-				
+
 				this.cmp 		= new DomComponents(cfg);
-				
+
 				if(this.stm.isAutosave()){ // TODO Currently doesn't listen already created models
 					this.updateComponents( this.cmp.getComponent(), null, { avoidStore : 1 });
 				}
-				
+
 				this.set('Components', this.cmp);
 			},
-			
+
 			/**
 			 * Initialize canvas
 			 * */
@@ -98,10 +99,10 @@ define([
 
 				if(this.cmp)
 					this.cv.setWrapper(this.cmp);
-				
+
 				this.set('Canvas', this.cv);
 			},
-			
+
 			/**
 			 * Initialize rich text editor
 			 * */
@@ -113,7 +114,7 @@ define([
 				this.rte		= new RichTextEditor(cfg);
 				this.set('RichTextEditor', this.rte);
 			},
-			
+
 			/**
 			 * Initialize storage
 			 * */
@@ -123,7 +124,7 @@ define([
 				this.stm.loadDefaultProviders().setCurrentProvider(this.config.storageType);
 				this.set('StorageManager', this.stm);
 			},
-			
+
 			/**
 			 * Initialize asset manager
 			 * */
@@ -132,14 +133,14 @@ define([
 				var cfg			= this.config.assetManager,
 					pfx			= cfg.stylePrefix || 'am-';
 				cfg.stylePrefix = this.config.stylePrefix + pfx;
-				
+
 				if(this.stm)
 					cfg.stm = this.stm;
-				
+
 				this.am			= new AssetManager(cfg);
 				this.set('AssetManager', this.am);
 			},
-			
+
 			/**
 			 * Initialize modal
 			 * */
@@ -152,7 +153,7 @@ define([
 				this.modal.render().appendTo('body');
 				this.set('Modal', this.modal);
 			},
-			
+
 			/**
 			 * Initialize Code Manager
 			 * */
@@ -165,7 +166,7 @@ define([
 				this.cm.loadDefaultGenerators().loadDefaultEditors();
 				this.set('CodeManager', this.cm);
 			},
-			
+
 			/**
 			 * Initialize Commands
 			 * */
@@ -181,7 +182,7 @@ define([
 				this.com.loadDefaultCommands();
 				this.set('Commands', this.com);
 			},
-			
+
 			/**
 			 * Initialize Panels
 			 * */
@@ -195,23 +196,25 @@ define([
 				this.pn.addPanel({ id: 'views-container'});
 				this.set('Panels', this.pn);
 			},
-			
+
 			/**
 			 * Initialize Undo manager
 			 * */
 			initUndoManager: function(){
 				if(this.cmp && this.config.undoManager){
-					var backboneUndo = new Backbone.UndoManager({
+					var that 	= this;
+					this.um 	= new Backbone.UndoManager({
 					    register: [this.cmp.getComponent().get('components')],
 					    track: true
 					});
+					this.set('UndoManager', this.um);
 					key('⌘+z, ctrl+z', function(){
-						backboneUndo.undo(); 
+						that.um.undo();
 					});
 					key('⌘+shift+z, ctrl+shift+z', function(){
-						backboneUndo.redo();
+						that.um.redo();
 					});
-					
+
 					Backbone.UndoManager.removeUndoType("change");
 					var beforeCache;
 					Backbone.UndoManager.addUndoType("change:style", {
@@ -237,12 +240,12 @@ define([
 							model.set(af);
 						}
 					});
-					
-					//TODO when, for example, undo delete cant redelete it, so need to 
+
+					//TODO when, for example, undo delete cant redelete it, so need to
 					//recall 'remove command'
 				}
 			},
-			
+
 			/**
 			 * Triggered when components are updated
 			 * */
@@ -256,13 +259,13 @@ define([
 				this.storeComponentsTree();
 				this.set('changesCount', 0 );
 			},
-			
-			/** 
+
+			/**
 			 * Callback on component selection
 			 * @param 	{Object} 	Model
 			 * @param 	{Mixed} 	New value
 			 * @param 	{Object} 	Options
-			 * 
+			 *
 			 * */
 			componentSelected: function(model, val, options)
 			{
@@ -271,10 +274,10 @@ define([
 				else
 					this.trigger('select-comp',[model,val,options]);
 			},
-			
-			/** 
+
+			/**
 			 * Load components from storage
-			 * 
+			 *
 			 * @return	{Object}
 			 * */
 			loadComponentsTree: function(){
@@ -286,10 +289,10 @@ define([
 				}
 				return result;
 			},
-			
-			/** 
+
+			/**
 			 * Save components to storage
-			 * 
+			 *
 			 * @return void
 			 * */
 			storeComponentsTree: function(){
@@ -299,44 +302,48 @@ define([
 					this.stm.store(this.compName, JSON.stringify(res));
 				}
 			},
-			
+
 			/**
 			 * Triggered when components are updated
 			 * @param	{Object}	model
 			 * @param	{Mixed}		val	Value
 			 * @param	{Object}	opt	Options
-			 * 
+			 *
 			 * */
 			updateComponents: function(model, val, opt){
 				var comps	= model.get('components'),
 					avSt	= opt ? opt.avoidStore : 0;
 
-				// Call stopListening for not creating nested listenings 
+				// Observe component with Undo Manager
+				if(this.um)
+					this.um.register(model.get('components'));
+
+				// Call stopListening for not creating nested listenings
 				this.stopListening(comps, 'add', this.updateComponents);
 				this.stopListening(comps, 'remove', this.rmComponents);
 				this.listenTo(comps, 'add', this.updateComponents);
 				this.listenTo(comps, 'remove', this.rmComponents);
-				
+
 				this.stopListening(model, 'change:style change:content', this.updateComponents);
 				this.listenTo(model, 'change:style change:content', this.updateComponents);
-				
+
 				if(!avSt)
 					this.componentsUpdated();
 			},
-			
+
 			/**
 			 * Triggered when some component is removed updated
 			 * @param	{Object}	model
 			 * @param	{Mixed}		val	Value
 			 * @param	{Object}	opt	Options
-			 * 
+			 *
 			 * */
 			rmComponents: function(model, val, opt){
 				var avSt	= opt ? opt.avoidStore : 0;
-				
+
 				if(!avSt)
 					this.componentsUpdated();
 			}
-			
+
 		});
 	});
