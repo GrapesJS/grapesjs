@@ -30,6 +30,7 @@ define([
 			defaults:{
 				clipboard					: null,
 				selectedComponent	: null,
+				previousModel 		: null,
 				changesCount			:	0,
 			},
 
@@ -58,29 +59,35 @@ define([
 			 * */
 			initComponents: function()
 			{
-				var cfg			= this.config.components,
-					comp		= this.loadComponentsTree(),
+				var cfg				= this.config.components,
+					comp				= this.loadComponents(),
 					cmpStylePfx	= cfg.stylePrefix || 'comp-';
 
 				cfg.stylePrefix	= this.config.stylePrefix + cmpStylePfx;
+
 				if(comp)
 					cfg.wrapper	= comp;
 
 				if(this.rte)
-					cfg.rte		= this.rte;
+					cfg.rte			= this.rte;
 
 				if(this.modal)
-					cfg.modal	= this.modal;
+					cfg.modal		= this.modal;
 
 				if(this.am)
-					cfg.am		= this.am;
+					cfg.am			= this.am;
 
-				cfg.em			= this;
+				cfg.em				= this;
 
-				this.cmp 		= new DomComponents(cfg);
+				this.cmp 			= new DomComponents(cfg);
 
-				if(this.stm.isAutosave()){ // TODO Currently doesn't listen already created models
-					this.updateComponents( this.cmp.getComponent(), null, { avoidStore : 1 });
+				if(this.stm.isAutosave()){
+					var md 	= this.cmp.getComponent();
+					this.updateComponents( md, null, { avoidStore : 1 });
+
+					// Call UndoManager here so it's possible to call it also for children inside
+					this.initUndoManager();
+					this.initChildrenComp(md);
 				}
 
 				this.set('Components', this.cmp);
@@ -200,7 +207,10 @@ define([
 			/**
 			 * Initialize Undo manager
 			 * */
-			initUndoManager: function(){
+			initUndoManager: function()
+			{
+				if(this.um)
+					return;
 				if(this.cmp && this.config.undoManager){
 					var that 	= this;
 					this.um 	= new Backbone.UndoManager({
@@ -256,7 +266,7 @@ define([
 				if(this.stm.isAutosave() && updatedCount < this.stm.getChangesBeforeSave()){
 					return;
 				}
-				this.storeComponentsTree();
+				this.storeComponents();
 				this.set('changesCount', 0 );
 			},
 
@@ -280,7 +290,7 @@ define([
 			 *
 			 * @return	{Object}
 			 * */
-			loadComponentsTree: function(){
+			loadComponents: function(){
 				var result = null;
 				try{
 					result	=  JSON.parse(this.stm.load(this.compName));
@@ -295,7 +305,7 @@ define([
 			 *
 			 * @return void
 			 * */
-			storeComponentsTree: function(){
+			storeComponents: function(){
 				var wrp	= this.cmp.getComponent();
 				if(wrp && this.cm){
 					var res	= this.cm.getCode(wrp, 'json');
@@ -312,11 +322,11 @@ define([
 			 * */
 			updateComponents: function(model, val, opt){
 				var comps	= model.get('components'),
-					avSt	= opt ? opt.avoidStore : 0;
+						avSt	= opt ? opt.avoidStore : 0;
 
 				// Observe component with Undo Manager
 				if(this.um)
-					this.um.register(model.get('components'));
+					this.um.register(comps);
 
 				// Call stopListening for not creating nested listenings
 				this.stopListening(comps, 'add', this.updateComponents);
@@ -329,6 +339,23 @@ define([
 
 				if(!avSt)
 					this.componentsUpdated();
+			},
+
+			/**
+			 * Init stuff like storage for already existing elements
+			 * @param {Object}	model
+			 */
+			initChildrenComp: function(model)
+			{
+					var comps	= model.get('components');
+					if(comps.length){
+						comps.each(function(md){
+								this.updateComponents(md, null, { avoidStore : 1 });
+								this.initChildrenComp(md);
+								if(this.um)
+									this.um.register(md);
+						}, this);
+					}
 			},
 
 			/**

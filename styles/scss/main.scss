@@ -149,12 +149,12 @@ ol.example li.placeholder:before {position: absolute;}
   	box-sizing: border-box;
 }
 
-.#{$com-prefix}no-select{
+.#{$com-prefix}no-select, .#{$com-prefix}no-select img{
  	@extend .no-select;
 }
 
-body .#{$cv-prefix}canvas .selected-component{//TODO
-	outline: 3px solid $colorBlue;
+.#{$cv-prefix}canvas .#{$comp-prefix}selected{//TODO
+	outline: 3px solid $colorBlue !important;
 }
 
 div.#{$com-prefix}hover { outline: 1px solid $colorBlue; }
@@ -226,7 +226,7 @@ $leftWidth: 16.5%;
 
   &##{$pn-prefix}views-container{
   	height: 100%;
-    padding: 50px 0 0;
+    padding: 52px 0 0;
     right: 0;
     width: $leftWidth;
     overflow: auto;
@@ -436,11 +436,16 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 	font-weight: lighter;
 	text-align:left;
 
+	##{$sm-prefix}caret{
+		padding-right: 5px;
+		font-size: 11px;
+	}
+
 	.#{$sm-prefix}title{
 	  background-color: $mainDkColor;
 	  font-size: 13px;
 	  letter-spacing: 1px;
-	  padding: 12px 10px 12px 25px;
+	  padding: 12px 10px 12px 20px;
 	  text-shadow: 0 1px 0 $darkTextShadow;
 	  border-bottom: 1px solid $darkBorder;
 	  border-top: 1px solid $lightBorder;
@@ -662,6 +667,7 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 			  background-color: white;
 			  height: 100%;
 			  width: 100%;
+			  background-size: cover !important;
 			}
 			&.#{$sm-prefix}active {
 			  background-color: lighten($mainDkColor, 7%);
@@ -862,6 +868,10 @@ $uploadPadding:	150px 10px;
 	float:left;
 	box-sizing: border-box;
 	width:50%;
+
+	.CodeMirror{
+		 height: 450px;
+	}
 }
 .#{$cm-prefix}editor{
 	font-size: 12px;
@@ -958,42 +968,4 @@ $uploadPadding:	150px 10px;
     text-shadow: none;
     box-shadow: none;
     padding: 3px 5px;
-}
-
-/*********JQuery-UI**********/
-.ui-sortable-helper{
-	opacity: 0.7; filter: alpha(opacity=70);
-}
-.ui-sort-highlight{/*ui-sortable-placeholder*/
-	background:#123;
-	height:20px;
-}
-.ui-resizable{ position:relative;}
-.ui-resizable-se, .ui-resizable-s,.ui-resizable-e{
-	position:absolute;
-	right: 0;
-	bottom:0;
-	cursor: nwse-resize;
-	height:15px;
-	width:15px;
-	outline: none !important;
-}
-.ui-resizable-se{
-	opacity: 0; filter: alpha(opacity=0);
-	font-size: 10px;
-	font-family: FontAwesome;
-}
-.ui-resizable-se::before{
-	content: "\f065";
-}
-.ui-resizable:hover > .ui-resizable-se{ opacity: 0.3; filter: alpha(opacity=30); }
-.ui-resizable-s{
-	height:10px;
-	width:100%;
-	cursor: ns-resize;
-}
-.ui-resizable-e{
-	width:10px;
-	height:100%;
-	cursor: ew-resize;
 }

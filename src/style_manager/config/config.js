@@ -20,7 +20,7 @@ define(function () {
 		sectors			   : [],
 
     // Text to show in case no element selected
-    textNoElement  : 'Select element before using Style Manager',
+    textNoElement  : 'Select an element before using Style Manager',
 
 	};
 });

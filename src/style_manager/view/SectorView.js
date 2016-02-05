@@ -1,9 +1,11 @@
-define(['backbone','./PropertiesView'],
-	function (Backbone,PropertiesView) {
+define(['backbone', './PropertiesView', 'text!./../templates/sector.html'],
+	function (Backbone, PropertiesView, sectorTemplate) {
 	/**
 	 * @class SectorView
 	 * */
 	return Backbone.View.extend({
+
+		template: _.template(sectorTemplate),
 
 		events:{},
 
@@ -12,6 +14,8 @@ define(['backbone','./PropertiesView'],
 			this.pfx 			= this.config.stylePrefix;
 			this.target		= o.target || {};
 			this.open 		= this.model.get('open');
+			this.caretR		= 'fa-caret-right';
+			this.caretD		= 'fa-caret-down';
 			this.listenTo( this.model ,'change:open', this.updateOpen);
 			this.events['click .' + this.pfx + 'title']	= 'toggle';
 			this.delegateEvents();
@@ -35,6 +39,7 @@ define(['backbone','./PropertiesView'],
 		{
 			this.$el.addClass(this.pfx + "open");
 			this.$el.find('.' + this.pfx + 'properties').show();
+			this.$caret.removeClass(this.caretR).addClass(this.caretD);
 		},
 
 		/**
@@ -44,6 +49,7 @@ define(['backbone','./PropertiesView'],
 		{
 			this.$el.removeClass(this.pfx + "open");
 			this.$el.find('.' + this.pfx + 'properties').hide();
+			this.$caret.removeClass(this.caretD).addClass(this.caretR);
 		},
 
 		/**
@@ -57,7 +63,11 @@ define(['backbone','./PropertiesView'],
 
 		render : function()
 		{
-			this.$el.html('<div class="' + this.pfx + 'title">'+this.model.get('name')+'</div>');
+			this.$el.html(this.template({
+				pfx		: this.pfx,
+				label	: this.model.get('name'),
+			}));
+			this.$caret	= this.$el.find('#' + this.pfx + 'caret');
 			this.renderProperties();
 			this.$el.attr('class', this.pfx + 'sector no-select');
 			this.updateOpen();

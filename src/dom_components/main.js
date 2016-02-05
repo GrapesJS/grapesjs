@@ -26,6 +26,12 @@ define(function(require) {
 			c.wrapper.attributes 	= {};
 		c.wrapper.attributes.id		= 'wrapper';
 
+		// If there is no components try to append defaults
+		if(!c.wrapper.components.length && c.defaults.length){
+			console.log('Set defaults');
+			c.wrapper.components = c.defaults;
+		}
+
 		if(!c.wrapper.style)
 			c.wrapper.style 		= {};
 		c.wrapper.style.position	= 'relative';

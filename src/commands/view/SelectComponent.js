@@ -109,14 +109,13 @@ define(function() {
 			onSelect: function(e, el)
 			{
 				e.stopPropagation();
-				if(this.$selected)																	//Check if already selected before
-					this.$selected.removeClass('selected-component');
-				this.$selected = $(el).addClass('selected-component');
-				if(this.$selected.data('model')){
-					// Generates too much recursions with JsonGenerator
-					//this.$selected.data('model').set('previousModel',this.editorModel.get('selectedComponent'));
-					this.editorModel.set('selectedComponent',this.$selected.data('model')); 			//Update selected component
-					this.$selected.data('model').set('status','selected');
+				var md 	= this.editorModel.get('selectedComponent');
+				if(md)
+					md.set('status','');
+				var nMd = $(el).data('model');
+				if(nMd){
+					this.editorModel.set('selectedComponent', nMd);
+					nMd.set('status','selected');
 				}
 			},
 
@@ -191,11 +190,10 @@ define(function() {
 			 * Stop method
 			 * */
 			stop: function(){
-				if(this.editorModel.get('selectedComponent'))
-					this.editorModel.get('selectedComponent').set('status','');
+				var sel 	= this.editorModel.get('selectedComponent');
+				if(sel)
+					sel.set('status','');
 				this.$el.unbind();												//removes all attached events
-				if(this.$selected)												//check if already selected before
-					this.$selected.removeClass('selected-component');
 				this.removeBadge();
 				this.clean();
 				this.$el.find('*').unbind('mouseover').unbind('mouseout').unbind('click');

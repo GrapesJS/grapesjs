@@ -1,34 +1,55 @@
-define(['backbone', './ComponentsView'], 
+define(['backbone', './ComponentsView'],
 	function (Backbone, ComponentsView) {
-		/** 
+		/**
 		 * @class ComponentView
 		 * */
 		return Backbone.View.extend({
-			
+
 			className : function(){ 						//load classes from model
-				return this.getClasses(); 
+				return this.getClasses();
 			},
-			
+
 			tagName: function(){ 							//load tagName from model
-				return this.model.get('tagName'); 
+				return this.model.get('tagName');
 			},
-			
+
 			initialize: function(opt){
 				this.config			= opt.config;
-				this.components 	= this.model.get('components');
-				this.attr			= this.model.get("attributes");
+				this.pfx				= this.config.stylePrefix;
+				this.components = this.model.get('components');
+				this.attr				= this.model.get("attributes");
 				this.classe			= this.attr.class || [];
-				this.listenTo( this.model, 'destroy remove', 	this.remove);				
-				this.listenTo( this.model, 'change:style', 		this.updateStyle);				
-				this.listenTo( this.model, 'change:attributes', this.updateAttributes);
+				this.listenTo(this.model, 'destroy remove', 	this.remove);
+				this.listenTo(this.model, 'change:style', 		this.updateStyle);
+				this.listenTo(this.model, 'change:attributes', this.updateAttributes);
+				this.listenTo(this.model, 'change:status', 		this.updateStatus);
 				this.$el.data("model", this.model);
 				this.$el.data("model-comp", this.components);
 			},
-			
-			/** 
-			 * Get classes from attributes. 
+
+			/**
+			 * Update item on status change
+			 * @param	Event
+			 * */
+			updateStatus: function(e)
+			{
+				var s		= this.model.get('status'),
+						pfx	= this.pfx;
+				switch(s) {
+				    case 'selected':
+				    	this.$el.addClass(pfx + 'selected');
+				        break;
+				    case 'moving':
+				        break;
+				    default:
+				    	this.$el.removeClass(pfx + 'selected');
+				}
+			},
+
+			/**
+			 * Get classes from attributes.
 			 * This method is called before initialize
-			 * 
+			 *
 			 * @return	{Array}|null
 			 * */
 			getClasses: function(){
@@ -39,40 +60,40 @@ define(['backbone', './ComponentsView'],
 				}else
 					return null;
 			},
-			
-			/** 
+
+			/**
 			 * Update attributes
-			 * 
+			 *
 			 * @return void
 			 * */
 			updateAttributes: function(){
 				var attributes	= {},
 					attr		= this.model.get("attributes");
-				for(var key in attr) {			
+				for(var key in attr) {
 					  if(attr.hasOwnProperty(key))
 					    attributes[key] = attr[key];
 				}
 				// Update src
 				if(this.model.get("src"))
 					attributes.src = this.model.get("src");
-				
+
 				attributes.style = this.getStyleString();
-				
+
 				this.$el.attr(attributes);
 			},
-			
-			/** 
+
+			/**
 			 * Update style attribute
-			 * 
+			 *
 			 * @return void
 			 * */
 			updateStyle: function(){
 				this.$el.attr('style', this.getStyleString());
 			},
-			
-			/** 
+
+			/**
 			 * Return style string
-			 * 
+			 *
 			 * @return	{String}
 			 * */
 			getStyleString: function(){
@@ -82,32 +103,32 @@ define(['backbone', './ComponentsView'],
 					  if(this.style.hasOwnProperty(key))
 						  style += key + ':' + this.style[key] + ';';
 				}
-				
+
 				return style;
 			},
-			
-			/** 
+
+			/**
 			 * Update classe attribute
-			 * 
+			 *
 			 * @return void
 			 * */
 			updateClasses: function(){
 				if(this.classe.length)
 					this.$el.attr('class', this.classe.join(" "));
 			},
-			
+
 			/**
-			 * Reply to event call 
+			 * Reply to event call
 			 * @param object Event that generated the request
 			 * */
 			eventCall: function(event){
 				event.viewResponse = this;
 			},
-			
+
 			render: function() {
 				this.updateAttributes();
 				this.$el.html(this.model.get('content'));
-				var view = new ComponentsView({ 
+				var view = new ComponentsView({
 					collection	: this.components,
 					config		: this.config,
 				});
@@ -116,6 +137,6 @@ define(['backbone', './ComponentsView'],
 				this.$el.append(view.render(this.$el).el.childNodes);
 				return this;
 			},
-			
+
 		});
 });

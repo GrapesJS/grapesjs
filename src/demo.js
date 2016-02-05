@@ -15,6 +15,185 @@ require(['src/config/require-config.js'], function() {
 				paramsStore	: {	type:'homeTemplate',},
 				paramsLoad	: {	type:'homeTemplate',},
 			},
+
+			components: {
+				defaults		: [
+				//padding:10px;width:130px;min-height:50px;background-color:#ffffff;border-radius:5px;color:#4d114f;font-size:23px;text-align:center;line-height:30px;
+					{
+						style: {'width':'100%', 'min-height':'550px', 'background':'url("./img/bg-gr-v.png") repeat left top scroll, url("http://www.freewhd.com/wp-content/uploads/2014/01/work-desk-14949.jpg") no-repeat center center scroll'},
+						components: [
+							{
+								style: {'width':'90%', 'max-width':'1100px', 'min-height':'75px', 'padding':'7px 7px 7px 7px', 'margin':'0 auto'},
+								components: [
+									{
+										style: {'width':'100%','padding':'25px 7px 7px 7px'},
+										components: [
+											{
+												style: {'width':'50%','min-height':'75px','padding':'7px 7px 7px 7px','float':'left'},
+												components:[
+													{ type: 'text', content: 'GrapesJS', style:{'padding':'10px 10px 10px 10px', 'width':'130px', 'min-height':'50px', 'background-color':'#ffffff', 'border-radius':'5px', 'color':'#4d114f', 'font-size':'23px', 'text-align':'center', 'line-height':'30px'}}
+												]
+											},
+											{
+												style: {'width':'50%','min-height':'75px','padding':'7px 7px 7px 7px','float':'left'},
+												components: [
+													{
+														style: {'float':'right', 'padding':'7px 7px 7px 7px'},
+														components: [
+															{ type: 'text', content: 'WEB', style:{'padding': '10px 10px 10px 10px', 'width': '130px', 'min-height': '50px', 'float': 'left', 'color': '#ffffff', 'text-align': 'center', 'font-size': '15px', 'line-height':'30px'} },
+															{ type: 'text', content: 'TEMPLATE', style:{'padding': '10px 10px 10px 10px', 'width': '130px', 'min-height': '50px', 'float': 'left', 'color': '#ffffff', 'text-align': 'center', 'font-size': '15px', 'line-height':'30px'} },
+															{ type: 'text', content: 'EDITOR', style:{'padding': '10px 10px 10px 10px', 'width': '130px', 'min-height': '50px', 'float': 'left', 'color': '#ffffff', 'text-align': 'center', 'font-size': '15px', 'line-height':'30px'} },
+														]
+													},
+												]
+											},
+											{style: {'clear':'both'}}
+										]
+									},
+									{
+										type: 'text',
+										content: 'Build your templates without coding',
+										style: { 'padding': '7px 7px 7px 7px', 'width':'670px', 'min-height':'57px', 'font-size':'40px', 'color':'#ffffff', 'font-family':'Helvetica, serif', 'font-weight':100, 'margin':'100px 0px 0px 0px'}
+									},
+									{
+										type: 'text',
+										content: 'All text blocks could be edited easily with double clicking on it. You can create new text blocks with the command from the left panel',
+										style: { 'padding':'10px 10px 10px 10px', 'width':'599px', 'min-height':'80px', 'color':'#c6c6c6', 'font-family':'Helvetica, serif', 'font-weight':100, 'line-height':'26px'}
+									},
+									{
+										type: 'text',
+										content: 'Try it now',
+										style: {'padding':'10px 10px 10px 10px', 'width':'190px', 'min-height':'50px', 'font-weight':100, 'color':'#ffffff', 'font-size':'20px', 'text-align':'center', 'letter-spacing':'3px', 'line-height':'30px', 'background-color':'#d983a6', 'border-radius':'5px', 'margin':'15px 0px 0px 0px'}
+									}
+								]
+							},
+						]
+					},
+					{
+						style: {'min-height': '200px', 'background-color':'#ffffff'},
+						components:[
+							{
+								style: {'width':'90%', 'max-width':'1100px', 'min-height':'75px', 'padding':'100px 7px 7px 7px', 'margin':'0 auto'},
+								components: [
+									{ type: 'image', src: './img/phone-app.png', attributes: {'onmousedown': 'return false'}, style: { 'float': 'left'}},
+									{
+										style: { 'float': 'left', 'margin':'150px 0px 0px 100px', 'padding':'7px 7px 7px 7px' },
+										components: [
+											{
+												type: 'text', content: 'ASSET MANAGER',
+												style: {'padding':'7px 7px 7px 7px', 'min-height':'35px', 'color':'#b1b1b1', 'font-size':'15px'}
+											},
+											{
+												type: 'text', content: 'Manage your images with Asset Manager',
+												style: {'padding':'7px 7px 7px 7px', 'min-height':'35px', 'color':'#444444', 'font-size':'25px'}
+											},
+											{
+												type: 'text', content: 'You can create image blocks with the command from the left panel and edit them with double click',
+												style: {'padding':'7px 7px 7px 7px', 'min-height':'35px', 'color':'#444444', 'font-size':'17px', 'line-height':'25px','font-weight':100, 'width':'450px'}
+											},
+											{
+												type: 'text', content: 'At the moment uploading of new images is not allowed in demo, so there is only some random images.',
+												style: {'padding':'7px 7px 7px 7px', 'min-height':'35px', 'color':'#444444', 'font-size':'13px', 'line-height':'20px','font-weight':100, 'width':'450px'}
+											}
+										]
+									},
+									{style: {'clear':'both'}}
+								]
+							}
+						]
+					},
+					{
+						style: {'min-height': '500px', 'background-color':'#222222'},
+						components: [
+								{
+									style: {'width':'90%', 'max-width':'1100px', 'min-height':'75px', 'padding':'70px 7px 70px 7px', 'margin':'0 auto'},
+									components: [
+											{
+												type: 'text', content: 'Blocks',
+												style: {'padding':'7px 7px 7px 7px', 'min-height':'35px', 'color':'#fff', 'font-size':'25px','text-align':'center'}
+											},
+											{
+												type: 'text', content: 'Each element of the HTML page could be seen as a block. On the left panel you could find different kind of blocks that you can create, move and style',
+												style: {'padding':'7px 7px 7px 7px', 'min-height':'35px', 'color':'#b1b1b1', 'font-size':'15px', 'text-align':'center', 'width':'700px', 'margin':'0 auto', 'font-weight':100	}
+											},
+											{
+												style: {'margin':'70px 0 0 0','padding':'7px 7px 7px 7px'},
+												components: [
+													{
+														style: {'width':'33%','min-height':'75px','padding':'7px 7px 7px 7px','float':'left'},
+														components:[
+															{
+																style: {'margin': '0 auto', 'width':'300px', 'min-height':'350px','padding':'0 20px 0 20px','background-color':'#d983a6','border-radius':'5px'},
+																components: [
+																	{ type: 'text', content:'Small', style:{ 'font-weight':100, 'color':'#ffffff', 'letter-spacing':'3px', 'text-align':'center', 'font-size':'25px', 'margin':'0 -20px 0 -20px', 'background-color': 'rgba(0, 0, 0, 0.1)','padding':'20px 20px 20px 20px'}},
+																	{ type: 'text', content:'Some random list', style:{ 'font-weight':100, 'color':'#ffffff', 'letter-spacing':'3px', 'text-align':'center', 'font-size':'15px', 'margin':'0 -20px 0 -20px','padding':'50px 20px 50px 20px'}},
+																	{ type: 'text', content:'+ Small feature 1', style:{ 'font-weight':100, 'color':'rgba(255,255,255,0.5)', 'letter-spacing':'2px', 'font-size':'15px', 'margin':'0 -20px 0 -20px', 'background-color': 'rgba(0, 0, 0, 0.1)','padding':'10px 20px 10px 20px'}},
+																	{ type: 'text', content:'+ Small feature 2', style:{ 'font-weight':100, 'color':'rgba(255,255,255,0.5)', 'letter-spacing':'2px', 'font-size':'15px', 'margin':'0 -20px 0 -20px','padding':'10px 20px 10px 20px'}},
+																	{ type: 'text', content:'+ Small feature 3', style:{ 'font-weight':100, 'color':'rgba(255,255,255,0.5)', 'letter-spacing':'2px', 'font-size':'15px', 'margin':'0 -20px 0 -20px', 'background-color': 'rgba(0, 0, 0, 0.1)','padding':'10px 20px 10px 20px'}},
+																	{ type: 'text', content:'+ Small feature 4', style:{ 'font-weight':100, 'color':'rgba(255,255,255,0.5)', 'letter-spacing':'2px', 'font-size':'15px', 'margin':'0 -20px 0 -20px','padding':'10px 20px 10px 20px'}},
+																	{ type: 'text', content:'Price 1', style:{ 'font-weight':100, 'color':'#ffffff', 'text-align':'center', 'font-size':'30px', 'margin':'0 -20px 0 -20px', 'background-color': 'rgba(0, 0, 0, 0.2)','padding':'40px 20px 40px 20px'}},
+																]
+															}
+														]
+													},
+													{
+														style: {'width':'33%','min-height':'75px','padding':'7px 7px 7px 7px','float':'left'},
+														components:[
+															{
+																style: {'margin': '0 auto', 'width':'300px', 'min-height':'350px','padding':'0 20px 0 20px','background-color':'#da78a0','border-radius':'5px'},
+																components: [
+																	{ type: 'text', content:'Medium', style:{ 'font-weight':100, 'color':'#ffffff', 'letter-spacing':'3px', 'text-align':'center', 'font-size':'25px', 'margin':'0 -20px 0 -20px', 'background-color': 'rgba(0, 0, 0, 0.1)','padding':'20px 20px 20px 20px'}},
+																	{ type: 'text', content:'Some random list', style:{ 'font-weight':100, 'color':'#ffffff', 'letter-spacing':'3px', 'text-align':'center', 'font-size':'15px', 'margin':'0 -20px 0 -20px','padding':'50px 20px 50px 20px'}},
+																	{ type: 'text', content:'+ Medium feature 1', style:{ 'font-weight':100, 'color':'rgba(255,255,255,0.5)', 'letter-spacing':'2px', 'font-size':'15px', 'margin':'0 -20px 0 -20px', 'background-color': 'rgba(0, 0, 0, 0.1)','padding':'10px 20px 10px 20px'}},
+																	{ type: 'text', content:'+ Medium feature 2', style:{ 'font-weight':100, 'color':'rgba(255,255,255,0.5)', 'letter-spacing':'2px', 'font-size':'15px', 'margin':'0 -20px 0 -20px','padding':'10px 20px 10px 20px'}},
+																	{ type: 'text', content:'+ Medium feature 3', style:{ 'font-weight':100, 'color':'rgba(255,255,255,0.5)', 'letter-spacing':'2px', 'font-size':'15px', 'margin':'0 -20px 0 -20px', 'background-color': 'rgba(0, 0, 0, 0.1)','padding':'10px 20px 10px 20px'}},
+																	{ type: 'text', content:'+ Medium feature 4', style:{ 'font-weight':100, 'color':'rgba(255,255,255,0.5)', 'letter-spacing':'2px', 'font-size':'15px', 'margin':'0 -20px 0 -20px','padding':'10px 20px 10px 20px'}},
+																	{ type: 'text', content:'Price 2', style:{ 'font-weight':100, 'color':'#ffffff', 'text-align':'center', 'font-size':'30px', 'margin':'0 -20px 0 -20px', 'background-color': 'rgba(0, 0, 0, 0.2)','padding':'40px 20px 40px 20px'}},
+																]
+															}
+														]
+													},
+													{
+														style: {'width':'33%','min-height':'75px','padding':'7px 7px 7px 7px','float':'left'},
+														components:[
+															{
+																style: {'margin': '0 auto', 'width':'300px', 'min-height':'350px','padding':'0 20px 0 20px','background-color':'#d66a96','border-radius':'5px'},
+																components: [
+																	{ type: 'text', content:'Large', style:{ 'font-weight':100, 'color':'#ffffff', 'letter-spacing':'3px', 'text-align':'center', 'font-size':'25px', 'margin':'0 -20px 0 -20px', 'background-color': 'rgba(0, 0, 0, 0.1)','padding':'20px 20px 20px 20px'}},
+																	{ type: 'text', content:'Some random list', style:{ 'font-weight':100, 'color':'#ffffff', 'letter-spacing':'3px', 'text-align':'center', 'font-size':'15px', 'margin':'0 -20px 0 -20px','padding':'50px 20px 50px 20px'}},
+																	{ type: 'text', content:'+ Large feature 1', style:{ 'font-weight':100, 'color':'rgba(255,255,255,0.5)', 'letter-spacing':'2px', 'font-size':'15px', 'margin':'0 -20px 0 -20px', 'background-color': 'rgba(0, 0, 0, 0.1)','padding':'10px 20px 10px 20px'}},
+																	{ type: 'text', content:'+ Large feature 2', style:{ 'font-weight':100, 'color':'rgba(255,255,255,0.5)', 'letter-spacing':'2px', 'font-size':'15px', 'margin':'0 -20px 0 -20px','padding':'10px 20px 10px 20px'}},
+																	{ type: 'text', content:'+ Large feature 3', style:{ 'font-weight':100, 'color':'rgba(255,255,255,0.5)', 'letter-spacing':'2px', 'font-size':'15px', 'margin':'0 -20px 0 -20px', 'background-color': 'rgba(0, 0, 0, 0.1)','padding':'10px 20px 10px 20px'}},
+																	{ type: 'text', content:'+ Large feature 4', style:{ 'font-weight':100, 'color':'rgba(255,255,255,0.5)', 'letter-spacing':'2px', 'font-size':'15px', 'margin':'0 -20px 0 -20px','padding':'10px 20px 10px 20px'}},
+																	{ type: 'text', content:'Price 3', style:{ 'font-weight':100, 'color':'#ffffff', 'text-align':'center', 'font-size':'30px', 'margin':'0 -20px 0 -20px', 'background-color': 'rgba(0, 0, 0, 0.2)','padding':'40px 20px 40px 20px'}},
+																]
+															}
+														]
+													},//#d8779e #d86895
+													{style: {'clear':'both'}}
+												]
+											},
+
+
+									]
+								}
+						]
+					}
+				],
+			},
+
+			commands: 		{
+					defaults		: [{
+													id: 	'open-github',
+
+													run: 	function(em, sender){
+														sender.set('active',false);
+														window.open('https://github.com/artf/grapesjs','_blank');
+													},
+
+													stop: function(){}
+												}],
+			},
 			assetManager: {
 				storageType			: '',
 				storeOnChange		: true,
@@ -27,6 +206,9 @@ require(['src/config/require-config.js'], function() {
 					      				   { type: 'image', src : 'http://placehold.it/350x250/f28c33/fff/image5.jpg', date: '2015-02-01',height:350, width:250},
 					      				   { type: 'image', src : 'http://placehold.it/350x250/e868a2/fff/image6.jpg', date: '2015-02-01',height:350, width:250},
 					      				   { type: 'image', src : 'http://placehold.it/350x250/cc4360/fff/image7.jpg', date: '2015-02-01',height:350, width:250},
+					      				   { type: 'image', src : 'http://www.freewhd.com/wp-content/uploads/2014/01/work-desk-14949.jpg', date: '2015-02-01',height:1080, width:1728},
+					      				   { type: 'image', src : './img/phone-app.png', date: '2015-02-01',height:650, width:320},
+					      				   { type: 'image', src : './img/bg-gr-v.png', date: '2015-02-01',height:1, width:1728},
 				      				   ]
 			},
 
@@ -37,36 +219,61 @@ require(['src/config/require-config.js'], function() {
 								id			: 'select',
 								className	: 'fa fa-mouse-pointer',
 								command		: 'select-comp',
-								attributes	: { title	: 'Select' }
+								attributes	: { title	: 'Select elements' }
 							},{
-								id			: 'create',
-								className	: 'fa fa-plus-square-o',
+								id				: 'create',
+								className	: 'fa fa-plus-square-o icon-add-comp',
 								command		: 'create-comp',
-								attributes	: { title	: 'Create' },
-					       	   	buttons		: [
-					       	   	       		   { id: 'create2', 	className: 'fa fa-plus-square-o',	command: 'create-comp', attributes: { title: 'Create' },},
-					       	   	       		   { id: 'box100',		className: 'fa fa-square-o',		command: 'insert-custom',
-					       	   	       			   attributes	: { title	: 'Create all-width box' },
+								attributes	: { title	: 'Create element' },
+					      buttons			: [
+					       	   	       		   { id: 'create2', 	className: 'fa fa-plus-square-o icon-add-comp',	command: 'create-comp', attributes: { title: 'Create element' },},
+					       	   	       		   { id: 'comp100',		className: 'fa fa-square-o icon-comp100',		command: 'insert-custom',
+					       	   	       			   attributes	: { title	: 'Create all-width element' },
 					       	   	       			   options:  {
-									       			   	content					: { style: { width: '100%', 'min-height': '75px', 'padding': '7px'}},
-									       			   	terminateAfterInsert	: false,
-									       			},},
-					       	   	]
+												       			   	content					: { style: { width: '100%', 'min-height': '75px', 'padding': '7px'}},
+												       			   	terminateAfterInsert	: false,
+												       			  },
+												       			},{ id: 'comp50',		className: 'fa fa-square-o icon-comp50',		command: 'insert-custom',
+					       	   	       			   attributes	: { title	: 'Create 2 columns element' },
+					       	   	       			   options:  {
+												       			   	content					: { style: { width: '100%', 'padding': '7px'},//, 'display': 'table'
+												       			   											components: [
+												       			   																		{style: {width: '50%', 'min-height': '75px', 'padding': '7px', 'float':'left' }},
+												       			   																		{style: {width: '50%', 'min-height': '75px', 'padding': '7px', 'float':'left'  }},
+												       			   																		{style: {clear:'both'}},
+												       			   																]
+												       			   										},
+												       			  },
+												       			},{ id: 'comp30',		className: 'fa fa-square-o icon-comp30',		command: 'insert-custom',
+					       	   	       			   attributes	: { title	: 'Create 3 columns element' },
+					       	   	       			   options:  {
+												       			   	content					: { style: { width: '100%', 'padding': '7px'},//, 'display': 'table'
+												       			   											components: [
+												       			   																		{style: {width: '33.333%', 'min-height': '75px', 'padding': '7px', 'float':'left' }},
+												       			   																		{style: {width: '33.333%', 'min-height': '75px', 'padding': '7px', 'float':'left'  }},
+												       			   																		{style: {width: '33.333%', 'min-height': '75px', 'padding': '7px', 'float':'left'  }},
+												       			   																		{style: {clear:'both'}},
+												       			   																]
+												       			   										},
+												       			  },
+												       			},
+					      ]
 							},
-								{ id: 'remove', 	className: 'fa fa-trash-o', 		command: 'delete-comp', attributes	: { title: 'Remove' },	},
-					       	   	{ id: 'move', 		className: 'fa fa-arrows',			command: 'move-comp',	attributes	: { title: 'Move' }, 	},
+											{ id: 'remove', 	className: 'fa fa-trash-o icon-rm', 		command: 'delete-comp', attributes	: { title: 'Remove element' },	},
+					       	   	{ id: 'move', 		className: 'fa fa-arrows',			command: 'move-comp',	attributes	: { title: 'Move elements' }, 	},
 					       	   	//{ id: 'resize', 	className: 'fa fa-arrows-alt', 		command: 'resize-comp',	attributes	: { title: 'Resize' }, 	},
-					       	   	{ id: 'text', 		className: 'fa fa-font' ,			command: 'text-comp',	attributes	: { title: 'Text' }, 	},
-					       	   	{ id: 'image', 		className: 'fa fa-picture-o',		command: 'image-comp',	attributes	: { title: 'Image' }, 	},
-					       	   	{ id: 'var',		className: 'fa fa-hashtag',			command: 'insert-custom',attributes	: { title: 'Some variable' },
-					       		  options:  {  content: '{{ VAR11 }}', terminateAfterInsert: true, },
-					       		},
+					       	   	{ id: 'text', 		className: 'fa fa-font' ,			command: 'text-comp',	attributes	: { title: 'Create text element' }, 	},
+					       	   	{ id: 'image', 		className: 'fa fa-picture-o',		command: 'image-comp',	attributes	: { title: 'Create image element' }, 	},
+					       	   	/*{ id: 'var',		className: 'fa fa-hashtag',			command: 'insert-custom',attributes	: { title: 'Some variable' },
+					       		 	 	options:  {  content: '{{ VAR11 }}', terminateAfterInsert: true, },
+					       			},*/
 					       	   ],
 				},{
 					id	: 'options',
 					buttons	: [
 					       	   { id: 'visibility', 	className: 'fa fa-eye', 	command: 'sw-visibility', 	active: true, context: 'sw-visibility', attributes: { title: 'View components' }, },
 					       	   { id: 'export', 		className: 'fa fa-code', 	command: 'export-template', attributes: { title: 'View code' }, },
+					       	   { id: 'view-github', className: 'fa fa-github', 	command: 'open-github', attributes: { title: 'View on Github' }, },
 					],
 				},{
 					id	: 'views',
@@ -275,61 +482,61 @@ require(['src/config/require-config.js'], function() {
 							list		: [{
 											value 		: 'Arial, Helvetica, sans-serif',
 											name 		: 'Arial',
-											style		: 'font-family: Arial, Helvetica, sans-serif',
+											style		: 'font-family: Arial, Helvetica, sans-serif; font-size:15px;',
 										},{
 											value 		: '"Arial Black", Gadget, sans-serif',
-											style		: 'font-family: "Arial Black", Gadget, sans-serif',
+											style		: 'font-family: "Arial Black", Gadget, sans-serif; font-size:15px;',
 											name 		: 'Arial Black',
 										},{
 											value 		: '"Brush Script MT", sans-serif',
-											style		: 'font-family: "Brush Script MT", sans-serif',
+											style		: 'font-family: "Brush Script MT", sans-serif; font-size:15px;',
 											name 		: 'Brush Script MT',
 										},{
 											value 		: '"Comic Sans MS", cursive, sans-serif',
-											style		: 'font-family: "Comic Sans MS", cursive, sans-serif',
+											style		: 'font-family: "Comic Sans MS", cursive, sans-serif; font-size:15px;',
 											name 		: 'Comica Sans',
 										},{
 											value 		: '"Courier New", Courier, monospace',
-											style		: 'font-family: "Courier New", Courier, monospace',
+											style		: 'font-family: "Courier New", Courier, monospace; font-size:15px;',
 											name 		: 'Courier New',
 										},{
 											value 		: 'Georgia, serif',
-											style		: 'font-family: Georgia, serif',
+											style		: 'font-family: Georgia, serif; font-size:15px;',
 											name 		: 'Georgia',
 										},{
 											value 		: 'Helvetica, serif',
-											style		: 'font-family: Helvetica, serif',
+											style		: 'font-family: Helvetica, serif; font-size:15px;',
 											name 		: 'Helvetica',
 										},{
 											value 		: 'Impact, Charcoal, sans-serif',
-											style		: 'font-family: Impact, Charcoal, sans-serif',
+											style		: 'font-family: Impact, Charcoal, sans-serif; font-size:15px;',
 											name 		: 'Impact',
 										},{
 											value 		: '"Lucida Sans Unicode", "Lucida Grande", sans-serif',
-											style		: 'font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif',
+											style		: 'font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif; font-size:15px;',
 											name 		: 'Lucida Sans',
 										},{
 											value 		: 'Tahoma, Geneva, sans-serif',
-											style		: 'font-family: Tahoma, Geneva, sans-serif',
+											style		: 'font-family: Tahoma, Geneva, sans-serif; font-size:15px;',
 											name 		: 'Tahoma',
 										},{
 											value 		: '"Times New Roman", Times, serif',
-											style		: 'font-family: "Times New Roman", Times, serif',
+											style		: 'font-family: "Times New Roman", Times, serif; font-size:15px;',
 											name 		: 'Times New Roman',
 										},{
 											value 		: '"Trebuchet MS", Helvetica, sans-serif',
-											style		: 'font-family: "Trebuchet MS", Helvetica, sans-serif',
+											style		: 'font-family: "Trebuchet MS", Helvetica, sans-serif; font-size:15px;',
 											name 		: 'Trebuchet',
 										},{
 											value 		: 'Verdana, Geneva, sans-serif',
-											style		: 'font-family: Verdana, Geneva, sans-serif',
+											style		: 'font-family: Verdana, Geneva, sans-serif; font-size:15px;',
 											name 		: 'Verdana',
 										}],
 						},{
 							name		: 'Font size',
 							property	: 'font-size',
 							type		: 'integer',
-							units		: ['px','em'],
+							units		: ['px','em', 'rem', '%'],
 							defaults 	: '12',
 							min			: 0,
 						},{
@@ -350,7 +557,7 @@ require(['src/config/require-config.js'], function() {
 							name		: 'Letter spacing',
 							property	: 'letter-spacing',
 							type		: 'integer',
-							units		: ['px'],
+							units		: ['px','em','%'],
 							defaults 	: 'normal',
 						},{
 							name: 		'Font color',
@@ -361,7 +568,7 @@ require(['src/config/require-config.js'], function() {
 							name		: 'Line height',
 							property	: 'line-height',
 							type		: 'integer',
-							units		: ['px'],
+							units		: ['px','em','%'],
 							defaults 	: 'normal',
 						},{
 							name		: 'Text align',

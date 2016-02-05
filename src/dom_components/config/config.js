@@ -2,7 +2,7 @@ define(function () {
 	return {
 		stylePrefix		: 'comp-',
 
-		wrapperId		: 'wrapper',
+		wrapperId			: 'wrapper',
 
 		// Default wrapper configuration
 		wrapper			: {
@@ -11,14 +11,15 @@ define(function () {
 			stylable	: ['background','background-color','background-image', 'background-repeat','background-attachment','background-position'],
 			movable		: false,
 			badgable	: false,
+			components: [],
 		},
 
 		// Could be used for default components
-		components		: {},
+		defaults		: [],
 
-		rte				: {},
+		rte					: {},
 
-		em				: {},
+		em					: {},
 
 		// Class for new image component
 		imageCompClass	: 'fa fa-picture-o',
