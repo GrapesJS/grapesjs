@@ -6,7 +6,8 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 		return _.extend({},SelectComponent, SelectPosition,{
 
 			init: function(o){
-				_.bindAll(this,'startMove','onMove','endMove','rollback','selectingPosition','itemLeft');//to mantein 'this' context
+				SelectComponent.init.apply(this, arguments);
+				_.bindAll(this,'startMove','onMove','endMove','rollback','selectingPosition','itemLeft');
 				this.opt	= o;
 				this.hoverClass	= this.pfx + 'hover-move';
 				this.badgeClass	= this.pfx + 'badge-yellow';
@@ -19,20 +20,23 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 				this.$el.css('cursor','move');
 				this.$el.on('mousedown', this.startMove);
 				this.startSelectComponent();
+
 				//Avoid strange moving behavior
 				this.$el.addClass(this.noSelClass);
 			},
 
-			/** Highlight component when pointer is over it
-			 * @param Event
-			 * @param Object Component
-			 * @return void
-			 * */
-			highlightComponent: function(e, el){
+			/**
+			 * Hover command
+			 * @param {Object}	e
+			 */
+			onHover: function(e)
+			{
 				e.stopPropagation();
-				if($(el).data('model').get('movable')){							//Show badge if possible
-					 $(el).addClass(this.hoverClass);
-					 this.attachBadge(el);
+
+			  var $this 	= $(e.target);
+			  if($this.data('model').get('movable')){							//Show badge if possible
+					 $this.addClass(this.hoverClass);
+					 this.attachBadge(e.target);
 			    }
 			},
 

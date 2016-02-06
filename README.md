@@ -104,6 +104,9 @@ var config = {
   // Where to render editor (eg. #myId)
   container:          '',
 
+  // Enable/Disable the possibility to copy (ctrl + c) and paste (ctrl + v) elements
+  copyPaste         : true,
+
   // Enable/Disable undo manager
   undoManager:        true,
 

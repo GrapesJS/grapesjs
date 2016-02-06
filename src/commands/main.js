@@ -20,6 +20,13 @@ define(function(require) {
 		this.config			= c;
 		this.Abstract		= AbsCommands;
 
+		// Load commands passed by configuration
+		for( var k in c.defaults){
+			var obj 	= c.defaults[k];
+			if(obj.id)
+				this.add(obj.id, obj);
+		}
+
 		this.defaultCommands					= {};
 		this.defaultCommands['select-comp']		= require('./view/SelectComponent');
 		this.defaultCommands['create-comp']		= require('./view/CreateComponent');

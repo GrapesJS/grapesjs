@@ -9,20 +9,24 @@ define(['backbone', 'text!./../template/item.html','require'],
 		template: _.template(ItemTemplate),
 
 		initialize: function(o){
-			this.opt 		= o;
+			this.opt 			= o;
 			this.config		= o.config;
+			this.em 			= o.config.em;
 			this.sorter		= o.sorter || {};
-			this.pfx		= this.config.stylePrefix;
+			this.pfx			= this.config.stylePrefix;
 			if(typeof this.model.get('open') == 'undefined')
 				this.model.set('open',false);
 			this.listenTo(this.model.components, 'remove add change reset', this.checkChildren);
 			this.listenTo(this.model, 'destroy remove', this.remove);
+			this.listenTo(this.model, 'change:status', this.updateStatus);
 			this.listenTo(this.model, 'change:open', this.updateOpening);
 			this.className	= this.pfx + 'item no-select';
 			this.events		= {};
 			this.events['click > #'+this.pfx+'btn-eye']	= 'toggleVisibility';
 			this.events['click .'+this.pfx+'title']		= 'toggleOpening';
 			this.$el.data("model", this.model);
+
+			//TODO listen
 
 			if(o.config.sortable)
 				this.events['mousedown > #'+this.pfx+'move']	= 'startSort';
@@ -53,6 +57,17 @@ define(['backbone', 'text!./../template/item.html','require'],
 		 * */
 		toggleOpening: function(e){
 			e.stopPropagation();
+
+			// Selection
+			if(this.em){
+				var md 	= this.em.get('selectedComponent');
+				if(md){
+						md.set('status','');
+						this.model.set('status','selected');
+						this.em.set('selectedComponent', this.model);
+				}
+			}
+
 			if(!this.model.components.length)
 				return;
 			this.model.set('open', !this.model.get('open') );
@@ -87,13 +102,11 @@ define(['backbone', 'text!./../template/item.html','require'],
 		/**
 		 * Update item on status change
 		 * @param	Event
-		 *
-		 * @return void
 		 * */
-		updateStatus: function(e){
-			var s	= this.model.get('status'),
-				pr	= this.model.get('previousModel'),
-				pfx	= this.pfx;
+		updateStatus: function(e)
+		{
+			var s		= this.model.get('status'),
+					pfx	= this.pfx;
 			switch(s) {
 			    case 'selected':
 			    	this.$el.addClass(pfx + 'selected');
@@ -102,10 +115,6 @@ define(['backbone', 'text!./../template/item.html','require'],
 			        break;
 			    default:
 			    	this.$el.removeClass(pfx + 'selected');
-			}
-			if(pr){
-				pr.set('previousModel','');
-				pr.set('status','');
 			}
 		},
 
@@ -193,6 +202,7 @@ define(['backbone', 'text!./../template/item.html','require'],
 			if(!vis)
 				this.className += ' ' + pfx + 'hide';
 			this.$el.attr('class', _.result(this, 'className'));
+			this.updateOpening();
 			return this;
 		},
 

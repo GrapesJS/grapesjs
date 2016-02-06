@@ -10,8 +10,8 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyInteger.html']
 		initialize: function(options) {
 			PropertyView.prototype.initialize.apply(this, arguments);
 			_.bindAll(this, 'moveIncrement', 'upIncrement');
-			this.events['click .'+this.pfx+'u-arrow']			= 'upArrowClick';
-			this.events['click .'+this.pfx+'d-arrow']			= 'downArrowClick';
+			this.events['click .'+this.pfx+'u-arrow']					= 'upArrowClick';
+			this.events['click .'+this.pfx+'d-arrow']					= 'downArrowClick';
 			this.events['mousedown .'+this.pfx+'int-arrows']	= 'downIncrement';
 			this.delegateEvents();
 		},
@@ -107,22 +107,28 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyInteger.html']
 		},
 
 		/** @inheritdoc */
-		setValue: function(value){
+		setValue: function(value)
+		{
 			var u	= this.unit,
-				v	= this.model.get('value') || this.defaultValue;
+					v	= this.model.get('value') || this.defaultValue;
 
 			if(value){
-				v		= parseInt(value, 10);
+				// Make it suitable for replace
+				value += '';
+				v		= parseFloat(value.replace(',', '.'));
 				v		= !isNaN(v) ? v : this.defaultValue;
 				var uN	= value.replace(v,'');
+				// Check if exists as unit
 				if(_.indexOf(this.units, uN) > -1)
 					u = uN;
 			}
 
 			if(this.$input)
 				this.$input.val(v);
+
 			if(this.$unit)
 				this.$unit.val(u);
+
 			this.model.set({value: v, unit: u,},{silent: true});
 		},
 

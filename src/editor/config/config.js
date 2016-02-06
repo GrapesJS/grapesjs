@@ -13,11 +13,14 @@ define(function () {
 		// Where render the editor
 		container 				: '',
 
-		idCanvas				: 'canvas',
+		idCanvas					: 'canvas',
 
-		idCanvasOverlay			: 'canvas-overlay',
+		idCanvasOverlay		: 'canvas-overlay',
 
 		idWrapper 				: 'wrapper',
+
+		// Enable/Disable possibility to copy(ctrl + c) & paste(ctrl + v) components
+		copyPaste					: true,
 
 		// Enable/Disable undo manager
 		undoManager 			: true,
@@ -29,34 +32,34 @@ define(function () {
 		assetManager			: {},
 
 		//Configurations for Canvas
-		canvas					: {},
+		canvas						: {},
 
 		//Configurations for Style Manager
 		styleManager			: {},
 
 		//Configurations for Layers
-		layers					: {},
+		layers						: {},
 
 		//Configurations for Storage Manager
-		storageManager			: {},
+		storageManager		: {},
 
 		//Configurations for Rich Text Editor
-		rte						: {},
+		rte								: {},
 
 		//Configurations for Components
 		components				: {},
 
 		//Configurations for Modal Dialog
-		modal					: {},
+		modal							: {},
 
 		//Configurations for Code Manager
 		codeManager				: {},
 
 		//Configurations for Panels
-		panels					: {},
+		panels						: {},
 
 		//Configurations for Commands
-		commands				: {},
+		commands					: {},
 
 	};
 	return config;
