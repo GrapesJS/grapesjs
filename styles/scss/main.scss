@@ -157,13 +157,13 @@ ol.example li.placeholder:before {position: absolute;}
 	outline: 3px solid $colorBlue !important;
 }
 
-div.#{$com-prefix}hover { outline: 1px solid $colorBlue; }
+*.#{$com-prefix}hover, div.#{$com-prefix}hover { outline: 1px solid $colorBlue; }
 
-div.#{$com-prefix}hover-delete{
+*.#{$com-prefix}hover-delete, div.#{$com-prefix}hover-delete{
 	outline: 2px solid $colorRed;
   	@include opacity(0.50);
 }
-div.#{$com-prefix}hover-move{
+*.#{$com-prefix}hover-move, div.#{$com-prefix}hover-move{
 	outline: 3px solid $colorYell;
 }
 .#{$com-prefix}badge{

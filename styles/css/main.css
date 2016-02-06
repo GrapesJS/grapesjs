@@ -2686,15 +2686,15 @@ ol.example li.placeholder:before {
 .wte-cv-canvas .wte-comp-selected {
   outline: 3px solid #3b97e3 !important; }
 
-div.wte-com-hover {
+*.wte-com-hover, div.wte-com-hover {
   outline: 1px solid #3b97e3; }
 
-div.wte-com-hover-delete {
+*.wte-com-hover-delete, div.wte-com-hover-delete {
   outline: 2px solid #DD3636;
   opacity: 0.5;
   filter: alpha(opacity=50); }
 
-div.wte-com-hover-move {
+*.wte-com-hover-move, div.wte-com-hover-move {
   outline: 3px solid #ffca6f; }
 
 .wte-com-badge, .wte-com-badge-red, .wte-com-badge-yellow {

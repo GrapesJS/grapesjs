@@ -18,7 +18,6 @@ require(['src/config/require-config.js'], function() {
 
 			components: {
 				defaults		: [
-				//padding:10px;width:130px;min-height:50px;background-color:#ffffff;border-radius:5px;color:#4d114f;font-size:23px;text-align:center;line-height:30px;
 					{
 						style: {'width':'100%', 'min-height':'550px', 'background':'url("./img/bg-gr-v.png") repeat left top scroll, url("http://www.freewhd.com/wp-content/uploads/2014/01/work-desk-14949.jpg") no-repeat center center scroll'},
 						components: [
@@ -120,7 +119,7 @@ require(['src/config/require-config.js'], function() {
 												style: {'margin':'70px 0 0 0','padding':'7px 7px 7px 7px'},
 												components: [
 													{
-														style: {'width':'33%','min-height':'75px','padding':'7px 7px 7px 7px','float':'left'},
+														style: {'width':'33.333%','min-height':'75px','padding':'7px 7px 7px 7px','float':'left'},
 														components:[
 															{
 																style: {'margin': '0 auto', 'width':'300px', 'min-height':'350px','padding':'0 20px 0 20px','background-color':'#d983a6','border-radius':'5px'},
@@ -137,7 +136,7 @@ require(['src/config/require-config.js'], function() {
 														]
 													},
 													{
-														style: {'width':'33%','min-height':'75px','padding':'7px 7px 7px 7px','float':'left'},
+														style: {'width':'33.333%','min-height':'75px','padding':'7px 7px 7px 7px','float':'left'},
 														components:[
 															{
 																style: {'margin': '0 auto', 'width':'300px', 'min-height':'350px','padding':'0 20px 0 20px','background-color':'#da78a0','border-radius':'5px'},
@@ -154,7 +153,7 @@ require(['src/config/require-config.js'], function() {
 														]
 													},
 													{
-														style: {'width':'33%','min-height':'75px','padding':'7px 7px 7px 7px','float':'left'},
+														style: {'width':'33.333%','min-height':'75px','padding':'7px 7px 7px 7px','float':'left'},
 														components:[
 															{
 																style: {'margin': '0 auto', 'width':'300px', 'min-height':'350px','padding':'0 20px 0 20px','background-color':'#d66a96','border-radius':'5px'},
@@ -219,7 +218,7 @@ require(['src/config/require-config.js'], function() {
 								id			: 'select',
 								className	: 'fa fa-mouse-pointer',
 								command		: 'select-comp',
-								attributes	: { title	: 'Select elements' }
+								attributes	: { title	: 'Select element' }
 							},{
 								id				: 'create',
 								className	: 'fa fa-plus-square-o icon-add-comp',
