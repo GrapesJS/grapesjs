@@ -285,7 +285,7 @@ require(['src/config/require-config.js'], function() {
 				sectors: [{
 					name: 'General',
 					properties:[{
-							name		: 'Alignament',
+							name		: 'Alignment',
 							property	: 'float',
 							type		: 'radio',
 							defaults 	: 'none',
