@@ -221,10 +221,13 @@
                           stop: function(){}
                         }],
       },
+
       assetManager: {
+        uploadText      : 'No uploads in demo :)',
         storageType     : '',
         storeOnChange   : true,
         storeAfterUpload  : true,
+        disableUpload   : true,
         assets        : [
                            { type: 'image', src : 'http://placehold.it/350x250/78c5d6/fff/image1.jpg', date: '2015-01-01',height:350, width:250},
                            { type: 'image', src : 'http://placehold.it/350x250/459ba8/fff/image2.jpg', date: '2015-02-01',height:350, width:250},
@@ -313,7 +316,7 @@
         sectors: [{
           name: 'General',
           properties:[{
-              name    : 'Alignament',
+              name    : 'Alignment',
               property  : 'float',
               type    : 'radio',
               defaults  : 'none',
