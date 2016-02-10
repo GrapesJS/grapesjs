@@ -1,6 +1,7 @@
 require(['../src/config/require-config.js', 'config/config.js'], function() {
 
 	require(['chai',
+					 'sinon',
 	         'specs/main.js',
 	         'specs/asset_manager/main.js',
 	         'specs/asset_manager/model/Asset.js',
