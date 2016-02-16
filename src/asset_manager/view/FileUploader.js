@@ -13,7 +13,7 @@ define(['backbone', 'text!./../template/fileUploader.html'],
 		initialize: function(o) {
 			this.options 	= o || {};
 			this.config		= o.config	|| {};
-			this.pfx		= this.config.stylePrefix;
+			this.pfx			= this.config.stylePrefix || '';
 			this.target		= this.collection || {};
 			this.uploadId	= this.pfx + 'uploadFile';
 			this.disabled	= this.config.disableUpload;
