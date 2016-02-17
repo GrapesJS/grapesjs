@@ -16,7 +16,7 @@ define(function(require) {
 			ComponentImageView	= require('./view/ComponentImageView'),
 			ComponentTextView	= require('./view/ComponentTextView');
 
-	    // Set default options
+	  // Set default options
 		for (var name in defaults) {
 			if (!(name in c))
 				c[name] = defaults[name];
@@ -34,25 +34,55 @@ define(function(require) {
 
 		if(!c.wrapper.style)
 			c.wrapper.style 		= {};
+
 		c.wrapper.style.position	= 'relative';
 
 		this.component		= new Component(c.wrapper);
 		var obj				= {
-				model	: this.component,
-		    	config	: c,
+			model: this.component,
+			config: c,
 		};
 
-	    this.ComponentView 	= new ComponentView(obj);
+		this.c = c;
+	  this.ComponentView 	= new ComponentView(obj);
 	}
 
 	Components.prototype	= {
 
-			render		: function(){
-				return this.ComponentView.render().$el;
-			},
-
+			/**
+			 * Returns main wrapper which will contain all new components
+			 *
+			 * @return {Object}
+			 */
 			getComponent	: function(){
 				return this.component;
+			},
+
+			/**
+			 * Returns main wrapper which will contain all new components
+			 *
+			 * @return {Object}
+			 */
+			getWrapper: function(){
+				return this.getComponent();
+			},
+
+			/**
+			 * Returns children from the wrapper
+			 *
+			 * @return {Object}
+			 */
+			getComponents: function(){
+				return this.getWrapper().get('components');
+			},
+
+			/**
+			 * Render and returns wrapper
+			 *
+			 * @return {Object}
+			 */
+			render		: function(){
+				return this.ComponentView.render().el;
 			},
 	};
 
