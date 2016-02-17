@@ -167,7 +167,7 @@ module.exports = function(grunt) {
     	test: {
     		files: ['test/specs/**/*.js'],
     		tasks: ['mocha'],
-    		options: { livereload: true }, //default port 35729
+    		//options: { livereload: true }, //default port 35729
     	}
     },
 
