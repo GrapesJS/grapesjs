@@ -28,7 +28,6 @@ define(function(require) {
 
 		// If there is no components try to append defaults
 		if(!c.wrapper.components.length && c.defaults.length){
-			console.log('Set defaults');
 			c.wrapper.components = c.defaults;
 		}
 

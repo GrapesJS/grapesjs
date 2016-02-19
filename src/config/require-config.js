@@ -35,6 +35,7 @@ require.config({
 	packages : 	[
 		            {  name: 'AssetManager', 		location: 'asset_manager', 		},
 		            {  name: 'StyleManager', 		location: 'style_manager', 		},
+		            {  name: 'ClassManager', 		location: 'class_manager', 		},
 		            {  name: 'StorageManager', 	location: 'storage_manager', 	},
 		            {  name: 'Navigator', 			location: 'navigator', 				},
 		            {  name: 'DomComponents', 	location: 'dom_components', 	},
