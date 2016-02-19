@@ -1,8 +1,9 @@
 .DS_Store
 .settings/
 .sass-cache/
-style/.sass-cache/
 .project
+npm-debug.log
+style/.sass-cache/
 grapes.sublime-project
 grapes.sublime-workspace
 

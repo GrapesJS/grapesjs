@@ -211,12 +211,11 @@ License: MIT
 @media (max-device-width: 480px) {
   .sp-color {
     right: 40%; }
-
   .sp-hue {
     left: 63%; }
-
   .sp-fill {
     padding-top: 60%; } }
+
 .sp-dragger {
   border-radius: 5px;
   height: 5px;
@@ -491,9 +490,10 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   src: url("../fonts/fontawesome-webfont.eot?#iefix&v=4.5.0") format("embedded-opentype"), url("../fonts/fontawesome-webfont.woff2?v=4.5.0") format("woff2"), url("../fonts/fontawesome-webfont.woff?v=4.5.0") format("woff"), url("../fonts/fontawesome-webfont.ttf?v=4.5.0") format("truetype"), url("../fonts/fontawesome-webfont.svg?v=4.5.0#fontawesomeregular") format("svg");
   font-weight: normal;
   font-style: normal; }
+
 .fa {
   display: inline-block;
-  font: normal normal normal 14px/1 FontAwesome;
+  font: normal normal normal 14px / 1 FontAwesome;
   font-size: inherit;
   text-rendering: auto;
   -webkit-font-smoothing: antialiased;
@@ -501,7 +501,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 
 /* makes the font 33% larger relative to the icon container */
 .fa-lg {
-  font-size: 1.33333em;
+  font-size: 1.3333333333em;
   line-height: 0.75em;
   vertical-align: -15%; }
 
@@ -518,24 +518,24 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   font-size: 5em; }
 
 .fa-fw {
-  width: 1.28571em;
+  width: 1.2857142857em;
   text-align: center; }
 
 .fa-ul {
   padding-left: 0;
-  margin-left: 2.14286em;
+  margin-left: 2.1428571429em;
   list-style-type: none; }
   .fa-ul > li {
     position: relative; }
 
 .fa-li {
   position: absolute;
-  left: -2.14286em;
-  width: 2.14286em;
-  top: 0.14286em;
+  left: -2.1428571429em;
+  width: 2.1428571429em;
+  top: 0.1428571429em;
   text-align: center; }
   .fa-li.fa-lg {
-    left: -1.85714em; }
+    left: -1.8571428571em; }
 
 .fa-border {
   padding: .2em .25em .15em;
@@ -550,6 +550,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 
 .fa.fa-pull-left {
   margin-right: .3em; }
+
 .fa.fa-pull-right {
   margin-left: .3em; }
 
@@ -562,6 +563,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 
 .fa.pull-left {
   margin-right: .3em; }
+
 .fa.pull-right {
   margin-left: .3em; }
 
@@ -580,6 +582,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   100% {
     -webkit-transform: rotate(359deg);
     transform: rotate(359deg); } }
+
 @keyframes fa-spin {
   0% {
     -webkit-transform: rotate(0deg);
@@ -587,6 +590,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   100% {
     -webkit-transform: rotate(359deg);
     transform: rotate(359deg); } }
+
 .fa-rotate-90 {
   filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
   -webkit-transform: rotate(90deg);
@@ -2816,7 +2820,7 @@ ol.example li.placeholder:before {
     background-color: rgba(0, 0, 0, 0.3); }
   .wte-nv-navigator .wte-nv-item.wte-nv-hide {
     opacity: 0.55;
-    filter: alpha(opacity=55.0); }
+    filter: alpha(opacity=55); }
   .wte-nv-navigator .wte-nv-item #wte-nv-counter {
     font-size: 10px;
     position: absolute;
@@ -2903,7 +2907,7 @@ ol.example li.placeholder:before {
   outline: 3px solid #ffca6f;
   outline-offset: -3px;
   text-align: center;
-  font-size: 16.66667px;
+  font-size: 16.6666666667px;
   cursor: pointer; }
   .wte-comp-image-placeholder.fa-picture-o::after {
     content: "\f03e"; }
@@ -3432,5 +3436,3 @@ ol.example li.placeholder:before {
   text-shadow: none;
   box-shadow: none;
   padding: 3px 5px; }
-
-/*# sourceMappingURL=main.css.map */

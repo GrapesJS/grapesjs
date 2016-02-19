@@ -1,4 +1,4 @@
-# [GrapesJS](http://grapesjs.com)
+# [GrapesJS](http://grapesjs.com) [![Build Status](https://travis-ci.org/artf/grapesjs.svg?branch=master)](https://travis-ci.org/artf/grapesjs)
 
 <p align="center"><img src="http://grapesjs.com/img/grapesjs-demo-template2.jpg" alt="GrapesJS" width="500" align="center"/></p>
 
@@ -105,7 +105,7 @@ var config = {
   container:          '',
 
   // Enable/Disable the possibility to copy (ctrl + c) and paste (ctrl + v) elements
-  copyPaste         : true,
+  copyPaste:          true,
 
   // Enable/Disable undo manager
   undoManager:        true,
@@ -156,6 +156,17 @@ Tests are run by [PhantomJS](http://phantomjs.org/) using [Mocha](https://mochaj
 $ npm run test
 ```
 
+### Tech
+
+GrapesJS is built on top of this amazing open source projects:
+
+* [Backbone] - gives Backbone to web applications
+* [Backbone.Undo] - a simple Backbone undo-manager
+* [Keymaster] - keyboard shortcuts
+* [CodeMirror] - versatile text editor
+* [Spectrum] - no hassle colorpicker
+* [FontAwesome] - the iconic font and CSS framework
+
 
 ### Contributing
 
@@ -165,3 +176,11 @@ Any kind of help is welcome. At the moment there is no generic guidelines so use
 ## License
 
 BSD 3-clause
+
+
+[Backbone]: <http://backbonejs.org/>
+[Backbone.Undo]: <http://backbone.undojs.com/>
+[Keymaster]: <https://github.com/madrobby/keymaster>
+[CodeMirror]: <http://codemirror.net/>
+[Spectrum]: <https://github.com/bgrins/spectrum>
+[FontAwesome]: <https://fortawesome.github.io/Font-Awesome/>
