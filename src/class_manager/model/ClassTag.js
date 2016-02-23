@@ -1,7 +1,7 @@
 define(['backbone'],
 	function (Backbone) {
 		/**
-		 * @class Class
+		 * @class ClassTag
 		 * */
 		return Backbone.Model.extend({
 

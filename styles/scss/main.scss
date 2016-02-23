@@ -12,6 +12,7 @@ $pn-prefix: 	$app-prefix + 'pn-';
 $com-prefix: 	$app-prefix + 'com-';
 $sm-prefix: 	$app-prefix + 'sm-';
 $cv-prefix: 	$app-prefix + 'cv-';
+$clm-prefix: 	$app-prefix + 'clm-';
 $mainColor:		#444; /* Light: #573454 Dark: #3b2639 -moz-linear-gradient(top, #fca99b 0%, #6e2842 100%)*/
 $mainDkColor:	darken($mainColor, 4%);/*#383838*/
 $mainLhColor:	lighten($mainColor, 5%);/*#515151*/
@@ -44,6 +45,11 @@ $imageCompDim:	50px;
 	-webkit-appearance: $v;
 	-moz-appearance: $v;
 	appearance: $v;
+}
+
+.#{$app-prefix}invis-invis{
+	background-color: transparent;
+	border: none;
 }
 
 .#{$app-prefix}test {
@@ -717,6 +723,56 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 }
 /********* END Style Manager **********/
 
+/********* Class manager **********/
+$addBtnBg: lighten($mainDkColor, 10%);
+$paddElClm: 5px 6px;
+$tagBg: #804f7b;
+
+.#{$clm-prefix}tags{
+	@extend .#{$sm-prefix}sector;
+	font-size: 11px;
+	padding: 10px 5px;
+
+	##{$clm-prefix}label{
+		padding-bottom: 5px;
+		float:left;
+	}
+	##{$clm-prefix}status-c{
+		float:right;
+	}
+
+	##{$clm-prefix}tags-field{
+		@extend .#{$sm-prefix}field.#{$sm-prefix}integer;
+		clear:both;
+		padding: 5px;
+		margin-bottom: 5px;
+	}
+
+	##{$clm-prefix}add-tag{
+		background-color: $addBtnBg;
+		border-radius: 2px;
+    padding: $paddElClm;
+    box-shadow: 1px 1px 0 lighten($addBtnBg, 10%) inset;
+    border: 1px solid darken($addBtnBg, 13%);
+    cursor: pointer;
+	}
+
+	##{$clm-prefix}new {
+		@extend  .#{$app-prefix}invis-invis;
+		color: $fontColor;
+		padding: $paddElClm;
+		display:none;
+	}
+
+	.#{$clm-prefix}tag {
+		background-color: $tagBg;
+		display: inline-block;
+		border-radius:2px;
+		margin: 0 3px 3px 0;
+    padding: 4px;
+	}
+}
+/********* END Class manager **********/
 
 /********* Modal dialog **********/
 

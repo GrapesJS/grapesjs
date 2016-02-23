@@ -62,7 +62,11 @@ define([
 			 * */
 			initClassManager: function()
 			{
-				this.clm		= new ClassManager(this.config.classManager);
+				var cfg = this.config.classManager,
+						pfx	= cfg.stylePrefix || 'clm-';
+				cfg.stylePrefix	= this.config.stylePrefix + pfx;
+				cfg.target = this;
+				this.clm = new ClassManager(cfg);
 				this.set('ClassManager', this.clm);
 			},
 
