@@ -7,7 +7,7 @@ define(['backbone','./Components'],
 
 			defaults: {
 				tagName			: 'div',
-				type			: '',
+				type				: '',
 				editable		: false,
 				removable		: true,
 				movable			: true,
@@ -18,12 +18,13 @@ define(['backbone','./Components'],
 				status			: '',
 				previousModel	: '',
 				content			: '',
-				style			: {},
-				attributes		: {},
+				style				: {},
+				attributes	: {},
 			},
 
-			initialize: function(options) {
-				this.defaultC = options.components || [];
+			initialize: function(o) {
+				this.config 	= o || {};
+				this.defaultC = this.config.components || [];
 				this.components	= new Components(this.defaultC);
 				this.set('components', this.components);
 			},
@@ -47,7 +48,7 @@ define(['backbone','./Components'],
 			/**
 			 * Get name of the component
 			 *
-			 * @return string
+			 * @return {String}
 			 * */
 			getName: function(){
 				if(!this.name){

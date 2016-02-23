@@ -14,10 +14,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-contrib-sass');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-bowercopy');
   grunt.loadNpmTasks('grunt-mocha');
+  grunt.loadNpmTasks('grunt-sass');
 
   grunt.initConfig({
     appDir: appPath,
@@ -167,7 +167,7 @@ module.exports = function(grunt) {
     	test: {
     		files: ['test/specs/**/*.js'],
     		tasks: ['mocha'],
-    		options: { livereload: true }, //default port 35729
+    		//options: { livereload: true }, //default port 35729
     	}
     },
 
