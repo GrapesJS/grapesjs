@@ -10,6 +10,7 @@ define([
         'Canvas',
         'RichTextEditor',
         'DomComponents',
+        'ClassManager',
         'Panels'],
 	function(
 			Backbone,
@@ -23,6 +24,7 @@ define([
 			Canvas,
 			RichTextEditor,
 			DomComponents,
+			ClassManager,
 			Panels
 			){
 		return Backbone.Model.extend({
@@ -40,6 +42,7 @@ define([
 				this.compName	= this.config.storagePrefix + 'components' + this.config.id;
 				this.set('Config', c);
 
+				this.initClassManager();
 				this.initStorage();
 				this.initModal();
 				this.initAssetManager();
@@ -52,6 +55,19 @@ define([
 				this.initUndoManager();
 
 				this.on('change:selectedComponent', this.componentSelected, this);
+			},
+
+			/**
+			 * Initialize Class manager
+			 * */
+			initClassManager: function()
+			{
+				var cfg = this.config.classManager,
+						pfx	= cfg.stylePrefix || 'clm-';
+				cfg.stylePrefix	= this.config.stylePrefix + pfx;
+				cfg.target = this;
+				this.clm = new ClassManager(cfg);
+				this.set('ClassManager', this.clm);
 			},
 
 			/**

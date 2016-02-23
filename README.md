@@ -39,6 +39,7 @@ GrapesJS uses [RequireJS](http://requirejs.org/) to organize its files inside `s
 Clone the repository and enter inside the folder
 
 ```sh
+$ npm install -g grunt-cli
 $ git clone https://github.com/artf/grapesjs.git
 $ cd grapesjs
 ```
@@ -156,7 +157,7 @@ Tests are run by [PhantomJS](http://phantomjs.org/) using [Mocha](https://mochaj
 $ npm run test
 ```
 
-### Tech
+### Acknowledgements
 
 GrapesJS is built on top of this amazing open source projects:
 
@@ -170,7 +171,7 @@ GrapesJS is built on top of this amazing open source projects:
 
 ### Contributing
 
-Any kind of help is welcome. At the moment there is no generic guidelines so use usual pull requests (with a little bit of parsimony)
+Any kind of help is welcome. At the moment there is no generic guidelines so use usual pull requests and push to `dev` branch
 
 
 ## License

@@ -61,6 +61,9 @@ define(function () {
 		//Configurations for Commands
 		commands					: {},
 
+		//Configurations for Class Manager
+		classManager			: {},
+
 	};
 	return config;
 });
