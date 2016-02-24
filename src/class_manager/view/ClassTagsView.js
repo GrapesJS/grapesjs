@@ -74,6 +74,9 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
      * @param  {Object} e
      */
     componentChanged: function(e){
+      this.compTarget = this.target.get('selectedComponent');
+      var models = this.compTarget ? this.compTarget.get('classes').models : [];
+      this.collection.reset(models);
     },
 
     /**
@@ -102,7 +105,12 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
       if(this.target){
         var cm = this.target.get('ClassManager');
         var model = cm.addClass(name);
-        console.log(model);
+
+        if(this.compTarget){
+          this.compTarget.get('classes').add(model);
+        }
+
+        console.log(this.compTarget);
       }
       this.endNewTag();
     },
