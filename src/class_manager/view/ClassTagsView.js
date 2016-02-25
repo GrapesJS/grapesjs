@@ -18,8 +18,8 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
       this.addBtnId = this.pfx + 'add-tag';
       this.newInputId = this.pfx + 'new';
       this.events['click #' + this.addBtnId] = 'startNewTag';
-      this.events['blur #'+this.newInputId] = 'endNewTag';
-      this.events['keyup #'+this.newInputId] = 'onInputKeyUp';
+      this.events['blur #' + this.newInputId] = 'endNewTag';
+      this.events['keyup #' + this.newInputId] = 'onInputKeyUp';
 
       this.target  = this.config.target;
 
@@ -106,11 +106,9 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
         var cm = this.target.get('ClassManager');
         var model = cm.addClass(name);
 
-        if(this.compTarget){
+        if(this.compTarget)
           this.compTarget.get('classes').add(model);
-        }
 
-        console.log(this.compTarget);
       }
       this.endNewTag();
     },

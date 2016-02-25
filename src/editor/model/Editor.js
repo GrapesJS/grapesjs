@@ -274,16 +274,23 @@ define([
 
 			/**
 			 * Triggered when components are updated
+			 * @param	{Object}	model
+			 * @param	{Mixed}		val	Value
+			 * @param	{Object}	opt	Options
 			 * */
-			componentsUpdated: function()
+			componentsUpdated: function(model, val, opt)
 			{
-				var updatedCount = this.get('changesCount') + 1;
+				var updatedCount = this.get('changesCount') + 1,
+						avSt	= opt ? opt.avoidStore : 0;
 				this.set('changesCount', updatedCount);
 				if(this.stm.isAutosave() && updatedCount < this.stm.getChangesBeforeSave()){
 					return;
 				}
-				this.storeComponents();
-				this.set('changesCount', 0 );
+
+				if(!avSt){
+					this.storeComponents();
+					this.set('changesCount', 0);
+				}
 			},
 
 			/**
@@ -338,6 +345,7 @@ define([
 			 * */
 			updateComponents: function(model, val, opt){
 				var comps	= model.get('components'),
+						classes	= model.get('classes'),
 						avSt	= opt ? opt.avoidStore : 0;
 
 				// Observe component with Undo Manager
@@ -350,8 +358,12 @@ define([
 				this.listenTo(comps, 'add', this.updateComponents);
 				this.listenTo(comps, 'remove', this.rmComponents);
 
-				this.stopListening(model, 'change:style change:content', this.updateComponents);
-				this.listenTo(model, 'change:style change:content', this.updateComponents);
+				this.stopListening(classes, 'add remove', this.componentsUpdated);
+				this.listenTo(classes, 'add remove', this.componentsUpdated);
+
+				var evn = 'change:style change:content';
+				this.stopListening(model, evn, this.componentsUpdated);
+				this.listenTo(model, evn, this.componentsUpdated);
 
 				if(!avSt)
 					this.componentsUpdated();

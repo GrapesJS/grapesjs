@@ -113,9 +113,11 @@ define(['backbone', './ComponentsView'],
 			 * */
 			updateClasses: function(){
 				var str = '';
+
 				this.model.get('classes').each(function(model){
 					str += model.get('name') + ' ';
 				});
+
 				this.$el.attr('class',str.trim());
 
 				// Regenerate status class
@@ -132,12 +134,14 @@ define(['backbone', './ComponentsView'],
 
 			render: function() {
 				this.updateAttributes();
+				this.updateClasses();
 				this.$el.html(this.model.get('content'));
 				var view = new ComponentsView({
 					collection	: this.components,
 					config		: this.config,
 				});
 				this.$components = view;
+
 				// With childNodes lets avoid wrapping 'div'
 				this.$el.append(view.render(this.$el).el.childNodes);
 				return this;
