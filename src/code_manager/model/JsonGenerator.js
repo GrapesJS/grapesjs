@@ -1,21 +1,22 @@
-define(['backbone'], 
+define(['backbone'],
 	function (Backbone) {
 		/**
 		 * @class JsonGenerator
 		 * */
 		return Backbone.Model.extend({
-			
+
 			/** @inheritdoc */
 			getId	: function()
 			{
-				return 'json'; 
+				return 'json';
 			},
-			
+
 			/** @inheritdoc */
 			build: function(model)
 			{
 				var json	= model.toJSON();
-				
+				this.beforeEach(json);
+
 				// Avoid jshint 'loopfunc' error
 				_.each(json,function(v, attr){
 					var obj	= json[attr];
@@ -30,11 +31,19 @@ define(['backbone'],
 							}, this);
 						}
 					}
-					
+
 				}, this);
-				
+
 				return json;
 			},
-			
+
+			/**
+			 * Execute on each object
+			 * @param {Object} obj
+			 */
+			beforeEach: function(obj) {
+				delete obj.status;
+			}
+
 		});
 });

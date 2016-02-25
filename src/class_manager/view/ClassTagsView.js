@@ -18,8 +18,8 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
       this.addBtnId = this.pfx + 'add-tag';
       this.newInputId = this.pfx + 'new';
       this.events['click #' + this.addBtnId] = 'startNewTag';
-      this.events['blur #'+this.newInputId] = 'endNewTag';
-      this.events['keyup #'+this.newInputId] = 'onInputKeyUp';
+      this.events['blur #' + this.newInputId] = 'endNewTag';
+      this.events['keyup #' + this.newInputId] = 'onInputKeyUp';
 
       this.target  = this.config.target;
 
@@ -74,6 +74,9 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
      * @param  {Object} e
      */
     componentChanged: function(e){
+      this.compTarget = this.target.get('selectedComponent');
+      var models = this.compTarget ? this.compTarget.get('classes').models : [];
+      this.collection.reset(models);
     },
 
     /**
@@ -102,7 +105,10 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
       if(this.target){
         var cm = this.target.get('ClassManager');
         var model = cm.addClass(name);
-        console.log(model);
+
+        if(this.compTarget)
+          this.compTarget.get('classes').add(model);
+
       }
       this.endNewTag();
     },
@@ -142,7 +148,9 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
         this.addToClasses(model, fragment);
       },this);
 
-      this.$classes.empty().append(fragment);
+      if(this.$classes)
+        this.$classes.empty().append(fragment);
+
       return this;
     },
 

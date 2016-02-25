@@ -2568,7 +2568,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 .wte-test::btn {
   color: '#fff'; }
 
-.opac50 {
+.opac50, .wte-clm-tags #wte-clm-close {
   opacity: 0.5;
   filter: alpha(opacity=50); }
 
@@ -2587,7 +2587,7 @@ html, body, #wte-app, .wte-editor {
 .clear {
   clear: both; }
 
-.no-select, .wte-com-no-select, .wte-com-no-select img {
+.no-select, .wte-com-no-select, .wte-com-no-select img, .wte-clm-tags #wte-clm-close {
   -moz-user-select: none;
   -khtml-user-select: none;
   -webkit-user-select: none;
@@ -3216,6 +3216,9 @@ ol.example li.placeholder:before {
     clear: both;
     padding: 5px;
     margin-bottom: 5px; }
+  .wte-clm-tags #wte-clm-tags-c {
+    display: inline-block;
+    vertical-align: top; }
   .wte-clm-tags #wte-clm-add-tag {
     background-color: #535353;
     border-radius: 2px;
@@ -3229,10 +3232,20 @@ ol.example li.placeholder:before {
     display: none; }
   .wte-clm-tags .wte-clm-tag {
     background-color: #804f7b;
+    border: 1px solid #5a3857;
+    box-shadow: 1px 1px #9c6196 inset;
+    text-shadow: 1px 1px #6a4166;
     display: inline-block;
-    border-radius: 2px;
+    border-radius: 3px;
     margin: 0 3px 3px 0;
     padding: 4px; }
+  .wte-clm-tags #wte-clm-close {
+    font-size: 20px;
+    line-height: 0;
+    cursor: pointer; }
+    .wte-clm-tags #wte-clm-close:hover {
+      opacity: 0.7;
+      filter: alpha(opacity=70); }
 
 /********* END Class manager **********/
 /********* Modal dialog **********/
