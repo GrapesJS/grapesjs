@@ -1,14 +1,22 @@
-# [GrapesJS](http://grapesjs.com) [![Build Status](https://travis-ci.org/artf/grapesjs.svg?branch=master)](https://travis-ci.org/artf/grapesjs)
+# [GrapesJS](http://grapesjs.com)
+
+[![Build Status](https://travis-ci.org/artf/grapesjs.svg?branch=master)](https://travis-ci.org/artf/grapesjs)
 
 <p align="center"><img src="http://grapesjs.com/img/grapesjs-demo-template2.jpg" alt="GrapesJS" width="500" align="center"/></p>
 
 GrapesJS is a free and open source Web Template Editor for building HTML templates to be used inside sites, webapps, newsletters or anything else related with HTML.
-Be aware that is not a 'Website Builder' but a tool to create only structure and containers for contents. The great thing about GrapesJS is that you can customize it, extend it or even integrate it with your applications.
-
-Try it here: http://grapesjs.com/demo.html
+Mainly GrapesJS was designed to be used inside a [CMS] to speed up creation of dynamic templates. To better understand this concept check the image below
 
 
-### Features
+<p align="center"><img src="http://grapesjs.com/img/gjs-concept.png" alt="GrapesJS - Style Manager" height="400" align="center"/></p>
+
+
+Generally any 'template system', that you can find in various applications like CMS, is composed by the **structure** (HTML), **style** (CSS) and **variables**, which are then replaced with other templates and contents on server-side and rendered soon on client.
+
+This demo shows an example of what is possible to achieve: http://grapesjs.com/demo.html
+
+
+## Features
 
 * Style Manager, for component styling<br/>
 <p align="center"><img src="http://grapesjs.com/img/grapesjs-style-manager.png" alt="GrapesJS - Style Manager" height="400" align="center"/></p>
@@ -27,12 +35,12 @@ Try it here: http://grapesjs.com/demo.html
 * Default built-in commands (basically for creating and managing different components)
 
 
-### Installation
+## Installation
 
 You can get GrapesJS with `bower install grapesjs` or via `git clone https://github.com/artf/grapesjs.git` to directly use it. For development purpose you should follow instructions below.
 
 
-### Development
+## Development
 
 GrapesJS uses [RequireJS](http://requirejs.org/) to organize its files inside `src` folder and [Grunt](http://gruntjs.com/) for build them to `dist`
 
@@ -67,7 +75,8 @@ Tests are already available inside browser on `localhost:8000/test`
 If [Grunt](http://gruntjs.com/) is already installed globally you could change the port by using `grunt dev --port 9000`
 
 
-### Usage
+## Usage
+
 JQuery is the only hard dependency so you have to include it before use GrapesJS.
 
 ```html
@@ -91,8 +100,10 @@ After that include scripts from GrapesJS with all your configurations and render
 Unfortunately with the configuration above you wouldn't see a lot. This because GrapesJS it self is simply empty, adding panels, buttons and other stuff will be your job (actually it's not empty but you need buttons to show them up).
 The section below will explain some basic configurations but for a more practical example I suggest to look up the code inside this demo: http://grapesjs.com/demo.html
 
+Documentation is under construction here: [wiki]
 
-### Configuration
+
+## Configuration
 
 For now I only show up some general settings, for more details check source or demo. Examples will be available soon
 
@@ -142,12 +153,12 @@ var config = {
 ```
 
 
-### API
+## API
 
 At the moment `render()` is the only available method but others will be public very soon...
 
 
-### Testing
+## Testing
 
 **ATTENTION: tests are pretty far away from being complete**
 
@@ -157,7 +168,14 @@ Tests are run by [PhantomJS](http://phantomjs.org/) using [Mocha](https://mochaj
 $ npm run test
 ```
 
-### Acknowledgements
+## Todos before beta release
+
+* **Class Manager** (*in development*) - Ability to assign different classes to components and style them (beacause CSS with only ids is pretty much a pain)
+* **Breakpoint Manager** - Resize canvas according to breakpoints established by user (in simple terms, for responsive templates). Will be put into development immediately after Class Manager
+* **Style Manager improvements** - Mainly `stack` type is not yet complete
+
+
+## Acknowledgements
 
 GrapesJS is built on top of this amazing open source projects:
 
@@ -169,7 +187,14 @@ GrapesJS is built on top of this amazing open source projects:
 * [FontAwesome] - the iconic font and CSS framework
 
 
-### Contributing
+## Support
+
+A star/fork is already a huge motivational support and I'd like to thank all of you for this, but if you want to contribute the project economically and you have this possibility you could use the link below :heart:
+
+[![PayPalMe](http://grapesjs.com/img/ppme.png)](https://paypal.me/grapesjs)
+
+
+## Contributing
 
 Any kind of help is welcome. At the moment there is no generic guidelines so use usual pull requests and push to `dev` branch
 
@@ -185,3 +210,5 @@ BSD 3-clause
 [CodeMirror]: <http://codemirror.net/>
 [Spectrum]: <https://github.com/bgrins/spectrum>
 [FontAwesome]: <https://fortawesome.github.io/Font-Awesome/>
+[wiki]: <https://github.com/artf/grapesjs/wiki>
+[CMS]: <https://it.wikipedia.org/wiki/Content_management_system>

@@ -23,6 +23,7 @@ define(['backbone', './ComponentsView'],
 				this.listenTo(this.model, 'change:style', 		this.updateStyle);
 				this.listenTo(this.model, 'change:attributes', this.updateAttributes);
 				this.listenTo(this.model, 'change:status', 		this.updateStatus);
+				this.listenTo(this.model.get('classes'), 'add remove change', this.updateClasses);
 				this.$el.data("model", this.model);
 				this.$el.data("model-comp", this.components);
 			},
@@ -109,12 +110,18 @@ define(['backbone', './ComponentsView'],
 
 			/**
 			 * Update classe attribute
-			 *
-			 * @return void
 			 * */
 			updateClasses: function(){
-				if(this.classe.length)
-					this.$el.attr('class', this.classe.join(" "));
+				var str = '';
+
+				this.model.get('classes').each(function(model){
+					str += model.get('name') + ' ';
+				});
+
+				this.$el.attr('class',str.trim());
+
+				// Regenerate status class
+				this.updateStatus();
 			},
 
 			/**
@@ -127,12 +134,14 @@ define(['backbone', './ComponentsView'],
 
 			render: function() {
 				this.updateAttributes();
+				this.updateClasses();
 				this.$el.html(this.model.get('content'));
 				var view = new ComponentsView({
 					collection	: this.components,
 					config		: this.config,
 				});
 				this.$components = view;
+
 				// With childNodes lets avoid wrapping 'div'
 				this.$el.append(view.render(this.$el).el.childNodes);
 				return this;

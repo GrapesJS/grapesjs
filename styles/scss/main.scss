@@ -747,6 +747,10 @@ $tagBg: #804f7b;
 		padding: 5px;
 		margin-bottom: 5px;
 	}
+	##{$clm-prefix}tags-c{
+		display: inline-block;
+		vertical-align: top;
+	}
 
 	##{$clm-prefix}add-tag{
 		background-color: $addBtnBg;
@@ -766,10 +770,23 @@ $tagBg: #804f7b;
 
 	.#{$clm-prefix}tag {
 		background-color: $tagBg;
+		border: 1px solid darken($tagBg, 12%);
+		box-shadow: 1px 1px lighten($tagBg, 9%) inset;
+		text-shadow: 1px 1px darken($tagBg, 7%);
 		display: inline-block;
-		border-radius:2px;
+		border-radius:3px;
 		margin: 0 3px 3px 0;
     padding: 4px;
+	}
+	##{$clm-prefix}close {
+		@extend  .opac50;
+		font-size: 20px;
+    line-height: 0;
+    cursor:pointer;
+    @extend  .no-select;
+    &:hover{
+    	@include opacity(0.7);
+    }
 	}
 }
 /********* END Class manager **********/
