@@ -266,9 +266,6 @@ define([
 							model.set(af);
 						}
 					});
-
-					//TODO when, for example, undo delete cant redelete it, so need to
-					//recall 'remove command'
 				}
 			},
 

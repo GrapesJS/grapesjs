@@ -148,7 +148,9 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
         this.addToClasses(model, fragment);
       },this);
 
-      this.$classes.empty().append(fragment);
+      if(this.$classes)
+        this.$classes.empty().append(fragment);
+
       return this;
     },
 

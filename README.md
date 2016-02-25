@@ -5,9 +5,15 @@
 <p align="center"><img src="http://grapesjs.com/img/grapesjs-demo-template2.jpg" alt="GrapesJS" width="500" align="center"/></p>
 
 GrapesJS is a free and open source Web Template Editor for building HTML templates to be used inside sites, webapps, newsletters or anything else related with HTML.
-Be aware that is not a 'Website Builder' but a tool to create only structure and containers for contents. The great thing about GrapesJS is that you can customize it, extend it or even integrate it with your applications.
+Mainly GrapesJS was designed to be used inside a [CMS] to speed up creation of dynamic templates. To better understand this concept check the image below
 
-Try it here: http://grapesjs.com/demo.html
+
+<p align="center"><img src="http://grapesjs.com/img/gjs-concept.png" alt="GrapesJS - Style Manager" height="400" align="center"/></p>
+
+
+Generally any 'template system', that you can find in various applications like CMS, is composed by the **structure** (HTML), **style** (CSS) and **variables**, which are then replaced with other templates and contents on server-side and rendered soon on client.
+
+This demo shows an example of what is possible to achieve: http://grapesjs.com/demo.html
 
 
 ## Features
@@ -94,6 +100,8 @@ After that include scripts from GrapesJS with all your configurations and render
 Unfortunately with the configuration above you wouldn't see a lot. This because GrapesJS it self is simply empty, adding panels, buttons and other stuff will be your job (actually it's not empty but you need buttons to show them up).
 The section below will explain some basic configurations but for a more practical example I suggest to look up the code inside this demo: http://grapesjs.com/demo.html
 
+Documentation is under construction here: [wiki]
+
 
 ## Configuration
 
@@ -160,6 +168,13 @@ Tests are run by [PhantomJS](http://phantomjs.org/) using [Mocha](https://mochaj
 $ npm run test
 ```
 
+## Todos before beta release
+
+* **Class Manager** (*in development*) - Ability to assign different classes to components and style them (beacause CSS with only ids is pretty much a pain)
+* **Breakpoint Manager** - Resize canvas according to breakpoints established by user (in simple terms, for responsive templates). Will be put into development immediately after Class Manager
+* **Style Manager improvements** - Mainly `stack` type is not yet complete
+
+
 ## Acknowledgements
 
 GrapesJS is built on top of this amazing open source projects:
@@ -170,6 +185,13 @@ GrapesJS is built on top of this amazing open source projects:
 * [CodeMirror] - versatile text editor
 * [Spectrum] - no hassle colorpicker
 * [FontAwesome] - the iconic font and CSS framework
+
+
+## Support
+
+A star/fork is already a huge motivational support and I'd like to thank all of you for this, but if you want to contribute the project economically and you have this possibility you could use the link below :heart:
+
+[![PayPalMe](http://grapesjs.com/img/ppme.png)](https://paypal.me/grapesjs)
 
 
 ## Contributing
@@ -188,3 +210,5 @@ BSD 3-clause
 [CodeMirror]: <http://codemirror.net/>
 [Spectrum]: <https://github.com/bgrins/spectrum>
 [FontAwesome]: <https://fortawesome.github.io/Font-Awesome/>
+[wiki]: <https://github.com/artf/grapesjs/wiki>
+[CMS]: <https://it.wikipedia.org/wiki/Content_management_system>
