@@ -9,3 +9,4 @@ private/
 vendor/
 node_modules/
 bower_components/
+tests/
