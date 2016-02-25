@@ -189,7 +189,7 @@ GrapesJS is built on top of this amazing open source projects:
 
 ## Support
 
-A star/fork is already a huge motivational support and I'd like to thank all of you for this, but if you want to contribute the project economically and you have this possibility you could use the link below :heart:
+A star/fork is already a huge motivational support and I'd like to thank all of you for that, but if you want to contribute the project economically and you have this possibility you could use the link below :heart:
 
 [![PayPalMe](http://grapesjs.com/img/ppme.png)](https://paypal.me/grapesjs)
 
