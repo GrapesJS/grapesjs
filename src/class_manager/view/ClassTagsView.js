@@ -26,9 +26,16 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
       this.listenTo( this.target ,'change:selectedComponent',this.componentChanged);
 
       this.listenTo( this.collection, 'add', this.addNew);
+      this.listenTo( this.collection, 'remove', this.removed);
       this.listenTo( this.collection, 'reset', this.renderClasses);
 
+      //this.config.
+
       this.delegateEvents();
+    },
+
+    removed: function(){
+      console.log('removed');
     },
 
     /**
@@ -106,9 +113,10 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
         var cm = this.target.get('ClassManager');
         var model = cm.addClass(name);
 
-        if(this.compTarget)
+        if(this.compTarget){
           this.compTarget.get('classes').add(model);
-
+          this.collection.add(model);
+        }
       }
       this.endNewTag();
     },

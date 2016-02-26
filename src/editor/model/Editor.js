@@ -313,7 +313,9 @@ define([
 			loadComponents: function(){
 				var result = null;
 				try{
-					result	=  JSON.parse(this.stm.load(this.compName));
+					var r = this.stm.load(this.compName);
+					if(r)
+						result	=  JSON.parse(r);
 				}catch(err){
 					console.warn("Error encountered while parsing JSON response");
 				}

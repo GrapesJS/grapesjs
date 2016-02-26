@@ -11,7 +11,7 @@ define(['backbone', 'text!./../template/classTag.html'],
 
     initialize: function(o) {
       this.config = o.config || {};
-      this.pfx = this.config.stylePrefix;
+      this.pfx = this.config.stylePrefix || '';
       this.className = this.pfx + 'tag';
       this.closeId = this.pfx + 'close';
       this.events['click #' + this.closeId ] = 'removeTag';
