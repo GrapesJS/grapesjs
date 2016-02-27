@@ -170,7 +170,7 @@ $ npm run test
 
 ## Todos before beta release
 
-* **Class Manager** (*in development*) - Ability to assign different classes to components and style them (beacause CSS with only ids is pretty much a pain)
+* **Class Manager** (*in development*) - Ability to assign different classes to components and style them (because CSS with only ids is pretty much a pain)
 * **Breakpoint Manager** - Resize canvas according to breakpoints established by user (in simple terms, for responsive templates). Will be put into development immediately after Class Manager
 * **Style Manager improvements** - Mainly `stack` type is not yet complete
 

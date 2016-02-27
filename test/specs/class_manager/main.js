@@ -80,10 +80,6 @@ define([
 					obj2.should.deep.equal(obj);
 				});
 
-				it('escapeName test', function() {
-					this.obj.escapeName('@Te sT*').should.equal('-te-st-');
-				});
-
 			});
 
 			Models.run();

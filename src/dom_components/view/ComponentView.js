@@ -26,6 +26,22 @@ define(['backbone', './ComponentsView'],
 				this.listenTo(this.model.get('classes'), 'add remove change', this.updateClasses);
 				this.$el.data("model", this.model);
 				this.$el.data("model-comp", this.components);
+
+				if(this.model.get('classes').length)
+					this.importClasses();
+			},
+
+			/**
+			 * Import, if possible, classes inside main container
+			 * */
+			importClasses: function(){
+				var clm = this.config.em.get('ClassManager');
+
+				if(clm){
+					this.model.get('classes').each(function(m){
+							clm.addClass(m.get('name'));
+					});
+				}
 			},
 
 			/**

@@ -25,10 +25,27 @@ define(['backbone','./Components', 'ClassManager/model/ClassTags'],
 			initialize: function(o) {
 				this.config 	= o || {};
 				this.defaultC = this.config.components || [];
-				this.defaultCl = this.config.classes || [];
+				this.defaultCl = this.normalizeClasses(this.config.classes || []);
 				this.components	= new Components(this.defaultC);
 				this.set('components', this.components);
 				this.set('classes', new ClassTags(this.defaultCl));
+			},
+
+			/**
+			 * Normalize input classes from array to array of objects
+			 * @param {Array} arr
+			 *
+			 * @return {Array}
+			 */
+			normalizeClasses: function(arr){
+				var res = [];
+				arr.forEach(function(val){
+					if(typeof val === 'string')
+						res.push({ name: val });
+					else
+						res.push(val);
+				});
+				return res;
 			},
 
 			/**

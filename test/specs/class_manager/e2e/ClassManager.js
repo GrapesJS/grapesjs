@@ -41,10 +41,11 @@ define(
               model.get('classes').length.should.equal(0);
 
               // Init Class Manager and set editor as a target
+              var $clm;
               var clm = this.gjs.editor.get('ClassManager');
               clm.config.target = this.gjs.editor;
               if(clm){
-                var $clm = new clm.ClassTagsView({
+                $clm = new clm.ClassTagsView({
                   collection: new clm.ClassTags([]),
                   config: clm.config,
                 }).render();
@@ -58,6 +59,26 @@ define(
               model.get('classes').length.should.equal(1);
               model.get('classes').at(0).get('name').should.equal('test');
 
+            });
+
+            it('Classes from components are correctly imported inside main container', function() {
+              this.$fixture.empty();
+              var Grapes = require('editor/main');
+              var gjs = new Grapes({
+                storageType: 'none',
+                storageManager: { storageType: 'none',},
+                assetManager: { storageType: 'none', },
+                container: '#ClassManager-fixture',
+                components: {
+                  defaults: [
+                    { classes: ['test11', 'test12', 'test13'] },
+                    { classes: ['test11', 'test22', 'test22'] },
+                  ],
+                }
+              });
+              gjs.render();
+              console.log(this.$fixture);
+              gjs.editor.get('ClassManager').getClasses().length.should.equal(4);
             });
 
         });

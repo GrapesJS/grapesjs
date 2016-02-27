@@ -19,8 +19,12 @@ define([path + 'ClassTag',
               this.obj.has('name').should.equal(true);
             });
 
-           it('Has label property', function() {
+            it('Has label property', function() {
               this.obj.has('label').should.equal(true);
+            });
+
+            it('escapeName test', function() {
+              this.obj.escapeName('@Te sT*').should.equal('-te-st-');
             });
 
         });

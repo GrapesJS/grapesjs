@@ -30,10 +30,9 @@ define(function(require) {
        * */
       addClass: function(name){
         var label = name;
-        var fname = this.escapeName(name);
-        var c = this.getClass(fname);
+        var c = this.getClass(name);
         if(!c)
-          return  this.classes.add({name: fname, label: label});
+          return  this.classes.add({name: name, label: label});
         return c;
       },
 
@@ -55,16 +54,6 @@ define(function(require) {
        * */
       getClasses : function() {
         return  this.classes;
-      },
-
-      /**
-       * Escape string
-       * @param {String} name
-       *
-       * @return {String}
-       */
-      escapeName: function(name) {
-        return name.toLowerCase().replace(/([^a-z0-9\w]+)/gi, '-');
       },
 
   };

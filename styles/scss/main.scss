@@ -777,6 +777,7 @@ $tagBg: #804f7b;
 		border-radius:3px;
 		margin: 0 3px 3px 0;
     padding: 4px;
+    cursor: default;
 	}
 	##{$clm-prefix}close {
 		@extend  .opac50;
@@ -787,6 +788,10 @@ $tagBg: #804f7b;
     &:hover{
     	@include opacity(0.7);
     }
+	}
+	##{$clm-prefix}checkbox {
+		vertical-align: middle;
+		font-size: 9px;
 	}
 }
 /********* END Class manager **********/
