@@ -8,6 +8,7 @@ define(['backbone'],
 			defaults: {
         label:  '',
 				name:	  '',
+        active: true,
 			},
 
 			initialize: function(){

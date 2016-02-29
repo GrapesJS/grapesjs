@@ -62,23 +62,22 @@ define(
             });
 
             it('Classes from components are correctly imported inside main container', function() {
-              this.$fixture.empty();
-              var Grapes = require('editor/main');
-              var gjs = new Grapes({
-                storageType: 'none',
-                storageManager: { storageType: 'none',},
-                assetManager: { storageType: 'none', },
-                container: '#ClassManager-fixture',
-                components: {
-                  defaults: [
-                    { classes: ['test11', 'test12', 'test13'] },
-                    { classes: ['test11', 'test22', 'test22'] },
-                  ],
-                }
+              var wrp = this.gjs.editor.get('Components').getWrapper().get('components');
+              var model = wrp.add([
+                { classes: ['test11', 'test12', 'test13'] },
+                { classes: ['test11', 'test22', 'test22'] },
+              ]);
+              this.gjs.editor.get('ClassManager').getClasses().length.should.equal(4);
+            });
+
+            it('Class imported into component is the same model from main container', function() {
+              var wrp = this.gjs.editor.get('Components').getWrapper().get('components');
+              var model = wrp.add({
+                classes: ['test1']
               });
-              gjs.render();
-              console.log(this.$fixture);
-              gjs.editor.get('ClassManager').getClasses().length.should.equal(4);
+              var clModel = model.get('classes').at(0);
+              var clModel2 = this.gjs.editor.get('ClassManager').getClasses().at(0);
+              clModel.should.deep.equal(clModel2);
             });
 
         });

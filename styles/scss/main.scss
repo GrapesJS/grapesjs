@@ -791,7 +791,13 @@ $tagBg: #804f7b;
 	}
 	##{$clm-prefix}checkbox {
 		vertical-align: middle;
+		cursor: pointer;
 		font-size: 9px;
+	}
+
+	##{$clm-prefix}tag-label {
+		cursor: pointer;
+		@extend  .no-select;
 	}
 }
 /********* END Class manager **********/

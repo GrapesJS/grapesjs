@@ -26,16 +26,9 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
       this.listenTo( this.target ,'change:selectedComponent',this.componentChanged);
 
       this.listenTo( this.collection, 'add', this.addNew);
-      this.listenTo( this.collection, 'remove', this.removed);
       this.listenTo( this.collection, 'reset', this.renderClasses);
 
-      //this.config.
-
       this.delegateEvents();
-    },
-
-    removed: function(){
-      console.log('removed');
     },
 
     /**
@@ -134,6 +127,7 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
       var view = new ClassTagView({
           model:  model,
           config: this.config,
+          coll: this.collection,
       });
       var rendered  = view.render().el;
 

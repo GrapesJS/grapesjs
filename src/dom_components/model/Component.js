@@ -22,11 +22,12 @@ define(['backbone','./Components', 'ClassManager/model/ClassTags'],
 				attributes	: {},
 			},
 
-			initialize: function(o) {
+			initialize: function(o, opt) {
+				this.sm = opt ? opt.sm || {} : {};
 				this.config 	= o || {};
 				this.defaultC = this.config.components || [];
 				this.defaultCl = this.normalizeClasses(this.config.classes || []);
-				this.components	= new Components(this.defaultC);
+				this.components	= new Components(this.defaultC, opt);
 				this.set('components', this.components);
 				this.set('classes', new ClassTags(this.defaultCl));
 			},
@@ -39,11 +40,24 @@ define(['backbone','./Components', 'ClassManager/model/ClassTags'],
 			 */
 			normalizeClasses: function(arr){
 				var res = [];
+
+				if(!this.sm.get)
+					return;
+
+				var clm = this.sm.get('ClassManager');
+				if(!clm)
+					return;
+
 				arr.forEach(function(val){
+					var name = '';
+
 					if(typeof val === 'string')
-						res.push({ name: val });
+						name = val;
 					else
-						res.push(val);
+						name = val.name;
+
+					var model = clm.addClass(name);
+					res.push(model);
 				});
 				return res;
 			},

@@ -2587,7 +2587,7 @@ html, body, #wte-app, .wte-editor {
 .clear {
   clear: both; }
 
-.no-select, .wte-com-no-select, .wte-com-no-select img, .wte-clm-tags #wte-clm-close {
+.no-select, .wte-com-no-select, .wte-com-no-select img, .wte-clm-tags #wte-clm-close, .wte-clm-tags #wte-clm-tag-label {
   -moz-user-select: none;
   -khtml-user-select: none;
   -webkit-user-select: none;
@@ -3249,7 +3249,10 @@ ol.example li.placeholder:before {
       filter: alpha(opacity=70); }
   .wte-clm-tags #wte-clm-checkbox {
     vertical-align: middle;
+    cursor: pointer;
     font-size: 9px; }
+  .wte-clm-tags #wte-clm-tag-label {
+    cursor: pointer; }
 
 /********* END Class manager **********/
 /********* Modal dialog **********/

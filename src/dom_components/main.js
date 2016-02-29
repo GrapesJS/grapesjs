@@ -35,8 +35,8 @@ define(function(require) {
 			c.wrapper.style 		= {};
 
 		c.wrapper.style.position	= 'relative';
+		this.component		= new Component(c.wrapper, { sm: c.em });
 
-		this.component		= new Component(c.wrapper);
 		var obj				= {
 			model: this.component,
 			config: c,
