@@ -47,14 +47,12 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 		componentSelected: function(e){
 			this.selectedComponent = this.target.get('selectedComponent');
 			if(this.selectedComponent){
-				/*
 				var classes = this.selectedComponent.get('classes');
 				if(classes.length){
 					var valid = _.filter(classes.models, function(item){ return item.get('active'); });
 					var ids = _.pluck(valid, 'cid');
 					var cssBlock = '';//this.sm.get('CssManager').getRule(ids, 'status', 'mediaq');
 				}
-				*/
 				//I will rerender it only if the assigned one is different from the actuale value
 				//console.log('property '+this.property+" view: "+this.componentValue+" model: "+ this.model.get('value'));
 				if( !this.sameValue() ){
