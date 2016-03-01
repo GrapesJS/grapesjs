@@ -23,9 +23,19 @@ define([path + 'ClassTag',
               this.obj.has('label').should.equal(true);
             });
 
+            it('Has active property', function() {
+              this.obj.has('active').should.equal(true);
+            });
+
             it('escapeName test', function() {
               this.obj.escapeName('@Te sT*').should.equal('-te-st-');
             });
+
+            it('Name is corrected at instantiation', function() {
+              this.obj  = new ClassTag({ name: '@Te sT*'});
+              this.obj.get('name').should.equal('-te-st-');
+            });
+
 
         });
         describe('ClassTags', function() {

@@ -13,22 +13,22 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 		},
 
 		initialize: function(o) {
-			this.config			= o.config;
-			this.pfx 			= this.config.stylePrefix;
-			this.target			= o.target 		|| {};
-			this.onChange		= o.onChange 		|| {};
-			this.onInputRender	= o.onInputRender	|| {};
+			this.config = o.config;
+			this.pfx = this.config.stylePrefix || '';
+			this.target = o.target || {};
+			this.onChange = o.onChange || {};
+			this.onInputRender = o.onInputRender	|| {};
 			this.customValue	= o.customValue	|| {};
-			this.func			= this.model.get('functionName');
-			this.defaultValue 	= this.model.get('defaults');
-			this.property 		= this.model.get('property');
-			this.units 			= this.model.get('units');
-			this.min 			= this.model.get('min') || this.model.get('min')===0 ? this.model.get('min') : -5000;
-			this.max 			= this.model.get('max') || this.model.get('max')===0 ? this.model.get('max') : 5000;
-			this.unit 			= this.model.get('unit') ? this.model.get('unit') : (this.units.length ? this.units[0] : '');
-			this.list 			= this.model.get('list');
-			this.input 			= this.$input = null;
-			this.className 		= this.pfx  + 'property';
+			this.func = this.model.get('functionName');
+			this.defaultValue = this.model.get('defaults');
+			this.property = this.model.get('property');
+			this.units = this.model.get('units');
+			this.min = this.model.get('min') || this.model.get('min')===0 ? this.model.get('min') : -5000;
+			this.max = this.model.get('max') || this.model.get('max')===0 ? this.model.get('max') : 5000;
+			this.unit = this.model.get('unit') ? this.model.get('unit') : (this.units.length ? this.units[0] : '');
+			this.list = this.model.get('list');
+			this.input = this.$input = null;
+			this.className = this.pfx  + 'property';
 			this.selectedComponent	= this.target.get('selectedComponent');
 
 			if(this.selectedComponent){
@@ -41,13 +41,20 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 
 		/**
 		 * Rerender property for the new selected component, if necessary
-		 * @param Array [Model, value, options]
+		 * @param {Array[Model, value, options]} e
 		 *
-		 * @return void
 		 * */
 		componentSelected: function(e){
 			this.selectedComponent = this.target.get('selectedComponent');
 			if(this.selectedComponent){
+				/*
+				var classes = this.selectedComponent.get('classes');
+				if(classes.length){
+					var valid = _.filter(classes.models, function(item){ return item.get('active'); });
+					var ids = _.pluck(valid, 'cid');
+					var cssBlock = '';//this.sm.get('CssManager').getRule(ids, 'status', 'mediaq');
+				}
+				*/
 				//I will rerender it only if the assigned one is different from the actuale value
 				//console.log('property '+this.property+" view: "+this.componentValue+" model: "+ this.model.get('value'));
 				if( !this.sameValue() ){
@@ -63,14 +70,14 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 		 * @return boolean
 		 * */
 		sameValue: function(){
-			return this.getComponentValue() == (this.model.get('value')+this.model.get('unit'));
+			return this.getComponentValue() == (this.model.get('value') + this.model.get('unit'));
 		},
 
 
 		/**
 		 * Get the value from the selected component of this property
 		 *
-		 * @return string
+		 * @return {String}
 		 * */
 		getComponentValue: function(){
 			if(!this.selectedComponent)
@@ -102,9 +109,9 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 
 		/**
 		 * Fetch string from function type value
-		 * @param string Function type value
+		 * @param {String} v Function type value
 		 *
-		 * @return string
+		 * @return {String}
 		 * */
 		fetchFromFunction: function(v){
 			return v.substring(v.indexOf("(") + 1, v.lastIndexOf(")"));
@@ -113,8 +120,8 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 		/**
 		 * Property was changed, so I need to update the component too
 		 * @param 	{Object}	e	Events
-		 * @param	{Mixed}		val	Value
-		 * @param	{Object}	opt	Options
+		 * @param		{Mixed}		val	Value
+		 * @param		{Object}	opt	Options
 		 *
 		 * @return void
 		 * */

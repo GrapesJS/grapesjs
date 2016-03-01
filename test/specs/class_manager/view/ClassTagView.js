@@ -54,6 +54,14 @@ define([path + 'ClassTagView', 'ClassManager/model/ClassTags'],
                   var $el = this.view.$el;
                   $el.find('#close').should.have.property(0);
                 });
+                it('Has checkbox', function() {
+                  var $el = this.view.$el;
+                  $el.find('#checkbox').should.have.property(0);
+                });
+                it('Has label', function() {
+                  var $el = this.view.$el;
+                  $el.find('#tag-label').should.have.property(0);
+                });
 
             });
 
@@ -63,6 +71,24 @@ define([path + 'ClassTagView', 'ClassManager/model/ClassTags'],
               sinon.stub(this.view.config.target, 'get').returns(0);
               this.view.$el.find('#close').trigger('click');
               this.$fixture.html().should.be.empty;
+            });
+
+            it('Checkbox toggles status', function() {
+              var spy     = sinon.spy();
+              this.view.model.on("change:active", spy);
+              this.view.model.set('active', true);
+              this.view.$el.find('#checkbox').trigger('click');
+              this.view.model.get('active').should.equal(false);
+              spy.called.should.equal(true);
+            });
+
+            it('Label toggles status', function() {
+              var spy     = sinon.spy();
+              this.view.model.on("change:active", spy);
+              this.view.model.set('active', true);
+              this.view.$el.find('#tag-label').trigger('click');
+              this.view.model.get('active').should.equal(false);
+              spy.called.should.equal(true);
             });
 
         });
