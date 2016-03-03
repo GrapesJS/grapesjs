@@ -64,6 +64,9 @@ define(function () {
 		//Configurations for Class Manager
 		classManager			: {},
 
+		//Configurations for Css Composer
+		cssComposer				: {},
+
 	};
 	return config;
 });

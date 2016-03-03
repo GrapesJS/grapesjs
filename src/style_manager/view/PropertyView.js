@@ -16,6 +16,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 			this.config = o.config;
 			this.pfx = this.config.stylePrefix || '';
 			this.target = o.target || {};
+			this.propTarget = o.propTarget || {};
 			this.onChange = o.onChange || {};
 			this.onInputRender = o.onInputRender	|| {};
 			this.customValue	= o.customValue	|| {};
@@ -35,8 +36,17 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 				this.componentValue = this.selectedComponent.get('style')[this.property];
 			}
 
+			this.listenTo( this.propTarget, 'update', this.targetUpdated);
 			this.listenTo( this.target ,'change:selectedComponent',this.componentSelected);
 			this.listenTo( this.model ,'change:value', this.valueChanged);
+
+		},
+
+		/**
+		 * Fired when target is updated
+		 */
+		targetUpdated: function() {
+			console.log('Property: target updated');
 		},
 
 		/**
@@ -47,12 +57,6 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 		componentSelected: function(e){
 			this.selectedComponent = this.target.get('selectedComponent');
 			if(this.selectedComponent){
-				var classes = this.selectedComponent.get('classes');
-				if(classes.length){
-					var valid = _.filter(classes.models, function(item){ return item.get('active'); });
-					var ids = _.pluck(valid, 'cid');
-					var cssBlock = '';//this.sm.get('CssManager').getRule(ids, 'status', 'mediaq');
-				}
 				//I will rerender it only if the assigned one is different from the actuale value
 				//console.log('property '+this.property+" view: "+this.componentValue+" model: "+ this.model.get('value'));
 				if( !this.sameValue() ){
