@@ -5,8 +5,8 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 	 * */
 	return Backbone.View.extend({
 
-		template: 		_.template(propertyTemplate),
-		templateLabel: 	_.template(propertyTemplate),
+		template: _.template(propertyTemplate),
+		templateLabel: _.template(propertyTemplate),
 
 		events:			{
 				'change' : 'valueChanged',
@@ -30,46 +30,26 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 			this.list = this.model.get('list');
 			this.input = this.$input = null;
 			this.className = this.pfx  + 'property';
-			this.selectedComponent	= this.target.get('selectedComponent');
-
-			if(this.selectedComponent){
-				this.componentValue = this.selectedComponent.get('style')[this.property];
-			}
-
 			this.listenTo( this.propTarget, 'update', this.targetUpdated);
-			this.listenTo( this.target ,'change:selectedComponent',this.componentSelected);
 			this.listenTo( this.model ,'change:value', this.valueChanged);
-
 		},
 
 		/**
-		 * Fired when target is updated
-		 */
-		targetUpdated: function() {
-			console.log('Property: target updated');
-		},
-
-		/**
-		 * Rerender property for the new selected component, if necessary
-		 * @param {Array[Model, value, options]} e
-		 *
+		 * Fired when the target is updated
 		 * */
-		componentSelected: function(e){
-			this.selectedComponent = this.target.get('selectedComponent');
+		targetUpdated: function(){
+			this.selectedComponent = this.propTarget.model;
 			if(this.selectedComponent){
-				//I will rerender it only if the assigned one is different from the actuale value
-				//console.log('property '+this.property+" view: "+this.componentValue+" model: "+ this.model.get('value'));
-				if( !this.sameValue() ){
+				if(!this.sameValue())
 					this.renderInputRequest();
-				}
 			}
 		},
 
 		/**
-		 * Checks if the value from selected component is the same with
-		 * the value of the model
+		 * Checks if the value from selected component is the
+		 * same of the value of the model
 		 *
-		 * @return boolean
+		 * @return {Boolean}
 		 * */
 		sameValue: function(){
 			return this.getComponentValue() == (this.model.get('value') + this.model.get('unit'));
@@ -88,7 +68,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 			if(this.selectedComponent.get('style')[this.property])
 				this.componentValue = this.selectedComponent.get('style')[this.property];
 			else
-				this.componentValue = this.defaultValue + (this.unit ? this.unit : '');
+				this.componentValue = this.defaultValue + (this.unit || '');
 
 			// Check if wrap inside function is required
 			if(this.func){
@@ -97,11 +77,11 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 					this.componentValue = v;
 			}
 
-			//This allow to ovveride the normal flow of selecting component value,
-			//useful in composite properties
+			// This allow to ovveride the normal flow of selecting component value,
+			// useful in composite properties
 			if(this.customValue && typeof this.customValue === "function"){
-				var index 	=  this.model.collection.indexOf(this.model);
-				var t		= this.customValue(this, index);
+				var index = this.model.collection.indexOf(this.model);
+				var t = this.customValue(this, index);
 				if(t)
 					this.componentValue = t;
 			}
@@ -110,7 +90,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 		},
 
 		/**
-		 * Fetch string from function type value
+		 * Fetch the string from function type value
 		 * @param {String} v Function type value
 		 *
 		 * @return {String}
@@ -124,8 +104,6 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 		 * @param 	{Object}	e	Events
 		 * @param		{Mixed}		val	Value
 		 * @param		{Object}	opt	Options
-		 *
-		 * @return void
 		 * */
 		valueChanged: function(e, val, opt){
 			if(!this.selectedComponent)
@@ -156,7 +134,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 				componentCss[this.property] = value;
 				this.selectedComponent.set('style', componentCss, { avoidStore : avSt});
 			}
-			this.selectedValue = value;//TODO ?
+			this.selectedValue = value;
 
 			if(this.onChange && typeof this.onChange === "function"){
 				this.onChange(this.selectedComponent, this.model);
@@ -165,9 +143,8 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 
 		/**
 		 * Set value to the input
-		 * @param 	String	value
-		 *
-		 * @return void
+		 * @param 	{String}	value
+		 * @param 	{Boolean}	force
 		 * */
 		setValue: function(value, force){
 			var f	= force===0 ? 0 : 1;
@@ -177,13 +154,11 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 			}
 			if(this.$input)
 				this.$input.val(v);
-			this.model.set({value: v},{silent: true});
+			this.model.set({value: v}, {silent: true});
 		},
 
 		/**
 		 * Render label
-		 *
-		 * @return void
 		 * */
 		renderLabel: function(){
 			this.$el.html( this.templateLabel({
@@ -196,8 +171,6 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 
 		/**
 		 * Render field property
-		 *
-		 * @return void
 		 * */
 		renderField : function() {
 			this.renderTemplate();
@@ -207,8 +180,6 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 
 		/**
 		 * Render loaded template
-		 *
-		 * @return void
 		 * */
 		renderTemplate: function(){
 			this.$el.append( this.template({
@@ -221,8 +192,6 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 
 		/**
 		 * Renders input, to override
-		 *
-		 * @return void
 		 * */
 		renderInput: function(){
 			console.warn("No render input implemented for '"+this.model.get('type')+"'");
@@ -230,8 +199,6 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 
 		/**
 		 * Request to render input of the property
-		 *
-		 * @return void
 		 * */
 		renderInputRequest: function(){
 			this.renderInput();
@@ -243,8 +210,6 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 
 		/**
 		 * Clean input
-		 *
-		 * @return void
 		 * */
 		cleanValue: function(){
 			this.setValue('');

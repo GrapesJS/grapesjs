@@ -9,10 +9,11 @@ define(['backbone','./SectorView'],
 			this.config 	= o.config;
 			this.pfx 		= this.config.stylePrefix;
 			this.target		= o.target || {};
+
+			// The taget that will emit events for properties
 			this.propTarget	 = {};
 			_.extend(this.propTarget, Backbone.Events);
-
-			this.listenTo( this.target ,'change:selectedComponent', this.targetUpdated);
+			this.listenTo( this.target, 'change:selectedComponent', this.targetUpdated);
 
 		},
 
@@ -21,21 +22,31 @@ define(['backbone','./SectorView'],
 		 */
 		targetUpdated: function() {
 			var el = this.target.get('selectedComponent');
+
+			if(!el)
+				return;
+
 			var classes = el.get('classes');
+			var pt = this.propTarget;
 
 			if(classes.length){
 				var cssC = this.target.get('CssComposer');
 				var valid = _.filter(classes.models, function(item){ return item.get('active'); });
 				var iContainer = cssC.getRule(valid, 'status', 'mediaq');
 				if(!iContainer){
-					//console.log(valid);
 					iContainer = cssC.newRule(valid, 'status', 'mediaq');
-					//console.log(iContainer.get('selectors').models);
-					this.propTarget.target = iContainer;
-					this.propTarget.trigger('update');
+					// Hydrate styles from component element
+					iContainer.set('style', el.get('style'));
+					cssC.addRule(iContainer);
+					el.set('style', {});
+					pt.model = iContainer;
+					pt.trigger('update');
+					return;
 				}
 			}
 
+			pt.model = el;
+			pt.trigger('update');
 		},
 
 		render: function() {

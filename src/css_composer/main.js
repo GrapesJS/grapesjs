@@ -1,15 +1,16 @@
 define(function(require) {
   /**
-   * @class   CssManager
+   * @class   CssComposer
    * @param   {Object} config Configurations
    *
    * */
-  var CssManager  = function(config)
+  var CssComposer  = function(config)
   {
     var c = config || {},
       def = require('./config/config'),
       CssRule = require('./model/CssRule'),
-      CssRules = require('./model/CssRules');
+      CssRules = require('./model/CssRules'),
+      CssRulesView = require('./view/CssRulesView');
 
     for (var name in def) {
       if (!(name in c))
@@ -17,7 +18,11 @@ define(function(require) {
     }
 
     //this.qset = { '' : CssRules, '340px': CssRules };
-    var rules = new CssRules([]);
+    var rules = new CssRules([]),
+      rulesView = new CssRulesView({
+        collection: rules,
+        config: c,
+      });
 
     return {
 
@@ -27,7 +32,8 @@ define(function(require) {
          *
          * @return  {Object} Model class
          * */
-        addRule: function(name){
+        addRule: function(Rule){
+          return rules.add(Rule);
           /*
           var label = name;
           var c = this.getRule(name);
@@ -78,6 +84,7 @@ define(function(require) {
          * Compare 2 arrays to check if are the same
          * @param  {Array} arr1
          * @param  {Array} arr2
+         *
          * @return {Boolean}
          */
         same: function(a1, a2){
@@ -107,9 +114,18 @@ define(function(require) {
           return  rules;
         },
 
+        /**
+         * Render block of CSS rules
+         *
+         * @return {Object}
+         */
+        render: function(){
+          return rulesView.render().el;
+        }
+
       };
   };
 
-  return CssManager;
+  return CssComposer;
 
 });
