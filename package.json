@@ -28,6 +28,7 @@
     "grunt-contrib-watch": "^0.6.1",
     "grunt-mocha": "^0.4.15",
     "grunt-sass": "^1.1.0",
+    "istanbul": "^0.4.2",
     "node-sass": "^3.4.2"
   },
   "keywords": [

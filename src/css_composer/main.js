@@ -58,8 +58,7 @@ define(function(require) {
               if(fRule)
                 return;
 
-              var sel = _.pluck(rule.get('selectors'), 'cid');
-
+              var sel = _.pluck(rule.get('selectors').models, 'cid');
               if(this.same(req, sel))
                 fRule = rule;
           }, this);

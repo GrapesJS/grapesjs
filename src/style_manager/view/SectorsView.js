@@ -31,7 +31,9 @@ define(['backbone','./SectorView'],
 
 			if(classes.length){
 				var cssC = this.target.get('CssComposer');
-				var valid = _.filter(classes.models, function(item){ return item.get('active'); });
+				var valid = _.filter(classes.models, function(item){
+					return item.get('active');
+				});
 				var iContainer = cssC.getRule(valid, 'status', 'mediaq');
 				if(!iContainer){
 					iContainer = cssC.newRule(valid, 'status', 'mediaq');
@@ -39,10 +41,10 @@ define(['backbone','./SectorView'],
 					iContainer.set('style', el.get('style'));
 					cssC.addRule(iContainer);
 					el.set('style', {});
-					pt.model = iContainer;
-					pt.trigger('update');
-					return;
 				}
+				pt.model = iContainer;
+				pt.trigger('update');
+				return;
 			}
 
 			pt.model = el;
