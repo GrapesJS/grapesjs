@@ -7,13 +7,11 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
 
     template: _.template(tagsTemplate),
 
-    events:{
-      'click .add': 'startNewClass',
-    },
+    events: {},
 
     initialize: function(o) {
       this.config = o.config || {};
-      this.pfx = this.config.stylePrefix;
+      this.pfx = this.config.stylePrefix || '';
       this.className = this.pfx + 'tags';
       this.addBtnId = this.pfx + 'add-tag';
       this.newInputId = this.pfx + 'new';
@@ -57,16 +55,6 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
     endNewTag: function(e) {
       this.$addBtn.show();
       this.$input.hide().val('');
-    },
-
-
-    /**
-     * Add new class tag
-     * @param {Object} model
-     *
-     */
-    addTag: function(model){
-
     },
 
     /**
