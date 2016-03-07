@@ -12,12 +12,12 @@ define([path + 'ClassTagsView', 'ClassManager/model/ClassTags'],
             });
 
             beforeEach(function () {
-              var target = {};
+              this.target = { get: function(){} };
               this.coll  = new ClassTags();
-              _.extend(target, Backbone.Events);
+              _.extend(this.target, Backbone.Events);
 
               this.view = new ClassTagsView({
-                config : { target: target },
+                config : { target: this.target },
                 collection: this.coll
               });
 
@@ -25,6 +25,7 @@ define([path + 'ClassTagsView', 'ClassManager/model/ClassTags'],
               this.$fixture.html(this.view.render().el);
               this.btnAdd = this.view.$el.find('#' + this.view.addBtnId);
               this.input = this.view.$el.find('input#' + this.view.newInputId);
+              this.$tags = this.$fixture.find('#tags-c');
             });
 
             afterEach(function () {
@@ -37,6 +38,10 @@ define([path + 'ClassTagsView', 'ClassManager/model/ClassTags'],
 
             it('Object exists', function() {
               ClassTagsView.should.be.exist;
+            });
+
+            it('Not tags inside', function() {
+              this.$tags.html().should.equal('');
             });
 
             it('Add new tag triggers correct method', function() {
@@ -60,7 +65,77 @@ define([path + 'ClassTagsView', 'ClassManager/model/ClassTags'],
               this.input.val().should.equal('');
             });
 
-            //this.$el.find('#' + this.addBtnId);
+            it('Check keyup of ESC on input', function() {
+              this.btnAdd.click();
+              sinon.stub(this.view, "addNewTag");
+              this.input.trigger({
+                type: 'keyup',
+                keyCode: 13
+               });
+              this.view.addNewTag.calledOnce.should.equal(true);
+            });
+
+            it('Check keyup on ENTER on input', function() {
+              this.btnAdd.click();
+              sinon.stub(this.view, "endNewTag");
+              this.input.trigger({
+                type: 'keyup',
+                keyCode: 27
+               });
+              this.view.endNewTag.calledOnce.should.equal(true);
+            });
+
+            it('Collection changes on update of target', function() {
+              this.coll.add({ name: 'test' });
+              this.target.trigger('change:selectedComponent');
+              this.coll.length.should.equal(0);
+            });
+
+            it('Collection reacts on reset', function() {
+              this.coll.add([{ name: 'test1' }, { name: 'test2' }]);
+              sinon.stub(this.view, "addToClasses");
+              this.coll.trigger('reset');
+              this.view.addToClasses.calledTwice.should.equal(true);
+            });
+
+            it("Don't accept empty tags", function() {
+              this.view.addNewTag('');
+              this.$tags.html().should.equal('');
+            });
+
+            it("Accept new tags", function() {
+              sinon.stub(this.target, "get").returns({
+                addClass: function(v){
+                  return {name: v};
+                }
+              });
+              this.view.compTarget = {
+                  get: function(){
+                    return { add: function(){} };
+                  }
+              };
+              this.view.addNewTag('test');
+              this.view.addNewTag('test2');
+              this.$tags.children().length.should.equal(2);
+            });
+
+            it("New tag correctly added", function() {
+              this.coll.add({ label: 'test' });
+              this.$tags.children().first().find('#tag-label').html().should.equal('test');
+            });
+
+            describe('Should be rendered correctly', function() {
+              it('Has label', function() {
+                this.view.$el.find('#label').should.have.property(0);
+              });
+              it('Has tags container', function() {
+                this.view.$el.find('#tags-c').should.have.property(0);
+              });
+              it('Has add button', function() {
+                this.view.$el.find('#add-tag').should.have.property(0);
+              });
+            });
+
         });
       }
     };

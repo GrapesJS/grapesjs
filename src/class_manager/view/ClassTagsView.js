@@ -38,7 +38,7 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
     },
 
     /**
-     * Start new tag event
+     * Start tag creation
      * @param {Object} e
      *
      */
@@ -48,23 +48,13 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
     },
 
     /**
-     * Start new tag event
+     * End tag creation
      * @param {Object} e
      *
      */
     endNewTag: function(e) {
       this.$addBtn.show();
       this.$input.hide().val('');
-    },
-
-    /**
-     * Triggered when component is changed
-     * @param  {Object} e
-     */
-    componentChanged: function(e){
-      this.compTarget = this.target.get('selectedComponent');
-      var models = this.compTarget ? this.compTarget.get('classes').models : [];
-      this.collection.reset(models);
     },
 
     /**
@@ -76,10 +66,16 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
         this.addNewTag(this.$input.val());
       else if(e.keyCode === 27)
         this.endNewTag();
-      else{
-        //this.searchItem();
-        //console.log('search');
-      }
+    },
+
+    /**
+     * Triggered when component is changed
+     * @param  {Object} e
+     */
+    componentChanged: function(e){
+      this.compTarget = this.target.get('selectedComponent');
+      var models = this.compTarget ? this.compTarget.get('classes').models : [];
+      this.collection.reset(models);
     },
 
     /**
