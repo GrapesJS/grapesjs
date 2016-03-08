@@ -6,6 +6,7 @@ define([
         'StorageManager',
         'ModalDialog',
         'CodeManager',
+        'CssComposer',
         'Commands',
         'Canvas',
         'RichTextEditor',
@@ -20,6 +21,7 @@ define([
 			StorageManager,
 			ModalDialog,
 			CodeManager,
+			CssComposer,
 			Commands,
 			Canvas,
 			RichTextEditor,
@@ -53,8 +55,20 @@ define([
 				this.initComponents();
 				this.initCanvas();
 				this.initUndoManager();
+				this.initCssComposer();
 
 				this.on('change:selectedComponent', this.componentSelected, this);
+			},
+
+			/**
+			 * Initialize Css Composer
+			 * */
+			initCssComposer: function()
+			{
+				var cfg = this.config.cssComposer,
+						pfx	= cfg.stylePrefix || 'css-';
+				cfg.stylePrefix	= this.config.stylePrefix + pfx;
+				this.set('CssComposer', new CssComposer(cfg));
 			},
 
 			/**

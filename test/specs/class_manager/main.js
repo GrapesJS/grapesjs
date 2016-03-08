@@ -4,12 +4,14 @@ define([
 				'ClassManager',
 				modulePath + '/model/ClassModels',
 				modulePath + '/view/ClassTagView',
+				modulePath + '/view/ClassTagsView',
 				modulePath + '/e2e/ClassManager'
 				 ],
 	function(
 					ClassManager,
 					Models,
 					ClassTagView,
+					ClassTagsView,
 					e2e
 					) {
 
@@ -84,6 +86,7 @@ define([
 
 			Models.run();
 			ClassTagView.run();
+			ClassTagsView.run();
 			e2e.run();
 
 		});

@@ -7,13 +7,11 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
 
     template: _.template(tagsTemplate),
 
-    events:{
-      'click .add': 'startNewClass',
-    },
+    events: {},
 
     initialize: function(o) {
       this.config = o.config || {};
-      this.pfx = this.config.stylePrefix;
+      this.pfx = this.config.stylePrefix || '';
       this.className = this.pfx + 'tags';
       this.addBtnId = this.pfx + 'add-tag';
       this.newInputId = this.pfx + 'new';
@@ -40,7 +38,7 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
     },
 
     /**
-     * Start new tag event
+     * Start tag creation
      * @param {Object} e
      *
      */
@@ -50,33 +48,13 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
     },
 
     /**
-     * Start new tag event
+     * End tag creation
      * @param {Object} e
      *
      */
     endNewTag: function(e) {
       this.$addBtn.show();
       this.$input.hide().val('');
-    },
-
-
-    /**
-     * Add new class tag
-     * @param {Object} model
-     *
-     */
-    addTag: function(model){
-
-    },
-
-    /**
-     * Triggered when component is changed
-     * @param  {Object} e
-     */
-    componentChanged: function(e){
-      this.compTarget = this.target.get('selectedComponent');
-      var models = this.compTarget ? this.compTarget.get('classes').models : [];
-      this.collection.reset(models);
     },
 
     /**
@@ -88,10 +66,16 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
         this.addNewTag(this.$input.val());
       else if(e.keyCode === 27)
         this.endNewTag();
-      else{
-        //this.searchItem();
-        //console.log('search');
-      }
+    },
+
+    /**
+     * Triggered when component is changed
+     * @param  {Object} e
+     */
+    componentChanged: function(e){
+      this.compTarget = this.target.get('selectedComponent');
+      var models = this.compTarget ? this.compTarget.get('classes').models : [];
+      this.collection.reset(models);
     },
 
     /**

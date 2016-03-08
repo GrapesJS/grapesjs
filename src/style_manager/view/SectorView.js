@@ -13,6 +13,7 @@ define(['backbone', './PropertiesView', 'text!./../templates/sector.html'],
 			this.config 	= o.config;
 			this.pfx 			= this.config.stylePrefix;
 			this.target		= o.target || {};
+			this.propTarget = o.propTarget || {};
 			this.open 		= this.model.get('open');
 			this.caretR		= 'fa-caret-right';
 			this.caretD		= 'fa-caret-down';
@@ -82,6 +83,7 @@ define(['backbone', './PropertiesView', 'text!./../templates/sector.html'],
 				var view = new PropertiesView({
 					collection	: objs,
 					target			: this.target,
+					propTarget  : this.propTarget,
 					config			: this.config,
 				});
 				this.$el.append(view.render().el);
