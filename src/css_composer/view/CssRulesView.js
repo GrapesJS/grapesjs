@@ -18,7 +18,7 @@ define(['backbone','./CssRuleView'],
      * @param {Object} model
      * */
     addTo: function(model){
-      console.log('Added');
+      //console.log('Added');
       this.addToCollection(model);
     },
 
