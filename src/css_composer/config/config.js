@@ -2,7 +2,10 @@ define(function () {
 	return {
 
     // Style prefix
-    stylePrefix     : 'css-',
+    stylePrefix: 'css-',
+
+    // Default CSS style
+    'default': '',
 
 	};
 });

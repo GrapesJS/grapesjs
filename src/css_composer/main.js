@@ -10,6 +10,7 @@ define(function(require) {
       def = require('./config/config'),
       CssRule = require('./model/CssRule'),
       CssRules = require('./model/CssRules'),
+      Selectors = require('./model/Selectors'),
       CssRulesView = require('./view/CssRulesView');
 
     for (var name in def) {
@@ -19,28 +20,46 @@ define(function(require) {
 
     //this.qset = { '' : CssRules, '340px': CssRules };
     var rules = new CssRules([]),
-      rulesView = new CssRulesView({
-        collection: rules,
-        config: c,
-      });
+    rulesView = new CssRulesView({
+      collection: rules,
+      config: c,
+    });
 
     return {
 
+        Selectors: Selectors,
+
         /**
-         * Add new class to collection only if it's not already exists
-         * @param {String} name Class name
+         * Create new rule and return it. Don't add it to the collection
+         * @param   {Array} selectors Array of selectors
+         * @param   {String} state Css rule state
+         * @param   {String} width For which device this style is oriented
          *
-         * @return  {Object} Model class
+         * @return  {Object}
          * */
-        addRule: function(Rule){
-          return rules.add(Rule);
-          /*
-          var label = name;
-          var c = this.getRule(name);
-          if(!c)
-            return  this.classes.add({name: name, label: label});
-          return c;
-          */
+        newRule: function(selectors, state, width) {
+          var s = state || '';
+          var w = width || '';
+          var rule = new CssRule({
+            state: s,
+            maxWidth: w,
+          });
+          rule.get('selectors').add(selectors);
+          return rule;
+        },
+
+        /**
+         * Add new rule to the collection if not yet exists
+         * @param {Object} rule
+         *
+         * @return  {Object}
+         * */
+        addRule: function(rule){
+          var models = rule.get('selectors').models;
+          var r = this.getRule(models, rule.get('state'), rule.get('maxWidth'));
+          if(!r)
+            r = rules.add(rule);
+          return r;
         },
 
         /**
@@ -57,26 +76,11 @@ define(function(require) {
           rules.each(function(rule){
               if(fRule)
                 return;
-
               var sel = _.pluck(rule.get('selectors').models, 'cid');
               if(this.same(req, sel))
                 fRule = rule;
           }, this);
           return fRule;
-        },
-
-        /**
-         * Create new rule
-         * @param   {Array} selectors Array of selectors
-         * @param   {String} state Rule status
-         * @param   {String} set Query set
-         *
-         * @return  {Object}
-         * */
-        newRule: function(selectors, state, set) {
-          var rule = new CssRule({ state: state });
-          rule.get('selectors').add(selectors);
-          return rule;
         },
 
         /**
