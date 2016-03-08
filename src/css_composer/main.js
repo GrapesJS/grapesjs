@@ -18,7 +18,6 @@ define(function(require) {
         c[name] = def[name];
     }
 
-    //this.qset = { '' : CssRules, '340px': CssRules };
     var rules = new CssRules([]),
     rulesView = new CssRulesView({
       collection: rules,
@@ -64,48 +63,21 @@ define(function(require) {
 
         /**
          * Get class by its name
-         * @param {Array} selectors Array of selectors
-         * @param {String} state Rule status
-         * @param {String} set Query set
+         * @param   {Array} selectors Array of selectors
+         * @param   {String} state Css rule state
+         * @param   {String} width For which device this style is oriented
          *
          * @return  {Object|null}
          * */
-        getRule  : function(selectors, state, set) {
-          var req = _.pluck(selectors, 'cid');
-            fRule = null;
+        getRule  : function(selectors, state, width) {
+          fRule = null;
           rules.each(function(rule){
               if(fRule)
                 return;
-              var sel = _.pluck(rule.get('selectors').models, 'cid');
-              if(this.same(req, sel))
+              if(rule.compare(selectors, state, width))
                 fRule = rule;
           }, this);
           return fRule;
-        },
-
-        /**
-         * Compare 2 arrays to check if are the same
-         * @param  {Array} arr1
-         * @param  {Array} arr2
-         *
-         * @return {Boolean}
-         */
-        same: function(a1, a2){
-          if(a1.length !== a2.length)
-            return;
-
-          for (var i = 0; i < a1.length; i++) {
-            var f = 0;
-
-            for (var j = 0; j < a2.length; j++) {
-              if (a1[i] === a2[j])
-                f = 1;
-            }
-
-            if(f === 0)
-              return;
-          }
-          return true;
         },
 
         /**

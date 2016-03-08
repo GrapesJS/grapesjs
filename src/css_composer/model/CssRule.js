@@ -24,5 +24,43 @@ define(['backbone', './Selectors'],
                 this.set('selectors', new Selectors(this.slct));
             },
 
+            /**
+             * Compare the actual model with parameters
+             * @param   {Object} selectors Collection of selectors
+             * @param   {String} state Css rule state
+             * @param   {String} width For which device this style is oriented
+             *
+             * @return  {Boolean}
+             */
+            compare: function(selectors, state, width){
+                var st = state || '';
+                var wd = width || '';
+                var cId = 'cid';
+                var a1 = _.pluck(selectors.models || selectors, cId);
+                var a2 = _.pluck(this.get('selectors').models, cId);
+                var f = false;
+
+                if(a1.length !== a2.length)
+                    return f;
+
+                for (var i = 0; i < a1.length; i++) {
+                    var re = 0;
+                    for (var j = 0; j < a2.length; j++) {
+                        if (a1[i] === a2[j])
+                            re = 1;
+                    }
+                    if(re === 0)
+                      return f;
+                }
+
+                if(this.get('state') !== st)
+                    return f;
+
+                if(this.get('maxWidth') !== wd)
+                    return f;
+
+                return true;
+            },
+
     	});
 });

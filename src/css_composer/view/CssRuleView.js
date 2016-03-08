@@ -15,6 +15,7 @@ define(['backbone'],
 
     /**
      * Returns string of selectors
+     *
      * @return {String}
      */
     renderSelectors: function(){
@@ -27,6 +28,7 @@ define(['backbone'],
 
     /**
      * Returns string of properties
+     *
      * @return {String}
      */
     renderProperties: function(){
@@ -38,9 +40,6 @@ define(['backbone'],
       return sel.join('');
     },
 
-    /*
-    http://stackoverflow.com/questions/524696/how-to-create-a-style-tag-with-javascript
-     */
     render : function(){
       if(!this.selStr)
         this.selStr = this.renderSelectors();

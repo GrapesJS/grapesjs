@@ -33,6 +33,30 @@ define([path + 'CssRule',
               this.obj.get('selectors').length.should.equal(0);
             });
 
+            it('Compare returns true with the same selectors', function() {
+              var s1 = this.obj.get('selectors').add({ name: 'test1' });
+              var s2 = this.obj.get('selectors').add({ name: 'test2' });
+              this.obj.compare([s1, s2]).should.equal(true);
+            });
+
+            it('Compare with different state', function() {
+              var s1 = this.obj.get('selectors').add({ name: 'test1' });
+              var s2 = this.obj.get('selectors').add({ name: 'test2' });
+              this.obj.set('state','hover');
+              this.obj.compare([s1, s2]).should.equal(false);
+              this.obj.compare([s1, s2], 'hover').should.equal(true);
+            });
+
+            it('Compare with different maxWidth', function() {
+              var s1 = this.obj.get('selectors').add({ name: 'test1' });
+              var s2 = this.obj.get('selectors').add({ name: 'test2' });
+              this.obj.set('state','hover');
+              this.obj.set('maxWidth','1000');
+              this.obj.compare([s1, s2]).should.equal(false);
+              this.obj.compare([s1, s2], 'hover').should.equal(false);
+              this.obj.compare([s2, s1], 'hover', '1000').should.equal(true);
+            });
+
         });
 
         describe('CssRules', function() {
