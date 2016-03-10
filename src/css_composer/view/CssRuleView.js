@@ -10,7 +10,6 @@ define(['backbone'],
     initialize: function(o) {
       this.config = o.config || {};
       this.listenTo(this.model, 'change:style', this.render);
-
     },
 
     /**
@@ -41,10 +40,15 @@ define(['backbone'],
     },
 
     render : function(){
+      var block = '',
+          o = '';
       if(!this.selStr)
         this.selStr = this.renderSelectors();
       var prpStr = this.renderProperties();
-      this.$el.html(this.selStr + '{' + prpStr + '}');
+      if(this.selStr)
+        block = prpStr !== '' ? '{' + prpStr + '}' : '';
+      o = this.selStr && block ? this.selStr + block : '';
+      this.$el.html(o);
       return this;
     },
 

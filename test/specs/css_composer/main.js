@@ -2,12 +2,13 @@ var modulePath = './../../../test/specs/css_composer';
 
 define([
 				'CssComposer',
-				modulePath + '/model/CssModels'
+				modulePath + '/model/CssModels',
+				modulePath + '/view/CssRuleView'
 				 ],
 	function(
 					CssComposer,
 					Models,
-					Selectors
+					CssRuleView
 					) {
 
 		describe('Css Composer', function() {
@@ -130,6 +131,7 @@ define([
 			});
 
 			Models.run();
+			CssRuleView.run();
 
 		});
 });
