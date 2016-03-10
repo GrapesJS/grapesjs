@@ -6,8 +6,7 @@ define(['backbone','./CssRuleView'],
   return Backbone.View.extend({
 
     initialize: function(o) {
-      this.config = o.config;
-      this.preview = o.preview;
+      this.config = o.config || {};
       this.pfx = this.config.stylePrefix;
       this.listenTo( this.collection, 'add', this.addTo );
       this.listenTo( this.collection, 'reset', this.render );
