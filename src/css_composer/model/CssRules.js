@@ -5,7 +5,23 @@ define(['backbone','./CssRule'],
      * */
     return Backbone.Collection.extend({
 
-      model:  CssRule,
+      initialize: function(models, opt){
+
+        this.model  = function(attrs, options) {
+          var model;
+
+          if(!options.sm && opt && opt.sm)
+            options.sm = opt.sm;
+
+          switch(1){
+            default:
+              model = new CssRule(attrs, options);
+          }
+
+          return  model;
+        };
+
+      },
 
     });
 });

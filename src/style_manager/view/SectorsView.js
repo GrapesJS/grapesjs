@@ -34,9 +34,10 @@ define(['backbone','./SectorView'],
 				var valid = _.filter(classes.models, function(item){
 					return item.get('active');
 				});
-				var iContainer = cssC.getRule(valid, 'status', 'mediaq');
+				var iContainer = cssC.getRule(valid, '', '');
 				if(!iContainer){
-					iContainer = cssC.newRule(valid, 'status', 'mediaq');
+					console.log('Create new one');
+					iContainer = cssC.newRule(valid, '', '');
 					// Hydrate styles from component element
 					iContainer.set('style', el.get('style'));
 					cssC.addRule(iContainer);

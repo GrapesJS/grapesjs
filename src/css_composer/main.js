@@ -18,7 +18,7 @@ define(function(require) {
         c[name] = def[name];
     }
 
-    var rules = new CssRules([]),
+    var rules = new CssRules(c.defaults, c),
     rulesView = new CssRulesView({
       collection: rules,
       config: c,
