@@ -91,8 +91,14 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
         var model = cm.addClass(name);
 
         if(this.compTarget){
-          this.compTarget.get('classes').add(model);
+          var targetCls = this.compTarget.get('classes');
+          var lenB = targetCls.length;
+          targetCls.add(model);
+          var lenA = targetCls.length;
           this.collection.add(model);
+
+          if(lenA > lenB)
+            this.target.trigger('targetClassAdded');
         }
       }
       this.endNewTag();

@@ -70,7 +70,10 @@ define([
 						df = this.loadRules();
 						pfx	= cfg.stylePrefix || 'css-';
 				cfg.stylePrefix	= this.config.stylePrefix + pfx;
-				cfg.defaults = df;
+
+				if(df)
+					cfg.defaults = df;
+
 				cfg.sm = this;
 				this.cssc = new CssComposer(cfg);
 				this.set('CssComposer', this.cssc);
@@ -86,6 +89,9 @@ define([
 			listenRules: function(collection) {
 				this.stopListening(collection, 'add remove', this.listenRule);
 				this.listenTo(collection, 'add remove', this.listenRule);
+				collection.each(function(model){
+					this.listenRule(model);
+				}, this);
 			},
 
 			/**
@@ -400,7 +406,7 @@ define([
 			 * @return	{Array}
 			 * */
 			loadRules: function(){
-				var result = [];
+				var result;
 				try{
 					var r = this.stm.load(this.rulesName);
 					if(r)
@@ -416,11 +422,9 @@ define([
 			 * */
 			storeRules: function() {
 				var rules	= this.cssc.getRules();
-				if(rules){
-					console.log('Store rules');
-					console.log(rules);
+
+				if(rules)
 					this.stm.store(this.rulesName, JSON.stringify(rules));
-				}
 			},
 
 			/**
