@@ -13,7 +13,7 @@ define(['backbone','./SectorView'],
 			// The taget that will emit events for properties
 			this.propTarget	 = {};
 			_.extend(this.propTarget, Backbone.Events);
-			this.listenTo( this.target, 'change:selectedComponent', this.targetUpdated);
+			this.listenTo( this.target, 'change:selectedComponent targetClassAdded', this.targetUpdated);
 
 		},
 
@@ -34,9 +34,9 @@ define(['backbone','./SectorView'],
 				var valid = _.filter(classes.models, function(item){
 					return item.get('active');
 				});
-				var iContainer = cssC.getRule(valid, 'status', 'mediaq');
+				var iContainer = cssC.getRule(valid, '', '');
 				if(!iContainer){
-					iContainer = cssC.newRule(valid, 'status', 'mediaq');
+					iContainer = cssC.newRule(valid, '', '');
 					// Hydrate styles from component element
 					iContainer.set('style', el.get('style'));
 					cssC.addRule(iContainer);

@@ -20,7 +20,16 @@ define(['backbone', './Selectors'],
 
             initialize: function(c, opt) {
                 this.config   = c || {};
+                this.sm = opt ? opt.sm || {} : {};
                 this.slct = this.config.selectors || [];
+
+                if(this.sm.get){
+                    var slct = [];
+                    for(var i = 0; i < this.slct.length; i++)
+                        slct.push(this.sm.get('ClassManager').addClass(this.slct[i].name));
+                    this.slct = slct;
+                }
+
                 this.set('selectors', new Selectors(this.slct));
             },
 

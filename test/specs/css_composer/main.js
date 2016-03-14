@@ -2,12 +2,17 @@ var modulePath = './../../../test/specs/css_composer';
 
 define([
 				'CssComposer',
-				modulePath + '/model/CssModels'
+				modulePath + '/model/CssModels',
+				modulePath + '/view/CssRuleView',
+				modulePath + '/view/CssRulesView',
+				modulePath + '/e2e/CssComposer'
 				 ],
 	function(
 					CssComposer,
 					Models,
-					Selectors
+					CssRuleView,
+					CssRulesView,
+					e2e
 					) {
 
 		describe('Css Composer', function() {
@@ -130,6 +135,9 @@ define([
 			});
 
 			Models.run();
+			CssRuleView.run();
+			CssRulesView.run();
+			e2e.run();
 
 		});
 });

@@ -16,7 +16,7 @@ define(function(require) {
         c[name] = def[name];
     }
 
-    this.classes = new this.ClassTags(c.classes);
+    this.classes = new this.ClassTags(c.defaults);
     this.config = c;
   };
 

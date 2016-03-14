@@ -6,9 +6,9 @@ define(['backbone','./CssRuleView'],
   return Backbone.View.extend({
 
     initialize: function(o) {
-      this.config = o.config;
-      this.preview = o.preview;
-      this.pfx = this.config.stylePrefix;
+      this.config = o.config || {};
+      this.pfx = this.config.stylePrefix || '';
+      this.className = this.pfx + 'rules';
       this.listenTo( this.collection, 'add', this.addTo );
       this.listenTo( this.collection, 'reset', this.render );
     },
@@ -56,6 +56,7 @@ define(['backbone','./CssRuleView'],
       }, this);
 
       this.$el.append(fragment);
+      this.$el.attr('class', this.className);
       return this;
     }
   });

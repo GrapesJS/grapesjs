@@ -41,11 +41,13 @@ define([
 			initialize: function(c)
 			{
 				this.config		= c;
-				this.compName	= this.config.storagePrefix + 'components' + this.config.id;
+				this.pfx = this.config.storagePrefix;
+				this.compName	= this.pfx + 'components' + this.config.id;
+				this.rulesName	= this.pfx + 'rules' + this.config.id;
 				this.set('Config', c);
 
-				this.initClassManager();
 				this.initStorage();
+				this.initClassManager();
 				this.initModal();
 				this.initAssetManager();
 				this.initCodeManager();
@@ -63,19 +65,68 @@ define([
 			/**
 			 * Initialize Css Composer
 			 * */
-			initCssComposer: function()
-			{
+			initCssComposer: function() {
 				var cfg = this.config.cssComposer,
+						df = this.loadRules();
 						pfx	= cfg.stylePrefix || 'css-';
 				cfg.stylePrefix	= this.config.stylePrefix + pfx;
-				this.set('CssComposer', new CssComposer(cfg));
+
+				if(df)
+					cfg.defaults = df;
+
+				cfg.sm = this;
+				this.cssc = new CssComposer(cfg);
+				this.set('CssComposer', this.cssc);
+
+				if(this.stm.isAutosave())
+					this.listenRules(this.cssc.getRules());
+			},
+
+			/**
+			 * Listen for new rules
+			 * @param {Object} collection
+			 */
+			listenRules: function(collection) {
+				this.stopListening(collection, 'add remove', this.listenRule);
+				this.listenTo(collection, 'add remove', this.listenRule);
+				collection.each(function(model){
+					this.listenRule(model);
+				}, this);
+			},
+
+			/**
+			 * Listen for rule changes
+			 * @param {Object} model
+			 */
+			listenRule: function(model) {
+				this.stopListening(model, 'change:style', this.ruleUpdated);
+				this.listenTo(model, 'change:style', this.ruleUpdated);
+			},
+
+			/**
+			 * Triggered when rule is updated
+			 * @param	{Object}	model
+			 * @param	{Mixed}		val	Value
+			 * @param	{Object}	opt	Options
+			 * */
+			ruleUpdated: function(model, val, opt) {
+				var count = this.get('changesCount') + 1,
+						avSt	= opt ? opt.avoidStore : 0;
+				this.set('changesCount', count);
+
+				if(this.stm.isAutosave() && count < this.stm.getChangesBeforeSave())
+					return;
+
+				if(!avSt){
+					this.storeRules();
+					this.set('changesCount', 0);
+				}
 			},
 
 			/**
 			 * Initialize Class manager
 			 * */
-			initClassManager: function()
-			{
+			initClassManager: function() {
 				var cfg = this.config.classManager,
 						pfx	= cfg.stylePrefix || 'clm-';
 				cfg.stylePrefix	= this.config.stylePrefix + pfx;
@@ -324,7 +375,7 @@ define([
 			 *
 			 * @return	{Object}
 			 * */
-			loadComponents: function(){
+			loadComponents: function() {
 				var result = null;
 				try{
 					var r = this.stm.load(this.compName);
@@ -341,12 +392,39 @@ define([
 			 *
 			 * @return void
 			 * */
-			storeComponents: function(){
+			storeComponents: function() {
 				var wrp	= this.cmp.getComponent();
 				if(wrp && this.cm){
 					var res	= this.cm.getCode(wrp, 'json');
 					this.stm.store(this.compName, JSON.stringify(res));
 				}
+			},
+
+			/**
+			 * Load rules from storage
+			 *
+			 * @return	{Array}
+			 * */
+			loadRules: function(){
+				var result;
+				try{
+					var r = this.stm.load(this.rulesName);
+					if(r)
+						result	=  JSON.parse(r);
+				}catch(err){
+					console.warn("Load '" + this.rulesName + "':Error encountered while parsing JSON response");
+				}
+				return result;
+			},
+
+			/**
+			 * Save rules to storage
+			 * */
+			storeRules: function() {
+				var rules	= this.cssc.getRules();
+
+				if(rules)
+					this.stm.store(this.rulesName, JSON.stringify(rules));
 			},
 
 			/**
@@ -356,7 +434,7 @@ define([
 			 * @param	{Object}	opt	Options
 			 *
 			 * */
-			updateComponents: function(model, val, opt){
+			updateComponents: function(model, val, opt) {
 				var comps	= model.get('components'),
 						classes	= model.get('classes'),
 						avSt	= opt ? opt.avoidStore : 0;
@@ -365,7 +443,7 @@ define([
 				if(this.um)
 					this.um.register(comps);
 
-				// Call stopListening for not creating nested listenings
+				// Call stopListening for not creating nested listeners
 				this.stopListening(comps, 'add', this.updateComponents);
 				this.stopListening(comps, 'remove', this.rmComponents);
 				this.listenTo(comps, 'add', this.updateComponents);
@@ -386,8 +464,7 @@ define([
 			 * Init stuff like storage for already existing elements
 			 * @param {Object}	model
 			 */
-			initChildrenComp: function(model)
-			{
+			initChildrenComp: function(model) {
 					var comps	= model.get('components');
 					if(comps.length){
 						comps.each(function(md){

@@ -5,7 +5,7 @@ define(function () {
     stylePrefix     : 'clm-',
 
     // Default classes
-    classes : [],
+    defaults : [],
 
     // Label for classes
     label: 'Classes',

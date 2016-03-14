@@ -37,7 +37,7 @@ define([
 
 				it('Able to add default classes', function() {
 					var cm = new ClassManager({
-						classes: ['test1', 'test2', 'test3'],
+						defaults: ['test1', 'test2', 'test3'],
 					});
 					cm.getClasses().length.should.equal(3);
 				});

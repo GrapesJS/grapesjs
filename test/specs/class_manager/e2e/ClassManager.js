@@ -54,79 +54,72 @@ define(
               this.$fixture.remove();
             });
 
+            describe('Interaction with Components', function() {
 
-
-            it('Assign correctly new class to component', function() {
-              var wrp = this.gjs.editor.get('Components').getWrapper().get('components');
-              var model = wrp.add({});
-              model.get('classes').length.should.equal(0);
-
-              // Init Class Manager and set editor as a target
-              var $clm = instClassTagViewer(this);
-
-              // Select element
-              this.gjs.editor.set('selectedComponent', model);
-
-              $clm.addNewTag('test');
-
-              model.get('classes').length.should.equal(1);
-              model.get('classes').at(0).get('name').should.equal('test');
-
-            });
-
-
-
-            it('Classes from components are correctly imported inside main container', function() {
-              var wrp = this.gjs.editor.get('Components').getWrapper().get('components');
-              var model = wrp.add([
-                { classes: ['test11', 'test12', 'test13'] },
-                { classes: ['test11', 'test22', 'test22'] },
-              ]);
-              this.gjs.editor.get('ClassManager').getClasses().length.should.equal(4);
-            });
-
-
-
-            it('Class imported into component is the same model from main container', function() {
-              var wrp = this.gjs.editor.get('Components').getWrapper().get('components');
-              var model = wrp.add({
-                classes: ['test1']
+              beforeEach(function () {
+                this.wrapper = this.gjs.editor.get('Components').getWrapper().get('components');
+                this.$clm = instClassTagViewer(this);
               });
-              var clModel = model.get('classes').at(0);
-              var clModel2 = this.gjs.editor.get('ClassManager').getClasses().at(0);
-              clModel.should.deep.equal(clModel2);
-            });
 
+              afterEach(function () {
+                delete this.wrapper;
+                delete this.$clm;
+              });
 
+              it('Assign correctly new class to component', function() {
+                var model = this.wrapper.add({});
+                model.get('classes').length.should.equal(0);
+                this.gjs.editor.set('selectedComponent', model);
+                this.$clm.addNewTag('test');
+                model.get('classes').length.should.equal(1);
+                model.get('classes').at(0).get('name').should.equal('test');
+              });
 
-            it('Can assign only one time the same class on selected component and the class viewer', function() {
-              var wrp = this.gjs.editor.get('Components').getWrapper().get('components');
-              var model = wrp.add({});
+              it('Classes from components are correctly imported inside main container', function() {
+                var model = this.wrapper.add([
+                  { classes: ['test11', 'test12', 'test13'] },
+                  { classes: ['test11', 'test22', 'test22'] },
+                ]);
+                this.gjs.editor.get('ClassManager').getClasses().length.should.equal(4);
+              });
 
-              var $clm = instClassTagViewer(this);
-              // Select element
-              this.gjs.editor.set('selectedComponent', model);
+              it('Class imported into component is the same model from main container', function() {
+                var model = this.wrapper.add({ classes: ['test1'] });
+                var clModel = model.get('classes').at(0);
+                var clModel2 = this.gjs.editor.get('ClassManager').getClasses().at(0);
+                clModel.should.deep.equal(clModel2);
+              });
 
-              $clm.addNewTag('test');
-              $clm.addNewTag('test');
+              it('Can assign only one time the same class on selected component and the class viewer', function() {
+                var model = this.wrapper.add({});
+                this.gjs.editor.set('selectedComponent', model);
+                this.$clm.addNewTag('test');
+                this.$clm.addNewTag('test');
+                model.get('classes').length.should.equal(1);
+                model.get('classes').at(0).get('name').should.equal('test');
+                this.$clm.collection.length.should.equal(1);
+                this.$clm.collection.at(0).get('name').should.equal('test');
+              });
 
-              model.get('classes').length.should.equal(1);
-              model.get('classes').at(0).get('name').should.equal('test');
+              it('Removing from container removes also from selected component', function() {
+                var model = this.wrapper.add({});
+                this.gjs.editor.set('selectedComponent', model);
+                this.$clm.addNewTag('test');
+                this.$clm.collection.at(0).destroy();
+                model.get('classes').length.should.equal(0);
+              });
 
-              $clm.collection.length.should.equal(1);
-              $clm.collection.at(0).get('name').should.equal('test');
-            });
-
-            it('Removing from container removes also from selected component', function() {
-
-              var wrp = this.gjs.editor.get('Components').getWrapper().get('components');
-              var model = wrp.add({});
-              var $clm = instClassTagViewer(this);
-              this.gjs.editor.set('selectedComponent', model);
-              $clm.addNewTag('test');
-              $clm.collection.at(0).destroy();
-
-              model.get('classes').length.should.equal(0);
+              it("Trigger correctly event on target with new class add", function() {
+                var spy = sinon.spy();
+                var model = this.wrapper.add({});
+                this.gjs.editor.set('selectedComponent', model);
+                this.$clm.addNewTag('test');
+                this.gjs.editor.on("targetClassAdded", spy);
+                this.$clm.addNewTag('test');
+                spy.called.should.equal(false);
+                this.$clm.addNewTag('test2');
+                spy.called.should.equal(true);
+              });
 
             });
 
