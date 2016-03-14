@@ -21,6 +21,14 @@ define([path + 'ClassTagsView', 'ClassManager/model/ClassTags'],
                 collection: this.coll
               });
 
+              this.targetStub = {
+                addClass: function(v){ return {name: v}; }
+              };
+
+              this.compTargetStub = {
+                  get: function(){ return { add: function(){} }}
+              };
+
               this.$fixture.empty().appendTo(this.$fixtures);
               this.$fixture.html(this.view.render().el);
               this.btnAdd = this.view.$el.find('#' + this.view.addBtnId);
@@ -104,16 +112,8 @@ define([path + 'ClassTagsView', 'ClassManager/model/ClassTags'],
             });
 
             it("Accept new tags", function() {
-              sinon.stub(this.target, "get").returns({
-                addClass: function(v){
-                  return {name: v};
-                }
-              });
-              this.view.compTarget = {
-                  get: function(){
-                    return { add: function(){} };
-                  }
-              };
+              sinon.stub(this.target, "get").returns(this.targetStub);
+              this.view.compTarget = this.compTargetStub;
               this.view.addNewTag('test');
               this.view.addNewTag('test2');
               this.$tags.children().length.should.equal(2);
