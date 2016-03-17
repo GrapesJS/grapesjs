@@ -11,7 +11,7 @@ define(function () {
     label: 'Classes',
 
     // Label for states
-    statesLabel: 'State',
+    statesLabel: '',
 
 	};
 });

@@ -12,16 +12,19 @@ define([path + 'ClassTagView', 'ClassManager/model/ClassTags'],
             });
 
             beforeEach(function () {
-              var coll  = new ClassTags();
+              this.coll  = new ClassTags();
               this.testLabel = 'TestLabel';
-              var model = coll.add({
+              var model = this.coll.add({
                 name: 'test',
                 label: this.testLabel,
               });
               this.view = new ClassTagView({
                 config : {},
-                model: model
+                model: model,
+                coll: this.coll
               });
+              this.view.target = { get:function(){} };
+              _.extend(this.view.target, Backbone.Events);
               this.$fixture.empty().appendTo(this.$fixtures);
               this.$fixture.html(this.view.render().el);
             });
@@ -73,12 +76,28 @@ define([path + 'ClassTagView', 'ClassManager/model/ClassTags'],
               this.$fixture.html().should.be.empty;
             });
 
+            it('On remove triggers event', function() {
+              var spy = sinon.spy();
+              sinon.stub(this.view.target, 'get').returns(0);
+              this.view.target.on("targetClassRemoved", spy);
+              this.view.$el.find('#close').trigger('click');
+              spy.called.should.equal(true);
+            });
+
             it('Checkbox toggles status', function() {
               var spy     = sinon.spy();
               this.view.model.on("change:active", spy);
               this.view.model.set('active', true);
               this.view.$el.find('#checkbox').trigger('click');
               this.view.model.get('active').should.equal(false);
+              spy.called.should.equal(true);
+            });
+
+            it('On toggle triggers event', function() {
+              var spy = sinon.spy();
+              sinon.stub(this.view.target, 'get').returns(0);
+              this.view.target.on("targetClassUpdated", spy);
+              this.view.$el.find('#checkbox').trigger('click');
               spy.called.should.equal(true);
             });
 

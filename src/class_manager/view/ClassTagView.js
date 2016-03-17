@@ -13,6 +13,7 @@ define(['backbone', 'text!./../template/classTag.html'],
       this.config = o.config || {};
       this.coll = o.coll || null;
       this.pfx = this.config.stylePrefix || '';
+      this.target = this.config.target;
       this.className = this.pfx + 'tag';
       this.closeId = this.pfx + 'close';
       this.chkId = this.pfx + 'checkbox';
@@ -28,6 +29,7 @@ define(['backbone', 'text!./../template/classTag.html'],
 
     changeStatus: function(){
       this.model.set('active', !this.model.get('active'));
+      this.target.trigger('targetClassUpdated');
     },
 
     /**
@@ -35,13 +37,15 @@ define(['backbone', 'text!./../template/classTag.html'],
      * @param {Object} e
      */
     removeTag: function(e){
-      var comp = this.config.target.get('selectedComponent');
+      var comp = this.target.get('selectedComponent');
 
       if(comp)
         comp.get('classes').remove(this.model);
 
-      if(this.coll)
+      if(this.coll){
         this.coll.remove(this.model);
+        this.target.trigger('targetClassRemoved');
+      }
 
       this.remove();
     },
@@ -53,10 +57,13 @@ define(['backbone', 'text!./../template/classTag.html'],
       if(!this.$chk)
         this.$chk = this.$el.find('#' + this.pfx + 'checkbox');
 
-      if(this.model.get('active'))
+      if(this.model.get('active')){
         this.$chk.removeClass('fa-circle-o').addClass('fa-dot-circle-o');
-      else
+        this.$el.removeClass('opac50');
+      }else{
         this.$chk.removeClass('fa-dot-circle-o').addClass('fa-circle-o');
+        this.$el.addClass('opac50');
+      }
     },
 
     /** @inheritdoc */
