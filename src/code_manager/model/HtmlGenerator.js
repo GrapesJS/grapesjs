@@ -16,15 +16,18 @@ define(['backbone'],
 					code 	= '';
 
 				coll.each(function(m){
-					var tag 	= m.get('tagName'),			// Tag name
-							sTag	= 0,										// Single tag
-							attr 	= '',										// Attributes string
-							cln		= m.get('components');	// Children
-
-					_.each(m.get('attributes'),function(value, prop){
+					var tag = m.get('tagName'),			// Tag name
+							sTag = 0,										// Single tag
+							attr = '',										// Attributes string
+							attrId = '',
+							strCls = '',
+							cln = m.get('components'),		// Children
+							attrs = m.get('attributes'),
+							classes = m.get('classes');
+					_.each(attrs,function(value, prop){
 						if(prop == 'onmousedown')
 							return;
-						attr 	+= value && prop!='style' ? ' ' + prop + '="' + value + '" ' : '';
+						attr 	+= value && prop!='style' ? ' ' + prop + '="' + value + '"' : '';
 					});
 
 					if(m.get('type') == 'image'){
@@ -33,7 +36,15 @@ define(['backbone'],
 							attr 	+= 'src="' + m.get('src') + '"';
 					}
 
-					code += '<'+tag+' id="'+m.cid+'"' + attr + (sTag ? '/' : '') + '>' + m.get('content');
+					if(!_.isEmpty(m.get('style')))
+						attrId = ' id="' + m.cid + '" ';
+
+					classes.each(function(m){
+						strCls += ' ' + m.get('name');
+					});
+
+					strCls = strCls !== '' ? ' class="' + strCls.trim() + '"' : '';
+					code += '<' + tag + strCls + attrId + attr + (sTag ? '/' : '') + '>' + m.get('content');
 
 					if(cln.length)
 						code += this.build(cln);
