@@ -6,7 +6,7 @@ define(['backbone'],
 		return Backbone.Model.extend({
 
 			initialize: function(){
-				this.printed = [];
+				this.buff = [];
 			},
 
 			/** @inheritdoc */
@@ -46,8 +46,8 @@ define(['backbone'],
 							selectors.each(function(selector){
 								strSel += '.' + selector.get('name');
 							});
-							if(this.printed.indexOf(strSel) < 0){
-								this.printed.push(strSel);
+							if(this.buff.indexOf(strSel) < 0){
+								this.buff.push(strSel);
 								code += strSel + '{';
 								if(ruleStyle && Object.keys(ruleStyle).length !== 0){
 									for(var prop2 in ruleStyle)
