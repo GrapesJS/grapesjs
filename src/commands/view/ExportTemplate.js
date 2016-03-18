@@ -9,6 +9,7 @@ define(function() {
 				this.components = em.get('Canvas').getWrapper().get('components');
 				this.modal		= em.get('Modal') || null;
 				this.cm			= em.get('CodeManager') || null;
+				this.cssc = em.get('CssComposer') || null;
 				this.enable();
 			},
 
@@ -62,7 +63,8 @@ define(function() {
 				}
 
 				this.htmlEditor.setContent( this.cm.getCode(this.components, 'html') );
-				this.cssEditor.setContent( this.cm.getCode(this.components, 'css') );
+				this.cm.getGenerator('css').buff = [];
+				this.cssEditor.setContent( this.cm.getCode(this.components, 'css', this.cssc));
 
 				if(this.sender)
 					this.sender.set('active',false);

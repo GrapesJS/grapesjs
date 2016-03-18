@@ -13,7 +13,7 @@ define(['backbone','./SectorView'],
 			// The taget that will emit events for properties
 			this.propTarget	 = {};
 			_.extend(this.propTarget, Backbone.Events);
-			this.listenTo( this.target, 'change:selectedComponent targetClassAdded', this.targetUpdated);
+			this.listenTo( this.target, 'change:selectedComponent targetClassAdded targetClassRemoved targetClassUpdated', this.targetUpdated);
 
 		},
 
