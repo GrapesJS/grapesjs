@@ -63,7 +63,6 @@ define(function() {
 				}
 
 				this.htmlEditor.setContent( this.cm.getCode(this.components, 'html') );
-				this.cm.getGenerator('css').buff = [];
 				this.cssEditor.setContent( this.cm.getCode(this.components, 'css', this.cssc));
 
 				if(this.sender)
