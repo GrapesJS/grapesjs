@@ -79,10 +79,11 @@ define(['backbone','./Components', 'ClassManager/model/ClassTags'],
 	    	}
 	    	if(cls.length){
 					cls.each(function(md,i){
-							attr.classes[i]	= md.clone();
+							attr.classes[i]	= md.get('name');
 					});
 	    	}
-	      return new this.constructor(attr);
+	    	attr.status = '';
+	      return new this.constructor(attr, {sm: this.sm});
 	    },
 
 			/**

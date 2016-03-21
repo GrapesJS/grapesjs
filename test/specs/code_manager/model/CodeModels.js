@@ -131,8 +131,18 @@ define([path + 'HtmlGenerator',
 
               this.obj.build(comp, cssc).should.equal('.class1.class2{prop1:value1;}.class2{prop2:value2;}');
             });
-            it.skip("Avoid useless code", function() {
-              //create comp with class then remove comp
+            it("Avoid useless code", function() {
+              var comp = new Component();
+              var m1 = comp.get('components').add({tagName: 'article'});
+              var cls1 = m1.get('classes').add({name: 'class1'});
+
+              var cssc = new CssComposer();
+              var rule = cssc.newRule(cls1);
+              rule.set('style',{'prop1':'value1', 'prop2':'value2'});
+              cssc.addRule(rule);
+
+              comp.get('components').remove(m1);
+              this.obj.build(comp, cssc).should.equal('');
             });
         })
       }
