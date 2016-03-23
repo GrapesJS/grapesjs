@@ -124,6 +124,17 @@ define([path + 'ClassTagsView', 'ClassManager/model/ClassTags'],
               this.$tags.children().first().find('#tag-label').html().should.equal('test');
             });
 
+            it("Output correctly state options", function() {
+              var view = new ClassTagsView({
+                config : {
+                  target: this.target,
+                  states: [ { name: 'testName', label: 'testLabel' } ],
+                },
+                collection: this.coll
+              });
+              view.getStateOptions().should.equal('<option value="testName">testLabel</option>');
+            });
+
             describe('Should be rendered correctly', function() {
               it('Has label', function() {
                 this.view.$el.find('#label').should.have.property(0);
@@ -133,6 +144,9 @@ define([path + 'ClassTagsView', 'ClassManager/model/ClassTags'],
               });
               it('Has add button', function() {
                 this.view.$el.find('#add-tag').should.have.property(0);
+              });
+              it('Has states input', function() {
+                this.view.$el.find('#states').should.have.property(0);
               });
             });
 

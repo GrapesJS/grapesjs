@@ -2967,63 +2967,63 @@ ol.example li.placeholder:before {
     cursor: pointer; }
   .wte-sm-sector .wte-sm-label, .wte-clm-tags .wte-sm-label {
     margin: 5px 5px 2px 0; }
-  .wte-sm-sector .wte-sm-field, .wte-clm-tags .wte-sm-field {
+  .wte-sm-sector .wte-sm-field, .wte-clm-tags .wte-sm-field, .wte-sm-sector .wte-clm-field, .wte-clm-tags .wte-clm-field {
     width: 100%;
     position: relative; }
-    .wte-sm-sector .wte-sm-field input, .wte-clm-tags .wte-sm-field input {
+    .wte-sm-sector .wte-sm-field input, .wte-clm-tags .wte-sm-field input, .wte-sm-sector .wte-clm-field input, .wte-clm-tags .wte-clm-field input {
       box-sizing: border-box;
       color: #d5d5d5;
       background: none;
       border: none;
       padding: 3px 21px 3px 0;
       width: 100%; }
-    .wte-sm-sector .wte-sm-field select, .wte-clm-tags .wte-sm-field select {
+    .wte-sm-sector .wte-sm-field select, .wte-clm-tags .wte-sm-field select, .wte-sm-sector .wte-clm-field select, .wte-clm-tags .wte-clm-field select {
       background: none;
       border: none;
       color: #d5d5d5;
       color: transparent;
       width: 100%;
-      padding: 2px 0;
+      padding: 2px 10px 2px 0;
       text-shadow: 0 0 0 #d5d5d5;
       position: relative;
       z-index: 1;
       -webkit-appearance: none;
       -moz-appearance: none;
       appearance: none; }
-      .wte-sm-sector .wte-sm-field select::-ms-expand, .wte-clm-tags .wte-sm-field select::-ms-expand {
+      .wte-sm-sector .wte-sm-field select::-ms-expand, .wte-clm-tags .wte-sm-field select::-ms-expand, .wte-sm-sector .wte-clm-field select::-ms-expand, .wte-clm-tags .wte-clm-field select::-ms-expand {
         display: none; }
-    .wte-sm-sector .wte-sm-field .wte-sm-unit, .wte-clm-tags .wte-sm-field .wte-sm-unit {
+    .wte-sm-sector .wte-sm-field .wte-sm-unit, .wte-clm-tags .wte-sm-field .wte-sm-unit, .wte-sm-sector .wte-clm-field .wte-sm-unit, .wte-clm-tags .wte-clm-field .wte-sm-unit {
       position: absolute;
       right: 10px;
       top: 3px;
       font-size: 10px;
       color: #b1b1b1;
       cursor: pointer; }
-    .wte-sm-sector .wte-sm-field .wte-sm-int-arrows, .wte-clm-tags .wte-sm-field .wte-sm-int-arrows, .wte-sm-sector .wte-sm-field .wte-sm-sel-arrow, .wte-clm-tags .wte-sm-field .wte-sm-sel-arrow {
+    .wte-sm-sector .wte-sm-field .wte-sm-int-arrows, .wte-clm-tags .wte-sm-field .wte-sm-int-arrows, .wte-sm-sector .wte-clm-field .wte-sm-int-arrows, .wte-clm-tags .wte-clm-field .wte-sm-int-arrows, .wte-sm-sector .wte-sm-field .wte-sm-sel-arrow, .wte-clm-tags .wte-sm-field .wte-sm-sel-arrow, .wte-sm-sector .wte-clm-field .wte-sm-sel-arrow, .wte-clm-tags .wte-clm-field .wte-sm-sel-arrow, .wte-sm-sector .wte-sm-field .wte-clm-sel-arrow, .wte-clm-tags .wte-sm-field .wte-clm-sel-arrow, .wte-sm-sector .wte-clm-field .wte-clm-sel-arrow, .wte-clm-tags .wte-clm-field .wte-clm-sel-arrow {
       height: 100%;
       width: 9px;
       position: absolute;
       right: 0;
       top: 0;
       cursor: ns-resize; }
-    .wte-sm-sector .wte-sm-field .wte-sm-sel-arrow, .wte-clm-tags .wte-sm-field .wte-sm-sel-arrow {
+    .wte-sm-sector .wte-sm-field .wte-sm-sel-arrow, .wte-clm-tags .wte-sm-field .wte-sm-sel-arrow, .wte-sm-sector .wte-clm-field .wte-sm-sel-arrow, .wte-clm-tags .wte-clm-field .wte-sm-sel-arrow {
       cursor: pointer; }
-    .wte-sm-sector .wte-sm-field .wte-sm-u-arrow, .wte-clm-tags .wte-sm-field .wte-sm-u-arrow, .wte-sm-sector .wte-sm-field .wte-sm-d-arrow, .wte-clm-tags .wte-sm-field .wte-sm-d-arrow, .wte-sm-sector .wte-sm-field .wte-sm-d-s-arrow, .wte-clm-tags .wte-sm-field .wte-sm-d-s-arrow {
+    .wte-sm-sector .wte-sm-field .wte-sm-u-arrow, .wte-clm-tags .wte-sm-field .wte-sm-u-arrow, .wte-sm-sector .wte-clm-field .wte-sm-u-arrow, .wte-clm-tags .wte-clm-field .wte-sm-u-arrow, .wte-sm-sector .wte-sm-field .wte-sm-d-arrow, .wte-clm-tags .wte-sm-field .wte-sm-d-arrow, .wte-sm-sector .wte-clm-field .wte-sm-d-arrow, .wte-clm-tags .wte-clm-field .wte-sm-d-arrow, .wte-sm-sector .wte-sm-field .wte-sm-d-s-arrow, .wte-clm-tags .wte-sm-field .wte-sm-d-s-arrow, .wte-sm-sector .wte-clm-field .wte-sm-d-s-arrow, .wte-clm-tags .wte-clm-field .wte-sm-d-s-arrow, .wte-sm-sector .wte-sm-field .wte-clm-d-s-arrow, .wte-clm-tags .wte-sm-field .wte-clm-d-s-arrow, .wte-sm-sector .wte-clm-field .wte-clm-d-s-arrow, .wte-clm-tags .wte-clm-field .wte-clm-d-s-arrow {
       position: absolute;
       height: 0;
       width: 0;
       border-left: 3px solid transparent;
       border-right: 4px solid transparent;
       cursor: pointer; }
-    .wte-sm-sector .wte-sm-field .wte-sm-u-arrow, .wte-clm-tags .wte-sm-field .wte-sm-u-arrow {
+    .wte-sm-sector .wte-sm-field .wte-sm-u-arrow, .wte-clm-tags .wte-sm-field .wte-sm-u-arrow, .wte-sm-sector .wte-clm-field .wte-sm-u-arrow, .wte-clm-tags .wte-clm-field .wte-sm-u-arrow {
       border-bottom: 4px solid #b1b1b1;
       top: 4px; }
-    .wte-sm-sector .wte-sm-field .wte-sm-d-arrow, .wte-clm-tags .wte-sm-field .wte-sm-d-arrow, .wte-sm-sector .wte-sm-field .wte-sm-d-s-arrow, .wte-clm-tags .wte-sm-field .wte-sm-d-s-arrow {
+    .wte-sm-sector .wte-sm-field .wte-sm-d-arrow, .wte-clm-tags .wte-sm-field .wte-sm-d-arrow, .wte-sm-sector .wte-clm-field .wte-sm-d-arrow, .wte-clm-tags .wte-clm-field .wte-sm-d-arrow, .wte-sm-sector .wte-sm-field .wte-sm-d-s-arrow, .wte-clm-tags .wte-sm-field .wte-sm-d-s-arrow, .wte-sm-sector .wte-clm-field .wte-sm-d-s-arrow, .wte-clm-tags .wte-clm-field .wte-sm-d-s-arrow, .wte-sm-sector .wte-sm-field .wte-clm-d-s-arrow, .wte-clm-tags .wte-sm-field .wte-clm-d-s-arrow, .wte-sm-sector .wte-clm-field .wte-clm-d-s-arrow, .wte-clm-tags .wte-clm-field .wte-clm-d-s-arrow {
       border-top: 4px solid #b1b1b1;
       bottom: 4px; }
-    .wte-sm-sector .wte-sm-field .wte-sm-d-s-arrow, .wte-clm-tags .wte-sm-field .wte-sm-d-s-arrow {
+    .wte-sm-sector .wte-sm-field .wte-sm-d-s-arrow, .wte-clm-tags .wte-sm-field .wte-sm-d-s-arrow, .wte-sm-sector .wte-clm-field .wte-sm-d-s-arrow, .wte-clm-tags .wte-clm-field .wte-sm-d-s-arrow, .wte-sm-sector .wte-sm-field .wte-clm-d-s-arrow, .wte-clm-tags .wte-sm-field .wte-clm-d-s-arrow, .wte-sm-sector .wte-clm-field .wte-clm-d-s-arrow, .wte-clm-tags .wte-clm-field .wte-clm-d-s-arrow {
       bottom: 7px; }
-    .wte-sm-sector .wte-sm-field.wte-sm-integer, .wte-clm-tags .wte-sm-field.wte-sm-integer, .wte-clm-tags #wte-clm-tags-field, .wte-sm-sector .wte-sm-field.wte-sm-select, .wte-clm-tags .wte-sm-field.wte-sm-select, .wte-sm-sector .wte-sm-field.wte-sm-list, .wte-clm-tags .wte-sm-field.wte-sm-list, .wte-sm-sector .wte-sm-field.wte-sm-color, .wte-clm-tags .wte-sm-field.wte-sm-color, .wte-sm-sector .wte-sm-field.wte-sm-composite, .wte-clm-tags .wte-sm-field.wte-sm-composite {
+    .wte-sm-sector .wte-sm-field.wte-sm-integer, .wte-clm-tags .wte-sm-field.wte-sm-integer, .wte-sm-sector .wte-sm-integer.wte-clm-field, .wte-clm-tags .wte-sm-integer.wte-clm-field, .wte-clm-tags #wte-clm-tags-field, .wte-sm-sector .wte-sm-field.wte-sm-select, .wte-clm-tags .wte-sm-field.wte-sm-select, .wte-sm-sector .wte-sm-select.wte-clm-field, .wte-clm-tags .wte-sm-select.wte-clm-field, .wte-sm-sector .wte-clm-select, .wte-clm-tags .wte-clm-select, .wte-sm-sector .wte-sm-field.wte-sm-list, .wte-clm-tags .wte-sm-field.wte-sm-list, .wte-sm-sector .wte-sm-list.wte-clm-field, .wte-clm-tags .wte-sm-list.wte-clm-field, .wte-sm-sector .wte-sm-field.wte-sm-color, .wte-clm-tags .wte-sm-field.wte-sm-color, .wte-sm-sector .wte-sm-color.wte-clm-field, .wte-clm-tags .wte-sm-color.wte-clm-field, .wte-sm-sector .wte-sm-field.wte-sm-composite, .wte-clm-tags .wte-sm-field.wte-sm-composite, .wte-sm-sector .wte-sm-composite.wte-clm-field, .wte-clm-tags .wte-sm-composite.wte-clm-field {
       background-color: #333333;
       /*353535*/
       border: 1px solid #292929;
@@ -3034,35 +3034,35 @@ ol.example li.placeholder:before {
       border-radius: 2px;
       box-sizing: border-box;
       padding: 0 5px; }
-    .wte-sm-sector .wte-sm-field.wte-sm-select, .wte-clm-tags .wte-sm-field.wte-sm-select {
+    .wte-sm-sector .wte-sm-field.wte-sm-select, .wte-clm-tags .wte-sm-field.wte-sm-select, .wte-sm-sector .wte-sm-select.wte-clm-field, .wte-clm-tags .wte-sm-select.wte-clm-field, .wte-sm-sector .wte-clm-select, .wte-clm-tags .wte-clm-select {
       padding: 0; }
-    .wte-sm-sector .wte-sm-field.wte-sm-select select, .wte-clm-tags .wte-sm-field.wte-sm-select select {
+    .wte-sm-sector .wte-sm-field.wte-sm-select select, .wte-clm-tags .wte-sm-field.wte-sm-select select, .wte-sm-sector .wte-sm-select.wte-clm-field select, .wte-clm-tags .wte-sm-select.wte-clm-field select, .wte-sm-sector .wte-clm-select select, .wte-clm-tags .wte-clm-select select {
       height: 20px; }
-    .wte-sm-sector .wte-sm-field.wte-sm-select option, .wte-clm-tags .wte-sm-field.wte-sm-select option {
+    .wte-sm-sector .wte-sm-field.wte-sm-select option, .wte-clm-tags .wte-sm-field.wte-sm-select option, .wte-sm-sector .wte-sm-select.wte-clm-field option, .wte-clm-tags .wte-sm-select.wte-clm-field option, .wte-sm-sector .wte-clm-select option, .wte-clm-tags .wte-clm-select option {
       margin: 5px 0; }
-    .wte-sm-sector .wte-sm-field.wte-sm-composite, .wte-clm-tags .wte-sm-field.wte-sm-composite {
+    .wte-sm-sector .wte-sm-field.wte-sm-composite, .wte-clm-tags .wte-sm-field.wte-sm-composite, .wte-sm-sector .wte-sm-composite.wte-clm-field, .wte-clm-tags .wte-sm-composite.wte-clm-field {
       background-color: transparent;
       border: 1px solid #333333; }
-    .wte-sm-sector .wte-sm-field.wte-sm-list, .wte-clm-tags .wte-sm-field.wte-sm-list {
+    .wte-sm-sector .wte-sm-field.wte-sm-list, .wte-clm-tags .wte-sm-field.wte-sm-list, .wte-sm-sector .wte-sm-list.wte-clm-field, .wte-clm-tags .wte-sm-list.wte-clm-field {
       width: auto;
       padding: 0;
       overflow: hidden;
       float: left; }
-      .wte-sm-sector .wte-sm-field.wte-sm-list input, .wte-clm-tags .wte-sm-field.wte-sm-list input {
+      .wte-sm-sector .wte-sm-field.wte-sm-list input, .wte-clm-tags .wte-sm-field.wte-sm-list input, .wte-sm-sector .wte-sm-list.wte-clm-field input, .wte-clm-tags .wte-sm-list.wte-clm-field input {
         display: none; }
-      .wte-sm-sector .wte-sm-field.wte-sm-list label, .wte-clm-tags .wte-sm-field.wte-sm-list label {
+      .wte-sm-sector .wte-sm-field.wte-sm-list label, .wte-clm-tags .wte-sm-field.wte-sm-list label, .wte-sm-sector .wte-sm-list.wte-clm-field label, .wte-clm-tags .wte-sm-list.wte-clm-field label {
         cursor: pointer;
         padding: 5px;
         display: block; }
-      .wte-sm-sector .wte-sm-field.wte-sm-list .wte-sm-radio:checked + label, .wte-clm-tags .wte-sm-field.wte-sm-list .wte-sm-radio:checked + label {
+      .wte-sm-sector .wte-sm-field.wte-sm-list .wte-sm-radio:checked + label, .wte-clm-tags .wte-sm-field.wte-sm-list .wte-sm-radio:checked + label, .wte-sm-sector .wte-sm-list.wte-clm-field .wte-sm-radio:checked + label, .wte-clm-tags .wte-sm-list.wte-clm-field .wte-sm-radio:checked + label {
         background-color: #5b5b5b;
         /*5b5b5b*/ }
-      .wte-sm-sector .wte-sm-field.wte-sm-list .wte-sm-icon, .wte-clm-tags .wte-sm-field.wte-sm-list .wte-sm-icon {
+      .wte-sm-sector .wte-sm-field.wte-sm-list .wte-sm-icon, .wte-clm-tags .wte-sm-field.wte-sm-list .wte-sm-icon, .wte-sm-sector .wte-sm-list.wte-clm-field .wte-sm-icon, .wte-clm-tags .wte-sm-list.wte-clm-field .wte-sm-icon {
         background-repeat: no-repeat;
         background-position: center;
         text-shadow: none;
         line-height: normal; }
-    .wte-sm-sector .wte-sm-field.wte-sm-integer select, .wte-clm-tags .wte-sm-field.wte-sm-integer select, .wte-clm-tags #wte-clm-tags-field select {
+    .wte-sm-sector .wte-sm-field.wte-sm-integer select, .wte-clm-tags .wte-sm-field.wte-sm-integer select, .wte-sm-sector .wte-sm-integer.wte-clm-field select, .wte-clm-tags .wte-sm-integer.wte-clm-field select, .wte-clm-tags #wte-clm-tags-field select {
       width: auto;
       padding: 0;
       color: transparent; }
@@ -3208,7 +3208,7 @@ ol.example li.placeholder:before {
   font-size: 11px;
   padding: 10px 5px; }
   .wte-clm-tags #wte-clm-label {
-    padding-bottom: 5px;
+    padding: 7px 0;
     float: left; }
   .wte-clm-tags #wte-clm-status-c {
     float: right; }

@@ -11,9 +11,14 @@ define(function () {
     label: 'Classes',
 
     // Label for states
-    statesLabel: 'State',
+    statesLabel: '- State -',
 
-    states: ['hover', 'active'/*click*/, 'nth-of-type(2n)'/*even*/]
+    // States
+    states: [
+        { name: 'hover', label: 'Hover' },
+        { name: 'active', label: 'Click' },
+        { name: 'nth-of-type(2n)', label: 'Even/Odd' }
+    ],
 
 	};
 });

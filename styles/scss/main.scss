@@ -478,7 +478,7 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 		  background: none; border: none;
 		  color: $inputFontColor;
 		  color: transparent;
-		  width: 100%; padding: 2px 0;
+		  width: 100%; padding: 2px 10px 2px 0;
 		  text-shadow: 0 0 0 $inputFontColor;
 		  position: relative;
 		  z-index:1;
@@ -495,7 +495,7 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 		  cursor:pointer;
 		}
 
-		.#{$sm-prefix}int-arrows, .#{$sm-prefix}sel-arrow{
+		.#{$sm-prefix}int-arrows, .#{$sm-prefix}sel-arrow, .#{$clm-prefix}sel-arrow{
 		  height: 100%; width: 9px;
 		  position: absolute;
 		  right: 0; top: 0;
@@ -503,7 +503,7 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 		}
 		.#{$sm-prefix}sel-arrow{ cursor:pointer }
 
-		.#{$sm-prefix}u-arrow, .#{$sm-prefix}d-arrow, .#{$sm-prefix}d-s-arrow{
+		.#{$sm-prefix}u-arrow, .#{$sm-prefix}d-arrow, .#{$sm-prefix}d-s-arrow, .#{$clm-prefix}d-s-arrow{
 			position: absolute;
 			height: 0; width: 0;
 			border-left: 3px solid transparent;
@@ -515,11 +515,11 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 		  border-bottom: 4px solid $arrowColor;
 		  top: 4px;
 		}
-		.#{$sm-prefix}d-arrow, .#{$sm-prefix}d-s-arrow{
+		.#{$sm-prefix}d-arrow, .#{$sm-prefix}d-s-arrow, .#{$clm-prefix}d-s-arrow{
 		  border-top: 4px solid $arrowColor;
 		  bottom: 4px;
 		}
-		.#{$sm-prefix}d-s-arrow{ bottom: 7px; }
+		.#{$sm-prefix}d-s-arrow, .#{$clm-prefix}d-s-arrow{ bottom: 7px; }
 
 	 	&.#{$sm-prefix}integer, &.#{$sm-prefix}select, &.#{$sm-prefix}list, &.#{$sm-prefix}color, &.#{$sm-prefix}composite {
 		  background-color: darken($mainDkColor, 2.5%);/*353535*/
@@ -728,13 +728,20 @@ $addBtnBg: lighten($mainDkColor, 10%);
 $paddElClm: 5px 6px;
 $tagBg: #804f7b;
 
+.#{$clm-prefix}field{
+		@extend .#{$sm-prefix}field
+}
+.#{$clm-prefix}select{
+		@extend .#{$sm-prefix}field.#{$sm-prefix}select;
+}
+
 .#{$clm-prefix}tags{
 	@extend .#{$sm-prefix}sector;
 	font-size: 11px;
 	padding: 10px 5px;
 
 	##{$clm-prefix}label{
-		padding-bottom: 5px;
+		padding: 7px 0;
 		float:left;
 	}
 	##{$clm-prefix}status-c{

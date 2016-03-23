@@ -15,9 +15,12 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
       this.className = this.pfx + 'tags';
       this.addBtnId = this.pfx + 'add-tag';
       this.newInputId = this.pfx + 'new';
+      this.stateInputId = this.pfx + 'states';
+      this.states = this.config.states || [];
       this.events['click #' + this.addBtnId] = 'startNewTag';
       this.events['blur #' + this.newInputId] = 'endNewTag';
       this.events['keyup #' + this.newInputId] = 'onInputKeyUp';
+      this.events['change #' + this.stateInputId] = 'stateChanged';
 
       this.target  = this.config.target;
 
@@ -27,6 +30,18 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
       this.listenTo( this.collection, 'reset', this.renderClasses);
 
       this.delegateEvents();
+    },
+
+    /**
+     * Create select input with states
+     * @return {string} String of options
+     */
+    getStateOptions: function(){
+      var strInput = '';
+      for(var i = 0; i < this.states.length; i++){
+        strInput += '<option value="' + this.states[i].name + '">' + this.states[i].label + '</option>';
+      }
+      return strInput;
     },
 
     /**
@@ -76,6 +91,15 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
       this.compTarget = this.target.get('selectedComponent');
       var models = this.compTarget ? this.compTarget.get('classes').models : [];
       this.collection.reset(models);
+      //TODO no classes, hide states
+    },
+
+    /**
+     * Triggered when select with states is changed
+     * @param  {Object} e
+     */
+    stateChanged: function(e){
+      console.log(this.$states.val());
     },
 
     /**
@@ -157,6 +181,8 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
       this.$input = this.$el.find('input#' + this.newInputId);
       this.$addBtn = this.$el.find('#' + this.addBtnId);
       this.$classes = this.$el.find('#' + this.pfx + 'tags-c');
+      this.$states = this.$el.find('#' + this.stateInputId);
+      this.$states.append(this.getStateOptions());
       this.renderClasses();
       this.$el.attr('class', this.className);
       return this;
