@@ -145,7 +145,7 @@ define([path + 'ClassTagsView', 'ClassManager/model/ClassTags'],
               it('Has add button', function() {
                 this.view.$el.find('#add-tag').should.have.property(0);
               });
-              it('Has states input', function() {
+              it.skip('Has states input', function() {
                 this.view.$el.find('#states').should.have.property(0);
               });
             });
