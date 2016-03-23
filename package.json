@@ -1,7 +1,7 @@
 {
   "name": "grapesjs",
   "description": "Open source Web Template Editor",
-  "version": "0.1.2",
+  "version": "0.1.7",
   "author": "Artur Arseniev",
   "license": "BSD-3-Clause",
   "homepage": "http://grapesjs.com",
@@ -28,6 +28,7 @@
     "grunt-contrib-watch": "^0.6.1",
     "grunt-mocha": "^0.4.15",
     "grunt-sass": "^1.1.0",
+    "istanbul": "^0.4.2",
     "node-sass": "^3.4.2"
   },
   "keywords": [

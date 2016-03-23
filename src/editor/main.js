@@ -23,7 +23,7 @@ define(function (require){
 			    	config	: c,
 			};
 
-		    this.editorView = new EditorView(obj);
+		  this.editorView = new EditorView(obj);
 		};
 
 		Grapes.prototype	= {

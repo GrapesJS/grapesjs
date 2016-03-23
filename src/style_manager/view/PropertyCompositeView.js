@@ -1,36 +1,36 @@
-define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html','require'], 
+define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html','require'],
 	function (Backbone, PropertyView, propertyTemplate, require) {
-	/** 
+	/**
 	 * @class PropertyCompositeView
 	 * */
 	return PropertyView.extend({
-		
+
 		template: _.template(propertyTemplate),
-		
+
 		initialize: function(o) {
 			PropertyView.prototype.initialize.apply(this, arguments);
 			_.bindAll(this, 'build');
 			this.config		= o.config;
 			this.className 	= this.className + ' '+ this.pfx +'composite';
 		},
-		
+
 		/**
 		 * Renders input
-		 * 
+		 *
 		 * @return void
 		 * */
 		renderInput: function() {
 			var props	= this.model.get('properties');
 			if(props && props.length){
-				if(!this.$input)											
+				if(!this.$input)
 					this.$input = $('<input>', {value: 0, type: 'hidden' });
-				
+
 				if(!this.props){
 					var Properties 	= require('./../model/Properties');
 					this.props		= new Properties(props);
 					this.model.set('properties', this.props);
 				}
-				
+
 				if(!this.$props){
 					//Avoid style for children
 					this.props.each(function(prop, index){
@@ -43,15 +43,16 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 							console.warn(prop.get('property')+' of type composite not yet allowed.');
 						}
 					},this);
-					
+
 					var PropertiesView 	= require('./PropertiesView');
 					var that 			= this;
 					var propsView = new PropertiesView({
 						config			: this.config,
-						collection		: this.props,
+						collection	: this.props,
 						target			: this.target,
+						propTarget	: this.propTarget,
 						onChange		: function(el, model){
-							var result = that.build(el, model);  
+							var result = that.build(el, model);
 							that.model.set('value', result);
 						},
 						onInputRender	: function(property, mIndex){
@@ -67,10 +68,10 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 				}
 			}
 		},
-		
+
 		/**
 		 * Get default value of the property
-		 * 
+		 *
 		 * @return string
 		 * */
 		getDefaultValue: function(){
@@ -80,12 +81,12 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 			});
 			return str.replace(/ +$/,'');
 		},
-		
+
 		/**
 		 * Extract string from composite value
 		 * @param integer	Index
 		 * @param object 	Property model
-		 * 
+		 *
 		 * @return string
 		 * */
 		valueOnIndex: function(index, model){
@@ -102,12 +103,12 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 			}
 			return result;
 		},
-		
+
 		/**
 		 * Build composite value
 		 * @param Object Selected element
 		 * @param Object Property model
-		 * 
+		 *
 		 * @return string
 		 * */
 		build: function(selectedEl, propertyModel){

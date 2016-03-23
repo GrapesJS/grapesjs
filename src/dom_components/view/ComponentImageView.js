@@ -59,6 +59,7 @@ define(['backbone', './ComponentView'],
 
 		render: function() {
 			this.updateAttributes();
+			this.updateClasses();
 			return this;
 		},
 	});

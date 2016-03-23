@@ -153,20 +153,30 @@ define(function(require) {
 			 * @param	{String}	name	Name of the resource
 			 * @param	{String}	value	Value of the resource
 			 *
-			 * @return 	{Object}|void
+			 * @return 	{Object|null}
 			 * */
 			store		: function(name, value){
-				return	this.getCurrentProvider().store(name, value);
+				var pv = this.getCurrentProvider();
+
+				if(pv)
+					return	pv.store(name, value);
+
+				return;
 			},
 
 			/**
 			 * Load resource
 			 * @param	{String}	name	Name of the resource
 			 *
-			 * @return 	{Object}|void
+			 * @return 	{Object|null}
 			 * */
 			load	: function(name){
-				return	this.getCurrentProvider().load(name);
+				var pv = this.getCurrentProvider();
+
+				if(pv)
+					return	pv.load(name);
+
+				return;
 			},
 
 			/**

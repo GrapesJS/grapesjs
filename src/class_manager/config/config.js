@@ -5,13 +5,20 @@ define(function () {
     stylePrefix     : 'clm-',
 
     // Default classes
-    classes : [],
+    defaults : [],
 
     // Label for classes
     label: 'Classes',
 
     // Label for states
-    statesLabel: 'States',
+    statesLabel: '- State -',
+
+    // States
+    states: [
+        { name: 'hover', label: 'Hover' },
+        { name: 'active', label: 'Click' },
+        { name: 'nth-of-type(2n)', label: 'Even/Odd' }
+    ],
 
 	};
 });

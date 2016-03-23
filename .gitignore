@@ -10,5 +10,6 @@ grapes.sublime-workspace
 img/
 private/
 vendor/
+coverage/
 node_modules/
 bower_components/

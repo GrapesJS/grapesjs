@@ -66,6 +66,7 @@ define(['backbone', './ComponentView'],
 
 		render: function() {
 			this.updateAttributes();
+			this.updateClasses();
 			this.$el.html(this.model.get('content'));
 			return this;
 		},

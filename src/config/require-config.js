@@ -42,6 +42,7 @@ require.config({
 		            {  name: 'RichTextEditor', 	location: 'rich_text_editor', },
 		            {  name: 'ModalDialog', 		location: 'modal_dialog', 		},
 		            {  name: 'CodeManager', 		location: 'code_manager', 		},
+		            {  name: 'CssComposer',			location: 'css_composer',			},
 		            {  name: 'Commands',				location: 'commands',					},
 		            {  name: 'Canvas',					location: 'canvas',						},
 		            {  name: 'Panels',					location: 'panels',						}

@@ -7,19 +7,20 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
 
     template: _.template(tagsTemplate),
 
-    events:{
-      'click .add': 'startNewClass',
-    },
+    events: {},
 
     initialize: function(o) {
       this.config = o.config || {};
-      this.pfx = this.config.stylePrefix;
+      this.pfx = this.config.stylePrefix || '';
       this.className = this.pfx + 'tags';
       this.addBtnId = this.pfx + 'add-tag';
       this.newInputId = this.pfx + 'new';
+      this.stateInputId = this.pfx + 'states';
+      this.states = this.config.states || [];
       this.events['click #' + this.addBtnId] = 'startNewTag';
       this.events['blur #' + this.newInputId] = 'endNewTag';
       this.events['keyup #' + this.newInputId] = 'onInputKeyUp';
+      this.events['change #' + this.stateInputId] = 'stateChanged';
 
       this.target  = this.config.target;
 
@@ -32,6 +33,18 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
     },
 
     /**
+     * Create select input with states
+     * @return {string} String of options
+     */
+    getStateOptions: function(){
+      var strInput = '';
+      for(var i = 0; i < this.states.length; i++){
+        strInput += '<option value="' + this.states[i].name + '">' + this.states[i].label + '</option>';
+      }
+      return strInput;
+    },
+
+    /**
      * Add new model
      * @param {Object} model
      */
@@ -40,7 +53,7 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
     },
 
     /**
-     * Start new tag event
+     * Start tag creation
      * @param {Object} e
      *
      */
@@ -50,33 +63,13 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
     },
 
     /**
-     * Start new tag event
+     * End tag creation
      * @param {Object} e
      *
      */
     endNewTag: function(e) {
       this.$addBtn.show();
       this.$input.hide().val('');
-    },
-
-
-    /**
-     * Add new class tag
-     * @param {Object} model
-     *
-     */
-    addTag: function(model){
-
-    },
-
-    /**
-     * Triggered when component is changed
-     * @param  {Object} e
-     */
-    componentChanged: function(e){
-      this.compTarget = this.target.get('selectedComponent');
-      var models = this.compTarget ? this.compTarget.get('classes').models : [];
-      this.collection.reset(models);
     },
 
     /**
@@ -88,10 +81,25 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
         this.addNewTag(this.$input.val());
       else if(e.keyCode === 27)
         this.endNewTag();
-      else{
-        //this.searchItem();
-        //console.log('search');
-      }
+    },
+
+    /**
+     * Triggered when component is changed
+     * @param  {Object} e
+     */
+    componentChanged: function(e){
+      this.compTarget = this.target.get('selectedComponent');
+      var models = this.compTarget ? this.compTarget.get('classes').models : [];
+      this.collection.reset(models);
+      //TODO no classes, hide states
+    },
+
+    /**
+     * Triggered when select with states is changed
+     * @param  {Object} e
+     */
+    stateChanged: function(e){
+      console.log(this.$states.val());
     },
 
     /**
@@ -106,9 +114,16 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
         var cm = this.target.get('ClassManager');
         var model = cm.addClass(name);
 
-        if(this.compTarget)
-          this.compTarget.get('classes').add(model);
+        if(this.compTarget){
+          var targetCls = this.compTarget.get('classes');
+          var lenB = targetCls.length;
+          targetCls.add(model);
+          var lenA = targetCls.length;
+          this.collection.add(model);
 
+          if(lenA > lenB)
+            this.target.trigger('targetClassAdded');
+        }
       }
       this.endNewTag();
     },
@@ -126,6 +141,7 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
       var view = new ClassTagView({
           model:  model,
           config: this.config,
+          coll: this.collection,
       });
       var rendered  = view.render().el;
 
@@ -165,6 +181,8 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
       this.$input = this.$el.find('input#' + this.newInputId);
       this.$addBtn = this.$el.find('#' + this.addBtnId);
       this.$classes = this.$el.find('#' + this.pfx + 'tags-c');
+      this.$states = this.$el.find('#' + this.stateInputId);
+      this.$states.append(this.getStateOptions());
       this.renderClasses();
       this.$el.attr('class', this.className);
       return this;

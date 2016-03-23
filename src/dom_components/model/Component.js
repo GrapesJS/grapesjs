@@ -22,13 +22,44 @@ define(['backbone','./Components', 'ClassManager/model/ClassTags'],
 				attributes	: {},
 			},
 
-			initialize: function(o) {
+			initialize: function(o, opt) {
+				this.sm = opt ? opt.sm || {} : {};
 				this.config 	= o || {};
 				this.defaultC = this.config.components || [];
-				this.defaultCl = this.config.classes || [];
-				this.components	= new Components(this.defaultC);
+				this.defaultCl = this.normalizeClasses(this.config.classes || []);
+				this.components	= new Components(this.defaultC, opt);
 				this.set('components', this.components);
 				this.set('classes', new ClassTags(this.defaultCl));
+			},
+
+			/**
+			 * Normalize input classes from array to array of objects
+			 * @param {Array} arr
+			 *
+			 * @return {Array}
+			 */
+			normalizeClasses: function(arr){
+				var res = [];
+
+				if(!this.sm.get)
+					return;
+
+				var clm = this.sm.get('ClassManager');
+				if(!clm)
+					return;
+
+				arr.forEach(function(val){
+					var name = '';
+
+					if(typeof val === 'string')
+						name = val;
+					else
+						name = val.name;
+
+					var model = clm.addClass(name);
+					res.push(model);
+				});
+				return res;
 			},
 
 			/**
@@ -48,10 +79,11 @@ define(['backbone','./Components', 'ClassManager/model/ClassTags'],
 	    	}
 	    	if(cls.length){
 					cls.each(function(md,i){
-							attr.classes[i]	= md.clone();
+							attr.classes[i]	= md.get('name');
 					});
 	    	}
-	      return new this.constructor(attr);
+	    	attr.status = '';
+	      return new this.constructor(attr, {sm: this.sm});
 	    },
 
 			/**
