@@ -3,21 +3,31 @@
   <head>
     <meta charset="UTF-8">
     <title>GrapesJS</title>
-    <meta property="og:url"           content="http://grapesjs.com" />
-    <meta property="og:type"          content="website" />
-    <meta property="og:title"         content="GrapesJS" />
+    <meta property="og:url" content="http://grapesjs.com" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="GrapesJS" />
+    <meta name="theme-color" content="#9e5381">
+    <meta name="description" content="Free and Open source Web Template Editor - Next generation tool for building templates without coding">
+    <meta name="keywords" content="site builder, web template editor, html builder, html editor">
+    <meta name="author" content="Artur Arseniev">
     <meta property="og:description"   content="Free and Open source Web Template Editor - Next generation tool for building templates without coding" />
     <meta property="og:image"         content="http://grapesjs.com/img/share-image.jpg" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,300' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/animate.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
   <body>
     <section class="page-header">
+    <a href="https://github.com/artf/grapesjs" class="github-ribbon" target="_blank">Star me on GitHub</a>
       <div class="title-cont">
-        <h1 class="project-name">GrapesJS<span class="b-badge">alpha</span></h1>
+        <h1 class="project-name">
+          <svg class="grapesjs-logo" xmlns="http://www.w3.org/2000/svg" version="1"><g id="gjs-logo"><path d="M40 5l-12.9 7.4 -12.9 7.4c-1.4 0.8-2.7 2.3-3.7 3.9 -0.9 1.6-1.5 3.5-1.5 5.1v14.9 14.9c0 1.7 0.6 3.5 1.5 5.1 0.9 1.6 2.2 3.1 3.7 3.9l12.9 7.4 12.9 7.4c1.4 0.8 3.3 1.2 5.2 1.2 1.9 0 3.8-0.4 5.2-1.2l12.9-7.4 12.9-7.4c1.4-0.8 2.7-2.2 3.7-3.9 0.9-1.6 1.5-3.5 1.5-5.1v-14.9 -12.7c0-4.6-3.8-6-6.8-4.2l-28 16.2" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-width:10;stroke:#fff"/></g></svg>
+          GrapesJS
+          <span class="b-badge">alpha</span>
+        </h1>
       </div>
       <h2 class="project-tagline">Free and Open source Web Template Editor<br/>
         <span>Next generation tool for building templates without coding</span>
@@ -26,11 +36,16 @@
         <img class="banner-img" src="img/grapesjs-frames2.png">
       </div>
       <div class="btns-cont">
-        <a href="https://github.com/artf/grapesjs" class="btn">View on GitHub</a>
-        <a href="./demo.html" class="btn try"> Try it now </a>
-        <a href="https://github.com/artf/grapesjs/zipball/master" class="btn">Download</a>
+        <!--a href="https://github.com/artf/grapesjs" class="btn btn-rnd">View on GitHub</a-->
+        <a href="./demo.html" class="btn try btn-rnd"> Try it now </a>
+        <div class="device-small">Sorry but your device is too small for the editor. See below for more information</div>
+        <!--a href="https://github.com/artf/grapesjs/zipball/master" class="btn btn-rnd">Download</a-->
       </div>
-
+      <div class="ddown-c">
+        <div class="ddown-icon-c animated fadeInDown">
+          <div id="ddown-icon">&lang;&lang;</div>
+        </div>
+      </div>
       <!-- Load Facebook SDK for JavaScript -->
     <div id="fb-root"></div>
     <script>(function(d, s, id) {
@@ -41,20 +56,94 @@
       fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));</script>
 
+      <div class="site-footer">
+          <div class="btn-share">
+            <div class="fb-share-button" data-href="http://grapesjs.com?test" data-layout="button"></div>
 
+            <a href="https://twitter.com/share" class="twitter-share-button"{count} data-url="http://grapesjs.com" data-text="GrapesJS: next generation tool for building templates without coding" data-hashtags="grapesjs">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+          </div>
+          <span style="visibility:hidden" class="site-footer-owner"><a href="https://github.com/artf/grapesjs">GrapesJS</a> is maintained by <a href="https://github.com/artf">artf</a></span>
+      </div>
     </section>
-    <footer class="site-footer">
-        <div class="btn-share">
-          <div class="fb-share-button" data-href="http://grapesjs.com?test" data-layout="button"></div>
+    <section class="main-content">
+      <div class="body-c body1 width-all">
 
-          <a href="https://twitter.com/share" class="twitter-share-button"{count} data-url="http://grapesjs.com" data-text="GrapesJS: next generation tool for building templates without coding" data-hashtags="grapesjs">Tweet</a>
-          <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+        <h1>Available end-user features</h1>
 
+        <div class="info-card fadeInBlock" id="card1">
+          <div id="desc">Design the structure with already built-in commands</div>
+          <div id="img-c">
+            <img data-gifffer="./img/gif-struct-m.gif"/>
+          </div>
+          <div class="clearfix"></div>
         </div>
-        <span style="visibility:hidden" class="site-footer-owner"><a href="https://github.com/artf/grapesjs">GrapesJS</a> is maintained by <a href="https://github.com/artf">artf</a></span>
-    </footer>
 
-    <section class="main-content">    <div class="body"></div>   </section>
+        <div class="info-card fadeInBlock" id="card2">
+          <div id="desc">Easily insert images and text contents</div>
+          <div id="img-c">
+            <img data-gifffer="./img/gif-img-txt.gif"/>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+
+        <div class="info-card fadeInBlock" id="card3">
+          <div id="desc">Layer Manager, navigate and manage the structure</div>
+          <div id="img-c">
+            <img data-gifffer="./img/layer-m.gif"/>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+
+        <div class="info-card fadeInBlock" id="card4">
+          <div id="desc">Customize style of your components</div>
+          <div id="img-c">
+            <img data-gifffer="./img/style-m.gif"/>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+
+        <div class="info-card fadeInBlock" id="card4">
+          <div id="desc">Style faster complex stuff</div>
+          <div id="img-c">
+            <img data-gifffer="./img/style-3d-text.gif"/>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+
+        <!--div class="info-card fadeInBlock" id="card4">
+          <div id="desc">With any CSS property, even transitions or 3D (experimental)</div>
+          <div id="img-c">
+            <img src="http://placehold.it/450x300/78c5d6/fff/image1.jpg"/>
+          </div>
+          <div class="clearfix"></div>
+        </div-->
+
+        <!--div class="info-card fadeInBlock" id="card4">
+          <div id="desc">Export the code and use it everywhere</div>
+          <div id="img-c">
+            <img src="http://placehold.it/450x300/78c5d6/fff/image1.jpg"/>
+          </div>
+          <div class="clearfix"></div>
+        </div-->
+        <!-- 1255-630 -->
+
+      </div><!-- close body1 -->
+    </section>
+    <section class="footer-content">
+        <div class="footer-c width-all">
+          <div class="title">The project is still in alpha, so stay tuned for new features</div>
+          <div class="btns-c">
+            <a class="btn btn-gjs" href="https://github.com/artf/grapesjs/wiki" target="_blank">View Docs</a>
+          </div>
+        </div>
+    </section>
+     <section class="copyr-content">
+      <div class="copyr-c width-all">
+        made with <3 by <a href="https://github.com/artf">artf</a>
+      </div>
+     </section>
 
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -66,5 +155,8 @@
       ga('send', 'pageview');
     </script>
 
+    <script src="js/jquery.js"></script>
+    <script src="js/gifffer.min.js"></script>
+    <script src="js/main.js"></script>
   </body>
 </html>
