@@ -2739,7 +2739,7 @@ ol.example li.placeholder:before {
   box-sizing: border-box;
   text-align: center;
   z-index: 3; }
-  .wte-pn-panel#wte-pn-commands, .wte-pn-panel#wte-pn-options {
+  .wte-pn-panel#wte-pn-commands, .wte-pn-panel#wte-pn-options, .wte-pn-panel#wte-pn-options2 {
     min-width: 35px;
     height: 100%;
     width: 3.5%;
@@ -2747,6 +2747,13 @@ ol.example li.placeholder:before {
   .wte-pn-panel#wte-pn-options {
     bottom: 0;
     height: auto; }
+  .wte-pn-panel#wte-pn-options2 {
+    bottom: 150px;
+    height: auto; }
+  .wte-pn-panel .icon-undo, .wte-pn-panel .icon-redo {
+    font-size: 20px;
+    height: 30px;
+    width: 25px; }
   .wte-pn-panel#wte-pn-views {
     border-bottom: 2px solid #3c3c3c;
     right: 0;
@@ -3166,6 +3173,12 @@ ol.example li.placeholder:before {
         background-color: #4c4c4c; }
       .wte-sm-sector .wte-sm-property .wte-sm-layer.wte-sm-no-preview #wte-sm-preview-box, .wte-clm-tags .wte-sm-property .wte-sm-layer.wte-sm-no-preview #wte-sm-preview-box {
         display: none; }
+  .wte-sm-sector #wte-sm-text-shadow #wte-sm-preview::after, .wte-clm-tags #wte-sm-text-shadow #wte-sm-preview::after {
+    color: #000;
+    content: "T";
+    font-weight: 900;
+    line-height: 17px;
+    padding: 0 4px; }
   .wte-sm-sector .wte-sm-stack .wte-sm-properties, .wte-clm-tags .wte-sm-stack .wte-sm-properties {
     padding-top: 5px; }
   .wte-sm-sector .wte-sm-stack #wte-sm-add, .wte-clm-tags .wte-sm-stack #wte-sm-add {

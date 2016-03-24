@@ -223,6 +223,18 @@ $leftWidth: 16.5%;
   	height: auto;
   }
 
+  &##{$pn-prefix}options2{
+  	@extend ##{$pn-prefix}commands;
+  	bottom: 150px;
+  	height: auto;
+  }
+
+  .icon-undo, .icon-redo{
+  	font-size: 20px;
+    height: 30px;
+    width: 25px;
+  }
+
   &##{$pn-prefix}views{
   	border-bottom: 2px solid darken($mainColor, 3%);
   	right: 0;
@@ -682,6 +694,13 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 				display:none;
 			}
 		}
+	}
+	##{$sm-prefix}text-shadow ##{$sm-prefix}preview::after {
+	  color: #000;
+	  content: "T";
+	  font-weight: 900;
+	  line-height: 17px;
+	  padding: 0 4px;
 	}
 	/*------------------END Property--------------------*/
 

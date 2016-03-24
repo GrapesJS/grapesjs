@@ -184,12 +184,37 @@ require(['src/config/require-config.js'], function() {
 			commands: 		{
 					defaults		: [{
 													id: 	'open-github',
-
 													run: 	function(em, sender){
 														sender.set('active',false);
 														window.open('https://github.com/artf/grapesjs','_blank');
 													},
-
+													stop: function(){}
+												},{
+													id: 	'undo',
+													run: 	function(em, sender){
+														sender.set('active',false);
+														em.get('UndoManager').undo();
+													},
+													stop: function(){}
+												},{
+													id: 	'redo',
+													run: 	function(em, sender){
+														sender.set('active',false);
+														em.get('UndoManager').redo();
+													},
+													stop: function(){}
+												},{
+													id: 	'clean-all',
+													run: 	function(em, sender){
+														sender.set('active',false);
+														if(confirm('Are you sure to clean the canvas?')){
+															var comps = em.get('Components').getComponents();
+															var len = comps.length;
+															for(var i = 0; i < len; i++){
+																comps.pop();
+															}
+														}
+													},
 													stop: function(){}
 												}],
 			},
@@ -273,6 +298,13 @@ require(['src/config/require-config.js'], function() {
 					       	   { id: 'visibility', 	className: 'fa fa-eye', 	command: 'sw-visibility', 	active: true, context: 'sw-visibility', attributes: { title: 'View components' }, },
 					       	   { id: 'export', 		className: 'fa fa-code', 	command: 'export-template', attributes: { title: 'View code' }, },
 					       	   { id: 'view-github', className: 'fa fa-github', 	command: 'open-github', attributes: { title: 'View on Github' }, },
+					],
+				},{
+					id	: 'options2',
+					buttons	: [
+					       	   { id: 'undo', 	className: 'fa fa-undo icon-undo', 	command: 'undo', attributes: { title: 'Undo (CTRL/CMD + Z)' }, },
+					       	   { id: 'redo', 		className: 'fa fa-repeat icon-redo', 	command: 'redo', attributes: { title: 'Redo (CTRL/CMD + SHIFT + Z)' }, },
+					       	   { id: 'clean-all', className: 'fa fa-trash icon-blank', 	command: 'clean-all', attributes: { title: 'Empty canvas' }, },
 					],
 				},{
 					id	: 'views',
@@ -578,6 +610,36 @@ require(['src/config/require-config.js'], function() {
 							    		   { value : 'center', 	name : 'Center',	className: 'fa fa-align-center' },
 							    		   { value : 'right', 	name : 'Right', 	className: 'fa fa-align-right'},
 							    		   { value : 'justify', name : 'Justify', 	className: 'fa fa-align-justify'},],
+						},{
+							name		: 'Text shadow',
+							property	: 'text-shadow',
+							type		: 'stack',
+							preview		: true,
+							properties	: [{
+											name: 		'X position',
+											property: 	'h-shadow',
+											type: 		'integer',
+											units: 		['px','%'],
+											defaults : 	0,
+										},{
+											name: 		'Y position',
+											property: 	'v-shadow',
+											type: 		'integer',
+											units: 		['px','%'],
+											defaults : 	0,
+										},{
+											name: 		'Blur',
+											property: 	'blur-radius',
+											type: 		'integer',
+											units: 		['px'],
+											defaults : 	0,
+											min: 0,
+										},{
+											name: 		'Color',
+											property: 	'shadow-color',
+											type: 		'color',
+											defaults: 	'black',
+										},],
 						}],
 					},{
 						name: 'Decorations',
