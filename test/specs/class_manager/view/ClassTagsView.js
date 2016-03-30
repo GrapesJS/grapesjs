@@ -131,10 +131,27 @@ define([path + 'ClassTagsView', 'ClassManager/model/ClassTags'],
               this.$statesC.css('display').should.equal('none');
             });
 
-            it("States are visible in case more tags inside", function() {
+            it("States are visible in case of more tags inside", function() {
               this.coll.add({ label: 'test' });
               this.view.updateStateVis();
               this.$statesC.css('display').should.equal('block');
+            });
+
+            it("Update state visibility on new tag", function() {
+              sinon.stub(this.view, "updateStateVis");
+              sinon.stub(this.target, "get").returns(this.targetStub);
+              this.view.compTarget = this.compTargetStub;
+              this.view.addNewTag('test');
+              this.view.updateStateVis.called.should.equal(true);
+            });
+
+            it("Update state visibility on removing of the tag", function() {
+              sinon.stub(this.target, "get").returns(this.targetStub);
+              this.view.compTarget = this.compTargetStub;
+              this.view.addNewTag('test');
+              sinon.stub(this.view, "updateStateVis");
+              this.coll.remove(this.coll.at(0));
+              this.view.updateStateVis.calledOnce.should.equal(true);
             });
 
             it("Output correctly state options", function() {

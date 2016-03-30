@@ -29,8 +29,17 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
 
       this.listenTo( this.collection, 'add', this.addNew);
       this.listenTo( this.collection, 'reset', this.renderClasses);
+      this.listenTo( this.collection, 'remove', this.tagRemoved);
 
       this.delegateEvents();
+    },
+
+    /**
+     * Triggered when a tag is removed from collection
+     * @param {Object} model Removed model
+     */
+    tagRemoved: function(model){
+      this.updateStateVis();
     },
 
     /**
@@ -135,6 +144,8 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
 
           if(lenA > lenB)
             this.target.trigger('targetClassAdded');
+
+          this.updateStateVis();
         }
       }
       this.endNewTag();
