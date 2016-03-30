@@ -35,13 +35,19 @@ define(['backbone','./SectorView'],
 					return item.get('active');
 				});
 				var iContainer = cssC.getRule(valid, '', '');
+
 				if(!iContainer){
 					iContainer = cssC.newRule(valid, '', '');
 					// Hydrate styles from component element
 					iContainer.set('style', el.get('style'));
 					cssC.addRule(iContainer);
 					el.set('style', {});
+				}else{
+					// Ensure to clean element
+					if(classes.length == 1)
+						el.set('style', {});
 				}
+
 				pt.model = iContainer;
 				pt.trigger('update');
 				return;

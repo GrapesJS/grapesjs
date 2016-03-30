@@ -34,6 +34,8 @@ define([path + 'ClassTagsView', 'ClassManager/model/ClassTags'],
               this.btnAdd = this.view.$el.find('#' + this.view.addBtnId);
               this.input = this.view.$el.find('input#' + this.view.newInputId);
               this.$tags = this.$fixture.find('#tags-c');
+              this.$states = this.$fixture.find('#states');
+              this.$statesC = this.$fixture.find('#input-c');
             });
 
             afterEach(function () {
@@ -124,6 +126,17 @@ define([path + 'ClassTagsView', 'ClassManager/model/ClassTags'],
               this.$tags.children().first().find('#tag-label').html().should.equal('test');
             });
 
+            it("States are hidden in case no tags", function() {
+              this.view.updateStateVis();
+              this.$statesC.css('display').should.equal('none');
+            });
+
+            it("States are visible in case more tags inside", function() {
+              this.coll.add({ label: 'test' });
+              this.view.updateStateVis();
+              this.$statesC.css('display').should.equal('block');
+            });
+
             it("Output correctly state options", function() {
               var view = new ClassTagsView({
                 config : {
@@ -145,7 +158,7 @@ define([path + 'ClassTagsView', 'ClassManager/model/ClassTags'],
               it('Has add button', function() {
                 this.view.$el.find('#add-tag').should.have.property(0);
               });
-              it.skip('Has states input', function() {
+              it('Has states input', function() {
                 this.view.$el.find('#states').should.have.property(0);
               });
             });

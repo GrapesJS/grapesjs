@@ -16,6 +16,7 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
       this.addBtnId = this.pfx + 'add-tag';
       this.newInputId = this.pfx + 'new';
       this.stateInputId = this.pfx + 'states';
+      this.stateInputC = this.pfx + 'input-c';
       this.states = this.config.states || [];
       this.events['click #' + this.addBtnId] = 'startNewTag';
       this.events['blur #' + this.newInputId] = 'endNewTag';
@@ -91,7 +92,18 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
       this.compTarget = this.target.get('selectedComponent');
       var models = this.compTarget ? this.compTarget.get('classes').models : [];
       this.collection.reset(models);
-      //TODO no classes, hide states
+      this.updateStateVis();
+    },
+
+    /**
+     * Update states visibility. Hides states in case there is no tags
+     * inside collection
+     */
+    updateStateVis: function(){
+      if(this.collection.length)
+        this.$statesC.css('display','block');
+      else
+        this.$statesC.css('display','none');
     },
 
     /**
@@ -182,6 +194,7 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
       this.$addBtn = this.$el.find('#' + this.addBtnId);
       this.$classes = this.$el.find('#' + this.pfx + 'tags-c');
       this.$states = this.$el.find('#' + this.stateInputId);
+      this.$statesC = this.$el.find('#' + this.stateInputC);
       this.$states.append(this.getStateOptions());
       this.renderClasses();
       this.$el.attr('class', this.className);
