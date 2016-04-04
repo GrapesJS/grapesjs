@@ -99,6 +99,8 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
      */
     componentChanged: function(e){
       this.compTarget = this.target.get('selectedComponent');
+      if(this.compTarget)
+        this.$states.val(this.compTarget.get('state'));
       var models = this.compTarget ? this.compTarget.get('classes').models : [];
       this.collection.reset(models);
       this.updateStateVis();
@@ -116,11 +118,15 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
     },
 
     /**
-     * Triggered when select with states is changed
+     * Triggered when the select with states is changed
      * @param  {Object} e
      */
     stateChanged: function(e){
-      console.log(this.$states.val());
+      if(this.compTarget){
+        this.compTarget.set('state', this.$states.val());
+        if(this.target)
+          this.target.trigger('targetStateUpdated');
+      }
     },
 
     /**

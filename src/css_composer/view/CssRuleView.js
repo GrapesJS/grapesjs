@@ -10,6 +10,7 @@ define(['backbone'],
     initialize: function(o) {
       this.config = o.config || {};
       this.listenTo(this.model, 'change:style', this.render);
+      this.listenTo(this.model, 'change:state', this.render);
     },
 
     /**
@@ -41,13 +42,17 @@ define(['backbone'],
 
     render : function(){
       var block = '',
+          selStr = '';
           o = '';
       if(!this.selStr)
         this.selStr = this.renderSelectors();
       var prpStr = this.renderProperties();
-      if(this.selStr)
+      var stateStr = this.model.get('state');
+      if(this.selStr){
+        stateStr = stateStr ? ':' + stateStr : '';
         block = prpStr !== '' ? '{' + prpStr + '}' : '';
-      o = this.selStr && block ? this.selStr + block : '';
+      }
+      o = this.selStr && block ? this.selStr + stateStr + block : '';
       this.$el.html(o);
       return this;
     },

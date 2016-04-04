@@ -111,7 +111,7 @@ define(function() {
 				e.stopPropagation();
 				var md 	= this.editorModel.get('selectedComponent');
 				if(md)
-					md.set('status','');
+					this.cleanPrevious(md);
 				var nMd = $(el).data('model');
 				if(nMd){
 					this.editorModel.set('selectedComponent', nMd);
@@ -179,6 +179,17 @@ define(function() {
 			},
 
 			/**
+			 * Clean previous model from different states
+			 * @param {Component} model
+			 */
+			cleanPrevious: function(model){
+				model.set({
+					status: '',
+					state: '',
+				});
+			},
+
+			/**
 			 * Run method
 			 * */
 			run: function(em, sender){
@@ -192,7 +203,7 @@ define(function() {
 			stop: function(){
 				var sel 	= this.editorModel.get('selectedComponent');
 				if(sel)
-					sel.set('status','');
+					this.cleanPrevious(sel);
 				this.$el.unbind();												//removes all attached events
 				this.removeBadge();
 				this.clean();

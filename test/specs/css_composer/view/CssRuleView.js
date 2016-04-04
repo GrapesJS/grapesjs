@@ -86,6 +86,19 @@ define([path + 'CssRuleView', 'CssComposer/model/CssRule'],
                 this.regView.$el.html().should.equal('.test1.test2{prop:value;}');
               });
 
+              it('State correctly rendered', function() {
+                this.regView.model.set('style', {'prop':'value'});
+                this.regView.model.set('state', 'hover');
+                this.regView.$el.html().should.equal('.test1.test2:hover{prop:value;}');
+              });
+
+              it('State render changes on update', function() {
+                this.regView.model.set('style', {'prop':'value'});
+                this.regView.model.set('state', 'hover');
+                this.regView.model.set('state', '');
+                this.regView.$el.html().should.equal('.test1.test2{prop:value;}');
+              });
+
               it('Empty on clear', function() {
                 this.regView.model.set('style', {'prop':'value'});
                 this.regView.model.set('style', {});
