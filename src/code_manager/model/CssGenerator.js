@@ -60,6 +60,7 @@ define(['backbone'],
 					rules.each(function(rule){
 						var selectors = rule.get('selectors');
 						var ruleStyle = rule.get('style');
+						var state = rule.get('state');
 						var strSel = '';
 						var found = 0;
 
@@ -69,6 +70,7 @@ define(['backbone'],
 								found = 1;
 						});
 						if(strSel && found){
+							strSel  += state ? ':' + state : '';
 							var strStyle = '';
 							if(ruleStyle && Object.keys(ruleStyle).length !== 0){
 								for(var prop2 in ruleStyle){

@@ -100,6 +100,21 @@ define([path + 'HtmlGenerator',
               this.obj.build(comp, cssc).should.equal('.class1{prop1:value1;prop2:value2;}');
             });
 
+            it('Build correctly component with class styled', function() {
+              var comp = new Component();
+              var m1 = comp.get('components').add({tagName: 'article'});
+              var cls1 = m1.get('classes').add({name: 'class1'});
+
+              var cssc = new CssComposer();
+              var rule = cssc.newRule(cls1);
+              rule.set('style',{'prop1':'value1', 'prop2':'value2'});
+              rule.set('state', 'hover');
+              cssc.addRule(rule);
+
+              this.obj.build(comp, cssc).should.equal('.class1:hover{prop1:value1;prop2:value2;}');
+            });
+
+
             it('Build correctly with more classes', function() {
               var comp = new Component();
               var m1 = comp.get('components').add({tagName: 'article'});
