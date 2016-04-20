@@ -7,13 +7,14 @@ require(['src/config/require-config.js'], function() {
 
 			container	: '#wte-app',
 
-			storageType: 'local',
-
-			remoteStorage: {
-				urlStore	: 'http://test.localhost/wte/index.php',
-				urlLoad		: 'http://test.localhost/wte/read.php',
-				paramsStore	: {	type:'homeTemplate',},
-				paramsLoad	: {	type:'homeTemplate',},
+			storageType: 'remote',
+			storageManager: {
+				remoteStorage: {
+					urlStore: 'http://test.localhost/wte/index.php',
+					urlLoad: 'http://test.localhost/wte/read.php',
+					paramsStore: {type: 'homeTemplate',},
+					paramsLoad: {type: 'homeTemplate',},
+				},
 			},
 
 			components: {
