@@ -60,9 +60,14 @@ define(['backbone','./SectorView'],
 					if(!helperRule){
 						helperRule = cssC.newRule([helperClass],'','');
 						cssC.addRule(helperRule);
+					}else{
+						// I will make it last again, otherwise it could be overridden
+						helperRule = cssC.getRules().remove(helperRule);
+						cssC.getRules().add(helperRule);
 					}
 					helperRule.set('style', iContainer.get('style'));
 					pt.helper = helperRule;
+					console.log(helperRule);
 				}
 
 				pt.model = iContainer;
