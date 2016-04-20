@@ -2,7 +2,6 @@ var modulePath = './../../../test/specs/panels';
 
 define([
 				'Panels'
-				//modulePath + '/model/CssModels',
 				 ],
 	function(
 					Panels
