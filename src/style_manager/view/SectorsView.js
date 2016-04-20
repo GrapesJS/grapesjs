@@ -30,6 +30,7 @@ define(['backbone','./SectorView'],
 			var classes = el.get('classes');
 			var state = el.get('state');
 			var pt = this.propTarget;
+			pt.helper = null;
 
 			if(classes.length){
 				var cssC = this.target.get('CssComposer');
@@ -48,6 +49,20 @@ define(['backbone','./SectorView'],
 					// Ensure to clean element
 					if(classes.length == 1)
 						el.set('style', {});
+				}
+
+				// If the state is not empty, there is should be a helper rule in play
+				// The helper rule will get the same style of the iContainer
+				if(state){
+					var clm = this.target.get('ClassManager');
+					var helperClass = clm.addClass('hc-state');
+					var helperRule = cssC.getRule([helperClass],'','');
+					if(!helperRule){
+						helperRule = cssC.newRule([helperClass],'','');
+						cssC.addRule(helperRule);
+					}
+					helperRule.set('style', iContainer.get('style'));
+					pt.helper = helperRule;
 				}
 
 				pt.model = iContainer;
