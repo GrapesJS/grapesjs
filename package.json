@@ -14,6 +14,7 @@
     "bower": "^1.7.2"
   },
   "devDependencies": {
+    "documentation": "^4.0.0-beta2",
     "grunt": "^0.4.5",
     "grunt-bowercopy": "^1.2.4",
     "grunt-cli": "^0.1.13",
