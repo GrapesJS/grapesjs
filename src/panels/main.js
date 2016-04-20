@@ -11,7 +11,7 @@
  * ```
  *
  *
- * Before using methods you should get first the module from the GrapesJs instance, in this way:
+ * Before using methods you should get first the module from the editor instance, in this way:
  *
  * ```js
  * var panelService = editor.get('Panels');
@@ -19,6 +19,22 @@
  *
  * @module Panels
  * @param {Object} config Configurations
+ * @param {Array<Object>} [config.defaults=[]] Array of possible panels
+ * @example
+ * ...
+ * panels: {
+ *  	defaults: [{
+ *      id: 'main-toolbar',
+ *      buttons: [{
+ *        id: 'btn-id',
+ *        className: 'some',
+ *        attributes: {
+ *        	title: 'MyTitle'
+ *        }
+ *      }],
+ *   	}],
+ * }
+ * ...
  */
 define(function(require) {
 
@@ -26,6 +42,7 @@ define(function(require) {
 
 		var c = config || {},
 			defaults = require('./config/config'),
+			Panel = require('./model/Panel'),
 			Panels = require('./model/Panels'),
 			PanelsView = require('./view/PanelsView');
 
@@ -136,6 +153,8 @@ define(function(require) {
 	    			});
 	    		});
 			},
+
+			Panel: Panel,
 
 	  };
 	};
