@@ -9,6 +9,7 @@ grapes.sublime-workspace
 
 img/
 private/
+docs/
 vendor/
 coverage/
 node_modules/

@@ -1,11 +1,29 @@
+/**
+ * This module manages panels and buttons inside the editor.
+ * You can init the editor with all panels and buttons necessary via configuration
+ *
+ * ```js
+ * var editor = new GrapesJS({
+ * 	...
+ *  panels: {...} // Check below for the possible properties
+ * 	...
+ * });
+ * ```
+ *
+ *
+ * Before using methods you should get first the module from the GrapesJs instance, in this way:
+ *
+ * ```js
+ * var panelService = editor.get('Panels');
+ * ```
+ *
+ * @module Panels
+ * @param {Object} config Configurations
+ */
 define(function(require) {
-	/**
-	 * @class 	Panel
-	 * @param 	{Object} Configurations
-	 *
-	 * @return	{Object}
- 	 * */
-	function Panel(config){
+
+	var Panels = function(config){
+
 		var c = config || {},
 			defaults = require('./config/config'),
 			Panels = require('./model/Panels'),
@@ -120,7 +138,7 @@ define(function(require) {
 			},
 
 	  };
-	}
+	};
 
-	return Panel;
+	return Panels;
 });
