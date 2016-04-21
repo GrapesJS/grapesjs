@@ -7,12 +7,12 @@ define(['backbone','./PanelView'],
 	return Backbone.View.extend({
 
 		initialize: function(o) {
-			this.opt 		= o;
-			this.config		= o.config;
-			this.pfx		= o.config.stylePrefix;
+			this.opt = o || {};
+			this.config = this.opt.config || {};
+			this.pfx = this.config.stylePrefix || '';
 			this.listenTo( this.collection, 'add', this.addTo );
 			this.listenTo( this.collection, 'reset', this.render );
-			this.className 	= this.pfx + 'panels';
+			this.className = this.pfx + 'panels';
 		},
 
 		/**
@@ -36,14 +36,14 @@ define(['backbone','./PanelView'],
 		 * @private
 		 * */
 		addToCollection: function(model, fragmentEl){
-			var fragment	= fragmentEl || null;
-			var viewObject	= PanelView;
+			var fragment = fragmentEl || null;
+			var viewObject = PanelView;
 
-			var view 		= new viewObject({
-				model 	: model,
-				config	: this.config,
+			var view = new viewObject({
+				model: model,
+				config: this.config,
 			});
-			var rendered	= view.render().el;
+			var rendered = view.render().el;
 
 			if(fragment){
 				fragment.appendChild(rendered);
