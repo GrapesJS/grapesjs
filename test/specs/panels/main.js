@@ -2,11 +2,13 @@ var modulePath = './../../../test/specs/panels';
 
 define([
 				'Panels',
-				modulePath + '/model/PanelModels'
+				modulePath + '/model/PanelModels',
+				modulePath + '/view/PanelView'
 				 ],
 	function(
 					Panels,
-					Models
+					Models,
+					PanelView
 					) {
 
 		describe('Panels', function() {
@@ -99,6 +101,7 @@ define([
 			});
 
 			Models.run();
+			PanelView.run();
 
 		});
 });
