@@ -2,12 +2,14 @@ define(['backbone'],
 	function(Backbone) {
 		/**
 		 * @class CommandAbstract
+		 * @private
 		 * */
 		return Backbone.View.extend({
 
 			/**
 			 * Initialize method that can't be removed
 			 * @param	{Object}	o Options
+			 * @private
 			 * */
 			initialize: function(o) {
 				this.config				= o;
@@ -27,6 +29,7 @@ define(['backbone'],
 			/**
 			 * Callback triggered after initialize
 			 * @param	{Object}	o 	Options
+			 * @private
 			 * */
 			init: function(o){},
 
@@ -34,6 +37,7 @@ define(['backbone'],
 			 * Method that run command
 			 * @param	{Object}	em 		Editor model
 			 * @param	{Object}	sender	Button sender
+			 * @private
 			 * */
 			run: function(em, sender) {
 				console.warn("No run method found");
@@ -43,6 +47,7 @@ define(['backbone'],
 			 * Method that stop command
 			 * @param	{Object}	em Editor model
 			 * @param	{Object}	sender	Button sender
+			 * @private
 			 * */
 			stop: function(em, sender) {
 				console.warn("No stop method found");

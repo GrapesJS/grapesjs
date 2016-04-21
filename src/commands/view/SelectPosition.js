@@ -1,28 +1,30 @@
 define(function() {
-		/** 
+		/**
 		 * @class SelectPosition
+		 * @private
 		 * */
 		return {
-			
+
 			init: function(opt) {
 				_.bindAll(this,'selectingPosition','itemLeft');
 				this.config	= opt;
 			},
-			
-			/** 
+
+			/**
 			 * Returns position placeholder
-			 * 
+			 *
 			 * @return	{Object}	Placeholder
+			 * @private
 			 * */
 			getPositionPlaceholder: function()
 			{
 				return this.$plh;
 			},
-			
-			/** 
+
+			/**
 			 * Creates position placeholder
-			 * 
 			 * @return	{Object}	Placeholder
+			 * @private
 			 * */
 			createPositionPlaceholder: function()
 			{
@@ -32,26 +34,25 @@ define(function() {
 				this.$plh.appendTo( this.$wrapper );
 				return this.$plh;
 			},
-			
+
 			enable: function()
 			{
 				this.startSelectPosition();
 			},
-			
-			/** 
+
+			/**
 			 * Start select position event
-			 * 
-			 * @return 	void
+			 * @private
 			 * */
 			startSelectPosition: function()
 			{
 				this.isPointed = false;
 				this.$wrapper.on('mousemove', this.selectingPosition);
 			},
-			
-			/** 
+
+			/**
 			 * Stop select position event
-			 * @return 	void
+			 * @private
 			 * */
 			stopSelectPosition: function()
 			{
@@ -60,21 +61,22 @@ define(function() {
 				this.posIndex 	= this.posMethod=='after' && this.cDim.length!==0 ? this.posIndex + 1 : this.posIndex; //Normalize
 				if(this.cDim){
 					this.posIsLastEl	= this.cDim.length!==0 && this.posMethod=='after' && this.posIndex==this.cDim.length;
-					this.posTargetEl 	= (this.cDim.length===0 ? $(this.outsideElem) : 
+					this.posTargetEl 	= (this.cDim.length===0 ? $(this.outsideElem) :
 						 (!this.posIsLastEl && this.cDim[this.posIndex] ? $(this.cDim[this.posIndex][5]).parent() : $(this.outsideElem) ));
 					this.posTargetModel 		= this.posTargetEl.data("model");
 					this.posTargetCollection 	= this.posTargetEl.data("model-comp");
 				}
 			},
-			
-			/** 
+
+			/**
 			 * During event
-			 * @param	{Object}	e Event 
+			 * @param	{Object}	e Event
+			 * @private
 			 * */
 			selectingPosition: function(e)
 			{
 				this.isPointed = true;
-				
+
 				if(!this.wp){
 					this.$wp 	= this.$wrapper;
 					this.wp		= this.$wp[0];
@@ -84,33 +86,32 @@ define(function() {
 				this.wpL	= wpO.left;
 				this.wpScT	= this.$wp.scrollTop();
 				this.wpScL	= this.$wp.scrollLeft();
-				
+
 				if(!this.$plh)
 					this.createPositionPlaceholder();
-				
+
 				this.rY			= (e.pageY - this.wpT) + this.wpScT;
 				this.rX 		= (e.pageX - this.wpL) + this.wpScL;
-				
+
 				this.entered(e);
 				this.updatePosition(this.rX, this.rY);
 				var actualPos 	= this.posIndex + ':' + this.posMethod;									//save globally the new index
-				
-				if(!this.lastPos || (this.lastPos != actualPos)){						//If there is a significant changes with mouse									
+
+				if(!this.lastPos || (this.lastPos != actualPos)){						//If there is a significant changes with mouse
 					this.updatePositionPlaceholder(this.posIndex, this.posMethod);
 					this.lastPos = actualPos;
 				}
 			},
-			
-			/** 
+
+			/**
 			 * Search where to put placeholder
 			 * @param	{Integer} 	posX	X position of the mouse
 			 * @param	{Integer} 	posY	Y position of the mouse
-			 * 
-			 * @retun void
+			 * @private
 			 * */
 			updatePosition: function( posX, posY ){
 				this.posMethod = "before";
-				this.posIndex = 0;				
+				this.posIndex = 0;
 				var leftLimit = 0, xLimit = 0, dimRight = 0, yLimit = 0, xCenter = 0, yCenter = 0, dimDown = 0, dim = 0;
 				for(var i = 0; i < this.cDim.length; i++){
 					dim = this.cDim[i];
@@ -122,7 +123,7 @@ define(function() {
 						(leftLimit && dimRight < leftLimit))										//No need with this one if over the limit
 							continue;
 					if(!dim[4]){																	//If it's not inFlow (like float element)
-						if( posY < dimDown)	
+						if( posY < dimDown)
 							yLimit = dimDown;
 						if( posX < xCenter){														//If mouse lefter than center
 							xLimit = xCenter;
@@ -145,13 +146,12 @@ define(function() {
 					this.posIndex--;
 				}
 			},
-			
-			/** 
+
+			/**
 			 * Updates the position of the placeholder
 			 * @param 	{Integer}	index	Index of the nearest child
 			 * @param 	{String}	method 	Before or after position
-			 * 
-			 * @return 	void
+			 * @private
 			 * */
 			updatePositionPlaceholder: function(index, method){
 				var t = 0, l = 0, w = 0, h = 0,
@@ -163,7 +163,7 @@ define(function() {
 					var elDim	= this.cDim[index];
 					if(!elDim[4]){
 						w 	= 'auto';
-						t	= elDim[0] + marg;	
+						t	= elDim[0] + marg;
 						h	= elDim[2] - (marg * 2) + un;
 						l	= (method == 'before') ? (elDim[1] - marg) : (elDim[1] + elDim[3] - marg);
 					}else{
@@ -184,7 +184,7 @@ define(function() {
 						h		= 'auto';
 					}
 				}
-				
+
 				plh.style.top		= t + un;
 				plh.style.left		= l	+ un;
 				if(w)
@@ -192,12 +192,11 @@ define(function() {
 				if(h)
 					plh.style.height	= h;
 			},
-			
-			/** 
+
+			/**
 			 * Track inside which element pointer entered
-			 * @param	{Object}	e	Event 
-			 * 
-			 * @return 	void
+			 * @param	{Object}	e	Event
+			 * @private
 			 * */
 			entered: function(e){
 				if( (!this.outsideElem || this.outsideElem != e.target) ){							//If I'm in the new element
@@ -214,50 +213,50 @@ define(function() {
 					this.cDim = this.getChildrenDim();
 				}
 			},
-			
-			/** 
+
+			/**
 			 * Check if pointer is near to the borders of the target
-			 * @param	{Object}	e	Event 
-			 * 
+			 * @param	{Object}	e	Event
 			 * @return	{Integer}
+			 * @private
 			 * */
 			nearToBorders: function(e){
 				var m 		= 7;																		//Limit in pixels for be near
-				if(!this.dimT) 
-					return; 
+				if(!this.dimT)
+					return;
 				var dimT 	= this.dimT;
 				if(dimT[2] < 40)
-					m 		= 5; 
-				if( ((dimT[0] + m) > this.rY) || (this.rY > (dimT[0] + dimT[2] - m)) || 
+					m 		= 5;
+				if( ((dimT[0] + m) > this.rY) || (this.rY > (dimT[0] + dimT[2] - m)) ||
 					((dimT[1] + m) > this.rX) || (this.rX > (dimT[1] + dimT[3] - m))  )					//Check if the pointer is near
 					return 1;
 				else
 					return 0;
 			},
-			
-			/** 
+
+			/**
 			 * Check if pointer is near to the float component
-			 * 
 			 * @return	{Integer}
+			 * @private
 			 * */
 			nearToFloat: function()
 			{
 				var index 	= this.posIndex;
 				var isLastEl	= this.posIsLastEl;
-				if(this.cDim.length !== 0 && ( 
-						(!isLastEl && !this.cDim[index][4]) || 
+				if(this.cDim.length !== 0 && (
+						(!isLastEl && !this.cDim[index][4]) ||
 						(this.cDim[index-1] && !this.cDim[index-1][4]) ||
 						(isLastEl && !this.cDim[index-1][4]) ) )
 					return 1;
 				else
 					return 0;
 			},
-			
-			/** 
+
+			/**
 			 * Returns dimension of the taget
 			 * @param	{Object}	e Event
-			 * 
 			 * @return	{Array}
+			 * @private
 			 * */
 			getTargetDim: function(e)
 			{
@@ -265,13 +264,13 @@ define(function() {
 					$el	= $(elT);
 				return [ elT.offsetTop, elT.offsetLeft, $el.outerHeight(), $el.outerWidth() ];
 			},
-			
-			/** 
-			 * Returns children and their dimensions of the target element, 
+
+			/**
+			 * Returns children and their dimensions of the target element,
 			 * excluding text nodes and the move placeholder
 			 * @param 	{Object}	el Element
-			 * 
-			 * @return 	{Array} 
+			 * @return 	{Array}
+			 * @private
 			 * */
 			getChildrenDim: function(el)
 			{
@@ -287,12 +286,11 @@ define(function() {
 				});
 				return dim;
 			},
-			
-			/** 
+
+			/**
 			 * Track when I go ouside of the element (basically when the target changes)
-			 * @param	{Object}	e Event 
-			 * 
-			 * @return	void
+			 * @param	{Object}	e Event
+			 * @private
 			 * */
 			itemLeft: function(e)
 			{
@@ -301,35 +299,35 @@ define(function() {
 				this.$targetEl	 = null;
 				this.lastPos = null;
 			},
-			
-			/** 
+
+			/**
 			 * Returns true if the elements is in flow, or better is not in flow where
 			 *  for example the component is with float:left
 			 *  @param	{Object}	$this	Context
 			 *  @param 	{Object}	elm	 	Element
-			 *  
 			 *  @return {Boolean}
+			 *  @private
 			 * */
 			isInFlow:  function($this, elm)
 			{
-			    var $elm = $(elm), ch = -1; 
+			    var $elm = $(elm), ch = -1;
 			    if(!$elm.length)
 			    	return false;
-			    if( ($elm.height() < ch) || !$this.okProps($elm) ) 
+			    if( ($elm.height() < ch) || !$this.okProps($elm) )
 			    	return false;
 			    return true;
 			},
-			
-			/** 
+
+			/**
 			 * Returns true only if the element follow the standard flow
 			 * @param 	{Object}	$elm	Element
-			 * 
 			 * @return 	{Boolean}
+			 * @private
 			 * */
-			okProps: function($elm) 
+			okProps: function($elm)
 			{
 			    if ($elm.css('float')!=='none')
-			        return false;  
+			        return false;
 			    switch($elm.css('position')) {
 			        case 'static': case 'relative':  break;
 			        default: 						 return false;
@@ -339,11 +337,11 @@ define(function() {
 			    }
 			    return false;
 			},
-			
+
 			/**
 			 * Removes position placeholder
-			 * 
 			 * @param	void
+			 * @private
 			 * */
 			removePositionPlaceholder: function()
 			{
@@ -351,13 +349,11 @@ define(function() {
 					this.$plh.remove();
 				this.$plh = null;
 			},
-			
-			/* Run method */
+
 			run: function(){
 				this.enable();
 			},
-			
-			/* Stop method */
+
 			stop: function(){
 				this.removePositionPlaceholder();
 				this.stopSelectPosition();

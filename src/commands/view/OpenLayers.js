@@ -1,6 +1,7 @@
 define(['Navigator'], function(Layers) {
 		/**
 		 * @class OpenStyleManager
+		 * @private
 		 * */
 		return {
 

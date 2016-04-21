@@ -2,12 +2,14 @@ define(['backbone', './InsertCustom'],
 	function(Backbone, InsertCustom) {
 		/**
 		 * @class ImageComponent
+		 * @private
 		 * */
 		return _.extend({}, InsertCustom, {
 
 			/**
 			 * Trigger before insert
 			 * @param 	{Object}	object
+			 * @private
 			 *
 			 * */
 			beforeInsert: function(object){
@@ -27,7 +29,7 @@ define(['backbone', './InsertCustom'],
 			/**
 			 * Trigger after insert
 			 * @param	{Object}	model	Model created after insert
-			 *
+			 * @private
 			 * */
 			afterInsert: function(model){
 				model.trigger('dblclick');

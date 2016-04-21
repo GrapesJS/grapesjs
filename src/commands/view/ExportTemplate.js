@@ -1,6 +1,7 @@
 define(function() {
 		/**
 		 * @class ExportTemplate
+		 * @private
 		 * */
 		return {
 
@@ -20,6 +21,7 @@ define(function() {
 			 * @param	{String}	label
 			 *
 			 * @return	{Object}	Editor
+			 * @private
 			 * */
 			buildEditor: function(codeName, theme, label)
 			{

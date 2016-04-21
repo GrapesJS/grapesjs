@@ -1,10 +1,11 @@
 define(['backbone', 'jqueryUi', './MoveComponent'],
 	function(Backbone, jqueryUi, MoveComponent) {
-		/** 
+		/**
 		 * @class ResizeComponent
+		 * @private
 		 * */
 		return _.extend({}, MoveComponent,{
-			
+
 			enable: function(){
 				var $this = this;
 				this.startSelectComponent();
@@ -14,14 +15,14 @@ define(['backbone', 'jqueryUi', './MoveComponent'],
 						ui.element[0].style.height = ui.element.height()+'px';
 						ui.element.css({'min-height':'', 'min-width':'' });
 					},
-					stop: function(event,ui){ 
+					stop: function(event,ui){
 						ui.element.css('overflow','auto');
-						$this.updateModel(ui); 
+						$this.updateModel(ui);
 					}
 				});
 			},
-			
-			
+
+
 			/**
 			 * Update model of resized element
 			 * @param object Component model
@@ -37,21 +38,21 @@ define(['backbone', 'jqueryUi', './MoveComponent'],
 				style.overflow	=  'auto';
 				model.set('style', style);
 			},
-			
-			/** 
-			 * Run method 
+
+			/**
+			 * Run method
 			 * */
 			run: function(){
 				this.enable();
 				this.active = true;
 			},
-			
-			/** 
-			 * Stop method 
+
+			/**
+			 * Stop method
 			 * */
 			stop: function(){
 				this.stopSelectComponent();
-				this.$el.find('.ui-resizable').resizable("destroy"); 
+				this.$el.find('.ui-resizable').resizable("destroy");
 				this.$el.unbind();//removes all attached events
 				this.active = false;
 			}
