@@ -4,13 +4,15 @@ define([
 				'Panels',
 				modulePath + '/model/PanelModels',
 				modulePath + '/view/PanelView',
-				modulePath + '/view/PanelsView'
+				modulePath + '/view/PanelsView',
+				modulePath + '/view/ButtonView'
 				 ],
 	function(
 					Panels,
 					Models,
 					PanelView,
-					PanelsView
+					PanelsView,
+					ButtonView
 					) {
 
 		describe('Panels', function() {
@@ -105,6 +107,7 @@ define([
 			Models.run();
 			PanelView.run();
 			PanelsView.run();
+			ButtonView.run();
 
 		});
 });
