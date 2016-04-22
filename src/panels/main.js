@@ -1,4 +1,12 @@
 /**
+ *
+ * * [addButton](#addbutton)
+ * * [addPanel](#addpanel)
+ * * [getButton](#getbutton)
+ * * [getPanel](#getpanel)
+ * * [getPanels](#getpanels)
+ * * [render](#render)
+ *
  * This module manages panels and buttons inside the editor.
  * You can init the editor with all panels and buttons necessary via configuration
  *

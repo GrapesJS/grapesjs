@@ -1,4 +1,8 @@
 /**
+ *
+ * * [add](#add)
+ * * [get](#get)
+ *
  * This module manages commands which could be called mainly by buttons.
  * You can init the editor with all necessary commands via configuration
  *
