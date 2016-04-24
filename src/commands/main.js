@@ -88,7 +88,9 @@ define(function(require) {
 		defaultCommands['open-layers'] = require('./view/OpenLayers');
 		defaultCommands['open-sm'] = require('./view/OpenStyleManager');
 		//this.defaultCommands['resize-comp'] 	= require('./view/ResizeComponent');
-		config.model = config.em.get('Canvas');
+
+		if(config.em)
+			config.model = config.em.get('Canvas');
 
 		return {
 
