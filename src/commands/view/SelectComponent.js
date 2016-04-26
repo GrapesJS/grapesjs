@@ -1,6 +1,7 @@
 define(function() {
 		/**
 		 * @class SelectComponent
+		 * @private
 		 * */
 		return {
 
@@ -21,6 +22,7 @@ define(function() {
 
 			/**
 			 * Copy component to clipboard
+			 * @private
 			 */
 			copyComp: function()
 			{
@@ -32,6 +34,7 @@ define(function() {
 
 			/**
 			 * Paste component from clipboard
+			 * @private
 			 */
 			pasteComp: function()
 			{
@@ -44,8 +47,9 @@ define(function() {
 					}
 			},
 
-			/** Start select component event
-			 * @return void
+			/**
+			 * Start select component event
+			 * @private
 			 * */
 			startSelectComponent: function(){
 				var that = this;
@@ -59,6 +63,7 @@ define(function() {
 			/**
 			 * Hover command
 			 * @param {Object}	e
+			 * @private
 			 */
 			onHover: function(e)
 			{
@@ -70,6 +75,7 @@ define(function() {
 			/**
 			 * Out command
 			 * @param {Object}	e
+			 * @private
 			 */
 			onOut: function(e)
 			{
@@ -82,6 +88,7 @@ define(function() {
 			/**
 			 * Hover command
 			 * @param {Object}	e
+			 * @private
 			 */
 			onClick: function(e)
 			{
@@ -93,7 +100,7 @@ define(function() {
 
 			/** Stop select component event
 			 * @param Event
-			 * @return void
+			 * @private
 			 * */
 			stopSelectComponent: function(e){
 				if(this.selEl)
@@ -105,6 +112,7 @@ define(function() {
 			 * Say what to do after the component was selected
 			 * @param 	{Object}	e
 			 * @param 	{Object}	el
+			 * @private
 			 * */
 			onSelect: function(e, el)
 			{
@@ -119,8 +127,9 @@ define(function() {
 				}
 			},
 
-			/** Removes all highlighting effects on components
-			 * @return void
+			/**
+			 * Removes all highlighting effects on components
+			 * @private
 			 * */
 			clean: function(){
 				this.$el.find('*').removeClass(this.hoverClass);
@@ -128,7 +137,7 @@ define(function() {
 
 			/** Attach badge to component
 			 * @param Object Component
-			 * @return void
+			 * @private
 			 * */
 			attachBadge: function(el){
 				var model = $(el).data("model");
@@ -152,15 +161,17 @@ define(function() {
 				this.badge.css({ left: relativeL, top:relativeT });
 			},
 
-			/** Create badge for the component
-			 * @return void
+			/**
+			 * Create badge for the component
+			 * @private
 			 * */
 			createBadge: function (){
 				this.badge = $('<div>', {class: this.badgeClass + " no-dots"}).appendTo(this.$wrapper);
 			},
 
-			/** Remove badge
-			 * @return void
+			/**
+			 * Remove badge
+			 * @private
 			 * */
 			removeBadge: function (){
 				if(this.badge){
@@ -169,9 +180,10 @@ define(function() {
 				}
 			},
 
-			/** Updates badge label
+			/**
+			 * Updates badge label
 			 * @param Object Model
-			 * @return void
+			 * @private
 			 * */
 			updateBadgeLabel: function (model){
 				if(model)
@@ -181,6 +193,7 @@ define(function() {
 			/**
 			 * Clean previous model from different states
 			 * @param {Component} model
+			 * @private
 			 */
 			cleanPrevious: function(model){
 				model.set({
@@ -189,17 +202,11 @@ define(function() {
 				});
 			},
 
-			/**
-			 * Run method
-			 * */
 			run: function(em, sender){
 				this.enable();
 				this.render();
 			},
 
-			/**
-			 * Stop method
-			 * */
 			stop: function(){
 				var sel 	= this.editorModel.get('selectedComponent');
 				if(sel)

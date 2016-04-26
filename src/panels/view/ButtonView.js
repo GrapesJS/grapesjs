@@ -11,26 +11,27 @@ function(Backbone, require) {
 
 		initialize: function(o){
 			_.bindAll(this, 'startTimer', 'stopTimer', 'showButtons', 'hideButtons','closeOnKeyPress');
-			this.config 	= o.config;
-			this.em			= this.config.em || {};
-			this.pfx 		= this.config.stylePrefix;
-			this.id			= this.pfx + this.model.get('id');
-			this.className	= this.pfx + 'btn ' + this.model.get('className');
-			this.activeCls	= this.pfx + 'active';
-			this.btnsVisCls	= this.pfx + 'visible';
-			this.parentM	= o.parentM || null;
+			var cls = this.model.get('className');
+			this.config = o.config || {};
+			this.em = this.config.em || {};
+			this.pfx = this.config.stylePrefix || '';
+			this.id = this.pfx + this.model.get('id');
+			this.activeCls = this.pfx + 'active';
+			this.btnsVisCls = this.pfx + 'visible';
+			this.parentM = o.parentM || null;
+			this.className = this.pfx + 'btn' + (cls ? ' ' + cls : '');
 			this.listenTo(this.model, 'change:active updateActive', this.updateActive);
 			this.listenTo(this.model, 'checkActive', this.checkActive);
-			this.listenTo(this.model, 'change:bntsVis',		this.updateBtnsVis);
-			this.listenTo(this.model, 'change:attributes', 	this.updateAttributes);
-			this.listenTo(this.model, 'change:className', 	this.updateClassName);
+			this.listenTo(this.model, 'change:bntsVis', this.updateBtnsVis);
+			this.listenTo(this.model, 'change:attributes', this.updateAttributes);
+			this.listenTo(this.model, 'change:className', this.updateClassName);
 
 			if(this.model.get('buttons').length){
 				this.$el.on('mousedown', this.startTimer);
 				this.$el.append($('<div>',{class: this.pfx + 'arrow-rd'}));
 			}
 
-			if(this.em)
+			if(this.em && this.em.get)
 				this.commands	= this.em.get('Commands');
 		},
 
@@ -41,7 +42,8 @@ function(Backbone, require) {
 		 * */
 		updateClassName: function()
 		{
-			this.$el.attr('class', this.pfx + 'btn ' + this.model.get('className'));
+			var cls = this.model.get('className');
+			this.$el.attr('class', this.pfx + 'btn' + (cls ? ' ' + cls : ''));
 		},
 
 		/**
@@ -105,6 +107,7 @@ function(Backbone, require) {
 			$(document).on('mousedown',	this.hideButtons);
 			$(document).on('keypress',	this.closeOnKeyPress);
 		},
+
 		/**
 		 * Hide children buttons
 		 *

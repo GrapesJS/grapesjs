@@ -23,6 +23,7 @@ define(['backbone', './ComponentsView'],
 				this.listenTo(this.model, 'change:style', 		this.updateStyle);
 				this.listenTo(this.model, 'change:attributes', this.updateAttributes);
 				this.listenTo(this.model, 'change:status', 		this.updateStatus);
+				this.listenTo(this.model, 'change:state', 		this.updateState);
 				this.listenTo(this.model.get('classes'), 'add remove change', this.updateClasses);
 				this.$el.data("model", this.model);
 				this.$el.data("model-comp", this.components);
@@ -45,11 +46,25 @@ define(['backbone', './ComponentsView'],
 			},
 
 			/**
-			 * Update item on status change
-			 * @param	Event
+			 * Fires on state update. If the state is not empty will add a helper class
+			 * @param	{Event} e
 			 * */
-			updateStatus: function(e)
-			{
+			updateState: function(e){
+				var cl = 'hc-state';
+				var state = this.model.get('state');
+
+				if(state){
+					this.$el.addClass(cl);
+				}else{
+					this.$el.removeClass(cl);
+				}
+			},
+
+			/**
+			 * Update item on status change
+			 * @param	{Event} e
+			 * */
+			updateStatus: function(e){
 				var s		= this.model.get('status'),
 						pfx	= this.pfx;
 				switch(s) {

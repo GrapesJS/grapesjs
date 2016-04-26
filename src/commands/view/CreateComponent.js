@@ -1,8 +1,10 @@
+/**
+ * @module CreateComponent
+ * @private
+ * */
 define(['backbone','./SelectPosition'],
 	function(Backbone, SelectPosition) {
-		/**
-		 * @class CreateComponent
-		 * */
+
 		return _.extend({}, SelectPosition, {
 
 			newElement : null,
@@ -20,6 +22,7 @@ define(['backbone','./SelectPosition'],
 			 * Returns creation placeholder
 			 *
 			 * @return 	{Object}
+			 * @private
 			 * */
 			getCreationPlaceholder: function()
 			{
@@ -30,6 +33,7 @@ define(['backbone','./SelectPosition'],
 			 * Removes creation placeholder
 			 *
 			 * @return 	void
+			 * @private
 			 * */
 			removeCreationPlaceholder: function()
 			{
@@ -39,6 +43,7 @@ define(['backbone','./SelectPosition'],
 			/**
 			 * Start with enabling to select position and listening to start drawning
 			 * @return 	void
+			 * @private
 			 * */
 			enable: function()
 			{
@@ -51,6 +56,7 @@ define(['backbone','./SelectPosition'],
 			 * Enable user to draw components
 			 *
 			 * @return 	void
+			 * @private
 			 * */
 			enableToDraw: function()
 			{
@@ -63,6 +69,7 @@ define(['backbone','./SelectPosition'],
 			 * @param 	{Object}	e	Event
 			 *
 			 * @return 	void
+			 * @private
 			 * */
 			startDraw : function(e)
 			{
@@ -88,6 +95,7 @@ define(['backbone','./SelectPosition'],
 			 * @param 	{Object}	e	Event
 			 *
 			 * @return 	void
+			 * @private
 			 * */
 			draw: function(e)
 			{
@@ -100,6 +108,7 @@ define(['backbone','./SelectPosition'],
 			 * @param 	{Object}	e Event
 			 *
 			 * @return 	void
+			 * @private
 			 * */
 			endDraw : function(e)
 			{
@@ -127,6 +136,7 @@ define(['backbone','./SelectPosition'],
 			 * @param 	{String}	method 		Before or after of the children
 			 *
 			 * @return 	{Object} Created model
+			 * @private
 			 * */
 			create: function(target, component, posIndex, method)
 			{
@@ -150,6 +160,7 @@ define(['backbone','./SelectPosition'],
 			 * Check and set basic requirements for the component
 			 * @param 	{Object}	component	New component to be created
 			 * @return 	{Object} 	Component updated
+			 * @private
 			 * */
 			setRequirements: function(component)
 			{
@@ -173,6 +184,7 @@ define(['backbone','./SelectPosition'],
 			 * @param 	{Object} 	e	Event
 			 *
 			 * @return 	void
+			 * @private
 			 * */
 			updateComponentSize : function (e)
 			{
@@ -207,6 +219,7 @@ define(['backbone','./SelectPosition'],
 			 * @param 	{Boolean} 	forse	Indicates if rollback in anycase
 			 *
 			 * @return 	void
+			 * @private
 			 * */
 			rollback: function(e, force)
 			{
@@ -223,6 +236,7 @@ define(['backbone','./SelectPosition'],
 			 * @param 	{Object}	component	Object component before creation
 			 *
 			 * @return 	void
+			 * @private
 			 * */
 			beforeDraw: function(component){
 				component.editable = false;//set this component editable
@@ -233,6 +247,7 @@ define(['backbone','./SelectPosition'],
 			 * @param 	{Object}	model	Component model created
 			 *
 			 * @return 	void
+			 * @private
 			 * */
 			afterDraw: function(model){},
 
@@ -241,6 +256,7 @@ define(['backbone','./SelectPosition'],
 			 * @param 	{Object} 	component	Object component before creation
 			 *
 			 * @return 	void
+			 * @private
 			 * */
 			beforeCreation: function(component){},
 
@@ -249,19 +265,16 @@ define(['backbone','./SelectPosition'],
 			 * @param 	{Object}	model	Component model created
 			 *
 			 * @return 	void
+			 * @private
 			 * */
 			afterCreation: function(model){},
 
-			/** Run method
-			 * */
 			run: function(em, sender){
 				this.sender	= sender;
 				this.$el 	= this.$wrapper;
 				this.enable();
 			},
 
-			/** Stop method
-			 * */
 			stop: function(){
 				this.removePositionPlaceholder();											//Removes placeholder from eventSelectPosition
 				this.stopSelectPosition();

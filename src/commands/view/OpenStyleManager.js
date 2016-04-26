@@ -1,6 +1,7 @@
 define(['StyleManager'], function(StyleManager) {
 		/**
 		 * @class OpenStyleManager
+		 * @private
 		 * */
 		return {
 
@@ -61,6 +62,7 @@ define(['StyleManager'], function(StyleManager) {
 
 			/**
 			 * Toggle Style Manager visibility
+			 * @private
 			 */
 			toggleSm: function()
 			{

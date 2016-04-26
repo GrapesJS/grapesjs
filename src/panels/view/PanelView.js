@@ -1,20 +1,20 @@
 define(['backbone','./ButtonsView'],
 function(Backbone, ButtonsView) {
-	/** 
+	/**
 	 * @class PanelView
 	 * */
 	return Backbone.View.extend({
-		
+
 		initialize: function(o){
-			this.config 	= o.config;
-			this.pfx 		= this.config.stylePrefix;
-			this.buttons	= this.model.get('buttons');
-			this.className	= this.pfx + 'panel';
-			this.id			= this.pfx + this.model.get('id');
+			this.config = o.config || {};
+			this.pfx = this.config.stylePrefix || '';
+			this.buttons = this.model.get('buttons');
+			this.className = this.pfx + 'panel';
+			this.id = this.pfx + this.model.get('id');
 			this.listenTo(this.model, 'change:appendContent', this.appendContent);
 			this.listenTo(this.model, 'change:content', this.updateContent);
 		},
-		
+
 		/**
 		 * Append content of the panel
 		 * */
@@ -22,7 +22,7 @@ function(Backbone, ButtonsView) {
 		{
 			this.$el.append(this.model.get('appendContent'));
 		},
-		
+
 		/**
 		 * Update content
 		 * */
@@ -30,15 +30,18 @@ function(Backbone, ButtonsView) {
 		{
 			this.$el.html(this.model.get('content'));
 		},
-		
-		
+
+
 		render: function() {
 			this.$el.attr('class', _.result(this, 'className'));
-			this.$el.attr('id', this.id);
+
+			if(this.id)
+				this.$el.attr('id', this.id);
+
 			if(this.buttons.length){
 				var buttons	= new ButtonsView({
-					collection	: this.buttons,
-					config		: this.config,
+					collection: this.buttons,
+					config: this.config,
 				});
 				this.$el.append(buttons.render().el);
 			}

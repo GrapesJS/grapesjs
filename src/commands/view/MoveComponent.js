@@ -2,6 +2,7 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 	function(Backbone, SelectComponent, SelectPosition) {
 		/**
 		 * @class MoveComponent
+		 * @private
 		 * */
 		return _.extend({},SelectComponent, SelectPosition,{
 
@@ -28,6 +29,7 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 			/**
 			 * Hover command
 			 * @param {Object}	e
+			 * @private
 			 */
 			onHover: function(e)
 			{
@@ -44,11 +46,13 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 			 * 	- Method from selectComponent
 			 * @param Event
 			 * @param Object Selected element
+			 * @private
 			 * */
 			onSelect: function(e,el){},
 
 			/** Picking component to move
 			 * @param event
+			 * @private
 			 * */
 			startMove: function(e, el){
 				this.moved = false;
@@ -74,7 +78,9 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 			},
 
 			/** During move
-			 * @param event */
+			 * @param event
+			 * @private
+			 * */
 			onMove: function(e){
 				this.moved = true;
 				var relativeY = (e.pageY - this.canvasTop) + this.$canvas.scrollTop();
@@ -84,7 +90,9 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 			},
 
 			/** Leave component
-			 * @param event */
+			 * @param event
+			 * @private
+			 * */
 			endMove: function(e){
 				this.$el.off('mousemove',this.onMove);
 				$(document).off('mouseup', this.endMove);
@@ -107,7 +115,7 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 			 * @param int Indicates the position inside the collection
 			 * @param string Before of after component
 			 *
-			 * @return void
+			 * @private
 			 * */
 			move: function(target, el, posIndex, posMethod){
 				var index = posIndex || 0;
@@ -128,7 +136,7 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 
 			/** Make component untouchable
 			 * @param object Component
-			 * @return void
+			 * @private
 			 * */
 			freezeComponent: function($component){
 				$component.css({'pointer-events':'none'});
@@ -137,7 +145,7 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 
 			/** Make component touchable
 			 * @param object Component
-			 * @return void
+			 * @private
 			 * */
 			unfreezeComponent: function($component){
 				$component.css({'pointer-events':'auto'});
@@ -147,7 +155,7 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 			/** Used to bring the previous situation before start moving the component
 			 * @param Event
 			 * @param Bool Indicates if rollback in anycase
-			 * @return void
+			 * @private
 			 * */
 			rollback: function(e, force){
 				var key = e.which || e.keyCode;
@@ -158,7 +166,9 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 				return;
 			},
 
-			/** Closing method
+			/**
+			 * Closing method
+			 * @private
 			 * */
 			last: function(){
 				this.placeholder.remove();
@@ -169,12 +179,10 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 				$(document).off('keypress', this.rollback);
 			},
 
-			/* Run method */
 			run: function(){
 				this.enable();
 			},
 
-			/* Stop method */
 			stop: function(){
 				this.stopSelectComponent();
 				this.$el.css('cursor','');//changes back aspect of the cursor

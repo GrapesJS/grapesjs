@@ -2,11 +2,13 @@ define(['backbone', './SelectPosition'],
 	function(Backbone, SelectPosition) {
 		/**
 		 * @class InsertCustom
+		 * @private
 		 * */
 		return _.extend({}, SelectPosition, {
 
 			/**
 			 * Run method
+			 * @private
 			 * */
 			run: function(em, sender){
 				this.enable();
@@ -25,8 +27,7 @@ define(['backbone', './SelectPosition'],
 
 			/**
 			 * Start insert event
-			 *
-			 * @return void
+			 * @private
 			 * */
 			insertComponent: function(){
 				this.$wp.off('click', this.insertComponent);
@@ -49,16 +50,14 @@ define(['backbone', './SelectPosition'],
 			/**
 			 * Trigger before insert
 			 * @param 	{Object}	obj
-			 *
-			 * @return 	void
+			 * @private
 			 * */
 			beforeInsert: function(obj){},
 
 			/**
 			 * Trigger after insert
 			 * @param	{Object}	model	Model created after insert
-			 *
-			 * @return 	void
+			 * @private
 			 * */
 			afterInsert: function(model){},
 
@@ -66,6 +65,7 @@ define(['backbone', './SelectPosition'],
 			 * Create different object, based on content, to insert inside canvas
 			 *
 			 * @return 	{Object}
+			 * @private
 			 * */
 			buildContent: function(){
 				var result = {};

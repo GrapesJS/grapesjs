@@ -2,6 +2,7 @@ define(['backbone', './SelectComponent'],
 	function(Backbone, SelectComponent) {
 		/**
 		 * @class DeleteComponent
+		 * @private
 		 * */
 		return _.extend({},SelectComponent,{
 
@@ -23,6 +24,7 @@ define(['backbone', './SelectComponent'],
 			/**
 			 * Start command
 			 * @param {Object}	e
+			 * @private
 			 */
 			startDelete: function(e)
 			{
@@ -40,6 +42,7 @@ define(['backbone', './SelectComponent'],
 			/**
 			 * Stop command
 			 * @param {Object}	e
+			 * @private
 			 */
 			stopDelete: function(e)
 			{
@@ -55,6 +58,7 @@ define(['backbone', './SelectComponent'],
 			/**
 			 * Delete command
 			 * @param {Object}	e
+			 * @private
 			 */
 			onDelete: function(e)
 			{
@@ -73,6 +77,7 @@ define(['backbone', './SelectComponent'],
 			/**
 			 * Updates badge label
 			 * @param 	{Object}	model
+			 * @private
 			 * */
 			updateBadgeLabel: function (model)
 			{

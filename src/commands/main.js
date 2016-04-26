@@ -1,78 +1,127 @@
+/**
+ *
+ * * [add](#add)
+ * * [get](#get)
+ *
+ * This module manages commands which could be called mainly by buttons.
+ * You can init the editor with all necessary commands via configuration
+ *
+ * ```js
+ * var editor = new GrapesJS({
+ * 	...
+ *  commands: {...} // Check below for the properties
+ * 	...
+ * });
+ * ```
+ *
+ * Before using methods you should get first the module from the editor instance, in this way:
+ *
+ * ```js
+ * var commandsService = editor.get('Commands');
+ * ```
+ *
+ * @module Commands
+ * @param {Object} config Configurations
+ * @param {Array<Object>} [config.defaults=[]] Array of possible commands
+ * @param {Boolean} [config.firstCentered=true] If true will center new first-level components
+ * @param {number} [config.minComponentH=50] Minimum height (in px) for new inserted components
+ * @param {number} [config.minComponentW=50] Minimum width (in px) for new inserted components
+ * @example
+ * ...
+ * commands: {
+ *  firstCentered: true,
+ *  minComponentH: 100,
+ *  minComponentW: 100,
+ * 	defaults: [{
+ * 		id: 'helloWorld',
+ * 		run:  function(serviceManager, senderBtn){
+ * 			alert('Hello world!');
+ * 		},
+ * 		stop:  function(serviceManager, senderBtn){
+ * 			alert('Stop!');
+ * 		},
+ * 	}],
+ * },
+ * ...
+ */
 define(function(require) {
-	/**
-	 * @class 	Commands
-	 * @param 	{Object} Configurations
-	 *
-	 * @return	{Object}
- 	 * */
-	function Commands(config)
-	{
-		var c				= config || {},
-			defaults		= require('./config/config'),
-			AbsCommands		= require('./view/CommandAbstract');
+
+	var Commands = function(conf){
+
+		var c = conf || {},
+			defaults = require('./config/config'),
+			AbsCommands = require('./view/CommandAbstract');
 
 		for (var name in defaults) {
 			if (!(name in c))
 				c[name] = defaults[name];
 		}
 
-		this.commands		= {};
-		this.config			= c;
-		this.Abstract		= AbsCommands;
+		// Need it here as it would be used below
+		var add = function(id, obj){
+			delete obj.initialize;
+			commands[id] = Abstract.extend(obj);
+			return this;
+		};
 
-		// Load commands passed by configuration
+		var commands = {};
+		var config = c;
+		var Abstract = AbsCommands;
+
+		// Load commands passed via configuration
 		for( var k in c.defaults){
-			var obj 	= c.defaults[k];
+			var obj = c.defaults[k];
 			if(obj.id)
-				this.add(obj.id, obj);
+				add(obj.id, obj);
 		}
 
-		this.defaultCommands					= {};
-		this.defaultCommands['select-comp']		= require('./view/SelectComponent');
-		this.defaultCommands['create-comp']		= require('./view/CreateComponent');
-		this.defaultCommands['delete-comp']		= require('./view/DeleteComponent');
+		var defaultCommands = {};
+		defaultCommands['select-comp'] = require('./view/SelectComponent');
+		defaultCommands['create-comp'] = require('./view/CreateComponent');
+		defaultCommands['delete-comp'] = require('./view/DeleteComponent');
+		defaultCommands['image-comp'] = require('./view/ImageComponent');
+		defaultCommands['move-comp'] = require('./view/MoveComponent');
+		defaultCommands['text-comp'] = require('./view/TextComponent');
+		defaultCommands['insert-custom'] = require('./view/InsertCustom');
+		defaultCommands['export-template'] = require('./view/ExportTemplate');
+		defaultCommands['sw-visibility'] = require('./view/SwitchVisibility');
+		defaultCommands['open-layers'] = require('./view/OpenLayers');
+		defaultCommands['open-sm'] = require('./view/OpenStyleManager');
 		//this.defaultCommands['resize-comp'] 	= require('./view/ResizeComponent');
-		this.defaultCommands['image-comp']		= require('./view/ImageComponent');
-		this.defaultCommands['move-comp']		= require('./view/MoveComponent');
-		this.defaultCommands['text-comp']		= require('./view/TextComponent');
-		this.defaultCommands['insert-custom']	= require('./view/InsertCustom');
-		this.defaultCommands['export-template']	= require('./view/ExportTemplate');
-		this.defaultCommands['sw-visibility']	= require('./view/SwitchVisibility');
-		this.defaultCommands['open-layers']		= require('./view/OpenLayers');
-		this.defaultCommands['open-sm']			= require('./view/OpenStyleManager');
+		config.model = config.em.get('Canvas');
 
-		this.config.model 		= this.config.em.get('Canvas');
-	}
-
-	Commands.prototype	= {
+		return {
 
 			/**
-			 * Add new command
-			 * @param	{String}	id
-			 * @param	{Object}	obj
-			 *
-			 * @return 	this
+			 * Add new command to the collection
+			 * @param	{string} id Command's ID
+			 * @param	{Object} command Object representing you command. Methods `run` and `stop` are required
+			 * @return {this}
+			 * @example
+			 * commandsService.add('myCommand', {
+			 * 	run:  function(serviceManager, senderBtn){
+			 * 		alert('Hello world!');
+			 * 	},
+			 * 	stop:  function(serviceManager, senderBtn){
+			 * 	},
+			 * });
 			 * */
-			add	: function(id, obj)
-			{
-				delete obj.initialize;
-				this.commands[id]		= this.Abstract.extend(obj);
-				return this;
-			},
+			add: add,
 
 			/**
-			 * Get command
-			 * @param	{String}	id
-			 *
-			 * @return 	Command
+			 * Get command by ID
+			 * @param	{string}	id Command's ID
+			 * @return {Object} Object representing the command
+			 * @example
+			 * var myCommand = commandsService.get('myCommand');
+			 * myCommand.run();
 			 * */
-			get	: function(id)
-			{
-				var el	= this.commands[id];
+			get: function(id){
+				var el = commands[id];
 
 				if(typeof el == 'function'){
-					el 					= new el(this.config);
-					this.commands[id]	= el;
+					el = new el(config);
+					commands[id]	= el;
 				}
 
 				return el;
@@ -80,17 +129,18 @@ define(function(require) {
 
 			/**
 			 * Load default commands
-			 *
-			 * @return 	this
+			 * @return {this}
+			 * @private
 			 * */
-			loadDefaultCommands	: function()
-			{
-				for (var id in this.defaultCommands) {
-					this.add(id, this.defaultCommands[id]);
+			loadDefaultCommands: function(){
+				for (var id in defaultCommands) {
+					this.add(id, defaultCommands[id]);
 				}
 
 				return this;
 			},
+		};
+
 	};
 
 	return Commands;

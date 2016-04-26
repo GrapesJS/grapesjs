@@ -39,6 +39,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 		 * */
 		targetUpdated: function(){
 			this.selectedComponent = this.propTarget.model;
+			this.helperComponent = this.propTarget.helper;
 			if(this.selectedComponent){
 				if(!this.sameValue())
 					this.renderInputRequest();
@@ -133,6 +134,8 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 				var componentCss = _.clone( this.selectedComponent.get('style') );
 				componentCss[this.property] = value;
 				this.selectedComponent.set('style', componentCss, { avoidStore : avSt});
+				if(this.helperComponent)
+					this.helperComponent.set('style', componentCss, { avoidStore : avSt});
 			}
 			this.selectedValue = value;
 
