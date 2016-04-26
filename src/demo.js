@@ -7,7 +7,7 @@ require(['src/config/require-config.js'], function() {
 
 			container	: '#wte-app',
 
-			storageType: 'remote',
+			storageType: 'local',
 			storageManager: {
 				remoteStorage: {
 					urlStore: 'http://test.localhost/wte/index.php',
