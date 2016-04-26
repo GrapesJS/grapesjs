@@ -1,9 +1,12 @@
 var modulePath = './../../../test/specs/commands';
 
 define([
-        'Commands'],
+        'Commands',
+        modulePath + '/model/CommandModels',
+        ],
   function(
-          Commands
+          Commands,
+          Models
           ) {
 
     describe('Commands', function() {
@@ -20,11 +23,28 @@ define([
           delete obj;
         });
 
-        it('Object exists', function() {
-          obj.should.be.exist;
+        it('No commands inside', function() {
+          (obj.get('test') == null).should.equal(true);
+        });
+
+        it('Push new command', function() {
+          var comm = { test: 'test'};
+          obj.add('test', comm);
+          (obj.get('test').test == 'test').should.equal(true);
+        });
+
+        it('No default commands at init', function() {
+          (obj.get('select-comp') == null).should.equal(true);
+        });
+
+        it('Default commands after loadDefaultCommands', function() {
+          obj.loadDefaultCommands();
+          (obj.get('select-comp') == null).should.equal(false);
         });
 
       });
 
     });
+
+    Models.run();
 });
