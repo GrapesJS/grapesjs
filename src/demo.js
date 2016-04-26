@@ -9,13 +9,6 @@ require(['src/config/require-config.js'], function() {
 
 			storageType: 'local',
 
-			remoteStorage: {
-				urlStore	: 'http://test.localhost/wte/index.php',
-				urlLoad		: 'http://test.localhost/wte/read.php',
-				paramsStore	: {	type:'homeTemplate',},
-				paramsLoad	: {	type:'homeTemplate',},
-			},
-
 			components: {
 				defaults		: [
 					{
