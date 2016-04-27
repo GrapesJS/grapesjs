@@ -3,11 +3,15 @@ var modulePath = './../../../test/specs/dom_components';
 define([
 				'DomComponents',
 				 modulePath + '/model/Component',
-				 modulePath + '/view/ComponentView'
+				 modulePath + '/view/ComponentView',
+				 modulePath + '/view/ComponentsView',
+				 modulePath + '/view/ComponentTextView'
 				 ],
 	function(DomComponents,
 					ComponentModels,
-					ComponentView
+					ComponentView,
+					ComponentsView,
+					ComponentTextView
 					) {
 
 		describe('DOM Components', function() {
@@ -61,6 +65,8 @@ define([
 
 			ComponentModels.run();
 			ComponentView.run();
+			ComponentsView.run();
+			ComponentTextView.run();
 
 		});
 });

@@ -14,8 +14,8 @@ define([path + 'ComponentView', 'DomComponents/model/Component'],
             var hClass = 'hc-state';
 
             before(function () {
-              $fixtures  = $("#fixtures");
-              $fixture   = $('<div class="components-fixture"></div>');
+              $fixtures = $("#fixtures");
+              $fixture = $('<div class="components-fixture"></div>');
             });
 
             beforeEach(function () {
@@ -36,28 +36,28 @@ define([path + 'ComponentView', 'DomComponents/model/Component'],
             });
 
             it('Component empty', function() {
-              $fixture.html().should.be.equal('<div></div>');
+              $fixture.html().should.equal('<div></div>');
             });
 
             it('Add helper class on update of state', function() {
               model.set('state', 'test');
-              $fixture.html().should.be.equal('<div class="' + hClass + '"></div>');
+              $fixture.html().should.equal('<div class="' + hClass + '"></div>');
             });
 
             it('Clean form helper state', function() {
               model.set('state', 'test');
               model.set('state', '');
-              $fixture.html().should.be.equal('<div class=""></div>');
+              $fixture.html().should.equal('<div class=""></div>');
             });
 
             it('Add helper class on status update', function() {
               model.set('status', 'selected');
-              $fixture.html().should.be.equal('<div class="selected"></div>');
+              $fixture.html().should.equal('<div class="selected"></div>');
             });
 
             it('Get string of classes', function() {
               model.set('attributes', { class: ['test', 'test2']});
-              view.getClasses().should.be.equal('test test2');
+              view.getClasses().should.equal('test test2');
             });
 
             it('Update attributes', function() {
@@ -65,8 +65,8 @@ define([path + 'ComponentView', 'DomComponents/model/Component'],
                 title: 'value',
                 'data-test': 'value2',
               });
-              view.el.getAttribute('title').should.be.equal('value');
-              view.el.getAttribute('data-test').should.be.equal('value2');
+              view.el.getAttribute('title').should.equal('value');
+              view.el.getAttribute('data-test').should.equal('value2');
             });
 
             it('Update style', function() {
@@ -74,13 +74,13 @@ define([path + 'ComponentView', 'DomComponents/model/Component'],
                 color: 'red',
                 float: 'left'
               });
-              view.el.getAttribute('style').should.be.equal('color:red;float:left;');
+              view.el.getAttribute('style').should.equal('color:red;float:left;');
             });
 
             it('Clean style', function() {
               model.set('style', { color: 'red'});
               model.set('style', {});
-              view.el.getAttribute('style').should.be.equal('');
+              view.el.getAttribute('style').should.equal('');
             });
 
             it('Get style string', function() {
@@ -88,30 +88,30 @@ define([path + 'ComponentView', 'DomComponents/model/Component'],
                 color: 'red',
                 float: 'left'
               });
-              view.getStyleString().should.be.equal('color:red;float:left;');
+              view.getStyleString().should.equal('color:red;float:left;');
             });
 
             it('Add class', function() {
               model.get('classes').add({name: 'test'});
-               view.el.getAttribute('class').should.be.equal('test');
+               view.el.getAttribute('class').should.equal('test');
             });
 
             it('Add classes', function() {
               model.get('classes').add([{name: 'test'}, {name: 'test2'}]);
-              view.el.getAttribute('class').should.be.equal('test test2');
+              view.el.getAttribute('class').should.equal('test test2');
             });
 
             it('Update on remove of some class', function() {
               var cls1 = model.get('classes').add({name: 'test'});
               var cls12 = model.get('classes').add({name: 'test2'});
               model.get('classes').remove(cls1);
-              view.el.getAttribute('class').should.be.equal('test2');
+              view.el.getAttribute('class').should.equal('test2');
             });
 
             it('Init with different tag', function() {
               model = new Component({ tagName: 'span' });
               view = new ComponentView({ model: model });
-              view.render().el.tagName.should.be.equal('SPAN');
+              view.render().el.tagName.should.equal('SPAN');
             });
 
             it('Init with nested components', function() {
@@ -124,7 +124,7 @@ define([path + 'ComponentView', 'DomComponents/model/Component'],
               view = new ComponentView({
                 model: model
               });
-              view.render().$el.html().should.be.equal('<span></span><div title="test"></div>');
+              view.render().$el.html().should.equal('<span></span><div title="test"></div>');
             });
 
         });
