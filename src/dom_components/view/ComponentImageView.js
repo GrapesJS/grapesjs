@@ -1,8 +1,5 @@
 define(['backbone', './ComponentView'],
 	function (Backbone, ComponentView) {
-	/**
-	 * @class ComponentImageView
-	 * */
 
 	return ComponentView.extend({
 
@@ -32,6 +29,7 @@ define(['backbone', './ComponentView'],
 		 * Update src attribute
 		 *
 		 * @return void
+		 * @private
 		 * */
 		updateSrc: function(){
 			this.$el.attr('src',this.model.get("src"));
@@ -42,6 +40,7 @@ define(['backbone', './ComponentView'],
 		 * @param	{Object}	e	Event
 		 *
 		 * @return void
+		 * @private
 		 * */
 		openModal: function(e){
 			var that	= this;

@@ -1,41 +1,41 @@
 define(['backbone','require'],
 function(Backbone, require) {
-	/** 
-	 * @class ComponentsView
-	 * */
+
 	return Backbone.View.extend({
-		
+
 		initialize: function(o) {
 			this.config			= o.config;
 			this.listenTo( this.collection, 'add', this.addTo );
 			this.listenTo( this.collection, 'reset', this.render );
 		},
-		
+
 		/**
 		 * Add to collection
 		 * @param	{Object} Model
-		 * 
+		 *
 		 * @return	void
+		 * @private
 		 * */
 		addTo: function(model){
 			var i	= this.collection.indexOf(model);
 			this.addToCollection(model, null, i);
 		},
-		
+
 		/**
 		 * Add new object to collection
 		 * @param	{Object}	Model
 		 * @param	{Object} 	Fragment collection
 		 * @param	{Integer}	Index of append
-		 * 
+		 *
 		 * @return 	{Object} 	Object rendered
+		 * @private
 		 * */
 		addToCollection: function(model, fragmentEl, index){
 			if(!this.compView)
 				this.compView	=	require('./ComponentView');
 			var fragment	= fragmentEl || null,
 				viewObject	= this.compView;
-			
+
 			switch(model.get('type')){
 				case 'text':
 					if(!this.compViewText)
@@ -48,13 +48,13 @@ function(Backbone, require) {
 					viewObject	= this.compViewImage;
 					break;
 			}
-			
-			var view 		= new viewObject({ 
-				model 	: model, 
+
+			var view 		= new viewObject({
+				model 	: model,
 				config	: this.config,
 			});
 			var rendered	= view.render().el;
-			
+
 			if(fragment){
 				fragment.appendChild(rendered);
 			}else{
@@ -76,10 +76,10 @@ function(Backbone, require) {
 					p.append(rendered);
 				}
 			}
-			
+
 			return rendered;
 		},
-		
+
 		render: function($p) {
 			var fragment 	= document.createDocumentFragment();
 			this.$parent	= $p || this.$el;
@@ -88,9 +88,9 @@ function(Backbone, require) {
 				this.addToCollection(model, fragment);
 			},this);
 			this.$el.append(fragment);
-			
+
 			return this;
 		}
-		
+
 	});
 });

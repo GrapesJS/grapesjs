@@ -1,8 +1,5 @@
 define(['backbone', './ComponentView'],
 	function (Backbone, ComponentView) {
-	/**
-	 * @class ComponentTextView
-	 * */
 
 	return ComponentView.extend({
 
@@ -23,6 +20,7 @@ define(['backbone', './ComponentView'],
 		 * Enable this component to be editable,
 		 * load also the mini toolbar for quick editing
 		 * @param Event
+		 * @private
 		 * */
 		enableEditing: function(e){
 			if(this.rte){
@@ -38,6 +36,7 @@ define(['backbone', './ComponentView'],
 		/**
 		 * Disable this component to be editable
 		 * @param Event
+		 * @private
 		 * */
 		disableEditing: function(e){
 			if(this.rte){
@@ -50,6 +49,7 @@ define(['backbone', './ComponentView'],
 
 		/** Isolate disable propagation method
 		 * @param Event
+		 * @private
 		 * */
 		disablePropagation: function(e){
 			e.stopPropagation();
@@ -59,6 +59,7 @@ define(['backbone', './ComponentView'],
 		 * Update contents of the element
 		 *
 		 * @return void
+		 * @private
 		 **/
 		updateContents : function(){
 			this.model.set('content', this.$el.html());

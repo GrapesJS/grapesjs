@@ -1,8 +1,6 @@
 define(['backbone','./Components', 'ClassManager/model/ClassTags'],
 	function (Backbone, Components, ClassTags) {
-		/**
-		 * @class Component
-		 * */
+
 		return Backbone.Model.extend({
 
 			defaults: {
@@ -36,8 +34,8 @@ define(['backbone','./Components', 'ClassManager/model/ClassTags'],
 			/**
 			 * Normalize input classes from array to array of objects
 			 * @param {Array} arr
-			 *
 			 * @return {Array}
+			 * @private
 			 */
 			normalizeClasses: function(arr){
 				var res = [];
@@ -65,6 +63,7 @@ define(['backbone','./Components', 'ClassManager/model/ClassTags'],
 
 			/**
 			 * Override original clone method
+			 * @private
 			 */
 	    clone: function()
 	    {
@@ -91,6 +90,7 @@ define(['backbone','./Components', 'ClassManager/model/ClassTags'],
 			 * Get name of the component
 			 *
 			 * @return {String}
+			 * @private
 			 * */
 			getName: function(){
 				if(!this.name){

@@ -2,22 +2,26 @@ var modulePath = './../../../test/specs/dom_components';
 
 define([
 				'DomComponents',
-				 modulePath + '/model/Component'
+				 modulePath + '/model/Component',
+				 modulePath + '/view/ComponentView'
 				 ],
 	function(DomComponents,
-					ComponentModels
+					ComponentModels,
+					ComponentView
 					) {
 
 		describe('DOM Components', function() {
 
 			describe('Main', function() {
 
+				var obj;
+
 				beforeEach(function () {
-					this.obj 	= new DomComponents();
+					obj = new DomComponents();
 				});
 
 				afterEach(function () {
-					delete this.obj;
+					delete obj;
 				});
 
 				it('Object exists', function() {
@@ -25,22 +29,38 @@ define([
 				});
 
 				it('Wrapper exists', function() {
-					this.obj.getWrapper().should.not.be.empty;
+					obj.getWrapper().should.not.be.empty;
 				});
 
 				it('No components inside', function() {
-					this.obj.getComponents().length.should.equal(0);
+					obj.getComponents().length.should.equal(0);
+				});
+
+				it('Add new component', function() {
+					var comp = obj.addComponent({});
+					obj.getComponents().length.should.equal(1);
+				});
+
+				it('Add more components at once', function() {
+					var comp = obj.addComponent([{},{}]);
+					obj.getComponents().length.should.equal(2);
 				});
 
 				it('Render wrapper', function() {
-					sinon.stub(this.obj.ComponentView, "render").returns({ el: '' });
-					this.obj.render();
-					this.obj.ComponentView.render.calledOnce.should.equal(true);
+					obj.render().should.be.ok;
+				});
+
+				it('Add components at init', function() {
+					obj = new DomComponents({
+						defaults : [{}, {}, {}]
+					});
+					obj.getComponents().length.should.equal(3);
 				});
 
 			});
 
 			ComponentModels.run();
+			ComponentView.run();
 
 		});
 });

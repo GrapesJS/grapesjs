@@ -1,8 +1,5 @@
 define([ 'backbone', 'require'],
 	function (Backbone, require) {
-		/**
-		 * @class Components
-		 * */
 
 		return Backbone.Collection.extend({
 

@@ -1,8 +1,6 @@
 define(['backbone', './ComponentsView'],
 	function (Backbone, ComponentsView) {
-		/**
-		 * @class ComponentView
-		 * */
+
 		return Backbone.View.extend({
 
 			className : function(){ 						//load classes from model
@@ -14,7 +12,7 @@ define(['backbone', './ComponentsView'],
 			},
 
 			initialize: function(opt){
-				this.config			= opt.config;
+				this.config			= opt.config || {};
 				this.pfx				= this.config.stylePrefix;
 				this.components = this.model.get('components');
 				this.attr				= this.model.get("attributes");
@@ -34,6 +32,7 @@ define(['backbone', './ComponentsView'],
 
 			/**
 			 * Import, if possible, classes inside main container
+			 * @private
 			 * */
 			importClasses: function(){
 				var clm = this.config.em.get('ClassManager');
@@ -48,6 +47,7 @@ define(['backbone', './ComponentsView'],
 			/**
 			 * Fires on state update. If the state is not empty will add a helper class
 			 * @param	{Event} e
+			 * @private
 			 * */
 			updateState: function(e){
 				var cl = 'hc-state';
@@ -63,6 +63,7 @@ define(['backbone', './ComponentsView'],
 			/**
 			 * Update item on status change
 			 * @param	{Event} e
+			 * @private
 			 * */
 			updateStatus: function(e){
 				var s		= this.model.get('status'),
@@ -83,6 +84,7 @@ define(['backbone', './ComponentsView'],
 			 * This method is called before initialize
 			 *
 			 * @return	{Array}|null
+			 * @private
 			 * */
 			getClasses: function(){
 				var attr	= this.model.get("attributes"),
@@ -97,6 +99,7 @@ define(['backbone', './ComponentsView'],
 			 * Update attributes
 			 *
 			 * @return void
+			 * @private
 			 * */
 			updateAttributes: function(){
 				var attributes	= {},
@@ -118,6 +121,7 @@ define(['backbone', './ComponentsView'],
 			 * Update style attribute
 			 *
 			 * @return void
+			 * @private
 			 * */
 			updateStyle: function(){
 				this.$el.attr('style', this.getStyleString());
@@ -127,6 +131,7 @@ define(['backbone', './ComponentsView'],
 			 * Return style string
 			 *
 			 * @return	{String}
+			 * @private
 			 * */
 			getStyleString: function(){
 				var style	= '';
@@ -141,6 +146,7 @@ define(['backbone', './ComponentsView'],
 
 			/**
 			 * Update classe attribute
+			 * @private
 			 * */
 			updateClasses: function(){
 				var str = '';
@@ -158,6 +164,7 @@ define(['backbone', './ComponentsView'],
 			/**
 			 * Reply to event call
 			 * @param object Event that generated the request
+			 * @private
 			 * */
 			eventCall: function(event){
 				event.viewResponse = this;
