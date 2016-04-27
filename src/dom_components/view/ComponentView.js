@@ -3,20 +3,20 @@ define(['backbone', './ComponentsView'],
 
 		return Backbone.View.extend({
 
-			className : function(){ 						//load classes from model
+			className : function(){
 				return this.getClasses();
 			},
 
-			tagName: function(){ 							//load tagName from model
+			tagName: function(){
 				return this.model.get('tagName');
 			},
 
 			initialize: function(opt){
-				this.config			= opt.config || {};
-				this.pfx				= this.config.stylePrefix;
+				this.config = opt.config || {};
+				this.pfx = this.config.stylePrefix || '';
 				this.components = this.model.get('components');
-				this.attr				= this.model.get("attributes");
-				this.classe			= this.attr.class || [];
+				this.attr = this.model.get("attributes");
+				this.classe = this.attr.class || [];
 				this.listenTo(this.model, 'destroy remove', 	this.remove);
 				this.listenTo(this.model, 'change:style', 		this.updateStyle);
 				this.listenTo(this.model, 'change:attributes', this.updateAttributes);
@@ -66,8 +66,8 @@ define(['backbone', './ComponentsView'],
 			 * @private
 			 * */
 			updateStatus: function(e){
-				var s		= this.model.get('status'),
-						pfx	= this.pfx;
+				var s = this.model.get('status'),
+						pfx = this.pfx;
 				switch(s) {
 				    case 'selected':
 				    	this.$el.addClass(pfx + 'selected');
@@ -87,7 +87,7 @@ define(['backbone', './ComponentsView'],
 			 * @private
 			 * */
 			getClasses: function(){
-				var attr	= this.model.get("attributes"),
+				var attr = this.model.get("attributes"),
 					classes	= attr['class'] || [];
 				if(classes.length){
 					return classes.join(" ");
@@ -97,13 +97,11 @@ define(['backbone', './ComponentsView'],
 
 			/**
 			 * Update attributes
-			 *
-			 * @return void
 			 * @private
 			 * */
 			updateAttributes: function(){
-				var attributes	= {},
-					attr		= this.model.get("attributes");
+				var attributes = {},
+					attr = this.model.get("attributes");
 				for(var key in attr) {
 					  if(attr.hasOwnProperty(key))
 					    attributes[key] = attr[key];
@@ -112,15 +110,16 @@ define(['backbone', './ComponentsView'],
 				if(this.model.get("src"))
 					attributes.src = this.model.get("src");
 
-				attributes.style = this.getStyleString();
+				var styleStr = this.getStyleString();
+
+				if(styleStr)
+					attributes.style = styleStr;
 
 				this.$el.attr(attributes);
 			},
 
 			/**
 			 * Update style attribute
-			 *
-			 * @return void
 			 * @private
 			 * */
 			updateStyle: function(){
@@ -129,13 +128,12 @@ define(['backbone', './ComponentsView'],
 
 			/**
 			 * Return style string
-			 *
-			 * @return	{String}
+			 * @return	{string}
 			 * @private
 			 * */
 			getStyleString: function(){
 				var style	= '';
-				this.style	= this.model.get('style');
+				this.style = this.model.get('style');
 				for(var key in this.style) {
 					  if(this.style.hasOwnProperty(key))
 						  style += key + ':' + this.style[key] + ';';
@@ -154,8 +152,10 @@ define(['backbone', './ComponentsView'],
 				this.model.get('classes').each(function(model){
 					str += model.get('name') + ' ';
 				});
+				str = str.trim();
 
-				this.$el.attr('class',str.trim());
+				if(str)
+					this.$el.attr('class',str);
 
 				// Regenerate status class
 				this.updateStatus();
