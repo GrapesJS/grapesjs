@@ -13,22 +13,21 @@ define(['backbone', './ComponentView'],
 			ComponentView.prototype.initialize.apply(this, arguments);
 			this.listenTo( this.model, 'change:src', 	this.updateSrc);
 			this.listenTo( this.model, 'dblclick', 		this.openModal);
-			this.classEmpty		= this.config.stylePrefix + 'image-placeholder ' + this.config.imageCompClass;
+			var compCls = this.config.imageCompClass || '';
+			this.classEmpty = this.pfx + 'image-placeholder' + (compCls ? ' ' + compCls : '');
 
 			if(!this.model.get('src'))
 				this.$el.attr('class', this.classEmpty);
 
 			if(this.config.modal)
-				this.modal		= this.config.modal;
+				this.modal = this.config.modal;
 
 			if(this.config.am)
-				this.am			= this.config.am;
+				this.am = this.config.am;
 		},
 
 		/**
 		 * Update src attribute
-		 *
-		 * @return void
 		 * @private
 		 * */
 		updateSrc: function(){
@@ -38,8 +37,6 @@ define(['backbone', './ComponentView'],
 		/**
 		 * Open dialog for image changing
 		 * @param	{Object}	e	Event
-		 *
-		 * @return void
 		 * @private
 		 * */
 		openModal: function(e){

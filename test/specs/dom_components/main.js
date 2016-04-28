@@ -5,13 +5,15 @@ define([
 				 modulePath + '/model/Component',
 				 modulePath + '/view/ComponentView',
 				 modulePath + '/view/ComponentsView',
-				 modulePath + '/view/ComponentTextView'
+				 modulePath + '/view/ComponentTextView',
+				 modulePath + '/view/ComponentImageView'
 				 ],
 	function(DomComponents,
 					ComponentModels,
 					ComponentView,
 					ComponentsView,
-					ComponentTextView
+					ComponentTextView,
+					ComponentImageView
 					) {
 
 		describe('DOM Components', function() {
@@ -67,6 +69,7 @@ define([
 			ComponentView.run();
 			ComponentsView.run();
 			ComponentTextView.run();
+			ComponentImageView.run();
 
 		});
 });

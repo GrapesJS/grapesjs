@@ -1,11 +1,11 @@
 var path = 'DomComponents/view/';
-define([path + 'ComponentTextView', 'DomComponents/model/Component'],
-  function(ComponentTextView, Component) {
+define([path + 'ComponentImageView', 'DomComponents/model/Component'],
+  function(ComponentImageView, Component) {
 
     return {
       run : function(){
 
-          describe('ComponentTextView', function() {
+          describe('ComponentImageView', function() {
 
             var $fixtures;
             var $fixture;
@@ -19,7 +19,7 @@ define([path + 'ComponentTextView', 'DomComponents/model/Component'],
 
             beforeEach(function () {
               model = new Component();
-              view = new ComponentTextView({
+              view = new ComponentImageView({
                 model: model
               });
               $fixture.empty().appendTo($fixtures);
@@ -35,22 +35,21 @@ define([path + 'ComponentTextView', 'DomComponents/model/Component'],
             });
 
             it('Component empty', function() {
-              $fixture.html().should.equal('<div></div>');
+              $fixture.html().should.equal('<img class="image-placeholder">');
             });
 
-            it('Input content is stored in model', function() {
-              view.enableEditing();
-              view.el.innerHTML = 'test';
-              view.disableEditing();
-              model.get('content').should.equal('test');
+            it('TagName is <img>', function() {
+              view.el.tagName.should.equal('IMG');
             });
 
-            it('Init with content', function() {
-              model = new Component({ content: 'test' });
-              view = new ComponentTextView({ model: model });
-              view.render().el.innerHTML.should.equal('test');
+            it('Update src attribute', function() {
+              model.set('src','./');
+              view.el.getAttribute('src').should.equal('./');
             });
 
+            it('Renders correctly', function() {
+              view.render().should.be.ok;
+            });
         });
       }
     };
