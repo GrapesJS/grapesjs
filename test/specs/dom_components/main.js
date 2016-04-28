@@ -3,7 +3,7 @@ var modulePath = './../../../test/specs/dom_components';
 define([
 				'DomComponents',
 				 modulePath + '/model/Component',
-				 modulePath + '/view/ComponentView',
+				 modulePath + '/view/ComponentV',
 				 modulePath + '/view/ComponentsView',
 				 modulePath + '/view/ComponentTextView',
 				 modulePath + '/view/ComponentImageView'
