@@ -1,9 +1,52 @@
 /**
- * @class 	StyleManager
- * @param 	{Object} Configurations
  *
- * @return	{Object}
- * */
+ * - [addSector](#addsector)
+ * - [getSector](#getsector)
+ * - [getSectors](#getsectors)
+ * - [addProperty](#addproperty)
+ * - [getProperty](#getproperty)
+ * - [getProperties](#getproperties)
+ * - [render](#render)
+ *
+ * With Style Manager you basically build categories (called sectors) of CSS properties which could
+ * be used to custom components and classes.
+ * You can init the editor with all sectors and properties via configuration
+ *
+ * ```js
+ * var editor = new GrapesJS({
+ * 	...
+ *  styleManager: {...} // Check below for the possible properties
+ * 	...
+ * });
+ * ```
+ *
+ * Before using methods you should get first the module from the editor instance, in this way:
+ *
+ * ```js
+ * var styleManager = editor.get('StyleManager');
+ * ```
+ *
+ * @module StyleManager
+ * @param {Object} config Configurations
+ * @param {Array<Object>} [config.sectors=[]] Array of possible sectors
+ * @example
+ * ...
+ * styleManager: {
+ *  	sectors: [{
+ *  		id: 'dim',
+ *      name: 'Dimension',
+ *      properties: [{
+ *      	name: 'Width',
+ *      	property: 'width',
+ *      	type: 'integer',
+ *      	units: ['px', '%'],
+ *      	defaults: 'auto',
+ *      	min: 0,
+          }],
+ *   	}],
+ * }
+ * ...
+ */
 define(function(require) {
 
 	var StyleManager = function(config){
@@ -82,6 +125,8 @@ define(function(require) {
 			 * @param {string} [property.type=''] Type of the property: integer | radio | select | color | file | composite | stack
 			 * @param {Array<string>} [property.units=[]] Unit of measure available, eg. ['px','%','em']. Only for integer type
 			 * @param {string} [property.unit=''] Default selected unit from `units`. Only for integer type
+			 * @param {number} [property.min=null] Min possible value. Only for integer type
+			 * @param {number} [property.max=null] Max possible value. Only for integer type
 			 * @param {string} [property.defaults=''] Default value
 			 * @param {string} [property.info=''] Some description
 			 * @param {string} [property.icon=''] Class name. If exists no text will be displayed

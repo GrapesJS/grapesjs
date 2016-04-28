@@ -1,8 +1,6 @@
 define(['backbone','./SectorView'],
 	function (Backbone, SectorView) {
-	/**
-	 * @class sectorsView
-	 * */
+
 	return Backbone.View.extend({
 
 		initialize: function(o) {
@@ -20,6 +18,7 @@ define(['backbone','./SectorView'],
 
 		/**
 		 * Fired when target is updated
+		 * @private
 		 */
 		targetUpdated: function() {
 			var el = this.target.get('selectedComponent');
