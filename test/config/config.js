@@ -1,3 +1,7 @@
+requirejs.onError = function (err) {
+  console.log(err);
+  throw err;
+};
 require.config({
 
 	baseUrl : "../src",
