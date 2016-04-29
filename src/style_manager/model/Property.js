@@ -15,8 +15,8 @@ define(['backbone'],
 				icon: '',
 				preview: false,
 				functionName:	'',
-				properties: {},
-				layers: {},
+				properties: [],
+				layers: [],
 				list: [],
 			}
 

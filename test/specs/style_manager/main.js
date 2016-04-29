@@ -1,10 +1,12 @@
 var modulePath = './../../../test/specs/style_manager';
 
 define([
-        'StyleManager'
+        'StyleManager',
+        modulePath + '/model/Models',
          ],
   function(
-          StyleManager
+          StyleManager,
+          Models
           ) {
 
     describe('StyleManager', function() {
@@ -169,6 +171,8 @@ define([
           });
 
         });
+
+        Models.run();
 
       });
 
