@@ -173,8 +173,10 @@ define(function(require) {
 				var prop = null;
 				var sector = this.getSector(sectorId);
 
-				if(sector)
-					prop = sectors.get('properties').where({property: name});
+				if(sector){
+					prop = sector.get('properties').where({property: name});
+					prop = prop.length == 1 ? prop[0] : prop;
+				}
 
 				return prop;
 			},
@@ -191,7 +193,7 @@ define(function(require) {
 				var sector = this.getSector(sectorId);
 
 				if(sector)
-					props = sectors.get('properties');
+					props = sector.get('properties');
 
 				return props;
 			},
