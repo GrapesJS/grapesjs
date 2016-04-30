@@ -13,7 +13,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 		},
 
 		initialize: function(o) {
-			this.config = o.config;
+			this.config = o.config || {};
 			this.pfx = this.config.stylePrefix || '';
 			this.target = o.target || {};
 			this.propTarget = o.propTarget || {};

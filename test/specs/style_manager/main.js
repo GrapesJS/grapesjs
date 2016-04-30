@@ -5,12 +5,14 @@ define([
         modulePath + '/model/Models',
         modulePath + '/view/SectorView',
         modulePath + '/view/SectorsView',
+        modulePath + '/view/PropertyView',
          ],
   function(
           StyleManager,
           Models,
           SectorView,
-          SectorsView
+          SectorsView,
+          PropertyView
           ) {
 
     describe('StyleManager', function() {
@@ -179,6 +181,7 @@ define([
         Models.run();
         SectorView.run();
         SectorsView.run();
+        PropertyView.run();
 
       });
 

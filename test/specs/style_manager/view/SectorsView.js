@@ -35,7 +35,7 @@ define([path + 'SectorsView', 'StyleManager/model/Sectors'],
             });
 
             it("Collection is empty", function (){
-              view.$el.html().should.be.empty;
+              view.el.innerHTML.should.be.empty;
             });
 
             it("Add new sectors", function (){
