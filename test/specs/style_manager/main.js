@@ -3,10 +3,12 @@ var modulePath = './../../../test/specs/style_manager';
 define([
         'StyleManager',
         modulePath + '/model/Models',
+        modulePath + '/view/SectorView',
          ],
   function(
           StyleManager,
-          Models
+          Models,
+          SectorView
           ) {
 
     describe('StyleManager', function() {
@@ -173,6 +175,7 @@ define([
         });
 
         Models.run();
+        SectorView.run();
 
       });
 

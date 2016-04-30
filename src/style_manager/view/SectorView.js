@@ -10,8 +10,8 @@ define(['backbone', './PropertiesView', 'text!./../templates/sector.html'],
 		events:{},
 
 		initialize: function(o) {
-			this.config 	= o.config;
-			this.pfx 			= this.config.stylePrefix;
+			this.config 	= o.config || {};
+			this.pfx 			= this.config.stylePrefix || '';
 			this.target		= o.target || {};
 			this.propTarget = o.propTarget || {};
 			this.open 		= this.model.get('open');

@@ -8,8 +8,8 @@ define(['backbone','./PropertyView', './PropertyIntegerView', './PropertyRadioVi
 	return Backbone.View.extend({
 
 		initialize: function(o) {
-			this.config 		= o.config;
-			this.pfx 			= this.config.stylePrefix;
+			this.config 		= o.config || {};
+			this.pfx 			= this.config.stylePrefix || '';
 			this.target			= o.target || {};
 			this.propTarget = o.propTarget || {};
 			this.onChange		= o.onChange || {};
