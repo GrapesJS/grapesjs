@@ -4,11 +4,13 @@ define([
         'StyleManager',
         modulePath + '/model/Models',
         modulePath + '/view/SectorView',
+        modulePath + '/view/SectorsView',
          ],
   function(
           StyleManager,
           Models,
-          SectorView
+          SectorView,
+          SectorsView
           ) {
 
     describe('StyleManager', function() {
@@ -176,6 +178,7 @@ define([
 
         Models.run();
         SectorView.run();
+        SectorsView.run();
 
       });
 

@@ -1,19 +1,31 @@
-define(['backbone','./SectorView'],
+define(['backbone', './SectorView'],
 	function (Backbone, SectorView) {
 
 	return Backbone.View.extend({
 
 		initialize: function(o) {
-			this.config 	= o.config;
-			this.pfx 		= this.config.stylePrefix;
-			this.target		= o.target || {};
+			this.config = o.config || {};
+			this.pfx = this.config.stylePrefix || '';
+			this.target = o.target || {};
 
 			// The taget that will emit events for properties
 			this.propTarget	 = {};
 			_.extend(this.propTarget, Backbone.Events);
+			this.listenTo( this.collection, 'add', this.addTo);
+			this.listenTo( this.collection, 'reset', this.render);
 			this.listenTo( this.target, 'change:selectedComponent targetClassAdded targetClassRemoved targetClassUpdated ' +
 				'targetStateUpdated', this.targetUpdated);
 
+		},
+
+		/**
+		 * Add to collection
+		 * @param {Object} model Model
+		 * @return {Object}
+		 * @private
+		 * */
+		addTo: function(model){
+			this.addToCollection(model);
 		},
 
 		/**
@@ -66,7 +78,6 @@ define(['backbone','./SectorView'],
 					}
 					helperRule.set('style', iContainer.get('style'));
 					pt.helper = helperRule;
-					console.log(helperRule);
 				}
 
 				pt.model = iContainer;
@@ -78,20 +89,44 @@ define(['backbone','./SectorView'],
 			pt.trigger('update');
 		},
 
+
+		/**
+		 * Add new object to collection
+		 * @param {Object} model Model
+		 * @param	{Object} fragmentEl collection
+		 * @return {Object} Object created
+		 * @private
+		 * */
+		addToCollection: function(model, fragmentEl){
+			var fragment = fragmentEl || null;
+			var viewObject = SectorView;
+
+			var view = new viewObject({
+				model: model,
+				id: this.pfx + model.get('name').replace(' ','_').toLowerCase(),
+				name: model.get('name'),
+				properties: model.get('properties'),
+				target: this.target,
+				propTarget: this.propTarget,
+				config: this.config,
+			});
+			var rendered = view.render().el;
+
+			if(fragment){
+				fragment.appendChild(rendered);
+			}else{
+				this.$el.append(rendered);
+			}
+
+			return rendered;
+		},
+
 		render: function() {
 			var fragment = document.createDocumentFragment();
+			this.$el.empty();
 
-			this.collection.each(function(obj){
-				var view = new SectorView({
-					model				: obj,
-					id					: this.pfx + obj.get('name').replace(' ','_').toLowerCase(),
-					name				: obj.get('name'),
-					properties	: obj.get('properties'),
-					target			: this.target,
-					propTarget	: this.propTarget,
-					config			: this.config,
-				});
-				fragment.appendChild(view.render().el);
+			this.collection.each(function(model){
+				this.addToCollection(model, fragment);
 			}, this);
 
 			this.$el.attr('id', this.pfx + 'sectors');

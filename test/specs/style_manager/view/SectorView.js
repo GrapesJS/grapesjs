@@ -64,6 +64,7 @@ define([path + 'SectorView', 'StyleManager/model/Sector'],
             });
 
             describe('Init with options', function() {
+
               beforeEach(function () {
                 model = new Sector({
                   open: false,
