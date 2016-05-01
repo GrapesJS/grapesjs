@@ -1,6 +1,6 @@
 var path = 'StyleManager/view/';
-define([path + 'PropertyView', 'StyleManager/model/Property'],
-  function(PropertyView, Property) {
+define([path + 'PropertyView', 'StyleManager/model/Property', 'DomComponents/model/Component'],
+  function(PropertyView, Property, Component) {
 
     return {
       run : function(){
@@ -18,6 +18,7 @@ define([path + 'PropertyView', 'StyleManager/model/Property'],
             });
 
             beforeEach(function () {
+              component = new Component();
               model = new Property();
               view = new PropertyView({
                 model: model
@@ -32,6 +33,12 @@ define([path + 'PropertyView', 'StyleManager/model/Property'],
 
             after(function () {
               $fixture.remove();
+            });
+
+            it('Rendered correctly', function() {
+              var prop = view.el;
+              $fixture.get(0).querySelector('.property').should.be.ok;
+              prop.querySelector('.label').should.be.ok;
             });
 
             it('Rendered correctly', function() {
