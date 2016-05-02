@@ -533,7 +533,7 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 		}
 		.#{$sm-prefix}d-s-arrow, .#{$clm-prefix}d-s-arrow{ bottom: 7px; }
 
-	 	&.#{$sm-prefix}integer, &.#{$sm-prefix}select, &.#{$sm-prefix}list, &.#{$sm-prefix}color, &.#{$sm-prefix}composite {
+	 	&.#{$sm-prefix}integer, &.#{$sm-prefix}select, &.#{$sm-prefix}list, &.#{$sm-prefix}color, &.#{$sm-prefix}composite, &.#{$sm-prefix}input {
 		  background-color: darken($mainDkColor, 2.5%);/*353535*/
 		  border: 1px solid darken($mainDkColor, 6.5%);/*292929*/
 		  box-shadow: 1px 1px 0 lighten($mainDkColor, 11.5%);/*575757*/

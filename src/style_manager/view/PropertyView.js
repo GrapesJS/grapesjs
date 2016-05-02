@@ -1,12 +1,12 @@
-define(['backbone', 'text!./../templates/propertyLabel.html'],
-	function (Backbone, propertyTemplate) {
+define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templates/propertyInput.html'],
+	function (Backbone, propertyLabel, propertyTemplate) {
 	/**
 	 * @class PropertyView
 	 * */
 	return Backbone.View.extend({
 
 		template: _.template(propertyTemplate),
-		templateLabel: _.template(propertyTemplate),
+		templateLabel: _.template(propertyLabel),
 
 		events:			{
 				'change' : 'valueChanged',
@@ -30,6 +30,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 			this.list = this.model.get('list');
 			this.input = this.$input = null;
 			this.className = this.pfx  + 'property';
+			this.inputHolderId = '#' + this.pfx + 'input-holder';
 			this.listenTo( this.propTarget, 'update', this.targetUpdated);
 			this.listenTo( this.model ,'change:value', this.valueChanged);
 		},
@@ -169,7 +170,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 				icon	: this.model.get('icon'),
 				info	: this.model.get('info'),
 				label	: this.model.get('name'),
-			}) );
+			}));
 		},
 
 		/**
@@ -197,7 +198,13 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 		 * Renders input, to override
 		 * */
 		renderInput: function(){
-			console.warn("No render input implemented for '"+this.model.get('type')+"'");
+			if(!this.$input){
+				this.$input = $('<input>', {
+					placeholder: this.defaultValue,
+					type: 'text'
+				});
+				this.$el.find(this.inputHolderId).html(this.$input);
+			}
 		},
 
 		/**

@@ -317,6 +317,10 @@ require(['src/config/require-config.js'], function() {
 				sectors: [{
 					name: 'General',
 					properties:[{
+							name		: 'Test',
+							property	: 'test',
+							defaults 	: 'testDef',
+						},{
 							name		: 'Alignment',
 							property	: 'float',
 							type		: 'radio',

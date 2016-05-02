@@ -41,10 +41,13 @@ define([path + 'PropertyView', 'StyleManager/model/Property', 'DomComponents/mod
               prop.querySelector('.label').should.be.ok;
             });
 
-            it('Rendered correctly', function() {
-              var prop = view.el;
-              $fixture.get(0).querySelector('.property').should.be.ok;
-              prop.querySelector('.label').should.be.ok;
+            it.skip('Update target on value change', function() {
+            });
+
+            it.skip('Update value on target swap', function() {
+            });
+
+            it.skip('Get target style', function() {
             });
 
         });
