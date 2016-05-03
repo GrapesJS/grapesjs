@@ -1,11 +1,11 @@
 var path = 'StyleManager/view/';
-define([path + 'PropertyView', 'StyleManager/model/Property', 'DomComponents/model/Component'],
-  function(PropertyView, Property, Component) {
+define([path + 'PropertySelectView', 'StyleManager/model/Property', 'DomComponents/model/Component'],
+  function(PropertySelectView, Property, Component) {
 
     return {
       run : function(){
 
-          describe('PropertyView', function() {
+          describe('PropertySelectView', function() {
 
             var component;
             var $fixtures;
@@ -14,8 +14,12 @@ define([path + 'PropertyView', 'StyleManager/model/Property', 'DomComponents/mod
             var model;
             var view;
             var propName = 'testprop';
-            var propValue = 'testvalue';
-            var defValue = 'testDefault';
+            var propValue = 'test1value';
+            var defValue = 'test2value';
+            var options = [
+                  {value: 'test1value', style: 'test:style'},
+                  {name: 'test2', value: 'test2value'}
+                ];
 
             before(function () {
               $fixtures  = $("#fixtures");
@@ -25,8 +29,12 @@ define([path + 'PropertyView', 'StyleManager/model/Property', 'DomComponents/mod
             beforeEach(function () {
               target = new Component();
               component = new Component();
-              model = new Property({property: propName});
-              view = new PropertyView({
+              model = new Property({
+                type: 'select',
+                list: options,
+                property: propName
+              });
+              view = new PropertySelectView({
                 model: model
               });
               $fixture.empty().appendTo($fixtures);
@@ -49,33 +57,41 @@ define([path + 'PropertyView', 'StyleManager/model/Property', 'DomComponents/mod
               prop.querySelector('.field').should.be.ok;
             });
 
+            it('Select rendered', function() {
+              var prop = view.el;
+              prop.querySelector('select').should.be.ok;
+            });
+
+            it('Options rendered', function() {
+              var select = view.el.querySelector('select');
+              select.children.length.should.equal(options.length);
+            });
+
+            it('Options rendered correctly', function() {
+              var select = view.el.querySelector('select');
+              var children = select.children;
+              children[0].value.should.equal(options[0].value);
+              children[1].value.should.equal(options[1].value);
+              children[0].textContent.should.equal(options[0].value);
+              children[1].textContent.should.equal(options[1].name);
+              children[0].getAttribute('style').should.equal(options[0].style);
+              (children[1].getAttribute('style') == null).should.equal(true);
+            });
+
             it('Input should exist', function() {
               view.$input.should.be.ok;
             });
 
             it('Input value is empty', function() {
               view.model.get('value').should.be.empty;
-              view.$input.val().should.be.empty;
+              (view.$input.val() === null).should.equal(true);
             });
 
-            it('Model not change without update trigger', function() {
-              view.$input.val(propValue);
-              view.model.get('value').should.be.empty;
-            });
-
-            // Tests valueUpdated()
             it('Update model on input change', function() {
               view.$input.val(propValue).trigger('change');
               view.model.get('value').should.equal(propValue);
             });
 
-            // Tests getValueForTarget()
-            it('Get value for target', function() {
-              view.model.set('value', propValue);
-              view.getValueForTarget().should.equal(propValue);
-            });
-
-            // Tests valueChanged() -> ...
             it('Update input on value change', function() {
               view.model.set('value', propValue);
               view.$input.val().should.equal(propValue);
@@ -90,62 +106,11 @@ define([path + 'PropertyView', 'StyleManager/model/Property', 'DomComponents/mod
               compStyle.should.deep.equal(assertStyle);
             });
 
-            it('Clean target from the property if its value is empty', function() {
-              view.selectedComponent = component;
-              view.model.set('value', propValue);
-              view.model.set('value', '');
-              var compStyle = view.selectedComponent.get('style');
-              compStyle.should.deep.equal({});
-            });
-
-            it('Check stylable element', function() {
-              view.selectedComponent = component;
-              view.isTargetStylable().should.equal(true);
-              component.set('stylable', false);
-              view.isTargetStylable().should.equal(false);
-              component.set('stylable', [propName]);
-              view.isTargetStylable().should.equal(true);
-              component.set('stylable', ['test1', propName]);
-              view.isTargetStylable().should.equal(true);
-              component.set('stylable', ['test1', 'test2']);
-              view.isTargetStylable().should.equal(false);
-            });
-
-            it('Target style is empty without values', function() {
-              view.selectedComponent = component;
-              view.getComponentValue().should.be.empty;
-            });
-
-            it('Target style is correct', function() {
-              view.selectedComponent = component;
-              var style = {};
-              style[propName] = propValue;
-              component.set('style', style);
-              view.getComponentValue().should.equal(propValue);
-            });
-
-            it('Target style is empty with an other style', function() {
-              view.selectedComponent = component;
-              var style = {};
-              style[propName + '2'] = propValue;
-              component.set('style', style);
-              view.getComponentValue().should.be.empty;
-            });
-
-            it('Fetch value from function', function() {
-              view.selectedComponent = component;
-              var style = {};
-              style[propName] = 'testfun(' + propValue + ')';
-              component.set('style', style);
-              view.model.set('functionName', 'testfun');
-              view.getComponentValue().should.equal(propValue);
-            });
-
             describe('With target setted', function() {
 
               beforeEach(function () {
                 target.model = component;
-                view = new PropertyView({
+                view = new PropertySelectView({
                   model: model,
                   propTarget: target
                 });
@@ -167,11 +132,11 @@ define([path + 'PropertyView', 'StyleManager/model/Property', 'DomComponents/mod
                 style[propName] = propValue;
                 component.set('style', style);
                 view.propTarget.trigger('update');
-                style[propName] = propValue + '2';
+                style[propName] = 'test2value';
                 component.set('style', style);
                 view.propTarget.trigger('update');
-                view.model.get('value').should.equal(propValue + '2');
-                view.$input.val().should.equal(propValue + '2');
+                view.model.get('value').should.equal('test2value');
+                view.$input.val().should.equal('test2value');
               });
 
             })
@@ -181,10 +146,12 @@ define([path + 'PropertyView', 'StyleManager/model/Property', 'DomComponents/mod
               beforeEach(function () {
                 component = new Component();
                 model = new Property({
-                  property: propName,
-                  defaults: defValue
+                  type: 'select',
+                  list: options,
+                  defaults: defValue,
+                  property: propName
                 });
-                view = new PropertyView({
+                view = new PropertySelectView({
                   model: model
                 });
                 $fixture.empty().appendTo($fixtures);
@@ -195,11 +162,7 @@ define([path + 'PropertyView', 'StyleManager/model/Property', 'DomComponents/mod
                 view.model.get('value').should.equal(defValue);
               });
 
-              it('Placeholder as default', function() {
-                view.$input.attr('placeholder').should.equal(defValue);
-              });
-
-              it('Input value is empty', function() {
+              it('Input value is as default', function() {
                 view.$input.val().should.equal(defValue);
               });
 

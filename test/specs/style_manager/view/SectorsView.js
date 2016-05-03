@@ -14,7 +14,7 @@ define([path + 'SectorsView', 'StyleManager/model/Sectors'],
 
             before(function () {
               $fixtures  = $("#fixtures");
-              $fixture   = $('<div class="cssrules-fixture"></div>');
+              $fixture   = $('<div class="sectors-fixture"></div>');
             });
 
             beforeEach(function () {

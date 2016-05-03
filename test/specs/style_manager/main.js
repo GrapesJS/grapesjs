@@ -6,13 +6,15 @@ define([
         modulePath + '/view/SectorView',
         modulePath + '/view/SectorsView',
         modulePath + '/view/PropertyView',
+        modulePath + '/view/PropertySelectView',
          ],
   function(
           StyleManager,
           Models,
           SectorView,
           SectorsView,
-          PropertyView
+          PropertyView,
+          PropertySelectView
           ) {
 
     describe('StyleManager', function() {
@@ -182,6 +184,7 @@ define([
         SectorView.run();
         SectorsView.run();
         PropertyView.run();
+        PropertySelectView.run();
 
       });
 

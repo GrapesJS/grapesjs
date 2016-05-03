@@ -79,7 +79,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 				this.componentValue = this.defaultValue + (this.unit || ''); // todo model
 
 			// Check if wrap inside function is required
-			if(this.func){
+			if(this.model.get('functionName')){
 				var v = this.fetchFromFunction(this.componentValue);
 				if(v)
 					this.componentValue = v;
