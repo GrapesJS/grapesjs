@@ -13,7 +13,19 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyInteger.html']
 			this.events['click .'+this.pfx+'u-arrow']					= 'upArrowClick';
 			this.events['click .'+this.pfx+'d-arrow']					= 'downArrowClick';
 			this.events['mousedown .'+this.pfx+'int-arrows']	= 'downIncrement';
+			this.listenTo( this.model ,'change:unit', this.valueChanged);
 			this.delegateEvents();
+		},
+
+		/**
+		 * Fired when the input value is updated
+		 */
+		valueUpdated: function(){
+			if(this.$input && this.$unit)
+				this.model.set({
+					value: this.$input.val(),
+					unit: this.$unit.val()
+				});
 		},
 
 		/**
