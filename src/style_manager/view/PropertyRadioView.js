@@ -1,17 +1,26 @@
-define(['backbone','./PropertyView', 'text!./../templates/propertyRadio.html'], 
+define(['backbone','./PropertyView', 'text!./../templates/propertyRadio.html'],
 	function (Backbone, PropertyView, propertyTemplate) {
-	/** 
+	/**
 	 * @class PropertyRadioView
 	 * */
 	return PropertyView.extend({
-		
+
 		template: _.template(propertyTemplate),
-		
+
 		initialize: function(options) {
 			PropertyView.prototype.initialize.apply(this, arguments);
-			this.className 	= this.className + ' '+ this.pfx +'list';
+			this.list = this.model.get('list');
+			this.className = this.className + ' '+ this.pfx +'list';
 		},
-		
+
+		/**
+		 * Fired when the input value is updated
+		 */
+		valueUpdated: function(){
+			if(this.$input)
+				this.model.set('value', this.$el.find('input:checked').val());
+		},
+
 		/** @inheritdoc */
 		renderInput: function() {
 			var pfx	= this.pfx;
@@ -33,7 +42,7 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyRadio.html'],
 			}
 			this.setValue(this.componentValue);
 		},
-		
+
 		/** @inheritdoc */
 		setValue: function(value){
 			var v 	= this.model.get('value') || this.defaultValue;

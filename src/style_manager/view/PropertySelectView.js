@@ -7,6 +7,11 @@ define(['backbone','./PropertyView', 'text!./../templates/propertySelect.html'],
 
 		template: _.template(propertyTemplate),
 
+		initialize: function(options) {
+			PropertyView.prototype.initialize.apply(this, arguments);
+			this.list = this.model.get('list');
+		},
+
 		/** @inheritdoc */
 		renderInput: function() {
 			var pfx	= this.pfx;

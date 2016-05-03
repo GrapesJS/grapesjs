@@ -8,9 +8,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 		template: _.template(propertyTemplate),
 		templateLabel: _.template(propertyLabel),
 
-		events:			{
-			'change': 'valueUpdated',
-		},
+		events: {'change': 'valueUpdated'},
 
 		initialize: function(o) {
 			this.config = o.config || {};
@@ -23,11 +21,6 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 			this.func = this.model.get('functionName');
 			this.defaultValue = this.model.get('defaults');
 			this.property = this.model.get('property');
-			this.units = this.model.get('units');
-			this.min = this.model.get('min') || this.model.get('min')===0 ? this.model.get('min') : -5000;
-			this.max = this.model.get('max') || this.model.get('max')===0 ? this.model.get('max') : 5000;
-			this.unit = this.model.get('unit') ? this.model.get('unit') : (this.units.length ? this.units[0] : '');
-			this.list = this.model.get('list');
 			this.input = this.$input = null;
 			this.className = this.pfx  + 'property';
 			this.inputHolderId = '#' + this.pfx + 'input-holder';
@@ -66,9 +59,6 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 		 * @return {Boolean}
 		 * */
 		sameValue: function(){
-			if(this.property == 'test'){
-				console.log('compoVal: ' + this.getComponentValue() + ' modelVal: ' + (this.model.get('value') + this.model.get('unit')));
-			}
 			return this.getComponentValue() == (this.model.get('value') + this.model.get('unit'));
 		},
 
@@ -86,7 +76,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 			if(targetProp)
 				this.componentValue = targetProp;
 			else
-				this.componentValue = this.defaultValue + (this.unit || '');
+				this.componentValue = this.defaultValue + (this.unit || ''); // todo model
 
 			// Check if wrap inside function is required
 			if(this.func){
@@ -118,7 +108,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 		},
 
 		/**
-		 * Returns value from necessary inputs
+		 * Returns value from inputs
 		 * @return {string}
 		 */
 		getValueForTarget: function(){

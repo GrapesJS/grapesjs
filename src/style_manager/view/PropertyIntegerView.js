@@ -10,6 +10,10 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyInteger.html']
 		initialize: function(options) {
 			PropertyView.prototype.initialize.apply(this, arguments);
 			_.bindAll(this, 'moveIncrement', 'upIncrement');
+			this.min = this.model.get('min') || this.model.get('min')===0 ? this.model.get('min') : -5000;
+			this.max = this.model.get('max') || this.model.get('max')===0 ? this.model.get('max') : 5000;
+			this.units = this.model.get('units');
+			this.unit = this.model.get('unit') ? this.model.get('unit') : (this.units.length ? this.units[0] : '');
 			this.events['click .'+this.pfx+'u-arrow']					= 'upArrowClick';
 			this.events['click .'+this.pfx+'d-arrow']					= 'downArrowClick';
 			this.events['mousedown .'+this.pfx+'int-arrows']	= 'downIncrement';
