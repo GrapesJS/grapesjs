@@ -1,4 +1,4 @@
-require(['src/config/require-config.js'], function() {
+require(['config/require-config'], function() {
 
 	require(['editor/main'],function (Grapes){
 		var grapes	= new Grapes(
