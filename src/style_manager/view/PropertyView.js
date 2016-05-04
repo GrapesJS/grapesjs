@@ -37,7 +37,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 		 */
 		valueUpdated: function(){
 			if(this.$input)
-				this.model.set('value', this.$input.val());
+				this.model.set('value', this.getInputValue());
 		},
 
 		/**
@@ -116,17 +116,25 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 		},
 
 		/**
+		 * Returns value from input
+		 * @return {string}
+		 */
+		getInputValue: function(){
+			return this.$input ? this.$input.val() : '';
+		},
+
+		/**
 		 * Property was changed, so I need to update the component too
 		 * @param 	{Object}	e	Events
 		 * @param		{Mixed}		val	Value
 		 * @param		{Object}	opt	Options
 		 * */
 		valueChanged: function(e, val, opt){
-			//var v			= e && e.currentTarget ? this.$input.val() : this.model.get('value');
 			var mVal = this.model.get('value');
 
 			if(this.$input)
-				this.$input.val(mVal);
+				this.setValue(mVal);
+				//this.$input.val(mVal);
 
 			if(!this.selectedComponent)
 				return;
@@ -135,17 +143,11 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 			if(!this.isTargetStylable())
 				return;
 
-			var v			= e && e.currentTarget ? this.$input.val() : this.model.get('value'),
-					u 		= this.$unit ? this.$unit.val() : '',
+			var v = e && e.currentTarget ? this.getInputValue() : this.model.get('value'),
+					u = this.$unit ? this.$unit.val() : '',
 					value	= v + u,
 					avSt	= opt ? opt.avoidStore : 0;
 
-			//The easiest way to deal with radio inputs
-			if(this.model.get('type') == 'radio')
-				value = this.$el.find('input:checked').val();
-
-			//if(this.$input)
-				//this.$input.val(v);
 			this.model.set({ value : v, unit: u }, { silent : true });
 
 			if(this.func)

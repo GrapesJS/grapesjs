@@ -1,11 +1,11 @@
 var path = 'StyleManager/view/';
-define([path + 'PropertySelectView', 'StyleManager/model/Property', 'DomComponents/model/Component'],
-  function(PropertySelectView, Property, Component) {
+define([path + 'PropertyRadioView', 'StyleManager/model/Property', 'DomComponents/model/Component'],
+  function(PropertyRadioView, Property, Component) {
 
     return {
       run : function(){
 
-          describe('PropertySelectView', function() {
+          describe('PropertyRadioView', function() {
 
             var component;
             var $fixtures;
@@ -17,8 +17,8 @@ define([path + 'PropertySelectView', 'StyleManager/model/Property', 'DomComponen
             var propValue = 'test1value';
             var defValue = 'test2value';
             var options = [
-                  {value: 'test1value', style: 'test:style'},
-                  {name: 'test2', value: 'test2value'}
+                  { value: 'test1value', 'title': 'testtitle'},
+                  { name: 'test2', value: 'test2value'}
                 ];
 
             before(function () {
@@ -30,11 +30,11 @@ define([path + 'PropertySelectView', 'StyleManager/model/Property', 'DomComponen
               target = new Component();
               component = new Component();
               model = new Property({
-                type: 'select',
+                type: 'radio',
                 list: options,
                 property: propName
               });
-              view = new PropertySelectView({
+              view = new PropertyRadioView({
                 model: model
               });
               $fixture.empty().appendTo($fixtures);
@@ -57,25 +57,25 @@ define([path + 'PropertySelectView', 'StyleManager/model/Property', 'DomComponen
               prop.querySelector('.field').should.be.ok;
             });
 
-            it('Select rendered', function() {
+            it('Radio rendered', function() {
               var prop = view.el;
-              prop.querySelector('select').should.be.ok;
+              prop.querySelector('input[type=radio]').should.be.ok;
             });
 
             it('Options rendered', function() {
-              var select = view.el.querySelector('select');
-              select.children.length.should.equal(options.length);
+              var input = view.el.querySelector('#input-holder');
+              input.children.length.should.equal(options.length);
             });
 
             it('Options rendered correctly', function() {
-              var select = view.el.querySelector('select');
-              var children = select.children;
-              children[0].value.should.equal(options[0].value);
-              children[1].value.should.equal(options[1].value);
-              children[0].textContent.should.equal(options[0].value);
-              children[1].textContent.should.equal(options[1].name);
-              children[0].getAttribute('style').should.equal(options[0].style);
-              (children[1].getAttribute('style') == null).should.equal(true);
+              var children = view.el.querySelector('#input-holder').children;
+              children[0].querySelector('label').textContent.should.equal('test1value');
+              children[1].querySelector('label').textContent.should.equal('test2');
+              children[0].querySelector('input').value.should.equal(options[0].value);
+              children[1].querySelector('input').value.should.equal(options[1].value);
+              children[0].querySelector('label').getAttribute('title').should.equal(options[0].title);
+              (children[1].querySelector('label').getAttribute('title') == null)
+                .should.equal(true);
             });
 
             it('Input should exist', function() {
@@ -87,13 +87,14 @@ define([path + 'PropertySelectView', 'StyleManager/model/Property', 'DomComponen
             });
 
             it('Update model on input change', function() {
-              view.$input.val(propValue).trigger('change');
+              view.setValue(propValue);
               view.model.get('value').should.equal(propValue);
+              view.getInputValue().should.equal(propValue);
             });
 
             it('Update input on value change', function() {
               view.model.set('value', propValue);
-              view.$input.val().should.equal(propValue);
+              view.getInputValue().should.equal(propValue);
             });
 
             it('Update target on value change', function() {
@@ -109,7 +110,7 @@ define([path + 'PropertySelectView', 'StyleManager/model/Property', 'DomComponen
 
               beforeEach(function () {
                 target.model = component;
-                view = new PropertySelectView({
+                view = new PropertyRadioView({
                   model: model,
                   propTarget: target
                 });
@@ -123,7 +124,7 @@ define([path + 'PropertySelectView', 'StyleManager/model/Property', 'DomComponen
                 component.set('style', style);
                 view.propTarget.trigger('update');
                 view.model.get('value').should.equal(propValue);
-                view.$input.val().should.equal(propValue);
+                view.getInputValue().should.equal(propValue);
               });
 
               it('Update value after multiple swaps', function() {
@@ -135,7 +136,7 @@ define([path + 'PropertySelectView', 'StyleManager/model/Property', 'DomComponen
                 component.set('style', style);
                 view.propTarget.trigger('update');
                 view.model.get('value').should.equal('test2value');
-                view.$input.val().should.equal('test2value');
+                view.getInputValue().should.equal('test2value');
               });
 
             })
@@ -150,7 +151,7 @@ define([path + 'PropertySelectView', 'StyleManager/model/Property', 'DomComponen
                   defaults: defValue,
                   property: propName
                 });
-                view = new PropertySelectView({
+                view = new PropertyRadioView({
                   model: model
                 });
                 $fixture.empty().appendTo($fixtures);
@@ -162,7 +163,7 @@ define([path + 'PropertySelectView', 'StyleManager/model/Property', 'DomComponen
               });
 
               it('Input value is as default', function() {
-                view.$input.val().should.equal(defValue);
+                view.getInputValue().should.equal(defValue);
               });
 
             });

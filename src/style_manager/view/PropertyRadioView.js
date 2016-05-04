@@ -9,16 +9,8 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyRadio.html'],
 
 		initialize: function(options) {
 			PropertyView.prototype.initialize.apply(this, arguments);
-			this.list = this.model.get('list');
+			this.list = this.model.get('list') || [];
 			this.className = this.className + ' '+ this.pfx +'list';
-		},
-
-		/**
-		 * Fired when the input value is updated
-		 */
-		valueUpdated: function(){
-			if(this.$input)
-				this.model.set('value', this.$el.find('input:checked').val());
 		},
 
 		/** @inheritdoc */
@@ -28,30 +20,40 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyRadio.html'],
 				if(this.list && this.list.length){
 					this.input = '';
 					_.each(this.list,function(el){
-						var cl 			= el.className ? el.className+' '+ pfx + 'icon' : '',
-							title 		= el.title ? el.title : '',
-							id			= this.property+'-'+el.value;
+						var cl = el.className ? el.className + ' ' + pfx + 'icon' : '',
+							id = this.property + '-' + el.value,
+							labelTxt = el.name ? el.name : el.value;
+							titleAttr = el.title ? 'title="' + el.title + '"': '';
 						this.input 		+= '<div class="' + pfx + 'el">'+
 							'<input class="'+pfx+'radio" type="radio" id="'+ id +'" name="'+this.property+'" value="'+el.value+'" />'+
-							'<label class="'+cl+'" title="'+title+'" for="'+ id +'">' + (cl ? '' : el.value) + '</label></div>';
+							'<label class="'+cl+'" ' + titleAttr + ' for="'+ id +'">' + (cl ? '' : labelTxt) + '</label></div>';
 					},this);
-					this.$input 		= $(this.input);
-					this.$el.find('#'+ pfx +'input-holder').html(this.$input);
-					this.$inputRadio 	= this.$input.find('input[name="'+this.property+'"]');
+					this.$inputEl = $(this.input);
+					this.$el.find('#'+ pfx +'input-holder').html(this.$inputEl);
+					this.$input = this.$inputEl.find('input[name="'+this.property+'"]');
 				}
 			}
 			this.setValue(this.componentValue);
 		},
 
+		/**
+		 * Returns value from input
+		 * @return {string}
+		 */
+		getInputValue: function(){
+			return this.$input ? this.$el.find('input:checked').val() : '';
+		},
+
 		/** @inheritdoc */
 		setValue: function(value){
-			var v 	= this.model.get('value') || this.defaultValue;
-			if(value){
+			var v = this.model.get('value') || this.defaultValue;
+
+			if(value)
 				v	= value;
-			}
-			if(this.$inputRadio){
-				this.$inputRadio.filter('[value="'+v+'"]').prop('checked', true);
-			}
+
+			if(this.$input)
+				this.$input.filter('[value="'+v+'"]').prop('checked', true);
+
 			this.model.set({value: v},{silent: true});
 		},
 
