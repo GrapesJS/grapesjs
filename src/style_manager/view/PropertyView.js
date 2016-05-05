@@ -130,11 +130,11 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 		 * @param		{Object}	opt	Options
 		 * */
 		valueChanged: function(e, val, opt){
-			var mVal = this.model.get('value');
+			var mVal = this.getValueForTarget(),
+			avSt = opt ? opt.avoidStore : 0;
 
 			if(this.$input)
 				this.setValue(mVal);
-				//this.$input.val(mVal);
 
 			if(!this.selectedComponent)
 				return;
@@ -143,12 +143,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 			if(!this.isTargetStylable())
 				return;
 
-			var v = e && e.currentTarget ? this.getInputValue() : this.model.get('value'),
-					u = this.$unit ? this.$unit.val() : '',
-					value	= v + u,
-					avSt	= opt ? opt.avoidStore : 0;
-
-			this.model.set({ value : v, unit: u }, { silent : true });
+			value = this.getValueForTarget();
 
 			if(this.func)
 				value =  this.func + '(' + value + ')';

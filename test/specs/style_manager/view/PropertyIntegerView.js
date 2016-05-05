@@ -19,6 +19,8 @@ define([path + 'PropertyIntegerView', 'StyleManager/model/Property', 'DomCompone
             var propValue = intValue + unitValue;
             var defValue = 'test2value';
             var units = ['px', '%', 'em'];
+            var minValue = -15;
+            var maxValue = 15;
 
             before(function () {
               $fixtures  = $("#fixtures");
@@ -86,12 +88,22 @@ define([path + 'PropertyIntegerView', 'StyleManager/model/Property', 'DomCompone
               view.model.get('unit').should.equal('px');
             });
 
-            it('Update model on input change', function() {
+            it('Update model on setValue', function() {
               view.setValue(intValue + unitValue);
               view.model.get('value').should.equal(parseFloat(intValue));
               view.model.get('unit').should.equal(unitValue);
               view.$input.val().should.equal(intValue);
               view.$unit.val().should.equal(unitValue);
+            });
+
+            it('Update model on input change', function() {
+              view.$input.val(123).trigger('change');
+              view.model.get('value').should.equal(123);
+            });
+
+            it('Update model on unit change', function() {
+              view.$unit.val(units[1]).trigger('change');
+              view.model.get('unit').should.equal(units[1]);
             });
 
             it('Update input on value change', function() {
@@ -101,7 +113,7 @@ define([path + 'PropertyIntegerView', 'StyleManager/model/Property', 'DomCompone
 
             it('Update target on value change', function() {
               view.selectedComponent = component;
-              view.model.set('value', propValue);
+              view.model.set('value', intValue);
               var compStyle = view.selectedComponent.get('style');
               var assertStyle = {};
               assertStyle[propName] = propValue;
@@ -144,7 +156,7 @@ define([path + 'PropertyIntegerView', 'StyleManager/model/Property', 'DomCompone
               });
 
             })
-
+/*
             describe('Init property', function() {
 
               beforeEach(function () {
@@ -154,6 +166,8 @@ define([path + 'PropertyIntegerView', 'StyleManager/model/Property', 'DomCompone
                   units: units,
                   property: propName,
                   defaults: intValue,
+                  min: minValue,
+                  max: maxValue,
                   unit: units[1],
                 });
                 view = new PropertyIntegerView({
@@ -173,8 +187,20 @@ define([path + 'PropertyIntegerView', 'StyleManager/model/Property', 'DomCompone
                 view.$unit.val().should.equal(units[1]);
               });
 
-            });
+              it('Input follows min', function() {
+                view.$input.val(minValue - 50).trigger('change');
+                view.model.get('value').should.equal(minValue);
+                view.$input.val().should.equal(minValue + "");
+              });
 
+              it('Input follows max', function() {
+                view.$input.val(maxValue + 50).trigger('change');
+                view.model.get('value').should.equal(maxValue);
+                view.$input.val().should.equal(maxValue + "");
+              });
+
+            });
+*/
         });
       }
     };
