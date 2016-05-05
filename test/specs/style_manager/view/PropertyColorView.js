@@ -1,11 +1,11 @@
 var path = 'StyleManager/view/';
-define([path + 'PropertyIntegerView', 'StyleManager/model/Property', 'DomComponents/model/Component'],
-  function(PropertyIntegerView, Property, Component) {
+define([path + 'PropertyColorView', 'StyleManager/model/Property', 'DomComponents/model/Component'],
+  function(PropertyColorView, Property, Component) {
 
     return {
       run : function(){
 
-          describe('PropertyIntegerView', function() {
+          describe('PropertyColorView', function() {
 
             var component;
             var $fixtures;
@@ -14,13 +14,8 @@ define([path + 'PropertyIntegerView', 'StyleManager/model/Property', 'DomCompone
             var model;
             var view;
             var propName = 'testprop';
-            var intValue = '55';
-            var unitValue = 'px';
-            var propValue = intValue + unitValue;
+            var propValue = '#fff';
             var defValue = 'test2value';
-            var units = ['px', '%', 'em'];
-            var minValue = -15;
-            var maxValue = 15;
 
             before(function () {
               $fixtures  = $("#fixtures");
@@ -31,11 +26,10 @@ define([path + 'PropertyIntegerView', 'StyleManager/model/Property', 'DomCompone
               target = new Component();
               component = new Component();
               model = new Property({
-                type: 'integer',
-                units: units,
+                type: 'color',
                 property: propName
               });
-              view = new PropertyIntegerView({
+              view = new PropertyColorView({
                 model: model
               });
               $fixture.empty().appendTo($fixtures);
@@ -63,57 +57,38 @@ define([path + 'PropertyIntegerView', 'StyleManager/model/Property', 'DomCompone
             it('Inputs rendered', function() {
               var prop = view.el;
               prop.querySelector('input[type=text]').should.be.ok;
-              prop.querySelector('select.unit').should.be.ok;
-            });
-
-            it('Units rendered', function() {
-              var select = view.el.querySelector('select.unit');
-              select.children.length.should.equal(units.length);
-            });
-
-            it('Units rendered correctly', function() {
-              var children = view.el.querySelector('select.unit').children;
-              children[0].textContent.should.equal(units[0]);
-              children[1].textContent.should.equal(units[1]);
-              children[2].textContent.should.equal(units[2]);
+              prop.querySelector('.color-picker').should.be.ok;
             });
 
             it('Inputs should exist', function() {
               view.$input.should.be.ok;
-              view.$unit.should.be.ok;
+              view.$colorPicker.should.be.ok;
             });
 
             it('Input value is empty', function() {
               view.model.get('value').should.be.empty;
-              view.model.get('unit').should.equal('px');
+              view.$input.val().should.be.empty;
             });
 
             it('Update model on setValue', function() {
-              view.setValue(intValue + unitValue);
-              view.model.get('value').should.equal(parseFloat(intValue));
-              view.model.get('unit').should.equal(unitValue);
-              view.$input.val().should.equal(intValue);
-              view.$unit.val().should.equal(unitValue);
+              view.setValue(propValue);
+              view.model.get('value').should.equal(propValue);
+              view.$input.val().should.equal(propValue);
             });
 
             it('Update model on input change', function() {
-              view.$input.val(123).trigger('change');
-              view.model.get('value').should.equal(123);
-            });
-
-            it('Update model on unit change', function() {
-              view.$unit.val(units[1]).trigger('change');
-              view.model.get('unit').should.equal(units[1]);
+              view.$input.val(propValue).trigger('change');
+              view.model.get('value').should.equal(propValue);
             });
 
             it('Update input on value change', function() {
-              view.model.set('value', intValue);
-              view.getInputValue().should.equal(intValue);
+              view.model.set('value', propValue);
+              view.getInputValue().should.equal(propValue);
             });
 
             it('Update target on value change', function() {
               view.selectedComponent = component;
-              view.model.set('value', intValue);
+              view.model.set('value', propValue);
               var compStyle = view.selectedComponent.get('style');
               var assertStyle = {};
               assertStyle[propName] = propValue;
@@ -124,7 +99,7 @@ define([path + 'PropertyIntegerView', 'StyleManager/model/Property', 'DomCompone
 
               beforeEach(function () {
                 target.model = component;
-                view = new PropertyIntegerView({
+                view = new PropertyColorView({
                   model: model,
                   propTarget: target
                 });
@@ -137,8 +112,8 @@ define([path + 'PropertyIntegerView', 'StyleManager/model/Property', 'DomCompone
                 style[propName] = propValue;
                 component.set('style', style);
                 view.propTarget.trigger('update');
-                view.model.get('value').should.equal(parseFloat(intValue));
-                view.getInputValue().should.equal(intValue);
+                view.model.get('value').should.equal(propValue);
+                view.getInputValue().should.equal(propValue);
               });
 
               it('Update value after multiple swaps', function() {
@@ -146,13 +121,11 @@ define([path + 'PropertyIntegerView', 'StyleManager/model/Property', 'DomCompone
                 style[propName] = propValue;
                 component.set('style', style);
                 view.propTarget.trigger('update');
-                style[propName] = '20em';
+                style[propName] = '#123123';
                 component.set('style', style);
                 view.propTarget.trigger('update');
-                view.model.get('value').should.equal(20);
-                view.model.get('unit').should.equal('em');
-                view.$input.val().should.equal('20');
-                view.$unit.val().should.equal('em');
+                view.model.get('value').should.equal('#123123');
+                view.$input.val().should.equal('#123123');
               });
 
             })
@@ -162,15 +135,11 @@ define([path + 'PropertyIntegerView', 'StyleManager/model/Property', 'DomCompone
               beforeEach(function () {
                 component = new Component();
                 model = new Property({
-                  type: 'integer',
-                  units: units,
+                  type: 'color',
                   property: propName,
-                  defaults: intValue,
-                  min: minValue,
-                  max: maxValue,
-                  unit: units[1],
+                  defaults: propValue,
                 });
-                view = new PropertyIntegerView({
+                view = new PropertyColorView({
                   model: model
                 });
                 $fixture.empty().appendTo($fixtures);
@@ -178,25 +147,11 @@ define([path + 'PropertyIntegerView', 'StyleManager/model/Property', 'DomCompone
               });
 
               it('Value as default', function() {
-                view.model.get('value').should.equal(intValue);
-                view.model.get('unit').should.equal(units[1]);
+                view.model.get('value').should.equal(propValue);
               });
 
               it('Input value is as default', function() {
-                view.$input.val().should.equal(intValue);
-                view.$unit.val().should.equal(units[1]);
-              });
-
-              it('Input follows min', function() {
-                view.$input.val(minValue - 50).trigger('change');
-                view.model.get('value').should.equal(minValue);
-                view.$input.val().should.equal(minValue + "");
-              });
-
-              it('Input follows max', function() {
-                view.$input.val(maxValue + 50).trigger('change');
-                view.model.get('value').should.equal(maxValue);
-                view.$input.val().should.equal(maxValue + "");
+                view.$input.val().should.equal(propValue);
               });
 
             });
