@@ -8,6 +8,7 @@ define([
         modulePath + '/view/PropertyView',
         modulePath + '/view/PropertySelectView',
         modulePath + '/view/PropertyRadioView',
+        modulePath + '/view/PropertyIntegerView',
          ],
   function(
           StyleManager,
@@ -16,7 +17,8 @@ define([
           SectorsView,
           PropertyView,
           PropertySelectView,
-          PropertyRadioView
+          PropertyRadioView,
+          PropertyIntegerView
           ) {
 
     describe('StyleManager', function() {
@@ -188,6 +190,7 @@ define([
         PropertyView.run();
         PropertySelectView.run();
         PropertyRadioView.run();
+        PropertyIntegerView.run();
 
       });
 

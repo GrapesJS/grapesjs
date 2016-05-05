@@ -14,9 +14,9 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyInteger.html']
 			this.max = this.model.get('max') || this.model.get('max')===0 ? this.model.get('max') : 5000;
 			this.units = this.model.get('units');
 			this.unit = this.model.get('unit') ? this.model.get('unit') : (this.units.length ? this.units[0] : '');
-			this.events['click .'+this.pfx+'u-arrow']					= 'upArrowClick';
-			this.events['click .'+this.pfx+'d-arrow']					= 'downArrowClick';
-			this.events['mousedown .'+this.pfx+'int-arrows']	= 'downIncrement';
+			this.events['click .'+this.pfx+'u-arrow'] = 'upArrowClick';
+			this.events['click .'+this.pfx+'d-arrow'] = 'downArrowClick';
+			this.events['mousedown .'+this.pfx+'int-arrows'] = 'downIncrement';
 			this.listenTo( this.model ,'change:unit', this.valueChanged);
 			this.delegateEvents();
 		},
@@ -111,8 +111,8 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyInteger.html']
 				if(this.units && this.units.length){
 					this.unitS = '<select class="' + pfx + 'unit">';
 					_.each(this.units,function(unit){
-						var selected 	= unit == this.selectedUnit ? 'selected': '';
-						this.unitS 		+= '<option '+selected+' >'+unit+'</option>';
+						var selected = unit == this.selectedUnit ? 'selected': '';
+						this.unitS += '<option ' + selected + ' >' + unit + '</option>';
 					},this);
 					this.unitS += '</select>';
 					this.$unit = $(this.unitS);
@@ -145,7 +145,7 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyInteger.html']
 			if(this.$unit)
 				this.$unit.val(u);
 
-			this.model.set({value: v, unit: u,},{silent: true});
+			this.model.set({value: v, unit: u,}, {silent: true});
 		},
 
 	});
