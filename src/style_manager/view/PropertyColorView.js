@@ -7,17 +7,6 @@ define(['backbone','./PropertyView', 'Spectrum', 'text!./../templates/propertyCo
 
 		template: _.template(propertyTemplate),
 
-		/**
-		 * @inheritdoc
-		 * */
-		valueChanged: function(){
-			PropertyView.prototype.valueChanged.apply(this, arguments);
-			if(this.$colorPicker){
-				var v	= this.model.get('value');
-				this.$colorPicker.spectrum("set", v).css('background-color', v);
-			}
-		},
-
 		/** @inheritdoc */
 		renderInput: function() {
 			if(!this.$input){
@@ -52,8 +41,11 @@ define(['backbone','./PropertyView', 'Spectrum', 'text!./../templates/propertyCo
 			PropertyView.prototype.setValue.apply(this, arguments);
 			var v = this.model.get('value') || this.defaultValue;
 			v = value || v;
-			if(this.$colorPicker)
-				this.$colorPicker.spectrum("set", v).css('background-color',v);
+			if(this.$colorPicker){
+				v = v === 'none' ? '#fff' : v;
+				this.$colorPicker.spectrum("set", v);
+				this.$colorPicker.get(0).style.backgroundColor = v;
+			}
 		},
 
 	});

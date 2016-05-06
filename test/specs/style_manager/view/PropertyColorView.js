@@ -18,6 +18,7 @@ define([path + 'PropertyColorView', 'StyleManager/model/Property', 'DomComponent
             var defValue = 'test2value';
 
             before(function () {
+              $.fn.spectrum = function(){};
               $fixtures  = $("#fixtures");
               $fixture   = $('<div class="sm-fixture"></div>');
             });
