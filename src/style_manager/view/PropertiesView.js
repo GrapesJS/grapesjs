@@ -41,14 +41,14 @@ define(['backbone','./PropertyView', './PropertyIntegerView', './PropertyRadioVi
 				}
 
 				var view = new objView({
-					model			: model,
-					name			: model.get('name'),
-					id				: this.pfx + model.get('property'),
-					target			: this.target,
-					propTarget	: this.propTarget,
-					onChange		: this.onChange,
-					onInputRender	: this.onInputRender,
-					config			: this.config,
+					model: model,
+					name: model.get('name'),
+					id: this.pfx + model.get('property'),
+					target: this.target,
+					propTarget: this.propTarget,
+					onChange: this.onChange,
+					onInputRender: this.onInputRender,
+					config: this.config,
 				});
 
 				if(model.get('type') != 'composite'){

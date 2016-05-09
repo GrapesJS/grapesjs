@@ -10,8 +10,8 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 		initialize: function(o) {
 			PropertyView.prototype.initialize.apply(this, arguments);
 			_.bindAll(this, 'build');
-			this.config		= o.config;
-			this.className 	= this.className + ' '+ this.pfx +'composite';
+			this.config = o.config || {};
+			this.className = this.className + ' '+ this.pfx +'composite';
 		},
 
 		/**
@@ -26,8 +26,8 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 					this.$input = $('<input>', {value: 0, type: 'hidden' });
 
 				if(!this.props){
-					var Properties 	= require('./../model/Properties');
-					this.props		= new Properties(props);
+					var Properties = require('./../model/Properties');
+					this.props = new Properties(props);
 					this.model.set('properties', this.props);
 				}
 
@@ -36,13 +36,14 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 					this.props.each(function(prop, index){
 						prop.set('doNotStyle', true);
 					});
+
 					//Not yet supported nested composite
 					this.props.each(function(prop, index){
 						if(prop && prop.get('type') == 'composite'){
 							this.props.remove(prop);
-							console.warn(prop.get('property')+' of type composite not yet allowed.');
+							console.warn('Nested composite types not yet allowed.');
 						}
-					},this);
+					}, this);
 
 					var PropertiesView 	= require('./PropertiesView');
 					var that 			= this;
@@ -51,17 +52,23 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 						collection	: this.props,
 						target			: this.target,
 						propTarget	: this.propTarget,
+						// On any change made to children I need to update composite value
 						onChange		: function(el, model){
 							var result = that.build(el, model);
 							that.model.set('value', result);
 						},
-						onInputRender	: function(property, mIndex){
-							var value = that.valueOnIndex(mIndex, property.model);
-							property.setValue(value);
-						},
+						// Each child property will receive a full composite string, eg. '0px 0px 10px 0px'
+						// I need to extract from that string the corresponding one to that property.
 						customValue		: function(property, mIndex){
 							return that.valueOnIndex(mIndex, property.model);
 						},
+						// setValue is already invoked by renderInput().
+						// TODO: Remove definitively after all tests
+						/*
+						onInputRender	: function(property, mIndex){
+							var value = that.valueOnIndex(mIndex, property.model);
+							property.setValue(value);
+						},*/
 					});
 					this.$props = propsView.render().$el;
 					this.$el.find('#'+ this.pfx +'input-holder').html(this.$props);
@@ -94,7 +101,6 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 			var a		= this.getComponentValue().split(' ');
 			if(a.length && a[index]){
 				result = a[index];
-				//Check for function type values
 				if(model && model.get('functionName')){
 					var v = this.fetchFromFunction(result);
 					if(v)
@@ -108,19 +114,19 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 		 * Build composite value
 		 * @param Object Selected element
 		 * @param Object Property model
-		 *
+		 * @todo  alias getValueForTarget?
 		 * @return string
 		 * */
 		build: function(selectedEl, propertyModel){
 			var result 	= '';
 			this.model.get('properties').each(function(prop){
+				//TODO v = prop.getValueForTarget(); -> functionName inside?!?
 				var v		= (prop.get('value') || prop.get('defaults')) + prop.get('unit'),
 					func	= prop.get('functionName');
 				if(func)
 					v =  func + '(' + v + ')';
 				result 	+= v + ' ';
 			});
-			//Remove also the last white space
 			return result.replace(/ +$/,'');
 		},
 

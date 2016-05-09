@@ -11,7 +11,7 @@ define(['backbone'],
 				unit: '',
 				defaults: '',
 				info: '',
-				value: '', //Selected value of the property (?)
+				value: '',
 				icon: '',
 				preview: false,
 				functionName:	'',

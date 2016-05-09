@@ -10,6 +10,7 @@ define([
         modulePath + '/view/PropertyRadioView',
         modulePath + '/view/PropertyIntegerView',
         modulePath + '/view/PropertyColorView',
+        modulePath + '/view/PropertyCompositeView',
          ],
   function(
           StyleManager,
@@ -20,7 +21,8 @@ define([
           PropertySelectView,
           PropertyRadioView,
           PropertyIntegerView,
-          PropertyColorView
+          PropertyColorView,
+          PropertyCompositeView
           ) {
 
     describe('StyleManager', function() {
@@ -194,6 +196,7 @@ define([
         PropertyRadioView.run();
         PropertyIntegerView.run();
         PropertyColorView.run();
+        PropertyCompositeView.run();
 
       });
 

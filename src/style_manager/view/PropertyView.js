@@ -33,6 +33,16 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 		},
 
 		/**
+		 * Returns selected target which should have 'style' property
+		 * @return {Model|null}
+		 */
+		getTarget: function(){
+			if(this.selectedComponent)
+				return this.selectedComponent;
+			return this.propTarget ? this.propTarget.model : null;
+		},
+
+		/**
 		 * Fired when the input value is updated
 		 */
 		valueUpdated: function(){
@@ -136,7 +146,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 			if(this.$input)
 				this.setValue(mVal);
 
-			if(!this.selectedComponent)
+			if(!this.getTarget())
 				return;
 
 			// Check if component is allowed to be styled
@@ -149,21 +159,20 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 				value =  this.func + '(' + value + ')';
 
 			if( !this.model.get('doNotStyle') ){
-				var componentCss = _.clone( this.selectedComponent.get('style') );
+				var componentCss = _.clone( this.getTarget().get('style') );
 
 				if(value)
 					componentCss[this.property] = value;
 				else
 					delete componentCss[this.property];
 
-				this.selectedComponent.set('style', componentCss, { avoidStore : avSt});
+				this.getTarget().set('style', componentCss, { avoidStore : avSt});
 				if(this.helperComponent)
 					this.helperComponent.set('style', componentCss, { avoidStore : avSt});
 			}
-			this.selectedValue = value;
 
 			if(this.onChange && typeof this.onChange === "function"){
-				this.onChange(this.selectedComponent, this.model);
+				this.onChange(this.getTarget(), this.model);
 			}
 		},
 
@@ -172,9 +181,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 		 * @return {Boolean}
 		 */
 		isTargetStylable: function(){
-			if(!this.selectedComponent)
-				return;
-			var stylable = this.selectedComponent.get('stylable');
+			var stylable = this.getTarget().get('stylable');
 			// Stylable could also be an array indicating with which property
 			// the target could be styled
 			if(stylable instanceof Array)
@@ -251,10 +258,6 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 		 * */
 		renderInputRequest: function(){
 			this.renderInput();
-			if(this.onInputRender && typeof this.onInputRender === "function"){
-				var index =  this.model.collection.indexOf(this.model);
-				this.onInputRender(this, index);
-			}
 		},
 
 		/**
