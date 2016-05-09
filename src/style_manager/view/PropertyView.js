@@ -18,7 +18,6 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 			this.onChange = o.onChange || {};
 			this.onInputRender = o.onInputRender	|| {};
 			this.customValue	= o.customValue	|| {};
-			this.func = this.model.get('functionName');
 			this.defaultValue = this.model.get('defaults');
 			this.property = this.model.get('property');
 			this.input = this.$input = null;
@@ -122,7 +121,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 		 * @return {string}
 		 */
 		getValueForTarget: function(){
-			return this.model.get('value');
+			return this.model.getValue();
 		},
 
 		/**
@@ -155,8 +154,9 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 
 			value = this.getValueForTarget();
 
-			if(this.func)
-				value =  this.func + '(' + value + ')';
+			var func = this.model.get('functionName');
+			if(func)
+				value =  func + '(' + value + ')';
 
 			if( !this.model.get('doNotStyle') ){
 				var componentCss = _.clone( this.getTarget().get('style') );

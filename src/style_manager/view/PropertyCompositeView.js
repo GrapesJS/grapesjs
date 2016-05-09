@@ -120,8 +120,7 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 		build: function(selectedEl, propertyModel){
 			var result 	= '';
 			this.model.get('properties').each(function(prop){
-				//TODO v = prop.getValueForTarget(); -> functionName inside?!?
-				var v		= (prop.get('value') || prop.get('defaults')) + prop.get('unit'),
+				var v		= prop.getValue();
 					func	= prop.get('functionName');
 				if(func)
 					v =  func + '(' + v + ')';

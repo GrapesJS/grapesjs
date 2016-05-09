@@ -90,6 +90,16 @@ define([path + 'PropertyView', 'StyleManager/model/Property', 'DomComponents/mod
               compStyle.should.deep.equal(assertStyle);
             });
 
+            it('Update target on value change with functionName', function() {
+              view.selectedComponent = component;
+              view.model.set('functionName', 'testfunc');
+              view.model.set('value', propValue);
+              var compStyle = view.selectedComponent.get('style');
+              var assertStyle = {};
+              assertStyle[propName] = 'testfunc(' + propValue + ')';
+              compStyle.should.deep.equal(assertStyle);
+            });
+
             it('Clean target from the property if its value is empty', function() {
               view.selectedComponent = component;
               view.model.set('value', propValue);
