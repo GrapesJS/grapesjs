@@ -16,8 +16,6 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 
 		/**
 		 * Renders input
-		 *
-		 * @return void
 		 * */
 		renderInput: function() {
 			var props	= this.model.get('properties');
@@ -62,13 +60,6 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 						customValue		: function(property, mIndex){
 							return that.valueOnIndex(mIndex, property.model);
 						},
-						// setValue is already invoked by renderInput().
-						// TODO: Remove definitively after all tests
-						/*
-						onInputRender	: function(property, mIndex){
-							var value = that.valueOnIndex(mIndex, property.model);
-							property.setValue(value);
-						},*/
 					});
 					this.$props = propsView.render().$el;
 					this.$el.find('#'+ this.pfx +'input-holder').html(this.$props);
@@ -78,8 +69,7 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 
 		/**
 		 * Get default value of the property
-		 *
-		 * @return string
+		 * @return {string}
 		 * */
 		getDefaultValue: function(){
 			var str = '';
@@ -91,20 +81,19 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 
 		/**
 		 * Extract string from composite value
-		 * @param integer	Index
-		 * @param object 	Property model
-		 *
-		 * @return string
+		 * @param {number} index Index
+		 * @param {Object} model Property model
+		 * @return {string}
 		 * */
 		valueOnIndex: function(index, model){
-			var result 	= null;
-			var a		= this.getComponentValue().split(' ');
+			var result = null;
+			var a = this.getComponentValue().split(' ');
 			if(a.length && a[index]){
 				result = a[index];
 				if(model && model.get('functionName')){
 					var v = this.fetchFromFunction(result);
 					if(v)
-						result	= v;
+						result = v;
 				}
 			}
 			return result;
@@ -112,18 +101,19 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 
 		/**
 		 * Build composite value
-		 * @param Object Selected element
-		 * @param Object Property model
-		 * @todo  alias getValueForTarget?
-		 * @return string
+		 * @param {Object} selectedEl Selected element
+		 * @param {Object} propertyModel Property model
+		 * @return {string}
 		 * */
 		build: function(selectedEl, propertyModel){
 			var result 	= '';
 			this.model.get('properties').each(function(prop){
 				var v		= prop.getValue();
 					func	= prop.get('functionName');
+
 				if(func)
 					v =  func + '(' + v + ')';
+
 				result 	+= v + ' ';
 			});
 			return result.replace(/ +$/,'');

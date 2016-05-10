@@ -55,7 +55,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 		targetUpdated: function(){
 			this.selectedComponent = this.propTarget.model;
 			this.helperComponent = this.propTarget.helper;
-			if(this.selectedComponent){
+			if(this.getTarget()){
 				if(!this.sameValue())
 					this.renderInputRequest();
 			}
@@ -78,10 +78,12 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 		 * @return {String}
 		 * */
 		getComponentValue: function(){
-			if(!this.selectedComponent)
+			var target = this.getTarget();
+
+			if(!target)
 				return;
 
-			var targetProp = this.selectedComponent.get('style')[this.property];
+			var targetProp = target.get('style')[this.property];
 			if(targetProp)
 				this.componentValue = targetProp;
 			else

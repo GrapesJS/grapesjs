@@ -174,6 +174,21 @@ define([path + 'PropertyCompositeView', 'StyleManager/model/Property', 'DomCompo
                 $prop3.val().should.equal('val1');
               });
 
+              it('The value is correctly extracted from the composite string', function() {
+                var style = {};
+                style[propName] = 'value1 value2 value3 value4';
+                component.set('style', style);
+                view.valueOnIndex(2).should.equal('value3');
+                view.valueOnIndex(0).should.equal('value1');
+                (view.valueOnIndex(4) === null).should.equal(true);
+              });
+
+              it('Build value from properties', function() {
+                view.model.get('properties').at(0).set('value', propValue);
+                view.model.get('properties').at(2).set('value', prop3Val);
+                view.build().should.equal(finalResult);
+              });
+
             })
 
             describe('Init property', function() {

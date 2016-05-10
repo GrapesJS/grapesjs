@@ -63,7 +63,7 @@ define([path + 'LayerView', 'StyleManager/model/Layers'],
               style.cssText.should.be.empty;
             });
 
-            it('Changes on valuePreview update preview box', function() {
+            it.skip('Changes on valuePreview update preview box', function() {
               var layerProp = 'color';
               var layerPrevValue = 'red';
               view.model.set('preview', true);

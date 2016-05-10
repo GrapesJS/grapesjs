@@ -1,5 +1,5 @@
-define(['backbone'],
-	function(Backbone) {
+define(['backbone', './Layers'],
+	function(Backbone, Layers) {
 
 		return Backbone.Model.extend({
 
@@ -14,10 +14,22 @@ define(['backbone'],
 				value: '',
 				icon: '',
 				preview: false,
+				detached: false,
 				functionName:	'',
 				properties: [],
 				layers: [],
 				list: [],
+			},
+
+			initialize: function(opt) {
+				var o = opt || {};
+				var type = this.get('type');
+
+				switch(type){
+					case 'stack':
+						this.set('layers', new Layers());
+						break;
+				}
 			},
 
 			/**
