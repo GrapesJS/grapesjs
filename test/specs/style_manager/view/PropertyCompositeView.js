@@ -133,13 +133,6 @@ define([path + 'PropertyCompositeView', 'StyleManager/model/Property', 'DomCompo
               });
 
               it('Update model on input change', function() {
-                var $prop1 = view.$props.find('#' + properties[0].property + ' input');
-                var $prop2 = view.$props.find('#' + properties[1].property + ' input');
-                var $prop3 = view.$props.find('#' + properties[2].property + ' select');
-                var prop3Val = properties[2].list[2].value;
-                var prop2Val = properties[1].defaults;
-                var prop2Unit = properties[1].units[0];
-                var finalResult = propValue + ' ' + prop2Val + prop2Unit +' ' + prop3Val;
                 $prop1.val(propValue).trigger('change');
                 $prop3.val(prop3Val).trigger('change');
                 view.model.get('value').should.equal(finalResult);
@@ -152,7 +145,6 @@ define([path + 'PropertyCompositeView', 'StyleManager/model/Property', 'DomCompo
               });
 
               it('Update target on value change', function() {
-                var $prop1 = view.$props.find('#' + properties[0].property + ' input');
                 $prop1.val(propValue).trigger('change');
                 var compStyle = view.getTarget().get('style');
                 var assertStyle = {};
@@ -174,7 +166,7 @@ define([path + 'PropertyCompositeView', 'StyleManager/model/Property', 'DomCompo
                 style[propName] = finalResult;
                 component.set('style', style);
                 view.propTarget.trigger('update');
-                style[propName] = propValue + '2 ' + prop2Val + '2' + prop2Unit +' ' + 'val1';
+                style[propName] = propValue + '2 ' + prop2Val + '2' + prop2Unit + ' ' + 'val1';
                 component.set('style', style);
                 view.propTarget.trigger('update');
                 $prop1.val().should.equal(propValue + '2');

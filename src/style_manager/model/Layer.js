@@ -4,10 +4,10 @@ define(['backbone'],
 		return Backbone.Model.extend({
 
 			defaults: {
-				name 	: '',
-				active	: true,
-				value 	: '',
-				preview	: false,
+				name: '',
+				active: true,
+				value: '',
+				preview: false,
 			}
 
     });
