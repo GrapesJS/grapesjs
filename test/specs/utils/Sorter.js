@@ -137,6 +137,14 @@ define([path + 'Sorter',],
               obj.plh.style.display.should.equal('block');
             });
 
+            it('getDim from element', function() {
+              var subPos = obj.offset(sib1);
+              var top = subPos.top;
+              var left = subPos.left;
+              var result = [top, left, 50, 100];
+              obj.getDim(sib1).should.deep.equal(result);
+            });
+
             it('getChildrenDim from element', function() {
               el.style.position = 'absolute';
               el.style.top = '0';
@@ -144,13 +152,119 @@ define([path + 'Sorter',],
               ch = ch.map(function(v){
                 return v.slice(0, 5);
               });
+              var subPos = obj.offset(sib1);
+              var top = subPos.top;
+              var left = subPos.left;
               var result = [
-                [0, 0, 50, 100, true],
-                [50, 0, 50, 100, true],
-                [100, 0, 50, 100, true],
-                [100, 100, 50, 70, true],
-              ]
+                [top, left, 50, 100, true],
+                [top + 50, left + 0, 50, 100, true],
+                [top + 100, left + 0, 50, 100, true],
+                [top + 100, left + 100, 50, 70, true],
+              ];
               ch.should.deep.equal(result);
+            });
+
+            it('nearBorders', function() {
+              obj.borderOffset = 10;
+              var dim = [0, 0, 100, 200];
+              obj.nearBorders(dim, 20, 15).should.equal(false);
+              obj.nearBorders(dim, 3, 4).should.equal(true);
+              obj.nearBorders(dim, 500, 500).should.equal(true);
+            });
+
+            it('dimsFromTarget', function() {
+              var child1 = document.createElement('div');
+              var child2 = document.createElement('div');
+              child1.style.width = '30px';
+              child1.style.height = '30px';
+              child2.style.width = '30px';
+              child2.style.height = '20px';
+              sib3.appendChild(child1);
+              sib3.appendChild(child2);
+
+              var subPos = obj.offset(sib1);
+              var top = subPos.top;
+              var left = subPos.left;
+              var topSib3 = top + 100;
+              var leftSib3 = left + 0;
+              var resultParent = [
+                [top, left, 50, 100, true],
+                [top + 50, left + 0, 50, 100, true],
+                [topSib3, leftSib3, 50, 100, true],
+                [top + 100, left + 100, 50, 70, true],
+              ];
+              var resultChildren = [
+                [topSib3, leftSib3, 30, 30, true],
+                [topSib3 + 30, left + 0, 20, 30, true],
+              ];
+
+              var dims = obj.dimsFromTarget(sib3);
+              dims = dims.map(function(v){
+                return v.slice(0, 5);
+              });
+              dims.should.deep.equal(resultParent);
+
+              // Inside target
+              var dims = obj.dimsFromTarget(sib3, leftSib3 + 15, topSib3 + 15);
+              dims = dims.map(function(v){
+                return v.slice(0, 5);
+              });
+              dims.should.deep.equal(resultChildren);
+
+              // Exactly on border
+              var bOffset = obj.borderOffset;
+              var dims = obj.dimsFromTarget(sib3, leftSib3 + bOffset, topSib3 + bOffset);
+              dims = dims.map(function(v){
+                return v.slice(0, 5);
+              });
+              dims.should.deep.equal(resultChildren);
+
+              // Slightly near border
+              var dims = obj.dimsFromTarget(sib3, leftSib3 + bOffset - 3, topSib3 + bOffset);
+              dims = dims.map(function(v){
+                return v.slice(0, 5);
+              });
+              dims.should.deep.equal(resultParent);
+            });
+
+
+            describe('findPosition', function() {
+
+              var dimsTree;
+
+              beforeEach(function () {
+                vertDims = [
+                  [0, 0, 50, 100, true],
+                  [50, 0, 50, 100, true],
+                  [100, 0, 50, 100, true],
+                  [150, 0, 50, 70, true],
+                ];
+              });
+
+              it('Vertical dimensions', function() {
+                var result = {index: 0, method: 'before'};
+                obj.findPosition(vertDims, -10, -10).should.deep.equal(result);
+                obj.findPosition(vertDims, 0, 0).should.deep.equal(result);
+                obj.findPosition(vertDims, 10, 10).should.deep.equal(result);
+
+                var result = {index: 1, method: 'before'};
+                obj.findPosition(vertDims, 10, 30).should.deep.equal(result);
+                obj.findPosition(vertDims, 10, 70).should.deep.equal(result);
+
+                var result = {index: 2, method: 'before'};
+                obj.findPosition(vertDims, 10, 76).should.deep.equal(result);
+
+                var result = {index: 3, method: 'before'};
+                obj.findPosition(vertDims, 100, 140).should.deep.equal(result);
+                obj.findPosition(vertDims, 100, 160).should.deep.equal(result);
+
+                var result = {index: 3, method: 'after'};
+                obj.findPosition(vertDims, 1000, 1000).should.deep.equal(result);
+              });
+
+            });
+
+            it.skip('movePlaceholder', function() {
             });
 
           });

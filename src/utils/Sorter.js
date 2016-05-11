@@ -4,7 +4,7 @@ define(['backbone'],
     return Backbone.View.extend({
 
       initialize: function(opt) {
-        _.bindAll(this,'startSort','onMove','endMove','rollback', 'itemLeft');
+        _.bindAll(this,'startSort','onMove','endMove','rollback');
         var o = opt || {};
         this.config = o.config || {};
         this.pfx = this.config.stylePrefix || '';
@@ -14,6 +14,8 @@ define(['backbone'],
 
         this.elT = 0;
         this.elL = 0;
+        this.borderOffset = o.borderOffset || 10;
+        this.freezeClass = o.freezeClass || 'freezed';
 
         this.el = document.querySelector(o.container);
         this.$el = $(this.el);
@@ -82,18 +84,20 @@ define(['backbone'],
 
       /**
        * Picking component to move
-       * @param {Object}  Element view
+       * @param {Object} trg
        * */
-      startSort: function(el){
+      startSort: function(trg){
         this.moved = 0;
-        this.eV = el.el || el;
+        this.eV = trg.el || trg;
 
         // Create placeholder if not exists
         if(!this.plh){
           this.plh = this.createPlaceholder();
           this.el.appendChild(this.plh);
         }
-        //freeze el
+        //freeze el.. add this.freezeClass
+
+        //callback onStart
 
         this.$el.on('mousemove',this.onMove);
         $(document).on('mouseup',this.endMove);
@@ -114,25 +118,23 @@ define(['backbone'],
         }
 
         // Cache all necessary positions
-        var rect = this.el.getBoundingClientRect();
-        var body = document.body;
-        var eO = { top: rect.top + body.scrollTop, left: rect.left + body.scrollLeft };
+        var eO = this.offset(this.el);
         this.elT = eO.top;
         this.elL = eO.left;
-        this.rY = (e.pageY - this.elT) + this.el.scrollTop;
         this.rX = (e.pageX - this.elL) + this.el.scrollLeft;
+        this.rY = (e.pageY - this.elT) + this.el.scrollTop;
 
-        this.inspect(e);
-        this.updatePosition(this.rX, this.rY);
-        var actualPos   = this.posIndex+':'+this.posMethod;
+        var dims = this.dimsFromTarget(e.target, this.rX, this.rY);
+        var pos = this.findPosition(dims, this.rX, this.rY);
+        var actualPos = pos.index + ':' + pos.method;
 
-        //If there is a significant changes with the pointer
+        // If there is a significant changes with the pointer
         if(!this.lastPos || (this.lastPos != actualPos)){
-          this.updatePlaceholderPos(this.posIndex, this.posMethod);
-          this.lastPos  = this.posIndex+':'+this.posMethod;
+          this.movePlaceholder(this.plh, dims, pos, this.prevTargetDim);
+          this.lastPos = actualPos;
         }
-        //Working alternative for find taget element
-        //var $targetEl = this.$selParent.children('.'+this.pfx+this.config.itemClass).eq(this.aIndex);
+
+        //callback onMove
       },
 
       /**
@@ -141,100 +143,185 @@ define(['backbone'],
        * @retun {Array}
        * */
       getChildrenDim: function(elem){
-        var dim = [];
-        var ch = elem.children;//TODO filter match
+        var dims = [];
+        var ch = elem.children; //TODO filter match
         for (var i = 0, len = ch.length; i < len; i++) {
-            var el = ch[i];
-            var elO = this.offset(el);
-            dim.push([elO.top - this.elT, elO.left - this.elL, el.offsetHeight, el.offsetWidth, true, el]);
+          var el = ch[i];
+          var dim = this.getDim(el);
+          dim.push(true); //TODO check if in flow, now only for vertical elements
+          dim.push(el);
+          dims.push(dim);
         }
-        return dim;
+        return dims;
       },
 
       /**
-       * Search where to put placeholder
-       * @param int X position of the mouse
-       * @param int Y position of the mouse
-       * @retun void
-       * */
-      updatePosition: function( posX, posY ){
-        this.posMethod = "before";
-        this.posIndex = 0;
-        var leftLimit = 0, xLimit = 0, dimRight = 0, yLimit = 0, xCenter = 0, yCenter = 0, dimDown = 0, dim = 0;
-        for(var i = 0; i < this.cDim.length; i++){                      //Dim => t,l,h,w
-          dim = this.cDim[i];
-          dimDown = dim[0] + dim[2];
-          yCenter = dim[0] + (dim[2] / 2);                        //Horizontal center
-          xCenter = dim[1] + (dim[3] / 2);                        //Vertical center
-          dimRight = dim[1] + dim[3];
-          if( (xLimit && dim[1] > xLimit) || (yLimit && yCenter > yLimit) ||
-            (leftLimit && dimRight < leftLimit))                    //No need with this one if over the limit
-              continue;
-          if(!dim[4]){                                  //If it's not inFlow (like float element)
-            if( posY < dimDown)
-              yLimit = dimDown;
-            if( posX < xCenter){                            //If mouse lefter than center
-              xLimit = xCenter;
-              this.posMethod = "before";
-            }else{
-              leftLimit = xCenter;
-              this.posMethod = "after";
-            }
-            this.posIndex = i;
-          }else{
-            this.posIndex = this.aIndex = i;
-            if( posY < yCenter ){                           //If mouse upper than center
-              this.posMethod = "before";                        //Should place helper before
-              if(posY < dim[0])
-                this.aIndex = i - 1;
-              break;                                  //No need to continue under inFlow element
-            }else
-              this.posMethod = "after";
+       * Returns dimensions and positions about the element
+       * @param {HTMLElement} el
+       * @return {Array<number>}
+       */
+      getDim: function(el){
+        var o = this.offset(el);
+        return [o.top - this.elT, o.left - this.elL, el.offsetHeight, el.offsetWidth];
+      },
+
+      /**
+       * Get dimensions of nodes relative to the coordinates
+       * @param  {HTMLElement} target
+       * @param {number} rX Relative X position
+       * @param {number} rY Relative Y position
+       * @return {Array<Array>}
+       */
+      dimsFromTarget: function(target, rX, rY){
+        var dims = [];
+
+        if(!this.matches(target, this.itemSel))
+          target = this.closest(target, this.itemSel);
+
+        // Check if the target is different from the previous one
+        if(this.prevTarget){
+          if(this.prevTarget != target){
+            this.prevTarget = null;
           }
         }
+
+        // New target encountered
+        if(!this.prevTarget){
+          var parent = this.closest(target, this.containerSel);
+          this.prevTarget = target;
+          this.prevTargetDim = this.getDim(target);
+          this.cacheDimsP = this.getChildrenDim(parent);
+          this.cacheDims = this.getChildrenDim(target);
+        }
+
+        // If the target is the previous one will return the cached dims
+        if(this.prevTarget == target)
+          dims = this.cacheDims;
+
+        // Generally also on every new target the poiner enters near
+        // to borders, so have to to check always
+        if(this.nearBorders(this.prevTargetDim, rX, rY))
+          dims = this.cacheDimsP;
+
+        return dims;
       },
+
+      /**
+       * Check if the coordinates are near to the borders
+       * @param {Array<number>} dim
+       * @param {number} rX Relative X position
+       * @param {number} rY Relative Y position
+       * @return {Boolean}
+       * */
+      nearBorders: function(dim, rX, rY){
+        var result = 0;
+        var off = this.borderOffset;
+        var x = rX || 0;
+        var y = rY || 0;
+        var t = dim[0];
+        var l = dim[1];
+        var h = dim[2];
+        var w = dim[3];
+        if( ((t + off) > y) || (y > (t + h - off)) ||
+            ((l + off) > x) || (x > (l + w - off)) )
+          result = 1;
+
+        return !!result;
+      },
+
+      /**
+       * Find the position based on passed dimensions and coordinates
+       * @param {Array<Array>} dims Dimensions of nodes to parse
+       * @param {number} posX X coordindate
+       * @param {number} posY Y coordindate
+       * @retun {Object}
+       * */
+      findPosition: function( dims, posX, posY ){
+        var result = {index: 0, method: 'before'};
+        var leftLimit = 0, xLimit = 0, dimRight = 0, yLimit = 0, xCenter = 0, yCenter = 0, dimDown = 0, dim = 0;
+        // Each dim is: Top, Left, Height, Width
+        for(var i = 0, len = dims.length; i < len; i++){
+          dim = dims[i];
+          // Right position of the element. Left + Width
+          dimRight = dim[1] + dim[3];
+          // Bottom position of the element. Top + Height
+          dimDown = dim[0] + dim[2];
+          // X center position of the element. Left + (Width / 2)
+          xCenter = dim[1] + (dim[3] / 2);
+          // Y center position of the element. Top + (Height / 2)
+          yCenter = dim[0] + (dim[2] / 2);
+
+          // Skip if over the limits
+          if( (xLimit && dim[1] > xLimit) ||
+              (yLimit && yCenter > yLimit) ||
+              (leftLimit && dimRight < leftLimit) )
+              continue;
+
+          result.index = i;
+          // If it's not in flow (like 'float' element)
+          if(!dim[4]){
+            if(posY < dimDown)
+              yLimit = dimDown;
+            //If x lefter than center
+            if(posX < xCenter){
+              xLimit = xCenter;
+              result.method = "before";
+            }else{
+              leftLimit = xCenter;
+              result.method = "after";
+            }
+          }else{
+            // If y upper than center
+            if(posY < yCenter){
+              result.method = "before";
+              break;
+            }else
+              result.method = "after"; // After last element
+          }
+        }
+        return result;
+      },
+
 
       /**
        * Updates the position of the placeholder
-       * @param int Index of the nearest child
-       * @param str Before or after position
-       * @return void
+       * @param {HTMLElement} phl
+       * @param {Array<Array>} dims
+       * @param {Object} pos Position object
+       * @param {Array<number>} trgDim target dimensions
        * */
-      updatePlaceholderPos: function(index, method){
+      movePlaceholder: function(plh, dims, pos, trgDim){
         var marg = 0, t = 0, l = 0, w = 0, h = 0,
-          un      = 'px',
-          margI   = 5,
-          plh     = this.$plh[0];
-        if( this.cDim[index] ){
-          var elDim = this.cDim[index];
-          //If it's like with 'float' style
+        un = 'px', margI = 5,
+        method = pos.method;
+        var elDim = dims[pos.index];
+        if(elDim){
+          // If it's not in flow (like 'float' element)
           if(!elDim[4]){
-            w   = 'auto';
-            h   = elDim[2] - (marg * 2) + un;
-            t   = elDim[0] + marg;
-            l   = (method == 'before') ? (elDim[1] - marg) : (elDim[1] + elDim[3] - marg);
+            w = 'auto';
+            h = elDim[2] - (marg * 2) + un;
+            t = elDim[0] + marg;
+            l = (method == 'before') ? (elDim[1] - marg) : (elDim[1] + elDim[3] - marg);
           }else{
             //w   = '100%';
-            w   = elDim[3] + un;
+            w = elDim[3] + un;
             //h   = elDim[3] + un;
-            t   = (method == 'before') ? (elDim[0] - marg) : (elDim[0] + elDim[2] - marg);
-            l   = elDim[1];
+            t = (method == 'before') ? (elDim[0] - marg) : (elDim[0] + elDim[2] - marg);
+            l = elDim[1];
           }
         }else{
-          if(this.$targetEl){
-            var trg   = this.$targetEl[0],
-              $elO  = this.$targetEl.offset();
-            t   = $elO.top  - this.elT  + margI + 17;
-            l   = $elO.left - this.elL  + margI * 7;
-            w     = (parseInt(trg.offsetWidth) - margI * 14) + un;
+          if(trgDim){
+            t = trgDim[0] + margI + 17;
+            l = trgDim[1] + margI * 7;
+            w = (parseInt(trgDim[3]) - margI * 14) + un;
           }
         }
-        plh.style.top     = t + un;
-        plh.style.left      = l + un;
+        plh.style.top = t + un;
+        plh.style.left = l + un;
         if(w)
-          plh.style.width   = w;
+          plh.style.width = w;
         if(h)
-          plh.style.height  = h;
+          plh.style.height = h;
       },
 
       /**
@@ -244,14 +331,15 @@ define(['backbone'],
        * @return void
        * */
       endMove: function(e){
-        this.$el.off('mousemove',this.onMove);
+        this.$el.off('mousemove', this.onMove);
         $(document).off('mouseup', this.endMove);
         $(document).off('keypress', this.rollback);
-        this.eV.unfreeze();
-        this.$plh.hide();
+        //this.eV.unfreeze();
+        //this.$plh.hide();
         if(this.moved)
           this.move(this.$targetEl, this.$sel, this.posIndex, this.posMethod);
-        this.itemLeft();
+        //this.itemLeft(); // Do I need to reset all cached stuff?
+        //callback onMove
       },
 
       /**
@@ -264,8 +352,9 @@ define(['backbone'],
        * @return void
        * */
       move: function(target, el, posIndex, method){
-        var trg         = target|| this.$targetEl;
-        trg           = trg || this.$backupEl;
+        //this.eV
+        var trg = target|| this.$targetEl;
+        trg = trg || this.$backupEl;
         if(!trg)
           return;
         var index         = posIndex || 0;
@@ -285,82 +374,6 @@ define(['backbone'],
           targetCollection.remove(modelTemp);
         }else
           console.warn("Invalid target position");
-      },
-
-      /**
-       * Track inside which element pointer entered
-       * @param event
-       *
-       * @return void
-       * */
-      inspect: function(e){
-        var item    = $(e.target).closest(this.itemClass);
-        if(!this.$targetEl || (item.length && item[0] != this.$targetEl[0]) ){
-          this.status   = 1;
-          if(item.length){
-            this.$targetEl  = this.$backupEl = item;
-            this.$targetElP = this.$targetEl.parent();
-            this.$targetsEl = this.$targetEl.find(this.itemsClass + ':first');
-            this.$targetEl.on('mouseleave', this.itemLeft);
-            this.targetM  = this.$targetEl.data('model');
-            this.dimT   = this.getTargetDim(this.$targetEl[0]);
-            this.cDim     = this.getChildrenDim();
-          }
-        }else if( this.nearToBorders(this.$targetEl[0]) || this.$targetEl[0] == this.$sel[0] ){
-          if(this.status == 1){
-            this.status   = 2;
-            this.lastPos  = null;
-            this.cDim     = this.getChildrenDim(this.$targetElP);
-          }
-        }else if( !this.nearToBorders(this.$targetEl[0]) ){
-          if(this.status == 2){
-            this.status   = 1;
-            this.lastPos  = null;
-          }
-          this.cDim   = [];
-        }
-      },
-
-      /**
-       * Triggered when pointer leaves item
-       * @param event
-       *
-       * @return void
-       * */
-      itemLeft: function(e){
-        if(this.$targetEl){
-          this.$targetEl.off('mouseleave',this.itemLeft);
-          this.$targetEl    = null;
-        }
-      },
-
-      /**
-       * Returns dimension of the target
-       * @param Event
-       *
-       * @return Array
-       * */
-      getTargetDim: function(e){
-        var $el   = $(e),
-          $elO  = $el.offset();
-        return [ $elO.top - this.elT, $elO.left - this.elL, $el.outerHeight(), $el.outerWidth() ];
-      },
-
-      /**
-       * Check if pointer is near to the borders of the target
-       * @param event
-       * @return Bool
-       * */
-      nearToBorders: function(e){
-        var m = 10;                                   //Limit in pixels for be near
-        if(!this.dimT)
-          return;
-        var dimT = this.dimT;
-        if( ((dimT[0] + m) > this.rY) || (this.rY > (dimT[0] + dimT[2] - m)) ||
-          ((dimT[1] + m) > this.rX) || (this.rX > (dimT[1] + dimT[3] - m))  )
-          return 1;
-        else
-          return 0;
       },
 
       /**
