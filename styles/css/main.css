@@ -3215,6 +3215,17 @@ ol.example li.placeholder:before {
   .wte-sm-sector .wte-sm-btn-upload #wte-sm-label, .wte-clm-tags .wte-sm-btn-upload #wte-sm-label {
     padding: 2px 0; }
 
+.wte-sm-layer > #wte-sm-move {
+  opacity: 0.3;
+  filter: alpha(opacity=30);
+  cursor: pointer;
+  font-size: 12px;
+  float: left;
+  margin: 0 5px 0 0; }
+  .wte-sm-layer > #wte-sm-move:hover {
+    opacity: 0.5;
+    filter: alpha(opacity=50); }
+
 /********* END Style Manager **********/
 /********* Class manager **********/
 .wte-clm-tags {

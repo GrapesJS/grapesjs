@@ -80,7 +80,6 @@ define([path + 'LayerView', 'StyleManager/model/Layers'],
               (view.model.get('props') === null).should.equal(true);
             });
 
-
         });
       }
     };

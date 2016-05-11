@@ -20,12 +20,22 @@ define(['backbone', 'text!./../templates/layer.html'],
 			this.listenTo(this.model, 'change:value', this.valueChanged);
 			this.listenTo(this.model, 'change:props', this.showProps);
 			this.events['click #' + this.pfx + 'close-layer'] = 'remove';
+			//this.events['mousedown > #' + this.pfx + 'move'] = 'initSorter';
 
 			if( !this.model.get('preview') ){
 				this.$el.addClass(this.pfx + 'no-preview');
 			}
 
 			this.delegateEvents();
+		},
+
+		/**
+		 * Delegate sorting
+		 * @param	{Event} e
+		 * */
+		initSorter: function(e){
+			if(this.sorter)
+				this.sorter.startMove(this);
 		},
 
 		/**

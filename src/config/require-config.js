@@ -45,6 +45,7 @@ require.config({
 		            {  name: 'CssComposer',			location: 'css_composer',			},
 		            {  name: 'Commands',				location: 'commands',					},
 		            {  name: 'Canvas',					location: 'canvas',						},
-		            {  name: 'Panels',					location: 'panels',						}
+		            {  name: 'Panels',					location: 'panels',						},
+		            {  name: 'Utils', 					location: 'utils', 						}
 	]
 });

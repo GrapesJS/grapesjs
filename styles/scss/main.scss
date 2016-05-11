@@ -740,6 +740,17 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 	.#{$sm-prefix}btn-upload ##{$sm-prefix}label { padding: 2px 0;}
 
 }
+.#{$sm-prefix}layer > ##{$sm-prefix}move {
+	@include opacity(0.3);
+	cursor: pointer;
+  font-size: 12px;
+  float: left;
+  margin: 0 5px 0 0;
+
+  &:hover{
+  	@include opacity(0.5);
+  }
+}
 /********* END Style Manager **********/
 
 /********* Class manager **********/

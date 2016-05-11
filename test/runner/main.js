@@ -17,7 +17,8 @@ require(['../src/config/require-config.js', 'config/config.js'], function() {
 	         'specs/code_manager/main.js',
 	         'specs/panels/main.js',
 	         'specs/commands/main.js',
-	         'specs/style_manager/main.js'
+	         'specs/style_manager/main.js',
+	         'specs/utils/main.js'
 	     ], function(chai)
 	     {
 				var should 	= chai.should(),
