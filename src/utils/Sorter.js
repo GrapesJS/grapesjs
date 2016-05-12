@@ -6,21 +6,18 @@ define(['backbone'],
       initialize: function(opt) {
         _.bindAll(this,'startSort','onMove','endMove','rollback');
         var o = opt || {};
-        this.config = o.config || {};
-        this.pfx = this.config.stylePrefix || '';
-        this.itemClass  = '.' + this.pfx + this.config.itemClass;
-        this.itemsClass = '.' + this.pfx + this.config.itemsClass;
-        this.setElement('.'+this.pfx+this.config.containerId);
-
         this.elT = 0;
         this.elL = 0;
         this.borderOffset = o.borderOffset || 10;
         this.freezeClass = o.freezeClass || 'freezed';
 
-        this.el = document.querySelector(o.container);
+        var el = o.container;
+        this.el = typeof el === 'string' ? document.querySelector(o.container) : el;
         this.$el = $(this.el);
-        this.containerSel = 'div';
-        this.itemSel = 'div';
+        this.containerSel = o.containerSel || 'div';
+        this.itemSel = o.itemSel || 'div';
+        this.nested = o.nested || 0;
+        this.pfx = o.pfx || '';
       },
 
       /**
@@ -44,6 +41,8 @@ define(['backbone'],
        * @return {Element|null}
        */
       closest: function(el, selector){
+        if(!el)
+          return;
         var elem = el.parentNode;
         while (elem && elem.nodeType === 1) {
           if (this.matches(elem, selector))
@@ -74,10 +73,10 @@ define(['backbone'],
         var pfx = this.pfx;
         var el = document.createElement('div');
         var ins = document.createElement('div');
-        el.id = pfx + 'placeholder';
+        el.className = pfx + 'placeholder';
         el.style.display = 'none';
         el.style['pointer-events'] = 'none';
-        ins.id = pfx + "plh-int";
+        ins.className = pfx + "placeholder-int";
         el.appendChild(ins);
         return el;
       },
@@ -88,16 +87,16 @@ define(['backbone'],
        * */
       startSort: function(trg){
         this.moved = 0;
-        this.eV = trg.el || trg;
+        this.eV = trg;
+
+        if(!this.matches(trg, this.itemSel + ',' + this.containerSel))
+          this.eV = this.closest(trg, this.itemSel);
 
         // Create placeholder if not exists
         if(!this.plh){
           this.plh = this.createPlaceholder();
           this.el.appendChild(this.plh);
         }
-        //freeze el.. add this.freezeClass
-
-        //callback onStart
 
         this.$el.on('mousemove',this.onMove);
         $(document).on('mouseup',this.endMove);
@@ -126,12 +125,12 @@ define(['backbone'],
 
         var dims = this.dimsFromTarget(e.target, this.rX, this.rY);
         var pos = this.findPosition(dims, this.rX, this.rY);
-        var actualPos = pos.index + ':' + pos.method;
 
         // If there is a significant changes with the pointer
-        if(!this.lastPos || (this.lastPos != actualPos)){
+        if( !this.lastPos ||
+            (this.lastPos.index != pos.index || this.lastPos.method != pos.method)){
           this.movePlaceholder(this.plh, dims, pos, this.prevTargetDim);
-          this.lastPos = actualPos;
+          this.lastPos = pos;
         }
 
         //callback onMove
@@ -144,9 +143,13 @@ define(['backbone'],
        * */
       getChildrenDim: function(elem){
         var dims = [];
+        if(!elem)
+          return dims;
         var ch = elem.children; //TODO filter match
         for (var i = 0, len = ch.length; i < len; i++) {
           var el = ch[i];
+          if(!this.matches(el, this.itemSel))
+            continue;
           var dim = this.getDim(el);
           dim.push(true); //TODO check if in flow, now only for vertical elements
           dim.push(el);
@@ -175,8 +178,11 @@ define(['backbone'],
       dimsFromTarget: function(target, rX, rY){
         var dims = [];
 
-        if(!this.matches(target, this.itemSel))
+        if(!this.matches(target, this.itemSel + ',' + this.containerSel))
           target = this.closest(target, this.itemSel);
+
+        if(!target)
+          return dims;
 
         // Check if the target is different from the previous one
         if(this.prevTarget){
@@ -187,10 +193,10 @@ define(['backbone'],
 
         // New target encountered
         if(!this.prevTarget){
-          var parent = this.closest(target, this.containerSel);
+          this.targetP = this.closest(target, this.containerSel);
           this.prevTarget = target;
           this.prevTargetDim = this.getDim(target);
-          this.cacheDimsP = this.getChildrenDim(parent);
+          this.cacheDimsP = this.getChildrenDim(this.targetP);
           this.cacheDims = this.getChildrenDim(target);
         }
 
@@ -198,10 +204,15 @@ define(['backbone'],
         if(this.prevTarget == target)
           dims = this.cacheDims;
 
+        // Target when I will drop element to sort
+        this.target = this.prevTarget;
         // Generally also on every new target the poiner enters near
         // to borders, so have to to check always
-        if(this.nearBorders(this.prevTargetDim, rX, rY))
+        if(this.nearBorders(this.prevTargetDim, rX, rY) ||
+           (!this.nested && !this.cacheDims.length)){
           dims = this.cacheDimsP;
+          this.target = this.targetP;
+        }
 
         return dims;
       },
@@ -310,6 +321,10 @@ define(['backbone'],
             l = elDim[1];
           }
         }else{
+          if(!this.nested){
+            plh.style.display = 'none';
+            return;
+          }
           if(trgDim){
             t = trgDim[0] + margI + 17;
             l = trgDim[1] + margI * 7;
@@ -334,12 +349,9 @@ define(['backbone'],
         this.$el.off('mousemove', this.onMove);
         $(document).off('mouseup', this.endMove);
         $(document).off('keypress', this.rollback);
-        //this.eV.unfreeze();
-        //this.$plh.hide();
+        this.plh.style.display = 'none';
         if(this.moved)
-          this.move(this.$targetEl, this.$sel, this.posIndex, this.posMethod);
-        //this.itemLeft(); // Do I need to reset all cached stuff?
-        //callback onMove
+          this.move(this.target, this.eV, this.lastPos);
       },
 
       /**
@@ -351,26 +363,17 @@ define(['backbone'],
        *
        * @return void
        * */
-      move: function(target, el, posIndex, method){
-        //this.eV
-        var trg = target|| this.$targetEl;
-        trg = trg || this.$backupEl;
-        if(!trg)
-          return;
-        var index         = posIndex || 0;
-        var model         = el.data("model");
-        var collection      = model.collection;
-        var targetModel     = trg.data('model');
-        var targetCollection  = targetModel.collection;
+      move: function(dst, src, pos){
+        var index = pos.index;
+        var model = $(src).data('model');
+        var collection = model.collection;
+        var targetCollection = $(dst).data('collection');
 
-        if(!this.cDim.length)
-          targetCollection  = targetModel.get('components');
-
-        if(targetCollection && targetModel.get('droppable')){
-          index       = method == 'after' ? index + 1 : index;
-          var modelTemp     = targetCollection.add({style:{}}, { at: index});
-          var modelRemoved  = collection.remove(model, { silent:false });
-          targetCollection.add(modelRemoved, { at: index, silent:false });
+        if(targetCollection){// && targetModel.get('droppable')
+          index = pos.method === 'after' ? index + 1 : index;
+          var modelTemp = targetCollection.add({}, {at: index, noIncrement: 1});
+          var modelRemoved = model.collection.remove(model);
+          targetCollection.add(modelRemoved, {at: index, noIncrement: 1});
           targetCollection.remove(modelTemp);
         }else
           console.warn("Invalid target position");
@@ -378,16 +381,13 @@ define(['backbone'],
 
       /**
        * Rollback to previous situation
-       * @param Event
-       * @param Bool Indicates if rollback in anycase
-       * @return void
+       * @param {Event}
+       * @param {Bool} Indicates if rollback in anycase
        * */
-      rollback: function(e, force){
+      rollback: function(e){
         var key = e.which || e.keyCode;
-        if(key == 27 || force){
-          this.moved = false;
+        if(key == 27)
           this.endMove();
-        }
         return;
       },
 

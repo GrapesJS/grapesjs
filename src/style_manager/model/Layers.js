@@ -5,5 +5,21 @@ define([ 'backbone', './Layer'],
 
 			model: Layer,
 
+      initialize: function(){
+        this.idx = 1;
+        this.on('add', this.onAdd);
+        this.on('reset', this.onReset);
+      },
+
+      onAdd: function(model, c, opts){
+        //console.log(opts);
+        if(!opts.noIncrement)
+          model.set('index', this.idx++);
+      },
+
+      onReset: function(){
+        this.idx = 1;
+      },
+
 		});
 });

@@ -47,7 +47,7 @@ define([path + 'Sorter',],
           });
 
           it('Creates placeholder', function() {
-            obj.createPlaceholder().id.should.equal('placeholder');
+            obj.createPlaceholder().className.should.equal('placeholder');
           });
 
           describe('Closest method', function() {
@@ -265,6 +265,10 @@ define([path + 'Sorter',],
             });
 
             it.skip('movePlaceholder', function() {
+            });
+
+            it.skip('move', function() {
+              obj.move(el).should.equal('test');
             });
 
           });

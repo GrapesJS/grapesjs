@@ -163,7 +163,9 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 				},this);
 			}
 			this.$props.detach();
-			this.getLayers().reset(n);
+			var layers = this.getLayers();
+			layers.reset();
+			layers.add(n);
 			this.refreshValue();
 			this.model.set({stackIndex: null}, {silent: true});
 		},

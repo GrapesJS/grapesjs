@@ -16,16 +16,17 @@ define(['backbone', 'text!./../templates/layer.html'],
 			this.config = o.config || {};
 			this.pfx = this.config.stylePrefix || '';
 			this.className = this.pfx + 'layer';
+			this.sorter = o.sorter || null;
 			this.listenTo(this.model, 'destroy remove', this.remove);
 			this.listenTo(this.model, 'change:value', this.valueChanged);
 			this.listenTo(this.model, 'change:props', this.showProps);
 			this.events['click #' + this.pfx + 'close-layer'] = 'remove';
-			//this.events['mousedown > #' + this.pfx + 'move'] = 'initSorter';
+			this.events['mousedown > #' + this.pfx + 'move'] = 'initSorter';
 
 			if( !this.model.get('preview') ){
 				this.$el.addClass(this.pfx + 'no-preview');
 			}
-
+			this.$el.data('model', this.model);
 			this.delegateEvents();
 		},
 
@@ -35,7 +36,7 @@ define(['backbone', 'text!./../templates/layer.html'],
 		 * */
 		initSorter: function(e){
 			if(this.sorter)
-				this.sorter.startMove(this);
+				this.sorter.startSort(this.el);
 		},
 
 		/**
@@ -121,7 +122,8 @@ define(['backbone', 'text!./../templates/layer.html'],
 
 			Backbone.View.prototype.remove.apply(this, arguments);
 
-			if(this.model.collection)
+			//---
+			if(this.model.collection.contains(this.model))
 				this.model.collection.remove(this.model);
 
 			if(this.stackModel && this.stackModel.set){
@@ -162,8 +164,7 @@ define(['backbone', 'text!./../templates/layer.html'],
 		render : function(){
 			var i = this.getIndex();
 			this.$el.html( this.template({
-				label: 'Layer ' + i,
-				name: this.model.get('name'),
+				label: 'Layer ' + this.model.get('index'),
 				pfx: this.pfx,
 			}));
 			this.$el.attr('class', this.className);

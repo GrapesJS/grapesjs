@@ -4,7 +4,7 @@ define(['backbone'],
 		return Backbone.Model.extend({
 
 			defaults: {
-				name: '',
+				index: '',
 				active: true,
 				value: '',
 				preview: false,

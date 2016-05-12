@@ -188,10 +188,11 @@ ol.example li.placeholder:before {position: absolute;}
 	@extend .#{$com-prefix}badge;
 	background-color: $colorYell;
 }
-.#{$com-prefix}placeholder{
+.#{$app-prefix}placeholder, .#{$com-prefix}placeholder{
 	position: absolute;
+	z-index: 10;
 }
-.#{$com-prefix}placeholder-int{
+.#{$app-prefix}placeholder-int, .#{$com-prefix}placeholder-int{
 	background-color: $colorGreen;
 	height: 100%; width: 100%;
 	pointer-events: 'none';
@@ -742,7 +743,7 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 }
 .#{$sm-prefix}layer > ##{$sm-prefix}move {
 	@include opacity(0.3);
-	cursor: pointer;
+	cursor: move;
   font-size: 12px;
   float: left;
   margin: 0 5px 0 0;

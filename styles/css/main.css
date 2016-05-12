@@ -2720,10 +2720,11 @@ ol.example li.placeholder:before {
 .wte-com-badge-yellow {
   background-color: #ffca6f; }
 
-.wte-com-placeholder {
-  position: absolute; }
+.wte-placeholder, .wte-com-placeholder {
+  position: absolute;
+  z-index: 10; }
 
-.wte-com-placeholder-int {
+.wte-placeholder-int, .wte-com-placeholder-int {
   background-color: #62c462;
   height: 100%;
   width: 100%;
@@ -3218,7 +3219,7 @@ ol.example li.placeholder:before {
 .wte-sm-layer > #wte-sm-move {
   opacity: 0.3;
   filter: alpha(opacity=30);
-  cursor: pointer;
+  cursor: move;
   font-size: 12px;
   float: left;
   margin: 0 5px 0 0; }

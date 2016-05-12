@@ -12,7 +12,8 @@ define([
         'RichTextEditor',
         'DomComponents',
         'ClassManager',
-        'Panels'],
+        'Panels',
+        'Utils'],
 	function(
 			Backbone,
 			UndoManager,
@@ -27,7 +28,8 @@ define([
 			RichTextEditor,
 			DomComponents,
 			ClassManager,
-			Panels
+			Panels,
+			Utils
 			){
 		return Backbone.Model.extend({
 
@@ -58,8 +60,16 @@ define([
 				this.initCanvas();
 				this.initUndoManager();
 				this.initCssComposer();
+				this.initUtils();
 
 				this.on('change:selectedComponent', this.componentSelected, this);
+			},
+
+			/**
+			 * Initialize Utils
+			 * */
+			initUtils: function() {
+				this.set('Utils', new Utils());
 			},
 
 			/**

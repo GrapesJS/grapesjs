@@ -118,8 +118,8 @@ define([path + 'Sector',
             delete obj;
           });
 
-          it('Has name property', function() {
-            obj.has('name').should.equal(true);
+          it('Has index property', function() {
+            obj.has('index').should.equal(true);
           });
 
           it('Is active', function() {
@@ -142,6 +142,25 @@ define([path + 'Sector',
 
           it('Object exists', function() {
             obj.should.be.ok;
+          });
+
+          it('Init index on add', function() {
+            var model = obj.add({});
+            model.get('index').should.equal(1);
+          });
+
+          it('Increment index', function() {
+            var model = obj.add({});
+            var model2 = obj.add({});
+            model2.get('index').should.equal(2);
+          });
+
+          it('Cache index', function() {
+            var model = obj.add({});
+            var model2 = obj.add({});
+            obj.remove(model2);
+            var model3 = obj.add({});
+            model3.get('index').should.equal(3);
           });
 
         });

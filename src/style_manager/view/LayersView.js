@@ -6,14 +6,26 @@ define(['backbone','./LayerView'],
 	return Backbone.View.extend({
 
 		initialize: function(o) {
-			this.config 	= o.config;
+			this.config = o.config || {};
 			this.stackModel	= o.stackModel;
-			this.preview	= o.preview;
-			this.pfx		= this.config.stylePrefix;
+			this.preview = o.preview;
+			this.pfx = this.config.stylePrefix || '';
 			this.className	= this.pfx + 'layers';
-			this.listenTo( this.collection, 'add', this.addTo );
+			this.listenTo( this.collection, 'add', this.addTo);
 			this.listenTo( this.collection, 'deselectAll', this.deselectAll );
-			this.listenTo( this.collection, 'reset', this.render );
+			this.listenTo( this.collection, 'reset', this.render);
+
+			var em = this.config.target || '';
+			var utils = em ? em.get('Utils') : '';
+
+			this.sorter = utils ? new utils.Sorter({
+				container: this.el,
+				containerSel: '.' + this.pfx + 'layers',
+				itemSel: '.' + this.pfx + 'layer',
+				pfx: 'wte-',
+			}) : '';
+
+			this.$el.data('collection', this.collection);
 		},
 
 		/**
@@ -23,19 +35,21 @@ define(['backbone','./LayerView'],
 		 * @return Object
 		 * */
 		addTo: function(model){
-			this.addToCollection(model);
+			var i	= this.collection.indexOf(model);
+			this.addToCollection(model, null, i);
 		},
 
 		/**
 		 * Add new object to collection
 		 * @param Object Model
 		 * @param Object Fragment collection
+		 * @param	{number} index Index of append
 		 *
 		 * @return Object Object created
 		 * */
-		addToCollection: function(model, fragmentEl){
-			var fragment	= fragmentEl || null;
-			var viewObject	= LayerView;
+		addToCollection: function(model, fragmentEl, index){
+			var fragment = fragmentEl || null;
+			var viewObject = LayerView;
 
 			if(typeof this.preview !== 'undefined'){
 				model.set('preview', this.preview);
@@ -45,13 +59,28 @@ define(['backbone','./LayerView'],
 					model: model,
 					stackModel: this.stackModel,
 					config: this.config,
+					sorter: this.sorter
 			});
 			var rendered	= view.render().el;
 
 			if(fragment){
 				fragment.appendChild( rendered );
 			}else{
-				this.$el.append(rendered);
+				if(typeof index != 'undefined'){
+					var method	= 'before';
+					// If the added model is the last of collection
+					// need to change the logic of append
+					if(this.$el.children().length == index){
+						index--;
+						method = 'after';
+					}
+					// In case the added is new in the collection index will be -1
+					if(index < 0){
+						this.$el.append(rendered);
+					}else
+						this.$el.children().eq(index)[method](rendered);
+				}else
+					this.$el.append(rendered);
 			}
 
 			return rendered;
