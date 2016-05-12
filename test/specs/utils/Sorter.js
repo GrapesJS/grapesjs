@@ -6,17 +6,28 @@ define([path + 'Sorter',],
       run : function(){
 
         describe('Sorter', function() {
+          var fixtures;
+          var fixture;
           var obj;
           var parent;
+          var plh;
+
+          before(function () {
+            fixture = $('<div class="sorter-fixture"></div>').get(0);
+          });
 
           beforeEach(function () {
             parent = document.createElement('div');
             parent.setAttribute('class', 'parent1');
+            plh = document.createElement('div');
             document.body.appendChild(parent);
             obj = new Sorter({container: '.parent1'});
+            document.body.appendChild(fixture);
+            fixture.appendChild(parent);
           });
 
           afterEach(function () {
+            document.body.removeChild(fixture);
             delete obj;
           });
 
@@ -84,6 +95,7 @@ define([path + 'Sorter',],
 
           describe('With elements', function() {
 
+            var vertDims;
             var parent2;
             var parent3;
             var sib1;
@@ -121,20 +133,30 @@ define([path + 'Sorter',],
               el.appendChild(sib2);
               el.appendChild(sib3);
               el.appendChild(sib4);
+
+              vertDims = [
+                [0, 0, 50, 100, true],
+                [50, 0, 50, 100, true],
+                [100, 0, 50, 100, true],
+                [150, 0, 50, 70, true],
+              ];
             });
 
             it('startSort inits correctly inits', function() {
               obj.startSort(el);
+              obj.moved.should.equal(0);
               obj.plh.style.display.should.equal('none');
             });
 
-            it.skip('onMove', function() {
+            it('onMove', function() {
+              var target = document.createElement('div');
               obj.startSort(el);
               obj.onMove({
                 pageX: 0,
                 pageY: 0,
+                target: target
               });
-              obj.plh.style.display.should.equal('block');
+              obj.moved.should.equal(1);
             });
 
             it('getDim from element', function() {
@@ -230,15 +252,7 @@ define([path + 'Sorter',],
 
             describe('findPosition', function() {
 
-              var dimsTree;
-
               beforeEach(function () {
-                vertDims = [
-                  [0, 0, 50, 100, true],
-                  [50, 0, 50, 100, true],
-                  [100, 0, 50, 100, true],
-                  [150, 0, 50, 70, true],
-                ];
               });
 
               it('Vertical dimensions', function() {
@@ -264,11 +278,35 @@ define([path + 'Sorter',],
 
             });
 
-            it.skip('movePlaceholder', function() {
-            });
+            describe('movePlaceholder', function() {
 
-            it.skip('move', function() {
-              obj.move(el).should.equal('test');
+              beforeEach(function () {
+                vertDims = [
+                  [0, 10, 50, 100, true],
+                  [50, 20, 50, 70, true],
+                  [100, 30, 50, 100, true],
+                  [150, 40, 50, 70, true],
+                ];
+              });
+
+              it('Vertical dimensions with before position', function() {
+                var pos = {index: 2, method: 'before'};
+                obj.movePlaceholder(plh, vertDims, pos);
+                var style = plh.style;
+                style.top.should.equal('100px');
+                style.left.should.equal('30px');
+                style.width.should.equal('100px');
+              });
+
+              it('Vertical dimensions with after position', function() {
+                var pos = {index: 1, method: 'after'};
+                obj.movePlaceholder(plh, vertDims, pos);
+                var style = plh.style;
+                style.top.should.equal('100px');
+                style.left.should.equal('20px');
+                style.width.should.equal('70px');
+              });
+
             });
 
           });

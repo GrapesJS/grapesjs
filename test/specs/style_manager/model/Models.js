@@ -163,6 +163,13 @@ define([path + 'Sector',
             model3.get('index').should.equal(3);
           });
 
+          it('Reset index on reset', function() {
+            var model = obj.add({});
+            var model2 = obj.add({});
+            obj.reset();
+            obj.idx.should.equal(1);
+          });
+
         });
 
       }

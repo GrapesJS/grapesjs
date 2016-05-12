@@ -54,24 +54,17 @@ define([path + 'LayerView', 'StyleManager/model/Layers'],
               view.getIndex().should.equal(0);
             });
 
-            it('Destroy element', function() {
-              view.model.destroy();
-            });
-
             it('No preview', function() {
               var style = view.el.querySelector('#preview').style;
               style.cssText.should.be.empty;
             });
 
-            it.skip('Changes on valuePreview update preview box', function() {
-              var layerProp = 'color';
-              var layerPrevValue = 'red';
+            it('Changes on value trigger onPreview', function() {
+              var called = 0;
+              view.onPreview = function(){called = 1};
               view.model.set('preview', true);
-              view.model.set('propertyPreview', layerProp);
-              view.model.set('valuePreview', layerPrevValue);
-              var preview = view.el.querySelector('#preview');
-              var style = preview.style;
-              style[layerProp].should.equal(layerPrevValue);
+              view.model.set('value', 'test');
+              called.should.equal(1);
             });
 
             it('Update props', function() {

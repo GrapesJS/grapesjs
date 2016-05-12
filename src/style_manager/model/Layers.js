@@ -12,7 +12,6 @@ define([ 'backbone', './Layer'],
       },
 
       onAdd: function(model, c, opts){
-        //console.log(opts);
         if(!opts.noIncrement)
           model.set('index', this.idx++);
       },

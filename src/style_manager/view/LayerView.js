@@ -162,7 +162,6 @@ define(['backbone', 'text!./../templates/layer.html'],
 		},
 
 		render : function(){
-			var i = this.getIndex();
 			this.$el.html( this.template({
 				label: 'Layer ' + this.model.get('index'),
 				pfx: this.pfx,

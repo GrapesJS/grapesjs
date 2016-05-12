@@ -356,12 +356,9 @@ define(['backbone'],
 
       /**
        * Move component to new position
-       * @param {Object}  Component to move
-       * @param {Object}  Target component
-       * @param   {Integer}   Indicates the position inside the collection
-       * @param   {String}  Before of after component
-       *
-       * @return void
+       * @param {HTMLElement} dst Destination target
+       * @param {HTMLElement} src Element to move
+       * @param {Object} pos Object with position coordinates
        * */
       move: function(dst, src, pos){
         var index = pos.index;
