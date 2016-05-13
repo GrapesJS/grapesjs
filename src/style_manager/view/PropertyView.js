@@ -160,21 +160,23 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 			if(func)
 				value =  func + '(' + value + ')';
 
-			if( !this.model.get('doNotStyle') ){
-				var componentCss = _.clone( this.getTarget().get('style') );
+			var target = this.getTarget();
+			var onChange = this.onChange;
+
+			if(onChange && typeof onChange === "function"){
+				onChange(target, this.model);
+			}else{
+				var componentCss = _.clone( target.get('style') );
 
 				if(value)
 					componentCss[this.property] = value;
 				else
 					delete componentCss[this.property];
 
-				this.getTarget().set('style', componentCss, { avoidStore : avSt});
+				target.set('style', componentCss, { avoidStore : avSt});
+
 				if(this.helperComponent)
 					this.helperComponent.set('style', componentCss, { avoidStore : avSt});
-			}
-
-			if(this.onChange && typeof this.onChange === "function"){
-				this.onChange(this.getTarget(), this.model);
 			}
 		},
 

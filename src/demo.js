@@ -476,6 +476,7 @@ require(['config/require-config'], function() {
 							name		: 'Padding',
 							property	: 'padding',
 							type		: 'composite',
+							detached : true,
 							properties:[{
 											name		: 'Top',
 											property	: 'padding-top',

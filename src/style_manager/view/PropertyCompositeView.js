@@ -15,10 +15,19 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 		},
 
 		/**
+		 * Fired when the input value is updated
+		 */
+		valueUpdated: function(){
+			if(!this.model.get('detached'))
+				PropertyView.prototype.valueUpdated.apply(this, arguments);
+		},
+
+		/**
 		 * Renders input
 		 * */
 		renderInput: function() {
 			var props	= this.model.get('properties');
+			var detached = this.model.get('detached');
 			if(props && props.length){
 				if(!this.$input)
 					this.$input = $('<input>', {value: 0, type: 'hidden' });
@@ -30,11 +39,6 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 				}
 
 				if(!this.$props){
-					//Avoid style for children
-					this.props.each(function(prop, index){
-						prop.set('doNotStyle', true);
-					});
-
 					//Not yet supported nested composite
 					this.props.each(function(prop, index){
 						if(prop && prop.get('type') == 'composite'){
@@ -43,24 +47,29 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 						}
 					}, this);
 
-					var PropertiesView 	= require('./PropertiesView');
-					var that 			= this;
-					var propsView = new PropertiesView({
-						config			: this.config,
-						collection	: this.props,
-						target			: this.target,
-						propTarget	: this.propTarget,
-						// On any change made to children I need to update composite value
-						onChange		: function(el, model){
-							var result = that.build(el, model);
-							that.model.set('value', result);
-						},
+					var PropertiesView = require('./PropertiesView');
+					var that = this;
+
+					var propsViewOpts = {
+						config: this.config,
+						collection: this.props,
+						target: this.target,
+						propTarget: this.propTarget,
 						// Each child property will receive a full composite string, eg. '0px 0px 10px 0px'
 						// I need to extract from that string the corresponding one to that property.
-						customValue		: function(property, mIndex){
+						customValue: function(property, mIndex){
 							return that.valueOnIndex(mIndex, property.model);
 						},
-					});
+					};
+
+					// On any change made to children I need to update composite value
+					if(!detached)
+						propsViewOpts.onChange = function(el, model){
+							var result = that.build(el, model);
+							that.model.set('value', result);
+						};
+
+					var propsView = new PropertiesView(propsViewOpts);
 					this.$props = propsView.render().$el;
 					this.$el.find('#'+ this.pfx +'input-holder').html(this.$props);
 				}

@@ -3165,6 +3165,9 @@ ol.example li.placeholder:before {
         top: 0;
         opacity: 0.2;
         filter: alpha(opacity=20); }
+        .wte-sm-sector .wte-sm-property .wte-sm-layer #wte-sm-close-layer:hover, .wte-clm-tags .wte-sm-property .wte-sm-layer #wte-sm-close-layer:hover {
+          opacity: 0.5;
+          filter: alpha(opacity=50); }
       .wte-sm-sector .wte-sm-property .wte-sm-layer > #wte-sm-preview-box #wte-sm-preview, .wte-clm-tags .wte-sm-property .wte-sm-layer > #wte-sm-preview-box #wte-sm-preview {
         background-color: white;
         height: 100%;

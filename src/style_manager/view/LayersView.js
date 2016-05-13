@@ -105,6 +105,10 @@ define(['backbone','./LayerView'],
 
 			this.$el.append(fragment);
 			this.$el.attr('class', this.className);
+
+			if(this.sorter)
+				this.sorter.plh = null;
+
 			return this;
 		}
 	});

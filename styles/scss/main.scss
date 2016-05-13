@@ -681,6 +681,10 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 				right: 5px;
 				top: 0;
 				@include opacity(0.2);
+
+				&:hover{
+					@include opacity(0.5);
+				}
 			}
 		  	> ##{$sm-prefix}preview-box ##{$sm-prefix}preview {
 			  background-color: white;

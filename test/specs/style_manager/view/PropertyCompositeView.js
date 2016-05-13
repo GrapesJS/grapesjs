@@ -152,6 +152,26 @@ define([path + 'PropertyCompositeView', 'StyleManager/model/Property', 'DomCompo
                 compStyle.should.deep.equal(assertStyle);
               });
 
+              it('Update target on detached value change', function() {
+                model = new Property({
+                  type: 'composite',
+                  property: propName,
+                  properties: properties,
+                  detached: true,
+                });
+                view = new PropertyCompositeView({
+                  model: model,
+                  propTarget: target
+                });
+                $fixture.html(view.render().el);
+                $prop1 = view.$props.find('#' + properties[0].property + ' input');
+                $prop1.val(propValue).trigger('change');
+                var compStyle = view.getTarget().get('style');
+                var assertStyle = {};
+                assertStyle[properties[0].property] = $prop1.val();
+                compStyle.should.deep.equal(assertStyle);
+              });
+
               it('Update value and input on target swap', function() {
                 var style = {};
                 style[propName] = finalResult;
