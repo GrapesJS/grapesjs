@@ -29,6 +29,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 
 			this.listenTo( this.propTarget, 'update', this.targetUpdated);
 			this.listenTo( this.model ,'change:value', this.valueChanged);
+			this.listenTo( this.model ,'targetUpdated', this.targetUpdated);
 		},
 
 		/**

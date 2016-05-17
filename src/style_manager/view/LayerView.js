@@ -98,7 +98,7 @@ define(['backbone', 'text!./../templates/layer.html'],
 			if(this.stackModel.get){
 				var property = this.stackModel.get('property');
 				if(property)
-					this.$preview.get(0).style[property] = nV; //css(property, this.model.get('valuePreview'));
+					this.$preview.get(0).style[property] = nV;
 			}
 		},
 

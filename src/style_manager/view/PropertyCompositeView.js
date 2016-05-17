@@ -76,7 +76,7 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 				// Each child property will receive a full composite string, eg. '0px 0px 10px 0px'
 				// I need to extract from that string the corresponding one to that property.
 				customValue: function(property, mIndex){
-					return that.valueOnIndex(mIndex, property.model);
+					return that.valueOnIndex(mIndex, property);
 				},
 			};
 
@@ -102,15 +102,15 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 		/**
 		 * Extract string from composite value
 		 * @param {number} index Index
-		 * @param {Object} model Property model
+		 * @param {Object} view Property view
 		 * @return {string}
 		 * */
-		valueOnIndex: function(index, model){
+		valueOnIndex: function(index, view){
 			var result = null;
 			var a = this.getComponentValue().split(' ');
 			if(a.length && a[index]){
 				result = a[index];
-				if(model && model.get('functionName')){
+				if(view && view.model && view.model.get('functionName')){
 					var v = this.fetchFromFunction(result);
 					if(v)
 						result = v;

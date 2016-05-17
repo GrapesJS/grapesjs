@@ -10,12 +10,23 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 		initialize: function(o) {
 			PropertyCompositeView.prototype.initialize.apply(this, arguments);
 			this.model.set('stackIndex', null);
-			this.listenTo( this.model ,'change:stackIndex', this.indexChanged);
-			this.listenTo( this.model ,'updateValue', this.valueUpdated);
 			this.className 	= this.pfx  + 'property '+ this.pfx +'stack';
 			this.events['click #'+this.pfx+'add']	= 'addLayer';
-
+			this.listenTo( this.model ,'change:stackIndex', this.indexChanged);
+			this.listenTo( this.model ,'updateValue', this.valueUpdated);
 			this.delegateEvents();
+		},
+
+		/**
+		 * Fired when the target is updated.
+		 * With detached mode the component will be always empty as its value
+		 * so we gonna check all props and fine if there is some differences.
+		 * */
+		targetUpdated: function(){
+			if(!this.model.get('detached'))
+				PropertyCompositeView.prototype.targetUpdated.apply(this, arguments);
+			else
+				this.refreshLayers();
 		},
 
 		/**
@@ -37,6 +48,9 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 		indexChanged: function(e){
 			var layer	= this.getLayers().at(this.model.get('stackIndex'));
 			layer.set('props', this.$props);
+			this.model.get('properties').each(function(prop){
+				prop.trigger('targetUpdated');
+			});
 		},
 
 		/**
@@ -51,10 +65,10 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 		getPropsConfig: function(opts){
 			var that = this;
 			var result = PropertyCompositeView.prototype.getPropsConfig.apply(this, arguments);
+
 			result.onChange = function(el, view, opt){
 				var model = view.model;
-				// This will update the layer value
-				var result = that.build(el, model);
+				var result = that.build();
 
 				if(that.model.get('detached')){
 					var propVal = '';
@@ -68,24 +82,41 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 				}else
 					that.model.set('value', result);
 			};
+
 			return result;
 		},
 
 		/**
 		 * Extract string from composite value
 		 * @param integer	Index
+		 * @param View	propView Property view
 		 * @return string
 		 * */
-		valueOnIndex: function(index){
+		valueOnIndex: function(index, propView){
 			var result 	= null;
-			var aStack	= this.getStackValues();
-			var strVar	= aStack[this.model.get('stackIndex')];
-
-			if(!strVar)
-				return;
-			var a		= strVar.split(' ');
-			if(a.length && a[index]){
-				result = a[index];
+			// If detached the value in this case is stacked, eg. substack-prop: 1px, 2px, 3px...
+			if(this.model.get('detached')){
+				//var aStackDet	= this.getStackValues();
+				//console.log('Stack values');
+				//console.log(aStackDet);
+				var valist = propView.componentValue.split(',');
+				result = valist[this.model.get('stackIndex')];
+				// In detached mode the value of the property never changed
+				// so I need some how to update
+				if(result !== propView.getValueForTarget()){
+					//UPDATE?!?
+					//this.refreshLayers(); NO!!
+				}
+				//console.log(propView.property + ' model: ' + propView.getValueForTarget() + ' found on comp: ' + result);
+			}else{
+				var aStack	= this.getStackValues();
+				var strVar	= aStack[this.model.get('stackIndex')];
+				if(!strVar)
+					return;
+				var a		= strVar.split(' ');
+				if(a.length && a[index]){
+					result = a[index];
+				}
 			}
 			return result;
 		},
@@ -99,7 +130,7 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 			var model = this.getLayers().at(stackIndex);
 			if(!model)
 				return;
-			model.set('value',result);
+			model.set('value', result);
 			return this.createValue();
 		},
 
@@ -115,7 +146,10 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 				var layer	= layers.add({ name : 'test' });
 				var index	= layers.indexOf(layer);
 				layer.set('value', this.getDefaultValue());
+				// In detached mode valueUpdated will add new 'layer value'
+				// to all subprops
 				this.valueUpdated();
+				// This will set subprops with a new default values
 				this.model.set('stackIndex', index);
 				return layer;
 			}
@@ -170,27 +204,51 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 		},
 
 		/**
+		 * Returns array suitale for layers from target style
+		 * @return {Array<string>}
+		 */
+		getLayersFromTarget: function(){
+			var arr = [];
+			var target = this.getTarget();
+			if(!target)
+				return arr;
+			var trgStyle = target.get('style');
+			this.model.get('properties').each(function(prop){
+				var style = trgStyle[prop.get('property')];
+				if(style){
+					var list =  style.split(',');
+					for(var i = 0, len = list.length; i < len; i++){
+						var val = list[i].trim();
+						if(arr[i])
+							arr[i] += ' ' + val;
+						else
+							arr[i] = val;
+					}
+				}
+			});
+			return arr;
+		},
+
+		/**
 		 * Refresh layers
 		 * */
 		refreshLayers: function(){
-			var v	= this.getComponentValue();
 			var n = [];
-			if(v){
-				var a = v.split(', ');
-				_.each(a,function(e){
-					n.push({
-						value: e,
-						valuePreview: e,
-						propertyPreview: this.property,
-						patternPreview:	this.props
-					});
-				},this);
+			var a = [];
+			if(this.model.get('detached')){
+				a = this.getLayersFromTarget();
+			}else{
+				var v	= this.getComponentValue();
+				if(v)
+					a = v.split(', ');
 			}
+			_.each(a,function(e){ n.push({ value: e});},this);
 			this.$props.detach();
 			var layers = this.getLayers();
 			layers.reset();
 			layers.add(n);
-			this.valueUpdated();
+			if(!this.model.get('detached'))
+				this.valueUpdated();
 			this.model.set({stackIndex: null}, {silent: true});
 		},
 

@@ -169,6 +169,7 @@ define([path + 'PropertyStackView', 'StyleManager/model/Property', 'DomComponent
                 prop2Val = properties[1].defaults;
                 prop2Unit = properties[1].units[0];
                 finalResult = propValue + ' ' + prop2Val + prop2Unit +' ' + prop3Val;
+                view.addLayer();
                 $prop1 = view.$props.find('#' + properties[0].property + ' input');
                 $prop2 = view.$props.find('#' + properties[1].property + ' input');
                 $prop3 = view.$props.find('#' + properties[2].property + ' select');
@@ -194,7 +195,67 @@ define([path + 'PropertyStackView', 'StyleManager/model/Property', 'DomComponent
                 compStyle.should.deep.equal(assertStyle);
               });
 
-              it('Update target on detached value change', function() {
+              it('Update value and input on target swap', function() {
+                var style = {};
+                var finalResult2 = 'A B C';
+                style[propName] = finalResult + ', ' + finalResult2;
+                component.set('style', style);
+                view.propTarget.trigger('update');
+                var layers = view.getLayers();
+                layers.at(0).get('value').should.equal(finalResult);
+                layers.at(1).get('value').should.equal(finalResult2);
+              });
+
+              it('Update value after multiple swaps', function() {
+                var style = {};
+                var finalResult2 = 'A2 B2 C2';
+                style[propName] = finalResult;
+                component.set('style', style);
+                view.propTarget.trigger('update');
+                style[propName] = finalResult + ', ' + finalResult2;
+                component.set('style', style);
+                view.propTarget.trigger('update');
+                var layers = view.getLayers();
+                layers.at(0).get('value').should.equal(finalResult);
+                layers.at(1).get('value').should.equal(finalResult2);
+              });
+
+              it('The value is correctly extracted from the composite string', function() {
+                var style = {};
+                style[propName] = 'value1 value2, value3 value4';
+                component.set('style', style);
+                view.propTarget.trigger('update');
+                view.model.set('stackIndex', 1);
+                view.valueOnIndex(0).should.equal('value3');
+                view.valueOnIndex(1).should.equal('value4');
+                (view.valueOnIndex(2) === null).should.equal(true);
+              });
+
+              it('Build value from properties', function() {
+                view.model.get('properties').at(0).set('value', propValue);
+                view.model.get('properties').at(2).set('value', prop3Val);
+                view.build().should.equal(finalResult);
+              });
+
+            });
+
+            describe('Detached with target setted', function() {
+
+              var prop2Val;
+              var prop3Val;
+              var prop2Unit;
+              var finalResult;
+              var $prop1;
+              var $prop2;
+              var $prop3;
+              var compStyle = {
+                subprop1: '1px, 20px, 30px',
+                subprop2: 'A, B, C',
+                subprop3: 'W, X, Y',
+                subprop555: 'T, T, T',
+              };
+
+              beforeEach(function () {
                 model = new Property({
                   type: 'stack',
                   property: propName,
@@ -206,71 +267,41 @@ define([path + 'PropertyStackView', 'StyleManager/model/Property', 'DomComponent
                   propTarget: target
                 });
                 $fixture.html(view.render().el);
+                prop3Val = properties[2].list[2].value;
+                prop2Val = properties[1].defaults;
+                prop2Unit = properties[1].units[0];
+                finalResult = propValue + ' ' + prop2Val + prop2Unit +' ' + prop3Val;
+                view.addLayer();
                 $prop1 = view.$props.find('#' + properties[0].property + ' input');
+                $prop2 = view.$props.find('#' + properties[1].property + ' input');
+                $prop3 = view.$props.find('#' + properties[2].property + ' select');
+              });
+
+              it('Returns correctly layers array from target', function() {
+                component.set('style', compStyle);
+                var result = ['1px A W', '20px B X', '30px C Y'];
+                view.getLayersFromTarget().should.have.same.members(result);
+              });
+
+              it('Update target on detached value change', function() {
                 $prop1.val(propValue).trigger('change');
                 var compStyle = view.getTarget().get('style');
                 var assertStyle = {};
                 assertStyle[properties[0].property] = $prop1.val();
+                assertStyle[properties[1].property] = '0%';
+                assertStyle[properties[2].property] = properties[2].defaults;
                 compStyle.should.deep.equal(assertStyle);
               });
 
               it('Update value and input on target swap', function() {
                 var style = {};
-                style[propName] = finalResult;
-                component.set('style', style);
+                component.set('style', compStyle);
                 view.propTarget.trigger('update');
-                $prop1.val().should.equal(propValue);
-                $prop3.val().should.equal(prop3Val);
-              });
-
-              it('Update value after multiple swaps', function() {
-                var style = {};
-                style[propName] = finalResult;
-                component.set('style', style);
-                view.propTarget.trigger('update');
-                style[propName] = propValue + '2 ' + prop2Val + '2' + prop2Unit + ' ' + 'val1';
-                component.set('style', style);
-                view.propTarget.trigger('update');
-                $prop1.val().should.equal(propValue + '2');
-                $prop2.val().should.equal('2');
-                $prop3.val().should.equal('val1');
-              });
-
-              it('The value is correctly extracted from the composite string', function() {
-                var style = {};
-                style[propName] = 'value1 value2 value3 value4';
-                component.set('style', style);
-                view.valueOnIndex(2).should.equal('value3');
-                view.valueOnIndex(0).should.equal('value1');
-                (view.valueOnIndex(4) === null).should.equal(true);
-              });
-
-              it('Build value from properties', function() {
-                view.model.get('properties').at(0).set('value', propValue);
-                view.model.get('properties').at(2).set('value', prop3Val);
-                view.build().should.equal(finalResult);
-              });
-
-            })
-
-            describe('Init property', function() {
-
-              beforeEach(function () {
-                model = new Property({
-                  type: 'stack',
-                  property: propName,
-                  properties: properties,
-                  defaults: defValue,
-                });
-                view = new PropertyStackView({
-                  model: model
-                });
-                $fixture.empty().appendTo($fixtures);
-                $fixture.html(view.render().el);
-              });
-
-              it('Value as default', function() {
-                view.model.get('value').should.equal(defValue);
+                var layers = view.getLayers();
+                layers.length.should.equal(3);
+                layers.at(0).get('value').should.equal('1px A W');
+                layers.at(1).get('value').should.equal('20px B X');
+                layers.at(2).get('value').should.equal('30px C Y');
               });
 
             });

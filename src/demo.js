@@ -619,7 +619,7 @@ require(['config/require-config'], function() {
 							name		: 'Text shadow',
 							property	: 'text-shadow',
 							type		: 'stack',
-							detached		: true,
+							detached: true,
 							preview		: true,
 							properties	: [{
 											name: 		'X position',
