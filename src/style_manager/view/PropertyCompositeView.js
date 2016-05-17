@@ -48,32 +48,43 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 					}, this);
 
 					var PropertiesView = require('./PropertiesView');
-					var that = this;
-
-					var propsViewOpts = {
-						config: this.config,
-						collection: this.props,
-						target: this.target,
-						propTarget: this.propTarget,
-						// Each child property will receive a full composite string, eg. '0px 0px 10px 0px'
-						// I need to extract from that string the corresponding one to that property.
-						customValue: function(property, mIndex){
-							return that.valueOnIndex(mIndex, property.model);
-						},
-					};
-
-					// On any change made to children I need to update composite value
-					if(!detached)
-						propsViewOpts.onChange = function(el, model){
-							var result = that.build(el, model);
-							that.model.set('value', result);
-						};
-
-					var propsView = new PropertiesView(propsViewOpts);
+					var propsView = new PropertiesView(this.getPropsConfig());
 					this.$props = propsView.render().$el;
 					this.$el.find('#'+ this.pfx +'input-holder').html(this.$props);
 				}
 			}
+		},
+
+		/**
+		 * Returns configurations that should be past to properties
+		 * @param {Object} opts
+		 * @return {Object}
+		 */
+		getPropsConfig: function(opts){
+			var that = this;
+
+			result = {
+				config: this.config,
+				collection: this.props,
+				target: this.target,
+				propTarget: this.propTarget,
+				// On any change made to children I need to update composite value
+				onChange: function(el, view, opts){
+					var result = that.build();
+					that.model.set('value', result);
+				},
+				// Each child property will receive a full composite string, eg. '0px 0px 10px 0px'
+				// I need to extract from that string the corresponding one to that property.
+				customValue: function(property, mIndex){
+					return that.valueOnIndex(mIndex, property.model);
+				},
+			};
+
+			// If detached let follow its standard flow
+			if(this.model.get('detached'))
+				delete result.onChange;
+
+			return result;
 		},
 
 		/**
@@ -111,10 +122,11 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 		/**
 		 * Build composite value
 		 * @param {Object} selectedEl Selected element
-		 * @param {Object} propertyModel Property model
+		 * @param {Object} propertyView Property view
+		 * @param {Object} opts Options
 		 * @return {string}
 		 * */
-		build: function(selectedEl, propertyModel){
+		build: function(selectedEl, propertyView, opts){
 			var result 	= '';
 			this.model.get('properties').each(function(prop){
 				var v		= prop.getValue();

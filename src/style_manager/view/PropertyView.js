@@ -141,8 +141,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 		 * @param		{Object}	opt	Options
 		 * */
 		valueChanged: function(e, val, opt){
-			var mVal = this.getValueForTarget(),
-			avSt = opt ? opt.avoidStore : 0;
+			var mVal = this.getValueForTarget();
 
 			if(this.$input)
 				this.setValue(mVal);
@@ -164,20 +163,33 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 			var onChange = this.onChange;
 
 			if(onChange && typeof onChange === "function"){
-				onChange(target, this.model);
-			}else{
-				var componentCss = _.clone( target.get('style') );
+				onChange(target, this, opt);
+			}else
+				this.updateTargetStyle(value, null, opt);
+		},
 
-				if(value)
-					componentCss[this.property] = value;
-				else
-					delete componentCss[this.property];
+		/**
+		 * Update target style
+		 * @param  {string} propertyValue
+		 * @param  {string} propertyName
+		 * @param  {Object} opts
+		 */
+		updateTargetStyle: function(propertyValue, propertyName, opts){
+			var propName = propertyName || this.property;
+			var value = propertyValue || '';
+			var avSt = opts ? opts.avoidStore : 0;
+			var target = this.getTarget();
+			var targetStyle = _.clone(target.get('style'));
 
-				target.set('style', componentCss, { avoidStore : avSt});
+			if(value)
+				targetStyle[propName] = value;
+			else
+				delete targetStyle[propName];
 
-				if(this.helperComponent)
-					this.helperComponent.set('style', componentCss, { avoidStore : avSt});
-			}
+			target.set('style', targetStyle, { avoidStore : avSt});
+
+			if(this.helperComponent)
+				this.helperComponent.set('style', targetStyle, { avoidStore : avSt});
 		},
 
 		/**

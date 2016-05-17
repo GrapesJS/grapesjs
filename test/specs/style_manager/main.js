@@ -11,6 +11,7 @@ define([
         modulePath + '/view/PropertyIntegerView',
         modulePath + '/view/PropertyColorView',
         modulePath + '/view/PropertyCompositeView',
+        modulePath + '/view/PropertyStackView',
         modulePath + '/view/LayerView',
          ],
   function(
@@ -24,6 +25,7 @@ define([
           PropertyIntegerView,
           PropertyColorView,
           PropertyCompositeView,
+          PropertyStackView,
           LayerView
           ) {
 
@@ -199,6 +201,7 @@ define([
         PropertyIntegerView.run();
         PropertyColorView.run();
         PropertyCompositeView.run();
+        PropertyStackView.run();
         LayerView.run();
       });
 

@@ -63,7 +63,8 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyInteger.html']
 		upArrowClick: function(e){
 			var value	= this.model.get('value');
 			value = isNaN(value) ? 1 : parseInt(value,10) + 1;
-			value = value > this.max ? this.max : value;
+			if(this.max !== null)
+				value = value > this.max ? this.max : value;
 			this.model.set('value',value);
 		},
 
@@ -76,7 +77,8 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyInteger.html']
 		downArrowClick: function(e){
 			var value	= this.model.get('value');
 			value = isNaN(value) ? 0 : parseInt(value,10) - 1;
-			value = value < this.min ? this.min : value;
+			if(this.min !== null)
+				value = value < this.min ? this.min : value;
 			this.model.set('value',value);
 		},
 

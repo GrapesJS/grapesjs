@@ -11,7 +11,7 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 			PropertyCompositeView.prototype.initialize.apply(this, arguments);
 			this.model.set('stackIndex', null);
 			this.listenTo( this.model ,'change:stackIndex', this.indexChanged);
-			this.listenTo( this.model ,'refreshValue', this.refreshValue);
+			this.listenTo( this.model ,'updateValue', this.valueUpdated);
 			this.className 	= this.pfx  + 'property '+ this.pfx +'stack';
 			this.events['click #'+this.pfx+'add']	= 'addLayer';
 
@@ -27,7 +27,9 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 		},
 
 		/**
-		 * Triggered when another layer has been selected
+		 * Triggered when another layer has been selected.
+		 * This allow to move all rendered properties to a new
+		 * selected layer
 		 * @param {Event}
 		 *
 		 * @return {Object}
@@ -35,26 +37,43 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 		indexChanged: function(e){
 			var layer	= this.getLayers().at(this.model.get('stackIndex'));
 			layer.set('props', this.$props);
-			this.target.trigger('change:selectedComponent');//TODO replace with getTarget
 		},
 
 		/**
 		 * Get array of values from layers
-		 * TODO replace with pluck
 		 * @return Array
 		 * */
 		getStackValues: function(){
-			var a = [];
-			this.getLayers().each(function(layer){
-				a.push( layer.get('value') );
-			});
-			return a;
+			return this.getLayers().pluck('value');
+		},
+
+		/** @inheritDoc */
+		getPropsConfig: function(opts){
+			var that = this;
+			var result = PropertyCompositeView.prototype.getPropsConfig.apply(this, arguments);
+			result.onChange = function(el, view, opt){
+				var model = view.model;
+				// This will update the layer value
+				var result = that.build(el, model);
+
+				if(that.model.get('detached')){
+					var propVal = '';
+					var index = model.collection.indexOf(model);
+					that.getLayers().each(function(layer){
+						var vals = layer.get('value').split(' ');
+						if(vals.length && vals[index])
+							propVal += (propVal ? ',' : '') + vals[index];
+					});
+					view.updateTargetStyle(propVal, null, opt);
+				}else
+					that.model.set('value', result);
+			};
+			return result;
 		},
 
 		/**
 		 * Extract string from composite value
 		 * @param integer	Index
-		 * TODO missing valueOnIndex
 		 * @return string
 		 * */
 		valueOnIndex: function(index){
@@ -72,11 +91,12 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 		},
 
 		/** @inheritdoc */
-		build: function(selectedEl, propertyModel){
-			if(this.model.get('stackIndex') === null)
+		build: function(){
+			var stackIndex = this.model.get('stackIndex');
+			if(stackIndex === null)
 				return;
 			var result = PropertyCompositeView.prototype.build.apply(this, arguments);
-			var model = this.getLayers().at(this.model.get('stackIndex'));
+			var model = this.getLayers().at(stackIndex);
 			if(!model)
 				return;
 			model.set('value',result);
@@ -90,24 +110,28 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 		 * @return Object
 		 * */
 		addLayer: function(e){
-			if(this.selectedComponent){
+			if(this.getTarget()){
 				var layers = this.getLayers();
 				var layer	= layers.add({ name : 'test' });
 				var index	= layers.indexOf(layer);
 				layer.set('value', this.getDefaultValue());
-				this.refreshValue();
+				this.valueUpdated();
 				this.model.set('stackIndex', index);
 				return layer;
 			}
 		},
 
 		/**
-		 * Refresh value
-		 *
-		 * @return void
-		 * */
-		refreshValue: function(){
-			this.model.set('value', this.createValue());
+		 * Fired when the input value is updated
+		 */
+		valueUpdated: function(){
+			if(!this.model.get('detached'))
+				this.model.set('value', this.createValue());
+			else{
+				this.model.get('properties').each(function(prop){
+					prop.trigger('change:value');
+				});
+			}
 		},
 
 		/**
@@ -166,7 +190,7 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 			var layers = this.getLayers();
 			layers.reset();
 			layers.add(n);
-			this.refreshValue();
+			this.valueUpdated();
 			this.model.set({stackIndex: null}, {silent: true});
 		},
 

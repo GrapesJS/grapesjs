@@ -163,6 +163,20 @@ define([path + 'PropertyView', 'StyleManager/model/Property', 'DomComponents/mod
                 $fixture.html(view.render().el);
               });
 
+              it('updateTargetStyle', function() {
+                view.updateTargetStyle(propValue);
+                var style = {};
+                style[propName] = propValue;
+                component.get('style').should.deep.equal(style);
+              });
+
+              it('updateTargetStyle with custom property', function() {
+                view.updateTargetStyle(propValue, propName + '2');
+                var style = {};
+                style[propName + '2'] = propValue;
+                component.get('style').should.deep.equal(style);
+              });
+
               it('Update value and input on target swap', function() {
                 var style = {};
                 style[propName] = propValue;

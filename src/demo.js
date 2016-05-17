@@ -500,7 +500,7 @@ require(['config/require-config'], function() {
 											min			: 0,
 										},{
 											name		: 'Left',
-											property	: 'padding-Left',
+											property	: 'padding-left',
 											type		: 'integer',
 											units		: ['px','%'],
 											defaults 	: 0,
@@ -619,6 +619,7 @@ require(['config/require-config'], function() {
 							name		: 'Text shadow',
 							property	: 'text-shadow',
 							type		: 'stack',
+							detached		: true,
 							preview		: true,
 							properties	: [{
 											name: 		'X position',

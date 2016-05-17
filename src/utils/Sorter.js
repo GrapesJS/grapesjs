@@ -9,7 +9,7 @@ define(['backbone'],
         this.elT = 0;
         this.elL = 0;
         this.borderOffset = o.borderOffset || 10;
-        this.freezeClass = o.freezeClass || 'freezed';
+        this.freezeClass = o.freezeClass || 'opac50';
 
         var el = o.container;
         this.el = typeof el === 'string' ? document.querySelector(o.container) : el;
@@ -98,6 +98,7 @@ define(['backbone'],
           this.el.appendChild(this.plh);
         }
 
+        this.eV.className += ' ' + this.freezeClass;
         this.$el.on('mousemove',this.onMove);
         $(document).on('mouseup',this.endMove);
         $(document).on('keypress',this.rollback);
@@ -350,6 +351,8 @@ define(['backbone'],
         $(document).off('mouseup', this.endMove);
         $(document).off('keypress', this.rollback);
         this.plh.style.display = 'none';
+        var clsReg = new RegExp('(?:^|\\s)'+this.freezeClass+'(?!\\S)', 'gi');
+        this.eV.className = this.eV.className.replace(clsReg, '');
         if(this.moved)
           this.move(this.target, this.eV, this.lastPos);
       },
