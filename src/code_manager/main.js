@@ -37,17 +37,13 @@ define(function(require) {
 		var generators = {},
 		defGenerators	= {},
 		viewers = {},
-		defViewers = {},
-		geHtml = new gHtml(),
-		geCss = new gCss(),
-		geJson = new gJson(),
-		edCM = new eCM();
+		defViewers = {};
 
-		defGenerators.html = geHtml;
-		defGenerators.css	= geCss;
-		defGenerators.json = geJson;
+		defGenerators.html = new gHtml();
+		defGenerators.css	= new gCss();
+		defGenerators.json = new gJson();
 
-		defViewers.CodeMirror = edCM;
+		defViewers.CodeMirror = new eCM();
 
 		return {
 
