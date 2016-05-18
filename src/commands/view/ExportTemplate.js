@@ -26,7 +26,7 @@ define(function() {
 			buildEditor: function(codeName, theme, label)
 			{
 				if(!this.codeMirror)
-					this.codeMirror		= this.cm.getEditor('CodeMirror');
+					this.codeMirror		= this.cm.getViewer('CodeMirror');
 
 				var $input 		= $('<textarea>'),
 

@@ -9,12 +9,6 @@ define(['backbone'],
 				this.compCls = [];
 			},
 
-			/** @inheritdoc */
-			getId	: function()
-			{
-				return 'css';
-			},
-
 			/**
 			 * Get CSS from components
 			 * @return {String}

@@ -6,12 +6,6 @@ define(['backbone'],
 		return Backbone.Model.extend({
 
 			/** @inheritdoc */
-			getId	: function()
-			{
-				return 'json';
-			},
-
-			/** @inheritdoc */
 			build: function(model)
 			{
 				var json	= model.toJSON();

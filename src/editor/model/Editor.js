@@ -261,7 +261,7 @@ define([
 					pfx			= cfg.stylePrefix || 'cm-';
 				cfg.stylePrefix = this.config.stylePrefix + pfx;
 				this.cm		= new CodeManager(cfg);
-				this.cm.loadDefaultGenerators().loadDefaultEditors();
+				this.cm.loadDefaultGenerators().loadDefaultViewers();
 				this.set('CodeManager', this.cm);
 			},
 
