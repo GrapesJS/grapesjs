@@ -127,8 +127,8 @@ define(['backbone', 'text!./../templates/layer.html'],
 				this.model.collection.remove(this.model);
 
 			if(this.stackModel && this.stackModel.set){
+				this.stackModel.set({stackIndex: null}, {silent: true});
 				this.stackModel.trigger('updateValue');
-				this.stackModel.set({stackIndex: null},{silent: true});
 			}
 		},
 

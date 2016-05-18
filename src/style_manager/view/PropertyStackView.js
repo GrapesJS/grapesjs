@@ -96,18 +96,8 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 			var result 	= null;
 			// If detached the value in this case is stacked, eg. substack-prop: 1px, 2px, 3px...
 			if(this.model.get('detached')){
-				//var aStackDet	= this.getStackValues();
-				//console.log('Stack values');
-				//console.log(aStackDet);
 				var valist = propView.componentValue.split(',');
 				result = valist[this.model.get('stackIndex')];
-				// In detached mode the value of the property never changed
-				// so I need some how to update
-				if(result !== propView.getValueForTarget()){
-					//UPDATE?!?
-					//this.refreshLayers(); NO!!
-				}
-				//console.log(propView.property + ' model: ' + propView.getValueForTarget() + ' found on comp: ' + result);
 			}else{
 				var aStack	= this.getStackValues();
 				var strVar	= aStack[this.model.get('stackIndex')];

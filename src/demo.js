@@ -317,10 +317,6 @@ require(['config/require-config'], function() {
 				sectors: [{
 					name: 'General',
 					properties:[{
-							name		: 'Test',
-							property	: 'test',
-							defaults 	: 'testDef',
-						},{
 							name		: 'Alignment',
 							property	: 'float',
 							type		: 'radio',
@@ -476,7 +472,6 @@ require(['config/require-config'], function() {
 							name		: 'Padding',
 							property	: 'padding',
 							type		: 'composite',
-							detached : true,
 							properties:[{
 											name		: 'Top',
 											property	: 'padding-top',
@@ -619,7 +614,6 @@ require(['config/require-config'], function() {
 							name		: 'Text shadow',
 							property	: 'text-shadow',
 							type		: 'stack',
-							detached: true,
 							preview		: true,
 							properties	: [{
 											name: 		'X position',
@@ -769,6 +763,7 @@ require(['config/require-config'], function() {
 							property	: 'background',
 							type		: 'stack',
 							preview		: true,
+							detached: true,
 							properties	: [{
 											name: 		'Image',
 											property: 	'background-image',
