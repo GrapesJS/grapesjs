@@ -23,6 +23,10 @@ define(function () {
 		//Enable/Disable saving HTML template
 		storeCss: false,
 
+		// ONLY FOR LOCAL STORAGE
+		// If enabled, checks if browser supports Local Storage
+		checkLocal: true,
+
 		// ONLY FOR REMOTE STORAGE
 		// Custom params that should be passed with each store/load request
 		params: {},

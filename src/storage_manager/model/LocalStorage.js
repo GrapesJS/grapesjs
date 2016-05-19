@@ -1,13 +1,10 @@
 define(['backbone'],
 	function (Backbone) {
-		/**
-		 * @class LocalStorage
-		 * */
+
 		return Backbone.Model.extend({
 
 			defaults: {
-				checkSupport		: true,
-				errorNoSupport		: 'Error encountered while parsing JSON response',
+				checkLocal: true,
 			},
 
 			/** @inheritdoc */
@@ -40,12 +37,10 @@ define(['backbone'],
 
 			/**
 			 * Check storage environment
-			 * @return void
 			 * */
-			checkStorageEnvironment: function(){
-				if(this.get('checkSupport'))
-					if( !localStorage )
-						console.warn(this.get('errorNoSupport'));
+			checkStorageEnvironment: function() {
+				if(this.get('checkLocal') && !localStorage)
+						console.warn("Your browser doesn't support localStorage");
 			},
 
 		});

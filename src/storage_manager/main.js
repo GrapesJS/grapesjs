@@ -37,8 +37,8 @@ define(function(require) {
 		var storages = {};
 		var defaultStorages = {};
 
-		defaultStorages.remote	= new RemoteStorage(c.remoteStorage);
-		defaultStorages.local = new LocalStorage(c.localStorage);
+		defaultStorages.remote	= new RemoteStorage(c);
+		defaultStorages.local = new LocalStorage(c);
 		c.currentStorage = c.storageType;
 
 		return {
