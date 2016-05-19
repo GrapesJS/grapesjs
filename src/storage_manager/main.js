@@ -1,11 +1,29 @@
+/**
+ * - [isAutosave](#isautosave)
+ * - [setAutosave](#setautosave)
+ * - [getStepsBeforeSave](#getstepsbeforesave)
+ * - [setStepsBeforeSave](#setstepsbeforesave)
+ * - [getStorages](#getstorages)
+ * - [getCurrent](#getcurrent)
+ * - [setCurrent](#setcurrent)
+ * - [add](#add)
+ * - [get](#get)
+ * - [store](#store)
+ * - [load](#load)
+ *
+ *
+ * Before using methods you should get first the module from the editor instance, in this way:
+ *
+ * ```js
+ * var storageManager = editor.get('StorageManager');
+ * ```
+ *
+ * @module StorageManager
+ */
 define(function(require) {
-	/**
-	 * @class 	StorageManager
-	 * @param 	{Object} Configurations
-	 *
-	 * @return	{Object}
- 	 * */
+
 	var StorageManager = function(config) {
+
 		var c = config || {},
 		defaults = require('./config/config'),
 		LocalStorage = require('./model/LocalStorage'),
@@ -150,6 +168,7 @@ define(function(require) {
 			},
 
 		};
+
 	};
 
 	return StorageManager;
