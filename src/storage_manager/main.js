@@ -39,6 +39,7 @@ define(function(require) {
 
 		defaultStorages.remote	= new RemoteStorage(c.remoteStorage);
 		defaultStorages.local = new LocalStorage(c.localStorage);
+		c.currentStorage = c.storageType;
 
 		return {
 
@@ -47,7 +48,7 @@ define(function(require) {
 			 * @return {Boolean}
 			 * */
 			isAutosave: function(){
-				return c.autosave;
+				return !!c.autosave;
 			},
 
 			/**
