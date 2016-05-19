@@ -16,7 +16,7 @@ define(['backbone', './AssetView', './AssetImageView', './FileUploader'],
 			// Check if storage is required and if Storage Manager is available
 			if(this.config.stm && this.config.storageType !== ''){
 				var type		= this.config.storageType;
-				this.provider	= this.config.stm.getProvider(type);
+				this.provider	= this.config.stm.get(type);
 				this.storeName	= this.config.storageName ? this.config.storageName : this.className;
 				if(this.provider){
 					// Create new instance of provider

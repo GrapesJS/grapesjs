@@ -124,7 +124,7 @@ define([
 						avSt	= opt ? opt.avoidStore : 0;
 				this.set('changesCount', count);
 
-				if(this.stm.isAutosave() && count < this.stm.getChangesBeforeSave())
+				if(this.stm.isAutosave() && count < this.stm.getStepsBeforeSave())
 					return;
 
 				if(!avSt){
@@ -219,7 +219,7 @@ define([
 			initStorage: function()
 			{
 				this.stm		= new StorageManager(this.config.storageManager);
-				this.stm.loadDefaultProviders().setCurrentProvider(this.config.storageType);
+				this.stm.loadDefaultProviders().setCurrent(this.config.storageType);
 				this.set('StorageManager', this.stm);
 			},
 
@@ -355,7 +355,7 @@ define([
 				var updatedCount = this.get('changesCount') + 1,
 						avSt	= opt ? opt.avoidStore : 0;
 				this.set('changesCount', updatedCount);
-				if(this.stm.isAutosave() && updatedCount < this.stm.getChangesBeforeSave()){
+				if(this.stm.isAutosave() && updatedCount < this.stm.getStepsBeforeSave()){
 					return;
 				}
 

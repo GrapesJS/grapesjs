@@ -16,11 +16,6 @@ define(['backbone'],
 			},
 
 			/** @inheritdoc */
-			getId	: function() {
-				return	'remote';
-			},
-
-			/** @inheritdoc */
 			store	: function(name, value) {
 				var fd 		= new FormData(),
 					params	= this.get('paramsStore');

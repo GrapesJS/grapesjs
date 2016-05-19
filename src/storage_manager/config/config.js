@@ -1,19 +1,48 @@
 define(function () {
+
 	return {
 		// Enable/Disable autosaving
-		autosave 			: 1,
+		autosave: 1,
 
 		// Indicates which storage to use. Available: local | remote
-		storageType			: 'local',
+		storageType: 'local',
 
 		// If autosave enabled, indicates how many changes (general changes to structure)
 		// need to be done before save. Useful with remoteStorage to reduce remote calls
-		changesBeforeSave	: 1,
+		stepsBeforeSave: 1,
+
+		//Enable/Disable components model (JSON format)
+		storeComponents: true,
+
+		//Enable/Disable styles model (JSON format)
+		storeStyles: false,
+
+		//Enable/Disable saving HTML template
+		storeHtml: false,
+
+		//Enable/Disable saving HTML template
+		storeCss: false,
+
+		// ONLY FOR REMOTE STORAGE
+		// Custom params that should be passed with each store/load request
+		params: {},
+
+		// Endpoint where to save all stuff
+		urlStore: '',
+
+		// Endpoint where to fetch data
+		urlLoad: '',
+
+		//Callback before request
+		beforeSend: function(jqXHR, settings){},
+
+		//Callback after request
+		onComplete: function(jqXHR, status){},
 
 		// Defaults for remote storage
-		remoteStorage		: {
+		remoteStorage: {
 			//Enable/Disable components model (JSON format)
-			storeComponents: 	true,
+			storeComponents: true,
 			//Enable/Disable styles model (JSON format)
 			storeStyles: 		false,
 			//Enable/Disable saving HTML template
@@ -47,6 +76,6 @@ define(function () {
 		},
 
 		// Defaults for local storage
-		localStorage		: {},
+		localStorage: {},
 	};
 });

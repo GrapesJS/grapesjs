@@ -11,11 +11,6 @@ define(['backbone'],
 			},
 
 			/** @inheritdoc */
-			getId	: function() {
-				return	'local';
-			},
-
-			/** @inheritdoc */
 			store	: function(name, value) {
 				this.checkStorageEnvironment();
 				localStorage.setItem(name, value );
