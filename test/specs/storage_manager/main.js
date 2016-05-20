@@ -2,9 +2,11 @@ var modulePath = './../../../test/specs/storage_manager';
 
 define([
         'StorageManager',
+        modulePath + '/model/Models',
          ],
   function(
-          StorageManager
+          StorageManager,
+          Models
           ) {
 
     describe('Storage Manager', function() {
@@ -116,7 +118,7 @@ define([
 
       });
 
-      //Models.run();
+      Models.run();
 
     });
 });
