@@ -7,7 +7,7 @@ define(function () {
 		// Indicates which storage to use. Available: local | remote
 		storageType: 'local',
 
-		// If autosave enabled, indicates how many changes (general changes to structure)
+		// If autosave enabled, indicates how many steps (general changes to structure)
 		// need to be done before save. Useful with remoteStorage to reduce remote calls
 		stepsBeforeSave: 1,
 

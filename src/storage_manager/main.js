@@ -19,6 +19,18 @@
  * ```
  *
  * @module StorageManager
+ * @param {Object} config Configurations
+ * @param {Boolean} [config.autosave=true] Indicates if autosave mode is enabled, works in conjunction with stepsBeforeSave
+ * @param {number} [config.stepsBeforeSave=1] If autosave enabled, indicates how many steps/changes are necessary
+ * before autosave is triggered
+ * @param {string} [config.storageType='local'] Default storage type. Available: 'local' | 'remote' | ''(do not store)
+ * @example
+ * ...
+ * storageManager: {
+ *  	autosave: false,
+ *  	storageType: 'remote',
+ * }
+ * ...
  */
 define(function(require) {
 
@@ -137,7 +149,7 @@ define(function(require) {
 			},
 
 			/**
-			 * Store resource
+			 * Store resource in the current storage
 			 * @param	{String} name Resource's name
 			 * @param	{String} value Resource's value
 			 * @return {Object|null}
@@ -148,7 +160,7 @@ define(function(require) {
 			},
 
 			/**
-			 * Load resource
+			 * Load resource from the current storage
 			 * @param	{string} name Resource's name
 			 * @return {Object|null} Loaded resource
 			 * */
