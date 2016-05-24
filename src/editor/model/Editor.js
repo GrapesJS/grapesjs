@@ -13,6 +13,7 @@ define([
         'DomComponents',
         'ClassManager',
         'Panels',
+        'Parser',
         'Utils'],
 	function(
 			Backbone,
@@ -29,6 +30,7 @@ define([
 			DomComponents,
 			ClassManager,
 			Panels,
+			Parser,
 			Utils
 			){
 		return Backbone.Model.extend({
@@ -61,8 +63,17 @@ define([
 				this.initUndoManager();
 				this.initCssComposer();
 				this.initUtils();
+				this.initParser();
 
 				this.on('change:selectedComponent', this.componentSelected, this);
+			},
+
+			/**
+			 * Initialize Parser
+			 * */
+			initParser: function() {
+				this.parser = new Parser();
+				this.set('parser', this.parser);
 			},
 
 			/**

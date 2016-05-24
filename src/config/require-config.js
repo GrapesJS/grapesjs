@@ -46,6 +46,7 @@ require.config({
 		            {  name: 'Commands',				location: 'commands',					},
 		            {  name: 'Canvas',					location: 'canvas',						},
 		            {  name: 'Panels',					location: 'panels',						},
+		            {  name: 'Parser',					location: 'parser',						},
 		            {  name: 'Utils', 					location: 'utils', 						}
 	]
 });

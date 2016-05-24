@@ -19,6 +19,7 @@ require(['../src/config/require-config.js', 'config/config.js'], function() {
 	         'specs/commands/main.js',
 	         'specs/style_manager/main.js',
 	         'specs/storage_manager/main.js',
+	         'specs/parser/main.js',
 	         'specs/utils/main.js'
 	     ], function(chai)
 	     {
