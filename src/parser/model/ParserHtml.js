@@ -48,23 +48,20 @@ define(function(require) {
       },
 
       /**
-       * Parse HTML string to a desired model object
-       * @param  {string} str HTML string
-       * @return {Object}
+       * Fetch data from node
+       * @param  {HTMLElement} el DOM
+       * @return {Array<Object>}
        */
-      parse: function(str){
-        var el = document.createElement('div');
-        el.innerHTML = str;
-        var nodes = el.childNodes;
+      parseNode: function(el){
         var result = [];
+        var nodes = el.childNodes;
 
-        // Iterate all nodes
         for (var i = 0, len = nodes.length; i < len; i++) {
           var node = nodes[i];
           var model = {};
-          var attrs = node.attributes;
+          var attrs = node.attributes || [];
           var attrsLen = attrs.length;
-          model.tagName = node.tagName.toLowerCase();
+          model.tagName = node.tagName ? node.tagName.toLowerCase() : '';
 
           if(attrsLen)
             model.attributes = {};
@@ -74,17 +71,49 @@ define(function(require) {
             var nodeName = attrs[j].nodeName;
             var nodeValue = attrs[j].nodeValue;
 
-            //Isolate style and class attributes
+            //Isolate style, class and src attributes
             if(nodeName === 'style')
               model.style = this.parseStyle(nodeValue);
             else if(nodeName === 'class')
               model.classes = this.parseClass(nodeValue);
-            else
+            else if(nodeName === 'src' && model.tagName === 'img'){
+              model.type = 'image';
+              model.src = nodeValue;
+            }else
               model.attributes[nodeName] = nodeValue;
           }
 
+          // Check for nested elements
+          if(node.childNodes.length)
+            model.components = this.parseNode(node);
+
+          // Find text nodes
+          if(!model.tagName && node.nodeType === 3 && node.nodeValue.trim()){
+            model.type = 'text';
+            model.tagName = 'span';
+            model.content = node.nodeValue;
+          }
+
+          // If tagName is still empty do not push it
+          if(!model.tagName)
+            continue;
+
           result.push(model);
         }
+
+        return result;
+      },
+
+      /**
+       * Parse HTML string to a desired model object
+       * @param  {string} str HTML string
+       * @return {Object}
+       */
+      parse: function(str){
+        var el = document.createElement('div');
+        el.innerHTML = str;
+        var nodes = el.childNodes;
+        var result = this.parseNode(el);
 
         if(result.length == 1)
           result = result[0];

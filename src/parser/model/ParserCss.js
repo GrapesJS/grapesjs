@@ -4,8 +4,98 @@ define(function(require) {
 
     return {
 
+      /**
+       * Parse selector string to array.
+       * Only concatenated classes are valid as CSS rules inside editor.
+       * It's ok with the last part of the string as state (:hover, :active)
+       * @param  {string} str Selectors string
+       * @return {Array<Array>}
+       * @example
+       * var res = ParserCss.parseSelector('.test1, .test1.test2, .test2.test3');
+       * console.log(res);
+       * // [['test1'], ['test1', 'test2'], ['test2', 'test3']]
+       */
+      parseSelector: function(str){
+        var result = [];
+        var sels = str.split(',');
+        for (var i = 0, len = sels.length; i < len; i++) {
+          var sel = sels[i].trim();
+          // Will accept only concatenated classes and last
+          // class might be with state (eg. :hover), nothing else.
+          if (/^(\.{1}[\w\-]+)+(:{1}[\w\-]+)?$/ig.test(sel)) {
+            var cls = sel.split('.').filter(Boolean);
+            result.push(cls);
+          }
+        }
+        return result;
+      },
+
+      /**
+       * Fetch data from node
+       * @param  {StyleSheet|CSSMediaRule} el
+       * @return {Array<Object>}
+       */
+      parseNode: function(el){
+        var result = [];
+        var nodes = el.cssRules;
+
+        for (var i = 0, len = nodes.length; i < len; i++) {
+          var node = nodes[i];
+          var sels = node.selectorText; // CSSMediaRule has conditionText (screen and (min-width: 480px))
+
+          //if(node.cssRules)
+            // it's a CSSMediaRule, need to go deeper
+
+          if(!sels)
+            continue;
+
+          sels = this.parseSelector(sels);
+
+          // Create style object from the big one
+          var stl = node.style;
+          var style = {};
+          for(var j = 0, len2 = stl.length; j < len2; j++){
+            style[stl[j]] = stl[stl[j]];
+          }
+
+          // For each group of selectors
+          for (var k = 0, len3 = sels.length; k < len3; k++) {
+            var selArr = sels[k];
+            var model = {};
+            model.selectors = selArr;
+            model.style = style;
+            result.push(model);
+          }
+
+        }
+
+        return result;
+      },
+
+      /**
+       * Parse CSS string to a desired model object
+       * @param  {string} str HTML string
+       * @return {Object|Array<Object>}
+       */
       parse: function(str){
-        return {parsed: 'CSS '+str};
+        var el = document.createElement('style');
+        /*
+        el.innerHTML = ".cssClass {border: 2px solid black; background-color: blue;} " +
+        ".red, .red2 {color:red; padding:5px} .test1.red {color:black} .red:hover{color: blue} " +
+        "@media screen and (min-width: 480px){ .red{color:white} }";
+        */
+        el.innerHTML = str;
+
+        // There is no .sheet without adding it to the <head>
+        document.head.appendChild(el);
+        var sheet = el.sheet;
+        document.head.removeChild(el);
+        var result = this.parseNode(sheet);
+
+        if(result.length == 1)
+          result = result[0];
+
+        return result;
       },
 
     };

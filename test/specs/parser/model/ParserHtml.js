@@ -82,16 +82,83 @@ define([path + 'model/ParserHtml',],
             obj.parse(str).should.deep.equal(result);
           });
 
-          it.skip('Parse nested nodes', function() {
-
+          it('Parse images nodes', function() {
+            var str = '<img id="test1" src="./index.html"/>';
+            var result = {
+              tagName: 'img',
+              type: 'image',
+              src: './index.html',
+              attributes: { id: 'test1'},
+            };
+            obj.parse(str).should.deep.equal(result);
           });
 
-          it.skip('Parse images nodes', function() {
-
+          it('Parse text nodes', function() {
+            var str = '<div id="test1">test2 </div>';
+            var result = {
+              tagName: 'div',
+              attributes: { id: 'test1'},
+              components: [{
+                tagName: 'span',
+                type: 'text',
+                content: 'test2 ',
+              }],
+            };
+            obj.parse(str).should.deep.equal(result);
           });
 
-          it.skip('Parse text nodes', function() {
+          it('Parse nested nodes', function() {
+            var str = '<article id="test1">   <div></div> <footer id="test2"></footer>  Text mid <div id="last"></div></article>';
+            var result = {
+              tagName: 'article',
+              attributes: {id: 'test1'},
+              components: [
+                {
+                  tagName: 'div'
+                },{
+                  tagName: 'footer',
+                  attributes: { id: 'test2'},
+                },{
+                  tagName: 'span',
+                  type: 'text',
+                  content: '  Text mid ',
+                },{
+                  tagName: 'div',
+                  attributes: { id: 'last'},
+                },
+              ]
+            };
+            obj.parse(str).should.deep.equal(result);
+          });
 
+          it('Parse nested text nodes', function() {
+            var str = '<div>content1 <div>nested</div> content2</div>';
+            var result = {
+              tagName: 'div',
+              components: [{
+                tagName: 'span',
+                type: 'text',
+                content: 'content1 ',
+              },{
+                tagName: 'div',
+                components: [{
+                  tagName: 'span',
+                  type: 'text',
+                  content: 'nested',
+                }]
+              },{
+                tagName: 'span',
+                type: 'text',
+                content: ' content2',
+              }],
+            };
+            obj.parse(str).should.deep.equal(result);
+          });
+
+          it('Parse multiple nodes', function() {
+            var str = '<div></div><div></div>';
+            var result = [{ tagName: 'div'},{ tagName: 'div'}];
+            obj.parse(str).should.deep.equal(result);
           });
 
         });
