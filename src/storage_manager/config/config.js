@@ -12,10 +12,10 @@ define(function () {
 		stepsBeforeSave: 1,
 
 		//Enable/Disable components model (JSON format)
-		storeComponents: true,
+		storeComponents: false,
 
 		//Enable/Disable styles model (JSON format)
-		storeStyles: true,
+		storeStyles: false,
 
 		//Enable/Disable saving HTML template
 		storeHtml: true,

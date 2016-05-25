@@ -91,7 +91,14 @@ define([path + 'model/ParserCss',],
             obj.parse(str).should.deep.equal(result);
           });
 
-          it.skip('Parse rule with state', function() {
+          it('Parse rule with state', function() {
+            var str = ' .test1.test2:hover{ color:red }';
+            var result = {
+              selectors: ['test1', 'test2'],
+              style: { color: 'red'},
+              state: 'hover'
+            };
+            obj.parse(str).should.deep.equal(result);
           });
 
         });

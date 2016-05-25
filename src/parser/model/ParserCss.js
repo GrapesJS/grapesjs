@@ -62,6 +62,14 @@ define(function(require) {
           for (var k = 0, len3 = sels.length; k < len3; k++) {
             var selArr = sels[k];
             var model = {};
+
+            //Isolate state from selector
+            var stateArr = selArr[selArr.length - 1].split(':');
+            if(stateArr[1]){
+              selArr[selArr.length - 1] = stateArr[0];
+              model.state = stateArr[1];
+            }
+
             model.selectors = selArr;
             model.style = style;
             result.push(model);
