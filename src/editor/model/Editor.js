@@ -97,6 +97,7 @@ define([
 
 				cfg.sm = this;
 				this.cssc = new CssComposer(cfg);
+				this.CssComposer = this.cssc;
 				this.set('CssComposer', this.cssc);
 
 				if(this.stm.isAutosave())
@@ -182,7 +183,7 @@ define([
 				cfg.em				= this;
 
 				this.cmp 			= new DomComponents(cfg);
-
+				this.Components = this.cmp;
 				if(this.stm.isAutosave()){
 					var md 	= this.cmp.getComponent();
 					this.updateComponents( md, null, { avoidStore : 1 });
@@ -227,9 +228,9 @@ define([
 			/**
 			 * Initialize storage
 			 * */
-			initStorage: function()
-			{
-				this.stm		= new StorageManager(this.config.storageManager);
+			initStorage: function() {
+				this.stm = new StorageManager(this.config.storageManager);
+				this.StorageManager = this.stm;
 				this.stm.loadDefaultProviders().setCurrent(this.config.storageType);
 				this.set('StorageManager', this.stm);
 			},
@@ -272,6 +273,7 @@ define([
 					pfx			= cfg.stylePrefix || 'cm-';
 				cfg.stylePrefix = this.config.stylePrefix + pfx;
 				this.cm		= new CodeManager(cfg);
+				this.CodeManager = this.cm;
 				this.cm.loadDefaultGenerators().loadDefaultViewers();
 				this.set('CodeManager', this.cm);
 			},
@@ -509,7 +511,79 @@ define([
 
 				if(!avSt)
 					this.componentsUpdated();
-			}
+			},
+
+			/**
+			 * Store data to the current storage
+			 */
+			store: function(){
+				var sm = this.StorageManager;
+				var cm = this.CodeManager;
+				var cmp = this.Components;
+				var cssc = this.CssComposer;
+
+				if(!sm || !cm || !cmp)
+					return;
+
+				var wrp	= cmp.getComponent();
+				var smConfig = sm.getConfig();
+				var store = {};
+
+				if(wrp){
+					if(smConfig.storeHtml)
+						store.html = cm.getCode(wrp, 'html');
+
+					if(smConfig.storeComponents)
+						store.components = JSON.stringify(cm.getCode(wrp, 'json'));
+				}
+
+				if(cssc){
+					if(smConfig.storeCss && wrp)
+						store.css = cm.getCode(wrp, 'css', cssc);
+
+					if(smConfig.storeStyles)
+						store.styles = JSON.stringify(cssc.getRules());
+				}
+
+				sm.store(store);
+			},
+
+			/**
+			 * Load data from the current storage
+			 */
+			load: function(){
+				var sm = this.StorageManager;
+				var load = [];
+
+				if(!sm)
+					return;
+
+				var smConfig = sm.getConfig();
+
+				if(smConfig.storeHtml)
+					load.push('html');
+
+				if(smConfig.storeComponents)
+					load.push('components');
+
+				if(smConfig.storeCss)
+					load.push('css');
+
+				if(smConfig.storeStyles)
+					load.push('styles');
+
+				var result = sm.load(load);
+
+				if(result.components){
+					try{
+						var comps	=  JSON.parse(result.components);
+						this.setComponents(comps);
+					}catch(err){}
+				}else if(result.html){
+					this.setComponents(result.html);
+				}
+
+			},
 
 		});
 	});

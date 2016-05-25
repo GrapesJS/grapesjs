@@ -10,6 +10,10 @@ define([path + 'LocalStorage',
 
           var obj;
           var itemName = 'testItem';
+          var data = {
+            'item1': 'value1',
+            'item2': 'value2',
+          };
 
           beforeEach(function () {
             obj = new LocalStorage();
@@ -19,15 +23,29 @@ define([path + 'LocalStorage',
             delete obj;
           });
 
-          it('Store and load item', function() {
-            obj.store(itemName, 'test');
-            obj.load(itemName).should.equal('test');
+          it('Store and load items', function() {
+            obj.store(data);
+            var result = obj.load(['item1', 'item2']);
+            result.should.deep.equal(data);
           });
 
-          it('Remove item', function() {
-            obj.store(itemName, 'test');
-            obj.remove(itemName);
-            (obj.load(itemName) === null).should.equal(true);
+          it('Store, update and load items', function() {
+            obj.store(data);
+            obj.store({item3: 'value3'});
+            obj.store({item2: 'value22'});
+            var result = obj.load(['item1', 'item2', 'item3']);
+            result.should.deep.equal({
+              'item1': 'value1',
+              'item2': 'value22',
+              'item3': 'value3',
+            });
+          });
+
+          it('Remove items', function() {
+            var items = ['item1', 'item2', 'item3'];
+            obj.store(data);
+            obj.remove(items);
+            obj.load(items).should.be.empty;
           });
 
         });
@@ -40,8 +58,13 @@ define([path + 'LocalStorage',
           var endpointLoad = 'testLoadEndpoint';
           var params = { test: 'testValue' };
           var storageOptions;
+          var data;
 
           beforeEach(function () {
+            data = {
+              'item1': 'value1',
+              'item2': 'value2',
+            };
             storageOptions = {
                 urlStore: endpointStore,
                 urlLoad: endpointLoad,
@@ -57,11 +80,14 @@ define([path + 'LocalStorage',
 
           it('Store data', function() {
             sinon.stub($, "ajax");
-            obj.store(itemName, 'test');
-            var data = params;
-            data.itemName = 'test';
+
+            for(var k in params)
+              data[k] = params[k];
+
+            obj.store(data);
             $.ajax.calledWithMatch({
               url: endpointStore,
+              data: data,
             }).should.equal(true);
           });
 
@@ -69,10 +95,17 @@ define([path + 'LocalStorage',
             sinon.stub($, "ajax").returns({
               done: function(){}
             });
-            obj.load(itemName);
-            var data = params;
+            var dt = {};
+            var keys = ['item1', 'item2'];
+            obj.load(keys);
+            dt.keys = keys;
+
+            for(var k in params)
+              dt[k] = params[k];
+
             $.ajax.calledWithMatch({
               url: endpointLoad,
+              data: dt
             }).should.equal(true);
           });
 

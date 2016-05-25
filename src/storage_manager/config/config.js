@@ -1,6 +1,9 @@
 define(function () {
 
 	return {
+		// Prefix identifier that will be used inside storing and loading
+		id: 'gjs-',
+
 		// Enable/Disable autosaving
 		autosave: 1,
 

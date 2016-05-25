@@ -14,13 +14,15 @@ define(['backbone'],
 			},
 
 			/** @inheritdoc */
-			store: function(name, value) {
-				var fd = new FormData(),
+			store: function(data) {
+				var fd = {},
 				params = this.get('params');
-				fd.append(name, value);
+
+				for(var k in data)
+					fd[k] = data[k];
 
 				for(var key in params)
-					fd.append(key, params[key]);
+					fd[key] = params[key];
 
 				$.ajax({
 					url: this.get('urlStore'),
@@ -34,17 +36,25 @@ define(['backbone'],
 			},
 
 			/** @inheritdoc */
-			load: function(name){
-				var result = null;
+			load: function(keys){
+				var result = {},
+				fd = {},
+				params = this.get('params');
+
+				for(var key in params)
+					fd[key] = params[key];
+
+				fd.keys = keys;
+
 				$.ajax({
 					url: this.get('urlLoad'),
 					beforeSend: this.get('beforeSend'),
 					complete: this.get('onComplete'),
-					data: this.get('paramsLoad'),
+					data: fd,
 					async: false,
 					type: 'GET',
 				}).done(function(d){
-					result = d.data ? d.data[name] : d[name];
+					result = d;
 				});
 				return result;
 			},

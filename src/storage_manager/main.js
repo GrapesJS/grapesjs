@@ -20,6 +20,8 @@
  *
  * @module StorageManager
  * @param {Object} config Configurations
+ * @param {string} [config.id='gjs-'] The prefix for the fields, useful to differentiate storing/loading
+ * with multiple editors on the same page. For example, in local storage, the item of HTML will be saved like 'gjs-html'
  * @param {Boolean} [config.autosave=true] Indicates if autosave mode is enabled, works in conjunction with stepsBeforeSave
  * @param {number} [config.stepsBeforeSave=1] If autosave enabled, indicates how many steps/changes are necessary
  * before autosave is triggered
@@ -100,11 +102,17 @@ define(function(require) {
 			 * @return {this}
 			 * @example
 			 * storageManager.add('local2', {
-			 * 	load: function(item){
-			 * 		return localStorage.getItem(name);
+			 * 	load: function(keys){
+			 * 	  var res = {};
+			 * 	  for (var i = 0, len = keys.length; i < len; i++){
+			 * 	  	var v = localStorage.getItem(keys[i]);
+			 * 	  	if(v) res[keys[i]] = v;
+			 * 	  }
+			 * 		return res;
 			 * 	},
-			 * 	store: function(item, value){
-			 * 		localStorage.setItem(item, value);
+			 * 	store: function(data){
+			 * 		for(var key in data)
+			 * 			localStorage.setItem(key, data[key]);
 			 * 	}
 			 * });
 			 * */
@@ -149,24 +157,43 @@ define(function(require) {
 			},
 
 			/**
-			 * Store resource in the current storage
-			 * @param	{String} name Resource's name
-			 * @param	{String} value Resource's value
+			 * Store key-value resources in the current storage
+			 * @param	{Object} data Data in key-value format, eg. {item1: value1, item2: value2}
 			 * @return {Object|null}
+			 * @example
+			 * storageManager.store({item1: value1, item2: value2});
 			 * */
-			store: function(name, value){
+			store: function(data){
 				var st = this.get(this.getCurrent());
-				return st ? st.store(name, value) : null;
+				var dataF = {};
+
+				for(var key in data)
+					dataF[c.id + key] = data[key];
+
+				return st ? st.store(dataF) : null;
 			},
 
 			/**
-			 * Load resource from the current storage
-			 * @param	{string} name Resource's name
-			 * @return {Object|null} Loaded resource
+			 * Load resource from the current storage by keys
+			 * @param	{string|Array<string>} keys Keys to load
+			 * @return {Object|null} Loaded resources
+			 * @example
+			 * var data = storageManager.load(['item1', 'item2']);
+			 * // data -> {item1: value1, item2: value2}
+			 * var data2 = storageManager.load('item1');
+			 * // data2 -> {item1: value1}
 			 * */
-			load: function(name){
+			load: function(keys){
 				var st = this.get(this.getCurrent());
-				return st ? st.load(name) : null;
+				var keysF = [];
+
+				if(typeof keys === 'string')
+					keys = [keys];
+
+				for (var i = 0, len = keys.length; i < len; i++)
+					keysF.push(c.id + keys[i]);
+
+				return st ? st.load(keysF) : null;
 			},
 
 			/**
@@ -178,6 +205,15 @@ define(function(require) {
 				for (var id in defaultStorages)
 					this.add(id, defaultStorages[id]);
 				return this;
+			},
+
+			/**
+			 * Get configuration object
+			 * @return {Object}
+			 * @private
+			 * */
+			getConfig	: function() {
+				return c;
 			},
 
 		};

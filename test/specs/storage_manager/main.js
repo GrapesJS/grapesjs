@@ -64,11 +64,11 @@ define([
         });
 
         it('Store do not execute if empty', function() {
-          (obj.store('item','test') === null).should.equal(true);
+          (obj.store({item:'test'}) === null).should.equal(true);
         });
 
         it('Load do not execute if empty', function() {
-          (obj.load('item') === null).should.equal(true);
+          (obj.load(['item']) === null).should.equal(true);
         });
 
         it('Load default storages ', function() {
@@ -83,11 +83,11 @@ define([
           var storeValue;
           var storageId = 'testStorage';
           var storage = {
-            store: function(n, v){
-              storeValue[n] = v;
+            store: function(data){
+              storeValue = data;
             },
-            load: function(n){
-              return storeValue[n];
+            load: function(keys){
+              return storeValue;
             },
           };
 
@@ -104,14 +104,19 @@ define([
           });
 
           it('Store and load data', function() {
-            obj.store('item','testData');
-            storeValue['item'].should.equal('testData');
-            obj.load('item').should.equal('testData');
-          });
+            var data = {
+              item: 'testData',
+              item2: 'testData2',
+            };
+            var data2 = {};
+            var id = obj.getConfig().id;
+            data2[id + 'item'] = 'testData';
+            data2[id + 'item2'] = 'testData2';
 
-          it('Load inexistent data', function() {
-            obj.store('item','testData');
-            (obj.load('item2') === undefined).should.equal(true);
+            obj.store(data);
+            var load = obj.load(['item', 'item2']);
+            storeValue.should.deep.equal(data2);
+            load.should.deep.equal(data2);
           });
 
         });

@@ -8,21 +8,33 @@ define(['backbone'],
 			},
 
 			/** @inheritdoc */
-			store: function(name, value) {
+			store: function(data) {
 				this.checkStorageEnvironment();
-				localStorage.setItem(name, value);
+
+				for(var key in data)
+					localStorage.setItem(key, data[key]);
 			},
 
 			/** @inheritdoc */
-			load: function(name){
+			load: function(keys){
 				this.checkStorageEnvironment();
-				return localStorage.getItem(name);
+				var result = {};
+
+				for (var i = 0, len = keys.length; i < len; i++){
+					var value = localStorage.getItem(keys[i]);
+					if(value)
+						result[keys[i]] = value;
+				}
+
+				return result;
 			},
 
 			/** @inheritdoc */
-			remove: function(name) {
+			remove: function(keys) {
 				this.checkStorageEnvironment();
-				localStorage.removeItem(name);
+
+				for (var i = 0, len = keys.length; i < len; i++)
+					localStorage.removeItem(keys[i]);
 			},
 
 			/**
