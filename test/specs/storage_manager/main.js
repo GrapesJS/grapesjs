@@ -68,7 +68,7 @@ define([
         });
 
         it('Load do not execute if empty', function() {
-          (obj.load(['item']) === null).should.equal(true);
+          obj.load(['item']).should.be.empty;
         });
 
         it('Load default storages ', function() {
@@ -116,7 +116,7 @@ define([
             obj.store(data);
             var load = obj.load(['item', 'item2']);
             storeValue.should.deep.equal(data2);
-            load.should.deep.equal(data2);
+            load.should.deep.equal(data);
           });
 
         });

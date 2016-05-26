@@ -186,6 +186,7 @@ define(function(require) {
 			load: function(keys){
 				var st = this.get(this.getCurrent());
 				var keysF = [];
+				var result = {};
 
 				if(typeof keys === 'string')
 					keys = [keys];
@@ -193,7 +194,16 @@ define(function(require) {
 				for (var i = 0, len = keys.length; i < len; i++)
 					keysF.push(c.id + keys[i]);
 
-				return st ? st.load(keysF) : null;
+				var loaded = st ? st.load(keysF) : {};
+
+				// Restore keys name
+				for (var itemKey in loaded){
+					var reg = new RegExp('^' + c.id + '');
+					var itemKeyR = itemKey.replace(reg, '');
+					result[itemKeyR] = loaded[itemKey];
+				}
+
+				return result;
 			},
 
 			/**

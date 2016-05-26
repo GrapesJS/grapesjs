@@ -2,31 +2,31 @@ define(function () {
 	var config = {
 
 		// Style prefix
-		stylePrefix: 			'wte-',
+		stylePrefix: 'wte-',
 
-		// Prefix to use inside local storage name
-		storagePrefix: 			'wte-',
+		// Prefix to use inside local storage name (!)
+		storagePrefix: 'wte-',
 
-		// Editor ID. Useful in case of multiple editors on the same page
-		id						: '',
+		// Editor ID. Useful in case of multiple editors on the same page (!)
+		id: '',
 
 		// Where render the editor
-		container 				: '',
+		container: '',
 
-		idCanvas					: 'canvas',
+		idCanvas					: 'canvas', //(!)
 
-		idCanvasOverlay		: 'canvas-overlay',
+		idCanvasOverlay		: 'canvas-overlay', //(!)
 
-		idWrapper 				: 'wrapper',
+		idWrapper 				: 'wrapper', //(!)
 
 		// Enable/Disable possibility to copy(ctrl + c) & paste(ctrl + v) components
-		copyPaste					: true,
+		copyPaste: true,
 
 		// Enable/Disable undo manager
-		undoManager 			: true,
+		undoManager: true,
 
-		//Indicates which storage to use. Available: local | remote | none
-		storageType				: 'local',
+		//Indicates which storage to use. Available: local | remote | none (!)
+		storageType: 'local',
 
 		//Configurations for Asset Manager
 		assetManager			: {},

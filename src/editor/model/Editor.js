@@ -35,15 +35,14 @@ define([
 			){
 		return Backbone.Model.extend({
 
-			defaults:{
-				clipboard					: null,
-				selectedComponent	: null,
-				previousModel 		: null,
-				changesCount			:	0,
+			defaults: {
+				clipboard: null,
+				selectedComponent: null,
+				previousModel: null,
+				changesCount:	0,
 			},
 
-			initialize: function(c)
-			{
+			initialize: function(c) {
 				this.config		= c;
 				this.pfx = this.config.storagePrefix;
 				this.compName	= this.pfx + 'components' + this.config.id;
@@ -159,9 +158,9 @@ define([
 
 			/**
 			 * Initialize components
+			 * @private
 			 * */
-			initComponents: function()
-			{
+			initComponents: function() {
 				var cfg				= this.config.components,
 					comp				= this.loadComponents(),
 					cmpStylePfx	= cfg.stylePrefix || 'comp-';
@@ -405,7 +404,7 @@ define([
 					if(r)
 						result	=  JSON.parse(r);
 				}catch(err){
-					console.warn("Error encountered while parsing JSON response");
+					//console.warn("Error encountered while parsing JSON response");
 				}
 				return result;
 			},
@@ -435,7 +434,7 @@ define([
 					if(r)
 						result	=  JSON.parse(r);
 				}catch(err){
-					console.warn("Load '" + this.rulesName + "':Error encountered while parsing JSON response");
+					//console.warn("Load '" + this.rulesName + "':Error encountered while parsing JSON response");
 				}
 				return result;
 			},
@@ -594,19 +593,19 @@ define([
 				if(!sm)
 					return;
 
-				var smConfig = sm.getConfig();
+				var smc = sm.getConfig();
 				var store = {};
 
-				if(smConfig.storeHtml)
+				if(smc.storeHtml)
 					store.html = this.getHtml();
 
-				if(smConfig.storeComponents)
+				if(smc.storeComponents)
 					store.components = JSON.stringify(this.getComponents());
 
-				if(smConfig.storeCss)
+				if(smc.storeCss)
 					store.css = this.getCss();
 
-				if(smConfig.storeStyles)
+				if(smc.storeStyles)
 					store.styles = JSON.stringify(this.getStyle());
 
 				sm.store(store);
@@ -622,30 +621,33 @@ define([
 				if(!sm)
 					return;
 
-				var smConfig = sm.getConfig();
+				var smc = sm.getConfig();
 
-				if(smConfig.storeHtml)
+				if(smc.storeHtml)
 					load.push('html');
 
-				if(smConfig.storeComponents)
+				if(smc.storeComponents)
 					load.push('components');
 
-				if(smConfig.storeCss)
+				if(smc.storeCss)
 					load.push('css');
 
-				if(smConfig.storeStyles)
+				if(smc.storeStyles)
 					load.push('styles');
 
 				var result = sm.load(load);
 
+				var comps = [];
 				if(result.components){
 					try{
-						var comps	=  JSON.parse(result.components);
-						this.setComponents(comps);
+						comps	=  JSON.parse(result.components);
 					}catch(err){}
 				}else if(result.html){
-					this.setComponents(result.html);
+					comps = result.html;
 				}
+
+				console.log(result);
+				//this.setComponents(comps);
 
 			},
 
