@@ -58,7 +58,7 @@ define([
 
 				it('Add components at init', function() {
 					obj = new DomComponents({
-						defaults : [{}, {}, {}]
+						components : [{}, {}, {}]
 					});
 					obj.getComponents().length.should.equal(3);
 				});

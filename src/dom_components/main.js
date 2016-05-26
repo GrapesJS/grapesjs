@@ -59,21 +59,21 @@ define(function(require) {
 			if (!(name in c))
 				c[name] = defaults[name];
 		}
-
-		if(!c.wrapper.attributes)
-			c.wrapper.attributes 	= {};
-		c.wrapper.attributes.id		= 'wrapper';
-
+/*
 		// If there is no components try to append defaults
 		if(!c.wrapper.components.length && c.defaults.length){
 			c.wrapper.components = c.defaults;
 		}
-
-		if(!c.wrapper.style)
-			c.wrapper.style 		= {};
-
-		c.wrapper.style.position	= 'relative';
+*/
+		//c.wrapper.style.position	= 'relative';
 		var component		= new Component(c.wrapper, { sm: c.em });
+
+		component.set({
+			attributes: {id: 'wrapper'}
+		});
+
+		if(c.components)
+			component.get('components').add(c.components);
 
 		var obj				= {
 			model: component,
@@ -178,9 +178,32 @@ define(function(require) {
 			 * updated immediately
 			 * @return {HTMLElement}
 			 */
-			render		: function(){
+			render: function(){
 				return componentView.render().el;
 			},
+
+			/**
+			 * Clear all components
+			 * @return {this}
+			 * @private
+			 */
+			clear: function(){
+				var c = this.getComponents();
+				for(var i = 0, len = c.length; i < len; i++)
+					c.pop();
+				return this;
+			},
+
+			/**
+			 * Set components
+			 * @param {Object|string} components HTML string or components model
+			 * @return {this}
+			 * @private
+			 */
+			setComponents: function(components){
+				this.clear().addComponent(components);
+			},
+
 		};
 	};
 

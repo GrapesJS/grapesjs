@@ -155,6 +155,30 @@ define([path + 'model/ParserHtml',],
             obj.parse(str).should.deep.equal(result);
           });
 
+          it('Parse nested span text nodes', function() {
+            var str = '<div>content1 <div><span>nested</span></div> content2</div>';
+            var result = {
+              tagName: 'div',
+              components: [{
+                tagName: 'span',
+                type: 'text',
+                content: 'content1 ',
+              },{
+                tagName: 'div',
+                components: [{
+                  tagName: 'span',
+                  type: 'text',
+                  content: 'nested',
+                }]
+              },{
+                tagName: 'span',
+                type: 'text',
+                content: ' content2',
+              }],
+            };
+            obj.parse(str).should.deep.equal(result);
+          });
+
           it('Parse multiple nodes', function() {
             var str = '<div></div><div></div>';
             var result = [{ tagName: 'div'},{ tagName: 'div'}];

@@ -98,7 +98,9 @@ html,body,#wte-app, .#{$app-prefix}editor{ height: 100%; }
   overflow: auto;
   z-index:1;
 
+  	/* This simulate body behaviour */
   	> div {
+  		position: relative;
 	    height: 100%;
 	    overflow: auto;
 	    width: 100%;
@@ -149,7 +151,7 @@ ol.example li.placeholder:before {position: absolute;}
 
 /********* COMMANDS **********/
 
-.#{$com-prefix}dashed div {
+.#{$com-prefix}dashed *{
 	outline: 1px dashed #888;
 	outline-offset: -2px;
   	box-sizing: border-box;
@@ -1031,12 +1033,13 @@ $uploadPadding:	150px 10px;
   z-index: 5;
 
   .#{$rte-prefix}btn {
-  		color: $fontColor;
+  	color: $fontColor;
 		padding: 5px;
 		width:	25px;
 		border-right: 1px solid #353535;
 		text-align: center;
 		cursor: pointer;
+		outline: none;
 
 	  	&:last-child{ border-right:none; }
 	  	&.btn-info{ background-color: darken($mainDkColor,3%); }

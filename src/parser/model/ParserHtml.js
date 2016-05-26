@@ -2,6 +2,8 @@ define(function(require) {
 
   return function(config) {
 
+    var TEXT_NODE = 'span';
+
     return {
 
       /**
@@ -84,13 +86,21 @@ define(function(require) {
           }
 
           // Check for nested elements
-          if(node.childNodes.length)
-            model.components = this.parseNode(node);
+          var nodeChild = node.childNodes.length;
+          if(nodeChild){
+            // Avoid infinite text nodes nesting
+            var firstChild = node.childNodes[0];
+            if(nodeChild === 1 && firstChild.nodeType === 3 && model.tagName === TEXT_NODE){
+              model.type = 'text';
+              model.content = firstChild.nodeValue;
+            }else
+              model.components = this.parseNode(node);
+          }
 
           // Find text nodes
           if(!model.tagName && node.nodeType === 3 && node.nodeValue.trim()){
             model.type = 'text';
-            model.tagName = 'span';
+            model.tagName = TEXT_NODE;
             model.content = node.nodeValue;
           }
 

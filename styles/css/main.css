@@ -2614,8 +2614,10 @@ html, body, #wte-app, .wte-editor {
   top: 0;
   left: 3.5%;
   overflow: auto;
-  z-index: 1; }
+  z-index: 1;
+  /* This simulate body behaviour */ }
   .wte-cv-canvas > div {
+    position: relative;
     height: 100%;
     overflow: auto;
     width: 100%; }
@@ -2686,7 +2688,7 @@ ol.example li.placeholder:before {
   outline: none !important; }
 
 /********* COMMANDS **********/
-.wte-com-dashed div {
+.wte-com-dashed * {
   outline: 1px dashed #888;
   outline-offset: -2px;
   box-sizing: border-box; }
@@ -3444,7 +3446,8 @@ ol.example li.placeholder:before {
     width: 25px;
     border-right: 1px solid #353535;
     text-align: center;
-    cursor: pointer; }
+    cursor: pointer;
+    outline: none; }
     #wte-rte-toolbar .wte-rte-btn:last-child {
       border-right: none; }
     #wte-rte-toolbar .wte-rte-btn.btn-info {

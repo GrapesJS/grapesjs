@@ -1,6 +1,9 @@
 define(function () {
 	var config = {
 
+		//TEMP
+		components: '',
+
 		// Style prefix
 		stylePrefix: 'wte-',
 
@@ -46,8 +49,8 @@ define(function () {
 		//Configurations for Rich Text Editor
 		rte								: {},
 
-		//Configurations for Components
-		components				: {},
+		//Configurations for DomComponents
+		domComponents			: {},
 
 		//Configurations for Modal Dialog
 		modal							: {},

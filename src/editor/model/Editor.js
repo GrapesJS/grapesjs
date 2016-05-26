@@ -49,6 +49,7 @@ define([
 				this.rulesName	= this.pfx + 'rules' + this.config.id;
 				this.set('Config', c);
 
+				this.initParser();
 				this.initStorage();
 				this.initClassManager();
 				this.initModal();
@@ -62,7 +63,6 @@ define([
 				this.initUndoManager();
 				this.initCssComposer();
 				this.initUtils();
-				this.initParser();
 
 				this.on('change:selectedComponent', this.componentSelected, this);
 			},
@@ -71,8 +71,8 @@ define([
 			 * Initialize Parser
 			 * */
 			initParser: function() {
-				this.parser = new Parser();
-				this.set('parser', this.parser);
+				this.Parser = new Parser();
+				this.set('parser', this.Parser);
 			},
 
 			/**
@@ -161,30 +161,31 @@ define([
 			 * @private
 			 * */
 			initComponents: function() {
-				var cfg				= this.config.components,
-					comp				= this.loadComponents(),
-					cmpStylePfx	= cfg.stylePrefix || 'comp-';
+				var cfg = this.config.domComponents,
+				comp = this.loadComponents(),
+				cmpStylePfx	= cfg.stylePrefix || 'comp-';
 
 				cfg.stylePrefix	= this.config.stylePrefix + cmpStylePfx;
 
 				if(comp)
-					cfg.wrapper	= comp;
+					cfg.components = comp;
 
 				if(this.rte)
-					cfg.rte			= this.rte;
+					cfg.rte = this.rte;
 
 				if(this.modal)
-					cfg.modal		= this.modal;
+					cfg.modal = this.modal;
 
 				if(this.am)
-					cfg.am			= this.am;
+					cfg.am = this.am;
 
-				cfg.em				= this;
+				cfg.em = this;
 
-				this.cmp 			= new DomComponents(cfg);
+				this.cmp = new DomComponents(cfg);
 				this.Components = this.cmp;
+
 				if(this.stm.isAutosave()){
-					var md 	= this.cmp.getComponent();
+					var md = this.cmp.getComponent();
 					this.updateComponents( md, null, { avoidStore : 1 });
 
 					// Call UndoManager here so it's possible to call it also for children inside
@@ -398,15 +399,20 @@ define([
 			 * @return	{Object}
 			 * */
 			loadComponents: function() {
-				var result = null;
-				try{
-					var r = this.stm.load(this.compName);
-					if(r)
-						result	=  JSON.parse(r);
-				}catch(err){
-					//console.warn("Error encountered while parsing JSON response");
+				var comps = '';
+				var result = this.getCacheLoad();
+
+				if(result.components){
+					try{
+						comps	=  JSON.parse(result.components);
+					}catch(err){}
+				}else if(result.html){
+					comps = result.html;
 				}
-				return result;
+
+				console.log('loadComponents');
+				console.log(comps);
+				return comps;
 			},
 
 			/**
@@ -415,11 +421,12 @@ define([
 			 * @return void
 			 * */
 			storeComponents: function() {
-				var wrp	= this.cmp.getComponent();
+				/*var wrp	= this.cmp.getComponent();
 				if(wrp && this.cm){
 					var res	= this.cm.getCode(wrp, 'json');
 					this.stm.store(this.compName, JSON.stringify(res));
-				}
+				}*/
+				this.store();
 			},
 
 			/**
@@ -518,7 +525,7 @@ define([
 			 * @return {this}
 			 */
 			setComponents: function(components){
-				return this;
+				return this.Components.setComponents(components);
 			},
 
 			/**
@@ -608,6 +615,8 @@ define([
 				if(smc.storeStyles)
 					store.styles = JSON.stringify(this.getStyle());
 
+				console.log('Store');
+				console.log(store);
 				sm.store(store);
 			},
 
@@ -615,11 +624,38 @@ define([
 			 * Load data from the current storage
 			 */
 			load: function(){
+				var result = this.getCacheLoad(1);
+				var comps = [];
+
+				if(result.components){
+					try{
+						comps	=  JSON.parse(result.components);
+					}catch(err){}
+				}else if(result.html){
+					comps = result.html;
+				}
+
+				console.log(result);
+				//this.setComponents(comps);
+			},
+
+			/**
+			 * Returns cached load
+			 * @param {Boolean} force Force to reload
+			 * @return {Object}
+			 * @private
+			 */
+			getCacheLoad: function(force){
+				var f = force ? 1 : 0;
+
+				if(this.cacheLoad && !f)
+					return this.cacheLoad;
+
 				var sm = this.StorageManager;
 				var load = [];
 
 				if(!sm)
-					return;
+					return {};
 
 				var smc = sm.getConfig();
 
@@ -635,20 +671,9 @@ define([
 				if(smc.storeStyles)
 					load.push('styles');
 
-				var result = sm.load(load);
+				this.cacheLoad = sm.load(load);
 
-				var comps = [];
-				if(result.components){
-					try{
-						comps	=  JSON.parse(result.components);
-					}catch(err){}
-				}else if(result.html){
-					comps = result.html;
-				}
-
-				console.log(result);
-				//this.setComponents(comps);
-
+				return this.cacheLoad;
 			},
 
 		});

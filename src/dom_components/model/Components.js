@@ -5,6 +5,10 @@ define([ 'backbone', 'require'],
 
 			initialize: function(models, opt){
 
+				// Inject editor
+				if(opt && opt.sm)
+					this.editor = opt.sm;
+
 				this.model	= function(attrs, options) {
 					var model;
 
@@ -35,6 +39,13 @@ define([ 'backbone', 'require'],
 					return	model;
 				};
 
+			},
+
+			add: function(models, opt){
+				if(typeof models === 'string')
+					models = this.editor.Parser.parseHtml(models);
+
+				return Backbone.Collection.prototype.add.apply(this, [models, opt]);
 			},
 
 		});
