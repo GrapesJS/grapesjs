@@ -514,36 +514,100 @@ define([
 			},
 
 			/**
+			 * Set components inside editor's canvas. This method overrides actual components
+			 * @param {Object|string} components HTML string or components model
+			 * @return {this}
+			 */
+			setComponents: function(components){
+				return this;
+			},
+
+			/**
+			 * Returns components model from the editor's canvas
+			 * @return {Components}
+			 */
+			getComponents: function(){
+				var cmp = this.Components;
+				var cm = this.CodeManager;
+
+				if(!cmp || !cm)
+					return;
+
+				var wrp	= cmp.getComponent();
+				return cm.getCode(wrp, 'json');
+			},
+
+			/**
+			 * Set style inside editor's canvas. This method overrides actual style
+			 * @param {Object|string} style CSS string or style model
+			 * @return {this}
+			 */
+			setStyle: function(style){
+				return this;
+			},
+
+			/**
+			 * Returns rules/style model from the editor's canvas
+			 * @return {Rules}
+			 */
+			getStyle: function(){
+				return this.CssComposer.getRules();
+			},
+
+			/**
+			 * Returns HTML built inside canvas
+			 * @return {string} HTML string
+			 */
+			getHtml: function(){
+				var cmp = this.Components;
+				var cm = this.CodeManager;
+
+				if(!cmp || !cm)
+					return;
+
+				var wrp	= cmp.getComponent();
+				return cm.getCode(wrp, 'html');
+			},
+
+			/**
+			 * Returns CSS built inside canvas
+			 * @return {string} CSS string
+			 */
+			getCss: function(){
+				var cmp = this.Components;
+				var cm = this.CodeManager;
+				var cssc = this.CssComposer;
+
+				if(!cmp || !cm || !cssc)
+					return;
+
+				var wrp	= cmp.getComponent();
+				return cm.getCode(wrp, 'css', cssc);
+			},
+
+			/**
 			 * Store data to the current storage
 			 */
 			store: function(){
 				var sm = this.StorageManager;
-				var cm = this.CodeManager;
-				var cmp = this.Components;
-				var cssc = this.CssComposer;
 
-				if(!sm || !cm || !cmp)
+				if(!sm)
 					return;
 
-				var wrp	= cmp.getComponent();
 				var smConfig = sm.getConfig();
 				var store = {};
 
-				if(wrp){
-					if(smConfig.storeHtml)
-						store.html = cm.getCode(wrp, 'html');
+				if(smConfig.storeHtml)
+					store.html = this.getHtml();
 
-					if(smConfig.storeComponents)
-						store.components = JSON.stringify(cm.getCode(wrp, 'json'));
-				}
+				if(smConfig.storeComponents)
+					store.components = JSON.stringify(this.getComponents());
 
-				if(cssc){
-					if(smConfig.storeCss && wrp)
-						store.css = cm.getCode(wrp, 'css', cssc);
+				if(smConfig.storeCss)
+					store.css = this.getCss();
 
-					if(smConfig.storeStyles)
-						store.styles = JSON.stringify(cssc.getRules());
-				}
+				if(smConfig.storeStyles)
+					store.styles = JSON.stringify(this.getStyle());
 
 				sm.store(store);
 			},
