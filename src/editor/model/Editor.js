@@ -77,6 +77,7 @@ define([
 
 			/**
 			 * Initialize Utils
+			 * @private
 			 * */
 			initUtils: function() {
 				this.set('Utils', new Utils());
@@ -84,11 +85,12 @@ define([
 
 			/**
 			 * Initialize Css Composer
+			 * @private
 			 * */
 			initCssComposer: function() {
 				var cfg = this.config.cssComposer,
-						df = this.loadRules();
-						pfx	= cfg.stylePrefix || 'css-';
+				df = this.loadRules();
+				pfx	= cfg.stylePrefix || 'css-';
 				cfg.stylePrefix	= this.config.stylePrefix + pfx;
 
 				if(df)
@@ -146,10 +148,11 @@ define([
 
 			/**
 			 * Initialize Class manager
+			 * @private
 			 * */
 			initClassManager: function() {
 				var cfg = this.config.classManager,
-						pfx	= cfg.stylePrefix || 'clm-';
+				pfx	= cfg.stylePrefix || 'clm-';
 				cfg.stylePrefix	= this.config.stylePrefix + pfx;
 				cfg.target = this;
 				this.clm = new ClassManager(cfg);
@@ -198,14 +201,14 @@ define([
 
 			/**
 			 * Initialize canvas
+			 * @private
 			 * */
-			initCanvas: function()
-			{
-				var cfg				= this.config.canvas,
-					pfx				= cfg.stylePrefix || 'cv-';
-					cfg.stylePrefix	= this.config.stylePrefix + pfx;
+			initCanvas: function() {
+				var cfg = this.config.canvas,
+				pfx = cfg.stylePrefix || 'cv-';
+				cfg.stylePrefix	= this.config.stylePrefix + pfx;
 				cfg.canvasId	= this.config.idCanvas;
-				this.cv			= new Canvas(this.config.canvas);
+				this.cv = new Canvas(this.config.canvas);
 
 				if(this.cmp)
 					this.cv.setWrapper(this.cmp);
@@ -215,18 +218,19 @@ define([
 
 			/**
 			 * Initialize rich text editor
+			 * @private
 			 * */
-			initRichTextEditor: function()
-			{
-				var cfg			= this.config.rte,
-					rteStylePfx	= cfg.stylePrefix || 'rte-';
+			initRichTextEditor: function() {
+				var cfg = this.config.rte,
+				rteStylePfx	= cfg.stylePrefix || 'rte-';
 				cfg.stylePrefix	= this.config.stylePrefix + rteStylePfx;
-				this.rte		= new RichTextEditor(cfg);
+				this.rte = new RichTextEditor(cfg);
 				this.set('RichTextEditor', this.rte);
 			},
 
 			/**
 			 * Initialize storage
+			 * @private
 			 * */
 			initStorage: function() {
 				this.stm = new StorageManager(this.config.storageManager);
@@ -237,9 +241,9 @@ define([
 
 			/**
 			 * Initialize asset manager
+			 * @private
 			 * */
-			initAssetManager: function()
-			{
+			initAssetManager: function() {
 				var cfg			= this.config.assetManager,
 					pfx			= cfg.stylePrefix || 'am-';
 				cfg.stylePrefix = this.config.stylePrefix + pfx;
@@ -252,27 +256,27 @@ define([
 			},
 
 			/**
-			 * Initialize modal
+			 * Initialize dialog
+			 * @private
 			 * */
-			initModal: function()
-			{
-				var cfg			= this.config.modal,
-					pfx			= cfg.stylePrefix || 'mdl-';
+			initModal: function() {
+				var cfg = this.config.modal,
+				pfx = cfg.stylePrefix || 'mdl-';
 				cfg.stylePrefix = this.config.stylePrefix + pfx;
-				this.modal		= new ModalDialog(cfg);
+				this.modal = new ModalDialog(cfg);
 				this.modal.render().appendTo('body');
 				this.set('Modal', this.modal);
 			},
 
 			/**
 			 * Initialize Code Manager
+			 * @private
 			 * */
-			initCodeManager: function()
-			{
-				var cfg			= this.config.codeManager,
-					pfx			= cfg.stylePrefix || 'cm-';
+			initCodeManager: function() {
+				var cfg = this.config.codeManager,
+				pfx = cfg.stylePrefix || 'cm-';
 				cfg.stylePrefix = this.config.stylePrefix + pfx;
-				this.cm		= new CodeManager(cfg);
+				this.cm = new CodeManager(cfg);
 				this.CodeManager = this.cm;
 				this.cm.loadDefaultGenerators().loadDefaultViewers();
 				this.set('CodeManager', this.cm);
@@ -280,39 +284,39 @@ define([
 
 			/**
 			 * Initialize Commands
+			 * @private
 			 * */
-			initCommands: function()
-			{
-				var cfg			= this.config.commands,
-					pfx			= cfg.stylePrefix || 'com-';
+			initCommands: function() {
+				var cfg = this.config.commands,
+					pfx = cfg.stylePrefix || 'com-';
 				cfg.stylePrefix = this.config.stylePrefix + pfx;
-				cfg.em			= this;
-				cfg.canvasId	= this.config.idCanvas;
-				cfg.wrapperId	= this.config.idWrapper;
-				this.com		= new Commands(cfg);
+				cfg.em = this;
+				cfg.canvasId = this.config.idCanvas;
+				cfg.wrapperId = this.config.idWrapper;
+				this.com = new Commands(cfg);
 				this.com.loadDefaultCommands();
 				this.set('Commands', this.com);
 			},
 
 			/**
 			 * Initialize Panels
+			 * @private
 			 * */
-			initPanels: function()
-			{
-				var cfg			= this.config.panels,
-					pfx			= cfg.stylePrefix || 'pn-';
+			initPanels: function() {
+				var cfg = this.config.panels,
+					pfx = cfg.stylePrefix || 'pn-';
 				cfg.stylePrefix = this.config.stylePrefix + pfx;
-				cfg.em			= this;
-				this.pn			= new Panels(cfg);
+				cfg.em = this;
+				this.pn = new Panels(cfg);
 				this.pn.addPanel({ id: 'views-container'});
 				this.set('Panels', this.pn);
 			},
 
 			/**
 			 * Initialize Undo manager
+			 * @private
 			 * */
-			initUndoManager: function()
-			{
+			initUndoManager: function() {
 				if(this.um)
 					return;
 				if(this.cmp && this.config.undoManager){
@@ -363,8 +367,7 @@ define([
 			 * @param	{Mixed}		val	Value
 			 * @param	{Object}	opt	Options
 			 * */
-			componentsUpdated: function(model, val, opt)
-			{
+			componentsUpdated: function(model, val, opt){
 				var updatedCount = this.get('changesCount') + 1,
 						avSt	= opt ? opt.avoidStore : 0;
 				this.set('changesCount', updatedCount);
@@ -385,8 +388,7 @@ define([
 			 * @param 	{Object} 	Options
 			 *
 			 * */
-			componentSelected: function(model, val, options)
-			{
+			componentSelected: function(model, val, options){
 				if(!this.get('selectedComponent'))
 					this.trigger('deselect-comp');
 				else
@@ -406,12 +408,9 @@ define([
 					try{
 						comps	=  JSON.parse(result.components);
 					}catch(err){}
-				}else if(result.html){
+				}else if(result.html)
 					comps = result.html;
-				}
 
-				console.log('loadComponents');
-				console.log(comps);
 				return comps;
 			},
 
@@ -421,39 +420,34 @@ define([
 			 * @return void
 			 * */
 			storeComponents: function() {
-				/*var wrp	= this.cmp.getComponent();
-				if(wrp && this.cm){
-					var res	= this.cm.getCode(wrp, 'json');
-					this.stm.store(this.compName, JSON.stringify(res));
-				}*/
 				this.store();
 			},
 
 			/**
 			 * Load rules from storage
-			 *
-			 * @return	{Array}
+			 * @return {Array<Object>}
+			 * @private
 			 * */
-			loadRules: function(){
-				var result;
-				try{
-					var r = this.stm.load(this.rulesName);
-					if(r)
-						result	=  JSON.parse(r);
-				}catch(err){
-					//console.warn("Load '" + this.rulesName + "':Error encountered while parsing JSON response");
-				}
-				return result;
+			loadRules: function() {
+				var comps = '';
+				var result = this.getCacheLoad();
+
+				if(result.style){
+					try{
+						comps	=  JSON.parse(result.style);
+					}catch(err){}
+				}else if(result.css)
+					comps = this.Parser.parseCss(result.css);
+
+				return comps;
 			},
 
 			/**
 			 * Save rules to storage
+			 * @private
 			 * */
 			storeRules: function() {
-				var rules	= this.cssc.getRules();
-
-				if(rules)
-					this.stm.store(this.rulesName, JSON.stringify(rules));
+				this.store();
 			},
 
 			/**
@@ -549,6 +543,7 @@ define([
 			 * @return {this}
 			 */
 			setStyle: function(style){
+				//return this.CssComposer.setStyle(style);
 				return this;
 			},
 
@@ -626,14 +621,6 @@ define([
 			load: function(){
 				var result = this.getCacheLoad(1);
 				var comps = [];
-
-				if(result.components){
-					try{
-						comps	=  JSON.parse(result.components);
-					}catch(err){}
-				}else if(result.html){
-					comps = result.html;
-				}
 
 				console.log(result);
 				//this.setComponents(comps);

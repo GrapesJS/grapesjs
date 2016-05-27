@@ -15,7 +15,7 @@ define(function () {
 		},
 
 		// Could be used for default components
-		defaults		: [],
+		components: [],
 
 		rte					: {},
 

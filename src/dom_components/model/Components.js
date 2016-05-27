@@ -5,6 +5,8 @@ define([ 'backbone', 'require'],
 
 			initialize: function(models, opt){
 
+				this.on('add', this.onAdd);
+
 				// Inject editor
 				if(opt && opt.sm)
 					this.editor = opt.sm;
@@ -47,6 +49,17 @@ define([ 'backbone', 'require'],
 
 				return Backbone.Collection.prototype.add.apply(this, [models, opt]);
 			},
+
+			onAdd: function(model, c, opts){
+				var style = model.get('style');
+
+				if(!_.isEmpty(style)){
+					var newClass = this.editor.get('ClassManager').addClass(model.cid);
+					model.get('classes').add(newClass);
+					var rule = this.editor.get('CssComposer').newRule(newClass);
+					rule.set('style', style);
+				}
+      },
 
 		});
 });

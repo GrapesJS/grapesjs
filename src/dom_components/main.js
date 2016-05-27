@@ -59,21 +59,14 @@ define(function(require) {
 			if (!(name in c))
 				c[name] = defaults[name];
 		}
-/*
-		// If there is no components try to append defaults
-		if(!c.wrapper.components.length && c.defaults.length){
-			c.wrapper.components = c.defaults;
-		}
-*/
-		//c.wrapper.style.position	= 'relative';
+
 		var component		= new Component(c.wrapper, { sm: c.em });
 
 		component.set({
 			attributes: {id: 'wrapper'}
 		});
 
-		if(c.components)
-			component.get('components').add(c.components);
+		component.get('components').add(c.components);
 
 		var obj				= {
 			model: component,
@@ -183,9 +176,8 @@ define(function(require) {
 			},
 
 			/**
-			 * Clear all components
+			 * Remove all components
 			 * @return {this}
-			 * @private
 			 */
 			clear: function(){
 				var c = this.getComponents();
