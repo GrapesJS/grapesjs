@@ -7,6 +7,8 @@ define([ 'backbone', 'require'],
 
 				this.on('add', this.onAdd);
 
+				this.config = opt && opt.config ? opt.config : null;
+
 				// Inject editor
 				if(opt && opt.sm)
 					this.editor = opt.sm;
@@ -16,6 +18,9 @@ define([ 'backbone', 'require'],
 
 					if(!options.sm && opt && opt.sm)
 						options.sm = opt.sm;
+
+					if(opt && opt.config)
+						options.config = opt.config;
 
 					switch(attrs.type){
 
@@ -53,7 +58,7 @@ define([ 'backbone', 'require'],
 			onAdd: function(model, c, opts){
 				var style = model.get('style');
 
-				if(!_.isEmpty(style)){
+				if(!_.isEmpty(style) && this.editor){
 					var newClass = this.editor.get('ClassManager').addClass(model.cid);
 					model.get('classes').add(newClass);
 					var rule = this.editor.get('CssComposer').newRule(newClass);

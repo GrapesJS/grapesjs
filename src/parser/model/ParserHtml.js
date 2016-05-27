@@ -3,6 +3,7 @@ define(function(require) {
   return function(config) {
 
     var TEXT_NODE = 'span';
+    var c = config;
 
     return {
 
@@ -63,6 +64,8 @@ define(function(require) {
           var model = {};
           var attrs = node.attributes || [];
           var attrsLen = attrs.length;
+          var prevI = result.length - 1;
+          var prevSib = result[prevI];
           model.tagName = node.tagName ? node.tagName.toLowerCase() : '';
 
           if(attrsLen)
@@ -74,11 +77,11 @@ define(function(require) {
             var nodeValue = attrs[j].nodeValue;
 
             //Isolate style, class and src attributes
-            if(nodeName === 'style')
+            if(nodeName == 'style')
               model.style = this.parseStyle(nodeValue);
-            else if(nodeName === 'class')
+            else if(nodeName == 'class')
               model.classes = this.parseClass(nodeValue);
-            else if(nodeName === 'src' && model.tagName === 'img'){
+            else if(nodeName == 'src' && model.tagName == 'img'){
               model.type = 'image';
               model.src = nodeValue;
             }else
@@ -90,18 +93,50 @@ define(function(require) {
           if(nodeChild){
             // Avoid infinite text nodes nesting
             var firstChild = node.childNodes[0];
-            if(nodeChild === 1 && firstChild.nodeType === 3 && model.tagName === TEXT_NODE){
+            if(nodeChild === 1 && firstChild.nodeType === 3){
               model.type = 'text';
               model.content = firstChild.nodeValue;
-            }else
-              model.components = this.parseNode(node);
+            }else{
+              var parsed = this.parseNode(node);
+              // From: <div> <span>TEST</span> </div> <-- span is text type
+              // TO: <div> TEST </div> <-- div become text type
+              // With 'nodeChild > 1' I know that nodes were merged
+              if(parsed.length == 1 && parsed[0].type == 'text' && nodeChild > 1){
+                model.type = 'text';
+                model.content = parsed[0].content;
+              }else
+                model.components = parsed;
+            }
           }
 
+          var prevIsText = prevSib && prevSib.type == 'text' && prevSib.tagName == TEXT_NODE;
           // Find text nodes
-          if(!model.tagName && node.nodeType === 3 && node.nodeValue.trim()){
-            model.type = 'text';
-            model.tagName = TEXT_NODE;
-            model.content = node.nodeValue;
+          if(!model.tagName && node.nodeType === 3){
+            // Pass content to the previous model if it's a text node
+            if(prevIsText){
+              prevSib.content += node.nodeValue;
+              continue;
+            }
+            // Make it text node only the content is not empty
+            if(node.nodeValue.trim()){
+              model.type = 'text';
+              model.tagName = TEXT_NODE;
+              model.content = node.nodeValue;
+            }
+          }
+
+          // Check if it's a text node and if it could be moved to the prevous model
+          if(c.textTags.indexOf(model.tagName) >= 0){
+            if(prevIsText){
+              prevSib.content += node.outerHTML;
+              continue;
+            }else{
+              model = {
+                type: 'text',
+                tagName: TEXT_NODE,
+                content: node.outerHTML,
+              };
+            }
           }
 
           // If tagName is still empty do not push it

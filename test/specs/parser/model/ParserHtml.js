@@ -9,7 +9,9 @@ define([path + 'model/ParserHtml',],
           var obj;
 
           beforeEach(function () {
-            obj = new ParserHtml();
+            obj = new ParserHtml({
+              textTags: ['br', 'b', 'i', 'u'],
+            });
           });
 
           afterEach(function () {
@@ -98,10 +100,40 @@ define([path + 'model/ParserHtml',],
             var result = {
               tagName: 'div',
               attributes: { id: 'test1'},
+              type: 'text',
+              content: 'test2 ',
+            };
+            obj.parse(str).should.deep.equal(result);
+          });
+
+          it('Parse text with few text tags', function() {
+            var str = '<div id="test1"><br/> test2 <br/> a b <b>b</b> <i>i</i> <u>u</u> test </div>';
+            var result = {
+              tagName: 'div',
+              attributes: { id: 'test1'},
+              type: 'text',
+              content: '<br> test2 <br> a b <b>b</b> <i>i</i> <u>u</u> test ',
+            };
+            obj.parse(str).should.deep.equal(result);
+          });
+
+          it('Parse text with few text tags and nested node', function() {
+            var str = '<div id="test1">a b <b>b</b> <i>i</i>c <div>ABC</div> <i>i</i> <u>u</u> test </div>';
+            var result = {
+              tagName: 'div',
+              attributes: { id: 'test1'},
               components: [{
                 tagName: 'span',
                 type: 'text',
-                content: 'test2 ',
+                content: 'a b <b>b</b> <i>i</i>c ',
+              },{
+                tagName: 'div',
+                type: 'text',
+                content: 'ABC',
+              },{
+                tagName: 'span',
+                type: 'text',
+                content: '<i>i</i> <u>u</u> test ',
               }],
             };
             obj.parse(str).should.deep.equal(result);
@@ -141,11 +173,8 @@ define([path + 'model/ParserHtml',],
                 content: 'content1 ',
               },{
                 tagName: 'div',
-                components: [{
-                  tagName: 'span',
-                  type: 'text',
-                  content: 'nested',
-                }]
+                type: 'text',
+                content: 'nested',
               },{
                 tagName: 'span',
                 type: 'text',

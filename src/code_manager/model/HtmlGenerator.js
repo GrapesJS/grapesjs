@@ -12,12 +12,12 @@ define(['backbone'],
 
 				coll.each(function(m){
 					var tag = m.get('tagName'),			// Tag name
-							sTag = 0,										// Single tag
 							attr = '',										// Attributes string
 							attrId = '',
 							strCls = '',
 							cln = m.get('components'),		// Children
 							attrs = m.get('attributes'),
+							sTag = m.get('void'),
 							classes = m.get('classes');
 					_.each(attrs,function(value, prop){
 						if(prop == 'onmousedown')

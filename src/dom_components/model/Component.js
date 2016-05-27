@@ -13,6 +13,7 @@ define(['backbone','./Components', 'ClassManager/model/ClassTags'],
 				badgable: true,
 				stylable: true,
 				copyable: true,
+				void: false,
 				state: '',
 				status: '',
 				previousModel: '',
@@ -22,6 +23,10 @@ define(['backbone','./Components', 'ClassManager/model/ClassTags'],
 			},
 
 			initialize: function(o, opt) {
+				// Check void elements
+				if(opt && opt.config && opt.config.voidElements.indexOf(this.get('tagName')) >= 0)
+					this.set('void', true);
+
 				this.sm = opt ? opt.sm || {} : {};
 				this.config 	= o || {};
 				this.defaultC = this.config.components || [];

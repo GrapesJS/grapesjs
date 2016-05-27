@@ -60,7 +60,7 @@ define(function(require) {
 				c[name] = defaults[name];
 		}
 
-		var component		= new Component(c.wrapper, { sm: c.em });
+		var component		= new Component(c.wrapper, { sm: c.em, config: c });
 
 		component.set({
 			attributes: {id: 'wrapper'}

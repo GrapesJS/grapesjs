@@ -26,5 +26,8 @@ define(function () {
 
 		// Open assets manager on create of image component
 		oAssetsOnCreate	: true,
+
+		// List of void elements
+		voidElements: ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'menuitem', 'meta', 'param', 'source', 'track', 'wbr'],
 	};
 });
