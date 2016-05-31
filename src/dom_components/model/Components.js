@@ -59,9 +59,12 @@ define([ 'backbone', 'require'],
 				var style = model.get('style');
 
 				if(!_.isEmpty(style) && this.editor){
+					var cssC = this.editor.get('CssComposer');
 					var newClass = this.editor.get('ClassManager').addClass(model.cid);
+					model.set({attributes: {}, style:{}});
 					model.get('classes').add(newClass);
-					var rule = this.editor.get('CssComposer').newRule(newClass);
+					var rule = cssC.newRule(newClass);
+					cssC.addRule(rule);
 					rule.set('style', style);
 				}
       },
