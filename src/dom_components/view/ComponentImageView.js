@@ -16,9 +16,6 @@ define(['backbone', './ComponentView'],
 			var compCls = this.config.imageCompClass || '';
 			this.classEmpty = this.pfx + 'image-placeholder' + (compCls ? ' ' + compCls : '');
 
-			if(!this.model.get('src'))
-				this.$el.attr('class', this.classEmpty);
-
 			if(this.config.modal)
 				this.modal = this.config.modal;
 
@@ -56,6 +53,10 @@ define(['backbone', './ComponentView'],
 		render: function() {
 			this.updateAttributes();
 			this.updateClasses();
+
+			if(!this.model.get('src'))
+				this.$el.attr('class', this.classEmpty);
+
 			return this;
 		},
 	});
