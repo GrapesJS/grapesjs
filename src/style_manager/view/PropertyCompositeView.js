@@ -71,7 +71,7 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 				// On any change made to children I need to update composite value
 				onChange: function(el, view, opts){
 					var result = that.build();
-					that.model.set('value', result);
+					that.model.set('value', result, opts);
 				},
 				// Each child property will receive a full composite string, eg. '0px 0px 10px 0px'
 				// I need to extract from that string the corresponding one to that property.

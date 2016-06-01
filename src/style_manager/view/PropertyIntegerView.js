@@ -107,7 +107,7 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyInteger.html']
 			this.moved = 1;
 			var pos = parseInt(ev.data.val - ev.pageY + ev.data.y, 10);
 			this.prValue = this.validateValue(pos);//Math.max(this.min, Math.min(this.max, pos) );
-			this.model.set( 'value', this.prValue, { avoidStore: 1 });
+			this.model.set('value', this.prValue, { avoidStore: 1 });
 			return false;
 		},
 

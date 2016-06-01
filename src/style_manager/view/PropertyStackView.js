@@ -80,7 +80,7 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 					});
 					view.updateTargetStyle(propVal, null, opt);
 				}else
-					that.model.set('value', result);
+					that.model.set('value', result, opt);
 			};
 
 			return result;
