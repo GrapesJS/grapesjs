@@ -231,6 +231,17 @@ define([path + 'PropertyStackView', 'StyleManager/model/Property', 'DomComponent
                 (view.valueOnIndex(2) === null).should.equal(true);
               });
 
+              it('The value is correctly extracted from the string with functions', function() {
+                var style = {};
+                style[propName] = 'func(a1a, s2a,d3a) value1 value2, func(4ddb,   aAS5b, sS.6b) value3';
+                component.set('style', style);
+                view.propTarget.trigger('update');
+                view.model.set('stackIndex', 1);
+                view.valueOnIndex(0).should.equal('func(4ddb,aAS5b,sS.6b)');
+                view.valueOnIndex(1).should.equal('value3');
+                (view.valueOnIndex(2) === null).should.equal(true);
+              });
+
               it('Build value from properties', function() {
                 view.model.get('properties').at(0).set('value', propValue);
                 view.model.get('properties').at(2).set('value', prop3Val);

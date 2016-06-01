@@ -229,8 +229,17 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 				a = this.getLayersFromTarget();
 			}else{
 				var v	= this.getComponentValue();
-				if(v)
+				if(v){
+					// Remove spaces inside functions:
+					// eg:
+					// From: 1px 1px rgba(2px, 2px, 2px), 2px 2px rgba(3px, 3px, 3px)
+					// To: 1px 1px rgba(2px,2px,2px), 2px 2px rgba(3px,3px,3px)
+					v.replace(/\(([\w\s,.]*)\)/g, function(match){
+						var cleaned = match.replace(/,\s*/g, ',');
+						v = v.replace(match, cleaned);
+					});
 					a = v.split(', ');
+				}
 			}
 			_.each(a,function(e){ n.push({ value: e});},this);
 			this.$props.detach();

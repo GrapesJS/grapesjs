@@ -100,7 +100,7 @@ define([
 				this.cssc = new CssComposer(cfg);
 				this.CssComposer = this.cssc;
 				this.set('CssComposer', this.cssc);
-
+				console.log(this.cssc.getRules());
 				if(this.stm.isAutosave())
 					this.listenRules(this.cssc.getRules());
 			},

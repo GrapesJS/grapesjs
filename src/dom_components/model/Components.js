@@ -67,7 +67,6 @@ define([ 'backbone', 'require'],
 					cssC.addRule(rule);
 					rule.set('style', style);
 				}
-				console.log('After component add');
       },
 
 		});

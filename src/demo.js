@@ -721,13 +721,6 @@ require(['config/require-config'], function() {
 							type		: 'stack',
 							preview		: true,
 							properties	: [{
-											name: 		'Shadow type',
-											property: 	'shadow-type',
-											type: 		'select',
-											defaults: 	'',
-											list:		[ { value : '', name : 'Outside', },
-											        	  { value : 'inset', name : 'Inside', }],
-										},{
 											name: 		'X position',
 											property: 	'shadow-x',
 											type: 		'integer',
@@ -757,7 +750,14 @@ require(['config/require-config'], function() {
 											property: 	'shadow-color',
 											type: 		'color',
 											defaults: 	'black',
-										},],
+										},{
+											name: 		'Shadow type',
+											property: 	'shadow-type',
+											type: 		'select',
+											defaults: 	' ',
+											list:		[ { value : ' ', name : 'Outside', },
+											        	  { value : 'inset', name : 'Inside', }],
+										}],
 						},{
 							name		: 'Background',
 							property	: 'background',
