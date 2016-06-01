@@ -79,7 +79,7 @@ define(['backbone', 'text!./../templates/layer.html'],
 			var lim = 3;
 			var nV = '';
 			props.each(function(p, index){
-				var v = aV[index];
+				var v = aV[index] || '';
 				if(v){
 					if(p.get('type') == 'integer'){
 						var vI	= parseInt(v, 10),

@@ -754,9 +754,9 @@ require(['config/require-config'], function() {
 											name: 		'Shadow type',
 											property: 	'shadow-type',
 											type: 		'select',
-											defaults: 	' ',
-											list:		[ { value : ' ', name : 'Outside', },
-											        	  { value : 'inset', name : 'Inside', }],
+											defaults: 	'',
+											list:		[ { value : '', name : 'Outside', },
+											        	{ value : 'inset', name : 'Inside', }],
 										}],
 						},{
 							name		: 'Background',

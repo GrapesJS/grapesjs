@@ -161,6 +161,26 @@ define([path + 'PropertySelectView', 'StyleManager/model/Property', 'DomComponen
                 view.model.get('value').should.equal(defValue);
               });
 
+              it('Empty value as default', function() {
+                options = [
+                    {value: 'test1value', name: 'test1'},
+                    {value: 'test2value', name: 'test2'},
+                    {value: '', name: 'TestDef'}
+                  ];
+                component = new Component();
+                model = new Property({
+                  type: 'select',
+                  list: options,
+                  defaults: '',
+                  property: 'emptyDefault'
+                });
+                view = new PropertySelectView({
+                  model: model
+                });
+                $fixture.html(view.render().el);
+                view.$input.val().should.equal('');
+              });
+
               it('Input value is as default', function() {
                 view.$input.val().should.equal(defValue);
               });
