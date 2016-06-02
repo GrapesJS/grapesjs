@@ -9,7 +9,7 @@ define(function () {
     // CSS string or object of rules
     style: '',
 
-    // If true, will fetch HTML and CSS from selected element
+    // If true, will fetch HTML and CSS from selected container
     fromElement: false,
 
     // Enable/Disable the possibility to copy(ctrl + c) & paste(ctrl + v) components
@@ -23,6 +23,7 @@ define(function () {
     //Indicates which storage to use. Available: local | remote | none
     storageType: 'local', // (!)
 
+    // More correct
     storage:{
         id: '',
         type: '',

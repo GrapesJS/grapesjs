@@ -37,6 +37,7 @@ require.config({
 		            {  name: 'StyleManager', 		location: 'style_manager', 		},
 		            {  name: 'ClassManager', 		location: 'class_manager', 		},
 		            {  name: 'StorageManager', 	location: 'storage_manager', 	},
+		            {  name: 'PluginManager',		location: 'plugin_manager',		},
 		            {  name: 'Navigator', 			location: 'navigator', 				},
 		            {  name: 'DomComponents', 	location: 'dom_components', 	},
 		            {  name: 'RichTextEditor', 	location: 'rich_text_editor', },
