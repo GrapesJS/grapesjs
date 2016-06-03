@@ -1,9 +1,11 @@
-define(function(require) {
+define(function (require) {
 
    return function(config) {
 
     var c = config || {},
-    defaults = require('./config/config');
+    defaults = require('./config/config'),
+    Editor = require('editor/main'),
+    PluginManager = require('PluginManager');
 
     // Set default options
     for (var name in defaults) {
@@ -11,13 +13,7 @@ define(function(require) {
         c[name] = defaults[name];
     }
 
-    var plugins = [];
-    /*
-    .plugins will be PluginManager
-    grapesjs.plugins.add('sheeet', function(editor){
-      editor.commands.add('openbar', function(){});
-    });
-     */
+    var plugins = new PluginManager();
     var editors = [];
 
     return {
@@ -36,13 +32,13 @@ define(function(require) {
        * @return {grapesjs.Editor} GrapesJS Editor instance
        */
       init: function(config) {
-        //
         var editor = new Editor(config);
         //- new EditorView({model: editor}).render();
         //- inject and start plugins (plugins)
         // foreach config.plugins
         //  pluginManager.get('plugin')(editor);
         //
+
         return editor;
       },
 

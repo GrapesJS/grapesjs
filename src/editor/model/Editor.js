@@ -80,7 +80,8 @@ define([
 			 * @private
 			 * */
 			initUtils: function() {
-				this.set('Utils', new Utils());
+				this.Utils = new Utils();
+				this.set('Utils', this.Utils);
 			},
 
 			/**
@@ -155,6 +156,7 @@ define([
 				cfg.stylePrefix	= this.config.stylePrefix + pfx;
 				cfg.target = this;
 				this.clm = new ClassManager(cfg);
+				this.ClassManager = this.clm;
 				this.set('ClassManager', this.clm);
 			},
 
@@ -211,7 +213,7 @@ define([
 
 				if(this.cmp)
 					this.cv.setWrapper(this.cmp);
-
+				this.Canvas = this.cv;
 				this.set('Canvas', this.cv);
 			},
 
@@ -250,7 +252,8 @@ define([
 				if(this.stm)
 					cfg.stm = this.stm;
 
-				this.am			= new AssetManager(cfg);
+				this.am = new AssetManager(cfg);
+				this.AssetManager = this.am;
 				this.set('AssetManager', this.am);
 			},
 
@@ -264,6 +267,7 @@ define([
 				cfg.stylePrefix = this.config.stylePrefix + pfx;
 				this.modal = new ModalDialog(cfg);
 				this.modal.render().appendTo('body');
+				this.Dialog = this.modal;
 				this.set('Modal', this.modal);
 			},
 
@@ -293,6 +297,7 @@ define([
 				cfg.canvasId = this.config.idCanvas;
 				cfg.wrapperId = this.config.idWrapper;
 				this.com = new Commands(cfg);
+				this.Commands = this.com;
 				this.com.loadDefaultCommands();
 				this.set('Commands', this.com);
 			},
@@ -308,6 +313,7 @@ define([
 				cfg.em = this;
 				this.pn = new Panels(cfg);
 				this.pn.addPanel({ id: 'views-container'});
+				this.Panels = this.pn;
 				this.set('Panels', this.pn);
 			},
 
@@ -324,6 +330,7 @@ define([
 					    register: [this.cmp.getComponent().get('components')],
 					    track: true
 					});
+					this.UndoManager = this.um;
 					this.set('UndoManager', this.um);
 					key('⌘+z, ctrl+z', function(){
 						that.um.undo();

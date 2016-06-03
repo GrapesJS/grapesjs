@@ -33,6 +33,13 @@ define(['PluginManager'], function(PluginManager) {
           obj.get('test').should.not.be.empty;
         });
 
+        it('Added plugin is working', function() {
+          obj.add('test', testPlugin);
+          var plugin = obj.get('test');
+          plugin('tval');
+          val.should.equal('tval');
+        });
+
       });
 
     });

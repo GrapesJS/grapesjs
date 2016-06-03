@@ -19,6 +19,7 @@ define(function(require) {
        * Add new plugin. Plugins could not be overwritten
        * @param {string} id Plugin ID
        * @param {Function} plugin Function which contains all plugin logic
+       * @return {this}
        * @example
        * PluginManager.add('some-plugin', function(editor){
        *   editor.Commands.add('new-command', {
@@ -29,6 +30,8 @@ define(function(require) {
        * });
        */
       add: function(id, plugin){
+        if(plugins[id])
+          return this;
         plugins[id] = plugin;
         return this;
       },
