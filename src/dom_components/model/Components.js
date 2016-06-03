@@ -50,7 +50,7 @@ define([ 'backbone', 'require'],
 
 			add: function(models, opt){
 				if(typeof models === 'string')
-					models = this.editor.Parser.parseHtml(models);
+					models = this.editor.Parser.parseHtml(models).html;
 
 				return Backbone.Collection.prototype.add.apply(this, [models, opt]);
 			},

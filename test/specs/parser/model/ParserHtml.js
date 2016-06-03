@@ -1,6 +1,6 @@
 var path = 'Parser/';
-define([path + 'model/ParserHtml',],
-  function(ParserHtml) {
+define([path + 'model/ParserHtml', path + 'model/ParserCss'],
+  function(ParserHtml, ParserCss) {
 
     return {
       run : function(){
@@ -21,13 +21,13 @@ define([path + 'model/ParserHtml',],
           it('Simple div node', function() {
             var str = '<div></div>';
             var result = { tagName: 'div'};
-            obj.parse(str).should.deep.equal(result);
+            obj.parse(str).html.should.deep.equal(result);
           });
 
           it('Simple article node', function() {
             var str = '<article></article>';
             var result = { tagName: 'article'};
-            obj.parse(str).should.deep.equal(result);
+            obj.parse(str).html.should.deep.equal(result);
           });
 
           it('Node with attributes', function() {
@@ -41,7 +41,7 @@ define([path + 'model/ParserHtml',],
                 'strange': 'test5'
               }
             };
-            obj.parse(str).should.deep.equal(result);
+            obj.parse(str).html.should.deep.equal(result);
           });
 
           it('Parse style string to object', function() {
@@ -71,7 +71,7 @@ define([path + 'model/ParserHtml',],
                 test: 'value',
               }
             };
-            obj.parse(str).should.deep.equal(result);
+            obj.parse(str).html.should.deep.equal(result);
           });
 
           it('Class attribute is isolated', function() {
@@ -81,7 +81,7 @@ define([path + 'model/ParserHtml',],
               attributes: { id: 'test1'},
               classes: ['test2', 'test3', 'test4']
             };
-            obj.parse(str).should.deep.equal(result);
+            obj.parse(str).html.should.deep.equal(result);
           });
 
           it('Parse images nodes', function() {
@@ -92,7 +92,7 @@ define([path + 'model/ParserHtml',],
               src: './index.html',
               attributes: { id: 'test1'},
             };
-            obj.parse(str).should.deep.equal(result);
+            obj.parse(str).html.should.deep.equal(result);
           });
 
           it('Parse text nodes', function() {
@@ -103,7 +103,7 @@ define([path + 'model/ParserHtml',],
               type: 'text',
               content: 'test2 ',
             };
-            obj.parse(str).should.deep.equal(result);
+            obj.parse(str).html.should.deep.equal(result);
           });
 
           it('Parse text with few text tags', function() {
@@ -114,7 +114,7 @@ define([path + 'model/ParserHtml',],
               type: 'text',
               content: '<br> test2 <br> a b <b>b</b> <i>i</i> <u>u</u> test ',
             };
-            obj.parse(str).should.deep.equal(result);
+            obj.parse(str).html.should.deep.equal(result);
           });
 
           it('Parse text with few text tags and nested node', function() {
@@ -136,7 +136,7 @@ define([path + 'model/ParserHtml',],
                 content: '<i>i</i> <u>u</u> test ',
               }],
             };
-            obj.parse(str).should.deep.equal(result);
+            obj.parse(str).html.should.deep.equal(result);
           });
 
           it('Parse nested nodes', function() {
@@ -160,7 +160,7 @@ define([path + 'model/ParserHtml',],
                 },
               ]
             };
-            obj.parse(str).should.deep.equal(result);
+            obj.parse(str).html.should.deep.equal(result);
           });
 
           it('Parse nested text nodes', function() {
@@ -181,7 +181,7 @@ define([path + 'model/ParserHtml',],
                 content: ' content2',
               }],
             };
-            obj.parse(str).should.deep.equal(result);
+            obj.parse(str).html.should.deep.equal(result);
           });
 
           it('Parse nested span text nodes', function() {
@@ -205,20 +205,34 @@ define([path + 'model/ParserHtml',],
                 content: ' content2',
               }],
             };
-            obj.parse(str).should.deep.equal(result);
+            obj.parse(str).html.should.deep.equal(result);
           });
 
           it('Parse multiple nodes', function() {
             var str = '<div></div><div></div>';
             var result = [{ tagName: 'div'},{ tagName: 'div'}];
-            obj.parse(str).should.deep.equal(result);
+            obj.parse(str).html.should.deep.equal(result);
           });
 
           it('Remove script tags', function() {
             var str = '<div><script>var test;</script></div><div></div><script>var test2;</script>';
             var result = [{ tagName: 'div'},{ tagName: 'div'}];
-            console.log(obj.parse(str));
-            obj.parse(str).should.deep.equal(result);
+            obj.parse(str).html.should.deep.equal(result);
+          });
+
+          it('Isolate styles', function() {
+            var str = '<div><style>.a{color: red}</style></div><div></div><style>.b{color: blue}</style>';
+            var resHtml = [{ tagName: 'div'},{ tagName: 'div'}];
+            var resCss = [{
+              selectors: ['a'],
+              style: { color: 'red'}
+            },{
+              selectors: ['b'],
+              style: { color: 'blue'}
+            }]
+            var res = obj.parse(str, new ParserCss());
+            res.html.should.deep.equal(resHtml);
+            res.css.should.deep.equal(resCss);
           });
 
         });

@@ -152,9 +152,11 @@ define(function(require) {
       /**
        * Parse HTML string to a desired model object
        * @param  {string} str HTML string
+       * @param  {ParserCss} parserCss In case there is style tags inside HTML
        * @return {Object}
        */
-      parse: function(str){
+      parse: function(str, parserCss){
+        var res = { html: [], css: []};
         var el = document.createElement('div');
         el.innerHTML = str;
         var scripts = el.querySelectorAll('script');
@@ -164,12 +166,30 @@ define(function(require) {
         while (i--)
           scripts[i].parentNode.removeChild(scripts[i]);
 
+        // Detach style tags and parse them
+        if(parserCss){
+          var styleStr = '';
+          var styles = el.querySelectorAll('style');
+          var j = styles.length;
+
+          while (j--){
+            styleStr = styles[j].innerHTML + styleStr;
+            styles[j].parentNode.removeChild(styles[j]);
+          }
+
+          if(styleStr)
+            res.css = parserCss.parse(styleStr);
+        }
+
         var result = this.parseNode(el);
 
         if(result.length == 1)
           result = result[0];
 
-        return result;
+        res.html = result;
+
+        return res;
+
       },
 
     };

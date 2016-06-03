@@ -18,8 +18,13 @@ define(function(require) {
 
     return {
 
+      /**
+       * Parse HTML string and return valid model
+       * @param  {string} str HTML string
+       * @return {Object}
+       */
       parseHtml: function(str){
-        return pHtml.parse(str);
+        return pHtml.parse(str, pCss);
       },
 
       parseCss: function(str){
