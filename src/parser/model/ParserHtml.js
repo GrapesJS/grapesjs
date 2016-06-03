@@ -157,7 +157,13 @@ define(function(require) {
       parse: function(str){
         var el = document.createElement('div');
         el.innerHTML = str;
-        var nodes = el.childNodes;
+        var scripts = el.querySelectorAll('script');
+        var i = scripts.length;
+
+        // Remove all scripts
+        while (i--)
+          scripts[i].parentNode.removeChild(scripts[i]);
+
         var result = this.parseNode(el);
 
         if(result.length == 1)

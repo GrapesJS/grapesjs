@@ -214,6 +214,13 @@ define([path + 'model/ParserHtml',],
             obj.parse(str).should.deep.equal(result);
           });
 
+          it('Remove script tags', function() {
+            var str = '<div><script>var test;</script></div><div></div><script>var test2;</script>';
+            var result = [{ tagName: 'div'},{ tagName: 'div'}];
+            console.log(obj.parse(str));
+            obj.parse(str).should.deep.equal(result);
+          });
+
         });
 
       }
