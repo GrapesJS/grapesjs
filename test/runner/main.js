@@ -2,7 +2,6 @@ require(['../src/config/require-config.js', 'config/config.js'], function() {
 
 	require(['chai',
 					 'sinon',
-	         'specs/grapesjs/main.js',
 	         'specs/main.js',
 	         'specs/asset_manager/main.js',
 	         'specs/asset_manager/model/Asset.js',
@@ -22,6 +21,7 @@ require(['../src/config/require-config.js', 'config/config.js'], function() {
 	         'specs/storage_manager/main.js',
 	         'specs/plugin_manager/main.js',
 	         'specs/parser/main.js',
+	         'specs/grapesjs/main.js',
 	         'specs/utils/main.js'
 	     ], function(chai)
 	     {
