@@ -153,6 +153,7 @@ define([
 			initClassManager: function() {
 				var cfg = this.config.classManager,
 				pfx	= cfg.stylePrefix || 'clm-';
+				cfg.pStylePrefix = this.config.stylePrefix;
 				cfg.stylePrefix	= this.config.stylePrefix + pfx;
 				cfg.target = this;
 				this.clm = new ClassManager(cfg);

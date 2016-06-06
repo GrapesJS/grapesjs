@@ -47,9 +47,13 @@ $imageCompDim:	50px;
 	appearance: $v;
 }
 
-.#{$app-prefix}invis-invis{
+.#{$app-prefix}invis-invis, .#{$app-prefix}no-app{
 	background-color: transparent;
 	border: none;
+	color:inherit;
+}
+.#{$app-prefix}no-app{
+	height: 10px;
 }
 
 .#{$app-prefix}test {
@@ -840,7 +844,7 @@ $tagBg: #804f7b;
 	}
 
 	##{$clm-prefix}tag-label {
-		cursor: pointer;
+		cursor: text;
 		@extend  .no-select;
 	}
 }

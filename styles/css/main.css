@@ -2561,9 +2561,13 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 /*#383838*/
 /*#515151*/
 /*l: #d8d7db*/
-.wte-invis-invis, .wte-clm-tags #wte-clm-new {
+.wte-invis-invis, .wte-clm-tags #wte-clm-new, .wte-no-app {
   background-color: transparent;
-  border: none; }
+  border: none;
+  color: inherit; }
+
+.wte-no-app {
+  height: 10px; }
 
 .wte-test::btn {
   color: '#fff'; }
@@ -3282,7 +3286,7 @@ ol.example li.placeholder:before {
     cursor: pointer;
     font-size: 9px; }
   .wte-clm-tags #wte-clm-tag-label {
-    cursor: pointer; }
+    cursor: text; }
 
 /********* END Class manager **********/
 /********* Modal dialog **********/
