@@ -6,11 +6,10 @@ define(function() {
 		return {
 
 			init: function(o){
-				_.bindAll(this, 'onHover', 'onOut', 'onClick');
+				_.bindAll(this, 'onHover', 'onOut', 'onClick', 'onKeyPress');
 			},
 
-			enable: function()
-			{
+			enable: function() {
 				_.bindAll(this,'copyComp','pasteComp');
 				var confMain	= this.config.em.get('Config');
 				this.startSelectComponent();
@@ -24,8 +23,7 @@ define(function() {
 			 * Copy component to clipboard
 			 * @private
 			 */
-			copyComp: function()
-			{
+			copyComp: function() {
 					var sel 	= this.editorModel.get('selectedComponent');
 
 					if(sel && sel.get('copyable'))
@@ -36,8 +34,7 @@ define(function() {
 			 * Paste component from clipboard
 			 * @private
 			 */
-			pasteComp: function()
-			{
+			pasteComp: function() {
 					var clp 	= this.editorModel.get('clipboard'),
 							sel 	= this.editorModel.get('selectedComponent');
 					if(clp && sel && sel.collection){
@@ -51,13 +48,32 @@ define(function() {
 			 * Start select component event
 			 * @private
 			 * */
-			startSelectComponent: function(){
+			startSelectComponent: function() {
 				var that = this;
 				this.$el.find('*')
 						.on('mouseover',this.onHover)
 						.on('mouseout', this.onOut)
 						.on('click', this.onClick);
 				this.selEl = this.$el.find('*');
+				$(document).on('keypress', this.onKeyPress);
+			},
+
+			/**
+			 * On key press event
+			 * @private
+			 * */
+			onKeyPress: function(e) {
+				var key = e.which || e.keyCode;
+				var comp = this.editorModel.get('selectedComponent');
+				if((key == 8 || key == 46) && comp) {
+					if(!comp.get('removable'))
+						return;
+					comp.set('status','');
+					comp.destroy();
+					this.removeBadge();
+					this.clean();
+					this.editorModel.set('selectedComponent',null);
+				}
 			},
 
 			/**
@@ -65,8 +81,7 @@ define(function() {
 			 * @param {Object}	e
 			 * @private
 			 */
-			onHover: function(e)
-			{
+			onHover: function(e) {
 				e.stopPropagation();
 			  $(e.target).addClass(this.hoverClass);
 			  this.attachBadge(e.target);
@@ -77,8 +92,7 @@ define(function() {
 			 * @param {Object}	e
 			 * @private
 			 */
-			onOut: function(e)
-			{
+			onOut: function(e) {
 				e.stopPropagation();
 			  $(e.target).removeClass(this.hoverClass);
 			  if(this.badge)
@@ -90,8 +104,7 @@ define(function() {
 			 * @param {Object}	e
 			 * @private
 			 */
-			onClick: function(e)
-			{
+			onClick: function(e) {
 				var s	= $(e.target).data('model').get('stylable');
 				if(!(s instanceof Array) && !s)
 					return;
@@ -102,7 +115,7 @@ define(function() {
 			 * @param Event
 			 * @private
 			 * */
-			stopSelectComponent: function(e){
+			stopSelectComponent: function(e) {
 				if(this.selEl)
 					this.selEl.trigger('mouseout').off('mouseover mouseout click');
 				this.selEl = null;
@@ -114,8 +127,7 @@ define(function() {
 			 * @param 	{Object}	el
 			 * @private
 			 * */
-			onSelect: function(e, el)
-			{
+			onSelect: function(e, el) {
 				e.stopPropagation();
 				var md 	= this.editorModel.get('selectedComponent');
 				if(md)
@@ -131,7 +143,7 @@ define(function() {
 			 * Removes all highlighting effects on components
 			 * @private
 			 * */
-			clean: function(){
+			clean: function() {
 				this.$el.find('*').removeClass(this.hoverClass);
 			},
 
@@ -139,7 +151,7 @@ define(function() {
 			 * @param Object Component
 			 * @private
 			 * */
-			attachBadge: function(el){
+			attachBadge: function(el) {
 				var model = $(el).data("model");
 				if(!model || !model.get('badgable'))
 					return;
@@ -165,7 +177,7 @@ define(function() {
 			 * Create badge for the component
 			 * @private
 			 * */
-			createBadge: function (){
+			createBadge: function () {
 				this.badge = $('<div>', {class: this.badgeClass + " no-dots"}).appendTo(this.$wrapper);
 			},
 
@@ -173,7 +185,7 @@ define(function() {
 			 * Remove badge
 			 * @private
 			 * */
-			removeBadge: function (){
+			removeBadge: function () {
 				if(this.badge){
 					this.badge.remove();
 					delete this.badge;
@@ -185,7 +197,7 @@ define(function() {
 			 * @param Object Model
 			 * @private
 			 * */
-			updateBadgeLabel: function (model){
+			updateBadgeLabel: function (model) {
 				if(model)
 					this.badge.html( model.getName() );
 			},
@@ -195,20 +207,20 @@ define(function() {
 			 * @param {Component} model
 			 * @private
 			 */
-			cleanPrevious: function(model){
+			cleanPrevious: function(model) {
 				model.set({
 					status: '',
 					state: '',
 				});
 			},
 
-			run: function(em, sender){
+			run: function(em, sender) {
 				this.enable();
 				this.render();
 			},
 
-			stop: function(){
-				var sel 	= this.editorModel.get('selectedComponent');
+			stop: function() {
+				var sel = this.editorModel.get('selectedComponent');
 				if(sel)
 					this.cleanPrevious(sel);
 				this.$el.unbind();												//removes all attached events
@@ -218,6 +230,7 @@ define(function() {
 				this.editorModel.set('selectedComponent',null);
 				key.unbind('⌘+c, ctrl+c');
 				key.unbind('⌘+v, ctrl+v');
+				$(document).off('keypress', this.onKeyPress);
 			}
 		};
 });

@@ -283,15 +283,15 @@ require(['config/require-config'], function() {
 												       			},
 					      ]
 							},
-											{ id: 'remove', 	className: 'fa fa-trash-o icon-rm', 		command: 'delete-comp', attributes	: { title: 'Remove element' },	},
-					       	   	{ id: 'move', 		className: 'fa fa-arrows',			command: 'move-comp',	attributes	: { title: 'Move elements' }, 	},
-					       	   	//{ id: 'resize', 	className: 'fa fa-arrows-alt', 		command: 'resize-comp',	attributes	: { title: 'Resize' }, 	},
-					       	   	{ id: 'text', 		className: 'fa fa-font' ,			command: 'text-comp',	attributes	: { title: 'Create text element' }, 	},
-					       	   	{ id: 'image', 		className: 'fa fa-picture-o',		command: 'image-comp',	attributes	: { title: 'Create image element' }, 	},
-					       	   	/*{ id: 'var',		className: 'fa fa-hashtag',			command: 'insert-custom',attributes	: { title: 'Some variable' },
-					       		 	 	options:  {  content: '{{ VAR11 }}', terminateAfterInsert: true, },
-					       			},*/
-					       	   ],
+	       	   	{ id: 'move', 		className: 'fa fa-arrows',			command: 'move-comp',	attributes	: { title: 'Move elements' }, 	},
+	       	   	//{ id: 'remove', 	className: 'fa fa-trash-o icon-rm', 		command: 'delete-comp', attributes	: { title: 'Remove element' },	},
+	       	   	//{ id: 'resize', 	className: 'fa fa-arrows-alt', 		command: 'resize-comp',	attributes	: { title: 'Resize' }, 	},
+	       	   	{ id: 'text', 		className: 'fa fa-font' ,			command: 'text-comp',	attributes	: { title: 'Create text element' }, 	},
+	       	   	{ id: 'image', 		className: 'fa fa-picture-o',		command: 'image-comp',	attributes	: { title: 'Create image element' }, 	},
+	       	   	/*{ id: 'var',		className: 'fa fa-hashtag',			command: 'insert-custom',attributes	: { title: 'Some variable' },
+	       		 	 	options:  {  content: '{{ VAR11 }}', terminateAfterInsert: true, },
+	       			},*/
+	       	   ],
 				},{
 					id	: 'options',
 					buttons	: [
