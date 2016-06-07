@@ -21,6 +21,7 @@ define(function(require) {
               });
               this.cssc = this.gjs.editor.get('CssComposer');
               this.clsm = this.gjs.editor.get('ClassManager');
+              this.domc = this.gjs.editor.Components;
               this.$fixture.empty().appendTo(this.$fixtures);
               this.gjs.render();
               this.rulesSet = [
@@ -73,6 +74,14 @@ define(function(require) {
               cls.at(0).get('name').should.equal('test1');
               cls.at(1).get('name').should.equal('test2');
               cls.at(2).get('name').should.equal('test3');
+            });
+
+            it('Add rules from the new component added as a string with style tag', function() {
+              var comps = this.domc.getComponents();
+              var rules = this.cssc.getRules();
+              comps.add("<div>Test</div><style>.test{color: red} .test2{color: blue}</style>");
+              comps.length.should.equal(1);
+              rules.length.should.equal(2);
             });
 
         });

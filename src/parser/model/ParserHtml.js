@@ -156,7 +156,7 @@ define(function(require) {
        * @return {Object}
        */
       parse: function(str, parserCss){
-        var res = { html: [], css: []};
+        var res = { html: '', css: ''};
         var el = document.createElement('div');
         el.innerHTML = str;
         var scripts = el.querySelectorAll('script');
