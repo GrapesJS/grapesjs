@@ -123,7 +123,7 @@ define([path + 'ClassTagsView', 'ClassManager/model/ClassTags'],
 
             it("New tag correctly added", function() {
               this.coll.add({ label: 'test' });
-              this.$tags.children().first().find('#tag-label').html().should.equal('test');
+              this.$tags.children().first().find('#tag-label input').val().should.equal('test');
             });
 
             it("States are hidden in case no tags", function() {

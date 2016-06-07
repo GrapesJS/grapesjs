@@ -27,8 +27,6 @@ define(['backbone', 'text!./../template/classTag.html'],
       this.events['blur #' + this.labelId + ' input'] = 'endEditTag';
 
       this.listenTo( this.model, 'change:active', this.updateStatus);
-      //this.listenTo( this.model, 'change:label', this.updateStatus);
-
       this.delegateEvents();
     },
 
@@ -40,9 +38,23 @@ define(['backbone', 'text!./../template/classTag.html'],
     },
 
     /**
-     * End editing tag
+     * End editing tag. If the class typed already exists the
+     * old one will be restored otherwise will be changed
      */
     endEditTag: function(){
+      var value = this.$labelInput.val();
+      var next = this.model.escapeName(value);
+
+      if(this.target){
+        var clsm = this.target.ClassManager;
+
+        if(clsm){
+          if(clsm.getClass(next))
+            this.$labelInput.val(this.model.get('label'));
+          else
+            this.model.set({ name: next, label: value});
+        }
+      }
       this.$labelInput.prop(this.inputProp, true);
     },
 

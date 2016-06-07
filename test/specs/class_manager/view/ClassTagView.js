@@ -101,13 +101,22 @@ define([path + 'ClassTagView', 'ClassManager/model/ClassTags'],
               spy.called.should.equal(true);
             });
 
-            it('Label toggles status', function() {
-              var spy     = sinon.spy();
-              this.view.model.on("change:active", spy);
-              this.view.model.set('active', true);
-              this.view.$el.find('#tag-label').trigger('click');
-              this.view.model.get('active').should.equal(false);
-              spy.called.should.equal(true);
+            it('Label input is disabled', function() {
+              var inputProp = this.view.inputProp;
+              this.view.$labelInput.prop(inputProp).should.equal(true);
+            });
+
+            it('On double click label input is enable', function() {
+              var inputProp = this.view.inputProp;
+              this.view.$el.find('#tag-label').trigger('dblclick');
+              this.view.$labelInput.prop(inputProp).should.equal(false);
+            });
+
+            it('On blur label input turns back disabled', function() {
+              var inputProp = this.view.inputProp;
+              this.view.$el.find('#tag-label').trigger('dblclick');
+              this.view.endEditTag();
+              this.view.$labelInput.prop(inputProp).should.equal(true);
             });
 
         });

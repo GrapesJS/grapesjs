@@ -11,6 +11,15 @@ define(['backbone'],
       this.config = o.config || {};
       this.listenTo(this.model, 'change:style', this.render);
       this.listenTo(this.model, 'change:state', this.render);
+      this.listenTo(this.model.get('selectors'), 'change', this.selChanged);
+    },
+
+    /**
+     * Triggered when some selector is changed
+     */
+    selChanged: function(){
+      this.selStr = this.renderSelectors();
+      this.render();
     },
 
     /**
