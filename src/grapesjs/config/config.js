@@ -27,6 +27,9 @@ define(function () {
     storage:{
         id: '',
         type: '',
+
+        // Indicates if load data inside editor after init
+        autoload: 1,
     },
 
     // Array of plugins to init

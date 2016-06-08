@@ -89,10 +89,14 @@ define([
 			 * @private
 			 * */
 			initCssComposer: function() {
+				this.config.cssComposer.defaults = this.config.style;
 				var cfg = this.config.cssComposer,
-				df = this.loadRules();
+				df = '';
 				pfx	= cfg.stylePrefix || 'css-';
 				cfg.stylePrefix	= this.config.stylePrefix + pfx;
+
+				if(this.StorageManager.getConfig().autoload)
+					df = this.loadRules();
 
 				if(df)
 					cfg.defaults = df;
@@ -166,9 +170,14 @@ define([
 			 * @private
 			 * */
 			initComponents: function() {
+				this.config.domComponents.components = this.config.components;
 				var cfg = this.config.domComponents,
-				comp = this.loadComponents(),
+				comp = '',
 				cmpStylePfx	= cfg.stylePrefix || 'comp-';
+
+				if(this.StorageManager.getConfig().autoload)
+					comp = this.loadComponents();
+
 
 				cfg.stylePrefix	= this.config.stylePrefix + cmpStylePfx;
 
@@ -235,7 +244,7 @@ define([
 			 * @private
 			 * */
 			initStorage: function() {
-				this.stm = new StorageManager(this.config.storageManager);
+				this.stm = new StorageManager(this.config.storage || this.config.storageManager);
 				this.StorageManager = this.stm;
 				this.stm.loadDefaultProviders().setCurrent(this.config.storageType);
 				this.set('StorageManager', this.stm);
@@ -521,6 +530,14 @@ define([
 			},
 
 			/**
+			 * Returns model of the selected component
+			 * @return {Component|null}
+			 */
+			getSelected: function(){
+				return this.get('selectedComponent');
+			},
+
+			/**
 			 * Set components inside editor's canvas. This method overrides actual components
 			 * @param {Object|string} components HTML string or components model
 			 * @return {this}
@@ -630,7 +647,8 @@ define([
 				var comps = [];
 
 				console.log(result);
-				//this.setComponents(comps);
+				//this.setComponents(result.components || result.html);
+				//this.setStyle(result.styles || result.css);
 			},
 
 			/**

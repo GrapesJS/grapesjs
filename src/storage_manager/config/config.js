@@ -7,6 +7,9 @@ define(function () {
 		// Enable/Disable autosaving
 		autosave: 1,
 
+		// Indicates if load data inside editor after init
+    autoload: 1,
+
 		// Indicates which storage to use. Available: local | remote
 		storageType: 'local',
 
