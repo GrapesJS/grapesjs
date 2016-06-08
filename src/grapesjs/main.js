@@ -32,6 +32,13 @@ define(function (require) {
        * @return {grapesjs.Editor} GrapesJS Editor instance
        */
       init: function(config) {
+        var c = config || {};
+        var els = c.container;
+
+        if(!els)
+          throw new Error("'container' is required");
+
+        config.el = document.querySelector(els);
         var editor = new Editor(config);
         //- new EditorView({model: editor}).render();
         //- inject and start plugins (plugins)

@@ -70,6 +70,9 @@ define(function () {
 		//Configurations for Css Composer
 		cssComposer				: {},
 
+		// Dom element
+		el: '',
+
 	};
 	return config;
 });

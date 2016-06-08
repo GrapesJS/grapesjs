@@ -43,11 +43,14 @@ define([
 			},
 
 			initialize: function(c) {
-				this.config		= c;
+				this.config = c;
 				this.pfx = this.config.storagePrefix;
 				this.compName	= this.pfx + 'components' + this.config.id;
 				this.rulesName	= this.pfx + 'rules' + this.config.id;
 				this.set('Config', c);
+
+				//console.log(c);
+				//getCacheLoad
 
 				this.initParser();
 				this.initStorage();
@@ -89,7 +92,8 @@ define([
 			 * @private
 			 * */
 			initCssComposer: function() {
-				this.config.cssComposer.defaults = this.config.style;
+				if(this.config.style)
+					this.config.cssComposer.defaults = this.config.style;
 				var cfg = this.config.cssComposer,
 				df = '';
 				pfx	= cfg.stylePrefix || 'css-';
