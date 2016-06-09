@@ -31,11 +31,13 @@ define(function (require){
 
 		  	editor: editorModel,
 
+		  	/**
+				 * @property {DomComponents}
+				 */
 				DomComponents: DomComponents,
 
 				/**
 				 * @property {CssComposer}
-				 * @type {[type]}
 				 */
 				CssComposer: CssComposer,
 
@@ -82,6 +84,16 @@ define(function (require){
 				},
 
 				/**
+				 * Set style inside editor's canvas. This method overrides actual style
+				 * @param {Array<Object>|Object|string} style CSS string or style model
+				 * @return {this}
+				 */
+				setStyle: function(style){
+					editorModel.setStyle(style);
+					return this;
+				},
+
+				/**
 				 * Returns selected component, if there is one
 				 * @return {grapesjs.Component}
 				 */
@@ -89,8 +101,12 @@ define(function (require){
 					return editorModel.getSelected();
 				},
 
+				/**
+				 * Render editor
+				 * @return {HTMLElement}
+				 */
 				render: function() {
-					return	editorView.render().$el;
+					return	editorView.render().el;
 				},
 
 			};

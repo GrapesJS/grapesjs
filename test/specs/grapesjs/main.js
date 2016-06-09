@@ -95,6 +95,26 @@ define(['GrapesJS', 'PluginManager', 'chai'],
         editor.getComponents().length.should.equal(3);
       });
 
+      it('Set style as CSS', function() {
+        var editor = obj.init(config);
+        editor.setStyle(cssString);
+        editor.setStyle(cssString);
+        var styles = editor.getStyle();
+        styles.length.should.equal(2);
+        styles.at(1).get('selectors').at(0).get('name').should.equal('test3');
+      });
+
+      it('Set style as as array of objects', function() {
+        var editor = obj.init(config);
+        editor.setStyle([
+          {selectors: ['test4']},
+          {selectors: ['test5']}
+        ]);
+        var styles = editor.getStyle();
+        styles.length.should.equal(2);
+        styles.at(1).get('selectors').at(0).get('name').should.equal('test5');
+      });
+
     });
 
   });

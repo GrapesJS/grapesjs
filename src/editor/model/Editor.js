@@ -573,7 +573,10 @@ define([
 			 * @return {this}
 			 */
 			setStyle: function(style){
-				//return this.CssComposer.setStyle(style);
+				var rules = this.CssComposer.getRules();
+				for(var i = 0, len = rules.length; i < len; i++)
+					rules.pop();
+				rules.add(style);
 				return this;
 			},
 
