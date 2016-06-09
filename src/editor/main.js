@@ -44,7 +44,7 @@ define(function (require){
 				 * @return {string} HTML string
 				 */
 				getHtml: function(){
-					editorModel.getHtml();
+					return editorModel.getHtml();
 				},
 
 				/**
@@ -52,7 +52,7 @@ define(function (require){
 				 * @return {string} CSS string
 				 */
 				getCss: function(){
-					editorModel.getCss();
+					return editorModel.getCss();
 				},
 
 				/**

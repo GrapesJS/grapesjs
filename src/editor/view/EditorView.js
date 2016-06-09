@@ -14,8 +14,8 @@ function(Backbone){
 
 		render: function(){
 			this.$el.empty();
-
-			this.$cont	= $('body ' + this.model.config.container);
+			var conf = this.model.config;
+			this.$cont	= $(conf.el || ('body ' + conf.container));
 
 			this.model.set('$editor', this.$el);
 

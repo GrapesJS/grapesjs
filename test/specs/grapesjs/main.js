@@ -19,7 +19,7 @@ define(['GrapesJS', 'PluginManager', 'chai'],
 
       beforeEach(function () {
         htmlString =  '<div class="test1"></div><div class="test2"></div>';
-        cssString =  '.test2{color:red} .test3{color:blue}';
+        cssString =  '.test2{color:red}.test3{color:blue}';
         documentEl = '<style>' + cssString + '</style>' + htmlString;
         config = {
           container: '#' + editorName,
@@ -32,7 +32,8 @@ define(['GrapesJS', 'PluginManager', 'chai'],
 
       afterEach(function () {
         delete obj;
-        delete fixture;
+        delete config;
+        fixture.remove();
       });
 
       it('main object should be loaded', function() {
@@ -70,18 +71,16 @@ define(['GrapesJS', 'PluginManager', 'chai'],
         rules.at(0).get('selectors').at(0).get('name').should.equal('test2');
       });
 
-      it.skip('Init editor from element', function() {
+      it('Init editor from element', function() {
         config.fromElement = 1;
         fixture.html(documentEl);
-        console.log('START');
         var editor = obj.init(config);
-        console.log('END');
         var html = editor.getHtml();
         var css = editor.getCss();
         (html ? html : '').should.equal(htmlString);
-        (css ? css : '').should.be.empty;
-        editor.getComponents().length.should.equal(0);
-        editor.getStyle().length.should.equal(0);
+        (css ? css : '').should.equal('.test2{color:red;}');// .test3 is discarded in css
+        editor.getComponents().length.should.equal(2);
+        editor.getStyle().length.should.equal(2);// .test3 is still here
       });
 
     });

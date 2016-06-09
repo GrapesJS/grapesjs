@@ -43,14 +43,14 @@ define([
 			},
 
 			initialize: function(c) {
-				this.config = c;
+				this.config = _.clone(c);
 				this.pfx = this.config.storagePrefix;
 				this.compName	= this.pfx + 'components' + this.config.id;
 				this.rulesName	= this.pfx + 'rules' + this.config.id;
 				this.set('Config', c);
 
-				//console.log(c);
-				//getCacheLoad
+				if(c.el && c.fromElement)
+					this.config.components = c.el.innerHTML;
 
 				this.initParser();
 				this.initStorage();
@@ -61,10 +61,10 @@ define([
 				this.initCommands();
 				this.initPanels();
 				this.initRichTextEditor();
+				this.initCssComposer();
 				this.initComponents();
 				this.initCanvas();
 				this.initUndoManager();
-				this.initCssComposer();
 				this.initUtils();
 
 				this.on('change:selectedComponent', this.componentSelected, this);
@@ -92,15 +92,17 @@ define([
 			 * @private
 			 * */
 			initCssComposer: function() {
-				if(this.config.style)
-					this.config.cssComposer.defaults = this.config.style;
-				var cfg = this.config.cssComposer,
+				var elStyle = this.config.style || '';
+				var cfg = _.clone(this.config.cssComposer),
 				df = '';
 				pfx	= cfg.stylePrefix || 'css-';
 				cfg.stylePrefix	= this.config.stylePrefix + pfx;
 
 				if(this.StorageManager.getConfig().autoload)
 					df = this.loadRules();
+
+				if(elStyle)
+					cfg.defaults = elStyle;
 
 				if(df)
 					cfg.defaults = df;

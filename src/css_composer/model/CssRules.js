@@ -30,7 +30,6 @@ define(['backbone','./CssRule'],
       add: function(models, opt){
         if(typeof models === 'string')
           models = this.editor.Parser.parseCss(models);
-
         return Backbone.Collection.prototype.add.apply(this, [models, opt]);
       },
 
