@@ -65,7 +65,8 @@ define(function() {
 			onKeyPress: function(e) {
 				var key = e.which || e.keyCode;
 				var comp = this.editorModel.get('selectedComponent');
-				if((key == 8 || key == 46) && comp) {
+				var focused = document.activeElement.tagName !== 'BODY';
+				if((key == 8 || key == 46) && comp && !focused) {
 					if(!comp.get('removable'))
 						return;
 					comp.set('status','');

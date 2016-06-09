@@ -24,9 +24,6 @@ define(function (require){
 
 		  var editorView = new EditorView(obj);
 
-		  var DomComponents = editorModel.get('Components');
-		  var CssComposer = editorModel.get('CssComposer');
-
 		  return {
 
 		  	editor: editorModel,
@@ -34,12 +31,22 @@ define(function (require){
 		  	/**
 				 * @property {DomComponents}
 				 */
-				DomComponents: DomComponents,
+				DomComponents: editorModel.get('Components'),
 
 				/**
 				 * @property {CssComposer}
 				 */
-				CssComposer: CssComposer,
+				CssComposer: editorModel.get('CssComposer'),
+
+				// AssetManager, Canvas, ClassManager, CodeManager, Commands, Dialog, Panels, StoragManager, StyleManager
+
+				/**
+				 * Returns configuration object
+				 * @return {Object}
+				 */
+				getConfig: function(){
+					return c;
+				},
 
 				/**
 				 * Returns HTML built inside canvas
@@ -99,6 +106,15 @@ define(function (require){
 				 */
 				getSelected: function(){
 					return editorModel.getSelected();
+				},
+
+				/**
+				 * Store data to the current storage
+				 * @return {this}
+				 */
+				store: function(){
+					editorModel.store();
+					return this;
 				},
 
 				/**

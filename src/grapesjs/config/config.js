@@ -1,5 +1,8 @@
 define(function () {
   return {
+    // If true renders editor on init
+    autorender: 1,
+
     // Where init the editor
     container: '',
 
@@ -10,8 +13,9 @@ define(function () {
     style: '',
 
     // If true, will fetch HTML and CSS from selected container
-    fromElement: false,
+    fromElement: 0,
 
+    // ---
     // Enable/Disable the possibility to copy(ctrl + c) & paste(ctrl + v) components
     copyPaste: true,
 

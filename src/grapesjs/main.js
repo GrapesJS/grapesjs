@@ -40,11 +40,16 @@ define(function (require) {
 
         config.el = document.querySelector(els);
         var editor = new Editor(config);
-        //- new EditorView({model: editor}).render();
-        //- inject and start plugins (plugins)
-        // foreach config.plugins
-        //  pluginManager.get('plugin')(editor);
-        //
+
+        // Execute all plugins
+        var plugs = plugins.getAll();
+        for (var id in plugs){
+          var plug = plugins.get(id);
+          plug(editor);
+        }
+
+        if(c.autorender)
+          editor.render();
 
         return editor;
       },
