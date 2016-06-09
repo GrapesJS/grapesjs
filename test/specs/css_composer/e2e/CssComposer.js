@@ -14,8 +14,7 @@ define(function(require) {
               this.Grapes = require('editor/main');
               this.gjs = new this.Grapes({
                 stylePrefix: '',
-                storageType: 'none',
-                storageManager: { storageType: 'none', },
+                storageManager: { type: 'none', },
                 assetManager: { storageType: 'none', },
                 container: 'csscomposer-fixture',
               });
@@ -45,8 +44,7 @@ define(function(require) {
             it('Rules are correctly imported from default property', function() {
               var gj = new this.Grapes({
                 stylePrefix: '',
-                storageType: 'none',
-                storageManager: { storageType: 'none', },
+                storageManager: { type: 'none', },
                 assetManager: { storageType: 'none', },
                 cssComposer: { defaults: this.rulesSet},
                 container: 'csscomposer-fixture',

@@ -22,19 +22,8 @@ define(function () {
     // Enable/Disable undo manager
     undoManager: true,
 
-    storageId: '', // (!)
-
-    //Indicates which storage to use. Available: local | remote | none
-    storageType: 'local', // (!)
-
-    // More correct
-    storage:{
-        id: '',
-        type: '',
-
-        // Indicates if load data inside editor after init
-        autoload: 1,
-    },
+    // Storage Manager
+    storage: {},
 
     // Array of plugins to init
     plugins: [],

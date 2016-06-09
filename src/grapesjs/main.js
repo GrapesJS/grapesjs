@@ -7,12 +7,6 @@ define(function (require) {
     Editor = require('editor/main'),
     PluginManager = require('PluginManager');
 
-    // Set default options
-    for (var name in defaults) {
-      if (!(name in c))
-        c[name] = defaults[name];
-    }
-
     var plugins = new PluginManager();
     var editors = [];
 
@@ -35,6 +29,12 @@ define(function (require) {
         var c = config || {};
         var els = c.container;
 
+        // Set default options
+        for (var name in defaults) {
+          if (!(name in c))
+            c[name] = defaults[name];
+        }
+
         if(!els)
           throw new Error("'container' is required");
 
@@ -44,6 +44,10 @@ define(function (require) {
         // Execute all plugins
         var plugs = plugins.getAll();
         for (var id in plugs){
+          // Check if plugin is requested
+          if(c.plugins.indexOf(id) < 0)
+            continue;
+
           var plug = plugins.get(id);
           plug(editor);
         }

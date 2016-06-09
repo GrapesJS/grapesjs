@@ -252,7 +252,7 @@ define([
 			initStorage: function() {
 				this.stm = new StorageManager(this.config.storage || this.config.storageManager);
 				this.StorageManager = this.stm;
-				this.stm.loadDefaultProviders().setCurrent(this.config.storageType);
+				this.stm.loadDefaultProviders().setCurrent(this.stm.getConfig().type);
 				this.set('StorageManager', this.stm);
 			},
 
@@ -621,6 +621,7 @@ define([
 
 			/**
 			 * Store data to the current storage
+			 * @return {Object} Stored data
 			 */
 			store: function(){
 				var sm = this.StorageManager;
@@ -646,18 +647,18 @@ define([
 				console.log('Store');
 				console.log(store);
 				sm.store(store);
+				return store;
 			},
 
 			/**
 			 * Load data from the current storage
+			 * @return {Object} Loaded data
 			 */
 			load: function(){
 				var result = this.getCacheLoad(1);
-				var comps = [];
-
-				console.log(result);
 				//this.setComponents(result.components || result.html);
 				//this.setStyle(result.styles || result.css);
+				return result;
 			},
 
 			/**

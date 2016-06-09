@@ -94,7 +94,7 @@ define([
           beforeEach(function () {
             storeValue = [];
             obj = new StorageManager({
-              storageType: storageId,
+              type: storageId,
             });
             obj.add(storageId, storage);
           });

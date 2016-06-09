@@ -38,7 +38,50 @@ define(function (require){
 				 */
 				CssComposer: editorModel.get('CssComposer'),
 
-				// AssetManager, Canvas, ClassManager, CodeManager, Commands, Dialog, Panels, StoragManager, StyleManager
+				/**
+				 * @property {StorageManager}
+				 */
+				StorageManager: editorModel.get('StorageManager'),
+
+				/**
+				 * @property {AssetManager}
+				 */
+				AssetManager: editorModel.get('AssetManager'),
+
+				/**
+				 * @property {ClassManager}
+				 */
+				ClassManager: editorModel.get('ClassManager'),
+
+				/**
+				 * @property {CodeManager}
+				 */
+				CodeManager: editorModel.get('CodeManager'),
+
+				/**
+				 * @property {Commands}
+				 */
+				Commands: editorModel.get('Commands'),
+
+				/**
+				 * @property {Dialog}
+				 */
+				Dialog: editorModel.get('Modal'),
+
+				/**
+				 * @property {Panels}
+				 */
+				Panels: editorModel.get('Panels'),
+
+				/**
+				 * @property {StyleManager}
+				 */
+				StyleManager: editorModel.get('StyleManager'),
+
+				/**
+				 * @property {StyleManager}
+				 */
+				Canvas: editorModel.get('Canvas'),
 
 				/**
 				 * Returns configuration object
@@ -110,11 +153,18 @@ define(function (require){
 
 				/**
 				 * Store data to the current storage
-				 * @return {this}
+				 * @return {Object} Stored data
 				 */
 				store: function(){
-					editorModel.store();
-					return this;
+					return editorModel.store();
+				},
+
+				/**
+				 * Store data to the current storage
+				 * @return {Object} Stored data
+				 */
+				load: function(){
+					return editorModel.load();
 				},
 
 				/**

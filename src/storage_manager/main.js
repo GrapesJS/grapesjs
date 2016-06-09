@@ -25,12 +25,12 @@
  * @param {Boolean} [config.autosave=true] Indicates if autosave mode is enabled, works in conjunction with stepsBeforeSave
  * @param {number} [config.stepsBeforeSave=1] If autosave enabled, indicates how many steps/changes are necessary
  * before autosave is triggered
- * @param {string} [config.storageType='local'] Default storage type. Available: 'local' | 'remote' | ''(do not store)
+ * @param {string} [config.type='local'] Default storage type. Available: 'local' | 'remote' | ''(do not store)
  * @example
  * ...
  * storageManager: {
  *  	autosave: false,
- *  	storageType: 'remote',
+ *  	type: 'remote',
  * }
  * ...
  */
@@ -53,7 +53,7 @@ define(function(require) {
 
 		defaultStorages.remote	= new RemoteStorage(c);
 		defaultStorages.local = new LocalStorage(c);
-		c.currentStorage = c.storageType;
+		c.currentStorage = c.type;
 
 		return {
 

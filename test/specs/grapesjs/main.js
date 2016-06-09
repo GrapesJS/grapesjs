@@ -12,6 +12,17 @@ define(['GrapesJS', 'PluginManager', 'chai'],
       var htmlString;
       var config;
 
+      var storage;
+      var storageId = 'testStorage';
+      var storageMock = {
+        store: function(data){
+          storage = data;
+        },
+        load: function(keys){
+          return storage;
+        },
+      };
+
       before(function () {
         editorName = 'editor-fixture';
         fixtures = $("#fixtures");
@@ -23,7 +34,10 @@ define(['GrapesJS', 'PluginManager', 'chai'],
         documentEl = '<style>' + cssString + '</style>' + htmlString;
         config = {
           container: '#' + editorName,
-          storage: { autoload: 0 },
+          storage: {
+            autoload: 0,
+            type:'none'
+          },
         }
         obj = new GrapesJS();
         fixture = $('<div id="' + editorName + '"></div>');
@@ -113,6 +127,20 @@ define(['GrapesJS', 'PluginManager', 'chai'],
         var styles = editor.getStyle();
         styles.length.should.equal(2);
         styles.at(1).get('selectors').at(0).get('name').should.equal('test5');
+      });
+
+      it('Adds new storage as plugin and store data there', function() {
+        var pluginName = storageId + '-plugin';
+        obj.plugins.add(pluginName, function(edt){
+          edt.StorageManager.add(storageId, storageMock);
+        });
+        config.storage.type = storageId;
+        config.plugins = [pluginName];
+        var editor = obj.init(config);
+        editor.setComponents(htmlString);
+        editor.store();
+        var data = editor.load();
+        data.html.should.equal(htmlString);
       });
 
     });

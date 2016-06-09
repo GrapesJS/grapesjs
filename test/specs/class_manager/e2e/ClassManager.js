@@ -33,9 +33,8 @@ define(
               var Grapes = require('editor/main');
               this.gjs = new Grapes({
                 stylePrefix: '',
-                storageType: 'none',
                 storageManager: {
-                  storageType: 'none',
+                  type: 'none',
                 },
                 assetManager: {
                   storageType: 'none',
