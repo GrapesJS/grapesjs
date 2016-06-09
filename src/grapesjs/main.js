@@ -20,10 +20,17 @@ define(function (require) {
        * @param {string} config.container Selector which indicates where render the editor
        * @param {Object|string} config.components='' HTML string or Component model in JSON format
        * @param {Object|string} config.style='' CSS string or CSS model in JSON format
+       * @param {Boolean} [config.fromElement=false] If true, will fetch HTML and CSS from selected container
        * @param {Boolean} [config.copyPaste=true] Enable/Disable the possibility to copy(ctrl+c) & paste(ctrl+v) components
        * @param {Boolean} [config.undoManager=true] Enable/Disable undo manager
        * @param {Array} [config.plugins=[]] Array of plugins to execute on start
-       * @return {grapesjs.Editor} GrapesJS Editor instance
+       * @return {grapesjs.Editor} GrapesJS editor instance
+       * @example
+       * var editor = grapesjs.init({
+       *   container: '#myeditor',
+       *   components: '<article class="hello">Hello world</article>',
+       *   style: '.hello{color: red}',
+       * })
        */
       init: function(config) {
         var c = config || {};
@@ -55,6 +62,7 @@ define(function (require) {
         if(c.autorender)
           editor.render();
 
+        editors.push(editor);
         return editor;
       },
 
