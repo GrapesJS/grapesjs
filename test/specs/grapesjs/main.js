@@ -83,6 +83,18 @@ define(['GrapesJS', 'PluginManager', 'chai'],
         editor.getStyle().length.should.equal(2);// .test3 is still here
       });
 
+      it('Set components as HTML', function() {
+        var editor = obj.init(config);
+        editor.setComponents(htmlString);
+        editor.getComponents().length.should.equal(2);
+      });
+
+      it('Set components as array of objects', function() {
+        var editor = obj.init(config);
+        editor.setComponents([{}, {}, {}]);
+        editor.getComponents().length.should.equal(3);
+      });
+
     });
 
   });

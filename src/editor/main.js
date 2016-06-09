@@ -64,11 +64,29 @@ define(function (require){
 				},
 
 				/**
+				 * Set components inside editor's canvas. This method overrides actual components
+				 * @param {Array<Object>|Object|string} components HTML string or components model
+				 * @return {this}
+				 */
+				setComponents: function(components){
+					editorModel.setComponents(components);
+					return this;
+				},
+
+				/**
 				 * Returns style in JSON format object
 				 * @return {Object}
 				 */
 				getStyle: function(){
 					return editorModel.get('CssComposer').getRules();
+				},
+
+				/**
+				 * Returns selected component, if there is one
+				 * @return {grapesjs.Component}
+				 */
+				getSelected: function(){
+					return editorModel.getSelected();
 				},
 
 				render: function() {
