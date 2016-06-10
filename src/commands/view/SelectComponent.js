@@ -75,6 +75,7 @@ define(function() {
 					this.clean();
 					this.editorModel.set('selectedComponent',null);
 				}
+				e.preventDefault();
 			},
 
 			/**
