@@ -138,7 +138,7 @@ $ npm test
 
 ## TODOs before beta release
 
-* **Breakpoint Manager** - Resize canvas according to breakpoints established by user (in simple terms, for responsive templates). Will be put into development immediately after Class Manager
+* **Breakpoint Manager** - Resize canvas according to breakpoints established by user (in simple terms, for responsive templates)
 
 
 ## Acknowledgements
@@ -155,7 +155,7 @@ GrapesJS is built on top of this amazing open source projects:
 
 ## Support
 
-If you like the project support it, with a donation of your choice.
+If you like the project support it with a donation of your choice.
 
 [![PayPalMe](http://grapesjs.com/img/ppme.png)](https://paypal.me/grapesjs)
 

@@ -1,12 +1,14 @@
 var path = 'StyleManager/model/';
 define([path + 'Sector',
         path + 'Sectors',
+        path + 'PropertyFactory',
         path + 'Property',
         path + 'Properties',
         path + 'Layer',
         path + 'Layers'],
   function(Sector,
           Sectors,
+          PropertyFactory,
           Property,
           Properties,
           Layer,
@@ -170,6 +172,36 @@ define([path + 'Sector',
             obj.idx.should.equal(1);
           });
 
+        });
+
+        describe('PropertyFactory', function() {
+
+          var obj;
+
+          beforeEach(function () {
+            obj = new PropertyFactory();
+          });
+
+          afterEach(function () {
+            delete obj;
+          });
+
+          it('Object exists', function() {
+            obj.should.be.ok;
+          });
+
+          it('Build single prop', function() {
+            obj.build(['float']).should.deep.equal([{
+              property: 'float',
+              type: 'radio',
+              defaults: 'none',
+              list: [
+                  {value: 'none'},
+                  {value: 'left'},
+                  {value: 'right'},
+                ],
+            }]);
+          });
         });
 
       }

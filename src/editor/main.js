@@ -186,6 +186,34 @@ define(function (require){
 				},
 
 				/**
+				 * Execute command
+				 * @param {string} id Command ID
+				 * @param {Object} options Custom options
+				 * @example
+				 * editor.runCommand('myCommand', {someValue: 1});
+				 */
+				runCommand: function(id, options) {
+					var command = editorModel.get('Commands').get(id);
+
+					if(command)
+						command.run(this, this, options);
+				},
+
+				/**
+				 * Stop command executed before
+				 * @param {string} id Command ID
+				 * @param {Object} options Custom options
+				 * @example
+				 * editor.stopCommand('myCommand', {someValue: 1});
+				 */
+				stopCommand: function(id, options) {
+					var command = editorModel.get('Commands').get(id);
+
+					if(command)
+						command.stop(this, this, options);
+				},
+
+				/**
 				 * Store data to the current storage
 				 * @return {Object} Stored data
 				 */

@@ -39,7 +39,7 @@ define(['GrapesJS', 'PluginManager', 'chai'],
             type:'none'
           },
         }
-        obj = new GrapesJS();
+        obj = GrapesJS;
         fixture = $('<div id="' + editorName + '"></div>');
         fixture.empty().appendTo(fixtures);
       });
@@ -141,6 +141,32 @@ define(['GrapesJS', 'PluginManager', 'chai'],
         editor.store();
         var data = editor.load();
         data.html.should.equal(htmlString);
+      });
+
+      it('Execute custom command', function() {
+        var editor = obj.init(config);
+        editor.testVal = '';
+        editor.setComponents(htmlString);
+        editor.Commands.add('test-command', {
+          run: function(editor, caller, opts){
+            editor.testVal = editor.getHtml() + opts.val;
+          },
+        });
+        editor.runCommand('test-command', {val: 5});
+        editor.testVal.should.equal(htmlString + '5');
+      });
+
+      it('Stop custom command', function() {
+        var editor = obj.init(config);
+        editor.testVal = '';
+        editor.setComponents(htmlString);
+        editor.Commands.add('test-command', {
+          stop: function(editor, caller, opts){
+            editor.testVal = editor.getHtml() + opts.val;
+          },
+        });
+        editor.stopCommand('test-command', {val: 5});
+        editor.testVal.should.equal(htmlString + '5');
       });
 
     });

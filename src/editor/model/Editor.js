@@ -644,8 +644,6 @@ define([
 				if(smc.storeStyles)
 					store.styles = JSON.stringify(this.getStyle());
 
-				console.log('Store');
-				console.log(store);
 				sm.store(store);
 				return store;
 			},

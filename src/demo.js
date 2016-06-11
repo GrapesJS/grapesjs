@@ -144,6 +144,10 @@ require(['config/require-config'], function() {
 
 			styleManager : {
 				sectors: [{
+					name: 'General555',
+					buildProps: ['float', 'block', 'position', 'top', 'right', 'left', 'bottom'],
+					extendBuilded: 1,
+				},{
 					name: 'General',
 					properties:[{
 							name		: 'Alignment',
