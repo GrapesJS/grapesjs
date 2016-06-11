@@ -9,7 +9,7 @@
  * You can init the editor with initial components via configuration
  *
  * ```js
- * var editor = new GrapesJS({
+ * var editor = grapesjs.init({
  * 	...
  *  components: {...} // Check below for the possible properties
  * 	...
@@ -20,7 +20,7 @@
  * Before using methods you should get first the module from the editor instance, in this way:
  *
  * ```js
- * var ComponentsService = editor.get('Components');
+ * var ComponentsService = editor.Components;
  * ```
  *
  * @module Components

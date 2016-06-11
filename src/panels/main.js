@@ -11,7 +11,7 @@
  * You can init the editor with all panels and buttons necessary via configuration
  *
  * ```js
- * var editor = new GrapesJS({
+ * var editor = grapesjs.init({
  * 	...
  *  panels: {...} // Check below for the possible properties
  * 	...
@@ -22,7 +22,7 @@
  * Before using methods you should get first the module from the editor instance, in this way:
  *
  * ```js
- * var panelService = editor.get('Panels');
+ * var panelManager = editor.Panels;
  * ```
  *
  * @module Panels
@@ -83,7 +83,7 @@ define(function(require) {
 			 * @param {Object|Panel} panel Object with right properties or an instance of Panel
 			 * @return {Panel} Added panel. Useful in case of passed argument was an Object
 			 * @example
-			 * var newPanel = panelService.addPanel({
+			 * var newPanel = panelManager.addPanel({
 			 *  id: 'myNewPanel',
 			 * 	visible	: true,
 			 * 	buttons	: [...],
@@ -98,7 +98,7 @@ define(function(require) {
 			 * @param  {string} id Id string
 			 * @return {Panel|null}
 			 * @example
-			 * var myPanel = panelService.getPanel('myNewPanel');
+			 * var myPanel = panelManager.getPanel('myNewPanel');
 			 */
 			getPanel	: function(id){
 				var res	= panels.where({id: id});
@@ -111,7 +111,7 @@ define(function(require) {
 			 * @param {Object|Button} button Button object or instance of Button
 			 * @return {Button|null} Added button. Useful in case of passed button was an Object
 			 * @example
-			 * var newButton = panelService.addButton('myNewPanel',{
+			 * var newButton = panelManager.addButton('myNewPanel',{
 			 * 	id: 'myNewButton',
 			 * 	className: 'someClass',
 			 * 	command: 'someCommand',
@@ -130,7 +130,7 @@ define(function(require) {
 			 * @param {string} id Button's ID
 			 * @return {Button|null}
 			 * @example
-			 * var button = panelService.getButton('myPanel','myButton');
+			 * var button = panelManager.getButton('myPanel','myButton');
 			 */
 			getButton	: function(panelId, id){
 				var pn	= this.getPanel(panelId);

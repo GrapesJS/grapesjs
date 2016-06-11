@@ -1,10 +1,29 @@
+/**
+ *
+ * * [getConfig](#getconfig)
+ * * [getHtml](#gethtml)
+ * * [getCss](#getcss)
+ * * [getComponents](#getcomponents)
+ * * [setComponents](#setcomponents)
+ * * [getStyle](#getstyle)
+ * * [setStyle](#setstyle)
+ * * [getSelected](#getselected)
+ * * [store](#store)
+ * * [load](#load)
+ * * [render](#render)
+ *
+ * Editor class contains the top level API which you'll probably use to custom the editor or extend it with plugins.
+ * You get the Editor instance on init method
+ *
+ * ```js
+ * var editor = grapesjs.init({...});
+ * ```
+ *
+ * @module Editor
+ * @param {Object} config Configurations
+ */
 define(function (require){
-		/**
-		 * @class 	Grapes
-		 * @param 	{Object} Configurations
-		 *
-		 * @return	{Object}
-	 	 * */
+
 		var Editor = function(config) {
 			var c = config || {},
 			defaults = require('./config/config'),
@@ -119,6 +138,14 @@ define(function (require){
 				 * Set components inside editor's canvas. This method overrides actual components
 				 * @param {Array<Object>|Object|string} components HTML string or components model
 				 * @return {this}
+				 * @example
+				 * editor.setComponents('<div class="cls">New component</div>');
+				 * // or
+				 * editor.setComponents({
+				 *  type: 'text',
+				 * 	classes:['cls'],
+				 * 	content: 'New component'
+				 * });
 				 */
 				setComponents: function(components){
 					editorModel.setComponents(components);
@@ -137,6 +164,13 @@ define(function (require){
 				 * Set style inside editor's canvas. This method overrides actual style
 				 * @param {Array<Object>|Object|string} style CSS string or style model
 				 * @return {this}
+				 * @example
+				 * editor.setStyle('.cls{color: red}');
+				 * //or
+				 * editor.setStyle({
+				 * 	selectors: ['cls']
+				 * 	style: { color: 'red' }
+				 * });
 				 */
 				setStyle: function(style){
 					editorModel.setStyle(style);

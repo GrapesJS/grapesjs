@@ -12,7 +12,7 @@
  * Before using methods you should get first the module from the editor instance, in this way:
  *
  * ```js
- * var codeManager = editor.get('CodeManager');
+ * var codeManager = editor.CodeManager;
  * ```
  *
  * @module CodeManager

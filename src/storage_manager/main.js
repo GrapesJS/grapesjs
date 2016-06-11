@@ -15,7 +15,7 @@
  * Before using methods you should get first the module from the editor instance, in this way:
  *
  * ```js
- * var storageManager = editor.get('StorageManager');
+ * var storageManager = editor.StorageManager;
  * ```
  *
  * @module StorageManager

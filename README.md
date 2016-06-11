@@ -3,15 +3,16 @@
 [![Build Status](https://travis-ci.org/artf/grapesjs.svg?branch=master)](https://travis-ci.org/artf/grapesjs)
 
 <p align="center"><img src="http://grapesjs.com/img/grapesjs-demo-template2.jpg" alt="GrapesJS" width="500" align="center"/></p>
+<br/>
 
-GrapesJS is a free and open source Web Template Editor for building HTML templates to be used inside sites, webapps, newsletters or anything else related with HTML.
+GrapesJS is a free and open source Web Template Builder which helps you building HTML templates to be used inside sites, newsletters or even mobile apps.
 Mainly GrapesJS was designed to be used inside a [CMS] to speed up creation of dynamic templates. To better understand this concept check the image below
 
-
+<br/>
 <p align="center"><img src="http://grapesjs.com/img/gjs-concept.png" alt="GrapesJS - Style Manager" height="400" align="center"/></p>
+<br/>
 
-
-Generally any 'template system', that you can find in various applications like CMS, is composed by the **structure** (HTML), **style** (CSS) and **variables**, which are then replaced with other templates and contents on server-side and rendered soon on client.
+Generally any 'template system', that you can find in various applications like CMS, is composed by the **structure** (HTML), **style** (CSS) and **variables**, which are then replaced with other templates and contents on server-side and rendered on client.
 
 This demo shows an example of what is possible to achieve: http://grapesjs.com/demo.html
 
@@ -77,7 +78,7 @@ If [Grunt](http://gruntjs.com/) is already installed globally you could change t
 
 ## Usage
 
-JQuery is the only hard dependency so you have to include it before use GrapesJS.
+JQuery is the only hard dependency so you have to include it before using GrapesJS.
 
 ```html
 <script src="http://code.jquery.com/jquery-2.2.0.min.js"></script>
@@ -87,92 +88,57 @@ After that include scripts from GrapesJS with all your configurations and render
 ```html
 <link rel="stylesheet" href="path/to/grapes.min.css">
 <script src="path/to/grapes.min.js"></script>
+
 <div id="gjs"></div>
 
 <script type="text/javascript">
-  var gjs  = new GrapesJS({
+  var editor = grapesjs.init({
       container : '#gjs',
+      components: '<div class="txt-red">Hello world!</div>',
+      style: '.txt-red{color: red}',
   });
-  gjs.render();
+</script>
+```
+
+You could also grab the content directly from the element with `fromElement` property
+
+```html
+<div id="gjs">
+  <div class="txt-red">Hello world!</div>
+  <style>.txt-red{color: red}</style>
+</div>
+
+<script type="text/javascript">
+  var editor = grapesjs.init({
+      container : '#gjs',
+      fromElement: true,
+  });
 </script>
 ```
 
 Unfortunately with the configuration above you wouldn't see a lot. This because GrapesJS it self is simply empty, adding panels, buttons and other stuff will be your job (actually it's not empty but you need buttons to show them up).
 The section below will explain some basic configurations but for a more practical example I suggest to look up the code inside this demo: http://grapesjs.com/demo.html
 
-Documentation is under construction here: [wiki]
-
 
 ## Configuration
 
-For now I only show up some general settings, for more details check source or demo. Examples will be available soon
-
-```js
-var config = {
-
-  // Prefix to use inside local storage name
-  storagePrefix:      'wte-',
-
-  // Where to render editor (eg. #myId)
-  container:          '',
-
-  // Enable/Disable the possibility to copy (ctrl + c) and paste (ctrl + v) elements
-  copyPaste:          true,
-
-  // Enable/Disable undo manager
-  undoManager:        true,
-
-  //Indicates which storage to use. Available: local | remote | none
-  storageType:        'local',
-
-  //Configurations for Asset Manager (check src/asset_manager/config/config.js)
-  assetManager:       {},
-
-  //Configurations for Style Manager (check src/style_manager/config/config.js)
-  styleManager:       {},
-
-  //Configurations for Layers (check src/navigator/config/config.js)
-  layers:             {},
-
-  //Configurations for Storage Manager (check src/storage_manager/config/config.js)
-  storageManager:     {},
-
-  //Configurations for Rich Text Editor (check src/rich_text_editor/config/config.js)
-  rte:                {},
-
-  //Configurations for Components (check src/dom_components/config/config.js)
-  components:         {},
-
-  //Configurations for Panels (check src/panels/config/config.js)
-  panels:             {},
-
-  //Configurations for Commands (check src/commands/config/config.js)
-  commands:           {},
-
-};
-```
+Check the getting started guide here: [wiki]
 
 
 ## API
 
-At the moment `render()` is the only available method but others will be public very soon...
+API References (draft) could be found here: [wiki/API-Reference]
 
 
 ## Testing
 
-**ATTENTION: tests are pretty far away from being complete**
-
-Tests are run by [PhantomJS](http://phantomjs.org/) using [Mocha](https://mochajs.org/) (with [Chai](http://chaijs.com/) and [Sinon](http://sinonjs.org/) help)
-
 ```sh
-$ npm run test
+$ npm test
 ```
 
-## Todos before beta release
+## TODOs before beta release
 
-* **Class Manager** (*in development*) - Ability to assign different classes to components and style them (because CSS with only ids is pretty much a pain)
 * **Breakpoint Manager** - Resize canvas according to breakpoints established by user (in simple terms, for responsive templates). Will be put into development immediately after Class Manager
-* **Style Manager improvements** - Mainly `stack` type is not yet complete
 
 
 ## Acknowledgements
@@ -189,14 +155,9 @@ GrapesJS is built on top of this amazing open source projects:
 
 ## Support
 
-A star/fork is already a huge motivational support and I'd like to thank all of you for that, but if you want to contribute the project economically and you have this possibility you could use the link below :heart:
+If you like the project support it, with a donation of your choice.
 
 [![PayPalMe](http://grapesjs.com/img/ppme.png)](https://paypal.me/grapesjs)
-
-
-## Contributing
-
-Any kind of help is welcome. At the moment there is no generic guidelines so use usual pull requests and push to `dev` branch
 
 
 ## License

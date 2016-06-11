@@ -7,7 +7,7 @@
  * You can init the editor with all necessary commands via configuration
  *
  * ```js
- * var editor = new GrapesJS({
+ * var editor = grapesjs.init({
  * 	...
  *  commands: {...} // Check below for the properties
  * 	...
@@ -17,7 +17,7 @@
  * Before using methods you should get first the module from the editor instance, in this way:
  *
  * ```js
- * var commandsService = editor.get('Commands');
+ * var commands = editor.Commands;
  * ```
  *
  * @module Commands
@@ -100,7 +100,7 @@ define(function(require) {
 			 * @param	{Object} command Object representing you command. Methods `run` and `stop` are required
 			 * @return {this}
 			 * @example
-			 * commandsService.add('myCommand', {
+			 * commands.add('myCommand', {
 			 * 	run:  function(serviceManager, senderBtn){
 			 * 		alert('Hello world!');
 			 * 	},
@@ -115,7 +115,7 @@ define(function(require) {
 			 * @param	{string}	id Command's ID
 			 * @return {Object} Object representing the command
 			 * @example
-			 * var myCommand = commandsService.get('myCommand');
+			 * var myCommand = commands.get('myCommand');
 			 * myCommand.run();
 			 * */
 			get: function(id){

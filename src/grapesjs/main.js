@@ -45,8 +45,8 @@ define(function (require) {
         if(!els)
           throw new Error("'container' is required");
 
-        config.el = document.querySelector(els);
-        var editor = new Editor(config);
+        c.el = document.querySelector(els);
+        var editor = new Editor(c);
 
         // Execute all plugins
         var plugs = plugins.getAll();
