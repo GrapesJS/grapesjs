@@ -20,7 +20,7 @@ define(['backbone'],
             var prop = props[i];
             obj.property = prop;
 
-            //Decide type
+            // Type
             switch(prop){
               case 'float': case 'position':
                 obj.type = 'radio';
@@ -29,11 +29,18 @@ define(['backbone'],
                 obj.type = 'select';
                 break;
               case 'top': case 'right': case 'bottom': case 'left':
+              case 'margin-top': case 'margin-right': case 'margin-bottom': case 'margin-left':
+              case 'padding-top': case 'padding-right': case 'padding-bottom': case 'padding-left':
+              case 'min-height': case 'min-width': case 'max-height': case 'max-width':
+              case 'width': case 'height':
                 obj.type = 'integer';
+                break;
+              case 'margin': case 'padding':
+                obj.type = 'composite';
                 break;
             }
 
-            //Default
+            // Default
             switch(prop){
               case 'float':
                 obj.defaults = 'none';
@@ -45,14 +52,32 @@ define(['backbone'],
                 obj.defaults = 'static';
                 break;
               case 'top': case 'right': case 'bottom': case 'left':
-                obj.defaults = '0';
+              case 'margin-top': case 'margin-right': case 'margin-bottom': case 'margin-left':
+              case 'padding-top': case 'padding-right': case 'padding-bottom': case 'padding-left':
+                obj.defaults = 0;
+                break;
+              case 'min-height': case 'min-width': case 'max-height': case 'max-width':
+              case 'width': case 'height':
+                obj.defaults = 'auto';
                 break;
             }
 
             //Units
             switch(prop){
               case 'top': case 'right': case 'bottom': case 'left':
+              case 'margin-top': case 'margin-right': case 'margin-bottom': case 'margin-left':
+              case 'padding-top': case 'padding-right': case 'padding-bottom': case 'padding-left':
+              case 'min-height': case 'min-width': case 'max-height': case 'max-width':
+              case 'width': case 'height':
                 obj.units = ['px','%'];
+                break;
+            }
+
+            // Min/Max
+            switch(prop){
+              case 'min-height': case 'min-width': case 'max-height': case 'max-width':
+              case 'width': case 'height':
+                obj.min = 0;
                 break;
             }
 
@@ -80,6 +105,16 @@ define(['backbone'],
                   {value: 'absolute'},
                   {value: 'fixed'},
                 ];
+                break;
+            }
+
+            // Properties
+            switch(prop){
+              case 'margin':
+                obj.properties = this.build(['margin-top', 'margin-right', 'margin-bottom', 'margin-left']);
+                break;
+              case 'padding':
+                obj.properties = this.build(['padding-top', 'padding-right', 'padding-bottom', 'padding-left']);
                 break;
             }
 

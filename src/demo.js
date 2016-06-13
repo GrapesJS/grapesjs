@@ -149,6 +149,7 @@ require(['config/require-config'], function() {
 					extendBuilded: 1,
 				},{
 					name: 'General',
+					open: false,
 					properties:[{
 							name		: 'Alignment',
 							property	: 'float',
@@ -284,7 +285,7 @@ require(['config/require-config'], function() {
 											defaults 	: 0,
 										},{
 											name		: 'Left',
-											property	: 'margin-Left',
+											property	: 'margin-left',
 											type		: 'integer',
 											units		: ['px','%'],
 											defaults 	: 0,

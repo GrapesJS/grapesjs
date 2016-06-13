@@ -80,10 +80,8 @@ define([path + 'Sector',
           });
 
           it('Do not extend properties', function() {
-            console.log('START');
             confToExt.extendBuilded = 0;
             obj = new Sector(confToExt);
-            console.log('END');
             obj.get('properties').length.should.equal(3);
             var prop0 = obj.get('properties').at(0);
             prop0.get('type').should.equal('radio');
@@ -281,7 +279,7 @@ define([path + 'Sector',
             var res = {
               type: 'integer',
               units: ['px','%'],
-              defaults : '0',
+              defaults : 0,
             }
             res.property = 'top';
             obj.build('top').should.deep.equal([res]);
@@ -291,6 +289,85 @@ define([path + 'Sector',
             obj.build('bottom').should.deep.equal([res]);
             res.property = 'left';
             obj.build('left').should.deep.equal([res]);
+          });
+
+          it('Build width e height family', function() {
+            var res = {
+              type: 'integer',
+              units: ['px','%'],
+              defaults: 'auto',
+              min: 0,
+            }
+            res.property = 'width';
+            obj.build('width').should.deep.equal([res]);
+            res.property = 'height';
+            obj.build('height').should.deep.equal([res]);
+            res.property = 'min-height';
+            obj.build('min-height').should.deep.equal([res]);
+            res.property = 'max-height';
+            obj.build('max-height').should.deep.equal([res]);
+            res.property = 'min-width';
+            obj.build('min-width').should.deep.equal([res]);
+            res.property = 'max-width';
+            obj.build('max-width').should.deep.equal([res]);
+          });
+
+          it('Build margin', function() {
+            var res = {
+              property: 'margin',
+              type: 'composite',
+              properties:[{
+                      property  : 'margin-top',
+                      type    : 'integer',
+                      units   : ['px','%'],
+                      defaults  : 0,
+                    },{
+                      property  : 'margin-right',
+                      type    : 'integer',
+                      units   : ['px','%'],
+                      defaults  : 0,
+                    },{
+                      property  : 'margin-bottom',
+                      type    : 'integer',
+                      units   : ['px','%'],
+                      defaults  : 0,
+                    },{
+                      property  : 'margin-left',
+                      type    : 'integer',
+                      units   : ['px','%'],
+                      defaults  : 0,
+                    },],
+            };
+            obj.build('margin').should.deep.equal([res]);
+          });
+
+          it('Build padding', function() {
+            var res = {
+              property: 'padding',
+              type: 'composite',
+              properties:[{
+                      property  : 'padding-top',
+                      type    : 'integer',
+                      units   : ['px','%'],
+                      defaults  : 0,
+                    },{
+                      property  : 'padding-right',
+                      type    : 'integer',
+                      units   : ['px','%'],
+                      defaults  : 0,
+                    },{
+                      property  : 'padding-bottom',
+                      type    : 'integer',
+                      units   : ['px','%'],
+                      defaults  : 0,
+                    },{
+                      property  : 'padding-left',
+                      type    : 'integer',
+                      units   : ['px','%'],
+                      defaults  : 0,
+                    },],
+            };
+            obj.build('padding').should.deep.equal([res]);
           });
 
         });
