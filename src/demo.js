@@ -144,8 +144,8 @@ require(['config/require-config'], function() {
 
 			styleManager : {
 				sectors: [{
-					name: 'General555',
-					buildProps: ['float', 'block', 'position', 'top', 'right', 'left', 'bottom'],
+					name: 'Dimension555',
+					buildProps: ['width', 'height', 'min-width', 'min-height', 'max-width', 'max-height', 'margin', 'padding'],
 					extendBuilded: 1,
 				},{
 					name: 'General',

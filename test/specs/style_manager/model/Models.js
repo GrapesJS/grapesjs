@@ -20,8 +20,19 @@ define([path + 'Sector',
         describe('Sector', function() {
 
           var obj;
+          var confToExt;
 
           beforeEach(function () {
+            confToExt = {
+              buildProps: ['display', 'float'],
+              properties: [{
+                property: 'display',
+                type: 'radio',
+              },{
+                property: 'color',
+                type: 'color',
+              }]
+            };
             obj = new Sector();
           });
 
@@ -42,6 +53,41 @@ define([path + 'Sector',
               properties: [{}, {}]
             });
             obj.get('properties').length.should.equal(2);
+          });
+
+          it('Build properties', function() {
+            var res = obj.buildProperties(['display', 'float']);
+            res.length.should.equal(2);
+            res[0].should.deep.equal({
+              property: 'display',
+              type: 'select',
+              defaults: 'block',
+              list: [
+                {value: 'block'},
+                {value: 'inline'},
+                {value: 'inline-block'},
+                {value: 'none'},
+              ],
+            });
+          });
+
+          it('Extend properties', function() {
+            obj = new Sector(confToExt);
+            obj.get('properties').length.should.equal(3);
+            var prop0 = obj.get('properties').at(0);
+            prop0.get('type').should.equal('radio');
+            prop0.get('defaults').should.equal('block');
+          });
+
+          it('Do not extend properties', function() {
+            console.log('START');
+            confToExt.extendBuilded = 0;
+            obj = new Sector(confToExt);
+            console.log('END');
+            obj.get('properties').length.should.equal(3);
+            var prop0 = obj.get('properties').at(0);
+            prop0.get('type').should.equal('radio');
+            prop0.get('defaults').should.equal('');
           });
 
         });
@@ -191,17 +237,62 @@ define([path + 'Sector',
           });
 
           it('Build single prop', function() {
-            obj.build(['float']).should.deep.equal([{
+            obj.build('float').should.deep.equal([{
               property: 'float',
               type: 'radio',
               defaults: 'none',
               list: [
-                  {value: 'none'},
-                  {value: 'left'},
-                  {value: 'right'},
-                ],
+                {value: 'none'},
+                {value: 'left'},
+                {value: 'right'},
+              ],
             }]);
           });
+
+          it('Build display', function() {
+            obj.build('display').should.deep.equal([{
+              property: 'display',
+              type: 'select',
+              defaults: 'block',
+              list: [
+                {value: 'block'},
+                {value: 'inline'},
+                {value: 'inline-block'},
+                {value: 'none'},
+              ],
+            }]);
+          });
+
+          it('Build position', function() {
+            obj.build('position').should.deep.equal([{
+              property: 'position',
+              type: 'radio',
+              defaults: 'static',
+              list: [
+                {value: 'static'},
+                {value: 'relative'},
+                {value: 'absolute'},
+                {value: 'fixed'},
+              ],
+            }]);
+          });
+
+          it('Build top, left, right, bottom', function() {
+            var res = {
+              type: 'integer',
+              units: ['px','%'],
+              defaults : '0',
+            }
+            res.property = 'top';
+            obj.build('top').should.deep.equal([res]);
+            res.property = 'right';
+            obj.build('right').should.deep.equal([res]);
+            res.property = 'bottom';
+            obj.build('bottom').should.deep.equal([res]);
+            res.property = 'left';
+            obj.build('left').should.deep.equal([res]);
+          });
+
         });
 
       }
