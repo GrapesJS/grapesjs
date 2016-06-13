@@ -148,8 +148,8 @@ define(['GrapesJS', 'PluginManager', 'chai'],
         editor.testVal = '';
         editor.setComponents(htmlString);
         editor.Commands.add('test-command', {
-          run: function(editor, caller, opts){
-            editor.testVal = editor.getHtml() + opts.val;
+          run: function(ed, caller, opts){
+            ed.testVal = ed.getHtml() + opts.val;
           },
         });
         editor.runCommand('test-command', {val: 5});
@@ -161,8 +161,8 @@ define(['GrapesJS', 'PluginManager', 'chai'],
         editor.testVal = '';
         editor.setComponents(htmlString);
         editor.Commands.add('test-command', {
-          stop: function(editor, caller, opts){
-            editor.testVal = editor.getHtml() + opts.val;
+          stop: function(ed, caller, opts){
+            ed.testVal = ed.getHtml() + opts.val;
           },
         });
         editor.stopCommand('test-command', {val: 5});

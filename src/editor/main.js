@@ -8,6 +8,8 @@
  * * [getStyle](#getstyle)
  * * [setStyle](#setstyle)
  * * [getSelected](#getselected)
+ * * [runCommand](#runcommand)
+ * * [stopCommand](#stopcommand)
  * * [store](#store)
  * * [load](#load)
  * * [render](#render)
@@ -27,7 +29,7 @@ define(function (require){
 		var Editor = function(config) {
 			var c = config || {},
 			defaults = require('./config/config'),
-			Editor = require('./model/Editor'),
+			EditorModel = require('./model/Editor'),
 			EditorView = require('./view/EditorView');
 
 			for (var name in defaults) {
@@ -35,9 +37,9 @@ define(function (require){
 					c[name] = defaults[name];
 			}
 
-			var editorModel = new Editor(c);
+			var em = new EditorModel(c);
 			var obj = {
-					model	: editorModel,
+					model	: em,
 			    config	: c,
 			};
 
@@ -45,62 +47,77 @@ define(function (require){
 
 		  return {
 
-		  	editor: editorModel,
+		  	editor: em,
 
 		  	/**
 				 * @property {DomComponents}
 				 */
-				DomComponents: editorModel.get('Components'),
+				DomComponents: em.get('Components'),
 
 				/**
 				 * @property {CssComposer}
 				 */
-				CssComposer: editorModel.get('CssComposer'),
+				CssComposer: em.get('CssComposer'),
 
 				/**
 				 * @property {StorageManager}
 				 */
-				StorageManager: editorModel.get('StorageManager'),
+				StorageManager: em.get('StorageManager'),
 
 				/**
 				 * @property {AssetManager}
 				 */
-				AssetManager: editorModel.get('AssetManager'),
+				AssetManager: em.get('AssetManager'),
 
 				/**
 				 * @property {ClassManager}
 				 */
-				ClassManager: editorModel.get('ClassManager'),
+				ClassManager: em.get('ClassManager'),
 
 				/**
 				 * @property {CodeManager}
 				 */
-				CodeManager: editorModel.get('CodeManager'),
+				CodeManager: em.get('CodeManager'),
 
 				/**
 				 * @property {Commands}
 				 */
-				Commands: editorModel.get('Commands'),
+				Commands: em.get('Commands'),
 
 				/**
 				 * @property {Dialog}
 				 */
-				Dialog: editorModel.get('Modal'),
+				Dialog: em.get('Modal'),
 
 				/**
 				 * @property {Panels}
 				 */
-				Panels: editorModel.get('Panels'),
+				Panels: em.get('Panels'),
 
 				/**
 				 * @property {StyleManager}
 				 */
-				StyleManager: editorModel.get('StyleManager'),
+				StyleManager: em.get('StyleManager'),
 
 				/**
 				 * @property {StyleManager}
 				 */
-				Canvas: editorModel.get('Canvas'),
+				Canvas: em.get('Canvas'),
+
+				/**
+				 * @property {Utils}
+				 */
+				Utils: em.get('Utils'),
+
+				/**
+				 * Initialize editor model
+				 * @return {this}
+				 * @private
+				 */
+				init: function(){
+					em.init(this);
+					return this;
+				},
 
 				/**
 				 * Returns configuration object
@@ -115,7 +132,7 @@ define(function (require){
 				 * @return {string} HTML string
 				 */
 				getHtml: function(){
-					return editorModel.getHtml();
+					return em.getHtml();
 				},
 
 				/**
@@ -123,7 +140,7 @@ define(function (require){
 				 * @return {string} CSS string
 				 */
 				getCss: function(){
-					return editorModel.getCss();
+					return em.getCss();
 				},
 
 				/**
@@ -131,7 +148,7 @@ define(function (require){
 				 * @return {Object}
 				 */
 				getComponents: function(){
-					return editorModel.get('Components').getComponents();
+					return em.get('Components').getComponents();
 				},
 
 				/**
@@ -148,7 +165,7 @@ define(function (require){
 				 * });
 				 */
 				setComponents: function(components){
-					editorModel.setComponents(components);
+					em.setComponents(components);
 					return this;
 				},
 
@@ -157,7 +174,7 @@ define(function (require){
 				 * @return {Object}
 				 */
 				getStyle: function(){
-					return editorModel.get('CssComposer').getRules();
+					return em.get('CssComposer').getRules();
 				},
 
 				/**
@@ -173,7 +190,7 @@ define(function (require){
 				 * });
 				 */
 				setStyle: function(style){
-					editorModel.setStyle(style);
+					em.setStyle(style);
 					return this;
 				},
 
@@ -182,7 +199,7 @@ define(function (require){
 				 * @return {grapesjs.Component}
 				 */
 				getSelected: function(){
-					return editorModel.getSelected();
+					return em.getSelected();
 				},
 
 				/**
@@ -193,21 +210,21 @@ define(function (require){
 				 * editor.runCommand('myCommand', {someValue: 1});
 				 */
 				runCommand: function(id, options) {
-					var command = editorModel.get('Commands').get(id);
+					var command = em.get('Commands').get(id);
 
 					if(command)
 						command.run(this, this, options);
 				},
 
 				/**
-				 * Stop command executed before
+				 * Stop the command if stop method was provided
 				 * @param {string} id Command ID
 				 * @param {Object} options Custom options
 				 * @example
 				 * editor.stopCommand('myCommand', {someValue: 1});
 				 */
 				stopCommand: function(id, options) {
-					var command = editorModel.get('Commands').get(id);
+					var command = em.get('Commands').get(id);
 
 					if(command)
 						command.stop(this, this, options);
@@ -218,7 +235,7 @@ define(function (require){
 				 * @return {Object} Stored data
 				 */
 				store: function(){
-					return editorModel.store();
+					return em.store();
 				},
 
 				/**
@@ -226,7 +243,7 @@ define(function (require){
 				 * @return {Object} Stored data
 				 */
 				load: function(){
-					return editorModel.load();
+					return em.load();
 				},
 
 				/**

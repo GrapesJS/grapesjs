@@ -6,7 +6,8 @@ define([
 				modulePath + '/view/PanelView',
 				modulePath + '/view/PanelsView',
 				modulePath + '/view/ButtonView',
-				modulePath + '/view/ButtonsView'
+				modulePath + '/view/ButtonsView',
+				modulePath + '/e2e/PanelsE2e'
 				 ],
 	function(
 					Panels,
@@ -14,7 +15,8 @@ define([
 					PanelView,
 					PanelsView,
 					ButtonView,
-					ButtonsView
+					ButtonsView,
+					e2e
 					) {
 
 		describe('Panels', function() {
@@ -111,5 +113,6 @@ define([
 			PanelsView.run();
 			ButtonView.run();
 			ButtonsView.run();
+			e2e.run();
 		});
 });
