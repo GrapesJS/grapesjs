@@ -73,11 +73,13 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 				if(that.model.get('detached')){
 					var propVal = '';
 					var index = model.collection.indexOf(model);
+
 					that.getLayers().each(function(layer){
-						var vals = layer.get('value').split(' ');
-						if(vals.length && vals[index])
-							propVal += (propVal ? ',' : '') + vals[index];
+						var val = layer.get('values')[model.get('property')];
+						if(val)
+							propVal += (propVal ? ',' : '') + val;
 					});
+
 					view.updateTargetStyle(propVal, null, opt);
 				}else
 					that.model.set('value', result, opt);
@@ -120,6 +122,19 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 			var model = this.getLayers().at(stackIndex);
 			if(!model)
 				return;
+
+			// Store properties values inside layer, in this way it's more reliable
+			//  to fetch them later
+			var valObj = {};
+			this.model.get('properties').each(function(prop){
+				var v		= prop.getValue();
+					func	= prop.get('functionName');
+				if(func)
+					v =  func + '(' + v + ')';
+				valObj[prop.get('property')] = v;
+			});
+			model.set('values', valObj);
+
 			model.set('value', result);
 			return this.createValue();
 		},

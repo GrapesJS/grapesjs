@@ -7,6 +7,7 @@ define(['backbone'],
 				index: '',
 				active: true,
 				value: '',
+				values: {},
 				preview: false,
 			}
 

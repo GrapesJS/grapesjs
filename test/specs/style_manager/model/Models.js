@@ -499,6 +499,185 @@ define([path + 'Sector',
             obj.build('text-shadow').should.deep.equal([res]);
           });
 
+          it('Build border-radius-c', function() {
+            var res = {
+              type: 'integer',
+              units: ['px', '%'],
+              defaults: 0,
+              min: 0,
+            };
+            res.property = 'border-radius';
+            obj.build('border-radius-c').should.deep.equal([res]);
+          });
+
+          it('Build border-radius', function() {
+            var res = {
+              property: 'border-radius',
+              type: 'composite',
+              properties: [{
+                      property : 'border-top-left-radius',
+                      type: 'integer',
+                      units: ['px','%'],
+                      defaults: 0,
+                      min: 0,
+                    },{
+                      property: 'border-top-right-radius',
+                      type: 'integer',
+                      units: ['px','%'],
+                      min : 0,
+                      defaults: 0,
+                    },{
+                      property: 'border-bottom-left-radius',
+                      type: 'integer',
+                      units: ['px','%'],
+                      min: 0,
+                      defaults: 0,
+                    },{
+                      property: 'border-bottom-right-radius',
+                      type: 'integer',
+                      units: ['px','%'],
+                      min: 0,
+                      defaults : 0,
+                    },],
+            };
+            res.property = 'border-radius';
+            obj.build('border-radius').should.deep.equal([res]);
+          });
+
+          it('Build background-color', function() {
+            var res = {
+              type : 'color',
+              defaults: 'none'
+            };
+            res.property = 'background-color';
+            obj.build('background-color').should.deep.equal([res]);
+          });
+
+          it('Build border', function() {
+            var res = {
+              property: 'border',
+              type: 'composite',
+              properties  : [{
+                      property: 'border-width',
+                      type: 'integer',
+                      units: ['px','em'],
+                      defaults: 'medium',
+                      min: 0,
+                    },{
+                      property: 'border-style',
+                      type : 'select',
+                      defaults: 'solid',
+                      list:   [{ value : 'none'},
+                               { value : 'solid'},
+                               { value : 'dotted'},
+                               { value : 'dashed'},
+                               { value : 'double'},
+                               { value : 'groove'},
+                               { value : 'ridge'},
+                               { value : 'inset'},
+                               { value : 'outset'},],
+                    },{
+                      property: 'border-color',
+                      type: 'color',
+                      defaults: 'black',
+                    }],
+            };
+            obj.build('border').should.deep.equal([res]);
+          });
+
+          it('Build box-shadow', function() {
+            var res = {
+              property: 'box-shadow',
+              type: 'stack',
+              preview: true,
+              properties: [{
+                      property: 'box-shadow-h',
+                      type: 'integer',
+                      units: ['px','%'],
+                      defaults: 0,
+                    },{
+                      property: 'box-shadow-v',
+                      type: 'integer',
+                      units: ['px','%'],
+                      defaults: 0,
+                    },{
+                      property: 'box-shadow-blur',
+                      type: 'integer',
+                      units: ['px'],
+                      defaults: 5,
+                      min: 0,
+                    },{
+                      property: 'box-shadow-spread',
+                      type: 'integer',
+                      units: ['px'],
+                      defaults: 0,
+                    },{
+                      property: 'box-shadow-color',
+                      type: 'color',
+                      defaults: 'black',
+                    },{
+                      property: 'box-shadow-type',
+                      type: 'select',
+                      defaults: '',
+                      list:   [{value : '', name: 'Outside' },
+                              {value : 'inset', name: 'Inside' }],
+                    }],
+            };
+            obj.build('box-shadow').should.deep.equal([res]);
+          });
+
+          it('Build background', function() {
+            var res = {
+              property: 'background',
+              type: 'stack',
+              preview: true,
+              detached: true,
+              properties  : [{
+                      property: 'background-image',
+                      type: 'file',
+                      defaults: 'none',
+                    },{
+                      property: 'background-repeat',
+                      type: 'select',
+                      defaults: 'repeat',
+                      list:   [{ value : 'repeat'},
+                               { value : 'repeat-x'},
+                               { value : 'repeat-y'},
+                               { value : 'no-repeat'}],
+                    },{
+                      property: 'background-position',
+                      type: 'select',
+                      defaults: 'left top',
+                      list:   [ { value : 'left top',},
+                                { value : 'left center',},
+                                { value : 'left bottom',},
+                                { value : 'right top',},
+                                { value : 'right center'},
+                                { value : 'right bottom'},
+                                { value : 'center top'},
+                                { value : 'center center'},
+                                { value : 'center bottom'}
+                              ]
+
+                    },{
+                      property: 'background-attachment',
+                      type: 'select',
+                      defaults: 'scroll',
+                      list:   [{ value : 'scroll'},
+                               { value : 'fixed'},
+                               { value : 'local'}],
+                    },{
+                      property: 'background-size',
+                      type: 'select',
+                      defaults: 'auto',
+                      list:   [{ value : 'auto'},
+                               { value : 'cover'},
+                               { value : 'contain'}],
+                    }],
+            };
+            obj.build('background').should.deep.equal([res]);
+          });
+
         });
 
       }

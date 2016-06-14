@@ -28,7 +28,7 @@ define(['backbone', './Layers'],
 				var prop = this.get('property');
 
 				if(!name)
-					this.set('name', prop.charAt(0).toUpperCase() + prop.slice(1));
+					this.set('name', prop.charAt(0).toUpperCase() + prop.slice(1).replace(/-/g,' '));
 
 				switch(type){
 					case 'stack':
