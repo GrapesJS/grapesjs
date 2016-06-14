@@ -105,6 +105,11 @@ define(function (require){
 				Canvas: em.get('Canvas'),
 
 				/**
+				 * @property {UndoManager}
+				 */
+				UndoManager: em.get('UndoManager'),
+
+				/**
 				 * @property {Utils}
 				 */
 				Utils: em.get('Utils'),

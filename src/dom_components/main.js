@@ -3,6 +3,7 @@
  * - [getWrapper](#getwrapper)
  * - [getComponents](#getcomponents)
  * - [addComponent](#addcomponent)
+ * - [clear](#clear)
  * - [render](#render)
  *
  * With this module is possible to manage all the HTML structure inside the canvas

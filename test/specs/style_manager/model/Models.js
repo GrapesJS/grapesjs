@@ -370,6 +370,135 @@ define([path + 'Sector',
             obj.build('padding').should.deep.equal([res]);
           });
 
+          it('Build font-family', function() {
+            var ss = ', sans-serif';
+            var ms = ', monospace';
+            var ff = 'font-family: ';
+            var sty = '; font-size:15px';
+            var res = {
+              property: 'font-family',
+              type: 'select',
+              defaults: 'Arial, Helvetica' + ss,
+              list:[
+                {name: 'Arial', value: 'Arial, Helvetica' + ss, style: ff + 'Arial, Helvetica' + ss + sty},
+                {name: 'Arial Black', value: 'Arial Black, Gadget' + ss,  style: ff + 'Arial Black, Gadget' + ss + sty},
+                {name: 'Brush Script MT', value: 'Brush Script MT' + ss,  style: ff + 'Brush Script MT' + ss + sty},
+                {name: 'Comic Sans MS', value: 'Comic Sans MS, cursive' + ss,  style: ff + 'Comic Sans MS, cursive' + ss + sty},
+                {name: 'Courier New', value: 'Courier New, Courier' + ms,  style: ff + 'Courier New, Courier' + ms + sty},
+                {name: 'Georgia', value: 'Georgia, serif',  style: ff + 'Georgia, serif' + sty},
+                {name: 'Helvetica', value: 'Helvetica, serif',  style: ff + 'Helvetica, serif' + sty},
+                {name: 'Impact', value: 'Impact, Charcoal' + ss,  style: ff + 'Impact, Charcoal' + ss + sty},
+                {name: 'Lucida Sans Unicode', value: 'Lucida Sans Unicode, Lucida Grande' + ss,  style: ff + 'Lucida Sans Unicode, Lucida Grande' + ss + sty},
+                {name: 'Tahoma', value: 'Tahoma, Geneva' + ss,  style: ff + 'Tahoma, Geneva' + ss + sty},
+                {name: 'Times New Roman', value: 'Times New Roman, Times, serif',  style: ff + 'Times New Roman, Times, serif' + sty},
+                {name: 'Trebuchet MS', value: 'Trebuchet MS, Helvetica' + ss,  style: ff + 'Trebuchet MS, Helvetica' + ss + sty},
+                {name: 'Verdana', value: 'Verdana, Geneva' + ss,  style: ff + 'Verdana, Geneva' + ss + sty},
+              ],
+            };
+            obj.build('font-family').should.deep.equal([res]);
+          });
+
+          it('Build font-size', function() {
+            var res = {
+              type: 'integer',
+              units: ['px','em', 'rem', '%'],
+              defaults: 'medium',
+              min: 0,
+            };
+            res.property = 'font-size';
+            obj.build('font-size').should.deep.equal([res]);
+          });
+
+          it('Build letter-spacing', function() {
+            var res = {
+              type: 'integer',
+              units: ['px','em', 'rem', '%'],
+              defaults: 'normal',
+            };
+            res.property = 'letter-spacing';
+            obj.build('letter-spacing').should.deep.equal([res]);
+          });
+
+          it('Build font-weight', function() {
+            var res = {
+              type: 'select',
+              defaults: '400',
+              list:   [{ value : '100', name : 'Thin', },
+                       { value : '200', name : 'Extra-Light', },
+                       { value : '300', name : 'Light', },
+                       { value : '400', name : 'Normal', },
+                       { value : '500', name : 'Medium',},
+                       { value : '600', name : 'Semi-Bold',},
+                       { value : '700', name : 'Bold', },
+                       { value : '800', name : 'Extra-Bold',},
+                       { value : '900', name : 'Ultra-Bold', }],
+            };
+            res.property = 'font-weight';
+            obj.build('font-weight').should.deep.equal([res]);
+          });
+
+          it('Build color', function() {
+            var res = {
+              property: 'color',
+              type: 'color',
+              defaults: 'black',
+            };
+            obj.build('color').should.deep.equal([res]);
+          });
+
+          it('Build line-height', function() {
+            var res = {
+              type: 'integer',
+              units: ['px','em', 'rem', '%'],
+              defaults: 'normal',
+            };
+            res.property = 'line-height';
+            obj.build('line-height').should.deep.equal([res]);
+          });
+
+          it('Build text-align', function() {
+            var res = {
+              type: 'radio',
+              defaults: 'left',
+              list: [{ value : 'left'},
+                     { value : 'center'},
+                     { value : 'right'},
+                     { value : 'justify'}],
+            };
+            res.property = 'text-align';
+            obj.build('text-align').should.deep.equal([res]);
+          });
+
+          it('Build text-shadow', function() {
+            var res = {
+              type: 'stack',
+              preview: true,
+              properties  : [{
+                      property: 'text-shadow-h',
+                      type:     'integer',
+                      units:    ['px','%'],
+                      defaults :  0,
+                    },{
+                      property:   'text-shadow-v',
+                      type:     'integer',
+                      units:    ['px','%'],
+                      defaults :  0,
+                    },{
+                      property:   'text-shadow-blur',
+                      type:     'integer',
+                      units:    ['px','%'],
+                      defaults :  0,
+                      min: 0,
+                    },{
+                      property: 'text-shadow-color',
+                      type: 'color',
+                      defaults: 'black',
+                    },],
+            };
+            res.property = 'text-shadow';
+            obj.build('text-shadow').should.deep.equal([res]);
+          });
+
         });
 
       }

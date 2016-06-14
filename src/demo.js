@@ -22,14 +22,14 @@ require(['config/require-config'], function() {
 													id: 	'undo',
 													run: 	function(em, sender){
 														sender.set('active',false);
-														em.get('UndoManager').undo();
+														em.UndoManager.undo();
 													},
 													stop: function(){}
 												},{
 													id: 	'redo',
 													run: 	function(em, sender){
 														sender.set('active',false);
-														em.get('UndoManager').redo();
+														em.UndoManager.redo();
 													},
 													stop: function(){}
 												},{
@@ -37,11 +37,7 @@ require(['config/require-config'], function() {
 													run: 	function(em, sender){
 														sender.set('active',false);
 														if(confirm('Are you sure to clean the canvas?')){
-															var comps = em.get('Components').getComponents();
-															var len = comps.length;
-															for(var i = 0; i < len; i++){
-																comps.pop();
-															}
+															var comps = em.DomComponents.clear();
 														}
 													},
 													stop: function(){}
@@ -145,8 +141,7 @@ require(['config/require-config'], function() {
 			styleManager : {
 				sectors: [{
 					name: 'Dimension555',
-					buildProps: ['width', 'height', 'min-width', 'min-height', 'max-width', 'max-height', 'margin', 'padding'],
-					extendBuilded: 1,
+					buildProps: ['font-family', 'font-size', 'font-weight', 'letter-spacing', 'color', 'line-height', 'text-align', 'text-shadow'],
 				},{
 					name: 'General',
 					open: false,
