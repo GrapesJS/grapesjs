@@ -678,6 +678,93 @@ define([path + 'Sector',
             obj.build('background').should.deep.equal([res]);
           });
 
+          it('Build transition', function() {
+            var res = {
+              property: 'transition',
+              type: 'stack',
+              properties:[{
+                property: 'transition-property',
+                type: 'select',
+                defaults: 'width',
+                list:   [{ value: 'width'},
+                         { value : 'height'},
+                         { value : 'background-color'},
+                         { value : 'transform'},
+                         { value : 'box-shadow'},
+                         { value : 'opacity'}],
+                },{
+                  property: 'transition-duration',
+                  type: 'integer',
+                  units: ['s'],
+                  defaults: '2',
+                  min: 0,
+                },{
+                  property: 'transition-timing-function',
+                  type: 'select',
+                  defaults: 'ease',
+                  list:   [{ value : 'linear'},
+                           { value : 'ease'},
+                           { value : 'ease-in'},
+                           { value : 'ease-out'},
+                           { value : 'ease-in-out'}],
+                }],
+            };
+            obj.build('transition').should.deep.equal([res]);
+          });
+
+          it('Build perspective', function() {
+            var res = {
+              property: 'perspective',
+              type: 'integer',
+              units: ['px'],
+              defaults : 0,
+              min: 0,
+            };
+            obj.build('perspective').should.deep.equal([res]);
+          });
+
+          it('Build transform', function() {
+            var res = {
+              property: 'transform',
+              type: 'composite',
+              properties:[{
+                      property: 'transform-rotate-x',
+                      type: 'integer',
+                      units: ['deg'],
+                      defaults : 0,
+                      functionName: 'rotateX',
+                    },{
+                      property: 'transform-rotate-y',
+                      type: 'integer',
+                      units: ['deg'],
+                      defaults : 0,
+                      functionName: 'rotateY',
+                    },{
+                      property: 'transform-rotate-z',
+                      type: 'integer',
+                      units: ['deg'],
+                      defaults : 0,
+                      functionName: 'rotateZ',
+                    },{
+                      property: 'transform-scale-x',
+                      type: 'integer',
+                      defaults : 1,
+                      functionName: 'scaleX',
+                    },{
+                      property: 'transform-scale-y',
+                      type: 'integer',
+                      defaults : 1,
+                      functionName: 'scaleY',
+                    },{
+                      property: 'transform-scale-z',
+                      type: 'integer',
+                      defaults : 1,
+                      functionName: 'scaleZ',
+                    }],
+            };
+            obj.build('transform').should.deep.equal([res]);
+          });
+
         });
 
       }

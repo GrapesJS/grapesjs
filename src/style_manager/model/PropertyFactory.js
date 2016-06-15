@@ -38,6 +38,7 @@ define(['backbone'],
               case 'border-style':
               case 'box-shadow-type':
               case 'background-repeat': case 'background-position': case 'background-attachment': case 'background-size':
+              case 'transition-property': case 'transition-timing-function':
                 obj.type = 'select';
                 break;
               case 'top': case 'right': case 'bottom': case 'left':
@@ -51,11 +52,16 @@ define(['backbone'],
               case 'border-top-left-radius': case 'border-top-right-radius': case 'border-bottom-left-radius':case 'border-bottom-right-radius':
               case 'border-width':
               case 'box-shadow-h': case 'box-shadow-v': case 'box-shadow-blur': case 'box-shadow-spread':
+              case 'transition-duration':
+              case 'perspective':
+              case 'transform-rotate-x': case 'transform-rotate-y': case 'transform-rotate-z':
+              case 'transform-scale-x': case 'transform-scale-y': case 'transform-scale-z':
                 obj.type = 'integer';
                 break;
               case 'margin': case 'padding':
               case 'border-radius':
               case 'border':
+              case 'transform':
                 obj.type = 'composite';
                 break;
               case 'color': case 'text-shadow-color':
@@ -63,6 +69,7 @@ define(['backbone'],
                 obj.type = 'color';
                 break;
               case 'text-shadow': case 'box-shadow': case 'background':
+              case 'transition':
                 obj.type = 'stack';
                 break;
               case 'background-image':
@@ -89,7 +96,12 @@ define(['backbone'],
               case 'border-radius-c':
               case 'border-top-left-radius': case 'border-top-right-radius': case 'border-bottom-left-radius':case 'border-bottom-right-radius':
               case 'box-shadow-h': case 'box-shadow-v': case 'box-shadow-spread':
+              case 'perspective':
+              case 'transform-rotate-x': case 'transform-rotate-y': case 'transform-rotate-z':
                 obj.defaults = 0;
+                break;
+              case 'transform-scale-x': case 'transform-scale-y': case 'transform-scale-z':
+                obj.defaults = 1;
                 break;
               case 'box-shadow-blur':
                 obj.defaults = 5;
@@ -133,6 +145,15 @@ define(['backbone'],
               case 'background-attachment':
                 obj.defaults = 'scroll';
                 break;
+              case 'transition-property':
+                obj.defaults = 'width';
+                break;
+              case 'transition-duration':
+                obj.defaults = '2';
+                break;
+              case 'transition-timing-function':
+                obj.defaults = 'ease';
+                break;
             }
 
             // Units
@@ -155,7 +176,14 @@ define(['backbone'],
                 obj.units = ['px','em'];
                 break;
               case 'box-shadow-blur': case 'box-shadow-spread':
+              case 'perspective':
                 obj.units = ['px'];
+                break;
+              case 'transition-duration':
+                obj.units = ['s'];
+                break;
+              case 'transform-rotate-x': case 'transform-rotate-y': case 'transform-rotate-z':
+                obj.units = ['deg'];
                 break;
             }
 
@@ -169,6 +197,8 @@ define(['backbone'],
               case 'border-top-left-radius': case 'border-top-right-radius': case 'border-bottom-left-radius':case 'border-bottom-right-radius':
               case 'border-width':
               case 'box-shadow-blur':
+              case 'transition-duration':
+              case 'perspective':
                 obj.min = 0;
                 break;
             }
@@ -184,6 +214,28 @@ define(['backbone'],
             switch(prop){
               case 'background':
                 obj.detached = true;
+                break;
+            }
+
+            // Functions
+            switch(prop){
+              case 'transform-rotate-x':
+                obj.functionName = 'rotateX';
+                break;
+              case 'transform-rotate-y':
+                obj.functionName = 'rotateY';
+                break;
+              case 'transform-rotate-z':
+                obj.functionName = 'rotateZ';
+                break;
+              case 'transform-scale-x':
+                obj.functionName = 'scaleX';
+                break;
+              case 'transform-scale-y':
+                obj.functionName = 'scaleY';
+                break;
+              case 'transform-scale-z':
+                obj.functionName = 'scaleZ';
                 break;
             }
 
@@ -303,6 +355,26 @@ define(['backbone'],
                     { value : 'contain'}
                   ];
                 break;
+              case 'transition-property':
+                obj.list = [
+                    { value: 'width'},
+                    { value : 'height'},
+                    { value : 'background-color'},
+                    { value : 'transform'},
+                    { value : 'box-shadow'},
+                    { value : 'opacity'}
+                  ];
+                break;
+              case 'transition-timing-function':
+                obj.list = [
+                   { value : 'linear'},
+                   { value : 'ease'},
+                   { value : 'ease-in'},
+                   { value : 'ease-out'},
+                   { value : 'ease-in-out'}
+                  ];
+                break;
+
             }
 
             // Properties
@@ -330,6 +402,13 @@ define(['backbone'],
               case 'background':
                 obj.properties = this.build(['background-image', 'background-repeat', 'background-position','background-attachment',
                   'background-size']);
+                break;
+              case 'transition':
+                obj.properties = this.build(['transition-property', 'transition-duration', 'transition-timing-function']);
+                break;
+              case 'transform':
+                obj.properties = this.build(['transform-rotate-x', 'transform-rotate-y', 'transform-rotate-z',
+                  'transform-scale-x', 'transform-scale-y', 'transform-scale-z']);
                 break;
             }
 

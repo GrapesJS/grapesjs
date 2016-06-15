@@ -1,5 +1,5 @@
 
-define(function(require) {
+define(['GrapesJS'],function(Grapes) {
 
     return {
       run : function(){
@@ -11,10 +11,10 @@ define(function(require) {
             });
 
             beforeEach(function () {
-              this.Grapes = require('editor/main');
-              this.gjs = new this.Grapes({
+              Grapes = Grapes;
+              this.gjs = Grapes.init({
                 stylePrefix: '',
-                storageManager: { type: 'none', },
+                storage: { autoload: 0, type:'none' },
                 assetManager: { storageType: 'none', },
                 container: 'csscomposer-fixture',
               });
@@ -31,7 +31,7 @@ define(function(require) {
             });
 
             afterEach(function () {
-              delete this.Grapes;
+              delete Grapes;
               delete this.gjs;
               delete this.cssc;
               delete this.clsm;
@@ -42,9 +42,9 @@ define(function(require) {
             });
 
             it('Rules are correctly imported from default property', function() {
-              var gj = new this.Grapes({
+              var gj = new Grapes.init({
                 stylePrefix: '',
-                storageManager: { type: 'none', },
+                storage: { autoload: 0, type:'none' },
                 assetManager: { storageType: 'none', },
                 cssComposer: { defaults: this.rulesSet},
                 container: 'csscomposer-fixture',

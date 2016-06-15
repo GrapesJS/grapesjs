@@ -38,7 +38,7 @@ define([
 				});
 
 				it("No panels inside", function() {
-					obj.getPanels().length.should.equal(0);
+					obj.getPanels().length.should.equal(3);
 				});
 
 				it("Adds new panel correctly via object", function() {

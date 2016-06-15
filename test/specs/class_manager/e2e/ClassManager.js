@@ -1,6 +1,6 @@
 
-define(
-	function(require) {
+define(['GrapesJS'],
+	function(GrapesJS) {
 
     return {
       run : function(){
@@ -30,12 +30,10 @@ define(
             });
 
             beforeEach(function () {
-              var Grapes = require('editor/main');
-              this.gjs = new Grapes({
+              var Grapes = GrapesJS;
+              this.gjs = Grapes.init({
                 stylePrefix: '',
-                storageManager: {
-                  type: 'none',
-                },
+                storage: { autoload: 0, type:'none' },
                 assetManager: {
                   storageType: 'none',
                 },
