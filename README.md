@@ -5,14 +5,14 @@
 <p align="center"><img src="http://grapesjs.com/img/grapesjs-demo-template2.jpg" alt="GrapesJS" width="500" align="center"/></p>
 <br/>
 
-GrapesJS is a free and open source Web Template Builder which helps you building HTML templates to be used inside sites, newsletters or even mobile apps.
-Mainly GrapesJS was designed to be used inside a [CMS] to speed up creation of dynamic templates. To better understand this concept check the image below
+GrapesJS is a free and open source Web Template Builder which helps you building HTML templates to be used inside sites, newsletters and mobile apps.
+Mainly GrapesJS was designed to be used inside a [CMS] to speed up a creation of dynamic templates. To better understand this concept check the image below
 
 <br/>
 <p align="center"><img src="http://grapesjs.com/img/gjs-concept.png" alt="GrapesJS - Style Manager" height="400" align="center"/></p>
 <br/>
 
-Generally any 'template system', that you can find in various applications like CMS, is composed by the **structure** (HTML), **style** (CSS) and **variables**, which are then replaced with other templates and contents on server-side and rendered on client.
+Generally any 'template system', that you find in various applications like CMS, is composed by the **structure** (HTML), **style** (CSS) and **variables**, which are then replaced with other templates and contents on server-side and rendered on client.
 
 This demo shows an example of what is possible to achieve: http://grapesjs.com/demo.html
 
@@ -78,12 +78,12 @@ If [Grunt](http://gruntjs.com/) is already installed globally you could change t
 
 ## Usage
 
-JQuery is the only hard dependency so you have to include it before using GrapesJS.
+JQuery is the only hard dependency so you have to include it before using GrapesJS
 
 ```html
 <script src="http://code.jquery.com/jquery-2.2.0.min.js"></script>
 ```
-After that include scripts from GrapesJS with all your configurations and render it.
+After that include scripts from GrapesJS with all your configurations
 
 ```html
 <link rel="stylesheet" href="path/to/grapes.min.css">
