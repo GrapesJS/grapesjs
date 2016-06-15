@@ -2593,6 +2593,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 
 .wte-editor {
   font-family: Helvetica, sans-serif;
+  background-color: #444;
   position: relative;
   border: 3px solid #444;
   border-left: none;
@@ -2612,6 +2613,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   z-index: 1;
   /* This simulate body behaviour */ }
   .wte-cv-canvas > div {
+    background-color: #fff;
     position: relative;
     height: 100%;
     overflow: auto;

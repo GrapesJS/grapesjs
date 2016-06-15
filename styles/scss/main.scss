@@ -78,6 +78,7 @@ $imageCompDim:	50px;
 }
 .#{$app-prefix}editor{
 	font-family: $mainFont;
+	background-color: $mainColor;
 	position:relative;
 	border: 3px solid $mainColor;
 	border-left:none;
@@ -97,6 +98,7 @@ $imageCompDim:	50px;
 
   	/* This simulate body behaviour */
   	> div {
+  		background-color: #fff;
   		position: relative;
 	    height: 100%;
 	    overflow: auto;

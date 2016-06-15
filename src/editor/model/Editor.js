@@ -12,6 +12,7 @@ define([
         'RichTextEditor',
         'DomComponents',
         'ClassManager',
+        'StyleManager',
         'Panels',
         'Parser',
         'Utils'],
@@ -29,6 +30,7 @@ define([
 			RichTextEditor,
 			DomComponents,
 			ClassManager,
+			StyleManager,
 			Panels,
 			Parser,
 			Utils
@@ -66,6 +68,7 @@ define([
 				this.initCanvas();
 				this.initUndoManager();
 				this.initUtils();
+				this.initStyleManager();
 
 				this.on('change:selectedComponent', this.componentSelected, this);
 			},
@@ -94,6 +97,19 @@ define([
 			initUtils: function() {
 				this.Utils = new Utils();
 				this.set('Utils', this.Utils);
+			},
+
+			/**
+			 * Initialize Style Manager
+			 * @private
+			 * */
+			initStyleManager: function(){
+				var cfg = this.config.styleManager,
+				pfx	= cfg.stylePrefix || 'sm-';
+				cfg.pStylePrefix = this.config.stylePrefix;
+				cfg.stylePrefix	= this.config.stylePrefix + pfx;
+				cfg.target = this;
+				this.set('StyleManager', new StyleManager(cfg));
 			},
 
 			/**
@@ -337,7 +353,7 @@ define([
 				cfg.stylePrefix = this.config.stylePrefix + pfx;
 				cfg.em = this;
 				this.pn = new Panels(cfg);
-				this.pn.addPanel({ id: 'views-container'});
+				//this.pn.addPanel({ id: 'views-container'});
 				this.Panels = this.pn;
 				this.set('Panels', this.pn);
 			},

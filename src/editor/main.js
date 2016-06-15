@@ -100,7 +100,7 @@ define(function (require){
 				StyleManager: em.get('StyleManager'),
 
 				/**
-				 * @property {StyleManager}
+				 * @property {Canvas}
 				 */
 				Canvas: em.get('Canvas'),
 

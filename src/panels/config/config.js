@@ -6,7 +6,8 @@ define(function () {
 	var imc = 'image-comp';
 	var swv = 'sw-visibility';
 	var expt = 'export-template';
-
+	var osm = 'open-sm';
+	var ola = 'open-layers';
 	return {
 		stylePrefix: 'pn-',
 
@@ -53,6 +54,20 @@ define(function () {
 				className: 'fa fa-code',
 				command: expt,
 				attributes: { title: 'View code' },
+			}],
+		},{
+			id: 'views',
+			buttons	: [{
+				id: osm,
+				className: 'fa fa-paint-brush',
+				command: osm,
+				active: true,
+				attributes: { title: 'Open Style Manager' },
+			},{
+				id: ola,
+				className: 'fa fa-bars',
+				command: ola,
+				attributes	: { title: 'Open Layer Manager' },
 			}],
 		}],
 
