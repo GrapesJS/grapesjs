@@ -135,6 +135,7 @@ require(['config/require-config'], function() {
 				}],
 			},
 */
+
 			styleManager : {
 				sectors: [{
 					name: 'General',
@@ -165,7 +166,7 @@ require(['config/require-config'], function() {
 					name: 'Extra',
 					open: false,
 					buildProps: ['transition', 'perspective', 'transform'],
-				},/*{
+				},{
 						name: 'Dimension',
 						open: false,
 						properties:[{
@@ -181,7 +182,7 @@ require(['config/require-config'], function() {
 												name			: 'Center',
 											}],
 						}],
-					}*/{
+					},{
             name: 'Flex',
             open: false,
             properties: [{
@@ -335,6 +336,7 @@ require(['config/require-config'], function() {
                       }],
             }]
           }
+
 				],
 
 			},
