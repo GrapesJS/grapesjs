@@ -3292,6 +3292,7 @@ ol.example li.placeholder:before {
   filter: alpha(opacity=50); }
 
 .wte-mdl-container {
+  font-family: Helvetica, sans-serif;
   position: absolute;
   top: 0;
   z-index: 10;
