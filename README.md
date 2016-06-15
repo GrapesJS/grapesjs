@@ -116,7 +116,7 @@ You could also grab the content directly from the element with `fromElement` pro
 </script>
 ```
 
-Unfortunately with the configuration above you wouldn't see a lot. This because GrapesJS it self is simply empty, adding panels, buttons and other stuff will be your job (actually it's not empty but you need buttons to show them up).
+Unfortunately with the configuration above you wouldn't see a lot. This because GrapesJS itself is empty, adding panels, buttons and other stuff will be your job (actually it's not empty but you need buttons to show them up).
 The section below will explain some basic configurations but for a more practical example I suggest to look up the code inside this demo: http://grapesjs.com/demo.html
 
 

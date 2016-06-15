@@ -17,6 +17,12 @@ function(Backbone){
 			var conf = this.model.config;
 			this.$cont	= $(conf.el || ('body ' + conf.container));
 
+			if(conf.width)
+				this.$cont.css('width', conf.width);
+
+			if(conf.height)
+				this.$cont.css('height', conf.height);
+
 			this.model.set('$editor', this.$el);
 
 			if(this.cv)

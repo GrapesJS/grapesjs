@@ -28,6 +28,12 @@ define(function () {
 		// Enable/Disable undo manager
 		undoManager: true,
 
+		// Height for the editor container
+		height: '900px',
+
+		// Width for the editor container
+		width: '100%',
+
 		//Indicates which storage to use. Available: local | remote | none (!)
 		storageType: 'local',
 

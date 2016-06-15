@@ -72,26 +72,19 @@ $imageCompDim:	50px;
 }
 
 /********************* MAIN ************************/
-body{
-	background-color:	$fontColor;
-	font-family: 		$mainFont;
-	margin: 0;
-}
-html,body,#wte-app, .#{$app-prefix}editor{ height: 100%; }
 .clear{ clear:both }
 .no-select{
  	@include user-select(none);
 }
-#wte-app{
-	height: 100%;
-	min-width: 1250px;
-}
 .#{$app-prefix}editor{
+	font-family: $mainFont;
 	position:relative;
 	border: 3px solid $mainColor;
 	border-left:none;
 	border-right:none;
 	box-sizing: border-box;
+	height: 100%;
+	min-width: 1250px;
 }
 /*************  CANVAS  ****************/
 .#{$cv-prefix}canvas {
