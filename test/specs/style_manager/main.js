@@ -36,7 +36,9 @@ define([
         var obj;
 
         beforeEach(function () {
-          obj = new StyleManager();
+          obj = new StyleManager({
+            sectors: []
+          });
         });
 
         afterEach(function () {
