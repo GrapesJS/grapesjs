@@ -3,13 +3,14 @@
  * - [getWrapper](#getwrapper)
  * - [getComponents](#getcomponents)
  * - [addComponent](#addcomponent)
+ * - [clear](#clear)
  * - [render](#render)
  *
  * With this module is possible to manage all the HTML structure inside the canvas
  * You can init the editor with initial components via configuration
  *
  * ```js
- * var editor = new GrapesJS({
+ * var editor = grapesjs.init({
  * 	...
  *  components: {...} // Check below for the possible properties
  * 	...
@@ -20,7 +21,7 @@
  * Before using methods you should get first the module from the editor instance, in this way:
  *
  * ```js
- * var ComponentsService = editor.get('Components');
+ * var ComponentsService = editor.Components;
  * ```
  *
  * @module Components

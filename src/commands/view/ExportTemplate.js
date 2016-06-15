@@ -5,12 +5,12 @@ define(function() {
 		 * */
 		return {
 
-			run: function(em, sender){
+			run: function(editor, sender){
 				this.sender		= sender;
-				this.components = em.get('Canvas').getWrapper().get('components');
-				this.modal		= em.get('Modal') || null;
-				this.cm			= em.get('CodeManager') || null;
-				this.cssc = em.get('CssComposer') || null;
+				this.components = editor.Canvas.getWrapper().get('components');
+				this.modal		= editor.Dialog || null;
+				this.cm			= editor.CodeManager || null;
+				this.cssc = editor.CssComposer || null;
 				this.enable();
 			},
 

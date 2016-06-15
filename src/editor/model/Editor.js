@@ -43,7 +43,7 @@ define([
 			},
 
 			initialize: function(c) {
-				this.config = _.clone(c);
+				this.config = c;
 				this.pfx = this.config.storagePrefix;
 				this.compName	= this.pfx + 'components' + this.config.id;
 				this.rulesName	= this.pfx + 'rules' + this.config.id;
@@ -68,6 +68,15 @@ define([
 				this.initUtils();
 
 				this.on('change:selectedComponent', this.componentSelected, this);
+			},
+
+			/**
+			 * Initialize editor model and set editor instance
+			 * @param {Editor} editor Editor instance
+			 * @return {this}
+			 */
+			init: function(editor){
+				this.set('Editor', editor);
 			},
 
 			/**
@@ -644,8 +653,6 @@ define([
 				if(smc.storeStyles)
 					store.styles = JSON.stringify(this.getStyle());
 
-				console.log('Store');
-				console.log(store);
 				sm.store(store);
 				return store;
 			},

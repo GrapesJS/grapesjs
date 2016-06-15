@@ -40,9 +40,7 @@ define(['backbone'],
 			 * @param	{Object}	sender	Button sender
 			 * @private
 			 * */
-			run: function(em, sender) {
-				console.warn("No run method found");
-			},
+			run: function(em, sender) {},
 
 			/**
 			 * Method that stop command
@@ -50,9 +48,7 @@ define(['backbone'],
 			 * @param	{Object}	sender	Button sender
 			 * @private
 			 * */
-			stop: function(em, sender) {
-				console.warn("No stop method found");
-			}
+			stop: function(em, sender) {}
 
 		});
 	});

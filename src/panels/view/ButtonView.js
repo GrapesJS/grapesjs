@@ -141,6 +141,7 @@ function(Backbone, require) {
 		 * */
 		updateActive: function(){
 			var command	= null;
+			var editor = this.em && this.em.get ? this.em.get('Editor') : null;
 
 			if(this.commands)
 				command	= this.commands.get(this.model.get('command'));
@@ -154,7 +155,7 @@ function(Backbone, require) {
 					this.parentM.set('active', true, { silent: true }).trigger('checkActive');
 
 				if(command)
-					command.run(this.em, this.model);
+					command.run(editor, this.model);
 			}else{
 				this.$el.removeClass(this.activeCls);
 
@@ -164,7 +165,7 @@ function(Backbone, require) {
 					this.parentM.set('active', false, { silent: true }).trigger('checkActive');
 
 				if(command)
-					command.stop(this.em, this.model);
+					command.stop(editor, this.model);
 			}
 		},
 

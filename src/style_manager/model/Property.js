@@ -24,6 +24,11 @@ define(['backbone', './Layers'],
 			initialize: function(opt) {
 				var o = opt || {};
 				var type = this.get('type');
+				var name = this.get('name');
+				var prop = this.get('property');
+
+				if(!name)
+					this.set('name', prop.charAt(0).toUpperCase() + prop.slice(1).replace(/-/g,' '));
 
 				switch(type){
 					case 'stack':

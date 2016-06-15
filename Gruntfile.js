@@ -48,7 +48,7 @@ module.exports = function(grunt) {
                           "else "+
                               "root.<%= pkg.name %> = root.GrapesJS = factory();"+
                       "}(this, function () {",
-              end: "return require('editor/main'); }));"
+              end: "return require('grapesjs/main'); }));"
           },
 
           paths: {

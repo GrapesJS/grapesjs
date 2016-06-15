@@ -9,12 +9,12 @@ define(['StyleManager'], function(StyleManager) {
 			{
 				this.sender	= sender;
 				if(!this.$cn){
-					var config		= em.get('Config'),
-							panels		= em.get('Panels'),
+					var config		= em.getConfig(),
+							panels		= em.Panels,
 							pfx				= config.styleManager.stylePrefix || 'sm-';
 
 					config.styleManager.stylePrefix = config.stylePrefix + pfx;
-					config.styleManager.target		= em;
+					config.styleManager.target = em.editor;
 
 					// Main container
 					this.$cn = $('<div/>');
@@ -23,7 +23,7 @@ define(['StyleManager'], function(StyleManager) {
 					this.$cn.append(this.$cn2);
 
 					// Class Manager container
-					this.clm = em.get('ClassManager');
+					this.clm = em.ClassManager;
 					if(this.clm){
 						this.$clm = new this.clm.ClassTagsView({
 							collection: new this.clm.ClassTags([]),
@@ -54,7 +54,7 @@ define(['StyleManager'], function(StyleManager) {
 					// Add all containers to the panel
 					this.panel.set('appendContent', this.$cn).trigger('change:appendContent');
 
-					this.target		= em;
+					this.target = em.editor;
 					this.listenTo( this.target ,'change:selectedComponent', this.toggleSm);
 				}
 				this.toggleSm();

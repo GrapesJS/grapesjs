@@ -13,7 +13,7 @@
  * You can init the editor with all sectors and properties via configuration
  *
  * ```js
- * var editor = new GrapesJS({
+ * var editor = grapesjs.init({
  * 	...
  *  styleManager: {...} // Check below for the possible properties
  * 	...
@@ -23,7 +23,7 @@
  * Before using methods you should get first the module from the editor instance, in this way:
  *
  * ```js
- * var styleManager = editor.get('StyleManager');
+ * var styleManager = editor.StyleManager;
  * ```
  *
  * @module StyleManager

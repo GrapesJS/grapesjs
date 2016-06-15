@@ -74,6 +74,7 @@ define(function() {
 					this.removeBadge();
 					this.clean();
 					this.editorModel.set('selectedComponent',null);
+					e.preventDefault();
 				}
 			},
 
