@@ -66,15 +66,17 @@ define(function() {
 				var key = e.which || e.keyCode;
 				var comp = this.editorModel.get('selectedComponent');
 				var focused = document.activeElement.tagName !== 'BODY';
-				if((key == 8 || key == 46) && comp && !focused) {
-					if(!comp.get('removable'))
-						return;
-					comp.set('status','');
-					comp.destroy();
-					this.removeBadge();
-					this.clean();
-					this.editorModel.set('selectedComponent',null);
+				if(key == 8 || key == 46) {
 					e.preventDefault();
+					if(comp && !focused){
+						if(!comp.get('removable'))
+						return;
+						comp.set('status','');
+						comp.destroy();
+						this.removeBadge();
+						this.clean();
+						this.editorModel.set('selectedComponent',null);
+					}
 				}
 			},
 
