@@ -12,7 +12,7 @@
  * ```js
  * var editor = grapesjs.init({
  * 	...
- *  components: {...} // Check below for the possible properties
+ *  domComponents: {...} // Check below for the possible properties
  * 	...
  * });
  * ```
@@ -21,24 +21,16 @@
  * Before using methods you should get first the module from the editor instance, in this way:
  *
  * ```js
- * var ComponentsService = editor.Components;
+ * var ComponentsService = editor.DomComponents;
  * ```
  *
  * @module Components
  * @param {Object} config Configurations
- * @param {Array<Object>} [config.defaults=[]] Array of possible components
+ * @param {string|Array<Object>} [config.defaults=[]] HTML string or an array of possible components
  * @example
  * ...
- * components: {
- *  	defaults: [
- *  		{
- *  			style: { background: 'red'}
- *  			components:[
- *  				{style: { background: 'blue'}},
- *  				{style: { background: 'green'}}
- *  			]
- *  		}
- *  	],
+ * domComponents: {
+ *  	defaults: '<div>Hello world!</div>',
  * }
  * ...
  */

@@ -3,7 +3,6 @@
  * * [add](#add)
  * * [get](#get)
  *
- * This module manages commands which could be called mainly by buttons.
  * You can init the editor with all necessary commands via configuration
  *
  * ```js
@@ -23,21 +22,15 @@
  * @module Commands
  * @param {Object} config Configurations
  * @param {Array<Object>} [config.defaults=[]] Array of possible commands
- * @param {Boolean} [config.firstCentered=true] If true will center new first-level components
- * @param {number} [config.minComponentH=50] Minimum height (in px) for new inserted components
- * @param {number} [config.minComponentW=50] Minimum width (in px) for new inserted components
  * @example
  * ...
  * commands: {
- *  firstCentered: true,
- *  minComponentH: 100,
- *  minComponentW: 100,
  * 	defaults: [{
  * 		id: 'helloWorld',
- * 		run:  function(serviceManager, senderBtn){
+ * 		run:  function(editor, sender){
  * 			alert('Hello world!');
  * 		},
- * 		stop:  function(serviceManager, senderBtn){
+ * 		stop:  function(editor, sender){
  * 			alert('Stop!');
  * 		},
  * 	}],
@@ -101,10 +94,10 @@ define(function(require) {
 			 * @return {this}
 			 * @example
 			 * commands.add('myCommand', {
-			 * 	run:  function(serviceManager, senderBtn){
+			 * 	run:  function(editor, sender){
 			 * 		alert('Hello world!');
 			 * 	},
-			 * 	stop:  function(serviceManager, senderBtn){
+			 * 	stop:  function(editor, sender){
 			 * 	},
 			 * });
 			 * */

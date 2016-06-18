@@ -1,7 +1,7 @@
 /**
  *
- * * [addButton](#addbutton)
  * * [addPanel](#addpanel)
+ * * [addButton](#addbutton)
  * * [getButton](#getbutton)
  * * [getPanel](#getpanel)
  * * [getPanels](#getpanels)
