@@ -67,7 +67,8 @@ define(function() {
 				var comp = this.editorModel.get('selectedComponent');
 				var focused = document.activeElement.tagName !== 'BODY';
 				if(key == 8 || key == 46) {
-					e.preventDefault();
+					if(!focused)
+						e.preventDefault();
 					if(comp && !focused){
 						if(!comp.get('removable'))
 						return;
