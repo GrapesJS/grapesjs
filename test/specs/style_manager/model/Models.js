@@ -765,6 +765,24 @@ define([path + 'Sector',
             obj.build('transform').should.deep.equal([res]);
           });
 
+          it('Build cursor', function() {
+            var res = {
+              type: 'select',
+              property: 'cursor',
+              defaults: 'auto',
+              list: [{ value : 'auto'},
+                     { value : 'pointer'},
+                     { value : 'copy'},
+                     { value : 'crosshair'},
+                     { value : 'grab'},
+                     { value : 'grabbing'},
+                     { value : 'help'},
+                     { value : 'move'},
+                     { value : 'text'}],
+            };
+            obj.build('cursor').should.deep.equal([res]);
+          });
+
         });
 
       }

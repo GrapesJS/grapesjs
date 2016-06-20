@@ -11,7 +11,146 @@
 		body, html{ height: 100%; margin: 0;}
 	</style>
 	<body>
-		<div id="gjs"></div>
+		<div id="gjs">
+
+			<header class="header-banner">
+				<div class="container-width">
+					<div class="logo-container">
+						<div></div>
+						<div class="logo">GrapesJS</div>
+					</div>
+					<nav class="navbar">
+						<div class="menu-item">BUILDER</div>
+						<div class="menu-item">TEMPLATE</div>
+						<div class="menu-item">WEB</div>
+					</nav>
+					<div class="clearfix"></div>
+					<div class="lead-title">Build your templates without coding</div>
+					<div class="sub-lead-title">All text blocks could be edited easily with double clicking on it. You can create new text blocks with the command from the left panel</div>
+					<div class="lead-btn">Try it now</div>
+				</div>
+			</header>
+
+			<section class="am-sect">
+				<div class="container-width">
+					<img class="img-phone" onmousedown="return false" src="./img/phone-app.png"/>
+					<div class="am-content">
+						<div class="am-pre">ASSET MANAGER</div>
+						<div class="am-title">Manage your images with Asset Manager</div>
+						<div class="am-desc">You can create image blocks with the command from the left panel and edit them with double click</div>
+					</div>
+					<div class="clearfix"></div>
+				</div>
+			</section>
+
+			<footer>
+
+			</footer>
+
+			<style>
+				.clearfix{ clear:both}
+				.header-banner{
+					background: url("./img/bg-gr-v.png") repeat scroll left top, rgba(0, 0, 0, 0) url("http://www.freewhd.com/wp-content/uploads/2014/01/work-desk-14949.jpg") no-repeat scroll center center;
+					min-height: 550px;
+					padding-top: 35px;
+					color: #ffffff;
+					font-family: Helvetica, serif;
+					font-weight: 100;
+				}
+				.container-width{
+					width: 100%;
+					max-width: 980px;
+					margin: 0 auto;
+				}
+				.logo-container{
+					float: left;
+					width: 50%;
+				}
+				.logo{
+					background-color: #fff;
+					border-radius: 5px;
+					width: 130px;
+					padding: 10px;
+					min-height: 50px;
+					text-align: center;
+					line-height: 30px;
+					color: #4d114f;
+					font-size: 23px;
+				}
+				.navbar{
+					float: right;
+					width: 50%;
+				}
+				.menu-item{
+					float:right;
+					font-size: 15px;
+					color:#eee;
+					width: 130px;
+					padding: 10px;
+					min-height: 50px;
+					text-align: center;
+					line-height: 30px;
+					font-weight: 400;
+				}
+				.lead-title{
+					margin: 150px 0 30px 0;
+					font-size: 40px;
+				}
+				.sub-lead-title{
+					width: 650px;
+					line-height:30px;
+					margin-bottom:30px;
+					color: #c6c6c6;
+				}
+				.lead-btn{
+					margin-top: 15px;
+					padding:10px;
+				  width:190px;
+				  min-height:50px;
+				  font-size:20px;
+				  text-align:center;
+				  letter-spacing:3px;
+				  line-height:30px;
+				  background-color:#d983a6;
+				  border-radius:5px;
+				  transition: all 0.5s ease;
+				}
+				.lead-btn:hover{
+				  background-color:#ffffff;
+				  color:#4c114e;
+				}
+				.am-sect{
+					padding-top: 100px;
+					padding-bottom: 100px;
+				}
+				.img-phone{
+					float: left;
+				}
+				.am-content{
+					float:left;
+					margin:150px 0px 0px 100px;
+					padding:7px;
+					width: 490px;
+					color: #444;
+					font-weight: 100;
+				}
+				.am-pre{
+					padding:7px;
+					color:#b1b1b1;
+					font-size:15px;
+				}
+				.am-title{
+					padding:7px;
+					font-size:25px;
+					font-weight: 400;
+				}
+				.am-desc{
+					padding:7px;
+					font-size:17px;
+					line-height:25px;
+				}
+			</style>
+		</div>
 		<script data-main="src/demo" src="vendor/require/require.js"></script>
 	</body>
 </html>

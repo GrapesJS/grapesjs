@@ -47,6 +47,10 @@ define(function (require){
 
 		  return {
 
+		  	/**
+				 * @property {EditorModel}
+				 * @private
+				 */
 		  	editor: em,
 
 		  	/**
@@ -244,7 +248,7 @@ define(function (require){
 				},
 
 				/**
-				 * Store data to the current storage
+				 * Load data from the current storage
 				 * @return {Object} Stored data
 				 */
 				load: function(){

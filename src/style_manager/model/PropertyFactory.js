@@ -39,6 +39,7 @@ define(['backbone'],
               case 'box-shadow-type':
               case 'background-repeat': case 'background-position': case 'background-attachment': case 'background-size':
               case 'transition-property': case 'transition-timing-function':
+              case 'cursor':
                 obj.type = 'select';
                 break;
               case 'top': case 'right': case 'bottom': case 'left':
@@ -109,6 +110,7 @@ define(['backbone'],
               case 'min-height': case 'min-width': case 'max-height': case 'max-width':
               case 'width': case 'height':
               case 'background-size':
+              case 'cursor':
                 obj.defaults = 'auto';
                 break;
               case 'font-family':
@@ -374,7 +376,19 @@ define(['backbone'],
                    { value : 'ease-in-out'}
                   ];
                 break;
-
+              case 'cursor':
+                obj.list = [
+                    { value : 'auto'},
+                    { value : 'pointer'},
+                    { value : 'copy'},
+                    { value : 'crosshair'},
+                    { value : 'grab'},
+                    { value : 'grabbing'},
+                    { value : 'help'},
+                    { value : 'move'},
+                    { value : 'text'}
+                  ];
+                break;
             }
 
             // Properties

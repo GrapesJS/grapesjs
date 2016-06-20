@@ -217,12 +217,22 @@ $leftWidth: 16.5%;
   	min-width: 35px;
     height: 100%;
     width: 3.5%; left:0;
+    box-shadow: 0 0 5px #333;
   }
 
   &##{$pn-prefix}options{
-  	@extend ##{$pn-prefix}commands;
+  	min-width: 35px;
+    height: 100%;
+    width: 3.5%; left:0;
   	bottom: 0;
   	height: auto;
+  }
+
+  &##{$pn-prefix}commands{
+    min-width: 35px;
+    height: 100%;
+    width: 3.5%; left:0;
+    box-shadow: 0 0 5px #333;
   }
 
   &##{$pn-prefix}options2{
@@ -250,6 +260,7 @@ $leftWidth: 16.5%;
     right: 0;
     width: $leftWidth;
     overflow: auto;
+    box-shadow: 0 0 5px #333;
   }
 }
 

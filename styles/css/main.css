@@ -2739,14 +2739,25 @@ ol.example li.placeholder:before {
   box-sizing: border-box;
   text-align: center;
   z-index: 3; }
-  .wte-pn-panel#wte-pn-commands, .wte-pn-panel#wte-pn-options, .wte-pn-panel#wte-pn-options2 {
+  .wte-pn-panel#wte-pn-commands, .wte-pn-panel#wte-pn-options2 {
     min-width: 35px;
     height: 100%;
     width: 3.5%;
-    left: 0; }
+    left: 0;
+    box-shadow: 0 0 5px #333; }
   .wte-pn-panel#wte-pn-options {
+    min-width: 35px;
+    height: 100%;
+    width: 3.5%;
+    left: 0;
     bottom: 0;
     height: auto; }
+  .wte-pn-panel#wte-pn-commands, .wte-pn-panel#wte-pn-options2 {
+    min-width: 35px;
+    height: 100%;
+    width: 3.5%;
+    left: 0;
+    box-shadow: 0 0 5px #333; }
   .wte-pn-panel#wte-pn-options2 {
     bottom: 150px;
     height: auto; }
@@ -2764,7 +2775,8 @@ ol.example li.placeholder:before {
     padding: 52px 0 0;
     right: 0;
     width: 16.5%;
-    overflow: auto; }
+    overflow: auto;
+    box-shadow: 0 0 5px #333; }
 
 .wte-pn-btn {
   box-sizing: border-box;
