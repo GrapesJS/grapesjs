@@ -40,6 +40,7 @@ define(['backbone'],
               case 'background-repeat': case 'background-position': case 'background-attachment': case 'background-size':
               case 'transition-property': case 'transition-timing-function':
               case 'cursor':
+              case 'overflow':
                 obj.type = 'select';
                 break;
               case 'top': case 'right': case 'bottom': case 'left':
@@ -155,6 +156,9 @@ define(['backbone'],
                 break;
               case 'transition-timing-function':
                 obj.defaults = 'ease';
+                break;
+              case 'overflow':
+                obj.defaults = 'visible';
                 break;
             }
 
@@ -388,6 +392,14 @@ define(['backbone'],
                     { value : 'move'},
                     { value : 'text'}
                   ];
+                break;
+              case 'overflow':
+                obj.list = [
+                   { value : 'visible'},
+                   { value : 'hidden'},
+                   { value : 'scroll'},
+                   { value : 'auto'}
+                ];
                 break;
             }
 

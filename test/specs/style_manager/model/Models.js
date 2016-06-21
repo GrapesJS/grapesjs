@@ -783,6 +783,19 @@ define([path + 'Sector',
             obj.build('cursor').should.deep.equal([res]);
           });
 
+          it('Build overflow', function() {
+            var res = {
+              type: 'select',
+              property: 'overflow',
+              defaults: 'visible',
+              list: [{ value : 'visible'},
+                     { value : 'hidden'},
+                     { value : 'scroll'},
+                     { value : 'auto'}],
+            };
+            obj.build('overflow').should.deep.equal([res]);
+          });
+
         });
 
       }
