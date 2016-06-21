@@ -22,7 +22,7 @@ define(function(require) {
           var sel = sels[i].trim();
           // Will accept only concatenated classes and last
           // class might be with state (eg. :hover), nothing else.
-          if (/^(\.{1}[\w\-]+)+(:{1}[\w\-]+)?$/ig.test(sel)) {
+          if (/^(\.{1}[\w\-]+)+(:{1}[\w\-()]+)?$/ig.test(sel)) {
             var cls = sel.split('.').filter(Boolean);
             result.push(cls);
           }

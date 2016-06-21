@@ -101,6 +101,16 @@ define([path + 'model/ParserCss',],
             obj.parse(str).should.deep.equal(result);
           });
 
+          it('Parse rule with nth-x state', function() {
+            var str = ' .test1.test2:nth-of-type(2n){ color:red }';
+            var result = {
+              selectors: ['test1', 'test2'],
+              style: { color: 'red'},
+              state: 'nth-of-type(2n)'
+            };
+            obj.parse(str).should.deep.equal(result);
+          });
+
         });
 
       }

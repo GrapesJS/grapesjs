@@ -11,7 +11,7 @@
 		body, html{ height: 100%; margin: 0;}
 	</style>
 	<body>
-		<div id="gjs">
+		<div id="gjs" style="height:0px; overflow:hidden">
 
 			<header class="header-banner">
 				<div class="container-width">
@@ -43,6 +43,27 @@
 				</div>
 			</section>
 
+			<section class="blk-sect">
+				<div class="container-width">
+					<div class="blk-title">Blocks</div>
+					<div class="blk-desc">Each element in HTML page could be seen as a block. On the left panel you could find different kind of blocks that you can create, move and style</div>
+					<div class="price-cards">
+						<div class="price-card-cont">
+							<div class="price-card">
+								<div class="pc-title">Starter</div>
+								<div class="pc-desc">Some random list</div>
+								<div class="pc-feature odd-feat">+ Small feature 1</div>
+								<div class="pc-feature">+ Small feature 2</div>
+								<div class="pc-feature odd-feat">+ Small feature 3</div>
+								<div class="pc-feature">+ Small feature 4</div>
+								<div class="pc-amount odd-feat">$ 9,90/mo</div>
+							</div>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+				</div>
+			</section>
+
 			<footer>
 
 			</footer>
@@ -51,8 +72,8 @@
 				.clearfix{ clear:both}
 				.header-banner{
 					background: url("./img/bg-gr-v.png") repeat scroll left top, rgba(0, 0, 0, 0) url("http://www.freewhd.com/wp-content/uploads/2014/01/work-desk-14949.jpg") no-repeat scroll center center;
-					min-height: 550px;
 					padding-top: 35px;
+					padding-bottom: 100px;
 					color: #ffffff;
 					font-family: Helvetica, serif;
 					font-weight: 100;
@@ -148,6 +169,71 @@
 					padding:7px;
 					font-size:17px;
 					line-height:25px;
+				}
+				.blk-sect{
+					padding-top: 100px;
+					padding-bottom: 100px;
+					background-color: #222222;
+				}
+				.blk-title{
+					color:#fff;
+					font-size:25px;
+					text-align:center;
+					margin-bottom: 15px;
+				}
+				.blk-desc{
+					color:#b1b1b1;
+					font-size:15px;
+					text-align:center;
+					width:700px;
+					margin:0 auto;
+					font-weight:100;
+				}
+				.price-cards{
+					margin-top: 70px;
+				}
+				.price-card-cont{
+					width:33.333%;
+					padding: 7px;
+					float:left;
+				}
+				.price-card{
+					margin:0 auto;
+					min-height:350px;
+					background-color:#d983a6;
+					border-radius:5px;
+					font-weight: 100;
+					color: #fff;
+				}
+				.pc-title{
+					font-weight:100;
+					letter-spacing:3px;
+					text-align:center;
+					font-size:25px;
+					background-color:rgba(0, 0, 0, 0.1);
+					padding:20px;
+				}
+				.pc-desc{
+					padding: 75px 0;
+					text-align: center;
+				}
+				.pc-feature{
+					color:rgba(255,255,255,0.5);
+					letter-spacing:2px;
+					font-size:15px;
+					padding:10px 20px;
+				}
+				.pc-feature:nth-of-type(2n){
+					background-color:transparent;
+					color: red;
+				}
+				.odd-feat{
+					background-color:rgba(0, 0, 0, 0.1);
+				}
+				.pc-amount{
+					font-size: 35px;
+					text-align: center;
+					padding: 20px 0;
 				}
 			</style>
 		</div>
