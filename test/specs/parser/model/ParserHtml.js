@@ -235,6 +235,19 @@ define([path + 'model/ParserHtml', path + 'model/ParserCss'],
             res.css.should.deep.equal(resCss);
           });
 
+          it('Parse nested div with text and spaces', function() {
+            var str = '<div> <p>TestText</p> </div>';
+            var result = {
+              tagName: 'div',
+              components: [{
+                tagName: 'p',
+                content: 'TestText',
+                type: 'text',
+              }],
+            };
+            obj.parse(str).html.should.deep.equal(result);
+          });
+
         });
 
       }

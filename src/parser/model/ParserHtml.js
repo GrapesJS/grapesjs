@@ -101,7 +101,8 @@ define(function(require) {
               // From: <div> <span>TEST</span> </div> <-- span is text type
               // TO: <div> TEST </div> <-- div become text type
               // With 'nodeChild > 1' I know that nodes were merged
-              if(parsed.length == 1 && parsed[0].type == 'text' && nodeChild > 1){
+              if(parsed.length == 1 && parsed[0].type == 'text' &&
+                nodeChild > 1 && parsed[0].tagName == TEXT_NODE){
                 model.type = 'text';
                 model.content = parsed[0].content;
               }else
