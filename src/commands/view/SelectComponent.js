@@ -55,7 +55,7 @@ define(function() {
 						.on('mouseout', this.onOut)
 						.on('click', this.onClick);
 				this.selEl = this.$el.find('*');
-				$(document).on('keypress', this.onKeyPress);
+				$(document).on('keydown', this.onKeyPress);
 			},
 
 			/**
@@ -235,7 +235,7 @@ define(function() {
 				this.editorModel.set('selectedComponent',null);
 				key.unbind('⌘+c, ctrl+c');
 				key.unbind('⌘+v, ctrl+v');
-				$(document).off('keypress', this.onKeyPress);
+				$(document).off('keydown', this.onKeyPress);
 			}
 		};
 });

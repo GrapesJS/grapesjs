@@ -109,11 +109,22 @@
 				</div>
 			</section>
 
-			<footer>
-
+			<footer class="footer-under">
+				<div class="container-width">
+					<div>List</div>
+				</div>
+				<div class="copyright">
+					<div class="container-width">Copyright</div>
+				</div>
 			</footer>
 
 			<style>
+				.footer-under{
+					background-color: #312833;
+					padding-bottom: 100px;
+					padding-top: 100px;
+				}
+
 				.clearfix{ clear:both}
 				.header-banner{
 					background: url("./img/bg-gr-v.png") repeat scroll left top, rgba(0, 0, 0, 0) url("http://www.freewhd.com/wp-content/uploads/2014/01/work-desk-14949.jpg") no-repeat scroll center center;
@@ -204,6 +215,7 @@
 					border-radius: 2px;
 					transition: all 0.5s ease;
 					font-weight: 100;
+					overflow: hidden;
 				}
 				.card:hover{
 					margin-top: -5px;
@@ -216,7 +228,8 @@
   				background-position:center center;
 				}
 				.card-body{
-					padding: 10px;
+					padding: 15px;
+					color: #555;
 				}
 				.card-title{
 					font-size: 1.4em;
@@ -229,6 +242,7 @@
 				}
 				.card-desc{
 					font-size: 0.85rem;
+					line-height: 17px;
 				}
 				.am-sect{
 					padding-top: 100px;
