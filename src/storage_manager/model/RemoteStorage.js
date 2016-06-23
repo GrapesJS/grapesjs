@@ -13,7 +13,9 @@ define(['backbone'],
 				onComplete: function(){},
 			},
 
-			/** @inheritdoc */
+			/**
+			 * @private
+			 */
 			store: function(data) {
 				var fd = {},
 				params = this.get('params');
@@ -35,7 +37,9 @@ define(['backbone'],
 				});
 			},
 
-			/** @inheritdoc */
+			/**
+			 * @private
+			 */
 			load: function(keys){
 				var result = {},
 				fd = {},

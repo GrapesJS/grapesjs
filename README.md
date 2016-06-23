@@ -12,7 +12,7 @@ Mainly GrapesJS was designed to be used inside a [CMS] to speed up a creation of
 <p align="center"><img src="http://grapesjs.com/img/gjs-concept.png" alt="GrapesJS - Style Manager" height="400" align="center"/></p>
 <br/>
 
-Generally any 'template system', that you find in various applications like CMS, is composed by the **structure** (HTML), **style** (CSS) and **variables**, which are then replaced with other templates and contents on server-side and rendered on client.
+Generally any 'template system', that you'd find in various applications like CMS, is composed by the **structure** (HTML), **style** (CSS) and **variables**, which are then replaced with other templates and contents on server-side and rendered on client.
 
 This demo shows an example of what is possible to achieve: http://grapesjs.com/demo.html
 
@@ -116,8 +116,7 @@ You could also grab the content directly from the element with `fromElement` pro
 </script>
 ```
 
-Unfortunately with the configuration above you wouldn't see a lot. This because GrapesJS itself is empty, adding panels, buttons and other stuff will be your job (actually it's not empty but you need buttons to show them up).
-The section below will explain some basic configurations but for a more practical example I suggest to look up the code inside this demo: http://grapesjs.com/demo.html
+For more practical example I suggest to look up the code inside this demo: http://grapesjs.com/demo.html
 
 
 ## Configuration

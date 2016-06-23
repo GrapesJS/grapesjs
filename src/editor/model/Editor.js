@@ -77,6 +77,7 @@ define([
 			 * Initialize editor model and set editor instance
 			 * @param {Editor} editor Editor instance
 			 * @return {this}
+			 * @private
 			 */
 			init: function(editor){
 				this.set('Editor', editor);
@@ -84,6 +85,7 @@ define([
 
 			/**
 			 * Initialize Parser
+			 * @private
 			 * */
 			initParser: function() {
 				this.Parser = new Parser();
@@ -143,6 +145,7 @@ define([
 			/**
 			 * Listen for new rules
 			 * @param {Object} collection
+			 * @private
 			 */
 			listenRules: function(collection) {
 				this.stopListening(collection, 'add remove', this.listenRule);
@@ -155,6 +158,7 @@ define([
 			/**
 			 * Listen for rule changes
 			 * @param {Object} model
+			 * @private
 			 */
 			listenRule: function(model) {
 				this.stopListening(model, 'change:style', this.ruleUpdated);
@@ -166,6 +170,7 @@ define([
 			 * @param	{Object}	model
 			 * @param	{Mixed}		val	Value
 			 * @param	{Object}	opt	Options
+			 * @private
 			 * */
 			ruleUpdated: function(model, val, opt) {
 				var count = this.get('changesCount') + 1,
@@ -413,6 +418,7 @@ define([
 			 * @param	{Object}	model
 			 * @param	{Mixed}		val	Value
 			 * @param	{Object}	opt	Options
+			 * @private
 			 * */
 			componentsUpdated: function(model, val, opt){
 				var updatedCount = this.get('changesCount') + 1,
@@ -433,7 +439,7 @@ define([
 			 * @param 	{Object} 	Model
 			 * @param 	{Mixed} 	New value
 			 * @param 	{Object} 	Options
-			 *
+			 * @private
 			 * */
 			componentSelected: function(model, val, options){
 				if(!this.get('selectedComponent'))
@@ -444,8 +450,8 @@ define([
 
 			/**
 			 * Load components from storage
-			 *
 			 * @return	{Object}
+			 * @private
 			 * */
 			loadComponents: function() {
 				var comps = '';
@@ -463,8 +469,7 @@ define([
 
 			/**
 			 * Save components to storage
-			 *
-			 * @return void
+			 * @private
 			 * */
 			storeComponents: function() {
 				this.store();
@@ -502,7 +507,7 @@ define([
 			 * @param	{Object}	model
 			 * @param	{Mixed}		val	Value
 			 * @param	{Object}	opt	Options
-			 *
+			 * @private
 			 * */
 			updateComponents: function(model, val, opt) {
 				var comps	= model.get('components'),
@@ -533,6 +538,7 @@ define([
 			/**
 			 * Init stuff like storage for already existing elements
 			 * @param {Object}	model
+			 * @private
 			 */
 			initChildrenComp: function(model) {
 					var comps	= model.get('components');
@@ -551,7 +557,7 @@ define([
 			 * @param	{Object}	model
 			 * @param	{Mixed}		val	Value
 			 * @param	{Object}	opt	Options
-			 *
+			 * @private
 			 * */
 			rmComponents: function(model, val, opt){
 				var avSt	= opt ? opt.avoidStore : 0;
@@ -563,6 +569,7 @@ define([
 			/**
 			 * Returns model of the selected component
 			 * @return {Component|null}
+			 * @private
 			 */
 			getSelected: function(){
 				return this.get('selectedComponent');
@@ -572,6 +579,7 @@ define([
 			 * Set components inside editor's canvas. This method overrides actual components
 			 * @param {Object|string} components HTML string or components model
 			 * @return {this}
+			 * @private
 			 */
 			setComponents: function(components){
 				return this.Components.setComponents(components);
@@ -580,6 +588,7 @@ define([
 			/**
 			 * Returns components model from the editor's canvas
 			 * @return {Components}
+			 * @private
 			 */
 			getComponents: function(){
 				var cmp = this.Components;
@@ -596,6 +605,7 @@ define([
 			 * Set style inside editor's canvas. This method overrides actual style
 			 * @param {Object|string} style CSS string or style model
 			 * @return {this}
+			 * @private
 			 */
 			setStyle: function(style){
 				var rules = this.CssComposer.getRules();
@@ -608,6 +618,7 @@ define([
 			/**
 			 * Returns rules/style model from the editor's canvas
 			 * @return {Rules}
+			 * @private
 			 */
 			getStyle: function(){
 				return this.CssComposer.getRules();
@@ -616,6 +627,7 @@ define([
 			/**
 			 * Returns HTML built inside canvas
 			 * @return {string} HTML string
+			 * @private
 			 */
 			getHtml: function(){
 				var cmp = this.Components;
@@ -631,6 +643,7 @@ define([
 			/**
 			 * Returns CSS built inside canvas
 			 * @return {string} CSS string
+			 * @private
 			 */
 			getCss: function(){
 				var cmp = this.Components;
@@ -647,6 +660,7 @@ define([
 			/**
 			 * Store data to the current storage
 			 * @return {Object} Stored data
+			 * @private
 			 */
 			store: function(){
 				var sm = this.StorageManager;
@@ -676,6 +690,7 @@ define([
 			/**
 			 * Load data from the current storage
 			 * @return {Object} Loaded data
+			 * @private
 			 */
 			load: function(){
 				var result = this.getCacheLoad(1);

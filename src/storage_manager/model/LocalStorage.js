@@ -7,7 +7,9 @@ define(['backbone'],
 				checkLocal: true,
 			},
 
-			/** @inheritdoc */
+			/**
+			* @private
+			*/
 			store: function(data) {
 				this.checkStorageEnvironment();
 
@@ -15,7 +17,9 @@ define(['backbone'],
 					localStorage.setItem(key, data[key]);
 			},
 
-			/** @inheritdoc */
+			/**
+			 * @private
+			 */
 			load: function(keys){
 				this.checkStorageEnvironment();
 				var result = {};
@@ -29,7 +33,9 @@ define(['backbone'],
 				return result;
 			},
 
-			/** @inheritdoc */
+			/**
+			 * @private
+			 */
 			remove: function(keys) {
 				this.checkStorageEnvironment();
 
@@ -39,6 +45,7 @@ define(['backbone'],
 
 			/**
 			 * Check storage environment
+			 * @private
 			 * */
 			checkStorageEnvironment: function() {
 				if(this.get('checkLocal') && !localStorage)

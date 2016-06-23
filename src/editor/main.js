@@ -23,6 +23,26 @@
  *
  * @module Editor
  * @param {Object} config Configurations
+ * @param {string} config.container='' Selector for the editor container, eg. '#myEditor'
+ * @param {string|Array<Object>} [config.components=''] HTML string or object of components
+ * @param {string|Array<Object>} [config.style=''] CSS string or object of rules
+ * @param {Boolean} [config.fromElement=false] If true, will fetch HTML and CSS from selected container
+ * @param {Boolean} [config.copyPaste=true] Enable/Disable the possibility to copy(ctrl + c) & paste(ctrl + v) components
+ * @param {Boolean} [config.undoManager=true] Enable/Disable undo manager
+ * @param {Boolean} [config.autorender=true] If true renders editor on init
+ * @param {string} [config.height='900px'] Height for the editor container
+ * @param {string} [config.width='100%'] Width for the editor container
+ * @param {Object} [config.storage={}] Storage manager configuration, see the relative documentation
+ * @param {Object} [config.styleManager={}] Style manager configuration, see the relative documentation
+ * @param {Object} [config.commands={}] Commands configuration, see the relative documentation
+ * @param {Object} [config.domComponents={}] Components configuration, see the relative documentation
+ * @param {Object} [config.panels={}] Panels configuration, see the relative documentation
+ * @example
+ * var editor = grapesjs.init({
+ * 	container : '#gjs',
+ * 	components: '<div class="txt-red">Hello world!</div>',
+ * 	style: '.txt-red{color: red}',
+ * });
  */
 define(function (require){
 

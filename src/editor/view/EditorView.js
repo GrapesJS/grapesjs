@@ -1,8 +1,6 @@
 define(['backbone'],
 function(Backbone){
-	/**
-	 * @class EditorView
-	 * */
+
 	return Backbone.View.extend({
 
 		initialize: function() {
