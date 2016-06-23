@@ -363,6 +363,7 @@ define(['backbone'],
                 break;
               case 'transition-property':
                 obj.list = [
+                    { value: 'all'},
                     { value: 'width'},
                     { value : 'height'},
                     { value : 'background-color'},

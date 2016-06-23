@@ -99,9 +99,12 @@ define(['backbone','./Components', 'ClassManager/model/ClassTags'],
 			 * */
 			getName: function(){
 				if(!this.name){
-					var id		= this.cid.replace(/\D/g,''),
-						type	= this.get('type');
-					this.name 	= type.charAt(0).toUpperCase() + type.slice(1) + 'Box' + id;
+					var id = this.cid.replace(/\D/g,''),
+						type = this.get('type');
+					var tag = this.get('tagName');
+					tag = tag == 'div' ? 'box' : tag;
+					tag = type ? type : tag;
+					this.name 	= tag.charAt(0).toUpperCase() + tag.slice(1) + ' ' + id;
 				}
 				return this.name;
 			},

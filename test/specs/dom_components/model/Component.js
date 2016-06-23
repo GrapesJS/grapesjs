@@ -31,13 +31,13 @@ define(['DomComponents/model/Component',
 
             it('Has expected name', function() {
               this.obj.cid = 'c999';
-              this.obj.getName().should.equal('Box999');
+              this.obj.getName().should.equal('Box 999');
             });
 
             it('Has expected name 2', function() {
               this.obj.cid = 'c999';
               this.obj.set('type','testType');
-              this.obj.getName().should.equal('TestTypeBox999');
+              this.obj.getName().should.equal('TestType 999');
             });
 
         });
