@@ -100,6 +100,7 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 			if(this.model.get('detached')){
 				var valist = propView.componentValue.split(',');
 				result = valist[this.model.get('stackIndex')];
+				result = result ? result.trim() : result;
 			}else{
 				var aStack	= this.getStackValues();
 				var strVar	= aStack[this.model.get('stackIndex')];

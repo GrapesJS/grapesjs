@@ -111,9 +111,17 @@
 			<footer class="footer-under">
 				<div class="container-width">
 					<div>List</div>
+					<div class="form-sub">
+						<input name="name" class="sub-input"/>
+						<input name="email" class="sub-input"/>
+					</div>
 				</div>
 				<div class="copyright">
-					<div class="container-width">Copyright</div>
+					<div class="container-width">
+						<div class="made-with">made with GrapesJS</div>
+						<div class="foot-social-btns">facebook twitter linkedin mail</div>
+						<div class="clearfix"></div>
+					</div>
 				</div>
 			</footer>
 
@@ -122,16 +130,44 @@
 					background-color: #312833;
 					padding-bottom: 100px;
 					padding-top: 100px;
+					height: 500px;
+					color:#eee;
+					position: relative;
+					font-weight: 100;
+				}
+				.copyright {
+				  background-color: rgba(0, 0, 0, 0.15);
+				  color: rgba(238, 238, 238, 0.5);
+				  bottom: 0;
+				  padding: 1em 0;
+				  position: absolute;
+				  width: 100%;
+				  font-size: 0.75em;
+				}
+				.made-with{
+					float: left;
+					width: 50%;
+					padding: 5px 0;
+				}
+				.foot-social-btns{
+					float: right;
+					width: 50%;
+					text-align: right;
+					padding: 5px 0;
 				}
 
 				.clearfix{ clear:both}
 				.header-banner{
-					background: url("./img/bg-gr-v.png") repeat scroll left top, rgba(0, 0, 0, 0) url("http://www.freewhd.com/wp-content/uploads/2014/01/work-desk-14949.jpg") no-repeat scroll center center;
 					padding-top: 35px;
 					padding-bottom: 100px;
 					color: #ffffff;
 					font-family: Helvetica, serif;
 					font-weight: 100;
+					background-image:url("./img/bg-gr-v.png"), url("./img/work-desk.jpg");
+					background-attachment:scroll, scroll;
+					background-position:left top, center center;
+					background-repeat:repeat-y, no-repeat;
+					background-size: contain, cover;
 				}
 				.container-width{
 					width: 100%;
@@ -190,10 +226,15 @@
 				  background-color:#d983a6;
 				  border-radius:5px;
 				  transition: all 0.5s ease;
+				  cursor: pointer;
 				}
 				.lead-btn:hover{
 				  background-color:#ffffff;
 				  color:#4c114e;
+				}
+				.lead-btn:active{
+				  background-color:#4d114f;
+				  color:#fff;
 				}
 				.flex-sect{
 					background-color: #fafafa;
@@ -340,7 +381,7 @@
 					background-color:rgba(0, 0, 0, 0.1);
 					font-size: 35px;
 					text-align: center;
-					padding: 20px 0;
+					padding: 35px 0;
 				}
 				.pc-regular{
 					background-color: #da78a0;
