@@ -128,7 +128,7 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 			//  to fetch them later
 			var valObj = {};
 			this.model.get('properties').each(function(prop){
-				var v		= prop.getValue();
+				var v		= prop.getValue(),
 					func	= prop.get('functionName');
 				if(func)
 					v =  func + '(' + v + ')';
@@ -211,6 +211,7 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 
 		/**
 		 * Returns array suitale for layers from target style
+		 * Only for detached stacks
 		 * @return {Array<string>}
 		 */
 		getLayersFromTarget: function(){
@@ -225,10 +226,14 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 					var list =  style.split(',');
 					for(var i = 0, len = list.length; i < len; i++){
 						var val = list[i].trim();
-						if(arr[i])
-							arr[i] += ' ' + val;
-						else
-							arr[i] = val;
+
+						if(arr[i]){
+							arr[i][prop.get('property')] = val;
+						}else{
+							var vals = {};
+							vals[prop.get('property')] = val;
+							arr[i] = vals;
+						}
 					}
 				}
 			});
@@ -241,7 +246,9 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 		refreshLayers: function(){
 			var n = [];
 			var a = [];
+			var fieldName = 'value';
 			if(this.model.get('detached')){
+				fieldName = 'values';
 				a = this.getLayersFromTarget();
 			}else{
 				var v	= this.getComponentValue();
@@ -257,7 +264,11 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 					a = v.split(', ');
 				}
 			}
-			_.each(a,function(e){ n.push({ value: e});},this);
+			_.each(a,function(e){
+				var o = {};
+				o[fieldName] = e;
+				n.push(o);
+			},this);
 			this.$props.detach();
 			var layers = this.getLayers();
 			layers.reset();

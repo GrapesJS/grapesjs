@@ -290,8 +290,20 @@ define([path + 'PropertyStackView', 'StyleManager/model/Property', 'DomComponent
 
               it('Returns correctly layers array from target', function() {
                 component.set('style', compStyle);
-                var result = ['1px A W', '20px B X', '30px C Y'];
-                view.getLayersFromTarget().should.have.same.members(result);
+                var result = [{
+                  subprop1: '1px',
+                  subprop2: 'A',
+                  subprop3: 'W',
+                },{
+                  subprop1: '20px',
+                  subprop2: 'B',
+                  subprop3: 'X',
+                },{
+                  subprop1: '30px',
+                  subprop2: 'C',
+                  subprop3: 'Y',
+                }];
+                view.getLayersFromTarget().should.deep.equal(result);
               });
 
               it('Update target on detached value change', function() {
@@ -310,9 +322,21 @@ define([path + 'PropertyStackView', 'StyleManager/model/Property', 'DomComponent
                 view.propTarget.trigger('update');
                 var layers = view.getLayers();
                 layers.length.should.equal(3);
-                layers.at(0).get('value').should.equal('1px A W');
-                layers.at(1).get('value').should.equal('20px B X');
-                layers.at(2).get('value').should.equal('30px C Y');
+                layers.at(0).get('values').should.deep.equal({
+                  subprop1: '1px',
+                  subprop2: 'A',
+                  subprop3: 'W',
+                });
+                layers.at(1).get('values').should.deep.equal({
+                  subprop1: '20px',
+                  subprop2: 'B',
+                  subprop3: 'X',
+                });
+                layers.at(2).get('values').should.deep.equal({
+                  subprop1: '30px',
+                  subprop2: 'C',
+                  subprop3: 'Y',
+                });
               });
 
             });
