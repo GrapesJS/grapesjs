@@ -6,6 +6,8 @@
     <link rel="stylesheet" href="stylesheets/grapes.min.css">
     <script src="http://code.jquery.com/jquery-2.2.0.min.js"></script>
     <style type="text/css">
+        body, html{ height: 100%; margin: 0; }
+         #wte-pn-options2.wte-pn-panel{box-shadow: none;}
         .icon-add-comp::before, .icon-comp100::before,.icon-comp50::before,.icon-comp30::before,.icon-rm::before{ content: '';}
         .icon-add-comp {
           background: url("./img/icon-sq-a.png") no-repeat center;
@@ -83,190 +85,578 @@
     </style>
   </head>
   <body>
-    <div id="wte-app"></div>
+    <div id="gjs" style="height:0px; overflow:hidden">
+
+      <header class="header-banner">
+        <div class="container-width">
+          <div class="logo-container">
+            <div class="logo">GrapesJS</div>
+          </div>
+          <nav class="navbar">
+            <div class="menu-item">BUILDER</div>
+            <div class="menu-item">TEMPLATE</div>
+            <div class="menu-item">WEB</div>
+          </nav>
+          <div class="clearfix"></div>
+          <div class="lead-title">Build your templates without coding</div>
+          <div class="sub-lead-title">All text blocks could be edited easily with double clicking on it. You can create new text blocks with the command from the left panel</div>
+          <div class="lead-btn">Hover me</div>
+        </div>
+      </header>
+
+      <section class="flex-sect">
+        <div class="container-width">
+          <div class="flex-title">Flex is the new black</div>
+          <div class="flex-desc">With flexbox system you're able to build complex layouts easily and with free responsivity</div>
+          <div class="cards">
+            <div class="card">
+              <div class="card-header"></div>
+              <div class="card-body">
+                <div class="card-title">Title one</div>
+                <div class="card-sub-title">Subtitle one</div>
+                <div class="card-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header ch2"></div>
+              <div class="card-body">
+                <div class="card-title">Title two</div>
+                <div class="card-sub-title">Subtitle two</div>
+                <div class="card-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header ch3"></div>
+              <div class="card-body">
+                <div class="card-title">Title three</div>
+                <div class="card-sub-title">Subtitle three</div>
+                <div class="card-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header ch4"></div>
+              <div class="card-body">
+                <div class="card-title">Title four</div>
+                <div class="card-sub-title">Subtitle four</div>
+                <div class="card-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header ch5"></div>
+              <div class="card-body">
+                <div class="card-title">Title five</div>
+                <div class="card-sub-title">Subtitle five</div>
+                <div class="card-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header ch6"></div>
+              <div class="card-body">
+                <div class="card-title">Title six</div>
+                <div class="card-sub-title">Subtitle six</div>
+                <div class="card-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="am-sect">
+        <div class="container-width">
+          <div class="am-container">
+            <img class="img-phone" onmousedown="return false" src="./img/phone-app.png"/>
+            <div class="am-content">
+              <div class="am-pre">ASSET MANAGER</div>
+              <div class="am-title">Manage your images with Asset Manager</div>
+              <div class="am-desc">You can create image blocks with the command from the left panel and edit them with double click</div>
+              <div class="am-post">Image uploading is not allowed in this demo</div>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="blk-sect">
+        <div class="container-width">
+          <div class="blk-title">Blocks</div>
+          <div class="blk-desc">Each element in HTML page could be seen as a block. On the left panel you could find different kind of blocks that you can create, move and style</div>
+
+          <div class="price-cards">
+            <div class="price-card-cont">
+              <div class="price-card">
+                <div class="pc-title">Starter</div>
+                <div class="pc-desc">Some random list</div>
+                <div class="pc-feature odd-feat">+ Starter feature 1</div>
+                <div class="pc-feature">+ Starter feature 2</div>
+                <div class="pc-feature odd-feat">+ Starter feature 3</div>
+                <div class="pc-feature">+ Starter feature 4</div>
+                <div class="pc-amount odd-feat">$ 9,90/mo</div>
+              </div>
+            </div>
+            <div class="price-card-cont">
+              <div class="price-card pc-regular">
+                <div class="pc-title">Regular</div>
+                <div class="pc-desc">Some random list</div>
+                <div class="pc-feature odd-feat">+ Regular feature 1</div>
+                <div class="pc-feature">+ Regular feature 2</div>
+                <div class="pc-feature odd-feat">+ Regular feature 3</div>
+                <div class="pc-feature">+ Regular feature 4</div>
+                <div class="pc-amount odd-feat">$ 19,90/mo</div>
+              </div>
+            </div>
+            <div class="price-card-cont">
+              <div class="price-card pc-enterprise">
+                <div class="pc-title">Enterprise</div>
+                <div class="pc-desc">Some random list</div>
+                <div class="pc-feature odd-feat">+ Enterprise feature 1</div>
+                <div class="pc-feature">+ Enterprise feature 2</div>
+                <div class="pc-feature odd-feat">+ Enterprise feature 3</div>
+                <div class="pc-feature">+ Enterprise feature 4</div>
+                <div class="pc-amount odd-feat">$ 29,90/mo</div>
+              </div>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+
+        </div>
+      </section>
+
+      <footer class="footer-under">
+        <div class="container-width">
+          <div class="foot-lists">
+            <div class="foot-list">
+              <div class="foot-list-title">About us</div>
+              <div class="foot-list-item">Contact</div>
+              <div class="foot-list-item">Events</div>
+              <div class="foot-list-item">Company</div>
+              <div class="foot-list-item">Jobs</div>
+              <div class="foot-list-item">Blog</div>
+            </div>
+            <div class="foot-list">
+              <div class="foot-list-title">Services</div>
+              <div class="foot-list-item">Education</div>
+              <div class="foot-list-item">Partner</div>
+              <div class="foot-list-item">Community</div>
+              <div class="foot-list-item">Forum</div>
+              <div class="foot-list-item">Download</div>
+              <div class="foot-list-item">Upgrade</div>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+          <div class="form-sub">
+            <div class="foot-form-cont">
+              <div class="foot-form-title">Subscribe</div>
+              <div class="foot-form-desc">Subscribe to our newsletter to receive exclusive offers and the latest news</div>
+              <input name="name" class="sub-input" placeholder="Name" />
+              <input name="email" class="sub-input" placeholder="Email"/>
+              <button class="sub-btn" type="button">Submit</button>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+        <div class="copyright">
+          <div class="container-width">
+            <div class="made-with">
+              made with GrapesJS
+            </div>
+            <div class="foot-social-btns">facebook twitter linkedin mail</div>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </footer>
+
+      <style>
+        .footer-under{
+          background-color: #312833;
+          padding-bottom: 100px;
+          padding-top: 100px;
+          height: 500px;
+          color:#eee;
+          position: relative;
+          font-weight: 100;
+        }
+        .led{
+          border-radius: 100%;
+          width: 10px;
+          height: 10px;
+          background-color: rgba(0, 0, 0, 0.15);
+          float: left;
+          margin: 2px;
+          transition: all 5s ease;
+        }
+        .led:hover{
+          background-color: #c29fca;/* #eac229 */
+          box-shadow: 0 0 5px #9d7aa5, 0 0 10px #e6c3ee;/* 0 0 10px 0 #efc111 */
+          transition: all 0s ease;
+        }
+        .copyright {
+          background-color: rgba(0, 0, 0, 0.15);
+          color: rgba(238, 238, 238, 0.5);
+          bottom: 0;
+          padding: 1em 0;
+          position: absolute;
+          width: 100%;
+          font-size: 0.75em;
+        }
+        .made-with{
+          float: left;
+          width: 50%;
+          padding: 5px 0;
+        }
+        .foot-social-btns{
+          display: none;
+          float: right;
+          width: 50%;
+          text-align: right;
+          padding: 5px 0;
+        }
+        .foot-list {
+          float: left;
+          width: 200px;
+        }
+        .foot-list-title {
+          font-weight: 400;
+          margin-bottom: 10px;
+          padding: 0.5em 0;
+        }
+        .foot-list-item {
+          color: rgba(238, 238, 238, 0.8);
+          font-size: 0.8em;
+          padding: 0.5em 0;
+        }
+        .foot-list-item:hover {
+          color: rgba(238, 238, 238, 1);
+        }
+        .foot-lists, .form-sub{
+          float: left;
+          width: 50%;
+        }
+        .foot-form-cont{
+          width: 300px;
+          float: right;
+        }
+        .foot-form-title{
+          color: rgba(255,255,255,0.75);
+          font-weight: 400;
+          margin-bottom: 10px;
+          padding: 0.5em 0;
+          text-align: right;
+          font-size: 2em;
+        }
+        .foot-form-desc{
+          font-size: 0.8em;
+          color: rgba(255,255,255,0.55);
+          line-height: 20px;
+          text-align: right;
+          margin-bottom: 15px;
+        }
+        .sub-input{
+          width: 100%;
+          margin-bottom: 15px;
+          padding: 7px 10px;
+          border-radius: 2px;
+          color:#fff;
+          background-color: #554c57;
+          border: none;
+        }
+        .sub-btn{
+          width: 100%;
+          margin-bottom: 15px;
+          background-color: #785580;
+          border: none;
+          color:#fff;
+          border-radius: 2px;
+          padding: 7px 10px;
+          font-size: 1em;
+          cursor: pointer;
+        }
+        .sub-btn:hover{
+          background-color: #91699a;
+        }
+        .sub-btn:active{
+          background-color: #573f5c;
+        }
+
+
+        .clearfix{ clear:both}
+        .header-banner{
+          padding-top: 35px;
+          padding-bottom: 100px;
+          color: #ffffff;
+          font-family: Helvetica, serif;
+          font-weight: 100;
+          background-image:url("./img/bg-gr-v.png"), url("./img/work-desk.jpg");
+          background-attachment:scroll, scroll;
+          background-position:left top, center center;
+          background-repeat:repeat-y, no-repeat;
+          background-size: contain, cover;
+        }
+        .container-width{
+          width: 100%;
+          max-width: 980px;
+          margin: 0 auto;
+        }
+        .logo-container{
+          float: left;
+          width: 50%;
+        }
+        .logo{
+          background-color: #fff;
+          border-radius: 5px;
+          width: 130px;
+          padding: 10px;
+          min-height: 50px;
+          text-align: center;
+          line-height: 30px;
+          color: #4d114f;
+          font-size: 23px;
+        }
+        .navbar{
+          float: right;
+          width: 50%;
+        }
+        .menu-item{
+          float:right;
+          font-size: 15px;
+          color:#eee;
+          width: 130px;
+          padding: 10px;
+          min-height: 50px;
+          text-align: center;
+          line-height: 30px;
+          font-weight: 400;
+        }
+        .lead-title{
+          margin: 150px 0 30px 0;
+          font-size: 40px;
+        }
+        .sub-lead-title{
+          width: 650px;
+          line-height:30px;
+          margin-bottom:30px;
+          color: #c6c6c6;
+        }
+        .lead-btn{
+          margin-top: 15px;
+          padding:10px;
+          width:190px;
+          min-height:50px;
+          font-size:20px;
+          text-align:center;
+          letter-spacing:3px;
+          line-height:30px;
+          background-color:#d983a6;
+          border-radius:5px;
+          transition: all 0.5s ease;
+          cursor: pointer;
+        }
+        .lead-btn:hover{
+          background-color:#ffffff;
+          color:#4c114e;
+        }
+        .lead-btn:active{
+          background-color:#4d114f;
+          color:#fff;
+        }
+        .flex-sect{
+          background-color: #fafafa;
+          padding: 100px 0;
+        }
+        .flex-title{
+          margin-bottom: 15px;
+          font-size: 2em;
+          text-align: center;
+          font-weight: 700;
+          color:#555;
+          padding: 5px;
+        }
+        .flex-desc{
+          margin-bottom: 55px;
+          font-size: 1em;
+          color: rgba(0, 0, 0, 0.5);
+          text-align: center;
+          padding: 5px;
+        }
+        .cards{
+          padding: 20px 0;
+          display: flex;
+          justify-content: space-around;
+          flex-flow: wrap;
+        }
+        .card{
+          background-color: white;
+          height: 300px;
+          width:300px;
+          margin-bottom:30px;
+          box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+          border-radius: 2px;
+          transition: all 0.5s ease;
+          font-weight: 100;
+          overflow: hidden;
+        }
+        .card:hover{
+          margin-top: -5px;
+          box-shadow: 0 20px 30px 0 rgba(0, 0, 0, 0.2);
+        }
+        .card-header{
+          height: 155px;
+          background-image:url("http://placehold.it/350x250/78c5d6/fff/image1.jpg");
+          background-size:cover;
+          background-position:center center;
+        }
+        .card-header.ch2{
+          background-image:url("http://placehold.it/350x250/459ba8/fff/image2.jpg");
+        }
+        .card-header.ch3{
+          background-image:url("http://placehold.it/350x250/79c267/fff/image3.jpg");
+        }
+        .card-header.ch4{
+          background-image:url("http://placehold.it/350x250/c5d647/fff/image4.jpg");
+        }
+        .card-header.ch5{
+          background-image:url("http://placehold.it/350x250/f28c33/fff/image5.jpg");
+        }
+        .card-header.ch6{
+          background-image:url("http://placehold.it/350x250/e868a2/fff/image6.jpg");
+        }
+        .card-body{
+          padding: 15px;
+          color: #555;
+        }
+        .card-title{
+          font-size: 1.4em;
+          margin-bottom: 5px;
+        }
+        .card-sub-title{
+          color: #b3b3b3;
+          font-size: 1em;
+          margin-bottom: 15px;
+        }
+        .card-desc{
+          font-size: 0.85rem;
+          line-height: 17px;
+        }
+        .am-sect{
+          padding-top: 100px;
+          padding-bottom: 100px;
+        }
+        .img-phone{
+          float: left;
+        }
+        /*
+        .am-container{
+          perspective: 1000px;
+        }*/
+        .am-content{
+          float:left;
+          margin:150px 0px 0px 100px;
+          padding:7px;
+          width: 490px;
+          color: #444;
+          font-weight: 100;
+          /*transform: rotateX(0deg) rotateY(-20deg) rotateZ(0deg) scaleX(1) scaleY(1) scaleZ(1);*/
+        }
+        .am-pre{
+          padding:7px;
+          color:#b1b1b1;
+          font-size:15px;
+        }
+        .am-title{
+          padding:7px;
+          font-size:25px;
+          font-weight: 400;
+        }
+        .am-desc{
+          padding:7px;
+          font-size:17px;
+          line-height:25px;
+        }
+        .am-post{
+          padding:7px;
+          line-height:25px;
+          font-size:13px;
+        }
+        .blk-sect{
+          padding-top: 100px;
+          padding-bottom: 100px;
+          background-color: #222222;
+        }
+        .blk-title{
+          color:#fff;
+          font-size:25px;
+          text-align:center;
+          margin-bottom: 15px;
+        }
+        .blk-desc{
+          color:#b1b1b1;
+          font-size:15px;
+          text-align:center;
+          width:700px;
+          margin:0 auto;
+          font-weight:100;
+        }
+        .price-cards{
+          margin-top: 70px;
+        }
+        .price-card-cont{
+          width:33.333%;
+          padding: 7px;
+          float:left;
+        }
+        .price-card{
+          margin:0 auto;
+          min-height:350px;
+          background-color:#d983a6;
+          border-radius:5px;
+          font-weight: 100;
+          color: #fff;
+          width: 90%;
+        }
+        .pc-title{
+          font-weight:100;
+          letter-spacing:3px;
+          text-align:center;
+          font-size:25px;
+          background-color:rgba(0, 0, 0, 0.1);
+          padding:20px;
+        }
+        .pc-desc{
+          padding: 75px 0;
+          text-align: center;
+        }
+        .pc-feature{
+          color:rgba(255,255,255,0.5);
+          background-color:rgba(0, 0, 0, 0.1);
+          letter-spacing:2px;
+          font-size:15px;
+          padding:10px 20px;
+        }
+        .pc-feature:nth-of-type(2n){
+          background-color:transparent;
+        }
+        .pc-amount{
+          background-color:rgba(0, 0, 0, 0.1);
+          font-size: 35px;
+          text-align: center;
+          padding: 35px 0;
+        }
+        .pc-regular{
+          background-color: #da78a0;
+        }
+        .pc-enterprise{
+          background-color: #d66a96;
+        }
+        pc-regular
+      </style>
+    </div>
     <script src="js/grapes.min.js"></script>
 
     <script type="text/javascript">
-      var gr  = new GrapesJS(
-
-    {
-
-      container : '#wte-app',
-
-      storageType: 'local',
-
-      remoteStorage: {
-        urlStore  : 'http://test.localhost/wte/index.php',
-        urlLoad   : 'http://test.localhost/wte/read.php',
-        paramsStore : { type:'homeTemplate',},
-        paramsLoad  : { type:'homeTemplate',},
-      },
-
-      components: {
-        defaults    : [
-          {
-            style: {'width':'100%', 'min-height':'550px', 'background':'url("./img/bg-gr-v.png") repeat left top scroll, url("http://www.freewhd.com/wp-content/uploads/2014/01/work-desk-14949.jpg") no-repeat center center scroll'},
-            components: [
-              {
-                style: {'width':'90%', 'max-width':'1100px', 'min-height':'75px', 'padding':'7px 7px 7px 7px', 'margin':'0 auto'},
-                components: [
-                  {
-                    style: {'width':'100%','padding':'25px 7px 7px 7px'},
-                    components: [
-                      {
-                        style: {'width':'50%','min-height':'75px','padding':'7px 7px 7px 7px','float':'left'},
-                        components:[
-                          { type: 'text', content: 'GrapesJS', style:{'padding':'10px 10px 10px 10px', 'width':'130px', 'min-height':'50px', 'background-color':'#ffffff', 'border-radius':'5px', 'color':'#4d114f', 'font-size':'23px', 'text-align':'center', 'line-height':'30px'}}
-                        ]
-                      },
-                      {
-                        style: {'width':'50%','min-height':'75px','padding':'7px 7px 7px 7px','float':'left'},
-                        components: [
-                          {
-                            style: {'float':'right', 'padding':'7px 7px 7px 7px'},
-                            components: [
-                              { type: 'text', content: 'WEB', style:{'padding': '10px 10px 10px 10px', 'width': '130px', 'min-height': '50px', 'float': 'left', 'color': '#ffffff', 'text-align': 'center', 'font-size': '15px', 'line-height':'30px'} },
-                              { type: 'text', content: 'TEMPLATE', style:{'padding': '10px 10px 10px 10px', 'width': '130px', 'min-height': '50px', 'float': 'left', 'color': '#ffffff', 'text-align': 'center', 'font-size': '15px', 'line-height':'30px'} },
-                              { type: 'text', content: 'EDITOR', style:{'padding': '10px 10px 10px 10px', 'width': '130px', 'min-height': '50px', 'float': 'left', 'color': '#ffffff', 'text-align': 'center', 'font-size': '15px', 'line-height':'30px'} },
-                            ]
-                          },
-                        ]
-                      },
-                      {style: {'clear':'both'}}
-                    ]
-                  },
-                  {
-                    type: 'text',
-                    content: 'Build your templates without coding',
-                    style: { 'padding': '7px 7px 7px 7px', 'width':'670px', 'min-height':'57px', 'font-size':'40px', 'color':'#ffffff', 'font-family':'Helvetica, serif', 'font-weight':100, 'margin':'100px 0px 0px 0px'}
-                  },
-                  {
-                    type: 'text',
-                    content: 'All text blocks could be edited easily with double clicking on it. You can create new text blocks with the command from the left panel',
-                    style: { 'padding':'10px 10px 10px 10px', 'width':'599px', 'min-height':'80px', 'color':'#c6c6c6', 'font-family':'Helvetica, serif', 'font-weight':100, 'line-height':'26px'}
-                  },
-                  {
-                    type: 'text',
-                    content: 'Try it now',
-                    style: {'padding':'10px 10px 10px 10px', 'width':'190px', 'min-height':'50px', 'font-weight':100, 'color':'#ffffff', 'font-size':'20px', 'text-align':'center', 'letter-spacing':'3px', 'line-height':'30px', 'background-color':'#d983a6', 'border-radius':'5px', 'margin':'15px 0px 0px 0px'}
-                  }
-                ]
-              },
-            ]
-          },
-          {
-            style: {'min-height': '200px', 'background-color':'#ffffff'},
-            components:[
-              {
-                style: {'width':'90%', 'max-width':'1100px', 'min-height':'75px', 'padding':'100px 7px 7px 7px', 'margin':'0 auto'},
-                components: [
-                  { type: 'image', src: './img/phone-app.png', attributes: {'onmousedown': 'return false'}, style: { 'float': 'left'}},
-                  {
-                    style: { 'float': 'left', 'margin':'150px 0px 0px 100px', 'padding':'7px 7px 7px 7px' },
-                    components: [
-                      {
-                        type: 'text', content: 'ASSET MANAGER',
-                        style: {'padding':'7px 7px 7px 7px', 'min-height':'35px', 'color':'#b1b1b1', 'font-size':'15px'}
-                      },
-                      {
-                        type: 'text', content: 'Manage your images with Asset Manager',
-                        style: {'padding':'7px 7px 7px 7px', 'min-height':'35px', 'color':'#444444', 'font-size':'25px'}
-                      },
-                      {
-                        type: 'text', content: 'You can create image blocks with the command from the left panel and edit them with double click',
-                        style: {'padding':'7px 7px 7px 7px', 'min-height':'35px', 'color':'#444444', 'font-size':'17px', 'line-height':'25px','font-weight':100, 'width':'450px'}
-                      },
-                      {
-                        type: 'text', content: 'At the moment uploading of new images is not allowed in demo, so there is only some random images.',
-                        style: {'padding':'7px 7px 7px 7px', 'min-height':'35px', 'color':'#444444', 'font-size':'13px', 'line-height':'20px','font-weight':100, 'width':'450px'}
-                      }
-                    ]
-                  },
-                  {style: {'clear':'both'}}
-                ]
-              }
-            ]
-          },
-          {
-            style: {'min-height': '500px', 'background-color':'#222222'},
-            components: [
-                {
-                  style: {'width':'90%', 'max-width':'1100px', 'min-height':'75px', 'padding':'70px 7px 70px 7px', 'margin':'0 auto'},
-                  components: [
-                      {
-                        type: 'text', content: 'Blocks',
-                        style: {'padding':'7px 7px 7px 7px', 'min-height':'35px', 'color':'#fff', 'font-size':'25px','text-align':'center'}
-                      },
-                      {
-                        type: 'text', content: 'Each element of the HTML page could be seen as a block. On the left panel you could find different kind of blocks that you can create, move and style',
-                        style: {'padding':'7px 7px 7px 7px', 'min-height':'35px', 'color':'#b1b1b1', 'font-size':'15px', 'text-align':'center', 'width':'700px', 'margin':'0 auto', 'font-weight':100 }
-                      },
-                      {
-                        style: {'margin':'70px 0 0 0','padding':'7px 7px 7px 7px'},
-                        components: [
-                          {
-                            style: {'width':'33.333%','min-height':'75px','padding':'7px 7px 7px 7px','float':'left'},
-                            components:[
-                              {
-                                style: {'margin': '0 auto', 'width':'300px', 'min-height':'350px','padding':'0 20px 0 20px','background-color':'#d983a6','border-radius':'5px'},
-                                components: [
-                                  { type: 'text', content:'Small', style:{ 'font-weight':100, 'color':'#ffffff', 'letter-spacing':'3px', 'text-align':'center', 'font-size':'25px', 'margin':'0 -20px 0 -20px', 'background-color': 'rgba(0, 0, 0, 0.1)','padding':'20px 20px 20px 20px'}},
-                                  { type: 'text', content:'Some random list', style:{ 'font-weight':100, 'color':'#ffffff', 'letter-spacing':'3px', 'text-align':'center', 'font-size':'15px', 'margin':'0 -20px 0 -20px','padding':'50px 20px 50px 20px'}},
-                                  { type: 'text', content:'+ Small feature 1', style:{ 'font-weight':100, 'color':'rgba(255,255,255,0.5)', 'letter-spacing':'2px', 'font-size':'15px', 'margin':'0 -20px 0 -20px', 'background-color': 'rgba(0, 0, 0, 0.1)','padding':'10px 20px 10px 20px'}},
-                                  { type: 'text', content:'+ Small feature 2', style:{ 'font-weight':100, 'color':'rgba(255,255,255,0.5)', 'letter-spacing':'2px', 'font-size':'15px', 'margin':'0 -20px 0 -20px','padding':'10px 20px 10px 20px'}},
-                                  { type: 'text', content:'+ Small feature 3', style:{ 'font-weight':100, 'color':'rgba(255,255,255,0.5)', 'letter-spacing':'2px', 'font-size':'15px', 'margin':'0 -20px 0 -20px', 'background-color': 'rgba(0, 0, 0, 0.1)','padding':'10px 20px 10px 20px'}},
-                                  { type: 'text', content:'+ Small feature 4', style:{ 'font-weight':100, 'color':'rgba(255,255,255,0.5)', 'letter-spacing':'2px', 'font-size':'15px', 'margin':'0 -20px 0 -20px','padding':'10px 20px 10px 20px'}},
-                                  { type: 'text', content:'Price 1', style:{ 'font-weight':100, 'color':'#ffffff', 'text-align':'center', 'font-size':'30px', 'margin':'0 -20px 0 -20px', 'background-color': 'rgba(0, 0, 0, 0.2)','padding':'40px 20px 40px 20px'}},
-                                ]
-                              }
-                            ]
-                          },
-                          {
-                            style: {'width':'33.333%','min-height':'75px','padding':'7px 7px 7px 7px','float':'left'},
-                            components:[
-                              {
-                                style: {'margin': '0 auto', 'width':'300px', 'min-height':'350px','padding':'0 20px 0 20px','background-color':'#da78a0','border-radius':'5px'},
-                                components: [
-                                  { type: 'text', content:'Medium', style:{ 'font-weight':100, 'color':'#ffffff', 'letter-spacing':'3px', 'text-align':'center', 'font-size':'25px', 'margin':'0 -20px 0 -20px', 'background-color': 'rgba(0, 0, 0, 0.1)','padding':'20px 20px 20px 20px'}},
-                                  { type: 'text', content:'Some random list', style:{ 'font-weight':100, 'color':'#ffffff', 'letter-spacing':'3px', 'text-align':'center', 'font-size':'15px', 'margin':'0 -20px 0 -20px','padding':'50px 20px 50px 20px'}},
-                                  { type: 'text', content:'+ Medium feature 1', style:{ 'font-weight':100, 'color':'rgba(255,255,255,0.5)', 'letter-spacing':'2px', 'font-size':'15px', 'margin':'0 -20px 0 -20px', 'background-color': 'rgba(0, 0, 0, 0.1)','padding':'10px 20px 10px 20px'}},
-                                  { type: 'text', content:'+ Medium feature 2', style:{ 'font-weight':100, 'color':'rgba(255,255,255,0.5)', 'letter-spacing':'2px', 'font-size':'15px', 'margin':'0 -20px 0 -20px','padding':'10px 20px 10px 20px'}},
-                                  { type: 'text', content:'+ Medium feature 3', style:{ 'font-weight':100, 'color':'rgba(255,255,255,0.5)', 'letter-spacing':'2px', 'font-size':'15px', 'margin':'0 -20px 0 -20px', 'background-color': 'rgba(0, 0, 0, 0.1)','padding':'10px 20px 10px 20px'}},
-                                  { type: 'text', content:'+ Medium feature 4', style:{ 'font-weight':100, 'color':'rgba(255,255,255,0.5)', 'letter-spacing':'2px', 'font-size':'15px', 'margin':'0 -20px 0 -20px','padding':'10px 20px 10px 20px'}},
-                                  { type: 'text', content:'Price 2', style:{ 'font-weight':100, 'color':'#ffffff', 'text-align':'center', 'font-size':'30px', 'margin':'0 -20px 0 -20px', 'background-color': 'rgba(0, 0, 0, 0.2)','padding':'40px 20px 40px 20px'}},
-                                ]
-                              }
-                            ]
-                          },
-                          {
-                            style: {'width':'33.333%','min-height':'75px','padding':'7px 7px 7px 7px','float':'left'},
-                            components:[
-                              {
-                                style: {'margin': '0 auto', 'width':'300px', 'min-height':'350px','padding':'0 20px 0 20px','background-color':'#d66a96','border-radius':'5px'},
-                                components: [
-                                  { type: 'text', content:'Large', style:{ 'font-weight':100, 'color':'#ffffff', 'letter-spacing':'3px', 'text-align':'center', 'font-size':'25px', 'margin':'0 -20px 0 -20px', 'background-color': 'rgba(0, 0, 0, 0.1)','padding':'20px 20px 20px 20px'}},
-                                  { type: 'text', content:'Some random list', style:{ 'font-weight':100, 'color':'#ffffff', 'letter-spacing':'3px', 'text-align':'center', 'font-size':'15px', 'margin':'0 -20px 0 -20px','padding':'50px 20px 50px 20px'}},
-                                  { type: 'text', content:'+ Large feature 1', style:{ 'font-weight':100, 'color':'rgba(255,255,255,0.5)', 'letter-spacing':'2px', 'font-size':'15px', 'margin':'0 -20px 0 -20px', 'background-color': 'rgba(0, 0, 0, 0.1)','padding':'10px 20px 10px 20px'}},
-                                  { type: 'text', content:'+ Large feature 2', style:{ 'font-weight':100, 'color':'rgba(255,255,255,0.5)', 'letter-spacing':'2px', 'font-size':'15px', 'margin':'0 -20px 0 -20px','padding':'10px 20px 10px 20px'}},
-                                  { type: 'text', content:'+ Large feature 3', style:{ 'font-weight':100, 'color':'rgba(255,255,255,0.5)', 'letter-spacing':'2px', 'font-size':'15px', 'margin':'0 -20px 0 -20px', 'background-color': 'rgba(0, 0, 0, 0.1)','padding':'10px 20px 10px 20px'}},
-                                  { type: 'text', content:'+ Large feature 4', style:{ 'font-weight':100, 'color':'rgba(255,255,255,0.5)', 'letter-spacing':'2px', 'font-size':'15px', 'margin':'0 -20px 0 -20px','padding':'10px 20px 10px 20px'}},
-                                  { type: 'text', content:'Price 3', style:{ 'font-weight':100, 'color':'#ffffff', 'text-align':'center', 'font-size':'30px', 'margin':'0 -20px 0 -20px', 'background-color': 'rgba(0, 0, 0, 0.2)','padding':'40px 20px 40px 20px'}},
-                                ]
-                              }
-                            ]
-                          },//#d8779e #d86895
-                          {style: {'clear':'both'}}
-                        ]
-                      },
-
-
-                  ]
-                }
-            ]
-          }
-        ],
-      },
-
+      var gr  = grapesjs.init(
+{
+      height: '100%',
+      container : '#gjs',
+      fromElement: true,
       commands:     {
           defaults    : [{
                           id:   'open-github',
@@ -294,11 +684,7 @@
                           run:  function(em, sender){
                             sender.set('active',false);
                             if(confirm('Are you sure to clean the canvas?')){
-                              var comps = em.get('Components').getComponents();
-                              var len = comps.length;
-                              for(var i = 0; i < len; i++){
-                                comps.pop();
-                              }
+                              var comps = em.DomComponents.clear();
                             }
                           },
                           stop: function(){}
@@ -369,15 +755,15 @@
                                     },
                 ]
               },
-                      { id: 'remove',   className: 'fa fa-trash-o icon-rm',     command: 'delete-comp', attributes  : { title: 'Remove element' },  },
-                      { id: 'move',     className: 'fa fa-arrows',      command: 'move-comp', attributes  : { title: 'Move elements' },   },
-                      //{ id: 'resize',   className: 'fa fa-arrows-alt',    command: 'resize-comp', attributes  : { title: 'Resize' },  },
-                      { id: 'text',     className: 'fa fa-font' ,     command: 'text-comp', attributes  : { title: 'Create text element' },   },
-                      { id: 'image',    className: 'fa fa-picture-o',   command: 'image-comp',  attributes  : { title: 'Create image element' },  },
-                      /*{ id: 'var',    className: 'fa fa-hashtag',     command: 'insert-custom',attributes : { title: 'Some variable' },
-                        options:  {  content: '{{ VAR11 }}', terminateAfterInsert: true, },
-                      },*/
-                     ],
+              { id: 'move',     className: 'fa fa-arrows',      command: 'move-comp', attributes  : { title: 'Move elements' },   },
+              //{ id: 'remove',   className: 'fa fa-trash-o icon-rm',     command: 'delete-comp', attributes  : { title: 'Remove element' },  },
+              //{ id: 'resize',   className: 'fa fa-arrows-alt',    command: 'resize-comp', attributes  : { title: 'Resize' },  },
+              { id: 'text',     className: 'fa fa-font' ,     command: 'text-comp', attributes  : { title: 'Create text element' },   },
+              { id: 'image',    className: 'fa fa-picture-o',   command: 'image-comp',  attributes  : { title: 'Create image element' },  },
+              /*{ id: 'var',    className: 'fa fa-hashtag',     command: 'insert-custom',attributes : { title: 'Some variable' },
+                options:  {  content: '{{ VAR11 }}', terminateAfterInsert: true, },
+              },*/
+             ],
         },{
           id  : 'options',
           buttons : [
@@ -402,6 +788,7 @@
       styleManager : {
         sectors: [{
           name: 'General',
+          buildProps: ['float', 'display', 'position', 'top', 'right', 'left', 'bottom'],
           properties:[{
               name    : 'Alignment',
               property  : 'float',
@@ -421,10 +808,8 @@
                         title   : 'Float element to the right',
                       }],
             },{
-              name    : 'Display',
               property  : 'display',
               type    : 'radio',
-              defaults  : 'block',
               list    : [{
                         value     : 'block',
                         title   : 'Block',
@@ -439,81 +824,12 @@
                         title   : 'None',
                         className   : 'fa fa-eye-slash',
                       }],
-            },{
-              name    : 'Position',
-              property  : 'position',
-              type    : 'radio',
-              defaults  : 'static',
-              list    : [{
-                        value   : 'static',
-                        title : 'Static',
-                      },{
-                        value   : 'relative',
-                        title : 'Relative',
-                      },{
-                        value   : 'absolute',
-                        title : 'Absolute',
-                      },{
-                        value   : 'fixed',
-                        title : 'fixed',
-                      }],
-            },{
-              name    : 'Top',
-              property  : 'top',
-              type    : 'integer',
-              units   : ['px','%'],
-              defaults  : '0',
-            },{
-              name    : 'Right',
-              property  : 'right',
-              type    : 'integer',
-              units   : ['px','%'],
-              defaults  : '0',
-            },{
-              name    : 'Left',
-              property  : 'left',
-              type    : 'integer',
-              units   : ['px','%'],
-              defaults  : '0',
-            },{
-              name    : 'Bottom',
-              property  : 'bottom',
-              type    : 'integer',
-              units   : ['px','%'],
-              defaults  : '0',
             }],
           },{
             name: 'Dimension',
             open: false,
+            buildProps: ['width', 'height', 'max-width', 'min-height', 'margin', 'padding'],
             properties:[{
-              name    : 'Width',
-              property  : 'width',
-              type    : 'integer',
-              units   : ['px','%'],
-              defaults  : 'auto',
-              min     : 0,
-            },{
-              name    : 'Height',
-              property  : 'height',
-              type    : 'integer',
-              units   : ['px','%'],
-              defaults  : 'auto',
-              min     : 0,
-            },{
-              name    : 'Max width',
-              property  : 'max-width',
-              type    : 'integer',
-              units   : ['px','%'],
-              defaults  : 'auto',
-              min     : 0,
-            },{
-              name    : 'Min height',
-              property  : 'min-height',
-              type    : 'integer',
-              units   : ['px','%'],
-              defaults  : 'auto',
-              min     : 0,
-            },{
               name    : 'Margin',
               property  : 'margin',
               type    : 'composite',
@@ -542,19 +858,16 @@
                       units   : ['px','%'],
                       defaults  : 0,
                     },],
-            },{
+            },/*{
               name    : 'Center block',
               property  : 'margin',
               type    : 'select',
               defaults  : '0',
-              list    : [{
-                        value     : '0',
-                        name      : 'Normal',
-                      },{
-                        value     : '0 auto',
-                        name      : 'Center',
-                      }],
-            },{
+              list    : [
+                         { value: '0', name: 'Normal',},
+                         { value: '0 auto', name: 'Center',}
+                        ],
+            },*/{
               name    : 'Padding',
               property  : 'padding',
               type    : 'composite',
@@ -581,7 +894,7 @@
                       min     : 0,
                     },{
                       name    : 'Left',
-                      property  : 'padding-Left',
+                      property  : 'padding-left',
                       type    : 'integer',
                       units   : ['px','%'],
                       defaults  : 0,
@@ -591,102 +904,16 @@
           },{
             name: 'Typography',
             open: false,
+            buildProps: ['font-family', 'font-size', 'font-weight', 'letter-spacing', 'color', 'line-height', 'text-align', 'text-shadow'],
             properties:[{
-              name    : 'Font',
-              property  : 'font-family',
-              type    : 'select',
-              defaults  : 'Arial, Helvetica, sans-serif',
-              list    : [{
-                      value     : 'Arial, Helvetica, sans-serif',
-                      name    : 'Arial',
-                      style   : 'font-family: Arial, Helvetica, sans-serif; font-size:15px;',
-                    },{
-                      value     : '"Arial Black", Gadget, sans-serif',
-                      style   : 'font-family: "Arial Black", Gadget, sans-serif; font-size:15px;',
-                      name    : 'Arial Black',
-                    },{
-                      value     : '"Brush Script MT", sans-serif',
-                      style   : 'font-family: "Brush Script MT", sans-serif; font-size:15px;',
-                      name    : 'Brush Script MT',
-                    },{
-                      value     : '"Comic Sans MS", cursive, sans-serif',
-                      style   : 'font-family: "Comic Sans MS", cursive, sans-serif; font-size:15px;',
-                      name    : 'Comica Sans',
-                    },{
-                      value     : '"Courier New", Courier, monospace',
-                      style   : 'font-family: "Courier New", Courier, monospace; font-size:15px;',
-                      name    : 'Courier New',
-                    },{
-                      value     : 'Georgia, serif',
-                      style   : 'font-family: Georgia, serif; font-size:15px;',
-                      name    : 'Georgia',
-                    },{
-                      value     : 'Helvetica, serif',
-                      style   : 'font-family: Helvetica, serif; font-size:15px;',
-                      name    : 'Helvetica',
-                    },{
-                      value     : 'Impact, Charcoal, sans-serif',
-                      style   : 'font-family: Impact, Charcoal, sans-serif; font-size:15px;',
-                      name    : 'Impact',
-                    },{
-                      value     : '"Lucida Sans Unicode", "Lucida Grande", sans-serif',
-                      style   : 'font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif; font-size:15px;',
-                      name    : 'Lucida Sans',
-                    },{
-                      value     : 'Tahoma, Geneva, sans-serif',
-                      style   : 'font-family: Tahoma, Geneva, sans-serif; font-size:15px;',
-                      name    : 'Tahoma',
-                    },{
-                      value     : '"Times New Roman", Times, serif',
-                      style   : 'font-family: "Times New Roman", Times, serif; font-size:15px;',
-                      name    : 'Times New Roman',
-                    },{
-                      value     : '"Trebuchet MS", Helvetica, sans-serif',
-                      style   : 'font-family: "Trebuchet MS", Helvetica, sans-serif; font-size:15px;',
-                      name    : 'Trebuchet',
-                    },{
-                      value     : 'Verdana, Geneva, sans-serif',
-                      style   : 'font-family: Verdana, Geneva, sans-serif; font-size:15px;',
-                      name    : 'Verdana',
-                    }],
+              name: 'Font',
+              property: 'font-family',
             },{
-              name    : 'Font size',
-              property  : 'font-size',
-              type    : 'integer',
-              units   : ['px','em', 'rem', '%'],
-              defaults  : '12',
-              min     : 0,
+              name: 'Weight',
+              property: 'font-weight',
             },{
-              name    : 'Weight',
-              property  : 'font-weight',
-              type    : 'select',
-              defaults  : '400',
-              list:   [{ value : '100', name : 'Thin', },
-                       { value : '200', name : 'Extra-Light', },
-                       { value : '300', name : 'Light', },
-                       { value : '400', name : 'Normal', },
-                       { value : '500', name : 'Medium',},
-                       { value : '600', name : 'Semi-Bold',},
-                       { value : '700', name : 'Bold', },
-                       { value : '800', name : 'Extra-Bold',},
-                       { value : '900', name : 'Ultra-Bold', }],
-            },{
-              name    : 'Letter spacing',
-              property  : 'letter-spacing',
-              type    : 'integer',
-              units   : ['px','em','%'],
-              defaults  : 'normal',
-            },{
-              name:     'Font color',
-              property:   'color',
-              type:     'color',
-              defaults:   'black',
-            },{
-              name    : 'Line height',
-              property  : 'line-height',
-              type    : 'integer',
-              units   : ['px','em','%'],
-              defaults  : 'normal',
+              name:  'Font color',
+              property: 'color',
             },{
               name    : 'Text align',
               property  : 'text-align',
@@ -730,90 +957,49 @@
           },{
             name: 'Decorations',
             open: false,
+            buildProps: [ 'background-color', 'border-radius', 'border', 'box-shadow', 'background'],
             properties: [{
-              name    : 'Border radius',
-              property  : 'border-radius',
-              type    : 'integer',
-              units   : ['px'],
-              defaults  : '0',
-              min     : 0,
-            },{
               name      : 'Background',
               property  : 'background-color',
-              type      : 'color',
-              defaults:   'none'
             },{
               name    : 'Border radius',
               property  : 'border-radius',
               type    : 'composite',
               properties  : [{
                       name    : 'Top',
-                      property  : 'b-top',
+                      property  : 'border-top-left-radius',
                       type    : 'integer',
                       units   : ['px','%'],
                       defaults  : 0,
                       min     : 0,
                     },{
                       name    : 'Right',
-                      property  : 'b-right',
+                      property  : 'border-top-right-radius',
                       type    : 'integer',
                       units   : ['px','%'],
                       min     : 0,
                       defaults  : 0,
                     },{
                       name    : 'Bottom',
-                      property  : 'b-bot',
+                      property  : 'border-bottom-left-radius',
                       type    : 'integer',
                       units   : ['px','%'],
                       min     : 0,
                       defaults  : 0,
                     },{
                       name    : 'Left',
-                      property  : 'b-left',
+                      property  : 'border-bottom-right-radius',
                       type    : 'integer',
                       units   : ['px'],
                       min     : 0,
                       defaults  : 0,
                     },],
             },{
-              name    : 'Border',
-              property  : 'border',
-              type    : 'composite',
-              properties  : [{
-                      name    : 'Width',
-                      property  : 'br-width',
-                      type    : 'integer',
-                      units   : ['px','em'],
-                      defaults  : 0,
-                      min     : 0,
-                    },{
-                      name    : 'Style',
-                      property  : 'br-style',
-                      type    : 'select',
-                      defaults  : 'solid',
-                      list:   [{ value : 'none',    name : 'None', },
-                               { value : 'solid',   name : 'Solid', },
-                               { value : 'dashed',  name : 'Dashed', },
-                               { value : 'dotted',  name : 'Dotted', },],
-                    },{
-                      name:     'Color',
-                      property:   'color',
-                      type:     'color',
-                      defaults:   'black',
-                    }],
-            },{
               name    : 'Box shadow',
               property  : 'box-shadow',
               type    : 'stack',
               preview   : true,
               properties  : [{
-                      name:     'Shadow type',
-                      property:   'shadow-type',
-                      type:     'select',
-                      defaults:   '',
-                      list:   [ { value : '', name : 'Outside', },
-                                  { value : 'inset', name : 'Inside', }],
-                    },{
                       name:     'X position',
                       property:   'shadow-x',
                       type:     'integer',
@@ -843,12 +1029,20 @@
                       property:   'shadow-color',
                       type:     'color',
                       defaults:   'black',
-                    },],
+                    },{
+                      name:     'Shadow type',
+                      property:   'shadow-type',
+                      type:     'select',
+                      defaults:   '',
+                      list:   [ { value : '', name : 'Outside', },
+                                { value : 'inset', name : 'Inside', }],
+                    }],
             },{
               name    : 'Background',
               property  : 'background',
               type    : 'stack',
               preview   : true,
+              detached: true,
               properties  : [{
                       name:     'Image',
                       property:   'background-image',
@@ -866,34 +1060,43 @@
                                { value : 'no-repeat', name : 'No repeat', }],
                     },
                     {
-                      name:     'Position X',
-                      property:   'background-position',
-                      type:     'select',
-                      defaults:   'left',
-                      list:   [ { value : 'left',   name : 'Left', },
-                                  { value : 'center', name : 'Center', },
-                                  { value : 'right',  name : 'Right', }],
+                      name: 'Position',
+                      property: 'background-position',
+                      type: 'select',
+                      defaults: 'left top',
+                      list:   [ { value : 'left top',},
+                                { value : 'left center',},
+                                { value : 'left bottom',},
+                                { value : 'right top',},
+                                { value : 'right center'},
+                                { value : 'right bottom'},
+                                { value : 'center top'},
+                                { value : 'center center'},
+                                { value : 'center bottom'}
+                              ]
+
                     },{
-                      name:     'Position Y',
-                      property:   'background-position',
-                      type:     'select',
-                      defaults:   'top',
-                      list:   [ { value : 'top',    name : 'Top', },
-                                  { value : 'center',   name : 'Center', },
-                                  { value : 'bottom',   name : 'Bottom', }],
+                      name: 'Attachment',
+                      property: 'background-attachment',
+                      type: 'select',
+                      defaults: 'scroll',
+                      list:   [{ value : 'scroll'},
+                               { value : 'fixed'},
+                               { value : 'local'}],
                     },{
-                      name:     'Attach',
-                      property:   'background-attachment',
-                      type:     'select',
-                      defaults:   'scroll',
-                      list:   [{ value : 'scroll', name : 'Scroll', },
-                               { value : 'fixed', name : 'Fixed', },
-                               { value : 'local', name : 'Local', }],
-                    },],
+                      name: 'Size',
+                      property: 'background-size',
+                      type: 'select',
+                      defaults: 'auto',
+                      list:   [{ value : 'auto'},
+                               { value : 'cover'},
+                               { value : 'contain'}],
+                    }],
             },],
           },{
             name: 'Extra',
             open: false,
+            buildProps: ['transition', 'perspective', 'transform'],
             properties: [{
               name: 'Transition',
               property: 'transition',
@@ -904,9 +1107,13 @@
                       property:   'transition-property',
                       type:     'select',
                       defaults:   '',
-                      list:   [{ value : 'width', name : 'Width', },
+                      list:   [{ value : 'all', name : 'All', },
+                               { value : 'width', name : 'Width', },
                                { value : 'height', name : 'Height', },
-                               { value : 'background-color', name : 'Background', }],
+                               { value : 'background-color', name : 'Background', },
+                               { value : 'transform', name : 'Transform', },
+                               { value : 'box-shadow', name : 'Box shadow', },
+                               { value : 'opacity', name : 'Opacity', }],
                     },{
                       name: 'Duration',
                       property: 'transition-duration',
@@ -925,13 +1132,6 @@
                                { value : 'ease-out', name : 'Ease-out', },
                                { value : 'ease-in-out', name : 'Ease-in-out', }],
                     }],
-            },{
-              name: 'Perspective',
-              property: 'perspective',
-              type: 'integer',
-              units: ['px'],
-              defaults : '0',
-              min:  0,
             },{
               name: 'Transform',
               property: 'transform',
@@ -957,6 +1157,24 @@
                       units: ['deg'],
                       defaults : '0',
                       functionName: 'rotateZ',
+                    },{
+                      name: 'Scale X',
+                      property: 'transform-scale-x',
+                      type: 'integer',
+                      defaults : '1',
+                      functionName: 'scaleX',
+                    },{
+                      name: 'Scale Y',
+                      property: 'transform-scale-y',
+                      type: 'integer',
+                      defaults : '1',
+                      functionName: 'scaleY',
+                    },{
+                      name: 'Scale Z',
+                      property: 'transform-scale-z',
+                      type: 'integer',
+                      defaults : '1',
+                      functionName: 'scaleZ',
                     }],
             }]
           },{
@@ -1119,8 +1337,6 @@
     }
 
     );
-
-    gr.render();
     </script>
 
     <script>
