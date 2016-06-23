@@ -32,34 +32,73 @@
 
 			<section class="flex-sect">
 				<div class="container-width">
+					<div class="flex-title">Flex is the new black</div>
+					<div class="flex-desc">With flexbox system you're able to build complex layouts easily and with free responsivity</div>
 					<div class="cards">
 						<div class="card">
 							<div class="card-header"></div>
 							<div class="card-body">
 								<div class="card-title">Title one</div>
 								<div class="card-sub-title">Subtitle one</div>
-								<div class="card-desc">You can create image blocks with the command from the left panel and edit them with double click</div>
+								<div class="card-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore</div>
 							</div>
 						</div>
-						<div class="card"></div>
-						<div class="card"></div>
-						<div class="card"></div>
-						<div class="card"></div>
-						<div class="card"></div>
+						<div class="card">
+							<div class="card-header ch2"></div>
+							<div class="card-body">
+								<div class="card-title">Title two</div>
+								<div class="card-sub-title">Subtitle two</div>
+								<div class="card-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore</div>
+							</div>
+						</div>
+						<div class="card">
+							<div class="card-header ch3"></div>
+							<div class="card-body">
+								<div class="card-title">Title three</div>
+								<div class="card-sub-title">Subtitle three</div>
+								<div class="card-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore</div>
+							</div>
+						</div>
+						<div class="card">
+							<div class="card-header ch4"></div>
+							<div class="card-body">
+								<div class="card-title">Title four</div>
+								<div class="card-sub-title">Subtitle four</div>
+								<div class="card-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore</div>
+							</div>
+						</div>
+						<div class="card">
+							<div class="card-header ch5"></div>
+							<div class="card-body">
+								<div class="card-title">Title five</div>
+								<div class="card-sub-title">Subtitle five</div>
+								<div class="card-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore</div>
+							</div>
+						</div>
+						<div class="card">
+							<div class="card-header ch6"></div>
+							<div class="card-body">
+								<div class="card-title">Title six</div>
+								<div class="card-sub-title">Subtitle six</div>
+								<div class="card-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore</div>
+							</div>
+						</div>
 					</div>
 				</div>
 			</section>
 
 			<section class="am-sect">
 				<div class="container-width">
-					<img class="img-phone" onmousedown="return false" src="./img/phone-app.png"/>
-					<div class="am-content">
-						<div class="am-pre">ASSET MANAGER</div>
-						<div class="am-title">Manage your images with Asset Manager</div>
-						<div class="am-desc">You can create image blocks with the command from the left panel and edit them with double click</div>
-						<div class="am-post">Image uploading is not allowed in this demo</div>
+					<div class="am-container">
+						<img class="img-phone" onmousedown="return false" src="./img/phone-app.png"/>
+						<div class="am-content">
+							<div class="am-pre">ASSET MANAGER</div>
+							<div class="am-title">Manage your images with Asset Manager</div>
+							<div class="am-desc">You can create image blocks with the command from the left panel and edit them with double click</div>
+							<div class="am-post">Image uploading is not allowed in this demo</div>
+						</div>
+						<div class="clearfix"></div>
 					</div>
-					<div class="clearfix"></div>
 				</div>
 			</section>
 
@@ -110,15 +149,42 @@
 
 			<footer class="footer-under">
 				<div class="container-width">
-					<div>List</div>
-					<div class="form-sub">
-						<input name="name" class="sub-input"/>
-						<input name="email" class="sub-input"/>
+					<div class="foot-lists">
+						<div class="foot-list">
+							<div class="foot-list-title">About us</div>
+							<div class="foot-list-item">Contact</div>
+							<div class="foot-list-item">Events</div>
+							<div class="foot-list-item">Company</div>
+							<div class="foot-list-item">Jobs</div>
+							<div class="foot-list-item">Blog</div>
+						</div>
+						<div class="foot-list">
+							<div class="foot-list-title">Services</div>
+							<div class="foot-list-item">Education</div>
+							<div class="foot-list-item">Partner</div>
+							<div class="foot-list-item">Community</div>
+							<div class="foot-list-item">Forum</div>
+							<div class="foot-list-item">Download</div>
+							<div class="foot-list-item">Upgrade</div>
+						</div>
+						<div class="clearfix"></div>
 					</div>
+					<div class="form-sub">
+						<div class="foot-form-cont">
+							<div class="foot-form-title">Subscribe</div>
+							<div class="foot-form-desc">Subscribe to our newsletter to receive exclusive offers and the latest news</div>
+							<input name="name" class="sub-input" placeholder="Name" />
+							<input name="email" class="sub-input" placeholder="Email"/>
+							<button class="sub-btn" type="button">Submit</button>
+						</div>
+					</div>
+					<div class="clearfix"></div>
 				</div>
 				<div class="copyright">
 					<div class="container-width">
-						<div class="made-with">made with GrapesJS</div>
+						<div class="made-with">
+							made with GrapesJS
+						</div>
 						<div class="foot-social-btns">facebook twitter linkedin mail</div>
 						<div class="clearfix"></div>
 					</div>
@@ -134,6 +200,20 @@
 					color:#eee;
 					position: relative;
 					font-weight: 100;
+				}
+				.led{
+					border-radius: 100%;
+					width: 10px;
+					height: 10px;
+					background-color: rgba(0, 0, 0, 0.15);
+					float: left;
+					margin: 2px;
+					transition: all 5s ease;
+				}
+				.led:hover{
+					background-color: #c29fca;/* #eac229 */
+					box-shadow: 0 0 5px #9d7aa5, 0 0 10px #e6c3ee;/* 0 0 10px 0 #efc111 */
+					transition: all 0s ease;
 				}
 				.copyright {
 				  background-color: rgba(0, 0, 0, 0.15);
@@ -155,6 +235,73 @@
 					text-align: right;
 					padding: 5px 0;
 				}
+				.foot-list {
+					float: left;
+					width: 200px;
+				}
+				.foot-list-title {
+				  font-weight: 400;
+				  margin-bottom: 10px;
+				  padding: 0.5em 0;
+				}
+				.foot-list-item {
+				  color: rgba(238, 238, 238, 0.8);
+				  font-size: 0.8em;
+				  padding: 0.5em 0;
+				}
+				.foot-list-item:hover {
+				  color: rgba(238, 238, 238, 1);
+				}
+				.foot-lists, .form-sub{
+					float: left;
+					width: 50%;
+				}
+				.foot-form-cont{
+					width: 300px;
+					float: right;
+				}
+				.foot-form-title{
+					color: rgba(255,255,255,0.75);
+					font-weight: 400;
+				  margin-bottom: 10px;
+				  padding: 0.5em 0;
+				  text-align: right;
+				  font-size: 2em;
+				}
+				.foot-form-desc{
+					font-size: 0.8em;
+					color: rgba(255,255,255,0.55);
+					line-height: 20px;
+					text-align: right;
+					margin-bottom: 15px;
+				}
+				.sub-input{
+					width: 100%;
+					margin-bottom: 15px;
+					padding: 7px 10px;
+					border-radius: 2px;
+					color:#fff;
+					background-color: #554c57;
+					border: none;
+				}
+				.sub-btn{
+					width: 100%;
+					margin-bottom: 15px;
+					background-color: #785580;
+					border: none;
+					color:#fff;
+					border-radius: 2px;
+					padding: 7px 10px;
+					font-size: 1em;
+					cursor: pointer;
+				}
+				.sub-btn:hover{
+					background-color: #91699a;
+				}
+				.sub-btn:active{
+					background-color: #573f5c;
+				}
+
 
 				.clearfix{ clear:both}
 				.header-banner{
@@ -240,6 +387,21 @@
 					background-color: #fafafa;
 					padding: 100px 0;
 				}
+				.flex-title{
+					margin-bottom: 15px;
+					font-size: 2em;
+					text-align: center;
+					font-weight: 700;
+					color:#555;
+					padding: 5px;
+				}
+				.flex-desc{
+					margin-bottom: 55px;
+					font-size: 1em;
+					color: rgba(0, 0, 0, 0.5);
+					text-align: center;
+					padding: 5px;
+				}
 				.cards{
 					padding: 20px 0;
 					display: flex;
@@ -267,6 +429,21 @@
 					background-size:cover;
   				background-position:center center;
 				}
+				.card-header.ch2{
+					background-image:url("http://placehold.it/350x250/459ba8/fff/image2.jpg");
+				}
+				.card-header.ch3{
+					background-image:url("http://placehold.it/350x250/79c267/fff/image3.jpg");
+				}
+				.card-header.ch4{
+					background-image:url("http://placehold.it/350x250/c5d647/fff/image4.jpg");
+				}
+				.card-header.ch5{
+					background-image:url("http://placehold.it/350x250/f28c33/fff/image5.jpg");
+				}
+				.card-header.ch6{
+					background-image:url("http://placehold.it/350x250/e868a2/fff/image6.jpg");
+				}
 				.card-body{
 					padding: 15px;
 					color: #555;
@@ -291,6 +468,10 @@
 				.img-phone{
 					float: left;
 				}
+				/*
+				.am-container{
+					perspective: 1000px;
+				}*/
 				.am-content{
 					float:left;
 					margin:150px 0px 0px 100px;
@@ -298,6 +479,7 @@
 					width: 490px;
 					color: #444;
 					font-weight: 100;
+					/*transform: rotateX(0deg) rotateY(-20deg) rotateZ(0deg) scaleX(1) scaleY(1) scaleZ(1);*/
 				}
 				.am-pre{
 					padding:7px;
