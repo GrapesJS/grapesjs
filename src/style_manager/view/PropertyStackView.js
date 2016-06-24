@@ -264,7 +264,7 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 					a = v.split(', ');
 				}
 			}
-			_.each(a,function(e){
+			_.each(a, function(e){
 				var o = {};
 				o[fieldName] = e;
 				n.push(o);
