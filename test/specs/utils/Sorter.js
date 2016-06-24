@@ -11,6 +11,7 @@ define([path + 'Sorter',],
           var obj;
           var parent;
           var plh;
+          var html;
 
           before(function () {
             fixture = $('<div class="sorter-fixture"></div>').get(0);
@@ -24,11 +25,38 @@ define([path + 'Sorter',],
             obj = new Sorter({container: '.parent1'});
             document.body.appendChild(fixture);
             fixture.appendChild(parent);
+            html = '<div id="el1" style="overflow: hidden;">'+
+                      '<div id="el2">ba' +
+                          '<p id="baa">baa</p>' +
+                          '<span id="elspan">bab</span>' +
+                          '<span id="bac" style="display:block;">bac</span>'+
+                          '<div id="eldiv">eldiv</div>'+
+                      '</div>' +
+                  '</div>' +
+                  '<div id="a">' +
+                    '<div id="aa">aa' +
+                        '<p id="aaa">aaa</p>' +
+                        '<span id="aab">aab</span>' +
+                        '<span id="aac" style="display:block;">aac</span>' +
+                    '</div>' +
+                    '<div id="ab" style="float: left;">ab</div>' +
+                    '<div id="ac" style="position: absolute;">ac' +
+                        '<div id="aca" style="float: left;">aca</div>' +
+                        '<div id="acb">acb</div>' +
+                    '</div>' +
+                    '<div id="ad" style="overflow: hidden;">ad' +
+                        '<p id="ada">ada</p>' +
+                        '<span id="adb">adb</span>' +
+                        '<span id="adc" style="display:block;">adc</span>' +
+                    '</div>' +
+                '</div>';
           });
 
           afterEach(function () {
             document.body.removeChild(fixture);
             delete obj;
+            delete parent;
+            delete html;
           });
 
           it('matches class', function() {
@@ -60,6 +88,102 @@ define([path + 'Sorter',],
           it('Creates placeholder', function() {
             obj.createPlaceholder().className.should.equal('placeholder');
           });
+
+          it('isInFlow to overflow hidden', function(){
+            parent.innerHTML = html;
+            var el = parent.querySelector('#el1');
+            obj.isInFlow(el).should.equal(false);
+          });
+
+          it('isInFlow inner to overflow', function(){
+            parent.innerHTML = html;
+            var el = parent.querySelector('#el2');
+            if(!el){
+              console.log('phantom issue');
+              return;
+            }
+            obj.isInFlow(el).should.equal(true);
+          });
+
+          it('isInFlow for span', function(){
+            parent.innerHTML = html;
+            var el = parent.querySelector('#elspan');
+            obj.isInFlow(el).should.equal(false);
+          });
+
+          it('isInFlow for div #a', function(){
+            parent.innerHTML = html;
+            var el = parent.querySelector('#a');
+            if(!el){
+              console.log('phantom issue');
+              return;
+            }
+            obj.isInFlow(el).should.equal(true);
+          });
+
+          it('isInFlow for div #aa', function(){
+            parent.innerHTML = html;
+            var el = parent.querySelector('#aa');
+            if(!el){
+              console.log('phantom issue');
+              return;
+            }
+            obj.isInFlow(el).should.equal(true);
+          });
+
+          it('isInFlow for p #aaa', function(){
+            parent.innerHTML = html;
+            var el = parent.querySelector('#aaa');
+            if(!el){
+              console.log('phantom issue');
+              return;
+            }
+            obj.isInFlow(el).should.equal(true);
+          });
+
+          it('isInFlow for span #aab', function(){
+            parent.innerHTML = html;
+            var el = parent.querySelector('#aab');
+            obj.isInFlow(el).should.equal(false);
+          });
+
+          it('isInFlow for span #aac with display block', function(){
+            parent.innerHTML = html;
+            var el = parent.querySelector('#aac');
+            if(!el) // in phantom doesnt work
+              return;
+            obj.isInFlow(el).should.equal(true);
+          });
+
+          it('isInFlow for div #ab with float left', function(){
+            parent.innerHTML = html;
+            var el = parent.querySelector('#ab');
+            obj.isInFlow(el).should.equal(false);
+          });
+
+          it('isInFlow for div #ac in absolute', function(){
+            parent.innerHTML = html;
+            var el = parent.querySelector('#ac');
+            obj.isInFlow(el).should.equal(false);
+          });
+
+          it('isInFlow for div #acb inside absolute', function(){
+            parent.innerHTML = html;
+            var el = parent.querySelector('#acb');
+            if(!el){
+              console.log('phantom issue');
+              return;
+            }
+            obj.isInFlow(el).should.equal(true);
+          });
+
+          it('isInFlow for div #ad overflow hidden', function(){
+            parent.innerHTML = html;
+            var el = parent.querySelector('#ad');
+            obj.isInFlow(el).should.equal(false);
+          });
+
+
 
           describe('Closest method', function() {
             var parent2;

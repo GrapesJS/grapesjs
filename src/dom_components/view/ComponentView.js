@@ -25,6 +25,7 @@ define(['backbone', './ComponentsView'],
 				this.listenTo(this.model.get('classes'), 'add remove change', this.updateClasses);
 				this.$el.data("model", this.model);
 				this.$el.data("model-comp", this.components);
+				this.$el.data("collection", this.components);
 
 				if(this.model.get('classes').length)
 					this.importClasses();

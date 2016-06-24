@@ -2602,6 +2602,11 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   height: 100%;
   min-width: 1250px; }
 
+.wte-freezed {
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+  pointer-events: none; }
+
 /*************  CANVAS  ****************/
 .wte-cv-canvas {
   position: absolute;
@@ -2612,7 +2617,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   overflow: auto;
   z-index: 1;
   /* This simulate body behaviour */ }
-  .wte-cv-canvas > div {
+  .wte-cv-canvas > div:first-child {
     background-color: #fff;
     position: relative;
     height: 100%;

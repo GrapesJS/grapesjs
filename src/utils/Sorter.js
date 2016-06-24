@@ -18,6 +18,8 @@ define(['backbone'],
         this.itemSel = o.itemSel || 'div';
         this.nested = o.nested || 0;
         this.pfx = o.pfx || '';
+        this.onEndMove = o.onEndMove || '';
+        this.direction = o.direction || 'v'; // v (vertical), h (horizontal), a (auto)
       },
 
       /**
@@ -152,7 +154,16 @@ define(['backbone'],
           if(!this.matches(el, this.itemSel))
             continue;
           var dim = this.getDim(el);
-          dim.push(true); //TODO check if in flow, now only for vertical elements
+          var dir = this.direction;
+
+          if(dir == 'v')
+            dir = true;
+          else if(dir == 'h')
+            dir = false;
+          else
+            dir = this.isInFlow(el, elem);
+
+          dim.push(dir);
           dim.push(el);
           dims.push(dim);
         }
@@ -167,6 +178,60 @@ define(['backbone'],
       getDim: function(el){
         var o = this.offset(el);
         return [o.top - this.elT, o.left - this.elL, el.offsetHeight, el.offsetWidth];
+      },
+
+      /**
+       * Returns true if the elements is in flow, so is not in flow where
+       * for example the component is with float:left
+       * @param  {HTMLElement} el
+       * @param  {HTMLElement} parent
+       * @return {Boolean}
+       * @private
+       * */
+      isInFlow:  function(el, parent) {
+          if(!el)
+            return false;
+
+          parent = parent || document.body;
+          var ch = -1, h;
+          var elem = el;
+          //while (elem !== document.body) {
+          h = elem.offsetHeight;
+          if (h < ch || !this.styleInFlow(elem, parent))
+            return false;
+          else
+            return true;
+      },
+
+      /**
+       * Check if el has style to be in flow
+       * @param  {HTMLElement} el
+       * @param  {HTMLElement} parent
+       * @return {Boolean}
+       * @private
+       */
+      styleInFlow: function(el, parent) {
+        var style = el.style;
+        if (style.float && style.float !== 'none')
+            return;
+        if (style.overflow && style.overflow !== 'visible')
+            return;
+        if(parent && $(parent).css('display') == 'flex')
+          return;
+        switch (style.position) {
+            case 'static': case 'relative': case '':
+                break;
+            default:
+                return;
+        }
+        var disp = $(el).css('display');
+        switch (disp) {
+            case 'block':
+            case 'list-item':
+            case 'table':
+                return true;
+        }
+        return;
       },
 
       /**
@@ -315,9 +380,8 @@ define(['backbone'],
             t = elDim[0] + marg;
             l = (method == 'before') ? (elDim[1] - marg) : (elDim[1] + elDim[3] - marg);
           }else{
-            //w   = '100%';
             w = elDim[3] + un;
-            //h   = elDim[3] + un;
+            h = 'auto';
             t = (method == 'before') ? (elDim[0] - marg) : (elDim[0] + elDim[2] - marg);
             l = elDim[1];
           }
@@ -327,9 +391,10 @@ define(['backbone'],
             return;
           }
           if(trgDim){
-            t = trgDim[0] + margI + 17;
-            l = trgDim[1] + margI * 7;
-            w = (parseInt(trgDim[3]) - margI * 14) + un;
+            t = trgDim[0] + margI;
+            l = trgDim[1] + margI;
+            w = (parseInt(trgDim[3]) - margI * 2) + un;
+            h = 'auto';
           }
         }
         plh.style.top = t + un;
@@ -355,6 +420,9 @@ define(['backbone'],
         this.eV.className = this.eV.className.replace(clsReg, '');
         if(this.moved)
           this.move(this.target, this.eV, this.lastPos);
+
+        if(typeof this.onEndMove === 'function')
+          this.onEndMove();
       },
 
       /**
@@ -367,9 +435,12 @@ define(['backbone'],
         var index = pos.index;
         var model = $(src).data('model');
         var collection = model.collection;
-        var targetCollection = $(dst).data('collection');
+        var $dst = $(dst);
+        var targetCollection = $dst.data('collection');
+        var targetModel = $dst.data('model');
+        var droppable = targetModel ? targetModel.get('droppable') : 1;
 
-        if(targetCollection){// && targetModel.get('droppable')
+        if(targetCollection && droppable){ // TODO && targetModel.get('droppable')
           index = pos.method === 'after' ? index + 1 : index;
           var modelTemp = targetCollection.add({}, {at: index, noIncrement: 1});
           var modelRemoved = model.collection.remove(model);

@@ -17,9 +17,11 @@ define(['backbone'],
 				this.canvasId			= this.config.canvasId 	|| '';
 				this.wrapperId		= this.config.wrapperId 	|| 'wrapper';
 				this.pfx					= this.config.stylePrefix;
+				this.ppfx					= this.config.pStylePrefix;
 				this.hoverClass		= this.pfx + 'hover';
 				this.badgeClass		= this.pfx + 'badge';
 				this.plhClass			= this.pfx + 'placeholder';
+				this.freezClass		= this.ppfx + 'freezed';
 				if(this.editorModel.get)
 					this.setElement(this.editorModel.get('$editor').find('#'+this.canvasId));
 				this.$canvas			= this.$el;

@@ -338,6 +338,7 @@ define([
 			initCommands: function() {
 				var cfg = this.config.commands,
 					pfx = cfg.stylePrefix || 'com-';
+				cfg.pStylePrefix = this.config.stylePrefix;
 				cfg.stylePrefix = this.config.stylePrefix + pfx;
 				cfg.em = this;
 				cfg.canvasId = this.config.idCanvas;
