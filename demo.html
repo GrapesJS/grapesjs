@@ -726,31 +726,27 @@
                                    { id: 'comp100',   className: 'fa fa-square-o icon-comp100',   command: 'insert-custom',
                                      attributes : { title : 'Create all-width element' },
                                      options:  {
-                                        content         : { style: { width: '100%', 'min-height': '75px', 'padding': '7px'}},
-                                        terminateAfterInsert  : false,
-                                      },
+                                        content: '<div style="width:100%; min-height:75px; padding:7px"></div>',
+                                        terminateAfterInsert: false,
+                                     },
                                     },{ id: 'comp50',   className: 'fa fa-square-o icon-comp50',    command: 'insert-custom',
                                      attributes : { title : 'Create 2 columns element' },
                                      options:  {
-                                        content         : { style: { width: '100%', 'padding': '7px'},//, 'display': 'table'
-                                                            components: [
-                                                                          {style: {width: '50%', 'min-height': '75px', 'padding': '7px', 'float':'left' }},
-                                                                          {style: {width: '50%', 'min-height': '75px', 'padding': '7px', 'float':'left'  }},
-                                                                          {style: {clear:'both'}},
-                                                                      ]
-                                                          },
+                                        content: '<div style="width:100%; padding:7px">'+
+                                                  '<div style="width:50%; min-height:75px; padding:7px; float:left"></div>' +
+                                                  '<div style="width:50%; min-height:75px; padding:7px; float:left"></div>' +
+                                                  '<div style="clear:both"></div>' +
+                                                '</div>',
                                       },
                                     },{ id: 'comp30',   className: 'fa fa-square-o icon-comp30',    command: 'insert-custom',
                                      attributes : { title : 'Create 3 columns element' },
                                      options:  {
-                                        content         : { style: { width: '100%', 'padding': '7px'},//, 'display': 'table'
-                                                            components: [
-                                                                          {style: {width: '33.333%', 'min-height': '75px', 'padding': '7px', 'float':'left' }},
-                                                                          {style: {width: '33.333%', 'min-height': '75px', 'padding': '7px', 'float':'left'  }},
-                                                                          {style: {width: '33.333%', 'min-height': '75px', 'padding': '7px', 'float':'left'  }},
-                                                                          {style: {clear:'both'}},
-                                                                      ]
-                                                          },
+                                      content: '<div style="width:100%; padding:7px">'+
+                                                  '<div style="width:33.333%; min-height:75px; padding:7px; float:left"></div>' +
+                                                  '<div style="width:33.333%; min-height:75px; padding:7px; float:left"></div>' +
+                                                  '<div style="width:33.333%; min-height:75px; padding:7px; float:left"></div>' +
+                                                  '<div style="clear:both"></div>' +
+                                                '</div>',
                                       },
                                     },
                 ]
