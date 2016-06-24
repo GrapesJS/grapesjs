@@ -371,9 +371,9 @@ define([
 				if(this.um)
 					return;
 				if(this.cmp && this.config.undoManager){
-					var that 	= this;
-					this.um 	= new Backbone.UndoManager({
-					    register: [this.cmp.getComponent().get('components')],
+					var that = this;
+					this.um = new Backbone.UndoManager({
+					    register: [this.cmp.getComponents(), this.cssc.getRules()],
 					    track: true
 					});
 					this.UndoManager = this.um;
