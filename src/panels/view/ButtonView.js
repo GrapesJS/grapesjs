@@ -155,7 +155,7 @@ function(Backbone, require) {
 					this.parentM.set('active', true, { silent: true }).trigger('checkActive');
 
 				if(command)
-					command.run(editor, this.model);
+					command.run(editor, this.model, this.model.get('options'));
 			}else{
 				this.$el.removeClass(this.activeCls);
 
@@ -165,7 +165,7 @@ function(Backbone, require) {
 					this.parentM.set('active', false, { silent: true }).trigger('checkActive');
 
 				if(command)
-					command.stop(editor, this.model);
+					command.stop(editor, this.model, this.model.get('options'));
 			}
 		},
 

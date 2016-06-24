@@ -10,12 +10,11 @@ define(['backbone', './SelectPosition'],
 			 * Run method
 			 * @private
 			 * */
-			run: function(em, sender){
+			run: function(em, sender, options){
 				this.enable();
-				this.em				= em;
-				this.sender		= sender;
-				this.opt 			= sender.get('options') || {};
-				this.content	= this.opt.content;
+				this.em = em;
+				this.sender = sender;
+				this.opt = options || {};
 			},
 
 			enable: function(){
@@ -42,7 +41,7 @@ define(['backbone', './SelectPosition'],
 					this.enable();
 
 				if(this.em)
-						this.em.initChildrenComp(model);
+						this.em.editor.initChildrenComp(model);
 
 				this.afterInsert(model, this);
 			},
@@ -68,16 +67,7 @@ define(['backbone', './SelectPosition'],
 			 * @private
 			 * */
 			buildContent: function(){
-				var result = {};
-				if(typeof this.content === 'string'){
-					result = {
-						content	: this.content,
-						tagName	: 'span',
-					};
-				}else if(typeof this.content === 'object'){
-					result = this.content;
-				}
-				return result;
+				return this.opt.content;
 			},
 		});
 	});
