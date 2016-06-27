@@ -46,10 +46,9 @@ define(['backbone', './AssetView', './AssetImageView', './FileUploader', 'text!.
 		addFromStr: function(e){
 			e.preventDefault();
 
-			if(!this.inputUrl || !this.inputUrl.value)
-				this.inputUrl = this.el.querySelector('.'+this.pfx+'add-asset input');
+			var input = this.getInputUrl();
 
-			var url = this.inputUrl.value.trim();
+			var url = input.value.trim();
 
 			if(!url)
 				return;
@@ -57,18 +56,30 @@ define(['backbone', './AssetView', './AssetImageView', './FileUploader', 'text!.
 			this.collection.addImg(url, {at: 0});
 
 			this.getAssetsEl().scrollTop = 0;
-			this.inputUrl.value = '';
+			input.value = '';
 			return this;
 		},
 
 		/**
 		 * Returns assets element
 		 * @return {HTMLElement}
+		 * @private
 		 */
 		getAssetsEl: function(){
 			//if(!this.assets) // Not able to cache as after the rerender it losses the ref
 			this.assets = this.el.querySelector('.' + this.pfx + 'assets');
 			return this.assets;
+		},
+
+		/**
+		 * Returns input url element
+		 * @return {HTMLElement}
+		 * @private
+		 */
+		getInputUrl: function(){
+			if(!this.inputUrl || !this.inputUrl.value)
+				this.inputUrl = this.el.querySelector('.'+this.pfx+'add-asset input');
+			return this.inputUrl;
 		},
 
 		/**

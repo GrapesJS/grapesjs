@@ -5,6 +5,8 @@ define(['AssetManager/view/AssetsView', 'AssetManager/model/Assets'],
 
 			describe('AssetsView', function() {
 
+				var obj;
+
 				before(function () {
 					this.$fixtures 	= $("#fixtures");
 					this.$fixture 	= $('<div class="assets-fixture"></div>');
@@ -16,6 +18,7 @@ define(['AssetManager/view/AssetsView', 'AssetManager/model/Assets'],
 						config : {},
 						collection: this.coll
 					});
+					obj = this.view;
 					this.$fixture.empty().appendTo(this.$fixtures);
 					this.$fixture.html(this.view.render().el);
 				});
@@ -77,6 +80,23 @@ define(['AssetManager/view/AssetsView', 'AssetManager/model/Assets'],
 					$asset.attr('class', this.view.pfx + 'highlight');
 					this.coll.trigger('deselectAll');
 					$asset.attr('class').should.be.empty;
+				});
+
+				it("Returns not empty assets element", function (){
+					obj.getAssetsEl().should.be.ok;
+				});
+
+				it("Returns not empty url input", function (){
+					obj.getInputUrl().should.be.ok;
+				});
+
+				it("Add image asset from input string", function (){
+					obj.getInputUrl().value = "test";
+					obj.addFromStr({
+						preventDefault: function(){}
+					});
+					var asset = obj.collection.at(0);
+					asset.get('src').should.equal('test');
 				});
 
 			});
