@@ -117,6 +117,7 @@ define([path + 'ClassTagsView', 'ClassManager/model/ClassTags'],
               sinon.stub(this.target, "get").returns(this.targetStub);
               this.view.compTarget = this.compTargetStub;
               this.view.addNewTag('test');
+              this.view.compTarget = this.compTargetStub;
               this.view.addNewTag('test2');
               this.$tags.children().length.should.equal(2);
             });

@@ -815,10 +815,14 @@ $paddElClm: 5px 6px;
 	font-size: 11px;
 	padding: 10px 5px;
 
-	##{$clm-prefix}label{
+	##{$clm-prefix}label, ##{$clm-prefix}sel{
 		padding: 7px 0;
 		float:left;
 	}
+  ##{$clm-prefix}sel{
+    font-style: italic;
+    margin-left: 5px;
+  }
 	##{$clm-prefix}status-c{
 		float:right;
 	}

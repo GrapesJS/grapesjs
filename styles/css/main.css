@@ -3272,9 +3272,12 @@ ol.example li.placeholder:before {
 .wte-clm-tags {
   font-size: 11px;
   padding: 10px 5px; }
-  .wte-clm-tags #wte-clm-label {
+  .wte-clm-tags #wte-clm-label, .wte-clm-tags #wte-clm-sel {
     padding: 7px 0;
     float: left; }
+  .wte-clm-tags #wte-clm-sel {
+    font-style: italic;
+    margin-left: 5px; }
   .wte-clm-tags #wte-clm-status-c {
     float: right; }
   .wte-clm-tags #wte-clm-tags-field {

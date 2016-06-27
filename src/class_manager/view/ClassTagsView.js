@@ -25,11 +25,12 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
 
       this.target  = this.config.target;
 
-      this.listenTo( this.target ,'change:selectedComponent',this.componentChanged);
+      this.listenTo(this.target ,'change:selectedComponent',this.componentChanged);
+      this.listenTo(this.target, 'targetClassUpdated', this.updateSelector);
 
-      this.listenTo( this.collection, 'add', this.addNew);
-      this.listenTo( this.collection, 'reset', this.renderClasses);
-      this.listenTo( this.collection, 'remove', this.tagRemoved);
+      this.listenTo(this.collection, 'add', this.addNew);
+      this.listenTo(this.collection, 'reset', this.renderClasses);
+      this.listenTo(this.collection, 'remove', this.tagRemoved);
 
       this.delegateEvents();
     },
@@ -115,6 +116,27 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
         this.$statesC.css('display','block');
       else
         this.$statesC.css('display','none');
+      this.updateSelector();
+    },
+
+    /**
+     * Udpate selector helper
+     * @return {this}
+     * @private
+     */
+    updateSelector: function(){
+      this.compTarget = this.target.get('selectedComponent');
+      if(!this.compTarget || !this.compTarget.get)
+        return;
+      var result = '';
+      var models = this.compTarget.get('classes');
+      models.each(function(model){
+        if(model.get('active'))
+          result += '.' + model.get('name');
+      });
+      var state = this.compTarget.get('state');
+      result = state ? result + ':' + state : result;
+      this.el.querySelector('#' + this.pfx + 'sel').innerHTML = result;
     },
 
     /**
@@ -126,6 +148,7 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
         this.compTarget.set('state', this.$states.val());
         if(this.target)
           this.target.trigger('targetStateUpdated');
+        this.updateSelector();
       }
     },
 
