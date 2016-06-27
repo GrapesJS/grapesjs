@@ -12,7 +12,7 @@ define(['AssetManager/view/AssetView', 'AssetManager/model/Asset', 'AssetManager
 
 				beforeEach(function () {
 					var coll 	= new Assets();
-					var model = coll.add({});
+					var model = coll.add({src: 'test'});
 					this.view = new AssetView({
 						config : {},
 						model: model
@@ -22,7 +22,7 @@ define(['AssetManager/view/AssetView', 'AssetManager/model/Asset', 'AssetManager
 				});
 
 				afterEach(function () {
-					this.view.model.destroy();
+					this.view.remove();
 				});
 
 				after(function () {

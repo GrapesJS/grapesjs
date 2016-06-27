@@ -80,7 +80,8 @@ define(['./AssetView','text!./../template/assetImage.html'],
 				name: 	name,
 				src: 	this.model.get('src'),
 				dim:	dim,
-				pfx:	this.pfx
+				pfx:	this.pfx,
+				ppfx:	this.ppfx
 			}));
 			this.$el.attr('class', this.className);
 			return this;

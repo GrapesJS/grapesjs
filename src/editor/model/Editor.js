@@ -293,8 +293,8 @@ define([
 			initAssetManager: function() {
 				var cfg			= this.config.assetManager,
 					pfx			= cfg.stylePrefix || 'am-';
+				cfg.pStylePrefix = this.config.stylePrefix;
 				cfg.stylePrefix = this.config.stylePrefix + pfx;
-
 				if(this.stm)
 					cfg.stm = this.stm;
 

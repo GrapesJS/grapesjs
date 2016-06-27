@@ -23,6 +23,8 @@ $colorBlue:		#3b97e3;
 $colorRed: 		#DD3636;
 $colorYell:		#ffca6f;
 $colorGreen:	#62c462;
+$tagBg: #804f7b;
+$secColor: $tagBg;
 
 $imageCompDim:	50px;
 
@@ -67,7 +69,7 @@ $imageCompDim:	50px;
 .opac50{
 	@include opacity(0.50);
 }
-.checker-bg{
+.#{$app-prefix}checker-bg, .checker-bg{
 	background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==");
 }
 
@@ -90,6 +92,29 @@ $imageCompDim:	50px;
 .#{$app-prefix}freezed{
   @include opacity(0.50);
   pointer-events: none;
+}
+
+.#{$app-prefix}btn-prim{
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+  padding: 3px 6px;
+  cursor: pointer;
+  color: #ddd;
+  padding: 0.5em;
+  border: none;
+}
+.#{$app-prefix}btn-prim:active{
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.#{$app-prefix}input{
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+  box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.1);
+  box-sizing: border-box;
+  color: $fontColor;
+  padding: 0.5em 1em;
 }
 /*************  CANVAS  ****************/
 .#{$cv-prefix}canvas {
@@ -252,7 +277,7 @@ $leftWidth: 16.5%;
   }
 
   &##{$pn-prefix}views{
-  	border-bottom: 2px solid darken($mainColor, 3%);
+  	border-bottom: 2px solid rgba(0,0,0,0.3);
   	right: 0;
   	width: $leftWidth;
   	z-index: 4;
@@ -268,7 +293,7 @@ $leftWidth: 16.5%;
   }
 }
 
-.#{$pn-prefix}btn{
+.#{$pn-prefix}btn, .#{$app-prefix}btnt{
 	box-sizing: border-box;
 	height: 35px; width: 35px;
 	line-height: 35px;
@@ -283,8 +308,8 @@ $leftWidth: 16.5%;
 	position: relative;
 
 	&.#{$pn-prefix}active{
-		background-color: $mainDkColor;
-    	box-shadow: 0 0 3px darken($mainDkColor,5%) inset;
+		background-color: rgba(0, 0, 0, 0.15);
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.25) inset;
 	}
 
 	> .#{$pn-prefix}arrow-rd {
@@ -551,9 +576,9 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 		.#{$sm-prefix}d-s-arrow, .#{$clm-prefix}d-s-arrow{ bottom: 7px; }
 
 	 	&.#{$sm-prefix}integer, &.#{$sm-prefix}select, &.#{$sm-prefix}list, &.#{$sm-prefix}color, &.#{$sm-prefix}composite, &.#{$sm-prefix}input {
-		  background-color: darken($mainDkColor, 2.5%);/*353535*/
-		  border: 1px solid darken($mainDkColor, 6.5%);/*292929*/
-		  box-shadow: 1px 1px 0 lighten($mainDkColor, 11.5%);/*575757*/
+		  background-color: rgba(0, 0, 0, 0.3);/*353535*/
+		  border: 1px solid rgba(0, 0, 0, 0.1);/*292929*/
+		  box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.1);/*575757*/
 		  color: $inputFontColor;
 		  border-radius: 2px;
 		  box-sizing: border-box;
@@ -563,8 +588,8 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 		&.#{$sm-prefix}select select{ height: 20px; }
 		&.#{$sm-prefix}select option { margin: 5px 0;}
 		&.#{$sm-prefix}composite{
-			background-color: transparent;
-			border: 1px solid darken($mainDkColor, 2.5%);
+			background-color: rgba(0,0,0,0.1);
+			border: 1px solid rgba(0, 0, 0, 0.25);
 		}
 		&.#{$sm-prefix}list{
 			width:auto;
@@ -661,18 +686,18 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 		}
 
 		.#{$sm-prefix}layers {
-		  background-color: $mainDkColor;
-		  border: 1px solid darken($mainDkColor, 2.5%);
-		  box-shadow: 1px 1px 0 lighten($mainDkColor, 11.5%);
+		  background-color: rgba(0,0,0,0.13);
+		  border: 1px solid rgba(0,0,0,0.13);
+		  box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.1);
 		  border-radius: 2px;
 		  margin-top: 5px;
 		  min-height: 30px;
 		}
 
 		.#{$sm-prefix}layer {
-		  background-color: lighten($mainDkColor, 4.5%);
+		  background-color: rgba(255, 255, 255, 0.055);
 		  border-radius: 2px;
-		  box-shadow: 1px 1px 0 darken($mainDkColor, 2.5%), 1px 1px 0 lighten($mainDkColor, 9%) inset;
+		  box-shadow: 1px 1px 0 rgba(0,0,0,0.2), 1px 1px 0 rgba(255, 255, 255, 0.055) inset;
 		  margin: 2px;
 		  padding: 7px;
 		  position: relative;
@@ -709,7 +734,7 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 			  background-size: cover !important;
 			}
 			&.#{$sm-prefix}active {
-			  background-color: lighten($mainDkColor, 7%);
+			  background-color: rgba(255, 255, 255, 0.12);
 			}
 			&.#{$sm-prefix}no-preview ##{$sm-prefix}preview-box{
 				display:none;
@@ -777,7 +802,6 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 /********* Class manager **********/
 $addBtnBg: lighten($mainDkColor, 10%);
 $paddElClm: 5px 6px;
-$tagBg: #804f7b;
 
 .#{$clm-prefix}field{
 		@extend .#{$sm-prefix}field
@@ -911,8 +935,27 @@ $tagBg: #804f7b;
 }
 
 /********* Assets Manager **********/
+.#{$am-prefix}assets{
+  height: 290px;
+  overflow: auto;
+  clear: both;
+}
 
-.#{$am-prefix}assets {
+.#{$am-prefix}assets-header{
+  padding: 5px;
+}
+
+.#{$am-prefix}add-asset{
+  input{
+    width: 70%;
+  }
+  button{
+    width: 25%;
+    float: right;
+  }
+}
+
+.#{$am-prefix}assets-cont {
   background-color: $mainDkColor;
   border-radius: 3px;
   box-sizing: border-box;
@@ -920,26 +963,45 @@ $tagBg: #804f7b;
   width: 45%;
   float:right;
   height: 325px;
-  overflow: auto;
+  overflow: hidden;
 
-  	.#{$am-prefix}highlight { background-color: $mainColor; }
+  ##{$am-prefix}preview-cont{
+    position: relative;
+    height: 70px; width: 30%;
+    background-color: $mainColor;
+    border-radius: 2px;
+    float: left;
+    overflow: hidden;
+  }
 
-  	.#{$am-prefix}asset {
+  ##{$am-prefix}preview{
+    position: absolute;
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+  }
+
+  ##{$am-prefix}preview-bg{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    @include opacity(0.5);
+    z-index: 0;
+  }
+
+  .#{$am-prefix}highlight { background-color: $mainColor; }
+
+  .#{$am-prefix}asset {
 	  border-bottom: 1px solid darken($mainDkColor, 3%);
 	  padding: 5px;
 	  cursor:pointer;
 	  position: relative;
-	  	&:hover ##{$am-prefix}close { display: block;}
 
-	  	##{$am-prefix}preview{
-			height: 70px; width: 30%;
-			background-position: center center;
-			background-size: cover;
-			background-repeat: no-repeat;
-			background-color: $mainColor;
-			border-radius: 2px;
-		    float: left;
-		}
+    &:hover ##{$am-prefix}close { display: block;}
+
 	}
 	##{$am-prefix}close {
 		@extend .btn-cl;

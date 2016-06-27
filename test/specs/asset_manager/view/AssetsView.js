@@ -33,38 +33,31 @@ define(['AssetManager/view/AssetsView', 'AssetManager/model/Assets'],
 				});
 
 				it("Collection is empty", function (){
-					this.view.$el.html().should.be.empty;
+					this.view.getAssetsEl().innerHTML.should.be.empty;
 				});
 
 				it("Add new asset", function (){
 					sinon.stub(this.view, "addAsset");
-					this.coll.add({});
+					this.coll.add({src: 'test'});
 					this.view.addAsset.calledOnce.should.equal(true);
 				});
 
 				it("Render new asset", function (){
-					this.coll.add({});
-					this.view.$el.html().should.not.be.empty;
-				});
-
-				it("Render correctly new asset", function (){
-					this.coll.add({});
-					var $asset = this.view.$el.children().first();
-					$asset.prop("tagName").should.equal('DIV');
-					$asset.html().should.be.empty;
+					this.coll.add({src: 'test'});
+					this.view.getAssetsEl().innerHTML.should.not.be.empty;
 				});
 
 				it("Render correctly new image asset", function (){
-					this.coll.add({ type: 'image'});
-					var $asset = this.view.$el.children().first();
-					$asset.prop("tagName").should.equal('DIV');
-					$asset.html().should.not.be.empty;
+					this.coll.add({ type: 'image', src: 'test'});
+					var asset = this.view.getAssetsEl().firstChild;
+					asset.tagName.should.equal('DIV');
+					asset.innerHTML.should.not.be.empty;
 				});
 
 				it("Clean collection from asset", function (){
-					var model = this.coll.add({});
+					var model = this.coll.add({src: 'test'});
 					this.coll.remove(model);
-					this.view.$el.html().should.be.empty;
+					this.view.getAssetsEl().innerHTML.should.be.empty;
 				});
 
 				it("Load no assets", function (){

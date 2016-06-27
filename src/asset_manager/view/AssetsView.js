@@ -1,14 +1,17 @@
-define(['backbone', './AssetView', './AssetImageView', './FileUploader'],
-	function (Backbone, AssetView, AssetImageView, FileUploader) {
+define(['backbone', './AssetView', './AssetImageView', './FileUploader', 'text!./../template/assets.html'],
+	function (Backbone, AssetView, AssetImageView, FileUploader, assetsTemplate) {
 	/**
 	 * @class AssetsView
 	 * */
 	return Backbone.View.extend({
 
+		template: _.template(assetsTemplate),
+
 		initialize: function(o) {
-			this.options 	= o;
-			this.config		= o.config;
-			this.pfx		= this.config.stylePrefix;
+			this.options = o;
+			this.config = o.config;
+			this.pfx = this.config.stylePrefix || '';
+			this.ppfx = this.config.pStylePrefix || '';
 			this.listenTo( this.collection, 'add', this.addToAsset );
 			this.listenTo( this.collection, 'deselectAll', this.deselectAll );
 			this.className	= this.pfx + 'assets';
@@ -29,6 +32,43 @@ define(['backbone', './AssetView', './AssetImageView', './FileUploader'],
 					}
 				}
 			}
+
+			this.events = {};
+			this.events.submit = 'addFromStr';
+			this.delegateEvents();
+		},
+
+		/**
+		 * Add new asset to the collection via string
+		 * @param {Event} e Event object
+		 * @return {this}
+		 */
+		addFromStr: function(e){
+			e.preventDefault();
+
+			if(!this.inputUrl || !this.inputUrl.value)
+				this.inputUrl = this.el.querySelector('.'+this.pfx+'add-asset input');
+
+			var url = this.inputUrl.value.trim();
+
+			if(!url)
+				return;
+
+			this.collection.addImg(url, {at: 0});
+
+			this.getAssetsEl().scrollTop = 0;
+			this.inputUrl.value = '';
+			return this;
+		},
+
+		/**
+		 * Returns assets element
+		 * @return {HTMLElement}
+		 */
+		getAssetsEl: function(){
+			//if(!this.assets) // Not able to cache as after the rerender it losses the ref
+			this.assets = this.el.querySelector('.' + this.pfx + 'assets');
+			return this.assets;
 		},
 
 		/**
@@ -90,7 +130,8 @@ define(['backbone', './AssetView', './AssetImageView', './FileUploader'],
 			if(fragment){
 				fragment.appendChild( rendered );
 			}else{
-				this.$el.prepend(rendered);
+				var assetsEl = this.getAssetsEl();
+				assetsEl.insertBefore(rendered, assetsEl.firstChild);
 			}
 
 			return rendered;
@@ -113,9 +154,12 @@ define(['backbone', './AssetView', './AssetImageView', './FileUploader'],
 				this.addAsset(model, fragment);
 			},this);
 
-			this.$el.append(fragment);
-			this.$el.attr('class', this.className);
+			this.$el.html(this.template({
+				pfx:	this.pfx,
+				ppfx: this.ppfx,
+			}));
 
+			this.$el.find('.'+this.pfx + 'assets').append(fragment);
 			return this;
 		}
 	});

@@ -1,5 +1,7 @@
 define(function () {
 	return {
+		// Indicates if try to load data from the selected storage
+    autoload: 1,
 
 		// Style prefix
 		stylePrefix			: 'am-',
@@ -44,8 +46,8 @@ define(function () {
 		// Store assets data where the new one is added or deleted
 		storeOnChange		: true,
 
-		// It could be useful avoid to send other requests, for saving assets,
-		// after each upload because the uploader script has already done it
+		// It could be useful to avoid send other requests for saving assets,
+		// as after upload the script may have already done it
 		storeAfterUpload	: false,
 
 	};
