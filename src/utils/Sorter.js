@@ -128,7 +128,6 @@ define(['backbone'],
 
         var dims = this.dimsFromTarget(e.target, this.rX, this.rY);
         var pos = this.findPosition(dims, this.rX, this.rY);
-
         // If there is a significant changes with the pointer
         if( !this.lastPos ||
             (this.lastPos.index != pos.index || this.lastPos.method != pos.method)){
@@ -195,9 +194,8 @@ define(['backbone'],
           parent = parent || document.body;
           var ch = -1, h;
           var elem = el;
-          //while (elem !== document.body) {
           h = elem.offsetHeight;
-          if (h < ch || !this.styleInFlow(elem, parent))
+          if (/*h < ch || */!this.styleInFlow(elem, parent))
             return false;
           else
             return true;
@@ -212,9 +210,10 @@ define(['backbone'],
        */
       styleInFlow: function(el, parent) {
         var style = el.style;
-        if (style.float && style.float !== 'none')
-            return;
+        var $el = $(el);
         if (style.overflow && style.overflow !== 'visible')
+            return;
+        if ($el.css('float') !== 'none')
             return;
         if(parent && $(parent).css('display') == 'flex')
           return;
@@ -224,8 +223,7 @@ define(['backbone'],
             default:
                 return;
         }
-        var disp = $(el).css('display');
-        switch (disp) {
+        switch ($el.css('display')) {
             case 'block':
             case 'list-item':
             case 'table':
@@ -327,13 +325,11 @@ define(['backbone'],
           xCenter = dim[1] + (dim[3] / 2);
           // Y center position of the element. Top + (Height / 2)
           yCenter = dim[0] + (dim[2] / 2);
-
           // Skip if over the limits
           if( (xLimit && dim[1] > xLimit) ||
-              (yLimit && yCenter > yLimit) ||
+              (yLimit && yCenter >= yLimit) || // >= avoid issue with clearfixes
               (leftLimit && dimRight < leftLimit) )
               continue;
-
           result.index = i;
           // If it's not in flow (like 'float' element)
           if(!dim[4]){
@@ -446,6 +442,8 @@ define(['backbone'],
           var modelRemoved = model.collection.remove(model);
           targetCollection.add(modelRemoved, {at: index, noIncrement: 1});
           targetCollection.remove(modelTemp);
+          // This will cause to recalculate children dimensions
+          this.prevTarget = null;
         }else
           console.warn("Invalid target position");
       },
@@ -457,8 +455,10 @@ define(['backbone'],
        * */
       rollback: function(e){
         var key = e.which || e.keyCode;
-        if(key == 27)
+        if(key == 27){
+          this.moved = false;
           this.endMove();
+        }
         return;
       },
 
