@@ -30,9 +30,8 @@ define(['backbone'],
 					url: this.get('urlStore'),
 					beforeSend: this.get('beforeSend'),
 					complete: this.get('onComplete'),
-					processData: false,
-					contentType: false,
-					type: 'POST',
+					method: 'POST',
+					dataType: 'json',
 					data: fd,
 				});
 			},
@@ -56,7 +55,7 @@ define(['backbone'],
 					complete: this.get('onComplete'),
 					data: fd,
 					async: false,
-					type: 'GET',
+					method: 'GET',
 				}).done(function(d){
 					result = d;
 				});
