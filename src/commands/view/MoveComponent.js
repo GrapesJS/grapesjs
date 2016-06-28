@@ -28,7 +28,7 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 			 * @param	{Event} e
 			 * */
 			initSorter: function(e){
-				var el = $(e.target).get('model');
+				var el = $(e.target).data('model');
 				if(!el.get('draggable'))
 					return;
 				if(this.sorter)
