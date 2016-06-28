@@ -9,13 +9,7 @@ require(['config/require-config'], function() {
 			container	: '#gjs',
 			height: '100%',
 			fromElement: true,
-			storage:{
-        type: 'remote',
-      stepsBeforeSave: 10,
-      urlStore: 'http://store/endpoint',
-      urlLoad: 'http://load/endpoint',
-      params: {},   // For custom values on requests
-      },
+			storage:{ autoload: 0 },
 
 			commands: 		{
 					defaults		: [{
