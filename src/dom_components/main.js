@@ -132,7 +132,7 @@ define(function(require) {
 			 * @param {string} [component.tagName='div'] Tag name
 			 * @param {string} [component.type=''] Type of the component. Available: ''(default), 'text', 'image'
 			 * @param {boolean} [component.removable=true] If component is removable
-			 * @param {boolean} [component.movable=true] If is possible to move the component around the structure
+			 * @param {boolean} [component.draggable=true] If is possible to move the component around the structure
 			 * @param {boolean} [component.droppable=true] If is possible to drop inside other components
 			 * @param {boolean} [component.badgable=true] If the badge is visible when the component is selected
 			 * @param {boolean} [component.stylable=true] If is possible to style component
@@ -146,7 +146,7 @@ define(function(require) {
 			 * var comp1 = ComponentsService.addComponent({
 			 * 	tagName: 'div',
 			 * 	removable: true, // Can't remove it
-			 * 	movable: true, // Can't move it
+			 * 	draggable: true, // Can't move it
 			 * 	copyable: true, // Disable copy/past
 			 * 	content: 'Content text', // Text inside component
 			 * 	style: { color: 'red'},

@@ -196,7 +196,7 @@ define(['backbone', 'text!./../template/item.html','require'],
 			}).render().$el;
 			this.$el.find('.'+ pfx +'children').html(this.$components);
 			this.$caret			= this.$el.find('> .' + pfx + 'title > #' + pfx + 'caret');
-			if(!this.model.get('movable') || !this.config.sortable){
+			if(!this.model.get('draggable') || !this.config.sortable){
 				this.$el.find('> #' + pfx + 'move').detach();
 			}
 			if(!vis)

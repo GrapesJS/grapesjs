@@ -28,6 +28,9 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 			 * @param	{Event} e
 			 * */
 			initSorter: function(e){
+				var el = $(e.target).get('model');
+				if(!el.get('draggable'))
+					return;
 				if(this.sorter)
 					this.sorter.startSort(e.target);
 				this.stopSelectComponent(e);
@@ -50,7 +53,7 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 				e.stopPropagation();
 
 			  var $this 	= $(e.target);
-			  if($this.data('model').get('movable')){
+			  if($this.data('model').get('draggable')){
 					 $this.addClass(this.hoverClass);
 					 this.attachBadge(e.target);
 			    }
