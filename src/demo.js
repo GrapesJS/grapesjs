@@ -9,7 +9,7 @@ require(['config/require-config'], function() {
 			container	: '#gjs',
 			height: '100%',
 			fromElement: true,
-			//storage:{ autoload: 0 },
+			storage:{ autoload: 0 },
 
 			commands: 		{
 					defaults		: [{
@@ -57,6 +57,7 @@ require(['config/require-config'], function() {
 					      				   { type: 'image', src : './img/bg-gr-v.png', date: '2015-02-01',height:1, width:1728},
 				      				   ]
 			},
+
 /*
 			panels: {
 				defaults		: [{
@@ -66,6 +67,22 @@ require(['config/require-config'], function() {
 						className	: 'fa fa fa-mouse-pointer',
 						command		: 'select-comp',
 					},{
+            id: 'image-comp',
+            className: 'fa fa-picture-o',
+            dragDrop: 1,
+            options:  {
+              content: '<div style="width:100%; padding:7px">'+
+                          '<div class="redbg" style="width:33.333%; min-height:75px; padding:7px; float:left"></div>' +
+                          '<div style="width:33.333%; min-height:75px; padding:7px; float:left"></div>' +
+                          '<div style="width:33.333%; min-height:75px; padding:7px; float:left"></div>' +
+                          '<div style="clear:both"></div>' +
+                        '</div>'
+            },
+          },{
+            id: 'move-comp',
+            command: 'move-comp',
+            className: 'fa fa-arrows',
+          },{
 								id				: 'create',
 								className	: 'fa fa-plus-square-o icon-add-comp',
 								command		: 'create-comp',
@@ -129,6 +146,7 @@ require(['config/require-config'], function() {
 					       	   { id: 'open-layers', className: 'fa fa-bars', 		command: 'open-layers',	attributes	: { title: 'Open Layer Manager' }, },],
 				}],
 			},
+
 */
 
 			styleManager : {

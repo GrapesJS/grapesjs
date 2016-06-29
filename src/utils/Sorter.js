@@ -20,6 +20,16 @@ define(['backbone'],
         this.pfx = o.pfx || '';
         this.onEndMove = o.onEndMove || '';
         this.direction = o.direction || 'v'; // v (vertical), h (horizontal), a (auto)
+        this.onMoveClb = o.onMove || '';
+        this.dropContent = '';
+      },
+
+      /**
+       * Set content to drop
+       * @param {String|Object} content
+       */
+      setDropContent: function(content){
+        this.dropContent = content;
       },
 
       /**
@@ -135,7 +145,8 @@ define(['backbone'],
           this.lastPos = pos;
         }
 
-        //callback onMove
+        if(typeof this.onMoveClb === 'function')
+          this.onMoveClb(e);
       },
 
       /**
@@ -227,6 +238,7 @@ define(['backbone'],
             case 'block':
             case 'list-item':
             case 'table':
+            case 'flex':
                 return true;
         }
         return;
@@ -430,7 +442,6 @@ define(['backbone'],
       move: function(dst, src, pos){
         var index = pos.index;
         var model = $(src).data('model');
-        var collection = model.collection;
         var $dst = $(dst);
         var targetCollection = $dst.data('collection');
         var targetModel = $dst.data('model');
@@ -438,10 +449,21 @@ define(['backbone'],
 
         if(targetCollection && droppable){ // TODO && targetModel.get('droppable')
           index = pos.method === 'after' ? index + 1 : index;
-          var modelTemp = targetCollection.add({}, {at: index, noIncrement: 1});
-          var modelRemoved = model.collection.remove(model);
-          targetCollection.add(modelRemoved, {at: index, noIncrement: 1});
-          targetCollection.remove(modelTemp);
+          var modelToDrop, modelTemp;
+          var opts = {at: index, noIncrement: 1};
+          if(!this.dropContent){
+            modelTemp = targetCollection.add({}, opts);
+            modelToDrop = model.collection.remove(model);
+          }else{
+            modelToDrop = this.dropContent;
+            opts.silent = false;
+          }
+          targetCollection.add(modelToDrop, opts);
+          if(!this.dropContent){
+            targetCollection.remove(modelTemp);
+          }else{
+            this.dropContent = null;
+          }
           // This will cause to recalculate children dimensions
           this.prevTarget = null;
         }else

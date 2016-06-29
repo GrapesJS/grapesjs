@@ -12,7 +12,9 @@ define([ 'backbone','require'],
 			context: '',
 			buttons: [],
 			attributes: {},
+			options: {},
 			active: false,
+			dragDrop: false,
 		},
 
 		initialize: function(options) {

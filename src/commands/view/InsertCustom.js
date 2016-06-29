@@ -34,7 +34,9 @@ define(['backbone', './SelectPosition'],
 				this.removePositionPlaceholder();
 				var object 	= this.buildContent();
 				this.beforeInsert(object);
+				// By default, collections do not trigger add event, so silent is used
 				var model = this.posTargetCollection.add(object, { at: this.posIndex, silent:false });
+
 				if(this.opt.terminateAfterInsert && this.sender)
 					this.sender.set('active',false);
 				else

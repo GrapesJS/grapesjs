@@ -5,16 +5,15 @@ function(Backbone, require) {
 	 * */
 	return Backbone.View.extend({
 
-		tagName		: 'span',
-
-		events		: { 'click'	: 'clicked'	},
+		tagName: 'span',
 
 		initialize: function(o){
-			_.bindAll(this, 'startTimer', 'stopTimer', 'showButtons', 'hideButtons','closeOnKeyPress');
+			_.bindAll(this, 'startTimer', 'stopTimer', 'showButtons', 'hideButtons','closeOnKeyPress','onDrop');
 			var cls = this.model.get('className');
 			this.config = o.config || {};
 			this.em = this.config.em || {};
 			this.pfx = this.config.stylePrefix || '';
+			this.ppfx = this.config.pStylePrefix || '';
 			this.id = this.pfx + this.model.get('id');
 			this.activeCls = this.pfx + 'active';
 			this.btnsVisCls = this.pfx + 'visible';
@@ -33,6 +32,52 @@ function(Backbone, require) {
 
 			if(this.em && this.em.get)
 				this.commands	= this.em.get('Commands');
+
+			this.events = {};
+
+			if(this.model.get('dragDrop'))
+				this.events.mousedown = 'initDrag';
+			else
+				this.events.click = 'clicked';
+			this.delegateEvents();
+
+			this.canvasEl = this.em.Canvas.CanvasView.$el.get(0);
+
+			this.sorter = new this.em.Utils.Sorter({
+				container: this.canvasEl,
+				containerSel: '*',
+				itemSel: '*',
+				pfx: this.ppfx,
+				onMove: this.onDrag,
+				onEndMove: this.onDrop,
+				direction: 'auto',
+				nested: 1,
+			});
+		},
+
+		/**
+		 * Init dragging element
+		 * @private
+		 */
+		initDrag: function(){
+			this.model.collection.deactivateAll(this.model.get('context'));
+			this.sorter.startSort(this.el);
+			this.sorter.setDropContent(this.model.get('options').content);
+			this.canvasEl.style.cursor = 'grabbing';
+		},
+
+		/**
+		 * During drag method
+		 * @private
+		 */
+		onDrag: function(e){},
+
+		/**
+		 * During drag method
+		 * @private
+		 */
+		onDrop: function(e){
+			this.canvasEl.style.cursor = 'default';
 		},
 
 		/**

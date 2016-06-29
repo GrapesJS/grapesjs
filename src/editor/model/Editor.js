@@ -356,6 +356,7 @@ define([
 			initPanels: function() {
 				var cfg = this.config.panels,
 					pfx = cfg.stylePrefix || 'pn-';
+				cfg.pStylePrefix = this.config.stylePrefix;
 				cfg.stylePrefix = this.config.stylePrefix + pfx;
 				cfg.em = this;
 				this.pn = new Panels(cfg);
