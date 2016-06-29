@@ -67,7 +67,7 @@ define(['backbone', './SelectPosition'],
 			 * @private
 			 * */
 			buildContent: function(){
-				return this.opt.content;
+				return this.opt.content || {};
 			},
 		});
 	});

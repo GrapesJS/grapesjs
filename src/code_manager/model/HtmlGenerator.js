@@ -28,7 +28,7 @@ define(['backbone'],
 					if(m.get('type') == 'image'){
 							tag 	= 'img';
 							sTag	= 1;
-							attr 	+= 'src="' + m.get('src') + '"';
+							attr 	+= ' src="' + m.get('src') + '"';
 					}
 
 					if(!_.isEmpty(m.get('style')))

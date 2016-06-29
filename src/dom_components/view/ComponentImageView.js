@@ -27,8 +27,13 @@ define(['backbone', './ComponentView'],
 		 * Update src attribute
 		 * @private
 		 * */
-		updateSrc: function(){
-			this.$el.attr('src',this.model.get("src"));
+		updateSrc: function() {
+			var src = this.model.get("src");
+			this.$el.attr('src', src);
+			if(!src)
+				this.$el.addClass(this.classEmpty);
+			else
+				this.$el.removeClass(this.classEmpty);
 		},
 
 		/**

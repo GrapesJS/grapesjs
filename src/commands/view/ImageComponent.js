@@ -13,8 +13,8 @@ define(['backbone', './InsertCustom'],
 			 *
 			 * */
 			beforeInsert: function(object){
-				object.type 			= 'image';
-				object.style			= {};
+				object.type = 'image';
+				object.style = {};
 				object.attributes = {};
 				if (!this.nearToFloat()) {
 					object.style.display	= 'block';
