@@ -16,8 +16,7 @@ define(function() {
 			 * @return	{Object}	Placeholder
 			 * @private
 			 * */
-			getPositionPlaceholder: function()
-			{
+			getPositionPlaceholder: function() {
 				return this.$plh;
 			},
 

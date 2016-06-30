@@ -5,13 +5,11 @@ define(function() {
 		 * */
 		return {
 
-			run: function()
-			{
+			run: function() {
 				this.$canvas.addClass(this.pfx + 'dashed');
 			},
 
-			stop: function()
-			{
+			stop: function() {
 				this.$canvas.removeClass(this.pfx + 'dashed');
 			}
 		};

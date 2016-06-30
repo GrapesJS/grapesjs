@@ -9,7 +9,6 @@ define(['backbone'],
         this.elT = 0;
         this.elL = 0;
         this.borderOffset = o.borderOffset || 10;
-        this.freezeClass = o.freezeClass || 'opac50';
 
         var el = o.container;
         this.el = typeof el === 'string' ? document.querySelector(o.container) : el;
@@ -18,9 +17,11 @@ define(['backbone'],
         this.itemSel = o.itemSel || 'div';
         this.nested = o.nested || 0;
         this.pfx = o.pfx || '';
+        this.freezeClass = o.freezeClass || this.pfx + 'freezed';
         this.onEndMove = o.onEndMove || '';
         this.direction = o.direction || 'v'; // v (vertical), h (horizontal), a (auto)
         this.onMoveClb = o.onMove || '';
+        this.relative = o.relative || 0;
         this.dropContent = '';
       },
 
@@ -101,7 +102,7 @@ define(['backbone'],
         this.moved = 0;
         this.eV = trg;
 
-        if(!this.matches(trg, this.itemSel + ',' + this.containerSel))
+        if(trg && !this.matches(trg, this.itemSel + ',' + this.containerSel))
           this.eV = this.closest(trg, this.itemSel);
 
         // Create placeholder if not exists
@@ -110,9 +111,12 @@ define(['backbone'],
           this.el.appendChild(this.plh);
         }
 
-        this.eV.className += ' ' + this.freezeClass;
+        if(this.eV){
+          this.eV.className += ' ' + this.freezeClass;
+          $(document).on('mouseup',this.endMove);
+        }
+
         this.$el.on('mousemove',this.onMove);
-        $(document).on('mouseup',this.endMove);
         $(document).on('keypress',this.rollback);
       },
 
@@ -187,7 +191,9 @@ define(['backbone'],
        */
       getDim: function(el){
         var o = this.offset(el);
-        return [o.top - this.elT, o.left - this.elL, el.offsetHeight, el.offsetWidth];
+        var top = this.relative ? el.offsetTop : o.top - this.elT;
+        var left = this.relative ? el.offsetLeft : o.left - this.elL;
+        return [top, left, el.offsetHeight, el.offsetWidth];
       },
 
       /**

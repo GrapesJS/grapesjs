@@ -50,6 +50,8 @@ define(['backbone','./SelectPosition'],
 				SelectPosition.enable.apply(this, arguments);
 				this.$el.css('cursor','crosshair');
 				this.enableToDraw();
+				if(this.sorter)
+					this.sorter.startSort();
 			},
 
 			/**
@@ -269,9 +271,24 @@ define(['backbone','./SelectPosition'],
 			 * */
 			afterCreation: function(model){},
 
-			run: function(em, sender){
+
+			run: function(editor, sender, opts){
+				this.editor = editor;
 				this.sender	= sender;
 				this.$el 	= this.$wrapper;
+/*
+				var utils = editor.Utils;
+				if(utils && utils.Sorter && !this.sorter)
+					this.sorter = new utils.Sorter({
+						container: this.$canvas.get(0),
+						containerSel: '*',
+						itemSel: '*',
+						pfx: this.ppfx,
+						//onEndMove: this.onEndMove,
+						direction: 'a',
+						nested: 1,
+					});
+*/
 				this.enable();
 			},
 

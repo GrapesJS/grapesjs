@@ -4,7 +4,7 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 		 * @class MoveComponent
 		 * @private
 		 * */
-		return _.extend({},SelectComponent, SelectPosition,{
+		return _.extend({},SelectComponent, SelectPosition, {
 
 			init: function(o){
 				SelectComponent.init.apply(this, arguments);
@@ -94,7 +94,6 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 						onEndMove: this.onEndMove,
 						direction: 'a',
 						nested: 1,
-						freezeClass: this.freezClass,
 					});
 
 				this.enable();
