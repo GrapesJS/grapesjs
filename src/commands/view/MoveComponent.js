@@ -87,6 +87,7 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 				var utils = this.editor.Utils;
 				if(utils && utils.Sorter)
 					this.sorter = new utils.Sorter({
+						editor: this.editor,
 						container: this.$el.get(0),
 						containerSel: '*',
 						itemSel: '*',

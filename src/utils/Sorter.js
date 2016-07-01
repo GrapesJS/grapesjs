@@ -22,6 +22,7 @@ define(['backbone'],
         this.direction = o.direction || 'v'; // v (vertical), h (horizontal), a (auto)
         this.onMoveClb = o.onMove || '';
         this.relative = o.relative || 0;
+        this.editor = o.editor || '';
         this.dropContent = '';
       },
 
@@ -383,9 +384,12 @@ define(['backbone'],
        * */
       movePlaceholder: function(plh, dims, pos, trgDim){
         var marg = 0, t = 0, l = 0, w = 0, h = 0,
-        un = 'px', margI = 5,
+        un = 'px', margI = 5, brdCol = '#62c462', brd = 3,
         method = pos.method;
-        var elDim = dims[pos.index];
+        var elDim = dims[pos.index];//#62c462
+        plh.style.borderColor = 'transparent ' + brdCol;
+        plh.style.borderWidth = brd + ' ' + (brd + 2);
+        plh.style.margin = '-' + brd + 'px 0 0';
         if(elDim){
           // If it's not in flow (like 'float' element)
           if(!elDim[4]){
@@ -393,6 +397,9 @@ define(['backbone'],
             h = elDim[2] - (marg * 2) + un;
             t = elDim[0] + marg;
             l = (method == 'before') ? (elDim[1] - marg) : (elDim[1] + elDim[3] - marg);
+            plh.style.borderColor = brdCol + ' transparent';
+            plh.style.borderWidth = (brd + 2) + ' ' + brd;
+            plh.style.margin = '0 0 0 -' + brd + 'px';
           }else{
             w = elDim[3] + un;
             h = 'auto';
@@ -460,6 +467,7 @@ define(['backbone'],
           if(!this.dropContent){
             modelTemp = targetCollection.add({}, opts);
             modelToDrop = model.collection.remove(model);
+
           }else{
             modelToDrop = this.dropContent;
             opts.silent = false;

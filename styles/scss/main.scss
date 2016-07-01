@@ -222,11 +222,19 @@ ol.example li.placeholder:before {position: absolute;}
 	position: absolute;
 	z-index: 10;
 }
+.#{$app-prefix}placeholder{
+  /*border-width: 3px !important;*/
+  border-style: solid !important;
+  border-color: $colorGreen;
+  outline: none;
+}
 .#{$app-prefix}placeholder-int, .#{$com-prefix}placeholder-int{
 	background-color: $colorGreen;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
 	height: 100%; width: 100%;
 	pointer-events: 'none';
-	padding: 2px;
+	padding: 1px;
+  outline: none;
 }
 
 /********* PANELS **********/

@@ -2749,12 +2749,20 @@ ol.example li.placeholder:before {
   position: absolute;
   z-index: 10; }
 
+.wte-placeholder {
+  /*border-width: 3px !important;*/
+  border-style: solid !important;
+  border-color: #62c462;
+  outline: none; }
+
 .wte-placeholder-int, .wte-com-placeholder-int {
   background-color: #62c462;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
   height: 100%;
   width: 100%;
   pointer-events: 'none';
-  padding: 2px; }
+  padding: 1px;
+  outline: none; }
 
 /********* PANELS **********/
 .wte-pn-panel {

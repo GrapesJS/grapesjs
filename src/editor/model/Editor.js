@@ -381,10 +381,10 @@ define([
 					this.UndoManager = this.um;
 					this.set('UndoManager', this.um);
 					key('⌘+z, ctrl+z', function(){
-						that.um.undo();
+						that.um.undo(true);
 					});
 					key('⌘+shift+z, ctrl+shift+z', function(){
-						that.um.redo();
+						that.um.redo(true);
 					});
 
 					Backbone.UndoManager.removeUndoType("change");
