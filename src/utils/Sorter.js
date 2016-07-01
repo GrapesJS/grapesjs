@@ -22,7 +22,6 @@ define(['backbone'],
         this.direction = o.direction || 'v'; // v (vertical), h (horizontal), a (auto)
         this.onMoveClb = o.onMove || '';
         this.relative = o.relative || 0;
-        this.editor = o.editor || '';
         this.dropContent = '';
       },
 

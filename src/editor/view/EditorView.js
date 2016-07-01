@@ -23,12 +23,15 @@ function(Backbone){
 
 			this.model.set('$editor', this.$el);
 
+			// Canvas
 			if(this.cv)
 				this.$el.append(this.cv.render());
 
+			// Panels
 			if(this.pn)
 				this.$el.append(this.pn.render());
 
+			// CSS Rules
 			if(this.css)
 				this.$el.append(this.css.render());
 
