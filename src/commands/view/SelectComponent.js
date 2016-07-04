@@ -50,6 +50,9 @@ define(function() {
 			 * */
 			startSelectComponent: function() {
 				var that = this;
+				// TODO
+				//this.setElement(this.editorModel.Canvas.getFrameWrapperEl());
+				//$el should be "canvas"
 				this.$el.find('*')
 						.on('mouseover',this.onHover)
 						.on('mouseout', this.onOut)

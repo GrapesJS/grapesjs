@@ -2630,6 +2630,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 
 /*************  CANVAS  ****************/
 .wte-cv-canvas {
+  background-color: rgba(0, 0, 0, 0.15);
   position: absolute;
   width: 80%;
   height: 100%;
@@ -2778,7 +2779,7 @@ ol.example li.placeholder:before {
     height: 100%;
     width: 3.5%;
     left: 0;
-    box-shadow: 0 0 5px #333; }
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); }
   .wte-pn-panel#wte-pn-options {
     min-width: 35px;
     height: 100%;
@@ -2786,12 +2787,6 @@ ol.example li.placeholder:before {
     left: 0;
     bottom: 0;
     height: auto; }
-  .wte-pn-panel#wte-pn-commands, .wte-pn-panel#wte-pn-options2 {
-    min-width: 35px;
-    height: 100%;
-    width: 3.5%;
-    left: 0;
-    box-shadow: 0 0 5px #333; }
   .wte-pn-panel#wte-pn-options2 {
     bottom: 150px;
     height: auto; }
@@ -2810,7 +2805,7 @@ ol.example li.placeholder:before {
     right: 0;
     width: 16.5%;
     overflow: auto;
-    box-shadow: 0 0 5px #333; }
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); }
 
 .wte-pn-btn, .wte-btnt {
   box-sizing: border-box;
@@ -2994,11 +2989,11 @@ ol.example li.placeholder:before {
   font-size: 11px;
   font-weight: lighter;
   padding: 10px;
-  text-shadow: 0 1px 0 #252525; }
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3); }
 
 .wte-sm-sector, .wte-clm-tags {
   clear: both;
-  border-bottom: 1px solid #303030;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
   color: #eee;
   font-weight: lighter;
   text-align: left;
@@ -3010,13 +3005,13 @@ ol.example li.placeholder:before {
     padding-right: 5px;
     font-size: 11px; }
   .wte-sm-sector .wte-sm-title, .wte-clm-tags .wte-sm-title {
-    background-color: #3a3a3a;
+    background-color: rgba(0, 0, 0, 0.15);
     font-size: 13px;
     letter-spacing: 1px;
     padding: 12px 10px 12px 20px;
-    text-shadow: 0 1px 0 #252525;
-    border-bottom: 1px solid #303030;
-    border-top: 1px solid #414141;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
     cursor: pointer; }
   .wte-sm-sector .wte-sm-label, .wte-clm-tags .wte-sm-label {
     margin: 5px 5px 2px 0; }
@@ -3121,7 +3116,7 @@ ol.example li.placeholder:before {
       color: transparent; }
   .wte-sm-sector .wte-sm-list .wte-sm-el, .wte-clm-tags .wte-sm-list .wte-sm-el {
     float: left;
-    border-left: 1px solid #252525;
+    border-left: 1px solid rgba(0, 0, 0, 0.3);
     text-shadow: 0 1px 0 #232323;
     /*232323*/ }
     .wte-sm-sector .wte-sm-list .wte-sm-el:first-child, .wte-clm-tags .wte-sm-list .wte-sm-el:first-child {
@@ -3162,13 +3157,13 @@ ol.example li.placeholder:before {
       width: 100%;
       padding: 0 5px; }
     .wte-sm-sector .wte-sm-property.wte-sm-file #wte-sm-preview-box, .wte-clm-tags .wte-sm-property.wte-sm-file #wte-sm-preview-box {
-      background-color: #414141;
+      background-color: rgba(255, 255, 255, 0.05);
       border-radius: 2px;
       margin-top: 5px;
       position: relative;
       overflow: hidden; }
       .wte-sm-sector .wte-sm-property.wte-sm-file #wte-sm-preview-box.wte-sm-show, .wte-clm-tags .wte-sm-property.wte-sm-file #wte-sm-preview-box.wte-sm-show {
-        border: 1px solid #3f3f3f;
+        border: 1px solid rgba(252, 252, 252, 0.05);
         padding: 3px 5px; }
       .wte-sm-sector .wte-sm-property.wte-sm-file #wte-sm-preview-box #wte-sm-close, .wte-clm-tags .wte-sm-property.wte-sm-file #wte-sm-preview-box #wte-sm-close {
         display: block; }

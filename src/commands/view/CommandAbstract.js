@@ -22,10 +22,20 @@ define(['backbone'],
 				this.badgeClass		= this.pfx + 'badge';
 				this.plhClass			= this.pfx + 'placeholder';
 				this.freezClass		= this.ppfx + 'freezed';
+
 				if(this.editorModel.get)
 					this.setElement(this.editorModel.get('$editor').find('#'+this.canvasId));
+
+				//TODO refactor
+				var fbody = this.editorModel.Canvas.getBody();
+				this.setElement(fbody);
+
 				this.$canvas			= this.$el;
 				this.$wrapper			= this.$canvas.find('#'+this.wrapperId);
+
+				//TODO refactor
+				this.$wrapper			= $(fbody.querySelector('#wrapper'));
+
 				this.init(this.config);
 			},
 

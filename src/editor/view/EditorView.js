@@ -23,6 +23,8 @@ function(Backbone){
 
 			this.model.set('$editor', this.$el);
 
+			this.$cont.html(this.$el);
+
 			// Canvas
 			if(this.cv)
 				this.$el.append(this.cv.render());
@@ -36,8 +38,6 @@ function(Backbone){
 				this.$el.append(this.css.render());
 
 			this.$el.attr('class', this.className);
-
-			this.$cont.html(this.$el);
 
 			if(this.pn)
 				this.pn.active();

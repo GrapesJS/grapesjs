@@ -118,6 +118,7 @@ $imageCompDim:	50px;
 }
 /*************  CANVAS  ****************/
 .#{$cv-prefix}canvas {
+  background-color: rgba(0, 0, 0, 0.15);
   position: absolute;
   width: 80%;
   height: 100%;
@@ -254,7 +255,7 @@ $leftWidth: 16.5%;
   	min-width: 35px;
     height: 100%;
     width: 3.5%; left:0;
-    box-shadow: 0 0 5px #333;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
   }
 
   &##{$pn-prefix}options{
@@ -263,13 +264,6 @@ $leftWidth: 16.5%;
     width: 3.5%; left:0;
   	bottom: 0;
   	height: auto;
-  }
-
-  &##{$pn-prefix}commands{
-    min-width: 35px;
-    height: 100%;
-    width: 3.5%; left:0;
-    box-shadow: 0 0 5px #333;
   }
 
   &##{$pn-prefix}options2{
@@ -297,7 +291,7 @@ $leftWidth: 16.5%;
     right: 0;
     width: $leftWidth;
     overflow: auto;
-    box-shadow: 0 0 5px #333;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
   }
 }
 
@@ -473,9 +467,9 @@ $leftWidth: 16.5%;
 
 /********* Style Manager **********/
 
-$darkBorder:		darken($mainDkColor,4%); /*303030*/
-$lightBorder:		lighten($mainDkColor,3%); /*414141*/
-$darkTextShadow:	darken($mainDkColor,8%); /*#252525*/
+$darkBorder:		rgba(0, 0, 0, 0.15); /*303030*/
+$lightBorder:		rgba(255, 255, 255, 0.05); /*414141*/
+$darkTextShadow:	rgba(0, 0, 0, 0.3); /*#252525*/
 $inputFontColor:	darken($fontColor,10%); /*#d5d5d5*/
 $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 
@@ -510,7 +504,7 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 	}
 
 	.#{$sm-prefix}title{
-	  background-color: $mainDkColor;
+	  background-color: $darkBorder;
 	  font-size: 13px;
 	  letter-spacing: 1px;
 	  padding: 12px 10px 12px 20px;
