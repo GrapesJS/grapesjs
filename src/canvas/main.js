@@ -41,22 +41,74 @@ define(function(require) {
 			 * Get wrapper
 			 *
 			 * @return	{Object}
-			 * */
+			 * *
 			getWrapper: function() {
 				return this.canvas.get('wrapper').getComponent();
 			},
+			*/
 
+			/**
+			 * Returns canvas element
+			 * @return {HTMLElement}
+			 */
+			getElement: function(){
+				return this.CanvasView.el;
+			},
 
-			getFrameWrapperEl: function(){
-				return this.CanvasView.frame.getWrapper();
+			/**
+			 * Returns frame element of the canvas
+			 * @return {HTMLElement}
+			 */
+			getFrameEl: function(){
+				return this.CanvasView.frame.el;
 			},
 
 			/**
 			 * Returns body element of the frame
-			 * @return {[type]} [description]
+			 * @return {HTMLElement}
 			 */
 			getBody: function(){
 				return this.CanvasView.frame.el.contentDocument.body;
+			},
+
+			/**
+			 * Returns body wrapper element of the frame
+			 * @return {HTMLElement}
+			 */
+			getWrapperEl: function(){
+				return this.getBody().querySelector('#wrapper');
+			},
+
+			/**
+			 * Returns element containing canvas tools
+			 * @return {HTMLElement}
+			 */
+			getToolsEl: function(){
+				return this.CanvasView.toolsEl;
+			},
+
+			/**
+			 * Returns highlighter element
+			 * @return {HTMLElement}
+			 */
+			getHighlighter: function(){
+				return this.CanvasView.hlEl;
+			},
+
+			/**
+			 * Returns selector highlighter element
+			 * @return {HTMLElement}
+			 */
+			getHighlighterSel: function(){
+				return this.CanvasView.hlSelEl;
+			},
+
+			/**
+			 * Returns badge element
+			 * @return {HTMLElement}
+			 */
+			getBadgeEl: function(){
+				return this.CanvasView.badgeEl;
 			},
 
 			/**
@@ -64,6 +116,15 @@ define(function(require) {
 			 * */
 			render: function() {
 				return	this.CanvasView.render().el;
+			},
+
+			/**
+			 * Returns wrapper element
+			 * @return {HTMLElement}
+			 * ????
+			 */
+			getFrameWrapperEl: function(){
+				return this.CanvasView.frame.getWrapper();
 			},
 	};
 

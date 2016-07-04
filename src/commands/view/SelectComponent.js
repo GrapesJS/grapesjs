@@ -9,11 +9,14 @@ define(function() {
 				_.bindAll(this, 'onHover', 'onOut', 'onClick', 'onKeyPress');
 			},
 
+
 			enable: function() {
 				_.bindAll(this,'copyComp','pasteComp');
-				var confMain	= this.config.em.get('Config');
+				this.frameEl.contentWindow.onscroll = this.onFrameScroll.bind(this);
+				var config	= this.config.em.get('Config');
 				this.startSelectComponent();
-				if(confMain.copyPaste){
+
+				if(config.copyPaste){
 					key('⌘+c, ctrl+c', this.copyComp);
 					key('⌘+v, ctrl+v', this.pasteComp);
 				}
@@ -24,10 +27,10 @@ define(function() {
 			 * @private
 			 */
 			copyComp: function() {
-					var sel 	= this.editorModel.get('selectedComponent');
+					var el = this.editorModel.get('selectedComponent');
 
-					if(sel && sel.get('copyable'))
-						 this.editorModel.set('clipboard', sel);
+					if(el && el.get('copyable'))
+						 this.editorModel.set('clipboard', el);
 			},
 
 			/**
@@ -35,11 +38,11 @@ define(function() {
 			 * @private
 			 */
 			pasteComp: function() {
-					var clp 	= this.editorModel.get('clipboard'),
-							sel 	= this.editorModel.get('selectedComponent');
+					var clp = this.editorModel.get('clipboard'),
+							sel = this.editorModel.get('selectedComponent');
 					if(clp && sel && sel.collection){
 						var index = sel.collection.indexOf(sel),
-								clone		= clp.clone();
+								clone = clp.clone();
 						sel.collection.add(clone, { at: index + 1 });
 					}
 			},
@@ -49,16 +52,11 @@ define(function() {
 			 * @private
 			 * */
 			startSelectComponent: function() {
-				var that = this;
-				// TODO
-				//this.setElement(this.editorModel.Canvas.getFrameWrapperEl());
-				//$el should be "canvas"
-				this.$el.find('*')
-						.on('mouseover',this.onHover)
+				this.selEl = $(this.getCanvasBody()).find('*');
+				this.selEl.on('mouseover',this.onHover)
 						.on('mouseout', this.onOut)
 						.on('click', this.onClick);
-				this.selEl = this.$el.find('*');
-				$(document).on('keydown', this.onKeyPress);
+				$(this.frameEl.contentWindow).on('keydown', this.onKeyPress);
 			},
 
 			/**
@@ -68,7 +66,7 @@ define(function() {
 			onKeyPress: function(e) {
 				var key = e.which || e.keyCode;
 				var comp = this.editorModel.get('selectedComponent');
-				var focused = document.activeElement.tagName !== 'BODY';
+				var focused = this.frameEl.contentDocument.activeElement.tagName !== 'BODY';
 				if(key == 8 || key == 46) {
 					if(!focused)
 						e.preventDefault();
@@ -91,8 +89,14 @@ define(function() {
 			 */
 			onHover: function(e) {
 				e.stopPropagation();
-			  $(e.target).addClass(this.hoverClass);
-			  this.attachBadge(e.target);
+				var trg = e.target;
+				// Adjust tools scroll top
+				if(!this.adjScroll){
+					this.adjScroll = 1;
+					this.onFrameScroll(e);
+				}
+			  this.updateBadge(trg);
+			  this.updateHighlighter(trg);
 			},
 
 			/**
@@ -102,9 +106,10 @@ define(function() {
 			 */
 			onOut: function(e) {
 				e.stopPropagation();
-			  $(e.target).removeClass(this.hoverClass);
 			  if(this.badge)
 			  	this.badge.css({ left: -10000, top:-10000 });
+			  if(this.hl)
+			  	this.hl.css({ left: -10000, top:-10000 });
 			},
 
 			/**
@@ -119,6 +124,17 @@ define(function() {
 				this.onSelect(e, e.target);
 			},
 
+			/**
+			 * Update highlighter element
+			 * @param {HTMLElement} el
+			 */
+			updateHighlighter: function(el){
+				if(!this.hl)
+					this.hl = $(this.canvas.getHighlighter());
+				var elPos = this.getElementPos($(el));
+				this.hl.css({ left: elPos.left, top: elPos.topP, height: elPos.height, width: elPos.width });
+			},
+
 			/** Stop select component event
 			 * @param Event
 			 * @private
@@ -131,8 +147,8 @@ define(function() {
 
 			/**
 			 * Say what to do after the component was selected
-			 * @param 	{Object}	e
-			 * @param 	{Object}	el
+			 * @param {Object}	e
+			 * @param {Object}	el
 			 * @private
 			 * */
 			onSelect: function(e, el) {
@@ -140,10 +156,15 @@ define(function() {
 				var md 	= this.editorModel.get('selectedComponent');
 				if(md)
 					this.cleanPrevious(md);
-				var nMd = $(el).data('model');
+				var $el = $(el);
+				var nMd = $el.data('model');
 				if(nMd){
 					this.editorModel.set('selectedComponent', nMd);
 					nMd.set('status','selected');
+					if(!this.hlSel)
+						this.hlSel = $(this.canvas.getHighlighterSel());
+					var elP = this.getElementPos($el);
+					this.hlSel.css({left: elP.left, top: elP.topP, height: elP.height, width: elP.width });
 				}
 			},
 
@@ -152,33 +173,61 @@ define(function() {
 			 * @private
 			 * */
 			clean: function() {
-				this.$el.find('*').removeClass(this.hoverClass);
+				this.selEl.removeClass(this.hoverClass);
 			},
 
-			/** Attach badge to component
+			/**
+			 * Update badge for the component
 			 * @param Object Component
 			 * @private
 			 * */
-			attachBadge: function(el) {
-				var model = $(el).data("model");
+			updateBadge: function(el) {
+				console.log('Hover');
+				var $el = $(el);
+				this.cacheEl = $el;
+				var model = $el.data("model");
 				if(!model || !model.get('badgable'))
 					return;
 				if(!this.badge)
 					this.createBadge();
-				var badgeH = this.badge.outerHeight();
 				this.updateBadgeLabel(model);
-				var $el = $(el);
-				if(!this.wrapper)
-					this.wrapper = this.$wrapper;
-				if(!this.wrapperTop)
-					this.wrapperTop = this.wrapper.offset() ? this.wrapper.offset().top : 0;
-				if(!this.wrapperLeft)
-					this.wrapperLeft= this.wrapper.offset() ? this.wrapper.offset().left : 0;
-				var relativeT = ($el.offset().top - this.wrapperTop) + this.wrapper.scrollTop();
-				var relativeL = ($el.offset().left- this.wrapperLeft) + this.wrapper.scrollLeft();
-				if( (relativeT-badgeH) > this.wrapperTop)											//If it's possible set badge to top
-					relativeT -= badgeH;
-				this.badge.css({ left: relativeL, top:relativeT });
+				var elPos = this.getElementPos($el);
+				this.badge.css({ left: elPos.left, top: elPos.top });
+			},
+
+			/**
+			 * On frame scroll callback
+			 * @param  {[type]} e [description]
+			 * @return {[type]}   [description]
+			 */
+			onFrameScroll: function(e){
+				this.canvasTool.style.top = '-' + this.bodyEl.scrollTop + 'px';
+				var elPos = this.getElementPos(this.cacheEl);
+				this.badge.css({ left: elPos.left, top: elPos.top });
+			},
+
+			/**
+			 * Returns element's data info
+			 * @param {HTMLElement} el
+			 * @return {Object}
+			 */
+			getElementPos: function(el){
+				if(!this.frameOff)
+					this.frameOff = this.offset(this.canvas.getFrameEl());
+				if(!this.canvasOff)
+					this.canvasOff = this.offset(this.canvas.getElement());
+				var eo = el.offset();//this.offset(el);
+				var bodyEl = this.getCanvasBody();
+				var badgeH = this.badge.outerHeight();
+				var top = eo.top + this.frameOff.top - this.canvasOff.top;// - bodyEl.scrollTop
+				var left = eo.left + this.frameOff.left - bodyEl.scrollLeft - this.canvasOff.left;
+				var topScroll = this.frameOff.top + bodyEl.scrollTop;
+				var topP = top;
+				if( (top - badgeH) < topScroll)
+					top = topScroll;
+				else
+					top -= badgeH;
+				return {topP: topP, top: top, left: left, height: el.height(), width: el.width() };
 			},
 
 			/**
@@ -186,7 +235,7 @@ define(function() {
 			 * @private
 			 * */
 			createBadge: function () {
-				this.badge = $('<div>', {class: this.badgeClass + " no-dots"}).appendTo(this.$wrapper);
+				this.badge = $('<div>', {class: this.badgeClass + " no-dots"}).appendTo(this.getCanvasTools());
 			},
 
 			/**
@@ -202,12 +251,12 @@ define(function() {
 
 			/**
 			 * Updates badge label
-			 * @param Object Model
+			 * @param {Object} Model
 			 * @private
 			 * */
 			updateBadgeLabel: function (model) {
 				if(model)
-					this.badge.html( model.getName() );
+					this.badge.html(model.getName());
 			},
 
 			/**
@@ -224,17 +273,25 @@ define(function() {
 
 			run: function(em, sender) {
 				this.enable();
-				this.render();
 			},
 
 			stop: function() {
+				if(!this.selEl)
+					this.selEl = $(this.getCanvasBody()).find('*');
+				if(this.hlSel)
+			  	this.hlSel.css({ left: -10000, top:-10000 });
+			  this.frameOff = this.canvasOff = this.adjScroll = null;
+			  $(this.frameEl.contentWindow).off('keydown');
+
+			  var frameEl = this.canvas.getFrameEl();
+				frameEl.contentWindow.onscroll = null;
 				var sel = this.editorModel.get('selectedComponent');
 				if(sel)
 					this.cleanPrevious(sel);
 				this.$el.unbind();												//removes all attached events
 				this.removeBadge();
 				this.clean();
-				this.$el.find('*').unbind('mouseover').unbind('mouseout').unbind('click');
+				this.selEl.unbind('mouseover').unbind('mouseout').unbind('click');
 				this.editorModel.set('selectedComponent',null);
 				key.unbind('⌘+c, ctrl+c');
 				key.unbind('⌘+v, ctrl+v');

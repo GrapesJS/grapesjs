@@ -253,6 +253,7 @@ define([
 			initCanvas: function() {
 				var cfg = this.config.canvas,
 				pfx = cfg.stylePrefix || 'cv-';
+				cfg.pStylePrefix	= this.config.stylePrefix;
 				cfg.stylePrefix	= this.config.stylePrefix + pfx;
 				cfg.canvasId	= this.config.idCanvas;
 				this.cv = new Canvas(this.config.canvas);

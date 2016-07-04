@@ -6,11 +6,18 @@ function(Backbone, FrameView) {
 	return Backbone.View.extend({
 
 		initialize: function(o) {
-			this.config		= o.config;
+			this.config = o.config || {};
+			this.ppfx	= this.config.pStylePrefix || '';
 			this.className	= this.config.stylePrefix + 'canvas';
 			this.frame = new FrameView({
 				model: this.model.get('frame')
 			});
+			this.toolsEl = $('<div>', { id: this.ppfx + 'tools' }).get(0);
+			this.hlEl = $('<div>', { class: this.ppfx + 'highlighter' }).get(0);
+			this.hlSelEl = $('<div>', { class: this.ppfx + 'highlighter-sel' }).get(0);
+			this.badgeEl = $('<div>', {class: this.ppfx + 'badge'}).get(0);
+			this.toolsEl.appendChild(this.hlEl);
+			this.toolsEl.appendChild(this.hlSelEl);
 		},
 
 		render: function() {
@@ -24,6 +31,7 @@ function(Backbone, FrameView) {
 				frame.el.onload = function(){ frame.renderWrapper(); };
 			}
 
+			this.$el.append(this.toolsEl);
 			this.$el.attr({class: this.className, id: this.config.canvasId});
 			return this;
 		},

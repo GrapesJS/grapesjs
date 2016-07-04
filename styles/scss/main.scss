@@ -123,8 +123,25 @@ $imageCompDim:	50px;
   width: 80%;
   height: 100%;
   top: 0; left: 3.5%;
-  overflow: auto;
+  overflow: hidden;
   z-index:1;
+
+  .#{$app-prefix}highlighter, .#{$app-prefix}highlighter-sel{
+    position: absolute;
+    outline: 1px solid $colorBlue;
+    pointer-events: none;
+  }
+
+  .#{$app-prefix}highlighter-sel{
+    outline: 3px solid $colorBlue;
+  }
+
+  ##{$app-prefix}tools{
+    width: 100%;
+    position: absolute;
+    top: 0; left: 0;
+    outline: none;
+  }
 
   	/* This simulate body behaviour */
   	> div:first-child {
@@ -135,6 +152,7 @@ $imageCompDim:	50px;
 	    width: 100%;
 	}
 }
+
 .#{$cv-prefix}canvas *{box-sizing: border-box;}
 
 .btn-cl {
@@ -203,7 +221,7 @@ ol.example li.placeholder:before {position: absolute;}
 *.#{$com-prefix}hover-move, div.#{$com-prefix}hover-move{
 	outline: 3px solid $colorYell;
 }
-.#{$com-prefix}badge{
+.#{$com-prefix}badge, .#{$app-prefix}badge{
 	pointer-events: none;
 	background-color: $colorBlue;
 	color: #fff;

@@ -23,21 +23,77 @@ define(['backbone'],
 				this.plhClass			= this.pfx + 'placeholder';
 				this.freezClass		= this.ppfx + 'freezed';
 
+				this.canvas = this.editorModel.Canvas;
+
 				if(this.editorModel.get)
-					this.setElement(this.editorModel.get('$editor').find('#'+this.canvasId));
+					//this.setElement(this.editorModel.get('$editor').find('#'+this.canvasId));
+					this.setElement(this.getCanvas());
 
-				//TODO refactor
-				var fbody = this.editorModel.Canvas.getBody();
-				this.setElement(fbody);
-
-				this.$canvas			= this.$el;
-				this.$wrapper			= this.$canvas.find('#'+this.wrapperId);
-
-				//TODO refactor
-				this.$wrapper			= $(fbody.querySelector('#wrapper'));
+				this.$canvas = this.$el;
+				//this.$wrapper			= this.$canvas.find('#'+this.wrapperId);
+				this.$wrapper = $(this.getCanvasWrapper());
 
 				this.init(this.config);
+
+				this.frameEl = this.canvas.getFrameEl();
+				this.canvasTool = this.getCanvasTools();
+				this.bodyEl = this.getCanvasBody();
+
+				//frameEl.contentWindow.onscroll = this.onFrameScroll.bind(this);
 			},
+
+			/**
+			 * On frame scroll callback
+			 * @param  {[type]} e [description]
+			 * @return {[type]}   [description]
+			 */
+			onFrameScroll: function(e){},
+
+			/**
+			 * Returns canval element
+			 * @return {HTMLElement}
+			 */
+			getCanvas: function(){
+				//return this.editorModel.get('$editor').find('#'+this.canvasId);
+				return this.canvas.getElement();
+			},
+
+			/**
+			 * Get canvas body element
+			 * @return {HTMLElement}
+			 */
+			getCanvasBody: function(){
+				return this.canvas.getBody();
+			},
+
+			/**
+			 * Get canvas wrapper element
+			 * @return {HTMLElement}
+			 */
+			getCanvasWrapper: function(){
+				return this.canvas.getWrapperEl();
+			},
+
+			/**
+			 * Get canvas wrapper element
+			 * @return {HTMLElement}
+			 */
+			getCanvasTools: function(){
+				return this.canvas.getToolsEl();
+			},
+
+			/**
+       * Get the offset of the element
+       * @param  {HTMLElement} el
+       * @return {Object}
+       */
+      offset: function(el){
+        var rect = el.getBoundingClientRect();
+        return {
+          top: rect.top + document.body.scrollTop,
+          left: rect.left + document.body.scrollLeft
+        };
+      },
 
 			/**
 			 * Callback triggered after initialize
@@ -60,7 +116,7 @@ define(['backbone'],
 			 * @param	{Object}	sender	Button sender
 			 * @private
 			 * */
-			stop: function(em, sender) {}
+			stop: function(em, sender) {},
 
 		});
 	});
