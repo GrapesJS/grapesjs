@@ -28,7 +28,11 @@ function(Backbone, FrameView) {
       if(wrap){
         var body = this.frame.$el.contents().find('body');
         var cssc = this.config.em.get('CssComposer');
+        var conf = this.config.em.get('Config');
         body.append(wrap.render()).append(cssc.render());
+        var protCss = conf.protectedCss;
+        if(protCss)
+        	body.append('<style>' + protCss + '</style>');
       }
 		},
 

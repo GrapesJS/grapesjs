@@ -19,15 +19,6 @@ function(Backbone) {
       return this.$el.contents().find('body div');
     },
 
-    renderWrapper: function(){
-      var wrap = this.model.get('wrapper');
-
-      if(wrap){
-        var body = this.$el.contents().find('body');
-        body.append(wrap.render());
-      }
-    },
-
     render: function() {
       this.$el.attr({
         class: 'testframe',
