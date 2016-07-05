@@ -228,6 +228,8 @@ ol.example li.placeholder:before {position: absolute;}
 	padding: 2px 5px;
 	position: absolute; z-index: 1;
 	font-size: 12px;
+  outline: none;
+  display: none;
 }
 .#{$com-prefix}badge-red{
 	@extend .#{$com-prefix}badge;

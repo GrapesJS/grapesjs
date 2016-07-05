@@ -5,8 +5,7 @@ define(function(require) {
 	 *
 	 * @return	{Object}
  	 * */
-	var Canvas	= function(config)
-	{
+	var Canvas	= function(config) {
 		var c			= config || {},
 			defaults	= require('./config/config'),
 			Canvas		= require('./model/Canvas'),

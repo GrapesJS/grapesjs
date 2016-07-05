@@ -2750,7 +2750,9 @@ ol.example li.placeholder:before {
   padding: 2px 5px;
   position: absolute;
   z-index: 1;
-  font-size: 12px; }
+  font-size: 12px;
+  outline: none;
+  display: none; }
 
 .wte-com-badge-red {
   background-color: #DD3636; }

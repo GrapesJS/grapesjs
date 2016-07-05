@@ -75,7 +75,7 @@ define(function() {
 						return;
 						comp.set('status','');
 						comp.destroy();
-						this.removeBadge();
+						this.hideBadge();
 						this.clean();
 						this.editorModel.set('selectedComponent',null);
 					}
@@ -106,8 +106,7 @@ define(function() {
 			 */
 			onOut: function(e) {
 				e.stopPropagation();
-			  if(this.badge)
-			  	this.badge.css({ left: -10000, top:-10000 });
+			  this.hideBadge();
 			  if(this.hl)
 			  	this.hl.css({ left: -10000, top:-10000 });
 			},
@@ -182,43 +181,56 @@ define(function() {
 			 * @private
 			 * */
 			updateBadge: function(el) {
-				console.log('Hover');
 				var $el = $(el);
 				this.cacheEl = $el;
 				var model = $el.data("model");
 				if(!model || !model.get('badgable'))
 					return;
-				if(!this.badge)
-					this.createBadge();
-				this.updateBadgeLabel(model);
-				var elPos = this.getElementPos($el);
-				this.badge.css({ left: elPos.left, top: elPos.top });
+				var badge = this.getBadge();
+				badge.innerHTML = model.getName();
+				var bStyle = badge.style;
+				var u = 'px';
+				bStyle.display = 'block';
+				var elP = this.getElementPos($el, badge);
+				bStyle.left = elP.left + u;
+				bStyle.top = elP.top + u;
+			},
+
+			/**
+			 * Returns badge element
+			 * @return {HTMLElement}
+			 * @private
+			 */
+			getBadge: function(){
+				return this.canvas.getBadgeEl();
 			},
 
 			/**
 			 * On frame scroll callback
-			 * @param  {[type]} e [description]
-			 * @return {[type]}   [description]
+			 * @private
 			 */
 			onFrameScroll: function(e){
 				this.canvasTool.style.top = '-' + this.bodyEl.scrollTop + 'px';
-				var elPos = this.getElementPos(this.cacheEl);
-				this.badge.css({ left: elPos.left, top: elPos.top });
+				if(this.cacheEl){
+					this.updateBadge(this.cacheEl);
+				}
 			},
 
 			/**
 			 * Returns element's data info
 			 * @param {HTMLElement} el
 			 * @return {Object}
+			 * @private
 			 */
-			getElementPos: function(el){
+			getElementPos: function(el, badge){
 				if(!this.frameOff)
 					this.frameOff = this.offset(this.canvas.getFrameEl());
 				if(!this.canvasOff)
 					this.canvasOff = this.offset(this.canvas.getElement());
 				var eo = el.offset();//this.offset(el);
 				var bodyEl = this.getCanvasBody();
-				var badgeH = this.badge.outerHeight();
+				var bdg = badge ? badge : null;
+				var badgeH = bdg ? bdg.offsetHeight : 0;
 				var top = eo.top + this.frameOff.top - this.canvasOff.top;// - bodyEl.scrollTop
 				var left = eo.left + this.frameOff.left - bodyEl.scrollLeft - this.canvasOff.left;
 				var topScroll = this.frameOff.top + bodyEl.scrollTop;
@@ -227,36 +239,18 @@ define(function() {
 					top = topScroll;
 				else
 					top -= badgeH;
-				return {topP: topP, top: top, left: left, height: el.height(), width: el.width() };
+				return {topP: topP, top: top, left: left, height: el.outerHeight(), width: el.outerWidth() };
 			},
 
 			/**
-			 * Create badge for the component
+			 * Hide badge
 			 * @private
 			 * */
-			createBadge: function () {
-				this.badge = $('<div>', {class: this.badgeClass + " no-dots"}).appendTo(this.getCanvasTools());
-			},
-
-			/**
-			 * Remove badge
-			 * @private
-			 * */
-			removeBadge: function () {
-				if(this.badge){
-					this.badge.remove();
-					delete this.badge;
-				}
-			},
-
-			/**
-			 * Updates badge label
-			 * @param {Object} Model
-			 * @private
-			 * */
-			updateBadgeLabel: function (model) {
-				if(model)
-					this.badge.html(model.getName());
+			hideBadge: function () {
+				//var st = this.getBadge().style;
+				//st.left = -10000;
+				//st.top = -10000;
+				this.getBadge().style.display = 'none';
 			},
 
 			/**
@@ -289,7 +283,7 @@ define(function() {
 				if(sel)
 					this.cleanPrevious(sel);
 				this.$el.unbind();												//removes all attached events
-				this.removeBadge();
+				this.hideBadge();
 				this.clean();
 				this.selEl.unbind('mouseover').unbind('mouseout').unbind('click');
 				this.editorModel.set('selectedComponent',null);

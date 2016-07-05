@@ -18,6 +18,7 @@ function(Backbone, FrameView) {
 			this.badgeEl = $('<div>', {class: this.ppfx + 'badge'}).get(0);
 			this.toolsEl.appendChild(this.hlEl);
 			this.toolsEl.appendChild(this.hlSelEl);
+			this.toolsEl.appendChild(this.badgeEl);
 		},
 
 		render: function() {
