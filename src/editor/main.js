@@ -139,6 +139,11 @@ define(function (require){
 				Utils: em.get('Utils'),
 
 				/**
+				 * @property {Utils}
+				 */
+				Config: em.get('Config'),
+
+				/**
 				 * Initialize editor model
 				 * @return {this}
 				 * @private

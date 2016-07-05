@@ -38,7 +38,7 @@ define(function () {
 		storageType: 'local',
 
 		// The css that could only be seen (for instance, inside the code viewer)
-		protectedCss: 'body{margin:0}',
+		protectedCss: 'body{margin:0;}',
 
 		//Configurations for Asset Manager
 		assetManager			: {},

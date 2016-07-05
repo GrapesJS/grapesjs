@@ -6,11 +6,12 @@ define(function() {
 		return {
 
 			run: function(editor, sender){
-				this.sender		= sender;
-				this.components = editor.Canvas.getWrapper().get('components');
-				this.modal		= editor.Dialog || null;
-				this.cm			= editor.CodeManager || null;
+				this.sender = sender;
+				this.components = editor.DomComponents.getComponents();
+				this.modal = editor.Dialog || null;
+				this.cm = editor.CodeManager || null;
 				this.cssc = editor.CssComposer || null;
+				this.protCss = editor.Config.protectedCss;
 				this.enable();
 			},
 
@@ -63,9 +64,9 @@ define(function() {
 					this.modal.setContent(this.$editors);
 					this.modal.show();
 				}
-
+				var addCss = this.protCss || '';
 				this.htmlEditor.setContent( this.cm.getCode(this.components, 'html') );
-				this.cssEditor.setContent( this.cm.getCode(this.components, 'css', this.cssc));
+				this.cssEditor.setContent( addCss + this.cm.getCode(this.components, 'css', this.cssc));
 
 				if(this.sender)
 					this.sender.set('active',false);
