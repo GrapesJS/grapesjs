@@ -256,7 +256,8 @@ define([
 				cfg.pStylePrefix	= this.config.stylePrefix;
 				cfg.stylePrefix	= this.config.stylePrefix + pfx;
 				cfg.canvasId	= this.config.idCanvas;
-				this.cv = new Canvas(this.config.canvas);
+				cfg.em = this;
+				this.cv = new Canvas(cfg);
 
 				if(this.cmp)
 					this.cv.setWrapper(this.cmp);

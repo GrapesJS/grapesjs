@@ -126,6 +126,14 @@ $imageCompDim:	50px;
   overflow: hidden;
   z-index:1;
 
+  > iframe {
+    background-color: #fff;
+    height: 100%;
+    outline: medium none;
+    width: 100%;
+    border: none;
+  }
+
   .#{$app-prefix}highlighter, .#{$app-prefix}highlighter-sel{
     position: absolute;
     outline: 1px solid $colorBlue;

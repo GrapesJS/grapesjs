@@ -6,7 +6,6 @@ function(Backbone){
 		initialize: function() {
 			this.cv = this.model.get('Canvas');
 			this.pn = this.model.get('Panels');
-			this.css = this.model.get('CssComposer');
 			this.className = this.model.config.stylePrefix + 'editor';
 		},
 
@@ -32,10 +31,6 @@ function(Backbone){
 			// Panels
 			if(this.pn)
 				this.$el.append(this.pn.render());
-
-			// CSS Rules
-			if(this.css)
-				this.$el.append(this.css.render());
 
 			this.$el.attr('class', this.className);
 

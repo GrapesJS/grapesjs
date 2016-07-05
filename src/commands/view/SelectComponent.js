@@ -16,6 +16,7 @@ define(function() {
 				var config	= this.config.em.get('Config');
 				this.startSelectComponent();
 
+				// TODO refactor
 				if(config.copyPaste){
 					key('⌘+c, ctrl+c', this.copyComp);
 					key('⌘+v, ctrl+v', this.pasteComp);
@@ -23,14 +24,13 @@ define(function() {
 			},
 
 			/**
-			 * Copy component to clipboard
+			 * Copy component to the clipboard
 			 * @private
 			 */
 			copyComp: function() {
-					var el = this.editorModel.get('selectedComponent');
-
-					if(el && el.get('copyable'))
-						 this.editorModel.set('clipboard', el);
+				var el = this.editorModel.get('selectedComponent');
+				if(el && el.get('copyable'))
+					this.editorModel.set('clipboard', el);
 			},
 
 			/**
@@ -38,13 +38,13 @@ define(function() {
 			 * @private
 			 */
 			pasteComp: function() {
-					var clp = this.editorModel.get('clipboard'),
-							sel = this.editorModel.get('selectedComponent');
-					if(clp && sel && sel.collection){
-						var index = sel.collection.indexOf(sel),
-								clone = clp.clone();
-						sel.collection.add(clone, { at: index + 1 });
-					}
+				var clp = this.editorModel.get('clipboard'),
+						sel = this.editorModel.get('selectedComponent');
+				if(clp && sel && sel.collection){
+					var index = sel.collection.indexOf(sel),
+							clone = clp.clone();
+					sel.collection.add(clone, { at: index + 1 });
+				}
 			},
 
 			/**
@@ -54,8 +54,8 @@ define(function() {
 			startSelectComponent: function() {
 				this.selEl = $(this.getCanvasBody()).find('*');
 				this.selEl.on('mouseover',this.onHover)
-						.on('mouseout', this.onOut)
-						.on('click', this.onClick);
+					.on('mouseout', this.onOut)
+					.on('click', this.onClick);
 				$(this.frameEl.contentWindow).on('keydown', this.onKeyPress);
 			},
 
@@ -126,6 +126,7 @@ define(function() {
 			/**
 			 * Update highlighter element
 			 * @param {HTMLElement} el
+			 * @private
 			 */
 			updateHighlighter: function(el){
 				if(!this.hl)
@@ -211,9 +212,8 @@ define(function() {
 			 */
 			onFrameScroll: function(e){
 				this.canvasTool.style.top = '-' + this.bodyEl.scrollTop + 'px';
-				if(this.cacheEl){
+				if(this.cacheEl)
 					this.updateBadge(this.cacheEl);
-				}
 			},
 
 			/**
@@ -235,10 +235,7 @@ define(function() {
 				var left = eo.left + this.frameOff.left - bodyEl.scrollLeft - this.canvasOff.left;
 				var topScroll = this.frameOff.top + bodyEl.scrollTop;
 				var topP = top;
-				if( (top - badgeH) < topScroll)
-					top = topScroll;
-				else
-					top -= badgeH;
+				top = (top - badgeH) < topScroll ? topScroll : top - badgeH;
 				return {topP: topP, top: top, left: left, height: el.outerHeight(), width: el.outerWidth() };
 			},
 
@@ -247,9 +244,6 @@ define(function() {
 			 * @private
 			 * */
 			hideBadge: function () {
-				//var st = this.getBadge().style;
-				//st.left = -10000;
-				//st.top = -10000;
 				this.getBadge().style.display = 'none';
 			},
 
@@ -289,7 +283,7 @@ define(function() {
 				this.editorModel.set('selectedComponent',null);
 				key.unbind('⌘+c, ctrl+c');
 				key.unbind('⌘+v, ctrl+v');
-				$(document).off('keydown', this.onKeyPress);
+				$(this.frameEl.contentWindow).off('keydown', this.onKeyPress);
 			}
 		};
 });

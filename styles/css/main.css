@@ -2639,6 +2639,12 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   overflow: hidden;
   z-index: 1;
   /* This simulate body behaviour */ }
+  .wte-cv-canvas > iframe {
+    background-color: #fff;
+    height: 100%;
+    outline: medium none;
+    width: 100%;
+    border: none; }
   .wte-cv-canvas .wte-highlighter, .wte-cv-canvas .wte-highlighter-sel {
     position: absolute;
     outline: 1px solid #3b97e3;

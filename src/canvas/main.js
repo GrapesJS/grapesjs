@@ -37,16 +37,6 @@ define(function(require) {
 			},
 
 			/**
-			 * Get wrapper
-			 *
-			 * @return	{Object}
-			 * *
-			getWrapper: function() {
-				return this.canvas.get('wrapper').getComponent();
-			},
-			*/
-
-			/**
 			 * Returns canvas element
 			 * @return {HTMLElement}
 			 */

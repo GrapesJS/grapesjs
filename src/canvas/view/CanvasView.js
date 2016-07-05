@@ -9,9 +9,7 @@ function(Backbone, FrameView) {
 			this.config = o.config || {};
 			this.ppfx	= this.config.pStylePrefix || '';
 			this.className	= this.config.stylePrefix + 'canvas';
-			this.frame = new FrameView({
-				model: this.model.get('frame')
-			});
+			this.frame = new FrameView({ model: this.model.get('frame')});
 			this.toolsEl = $('<div>', { id: this.ppfx + 'tools' }).get(0);
 			this.hlEl = $('<div>', { class: this.ppfx + 'highlighter' }).get(0);
 			this.hlSelEl = $('<div>', { class: this.ppfx + 'highlighter-sel' }).get(0);
@@ -19,6 +17,19 @@ function(Backbone, FrameView) {
 			this.toolsEl.appendChild(this.hlEl);
 			this.toolsEl.appendChild(this.hlSelEl);
 			this.toolsEl.appendChild(this.badgeEl);
+		},
+
+		/**
+		 * Render inside frame's body
+		 * @private
+		 */
+		renderBody: function(){
+			var wrap = this.model.get('frame').get('wrapper');
+      if(wrap){
+        var body = this.frame.$el.contents().find('body');
+        var cssc = this.config.em.get('CssComposer');
+        body.append(wrap.render()).append(cssc.render());
+      }
 		},
 
 		render: function() {
@@ -29,7 +40,7 @@ function(Backbone, FrameView) {
 				var wrap = this.wrapper.render();
 				this.$el.append(this.frame.render().el);
 				var frame = this.frame;
-				frame.el.onload = function(){ frame.renderWrapper(); };
+				frame.el.onload = this.renderBody.bind(this);
 			}
 
 			this.$el.append(this.toolsEl);
