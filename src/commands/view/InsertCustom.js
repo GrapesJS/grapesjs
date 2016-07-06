@@ -31,7 +31,7 @@ define(['backbone', './SelectPosition'],
 			insertComponent: function(){
 				this.$wp.off('click', this.insertComponent);
 				this.stopSelectPosition();
-				this.removePositionPlaceholder();
+				//this.removePositionPlaceholder();
 				var object 	= this.buildContent();
 				this.beforeInsert(object);
 				// By default, collections do not trigger add event, so silent is used

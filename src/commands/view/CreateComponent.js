@@ -17,7 +17,6 @@ define(['backbone','./SelectPosition'],
 				SelectPosition.enable.apply(this, arguments);
 				this.$wr.css('cursor','crosshair');
 				this.$wr.on('mousedown', this.startDraw);
-				this.plh = $(this.canvas.getPlacerEl());
 				this.ghost = this.canvas.getGhostEl();
 			},
 
@@ -35,17 +34,24 @@ define(['backbone','./SelectPosition'],
 					top : e.pageY + this.frameOff.top,
 					left: e.pageX + this.frameOff.left
 				};
-
 				this.isDragged = false;
 				this.tempComponent = {style: {}};
 				this.beforeDraw(this.tempComponent);
 				this.updateSize(this.startPos.top, this.startPos.left, 0, 0);
+				this.toggleEvents(1);
+			},
 
-				this.$wr.on('mousemove', this.draw);
-				this.$wr.on('mouseup', this.endDraw);
-				this.$canvas.on('mousemove', this.draw);
-				$(document).on('mouseup', this.endDraw);
-				$(document).on('keypress', this.rollback);
+			/**
+			 * Enable/Disable events
+			 * @param {Boolean} enable
+			 */
+			toggleEvents: function(enable){
+				var method = enable ? 'on' : 'off';
+				this.$wr[method]('mousemove', this.draw);
+				this.$wr[method]('mouseup', this.endDraw);
+				this.$canvas[method]('mousemove', this.draw);
+				$(document)[method]('mouseup', this.endDraw);
+				$(document)[method]('keypress', this.rollback);
 			},
 
 			/**
@@ -64,17 +70,15 @@ define(['backbone','./SelectPosition'],
 			 * @private
 			 * */
 			endDraw : function(e) {
-				this.$wr.off('mousemove', this.draw);
-				this.$wr.off('mouseup', this.endDraw);
-				this.$canvas.off('mousemove', this.draw);
-				$(document).off('mouseup', this.endDraw);
-				$(document).off('keypress',this.rollback);
-
+				this.toggleEvents();
 				var model = {};
-				if(this.isDragged){																						//Only if the mouse was moved
+				// Only if the mouse was moved
+				if(this.isDragged){
 					this.updateComponentSize(e);
 					this.setRequirements(this.tempComponent);
-					model = this.create(null,this.tempComponent,this.posIndex,this.posMethod);
+					var lp = this.sorter.lastPos;
+					model = this.create(this.sorter.target, this.tempComponent, lp.index, lp.method);
+					this.sorter.prevTarget = null;
 				}
 				this.ghost.style.display = 'none';
 				this.startSelectPosition();
@@ -82,29 +86,21 @@ define(['backbone','./SelectPosition'],
 			},
 
 			/**
-			 * Create component
-			 * @param	{Object}	target	 	DOM of the target element which to push new component
-			 * @param 	{Object}	component 	New component to push
-			 * @param 	{Integer}	posIndex	Index inside the collection, 0 if no children inside
-			 * @param 	{String}	method 		Before or after of the children
-			 *
-			 * @return 	{Object} Created model
-			 * @private
-			 * */
-			create: function(target, component, posIndex, method) {
-				var index = posIndex || 0;
-				if(this.posTargetCollection && this.posTargetModel.get('droppable')){
-					//Check config parameters for center in wrapper
-					if(this.config.firstCentered && (this.$wrapper.get(0) == this.posTargetEl.get(0)) ){
-						component.style.margin 	= '0 auto';
-					}
-					if(this.nearToFloat())							//Set not in flow if the nearest is too
-						component.style.float 	= 'left';
-					this.beforeCreation(component);
-					var model = this.posTargetCollection.add(component, { at: index, silent:false });
-					this.afterCreation(model);
-					return model;
-				}else
+			 * Create new component inside the target
+			 * @param	{Object} target Tha target collection
+			 * @param {Object} component New component to create
+			 * @param {number} index Index inside the collection, 0 if no children inside
+			 * @param {string} method Before or after of the children
+			 */
+			create: function(target, component, index, method) {
+				index = method === 'after' ? index + 1 : index;
+				var $trg = $(target);
+				var trgModel = $trg.data('model');
+        var trgCollection = $trg.data('collection');
+        var droppable = trgModel ? trgModel.get('droppable') : 1;
+        if(trgCollection && droppable){
+        	return trgCollection.add(component, {at: index});
+        }else
 					console.warn("Invalid target position");
 			},
 
@@ -200,20 +196,6 @@ define(['backbone','./SelectPosition'],
 			 * */
 			afterDraw: function(model){},
 
-			/**
-			 * This event is triggered just before a create operation
-			 * @param 	{Object} 	component	Object component before creation
-			 * @private
-			 * */
-			beforeCreation: function(component){},
-
-			/**
-			 * This event is triggered at the end of a create operation
-			 * @param 	{Object}	model	Component model created
-			 * @private
-			 * */
-			afterCreation: function(model){},
-
 
 			run: function(editor, sender, opts){
 				this.editor = editor;
@@ -224,8 +206,8 @@ define(['backbone','./SelectPosition'],
 
 			stop: function(){
 				this.stopSelectPosition();
-				this.$wrapper.css('cursor','');													//Changes back aspect of the cursor
-				this.$wrapper.unbind();															//Removes all attached events
+				this.$wrapper.css('cursor','');
+				this.$wrapper.unbind();
 			}
 		});
 	});

@@ -27,6 +27,23 @@ define(['backbone', './InsertCustom'],
 			},
 
 			/**
+			 * Check if pointer is near to the float component
+			 * @return	{Integer}
+			 * @private
+			 * */
+			nearToFloat: function() {
+				var index 	= this.posIndex;
+				var isLastEl	= this.posIsLastEl;
+				if(this.cDim.length !== 0 && (
+						(!isLastEl && !this.cDim[index][4]) ||
+						(this.cDim[index-1] && !this.cDim[index-1][4]) ||
+						(isLastEl && !this.cDim[index-1][4]) ) )
+					return 1;
+				else
+					return 0;
+			},
+
+			/**
 			 * Trigger after insert
 			 * @param	{Object}	model	Model created after insert
 			 * @private
