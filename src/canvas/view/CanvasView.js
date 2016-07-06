@@ -35,8 +35,9 @@ function(Backbone, FrameView) {
         var conf = this.config.em.get('Config');
         body.append(wrap.render()).append(cssc.render());
         var protCss = conf.protectedCss;
+        var frameCss = '.' + this.ppfx	+ 'dashed *{outline: 1px dashed rgba(170,170,170,0.7); outline-offset: -2px;}';
         if(protCss)
-        	body.append('<style>' + protCss + '</style>');
+        	body.append('<style>' + frameCss + protCss + '</style>');
       }
 		},
 

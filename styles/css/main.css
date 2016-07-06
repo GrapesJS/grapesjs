@@ -2784,7 +2784,7 @@ ol.example li.placeholder:before {
   height: 100%;
   width: 100%;
   pointer-events: 'none';
-  padding: 1px;
+  padding: 1.5px;
   outline: none; }
 
 /********* PANELS **********/
