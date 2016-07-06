@@ -12,7 +12,6 @@ define(['backbone','./SelectPosition'],
 			tempComponent: { style:{} },
 
 			init: function(opt) {
-				SelectPosition.init.apply(this, arguments);
 				_.bindAll(this,'startDraw','draw','endDraw','rollback');
 				this.config		= opt;
 				this.heightType = this.config.newFixedH ? 'height' : 'min-height';
@@ -293,7 +292,6 @@ define(['backbone','./SelectPosition'],
 			},
 
 			stop: function(){
-				this.removePositionPlaceholder();											//Removes placeholder from eventSelectPosition
 				this.stopSelectPosition();
 				this.$el.css('cursor','');													//Changes back aspect of the cursor
 				this.$el.unbind();															//Removes all attached events
