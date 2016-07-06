@@ -12,13 +12,11 @@ function(Backbone, FrameView) {
 			this.frame = new FrameView({ model: this.model.get('frame')});
 			this.toolsEl = $('<div>', { id: this.ppfx + 'tools' }).get(0);
 			this.hlEl = $('<div>', { class: this.ppfx + 'highlighter' }).get(0);
-			this.hlSelEl = $('<div>', { class: this.ppfx + 'highlighter-sel' }).get(0);
 			this.badgeEl = $('<div>', {class: this.ppfx + 'badge'}).get(0);
 			this.placerEl = $('<div>', {class: this.ppfx + 'placeholder'}).get(0);
 			this.placerIntEl = $('<div>', {class: this.ppfx + 'placeholder-int'}).get(0);
 			this.placerEl.appendChild(this.placerIntEl);
 			this.toolsEl.appendChild(this.hlEl);
-			this.toolsEl.appendChild(this.hlSelEl);
 			this.toolsEl.appendChild(this.badgeEl);
 			this.toolsEl.appendChild(this.placerEl);
 		},
@@ -35,7 +33,8 @@ function(Backbone, FrameView) {
         var conf = this.config.em.get('Config');
         body.append(wrap.render()).append(cssc.render());
         var protCss = conf.protectedCss;
-        var frameCss = '.' + this.ppfx	+ 'dashed *{outline: 1px dashed rgba(170,170,170,0.7); outline-offset: -2px;}';
+        var frameCss = '.' + this.ppfx	+ 'dashed *{outline: 1px dashed rgba(170,170,170,0.7); outline-offset: -2px}' +
+        							 '.' + this.ppfx	+ 'comp-selected{outline: 3px solid #3b97e3 !important}';
         if(protCss)
         	body.append('<style>' + frameCss + protCss + '</style>');
       }

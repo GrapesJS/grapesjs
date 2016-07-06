@@ -161,10 +161,7 @@ define(function() {
 				if(nMd){
 					this.editorModel.set('selectedComponent', nMd);
 					nMd.set('status','selected');
-					if(!this.hlSel)
-						this.hlSel = $(this.canvas.getHighlighterSel());
 					var elP = this.getElementPos($el);
-					this.hlSel.css({left: elP.left, top: elP.topP, height: elP.height, width: elP.width });
 				}
 			},
 
@@ -270,8 +267,6 @@ define(function() {
 			stop: function() {
 				if(!this.selEl)
 					this.selEl = $(this.getCanvasBody()).find('*');
-				if(this.hlSel)
-			  	this.hlSel.css({ left: -10000, top:-10000 });
 			  this.frameOff = this.canvasOff = this.adjScroll = null;
 			  $(this.frameEl.contentWindow).off('keydown');
 

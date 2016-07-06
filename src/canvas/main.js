@@ -85,14 +85,6 @@ define(function(require) {
 			},
 
 			/**
-			 * Returns selector highlighter element
-			 * @return {HTMLElement}
-			 */
-			getHighlighterSel: function(){
-				return this.CanvasView.hlSelEl;
-			},
-
-			/**
 			 * Returns badge element
 			 * @return {HTMLElement}
 			 */
