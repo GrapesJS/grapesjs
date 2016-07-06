@@ -193,7 +193,7 @@ define(function() {
 				var u = 'px';
 				bStyle.display = 'block';
 				var elP = this.getElementPos($el, badge);
-				bStyle.left = elP.left + u;
+				bStyle.left = elP.leftP + u;
 				bStyle.top = elP.top + u;
 			},
 
@@ -212,6 +212,7 @@ define(function() {
 			 */
 			onFrameScroll: function(e){
 				this.canvasTool.style.top = '-' + this.bodyEl.scrollTop + 'px';
+				this.canvasTool.style.left = '-' + this.bodyEl.scrollLeft + 'px';
 				if(this.cacheEl)
 					this.updateBadge(this.cacheEl);
 			},
@@ -227,16 +228,19 @@ define(function() {
 					this.frameOff = this.offset(this.canvas.getFrameEl());
 				if(!this.canvasOff)
 					this.canvasOff = this.offset(this.canvas.getElement());
-				var eo = el.offset();//this.offset(el);
+				var eo = el.offset();
 				var bodyEl = this.getCanvasBody();
 				var bdg = badge ? badge : null;
 				var badgeH = bdg ? bdg.offsetHeight : 0;
-				var top = eo.top + this.frameOff.top - this.canvasOff.top;// - bodyEl.scrollTop
-				var left = eo.left + this.frameOff.left - bodyEl.scrollLeft - this.canvasOff.left;
+				var badgeW = bdg ? bdg.offsetWidth : 0;
+				var top = eo.top + this.frameOff.top - this.canvasOff.top;
+				var left = eo.left + this.frameOff.left - this.canvasOff.left;
 				var topScroll = this.frameOff.top + bodyEl.scrollTop;
+				var leftScroll = this.frameOff.left + bodyEl.scrollLeft;
 				var topP = top;
 				top = (top - badgeH) < topScroll ? topScroll : top - badgeH;
-				return {topP: topP, top: top, left: left, height: el.outerHeight(), width: el.outerWidth() };
+				var leftP = (left + badgeW) < leftScroll ? leftScroll - badgeW : left;
+				return {topP: topP, leftP: leftP, top: top, left: left, height: el.outerHeight(), width: el.outerWidth() };
 			},
 
 			/**

@@ -26,7 +26,6 @@ define(['backbone'],
 				this.canvas = this.editorModel.Canvas;
 
 				if(this.editorModel.get)
-					//this.setElement(this.editorModel.get('$editor').find('#'+this.canvasId));
 					this.setElement(this.getCanvas());
 
 				this.$canvas = this.$el;

@@ -22,6 +22,10 @@ define(['backbone'],
         this.direction = o.direction || 'v'; // v (vertical), h (horizontal), a (auto)
         this.onMoveClb = o.onMove || '';
         this.relative = o.relative || 0;
+        this.plh = o.placer || '';
+        // Frame offset
+        this.offTop = o.offsetTop || 0;
+        this.offleft = o.offsetLeft || 0;
         this.dropContent = '';
       },
 
@@ -129,71 +133,54 @@ define(['backbone'],
 
         // Turn placeholder visibile
         var plh = this.plh;
-        if(plh.style.display === 'none'){
+        var dsp = plh.style.display;
+        if(!dsp || dsp === 'none')
           plh.style.display = 'block';
-        }
 
         // Cache all necessary positions
         var eO = this.offset(this.el);
-        this.elT = eO.top;
-        this.elL = eO.left;
-        this.rX = (e.pageX - this.elL) + this.el.scrollLeft;
+        this.elT = Math.abs(eO.top);
+        this.elL = Math.abs(eO.left);
+        //var top = eo.top + this.frameOff.top - this.canvasOff.top;
+        // this.el.scrollTop = - this.elT
         this.rY = (e.pageY - this.elT) + this.el.scrollTop;
-
+        this.rX = (e.pageX - this.elL) + this.el.scrollLeft;
         var dims = this.dimsFromTarget(e.target, this.rX, this.rY);
-        var pos = this.findPosition(dims, this.rX, this.rY);
+
+        //var dimsT = dims;
+
+        var dimsT = [];
+        for(var i = 0, len = dims.length; i < len; i++){
+          var dimT = [];
+          var dm = dims[i];
+          dimT[0] = dm[0];// - this.el.scrollTop;
+          dimT[1] = dm[1];// - this.el.scrollLeft;
+          dimT[2] = dm[2];
+          dimT[3] = dm[3];
+          dimT[4] = dm[4];
+          dimT[5] = dm[5];
+          dimsT.push(dimT);
+        }
+
+        var pos = this.findPosition(dimsT, this.rX, this.rY);
         // If there is a significant changes with the pointer
         if( !this.lastPos ||
             (this.lastPos.index != pos.index || this.lastPos.method != pos.method)){
-          this.movePlaceholder(this.plh, dims, pos, this.prevTargetDim);
+          this.movePlaceholder(this.plh, dimsT, pos, this.prevTargetDim);
+          if(!this.$plh)
+            this.$plh = $(this.plh);
+          if(this.offTop)
+            this.$plh.css('top', '+=' + this.offTop + 'px');
+          if(this.offLeft)
+            this.$plh.css('left', '+=' + this.offLeft + 'px');
           this.lastPos = pos;
         }
 
+        console.log('pageY: '+e.pageY+' elT: '+this.elT+' scrollT: '+this.el.scrollTop+' offTop: '+this.offTop+' rY: '+
+          this.rY + ' plhT: '+ plh.style.top, dimsT);
+
         if(typeof this.onMoveClb === 'function')
           this.onMoveClb(e);
-      },
-
-      /**
-       * Get children dimensions
-       * @param {HTMLELement} el Element root
-       * @retun {Array}
-       * */
-      getChildrenDim: function(elem){
-        var dims = [];
-        if(!elem)
-          return dims;
-        var ch = elem.children; //TODO filter match
-        for (var i = 0, len = ch.length; i < len; i++) {
-          var el = ch[i];
-          if(!this.matches(el, this.itemSel))
-            continue;
-          var dim = this.getDim(el);
-          var dir = this.direction;
-
-          if(dir == 'v')
-            dir = true;
-          else if(dir == 'h')
-            dir = false;
-          else
-            dir = this.isInFlow(el, elem);
-
-          dim.push(dir);
-          dim.push(el);
-          dims.push(dim);
-        }
-        return dims;
-      },
-
-      /**
-       * Returns dimensions and positions about the element
-       * @param {HTMLElement} el
-       * @return {Array<number>}
-       */
-      getDim: function(el){
-        var o = this.offset(el);
-        var top = this.relative ? el.offsetTop : o.top - this.elT;
-        var left = this.relative ? el.offsetLeft : o.left - this.elL;
-        return [top, left, el.offsetHeight, el.offsetWidth];
       },
 
       /**
@@ -295,7 +282,51 @@ define(['backbone'],
           dims = this.cacheDimsP;
           this.target = this.targetP;
         }
+        this.lastPos = null;
+        return dims;
+      },
 
+      /**
+       * Returns dimensions and positions about the element
+       * @param {HTMLElement} el
+       * @return {Array<number>}
+       */
+      getDim: function(el){
+        var o = this.offset(el);
+        var top = this.relative ? el.offsetTop : o.top + this.elT;
+        var left = this.relative ? el.offsetLeft : o.left + this.elL;
+        console.log(o.top+' - '+ this.elT);
+        return [top, left, el.offsetHeight, el.offsetWidth];
+      },
+
+      /**
+       * Get children dimensions
+       * @param {HTMLELement} el Element root
+       * @retun {Array}
+       * */
+      getChildrenDim: function(elem){
+        var dims = [];
+        if(!elem)
+          return dims;
+        var ch = elem.children; //TODO filter match
+        for (var i = 0, len = ch.length; i < len; i++) {
+          var el = ch[i];
+          if(!this.matches(el, this.itemSel))
+            continue;
+          var dim = this.getDim(el);
+          var dir = this.direction;
+
+          if(dir == 'v')
+            dir = true;
+          else if(dir == 'h')
+            dir = false;
+          else
+            dir = this.isInFlow(el, elem);
+
+          dim.push(dir);
+          dim.push(el);
+          dims.push(dim);
+        }
         return dims;
       },
 
@@ -385,7 +416,7 @@ define(['backbone'],
         var marg = 0, t = 0, l = 0, w = 0, h = 0,
         un = 'px', margI = 5, brdCol = '#62c462', brd = 3,
         method = pos.method;
-        var elDim = dims[pos.index];//#62c462
+        var elDim = dims[pos.index];
         plh.style.borderColor = 'transparent ' + brdCol;
         plh.style.borderWidth = brd + ' ' + (brd + 2);
         plh.style.margin = '-' + brd + 'px 0 0';
@@ -437,10 +468,12 @@ define(['backbone'],
         $(document).off('keypress', this.rollback);
         this.plh.style.display = 'none';
         var clsReg = new RegExp('(?:^|\\s)'+this.freezeClass+'(?!\\S)', 'gi');
-        this.eV.className = this.eV.className.replace(clsReg, '');
+        if(this.eV)
+          this.eV.className = this.eV.className.replace(clsReg, '');
         if(this.moved)
           this.move(this.target, this.eV, this.lastPos);
-
+        if(this.plh)
+          this.plh.style.display = 'none';
         if(typeof this.onEndMove === 'function')
           this.onEndMove();
       },

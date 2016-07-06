@@ -2768,7 +2768,9 @@ ol.example li.placeholder:before {
 
 .wte-placeholder, .wte-com-placeholder {
   position: absolute;
-  z-index: 10; }
+  z-index: 10;
+  pointer-events: none;
+  display: none; }
 
 .wte-placeholder {
   /*border-width: 3px !important;*/

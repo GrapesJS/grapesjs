@@ -250,6 +250,8 @@ ol.example li.placeholder:before {position: absolute;}
 .#{$app-prefix}placeholder, .#{$com-prefix}placeholder{
 	position: absolute;
 	z-index: 10;
+  pointer-events: none;
+  display: none;
 }
 .#{$app-prefix}placeholder{
   /*border-width: 3px !important;*/

@@ -25,8 +25,7 @@ define(function() {
 			 * @return	{Object}	Placeholder
 			 * @private
 			 * */
-			createPositionPlaceholder: function()
-			{
+			createPositionPlaceholder: function() {
 				this.$plh =  $('<div>', { class: this.plhClass + " no-dots" })
 					.css({'pointer-events':'none'}).data('helper',1);
 				this.$plh.append( $('<div>', { class: this.plhClass + "-int no-dots" } ) );
@@ -34,30 +33,52 @@ define(function() {
 				return this.$plh;
 			},
 
-			enable: function()
-			{
-				this.startSelectPosition();
-			},
-
 			/**
 			 * Start select position event
 			 * @private
 			 * */
-			startSelectPosition: function()
-			{
+			startSelectPosition: function() {
 				this.isPointed = false;
+				var utils = this.editorModel.Utils;
+				if(utils && !this.sorter)
+					this.sorter = new utils.Sorter({
+						container: this.getCanvasBody(),
+						placer: this.canvas.getPlacerEl(),
+						containerSel: '*',
+						itemSel: '*',
+						pfx: this.ppfx,
+						direction: 'a',
+						nested: 1,
+						//onEndMove: this.onEndMove,
+					});
+				var offDim = this.getOffsetDim();
+				this.sorter.offTop = offDim.top;
+				this.sorter.offLeft = offDim.left;
+				console.log(offDim);
 				this.$wrapper.on('mousemove', this.selectingPosition);
+			},
+
+			getOffsetDim: function(){
+				var frameOff = this.offset(this.canvas.getFrameEl());
+				var canvasOff = this.offset(this.canvas.getElement());
+				var bodyEl = this.getCanvasBody();
+				var top = frameOff.top - canvasOff.top; //- bodyEl.scrollTop
+				var left = frameOff.left - canvasOff.left;// - bodyEl.scrollLeft
+				return { top: top, left: left };
 			},
 
 			/**
 			 * Stop select position event
 			 * @private
 			 * */
-			stopSelectPosition: function()
-			{
+			stopSelectPosition: function() {
 				this.$wrapper.off('mousemove',this.selectingPosition);
 				this.posTargetCollection = null;
 				this.posIndex 	= this.posMethod=='after' && this.cDim.length!==0 ? this.posIndex + 1 : this.posIndex; //Normalize
+				if(this.sorter){
+					this.sorter.moved = 0;
+					this.sorter.endMove();
+				}
 				if(this.cDim){
 					this.posIsLastEl	= this.cDim.length!==0 && this.posMethod=='after' && this.posIndex==this.cDim.length;
 					this.posTargetEl 	= (this.cDim.length===0 ? $(this.outsideElem) :
@@ -72,8 +93,7 @@ define(function() {
 			 * @param	{Object}	e Event
 			 * @private
 			 * */
-			selectingPosition: function(e)
-			{
+			selectingPosition: function(e) {
 				this.isPointed = true;
 
 				if(!this.wp){
@@ -238,8 +258,7 @@ define(function() {
 			 * @return	{Integer}
 			 * @private
 			 * */
-			nearToFloat: function()
-			{
+			nearToFloat: function() {
 				var index 	= this.posIndex;
 				var isLastEl	= this.posIsLastEl;
 				if(this.cDim.length !== 0 && (
@@ -257,8 +276,7 @@ define(function() {
 			 * @return	{Array}
 			 * @private
 			 * */
-			getTargetDim: function(e)
-			{
+			getTargetDim: function(e) {
 				var elT = e.target,
 					$el	= $(elT);
 				return [ elT.offsetTop, elT.offsetLeft, $el.outerHeight(), $el.outerWidth() ];
@@ -271,8 +289,7 @@ define(function() {
 			 * @return 	{Array}
 			 * @private
 			 * */
-			getChildrenDim: function(el)
-			{
+			getChildrenDim: function(el) {
 				var dim 		= [];
 				var elToPars 	= el || this.outsideElem;
 				var isInFlow 	= this.isInFlow;													//Assign method for make it work inside $.each
@@ -291,8 +308,7 @@ define(function() {
 			 * @param	{Object}	e Event
 			 * @private
 			 * */
-			itemLeft: function(e)
-			{
+			itemLeft: function(e) {
 				$(this.outsideElem).off('mouseleave',this.itemLeft);
 				this.outsideElem = null;
 				this.$targetEl	 = null;
@@ -307,8 +323,7 @@ define(function() {
 			 *  @return {Boolean}
 			 *  @private
 			 * */
-			isInFlow:  function($this, elm)
-			{
+			isInFlow:  function($this, elm) {
 			    var $elm = $(elm), ch = -1;
 			    if(!$elm.length)
 			    	return false;
@@ -323,8 +338,7 @@ define(function() {
 			 * @return 	{Boolean}
 			 * @private
 			 * */
-			okProps: function($elm)
-			{
+			okProps: function($elm) {
 			    if ($elm.css('float')!=='none')
 			        return false;
 			    switch($elm.css('position')) {
@@ -342,18 +356,33 @@ define(function() {
 			 * @param	void
 			 * @private
 			 * */
-			removePositionPlaceholder: function()
-			{
+			removePositionPlaceholder: function() {
 				if(this.$plh && this.$plh.length)
 					this.$plh.remove();
 				this.$plh = null;
 			},
+
+			enable: function(){
+				this.frameEl.contentWindow.onscroll = this.onFrameScroll.bind(this);
+				this.startSelectPosition();
+			},
+
+			/**
+			 * On frame scroll callback
+			 * @private
+			 */
+			onFrameScroll: function(e){
+				this.canvasTool.style.top = '-' + this.bodyEl.scrollTop + 'px';
+				this.canvasTool.style.left = '-' + this.bodyEl.scrollLeft + 'px';
+			},
+
 
 			run: function(){
 				this.enable();
 			},
 
 			stop: function(){
+				this.frameEl.contentWindow.onscroll = null;
 				this.removePositionPlaceholder();
 				this.stopSelectPosition();
 				this.$wrapper.css('cursor','');//changes back aspect of the cursor

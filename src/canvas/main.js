@@ -101,6 +101,14 @@ define(function(require) {
 			},
 
 			/**
+			 * Returns placer element
+			 * @return {HTMLElement}
+			 */
+			getPlacerEl: function(){
+				return this.CanvasView.placerEl;
+			},
+
+			/**
 			 * Render canvas
 			 * */
 			render: function() {

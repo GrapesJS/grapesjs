@@ -16,12 +16,11 @@ function(Backbone) {
     },
 
     getWrapper: function(){
-      return this.$el.contents().find('body div');
+      return this.$el.contents().find('body > div');
     },
 
     render: function() {
       this.$el.attr({
-        class: 'testframe',
         style: 'width: 50%; display: block; height: 80%; border: medium none; margin: 50px auto 0; background-color: white',
       });
       return this;
