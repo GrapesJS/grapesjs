@@ -26,6 +26,7 @@ define(['backbone'],
         // Frame offset
         this.offTop = o.offsetTop || 0;
         this.offleft = o.offsetLeft || 0;
+        this.document = o.document || document;
         this.dropContent = '';
       },
 
@@ -117,11 +118,11 @@ define(['backbone'],
 
         if(this.eV){
           this.eV.className += ' ' + this.freezeClass;
-          $(document).on('mouseup',this.endMove);
+          $(this.document).on('mouseup',this.endMove);
         }
 
         this.$el.on('mousemove',this.onMove);
-        $(document).on('keypress',this.rollback);
+        $(this.document).on('keypress',this.rollback);
       },
 
       /**
@@ -397,7 +398,7 @@ define(['backbone'],
         method = pos.method;
         var elDim = dims[pos.index];
         plh.style.borderColor = 'transparent ' + brdCol;
-        plh.style.borderWidth = brd + ' ' + (brd + 2);
+        plh.style.borderWidth = brd + un + ' ' + (brd + 2) + un;
         plh.style.margin = '-' + brd + 'px 0 0';
         if(elDim){
           // If it's not in flow (like 'float' element)
@@ -407,7 +408,7 @@ define(['backbone'],
             t = elDim[0] + marg;
             l = (method == 'before') ? (elDim[1] - marg) : (elDim[1] + elDim[3] - marg);
             plh.style.borderColor = brdCol + ' transparent';
-            plh.style.borderWidth = (brd + 2) + ' ' + brd;
+            plh.style.borderWidth = (brd + 2) + un + ' ' + brd + un;
             plh.style.margin = '0 0 0 -' + brd + 'px';
           }else{
             w = elDim[3] + un;
@@ -443,8 +444,8 @@ define(['backbone'],
        * */
       endMove: function(e){
         this.$el.off('mousemove', this.onMove);
-        $(document).off('mouseup', this.endMove);
-        $(document).off('keypress', this.rollback);
+        $(this.document).off('mouseup', this.endMove);
+        $(this.document).off('keypress', this.rollback);
         this.plh.style.display = 'none';
         var clsReg = new RegExp('(?:^|\\s)'+this.freezeClass+'(?!\\S)', 'gi');
         if(this.eV)

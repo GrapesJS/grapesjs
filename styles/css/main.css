@@ -2658,6 +2658,8 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
     position: absolute;
     outline: 1px solid #3b97e3;
     pointer-events: none; }
+  .wte-cv-canvas .wte-highlighter-warning {
+    outline: 3px solid #ffca6f; }
   .wte-cv-canvas .wte-highlighter-sel {
     outline: 3px solid #3b97e3; }
   .wte-cv-canvas #wte-tools {
@@ -2758,7 +2760,7 @@ ol.example li.placeholder:before {
 *.wte-com-hover-move, div.wte-com-hover-move {
   outline: 3px solid #ffca6f; }
 
-.wte-com-badge, .wte-com-badge-red, .wte-com-badge-yellow, .wte-badge {
+.wte-com-badge, .wte-com-badge-red, .wte-badge {
   pointer-events: none;
   background-color: #3b97e3;
   color: #fff;
@@ -2772,7 +2774,7 @@ ol.example li.placeholder:before {
 .wte-com-badge-red {
   background-color: #DD3636; }
 
-.wte-com-badge-yellow {
+.wte-badge-warning {
   background-color: #ffca6f; }
 
 .wte-placeholder, .wte-com-placeholder {

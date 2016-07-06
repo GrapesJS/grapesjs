@@ -150,6 +150,10 @@ $imageCompDim:	50px;
     pointer-events: none;
   }
 
+  .#{$app-prefix}highlighter-warning{
+    outline: 3px solid $colorYell;
+  }
+
   .#{$app-prefix}highlighter-sel{
     outline: 3px solid $colorBlue;
   }
@@ -253,8 +257,7 @@ ol.example li.placeholder:before {position: absolute;}
 	@extend .#{$com-prefix}badge;
 	background-color: $colorRed;
 }
-.#{$com-prefix}badge-yellow{
-	@extend .#{$com-prefix}badge;
+.#{$app-prefix}badge-warning{
 	background-color: $colorYell;
 }
 .#{$app-prefix}placeholder, .#{$com-prefix}placeholder{

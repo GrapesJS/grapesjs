@@ -4,9 +4,10 @@ define(function() {
 
 			/**
 			 * Start select position event
+			 * @param {HTMLElement} trg
 			 * @private
 			 * */
-			startSelectPosition: function() {
+			startSelectPosition: function(trg, doc) {
 				this.isPointed = false;
 				var utils = this.editorModel.Utils;
 				if(utils && !this.sorter)
@@ -17,12 +18,13 @@ define(function() {
 						itemSel: '*',
 						pfx: this.ppfx,
 						direction: 'a',
+						document: doc,
 						nested: 1,
 					});
 				var offDim = this.getOffsetDim();
 				this.sorter.offTop = offDim.top;
 				this.sorter.offLeft = offDim.left;
-				this.sorter.startSort();
+				this.sorter.startSort(trg);
 			},
 
 			/**
