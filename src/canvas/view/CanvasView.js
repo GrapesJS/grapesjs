@@ -15,10 +15,12 @@ function(Backbone, FrameView) {
 			this.badgeEl = $('<div>', {class: this.ppfx + 'badge'}).get(0);
 			this.placerEl = $('<div>', {class: this.ppfx + 'placeholder'}).get(0);
 			this.placerIntEl = $('<div>', {class: this.ppfx + 'placeholder-int'}).get(0);
+      this.ghostEl = $('<div>', {class: this.ppfx + 'ghost'}).get(0);
 			this.placerEl.appendChild(this.placerIntEl);
 			this.toolsEl.appendChild(this.hlEl);
 			this.toolsEl.appendChild(this.badgeEl);
 			this.toolsEl.appendChild(this.placerEl);
+      this.toolsEl.appendChild(this.ghostEl);
 		},
 
 		/**

@@ -134,6 +134,16 @@ $imageCompDim:	50px;
     border: none;
   }
 
+  .#{$app-prefix}ghost{
+    display: none;
+    pointer-events: none;
+    background-color: #5b5b5b;
+    border: 2px dashed #ccc;
+    position: absolute;
+    z-index: 10;
+    @include opacity(0.55);
+  }
+
   .#{$app-prefix}highlighter, .#{$app-prefix}highlighter-sel{
     position: absolute;
     outline: 1px solid $colorBlue;
@@ -465,14 +475,6 @@ $leftWidth: 16.5%;
 
 /* pa-refresh pa-rocket pa-trash pa-columns pa-rotate-left/right */
 .btn.expand{ background-image: none;}
-.tempComp{
-	background-color: #5b5b5b;
-	border: 2px dashed #ccc;
-	outline:none !important;
-	position: absolute; z-index: 55;
-	opacity:0.55;
-	filter: alpha(opacity=55);
-}
 
 /***********  Components *************/
 

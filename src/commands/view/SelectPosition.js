@@ -22,7 +22,7 @@ define(function() {
 				var offDim = this.getOffsetDim();
 				this.sorter.offTop = offDim.top;
 				this.sorter.offLeft = offDim.left;
-				this.$wrapper.on('mousemove', this.selectingPosition);
+				this.sorter.startSort();
 			},
 
 			/**
@@ -44,7 +44,6 @@ define(function() {
 			 * @private
 			 * */
 			stopSelectPosition: function() {
-				this.$wrapper.off('mousemove',this.selectingPosition);
 				this.posTargetCollection = null;
 				this.posIndex 	= this.posMethod=='after' && this.cDim.length!==0 ? this.posIndex + 1 : this.posIndex; //Normalize
 				if(this.sorter){
@@ -86,8 +85,8 @@ define(function() {
 			stop: function() {
 				this.frameEl.contentWindow.onscroll = null;
 				this.stopSelectPosition();
-				this.$wrapper.css('cursor','');//changes back aspect of the cursor
-				this.$wrapper.unbind();//removes all attached events
+				this.$wrapper.css('cursor','');
+				this.$wrapper.unbind();
 			}
 		};
 });

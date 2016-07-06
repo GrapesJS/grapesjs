@@ -101,6 +101,15 @@ define(function(require) {
 			},
 
 			/**
+			 * Returns ghost element
+			 * @return {HTMLElement}
+			 * @private
+			 */
+			getGhostEl: function(){
+				return this.CanvasView.ghostEl;
+			},
+
+			/**
 			 * Render canvas
 			 * */
 			render: function() {

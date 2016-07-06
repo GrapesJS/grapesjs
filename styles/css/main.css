@@ -2645,6 +2645,15 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
     outline: medium none;
     width: 100%;
     border: none; }
+  .wte-cv-canvas .wte-ghost {
+    display: none;
+    pointer-events: none;
+    background-color: #5b5b5b;
+    border: 2px dashed #ccc;
+    position: absolute;
+    z-index: 10;
+    opacity: 0.55;
+    filter: alpha(opacity=55); }
   .wte-cv-canvas .wte-highlighter, .wte-cv-canvas .wte-highlighter-sel {
     position: absolute;
     outline: 1px solid #3b97e3;
@@ -2960,15 +2969,6 @@ ol.example li.placeholder:before {
 /* pa-refresh pa-rocket pa-trash pa-columns pa-rotate-left/right */
 .btn.expand, .wte-nv-navigator .wte-nv-item .expand#wte-nv-btn-eye {
   background-image: none; }
-
-.tempComp {
-  background-color: #5b5b5b;
-  border: 2px dashed #ccc;
-  outline: none !important;
-  position: absolute;
-  z-index: 55;
-  opacity: 0.55;
-  filter: alpha(opacity=55); }
 
 /***********  Components *************/
 .wte-comp-image-placeholder {
