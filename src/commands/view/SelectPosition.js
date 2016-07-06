@@ -54,7 +54,6 @@ define(function() {
 				var offDim = this.getOffsetDim();
 				this.sorter.offTop = offDim.top;
 				this.sorter.offLeft = offDim.left;
-				console.log(offDim);
 				this.$wrapper.on('mousemove', this.selectingPosition);
 			},
 

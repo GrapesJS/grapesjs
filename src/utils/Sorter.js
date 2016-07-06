@@ -139,34 +139,17 @@ define(['backbone'],
 
         // Cache all necessary positions
         var eO = this.offset(this.el);
-        this.elT = Math.abs(eO.top);
-        this.elL = Math.abs(eO.left);
-        //var top = eo.top + this.frameOff.top - this.canvasOff.top;
-        // this.el.scrollTop = - this.elT
+        this.elT = this.offTop ? Math.abs(eO.top) : eO.top;
+        this.elL = this.offLeft ? Math.abs(eO.left): eO.left;
         this.rY = (e.pageY - this.elT) + this.el.scrollTop;
         this.rX = (e.pageX - this.elL) + this.el.scrollLeft;
         var dims = this.dimsFromTarget(e.target, this.rX, this.rY);
 
-        //var dimsT = dims;
-
-        var dimsT = [];
-        for(var i = 0, len = dims.length; i < len; i++){
-          var dimT = [];
-          var dm = dims[i];
-          dimT[0] = dm[0];// - this.el.scrollTop;
-          dimT[1] = dm[1];// - this.el.scrollLeft;
-          dimT[2] = dm[2];
-          dimT[3] = dm[3];
-          dimT[4] = dm[4];
-          dimT[5] = dm[5];
-          dimsT.push(dimT);
-        }
-
-        var pos = this.findPosition(dimsT, this.rX, this.rY);
+        var pos = this.findPosition(dims, this.rX, this.rY);
         // If there is a significant changes with the pointer
         if( !this.lastPos ||
             (this.lastPos.index != pos.index || this.lastPos.method != pos.method)){
-          this.movePlaceholder(this.plh, dimsT, pos, this.prevTargetDim);
+          this.movePlaceholder(this.plh, dims, pos, this.prevTargetDim);
           if(!this.$plh)
             this.$plh = $(this.plh);
           if(this.offTop)
@@ -175,9 +158,6 @@ define(['backbone'],
             this.$plh.css('left', '+=' + this.offLeft + 'px');
           this.lastPos = pos;
         }
-
-        console.log('pageY: '+e.pageY+' elT: '+this.elT+' scrollT: '+this.el.scrollTop+' offTop: '+this.offTop+' rY: '+
-          this.rY + ' plhT: '+ plh.style.top, dimsT);
 
         if(typeof this.onMoveClb === 'function')
           this.onMoveClb(e);
@@ -293,9 +273,8 @@ define(['backbone'],
        */
       getDim: function(el){
         var o = this.offset(el);
-        var top = this.relative ? el.offsetTop : o.top + this.elT;
-        var left = this.relative ? el.offsetLeft : o.left + this.elL;
-        console.log(o.top+' - '+ this.elT);
+        var top = this.relative ? el.offsetTop : o.top - (this.offTop ? -1 : 1) * this.elT;
+        var left = this.relative ? el.offsetLeft : o.left - (this.offLeft ? -1 : 1) * this.elL;
         return [top, left, el.offsetHeight, el.offsetWidth];
       },
 
