@@ -37,7 +37,8 @@ function(Backbone, FrameView) {
         var protCss = conf.protectedCss;
         var frameCss = '.' + this.ppfx	+ 'dashed *{outline: 1px dashed rgba(170,170,170,0.7); outline-offset: -2px}' +
         							 '.' + this.ppfx	+ 'comp-selected{outline: 3px solid #3b97e3 !important}' +
-                       '.' + this.ppfx  + 'no-select{user-select: none; -webkit-user-select:none; -moz-user-select: none}';
+                       '.' + this.ppfx  + 'no-select{user-select: none; -webkit-user-select:none; -moz-user-select: none}'+
+                       '.' + this.ppfx  + 'freezed{opacity: 0.5; pointer-events: none}';
         if(protCss)
         	body.append('<style>' + frameCss + protCss + '</style>');
       }
