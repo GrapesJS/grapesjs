@@ -14,6 +14,7 @@ define(['backbone', './ComponentsView'],
 			initialize: function(opt){
 				this.config = opt.config || {};
 				this.pfx = this.config.stylePrefix || '';
+				this.ppfx = this.config.pStylePrefix || '';
 				this.components = this.model.get('components');
 				this.attr = this.model.get("attributes");
 				this.classe = this.attr.class || [];

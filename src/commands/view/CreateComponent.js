@@ -7,6 +7,7 @@ define(['backbone','./SelectPosition'],
 				_.bindAll(this,'startDraw','draw','endDraw','rollback');
 				this.config = opt || {};
 				this.hType = this.config.newFixedH ? 'height' : 'min-height';
+				this.allowDraw = 1;
 			},
 
 			/**
@@ -16,7 +17,8 @@ define(['backbone','./SelectPosition'],
 			enable: function() {
 				SelectPosition.enable.apply(this, arguments);
 				this.$wr.css('cursor','crosshair');
-				this.$wr.on('mousedown', this.startDraw);
+				if(this.allowDraw)
+					this.$wr.on('mousedown', this.startDraw);
 				this.ghost = this.canvas.getGhostEl();
 			},
 
@@ -45,7 +47,7 @@ define(['backbone','./SelectPosition'],
 			 * Enable/Disable events
 			 * @param {Boolean} enable
 			 */
-			toggleEvents: function(enable){
+			toggleEvents: function(enable) {
 				var method = enable ? 'on' : 'off';
 				this.$wr[method]('mousemove', this.draw);
 				this.$wr[method]('mouseup', this.endDraw);
@@ -91,16 +93,19 @@ define(['backbone','./SelectPosition'],
 			 * @param {Object} component New component to create
 			 * @param {number} index Index inside the collection, 0 if no children inside
 			 * @param {string} method Before or after of the children
+			 * @param {Object} opts Options
 			 */
-			create: function(target, component, index, method) {
+			create: function(target, component, index, method, opts) {
 				index = method === 'after' ? index + 1 : index;
+				var opt = opts || {};
 				var $trg = $(target);
 				var trgModel = $trg.data('model');
         var trgCollection = $trg.data('collection');
         var droppable = trgModel ? trgModel.get('droppable') : 1;
-        if(trgCollection && droppable){
-        	return trgCollection.add(component, {at: index});
-        }else
+        opt.at = index;
+        if(trgCollection && droppable)
+        	return trgCollection.add(component, opt);
+        else
 					console.warn("Invalid target position");
 			},
 
@@ -110,8 +115,7 @@ define(['backbone','./SelectPosition'],
 			 * @return 	{Object} 	Component updated
 			 * @private
 			 * */
-			setRequirements: function(component)
-			{
+			setRequirements: function(component) {
 				var c	= this.config;
 				if(component.style.width.replace(/\D/g,'') < c.minComponentW)				//Check min width
 					component.style.width = c.minComponentW +'px';

@@ -483,15 +483,15 @@ $leftWidth: 16.5%;
 
 .#{$comp-prefix}image-placeholder {
 	display:	block;
-  	background-color: #f5f5f5;
-  	color: 	$fontColorDk;
-  	height: $imageCompDim; width: $imageCompDim;
-  	line-height: $imageCompDim;
-  	outline: 3px solid $colorYell;
-  	outline-offset: -3px;
-  	text-align: center;
-  	font-size: $imageCompDim/3;
-  	cursor: pointer;
+	background-color: #f5f5f5;
+	color: 	$fontColorDk;
+	height: $imageCompDim; width: $imageCompDim;
+	line-height: $imageCompDim;
+	outline: 3px solid $colorYell;
+	outline-offset: -3px;
+	text-align: center;
+	font-size: $imageCompDim/3;
+	cursor: pointer;
 
   	&.fa-picture-o::after{
 		content:  "\f03e";

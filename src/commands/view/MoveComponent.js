@@ -6,7 +6,7 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 			init: function(o){
 				SelectComponent.init.apply(this, arguments);
 				_.bindAll(this, 'initSorter','rollback', 'onEndMove');
-				this.opt	= o;
+				this.opt = o;
 				this.hoverClass	= this.ppfx + 'highlighter-warning';
 				this.badgeClass	= this.ppfx + 'badge-warning';
 				this.noSelClass	= this.ppfx + 'no-select';

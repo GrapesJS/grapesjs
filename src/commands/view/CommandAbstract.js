@@ -29,7 +29,6 @@ define(['backbone'],
 					this.setElement(this.getCanvas());
 
 				this.$canvas = this.$el;
-				//this.$wrapper			= this.$canvas.find('#'+this.wrapperId);
 				this.$wrapper = $(this.getCanvasWrapper());
 
 				this.init(this.config);
@@ -37,8 +36,6 @@ define(['backbone'],
 				this.frameEl = this.canvas.getFrameEl();
 				this.canvasTool = this.getCanvasTools();
 				this.bodyEl = this.getCanvasBody();
-
-				//frameEl.contentWindow.onscroll = this.onFrameScroll.bind(this);
 			},
 
 			/**

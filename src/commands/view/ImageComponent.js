@@ -16,31 +16,11 @@ define(['backbone', './InsertCustom'],
 				object.type = 'image';
 				object.style = {};
 				object.attributes = {};
-				if (!this.nearToFloat()) {
-					object.style.display	= 'block';
-				}
-				// This allow to avoid 'ghosts' on drag
 				object.attributes.onmousedown = 'return false';
-				if (this.config.firstCentered && (this.$wp.get(0) == this.posTargetEl.get(0)) ) {
-					object.style.margin 	= '0 auto';
+				if (this.config.firstCentered &&
+					 (this.$wrapper.get(0) == this.sorter.target) ) {
+					object.style.margin = '0 auto';
 				}
-			},
-
-			/**
-			 * Check if pointer is near to the float component
-			 * @return	{Integer}
-			 * @private
-			 * */
-			nearToFloat: function() {
-				var index 	= this.posIndex;
-				var isLastEl	= this.posIsLastEl;
-				if(this.cDim.length !== 0 && (
-						(!isLastEl && !this.cDim[index][4]) ||
-						(this.cDim[index-1] && !this.cDim[index-1][4]) ||
-						(isLastEl && !this.cDim[index-1][4]) ) )
-					return 1;
-				else
-					return 0;
 			},
 
 			/**

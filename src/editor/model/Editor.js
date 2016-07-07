@@ -214,7 +214,7 @@ define([
 				if(this.StorageManager.getConfig().autoload)
 					comp = this.loadComponents();
 
-
+				cfg.pStylePrefix	= this.config.stylePrefix;
 				cfg.stylePrefix	= this.config.stylePrefix + cmpStylePfx;
 
 				if(comp)

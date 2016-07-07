@@ -38,7 +38,8 @@ function(Backbone, FrameView) {
         var frameCss = '.' + this.ppfx	+ 'dashed *{outline: 1px dashed rgba(170,170,170,0.7); outline-offset: -2px}' +
         							 '.' + this.ppfx	+ 'comp-selected{outline: 3px solid #3b97e3 !important}' +
                        '.' + this.ppfx  + 'no-select{user-select: none; -webkit-user-select:none; -moz-user-select: none}'+
-                       '.' + this.ppfx  + 'freezed{opacity: 0.5; pointer-events: none}';
+                       '.' + this.ppfx  + 'freezed{opacity: 0.5; pointer-events: none}' +
+                       '.' + this.ppfx  + 'plh-image{background:#f5f5f5; border:none; height:50px; width:50px; display:block; outline:3px solid #ffca6f; cursor:pointer}';
         if(protCss)
         	body.append('<style>' + frameCss + protCss + '</style>');
       }
