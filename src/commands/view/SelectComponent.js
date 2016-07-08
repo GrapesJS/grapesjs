@@ -117,7 +117,10 @@ define(function() {
 			 * @private
 			 */
 			onClick: function(e) {
-				var s	= $(e.target).data('model').get('stylable');
+				var m = $(e.target).data('model');
+				if(!m)
+					return;
+				var s	= m.get('stylable');
 				if(!(s instanceof Array) && !s)
 					return;
 				this.onSelect(e, e.target);

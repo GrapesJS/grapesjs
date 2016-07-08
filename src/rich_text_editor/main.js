@@ -36,7 +36,7 @@ define(function(require) {
 					toolS.top = (dims.top - toolbar.$el.outerHeight()) + u;
 					toolS.left = dims.left + u;
 				}
-				this.bindToolbar(view).show();
+				this.show();
 				//Avoid closing edit mode clicking on toolbar
 				toolbar.$el.on('mousedown', this.disableProp);
 			},
@@ -50,22 +50,6 @@ define(function(require) {
 				view.$el.wysiwyg('destroy');
 				this.hide();
 				toolbar.$el.off('mousedown', this.disableProp);
-			},
-
-			/**
-			 * Bind toolbar to element
-			 * @param {Object} view
-			 * @return {this}
-			 * */
-			bindToolbar: function(view){
-				var	id = tlbPfx + view.model.cid,
-				dId	= tlbPfx + 'inited';
-				if(!view.$el.data(dId)){
-					view.$el.data(dId, 1);
-					view.$el.attr('id',id);
-				}
-				toolbar.updateTarget('#' + id);
-				return this;
 			},
 
 			/**

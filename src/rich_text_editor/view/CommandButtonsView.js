@@ -15,17 +15,6 @@ define(['backbone','./CommandButtonView'],
 			this.$el.data('helper',1);
 		},
 
-		/**
-		 * Update RTE target pointer
-		 * @param	{String}	target
-		 *
-		 * @return 	this
-		 * */
-		updateTarget: function(target){
-			this.$el.attr('data-target', target);
-			return this;
-		},
-
 		render: function() {
 			var fragment = document.createDocumentFragment();
 			this.$el.empty();
