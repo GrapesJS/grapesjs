@@ -25,7 +25,6 @@ define(['backbone', './ComponentsView'],
 				this.listenTo(this.model, 'change:state', 		this.updateState);
 				this.listenTo(this.model.get('classes'), 'add remove change', this.updateClasses);
 				this.$el.data("model", this.model);
-				this.$el.data("model-comp", this.components);
 				this.$el.data("collection", this.components);
 
 				if(this.model.get('classes').length)
@@ -177,10 +176,9 @@ define(['backbone', './ComponentsView'],
 				this.updateClasses();
 				this.$el.html(this.model.get('content'));
 				var view = new ComponentsView({
-					collection	: this.components,
-					config		: this.config,
+					collection: this.components,
+					config: this.config,
 				});
-				this.$components = view;
 
 				// With childNodes lets avoid wrapping 'div'
 				this.$el.append(view.render(this.$el).el.childNodes);
