@@ -272,7 +272,9 @@ define([
 			initRichTextEditor: function() {
 				var cfg = this.config.rte,
 				rteStylePfx	= cfg.stylePrefix || 'rte-';
-				cfg.stylePrefix	= this.config.stylePrefix + rteStylePfx;
+				cfg.pStylePrefix	= this.config.stylePrefix;
+				cfg.stylePrefix	= cfg.pStylePrefix + rteStylePfx;
+				cfg.em = this;
 				this.rte = new RichTextEditor(cfg);
 				this.set('RichTextEditor', this.rte);
 			},

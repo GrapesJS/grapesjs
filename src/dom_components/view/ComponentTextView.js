@@ -15,26 +15,24 @@ define(['backbone', './ComponentView'],
 		},
 
 		/**
-		 * Enable this component to be editable,
-		 * load also the mini toolbar for quick editing
+		 * Enable the component to be editable
 		 * @param {Event} e
 		 * @private
 		 * */
 		enableEditing: function(e){
 			if(this.rte)
-				this.rte.bind(this);
+				this.rte.attach(this);
 			this.toggleEvents(1);
 		},
 
 		/**
 		 * Disable this component to be editable
-		 * @param Event
+		 * @param {Event}
 		 * @private
 		 * */
 		disableEditing: function(e){
-			if(this.rte){
-				this.rte.unbind(this);
-			}
+			if(this.rte)
+				this.rte.detach(this);
 			this.toggleEvents();
 			this.updateContents();
 		},
@@ -52,7 +50,7 @@ define(['backbone', './ComponentView'],
 		 * Update contents of the element
 		 * @private
 		 **/
-		updateContents : function(){
+		updateContents: function(){
 			this.model.set('content', this.el.innerHTML);
 		},
 
@@ -63,7 +61,7 @@ define(['backbone', './ComponentView'],
 		toggleEvents: function(enable) {
 			var method = enable ? 'on' : 'off';
 			// The ownerDocument is from the frame
-			var elDocs = [this.el.ownerDocument, document];
+			var elDocs = [this.el.ownerDocument, document, this.rte];
 			$(elDocs)[method]('mousedown', this.disableEditing);
 			// Avoid closing edit mode on component click
 			this.$el[method]('mousedown', this.disablePropagation);

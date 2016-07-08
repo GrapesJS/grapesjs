@@ -13,6 +13,17 @@ function(Backbone, FrameView) {
 			this.frame = new FrameView({ model: this.model.get('frame')});
 		},
 
+    /**
+     * Update tools position
+     * @private
+     */
+    onFrameScroll: function(){
+      var u = 'px';
+      var body = this.frame.el.contentDocument.body;
+      this.toolsEl.style.top = '-' + body.scrollTop + u;
+      this.toolsEl.style.left = '-' + body.scrollLeft + u;
+    },
+
 		/**
 		 * Render inside frame's body
 		 * @private
@@ -33,8 +44,45 @@ function(Backbone, FrameView) {
         if(protCss)
         	body.append('<style>' + frameCss + protCss + '</style>');
         this.config.em.trigger('loaded');
+        this.frame.el.contentWindow.onscroll = this.onFrameScroll.bind(this);
       }
 		},
+
+    /**
+     * Get the offset of the element
+     * @param  {HTMLElement} el
+     * @return {Object}
+     */
+    offset: function(el){
+      var rect = el.getBoundingClientRect();
+      var docBody = el.ownerDocument.body;
+      return {
+        top: rect.top + docBody.scrollTop,
+        left: rect.left + docBody.scrollLeft
+      };
+    },
+
+    /**
+     * Returns element's data info
+     * @param {HTMLElement} el
+     * @return {Object}
+     * @private
+     */
+    getElementPos: function(el){
+      if(!this.frmOff)
+        this.frmOff = this.offset(this.frame.el);
+      if(!this.cvsOff)
+        this.cvsOff = this.offset(this.el);
+      var eo = this.offset(el);
+      var top = eo.top + this.frmOff.top - this.cvsOff.top;
+      var left = eo.left + this.frmOff.left - this.cvsOff.left;
+      return {
+        top: top,
+        left: left,
+        height: el.offsetHeight,
+        width: el.offsetWidth
+      };
+    },
 
 		render: function() {
 			this.wrapper	= this.model.get('wrapper');

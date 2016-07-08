@@ -1,64 +1,44 @@
 define(function(require) {
-	/**
-	 * @class 	RichTextEditor
-	 * @param 	{Object} Configurations
-	 *
-	 * @return	{Object}
- 	 * */
-	function RichTextEditor(config)
-	{
-		var c									= config || {},
-			defaults						= require('./config/config'),
-			rte									= require('./view/TextEditorView'),
-			CommandButtons			= require('./model/CommandButtons'),
-			CommandButtonsView	= require('./view/CommandButtonsView');
+
+	return function(config) {
+		var c = config || {},
+			defaults = require('./config/config'),
+			rte = require('./view/TextEditorView'),
+			CommandButtons = require('./model/CommandButtons'),
+			CommandButtonsView = require('./view/CommandButtonsView');
 
 		for (var name in defaults) {
 			if (!(name in c))
 				c[name] = defaults[name];
 		}
 
-		this.tlbPfx			= c.stylePrefix;
-		this.commands		= new CommandButtons(c.commands);
-		var obj				= {
-				collection	: this.commands,
-		    	config		: c,
-		};
+		var tlbPfx = c.stylePrefix;
+		var toolbar = new CommandButtonsView({
+			collection: new CommandButtons(c.commands),
+			config: c,
+		});
 
-		this.toolbar = new CommandButtonsView(obj);
-		this.$toolbar = this.toolbar.render().$el;
-	}
-
-	RichTextEditor.prototype	= {
-
-			/**
-			 * Render toolbar
-			 * @return {HTMLElement}
-			 */
-			render: function(){
-				return this.toolbar.render().el;
-			},
-
-			/**
-			 * Return toolbar element
-			 * @return {HTMLElement}
-			 */
-			getToolbarEl: function() {
-				return this.$toolbar;
-			},
+		return {
 
 			/**
 			 * Bind rich text editor to element
 			 * @param {View} view
 			 * */
-			bind: function(view){
+			attach: function(view){
 				view.$el.wysiwyg({hotKeys: {}}).focus();
 
-				this.updatePosition(view.$el);
+				if(c.em){
+					var u = 'px';
+					var cvsView = c.em.get('Canvas').CanvasView;
+					var dims = cvsView.getElementPos(view.el);
+					var toolEl = toolbar.el;
+					var toolS = toolbar.el.style;
+					toolS.top = (dims.top - toolbar.$el.outerHeight()) + u;
+					toolS.left = dims.left + u;
+				}
 				this.bindToolbar(view).show();
-
 				//Avoid closing edit mode clicking on toolbar
-				this.$toolbar.on('mousedown', this.disableProp);
+				toolbar.$el.on('mousedown', this.disableProp);
 			},
 
 			/**
@@ -66,63 +46,42 @@ define(function(require) {
 			 * @param		{Object}	view
 			 *
 			 * */
-			unbind: function(view){
+			detach: function(view){
 				view.$el.wysiwyg('destroy');
 				this.hide();
-				this.$toolbar.off('mousedown', this.disableProp);
+				toolbar.$el.off('mousedown', this.disableProp);
 			},
 
 			/**
 			 * Bind toolbar to element
-			 * @param		{Object}	view
-			 *
-			 * @return 	this
+			 * @param {Object} view
+			 * @return {this}
 			 * */
 			bindToolbar: function(view){
-				var	id	= this.tlbPfx + view.model.cid,
-					dId	= this.tlbPfx + 'inited';
+				var	id = tlbPfx + view.model.cid,
+				dId	= tlbPfx + 'inited';
 				if(!view.$el.data(dId)){
 					view.$el.data(dId, 1);
 					view.$el.attr('id',id);
 				}
-				this.toolbar.updateTarget('#' + id);
+				toolbar.updateTarget('#' + id);
 				return this;
-			},
-
-			/**
-			 * Update toolbar position
-			 * @param 	{Object}	$el	Element
-			 *
-			 */
-			updatePosition: function($el){
-				var	cOffset	= this.$container.offset(),
-					cTop 	= cOffset ? cOffset.top : 0,
-					cLeft	= cOffset ? cOffset.left : 0,
-					eOffset	= $el.offset(),
-					rTop	= eOffset.top  - cTop + this.$container.scrollTop(),
-					rLeft	= eOffset.left - cLeft + this.$container.scrollLeft();
-				if(!this.tlbH)
-					this.tlbH	= this.$toolbar.outerHeight();
-				this.$toolbar.css({
-					top		: (rTop - this.tlbH - 5),
-					left	: rLeft
-				});
 			},
 
 			/**
 			 * Show toolbar
 			 *
 			 * */
-			show	: function(){
-				this.$toolbar.show();
+			show: function(){
+				toolbar.el.style.display = 'block';
 			},
 
 			/**
 			 * Hide toolbar
 			 *
 			 * */
-			hide	: function(){
-				this.$toolbar.hide();
+			hide: function(){
+				toolbar.el.style.display = 'none';
 			},
 
 			/**
@@ -132,7 +91,24 @@ define(function(require) {
 			disableProp: function(e){
 				e.stopPropagation();
 			},
+
+			/**
+			 * Return toolbar element
+			 * @return {HTMLElement}
+			 */
+			getToolbarEl: function() {
+				return toolbar.el;
+			},
+
+			/**
+			 * Render toolbar
+			 * @return {HTMLElement}
+			 */
+			render: function(){
+				return toolbar.render().el;
+			}
+
+		};
 	};
 
-	return RichTextEditor;
 });

@@ -1148,6 +1148,7 @@ $uploadPadding:	150px 10px;
   position: absolute;
   border-radius: 3px;
   overflow: hidden;
+  display: none;
   z-index: 5;
 
   .#{$rte-prefix}btn {

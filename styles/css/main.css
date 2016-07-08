@@ -3534,6 +3534,7 @@ ol.example li.placeholder:before {
   position: absolute;
   border-radius: 3px;
   overflow: hidden;
+  display: none;
   z-index: 5; }
   #wte-rte-toolbar .wte-rte-btn {
     color: #eee;
