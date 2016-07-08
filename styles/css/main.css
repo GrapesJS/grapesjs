@@ -2902,7 +2902,7 @@ ol.example li.placeholder:before {
     font-weight: lighter;
     text-align: left;
     position: relative;
-    background-color: rgba(0, 0, 0, 0.3); }
+    background-color: rgba(0, 0, 0, 0.2); }
   .wte-nv-navigator .wte-nv-item.wte-nv-hide {
     opacity: 0.55;
     filter: alpha(opacity=55); }
@@ -3127,7 +3127,7 @@ ol.example li.placeholder:before {
         padding: 5px;
         display: block; }
       .wte-sm-sector .wte-sm-field.wte-sm-list .wte-sm-radio:checked + label, .wte-clm-tags .wte-sm-field.wte-sm-list .wte-sm-radio:checked + label, .wte-sm-sector .wte-sm-list.wte-clm-field .wte-sm-radio:checked + label, .wte-clm-tags .wte-sm-list.wte-clm-field .wte-sm-radio:checked + label {
-        background-color: #5b5b5b;
+        background-color: rgba(255, 255, 255, 0.2);
         /*5b5b5b*/ }
       .wte-sm-sector .wte-sm-field.wte-sm-list .wte-sm-icon, .wte-clm-tags .wte-sm-field.wte-sm-list .wte-sm-icon, .wte-sm-sector .wte-sm-list.wte-clm-field .wte-sm-icon, .wte-clm-tags .wte-sm-list.wte-clm-field .wte-sm-icon {
         background-repeat: no-repeat;
@@ -3315,11 +3315,11 @@ ol.example li.placeholder:before {
     display: inline-block;
     vertical-align: top; }
   .wte-clm-tags #wte-clm-add-tag {
-    background-color: #535353;
+    background-color: rgba(255, 255, 255, 0.2);
     border-radius: 2px;
     padding: 5px 6px;
-    box-shadow: 1px 1px 0 #6d6d6d inset;
-    border: 1px solid #323232;
+    box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.2) inset;
+    border: 1px solid rgba(0, 0, 0, 0.15);
     cursor: pointer; }
   .wte-clm-tags #wte-clm-new {
     color: #eee;

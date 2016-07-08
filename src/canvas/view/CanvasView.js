@@ -7,20 +7,10 @@ function(Backbone, FrameView) {
 
 		initialize: function(o) {
 			this.config = o.config || {};
+      this.em = this.config.em || {};
 			this.ppfx	= this.config.pStylePrefix || '';
 			this.className	= this.config.stylePrefix + 'canvas';
 			this.frame = new FrameView({ model: this.model.get('frame')});
-			this.toolsEl = $('<div>', { id: this.ppfx + 'tools' }).get(0);
-			this.hlEl = $('<div>', { class: this.ppfx + 'highlighter' }).get(0);
-			this.badgeEl = $('<div>', {class: this.ppfx + 'badge'}).get(0);
-			this.placerEl = $('<div>', {class: this.ppfx + 'placeholder'}).get(0);
-			this.placerIntEl = $('<div>', {class: this.ppfx + 'placeholder-int'}).get(0);
-      this.ghostEl = $('<div>', {class: this.ppfx + 'ghost'}).get(0);
-			this.placerEl.appendChild(this.placerIntEl);
-			this.toolsEl.appendChild(this.hlEl);
-			this.toolsEl.appendChild(this.badgeEl);
-			this.toolsEl.appendChild(this.placerEl);
-      this.toolsEl.appendChild(this.ghostEl);
 		},
 
 		/**
@@ -42,6 +32,7 @@ function(Backbone, FrameView) {
                        '.' + this.ppfx  + 'plh-image{background:#f5f5f5; border:none; height:50px; width:50px; display:block; outline:3px solid #ffca6f; cursor:pointer}';
         if(protCss)
         	body.append('<style>' + frameCss + protCss + '</style>');
+        this.config.em.trigger('loaded');
       }
 		},
 
@@ -55,8 +46,23 @@ function(Backbone, FrameView) {
 				var frame = this.frame;
 				frame.el.onload = this.renderBody.bind(this);
 			}
-
+      this.toolsEl = $('<div>', { id: this.ppfx + 'tools' }).get(0);
+      this.hlEl = $('<div>', { class: this.ppfx + 'highlighter' }).get(0);
+      this.badgeEl = $('<div>', {class: this.ppfx + 'badge'}).get(0);
+      this.placerEl = $('<div>', {class: this.ppfx + 'placeholder'}).get(0);
+      this.placerIntEl = $('<div>', {class: this.ppfx + 'placeholder-int'}).get(0);
+      this.ghostEl = $('<div>', {class: this.ppfx + 'ghost'}).get(0);
+      this.placerEl.appendChild(this.placerIntEl);
+      this.toolsEl.appendChild(this.hlEl);
+      this.toolsEl.appendChild(this.badgeEl);
+      this.toolsEl.appendChild(this.placerEl);
+      this.toolsEl.appendChild(this.ghostEl);
 			this.$el.append(this.toolsEl);
+      var rte = this.em.get('RichTextEditor');
+
+      if(rte)
+        this.toolsEl.appendChild(rte.render());
+
 			this.$el.attr({class: this.className, id: this.config.canvasId});
 			return this;
 		},

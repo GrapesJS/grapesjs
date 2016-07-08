@@ -410,7 +410,7 @@ $leftWidth: 16.5%;
 		font-weight: lighter;
 		text-align: left;
 		position: relative;
-		background-color: rgba(0, 0, 0, 0.3);
+		background-color: rgba(0, 0, 0, 0.2);
 	}
 	.#{$nv-prefix}item.#{$nv-prefix}hide {
 	  @include opacity(0.55);
@@ -637,7 +637,7 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 			input{ display:none; }
 			label{ cursor:pointer; padding: 5px; display:block;}
 			.#{$sm-prefix}radio:checked + label{
-				background-color: lighten($mainDkColor, 13%);/*5b5b5b*/
+				background-color: rgba(255, 255, 255, 0.2);/*5b5b5b*/
 			}
 			.#{$sm-prefix}icon{
 				background-repeat: no-repeat;
@@ -876,11 +876,11 @@ $paddElClm: 5px 6px;
 	}
 
 	##{$clm-prefix}add-tag{
-		background-color: $addBtnBg;
+		background-color: rgba(255, 255, 255, 0.2);
 		border-radius: 2px;
     padding: $paddElClm;
-    box-shadow: 1px 1px 0 lighten($addBtnBg, 10%) inset;
-    border: 1px solid darken($addBtnBg, 13%);
+    box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.2) inset;
+    border: 1px solid rgba(0, 0, 0, 0.15);
     cursor: pointer;
 	}
 

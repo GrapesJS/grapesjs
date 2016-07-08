@@ -7,6 +7,9 @@ function(Backbone){
 			this.cv = this.model.get('Canvas');
 			this.pn = this.model.get('Panels');
 			this.className = this.model.config.stylePrefix + 'editor';
+			this.model.on('loaded', function(){
+				this.pn.active();
+			});
 		},
 
 		render: function(){
@@ -33,9 +36,6 @@ function(Backbone){
 				this.$el.append(this.pn.render());
 
 			this.$el.attr('class', this.className);
-
-			if(this.pn)
-				this.pn.active();
 
 			return this;
 		}

@@ -25,26 +25,38 @@ define(function(require) {
 		    	config		: c,
 		};
 
-		this.toolbar 		= new CommandButtonsView(obj);
-		this.$toolbar 		= this.toolbar.render().$el;
+		this.toolbar = new CommandButtonsView(obj);
+		this.$toolbar = this.toolbar.render().$el;
 	}
 
 	RichTextEditor.prototype	= {
 
 			/**
+			 * Render toolbar
+			 * @return {HTMLElement}
+			 */
+			render: function(){
+				return this.toolbar.render().el;
+			},
+
+			/**
+			 * Return toolbar element
+			 * @return {HTMLElement}
+			 */
+			getToolbarEl: function() {
+				return this.$toolbar;
+			},
+
+			/**
 			 * Bind rich text editor to element
-			 * @param		{Object}	view
-			 * @param		{Object}	container
-			 *
+			 * @param {View} view
 			 * */
-			bind		: function(view, container){
-				if(!this.$contaniner){
-					this.$container		= container;
-					this.$toolbar.appendTo(this.$container);
-				}
+			bind: function(view){
 				view.$el.wysiwyg({hotKeys: {}}).focus();
+
 				this.updatePosition(view.$el);
 				this.bindToolbar(view).show();
+
 				//Avoid closing edit mode clicking on toolbar
 				this.$toolbar.on('mousedown', this.disableProp);
 			},
@@ -54,7 +66,7 @@ define(function(require) {
 			 * @param		{Object}	view
 			 *
 			 * */
-			unbind		: function(view){
+			unbind: function(view){
 				view.$el.wysiwyg('destroy');
 				this.hide();
 				this.$toolbar.off('mousedown', this.disableProp);
@@ -66,7 +78,7 @@ define(function(require) {
 			 *
 			 * @return 	this
 			 * */
-			bindToolbar	: function(view){
+			bindToolbar: function(view){
 				var	id	= this.tlbPfx + view.model.cid,
 					dId	= this.tlbPfx + 'inited';
 				if(!view.$el.data(dId)){
