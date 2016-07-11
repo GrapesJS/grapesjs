@@ -271,7 +271,6 @@ define(function() {
 				if(!this.selEl)
 					this.selEl = $(this.getCanvasBody()).find('*');
 			  this.frameOff = this.canvasOff = this.adjScroll = null;
-			  $(this.frameEl.contentWindow).off('keydown');
 
 			  var frameEl = this.canvas.getFrameEl();
 				frameEl.contentWindow.onscroll = null;

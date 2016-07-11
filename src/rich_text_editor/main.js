@@ -25,7 +25,7 @@ define(function(require) {
 			 * @param {View} view
 			 * */
 			attach: function(view){
-				view.$el.wysiwyg({hotKeys: {}}).focus();
+				view.$el.wysiwyg({}).focus();
 
 				if(c.em){
 					var u = 'px';

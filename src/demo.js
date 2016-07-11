@@ -57,7 +57,16 @@ require(['config/require-config'], function() {
 					      				   { type: 'image', src : './img/bg-gr-v.png', date: '2015-02-01',height:1, width:1728},
 				      				   ]
 			},
-
+/*
+panels: {
+        defaults    : [{
+          id    : 'commands',
+          buttons : [{
+            id        : 'selcomp',
+            className : 'fa fa fa-mouse-pointer',
+            command   : 'select-comp',
+          }]}]},
+*/
 /*
 			panels: {
 				defaults		: [{

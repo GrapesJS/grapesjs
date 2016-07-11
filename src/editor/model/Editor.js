@@ -382,6 +382,7 @@ define([
 					this.UndoManager = this.um;
 					this.set('UndoManager', this.um);
 					key('⌘+z, ctrl+z', function(){
+						console.log('Undo');
 						that.um.undo(true);
 					});
 					key('⌘+shift+z, ctrl+shift+z', function(){

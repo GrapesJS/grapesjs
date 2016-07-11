@@ -41,6 +41,7 @@ define(['jquery'],
         document.execCommand(command, 0, args);
         updateToolbar();
       },
+      /*
       bindHotkeys = function (hotKeys) {
         $.each(hotKeys, function (hotkey, command) {
           editor.keydown(hotkey, function (e) {
@@ -57,6 +58,7 @@ define(['jquery'],
           });
         });
       },
+      */
       getCurrentRange = function () {
         var sel = window.getSelection();
         if (sel.getRangeAt && sel.rangeCount) {
@@ -160,13 +162,12 @@ define(['jquery'],
     }
     options = $.extend({}, $.fn.wysiwyg.defaults, userOptions);
     toolbarBtnSelector = 'a[data-' + options.commandRole + '],button[data-' + options.commandRole + '],input[type=button][data-' + options.commandRole + ']';
-    bindHotkeys(options.hotKeys);
+    //bindHotkeys(options.hotKeys);
     if (options.dragAndDropImages) {
       initFileDrops();
     }
     bindToolbar($(options.toolbarSelector), options);
-    editor.attr('contenteditable', true)
-      .on('mouseup keyup mouseout', function () {
+    editor.attr('contenteditable', true).on('mouseup keyup mouseout', function () {
         saveSelection();
         updateToolbar();
       });
