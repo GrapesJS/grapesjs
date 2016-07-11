@@ -235,12 +235,9 @@ define([
 				this.Components = this.cmp;
 
 				if(this.stm.isAutosave()){
-					var md = this.cmp.getComponent();
-					this.updateComponents( md, null, { avoidStore : 1 });
-
 					// Call UndoManager here so it's possible to call it also for children inside
 					this.initUndoManager();
-					this.initChildrenComp(md);
+					this.initChildrenComp(this.cmp.getWrapper());
 				}
 
 				this.set('Components', this.cmp);
@@ -548,14 +545,12 @@ define([
 			 */
 			initChildrenComp: function(model) {
 					var comps	= model.get('components');
-					if(comps.length){
-						comps.each(function(md){
-								this.updateComponents(md, null, { avoidStore : 1 });
-								this.initChildrenComp(md);
-								if(this.um)
-									this.um.register(md);
-						}, this);
-					}
+					this.updateComponents(model, null, { avoidStore : 1 });
+					comps.each(function(md){
+							this.initChildrenComp(md);
+							if(this.um)
+								this.um.register(md);
+					}, this);
 			},
 
 			/**

@@ -19,6 +19,7 @@ define(function() {
 						pfx: this.ppfx,
 						direction: 'a',
 						document: doc,
+						wmargin: 1,
 						nested: 1,
 					});
 				var offDim = this.getOffsetDim();
@@ -77,6 +78,28 @@ define(function() {
 			onFrameScroll: function(e) {
 				this.canvasTool.style.top = '-' + this.bodyEl.scrollTop + 'px';
 				this.canvasTool.style.left = '-' + this.bodyEl.scrollLeft + 'px';
+			},
+
+			/**
+			 * Check if the pointer is near to the float component
+			 * @param {number} index
+			 * @param {string} method
+			 * @param {Array<Array>} dims
+			 * @return {Boolean}
+			 * @private
+			 * */
+			nearToFloat: function(index, method, dims) {
+				var i = index || 0;
+				var m = method || 'before';
+				var len = dims.length;
+				var isLast	= len !== 0 && m == 'after' && i == len;
+				if(len !== 0 && (
+					 (!isLast && !dims[i][4]) ||
+					 (dims[i-1] && !dims[i-1][4]) ||
+					 (isLast && !dims[i-1][4]) ) )
+					return 1;
+				else
+					return 0;
 			},
 
 

@@ -24,6 +24,7 @@ define(['backbone'],
         this.relative = o.relative || 0;
         this.plh = o.placer || '';
         // Frame offset
+        this.wmargin = o.wmargin || 0;
         this.offTop = o.offsetTop || 0;
         this.offleft = o.offsetLeft || 0;
         this.document = o.document || document;
@@ -140,8 +141,8 @@ define(['backbone'],
 
         // Cache all necessary positions
         var eO = this.offset(this.el);
-        this.elT = this.offTop ? Math.abs(eO.top) : eO.top;
-        this.elL = this.offLeft ? Math.abs(eO.left): eO.left;
+        this.elT = this.wmargin ? Math.abs(eO.top) : eO.top;
+        this.elL = this.wmargin ? Math.abs(eO.left): eO.left;
         this.rY = (e.pageY - this.elT) + this.el.scrollTop;
         this.rX = (e.pageX - this.elL) + this.el.scrollLeft;
         var dims = this.dimsFromTarget(e.target, this.rX, this.rY);
@@ -274,8 +275,8 @@ define(['backbone'],
        */
       getDim: function(el){
         var o = this.offset(el);
-        var top = this.relative ? el.offsetTop : o.top - (this.offTop ? -1 : 1) * this.elT;
-        var left = this.relative ? el.offsetLeft : o.left - (this.offLeft ? -1 : 1) * this.elL;
+        var top = this.relative ? el.offsetTop : o.top - (this.wmargin ? -1 : 1) * this.elT;
+        var left = this.relative ? el.offsetLeft : o.left - (this.wmargin ? -1 : 1) * this.elL;
         return [top, left, el.offsetHeight, el.offsetWidth];
       },
 

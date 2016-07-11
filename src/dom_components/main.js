@@ -61,13 +61,12 @@ define(function(require) {
 
 		component.get('components').add(c.components);
 
-		var obj				= {
+		this.c = c;
+
+	  var componentView = new ComponentView({
 			model: component,
 			config: c,
-		};
-
-		this.c = c;
-	  var componentView 	= new ComponentView(obj);
+		});
 
 	  return {
 

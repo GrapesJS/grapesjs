@@ -49,6 +49,7 @@ define([ 'backbone', 'require'],
 			},
 
 			add: function(models, opt){
+				console.log(models, opt);
 				if(typeof models === 'string'){
 					var parsed = this.editor.Parser.parseHtml(models);
 					models = parsed.html;

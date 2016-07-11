@@ -21,7 +21,7 @@ function(Backbone) {
 
     render: function() {
       this.$el.attr({
-        style: 'width: 50%; display: block; height: 80%; border: medium none; margin: 50px auto 0; background-color: white',
+        style: 'width: 50%; display: block; height: 80%; border: medium none; margin: 0 auto 0; background-color: white',
       });
       return this;
     },
