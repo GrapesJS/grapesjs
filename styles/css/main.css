@@ -2678,6 +2678,9 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 .wte-cv-canvas * {
   box-sizing: border-box; }
 
+.wte-frame {
+  transition: width 0.35s linear; }
+
 .btn-cl, .wte-mdl-dialog .wte-mdl-btn-close, .wte-am-assets-cont #wte-am-close {
   font-size: 25px;
   opacity: 0.3;

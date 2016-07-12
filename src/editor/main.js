@@ -58,12 +58,11 @@ define(function (require){
 			}
 
 			var em = new EditorModel(c);
-			var obj = {
-					model	: em,
-			    config	: c,
-			};
 
-		  var editorView = new EditorView(obj);
+		  var editorView = new EditorView({
+					model: em,
+			    config: c,
+			});
 
 		  return {
 

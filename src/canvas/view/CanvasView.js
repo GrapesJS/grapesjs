@@ -10,7 +10,10 @@ function(Backbone, FrameView) {
       this.em = this.config.em || {};
 			this.ppfx	= this.config.pStylePrefix || '';
 			this.className	= this.config.stylePrefix + 'canvas';
-			this.frame = new FrameView({ model: this.model.get('frame')});
+			this.frame = new FrameView({
+        model: this.model.get('frame'),
+        config: this.config
+      });
 		},
 
     /**
@@ -100,7 +103,6 @@ function(Backbone, FrameView) {
 
 			if(this.wrapper && typeof this.wrapper.render == 'function'){
 				this.model.get('frame').set('wrapper', this.wrapper);
-				var wrap = this.wrapper.render();
 				this.$el.append(this.frame.render().el);
 				var frame = this.frame;
 				frame.el.onload = this.renderBody.bind(this);

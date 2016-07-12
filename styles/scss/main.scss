@@ -177,6 +177,10 @@ $imageCompDim:	50px;
 
 .#{$cv-prefix}canvas *{box-sizing: border-box;}
 
+.#{$app-prefix}frame{
+  transition: width 0.35s linear;
+}
+
 .btn-cl {
   font-size: 25px;
   @include opacity(0.3);

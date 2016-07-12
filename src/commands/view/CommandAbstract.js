@@ -50,7 +50,6 @@ define(['backbone'],
 			 * @return {HTMLElement}
 			 */
 			getCanvas: function(){
-				//return this.editorModel.get('$editor').find('#'+this.canvasId);
 				return this.canvas.getElement();
 			},
 

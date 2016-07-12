@@ -103,9 +103,9 @@ define(['backbone','./SelectPosition'],
         var trgCollection = $trg.data('collection');
         var droppable = trgModel ? trgModel.get('droppable') : 1;
         opt.at = index;
-        if(trgCollection && droppable)
+        if(trgCollection && droppable){
         	return trgCollection.add(component, opt);
-        else
+        }else
 					console.warn("Invalid target position");
 			},
 
