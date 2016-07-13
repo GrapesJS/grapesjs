@@ -6,6 +6,7 @@ function(Backbone, FrameView) {
 	return Backbone.View.extend({
 
 		initialize: function(o) {
+      _.bindAll(this, 'renderBody', 'onFrameScroll');
 			this.config = o.config || {};
       this.em = this.config.em || {};
 			this.ppfx	= this.config.pStylePrefix || '';
@@ -47,7 +48,7 @@ function(Backbone, FrameView) {
         if(protCss)
         	body.append('<style>' + frameCss + protCss + '</style>');
         this.config.em.trigger('loaded');
-        this.frame.el.contentWindow.onscroll = this.onFrameScroll.bind(this);
+        this.frame.el.contentWindow.onscroll = this.onFrameScroll;
 
         // When the iframe is focused the event dispatcher is not the same so
         // I need to delegate all events to the parent document
@@ -105,7 +106,7 @@ function(Backbone, FrameView) {
 				this.model.get('frame').set('wrapper', this.wrapper);
 				this.$el.append(this.frame.render().el);
 				var frame = this.frame;
-				frame.el.onload = this.renderBody.bind(this);
+				frame.el.onload = this.renderBody;
 			}
       this.toolsEl = $('<div>', { id: this.ppfx + 'tools' }).get(0);
       this.hlEl = $('<div>', { class: this.ppfx + 'highlighter' }).get(0);

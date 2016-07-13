@@ -136,7 +136,9 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
       });
       var state = this.compTarget.get('state');
       result = state ? result + ':' + state : result;
-      this.el.querySelector('#' + this.pfx + 'sel').innerHTML = result;
+      var el = this.el.querySelector('#' + this.pfx + 'sel');
+      if(el)
+        el.innerHTML = result;
     },
 
     /**

@@ -100,7 +100,7 @@ define(function(require) {
 			 * @example
 			 * var myPanel = panelManager.getPanel('myNewPanel');
 			 */
-			getPanel	: function(id){
+			getPanel: function(id){
 				var res	= panels.where({id: id});
 				return res.length ? res[0] : null;
 			},
@@ -119,7 +119,7 @@ define(function(require) {
 			 * 	active: false,
 			 * });
 			 */
-			addButton	: function(panelId, button){
+			addButton: function(panelId, button){
 				var pn	= this.getPanel(panelId);
 				return pn ? pn.get('buttons').add(button) : null;
 			},
@@ -132,7 +132,7 @@ define(function(require) {
 			 * @example
 			 * var button = panelManager.getButton('myPanel','myButton');
 			 */
-			getButton	: function(panelId, id){
+			getButton: function(panelId, id){
 				var pn	= this.getPanel(panelId);
 				if(pn){
 					var res	= pn.get('buttons').where({id: id});
@@ -145,7 +145,7 @@ define(function(require) {
 			 * Render panels and buttons
 			 * @return {HTMLElement}
 			 */
-			render		: function(){
+			render: function(){
 				return PanelsViewObj.render().el;
 			},
 
@@ -153,7 +153,7 @@ define(function(require) {
 			 * Active activable buttons
 			 * @private
 			 */
-			active		: function(){
+			active: function(){
 				this.getPanels().each(function(p){
 	    			p.get('buttons').each(function(btn){
 	    				if(btn.get('active'))

@@ -35,7 +35,7 @@ define([path + 'ComponentImageView', 'DomComponents/model/Component'],
             });
 
             it('Component empty', function() {
-              $fixture.html().should.equal('<img class="image-placeholder">');
+              $fixture.html().should.equal('<img class="'+ view.classEmpty +'">');
             });
 
             it('TagName is <img>', function() {

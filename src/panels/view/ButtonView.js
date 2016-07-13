@@ -41,18 +41,19 @@ function(Backbone, require) {
 				this.events.click = 'clicked';
 			this.delegateEvents();
 
-			this.canvasEl = this.em.Canvas.CanvasView.$el.get(0);
-
-			this.sorter = new this.em.Utils.Sorter({
-				container: this.canvasEl,
-				containerSel: '*',
-				itemSel: '*',
-				pfx: this.ppfx,
-				onMove: this.onDrag,
-				onEndMove: this.onDrop,
-				direction: 'auto',
-				nested: 1,
-			});
+			if(this.em.Canvas){
+				this.canvasEl = this.em.Canvas.getElement();
+				this.sorter = new this.em.Utils.Sorter({
+					container: this.canvasEl,
+					containerSel: '*',
+					itemSel: '*',
+					pfx: this.ppfx,
+					onMove: this.onDrag,
+					onEndMove: this.onDrop,
+					direction: 'auto',
+					nested: 1,
+				});
+			}
 		},
 
 		/**

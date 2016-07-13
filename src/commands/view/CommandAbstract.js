@@ -28,14 +28,15 @@ define(['backbone'],
 				if(this.editorModel.get)
 					this.setElement(this.getCanvas());
 
-				this.$canvas = this.$el;
-				this.$wrapper = $(this.getCanvasWrapper());
+				if(this.canvas){
+					this.$canvas = this.$el;
+					this.$wrapper = $(this.getCanvasWrapper());
+					this.frameEl = this.canvas.getFrameEl();
+					this.canvasTool = this.getCanvasTools();
+					this.bodyEl = this.getCanvasBody();
+				}
 
 				this.init(this.config);
-
-				this.frameEl = this.canvas.getFrameEl();
-				this.canvasTool = this.getCanvasTools();
-				this.bodyEl = this.getCanvasBody();
 			},
 
 			/**
