@@ -2644,7 +2644,9 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
     height: 100%;
     outline: medium none;
     width: 100%;
-    border: none; }
+    border: none;
+    margin: 0 auto;
+    display: block; }
   .wte-cv-canvas .wte-ghost {
     display: none;
     pointer-events: none;

@@ -25,9 +25,6 @@ function(Backbone) {
     },
 
     render: function() {
-      this.$el.attr({
-        style: 'width: 50%; display: block; height: 80%; border: medium none; margin: 0 auto 0; background-color: white',
-      });
       this.$el.attr({class: this.ppfx + 'frame'});
       return this;
     },

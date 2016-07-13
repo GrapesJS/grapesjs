@@ -132,6 +132,8 @@ $imageCompDim:	50px;
     outline: medium none;
     width: 100%;
     border: none;
+    margin: 0 auto;
+    display: block;
   }
 
   .#{$app-prefix}ghost{
