@@ -12,16 +12,19 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
     initialize: function(o) {
       this.config = o.config || {};
       this.pfx = this.config.stylePrefix || '';
+      this.mediaId = this.pfx + 'media';
       this.className = this.pfx + 'tags';
       this.addBtnId = this.pfx + 'add-tag';
       this.newInputId = this.pfx + 'new';
       this.stateInputId = this.pfx + 'states';
       this.stateInputC = this.pfx + 'input-c';
       this.states = this.config.states || [];
+      this.medias = this.config.medias || [];
       this.events['click #' + this.addBtnId] = 'startNewTag';
       this.events['blur #' + this.newInputId] = 'endNewTag';
       this.events['keyup #' + this.newInputId] = 'onInputKeyUp';
       this.events['change #' + this.stateInputId] = 'stateChanged';
+      this.events['change #' + this.mediaId] = 'mediaChanged';
 
       this.target  = this.config.target;
 
@@ -33,6 +36,21 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
       this.listenTo(this.collection, 'remove', this.tagRemoved);
 
       this.delegateEvents();
+    },
+
+    /**
+     * Triggered when the select with media is changed
+     * @param  {Object} e
+     */
+    mediaChanged: function(e){
+      console.log('Change media ' + this.$media.val());
+      /*
+      if(this.compTarget){
+        this.compTarget.set('media', this.$states.val());
+        if(this.target)
+          this.target.trigger('targetStateUpdated');
+        this.updateSelector();
+      }*/
     },
 
     /**
@@ -51,6 +69,19 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
       var strInput = '';
       for(var i = 0; i < this.states.length; i++){
         strInput += '<option value="' + this.states[i].name + '">' + this.states[i].label + '</option>';
+      }
+      return strInput;
+    },
+
+    /**
+     * Create options of media queries
+     * @return {string} String of options
+     */
+    getMediaOptions: function(){
+      var strInput = '';
+      var coll = this.medias;
+      for(var i = 0; i < coll.length; i++){
+        strInput += '<option value="' + coll[i].width + '">' + coll[i].name + '</option>';
       }
       return strInput;
     },
@@ -236,8 +267,10 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
       this.$addBtn = this.$el.find('#' + this.addBtnId);
       this.$classes = this.$el.find('#' + this.pfx + 'tags-c');
       this.$states = this.$el.find('#' + this.stateInputId);
+      this.$media = this.$el.find('#' + this.mediaId);
       this.$statesC = this.$el.find('#' + this.stateInputC);
       this.$states.append(this.getStateOptions());
+      this.$media.append(this.getMediaOptions());
       this.renderClasses();
       this.$el.attr('class', this.className);
       return this;
