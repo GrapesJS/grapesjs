@@ -146,7 +146,7 @@ define(['backbone'],
         this.rY = (e.pageY - this.elT) + this.el.scrollTop;
         this.rX = (e.pageX - this.elL) + this.el.scrollLeft;
         var dims = this.dimsFromTarget(e.target, this.rX, this.rY);
-
+        this.lastDims = dims;
         var pos = this.findPosition(dims, this.rX, this.rY);
         // If there is a significant changes with the pointer
         if( !this.lastPos ||

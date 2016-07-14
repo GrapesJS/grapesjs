@@ -79,6 +79,10 @@ define(['backbone','./SelectPosition'],
 					this.updateComponentSize(e);
 					this.setRequirements(this.tempComponent);
 					var lp = this.sorter.lastPos;
+
+					if(this.nearFloat(lp.index, lp.method, this.sorter.lastDims))
+						this.tempComponent.style.float = 'left';
+
 					model = this.create(this.sorter.target, this.tempComponent, lp.index, lp.method);
 					this.sorter.prevTarget = null;
 				}

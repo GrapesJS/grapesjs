@@ -88,7 +88,7 @@ define(function() {
 			 * @return {Boolean}
 			 * @private
 			 * */
-			nearToFloat: function(index, method, dims) {
+			nearFloat: function(index, method, dims) {
 				var i = index || 0;
 				var m = method || 'before';
 				var len = dims.length;
@@ -98,8 +98,7 @@ define(function() {
 					 (dims[i-1] && !dims[i-1][4]) ||
 					 (isLast && !dims[i-1][4]) ) )
 					return 1;
-				else
-					return 0;
+				return 0;
 			},
 
 
