@@ -18,7 +18,7 @@ define(['backbone', './InsertCustom'],
 				object.attributes = {};
 				object.attributes.onmousedown = 'return false';
 				if (this.config.firstCentered &&
-					 (this.$wrapper.get(0) == this.sorter.target) ) {
+					 this.getCanvasWrapper() == this.sorter.target ) {
 					object.style.margin = '0 auto';
 				}
 			},

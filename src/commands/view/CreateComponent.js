@@ -79,10 +79,6 @@ define(['backbone','./SelectPosition'],
 					this.updateComponentSize(e);
 					this.setRequirements(this.tempComponent);
 					var lp = this.sorter.lastPos;
-
-					if(this.nearFloat(lp.index, lp.method, this.sorter.lastDims))
-						this.tempComponent.style.float = 'left';
-
 					model = this.create(this.sorter.target, this.tempComponent, lp.index, lp.method);
 					this.sorter.prevTarget = null;
 				}
@@ -107,9 +103,9 @@ define(['backbone','./SelectPosition'],
         var trgCollection = $trg.data('collection');
         var droppable = trgModel ? trgModel.get('droppable') : 1;
         opt.at = index;
-        if(trgCollection && droppable){
+        if(trgCollection && droppable)
         	return trgCollection.add(component, opt);
-        }else
+        else
 					console.warn("Invalid target position");
 			},
 
@@ -121,17 +117,31 @@ define(['backbone','./SelectPosition'],
 			 * */
 			setRequirements: function(component) {
 				var c	= this.config;
-				if(component.style.width.replace(/\D/g,'') < c.minComponentW)				//Check min width
-					component.style.width = c.minComponentW +'px';
-				if(component.style[this.hType].replace(/\D/g,'') < c.minComponentH)		//Check min height
-					component.style[this.hType] = c.minComponentH +'px';
-				if(c.newFixedH)															//Set overflow in case of fixed height
-					component.style.overflow = 'auto';
+				var compStl = component.style;
+				// Check min width
+				if(compStl.width.replace(/\D/g,'') < c.minComponentW)
+					compStl.width = c.minComponentW +'px';
+				// Check min height
+				if(compStl[this.hType].replace(/\D/g,'') < c.minComponentH)
+					compStl[this.hType] = c.minComponentH +'px';
+				// Set overflow in case of fixed height
+				if(c.newFixedH)
+					compStl.overflow = 'auto';
 				if(!this.absoluteMode){
-					delete component.style.left;
-					delete component.style.top;
+					delete compStl.left;
+					delete compStl.top;
 				}else
-					component.style.position = 'absolute';
+					compStl.position = 'absolute';
+				var lp = this.sorter.lastPos;
+
+				if(this.nearFloat(lp.index, lp.method, this.sorter.lastDims))
+					compStl.float = 'left';
+
+				if(this.config.firstCentered &&
+					this.getCanvasWrapper() == this.sorter.target){
+					compStl.margin = '0 auto';
+				}
+
 				return component;
 			},
 
