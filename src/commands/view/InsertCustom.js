@@ -8,6 +8,7 @@ define(['backbone', './CreateComponent'],
 
 			init: function(){
 				CreateComponent.init.apply(this, arguments);
+				_.bindAll(this, 'insertComponent');
 				this.allowDraw = 0;
 			},
 
@@ -25,7 +26,7 @@ define(['backbone', './CreateComponent'],
 
 			enable: function(){
 				CreateComponent.enable.apply(this, arguments);
-				this.$wr.on('click', this.insertComponent.bind(this));
+				this.$wr.on('click', this.insertComponent);
 			},
 
 			/**
@@ -42,9 +43,12 @@ define(['backbone', './CreateComponent'],
 				var model = this.create(this.sorter.target, object, index, null, {silent: false});
 
 				if(this.opt.terminateAfterInsert && this.sender)
-					this.sender.set('active',false);
+					this.sender.set('active', false);
 				else
 					this.enable();
+
+				if(!model)
+					return;
 
 				if(this.em)
 						this.em.editor.initChildrenComp(model);

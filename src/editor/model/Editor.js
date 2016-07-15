@@ -42,6 +42,7 @@ define([
 				selectedComponent: null,
 				previousModel: null,
 				changesCount:	0,
+				device: '',
 			},
 
 			initialize: function(c) {
