@@ -20,18 +20,11 @@ function(Backbone) {
 
     /**
      * Update width of the frame
+     * @private
      */
     updateWidth: function(model){
-      // Refactor: maybe its better put it inside EditorModel
-      // as I will use it also inside Style Manager
-      // editor.getMediaWidth();
-      /*
-      var value = model.get('device');
-      var media = em.get('Devices').get(value);
-      if(!media)
-        return;
-      this.el.style.width = media.get('width');
-      */
+      var device = this.em.getDeviceModel();
+      this.el.style.width = device ? device.get('width') : '';
     },
 
     getBody: function(){

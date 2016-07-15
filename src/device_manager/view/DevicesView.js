@@ -1,18 +1,37 @@
-define(['backbone'],
-function(Backbone) {
+define(['backbone', 'text!./../template/devices.html'],
+function(Backbone, devicesTemplate) {
 
   return Backbone.View.extend({
 
-    //template: _.template(assetsTemplate),
+    template: _.template(devicesTemplate),
+
+    events: {
+      'change': 'updateDevice'
+    },
 
     initialize: function(o) {
       this.config = o.config || {};
+      console.log(this.config);
       this.ppfx = this.config.pStylePrefix || '';
+    },
+
+    /**
+     * Update device of the editor
+     * @private
+     */
+    updateDevice: function(){
+      var em = this.config.em;
+      if(em){
+        var devEl = this.devicesEl;
+        var val = devEl ? devEl.val() : '';
+        em.set('device', val);
+      }
     },
 
     /**
      * Return devices options
      * @return {string} String of options
+     * @private
      */
     getOptions: function(){
       var result = '';
@@ -24,12 +43,11 @@ function(Backbone) {
     },
 
     render: function() {
-      /*
-      this.$el.html(this.template({
-        ppfx: this.ppfx,
-      }));
-       */
-      //this.$el.attr({class: this.ppfx + 'frame'});
+      var pfx = this.ppfx;
+      this.$el.html(this.template({ ppfx: pfx }));
+      this.devicesEl = this.$el.find('.' + pfx + 'devices');
+      this.devicesEl.append(this.getOptions());
+      this.el.className = pfx + 'devices-c';
       return this;
     },
 

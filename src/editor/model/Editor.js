@@ -93,6 +93,8 @@ define([
 			 * */
 			initDeviceManager: function(){
 				var cfg = this.config.deviceManager;
+				cfg.em = this;
+				cfg.pStylePrefix = this.config.stylePrefix;
 				var dm = new DeviceManager(cfg);
 				this.set('DeviceManager', dm);
 			},
@@ -749,6 +751,15 @@ define([
 				this.cacheLoad = sm.load(load);
 
 				return this.cacheLoad;
+			},
+
+			/**
+			 * Returns device model by name
+			 * @return {Device|null}
+			 */
+			getDeviceModel: function(){
+				var name = this.get('device');
+				return this.get('DeviceManager').get(name);
 			},
 
 		});

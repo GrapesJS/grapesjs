@@ -17,14 +17,19 @@ define(['StyleManager'], function(StyleManager) {
 					this.$cn2 = $('<div/>');
 					this.$cn.append(this.$cn2);
 
+					// Device Manager
+					var dvm = em.DeviceManager;
+					if(dvm)
+						this.$cn2.append(dvm.render());
+
 					// Class Manager container
-					this.clm = em.ClassManager;
-					if(this.clm){
-						this.$clm = new this.clm.ClassTagsView({
-							collection: new this.clm.ClassTags([]),
-							config: this.clm.config,
+					var clm = em.ClassManager;
+					if(clm){
+						var $clm = new clm.ClassTagsView({
+							collection: new clm.ClassTags([]),
+							config: clm.config,
 						}).render().el;
-						this.$cn2.append(this.$clm);
+						this.$cn2.append($clm);
 					}
 
 					this.$cn2.append(em.StyleManager.render());

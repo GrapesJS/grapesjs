@@ -27,7 +27,8 @@ define(function(require) {
   return function(config) {
     var c = config || {},
       defaults = require('./config/config'),
-      Devices = require('./model/Devices');
+      Devices = require('./model/Devices'),
+      DevicesView = require('./view/DevicesView');
 
     for (var name in defaults) {
       if (!(name in c))
@@ -35,7 +36,10 @@ define(function(require) {
     }
 
     var devices = new Devices(c.devices);
-    //var view = new DevicesView({ collection: devices });
+    var view = new DevicesView({
+      collection: devices,
+      config: c
+    });
 
     return {
 
@@ -78,6 +82,15 @@ define(function(require) {
          */
         getAll: function(){
           return devices;
+        },
+
+        /**
+         * Render devices
+         * @return {string} HTML string
+         * @private
+         */
+        render: function(){
+          return view.render().el;
         },
 
     };

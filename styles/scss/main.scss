@@ -180,7 +180,7 @@ $imageCompDim:	50px;
 .#{$cv-prefix}canvas *{box-sizing: border-box;}
 
 .#{$app-prefix}frame{
-  transition: width 0.35s linear;
+  transition: width 0.35s ease;
 }
 
 .btn-cl {

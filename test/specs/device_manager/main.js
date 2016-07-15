@@ -60,6 +60,10 @@ define([ 'DeviceManager',
           model.should.deep.equal(model2);
         });
 
+        it('Render devices', function() {
+          obj.render().should.be.ok;
+        });
+
       });
 
     });
