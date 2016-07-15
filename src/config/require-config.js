@@ -38,6 +38,7 @@ require.config({
 		            {  name: 'AssetManager', 		location: 'asset_manager', 		},
 		            {  name: 'StyleManager', 		location: 'style_manager', 		},
 		            {  name: 'ClassManager', 		location: 'class_manager', 		},
+		            {  name: 'DeviceManager', 	location: 'device_manager', 	},
 		            {  name: 'StorageManager', 	location: 'storage_manager', 	},
 		            {  name: 'PluginManager',		location: 'plugin_manager',		},
 		            {  name: 'Navigator', 			location: 'navigator', 				},

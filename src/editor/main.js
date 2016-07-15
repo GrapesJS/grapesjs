@@ -8,6 +8,8 @@
  * * [getStyle](#getstyle)
  * * [setStyle](#setstyle)
  * * [getSelected](#getselected)
+ * * [setDevice](#setdevice)
+ * * [getDevice](#getdevice)
  * * [runCommand](#runcommand)
  * * [stopCommand](#stopcommand)
  * * [store](#store)
@@ -133,6 +135,11 @@ define(function (require){
 				UndoManager: em.get('UndoManager'),
 
 				/**
+				 * @property {DeviceManager}
+				 */
+				DeviceManager: em.get('DeviceManager'),
+
+				/**
 				 * @property {Utils}
 				 */
 				Utils: em.get('Utils'),
@@ -233,6 +240,29 @@ define(function (require){
 				 */
 				getSelected: function(){
 					return em.getSelected();
+				},
+
+				/**
+				 * Set device to the editor. If the device exists it will
+				 * change the canvas to the proper width
+				 * @return {this}
+				 * @example
+				 * editor.setDevice('Tablet');
+				 */
+				setDevice: function(name){
+					return em.set('device', name);
+				},
+
+				/**
+				 * Return the actual active device
+				 * @return {string} Device name
+				 * @example
+				 * var device = editor.getDevice();
+				 * console.log(device);
+				 * // 'Tablet'
+				 */
+				getDevice: function(){
+					return em.get('device');
 				},
 
 				/**

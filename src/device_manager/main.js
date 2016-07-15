@@ -1,13 +1,12 @@
 /**
- *
- * * [getAll](#getall)
- * * [get](#get)
  * * [add](#add)
+ * * [get](#get)
+ * * [getAll](#getall)
  *
  * Before using methods you should get first the module from the editor instance, in this way:
  *
  * ```js
- * var deviceManager = editor.Devices;
+ * var deviceManager = editor.DeviceManager;
  * ```
  *
  * @module Devices
@@ -15,7 +14,7 @@
  * @param {Array<Object>} [config.devices=[]] Default devices
  * @example
  * ...
- * devices: {
+ * deviceManager: {
  *    devices: [
  *      {name: 'Desktop', width: ''}
  *      {name: 'Tablet', width: '991px'}

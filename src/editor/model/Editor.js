@@ -4,6 +4,7 @@ define([
         'keymaster',
         'AssetManager',
         'StorageManager',
+        'DeviceManager',
         'ModalDialog',
         'CodeManager',
         'CssComposer',
@@ -22,6 +23,7 @@ define([
 			Keymaster,
 			AssetManager,
 			StorageManager,
+			DeviceManager,
 			ModalDialog,
 			CodeManager,
 			CssComposer,
@@ -55,6 +57,7 @@ define([
 				if(c.el && c.fromElement)
 					this.config.components = c.el.innerHTML;
 
+				this.initDeviceManager();
 				this.initParser();
 				this.initStorage();
 				this.initClassManager();
@@ -82,6 +85,16 @@ define([
 			 */
 			init: function(editor){
 				this.set('Editor', editor);
+			},
+
+			/**
+			 * Initialize device manager
+			 * @private
+			 * */
+			initDeviceManager: function(){
+				var cfg = this.config.deviceManager;
+				var dm = new DeviceManager(cfg);
+				this.set('DeviceManager', dm);
 			},
 
 			/**

@@ -25,11 +25,13 @@ function(Backbone) {
       // Refactor: maybe its better put it inside EditorModel
       // as I will use it also inside Style Manager
       // editor.getMediaWidth();
+      /*
       var value = model.get('device');
       var media = em.get('Devices').get(value);
       if(!media)
         return;
       this.el.style.width = media.get('width');
+      */
     },
 
     getBody: function(){

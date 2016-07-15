@@ -169,6 +169,28 @@ define(['GrapesJS', 'PluginManager', 'chai'],
         editor.testVal.should.equal(htmlString + '5');
       });
 
+      it('Set default devices', function() {
+        config.deviceManager = {};
+        config.deviceManager.devices = [
+          {name:'1', width: '2'},
+          {name:'3', width: '4'},
+        ];
+        var editor = obj.init(config);
+        editor.DeviceManager.getAll().length.should.equal(2);
+      });
+
+      it('There is no active device', function() {
+        var editor = obj.init(config);
+        editor.getDevice().should.be.empty;
+      });
+
+      it('Active another device', function() {
+        var editor = obj.init(config);
+        editor.setDevice('Tablet');
+        editor.getDevice().should.equal('Tablet');
+      });
+
+
     });
 
   });

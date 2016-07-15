@@ -79,6 +79,23 @@ define(function () {
 		//Configurations for Css Composer
 		cssComposer				: {},
 
+		//Configurations for Device Manager
+		deviceManager: {
+			'devices': [{
+	        name: 'Desktop',
+	        width: '',
+	      },{
+	        name: 'Tablet',
+	        width: '991px',
+	      },{
+	        name: 'Mobile landscape',
+	        width: '767px',
+	      },{
+	        name: 'Mobile portrait',
+	        width: '479px',
+	    }],
+		},
+
 		// Dom element
 		el: '',
 
