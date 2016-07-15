@@ -20,13 +20,5 @@ define(function () {
         { name: 'nth-of-type(2n)', label: 'Even/Odd' }
     ],
 
-    // Media queries
-    medias: [
-        { name: 'Desktop', width: ''},
-        { name: 'Tablet', width: '991px' },
-        { name: 'Mobile landscape', width: '767px' },
-        { name: 'Mobile portrait', width: '479px' },
-    ],
-
 	};
 });

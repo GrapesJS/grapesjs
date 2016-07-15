@@ -35,6 +35,7 @@ define(function(require) {
     }
 
     var devices = new Devices(c.devices);
+    //var view = new DevicesView({ collection: devices });
 
     return {
 
