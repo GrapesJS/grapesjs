@@ -21,6 +21,17 @@ define(function() {
 					key('⌘+c, ctrl+c', this.copyComp);
 					key('⌘+v, ctrl+v', this.pasteComp);
 				}
+
+				this.listenTo(this.em.editor, 'change:device', this.clearOff);
+			},
+
+			/**
+			 * Cleare cached offsets
+			 * @private
+			 */
+			clearOff: function(){
+				this.frameOff = null;
+				this.canvasOff = null;
 			},
 
 			/**
@@ -264,10 +275,12 @@ define(function() {
 			},
 
 			run: function(em, sender) {
+				this.em = em;
 				this.enable();
 			},
 
 			stop: function() {
+				this.stopListening(this.em.editor, 'change:device', this.clearOff);
 				if(!this.selEl)
 					this.selEl = $(this.getCanvasBody()).find('*');
 			  this.frameOff = this.canvasOff = this.adjScroll = null;
