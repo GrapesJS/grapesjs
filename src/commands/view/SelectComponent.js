@@ -184,7 +184,8 @@ define(function() {
 			 * @private
 			 * */
 			clean: function() {
-				this.selEl.removeClass(this.hoverClass);
+				if(this.selEl)
+					this.selEl.removeClass(this.hoverClass);
 			},
 
 			/**

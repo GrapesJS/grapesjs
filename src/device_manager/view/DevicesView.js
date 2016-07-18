@@ -11,8 +11,17 @@ function(Backbone, devicesTemplate) {
 
     initialize: function(o) {
       this.config = o.config || {};
-      console.log(this.config);
       this.ppfx = this.config.pStylePrefix || '';
+      this.events['click .' + this.ppfx + 'add-trasp'] = this.startAdd;
+      this.delegateEvents();
+    },
+
+    /**
+     * Start adding new device
+     * @return {[type]} [description]
+     */
+    startAdd: function(){
+      console.log('start new device');
     },
 
     /**

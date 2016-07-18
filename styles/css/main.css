@@ -2994,12 +2994,92 @@ ol.example li.placeholder:before {
     content: "\f03e"; }
 
 /***********  END Components *************/
-/********* Style Manager **********/
+/********* Inputs **********/
+/*#d5d5d5*/
 /*303030*/
 /*414141*/
 /*#252525*/
-/*#d5d5d5*/
 /*b1b1b1*/
+.wte-field {
+  background-color: rgba(0, 0, 0, 0.3);
+  /*353535*/
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  /*292929*/
+  box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.1);
+  /*575757*/
+  border-radius: 2px;
+  box-sizing: border-box;
+  padding: 0 5px;
+  position: relative; }
+  .wte-field input, .wte-field select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    color: #d5d5d5;
+    border: none;
+    background-color: transparent;
+    width: 100%;
+    position: relative;
+    z-index: 1; }
+  .wte-field select {
+    color: transparent;
+    text-shadow: 0 0 0 #d5d5d5;
+    height: 20px; }
+  .wte-field option {
+    margin: 5px 0; }
+  .wte-field .wte-sel-arrow {
+    height: 100%;
+    width: 9px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 0; }
+  .wte-field .wte-d-s-arrow {
+    bottom: 7px;
+    border-top: 4px solid #b1b1b1;
+    position: absolute;
+    height: 0;
+    width: 0;
+    border-left: 3px solid transparent;
+    border-right: 4px solid transparent;
+    cursor: pointer; }
+
+.wte-add-trasp {
+  background: none;
+  border: none;
+  color: #eee;
+  cursor: pointer;
+  font-size: 1em;
+  border-radius: 2px;
+  opacity: 0.75;
+  filter: alpha(opacity=75); }
+  .wte-add-trasp:hover {
+    opacity: 1;
+    filter: alpha(opacity=100); }
+  .wte-add-trasp:active {
+    background-color: rgba(0, 0, 0, 0.2); }
+
+/********* END Inputs **********/
+/********* Device Manager **********/
+.wte-devices-c {
+  display: flex;
+  align-items: center;
+  padding: 10px 5px;
+  color: #d5d5d5;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  margin-bottom: 10px; }
+  .wte-devices-c .wte-device-label {
+    flex-grow: 2;
+    font-size: 0.7em;
+    text-align: left; }
+  .wte-devices-c .wte-select {
+    flex-grow: 20; }
+  .wte-devices-c .wte-add-trasp {
+    flex-grow: 1;
+    margin-left: 5px; }
+
+/********* END Device Manager **********/
+/********* Style Manager **********/
 .wte-sm-close-btn, .wte-sm-sector .wte-sm-property.wte-sm-file #wte-sm-preview-box #wte-sm-close, .wte-clm-tags .wte-sm-property.wte-sm-file #wte-sm-preview-box #wte-sm-close {
   display: block;
   font-size: 23px;

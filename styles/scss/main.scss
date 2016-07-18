@@ -506,13 +506,107 @@ $leftWidth: 16.5%;
 /***********  END Components *************/
 
 
-/********* Style Manager **********/
+/********* Inputs **********/
 
-$darkBorder:		rgba(0, 0, 0, 0.15); /*303030*/
-$lightBorder:		rgba(255, 255, 255, 0.05); /*414141*/
-$darkTextShadow:	rgba(0, 0, 0, 0.3); /*#252525*/
-$inputFontColor:	darken($fontColor,10%); /*#d5d5d5*/
-$arrowColor:		darken($fontColor,24%); /*b1b1b1*/
+$inputFontColor:  darken($fontColor,10%); /*#d5d5d5*/
+$darkBorder:    rgba(0, 0, 0, 0.15); /*303030*/
+$lightBorder:   rgba(255, 255, 255, 0.05); /*414141*/
+$darkTextShadow:  rgba(0, 0, 0, 0.3); /*#252525*/
+$arrowColor:    darken($fontColor,24%); /*b1b1b1*/
+
+.#{$app-prefix}field {
+  background-color: rgba(0, 0, 0, 0.3);/*353535*/
+  border: 1px solid rgba(0, 0, 0, 0.1);/*292929*/
+  box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.1);/*575757*/
+  border-radius: 2px;
+  box-sizing: border-box;
+  padding: 0 5px;
+  position: relative;
+
+  input, select{
+    @include appearance(none);
+    color: $inputFontColor;
+    border:none;
+    background-color: transparent;
+    width: 100%;
+    position: relative;
+    z-index:1;
+  }
+
+  select{
+    color: transparent;
+    text-shadow: 0 0 0 $inputFontColor;
+    height: 20px;
+  }
+
+  option{
+    margin: 5px 0;
+  }
+
+  .#{$app-prefix}sel-arrow {
+    height: 100%; width: 9px;
+    position: absolute;
+    right: 0; top: 0;
+    z-index: 0;
+  }
+  .#{$app-prefix}d-s-arrow {
+    bottom: 7px;
+    border-top: 4px solid $arrowColor;
+    position: absolute;
+    height: 0; width: 0;
+    border-left: 3px solid transparent;
+    border-right: 4px solid transparent;
+    cursor:pointer;
+  }
+}
+
+.#{$app-prefix}add-trasp {
+  background: none;
+  border: none;
+  color: $fontColor;
+  cursor: pointer;
+  font-size: 1em;
+  border-radius: 2px;
+  @include opacity(0.75);
+
+  &:hover{  @include opacity(1); }
+  &:active{
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+}
+
+/********* END Inputs **********/
+
+/********* Device Manager **********/
+
+.#{$app-prefix}devices-c{
+  display: flex;
+  align-items: center;
+  padding: 10px 5px;
+  color: $inputFontColor;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  margin-bottom: 10px;
+
+  .#{$app-prefix}device-label {
+    flex-grow: 2;
+    font-size: 0.7em;
+    text-align: left;
+  }
+
+  .#{$app-prefix}select{
+    flex-grow: 20;
+  }
+
+  .#{$app-prefix}add-trasp{
+    flex-grow: 1;
+    margin-left: 5px;
+  }
+}
+
+/********* END Device Manager **********/
+
+
+/********* Style Manager **********/
 
 .#{$sm-prefix}close-btn{
 	display:block;
