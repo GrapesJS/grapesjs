@@ -1,9 +1,9 @@
 var modulePath = './../../../test/specs/device_manager';
 
 define([ 'DeviceManager',
-        //modulePath + '/model/DeviceModels',
+        modulePath + '/view/DevicesView',
          ],
-  function(DeviceManager) {
+  function(DeviceManager, DevicesView) {
 
     describe('DeviceManager', function() {
 
@@ -65,6 +65,8 @@ define([ 'DeviceManager',
         });
 
       });
+
+      DevicesView.run();
 
     });
 });

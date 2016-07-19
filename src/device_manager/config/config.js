@@ -3,5 +3,7 @@ define(function () {
 
     'devices': [],
 
+    deviceLabel: 'Device',
+
 	};
 });

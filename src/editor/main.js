@@ -39,6 +39,7 @@
  * @param {Object} [config.commands={}] Commands configuration, see the relative documentation
  * @param {Object} [config.domComponents={}] Components configuration, see the relative documentation
  * @param {Object} [config.panels={}] Panels configuration, see the relative documentation
+ * @param {Object} [config.showDevices=true] If true render a select of available devices inside style manager panel
  * @example
  * var editor = grapesjs.init({
  * 	container : '#gjs',

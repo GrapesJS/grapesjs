@@ -20,9 +20,7 @@ function(Backbone, devicesTemplate) {
      * Start adding new device
      * @return {[type]} [description]
      */
-    startAdd: function(){
-      console.log('start new device');
-    },
+    startAdd: function(){},
 
     /**
      * Update device of the editor
@@ -53,7 +51,10 @@ function(Backbone, devicesTemplate) {
 
     render: function() {
       var pfx = this.ppfx;
-      this.$el.html(this.template({ ppfx: pfx }));
+      this.$el.html(this.template({
+        ppfx: pfx,
+        deviceLabel: this.config.deviceLabel
+      }));
       this.devicesEl = this.$el.find('.' + pfx + 'devices');
       this.devicesEl.append(this.getOptions());
       this.el.className = pfx + 'devices-c';

@@ -96,6 +96,9 @@ define(function () {
 	    }],
 		},
 
+		// If true render a select of available devices
+		showDevices: 1,
+
 		// Dom element
 		el: '',
 

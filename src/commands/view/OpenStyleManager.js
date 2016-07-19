@@ -19,7 +19,7 @@ define(['StyleManager'], function(StyleManager) {
 
 					// Device Manager
 					var dvm = em.DeviceManager;
-					if(dvm)
+					if(dvm && config.showDevices)
 						this.$cn2.append(dvm.render());
 
 					// Class Manager container
