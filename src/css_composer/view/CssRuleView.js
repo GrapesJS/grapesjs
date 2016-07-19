@@ -51,17 +51,21 @@ define(['backbone'],
 
     render : function(){
       var block = '',
-          selStr = '';
-          o = '';
+        selStr = '';
+        o = '';
       if(!this.selStr)
         this.selStr = this.renderSelectors();
       var prpStr = this.renderProperties();
       var stateStr = this.model.get('state');
+      var width = this.model.get('maxWidth');
       if(this.selStr){
         stateStr = stateStr ? ':' + stateStr : '';
         block = prpStr !== '' ? '{' + prpStr + '}' : '';
       }
       o = this.selStr && block ? this.selStr + stateStr + block : '';
+      if(width && o){
+        o = '@media (max-width: ' + width + '){' + o + '}';
+      }
       this.$el.html(o);
       return this;
     },

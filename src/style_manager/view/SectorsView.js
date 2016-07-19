@@ -41,6 +41,8 @@ define(['backbone', './SectorView'],
 			var classes = el.get('classes');
 			var state = el.get('state');
 			var pt = this.propTarget;
+			var device = this.target.getDeviceModel();
+			var deviceW = device ? device.get('width') : '';
 			pt.helper = null;
 
 			if(classes.length){
@@ -48,10 +50,10 @@ define(['backbone', './SectorView'],
 				var valid = _.filter(classes.models, function(item){
 					return item.get('active');
 				});
-				var iContainer = cssC.getRule(valid, state, '');
+				var iContainer = cssC.getRule(valid, state, deviceW);
 
 				if(!iContainer){
-					iContainer = cssC.newRule(valid, state, '');
+					iContainer = cssC.newRule(valid, state, deviceW);
 					// Hydrate styles from component element
 					iContainer.set('style', el.get('style'));
 					cssC.addRule(iContainer);
