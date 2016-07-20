@@ -14,8 +14,8 @@ $sm-prefix: 	$app-prefix + 'sm-';
 $cv-prefix: 	$app-prefix + 'cv-';
 $clm-prefix: 	$app-prefix + 'clm-';
 $mainColor:		#444; /* Light: #573454 Dark: #3b2639 -moz-linear-gradient(top, #fca99b 0%, #6e2842 100%)*/
-$mainDkColor:	darken($mainColor, 4%);/*#383838*/
-$mainLhColor:	lighten($mainColor, 5%);/*#515151*/
+$mainDkColor:	rgba(0, 0, 0, 0.3);/* darken($mainColor, 4%) - #383838*/
+$mainLhColor:	rgba(255, 255, 255, 0.1);/*#515151*/
 $fontColor:		#eee; /*l: #d8d7db*/
 $fontColorDk:	#777;
 $mainFont:		Helvetica, sans-serif;
@@ -73,6 +73,10 @@ $imageCompDim:	50px;
 	background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==");
 }
 
+.#{$app-prefix}bg-main{
+  background-color: $mainColor;
+}
+
 /********************* MAIN ************************/
 .clear{ clear:both }
 .no-select{
@@ -104,14 +108,14 @@ $imageCompDim:	50px;
   border: none;
 }
 .#{$app-prefix}btn-prim:active{
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: $mainLhColor;
 }
 
 .#{$app-prefix}input{
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: $mainDkColor;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 2px;
-  box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: 1px 1px 0 $mainLhColor;
   box-sizing: border-box;
   color: $fontColor;
   padding: 0.5em 1em;
@@ -120,9 +124,9 @@ $imageCompDim:	50px;
 .#{$cv-prefix}canvas {
   background-color: rgba(0, 0, 0, 0.15);
   position: absolute;
-  width: 80%;
+  width: 83%;
   height: 100%;
-  top: 0; left: 3.5%;
+  top: 0; left: 2%;
   overflow: hidden;
   z-index:1;
 
@@ -289,10 +293,10 @@ ol.example li.placeholder:before {position: absolute;}
 
 /********* PANELS **********/
 
-$leftWidth: 16.5%;
+$leftWidth: 15%;
 
 .#{$pn-prefix}panel {
-  background-color: $mainColor;
+  @extend .#{$app-prefix}bg-main;
   display: inline-block;
   padding: 5px;
   position: absolute;
@@ -303,14 +307,14 @@ $leftWidth: 16.5%;
   &##{$pn-prefix}commands{
   	min-width: 35px;
     height: 100%;
-    width: 3.5%; left:0;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    width: 2%; left:0;
+    box-shadow: 0 0 5px $mainDkColor;
   }
 
   &##{$pn-prefix}options{
   	min-width: 35px;
     height: 100%;
-    width: 3.5%; left:0;
+    width: 2%; left:0;
   	bottom: 0;
   	height: auto;
   }
@@ -328,7 +332,7 @@ $leftWidth: 16.5%;
   }
 
   &##{$pn-prefix}views{
-  	border-bottom: 2px solid rgba(0,0,0,0.3);
+  	border-bottom: 2px solid $mainDkColor;
   	right: 0;
   	width: $leftWidth;
   	z-index: 4;
@@ -340,22 +344,22 @@ $leftWidth: 16.5%;
     right: 0;
     width: $leftWidth;
     overflow: auto;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 5px $mainDkColor;
   }
 }
 
 .#{$pn-prefix}btn, .#{$app-prefix}btnt{
 	box-sizing: border-box;
-	height: 35px; width: 35px;
-	line-height: 35px;
+	height: 30px; width: 30px;
+	line-height: 21px;
 	background-color: transparent;
 	border:none;
 	color:  $fontColor;
-	font-size: 25px;
+	font-size: 18px;
 	margin-bottom: 5px;
 	border-radius: 2px;
 	cursor: pointer;
-	padding: 0 5px;
+	padding: 5px;
 	position: relative;
 
 	&.#{$pn-prefix}active{
@@ -434,7 +438,7 @@ $leftWidth: 16.5%;
 	    left: 0; top: 0;
 	    padding: 7px 5px 7px 10px;
 	    position: absolute;
-	    color: darken($fontColor,25%);
+	    color: darken($fontColor, 20%);
 	    cursor:pointer;
 	    z-index: 1;
 	}
@@ -447,14 +451,17 @@ $leftWidth: 16.5%;
 		width: 8px;
 	}
 }
+.#{$nv-prefix}item .#{$nv-prefix}title-c {
+  @extend .#{$app-prefix}bg-main;
+}
 .#{$nv-prefix}item .#{$nv-prefix}title {
-  background-color: $mainDkColor;
+  background-color: rgba(0, 0, 0, 0.15);
   font-size: 13px;
   letter-spacing: 1px;
   padding: 7px 10px 7px 25px;
-  text-shadow: 0 1px 0 darken($mainDkColor,8%);/*#252525*/
-  border-bottom: 1px solid darken($mainDkColor,4%);/*#303030*/
-  border-top: 1px solid lighten($mainDkColor,3%);/*#414141*/
+  text-shadow: 0 1px 0 $mainDkColor;
+  border-bottom: 1px solid $mainDkColor;
+  border-top: 1px solid $mainLhColor;
   cursor:pointer;
 }
 .#{$nv-prefix}item .#{$nv-prefix}children .#{$nv-prefix}title{
@@ -466,13 +473,14 @@ $leftWidth: 16.5%;
 }
 .#{$nv-prefix}item.open > .#{$nv-prefix}children { display: block; }
 .#{$nv-prefix}item > .#{$nv-prefix}no-chld > ##{$nv-prefix}caret::before{ content:''; }
+.#{$nv-prefix}no-chld > ##{$nv-prefix}caret{ display:none; }
 .#{$nv-prefix}item > ##{$nv-prefix}move {
-	color: darken($fontColor,50%);
+	color: darken($fontColor, 20%);
 	position: absolute;
 	cursor: move;
-  	font-size: 12px;
-  	right: 0; top: 0;
-  	padding: 7px 10px 7px 5px;
+  font-size: 12px;
+  right: 0; top: 0;
+  padding: 7px 10px 7px 5px;
 }
 .#{$nv-prefix}item{
 	&.#{$nv-prefix}selected{
@@ -511,13 +519,13 @@ $leftWidth: 16.5%;
 $inputFontColor:  darken($fontColor,10%); /*#d5d5d5*/
 $darkBorder:    rgba(0, 0, 0, 0.15); /*303030*/
 $lightBorder:   rgba(255, 255, 255, 0.05); /*414141*/
-$darkTextShadow:  rgba(0, 0, 0, 0.3); /*#252525*/
+$darkTextShadow:  $mainDkColor; /*#252525*/
 $arrowColor:    darken($fontColor,24%); /*b1b1b1*/
 
 .#{$app-prefix}field {
-  background-color: rgba(0, 0, 0, 0.3);/*353535*/
+  background-color: $mainDkColor;/*353535*/
   border: 1px solid rgba(0, 0, 0, 0.1);/*292929*/
-  box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.1);/*575757*/
+  box-shadow: 1px 1px 0 $mainLhColor;/*575757*/
   border-radius: 2px;
   box-sizing: border-box;
   padding: 0 5px;
@@ -628,7 +636,7 @@ $arrowColor:    darken($fontColor,24%); /*b1b1b1*/
 }
 .#{$sm-prefix}sector {
 	clear:both;
-	border-bottom: 1px solid $darkBorder;
+	border-bottom: 1px solid $mainDkColor;
 	color:	$fontColor;
 	font-weight: lighter;
 	text-align:left;
@@ -643,9 +651,9 @@ $arrowColor:    darken($fontColor,24%); /*b1b1b1*/
 	  font-size: 13px;
 	  letter-spacing: 1px;
 	  padding: 12px 10px 12px 20px;
-	  text-shadow: 0 1px 0 $darkTextShadow;
-	  border-bottom: 1px solid $darkBorder;
-	  border-top: 1px solid $lightBorder;
+	  text-shadow: 0 1px 0 $mainDkColor;
+	  border-bottom: 1px solid $mainDkColor;
+	  border-top: 1px solid $mainLhColor;
 	  cursor:pointer;
 	}
 
@@ -713,9 +721,9 @@ $arrowColor:    darken($fontColor,24%); /*b1b1b1*/
 		.#{$sm-prefix}d-s-arrow, .#{$clm-prefix}d-s-arrow{ bottom: 7px; }
 
 	 	&.#{$sm-prefix}integer, &.#{$sm-prefix}select, &.#{$sm-prefix}list, &.#{$sm-prefix}color, &.#{$sm-prefix}composite, &.#{$sm-prefix}input {
-		  background-color: rgba(0, 0, 0, 0.3);/*353535*/
+		  background-color: $mainDkColor;/*353535*/
 		  border: 1px solid rgba(0, 0, 0, 0.1);/*292929*/
-		  box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.1);/*575757*/
+		  box-shadow: 1px 1px 0 $mainLhColor;/*575757*/
 		  color: $inputFontColor;
 		  border-radius: 2px;
 		  box-sizing: border-box;
@@ -825,7 +833,7 @@ $arrowColor:    darken($fontColor,24%); /*b1b1b1*/
 		.#{$sm-prefix}layers {
 		  background-color: rgba(0,0,0,0.13);
 		  border: 1px solid rgba(0,0,0,0.13);
-		  box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.1);
+		  box-shadow: 1px 1px 0 $mainLhColor;
 		  border-radius: 2px;
 		  margin-top: 5px;
 		  min-height: 30px;
@@ -1043,7 +1051,7 @@ $paddElClm: 5px 6px;
 }
 
 .#{$mdl-prefix}dialog {
-  	background-color: lighten($mainColor, 2%);
+  	@extend .#{$app-prefix}bg-main;
   	border-bottom: 2px solid #353535;
   	text-shadow: -1px -1px 0 #353535;
   	margin: 30px auto 0;
@@ -1243,7 +1251,7 @@ $uploadPadding:	150px 10px;
 /*************RTE****************/
 
 ##{$rte-prefix}toolbar {
-  background-color: $mainColor;
+  @extend .#{$app-prefix}bg-main;
   border: 1px solid $mainDkColor;
   position: absolute;
   border-radius: 3px;
@@ -1255,13 +1263,13 @@ $uploadPadding:	150px 10px;
   	color: $fontColor;
 		padding: 5px;
 		width:	25px;
-		border-right: 1px solid #353535;
+		border-right: 1px solid $mainDkColor;
 		text-align: center;
 		cursor: pointer;
 		outline: none;
 
 	  	&:last-child{ border-right:none; }
-	  	&.btn-info{ background-color: darken($mainDkColor,3%); }
+	  	&.btn-info{ background-color: $mainDkColor;}
 	  	&:hover {  background-color: $mainLhColor;}
 	}
 }
@@ -1274,13 +1282,13 @@ $uploadPadding:	150px 10px;
 .sp-hue{ left: 90%; }
 .sp-color{right: 15%;}
 .sp-container {
-  background-color: #454545;
-  border: 1px solid #333333;
-  box-shadow: 0 0 7px #111;
+  @extend .#{$app-prefix}bg-main;
+  border: 1px solid $mainDkColor;
+  box-shadow: 0 0 7px $mainDkColor;
   border-radius: 3px;
 }
 .sp-picker-container{border:none;}
-.colpick_dark .colpick_color {  outline: 1px solid #333;}
+.colpick_dark .colpick_color {  outline: 1px solid $mainDkColor;}
 .sp-cancel, .sp-cancel:hover {
   bottom: -8px;
   color: #777 !important;
@@ -1310,10 +1318,10 @@ $uploadPadding:	150px 10px;
 	text-align: right;
 }
 .sp-container button, .sp-container button:hover, .sp-container button:active{
-	background: #333;
-    border-color: #292929;
-    color: #757575;
-    text-shadow: none;
-    box-shadow: none;
-    padding: 3px 5px;
+	background: $mainDkColor;
+  border-color: $mainDkColor;
+  color: $fontColor;
+  text-shadow: none;
+  box-shadow: none;
+  padding: 3px 5px;
 }

@@ -2558,7 +2558,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   content: ""; }
 
 /* Light: #573454 Dark: #3b2639 -moz-linear-gradient(top, #fca99b 0%, #6e2842 100%)*/
-/*#383838*/
+/* darken($mainColor, 4%) - #383838*/
 /*#515151*/
 /*l: #d8d7db*/
 .wte-invis-invis, .wte-clm-tags #wte-clm-new, .wte-no-app {
@@ -2578,6 +2578,9 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 
 .wte-checker-bg, .checker-bg, .wte-sm-sector .wte-sm-property .wte-sm-layer > #wte-sm-preview-box, .wte-clm-tags .wte-sm-property .wte-sm-layer > #wte-sm-preview-box {
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg=="); }
+
+.wte-bg-main, .wte-pn-panel, .wte-nv-item .wte-nv-title-c, .wte-mdl-dialog, #wte-rte-toolbar, .sp-container {
+  background-color: #444; }
 
 /********************* MAIN ************************/
 .clear {
@@ -2632,10 +2635,10 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 .wte-cv-canvas {
   background-color: rgba(0, 0, 0, 0.15);
   position: absolute;
-  width: 80%;
+  width: 83%;
   height: 100%;
   top: 0;
-  left: 3.5%;
+  left: 2%;
   overflow: hidden;
   z-index: 1;
   /* This simulate body behaviour */ }
@@ -2805,7 +2808,6 @@ ol.example li.placeholder:before {
 
 /********* PANELS **********/
 .wte-pn-panel {
-  background-color: #444;
   display: inline-block;
   padding: 5px;
   position: absolute;
@@ -2815,13 +2817,13 @@ ol.example li.placeholder:before {
   .wte-pn-panel#wte-pn-commands, .wte-pn-panel#wte-pn-options2 {
     min-width: 35px;
     height: 100%;
-    width: 3.5%;
+    width: 2%;
     left: 0;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); }
   .wte-pn-panel#wte-pn-options {
     min-width: 35px;
     height: 100%;
-    width: 3.5%;
+    width: 2%;
     left: 0;
     bottom: 0;
     height: auto; }
@@ -2835,29 +2837,29 @@ ol.example li.placeholder:before {
   .wte-pn-panel#wte-pn-views {
     border-bottom: 2px solid rgba(0, 0, 0, 0.3);
     right: 0;
-    width: 16.5%;
+    width: 15%;
     z-index: 4; }
   .wte-pn-panel#wte-pn-views-container {
     height: 100%;
     padding: 52px 0 0;
     right: 0;
-    width: 16.5%;
+    width: 15%;
     overflow: auto;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); }
 
 .wte-pn-btn, .wte-btnt {
   box-sizing: border-box;
-  height: 35px;
-  width: 35px;
-  line-height: 35px;
+  height: 30px;
+  width: 30px;
+  line-height: 21px;
   background-color: transparent;
   border: none;
   color: #eee;
-  font-size: 25px;
+  font-size: 18px;
   margin-bottom: 5px;
   border-radius: 2px;
   cursor: pointer;
-  padding: 0 5px;
+  padding: 5px;
   position: relative; }
   .wte-pn-btn.wte-pn-active, .wte-btnt.wte-pn-active {
     background-color: rgba(0, 0, 0, 0.15);
@@ -2924,7 +2926,7 @@ ol.example li.placeholder:before {
     top: 0;
     padding: 7px 5px 7px 10px;
     position: absolute;
-    color: #aeaeae;
+    color: #bbbbbb;
     cursor: pointer;
     z-index: 1; }
   .wte-nv-navigator .wte-nv-item .wte-nv-title {
@@ -2935,20 +2937,17 @@ ol.example li.placeholder:before {
     width: 8px; }
 
 .wte-nv-item .wte-nv-title {
-  background-color: #3a3a3a;
+  background-color: rgba(0, 0, 0, 0.15);
   font-size: 13px;
   letter-spacing: 1px;
   padding: 7px 10px 7px 25px;
-  text-shadow: 0 1px 0 #252525;
-  /*#252525*/
-  border-bottom: 1px solid #303030;
-  /*#303030*/
-  border-top: 1px solid #414141;
-  /*#414141*/
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   cursor: pointer; }
 
 .wte-nv-item .wte-nv-children .wte-nv-title {
-  border-left: 1px solid #3f3f3f; }
+  border-left: 1px solid rgba(5, 5, 5, 0.3); }
 
 .wte-nv-item > .wte-nv-children {
   margin-left: 15px;
@@ -2960,8 +2959,11 @@ ol.example li.placeholder:before {
 .wte-nv-item > .wte-nv-no-chld > #wte-nv-caret::before {
   content: ''; }
 
+.wte-nv-no-chld > #wte-nv-caret {
+  display: none; }
+
 .wte-nv-item > #wte-nv-move {
-  color: #6f6f6f;
+  color: #bbbbbb;
   position: absolute;
   cursor: move;
   font-size: 12px;
@@ -3102,7 +3104,7 @@ ol.example li.placeholder:before {
 
 .wte-sm-sector, .wte-clm-tags {
   clear: both;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
   color: #eee;
   font-weight: lighter;
   text-align: left;
@@ -3119,8 +3121,8 @@ ol.example li.placeholder:before {
     letter-spacing: 1px;
     padding: 12px 10px 12px 20px;
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     cursor: pointer; }
   .wte-sm-sector .wte-sm-label, .wte-clm-tags .wte-sm-label {
     margin: 5px 5px 2px 0; }
@@ -3226,12 +3228,12 @@ ol.example li.placeholder:before {
   .wte-sm-sector .wte-sm-list .wte-sm-el, .wte-clm-tags .wte-sm-list .wte-sm-el {
     float: left;
     border-left: 1px solid rgba(0, 0, 0, 0.3);
-    text-shadow: 0 1px 0 #232323;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
     /*232323*/ }
     .wte-sm-sector .wte-sm-list .wte-sm-el:first-child, .wte-clm-tags .wte-sm-list .wte-sm-el:first-child {
       border: none; }
     .wte-sm-sector .wte-sm-list .wte-sm-el:hover, .wte-clm-tags .wte-sm-list .wte-sm-el:hover {
-      background: #3a3a3a; }
+      background: rgba(0, 0, 0, 0.3); }
   .wte-sm-sector .wte-sm-properties, .wte-clm-tags .wte-sm-properties {
     font-size: 11px;
     padding: 10px 5px; }
@@ -3244,10 +3246,10 @@ ol.example li.placeholder:before {
     .wte-sm-sector .wte-sm-property.wte-sm-file, .wte-clm-tags .wte-sm-property.wte-sm-file, .wte-sm-sector .wte-sm-property.wte-sm-composite, .wte-clm-tags .wte-sm-property.wte-sm-composite, .wte-sm-sector .wte-sm-property.wte-sm-stack, .wte-clm-tags .wte-sm-property.wte-sm-stack, .wte-sm-sector .wte-sm-property.wte-sm-list, .wte-clm-tags .wte-sm-property.wte-sm-list {
       width: 100%; }
     .wte-sm-sector .wte-sm-property .wte-sm-btn, .wte-clm-tags .wte-sm-property .wte-sm-btn {
-      background-color: #5b5b5b;
+      background-color: rgba(33, 33, 33, 0.3);
       /*#5d5d5d*/
       border-radius: 2px;
-      box-shadow: 1px 1px 0 #3f3f3f, 1px 1px 0 #656565 inset;
+      box-shadow: 1px 1px 0 rgba(5, 5, 5, 0.3), 1px 1px 0 rgba(43, 43, 43, 0.3) inset;
       padding: 5px;
       position: relative;
       text-align: center;
@@ -3256,7 +3258,7 @@ ol.example li.placeholder:before {
       cursor: pointer;
       color: #eee;
       box-sizing: border-box;
-      text-shadow: -1px -1px 0 #3a3a3a;
+      text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.3);
       border: none;
       opacity: 0.85;
       filter: alpha(opacity=85); }
@@ -3350,7 +3352,7 @@ ol.example li.placeholder:before {
       filter: alpha(opacity=100); }
   .wte-sm-sector .wte-sm-color-picker, .wte-clm-tags .wte-sm-color-picker {
     background-color: #eee;
-    border: 2px solid #575757;
+    border: 2px solid rgba(29, 29, 29, 0.3);
     box-sizing: border-box;
     cursor: pointer;
     height: 100%;
@@ -3455,7 +3457,6 @@ ol.example li.placeholder:before {
   height: 100%; }
 
 .wte-mdl-dialog {
-  background-color: #494949;
   border-bottom: 2px solid #353535;
   text-shadow: -1px -1px 0 #353535;
   margin: 30px auto 0;
@@ -3477,11 +3478,11 @@ ol.example li.placeholder:before {
 
 .wte-mdl-header {
   position: relative;
-  border-bottom: 1px solid #3a3a3a;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
   padding: 15px 15px 7px; }
 
 .wte-mdl-content {
-  border-top: 1px solid #515151; }
+  border-top: 1px solid rgba(255, 255, 255, 0.1); }
 
 /********* Assets Manager **********/
 .wte-am-assets {
@@ -3500,7 +3501,7 @@ ol.example li.placeholder:before {
   float: right; }
 
 .wte-am-assets-cont {
-  background-color: #3a3a3a;
+  background-color: rgba(0, 0, 0, 0.3);
   border-radius: 3px;
   box-sizing: border-box;
   padding: 10px;
@@ -3534,7 +3535,7 @@ ol.example li.placeholder:before {
   .wte-am-assets-cont .wte-am-highlight {
     background-color: #444; }
   .wte-am-assets-cont .wte-am-asset {
-    border-bottom: 1px solid #323232;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
     padding: 5px;
     cursor: pointer;
     position: relative; }
@@ -3563,7 +3564,7 @@ ol.example li.placeholder:before {
   width: 55%;
   float: left; }
   .wte-am-file-uploader > form {
-    background-color: #3a3a3a;
+    background-color: rgba(0, 0, 0, 0.3);
     border: 2px dashed #999999;
     border-radius: 3px;
     position: relative;
@@ -3598,24 +3599,23 @@ ol.example li.placeholder:before {
   font-size: 12px; }
   .wte-cm-editor#wte-cm-htmlmixed {
     padding-right: 10px;
-    border-right: 1px solid #3a3a3a; }
+    border-right: 1px solid rgba(0, 0, 0, 0.3); }
     .wte-cm-editor#wte-cm-htmlmixed #wte-cm-title {
       color: #a97d44; }
   .wte-cm-editor#wte-cm-css {
     padding-left: 10px;
-    border-left: 1px solid #515151; }
+    border-left: 1px solid rgba(255, 255, 255, 0.1); }
     .wte-cm-editor#wte-cm-css #wte-cm-title {
       color: #ddca7e; }
   .wte-cm-editor #wte-cm-title {
-    background-color: #3a3a3a;
+    background-color: rgba(0, 0, 0, 0.3);
     font-size: 12px;
     padding: 5px 10px 3px;
     text-align: right; }
 
 /*************RTE****************/
 #wte-rte-toolbar {
-  background-color: #444;
-  border: 1px solid #3a3a3a;
+  border: 1px solid rgba(0, 0, 0, 0.3);
   position: absolute;
   border-radius: 3px;
   overflow: hidden;
@@ -3625,16 +3625,16 @@ ol.example li.placeholder:before {
     color: #eee;
     padding: 5px;
     width: 25px;
-    border-right: 1px solid #353535;
+    border-right: 1px solid rgba(0, 0, 0, 0.3);
     text-align: center;
     cursor: pointer;
     outline: none; }
     #wte-rte-toolbar .wte-rte-btn:last-child {
       border-right: none; }
     #wte-rte-toolbar .wte-rte-btn.btn-info {
-      background-color: #323232; }
+      background-color: rgba(0, 0, 0, 0.3); }
     #wte-rte-toolbar .wte-rte-btn:hover {
-      background-color: #515151; }
+      background-color: rgba(255, 255, 255, 0.1); }
 
 /********* Spectrum **********/
 .sp-hue, .sp-slider {
@@ -3653,16 +3653,15 @@ ol.example li.placeholder:before {
   right: 15%; }
 
 .sp-container {
-  background-color: #454545;
-  border: 1px solid #333333;
-  box-shadow: 0 0 7px #111;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 7px rgba(0, 0, 0, 0.3);
   border-radius: 3px; }
 
 .sp-picker-container {
   border: none; }
 
 .colpick_dark .colpick_color {
-  outline: 1px solid #333; }
+  outline: 1px solid rgba(0, 0, 0, 0.3); }
 
 .sp-cancel, .sp-cancel:hover {
   bottom: -8px;
@@ -3698,9 +3697,9 @@ ol.example li.placeholder:before {
   text-align: right; }
 
 .sp-container button, .sp-container button:hover, .sp-container button:active {
-  background: #333;
-  border-color: #292929;
-  color: #757575;
+  background: rgba(0, 0, 0, 0.3);
+  border-color: rgba(0, 0, 0, 0.3);
+  color: #eee;
   text-shadow: none;
   box-shadow: none;
   padding: 3px 5px; }

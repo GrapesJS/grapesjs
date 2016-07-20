@@ -162,14 +162,15 @@ define(['backbone', 'text!./../template/item.html','require'],
 		 * */
 		checkChildren: function(){
 			var c	= this.model.components.length,
-				pfx	= this.pfx;
+				pfx	= this.pfx,
+				tC = '> .' + pfx + 'title-c > .' + pfx + 'title';
 			if(!this.$counter)
 				this.$counter	= this.$el.find('> #' + pfx + 'counter');
 			if(c){
-				this.$el.find('> .' + pfx + 'title').removeClass(pfx + 'no-chld');
+				this.$el.find(tC).removeClass(pfx + 'no-chld');
 				this.$counter.html(c);
 			}else{
-				this.$el.find('> .' + pfx + 'title').addClass(pfx + 'no-chld');
+				this.$el.find(tC).addClass(pfx + 'no-chld');
 				this.$counter.empty();
 				this.model.set('open',0);
 			}
@@ -195,7 +196,7 @@ define(['backbone', 'text!./../template/item.html','require'],
 				parent		: this.model
 			}).render().$el;
 			this.$el.find('.'+ pfx +'children').html(this.$components);
-			this.$caret			= this.$el.find('> .' + pfx + 'title > #' + pfx + 'caret');
+			this.$caret = this.$el.find('> .' + pfx + 'title-c > .' + pfx + 'title > #' + pfx + 'caret');
 			if(!this.model.get('draggable') || !this.config.sortable){
 				this.$el.find('> #' + pfx + 'move').detach();
 			}
