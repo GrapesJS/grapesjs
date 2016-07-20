@@ -146,6 +146,53 @@ define([path + 'HtmlGenerator',
 
               this.obj.build(comp, cssc).should.equal('.class1.class2{prop1:value1;}.class2{prop2:value2;}');
             });
+
+            it('Rule with media query', function() {
+              var comp = new Component();
+              var m1 = comp.get('components').add({tagName: 'article'});
+              var cls1 = m1.get('classes').add({name: 'class1'});
+              var cls2 = m1.get('classes').add({name: 'class2'});
+
+              var cssc = new CssComposer();
+              var rule = cssc.newRule([cls1, cls2]);
+              rule.set('style',{'prop1':'value1'});
+              rule.set('maxWidth', '999px');
+              cssc.addRule(rule);
+
+              this.obj.build(comp, cssc).should.equal('@media (max-width: 999px){.class1.class2{prop1:value1;}}');
+            });
+
+            it('Rules mixed with media queries', function() {
+              var comp = new Component();
+              var m1 = comp.get('components').add({tagName: 'article'});
+              var cls1 = m1.get('classes').add({name: 'class1'});
+              var cls2 = m1.get('classes').add({name: 'class2'});
+
+              var cssc = new CssComposer();
+
+              var rule = cssc.newRule([cls1, cls2]);
+              rule.set('style',{'prop1':'value1'});
+              cssc.addRule(rule);
+              var rule2 = cssc.newRule(cls2);
+              rule2.set('style',{'prop2':'value2'});
+              cssc.addRule(rule2);
+
+              var rule3 = cssc.newRule(cls1, '', '999px');
+              rule3.set('style',{'prop3':'value3'});
+              cssc.addRule(rule3);
+              var rule4 = cssc.newRule(cls2, '', '999px');
+              rule4.set('style',{'prop4':'value4'});
+              cssc.addRule(rule4);
+
+              var rule5 = cssc.newRule(cls1, '', '100px');
+              rule5.set('style',{'prop5':'value5'});
+              cssc.addRule(rule5);
+
+              this.obj.build(comp, cssc).should.equal('.class1.class2{prop1:value1;}.class2{prop2:value2;}'+
+                '@media (max-width: 999px){.class1{prop3:value3;}.class2{prop4:value4;}}'+
+                '@media (max-width: 100px){.class1{prop5:value5;}}');
+            });
+
             it("Avoid useless code", function() {
               var comp = new Component();
               var m1 = comp.get('components').add({tagName: 'article'});

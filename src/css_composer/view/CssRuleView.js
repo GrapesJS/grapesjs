@@ -11,6 +11,7 @@ define(['backbone'],
       this.config = o.config || {};
       this.listenTo(this.model, 'change:style', this.render);
       this.listenTo(this.model, 'change:state', this.render);
+      this.listenTo(this.model, 'change:maxWidth', this.render);
       this.listenTo(this.model.get('selectors'), 'change', this.selChanged);
     },
 
@@ -63,9 +64,10 @@ define(['backbone'],
         block = prpStr !== '' ? '{' + prpStr + '}' : '';
       }
       o = this.selStr && block ? this.selStr + stateStr + block : '';
-      if(width && o){
+
+      if(width && o)
         o = '@media (max-width: ' + width + '){' + o + '}';
-      }
+
       this.$el.html(o);
       return this;
     },

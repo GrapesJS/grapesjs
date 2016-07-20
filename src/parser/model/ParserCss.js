@@ -41,10 +41,18 @@ define(function(require) {
 
         for (var i = 0, len = nodes.length; i < len; i++) {
           var node = nodes[i];
-          var sels = node.selectorText; // CSSMediaRule has conditionText (screen and (min-width: 480px))
+          var sels = node.selectorText;
 
-          //if(node.cssRules)
-            // it's a CSSMediaRule, need to go deeper
+          // It's a CSSMediaRule
+          if(node.cssRules){
+            var subRules = this.parseNode(node);
+            var width = node.conditionText.match(/-width:(.*)\)/i)[1];
+            for(var s = 0, lens = subRules.length; s < lens; s++){
+              var subRule = subRules[s];
+              subRule.maxWidth = width ? width.trim() : '';
+            }
+            result = result.concat(subRules);
+          }
 
           if(!sels)
             continue;

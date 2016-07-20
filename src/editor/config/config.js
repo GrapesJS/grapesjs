@@ -86,13 +86,13 @@ define(function () {
 	        width: '',
 	      },{
 	        name: 'Tablet',
-	        width: '991px',
+	        width: '992px',
 	      },{
 	        name: 'Mobile landscape',
-	        width: '767px',
+	        width: '768px',
 	      },{
 	        name: 'Mobile portrait',
-	        width: '479px',
+	        width: '480px',
 	    }],
 		},
 
