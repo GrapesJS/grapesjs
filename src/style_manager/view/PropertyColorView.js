@@ -15,6 +15,7 @@ define(['backbone','./PropertyView', 'Spectrum', 'text!./../templates/propertyCo
 			}
 			if(!this.$colorPicker){
 				this.$colorPicker = $('<div>', {class: this.pfx + "color-picker"});
+				cpStyle = this.$colorPicker.get(0).style;
 				var that = this;
 				this.$colorPicker.spectrum({
 					showAlpha: 	true,
@@ -22,16 +23,16 @@ define(['backbone','./PropertyView', 'Spectrum', 'text!./../templates/propertyCo
 					cancelText: '⨯',
 					move: function(color) {
 						var c	= color.getAlpha() == 1 ? color.toHexString() : color.toRgbString();
-						that.$colorPicker.get(0).style.backgroundColor = c;
+						cpStyle.backgroundColor = c;
 					},
 					change: function(color) {
 						var c	= color.getAlpha() == 1 ? color.toHexString() : color.toRgbString();
 						c = c.replace(/ /g,'');
-						that.$colorPicker.get(0).style.backgroundColor = c;
+						cpStyle.backgroundColor = c;
 						that.model.set('value', c);
 					}
 				});
-				this.$el.find('#' + this.pfx + 'input-holder').append(this.$colorPicker);
+				this.$el.find('.' + this.pfx + 'colorp-c').append(this.$colorPicker);
 			}
 			this.setValue(this.componentValue, 0);
 		},

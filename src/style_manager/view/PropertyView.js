@@ -13,6 +13,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 		initialize: function(o) {
 			this.config = o.config || {};
 			this.pfx = this.config.stylePrefix || '';
+			this.ppfx = this.config.pStylePrefix || '';
 			this.target = o.target || {};
 			this.propTarget = o.propTarget || {};
 			this.onChange = o.onChange || {};
@@ -229,6 +230,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 		renderLabel: function(){
 			this.$el.html( this.templateLabel({
 				pfx		: this.pfx,
+				ppfx	: this.ppfx,
 				icon	: this.model.get('icon'),
 				info	: this.model.get('info'),
 				label	: this.model.get('name'),
@@ -250,6 +252,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 		renderTemplate: function(){
 			this.$el.append( this.template({
 				pfx		: this.pfx,
+				ppfx	: this.ppfx,
 				icon	: this.model.get('icon'),
 				info	: this.model.get('info'),
 				label	: this.model.get('name'),

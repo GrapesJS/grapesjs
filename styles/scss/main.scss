@@ -13,10 +13,22 @@ $com-prefix: 	$app-prefix + 'com-';
 $sm-prefix: 	$app-prefix + 'sm-';
 $cv-prefix: 	$app-prefix + 'cv-';
 $clm-prefix: 	$app-prefix + 'clm-';
+
+/* Dark theme */
 $mainColor:		#444; /* Light: #573454 Dark: #3b2639 -moz-linear-gradient(top, #fca99b 0%, #6e2842 100%)*/
+$fontColor:   #ddd; /*l: #d8d7db*/
+$fontColorActive: #f8f8f8;
+
+/* Light theme
+$mainColor: #fff;
+$fontColor: #9299a3;
+$fontColorActive: #4f8ef7;
+*/
+
 $mainDkColor:	rgba(0, 0, 0, 0.3);/* darken($mainColor, 4%) - #383838*/
+$mainDklColor: rgba(0, 0, 0, 0.1);
 $mainLhColor:	rgba(255, 255, 255, 0.1);/*#515151*/
-$fontColor:		#eee; /*l: #d8d7db*/
+$mainLhlColor: rgba(255, 255, 255, 0.7);
 $fontColorDk:	#777;
 $mainFont:		Helvetica, sans-serif;
 $colorBlue:		#3b97e3;
@@ -25,7 +37,6 @@ $colorYell:		#ffca6f;
 $colorGreen:	#62c462;
 $tagBg: #804f7b;
 $secColor: $tagBg;
-
 $imageCompDim:	50px;
 
 @mixin user-select($v) {
@@ -77,6 +88,14 @@ $imageCompDim:	50px;
   background-color: $mainColor;
 }
 
+.#{$app-prefix}color-main{
+  color: $fontColor;
+}
+
+.#{$app-prefix}color-active{
+  color: $fontColorActive;
+}
+
 /********************* MAIN ************************/
 .clear{ clear:both }
 .no-select{
@@ -86,9 +105,6 @@ $imageCompDim:	50px;
 	font-family: $mainFont;
 	background-color: $mainColor;
 	position:relative;
-	border: 3px solid $mainColor;
-	border-left:none;
-	border-right:none;
 	box-sizing: border-box;
 	height: 100%;
 	min-width: 1250px;
@@ -97,20 +113,18 @@ $imageCompDim:	50px;
   @include opacity(0.50);
   pointer-events: none;
 }
-
 .#{$app-prefix}btn-prim{
-  background-color: rgba(255, 255, 255, 0.15);
+  @extend .#{$app-prefix}color-main;
+  background-color: $mainLhColor;
   border-radius: 2px;
   padding: 3px 6px;
   cursor: pointer;
-  color: #ddd;
   padding: 0.5em;
   border: none;
 }
 .#{$app-prefix}btn-prim:active{
   background-color: $mainLhColor;
 }
-
 .#{$app-prefix}input{
   background-color: $mainDkColor;
   border: 1px solid rgba(0, 0, 0, 0.1);
@@ -120,6 +134,7 @@ $imageCompDim:	50px;
   color: $fontColor;
   padding: 0.5em 1em;
 }
+
 /*************  CANVAS  ****************/
 .#{$cv-prefix}canvas {
   background-color: rgba(0, 0, 0, 0.15);
@@ -297,6 +312,7 @@ $leftWidth: 15%;
 
 .#{$pn-prefix}panel {
   @extend .#{$app-prefix}bg-main;
+  @extend .#{$app-prefix}color-main;
   display: inline-block;
   padding: 5px;
   position: absolute;
@@ -349,12 +365,12 @@ $leftWidth: 15%;
 }
 
 .#{$pn-prefix}btn, .#{$app-prefix}btnt{
+  @extend .#{$app-prefix}color-main;
 	box-sizing: border-box;
 	height: 30px; width: 30px;
 	line-height: 21px;
 	background-color: transparent;
 	border:none;
-	color:  $fontColor;
 	font-size: 18px;
 	margin-bottom: 5px;
 	border-radius: 2px;
@@ -363,12 +379,13 @@ $leftWidth: 15%;
 	position: relative;
 
 	&.#{$pn-prefix}active{
+    @extend .#{$app-prefix}color-active;
 		background-color: rgba(0, 0, 0, 0.15);
     box-shadow: 0 0 3px rgba(0, 0, 0, 0.25) inset;
 	}
 
 	> .#{$pn-prefix}arrow-rd {
-	  	border-bottom: 5px solid $fontColor;
+	  	border-bottom: 5px solid $mainLhlColor;
 	  	border-left: 5px solid transparent;
 	  	bottom: 2px; right: 2px;
 	  	position: absolute;
@@ -416,7 +433,6 @@ $leftWidth: 15%;
 		}
 	}
 	.#{$nv-prefix}item {
-		color: $fontColor;
 		font-weight: lighter;
 		text-align: left;
 		position: relative;
@@ -455,11 +471,10 @@ $leftWidth: 15%;
   @extend .#{$app-prefix}bg-main;
 }
 .#{$nv-prefix}item .#{$nv-prefix}title {
-  background-color: rgba(0, 0, 0, 0.15);
+  background-color: $mainDklColor;
   font-size: 13px;
   letter-spacing: 1px;
   padding: 7px 10px 7px 25px;
-  text-shadow: 0 1px 0 $mainDkColor;
   border-bottom: 1px solid $mainDkColor;
   border-top: 1px solid $mainLhColor;
   cursor:pointer;
@@ -516,11 +531,11 @@ $leftWidth: 15%;
 
 /********* Inputs **********/
 
-$inputFontColor:  darken($fontColor,10%); /*#d5d5d5*/
+$inputFontColor:  $mainLhlColor; /*#d5d5d5*/
 $darkBorder:    rgba(0, 0, 0, 0.15); /*303030*/
 $lightBorder:   rgba(255, 255, 255, 0.05); /*414141*/
 $darkTextShadow:  $mainDkColor; /*#252525*/
-$arrowColor:    darken($fontColor,24%); /*b1b1b1*/
+$arrowColor:    $mainLhlColor; /*b1b1b1*/
 
 .#{$app-prefix}field {
   background-color: $mainDkColor;/*353535*/
@@ -591,7 +606,6 @@ $arrowColor:    darken($fontColor,24%); /*b1b1b1*/
   display: flex;
   align-items: center;
   padding: 10px 5px;
-  color: $inputFontColor;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   margin-bottom: 10px;
 
@@ -628,16 +642,13 @@ $arrowColor:    darken($fontColor,24%); /*b1b1b1*/
 	&:hover{ @include opacity(0.7); }
 }
 .#{$sm-prefix}header {
-	color: $fontColor;
 	font-size: 11px;
   font-weight: lighter;
   padding: 10px;
-  text-shadow: 0 1px 0 $darkTextShadow;
 }
 .#{$sm-prefix}sector {
 	clear:both;
 	border-bottom: 1px solid $mainDkColor;
-	color:	$fontColor;
 	font-weight: lighter;
 	text-align:left;
 
@@ -647,12 +658,10 @@ $arrowColor:    darken($fontColor,24%); /*b1b1b1*/
 	}
 
 	.#{$sm-prefix}title{
-	  background-color: $darkBorder;
+	  background-color: $mainDklColor;
 	  font-size: 13px;
 	  letter-spacing: 1px;
 	  padding: 12px 10px 12px 20px;
-	  text-shadow: 0 1px 0 $mainDkColor;
-	  border-bottom: 1px solid $mainDkColor;
 	  border-top: 1px solid $mainLhColor;
 	  cursor:pointer;
 	}
@@ -720,7 +729,7 @@ $arrowColor:    darken($fontColor,24%); /*b1b1b1*/
 		}
 		.#{$sm-prefix}d-s-arrow, .#{$clm-prefix}d-s-arrow{ bottom: 7px; }
 
-	 	&.#{$sm-prefix}integer, &.#{$sm-prefix}select, &.#{$sm-prefix}list, &.#{$sm-prefix}color, &.#{$sm-prefix}composite, &.#{$sm-prefix}input {
+	 	&.#{$sm-prefix}integer, &.#{$sm-prefix}select, &.#{$sm-prefix}list, &.#{$sm-prefix}color, &.#{$sm-prefix}input {
 		  background-color: $mainDkColor;/*353535*/
 		  border: 1px solid rgba(0, 0, 0, 0.1);/*292929*/
 		  box-shadow: 1px 1px 0 $mainLhColor;/*575757*/
@@ -729,6 +738,10 @@ $arrowColor:    darken($fontColor,24%); /*b1b1b1*/
 		  box-sizing: border-box;
 		  padding: 0 5px;
 		}
+    &.#{$sm-prefix}composite{
+      @extend .#{$app-prefix}color-main;
+      border-radius: 2px;
+    }
 		&.#{$sm-prefix}select{ padding:0; }
 		&.#{$sm-prefix}select select{ height: 20px; }
 		&.#{$sm-prefix}select option { margin: 5px 0;}
@@ -764,7 +777,6 @@ $arrowColor:    darken($fontColor,24%); /*b1b1b1*/
 	.#{$sm-prefix}list .#{$sm-prefix}el{
 		float:left;
 		border-left: 1px solid $darkTextShadow;
-		text-shadow: 0 1px 0 darken($mainDkColor, 9%);/*232323*/
 
 		&:first-child{border:none}
 		&:hover{background: $mainDkColor; }
@@ -866,10 +878,10 @@ $arrowColor:    darken($fontColor,24%); /*b1b1b1*/
 				cursor: pointer;
 				right: 5px;
 				top: 0;
-				@include opacity(0.2);
+				@include opacity(0.5);
 
 				&:hover{
-					@include opacity(0.5);
+					@include opacity(0.8);
 				}
 			}
 		  	> ##{$sm-prefix}preview-box ##{$sm-prefix}preview {
@@ -898,9 +910,9 @@ $arrowColor:    darken($fontColor,24%); /*b1b1b1*/
 	.#{$sm-prefix}stack .#{$sm-prefix}properties{padding-top: 5px;}
 
 	.#{$sm-prefix}stack ##{$sm-prefix}add {
+      @extend .#{$app-prefix}color-main;
 		  background: none;
 		  border: none;
-		  color: white;
 		  cursor: pointer;
 		  font-size: 22px;
 		  line-height: 10px;
@@ -911,15 +923,29 @@ $arrowColor:    darken($fontColor,24%); /*b1b1b1*/
 		  &:hover{  @include opacity(1); }
 	}
 
-	.#{$sm-prefix}color-picker {
-		background-color: $fontColor;
-	  	border: 2px solid lighten($mainDkColor, 11.5%);
-	  	box-sizing: border-box;
-	  	cursor: pointer;
-	  	height: 100%; width: 20px;
-		position: absolute;
-	    right: 0; top: 0;
-	}
+  .#{$sm-prefix}colorp-c {
+    @extend .#{$app-prefix}bg-main;
+    height: 100%; width: 20px;
+    position: absolute;
+    right: 0; top: 0;
+    box-sizing: border-box;
+    border-radius: 2px;
+    padding: 2px;
+
+    .#{$app-prefix}checker-bg{
+      height: 100%; width: 100%;
+      border-radius: 1px;
+    }
+  }
+
+  .#{$sm-prefix}color-picker {
+    background-color: $fontColor;
+    cursor: pointer;
+    height: 100%; width: 100%;
+    margin-top: -16px;
+    box-shadow: 0 0 1px $mainDkColor;
+    border-radius: 1px;
+  }
 
 	.#{$sm-prefix}btn-upload ##{$sm-prefix}upload {
 	  left: 0; top: 0;
@@ -928,18 +954,19 @@ $arrowColor:    darken($fontColor,24%); /*b1b1b1*/
 	  opacity: 0;
 	  cursor: pointer;
 	}
+
 	.#{$sm-prefix}btn-upload ##{$sm-prefix}label { padding: 2px 0;}
 
 }
 .#{$sm-prefix}layer > ##{$sm-prefix}move {
-	@include opacity(0.3);
+	@include opacity(0.7);
 	cursor: move;
   font-size: 12px;
   float: left;
   margin: 0 5px 0 0;
 
   &:hover{
-  	@include opacity(0.5);
+  	@include opacity(0.9);
   }
 }
 /********* END Style Manager **********/
@@ -1052,12 +1079,11 @@ $paddElClm: 5px 6px;
 
 .#{$mdl-prefix}dialog {
   	@extend .#{$app-prefix}bg-main;
-  	border-bottom: 2px solid #353535;
-  	text-shadow: -1px -1px 0 #353535;
+    @extend .#{$app-prefix}color-main;
+  	text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.05);
   	margin: 30px auto 0;
   	max-width: 850px;
   	width: 90%;
-   	color: $fontColor;
    	border-radius: 3px;
    	font-weight: lighter;
    	position:relative;
@@ -1105,7 +1131,7 @@ $paddElClm: 5px 6px;
 }
 
 .#{$am-prefix}assets-cont {
-  background-color: $mainDkColor;
+  background-color: $mainDklColor;
   border-radius: 3px;
   box-sizing: border-box;
   padding: 10px;
@@ -1141,7 +1167,9 @@ $paddElClm: 5px 6px;
     z-index: 0;
   }
 
-  .#{$am-prefix}highlight { background-color: $mainColor; }
+  .#{$am-prefix}highlight {
+    background-color: $mainLhColor;
+  }
 
   .#{$am-prefix}asset {
 	  border-bottom: 1px solid darken($mainDkColor, 3%);
@@ -1184,7 +1212,7 @@ $uploadPadding:	150px 10px;
 	float:left;
 
 	> form {
-	  background-color: $mainDkColor;
+	  background-color: $mainDklColor;
 	  border: 2px dashed #999999;
 	  border-radius: 3px;
 	  position: relative;
@@ -1260,7 +1288,7 @@ $uploadPadding:	150px 10px;
   z-index: 5;
 
   .#{$rte-prefix}btn {
-  	color: $fontColor;
+  	@extend .#{$app-prefix}color-main;
 		padding: 5px;
 		width:	25px;
 		border-right: 1px solid $mainDkColor;

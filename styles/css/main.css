@@ -2557,10 +2557,16 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 .fa-percent:before {
   content: ""; }
 
+/* Dark theme */
 /* Light: #573454 Dark: #3b2639 -moz-linear-gradient(top, #fca99b 0%, #6e2842 100%)*/
+/*l: #d8d7db*/
+/* Light theme
+$mainColor: #fff;
+$fontColor: #9299a3;
+$fontColorActive: #4f8ef7;
+*/
 /* darken($mainColor, 4%) - #383838*/
 /*#515151*/
-/*l: #d8d7db*/
 .wte-invis-invis, .wte-clm-tags #wte-clm-new, .wte-no-app {
   background-color: transparent;
   border: none;
@@ -2579,8 +2585,14 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 .wte-checker-bg, .checker-bg, .wte-sm-sector .wte-sm-property .wte-sm-layer > #wte-sm-preview-box, .wte-clm-tags .wte-sm-property .wte-sm-layer > #wte-sm-preview-box {
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg=="); }
 
-.wte-bg-main, .wte-pn-panel, .wte-nv-item .wte-nv-title-c, .wte-mdl-dialog, #wte-rte-toolbar, .sp-container {
+.wte-bg-main, .wte-pn-panel, .wte-nv-item .wte-nv-title-c, .wte-sm-sector .wte-sm-colorp-c, .wte-clm-tags .wte-sm-colorp-c, .wte-mdl-dialog, #wte-rte-toolbar, .sp-container {
   background-color: #444; }
+
+.wte-color-main, .wte-btn-prim, .wte-pn-panel, .wte-pn-btn, .wte-btnt, .wte-sm-sector .wte-sm-field.wte-sm-composite, .wte-clm-tags .wte-sm-field.wte-sm-composite, .wte-sm-sector .wte-sm-composite.wte-clm-field, .wte-clm-tags .wte-sm-composite.wte-clm-field, .wte-sm-sector .wte-sm-stack #wte-sm-add, .wte-clm-tags .wte-sm-stack #wte-sm-add, .wte-mdl-dialog, #wte-rte-toolbar .wte-rte-btn {
+  color: #ddd; }
+
+.wte-color-active, .wte-pn-btn.wte-pn-active, .wte-btnt.wte-pn-active {
+  color: #f8f8f8; }
 
 /********************* MAIN ************************/
 .clear {
@@ -2598,9 +2610,6 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   font-family: Helvetica, sans-serif;
   background-color: #444;
   position: relative;
-  border: 3px solid #444;
-  border-left: none;
-  border-right: none;
   box-sizing: border-box;
   height: 100%;
   min-width: 1250px; }
@@ -2611,11 +2620,10 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   pointer-events: none; }
 
 .wte-btn-prim {
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.1);
   border-radius: 2px;
   padding: 3px 6px;
   cursor: pointer;
-  color: #ddd;
   padding: 0.5em;
   border: none; }
 
@@ -2628,7 +2636,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   border-radius: 2px;
   box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.1);
   box-sizing: border-box;
-  color: #eee;
+  color: #ddd;
   padding: 0.5em 1em; }
 
 /*************  CANVAS  ****************/
@@ -2708,7 +2716,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 #views.panel {
   width: 16.5%;
   font-weight: lighter;
-  color: #eee;
+  color: #ddd;
   right: 0;
   top: 0;
   z-index: 3;
@@ -2854,7 +2862,6 @@ ol.example li.placeholder:before {
   line-height: 21px;
   background-color: transparent;
   border: none;
-  color: #eee;
   font-size: 18px;
   margin-bottom: 5px;
   border-radius: 2px;
@@ -2865,7 +2872,7 @@ ol.example li.placeholder:before {
     background-color: rgba(0, 0, 0, 0.15);
     box-shadow: 0 0 3px rgba(0, 0, 0, 0.25) inset; }
   .wte-pn-btn > .wte-pn-arrow-rd, .wte-btnt > .wte-pn-arrow-rd {
-    border-bottom: 5px solid #eee;
+    border-bottom: 5px solid rgba(255, 255, 255, 0.7);
     border-left: 5px solid transparent;
     bottom: 2px;
     right: 2px;
@@ -2905,7 +2912,6 @@ ol.example li.placeholder:before {
       .wte-nv-navigator #wte-nv-placeholder #wte-nv-plh-int.wte-nv-insert {
         background-color: #62c462; }
   .wte-nv-navigator .wte-nv-item {
-    color: #eee;
     font-weight: lighter;
     text-align: left;
     position: relative;
@@ -2926,7 +2932,7 @@ ol.example li.placeholder:before {
     top: 0;
     padding: 7px 5px 7px 10px;
     position: absolute;
-    color: #bbbbbb;
+    color: #aaaaaa;
     cursor: pointer;
     z-index: 1; }
   .wte-nv-navigator .wte-nv-item .wte-nv-title {
@@ -2937,11 +2943,10 @@ ol.example li.placeholder:before {
     width: 8px; }
 
 .wte-nv-item .wte-nv-title {
-  background-color: rgba(0, 0, 0, 0.15);
+  background-color: rgba(0, 0, 0, 0.1);
   font-size: 13px;
   letter-spacing: 1px;
   padding: 7px 10px 7px 25px;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
   border-bottom: 1px solid rgba(0, 0, 0, 0.3);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   cursor: pointer; }
@@ -2963,7 +2968,7 @@ ol.example li.placeholder:before {
   display: none; }
 
 .wte-nv-item > #wte-nv-move {
-  color: #bbbbbb;
+  color: #aaaaaa;
   position: absolute;
   cursor: move;
   font-size: 12px;
@@ -3017,7 +3022,7 @@ ol.example li.placeholder:before {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    color: #d5d5d5;
+    color: rgba(255, 255, 255, 0.7);
     border: none;
     background-color: transparent;
     width: 100%;
@@ -3025,7 +3030,7 @@ ol.example li.placeholder:before {
     z-index: 1; }
   .wte-field select {
     color: transparent;
-    text-shadow: 0 0 0 #d5d5d5;
+    text-shadow: 0 0 0 rgba(255, 255, 255, 0.7);
     height: 20px; }
   .wte-field option {
     margin: 5px 0; }
@@ -3038,7 +3043,7 @@ ol.example li.placeholder:before {
     z-index: 0; }
   .wte-field .wte-d-s-arrow {
     bottom: 7px;
-    border-top: 4px solid #b1b1b1;
+    border-top: 4px solid rgba(255, 255, 255, 0.7);
     position: absolute;
     height: 0;
     width: 0;
@@ -3049,7 +3054,7 @@ ol.example li.placeholder:before {
 .wte-add-trasp {
   background: none;
   border: none;
-  color: #eee;
+  color: #ddd;
   cursor: pointer;
   font-size: 1em;
   border-radius: 2px;
@@ -3067,7 +3072,6 @@ ol.example li.placeholder:before {
   display: flex;
   align-items: center;
   padding: 10px 5px;
-  color: #d5d5d5;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   margin-bottom: 10px; }
   .wte-devices-c .wte-device-label {
@@ -3096,16 +3100,13 @@ ol.example li.placeholder:before {
     filter: alpha(opacity=70); }
 
 .wte-sm-header {
-  color: #eee;
   font-size: 11px;
   font-weight: lighter;
-  padding: 10px;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3); }
+  padding: 10px; }
 
 .wte-sm-sector, .wte-clm-tags {
   clear: both;
   border-bottom: 1px solid rgba(0, 0, 0, 0.3);
-  color: #eee;
   font-weight: lighter;
   text-align: left;
   /*------------------Field--------------------*/
@@ -3116,12 +3117,10 @@ ol.example li.placeholder:before {
     padding-right: 5px;
     font-size: 11px; }
   .wte-sm-sector .wte-sm-title, .wte-clm-tags .wte-sm-title {
-    background-color: rgba(0, 0, 0, 0.15);
+    background-color: rgba(0, 0, 0, 0.1);
     font-size: 13px;
     letter-spacing: 1px;
     padding: 12px 10px 12px 20px;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     cursor: pointer; }
   .wte-sm-sector .wte-sm-label, .wte-clm-tags .wte-sm-label {
@@ -3131,7 +3130,7 @@ ol.example li.placeholder:before {
     position: relative; }
     .wte-sm-sector .wte-sm-field input, .wte-clm-tags .wte-sm-field input, .wte-sm-sector .wte-clm-field input, .wte-clm-tags .wte-clm-field input {
       box-sizing: border-box;
-      color: #d5d5d5;
+      color: rgba(255, 255, 255, 0.7);
       background: none;
       border: none;
       padding: 3px 21px 3px 0;
@@ -3139,11 +3138,11 @@ ol.example li.placeholder:before {
     .wte-sm-sector .wte-sm-field select, .wte-clm-tags .wte-sm-field select, .wte-sm-sector .wte-clm-field select, .wte-clm-tags .wte-clm-field select {
       background: none;
       border: none;
-      color: #d5d5d5;
+      color: rgba(255, 255, 255, 0.7);
       color: transparent;
       width: 100%;
       padding: 2px 10px 2px 0;
-      text-shadow: 0 0 0 #d5d5d5;
+      text-shadow: 0 0 0 rgba(255, 255, 255, 0.7);
       position: relative;
       z-index: 1;
       -webkit-appearance: none;
@@ -3156,7 +3155,7 @@ ol.example li.placeholder:before {
       right: 10px;
       top: 3px;
       font-size: 10px;
-      color: #b1b1b1;
+      color: rgba(255, 255, 255, 0.7);
       cursor: pointer; }
     .wte-sm-sector .wte-sm-field .wte-sm-int-arrows, .wte-clm-tags .wte-sm-field .wte-sm-int-arrows, .wte-sm-sector .wte-clm-field .wte-sm-int-arrows, .wte-clm-tags .wte-clm-field .wte-sm-int-arrows, .wte-sm-sector .wte-sm-field .wte-sm-sel-arrow, .wte-clm-tags .wte-sm-field .wte-sm-sel-arrow, .wte-sm-sector .wte-clm-field .wte-sm-sel-arrow, .wte-clm-tags .wte-clm-field .wte-sm-sel-arrow, .wte-sm-sector .wte-sm-field .wte-clm-sel-arrow, .wte-clm-tags .wte-sm-field .wte-clm-sel-arrow, .wte-sm-sector .wte-clm-field .wte-clm-sel-arrow, .wte-clm-tags .wte-clm-field .wte-clm-sel-arrow {
       height: 100%;
@@ -3175,24 +3174,26 @@ ol.example li.placeholder:before {
       border-right: 4px solid transparent;
       cursor: pointer; }
     .wte-sm-sector .wte-sm-field .wte-sm-u-arrow, .wte-clm-tags .wte-sm-field .wte-sm-u-arrow, .wte-sm-sector .wte-clm-field .wte-sm-u-arrow, .wte-clm-tags .wte-clm-field .wte-sm-u-arrow {
-      border-bottom: 4px solid #b1b1b1;
+      border-bottom: 4px solid rgba(255, 255, 255, 0.7);
       top: 4px; }
     .wte-sm-sector .wte-sm-field .wte-sm-d-arrow, .wte-clm-tags .wte-sm-field .wte-sm-d-arrow, .wte-sm-sector .wte-clm-field .wte-sm-d-arrow, .wte-clm-tags .wte-clm-field .wte-sm-d-arrow, .wte-sm-sector .wte-sm-field .wte-sm-d-s-arrow, .wte-clm-tags .wte-sm-field .wte-sm-d-s-arrow, .wte-sm-sector .wte-clm-field .wte-sm-d-s-arrow, .wte-clm-tags .wte-clm-field .wte-sm-d-s-arrow, .wte-sm-sector .wte-sm-field .wte-clm-d-s-arrow, .wte-clm-tags .wte-sm-field .wte-clm-d-s-arrow, .wte-sm-sector .wte-clm-field .wte-clm-d-s-arrow, .wte-clm-tags .wte-clm-field .wte-clm-d-s-arrow {
-      border-top: 4px solid #b1b1b1;
+      border-top: 4px solid rgba(255, 255, 255, 0.7);
       bottom: 4px; }
     .wte-sm-sector .wte-sm-field .wte-sm-d-s-arrow, .wte-clm-tags .wte-sm-field .wte-sm-d-s-arrow, .wte-sm-sector .wte-clm-field .wte-sm-d-s-arrow, .wte-clm-tags .wte-clm-field .wte-sm-d-s-arrow, .wte-sm-sector .wte-sm-field .wte-clm-d-s-arrow, .wte-clm-tags .wte-sm-field .wte-clm-d-s-arrow, .wte-sm-sector .wte-clm-field .wte-clm-d-s-arrow, .wte-clm-tags .wte-clm-field .wte-clm-d-s-arrow {
       bottom: 7px; }
-    .wte-sm-sector .wte-sm-field.wte-sm-integer, .wte-clm-tags .wte-sm-field.wte-sm-integer, .wte-sm-sector .wte-sm-integer.wte-clm-field, .wte-clm-tags .wte-sm-integer.wte-clm-field, .wte-clm-tags #wte-clm-tags-field, .wte-sm-sector .wte-sm-field.wte-sm-select, .wte-clm-tags .wte-sm-field.wte-sm-select, .wte-sm-sector .wte-sm-select.wte-clm-field, .wte-clm-tags .wte-sm-select.wte-clm-field, .wte-sm-sector .wte-clm-select, .wte-clm-tags .wte-clm-select, .wte-sm-sector .wte-sm-field.wte-sm-list, .wte-clm-tags .wte-sm-field.wte-sm-list, .wte-sm-sector .wte-sm-list.wte-clm-field, .wte-clm-tags .wte-sm-list.wte-clm-field, .wte-sm-sector .wte-sm-field.wte-sm-color, .wte-clm-tags .wte-sm-field.wte-sm-color, .wte-sm-sector .wte-sm-color.wte-clm-field, .wte-clm-tags .wte-sm-color.wte-clm-field, .wte-sm-sector .wte-sm-field.wte-sm-composite, .wte-clm-tags .wte-sm-field.wte-sm-composite, .wte-sm-sector .wte-sm-composite.wte-clm-field, .wte-clm-tags .wte-sm-composite.wte-clm-field, .wte-sm-sector .wte-sm-field.wte-sm-input, .wte-clm-tags .wte-sm-field.wte-sm-input, .wte-sm-sector .wte-sm-input.wte-clm-field, .wte-clm-tags .wte-sm-input.wte-clm-field {
+    .wte-sm-sector .wte-sm-field.wte-sm-integer, .wte-clm-tags .wte-sm-field.wte-sm-integer, .wte-sm-sector .wte-sm-integer.wte-clm-field, .wte-clm-tags .wte-sm-integer.wte-clm-field, .wte-clm-tags #wte-clm-tags-field, .wte-sm-sector .wte-sm-field.wte-sm-select, .wte-clm-tags .wte-sm-field.wte-sm-select, .wte-sm-sector .wte-sm-select.wte-clm-field, .wte-clm-tags .wte-sm-select.wte-clm-field, .wte-sm-sector .wte-clm-select, .wte-clm-tags .wte-clm-select, .wte-sm-sector .wte-sm-field.wte-sm-list, .wte-clm-tags .wte-sm-field.wte-sm-list, .wte-sm-sector .wte-sm-list.wte-clm-field, .wte-clm-tags .wte-sm-list.wte-clm-field, .wte-sm-sector .wte-sm-field.wte-sm-color, .wte-clm-tags .wte-sm-field.wte-sm-color, .wte-sm-sector .wte-sm-color.wte-clm-field, .wte-clm-tags .wte-sm-color.wte-clm-field, .wte-sm-sector .wte-sm-field.wte-sm-input, .wte-clm-tags .wte-sm-field.wte-sm-input, .wte-sm-sector .wte-sm-input.wte-clm-field, .wte-clm-tags .wte-sm-input.wte-clm-field {
       background-color: rgba(0, 0, 0, 0.3);
       /*353535*/
       border: 1px solid rgba(0, 0, 0, 0.1);
       /*292929*/
       box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.1);
       /*575757*/
-      color: #d5d5d5;
+      color: rgba(255, 255, 255, 0.7);
       border-radius: 2px;
       box-sizing: border-box;
       padding: 0 5px; }
+    .wte-sm-sector .wte-sm-field.wte-sm-composite, .wte-clm-tags .wte-sm-field.wte-sm-composite, .wte-sm-sector .wte-sm-composite.wte-clm-field, .wte-clm-tags .wte-sm-composite.wte-clm-field {
+      border-radius: 2px; }
     .wte-sm-sector .wte-sm-field.wte-sm-select, .wte-clm-tags .wte-sm-field.wte-sm-select, .wte-sm-sector .wte-sm-select.wte-clm-field, .wte-clm-tags .wte-sm-select.wte-clm-field, .wte-sm-sector .wte-clm-select, .wte-clm-tags .wte-clm-select {
       padding: 0; }
     .wte-sm-sector .wte-sm-field.wte-sm-select select, .wte-clm-tags .wte-sm-field.wte-sm-select select, .wte-sm-sector .wte-sm-select.wte-clm-field select, .wte-clm-tags .wte-sm-select.wte-clm-field select, .wte-sm-sector .wte-clm-select select, .wte-clm-tags .wte-clm-select select {
@@ -3227,9 +3228,7 @@ ol.example li.placeholder:before {
       color: transparent; }
   .wte-sm-sector .wte-sm-list .wte-sm-el, .wte-clm-tags .wte-sm-list .wte-sm-el {
     float: left;
-    border-left: 1px solid rgba(0, 0, 0, 0.3);
-    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
-    /*232323*/ }
+    border-left: 1px solid rgba(0, 0, 0, 0.3); }
     .wte-sm-sector .wte-sm-list .wte-sm-el:first-child, .wte-clm-tags .wte-sm-list .wte-sm-el:first-child {
       border: none; }
     .wte-sm-sector .wte-sm-list .wte-sm-el:hover, .wte-clm-tags .wte-sm-list .wte-sm-el:hover {
@@ -3256,7 +3255,7 @@ ol.example li.placeholder:before {
       height: auto;
       width: 100%;
       cursor: pointer;
-      color: #eee;
+      color: #ddd;
       box-sizing: border-box;
       text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.3);
       border: none;
@@ -3314,11 +3313,11 @@ ol.example li.placeholder:before {
         cursor: pointer;
         right: 5px;
         top: 0;
-        opacity: 0.2;
-        filter: alpha(opacity=20); }
+        opacity: 0.5;
+        filter: alpha(opacity=50); }
         .wte-sm-sector .wte-sm-property .wte-sm-layer #wte-sm-close-layer:hover, .wte-clm-tags .wte-sm-property .wte-sm-layer #wte-sm-close-layer:hover {
-          opacity: 0.5;
-          filter: alpha(opacity=50); }
+          opacity: 0.8;
+          filter: alpha(opacity=80); }
       .wte-sm-sector .wte-sm-property .wte-sm-layer > #wte-sm-preview-box #wte-sm-preview, .wte-clm-tags .wte-sm-property .wte-sm-layer > #wte-sm-preview-box #wte-sm-preview {
         background-color: white;
         height: 100%;
@@ -3339,7 +3338,6 @@ ol.example li.placeholder:before {
   .wte-sm-sector .wte-sm-stack #wte-sm-add, .wte-clm-tags .wte-sm-stack #wte-sm-add {
     background: none;
     border: none;
-    color: white;
     cursor: pointer;
     font-size: 22px;
     line-height: 10px;
@@ -3350,16 +3348,27 @@ ol.example li.placeholder:before {
     .wte-sm-sector .wte-sm-stack #wte-sm-add:hover, .wte-clm-tags .wte-sm-stack #wte-sm-add:hover {
       opacity: 1;
       filter: alpha(opacity=100); }
-  .wte-sm-sector .wte-sm-color-picker, .wte-clm-tags .wte-sm-color-picker {
-    background-color: #eee;
-    border: 2px solid rgba(29, 29, 29, 0.3);
-    box-sizing: border-box;
-    cursor: pointer;
+  .wte-sm-sector .wte-sm-colorp-c, .wte-clm-tags .wte-sm-colorp-c {
     height: 100%;
     width: 20px;
     position: absolute;
     right: 0;
-    top: 0; }
+    top: 0;
+    box-sizing: border-box;
+    border-radius: 2px;
+    padding: 2px; }
+    .wte-sm-sector .wte-sm-colorp-c .wte-checker-bg, .wte-clm-tags .wte-sm-colorp-c .wte-checker-bg {
+      height: 100%;
+      width: 100%;
+      border-radius: 1px; }
+  .wte-sm-sector .wte-sm-color-picker, .wte-clm-tags .wte-sm-color-picker {
+    background-color: #ddd;
+    cursor: pointer;
+    height: 100%;
+    width: 100%;
+    margin-top: -16px;
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.3);
+    border-radius: 1px; }
   .wte-sm-sector .wte-sm-btn-upload #wte-sm-upload, .wte-clm-tags .wte-sm-btn-upload #wte-sm-upload {
     left: 0;
     top: 0;
@@ -3371,15 +3380,15 @@ ol.example li.placeholder:before {
     padding: 2px 0; }
 
 .wte-sm-layer > #wte-sm-move {
-  opacity: 0.3;
-  filter: alpha(opacity=30);
+  opacity: 0.7;
+  filter: alpha(opacity=70);
   cursor: move;
   font-size: 12px;
   float: left;
   margin: 0 5px 0 0; }
   .wte-sm-layer > #wte-sm-move:hover {
-    opacity: 0.5;
-    filter: alpha(opacity=50); }
+    opacity: 0.9;
+    filter: alpha(opacity=90); }
 
 /********* END Style Manager **********/
 /********* Class manager **********/
@@ -3409,7 +3418,7 @@ ol.example li.placeholder:before {
     border: 1px solid rgba(0, 0, 0, 0.15);
     cursor: pointer; }
   .wte-clm-tags #wte-clm-new {
-    color: #eee;
+    color: #ddd;
     padding: 5px 6px;
     display: none; }
   .wte-clm-tags .wte-clm-tag {
@@ -3457,12 +3466,10 @@ ol.example li.placeholder:before {
   height: 100%; }
 
 .wte-mdl-dialog {
-  border-bottom: 2px solid #353535;
-  text-shadow: -1px -1px 0 #353535;
+  text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.05);
   margin: 30px auto 0;
   max-width: 850px;
   width: 90%;
-  color: #eee;
   border-radius: 3px;
   font-weight: lighter;
   position: relative;
@@ -3501,7 +3508,7 @@ ol.example li.placeholder:before {
   float: right; }
 
 .wte-am-assets-cont {
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.1);
   border-radius: 3px;
   box-sizing: border-box;
   padding: 10px;
@@ -3533,7 +3540,7 @@ ol.example li.placeholder:before {
     filter: alpha(opacity=50);
     z-index: 0; }
   .wte-am-assets-cont .wte-am-highlight {
-    background-color: #444; }
+    background-color: rgba(255, 255, 255, 0.1); }
   .wte-am-assets-cont .wte-am-asset {
     border-bottom: 1px solid rgba(0, 0, 0, 0.3);
     padding: 5px;
@@ -3564,7 +3571,7 @@ ol.example li.placeholder:before {
   width: 55%;
   float: left; }
   .wte-am-file-uploader > form {
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.1);
     border: 2px dashed #999999;
     border-radius: 3px;
     position: relative;
@@ -3622,7 +3629,6 @@ ol.example li.placeholder:before {
   display: none;
   z-index: 5; }
   #wte-rte-toolbar .wte-rte-btn {
-    color: #eee;
     padding: 5px;
     width: 25px;
     border-right: 1px solid rgba(0, 0, 0, 0.3);
@@ -3699,7 +3705,7 @@ ol.example li.placeholder:before {
 .sp-container button, .sp-container button:hover, .sp-container button:active {
   background: rgba(0, 0, 0, 0.3);
   border-color: rgba(0, 0, 0, 0.3);
-  color: #eee;
+  color: #ddd;
   text-shadow: none;
   box-shadow: none;
   padding: 3px 5px; }
