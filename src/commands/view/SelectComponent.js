@@ -11,17 +11,14 @@ define(function() {
 
 
 			enable: function() {
-				_.bindAll(this,'copyComp','pasteComp');
-				this.frameEl.contentWindow.onscroll = this.onFrameScroll.bind(this);
+				_.bindAll(this,'copyComp', 'pasteComp', 'onFrameScroll');
 				var config	= this.config.em.get('Config');
 				this.startSelectComponent();
-
 				// TODO refactor
 				if(config.copyPaste){
 					key('⌘+c, ctrl+c', this.copyComp);
 					key('⌘+v, ctrl+v', this.pasteComp);
 				}
-
 				this.listenTo(this.em.editor, 'change:device', this.clearOff);
 			},
 
@@ -63,11 +60,23 @@ define(function() {
 			 * @private
 			 * */
 			startSelectComponent: function() {
+				this.getContentWindow().on('scroll', this.onFrameScroll);
 				this.selEl = $(this.getCanvasBody()).find('*');
 				this.selEl.on('mouseover',this.onHover)
 					.on('mouseout', this.onOut)
 					.on('click', this.onClick);
-				$(this.frameEl.contentWindow).on('keydown', this.onKeyPress);
+				this.getContentWindow().on('keydown', this.onKeyPress);
+			},
+
+			/**
+			 * Stop select component event
+			 * @private
+			 * */
+			stopSelectComponent: function() {
+				this.getContentWindow().off('scroll', this.onFrameScroll);
+				if(this.selEl)
+					this.selEl.trigger('mouseout').off('mouseover mouseout click');
+				this.selEl = null;
 			},
 
 			/**
@@ -149,16 +158,6 @@ define(function() {
 				this.hl.css({ left: elPos.left, top: elPos.topP, height: elPos.height, width: elPos.width });
 			},
 
-			/** Stop select component event
-			 * @param Event
-			 * @private
-			 * */
-			stopSelectComponent: function(e) {
-				if(this.selEl)
-					this.selEl.trigger('mouseout').off('mouseover mouseout click');
-				this.selEl = null;
-			},
-
 			/**
 			 * Say what to do after the component was selected
 			 * @param {Object}	e
@@ -223,8 +222,7 @@ define(function() {
 			 * @private
 			 */
 			onFrameScroll: function(e){
-				this.canvasTool.style.top = '-' + this.bodyEl.scrollTop + 'px';
-				this.canvasTool.style.left = '-' + this.bodyEl.scrollLeft + 'px';
+				console.log('scrolling');
 				if(this.cacheEl)
 					this.updateBadge(this.cacheEl);
 			},
@@ -275,6 +273,16 @@ define(function() {
 				});
 			},
 
+			/**
+			 * Returns content window
+			 * @private
+			 */
+			getContentWindow: function(){
+				if(!this.contWindow)
+					this.contWindow = $(this.frameEl.contentWindow);
+				return this.contWindow;
+			},
+
 			run: function(em, sender) {
 				this.em = em;
 				this.enable();
@@ -287,7 +295,6 @@ define(function() {
 			  this.frameOff = this.canvasOff = this.adjScroll = null;
 
 			  var frameEl = this.canvas.getFrameEl();
-				frameEl.contentWindow.onscroll = null;
 				var sel = this.editorModel.get('selectedComponent');
 				if(sel)
 					this.cleanPrevious(sel);
@@ -298,7 +305,9 @@ define(function() {
 				this.editorModel.set('selectedComponent',null);
 				key.unbind('⌘+c, ctrl+c');
 				key.unbind('⌘+v, ctrl+v');
-				$(this.frameEl.contentWindow).off('keydown', this.onKeyPress);
+				var cw = this.getContentWindow();
+				cw.off('keydown', this.onKeyPress);
+				this.stopSelectComponent();
 			}
 		};
 });

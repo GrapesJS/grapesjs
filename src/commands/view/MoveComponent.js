@@ -13,7 +13,7 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 			},
 
 			enable: function(){
-				this.frameEl.contentWindow.onscroll = this.onFrameScroll.bind(this);
+				_.bindAll(this, 'onFrameScroll');
 				this.$el.css('cursor','move');
 				this.$el.on('mousedown', this.initSorter);
 				this.startSelectComponent();
@@ -77,11 +77,11 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 
 			stop: function(){
 				this.stopSelectComponent();
+				this.hideBadge();
 				this.$badge = $(this.getBadge());
 				this.$badge.removeClass(this.badgeClass);
 				this.$hl = $(this.canvas.getHighlighter());
 				this.$hl.removeClass(this.hoverClass);
-				this.frameEl.contentWindow.onscroll = null;
 				this.$el.css('cursor','');//changes back aspect of the cursor
 				this.$el.unbind();//removes all attached events
 				this.$el.removeClass(this.noSelClass);
