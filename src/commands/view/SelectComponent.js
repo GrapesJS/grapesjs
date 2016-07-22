@@ -222,7 +222,6 @@ define(function() {
 			 * @private
 			 */
 			onFrameScroll: function(e){
-				console.log('scrolling');
 				if(this.cacheEl)
 					this.updateBadge(this.cacheEl);
 			},

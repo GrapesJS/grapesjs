@@ -138,11 +138,13 @@ $imageCompDim:	50px;
 /*************  CANVAS  ****************/
 .#{$cv-prefix}canvas {
   background-color: rgba(0, 0, 0, 0.15);
+  box-sizing: border-box;
   position: absolute;
-  width: 83%;
+  width: 85%;
   height: 100%;
-  top: 0; left: 2%;
+  bottom: 0; left: 0;
   overflow: hidden;
+  padding-top: 40px;
   z-index:1;
 
   > iframe {
@@ -321,18 +323,13 @@ $leftWidth: 15%;
   z-index:3;
 
   &##{$pn-prefix}commands{
-  	min-width: 35px;
-    height: 100%;
-    width: 2%; left:0;
+    width: 85%;
+    left:0; top: 0;
     box-shadow: 0 0 5px $mainDkColor;
   }
 
   &##{$pn-prefix}options{
-  	min-width: 35px;
-    height: 100%;
-    width: 2%; left:0;
-  	bottom: 0;
-  	height: auto;
+  	right: 15%; top: 0;
   }
 
   &##{$pn-prefix}options2{
@@ -364,6 +361,12 @@ $leftWidth: 15%;
   }
 }
 
+.#{$pn-prefix}buttons{
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
 .#{$pn-prefix}btn, .#{$app-prefix}btnt{
   @extend .#{$app-prefix}color-main;
 	box-sizing: border-box;
@@ -372,7 +375,7 @@ $leftWidth: 15%;
 	background-color: transparent;
 	border:none;
 	font-size: 18px;
-	margin-bottom: 5px;
+	margin-right: 5px;
 	border-radius: 2px;
 	cursor: pointer;
 	padding: 5px;

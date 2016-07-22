@@ -123,7 +123,7 @@ define(['backbone'],
         }
 
         this.$el.on('mousemove',this.onMove);
-        $(this.document).on('keypress',this.rollback);
+        $(document).on('keypress',this.rollback);
       },
 
       /**
@@ -479,7 +479,8 @@ define(['backbone'],
           var opts = {at: index, noIncrement: 1};
           if(!this.dropContent){
             modelTemp = targetCollection.add({}, opts);
-            modelToDrop = model.collection.remove(model);
+            if(model)
+              modelToDrop = model.collection.remove(model);
 
           }else{
             modelToDrop = this.dropContent;
@@ -503,6 +504,7 @@ define(['backbone'],
        * @param {Bool} Indicates if rollback in anycase
        * */
       rollback: function(e){
+        $(document).off('keypress',this.rollback);
         var key = e.which || e.keyCode;
         if(key == 27){
           this.moved = false;

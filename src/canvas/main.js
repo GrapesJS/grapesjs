@@ -117,6 +117,34 @@ define(function(require) {
 			},
 
 			/**
+			 * Get frame position
+			 * @return {Object}
+			 * @private
+			 */
+			getOffset: function() {
+				var frameOff = this.offset(this.getFrameEl());
+				var canvasOff = this.offset(this.getElement());
+				return {
+					top: frameOff.top - canvasOff.top,
+					left: frameOff.left - canvasOff.left
+				};
+			},
+
+			/**
+       * Get the offset of the element
+       * @param  {HTMLElement} el
+       * @return {Object}
+       * @private
+       */
+      offset: function(el){
+        var rect = el.getBoundingClientRect();
+        return {
+          top: rect.top + document.body.scrollTop,
+          left: rect.left + document.body.scrollLeft
+        };
+      },
+
+			/**
 			 * Returns wrapper element
 			 * @return {HTMLElement}
 			 * ????

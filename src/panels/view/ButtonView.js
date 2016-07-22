@@ -8,7 +8,7 @@ function(Backbone, require) {
 		tagName: 'span',
 
 		initialize: function(o){
-			_.bindAll(this, 'startTimer', 'stopTimer', 'showButtons', 'hideButtons','closeOnKeyPress','onDrop');
+			_.bindAll(this, 'startTimer', 'stopTimer', 'showButtons', 'hideButtons','closeOnKeyPress','onDrop', 'initSorter', 'stopDrag');
 			var cls = this.model.get('className');
 			this.config = o.config || {};
 			this.em = this.config.em || {};
@@ -35,24 +35,34 @@ function(Backbone, require) {
 
 			this.events = {};
 
-			if(this.model.get('dragDrop'))
+			if(this.model.get('dragDrop')){
 				this.events.mousedown = 'initDrag';
-			else
+				this.em.on('loaded', this.initSorter);
+			}else
 				this.events.click = 'clicked';
 			this.delegateEvents();
+		},
 
+		initSorter: function(){
 			if(this.em.Canvas){
-				this.canvasEl = this.em.Canvas.getElement();
+				var canvas = this.em.Canvas;
+				this.canvasEl = canvas.getBody();
 				this.sorter = new this.em.Utils.Sorter({
 					container: this.canvasEl,
+					placer: canvas.getPlacerEl(),
 					containerSel: '*',
 					itemSel: '*',
 					pfx: this.ppfx,
 					onMove: this.onDrag,
 					onEndMove: this.onDrop,
-					direction: 'auto',
+					document: canvas.getFrameEl().contentDocument,
+					direction: 'a',
+					wmargin: 1,
 					nested: 1,
 				});
+				var offDim = canvas.getOffset();
+				this.sorter.offTop = offDim.top;
+				this.sorter.offLeft = offDim.left;
 			}
 		},
 
@@ -65,6 +75,16 @@ function(Backbone, require) {
 			this.sorter.startSort(this.el);
 			this.sorter.setDropContent(this.model.get('options').content);
 			this.canvasEl.style.cursor = 'grabbing';
+			$(document).on('mouseup', this.stopDrag);
+		},
+
+		/**
+		 * Stop dragging
+		 * @private
+		 */
+		stopDrag: function(){
+			$(document).off('mouseup', this.stopDrag);
+			this.sorter.endMove();
 		},
 
 		/**
@@ -126,7 +146,7 @@ function(Backbone, require) {
 		startTimer: function()
 		{
 			this.timeout = setTimeout(this.showButtons, this.config.delayBtnsShow);
-			$(document).on('mouseup', 	this.stopTimer);
+			$(document).on('mouseup', this.stopTimer);
 		},
 
 		/**

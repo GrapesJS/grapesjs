@@ -22,13 +22,13 @@ require(['config/require-config'], function() {
 													id: 	'undo',
 													run: 	function(editor, sender){
 														sender.set('active',false);
-														editor.UndoManager.undo();
+														editor.UndoManager.undo(true);
 													}
 												},{
 													id: 	'redo',
 													run: 	function(editor, sender){
 														sender.set('active',false);
-														editor.UndoManager.redo();
+														editor.UndoManager.redo(true);
 													}
 												},{
 													id: 	'clean-all',
@@ -57,7 +57,7 @@ require(['config/require-config'], function() {
 					      				   { type: 'image', src : './img/bg-gr-v.png', date: '2015-02-01',height:1, width:1728},
 				      				   ]
 			},
-/*
+
 panels: {
         defaults    : [{
           id    : 'commands',
@@ -65,8 +65,38 @@ panels: {
             id        : 'selcomp',
             className : 'fa fa fa-mouse-pointer',
             command   : 'select-comp',
-          }]}]},
-*/
+          },{
+            id        : 'create',
+            className : 'fa fa-plus-square-o icon-add-comp',
+            command   : 'create-comp',
+          },{
+            id: 'image-comp',
+            className: 'fa fa-picture-o',
+            dragDrop: 1,
+            options:  {
+              content: '<div style="width:100%; padding:7px">'+
+                          '<div class="redbg" style="width:33.333%; min-height:75px; padding:7px; float:left;"></div>' +
+                          '<div style="width:33.333%; min-height:75px; padding:7px; float:left; background:blue"></div>' +
+                          '<div style="width:33.333%; min-height:75px; padding:7px; float:left; background:blue"></div>' +
+                          '<div style="clear:both"></div>' +
+                        '</div>'
+            },
+          }]
+        },{
+          id  : 'options',
+          buttons : [
+                     { id: 'visibility',  className: 'fa fa-eye',   command: 'sw-visibility',   active: true, context: 'sw-visibility', attributes: { title: 'View components' }, },
+                     { id: 'export',    className: 'fa fa-code',  command: 'export-template', attributes: { title: 'View code' }, },
+                     { id: 'view-github', className: 'fa fa-github',  command: 'open-github', attributes: { title: 'View on Github' }, },
+          ],
+        },{
+          id  : 'views',
+          buttons : [{ id: 'open-sm',   className: 'fa fa-paint-brush', command: 'open-sm',   active: true, attributes: { title: 'Open Style Manager' },},
+                     { id: 'open-layers', className: 'fa fa-bars',    command: 'open-layers', attributes  : { title: 'Open Layer Manager' }, },
+                     { id: 'open-blocks', className: 'fa fa-th-large',    command: 'open-blocks', attributes  : { title: 'Open Blocks' }, }],
+        }]},
+
+
 /*
 			panels: {
 				defaults		: [{
@@ -155,8 +185,8 @@ panels: {
 					       	   { id: 'open-layers', className: 'fa fa-bars', 		command: 'open-layers',	attributes	: { title: 'Open Layer Manager' }, },],
 				}],
 			},
-
 */
+
 
 			styleManager : {
 				sectors: [{
