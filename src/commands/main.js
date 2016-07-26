@@ -80,6 +80,7 @@ define(function(require) {
 		defaultCommands['sw-visibility'] = require('./view/SwitchVisibility');
 		defaultCommands['open-layers'] = require('./view/OpenLayers');
 		defaultCommands['open-sm'] = require('./view/OpenStyleManager');
+		defaultCommands['open-blocks'] = require('./view/OpenBlocks');
 		//this.defaultCommands['resize-comp'] 	= require('./view/ResizeComponent');
 
 		if(config.em)

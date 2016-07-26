@@ -38,7 +38,7 @@ define(function () {
 		storageType: 'local',
 
 		// The css that could only be seen (for instance, inside the code viewer)
-		protectedCss: 'body{margin:0;}',
+		protectedCss: 'body{margin:0;height:100%}#wrapper{height:100%}',
 
 		//Configurations for Asset Manager
 		assetManager			: {},
@@ -94,6 +94,23 @@ define(function () {
 	        name: 'Mobile portrait',
 	        width: '480px',
 	    }],
+		},
+
+		//Configurations for Block Manager
+		blockManager: {
+			'blocks': [{
+					id: 'b1',
+	        label: 'Block1',
+	        content: '<h1>Block 1</h1>',
+	      },{
+					id: 'b2',
+	        label: 'Block2',
+	        content: '<h1>Block 2</h1>',
+	      },{
+					id: 'b3',
+	        label: 'Block3',
+	        content: '<h1>Block 3</h1>',
+	      }],
 		},
 
 		// If true render a select of available devices

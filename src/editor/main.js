@@ -96,6 +96,11 @@ define(function (require){
 				AssetManager: em.get('AssetManager'),
 
 				/**
+				 * @property {BlockManager}
+				 */
+				BlockManager: em.get('BlockManager'),
+
+				/**
 				 * @property {ClassManager}
 				 */
 				ClassManager: em.get('ClassManager'),

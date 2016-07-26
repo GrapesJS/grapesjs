@@ -36,6 +36,7 @@ require.config({
 								{  name: 'GrapesJS', 				location: 'grapesjs', 				},
 								{  name: 'Editor', 					location: 'editor', 					},
 		            {  name: 'AssetManager', 		location: 'asset_manager', 		},
+		            {  name: 'BlockManager', 		location: 'block_manager', 		},
 		            {  name: 'StyleManager', 		location: 'style_manager', 		},
 		            {  name: 'ClassManager', 		location: 'class_manager', 		},
 		            {  name: 'DeviceManager', 	location: 'device_manager', 	},

@@ -2846,7 +2846,7 @@ ol.example li.placeholder:before {
     z-index: 4; }
   .wte-pn-panel#wte-pn-views-container {
     height: 100%;
-    padding: 52px 0 0;
+    padding: 42px 0 0;
     right: 0;
     width: 15%;
     overflow: auto;

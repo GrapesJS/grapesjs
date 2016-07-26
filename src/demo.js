@@ -65,6 +65,7 @@ panels: {
             id        : 'selcomp',
             className : 'fa fa fa-mouse-pointer',
             command   : 'select-comp',
+            active: 1,
           },{
             id        : 'create',
             className : 'fa fa-plus-square-o icon-add-comp',
@@ -409,6 +410,8 @@ panels: {
 
 
 		);
+
+    window.grapesEditor = editor;
 
 	});
 });

@@ -50,7 +50,6 @@ define(function(require) {
          * @param {Object} opts Custom options
          * @return {Device} Added device
          * @example
-         * // In case of strings, would be interpreted as images
          * deviceManager.add('Tablet', '900px');
          */
         add: function(name, width, opts){

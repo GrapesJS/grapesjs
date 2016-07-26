@@ -3,6 +3,7 @@ define([
         'backboneUndo',
         'keymaster',
         'AssetManager',
+        'BlockManager',
         'StorageManager',
         'DeviceManager',
         'ModalDialog',
@@ -22,6 +23,7 @@ define([
 			UndoManager,
 			Keymaster,
 			AssetManager,
+			BlockManager,
 			StorageManager,
 			DeviceManager,
 			ModalDialog,
@@ -63,6 +65,7 @@ define([
 				this.initClassManager();
 				this.initModal();
 				this.initAssetManager();
+				this.initBlockManager();
 				this.initCodeManager();
 				this.initCommands();
 				this.initPanels();
@@ -85,6 +88,17 @@ define([
 			 */
 			init: function(editor){
 				this.set('Editor', editor);
+			},
+
+			/**
+			 * Initialize block manager
+			 * @private
+			 * */
+			initBlockManager: function(){
+				var cfg = this.config.blockManager;
+				cfg.em = this;
+				cfg.pStylePrefix = this.config.stylePrefix;
+				this.set('BlockManager', new BlockManager(cfg));
 			},
 
 			/**
