@@ -102,9 +102,10 @@ define(function () {
 					id: 'b1',
 	        label: 'Block1',
 	        content: '<h1>Block 1</h1>',
+	        attributes: { title: 'Block1', class:'b1-cl'}
 	      },{
 					id: 'b2',
-	        label: 'Block2',
+	        label: '&hearts; Block2',
 	        content: '<h1>Block 2</h1>',
 	      },{
 					id: 'b3',

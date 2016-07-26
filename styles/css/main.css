@@ -3393,6 +3393,27 @@ ol.example li.placeholder:before {
     filter: alpha(opacity=90); }
 
 /********* END Style Manager **********/
+/********* Block manager **********/
+.wte-blocks-c {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start; }
+
+.wte-block {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  width: 45%;
+  padding: 1em;
+  box-sizing: border-box;
+  height: 100px;
+  cursor: all-scroll;
+  margin: 2.5%; }
+
+/********* END Block manager **********/
 /********* Class manager **********/
 .wte-clm-tags {
   font-size: 11px;

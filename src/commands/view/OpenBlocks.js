@@ -7,7 +7,8 @@ define(function() {
 				var pfx = config.stylePrefix;
 				var bm = editor.BlockManager;
 				if(!this.blocks){
-					this.blocks = bm.render();
+					this.blocks = $('<div/>').get(0);
+					this.blocks.appendChild(bm.render());
 					var panels = editor.Panels;
 					if(!panels.getPanel('views-container'))
 						panelC = panels.addPanel({id: 'views-container'});

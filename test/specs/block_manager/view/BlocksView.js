@@ -77,7 +77,7 @@ define([path + 'BlocksView', 'BlockManager/model/Blocks'],
                 view.el.children.length.should.equal(2);
               });
 
-              it("Render children", function (){
+              it("Render container", function (){
                 view.el.getAttribute('class').should.equal(ppfx + 'blocks-c');
               });
 

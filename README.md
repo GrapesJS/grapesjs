@@ -68,7 +68,7 @@ $ npm run build
 Launch server, which also gonna watch some files, and try out the demo on `localhost:8000`
 
 ```sh
-$ npm run dev
+$ npm start
 ```
 
 Tests are already available inside browser on `localhost:8000/test`
@@ -126,7 +126,7 @@ Check the getting started guide here: [wiki]
 
 ## API
 
-API References (draft) could be found here: [wiki/API-Reference]
+API References (draft) could be found here: [API-Reference]
 
 
 ## Testing
@@ -171,4 +171,5 @@ BSD 3-clause
 [Spectrum]: <https://github.com/bgrins/spectrum>
 [FontAwesome]: <https://fortawesome.github.io/Font-Awesome/>
 [wiki]: <https://github.com/artf/grapesjs/wiki>
+[API-Reference]: <https://github.com/artf/grapesjs/wiki/API-Reference>
 [CMS]: <https://it.wikipedia.org/wiki/Content_management_system>
