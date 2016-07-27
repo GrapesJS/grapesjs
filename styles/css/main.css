@@ -2594,6 +2594,11 @@ $fontColorActive: #4f8ef7;
 .wte-color-active, .wte-pn-btn.wte-pn-active, .wte-btnt.wte-pn-active {
   color: #f8f8f8; }
 
+.wte-bdrag {
+  position: absolute;
+  z-index: 10;
+  width: auto; }
+
 /********************* MAIN ************************/
 .clear {
   clear: both; }
@@ -3073,9 +3078,12 @@ ol.example li.placeholder:before {
 .wte-devices-c {
   display: flex;
   align-items: center;
+  padding: 4px;
+  /*
   padding: 10px 5px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-  margin-bottom: 10px; }
+  margin-bottom: 10px;
+  */ }
   .wte-devices-c .wte-device-label {
     flex-grow: 2;
     font-size: 0.7em;
@@ -3412,6 +3420,10 @@ ol.example li.placeholder:before {
   height: 100px;
   cursor: all-scroll;
   margin: 2.5%; }
+
+.wte-block.wte-bdrag {
+  width: auto;
+  padding: 0; }
 
 /********* END Block manager **********/
 /********* Class manager **********/

@@ -19,8 +19,11 @@ define(['StyleManager'], function(StyleManager) {
 
 					// Device Manager
 					var dvm = em.DeviceManager;
-					if(dvm && config.showDevices)
-						this.$cn2.append(dvm.render());
+					if(dvm && config.showDevices){
+						var devicePanel = panels.addPanel({ id: 'devices-c'});
+						devicePanel.set('appendContent', dvm.render()).trigger('change:appendContent');
+						//this.$cn2.append(dvm.render());
+					}
 
 					// Class Manager container
 					var clm = em.ClassManager;

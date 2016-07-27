@@ -260,8 +260,19 @@ function(Backbone, require) {
 
 			if(this.parentM)
 				this.swapParent();
+			var active = this.model.get('active');
+			this.model.set('active', !active);
 
-			this.model.set('active', !this.model.get('active'));
+			// If the stop is requested
+			var command = this.em.get('Commands').get('select-comp');
+
+			if(active){
+				if(this.model.get('runDefaultCommand'))
+					this.em.runDefault();
+			}else{
+				if(this.model.get('stopDefaultCommand'))
+					this.em.stopDefault();
+			}
 		},
 
 		/**

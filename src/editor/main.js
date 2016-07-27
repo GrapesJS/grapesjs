@@ -40,6 +40,7 @@
  * @param {Object} [config.domComponents={}] Components configuration, see the relative documentation
  * @param {Object} [config.panels={}] Panels configuration, see the relative documentation
  * @param {Object} [config.showDevices=true] If true render a select of available devices inside style manager panel
+ * @param {string} [config.defaultCommand='select-comp'] Command to execute when no other command is running
  * @example
  * var editor = grapesjs.init({
  * 	container : '#gjs',

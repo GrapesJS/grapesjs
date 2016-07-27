@@ -30,6 +30,7 @@ define(['backbone'],
         this.offleft = o.offsetLeft || 0;
         this.document = o.document || document;
         this.dropContent = '';
+        this.helper = '';
       },
 
       /**
@@ -123,6 +124,12 @@ define(['backbone'],
           $(this.document).on('mouseup',this.endMove);
         }
 
+        if(this.helper){
+          this.helperEl = this.helper;
+          this.helperEl.className += ' ' + this.ppfx + 'bdrag';
+          document.body.appendChild(this.helperEl);
+        }
+
         this.$el.on('mousemove',this.onMove);
         $(document).on('keypress',this.rollback);
 
@@ -163,6 +170,12 @@ define(['backbone'],
           if(this.offLeft)
             this.$plh.css('left', '+=' + this.offLeft + 'px');
           this.lastPos = pos;
+        }
+
+        if(this.helperEl){
+          var helperS = this.helperEl.style;
+          helperS.left = this.rX + 'px';
+          helperS.top = this.rY + 'px';
         }
 
         if(typeof this.onMoveClb === 'function')
@@ -459,6 +472,9 @@ define(['backbone'],
           this.move(this.target, this.eV, this.lastPos);
         if(this.plh)
           this.plh.style.display = 'none';
+        this.helperEl = '';
+        if(this.helper)
+          this.helper.parentNode.removeChild(this.helper);
         if(typeof this.onEndMove === 'function')
           this.onEndMove();
       },

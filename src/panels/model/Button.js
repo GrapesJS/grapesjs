@@ -15,6 +15,8 @@ define([ 'backbone','require'],
 			options: {},
 			active: false,
 			dragDrop: false,
+			runDefaultCommand: true,
+			stopDefaultCommand: false,
 		},
 
 		initialize: function(options) {

@@ -4,13 +4,14 @@ function(Backbone, BlockView) {
   return Backbone.View.extend({
 
     initialize: function(opts, config) {
-      _.bindAll(this, 'getSorter', 'onDrag', 'onDrop');
+      _.bindAll(this, 'getSorter', 'onDrag', 'onDrop', 'dragHelper', 'moveHelper');
       this.config = config || {};
       this.ppfx = this.config.pStylePrefix || '';
       this.listenTo(this.collection, 'add', this.addTo);
       this.em = this.config.em;
       this.tac = 'test-tac';
       this.config.getSorter = this.getSorter;
+      this.config.dragHelper = this.dragHelper;
     },
 
     /**
@@ -49,8 +50,22 @@ function(Backbone, BlockView) {
      * @private
      */
     onDrag: function(){
+      this.em.stopDefault();
       this.em.get('Canvas').getBody().style.cursor = 'grabbing';
       document.body.style.cursor = 'grabbing';
+    },
+
+    dragHelper: function(el){
+      el.className += ' ' + this.ppfx + 'bdrag';
+      this.helper = el;
+      document.body.appendChild(el);
+      $(this.em.get('Canvas').getBody()).on('mousemove', this.moveHelper);
+      $(document).on('mousemove', this.moveHelper);
+    },
+
+    moveHelper: function(e){
+      this.helper.style.left = e.pageX + 'px';
+      this.helper.style.top = e.pageY + 'px';
     },
 
     /**
@@ -58,6 +73,7 @@ function(Backbone, BlockView) {
      * @private
      */
     onDrop: function(){
+      this.em.runDefault();
       this.em.get('Canvas').getBody().style.cursor = '';
       document.body.style.cursor = '';
     },

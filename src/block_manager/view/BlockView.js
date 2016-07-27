@@ -23,6 +23,7 @@ function(Backbone) {
       if(!this.config.getSorter)
         return;
       var sorter = this.config.getSorter();
+      //this.config.dragHelper(this.el.cloneNode(1));
       sorter.startSort(this.el);
       sorter.setDropContent(this.model.get('content'));
       this.doc.on('mouseup', this.onDrop);

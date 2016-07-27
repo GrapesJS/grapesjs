@@ -9,7 +9,8 @@ function(Backbone){
 			this.className = this.conf.stylePrefix + 'editor';
 			this.model.on('loaded', function(){
 				this.pn.active();
-			});
+				this.model.runDefault();
+			}, this);
 		},
 
 		render: function(){

@@ -776,5 +776,30 @@ define([
 				return this.get('DeviceManager').get(name);
 			},
 
+			/**
+			 * Run default command if setted
+			 * @private
+			 */
+			runDefault: function(){
+				var command = this.get('Commands').get(this.config.defaultCommand);
+				if(!command || this.defaultRunning)
+					return;
+				command.stop(this, this);
+				command.run(this, this);
+				this.defaultRunning = 1;
+			},
+
+			/**
+			 * Stop default command
+			 * @private
+			 */
+			stopDefault: function(){
+				var command = this.get('Commands').get(this.config.defaultCommand);
+				if(!command)
+					return;
+				command.stop(this, this);
+				this.defaultRunning = 0;
+			},
+
 		});
 	});

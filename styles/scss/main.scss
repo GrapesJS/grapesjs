@@ -96,6 +96,12 @@ $imageCompDim:	50px;
   color: $fontColorActive;
 }
 
+.#{$app-prefix}bdrag{
+  position: absolute;
+  z-index: 10;
+  width: auto;
+}
+
 /********************* MAIN ************************/
 .clear{ clear:both }
 .no-select{
@@ -608,9 +614,12 @@ $arrowColor:    $mainLhlColor; /*b1b1b1*/
 .#{$app-prefix}devices-c{
   display: flex;
   align-items: center;
+  padding: 4px;
+  /*
   padding: 10px 5px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   margin-bottom: 10px;
+  */
 
   .#{$app-prefix}device-label {
     flex-grow: 2;
@@ -991,6 +1000,11 @@ $arrowColor:    $mainLhlColor; /*b1b1b1*/
   height: 100px;
   cursor:all-scroll;
   margin: 2.5%;
+}
+
+.#{$app-prefix}block.#{$app-prefix}bdrag{
+ width: auto;
+ padding: 0;
 }
 
 /********* END Block manager **********/

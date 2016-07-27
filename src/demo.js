@@ -61,19 +61,21 @@ require(['config/require-config'], function() {
 panels: {
         defaults    : [{
           id    : 'commands',
-          buttons : [{
+          buttons : [/*{
             id        : 'selcomp',
             className : 'fa fa fa-mouse-pointer',
             command   : 'select-comp',
             active: 1,
-          },{
+          },*/{
             id        : 'create',
             className : 'fa fa-plus-square-o icon-add-comp',
             command   : 'create-comp',
+            stopDefaultCommand: 1,
           },{
             id: 'image-comp',
             className: 'fa fa-picture-o',
             dragDrop: 1,
+            stopDefaultCommand: 1,
             options:  {
               content: '<div style="width:100%; padding:7px">'+
                           '<div class="redbg" style="width:33.333%; min-height:75px; padding:7px; float:left;"></div>' +

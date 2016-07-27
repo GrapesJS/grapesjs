@@ -38,7 +38,7 @@ define(function () {
 		storageType: 'local',
 
 		// The css that could only be seen (for instance, inside the code viewer)
-		protectedCss: 'body{margin:0;height:100%}#wrapper{height:100%}',
+		protectedCss: 'body{margin:0;height:100%}#wrapper{min-height:100%; overflow:auto}',
 
 		//Configurations for Asset Manager
 		assetManager			: {},
@@ -113,6 +113,9 @@ define(function () {
 	        content: '<h3>Block 3</h3>',
 	      }],
 		},
+
+		// Default command
+		defaultCommand: 'select-comp',
 
 		// If true render a select of available devices
 		showDevices: 1,

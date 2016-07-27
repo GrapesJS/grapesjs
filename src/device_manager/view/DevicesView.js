@@ -11,8 +11,10 @@ function(Backbone, devicesTemplate) {
 
     initialize: function(o) {
       this.config = o.config || {};
+      this.em = this.config.em;
       this.ppfx = this.config.pStylePrefix || '';
       this.events['click .' + this.ppfx + 'add-trasp'] = this.startAdd;
+      this.listenTo(this.em, 'change:device', this.updateSelect);
       this.delegateEvents();
     },
 
@@ -27,11 +29,24 @@ function(Backbone, devicesTemplate) {
      * @private
      */
     updateDevice: function(){
-      var em = this.config.em;
+      var em = this.em;
       if(em){
         var devEl = this.devicesEl;
         var val = devEl ? devEl.val() : '';
         em.set('device', val);
+      }
+    },
+
+    /**
+     * Update select value on device update
+     * @private
+     */
+    updateSelect: function(){
+      var em = this.em;
+      if(em){
+        var device = this.em.getDeviceModel();
+        var name = device ? device.get('name') : '';
+        this.devicesEl.val(name);
       }
     },
 
