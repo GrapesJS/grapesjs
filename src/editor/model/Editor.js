@@ -65,7 +65,7 @@ define([
 				this.initClassManager();
 				this.initModal();
 				this.initAssetManager();
-				this.initBlockManager();
+				this.initUtils();
 				this.initCodeManager();
 				this.initCommands();
 				this.initPanels();
@@ -74,8 +74,8 @@ define([
 				this.initComponents();
 				this.initCanvas();
 				this.initUndoManager();
-				this.initUtils();
 				this.initStyleManager();
+				this.initBlockManager(); // Requres utils, canvas
 
 				this.on('change:selectedComponent', this.componentSelected, this);
 			},

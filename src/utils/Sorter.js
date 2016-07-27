@@ -18,6 +18,7 @@ define(['backbone'],
         this.nested = o.nested || 0;
         this.pfx = o.pfx || '';
         this.freezeClass = o.freezeClass || this.pfx + 'freezed';
+        this.onStart = o.onStart || '';
         this.onEndMove = o.onEndMove || '';
         this.direction = o.direction || 'v'; // v (vertical), h (horizontal), a (auto)
         this.onMoveClb = o.onMove || '';
@@ -124,6 +125,9 @@ define(['backbone'],
 
         this.$el.on('mousemove',this.onMove);
         $(document).on('keypress',this.rollback);
+
+        if(typeof this.onStart === 'function')
+          this.onStart();
       },
 
       /**

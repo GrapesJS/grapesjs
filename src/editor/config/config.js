@@ -106,11 +106,11 @@ define(function () {
 	      },{
 					id: 'b2',
 	        label: '&hearts; Block2',
-	        content: '<h1>Block 2</h1>',
+	        content: '<h2>Block 2</h2>',
 	      },{
 					id: 'b3',
 	        label: 'Block3',
-	        content: '<h1>Block 3</h1>',
+	        content: '<h3>Block 3</h3>',
 	      }],
 		},
 
