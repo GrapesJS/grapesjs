@@ -22,6 +22,9 @@ define(function () {
     // Enable/Disable undo manager
     undoManager: true,
 
+    // Show an alert before unload the page
+    noticeOnUnload: true,
+
     // Storage Manager
     storage: {},
 

@@ -45,6 +45,11 @@ define(function (require) {
         if(!els)
           throw new Error("'container' is required");
 
+        if(c.noticeOnUnload)
+          window.onbeforeunload = function(e) {
+            return 1;
+          };
+
         c.el = document.querySelector(els);
         var editor = new Editor(c).init();
 

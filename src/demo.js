@@ -6,6 +6,7 @@ require(['config/require-config'], function() {
 
 
 		{
+      noticeOnUnload: 0,
 			container	: '#gjs',
 			height: '100%',
 			fromElement: true,
