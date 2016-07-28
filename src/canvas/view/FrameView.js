@@ -12,9 +12,11 @@ function(Backbone) {
     },
 
     initialize: function(o) {
+      _.bindAll(this, 'udpateOffset');
       this.config = o.config || {};
       this.ppfx = this.config.pStylePrefix || '';
       this.em = this.config.em;
+      this.motionsEv = 'transitionend oTransitionEnd transitionend webkitTransitionEnd';
       this.listenTo(this.em, 'change:device', this.updateWidth);
     },
 
@@ -25,6 +27,14 @@ function(Backbone) {
     updateWidth: function(model){
       var device = this.em.getDeviceModel();
       this.el.style.width = device ? device.get('width') : '';
+      this.udpateOffset();
+      this.$el.on(this.motionsEv, this.udpateOffset);
+    },
+
+    udpateOffset: function(){
+      var offset = this.em.get('Canvas').getOffset();
+      this.em.set('canvasOffset', offset);
+      this.$el.off(this.motionsEv, this.udpateOffset);
     },
 
     getBody: function(){

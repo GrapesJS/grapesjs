@@ -12,6 +12,8 @@ function(Backbone, BlockView) {
       this.tac = 'test-tac';
       this.config.getSorter = this.getSorter;
       this.config.dragHelper = this.dragHelper;
+      //this.listenTo(this.em, 'change:device', this.updateOffset);
+      this.canvas = this.em.get('Canvas');
     },
 
     /**
@@ -23,8 +25,8 @@ function(Backbone, BlockView) {
         return;
       if(!this.sorter){
         var utils = this.em.get('Utils');
-        var canvas = this.em.get('Canvas');
-        var sorter = new utils.Sorter({
+        var canvas = this.canvas;
+        this.sorter = new utils.Sorter({
           container: canvas.getBody(),
           placer: canvas.getPlacerEl(),
           containerSel: '*',
@@ -36,15 +38,21 @@ function(Backbone, BlockView) {
           direction: 'a',
           wmargin: 1,
           nested: 1,
+          em: this.em
         });
-        var offDim = canvas.getOffset();
-        sorter.offTop = offDim.top;
-        sorter.offLeft = offDim.left;
-        this.sorter = sorter;
       }
       return this.sorter;
     },
-
+/*
+    updateOffset: function(){
+      if(!this.sorter)
+        return;
+      var sorter = this.sorter;
+      var offDim = this.canvas.getOffset();
+      sorter.offTop = offDim.top;
+      sorter.offLeft = offDim.left;
+    },
+*/
     /**
      * Callback when block is on drag
      * @private

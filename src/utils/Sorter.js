@@ -4,7 +4,7 @@ define(['backbone'],
     return Backbone.View.extend({
 
       initialize: function(opt) {
-        _.bindAll(this,'startSort','onMove','endMove','rollback');
+        _.bindAll(this,'startSort','onMove','endMove','rollback', 'udpateOffset');
         var o = opt || {};
         this.elT = 0;
         this.elL = 0;
@@ -27,10 +27,25 @@ define(['backbone'],
         // Frame offset
         this.wmargin = o.wmargin || 0;
         this.offTop = o.offsetTop || 0;
-        this.offleft = o.offsetLeft || 0;
+        this.offLeft = o.offsetLeft || 0;
         this.document = o.document || document;
         this.dropContent = '';
         this.helper = '';
+        this.em = o.em || '';
+
+        if(this.em && this.em.on){
+          this.em.on('change:canvasOffset', this.udpateOffset);
+          this.udpateOffset();
+        }
+      },
+
+      /**
+       * Triggered when the offset of the editro is changed
+       */
+      udpateOffset: function(){
+        var offset = this.em.get('canvasOffset');
+        this.offTop = offset.top;
+        this.offLeft = offset.left;
       },
 
       /**

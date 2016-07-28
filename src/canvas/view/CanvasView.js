@@ -49,6 +49,7 @@ function(Backbone, FrameView) {
         	body.append('<style>' + frameCss + protCss + '</style>');
         this.config.em.trigger('loaded');
         this.frame.el.contentWindow.onscroll = this.onFrameScroll;
+        this.frame.udpateOffset();
 
         // When the iframe is focused the event dispatcher is not the same so
         // I need to delegate all events to the parent document

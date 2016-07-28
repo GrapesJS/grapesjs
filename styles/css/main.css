@@ -3087,7 +3087,8 @@ ol.example li.placeholder:before {
   .wte-devices-c .wte-device-label {
     flex-grow: 2;
     font-size: 0.7em;
-    text-align: left; }
+    text-align: left;
+    margin-right: 10px; }
   .wte-devices-c .wte-select {
     flex-grow: 20; }
   .wte-devices-c .wte-add-trasp {

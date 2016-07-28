@@ -22,7 +22,6 @@ define(['StyleManager'], function(StyleManager) {
 					if(dvm && config.showDevices){
 						var devicePanel = panels.addPanel({ id: 'devices-c'});
 						devicePanel.set('appendContent', dvm.render()).trigger('change:appendContent');
-						//this.$cn2.append(dvm.render());
 					}
 
 					// Class Manager container

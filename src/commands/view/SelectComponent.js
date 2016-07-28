@@ -6,7 +6,8 @@ define(function() {
 		return {
 
 			init: function(o){
-				_.bindAll(this, 'onHover', 'onOut', 'onClick', 'onKeyPress');
+				_.bindAll(this, 'onHover', 'onOut', 'onClick', 'onKeyPress', 'clearOff');
+				this.trEvents = 'transitionend oTransitionEnd transitionend webkitTransitionEnd';
 			},
 
 
@@ -20,6 +21,7 @@ define(function() {
 					key('⌘+v, ctrl+v', this.pasteComp);
 				}
 				this.listenTo(this.em.editor, 'change:device', this.clearOff);
+				$(this.frameEl).on(this.trEvents, this.clearOff);
 			},
 
 			/**
@@ -289,6 +291,7 @@ define(function() {
 
 			stop: function() {
 				this.stopListening(this.em.editor, 'change:device', this.clearOff);
+				$(this.frameEl).off(this.trEvents, this.clearOff);
 				if(!this.selEl)
 					this.selEl = $(this.getCanvasBody()).find('*');
 			  this.frameOff = this.canvasOff = this.adjScroll = null;

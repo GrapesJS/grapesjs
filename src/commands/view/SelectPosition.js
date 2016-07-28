@@ -21,10 +21,8 @@ define(function() {
 						document: doc,
 						wmargin: 1,
 						nested: 1,
+						em: this.editorModel,
 					});
-				var offDim = this.getOffsetDim();
-				this.sorter.offTop = offDim.top;
-				this.sorter.offLeft = offDim.left;
 				this.sorter.startSort(trg);
 			},
 
@@ -36,7 +34,6 @@ define(function() {
 			getOffsetDim: function() {
 				var frameOff = this.offset(this.canvas.getFrameEl());
 				var canvasOff = this.offset(this.canvas.getElement());
-				var bodyEl = this.getCanvasBody();
 				var top = frameOff.top - canvasOff.top;
 				var left = frameOff.left - canvasOff.left;
 				return { top: top, left: left };
@@ -67,17 +64,7 @@ define(function() {
 			 * @private
 			 */
 			enable: function() {
-				this.frameEl.contentWindow.onscroll = this.onFrameScroll.bind(this);
 				this.startSelectPosition();
-			},
-
-			/**
-			 * On frame scroll callback
-			 * @private
-			 */
-			onFrameScroll: function(e) {
-				this.canvasTool.style.top = '-' + this.bodyEl.scrollTop + 'px';
-				this.canvasTool.style.left = '-' + this.bodyEl.scrollLeft + 'px';
 			},
 
 			/**
@@ -107,7 +94,6 @@ define(function() {
 			},
 
 			stop: function() {
-				this.frameEl.contentWindow.onscroll = null;
 				this.stopSelectPosition();
 				this.$wrapper.css('cursor','');
 				this.$wrapper.unbind();
