@@ -32,6 +32,7 @@
  * @param {Boolean} [config.copyPaste=true] Enable/Disable the possibility to copy(ctrl + c) & paste(ctrl + v) components
  * @param {Boolean} [config.undoManager=true] Enable/Disable undo manager
  * @param {Boolean} [config.autorender=true] If true renders editor on init
+ * @param {Boolean} [config.noticeOnUnload=true] Enable/Disable alert message before unload the page
  * @param {string} [config.height='900px'] Height for the editor container
  * @param {string} [config.width='100%'] Width for the editor container
  * @param {Object} [config.storage={}] Storage manager configuration, see the relative documentation
