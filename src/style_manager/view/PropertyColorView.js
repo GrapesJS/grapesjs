@@ -18,6 +18,9 @@ define(['backbone','./PropertyView', 'Spectrum', 'text!./../templates/propertyCo
 				cpStyle = this.$colorPicker.get(0).style;
 				var that = this;
 				this.$colorPicker.spectrum({
+					showPalette: true,
+					maxSelectionSize: 8,
+					palette: [],
 					showAlpha: 	true,
 					chooseText: 'Ok',
 					cancelText: '⨯',

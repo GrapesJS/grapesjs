@@ -1394,3 +1394,12 @@ $uploadPadding:	150px 10px;
   box-shadow: none;
   padding: 3px 5px;
 }
+.sp-palette-container{
+  border: none;
+  float:none;
+  margin:0;
+  padding:5px 10px 0;
+}
+.sp-palette .sp-thumb-el, .sp-palette .sp-thumb-el:hover{
+  border: 1px solid rgba(0, 0, 0, 0.8);
+}
