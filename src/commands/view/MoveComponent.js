@@ -13,17 +13,27 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 			},
 
 			enable: function(){
-				_.bindAll(this, 'onFrameScroll');
-				this.$el.css('cursor','move');
-				this.$el.on('mousedown', this.initSorter);
-				this.startSelectComponent();
+				SelectComponent.enable.apply(this, arguments);
+				this.getBadgeEl().addClass(this.badgeClass);
+				this.getHighlighterEl().addClass(this.hoverClass);
+				var wp = this.$wrapper;
+				wp.css('cursor','move');
+				wp.on('mousedown', this.initSorter);
+
 				// Avoid strange moving behavior
-				this.$el.addClass(this.noSelClass);
+				wp.addClass(this.noSelClass);
 			},
+
+			/**
+			 * Overwrite for doing nothing
+			 * @private
+			 */
+			toggleClipboard: function(){},
 
 			/**
 			 * Delegate sorting
 			 * @param	{Event} e
+			 * @private
 			 * */
 			initSorter: function(e){
 				var el = $(e.target).data('model');
@@ -33,58 +43,71 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 				this.cacheEl = null;
 				this.startSelectPosition(e.target, this.frameEl.contentDocument);
 				this.sorter.onEndMove = this.onEndMove.bind(this);
-				this.stopSelectComponent(e);
-				this.$el.off('mousedown', this.initSorter);
+				this.stopSelectComponent();
+				this.$wrapper.off('mousedown', this.initSorter);
+				this.getContentWindow().on('keydown', this.rollback);
 			},
 
 			/**
 			 * Callback after sorting
+			 * @private
 			 */
 			onEndMove: function(){
 				this.enable();
+				this.getContentWindow().off('keydown', this.rollback);
 			},
 
-			/** Say what to do after the component was selected (selectComponent)
-			 * @param Event
-			 * @param Object Selected element
+			/**
+			 * Say what to do after the component was selected (selectComponent)
+			 * @param {Event} e
+			 * @param {Object} Selected element
 			 * @private
 			 * */
 			onSelect: function(e,el){},
 
-			/** Used to bring the previous situation before start moving the component
-			 * @param Event
-			 * @param Bool Indicates if rollback in anycase
+			/**
+			 * Used to bring the previous situation before start moving the component
+			 * @param {Event} e
+			 * @param {Boolean} Indicates if rollback in anycase
 			 * @private
 			 * */
 			rollback: function(e, force){
 				var key = e.which || e.keyCode;
 				if(key == this.opt.ESCAPE_KEY || force){
-					this.moved = false;
-					this.endMove();
+					this.sorter.moved = false;
+					this.sorter.endMove();
 				}
 				return;
 			},
 
-			run: function(editor, sender, opts){
-				this.editor = editor;
-				this.$el = this.$wrapper;
-				this.$badge = $(this.getBadge());
-				this.$badge.addClass(this.badgeClass);
-				this.$hl = $(this.canvas.getHighlighter());
-				this.$hl.addClass(this.hoverClass);
-				this.enable();
+			/**
+			 * Returns badge element
+			 * @return {HTMLElement}
+			 * @private
+			 */
+			getBadgeEl: function(){
+				if(!this.$badge)
+					this.$badge = $(this.getBadge());
+				return this.$badge;
+			},
+
+			/**
+			 * Returns highlighter element
+			 * @return {HTMLElement}
+			 * @private
+			 */
+			getHighlighterEl: function(){
+				if(!this.$hl)
+					this.$hl = $(this.canvas.getHighlighter());
+				return this.$hl;
 			},
 
 			stop: function(){
-				this.stopSelectComponent();
-				this.hideBadge();
-				this.$badge = $(this.getBadge());
-				this.$badge.removeClass(this.badgeClass);
-				this.$hl = $(this.canvas.getHighlighter());
-				this.$hl.removeClass(this.hoverClass);
-				this.$el.css('cursor','');//changes back aspect of the cursor
-				this.$el.unbind();//removes all attached events
-				this.$el.removeClass(this.noSelClass);
+				SelectComponent.stop.apply(this, arguments);
+				this.getBadgeEl().removeClass(this.badgeClass);
+				this.getHighlighterEl().removeClass(this.hoverClass);
+				var wp = this.$wrapper;
+				wp.css('cursor', '').unbind().removeClass(this.noSelClass);
 			}
 		});
 	});

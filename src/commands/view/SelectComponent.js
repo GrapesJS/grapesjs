@@ -7,21 +7,32 @@ define(function() {
 
 			init: function(o){
 				_.bindAll(this, 'onHover', 'onOut', 'onClick', 'onKeyPress', 'clearOff');
-				this.trEvents = 'transitionend oTransitionEnd transitionend webkitTransitionEnd';
 			},
 
 
 			enable: function() {
-				_.bindAll(this,'copyComp', 'pasteComp', 'onFrameScroll');
+				_.bindAll(this, 'copyComp', 'pasteComp', 'onFrameScroll');
+				this.frameOff = this.canvasOff = this.adjScroll = null;
 				var config	= this.config.em.get('Config');
 				this.startSelectComponent();
-				// TODO refactor
-				if(config.copyPaste){
+				this.toggleClipboard(config.copyPaste);
+			},
+
+			/**
+			 * Toggle clipboard function
+			 * @param  {Boolean} active
+			 * @return {this}
+			 * @private
+			 */
+			toggleClipboard: function(active){
+				var en = active || 0;
+				if(en){
 					key('⌘+c, ctrl+c', this.copyComp);
 					key('⌘+v, ctrl+v', this.pasteComp);
+				}else{
+					key.unbind('⌘+c, ctrl+c');
+					key.unbind('⌘+v, ctrl+v');
 				}
-				this.listenTo(this.em.editor, 'change:device', this.clearOff);
-				$(this.frameEl).on(this.trEvents, this.clearOff);
 			},
 
 			/**
@@ -62,12 +73,14 @@ define(function() {
 			 * @private
 			 * */
 			startSelectComponent: function() {
-				this.getContentWindow().on('scroll', this.onFrameScroll);
+				this.listenTo(this.em, 'change:canvasOffset', this.clearOff);
 				this.selEl = $(this.getCanvasBody()).find('*');
-				this.selEl.on('mouseover',this.onHover)
+				this.selEl.on('mouseover', this.onHover)
 					.on('mouseout', this.onOut)
 					.on('click', this.onClick);
-				this.getContentWindow().on('keydown', this.onKeyPress);
+				var cw = this.getContentWindow();
+				cw.on('scroll', this.onFrameScroll);
+				cw.on('keydown', this.onKeyPress);
 			},
 
 			/**
@@ -75,10 +88,15 @@ define(function() {
 			 * @private
 			 * */
 			stopSelectComponent: function() {
-				this.getContentWindow().off('scroll', this.onFrameScroll);
+				this.stopListening(this.em, 'change:canvasOffset', this.clearOff);
 				if(this.selEl)
-					this.selEl.trigger('mouseout').off('mouseover mouseout click');
+					this.selEl.trigger('mouseout').off('mouseover', this.onHover)
+						.off('mouseout', this.onOut)
+						.off('click', this.onClick);
 				this.selEl = null;
+				var cw = this.getContentWindow();
+				cw.off('scroll', this.onFrameScroll);
+				cw.off('keydown', this.onKeyPress);
 			},
 
 			/**
@@ -169,8 +187,7 @@ define(function() {
 			onSelect: function(e, el) {
 				e.stopPropagation();
 				var md 	= this.editorModel.get('selectedComponent');
-				if(md)
-					this.cleanPrevious(md);
+				this.cleanPrevious(md);
 				var $el = $(el);
 				var nMd = $el.data('model');
 				if(nMd){
@@ -268,10 +285,11 @@ define(function() {
 			 * @private
 			 */
 			cleanPrevious: function(model) {
-				model.set({
-					status: '',
-					state: '',
-				});
+				if(model)
+					model.set({
+						status: '',
+						state: '',
+					});
 			},
 
 			/**
@@ -285,31 +303,16 @@ define(function() {
 			},
 
 			run: function(em, sender) {
-				this.em = em;
 				this.enable();
 			},
 
 			stop: function() {
-				this.stopListening(this.em.editor, 'change:device', this.clearOff);
-				$(this.frameEl).off(this.trEvents, this.clearOff);
-				if(!this.selEl)
-					this.selEl = $(this.getCanvasBody()).find('*');
-			  this.frameOff = this.canvasOff = this.adjScroll = null;
-
-			  var frameEl = this.canvas.getFrameEl();
-				var sel = this.editorModel.get('selectedComponent');
-				if(sel)
-					this.cleanPrevious(sel);
-				this.$el.unbind();												//removes all attached events
-				this.hideBadge();
-				this.clean();
-				this.selEl.unbind('mouseover').unbind('mouseout').unbind('click');
-				this.editorModel.set('selectedComponent',null);
-				key.unbind('⌘+c, ctrl+c');
-				key.unbind('⌘+v, ctrl+v');
-				var cw = this.getContentWindow();
-				cw.off('keydown', this.onKeyPress);
 				this.stopSelectComponent();
+				this.cleanPrevious(this.em.get('selectedComponent'));
+				this.clean();
+				this.em.set('selectedComponent', null);
+				this.toggleClipboard();
+				this.hideBadge();
 			}
 		};
 });
