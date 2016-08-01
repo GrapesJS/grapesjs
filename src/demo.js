@@ -73,6 +73,11 @@ panels: {
             command   : 'create-comp',
             stopDefaultCommand: 1,
           },{
+            id        : 'move-comp',
+            className : 'fa fa-arrows',
+            command   : 'move-comp',
+            stopDefaultCommand: 1,
+          },{
             id: 'image-comp',
             className: 'fa fa-picture-o',
             dragDrop: 1,

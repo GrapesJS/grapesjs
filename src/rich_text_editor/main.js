@@ -21,20 +21,34 @@ define(function(require) {
 		return {
 
 			/**
+       * Triggered when the offset of the editro is changed
+       * @private
+       */
+      udpatePosition: function(){
+      	if(!this.lastEl || !c.em)
+      		return;
+      	var u = 'px';
+        var eOffset = c.em.get('canvasOffset');
+        var cvsView = c.em.get('Canvas').CanvasView;
+        var dims = cvsView.getElementPos(this.lastEl);
+        var toolS = toolbar.el.style;
+        var toolH = toolbar.$el.outerHeight();
+        toolS.top = (dims.top - toolH) + u;
+				toolS.left = (dims.left + eOffset.left) + u;
+      },
+
+			/**
 			 * Bind rich text editor to element
 			 * @param {View} view
 			 * */
 			attach: function(view){
 				view.$el.wysiwyg({}).focus();
+				this.lastEl = view.el;
 
 				if(c.em){
-					var u = 'px';
-					var cvsView = c.em.get('Canvas').CanvasView;
-					var dims = cvsView.getElementPos(view.el);
-					var toolEl = toolbar.el;
-					var toolS = toolbar.el.style;
-					toolS.top = (dims.top - toolbar.$el.outerHeight()) + u;
-					toolS.left = dims.left + u;
+					this.udpatePosition();
+					c.em.off('change:canvasOffset', this.udpatePosition, this);
+					c.em.on('change:canvasOffset', this.udpatePosition, this);
 				}
 				this.show();
 				//Avoid closing edit mode clicking on toolbar
