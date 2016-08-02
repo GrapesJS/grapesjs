@@ -11,8 +11,8 @@ define(['backbone', './ComponentView'],
 
 		initialize: function(o){
 			ComponentView.prototype.initialize.apply(this, arguments);
-			this.listenTo( this.model, 'change:src', 	this.updateSrc);
-			this.listenTo( this.model, 'dblclick', 		this.openModal);
+			this.listenTo( this.model, 'change:src', this.updateSrc);
+			this.listenTo( this.model, 'dblclick active', this.openModal);
 			this.classEmpty = this.ppfx + 'plh-image';
 
 			if(this.config.modal)
@@ -61,6 +61,8 @@ define(['backbone', './ComponentView'],
 			if(!this.model.get('src'))
 				this.$el.attr('class', this.classEmpty);
 
+			// Avoid strange behaviours while try to drag
+			this.$el.attr('onmousedown', 'return false');
 			return this;
 		},
 	});

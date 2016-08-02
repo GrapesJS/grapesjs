@@ -110,7 +110,24 @@ define(function () {
 	      },{
 					id: 'b3',
 	        label: 'Block3',
-	        content: '<h3>Block 3</h3>',
+	        content: '<div>Block 3</div>',
+	      },{
+					id: 'text',
+	        label: 'Text',
+	        content: '<div style="padding:5px">Insert your text here</div>',
+	      },{
+					id: 'text2',
+	        label: 'Text2',
+	        content: {
+	        	type:'text',
+	        	content:'Insert your text here',
+	        	style: { padding: '10px' },
+	        	activeOnRender: 1
+	        },
+	      },{
+					id: 'image',
+	        label: 'Image',
+	        content: {type:'image', activeOnRender: 1},
 	      }],
 		},
 

@@ -80,10 +80,14 @@ function(Backbone, BlockView) {
      * Callback when block is dropped
      * @private
      */
-    onDrop: function(){
+    onDrop: function(model){
       this.em.runDefault();
       this.em.get('Canvas').getBody().style.cursor = '';
       document.body.style.cursor = '';
+      if(model && model.get('activeOnRender')){
+        model.trigger('active');
+        model.set('activeOnRender', 0);
+      }
     },
 
     /**

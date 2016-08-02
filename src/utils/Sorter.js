@@ -476,6 +476,7 @@ define(['backbone'],
        * @return void
        * */
       endMove: function(e){
+        var created;
         this.$el.off('mousemove', this.onMove);
         $(this.document).off('mouseup', this.endMove);
         $(this.document).off('keypress', this.rollback);
@@ -484,14 +485,14 @@ define(['backbone'],
         if(this.eV)
           this.eV.className = this.eV.className.replace(clsReg, '');
         if(this.moved)
-          this.move(this.target, this.eV, this.lastPos);
+          created = this.move(this.target, this.eV, this.lastPos);
         if(this.plh)
           this.plh.style.display = 'none';
         this.helperEl = '';
         if(this.helper)
           this.helper.parentNode.removeChild(this.helper);
         if(typeof this.onEndMove === 'function')
-          this.onEndMove();
+          this.onEndMove(created);
       },
 
       /**
@@ -521,7 +522,7 @@ define(['backbone'],
             modelToDrop = this.dropContent;
             opts.silent = false;
           }
-          targetCollection.add(modelToDrop, opts);
+          var created = targetCollection.add(modelToDrop, opts);
           if(!this.dropContent){
             targetCollection.remove(modelTemp);
           }else{
@@ -529,6 +530,7 @@ define(['backbone'],
           }
           // This will cause to recalculate children dimensions
           this.prevTarget = null;
+          return created;
         }else
           console.warn("Invalid target position");
       },

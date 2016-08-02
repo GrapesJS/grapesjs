@@ -10,7 +10,7 @@ define(['backbone', './ComponentView'],
 		initialize: function(o){
 			ComponentView.prototype.initialize.apply(this, arguments);
 			_.bindAll(this,'disableEditing');
-			this.listenTo(this.model, 'focus', this.enableEditing);
+			this.listenTo(this.model, 'focus active', this.enableEditing);
 			this.rte = this.config.rte || '';
 		},
 
