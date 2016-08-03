@@ -77,19 +77,6 @@ panels: {
             className : 'fa fa-arrows',
             command   : 'move-comp',
             stopDefaultCommand: 1,
-          },{
-            id: 'image-comp',
-            className: 'fa fa-picture-o',
-            dragDrop: 1,
-            stopDefaultCommand: 1,
-            options:  {
-              content: '<div style="width:100%; padding:7px">'+
-                          '<div class="redbg" style="width:33.333%; min-height:75px; padding:7px; float:left;"></div>' +
-                          '<div style="width:33.333%; min-height:75px; padding:7px; float:left; background:blue"></div>' +
-                          '<div style="width:33.333%; min-height:75px; padding:7px; float:left; background:blue"></div>' +
-                          '<div style="clear:both"></div>' +
-                        '</div>'
-            },
           }]
         },{
           id  : 'options',

@@ -197,11 +197,55 @@ module.exports = function(grunt) {
 	    grunt.file.copy(appPath + '/' + configPath, buildPath + '/' + appPath + '/' + configPath);
   });
 
+  grunt.registerTask('webfont-custom', function() {
+      var dir = './styles/fonts/';
+      var destName = 'main-fonts';
+      var donePromise = this.async();
+      var svg2ttf = {
+        cmd: 'svg2ttf',
+        args: [dir + destName + '.svg', dir + destName + '.ttf'],
+      };
+      var ttf2woff = {
+        cmd: 'ttf2woff',
+        args: [dir + destName + '.ttf', dir + destName + '.woff'],
+      };
+      var ttf2woff2 = {
+        cmd: 'cat',
+        //args: [dir + destName + '.ttf', dir + destName + '.woff2'],
+        args: [dir + destName + '.ttf', '|', 'ttf2woff2', '>>', dir + destName + '.woff2'],
+      };
+      var ttf2eot = {
+        cmd: 'ttf2eot',
+        args: [dir + destName + '.ttf', dir + destName + '.eot'],
+      };
+      grunt.util.spawn(svg2ttf, function done(error, result, code) {
+        grunt.log.ok('.ttf file created');
+
+        grunt.util.spawn(ttf2woff, function done(error, result, code) {
+          grunt.log.ok('.woff file created');
+
+          grunt.util.spawn(ttf2eot, function done(error, result, code) {
+            grunt.log.ok('.eot file created');
+            donePromise();
+            /*
+            grunt.util.spawn(ttf2woff2, function done(error, result, code) {
+              grunt.log.ok('.woff2 file created');
+              donePromise();
+            });
+            */
+          });
+        });
+      });
+
+  });
+
   grunt.registerTask('bower', ['bowercopy']);
 
   grunt.registerTask('dev', ['bowercopy', 'connect', 'watch']);
 
   grunt.registerTask('test', ['jshint', 'mocha']);
+
+  grunt.registerTask('build:fonts', ['webfont-custom']);
 
   grunt.registerTask('build', ['bowercopy', 'jshint', 'sass', 'before-rjs', 'requirejs', 'uglify', 'cssmin', 'concat', 'clean', 'copy']);
 

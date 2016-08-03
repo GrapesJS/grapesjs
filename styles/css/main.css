@@ -2567,6 +2567,52 @@ $fontColorActive: #4f8ef7;
 */
 /* darken($mainColor, 4%) - #383838*/
 /*#515151*/
+@font-face {
+  font-family: 'font3336';
+  src: url("../fonts/main-fonts.eot?v=1");
+  src: url("../fonts/main-fonts.woff?v=1") format("woff"), url("../fonts/main-fonts.ttf?v=1") format("truetype"), url("../fonts/main-fonts.svg?v=1") format("svg"), url("../fonts/main-fonts.eot?v=1") format("embedded-opentype");
+  font-weight: normal;
+  font-style: normal; }
+
+.wte-fonts:before {
+  display: block;
+  font: normal normal normal 14px font3336;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 5em; }
+
+.wte-f-b1:before {
+  content: 'q'; }
+
+.wte-f-b2:before {
+  content: 'w'; }
+
+.wte-f-b3:before {
+  content: 'e'; }
+
+.wte-f-b37:before {
+  content: 'r'; }
+
+.wte-f-hero:before {
+  content: 't'; }
+
+.wte-f-h1p:before {
+  content: 'y'; }
+
+.wte-f-3ba:before {
+  content: 'u'; }
+
+.wte-f-image:before {
+  content: 'i'; }
+
+.wte-f-text:before {
+  content: 'o'; }
+
+.wte-f-quo:before {
+  content: 'p'; }
+
 .wte-invis-invis, .wte-clm-tags #wte-clm-new, .wte-no-app {
   background-color: transparent;
   border: none;
@@ -3418,9 +3464,14 @@ ol.example li.placeholder:before {
   width: 45%;
   padding: 1em;
   box-sizing: border-box;
-  height: 100px;
+  height: 90px;
   cursor: all-scroll;
-  margin: 2.5%; }
+  margin: 2.5%;
+  font-size: 11px;
+  font-weight: lighter;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; }
 
 .wte-block.wte-bdrag {
   width: auto;

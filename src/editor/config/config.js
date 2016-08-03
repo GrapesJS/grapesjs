@@ -100,34 +100,59 @@ define(function () {
 		blockManager: {
 			'blocks': [{
 					id: 'b1',
-	        label: 'Block1',
+	        label: '1 Block',
 	        content: '<h1>Block 1</h1>',
-	        attributes: { title: 'Block1', class:'b1-cl'}
+	        attributes: {class:'wte-fonts wte-f-b1'}
 	      },{
 					id: 'b2',
-	        label: '&hearts; Block2',
+	        label: '2 Blocks',
 	        content: '<h2>Block 2</h2>',
+	        attributes: {class:'wte-fonts wte-f-b2'}
 	      },{
 					id: 'b3',
-	        label: 'Block3',
+	        label: '3 Blocks',
 	        content: '<div>Block 3</div>',
+	        attributes: {class:'wte-fonts wte-f-b3'}
+	      },{
+					id: 'b4',
+	        label: '3/7 Block',
+	        content: '<div>Block 4</div>',
+	        attributes: {class:'wte-fonts wte-f-b37'}
+	      },{
+					id: 'hero',
+	        label: 'Hero section',
+	        content: '<div>Hero here</div>',
+	        attributes: {class:'wte-fonts wte-f-hero'}
+	      },{
+					id: 'h1p',
+	        label: 'Text section',
+	        content: '<div>Text text text</div>',
+	        attributes: {class:'wte-fonts wte-f-h1p'}
+	      },{
+					id: '3ba',
+	        label: 'Badges',
+	        content: '<div>Badges</div>',
+	        attributes: {class:'wte-fonts wte-f-3ba'}
 	      },{
 					id: 'text',
 	        label: 'Text',
-	        content: '<div style="padding:5px">Insert your text here</div>',
-	      },{
-					id: 'text2',
-	        label: 'Text2',
+	        attributes: {class:'wte-fonts wte-f-text'},
 	        content: {
 	        	type:'text',
 	        	content:'Insert your text here',
-	        	style: { padding: '10px' },
+	        	style: {padding: '10px' },
 	        	activeOnRender: 1
 	        },
 	      },{
 					id: 'image',
 	        label: 'Image',
-	        content: {type:'image', activeOnRender: 1},
+	        attributes: {class:'wte-fonts wte-f-image'},
+	        content: { type:'image',  activeOnRender: 1},
+	      },{
+					id: 'quo',
+	        label: 'Quote',
+	        content: '<quoteTag>Quote</quoteTag>',
+	        attributes: {class:'wte-fonts wte-f-quo'}
 	      }],
 		},
 

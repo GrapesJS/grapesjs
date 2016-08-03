@@ -39,6 +39,22 @@ $tagBg: #804f7b;
 $secColor: $tagBg;
 $imageCompDim:	50px;
 
+$fontPath: '../fonts';
+$fontName: 'main-fonts';
+$fontV: '1';
+
+@font-face {
+  font-family: 'font3336';
+  src: url('#{$fontPath}/#{$fontName}.eot?v=#{$fontV}');
+  src: url('#{$fontPath}/#{$fontName}.woff?v=#{$fontV}') format('woff'),
+       //url('#{$fontPath}/#{$fontName}.woff2?v=#{$fontV}') format('woff2'),
+       url('#{$fontPath}/#{$fontName}.ttf?v=#{$fontV}') format('truetype'),
+       url('#{$fontPath}/#{$fontName}.svg?v=#{$fontV}') format('svg'),
+       url('#{$fontPath}/#{$fontName}.eot?v=#{$fontV}') format('embedded-opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 @mixin user-select($v) {
     -moz-user-select: 	$v;
 	-khtml-user-select: $v;
@@ -59,6 +75,29 @@ $imageCompDim:	50px;
 	-moz-appearance: $v;
 	appearance: $v;
 }
+
+.#{$app-prefix}fonts{
+}
+.#{$app-prefix}fonts:before{
+  display: block;
+  font: normal normal normal 14px font3336; // shortening font declaration
+  font-size: inherit; // can't have font-size inherit on line above, so need to override
+  text-rendering: auto; // optimizelegibility throws things off #1094
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 5em;
+}
+.#{$app-prefix}f-b1:before { content: 'q'; }
+.#{$app-prefix}f-b2:before { content: 'w'; }
+.#{$app-prefix}f-b3:before { content: 'e'; }
+.#{$app-prefix}f-b37:before { content: 'r'; }
+.#{$app-prefix}f-hero:before { content: 't'; }
+.#{$app-prefix}f-h1p:before { content: 'y'; }
+.#{$app-prefix}f-3ba:before { content: 'u'; }
+.#{$app-prefix}f-image:before { content: 'i'; }
+.#{$app-prefix}f-text:before { content: 'o'; }
+.#{$app-prefix}f-quo:before { content: 'p'; }
+
 
 .#{$app-prefix}invis-invis, .#{$app-prefix}no-app{
 	background-color: transparent;
@@ -998,9 +1037,14 @@ $arrowColor:    $mainLhlColor; /*b1b1b1*/
   width: 45%;
   padding: 1em;
   box-sizing: border-box;
-  height: 100px;
+  height: 90px;
   cursor:all-scroll;
   margin: 2.5%;
+  font-size: 11px;
+  font-weight: lighter;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 .#{$app-prefix}block.#{$app-prefix}bdrag{

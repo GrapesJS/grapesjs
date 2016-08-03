@@ -30,7 +30,11 @@
     "grunt-mocha": "^0.4.15",
     "grunt-sass": "^1.1.0",
     "istanbul": "^0.4.2",
-    "node-sass": "^3.4.2"
+    "node-sass": "^3.4.2",
+    "svg2ttf": "^4.0.1",
+    "ttf2eot": "^2.0.0",
+    "ttf2woff": "^2.0.1",
+    "ttf2woff2": "^2.0.3"
   },
   "keywords": [
     "wte",
@@ -46,6 +50,7 @@
   "scripts": {
     "postinstall": "node ./node_modules/bower/bin/bower install --config.interactive=false",
     "build": "./node_modules/.bin/grunt build",
+    "build:fonts": "./node_modules/.bin/grunt build:fonts",
     "test": "./node_modules/.bin/grunt test",
     "start": "./node_modules/.bin/grunt dev"
   }
