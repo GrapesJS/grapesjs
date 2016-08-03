@@ -41,7 +41,7 @@ $imageCompDim:	50px;
 
 $fontPath: '../fonts';
 $fontName: 'main-fonts';
-$fontV: '1';
+$fontV: 5;//random(1000)
 
 @font-face {
   font-family: 'font3336';

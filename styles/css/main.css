@@ -2569,8 +2569,8 @@ $fontColorActive: #4f8ef7;
 /*#515151*/
 @font-face {
   font-family: 'font3336';
-  src: url("../fonts/main-fonts.eot?v=1");
-  src: url("../fonts/main-fonts.woff?v=1") format("woff"), url("../fonts/main-fonts.ttf?v=1") format("truetype"), url("../fonts/main-fonts.svg?v=1") format("svg"), url("../fonts/main-fonts.eot?v=1") format("embedded-opentype");
+  src: url("../fonts/main-fonts.eot?v=5");
+  src: url("../fonts/main-fonts.woff?v=5") format("woff"), url("../fonts/main-fonts.ttf?v=5") format("truetype"), url("../fonts/main-fonts.svg?v=5") format("svg"), url("../fonts/main-fonts.eot?v=5") format("embedded-opentype");
   font-weight: normal;
   font-style: normal; }
 
