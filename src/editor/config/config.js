@@ -38,7 +38,7 @@ define(function () {
 		storageType: 'local',
 
 		// The css that could only be seen (for instance, inside the code viewer)
-		protectedCss: 'body{margin:0;height:100%}#wrapper{min-height:100%; overflow:auto}',
+		protectedCss: '*{box-sizing: border-box;}body{margin:0;height:100%}#wrapper{min-height:100%; overflow:auto}',
 
 		//Configurations for Asset Manager
 		assetManager			: {},
@@ -101,22 +101,22 @@ define(function () {
 			'blocks': [{
 					id: 'b1',
 	        label: '1 Block',
-	        content: '<h1>Block 1</h1>',
+	        content: '<div class="blk-row"><div class="blk1"></div></div>',
 	        attributes: {class:'wte-fonts wte-f-b1'}
 	      },{
 					id: 'b2',
 	        label: '2 Blocks',
-	        content: '<h2>Block 2</h2>',
+	        content: '<div class="blk-row"><div class="blk2"></div><div class="blk2"></div></div>',
 	        attributes: {class:'wte-fonts wte-f-b2'}
 	      },{
 					id: 'b3',
 	        label: '3 Blocks',
-	        content: '<div>Block 3</div>',
+	        content: '<div class="blk-row"><div class="blk3"></div><div class="blk3"></div><div class="blk3"></div></div>',
 	        attributes: {class:'wte-fonts wte-f-b3'}
 	      },{
 					id: 'b4',
 	        label: '3/7 Block',
-	        content: '<div>Block 4</div>',
+	        content: '<div class="blk-row"><div class="blk37l"></div><div class="blk37r"></div></div></div>',
 	        attributes: {class:'wte-fonts wte-f-b37'}
 	      },{
 					id: 'hero',

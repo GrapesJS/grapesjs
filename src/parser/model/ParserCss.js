@@ -22,7 +22,7 @@ define(function(require) {
           var sel = sels[i].trim();
           // Will accept only concatenated classes and last
           // class might be with state (eg. :hover), nothing else.
-          if (/^(\.{1}[\w\-]+)+(:{1}[\w\-()]+)?$/ig.test(sel)) {
+          if (/^(\.{1}[\w\-]+)+(:{1,2}[\w\-()]+)?$/ig.test(sel)) {
             var cls = sel.split('.').filter(Boolean);
             result.push(cls);
           }
@@ -72,10 +72,11 @@ define(function(require) {
             var model = {};
 
             //Isolate state from selector
-            var stateArr = selArr[selArr.length - 1].split(':');
+            var stateArr = selArr[selArr.length - 1].split(/:(.+)/);
             if(stateArr[1]){
               selArr[selArr.length - 1] = stateArr[0];
               model.state = stateArr[1];
+              stateArr.splice(stateArr.length - 1, 1);
             }
 
             model.selectors = selArr;
