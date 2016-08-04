@@ -41,18 +41,63 @@ require(['config/require-config'], function() {
 													}
 												},{
                           id:   'fullscreen',
-                          run:  function(editor, sender){
-                            var el = editor.getContainer();
-                            if (el.requestFullscreen) {
+
+                          isEnabled: function(){
+                            var d = document;
+                            if(d.fullscreenElement || d.webkitFullscreenElement || d.mozFullScreenElement)
+                              return 1;
+                            else
+                              return 0;
+                          },
+
+                          enable: function(el){
+                            var pfx = '';
+                            if (el.requestFullscreen)
                               el.requestFullscreen();
-                            } else if (el.webkitRequestFullscreen) {
+                            else if (el.webkitRequestFullscreen) {
+                              pfx = 'webkit';
                               el.webkitRequestFullscreen();
-                            } else if (el.mozRequestFullScreen) {
+                            }else if (el.mozRequestFullScreen) {
+                              pfx = 'moz';
                               el.mozRequestFullScreen();
-                            } else if (el.msRequestFullscreen) {
+                            }else if (el.msRequestFullscreen)
                               el.msRequestFullscreen();
-                            }else
+                            else
                               console.warn('Fullscreen not supported');
+                            return pfx;
+                          },
+
+                          disable: function(){
+                            var d = document;
+                            if (d.exitFullscreen)
+                              d.exitFullscreen();
+                            else if (d.webkitExitFullscreen)
+                              d.webkitExitFullscreen();
+                            else if (d.mozCancelFullScreen)
+                              d.mozCancelFullScreen();
+                            else if (d.msExitFullscreen)
+                              d.msExitFullscreen();
+                          },
+
+                          fsChanged: function(pfx, e){
+                            var d = document;
+                            var ev = (pfx || '') + 'fullscreenchange';
+                            if(!this.isEnabled()){
+                              this.stop(null, this.sender);
+                              document.removeEventListener(ev, this.fsChanged);
+                            }
+                          },
+
+                          run:  function(editor, sender){
+                            this.sender = sender;
+                            var pfx = this.enable(editor.getContainer());
+                            this.fsChanged = this.fsChanged.bind(this, pfx);
+                            document.addEventListener(pfx + 'fullscreenchange', this.fsChanged);
+                          },
+
+                          stop: function(editor, sender){
+                            sender.set('active', false);
+                            this.disable();
                           }
                         }],
 			},
