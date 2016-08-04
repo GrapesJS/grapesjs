@@ -39,7 +39,22 @@ require(['config/require-config'], function() {
 															var comps = editor.DomComponents.clear();
 														}
 													}
-												}],
+												},{
+                          id:   'fullscreen',
+                          run:  function(editor, sender){
+                            var el = editor.getContainer();
+                            if (el.requestFullscreen) {
+                              el.requestFullscreen();
+                            } else if (el.webkitRequestFullscreen) {
+                              el.webkitRequestFullscreen();
+                            } else if (el.mozRequestFullScreen) {
+                              el.mozRequestFullScreen();
+                            } else if (el.msRequestFullscreen) {
+                              el.msRequestFullscreen();
+                            }else
+                              console.warn('Fullscreen not supported');
+                          }
+                        }],
 			},
 			assetManager: {
 				storageType			: '',

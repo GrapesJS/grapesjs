@@ -318,6 +318,14 @@ define(function (require){
 				},
 
 				/**
+				 * Returns container element. The one which was indicated as 'container' on init method
+				 * @return {HTMLElement}
+				 */
+				getContainer: function(){
+					return c.el;
+				},
+
+				/**
 				 * Render editor
 				 * @return {HTMLElement}
 				 */
