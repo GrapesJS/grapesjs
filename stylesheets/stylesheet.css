@@ -100,6 +100,7 @@ a {
   color: #fff;
   text-align: center;
   background-color: #6f2943;
+  /*linear-gradient(120deg, #d781a5, #7f3a71)*/
   background-image: linear-gradient(120deg, #d983a6, #4d114f);
   overflow: auto;
   position: relative;
