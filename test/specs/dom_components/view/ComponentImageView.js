@@ -35,7 +35,8 @@ define([path + 'ComponentImageView', 'DomComponents/model/Component'],
             });
 
             it('Component empty', function() {
-              $fixture.html().should.equal('<img class="'+ view.classEmpty +'">');
+              view.el.getAttribute('onmousedown').should.equal('return false');
+              view.el.getAttribute('class').should.equal(view.classEmpty);
             });
 
             it('TagName is <img>', function() {

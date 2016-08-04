@@ -43,10 +43,11 @@ function(Backbone, devicesTemplate) {
      */
     updateSelect: function(){
       var em = this.em;
-      if(em){
-        var device = this.em.getDeviceModel();
+      var devEl = this.devicesEl;
+      if(em && em.getDeviceModel && devEl){
+        var device = em.getDeviceModel();
         var name = device ? device.get('name') : '';
-        this.devicesEl.val(name);
+        devEl.val(name);
       }
     },
 

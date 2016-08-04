@@ -10,10 +10,12 @@ function(Backbone, BlockView) {
       this.listenTo(this.collection, 'add', this.addTo);
       this.em = this.config.em;
       this.tac = 'test-tac';
-      this.config.getSorter = this.getSorter;
-      this.config.dragHelper = this.dragHelper;
-      //this.listenTo(this.em, 'change:device', this.updateOffset);
-      this.canvas = this.em.get('Canvas');
+
+      if(this.em){
+        this.config.getSorter = this.getSorter;
+        this.config.dragHelper = this.dragHelper;
+        this.canvas = this.em.get('Canvas');
+      }
     },
 
     /**
