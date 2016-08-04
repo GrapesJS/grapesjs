@@ -36,7 +36,7 @@ define(function () {
 				command: swv,
 				context: swv,
 				attributes: { title: 'View components' },
-			},{
+			},/*{
 				id: 'eye',
 				className: 'fa fa-eye',
 				command: 'eye',
@@ -49,7 +49,7 @@ define(function () {
 				command: ful,
 				context: ful,
 				attributes: { title: 'Fullscreen' },
-			},{
+			},*/{
 				id: expt,
 				className: 'fa fa-code',
 				command: expt,

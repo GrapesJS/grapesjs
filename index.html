@@ -100,7 +100,6 @@
 							<div class="am-desc">You can create image blocks with the command from the left panel and edit them with double click</div>
 							<div class="am-post">Image uploading is not allowed in this demo</div>
 						</div>
-						<div class="clearfix"></div>
 					</div>
 				</div>
 			</section>
@@ -144,7 +143,6 @@
 								<div class="pc-amount odd-feat">$ 29,90/mo</div>
 							</div>
 						</div>
-						<div class="clearfix"></div>
 					</div>
 
 				</div>
@@ -202,36 +200,37 @@
 
 			<footer class="footer-under">
 				<div class="container-width">
-					<div class="foot-lists">
-						<div class="foot-list">
-							<div class="foot-list-title">About us</div>
-							<div class="foot-list-item">Contact</div>
-							<div class="foot-list-item">Events</div>
-							<div class="foot-list-item">Company</div>
-							<div class="foot-list-item">Jobs</div>
-							<div class="foot-list-item">Blog</div>
+					<div class="footer-container">
+						<div class="foot-lists">
+							<div class="foot-list">
+								<div class="foot-list-title">About us</div>
+								<div class="foot-list-item">Contact</div>
+								<div class="foot-list-item">Events</div>
+								<div class="foot-list-item">Company</div>
+								<div class="foot-list-item">Jobs</div>
+								<div class="foot-list-item">Blog</div>
+							</div>
+							<div class="foot-list">
+								<div class="foot-list-title">Services</div>
+								<div class="foot-list-item">Education</div>
+								<div class="foot-list-item">Partner</div>
+								<div class="foot-list-item">Community</div>
+								<div class="foot-list-item">Forum</div>
+								<div class="foot-list-item">Download</div>
+								<div class="foot-list-item">Upgrade</div>
+							</div>
+							<div class="clearfix"></div>
 						</div>
-						<div class="foot-list">
-							<div class="foot-list-title">Services</div>
-							<div class="foot-list-item">Education</div>
-							<div class="foot-list-item">Partner</div>
-							<div class="foot-list-item">Community</div>
-							<div class="foot-list-item">Forum</div>
-							<div class="foot-list-item">Download</div>
-							<div class="foot-list-item">Upgrade</div>
+						<div class="form-sub">
+							<div class="foot-form-cont">
+								<div class="foot-form-title">Subscribe</div>
+								<div class="foot-form-desc">Subscribe to our newsletter to receive exclusive offers and the latest news</div>
+								<input name="name" class="sub-input" placeholder="Name" />
+								<input name="email" class="sub-input" placeholder="Email"/>
+								<button class="sub-btn" type="button">Submit</button>
+							</div>
 						</div>
-						<div class="clearfix"></div>
 					</div>
-					<div class="form-sub">
-						<div class="foot-form-cont">
-							<div class="foot-form-title">Subscribe</div>
-							<div class="foot-form-desc">Subscribe to our newsletter to receive exclusive offers and the latest news</div>
-							<input name="name" class="sub-input" placeholder="Name" />
-							<input name="email" class="sub-input" placeholder="Email"/>
-							<button class="sub-btn" type="button">Submit</button>
-						</div>
-					</div>
-					<div class="clearfix"></div>
 				</div>
 				<div class="copyright">
 					<div class="container-width">
@@ -259,7 +258,7 @@
 					background-size: contain, cover;
 				}
 				.container-width{
-					width: 100%;
+					width: 90%;
 					max-width: 1150px;
 					margin: 0 auto;
 				}
@@ -298,7 +297,7 @@
 					font-size: 40px;
 				}
 				.sub-lead-title{
-					width: 650px;
+					max-width: 650px;
 					line-height:30px;
 					margin-bottom:30px;
 					color: #c6c6c6;
@@ -412,17 +411,23 @@
 				.img-phone{
 					float: left;
 				}
+				.am-container{
+					display: flex;
+			    flex-wrap: wrap;
+					align-items: center;
+			    justify-content: space-around;
+				}
 				/*
 				.am-container{
 					perspective: 1000px;
 				}*/
 				.am-content{
 					float:left;
-					margin:150px 0px 0px 100px;
 					padding:7px;
 					width: 490px;
 					color: #444;
 					font-weight: 100;
+					margin-top: 50px;
 					/*transform: rotateX(0deg) rotateY(-20deg) rotateZ(0deg) scaleX(1) scaleY(1) scaleZ(1);*/
 				}
 				.am-pre{
@@ -461,15 +466,19 @@
 					color:#b1b1b1;
 					font-size:15px;
 					text-align:center;
-					width:700px;
+					max-width:700px;
 					margin:0 auto;
 					font-weight:100;
 				}
 				.price-cards{
 					margin-top: 70px;
+					display: flex;
+			    flex-wrap: wrap;
+					align-items: center;
+			    justify-content: space-around;
 				}
 				.price-card-cont{
-					width:33.333%;
+					width: 300px;
 					padding: 7px;
 					float:left;
 				}
@@ -520,7 +529,7 @@
 					background-color: #312833;
 					padding-bottom: 100px;
 					padding-top: 100px;
-					height: 500px;
+					min-height: 500px;
 					color:#eee;
 					position: relative;
 					font-weight: 100;
@@ -555,10 +564,17 @@
 					padding: 5px 0;
 				}
 				.foot-social-btns{
+					display: none;
 					float: right;
 					width: 50%;
 					text-align: right;
 					padding: 5px 0;
+				}
+				.footer-container{
+					display: flex;
+			    flex-wrap: wrap;
+					align-items: stretch;
+			    justify-content: space-around;
 				}
 				.foot-list {
 					float: left;
@@ -576,10 +592,6 @@
 				}
 				.foot-list-item:hover {
 				  color: rgba(238, 238, 238, 1);
-				}
-				.foot-lists, .form-sub{
-					float: left;
-					width: 50%;
 				}
 				.foot-form-cont{
 					width: 300px;
@@ -757,6 +769,21 @@
 					box-shadow: -5px 0 0 0 #ccc;
 					font-style: italic;
 					margin: 20px 30px;
+				}
+
+				@media (max-width: 768px){
+				  .foot-form-cont{
+				    width:400px;
+				  }
+				  .foot-form-title{
+				    width:autopx;
+				  }
+				}
+
+				@media (max-width: 480px){
+				  .foot-lists{
+				    display:none;
+				  }
 				}
 				pc-regular
 			</style>
