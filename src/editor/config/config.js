@@ -121,12 +121,18 @@ define(function () {
 	      },{
 					id: 'hero',
 	        label: 'Hero section',
-	        content: '<div>Hero here</div>',
+	        content: '<header class="header-banner"> <div class="container-width">'+
+							'<div class="logo-container"><div class="logo">GrapesJS</div></div>'+
+							'<nav class="navbar">'+
+								'<div class="menu-item">BUILDER</div><div class="menu-item">TEMPLATE</div><div class="menu-item">WEB</div>'+
+							'</nav><div class="clearfix"></div>'+
+							'<div class="lead-title">Build your templates without coding</div>'+
+							'<div class="lead-btn">Try it now</div></div></header>',
 	        attributes: {class:'wte-fonts wte-f-hero'}
 	      },{
 					id: 'h1p',
 	        label: 'Text section',
-	        content: '<div>Text text text</div>',
+	        content: '<h1 class="heading">Insert title here</h1><p class="paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>',
 	        attributes: {class:'wte-fonts wte-f-h1p'}
 	      },{
 					id: '3ba',

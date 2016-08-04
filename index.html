@@ -11,8 +11,11 @@
 		body, html{ height: 100%; margin: 0;}
 	</style>
 	<body>
-		<div id="gjs" style="height:0px; overflow:hidden">
 
+		<div id="gjs" style="height:0px; overflow:hidden">
+			<style>
+
+	</style>
 			<header class="header-banner">
 				<div class="container-width">
 					<div class="logo-container">
@@ -29,6 +32,7 @@
 					<div class="lead-btn">Hover me</div>
 				</div>
 			</header>
+
 			<section class="flex-sect">
 				<div class="container-width">
 					<div class="flex-title">Flex is the new black</div>
@@ -146,6 +150,56 @@
 				</div>
 			</section>
 
+			<section class="bdg-sect">
+				<div class="container-width">
+					<h1 class="bdg-title">The team</h1>
+					<div class="badges">
+						<div class="badge">
+							<div class="badge-header"></div>
+							<img class="badge-avatar" src="img/team1.jpg">
+							<div class="badge-body">
+								<div class="badge-name">Adam Smith</div>
+								<div class="badge-role">CEO</div>
+								<div class="badge-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore ipsum dolor sit</div>
+							</div>
+							<div class="badge-foot">
+								<span class="badge-link">f</span>
+								<span class="badge-link">t</span>
+								<span class="badge-link">ln</span>
+							</div>
+						</div>
+						<div class="badge">
+							<div class="badge-header"></div>
+							<img class="badge-avatar" src="img/team2.jpg">
+							<div class="badge-body">
+								<div class="badge-name">John Black</div>
+								<div class="badge-role">Software Engineer</div>
+								<div class="badge-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore ipsum dolor sit</div>
+							</div>
+							<div class="badge-foot">
+								<span class="badge-link">f</span>
+								<span class="badge-link">t</span>
+								<span class="badge-link">ln</span>
+							</div>
+						</div>
+						<div class="badge">
+							<div class="badge-header"></div>
+							<img class="badge-avatar" src="img/team3.jpg">
+							<div class="badge-body">
+								<div class="badge-name">Jessica White</div>
+								<div class="badge-role">Web Designer</div>
+								<div class="badge-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore ipsum dolor sit</div>
+							</div>
+							<div class="badge-foot">
+								<span class="badge-link">f</span>
+								<span class="badge-link">t</span>
+								<span class="badge-link">ln</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
 			<footer class="footer-under">
 				<div class="container-width">
 					<div class="foot-lists">
@@ -206,7 +260,7 @@
 				}
 				.container-width{
 					width: 100%;
-					max-width: 980px;
+					max-width: 1150px;
 					margin: 0 auto;
 				}
 				.logo-container{
@@ -608,6 +662,93 @@
 					width: 70%;
 					padding: 10px;
 					min-height: 75px;
+				}
+				.heading{padding: 10px;}
+				.paragraph{padding: 10px;}
+
+				.bdg-sect{
+					padding-top:100px;
+					padding-bottom:100px;
+					font-family: Helvetica, serif;
+					background-color: #fafafa;
+				}
+				.bdg-title{
+					text-align: center;
+					font-size: 2em;
+					margin-bottom: 55px;
+					color: #555555;
+				}
+				.badges{
+					padding:20px;
+					display: flex;
+					justify-content: space-around;
+					align-items: flex-start;
+					flex-wrap: wrap;
+				}
+				.badge{
+					width: 290px;
+					font-family: Helvetica, serif;
+					background-color: white;
+					margin-bottom:30px;
+					box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2);
+					border-radius: 3px;
+					font-weight: 100;
+					overflow: hidden;
+					text-align: center;
+				}
+				.badge-header{
+					height: 115px;
+					background-image:url("./img/bg-gr-v.png"), url("./img/work-desk.jpg");
+					background-position:left top, center center;
+					background-attachment:scroll, fixed;
+					overflow: hidden;
+				}
+				.blurer{
+					filter: blur(5px);
+				}
+				.badge-name{
+					font-size: 1.4em;
+					margin-bottom: 5px;
+				}
+				.badge-role{
+					color: #777;
+					font-size: 1em;
+					margin-bottom: 25px;
+				}
+				.badge-desc{
+					font-size: 0.85rem;
+					line-height: 20px;
+				}
+				.badge-avatar{
+					width:100px;
+					height:100px;
+					border-radius: 100%;
+					border: 5px solid #fff;
+					box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2);
+					margin-top: -75px;
+					position: relative;
+				}
+				.badge-body{
+					margin: 35px 10px;
+				}
+				.badge-foot{
+					color:#fff;
+					background-color:#a290a5;
+					padding-top:13px;
+					padding-bottom:13px;
+					display: flex;
+					justify-content: center;
+				}
+				.badge-link{
+					height: 35px;
+					width: 35px;
+					line-height: 35px;
+					font-weight: 700;
+					background-color: #fff;
+					color: #a290a5;
+					display: block;
+					border-radius: 100%;
+					margin: 0 10px;
 				}
 				pc-regular
 			</style>

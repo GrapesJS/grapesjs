@@ -4,7 +4,7 @@
  * * [getAll](#getall)
  * * [render](#render)
  *
- * Block manager helps managing various, draggable, pieces of content that could be reused inside templates.
+ * Block manager helps managing various, draggable, piece of contents that could be easily reused inside templates.
  *
  * Before using methods you should get first the module from the editor instance, in this way:
  *

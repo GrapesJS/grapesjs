@@ -137,7 +137,7 @@ $ npm test
 
 ## TODOs before beta release
 
-* **Breakpoint Manager** - Resize canvas according to breakpoints established by user (in simple terms, for responsive templates)
+* **Stable-like, documented APIs** - Probably would be better redefined during beta
 
 
 ## Acknowledgements
