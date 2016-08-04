@@ -137,7 +137,32 @@ define(function () {
 	      },{
 					id: '3ba',
 	        label: 'Badges',
-	        content: '<div>Badges</div>',
+	        content: '<div class="badges">'+
+	        	'<div class="badge">'+
+							'<div class="badge-header"></div>'+
+							'<img class="badge-avatar" src="img/team1.jpg">'+
+							'<div class="badge-body">'+
+								'<div class="badge-name">Adam Smith</div><div class="badge-role">CEO</div><div class="badge-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore ipsum dolor sit</div>'+
+							'</div>'+
+							'<div class="badge-foot"><span class="badge-link">f</span><span class="badge-link">t</span><span class="badge-link">ln</span></div>'+
+						'</div>'+
+						'<div class="badge">'+
+							'<div class="badge-header"></div>'+
+							'<img class="badge-avatar" src="img/team2.jpg">'+
+							'<div class="badge-body">'+
+								'<div class="badge-name">John Black</div><div class="badge-role">Software Engineer</div><div class="badge-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore ipsum dolor sit</div>'+
+							'</div>'+
+							'<div class="badge-foot"><span class="badge-link">f</span><span class="badge-link">t</span><span class="badge-link">ln</span></div>'+
+						'</div>'+
+						'<div class="badge">'+
+							'<div class="badge-header"></div>'+
+							'<img class="badge-avatar" src="img/team3.jpg">'+
+							'<div class="badge-body">'+
+								'<div class="badge-name">Jessica White</div><div class="badge-role">Web Designer</div><div class="badge-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore ipsum dolor sit</div>'+
+							'</div>'+
+							'<div class="badge-foot"><span class="badge-link">f</span><span class="badge-link">t</span><span class="badge-link">ln</span>'+
+							'</div>'+
+						'</div></div>',
 	        attributes: {class:'wte-fonts wte-f-3ba'}
 	      },{
 					id: 'text',
@@ -157,7 +182,7 @@ define(function () {
 	      },{
 					id: 'quo',
 	        label: 'Quote',
-	        content: '<quoteTag>Quote</quoteTag>',
+	        content: '<blockquote class="quote">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore ipsum dolor sit</blockquote>',
 	        attributes: {class:'wte-fonts wte-f-quo'}
 	      }],
 		},
