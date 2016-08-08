@@ -1193,6 +1193,12 @@ $paddElClm: 5px 6px;
 .#{$mdl-prefix}content{
 	border-top: 1px solid $mainLhColor;
 }
+##{$mdl-prefix}c > div::after{
+  content: "";
+  clear: both;
+  display:block;
+  margin-bottom:10px;
+}
 
 /********* Assets Manager **********/
 .#{$am-prefix}assets{

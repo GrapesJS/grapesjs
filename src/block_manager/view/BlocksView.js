@@ -105,6 +105,7 @@ function(Backbone, BlockView) {
      * Render new model inside the view
      * @param {Model} model
      * @param {Object} fragment Fragment collection
+     * @private
      * */
     add: function(model, fragment){
       var frag = fragment || null;

@@ -143,6 +143,19 @@ define(['GrapesJS', 'PluginManager', 'chai'],
         data.html.should.equal(htmlString);
       });
 
+      it('Execute plugins with custom options', function() {
+        var pluginName = storageId + '-plugin-opts';
+        obj.plugins.add(pluginName, function(edt, opts){
+          var opts = opts || {};
+          edt.customValue = opts.cVal || '';
+        });
+        config.plugins = [pluginName];
+        config.pluginsOpts = {};
+        config.pluginsOpts[pluginName] = {cVal: 'TEST'};
+        var editor = obj.init(config);
+        editor.customValue.should.equal('TEST');
+      });
+
       it('Execute custom command', function() {
         var editor = obj.init(config);
         editor.testVal = '';

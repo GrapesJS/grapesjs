@@ -14,6 +14,9 @@
  * * [stopCommand](#stopcommand)
  * * [store](#store)
  * * [load](#load)
+ * * [getContainer](#getcontainer)
+ * * [on](#on)
+ * * [trigger](#trigger)
  * * [render](#render)
  *
  * Editor class contains the top level API which you'll probably use to custom the editor or extend it with plugins.
@@ -42,6 +45,8 @@
  * @param {Object} [config.panels={}] Panels configuration, see the relative documentation
  * @param {Object} [config.showDevices=true] If true render a select of available devices inside style manager panel
  * @param {string} [config.defaultCommand='select-comp'] Command to execute when no other command is running
+ * @param {Array} [config.plugins=[]] Array of plugins to execute on start
+ * @param {Object} [config.pluginsOpts={}] Custom options for plugins
  * @example
  * var editor = grapesjs.init({
  * 	container : '#gjs',

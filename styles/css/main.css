@@ -3578,6 +3578,12 @@ ol.example li.placeholder:before {
 .wte-mdl-content {
   border-top: 1px solid rgba(255, 255, 255, 0.1); }
 
+#wte-mdl-c > div::after {
+  content: "";
+  clear: both;
+  display: block;
+  margin-bottom: 10px; }
+
 /********* Assets Manager **********/
 .wte-am-assets {
   height: 290px;

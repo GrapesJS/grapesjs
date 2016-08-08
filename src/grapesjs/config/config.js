@@ -30,5 +30,8 @@ define(function () {
 
     // Array of plugins to init
     plugins: [],
+
+    // Custom options for plugins
+    pluginsOpts: {}
   };
 });

@@ -60,8 +60,9 @@ define(function (require) {
           if(c.plugins.indexOf(id) < 0)
             continue;
 
+          var opts = c.pluginsOpts[id] || {};
           var plug = plugins.get(id);
-          plug(editor);
+          plug(editor, opts);
         }
 
         if(c.autorender)

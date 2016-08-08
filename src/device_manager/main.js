@@ -9,7 +9,7 @@
  * var deviceManager = editor.DeviceManager;
  * ```
  *
- * @module Devices
+ * @module DeviceManager
  * @param {Object} config Configurations
  * @param {Array<Object>} [config.devices=[]] Default devices
  * @example

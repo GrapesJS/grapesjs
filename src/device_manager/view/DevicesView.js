@@ -21,6 +21,7 @@ function(Backbone, devicesTemplate) {
     /**
      * Start adding new device
      * @return {[type]} [description]
+     * @private
      */
     startAdd: function(){},
 
