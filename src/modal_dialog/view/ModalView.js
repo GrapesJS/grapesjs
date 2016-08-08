@@ -24,6 +24,16 @@ define(['backbone', 'text!./../template/modal.html'],
 			},
 
 			/**
+			 * Returns content element
+			 * @return {HTMLElement}
+			 */
+			getContent:function(){
+				if(!this.$content)
+					this.$content	= this.$el.find('.'+this.pfx+'content #'+this.pfx+'c');
+				return this.$content.get(0);
+			},
+
+			/**
 			 * Update content
 			 *
 			 * @return	void
