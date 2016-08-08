@@ -326,6 +326,25 @@ define(function (require){
 				},
 
 				/**
+				 * Attach event
+				 * @param  {string} event Event name
+				 * @param  {Function} callback Callback function
+				 * @return {this}
+				 */
+				on: function(event, callback){
+					return em.on(event, callback);
+				},
+
+				/**
+				 * Trigger event
+				 * @param  {string} event Event to trigger
+				 * @return {this}
+				 */
+				trigger: function(event){
+					return em.trigger(event);
+				},
+
+				/**
 				 * Render editor
 				 * @return {HTMLElement}
 				 */
