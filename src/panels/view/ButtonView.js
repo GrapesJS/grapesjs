@@ -208,9 +208,9 @@ function(Backbone, require) {
 		updateActive: function(){
 			var command	= null;
 			var editor = this.em && this.em.get ? this.em.get('Editor') : null;
-
+			var commandName = this.model.get('command');
 			if(this.commands)
-				command	= this.commands.get(this.model.get('command'));
+				command	= this.commands.get(commandName);
 
 			if(this.model.get('active')){
 
@@ -220,8 +220,10 @@ function(Backbone, require) {
 				if(this.parentM)
 					this.parentM.set('active', true, { silent: true }).trigger('checkActive');
 
-				if(command)
+				if(command){
 					command.run(editor, this.model, this.model.get('options'));
+					editor.trigger('run:' + commandName);
+				}
 			}else{
 				this.$el.removeClass(this.activeCls);
 
@@ -230,8 +232,10 @@ function(Backbone, require) {
 				if(this.parentM)
 					this.parentM.set('active', false, { silent: true }).trigger('checkActive');
 
-				if(command)
+				if(command){
 					command.stop(editor, this.model, this.model.get('options'));
+					editor.trigger('stop:' + commandName);
+				}
 			}
 		},
 

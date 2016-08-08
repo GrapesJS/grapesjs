@@ -283,8 +283,10 @@ define(function (require){
 				runCommand: function(id, options) {
 					var command = em.get('Commands').get(id);
 
-					if(command)
+					if(command){
 						command.run(this, this, options);
+						this.trigger('run:' + id);
+					}
 				},
 
 				/**
@@ -297,8 +299,10 @@ define(function (require){
 				stopCommand: function(id, options) {
 					var command = em.get('Commands').get(id);
 
-					if(command)
+					if(command){
 						command.stop(this, this, options);
+						this.trigger('stop:' + id);
+					}
 				},
 
 				/**
