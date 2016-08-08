@@ -1,7 +1,7 @@
 {
   "name": "grapesjs",
   "description": "Open source Web Template Editor",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "author": "Artur Arseniev",
   "license": "BSD-3-Clause",
   "homepage": "http://grapesjs.com",
@@ -49,7 +49,7 @@
     "editor"
   ],
   "scripts": {
-    "postinstall": "node ./node_modules/.bin/bower install --config.interactive=false",
+    "postinstall": "./node_modules/.bin/bower install --config.interactive=false",
     "build": "./node_modules/.bin/grunt build",
     "build:fonts": "./node_modules/.bin/grunt build:fonts",
     "test": "./node_modules/.bin/grunt test",
