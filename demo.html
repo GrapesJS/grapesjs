@@ -859,13 +859,14 @@
       </style>
     </div>
     <script src="js/grapes.min.js"></script>
-
+    <script src="js/grapesjs-plugin-export.min.js"></script>
     <script type="text/javascript">
       var gr  = grapesjs.init(
 {
       height: '100%',
       container : '#gjs',
       fromElement: true,
+      plugins: ['gjs-plugin-export'],
       commands:     {
           defaults    : [{
                           id:   'open-github',
