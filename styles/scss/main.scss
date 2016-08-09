@@ -141,6 +141,15 @@ $fontV: 5;//random(1000)
   width: auto;
 }
 
+.#{$app-prefix}off-prv{
+  @extend .#{$app-prefix}color-main;
+  @extend .#{$app-prefix}bg-main;
+  position: relative;
+  z-index: 10;
+  padding: 5px;
+  cursor: pointer;
+}
+
 /********************* MAIN ************************/
 .clear{ clear:both }
 .no-select{

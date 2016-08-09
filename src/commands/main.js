@@ -81,6 +81,8 @@ define(function(require) {
 		defaultCommands['open-layers'] = require('./view/OpenLayers');
 		defaultCommands['open-sm'] = require('./view/OpenStyleManager');
 		defaultCommands['open-blocks'] = require('./view/OpenBlocks');
+		defaultCommands.fullscreen = require('./view/Fullscreen');
+		defaultCommands.preview = require('./view/Preview');
 		//this.defaultCommands['resize-comp'] 	= require('./view/ResizeComponent');
 
 		if(config.em)

@@ -80,6 +80,14 @@ define(function(require) {
 			},
 
 			/**
+	  	 * Returns panels element
+	  	 * @return {HTMLElement}
+	  	 */
+	  	getPanelsEl: function(){
+				return PanelsViewObj.el;
+			},
+
+			/**
 			 * Add new panel to the collection
 			 * @param {Object|Panel} panel Object with right properties or an instance of Panel
 			 * @return {Panel} Added panel. Useful in case passed argument was an Object

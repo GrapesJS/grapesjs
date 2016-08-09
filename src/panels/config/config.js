@@ -7,6 +7,7 @@ define(function () {
 	var ola = 'open-layers';
 	var obl = 'open-blocks';
 	var ful = 'fullscreen';
+	var prv = 'preview';
 
 	return {
 		stylePrefix: 'pn-',
@@ -36,11 +37,11 @@ define(function () {
 				command: swv,
 				context: swv,
 				attributes: { title: 'View components' },
-			},/*{
-				id: 'eye',
+			},{
+				id: prv,
 				className: 'fa fa-eye',
-				command: 'eye',
-				context: 'eye',
+				command: prv,
+				context: prv,
 				stopDefaultCommand: 1,
 				attributes: { title: 'Preview' },
 			},{
@@ -49,7 +50,7 @@ define(function () {
 				command: ful,
 				context: ful,
 				attributes: { title: 'Fullscreen' },
-			},*/{
+			},{
 				id: expt,
 				className: 'fa fa-code',
 				command: expt,

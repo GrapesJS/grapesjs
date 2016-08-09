@@ -343,7 +343,9 @@ define([
 				pfx = cfg.stylePrefix || 'mdl-';
 				cfg.stylePrefix = this.config.stylePrefix + pfx;
 				this.modal = new ModalDialog(cfg);
-				this.modal.render().appendTo('body');
+				this.on('loaded', function(){
+					this.modal.render().appendTo(this.config.el || 'body');
+				}, this);
 				this.Dialog = this.modal;
 				this.set('Modal', this.modal);
 			},

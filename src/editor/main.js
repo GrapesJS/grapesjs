@@ -354,6 +354,15 @@ define(function (require){
 				},
 
 				/**
+				 * Returns editor element
+				 * @return {HTMLElement}
+				 * @private
+				 */
+				getEl: function(){
+					return editorView.el;
+				},
+
+				/**
 				 * Render editor
 				 * @return {HTMLElement}
 				 */

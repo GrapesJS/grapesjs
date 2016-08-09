@@ -2631,10 +2631,10 @@ $fontColorActive: #4f8ef7;
 .wte-checker-bg, .checker-bg, .wte-sm-sector .wte-sm-property .wte-sm-layer > #wte-sm-preview-box, .wte-clm-tags .wte-sm-property .wte-sm-layer > #wte-sm-preview-box {
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg=="); }
 
-.wte-bg-main, .wte-pn-panel, .wte-nv-item .wte-nv-title-c, .wte-sm-sector .wte-sm-colorp-c, .wte-clm-tags .wte-sm-colorp-c, .wte-mdl-dialog, #wte-rte-toolbar, .sp-container {
+.wte-bg-main, .wte-off-prv, .wte-pn-panel, .wte-nv-item .wte-nv-title-c, .wte-sm-sector .wte-sm-colorp-c, .wte-clm-tags .wte-sm-colorp-c, .wte-mdl-dialog, #wte-rte-toolbar, .sp-container {
   background-color: #444; }
 
-.wte-color-main, .wte-btn-prim, .wte-pn-panel, .wte-pn-btn, .wte-btnt, .wte-sm-sector .wte-sm-field.wte-sm-composite, .wte-clm-tags .wte-sm-field.wte-sm-composite, .wte-sm-sector .wte-sm-composite.wte-clm-field, .wte-clm-tags .wte-sm-composite.wte-clm-field, .wte-sm-sector .wte-sm-stack #wte-sm-add, .wte-clm-tags .wte-sm-stack #wte-sm-add, .wte-mdl-dialog, #wte-rte-toolbar .wte-rte-btn {
+.wte-color-main, .wte-off-prv, .wte-btn-prim, .wte-pn-panel, .wte-pn-btn, .wte-btnt, .wte-sm-sector .wte-sm-field.wte-sm-composite, .wte-clm-tags .wte-sm-field.wte-sm-composite, .wte-sm-sector .wte-sm-composite.wte-clm-field, .wte-clm-tags .wte-sm-composite.wte-clm-field, .wte-sm-sector .wte-sm-stack #wte-sm-add, .wte-clm-tags .wte-sm-stack #wte-sm-add, .wte-mdl-dialog, #wte-rte-toolbar .wte-rte-btn {
   color: #ddd; }
 
 .wte-color-active, .wte-pn-btn.wte-pn-active, .wte-btnt.wte-pn-active {
@@ -2644,6 +2644,12 @@ $fontColorActive: #4f8ef7;
   position: absolute;
   z-index: 10;
   width: auto; }
+
+.wte-off-prv {
+  position: relative;
+  z-index: 10;
+  padding: 5px;
+  cursor: pointer; }
 
 /********************* MAIN ************************/
 .clear {

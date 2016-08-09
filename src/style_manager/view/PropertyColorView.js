@@ -17,7 +17,9 @@ define(['backbone','./PropertyView', 'Spectrum', 'text!./../templates/propertyCo
 				this.$colorPicker = $('<div>', {class: this.pfx + "color-picker"});
 				cpStyle = this.$colorPicker.get(0).style;
 				var that = this;
+				var el = this.target.config ? this.target.config.el : '';
 				this.$colorPicker.spectrum({
+					appendTo: el || 'body',
 					showPalette: true,
 					maxSelectionSize: 8,
 					palette: [],
