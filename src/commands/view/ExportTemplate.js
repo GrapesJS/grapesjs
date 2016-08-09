@@ -12,6 +12,7 @@ define(function() {
 				this.cm = editor.CodeManager || null;
 				this.cssc = editor.CssComposer || null;
 				this.protCss = editor.Config.protectedCss;
+				this.pfx = editor.Config.stylePrefix || '';
 				this.enable();
 			},
 
@@ -55,7 +56,7 @@ define(function() {
 						oCsslEd			= this.buildEditor('css', 'hopscotch', 'CSS');
 					this.htmlEditor		= oHtmlEd.el;
 					this.cssEditor		= oCsslEd.el;
-					this.$editors		= $('<div>');
+					this.$editors	= $('<div>', {class: this.pfx + 'export-dl'});
 					this.$editors.append(oHtmlEd.$el).append(oCsslEd.$el);
 				}
 

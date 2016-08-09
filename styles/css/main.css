@@ -3578,7 +3578,7 @@ ol.example li.placeholder:before {
 .wte-mdl-content {
   border-top: 1px solid rgba(255, 255, 255, 0.1); }
 
-#wte-mdl-c > div::after {
+.wte-export-dl::after {
   content: "";
   clear: both;
   display: block;

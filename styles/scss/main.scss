@@ -1193,7 +1193,7 @@ $paddElClm: 5px 6px;
 .#{$mdl-prefix}content{
 	border-top: 1px solid $mainLhColor;
 }
-##{$mdl-prefix}c > div::after{
+.#{$app-prefix}export-dl::after{
   content: "";
   clear: both;
   display:block;
