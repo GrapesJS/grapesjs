@@ -40,6 +40,7 @@ define(function() {
 			stop: function(editor, sender) {
 				var panels = this.getPanels(editor);
 				editor.runCommand('sw-visibility');
+				editor.getModel().runDefault();
 				panels.style.display = 'block';
 				var canvas = editor.Canvas.getElement();
 				canvas.setAttribute('style', '');

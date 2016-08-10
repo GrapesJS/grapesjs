@@ -9,7 +9,7 @@ define(['AssetManager/model/AssetImage'],
 				});
 
 				it('Has default values', function() {
-					var obj 	= new AssetImage({});
+					var obj = new AssetImage({});
 					obj.get('type').should.equal("image");
 					obj.get('src').should.equal("");
 					obj.get('unitDim').should.equal("px");

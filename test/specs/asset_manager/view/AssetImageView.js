@@ -22,7 +22,7 @@ define(['AssetManager/view/AssetImageView', 'AssetManager/model/AssetImage', 'As
 				});
 
 				afterEach(function () {
-					this.view.model.destroy();
+					delete this.view;
 				});
 
 				after(function () {

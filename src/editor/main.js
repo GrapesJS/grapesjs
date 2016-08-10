@@ -363,6 +363,15 @@ define(function (require){
 				},
 
 				/**
+				 * Returns editor model
+				 * @return {Model}
+				 * @private
+				 */
+				getModel: function(){
+					return em;
+				},
+
+				/**
 				 * Render editor
 				 * @return {HTMLElement}
 				 */

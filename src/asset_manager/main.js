@@ -1,32 +1,55 @@
+/**
+ * * [add](#add)
+ * * [get](#get)
+ * * [getAll](#getall)
+ * * [render](#render)
+ *
+ * Before using methods you should get first the module from the editor instance, in this way:
+ *
+ * ```js
+ * var assetManager = editor.AssetManager;
+ * ```
+ *
+ * @module AssetManager
+ * @param {Object} config Configurations
+ * @param {Array<Object>} [config.blocks=[]] Default blocks
+ * @example
+ * ...
+ * assetManager: {
+ *    assets: [
+ *      {src:'path/to/image.png'},
+ *      ...
+ *    ],
+ * }
+ * ...
+ */
 define(function(require) {
 
-	var AssetManager	= function(config) {
-		var c			= config || {},
-			defaults	= require('./config/config'),
-			Assets		= require('./model/Assets'),
-			AssetsView	= require('./view/AssetsView'),
-			FileUpload	= require('./view/FileUploader');
+	return function(config) {
+		var c = config || {},
+			defaults = require('./config/config'),
+			Assets = require('./model/Assets'),
+			AssetsView = require('./view/AssetsView'),
+			FileUpload = require('./view/FileUploader');
 
 		for (var name in defaults) {
 			if (!(name in c))
 				c[name] = defaults[name];
 		}
 
-		this.assets		= new Assets(c.assets);
-		var obj				= {
-				collection	: this.assets,
-		    	config		: c,
+		var assets = new Assets(c.assets);
+		var obj = {
+			collection: assets,
+			config: c,
 		};
 
-	  this.am 		= new AssetsView(obj);
-	  this.fu 		= new FileUpload(obj);
-	};
+	  var am = new AssetsView(obj);
+	  var fu = new FileUpload(obj);
 
-	AssetManager.prototype	= {
-
+	  return {
 			/**
 			 * Add new asset/s to the collection. URLs are supposed to be unique
-			 * @param {string|Object|Array<string>|Array<Object>} assets URL strings or an objects representing the resource.
+			 * @param {string|Object|Array<string>|Array<Object>} asset URL strings or an objects representing the resource.
 			 * @return {this}
 			 * @example
 			 * // In case of strings, would be interpreted as images
@@ -48,19 +71,19 @@ define(function(require) {
 			 * 	type: 'image',
 			 * }]);
 			 */
-			add: function(assets){
-				return this;
+			add: function(asset){
+				return assets.add(asset);
 			},
 
 			/**
 			 * Return the asset by URL
-			 * @param  {string} id URL of the asset
+			 * @param  {string} src URL of the asset
 			 * @return {Object} Object representing the asset
 			 * @example
 			 * var asset = assetManager.get('http://img.jpg');
 			 */
-			get: function(id){
-				return {};
+			get: function(src){
+				return assets.where({src: src})[0];
 			},
 
 			/**
@@ -106,7 +129,7 @@ define(function(require) {
 			 * @return	{Object}
 			 * */
 			getAssets	: function(){
-				return	this.assets;
+				return	assets;
 			},
 
 			/**
@@ -116,7 +139,7 @@ define(function(require) {
 			 * @return	void
 			 * */
 			setTarget	: function(m){
-				this.am.collection.target = m;
+				am.collection.target = m;
 			},
 
 			/**
@@ -126,7 +149,7 @@ define(function(require) {
 			 * @return	void
 			 * */
 			onSelect	: function(f){
-				this.am.collection.onSelect = f;
+				am.collection.onSelect = f;
 			},
 
 			/**
@@ -135,10 +158,9 @@ define(function(require) {
 			 */
 			render		: function(f){
 				if(!this.rendered || f)
-					this.rendered	= this.am.render().$el.add(this.fu.render().$el);
+					this.rendered	= am.render().$el.add(fu.render().$el);
 				return	this.rendered;
-			},
+			}
+		};
 	};
-
-	return AssetManager;
 });

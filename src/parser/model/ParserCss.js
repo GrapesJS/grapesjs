@@ -46,7 +46,7 @@ define(function(require) {
           // It's a CSSMediaRule
           if(node.cssRules){
             var subRules = this.parseNode(node);
-            var width = node.conditionText.match(/-width:(.*)\)/i)[1];
+            var width = node.media.mediaText.match(/-width:(.*)\)/i)[1];
             for(var s = 0, lens = subRules.length; s < lens; s++){
               var subRule = subRules[s];
               subRule.maxWidth = width ? width.trim() : '';

@@ -5,13 +5,11 @@ define(['backbone'],
 		 * */
 		return Backbone.Model.extend({
 
-			defaults: {
-				type:	'none',			//Type of the asset
-				src:	'',				//Location
-			},
+			idAttribute: 'src',
 
-			initialize: function(options) {
-				this.options = options || {};
+			defaults: {
+				type:	'',
+				src:	'',
 			},
 
 			/**

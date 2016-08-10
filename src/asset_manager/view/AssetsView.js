@@ -142,7 +142,8 @@ define(['backbone', './AssetView', './AssetImageView', './FileUploader', 'text!.
 				fragment.appendChild( rendered );
 			}else{
 				var assetsEl = this.getAssetsEl();
-				assetsEl.insertBefore(rendered, assetsEl.firstChild);
+				if(assetsEl)
+					assetsEl.insertBefore(rendered, assetsEl.firstChild);
 			}
 
 			return rendered;

@@ -1,11 +1,24 @@
-define(['backbone','./Asset'],
-	function (Backbone, Asset) {
+define(['backbone', './Asset', './AssetImage'],
+	function (Backbone, Asset, AssetImage) {
 		/**
 		 * @class Assets
 		 * */
 		return Backbone.Collection.extend({
 
-			model:	Asset,
+			model:	AssetImage,
+
+      initialize: function(models, opt){
+
+        this.model = function(attrs, options) {
+          var model;
+          switch(attrs.type){
+            default:
+              model = new AssetImage(attrs, options);
+          }
+          return  model;
+        };
+
+      },
 
       /**
        * Add new image asset to the collection
@@ -24,6 +37,7 @@ define(['backbone','./Asset'],
 
       /**
        * Prevent inserting assets with the same 'src'
+       * Seems like idAttribute is not working with dynamic model assignament
        * @private
        */
       add: function(models, opt) {
@@ -32,6 +46,9 @@ define(['backbone','./Asset'],
 
         for (var i = 0, len = models.length; i < len; i++) {
           var model = models[i];
+
+          if(typeof model === 'string')
+            model = {src: model, type: 'image'};
 
           if(!model || !model.src)
             continue;
@@ -47,6 +64,7 @@ define(['backbone','./Asset'],
 
         return Backbone.Collection.prototype.add.apply(this, [mods, opt]);
       },
+
 
 		});
 });
