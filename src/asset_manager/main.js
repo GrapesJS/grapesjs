@@ -2,6 +2,9 @@
  * * [add](#add)
  * * [get](#get)
  * * [getAll](#getall)
+ * * [remove](#remove)
+ * * [store](#store)
+ * * [load](#load)
  * * [render](#render)
  *
  * Before using methods you should get first the module from the editor instance, in this way:
@@ -12,7 +15,7 @@
  *
  * @module AssetManager
  * @param {Object} config Configurations
- * @param {Array<Object>} [config.blocks=[]] Default blocks
+ * @param {Array<Object>} [config.assets=[]] Default assets
  * @example
  * ...
  * assetManager: {
@@ -20,6 +23,8 @@
  *      {src:'path/to/image.png'},
  *      ...
  *    ],
+ *    upload: 'http://dropbox/path', // set to false to disable it
+ *    uploadText: 'Drop files here or click to upload',
  * }
  * ...
  */
@@ -47,6 +52,9 @@ define(function(require) {
 	  var fu = new FileUpload(obj);
 
 	  return {
+
+	  	stm: c.stm,
+
 			/**
 			 * Add new asset/s to the collection. URLs are supposed to be unique
 			 * @param {string|Object|Array<string>|Array<Object>} asset URL strings or an objects representing the resource.
@@ -59,16 +67,14 @@ define(function(require) {
 			 * // Using objects you could indicate the type and other meta informations
 			 * assetManager.add({
 			 * 	src: 'http://img.jpg',
-			 * 	type: 'image',
+			 * 	//type: 'image',	//image is default
 			 * 	height: 300,
 			 *	width: 200,
 			 * });
 			 * assetManager.add([{
 			 * 	src: 'http://img.jpg',
-			 * 	type: 'image',
 			 * },{
 			 * 	src: './path/to/img.png',
-			 * 	type: 'image',
 			 * }]);
 			 */
 			add: function(asset){
@@ -96,41 +102,55 @@ define(function(require) {
 
 			/**
 			 * Remove asset by URL
-			 * @param  {string} id URL of the asset
+			 * @param  {string} src URL of the asset
 			 * @return {this}
 			 * @example
 			 * assetManager.remove('http://img.jpg');
 			 */
-			remove: function(id){
+			remove: function(src){
+				var asset = this.get(src);
+				this.getAll().remove(asset);
 				return this;
 			},
 
 			/**
-			 * Store data from the selected storage
-			 * @return {[type]} [description]
+			 * Store assets data to the selected storage
+			 * @return {this}
 			 */
 			store: function(){
-
+				if(!this.stm)
+					return;
+				this.stm.store({
+					assets: this.getAll().toJSON()
+				});
+				return this;
 			},
 
 			/**
-			 * Load data from the selected storage
-			 * @return {[type]} [description]
+			 * Load data from the selected storage. The fetched data will be added to the collection
+			 * @return {this}
 			 */
 			load: function(){
+				var name = 'assets';
+				if(!this.stm)
+					return;
+				var data = this.stm.load([name]);
+				this.getAll().add(data[name] || []);
+				return this;
+			},
 
+			/**
+			 * Render assets
+			 * @param  {Boolean} f 	Force to render
+			 * @return {HTMLElement}
+			 */
+			render: function(f){
+				if(!this.rendered || f)
+					this.rendered	= am.render().$el.add(fu.render().$el);
+				return	this.rendered;
 			},
 
 			//-------
-
-			/**
-			 * Get collection of assets
-			 *
-			 * @return	{Object}
-			 * */
-			getAssets	: function(){
-				return	assets;
-			},
 
 			/**
 			 * Set new target
@@ -138,7 +158,7 @@ define(function(require) {
 			 *
 			 * @return	void
 			 * */
-			setTarget	: function(m){
+			setTarget: function(m){
 				am.collection.target = m;
 			},
 
@@ -148,19 +168,10 @@ define(function(require) {
 			 *
 			 * @return	void
 			 * */
-			onSelect	: function(f){
+			onSelect: function(f){
 				am.collection.onSelect = f;
 			},
 
-			/**
-			 * Render
-			 * @param  {Boolean} f 	Force to render
-			 */
-			render		: function(f){
-				if(!this.rendered || f)
-					this.rendered	= am.render().$el.add(fu.render().$el);
-				return	this.rendered;
-			}
 		};
 	};
 });

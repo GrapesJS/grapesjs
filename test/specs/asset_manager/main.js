@@ -1,5 +1,14 @@
-define(['AssetManager'],
-	function(AssetManager) {
+var modulePath = './../../../test/specs/asset_manager';
+
+define(['StorageManager','AssetManager',
+		modulePath + '/model/Asset',
+		modulePath + '/model/AssetImage',
+		modulePath + '/model/Assets',
+		modulePath + '/view/AssetView',
+		modulePath + '/view/AssetImageView',
+		modulePath + '/view/AssetsView',
+		modulePath + '/view/FileUploader'],
+	function(StorageManager, AssetManager, Asset, AssetImage, Assets, AssetView, AssetImageView, AssetsView, FileUploader) {
 
 		describe('Asset Manager', function() {
 
@@ -7,6 +16,17 @@ define(['AssetManager'],
 
 				var obj;
 				var imgObj;
+
+				var storage;
+	      var storageId = 'testStorage';
+	      var storageMock = {
+	        store: function(data){
+	          storage = data;
+	        },
+	        load: function(keys){
+	          return storage;
+	        },
+	      };
 
       	beforeEach(function () {
       		imgObj = {
@@ -64,46 +84,58 @@ define(['AssetManager'],
 					obj.getAll().length.should.equal(1);
 				});
 
-/*
-				it('AssetsView exists and is an instance of Backbone.View', function() {
-					var obj 	= new AssetManager();
-					obj.am.should.be.exist;
-					obj.am.should.be.an.instanceOf(Backbone.View);
+				it('Remove asset', function() {
+					obj.add(imgObj);
+					obj.remove(imgObj.src);
+					obj.getAll().length.should.equal(0);
 				});
 
-				it('FileUpload exists and is an instance of Backbone.View', function() {
-					var obj 	= new AssetManager();
-					obj.fu.should.be.exist;
-					obj.fu.should.be.an.instanceOf(Backbone.View);
+				it('Render assets', function() {
+					obj.add(imgObj);
+					obj.render().should.not.be.empty;
 				});
 
-				it('Target is assigning', function() {
-					var obj 	= new AssetManager();
-					var t 		= 'target';
-					obj.setTarget(t);
-					obj.am.collection.target.should.equal(t);
+				describe('With storage', function() {
+
+					var storageManager;
+
+					beforeEach(function () {
+	      		storageManager = new StorageManager({
+	      			autoload: 0,
+	      			type: storageId
+	      		})
+	          obj = new AssetManager({
+	          	stm: storageManager,
+	          });
+	          obj.stm.add(storageId, storageMock);
+	        });
+
+	        afterEach(function () {
+	          delete storageManager;
+	        });
+
+					it('Store and load data', function() {
+		        obj.add(imgObj);
+		        obj.store();
+		        obj.remove(imgObj.src);
+		        obj.load();
+		        var asset = obj.get(imgObj.src);
+						asset.get('width').should.equal(imgObj.width);
+						asset.get('height').should.equal(imgObj.height);
+						asset.get('type').should.equal('image');
+		      });
+
 				});
 
-				it('onSelect callback is assigning', function() {
-					var obj 	= new AssetManager();
-					var cb 		= function(){
-						return 'callback';
-					};
-					obj.onSelect(cb);
-					obj.am.collection.onSelect.should.equal(cb);
-				});
-
-				it('Render propagates', function() {
-					var obj 	= new AssetManager(),
-							jq 		= { $el: $('<div>') };
-					sinon.stub(obj.am, "render").returns(jq);
-					sinon.stub(obj.fu, "render").returns(jq);
-					obj.render();
-					obj.am.render.calledOnce.should.equal(true);
-					obj.fu.render.calledOnce.should.equal(true);
-					obj.rendered.should.not.be.empty;
-				});
-*/
 			});
+
+			Asset.run();
+			AssetImage.run();
+			Assets.run();
+
+			AssetView.run();
+			AssetImageView.run();
+			AssetsView.run();
+			FileUploader.run();
 		});
 });

@@ -4,10 +4,10 @@ define(function () {
     autoload: 1,
 
 		// Style prefix
-		stylePrefix			: 'am-',
+		stylePrefix: 'am-',
 
 		// Default assets
-		assets				: [],
+		assets: [],
 
 		// Indicates which storage to use. Available: local | remote
 		storageType			: 'local',
