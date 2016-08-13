@@ -73,7 +73,8 @@ define(function() {
 		  },
 
 		  stop: function(editor, sender){
-		    sender.set('active', false);
+		    if(sender && sender.set)
+		    	sender.set('active', false);
 		    this.disable();
 		  }
 

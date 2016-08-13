@@ -46,6 +46,7 @@ define([
 				selectedComponent: null,
 				previousModel: null,
 				changesCount:	0,
+				storables: [],
 				device: '',
 			},
 
@@ -64,7 +65,8 @@ define([
 				this.initStorage();
 				this.initClassManager();
 				this.initModal();
-				this.initAssetManager();
+				this.loadModule(AssetManager);
+				//this.initAssetManager();
 				this.initUtils();
 				this.initCodeManager();
 				this.initCommands();
@@ -78,6 +80,32 @@ define([
 				this.initBlockManager(); // Requres utils, canvas
 
 				this.on('change:selectedComponent', this.componentSelected, this);
+			},
+
+			/**
+			 * Load generic module
+			 * @param {Object} module
+			 * @return {this}
+			 */
+			loadModule: function(module) {
+				var c = this.config;
+				var M = new module();
+				var name = M.name.charAt(0).toLowerCase() + M.name.slice(1);
+				var cfg = c[name] || c[M.name];
+				cfg.pStylePrefix = c.stylePrefix;
+
+				// Check if module is storable
+				var sm = this.get('StorageManager');
+				if(M.store && M.load && sm){
+					cfg.stm = sm;
+					this.set('storables', this.get('storables').push(module));
+				}
+				M.init(cfg);
+
+				// Bind the module to the editor model if public
+				if(M.public)
+					this.set(M.name, M);
+				return this;
 			},
 
 			/**
@@ -256,8 +284,7 @@ define([
 				if(this.modal)
 					cfg.modal = this.modal;
 
-				if(this.am)
-					cfg.am = this.am;
+				cfg.am = this.get('AssetManager') || '';
 
 				cfg.em = this;
 
@@ -315,23 +342,6 @@ define([
 				this.StorageManager = this.stm;
 				this.stm.loadDefaultProviders().setCurrent(this.stm.getConfig().type);
 				this.set('StorageManager', this.stm);
-			},
-
-			/**
-			 * Initialize asset manager
-			 * @private
-			 * */
-			initAssetManager: function() {
-				var cfg			= this.config.assetManager,
-					pfx			= cfg.stylePrefix || 'am-';
-				cfg.pStylePrefix = this.config.stylePrefix;
-				cfg.stylePrefix = this.config.stylePrefix + pfx;
-				if(this.stm)
-					cfg.stm = this.stm;
-
-				this.am = new AssetManager(cfg);
-				this.AssetManager = this.am;
-				this.set('AssetManager', this.am);
 			},
 
 			/**

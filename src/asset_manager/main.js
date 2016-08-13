@@ -30,28 +30,65 @@
  */
 define(function(require) {
 
-	return function(config) {
-		var c = config || {},
-			defaults = require('./config/config'),
+	return function() {
+		var c = {},
 			Assets = require('./model/Assets'),
 			AssetsView = require('./view/AssetsView'),
-			FileUpload = require('./view/FileUploader');
-
-		for (var name in defaults) {
-			if (!(name in c))
-				c[name] = defaults[name];
-		}
-
-		var assets = new Assets(c.assets);
-		var obj = {
-			collection: assets,
-			config: c,
-		};
-
-	  var am = new AssetsView(obj);
-	  var fu = new FileUpload(obj);
+			FileUpload = require('./view/FileUploader'),
+			assets, am, fu;
 
 	  return {
+
+	  	/**
+	  	 * Name of the module
+	  	 * @type {String}
+	  	 * @private
+	  	 */
+	  	name: 'AssetManager',
+
+	  	/**
+	  	 * If public module
+	  	 * @type {Boolean}
+	  	 * @private
+	  	 */
+	  	public: true,
+
+	  	/**
+	  	 * Initialize module
+	  	 * @param {Object} config Configurations
+			 * @param {Array<Object>} [config.assets=[]] Default assets
+			 * @example
+			 * ...
+			 * {
+			 * 	assets: [
+			 *  	{src:'path/to/image.png'},
+			 *     ...
+			 *  ],
+			 *  upload: 'http://dropbox/path', // set to false to disable it
+			 *  uploadText: 'Drop files here or click to upload',
+			 * }
+	  	 */
+	  	init: function(config){
+	  		c = config;
+	  		var defaults = require('./config/config');
+
+	  		for (var name in defaults) {
+					if (!(name in c))
+						c[name] = defaults[name];
+				}
+
+				var ppfx = c.pStylePrefix;
+				if(ppfx)
+					c.stylePrefix = ppfx + c.stylePrefix;
+
+	  		assets = new Assets(c.assets);
+				var obj = {
+					collection: assets,
+					config: c,
+				};
+				am = new AssetsView(obj);
+	  		fu = new FileUpload(obj);
+	  	},
 
 	  	stm: c.stm,
 
@@ -121,27 +158,28 @@ define(function(require) {
 				if(!this.stm)
 					return;
 				this.stm.store({
-					assets: this.getAll().toJSON()
+					assets: JSON.stringify(this.getAll().toJSON())
 				});
 				return this;
 			},
 
 			/**
 			 * Load data from the selected storage. The fetched data will be added to the collection
-			 * @return {this}
+			 * @return {Object} Stored assets
 			 */
 			load: function(){
 				var name = 'assets';
 				if(!this.stm)
 					return;
 				var data = this.stm.load([name]);
-				this.getAll().add(data[name] || []);
-				return this;
+				var assets = (JSON.parse(data[name]) || []).reverse();
+				this.getAll().add(assets);
+				return assets;
 			},
 
 			/**
 			 * Render assets
-			 * @param  {Boolean} f 	Force to render
+			 * @param  {Boolean} f 	Force to render, otherwise cached version will be returned
 			 * @return {HTMLElement}
 			 */
 			render: function(f){

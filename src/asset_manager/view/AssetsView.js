@@ -15,6 +15,7 @@ define(['backbone', './AssetView', './AssetImageView', './FileUploader', 'text!.
 			this.listenTo( this.collection, 'add', this.addToAsset );
 			this.listenTo( this.collection, 'deselectAll', this.deselectAll );
 			this.className	= this.pfx + 'assets';
+			var c = this.config;
 
 			// Check if storage is required and if Storage Manager is available
 			if(this.config.stm && this.config.storageType !== ''){
