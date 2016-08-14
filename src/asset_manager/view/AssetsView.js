@@ -15,24 +15,6 @@ define(['backbone', './AssetView', './AssetImageView', './FileUploader', 'text!.
 			this.listenTo( this.collection, 'add', this.addToAsset );
 			this.listenTo( this.collection, 'deselectAll', this.deselectAll );
 			this.className	= this.pfx + 'assets';
-			var c = this.config;
-
-			// Check if storage is required and if Storage Manager is available
-			if(this.config.stm && this.config.storageType !== ''){
-				var type		= this.config.storageType;
-				this.provider	= this.config.stm.get(type);
-				this.storeName	= this.config.storageName ? this.config.storageName : this.className;
-				if(this.provider){
-					// Create new instance of provider
-					this.storagePrv	= this.provider.clone().set(this.config);
-					this.collection.reset();
-					this.collection.add(this.load());
-					if(this.config.storeOnChange){
-						var ev	= 'remove' + (this.config.storeAfterUpload ? ' add' : '');
-						this.listenTo(this.collection, ev, this.store);
-					}
-				}
-			}
 
 			this.events = {};
 			this.events.submit = 'addFromStr';
@@ -81,35 +63,6 @@ define(['backbone', './AssetView', './AssetImageView', './FileUploader', 'text!.
 			if(!this.inputUrl || !this.inputUrl.value)
 				this.inputUrl = this.el.querySelector('.'+this.pfx+'add-asset input');
 			return this.inputUrl;
-		},
-
-		/**
-		 * Store collection
-		 *
-		 * @return void
-		 * */
-		store: function(){
-			if(this.storagePrv)
-				this.storagePrv.store(this.storeName, JSON.stringify(this.collection.toJSON()) );
-		},
-
-		/**
-		 * Load collection
-		 *
-		 * @return 	{Object}
-		 * */
-		load: function(){
-			var result	= null;
-			if(this.storagePrv)
-				result = this.storagePrv.load(this.storeName);
-			if(typeof result !== 'object'){
-				try{
-					result	= JSON.parse(result);
-				}catch(err){
-					console.warn(err);
-				}
-			}
-			return result;
 		},
 
 		/**

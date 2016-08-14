@@ -47,16 +47,26 @@ define(function(require) {
 	  	name: 'AssetManager',
 
 	  	/**
-	  	 * If public module
+	  	 * Indicates if module is public
 	  	 * @type {Boolean}
 	  	 * @private
 	  	 */
 	  	public: true,
 
 	  	/**
+	  	 * Manda
+	  	 * @type {String}
+	  	 * @private
+	  	 */
+	  	storageKey: 'assets',
+
+	  	/**
 	  	 * Initialize module
 	  	 * @param {Object} config Configurations
 			 * @param {Array<Object>} [config.assets=[]] Default assets
+			 * @param {String} [config.uploadText='Drop files here or click to upload'] Upload text
+			 * @param {String} [config.upload=''] Where to send upload data. Expects as return a JSON with asset/s object
+			 * as: {data: [{src:'...'}, {src:'...'}]}
 			 * @example
 			 * ...
 			 * {
@@ -64,7 +74,7 @@ define(function(require) {
 			 *  	{src:'path/to/image.png'},
 			 *     ...
 			 *  ],
-			 *  upload: 'http://dropbox/path', // set to false to disable it
+			 *  upload: 'http://dropbox/path', // Set to false to disable it
 			 *  uploadText: 'Drop files here or click to upload',
 			 * }
 	  	 */
@@ -89,8 +99,6 @@ define(function(require) {
 				am = new AssetsView(obj);
 	  		fu = new FileUpload(obj);
 	  	},
-
-	  	stm: c.stm,
 
 			/**
 			 * Add new asset/s to the collection. URLs are supposed to be unique
@@ -152,27 +160,44 @@ define(function(require) {
 
 			/**
 			 * Store assets data to the selected storage
-			 * @return {this}
+			 * @param {Boolean} noStore If true, won't store
+			 * @return {Object} Data to store
+			 * @example
+			 * var assets = assetManager.store();
 			 */
-			store: function(){
-				if(!this.stm)
-					return;
-				this.stm.store({
-					assets: JSON.stringify(this.getAll().toJSON())
-				});
-				return this;
+			store: function(noStore){
+				var obj = {};
+				var assets = JSON.stringify(this.getAll().toJSON());
+				obj[this.storageKey] = assets;
+				if(!noStore && c.stm)
+					c.stm.store(obj);
+				return obj;
 			},
 
 			/**
-			 * Load data from the selected storage. The fetched data will be added to the collection
-			 * @return {Object} Stored assets
+			 * Load data from the passed object, if the object is empty will try to fetch them
+			 * autonomously from the storage manager.
+			 * The fetched data will be added to the collection
+			 * @param {Object} data Object of data to load
+			 * @return {Object} Loaded assets
+			 * @example
+			 * var assets = assetManager.load();
+			 * // The format below will be used by the editor model
+			 * // to load automatically all the stuff
+			 * var assets = assetManager.load({
+			 * 	assets: [...]
+			 * });
+			 *
 			 */
-			load: function(){
-				var name = 'assets';
-				if(!this.stm)
-					return;
-				var data = this.stm.load([name]);
-				var assets = (JSON.parse(data[name]) || []).reverse();
+			load: function(data){
+				var d = data || '';
+				var name = this.storageKey;
+				if(!d && c.stm)
+					d = c.stm.load(name);
+				var assets = [];
+				try{
+					assets = JSON.parse(d[name]);
+				}catch(err){}
 				this.getAll().add(assets);
 				return assets;
 			},

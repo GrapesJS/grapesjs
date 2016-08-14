@@ -41,7 +41,7 @@ require(['config/require-config'], function() {
 													}
 												}],
 			},
-
+/*
 			assetManager: {
 				storageType			: '',
 				storeOnChange		: true,
@@ -59,7 +59,7 @@ require(['config/require-config'], function() {
 					      				   { type: 'image', src : './img/bg-gr-v.png', date: '2015-02-01',height:1, width:1728},
 				      				   ]
 			},
-
+*/
 
 			styleManager : {
 				sectors: [{

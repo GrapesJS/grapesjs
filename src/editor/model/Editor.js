@@ -96,9 +96,11 @@ define([
 
 				// Check if module is storable
 				var sm = this.get('StorageManager');
-				if(M.store && M.load && sm){
+				if(M.storageKey && M.store && M.load && sm){
 					cfg.stm = sm;
-					this.set('storables', this.get('storables').push(module));
+					var storables = this.get('storables');
+					storables.push(M);
+					this.set('storables', storables);
 				}
 				M.init(cfg);
 
@@ -726,6 +728,12 @@ define([
 				if(smc.storeStyles)
 					store.styles = JSON.stringify(this.getStyle());
 
+				this.get('storables').forEach(function(m){
+					var obj = m.store(1);
+					for(var el in obj)
+						store[el] = obj[el];
+				});
+
 				sm.store(store);
 				return store;
 			},
@@ -737,6 +745,9 @@ define([
 			 */
 			load: function(){
 				var result = this.getCacheLoad(1);
+				this.get('storables').forEach(function(m){
+					m.load(result);
+				});
 				//this.setComponents(result.components || result.html);
 				//this.setStyle(result.styles || result.css);
 				return result;
@@ -773,6 +784,10 @@ define([
 
 				if(smc.storeStyles)
 					load.push('styles');
+
+				this.get('storables').forEach(function(m){
+					load.push(m.storageKey);
+				});
 
 				this.cacheLoad = sm.load(load);
 

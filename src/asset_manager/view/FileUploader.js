@@ -16,7 +16,7 @@ define(['backbone', 'text!./../template/fileUploader.html'],
 			this.pfx			= this.config.stylePrefix || '';
 			this.target		= this.collection || {};
 			this.uploadId	= this.pfx + 'uploadFile';
-			this.disabled	= this.config.disableUpload;
+			this.disabled	= !this.config.upload;
 			this.events['change #' + this.uploadId]	= 'uploadFile';
 			this.delegateEvents();
 		},
@@ -35,7 +35,7 @@ define(['backbone', 'text!./../template/fileUploader.html'],
 		    }
 			var target = this.target;
 			$.ajax({
-				url			: this.config.urlUpload, //this.config.urlUpload
+				url			: this.config.upload,
 				type		: 'POST',
 				data		: formData,
 				beforeSend	: this.config.beforeSend,
