@@ -35,6 +35,7 @@ define(['StorageManager','AssetManager',
       			height: 102,
       		};
           obj = new AssetManager();
+          obj.init();
         });
 
         afterEach(function () {
@@ -104,10 +105,10 @@ define(['StorageManager','AssetManager',
 	      			autoload: 0,
 	      			type: storageId
 	      		})
-	          obj = new AssetManager({
+	          obj = new AssetManager().init({
 	          	stm: storageManager,
 	          });
-	          obj.stm.add(storageId, storageMock);
+	          storageManager.add(storageId, storageMock);
 	        });
 
 	        afterEach(function () {

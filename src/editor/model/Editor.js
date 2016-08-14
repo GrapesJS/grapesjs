@@ -65,8 +65,7 @@ define([
 				this.initStorage();
 				this.initClassManager();
 				this.initModal();
-				this.loadModule(AssetManager);
-				//this.initAssetManager();
+				this.loadModule('AssetManager');
 				this.initUtils();
 				this.initCodeManager();
 				this.initCommands();
@@ -84,12 +83,12 @@ define([
 
 			/**
 			 * Load generic module
-			 * @param {Object} module
+			 * @param {String} moduleName Module name
 			 * @return {this}
 			 */
-			loadModule: function(module) {
+			loadModule: function(moduleName) {
 				var c = this.config;
-				var M = new module();
+				var M = new require(moduleName)();
 				var name = M.name.charAt(0).toLowerCase() + M.name.slice(1);
 				var cfg = c[name] || c[M.name];
 				cfg.pStylePrefix = c.stylePrefix;

@@ -48,7 +48,7 @@ define(['AssetManager/view/FileUploader'],
 							});
 
 							it('File input is enabled', function() {
-								this.view.$el.find('input[type=file]').prop('disabled').should.equal(false);
+								this.view.$el.find('input[type=file]').prop('disabled').should.equal(true);
 							});
 
 					});

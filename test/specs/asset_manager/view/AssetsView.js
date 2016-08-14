@@ -64,17 +64,6 @@ define(['AssetManager/view/AssetsView', 'AssetManager/model/Assets'],
 						this.view.getAssetsEl().innerHTML.should.be.empty;
 					});
 
-					it("Load no assets", function (){
-						(this.view.load() === null).should.be.true;
-					});
-
-					it("Load assets", function (){
-						var obj = { test: '1' };
-						this.view.storagePrv = { load : function(){} };
-						sinon.stub(this.view.storagePrv, "load").returns(obj);
-						this.view.load().should.equal(obj);
-					});
-
 					it("Deselect works", function (){
 						this.coll.add([{},{}]);
 						var $asset = this.view.$el.children().first();

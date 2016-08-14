@@ -67,6 +67,7 @@ define(function(require) {
 			 * @param {String} [config.uploadText='Drop files here or click to upload'] Upload text
 			 * @param {String} [config.upload=''] Where to send upload data. Expects as return a JSON with asset/s object
 			 * as: {data: [{src:'...'}, {src:'...'}]}
+			 * @return {this}
 			 * @example
 			 * ...
 			 * {
@@ -79,7 +80,7 @@ define(function(require) {
 			 * }
 	  	 */
 	  	init: function(config){
-	  		c = config;
+	  		c = config || {};
 	  		var defaults = require('./config/config');
 
 	  		for (var name in defaults) {
@@ -98,6 +99,7 @@ define(function(require) {
 				};
 				am = new AssetsView(obj);
 	  		fu = new FileUpload(obj);
+	  		return this;
 	  	},
 
 			/**
