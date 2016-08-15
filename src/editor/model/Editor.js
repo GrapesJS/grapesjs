@@ -13,7 +13,7 @@ define([
         'Canvas',
         'RichTextEditor',
         'DomComponents',
-        'ClassManager',
+        'SelectorManager',
         'StyleManager',
         'Panels',
         'Parser',
@@ -33,7 +33,7 @@ define([
 			Canvas,
 			RichTextEditor,
 			DomComponents,
-			ClassManager,
+			SelectorManager,
 			StyleManager,
 			Panels,
 			Parser,
@@ -63,7 +63,7 @@ define([
 				this.initDeviceManager();
 				this.initParser();
 				this.initStorage();
-				this.initClassManager();
+				this.loadModule('SelectorManager');
 				this.initModal();
 				this.loadModule('AssetManager');
 				this.initUtils();
@@ -101,6 +101,8 @@ define([
 					storables.push(M);
 					this.set('storables', storables);
 				}
+				cfg.em = this;
+				//cfg.target = this; // refactor
 				M.init(cfg);
 
 				// Bind the module to the editor model if public
@@ -243,21 +245,6 @@ define([
 					this.storeRules();
 					this.set('changesCount', 0);
 				}
-			},
-
-			/**
-			 * Initialize Class manager
-			 * @private
-			 * */
-			initClassManager: function() {
-				var cfg = this.config.classManager,
-				pfx	= cfg.stylePrefix || 'clm-';
-				cfg.pStylePrefix = this.config.stylePrefix;
-				cfg.stylePrefix	= this.config.stylePrefix + pfx;
-				cfg.target = this;
-				this.clm = new ClassManager(cfg);
-				this.ClassManager = this.clm;
-				this.set('ClassManager', this.clm);
 			},
 
 			/**

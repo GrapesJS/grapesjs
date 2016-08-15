@@ -73,11 +73,11 @@ define(function () {
 		//Configurations for Commands
 		commands					: {},
 
-		//Configurations for Class Manager
-		classManager			: {},
-
 		//Configurations for Css Composer
 		cssComposer				: {},
+
+		//Configurations for Selector Manager
+		selectorManager: {},
 
 		//Configurations for Device Manager
 		deviceManager: {

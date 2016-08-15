@@ -36,11 +36,11 @@ define(['backbone', './ComponentsView'],
 			 * @private
 			 * */
 			importClasses: function(){
-				var clm = this.config.em.get('ClassManager');
+				var clm = this.config.em.get('SelectorManager');
 
 				if(clm){
 					this.model.get('classes').each(function(m){
-							clm.addClass(m.get('name'));
+							clm.add(m.get('name'));
 					});
 				}
 			},

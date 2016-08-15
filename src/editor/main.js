@@ -108,9 +108,9 @@ define(function (require){
 				BlockManager: em.get('BlockManager'),
 
 				/**
-				 * @property {ClassManager}
+				 * @property {SelectorManager}
 				 */
-				ClassManager: em.get('ClassManager'),
+				SelectorManager: em.get('SelectorManager'),
 
 				/**
 				 * @property {CodeManager}

@@ -67,8 +67,8 @@ define(['backbone', './SectorView'],
 				// If the state is not empty, there is should be a helper rule in play
 				// The helper rule will get the same style of the iContainer
 				if(state){
-					var clm = this.target.get('ClassManager');
-					var helperClass = clm.addClass('hc-state');
+					var clm = this.target.get('SelectorManager');
+					var helperClass = clm.add('hc-state');
 					var helperRule = cssC.getRule([helperClass],'','');
 					if(!helperRule){
 						helperRule = cssC.newRule([helperClass],'','');

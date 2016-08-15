@@ -65,7 +65,7 @@ define([ 'backbone', 'require'],
 
 				if(!_.isEmpty(style) && this.editor){
 					var cssC = this.editor.get('CssComposer');
-					var newClass = this.editor.get('ClassManager').addClass(model.cid);
+					var newClass = this.editor.get('SelectorManager').add(model.cid);
 					model.set({style:{}});
 					model.get('classes').add(newClass);
 					var rule = cssC.newRule(newClass);

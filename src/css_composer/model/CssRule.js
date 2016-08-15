@@ -26,7 +26,7 @@ define(['backbone', './Selectors'],
                 if(this.sm.get){
                     var slct = [];
                     for(var i = 0; i < this.slct.length; i++)
-                        slct.push(this.sm.get('ClassManager').addClass(this.slct[i].name || this.slct[i]));
+                        slct.push(this.sm.get('SelectorManager').add(this.slct[i].name || this.slct[i]));
                     this.slct = slct;
                 }
 

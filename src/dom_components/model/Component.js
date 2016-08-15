@@ -1,5 +1,5 @@
-define(['backbone','./Components', 'ClassManager/model/ClassTags'],
-	function (Backbone, Components, ClassTags) {
+define(['backbone','./Components', 'SelectorManager/model/Selectors'],
+	function (Backbone, Components, Selectors) {
 
 		return Backbone.Model.extend({
 
@@ -33,7 +33,7 @@ define(['backbone','./Components', 'ClassManager/model/ClassTags'],
 				this.defaultCl = this.normalizeClasses(this.config.classes || []);
 				this.components	= new Components(this.defaultC, opt);
 				this.set('components', this.components);
-				this.set('classes', new ClassTags(this.defaultCl));
+				this.set('classes', new Selectors(this.defaultCl));
 			},
 
 			/**
@@ -48,7 +48,7 @@ define(['backbone','./Components', 'ClassManager/model/ClassTags'],
 				if(!this.sm.get)
 					return;
 
-				var clm = this.sm.get('ClassManager');
+				var clm = this.sm.get('SelectorManager');
 				if(!clm)
 					return;
 
@@ -60,7 +60,7 @@ define(['backbone','./Components', 'ClassManager/model/ClassTags'],
 					else
 						name = val.name;
 
-					var model = clm.addClass(name);
+					var model = clm.add(name);
 					res.push(model);
 				});
 				return res;

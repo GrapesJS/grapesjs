@@ -25,14 +25,9 @@ define(['StyleManager'], function(StyleManager) {
 					}
 
 					// Class Manager container
-					var clm = em.ClassManager;
-					if(clm){
-						var $clm = new clm.ClassTagsView({
-							collection: new clm.ClassTags([]),
-							config: clm.config,
-						}).render().el;
-						this.$cn2.append($clm);
-					}
+					var clm = em.SelectorManager;
+					if(clm)
+						this.$cn2.append(clm.render([]));
 
 					this.$cn2.append(em.StyleManager.render());
 
