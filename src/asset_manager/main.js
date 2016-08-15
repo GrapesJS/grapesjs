@@ -14,19 +14,6 @@
  * ```
  *
  * @module AssetManager
- * @param {Object} config Configurations
- * @param {Array<Object>} [config.assets=[]] Default assets
- * @example
- * ...
- * assetManager: {
- *    assets: [
- *      {src:'path/to/image.png'},
- *      ...
- *    ],
- *    upload: 'http://dropbox/path', // set to false to disable it
- *    uploadText: 'Drop files here or click to upload',
- * }
- * ...
  */
 define(function(require) {
 
@@ -105,7 +92,7 @@ define(function(require) {
 			/**
 			 * Add new asset/s to the collection. URLs are supposed to be unique
 			 * @param {string|Object|Array<string>|Array<Object>} asset URL strings or an objects representing the resource.
-			 * @return {this}
+			 * @return {Model}
 			 * @example
 			 * // In case of strings, would be interpreted as images
 			 * assetManager.add('http://img.jpg');
@@ -220,8 +207,7 @@ define(function(require) {
 			/**
 			 * Set new target
 			 * @param	{Object}	m Model
-			 *
-			 * @return	void
+			 * @private
 			 * */
 			setTarget: function(m){
 				am.collection.target = m;
@@ -230,8 +216,7 @@ define(function(require) {
 			/**
 			 * Set callback after asset was selected
 			 * @param	{Object}	f Callback function
-			 *
-			 * @return	void
+			 * @private
 			 * */
 			onSelect: function(f){
 				am.collection.onSelect = f;

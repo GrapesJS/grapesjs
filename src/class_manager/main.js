@@ -1,38 +1,68 @@
+/**
+ * * [add](#add)
+ * * [get](#get)
+ * * [getAll](#getall)
+ * * [remove](#remove)
+ * * [store](#store)
+ * * [load](#load)
+ * * [render](#render)
+ *
+ * Before using methods you should get first the module from the editor instance, in this way:
+ *
+ * ```js
+ * var classManager = editor.ClassManager;
+ * ```
+ *
+ * @module ClassManager
+ */
 define(function(require) {
-  /**
-   * @class   ClassManager
-   * @param   {Object} config Configurations
-   *
-   * */
-  var ClassManager  = function(config)
-  {
+
+  return function(config) {
     var c = config || {},
       def = require('./config/config');
-    this.ClassTags = require('./model/ClassTags');
-    this.ClassTagsView = require('./view/ClassTagsView');
+    ClassTags = require('./model/ClassTags');
+    ClassTagsView = require('./view/ClassTagsView');
 
     for (var name in def) {
       if (!(name in c))
         c[name] = def[name];
     }
 
-    this.classes = new this.ClassTags(c.defaults);
-    this.config = c;
-  };
+    classes = new ClassTags(c.defaults);
+    config = c;
 
-  ClassManager.prototype  = {
+    return {
+
+      config: config,
+
+      ClassTags: ClassTags,
+
+      ClassTagsView: ClassTagsView,
+
+      /**
+       * Name of the module
+       * @type {String}
+       * @private
+       */
+      name: 'ClassManager',
+
+      /**
+       * Indicates if module is public
+       * @type {Boolean}
+       * @private
+       */
+      public: true,
 
       /**
        * Add new class to collection only if it's not already exists
        * @param {String} name Class name
-       *
-       * @return  {Object} Model class
+       * @return {Model}
        * */
       addClass: function(name){
         var label = name;
         var c = this.getClass(name);
         if(!c)
-          return  this.classes.add({name: name, label: label});
+          return  classes.add({name: name, label: label});
         return c;
       },
 
@@ -42,22 +72,19 @@ define(function(require) {
        *
        * @return  {Object|null}
        * */
-      getClass  : function(id) {
-        var res = this.classes.where({name: id});
-        return res.length ? res[0] : null;
+      getClass: function(id) {
+        return classes.where({name: id})[0];
       },
 
       /**
-       * Get collection of classes
-       *
-       * @return  {Object}
+       * Get the collection of classes
+       * @return  {Collection}
        * */
-      getClasses : function() {
-        return  this.classes;
+      getAllClasses: function() {
+        return  classes;
       },
 
+    };
   };
-
-  return ClassManager;
 
 });
