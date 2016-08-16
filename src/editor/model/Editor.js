@@ -65,7 +65,7 @@ define([
 				this.initStorage();
 				this.loadModule('SelectorManager');
 				this.initModal();
-				this.loadModule('AssetManager');
+				this.loadModule('AssetManager'); // requires SelectorManager
 				this.initUtils();
 				this.initCodeManager();
 				this.initCommands();
@@ -102,7 +102,6 @@ define([
 					this.set('storables', storables);
 				}
 				cfg.em = this;
-				//cfg.target = this; // refactor
 				M.init(cfg);
 
 				// Bind the module to the editor model if public

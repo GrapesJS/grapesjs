@@ -4,8 +4,6 @@
 .project
 npm-debug.log
 style/.sass-cache/
-grapes.sublime-project
-grapes.sublime-workspace
 
 img/
 private/

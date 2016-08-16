@@ -2,8 +2,8 @@ var path = 'CssComposer/model/';
 define([path + 'CssRule',
         path + 'CssRules',
         path + 'Selectors',
-        'ClassManager/model/ClassTag'],
-	function(CssRule, CssRules, Selectors, ClassTag) {
+        'SelectorManager/model/Selector'],
+	function(CssRule, CssRules, Selectors, Selector) {
 
     return {
       run : function(){
@@ -74,7 +74,7 @@ define([path + 'CssRule',
             it('Creates collection item correctly', function() {
               var c = new Selectors();
               var m = c.add({});
-              m.should.be.an.instanceOf(ClassTag);
+              m.should.be.an.instanceOf(Selector);
             });
 
         });
