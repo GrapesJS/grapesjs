@@ -76,7 +76,7 @@ define([
 				this.initCanvas();
 				this.initUndoManager();
 				this.initStyleManager();
-				this.initBlockManager(); // Requres utils, canvas
+				this.loadModule('BlockManager'); // Requres utils, canvas
 
 				this.on('change:selectedComponent', this.componentSelected, this);
 			},
@@ -118,17 +118,6 @@ define([
 			 */
 			init: function(editor){
 				this.set('Editor', editor);
-			},
-
-			/**
-			 * Initialize block manager
-			 * @private
-			 * */
-			initBlockManager: function(){
-				var cfg = this.config.blockManager;
-				cfg.em = this;
-				cfg.pStylePrefix = this.config.stylePrefix;
-				this.set('BlockManager', new BlockManager(cfg));
 			},
 
 			/**

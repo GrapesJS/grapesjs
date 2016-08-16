@@ -1,4 +1,5 @@
 /**
+ * * [init](#init)
  * * [add](#add)
  * * [get](#get)
  * * [getAll](#getall)
@@ -13,35 +14,57 @@
  * ```
  *
  * @module BlockManager
- * @param {Object} config Configurations
- * @param {Array<Object>} [config.blocks=[]] Default blocks
- * @example
- * ...
- * blockManager: {
- *    blocks: [
- *      {id:'h1-block' label: 'Heading', content:'<h1>...</h1>'},
- *      ...
- *    ],
- * }
- * ...
  */
 define(function(require) {
 
-  return function(config) {
-    var c = config || {},
-      defaults = require('./config/config'),
-      Blocks = require('./model/Blocks'),
-      BlocksView = require('./view/BlocksView');
-
-    for (var name in defaults) {
-      if (!(name in c))
-        c[name] = defaults[name];
-    }
-
-    var blocks = new Blocks(c.blocks);
-    var view = new BlocksView({ collection: blocks }, c);
+  return function() {
+    var c = {},
+    defaults = require('./config/config'),
+    Blocks = require('./model/Blocks'),
+    BlocksView = require('./view/BlocksView');
+    var blocks, view;
 
     return {
+
+        /**
+         * Name of the module
+         * @type {String}
+         * @private
+         */
+        name: 'BlockManager',
+
+        /**
+         * Indicates if module is public
+         * @type {Boolean}
+         * @private
+         */
+        public: true,
+
+        /**
+         * Initialize module. Automatically called with a new instance of the editor
+         * @param {Object} config Configurations
+         * @param {Array<Object>} [config.blocks=[]] Default blocks
+         * @example
+         * ...
+         * {
+         *     blocks: [
+         *      {id:'h1-block' label: 'Heading', content:'<h1>...</h1>'},
+         *      ...
+         *    ],
+         * }
+         * ...
+         * @return {this}
+         */
+        init: function(config) {
+          c = config || {};
+          for (var name in defaults) {
+            if (!(name in c))
+              c[name] = defaults[name];
+          }
+          blocks = new Blocks(c.blocks);
+          view = new BlocksView({ collection: blocks }, c);
+          return this;
+        },
 
         /**
          * Add new block to the collection.

@@ -19,7 +19,7 @@ define([ 'BlockManager',
             label: 'Heading',
             content: '<h1>Test</h1>'
           };
-          obj = new BlockManager();
+          obj = new BlockManager().init();
         });
 
         afterEach(function () {
