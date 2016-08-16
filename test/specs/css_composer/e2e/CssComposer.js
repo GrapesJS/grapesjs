@@ -19,7 +19,7 @@ define(['GrapesJS'],function(Grapes) {
                 container: 'csscomposer-fixture',
               });
               this.cssc = this.gjs.editor.get('CssComposer');
-              this.clsm = this.gjs.editor.get('ClassManager');
+              this.clsm = this.gjs.editor.get('SelectorManager');
               this.domc = this.gjs.editor.Components;
               this.$fixture.empty().appendTo(this.$fixtures);
               this.gjs.render();
@@ -51,23 +51,23 @@ define(['GrapesJS'],function(Grapes) {
               });
               var cssc = gj.editor.get('CssComposer');
               cssc.getRules().length.should.equal(this.rulesSet.length);
-              var cls = gj.editor.get('ClassManager').getClasses();
+              var cls = gj.editor.get('SelectorManager').getAll();
               cls.length.should.equal(3);
             });
 
 
-            it('New rule adds correctly the class inside classe manager', function() {
+            it('New rule adds correctly the class inside selector manager', function() {
               var rules = this.cssc.getRules();
               rules.add({ selectors: [{name: 'test1'}] });
-              this.clsm.getClasses().at(0).get('name').should.equal('test1');
+              this.clsm.getAll().at(0).get('name').should.equal('test1');
             });
 
-            it('New rules are correctly imported inside classe manager', function() {
+            it('New rules are correctly imported inside selector manager', function() {
               var rules = this.cssc.getRules();
               this.rulesSet.forEach(function(item){
                 rules.add(item);
               });
-              var cls = this.clsm.getClasses();
+              var cls = this.clsm.getAll();
               cls.length.should.equal(3);
               cls.at(0).get('name').should.equal('test1');
               cls.at(1).get('name').should.equal('test2');

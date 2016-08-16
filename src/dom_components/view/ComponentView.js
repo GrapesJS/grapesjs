@@ -156,7 +156,9 @@ define(['backbone', './ComponentsView'],
 				str = str.trim();
 
 				if(str)
-					this.$el.attr('class',str);
+					this.$el.attr('class', str);
+				else
+					this.$el.removeAttr('class');
 
 				// Regenerate status class
 				this.updateStatus();
