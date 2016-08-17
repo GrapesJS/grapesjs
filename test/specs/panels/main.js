@@ -26,7 +26,7 @@ define([
 				var obj;
 
 				beforeEach(function () {
-					obj = new Panels();
+					obj = new Panels().init();
 				});
 
 				afterEach(function () {

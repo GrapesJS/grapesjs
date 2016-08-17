@@ -14,7 +14,7 @@ define(['GrapesJS'],function(Grapes) {
               Grapes = Grapes;
               this.gjs = Grapes.init({
                 stylePrefix: '',
-                storage: { autoload: 0, type:'none' },
+                storageManager: { autoload: 0, type:'none' },
                 assetManager: { storageType: 'none', },
                 container: 'csscomposer-fixture',
               });
@@ -44,7 +44,7 @@ define(['GrapesJS'],function(Grapes) {
             it('Rules are correctly imported from default property', function() {
               var gj = new Grapes.init({
                 stylePrefix: '',
-                storage: { autoload: 0, type:'none' },
+                storageManager: { autoload: 0, type:'none' },
                 assetManager: { storageType: 'none', },
                 cssComposer: { defaults: this.rulesSet},
                 container: 'csscomposer-fixture',

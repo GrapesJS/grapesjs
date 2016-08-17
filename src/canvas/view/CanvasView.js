@@ -121,7 +121,7 @@ function(Backbone, FrameView) {
       this.toolsEl.appendChild(this.placerEl);
       this.toolsEl.appendChild(this.ghostEl);
 			this.$el.append(this.toolsEl);
-      var rte = this.em.get('RichTextEditor');
+      var rte = this.em.get('rte');
 
       if(rte)
         this.toolsEl.appendChild(rte.render());

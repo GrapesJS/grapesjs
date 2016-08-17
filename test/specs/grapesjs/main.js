@@ -34,7 +34,7 @@ define(['GrapesJS', 'PluginManager', 'chai'],
         documentEl = '<style>' + cssString + '</style>' + htmlString;
         config = {
           container: '#' + editorName,
-          storage: {
+          storageManager: {
             autoload: 0,
             type:'none'
           },
@@ -134,7 +134,7 @@ define(['GrapesJS', 'PluginManager', 'chai'],
         obj.plugins.add(pluginName, function(edt){
           edt.StorageManager.add(storageId, storageMock);
         });
-        config.storage.type = storageId;
+        config.storageManager.type = storageId;
         config.plugins = [pluginName];
         var editor = obj.init(config);
         editor.setComponents(htmlString);

@@ -19,43 +19,71 @@
  * ```
  *
  * @module StorageManager
- * @param {Object} config Configurations
- * @param {string} [config.id='gjs-'] The prefix for the fields, useful to differentiate storing/loading
- * with multiple editors on the same page. For example, in local storage, the item of HTML will be saved like 'gjs-html'
- * @param {Boolean} [config.autosave=true] Indicates if autosave mode is enabled, works in conjunction with stepsBeforeSave
- * @param {number} [config.stepsBeforeSave=1] If autosave enabled, indicates how many steps/changes are necessary
- * before autosave is triggered
- * @param {string} [config.type='local'] Default storage type. Available: 'local' | 'remote' | ''(do not store)
- * @example
- * ...
- * storageManager: {
- *  	autosave: false,
- *  	type: 'remote',
- * }
- * ...
  */
 define(function(require) {
 
-	var StorageManager = function(config) {
-
-		var c = config || {},
+	var StorageManager = function() {
+		var c = {},
 		defaults = require('./config/config'),
 		LocalStorage = require('./model/LocalStorage'),
 		RemoteStorage = require('./model/RemoteStorage');
 
-		for (var name in defaults){
-			if (!(name in c))
-				c[name] = defaults[name];
-		}
-
 		var storages = {};
 		var defaultStorages = {};
 
-		defaultStorages.remote	= new RemoteStorage(c);
-		defaultStorages.local = new LocalStorage(c);
-		c.currentStorage = c.type;
-
 		return {
+
+			/**
+       * Name of the module
+       * @type {String}
+       * @private
+       */
+      name: 'StorageManager',
+
+      /**
+       * Indicates if module is public
+       * @type {Boolean}
+       * @private
+       */
+      public: true,
+
+      /**
+       * Initialize module. Automatically called with a new instance of the editor
+       * @param {Object} config Configurations
+			 * @param {string} [config.id='gjs-'] The prefix for the fields, useful to differentiate storing/loading
+			 * with multiple editors on the same page. For example, in local storage, the item of HTML will be saved like 'gjs-html'
+			 * @param {Boolean} [config.autosave=true] Indicates if autosave mode is enabled, works in conjunction with stepsBeforeSave
+			 * @param {number} [config.stepsBeforeSave=1] If autosave enabled, indicates how many steps/changes are necessary
+			 * before autosave is triggered
+			 * @param {string} [config.type='local'] Default storage type. Available: 'local' | 'remote' | ''(do not store)
+			 * @example
+			 * ...
+			 * {
+			 *  	autosave: false,
+			 *  	type: 'remote',
+			 * }
+			 * ...
+       */
+      init: function(config) {
+        c = config || {};
+        for (var name in defaults){
+					if (!(name in c))
+						c[name] = defaults[name];
+				}
+
+				defaultStorages.remote	= new RemoteStorage(c);
+				defaultStorages.local = new LocalStorage(c);
+				c.currentStorage = c.type;
+        return this;
+      },
+
+      /**
+       * Callback executed after the module is loaded
+       * @private
+       */
+      onLoad: function(){
+      	this.loadDefaultProviders().setCurrent(c.type);
+      },
 
 			/**
 			 * Checks if autosave is enabled

@@ -1,24 +1,51 @@
 define(function(require) {
 
-	return function(config) {
-		var c = config || {},
-			defaults = require('./config/config'),
-			rte = require('./view/TextEditorView'),
-			CommandButtons = require('./model/CommandButtons'),
-			CommandButtonsView = require('./view/CommandButtonsView');
-
-		for (var name in defaults) {
-			if (!(name in c))
-				c[name] = defaults[name];
-		}
-
-		var tlbPfx = c.stylePrefix;
-		var toolbar = new CommandButtonsView({
-			collection: new CommandButtons(c.commands),
-			config: c,
-		});
+	return function() {
+		var c = {},
+		defaults = require('./config/config'),
+		rte = require('./view/TextEditorView'),
+		CommandButtons = require('./model/CommandButtons'),
+		CommandButtonsView = require('./view/CommandButtonsView');
+		var tlbPfx, toolbar;
 
 		return {
+
+			/**
+       * Name of the module
+       * @type {String}
+       * @private
+       */
+      name: 'rte',
+
+      /**
+       * Indicates if module is public
+       * @type {Boolean}
+       * @private
+       */
+      public: true,
+
+      /**
+       * Initialize module. Automatically called with a new instance of the editor
+       * @param {Object} config Configurations
+       */
+      init: function(config) {
+        c = config || {};
+        for (var name in defaults) {
+					if (!(name in c))
+						c[name] = defaults[name];
+				}
+
+				var ppfx = c.pStylePrefix;
+				if(ppfx)
+					c.stylePrefix = ppfx + c.stylePrefix;
+
+				tlbPfx = c.stylePrefix;
+				toolbar = new CommandButtonsView({
+					collection: new CommandButtons(c.commands),
+					config: c,
+				});
+        return this;
+      },
 
 			/**
        * Triggered when the offset of the editro is changed
@@ -42,6 +69,7 @@ define(function(require) {
 			 * @param {View} view
 			 * */
 			attach: function(view){
+				console.log('attatch');
 				view.$el.wysiwyg({}).focus();
 				this.lastEl = view.el;
 

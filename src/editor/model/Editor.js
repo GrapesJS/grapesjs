@@ -1,3 +1,11 @@
+var deps = ['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'DeviceManager', 'Parser',
+         'SelectorManager', 'ModalDialog', 'AssetManager', 'CodeManager', 'Panels', 'RichTextEditor',
+        'BlockManager',
+        'CssComposer',
+        'Commands',
+        'Canvas',
+        'DomComponents',
+        'StyleManager'];
 define([
         'backbone',
         'backboneUndo',
@@ -60,23 +68,24 @@ define([
 				if(c.el && c.fromElement)
 					this.config.components = c.el.innerHTML;
 
-				this.initDeviceManager();
-				this.initParser();
-				this.initStorage();
-				this.loadModule('SelectorManager');
-				this.initModal();
+				this.loadModule('Utils'); // no dep
+				this.loadModule('StorageManager'); // No dep
+				this.loadModule('DeviceManager'); // No dep
+				this.loadModule('Parser'); // No dep
+				this.loadModule('SelectorManager'); // No dep
+				this.loadModule('ModalDialog'); // No dep
 				this.loadModule('AssetManager'); // requires SelectorManager
-				this.initUtils();
-				this.initCodeManager();
+				this.loadModule('CodeManager'); // no deps
+				this.loadModule('Panels'); // no deps
+				this.loadModule('RichTextEditor'); // no deps
 				this.initCommands();
-				this.initPanels();
-				this.initRichTextEditor();
+				//this.initRichTextEditor();
 				this.initCssComposer();
-				this.initComponents();
-				this.initCanvas();
+				this.initComponents(); // Requires AssetManager and Dialog for images components
+				this.initCanvas(); // Requires RTE
 				this.initUndoManager();
 				this.initStyleManager();
-				this.loadModule('BlockManager'); // Requres utils, canvas
+				this.loadModule('BlockManager'); // Requires utils, canvas
 
 				this.on('change:selectedComponent', this.componentSelected, this);
 			},
@@ -90,7 +99,7 @@ define([
 				var c = this.config;
 				var M = new require(moduleName)();
 				var name = M.name.charAt(0).toLowerCase() + M.name.slice(1);
-				var cfg = c[name] || c[M.name];
+				var cfg = c[name] || c[M.name] || {};
 				cfg.pStylePrefix = c.stylePrefix;
 
 				// Check if module is storable
@@ -103,6 +112,9 @@ define([
 				}
 				cfg.em = this;
 				M.init(cfg);
+
+				if(M.onLoad)
+					M.onLoad();
 
 				// Bind the module to the editor model if public
 				if(M.public)
@@ -118,36 +130,6 @@ define([
 			 */
 			init: function(editor){
 				this.set('Editor', editor);
-			},
-
-			/**
-			 * Initialize device manager
-			 * @private
-			 * */
-			initDeviceManager: function(){
-				var cfg = this.config.deviceManager;
-				cfg.em = this;
-				cfg.pStylePrefix = this.config.stylePrefix;
-				var dm = new DeviceManager(cfg);
-				this.set('DeviceManager', dm);
-			},
-
-			/**
-			 * Initialize Parser
-			 * @private
-			 * */
-			initParser: function() {
-				this.Parser = new Parser();
-				this.set('parser', this.Parser);
-			},
-
-			/**
-			 * Initialize Utils
-			 * @private
-			 * */
-			initUtils: function() {
-				this.Utils = new Utils();
-				this.set('Utils', this.Utils);
 			},
 
 			/**
@@ -174,7 +156,7 @@ define([
 				pfx	= cfg.stylePrefix || 'css-';
 				cfg.stylePrefix	= this.config.stylePrefix + pfx;
 
-				if(this.StorageManager.getConfig().autoload)
+				if(this.get('StorageManager').getConfig().autoload)
 					df = this.loadRules();
 
 				if(elStyle)
@@ -187,7 +169,7 @@ define([
 				this.cssc = new CssComposer(cfg);
 				this.CssComposer = this.cssc;
 				this.set('CssComposer', this.cssc);
-				if(this.stm.isAutosave())
+				if(this.get('StorageManager').isAutosave())
 					this.listenRules(this.cssc.getRules());
 			},
 
@@ -225,8 +207,8 @@ define([
 				var count = this.get('changesCount') + 1,
 						avSt	= opt ? opt.avoidStore : 0;
 				this.set('changesCount', count);
-
-				if(this.stm.isAutosave() && count < this.stm.getStepsBeforeSave())
+        var stm = this.get('StorageManager');
+				if(stm.isAutosave() && count < stm.getStepsBeforeSave())
 					return;
 
 				if(!avSt){
@@ -245,7 +227,7 @@ define([
 				comp = '',
 				cmpStylePfx	= cfg.stylePrefix || 'comp-';
 
-				if(this.StorageManager.getConfig().autoload)
+				if(this.get('StorageManager').getConfig().autoload)
 					comp = this.loadComponents();
 
 				cfg.pStylePrefix	= this.config.stylePrefix;
@@ -254,11 +236,9 @@ define([
 				if(comp)
 					cfg.components = comp;
 
-				if(this.rte)
-					cfg.rte = this.rte;
+				cfg.rte = this.get('rte') || '';
 
-				if(this.modal)
-					cfg.modal = this.modal;
+				cfg.modal = this.get('Modal') || '';
 
 				cfg.am = this.get('AssetManager') || '';
 
@@ -267,7 +247,7 @@ define([
 				this.cmp = new DomComponents(cfg);
 				this.Components = this.cmp;
 
-				if(this.stm.isAutosave()){
+				if(this.get('StorageManager').isAutosave()){
 					// Call UndoManager here so it's possible to call it also for children inside
 					this.initUndoManager();
 					this.initChildrenComp(this.cmp.getWrapper());
@@ -296,61 +276,6 @@ define([
 			},
 
 			/**
-			 * Initialize rich text editor
-			 * @private
-			 * */
-			initRichTextEditor: function() {
-				var cfg = this.config.rte,
-				rteStylePfx	= cfg.stylePrefix || 'rte-';
-				cfg.pStylePrefix	= this.config.stylePrefix;
-				cfg.stylePrefix	= cfg.pStylePrefix + rteStylePfx;
-				cfg.em = this;
-				this.rte = new RichTextEditor(cfg);
-				this.set('RichTextEditor', this.rte);
-			},
-
-			/**
-			 * Initialize storage
-			 * @private
-			 * */
-			initStorage: function() {
-				this.stm = new StorageManager(this.config.storage || this.config.storageManager);
-				this.StorageManager = this.stm;
-				this.stm.loadDefaultProviders().setCurrent(this.stm.getConfig().type);
-				this.set('StorageManager', this.stm);
-			},
-
-			/**
-			 * Initialize dialog
-			 * @private
-			 * */
-			initModal: function() {
-				var cfg = this.config.modal,
-				pfx = cfg.stylePrefix || 'mdl-';
-				cfg.stylePrefix = this.config.stylePrefix + pfx;
-				this.modal = new ModalDialog(cfg);
-				this.on('loaded', function(){
-					this.modal.render().appendTo(this.config.el || 'body');
-				}, this);
-				this.Dialog = this.modal;
-				this.set('Modal', this.modal);
-			},
-
-			/**
-			 * Initialize Code Manager
-			 * @private
-			 * */
-			initCodeManager: function() {
-				var cfg = this.config.codeManager,
-				pfx = cfg.stylePrefix || 'cm-';
-				cfg.stylePrefix = this.config.stylePrefix + pfx;
-				this.cm = new CodeManager(cfg);
-				this.CodeManager = this.cm;
-				this.cm.loadDefaultGenerators().loadDefaultViewers();
-				this.set('CodeManager', this.cm);
-			},
-
-			/**
 			 * Initialize Commands
 			 * @private
 			 * */
@@ -366,22 +291,6 @@ define([
 				this.Commands = this.com;
 				this.com.loadDefaultCommands();
 				this.set('Commands', this.com);
-			},
-
-			/**
-			 * Initialize Panels
-			 * @private
-			 * */
-			initPanels: function() {
-				var cfg = this.config.panels,
-					pfx = cfg.stylePrefix || 'pn-';
-				cfg.pStylePrefix = this.config.stylePrefix;
-				cfg.stylePrefix = this.config.stylePrefix + pfx;
-				cfg.em = this;
-				this.pn = new Panels(cfg);
-				//this.pn.addPanel({ id: 'views-container'});
-				this.Panels = this.pn;
-				this.set('Panels', this.pn);
 			},
 
 			/**
@@ -445,7 +354,8 @@ define([
 				var updatedCount = this.get('changesCount') + 1,
 						avSt	= opt ? opt.avoidStore : 0;
 				this.set('changesCount', updatedCount);
-				if(this.stm.isAutosave() && updatedCount < this.stm.getStepsBeforeSave()){
+				var stm = this.get('StorageManager');
+				if(stm.isAutosave() && updatedCount < stm.getStepsBeforeSave()){
 					return;
 				}
 
@@ -510,7 +420,7 @@ define([
 						comps	=  JSON.parse(result.style);
 					}catch(err){}
 				}else if(result.css)
-					comps = this.Parser.parseCss(result.css);
+					comps = this.get('Parser').parseCss(result.css);
 
 				return comps;
 			},
@@ -610,8 +520,8 @@ define([
 			 * @private
 			 */
 			getComponents: function(){
-				var cmp = this.Components;
-				var cm = this.CodeManager;
+				var cmp = this.get('Components');
+				var cm = this.get('CodeManager');
 
 				if(!cmp || !cm)
 					return;
@@ -649,8 +559,8 @@ define([
 			 * @private
 			 */
 			getHtml: function(){
-				var cmp = this.Components;
-				var cm = this.CodeManager;
+				var cmp = this.get('Components');
+				var cm = this.get('CodeManager');
 
 				if(!cmp || !cm)
 					return;
@@ -665,9 +575,9 @@ define([
 			 * @private
 			 */
 			getCss: function(){
-				var cmp = this.Components;
-				var cm = this.CodeManager;
-				var cssc = this.CssComposer;
+				var cmp = this.get('Components');
+				var cm = this.get('CodeManager');
+				var cssc = this.get('CssComposer');
 
 				if(!cmp || !cm || !cssc)
 					return;
@@ -682,7 +592,7 @@ define([
 			 * @private
 			 */
 			store: function(){
-				var sm = this.StorageManager;
+				var sm = this.get('StorageManager');
 
 				if(!sm)
 					return;
@@ -739,7 +649,7 @@ define([
 				if(this.cacheLoad && !f)
 					return this.cacheLoad;
 
-				var sm = this.StorageManager;
+				var sm = this.get('StorageManager');
 				var load = [];
 
 				if(!sm)

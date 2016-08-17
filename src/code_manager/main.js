@@ -19,9 +19,9 @@
  */
 define(function(require) {
 
-	var CodeManager = function(config) {
+	var CodeManager = function() {
 
-		var c = config || {},
+		var c = {},
 		defaults = require('./config/config'),
 		gHtml = require('./model/HtmlGenerator'),
 		gCss = require('./model/CssGenerator'),
@@ -29,27 +29,64 @@ define(function(require) {
 		eCM = require('./model/CodeMirrorEditor'),
 		editorView = require('./view/EditorView');
 
-		for (var name in defaults) {
-			if (!(name in c))
-				c[name] = defaults[name];
-		}
-
 		var generators = {},
 		defGenerators	= {},
 		viewers = {},
 		defViewers = {};
 
-		defGenerators.html = new gHtml();
-		defGenerators.css	= new gCss();
-		defGenerators.json = new gJson();
-
-		defViewers.CodeMirror = new eCM();
-
 		return {
+
+			getConfig: function() {
+				return c;
+			},
 
 			config: c,
 
 			EditorView: editorView,
+
+			/**
+       * Name of the module
+       * @type {String}
+       * @private
+       */
+      name: 'CodeManager',
+
+      /**
+       * Indicates if module is public
+       * @type {Boolean}
+       * @private
+       */
+      public: true,
+
+      /**
+       * Initialize module. Automatically called with a new instance of the editor
+       * @param {Object} config Configurations
+       */
+      init: function(config) {
+        c = config || {};
+        for (var name in defaults) {
+					if (!(name in c))
+						c[name] = defaults[name];
+				}
+
+				var ppfx = c.pStylePrefix;
+				if(ppfx)
+					c.stylePrefix = ppfx + c.stylePrefix;
+
+				defGenerators.html = new gHtml();
+				defGenerators.css	= new gCss();
+				defGenerators.json = new gJson();
+
+				defViewers.CodeMirror = new eCM();
+        return this;
+      },
+
+      /**
+       * Callback on load
+       */
+      onLoad: function(){
+      	this.loadDefaultGenerators().loadDefaultViewers();
+      },
 
 			/**
 			 * Add new code generator to the collection

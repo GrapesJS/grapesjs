@@ -33,7 +33,7 @@ define(['GrapesJS', 'SelectorManager/model/Selectors', 'SelectorManager/view/Cla
             beforeEach(function () {
               this.gjs = GrapesJS.init({
                 stylePrefix: '',
-                storage: { autoload: 0, type:'none' },
+                storageManager: { autoload: 0, type:'none' },
                 assetManager: {
                   storageType: 'none',
                 },

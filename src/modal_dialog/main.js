@@ -1,55 +1,78 @@
+/**
+ * @class Modal
+ * */
 define(function(require) {
-	/**
-	 * @class 	Modal
-	 * @param 	{Object} Configurations
-	 *
-	 * @return	{Object}
- 	 * */
-	function Modal(config)
-	{
-		var c			= config || {},
-			defaults	= require('./config/config'),
-			ModalM		= require('./model/Modal'),
-			ModalView	= require('./view/ModalView');
+	return function() {
+		var c = {},
+		defaults = require('./config/config'),
+		ModalM = require('./model/Modal'),
+		ModalView	= require('./view/ModalView');
+		var model, modal;
 
-		for (var name in defaults) {
-			if (!(name in c))
-				c[name] = defaults[name];
-		}
+	  return {
 
-		this.model		= new ModalM(c);
-		var obj			= {
-				model	: this.model,
-		    	config	: c,
-		};
+	  	/**
+       * Name of the module
+       * @type {String}
+       * @private
+       */
+      name: 'Modal',
 
-	    this.modal 		= new ModalView(obj);
-	}
+      /**
+       * Indicates if module is public
+       * @type {Boolean}
+       * @private
+       */
+      public: true,
 
-	Modal.prototype	= {
+      /**
+       * Initialize module. Automatically called with a new instance of the editor
+       * @param {Object} config Configurations
+       */
+      init: function(config) {
+        c = config || {};
+        for (var name in defaults) {
+					if (!(name in c))
+						c[name] = defaults[name];
+				}
 
-			getModel	: function(){
-				return	this.model;
+				var ppfx = c.pStylePrefix;
+				if(ppfx)
+					c.stylePrefix = ppfx + c.stylePrefix;
+
+				model = new ModalM(c);
+			  modal = new ModalView({
+					model: model,
+				  config: c,
+				});
+				c.em.on('loaded', function(){
+					this.render().appendTo(c.em.config.el || 'body');
+				}, this);
+        return this;
+      },
+
+			getModel: function(){
+				return model;
 			},
 
-			render		: function(){
-				return	this.modal.render().$el;
+			render: function(){
+				return modal.render().$el;
 			},
 
-			show		: function(){
-				return this.modal.show();
+			show: function(){
+				return modal.show();
 			},
 
-			hide		: function(){
-				return this.modal.hide();
+			hide: function(){
+				return modal.hide();
 			},
 
-			setTitle	: function(v){
-				return this.modal.setTitle(v);
+			setTitle: function(v){
+				return modal.setTitle(v);
 			},
 
-			setContent	: function(v){
-				return this.modal.setContent(v);
+			setContent: function(v){
+				return modal.setContent(v);
 			},
 
 			/**
@@ -57,9 +80,8 @@ define(function(require) {
 			 * @return {HTMLElement}
 			 */
 			getContentEl: function(){
-				return this.modal.getContent();
+				return modal.getContent();
 			}
+		};
 	};
-
-	return Modal;
 });

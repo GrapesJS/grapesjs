@@ -44,6 +44,7 @@ define(function(require) {
          * Initialize module. Automatically called with a new instance of the editor
          * @param {Object} config Configurations
          * @param {Array<Object>} [config.blocks=[]] Default blocks
+         * @return {this}
          * @example
          * ...
          * {
@@ -53,7 +54,6 @@ define(function(require) {
          *    ],
          * }
          * ...
-         * @return {this}
          */
         init: function(config) {
           c = config || {};

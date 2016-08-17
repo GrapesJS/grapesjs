@@ -26,7 +26,7 @@ define(function () {
     noticeOnUnload: true,
 
     // Storage Manager
-    storage: {},
+    storageManager: {},
 
     // Array of plugins to init
     plugins: [],

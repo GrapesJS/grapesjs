@@ -1,7 +1,7 @@
 define(function () {
 	return {
 
-    'devices': [],
+    devices: [],
 
     deviceLabel: 'Device',
 

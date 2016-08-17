@@ -46,30 +46,53 @@
  */
 define(function(require) {
 
-	var Panels = function(config){
-
-		var c = config || {},
-			defaults = require('./config/config'),
-			Panel = require('./model/Panel'),
-			Panels = require('./model/Panels'),
-			PanelView = require('./view/PanelView'),
-			PanelsView = require('./view/PanelsView');
-
-	  // Set default options
-		for (var name in defaults) {
-			if (!(name in c))
-				c[name] = defaults[name];
-		}
-
-		var panels = new Panels(c.defaults);
-		var obj = {
-			collection : panels,
-			config : c,
-		};
-
-	  var PanelsViewObj = new PanelsView(obj);
+	return function(){
+		var c = {},
+		defaults = require('./config/config'),
+		Panel = require('./model/Panel'),
+		Panels = require('./model/Panels'),
+		PanelView = require('./view/PanelView'),
+		PanelsView = require('./view/PanelsView');
+		var panels, PanelsViewObj;
 
 	  return {
+
+	  	/**
+       * Name of the module
+       * @type {String}
+       * @private
+       */
+      name: 'Panels',
+
+      /**
+       * Indicates if module is public
+       * @type {Boolean}
+       * @private
+       */
+      public: true,
+
+      /**
+       * Initialize module. Automatically called with a new instance of the editor
+       * @param {Object} config Configurations
+       */
+      init: function(config) {
+        c = config || {};
+        for (var name in defaults) {
+					if (!(name in c))
+						c[name] = defaults[name];
+				}
+
+				var ppfx = c.pStylePrefix;
+				if(ppfx)
+					c.stylePrefix = ppfx + c.stylePrefix;
+
+				panels = new Panels(c.defaults);
+			  PanelsViewObj = new PanelsView({
+					collection : panels,
+					config : c,
+				});
+        return this;
+      },
 
 	  	/**
 	  	 * Returns the collection of panels
@@ -175,6 +198,4 @@ define(function(require) {
 
 	  };
 	};
-
-	return Panels;
 });

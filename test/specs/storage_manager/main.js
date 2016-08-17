@@ -16,7 +16,7 @@ define([
         var obj;
 
         beforeEach(function () {
-          obj = new StorageManager();
+          obj = new StorageManager().init();
         });
 
         afterEach(function () {
@@ -93,7 +93,7 @@ define([
 
           beforeEach(function () {
             storeValue = [];
-            obj = new StorageManager({
+            obj = new StorageManager().init({
               type: storageId,
             });
             obj.add(storageId, storage);

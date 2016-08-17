@@ -16,7 +16,7 @@ define([ 'DeviceManager',
         beforeEach(function () {
           testNameDevice = 'Tablet';
           testWidthDevice = '100px';
-          obj = new DeviceManager();
+          obj = new DeviceManager().init();
         });
 
         afterEach(function () {

@@ -101,7 +101,7 @@ define(['StorageManager','AssetManager',
 					var storageManager;
 
 					beforeEach(function () {
-	      		storageManager = new StorageManager({
+	      		storageManager = new StorageManager().init({
 	      			autoload: 0,
 	      			type: storageId
 	      		})

@@ -9,7 +9,7 @@ define(function() {
 			 * */
 			startSelectPosition: function(trg, doc) {
 				this.isPointed = false;
-				var utils = this.editorModel.Utils;
+				var utils = this.editorModel.get('Utils');
 				if(utils && !this.sorter)
 					this.sorter = new utils.Sorter({
 						container: this.getCanvasBody(),

@@ -41,7 +41,7 @@ define(function() {
 
 					$editor 	= new this.cm.EditorView({
 						model		: editor,
-						config		: this.cm.config
+						config		: this.cm.getConfig()
 					}).render().$el;
 
 				editor.init( $input[0] );

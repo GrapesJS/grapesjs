@@ -1,4 +1,5 @@
 /**
+ * * [init](#init)
  * * [add](#add)
  * * [get](#get)
  * * [getAll](#getall)
@@ -10,38 +11,61 @@
  * ```
  *
  * @module DeviceManager
- * @param {Object} config Configurations
- * @param {Array<Object>} [config.devices=[]] Default devices
- * @example
- * ...
- * deviceManager: {
- *    devices: [
- *      {name: 'Desktop', width: ''}
- *      {name: 'Tablet', width: '991px'}
- *    ],
- * }
- * ...
  */
 define(function(require) {
 
-  return function(config) {
-    var c = config || {},
-      defaults = require('./config/config'),
-      Devices = require('./model/Devices'),
-      DevicesView = require('./view/DevicesView');
-
-    for (var name in defaults) {
-      if (!(name in c))
-        c[name] = defaults[name];
-    }
-
-    var devices = new Devices(c.devices);
-    var view = new DevicesView({
-      collection: devices,
-      config: c
-    });
+  return function() {
+    var c = {},
+    defaults = require('./config/config'),
+    Devices = require('./model/Devices'),
+    DevicesView = require('./view/DevicesView');
+    var devices, view;
 
     return {
+
+        /**
+         * Name of the module
+         * @type {String}
+         * @private
+         */
+        name: 'DeviceManager',
+
+        /**
+         * Indicates if module is public
+         * @type {Boolean}
+         * @private
+         */
+        public: true,
+
+        /**
+         * Initialize module. Automatically called with a new instance of the editor
+         * @param {Object} config Configurations
+         * @param {Array<Object>} [config.devices=[]] Default devices
+         * @example
+         * ...
+         * {
+         *    devices: [
+         *      {name: 'Desktop', width: ''}
+         *      {name: 'Tablet', width: '991px'}
+         *    ],
+         * }
+         * ...
+         * @return {this}
+         */
+        init: function(config) {
+          c = config || {};
+          for (var name in defaults) {
+            if (!(name in c))
+              c[name] = defaults[name];
+          }
+
+          devices = new Devices(c.devices);
+          view = new DevicesView({
+            collection: devices,
+            config: c
+          });
+          return this;
+        },
 
         /**
          * Add new device to the collection. URLs are supposed to be unique

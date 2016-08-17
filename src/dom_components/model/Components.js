@@ -50,7 +50,7 @@ define([ 'backbone', 'require'],
 
 			add: function(models, opt){
 				if(typeof models === 'string'){
-					var parsed = this.editor.Parser.parseHtml(models);
+					var parsed = this.editor.get('Parser').parseHtml(models);
 					models = parsed.html;
 
 					if(parsed.css)
