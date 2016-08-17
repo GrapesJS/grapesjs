@@ -69,7 +69,6 @@ define(function(require) {
 			 * @param {View} view
 			 * */
 			attach: function(view){
-				console.log('attatch');
 				view.$el.wysiwyg({}).focus();
 				this.lastEl = view.el;
 

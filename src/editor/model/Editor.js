@@ -1,11 +1,10 @@
-var deps = ['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'DeviceManager', 'Parser',
-         'SelectorManager', 'ModalDialog', 'AssetManager', 'CodeManager', 'Panels', 'RichTextEditor',
+var deps = ['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'DeviceManager', 'Parser', 'SelectorManager',
+					'ModalDialog', 'AssetManager', 'CodeManager', 'Panels', 'RichTextEditor', 'StyleManager',
         'BlockManager',
         'CssComposer',
         'Commands',
         'Canvas',
-        'DomComponents',
-        'StyleManager'];
+        'DomComponents'];
 define([
         'backbone',
         'backboneUndo',
@@ -78,13 +77,12 @@ define([
 				this.loadModule('CodeManager'); // no deps
 				this.loadModule('Panels'); // no deps
 				this.loadModule('RichTextEditor'); // no deps
+				this.loadModule('StyleManager'); // no deps
 				this.initCommands();
-				//this.initRichTextEditor();
 				this.initCssComposer();
 				this.initComponents(); // Requires AssetManager and Dialog for images components
-				this.initCanvas(); // Requires RTE
+				this.initCanvas(); // Requires RTE and Components
 				this.initUndoManager();
-				this.initStyleManager();
 				this.loadModule('BlockManager'); // Requires utils, canvas
 
 				this.on('change:selectedComponent', this.componentSelected, this);
@@ -123,6 +121,43 @@ define([
 			},
 
 			/**
+			 * Initialize Commands
+			 * @private
+			 * */
+			initCommands: function() {
+				var cfg = this.config.commands,
+					pfx = cfg.stylePrefix || 'com-';
+				cfg.pStylePrefix = this.config.stylePrefix;
+				cfg.stylePrefix = this.config.stylePrefix + pfx;
+				cfg.em = this;
+				cfg.canvasId = this.config.idCanvas;
+				cfg.wrapperId = this.config.idWrapper;
+				this.com = new Commands(cfg);
+				this.Commands = this.com;
+				this.com.loadDefaultCommands();
+				this.set('Commands', this.com);
+			},
+
+			/**
+			 * Initialize canvas
+			 * @private
+			 * */
+			initCanvas: function() {
+				var cfg = this.config.canvas,
+				pfx = cfg.stylePrefix || 'cv-';
+				cfg.pStylePrefix	= this.config.stylePrefix;
+				cfg.stylePrefix	= this.config.stylePrefix + pfx;
+				cfg.canvasId	= this.config.idCanvas;
+				cfg.em = this;
+				this.cv = new Canvas(cfg);
+
+				if(this.cmp)
+					this.cv.setWrapper(this.cmp);
+				this.Canvas = this.cv;
+				this.set('Canvas', this.cv);
+			},
+
+			/**
 			 * Initialize editor model and set editor instance
 			 * @param {Editor} editor Editor instance
 			 * @return {this}
@@ -130,19 +165,6 @@ define([
 			 */
 			init: function(editor){
 				this.set('Editor', editor);
-			},
-
-			/**
-			 * Initialize Style Manager
-			 * @private
-			 * */
-			initStyleManager: function(){
-				var cfg = this.config.styleManager,
-				pfx	= cfg.stylePrefix || 'sm-';
-				cfg.pStylePrefix = this.config.stylePrefix;
-				cfg.stylePrefix	= this.config.stylePrefix + pfx;
-				cfg.target = this;
-				this.set('StyleManager', new StyleManager(cfg));
 			},
 
 			/**
@@ -254,43 +276,6 @@ define([
 				}
 
 				this.set('Components', this.cmp);
-			},
-
-			/**
-			 * Initialize canvas
-			 * @private
-			 * */
-			initCanvas: function() {
-				var cfg = this.config.canvas,
-				pfx = cfg.stylePrefix || 'cv-';
-				cfg.pStylePrefix	= this.config.stylePrefix;
-				cfg.stylePrefix	= this.config.stylePrefix + pfx;
-				cfg.canvasId	= this.config.idCanvas;
-				cfg.em = this;
-				this.cv = new Canvas(cfg);
-
-				if(this.cmp)
-					this.cv.setWrapper(this.cmp);
-				this.Canvas = this.cv;
-				this.set('Canvas', this.cv);
-			},
-
-			/**
-			 * Initialize Commands
-			 * @private
-			 * */
-			initCommands: function() {
-				var cfg = this.config.commands,
-					pfx = cfg.stylePrefix || 'com-';
-				cfg.pStylePrefix = this.config.stylePrefix;
-				cfg.stylePrefix = this.config.stylePrefix + pfx;
-				cfg.em = this;
-				cfg.canvasId = this.config.idCanvas;
-				cfg.wrapperId = this.config.idWrapper;
-				this.com = new Commands(cfg);
-				this.Commands = this.com;
-				this.com.loadDefaultCommands();
-				this.set('Commands', this.com);
 			},
 
 			/**

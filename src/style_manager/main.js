@@ -49,27 +49,52 @@
  */
 define(function(require) {
 
-	var StyleManager = function(config){
-		var c = config || {},
-			defaults = require('./config/config'),
-			Sectors = require('./model/Sectors'),
-			SectorsView = require('./view/SectorsView');
-
-		for (var name in defaults) {
-			if (!(name in c))
-				c[name] = defaults[name];
-		}
-
-		var sectors = new Sectors(c.sectors);
-		var obj = {
-				collection: sectors,
-				target: c.target,
-		    config: c,
-		};
-
-	  var SectView 	= new SectorsView(obj);
+	return function(){
+		var c = {},
+		defaults = require('./config/config'),
+		Sectors = require('./model/Sectors'),
+		SectorsView = require('./view/SectorsView');
+		var sectors, SectView;
 
 	  return {
+
+	  	/**
+       * Name of the module
+       * @type {String}
+       * @private
+       */
+      name: 'StyleManager',
+
+      /**
+       * Indicates if module is public
+       * @type {Boolean}
+       * @private
+       */
+      public: true,
+
+      /**
+       * Initialize module. Automatically called with a new instance of the editor
+       * @param {Object} config Configurations
+       */
+      init: function(config) {
+        c = config || {};
+        for (var name in defaults) {
+					if (!(name in c))
+						c[name] = defaults[name];
+				}
+
+				var ppfx = c.pStylePrefix;
+				if(ppfx)
+					c.stylePrefix = ppfx + c.stylePrefix;
+
+				sectors = new Sectors(c.sectors);
+	  		SectView 	= new SectorsView({
+					collection: sectors,
+					target: c.em,
+				  config: c,
+				});
+        return this;
+      },
 
 	  	/**
 			 * Add new sector to the collection. If the sector with the same id already exists,
@@ -208,6 +233,4 @@ define(function(require) {
 
 		};
 	};
-
-	return StyleManager;
 });

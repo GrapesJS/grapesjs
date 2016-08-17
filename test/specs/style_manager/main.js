@@ -36,7 +36,7 @@ define([
         var obj;
 
         beforeEach(function () {
-          obj = new StyleManager({
+          obj = new StyleManager().init({
             sectors: []
           });
         });
@@ -148,7 +148,7 @@ define([
         describe('Init with configuration', function() {
 
           beforeEach(function () {
-            obj = new StyleManager({
+            obj = new StyleManager().init({
               sectors: [{
                 id: 'dim',
                 name: 'Dimension',
