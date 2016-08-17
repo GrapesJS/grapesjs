@@ -56,7 +56,7 @@ define(function(require) {
       		return;
       	var u = 'px';
         var eOffset = c.em.get('canvasOffset');
-        var cvsView = c.em.get('Canvas').CanvasView;
+        var cvsView = c.em.get('Canvas').getCanvasView();
         var dims = cvsView.getElementPos(this.lastEl);
         var toolS = toolbar.el.style;
         var toolH = toolbar.$el.outerHeight();

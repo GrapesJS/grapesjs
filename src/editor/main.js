@@ -85,7 +85,7 @@ define(function (require){
 		  	/**
 				 * @property {DomComponents}
 				 */
-				DomComponents: em.get('Components'),
+				DomComponents: em.get('DomComponents'),
 
 				/**
 				 * @property {CssComposer}
@@ -201,7 +201,7 @@ define(function (require){
 				 * @return {Object}
 				 */
 				getComponents: function(){
-					return em.get('Components').getComponents();
+					return em.get('DomComponents').getComponents();
 				},
 
 				/**

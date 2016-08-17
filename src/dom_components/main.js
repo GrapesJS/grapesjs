@@ -36,9 +36,8 @@
  */
 define(function(require) {
 
-	var Components = function (config){
-
-		var c = config || {},
+	return function (){
+		var c = {},
 			defaults = require('./config/config'),
 			Component = require('./model/Component'),
 			ComponentText = require('./model/ComponentText'),
@@ -46,29 +45,115 @@ define(function(require) {
 			ComponentView = require('./view/ComponentView'),
 			ComponentImageView = require('./view/ComponentImageView'),
 			ComponentTextView	= require('./view/ComponentTextView');
-
-	  // Set default options
-		for (var name in defaults) {
-			if (!(name in c))
-				c[name] = defaults[name];
-		}
-
-		var component		= new Component(c.wrapper, { sm: c.em, config: c });
-
-		component.set({
-			attributes: {id: 'wrapper'}
-		});
-
-		component.get('components').add(c.components);
-
+		var component, componentView;
 		this.c = c;
 
-	  var componentView = new ComponentView({
-			model: component,
-			config: c,
-		});
-
 	  return {
+
+	  	/**
+       * Name of the module
+       * @type {String}
+       * @private
+       */
+      name: 'DomComponents',
+
+      /**
+       * Indicates if module is public
+       * @type {Boolean}
+       * @private
+       */
+      public: true,
+
+      /**
+       * Mandatory for the storage manager
+       * @type {String}
+       * @private
+       */
+      storageKey: 'html', // [css, style] ??
+
+      /**
+       * Initialize module. Automatically called with a new instance of the editor
+       * @param {Object} config Configurations
+       */
+      init: function(config) {
+        c = config || {};
+        c.components = c.em.config.components || c.components;
+
+        for (var name in defaults) {
+          if (!(name in c))
+            c[name] = defaults[name];
+        }
+
+        var ppfx = c.pStylePrefix;
+        if(ppfx)
+          c.stylePrefix = ppfx + c.stylePrefix;
+
+        // Load dependencies
+        c.rte = c.em.get('rte') || '';
+				c.modal = c.em.get('Modal') || '';
+				c.am = c.em.get('AssetManager') || '';
+
+        component = new Component(c.wrapper, { sm: c.em, config: c });
+				component.set({ attributes: {id: 'wrapper'}});
+				component.get('components').add(c.components);
+			  componentView = new ComponentView({
+					model: component,
+					config: c,
+				});
+
+        if(c.stm && c.stm.getConfig().autoload)
+            this.load();
+
+        if(c.stm && c.stm.isAutosave()){
+					c.em.initUndoManager();
+          c.em.initChildrenComp(this.getWrapper());
+        }
+        return this;
+      },
+
+      /**
+         * Load data from the passed object, if the object is empty will try to fetch them
+         * autonomously from the storage manager.
+         * The fetched data will be added to the collection
+         * @param {Object} data Object of data to load
+         * @return {Object} Loaded data
+         */
+        load: function(data){
+          var d = data || '';
+          if(!d && c.stm)
+            d = c.em.getCacheLoad();
+          var obj = '';
+          if(d.components){
+            try{
+              obj =  JSON.parse(d.components);
+            }catch(err){}
+          }else if(d.html)
+            obj = d.html;
+
+          this.getComponents().reset(obj);
+          return obj;
+        },
+
+        /**
+         * Store data to the selected storage
+         * @param {Boolean} noStore If true, won't store
+         * @return {Object} Data to store
+         * @example
+         * var rules = cssComposer.store();
+         */
+        store: function(noStore){
+          if(!c.stm)
+            return;
+          var obj = {};
+          var smc = c.stm.getConfig();
+          if(smc.storeHtml)
+            obj.html = c.em.getHtml();
+          if(smc.storeComponents)
+            obj.components = JSON.stringify(c.em.getComponents());
+          if(!noStore)
+            c.stm.store(obj);
+          return obj;
+        },
 
 			/**
 			 * Returns privately the main wrapper
@@ -190,6 +275,4 @@ define(function(require) {
 
 		};
 	};
-
-	return Components;
 });

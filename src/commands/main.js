@@ -39,56 +39,88 @@
  */
 define(function(require) {
 
-	var Commands = function(conf){
-
-		var c = conf || {},
+	return function() {
+		var c = {},
+			commands = {},
+			defaultCommands = {},
 			defaults = require('./config/config'),
 			AbsCommands = require('./view/CommandAbstract');
-
-		for (var name in defaults) {
-			if (!(name in c))
-				c[name] = defaults[name];
-		}
 
 		// Need it here as it would be used below
 		var add = function(id, obj){
 			delete obj.initialize;
-			commands[id] = Abstract.extend(obj);
+			commands[id] = AbsCommands.extend(obj);
 			return this;
 		};
 
-		var commands = {};
-		var config = c;
-		var Abstract = AbsCommands;
-
-		// Load commands passed via configuration
-		for( var k in c.defaults){
-			var obj = c.defaults[k];
-			if(obj.id)
-				add(obj.id, obj);
-		}
-
-		var defaultCommands = {};
-		defaultCommands['select-comp'] = require('./view/SelectComponent');
-		defaultCommands['create-comp'] = require('./view/CreateComponent');
-		defaultCommands['delete-comp'] = require('./view/DeleteComponent');
-		defaultCommands['image-comp'] = require('./view/ImageComponent');
-		defaultCommands['move-comp'] = require('./view/MoveComponent');
-		defaultCommands['text-comp'] = require('./view/TextComponent');
-		defaultCommands['insert-custom'] = require('./view/InsertCustom');
-		defaultCommands['export-template'] = require('./view/ExportTemplate');
-		defaultCommands['sw-visibility'] = require('./view/SwitchVisibility');
-		defaultCommands['open-layers'] = require('./view/OpenLayers');
-		defaultCommands['open-sm'] = require('./view/OpenStyleManager');
-		defaultCommands['open-blocks'] = require('./view/OpenBlocks');
-		defaultCommands.fullscreen = require('./view/Fullscreen');
-		defaultCommands.preview = require('./view/Preview');
-		//this.defaultCommands['resize-comp'] 	= require('./view/ResizeComponent');
-
-		if(config.em)
-			config.model = config.em.get('Canvas');
-
 		return {
+
+			/**
+       * Name of the module
+       * @type {String}
+       * @private
+       */
+      name: 'Commands',
+
+      /**
+       * Indicates if module is public
+       * @type {Boolean}
+       * @private
+       */
+      public: true,
+
+      /**
+       * Initialize module. Automatically called with a new instance of the editor
+       * @param {Object} config Configurations
+       * @private
+       */
+      init: function(config) {
+        c = config || {};
+        for (var name in defaults) {
+					if (!(name in c))
+						c[name] = defaults[name];
+				}
+
+				var ppfx = c.pStylePrefix;
+				if(ppfx)
+					c.stylePrefix = ppfx + c.stylePrefix;
+
+				// Load commands passed via configuration
+				for( var k in c.defaults){
+					var obj = c.defaults[k];
+					if(obj.id)
+						this.add(obj.id, obj);
+				}
+
+				defaultCommands['select-comp'] = require('./view/SelectComponent');
+				defaultCommands['create-comp'] = require('./view/CreateComponent');
+				defaultCommands['delete-comp'] = require('./view/DeleteComponent');
+				defaultCommands['image-comp'] = require('./view/ImageComponent');
+				defaultCommands['move-comp'] = require('./view/MoveComponent');
+				defaultCommands['text-comp'] = require('./view/TextComponent');
+				defaultCommands['insert-custom'] = require('./view/InsertCustom');
+				defaultCommands['export-template'] = require('./view/ExportTemplate');
+				defaultCommands['sw-visibility'] = require('./view/SwitchVisibility');
+				defaultCommands['open-layers'] = require('./view/OpenLayers');
+				defaultCommands['open-sm'] = require('./view/OpenStyleManager');
+				defaultCommands['open-blocks'] = require('./view/OpenBlocks');
+				defaultCommands.fullscreen = require('./view/Fullscreen');
+				defaultCommands.preview = require('./view/Preview');
+				//this.defaultCommands['resize-comp'] 	= require('./view/ResizeComponent');
+
+				if(c.em)
+					c.model = c.em.get('Canvas');
+
+        return this;
+      },
+
+      /**
+       * On load callback
+       * @private
+       */
+      onLoad: function() {
+      	this.loadDefaultCommands();
+      },
 
 			/**
 			 * Add new command to the collection
@@ -118,7 +150,7 @@ define(function(require) {
 				var el = commands[id];
 
 				if(typeof el == 'function'){
-					el = new el(config);
+					el = new el(c);
 					commands[id]	= el;
 				}
 
@@ -140,6 +172,4 @@ define(function(require) {
 		};
 
 	};
-
-	return Commands;
 });

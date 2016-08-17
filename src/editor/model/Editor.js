@@ -1,10 +1,6 @@
 var deps = ['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'DeviceManager', 'Parser', 'SelectorManager',
-					'ModalDialog', 'AssetManager', 'CodeManager', 'Panels', 'RichTextEditor', 'StyleManager',
-        'BlockManager',
-        'CssComposer',
-        'Commands',
-        'Canvas',
-        'DomComponents'];
+					'ModalDialog', 'AssetManager', 'CodeManager', 'Panels', 'RichTextEditor', 'StyleManager', 'Commands', 'CssComposer',
+					'DomComponents', 'Canvas', 'BlockManager'];
 define([
         'backbone',
         'backboneUndo',
@@ -78,12 +74,12 @@ define([
 				this.loadModule('Panels'); // no deps
 				this.loadModule('RichTextEditor'); // no deps
 				this.loadModule('StyleManager'); // no deps
-				this.initCommands();
-				this.initCssComposer();
-				this.initComponents(); // Requires AssetManager and Dialog for images components
-				this.initCanvas(); // Requires RTE and Components
-				this.initUndoManager();
+				this.loadModule('Commands'); // dep Canvas
+				this.loadModule('CssComposer'); // dep Canvas
+				this.loadModule('DomComponents'); // Requires AssetManager and Dialog for images components
+				this.loadModule('Canvas'); // Requires RTE and Components
 				this.loadModule('BlockManager'); // Requires utils, canvas
+				this.initUndoManager(); // Is already called (components and css composer)
 
 				this.on('change:selectedComponent', this.componentSelected, this);
 			},
@@ -121,43 +117,6 @@ define([
 			},
 
 			/**
-			 * Initialize Commands
-			 * @private
-			 * */
-			initCommands: function() {
-				var cfg = this.config.commands,
-					pfx = cfg.stylePrefix || 'com-';
-				cfg.pStylePrefix = this.config.stylePrefix;
-				cfg.stylePrefix = this.config.stylePrefix + pfx;
-				cfg.em = this;
-				cfg.canvasId = this.config.idCanvas;
-				cfg.wrapperId = this.config.idWrapper;
-				this.com = new Commands(cfg);
-				this.Commands = this.com;
-				this.com.loadDefaultCommands();
-				this.set('Commands', this.com);
-			},
-
-			/**
-			 * Initialize canvas
-			 * @private
-			 * */
-			initCanvas: function() {
-				var cfg = this.config.canvas,
-				pfx = cfg.stylePrefix || 'cv-';
-				cfg.pStylePrefix	= this.config.stylePrefix;
-				cfg.stylePrefix	= this.config.stylePrefix + pfx;
-				cfg.canvasId	= this.config.idCanvas;
-				cfg.em = this;
-				this.cv = new Canvas(cfg);
-
-				if(this.cmp)
-					this.cv.setWrapper(this.cmp);
-				this.Canvas = this.cv;
-				this.set('Canvas', this.cv);
-			},
-
-			/**
 			 * Initialize editor model and set editor instance
 			 * @param {Editor} editor Editor instance
 			 * @return {this}
@@ -165,34 +124,6 @@ define([
 			 */
 			init: function(editor){
 				this.set('Editor', editor);
-			},
-
-			/**
-			 * Initialize Css Composer
-			 * @private
-			 * */
-			initCssComposer: function() {
-				var elStyle = this.config.style || '';
-				var cfg = _.clone(this.config.cssComposer),
-				df = '';
-				pfx	= cfg.stylePrefix || 'css-';
-				cfg.stylePrefix	= this.config.stylePrefix + pfx;
-
-				if(this.get('StorageManager').getConfig().autoload)
-					df = this.loadRules();
-
-				if(elStyle)
-					cfg.defaults = elStyle;
-
-				if(df)
-					cfg.defaults = df;
-
-				cfg.sm = this;
-				this.cssc = new CssComposer(cfg);
-				this.CssComposer = this.cssc;
-				this.set('CssComposer', this.cssc);
-				if(this.get('StorageManager').isAutosave())
-					this.listenRules(this.cssc.getRules());
 			},
 
 			/**
@@ -234,48 +165,9 @@ define([
 					return;
 
 				if(!avSt){
-					this.storeRules();
+					this.store();
 					this.set('changesCount', 0);
 				}
-			},
-
-			/**
-			 * Initialize components
-			 * @private
-			 * */
-			initComponents: function() {
-				this.config.domComponents.components = this.config.components;
-				var cfg = this.config.domComponents,
-				comp = '',
-				cmpStylePfx	= cfg.stylePrefix || 'comp-';
-
-				if(this.get('StorageManager').getConfig().autoload)
-					comp = this.loadComponents();
-
-				cfg.pStylePrefix	= this.config.stylePrefix;
-				cfg.stylePrefix	= this.config.stylePrefix + cmpStylePfx;
-
-				if(comp)
-					cfg.components = comp;
-
-				cfg.rte = this.get('rte') || '';
-
-				cfg.modal = this.get('Modal') || '';
-
-				cfg.am = this.get('AssetManager') || '';
-
-				cfg.em = this;
-
-				this.cmp = new DomComponents(cfg);
-				this.Components = this.cmp;
-
-				if(this.get('StorageManager').isAutosave()){
-					// Call UndoManager here so it's possible to call it also for children inside
-					this.initUndoManager();
-					this.initChildrenComp(this.cmp.getWrapper());
-				}
-
-				this.set('Components', this.cmp);
 			},
 
 			/**
@@ -288,7 +180,7 @@ define([
 				if(this.cmp && this.config.undoManager){
 					var that = this;
 					this.um = new Backbone.UndoManager({
-					    register: [this.cmp.getComponents(), this.cssc.getRules()],
+					    register: [this.cmp.getComponents(), this.get('CssComposer').getRules()],
 					    track: true
 					});
 					this.UndoManager = this.um;
@@ -345,7 +237,7 @@ define([
 				}
 
 				if(!avSt){
-					this.storeComponents();
+					this.store();
 					this.set('changesCount', 0);
 				}
 			},
@@ -368,7 +260,7 @@ define([
 			 * Load components from storage
 			 * @return	{Object}
 			 * @private
-			 * */
+			 * *
 			loadComponents: function() {
 				var comps = '';
 				var result = this.getCacheLoad();
@@ -381,21 +273,13 @@ define([
 					comps = result.html;
 
 				return comps;
-			},
-
-			/**
-			 * Save components to storage
-			 * @private
-			 * */
-			storeComponents: function() {
-				this.store();
-			},
+			},*/
 
 			/**
 			 * Load rules from storage
 			 * @return {Array<Object>}
 			 * @private
-			 * */
+			 * *
 			loadRules: function() {
 				var comps = '';
 				var result = this.getCacheLoad();
@@ -408,15 +292,7 @@ define([
 					comps = this.get('Parser').parseCss(result.css);
 
 				return comps;
-			},
-
-			/**
-			 * Save rules to storage
-			 * @private
-			 * */
-			storeRules: function() {
-				this.store();
-			},
+			},*/
 
 			/**
 			 * Triggered when components are updated
@@ -505,7 +381,7 @@ define([
 			 * @private
 			 */
 			getComponents: function(){
-				var cmp = this.get('Components');
+				var cmp = this.get('DomComponents');
 				var cm = this.get('CodeManager');
 
 				if(!cmp || !cm)
@@ -522,7 +398,7 @@ define([
 			 * @private
 			 */
 			setStyle: function(style){
-				var rules = this.CssComposer.getRules();
+				var rules = this.get('CssComposer').getRules();
 				for(var i = 0, len = rules.length; i < len; i++)
 					rules.pop();
 				rules.add(style);
@@ -535,7 +411,7 @@ define([
 			 * @private
 			 */
 			getStyle: function(){
-				return this.CssComposer.getRules();
+				return this.get('CssComposer').getRules();
 			},
 
 			/**
@@ -544,7 +420,7 @@ define([
 			 * @private
 			 */
 			getHtml: function(){
-				var cmp = this.get('Components');
+				var cmp = this.get('DomComponents');
 				var cm = this.get('CodeManager');
 
 				if(!cmp || !cm)
@@ -560,7 +436,7 @@ define([
 			 * @private
 			 */
 			getCss: function(){
-				var cmp = this.get('Components');
+				var cmp = this.get('DomComponents');
 				var cm = this.get('CodeManager');
 				var cssc = this.get('CssComposer');
 
@@ -584,7 +460,7 @@ define([
 
 				var smc = sm.getConfig();
 				var store = {};
-
+				/*
 				if(smc.storeHtml)
 					store.html = this.getHtml();
 
@@ -596,13 +472,13 @@ define([
 
 				if(smc.storeStyles)
 					store.styles = JSON.stringify(this.getStyle());
-
+				*/
 				this.get('storables').forEach(function(m){
 					var obj = m.store(1);
 					for(var el in obj)
 						store[el] = obj[el];
 				});
-
+				console.log('TO STORE', store);
 				sm.store(store);
 				return store;
 			},

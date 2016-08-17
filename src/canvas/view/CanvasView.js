@@ -126,7 +126,7 @@ function(Backbone, FrameView) {
       if(rte)
         this.toolsEl.appendChild(rte.render());
 
-			this.$el.attr({class: this.className, id: this.config.canvasId});
+			this.$el.attr({class: this.className});
 			return this;
 		},
 

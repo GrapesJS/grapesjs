@@ -4,31 +4,120 @@ define(function(require) {
    * @param   {Object} config Configurations
    *
    * */
-  var CssComposer  = function(config)
-  {
-    var c = config || {},
-      def = require('./config/config'),
-      CssRule = require('./model/CssRule'),
-      CssRules = require('./model/CssRules'),
-      Selectors = require('./model/Selectors'),
-      CssRulesView = require('./view/CssRulesView');
+  return function() {
+    var c = {},
+    defaults = require('./config/config'),
+    CssRule = require('./model/CssRule'),
+    CssRules = require('./model/CssRules'),
+    Selectors = require('./model/Selectors'),
+    CssRulesView = require('./view/CssRulesView');
 
-    for (var name in def) {
-      if (!(name in c))
-        c[name] = def[name];
-    }
-
-    var rules = new CssRules([], c);
-    rules.add(c.defaults);
-
-    var rulesView = new CssRulesView({
-      collection: rules,
-      config: c,
-    });
+    var rules, rulesView;
 
     return {
 
         Selectors: Selectors,
+
+        /**
+         * Name of the module
+         * @type {String}
+         * @private
+         */
+        name: 'CssComposer',
+
+        /**
+         * Indicates if module is public
+         * @type {Boolean}
+         * @private
+         */
+        public: true,
+
+        /**
+         * Mandatory for the storage manager
+         * @type {String}
+         * @private
+         */
+        storageKey: 'css', // [css, style] ??
+
+        /**
+         * Initialize module. Automatically called with a new instance of the editor
+         * @param {Object} config Configurations
+         */
+        init: function(config) {
+          c = config || {};
+          for (var name in defaults) {
+            if (!(name in c))
+              c[name] = defaults[name];
+          }
+
+          var ppfx = c.pStylePrefix;
+          if(ppfx)
+            c.stylePrefix = ppfx + c.stylePrefix;
+
+          var elStyle = c.em.config.style || '';
+          c.defaults = elStyle || c.defaults;
+
+          c.sm = c.em; // TODO Refactor
+          rules = new CssRules([], c);
+          rules.add(c.defaults);
+
+          // Load if requested
+          if(c.stm && c.stm.getConfig().autoload)
+            this.load();
+
+          rulesView = new CssRulesView({
+            collection: rules,
+            config: c,
+          });
+
+          if(c.stm && c.stm.isAutosave())
+            c.em.listenRules(this.getRules());
+          return this;
+        },
+
+        /**
+         * Load data from the passed object, if the object is empty will try to fetch them
+         * autonomously from the storage manager.
+         * The fetched data will be added to the collection
+         * @param {Object} data Object of data to load
+         * @return {Object} Loaded rules
+         */
+        load: function(data){
+          var d = data || '';
+          if(!d && c.stm)
+            d = c.em.getCacheLoad();
+          var obj = '';
+          if(d.style){
+            try{
+              obj =  JSON.parse(d.style);
+            }catch(err){}
+          }else if(d.css)
+            obj = c.em.get('Parser').parseCss(d.css);
+
+          rules.reset(obj);
+          return obj;
+        },
+
+        /**
+         * Store data to the selected storage
+         * @param {Boolean} noStore If true, won't store
+         * @return {Object} Data to store
+         * @example
+         * var rules = cssComposer.store();
+         */
+        store: function(noStore){
+          if(!c.stm)
+            return;
+          var obj = {};
+          var smc = c.stm.getConfig();
+          if(smc.storeCss)
+            obj.css = c.em.getCss();
+          if(smc.storeStyles)
+            obj.styles = JSON.stringify(rules);
+          if(!noStore)
+            c.stm.store(obj);
+          return obj;
+        },
 
         /**
          * Create new rule and return it. Don't add it to the collection
@@ -102,7 +191,5 @@ define(function(require) {
 
       };
   };
-
-  return CssComposer;
 
 });

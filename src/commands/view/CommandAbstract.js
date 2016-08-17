@@ -14,8 +14,6 @@ define(['backbone'],
 			initialize: function(o) {
 				this.config				= o || {};
 				this.editorModel 	= this.em = this.config.em || {};
-				this.canvasId			= this.config.canvasId 	|| '';
-				this.wrapperId		= this.config.wrapperId 	|| 'wrapper';
 				this.pfx					= this.config.stylePrefix;
 				this.ppfx					= this.config.pStylePrefix;
 				this.hoverClass		= this.pfx + 'hover';
@@ -23,7 +21,7 @@ define(['backbone'],
 				this.plhClass			= this.pfx + 'placeholder';
 				this.freezClass		= this.ppfx + 'freezed';
 
-				this.canvas = this.editorModel.Canvas;
+				this.canvas = this.editorModel.get('Canvas');
 
 				if(this.editorModel.get)
 					this.setElement(this.getCanvas());

@@ -53,8 +53,9 @@ define([ 'backbone', 'require'],
 					var parsed = this.editor.get('Parser').parseHtml(models);
 					models = parsed.html;
 
-					if(parsed.css)
-						this.editor.CssComposer.getRules().add(parsed.css);
+					var cssc = this.editor.get('CssComposer');
+					if(parsed.css && cssc)
+						cssc.getRules().add(parsed.css);
 				}
 
 				return Backbone.Collection.prototype.add.apply(this, [models, opt]);

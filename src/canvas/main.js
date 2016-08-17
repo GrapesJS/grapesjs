@@ -1,31 +1,65 @@
 define(function(require) {
 	/**
-	 * @class 	Canvas
-	 * @param 	{Object} Configurations
-	 *
-	 * @return	{Object}
+	 * @class 	Canvas}
  	 * */
-	var Canvas	= function(config) {
-		var c			= config || {},
-			defaults	= require('./config/config'),
-			Canvas		= require('./model/Canvas'),
-			CanvasView	= require('./view/CanvasView');
+	return function() {
+		var c = {},
+		defaults = require('./config/config'),
+		Canvas = require('./model/Canvas'),
+		CanvasView = require('./view/CanvasView');
+		var canvas;
 
-		for (var name in defaults) {
-			if (!(name in c))
-				c[name] = defaults[name];
-		}
+		return {
 
-		this.canvas		= new Canvas(config);
-		var obj			= {
-				model	: this.canvas,
-		    config	: c,
-		};
+      /**
+       * Used inside RTE
+       * @private
+       */
+      getCanvasView: function() {
+        return CanvasView;
+      },
 
-		this.CanvasView	= new CanvasView(obj);
-	};
+			/**
+       * Name of the module
+       * @type {String}
+       * @private
+       */
+      name: 'Canvas',
 
-	Canvas.prototype	= {
+      /**
+       * Indicates if module is public
+       * @type {Boolean}
+       * @private
+       */
+      public: true,
+
+      /**
+       * Initialize module. Automatically called with a new instance of the editor
+       * @param {Object} config Configurations
+       */
+      init: function(config) {
+        c = config || {};
+        for (var name in defaults) {
+					if (!(name in c))
+						c[name] = defaults[name];
+				}
+
+				var ppfx = c.pStylePrefix;
+				if(ppfx)
+					c.stylePrefix = ppfx + c.stylePrefix;
+
+				canvas = new Canvas(config);
+				CanvasView	= new CanvasView({
+					model: canvas,
+				  config: c,
+				});
+
+				var cm = c.em.get('DomComponents');
+				if(cm)
+					this.setWrapper(cm);
+
+        return this;
+      },
 
 			/**
 			 * Add wrapper
@@ -33,7 +67,7 @@ define(function(require) {
 			 *
 			 * */
 			setWrapper: function(wrp) {
-				this.canvas.set('wrapper', wrp);
+				canvas.set('wrapper', wrp);
 			},
 
 			/**
@@ -41,7 +75,7 @@ define(function(require) {
 			 * @return {HTMLElement}
 			 */
 			getElement: function(){
-				return this.CanvasView.el;
+				return CanvasView.el;
 			},
 
 			/**
@@ -49,7 +83,7 @@ define(function(require) {
 			 * @return {HTMLElement}
 			 */
 			getFrameEl: function(){
-				return this.CanvasView.frame.el;
+				return CanvasView.frame.el;
 			},
 
 			/**
@@ -57,7 +91,7 @@ define(function(require) {
 			 * @return {HTMLElement}
 			 */
 			getBody: function(){
-				return this.CanvasView.frame.el.contentDocument.body;
+				return CanvasView.frame.el.contentDocument.body;
 			},
 
 			/**
@@ -73,7 +107,7 @@ define(function(require) {
 			 * @return {HTMLElement}
 			 */
 			getToolsEl: function(){
-				return this.CanvasView.toolsEl;
+				return CanvasView.toolsEl;
 			},
 
 			/**
@@ -81,7 +115,7 @@ define(function(require) {
 			 * @return {HTMLElement}
 			 */
 			getHighlighter: function(){
-				return this.CanvasView.hlEl;
+				return CanvasView.hlEl;
 			},
 
 			/**
@@ -89,7 +123,7 @@ define(function(require) {
 			 * @return {HTMLElement}
 			 */
 			getBadgeEl: function(){
-				return this.CanvasView.badgeEl;
+				return CanvasView.badgeEl;
 			},
 
 			/**
@@ -97,7 +131,7 @@ define(function(require) {
 			 * @return {HTMLElement}
 			 */
 			getPlacerEl: function(){
-				return this.CanvasView.placerEl;
+				return CanvasView.placerEl;
 			},
 
 			/**
@@ -106,14 +140,14 @@ define(function(require) {
 			 * @private
 			 */
 			getGhostEl: function(){
-				return this.CanvasView.ghostEl;
+				return CanvasView.ghostEl;
 			},
 
 			/**
 			 * Render canvas
 			 * */
 			render: function() {
-				return	this.CanvasView.render().el;
+				return CanvasView.render().el;
 			},
 
 			/**
@@ -150,9 +184,9 @@ define(function(require) {
 			 * ????
 			 */
 			getFrameWrapperEl: function(){
-				return this.CanvasView.frame.getWrapper();
+				return CanvasView.frame.getWrapper();
 			},
+		};
 	};
 
-	return Canvas;
 });

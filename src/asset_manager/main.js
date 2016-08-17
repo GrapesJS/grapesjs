@@ -41,7 +41,7 @@ define(function(require) {
 	  	public: true,
 
 	  	/**
-	  	 * Manda
+	  	 * Mandatory for the storage manager
 	  	 * @type {String}
 	  	 * @private
 	  	 */
