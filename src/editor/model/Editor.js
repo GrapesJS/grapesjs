@@ -1,9 +1,7 @@
-var deps = ['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'DeviceManager', 'Parser', 'SelectorManager',
+var dep = ['Utils', 'StorageManager', 'DeviceManager', 'Parser', 'SelectorManager',
 					'ModalDialog', 'CodeManager', 'Panels', 'RichTextEditor', 'StyleManager', 'AssetManager', 'CssComposer',
 					'DomComponents', 'Canvas', 'Commands', 'BlockManager'];
-define(deps, function(backbone, backboneUndo, keymaster, Utils, StorageManager, DeviceManager, Parser, SelectorManager,
-					ModalDialog, CodeManager, Panels, RichTextEditor, StyleManager, AssetManager, CssComposer,
-					DomComponents, Canvas, Commands, BlockManager){
+define(['backbone', 'backboneUndo', 'keymaster'].concat(dep), function(){
 		return Backbone.Model.extend({
 
 			defaults: {
@@ -23,33 +21,11 @@ define(deps, function(backbone, backboneUndo, keymaster, Utils, StorageManager, 
 					this.config.components = c.el.innerHTML;
 
 				// Load modules
-				/*
-				deps.forEach(function(name){
+				dep.forEach(function(name){
 					if(['backbone','backboneUndo','keymaster'].indexOf(name) >= 0)
 						return;
 					this.loadModule(name);
 				}, this);
-				*/
-
-				/*
-				var t = new DomComponents();
-				this.loadModule(Utils);
-				this.loadModule(StorageManager);
-				this.loadModule(DeviceManager);
-				this.loadModule(Parser);
-				this.loadModule(SelectorManager);
-				this.loadModule(ModalDialog);
-				this.loadModule(CodeManager);
-				this.loadModule(Panels);
-				this.loadModule(RichTextEditor);
-				this.loadModule(StyleManager);
-				this.loadModule(AssetManager);
-				this.loadModule(CssComposer);
-				this.loadModule(DomComponents);
-				this.loadModule(Canvas);
-				this.loadModule(Commands);
-				this.loadModule(BlockManager);
-				*/
 
 				this.initUndoManager(); // Is already called (inside components and css composer)
 
@@ -64,7 +40,6 @@ define(deps, function(backbone, backboneUndo, keymaster, Utils, StorageManager, 
 			loadModule: function(moduleName) {
 				var c = this.config;
 				var M = new require(moduleName)();
-				//var M = new moduleName();
 				var name = M.name.charAt(0).toLowerCase() + M.name.slice(1);
 				var cfg = c[name] || c[M.name] || {};
 				cfg.pStylePrefix = c.stylePrefix || '';
