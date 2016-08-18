@@ -17,13 +17,6 @@ define(function(require) {
       name: 'Parser',
 
       /**
-       * Indicates if module is public
-       * @type {Boolean}
-       * @private
-       */
-      public: true,
-
-      /**
        * Initialize module. Automatically called with a new instance of the editor
        * @param {Object} config Configurations
        * @param {Array<Object>} [config.blocks=[]] Default blocks

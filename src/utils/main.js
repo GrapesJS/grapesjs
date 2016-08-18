@@ -13,13 +13,6 @@ define(function(require) {
       name: 'Utils',
 
       /**
-       * Indicates if module is public
-       * @type {Boolean}
-       * @private
-       */
-      public: true,
-
-      /**
        * Initialize module
        */
       init: function() {

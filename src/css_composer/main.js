@@ -26,18 +26,19 @@ define(function(require) {
         name: 'CssComposer',
 
         /**
-         * Indicates if module is public
-         * @type {Boolean}
-         * @private
-         */
-        public: true,
-
-        /**
          * Mandatory for the storage manager
          * @type {String}
          * @private
          */
-        storageKey: 'css', // [css, style] ??
+        storageKey: function(){
+          var keys = [];
+          var smc = c.stm.getConfig() || {};
+          if(smc.storeCss)
+            keys.push('css');
+          if(smc.storeStyles)
+            keys.push('style');
+          return keys;
+        },
 
         /**
          * Initialize module. Automatically called with a new instance of the editor
@@ -109,10 +110,10 @@ define(function(require) {
           if(!c.stm)
             return;
           var obj = {};
-          var smc = c.stm.getConfig();
-          if(smc.storeCss)
+          var keys = this.storageKey();
+          if(keys.indexOf('css') >= 0)
             obj.css = c.em.getCss();
-          if(smc.storeStyles)
+          if(keys.indexOf('style') >= 0)
             obj.styles = JSON.stringify(rules);
           if(!noStore)
             c.stm.store(obj);

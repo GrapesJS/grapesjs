@@ -34,13 +34,6 @@ define(function(require) {
 	  	name: 'AssetManager',
 
 	  	/**
-	  	 * Indicates if module is public
-	  	 * @type {Boolean}
-	  	 * @private
-	  	 */
-	  	public: true,
-
-	  	/**
 	  	 * Mandatory for the storage manager
 	  	 * @type {String}
 	  	 * @private

@@ -1,47 +1,9 @@
 var deps = ['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'DeviceManager', 'Parser', 'SelectorManager',
-					'ModalDialog', 'AssetManager', 'CodeManager', 'Panels', 'RichTextEditor', 'StyleManager', 'Commands', 'CssComposer',
-					'DomComponents', 'Canvas', 'BlockManager'];
-define([
-        'backbone',
-        'backboneUndo',
-        'keymaster',
-        'AssetManager',
-        'BlockManager',
-        'StorageManager',
-        'DeviceManager',
-        'ModalDialog',
-        'CodeManager',
-        'CssComposer',
-        'Commands',
-        'Canvas',
-        'RichTextEditor',
-        'DomComponents',
-        'SelectorManager',
-        'StyleManager',
-        'Panels',
-        'Parser',
-        'Utils'],
-	function(
-			Backbone,
-			UndoManager,
-			Keymaster,
-			AssetManager,
-			BlockManager,
-			StorageManager,
-			DeviceManager,
-			ModalDialog,
-			CodeManager,
-			CssComposer,
-			Commands,
-			Canvas,
-			RichTextEditor,
-			DomComponents,
-			SelectorManager,
-			StyleManager,
-			Panels,
-			Parser,
-			Utils
-			){
+					'ModalDialog', 'CodeManager', 'Panels', 'RichTextEditor', 'StyleManager', 'AssetManager', 'CssComposer',
+					'DomComponents', 'Canvas', 'Commands', 'BlockManager'];
+define(deps, function(backbone, backboneUndo, keymaster, Utils, StorageManager, DeviceManager, Parser, SelectorManager,
+					ModalDialog, CodeManager, Panels, RichTextEditor, StyleManager, AssetManager, CssComposer,
+					DomComponents, Canvas, Commands, BlockManager){
 		return Backbone.Model.extend({
 
 			defaults: {
@@ -55,31 +17,41 @@ define([
 
 			initialize: function(c) {
 				this.config = c;
-				this.pfx = this.config.storagePrefix;
-				this.compName	= this.pfx + 'components' + this.config.id;
-				this.rulesName	= this.pfx + 'rules' + this.config.id;
 				this.set('Config', c);
 
 				if(c.el && c.fromElement)
 					this.config.components = c.el.innerHTML;
 
-				this.loadModule('Utils'); // no dep
-				this.loadModule('StorageManager'); // No dep
-				this.loadModule('DeviceManager'); // No dep
-				this.loadModule('Parser'); // No dep
-				this.loadModule('SelectorManager'); // No dep
-				this.loadModule('ModalDialog'); // No dep
-				this.loadModule('AssetManager'); // requires SelectorManager
-				this.loadModule('CodeManager'); // no deps
-				this.loadModule('Panels'); // no deps
-				this.loadModule('RichTextEditor'); // no deps
-				this.loadModule('StyleManager'); // no deps
-				this.loadModule('Commands'); // dep Canvas
-				this.loadModule('CssComposer'); // dep Canvas
-				this.loadModule('DomComponents'); // Requires AssetManager and Dialog for images components
-				this.loadModule('Canvas'); // Requires RTE and Components
-				this.loadModule('BlockManager'); // Requires utils, canvas
-				this.initUndoManager(); // Is already called (components and css composer)
+				// Load modules
+				/*
+				deps.forEach(function(name){
+					if(['backbone','backboneUndo','keymaster'].indexOf(name) >= 0)
+						return;
+					this.loadModule(name);
+				}, this);
+				*/
+
+				/*
+				var t = new DomComponents();
+				this.loadModule(Utils);
+				this.loadModule(StorageManager);
+				this.loadModule(DeviceManager);
+				this.loadModule(Parser);
+				this.loadModule(SelectorManager);
+				this.loadModule(ModalDialog);
+				this.loadModule(CodeManager);
+				this.loadModule(Panels);
+				this.loadModule(RichTextEditor);
+				this.loadModule(StyleManager);
+				this.loadModule(AssetManager);
+				this.loadModule(CssComposer);
+				this.loadModule(DomComponents);
+				this.loadModule(Canvas);
+				this.loadModule(Commands);
+				this.loadModule(BlockManager);
+				*/
+
+				this.initUndoManager(); // Is already called (inside components and css composer)
 
 				this.on('change:selectedComponent', this.componentSelected, this);
 			},
@@ -92,9 +64,10 @@ define([
 			loadModule: function(moduleName) {
 				var c = this.config;
 				var M = new require(moduleName)();
+				//var M = new moduleName();
 				var name = M.name.charAt(0).toLowerCase() + M.name.slice(1);
 				var cfg = c[name] || c[M.name] || {};
-				cfg.pStylePrefix = c.stylePrefix;
+				cfg.pStylePrefix = c.stylePrefix || '';
 
 				// Check if module is storable
 				var sm = this.get('StorageManager');
@@ -107,12 +80,14 @@ define([
 				cfg.em = this;
 				M.init(cfg);
 
+				// Bind the module to the editor model if public
+				if(!M.private)
+					this.set(M.name, M);
+
+				// Load callback
 				if(M.onLoad)
 					M.onLoad();
 
-				// Bind the module to the editor model if public
-				if(M.public)
-					this.set(M.name, M);
 				return this;
 			},
 
@@ -177,10 +152,11 @@ define([
 			initUndoManager: function() {
 				if(this.um)
 					return;
-				if(this.cmp && this.config.undoManager){
+				var cmp = this.get('DomComponents');
+				if(cmp && this.config.undoManager){
 					var that = this;
 					this.um = new Backbone.UndoManager({
-					    register: [this.cmp.getComponents(), this.get('CssComposer').getRules()],
+					    register: [cmp.getComponents(), this.get('CssComposer').getRules()],
 					    track: true
 					});
 					this.UndoManager = this.um;
@@ -255,44 +231,6 @@ define([
 				else
 					this.trigger('select-comp',[model,val,options]);
 			},
-
-			/**
-			 * Load components from storage
-			 * @return	{Object}
-			 * @private
-			 * *
-			loadComponents: function() {
-				var comps = '';
-				var result = this.getCacheLoad();
-
-				if(result.components){
-					try{
-						comps	=  JSON.parse(result.components);
-					}catch(err){}
-				}else if(result.html)
-					comps = result.html;
-
-				return comps;
-			},*/
-
-			/**
-			 * Load rules from storage
-			 * @return {Array<Object>}
-			 * @private
-			 * *
-			loadRules: function() {
-				var comps = '';
-				var result = this.getCacheLoad();
-
-				if(result.style){
-					try{
-						comps	=  JSON.parse(result.style);
-					}catch(err){}
-				}else if(result.css)
-					comps = this.get('Parser').parseCss(result.css);
-
-				return comps;
-			},*/
 
 			/**
 			 * Triggered when components are updated
@@ -454,31 +392,17 @@ define([
 			 */
 			store: function(){
 				var sm = this.get('StorageManager');
-
+				var store = {};
 				if(!sm)
 					return;
 
-				var smc = sm.getConfig();
-				var store = {};
-				/*
-				if(smc.storeHtml)
-					store.html = this.getHtml();
-
-				if(smc.storeComponents)
-					store.components = JSON.stringify(this.getComponents());
-
-				if(smc.storeCss)
-					store.css = this.getCss();
-
-				if(smc.storeStyles)
-					store.styles = JSON.stringify(this.getStyle());
-				*/
+				// Fetch what to store
 				this.get('storables').forEach(function(m){
 					var obj = m.store(1);
 					for(var el in obj)
 						store[el] = obj[el];
 				});
-				console.log('TO STORE', store);
+
 				sm.store(store);
 				return store;
 			},
@@ -493,8 +417,6 @@ define([
 				this.get('storables').forEach(function(m){
 					m.load(result);
 				});
-				//this.setComponents(result.components || result.html);
-				//this.setStyle(result.styles || result.css);
 				return result;
 			},
 
@@ -506,36 +428,24 @@ define([
 			 */
 			getCacheLoad: function(force){
 				var f = force ? 1 : 0;
-
 				if(this.cacheLoad && !f)
 					return this.cacheLoad;
-
 				var sm = this.get('StorageManager');
 				var load = [];
 
 				if(!sm)
 					return {};
 
-				var smc = sm.getConfig();
-
-				if(smc.storeHtml)
-					load.push('html');
-
-				if(smc.storeComponents)
-					load.push('components');
-
-				if(smc.storeCss)
-					load.push('css');
-
-				if(smc.storeStyles)
-					load.push('styles');
-
 				this.get('storables').forEach(function(m){
-					load.push(m.storageKey);
+					var key = m.storageKey;
+					key = typeof key === 'function' ? key() : key;
+					keys = key instanceof Array ? key : [key];
+					keys.forEach(function(k){
+						load.push(k);
+					});
 				});
 
 				this.cacheLoad = sm.load(load);
-
 				return this.cacheLoad;
 			},
 

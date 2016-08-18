@@ -65,13 +65,6 @@ define(function(require) {
       name: 'Panels',
 
       /**
-       * Indicates if module is public
-       * @type {Boolean}
-       * @private
-       */
-      public: true,
-
-      /**
        * Initialize module. Automatically called with a new instance of the editor
        * @param {Object} config Configurations
        */

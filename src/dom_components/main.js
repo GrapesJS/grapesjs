@@ -58,18 +58,19 @@ define(function(require) {
       name: 'DomComponents',
 
       /**
-       * Indicates if module is public
-       * @type {Boolean}
-       * @private
-       */
-      public: true,
-
-      /**
        * Mandatory for the storage manager
        * @type {String}
        * @private
        */
-      storageKey: 'html', // [css, style] ??
+      storageKey: function(){
+      	var keys = [];
+      	var smc = c.stm.getConfig() || {};
+        if(smc.storeHtml)
+          keys.push('html');
+        if(smc.storeComponents)
+          keys.push('components');
+      	return keys;
+      },
 
       /**
        * Initialize module. Automatically called with a new instance of the editor
@@ -100,15 +101,21 @@ define(function(require) {
 					model: component,
 					config: c,
 				});
+        return this;
+      },
 
+      /**
+       * On load callback
+       * @private
+       */
+      onLoad: function(){
         if(c.stm && c.stm.getConfig().autoload)
             this.load();
 
         if(c.stm && c.stm.isAutosave()){
-					c.em.initUndoManager();
+          c.em.initUndoManager();
           c.em.initChildrenComp(this.getWrapper());
         }
-        return this;
       },
 
       /**
@@ -145,10 +152,10 @@ define(function(require) {
           if(!c.stm)
             return;
           var obj = {};
-          var smc = c.stm.getConfig();
-          if(smc.storeHtml)
+          var keys = this.storageKey();
+          if(keys.indexOf('html') >= 0)
             obj.html = c.em.getHtml();
-          if(smc.storeComponents)
+          if(keys.indexOf('components') >= 0)
             obj.components = JSON.stringify(c.em.getComponents());
           if(!noStore)
             c.stm.store(obj);

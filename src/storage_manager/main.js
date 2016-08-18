@@ -41,13 +41,6 @@ define(function(require) {
       name: 'StorageManager',
 
       /**
-       * Indicates if module is public
-       * @type {Boolean}
-       * @private
-       */
-      public: true,
-
-      /**
        * Initialize module. Automatically called with a new instance of the editor
        * @param {Object} config Configurations
 			 * @param {string} [config.id='gjs-'] The prefix for the fields, useful to differentiate storing/loading
