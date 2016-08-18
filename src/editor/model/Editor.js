@@ -1,7 +1,11 @@
-var dep = ['Utils', 'StorageManager', 'DeviceManager', 'Parser', 'SelectorManager',
-					'ModalDialog', 'CodeManager', 'Panels', 'RichTextEditor', 'StyleManager', 'AssetManager', 'CssComposer',
-					'DomComponents', 'Canvas', 'Commands', 'BlockManager'];
-define(['backbone', 'backboneUndo', 'keymaster'].concat(dep), function(){
+var deps = ['Utils', 'StorageManager', 'DeviceManager', 'Parser', 'SelectorManager', 'ModalDialog', 'CodeManager', 'Panels',
+				'RichTextEditor', 'StyleManager', 'AssetManager', 'CssComposer', 'DomComponents', 'Canvas', 'Commands', 'BlockManager'];
+
+// r.js do not see deps if I pass them as a variable
+// http://stackoverflow.com/questions/27545412/optimization-fails-when-passing-a-variable-with-a-list-of-dependencies-to-define
+define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'DeviceManager', 'Parser', 'SelectorManager',
+'ModalDialog', 'CodeManager', 'Panels', 'RichTextEditor', 'StyleManager', 'AssetManager', 'CssComposer', 'DomComponents',
+'Canvas', 'Commands', 'BlockManager'], function(){
 		return Backbone.Model.extend({
 
 			defaults: {
@@ -21,9 +25,7 @@ define(['backbone', 'backboneUndo', 'keymaster'].concat(dep), function(){
 					this.config.components = c.el.innerHTML;
 
 				// Load modules
-				dep.forEach(function(name){
-					if(['backbone','backboneUndo','keymaster'].indexOf(name) >= 0)
-						return;
+				deps.forEach(function(name){
 					this.loadModule(name);
 				}, this);
 
@@ -42,7 +44,7 @@ define(['backbone', 'backboneUndo', 'keymaster'].concat(dep), function(){
 				var M = new require(moduleName)();
 				var name = M.name.charAt(0).toLowerCase() + M.name.slice(1);
 				var cfg = c[name] || c[M.name] || {};
-				cfg.pStylePrefix = c.stylePrefix || '';
+				cfg.pStylePrefix = c.pStylePrefix || '';
 
 				// Check if module is storable
 				var sm = this.get('StorageManager');
@@ -53,7 +55,7 @@ define(['backbone', 'backboneUndo', 'keymaster'].concat(dep), function(){
 					this.set('storables', storables);
 				}
 				cfg.em = this;
-				M.init(cfg);
+				M.init(Object.create(cfg));
 
 				// Bind the module to the editor model if public
 				if(!M.private)
@@ -285,7 +287,7 @@ define(['backbone', 'backboneUndo', 'keymaster'].concat(dep), function(){
 			 * @private
 			 */
 			setComponents: function(components){
-				return this.Components.setComponents(components);
+				return this.get('DomComponents').setComponents(components);
 			},
 
 			/**

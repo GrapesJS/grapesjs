@@ -55,7 +55,7 @@ define(function(require) {
           if(ppfx)
             c.stylePrefix = ppfx + c.stylePrefix;
 
-          var elStyle = c.em.config.style || '';
+          var elStyle = (c.em && c.em.config.style) || '';
           c.defaults = elStyle || c.defaults;
 
           c.sm = c.em; // TODO Refactor

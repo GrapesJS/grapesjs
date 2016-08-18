@@ -6,14 +6,16 @@ define([
 				 modulePath + '/view/ComponentV',
 				 modulePath + '/view/ComponentsView',
 				 modulePath + '/view/ComponentTextView',
-				 modulePath + '/view/ComponentImageView'
+				 modulePath + '/view/ComponentImageView',
+				 './../test_utils.js'
 				 ],
 	function(DomComponents,
 					ComponentModels,
 					ComponentView,
 					ComponentsView,
 					ComponentTextView,
-					ComponentImageView
+					ComponentImageView,
+					utils
 					) {
 
 		describe('DOM Components', function() {
@@ -21,9 +23,33 @@ define([
 			describe('Main', function() {
 
 				var obj;
+				var config;
+				var storagMock = utils.storageMock();
+				var editorModel = {
+					getHtml: function(){return 'testHtml';},
+					getComponents: function(){return {test: 1};},
+					getCacheLoad: function(){
+						return storagMock.load();
+					}
+				};
+				// Methods
+				var setSmConfig = function(){
+					config.stm = storagMock;
+					config.stm.getConfig =  function(){
+						return {
+							storeHtml: 1,
+							storeComponents: 1,
+						}
+					};
+				};
+				var setEm = function(){
+					config.em = editorModel;
+				}
+
 
 				beforeEach(function () {
-					obj = new DomComponents();
+					config = {};
+					obj = new DomComponents().init(config);
 				});
 
 				afterEach(function () {
@@ -32,6 +58,40 @@ define([
 
 				it('Object exists', function() {
 					DomComponents.should.be.exist;
+				});
+
+				it('storageKey returns array', function() {
+					obj.storageKey().should.be.instanceOf(Array);
+				});
+
+				it('storageKey returns correct composition', function() {
+					config.stm = {
+						getConfig: function(){
+							return {
+								storeHtml: 1,
+								storeComponents: 1,
+							}
+						}
+					};
+					obj.storageKey().should.eql(['html', 'components']);
+				});
+
+				it('Store data', function() {
+					setSmConfig();
+					setEm();
+					var expected = {
+						html: 'testHtml',
+						components: '{"test":1}',
+					};
+					obj.store(1).should.deep.equal(expected);
+				});
+
+				it('Store and load data', function() {
+					setSmConfig();
+					setEm();
+					obj.store();
+					// Load object between html and components
+					obj.load().should.deep.equal({test: 1});
 				});
 
 				it('Wrapper exists', function() {
@@ -57,7 +117,7 @@ define([
 				});
 
 				it('Add components at init', function() {
-					obj = new DomComponents({
+					obj = new DomComponents().init({
 						components : [{}, {}, {}]
 					});
 					obj.getComponents().length.should.equal(3);

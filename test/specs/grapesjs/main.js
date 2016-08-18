@@ -45,6 +45,7 @@ define(['GrapesJS', 'PluginManager', 'chai'],
       });
 
       afterEach(function () {
+        config = {};
         delete obj;
         delete config;
         fixture.remove();

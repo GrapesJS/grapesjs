@@ -56,6 +56,9 @@ define([path + 'HtmlGenerator',
         });
 
         describe('CssGenerator', function() {
+          var newCssComp = function(){
+            return new CssComposer().init();
+          };
           beforeEach(function () {
               this.obj  = new CssGenerator();
             });
@@ -92,7 +95,7 @@ define([path + 'HtmlGenerator',
               var m1 = comp.get('components').add({tagName: 'article'});
               var cls1 = m1.get('classes').add({name: 'class1'});
 
-              var cssc = new CssComposer();
+              var cssc = newCssComp();
               var rule = cssc.newRule(cls1);
               rule.set('style',{'prop1':'value1', 'prop2':'value2'});
               cssc.addRule(rule);
@@ -105,7 +108,7 @@ define([path + 'HtmlGenerator',
               var m1 = comp.get('components').add({tagName: 'article'});
               var cls1 = m1.get('classes').add({name: 'class1'});
 
-              var cssc = new CssComposer();
+              var cssc = newCssComp();
               var rule = cssc.newRule(cls1);
               rule.set('style',{'prop1':'value1', 'prop2':'value2'});
               rule.set('state', 'hover');
@@ -121,7 +124,7 @@ define([path + 'HtmlGenerator',
               var cls1 = m1.get('classes').add({name: 'class1'});
               var cls2 = m1.get('classes').add({name: 'class2'});
 
-              var cssc = new CssComposer();
+              var cssc = newCssComp();
               var rule = cssc.newRule([cls1, cls2]);
               rule.set('style',{'prop1':'value1', 'prop2':'value2'});
               cssc.addRule(rule);
@@ -136,7 +139,7 @@ define([path + 'HtmlGenerator',
               var cls1 = m1.get('classes').add({name: 'class1'});
               var cls2 = m1.get('classes').add({name: 'class2'});
 
-              var cssc = new CssComposer();
+              var cssc = newCssComp();
               var rule = cssc.newRule([cls1, cls2]);
               rule.set('style',{'prop1':'value1'});
               cssc.addRule(rule);
@@ -153,7 +156,7 @@ define([path + 'HtmlGenerator',
               var cls1 = m1.get('classes').add({name: 'class1'});
               var cls2 = m1.get('classes').add({name: 'class2'});
 
-              var cssc = new CssComposer();
+              var cssc = newCssComp();
               var rule = cssc.newRule([cls1, cls2]);
               rule.set('style',{'prop1':'value1'});
               rule.set('maxWidth', '999px');
@@ -168,7 +171,7 @@ define([path + 'HtmlGenerator',
               var cls1 = m1.get('classes').add({name: 'class1'});
               var cls2 = m1.get('classes').add({name: 'class2'});
 
-              var cssc = new CssComposer();
+              var cssc = newCssComp();
 
               var rule = cssc.newRule([cls1, cls2]);
               rule.set('style',{'prop1':'value1'});
@@ -198,7 +201,7 @@ define([path + 'HtmlGenerator',
               var m1 = comp.get('components').add({tagName: 'article'});
               var cls1 = m1.get('classes').add({name: 'class1'});
 
-              var cssc = new CssComposer();
+              var cssc = newCssComp();
               var rule = cssc.newRule(cls1);
               rule.set('style',{'prop1':'value1', 'prop2':'value2'});
               cssc.addRule(rule);

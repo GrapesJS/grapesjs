@@ -16,7 +16,7 @@ define([
         var obj;
 
         beforeEach(function () {
-          obj = new Commands();
+          obj = new Commands().init();
         });
 
         afterEach(function () {

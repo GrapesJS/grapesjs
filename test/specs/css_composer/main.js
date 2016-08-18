@@ -20,7 +20,7 @@ define([
 			describe('Main', function() {
 
 				beforeEach(function () {
-					this.obj 	= new CssComposer();
+					this.obj 	= new CssComposer().init();
 				});
 
 				afterEach(function () {

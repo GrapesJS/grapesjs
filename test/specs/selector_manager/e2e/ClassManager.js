@@ -54,7 +54,7 @@ define(['GrapesJS', 'SelectorManager/model/Selectors', 'SelectorManager/view/Cla
             describe('Interaction with Components', function() {
 
               beforeEach(function () {
-                this.wrapper = this.gjs.editor.get('Components').getWrapper().get('components');
+                this.wrapper = this.gjs.editor.get('DomComponents').getWrapper().get('components');
                 this.$clm = instClassTagViewer(this);
               });
 

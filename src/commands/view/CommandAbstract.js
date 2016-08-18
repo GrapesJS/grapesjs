@@ -21,9 +21,9 @@ define(['backbone'],
 				this.plhClass			= this.pfx + 'placeholder';
 				this.freezClass		= this.ppfx + 'freezed';
 
-				this.canvas = this.editorModel.get('Canvas');
+				this.canvas = this.em.get && this.em.get('Canvas');
 
-				if(this.editorModel.get)
+				if(this.em.get)
 					this.setElement(this.getCanvas());
 
 				if(this.canvas){

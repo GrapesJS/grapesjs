@@ -20,7 +20,7 @@ define(['GrapesJS'],function(Grapes) {
               });
               this.cssc = this.gjs.editor.get('CssComposer');
               this.clsm = this.gjs.editor.get('SelectorManager');
-              this.domc = this.gjs.editor.Components;
+              this.domc = this.gjs.editor.get('DomComponents');
               this.$fixture.empty().appendTo(this.$fixtures);
               this.gjs.render();
               this.rulesSet = [

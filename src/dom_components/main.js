@@ -6,31 +6,27 @@
  * - [clear](#clear)
  * - [render](#render)
  *
- * With this module is possible to manage all the HTML structure inside the canvas
- * You can init the editor with initial components via configuration
- *
- * ```js
- * var editor = grapesjs.init({
- * 	...
- *  domComponents: {...} // Check below for the possible properties
- * 	...
- * });
- * ```
- *
- *
+ * With this module is possible to manage components inside the canvas.
  * Before using methods you should get first the module from the editor instance, in this way:
  *
  * ```js
- * var ComponentsService = editor.DomComponents;
+ * var domComponents = editor.DomComponents;
  * ```
  *
- * @module Components
+ * @module DomComponents
  * @param {Object} config Configurations
- * @param {string|Array<Object>} [config.defaults=[]] HTML string or an array of possible components
+ * @param {string|Array<Object>} [config.components=[]] HTML string or an array of possible components
  * @example
  * ...
  * domComponents: {
- *  	defaults: '<div>Hello world!</div>',
+ *  	components: '<div>Hello world!</div>',
+ * }
+ * // Or
+ * domComponents: {
+ *    components: [
+ *      { tagName: 'span', style: {color: 'red'}, content: 'Hello'},
+ *      { style: {width: '100px', content: 'world!'}}
+ *    ],
  * }
  * ...
  */
@@ -46,7 +42,6 @@ define(function(require) {
 			ComponentImageView = require('./view/ComponentImageView'),
 			ComponentTextView	= require('./view/ComponentTextView');
 		var component, componentView;
-		this.c = c;
 
 	  return {
 
@@ -64,7 +59,7 @@ define(function(require) {
        */
       storageKey: function(){
       	var keys = [];
-      	var smc = c.stm.getConfig() || {};
+      	var smc = (c.stm && c.stm.getConfig()) || {};
         if(smc.storeHtml)
           keys.push('html');
         if(smc.storeComponents)
@@ -73,12 +68,15 @@ define(function(require) {
       },
 
       /**
-       * Initialize module. Automatically called with a new instance of the editor
+       * Initialize module. Called on a new instance of the editor with configurations passed
+       * inside 'domComponents' field
        * @param {Object} config Configurations
+       * @private
        */
       init: function(config) {
         c = config || {};
-        c.components = c.em.config.components || c.components;
+        if(c.em)
+          c.components = c.em.config.components || c.components;
 
         for (var name in defaults) {
           if (!(name in c))
@@ -90,9 +88,11 @@ define(function(require) {
           c.stylePrefix = ppfx + c.stylePrefix;
 
         // Load dependencies
-        c.rte = c.em.get('rte') || '';
-				c.modal = c.em.get('Modal') || '';
-				c.am = c.em.get('AssetManager') || '';
+        if(c.em){
+          c.rte = c.em.get('rte') || '';
+  				c.modal = c.em.get('Modal') || '';
+  				c.am = c.em.get('AssetManager') || '';
+        }
 
         component = new Component(c.wrapper, { sm: c.em, config: c });
 				component.set({ attributes: {id: 'wrapper'}});
@@ -119,48 +119,48 @@ define(function(require) {
       },
 
       /**
-         * Load data from the passed object, if the object is empty will try to fetch them
-         * autonomously from the storage manager.
-         * The fetched data will be added to the collection
-         * @param {Object} data Object of data to load
-         * @return {Object} Loaded data
-         */
-        load: function(data){
-          var d = data || '';
-          if(!d && c.stm)
-            d = c.em.getCacheLoad();
-          var obj = '';
-          if(d.components){
-            try{
-              obj =  JSON.parse(d.components);
-            }catch(err){}
-          }else if(d.html)
-            obj = d.html;
+       * Load data from the passed object, if the object is empty will try to fetch them
+       * autonomously from the storage manager.
+       * The fetched data will be added to the collection
+       * @param {Object} data Object of data to load
+       * @return {Object} Loaded data
+       */
+      load: function(data){
+        var d = data || '';
+        if(!d && c.stm)
+          d = c.em.getCacheLoad();
+        var obj = '';
+        if(d.components){
+          try{
+            obj =  JSON.parse(d.components);
+          }catch(err){}
+        }else if(d.html)
+          obj = d.html;
 
-          this.getComponents().reset(obj);
-          return obj;
-        },
+        this.getComponents().reset(obj);
+        return obj;
+      },
 
-        /**
-         * Store data to the selected storage
-         * @param {Boolean} noStore If true, won't store
-         * @return {Object} Data to store
-         * @example
-         * var rules = cssComposer.store();
-         */
-        store: function(noStore){
-          if(!c.stm)
-            return;
-          var obj = {};
-          var keys = this.storageKey();
-          if(keys.indexOf('html') >= 0)
-            obj.html = c.em.getHtml();
-          if(keys.indexOf('components') >= 0)
-            obj.components = JSON.stringify(c.em.getComponents());
-          if(!noStore)
-            c.stm.store(obj);
-          return obj;
-        },
+      /**
+       * Store data to the selected storage
+       * @param {Boolean} noStore If true, won't store
+       * @return {Object} Data to store
+       * @example
+       * var components = domComponents.store();
+       */
+      store: function(noStore){
+        if(!c.stm)
+          return;
+        var obj = {};
+        var keys = this.storageKey();
+        if(keys.indexOf('html') >= 0)
+          obj.html = c.em.getHtml();
+        if(keys.indexOf('components') >= 0)
+          obj.components = JSON.stringify(c.em.getComponents());
+        if(!noStore)
+          c.stm.store(obj);
+        return obj;
+      },
 
 			/**
 			 * Returns privately the main wrapper
@@ -177,7 +177,7 @@ define(function(require) {
 			 * @return {Component} Root Component
 			 * @example
 			 * // Change background of the wrapper and set some attribute
-			 * var wrapper = ComponentsService.getWrapper();
+			 * var wrapper = domComponents.getWrapper();
 			 * wrapper.set('style', {'background-color': 'red'});
 			 * wrapper.set('attributes', {'title': 'Hello!'});
 			 */
@@ -192,7 +192,7 @@ define(function(require) {
 			 * @return {Components} Collection of components
 			 * @example
 			 * // Let's add some component
-			 * var wrapperChildren = ComponentsService.getComponents();
+			 * var wrapperChildren = domComponents.getComponents();
 			 * var comp1 = wrapperChildren.add({
 			 * 	style: { 'background-color': 'red'}
 			 * });
@@ -218,7 +218,7 @@ define(function(require) {
 
 			/**
 			 * Add new components to the wrapper's children. It's the same
-			 * as 'ComponentsService.getComponents().add(...)'
+			 * as 'domComponents.getComponents().add(...)'
 			 * @param {Object|Component|Array<Object>} component Component/s to add
 			 * @param {string} [component.tagName='div'] Tag name
 			 * @param {string} [component.type=''] Type of the component. Available: ''(default), 'text', 'image'
@@ -234,7 +234,7 @@ define(function(require) {
 			 * @return {Component|Array<Component>} Component/s added
 			 * @example
 			 * // Example of a new component with some extra property
-			 * var comp1 = ComponentsService.addComponent({
+			 * var comp1 = domComponents.addComponent({
 			 * 	tagName: 'div',
 			 * 	removable: true, // Can't remove it
 			 * 	draggable: true, // Can't move it

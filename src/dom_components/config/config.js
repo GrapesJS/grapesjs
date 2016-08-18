@@ -17,9 +17,7 @@ define(function () {
 		// Could be used for default components
 		components: [],
 
-		rte					: {},
-
-		em					: {},
+		rte: {},
 
 		// Class for new image component
 		imageCompClass	: 'fa fa-picture-o',

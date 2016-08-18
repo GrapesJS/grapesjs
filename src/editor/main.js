@@ -66,6 +66,7 @@ define(function (require){
 				if (!(name in c))
 					c[name] = defaults[name];
 			}
+			c.pStylePrefix = c.stylePrefix;
 
 			var em = new EditorModel(c);
 
