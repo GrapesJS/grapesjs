@@ -228,7 +228,7 @@ define(function (require){
 				 * @return {Object}
 				 */
 				getStyle: function(){
-					return em.get('CssComposer').getRules();
+					return em.get('CssComposer').getAll();
 				},
 
 				/**

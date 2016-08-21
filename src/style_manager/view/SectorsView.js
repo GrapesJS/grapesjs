@@ -50,13 +50,13 @@ define(['backbone', './SectorView'],
 				var valid = _.filter(classes.models, function(item){
 					return item.get('active');
 				});
-				var iContainer = cssC.getRule(valid, state, deviceW);
+				var iContainer = cssC.get(valid, state, deviceW);
 
 				if(!iContainer){
-					iContainer = cssC.newRule(valid, state, deviceW);
-					// Hydrate styles from component element
+					iContainer = cssC.add(valid, state, deviceW);
+					// Get styles from the component
 					iContainer.set('style', el.get('style'));
-					cssC.addRule(iContainer);
+					//cssC.addRule(iContainer);
 					el.set('style', {});
 				}else{
 					// Ensure to clean element
@@ -64,19 +64,18 @@ define(['backbone', './SectorView'],
 						el.set('style', {});
 				}
 
-				// If the state is not empty, there is should be a helper rule in play
+				// If the state is not empty, there should be a helper rule in play
 				// The helper rule will get the same style of the iContainer
 				if(state){
 					var clm = this.target.get('SelectorManager');
 					var helperClass = clm.add('hc-state');
-					var helperRule = cssC.getRule([helperClass],'','');
-					if(!helperRule){
-						helperRule = cssC.newRule([helperClass],'','');
-						cssC.addRule(helperRule);
-					}else{
+					var helperRule = cssC.get([helperClass]);
+					if(!helperRule)
+						helperRule = cssC.add([helperClass]);
+					else{
 						// I will make it last again, otherwise it could be overridden
-						helperRule = cssC.getRules().remove(helperRule);
-						cssC.getRules().add(helperRule);
+						cssC.getAll().remove(helperRule);
+						cssC.getAll().add(helperRule);
 					}
 					helperRule.set('style', iContainer.get('style'));
 					pt.helper = helperRule;

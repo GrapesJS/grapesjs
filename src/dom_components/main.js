@@ -1,10 +1,12 @@
 /**
  *
- * - [getWrapper](#getwrapper)
- * - [getComponents](#getcomponents)
- * - [addComponent](#addcomponent)
- * - [clear](#clear)
- * - [render](#render)
+ * * [getWrapper](#getwrapper)
+ * * [getComponents](#getcomponents)
+ * * [addComponent](#addcomponent)
+ * * [clear](#clear)
+ * * [load](#load)
+ * * [store](#store)
+ * * [render](#render)
  *
  * With this module is possible to manage components inside the canvas.
  * Before using methods you should get first the module from the editor instance, in this way:
@@ -119,8 +121,8 @@ define(function(require) {
       },
 
       /**
-       * Load data from the passed object, if the object is empty will try to fetch them
-       * autonomously from the storage manager.
+       * Load components from the passed object, if the object is empty will try to fetch them
+       * autonomously from the selected storage
        * The fetched data will be added to the collection
        * @param {Object} data Object of data to load
        * @return {Object} Loaded data
@@ -142,11 +144,9 @@ define(function(require) {
       },
 
       /**
-       * Store data to the selected storage
+       * Store components on the selected storage
        * @param {Boolean} noStore If true, won't store
        * @return {Object} Data to store
-       * @example
-       * var components = domComponents.store();
        */
       store: function(noStore){
         if(!c.stm)

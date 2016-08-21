@@ -8,7 +8,7 @@ define(function () {
     'staticRules': '',
 
     // Default CSS style
-    'defaults': [],
+    rules: [],
 
 	};
 });

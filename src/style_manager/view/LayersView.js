@@ -15,14 +15,14 @@ define(['backbone','./LayerView'],
 			this.listenTo( this.collection, 'deselectAll', this.deselectAll );
 			this.listenTo( this.collection, 'reset', this.render);
 
-			var em = this.config.target || '';
+			var em = this.config.em || '';
 			var utils = em ? em.get('Utils') : '';
 
 			this.sorter = utils ? new utils.Sorter({
 				container: this.el,
 				containerSel: '.' + this.pfx + 'layers',
 				itemSel: '.' + this.pfx + 'layer',
-				pfx: 'wte-',
+				pfx: this.config.pStylePrefix,
 			}) : '';
 
 			this.$el.data('collection', this.collection);

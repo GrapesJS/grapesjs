@@ -55,7 +55,7 @@ define([ 'backbone', 'require'],
 
 					var cssc = this.editor.get('CssComposer');
 					if(parsed.css && cssc)
-						cssc.getRules().add(parsed.css);
+						cssc.getAll().add(parsed.css);
 				}
 
 				return Backbone.Collection.prototype.add.apply(this, [models, opt]);
@@ -69,8 +69,7 @@ define([ 'backbone', 'require'],
 					var newClass = this.editor.get('SelectorManager').add(model.cid);
 					model.set({style:{}});
 					model.get('classes').add(newClass);
-					var rule = cssC.newRule(newClass);
-					cssC.addRule(rule);
+					var rule = cssC.add(newClass);
 					rule.set('style', style);
 				}
       },

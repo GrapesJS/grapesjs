@@ -46,24 +46,24 @@ define(['GrapesJS'],function(Grapes) {
                 stylePrefix: '',
                 storageManager: { autoload: 0, type:'none' },
                 assetManager: { storageType: 'none', },
-                cssComposer: { defaults: this.rulesSet},
+                cssComposer: { rules: this.rulesSet},
                 container: 'csscomposer-fixture',
               });
               var cssc = gj.editor.get('CssComposer');
-              cssc.getRules().length.should.equal(this.rulesSet.length);
+              cssc.getAll().length.should.equal(this.rulesSet.length);
               var cls = gj.editor.get('SelectorManager').getAll();
               cls.length.should.equal(3);
             });
 
 
             it('New rule adds correctly the class inside selector manager', function() {
-              var rules = this.cssc.getRules();
+              var rules = this.cssc.getAll();
               rules.add({ selectors: [{name: 'test1'}] });
               this.clsm.getAll().at(0).get('name').should.equal('test1');
             });
 
             it('New rules are correctly imported inside selector manager', function() {
-              var rules = this.cssc.getRules();
+              var rules = this.cssc.getAll();
               this.rulesSet.forEach(function(item){
                 rules.add(item);
               });
@@ -76,7 +76,7 @@ define(['GrapesJS'],function(Grapes) {
 
             it('Add rules from the new component added as a string with style tag', function() {
               var comps = this.domc.getComponents();
-              var rules = this.cssc.getRules();
+              var rules = this.cssc.getAll();
               comps.add("<div>Test</div><style>.test{color: red} .test2{color: blue}</style>");
               comps.length.should.equal(1);
               rules.length.should.equal(2);

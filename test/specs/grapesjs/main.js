@@ -81,7 +81,7 @@ define(['GrapesJS', 'PluginManager', 'chai'],
       it('Init editor with css', function() {
         config.style = cssString;
         var editor = obj.init(config);
-        var rules = editor.CssComposer.getRules();
+        var rules = editor.CssComposer.getAll();
         rules.length.should.equal(2);
         rules.at(0).get('selectors').at(0).get('name').should.equal('test2');
       });

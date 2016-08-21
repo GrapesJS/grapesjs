@@ -11,6 +11,7 @@ define(['backbone'],
       this.config = o.config || {};
       this.listenTo(this.model, 'change:style', this.render);
       this.listenTo(this.model, 'change:state', this.render);
+      this.listenTo(this.model, 'destroy remove', this.remove);
       this.listenTo(this.model, 'change:maxWidth', this.render);
       this.listenTo(this.model.get('selectors'), 'change', this.selChanged);
     },

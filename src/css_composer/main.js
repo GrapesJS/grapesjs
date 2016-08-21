@@ -1,9 +1,27 @@
+/**
+ * * [add](#add)
+ * * [get](#get)
+ * * [getAll](#getall)
+ * * [load](#load)
+ * * [store](#store)
+ *
+ * This module contains and manage CSS rules for the template inside the canvas
+ * Before using methods you should get first the module from the editor instance, in this way:
+ *
+ * ```js
+ * var cssComposer = editor.CssComposer;
+ * ```
+ *
+ * @module CssComposer
+ * @param {Object} config Configurations
+ * @param {string|Array<Object>} [config.rules=[]] CSS string or an array of rule objects
+ * @example
+ * ...
+ * CssComposer: {
+ *    rules: '.myClass{ color: red}',
+ * }
+ */
 define(function(require) {
-  /**
-   * @class   CssComposer
-   * @param   {Object} config Configurations
-   *
-   * */
   return function() {
     var c = {},
     defaults = require('./config/config'),
@@ -43,6 +61,7 @@ define(function(require) {
         /**
          * Initialize module. Automatically called with a new instance of the editor
          * @param {Object} config Configurations
+         * @private
          */
         init: function(config) {
           c = config || {};
@@ -56,11 +75,11 @@ define(function(require) {
             c.stylePrefix = ppfx + c.stylePrefix;
 
           var elStyle = (c.em && c.em.config.style) || '';
-          c.defaults = elStyle || c.defaults;
+          c.rules = elStyle || c.rules;
 
           c.sm = c.em; // TODO Refactor
           rules = new CssRules([], c);
-          rules.add(c.defaults);
+          rules.add(c.rules);
 
           // Load if requested
           if(c.stm && c.stm.getConfig().autoload)
@@ -72,7 +91,7 @@ define(function(require) {
           });
 
           if(c.stm && c.stm.isAutosave())
-            c.em.listenRules(this.getRules());
+            c.em.listenRules(this.getAll());
           return this;
         },
 
@@ -103,8 +122,6 @@ define(function(require) {
          * Store data to the selected storage
          * @param {Boolean} noStore If true, won't store
          * @return {Object} Data to store
-         * @example
-         * var rules = cssComposer.store();
          */
         store: function(noStore){
           if(!c.stm)
@@ -121,13 +138,63 @@ define(function(require) {
         },
 
         /**
+         * Add new rule to the collection, if not yet exists with the same selectors
+         * @param {Array<Selector>} selectors Array of selectors
+         * @param {String} state Css rule state
+         * @param {String} width For which device this style is oriented
+         * @return {Model}
+         * */
+        add: function(selectors, state, width) {
+          var s = state || '';
+          var w = width || '';
+          var rule = this.get(selectors, s, w);
+          if(rule)
+            return rule;
+          else{
+            rule = new CssRule({
+              state: s,
+              maxWidth: w,
+            });
+            rule.get('selectors').add(selectors);
+            rules.add(rule);
+            return rule;
+          }
+        },
+
+        /**
+         * Get rule
+         * @param {Array<Selector>} selectors Array of selectors
+         * @param {String} state Css rule state
+         * @param {String} width For which device this style is oriented
+         * @return  {Model|null}
+         * */
+        get: function(selectors, state, width) {
+          var rule = null;
+          rules.each(function(m){
+            if(rule)
+              return;
+            if(m.compare(selectors, state, width))
+              rule = m;
+          });
+          return rule;
+        },
+
+        /**
+         * Get the collection of rules
+         * @return {Collection}
+         * */
+        getAll: function() {
+          return rules;
+        },
+
+        /**
          * Create new rule and return it. Don't add it to the collection
          * @param   {Array} selectors Array of selectors
          * @param   {String} state Css rule state
          * @param   {String} width For which device this style is oriented
          *
          * @return  {Object}
-         * */
+         * *
         newRule: function(selectors, state, width) {
           var s = state || '';
           var w = width || '';
@@ -137,21 +204,21 @@ define(function(require) {
           });
           rule.get('selectors').add(selectors);
           return rule;
-        },
+        },*/
 
         /**
          * Add new rule to the collection if not yet exists
          * @param {Object} rule
          *
          * @return  {Object}
-         * */
+         * *
         addRule: function(rule){
           var models = rule.get('selectors').models;
           var r = this.getRule(models, rule.get('state'), rule.get('maxWidth'));
           if(!r)
             r = rules.add(rule);
           return r;
-        },
+        },*/
 
         /**
          * Get class by its name
@@ -160,8 +227,8 @@ define(function(require) {
          * @param   {String} width For which device this style is oriented
          *
          * @return  {Object|null}
-         * */
-        getRule  : function(selectors, state, width) {
+         * *
+        getRule: function(selectors, state, width) {
           fRule = null;
           rules.each(function(rule){
               if(fRule)
@@ -170,23 +237,22 @@ define(function(require) {
                 fRule = rule;
           }, this);
           return fRule;
-        },
+        },*/
 
         /**
-         * Get collection of css rules
-         *
-         * @return  {Object}
-         * */
-        getRules : function() {
-          return  rules;
-        },
+         * Get the collection of css rules
+         * @return {Collection}
+         * *
+        getRules: function() {
+          return rules;
+        },*/
 
         /**
          * Render block of CSS rules
-         *
-         * @return {Object}
+         * @return {HTMLElement}
+         * @private
          */
-        render: function(){
+        render: function() {
           return rulesView.render().el;
         }
 

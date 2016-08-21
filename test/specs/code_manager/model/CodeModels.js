@@ -96,23 +96,21 @@ define([path + 'HtmlGenerator',
               var cls1 = m1.get('classes').add({name: 'class1'});
 
               var cssc = newCssComp();
-              var rule = cssc.newRule(cls1);
+              var rule = cssc.add(cls1);
               rule.set('style',{'prop1':'value1', 'prop2':'value2'});
-              cssc.addRule(rule);
 
               this.obj.build(comp, cssc).should.equal('.class1{prop1:value1;prop2:value2;}');
             });
 
-            it('Build correctly component with class styled', function() {
+            it('Build correctly component styled with class and state', function() {
               var comp = new Component();
               var m1 = comp.get('components').add({tagName: 'article'});
               var cls1 = m1.get('classes').add({name: 'class1'});
 
               var cssc = newCssComp();
-              var rule = cssc.newRule(cls1);
+              var rule = cssc.add(cls1);
               rule.set('style',{'prop1':'value1', 'prop2':'value2'});
               rule.set('state', 'hover');
-              cssc.addRule(rule);
 
               this.obj.build(comp, cssc).should.equal('.class1:hover{prop1:value1;prop2:value2;}');
             });
@@ -125,9 +123,8 @@ define([path + 'HtmlGenerator',
               var cls2 = m1.get('classes').add({name: 'class2'});
 
               var cssc = newCssComp();
-              var rule = cssc.newRule([cls1, cls2]);
+              var rule = cssc.add([cls1, cls2]);
               rule.set('style',{'prop1':'value1', 'prop2':'value2'});
-              cssc.addRule(rule);
 
               this.obj.build(comp, cssc).should.equal('.class1.class2{prop1:value1;prop2:value2;}');
               this.obj.build(comp, cssc).should.equal('.class1.class2{prop1:value1;prop2:value2;}');
@@ -140,12 +137,10 @@ define([path + 'HtmlGenerator',
               var cls2 = m1.get('classes').add({name: 'class2'});
 
               var cssc = newCssComp();
-              var rule = cssc.newRule([cls1, cls2]);
+              var rule = cssc.add([cls1, cls2]);
               rule.set('style',{'prop1':'value1'});
-              cssc.addRule(rule);
-              var rule2 = cssc.newRule(cls2);
+              var rule2 = cssc.add(cls2);
               rule2.set('style',{'prop2':'value2'});
-              cssc.addRule(rule2);
 
               this.obj.build(comp, cssc).should.equal('.class1.class2{prop1:value1;}.class2{prop2:value2;}');
             });
@@ -157,10 +152,9 @@ define([path + 'HtmlGenerator',
               var cls2 = m1.get('classes').add({name: 'class2'});
 
               var cssc = newCssComp();
-              var rule = cssc.newRule([cls1, cls2]);
+              var rule = cssc.add([cls1, cls2]);
               rule.set('style',{'prop1':'value1'});
               rule.set('maxWidth', '999px');
-              cssc.addRule(rule);
 
               this.obj.build(comp, cssc).should.equal('@media (max-width: 999px){.class1.class2{prop1:value1;}}');
             });
@@ -173,23 +167,18 @@ define([path + 'HtmlGenerator',
 
               var cssc = newCssComp();
 
-              var rule = cssc.newRule([cls1, cls2]);
+              var rule = cssc.add([cls1, cls2]);
               rule.set('style',{'prop1':'value1'});
-              cssc.addRule(rule);
-              var rule2 = cssc.newRule(cls2);
+              var rule2 = cssc.add(cls2);
               rule2.set('style',{'prop2':'value2'});
-              cssc.addRule(rule2);
 
-              var rule3 = cssc.newRule(cls1, '', '999px');
+              var rule3 = cssc.add(cls1, '', '999px');
               rule3.set('style',{'prop3':'value3'});
-              cssc.addRule(rule3);
-              var rule4 = cssc.newRule(cls2, '', '999px');
+              var rule4 = cssc.add(cls2, '', '999px');
               rule4.set('style',{'prop4':'value4'});
-              cssc.addRule(rule4);
 
-              var rule5 = cssc.newRule(cls1, '', '100px');
+              var rule5 = cssc.add(cls1, '', '100px');
               rule5.set('style',{'prop5':'value5'});
-              cssc.addRule(rule5);
 
               this.obj.build(comp, cssc).should.equal('.class1.class2{prop1:value1;}.class2{prop2:value2;}'+
                 '@media (max-width: 999px){.class1{prop3:value3;}.class2{prop4:value4;}}'+
@@ -202,9 +191,8 @@ define([path + 'HtmlGenerator',
               var cls1 = m1.get('classes').add({name: 'class1'});
 
               var cssc = newCssComp();
-              var rule = cssc.newRule(cls1);
+              var rule = cssc.add(cls1);
               rule.set('style',{'prop1':'value1', 'prop2':'value2'});
-              cssc.addRule(rule);
 
               comp.get('components').remove(m1);
               this.obj.build(comp, cssc).should.equal('');

@@ -1,26 +1,11 @@
 define(function () {
-	var config = {
+	return {
+
+		// Style prefix
+		stylePrefix: 'gjs-',
 
 		//TEMP
 		components: '',
-
-		// Style prefix
-		stylePrefix: 'wte-',
-
-		// Prefix to use inside local storage name (!)
-		storagePrefix: 'wte-',
-
-		// Editor ID. Useful in case of multiple editors on the same page (!)
-		id: '',
-
-		// Where render the editor
-		container: '',
-
-		idCanvas					: 'canvas', //(!)
-
-		idCanvasOverlay		: 'canvas-overlay', //(!)
-
-		idWrapper 				: 'wrapper', //(!)
 
 		// Enable/Disable possibility to copy(ctrl + c) & paste(ctrl + v) components
 		copyPaste: true,
@@ -34,47 +19,53 @@ define(function () {
 		// Width for the editor container
 		width: '100%',
 
-		//Indicates which storage to use. Available: local | remote | none (!)
-		storageType: 'local',
-
 		// The css that could only be seen (for instance, inside the code viewer)
 		protectedCss: '*{box-sizing: border-box;}body{margin:0;height:100%}#wrapper{min-height:100%; overflow:auto}',
 
+		// Default command
+		defaultCommand: 'select-comp',
+
+		// If true render a select of available devices
+		showDevices: 1,
+
+		// Dom element
+		el: '',
+
 		//Configurations for Asset Manager
-		assetManager			: {},
+		assetManager: {},
 
 		//Configurations for Canvas
-		canvas						: {},
+		canvas: {},
 
 		//Configurations for Style Manager
-		styleManager			: {},
+		styleManager: {},
 
 		//Configurations for Layers
-		layers						: {},
+		layers: {},
 
 		//Configurations for Storage Manager
-		storageManager		: {},
+		storageManager: {},
 
 		//Configurations for Rich Text Editor
-		rte								: {},
+		rte: {},
 
 		//Configurations for DomComponents
-		domComponents			: {},
+		domComponents: {},
 
 		//Configurations for Modal Dialog
-		modal							: {},
+		modal: {},
 
 		//Configurations for Code Manager
-		codeManager				: {},
+		codeManager: {},
 
 		//Configurations for Panels
-		panels						: {},
+		panels: {},
 
 		//Configurations for Commands
-		commands					: {},
+		commands: {},
 
 		//Configurations for Css Composer
-		cssComposer				: {},
+		cssComposer: {},
 
 		//Configurations for Selector Manager
 		selectorManager: {},
@@ -102,22 +93,22 @@ define(function () {
 					id: 'b1',
 	        label: '1 Block',
 	        content: '<div class="blk-row"><div class="blk1"></div></div>',
-	        attributes: {class:'wte-fonts wte-f-b1'}
+	        attributes: {class:'gjs-fonts gjs-f-b1'}
 	      },{
 					id: 'b2',
 	        label: '2 Blocks',
 	        content: '<div class="blk-row"><div class="blk2"></div><div class="blk2"></div></div>',
-	        attributes: {class:'wte-fonts wte-f-b2'}
+	        attributes: {class:'gjs-fonts gjs-f-b2'}
 	      },{
 					id: 'b3',
 	        label: '3 Blocks',
 	        content: '<div class="blk-row"><div class="blk3"></div><div class="blk3"></div><div class="blk3"></div></div>',
-	        attributes: {class:'wte-fonts wte-f-b3'}
+	        attributes: {class:'gjs-fonts gjs-f-b3'}
 	      },{
 					id: 'b4',
 	        label: '3/7 Block',
 	        content: '<div class="blk-row"><div class="blk37l"></div><div class="blk37r"></div></div></div>',
-	        attributes: {class:'wte-fonts wte-f-b37'}
+	        attributes: {class:'gjs-fonts gjs-f-b37'}
 	      },{
 					id: 'hero',
 	        label: 'Hero section',
@@ -128,12 +119,12 @@ define(function () {
 							'</nav><div class="clearfix"></div>'+
 							'<div class="lead-title">Build your templates without coding</div>'+
 							'<div class="lead-btn">Try it now</div></div></header>',
-	        attributes: {class:'wte-fonts wte-f-hero'}
+	        attributes: {class:'gjs-fonts gjs-f-hero'}
 	      },{
 					id: 'h1p',
 	        label: 'Text section',
 	        content: '<h1 class="heading">Insert title here</h1><p class="paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>',
-	        attributes: {class:'wte-fonts wte-f-h1p'}
+	        attributes: {class:'gjs-fonts gjs-f-h1p'}
 	      },{
 					id: '3ba',
 	        label: 'Badges',
@@ -163,11 +154,11 @@ define(function () {
 							'<div class="badge-foot"><span class="badge-link">f</span><span class="badge-link">t</span><span class="badge-link">ln</span>'+
 							'</div>'+
 						'</div></div>',
-	        attributes: {class:'wte-fonts wte-f-3ba'}
+	        attributes: {class:'gjs-fonts gjs-f-3ba'}
 	      },{
 					id: 'text',
 	        label: 'Text',
-	        attributes: {class:'wte-fonts wte-f-text'},
+	        attributes: {class:'gjs-fonts gjs-f-text'},
 	        content: {
 	        	type:'text',
 	        	content:'Insert your text here',
@@ -177,25 +168,15 @@ define(function () {
 	      },{
 					id: 'image',
 	        label: 'Image',
-	        attributes: {class:'wte-fonts wte-f-image'},
+	        attributes: {class:'gjs-fonts gjs-f-image'},
 	        content: { type:'image',  activeOnRender: 1},
 	      },{
 					id: 'quo',
 	        label: 'Quote',
 	        content: '<blockquote class="quote">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore ipsum dolor sit</blockquote>',
-	        attributes: {class:'wte-fonts wte-f-quo'}
+	        attributes: {class:'gjs-fonts gjs-f-quo'}
 	      }],
 		},
 
-		// Default command
-		defaultCommand: 'select-comp',
-
-		// If true render a select of available devices
-		showDevices: 1,
-
-		// Dom element
-		el: '',
-
 	};
-	return config;
 });

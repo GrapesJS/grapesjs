@@ -133,7 +133,7 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
 				if(cmp && this.config.undoManager){
 					var that = this;
 					this.um = new Backbone.UndoManager({
-					    register: [cmp.getComponents(), this.get('CssComposer').getRules()],
+					    register: [cmp.getComponents(), this.get('CssComposer').getAll()],
 					    track: true
 					});
 					this.UndoManager = this.um;
@@ -313,7 +313,7 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
 			 * @private
 			 */
 			setStyle: function(style){
-				var rules = this.get('CssComposer').getRules();
+				var rules = this.get('CssComposer').getAll();
 				for(var i = 0, len = rules.length; i < len; i++)
 					rules.pop();
 				rules.add(style);
@@ -326,7 +326,7 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
 			 * @private
 			 */
 			getStyle: function(){
-				return this.get('CssComposer').getRules();
+				return this.get('CssComposer').getAll();
 			},
 
 			/**

@@ -50,7 +50,7 @@ define(['backbone'],
 				var compCls = this.compCls;
 
 				if(cssc){
-					var rules = cssc.getRules();
+					var rules = cssc.getAll();
 					var mediaRules = {};
 					rules.each(function(rule){
 						var width = rule.get('maxWidth');
