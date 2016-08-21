@@ -143,6 +143,15 @@ define(function(require) {
          * @param {String} state Css rule state
          * @param {String} width For which device this style is oriented
          * @return {Model}
+         * @example
+         * var sm = editor.SelectorManager;
+         * var sel1 = sm.add('myClass1');
+         * var sel2 = sm.add('myClass2');
+         * var rule = cssComposer.add([sel1, sel2], 'hover');
+         * rule.set('style', {
+         *   width: '100px',
+         *   color: '#fff',
+         * });
          * */
         add: function(selectors, state, width) {
           var s = state || '';
@@ -167,6 +176,16 @@ define(function(require) {
          * @param {String} state Css rule state
          * @param {String} width For which device this style is oriented
          * @return  {Model|null}
+         * @example
+         * var sm = editor.SelectorManager;
+         * var sel1 = sm.add('myClass1');
+         * var sel2 = sm.add('myClass2');
+         * var rule = cssComposer.get([sel1, sel2], 'hover');
+         * // Update the style
+         * rule.set('style', {
+         *   width: '300px',
+         *   color: '#000',
+         * });
          * */
         get: function(selectors, state, width) {
           var rule = null;
@@ -186,66 +205,6 @@ define(function(require) {
         getAll: function() {
           return rules;
         },
-
-        /**
-         * Create new rule and return it. Don't add it to the collection
-         * @param   {Array} selectors Array of selectors
-         * @param   {String} state Css rule state
-         * @param   {String} width For which device this style is oriented
-         *
-         * @return  {Object}
-         * *
-        newRule: function(selectors, state, width) {
-          var s = state || '';
-          var w = width || '';
-          var rule = new CssRule({
-            state: s,
-            maxWidth: w,
-          });
-          rule.get('selectors').add(selectors);
-          return rule;
-        },*/
-
-        /**
-         * Add new rule to the collection if not yet exists
-         * @param {Object} rule
-         *
-         * @return  {Object}
-         * *
-        addRule: function(rule){
-          var models = rule.get('selectors').models;
-          var r = this.getRule(models, rule.get('state'), rule.get('maxWidth'));
-          if(!r)
-            r = rules.add(rule);
-          return r;
-        },*/
-
-        /**
-         * Get class by its name
-         * @param   {Array} selectors Array of selectors
-         * @param   {String} state Css rule state
-         * @param   {String} width For which device this style is oriented
-         *
-         * @return  {Object|null}
-         * *
-        getRule: function(selectors, state, width) {
-          fRule = null;
-          rules.each(function(rule){
-              if(fRule)
-                return;
-              if(rule.compare(selectors, state, width))
-                fRule = rule;
-          }, this);
-          return fRule;
-        },*/
-
-        /**
-         * Get the collection of css rules
-         * @return {Collection}
-         * *
-        getRules: function() {
-          return rules;
-        },*/
 
         /**
          * Render block of CSS rules
