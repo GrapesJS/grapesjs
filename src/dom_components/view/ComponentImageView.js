@@ -46,9 +46,9 @@ define(['backbone', './ComponentView'],
 				this.modal.setTitle('Select image');
 				this.modal.setContent(this.am.render(1));
 				this.am.setTarget(this.model);
-				this.modal.show();
+				this.modal.open();
 				this.am.onSelect(function(){
-					that.modal.hide();
+					that.modal.close();
 					that.am.setTarget(null);
 				});
 			}

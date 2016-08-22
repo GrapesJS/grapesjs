@@ -5,6 +5,7 @@ require(['../src/config/require-config.js', 'config/config.js'], function() {
 	         'specs/main.js',
 	         'specs/asset_manager/main.js',
 	         'specs/dom_components/main.js',
+	         'specs/modal/main.js',
 	         'specs/selector_manager/main.js',
 	         'specs/css_composer/main.js',
 	         'specs/code_manager/main.js',

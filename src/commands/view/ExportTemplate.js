@@ -5,10 +5,10 @@ define(function() {
 		 * */
 		return {
 
-			run: function(editor, sender){
+			run: function(editor, sender) {
 				this.sender = sender;
 				this.components = editor.DomComponents.getComponents();
-				this.modal = editor.Dialog || null;
+				this.modal = editor.Modal || null;
 				this.cm = editor.CodeManager || null;
 				this.cssc = editor.CssComposer || null;
 				this.protCss = editor.Config.protectedCss;
@@ -25,8 +25,7 @@ define(function() {
 			 * @return	{Object}	Editor
 			 * @private
 			 * */
-			buildEditor: function(codeName, theme, label)
-			{
+			buildEditor: function(codeName, theme, label) {
 				if(!this.codeMirror)
 					this.codeMirror		= this.cm.getViewer('CodeMirror');
 
@@ -49,8 +48,7 @@ define(function() {
 				return { el: editor, $el: $editor };
 			},
 
-			enable: function()
-			{
+			enable: function() {
 				if(!this.$editors){
 					var oHtmlEd			= this.buildEditor('htmlmixed', 'hopscotch', 'HTML'),
 						oCsslEd			= this.buildEditor('css', 'hopscotch', 'CSS');
@@ -63,7 +61,7 @@ define(function() {
 				if(this.modal){
 					this.modal.setTitle('Export template');
 					this.modal.setContent(this.$editors);
-					this.modal.show();
+					this.modal.open();
 				}
 				var addCss = this.protCss || '';
 				this.htmlEditor.setContent( this.cm.getCode(this.components, 'html') );

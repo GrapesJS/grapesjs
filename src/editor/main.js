@@ -124,9 +124,9 @@ define(function (require){
 				Commands: em.get('Commands'),
 
 				/**
-				 * @property {Dialog}
+				 * @property {Modal}
 				 */
-				Dialog: em.get('Modal'),
+				Modal: em.get('Modal'),
 
 				/**
 				 * @property {Panels}

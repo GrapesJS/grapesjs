@@ -1,20 +1,17 @@
 define(['backbone', 'text!./../template/modal.html'],
 	function (Backbone, modalTemplate) {
-		/**
-		 * @class ModalView
-		 * */
 		return Backbone.View.extend({
 
 			template: _.template(modalTemplate),
 
-			events	: {},
+			events: {},
 
 			initialize: function(o){
-				this.config		= o.config || {};
-				this.pfx		= this.config.stylePrefix;
-				this.listenTo( this.model, 'change:open', 	this.updateOpen);
-				this.listenTo( this.model, 'change:title', 	this.updateTitle);
-				this.listenTo( this.model, 'change:content',this.updateContent);
+				this.config = o.config || {};
+				this.pfx = this.config.stylePrefix || '';
+				this.listenTo(this.model, 'change:open', this.updateOpen);
+				this.listenTo(this.model, 'change:title', this.updateTitle);
+				this.listenTo(this.model, 'change:content', this.updateContent);
 				this.events['click .'+this.pfx+'btn-close']	= 'hide';
 
 				if(this.config.backdrop)
@@ -26,39 +23,48 @@ define(['backbone', 'text!./../template/modal.html'],
 			/**
 			 * Returns content element
 			 * @return {HTMLElement}
+			 * @private
 			 */
-			getContent:function(){
+			getContent: function(){
 				if(!this.$content)
 					this.$content	= this.$el.find('.'+this.pfx+'content #'+this.pfx+'c');
 				return this.$content.get(0);
 			},
 
 			/**
+			 * Returns title element
+			 * @return {HTMLElement}
+			 * @private
+			 */
+			getTitle: function(){
+				if(!this.$title)
+					this.$title	= this.$el.find('.'+this.pfx+'title');
+				return this.$title.get(0);
+			},
+
+			/**
 			 * Update content
-			 *
-			 * @return	void
+			 * @private
 			 * */
 			updateContent: function(){
-				if(!this.$content)
-					this.$content	= this.$el.find('.'+this.pfx+'content #'+this.pfx+'c');
-				this.$content.html(this.model.get('content'));
+				var content = this.getContent();
+				if(content)
+					content.innerHTML = this.model.get('content');
 			},
 
 			/**
 			 * Update title
-			 *
-			 * @return	void
+			 * @private
 			 * */
 			updateTitle: function(){
-				if(!this.$title)
-					this.$title	= this.$el.find('.'+this.pfx+'title');
-				this.$title.html(this.model.get('title'));
+				var title = this.getTitle();
+				if(title)
+					title.innerHTML = this.model.get('title');
 			},
 
 			/**
 			 * Update open
-			 *
-			 * @return	void
+			 * @private
 			 * */
 			updateOpen: function(){
 				if(this.model.get('open'))
@@ -69,8 +75,7 @@ define(['backbone', 'text!./../template/modal.html'],
 
 			/**
 			 * Hide modal
-			 *
-			 * @return void
+			 * @private
 			 * */
 			hide: function(){
 				this.model.set('open', 0);
@@ -78,42 +83,18 @@ define(['backbone', 'text!./../template/modal.html'],
 
 			/**
 			 * Show modal
-			 *
-			 * @return void
+			 * @private
 			 * */
 			show: function(){
 				this.model.set('open', 1);
 			},
 
-			/**
-			 * Set title
-			 * @param	{String}	v Title
-			 *
-			 * @return 	this
-			 * */
-			setTitle: function(v){
-				this.model.set('title',v);
-				return this;
-			},
-
-			/**
-			 * Set content
-			 * @param	{String}	v Title
-			 *
-			 * @return 	this
-			 * */
-			setContent: function(v){
-				this.model.set('content',v);
-				return this;
-			},
-
-			render : function(){
-				var	obj		= this.model.toJSON();
-				obj.pfx		= this.pfx;
+			render: function(){
+				var	obj = this.model.toJSON();
+				obj.pfx = this.pfx;
 				this.$el.html( this.template(obj) );
 				this.$el.attr('class', this.pfx + 'container');
 				this.updateOpen();
-
 				return this;
 			},
 

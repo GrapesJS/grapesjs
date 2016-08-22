@@ -1,6 +1,19 @@
 /**
- * @class Modal
- * */
+ * * [open](#open)
+ * * [close](#close)
+ * * [isOpen](#isopen)
+ * * [setTitle](#settitle)
+ * * [getTitle](#gettitle)
+ * * [setContent](#setcontent)
+ * * [getContent](#getcontent)
+ *
+ * Before using the methods you should get first the module from the editor instance, in this way:
+ *
+ * ```js
+ * var modal = editor.Modal;
+ * ```
+ * @module Modal
+ */
 define(function(require) {
 	return function() {
 		var c = {},
@@ -21,6 +34,7 @@ define(function(require) {
       /**
        * Initialize module. Automatically called with a new instance of the editor
        * @param {Object} config Configurations
+       * @private
        */
       init: function(config) {
         c = config || {};
@@ -38,43 +52,107 @@ define(function(require) {
 					model: model,
 				  config: c,
 				});
-				c.em.on('loaded', function(){
-					this.render().appendTo(c.em.config.el || 'body');
-				}, this);
+
+        if(c.em)
+  				c.em.on('loaded', function(){
+  					this.render().appendTo(c.em.config.el || 'body');
+  				}, this);
+
         return this;
       },
 
-			getModel: function(){
-				return model;
+      /**
+       * Open modal window
+       * @return {this}
+       */
+      open: function(){
+        modal.show();
+        return this;
+      },
+
+      /**
+       * Close modal window
+       * @return {this}
+       */
+      close: function(){
+        modal.hide();
+        return this;
+      },
+
+      /**
+       * Checks if modal window is open
+       * @return {Boolean}
+       */
+      isOpen: function(){
+        return !!model.get('open');
+      },
+
+      /**
+       * Set title to the modal window
+       * @param {string} title Title
+       * @return {this}
+       * @example
+       * modal.setTitle('New title');
+       */
+			setTitle: function(title){
+        model.set('title', title);
+        return this;
 			},
 
-			render: function(){
-				return modal.render().$el;
+      /**
+       * Returns title of the modal window
+       * @return {string}
+       */
+      getTitle: function(){
+        return model.get('title');
+      },
+
+      /**
+       * Set content of the modal window
+       * @param {string} content Content
+       * @return {this}
+       * @example
+       * modal.setContent('<div>Some HTML content</div>');
+       */
+			setContent: function(content){
+				model.set('content', content);
+        return this;
 			},
 
-			show: function(){
-				return modal.show();
-			},
-
-			hide: function(){
-				return modal.hide();
-			},
-
-			setTitle: function(v){
-				return modal.setTitle(v);
-			},
-
-			setContent: function(v){
-				return modal.setContent(v);
-			},
+      /**
+       * Get content of the modal window
+       * @return {string}
+       */
+      getContent: function(){
+        return model.get('content');
+      },
 
 			/**
 			 * Returns content element
 			 * @return {HTMLElement}
+       * @private
 			 */
 			getContentEl: function(){
 				return modal.getContent();
-			}
+			},
+
+      /**
+       * Returns modal model
+       * @return {Model}
+       * @private
+       */
+      getModel: function(){
+        return model;
+      },
+
+      /**
+       * Render the modal window
+       * @return {HTMLElement}
+       * @private
+       */
+      render: function(){
+        return modal.render().$el;
+      }
 		};
 	};
 });
