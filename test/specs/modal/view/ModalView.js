@@ -45,7 +45,7 @@ define([path + 'ModalView', 'ModalDialog/model/Modal'],
 
             it("Update content", function (){
               model.set('content', 'test');
-              view.getContent().innerHTML.should.equal('test');
+              view.getContent().get(0).innerHTML.should.equal('test');
             });
 
             it("Get title", function (){

@@ -109,7 +109,7 @@ define(function(require) {
 
       /**
        * Set content of the modal window
-       * @param {string} content Content
+       * @param {string|HTMLElement} content Content
        * @return {this}
        * @example
        * modal.setContent('<div>Some HTML content</div>');
