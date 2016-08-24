@@ -1,3 +1,19 @@
+/**
+ * * [add](#add)
+ * * [get](#get)
+ * * [getAll](#getall)
+ * * [remove](#remove)
+ *
+ * This module allows to customize the toolbar of the Rich Text Editor
+ * Before using methods you should get first the module from the editor instance, in this way:
+ *
+ * ```js
+ * var rte = editor.RichTextEditor;
+ * ```
+ * Complete list of commands
+ * http://www.quirksmode.org/dom/execCommand.html
+ * @module RichTextEditor
+ */
 define(function(require) {
 
 	return function() {
@@ -6,7 +22,7 @@ define(function(require) {
 		rte = require('./view/TextEditorView'),
 		CommandButtons = require('./model/CommandButtons'),
 		CommandButtonsView = require('./view/CommandButtonsView');
-		var tlbPfx, toolbar;
+		var tlbPfx, toolbar, commands;
 
 		return {
 
@@ -20,6 +36,7 @@ define(function(require) {
       /**
        * Initialize module. Automatically called with a new instance of the editor
        * @param {Object} config Configurations
+       * @private
        */
       init: function(config) {
         c = config || {};
@@ -33,11 +50,37 @@ define(function(require) {
 					c.stylePrefix = ppfx + c.stylePrefix;
 
 				tlbPfx = c.stylePrefix;
+        commands = new CommandButtons(c.commands);
 				toolbar = new CommandButtonsView({
-					collection: new CommandButtons(c.commands),
+					collection: commands,
 					config: c,
 				});
         return this;
+      },
+
+      /**
+       * Add new command to the toolbar
+       * @param {string} command Command name
+       * @param {string} command Command name
+       * @example
+       * var cm = rte.add('bold', {
+       *   title: 'Make bold',
+       *   class: 'fa fa-bold',
+       * });
+       * // With arguments
+       * var cm = rte.add('fontSize', {
+       *   title: 'Font size',
+       *   arguments: [
+       *     {name: 'Big', value: 5},
+       *     {name: 'Normal', value: 3},
+       *     {name: 'Small', value: 1}
+       *   ]
+       * });
+       */
+      add: function(command, opts) {
+        var obj = opts || {};
+        obj.command = command;
+        return commands.add(obj);
       },
 
 			/**
@@ -58,8 +101,9 @@ define(function(require) {
       },
 
 			/**
-			 * Bind rich text editor to element
+			 * Bind rich text editor to the element
 			 * @param {View} view
+       * @private
 			 * */
 			attach: function(view){
 				view.$el.wysiwyg({}).focus();
@@ -76,9 +120,9 @@ define(function(require) {
 			},
 
 			/**
-			 * Unbind rich text editor from element
-			 * @param		{Object}	view
-			 *
+			 * Unbind rich text editor from the element
+			 * @param {View} view
+			 * @private
 			 * */
 			detach: function(view){
 				view.$el.wysiwyg('destroy');
@@ -87,24 +131,24 @@ define(function(require) {
 			},
 
 			/**
-			 * Show toolbar
-			 *
+			 * Show the toolbar
+			 * @private
 			 * */
 			show: function(){
 				toolbar.el.style.display = 'block';
 			},
 
 			/**
-			 * Hide toolbar
-			 *
+			 * Hide the toolbar
+			 * @private
 			 * */
 			hide: function(){
 				toolbar.el.style.display = 'none';
 			},
 
 			/**
-			 * Isolate disable propagation method
-			 *
+			 * Isolate the disable propagation method
+			 * @private
 			 * */
 			disableProp: function(e){
 				e.stopPropagation();
@@ -113,6 +157,7 @@ define(function(require) {
 			/**
 			 * Return toolbar element
 			 * @return {HTMLElement}
+       * @private
 			 */
 			getToolbarEl: function() {
 				return toolbar.el;
@@ -121,6 +166,7 @@ define(function(require) {
 			/**
 			 * Render toolbar
 			 * @return {HTMLElement}
+       * @private
 			 */
 			render: function(){
 				return toolbar.render().el;

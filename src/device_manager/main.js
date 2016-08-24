@@ -1,5 +1,4 @@
 /**
- * * [init](#init)
  * * [add](#add)
  * * [get](#get)
  * * [getAll](#getall)

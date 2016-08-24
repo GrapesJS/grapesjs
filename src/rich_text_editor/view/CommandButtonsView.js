@@ -1,18 +1,15 @@
 define(['backbone','./CommandButtonView'],
 	function (Backbone, CommandButtonView) {
-	/**
-	 * @class CommandButtonsView
-	 * */
 	return Backbone.View.extend({
 
 		attributes : {
-			'data-role' 	:	'editor-toolbar',
+			'data-role':	'editor-toolbar',
 		},
 
 		initialize: function(o){
-			this.config		= o.config || {};
-			this.id			= this.config.stylePrefix + this.config.toolbarId;
-			this.$el.data('helper',1);
+			this.config = o.config || {};
+			this.id = this.config.stylePrefix + this.config.toolbarId;
+			this.$el.data('helper', 1);
 		},
 
 		render: function() {
@@ -21,11 +18,11 @@ define(['backbone','./CommandButtonView'],
 
 			this.collection.each(function(item){
 				var view = new CommandButtonView({
-					model 		: item,
-					config		: this.config,
-					attributes 	: {
-						'title'		: item.get('title'),
-						'data-edit'	: item.get('command'),
+					model: item,
+					config: this.config,
+					attributes: {
+						'title': item.get('title'),
+						'data-edit': item.get('command'),
 					},
 				});
 				fragment.appendChild(view.render().el);
@@ -34,5 +31,6 @@ define(['backbone','./CommandButtonView'],
 			this.$el.attr('id',  _.result( this, 'id' ) );
 			return this;
 		}
+
 	});
 });

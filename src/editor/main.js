@@ -154,6 +154,11 @@ define(function (require){
 				DeviceManager: em.get('DeviceManager'),
 
 				/**
+				 * @property {RichTextEditor}
+				 */
+				RichTextEditor: em.get('rte'),
+
+				/**
 				 * @property {Utils}
 				 */
 				Utils: em.get('Utils'),

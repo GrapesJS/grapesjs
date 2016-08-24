@@ -1,16 +1,14 @@
-define(['backbone'], 
+define(['backbone'],
 	function (Backbone) {
-		/**
-		 * @class CommandButton
-		 * */
-		return Backbone.Model.extend({ 
-			
+		return Backbone.Model.extend({
+
 			defaults: {
-				command		: '',
-				title		: '',
-				class		: '',
-				group		: '',
+				command: '',
+				title: '',
+				class: '',
+				group: '',
+        arguments: [],
 			},
-			
+
 		});
 });
