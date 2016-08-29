@@ -12,6 +12,7 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
     initialize: function(o) {
       this.config = o.config || {};
       this.pfx = this.config.stylePrefix || '';
+      this.ppfx = this.config.pStylePrefix || '';
       this.className = this.pfx + 'tags';
       this.addBtnId = this.pfx + 'add-tag';
       this.newInputId = this.pfx + 'new';
@@ -264,6 +265,7 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
         label: this.config.label,
         statesLabel: this.config.statesLabel,
         pfx: this.pfx,
+        ppfx: this.ppfx
       }));
       this.$input = this.$el.find('input#' + this.newInputId);
       this.$addBtn = this.$el.find('#' + this.addBtnId);

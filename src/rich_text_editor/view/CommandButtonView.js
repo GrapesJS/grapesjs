@@ -4,13 +4,13 @@ define(['backbone'],
 
 		tagName: 'a',
 
-		initialize: function(o){
-			this.config		= o.config || {};
-			this.className	= this.config.stylePrefix + 'btn ' + this.model.get('class');
+		initialize: function(o, config){
+			this.config = config || {};
+			this.className = this.config.stylePrefix + 'btn ' + this.model.get('class');
 		},
 
 		render: function() {
-			this.$el.attr('class',  _.result( this, 'className' ) );
+			this.$el.addClass(this.className);
 			return this;
 		}
 	});

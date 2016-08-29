@@ -2687,7 +2687,7 @@ $fontColorActive: #4f8ef7;
 .gjs-btn-prim:active {
   background-color: rgba(255, 255, 255, 0.1); }
 
-.gjs-input {
+.gjs-input, .gjs-select {
   background-color: rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 2px;
@@ -2695,6 +2695,21 @@ $fontColorActive: #4f8ef7;
   box-sizing: border-box;
   color: #ddd;
   padding: 0.5em 1em; }
+
+div.gjs-select {
+  padding: 0; }
+
+.gjs-select:-moz-focusring,
+.gjs-select select:-moz-focusring {
+  color: transparent;
+  text-shadow: 0 0 0 rgba(255, 255, 255, 0.7); }
+
+.gjs-input:focus, .gjs-select:focus,
+.gjs-button:focus,
+.gjs-btn-prim:focus,
+.gjs-select:focus,
+.gjs-select select:focus {
+  outline: none; }
 
 /*************  CANVAS  ****************/
 .gjs-cv-canvas {
@@ -3202,10 +3217,8 @@ ol.example li.placeholder:before {
       background: none;
       border: none;
       color: rgba(255, 255, 255, 0.7);
-      color: transparent;
       width: 100%;
-      padding: 2px 10px 2px 0;
-      text-shadow: 0 0 0 rgba(255, 255, 255, 0.7);
+      padding: 2px 10px 2px 2px;
       position: relative;
       z-index: 1;
       -webkit-appearance: none;
@@ -3213,6 +3226,11 @@ ol.example li.placeholder:before {
       appearance: none; }
       .gjs-sm-sector .gjs-sm-field select::-ms-expand, .gjs-clm-tags .gjs-sm-field select::-ms-expand, .gjs-sm-sector .gjs-clm-field select::-ms-expand, .gjs-clm-tags .gjs-clm-field select::-ms-expand {
         display: none; }
+    .gjs-sm-sector .gjs-sm-field select:-moz-focusring, .gjs-clm-tags .gjs-sm-field select:-moz-focusring, .gjs-sm-sector .gjs-clm-field select:-moz-focusring, .gjs-clm-tags .gjs-clm-field select:-moz-focusring {
+      color: transparent;
+      text-shadow: 0 0 0 rgba(255, 255, 255, 0.7); }
+    .gjs-sm-sector .gjs-sm-field select:focus, .gjs-clm-tags .gjs-sm-field select:focus, .gjs-sm-sector .gjs-clm-field select:focus, .gjs-clm-tags .gjs-clm-field select:focus, .gjs-sm-sector .gjs-sm-field input:focus, .gjs-clm-tags .gjs-sm-field input:focus, .gjs-sm-sector .gjs-clm-field input:focus, .gjs-clm-tags .gjs-clm-field input:focus {
+      outline: none; }
     .gjs-sm-sector .gjs-sm-field .gjs-sm-unit, .gjs-clm-tags .gjs-sm-field .gjs-sm-unit, .gjs-sm-sector .gjs-clm-field .gjs-sm-unit, .gjs-clm-tags .gjs-clm-field .gjs-sm-unit {
       position: absolute;
       right: 10px;
@@ -3729,7 +3747,7 @@ ol.example li.placeholder:before {
   z-index: 5; }
   #gjs-rte-toolbar .gjs-rte-btn {
     padding: 5px;
-    width: 25px;
+    min-width: 25px;
     border-right: 1px solid rgba(0, 0, 0, 0.3);
     text-align: center;
     cursor: pointer;

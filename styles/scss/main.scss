@@ -188,7 +188,25 @@ $fontV: 5;//random(1000)
   color: $fontColor;
   padding: 0.5em 1em;
 }
+.#{$app-prefix}select{
+  @extend .#{$app-prefix}input;
+}
+div.#{$app-prefix}select{
+  padding: 0;
+}
+.#{$app-prefix}select:-moz-focusring,
+.#{$app-prefix}select select:-moz-focusring{
+  color: transparent;
+  text-shadow: 0 0 0 $mainLhlColor;
+}
 
+.#{$app-prefix}input:focus,
+.#{$app-prefix}button:focus,
+.#{$app-prefix}btn-prim:focus,
+.#{$app-prefix}select:focus,
+.#{$app-prefix}select select:focus {
+  outline: none;
+}
 /*************  CANVAS  ****************/
 .#{$cv-prefix}canvas {
   background-color: rgba(0, 0, 0, 0.15);
@@ -746,15 +764,23 @@ $arrowColor:    $mainLhlColor; /*b1b1b1*/
 		select {
 		  background: none; border: none;
 		  color: $inputFontColor;
-		  color: transparent;
-		  width: 100%; padding: 2px 10px 2px 0;
-		  text-shadow: 0 0 0 $inputFontColor;
+		  width: 100%;
+      padding: 2px 10px 2px 2px;
 		  position: relative;
 		  z-index:1;
 		  @include appearance(none);
 
 		  &::-ms-expand { display: none;}
 		}
+
+    select:-moz-focusring{
+      color: transparent;
+      text-shadow: 0 0 0 $inputFontColor;
+    }
+
+    select:focus, input:focus{
+      outline: none;
+    }
 
 		.#{$sm-prefix}unit {
 		  position: absolute;
@@ -1390,7 +1416,7 @@ $uploadPadding:	150px 10px;
   .#{$rte-prefix}btn {
   	@extend .#{$app-prefix}color-main;
 		padding: 5px;
-		width:	25px;
+		min-width:	25px;
 		border-right: 1px solid $mainDkColor;
 		text-align: center;
 		cursor: pointer;

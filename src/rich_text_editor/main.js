@@ -4,13 +4,22 @@
  * * [getAll](#getall)
  * * [remove](#remove)
  *
- * This module allows to customize the toolbar of the Rich Text Editor
+ *
+ * styleWithCSS
+ * removeFormat
+ *
+ *
+ * This module allows to customize the toolbar of the Rich Text Editor. It's highly recommended
+ * to keep this toolbar as small as possible, especially from styling commands (eg. 'fontSize')
+ * and leave this task to the Style Manager.
+ *
  * Before using methods you should get first the module from the editor instance, in this way:
  *
  * ```js
  * var rte = editor.RichTextEditor;
  * ```
  * Complete list of commands
+ * https://developer.mozilla.org/it/docs/Web/API/Document/execCommand
  * http://www.quirksmode.org/dom/execCommand.html
  * @module RichTextEditor
  */
@@ -59,9 +68,10 @@ define(function(require) {
       },
 
       /**
-       * Add new command to the toolbar
+       * Add a new command to the toolbar
        * @param {string} command Command name
-       * @param {string} command Command name
+       * @param {Object} opts Command options
+       * @return {Model} Added command
        * @example
        * var cm = rte.add('bold', {
        *   title: 'Make bold',
@@ -70,7 +80,7 @@ define(function(require) {
        * // With arguments
        * var cm = rte.add('fontSize', {
        *   title: 'Font size',
-       *   arguments: [
+       *   options: [
        *     {name: 'Big', value: 5},
        *     {name: 'Normal', value: 3},
        *     {name: 'Small', value: 1}
@@ -81,6 +91,25 @@ define(function(require) {
         var obj = opts || {};
         obj.command = command;
         return commands.add(obj);
+      },
+
+      /**
+       * Get the command by its name
+       * @param {string} command Command name
+       * @return {Model}
+       * @example
+       * var cm = rte.get('fontSize');
+       */
+      get: function(command) {
+        return commands.where({command: command})[0];
+      },
+
+      /**
+       * Returns the collection of commands
+       * @return {Collection}
+       */
+      getAll: function(){
+        return commands;
       },
 
 			/**
