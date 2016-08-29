@@ -133,7 +133,7 @@ define(function(require) {
        * @private
 			 */
 			getContentEl: function(){
-				return modal.getContent();
+				return modal.getContent().get(0);
 			},
 
       /**
