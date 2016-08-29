@@ -139,7 +139,8 @@ define(function(require) {
         }else if(d.html)
           obj = d.html;
 
-        this.getComponents().reset(obj);
+        if(obj)
+          this.getComponents().reset(obj);
         return obj;
       },
 

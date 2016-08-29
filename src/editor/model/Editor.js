@@ -14,6 +14,7 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
 				previousModel: null,
 				changesCount:	0,
 				storables: [],
+				toLoad: [],
 				device: '',
 			},
 
@@ -28,6 +29,10 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
 				deps.forEach(function(name){
 					this.loadModule(name);
 				}, this);
+
+				this.get('toLoad').forEach(function(M){
+					M.onLoad();
+				});
 
 				this.initUndoManager(); // Is already called (inside components and css composer)
 
@@ -61,9 +66,8 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
 				if(!M.private)
 					this.set(M.name, M);
 
-				// Load callback
 				if(M.onLoad)
-					M.onLoad();
+					this.get('toLoad').push(M);
 
 				return this;
 			},

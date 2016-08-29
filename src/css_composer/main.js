@@ -81,18 +81,23 @@ define(function(require) {
           rules = new CssRules([], c);
           rules.add(c.rules);
 
-          // Load if requested
-          if(c.stm && c.stm.getConfig().autoload)
-            this.load();
-
           rulesView = new CssRulesView({
             collection: rules,
             config: c,
           });
+          return this;
+        },
+
+        /**
+         * On load callback
+         * @private
+         */
+        onLoad: function(){
+          if(c.stm && c.stm.getConfig().autoload)
+              this.load();
 
           if(c.stm && c.stm.isAutosave())
             c.em.listenRules(this.getAll());
-          return this;
         },
 
         /**
@@ -114,7 +119,8 @@ define(function(require) {
           }else if(d.css)
             obj = c.em.get('Parser').parseCss(d.css);
 
-          rules.reset(obj);
+          if(obj)
+            rules.reset(obj);
           return obj;
         },
 
