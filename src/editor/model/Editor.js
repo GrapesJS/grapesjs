@@ -30,6 +30,7 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
 					this.loadModule(name);
 				}, this);
 
+				// Call modules with onLoad callback
 				this.get('toLoad').forEach(function(M){
 					M.onLoad();
 				});
