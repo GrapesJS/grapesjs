@@ -5,15 +5,30 @@
  * * [remove](#remove)
  * * [store](#store)
  * * [load](#load)
- * * [render](#render)
  *
- * Before using methods you should get first the module from the editor instance, in this way:
+ * Before using this methods you should get first the module from the editor instance, in this way:
  *
  * ```js
  * var assetManager = editor.AssetManager;
  * ```
  *
  * @module AssetManager
+ * @param {Object} config Configurations
+ * @param {Array<Object>} [config.assets=[]] Default assets
+ * @param {String} [config.uploadText='Drop files here or click to upload'] Upload text
+ * @param {String} [config.upload=''] Where to send upload data. Expects as return a JSON with asset/s object
+ * as: {data: [{src:'...'}, {src:'...'}]}
+ * @return {this}
+ * @example
+ * ...
+ * {
+ * 	assets: [
+ *  	{src:'path/to/image.png'},
+ *     ...
+ *  ],
+ *  upload: 'http://dropbox/path', // Set to false to disable it
+ *  uploadText: 'Drop files here or click to upload',
+ * }
  */
 define(function(require) {
 
@@ -43,21 +58,7 @@ define(function(require) {
 	  	/**
 	  	 * Initialize module
 	  	 * @param {Object} config Configurations
-			 * @param {Array<Object>} [config.assets=[]] Default assets
-			 * @param {String} [config.uploadText='Drop files here or click to upload'] Upload text
-			 * @param {String} [config.upload=''] Where to send upload data. Expects as return a JSON with asset/s object
-			 * as: {data: [{src:'...'}, {src:'...'}]}
-			 * @return {this}
-			 * @example
-			 * ...
-			 * {
-			 * 	assets: [
-			 *  	{src:'path/to/image.png'},
-			 *     ...
-			 *  ],
-			 *  upload: 'http://dropbox/path', // Set to false to disable it
-			 *  uploadText: 'Drop files here or click to upload',
-			 * }
+	  	 * @private
 	  	 */
 	  	init: function(config){
 	  		c = config || {};
@@ -109,7 +110,7 @@ define(function(require) {
 			},
 
 			/**
-			 * Return the asset by URL
+			 * Returns the asset by URL
 			 * @param  {string} src URL of the asset
 			 * @return {Object} Object representing the asset
 			 * @example
@@ -128,7 +129,7 @@ define(function(require) {
 			},
 
 			/**
-			 * Remove asset by URL
+			 * Remove the asset by its URL
 			 * @param  {string} src URL of the asset
 			 * @return {this}
 			 * @example
@@ -188,6 +189,7 @@ define(function(require) {
 			 * Render assets
 			 * @param  {Boolean} f 	Force to render, otherwise cached version will be returned
 			 * @return {HTMLElement}
+			 * @private
 			 */
 			render: function(f){
 				if(!this.rendered || f)
