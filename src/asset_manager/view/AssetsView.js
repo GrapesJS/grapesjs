@@ -1,8 +1,5 @@
 define(['backbone', './AssetView', './AssetImageView', './FileUploader', 'text!./../template/assets.html'],
 	function (Backbone, AssetView, AssetImageView, FileUploader, assetsTemplate) {
-	/**
-	 * @class AssetsView
-	 * */
 	return Backbone.View.extend({
 
 		template: _.template(assetsTemplate),
@@ -25,6 +22,7 @@ define(['backbone', './AssetView', './AssetImageView', './FileUploader', 'text!.
 		 * Add new asset to the collection via string
 		 * @param {Event} e Event object
 		 * @return {this}
+		 * @private
 		 */
 		addFromStr: function(e){
 			e.preventDefault();
@@ -67,6 +65,7 @@ define(['backbone', './AssetView', './AssetImageView', './FileUploader', 'text!.
 
 		/**
 		 * Add asset to collection
+		 * @private
 		 * */
 		addToAsset: function(model){
 			this.addAsset(model);
@@ -76,8 +75,8 @@ define(['backbone', './AssetView', './AssetImageView', './FileUploader', 'text!.
 		 * Add new asset to collection
 		 * @param Object Model
 		 * @param Object Fragment collection
-		 *
 		 * @return Object Object created
+		 * @private
 		 * */
 		addAsset: function(model, fragmentEl){
 			var fragment	= fragmentEl || null;
@@ -105,8 +104,7 @@ define(['backbone', './AssetView', './AssetImageView', './FileUploader', 'text!.
 
 		/**
 		 * Deselect all assets
-		 *
-		 * @return void
+		 * @private
 		 * */
 		deselectAll: function(){
 			this.$el.find('.' + this.pfx + 'highlight').removeClass(this.pfx + 'highlight');

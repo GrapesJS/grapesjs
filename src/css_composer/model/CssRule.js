@@ -1,8 +1,5 @@
 define(['backbone', './Selectors'],
     function (Backbone, Selectors) {
-    	/**
-    	 * @class CssRule
-    	 * */
     	return Backbone.Model.extend({
 
     		defaults: {
@@ -38,8 +35,8 @@ define(['backbone', './Selectors'],
              * @param   {Object} selectors Collection of selectors
              * @param   {String} state Css rule state
              * @param   {String} width For which device this style is oriented
-             *
              * @return  {Boolean}
+             * @private
              */
             compare: function(selectors, state, width){
                 var st = state || '';

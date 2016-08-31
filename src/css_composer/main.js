@@ -6,7 +6,7 @@
  * * [store](#store)
  *
  * This module contains and manage CSS rules for the template inside the canvas
- * Before using methods you should get first the module from the editor instance, in this way:
+ * Before using the methods you should get first the module from the editor instance, in this way:
  *
  * ```js
  * var cssComposer = editor.CssComposer;
@@ -59,7 +59,7 @@ define(function(require) {
         },
 
         /**
-         * Initialize module. Automatically called with a new instance of the editor
+         * Initializes module. Automatically called with a new instance of the editor
          * @param {Object} config Configurations
          * @private
          */
@@ -177,7 +177,7 @@ define(function(require) {
         },
 
         /**
-         * Get rule
+         * Get the rule
          * @param {Array<Selector>} selectors Array of selectors
          * @param {String} state Css rule state
          * @param {String} width For which device this style is oriented
@@ -213,7 +213,7 @@ define(function(require) {
         },
 
         /**
-         * Render block of CSS rules
+         * Render the block of CSS rules
          * @return {HTMLElement}
          * @private
          */

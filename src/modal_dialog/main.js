@@ -62,7 +62,7 @@ define(function(require) {
       },
 
       /**
-       * Open modal window
+       * Open the modal window
        * @return {this}
        */
       open: function(){
@@ -71,7 +71,7 @@ define(function(require) {
       },
 
       /**
-       * Close modal window
+       * Close the modal window
        * @return {this}
        */
       close: function(){
@@ -80,7 +80,7 @@ define(function(require) {
       },
 
       /**
-       * Checks if modal window is open
+       * Checks if the modal window is open
        * @return {Boolean}
        */
       isOpen: function(){
@@ -88,7 +88,7 @@ define(function(require) {
       },
 
       /**
-       * Set title to the modal window
+       * Set the title to the modal window
        * @param {string} title Title
        * @return {this}
        * @example
@@ -100,7 +100,7 @@ define(function(require) {
 			},
 
       /**
-       * Returns title of the modal window
+       * Returns the title of the modal window
        * @return {string}
        */
       getTitle: function(){
@@ -108,7 +108,7 @@ define(function(require) {
       },
 
       /**
-       * Set content of the modal window
+       * Set the content of the modal window
        * @param {string|HTMLElement} content Content
        * @return {this}
        * @example
@@ -120,7 +120,7 @@ define(function(require) {
 			},
 
       /**
-       * Get content of the modal window
+       * Get the content of the modal window
        * @return {string}
        */
       getContent: function(){

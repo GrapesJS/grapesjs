@@ -21,8 +21,8 @@ define(['backbone'],
 			/**
        * Escape string
        * @param {string} name
-       *
        * @return {string}
+       * @private
        */
       escapeName: function(name) {
         return name.toLowerCase().replace(/([^a-z0-9\w]+)/gi, '-');

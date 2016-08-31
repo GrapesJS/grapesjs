@@ -1,8 +1,5 @@
 define(['backbone'],
   function (Backbone) {
-  /**
-   * @class CssRuleView
-   * */
   return Backbone.View.extend({
 
     tagName: 'style',
@@ -18,6 +15,7 @@ define(['backbone'],
 
     /**
      * Triggered when some selector is changed
+     * @private
      */
     selChanged: function(){
       this.selStr = this.renderSelectors();
@@ -26,8 +24,8 @@ define(['backbone'],
 
     /**
      * Returns string of selectors
-     *
      * @return {String}
+     * @private
      */
     renderSelectors: function(){
       var sel = [];
@@ -39,8 +37,8 @@ define(['backbone'],
 
     /**
      * Returns string of properties
-     *
      * @return {String}
+     * @private
      */
     renderProperties: function(){
       var sel = [],

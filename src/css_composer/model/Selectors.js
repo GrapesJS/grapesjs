@@ -1,9 +1,5 @@
 define([ 'backbone', 'require'],
   function (Backbone, require) {
-    /**
-     * @class Selectors
-     * */
-
     return Backbone.Collection.extend({
 
       initialize: function(models, opt){

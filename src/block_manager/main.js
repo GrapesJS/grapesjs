@@ -1,5 +1,4 @@
 /**
- * * [init](#init)
  * * [add](#add)
  * * [get](#get)
  * * [getAll](#getall)
@@ -14,6 +13,17 @@
  * ```
  *
  * @module BlockManager
+ * @param {Object} config Configurations
+ * @param {Array<Object>} [config.blocks=[]] Default blocks
+ * @example
+ * ...
+ * {
+ *     blocks: [
+ *      {id:'h1-block' label: 'Heading', content:'<h1>...</h1>'},
+ *      ...
+ *    ],
+ * }
+ * ...
  */
 define(function(require) {
 
@@ -36,17 +46,8 @@ define(function(require) {
         /**
          * Initialize module. Automatically called with a new instance of the editor
          * @param {Object} config Configurations
-         * @param {Array<Object>} [config.blocks=[]] Default blocks
          * @return {this}
-         * @example
-         * ...
-         * {
-         *     blocks: [
-         *      {id:'h1-block' label: 'Heading', content:'<h1>...</h1>'},
-         *      ...
-         *    ],
-         * }
-         * ...
+         * @private
          */
         init: function(config) {
           c = config || {};

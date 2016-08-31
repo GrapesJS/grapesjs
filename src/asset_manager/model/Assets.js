@@ -1,8 +1,5 @@
 define(['backbone', './Asset', './AssetImage'],
 	function (Backbone, Asset, AssetImage) {
-		/**
-		 * @class Assets
-		 * */
 		return Backbone.Collection.extend({
 
 			model:	AssetImage,

@@ -1,9 +1,7 @@
 /**
- * * [init](#init)
  * * [add](#add)
  * * [get](#get)
  * * [getAll](#getall)
- * * [render](#render)
  *
  * Selectors in GrapesJS are used in CSS Composer inside Rules and in Components as classes. To get better this concept let's take
  * a look at this code:
@@ -33,6 +31,26 @@
  * ```
  *
  * @module SelectorManager
+ * @param {Object} config Configurations
+ * @param {Array<Object>} [config.selectors=[]] Default selectors
+ * @param {Array<Object>} [config.states=[]] Default states
+ * @param {String} [config.label='Classes'] Classes label
+ * @param {String} [config.statesLabel='- State -'] The empty state label
+ * @return {this}
+ * @example
+ * ...
+ * {
+ *  selectors: [
+ *    {name:'myselector1'},
+ *     ...
+ *  ],
+ *  states: [{
+ *    name: 'hover', label: 'Hover'
+ *  },{
+ *    name: 'active', label: 'Click'
+ *  }],
+ *  statesLabel: '- Selecte State -',
+ * }
  */
 define(function(require) {
 
@@ -55,25 +73,8 @@ define(function(require) {
       /**
        * Initialize module. Automatically called with a new instance of the editor
        * @param {Object} config Configurations
-       * @param {Array<Object>} [config.selectors=[]] Default selectors
-       * @param {Array<Object>} [config.states=[]] Default states
-       * @param {String} [config.label='Classes'] Classes label
-       * @param {String} [config.statesLabel='- State -'] The empty state label
        * @return {this}
-       * @example
-       * ...
-       * {
-       *  selectors: [
-       *    {name:'myselector1'},
-       *     ...
-       *  ],
-       *  states: [{
-       *    name: 'hover', label: 'Hover'
-       *  },{
-       *    name: 'active', label: 'Click'
-       *  }],
-       *  statesLabel: '- Selecte State -',
-       * }
+       * @private
        */
       init: function(conf) {
         c = conf || {};
@@ -96,7 +97,7 @@ define(function(require) {
       },
 
       /**
-       * Add new selector to collection if it's not already exists. Class type is a default one
+       * Add the new selector to collection if it's not already exists. Class type is a default one
        * @param {String} name Selector name
        * @param {Object} opts Selector options
        * @param {String} [opts.label=''] Label for the selector, if it's not provided the label will be the same as the name
@@ -117,7 +118,7 @@ define(function(require) {
       },
 
       /**
-       * Get selector by its name
+       * Get the selector by its name
        * @param {String} name Selector name
        * @return {Model|null}
        * @example
@@ -129,7 +130,7 @@ define(function(require) {
 
       /**
        * Get all selectors
-       * @return  {Collection}
+       * @return {Collection}
        * */
       getAll: function() {
         return selectors;
@@ -139,6 +140,7 @@ define(function(require) {
        * Render class selectors. If an array of selectors is provided a new instance of the collection will be rendered
        * @param {Array<Object>} selectors
        * @return {HTMLElement}
+       * @private
        */
       render: function(selectors) {
         if(selectors){

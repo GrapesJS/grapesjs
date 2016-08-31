@@ -1,8 +1,5 @@
 define(['backbone', 'text!./../template/classTag.html'],
   function (Backbone, tagTemplate) {
-  /**
-   * @class ClassTagView
-   * */
   return Backbone.View.extend({
 
     template: _.template(tagTemplate),
@@ -32,6 +29,7 @@ define(['backbone', 'text!./../template/classTag.html'],
 
     /**
      * Start editing tag
+     * @private
      */
     startEditTag: function(){
       this.$labelInput.prop(this.inputProp, false);
@@ -40,6 +38,7 @@ define(['backbone', 'text!./../template/classTag.html'],
     /**
      * End editing tag. If the class typed already exists the
      * old one will be restored otherwise will be changed
+     * @private
      */
     endEditTag: function(){
       var value = this.$labelInput.val();
@@ -60,6 +59,7 @@ define(['backbone', 'text!./../template/classTag.html'],
 
     /**
      * Update status of the tag
+     * @private
      */
     changeStatus: function(){
       this.model.set('active', !this.model.get('active'));
@@ -69,6 +69,7 @@ define(['backbone', 'text!./../template/classTag.html'],
     /**
      * Remove tag from the selected component
      * @param {Object} e
+     * @private
      */
     removeTag: function(e){
       var comp = this.target.get('selectedComponent');
@@ -86,6 +87,7 @@ define(['backbone', 'text!./../template/classTag.html'],
 
     /**
      * Update status of the checkbox
+     * @private
      */
     updateStatus: function(){
       if(!this.$chk)
@@ -102,6 +104,7 @@ define(['backbone', 'text!./../template/classTag.html'],
 
     /**
      * Update label's input
+     * @private
      */
     updateInputLabel: function(){
       if(!this.$labelInput)
@@ -111,7 +114,7 @@ define(['backbone', 'text!./../template/classTag.html'],
       this.$labelInput.attr('size', size);
     },
 
-    /** @inheritdoc */
+
     render : function(){
       this.$el.html( this.template({
         label: this.model.get('label'),

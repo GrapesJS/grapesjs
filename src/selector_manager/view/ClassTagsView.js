@@ -1,8 +1,5 @@
 define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
   function (Backbone, tagsTemplate, ClassTagView) {
-  /**
-   * @class ClassTagsView
-   * */
   return Backbone.View.extend({
 
     template: _.template(tagsTemplate),
@@ -39,6 +36,7 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
     /**
      * Triggered when a tag is removed from collection
      * @param {Object} model Removed model
+     * @private
      */
     tagRemoved: function(model){
       this.updateStateVis();
@@ -47,6 +45,7 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
     /**
      * Create select input with states
      * @return {string} String of options
+     * @private
      */
     getStateOptions: function(){
       var strInput = '';
@@ -59,6 +58,7 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
     /**
      * Add new model
      * @param {Object} model
+     * @private
      */
     addNew: function(model){
       this.addToClasses(model);
@@ -67,7 +67,7 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
     /**
      * Start tag creation
      * @param {Object} e
-     *
+     * @private
      */
     startNewTag: function(e) {
       this.$addBtn.hide();
@@ -77,7 +77,7 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
     /**
      * End tag creation
      * @param {Object} e
-     *
+     * @private
      */
     endNewTag: function(e) {
       this.$addBtn.show();
@@ -87,6 +87,7 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
     /**
      * Checks what to do on keyup event
      * @param  {Object} e
+     * @private
      */
     onInputKeyUp: function(e) {
       if (e.keyCode === 13)
@@ -98,6 +99,7 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
     /**
      * Triggered when component is changed
      * @param  {Object} e
+     * @private
      */
     componentChanged: function(e){
       this.compTarget = this.target.get('selectedComponent');
@@ -111,6 +113,7 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
     /**
      * Update states visibility. Hides states in case there is no tags
      * inside collection
+     * @private
      */
     updateStateVis: function(){
       if(this.collection.length)
@@ -145,6 +148,7 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
     /**
      * Triggered when the select with states is changed
      * @param  {Object} e
+     * @private
      */
     stateChanged: function(e){
       if(this.compTarget){
@@ -158,6 +162,7 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
     /**
      * Add new tag to collection, if possible, and to the component
      * @param  {Object} e
+     * @private
      */
     addNewTag: function(name){
       if(!name)
@@ -187,8 +192,8 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
      * Add new object to collection
      * @param   {Object} model  Model
      * @param   {Object} fragmentEl   Fragment collection
-     *
      * @return {Object} Object created
+     * @private
      * */
     addToClasses: function(model, fragmentEl) {
       var fragment  = fragmentEl || null;
@@ -211,6 +216,7 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
     /**
      * Render the collection of classes
      * @return {this}
+     * @private
      */
     renderClasses: function() {
       var fragment = document.createDocumentFragment();
@@ -258,8 +264,6 @@ define(['backbone', 'text!./../template/classTags.html', './ClassTagView'],
       return this.$statesC;
     },
 
-
-    /** @inheritdoc */
     render : function(){
       this.$el.html( this.template({
         label: this.config.label,

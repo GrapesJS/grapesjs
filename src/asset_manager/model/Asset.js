@@ -1,8 +1,5 @@
 define(['backbone'],
 	function (Backbone) {
-		/**
-		 * @class Asset
-		 * */
 		return Backbone.Model.extend({
 
 			idAttribute: 'src',
@@ -14,8 +11,8 @@ define(['backbone'],
 
 			/**
 			 * Get filename of the asset
-			 *
-			 * @return	{String}
+			 * @return	{string}
+			 * @private
 			 * */
 			getFilename: function(){
 				return  this.get('src').split('/').pop();
@@ -23,8 +20,8 @@ define(['backbone'],
 
 			/**
 			 * Get extension of the asset
-			 *
-			 * @return	{String}
+			 * @return	{string}
+			 * @private
 			 * */
 			getExtension: function(){
 				return  this.getFilename().split('.').pop();

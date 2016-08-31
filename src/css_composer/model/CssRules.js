@@ -1,8 +1,5 @@
 define(['backbone','./CssRule'],
   function (Backbone, CssRule) {
-    /**
-     * @class CssRules
-     * */
     return Backbone.Collection.extend({
 
       initialize: function(models, opt){
