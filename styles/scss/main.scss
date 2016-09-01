@@ -76,8 +76,8 @@ $fontV: 5;//random(1000)
 	appearance: $v;
 }
 
-.#{$app-prefix}fonts{
-}
+.#{$app-prefix}fonts{}
+
 .#{$app-prefix}fonts:before{
   display: block;
   font: normal normal normal 14px font3336; // shortening font declaration
@@ -193,6 +193,9 @@ $fontV: 5;//random(1000)
 }
 div.#{$app-prefix}select{
   padding: 0;
+}
+.#{$app-prefix}select select{
+  padding-right: 10px
 }
 .#{$app-prefix}select:-moz-focusring,
 .#{$app-prefix}select select:-moz-focusring{
@@ -632,8 +635,6 @@ $arrowColor:    $mainLhlColor; /*b1b1b1*/
   }
 
   select{
-    color: transparent;
-    text-shadow: 0 0 0 $inputFontColor;
     height: 20px;
   }
 
@@ -856,7 +857,7 @@ $arrowColor:    $mainLhlColor; /*b1b1b1*/
 			}
 		}
 
-		&.#{$sm-prefix}integer select{ width:auto; padding: 0; color: transparent;}
+		&.#{$sm-prefix}integer select{ width:auto; padding: 0;}
 
 	}
 	/*------------------END Field--------------------*/
@@ -1185,7 +1186,8 @@ $paddElClm: 5px 6px;
 .#{$mdl-prefix}backlayer {
 	background-color: #000;
   	position: absolute;
-  	top: 0; z-index: 1;
+  	top: 0; left: 0;
+    z-index: 1;
   	width:100%; height:100%;
   	@include opacity(0.5);
 }
@@ -1193,7 +1195,8 @@ $paddElClm: 5px 6px;
 .#{$mdl-prefix}container {
 		font-family: $mainFont;
   	position: absolute;
-  	top: 0; z-index: 10;
+  	top: 0; left: 0;
+    z-index: 10;
   	width:100%; height:100%;
 }
 
@@ -1406,15 +1409,16 @@ $uploadPadding:	150px 10px;
 
 ##{$rte-prefix}toolbar {
   @extend .#{$app-prefix}bg-main;
+  display: none;
   border: 1px solid $mainDkColor;
   position: absolute;
   border-radius: 3px;
   overflow: hidden;
-  display: none;
   z-index: 5;
 
   .#{$rte-prefix}btn {
   	@extend .#{$app-prefix}color-main;
+    display: inline-block;
 		padding: 5px;
 		min-width:	25px;
 		border-right: 1px solid $mainDkColor;
@@ -1426,6 +1430,10 @@ $uploadPadding:	150px 10px;
 	  	&.btn-info{ background-color: $mainDkColor;}
 	  	&:hover {  background-color: $mainLhColor;}
 	}
+
+  select{
+    height: 16px;
+  }
 }
 
 /********* Spectrum **********/
@@ -1488,3 +1496,5 @@ $uploadPadding:	150px 10px;
 .sp-palette .sp-thumb-el, .sp-palette .sp-thumb-el:hover{
   border: 1px solid rgba(0, 0, 0, 0.8);
 }
+
+.#{$app-prefix}hidden{ display: none; }

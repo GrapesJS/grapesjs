@@ -4,13 +4,11 @@
  * * [getAll](#getall)
  * * [remove](#remove)
  *
+ * This module allows to customize the toolbar of the Rich Text Editor and use commands from the HTML Editing APIs.
+ * For more info about HTML Editing APIs check here:
+ * https://developer.mozilla.org/it/docs/Web/API/Document/execCommand
  *
- * styleWithCSS
- * removeFormat
- *
- *
- * This module allows to customize the toolbar of the Rich Text Editor. It's highly recommended
- * to keep this toolbar as small as possible, especially from styling commands (eg. 'fontSize')
+ * It's highly recommended to keep this toolbar as small as possible, especially from styling commands (eg. 'fontSize')
  * and leave this task to the Style Manager.
  *
  * Before using methods you should get first the module from the editor instance, in this way:
@@ -164,7 +162,7 @@ define(function(require) {
 			 * @private
 			 * */
 			show: function(){
-				toolbar.el.style.display = 'block';
+        toolbar.el.style.display = "block";
 			},
 
 			/**
@@ -172,7 +170,7 @@ define(function(require) {
 			 * @private
 			 * */
 			hide: function(){
-				toolbar.el.style.display = 'none';
+        toolbar.el.style.display = "none";
 			},
 
 			/**

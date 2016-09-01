@@ -2699,6 +2699,9 @@ $fontColorActive: #4f8ef7;
 div.gjs-select {
   padding: 0; }
 
+.gjs-select select {
+  padding-right: 10px; }
+
 .gjs-select:-moz-focusring,
 .gjs-select select:-moz-focusring {
   color: transparent;
@@ -3103,8 +3106,6 @@ ol.example li.placeholder:before {
     position: relative;
     z-index: 1; }
   .gjs-field select {
-    color: transparent;
-    text-shadow: 0 0 0 rgba(255, 255, 255, 0.7);
     height: 20px; }
   .gjs-field option {
     margin: 5px 0; }
@@ -3305,8 +3306,7 @@ ol.example li.placeholder:before {
         line-height: normal; }
     .gjs-sm-sector .gjs-sm-field.gjs-sm-integer select, .gjs-clm-tags .gjs-sm-field.gjs-sm-integer select, .gjs-sm-sector .gjs-sm-integer.gjs-clm-field select, .gjs-clm-tags .gjs-sm-integer.gjs-clm-field select, .gjs-clm-tags #gjs-clm-tags-field select {
       width: auto;
-      padding: 0;
-      color: transparent; }
+      padding: 0; }
   .gjs-sm-sector .gjs-sm-list .gjs-sm-el, .gjs-clm-tags .gjs-sm-list .gjs-sm-el {
     float: left;
     border-left: 1px solid rgba(0, 0, 0, 0.3); }
@@ -3562,6 +3562,7 @@ ol.example li.placeholder:before {
   background-color: #000;
   position: absolute;
   top: 0;
+  left: 0;
   z-index: 1;
   width: 100%;
   height: 100%;
@@ -3572,6 +3573,7 @@ ol.example li.placeholder:before {
   font-family: Helvetica, sans-serif;
   position: absolute;
   top: 0;
+  left: 0;
   z-index: 10;
   width: 100%;
   height: 100%; }
@@ -3739,13 +3741,14 @@ ol.example li.placeholder:before {
 
 /*************RTE****************/
 #gjs-rte-toolbar {
+  display: none;
   border: 1px solid rgba(0, 0, 0, 0.3);
   position: absolute;
   border-radius: 3px;
   overflow: hidden;
-  display: none;
   z-index: 5; }
   #gjs-rte-toolbar .gjs-rte-btn {
+    display: inline-block;
     padding: 5px;
     min-width: 25px;
     border-right: 1px solid rgba(0, 0, 0, 0.3);
@@ -3758,6 +3761,8 @@ ol.example li.placeholder:before {
       background-color: rgba(0, 0, 0, 0.3); }
     #gjs-rte-toolbar .gjs-rte-btn:hover {
       background-color: rgba(255, 255, 255, 0.1); }
+  #gjs-rte-toolbar select {
+    height: 16px; }
 
 /********* Spectrum **********/
 .sp-hue, .sp-slider {
@@ -3835,3 +3840,6 @@ ol.example li.placeholder:before {
 
 .sp-palette .sp-thumb-el, .sp-palette .sp-thumb-el:hover {
   border: 1px solid rgba(0, 0, 0, 0.8); }
+
+.gjs-hidden {
+  display: none; }

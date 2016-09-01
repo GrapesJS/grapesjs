@@ -23,10 +23,10 @@ define(function () {
 	 	}/*,{
 	 		command: 	'fontSize',
 	 		options: [
-	 			{name: 'Huge', value: '100px'},
-	 			{name: 'Normal', value: '14px'},
-	 			{value: '5px'}
+	 			{name: 'Huge', value: '7'},
+	 			{name: 'Normal', value: '5'},
+	 			{value: '1'}
 	 		]
-	 }*/],
+	 	}*/],
 	};
 });

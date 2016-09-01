@@ -6,6 +6,7 @@ define(['backbone'],
 
 		initialize: function(o, config){
 			this.config = config || {};
+			this.ppfx = this.config.pStylePrefix || '';
 			this.className = this.config.stylePrefix + 'btn ' + this.model.get('class');
 		},
 
