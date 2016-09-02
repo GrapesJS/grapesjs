@@ -2719,7 +2719,7 @@ div.gjs-select {
   background-color: rgba(0, 0, 0, 0.15);
   box-sizing: border-box;
   position: absolute;
-  width: 83%;
+  width: 85%;
   height: 100%;
   bottom: 0;
   left: 0;
@@ -2900,12 +2900,12 @@ ol.example li.placeholder:before {
   text-align: center;
   z-index: 3; }
   .gjs-pn-panel#gjs-pn-commands, .gjs-pn-panel#gjs-pn-options2 {
-    width: 83%;
+    width: 85%;
     left: 0;
     top: 0;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); }
   .gjs-pn-panel#gjs-pn-options {
-    right: 17%;
+    right: 15%;
     top: 0; }
   .gjs-pn-panel#gjs-pn-options2 {
     bottom: 150px;
@@ -2917,13 +2917,13 @@ ol.example li.placeholder:before {
   .gjs-pn-panel#gjs-pn-views {
     border-bottom: 2px solid rgba(0, 0, 0, 0.3);
     right: 0;
-    width: 17%;
+    width: 15%;
     z-index: 4; }
   .gjs-pn-panel#gjs-pn-views-container {
     height: 100%;
     padding: 42px 0 0;
     right: 0;
-    width: 17%;
+    width: 15%;
     overflow: auto;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); }
 

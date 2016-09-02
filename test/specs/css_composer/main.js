@@ -5,14 +5,16 @@ define([
 				modulePath + '/model/CssModels',
 				modulePath + '/view/CssRuleView',
 				modulePath + '/view/CssRulesView',
-				modulePath + '/e2e/CssComposer'
+				modulePath + '/e2e/CssComposer',
+				'./../test_utils.js'
 				 ],
 	function(
 					CssComposer,
 					Models,
 					CssRuleView,
 					CssRulesView,
-					e2e
+					e2e,
+					utils
 					) {
 
 		describe('Css Composer', function() {
@@ -21,8 +23,29 @@ define([
 
 				var obj;
 
+				var config;
+				var storagMock = utils.storageMock();
+				var editorModel = {
+					getCss: function(){return 'testCss';},
+					getCacheLoad: function(){
+						return storagMock.load();
+					}
+				};
+
+				var setSmConfig = function(){
+					config.stm = storagMock;
+					config.stm.getConfig =  function(){
+						return { storeCss: 1, storeStyles: 1}
+					};
+				};
+				var setEm = function(){
+					config.em = editorModel;
+				}
+
+
 				beforeEach(function () {
-					obj = new CssComposer().init();
+					config = {};
+					obj = new CssComposer().init(config);
 				});
 
 				afterEach(function () {
@@ -31,6 +54,22 @@ define([
 
 				it('Object exists', function() {
 					CssComposer.should.be.exist;
+				});
+
+				it('storageKey returns array', function() {
+					obj.storageKey().should.be.instanceOf(Array);
+				});
+
+				it('storageKey returns correct composition', function() {
+					setSmConfig();
+					obj.storageKey().should.eql(['css', 'styles']);
+				});
+
+				it('Store data', function() {
+					setSmConfig();
+					setEm();
+					var expected = { css: 'testCss', styles: '[]',};
+					obj.store(1).should.deep.equal(expected);
 				});
 
 				it("Rules are empty", function() {

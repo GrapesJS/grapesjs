@@ -50,11 +50,11 @@ define(function(require) {
          */
         storageKey: function(){
           var keys = [];
-          var smc = c.stm.getConfig() || {};
+          var smc = (c.stm && c.stm.getConfig()) || {};
           if(smc.storeCss)
             keys.push('css');
           if(smc.storeStyles)
-            keys.push('style');
+            keys.push('styles');
           return keys;
         },
 
@@ -136,7 +136,7 @@ define(function(require) {
           var keys = this.storageKey();
           if(keys.indexOf('css') >= 0)
             obj.css = c.em.getCss();
-          if(keys.indexOf('style') >= 0)
+          if(keys.indexOf('styles') >= 0)
             obj.styles = JSON.stringify(rules);
           if(!noStore)
             c.stm.store(obj);
