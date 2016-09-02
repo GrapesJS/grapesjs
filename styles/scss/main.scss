@@ -38,6 +38,7 @@ $colorGreen:	#62c462;
 $tagBg: #804f7b;
 $secColor: $tagBg;
 $imageCompDim:	50px;
+$leftWidth: 17%;
 
 $fontPath: '../fonts';
 $fontName: 'main-fonts';
@@ -215,7 +216,7 @@ div.#{$app-prefix}select{
   background-color: rgba(0, 0, 0, 0.15);
   box-sizing: border-box;
   position: absolute;
-  width: 85%;
+  width: (100% - $leftWidth);
   height: 100%;
   bottom: 0; left: 0;
   overflow: hidden;
@@ -385,8 +386,6 @@ ol.example li.placeholder:before {position: absolute;}
 
 /********* PANELS **********/
 
-$leftWidth: 15%;
-
 .#{$pn-prefix}panel {
   @extend .#{$app-prefix}bg-main;
   @extend .#{$app-prefix}color-main;
@@ -398,13 +397,14 @@ $leftWidth: 15%;
   z-index:3;
 
   &##{$pn-prefix}commands{
-    width: 85%;
+    width: (100% - $leftWidth);
     left:0; top: 0;
     box-shadow: 0 0 5px $mainDkColor;
   }
 
   &##{$pn-prefix}options{
-  	right: 15%; top: 0;
+  	right: $leftWidth;
+    top: 0;
   }
 
   &##{$pn-prefix}options2{
@@ -754,23 +754,21 @@ $arrowColor:    $mainLhlColor; /*b1b1b1*/
 	  width: 100%;
 	  position:relative;
 
-	  	input {
+    input, select {
+      background-color: transparent;
+      color: $inputFontColor;
+      border:none;
+      width: 100%;
+    }
+	  input {
 		  box-sizing: border-box;
-		  color: $inputFontColor;
-		  background:none; border:none;
 		  padding: 3px 21px 3px 0;
-   	 	  width: 100%;
 		}
-
 		select {
-		  background: none; border: none;
-		  color: $inputFontColor;
-		  width: 100%;
       padding: 2px 10px 2px 2px;
 		  position: relative;
 		  z-index:1;
 		  @include appearance(none);
-
 		  &::-ms-expand { display: none;}
 		}
 

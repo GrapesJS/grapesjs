@@ -1,7 +1,7 @@
 {
   "name": "grapesjs",
   "description": "Open source Web Template Editor",
-  "version": "0.3.12",
+  "version": "0.3.13",
   "author": "Artur Arseniev",
   "homepage": "http://grapesjs.com",
   "main": [
