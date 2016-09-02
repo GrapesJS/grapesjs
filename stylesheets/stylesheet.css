@@ -94,7 +94,7 @@ a {
     display:block;
   }
 }
-.page-header {
+.page-header, .gjs-playground {
   text-shadow: 0 2px 0 #793d7b;
   min-height:100px;
   color: #fff;

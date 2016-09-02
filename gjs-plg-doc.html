@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>GrapesJS Playground PDF Creator</title>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="stylesheets/grapesjs-plg.css">
+    <link rel="stylesheet" href="stylesheets/grapes.min.css">
+    <script src="js/jquery.js"></script>
+    <script src="js/grapes.min.js"></script>
+    <script src="js/jspdf.min.js"></script>
+    <script src="js/html2canvas.js"></script>
+    <style type="text/css">
+        body, html{ height: 100%; margin: 0; }
+        .width-gjs-plg {
+          margin: 0 auto;
+          max-width: none;
+          width: 90%;
+        }
+
+        .gjs-plg-editor, .gjs-plg-output {
+          min-height: 300px;
+          width: 100%;
+        }
+    </style>
+  </head>
+  <body>
+    <section class="gjs-playground">
+      <div class="width-gjs-plg">
+
+        <div class="logo-bann">
+          <div class="logo-block">
+            <div class="logo-c">
+              <img class="logo" src="img/grapesjs-logo-plg.svg">
+            </div>
+            <div class="logo-label">
+              <div class="logo-name">rapesJS</div>
+              <div class="logo-plg">Playground</div>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+
+        <div class="gjs-plg">
+          <div class="gjs-plg-editor">
+            EDITOR
+            <div id="gjs" style="height:0px; overflow:hidden"></div>
+          </div>
+          <div class="gjs-plg-output">
+          PDF
+          <iframe class="doc" width="396" height="352" frameborder="0" src="##"></iframe>
+          </div>
+        </div>
+
+      </div>
+    </section>
+    <script type="text/javascript">
+      var a4  = [ 595.28,  841.89];
+      var docFrame = $('iframe.doc');
+      var saveFilePls = function(fs){
+        console.log('INSIDE RequestFS');
+
+        /*
+        fs.root.getFile("info.txt", {create: true}, function(file) {
+          file.createWriter(function(writer) {
+            var blob = new Blob(["Lorem Ipsum"], {type: "text/plain"});
+            writer.write(blob);
+          });
+        });
+        */
+
+        // Remove
+        // localstorage.root.getFile("info.txt", {create: false}, function(DatFile) { DatFile.remove(function() {}); })
+      }
+      var generatePdf = function (el) {
+         getEditorCanvas(el).then(function(canvas){
+          // img is a good png image 125kb
+          var img = canvas.toDataURL("image/png"),
+            doc = new jsPDF({
+              unit:'px',
+              format:'a4'
+            });
+            doc.addImage(img, 'image/png', 20, 20);
+            console.time('test');
+            var string = doc.output('datauristring');
+            console.timeEnd('test');
+
+            docFrame.attr('src', img);
+
+            /*
+            window.webkitRequestFileSystem(window.TEMPORARY, 1024*1024, saveFilePls, function(err){
+              console.log(err);
+            });
+            */
+
+            /*
+            window.webkitStorageInfo.requestQuota(window.PERSISTENT, 1024*1024, function(grantedBytes) {
+              window.webkitRequestFileSystem(window.PERSISTENT, grantedBytes, saveFilePls, function(err){
+              console.log('Er2',err);
+            });
+            }, function(err){
+              console.log('Er1', err);
+            } );
+            */
+
+            //doc.save('test-pdf.pdf');
+            //el.width(cache_width);
+         });
+      }
+
+      var getEditorCanvas = function(el) {
+        //form.width((a4[0]*1.33333) -80).css('max-width','none');
+        return html2canvas(el, {
+          imageTimeout:2000,
+          removeContainer:true
+        });
+      };
+
+
+      var gr  = grapesjs.init(
+{
+      noticeOnUnload: 0,
+      height: '100%',
+      container : '#gjs',
+      fromElement: true,
+      plugins: ['gjs-plugin-export'],
+      commands:     {
+          defaults    : [{
+                          id:   'open-github',
+                          run:  function(em, sender){
+                            generatePdf(em.Canvas.getBody());
+                            //sender.set('active',false);
+                            //window.open('https://github.com/artf/grapesjs','_blank');
+                          },
+                          stop: function(){}
+                        },{
+                          id:   'undo',
+                          run:  function(em, sender){
+                            sender.set('active',false);
+                            em.UndoManager.undo(true);
+                          },
+                          stop: function(){}
+                        },{
+                          id:   'redo',
+                          run:  function(em, sender){
+                            sender.set('active',false);
+                            em.UndoManager.redo(true);
+                          },
+                          stop: function(){}
+                        },{
+                          id:   'clean-all',
+                          run:  function(em, sender){
+                            sender.set('active',false);
+                            if(confirm('Are you sure to clean the canvas?')){
+                              var comps = em.DomComponents.clear();
+                            }
+                          },
+                          stop: function(){}
+                        }],
+      },
+      assetManager: {
+        storageType     : '',
+        storeOnChange   : true,
+        storeAfterUpload  : true,
+        assets        : [
+                           { type: 'image', src : './img/team1.jpg',height:100, width:100},
+                           { type: 'image', src : './img/team2.jpg',height:100, width:100},
+                           { type: 'image', src : './img/team3.jpg',height:100, width:100},
+                           { type: 'image', src : 'http://placehold.it/350x250/78c5d6/fff/image1.jpg',height:350, width:250},
+                           { type: 'image', src : 'http://placehold.it/350x250/459ba8/fff/image2.jpg',height:350, width:250},
+                           { type: 'image', src : 'http://placehold.it/350x250/79c267/fff/image3.jpg',height:350, width:250},
+                           { type: 'image', src : 'http://placehold.it/350x250/c5d647/fff/image4.jpg',height:350, width:250},
+                           { type: 'image', src : 'http://placehold.it/350x250/f28c33/fff/image5.jpg',height:350, width:250},
+                           { type: 'image', src : 'http://placehold.it/350x250/e868a2/fff/image6.jpg',height:350, width:250},
+                           { type: 'image', src : 'http://placehold.it/350x250/cc4360/fff/image7.jpg',height:350, width:250},
+                           { type: 'image', src : './img/work-desk.jpg',height:1080, width:1728},
+                           { type: 'image', src : './img/phone-app.png', date: '2015-02-01',height:650, width:320},
+                           { type: 'image', src : './img/bg-gr-v.png', date: '2015-02-01',height:1, width:1728},
+                         ]
+      },
+
+      styleManager : {
+        sectors: [{
+          name: 'General',
+          buildProps: ['float', 'display', 'position', 'top', 'right', 'left', 'bottom'],
+          properties:[{
+              name    : 'Alignment',
+              property  : 'float',
+              type    : 'radio',
+              defaults  : 'none',
+              list    : [{
+                        value     : 'none',
+                        title   : 'None',
+                        className   : 'fa fa-times',
+                      },{
+                        value     : 'left',
+                        className   : 'fa fa-align-left',
+                        title   : 'Float element to the left',
+                      },{
+                        value     : 'right',
+                        className   : 'fa fa-align-right',
+                        title   : 'Float element to the right',
+                      }],
+            },{
+              property  : 'display',
+              type    : 'radio',
+              list    : [{
+                        value     : 'block',
+                        title   : 'Block',
+                      },{
+                        value     : 'inline',
+                        title   : 'Inline',
+                      },{
+                        value     : 'inline-block',
+                        title   : 'Inline-block',
+                      },{
+                        value     : 'none',
+                        title   : 'None',
+                        className   : 'fa fa-eye-slash',
+                      }],
+            }],
+          },{
+            name: 'Dimension',
+            open: false,
+            buildProps: ['width', 'height', 'max-width', 'min-height', 'margin', 'padding'],
+            properties:[{
+              name    : 'Margin',
+              property  : 'margin',
+              type    : 'composite',
+              properties:[{
+                      name    : 'Top',
+                      property  : 'margin-top',
+                      type    : 'integer',
+                      units   : ['px','%'],
+                      defaults  : 0,
+                    },{
+                      name    : 'Right',
+                      property  : 'margin-right',
+                      type    : 'integer',
+                      units   : ['px','%'],
+                      defaults  : 0,
+                    },{
+                      name    : 'Bottom',
+                      property  : 'margin-bottom',
+                      type    : 'integer',
+                      units   : ['px','%'],
+                      defaults  : 0,
+                    },{
+                      name    : 'Left',
+                      property  : 'margin-Left',
+                      type    : 'integer',
+                      units   : ['px','%'],
+                      defaults  : 0,
+                    },],
+            },/*{
+              name    : 'Center block',
+              property  : 'margin',
+              type    : 'select',
+              defaults  : '0',
+              list    : [
+                         { value: '0', name: 'Normal',},
+                         { value: '0 auto', name: 'Center',}
+                        ],
+            },*/{
+              name    : 'Padding',
+              property  : 'padding',
+              type    : 'composite',
+              properties:[{
+                      name    : 'Top',
+                      property  : 'padding-top',
+                      type    : 'integer',
+                      units   : ['px','%'],
+                      defaults  : 0,
+                      min     : 0,
+                    },{
+                      name    : 'Right',
+                      property  : 'padding-right',
+                      type    : 'integer',
+                      units   : ['px','%'],
+                      defaults  : 0,
+                      min     : 0,
+                    },{
+                      name    : 'Bottom',
+                      property  : 'padding-bottom',
+                      type    : 'integer',
+                      units   : ['px','%'],
+                      defaults  : 0,
+                      min     : 0,
+                    },{
+                      name    : 'Left',
+                      property  : 'padding-left',
+                      type    : 'integer',
+                      units   : ['px','%'],
+                      defaults  : 0,
+                      min     : 0,
+                    },],
+            },],
+          },{
+            name: 'Typography',
+            open: false,
+            buildProps: ['font-family', 'font-size', 'font-weight', 'letter-spacing', 'color', 'line-height', 'text-align', 'text-shadow'],
+            properties:[{
+              name: 'Font',
+              property: 'font-family',
+            },{
+              name: 'Weight',
+              property: 'font-weight',
+            },{
+              name:  'Font color',
+              property: 'color',
+            },{
+              name    : 'Text align',
+              property  : 'text-align',
+              type    : 'radio',
+              defaults  : 'left',
+              list    : [{ value : 'left',  name : 'Left',    className: 'fa fa-align-left'},
+                         { value : 'center',  name : 'Center',  className: 'fa fa-align-center' },
+                         { value : 'right',   name : 'Right',   className: 'fa fa-align-right'},
+                         { value : 'justify', name : 'Justify',   className: 'fa fa-align-justify'},],
+            },{
+              name    : 'Text shadow',
+              property  : 'text-shadow',
+              type    : 'stack',
+              preview   : true,
+              properties  : [{
+                      name:     'X position',
+                      property:   'h-shadow',
+                      type:     'integer',
+                      units:    ['px','%'],
+                      defaults :  0,
+                    },{
+                      name:     'Y position',
+                      property:   'v-shadow',
+                      type:     'integer',
+                      units:    ['px','%'],
+                      defaults :  0,
+                    },{
+                      name:     'Blur',
+                      property:   'blur-radius',
+                      type:     'integer',
+                      units:    ['px'],
+                      defaults :  0,
+                      min: 0,
+                    },{
+                      name:     'Color',
+                      property:   'shadow-color',
+                      type:     'color',
+                      defaults:   'black',
+                    },],
+            }],
+          },{
+            name: 'Decorations',
+            open: false,
+            buildProps: [ 'background-color', 'border-radius', 'border', 'box-shadow', 'background'],
+            properties: [{
+              name      : 'Background',
+              property  : 'background-color',
+            },{
+              name    : 'Border radius',
+              property  : 'border-radius',
+              type    : 'composite',
+              properties  : [{
+                      name    : 'Top',
+                      property  : 'border-top-left-radius',
+                      type    : 'integer',
+                      units   : ['px','%'],
+                      defaults  : 0,
+                      min     : 0,
+                    },{
+                      name    : 'Right',
+                      property  : 'border-top-right-radius',
+                      type    : 'integer',
+                      units   : ['px','%'],
+                      min     : 0,
+                      defaults  : 0,
+                    },{
+                      name    : 'Bottom',
+                      property  : 'border-bottom-left-radius',
+                      type    : 'integer',
+                      units   : ['px','%'],
+                      min     : 0,
+                      defaults  : 0,
+                    },{
+                      name    : 'Left',
+                      property  : 'border-bottom-right-radius',
+                      type    : 'integer',
+                      units   : ['px'],
+                      min     : 0,
+                      defaults  : 0,
+                    },],
+            },{
+              name    : 'Box shadow',
+              property  : 'box-shadow',
+              type    : 'stack',
+              preview   : true,
+              properties  : [{
+                      name:     'X position',
+                      property:   'shadow-x',
+                      type:     'integer',
+                      units:    ['px','%'],
+                      defaults :  0,
+                    },{
+                      name:     'Y position',
+                      property:   'shadow-y',
+                      type:     'integer',
+                      units:    ['px','%'],
+                      defaults :  0,
+                    },{
+                      name:     'Blur',
+                      property:   'shadow-blur',
+                      type:     'integer',
+                      units:    ['px'],
+                      defaults :  5,
+                      min:    0,
+                    },{
+                      name:     'Spread',
+                      property:   'shadow-spread',
+                      type:     'integer',
+                      units:    ['px'],
+                      defaults :  0,
+                    },{
+                      name:     'Color',
+                      property:   'shadow-color',
+                      type:     'color',
+                      defaults:   'black',
+                    },{
+                      name:     'Shadow type',
+                      property:   'shadow-type',
+                      type:     'select',
+                      defaults:   '',
+                      list:   [ { value : '', name : 'Outside', },
+                                { value : 'inset', name : 'Inside', }],
+                    }],
+            },{
+              name    : 'Background',
+              property  : 'background',
+              type    : 'stack',
+              preview   : true,
+              detached: true,
+              properties  : [{
+                      name:     'Image',
+                      property:   'background-image',
+                      type:     'file',
+                      defaults:   'none',
+                    },
+                    {
+                      name:     'Repeat',
+                      property:   'background-repeat',
+                      type:     'select',
+                      defaults:   'repeat',
+                      list:   [{ value : 'repeat', name : 'Repeat', },
+                               { value : 'repeat-x', name : 'Repeat X', },
+                               { value : 'repeat-y', name : 'Repeat Y', },
+                               { value : 'no-repeat', name : 'No repeat', }],
+                    },
+                    {
+                      name: 'Position',
+                      property: 'background-position',
+                      type: 'select',
+                      defaults: 'left top',
+                      list:   [ { value : 'left top',},
+                                { value : 'left center',},
+                                { value : 'left bottom',},
+                                { value : 'right top',},
+                                { value : 'right center'},
+                                { value : 'right bottom'},
+                                { value : 'center top'},
+                                { value : 'center center'},
+                                { value : 'center bottom'}
+                              ]
+
+                    },{
+                      name: 'Attachment',
+                      property: 'background-attachment',
+                      type: 'select',
+                      defaults: 'scroll',
+                      list:   [{ value : 'scroll'},
+                               { value : 'fixed'},
+                               { value : 'local'}],
+                    },{
+                      name: 'Size',
+                      property: 'background-size',
+                      type: 'select',
+                      defaults: 'auto',
+                      list:   [{ value : 'auto'},
+                               { value : 'cover'},
+                               { value : 'contain'}],
+                    }],
+            },],
+          },{
+            name: 'Extra',
+            open: false,
+            buildProps: ['transition', 'perspective', 'transform'],
+            properties: [{
+              name: 'Transition',
+              property: 'transition',
+              type: 'stack',
+              preview: false,
+              properties:[{
+                      name:     'Property',
+                      property:   'transition-property',
+                      type:     'select',
+                      defaults:   '',
+                      list:   [{ value : 'all', name : 'All', },
+                               { value : 'width', name : 'Width', },
+                               { value : 'height', name : 'Height', },
+                               { value : 'background-color', name : 'Background', },
+                               { value : 'transform', name : 'Transform', },
+                               { value : 'box-shadow', name : 'Box shadow', },
+                               { value : 'opacity', name : 'Opacity', }],
+                    },{
+                      name: 'Duration',
+                      property: 'transition-duration',
+                      type: 'integer',
+                      units: ['s'],
+                      defaults : '2',
+                      min: 0,
+                    },{
+                      name:     'Easing',
+                      property:   'transition-timing-function',
+                      type:     'select',
+                      defaults:   'ease',
+                      list:   [{ value : 'linear', name : 'Linear', },
+                               { value : 'ease', name : 'Ease', },
+                               { value : 'ease-in', name : 'Ease-in', },
+                               { value : 'ease-out', name : 'Ease-out', },
+                               { value : 'ease-in-out', name : 'Ease-in-out', }],
+                    }],
+            },{
+              name: 'Transform',
+              property: 'transform',
+              type: 'composite',
+              properties:[{
+                      name: 'Rotate X',
+                      property: 'transform-rotate-x',
+                      type: 'integer',
+                      units: ['deg'],
+                      defaults : '0',
+                      functionName: 'rotateX',
+                    },{
+                      name: 'Rotate Y',
+                      property: 'transform-rotate-y',
+                      type: 'integer',
+                      units: ['deg'],
+                      defaults : '0',
+                      functionName: 'rotateY',
+                    },{
+                      name: 'Rotate Z',
+                      property: 'transform-rotate-z',
+                      type: 'integer',
+                      units: ['deg'],
+                      defaults : '0',
+                      functionName: 'rotateZ',
+                    },{
+                      name: 'Scale X',
+                      property: 'transform-scale-x',
+                      type: 'integer',
+                      defaults : '1',
+                      functionName: 'scaleX',
+                    },{
+                      name: 'Scale Y',
+                      property: 'transform-scale-y',
+                      type: 'integer',
+                      defaults : '1',
+                      functionName: 'scaleY',
+                    },{
+                      name: 'Scale Z',
+                      property: 'transform-scale-z',
+                      type: 'integer',
+                      defaults : '1',
+                      functionName: 'scaleZ',
+                    }],
+            }]
+          },{
+            name: 'Flex',
+            open: false,
+            properties: [{
+              name    : 'Flex Container',
+              property  : 'display',
+              type    : 'select',
+              defaults  : 'block',
+              list    : [{
+                        value     : 'block',
+                        name   : 'Disable',
+                      },{
+                        value   : 'flex',
+                        name   : 'Enable',
+                      }],
+            },{
+              name: 'Flex Parent',
+              property: 'label-parent-flex',
+              type: 'integer',
+            },{
+              name      : 'Direction',
+              property  : 'flex-direction',
+              type    : 'radio',
+              defaults  : 'row',
+              list    : [{
+                        value   : 'row',
+                        name    : 'Row',
+                        className : 'icons-flex icon-dir-row',
+                        title   : 'Row',
+                      },{
+                        value   : 'row-reverse',
+                        name    : 'Row reverse',
+                        className : 'icons-flex icon-dir-row-rev',
+                        title   : 'Row reverse',
+                      },{
+                        value   : 'column',
+                        name    : 'Column',
+                        title   : 'Column',
+                        className : 'icons-flex icon-dir-col',
+                      },{
+                        value   : 'column-reverse',
+                        name    : 'Column reverse',
+                        title   : 'Column reverse',
+                        className : 'icons-flex icon-dir-col-rev',
+                      }],
+            },{
+              name      : 'Justify',
+              property  : 'justify-content',
+              type    : 'radio',
+              defaults  : 'flex-start',
+              list    : [{
+                        value   : 'flex-start',
+                        className : 'icons-flex icon-just-start',
+                        title   : 'Start',
+                      },{
+                        value   : 'flex-end',
+                        title    : 'End',
+                        className : 'icons-flex icon-just-end',
+                      },{
+                        value   : 'space-between',
+                        title    : 'Space between',
+                        className : 'icons-flex icon-just-sp-bet',
+                      },{
+                        value   : 'space-around',
+                        title    : 'Space around',
+                        className : 'icons-flex icon-just-sp-ar',
+                      },{
+                        value   : 'center',
+                        title    : 'Center',
+                        className : 'icons-flex icon-just-sp-cent',
+                      }],
+            },{
+              name      : 'Align',
+              property  : 'align-items',
+              type    : 'radio',
+              defaults  : 'center',
+              list    : [{
+                        value   : 'flex-start',
+                        title    : 'Start',
+                        className : 'icons-flex icon-al-start',
+                      },{
+                        value   : 'flex-end',
+                        title    : 'End',
+                        className : 'icons-flex icon-al-end',
+                      },{
+                        value   : 'stretch',
+                        title    : 'Stretch',
+                        className : 'icons-flex icon-al-str',
+                      },{
+                        value   : 'center',
+                        title    : 'Center',
+                        className : 'icons-flex icon-al-center',
+                      }],
+            },{
+              name: 'Flex Children',
+              property: 'label-parent-flex',
+              type: 'integer',
+            },{
+              name:     'Order',
+              property:   'order',
+              type:     'integer',
+              defaults :  0,
+              min: 0
+            },{
+              name    : 'Flex',
+              property  : 'flex',
+              type    : 'composite',
+              properties  : [{
+                      name:     'Grow',
+                      property:   'flex-grow',
+                      type:     'integer',
+                      defaults :  0,
+                      min: 0
+                    },{
+                      name:     'Shrink',
+                      property:   'flex-shrink',
+                      type:     'integer',
+                      defaults :  0,
+                      min: 0
+                    },{
+                      name:     'Basis',
+                      property:   'flex-basis',
+                      type:     'integer',
+                      units:    ['px','%',''],
+                      unit: '',
+                      defaults :  'auto',
+                    }],
+            },{
+              name      : 'Align',
+              property  : 'align-self',
+              type      : 'radio',
+              defaults  : 'auto',
+              list    : [{
+                        value   : 'auto',
+                        name    : 'Auto',
+                      },{
+                        value   : 'flex-start',
+                        title    : 'Start',
+                        className : 'icons-flex icon-al-start',
+                      },{
+                        value   : 'flex-end',
+                        title    : 'End',
+                        className : 'icons-flex icon-al-end',
+                      },{
+                        value   : 'stretch',
+                        title    : 'Stretch',
+                        className : 'icons-flex icon-al-str',
+                      },{
+                        value   : 'center',
+                        title    : 'Center',
+                        className : 'icons-flex icon-al-center',
+                      }],
+            }]
+          }
+        ],
+      },
+
+    }
+
+    );
+
+// Add extra buttons
+gr.Panels.addButton('options', [{
+  id: 'undo',
+  className: 'fa fa-undo icon-undo',
+  command: 'undo',
+  attributes: { title: 'Undo (CTRL/CMD + Z)'}
+},{
+  id: 'redo',
+  className: 'fa fa-repeat icon-redo',
+  command: 'redo',
+  attributes: { title: 'Redo (CTRL/CMD + SHIFT + Z)' }
+},{
+  id: 'clean-all',
+  className: 'fa fa-trash icon-blank',
+  command: 'clean-all',
+  attributes: { title: 'Empty canvas' }
+},{
+  id: 'view-github',
+  className: 'fa fa-github',
+  command: 'open-github',
+  attributes: { title: 'View on Github' }
+}]);
+
+
+    </script>
+
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-74284223-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
