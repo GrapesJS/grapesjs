@@ -6,7 +6,7 @@ define(function() {
 		return {
 
 			init: function(o){
-				_.bindAll(this, 'onHover', 'onOut', 'onClick', 'onKeyPress', 'clearOff');
+				_.bindAll(this, 'onHover', 'onOut', 'onClick', 'onKeyPress');
 			},
 
 
@@ -33,15 +33,6 @@ define(function() {
 					key.unbind('⌘+c, ctrl+c');
 					key.unbind('⌘+v, ctrl+v');
 				}
-			},
-
-			/**
-			 * Cleare cached offsets
-			 * @private
-			 */
-			clearOff: function(){
-				this.frameOff = null;
-				this.canvasOff = null;
 			},
 
 			/**
@@ -73,7 +64,6 @@ define(function() {
 			 * @private
 			 * */
 			startSelectComponent: function() {
-				this.listenTo(this.em, 'change:canvasOffset', this.clearOff);
 				this.selEl = $(this.getCanvasBody()).find('*');
 				this.selEl.on('mouseover', this.onHover)
 					.on('mouseout', this.onOut)
@@ -88,7 +78,6 @@ define(function() {
 			 * @private
 			 * */
 			stopSelectComponent: function() {
-				this.stopListening(this.em, 'change:canvasOffset', this.clearOff);
 				if(this.selEl)
 					this.selEl.trigger('mouseout').off('mouseover', this.onHover)
 						.off('mouseout', this.onOut)
@@ -135,8 +124,9 @@ define(function() {
 					this.adjScroll = 1;
 					this.onFrameScroll(e);
 				}
-			  this.updateBadge(trg);
-			  this.updateHighlighter(trg);
+				var pos = this.getElementPos(trg);
+			  this.updateBadge(trg, pos);
+			  this.updateHighlighter(trg, pos);
 			},
 
 			/**
@@ -167,15 +157,46 @@ define(function() {
 			},
 
 			/**
+			 * Update badge for the component
+			 * @param {Object} Component
+			 * @param {Object} pos Position object
+			 * @private
+			 * */
+			updateBadge: function(el, pos) {
+				var $el = $(el);
+				this.cacheEl = el;
+				var model = $el.data("model");
+				if(!model || !model.get('badgable'))
+					return;
+				var badge = this.getBadge();
+				badge.innerHTML = model.getName();
+				var bStyle = badge.style;
+				var u = 'px';
+				bStyle.display = 'block';
+				var canvasPos = this.canvas.getCanvasView().getPosition();
+				var badgeH = badge ? badge.offsetHeight : 0;
+				var badgeW = badge ? badge.offsetWidth : 0;
+				var top = pos.top - badgeH < canvasPos.top ? canvasPos.top : pos.top - badgeH;
+				var left = pos.left + badgeW < canvasPos.left ? canvasPos.left : pos.left;
+				bStyle.top = top + u;
+				bStyle.left = left + u;
+			},
+
+			/**
 			 * Update highlighter element
 			 * @param {HTMLElement} el
+			 * @param {Object} pos Position object
 			 * @private
 			 */
-			updateHighlighter: function(el){
+			updateHighlighter: function(el, pos){
 				if(!this.hl)
 					this.hl = $(this.canvas.getHighlighter());
-				var elPos = this.getElementPos($(el));
-				this.hl.css({ left: elPos.left, top: elPos.topP, height: elPos.height, width: elPos.width });
+				this.hl.css({
+					left: pos.left,
+					top: pos.top,
+					height: pos.height,
+					width: pos.width
+				});
 			},
 
 			/**
@@ -193,7 +214,6 @@ define(function() {
 				if(nMd){
 					this.editorModel.set('selectedComponent', nMd);
 					nMd.set('status','selected');
-					var elP = this.getElementPos($el);
 				}
 			},
 
@@ -204,27 +224,6 @@ define(function() {
 			clean: function() {
 				if(this.selEl)
 					this.selEl.removeClass(this.hoverClass);
-			},
-
-			/**
-			 * Update badge for the component
-			 * @param Object Component
-			 * @private
-			 * */
-			updateBadge: function(el) {
-				var $el = $(el);
-				this.cacheEl = $el;
-				var model = $el.data("model");
-				if(!model || !model.get('badgable'))
-					return;
-				var badge = this.getBadge();
-				badge.innerHTML = model.getName();
-				var bStyle = badge.style;
-				var u = 'px';
-				bStyle.display = 'block';
-				var elP = this.getElementPos($el, badge);
-				bStyle.left = elP.leftP + u;
-				bStyle.top = elP.top + u;
 			},
 
 			/**
@@ -241,8 +240,9 @@ define(function() {
 			 * @private
 			 */
 			onFrameScroll: function(e){
-				if(this.cacheEl)
-					this.updateBadge(this.cacheEl);
+				var el = this.cacheEl;
+				if(el)
+					this.updateBadge(el, this.getElementPos(el));
 			},
 
 			/**
@@ -252,23 +252,7 @@ define(function() {
 			 * @private
 			 */
 			getElementPos: function(el, badge){
-				if(!this.frameOff)
-					this.frameOff = this.offset(this.canvas.getFrameEl());
-				if(!this.canvasOff)
-					this.canvasOff = this.offset(this.canvas.getElement());
-				var eo = el.offset();
-				var bodyEl = this.getCanvasBody();
-				var bdg = badge ? badge : null;
-				var badgeH = bdg ? bdg.offsetHeight : 0;
-				var badgeW = bdg ? bdg.offsetWidth : 0;
-				var top = eo.top + this.frameOff.top - this.canvasOff.top;
-				var left = eo.left + this.frameOff.left - this.canvasOff.left;
-				var topScroll = this.frameOff.top + bodyEl.scrollTop;
-				var leftScroll = this.frameOff.left + bodyEl.scrollLeft;
-				var topP = top;
-				top = (top - badgeH) < topScroll ? topScroll : top - badgeH;
-				var leftP = (left + badgeW) < leftScroll ? leftScroll - badgeW : left;
-				return {topP: topP, leftP: leftP, top: top, left: left, height: el.outerHeight(), width: el.outerWidth() };
+				return this.canvas.getCanvasView().getElementPos(el);
 			},
 
 			/**

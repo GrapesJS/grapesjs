@@ -6,11 +6,12 @@ function(Backbone, FrameView) {
 	return Backbone.View.extend({
 
 		initialize: function(o) {
-      _.bindAll(this, 'renderBody', 'onFrameScroll');
+      _.bindAll(this, 'renderBody', 'onFrameScroll', 'clearOff');
 			this.config = o.config || {};
       this.em = this.config.em || {};
 			this.ppfx	= this.config.pStylePrefix || '';
 			this.className	= this.config.stylePrefix + 'canvas';
+			this.listenTo(this.em, 'change:canvasOffset', this.clearOff);
 			this.frame = new FrameView({
         model: this.model.get('frame'),
         config: this.config
@@ -78,6 +79,15 @@ function(Backbone, FrameView) {
       };
     },
 
+		/**
+		 * Cleare cached offsets
+		 * @private
+		 */
+		clearOff: function(){
+			this.frmOff = null;
+			this.cvsOff = null;
+		},
+
     /**
      * Returns element's data info
      * @param {HTMLElement} el
@@ -99,6 +109,21 @@ function(Backbone, FrameView) {
         width: el.offsetWidth
       };
     },
+
+		/**
+		 * Returns position data of the canvas element
+		 * @return {Object} obj Position object
+		 */
+		getPosition: function() {
+			var bEl = this.frame.el.contentDocument.body;
+			var fo = this.frmOff;
+			var co = this.cvsOff;
+			return {
+				top: fo.top + bEl.scrollTop - co.top,
+				left: fo.left + bEl.scrollLeft - co.left
+			};
+		},
+
 
 		render: function() {
 			this.wrapper	= this.model.get('wrapper');

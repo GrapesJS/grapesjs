@@ -70,12 +70,16 @@ define(function() {
 		    var pfx = this.enable(editor.getContainer());
 		    this.fsChanged = this.fsChanged.bind(this, pfx);
 		    document.addEventListener(pfx + 'fullscreenchange', this.fsChanged);
+				if(editor)
+					editor.trigger('change:canvasOffset');
 		  },
 
 		  stop: function(editor, sender){
 		    if(sender && sender.set)
 		    	sender.set('active', false);
 		    this.disable();
+				if(editor)
+					editor.trigger('change:canvasOffset');
 		  }
 
 		};
