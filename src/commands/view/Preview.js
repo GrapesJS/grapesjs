@@ -35,6 +35,7 @@ define(function() {
 				canvasS.left = '0';
 				canvasS.padding = '0';
 				canvasS.margin = '0';
+				editor.trigger('change:canvasOffset');
 			},
 
 			stop: function(editor, sender) {
@@ -47,6 +48,7 @@ define(function() {
 				if(this.helper) {
 					this.helper.style.display = 'none';
 				}
+				editor.trigger('change:canvasOffset');
 			}
 		};
 	});

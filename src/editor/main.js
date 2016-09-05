@@ -25,6 +25,10 @@
  * ```js
  * var editor = grapesjs.init({...});
  * ```
+ * Available events
+ * #run:{commandName}
+ * #stop:{commandName}
+ * #load - When the editor is loaded
  *
  * @module Editor
  * @param {Object} config Configurations

@@ -2668,8 +2668,7 @@ $fontColorActive: #4f8ef7;
   background-color: #444;
   position: relative;
   box-sizing: border-box;
-  height: 100%;
-  min-width: 1250px; }
+  height: 100%; }
 
 .gjs-freezed {
   opacity: 0.5;

@@ -162,7 +162,6 @@ $fontV: 5;//random(1000)
 	position:relative;
 	box-sizing: border-box;
 	height: 100%;
-	min-width: 1250px;
 }
 .#{$app-prefix}freezed{
   @include opacity(0.50);

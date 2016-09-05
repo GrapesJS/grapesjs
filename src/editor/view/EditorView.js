@@ -10,6 +10,7 @@ function(Backbone){
 			this.model.on('loaded', function(){
 				this.pn.active();
 				this.model.runDefault();
+				this.model.trigger('load');
 			}, this);
 		},
 

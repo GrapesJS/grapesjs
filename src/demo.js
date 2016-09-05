@@ -283,7 +283,7 @@ require(['config/require-config'], function() {
 
 		);
 
-    window.grapesEditor = editor;
+    window.editor = editor;
 
 	});
 });
