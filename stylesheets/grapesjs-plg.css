@@ -36,14 +36,42 @@
 }
 
 .gjs-playground{
+  text-align: left;
   height: 100%;
   overflow-y: auto;
 }
 
 .gjs-plg {
   display: flex;
+  background-color: #444;
 }
 .gjs-plg-editor, .gjs-plg-output {
   width: 50%;
-  min-height: 300px;
+}
+
+/***TABS**/
+.tabs-menu{
+  margin: 0;
+  list-style: none;
+  padding: 0;
+}
+.tabs-menu:after{
+  content: '';
+  display: block;
+  clear: both;
+}
+.tabs-menu li {
+    height: 30px;
+    line-height: 30px;
+    float: left;
+    margin-right: 10px;
+}
+
+.tab-content {
+    display: none;
+    height: 700px;
+}
+
+#gjs-result {
+ display: block;
 }

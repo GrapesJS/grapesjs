@@ -17,11 +17,16 @@
           max-width: none;
           width: 90%;
         }
-
-        .gjs-plg-editor, .gjs-plg-output {
-          min-height: 300px;
+        .gjs-plg-editor{ width: 70%; }
+        .gjs-plg-output{ width: 30%; }
+        .gjs-plg-output .doc {
+          height: 100%;
           width: 100%;
         }
+        /*
+        .gjs-cv-canvas{
+          background: rgba(0, 0, 0, 0) url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAHklEQVQYlWNwcXH5Twjb2dn9ZxhVSB2FdnZ2/4nBAJ3Ssfdcli76AAAAAElFTkSuQmCC") repeat scroll 0 0
+        }*/
     </style>
   </head>
   <body>
@@ -41,14 +46,33 @@
           </div>
         </div>
 
+
         <div class="gjs-plg">
           <div class="gjs-plg-editor">
-            EDITOR
-            <div id="gjs" style="height:0px; overflow:hidden"></div>
+
+            <div class="gjs-plg-box">
+              <ul class="tabs-menu">
+                  <li class="current"><a href="#gjs-result">Result</a></li>
+                  <li><a href="#gjs-code">Code</a></li>
+              </ul>
+              <div class="tabs">
+                <div id="gjs-result" class="tab-content">
+                  <div id="gjs" style="height:0px; overflow:hidden"></div>
+                </div>
+                <div id="gjs-code" class="tab-content">
+                  No code yet
+                </div>
+              </div>
+            </div>
+
           </div>
           <div class="gjs-plg-output">
-          PDF
-          <iframe class="doc" width="396" height="352" frameborder="0" src="##"></iframe>
+
+            <div class="gjs-plg-box">
+              <div class="gjs-plg-box-title">Image Preview</div>
+              <iframe class="doc" frameborder="0" src="##"></iframe>
+            </div>
+
           </div>
         </div>
 
@@ -117,13 +141,23 @@
       };
 
 
-      var gr  = grapesjs.init(
-{
+      var gr  = grapesjs.init({
+
+
       noticeOnUnload: 0,
       height: '100%',
       container : '#gjs',
       fromElement: true,
       plugins: ['gjs-plugin-export'],
+      showDevices: 0,
+
+      deviceManager: {
+        'devices': [{
+          name: 'Document',
+          width: '595px',
+        }],
+      },
+
       commands:     {
           defaults    : [{
                           id:   'open-github',
@@ -131,29 +165,6 @@
                             generatePdf(em.Canvas.getBody());
                             //sender.set('active',false);
                             //window.open('https://github.com/artf/grapesjs','_blank');
-                          },
-                          stop: function(){}
-                        },{
-                          id:   'undo',
-                          run:  function(em, sender){
-                            sender.set('active',false);
-                            em.UndoManager.undo(true);
-                          },
-                          stop: function(){}
-                        },{
-                          id:   'redo',
-                          run:  function(em, sender){
-                            sender.set('active',false);
-                            em.UndoManager.redo(true);
-                          },
-                          stop: function(){}
-                        },{
-                          id:   'clean-all',
-                          run:  function(em, sender){
-                            sender.set('active',false);
-                            if(confirm('Are you sure to clean the canvas?')){
-                              var comps = em.DomComponents.clear();
-                            }
                           },
                           stop: function(){}
                         }],
@@ -728,33 +739,30 @@
         ],
       },
 
-    }
+    });
 
-    );
+    // Add extra buttons
+    gr.Panels.addButton('options', [{
+      id: 'view-github',
+      className: 'fa fa-github',
+      command: 'open-github',
+      attributes: { title: 'View on Github' }
+    }]);
 
-// Add extra buttons
-gr.Panels.addButton('options', [{
-  id: 'undo',
-  className: 'fa fa-undo icon-undo',
-  command: 'undo',
-  attributes: { title: 'Undo (CTRL/CMD + Z)'}
-},{
-  id: 'redo',
-  className: 'fa fa-repeat icon-redo',
-  command: 'redo',
-  attributes: { title: 'Redo (CTRL/CMD + SHIFT + Z)' }
-},{
-  id: 'clean-all',
-  className: 'fa fa-trash icon-blank',
-  command: 'clean-all',
-  attributes: { title: 'Empty canvas' }
-},{
-  id: 'view-github',
-  className: 'fa fa-github',
-  command: 'open-github',
-  attributes: { title: 'View on Github' }
-}]);
+    $(".tabs-menu a").click(function(event) {
+        event.preventDefault();
+        var t = $(this);
+        var parent = t.parent();
+        parent.addClass("current");
+        parent.siblings().removeClass("current");
+        var tab = t.attr("href");
+        $(".tab-content").not(tab).css("display", "none");
+        $(tab).fadeIn();
+    });
 
+    gr.setDevice('Document');
+
+    window.editor = gr;
 
     </script>
 
