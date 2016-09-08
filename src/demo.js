@@ -92,21 +92,39 @@ require(['config/require-config'], function() {
 					open: false,
 					buildProps: ['transition', 'perspective', 'transform'],
 				},{
-						name: 'Dimension',
-						open: false,
-						properties:[{
-							name		: 'Center block',
-							property	: 'margin',
-							type		: 'select',
-							defaults 	: '0',
-							list		:	[{
-												value 		: '0',
-												name			: 'Normal',
-											},{
-												value 		: '0 auto',
-												name			: 'Center',
-											}],
-						}],
+					name: 'Dimension',
+					open: false,
+					buildProps: ['margin'],
+					properties:[{
+              name: 'Marginnnn',
+              property: 'margin',
+              type: 'composite',
+              properties:[{
+                name: 'Top',
+                property: 'margin-top',
+              },{
+                name: 'Right',
+                property: 'margin-right',
+              },{
+                name: 'Bottom',
+                property: 'margin-bottom',
+              },{
+                name: 'Left',
+                property: 'margin-left',
+              },],
+            }/*{
+						name		: 'Center blocksss',
+						property	: 'margins',
+						type		: 'select',
+						defaults 	: '0',
+						list		:	[{
+											value 		: '0',
+											name			: 'Normal',
+										},{
+											value 		: '0 auto',
+											name			: 'Center',
+										}],
+					}*/],
 					},{
             name: 'Flex',
             open: false,
@@ -287,4 +305,3 @@ require(['config/require-config'], function() {
 
 	});
 });
-

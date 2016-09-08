@@ -1,5 +1,5 @@
-define(['backbone', './Layers'],
-	function(Backbone, Layers) {
+define(['backbone', './Layers', 'require'],
+	function(Backbone, Layers, require) {
 
 		return Backbone.Model.extend({
 
@@ -26,9 +26,15 @@ define(['backbone', './Layers'],
 				var type = this.get('type');
 				var name = this.get('name');
 				var prop = this.get('property');
+				var props = this.get('properties');
 
 				if(!name)
 					this.set('name', prop.charAt(0).toUpperCase() + prop.slice(1).replace(/-/g,' '));
+
+				if(props.length){
+					var Properties = require('./Properties');
+					this.set('properties', new Properties(props));
+				}
 
 				switch(type){
 					case 'stack':

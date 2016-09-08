@@ -88,6 +88,30 @@ define([path + 'Sector',
             prop0.get('defaults').should.equal('');
           });
 
+          it('Extend composed properties', function() {
+            obj = new Sector({
+              buildProps: ['margin', 'float'],
+              properties: [{
+                property: 'margin',
+                properties:[{
+                  name: 'Top',
+                  property: 'margin-top',
+                },{
+                  property: 'margin-right',
+                }]
+              }]
+            });
+            var sectProps = obj.get('properties');
+            sectProps.length.should.equal(2);
+            var prop0 = obj.get('properties').at(0);
+            var propProps = prop0.get('properties');
+
+            propProps.length.should.equal(2);
+            var propTop = propProps.at(0);
+            propTop.get('name').should.equal('Top');
+            propTop.get('type').should.equal('integer');
+          });
+
         });
 
         describe('Sectors', function() {

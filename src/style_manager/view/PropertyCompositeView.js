@@ -33,9 +33,7 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 					this.$input = $('<input>', {value: 0, type: 'hidden' });
 
 				if(!this.props){
-					var Properties = require('./../model/Properties');
-					this.props = new Properties(props);
-					this.model.set('properties', this.props);
+					this.props = this.model.get('properties');
 				}
 
 				if(!this.$props){
