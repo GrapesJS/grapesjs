@@ -1,7 +1,7 @@
 {
   "name": "grapesjs",
   "description": "Open source Web Template Editor",
-  "version": "0.3.14",
+  "version": "0.3.15",
   "author": "Artur Arseniev",
   "license": "BSD-3-Clause",
   "homepage": "http://grapesjs.com",
@@ -42,6 +42,8 @@
     "grapes",
     "grapesjs",
     "web template editor",
+    "web site builder",
+    "web template builder",
     "site builder",
     "newsletter builder",
     "wysiwyg",
