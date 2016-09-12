@@ -42,8 +42,16 @@ define(['backbone', './Selectors'],
                 var st = state || '';
                 var wd = width || '';
                 var cId = 'cid';
-                var a1 = _.pluck(selectors.models || selectors, cId);
-                var a2 = _.pluck(this.get('selectors').models, cId);
+                //var a1 = _.pluck(selectors.models || selectors, cId);
+                //var a2 = _.pluck(this.get('selectors').models, cId);
+                if(!(selectors instanceof Array) && !selectors.models)
+                  selectors = [selectors];
+                var a1 = _.each((selectors.models || selectors), function(model) {
+                  return model.get('name');
+                });
+                var a2 = _.each(this.get('selectors').models, function(model) {
+                  return model.get('name');
+                });
                 var f = false;
 
                 if(a1.length !== a2.length)

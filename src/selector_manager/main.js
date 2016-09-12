@@ -113,7 +113,7 @@ define(function(require) {
        * */
       add: function(name, opts){
         var obj = opts || {};
-        obj.name = name;
+        obj.name = name.name || name;
         return selectors.add(obj);
       },
 

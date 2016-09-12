@@ -213,6 +213,38 @@ define(function(require) {
         },
 
         /**
+         * Add a raw collection of rule objects
+         * This method overrides styles, in case, of already defined rule
+         * @param {Array<Object>} data Array of rule objects
+         * @return {Array<Model>}
+         * @private
+         */
+        addCollection: function(data){
+          var result = [];
+          var d = data instanceof Array ? data : [data];
+          for(var i = 0, l = d.length; i < l; i++){
+            var rule = d[i] || {};
+            if(!rule.selectors)
+              continue;
+            var sm = c.em && c.em.get('SelectorManager');
+            if(!sm)
+              console.warn('Selector Manager not found');
+            var sl = rule.selectors;
+            var sels = sl instanceof Array ? sl : [sl];
+            var newSels = [];
+            for(var j = 0, le = sels.length; j < le; j++){
+              var selec = sm.add(sels[j]);
+              console.log('Selector: ', selec.get('name'), selec.cid);
+              newSels.push(selec);
+            }
+            var model = this.add(newSels, rule.state, rule.width);
+            model.set('style', rule.style || {});
+            result.push(model);
+          }
+          return result;
+        },
+
+        /**
          * Render the block of CSS rules
          * @return {HTMLElement}
          * @private

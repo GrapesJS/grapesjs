@@ -1,4 +1,25 @@
 define(function () {
+	var blkStyle = '.blk-row::after{ content: ""; clear: both; display: block;} .blk-row{padding: 10px;}';
+	/*
+	.blk3{
+		float: left;
+		width: 33.3333%;
+		padding: 10px;
+		min-height: 75px;
+	}
+	.blk37l{
+		float: left;
+		width: 30%;
+		padding: 10px;
+		min-height: 75px;
+	}
+	.blk37r{
+		float: left;
+		width: 70%;
+		padding: 10px;
+		min-height: 75px;
+	}';
+	*/
 	return {
 
 		// Style prefix
@@ -92,12 +113,12 @@ define(function () {
 			'blocks': [{
 					id: 'b1',
 	        label: '1 Block',
-	        content: '<div class="blk-row"><div class="blk1"></div></div>',
+	        content: '<div class="blk-row"><div class="blk1"></div></div><style>'+ blkStyle +'.blk1{width: 100%;padding: 10px;min-height: 75px;}</style>',
 	        attributes: {class:'gjs-fonts gjs-f-b1'}
 	      },{
 					id: 'b2',
 	        label: '2 Blocks',
-	        content: '<div class="blk-row"><div class="blk2"></div><div class="blk2"></div></div>',
+	        content: '<div class="blk-row"><div class="blk2"></div><div class="blk2"></div></div><style>'+ blkStyle +'.blk2{float: left;width: 50%;padding: 10px;min-height: 75px;}</style>',
 	        attributes: {class:'gjs-fonts gjs-f-b2'}
 	      },{
 					id: 'b3',
