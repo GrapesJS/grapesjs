@@ -56,8 +56,6 @@ define([ 'backbone', 'require'],
 					var cssc = this.editor.get('CssComposer');
 					if(parsed.css && cssc){
 						var added = cssc.addCollection(parsed.css);
-						console.log(added);
-						//cssc.getAll().add(parsed.css);
 					}
 				}
 

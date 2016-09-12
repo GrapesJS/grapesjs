@@ -116,6 +116,15 @@ define([
 					rule3.should.deep.equal(rule2);
 				});
 
+				it("Do not create multiple rules with the same name selectors", function() {
+					var sel1 = new obj.Selectors([{name: 'test21'}, {name: 'test22'}]);
+					var rule1 = obj.add(sel1.models);
+
+					var sel2 = new obj.Selectors([{name: 'test22'}, {name: 'test21'}]);
+					var rule2 = obj.add(sel2.models);
+					rule2.should.deep.equal(rule1);
+				});
+
 				it("Don't duplicate rules", function() {
 					var sel = new obj.Selectors([]);
 					var s1 = sel.add({name: 'test1'});

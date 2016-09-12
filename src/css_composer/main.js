@@ -234,7 +234,6 @@ define(function(require) {
             var newSels = [];
             for(var j = 0, le = sels.length; j < le; j++){
               var selec = sm.add(sels[j]);
-              console.log('Selector: ', selec.get('name'), selec.cid);
               newSels.push(selec);
             }
             var model = this.add(newSels, rule.state, rule.width);
