@@ -1,25 +1,5 @@
 define(function () {
 	var blkStyle = '.blk-row::after{ content: ""; clear: both; display: block;} .blk-row{padding: 10px;}';
-	/*
-	.blk3{
-		float: left;
-		width: 33.3333%;
-		padding: 10px;
-		min-height: 75px;
-	}
-	.blk37l{
-		float: left;
-		width: 30%;
-		padding: 10px;
-		min-height: 75px;
-	}
-	.blk37r{
-		float: left;
-		width: 70%;
-		padding: 10px;
-		min-height: 75px;
-	}';
-	*/
 	return {
 
 		// Style prefix
@@ -123,12 +103,12 @@ define(function () {
 	      },{
 					id: 'b3',
 	        label: '3 Blocks',
-	        content: '<div class="blk-row"><div class="blk3"></div><div class="blk3"></div><div class="blk3"></div></div>',
+	        content: '<div class="blk-row"><div class="blk3"></div><div class="blk3"></div><div class="blk3"></div></div><style>'+ blkStyle +'.blk3{float: left;width: 33.3333%;padding: 10px;min-height: 75px;}</style>',
 	        attributes: {class:'gjs-fonts gjs-f-b3'}
 	      },{
 					id: 'b4',
 	        label: '3/7 Block',
-	        content: '<div class="blk-row"><div class="blk37l"></div><div class="blk37r"></div></div></div>',
+	        content: '<div class="blk-row"><div class="blk37l"></div><div class="blk37r"></div></div></div><style>'+ blkStyle +'.blk37l{float: left;width: 30%;padding: 10px;min-height: 75px;}.blk37r{float: left;width: 70%;padding: 10px;min-height: 75px;}</style>',
 	        attributes: {class:'gjs-fonts gjs-f-b37'}
 	      },{
 					id: 'hero',

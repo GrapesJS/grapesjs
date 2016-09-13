@@ -137,7 +137,9 @@ $ npm test
 
 ## TODOs before beta release
 
-* **Stable-like, documented APIs** - Probably would be better redefined during beta
+* **Component traits** - traits are some some kind of `attributes` of the component. For example, the `Link`
+  will get `href` for the url/resource address and it's exactly as we see `<a>`, but in case of `Map` component
+  I'd attach `address`, `city` and `zoom` to manage marker position.
 
 
 ## Acknowledgements
