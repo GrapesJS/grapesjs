@@ -20,6 +20,7 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors'],
 				content: '',
 				style: {},
 				attributes: {},
+				traits: [],
 			},
 
 			initialize: function(o, opt) {

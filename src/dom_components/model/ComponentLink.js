@@ -4,9 +4,8 @@ define(['./Component'],
 		return Component.extend({
 
 			defaults: _.extend({}, Component.prototype.defaults, {
-					src: '',
 					droppable: false,
-					traits: ['alt'],
+					traits: ['href'],
 			}),
 
 		});
