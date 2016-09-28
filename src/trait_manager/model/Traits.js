@@ -7,7 +7,7 @@ define(['backbone','./Trait'],
 
       add: function(models, opt){
 				if(typeof models === 'string'){
-	         //TraitFactory('href')
+	         //TraitFactory('href')  <-- cache it
 				}
 
 				return Backbone.Collection.prototype.add.apply(this, [models, opt]);

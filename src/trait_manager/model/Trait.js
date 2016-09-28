@@ -12,7 +12,6 @@ define(['backbone'],
 			},
 
 			initialize: function(){
-
       },
 
     });
