@@ -155,7 +155,7 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
 					Backbone.UndoManager.addUndoType("change:style", {
 						"on": function (model, value, opt) {
 							if(!beforeCache)
-								beforeCache = model.toJSON();
+								beforeCache = model.previousAttributes();
 							if (opt && opt.avoidStore) {
 								return;
 							} else {
@@ -170,9 +170,13 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
 						},
 						"undo": function (model, bf, af, opt) {
 							model.set(bf);
+							// Update also inputs inside Style Manager
+							that.trigger('change:selectedComponent');
 						},
 						"redo": function (model, bf, af, opt) {
 							model.set(af);
+							// Update also inputs inside Style Manager
+							that.trigger('change:selectedComponent');
 						}
 					});
 				}
