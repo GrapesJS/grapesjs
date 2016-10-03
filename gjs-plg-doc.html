@@ -2,13 +2,13 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>GrapesJS Playground PDF Creator</title>
+    <title>GrapesJS Playground PDF Builder</title>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css">
     <link rel="stylesheet" type="text/css" href="stylesheets/grapesjs-plg.css">
     <link rel="stylesheet" href="stylesheets/grapes.min.css">
     <script src="js/jquery.js"></script>
     <script src="js/grapes.min.js"></script>
-    <script src="js/jspdf.min.js"></script>
+    <script src="js/jspdf0.min.js"></script>
     <script src="js/html2canvas.js"></script>
     <style type="text/css">
         body, html{ height: 100%; margin: 0; }
@@ -17,11 +17,22 @@
           max-width: none;
           width: 90%;
         }
-        .gjs-plg-editor{ width: 70%; }
-        .gjs-plg-output{ width: 30%; }
+        .gjs-plg-editor{ width: 100%; }
+        .gjs-plg-output{ width: 30%; display: none;}
         .gjs-plg-output .doc {
           height: 100%;
           width: 100%;
+        }
+        .gjs-playground{
+          height: auto;
+          text-shadow: none;
+        }
+        .gjs-cv-canvas > iframe {
+          margin-top: 35px;
+          height: 850px;
+        }
+        .gjs-cv-canvas > iframe body{
+          overflow: hidden;
         }
         /*
         .gjs-cv-canvas{
@@ -81,59 +92,78 @@
     <script type="text/javascript">
       var a4  = [ 595.28,  841.89];
       var docFrame = $('iframe.doc');
-      var saveFilePls = function(fs){
-        console.log('INSIDE RequestFS');
 
-        /*
-        fs.root.getFile("info.txt", {create: true}, function(file) {
-          file.createWriter(function(writer) {
-            var blob = new Blob(["Lorem Ipsum"], {type: "text/plain"});
-            writer.write(blob);
-          });
-        });
-        */
-
-        // Remove
-        // localstorage.root.getFile("info.txt", {create: false}, function(DatFile) { DatFile.remove(function() {}); })
-      }
-      var generatePdf = function (el) {
+      /**
+       * Generate PDF from the canvas
+       * @param  {HTMLElement} el
+       */
+      var generatePdf2 = function (el) {
          getEditorCanvas(el).then(function(canvas){
-          // img is a good png image 125kb
           var img = canvas.toDataURL("image/png"),
             doc = new jsPDF({
               unit:'px',
               format:'a4'
             });
             doc.addImage(img, 'image/png', 20, 20);
-            console.time('test');
-            var string = doc.output('datauristring');
-            console.timeEnd('test');
-
-            docFrame.attr('src', img);
-
-            /*
-            window.webkitRequestFileSystem(window.TEMPORARY, 1024*1024, saveFilePls, function(err){
-              console.log(err);
-            });
-            */
-
-            /*
-            window.webkitStorageInfo.requestQuota(window.PERSISTENT, 1024*1024, function(grantedBytes) {
-              window.webkitRequestFileSystem(window.PERSISTENT, grantedBytes, saveFilePls, function(err){
-              console.log('Er2',err);
-            });
-            }, function(err){
-              console.log('Er1', err);
-            } );
-            */
-
-            //doc.save('test-pdf.pdf');
-            //el.width(cache_width);
+            doc.save('grapesjs_export_' + new Date().getTime() + '.pdf');
          });
       }
 
+      var generatePdf = function (el) {
+            doc = new jsPDF({
+              unit:'px',
+              format:'a4'
+            });
+            var specialElementHandlers = {
+              /*
+            	'#wrapper': function(element, renderer){
+                console.log(element, renderer);
+            		return true;
+            	}*/
+              '#inputTest': function(element, renderer){
+                console.log(element, renderer);
+                var textField = new TextField();
+                textField.Rect = [100, 140, 100, 10];
+                textField.multiline = true;
+                textField.V = element.value;//
+                textField.T = "TestTextBox";
+                //textField.Q = 2; // Text-Alignment
+                renderer.pdf.addField(textField);
+            		return true;
+            	}
+            };
+            console.log(el);
+            doc.fromHTML(el, 15, 15, {
+            	//'width': 170,
+            	'elementHandlers': specialElementHandlers
+            }, function(){
+              console.log('done');
+              doc.save('grapesjs_export_' + new Date().getTime() + '.pdf');
+            });
+      }
+
+      /**
+       * Generate PNG from the canvas
+       * @param  {HTMLElement} el
+       */
+      var generatePng = function(el) {
+        getEditorCanvas(el).then(function(canvas){
+          var img = canvas.toDataURL("image/png");
+          var a = document.createElement('a');
+          a.href = img.replace("image/png", "image/octet-stream");
+          a.download = 'grapesjs_export_' + new Date().getTime() + '.png';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        });
+      }
+
+      /**
+       * Get canvas from the GrapesJS editor
+       * @param  {HTMLElement} el
+       * @return {Promise}
+       */
       var getEditorCanvas = function(el) {
-        //form.width((a4[0]*1.33333) -80).css('max-width','none');
         return html2canvas(el, {
           imageTimeout:2000,
           removeContainer:true
@@ -160,13 +190,17 @@
 
       commands:     {
           defaults    : [{
-                          id:   'open-github',
+                          id:   'gen-pdf',
                           run:  function(em, sender){
                             generatePdf(em.Canvas.getBody());
-                            //sender.set('active',false);
-                            //window.open('https://github.com/artf/grapesjs','_blank');
+                            sender.set('active',false);
                           },
-                          stop: function(){}
+                        },{
+                          id:   'gen-png',
+                          run:  function(em, sender){
+                            generatePng(em.Canvas.getBody());
+                            sender.set('active',false);
+                          },
                         }],
       },
       assetManager: {
@@ -743,12 +777,21 @@
 
     // Add extra buttons
     gr.Panels.addButton('options', [{
-      id: 'view-github',
-      className: 'fa fa-github',
-      command: 'open-github',
-      attributes: { title: 'View on Github' }
+      id: 'gen-pdf',
+      className: 'fa fa-file-pdf-o',
+      command: 'gen-pdf',
+      attributes: { title: 'Export in PDF' }
+    },{
+      id: 'gen-png',
+      className: 'fa fa-file-image-o',
+      command: 'gen-png',
+      attributes: { title: 'Export in PNG' }
     }]);
+    gr.setDevice('Document');
+    window.editor = gr;
 
+
+    // Tabs
     $(".tabs-menu a").click(function(event) {
         event.preventDefault();
         var t = $(this);
@@ -759,13 +802,7 @@
         $(".tab-content").not(tab).css("display", "none");
         $(tab).fadeIn();
     });
-
-    gr.setDevice('Document');
-
-    window.editor = gr;
-
     </script>
-
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

@@ -44,6 +44,7 @@
 .gjs-plg {
   display: flex;
   background-color: #444;
+  border-radius: 3px;
 }
 .gjs-plg-editor, .gjs-plg-output {
   width: 50%;

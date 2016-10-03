@@ -861,473 +861,191 @@
     <script src="js/grapes.min.js"></script>
     <script src="js/grapesjs-plugin-export.min.js"></script>
     <script type="text/javascript">
-      var gr  = grapesjs.init(
-{
+
+      var lp = './img/';
+      var plp = 'http://placehold.it/350x250/';
+      var images = [
+        lp+'team1.jpg', lp+'team2.jpg', lp+'team3.jpg', plp+'78c5d6/fff/image1.jpg', plp+'459ba8/fff/image2.jpg', plp+'79c267/fff/image3.jpg',
+        plp+'c5d647/fff/image4.jpg', plp+'f28c33/fff/image5.jpg', plp+'e868a2/fff/image6.jpg', plp+'cc4360/fff/image7.jpg',
+        lp+'work-desk.jpg', lp+'phone-app.png', lp+'bg-gr-v.png'
+      ];
+
+      var gr  = grapesjs.init({
+
+
       height: '100%',
       container : '#gjs',
       fromElement: true,
       plugins: ['gjs-plugin-export'],
-      commands:     {
-          defaults    : [{
-                          id:   'open-github',
-                          run:  function(em, sender){
-                            sender.set('active',false);
-                            window.open('https://github.com/artf/grapesjs','_blank');
-                          },
-                          stop: function(){}
-                        },{
-                          id:   'undo',
-                          run:  function(em, sender){
-                            sender.set('active',false);
-                            em.UndoManager.undo(true);
-                          },
-                          stop: function(){}
-                        },{
-                          id:   'redo',
-                          run:  function(em, sender){
-                            sender.set('active',false);
-                            em.UndoManager.redo(true);
-                          },
-                          stop: function(){}
-                        },{
-                          id:   'clean-all',
-                          run:  function(em, sender){
-                            sender.set('active',false);
-                            if(confirm('Are you sure to clean the canvas?')){
-                              var comps = em.DomComponents.clear();
-                            }
-                          },
-                          stop: function(){}
-                        }],
-      },
-      assetManager: {
-        storageType     : '',
-        storeOnChange   : true,
-        storeAfterUpload  : true,
-        assets        : [
-                           { type: 'image', src : './img/team1.jpg',height:100, width:100},
-                           { type: 'image', src : './img/team2.jpg',height:100, width:100},
-                           { type: 'image', src : './img/team3.jpg',height:100, width:100},
-                           { type: 'image', src : 'http://placehold.it/350x250/78c5d6/fff/image1.jpg',height:350, width:250},
-                           { type: 'image', src : 'http://placehold.it/350x250/459ba8/fff/image2.jpg',height:350, width:250},
-                           { type: 'image', src : 'http://placehold.it/350x250/79c267/fff/image3.jpg',height:350, width:250},
-                           { type: 'image', src : 'http://placehold.it/350x250/c5d647/fff/image4.jpg',height:350, width:250},
-                           { type: 'image', src : 'http://placehold.it/350x250/f28c33/fff/image5.jpg',height:350, width:250},
-                           { type: 'image', src : 'http://placehold.it/350x250/e868a2/fff/image6.jpg',height:350, width:250},
-                           { type: 'image', src : 'http://placehold.it/350x250/cc4360/fff/image7.jpg',height:350, width:250},
-                           { type: 'image', src : './img/work-desk.jpg',height:1080, width:1728},
-                           { type: 'image', src : './img/phone-app.png', date: '2015-02-01',height:650, width:320},
-                           { type: 'image', src : './img/bg-gr-v.png', date: '2015-02-01',height:1, width:1728},
-                         ]
+
+      // Define commands
+      commands: {
+        defaults: [{
+          id: 'open-github',
+          run: function(em, sender){
+            sender.set('active',false);
+            window.open('https://github.com/artf/grapesjs','_blank');
+          },
+        },{
+          id: 'undo',
+          run: function(em, sender){
+            sender.set('active',false);
+            em.UndoManager.undo(true);
+          },
+        },{
+          id: 'redo',
+          run: function(em, sender){
+            sender.set('active',false);
+            em.UndoManager.redo(true);
+          },
+        },{
+          id: 'clean-all',
+          run: function(em, sender){
+            sender.set('active',false);
+            if(confirm('Are you sure to clean the canvas?')){
+              var comps = em.DomComponents.clear();
+            }
+          },
+        }],
       },
 
+      // Insert some default images
+      assetManager: {
+        assets: images
+      },
+
+      // Configure Style Manager // 1481 - 1235
       styleManager : {
         sectors: [{
           name: 'General',
           buildProps: ['float', 'display', 'position', 'top', 'right', 'left', 'bottom'],
           properties:[{
-              name    : 'Alignment',
-              property  : 'float',
-              type    : 'radio',
-              defaults  : 'none',
-              list    : [{
-                        value     : 'none',
-                        title   : 'None',
-                        className   : 'fa fa-times',
-                      },{
-                        value     : 'left',
-                        className   : 'fa fa-align-left',
-                        title   : 'Float element to the left',
-                      },{
-                        value     : 'right',
-                        className   : 'fa fa-align-right',
-                        title   : 'Float element to the right',
-                      }],
-            },{
-              property  : 'display',
-              type    : 'radio',
-              list    : [{
-                        value     : 'block',
-                        title   : 'Block',
-                      },{
-                        value     : 'inline',
-                        title   : 'Inline',
-                      },{
-                        value     : 'inline-block',
-                        title   : 'Inline-block',
-                      },{
-                        value     : 'none',
-                        title   : 'None',
-                        className   : 'fa fa-eye-slash',
-                      }],
-            }],
-          },{
+              name: 'Alignment',
+              property: 'float',
+              type: 'radio',
+              defaults: 'none',
+              list: [
+                { value: 'none', className: 'fa fa-times'},
+                { value: 'left', className: 'fa fa-align-left'},
+                { value: 'right', className: 'fa fa-align-right'}
+              ],
+            },
+            { property: 'position', type: 'select'}
+          ],
+        },{
             name: 'Dimension',
             open: false,
             buildProps: ['width', 'height', 'max-width', 'min-height', 'margin', 'padding'],
             properties:[{
-              name    : 'Margin',
-              property  : 'margin',
-              type    : 'composite',
-              properties:[{
-                      name    : 'Top',
-                      property  : 'margin-top',
-                      type    : 'integer',
-                      units   : ['px','%'],
-                      defaults  : 0,
-                    },{
-                      name    : 'Right',
-                      property  : 'margin-right',
-                      type    : 'integer',
-                      units   : ['px','%'],
-                      defaults  : 0,
-                    },{
-                      name    : 'Bottom',
-                      property  : 'margin-bottom',
-                      type    : 'integer',
-                      units   : ['px','%'],
-                      defaults  : 0,
-                    },{
-                      name    : 'Left',
-                      property  : 'margin-Left',
-                      type    : 'integer',
-                      units   : ['px','%'],
-                      defaults  : 0,
-                    },],
-            },/*{
-              name    : 'Center block',
-              property  : 'margin',
-              type    : 'select',
-              defaults  : '0',
-              list    : [
-                         { value: '0', name: 'Normal',},
-                         { value: '0 auto', name: 'Center',}
-                        ],
-            },*/{
-              name    : 'Padding',
+              property: 'margin',
+              properties:[
+                { name: 'Top', property: 'margin-top'},
+                { name: 'Right', property: 'margin-right'},
+                { name: 'Bottom', property: 'margin-bottom'},
+                { name: 'Left', property: 'margin-left'}
+              ],
+            },{
               property  : 'padding',
-              type    : 'composite',
-              properties:[{
-                      name    : 'Top',
-                      property  : 'padding-top',
-                      type    : 'integer',
-                      units   : ['px','%'],
-                      defaults  : 0,
-                      min     : 0,
-                    },{
-                      name    : 'Right',
-                      property  : 'padding-right',
-                      type    : 'integer',
-                      units   : ['px','%'],
-                      defaults  : 0,
-                      min     : 0,
-                    },{
-                      name    : 'Bottom',
-                      property  : 'padding-bottom',
-                      type    : 'integer',
-                      units   : ['px','%'],
-                      defaults  : 0,
-                      min     : 0,
-                    },{
-                      name    : 'Left',
-                      property  : 'padding-left',
-                      type    : 'integer',
-                      units   : ['px','%'],
-                      defaults  : 0,
-                      min     : 0,
-                    },],
-            },],
+              properties:[
+                { name: 'Top', property: 'padding-top'},
+                { name: 'Right', property: 'padding-right'},
+                { name: 'Bottom', property: 'padding-bottom'},
+                { name: 'Left', property: 'padding-left'}
+              ],
+            }],
           },{
             name: 'Typography',
             open: false,
             buildProps: ['font-family', 'font-size', 'font-weight', 'letter-spacing', 'color', 'line-height', 'text-align', 'text-shadow'],
-            properties:[{
-              name: 'Font',
-              property: 'font-family',
-            },{
-              name: 'Weight',
-              property: 'font-weight',
-            },{
-              name:  'Font color',
-              property: 'color',
-            },{
-              name    : 'Text align',
-              property  : 'text-align',
-              type    : 'radio',
-              defaults  : 'left',
-              list    : [{ value : 'left',  name : 'Left',    className: 'fa fa-align-left'},
-                         { value : 'center',  name : 'Center',  className: 'fa fa-align-center' },
-                         { value : 'right',   name : 'Right',   className: 'fa fa-align-right'},
-                         { value : 'justify', name : 'Justify',   className: 'fa fa-align-justify'},],
-            },{
-              name    : 'Text shadow',
-              property  : 'text-shadow',
-              type    : 'stack',
-              preview   : true,
-              properties  : [{
-                      name:     'X position',
-                      property:   'h-shadow',
-                      type:     'integer',
-                      units:    ['px','%'],
-                      defaults :  0,
-                    },{
-                      name:     'Y position',
-                      property:   'v-shadow',
-                      type:     'integer',
-                      units:    ['px','%'],
-                      defaults :  0,
-                    },{
-                      name:     'Blur',
-                      property:   'blur-radius',
-                      type:     'integer',
-                      units:    ['px'],
-                      defaults :  0,
-                      min: 0,
-                    },{
-                      name:     'Color',
-                      property:   'shadow-color',
-                      type:     'color',
-                      defaults:   'black',
-                    },],
+            properties:[
+              { name: 'Font', property: 'font-family'},
+              { name: 'Weight', property: 'font-weight'},
+              { name:  'Font color', property: 'color'},
+              {
+                property: 'text-align',
+                type: 'radio',
+                defaults: 'left',
+                list: [
+                  { value : 'left',  name : 'Left',    className: 'fa fa-align-left'},
+                  { value : 'center',  name : 'Center',  className: 'fa fa-align-center' },
+                  { value : 'right',   name : 'Right',   className: 'fa fa-align-right'},
+                  { value : 'justify', name : 'Justify',   className: 'fa fa-align-justify'}
+                ],
+              },{
+                property: 'text-shadow',
+                properties: [
+                  { name: 'X position', property: 'text-shadow-h'},
+                  { name: 'Y position', property: 'text-shadow-v'},
+                  { name: 'Blur', property: 'text-shadow-blur'},
+                  { name: 'Color', property: 'text-shadow-color'}
+                ],
             }],
           },{
             name: 'Decorations',
             open: false,
             buildProps: [ 'background-color', 'border-radius', 'border', 'box-shadow', 'background'],
             properties: [{
-              name      : 'Background',
-              property  : 'background-color',
+              property: 'border-radius',
+              properties  : [
+                { name: 'Top', property: 'border-top-left-radius'},
+                { name: 'Right', property: 'border-top-right-radius'},
+                { name: 'Bottom', property: 'border-bottom-left-radius'},
+                { name: 'Left', property: 'border-bottom-right-radius'}
+              ],
             },{
-              name    : 'Border radius',
-              property  : 'border-radius',
-              type    : 'composite',
-              properties  : [{
-                      name    : 'Top',
-                      property  : 'border-top-left-radius',
-                      type    : 'integer',
-                      units   : ['px','%'],
-                      defaults  : 0,
-                      min     : 0,
-                    },{
-                      name    : 'Right',
-                      property  : 'border-top-right-radius',
-                      type    : 'integer',
-                      units   : ['px','%'],
-                      min     : 0,
-                      defaults  : 0,
-                    },{
-                      name    : 'Bottom',
-                      property  : 'border-bottom-left-radius',
-                      type    : 'integer',
-                      units   : ['px','%'],
-                      min     : 0,
-                      defaults  : 0,
-                    },{
-                      name    : 'Left',
-                      property  : 'border-bottom-right-radius',
-                      type    : 'integer',
-                      units   : ['px'],
-                      min     : 0,
-                      defaults  : 0,
-                    },],
+              property: 'box-shadow',
+              properties: [
+                { name: 'X position', property: 'box-shadow-h'},
+                { name: 'Y position', property: 'box-shadow-v'},
+                { name: 'Blur', property: 'box-shadow-blur'},
+                { name: 'Spread', property: 'box-shadow-spread'},
+                { name: 'Color', property: 'box-shadow-color'},
+                { name: 'Shadow type', property: 'box-shadow-type'}
+              ],
             },{
-              name    : 'Box shadow',
-              property  : 'box-shadow',
-              type    : 'stack',
-              preview   : true,
-              properties  : [{
-                      name:     'X position',
-                      property:   'shadow-x',
-                      type:     'integer',
-                      units:    ['px','%'],
-                      defaults :  0,
-                    },{
-                      name:     'Y position',
-                      property:   'shadow-y',
-                      type:     'integer',
-                      units:    ['px','%'],
-                      defaults :  0,
-                    },{
-                      name:     'Blur',
-                      property:   'shadow-blur',
-                      type:     'integer',
-                      units:    ['px'],
-                      defaults :  5,
-                      min:    0,
-                    },{
-                      name:     'Spread',
-                      property:   'shadow-spread',
-                      type:     'integer',
-                      units:    ['px'],
-                      defaults :  0,
-                    },{
-                      name:     'Color',
-                      property:   'shadow-color',
-                      type:     'color',
-                      defaults:   'black',
-                    },{
-                      name:     'Shadow type',
-                      property:   'shadow-type',
-                      type:     'select',
-                      defaults:   '',
-                      list:   [ { value : '', name : 'Outside', },
-                                { value : 'inset', name : 'Inside', }],
-                    }],
-            },{
-              name    : 'Background',
-              property  : 'background',
-              type    : 'stack',
-              preview   : true,
-              detached: true,
-              properties  : [{
-                      name:     'Image',
-                      property:   'background-image',
-                      type:     'file',
-                      defaults:   'none',
-                    },
-                    {
-                      name:     'Repeat',
-                      property:   'background-repeat',
-                      type:     'select',
-                      defaults:   'repeat',
-                      list:   [{ value : 'repeat', name : 'Repeat', },
-                               { value : 'repeat-x', name : 'Repeat X', },
-                               { value : 'repeat-y', name : 'Repeat Y', },
-                               { value : 'no-repeat', name : 'No repeat', }],
-                    },
-                    {
-                      name: 'Position',
-                      property: 'background-position',
-                      type: 'select',
-                      defaults: 'left top',
-                      list:   [ { value : 'left top',},
-                                { value : 'left center',},
-                                { value : 'left bottom',},
-                                { value : 'right top',},
-                                { value : 'right center'},
-                                { value : 'right bottom'},
-                                { value : 'center top'},
-                                { value : 'center center'},
-                                { value : 'center bottom'}
-                              ]
-
-                    },{
-                      name: 'Attachment',
-                      property: 'background-attachment',
-                      type: 'select',
-                      defaults: 'scroll',
-                      list:   [{ value : 'scroll'},
-                               { value : 'fixed'},
-                               { value : 'local'}],
-                    },{
-                      name: 'Size',
-                      property: 'background-size',
-                      type: 'select',
-                      defaults: 'auto',
-                      list:   [{ value : 'auto'},
-                               { value : 'cover'},
-                               { value : 'contain'}],
-                    }],
+              property: 'background',
+              properties: [
+                { name: 'Image', property: 'background-image'},
+                { name: 'Repeat', property:   'background-repeat'},
+                { name: 'Position', property: 'background-position'},
+                { name: 'Attachment', property: 'background-attachment'},
+                { name: 'Size', property: 'background-size'}
+              ],
             },],
           },{
             name: 'Extra',
             open: false,
             buildProps: ['transition', 'perspective', 'transform'],
             properties: [{
-              name: 'Transition',
               property: 'transition',
-              type: 'stack',
-              preview: false,
-              properties:[{
-                      name:     'Property',
-                      property:   'transition-property',
-                      type:     'select',
-                      defaults:   '',
-                      list:   [{ value : 'all', name : 'All', },
-                               { value : 'width', name : 'Width', },
-                               { value : 'height', name : 'Height', },
-                               { value : 'background-color', name : 'Background', },
-                               { value : 'transform', name : 'Transform', },
-                               { value : 'box-shadow', name : 'Box shadow', },
-                               { value : 'opacity', name : 'Opacity', }],
-                    },{
-                      name: 'Duration',
-                      property: 'transition-duration',
-                      type: 'integer',
-                      units: ['s'],
-                      defaults : '2',
-                      min: 0,
-                    },{
-                      name:     'Easing',
-                      property:   'transition-timing-function',
-                      type:     'select',
-                      defaults:   'ease',
-                      list:   [{ value : 'linear', name : 'Linear', },
-                               { value : 'ease', name : 'Ease', },
-                               { value : 'ease-in', name : 'Ease-in', },
-                               { value : 'ease-out', name : 'Ease-out', },
-                               { value : 'ease-in-out', name : 'Ease-in-out', }],
-                    }],
+              properties:[
+                { name: 'Property', property: 'transition-property'},
+                { name: 'Duration', property: 'transition-duration'},
+                { name: 'Easing', property: 'transition-timing-function'}
+              ],
             },{
-              name: 'Transform',
               property: 'transform',
-              type: 'composite',
-              properties:[{
-                      name: 'Rotate X',
-                      property: 'transform-rotate-x',
-                      type: 'integer',
-                      units: ['deg'],
-                      defaults : '0',
-                      functionName: 'rotateX',
-                    },{
-                      name: 'Rotate Y',
-                      property: 'transform-rotate-y',
-                      type: 'integer',
-                      units: ['deg'],
-                      defaults : '0',
-                      functionName: 'rotateY',
-                    },{
-                      name: 'Rotate Z',
-                      property: 'transform-rotate-z',
-                      type: 'integer',
-                      units: ['deg'],
-                      defaults : '0',
-                      functionName: 'rotateZ',
-                    },{
-                      name: 'Scale X',
-                      property: 'transform-scale-x',
-                      type: 'integer',
-                      defaults : '1',
-                      functionName: 'scaleX',
-                    },{
-                      name: 'Scale Y',
-                      property: 'transform-scale-y',
-                      type: 'integer',
-                      defaults : '1',
-                      functionName: 'scaleY',
-                    },{
-                      name: 'Scale Z',
-                      property: 'transform-scale-z',
-                      type: 'integer',
-                      defaults : '1',
-                      functionName: 'scaleZ',
-                    }],
+              properties:[
+                { name: 'Rotate X', property: 'transform-rotate-x'},
+                { name: 'Rotate Y', property: 'transform-rotate-y'},
+                { name: 'Rotate Z', property: 'transform-rotate-z'},
+                { name: 'Scale X', property: 'transform-scale-x'},
+                { name: 'Scale Y', property: 'transform-scale-y'},
+                { name: 'Scale Z', property: 'transform-scale-z'}
+              ],
             }]
           },{
             name: 'Flex',
             open: false,
             properties: [{
-              name    : 'Flex Container',
-              property  : 'display',
-              type    : 'select',
-              defaults  : 'block',
-              list    : [{
-                        value     : 'block',
-                        name   : 'Disable',
-                      },{
-                        value   : 'flex',
-                        name   : 'Enable',
-                      }],
+              name: 'Flex Container',
+              property: 'display',
+              type: 'select',
+              defaults: 'block',
+              list: [
+                { value: 'block', name: 'Disable'},
+                { value: 'flex', name: 'Enable'}
+              ],
             },{
               name: 'Flex Parent',
               property: 'label-parent-flex',
@@ -1474,28 +1192,28 @@
 
     );
 
-// Add extra buttons
-gr.Panels.addButton('options', [{
-  id: 'undo',
-  className: 'fa fa-undo icon-undo',
-  command: 'undo',
-  attributes: { title: 'Undo (CTRL/CMD + Z)'}
-},{
-  id: 'redo',
-  className: 'fa fa-repeat icon-redo',
-  command: 'redo',
-  attributes: { title: 'Redo (CTRL/CMD + SHIFT + Z)' }
-},{
-  id: 'clean-all',
-  className: 'fa fa-trash icon-blank',
-  command: 'clean-all',
-  attributes: { title: 'Empty canvas' }
-},{
-  id: 'view-github',
-  className: 'fa fa-github',
-  command: 'open-github',
-  attributes: { title: 'View on Github' }
-}]);
+    // Add extra buttons
+    gr.Panels.addButton('options', [{
+      id: 'undo',
+      className: 'fa fa-undo icon-undo',
+      command: 'undo',
+      attributes: { title: 'Undo (CTRL/CMD + Z)'}
+    },{
+      id: 'redo',
+      className: 'fa fa-repeat icon-redo',
+      command: 'redo',
+      attributes: { title: 'Redo (CTRL/CMD + SHIFT + Z)' }
+    },{
+      id: 'clean-all',
+      className: 'fa fa-trash icon-blank',
+      command: 'clean-all',
+      attributes: { title: 'Empty canvas' }
+    },{
+      id: 'view-github',
+      className: 'fa fa-github',
+      command: 'open-github',
+      attributes: { title: 'View on Github' }
+    }]);
 
     </script>
 
