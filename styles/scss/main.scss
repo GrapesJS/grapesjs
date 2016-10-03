@@ -210,6 +210,14 @@ div.#{$app-prefix}select{
 .#{$app-prefix}select select:focus {
   outline: none;
 }
+
+.#{$app-prefix}select option,
+.#{$clm-prefix}select option,
+.#{$sm-prefix}select option,
+.#{$sm-prefix}unit option{
+  @extend .#{$app-prefix}bg-main;
+  //background-color: $mainDkColor;
+}
 /*************  CANVAS  ****************/
 .#{$cv-prefix}canvas {
   background-color: rgba(0, 0, 0, 0.15);
@@ -638,7 +646,7 @@ $arrowColor:    $mainLhlColor; /*b1b1b1*/
   }
 
   option{
-    margin: 5px 0;
+    padding: 5px 0;
   }
 
   .#{$app-prefix}sel-arrow {

@@ -16,7 +16,7 @@ define(['backbone'], function (Backbone) {
 		 * @param {Object} el Test
 		 * @private
 		 */
-		onChange: function(elView) {
+		onChange: function(elView) { //<-- TraitRenderer
 			var m = this.model;
 			var attrs = elView.model.get('attributes');
 			attrs[m.get('name')] = m.get('value');
