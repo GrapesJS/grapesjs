@@ -8,6 +8,7 @@ define(['backbone'],
 				label: '',
         name: '',
         value: '',
+				target: '',
         options: [],
 			},
 
