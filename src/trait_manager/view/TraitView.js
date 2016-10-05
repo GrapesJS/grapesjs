@@ -11,16 +11,20 @@ define(['backbone'], function (Backbone) {
 			this.pfx = this.config.stylePrefix || '';
 		},
 
+		onChange: function() {
+			//change model value
+		},
+
 		/**
 		 * On change callback
-		 * @param {Object} el Test
 		 * @private
 		 */
-		onChange: function(elView) { //<-- TraitRenderer
+		onValuesChange: function() {
 			var m = this.model;
-			var attrs = elView.model.get('attributes');
+			var trg = m.target;
+			var attrs = trg.get('attributes');
 			attrs[m.get('name')] = m.get('value');
-			elView.model.set('attributes', attrs);
+			trg.set('attributes', attrs);
 		},
 
 		/**

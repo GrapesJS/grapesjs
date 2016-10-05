@@ -9,7 +9,14 @@ require(['config/require-config'], function() {
       noticeOnUnload: 0,
 			container	: '#gjs',
 			height: '100%',
-			fromElement: true,
+			//fromElement: true,
+			components: [{
+				style:{
+					width:'100px',
+					height:'100px'
+				},
+				traits: ['title']
+			}],
 			storageManager:{ autoload: 0},
 
 			commands: 		{

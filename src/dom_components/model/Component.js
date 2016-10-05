@@ -1,5 +1,5 @@
-define(['backbone','./Components', 'SelectorManager/model/Selectors'],
-	function (Backbone, Components, Selectors) {
+define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitManager/model/Traits'],
+	function (Backbone, Components, Selectors, Traits) {
 
 		return Backbone.Model.extend({
 
@@ -35,6 +35,7 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors'],
 				this.components	= new Components(this.defaultC, opt);
 				this.set('components', this.components);
 				this.set('classes', new Selectors(this.defaultCl));
+				this.set('traits', new Traits(this.get('traits'), this));
 			},
 
 			/**

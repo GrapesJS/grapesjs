@@ -37,6 +37,7 @@ require.config({
 								{  name: 'Editor', 					location: 'editor', 					},
 		            {  name: 'AssetManager', 		location: 'asset_manager', 		},
 		            {  name: 'BlockManager', 		location: 'block_manager', 		},
+								{  name: 'TraitManager', 		location: 'trait_manager', 		},
 		            {  name: 'StyleManager', 		location: 'style_manager', 		},
 		            {  name: 'DeviceManager', 	location: 'device_manager', 	},
 		            {  name: 'StorageManager', 	location: 'storage_manager', 	},

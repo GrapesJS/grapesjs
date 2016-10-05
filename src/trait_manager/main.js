@@ -32,7 +32,7 @@ define(function(require) {
 					c.stylePrefix = ppfx + c.stylePrefix;
 
 				sectors = new Traits(c.traits);
-	  		SectView 	= new SectorsView({
+	  		TraitView = new TraitsView({
 					collection: sectors,
 					target: c.em,
 				  config: c,
