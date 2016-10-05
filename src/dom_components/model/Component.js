@@ -111,14 +111,5 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 				return this.name;
 			},
 
-			/**
-			 * Returns HTML code of the component
-			 * @return {string}
-			 * @private
-			 */
-			getCode: function() {
-				return '';
-			},
-
 		});
 });

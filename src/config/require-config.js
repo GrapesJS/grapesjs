@@ -33,7 +33,8 @@ require.config({
 	},
 
 	packages : 	[
-								{  name: 'GrapesJS', 				location: 'grapesjs', 				},
+								{  name: 'GrapesJS', 				location: 'grapesjs'					},
+								{  name: 'Abstracts', 			location: 'domain_abstract'		},
 								{  name: 'Editor', 					location: 'editor', 					},
 		            {  name: 'AssetManager', 		location: 'asset_manager', 		},
 		            {  name: 'BlockManager', 		location: 'block_manager', 		},

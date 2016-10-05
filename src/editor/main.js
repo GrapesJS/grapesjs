@@ -113,6 +113,11 @@ define(function (require){
 				BlockManager: em.get('BlockManager'),
 
 				/**
+				 * @property {TraitManager}
+				 */
+				TraitManager: em.get('TraitManager'),
+
+				/**
 				 * @property {SelectorManager}
 				 */
 				SelectorManager: em.get('SelectorManager'),

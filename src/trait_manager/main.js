@@ -9,6 +9,8 @@ define(function(require) {
 
 	  return {
 
+			Traits: Traits,
+
 	  	/**
        * Name of the module
        * @type {String}

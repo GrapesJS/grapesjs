@@ -1,11 +1,11 @@
 var deps = ['Utils', 'StorageManager', 'DeviceManager', 'Parser', 'SelectorManager', 'ModalDialog', 'CodeManager', 'Panels',
-				'RichTextEditor', 'StyleManager', 'AssetManager', 'CssComposer', 'DomComponents', 'Canvas', 'Commands', 'BlockManager'];
+				'RichTextEditor', 'StyleManager', 'AssetManager', 'CssComposer', 'DomComponents', 'Canvas', 'Commands', 'BlockManager', 'TraitManager'];
 
 // r.js do not see deps if I pass them as a variable
 // http://stackoverflow.com/questions/27545412/optimization-fails-when-passing-a-variable-with-a-list-of-dependencies-to-define
 define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'DeviceManager', 'Parser', 'SelectorManager',
 'ModalDialog', 'CodeManager', 'Panels', 'RichTextEditor', 'StyleManager', 'AssetManager', 'CssComposer', 'DomComponents',
-'Canvas', 'Commands', 'BlockManager'], function(){
+'Canvas', 'Commands', 'BlockManager', 'TraitManager'], function(){
 		return Backbone.Model.extend({
 
 			defaults: {
