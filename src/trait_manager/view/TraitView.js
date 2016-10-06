@@ -32,6 +32,7 @@ define(['backbone'], function (Backbone) {
 		 * @private
 		 */
 		renderLabel: function() {
+			/*
 			this.$el.html(this.templateLabel({
 				pfx		: this.pfx,
 				ppfx	: this.ppfx,
@@ -39,6 +40,34 @@ define(['backbone'], function (Backbone) {
 				info	: this.model.get('info'),
 				label	: this.model.get('name'),
 			}));
+			*/
+		console.log(this.model);
+			this.$el.html('<div class="label"><div>' + this.getLabel() + '</div></div>');
+		},
+
+		/**
+		 * Returns label for the input
+		 * @return {string}
+		 * @private
+		 */
+		getLabel: function() {
+			var model = this.model;
+			return model.get('label') || model.get('name');
+		},
+
+		/**
+		 * Renders input
+		 * */
+		renderField: function(){
+			if(!this.$input){
+				this.$el.append('<div class="input-h"></div>');
+				this.$input = $('<input>', {
+					placeholder: this.model.get('defaults'),
+					type: 'text'
+				});
+				this.$el.find('.input-h').html(this.$input);
+			}
+			//this.setValue(this.componentValue, 0);
 		},
 
 		render : function() {

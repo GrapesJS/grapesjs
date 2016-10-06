@@ -9,7 +9,7 @@ define(function(require) {
 
 	  return {
 
-			Traits: Traits,
+			TraitsView: TraitsView,
 
 	  	/**
        * Name of the module

@@ -96,6 +96,7 @@ define(function(require) {
 				defaultCommands['sw-visibility'] = require('./view/SwitchVisibility');
 				defaultCommands['open-layers'] = require('./view/OpenLayers');
 				defaultCommands['open-sm'] = require('./view/OpenStyleManager');
+				defaultCommands['open-tm'] = require('./view/OpenTraitManager');
 				defaultCommands['open-blocks'] = require('./view/OpenBlocks');
 				defaultCommands.fullscreen = require('./view/Fullscreen');
 				defaultCommands.preview = require('./view/Preview');

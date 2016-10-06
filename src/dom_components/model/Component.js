@@ -35,7 +35,10 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 				this.components	= new Components(this.defaultC, opt);
 				this.set('components', this.components);
 				this.set('classes', new Selectors(this.defaultCl));
-				this.set('traits', new Traits(this.get('traits'), this));
+				var traits = new Traits();
+				traits.setTarget(this);
+				traits.add(this.get('traits'));
+				this.set('traits', traits);
 			},
 
 			/**

@@ -13,6 +13,8 @@ define(['backbone'],
 			},
 
 			initialize: function(){
+				if(!this.get('target'))
+          throw new Error('Target not found');
       },
 
     });

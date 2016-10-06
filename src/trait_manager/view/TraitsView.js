@@ -1,62 +1,62 @@
-define(['backbone'], function (Backbone) {
+define(['backbone', 'Abstract/view/DomainViews', './TraitView'],
+	function (Backbone, DomainViews, TraitView) {
 
-	return Backbone.View.extend({
+		return DomainViews.extend({
 
-		className: 'test-traits',
+			itemView: TraitView,
 
-		initialize: function(o) {
-			console.log(o);
-			this.config = o.config || {};
-			this.pfx = this.config.stylePrefix || '';
-			// listen selected component change
-			/*
-			if target not empty refresh
+			className: 'test-traits',
+
+			initialize: function(o) {
+				this.config = o.config || {};
+				this.em = o.editor;
+				this.pfx = this.config.stylePrefix || '';
+				this.listenTo(this.em, 'change:selectedComponent', this.updatedCollection);
+				/*
+				if target not empty refresh
+				 */
+			},
+
+			/**
+			 * Update view collection
+			 * @private
 			 */
-		},
+			updatedCollection: function() {
+				var comp = this.em.get('selectedComponent');
+				this.collection = comp.get('traits');
+				this.render();
+			},
 
-		onChange: function() {
-			//change model value
-		},
+			onChange: function() {
+				//change model value
+			},
 
-		/**
-		 * On change callback
-		 * @private
-		 */
-		onValuesChange: function() {
-			var m = this.model;
-			var trg = m.target;
-			var attrs = trg.get('attributes');
-			attrs[m.get('name')] = m.get('value');
-			trg.set('attributes', attrs);
-		},
+			/**
+			 * On change callback
+			 * @private
+			 */
+			onValuesChange: function() {
+				var m = this.model;
+				var trg = m.target;
+				var attrs = trg.get('attributes');
+				attrs[m.get('name')] = m.get('value');
+				trg.set('attributes', attrs);
+			},
 
-		/**
-		 * Render label
-		 * @private
-		 */
-		renderLabel: function() {
-			this.$el.html(this.templateLabel({
-				pfx		: this.pfx,
-				ppfx	: this.ppfx,
-				icon	: this.model.get('icon'),
-				info	: this.model.get('info'),
-				label	: this.model.get('name'),
-			}));
-		},
+			/**
+			 * Render label
+			 * @private
+			 */
+			renderLabel: function() {
+				this.$el.html(this.templateLabel({
+					pfx		: this.pfx,
+					ppfx	: this.ppfx,
+					icon	: this.model.get('icon'),
+					info	: this.model.get('info'),
+					label	: this.model.get('name'),
+				}));
+			},
 
-		render: function() {
-      var frag = document.createDocumentFragment();
-      this.$el.empty();
-
-      this.collection.each(function(model){
-        this.add(model, frag);
-      }, this);
-
-      this.$el.append(frag);
-      this.$el.addClass(this.ppfx + 'blocks-c');
-      return this;
-    },
-
-	});
+		});
 
 });

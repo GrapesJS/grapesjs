@@ -4,6 +4,7 @@ define(function () {
 	var swv = 'sw-visibility';
 	var expt = 'export-template';
 	var osm = 'open-sm';
+	var otm = 'open-tm';
 	var ola = 'open-layers';
 	var obl = 'open-blocks';
 	var ful = 'fullscreen';
@@ -64,6 +65,11 @@ define(function () {
 				command: osm,
 				active: true,
 				attributes: { title: 'Open Style Manager' },
+			},{
+				id: otm,
+				className: 'fa fa-cog',
+				command: otm,
+				attributes: { title: 'Settings' },
 			},{
 				id: ola,
 				className: 'fa fa-bars',

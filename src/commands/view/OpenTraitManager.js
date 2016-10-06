@@ -6,27 +6,27 @@ define(function() {
 				var config = editor.Config;
 				var pfx = config.stylePrefix;
 				var tm = editor.TraitManager;
-				if(!this.blocks){
+				if(!this.obj){
           var tmView = new tm.TraitsView({
 						collection: [],
-						editor: editor
+						editor: editor.editor
 					});
-					this.blocks = $('<div/>').get(0);
-					this.blocks.appendChild(tmView.render());
+					this.obj = $('<div/>').get(0);
+					this.obj.appendChild(tmView.render().el);
 					var panels = editor.Panels;
 					if(!panels.getPanel('views-container'))
 						panelC = panels.addPanel({id: 'views-container'});
 					else
 						panelC = panels.getPanel('views-container');
-					panelC.set('appendContent', this.blocks).trigger('change:appendContent');
+					panelC.set('appendContent', this.obj).trigger('change:appendContent');
 				}
 
-				this.blocks.style.display = 'block';
+				this.obj.style.display = 'block';
 			},
 
 			stop: function() {
-				if(this.blocks)
-					this.blocks.style.display = 'none';
+				if(this.obj)
+					this.obj.style.display = 'none';
 			}
 		};
 	});
