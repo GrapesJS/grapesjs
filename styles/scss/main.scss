@@ -1,3 +1,4 @@
+/* stylelint-disable */
 @import "spectrum";
 @import "font-awesome";
 
@@ -13,10 +14,11 @@ $com-prefix: 	$app-prefix + 'com-';
 $sm-prefix: 	$app-prefix + 'sm-';
 $cv-prefix: 	$app-prefix + 'cv-';
 $clm-prefix: 	$app-prefix + 'clm-';
+$trt-prefix: 	$app-prefix + 'trt-';
 
 /* Dark theme */
-$mainColor:		#444; /* Light: #573454 Dark: #3b2639 -moz-linear-gradient(top, #fca99b 0%, #6e2842 100%)*/
-$fontColor:   #ddd; /*l: #d8d7db*/
+$mainColor:		#444; /* Light: #573454 Dark: #3b2639 -moz-linear-gradient(top, #fca99b 0%, #6e2842 100%) */
+$fontColor:   #ddd; /* l: #d8d7db */
 $fontColorActive: #f8f8f8;
 
 /* Light theme
@@ -25,14 +27,14 @@ $fontColor: #9299a3;
 $fontColorActive: #4f8ef7;
 */
 
-$mainDkColor:	rgba(0, 0, 0, 0.3);/* darken($mainColor, 4%) - #383838*/
+$mainDkColor:	rgba(0, 0, 0, 0.3);/* darken($mainColor, 4%) - #383838 */
 $mainDklColor: rgba(0, 0, 0, 0.1);
-$mainLhColor:	rgba(255, 255, 255, 0.1);/*#515151*/
+$mainLhColor:	rgba(255, 255, 255, 0.1); /* #515151 */
 $mainLhlColor: rgba(255, 255, 255, 0.7);
 $fontColorDk:	#777;
 $mainFont:		Helvetica, sans-serif;
 $colorBlue:		#3b97e3;
-$colorRed: 		#DD3636;
+$colorRed: 		#dd3636;
 $colorYell:		#ffca6f;
 $colorGreen:	#62c462;
 $tagBg: #804f7b;
@@ -47,60 +49,60 @@ $fontV: 5;//random(1000)
 @font-face {
   font-family: 'font3336';
   src: url('#{$fontPath}/#{$fontName}.eot?v=#{$fontV}');
-  src: url('#{$fontPath}/#{$fontName}.woff?v=#{$fontV}') format('woff'),
-       //url('#{$fontPath}/#{$fontName}.woff2?v=#{$fontV}') format('woff2'),
-       url('#{$fontPath}/#{$fontName}.ttf?v=#{$fontV}') format('truetype'),
-       url('#{$fontPath}/#{$fontName}.svg?v=#{$fontV}') format('svg'),
-       url('#{$fontPath}/#{$fontName}.eot?v=#{$fontV}') format('embedded-opentype');
+  src:
+    url('#{$fontPath}/#{$fontName}.woff?v=#{$fontV}') format('woff'),
+    //url('#{$fontPath}/#{$fontName}.woff2?v=#{$fontV}') format('woff2'),
+    url('#{$fontPath}/#{$fontName}.ttf?v=#{$fontV}') format('truetype'),
+    url('#{$fontPath}/#{$fontName}.svg?v=#{$fontV}') format('svg'),
+    url('#{$fontPath}/#{$fontName}.eot?v=#{$fontV}') format('embedded-opentype');
   font-weight: normal;
   font-style: normal;
 }
 
 @mixin user-select($v) {
-    -moz-user-select: 	$v;
-	-khtml-user-select: $v;
-	-webkit-user-select:$v;
-	-ms-user-select: 	$v;
-	-o-user-select: 	$v;
- 	user-select: 		$v;
+  -moz-user-select: $v;
+  -khtml-user-select: $v;
+  -webkit-user-select: $v;
+  -ms-user-select: $v;
+  -o-user-select: $v;
+  user-select: $v;
 }
 
 @mixin opacity($v) {
-  opacity: 		$v;
-  $opacity-ie: 	$v * 100;
-  filter: 		alpha(opacity=$opacity-ie);
+  opacity: $v;
+  filter: alpha(opacity=$v * 100);
 }
 
-@mixin appearance($v){
-	-webkit-appearance: $v;
-	-moz-appearance: $v;
-	appearance: $v;
+@mixin appearance($v) {
+  -webkit-appearance: $v;
+  -moz-appearance: $v;
+  appearance: $v;
 }
 
-.#{$app-prefix}fonts{}
+//.#{$app-prefix}fonts {}
 
-.#{$app-prefix}fonts:before{
+.#{$app-prefix}fonts::before {
   display: block;
   font: normal normal normal 14px font3336; // shortening font declaration
-  font-size: inherit; // can't have font-size inherit on line above, so need to override
   text-rendering: auto; // optimizelegibility throws things off #1094
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 5em;
 }
-.#{$app-prefix}f-b1:before { content: 'q'; }
-.#{$app-prefix}f-b2:before { content: 'w'; }
-.#{$app-prefix}f-b3:before { content: 'e'; }
-.#{$app-prefix}f-b37:before { content: 'r'; }
-.#{$app-prefix}f-hero:before { content: 't'; }
-.#{$app-prefix}f-h1p:before { content: 'y'; }
-.#{$app-prefix}f-3ba:before { content: 'u'; }
-.#{$app-prefix}f-image:before { content: 'i'; }
-.#{$app-prefix}f-text:before { content: 'o'; }
-.#{$app-prefix}f-quo:before { content: 'p'; }
+.#{$app-prefix}f-b1::before { content: 'q'; }
+.#{$app-prefix}f-b2::before { content: 'w'; }
+.#{$app-prefix}f-b3::before { content: 'e'; }
+.#{$app-prefix}f-b37::before { content: 'r'; }
+.#{$app-prefix}f-hero::before { content: 't'; }
+.#{$app-prefix}f-h1p::before { content: 'y'; }
+.#{$app-prefix}f-3ba::before { content: 'u'; }
+.#{$app-prefix}f-image::before { content: 'i'; }
+.#{$app-prefix}f-text::before { content: 'o'; }
+.#{$app-prefix}f-quo::before { content: 'p'; }
 
 
-.#{$app-prefix}invis-invis, .#{$app-prefix}no-app{
+.#{$app-prefix}invis-invis,
+.#{$app-prefix}no-app {
 	background-color: transparent;
 	border: none;
 	color:inherit;
@@ -188,17 +190,20 @@ $fontV: 5;//random(1000)
   color: $fontColor;
   padding: 0.5em 1em;
 }
-.#{$app-prefix}select{
+.#{$app-prefix}select {
   @extend .#{$app-prefix}input;
 }
-div.#{$app-prefix}select{
+
+div.#{$app-prefix}select {
   padding: 0;
 }
-.#{$app-prefix}select select{
-  padding-right: 10px
+
+.#{$app-prefix}select select {
+  padding-right: 10px;
 }
+
 .#{$app-prefix}select:-moz-focusring,
-.#{$app-prefix}select select:-moz-focusring{
+.#{$app-prefix}select select:-moz-focusring {
   color: transparent;
   text-shadow: 0 0 0 $mainLhlColor;
 }
@@ -214,10 +219,20 @@ div.#{$app-prefix}select{
 .#{$app-prefix}select option,
 .#{$clm-prefix}select option,
 .#{$sm-prefix}select option,
-.#{$sm-prefix}unit option{
+.#{$sm-prefix}unit option {
   @extend .#{$app-prefix}bg-main;
   //background-color: $mainDkColor;
 }
+
+/*************  TRAITS  ****************/
+.#{$trt-prefix}trait {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  font-size: 0.75em;
+  font-weight: lighter;
+}
+
 /*************  CANVAS  ****************/
 .#{$cv-prefix}canvas {
   background-color: rgba(0, 0, 0, 0.15);
@@ -638,6 +653,7 @@ $arrowColor:    $mainLhlColor; /*b1b1b1*/
     background-color: transparent;
     width: 100%;
     position: relative;
+    padding: 3px 0;
     z-index:1;
   }
 

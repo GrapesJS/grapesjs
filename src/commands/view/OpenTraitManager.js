@@ -7,10 +7,7 @@ define(function() {
 				var pfx = config.stylePrefix;
 				var tm = editor.TraitManager;
 				if(!this.obj){
-          var tmView = new tm.TraitsView({
-						collection: [],
-						editor: editor.editor
-					});
+          var tmView = tm.getTraitsViewer();
 					this.obj = $('<div/>').get(0);
 					this.obj.appendChild(tmView.render().el);
 					var panels = editor.Panels;

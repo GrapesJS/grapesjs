@@ -1,4 +1,5 @@
 @charset "UTF-8";
+/* stylelint-disable */
 /***
 Spectrum Colorpicker v1.7.1
 https://github.com/bgrins/spectrum
@@ -2558,15 +2559,15 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   content: ""; }
 
 /* Dark theme */
-/* Light: #573454 Dark: #3b2639 -moz-linear-gradient(top, #fca99b 0%, #6e2842 100%)*/
-/*l: #d8d7db*/
+/* Light: #573454 Dark: #3b2639 -moz-linear-gradient(top, #fca99b 0%, #6e2842 100%) */
+/* l: #d8d7db */
 /* Light theme
 $mainColor: #fff;
 $fontColor: #9299a3;
 $fontColorActive: #4f8ef7;
 */
-/* darken($mainColor, 4%) - #383838*/
-/*#515151*/
+/* darken($mainColor, 4%) - #383838 */
+/* #515151 */
 @font-face {
   font-family: 'font3336';
   src: url("../fonts/main-fonts.eot?v=5");
@@ -2574,46 +2575,46 @@ $fontColorActive: #4f8ef7;
   font-weight: normal;
   font-style: normal; }
 
-.gjs-fonts:before {
+.gjs-fonts::before {
   display: block;
   font: normal normal normal 14px font3336;
-  font-size: inherit;
   text-rendering: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 5em; }
 
-.gjs-f-b1:before {
+.gjs-f-b1::before {
   content: 'q'; }
 
-.gjs-f-b2:before {
+.gjs-f-b2::before {
   content: 'w'; }
 
-.gjs-f-b3:before {
+.gjs-f-b3::before {
   content: 'e'; }
 
-.gjs-f-b37:before {
+.gjs-f-b37::before {
   content: 'r'; }
 
-.gjs-f-hero:before {
+.gjs-f-hero::before {
   content: 't'; }
 
-.gjs-f-h1p:before {
+.gjs-f-h1p::before {
   content: 'y'; }
 
-.gjs-f-3ba:before {
+.gjs-f-3ba::before {
   content: 'u'; }
 
-.gjs-f-image:before {
+.gjs-f-image::before {
   content: 'i'; }
 
-.gjs-f-text:before {
+.gjs-f-text::before {
   content: 'o'; }
 
-.gjs-f-quo:before {
+.gjs-f-quo::before {
   content: 'p'; }
 
-.gjs-invis-invis, .gjs-clm-tags #gjs-clm-new, .gjs-no-app {
+.gjs-invis-invis, .gjs-clm-tags #gjs-clm-new,
+.gjs-no-app {
   background-color: transparent;
   border: none;
   color: inherit; }
@@ -2715,6 +2716,14 @@ div.gjs-select {
 .gjs-select:focus,
 .gjs-select select:focus {
   outline: none; }
+
+/*************  TRAITS  ****************/
+.gjs-trt-trait {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  font-size: 0.75em;
+  font-weight: lighter; }
 
 /*************  CANVAS  ****************/
 .gjs-cv-canvas {
@@ -2848,7 +2857,7 @@ ol.example li.placeholder:before {
   outline: 1px solid #3b97e3; }
 
 *.gjs-com-hover-delete, div.gjs-com-hover-delete {
-  outline: 2px solid #DD3636;
+  outline: 2px solid #dd3636;
   opacity: 0.5;
   filter: alpha(opacity=50); }
 
@@ -2867,7 +2876,7 @@ ol.example li.placeholder:before {
   display: none; }
 
 .gjs-com-badge-red {
-  background-color: #DD3636; }
+  background-color: #dd3636; }
 
 .gjs-badge-warning {
   background-color: #ffca6f; }
@@ -3106,6 +3115,7 @@ ol.example li.placeholder:before {
     background-color: transparent;
     width: 100%;
     position: relative;
+    padding: 3px 0;
     z-index: 1; }
   .gjs-field select {
     height: 20px; }

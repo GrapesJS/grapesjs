@@ -5,7 +5,7 @@ define(function(require) {
 		defaults = require('./config/config'),
 		Traits = require('./model/Traits'),
 		TraitsView = require('./view/TraitsView');
-		var sectors, SectView;
+		var TraitsViewer;
 
 	  return {
 
@@ -32,22 +32,21 @@ define(function(require) {
 				var ppfx = c.pStylePrefix;
 				if(ppfx)
 					c.stylePrefix = ppfx + c.stylePrefix;
-
-				sectors = new Traits(c.traits);
-	  		TraitView = new TraitsView({
-					collection: sectors,
-					target: c.em,
+	  		TraitsViewer = new TraitsView({
+					collection: [],
+					editor: c.em,
 				  config: c,
 				});
         return this;
       },
 
 			/**
-			 * Render sectors and properties
-			 * @return	{HTMLElement}
-			 * */
-			render: function(){
-				return SectView.render().el;
+			 *
+			 * Get Traits viewer
+			 * @private
+			 */
+			getTraitsViewer: function() {
+				return TraitsViewer;
 			},
 
 		};

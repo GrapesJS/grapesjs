@@ -9,22 +9,34 @@ define(['backbone'], function (Backbone) {
 		initialize: function(o) {
 			this.config = o.config || {};
 			this.pfx = this.config.stylePrefix || '';
+			this.ppfx = this.config.pStylePrefix || '';
+			this.target = this.model.get('target');
+			this.className = this.pfx + 'trait';
+			this.labelClass = this.ppfx + 'label';
+			this.fieldClass = this.ppfx + 'field';
+			this.inputhClass = this.ppfx + 'input-holder';
+			this.listenTo(this.model, 'change:value', this.onValueChange);
 		},
 
+		/**
+		 * Fires when the input is changed
+		 * @private
+		 */
 		onChange: function() {
-			//change model value
+			this.model.set('value', this.getInputEl().value);
 		},
 
 		/**
 		 * On change callback
 		 * @private
 		 */
-		onValuesChange: function() {
+		onValueChange: function() {
 			var m = this.model;
-			var trg = m.target;
+			var trg = this.target;
 			var attrs = trg.get('attributes');
 			attrs[m.get('name')] = m.get('value');
 			trg.set('attributes', attrs);
+			console.log(trg);
 		},
 
 		/**
@@ -32,17 +44,7 @@ define(['backbone'], function (Backbone) {
 		 * @private
 		 */
 		renderLabel: function() {
-			/*
-			this.$el.html(this.templateLabel({
-				pfx		: this.pfx,
-				ppfx	: this.ppfx,
-				icon	: this.model.get('icon'),
-				info	: this.model.get('info'),
-				label	: this.model.get('name'),
-			}));
-			*/
-		console.log(this.model);
-			this.$el.html('<div class="label"><div>' + this.getLabel() + '</div></div>');
+			this.$el.html('<div class="' + this.labelClass + '">' + this.getLabel() + '</div>');
 		},
 
 		/**
@@ -56,23 +58,33 @@ define(['backbone'], function (Backbone) {
 		},
 
 		/**
+		 * Returns input element
+		 * @return {HTMLElement}
+		 * @private
+		 */
+		getInputEl: function() {
+			return this.$input.get(0);
+		},
+
+		/**
 		 * Renders input
+		 * @private
 		 * */
 		renderField: function(){
 			if(!this.$input){
-				this.$el.append('<div class="input-h"></div>');
+				this.$el.append('<div class="' + this.fieldClass +'"><div class="' + this.inputhClass +'"></div></div>');
 				this.$input = $('<input>', {
 					placeholder: this.model.get('defaults'),
 					type: 'text'
 				});
-				this.$el.find('.input-h').html(this.$input);
+				this.$el.find('.' + this.inputhClass).html(this.$input);
 			}
-			//this.setValue(this.componentValue, 0);
 		},
 
 		render : function() {
 			this.renderLabel();
 			this.renderField();
+			this.el.className = this.className;
 			return this;
 		},
 

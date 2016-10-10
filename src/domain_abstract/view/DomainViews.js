@@ -28,7 +28,8 @@ function(Backbone) {
     add: function(model, fragment){
       var frag = fragment || null;
       var view = new this.itemView({
-        model: model
+        model: model,
+        config: this.config
       }, this.config);
       var rendered = view.render().el;
 
