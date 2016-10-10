@@ -15,6 +15,7 @@ define(['backbone'], function (Backbone) {
 			this.labelClass = this.ppfx + 'label';
 			this.fieldClass = this.ppfx + 'field';
 			this.inputhClass = this.ppfx + 'input-holder';
+			this.model.off('change:value', this.onValueChange);
 			this.listenTo(this.model, 'change:value', this.onValueChange);
 		},
 
@@ -35,6 +36,7 @@ define(['backbone'], function (Backbone) {
 			var trg = this.target;
 			var attrs = trg.get('attributes');
 			attrs[m.get('name')] = m.get('value');
+			trg.set('attributes', {});
 			trg.set('attributes', attrs);
 			console.log(trg);
 		},
@@ -54,7 +56,8 @@ define(['backbone'], function (Backbone) {
 		 */
 		getLabel: function() {
 			var model = this.model;
-			return model.get('label') || model.get('name');
+			var label = model.get('label') || model.get('name');
+			return label.charAt(0).toUpperCase() + label.slice(1).replace(/-/g,' ');
 		},
 
 		/**
@@ -75,7 +78,8 @@ define(['backbone'], function (Backbone) {
 				this.$el.append('<div class="' + this.fieldClass +'"><div class="' + this.inputhClass +'"></div></div>');
 				this.$input = $('<input>', {
 					placeholder: this.model.get('defaults'),
-					type: 'text'
+					type: 'text',
+					value: this.model.get('value')
 				});
 				this.$el.find('.' + this.inputhClass).html(this.$input);
 			}

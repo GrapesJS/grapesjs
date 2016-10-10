@@ -5,12 +5,11 @@ define(['backbone', 'Abstract/view/DomainViews', './TraitView'],
 
 			itemView: TraitView,
 
-			className: 'test-traits',
-
 			initialize: function(o) {
 				this.config = o.config || {};
 				this.em = o.editor;
 				this.pfx = this.config.stylePrefix || '';
+				this.className = this.pfx + 'traits';
 				this.listenTo(this.em, 'change:selectedComponent', this.updatedCollection);
 				this.updatedCollection();
 			},
@@ -24,6 +23,7 @@ define(['backbone', 'Abstract/view/DomainViews', './TraitView'],
 				if(comp){
 					this.collection = comp.get('traits');
 					this.render();
+					this.el.className = this.className;
 				}
 			},
 
