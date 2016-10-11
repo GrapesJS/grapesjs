@@ -6,38 +6,42 @@ define(['DomComponents/model/Component',
 
     return {
       run : function(){
+          var obj;
+
           describe('Component', function() {
 
             beforeEach(function () {
-              this.obj  = new Component();
+              obj = new Component();
             });
 
             afterEach(function () {
-              delete this.obj;
+              delete obj;
             });
 
             it('Has no children', function() {
-              this.obj.get('components').length.should.equal(0);
+              obj.get('components').length.should.equal(0);
             });
 
             it('Clones correctly', function() {
-              var sAttr = this.obj.attributes;
-              var cloned = this.obj.clone();
+              var sAttr = obj.attributes;
+              var cloned = obj.clone();
               var eAttr = cloned.attributes;
-              sAttr.components = {};
               eAttr.components = {};
+              sAttr.components = {};
+              eAttr.traits = {};
+              sAttr.traits = {};
               sAttr.should.deep.equal(eAttr);
             });
 
             it('Has expected name', function() {
-              this.obj.cid = 'c999';
-              this.obj.getName().should.equal('Box 999');
+              obj.cid = 'c999';
+              obj.getName().should.equal('Box 999');
             });
 
             it('Has expected name 2', function() {
-              this.obj.cid = 'c999';
-              this.obj.set('type','testType');
-              this.obj.getName().should.equal('TestType 999');
+              obj.cid = 'c999';
+              obj.set('type','testType');
+              obj.getName().should.equal('TestType 999');
             });
 
         });
@@ -45,19 +49,19 @@ define(['DomComponents/model/Component',
         describe('Image Component', function() {
 
             beforeEach(function () {
-              this.obj  = new ComponentImage();
+              obj = new ComponentImage();
             });
 
             afterEach(function () {
-              delete this.obj;
+              delete obj;
             });
 
             it('Has src property', function() {
-              this.obj.has('src').should.equal(true);
+              obj.has('src').should.equal(true);
             });
 
             it('Not droppable', function() {
-              this.obj.get('droppable').should.equal(false);
+              obj.get('droppable').should.equal(false);
             });
 
         });
@@ -65,19 +69,19 @@ define(['DomComponents/model/Component',
         describe('Text Component', function() {
 
             beforeEach(function () {
-              this.obj  = new ComponentText();
+              obj  = new ComponentText();
             });
 
             afterEach(function () {
-              delete this.obj;
+              delete obj;
             });
 
             it('Has content property', function() {
-              this.obj.has('content').should.equal(true);
+              obj.has('content').should.equal(true);
             });
 
             it('Not droppable', function() {
-              this.obj.get('droppable').should.equal(false);
+              obj.get('droppable').should.equal(false);
             });
 
         });

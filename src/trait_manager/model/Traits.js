@@ -15,7 +15,8 @@ define(['backbone','./Trait', './TraitFactory'],
           if(typeof models === 'string')
             models = [models];
           for(var i = 0, len = models.length; i < len; i++){
-            var model = TraitFactory.build(models[i])[0];
+            var str = models[i];
+            var model = typeof str === 'string' ? TraitFactory.build(str)[0] : str;
             model.target = this.target;
             models[i] = model;
           }

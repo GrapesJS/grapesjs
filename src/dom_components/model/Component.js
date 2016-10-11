@@ -47,7 +47,7 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 			 * @return {Array}
 			 * @private
 			 */
-			normalizeClasses: function(arr){
+			normalizeClasses: function(arr) {
 				var res = [];
 
 				if(!this.sm.get)
@@ -75,21 +75,27 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 			 * Override original clone method
 			 * @private
 			 */
-	    clone: function()
-	    {
+	    clone: function() {
 	    	var attr = _.clone(this.attributes),
 	    			comp = this.get('components'),
+						traits = this.get('traits'),
 	    			cls = this.get('classes');
 	    	attr.components = [];
-	    	attr.classes 	= [];
+	    	attr.classes = [];
+				attr.traits = [];
 	    	if(comp.length){
-					comp.each(function(md,i){
-							attr.components[i]	= md.clone();
+					comp.each(function(md,i) {
+						attr.components[i]	= md.clone();
+					});
+	    	}
+				if(traits.length){
+					traits.each(function(md, i) {
+						attr.traits[i] = md.clone();
 					});
 	    	}
 	    	if(cls.length){
-					cls.each(function(md,i){
-							attr.classes[i]	= md.get('name');
+					cls.each(function(md,i) {
+						attr.classes[i]	= md.get('name');
 					});
 	    	}
 	    	attr.status = '';
@@ -102,7 +108,7 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 			 * @return {String}
 			 * @private
 			 * */
-			getName: function(){
+			getName: function() {
 				if(!this.name){
 					var id = this.cid.replace(/\D/g,''),
 						type = this.get('type');

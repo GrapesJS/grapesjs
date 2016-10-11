@@ -15,11 +15,10 @@ define(['backbone'],
           if(typeof props === 'string')
             props = [props];
 
-          for (var i = 0, len = props.length; i < len; i++) {
+          for (var i = 0; i < props.length; i++) {
             var obj = {};
             var prop = props[i];
             obj.name = prop;
-
             objs.push(obj);
           }
 
