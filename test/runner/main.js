@@ -16,6 +16,7 @@ require(['../src/config/require-config.js', 'config/config.js'], function() {
 	         'specs/storage_manager/main.js',
 	         'specs/plugin_manager/main.js',
 	         'specs/block_manager/main.js',
+					 'specs/trait_manager/main.js',
 	         'specs/parser/main.js',
 	         'specs/grapesjs/main.js',
 	         'specs/utils/main.js'

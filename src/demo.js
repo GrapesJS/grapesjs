@@ -9,8 +9,7 @@ require(['config/require-config'], function() {
       noticeOnUnload: 0,
 			container	: '#gjs',
 			height: '100%',
-			fromElement: true,
-			/*
+			//fromElement: true,
 			components: [{
 				style:{
 					width:'100px',
@@ -18,13 +17,19 @@ require(['config/require-config'], function() {
 				},
 				traits: ['title']
 			},{
+				style:{
+					width:'150px',
+					height:'100px'
+				},
+				traits: [{name:'title', value: "myTitleTest"}]
+			},{
 				type: 'image'
 			},{
 				tagName: 'a',
 				type: 'link',
 				content: 'mylink',
 			}],
-			*/
+
 			storageManager:{ autoload: 0},
 			commands: 		{
 					defaults		: [{

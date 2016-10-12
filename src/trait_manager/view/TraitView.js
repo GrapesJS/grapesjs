@@ -34,11 +34,9 @@ define(['backbone'], function (Backbone) {
 		onValueChange: function() {
 			var m = this.model;
 			var trg = this.target;
-			var attrs = trg.get('attributes');
+			var attrs = _.clone(trg.get('attributes'));
 			attrs[m.get('name')] = m.get('value');
-			trg.set('attributes', {});
 			trg.set('attributes', attrs);
-			console.log(trg);
 		},
 
 		/**
