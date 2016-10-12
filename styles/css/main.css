@@ -2721,9 +2721,14 @@ div.gjs-select {
 .gjs-trt-trait {
   display: flex;
   justify-content: space-between;
-  padding: 10px;
+  padding: 5px 10px;
   font-size: 0.75em;
   font-weight: lighter; }
+  .gjs-trt-trait .gjs-label {
+    width: 30%;
+    text-align: left; }
+  .gjs-trt-trait .gjs-field {
+    width: 70%; }
 
 /*************  CANVAS  ****************/
 .gjs-cv-canvas {
@@ -3095,6 +3100,9 @@ ol.example li.placeholder:before {
 /*414141*/
 /*#252525*/
 /*b1b1b1*/
+.gjs-label {
+  line-height: 18px; }
+
 .gjs-field {
   background-color: rgba(0, 0, 0, 0.3);
   /*353535*/

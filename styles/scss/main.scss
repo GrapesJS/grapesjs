@@ -228,9 +228,18 @@ div.#{$app-prefix}select {
 .#{$trt-prefix}trait {
   display: flex;
   justify-content: space-between;
-  padding: 10px;
+  padding: 5px 10px;
   font-size: 0.75em;
   font-weight: lighter;
+
+  .#{$app-prefix}label {
+    width: 30%;
+    text-align: left;
+  }
+
+  .#{$app-prefix}field {
+    width: 70%;
+  }
 }
 
 /*************  CANVAS  ****************/
@@ -636,6 +645,10 @@ $darkBorder:    rgba(0, 0, 0, 0.15); /*303030*/
 $lightBorder:   rgba(255, 255, 255, 0.05); /*414141*/
 $darkTextShadow:  $mainDkColor; /*#252525*/
 $arrowColor:    $mainLhlColor; /*b1b1b1*/
+
+.#{$app-prefix}label {
+  line-height: 18px;
+}
 
 .#{$app-prefix}field {
   background-color: $mainDkColor;/*353535*/

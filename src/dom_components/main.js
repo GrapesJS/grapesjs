@@ -40,6 +40,7 @@ define(function(require) {
 			Component = require('./model/Component'),
 			ComponentText = require('./model/ComponentText'),
 			ComponentImage = require('./model/ComponentImage'),
+			ComponentLink = require('./model/ComponentLink'),
 			ComponentView = require('./view/ComponentView'),
 			ComponentImageView = require('./view/ComponentImageView'),
 			ComponentTextView	= require('./view/ComponentTextView');

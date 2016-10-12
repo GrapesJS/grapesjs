@@ -9,16 +9,23 @@ require(['config/require-config'], function() {
       noticeOnUnload: 0,
 			container	: '#gjs',
 			height: '100%',
-			//fromElement: true,
+			fromElement: true,
+			/*
 			components: [{
 				style:{
 					width:'100px',
 					height:'100px'
 				},
 				traits: ['title']
+			},{
+				type: 'image'
+			},{
+				tagName: 'a',
+				type: 'link',
+				content: 'mylink',
 			}],
+			*/
 			storageManager:{ autoload: 0},
-
 			commands: 		{
 					defaults		: [{
 													id: 	'open-github',

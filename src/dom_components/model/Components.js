@@ -29,6 +29,12 @@ define([ 'backbone', 'require'],
 					    		this.mComponentText		= require("./ComponentText");
 							model	= new this.mComponentText(attrs, options);
 							break;
+							
+						case 'link':
+							if(!this.mComponentLink)
+					    		this.mComponentLink = require("./ComponentLink");
+							model	= new this.mComponentLink(attrs, options);
+							break;
 
 						case 'image':
 							if(!this.mComponentImage)
