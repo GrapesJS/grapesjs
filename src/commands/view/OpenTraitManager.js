@@ -8,7 +8,10 @@ define(function() {
 				var tm = editor.TraitManager;
 				if(!this.obj){
           var tmView = tm.getTraitsViewer();
-					this.obj = $('<div/>').get(0);
+					var confTm = tm.getConfig();
+					this.obj = $('<div/>')
+					.append('<div class="'+pfx+'traits-label">' + confTm.labelContainer + '</div>')
+					.get(0);
 					this.obj.appendChild(tmView.render().el);
 					var panels = editor.Panels;
 					if(!panels.getPanel('views-container'))

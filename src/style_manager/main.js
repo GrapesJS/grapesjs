@@ -65,6 +65,15 @@ define(function(require) {
        */
       name: 'StyleManager',
 
+			/**
+			 * Get configuration object
+			 * @return {Object}
+			 * @private
+			 */
+			getConfig: function(){
+        return c;
+      },
+
       /**
        * Initialize module. Automatically called with a new instance of the editor
        * @param {Object} config Configurations

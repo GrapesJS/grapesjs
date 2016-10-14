@@ -10,7 +10,6 @@ define(['StyleManager'], function(StyleManager) {
 				if(!this.$cn){
 					var config		= em.getConfig(),
 							panels		= em.Panels;
-
 					// Main container
 					this.$cn = $('<div/>');
 					// Secondary container
@@ -30,11 +29,11 @@ define(['StyleManager'], function(StyleManager) {
 						this.$cn2.append(clm.render([]));
 
 					this.$cn2.append(em.StyleManager.render());
-
+					var smConfig = em.StyleManager.getConfig();
 					// Create header
 					this.$header	= $('<div>', {
-						class	: config.styleManager.stylePrefix + 'header',
-						text 	: config.styleManager.textNoElement,
+						class: smConfig.stylePrefix + 'header',
+						text: smConfig.textNoElement,
 					});
 					//this.$cn = this.$cn.add(this.$header);
 					this.$cn.append(this.$header);

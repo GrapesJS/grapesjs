@@ -2718,6 +2718,14 @@ div.gjs-select {
   outline: none; }
 
 /*************  TRAITS  ****************/
+.gjs-traits-label {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+  font-size: 13px;
+  font-weight: lighter;
+  margin-bottom: 5px;
+  padding: 10px;
+  text-align: left; }
+
 .gjs-trt-trait {
   display: flex;
   justify-content: space-between;

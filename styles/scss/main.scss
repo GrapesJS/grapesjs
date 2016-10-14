@@ -225,6 +225,14 @@ div.#{$app-prefix}select {
 }
 
 /*************  TRAITS  ****************/
+.#{$app-prefix}traits-label {
+  border-bottom: 1px solid $mainDkColor;
+  font-size: 13px;
+  font-weight: lighter;
+  margin-bottom: 5px;
+  padding: 10px;
+  text-align: left;
+}
 .#{$trt-prefix}trait {
   display: flex;
   justify-content: space-between;
