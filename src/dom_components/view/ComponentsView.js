@@ -47,6 +47,11 @@ function(Backbone, require) {
 						this.compViewImage	=	require('./ComponentImageView');
 					viewObject	= this.compViewImage;
 					break;
+				case 'link':
+					if(!this.compViewLink)
+						this.compViewLink	=	require('./ComponentLinkView');
+					viewObject	= this.compViewLink;
+					break;
 			}
 
 			var view 		= new viewObject({

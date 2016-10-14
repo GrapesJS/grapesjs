@@ -44,6 +44,7 @@ define(function(require) {
 			ComponentView = require('./view/ComponentView'),
 			ComponentImageView = require('./view/ComponentImageView'),
 			ComponentTextView	= require('./view/ComponentTextView');
+			ComponentLinkView	= require('./view/ComponentLinkView');
 		var component, componentView;
 
 	  return {

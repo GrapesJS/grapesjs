@@ -25,7 +25,6 @@ require(['config/require-config'], function() {
 			},{
 				type: 'image'
 			},{
-				tagName: 'a',
 				type: 'link',
 				content: 'mylink',
 			}],
