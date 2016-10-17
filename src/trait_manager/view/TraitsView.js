@@ -1,9 +1,12 @@
-define(['backbone', 'Abstract/view/DomainViews', './TraitView'],
-	function (Backbone, DomainViews, TraitView) {
+define(['backbone', 'Abstract/view/DomainViews', './TraitView', './TraitSelectView'],
+	function (Backbone, DomainViews, TraitView, TraitSelectView) {
 
 		return DomainViews.extend({
 
-			itemView: TraitView,
+			itemsView: {
+				'text': TraitView,
+				'select': TraitSelectView,
+			},
 
 			initialize: function(o) {
 				this.config = o.config || {};

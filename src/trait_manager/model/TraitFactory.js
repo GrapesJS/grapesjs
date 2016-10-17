@@ -19,6 +19,24 @@ define(['backbone'],
             var obj = {};
             var prop = props[i];
             obj.name = prop;
+
+            // Define type
+            switch (prop) {
+              case 'target':
+                obj.type = 'select';
+                break;
+            }
+
+            // Define options
+            switch (prop) {
+              case 'target':
+                obj.options = [
+                  {value: '_self', name: 'This window'},
+                  {value: '_blank', name: 'New window'}
+                ];
+                break;
+            }
+
             objs.push(obj);
           }
 

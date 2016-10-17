@@ -6,7 +6,7 @@ define(['./Component'],
 			defaults: _.extend({}, Component.prototype.defaults, {
 					tagName: 'a',
 					droppable: false,
-					traits: ['title', 'href', 'blank'],
+					traits: ['title', 'href', 'target'],
 			}),
 
 		});

@@ -5,6 +5,11 @@ function(Backbone) {
 
     itemView: '',
 
+    // Defines the View per type
+    itemsView: '',
+
+    itemType: 'type',
+
     initialize: function(opts, config) {
       this.config = config || {};
     },
@@ -27,7 +32,12 @@ function(Backbone) {
      * */
     add: function(model, fragment){
       var frag = fragment || null;
-      var view = new this.itemView({
+      var itemView = this.itemView;
+      if(this.itemsView){
+        var typeField = model.get(this.itemType);
+        itemView = this.itemsView[typeField];
+      }
+      var view = new itemView({
         model: model,
         config: this.config
       }, this.config);

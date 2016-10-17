@@ -64,6 +64,13 @@ define(['backbone'], function (Backbone) {
 		 * @private
 		 */
 		getInputEl: function() {
+			if(!this.$input){
+				this.$input = $('<input>', {
+					placeholder: this.model.get('defaults'),
+					type: 'text',
+					value: this.model.get('value')
+				});
+			}
 			return this.$input.get(0);
 		},
 
@@ -74,12 +81,8 @@ define(['backbone'], function (Backbone) {
 		renderField: function(){
 			if(!this.$input){
 				this.$el.append('<div class="' + this.fieldClass +'"><div class="' + this.inputhClass +'"></div></div>');
-				this.$input = $('<input>', {
-					placeholder: this.model.get('defaults'),
-					type: 'text',
-					value: this.model.get('value')
-				});
-				this.$el.find('.' + this.inputhClass).html(this.$input);
+				var el = this.getInputEl();
+				this.$el.find('.' + this.inputhClass).html(el);
 			}
 		},
 
