@@ -9,6 +9,8 @@ define(['backbone'],
         name: '',
         value: '',
 				target: '',
+				default: '',
+				placeholder: '',
         options: [],
 			},
 

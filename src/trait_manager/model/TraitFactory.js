@@ -27,6 +27,17 @@ define(['backbone'],
                 break;
             }
 
+            // Define placeholder
+            switch (prop) {
+              case 'title': case 'alt': case 'id':
+                obj.placeholder = 'eg. Text here';
+                break;
+              case 'href':
+                obj.placeholder = 'eg. https://google.com';
+                break;
+            }
+
+
             // Define options
             switch (prop) {
               case 'target':

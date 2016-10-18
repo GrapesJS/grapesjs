@@ -17,6 +17,7 @@ define(['backbone'], function (Backbone) {
 			this.inputhClass = this.ppfx + 'input-holder';
 			this.model.off('change:value', this.onValueChange);
 			this.listenTo(this.model, 'change:value', this.onValueChange);
+			this.tmpl = '<div class="' + this.fieldClass +'"><div class="' + this.inputhClass +'"></div></div>';
 		},
 
 		/**
@@ -65,10 +66,11 @@ define(['backbone'], function (Backbone) {
 		 */
 		getInputEl: function() {
 			if(!this.$input){
+				var md = this.model;
 				this.$input = $('<input>', {
-					placeholder: this.model.get('defaults'),
+					placeholder: md.get('placeholder') || md.get('default'),
 					type: 'text',
-					value: this.model.get('value')
+					value: md.get('value')
 				});
 			}
 			return this.$input.get(0);
@@ -80,7 +82,7 @@ define(['backbone'], function (Backbone) {
 		 * */
 		renderField: function(){
 			if(!this.$input){
-				this.$el.append('<div class="' + this.fieldClass +'"><div class="' + this.inputhClass +'"></div></div>');
+				this.$el.append(this.tmpl);
 				var el = this.getInputEl();
 				this.$el.find('.' + this.inputhClass).html(el);
 			}
