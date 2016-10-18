@@ -1,52 +1,53 @@
 define(function () {
+
 	return {
+		// Prefix identifier that will be used inside storing and loading
+		id: 'gjs-',
+
 		// Enable/Disable autosaving
-		autosave 			: 1,
+		autosave: 1,
+
+		// Indicates if load data inside editor after init
+    autoload: 1,
 
 		// Indicates which storage to use. Available: local | remote
-		storageType			: 'local',
+		type: 'local',
 
-		// If autosave enabled, indicates how many changes (general changes to structure)
+		// If autosave enabled, indicates how many steps (general changes to structure)
 		// need to be done before save. Useful with remoteStorage to reduce remote calls
-		changesBeforeSave	: 1,
+		stepsBeforeSave: 1,
 
-		// Defaults for remote storage
-		remoteStorage		: {
-			//Enable/Disable components model (JSON format)
-			storeComponents: 	true,
-			//Enable/Disable styles model (JSON format)
-			storeStyles: 		false,
-			//Enable/Disable saving HTML template
-			storeHTML: 			false,
-			/**
-			 * Url where to save all stuff.
-			 * The request will send a POST via AJAX, like this:
-			 * {
-			 * 		components: '',
-			 * 		style:		'',
-			 * 		html:		'', 			//if storeHTML is enabled
-			 * }
-			 * */
-			urlStore: '',
-			/**
-			 * Use this url to fetch model data, does expect in response something like this:
-			 * { data: {
-			 * 		components: '',
-			 * 		style: '',
-			 * } }
-			 */
-			urlLoad: '',
-			/**
-			 * Url where assets will be send
-			 * */
-			urlUpload: '',
-			paramsStore	:{},							//Custom parameters to pass with set request
-			paramsLoad	:{},							//Custom parameters to pass with get request
-			beforeSend	: function(jqXHR,settings){},	//Callback before request
-			onComplete	: function(jqXHR,status){},	//Callback after request
-		},
+		//Enable/Disable components model (JSON format)
+		storeComponents: false,
 
-		// Defaults for local storage
-		localStorage		: {},
+		//Enable/Disable styles model (JSON format)
+		storeStyles: false,
+
+		//Enable/Disable saving HTML template
+		storeHtml: true,
+
+		//Enable/Disable saving HTML template
+		storeCss: true,
+
+		// ONLY FOR LOCAL STORAGE
+		// If enabled, checks if browser supports Local Storage
+		checkLocal: true,
+
+		// ONLY FOR REMOTE STORAGE
+		// Custom params that should be passed with each store/load request
+		params: {},
+
+		// Endpoint where to save all stuff
+		urlStore: '',
+
+		// Endpoint where to fetch data
+		urlLoad: '',
+
+		//Callback before request
+		beforeSend: function(jqXHR, settings){},
+
+		//Callback after request
+		onComplete: function(jqXHR, status){},
+
 	};
 });

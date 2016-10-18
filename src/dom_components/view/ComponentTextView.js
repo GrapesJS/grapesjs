@@ -1,8 +1,5 @@
 define(['backbone', './ComponentView'],
 	function (Backbone, ComponentView) {
-	/**
-	 * @class ComponentTextView
-	 * */
 
 	return ComponentView.extend({
 
@@ -13,43 +10,37 @@ define(['backbone', './ComponentView'],
 		initialize: function(o){
 			ComponentView.prototype.initialize.apply(this, arguments);
 			_.bindAll(this,'disableEditing');
-			this.listenTo( this.model, 'focus', this.enableEditing);
-			if(this.config.rte){
-				this.rte	= this.config.rte;
-			}
+			this.listenTo(this.model, 'focus active', this.enableEditing);
+			this.rte = this.config.rte || '';
 		},
 
 		/**
-		 * Enable this component to be editable,
-		 * load also the mini toolbar for quick editing
-		 * @param Event
+		 * Enable the component to be editable
+		 * @param {Event} e
+		 * @private
 		 * */
 		enableEditing: function(e){
-			if(this.rte){
-				var $e	= this.config.em.get('$editor');
-				if(!this.$wrapper && $e.length)
-					this.$wrapper	= $e.find('#'+this.config.wrapperId);
-				this.rte.bind(this, this.$wrapper);
-			}
-			$(document).on('mousedown', this.disableEditing);									//Close edit mode
-			this.$el.on('mousedown', this.disablePropagation);								//Avoid closing edit mode on component click
+			if(this.rte)
+				this.rte.attach(this);
+			this.toggleEvents(1);
 		},
 
 		/**
 		 * Disable this component to be editable
-		 * @param Event
+		 * @param {Event}
+		 * @private
 		 * */
 		disableEditing: function(e){
-			if(this.rte){
-				this.rte.unbind(this);
-			}
-			$(document).off('mousedown', this.disableEditing);
-			this.$el.off('mousedown',this.disablePropagation);
+			if(this.rte)
+				this.rte.detach(this);
+			this.toggleEvents();
 			this.updateContents();
 		},
 
-		/** Isolate disable propagation method
-		 * @param Event
+		/**
+		 * Isolate disable propagation method
+		 * @param {Event}
+		 * @private
 		 * */
 		disablePropagation: function(e){
 			e.stopPropagation();
@@ -57,17 +48,29 @@ define(['backbone', './ComponentView'],
 
 		/**
 		 * Update contents of the element
-		 *
-		 * @return void
+		 * @private
 		 **/
-		updateContents : function(){
-			this.model.set('content', this.$el.html());
+		updateContents: function(){
+			this.model.set('content', this.el.innerHTML);
+		},
+
+		/**
+		 * Enable/Disable events
+		 * @param {Boolean} enable
+		 */
+		toggleEvents: function(enable) {
+			var method = enable ? 'on' : 'off';
+			// The ownerDocument is from the frame
+			var elDocs = [this.el.ownerDocument, document, this.rte];
+			$(elDocs)[method]('mousedown', this.disableEditing);
+			// Avoid closing edit mode on component click
+			this.$el[method]('mousedown', this.disablePropagation);
 		},
 
 		render: function() {
 			this.updateAttributes();
 			this.updateClasses();
-			this.$el.html(this.model.get('content'));
+			this.el.innerHTML = this.model.get('content');
 			return this;
 		},
 	});

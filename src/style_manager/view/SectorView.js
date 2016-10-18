@@ -10,13 +10,13 @@ define(['backbone', './PropertiesView', 'text!./../templates/sector.html'],
 		events:{},
 
 		initialize: function(o) {
-			this.config 	= o.config;
-			this.pfx 			= this.config.stylePrefix;
-			this.target		= o.target || {};
+			this.config = o.config || {};
+			this.pfx = this.config.stylePrefix || '';
+			this.target = o.target || {};
 			this.propTarget = o.propTarget || {};
-			this.open 		= this.model.get('open');
-			this.caretR		= 'fa-caret-right';
-			this.caretD		= 'fa-caret-down';
+			this.open = this.model.get('open');
+			this.caretR = 'fa-caret-right';
+			this.caretD = 'fa-caret-down';
 			this.listenTo( this.model ,'change:open', this.updateOpen);
 			this.events['click .' + this.pfx + 'title']	= 'toggle';
 			this.delegateEvents();
@@ -58,15 +58,15 @@ define(['backbone', './PropertiesView', 'text!./../templates/sector.html'],
 		 * */
 		toggle: function()
 		{
-			var v 	= this.model.get('open') ? 0 : 1;
+			var v = this.model.get('open') ? 0 : 1;
 			this.model.set('open', v);
 		},
 
 		render : function()
 		{
 			this.$el.html(this.template({
-				pfx		: this.pfx,
-				label	: this.model.get('name'),
+				pfx: this.pfx,
+				label: this.model.get('name'),
 			}));
 			this.$caret	= this.$el.find('#' + this.pfx + 'caret');
 			this.renderProperties();
@@ -81,10 +81,10 @@ define(['backbone', './PropertiesView', 'text!./../templates/sector.html'],
 
 			if(objs){
 				var view = new PropertiesView({
-					collection	: objs,
-					target			: this.target,
-					propTarget  : this.propTarget,
-					config			: this.config,
+					collection: objs,
+					target: this.target,
+					propTarget: this.propTarget,
+					config: this.config,
 				});
 				this.$el.append(view.render().el);
 			}

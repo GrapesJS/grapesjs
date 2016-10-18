@@ -1,8 +1,5 @@
 define(['./AssetView','text!./../template/assetImage.html'],
 	function (AssetView, assetTemplate) {
-	/**
-	 * @class AssetImageView
-	 * */
 	return AssetView.extend({
 
 		events:{
@@ -21,8 +18,7 @@ define(['./AssetView','text!./../template/assetImage.html'],
 
 		/**
 		 * Trigger when asset is been selected
-		 *
-		 * @return void
+		 * @private
 		 * */
 		selected: function(){
 			this.model.collection.trigger('deselectAll');
@@ -33,8 +29,7 @@ define(['./AssetView','text!./../template/assetImage.html'],
 
 		/**
 		 * Trigger when asset is been chosen (double clicked)
-		 *
-		 * @return void
+		 * @private
 		 * */
 		chosen: function(){
 			this.updateTarget(this.model.get('src'));
@@ -47,14 +42,12 @@ define(['./AssetView','text!./../template/assetImage.html'],
 		/**
 		 * Update target if exists
 		 * @param	{String}	v 	Value
-		 *
-		 * @return 	void
+		 * @private
 		 * */
 		updateTarget: function(v){
 			var target			= this.model.collection.target;
 			if(target && target.set){
 				var attr		= _.clone( target.get('attributes') );
-				attr['class'] 	= [];
 				target.set('attributes', attr );
 				target.set('src', v );
 			}
@@ -62,8 +55,7 @@ define(['./AssetView','text!./../template/assetImage.html'],
 
 		/**
 		 * Remove asset from collection
-		 *
-		 * @return void
+		 * @private
 		 * */
 		removeItem: function(e){
 			e.stopPropagation();
@@ -81,7 +73,8 @@ define(['./AssetView','text!./../template/assetImage.html'],
 				name: 	name,
 				src: 	this.model.get('src'),
 				dim:	dim,
-				pfx:	this.pfx
+				pfx:	this.pfx,
+				ppfx:	this.ppfx
 			}));
 			this.$el.attr('class', this.className);
 			return this;

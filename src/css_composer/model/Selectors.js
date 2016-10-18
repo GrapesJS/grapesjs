@@ -1,9 +1,5 @@
 define([ 'backbone', 'require'],
   function (Backbone, require) {
-    /**
-     * @class Selectors
-     * */
-
     return Backbone.Collection.extend({
 
       initialize: function(models, opt){
@@ -15,7 +11,7 @@ define([ 'backbone', 'require'],
 
             default:
               if(!this.ClassTag)
-                this.ClassTag = require("ClassManager/model/ClassTag");
+                this.ClassTag = require("SelectorManager/model/Selector");
               model = new this.ClassTag(attrs, opts);
 
           }

@@ -1,15 +1,18 @@
 define(function() {
 		/**
 		 * @class ExportTemplate
+		 * @private
 		 * */
 		return {
 
-			run: function(em, sender){
-				this.sender		= sender;
-				this.components = em.get('Canvas').getWrapper().get('components');
-				this.modal		= em.get('Modal') || null;
-				this.cm			= em.get('CodeManager') || null;
-				this.cssc = em.get('CssComposer') || null;
+			run: function(editor, sender) {
+				this.sender = sender;
+				this.components = editor.DomComponents.getComponents();
+				this.modal = editor.Modal || null;
+				this.cm = editor.CodeManager || null;
+				this.cssc = editor.CssComposer || null;
+				this.protCss = editor.Config.protectedCss;
+				this.pfx = editor.Config.stylePrefix || '';
 				this.enable();
 			},
 
@@ -20,11 +23,11 @@ define(function() {
 			 * @param	{String}	label
 			 *
 			 * @return	{Object}	Editor
+			 * @private
 			 * */
-			buildEditor: function(codeName, theme, label)
-			{
+			buildEditor: function(codeName, theme, label) {
 				if(!this.codeMirror)
-					this.codeMirror		= this.cm.getEditor('CodeMirror');
+					this.codeMirror		= this.cm.getViewer('CodeMirror');
 
 				var $input 		= $('<textarea>'),
 
@@ -37,7 +40,7 @@ define(function() {
 
 					$editor 	= new this.cm.EditorView({
 						model		: editor,
-						config		: this.cm.config
+						config		: this.cm.getConfig()
 					}).render().$el;
 
 				editor.init( $input[0] );
@@ -45,25 +48,24 @@ define(function() {
 				return { el: editor, $el: $editor };
 			},
 
-			enable: function()
-			{
+			enable: function() {
 				if(!this.$editors){
 					var oHtmlEd			= this.buildEditor('htmlmixed', 'hopscotch', 'HTML'),
 						oCsslEd			= this.buildEditor('css', 'hopscotch', 'CSS');
 					this.htmlEditor		= oHtmlEd.el;
 					this.cssEditor		= oCsslEd.el;
-					this.$editors		= $('<div>');
+					this.$editors	= $('<div>', {class: this.pfx + 'export-dl'});
 					this.$editors.append(oHtmlEd.$el).append(oCsslEd.$el);
 				}
 
 				if(this.modal){
 					this.modal.setTitle('Export template');
 					this.modal.setContent(this.$editors);
-					this.modal.show();
+					this.modal.open();
 				}
-
+				var addCss = this.protCss || '';
 				this.htmlEditor.setContent( this.cm.getCode(this.components, 'html') );
-				this.cssEditor.setContent( this.cm.getCode(this.components, 'css', this.cssc));
+				this.cssEditor.setContent( addCss + this.cm.getCode(this.components, 'css', this.cssc));
 
 				if(this.sender)
 					this.sender.set('active',false);

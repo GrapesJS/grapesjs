@@ -10,10 +10,48 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyInteger.html']
 		initialize: function(options) {
 			PropertyView.prototype.initialize.apply(this, arguments);
 			_.bindAll(this, 'moveIncrement', 'upIncrement');
-			this.events['click .'+this.pfx+'u-arrow']					= 'upArrowClick';
-			this.events['click .'+this.pfx+'d-arrow']					= 'downArrowClick';
-			this.events['mousedown .'+this.pfx+'int-arrows']	= 'downIncrement';
+			this.min = this.model.get('min') || this.model.get('min')===0 ? this.model.get('min') : null;
+			this.max = this.model.get('max') || this.model.get('max')===0 ? this.model.get('max') : null;
+			this.units = this.model.get('units');
+			this.unit = this.model.get('unit') ? this.model.get('unit') : (this.units.length ? this.units[0] : '');
+			this.events['click .'+this.pfx+'u-arrow'] = 'upArrowClick';
+			this.events['click .'+this.pfx+'d-arrow'] = 'downArrowClick';
+			this.events['mousedown .'+this.pfx+'int-arrows'] = 'downIncrement';
+			this.listenTo( this.model ,'change:unit', this.valueChanged);
 			this.delegateEvents();
+		},
+
+		/**
+		 * Fired when the input value is updated
+		 */
+		valueUpdated: function(){
+			if(this.$input && this.$unit)
+				this.model.set({
+					value: this.validateValue(this.$input.val()),
+					unit: this.$unit.val()
+				});
+		},
+
+		/**
+		 * Validate input value
+		 * @param {integer|float} value Raw value
+		 * @return {string} Validated string
+		 */
+		validateValue: function(value){
+			var val = value;
+			if(this.max !== null)
+				val = val > this.max ? this.max : val;
+			if(this.min !== null)
+				val = val < this.min ? this.min : val;
+			return val;
+		},
+
+		/**
+		 * Returns value from inputs
+		 * @return {string}
+		 */
+		getValueForTarget: function(){
+			return this.model.get('value') + this.model.get('unit');
 		},
 
 		/**
@@ -24,8 +62,9 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyInteger.html']
 		 * */
 		upArrowClick: function(e){
 			var value	= this.model.get('value');
-			value 		= isNaN(value) ? 1 : parseInt(value,10) + 1;
-			value 		= value > this.max ? this.max : value;
+			value = isNaN(value) ? 1 : parseInt(value,10) + 1;
+			if(this.max !== null)
+				value = value > this.max ? this.max : value;
 			this.model.set('value',value);
 		},
 
@@ -37,8 +76,9 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyInteger.html']
 		 * */
 		downArrowClick: function(e){
 			var value	= this.model.get('value');
-			value 		= isNaN(value) ? 0 : parseInt(value,10) - 1;
-			value 		= value < this.min ? this.min : value;
+			value = isNaN(value) ? 0 : parseInt(value,10) - 1;
+			if(this.min !== null)
+				value = value < this.min ? this.min : value;
 			this.model.set('value',value);
 		},
 
@@ -50,9 +90,9 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyInteger.html']
 		 * */
 		downIncrement: function(e) {
 			e.preventDefault();
-			this.moved	= 0;
-			var value	= this.model.get('value');
-			value 		= isNaN(value) ? 0 : parseInt(value,10);
+			this.moved = 0;
+			var value = this.model.get('value');
+			value = isNaN(value) ? 0 : parseInt(value,10);
 			var current = {y: e.pageY, val: value };
 			$(document).mouseup(current, this.upIncrement);
 			$(document).mousemove(current, this.moveIncrement);
@@ -64,9 +104,10 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyInteger.html']
 		 * @return bool
 		 * */
 		moveIncrement: function (ev) {
-			this.moved	= 1;
-			this.prValue	= Math.max(this.min, Math.min(this.max, parseInt(ev.data.val - ev.pageY + ev.data.y, 10) ) );
-			this.model.set( 'value', this.prValue, { avoidStore: 1 });
+			this.moved = 1;
+			var pos = parseInt(ev.data.val - ev.pageY + ev.data.y, 10);
+			this.prValue = this.validateValue(pos);//Math.max(this.min, Math.min(this.max, pos) );
+			this.model.set('value', this.prValue, { avoidStore: 1 });
 			return false;
 		},
 
@@ -95,8 +136,8 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyInteger.html']
 				if(this.units && this.units.length){
 					this.unitS = '<select class="' + pfx + 'unit">';
 					_.each(this.units,function(unit){
-						var selected 	= unit == this.selectedUnit ? 'selected': '';
-						this.unitS 		+= '<option '+selected+' >'+unit+'</option>';
+						var selected = unit == this.selectedUnit ? 'selected': '';
+						this.unitS += '<option ' + selected + ' >' + unit + '</option>';
 					},this);
 					this.unitS += '</select>';
 					this.$unit = $(this.unitS);
@@ -107,16 +148,15 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyInteger.html']
 		},
 
 		/** @inheritdoc */
-		setValue: function(value)
-		{
+		setValue: function(value){
 			var u	= this.unit,
 					v	= this.model.get('value') || this.defaultValue;
 
 			if(value){
 				// Make it suitable for replace
 				value += '';
-				v		= parseFloat(value.replace(',', '.'));
-				v		= !isNaN(v) ? v : this.defaultValue;
+				v = parseFloat(value.replace(',', '.'));
+				v = !isNaN(v) ? v : this.defaultValue;
 				var uN	= value.replace(v,'');
 				// Check if exists as unit
 				if(_.indexOf(this.units, uN) > -1)
@@ -129,7 +169,7 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyInteger.html']
 			if(this.$unit)
 				this.$unit.val(u);
 
-			this.model.set({value: v, unit: u,},{silent: true});
+			this.model.set({value: v, unit: u,}, {silent: true});
 		},
 
 	});

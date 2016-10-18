@@ -1,8 +1,5 @@
 define(['backbone'],
   function (Backbone) {
-  /**
-   * @class CssRuleView
-   * */
   return Backbone.View.extend({
 
     tagName: 'style',
@@ -10,12 +7,25 @@ define(['backbone'],
     initialize: function(o) {
       this.config = o.config || {};
       this.listenTo(this.model, 'change:style', this.render);
+      this.listenTo(this.model, 'change:state', this.render);
+      this.listenTo(this.model, 'destroy remove', this.remove);
+      this.listenTo(this.model, 'change:maxWidth', this.render);
+      this.listenTo(this.model.get('selectors'), 'change', this.selChanged);
+    },
+
+    /**
+     * Triggered when some selector is changed
+     * @private
+     */
+    selChanged: function(){
+      this.selStr = this.renderSelectors();
+      this.render();
     },
 
     /**
      * Returns string of selectors
-     *
      * @return {String}
+     * @private
      */
     renderSelectors: function(){
       var sel = [];
@@ -27,8 +37,8 @@ define(['backbone'],
 
     /**
      * Returns string of properties
-     *
      * @return {String}
+     * @private
      */
     renderProperties: function(){
       var sel = [],
@@ -41,13 +51,22 @@ define(['backbone'],
 
     render : function(){
       var block = '',
-          o = '';
+        selStr = '';
+        o = '';
       if(!this.selStr)
         this.selStr = this.renderSelectors();
       var prpStr = this.renderProperties();
-      if(this.selStr)
+      var stateStr = this.model.get('state');
+      var width = this.model.get('maxWidth');
+      if(this.selStr){
+        stateStr = stateStr ? ':' + stateStr : '';
         block = prpStr !== '' ? '{' + prpStr + '}' : '';
-      o = this.selStr && block ? this.selStr + block : '';
+      }
+      o = this.selStr && block ? this.selStr + stateStr + block : '';
+
+      if(width && o)
+        o = '@media (max-width: ' + width + '){' + o + '}';
+
       this.$el.html(o);
       return this;
     },

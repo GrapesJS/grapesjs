@@ -1,11 +1,9 @@
-define([ 'backbone','./Property'], 
-	function (Backbone,Property) {
-		/** 
-		 * @class Properties
-		 * */
+define([ 'backbone', './Property'],
+	function (Backbone, Property) {
+
 		return Backbone.Collection.extend({
-			
+
 			model: Property,
-			
+
 		});
 });

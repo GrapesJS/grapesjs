@@ -1,45 +1,39 @@
 define(['StyleManager'], function(StyleManager) {
 		/**
 		 * @class OpenStyleManager
+		 * @private
 		 * */
 		return {
 
-			run: function(em, sender)
-			{
+			run: function(em, sender) {
 				this.sender	= sender;
 				if(!this.$cn){
-					var config		= em.get('Config'),
-							panels		= em.get('Panels'),
-							pfx				= config.styleManager.stylePrefix || 'sm-';
-
-					config.styleManager.stylePrefix = config.stylePrefix + pfx;
-					config.styleManager.target		= em;
-
+					var config		= em.getConfig(),
+							panels		= em.Panels;
 					// Main container
 					this.$cn = $('<div/>');
 					// Secondary container
 					this.$cn2 = $('<div/>');
 					this.$cn.append(this.$cn2);
 
-					// Class Manager container
-					this.clm = em.get('ClassManager');
-					if(this.clm){
-						this.$clm = new this.clm.ClassTagsView({
-							collection: new this.clm.ClassTags([]),
-							config: this.clm.config,
-						}).render().el;
-						this.$cn2.append(this.$clm);
+					// Device Manager
+					var dvm = em.DeviceManager;
+					if(dvm && config.showDevices){
+						var devicePanel = panels.addPanel({ id: 'devices-c'});
+						devicePanel.set('appendContent', dvm.render()).trigger('change:appendContent');
 					}
 
-					// Style Manager manager container
-					this.sm = new StyleManager(config.styleManager);
-					this.$sm = this.sm.render();
-					this.$cn2.append(this.$sm);
+					// Class Manager container
+					var clm = em.SelectorManager;
+					if(clm)
+						this.$cn2.append(clm.render([]));
 
+					this.$cn2.append(em.StyleManager.render());
+					var smConfig = em.StyleManager.getConfig();
 					// Create header
 					this.$header	= $('<div>', {
-						class	: config.styleManager.stylePrefix + 'header',
-						text 	: config.styleManager.textNoElement,
+						class: smConfig.stylePrefix + 'header',
+						text: smConfig.textNoElement,
 					});
 					//this.$cn = this.$cn.add(this.$header);
 					this.$cn.append(this.$header);
@@ -53,7 +47,7 @@ define(['StyleManager'], function(StyleManager) {
 					// Add all containers to the panel
 					this.panel.set('appendContent', this.$cn).trigger('change:appendContent');
 
-					this.target		= em;
+					this.target = em.editor;
 					this.listenTo( this.target ,'change:selectedComponent', this.toggleSm);
 				}
 				this.toggleSm();
@@ -61,9 +55,9 @@ define(['StyleManager'], function(StyleManager) {
 
 			/**
 			 * Toggle Style Manager visibility
+			 * @private
 			 */
-			toggleSm: function()
-			{
+			toggleSm: function() {
 					if(!this.sender.get('active'))
 						return;
 					if(this.target.get('selectedComponent')){
@@ -75,8 +69,7 @@ define(['StyleManager'], function(StyleManager) {
 					}
 			},
 
-			stop: function()
-			{
+			stop: function() {
 				// Hide secondary container if exists
 				if(this.$cn2)
 					this.$cn2.hide();

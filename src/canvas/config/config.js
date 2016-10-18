@@ -1,10 +1,10 @@
 define(function () {
 	return {
-		
-		stylePrefix			: 'cv-',
-		
+
+		stylePrefix: 'cv-',
+
 		// Coming soon
-		rulers				: false,
-		
+		rulers: false,
+
 	};
 });

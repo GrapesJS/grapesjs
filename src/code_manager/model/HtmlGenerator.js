@@ -6,23 +6,18 @@ define(['backbone'],
 		return Backbone.Model.extend({
 
 			/** @inheritdoc */
-			getId	: function(){
-				return 'html';
-			},
-
-			/** @inheritdoc */
 			build: function(model){
 				var coll 	= model.get('components') || model,
 					code 	= '';
 
 				coll.each(function(m){
 					var tag = m.get('tagName'),			// Tag name
-							sTag = 0,										// Single tag
 							attr = '',										// Attributes string
 							attrId = '',
 							strCls = '',
 							cln = m.get('components'),		// Children
 							attrs = m.get('attributes'),
+							sTag = m.get('void'),
 							classes = m.get('classes');
 					_.each(attrs,function(value, prop){
 						if(prop == 'onmousedown')
@@ -33,7 +28,7 @@ define(['backbone'],
 					if(m.get('type') == 'image'){
 							tag 	= 'img';
 							sTag	= 1;
-							attr 	+= 'src="' + m.get('src') + '"';
+							attr 	+= ' src="' + m.get('src') + '"';
 					}
 
 					if(!_.isEmpty(m.get('style')))

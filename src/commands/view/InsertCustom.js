@@ -1,47 +1,57 @@
-define(['backbone', './SelectPosition'],
-	function(Backbone, SelectPosition) {
+define(['backbone', './CreateComponent'],
+	function(Backbone, CreateComponent) {
 		/**
 		 * @class InsertCustom
+		 * @private
 		 * */
-		return _.extend({}, SelectPosition, {
+		return _.extend({}, CreateComponent, {
+
+			init: function(){
+				CreateComponent.init.apply(this, arguments);
+				_.bindAll(this, 'insertComponent');
+				this.allowDraw = 0;
+			},
 
 			/**
 			 * Run method
+			 * @private
 			 * */
-			run: function(em, sender){
+			run: function(em, sender, options) {
+				this.em = em;
+				this.sender = sender;
+				this.opt = options || {};
+				this.$wr = this.$wrapper;
 				this.enable();
-				this.em				= em;
-				this.sender		= sender;
-				this.opt 			= sender.get('options') || {};
-				this.content	= this.opt.content;
 			},
 
 			enable: function(){
-				SelectPosition.enable.apply(this, arguments);
-				_.bindAll(this,'insertComponent');
-				this.$wp	= this.$wrapper;
-				this.$wp.on('click', this.insertComponent);
+				CreateComponent.enable.apply(this, arguments);
+				this.$wr.on('click', this.insertComponent);
 			},
 
 			/**
 			 * Start insert event
-			 *
-			 * @return void
+			 * @private
 			 * */
 			insertComponent: function(){
-				this.$wp.off('click', this.insertComponent);
+				this.$wr.off('click', this.insertComponent);
 				this.stopSelectPosition();
-				this.removePositionPlaceholder();
-				var object 	= this.buildContent();
+				var object = this.buildContent();
 				this.beforeInsert(object);
-				var model = this.posTargetCollection.add(object, { at: this.posIndex, silent:false });
+				var index = this.sorter.lastPos.index;
+				// By default, collections do not trigger add event, so silent is used
+				var model = this.create(this.sorter.target, object, index, null, {silent: false});
+
 				if(this.opt.terminateAfterInsert && this.sender)
-					this.sender.set('active',false);
+					this.sender.set('active', false);
 				else
 					this.enable();
 
+				if(!model)
+					return;
+
 				if(this.em)
-						this.em.initChildrenComp(model);
+						this.em.editor.initChildrenComp(model);
 
 				this.afterInsert(model, this);
 			},
@@ -49,16 +59,14 @@ define(['backbone', './SelectPosition'],
 			/**
 			 * Trigger before insert
 			 * @param 	{Object}	obj
-			 *
-			 * @return 	void
+			 * @private
 			 * */
 			beforeInsert: function(obj){},
 
 			/**
 			 * Trigger after insert
 			 * @param	{Object}	model	Model created after insert
-			 *
-			 * @return 	void
+			 * @private
 			 * */
 			afterInsert: function(model){},
 
@@ -66,18 +74,10 @@ define(['backbone', './SelectPosition'],
 			 * Create different object, based on content, to insert inside canvas
 			 *
 			 * @return 	{Object}
+			 * @private
 			 * */
 			buildContent: function(){
-				var result = {};
-				if(typeof this.content === 'string'){
-					result = {
-						content	: this.content,
-						tagName	: 'span',
-					};
-				}else if(typeof this.content === 'object'){
-					result = this.content;
-				}
-				return result;
+				return this.opt.content || {};
 			},
 		});
 	});

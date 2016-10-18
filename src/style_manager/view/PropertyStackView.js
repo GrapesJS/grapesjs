@@ -10,110 +10,134 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 		initialize: function(o) {
 			PropertyCompositeView.prototype.initialize.apply(this, arguments);
 			this.model.set('stackIndex', null);
-			this.listenTo( this.model ,'change:stackIndex', this.indexChanged);
-			this.listenTo( this.model ,'refreshValue', this.refreshValue);
 			this.className 	= this.pfx  + 'property '+ this.pfx +'stack';
 			this.events['click #'+this.pfx+'add']	= 'addLayer';
-
-			if(!this.layers){
-				this.layers		= new Layers();
-				this.model.set('layers', this.layers);
-				this.$layers	= new LayersView({
-					collection	: this.layers,
-					stackModel	: this.model,
-					preview		: this.model.get('preview'),
-					config		: o.config
-				});
-			}
-
+			this.listenTo( this.model ,'change:stackIndex', this.indexChanged);
+			this.listenTo( this.model ,'updateValue', this.valueUpdated);
 			this.delegateEvents();
 		},
 
 		/**
-		 * Triggered when another layer has been selected
-		 * @param Event
+		 * Fired when the target is updated.
+		 * With detached mode the component will be always empty as its value
+		 * so we gonna check all props and fine if there is some differences.
+		 * */
+		targetUpdated: function(){
+			if(!this.model.get('detached'))
+				PropertyCompositeView.prototype.targetUpdated.apply(this, arguments);
+			else
+				this.refreshLayers();
+		},
+
+		/**
+		 * Returns the collection of layers
+		 * @return {Collection}
+		 */
+		getLayers: function(){
+			return this.model.get('layers');
+		},
+
+		/**
+		 * Triggered when another layer has been selected.
+		 * This allow to move all rendered properties to a new
+		 * selected layer
+		 * @param {Event}
 		 *
-		 * @return Object
+		 * @return {Object}
 		 * */
 		indexChanged: function(e){
-			var layer	= this.layers.at(this.model.get('stackIndex'));
+			var layer	= this.getLayers().at(this.model.get('stackIndex'));
 			layer.set('props', this.$props);
-			this.target.trigger('change:selectedComponent');
+			this.model.get('properties').each(function(prop){
+				prop.trigger('targetUpdated');
+			});
 		},
 
 		/**
 		 * Get array of values from layers
-		 *
 		 * @return Array
 		 * */
 		getStackValues: function(){
-			var a = [];
-			this.layers.each(function(layer){
-				a.push( layer.get('value') );
-			});
-			return a;
+			return this.getLayers().pluck('value');
+		},
+
+		/** @inheritDoc */
+		getPropsConfig: function(opts){
+			var that = this;
+			var result = PropertyCompositeView.prototype.getPropsConfig.apply(this, arguments);
+
+			result.onChange = function(el, view, opt){
+				var model = view.model;
+				var result = that.build();
+
+				if(that.model.get('detached')){
+					var propVal = '';
+					var index = model.collection.indexOf(model);
+
+					that.getLayers().each(function(layer){
+						var val = layer.get('values')[model.get('property')];
+						if(val)
+							propVal += (propVal ? ',' : '') + val;
+					});
+
+					view.updateTargetStyle(propVal, null, opt);
+				}else
+					that.model.set('value', result, opt);
+			};
+
+			return result;
 		},
 
 		/**
 		 * Extract string from composite value
 		 * @param integer	Index
-		 *
+		 * @param View	propView Property view
 		 * @return string
 		 * */
-		valueOnIndex: function(index){
+		valueOnIndex: function(index, propView){
 			var result 	= null;
-			var aStack	= this.getStackValues();
-			var strVar	= aStack[this.model.get('stackIndex')];
-
-			if(!strVar)
-				return;
-			var a		= strVar.split(' ');
-			if(a.length && a[index]){
-				result = a[index];
+			// If detached the value in this case is stacked, eg. substack-prop: 1px, 2px, 3px...
+			if(this.model.get('detached')){
+				var valist = propView.componentValue.split(',');
+				result = valist[this.model.get('stackIndex')];
+				result = result ? result.trim() : result;
+			}else{
+				var aStack	= this.getStackValues();
+				var strVar	= aStack[this.model.get('stackIndex')];
+				if(!strVar)
+					return;
+				var a		= strVar.split(' ');
+				if(a.length && a[index]){
+					result = a[index];
+				}
 			}
 			return result;
 		},
 
 		/** @inheritdoc */
-		build: function(selectedEl, propertyModel){
-			if(this.model.get('stackIndex') === null)
+		build: function(){
+			var stackIndex = this.model.get('stackIndex');
+			if(stackIndex === null)
 				return;
 			var result = PropertyCompositeView.prototype.build.apply(this, arguments);
-			var model = this.layers.at(this.model.get('stackIndex'));
+			var model = this.getLayers().at(stackIndex);
 			if(!model)
 				return;
-			model.set('value',result);
-			// Update data for preview
-			if(this.onPreview && typeof this.onPreview === "function"){
-				var v	= this.onPreview(this.model.get('properties'));
-				if(v)
-					result = v;
-				model.set('propertyPreview', this.property);
-				model.set('valuePreview',result);
-			}
 
-			return this.createValue();
-		},
-
-		/**
-		 * Change preview value. Limited integer values
-		 * @param Models
-		 *
-		 * @return string
-		 * */
-		onPreview: function(properties){
-			var str = '',
-				lim	= 3;
-			properties.each(function(p){
-				var v = p.get('value');
-				if(p.get('type') == 'integer'){
-					if(v > lim)		v = lim;
-					if(v < -lim) 	v = -lim;
-				}
-				str	+= v + p.get('unit')+' ';
+			// Store properties values inside layer, in this way it's more reliable
+			//  to fetch them later
+			var valObj = {};
+			this.model.get('properties').each(function(prop){
+				var v		= prop.getValue(),
+					func	= prop.get('functionName');
+				if(func)
+					v =  func + '(' + v + ')';
+				valObj[prop.get('property')] = v;
 			});
+			model.set('values', valObj);
 
-			return str;
+			model.set('value', result);
+			return this.createValue();
 		},
 
 		/**
@@ -123,23 +147,31 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 		 * @return Object
 		 * */
 		addLayer: function(e){
-			if(this.selectedComponent){
-				var layer	= this.layers.add({ name : 'test' });
-				var index	= this.layers.indexOf(layer);
+			if(this.getTarget()){
+				var layers = this.getLayers();
+				var layer	= layers.add({ name : 'test' });
+				var index	= layers.indexOf(layer);
 				layer.set('value', this.getDefaultValue());
-				this.refreshValue();
+				// In detached mode valueUpdated will add new 'layer value'
+				// to all subprops
+				this.valueUpdated();
+				// This will set subprops with a new default values
 				this.model.set('stackIndex', index);
 				return layer;
 			}
 		},
 
 		/**
-		 * Refresh value
-		 *
-		 * @return void
-		 * */
-		refreshValue: function(){
-			this.model.set('value', this.createValue());
+		 * Fired when the input value is updated
+		 */
+		valueUpdated: function(){
+			if(!this.model.get('detached'))
+				this.model.set('value', this.createValue());
+			else{
+				this.model.get('properties').each(function(prop){
+					prop.trigger('change:value');
+				});
+			}
 		},
 
 		/**
@@ -152,11 +184,21 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 
 		/**
 		 * Render layers
-		 *
 		 * @return self
 		 * */
 		renderLayers: function() {
-			this.$el.find('> .'+this.pfx+'field').append(this.$layers.render().el);
+			if(!this.$field)
+				this.$field = this.$el.find('> .' + this.pfx + 'field');
+
+			if(!this.$layers)
+				this.$layers = new LayersView({
+					collection: this.getLayers(),
+					stackModel: this.model,
+					preview: this.model.get('preview'),
+					config: this.config
+				});
+
+			this.$field.append(this.$layers.render().el);
 			this.$props.hide();
 			return this;
 		},
@@ -168,30 +210,74 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 		},
 
 		/**
-		 * Refresh layers
-		 *
-		 * @return void
-		 * */
-		refreshLayers: function(){
-			var v	= this.getComponentValue();
-			var n = [];
-			if(v){
-				var a = v.split(', ');
-				_.each(a,function(e){
-					n.push({ 	value: e,
-								valuePreview: e,
-								propertyPreview: this.property,
-								patternPreview:	this.props
-							});
-				},this);
-			}
-			this.$props.detach();
-			this.layers.reset(n);
-			this.refreshValue();
-			this.model.set({stackIndex: null},{silent: true});
+		 * Returns array suitale for layers from target style
+		 * Only for detached stacks
+		 * @return {Array<string>}
+		 */
+		getLayersFromTarget: function(){
+			var arr = [];
+			var target = this.getTarget();
+			if(!target)
+				return arr;
+			var trgStyle = target.get('style');
+			this.model.get('properties').each(function(prop){
+				var style = trgStyle[prop.get('property')];
+				if(style){
+					var list =  style.split(',');
+					for(var i = 0, len = list.length; i < len; i++){
+						var val = list[i].trim();
+
+						if(arr[i]){
+							arr[i][prop.get('property')] = val;
+						}else{
+							var vals = {};
+							vals[prop.get('property')] = val;
+							arr[i] = vals;
+						}
+					}
+				}
+			});
+			return arr;
 		},
 
-		/** @inheritdoc */
+		/**
+		 * Refresh layers
+		 * */
+		refreshLayers: function(){
+			var n = [];
+			var a = [];
+			var fieldName = 'value';
+			if(this.model.get('detached')){
+				fieldName = 'values';
+				a = this.getLayersFromTarget();
+			}else{
+				var v	= this.getComponentValue();
+				if(v){
+					// Remove spaces inside functions:
+					// eg:
+					// From: 1px 1px rgba(2px, 2px, 2px), 2px 2px rgba(3px, 3px, 3px)
+					// To: 1px 1px rgba(2px,2px,2px), 2px 2px rgba(3px,3px,3px)
+					v.replace(/\(([\w\s,.]*)\)/g, function(match){
+						var cleaned = match.replace(/,\s*/g, ',');
+						v = v.replace(match, cleaned);
+					});
+					a = v.split(', ');
+				}
+			}
+			_.each(a, function(e){
+				var o = {};
+				o[fieldName] = e;
+				n.push(o);
+			},this);
+			this.$props.detach();
+			var layers = this.getLayers();
+			layers.reset();
+			layers.add(n);
+			if(!this.model.get('detached'))
+				this.valueUpdated();
+			this.model.set({stackIndex: null}, {silent: true});
+		},
+
 		render : function(){
 			this.renderLabel();
 			this.renderField();

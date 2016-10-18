@@ -2,13 +2,13 @@
 .settings/
 .sass-cache/
 .project
+.eslintrc
 npm-debug.log
 style/.sass-cache/
-grapes.sublime-project
-grapes.sublime-workspace
 
 img/
 private/
+docs/
 vendor/
 coverage/
 node_modules/

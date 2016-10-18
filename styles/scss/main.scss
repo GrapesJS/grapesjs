@@ -1,10 +1,11 @@
+/* stylelint-disable */
 @import "spectrum";
 @import "font-awesome";
 
-$app-prefix: 	'wte-';
+$app-prefix: 	'gjs-';
 $nv-prefix: 	$app-prefix + 'nv-';
 $rte-prefix: 	$app-prefix + 'rte-';
-$comp-prefix: 	$app-prefix + 'comp-';
+$comp-prefix: $app-prefix + 'comp-';
 $mdl-prefix: 	$app-prefix + 'mdl-';
 $am-prefix: 	$app-prefix + 'am-';
 $cm-prefix: 	$app-prefix + 'cm-';
@@ -13,43 +14,101 @@ $com-prefix: 	$app-prefix + 'com-';
 $sm-prefix: 	$app-prefix + 'sm-';
 $cv-prefix: 	$app-prefix + 'cv-';
 $clm-prefix: 	$app-prefix + 'clm-';
-$mainColor:		#444; /* Light: #573454 Dark: #3b2639 -moz-linear-gradient(top, #fca99b 0%, #6e2842 100%)*/
-$mainDkColor:	darken($mainColor, 4%);/*#383838*/
-$mainLhColor:	lighten($mainColor, 5%);/*#515151*/
-$fontColor:		#eee; /*l: #d8d7db*/
+$trt-prefix: 	$app-prefix + 'trt-';
+
+/* Dark theme */
+$mainColor:		#444; /* Light: #573454 Dark: #3b2639 -moz-linear-gradient(top, #fca99b 0%, #6e2842 100%) */
+$fontColor:   #ddd; /* l: #d8d7db */
+$fontColorActive: #f8f8f8;
+
+/* Light theme
+$mainColor: #fff;
+$fontColor: #9299a3;
+$fontColorActive: #4f8ef7;
+*/
+
+$mainDkColor:	rgba(0, 0, 0, 0.3);/* darken($mainColor, 4%) - #383838 */
+$mainDklColor: rgba(0, 0, 0, 0.1);
+$mainLhColor:	rgba(255, 255, 255, 0.1); /* #515151 */
+$mainLhlColor: rgba(255, 255, 255, 0.7);
 $fontColorDk:	#777;
 $mainFont:		Helvetica, sans-serif;
 $colorBlue:		#3b97e3;
-$colorRed: 		#DD3636;
+$colorRed: 		#dd3636;
 $colorYell:		#ffca6f;
 $colorGreen:	#62c462;
-
+$tagBg: #804f7b;
+$secColor: $tagBg;
 $imageCompDim:	50px;
+$leftWidth: 15%;
+
+$fontPath: '../fonts';
+$fontName: 'main-fonts';
+$fontV: 5;//random(1000)
+
+@font-face {
+  font-family: 'font3336';
+  src: url('#{$fontPath}/#{$fontName}.eot?v=#{$fontV}');
+  src:
+    url('#{$fontPath}/#{$fontName}.woff?v=#{$fontV}') format('woff'),
+    //url('#{$fontPath}/#{$fontName}.woff2?v=#{$fontV}') format('woff2'),
+    url('#{$fontPath}/#{$fontName}.ttf?v=#{$fontV}') format('truetype'),
+    url('#{$fontPath}/#{$fontName}.svg?v=#{$fontV}') format('svg'),
+    url('#{$fontPath}/#{$fontName}.eot?v=#{$fontV}') format('embedded-opentype');
+  font-weight: normal;
+  font-style: normal;
+}
 
 @mixin user-select($v) {
-    -moz-user-select: 	$v;
-	-khtml-user-select: $v;
-	-webkit-user-select:$v;
-	-ms-user-select: 	$v;
-	-o-user-select: 	$v;
- 	user-select: 		$v;
+  -moz-user-select: $v;
+  -khtml-user-select: $v;
+  -webkit-user-select: $v;
+  -ms-user-select: $v;
+  -o-user-select: $v;
+  user-select: $v;
 }
 
 @mixin opacity($v) {
-  opacity: 		$v;
-  $opacity-ie: 	$v * 100;
-  filter: 		alpha(opacity=$opacity-ie);
+  opacity: $v;
+  filter: alpha(opacity=$v * 100);
 }
 
-@mixin appearance($v){
-	-webkit-appearance: $v;
-	-moz-appearance: $v;
-	appearance: $v;
+@mixin appearance($v) {
+  -webkit-appearance: $v;
+  -moz-appearance: $v;
+  appearance: $v;
 }
 
-.#{$app-prefix}invis-invis{
+//.#{$app-prefix}fonts {}
+
+.#{$app-prefix}fonts::before {
+  display: block;
+  font: normal normal normal 14px font3336; // shortening font declaration
+  text-rendering: auto; // optimizelegibility throws things off #1094
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 5em;
+}
+.#{$app-prefix}f-b1::before { content: 'q'; }
+.#{$app-prefix}f-b2::before { content: 'w'; }
+.#{$app-prefix}f-b3::before { content: 'e'; }
+.#{$app-prefix}f-b37::before { content: 'r'; }
+.#{$app-prefix}f-hero::before { content: 't'; }
+.#{$app-prefix}f-h1p::before { content: 'y'; }
+.#{$app-prefix}f-3ba::before { content: 'u'; }
+.#{$app-prefix}f-image::before { content: 'i'; }
+.#{$app-prefix}f-text::before { content: 'o'; }
+.#{$app-prefix}f-quo::before { content: 'p'; }
+
+
+.#{$app-prefix}invis-invis,
+.#{$app-prefix}no-app {
 	background-color: transparent;
 	border: none;
+	color:inherit;
+}
+.#{$app-prefix}no-app{
+	height: 10px;
 }
 
 .#{$app-prefix}test {
@@ -63,48 +122,202 @@ $imageCompDim:	50px;
 .opac50{
 	@include opacity(0.50);
 }
-.checker-bg{
+.#{$app-prefix}checker-bg, .checker-bg{
 	background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==");
 }
 
-/********************* MAIN ************************/
-body{
-	background-color:	$fontColor;
-	font-family: 		$mainFont;
-	margin: 0;
+.#{$app-prefix}bg-main{
+  background-color: $mainColor;
 }
-html,body,#wte-app, .#{$app-prefix}editor{ height: 100%; }
+
+.#{$app-prefix}color-main{
+  color: $fontColor;
+}
+
+.#{$app-prefix}color-active{
+  color: $fontColorActive;
+}
+
+.#{$app-prefix}bdrag{
+  position: absolute;
+  z-index: 10;
+  width: auto;
+}
+
+.#{$app-prefix}off-prv{
+  @extend .#{$app-prefix}color-main;
+  @extend .#{$app-prefix}bg-main;
+  position: relative;
+  z-index: 10;
+  padding: 5px;
+  cursor: pointer;
+}
+
+/********************* MAIN ************************/
 .clear{ clear:both }
 .no-select{
  	@include user-select(none);
 }
-#wte-app{
-	height: 100%;
-	min-width: 1250px;
-}
 .#{$app-prefix}editor{
+	font-family: $mainFont;
+	background-color: $mainColor;
 	position:relative;
-	border: 3px solid $mainColor;
-	border-left:none;
-	border-right:none;
 	box-sizing: border-box;
+	height: 100%;
 }
+.#{$app-prefix}freezed{
+  @include opacity(0.50);
+  pointer-events: none;
+}
+.#{$app-prefix}btn-prim{
+  @extend .#{$app-prefix}color-main;
+  background-color: $mainLhColor;
+  border-radius: 2px;
+  padding: 3px 6px;
+  cursor: pointer;
+  padding: 0.5em;
+  border: none;
+}
+.#{$app-prefix}btn-prim:active{
+  background-color: $mainLhColor;
+}
+.#{$app-prefix}input{
+  background-color: $mainDkColor;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+  box-shadow: 1px 1px 0 $mainLhColor;
+  box-sizing: border-box;
+  color: $fontColor;
+  padding: 0.5em 1em;
+}
+.#{$app-prefix}select {
+  @extend .#{$app-prefix}input;
+}
+
+div.#{$app-prefix}select {
+  padding: 0;
+}
+
+.#{$app-prefix}select select {
+  padding-right: 10px;
+}
+
+.#{$app-prefix}select:-moz-focusring,
+.#{$app-prefix}select select:-moz-focusring {
+  color: transparent;
+  text-shadow: 0 0 0 $mainLhlColor;
+}
+
+.#{$app-prefix}input:focus,
+.#{$app-prefix}button:focus,
+.#{$app-prefix}btn-prim:focus,
+.#{$app-prefix}select:focus,
+.#{$app-prefix}select select:focus {
+  outline: none;
+}
+
+.#{$app-prefix}select option,
+.#{$clm-prefix}select option,
+.#{$sm-prefix}select option,
+.#{$sm-prefix}unit option {
+  @extend .#{$app-prefix}bg-main;
+  //background-color: $mainDkColor;
+}
+
+/*************  TRAITS  ****************/
+.#{$app-prefix}traits-label {
+  border-bottom: 1px solid $mainDkColor;
+  font-size: 13px;
+  font-weight: lighter;
+  margin-bottom: 5px;
+  padding: 10px;
+  text-align: left;
+}
+.#{$trt-prefix}trait {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 10px;
+  font-size: 0.75em;
+  font-weight: lighter;
+
+  .#{$app-prefix}label {
+    width: 30%;
+    text-align: left;
+  }
+
+  .#{$app-prefix}field {
+    width: 70%;
+  }
+}
+
 /*************  CANVAS  ****************/
 .#{$cv-prefix}canvas {
+  background-color: rgba(0, 0, 0, 0.15);
+  box-sizing: border-box;
   position: absolute;
-  width: 80%;
+  width: (100% - $leftWidth);
   height: 100%;
-  top: 0; left: 3.5%;
-  overflow: auto;
+  bottom: 0; left: 0;
+  overflow: hidden;
+  padding-top: 40px;
   z-index:1;
 
-  	> div {
+  > iframe {
+    background-color: #fff;
+    height: 100%;
+    outline: medium none;
+    width: 100%;
+    border: none;
+    margin: 0 auto;
+    display: block;
+  }
+
+  .#{$app-prefix}ghost{
+    display: none;
+    pointer-events: none;
+    background-color: #5b5b5b;
+    border: 2px dashed #ccc;
+    position: absolute;
+    z-index: 10;
+    @include opacity(0.55);
+  }
+
+  .#{$app-prefix}highlighter, .#{$app-prefix}highlighter-sel{
+    position: absolute;
+    outline: 1px solid $colorBlue;
+    pointer-events: none;
+  }
+
+  .#{$app-prefix}highlighter-warning{
+    outline: 3px solid $colorYell;
+  }
+
+  .#{$app-prefix}highlighter-sel{
+    outline: 3px solid $colorBlue;
+  }
+
+  ##{$app-prefix}tools{
+    width: 100%;
+    position: absolute;
+    top: 0; left: 0;
+    outline: none;
+  }
+
+  	/* This simulate body behaviour */
+  	> div:first-child {
+  		background-color: #fff;
+  		position: relative;
 	    height: 100%;
 	    overflow: auto;
 	    width: 100%;
 	}
 }
+
 .#{$cv-prefix}canvas *{box-sizing: border-box;}
+
+.#{$app-prefix}frame{
+  transition: width 0.35s ease;
+}
 
 .btn-cl {
   font-size: 25px;
@@ -149,7 +362,7 @@ ol.example li.placeholder:before {position: absolute;}
 
 /********* COMMANDS **********/
 
-.#{$com-prefix}dashed div {
+.#{$com-prefix}dashed *{
 	outline: 1px dashed #888;
 	outline-offset: -2px;
   	box-sizing: border-box;
@@ -172,38 +385,49 @@ ol.example li.placeholder:before {position: absolute;}
 *.#{$com-prefix}hover-move, div.#{$com-prefix}hover-move{
 	outline: 3px solid $colorYell;
 }
-.#{$com-prefix}badge{
+.#{$com-prefix}badge, .#{$app-prefix}badge{
 	pointer-events: none;
 	background-color: $colorBlue;
 	color: #fff;
 	padding: 2px 5px;
 	position: absolute; z-index: 1;
 	font-size: 12px;
+  outline: none;
+  display: none;
 }
 .#{$com-prefix}badge-red{
 	@extend .#{$com-prefix}badge;
 	background-color: $colorRed;
 }
-.#{$com-prefix}badge-yellow{
-	@extend .#{$com-prefix}badge;
+.#{$app-prefix}badge-warning{
 	background-color: $colorYell;
 }
-.#{$com-prefix}placeholder{
+.#{$app-prefix}placeholder, .#{$com-prefix}placeholder{
 	position: absolute;
+	z-index: 10;
+  pointer-events: none;
+  display: none;
 }
-.#{$com-prefix}placeholder-int{
+.#{$app-prefix}placeholder{
+  /*border-width: 3px !important;*/
+  border-style: solid !important;
+  border-color: $colorGreen;
+  outline: none;
+}
+.#{$app-prefix}placeholder-int, .#{$com-prefix}placeholder-int{
 	background-color: $colorGreen;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
 	height: 100%; width: 100%;
 	pointer-events: 'none';
-	padding: 2px;
+	padding: 1.5px;
+  outline: none;
 }
 
 /********* PANELS **********/
 
-$leftWidth: 16.5%;
-
 .#{$pn-prefix}panel {
-  background-color: $mainColor;
+  @extend .#{$app-prefix}bg-main;
+  @extend .#{$app-prefix}color-main;
   display: inline-block;
   padding: 5px;
   position: absolute;
@@ -212,19 +436,30 @@ $leftWidth: 16.5%;
   z-index:3;
 
   &##{$pn-prefix}commands{
-  	min-width: 35px;
-    height: 100%;
-    width: 3.5%; left:0;
+    width: (100% - $leftWidth);
+    left:0; top: 0;
+    box-shadow: 0 0 5px $mainDkColor;
   }
 
   &##{$pn-prefix}options{
+  	right: $leftWidth;
+    top: 0;
+  }
+
+  &##{$pn-prefix}options2{
   	@extend ##{$pn-prefix}commands;
-  	bottom: 0;
+  	bottom: 150px;
   	height: auto;
   }
 
+  .icon-undo, .icon-redo{
+  	font-size: 20px;
+    height: 30px;
+    width: 25px;
+  }
+
   &##{$pn-prefix}views{
-  	border-bottom: 2px solid darken($mainColor, 3%);
+  	border-bottom: 2px solid $mainDkColor;
   	right: 0;
   	width: $leftWidth;
   	z-index: 4;
@@ -232,34 +467,42 @@ $leftWidth: 16.5%;
 
   &##{$pn-prefix}views-container{
   	height: 100%;
-    padding: 52px 0 0;
+    padding: 42px 0 0;
     right: 0;
     width: $leftWidth;
     overflow: auto;
+    box-shadow: 0 0 5px $mainDkColor;
   }
 }
 
-.#{$pn-prefix}btn{
+.#{$pn-prefix}buttons{
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.#{$pn-prefix}btn, .#{$app-prefix}btnt{
+  @extend .#{$app-prefix}color-main;
 	box-sizing: border-box;
-	height: 35px; width: 35px;
-	line-height: 35px;
+	height: 30px; width: 30px;
+	line-height: 21px;
 	background-color: transparent;
 	border:none;
-	color:  $fontColor;
-	font-size: 25px;
-	margin-bottom: 5px;
+	font-size: 18px;
+	margin-right: 5px;
 	border-radius: 2px;
 	cursor: pointer;
-	padding: 0 5px;
+	padding: 5px;
 	position: relative;
 
 	&.#{$pn-prefix}active{
-		background-color: $mainDkColor;
-    	box-shadow: 0 0 3px darken($mainDkColor,5%) inset;
+    @extend .#{$app-prefix}color-active;
+		background-color: rgba(0, 0, 0, 0.15);
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.25) inset;
 	}
 
 	> .#{$pn-prefix}arrow-rd {
-	  	border-bottom: 5px solid $fontColor;
+	  	border-bottom: 5px solid $mainLhlColor;
 	  	border-left: 5px solid transparent;
 	  	bottom: 2px; right: 2px;
 	  	position: absolute;
@@ -307,11 +550,10 @@ $leftWidth: 16.5%;
 		}
 	}
 	.#{$nv-prefix}item {
-		color: $fontColor;
 		font-weight: lighter;
 		text-align: left;
 		position: relative;
-		background-color: rgba(0, 0, 0, 0.3);
+		background-color: rgba(0, 0, 0, 0.2);
 	}
 	.#{$nv-prefix}item.#{$nv-prefix}hide {
 	  @include opacity(0.55);
@@ -329,7 +571,7 @@ $leftWidth: 16.5%;
 	    left: 0; top: 0;
 	    padding: 7px 5px 7px 10px;
 	    position: absolute;
-	    color: darken($fontColor,25%);
+	    color: darken($fontColor, 20%);
 	    cursor:pointer;
 	    z-index: 1;
 	}
@@ -342,14 +584,16 @@ $leftWidth: 16.5%;
 		width: 8px;
 	}
 }
+.#{$nv-prefix}item .#{$nv-prefix}title-c {
+  @extend .#{$app-prefix}bg-main;
+}
 .#{$nv-prefix}item .#{$nv-prefix}title {
-  background-color: $mainDkColor;
+  background-color: $mainDklColor;
   font-size: 13px;
   letter-spacing: 1px;
   padding: 7px 10px 7px 25px;
-  text-shadow: 0 1px 0 darken($mainDkColor,8%);/*#252525*/
-  border-bottom: 1px solid darken($mainDkColor,4%);/*#303030*/
-  border-top: 1px solid lighten($mainDkColor,3%);/*#414141*/
+  border-bottom: 1px solid $mainDkColor;
+  border-top: 1px solid $mainLhColor;
   cursor:pointer;
 }
 .#{$nv-prefix}item .#{$nv-prefix}children .#{$nv-prefix}title{
@@ -361,13 +605,14 @@ $leftWidth: 16.5%;
 }
 .#{$nv-prefix}item.open > .#{$nv-prefix}children { display: block; }
 .#{$nv-prefix}item > .#{$nv-prefix}no-chld > ##{$nv-prefix}caret::before{ content:''; }
+.#{$nv-prefix}no-chld > ##{$nv-prefix}caret{ display:none; }
 .#{$nv-prefix}item > ##{$nv-prefix}move {
-	color: darken($fontColor,50%);
+	color: darken($fontColor, 20%);
 	position: absolute;
 	cursor: move;
-  	font-size: 12px;
-  	right: 0; top: 0;
-  	padding: 7px 10px 7px 5px;
+  font-size: 12px;
+  right: 0; top: 0;
+  padding: 7px 10px 7px 5px;
 }
 .#{$nv-prefix}item{
 	&.#{$nv-prefix}selected{
@@ -379,28 +624,20 @@ $leftWidth: 16.5%;
 
 /* pa-refresh pa-rocket pa-trash pa-columns pa-rotate-left/right */
 .btn.expand{ background-image: none;}
-.tempComp{
-	background-color: #5b5b5b;
-	border: 2px dashed #ccc;
-	outline:none !important;
-	position: absolute; z-index: 55;
-	opacity:0.55;
-	filter: alpha(opacity=55);
-}
 
 /***********  Components *************/
 
 .#{$comp-prefix}image-placeholder {
 	display:	block;
-  	background-color: #f5f5f5;
-  	color: 	$fontColorDk;
-  	height: $imageCompDim; width: $imageCompDim;
-  	line-height: $imageCompDim;
-  	outline: 3px solid $colorYell;
-  	outline-offset: -3px;
-  	text-align: center;
-  	font-size: $imageCompDim/3;
-  	cursor: pointer;
+	background-color: #f5f5f5;
+	color: 	$fontColorDk;
+	height: $imageCompDim; width: $imageCompDim;
+	line-height: $imageCompDim;
+	outline: 3px solid $colorYell;
+	outline-offset: -3px;
+	text-align: center;
+	font-size: $imageCompDim/3;
+	cursor: pointer;
 
   	&.fa-picture-o::after{
 		content:  "\f03e";
@@ -409,13 +646,113 @@ $leftWidth: 16.5%;
 /***********  END Components *************/
 
 
-/********* Style Manager **********/
+/********* Inputs **********/
 
-$darkBorder:		darken($mainDkColor,4%); /*303030*/
-$lightBorder:		lighten($mainDkColor,3%); /*414141*/
-$darkTextShadow:	darken($mainDkColor,8%); /*#252525*/
-$inputFontColor:	darken($fontColor,10%); /*#d5d5d5*/
-$arrowColor:		darken($fontColor,24%); /*b1b1b1*/
+$inputFontColor:  $mainLhlColor; /*#d5d5d5*/
+$darkBorder:    rgba(0, 0, 0, 0.15); /*303030*/
+$lightBorder:   rgba(255, 255, 255, 0.05); /*414141*/
+$darkTextShadow:  $mainDkColor; /*#252525*/
+$arrowColor:    $mainLhlColor; /*b1b1b1*/
+
+.#{$app-prefix}label {
+  line-height: 18px;
+}
+
+.#{$app-prefix}field {
+  background-color: $mainDkColor;/*353535*/
+  border: 1px solid rgba(0, 0, 0, 0.1);/*292929*/
+  box-shadow: 1px 1px 0 $mainLhColor;/*575757*/
+  border-radius: 2px;
+  box-sizing: border-box;
+  padding: 0 5px;
+  position: relative;
+
+  input, select{
+    @include appearance(none);
+    color: $inputFontColor;
+    border:none;
+    background-color: transparent;
+    width: 100%;
+    position: relative;
+    padding: 3px 0;
+    z-index:1;
+  }
+
+  select{
+    height: 20px;
+  }
+
+  option{
+    padding: 5px 0;
+  }
+
+  .#{$app-prefix}sel-arrow {
+    height: 100%; width: 9px;
+    position: absolute;
+    right: 0; top: 0;
+    z-index: 0;
+  }
+  .#{$app-prefix}d-s-arrow {
+    bottom: 7px;
+    border-top: 4px solid $arrowColor;
+    position: absolute;
+    height: 0; width: 0;
+    border-left: 3px solid transparent;
+    border-right: 4px solid transparent;
+    cursor:pointer;
+  }
+}
+
+.#{$app-prefix}add-trasp {
+  background: none;
+  border: none;
+  color: $fontColor;
+  cursor: pointer;
+  font-size: 1em;
+  border-radius: 2px;
+  @include opacity(0.75);
+
+  &:hover{  @include opacity(1); }
+  &:active{
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+}
+
+/********* END Inputs **********/
+
+/********* Device Manager **********/
+
+.#{$app-prefix}devices-c{
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  /*
+  padding: 10px 5px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  margin-bottom: 10px;
+  */
+
+  .#{$app-prefix}device-label {
+    flex-grow: 2;
+    font-size: 0.7em;
+    text-align: left;
+    margin-right: 10px;
+  }
+
+  .#{$app-prefix}select{
+    flex-grow: 20;
+  }
+
+  .#{$app-prefix}add-trasp{
+    flex-grow: 1;
+    margin-left: 5px;
+  }
+}
+
+/********* END Device Manager **********/
+
+
+/********* Style Manager **********/
 
 .#{$sm-prefix}close-btn{
 	display:block;
@@ -429,16 +766,13 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 	&:hover{ @include opacity(0.7); }
 }
 .#{$sm-prefix}header {
-	color: $fontColor;
 	font-size: 11px;
   font-weight: lighter;
   padding: 10px;
-  text-shadow: 0 1px 0 $darkTextShadow;
 }
 .#{$sm-prefix}sector {
 	clear:both;
-	border-bottom: 1px solid $darkBorder;
-	color:	$fontColor;
+	border-bottom: 1px solid $mainDkColor;
 	font-weight: lighter;
 	text-align:left;
 
@@ -448,13 +782,11 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 	}
 
 	.#{$sm-prefix}title{
-	  background-color: $mainDkColor;
+	  background-color: $mainDklColor;
 	  font-size: 13px;
 	  letter-spacing: 1px;
 	  padding: 12px 10px 12px 20px;
-	  text-shadow: 0 1px 0 $darkTextShadow;
-	  border-bottom: 1px solid $darkBorder;
-	  border-top: 1px solid $lightBorder;
+	  border-top: 1px solid $mainLhColor;
 	  cursor:pointer;
 	}
 
@@ -466,26 +798,32 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 	  width: 100%;
 	  position:relative;
 
-	  	input {
+    input, select {
+      background-color: transparent;
+      color: $inputFontColor;
+      border:none;
+      width: 100%;
+    }
+	  input {
 		  box-sizing: border-box;
-		  color: $inputFontColor;
-		  background:none; border:none;
 		  padding: 3px 21px 3px 0;
-   	 	  width: 100%;
 		}
-
 		select {
-		  background: none; border: none;
-		  color: $inputFontColor;
-		  color: transparent;
-		  width: 100%; padding: 2px 10px 2px 0;
-		  text-shadow: 0 0 0 $inputFontColor;
+      padding: 2px 10px 2px 2px;
 		  position: relative;
 		  z-index:1;
 		  @include appearance(none);
-
 		  &::-ms-expand { display: none;}
 		}
+
+    select:-moz-focusring{
+      color: transparent;
+      text-shadow: 0 0 0 $inputFontColor;
+    }
+
+    select:focus, input:focus{
+      outline: none;
+    }
 
 		.#{$sm-prefix}unit {
 		  position: absolute;
@@ -521,21 +859,25 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 		}
 		.#{$sm-prefix}d-s-arrow, .#{$clm-prefix}d-s-arrow{ bottom: 7px; }
 
-	 	&.#{$sm-prefix}integer, &.#{$sm-prefix}select, &.#{$sm-prefix}list, &.#{$sm-prefix}color, &.#{$sm-prefix}composite {
-		  background-color: darken($mainDkColor, 2.5%);/*353535*/
-		  border: 1px solid darken($mainDkColor, 6.5%);/*292929*/
-		  box-shadow: 1px 1px 0 lighten($mainDkColor, 11.5%);/*575757*/
+	 	&.#{$sm-prefix}integer, &.#{$sm-prefix}select, &.#{$sm-prefix}list, &.#{$sm-prefix}color, &.#{$sm-prefix}input {
+		  background-color: $mainDkColor;/*353535*/
+		  border: 1px solid rgba(0, 0, 0, 0.1);/*292929*/
+		  box-shadow: 1px 1px 0 $mainLhColor;/*575757*/
 		  color: $inputFontColor;
 		  border-radius: 2px;
 		  box-sizing: border-box;
 		  padding: 0 5px;
 		}
+    &.#{$sm-prefix}composite{
+      @extend .#{$app-prefix}color-main;
+      border-radius: 2px;
+    }
 		&.#{$sm-prefix}select{ padding:0; }
 		&.#{$sm-prefix}select select{ height: 20px; }
 		&.#{$sm-prefix}select option { margin: 5px 0;}
 		&.#{$sm-prefix}composite{
-			background-color: transparent;
-			border: 1px solid darken($mainDkColor, 2.5%);
+			background-color: rgba(0,0,0,0.1);
+			border: 1px solid rgba(0, 0, 0, 0.25);
 		}
 		&.#{$sm-prefix}list{
 			width:auto;
@@ -546,7 +888,7 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 			input{ display:none; }
 			label{ cursor:pointer; padding: 5px; display:block;}
 			.#{$sm-prefix}radio:checked + label{
-				background-color: lighten($mainDkColor, 13%);/*5b5b5b*/
+				background-color: rgba(255, 255, 255, 0.2);/*5b5b5b*/
 			}
 			.#{$sm-prefix}icon{
 				background-repeat: no-repeat;
@@ -557,7 +899,7 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 			}
 		}
 
-		&.#{$sm-prefix}integer select{ width:auto; padding: 0; color: transparent;}
+		&.#{$sm-prefix}integer select{ width:auto; padding: 0;}
 
 	}
 	/*------------------END Field--------------------*/
@@ -565,7 +907,6 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 	.#{$sm-prefix}list .#{$sm-prefix}el{
 		float:left;
 		border-left: 1px solid $darkTextShadow;
-		text-shadow: 0 1px 0 darken($mainDkColor, 9%);/*232323*/
 
 		&:first-child{border:none}
 		&:hover{background: $mainDkColor; }
@@ -632,18 +973,18 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 		}
 
 		.#{$sm-prefix}layers {
-		  background-color: $mainDkColor;
-		  border: 1px solid darken($mainDkColor, 2.5%);
-		  box-shadow: 1px 1px 0 lighten($mainDkColor, 11.5%);
+		  background-color: rgba(0,0,0,0.13);
+		  border: 1px solid rgba(0,0,0,0.13);
+		  box-shadow: 1px 1px 0 $mainLhColor;
 		  border-radius: 2px;
 		  margin-top: 5px;
 		  min-height: 30px;
 		}
 
 		.#{$sm-prefix}layer {
-		  background-color: lighten($mainDkColor, 4.5%);
+		  background-color: rgba(255, 255, 255, 0.055);
 		  border-radius: 2px;
-		  box-shadow: 1px 1px 0 darken($mainDkColor, 2.5%), 1px 1px 0 lighten($mainDkColor, 9%) inset;
+		  box-shadow: 1px 1px 0 rgba(0,0,0,0.2), 1px 1px 0 rgba(255, 255, 255, 0.055) inset;
 		  margin: 2px;
 		  padding: 7px;
 		  position: relative;
@@ -667,7 +1008,11 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 				cursor: pointer;
 				right: 5px;
 				top: 0;
-				@include opacity(0.2);
+				@include opacity(0.5);
+
+				&:hover{
+					@include opacity(0.8);
+				}
 			}
 		  	> ##{$sm-prefix}preview-box ##{$sm-prefix}preview {
 			  background-color: white;
@@ -676,21 +1021,28 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 			  background-size: cover !important;
 			}
 			&.#{$sm-prefix}active {
-			  background-color: lighten($mainDkColor, 7%);
+			  background-color: rgba(255, 255, 255, 0.12);
 			}
 			&.#{$sm-prefix}no-preview ##{$sm-prefix}preview-box{
 				display:none;
 			}
 		}
 	}
+	##{$sm-prefix}text-shadow ##{$sm-prefix}preview::after {
+	  color: #000;
+	  content: "T";
+	  font-weight: 900;
+	  line-height: 17px;
+	  padding: 0 4px;
+	}
 	/*------------------END Property--------------------*/
 
 	.#{$sm-prefix}stack .#{$sm-prefix}properties{padding-top: 5px;}
 
 	.#{$sm-prefix}stack ##{$sm-prefix}add {
+      @extend .#{$app-prefix}color-main;
 		  background: none;
 		  border: none;
-		  color: white;
 		  cursor: pointer;
 		  font-size: 22px;
 		  line-height: 10px;
@@ -701,15 +1053,29 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 		  &:hover{  @include opacity(1); }
 	}
 
-	.#{$sm-prefix}color-picker {
-		background-color: $fontColor;
-	  	border: 2px solid lighten($mainDkColor, 11.5%);
-	  	box-sizing: border-box;
-	  	cursor: pointer;
-	  	height: 100%; width: 20px;
-		position: absolute;
-	    right: 0; top: 0;
-	}
+  .#{$sm-prefix}colorp-c {
+    @extend .#{$app-prefix}bg-main;
+    height: 100%; width: 20px;
+    position: absolute;
+    right: 0; top: 0;
+    box-sizing: border-box;
+    border-radius: 2px;
+    padding: 2px;
+
+    .#{$app-prefix}checker-bg{
+      height: 100%; width: 100%;
+      border-radius: 1px;
+    }
+  }
+
+  .#{$sm-prefix}color-picker {
+    background-color: $fontColor;
+    cursor: pointer;
+    height: 100%; width: 100%;
+    margin-top: -16px;
+    box-shadow: 0 0 1px $mainDkColor;
+    border-radius: 1px;
+  }
 
 	.#{$sm-prefix}btn-upload ##{$sm-prefix}upload {
 	  left: 0; top: 0;
@@ -718,15 +1084,59 @@ $arrowColor:		darken($fontColor,24%); /*b1b1b1*/
 	  opacity: 0;
 	  cursor: pointer;
 	}
+
 	.#{$sm-prefix}btn-upload ##{$sm-prefix}label { padding: 2px 0;}
 
 }
+.#{$sm-prefix}layer > ##{$sm-prefix}move {
+	@include opacity(0.7);
+	cursor: move;
+  font-size: 12px;
+  float: left;
+  margin: 0 5px 0 0;
+
+  &:hover{
+  	@include opacity(0.9);
+  }
+}
 /********* END Style Manager **********/
+
+
+
+/********* Block manager **********/
+
+.#{$app-prefix}blocks-c{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+.#{$app-prefix}block{
+  @include user-select(none);
+  width: 45%;
+  padding: 1em;
+  box-sizing: border-box;
+  height: 90px;
+  cursor:all-scroll;
+  margin: 2.5%;
+  font-size: 11px;
+  font-weight: lighter;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.#{$app-prefix}block.#{$app-prefix}bdrag{
+ width: auto;
+ padding: 0;
+}
+
+/********* END Block manager **********/
+
+
 
 /********* Class manager **********/
 $addBtnBg: lighten($mainDkColor, 10%);
 $paddElClm: 5px 6px;
-$tagBg: #804f7b;
 
 .#{$clm-prefix}field{
 		@extend .#{$sm-prefix}field
@@ -740,10 +1150,14 @@ $tagBg: #804f7b;
 	font-size: 11px;
 	padding: 10px 5px;
 
-	##{$clm-prefix}label{
+	##{$clm-prefix}label, ##{$clm-prefix}sel{
 		padding: 7px 0;
 		float:left;
 	}
+  ##{$clm-prefix}sel{
+    font-style: italic;
+    margin-left: 5px;
+  }
 	##{$clm-prefix}status-c{
 		float:right;
 	}
@@ -760,11 +1174,11 @@ $tagBg: #804f7b;
 	}
 
 	##{$clm-prefix}add-tag{
-		background-color: $addBtnBg;
+		background-color: rgba(255, 255, 255, 0.2);
 		border-radius: 2px;
     padding: $paddElClm;
-    box-shadow: 1px 1px 0 lighten($addBtnBg, 10%) inset;
-    border: 1px solid darken($addBtnBg, 13%);
+    box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.2) inset;
+    border: 1px solid rgba(0, 0, 0, 0.15);
     cursor: pointer;
 	}
 
@@ -803,7 +1217,7 @@ $tagBg: #804f7b;
 	}
 
 	##{$clm-prefix}tag-label {
-		cursor: pointer;
+		cursor: text;
 		@extend  .no-select;
 	}
 }
@@ -814,25 +1228,27 @@ $tagBg: #804f7b;
 .#{$mdl-prefix}backlayer {
 	background-color: #000;
   	position: absolute;
-  	top: 0; z-index: 1;
+  	top: 0; left: 0;
+    z-index: 1;
   	width:100%; height:100%;
   	@include opacity(0.5);
 }
 
 .#{$mdl-prefix}container {
+		font-family: $mainFont;
   	position: absolute;
-  	top: 0; z-index: 10;
+  	top: 0; left: 0;
+    z-index: 10;
   	width:100%; height:100%;
 }
 
 .#{$mdl-prefix}dialog {
-  	background-color: lighten($mainColor, 2%);
-  	border-bottom: 2px solid #353535;
-  	text-shadow: -1px -1px 0 #353535;
+  	@extend .#{$app-prefix}bg-main;
+    @extend .#{$app-prefix}color-main;
+  	text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.05);
   	margin: 30px auto 0;
   	max-width: 850px;
   	width: 90%;
-   	color: $fontColor;
    	border-radius: 3px;
    	font-weight: lighter;
    	position:relative;
@@ -857,37 +1273,83 @@ $tagBg: #804f7b;
 .#{$mdl-prefix}content{
 	border-top: 1px solid $mainLhColor;
 }
+.#{$app-prefix}export-dl::after{
+  content: "";
+  clear: both;
+  display:block;
+  margin-bottom:10px;
+}
 
 /********* Assets Manager **********/
+.#{$am-prefix}assets{
+  height: 290px;
+  overflow: auto;
+  clear: both;
+}
 
-.#{$am-prefix}assets {
-  background-color: $mainDkColor;
+.#{$am-prefix}assets-header{
+  padding: 5px;
+}
+
+.#{$am-prefix}add-asset{
+  input{
+    width: 70%;
+  }
+  button{
+    width: 25%;
+    float: right;
+  }
+}
+
+.#{$am-prefix}assets-cont {
+  background-color: $mainDklColor;
   border-radius: 3px;
   box-sizing: border-box;
   padding: 10px;
   width: 45%;
   float:right;
   height: 325px;
-  overflow: auto;
+  overflow: hidden;
 
-  	.#{$am-prefix}highlight { background-color: $mainColor; }
+  ##{$am-prefix}preview-cont{
+    position: relative;
+    height: 70px; width: 30%;
+    background-color: $mainColor;
+    border-radius: 2px;
+    float: left;
+    overflow: hidden;
+  }
 
-  	.#{$am-prefix}asset {
+  ##{$am-prefix}preview{
+    position: absolute;
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+  }
+
+  ##{$am-prefix}preview-bg{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    @include opacity(0.5);
+    z-index: 0;
+  }
+
+  .#{$am-prefix}highlight {
+    background-color: $mainLhColor;
+  }
+
+  .#{$am-prefix}asset {
 	  border-bottom: 1px solid darken($mainDkColor, 3%);
 	  padding: 5px;
 	  cursor:pointer;
 	  position: relative;
-	  	&:hover ##{$am-prefix}close { display: block;}
 
-	  	##{$am-prefix}preview{
-			height: 70px; width: 30%;
-			background-position: center center;
-			background-size: cover;
-			background-repeat: no-repeat;
-			background-color: $mainColor;
-			border-radius: 2px;
-		    float: left;
-		}
+    &:hover ##{$am-prefix}close { display: block;}
+
 	}
 	##{$am-prefix}close {
 		@extend .btn-cl;
@@ -921,7 +1383,7 @@ $uploadPadding:	150px 10px;
 	float:left;
 
 	> form {
-	  background-color: $mainDkColor;
+	  background-color: $mainDklColor;
 	  border: 2px dashed #999999;
 	  border-radius: 3px;
 	  position: relative;
@@ -988,7 +1450,8 @@ $uploadPadding:	150px 10px;
 /*************RTE****************/
 
 ##{$rte-prefix}toolbar {
-  background-color: $mainColor;
+  @extend .#{$app-prefix}bg-main;
+  display: none;
   border: 1px solid $mainDkColor;
   position: absolute;
   border-radius: 3px;
@@ -996,17 +1459,23 @@ $uploadPadding:	150px 10px;
   z-index: 5;
 
   .#{$rte-prefix}btn {
-  		color: $fontColor;
+  	@extend .#{$app-prefix}color-main;
+    display: inline-block;
 		padding: 5px;
-		width:	25px;
-		border-right: 1px solid #353535;
+		min-width:	25px;
+		border-right: 1px solid $mainDkColor;
 		text-align: center;
 		cursor: pointer;
+		outline: none;
 
 	  	&:last-child{ border-right:none; }
-	  	&.btn-info{ background-color: darken($mainDkColor,3%); }
+	  	&.btn-info{ background-color: $mainDkColor;}
 	  	&:hover {  background-color: $mainLhColor;}
 	}
+
+  select{
+    height: 16px;
+  }
 }
 
 /********* Spectrum **********/
@@ -1017,13 +1486,13 @@ $uploadPadding:	150px 10px;
 .sp-hue{ left: 90%; }
 .sp-color{right: 15%;}
 .sp-container {
-  background-color: #454545;
-  border: 1px solid #333333;
-  box-shadow: 0 0 7px #111;
+  @extend .#{$app-prefix}bg-main;
+  border: 1px solid $mainDkColor;
+  box-shadow: 0 0 7px $mainDkColor;
   border-radius: 3px;
 }
 .sp-picker-container{border:none;}
-.colpick_dark .colpick_color {  outline: 1px solid #333;}
+.colpick_dark .colpick_color {  outline: 1px solid $mainDkColor;}
 .sp-cancel, .sp-cancel:hover {
   bottom: -8px;
   color: #777 !important;
@@ -1053,10 +1522,21 @@ $uploadPadding:	150px 10px;
 	text-align: right;
 }
 .sp-container button, .sp-container button:hover, .sp-container button:active{
-	background: #333;
-    border-color: #292929;
-    color: #757575;
-    text-shadow: none;
-    box-shadow: none;
-    padding: 3px 5px;
+	background: $mainDkColor;
+  border-color: $mainDkColor;
+  color: $fontColor;
+  text-shadow: none;
+  box-shadow: none;
+  padding: 3px 5px;
 }
+.sp-palette-container{
+  border: none;
+  float:none;
+  margin:0;
+  padding:5px 10px 0;
+}
+.sp-palette .sp-thumb-el, .sp-palette .sp-thumb-el:hover{
+  border: 1px solid rgba(0, 0, 0, 0.8);
+}
+
+.#{$app-prefix}hidden{ display: none; }

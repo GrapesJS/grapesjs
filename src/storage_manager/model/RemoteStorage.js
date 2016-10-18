@@ -6,72 +6,60 @@ define(['backbone'],
 		return Backbone.Model.extend({
 
 			defaults: {
-				urlLoad				: 'http://localhost/load',
-				urlStore			: 'http://localhost/store',
-				beforeSend			: function(){},
-				onComplete			: function(){},
-				paramsStore			: {},
-				paramsLoad			: {},
-				errorLoad			: 'Response is not a valid JSON',
+				urlStore: '',
+				urlLoad: '',
+				params: {},
+				beforeSend: function(){},
+				onComplete: function(){},
 			},
 
-			/** @inheritdoc */
-			getId	: function() {
-				return	'remote';
-			},
+			/**
+			 * @private
+			 */
+			store: function(data) {
+				var fd = {},
+				params = this.get('params');
 
-			/** @inheritdoc */
-			store	: function(name, value) {
-				var fd 		= new FormData(),
-					params	= this.get('paramsStore');
-				fd.append( name, value );
-				for(var key in params){
-					fd.append(key, params[key] );
-				}
+				for(var k in data)
+					fd[k] = data[k];
+
+				for(var key in params)
+					fd[key] = params[key];
+
 				$.ajax({
-					url: 			this.get('urlStore'),
-					beforeSend: 	this.get('beforeSend'),
-					complete:		this.get('onComplete'),
-					type: 			'POST',
-					processData:	false,
-					contentType: 	false,
-					data: 			fd,
+					url: this.get('urlStore'),
+					beforeSend: this.get('beforeSend'),
+					complete: this.get('onComplete'),
+					method: 'POST',
+					dataType: 'json',
+					data: fd,
 				});
 			},
 
-			/** @inheritdoc */
-			load: function(name){
-				var result 	= null,
-					t		= this;
+			/**
+			 * @private
+			 */
+			load: function(keys){
+				var result = {},
+				fd = {},
+				params = this.get('params');
+
+				for(var key in params)
+					fd[key] = params[key];
+
+				fd.keys = keys;
+
 				$.ajax({
-					url				:	this.get('urlLoad'),
-					beforeSend		: 	this.get('beforeSend'),
-					complete		:	this.get('onComplete'),
-					data			: 	this.get('paramsLoad'),
-					async			:   false,
-					type			: 	'GET',
+					url: this.get('urlLoad'),
+					beforeSend: this.get('beforeSend'),
+					complete: this.get('onComplete'),
+					data: fd,
+					async: false,
+					method: 'GET',
 				}).done(function(d){
-					try{
-						var prx	= "Loading '" + name + "': ";
-
-						if(typeof d !== 'object')
-							throw prx + t.get('errorLoad');
-
-						result = d.data ? d.data[name] : d[name];
-
-						if(!result)
-							throw prx + ' Resource was not found';
-
-					}catch(err){
-						console.warn(err);
-					}
+					result = d;
 				});
 				return result;
-			},
-
-			/** @inheritdoc */
-			remove	: function(name) {
-
 			},
 
 		});

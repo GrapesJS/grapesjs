@@ -10,59 +10,43 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 		initialize: function(o) {
 			PropertyView.prototype.initialize.apply(this, arguments);
 			_.bindAll(this, 'build');
-			this.config		= o.config;
-			this.className 	= this.className + ' '+ this.pfx +'composite';
+			this.config = o.config || {};
+			this.className = this.className + ' '+ this.pfx +'composite';
+		},
+
+		/**
+		 * Fired when the input value is updated
+		 */
+		valueUpdated: function(){
+			if(!this.model.get('detached'))
+				PropertyView.prototype.valueUpdated.apply(this, arguments);
 		},
 
 		/**
 		 * Renders input
-		 *
-		 * @return void
 		 * */
 		renderInput: function() {
 			var props	= this.model.get('properties');
+			var detached = this.model.get('detached');
 			if(props && props.length){
 				if(!this.$input)
 					this.$input = $('<input>', {value: 0, type: 'hidden' });
 
 				if(!this.props){
-					var Properties 	= require('./../model/Properties');
-					this.props		= new Properties(props);
-					this.model.set('properties', this.props);
+					this.props = this.model.get('properties');
 				}
 
 				if(!this.$props){
-					//Avoid style for children
-					this.props.each(function(prop, index){
-						prop.set('doNotStyle', true);
-					});
 					//Not yet supported nested composite
 					this.props.each(function(prop, index){
 						if(prop && prop.get('type') == 'composite'){
 							this.props.remove(prop);
-							console.warn(prop.get('property')+' of type composite not yet allowed.');
+							console.warn('Nested composite types not yet allowed.');
 						}
-					},this);
+					}, this);
 
-					var PropertiesView 	= require('./PropertiesView');
-					var that 			= this;
-					var propsView = new PropertiesView({
-						config			: this.config,
-						collection	: this.props,
-						target			: this.target,
-						propTarget	: this.propTarget,
-						onChange		: function(el, model){
-							var result = that.build(el, model);
-							that.model.set('value', result);
-						},
-						onInputRender	: function(property, mIndex){
-							var value = that.valueOnIndex(mIndex, property.model);
-							property.setValue(value);
-						},
-						customValue		: function(property, mIndex){
-							return that.valueOnIndex(mIndex, property.model);
-						},
-					});
+					var PropertiesView = require('./PropertiesView');
+					var propsView = new PropertiesView(this.getPropsConfig());
 					this.$props = propsView.render().$el;
 					this.$el.find('#'+ this.pfx +'input-holder').html(this.$props);
 				}
@@ -70,9 +54,40 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 		},
 
 		/**
+		 * Returns configurations that should be past to properties
+		 * @param {Object} opts
+		 * @return {Object}
+		 */
+		getPropsConfig: function(opts){
+			var that = this;
+
+			result = {
+				config: this.config,
+				collection: this.props,
+				target: this.target,
+				propTarget: this.propTarget,
+				// On any change made to children I need to update composite value
+				onChange: function(el, view, opts){
+					var result = that.build();
+					that.model.set('value', result, opts);
+				},
+				// Each child property will receive a full composite string, eg. '0px 0px 10px 0px'
+				// I need to extract from that string the corresponding one to that property.
+				customValue: function(property, mIndex){
+					return that.valueOnIndex(mIndex, property);
+				},
+			};
+
+			// If detached let follow its standard flow
+			if(this.model.get('detached'))
+				delete result.onChange;
+
+			return result;
+		},
+
+		/**
 		 * Get default value of the property
-		 *
-		 * @return string
+		 * @return {string}
 		 * */
 		getDefaultValue: function(){
 			var str = '';
@@ -84,21 +99,19 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 
 		/**
 		 * Extract string from composite value
-		 * @param integer	Index
-		 * @param object 	Property model
-		 *
-		 * @return string
+		 * @param {number} index Index
+		 * @param {Object} view Property view
+		 * @return {string}
 		 * */
-		valueOnIndex: function(index, model){
-			var result 	= null;
-			var a		= this.getComponentValue().split(' ');
+		valueOnIndex: function(index, view){
+			var result = null;
+			var a = this.getComponentValue().split(' ');
 			if(a.length && a[index]){
 				result = a[index];
-				//Check for function type values
-				if(model && model.get('functionName')){
+				if(view && view.model && view.model.get('functionName')){
 					var v = this.fetchFromFunction(result);
 					if(v)
-						result	= v;
+						result = v;
 				}
 			}
 			return result;
@@ -106,21 +119,22 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
 
 		/**
 		 * Build composite value
-		 * @param Object Selected element
-		 * @param Object Property model
-		 *
-		 * @return string
+		 * @param {Object} selectedEl Selected element
+		 * @param {Object} propertyView Property view
+		 * @param {Object} opts Options
+		 * @return {string}
 		 * */
-		build: function(selectedEl, propertyModel){
+		build: function(selectedEl, propertyView, opts){
 			var result 	= '';
 			this.model.get('properties').each(function(prop){
-				var v		= (prop.get('value') || prop.get('defaults')) + prop.get('unit'),
+				var v		= prop.getValue();
 					func	= prop.get('functionName');
+
 				if(func)
 					v =  func + '(' + v + ')';
+
 				result 	+= v + ' ';
 			});
-			//Remove also the last white space
 			return result.replace(/ +$/,'');
 		},
 

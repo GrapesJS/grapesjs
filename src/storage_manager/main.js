@@ -1,194 +1,256 @@
+/**
+ * - [isAutosave](#isautosave)
+ * - [setAutosave](#setautosave)
+ * - [getStepsBeforeSave](#getstepsbeforesave)
+ * - [setStepsBeforeSave](#setstepsbeforesave)
+ * - [getStorages](#getstorages)
+ * - [getCurrent](#getcurrent)
+ * - [setCurrent](#setcurrent)
+ * - [add](#add)
+ * - [get](#get)
+ * - [store](#store)
+ * - [load](#load)
+ *
+ *
+ * Before using methods you should get first the module from the editor instance, in this way:
+ *
+ * ```js
+ * var storageManager = editor.StorageManager;
+ * ```
+ *
+ * @module StorageManager
+ */
 define(function(require) {
-	/**
-	 * @class 	StorageManager
-	 * @param 	{Object} Configurations
-	 *
-	 * @return	{Object}
- 	 * */
-	function StorageManager(config)
-	{
-		var c					= config || {},
-			defaults			= require('./config/config'),
-			LocalStorage		= require('./model/LocalStorage'),
-			RemoteStorage		= require('./model/RemoteStorage'),
-			StorageInterface	= require('./model/StorageInterface');
 
-		for (var name in defaults){
-			if (!(name in c))
-				c[name] = defaults[name];
-		}
+	var StorageManager = function() {
+		var c = {},
+		defaults = require('./config/config'),
+		LocalStorage = require('./model/LocalStorage'),
+		RemoteStorage = require('./model/RemoteStorage');
 
-		this.providers			= {};
-		this.defaultProviders	= {};
-		this.autosave			= c.autosave;
-		this.currentProvider	= c.storageType || null;
-		this.changesBeforeSave	= c.changesBeforeSave;
-		this.si					= new StorageInterface();
+		var storages = {};
+		var defaultStorages = {};
 
-		var Local				= new LocalStorage(c.localStorage),
-			Remote				= new RemoteStorage(c.remoteStorage);
-
-		this.defaultProviders[Local.getId()]	= Local;
-		this.defaultProviders[Remote.getId()]	= Remote;
-	}
-
-	StorageManager.prototype	= {
+		return {
 
 			/**
-			 * Check if autosave enabled
-			 *
-			 * @return	boolean
+       * Name of the module
+       * @type {String}
+       * @private
+       */
+      name: 'StorageManager',
+
+      /**
+       * Initialize module. Automatically called with a new instance of the editor
+       * @param {Object} config Configurations
+			 * @param {string} [config.id='gjs-'] The prefix for the fields, useful to differentiate storing/loading
+			 * with multiple editors on the same page. For example, in local storage, the item of HTML will be saved like 'gjs-html'
+			 * @param {Boolean} [config.autosave=true] Indicates if autosave mode is enabled, works in conjunction with stepsBeforeSave
+			 * @param {number} [config.stepsBeforeSave=1] If autosave enabled, indicates how many steps/changes are necessary
+			 * before autosave is triggered
+			 * @param {string} [config.type='local'] Default storage type. Available: 'local' | 'remote' | ''(do not store)
+			 * @example
+			 * ...
+			 * {
+			 *  	autosave: false,
+			 *  	type: 'remote',
+			 * }
+			 * ...
+       */
+      init: function(config) {
+        c = config || {};
+        for (var name in defaults){
+					if (!(name in c))
+						c[name] = defaults[name];
+				}
+
+				defaultStorages.remote	= new RemoteStorage(c);
+				defaultStorages.local = new LocalStorage(c);
+				c.currentStorage = c.type;
+        return this;
+      },
+
+      /**
+       * Callback executed after the module is loaded
+       * @private
+       */
+      onLoad: function(){
+      	this.loadDefaultProviders().setCurrent(c.type);
+      },
+
+			/**
+			 * Checks if autosave is enabled
+			 * @return {Boolean}
 			 * */
-			isAutosave	: function(){
-				return this.autosave;
+			isAutosave: function(){
+				return !!c.autosave;
 			},
 
 			/**
-			 * Set autosave
-			 * @param	{Mixed}	v	Value
-			 *
-			 * @return	this
+			 * Set autosave value
+			 * @param	{Boolean}	v
+			 * @return {this}
 			 * */
 			setAutosave	: function(v){
-				this.autosave	= v;
+				c.autosave = !!v;
 				return this;
 			},
 
 			/**
-			 * Returns value of changes required before save
-			 *
-			 * @return	{Integer}
+			 * Returns number of steps required before trigger autosave
+			 * @return {number}
 			 * */
-			getChangesBeforeSave	: function(){
-				return this.changesBeforeSave;
+			getStepsBeforeSave: function(){
+				return c.stepsBeforeSave;
 			},
 
 			/**
-			 * Set changesBeforeSave value
-			 * @param	{Mixed}	v	Value
-			 *
-			 * @return	this
+			 * Set steps required before trigger autosave
+			 * @param	{number} v
+			 * @return {this}
 			 * */
-			setChangesBeforeSave	: function(v){
-				this.changesBeforeSave	= v;
+			setStepsBeforeSave: function(v){
+				c.stepsBeforeSave	= v;
 				return this;
 			},
 
 			/**
-			 * Add new storage provider
-			 * @param	{StorageInterface} provider
-			 *
-			 * @return 	self
+			 * Add new storage
+			 * @param {string} id Storage ID
+			 * @param	{Object} storage Storage wrapper
+			 * @param	{Function} storage.load Load method
+			 * @param	{Function} storage.store Store method
+			 * @return {this}
+			 * @example
+			 * storageManager.add('local2', {
+			 * 	load: function(keys){
+			 * 	  var res = {};
+			 * 	  for (var i = 0, len = keys.length; i < len; i++){
+			 * 	  	var v = localStorage.getItem(keys[i]);
+			 * 	  	if(v) res[keys[i]] = v;
+			 * 	  }
+			 * 		return res;
+			 * 	},
+			 * 	store: function(data){
+			 * 		for(var key in data)
+			 * 			localStorage.setItem(key, data[key]);
+			 * 	}
+			 * });
 			 * */
-			addProvider	: function(provider) {
-				// Check interface implementation
-				for (var method in this.si)
-					if(!provider[method])
-						console.warn("addProvider: method '"+ method +"' was not found inside '"+ provider.getId() +"' object");
-
-				this.providers[provider.getId()] = provider;
-				if(!this.currentProvider)
-					this.currentProvider		 =	provider.getId();
+			add: function(id, storage) {
+				storages[id] = storage;
 				return this;
 			},
 
 			/**
-			 * Returns storage provider
-			 * @param	{Integer}	id	Storage provider ID
-			 *
-			 * @return 	{StorageInterface}|null
+			 * Returns storage by id
+			 * @param {string} id Storage ID
+			 * @return {Object|null}
 			 * */
-			getProvider	: function(id){
-				var provider	= null;
-				if(id && this.providers[id])
-					provider	= this.providers[id];
-				return provider;
+			get: function(id){
+				return storages[id] || null;
 			},
 
 			/**
-			 * Returns storage providers
-			 *
+			 * Returns all storages
 			 * @return 	{Array}
 			 * */
-			getProviders	: function(){
-				return this.providers;
+			getStorages: function() {
+				return storages;
 			},
 
 			/**
-			 * Get current provider
-			 *
-			 * @return {StorageInterface}
+			 * Returns current storage type
+			 * @return {string}
 			 * */
-			getCurrentProvider		: function() {
-				if(!this.currentProvider)
-					this.loadDefaultProviders();
-				return this.getProvider(this.currentProvider);
+			getCurrent: function() {
+				return c.currentStorage;
 			},
 
 			/**
-			 * Set current provider
-			 * @param	{Integer}	id	Storage provider ID
-			 *
-			 * @return this
+			 * Set current storage type
+			 * @param {string} id Storage ID
+			 * @return {this}
 			 * */
-			setCurrentProvider		: function(id) {
-				this.currentProvider	= id;
+			setCurrent: function(id) {
+				c.currentStorage = id;
 				return this;
 			},
 
 			/**
-			 * Load default providers
-			 *
-			 * @return this
+			 * Store key-value resources in the current storage
+			 * @param	{Object} data Data in key-value format, eg. {item1: value1, item2: value2}
+			 * @return {Object|null}
+			 * @example
+			 * storageManager.store({item1: value1, item2: value2});
+			 * */
+			store: function(data){
+				var st = this.get(this.getCurrent());
+				var dataF = {};
+
+				for(var key in data)
+					dataF[c.id + key] = data[key];
+
+				return st ? st.store(dataF) : null;
+			},
+
+			/**
+			 * Load resource from the current storage by keys
+			 * @param	{string|Array<string>} keys Keys to load
+			 * @return {Object|null} Loaded resources
+			 * @example
+			 * var data = storageManager.load(['item1', 'item2']);
+			 * // data -> {item1: value1, item2: value2}
+			 * var data2 = storageManager.load('item1');
+			 * // data2 -> {item1: value1}
+			 * */
+			load: function(keys){
+				var st = this.get(this.getCurrent());
+				var keysF = [];
+				var result = {};
+
+				if(typeof keys === 'string')
+					keys = [keys];
+
+				for (var i = 0, len = keys.length; i < len; i++)
+					keysF.push(c.id + keys[i]);
+
+				var loaded = st ? st.load(keysF) : {};
+
+				// Restore keys name
+				for (var itemKey in loaded){
+					var reg = new RegExp('^' + c.id + '');
+					var itemKeyR = itemKey.replace(reg, '');
+					result[itemKeyR] = loaded[itemKey];
+				}
+
+				return result;
+			},
+
+			/**
+			 * Load default storages
+			 * @return {this}
+			 * @private
 			 * */
 			loadDefaultProviders	: function() {
-				for (var id in this.defaultProviders) {
-					this.addProvider(this.defaultProviders[id]);
-				}
+				for (var id in defaultStorages)
+					this.add(id, defaultStorages[id]);
 				return this;
 			},
 
 			/**
-			 * Store resource
-			 * @param	{String}	name	Name of the resource
-			 * @param	{String}	value	Value of the resource
-			 *
-			 * @return 	{Object|null}
+			 * Get configuration object
+			 * @return {Object}
+			 * @private
 			 * */
-			store		: function(name, value){
-				var pv = this.getCurrentProvider();
-
-				if(pv)
-					return	pv.store(name, value);
-
-				return;
+			getConfig	: function() {
+				return c;
 			},
 
-			/**
-			 * Load resource
-			 * @param	{String}	name	Name of the resource
-			 *
-			 * @return 	{Object|null}
-			 * */
-			load	: function(name){
-				var pv = this.getCurrentProvider();
+		};
 
-				if(pv)
-					return	pv.load(name);
-
-				return;
-			},
-
-			/**
-			 * Remove resource
-			 * @param	{String}	name	Name of the resource
-			 *
-			 * @return 	{Object}|void
-			 * */
-			remove	: function(name){
-				return	this.getCurrentProvider().remove(name);
-			},
 	};
 
 	return StorageManager;
+
 });

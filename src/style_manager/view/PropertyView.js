@@ -1,37 +1,54 @@
-define(['backbone', 'text!./../templates/propertyLabel.html'],
-	function (Backbone, propertyTemplate) {
+define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templates/propertyInput.html'],
+	function (Backbone, propertyLabel, propertyTemplate) {
 	/**
 	 * @class PropertyView
 	 * */
 	return Backbone.View.extend({
 
 		template: _.template(propertyTemplate),
-		templateLabel: _.template(propertyTemplate),
+		templateLabel: _.template(propertyLabel),
 
-		events:			{
-				'change' : 'valueChanged',
-		},
+		events: {'change': 'valueUpdated'},
 
 		initialize: function(o) {
-			this.config = o.config;
+			this.config = o.config || {};
 			this.pfx = this.config.stylePrefix || '';
+			this.ppfx = this.config.pStylePrefix || '';
 			this.target = o.target || {};
 			this.propTarget = o.propTarget || {};
 			this.onChange = o.onChange || {};
 			this.onInputRender = o.onInputRender	|| {};
 			this.customValue	= o.customValue	|| {};
-			this.func = this.model.get('functionName');
 			this.defaultValue = this.model.get('defaults');
 			this.property = this.model.get('property');
-			this.units = this.model.get('units');
-			this.min = this.model.get('min') || this.model.get('min')===0 ? this.model.get('min') : -5000;
-			this.max = this.model.get('max') || this.model.get('max')===0 ? this.model.get('max') : 5000;
-			this.unit = this.model.get('unit') ? this.model.get('unit') : (this.units.length ? this.units[0] : '');
-			this.list = this.model.get('list');
 			this.input = this.$input = null;
 			this.className = this.pfx  + 'property';
+			this.inputHolderId = '#' + this.pfx + 'input-holder';
+
+			if(!this.model.get('value'))
+				this.model.set('value', this.model.get('defaults'));
+
 			this.listenTo( this.propTarget, 'update', this.targetUpdated);
 			this.listenTo( this.model ,'change:value', this.valueChanged);
+			this.listenTo( this.model ,'targetUpdated', this.targetUpdated);
+		},
+
+		/**
+		 * Returns selected target which should have 'style' property
+		 * @return {Model|null}
+		 */
+		getTarget: function(){
+			if(this.selectedComponent)
+				return this.selectedComponent;
+			return this.propTarget ? this.propTarget.model : null;
+		},
+
+		/**
+		 * Fired when the input value is updated
+		 */
+		valueUpdated: function(){
+			if(this.$input)
+				this.model.set('value', this.getInputValue());
 		},
 
 		/**
@@ -39,7 +56,8 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 		 * */
 		targetUpdated: function(){
 			this.selectedComponent = this.propTarget.model;
-			if(this.selectedComponent){
+			this.helperComponent = this.propTarget.helper;
+			if(this.getTarget()){
 				if(!this.sameValue())
 					this.renderInputRequest();
 			}
@@ -62,16 +80,19 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 		 * @return {String}
 		 * */
 		getComponentValue: function(){
-			if(!this.selectedComponent)
+			var target = this.getTarget();
+
+			if(!target)
 				return;
 
-			if(this.selectedComponent.get('style')[this.property])
-				this.componentValue = this.selectedComponent.get('style')[this.property];
+			var targetProp = target.get('style')[this.property];
+			if(targetProp)
+				this.componentValue = targetProp;
 			else
-				this.componentValue = this.defaultValue + (this.unit || '');
+				this.componentValue = this.defaultValue + (this.unit || ''); // todo model
 
 			// Check if wrap inside function is required
-			if(this.func){
+			if(this.model.get('functionName')){
 				var v = this.fetchFromFunction(this.componentValue);
 				if(v)
 					this.componentValue = v;
@@ -100,45 +121,90 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 		},
 
 		/**
+		 * Returns value from inputs
+		 * @return {string}
+		 */
+		getValueForTarget: function(){
+			return this.model.getValue();
+		},
+
+		/**
+		 * Returns value from input
+		 * @return {string}
+		 */
+		getInputValue: function(){
+			return this.$input ? this.$input.val() : '';
+		},
+
+		/**
 		 * Property was changed, so I need to update the component too
 		 * @param 	{Object}	e	Events
 		 * @param		{Mixed}		val	Value
 		 * @param		{Object}	opt	Options
 		 * */
 		valueChanged: function(e, val, opt){
-			if(!this.selectedComponent)
+			var mVal = this.getValueForTarget();
+
+			if(this.$input)
+				this.setValue(mVal);
+
+			if(!this.getTarget())
 				return;
 
 			// Check if component is allowed to be styled
-			var stylable	= this.selectedComponent.get('stylable');
-			if( (stylable instanceof Array && _.indexOf(stylable, this.property) < 0) || !stylable )
+			if(!this.isTargetStylable())
 				return;
-			var v			= e && e.currentTarget ? this.$input.val() : this.model.get('value'),
-					u 		= this.$unit ? this.$unit.val() : '',
-					value	= v + u,
-					avSt	= opt ? opt.avoidStore : 0;
 
-			//The easiest way to deal with radio inputs
-			if(this.model.get('type') == 'radio')
-				value = this.$el.find('input:checked').val();
+			value = this.getValueForTarget();
 
-			if(this.$input)
-				this.$input.val(v);
-			this.model.set({ value : v, unit: u },{ silent : true });
+			var func = this.model.get('functionName');
+			if(func)
+				value =  func + '(' + value + ')';
 
-			if(this.func)
-				value =  this.func + '(' + value + ')';
+			var target = this.getTarget();
+			var onChange = this.onChange;
 
-			if( !this.model.get('doNotStyle') ){
-				var componentCss = _.clone( this.selectedComponent.get('style') );
-				componentCss[this.property] = value;
-				this.selectedComponent.set('style', componentCss, { avoidStore : avSt});
-			}
-			this.selectedValue = value;
+			if(onChange && typeof onChange === "function"){
+				onChange(target, this, opt);
+			}else
+				this.updateTargetStyle(value, null, opt);
+		},
 
-			if(this.onChange && typeof this.onChange === "function"){
-				this.onChange(this.selectedComponent, this.model);
-			}
+		/**
+		 * Update target style
+		 * @param  {string} propertyValue
+		 * @param  {string} propertyName
+		 * @param  {Object} opts
+		 */
+		updateTargetStyle: function(propertyValue, propertyName, opts){
+			var propName = propertyName || this.property;
+			var value = propertyValue || '';
+			var avSt = opts ? opts.avoidStore : 0;
+			var target = this.getTarget();
+			var targetStyle = _.clone(target.get('style'));
+
+			if(value)
+				targetStyle[propName] = value;
+			else
+				delete targetStyle[propName];
+
+			target.set('style', targetStyle, { avoidStore : avSt});
+
+			if(this.helperComponent)
+				this.helperComponent.set('style', targetStyle, { avoidStore : avSt});
+		},
+
+		/**
+		 * Check if target is stylable with this property
+		 * @return {Boolean}
+		 */
+		isTargetStylable: function(){
+			var stylable = this.getTarget().get('stylable');
+			// Stylable could also be an array indicating with which property
+			// the target could be styled
+			if(stylable instanceof Array)
+				stylable = _.indexOf(stylable, this.property) >= 0;
+			return stylable;
 		},
 
 		/**
@@ -147,8 +213,9 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 		 * @param 	{Boolean}	force
 		 * */
 		setValue: function(value, force){
-			var f	= force===0 ? 0 : 1;
-			var v 	= this.model.get('value') || this.defaultValue;
+			var f	= force === 0 ? 0 : 1;
+			var def = this.model.get('defaults');
+			var v 	= this.model.get('value') || def;
 			if(value || f){
 				v		= value;
 			}
@@ -163,10 +230,11 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 		renderLabel: function(){
 			this.$el.html( this.templateLabel({
 				pfx		: this.pfx,
+				ppfx	: this.ppfx,
 				icon	: this.model.get('icon'),
 				info	: this.model.get('info'),
 				label	: this.model.get('name'),
-			}) );
+			}));
 		},
 
 		/**
@@ -184,6 +252,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 		renderTemplate: function(){
 			this.$el.append( this.template({
 				pfx		: this.pfx,
+				ppfx	: this.ppfx,
 				icon	: this.model.get('icon'),
 				info	: this.model.get('info'),
 				label	: this.model.get('name'),
@@ -194,7 +263,14 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 		 * Renders input, to override
 		 * */
 		renderInput: function(){
-			console.warn("No render input implemented for '"+this.model.get('type')+"'");
+			if(!this.$input){
+				this.$input = $('<input>', {
+					placeholder: this.model.get('defaults'),
+					type: 'text'
+				});
+				this.$el.find(this.inputHolderId).html(this.$input);
+			}
+			this.setValue(this.componentValue, 0);
 		},
 
 		/**
@@ -202,10 +278,6 @@ define(['backbone', 'text!./../templates/propertyLabel.html'],
 		 * */
 		renderInputRequest: function(){
 			this.renderInput();
-			if(this.onInputRender && typeof this.onInputRender === "function"){
-				var index =  this.model.collection.indexOf(this.model);
-				this.onInputRender(this, index);
-			}
 		},
 
 		/**

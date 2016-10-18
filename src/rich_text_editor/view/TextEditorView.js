@@ -23,13 +23,16 @@ define(['jquery'],
       options,
       toolbarBtnSelector,
       updateToolbar = function () {
-        if (options.activeToolbarClass) {
+        var actCls = options.activeToolbarClass;
+        if (actCls) {
           $(options.toolbarSelector).find(toolbarBtnSelector).each(function () {
-            var command = $(this).data(options.commandRole);
-            if (document.queryCommandState(command)) {
-              $(this).addClass(options.activeToolbarClass);
+            var el = $(this);
+            var command = el.data(options.commandRole);
+            var doc = editor.get(0).ownerDocument;
+            if (doc.queryCommandState(command)) {
+              el.addClass(actCls);
             } else {
-              $(this).removeClass(options.activeToolbarClass);
+              el.removeClass(actCls);
             }
           });
         }
@@ -38,9 +41,12 @@ define(['jquery'],
         var commandArr = commandWithArgs.split(' '),
           command = commandArr.shift(),
           args = commandArr.join(' ') + (valueArg || '');
-        document.execCommand(command, 0, args);
+        //document.execCommand("insertHTML", false, "<span class='own-class'>"+ document.getSelection()+"</span>");
+        editor.get(0).ownerDocument.execCommand("styleWithCSS", false, true);
+        editor.get(0).ownerDocument.execCommand(command, 0, args);
         updateToolbar();
       },
+      /*
       bindHotkeys = function (hotKeys) {
         $.each(hotKeys, function (hotkey, command) {
           editor.keydown(hotkey, function (e) {
@@ -57,6 +63,7 @@ define(['jquery'],
           });
         });
       },
+      */
       getCurrentRange = function () {
         var sel = window.getSelection();
         if (sel.getRangeAt && sel.rangeCount) {
@@ -102,15 +109,26 @@ define(['jquery'],
         input.data(options.selectionMarker, color);
       },
       bindToolbar = function (toolbar, options) {
-        toolbar.find(toolbarBtnSelector).click(function () {
+        toolbar.find(toolbarBtnSelector).unbind().click(function () {
           restoreSelection();
-          editor.focus();
-          execCommand($(this).data(options.commandRole));
+          //editor.focus(); // cause defocus on selects
+          editor.get(0).ownerDocument.execCommand($(this).data(options.commandRole));
           saveSelection();
         });
         toolbar.find('[data-toggle=dropdown]').click(restoreSelection);
-
-        toolbar.find('input[type=text][data-' + options.commandRole + ']').on('webkitspeechchange change', function () {
+        var dName = '[data-' + options.commandRole + ']';
+        toolbar.find('select'+dName).on('webkitspeechchange change', function(){
+          var newValue = this.value;
+          restoreSelection();
+          if (newValue) {
+            editor.focus();
+            execCommand($(this).data(options.commandRole), newValue);
+          }
+          console.log('change isolated2 ', newValue);
+          saveSelection();
+        });
+        toolbar.find('input[type=text]'+dName,', select'+dName).on('webkitspeechchange change', function () {
+          console.log('on changed ', newValue);
           var newValue = this.value; /* ugly but prevents fake double-calls due to selection restoration */
           this.value = '';
           restoreSelection();
@@ -120,8 +138,10 @@ define(['jquery'],
           }
           saveSelection();
         }).on('focus', function () {
+          console.log('on focus ');
           var input = $(this);
           if (!input.data(options.selectionMarker)) {
+            console.log('i have no ', options.selectionMarker);
             markSelection(input, options.selectionColor);
             input.focus();
           }
@@ -159,14 +179,14 @@ define(['jquery'],
       return this;
     }
     options = $.extend({}, $.fn.wysiwyg.defaults, userOptions);
-    toolbarBtnSelector = 'a[data-' + options.commandRole + '],button[data-' + options.commandRole + '],input[type=button][data-' + options.commandRole + ']';
-    bindHotkeys(options.hotKeys);
+    var dName = '[data-' + options.commandRole + ']';
+    toolbarBtnSelector = 'a'+dName+',button'+dName+',input[type=button]'+dName+', select'+dName;
+    //bindHotkeys(options.hotKeys);
     if (options.dragAndDropImages) {
       initFileDrops();
     }
     bindToolbar($(options.toolbarSelector), options);
-    editor.attr('contenteditable', true)
-      .on('mouseup keyup mouseout', function () {
+    editor.attr('contenteditable', true).on('mouseup keyup mouseout', function () {
         saveSelection();
         updateToolbar();
       });
@@ -182,6 +202,7 @@ define(['jquery'],
     return this;
   };
   $.fn.wysiwyg.defaults = {
+    /*
     hotKeys: {
       'ctrl+b meta+b': 'bold',
       'ctrl+i meta+i': 'italic',
@@ -195,6 +216,7 @@ define(['jquery'],
       'shift+tab': 'outdent',
       'tab': 'indent'
     },
+    */
     toolbarSelector: '[data-role=editor-toolbar]',
     commandRole: 'edit',
     activeToolbarClass: 'btn-info',

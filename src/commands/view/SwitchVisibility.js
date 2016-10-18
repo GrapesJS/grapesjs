@@ -1,17 +1,13 @@
 define(function() {
-		/**
-		 * @class SwitchVisibility
-		 * */
 		return {
-			
-			run: function()
-			{
-				this.$canvas.addClass(this.pfx + 'dashed');
+
+			run: function(ed) {
+				ed.Canvas.getBody().className = this.ppfx + 'dashed';
 			},
-			
-			stop: function()
-			{
-				this.$canvas.removeClass(this.pfx + 'dashed');
+
+			stop: function(ed) {
+				ed.Canvas.getBody().className = "";
 			}
+
 		};
 	});

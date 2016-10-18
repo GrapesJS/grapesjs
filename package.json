@@ -1,7 +1,7 @@
 {
   "name": "grapesjs",
   "description": "Open source Web Template Editor",
-  "version": "0.1.7",
+  "version": "0.3.20",
   "author": "Artur Arseniev",
   "license": "BSD-3-Clause",
   "homepage": "http://grapesjs.com",
@@ -14,6 +14,7 @@
     "bower": "^1.7.2"
   },
   "devDependencies": {
+    "documentation": "^4.0.0-beta2",
     "grunt": "^0.4.5",
     "grunt-bowercopy": "^1.2.4",
     "grunt-cli": "^0.1.13",
@@ -29,13 +30,20 @@
     "grunt-mocha": "^0.4.15",
     "grunt-sass": "^1.1.0",
     "istanbul": "^0.4.2",
-    "node-sass": "^3.4.2"
+    "bower": "^1.7.2",
+    "node-sass": "^3.4.2",
+    "svg2ttf": "^4.0.1",
+    "ttf2eot": "^2.0.0",
+    "ttf2woff": "^2.0.1",
+    "ttf2woff2": "^2.0.3"
   },
   "keywords": [
     "wte",
     "grapes",
     "grapesjs",
     "web template editor",
+    "web site builder",
+    "web template builder",
     "site builder",
     "newsletter builder",
     "wysiwyg",
@@ -43,9 +51,10 @@
     "editor"
   ],
   "scripts": {
-    "postinstall": "node ./node_modules/bower/bin/bower install --config.interactive=false",
+    "postinstall": "./node_modules/.bin/bower install --config.interactive=false",
     "build": "./node_modules/.bin/grunt build",
+    "build:fonts": "./node_modules/.bin/grunt build:fonts",
     "test": "./node_modules/.bin/grunt test",
-    "dev": "./node_modules/.bin/grunt dev"
+    "start": "./node_modules/.bin/grunt dev"
   }
 }

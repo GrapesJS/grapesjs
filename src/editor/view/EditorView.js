@@ -1,39 +1,39 @@
 define(['backbone'],
 function(Backbone){
-	/**
-	 * @class EditorView
-	 * */
+
 	return Backbone.View.extend({
 
 		initialize: function() {
-			this.cv = this.model.get('Canvas');
 			this.pn = this.model.get('Panels');
-			this.css = this.model.get('CssComposer');
-			this.className = this.model.config.stylePrefix + 'editor';
+			this.conf = this.model.config;
+			this.className = this.conf.stylePrefix + 'editor';
+			this.model.on('loaded', function(){
+				this.pn.active();
+				this.model.runDefault();
+				this.model.trigger('load');
+			}, this);
 		},
 
 		render: function(){
+			var conf = this.conf;
 			this.$el.empty();
+			this.$cont	= $(conf.el || ('body ' + conf.container));
 
-			this.$cont	= $('body ' + this.model.config.container);
+			if(conf.width)
+				this.$cont.css('width', conf.width);
 
-			this.model.set('$editor', this.$el);
+			if(conf.height)
+				this.$cont.css('height', conf.height);
 
-			if(this.cv)
-				this.$el.append(this.cv.render());
+			// Canvas
+			this.$el.append(this.model.get('Canvas').render());
 
-			if(this.pn)
-				this.$el.append(this.pn.render());
-
-			if(this.css)
-				this.$el.append(this.css.render());
+			// Panels
+			this.$el.append(this.pn.render());
 
 			this.$el.attr('class', this.className);
 
 			this.$cont.html(this.$el);
-
-			if(this.pn)
-				this.pn.active();
 
 			return this;
 		}

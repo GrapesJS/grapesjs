@@ -1,16 +1,22 @@
-define(['backbone'], 
+define(['backbone'],
 	function (Backbone) {
-		/**
-		 * @class CommandButton
-		 * */
-		return Backbone.Model.extend({ 
-			
+		return Backbone.Model.extend({
+
+			idAttribute: 'command',
+
 			defaults: {
-				command		: '',
-				title		: '',
-				class		: '',
-				group		: '',
+				command: '',
+				type: '',
+				title: '',
+				class: '',
+        options: [],
 			},
-			
+
+			initialize: function() {
+				var opts = this.get('options');
+				if(opts.length)
+					this.set('type', 'select');
+			},
+
 		});
 });

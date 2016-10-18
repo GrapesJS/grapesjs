@@ -1,14 +1,18 @@
-define(['backbone'],
-	function(Backbone){
-		/**
-		 * @class Canvas
-		 * */
+define(['backbone', './Frame'],
+	function(Backbone, Frame){
+
 		return Backbone.Model.extend({
-			
+
 			defaults :{
-				wrapper		: '',
-				rulers		: false,
+        frame: '',
+				wrapper: '',
+				rulers: false,
 			},
-		
+
+      initialize: function(config) {
+        var conf = this.conf || {};
+        this.set('frame', new Frame(conf.frame));
+      },
+
 		});
 	});

@@ -1,9 +1,5 @@
 define(['backbone', 'text!./../template/fileUploader.html'],
 	function (Backbone, fileUploaderTemplate) {
-	/**
-	 * @class FileUploader
-	 * */
-
 	return Backbone.View.extend({
 
 		template: 	_.template(fileUploaderTemplate),
@@ -16,7 +12,7 @@ define(['backbone', 'text!./../template/fileUploader.html'],
 			this.pfx			= this.config.stylePrefix || '';
 			this.target		= this.collection || {};
 			this.uploadId	= this.pfx + 'uploadFile';
-			this.disabled	= this.config.disableUpload;
+			this.disabled	= !this.config.upload;
 			this.events['change #' + this.uploadId]	= 'uploadFile';
 			this.delegateEvents();
 		},
@@ -24,8 +20,7 @@ define(['backbone', 'text!./../template/fileUploader.html'],
 		/**
 		 * Upload files
 		 * @param	{Object}	e Event
-		 *
-		 * @return 	void
+		 * @private
 		 * */
 		uploadFile : function(e){
 			var files		= e.dataTransfer ? e.dataTransfer.files : e.target.files,
@@ -35,7 +30,7 @@ define(['backbone', 'text!./../template/fileUploader.html'],
 		    }
 			var target = this.target;
 			$.ajax({
-				url			: this.config.urlUpload, //this.config.urlUpload
+				url			: this.config.upload,
 				type		: 'POST',
 				data		: formData,
 				beforeSend	: this.config.beforeSend,
@@ -60,8 +55,7 @@ define(['backbone', 'text!./../template/fileUploader.html'],
 
 		/**
 		 * Make input file droppable
-		 *
-		 * @return 	void
+		 * @private
 		 * */
 		initDrop: function(){
 			var that	= this;

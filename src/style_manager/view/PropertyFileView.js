@@ -120,9 +120,9 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyFile.html'],
 				this.modal.setTitle('Select image');
 				this.modal.setContent(this.am.render());
 				this.am.setTarget(null);
-				this.modal.show();
+				this.modal.open();
 				this.am.onSelect(function(model){
-					that.modal.hide();
+					that.modal.close();
 					that.spreadUrl(model.get('src'));
 					that.valueChanged(e);
 				});

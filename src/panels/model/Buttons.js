@@ -1,17 +1,17 @@
-define([ 'backbone','./Button'], 
+define([ 'backbone','./Button'],
 	function (Backbone, Button) {
 		/**
 		 * @class Buttons
 		 * */
 		return Backbone.Collection.extend({
-			
+
 			model: Button,
-			
+
 			/**
 			 * Deactivate all buttons, except one passed
 			 * @param	{Object}	except	Model to ignore
 			 * @param	{Boolean}	r 		Recursive flag
-			 * 
+			 *
 			 * @return	void
 			 * */
 			deactivateAllExceptOne: function(except, r){
@@ -23,14 +23,15 @@ define([ 'backbone','./Button'],
 					}
 				});
 			},
-			
+
 			/**
 			 * Deactivate all buttons
-			 * @param	{String}	context Context string
-			 * 
+			 * @param	{String}	ctx Context string
+			 *
 			 * @return	void
 			 * */
-			deactivateAll: function(context){
+			deactivateAll: function(ctx){
+				var context = ctx || '';
 				this.forEach(function(model, index) {
 					if( model.get('context') == context ){
 						model.set('active', false);
@@ -39,6 +40,6 @@ define([ 'backbone','./Button'],
 					}
 				});
 			},
-			
+
 		});
 });

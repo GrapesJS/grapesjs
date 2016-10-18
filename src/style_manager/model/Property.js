@@ -1,32 +1,68 @@
-define(['backbone'],
-	function(Backbone) {
-		/** 
-		 * @class Property
-		 * */
+define(['backbone', './Layers', 'require'],
+	function(Backbone, Layers, require) {
+
 		return Backbone.Model.extend({
-			
+
 			defaults: {
-				name : 			'', 			//Name of the property
-				property: 		'',				//CSS property, eg. min-height
-				type: 			'',				//Type of the property: integer | radio | select | color | file | composite | stack
-				units: 			[],				//Unit of measure available, eg. ['px','%','em']
-				unit: 			'',				//Unit selected
-				defaults: 		'',				//Default value
-				info: 			'',				//Description HTML
-				value: 			'',				//Selected value of the property
-				icon: 			'',				//If exists, a custom class will be attached and no text will be displayed
-				preview:		false,			//Show layers preview. Available only for stack property
-				functionName:	'',				//Indicates if value need to be wrapped in some function, for istance: transform: rotate(90deg)
-				properties : 	{}, 			//For composite properties
-				layers : 		{}, 			//For stack properties
-				list: 			[],				//If exits, ignore type attribute ad display as multi-optional property
-												//Any element could be as: 
-												//	value : 'auto', 
-												//	icon: 'auto', 
-												//	defaults : true, 
-												//  style:	'',			//custom style to the value of propriety
-												//	name:''				//alternative view to value
-			}
-		
-        });
+				name : '',
+				property: '',
+				type: '',
+				units: [],
+				unit: '',
+				defaults: '',
+				info: '',
+				value: '',
+				icon: '',
+				preview: false,
+				detached: false,
+				functionName:	'',
+				properties: [],
+				layers: [],
+				list: [],
+			},
+
+			initialize: function(opt) {
+				var o = opt || {};
+				var type = this.get('type');
+				var name = this.get('name');
+				var prop = this.get('property');
+				var props = this.get('properties');
+
+				if(!name)
+					this.set('name', prop.charAt(0).toUpperCase() + prop.slice(1).replace(/-/g,' '));
+
+				if(props.length){
+					var Properties = require('./Properties');
+					this.set('properties', new Properties(props));
+				}
+
+				switch(type){
+					case 'stack':
+						this.set('layers', new Layers());
+						break;
+				}
+			},
+
+			/**
+			 * Return value
+			 * @return {string} Value
+			 * @private
+			 */
+			getValue: function(){
+				var result = '';
+				var type = this.get('type');
+
+				switch(type){
+					case 'integer':
+						result = this.get('value') + this.get('unit');
+						break;
+					default:
+						result = this.get('value');
+						break;
+				}
+
+				return result;
+			},
+
+    });
 	});

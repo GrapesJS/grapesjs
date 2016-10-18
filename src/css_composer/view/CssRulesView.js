@@ -1,8 +1,5 @@
 define(['backbone','./CssRuleView'],
   function (Backbone, CssRuleView) {
-  /**
-   * @class CssRulesView
-   * */
   return Backbone.View.extend({
 
     initialize: function(o) {
@@ -16,6 +13,7 @@ define(['backbone','./CssRuleView'],
     /**
      * Add to collection
      * @param {Object} model
+     * @private
      * */
     addTo: function(model){
       //console.log('Added');
@@ -26,8 +24,8 @@ define(['backbone','./CssRuleView'],
      * Add new object to collection
      * @param {Object} model
      * @param {Object} fragmentEl
-     *
      * @return {Object}
+     * @private
      * */
     addToCollection: function(model, fragmentEl){
       var fragment  = fragmentEl || null;

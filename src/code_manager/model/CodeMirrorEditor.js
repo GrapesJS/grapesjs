@@ -20,12 +20,6 @@ define(['backbone',
 			},
 
 			/** @inheritdoc */
-			getId	: function()
-			{
-				return 'CodeMirror';
-			},
-
-			/** @inheritdoc */
 			init: function(el)
 			{
 				this.editor	= CodeMirror.fromTextArea(el, {

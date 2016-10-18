@@ -1,126 +1,205 @@
+/**
+ * * [add](#add)
+ * * [get](#get)
+ * * [getAll](#getall)
+ * * [remove](#remove)
+ *
+ * This module allows to customize the toolbar of the Rich Text Editor and use commands from the HTML Editing APIs.
+ * For more info about HTML Editing APIs check here:
+ * https://developer.mozilla.org/it/docs/Web/API/Document/execCommand
+ *
+ * It's highly recommended to keep this toolbar as small as possible, especially from styling commands (eg. 'fontSize')
+ * and leave this task to the Style Manager.
+ *
+ * Before using methods you should get first the module from the editor instance, in this way:
+ *
+ * ```js
+ * var rte = editor.RichTextEditor;
+ * ```
+ * Complete list of commands
+ * https://developer.mozilla.org/it/docs/Web/API/Document/execCommand
+ * http://www.quirksmode.org/dom/execCommand.html
+ * @module RichTextEditor
+ */
 define(function(require) {
-	/**
-	 * @class 	RichTextEditor
-	 * @param 	{Object} Configurations
-	 *
-	 * @return	{Object}
- 	 * */
-	function RichTextEditor(config)
-	{
-		var c									= config || {},
-			defaults						= require('./config/config'),
-			rte									= require('./view/TextEditorView'),
-			CommandButtons			= require('./model/CommandButtons'),
-			CommandButtonsView	= require('./view/CommandButtonsView');
 
-		for (var name in defaults) {
-			if (!(name in c))
-				c[name] = defaults[name];
-		}
+	return function() {
+		var c = {},
+		defaults = require('./config/config'),
+		rte = require('./view/TextEditorView'),
+		CommandButtons = require('./model/CommandButtons'),
+		CommandButtonsView = require('./view/CommandButtonsView');
+		var tlbPfx, toolbar, commands;
 
-		this.tlbPfx			= c.stylePrefix;
-		this.commands		= new CommandButtons(c.commands);
-		var obj				= {
-				collection	: this.commands,
-		    	config		: c,
-		};
-
-		this.toolbar 		= new CommandButtonsView(obj);
-		this.$toolbar 		= this.toolbar.render().$el;
-	}
-
-	RichTextEditor.prototype	= {
+		return {
 
 			/**
-			 * Bind rich text editor to element
-			 * @param		{Object}	view
-			 * @param		{Object}	container
-			 *
-			 * */
-			bind		: function(view, container){
-				if(!this.$contaniner){
-					this.$container		= container;
-					this.$toolbar.appendTo(this.$container);
+       * Name of the module
+       * @type {String}
+       * @private
+       */
+      name: 'rte',
+
+      /**
+       * Initialize module. Automatically called with a new instance of the editor
+       * @param {Object} config Configurations
+       * @private
+       */
+      init: function(config) {
+        c = config || {};
+        for (var name in defaults) {
+					if (!(name in c))
+						c[name] = defaults[name];
 				}
-				view.$el.wysiwyg({hotKeys: {}}).focus();
-				this.updatePosition(view.$el);
-				this.bindToolbar(view).show();
+
+				var ppfx = c.pStylePrefix;
+				if(ppfx)
+					c.stylePrefix = ppfx + c.stylePrefix;
+
+				tlbPfx = c.stylePrefix;
+        commands = new CommandButtons(c.commands);
+				toolbar = new CommandButtonsView({
+					collection: commands,
+					config: c,
+				});
+        return this;
+      },
+
+      /**
+       * Add a new command to the toolbar
+       * @param {string} command Command name
+       * @param {Object} opts Command options
+       * @return {Model} Added command
+       * @example
+       * var cm = rte.add('bold', {
+       *   title: 'Make bold',
+       *   class: 'fa fa-bold',
+       * });
+       * // With arguments
+       * var cm = rte.add('fontSize', {
+       *   title: 'Font size',
+       *   options: [
+       *     {name: 'Big', value: 5},
+       *     {name: 'Normal', value: 3},
+       *     {name: 'Small', value: 1}
+       *   ]
+       * });
+       */
+      add: function(command, opts) {
+        var obj = opts || {};
+        obj.command = command;
+        return commands.add(obj);
+      },
+
+      /**
+       * Get the command by its name
+       * @param {string} command Command name
+       * @return {Model}
+       * @example
+       * var cm = rte.get('fontSize');
+       */
+      get: function(command) {
+        return commands.where({command: command})[0];
+      },
+
+      /**
+       * Returns the collection of commands
+       * @return {Collection}
+       */
+      getAll: function(){
+        return commands;
+      },
+
+			/**
+       * Triggered when the offset of the editro is changed
+       * @private
+       */
+      udpatePosition: function(){
+      	if(!this.lastEl || !c.em)
+      		return;
+      	var u = 'px';
+        var eOffset = c.em.get('canvasOffset');
+        var cvsView = c.em.get('Canvas').getCanvasView();
+        var dims = cvsView.getElementPos(this.lastEl);
+        var toolS = toolbar.el.style;
+        var toolH = toolbar.$el.outerHeight();
+        toolS.top = (dims.top - toolH) + u;
+				toolS.left = (dims.left + eOffset.left) + u;
+      },
+
+			/**
+			 * Bind rich text editor to the element
+			 * @param {View} view
+       * @private
+			 * */
+			attach: function(view){
+				view.$el.wysiwyg({}).focus();
+				this.lastEl = view.el;
+
+				if(c.em){
+					this.udpatePosition();
+					c.em.off('change:canvasOffset', this.udpatePosition, this);
+					c.em.on('change:canvasOffset', this.udpatePosition, this);
+				}
+				this.show();
 				//Avoid closing edit mode clicking on toolbar
-				this.$toolbar.on('mousedown', this.disableProp);
+				toolbar.$el.on('mousedown', this.disableProp);
 			},
 
 			/**
-			 * Unbind rich text editor from element
-			 * @param		{Object}	view
-			 *
+			 * Unbind rich text editor from the element
+			 * @param {View} view
+			 * @private
 			 * */
-			unbind		: function(view){
+			detach: function(view){
 				view.$el.wysiwyg('destroy');
 				this.hide();
-				this.$toolbar.off('mousedown', this.disableProp);
+				toolbar.$el.off('mousedown', this.disableProp);
 			},
 
 			/**
-			 * Bind toolbar to element
-			 * @param		{Object}	view
-			 *
-			 * @return 	this
+			 * Show the toolbar
+			 * @private
 			 * */
-			bindToolbar	: function(view){
-				var	id	= this.tlbPfx + view.model.cid,
-					dId	= this.tlbPfx + 'inited';
-				if(!view.$el.data(dId)){
-					view.$el.data(dId, 1);
-					view.$el.attr('id',id);
-				}
-				this.toolbar.updateTarget('#' + id);
-				return this;
+			show: function(){
+        toolbar.el.style.display = "block";
 			},
 
 			/**
-			 * Update toolbar position
-			 * @param 	{Object}	$el	Element
-			 *
-			 */
-			updatePosition: function($el){
-				var	cOffset	= this.$container.offset(),
-					cTop 	= cOffset ? cOffset.top : 0,
-					cLeft	= cOffset ? cOffset.left : 0,
-					eOffset	= $el.offset(),
-					rTop	= eOffset.top  - cTop + this.$container.scrollTop(),
-					rLeft	= eOffset.left - cLeft + this.$container.scrollLeft();
-				if(!this.tlbH)
-					this.tlbH	= this.$toolbar.outerHeight();
-				this.$toolbar.css({
-					top		: (rTop - this.tlbH - 5),
-					left	: rLeft
-				});
-			},
-
-			/**
-			 * Show toolbar
-			 *
+			 * Hide the toolbar
+			 * @private
 			 * */
-			show	: function(){
-				this.$toolbar.show();
+			hide: function(){
+        toolbar.el.style.display = "none";
 			},
 
 			/**
-			 * Hide toolbar
-			 *
-			 * */
-			hide	: function(){
-				this.$toolbar.hide();
-			},
-
-			/**
-			 * Isolate disable propagation method
-			 *
+			 * Isolate the disable propagation method
+			 * @private
 			 * */
 			disableProp: function(e){
 				e.stopPropagation();
 			},
+
+			/**
+			 * Return toolbar element
+			 * @return {HTMLElement}
+       * @private
+			 */
+			getToolbarEl: function() {
+				return toolbar.el;
+			},
+
+			/**
+			 * Render toolbar
+			 * @return {HTMLElement}
+       * @private
+			 */
+			render: function(){
+				return toolbar.render().el;
+			}
+
+		};
 	};
 
-	return RichTextEditor;
 });
