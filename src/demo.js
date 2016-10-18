@@ -9,7 +9,8 @@ require(['config/require-config'], function() {
       noticeOnUnload: 0,
 			container	: '#gjs',
 			height: '100%',
-			//fromElement: true,
+			fromElement: true,
+			/*
 			components: [{
 				style:{
 					width:'100px',
@@ -28,7 +29,7 @@ require(['config/require-config'], function() {
 				type: 'link',
 				content: 'mylink',
 			}],
-
+			*/
 			storageManager:{ autoload: 0},
 			commands: 		{
 					defaults		: [{
