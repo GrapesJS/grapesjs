@@ -236,7 +236,7 @@ define(function(require) {
               var selec = sm.add(sels[j]);
               newSels.push(selec);
             }
-            var model = this.add(newSels, rule.state, rule.width);
+            var model = this.add(newSels, rule.state, rule.maxWidth);
             model.set('style', rule.style || {});
             result.push(model);
           }
