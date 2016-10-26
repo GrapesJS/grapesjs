@@ -33,6 +33,15 @@ define(['DomComponents/model/Component',
               sAttr.should.deep.equal(eAttr);
             });
 
+            it('Clones correctly with traits', function() {
+              obj.get('traits').at(0).set('value', 'testTitle');
+              var cloned = obj.clone();
+              cloned.set('stylable', 0);
+              cloned.get('traits').at(0).set('value', 'testTitle2');
+              obj.get('traits').at(0).get('value').should.equal('testTitle');
+              obj.get('stylable').should.equal(true);
+            });
+
             it('Has expected name', function() {
               obj.cid = 'c999';
               obj.getName().should.equal('Box 999');
