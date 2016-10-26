@@ -3522,6 +3522,17 @@ ol.example li.placeholder:before {
   flex-direction: column;
   justify-content: flex-end; }
 
+.gjs-block.fa {
+  font-size: 2em;
+  line-height: 2em;
+  padding: 11px; }
+
+.gjs-block-label {
+  line-height: normal;
+  font-size: 0.65rem;
+  font-weight: normal;
+  font-family: Helvetica, sans-serif; }
+
 .gjs-block.gjs-bdrag {
   width: auto;
   padding: 0; }

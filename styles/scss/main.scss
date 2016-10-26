@@ -1125,6 +1125,19 @@ $arrowColor:    $mainLhlColor; /*b1b1b1*/
   justify-content: flex-end;
 }
 
+.#{$app-prefix}block.fa {
+  font-size: 2em;
+  line-height: 2em;
+  padding: 11px;
+}
+
+.#{$app-prefix}block-label {
+  line-height: normal;
+  font-size: 0.65rem;
+  font-weight: normal;
+  font-family: Helvetica, sans-serif;
+}
+
 .#{$app-prefix}block.#{$app-prefix}bdrag{
  width: auto;
  padding: 0;

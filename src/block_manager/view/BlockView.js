@@ -39,8 +39,9 @@ function(Backbone) {
     },
 
     render: function() {
-      this.el.innerHTML = this.model.get('label');
-      this.$el.addClass(this.ppfx + 'block');
+      var className = this.ppfx + 'block';
+      this.$el.addClass(className);
+      this.el.innerHTML = '<div class="' + className + '-label">' + this.model.get('label') + '</div>';
       return this;
     },
 

@@ -176,6 +176,15 @@ define(function () {
 	        label: 'Quote',
 	        content: '<blockquote class="quote">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore ipsum dolor sit</blockquote>',
 	        attributes: {class:'gjs-fonts gjs-f-quo'}
+	      },{
+					id: 'link',
+	        label: 'Link',
+	        attributes: {class:'fa fa-link'},
+	        content: {
+						type:'link',
+						content:'Link',
+						style:{color: '#d983a6'}
+					},
 	      }],
 		},
 
