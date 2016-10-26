@@ -120,5 +120,22 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 				return this.name;
 			},
 
+		}, {
+
+			/**
+			 * Detect if the passed element is a valid component.
+			 * In case the element is valid an object abstracted
+			 * from the element will be returned
+			 * @param {HTMLElement}
+			 * @return {Object}
+			 * @private
+			 */
+			isValidEl: function(el) {
+				var result = '';
+				if(el.tagName == 'DIV')
+					result = {tagName: 'div'};
+				return result;
+			}
+
 		});
 });
