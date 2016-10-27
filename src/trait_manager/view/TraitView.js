@@ -18,6 +18,7 @@ define(['backbone'], function (Backbone) {
 			this.model.off('change:value', this.onValueChange);
 			this.listenTo(this.model, 'change:value', this.onValueChange);
 			this.tmpl = '<div class="' + this.fieldClass +'"><div class="' + this.inputhClass +'"></div></div>';
+			console.log(this.model.attributes);
 		},
 
 		/**

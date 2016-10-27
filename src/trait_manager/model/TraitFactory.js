@@ -42,7 +42,7 @@ define(['backbone'],
             switch (prop) {
               case 'target':
                 obj.options = [
-                  {value: '_self', name: 'This window'},
+                  {value: '', name: 'This window'},
                   {value: '_blank', name: 'New window'}
                 ];
                 break;
