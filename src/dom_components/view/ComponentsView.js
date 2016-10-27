@@ -52,6 +52,11 @@ function(Backbone, require) {
 						this.compViewLink	=	require('./ComponentLinkView');
 					viewObject	= this.compViewLink;
 					break;
+				case 'map':
+					if(!this.compViewMap)
+						this.compViewMap	=	require('./ComponentMapView');
+					viewObject	= this.compViewMap;
+					break;
 			}
 
 			var view 		= new viewObject({

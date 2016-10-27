@@ -41,9 +41,11 @@ define(function(require) {
 			ComponentText = require('./model/ComponentText'),
 			ComponentImage = require('./model/ComponentImage'),
 			ComponentLink = require('./model/ComponentLink'),
+			ComponentMap = require('./model/ComponentMap'),
 			ComponentView = require('./view/ComponentView'),
 			ComponentImageView = require('./view/ComponentImageView'),
-			ComponentTextView	= require('./view/ComponentTextView');
+			ComponentTextView	= require('./view/ComponentTextView'),
+			ComponentMapView	= require('./view/ComponentMapView'),
 			ComponentLinkView	= require('./view/ComponentLinkView');
 		var component, componentView;
 
@@ -282,6 +284,14 @@ define(function(require) {
 			setComponents: function(components){
 				this.clear().addComponent(components);
 			},
+
+			/**
+			 * Add new component type
+			 * @private
+			 */
+			addComponentType: function(type, methods) {
+
+			}
 
 		};
 	};

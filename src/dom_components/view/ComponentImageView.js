@@ -3,9 +3,9 @@ define(['backbone', './ComponentView'],
 
 	return ComponentView.extend({
 
-		tagName		: 'img',
+		tagName: 'img',
 
-		events		: {
+		events: {
 				'dblclick' 	: 'openModal',
 		},
 

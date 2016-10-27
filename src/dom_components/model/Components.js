@@ -26,7 +26,7 @@ define([ 'backbone', 'require'],
 
 						case 'text':
 							if(!this.mComponentText)
-					    		this.mComponentText		= require("./ComponentText");
+					    		this.mComponentText = require("./ComponentText");
 							model	= new this.mComponentText(attrs, options);
 							break;
 
@@ -38,13 +38,19 @@ define([ 'backbone', 'require'],
 
 						case 'image':
 							if(!this.mComponentImage)
-					    		this.mComponentImage	= require("./ComponentImage");
+					    		this.mComponentImage = require("./ComponentImage");
 							model	= new this.mComponentImage(attrs, options);
+							break;
+
+						case 'map':
+							if(!this.mComponentMap)
+					    		this.mComponentMap = require("./ComponentMap");
+							model	= new this.mComponentMap(attrs, options);
 							break;
 
 						default:
 							if(!this.mComponent)
-					    		this.mComponent			= require("./Component");
+					    		this.mComponent = require("./Component");
 							model	= new this.mComponent(attrs, options);
 
 					}
