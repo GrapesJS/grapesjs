@@ -6,12 +6,10 @@ define(['backbone'],
 		return Backbone.Model.extend({
 
 			/** @inheritdoc */
-			build: function(model)
-			{
+			build: function(model) {
 				var json	= model.toJSON();
 				this.beforeEach(json);
 
-				// Avoid jshint 'loopfunc' error
 				_.each(json,function(v, attr){
 					var obj	= json[attr];
 					if(obj instanceof Backbone.Model){
@@ -25,7 +23,6 @@ define(['backbone'],
 							}, this);
 						}
 					}
-
 				}, this);
 
 				return json;

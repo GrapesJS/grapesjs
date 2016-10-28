@@ -19,5 +19,17 @@ define(['backbone'],
           throw new Error('Target not found');
       },
 
+			/**
+			 * Need to remove target from it otherwise with toJSON
+			 * creates an infinite loop
+			 * @return {Object}
+			 * @private
+			 */
+			toJSON: function(){
+				var obj = this.attributes;
+				delete obj.target;
+				return obj;
+			}
+
     });
 	});

@@ -30,7 +30,9 @@ require(['config/require-config'], function() {
 				content: 'mylink',
 			}],
 			*/
-			storageManager:{ autoload: 0},
+			storageManager:{
+				autoload: 0,
+			},
 			commands: 		{
 					defaults		: [{
 													id: 	'open-github',
