@@ -185,7 +185,7 @@ define(function () {
 						content:'Link',
 						style:{color: '#d983a6'}
 					},
-	      },{
+	      }/*,{
 					id: 'map',
 	        label: 'Map',
 	        attributes: {class:'fa fa-map-o'},
@@ -193,7 +193,7 @@ define(function () {
 						type: 'map',
 						style: {color: '#fff'}
 					},
-	      }],
+	      }*/],
 		},
 
 	};
