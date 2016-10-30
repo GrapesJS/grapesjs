@@ -646,13 +646,28 @@ ol.example li.placeholder:before {position: absolute;}
 /***********  END Components *************/
 
 
-/********* Inputs **********/
+/********* Input style **********/
 
-$inputFontColor:  $mainLhlColor; /*#d5d5d5*/
-$darkBorder:    rgba(0, 0, 0, 0.15); /*303030*/
-$lightBorder:   rgba(255, 255, 255, 0.05); /*414141*/
-$darkTextShadow:  $mainDkColor; /*#252525*/
-$arrowColor:    $mainLhlColor; /*b1b1b1*/
+$inputFontColor: $mainLhlColor; /*#d5d5d5*/
+$darkBorder: rgba(0, 0, 0, 0.15); /*303030*/
+$lightBorder: rgba(255, 255, 255, 0.05); /*414141*/
+$darkTextShadow: $mainDkColor; /*#252525*/
+$arrowColor: $mainLhlColor; /*b1b1b1*/
+
+@mixin rangeThumbStyle() {
+  height: 10px; width: 10px;
+  border: 1px solid $mainDkColor;
+  border-radius: 100%;
+  background-color: $fontColor;
+  cursor: pointer;
+}
+
+@mixin rangeTrackStyle() {
+  background-color: $mainDkColor;
+  border: 1px solid $darkBorder;
+  border-radius: 1px;
+  height: 2px;
+}
 
 .#{$app-prefix}label {
   line-height: 18px;
@@ -702,6 +717,48 @@ $arrowColor:    $mainLhlColor; /*b1b1b1*/
     cursor:pointer;
   }
 }
+
+.#{$app-prefix}field-select {
+  padding: 0;
+}
+
+.#{$app-prefix}field-range {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+
+  input {
+    margin: 0;
+  }
+
+  input::-moz-range-thumb {
+    @include rangeThumbStyle();
+  }
+
+  input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    margin-top: -5px;
+    @include rangeThumbStyle();
+  }
+
+  input::-ms-thumb {
+    @include rangeThumbStyle();
+  }
+
+  input::-moz-range-track {
+    @include rangeTrackStyle();
+  }
+
+  input::-webkit-slider-runnable-track {
+    @include rangeTrackStyle();
+  }
+
+  input::-ms-track {
+    @include rangeTrackStyle();
+  }
+}
+
 
 .#{$app-prefix}add-trasp {
   background: none;
@@ -874,7 +931,7 @@ $arrowColor:    $mainLhlColor; /*b1b1b1*/
     }
 		&.#{$sm-prefix}select{ padding:0; }
 		&.#{$sm-prefix}select select{ height: 20px; }
-		&.#{$sm-prefix}select option { margin: 5px 0;}
+		&.#{$sm-prefix}select option { padding: 3px 0;}
 		&.#{$sm-prefix}composite{
 			background-color: rgba(0,0,0,0.1);
 			border: 1px solid rgba(0, 0, 0, 0.25);

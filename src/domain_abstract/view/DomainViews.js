@@ -3,6 +3,7 @@ function(Backbone) {
 
   return Backbone.View.extend({
 
+    // Default view
     itemView: '',
 
     // Defines the View per type
@@ -33,8 +34,8 @@ function(Backbone) {
     add: function(model, fragment){
       var frag = fragment || null;
       var itemView = this.itemView;
-      if(this.itemsView){
-        var typeField = model.get(this.itemType);
+      var typeField = model.get(this.itemType);
+      if(this.itemsView && this.itemsView[typeField]){
         itemView = this.itemsView[typeField];
       }
       var view = new itemView({

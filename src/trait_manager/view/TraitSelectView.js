@@ -6,7 +6,6 @@ define(['backbone','./TraitView'],
 		initialize: function(o) {
 			TraitView.prototype.initialize.apply(this, arguments);
 			var ppfx = this.ppfx;
-			this.fieldClass += ' ' + ppfx + 'select';
 			this.tmpl = '<div class="' + this.fieldClass +'"><div class="' + this.inputhClass +'"></div>'+
 			'<div class="' + ppfx + 'sel-arrow"><div class="' + ppfx + 'd-s-arrow"></div></div> </div>';
 		},

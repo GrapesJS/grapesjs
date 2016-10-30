@@ -3,6 +3,8 @@ define(['backbone', 'Abstract/view/DomainViews', './TraitView', './TraitSelectVi
 
 		return DomainViews.extend({
 
+			itemView: TraitView,
+
 			itemsView: {
 				'text': TraitView,
 				'select': TraitSelectView,

@@ -7,16 +7,17 @@ define(['backbone'], function (Backbone) {
 		},
 
 		initialize: function(o) {
+			var md = this.model;
 			this.config = o.config || {};
 			this.pfx = this.config.stylePrefix || '';
 			this.ppfx = this.config.pStylePrefix || '';
-			this.target = this.model.get('target');
+			this.target = md.get('target');
 			this.className = this.pfx + 'trait';
 			this.labelClass = this.ppfx + 'label';
-			this.fieldClass = this.ppfx + 'field';
+			this.fieldClass = this.ppfx + 'field ' + this.ppfx + 'field-' + md.get('type');
 			this.inputhClass = this.ppfx + 'input-holder';
-			this.model.off('change:value', this.onValueChange);
-			this.listenTo(this.model, 'change:value', this.onValueChange);
+			md.off('change:value', this.onValueChange);
+			this.listenTo(md, 'change:value', this.onValueChange);
 			this.tmpl = '<div class="' + this.fieldClass +'"><div class="' + this.inputhClass +'"></div></div>';
 		},
 
@@ -35,9 +36,16 @@ define(['backbone'], function (Backbone) {
 		onValueChange: function() {
 			var m = this.model;
 			var trg = this.target;
-			var attrs = _.clone(trg.get('attributes'));
-			attrs[m.get('name')] = m.get('value');
-			trg.set('attributes', attrs);
+			var name = m.get('name');
+			var value = m.get('value');
+			// Chabge property if requested otherwise attributes
+			if(m.get('changeProp')){
+				trg.set(name, value);
+			}else{
+				var attrs = _.clone(trg.get('attributes'));
+				attrs[name] = value;
+				trg.set('attributes', attrs);
+			}
 		},
 
 		/**
@@ -67,11 +75,16 @@ define(['backbone'], function (Backbone) {
 		getInputEl: function() {
 			if(!this.$input){
 				var md = this.model;
-				this.$input = $('<input>', {
+				var opts = {
 					placeholder: md.get('placeholder') || md.get('default'),
-					type: 'text',
+					type: md.get('type') || 'text',
 					value: md.get('value')
-				});
+				};
+				if(md.get('min'))
+					opts.min = md.get('min');
+				if(md.get('max'))
+					opts.max = md.get('max');
+				this.$input = $('<input>', opts);
 			}
 			return this.$input.get(0);
 		},

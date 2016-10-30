@@ -3102,7 +3102,7 @@ ol.example li.placeholder:before {
     content: "\f03e"; }
 
 /***********  END Components *************/
-/********* Inputs **********/
+/********* Input style **********/
 /*#d5d5d5*/
 /*303030*/
 /*414141*/
@@ -3153,6 +3153,55 @@ ol.example li.placeholder:before {
     border-left: 3px solid transparent;
     border-right: 4px solid transparent;
     cursor: pointer; }
+
+.gjs-field-select {
+  padding: 0; }
+
+.gjs-field-range {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0; }
+  .gjs-field-range input {
+    margin: 0; }
+  .gjs-field-range input::-moz-range-thumb {
+    height: 10px;
+    width: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 100%;
+    background-color: #ddd;
+    cursor: pointer; }
+  .gjs-field-range input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    margin-top: -5px;
+    height: 10px;
+    width: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 100%;
+    background-color: #ddd;
+    cursor: pointer; }
+  .gjs-field-range input::-ms-thumb {
+    height: 10px;
+    width: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 100%;
+    background-color: #ddd;
+    cursor: pointer; }
+  .gjs-field-range input::-moz-range-track {
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 1px;
+    height: 2px; }
+  .gjs-field-range input::-webkit-slider-runnable-track {
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 1px;
+    height: 2px; }
+  .gjs-field-range input::-ms-track {
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 1px;
+    height: 2px; }
 
 .gjs-add-trasp {
   background: none;
@@ -3306,7 +3355,7 @@ ol.example li.placeholder:before {
     .gjs-sm-sector .gjs-sm-field.gjs-sm-select select, .gjs-clm-tags .gjs-sm-field.gjs-sm-select select, .gjs-sm-sector .gjs-sm-select.gjs-clm-field select, .gjs-clm-tags .gjs-sm-select.gjs-clm-field select, .gjs-sm-sector .gjs-clm-select select, .gjs-clm-tags .gjs-clm-select select {
       height: 20px; }
     .gjs-sm-sector .gjs-sm-field.gjs-sm-select option, .gjs-clm-tags .gjs-sm-field.gjs-sm-select option, .gjs-sm-sector .gjs-sm-select.gjs-clm-field option, .gjs-clm-tags .gjs-sm-select.gjs-clm-field option, .gjs-sm-sector .gjs-clm-select option, .gjs-clm-tags .gjs-clm-select option {
-      margin: 5px 0; }
+      padding: 3px 0; }
     .gjs-sm-sector .gjs-sm-field.gjs-sm-composite, .gjs-clm-tags .gjs-sm-field.gjs-sm-composite, .gjs-sm-sector .gjs-sm-composite.gjs-clm-field, .gjs-clm-tags .gjs-sm-composite.gjs-clm-field {
       background-color: rgba(0, 0, 0, 0.1);
       border: 1px solid rgba(0, 0, 0, 0.25); }

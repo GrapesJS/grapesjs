@@ -7,10 +7,13 @@ define(['backbone'],
         type: 'text', // text, number, range, select
 				label: '',
         name: '',
+				min: '',
+				max: '',
         value: '',
 				target: '',
 				default: '',
 				placeholder: '',
+				changeProp: 0,
         options: [],
 			},
 

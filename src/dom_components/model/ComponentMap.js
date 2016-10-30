@@ -1,18 +1,35 @@
-define(['./Component'],
+define(['./ComponentImage'],
 	function (Component) {
 
 		return Component.extend({
 
 			defaults: _.extend({}, Component.prototype.defaults, {
+					mapUrl: 'https://maps.google.com/maps',
 					tagName: 'iframe',
-          staticUrl: 'http://maps.googleapis.com/maps/api/staticmap',
-          mapUrl: 'https://maps.google.com/maps',
-          zoom: '1',
-          mapType: '',
-          staticHeight: '',
-          staticWidth: '',
-          src: 'http://maps.googleapis.com/maps/api/staticmap?zoom=1&format=jpg&size=500x300',//'https://maps.google.com/maps?output=embed',
-					traits: ['mapTraits'],
+					mapType: 'q',
+					address: '',
+					zoom: '1',
+					traits: [{
+						label: 'Address',
+						name: 'address',
+						changeProp: 1,
+					},{
+						type: 'select',
+						label: 'Map type',
+						name: 'mapType',
+						changeProp: 1,
+						options: [
+							{value: 'q', name: 'Roadmap'},
+							{value: 'w', name: 'Satellite'}
+						]
+					},{
+						label: 'Zoom',
+						name: 'zoom',
+						type: 'range',
+						min: '1',
+						max: '20',
+						changeProp: 1,
+					}],
 			}),
 
 		});
