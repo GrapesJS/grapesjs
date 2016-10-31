@@ -104,8 +104,7 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 
 			/**
 			 * Get name of the component
-			 *
-			 * @return {String}
+			 * @return {string}
 			 * @private
 			 * */
 			getName: function() {
@@ -119,6 +118,58 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 				}
 				return this.name;
 			},
+
+			/**
+			 * Return HTML string of the component
+			 * @return {string} HTML string
+			 * @private
+			 */
+			toHTML: function() {
+				var code = '';
+				var m = this;
+				var tag = m.get('tagName'),
+				attrs = m.get('attributes'),
+				sTag = m.get('void'),
+				attrId = '';
+				// Build the string of attributes
+				var attr = '';
+				_.each(attrs, function(value, prop){
+					// TODO: to refactor
+					if(prop == 'onmousedown')
+						return;
+					attr += value && prop!='style' ? ' ' + prop + '="' + value + '"' : '';
+				});
+				// Build the string of classes
+				var strCls = '';
+				m.get('classes').each(function(m){
+					strCls += ' ' + m.get('name');
+				});
+				strCls = strCls !== '' ? ' class="' + strCls.trim() + '"' : '';
+
+				/*
+				// TODO: to refactor
+				if(m.get('type') == 'image'){
+						tag = 'img';
+						sTag	= 1;
+						attr 	+= ' src="' + m.get('src') + '"';
+				}
+				*/
+				 // If style is not empty I need an ID attached to the component
+				 // TODO: need to refactor in case of 'ID Trait'
+				 if(!_.isEmpty(m.get('style')))
+ 					attrId = ' id="' + m.cid + '" ';
+
+				code += '<' + tag + strCls + attrId + attr + (sTag ? '/' : '') + '>' + m.get('content');
+
+				var cln = m.get('components');
+				if(cln.length)
+					code += this.toHTML(cln);
+
+				if(!sTag)
+					code += '</'+tag+'>';
+
+				return code;
+			}
 
 		}, {
 
