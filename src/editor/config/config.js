@@ -193,6 +193,14 @@ define(function () {
 						type: 'map',
 						style: {height: '350px'}
 					},
+	      },{
+					id: 'video',
+	        label: 'Video',
+	        attributes: {class:'fa fa-youtube-play'},
+	        content: {
+						type: 'video',
+						style: {height: '350px'}
+					},
 	      }],
 		},
 

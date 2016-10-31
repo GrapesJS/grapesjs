@@ -53,6 +53,48 @@ define(['DomComponents/model/Component',
               obj.getName().should.equal('TestType 999');
             });
 
+            it('Component toHTML', function() {
+              obj.toHTML().should.equal('<div></div>');
+            });
+
+            it('Component toHTML with attributes', function() {
+              obj = new Component({
+                tagName: 'article',
+                attributes: {
+                  'data-test1': 'value1',
+                  'data-test2': 'value2'
+                }
+              });
+              obj.toHTML().should.equal('<article data-test1="value1" data-test2="value2"></article>');
+            });
+
+            it('Component toHTML with classes', function() {
+              obj = new Component({
+                tagName: 'article'
+              });
+              ['class1', 'class2'].forEach(function(item){
+                obj.get('classes').add({name: item});
+              });
+              obj.toHTML().should.equal('<article class="class1 class2"></article>');
+            });
+
+            it('Component toHTML with children', function() {
+              obj = new Component({tagName: 'article'});
+              obj.get('components').add({tagName: 'span'});
+              obj.toHTML().should.equal('<article><span></span></article>');
+            });
+
+            it('Component toHTML with more children', function() {
+              obj = new Component({tagName: 'article'});
+              obj.get('components').add([{tagName: 'span'}, {tagName: 'div'}]);
+              obj.toHTML().should.equal('<article><span></span><div></div></article>');
+            });
+
+            it('Component toHTML with no closing tag', function() {
+              obj = new Component({void: 1});
+              obj.toHTML().should.equal('<div/>');
+            });
+
         });
 
         describe('Image Component', function() {
@@ -73,6 +115,19 @@ define(['DomComponents/model/Component',
               obj.get('droppable').should.equal(false);
             });
 
+            it('ComponentImage toHTML', function() {
+              obj = new ComponentImage();
+              obj.toHTML().should.equal('<img/>');
+            });
+
+            it('Component toHTML with attributes', function() {
+              obj = new ComponentImage({
+                attributes: {'alt': 'AltTest'},
+                src: 'testPath'
+              });
+              obj.toHTML().should.equal('<img alt="AltTest" src="testPath"/>');
+            });
+
         });
 
         describe('Text Component', function() {
@@ -91,6 +146,14 @@ define(['DomComponents/model/Component',
 
             it('Not droppable', function() {
               obj.get('droppable').should.equal(false);
+            });
+
+            it('Component toHTML with attributes', function() {
+              obj = new ComponentText({
+                attributes: {'data-test': 'value'},
+                content: 'test content'
+              });
+              obj.toHTML().should.equal('<div data-test="value">test content</div>');
             });
 
         });

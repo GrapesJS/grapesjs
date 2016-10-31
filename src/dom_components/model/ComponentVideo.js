@@ -7,7 +7,7 @@ define(['./ComponentImage'],
 					type: 'video',
 					tagName: 'video',
 					provider: '', // on change of provider, traits are switched
-					traits: this.getSourceTraits(),
+					sources: [],
 			}),
 
 			// Listen provider change and switch traits, in TraitView listen traits change

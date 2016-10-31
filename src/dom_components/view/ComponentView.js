@@ -12,6 +12,7 @@ define(['backbone', './ComponentsView'],
 			},
 
 			initialize: function(opt){
+				this.opts = opt || {};
 				this.config = opt.config || {};
 				this.pfx = this.config.stylePrefix || '';
 				this.ppfx = this.config.pStylePrefix || '';
@@ -180,6 +181,8 @@ define(['backbone', './ComponentsView'],
 				var view = new ComponentsView({
 					collection: this.components,
 					config: this.config,
+					defaultTypes: this.opts.defaultTypes,
+					componentTypes: this.opts.componentTypes,
 				});
 
 				// With childNodes lets avoid wrapping 'div'

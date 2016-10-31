@@ -22,40 +22,22 @@ define([ 'backbone', 'require'],
 					if(opt && opt.config)
 						options.config = opt.config;
 
-					switch(attrs.type){
+					if(opt && opt.defaultTypes)
+							options.defaultTypes = opt.defaultTypes;
 
-						case 'text':
-							if(!this.mComponentText)
-					    		this.mComponentText = require("./ComponentText");
-							model	= new this.mComponentText(attrs, options);
-							break;
+					if(opt && opt.componentTypes)
+							options.componentTypes = opt.componentTypes;
 
-						case 'link':
-							if(!this.mComponentLink)
-					    		this.mComponentLink = require("./ComponentLink");
-							model	= new this.mComponentLink(attrs, options);
-							break;
+					var df = opt.defaultTypes;
+					var cf = opt.componentTypes;
 
-						case 'image':
-							if(!this.mComponentImage)
-					    		this.mComponentImage = require("./ComponentImage");
-							model	= new this.mComponentImage(attrs, options);
-							break;
-
-						case 'map':
-							if(!this.mComponentMap)
-					    		this.mComponentMap = require("./ComponentMap");
-							model	= new this.mComponentMap(attrs, options);
-							break;
-
-						default:
-							if(!this.mComponent)
-					    		this.mComponent = require("./Component");
-							model	= new this.mComponent(attrs, options);
-
+					if(df[attrs.type]){
+						model = df[attrs.type].model;
+					}else{
+						model = df.default.model;
 					}
 
-					return	model;
+					return new model(attrs, options);
 				};
 
 			},

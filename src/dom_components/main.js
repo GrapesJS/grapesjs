@@ -36,18 +36,37 @@ define(function(require) {
 
 	return function (){
 		var c = {},
-			defaults = require('./config/config'),
-			Component = require('./model/Component'),
-			ComponentText = require('./model/ComponentText'),
-			ComponentImage = require('./model/ComponentImage'),
-			ComponentLink = require('./model/ComponentLink'),
-			ComponentMap = require('./model/ComponentMap'),
-			ComponentView = require('./view/ComponentView'),
-			ComponentImageView = require('./view/ComponentImageView'),
-			ComponentTextView	= require('./view/ComponentTextView'),
-			ComponentMapView	= require('./view/ComponentMapView'),
-			ComponentLinkView	= require('./view/ComponentLinkView');
+		componentTypes = {},
+		defaults = require('./config/config'),
+		Component = require('./model/Component'),
+		ComponentView = require('./view/ComponentView');
 		var component, componentView;
+		var defaultTypes = {
+			'default': {
+				model: Component,
+				view: ComponentView,
+			},
+			'text': {
+				model: require('./model/ComponentText'),
+				view: require('./view/ComponentTextView'),
+			},
+			'image': {
+				model: require('./model/ComponentImage'),
+				view: require('./view/ComponentImageView'),
+			},
+			'link': {
+				model: require('./model/ComponentLink'),
+				view: require('./view/ComponentLinkView'),
+			},
+			'map': {
+				model: require('./model/ComponentMap'),
+				view: require('./view/ComponentMapView'),
+			},
+			'video': {
+				model: require('./model/ComponentVideo'),
+				view: require('./view/ComponentVideoView'),
+			}
+		};
 
 	  return {
 
@@ -100,12 +119,19 @@ define(function(require) {
   				c.am = c.em.get('AssetManager') || '';
         }
 
-        component = new Component(c.wrapper, { sm: c.em, config: c });
+        component = new Component(c.wrapper, {
+					sm: c.em,
+					config: c,
+					defaultTypes: defaultTypes,
+					componentTypes: componentTypes,
+				});
 				component.set({ attributes: {id: 'wrapper'}});
 				component.get('components').add(c.components);
 			  componentView = new ComponentView({
 					model: component,
 					config: c,
+					defaultTypes: defaultTypes,
+					componentTypes: componentTypes,
 				});
         return this;
       },
@@ -290,7 +316,8 @@ define(function(require) {
 			 * @private
 			 */
 			addComponentType: function(type, methods) {
-
+				componentTypes[type] = methods;
+				return this;
 			}
 
 		};
