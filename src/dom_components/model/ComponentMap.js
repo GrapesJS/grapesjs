@@ -12,6 +12,7 @@ define(['./ComponentImage'],
 					traits: [{
 						label: 'Address',
 						name: 'address',
+						placeholder: 'eg. London, UK',
 						changeProp: 1,
 					},{
 						type: 'select',
