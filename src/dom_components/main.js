@@ -70,6 +70,8 @@ define(function(require) {
 
 	  return {
 
+			componentTypes: defaultTypes,
+
 	  	/**
        * Name of the module
        * @type {String}

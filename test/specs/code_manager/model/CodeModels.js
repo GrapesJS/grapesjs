@@ -1,15 +1,22 @@
 var path = 'CodeManager/model/';
 define([path + 'HtmlGenerator',
   path + 'CssGenerator',
+  'DomComponents',
   'DomComponents/model/Component',
   'CssComposer'],
-  function(HtmlGenerator, CssGenerator, Component, CssComposer) {
+  function(HtmlGenerator, CssGenerator, DomComponents, Component, CssComposer) {
 
     return {
       run : function(){
+          var comp;
+
           describe('HtmlGenerator', function() {
             beforeEach(function () {
-              this.obj  = new HtmlGenerator();
+              this.obj = new HtmlGenerator();
+              var dcomp = new DomComponents();
+              comp = new Component({}, {
+                defaultTypes: dcomp.componentTypes,
+              });
             });
 
             afterEach(function () {
@@ -17,18 +24,15 @@ define([path + 'HtmlGenerator',
             });
 
             it('Build correctly one component', function() {
-              var comp = new Component();
               this.obj.build(comp).should.equal('');
             });
 
             it('Build correctly empty component inside', function() {
-              var comp = new Component();
               var m1 = comp.get('components').add({});
               this.obj.build(comp).should.equal('<div></div>');
             });
 
             it('Build correctly not empty component inside', function() {
-              var comp = new Component();
               var m1 = comp.get('components').add({
                 tagName: 'article',
                 attributes: {
@@ -40,7 +44,6 @@ define([path + 'HtmlGenerator',
             });
 
             it('Build correctly component with classes', function() {
-              var comp = new Component();
               var m1 = comp.get('components').add({
                 tagName: 'article',
                 attributes: {
@@ -56,11 +59,15 @@ define([path + 'HtmlGenerator',
         });
 
         describe('CssGenerator', function() {
-          var newCssComp = function(){
-            return new CssComposer().init();
-          };
-          beforeEach(function () {
+            var newCssComp = function(){
+              return new CssComposer().init();
+            };
+            beforeEach(function () {
               this.obj  = new CssGenerator();
+              var dcomp = new DomComponents();
+              comp = new Component({}, {
+                defaultTypes: dcomp.componentTypes,
+              });
             });
 
             afterEach(function () {
@@ -68,18 +75,15 @@ define([path + 'HtmlGenerator',
             });
 
             it('Build correctly one component', function() {
-              var comp = new Component();
               this.obj.build(comp).should.equal('');
             });
 
             it('Build correctly empty component inside', function() {
-              var comp = new Component();
               var m1 = comp.get('components').add({tagName: 'article'});
               this.obj.build(comp).should.equal('');
             });
 
             it('Build correctly component with style inside', function() {
-              var comp = new Component();
               var m1 = comp.get('components').add({
                 tagName: 'article',
                 style: {
@@ -91,7 +95,6 @@ define([path + 'HtmlGenerator',
             });
 
             it('Build correctly component with class styled', function() {
-              var comp = new Component();
               var m1 = comp.get('components').add({tagName: 'article'});
               var cls1 = m1.get('classes').add({name: 'class1'});
 
@@ -103,7 +106,6 @@ define([path + 'HtmlGenerator',
             });
 
             it('Build correctly component styled with class and state', function() {
-              var comp = new Component();
               var m1 = comp.get('components').add({tagName: 'article'});
               var cls1 = m1.get('classes').add({name: 'class1'});
 
@@ -117,7 +119,6 @@ define([path + 'HtmlGenerator',
 
 
             it('Build correctly with more classes', function() {
-              var comp = new Component();
               var m1 = comp.get('components').add({tagName: 'article'});
               var cls1 = m1.get('classes').add({name: 'class1'});
               var cls2 = m1.get('classes').add({name: 'class2'});
@@ -131,7 +132,6 @@ define([path + 'HtmlGenerator',
             });
 
             it('Build correctly with class styled out', function() {
-              var comp = new Component();
               var m1 = comp.get('components').add({tagName: 'article'});
               var cls1 = m1.get('classes').add({name: 'class1'});
               var cls2 = m1.get('classes').add({name: 'class2'});
@@ -146,7 +146,6 @@ define([path + 'HtmlGenerator',
             });
 
             it('Rule with media query', function() {
-              var comp = new Component();
               var m1 = comp.get('components').add({tagName: 'article'});
               var cls1 = m1.get('classes').add({name: 'class1'});
               var cls2 = m1.get('classes').add({name: 'class2'});
@@ -160,7 +159,6 @@ define([path + 'HtmlGenerator',
             });
 
             it('Rules mixed with media queries', function() {
-              var comp = new Component();
               var m1 = comp.get('components').add({tagName: 'article'});
               var cls1 = m1.get('classes').add({name: 'class1'});
               var cls2 = m1.get('classes').add({name: 'class2'});
@@ -186,7 +184,6 @@ define([path + 'HtmlGenerator',
             });
 
             it("Avoid useless code", function() {
-              var comp = new Component();
               var m1 = comp.get('components').add({tagName: 'article'});
               var cls1 = m1.get('classes').add({name: 'class1'});
 

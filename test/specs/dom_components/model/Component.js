@@ -1,17 +1,24 @@
-define(['DomComponents/model/Component',
+define(['DomComponents',
+        'DomComponents/model/Component',
         'DomComponents/model/ComponentImage',
         'DomComponents/model/ComponentText',
         'DomComponents/model/Components'],
-	function(Component, ComponentImage, ComponentText, Components) {
+	function(DomComponents, Component, ComponentImage, ComponentText, Components) {
 
     return {
       run : function(){
           var obj;
+          var dcomp;
+          var compOpts;
 
           describe('Component', function() {
 
             beforeEach(function () {
               obj = new Component();
+              dcomp = new DomComponents();
+              compOpts = {
+                defaultTypes: dcomp.componentTypes,
+              };
             });
 
             afterEach(function () {
@@ -79,13 +86,13 @@ define(['DomComponents/model/Component',
             });
 
             it('Component toHTML with children', function() {
-              obj = new Component({tagName: 'article'});
+              obj = new Component({tagName: 'article'}, compOpts);
               obj.get('components').add({tagName: 'span'});
               obj.toHTML().should.equal('<article><span></span></article>');
             });
 
             it('Component toHTML with more children', function() {
-              obj = new Component({tagName: 'article'});
+              obj = new Component({tagName: 'article'}, compOpts);
               obj.get('components').add([{tagName: 'span'}, {tagName: 'div'}]);
               obj.toHTML().should.equal('<article><span></span><div></div></article>');
             });
@@ -160,20 +167,27 @@ define(['DomComponents/model/Component',
 
         describe('Components', function() {
 
+            beforeEach(function () {
+              dcomp = new DomComponents();
+              compOpts = {
+                defaultTypes: dcomp.componentTypes,
+              }
+            });
+
             it('Creates component correctly', function() {
-              var c = new Components();
+              var c = new Components({}, compOpts);
               var m = c.add({});
               m.should.be.an.instanceOf(Component);
             });
 
             it('Creates image component correctly', function() {
-              var c = new Components();
+              var c = new Components({}, compOpts);
               var m = c.add({ type: 'image' });
               m.should.be.an.instanceOf(ComponentImage);
             });
 
             it('Creates text component correctly', function() {
-              var c = new Components();
+              var c = new Components({}, compOpts);
               var m = c.add({ type: 'text' });
               m.should.be.an.instanceOf(ComponentText);
             });
