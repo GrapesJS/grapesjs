@@ -242,5 +242,36 @@ define(['./ComponentImage'],
 				return url;
 			},
 
+		},{
+
+			/**
+			 * Detect if the passed element is a valid component.
+			 * In case the element is valid an object abstracted
+			 * from the element will be returned
+			 * @param {HTMLElement}
+			 * @return {Object}
+			 * @private
+			 */
+			isComponent: function(el) {
+				var result = '';
+				var isYtProv = /youtube\.com\/embed/.test(el.src);
+				var isViProv = /player\.vimeo\.com\/video/.test(el.src);
+				var isExtProv = isYtProv || isViProv;
+				if(el.tagName == 'VIDEO' ||
+					(el.tagName == 'IFRAME' && isExtProv) ){
+					result = {type: 'video', tagName: 'video'};
+					if(el.src)
+						result.src = el.src;
+					if(isExtProv){
+						result.tagName = 'iframe';
+						if(isYtProv)
+							result.provider = 'yt';
+						else if(isViProv)
+								result.provider = 'vi';
+					}
+				}
+				return result;
+			},
+
 		});
 });

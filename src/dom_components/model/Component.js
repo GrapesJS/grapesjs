@@ -194,11 +194,8 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 			 * @private
 			 */
 			isComponent: function(el) {
-				var result = '';
-				if(el.tagName == 'DIV')
-					result = {tagName: 'div'};
-				return result;
-			}
+				return {tagName: el.tagName ? el.tagName.toLowerCase() : ''};
+			},
 
 		});
 });

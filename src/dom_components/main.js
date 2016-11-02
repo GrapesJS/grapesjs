@@ -42,30 +42,30 @@ define(function(require) {
 		ComponentView = require('./view/ComponentView');
 		var component, componentView;
 		var defaultTypes = {
-			'default': {
-				model: Component,
-				view: ComponentView,
-			},
-			'text': {
-				model: require('./model/ComponentText'),
-				view: require('./view/ComponentTextView'),
-			},
-			'image': {
-				model: require('./model/ComponentImage'),
-				view: require('./view/ComponentImageView'),
+			'map': {
+				model: require('./model/ComponentMap'),
+				view: require('./view/ComponentMapView'),
 			},
 			'link': {
 				model: require('./model/ComponentLink'),
 				view: require('./view/ComponentLinkView'),
 			},
-			'map': {
-				model: require('./model/ComponentMap'),
-				view: require('./view/ComponentMapView'),
-			},
 			'video': {
 				model: require('./model/ComponentVideo'),
 				view: require('./view/ComponentVideoView'),
-			}
+			},
+			'image': {
+				model: require('./model/ComponentImage'),
+				view: require('./view/ComponentImageView'),
+			},
+			'text': {
+				model: require('./model/ComponentText'),
+				view: require('./view/ComponentTextView'),
+			},
+			'default': {
+				model: Component,
+				view: ComponentView,
+			},
 		};
 
 	  return {
@@ -119,6 +119,7 @@ define(function(require) {
           c.rte = c.em.get('rte') || '';
   				c.modal = c.em.get('Modal') || '';
   				c.am = c.em.get('AssetManager') || '';
+					c.em.get('Parser').compTypes = defaultTypes;
         }
 
         component = new Component(c.wrapper, {

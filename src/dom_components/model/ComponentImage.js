@@ -4,6 +4,7 @@ define(['./Component'],
 		return Component.extend({
 
 			defaults: _.extend({}, Component.prototype.defaults, {
+				type: 'image',
 				tagName: 'img',
 				src: '',
 				void: 1,
@@ -30,6 +31,25 @@ define(['./Component'],
 
 				return attr;
 			}
+
+		},{
+
+			/**
+			 * Detect if the passed element is a valid component.
+			 * In case the element is valid an object abstracted
+			 * from the element will be returned
+			 * @param {HTMLElement}
+			 * @return {Object}
+			 * @private
+			 */
+			isComponent: function(el) {
+				var result = '';
+				if(el.tagName == 'IMG'){
+					result = {type: 'image', tagName: 'img'};
+					result.src = el.src;
+				}
+				return result;
+			},
 
 		});
 });

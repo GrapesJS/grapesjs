@@ -2,8 +2,12 @@ define(['DomComponents',
         'DomComponents/model/Component',
         'DomComponents/model/ComponentImage',
         'DomComponents/model/ComponentText',
+        'DomComponents/model/ComponentLink',
+        'DomComponents/model/ComponentMap',
+        'DomComponents/model/ComponentVideo',
         'DomComponents/model/Components'],
-	function(DomComponents, Component, ComponentImage, ComponentText, Components) {
+	function(DomComponents, Component, ComponentImage, ComponentText,
+    ComponentLink, ComponentMap, ComponentVideo, Components) {
 
     return {
       run : function(){
@@ -102,6 +106,18 @@ define(['DomComponents',
               obj.toHTML().should.equal('<div/>');
             });
 
+            it('Component parse empty div', function() {
+              var el = document.createElement('div');
+              obj = Component.isComponent(el);
+              obj.should.deep.equal({tagName: 'div'});
+            });
+
+            it('Component parse span', function() {
+              var el = document.createElement('span');
+              obj = Component.isComponent(el);
+              obj.should.deep.equal({tagName: 'span'});
+            });
+
         });
 
         describe('Image Component', function() {
@@ -135,6 +151,25 @@ define(['DomComponents',
               obj.toHTML().should.equal('<img alt="AltTest" src="testPath"/>');
             });
 
+            it('Refuse not img element', function() {
+              var el = document.createElement('div');
+              obj = ComponentImage.isComponent(el);
+              obj.should.equal('');
+            });
+
+            it('Component parse img element', function() {
+              var el = document.createElement('img');
+              obj = ComponentImage.isComponent(el);
+              obj.should.deep.equal({type: 'image', src: ''});
+            });
+
+            it('Component parse img element with src', function() {
+              var el = document.createElement('img');
+              el.src = 'http://localhost/';
+              obj = ComponentImage.isComponent(el);
+              obj.should.deep.equal({type: 'image', src: 'http://localhost/'});
+            });
+
         });
 
         describe('Text Component', function() {
@@ -162,6 +197,58 @@ define(['DomComponents',
               });
               obj.toHTML().should.equal('<div data-test="value">test content</div>');
             });
+
+        });
+
+        describe('Link Component', function() {
+
+          it('Component parse a element', function() {
+            var el = document.createElement('a');
+            obj = ComponentLink.isComponent(el);
+            obj.should.deep.equal({type: 'link'});
+          });
+
+        });
+
+        describe('Map Component', function() {
+
+          it('Component parse map iframe', function() {
+            var src = 'https://maps.google.com/maps?&q=London,UK&z=11&t=q&output=embed';
+            var el = $('<iframe src="' + src + '"></iframe>');
+            obj = ComponentMap.isComponent(el.get(0));
+            obj.should.deep.equal({type: 'map', src: src});
+          });
+
+          it('Component parse not map iframe', function() {
+            var el = $('<iframe src="https://www.youtube.com/watch?v=jNQXAC9IVRw"></iframe>');
+            obj = ComponentMap.isComponent(el.get(0));
+            obj.should.equal('');
+          });
+
+        });
+
+        describe('Video Component', function() {
+
+          it('Component parse video', function() {
+            var src = 'http://localhost/';
+            var el = $('<video src="' + src + '"></video>');
+            obj = ComponentVideo.isComponent(el.get(0));
+            obj.should.deep.equal({type: 'video'}); //src: src
+          });
+
+          it('Component parse youtube video iframe', function() {
+            var src = 'http://www.youtube.com/embed/jNQXAC9IVRw?';
+            var el = $('<iframe src="' + src + '"></video>');
+            obj = ComponentVideo.isComponent(el.get(0));
+            obj.should.deep.equal({type: 'video', provider: 'yt', src: src});
+          });
+
+          it('Component parse vimeo video iframe', function() {
+            var src = 'http://player.vimeo.com/video/2?';
+            var el = $('<iframe src="' + src + '"></video>');
+            obj = ComponentVideo.isComponent(el.get(0));
+            obj.should.deep.equal({type: 'video', provider: 'vi', src: src});
+          });
 
         });
 

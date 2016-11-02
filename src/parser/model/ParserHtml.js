@@ -7,6 +7,8 @@ define(function(require) {
 
     return {
 
+      compTypes: '',
+
       /**
        * Parse style string to object
        * @param {string} str
@@ -67,6 +69,18 @@ define(function(require) {
           var prevI = result.length - 1;
           var prevSib = result[prevI];
           model.tagName = node.tagName ? node.tagName.toLowerCase() : '';
+
+          var ct = this.compTypes;
+          if(ct){
+            var obj = '';
+            for (var cType in ct) {
+              var component = ct[cType].model;
+              obj = component.isComponent(node);
+              if(obj)
+                break;
+            }
+            model = obj;
+          }
 
           if(attrsLen)
             model.attributes = {};
