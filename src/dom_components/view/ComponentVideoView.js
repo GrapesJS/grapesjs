@@ -9,7 +9,18 @@ define(['backbone', './ComponentImageView'],
 
 		initialize: function(o){
 			ComponentView.prototype.initialize.apply(this, arguments);
-			this.listenTo(this.model, 'change:loop change:autoplay change:controls', this.updateVideo);
+			this.listenTo(this.model, 'change:loop change:autoplay change:controls change:color', this.updateVideo);
+			this.listenTo(this.model, 'change:provider', this.updateProvider);
+		},
+
+		/**
+		 * Rerender on update of the provider
+		 * @private
+		 */
+		updateProvider: function() {
+			var prov = this.model.get('provider');
+			this.el.innerHTML = '';
+			this.el.appendChild(this.renderByProvider(prov));
 		},
 
 		/**
@@ -17,8 +28,17 @@ define(['backbone', './ComponentImageView'],
 		 * @private
 		 */
 		updateSrc: function() {
-			this.videoEl.src = this.model.get('src');
-			console.log('update source');
+			var prov = this.model.get('provider');
+			var src = this.model.get('src');
+			switch (prov) {
+				case 'yt':
+					src = this.model.getYoutubeSrc();
+					break;
+				case 'vi':
+					src = this.model.getVimeoSrc();
+					break;
+			}
+			this.videoEl.src = src;
 		},
 
 		/**
@@ -26,18 +46,28 @@ define(['backbone', './ComponentImageView'],
 		 * @private
 		 */
 		updateVideo: function() {
+			var prov = this.model.get('provider');
 			var videoEl = this.videoEl;
 			var md = this.model;
-			videoEl.loop = md.get('loop');
-			videoEl.autoplay = md.get('autoplay');
-			videoEl.controls = md.get('controls');
+			switch (prov) {
+				case 'yt': case 'vi':
+					this.model.trigger('change:videoId');
+					break;
+				default:
+					videoEl.loop = md.get('loop');
+					videoEl.autoplay = md.get('autoplay');
+					videoEl.controls = md.get('controls');
+			}
 		},
 
 		renderByProvider: function(prov) {
 			var videoEl;
 			switch (prov) {
 				case 'yt':
-
+					videoEl = this.renderYoutube();
+					break;
+				case 'vi':
+					videoEl = this.renderVimeo();
 					break;
 				default:
 					videoEl = this.renderSource();
@@ -49,6 +79,26 @@ define(['backbone', './ComponentImageView'],
 		renderSource: function() {
 			var el = document.createElement('video');
 			el.src = this.model.get('src');
+			el.style.pointerEvents = 'none';
+			el.style.height = '100%';
+			el.style.width = '100%';
+			return el;
+		},
+
+		renderYoutube: function() {
+			var el = document.createElement('iframe');
+			el.src = this.model.getYoutubeSrc();
+			el.frameBorder = 0;
+			el.style.pointerEvents = 'none';
+			el.style.height = '100%';
+			el.style.width = '100%';
+			return el;
+		},
+
+		renderVimeo: function() {
+			var el = document.createElement('iframe');
+			el.src = this.model.getVimeoSrc();
+			el.frameBorder = 0;
 			el.style.pointerEvents = 'none';
 			el.style.height = '100%';
 			el.style.width = '100%';

@@ -11,42 +11,7 @@ define(['backbone'],
 					code 	= '';
 
 				coll.each(function(m){
-					var tag = m.get('tagName'),			// Tag name
-							attr = '',										// Attributes string
-							attrId = '',
-							strCls = '',
-							cln = m.get('components'),		// Children
-							attrs = m.get('attributes'),
-							sTag = m.get('void'),
-							classes = m.get('classes');
-					_.each(attrs,function(value, prop){
-						if(prop == 'onmousedown')
-							return;
-						attr 	+= value && prop!='style' ? ' ' + prop + '="' + value + '"' : '';
-					});
-
-					if(m.get('type') == 'image'){
-							tag 	= 'img';
-							sTag	= 1;
-							attr 	+= ' src="' + m.get('src') + '"';
-					}
-
-					if(!_.isEmpty(m.get('style')))
-						attrId = ' id="' + m.cid + '" ';
-
-					classes.each(function(m){
-						strCls += ' ' + m.get('name');
-					});
-
-					strCls = strCls !== '' ? ' class="' + strCls.trim() + '"' : '';
-					code += '<' + tag + strCls + attrId + attr + (sTag ? '/' : '') + '>' + m.get('content');
-
-					if(cln.length)
-						code += this.build(cln);
-
-					if(!sTag)
-						code += '</'+tag+'>';
-
+					code += m.toHTML();
 				}, this);
 
 				return code;
