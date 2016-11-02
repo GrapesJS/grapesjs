@@ -199,7 +199,11 @@ define(function () {
 	        attributes: {class:'fa fa-youtube-play'},
 	        content: {
 						type: 'video',
-						style: {height: '350px'}
+						src: 'img/video2.webm',
+						style: {
+							height: '350px',
+							width: '615px',
+						}
 					},
 	      }],
 		},

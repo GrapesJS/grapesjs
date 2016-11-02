@@ -79,6 +79,13 @@ $fontV: 5;//random(1000)
   appearance: $v;
 }
 
+@mixin transform($v) {
+  -ms-transform: $v;
+  -webkit-transform: $v;
+  -moz-transform: $v;
+  transform: $v;
+}
+
 //.#{$app-prefix}fonts {}
 
 .#{$app-prefix}fonts::before {
@@ -235,7 +242,7 @@ div.#{$app-prefix}select {
 }
 .#{$trt-prefix}trait {
   display: flex;
-  justify-content: space-between;
+  justify-content: start;
   padding: 5px 10px;
   font-size: 0.75em;
   font-weight: lighter;
@@ -756,6 +763,31 @@ $arrowColor: $mainLhlColor; /*b1b1b1*/
 
   input::-ms-track {
     @include rangeTrackStyle();
+  }
+}
+
+.#{$app-prefix}chk-icon{
+  @include transform(rotate(45deg));
+  box-sizing: border-box;
+  display: block;
+  height: 14px;
+  margin: 0 5px;
+  width: 6px;
+  cursor: pointer;
+}
+
+.#{$app-prefix}field-checkbox {
+  padding: 0;
+  width: auto !important;
+
+  input {
+    display: none;
+  }
+
+  input:checked + .#{$app-prefix}chk-icon{
+    border-color: rgba(255, 255, 255, 0.5);
+    border-width: 0 2px 2px 0;
+    border-style: solid;
   }
 }
 

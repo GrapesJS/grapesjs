@@ -75,11 +75,15 @@ define(['backbone'], function (Backbone) {
 		getInputEl: function() {
 			if(!this.$input){
 				var md = this.model;
+				var name = md.get('name');
 				var opts = {
 					placeholder: md.get('placeholder') || md.get('default'),
 					type: md.get('type') || 'text',
 					value: md.get('value')
 				};
+				if(md.get('changeProp')){
+					opts.value = this.target.get(name);
+				}
 				if(md.get('min'))
 					opts.min = md.get('min');
 				if(md.get('max'))
@@ -97,7 +101,7 @@ define(['backbone'], function (Backbone) {
 			if(!this.$input){
 				this.$el.append(this.tmpl);
 				var el = this.getInputEl();
-				this.$el.find('.' + this.inputhClass).html(el);
+				this.$el.find('.' + this.inputhClass).prepend(el);
 			}
 		},
 

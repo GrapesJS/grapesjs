@@ -43,6 +43,18 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 			},
 
 			/**
+			 * Load traits
+			 * @param  {Array} traits
+			 * @private
+			 */
+			loadTraits: function(traits) {
+				var trt = new Traits();
+				trt.setTarget(this);
+				trt.add(traits);
+				this.set('traits', trt);
+			},
+
+			/**
 			 * Normalize input classes from array to array of objects
 			 * @param {Array} arr
 			 * @return {Array}

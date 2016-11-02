@@ -2728,7 +2728,7 @@ div.gjs-select {
 
 .gjs-trt-trait {
   display: flex;
-  justify-content: space-between;
+  justify-content: start;
   padding: 5px 10px;
   font-size: 0.75em;
   font-weight: lighter; }
@@ -3202,6 +3202,28 @@ ol.example li.placeholder:before {
     border: 1px solid rgba(0, 0, 0, 0.15);
     border-radius: 1px;
     height: 2px; }
+
+.gjs-chk-icon {
+  -ms-transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  transform: rotate(45deg);
+  box-sizing: border-box;
+  display: block;
+  height: 14px;
+  margin: 0 5px;
+  width: 6px;
+  cursor: pointer; }
+
+.gjs-field-checkbox {
+  padding: 0;
+  width: auto !important; }
+  .gjs-field-checkbox input {
+    display: none; }
+  .gjs-field-checkbox input:checked + .gjs-chk-icon {
+    border-color: rgba(255, 255, 255, 0.5);
+    border-width: 0 2px 2px 0;
+    border-style: solid; }
 
 .gjs-add-trasp {
   background: none;
