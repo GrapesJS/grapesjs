@@ -40,9 +40,9 @@ define(['backbone', './ComponentImageView'],
 				var ifrm = document.createElement("iframe");
 				ifrm.src = this.getMapUrl();
 				ifrm.frameBorder = 0;
-				ifrm.style.pointerEvents = 'none';
 				ifrm.style.height = '100%';
 				ifrm.style.width = '100%';
+				ifrm.className = this.ppfx + 'no-pointer';
 				this.iframe = ifrm;
 			}
 			return this.iframe;

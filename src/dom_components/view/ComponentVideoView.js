@@ -79,9 +79,7 @@ define(['backbone', './ComponentImageView'],
 		renderSource: function() {
 			var el = document.createElement('video');
 			el.src = this.model.get('src');
-			el.style.pointerEvents = 'none';
-			el.style.height = '100%';
-			el.style.width = '100%';
+			this.initVideoEl(el);
 			return el;
 		},
 
@@ -89,9 +87,7 @@ define(['backbone', './ComponentImageView'],
 			var el = document.createElement('iframe');
 			el.src = this.model.getYoutubeSrc();
 			el.frameBorder = 0;
-			el.style.pointerEvents = 'none';
-			el.style.height = '100%';
-			el.style.width = '100%';
+			this.initVideoEl(el);
 			return el;
 		},
 
@@ -99,10 +95,14 @@ define(['backbone', './ComponentImageView'],
 			var el = document.createElement('iframe');
 			el.src = this.model.getVimeoSrc();
 			el.frameBorder = 0;
-			el.style.pointerEvents = 'none';
+			this.initVideoEl(el);
+			return el;
+		},
+
+		initVideoEl: function(el){
+			el.className = this.ppfx + 'no-pointer';
 			el.style.height = '100%';
 			el.style.width = '100%';
-			return el;
 		},
 
 		render: function() {

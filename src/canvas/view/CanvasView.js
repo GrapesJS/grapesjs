@@ -45,6 +45,7 @@ function(Backbone, FrameView) {
         							 '.' + this.ppfx	+ 'comp-selected{outline: 3px solid #3b97e3 !important}' +
                        '.' + this.ppfx  + 'no-select{user-select: none; -webkit-user-select:none; -moz-user-select: none}'+
                        '.' + this.ppfx  + 'freezed{opacity: 0.5; pointer-events: none}' +
+											 '.' + this.ppfx  + 'no-pointer{pointer-events: none}' +
                        '.' + this.ppfx  + 'plh-image{background:#f5f5f5; border:none; height:50px; width:50px; display:block; outline:3px solid #ffca6f; cursor:pointer}';
         if(protCss)
         	body.append('<style>' + frameCss + protCss + '</style>');
