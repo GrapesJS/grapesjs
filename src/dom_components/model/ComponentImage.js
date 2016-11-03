@@ -30,7 +30,35 @@ define(['./Component'],
 					attr += ' src="' + src + '"';
 
 				return attr;
-			}
+			},
+
+			/**
+			 * Parse uri
+			 * @param  {string} uri
+			 * @return {object}
+			 * @private
+			 */
+			parseUri: function(uri) {
+				var el = document.createElement('a');
+				el.href = uri;
+				var query = {};
+				var qrs = el.search.substring(1).split('&');
+				for (var i = 0; i < qrs.length; i++) {
+	        var pair = qrs[i].split('=');
+					var name = decodeURIComponent(pair[0]);
+					if(name)
+						query[name] = decodeURIComponent(pair[1]);
+    		}
+				return {
+					hostname: el.hostname,
+					pathname: el.pathname,
+					protocol: el.protocol,
+					search: el.search,
+					hash: el.hash,
+					port: el.port,
+					query: query,
+				};
+			},
 
 		},{
 
@@ -45,7 +73,7 @@ define(['./Component'],
 			isComponent: function(el) {
 				var result = '';
 				if(el.tagName == 'IMG'){
-					result = {type: 'image', tagName: 'img'};
+					result = {type: 'image'};
 					result.src = el.src;
 				}
 				return result;

@@ -1,6 +1,9 @@
 define(['./ComponentImage'],
 	function (Component) {
 
+		var yt = 'yt';
+		var vi = 'vi';
+
 		return Component.extend({
 
 			defaults: _.extend({}, Component.prototype.defaults, {
@@ -20,10 +23,48 @@ define(['./ComponentImage'],
 			}),
 
 			initialize: function(o, opt) {
-				this.set('traits', this.getSourceTraits());
+				var traits = [];
+				var prov = this.get('provider');
+				switch (prov) {
+					case yt:
+						traits = this.getYoutubeTraits();
+						break;
+					case vi:
+						traits = this.getVimeoTraits();
+						break;
+					default:
+						traits = this.getSourceTraits();
+				}
+				if(this.get('src'))
+					this.parseFromSrc();
+				this.set('traits', traits);
 				Component.prototype.initialize.apply(this, arguments);
 				this.listenTo(this, 'change:provider', this.updateTraits);
 				this.listenTo(this, 'change:videoId', this.updateSrc);
+			},
+
+			/**
+			 * Set attributes by src string
+			 */
+			parseFromSrc: function() {
+				var prov = this.get('provider');
+				var uri = this.parseUri(this.get('src'));
+				var qr = uri.query;
+				switch (prov) {
+					case yt: case vi:
+						var videoId = uri.pathname.split('/').pop();
+						this.set('videoId', videoId);
+						if(qr.autoplay)
+							this.set('autoplay', 1);
+						if(qr.loop)
+							this.set('loop', 1);
+						if(parseInt(qr.controls) === 0)
+							this.set('controls', 0);
+						if(qr.color)
+							this.set('color', qr.color);
+						break;
+					default:
+				}
 			},
 
 			/**
@@ -259,15 +300,14 @@ define(['./ComponentImage'],
 				var isExtProv = isYtProv || isViProv;
 				if(el.tagName == 'VIDEO' ||
 					(el.tagName == 'IFRAME' && isExtProv) ){
-					result = {type: 'video', tagName: 'video'};
+					result = {type: 'video'};
 					if(el.src)
 						result.src = el.src;
 					if(isExtProv){
-						result.tagName = 'iframe';
 						if(isYtProv)
 							result.provider = 'yt';
 						else if(isViProv)
-								result.provider = 'vi';
+							result.provider = 'vi';
 					}
 				}
 				return result;

@@ -33,6 +33,26 @@ define(['./ComponentImage'],
 					}],
 			}),
 
+			initialize: function(o, opt) {
+				if(this.get('src'))
+					this.parseFromSrc();
+				Component.prototype.initialize.apply(this, arguments);
+			},
+
+			/**
+			 * Set attributes by src string
+			 */
+			parseFromSrc: function() {
+				var uri = this.parseUri(this.get('src'));
+				var qr = uri.query;
+				if(qr.q)
+					this.set('address', qr.q);
+				if(qr.z)
+					this.set('zoom', qr.z);
+				if(qr.t)
+					this.set('mapType', qr.t);
+			},
+
 		},{
 
 			/**
@@ -47,7 +67,7 @@ define(['./ComponentImage'],
 				var result = '';
 				if(el.tagName == 'IFRAME' &&
 					/maps\.google\.com/.test(el.src) ){
-					result = {type: 'map', src: el.src, tagName: 'iframe'};
+					result = {type: 'map', src: el.src};
 				}
 				return result;
 			},

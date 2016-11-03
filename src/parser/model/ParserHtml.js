@@ -68,7 +68,6 @@ define(function(require) {
           var attrsLen = attrs.length;
           var prevI = result.length - 1;
           var prevSib = result[prevI];
-          model.tagName = node.tagName ? node.tagName.toLowerCase() : '';
 
           var ct = this.compTypes;
           if(ct){
@@ -81,6 +80,9 @@ define(function(require) {
             }
             model = obj;
           }
+
+          if(!model.tagName)
+            model.tagName = node.tagName ? node.tagName.toLowerCase() : '';
 
           if(attrsLen)
             model.attributes = {};

@@ -21,7 +21,7 @@ define(['./ComponentText'],
 			isComponent: function(el) {
 				var result = '';
 				if(el.tagName == 'A'){
-					result = {type: 'link', tagName: 'a'};
+					result = {type: 'link'};
 				}
 				return result;
 			},
