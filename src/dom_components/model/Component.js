@@ -141,11 +141,16 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 				var code = '';
 				var m = this;
 				var tag = m.get('tagName'),
-				attrs = m.get('attributes'),
 				sTag = m.get('void'),
 				attrId = '';
 				// Build the string of attributes
-				var attr = this.toAttrHTML();
+				var strAttr = '';
+				var attr = this.getAttrToHTML();
+				for(var prop in attr){
+					var val = attr[prop];
+					strAttr += typeof val !== undefined && val !== '' ?
+						' ' + prop + '="' + val + '"' : '';
+				}
 				// Build the string of classes
 				var strCls = '';
 				m.get('classes').each(function(m){
@@ -158,7 +163,7 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 				if(!_.isEmpty(m.get('style')))
  					attrId = ' id="' + m.cid + '" ';
 
-				code += '<' + tag + strCls + attrId + attr + (sTag ? '/' : '') + '>' + m.get('content');
+				code += '<' + tag + strCls + attrId + strAttr + (sTag ? '/' : '') + '>' + m.get('content');
 
 				m.get('components').each(function(m) {
 					code += m.toHTML();
@@ -171,15 +176,13 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 			},
 
 			/**
-			 * Returns attributes string in HTML
-			 * @return {string}
+			 * Returns object of attributes for HTML
+			 * @return {Object}
 			 * @private
 			 */
-			toAttrHTML: function() {
-				var attr = '';
-				_.each(this.get('attributes'), function(val, prop){
-					attr += (val && prop != 'style') ? ' ' + prop + '="' + val + '"' : '';
-				});
+			getAttrToHTML: function() {
+				var attr = this.get('attributes') || {};
+				delete attr.style;
 				return attr;
 			}
 

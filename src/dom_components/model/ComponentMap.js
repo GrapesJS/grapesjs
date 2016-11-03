@@ -4,11 +4,14 @@ define(['./ComponentImage'],
 		return Component.extend({
 
 			defaults: _.extend({}, Component.prototype.defaults, {
+					type: 'map',
+					void: 0,
 					mapUrl: 'https://maps.google.com/maps',
 					tagName: 'iframe',
 					mapType: 'q',
 					address: '',
 					zoom: '1',
+					attributes: {frameborder: 0},
 					traits: [{
 						label: 'Address',
 						name: 'address',
@@ -33,14 +36,42 @@ define(['./ComponentImage'],
 					}],
 			}),
 
+
 			initialize: function(o, opt) {
 				if(this.get('src'))
 					this.parseFromSrc();
+				else
+					this.updateSrc();
 				Component.prototype.initialize.apply(this, arguments);
+				this.listenTo(this, 'change:address change:zoom change:mapType', this.updateSrc);
+			},
+
+			updateSrc: function() {
+				this.set('src', this.getMapUrl());
+			},
+
+			/**
+			 * Returns url of the map
+			 * @return {string}
+			 * @private
+			 */
+			getMapUrl: function() {
+				var md = this;
+				var addr = md.get('address');
+				var zoom = md.get('zoom');
+				var type = md.get('mapType');
+				var size = '';
+				addr = addr ? '&q=' + addr : '';
+				zoom = zoom ? '&z=' + zoom : '';
+				type = type ? '&t=' + type : '';
+				var result = md.get('mapUrl')+'?' + addr + zoom + type;
+				result += '&output=embed';
+				return result;
 			},
 
 			/**
 			 * Set attributes by src string
+			 * @private
 			 */
 			parseFromSrc: function() {
 				var uri = this.parseUri(this.get('src'));

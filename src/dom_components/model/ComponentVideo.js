@@ -74,36 +74,34 @@ define(['./ComponentImage'],
 			updateSrc: function() {
 				var prov = this.get('provider');
 				switch (prov) {
-					case 'yt':
+					case yt:
 						this.set('src',this.getYoutubeSrc());
 						break;
-					case 'vi':
+					case vi:
 						this.set('src',this.getVimeoSrc());
 						break;
 				}
 			},
 
 			/**
-			 * Returns attributes string in HTML
-			 * @return {string}
+			 * Returns object of attributes for HTML
+			 * @return {Object}
 			 * @private
 			 */
-			toAttrHTML: function() {
-				var attr = Component.prototype.toAttrHTML.apply(this, arguments);
+			getAttrToHTML: function() {
+				var attr = Component.prototype.getAttrToHTML.apply(this, arguments);
 				var prov = this.get('provider');
-
 				switch (prov) {
-					case 'yt': case 'vi':
+					case yt: case vi:
 						break;
 					default:
 						if(this.get('loop'))
-							attr += ' loop';
+							attr.loop = 'loop';
 						if(this.get('autoplay'))
-							attr += ' autoplay';
+							attr.autoplay = 'autoplay';
 						if(this.get('controls'))
-							attr += ' controls';
+							attr.controls = 'controls';
 				}
-
 				return attr;
 			},
 
@@ -115,11 +113,11 @@ define(['./ComponentImage'],
 				var prov = this.get('provider');
 				var traits = this.getSourceTraits();
 				switch (prov) {
-					case 'yt':
+					case yt:
 						this.set('tagName', 'iframe');
 						traits = this.getYoutubeTraits();
 						break;
-					case 'vi':
+					case vi:
 						this.set('tagName', 'iframe');
 						traits = this.getVimeoTraits();
 						break;
@@ -146,8 +144,8 @@ define(['./ComponentImage'],
 					value: this.get('provider'),
 					options: [
 						{value: 'so', name: 'HTML5 Source'},
-						{value: 'yt', name: 'Youtube'},
-						{value: 'vi', name: 'Vimeo'}
+						{value: yt, name: 'Youtube'},
+						{value: vi, name: 'Vimeo'}
 					]
 				};
 			},
@@ -305,9 +303,9 @@ define(['./ComponentImage'],
 						result.src = el.src;
 					if(isExtProv){
 						if(isYtProv)
-							result.provider = 'yt';
+							result.provider = yt;
 						else if(isViProv)
-							result.provider = 'vi';
+							result.provider = vi;
 					}
 				}
 				return result;

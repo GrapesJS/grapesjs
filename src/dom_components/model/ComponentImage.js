@@ -13,22 +13,16 @@ define(['./Component'],
 			}),
 
 			/**
-			 * Returns attributes string in HTML
-			 * @return {string}
+			 * Returns object of attributes for HTML
+			 * @return {Object}
 			 * @private
 			 */
-			toAttrHTML: function() {
-				var attr = '';
-				_.each(this.get('attributes'), function(value, prop){
-					if(prop == 'onmousedown')
-						return;
-					attr += value && prop!='style' ? ' ' + prop + '="' + value + '"' : '';
-				});
-
+			getAttrToHTML: function() {
+				var attr = Component.prototype.getAttrToHTML.apply(this, arguments);
+				delete attr.onmousedown;
 				var src = this.get('src');
 				if(src)
-					attr += ' src="' + src + '"';
-
+					attr.src = src;
 				return attr;
 			},
 

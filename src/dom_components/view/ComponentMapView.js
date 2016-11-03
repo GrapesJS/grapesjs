@@ -9,7 +9,6 @@ define(['backbone', './ComponentImageView'],
 
 		initialize: function(o){
 			ComponentView.prototype.initialize.apply(this, arguments);
-			this.listenTo(this.model, 'change:address change:zoom change:mapType', this.updateMap);
 			this.classEmpty = this.ppfx + 'plh-map';
 		},
 
@@ -17,28 +16,14 @@ define(['backbone', './ComponentImageView'],
 		 * Update the map on the canvas
 		 * @private
 		 */
-		updateMap: function(e, m) {
-			this.getIframe().src = this.getMapUrl();
-		},
-
-		getMapUrl: function() {
-			var md = this.model;
-			var addr = md.get('address');
-			var zoom = md.get('zoom');
-			var type = md.get('mapType');
-			var size = '';
-			addr = addr ? '&q=' + addr : '';
-			zoom = zoom ? '&z=' + zoom : '';
-			type = type ? '&t=' + type : '';
-			var result = md.get('mapUrl')+'?' + addr + zoom + type;
-			result += '&output=embed';
-			return result;
+		updateSrc: function() {
+			this.getIframe().src = this.model.get('src');
 		},
 
 		getIframe: function() {
 			if(!this.iframe){
 				var ifrm = document.createElement("iframe");
-				ifrm.src = this.getMapUrl();
+				ifrm.src = this.model.get('src');
 				ifrm.frameBorder = 0;
 				ifrm.style.height = '100%';
 				ifrm.style.width = '100%';
