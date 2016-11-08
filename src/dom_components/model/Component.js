@@ -127,7 +127,7 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 					var tag = this.get('tagName');
 					tag = tag == 'div' ? 'box' : tag;
 					tag = type ? type : tag;
-					this.name 	= tag.charAt(0).toUpperCase() + tag.slice(1) + ' ' + id;
+					this.name 	= tag.charAt(0).toUpperCase() + tag.slice(1);
 				}
 				return this.name;
 			},
