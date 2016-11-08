@@ -62,6 +62,10 @@ define(function(require) {
 				model: require('./model/ComponentText'),
 				view: require('./view/ComponentTextView'),
 			},
+			'textnode': {
+				model: require('./model/ComponentTextNode'),
+				view: require('./view/ComponentTextNodeView'),
+			},
 			'default': {
 				model: Component,
 				view: ComponentView,
