@@ -87,6 +87,7 @@ define(['backbone', './ComponentImageView'],
 			var el = document.createElement('iframe');
 			el.src = this.model.getYoutubeSrc();
 			el.frameBorder = 0;
+			el.setAttribute('allowfullscreen', true);
 			this.initVideoEl(el);
 			return el;
 		},
@@ -95,6 +96,7 @@ define(['backbone', './ComponentImageView'],
 			var el = document.createElement('iframe');
 			el.src = this.model.getVimeoSrc();
 			el.frameBorder = 0;
+			el.setAttribute('allowfullscreen', true);
 			this.initVideoEl(el);
 			return el;
 		},

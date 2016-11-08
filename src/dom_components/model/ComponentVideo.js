@@ -20,6 +20,7 @@ define(['./ComponentImage'],
 					controls: 1,
 					color: '',
 					sources: [],
+					attributes:{allowfullscreen:'allowfullscreen'}
 			}),
 
 			initialize: function(o, opt) {
