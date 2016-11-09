@@ -51,6 +51,8 @@ define([ 'backbone', 'require'],
 					if(parsed.css && cssc){
 						var added = cssc.addCollection(parsed.css);
 					}
+
+					console.log('Parsed from add', models);
 				}
 
 				return Backbone.Collection.prototype.add.apply(this, [models, opt]);

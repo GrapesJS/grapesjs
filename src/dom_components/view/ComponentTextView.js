@@ -4,7 +4,8 @@ define(['backbone', './ComponentView'],
 	return ComponentView.extend({
 
 		events: {
-			'dblclick' 	: 'enableEditing',
+			'dblclick': 'enableEditing',
+			'change': 'parseRender',
 		},
 
 		initialize: function(o){
@@ -12,6 +13,20 @@ define(['backbone', './ComponentView'],
 			_.bindAll(this,'disableEditing');
 			this.listenTo(this.model, 'focus active', this.enableEditing);
 			this.rte = this.config.rte || '';
+		},
+
+		/**
+		 * Parse content and re-render it
+		 * @private
+		 */
+		parseRender: function(){
+			var comps = this.model.get('components');
+			var opts = {silent: true};
+			// Avoid re-render on reset with silent option
+			comps.reset(null, opts);
+			comps.add(this.$el.html(), opts);
+			this.model.set('content', '');
+			this.render();
 		},
 
 		/**
@@ -34,7 +49,8 @@ define(['backbone', './ComponentView'],
 			if(this.rte)
 				this.rte.detach(this);
 			this.toggleEvents();
-			this.updateContents();
+			//this.updateContents();
+			this.parseRender();
 		},
 
 		/**
@@ -48,10 +64,11 @@ define(['backbone', './ComponentView'],
 
 		/**
 		 * Update contents of the element
+		 * TODO to remove
 		 * @private
 		 **/
 		updateContents: function(){
-			this.model.set('content', this.el.innerHTML);
+			//this.model.set('content', this.el.innerHTML);
 		},
 
 		/**
@@ -62,16 +79,12 @@ define(['backbone', './ComponentView'],
 			var method = enable ? 'on' : 'off';
 			// The ownerDocument is from the frame
 			var elDocs = [this.el.ownerDocument, document, this.rte];
+			$(elDocs).off('mousedown', this.disableEditing);
 			$(elDocs)[method]('mousedown', this.disableEditing);
 			// Avoid closing edit mode on component click
+			this.$el.off('mousedown', this.disablePropagation);
 			this.$el[method]('mousedown', this.disablePropagation);
 		},
 
-		render: function() {
-			this.updateAttributes();
-			this.updateClasses();
-			this.el.innerHTML = this.model.get('content');
-			return this;
-		},
 	});
 });

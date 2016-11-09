@@ -45,6 +45,7 @@ define(['jquery'],
         editor.get(0).ownerDocument.execCommand("styleWithCSS", false, true);
         editor.get(0).ownerDocument.execCommand(command, 0, args);
         updateToolbar();
+        editor.trigger('change');
       },
       /*
       bindHotkeys = function (hotKeys) {
@@ -112,7 +113,16 @@ define(['jquery'],
         toolbar.find(toolbarBtnSelector).unbind().click(function () {
           restoreSelection();
           //editor.focus(); // cause defocus on selects
-          editor.get(0).ownerDocument.execCommand($(this).data(options.commandRole));
+          var doc = editor.get(0).ownerDocument;
+          var el = $(this);
+          var comm = el.data(options.commandRole);
+          var args = el.data('args');
+          if(args){
+            args = args.replace('${content}', doc.getSelection());
+            execCommand(comm, args);
+          }else{
+            doc.execCommand(comm);
+          }
           saveSelection();
         });
         toolbar.find('[data-toggle=dropdown]').click(restoreSelection);
@@ -124,11 +134,9 @@ define(['jquery'],
             editor.focus();
             execCommand($(this).data(options.commandRole), newValue);
           }
-          console.log('change isolated2 ', newValue);
           saveSelection();
         });
         toolbar.find('input[type=text]'+dName,', select'+dName).on('webkitspeechchange change', function () {
-          console.log('on changed ', newValue);
           var newValue = this.value; /* ugly but prevents fake double-calls due to selection restoration */
           this.value = '';
           restoreSelection();
@@ -138,10 +146,8 @@ define(['jquery'],
           }
           saveSelection();
         }).on('focus', function () {
-          console.log('on focus ');
           var input = $(this);
           if (!input.data(options.selectionMarker)) {
-            console.log('i have no ', options.selectionMarker);
             markSelection(input, options.selectionColor);
             input.focus();
           }
@@ -228,4 +234,3 @@ define(['jquery'],
 
   return $;
 });
-

@@ -97,10 +97,7 @@ define(function(require) {
               model.style = this.parseStyle(nodeValue);
             else if(nodeName == 'class')
               model.classes = this.parseClass(nodeValue);
-            else if(nodeName == 'src' && model.tagName == 'img'){
-              model.type = 'image';
-              model.src = nodeValue;
-            }else
+            else
               model.attributes[nodeName] = nodeValue;
           }
 
@@ -110,7 +107,9 @@ define(function(require) {
             // Avoid infinite text nodes nesting
             var firstChild = node.childNodes[0];
             if(nodeChild === 1 && firstChild.nodeType === 3){
-              model.type = 'text';
+              if(!model.type){
+                model.type = 'text';
+              }
               model.content = firstChild.nodeValue;
             }else{
               var parsed = this.parseNode(node);
@@ -128,19 +127,22 @@ define(function(require) {
 
           var prevIsText = prevSib && prevSib.type == 'text' && prevSib.tagName == TEXT_NODE;
           // Find text nodes
-          if(!model.tagName && node.nodeType === 3){
+          /*
+          if(model.type == 'textnode'){
             // Pass content to the previous model if it's a text node
             if(prevIsText){
               prevSib.content += node.nodeValue;
               continue;
             }
-            // Make it text node only the content is not empty
+            // Make it text node only if the content is not empty
             if(node.nodeValue.trim()){
+              console.log('part 1', model);
               model.type = 'text';
               model.tagName = TEXT_NODE;
               model.content = node.nodeValue;
             }
           }
+          */
 
           // Check if it's a text node and if it could be moved to the prevous model
           if(c.textTags.indexOf(model.tagName) >= 0){
@@ -156,8 +158,8 @@ define(function(require) {
             }
           }
 
-          // If tagName is still empty do not push it
-          if(!model.tagName)
+          // If tagName is still empty and is not a textnode, do not push it
+          if(!model.tagName && model.type != 'textnode')
             continue;
 
           result.push(model);

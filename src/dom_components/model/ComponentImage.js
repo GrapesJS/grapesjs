@@ -67,8 +67,10 @@ define(['./Component'],
 			isComponent: function(el) {
 				var result = '';
 				if(el.tagName == 'IMG'){
-					result = {type: 'image'};
-					result.src = el.src;
+					result = {
+						type: 'image',
+						src: el.src
+					};
 				}
 				return result;
 			},

@@ -179,7 +179,7 @@ define(['backbone', './ComponentsView'],
 				this.updateClasses();
 				this.$el.html(this.model.get('content'));
 				var view = new ComponentsView({
-					collection: this.components,
+					collection: this.model.get('components'),
 					config: this.config,
 					defaultTypes: this.opts.defaultTypes,
 					componentTypes: this.opts.componentTypes,

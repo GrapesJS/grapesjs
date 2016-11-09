@@ -36,6 +36,7 @@ function(Backbone, require) {
 				this.compView	=	require('./ComponentView');
 			var fragment	= fragmentEl || null,
 			viewObject	= this.compView;
+			//console.log('Add to collection', model, 'Index',i);
 
 			var dt = this.opts.defaultTypes;
 			var ct = this.opts.componentTypes;
@@ -50,6 +51,8 @@ function(Backbone, require) {
 				componentTypes: ct,
 			});
 			var rendered	= view.render().el;
+			if(view.model.get('type') == 'textnode')
+				rendered =  document.createTextNode(view.model.get('content'));
 
 			if(fragment){
 				fragment.appendChild(rendered);

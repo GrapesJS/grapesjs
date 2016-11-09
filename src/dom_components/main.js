@@ -58,13 +58,13 @@ define(function(require) {
 				model: require('./model/ComponentImage'),
 				view: require('./view/ComponentImageView'),
 			},
-			'text': {
-				model: require('./model/ComponentText'),
-				view: require('./view/ComponentTextView'),
-			},
 			'textnode': {
 				model: require('./model/ComponentTextNode'),
 				view: require('./view/ComponentTextNodeView'),
+			},
+			'text': {
+				model: require('./model/ComponentText'),
+				view: require('./view/ComponentTextView'),
 			},
 			'default': {
 				model: Component,
