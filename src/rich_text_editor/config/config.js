@@ -24,7 +24,7 @@ define(function () {
 			command: 'insertHTML',
 			title: 'Link',
 			class: 'fa fa-link',
-			args: '<a href="">${content}</a>',
+			args: '<a class="link" href="">${content}</a>',
 	 	}/*,{
 	 		command: 'fontSize',
 	 		options: [

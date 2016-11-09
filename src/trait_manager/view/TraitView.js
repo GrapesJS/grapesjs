@@ -75,14 +75,17 @@ define(['backbone'], function (Backbone) {
 		getInputEl: function() {
 			if(!this.$input){
 				var md = this.model;
+				var trg = this.target;
 				var name = md.get('name');
 				var opts = {
 					placeholder: md.get('placeholder') || md.get('default'),
-					type: md.get('type') || 'text',
-					value: md.get('value')
+					type: md.get('type') || 'text'
 				};
 				if(md.get('changeProp')){
-					opts.value = this.target.get(name);
+					opts.value = trg.get(name);
+				}else{
+					var attrs = trg.get('attributes');
+					opts.value = md.get('value') || attrs[name];
 				}
 				if(md.get('min'))
 					opts.min = md.get('min');
