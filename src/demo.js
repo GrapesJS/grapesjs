@@ -10,7 +10,7 @@ require(['config/require-config'], function() {
 			container	: '#gjs',
 			height: '100%',
 			//fromElement: true,
-
+			/*
 			components: [{
 				type: 'text',
 				style:{
@@ -32,7 +32,8 @@ require(['config/require-config'], function() {
 					type: 'textnode',
 					content: " More text node  ---   ",
 				}],
-			}],
+			}],*/
+			components: '<div id="test1">a b <b>b</b> <i>i</i>c <div>ABC</div> <i>i</i> <u>u</u> test </div>',
 
 			storageManager:{
 				autoload: 0,

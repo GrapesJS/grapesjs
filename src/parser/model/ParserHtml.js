@@ -68,8 +68,8 @@ define(function(require) {
           var attrsLen = attrs.length;
           var prevI = result.length - 1;
           var prevSib = result[prevI];
-
           var ct = this.compTypes;
+
           if(ct){
             var obj = '';
             for (var cType in ct) {
@@ -125,7 +125,13 @@ define(function(require) {
             }
           }
 
-          var prevIsText = prevSib && prevSib.type == 'text' && prevSib.tagName == TEXT_NODE;
+          var prevIsText = prevSib && prevSib.type == 'textnode';
+          if(model.type == 'textnode'){
+            if(prevIsText){
+              prevSib.content += model.content;
+              continue;
+            }
+          }
           // Find text nodes
           /*
           if(model.type == 'textnode'){
@@ -155,6 +161,24 @@ define(function(require) {
               model = { type: 'text', tagName: TEXT_NODE, content: node.outerHTML,};
             }
           }*/
+
+          // If all components are texts and textnodes the parent should be text too
+          // otherwise I'm unable to edit texts
+          var comps = model.components;
+          if(!model.type && comps){
+            var allTxt = 1;
+            for(var ci = 0; ci < comps.length; ci++){
+              var comp = comps[ci];
+              if(comp.type != 'text' &&
+                comp.type != 'textnode' &&
+                c.textTags.indexOf(comp.tagName) < 0 ){
+                allTxt = 0;
+                break;
+              }
+            }
+            if(allTxt)
+              model.type = 'text';
+          }
 
           // If tagName is still empty and is not a textnode, do not push it
           if(!model.tagName && model.type != 'textnode')

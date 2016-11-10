@@ -1,17 +1,19 @@
 var path = 'Parser/';
-define([path + 'model/ParserHtml', path + 'model/ParserCss'],
-  function(ParserHtml, ParserCss) {
+define([path + 'model/ParserHtml', path + 'model/ParserCss', 'DomComponents'],
+  function(ParserHtml, ParserCss, DomComponents) {
 
     return {
       run : function(){
 
-        describe('ParserHtml', function() {
+        describe.only('ParserHtml', function() {
           var obj;
 
           beforeEach(function () {
+            var dom = new DomComponents();
             obj = new ParserHtml({
               textTags: ['br', 'b', 'i', 'u'],
             });
+            obj.compTypes = dom.componentTypes;
           });
 
           afterEach(function () {
@@ -89,8 +91,10 @@ define([path + 'model/ParserHtml', path + 'model/ParserCss'],
             var result = {
               tagName: 'img',
               type: 'image',
-              src: './index.html',
-              attributes: { id: 'test1'},
+              attributes: {
+                id: 'test1',
+                src: './index.html',
+              },
             };
             obj.parse(str).html.should.deep.equal(result);
           });
@@ -112,7 +116,44 @@ define([path + 'model/ParserHtml', path + 'model/ParserCss'],
               tagName: 'div',
               attributes: { id: 'test1'},
               type: 'text',
-              content: '<br> test2 <br> a b <b>b</b> <i>i</i> <u>u</u> test ',
+              components: [
+                {tagName: 'br'},
+                {
+                  content: ' test2 ',
+                  type: 'textnode',
+                  tagName: ''
+                },
+                {tagName: 'br'},
+                {
+                  content: ' a b ',
+                  type: 'textnode',
+                  tagName: ''
+                },{
+                  content: 'b',
+                  type: 'text',
+                  tagName: 'b'
+                },{
+                  content: ' ',
+                  type: 'textnode',
+                  tagName: ''
+                },{
+                  content: 'i',
+                  tagName: 'i',
+                  type: 'text'
+                },{
+                  content: ' ',
+                  type: 'textnode',
+                  tagName: ''
+                },{
+                  content: 'u',
+                  tagName: 'u',
+                  type: 'text'
+                },{
+                  content: ' test ',
+                  type: 'textnode',
+                  tagName: ''
+                }
+              ],
             };
             obj.parse(str).html.should.deep.equal(result);
           });
