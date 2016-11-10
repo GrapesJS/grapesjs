@@ -26,6 +26,7 @@ define(['backbone', './ComponentView'],
 			comps.reset(null, opts);
 			comps.add(this.$el.html(), opts);
 			this.model.set('content', '');
+			comps.trigger('resetNavigator');
 			this.render();
 		},
 

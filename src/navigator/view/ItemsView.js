@@ -12,8 +12,8 @@ define(['backbone','./ItemView'],
 			this.sorter		= o.sorter || {};
 			this.pfx			= o.config.stylePrefix;
 			this.parent		= o.parent;
-			this.listenTo( this.collection, 'add', this.addTo );
-			this.listenTo( this.collection, 'reset', this.render );
+			this.listenTo(this.collection, 'add', this.addTo);
+			this.listenTo(this.collection, 'reset resetNavigator', this.render);
 			this.className 	= this.pfx + 'items';
 
 			if(!this.parent)

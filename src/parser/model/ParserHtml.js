@@ -145,18 +145,16 @@ define(function(require) {
           */
 
           // Check if it's a text node and if it could be moved to the prevous model
+          /*
           if(c.textTags.indexOf(model.tagName) >= 0){
             if(prevIsText){
               prevSib.content += node.outerHTML;
               continue;
             }else{
-              model = {
-                type: 'text',
-                tagName: TEXT_NODE,
-                content: node.outerHTML,
-              };
+              console.log(model);
+              model = { type: 'text', tagName: TEXT_NODE, content: node.outerHTML,};
             }
-          }
+          }*/
 
           // If tagName is still empty and is not a textnode, do not push it
           if(!model.tagName && model.type != 'textnode')
