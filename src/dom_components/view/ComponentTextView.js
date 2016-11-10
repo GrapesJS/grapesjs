@@ -22,12 +22,16 @@ define(['backbone', './ComponentView'],
 		parseRender: function(){
 			var comps = this.model.get('components');
 			var opts = {silent: true};
+
 			// Avoid re-render on reset with silent option
 			comps.reset(null, opts);
 			comps.add(this.$el.html(), opts);
 			this.model.set('content', '');
-			comps.trigger('resetNavigator');
 			this.render();
+
+			// As the reset was in silent mode I need to notify
+			// the navigator about the change
+			comps.trigger('resetNavigator');
 		},
 
 		/**

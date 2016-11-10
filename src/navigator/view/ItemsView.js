@@ -78,8 +78,10 @@ define(['backbone','./ItemView'],
 			this.$el.empty();
 
 			this.collection.each(function(model){
+				if(model.get('type') == 'textnode' && this.config.hideTextnode)
+					return;
 				this.addToCollection(model, fragment);
-			},this);
+			}, this);
 
 			this.$el.append(fragment);
 			this.$el.attr('class', _.result(this, 'className'));
