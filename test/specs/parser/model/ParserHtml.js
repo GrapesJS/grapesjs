@@ -5,7 +5,7 @@ define([path + 'model/ParserHtml', path + 'model/ParserCss', 'DomComponents'],
     return {
       run : function(){
 
-        describe.only('ParserHtml', function() {
+        describe('ParserHtml', function() {
           var obj;
 
           beforeEach(function () {
@@ -163,18 +163,51 @@ define([path + 'model/ParserHtml', path + 'model/ParserCss', 'DomComponents'],
             var result = {
               tagName: 'div',
               attributes: { id: 'test1'},
+              type: 'text',
               components: [{
-                tagName: 'span',
-                type: 'text',
-                content: 'a b <b>b</b> <i>i</i>c ',
+                content: 'a b ',
+                type: 'textnode',
+                tagName: ''
+              },{
+                content: 'b',
+                tagName: 'b',
+                type: 'text'
+              },{
+                content: ' ',
+                type: 'textnode',
+                tagName: ''
+              },{
+                content: 'i',
+                tagName: 'i',
+                type: 'text'
+              },{
+                content: 'c ',
+                type: 'textnode',
+                tagName: ''
               },{
                 tagName: 'div',
                 type: 'text',
                 content: 'ABC',
               },{
-                tagName: 'span',
-                type: 'text',
-                content: '<i>i</i> <u>u</u> test ',
+                content: ' ',
+                type: 'textnode',
+                tagName: ''
+              },{
+                content: 'i',
+                tagName: 'i',
+                type: 'text'
+              },{
+                content: ' ',
+                type: 'textnode',
+                tagName: ''
+              },{
+                content: 'u',
+                tagName: 'u',
+                type: 'text'
+              },{
+                content: ' test ',
+                type: 'textnode',
+                tagName: ''
               }],
             };
             obj.parse(str).html.should.deep.equal(result);
@@ -185,15 +218,22 @@ define([path + 'model/ParserHtml', path + 'model/ParserCss', 'DomComponents'],
             var result = {
               tagName: 'article',
               attributes: {id: 'test1'},
-              components: [
-                {
+              components: [{
+                  content: '   ',
+                  type: 'textnode',
+                  tagName: ''
+                },{
                   tagName: 'div'
+                },{
+                  content: ' ',
+                  type: 'textnode',
+                  tagName: ''
                 },{
                   tagName: 'footer',
                   attributes: { id: 'test2'},
                 },{
-                  tagName: 'span',
-                  type: 'text',
+                  tagName: '',
+                  type: 'textnode',
                   content: '  Text mid ',
                 },{
                   tagName: 'div',
@@ -208,17 +248,18 @@ define([path + 'model/ParserHtml', path + 'model/ParserCss', 'DomComponents'],
             var str = '<div>content1 <div>nested</div> content2</div>';
             var result = {
               tagName: 'div',
+              type: 'text',
               components: [{
-                tagName: 'span',
-                type: 'text',
+                tagName: '',
+                type: 'textnode',
                 content: 'content1 ',
               },{
                 tagName: 'div',
                 type: 'text',
                 content: 'nested',
               },{
-                tagName: 'span',
-                type: 'text',
+                tagName: '',
+                type: 'textnode',
                 content: ' content2',
               }],
             };
@@ -229,20 +270,22 @@ define([path + 'model/ParserHtml', path + 'model/ParserCss', 'DomComponents'],
             var str = '<div>content1 <div><span>nested</span></div> content2</div>';
             var result = {
               tagName: 'div',
+              type: 'text',
               components: [{
-                tagName: 'span',
-                type: 'text',
+                tagName: '',
+                type: 'textnode',
                 content: 'content1 ',
               },{
                 tagName: 'div',
+                type: 'text',
                 components: [{
                   tagName: 'span',
                   type: 'text',
                   content: 'nested',
                 }]
               },{
-                tagName: 'span',
-                type: 'text',
+                tagName: '',
+                type: 'textnode',
                 content: ' content2',
               }],
             };
@@ -280,10 +323,19 @@ define([path + 'model/ParserHtml', path + 'model/ParserCss', 'DomComponents'],
             var str = '<div> <p>TestText</p> </div>';
             var result = {
               tagName: 'div',
+              type: 'text',
               components: [{
+                tagName: '',
+                type: 'textnode',
+                content: ' ',
+              },{
                 tagName: 'p',
                 content: 'TestText',
                 type: 'text',
+              },{
+                tagName: '',
+                type: 'textnode',
+                content: ' ',
               }],
             };
             obj.parse(str).html.should.deep.equal(result);

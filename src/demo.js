@@ -33,7 +33,7 @@ require(['config/require-config'], function() {
 					content: " More text node  ---   ",
 				}],
 			}],*/
-			components: '<div id="test1">a b <b>b</b> <i>i</i>c <div>ABC</div> <i>i</i> <u>u</u> test </div>',
+			components: '<div>content1 <div><span>nested</span></div> content2</div>',
 
 			storageManager:{
 				autoload: 0,

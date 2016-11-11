@@ -54,14 +54,13 @@ define(['DomComponents',
             });
 
             it('Has expected name', function() {
-              obj.cid = 'c999';
-              obj.getName().should.equal('Box 999');
+              obj.getName().should.equal('Box');
             });
 
             it('Has expected name 2', function() {
               obj.cid = 'c999';
               obj.set('type','testType');
-              obj.getName().should.equal('TestType 999');
+              obj.getName().should.equal('TestType');
             });
 
             it('Component toHTML', function() {
@@ -160,14 +159,14 @@ define(['DomComponents',
             it('Component parse img element', function() {
               var el = document.createElement('img');
               obj = ComponentImage.isComponent(el);
-              obj.should.deep.equal({type: 'image', src: ''});
+              obj.should.deep.equal({type: 'image'});
             });
 
             it('Component parse img element with src', function() {
               var el = document.createElement('img');
               el.src = 'http://localhost/';
               obj = ComponentImage.isComponent(el);
-              obj.should.deep.equal({type: 'image', src: 'http://localhost/'});
+              obj.should.deep.equal({type: 'image'});
             });
 
         });

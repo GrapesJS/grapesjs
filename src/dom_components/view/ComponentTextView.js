@@ -54,7 +54,6 @@ define(['backbone', './ComponentView'],
 			if(this.rte)
 				this.rte.detach(this);
 			this.toggleEvents();
-			//this.updateContents();
 			this.parseRender();
 		},
 
@@ -68,24 +67,17 @@ define(['backbone', './ComponentView'],
 		},
 
 		/**
-		 * Update contents of the element
-		 * TODO to remove
-		 * @private
-		 **/
-		updateContents: function(){
-			//this.model.set('content', this.el.innerHTML);
-		},
-
-		/**
 		 * Enable/Disable events
 		 * @param {Boolean} enable
 		 */
 		toggleEvents: function(enable) {
 			var method = enable ? 'on' : 'off';
+
 			// The ownerDocument is from the frame
 			var elDocs = [this.el.ownerDocument, document, this.rte];
 			$(elDocs).off('mousedown', this.disableEditing);
 			$(elDocs)[method]('mousedown', this.disableEditing);
+
 			// Avoid closing edit mode on component click
 			this.$el.off('mousedown', this.disablePropagation);
 			this.$el[method]('mousedown', this.disablePropagation);
