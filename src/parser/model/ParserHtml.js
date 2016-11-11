@@ -132,24 +132,6 @@ define(function(require) {
               continue;
             }
           }
-          // Find text nodes
-          /*
-          if(model.type == 'textnode'){
-            // Pass content to the previous model if it's a text node
-            if(prevIsText){
-              prevSib.content += node.nodeValue;
-              continue;
-            }
-            // Make it text node only if the content is not empty
-            if(node.nodeValue.trim()){
-              console.log('part 1', model);
-              model.type = 'text';
-              model.tagName = TEXT_NODE;
-              model.content = node.nodeValue;
-            }
-          }
-          */
-
           // Check if it's a text node and if it could be moved to the prevous model
           /*
           if(c.textTags.indexOf(model.tagName) >= 0){

@@ -9,7 +9,7 @@ require(['config/require-config'], function() {
       noticeOnUnload: 0,
 			container	: '#gjs',
 			height: '100%',
-			//fromElement: true,
+			fromElement: true,
 			/*
 			components: [{
 				type: 'text',
@@ -33,7 +33,6 @@ require(['config/require-config'], function() {
 					content: " More text node  ---   ",
 				}],
 			}],*/
-			components: '<div>content1 <div><span>nested</span></div> content2</div>',
 
 			storageManager:{
 				autoload: 0,
