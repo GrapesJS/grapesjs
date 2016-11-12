@@ -45,7 +45,8 @@ define(function(require) {
         var cls = str.split(' ');
         for (var i = 0, len = cls.length; i < len; i++) {
           var cl = cls[i].trim();
-          if(!cl)
+          var reg = new RegExp('^' + c.pStylePrefix);
+          if(!cl || reg.test(cl))
             continue;
           result.push(cl);
         }
