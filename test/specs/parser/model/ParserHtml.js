@@ -12,6 +12,7 @@ define([path + 'model/ParserHtml', path + 'model/ParserCss', 'DomComponents'],
             var dom = new DomComponents();
             obj = new ParserHtml({
               textTags: ['br', 'b', 'i', 'u'],
+              pStylePrefix: 'gjs-',
             });
             obj.compTypes = dom.componentTypes;
           });
@@ -58,6 +59,12 @@ define([path + 'model/ParserHtml', path + 'model/ParserCss', 'DomComponents'],
 
           it('Parse class string to array', function() {
             var str = 'test1 test2    test3 test-4';
+            var result = ['test1', 'test2', 'test3', 'test-4'];
+            obj.parseClass(str).should.deep.equal(result);
+          });
+
+          it('Parse class string to array with special classes', function() {
+            var str = 'test1 test2    test3 test-4 gjs-test';
             var result = ['test1', 'test2', 'test3', 'test-4'];
             obj.parseClass(str).should.deep.equal(result);
           });
@@ -219,10 +226,6 @@ define([path + 'model/ParserHtml', path + 'model/ParserCss', 'DomComponents'],
               tagName: 'article',
               attributes: {id: 'test1'},
               components: [{
-                  content: '   ',
-                  type: 'textnode',
-                  tagName: ''
-                },{
                   tagName: 'div'
                 },{
                   content: ' ',
@@ -278,11 +281,7 @@ define([path + 'model/ParserHtml', path + 'model/ParserCss', 'DomComponents'],
               },{
                 tagName: 'div',
                 type: 'text',
-                components: [{
-                  tagName: 'span',
-                  type: 'text',
-                  content: 'nested',
-                }]
+                content: 'nested',
               },{
                 tagName: '',
                 type: 'textnode',
