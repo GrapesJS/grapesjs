@@ -12,6 +12,13 @@ define(['./Component'],
 				traits: ['alt'],
 			}),
 
+			initialize: function(o, opt) {
+				Component.prototype.initialize.apply(this, arguments);
+				var attr = this.get('attributes');
+				if(attr.src)
+					this.set('src', attr.src);
+			},
+
 			/**
 			 * Returns object of attributes for HTML
 			 * @return {Object}

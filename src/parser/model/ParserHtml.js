@@ -92,11 +92,13 @@ define(function(require) {
             var nodeName = attrs[j].nodeName;
             var nodeValue = attrs[j].nodeValue;
 
-            //Isolate style, class and src attributes
+            //Isolate few attributes
             if(nodeName == 'style')
               model.style = this.parseStyle(nodeValue);
             else if(nodeName == 'class')
               model.classes = this.parseClass(nodeValue);
+            else if (nodeName == 'contenteditable')
+              continue;
             else
               model.attributes[nodeName] = nodeValue;
           }
@@ -125,30 +127,26 @@ define(function(require) {
             }
           }
 
-          var prevIsText = prevSib && prevSib.type == 'textnode';
+          // Check if it's a text node and if could be moved to the prevous model
           if(model.type == 'textnode'){
+            var prevIsText = prevSib && prevSib.type == 'textnode';
             if(prevIsText){
               prevSib.content += model.content;
               continue;
             }
-          }
-          // Check if it's a text node and if it could be moved to the prevous model
-          /*
-          if(c.textTags.indexOf(model.tagName) >= 0){
-            if(prevIsText){
-              prevSib.content += node.outerHTML;
+            // Throw away empty nodes (keep spaces)
+            var content = node.nodeValue;
+            if(content != ' ' && !content.trim()){
               continue;
-            }else{
-              console.log(model);
-              model = { type: 'text', tagName: TEXT_NODE, content: node.outerHTML,};
             }
-          }*/
+          }
 
-          // If all components are texts and textnodes the parent should be text too
-          // otherwise I'm unable to edit texts
+          // If all children are texts and there is some textnode the parent should
+          // be text too otherwise I'm unable to edit texnodes
           var comps = model.components;
           if(!model.type && comps){
             var allTxt = 1;
+            var foundTextNode = 0;
             for(var ci = 0; ci < comps.length; ci++){
               var comp = comps[ci];
               if(comp.type != 'text' &&
@@ -157,8 +155,10 @@ define(function(require) {
                 allTxt = 0;
                 break;
               }
+              if(comp.type == 'textnode')
+                foundTextNode = 1;
             }
-            if(allTxt)
+            if(allTxt && foundTextNode)
               model.type = 'text';
           }
 
