@@ -1160,7 +1160,8 @@ $arrowColor: $mainLhlColor; /*b1b1b1*/
   .#{$sm-prefix}color-picker {
     background-color: $fontColor;
     cursor: pointer;
-    height: 100%; width: 100%;
+    height: 16px;
+    width: 100%;
     margin-top: -16px;
     box-shadow: 0 0 1px $mainDkColor;
     border-radius: 1px;
