@@ -161,7 +161,7 @@ define(['backbone', 'text!./../template/item.html','require'],
 		 * @return void
 		 * */
 		checkChildren: function(){
-			var c	= this.model.components.length,
+			var c	= this.countChildren(this.model),
 				pfx	= this.pfx,
 				tC = '> .' + pfx + 'title-c > .' + pfx + 'title';
 			if(!this.$counter)
@@ -176,16 +176,36 @@ define(['backbone', 'text!./../template/item.html','require'],
 			}
 		},
 
-		render : function(){
-			var pfx	= this.pfx,
-				vis	= this.isVisible();
+		/**
+		 * Count children inside model
+		 * @param  {Object} model
+		 * @return {number}
+		 * @private
+		 */
+		countChildren: function(model){
+			var count = 0;
+			model.components.each(function(m){
+				var isCountable = this.opt.isCountable;
+				var hide = this.config.hideTextnode;
+				if(isCountable && !isCountable(m, hide))
+					return;
+				count++;
+			}, this);
+			return count;
+		},
+
+		render: function(){
+			var pfx	= this.pfx;
+			var vis	= this.isVisible();
+			var count = this.countChildren(this.model);
+
 			this.$el.html( this.template({
-				title		: this.model.getName(),
-				addClass	: (this.model.components.length ? '' : pfx+'no-chld'),
-				count		: this.model.components.length,
-				visible		: vis,
-				hidable		: this.config.hidable,
-				prefix		: pfx
+				title: this.model.getName(),
+				addClass: (count ? '' : pfx+'no-chld'),
+				count: count,
+				visible: vis,
+				hidable: this.config.hidable,
+				prefix: pfx
 			}));
 			if(typeof ItemsView == 'undefined')
 				ItemsView = require('./ItemsView');

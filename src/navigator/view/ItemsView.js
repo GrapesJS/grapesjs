@@ -43,10 +43,11 @@ define(['backbone','./ItemView'],
 			var fragment	= fragmentEl || null;
 			var viewObject	= ItemView;
 
-			var view 		= new viewObject({
-				model 	: model,
-				config	: this.config,
-				sorter	: this.sorter,
+			var view = new viewObject({
+				model: model,
+				config: this.config,
+				sorter: this.sorter,
+				isCountable: this.isCountable,
 			});
 			var rendered	= view.render().el;
 
@@ -73,12 +74,26 @@ define(['backbone','./ItemView'],
 			return rendered;
 		},
 
+		/**
+		 * Check if the model could be count by the navigator
+		 * @param  {Object}  model
+		 * @return {Boolean}
+		 * @private
+		 */
+		isCountable: function(model, hide) {
+			var type = model.get('type');
+			var tag = model.get('tagName');
+			if((type == 'textnode' || tag == 'br') && hide)
+				return false;
+			return true;
+		},
+
 		render: function() {
 			var fragment = document.createDocumentFragment();
 			this.$el.empty();
 
-			this.collection.each(function(model){
-				if(model.get('type') == 'textnode' && this.config.hideTextnode)
+			this.collection.each(function(model) {
+				if(!this.isCountable(model, this.config.hideTextnode))
 					return;
 				this.addToCollection(model, fragment);
 			}, this);
