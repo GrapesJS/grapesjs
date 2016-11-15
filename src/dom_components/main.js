@@ -42,6 +42,18 @@ define(function(require) {
 		ComponentView = require('./view/ComponentView');
 		var component, componentView;
 		var defaultTypes = {
+			'cell': {
+				model: require('./model/ComponentTableCell'),
+				view: require('./view/ComponentTableCellView'),
+			},
+			'row': {
+				model: require('./model/ComponentTableRow'),
+				view: require('./view/ComponentTableRowView'),
+			},
+			'table': {
+				model: require('./model/ComponentTable'),
+				view: require('./view/ComponentTableView'),
+			},
 			'map': {
 				model: require('./model/ComponentMap'),
 				view: require('./view/ComponentMapView'),

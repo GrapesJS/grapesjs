@@ -8,8 +8,15 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 				type: '',
 				editable: false,
 				removable: true,
+
+				// Indicates if it's possible to drag the component inside other
+				// TODO: Indicate an array of selectors where it could be dropped inside
 				draggable: true,
+
+				// Indicates if it's possible to drop other components inside
+				// TODO: Indicate an array of selectors which could be dropped inside
 				droppable: true,
+
 				badgable: true,
 				stylable: true,
 				copyable: true,
