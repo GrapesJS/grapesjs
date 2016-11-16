@@ -37,12 +37,13 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 			 * */
 			initSorter: function(e){
 				var el = $(e.target).data('model');
-				if(!el.get('draggable'))
+				var drag = el.get('draggable');
+				if(!drag)
 					return;
 				// Avoid badge showing on move
 				this.cacheEl = null;
 				this.startSelectPosition(e.target, this.frameEl.contentDocument);
-				console.log(el.get('draggable'));
+				this.sorter.draggable = drag;
 				this.sorter.onEndMove = this.onEndMove.bind(this);
 				this.stopSelectComponent();
 				this.$wrapper.off('mousedown', this.initSorter);

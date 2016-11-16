@@ -19,8 +19,12 @@ define(['./Component'],
 			 */
 			isComponent: function(el) {
 				var result = '';
-				if(el.tagName == 'TD'){
-					result = {type: 'cell'};
+				var tag = el.tagName;
+				if(tag == 'TD' || tag == 'TH'){
+					result = {
+						type: 'cell',
+						tagName: tag.toLowerCase()
+					};
 				}
 				return result;
 			},

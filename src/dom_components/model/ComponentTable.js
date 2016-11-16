@@ -1,10 +1,11 @@
-define(['./ComponentText'],
+define(['./Component'],
 	function (Component) {
 
 		return Component.extend({
 
 			defaults: _.extend({}, Component.prototype.defaults, {
 					tagName: 'table',
+					droppable: ['tr', 'tbody', 'thead', 'tfoot'],
 					columns: 3,
 					rows: 2,
 					traits: [{

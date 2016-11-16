@@ -199,6 +199,8 @@ define(function () {
 	        attributes: {class:'fa fa-table'},
 	        content: {
 						type: 'table',
+						columns: 3,
+						rows: 5,
 						style: {height: '150px', width: '100%'}
 					},
 	      },{

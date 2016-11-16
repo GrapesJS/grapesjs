@@ -15,6 +15,7 @@ define(['backbone'],
         this.$el = $(this.el);
         this.containerSel = o.containerSel || 'div';
         this.itemSel = o.itemSel || 'div';
+        this.draggable = o.draggable || true;
         this.nested = o.nested || 0;
         this.pfx = o.pfx || '';
         this.freezeClass = o.freezeClass || this.pfx + 'freezed';
@@ -241,6 +242,10 @@ define(['backbone'],
             default:
                 return;
         }
+        switch (el.tagName) {
+            case 'TR':
+                return true;
+        }
         switch ($el.css('display')) {
             case 'block':
             case 'list-item':
@@ -261,8 +266,16 @@ define(['backbone'],
       dimsFromTarget: function(target, rX, rY){
         var dims = [];
 
+        // Select the first valuable target
+        // TODO: avoid this check for every standard component,
+        // which generally is ok
         if(!this.matches(target, this.itemSel + ',' + this.containerSel))
           target = this.closest(target, this.itemSel);
+
+        // If draggable is an array the target will be one of those
+        if(this.draggable instanceof Array){
+            target = this.closest(target, this.draggable.join(','));
+        }
 
         if(!target)
           return dims;
