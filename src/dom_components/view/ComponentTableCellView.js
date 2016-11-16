@@ -1,4 +1,4 @@
-define(['backbone', './ComponentTextView'],
+define(['backbone', './ComponentView'],
 	function (Backbone, ComponentView) {
 
 	return ComponentView.extend({

@@ -20,7 +20,33 @@ define(['./ComponentText'],
 
 			initialize: function(o, opt) {
 				Component.prototype.initialize.apply(this, arguments);
-				//this.listenTo(this, 'change:columns change:rows', this.render);
+				var components = this.get('components');
+				var rows = this.get('rows');
+				var columns = this.get('columns');
+
+				// Init components if empty
+				if(!components.length){
+					var rowsToAdd = [];
+
+					while(rows--){
+						var columnsToAdd = [];
+						var clm = columns;
+
+						while (clm--) {
+							columnsToAdd.push({
+								type: 'cell',
+								classes: ['cell']
+							});
+						}
+
+						rowsToAdd.push({
+							type: 'row',
+							classes: ['row'],
+							components: columnsToAdd
+						});
+					}
+					components.add(rowsToAdd);
+				}
 			},
 
 		},{

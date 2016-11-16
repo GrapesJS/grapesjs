@@ -1,4 +1,4 @@
-define(['./ComponentText'],
+define(['./Component'],
 	function (Component) {
 
 		return Component.extend({

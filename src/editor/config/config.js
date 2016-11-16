@@ -194,6 +194,14 @@ define(function () {
 						style: {height: '350px'}
 					},
 	      },{
+					id: 'table',
+	        label: 'Table',
+	        attributes: {class:'fa fa-table'},
+	        content: {
+						type: 'table',
+						style: {height: '150px', width: '100%'}
+					},
+	      },{
 					id: 'video',
 	        label: 'Video',
 	        attributes: {class:'fa fa-youtube-play'},
