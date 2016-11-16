@@ -42,6 +42,7 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 				// Avoid badge showing on move
 				this.cacheEl = null;
 				this.startSelectPosition(e.target, this.frameEl.contentDocument);
+				console.log(el.get('draggable'));
 				this.sorter.onEndMove = this.onEndMove.bind(this);
 				this.stopSelectComponent();
 				this.$wrapper.off('mousedown', this.initSorter);
