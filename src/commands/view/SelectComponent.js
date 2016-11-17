@@ -126,6 +126,7 @@ define(function() {
 				}
 				var pos = this.getElementPos(trg);
 			  this.updateBadge(trg, pos);
+				// Not mirrored
 			  this.updateHighlighter(trg, pos);
 			},
 
@@ -188,7 +189,7 @@ define(function() {
 			 * @param {Object} pos Position object
 			 * @private
 			 */
-			updateHighlighter: function(el, pos){
+			updateHighlighter: function(el, pos) {
 				if(!this.hl)
 					this.hl = $(this.canvas.getHighlighter());
 				this.hl.css({
@@ -212,6 +213,22 @@ define(function() {
 				var $el = $(el);
 				var nMd = $el.data('model');
 				if(nMd){
+					var mirror = nMd.get('mirror');
+					nMd = mirror ? mirror : nMd;
+
+					// Close all opened components inside Navigator
+					var opened = this.em.get('opened');
+					for (var cid in opened){
+						var m = opened[cid];
+						m.set('open', 0);
+					}
+					var parent = nMd.collection ? nMd.collection.parent : null;
+					while(parent){
+						parent.set('open', 1);
+						opened[parent.cid] = parent;
+						parent = parent.collection ? parent.collection.parent : null;
+					}
+
 					this.editorModel.set('selectedComponent', nMd);
 					nMd.set('status','selected');
 				}

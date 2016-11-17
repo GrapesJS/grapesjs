@@ -243,7 +243,7 @@ define(['backbone'],
                 return;
         }
         switch (el.tagName) {
-            case 'TR':
+            case 'TR': case 'TBODY': case 'THEAD': case 'TFOOT':
                 return true;
         }
         switch ($el.css('display')) {

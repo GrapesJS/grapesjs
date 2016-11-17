@@ -5,6 +5,7 @@ define(['./Component'],
 
 			defaults: _.extend({}, Component.prototype.defaults, {
 					tagName: 'td',
+					draggable: ['tr'],
 			}),
 
 		},{

@@ -6,12 +6,12 @@ define(['backbone','./ItemView'],
 	return Backbone.View.extend({
 
 		initialize: function(o) {
-			this.opt 			= o;
-			this.config		= o.config;
-			this.preview	= o.preview;
-			this.sorter		= o.sorter || {};
-			this.pfx			= o.config.stylePrefix;
-			this.parent		= o.parent;
+			this.opt = o;
+			this.config = o.config;
+			this.preview = o.preview;
+			this.sorter = o.sorter || {};
+			this.pfx = o.config.stylePrefix;
+			this.parent = o.parent;
 			this.listenTo(this.collection, 'add', this.addTo);
 			this.listenTo(this.collection, 'reset resetNavigator', this.render);
 			this.className 	= this.pfx + 'items';
@@ -48,6 +48,7 @@ define(['backbone','./ItemView'],
 				config: this.config,
 				sorter: this.sorter,
 				isCountable: this.isCountable,
+				opened: this.opt.opened,
 			});
 			var rendered	= view.render().el;
 

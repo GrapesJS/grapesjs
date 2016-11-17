@@ -9,11 +9,11 @@ define(['backbone', 'text!./../template/item.html','require'],
 		template: _.template(ItemTemplate),
 
 		initialize: function(o){
-			this.opt 			= o;
-			this.config		= o.config;
-			this.em 			= o.config.em;
-			this.sorter		= o.sorter || {};
-			this.pfx			= this.config.stylePrefix;
+			this.opt = o;
+			this.config = o.config;
+			this.em = o.config.em;
+			this.sorter = o.sorter || {};
+			this.pfx = this.config.stylePrefix;
 			if(typeof this.model.get('open') == 'undefined')
 				this.model.set('open',false);
 			this.listenTo(this.model.components, 'remove add change reset', this.checkChildren);
@@ -40,12 +40,16 @@ define(['backbone', 'text!./../template/item.html','require'],
 		 * @return void
 		 * */
 		updateOpening: function (){
-			if(this.model.get('open')){
+			var opened = this.opt.opened || {};
+			var model = this.model;
+			if(model.get('open')){
 				this.$el.addClass("open");
 				this.$caret.addClass('fa-chevron-down');
+				opened[model.cid] = model;
 			}else{
 				this.$el.removeClass("open");
 				this.$caret.removeClass('fa-chevron-down');
+				delete opened[model.cid];
 			}
 		},
 
@@ -209,11 +213,12 @@ define(['backbone', 'text!./../template/item.html','require'],
 			}));
 			if(typeof ItemsView == 'undefined')
 				ItemsView = require('./ItemsView');
-			this.$components	= new ItemsView({
+			this.$components = new ItemsView({
 				collection 	: this.model.components,
-				config		: this.config,
-				sorter		: this.sorter,
-				parent		: this.model
+				config: this.config,
+				sorter: this.sorter,
+				opened: this.opt.opened,
+				parent: this.model
 			}).render().$el;
 			this.$el.find('.'+ pfx +'children').html(this.$components);
 			this.$caret = this.$el.find('> .' + pfx + 'title-c > .' + pfx + 'title > #' + pfx + 'caret');

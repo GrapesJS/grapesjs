@@ -17,6 +17,7 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 				// TODO: Indicate an array of selectors which could be dropped inside
 				droppable: true,
 
+				mirror: '',
 				badgable: true,
 				stylable: true,
 				copyable: true,
@@ -41,6 +42,7 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 				this.defaultC = this.config.components || [];
 				this.defaultCl = this.normalizeClasses(this.get('classes') || this.config.classes || []);
 				this.components	= new Components(this.defaultC, opt);
+				this.components.parent = this;
 				this.set('components', this.components);
 				this.set('classes', new Selectors(this.defaultCl));
 				var traits = new Traits();
