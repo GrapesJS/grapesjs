@@ -45,6 +45,41 @@ require(['config/require-config'], function() {
 														window.open('https://github.com/artf/grapesjs','_blank');
 													}
 												},{
+													id: 	'sw-images',
+													run: 	function(editor, sender){
+														var srcPlh = '##';
+														var components = editor.getComponents();
+														var searchImage = function(components) {
+															components.each(function(comp){
+																if(comp.get('type') == 'image'){
+																	if(comp.get('src') != srcPlh){
+																		comp.set('src_bkp', comp.get('src'));
+																		comp.set('src', srcPlh);
+																		console.log('Stored', comp.get('src_bkp'));
+																	}
+																}
+																searchImage(comp.get('components'));
+															});
+														};
+														searchImage(components);
+													},
+													stop: function() {
+														var srcPlh = '##';
+														var components = editor.getComponents();
+														var searchImage = function(components) {
+															components.each(function(comp){
+																if(comp.get('type') == 'image'){
+																	if(comp.get('src') == srcPlh){
+																		comp.set('src', comp.get('src_bkp'));
+																		console.log('Restored', comp.get('src'));
+																	}
+																}
+																searchImage(comp.get('components'));
+															});
+														};
+														searchImage(components);
+													}
+												},{
 													id: 	'undo',
 													run: 	function(editor, sender){
 														sender.set('active',false);
@@ -325,6 +360,13 @@ require(['config/require-config'], function() {
 
 
 		);
+
+		editor.Panels.addButton('options', [{
+      id: 'sw-images',
+      className: 'fa fa-image',
+      command: 'sw-images',
+      attributes: { title: 'View on Github' }
+    }]);
 
     window.editor = editor;
 
