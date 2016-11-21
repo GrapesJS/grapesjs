@@ -4,6 +4,7 @@ define(['./Component'],
 		return Component.extend({
 
 			defaults: _.extend({}, Component.prototype.defaults, {
+					type: 'table',
 					tagName: 'table',
 					droppable: ['tr', 'tbody', 'thead', 'tfoot'],
 					columns: 3,
@@ -48,6 +49,22 @@ define(['./Component'],
 					}
 					components.add(rowsToAdd);
 				}
+
+				// Clean table from non rows
+				var rowsColl = [];
+				components.each(function(model){
+					if(model.get('type') != 'row'){
+						model.get('components').each(function(row) {
+							if(row.get('type') == 'row'){
+								row.collection = components;
+								rowsColl.push(row);
+							}
+						});
+					}else{
+						rowsColl.push(model);
+					}
+				});
+				components.reset(rowsColl);
 			},
 
 		},{

@@ -4,6 +4,7 @@ define(['./ComponentText'],
 		return Component.extend({
 
 			defaults: _.extend({}, Component.prototype.defaults, {
+					type: 'link',
 					tagName: 'a',
 					traits: ['title', 'href', 'target'],
 			}),
