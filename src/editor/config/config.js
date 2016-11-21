@@ -194,16 +194,6 @@ define(function () {
 						style: {height: '350px'}
 					},
 	      },{
-					id: 'table',
-	        label: 'Table',
-	        attributes: {class:'fa fa-table'},
-	        content: {
-						type: 'table',
-						columns: 3,
-						rows: 5,
-						style: {height: '150px', width: '100%'}
-					},
-	      },{
 					id: 'video',
 	        label: 'Video',
 	        attributes: {class:'fa fa-youtube-play'},
@@ -215,7 +205,17 @@ define(function () {
 							width: '615px',
 						}
 					},
-	      }],
+	      }/*,{
+					id: 'table',
+	        label: 'Table',
+	        attributes: {class:'fa fa-table'},
+	        content: {
+						type: 'table',
+						columns: 3,
+						rows: 5,
+						style: {height: '150px', width: '100%'}
+					},
+	      }*/],
 		},
 
 	};
