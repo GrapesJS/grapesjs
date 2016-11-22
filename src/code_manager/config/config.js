@@ -1,6 +1,8 @@
 define(function () {
 	return {
 		// Style prefix
-		stylePrefix			: 'cm-',
+		stylePrefix: 'cm-',
+
+		inlineCss: false,
 	};
 });

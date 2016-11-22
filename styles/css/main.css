@@ -3056,7 +3056,7 @@ ol.example li.placeholder:before {
   border-left: 1px solid rgba(5, 5, 5, 0.3); }
 
 .gjs-nv-item > .gjs-nv-children {
-  margin-left: 15px;
+  margin-left: 10px;
   display: none; }
 
 .gjs-nv-item.open > .gjs-nv-children {

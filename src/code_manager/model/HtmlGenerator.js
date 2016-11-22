@@ -6,9 +6,10 @@ define(['backbone'],
 		return Backbone.Model.extend({
 
 			/** @inheritdoc */
-			build: function(model){
-				var coll 	= model.get('components') || model,
-					code 	= '';
+			build: function(model, cssc){
+				var inlineCss = 1;
+				var coll = model.get('components') || model,
+					code = '';
 
 				coll.each(function(m){
 					code += m.toHTML();

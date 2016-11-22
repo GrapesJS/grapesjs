@@ -607,7 +607,7 @@ ol.example li.placeholder:before {position: absolute;}
 	border-left: 1px solid lighten($mainDkColor,2%);
 }
 .#{$nv-prefix}item > .#{$nv-prefix}children {
-  margin-left: 15px;
+  margin-left: 10px;
   display: none;
 }
 .#{$nv-prefix}item.open > .#{$nv-prefix}children { display: block; }
