@@ -12,6 +12,8 @@ define(function (require) {
 
     return {
 
+      editors: editors,
+
       plugins: plugins,
 
       /**

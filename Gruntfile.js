@@ -33,7 +33,7 @@ module.exports = function(grunt) {
     			dir: 					           '<%= builtDir %>',
     			baseUrl: 				         './',
     			name: 					         'main',
-          include:                 ["./../vendor/almond/almond"],
+          include:                 ["./../node_modules/almond/almond"],
     			removeCombined: 		     true,
     			findNestedDependencies:  true,
     			keepBuildDir: 			     true,
@@ -96,8 +96,8 @@ module.exports = function(grunt) {
           flatten: true,
           src: [
             '<%= styleDir %>/css/main.css',
-            'vendor/codemirror/lib/codemirror.css',
-            'vendor/codemirror/theme/hopscotch.css'
+            'node_modules/codemirror/lib/codemirror.css',
+            'node_modules/codemirror/theme/hopscotch.css'
           ],
           dest: '<%= builtDir %>',
           ext: '.min.css'
@@ -127,7 +127,7 @@ module.exports = function(grunt) {
           }
       },
     },
-
+/*
     bowercopy: {
         options: {
           srcPrefix: 'bower_components'
@@ -154,7 +154,7 @@ module.exports = function(grunt) {
             },
         }
     },
-
+*/
     watch: {
     	script: {
     		files: [ '<%= appDir %>/**/*.js' ],
@@ -239,15 +239,13 @@ module.exports = function(grunt) {
 
   });
 
-  grunt.registerTask('bower', ['bowercopy']);
-
-  grunt.registerTask('dev', ['bowercopy', 'connect', 'watch']);
+  grunt.registerTask('dev', ['connect', 'watch']);
 
   grunt.registerTask('test', ['jshint', 'mocha']);
 
   grunt.registerTask('build:fonts', ['webfont-custom']);
 
-  grunt.registerTask('build', ['bowercopy', 'jshint', 'sass', 'before-rjs', 'requirejs', 'uglify', 'cssmin', 'concat', 'clean', 'copy']);
+  grunt.registerTask('build', ['jshint', 'sass', 'before-rjs', 'requirejs', 'uglify', 'cssmin', 'concat', 'clean', 'copy']);
 
   grunt.registerTask('default', ['dev']);
 

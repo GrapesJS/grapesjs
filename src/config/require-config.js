@@ -21,15 +21,15 @@ require.config({
 	},
 
 	paths: {
-		jquery: 			'../vendor/jquery/jquery',
-		underscore: 	'../vendor/underscore/underscore',
-		backbone: 		'../vendor/backbone/backbone',
-		backboneUndo: '../vendor/backbone-undo/backbone-undo',
-		keymaster:		'../vendor/keymaster/keymaster',
-		text: 				'../vendor/require-text/text',
-		Spectrum: 		'../vendor/spectrum/spectrum',
-		codemirror: 	'../vendor/codemirror',
-		formatting: 	'../vendor/codemirror-formatting/formatting',
+		jquery: 			'../node_modules/jquery/dist/jquery',
+		underscore: 	'../node_modules/underscore/underscore',
+		backbone: 		'../node_modules/backbone/backbone',
+		backboneUndo: '../node_modules/backbone-undo/Backbone.Undo',
+		keymaster:		'../node_modules/keymaster/keymaster',
+		text: 				'../node_modules/requirejs-text/text',
+		Spectrum: 		'../node_modules/spectrum-colorpicker/spectrum',
+		codemirror: 	'../node_modules/codemirror',
+		formatting: 	'../node_modules/codemirror-formatting/formatting',
 	},
 
 	packages : 	[
