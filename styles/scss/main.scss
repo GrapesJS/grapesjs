@@ -1361,7 +1361,11 @@ $paddElClm: 5px 6px;
    		@extend .btn-cl;
    		position: absolute;
    		right: 15px; top: 5px;
-	}
+    }
+}
+
+.#{$mdl-prefix}active .#{$mdl-prefix}dialog {
+  animation: #{$mdl-prefix}slide-down .216s;
 }
 
 .#{$mdl-prefix}header, .#{$mdl-prefix}content{
@@ -1643,3 +1647,14 @@ $uploadPadding:	150px 10px;
 }
 
 .#{$app-prefix}hidden{ display: none; }
+
+@keyframes #{$app-prefix}-slide-down {
+  0% {
+      margin-top: -3rem;
+      opacity: 0;
+  }
+  100% {
+      margin-top: 0;
+      opacity: 1;
+  }
+}

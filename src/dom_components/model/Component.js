@@ -143,10 +143,11 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 
 			/**
 			 * Return HTML string of the component
+			 * @param {Object} opts Options
 			 * @return {string} HTML string
 			 * @private
 			 */
-			toHTML: function() {
+			toHTML: function(opts) {
 				var code = '';
 				var m = this;
 				var tag = m.get('tagName'),

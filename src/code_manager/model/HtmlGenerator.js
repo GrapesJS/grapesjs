@@ -7,12 +7,13 @@ define(['backbone'],
 
 			/** @inheritdoc */
 			build: function(model, cssc){
-				var inlineCss = 1;
 				var coll = model.get('components') || model,
 					code = '';
 
 				coll.each(function(m){
-					code += m.toHTML();
+					code += m.toHTML({
+						cssc: cssc
+					});
 				}, this);
 
 				return code;

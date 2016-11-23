@@ -3699,6 +3699,9 @@ ol.example li.placeholder:before {
     right: 15px;
     top: 5px; }
 
+.gjs-mdl-active .gjs-mdl-dialog {
+  animation: gjs-mdl-slide-down 0.216s; }
+
 .gjs-mdl-header, .gjs-mdl-content {
   padding: 10px 15px;
   clear: both; }
@@ -3950,3 +3953,11 @@ ol.example li.placeholder:before {
 
 .gjs-hidden {
   display: none; }
+
+@keyframes gjs--slide-down {
+  0% {
+    margin-top: -3rem;
+    opacity: 0; }
+  100% {
+    margin-top: 0;
+    opacity: 1; } }
