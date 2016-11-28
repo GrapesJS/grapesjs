@@ -8,7 +8,7 @@ require.config({
 
 	paths : {
 		chai 	: '../node_modules/chai/chai',
-		sinon : '../node_modules/sinon/sinon',
+		sinon : '../node_modules/sinon/lib/sinon',
 		mocha	: '../node_modules/mocha/mocha',
 	},
 
