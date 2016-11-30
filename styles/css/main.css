@@ -494,7 +494,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 
 .fa {
   display: inline-block;
-  font: normal normal normal 14px / 1 FontAwesome;
+  font: normal normal normal 14px/1 FontAwesome;
   font-size: inherit;
   text-rendering: auto;
   -webkit-font-smoothing: antialiased;
@@ -3016,7 +3016,7 @@ ol.example li.placeholder:before {
     font-weight: lighter;
     text-align: left;
     position: relative;
-    background-color: rgba(0, 0, 0, 0.2); }
+    background-color: rgba(0, 0, 0, 0.1); }
   .gjs-nv-navigator .gjs-nv-item.gjs-nv-hide {
     opacity: 0.55;
     filter: alpha(opacity=55); }
@@ -3033,7 +3033,6 @@ ol.example li.placeholder:before {
     top: 0;
     padding: 7px 5px 7px 10px;
     position: absolute;
-    color: #aaaaaa;
     cursor: pointer;
     z-index: 1; }
   .gjs-nv-navigator .gjs-nv-item .gjs-nv-title {
@@ -3069,7 +3068,6 @@ ol.example li.placeholder:before {
   display: none; }
 
 .gjs-nv-item > #gjs-nv-move {
-  color: #aaaaaa;
   position: absolute;
   cursor: move;
   font-size: 12px;
@@ -3134,9 +3132,10 @@ ol.example li.placeholder:before {
     padding: 3px 0;
     z-index: 1; }
   .gjs-field select {
-    height: 20px; }
+    height: 20px;
+    padding-right: 12px; }
   .gjs-field option {
-    padding: 5px 0; }
+    padding: 3px 0; }
   .gjs-field .gjs-sel-arrow {
     height: 100%;
     width: 9px;
@@ -3153,6 +3152,112 @@ ol.example li.placeholder:before {
     border-left: 3px solid transparent;
     border-right: 4px solid transparent;
     cursor: pointer; }
+
+.gjs-field-color input {
+  padding-right: 20px;
+  box-sizing: border-box; }
+
+.gjs-field-colorp {
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  height: 100%;
+  padding: 2px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 20px;
+  z-index: 10; }
+  .gjs-field-colorp .gjs-checker-bg {
+    height: 100%;
+    width: 100%;
+    border-radius: 1px; }
+
+.gjs-field-colorp-c {
+  height: 100%;
+  position: relative;
+  width: 100%; }
+
+.gjs-field-color-picker {
+  background-color: #ddd;
+  cursor: pointer;
+  height: 100%;
+  width: 100%;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.3);
+  border-radius: 1px;
+  position: absolute;
+  top: 0; }
+
+.gjs-field-radio {
+  float: left;
+  overflow: hidden;
+  padding: 0;
+  width: auto; }
+
+/*???*/
+.gjs-field-checkbox {
+  padding: 0;
+  width: auto !important; }
+  .gjs-field-checkbox input {
+    display: none; }
+  .gjs-field-checkbox input:checked + .gjs-chk-icon {
+    border-color: rgba(255, 255, 255, 0.5);
+    border-width: 0 2px 2px 0;
+    border-style: solid; }
+
+.gjs-radio-item {
+  float: left;
+  border-left: 1px solid rgba(0, 0, 0, 0.3); }
+  .gjs-radio-item:first-child {
+    border: none; }
+  .gjs-radio-item:hover {
+    background: rgba(0, 0, 0, 0.3); }
+  .gjs-radio-item input {
+    display: none; }
+  .gjs-radio-item input:checked + .gjs-radio-item-label {
+    background-color: rgba(255, 255, 255, 0.2); }
+
+.gjs-radio-item-label {
+  cursor: pointer;
+  display: block;
+  padding: 5px; }
+
+.gjs-field-units {
+  position: absolute;
+  right: 0;
+  top: 0; }
+
+.gjs-field-unit {
+  position: absolute;
+  right: 10px;
+  top: 3px;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer; }
+
+.gjs-field-arrows {
+  z-index: 10;
+  cursor: ns-resize;
+  height: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 9px; }
+
+.gjs-field-arrow-u,
+.gjs-field-arrow-d {
+  position: absolute;
+  height: 0;
+  width: 0;
+  border-left: 3px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid rgba(255, 255, 255, 0.7);
+  bottom: 4px;
+  cursor: pointer; }
+
+.gjs-field-arrow-u {
+  border-bottom: 4px solid rgba(255, 255, 255, 0.7);
+  border-top: none;
+  top: 4px; }
 
 .gjs-field-select {
   padding: 0; }
@@ -3214,16 +3319,6 @@ ol.example li.placeholder:before {
   margin: 0 5px;
   width: 6px;
   cursor: pointer; }
-
-.gjs-field-checkbox {
-  padding: 0;
-  width: auto !important; }
-  .gjs-field-checkbox input {
-    display: none; }
-  .gjs-field-checkbox input:checked + .gjs-chk-icon {
-    border-color: rgba(255, 255, 255, 0.5);
-    border-width: 0 2px 2px 0;
-    border-style: solid; }
 
 .gjs-add-trasp {
   background: none;
@@ -3359,7 +3454,7 @@ ol.example li.placeholder:before {
       bottom: 4px; }
     .gjs-sm-sector .gjs-sm-field .gjs-sm-d-s-arrow, .gjs-clm-tags .gjs-sm-field .gjs-sm-d-s-arrow, .gjs-sm-sector .gjs-clm-field .gjs-sm-d-s-arrow, .gjs-clm-tags .gjs-clm-field .gjs-sm-d-s-arrow, .gjs-sm-sector .gjs-sm-field .gjs-clm-d-s-arrow, .gjs-clm-tags .gjs-sm-field .gjs-clm-d-s-arrow, .gjs-sm-sector .gjs-clm-field .gjs-clm-d-s-arrow, .gjs-clm-tags .gjs-clm-field .gjs-clm-d-s-arrow {
       bottom: 7px; }
-    .gjs-sm-sector .gjs-sm-field.gjs-sm-integer, .gjs-clm-tags .gjs-sm-field.gjs-sm-integer, .gjs-sm-sector .gjs-sm-integer.gjs-clm-field, .gjs-clm-tags .gjs-sm-integer.gjs-clm-field, .gjs-clm-tags #gjs-clm-tags-field, .gjs-sm-sector .gjs-sm-field.gjs-sm-select, .gjs-clm-tags .gjs-sm-field.gjs-sm-select, .gjs-sm-sector .gjs-sm-select.gjs-clm-field, .gjs-clm-tags .gjs-sm-select.gjs-clm-field, .gjs-sm-sector .gjs-clm-select, .gjs-clm-tags .gjs-clm-select, .gjs-sm-sector .gjs-sm-field.gjs-sm-list, .gjs-clm-tags .gjs-sm-field.gjs-sm-list, .gjs-sm-sector .gjs-sm-list.gjs-clm-field, .gjs-clm-tags .gjs-sm-list.gjs-clm-field, .gjs-sm-sector .gjs-sm-field.gjs-sm-color, .gjs-clm-tags .gjs-sm-field.gjs-sm-color, .gjs-sm-sector .gjs-sm-color.gjs-clm-field, .gjs-clm-tags .gjs-sm-color.gjs-clm-field, .gjs-sm-sector .gjs-sm-field.gjs-sm-input, .gjs-clm-tags .gjs-sm-field.gjs-sm-input, .gjs-sm-sector .gjs-sm-input.gjs-clm-field, .gjs-clm-tags .gjs-sm-input.gjs-clm-field {
+    .gjs-sm-sector .gjs-sm-field.gjs-sm-integer, .gjs-clm-tags .gjs-sm-field.gjs-sm-integer, .gjs-sm-sector .gjs-sm-integer.gjs-clm-field, .gjs-clm-tags .gjs-sm-integer.gjs-clm-field, .gjs-sm-sector .gjs-sm-field.gjs-sm-select, .gjs-clm-tags .gjs-sm-field.gjs-sm-select, .gjs-sm-sector .gjs-sm-select.gjs-clm-field, .gjs-clm-tags .gjs-sm-select.gjs-clm-field, .gjs-sm-sector .gjs-clm-select, .gjs-clm-tags .gjs-clm-select, .gjs-sm-sector .gjs-sm-field.gjs-sm-list, .gjs-clm-tags .gjs-sm-field.gjs-sm-list, .gjs-sm-sector .gjs-sm-list.gjs-clm-field, .gjs-clm-tags .gjs-sm-list.gjs-clm-field, .gjs-sm-sector .gjs-sm-field.gjs-sm-color, .gjs-clm-tags .gjs-sm-field.gjs-sm-color, .gjs-sm-sector .gjs-sm-color.gjs-clm-field, .gjs-clm-tags .gjs-sm-color.gjs-clm-field, .gjs-sm-sector .gjs-sm-field.gjs-sm-input, .gjs-clm-tags .gjs-sm-field.gjs-sm-input, .gjs-sm-sector .gjs-sm-input.gjs-clm-field, .gjs-clm-tags .gjs-sm-input.gjs-clm-field {
       background-color: rgba(0, 0, 0, 0.3);
       /*353535*/
       border: 1px solid rgba(0, 0, 0, 0.1);
@@ -3400,7 +3495,7 @@ ol.example li.placeholder:before {
         background-position: center;
         text-shadow: none;
         line-height: normal; }
-    .gjs-sm-sector .gjs-sm-field.gjs-sm-integer select, .gjs-clm-tags .gjs-sm-field.gjs-sm-integer select, .gjs-sm-sector .gjs-sm-integer.gjs-clm-field select, .gjs-clm-tags .gjs-sm-integer.gjs-clm-field select, .gjs-clm-tags #gjs-clm-tags-field select {
+    .gjs-sm-sector .gjs-sm-field.gjs-sm-integer select, .gjs-clm-tags .gjs-sm-field.gjs-sm-integer select, .gjs-sm-sector .gjs-sm-integer.gjs-clm-field select, .gjs-clm-tags .gjs-sm-integer.gjs-clm-field select {
       width: auto;
       padding: 0; }
   .gjs-sm-sector .gjs-sm-list .gjs-sm-el, .gjs-clm-tags .gjs-sm-list .gjs-sm-el {
@@ -3652,16 +3747,20 @@ ol.example li.placeholder:before {
   .gjs-clm-tags #gjs-clm-close {
     font-size: 20px;
     line-height: 0;
-    cursor: pointer; }
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.9); }
     .gjs-clm-tags #gjs-clm-close:hover {
       opacity: 0.7;
       filter: alpha(opacity=70); }
   .gjs-clm-tags #gjs-clm-checkbox {
+    color: rgba(255, 255, 255, 0.9);
     vertical-align: middle;
     cursor: pointer;
     font-size: 9px; }
   .gjs-clm-tags #gjs-clm-tag-label {
     cursor: text; }
+    .gjs-clm-tags #gjs-clm-tag-label input {
+      width: auto; }
 
 /********* END Class manager **********/
 /********* Modal dialog **********/
@@ -3949,7 +4048,10 @@ ol.example li.placeholder:before {
   padding: 5px 10px 0; }
 
 .sp-palette .sp-thumb-el, .sp-palette .sp-thumb-el:hover {
-  border: 1px solid rgba(0, 0, 0, 0.8); }
+  border: 1px solid rgba(0, 0, 0, 0.9); }
+
+.sp-palette .sp-thumb-el:hover, .sp-palette .sp-thumb-el.sp-thumb-active {
+  border-color: rgba(0, 0, 0, 0.9); }
 
 .gjs-hidden {
   display: none; }

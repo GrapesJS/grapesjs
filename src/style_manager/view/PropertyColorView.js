@@ -14,7 +14,7 @@ define(['backbone','./PropertyView', 'Spectrum', 'text!./../templates/propertyCo
 				this.$el.find('#' + this.pfx + 'input-holder').html(this.$input);
 			}
 			if(!this.$colorPicker){
-				this.$colorPicker = $('<div>', {class: this.pfx + "color-picker"});
+				this.$colorPicker = $('<div>', {class: this.ppfx + "field-color-picker"});
 				cpStyle = this.$colorPicker.get(0).style;
 				var that = this;
 				var el = this.target.config ? this.target.config.el : '';
@@ -37,7 +37,7 @@ define(['backbone','./PropertyView', 'Spectrum', 'text!./../templates/propertyCo
 						that.model.set('value', c);
 					}
 				});
-				this.$el.find('.' + this.pfx + 'colorp-c').append(this.$colorPicker);
+				this.$el.find('.' + this.ppfx + 'field-colorp-c').append(this.$colorPicker);
 			}
 			this.setValue(this.componentValue, 0);
 		},

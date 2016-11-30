@@ -14,9 +14,9 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyInteger.html']
 			this.max = this.model.get('max') || this.model.get('max')===0 ? this.model.get('max') : null;
 			this.units = this.model.get('units');
 			this.unit = this.model.get('unit') ? this.model.get('unit') : (this.units.length ? this.units[0] : '');
-			this.events['click .'+this.pfx+'u-arrow'] = 'upArrowClick';
-			this.events['click .'+this.pfx+'d-arrow'] = 'downArrowClick';
-			this.events['mousedown .'+this.pfx+'int-arrows'] = 'downIncrement';
+			this.events['click .'+this.ppfx+'field-arrow-u'] = 'upArrowClick';
+			this.events['click .'+this.ppfx+'field-arrow-d'] = 'downArrowClick';
+			this.events['mousedown .'+this.ppfx+'field-arrows'] = 'downIncrement';
 			this.listenTo( this.model ,'change:unit', this.valueChanged);
 			this.delegateEvents();
 		},
@@ -128,20 +128,21 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyInteger.html']
 		/** @inheritdoc */
 		renderInput: function() {
 			var pfx	= this.pfx;
+			var ppfx	= this.ppfx;
 			if(!this.$input){
 				this.$input = $('<input>', {placeholder: 'auto', type: 'text' });
 				this.$el.find('#'+ pfx +'input-holder').html(this.$input);
 			}
 			if(!this.$unit){
 				if(this.units && this.units.length){
-					this.unitS = '<select class="' + pfx + 'unit">';
+					this.unitS = '<select>';
 					_.each(this.units,function(unit){
 						var selected = unit == this.selectedUnit ? 'selected': '';
 						this.unitS += '<option ' + selected + ' >' + unit + '</option>';
 					},this);
 					this.unitS += '</select>';
 					this.$unit = $(this.unitS);
-					this.$el.find('#' + pfx + 'units-holder').html(this.$unit);
+					this.$el.find('.' + ppfx + 'field-units').html(this.$unit);
 				}
 			}
 			this.setValue(this.componentValue);

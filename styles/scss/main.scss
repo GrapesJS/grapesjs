@@ -560,7 +560,7 @@ ol.example li.placeholder:before {position: absolute;}
 		font-weight: lighter;
 		text-align: left;
 		position: relative;
-		background-color: rgba(0, 0, 0, 0.2);
+		background-color: rgba(0, 0, 0, 0.1);
 	}
 	.#{$nv-prefix}item.#{$nv-prefix}hide {
 	  @include opacity(0.55);
@@ -575,12 +575,11 @@ ol.example li.placeholder:before {position: absolute;}
 		@extend .btn;
 		height: auto !important; width: auto !important;
 		font-size: 13px;
-	    left: 0; top: 0;
-	    padding: 7px 5px 7px 10px;
-	    position: absolute;
-	    color: darken($fontColor, 20%);
-	    cursor:pointer;
-	    z-index: 1;
+    left: 0; top: 0;
+    padding: 7px 5px 7px 10px;
+    position: absolute;
+    cursor:pointer;
+    z-index: 1;
 	}
 	.#{$nv-prefix}item .#{$nv-prefix}title {
 		font-size: 11px;
@@ -614,7 +613,6 @@ ol.example li.placeholder:before {position: absolute;}
 .#{$nv-prefix}item > .#{$nv-prefix}no-chld > ##{$nv-prefix}caret::before{ content:''; }
 .#{$nv-prefix}no-chld > ##{$nv-prefix}caret{ display:none; }
 .#{$nv-prefix}item > ##{$nv-prefix}move {
-	color: darken($fontColor, 20%);
 	position: absolute;
 	cursor: move;
   font-size: 12px;
@@ -660,6 +658,7 @@ $darkBorder: rgba(0, 0, 0, 0.15); /*303030*/
 $lightBorder: rgba(255, 255, 255, 0.05); /*414141*/
 $darkTextShadow: $mainDkColor; /*#252525*/
 $arrowColor: $mainLhlColor; /*b1b1b1*/
+$colorpSize: 20px;
 
 @mixin rangeThumbStyle() {
   height: 10px; width: 10px;
@@ -702,10 +701,11 @@ $arrowColor: $mainLhlColor; /*b1b1b1*/
 
   select{
     height: 20px;
+    padding-right: 12px;
   }
 
   option{
-    padding: 5px 0;
+    padding: 3px 0;
   }
 
   .#{$app-prefix}sel-arrow {
@@ -723,6 +723,140 @@ $arrowColor: $mainLhlColor; /*b1b1b1*/
     border-right: 4px solid transparent;
     cursor:pointer;
   }
+}
+
+.#{$app-prefix}field-color {
+
+  input {
+    padding-right: $colorpSize;
+    box-sizing: border-box;
+  }
+}
+
+.#{$app-prefix}field-colorp {
+  border-left: 1px solid $mainDklColor;
+  box-sizing: border-box;
+  height: 100%;
+  padding: 2px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: $colorpSize;
+  z-index: 10;
+
+  .#{$app-prefix}checker-bg{
+    height: 100%;
+    width: 100%;
+    border-radius: 1px;
+  }
+}
+
+.#{$app-prefix}field-colorp-c {
+    height: 100%;
+    position: relative;
+    width: 100%;
+}
+
+.#{$app-prefix}field-color-picker {
+  background-color: $fontColor;
+  cursor: pointer;
+  height: 100%;
+  width: 100%;
+  box-shadow: 0 0 1px $mainDkColor;
+  border-radius: 1px;
+  position: absolute;
+  top: 0;
+}
+
+.#{$app-prefix}field-radio {
+  float: left;
+  overflow: hidden;
+  padding: 0;
+  width: auto;
+}
+
+/*???*/
+.#{$app-prefix}field-checkbox {
+  padding: 0;
+  width: auto !important;
+
+  input {
+    display: none;
+  }
+
+  input:checked + .#{$app-prefix}chk-icon{
+    border-color: rgba(255, 255, 255, 0.5);
+    border-width: 0 2px 2px 0;
+    border-style: solid;
+  }
+}
+
+.#{$app-prefix}radio-item{
+  float:left;
+  border-left: 1px solid $darkTextShadow;
+
+  &:first-child{
+    border:none
+  }
+  &:hover{
+    background: $mainDkColor;
+  }
+
+  input {
+    display: none;
+  }
+
+  input:checked + .#{$app-prefix}radio-item-label{
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+}
+
+.#{$app-prefix}radio-item-label{
+  cursor: pointer;
+  display: block;
+  padding: 5px;
+}
+
+.#{$app-prefix}field-units {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.#{$app-prefix}field-unit {
+  position: absolute;
+  right: 10px; top: 3px;
+  font-size: 10px;
+  color: $arrowColor;
+  cursor:pointer;
+}
+
+.#{$app-prefix}field-arrows {
+  z-index: 10;
+  cursor: ns-resize;
+  height: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 9px;
+}
+
+.#{$app-prefix}field-arrow-u,
+.#{$app-prefix}field-arrow-d{
+  position: absolute;
+  height: 0; width: 0;
+  border-left: 3px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid $arrowColor;
+  bottom: 4px;
+  cursor:pointer;
+}
+
+.#{$app-prefix}field-arrow-u {
+  border-bottom: 4px solid $arrowColor;
+  border-top: none;
+  top: 4px;
 }
 
 .#{$app-prefix}field-select {
@@ -774,21 +908,6 @@ $arrowColor: $mainLhlColor; /*b1b1b1*/
   margin: 0 5px;
   width: 6px;
   cursor: pointer;
-}
-
-.#{$app-prefix}field-checkbox {
-  padding: 0;
-  width: auto !important;
-
-  input {
-    display: none;
-  }
-
-  input:checked + .#{$app-prefix}chk-icon{
-    border-color: rgba(255, 255, 255, 0.5);
-    border-width: 0 2px 2px 0;
-    border-style: solid;
-  }
 }
 
 
@@ -1266,7 +1385,6 @@ $paddElClm: 5px 6px;
 	}
 
 	##{$clm-prefix}tags-field{
-		@extend .#{$sm-prefix}field.#{$sm-prefix}integer;
 		clear:both;
 		padding: 5px;
 		margin-bottom: 5px;
@@ -1308,12 +1426,14 @@ $paddElClm: 5px 6px;
 		font-size: 20px;
     line-height: 0;
     cursor:pointer;
+    color: rgba(255, 255, 255, 0.9);
     @extend  .no-select;
     &:hover{
     	@include opacity(0.7);
     }
 	}
 	##{$clm-prefix}checkbox {
+    color: rgba(255, 255, 255, 0.9);
 		vertical-align: middle;
 		cursor: pointer;
 		font-size: 9px;
@@ -1322,6 +1442,10 @@ $paddElClm: 5px 6px;
 	##{$clm-prefix}tag-label {
 		cursor: text;
 		@extend  .no-select;
+
+    input {
+      width: auto;
+    }
 	}
 }
 /********* END Class manager **********/
@@ -1643,8 +1767,13 @@ $uploadPadding:	150px 10px;
   padding:5px 10px 0;
 }
 .sp-palette .sp-thumb-el, .sp-palette .sp-thumb-el:hover{
-  border: 1px solid rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.9);
 }
+
+.sp-palette .sp-thumb-el:hover, .sp-palette .sp-thumb-el.sp-thumb-active {
+  border-color: rgba(0, 0, 0, 0.9);
+}
+
 
 .#{$app-prefix}hidden{ display: none; }
 
