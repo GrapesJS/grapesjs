@@ -58,7 +58,7 @@ define([path + 'PropertyColorView', 'StyleManager/model/Property', 'DomComponent
             it('Inputs rendered', function() {
               var prop = view.el;
               prop.querySelector('input[type=text]').should.be.ok;
-              prop.querySelector('.color-picker').should.be.ok;
+              prop.querySelector('.field-color-picker').should.be.ok;
             });
 
             it('Inputs should exist', function() {
