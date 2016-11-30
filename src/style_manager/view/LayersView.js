@@ -10,7 +10,8 @@ define(['backbone','./LayerView'],
 			this.stackModel	= o.stackModel;
 			this.preview = o.preview;
 			this.pfx = this.config.stylePrefix || '';
-			this.className	= this.pfx + 'layers';
+			this.ppfx = this.config.pStylePrefix || '';
+			this.className	= this.pfx + 'layers ' + this.ppfx + 'field';
 			this.listenTo( this.collection, 'add', this.addTo);
 			this.listenTo( this.collection, 'deselectAll', this.deselectAll );
 			this.listenTo( this.collection, 'reset', this.render);

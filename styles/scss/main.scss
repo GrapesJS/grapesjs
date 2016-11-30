@@ -162,9 +162,11 @@ $fontV: 5;//random(1000)
 
 /********************* MAIN ************************/
 .clear{ clear:both }
+
 .no-select{
  	@include user-select(none);
 }
+
 .#{$app-prefix}editor{
 	font-family: $mainFont;
 	background-color: $mainColor;
@@ -606,7 +608,7 @@ ol.example li.placeholder:before {position: absolute;}
 	border-left: 1px solid lighten($mainDkColor,2%);
 }
 .#{$nv-prefix}item > .#{$nv-prefix}children {
-  margin-left: 10px;
+  margin-left: 7px;
   display: none;
 }
 .#{$nv-prefix}item.open > .#{$nv-prefix}children { display: block; }
@@ -648,285 +650,10 @@ ol.example li.placeholder:before {position: absolute;}
 		content:  "\f03e";
 	}
 }
-/***********  END Components *************/
 
+$lightBorder: rgba(255, 255, 255, 0.05);
 
-/********* Input style **********/
-
-$inputFontColor: $mainLhlColor; /*#d5d5d5*/
-$darkBorder: rgba(0, 0, 0, 0.15); /*303030*/
-$lightBorder: rgba(255, 255, 255, 0.05); /*414141*/
-$darkTextShadow: $mainDkColor; /*#252525*/
-$arrowColor: $mainLhlColor; /*b1b1b1*/
-$colorpSize: 20px;
-
-@mixin rangeThumbStyle() {
-  height: 10px; width: 10px;
-  border: 1px solid $mainDkColor;
-  border-radius: 100%;
-  background-color: $fontColor;
-  cursor: pointer;
-}
-
-@mixin rangeTrackStyle() {
-  background-color: $mainDkColor;
-  border: 1px solid $darkBorder;
-  border-radius: 1px;
-  height: 2px;
-}
-
-.#{$app-prefix}label {
-  line-height: 18px;
-}
-
-.#{$app-prefix}field {
-  background-color: $mainDkColor;/*353535*/
-  border: 1px solid rgba(0, 0, 0, 0.1);/*292929*/
-  box-shadow: 1px 1px 0 $mainLhColor;/*575757*/
-  border-radius: 2px;
-  box-sizing: border-box;
-  padding: 0 5px;
-  position: relative;
-
-  input, select{
-    @include appearance(none);
-    color: $inputFontColor;
-    border:none;
-    background-color: transparent;
-    width: 100%;
-    position: relative;
-    padding: 3px 0;
-    z-index:1;
-  }
-
-  select{
-    height: 20px;
-    padding-right: 12px;
-  }
-
-  option{
-    padding: 3px 0;
-  }
-
-  .#{$app-prefix}sel-arrow {
-    height: 100%; width: 9px;
-    position: absolute;
-    right: 0; top: 0;
-    z-index: 0;
-  }
-  .#{$app-prefix}d-s-arrow {
-    bottom: 7px;
-    border-top: 4px solid $arrowColor;
-    position: absolute;
-    height: 0; width: 0;
-    border-left: 3px solid transparent;
-    border-right: 4px solid transparent;
-    cursor:pointer;
-  }
-}
-
-.#{$app-prefix}field-color {
-
-  input {
-    padding-right: $colorpSize;
-    box-sizing: border-box;
-  }
-}
-
-.#{$app-prefix}field-colorp {
-  border-left: 1px solid $mainDklColor;
-  box-sizing: border-box;
-  height: 100%;
-  padding: 2px;
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: $colorpSize;
-  z-index: 10;
-
-  .#{$app-prefix}checker-bg{
-    height: 100%;
-    width: 100%;
-    border-radius: 1px;
-  }
-}
-
-.#{$app-prefix}field-colorp-c {
-    height: 100%;
-    position: relative;
-    width: 100%;
-}
-
-.#{$app-prefix}field-color-picker {
-  background-color: $fontColor;
-  cursor: pointer;
-  height: 100%;
-  width: 100%;
-  box-shadow: 0 0 1px $mainDkColor;
-  border-radius: 1px;
-  position: absolute;
-  top: 0;
-}
-
-.#{$app-prefix}field-radio {
-  float: left;
-  overflow: hidden;
-  padding: 0;
-  width: auto;
-}
-
-/*???*/
-.#{$app-prefix}field-checkbox {
-  padding: 0;
-  width: auto !important;
-
-  input {
-    display: none;
-  }
-
-  input:checked + .#{$app-prefix}chk-icon{
-    border-color: rgba(255, 255, 255, 0.5);
-    border-width: 0 2px 2px 0;
-    border-style: solid;
-  }
-}
-
-.#{$app-prefix}radio-item{
-  float:left;
-  border-left: 1px solid $darkTextShadow;
-
-  &:first-child{
-    border:none
-  }
-  &:hover{
-    background: $mainDkColor;
-  }
-
-  input {
-    display: none;
-  }
-
-  input:checked + .#{$app-prefix}radio-item-label{
-    background-color: rgba(255, 255, 255, 0.2);
-  }
-
-}
-
-.#{$app-prefix}radio-item-label{
-  cursor: pointer;
-  display: block;
-  padding: 5px;
-}
-
-.#{$app-prefix}field-units {
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-
-.#{$app-prefix}field-unit {
-  position: absolute;
-  right: 10px; top: 3px;
-  font-size: 10px;
-  color: $arrowColor;
-  cursor:pointer;
-}
-
-.#{$app-prefix}field-arrows {
-  z-index: 10;
-  cursor: ns-resize;
-  height: 100%;
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 9px;
-}
-
-.#{$app-prefix}field-arrow-u,
-.#{$app-prefix}field-arrow-d{
-  position: absolute;
-  height: 0; width: 0;
-  border-left: 3px solid transparent;
-  border-right: 4px solid transparent;
-  border-top: 4px solid $arrowColor;
-  bottom: 4px;
-  cursor:pointer;
-}
-
-.#{$app-prefix}field-arrow-u {
-  border-bottom: 4px solid $arrowColor;
-  border-top: none;
-  top: 4px;
-}
-
-.#{$app-prefix}field-select {
-  padding: 0;
-}
-
-.#{$app-prefix}field-range {
-  background-color: transparent;
-  border: none;
-  box-shadow: none;
-  padding: 0;
-
-  input {
-    margin: 0;
-  }
-
-  input::-moz-range-thumb {
-    @include rangeThumbStyle();
-  }
-
-  input::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    margin-top: -5px;
-    @include rangeThumbStyle();
-  }
-
-  input::-ms-thumb {
-    @include rangeThumbStyle();
-  }
-
-  input::-moz-range-track {
-    @include rangeTrackStyle();
-  }
-
-  input::-webkit-slider-runnable-track {
-    @include rangeTrackStyle();
-  }
-
-  input::-ms-track {
-    @include rangeTrackStyle();
-  }
-}
-
-.#{$app-prefix}chk-icon{
-  @include transform(rotate(45deg));
-  box-sizing: border-box;
-  display: block;
-  height: 14px;
-  margin: 0 5px;
-  width: 6px;
-  cursor: pointer;
-}
-
-
-.#{$app-prefix}add-trasp {
-  background: none;
-  border: none;
-  color: $fontColor;
-  cursor: pointer;
-  font-size: 1em;
-  border-radius: 2px;
-  @include opacity(0.75);
-
-  &:hover{  @include opacity(1); }
-  &:active{
-    background-color: rgba(0, 0, 0, 0.2);
-  }
-}
-
-/********* END Inputs **********/
+@import "gjs_inputs";
 
 /********* Device Manager **********/
 
@@ -1008,16 +735,14 @@ $colorpSize: 20px;
 
     input, select {
       background-color: transparent;
-      color: $inputFontColor;
+      color: $mainLhlColor;
       border:none;
       width: 100%;
     }
 	  input {
 		  box-sizing: border-box;
-		  padding: 3px 21px 3px 0;
 		}
 		select {
-      padding: 2px 10px 2px 2px;
 		  position: relative;
 		  z-index:1;
 		  @include appearance(none);
@@ -1026,7 +751,7 @@ $colorpSize: 20px;
 
     select:-moz-focusring{
       color: transparent;
-      text-shadow: 0 0 0 $inputFontColor;
+      text-shadow: 0 0 0 $mainLhlColor;
     }
 
     select:focus, input:focus{
@@ -1037,7 +762,7 @@ $colorpSize: 20px;
 		  position: absolute;
 		  right: 10px; top: 3px;
 		  font-size: 10px;
-		  color: $arrowColor;
+		  color: $mainLhlColor;
 		  cursor:pointer;
 		}
 
@@ -1058,11 +783,11 @@ $colorpSize: 20px;
 		}
 
 		.#{$sm-prefix}u-arrow {
-		  border-bottom: 4px solid $arrowColor;
+		  border-bottom: 4px solid $mainLhlColor;
 		  top: 4px;
 		}
 		.#{$sm-prefix}d-arrow, .#{$sm-prefix}d-s-arrow, .#{$clm-prefix}d-s-arrow{
-		  border-top: 4px solid $arrowColor;
+		  border-top: 4px solid $mainLhlColor;
 		  bottom: 4px;
 		}
 		.#{$sm-prefix}d-s-arrow, .#{$clm-prefix}d-s-arrow{ bottom: 7px; }
@@ -1071,7 +796,7 @@ $colorpSize: 20px;
 		  background-color: $mainDkColor;/*353535*/
 		  border: 1px solid rgba(0, 0, 0, 0.1);/*292929*/
 		  box-shadow: 1px 1px 0 $mainLhColor;/*575757*/
-		  color: $inputFontColor;
+		  color: $mainLhlColor;
 		  border-radius: 2px;
 		  box-sizing: border-box;
 		  padding: 0 5px;
@@ -1114,7 +839,7 @@ $colorpSize: 20px;
 
 	.#{$sm-prefix}list .#{$sm-prefix}el{
 		float:left;
-		border-left: 1px solid $darkTextShadow;
+		border-left: 1px solid $mainDkColor;
 
 		&:first-child{border:none}
 		&:hover{background: $mainDkColor; }
@@ -1181,10 +906,6 @@ $colorpSize: 20px;
 		}
 
 		.#{$sm-prefix}layers {
-		  background-color: rgba(0,0,0,0.13);
-		  border: 1px solid rgba(0,0,0,0.13);
-		  box-shadow: 1px 1px 0 $mainLhColor;
-		  border-radius: 2px;
 		  margin-top: 5px;
 		  min-height: 30px;
 		}
@@ -1395,7 +1116,7 @@ $paddElClm: 5px 6px;
 	}
 
 	##{$clm-prefix}add-tag{
-		background-color: rgba(255, 255, 255, 0.2);
+		background-color: rgba(255, 255, 255, 0.15);
 		border-radius: 2px;
     padding: $paddElClm;
     box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.2) inset;
@@ -1445,6 +1166,7 @@ $paddElClm: 5px 6px;
 
     input {
       width: auto;
+      padding: 0 4px;
     }
 	}
 }
@@ -1512,24 +1234,29 @@ $paddElClm: 5px 6px;
 }
 
 /********* Assets Manager **********/
-.#{$am-prefix}assets{
+.#{$am-prefix}assets {
   height: 290px;
   overflow: auto;
   clear: both;
 }
 
-.#{$am-prefix}assets-header{
+.#{$am-prefix}assets-header {
   padding: 5px;
 }
 
-.#{$am-prefix}add-asset{
-  input{
+.#{$am-prefix}add-asset {
+  .#{$am-prefix}add-field {
     width: 70%;
+    float: left;
   }
   button{
     width: 25%;
     float: right;
   }
+}
+
+.#{$am-prefix}add-field input {
+  padding: 6px;
 }
 
 .#{$am-prefix}assets-cont {
