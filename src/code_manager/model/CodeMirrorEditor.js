@@ -23,11 +23,12 @@ define(['backbone',
 			init: function(el)
 			{
 				this.editor	= CodeMirror.fromTextArea(el, {
-					dragDrop		: false,
-					lineNumbers		: this.get('lineNumbers'),
-					readOnly		: this.get('readOnly'),
-				    mode			: this.get('codeName'),
-				    theme			: this.get('theme'),
+					dragDrop: false,
+          lineWrapping: true,
+					lineNumbers: this.get('lineNumbers'),
+					readOnly: this.get('readOnly'),
+				  mode: this.get('codeName'),
+				  theme: this.get('theme'),
 				});
 
 				return this;

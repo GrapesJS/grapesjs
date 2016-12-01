@@ -58,8 +58,9 @@ define(['backbone', './ComponentView'],
 			this.updateAttributes();
 			this.updateClasses();
 
+			var actCls = this.$el.attr('class');
 			if(!this.model.get('src'))
-				this.$el.attr('class', this.classEmpty);
+				this.$el.attr('class', (actCls + ' ' + this.classEmpty).trim());
 
 			// Avoid strange behaviours while try to drag
 			this.$el.attr('onmousedown', 'return false');

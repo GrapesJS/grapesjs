@@ -7,7 +7,7 @@ define(function () {
 		// Style prefix
 		stylePrefix: 'am-',
 
-		// Url where uploads will be send
+		// Url where uploads will be send, set false to disable upload
 		upload: 'http://localhost/assets/upload',
 
 		// Text on upload input

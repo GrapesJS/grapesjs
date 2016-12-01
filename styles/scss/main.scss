@@ -1195,6 +1195,7 @@ $paddElClm: 5px 6px;
   	@extend .#{$app-prefix}bg-main;
     @extend .#{$app-prefix}color-main;
   	text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.05);
+    animation: #{$app-prefix}slide-down 0.215s;
   	margin: 30px auto 0;
   	max-width: 850px;
   	width: 90%;
@@ -1502,15 +1503,28 @@ $uploadPadding:	150px 10px;
 }
 
 
-.#{$app-prefix}hidden{ display: none; }
+.#{$app-prefix}hidden {
+  display: none;
+}
 
-@keyframes #{$app-prefix}-slide-down {
+@keyframes #{$app-prefix}slide-down {
   0% {
-      margin-top: -3rem;
+      transform: translate(0, -3rem);
       opacity: 0;
   }
   100% {
-      margin-top: 0;
+      transform: translate(0, 0);
       opacity: 1;
+  }
+}
+
+@keyframes #{$app-prefix}slide-up {
+  0% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(0, -3rem);
+    opacity: 0;
   }
 }

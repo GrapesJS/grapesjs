@@ -3155,7 +3155,7 @@ ol.example li.placeholder:before {
   box-sizing: border-box; }
 
 .gjs-field-colorp {
-  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  border-left: 1px solid rgba(0, 0, 0, 0.3);
   box-sizing: border-box;
   height: 100%;
   padding: 2px;
@@ -3779,6 +3779,7 @@ ol.example li.placeholder:before {
 
 .gjs-mdl-dialog {
   text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.05);
+  animation: gjs-slide-down 0.215s;
   margin: 30px auto 0;
   max-width: 850px;
   width: 90%;
@@ -4053,10 +4054,18 @@ ol.example li.placeholder:before {
 .gjs-hidden {
   display: none; }
 
-@keyframes gjs--slide-down {
+@keyframes gjs-slide-down {
   0% {
-    margin-top: -3rem;
+    transform: translate(0, -3rem);
     opacity: 0; }
   100% {
-    margin-top: 0;
+    transform: translate(0, 0);
     opacity: 1; } }
+
+@keyframes gjs-slide-up {
+  0% {
+    transform: translate(0, 0);
+    opacity: 1; }
+  100% {
+    transform: translate(0, -3rem);
+    opacity: 0; } }

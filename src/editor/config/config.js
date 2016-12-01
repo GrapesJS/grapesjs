@@ -170,7 +170,11 @@ define(function () {
 					id: 'image',
 	        label: 'Image',
 	        attributes: {class:'gjs-fonts gjs-f-image'},
-	        content: { type:'image',  activeOnRender: 1},
+	        content: {
+						style: {color: 'black'},
+						type:'image',
+						activeOnRender: 1
+					},
 	      },{
 					id: 'quo',
 	        label: 'Quote',
