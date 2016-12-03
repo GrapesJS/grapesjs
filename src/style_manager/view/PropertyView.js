@@ -28,6 +28,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 			if(!this.model.get('value'))
 				this.model.set('value', this.model.get('defaults'));
 
+			this.listenTo(this.model, 'destroy remove', this.remove);
 			this.listenTo( this.propTarget, 'update', this.targetUpdated);
 			this.listenTo( this.model ,'change:value', this.valueChanged);
 			this.listenTo( this.model ,'targetUpdated', this.targetUpdated);
@@ -58,8 +59,9 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 			this.selectedComponent = this.propTarget.model;
 			this.helperComponent = this.propTarget.helper;
 			if(this.getTarget()){
-				if(!this.sameValue())
+				if(!this.sameValue()){
 					this.renderInputRequest();
+				}
 			}
 		},
 

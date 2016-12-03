@@ -169,7 +169,6 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyInteger.html']
 
 			if(this.$unit)
 				this.$unit.val(u);
-
 			this.model.set({value: v, unit: u,}, {silent: true});
 		},
 
