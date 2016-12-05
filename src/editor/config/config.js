@@ -29,6 +29,9 @@ define(function () {
 		// If true render a select of available devices
 		showDevices: 1,
 
+		// When enabled, on device change media rules won't be created
+		devicePreviewMode: 0,
+
 		// Dom element
 		el: '',
 

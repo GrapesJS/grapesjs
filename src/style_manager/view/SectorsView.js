@@ -38,7 +38,7 @@ define(['backbone', './SectorView'],
 			if(!el)
 				return;
 
-			var previewMode = this.target.get('previewMode');
+			var previewMode = this.target.get('Config').devicePreviewMode;
 			var classes = el.get('classes');
 			var pt = this.propTarget;
 			var device = this.target.getDeviceModel();
