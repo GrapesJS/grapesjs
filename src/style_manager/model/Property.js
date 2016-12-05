@@ -4,7 +4,7 @@ define(['backbone', './Layers', 'require'],
 		return Backbone.Model.extend({
 
 			defaults: {
-				name : '',
+				name: '',
 				property: '',
 				type: '',
 				units: [],
@@ -15,10 +15,11 @@ define(['backbone', './Layers', 'require'],
 				icon: '',
 				preview: false,
 				detached: false,
-				functionName:	'',
+				functionName: '',
 				properties: [],
 				layers: [],
 				list: [],
+				fixedValues: ['initial', 'inherit'],
 			},
 
 			initialize: function(opt) {
@@ -48,7 +49,7 @@ define(['backbone', './Layers', 'require'],
 			 * @return {string} Value
 			 * @private
 			 */
-			getValue: function(){
+			getValue: function() {
 				var result = '';
 				var type = this.get('type');
 

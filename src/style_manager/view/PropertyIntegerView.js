@@ -150,18 +150,27 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyInteger.html']
 
 		/** @inheritdoc */
 		setValue: function(value){
-			var u	= this.unit,
-					v	= this.model.get('value') || this.defaultValue;
+			var model = this.model;
+			var u	= this.unit;
+			var v	= model.get('value') || this.defaultValue;
+			var fixed = model.get('fixedValues') || [];
 
-			if(value){
-				// Make it suitable for replace
-				value += '';
-				v = parseFloat(value.replace(',', '.'));
-				v = !isNaN(v) ? v : this.defaultValue;
-				var uN	= value.replace(v,'');
-				// Check if exists as unit
-				if(_.indexOf(this.units, uN) > -1)
-					u = uN;
+			if (value) {
+				// If the value is one of the fixed values I leave it as it is
+				var regFixed = new RegExp('^' + fixed.join('|'), 'g');
+				if (fixed.length && regFixed.test(value)) {
+					v = value.match(regFixed)[0];
+					u = '';
+				} else {
+					// Make it suitable for replace
+					value += '';
+					v = parseFloat(value.replace(',', '.'));
+					v = !isNaN(v) ? v : this.defaultValue;
+					var uN	= value.replace(v, '');
+					// Check if exists as unit
+					if(_.indexOf(this.units, uN) > -1)
+						u = uN;
+				}
 			}
 
 			if(this.$input)
@@ -169,7 +178,7 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyInteger.html']
 
 			if(this.$unit)
 				this.$unit.val(u);
-			this.model.set({value: v, unit: u,}, {silent: true});
+			model.set({value: v, unit: u,}, {silent: true});
 		},
 
 	});

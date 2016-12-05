@@ -242,7 +242,7 @@ define(function () {
 							width: '615px',
 						}
 					},
-	      }/*,{
+	      },{
 					id: 'table',
 	        label: 'Table',
 	        attributes: {class:'fa fa-table'},
@@ -252,7 +252,7 @@ define(function () {
 						rows: 5,
 						style: {height: '150px', width: '100%'}
 					},
-	      }*/],
+	      }],
 		},
 
 	};

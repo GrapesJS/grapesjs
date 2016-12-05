@@ -69,7 +69,7 @@ function(Backbone, BlockView) {
       el.className += ' ' + this.ppfx + 'bdrag';
       this.helper = el;
       document.body.appendChild(el);
-      $(this.em.get('Canvas').getBody()).on('mousemove', this.moveHelper);
+      $(this.em.get('Canvas').getBody().ownerDocument).on('mousemove', this.moveHelper);
       $(document).on('mousemove', this.moveHelper);
     },
 

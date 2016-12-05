@@ -215,11 +215,11 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 		 * @param 	{Boolean}	force
 		 * */
 		setValue: function(value, force){
-			var f	= force === 0 ? 0 : 1;
+			var f = force === 0 ? 0 : 1;
 			var def = this.model.get('defaults');
-			var v 	= this.model.get('value') || def;
+			var v = this.model.get('value') || def;
 			if(value || f){
-				v		= value;
+				v = value;
 			}
 			if(this.$input)
 				this.$input.val(v);
