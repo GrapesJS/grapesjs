@@ -38,11 +38,12 @@ define(['backbone', './SectorView'],
 			if(!el)
 				return;
 
+			var previewMode = this.target.get('previewMode');
 			var classes = el.get('classes');
-			var state = el.get('state');
 			var pt = this.propTarget;
 			var device = this.target.getDeviceModel();
-			var deviceW = device ? device.get('width') : '';
+			var state = !previewMode ? el.get('state') : '';
+			var deviceW = device && !previewMode ? device.get('width') : '';
 			pt.helper = null;
 
 			if(classes.length){

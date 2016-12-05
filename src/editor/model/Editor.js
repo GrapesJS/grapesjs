@@ -17,6 +17,9 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
 				toLoad: [],
 				opened: {},
 				device: '',
+
+				// When enabled, on device change media rules won't be created
+				previewMode: 0,
 			},
 
 			initialize: function(c) {
