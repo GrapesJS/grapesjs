@@ -9,6 +9,7 @@ define(['./Component'],
 					droppable: ['tr', 'tbody', 'thead', 'tfoot'],
 					columns: 3,
 					rows: 2,
+					/*
 					traits: [{
 						label: 'Columns',
 						name: 'columns',
@@ -18,6 +19,7 @@ define(['./Component'],
 						name: 'rows',
 						changeProp: 1,
 					}]
+					*/
 			}),
 
 			initialize: function(o, opt) {
