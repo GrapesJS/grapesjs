@@ -12,5 +12,13 @@ define(['backbone', './ComponentTextView'],
       e.preventDefault();
     },
 
+		render: function() {
+			ComponentView.prototype.render.apply(this, arguments);
+
+			// Avoid strange behaviours while try to drag
+			//this.$el.attr('onmousedown', 'return false');
+			return this;
+		},
+
 	});
 });

@@ -9,6 +9,17 @@ define(['./ComponentText'],
 					traits: ['title', 'href', 'target'],
 			}),
 
+			/**
+			 * Returns object of attributes for HTML
+			 * @return {Object}
+			 * @private
+			 */
+			getAttrToHTML: function() {
+				var attr = Component.prototype.getAttrToHTML.apply(this, arguments);
+				delete attr.onmousedown;
+				return attr;
+			},
+
 		},{
 
 			/**
