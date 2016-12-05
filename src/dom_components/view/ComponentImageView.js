@@ -58,7 +58,7 @@ define(['backbone', './ComponentView'],
 			this.updateAttributes();
 			this.updateClasses();
 
-			var actCls = this.$el.attr('class');
+			var actCls = this.$el.attr('class') || '';
 			if(!this.model.get('src'))
 				this.$el.attr('class', (actCls + ' ' + this.classEmpty).trim());
 
