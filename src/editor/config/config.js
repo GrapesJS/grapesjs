@@ -215,7 +215,7 @@ define(function () {
 					id: 'quo',
 	        label: 'Quote',
 	        content: '<blockquote class="quote">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore ipsum dolor sit</blockquote>',
-	        attributes: {class:'gjs-fonts gjs-f-quo'}
+	        attributes: {class:'fa fa-quote-right'}
 	      },{
 					id: 'link',
 	        label: 'Link',

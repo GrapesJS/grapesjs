@@ -2570,8 +2570,8 @@ $fontColorActive: #4f8ef7;
 /* #515151 */
 @font-face {
   font-family: 'font3336';
-  src: url("../fonts/main-fonts.eot?v=5");
-  src: url("../fonts/main-fonts.woff?v=5") format("woff"), url("../fonts/main-fonts.ttf?v=5") format("truetype"), url("../fonts/main-fonts.svg?v=5") format("svg"), url("../fonts/main-fonts.eot?v=5") format("embedded-opentype");
+  src: url("../fonts/main-fonts.eot?v=20");
+  src: url("../fonts/main-fonts.woff?v=20") format("woff"), url("../fonts/main-fonts.ttf?v=20") format("truetype"), url("../fonts/main-fonts.svg?v=20") format("svg"), url("../fonts/main-fonts.eot?v=20") format("embedded-opentype");
   font-weight: normal;
   font-style: normal; }
 
@@ -2584,19 +2584,19 @@ $fontColorActive: #4f8ef7;
   font-size: 5em; }
 
 .gjs-f-b1::before {
-  content: 'q'; }
+  content: 'Q'; }
 
 .gjs-f-b2::before {
-  content: 'w'; }
+  content: 'W'; }
 
 .gjs-f-b3::before {
-  content: 'e'; }
+  content: 'E'; }
 
 .gjs-f-b37::before {
-  content: 'r'; }
+  content: 'R'; }
 
 .gjs-f-hero::before {
-  content: 't'; }
+  content: 'T'; }
 
 .gjs-f-h1p::before {
   content: 'y'; }
@@ -2605,7 +2605,7 @@ $fontColorActive: #4f8ef7;
   content: 'u'; }
 
 .gjs-f-image::before {
-  content: 'i'; }
+  content: 'I'; }
 
 .gjs-f-text::before {
   content: 'o'; }
@@ -3898,7 +3898,7 @@ ol.example li.placeholder:before {
   float: left; }
   .gjs-am-file-uploader > form {
     background-color: rgba(0, 0, 0, 0.1);
-    border: 2px dashed #999999;
+    border: 2px dashed;
     border-radius: 3px;
     position: relative;
     text-align: center;
