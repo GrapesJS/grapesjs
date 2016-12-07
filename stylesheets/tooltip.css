@@ -1,0 +1,88 @@
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]::after {
+  font-family: Helvetica, sans-serif;
+  background: rgba(51, 51, 51, 0.9);
+  background: rgba(55, 61, 73, 0.9);
+  border-radius: 3px;
+  bottom: 100%;
+  color: #fff;
+  content: attr(data-tooltip);
+  display: block;
+  font-size: 12px;
+  left: 50%;
+  line-height: normal;
+  max-width: 32rem;
+  opacity: 0;
+  overflow: hidden;
+  padding: 0.6rem 1rem;
+  pointer-events: none;
+  position: absolute;
+  text-overflow: ellipsis;
+  -webkit-transform: translate(-50%, 0);
+  -ms-transform: translate(-50%, 0);
+  transform: translate(-50%, 0);
+  transition: all 0.216s ease;
+  z-index: 99;
+}
+
+[data-tooltip]:focus::after,
+[data-tooltip]:hover::after {
+  opacity: 1;
+  -webkit-transform: translate(-50%, -0.5rem);
+  -ms-transform: translate(-50%, -0.5rem);
+  transform: translate(-50%, -0.5rem);
+}
+
+[data-tooltip][disabled],
+[data-tooltip].disabled {
+  pointer-events: auto;
+}
+
+[data-tooltip-pos=right]::after {
+  bottom: 50%;
+  left: 100%;
+  -webkit-transform: translate(0, 50%);
+  -ms-transform: translate(0, 50%);
+  transform: translate(0, 50%);
+}
+
+[data-tooltip-pos=right]:focus::after,
+[data-tooltip-pos=right]:hover::after {
+  -webkit-transform: translate(0.5rem, 50%);
+  -ms-transform: translate(0.5rem, 50%);
+  transform: translate(0.5rem, 50%);
+}
+
+[data-tooltip-pos=bottom]::after {
+  bottom: auto;
+  top: 100%;
+  -webkit-transform: translate(-50%, 0);
+  -ms-transform: translate(-50%, 0);
+  transform: translate(-50%, 0);
+}
+
+[data-tooltip-pos=bottom]:focus::after,
+[data-tooltip-pos=bottom]:hover::after {
+  -webkit-transform: translate(-50%, 0.5rem);
+  -ms-transform: translate(-50%, 0.5rem);
+  transform: translate(-50%, 0.5rem);
+}
+
+[data-tooltip-pos=left]::after {
+  bottom: 50%;
+  left: auto;
+  right: 100%;
+  -webkit-transform: translate(0, 50%);
+  -ms-transform: translate(0, 50%);
+  transform: translate(0, 50%);
+}
+
+[data-tooltip-pos=left]:focus::after,
+[data-tooltip-pos=left]:hover::after {
+  -webkit-transform: translate(-0.5rem, 50%);
+  -ms-transform: translate(-0.5rem, 50%);
+  transform: translate(-0.5rem, 50%);
+}

@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>GrapesJS Newsletter Editor</title>
+    <link rel="stylesheet" href="./stylesheets/grapes.min.css">
+    <link rel="stylesheet" href="./stylesheets/material.css">
+    <link rel="stylesheet" href="./stylesheets/tooltip.css">
+    <link rel="stylesheet" href="./stylesheets/grapesjs-preset-newsletter.css">
+
+    <script src="./js/jquery.js"></script>
+    <script src="./js/grapes.min.js"></script>
+    <script src="./js/grapesjs-preset-newsletter.min.js"></script>
+    <script src="./js/ajaxable.min.js"></script>
+  </head>
+  <style>
+    body, html{ height: 100%; margin: 0;}
+  </style>
+  <body>
+
+
+    <div id="gjs" style="height:0px; overflow:hidden"></div>
+
+
+    <form id="test-form" class="test-form" action="http://grapes.16mb.com/s" method="POST" style="display:none">
+      <div class="putsmail-c">
+        <a href="https://putsmail.com/" target="_blank">
+          <img src="./img/putsmail.png" style="opacity:0.85; width:177px" />
+        </a>
+        <div class="gjs-sm-property" style="font-size: 10px">
+          Message delivering offered by PutsMail
+          <span class="form-status" style="opacity: 0">
+            <i class="fa fa-refresh anim-spin" aria-hidden="true"></i>
+          </span>
+        </div>
+      </div>
+      <div class="gjs-sm-property">
+        <div class="gjs-field">
+        	<span id="gjs-sm-input-holder">
+            <input type="email" name="email" placeholder="Email" required>
+          </span>
+        </div>
+      </div>
+
+      <div class="gjs-sm-property">
+        <div class="gjs-field">
+        	<span id="gjs-sm-input-holder">
+            <input type="text" name="subject" placeholder="Subject" required>
+          </span>
+        </div>
+      </div>
+      <input type="hidden" name="body">
+      <button class="gjs-btn-prim gjs-btn-import" style="width: 100%">SEND</button>
+    </form>
+
+
+    <script type="text/javascript">
+      // Custom template
+      var templateImport = `
+      <table class="c654">
+  <tr class="row">
+    <td class="cell">
+      <table class="container">
+        <tr>
+          <td class="container-cell">
+            <table class="table100 c1790">
+              <tr>
+                <td class="top-cell" id="c1793">
+                  <u class="browser-link" id="c307">View in browser
+                  </u>
+                </td>
+              </tr>
+            </table>
+            <table class="c1766">
+              <tr>
+                <td class="cell c1769">
+                  <img class="c926" src="https://raw.githubusercontent.com/artf/grapesjs/gh-pages/img/grapesjs-logo.png" alt="GrapesJS."/>
+                </td>
+                <td class="cell c1776">
+                  <div class="c1144 darkerfont">GrapesJS Newsletter Editor
+                    <br/>
+                  </div>
+                </td>
+              </tr>
+            </table>
+            <table class="card">
+              <tr>
+                <td class="card-cell">
+                  <img class="c1271" src="http://placehold.it/550x250/78c5d6/fff/" alt="Big image here"/>
+                  <table class="table100 c1357">
+                    <tr>
+                      <td class="card-content">
+                        <h1 class="card-title">Build your newsletters faster than ever
+                          <br/>
+                        </h1>
+                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua
+                        </p>
+                        <table class="c1542">
+                          <tr>
+                            <td class="card-footer" id="c1545">
+                              <a class="button">Button here
+                              </a>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<style>.row{
+  vertical-align:top;
+  }
+  .c654{
+    min-height:150px;
+    padding-top:5px;
+    padding-right:5px;
+    padding-bottom:5px;
+    padding-left:5px;
+    margin-top:auto;
+    margin-right:auto;
+    margin-bottom:auto;
+    margin-left:auto;
+    width:100%;
+    height:100%;
+    background-color:rgb(234, 236, 237);
+  }
+  .cell{
+    text-align:left;
+    font-size:12px;
+    font-family:Helvetica,serif;
+    font-weight:300;
+    color:rgb(111, 119, 125);
+    padding-top:0px;
+    padding-right:0px;
+    padding-bottom:0px;
+    padding-left:0px;
+    vertical-align:top;
+    margin-top:0px;
+    margin-right:0px;
+    margin-bottom:0px;
+    margin-left:0px;
+  }
+  .c926{
+    color:rgb(158, 83, 129);
+    width:100%;
+    font-size:50px;
+  }
+  .cell.c849{
+    width:11%;
+  }
+  .c1144{
+    padding-top:10px;
+    padding-right:10px;
+    padding-bottom:10px;
+    padding-left:10px;
+    font-size:17px;
+  }
+  .card{
+    min-height:150px;
+    padding-top:5px;
+    padding-right:5px;
+    padding-bottom:5px;
+    padding-left:5px;
+    margin-top:20px;
+    height:0px;
+  }
+  .card-cell{
+    background-color:rgb(255, 255, 255);
+    overflow-x:hidden;
+    overflow-y:hidden;
+    border-top-left-radius:3px;
+    border-top-right-radius:3px;
+    border-bottom-right-radius:3px;
+    border-bottom-left-radius:3px;
+    padding-top:0px;
+    padding-right:0px;
+    padding-bottom:0px;
+    padding-left:0px;
+    text-align:center;
+  }
+  .card.sector{
+    background-color:rgb(255, 255, 255);
+    border-top-left-radius:3px;
+    border-top-right-radius:3px;
+    border-bottom-right-radius:3px;
+    border-bottom-left-radius:3px;
+    border-collapse:separate;
+  }
+  .c1271{
+    width:100%;
+    margin-top:0px;
+    margin-right:0px;
+    margin-bottom:15px;
+    margin-left:0px;
+    font-size:50px;
+    color:rgb(120, 197, 214);
+    line-height:250px;
+    text-align:center;
+  }
+  .table100{
+    width:100%;
+  }
+  .c1357{
+    min-height:150px;
+    padding-top:5px;
+    padding-right:5px;
+    padding-bottom:5px;
+    padding-left:5px;
+    margin-top:auto;
+    margin-right:auto;
+    margin-bottom:auto;
+    margin-left:auto;
+    height:0px;
+  }
+  .darkerfont{
+    color:rgb(65, 69, 72);
+  }
+  .button{
+    font-size:12px;
+    padding-top:10px;
+    padding-right:20px;
+    padding-bottom:10px;
+    padding-left:20px;
+    background-color:rgb(217, 131, 166);
+    color:rgb(255, 255, 255);
+    text-align:center;
+    border-top-left-radius:3px;
+    border-top-right-radius:3px;
+    border-bottom-right-radius:3px;
+    border-bottom-left-radius:3px;
+    font-weight:300;
+  }
+  .table100.c1437{
+    text-align:left;
+  }
+  .cell.cell-bottom{
+    text-align:center;
+    height:51px;
+  }
+  .card-title{
+    font-size:25px;
+    font-weight:300;
+    color:rgb(68, 68, 68);
+  }
+  .card-content{
+    font-size:13px;
+    line-height:20px;
+    color:rgb(111, 119, 125);
+    padding-top:10px;
+    padding-right:20px;
+    padding-bottom:0px;
+    padding-left:20px;
+  }
+  .container{
+    min-height:150px;
+    padding-top:5px;
+    padding-right:5px;
+    padding-bottom:5px;
+    padding-left:5px;
+    margin-top:auto;
+    margin-right:auto;
+    margin-bottom:auto;
+    margin-left:auto;
+    height:0px;
+    width:90%;
+    max-width:550px;
+  }
+  .cell.c856{
+    vertical-align:middle;
+  }
+  .container-cell{
+    vertical-align:top;
+    font-size:medium;
+    padding-top:0px;
+    padding-right:0px;
+    padding-bottom:0px;
+    padding-left:0px;
+  }
+  .c1790{
+    min-height:150px;
+    padding-top:5px;
+    padding-right:5px;
+    padding-bottom:5px;
+    padding-left:5px;
+    margin-top:auto;
+    margin-right:auto;
+    margin-bottom:auto;
+    margin-left:auto;
+    height:0px;
+  }
+  .table100.c1790{
+    min-height:30px;
+    border-collapse:separate;
+    margin-top:0px;
+    margin-right:0px;
+    margin-bottom:10px;
+    margin-left:0px;
+  }
+  .browser-link{
+    font-size:12px;
+  }
+  .top-cell{
+    text-align:right;
+    color:rgb(152, 156, 165);
+  }
+  .table100.c1357{
+    margin-top:0px;
+    margin-right:0px;
+    margin-bottom:0px;
+    margin-left:0px;
+    border-collapse:collapse;
+  }
+  .c1769{
+    width:30%;
+  }
+  .c1776{
+    width:70%;
+  }
+  .c1766{
+    margin-top:0px;
+    margin-right:auto;
+    margin-bottom:10px;
+    margin-left:auto;
+    padding-top:5px;
+    padding-right:5px;
+    padding-bottom:5px;
+    padding-left:5px;
+    width:100%;
+    min-height:30px;
+  }
+  .cell.c1769{
+    width:11%;
+  }
+  .cell.c1776{
+    vertical-align:middle;
+  }
+  .c1542{
+    margin-top:0px;
+    margin-right:auto;
+    margin-bottom:10px;
+    margin-left:auto;
+    padding-top:5px;
+    padding-right:5px;
+    padding-bottom:5px;
+    padding-left:5px;
+    width:100%;
+  }
+  .card-footer{
+    padding:20px 0px 20px 0px;
+    text-align:center;
+  }
+  .quote {
+    color: #6a6a6a;
+    font-style: italic;
+    font-weight: 200;
+  }
+</style>
+      `;
+
+      // Set up GrapesJS editor with the Newsletter plugin
+      var editor = grapesjs.init({
+        height: '100%',
+        noticeOnUnload: 0,
+        storageManager:{
+          autoload: 0,
+        },
+        assetManager: {
+          upload: 0,
+          uploadText: 'Uploading is not available in this demo',
+        },
+        container : '#gjs',
+        plugins: ['gjs-preset-newsletter'],
+        pluginsOpts: {
+          'gjs-preset-newsletter': {
+            inlineCss: 0,
+            modalLabelImport: 'Paste all your code here below and click import',
+            modalLabelExport: 'Copy the code and use it wherever you want',
+            codeViewerTheme: 'material',
+            defaultTemplate: templateImport,
+            importPlaceholder: templateImport
+          }
+        }
+      });
+
+
+      // Let's add in this demo the possibility to test our newsletters
+      var mdlClass = 'gjs-mdl-dialog-sm';
+      var pnm = editor.Panels;
+      var cmdm = editor.Commands;
+      var testContainer = document.getElementById("test-form");
+      var contentEl = testContainer.querySelector('input[name=body]');
+      var md = editor.Modal;
+      cmdm.add('send-test', {
+        run(editor, sender) {
+          sender.set('active', 0);
+          var modalContent = md.getContentEl();
+          var mdlDialog = document.querySelector('.gjs-mdl-dialog');
+          var cmdGetCode = cmdm.get('gjs-get-inlined-html');
+          contentEl.value = cmdGetCode && cmdGetCode.run(editor);
+          mdlDialog.className += ' ' + mdlClass;
+          testContainer.style.display = 'block';
+          md.setTitle('Test your Newsletter');
+          md.setContent('');
+          md.setContent(testContainer);
+          md.open();
+          md.getModel().once('change:open', function() {
+            mdlDialog.className = mdlDialog.className.replace(mdlClass, '');
+            //clean status
+          })
+        }
+      });
+      pnm.addButton('options', {
+        id: 'send-test',
+        className: 'fa fa-paper-plane',
+        command: 'send-test',
+        attributes: {
+          'title': 'Test Newsletter',
+          'data-tooltip-pos': 'bottom',
+        },
+      });
+
+      //fa fa-refresh
+      var statusFormElC = document.querySelector('.form-status');
+      var statusFormEl = document.querySelector('.form-status i');
+      var ajaxTest = ajaxable(testContainer).
+        onStart(function(){
+          statusFormEl.className = 'fa fa-refresh anim-spin';
+          statusFormElC.style.opacity = '1';
+          statusFormElC.className = 'form-status';
+        })
+        .onResponse(function(res){
+          if (res.data) {
+            statusFormElC.style.opacity = '0';
+            statusFormEl.removeAttribute('data-tooltip');
+            md.close();
+          } else if(res.errors){
+            statusFormEl.className = 'fa fa-exclamation-circle';
+            statusFormEl.setAttribute('data-tooltip', res.errors);
+            statusFormElC.className = 'form-status text-danger';
+          }
+        });
+
+      // Add a link to a github page
+      cmdm.add('open-github', {
+        run(editor, sender) {
+          sender.set('active',false);
+          window.open('https://github.com/artf/grapesjs','_blank');
+        }
+      });
+      pnm.addButton('options', {
+        id: 'view-github',
+        className: 'fa fa-github',
+        command: 'open-github'
+      });
+
+      $(document).ready(function () {
+
+        // Beautify tooltips
+        $('*[title]').each(function () {
+          var el = $(this);
+          var title = el.attr('title').trim();
+          if(!title)
+            return;
+          el.attr('data-tooltip', el.attr('title'));
+          el.attr('title', '');
+        });
+
+      });
+    </script>
+  </body>
+</html>
