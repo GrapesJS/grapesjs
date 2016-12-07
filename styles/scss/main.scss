@@ -106,6 +106,8 @@ $fontV: 20;//random(1000)
 .#{$app-prefix}f-image::before { content: 'I'; }
 .#{$app-prefix}f-text::before { content: 'o'; }
 .#{$app-prefix}f-quo::before { content: 'p'; }
+.#{$app-prefix}f-button::before { content: 'B'; }
+.#{$app-prefix}f-divider::before { content: 'D'; }
 
 
 .#{$app-prefix}invis-invis,

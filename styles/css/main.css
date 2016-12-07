@@ -2613,6 +2613,12 @@ $fontColorActive: #4f8ef7;
 .gjs-f-quo::before {
   content: 'p'; }
 
+.gjs-f-button::before {
+  content: 'B'; }
+
+.gjs-f-divider::before {
+  content: 'D'; }
+
 .gjs-invis-invis, .gjs-clm-tags #gjs-clm-new,
 .gjs-no-app {
   background-color: transparent;
