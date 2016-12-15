@@ -3,8 +3,10 @@
   <head>
     <meta charset="utf-8">
     <title>GrapesJS Demo</title>
+    <link rel="stylesheet" href="stylesheets/toastr.min.css">
     <link rel="stylesheet" href="stylesheets/grapes.min.css">
     <script src="http://code.jquery.com/jquery-2.2.0.min.js"></script>
+    <script src="js/toastr.min.js"></script>
     <style type="text/css">
         body, html{ height: 100%; margin: 0; }
          #wte-pn-options2.wte-pn-panel{box-shadow: none;}
@@ -82,6 +84,21 @@
         }
         #wte-sm-flex-grow, #wte-sm-flex-shrink{ width:30%;}
          #wte-sm-flex-basis{ width:40%;}
+
+         #toast-container {
+           font-size: 13px;
+           font-weight: lighter;
+         }
+
+         #toast-container > div,
+         #toast-container > div:hover {
+           box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+           font-family: Helvetica, sans-serif;
+         }
+
+         #toast-container > div {
+           opacity: 0.95;
+         }
     </style>
   </head>
   <body>
@@ -855,7 +872,6 @@
             display:none;
           }
         }
-        pc-regular
       </style>
     </div>
     <script src="js/grapes.min.js"></script>
@@ -1192,7 +1208,7 @@
 
     );
 
-    // Add extra buttons
+    //Add extra buttons
     gr.Panels.addButton('options', [{
       id: 'undo',
       className: 'fa fa-undo icon-undo',
@@ -1216,6 +1232,19 @@
     }]);
 
     window.editor = gr;
+
+    // Simple warn notifier
+    var origWarn = console.warn;
+    toastr.options = {
+      closeButton: true,
+      preventDuplicates: true,
+      showDuration: 250,
+      hideDuration: 150
+    };
+    console.warn = function (msg) {
+      toastr.warning(msg);
+      origWarn(msg);
+    };
 
     </script>
 
