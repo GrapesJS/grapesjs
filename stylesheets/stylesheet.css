@@ -90,7 +90,7 @@ a {
 }
 
 .section-container {
-  padding: 5rem 6rem 7rem;
+  padding: 5rem 3% 7rem;
 }
 
 .section-title {
@@ -117,6 +117,41 @@ a {
   padding: 25px;
   text-shadow: none;
   width: 90%;
+}
+
+.what-images {
+  height: 500px;
+  margin: 5rem auto 0;
+  position: relative;
+  width: 80%;
+}
+
+.what-image-cont {
+  border: 2px solid #444;
+  border-radius: 3px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.35), 0 0 15px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  overflow: hidden;
+  position: absolute;
+  min-width: 259px;
+}
+
+.what-image-cont1 {
+  right: 0;
+  top: 0;
+  width: 75%;
+}
+
+.what-image-cont2 {
+  left: 0;
+  top: 100px;
+  width: 75%;
+  border-color: #373d49;
+}
+
+.what-image {
+  display: block;
+  width: 100%;
 }
 
 @media screen and (min-width: 64em) {
