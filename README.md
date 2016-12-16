@@ -5,7 +5,7 @@
 <p align="center"><img src="http://grapesjs.com/img/grapesjs-demo-template2.jpg" alt="GrapesJS" width="500" align="center"/></p>
 <br/>
 
-GrapesJS is a free and open source Web Template Builder which helps you building HTML templates to be used inside sites, newsletters and mobile apps.
+GrapesJS is a free and open source Web Builder Framework which helps you building HTML templates to be used inside sites, newsletters and mobile apps.
 Mainly GrapesJS was designed to be used inside a [CMS] to speed up a creation of dynamic templates. To better understand this concept check the image below
 
 <br/>
@@ -14,7 +14,9 @@ Mainly GrapesJS was designed to be used inside a [CMS] to speed up a creation of
 
 Generally any 'template system', that you'd find in various applications like CMS, is composed by the **structure** (HTML), **style** (CSS) and **variables**, which are then replaced with other templates and contents on server-side and rendered on client.
 
-This demo shows an example of what is possible to achieve: http://grapesjs.com/demo.html
+This demos show examples of what is possible to achieve:
+Webpage Demo - http://grapesjs.com/demo.html
+Newsletter Demo - http://grapesjs.com/demo-newsletter-editor.html
 
 
 ## Features
@@ -134,13 +136,6 @@ API References (draft) could be found here: [API-Reference]
 ```sh
 $ npm test
 ```
-
-## TODOs before beta release
-
-* **Component traits** - traits are some some kind of `attributes` of the component. For example, the `Link`
-  will get `href` for the url/resource address and it's exactly as we see `<a>`, but in case of `Map` component
-  I'd attach `address`, `city` and `zoom` to manage marker position.
-
 
 ## Acknowledgements
 
