@@ -3,7 +3,7 @@ $(document).ready(function(){
   var $header = $('section.page-header');
   var viewportH = $(window).height();
   var $root = $('html');
-  $header.css('min-height', viewportH);
+  //$header.css('min-height', viewportH);
   //$('#yourElement').one(aniEnd, doSomething);
   //
   var $win = $(window);

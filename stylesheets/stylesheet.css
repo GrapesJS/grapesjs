@@ -154,6 +154,43 @@ a {
   width: 100%;
 }
 
+.info-card-blocks {
+  align-items: center;
+  display: flex;
+}
+
+.card-images {
+  position: relative;
+}
+
+.card-image {
+  display: block;
+  width: 100%;
+}
+
+.card-image-cont1 {
+  border-color: #463a3b;
+  float: right;
+  max-width: 344px;
+}
+
+.card-image-cont2 {
+  border-color: #463a3b;
+  float: right;
+  max-width: 1200px;
+  width: 150%;
+  margin-right: 15%;
+}
+
+.brd-image {
+  border-width: 2px;
+  border-style: solid;
+  border-radius: 3px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+
 @media screen and (min-width: 64em) {
   .btn {
     padding: 0.75rem 1rem; }
@@ -196,7 +233,7 @@ a {
 }
 
 .page-header {
-  min-height: 1000px;
+  min-height: 550px;
 }
 
 .logo-cont {
