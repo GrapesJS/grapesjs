@@ -297,32 +297,38 @@ define(function (require){
 				 * Execute command
 				 * @param {string} id Command ID
 				 * @param {Object} options Custom options
+				 * @return {*} The return is defined by the command
 				 * @example
 				 * editor.runCommand('myCommand', {someValue: 1});
 				 */
 				runCommand: function(id, options) {
+					var result;
 					var command = em.get('Commands').get(id);
 
 					if(command){
-						command.run(this, this, options);
+						result = command.run(this, this, options);
 						this.trigger('run:' + id);
 					}
+					return result;
 				},
 
 				/**
 				 * Stop the command if stop method was provided
 				 * @param {string} id Command ID
 				 * @param {Object} options Custom options
+				 * @return {*} The return is defined by the command
 				 * @example
 				 * editor.stopCommand('myCommand', {someValue: 1});
 				 */
 				stopCommand: function(id, options) {
+					var result;
 					var command = em.get('Commands').get(id);
 
 					if(command){
-						command.stop(this, this, options);
+						result = command.stop(this, this, options);
 						this.trigger('stop:' + id);
 					}
+					return result;
 				},
 
 				/**
