@@ -16,6 +16,7 @@
  * @param {Object} config Configurations
  * @param {Array<Object>} [config.assets=[]] Default assets
  * @param {String} [config.uploadText='Drop files here or click to upload'] Upload text
+ * @param {String} [config.addBtnText='Add image'] Text for the add button
  * @param {String} [config.upload=''] Where to send upload data. Expects as return a JSON with asset/s object
  * as: {data: [{src:'...'}, {src:'...'}]}
  * @return {this}
