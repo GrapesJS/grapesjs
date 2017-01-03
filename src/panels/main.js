@@ -143,6 +143,22 @@ define(function(require) {
 			 * 	attributes: { title: 'Some title'},
 			 * 	active: false,
 			 * });
+			 * // It's also possible to pass the command as an object
+			 * // with .run and .stop methods
+			 * ...
+			 * command: {
+			 * 	run: function(editor) {
+			 * 		...
+			 * 	},
+			 * 	stop: function(editor) {
+			 * 		...
+			 * 	}
+			 * },
+			 * // Or simply like a function which will be evaluated as a single .run command
+			 * ...
+			 * command: function(editor) {
+			 * 	...
+			 * }
 			 */
 			addButton: function(panelId, button){
 				var pn	= this.getPanel(panelId);
