@@ -7,20 +7,31 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 				tagName: 'div',
 				type: '',
 				editable: false,
+
+				// True if the component is removable from the canvas
 				removable: true,
 
 				// Indicates if it's possible to drag the component inside other
-				// TODO: Indicate an array of selectors where it could be dropped inside
+				// Tip: Indicate an array of selectors where it could be dropped inside
 				draggable: true,
 
 				// Indicates if it's possible to drop other components inside
-				// TODO: Indicate an array of selectors which could be dropped inside
+				// Tip: Indicate an array of selectors which could be dropped inside
 				droppable: true,
 
-				mirror: '',
+				// Set false if don't want to see the badge (with the name) over the component
 				badgable: true,
+
+				// True if it's possible to style it
+				// Tip:  Indicate an array of css properties is possible to style
 				stylable: true,
+
+				// True if it's possible to clone the component
 				copyable: true,
+
+				// TODO
+				mirror: '',
+
 				void: false,
 				state: '',
 				status: '',
