@@ -315,11 +315,12 @@ define([path + 'Sector',
             obj.build('left').should.deep.equal([res]);
           });
 
-          it('Build width e height family', function() {
+          it('Build width and height family', function() {
             var res = {
               type: 'integer',
               units: ['px','%'],
               defaults: 'auto',
+              fixedValues: ['initial', 'inherit', 'auto'],
               min: 0,
             }
             res.property = 'width';
@@ -375,21 +376,25 @@ define([path + 'Sector',
               type: 'composite',
               properties:[{
                       property  : 'padding-top',
+                      fixedValues: ['initial', 'inherit', 'auto'],
                       type    : 'integer',
                       units   : ['px','%'],
                       defaults  : 0,
                     },{
                       property  : 'padding-right',
+                      fixedValues: ['initial', 'inherit', 'auto'],
                       type    : 'integer',
                       units   : ['px','%'],
                       defaults  : 0,
                     },{
                       property  : 'padding-bottom',
+                      fixedValues: ['initial', 'inherit', 'auto'],
                       type    : 'integer',
                       units   : ['px','%'],
                       defaults  : 0,
                     },{
                       property  : 'padding-left',
+                      fixedValues: ['initial', 'inherit', 'auto'],
                       type    : 'integer',
                       units   : ['px','%'],
                       defaults  : 0,

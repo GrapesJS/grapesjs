@@ -24,13 +24,17 @@ define(['backbone','./PropertyView', 'Abstract/ui/InputNumber'],
 				});
 				this.input = inputNumber.render();
 				this.$el.append(this.input.$el);
+				this.$input = this.input.inputEl;
+				this.$unit = this.input.unitEl;
 			}
-			this.input.setValue(this.componentValue, {silent: 1});
+			this.setValue(this.componentValue);
 		},
 
 		renderTemplate: function(){},
 
-		setValue: function() {},
+		setValue: function(value) {
+			this.input.setValue(value, {silent: 1});
+		},
 
 	});
 });

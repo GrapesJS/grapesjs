@@ -85,6 +85,7 @@ define(['backbone', 'text!./templates/inputNumber.html'],
     getInputEl: function() {
       if(!this.inputEl) {
         this.inputEl = $('<input>', {
+					type: 'text',
 					class: this.inputCls,
 					placeholder: this.model.get('defaults')
 				});
@@ -183,11 +184,12 @@ define(['backbone', 'text!./templates/inputNumber.html'],
 		 * @return {Object} Validated string
 		 */
 		validateInputValue: function(value, opts) {
-      var unit = '';
-			var val = value;
 			var force = 0;
       var opt = opts || {};
 			var model = this.model;
+			var val = value || model.get('defaults');
+			var units = model.get('units') || [];
+      var unit = model.get('unit') || (units.length && units[0]) || '';
       var max = model.get('max');
       var min = model.get('min');
 
@@ -202,13 +204,13 @@ define(['backbone', 'text!./templates/inputNumber.html'],
 						unit = '';
 						force = 1;
 					} else {
-						// Make it suitable for replace
-						val += '';
+						var valCopy = val + '';
+						val += ''; // Make it suitable for replace
 						val = parseFloat(val.replace(',', '.'));
 						val = !isNaN(val) ? val : model.get('defaults');
-						var uN = value.replace(val, '');
+						var uN = valCopy.replace(val, '');
 						// Check if exists as unit
-						if(_.indexOf(model.get('units'), uN) >= 0)
+						if(_.indexOf(units, uN) >= 0)
 							unit = uN;
 					}
 				}

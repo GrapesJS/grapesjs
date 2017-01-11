@@ -20,7 +20,7 @@ define([path + 'PropertyIntegerView', 'StyleManager/model/Property', 'DomCompone
             var defValue = 'test2value';
             var units = ['px', '%', 'em'];
             var minValue = -15;
-            var maxValue = 15;
+            var maxValue = 75;
             var unitsElSel = '.field-units select';
 
             before(function () {
@@ -179,7 +179,7 @@ define([path + 'PropertyIntegerView', 'StyleManager/model/Property', 'DomCompone
               });
 
               it('Value as default', function() {
-                view.model.get('value').should.equal(intValue);
+                view.model.get('value').should.equal(parseInt(intValue));
                 view.model.get('unit').should.equal(units[1]);
               });
 
