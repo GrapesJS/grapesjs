@@ -86,7 +86,7 @@ function(Backbone, BlockView) {
       this.em.runDefault();
       this.em.get('Canvas').getBody().style.cursor = '';
       document.body.style.cursor = '';
-      if(model && model.get('activeOnRender')){
+      if(model && model.get && model.get('activeOnRender')){
         model.trigger('active');
         model.set('activeOnRender', 0);
       }
