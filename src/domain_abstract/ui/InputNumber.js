@@ -127,7 +127,7 @@ define(['backbone', 'text!./templates/inputNumber.html'],
 		/**
 		 * Invoked when the down arrow is clicked
 		 * */
-		downArrowClick: function(e){
+		downArrowClick: function(){
 			var value	= this.model.get('value');
 			value = isNaN(value) ? 0 : parseInt(value, 10) - 1;
 			var valid = this.validateInputValue(value);
