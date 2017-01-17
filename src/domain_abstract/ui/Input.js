@@ -3,18 +3,20 @@ define(['backbone', 'text!./templates/input.html'],
 
 	return Backbone.View.extend({
 
-		events: {},
+		events: {
+			'change': 'handleChange',
+		},
 
 		template: _.template(inputTemplate),
 
 		initialize: function(opts) {
 			var opt = opts || {};
 			var ppfx = opt.ppfx || '';
+			this.target = opt.target || {};
 			this.inputClass = ppfx + 'field';
 			this.inputHolderClass = ppfx + 'input-holder';
 			this.ppfx = ppfx;
 			this.listenTo(this.model, 'change:value', this.handleModelChange);
-			this.delegateEvents();
 		},
 
 		/**
@@ -33,7 +35,9 @@ define(['backbone', 'text!./templates/input.html'],
 		setValue: function(value, opts) {
 			var opt = opts || {};
 			var model = this.model;
-			model.set(value || model.get('defaults'), opt);
+			model.set({
+				value: value || model.get('defaults')
+			}, opt);
 
 			// Generally I get silent when I need to reflect data to view without
 			// reupdating the target
@@ -67,7 +71,10 @@ define(['backbone', 'text!./templates/input.html'],
 		render: function() {
 			var el = this.$el;
 			el.addClass(this.inputClass);
-			el.html(this.template({holderClass: this.inputHolderClass}));
+			el.html(this.template({
+				holderClass: this.inputHolderClass,
+				ppfx: this.ppfx
+			}));
 			el.find('.'+ this.inputHolderClass).html(this.getInputEl());
 			return this;
 		}

@@ -1,88 +1,34 @@
-define(['backbone', 'text!./templates/inputColor.html'],
-	function (Backbone, inputTemplate) {
+define(['backbone', './Input', 'Spectrum', 'text!./templates/inputColor.html'],
+	function (Backbone, Input, Spectrum, inputTemplate) {
 
-	return Backbone.View.extend({
-
-		events: {},
+	return Input.extend({
 
 		template: _.template(inputTemplate),
 
 		initialize: function(opts) {
-      var ppfx = opts.ppfx || '';
-			this.ppfx = ppfx;
-			this.inputCls = ppfx + 'input-number';
+			Input.prototype.initialize.apply(this, arguments);
+			var ppfx = this.ppfx;
 			this.colorCls = ppfx + 'field-color-picker';
-      this.events['change .' + this.inputCls] = 'handleChange';
-      this.events['change .' + this.unitCls] = 'handleUnitChange';
+			this.inputClass = ppfx + 'field ' + ppfx + 'field-color';
+			this.colorHolderClass = ppfx + 'field-colorp-c';
 
 			this.listenTo(this.model, 'change:value', this.handleModelChange);
-			this.delegateEvents();
 		},
-
-		/**
-		 * Set value to the model
-		 * @param {string} value
-		 * @param {Object} opts
-		 */
-		setValue: function(value, opts) {
-			var opt = opts || {};
-			var model = this.model;
-			var val = value || model.get('defaults');
-
-			var valid = this.validateInputValue(value, {deepCheck: 1});
-			var validObj = {value: valid.value};
-
-			this.model.set(val, opt);
-
-			if(opt.silent) {
-				this.handleModelChange();
-			}
-		},
-
-    /**
-     * Handled when the view is changed
-     */
-    handleChange: function (e) {
-			e.stopPropagation();
-      this.setValue(this.getInputEl().value);
-    },
-
-    /**
-     * Handled when the view is changed
-     */
-    handleUnitChange: function (e) {
-			e.stopPropagation();
-      var value = this.getUnitEl().value;
-      this.model.set('unit', value);
-    },
 
     /**
 		 * Updates the view when the model is changed
 		 * */
 		handleModelChange: function() {
-      var m = this.model;
-			var value = m.get('value');
-      this.getInputEl().value = value;
+			Input.prototype.handleModelChange.apply(this, arguments);
 
+			var value = this.model.get('value');
 			var colorEl = this.getColorEl();
+
+			// If no color selected I will set white for the picker
+			value = value === 'none' ? '#fff' : value;
 			colorEl.spectrum('set', value);
 			colorEl.get(0).style.backgroundColor = value;
 		},
-
-		/**
-		 * Get the input element
-		 * @return {HTMLElement}
-		 */
-    getInputEl: function() {
-      if(!this.inputEl) {
-        this.inputEl = $('<input>', {
-					type: 'text',
-					class: this.inputCls,
-					placeholder: this.model.get('defaults')
-				});
-      }
-      return this.inputEl.get(0);
-    },
 
 		/**
 		 * Get the color input element
@@ -93,9 +39,9 @@ define(['backbone', 'text!./templates/inputColor.html'],
 				var model = this.model;
 				var colorEl = $('<div>', {class: this.colorCls});
 				var cpStyle = colorEl.get(0).style;
-				var elToAppend = this.target.config ? this.target.config.el : '';
+				var elToAppend = this.target && this.target.config ? this.target.config.el : '';
 				colorEl.spectrum({
-					appendTo: el || 'body',
+					appendTo: elToAppend || 'body',
 					maxSelectionSize: 8,
 					showPalette: true,
 					showAlpha: 	true,
@@ -115,16 +61,12 @@ define(['backbone', 'text!./templates/inputColor.html'],
 				});
 				this.colorEl = colorEl;
       }
-      return this.colorEl && this.colorEl.get(0);
+      return this.colorEl;
     },
 
 		render: function() {
-			var ppfx = this.ppfx;
-			var el = this.$el;
-			el.html(this.template({ppfx: ppfx}));
-			el.find('.' + ppfx +'input-holder').html(this.getInputEl());
-			el.find('.' + ppfx + 'field-colorp-c').html(this.getColorEl());
-			el.addClass(ppfx + 'field ' + ppfx + 'field-color');
+			Input.prototype.render.apply(this, arguments);
+			this.$el.find('.' + this.colorHolderClass).html(this.getColorEl());
 			return this;
 		}
 
