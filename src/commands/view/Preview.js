@@ -16,8 +16,8 @@ define(function() {
 			},
 
 			run: function(editor, sender) {
-				if(sender)
-					sender.set('active',false);
+				if(sender && sender.set)
+					sender.set('active', false);
 				editor.stopCommand('sw-visibility');
 				var that = this;
 				var panels = this.getPanels(editor);
