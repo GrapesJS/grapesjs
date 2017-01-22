@@ -10,6 +10,19 @@ define(['./Component'],
 				void: 1,
 				droppable: false,
 				traits: ['alt'],
+				toolbar: [{
+					className: 'fa fa-arrows',
+					command: 'tlb-move',
+				},{
+					className: 'fa fa-clone',
+					command: 'tlb-clone',
+				},{
+					className: 'fa fa-pencil',
+					command: 'tlb-edit',
+				},{
+					className: 'fa fa-trash-o',
+					command: 'tlb-delete',
+				}],
 			}),
 
 			initialize: function(o, opt) {

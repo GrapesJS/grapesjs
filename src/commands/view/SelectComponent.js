@@ -265,19 +265,35 @@ define(function() {
 
 					var view = model.get('view');
 					if(view) {
-						var canvasPos = this.getCanvasPosition();
-						var pos = this.getElementPos(view.el);
-						var toolbarStyle = toolbarEl.style;
-						var unit = 'px';
-						// TODO Fix toolbar over the canvas (the problem is with the fisrt top el)
-						var topPos = (pos.top - toolbarEl.offsetHeight) < canvasPos.top ?
-							canvasPos.top : pos.top - toolbarEl.offsetHeight;
-						//var left = pos.left + badgeW < canvasPos.left ? canvasPos.left : pos.left;
-						toolbarStyle.display = 'flex';
-						toolbarStyle.left = (pos.left + pos.width - toolbarEl.offsetWidth) + unit; //
-						toolbarStyle.top = (pos.top - toolbarEl.offsetHeight) + unit;
+						this.updateToolbarPos(view.el);
 					}
 				}
+			},
+
+			/**
+			 * Update toolbar positions
+			 * @param {HTMLElement} el
+			 * @param {Object} pos
+			 */
+			updateToolbarPos: function(el, elPos) {
+				var toolbarEl = this.canvas.getToolbarEl();
+				var canvasPos = this.getCanvasPosition();
+				var pos = elPos || this.getElementPos(el);
+				var toolbarStyle = toolbarEl.style;
+				var unit = 'px';
+				var elTop = pos.top - toolbarEl.offsetHeight;
+				var elLeft = pos.left + pos.width - toolbarEl.offsetWidth;
+				var leftPos = elLeft < canvasPos.left ? canvasPos.left : elLeft;
+
+				// This will make the toolbar follow the window up
+				// and down while scrolling
+				var topPos = elTop < canvasPos.top ? canvasPos.top : elTop;
+				// This will stop the toolbar when the end of the element is reached
+				topPos = topPos > (pos.top + pos.height) ? (pos.top + pos.height) : topPos;
+
+				toolbarStyle.display = 'flex';
+				toolbarStyle.left = elLeft + unit;
+				toolbarStyle.top = topPos + unit;
 			},
 
 			/**
@@ -312,8 +328,16 @@ define(function() {
 			 */
 			onFrameScroll: function(e){
 				var el = this.cacheEl;
-				if(el)
-					this.updateBadge(el, this.getElementPos(el));
+				if(el){
+					var elPos = this.getElementPos(el);
+					this.updateBadge(el, elPos);
+					var model = this.editorModel.get('selectedComponent');
+
+					if (model) {
+						var view = model.get('view');
+						this.updateToolbarPos(view.el);
+					}
+				}
 			},
 
 			/**

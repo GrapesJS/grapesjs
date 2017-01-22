@@ -334,6 +334,7 @@ div.#{$app-prefix}select {
   position: absolute;
   background-color: $colorBlue;
   color: white;
+  z-index: 10;
 }
 
 .#{$app-prefix}toolbar-item {
