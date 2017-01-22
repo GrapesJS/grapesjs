@@ -12,7 +12,7 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 				this.noSelClass	= this.ppfx + 'no-select';
 			},
 
-			enable: function(){
+			enable: function() {
 				SelectComponent.enable.apply(this, arguments);
 				this.getBadgeEl().addClass(this.badgeClass);
 				this.getHighlighterEl().addClass(this.hoverClass);
@@ -40,6 +40,7 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 				var drag = el.get('draggable');
 				if(!drag)
 					return;
+
 				// Avoid badge showing on move
 				this.cacheEl = null;
 				this.startSelectPosition(e.target, this.frameEl.contentDocument);

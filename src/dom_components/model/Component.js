@@ -41,6 +41,16 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 				attributes: {},
 				classes: '',
 				traits: ['id', 'title'],
+				toolbar: [{
+					className: 'fa fa-arrows',
+					command: 'tlb-move',
+				},{
+					className: 'fa fa-clone',
+					command: 'tlb-clone',
+				},{
+					className: 'fa fa-trash-o',
+					command: 'tlb-delete',
+				}],
 			},
 
 			initialize: function(o, opt) {
@@ -132,6 +142,7 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 					});
 	    	}
 	    	attr.status = '';
+				attr.view = '';
 	      return new this.constructor(attr, {sm: this.sm});
 	    },
 

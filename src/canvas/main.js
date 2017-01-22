@@ -137,6 +137,14 @@ define(function(require) {
 			},
 
 			/**
+			 * Returns toolbar element
+			 * @return {HTMLElement}
+			 */
+			getToolbarEl: function(){
+				return CanvasView.toolbarEl;
+			},
+
+			/**
 			 * Render canvas
 			 * */
 			render: function() {
@@ -158,18 +166,18 @@ define(function(require) {
 			},
 
 			/**
-       * Get the offset of the element
-       * @param  {HTMLElement} el
-       * @return {Object}
-       * @private
-       */
-      offset: function(el){
-        var rect = el.getBoundingClientRect();
-        return {
-          top: rect.top + document.body.scrollTop,
-          left: rect.left + document.body.scrollLeft
-        };
-      },
+			* Get the offset of the element
+			* @param  {HTMLElement} el
+			* @return {Object}
+			* @private
+			*/
+			offset: function(el){
+				var rect = el.getBoundingClientRect();
+				return {
+					top: rect.top + document.body.scrollTop,
+					left: rect.left + document.body.scrollLeft
+				};
+			},
 
 			/**
 			 * Returns wrapper element

@@ -232,7 +232,7 @@ define(function() {
 						m.set('open', 0);
 					}
 					var parent = nMd.collection ? nMd.collection.parent : null;
-					while(parent){
+					while(parent) {
 						parent.set('open', 1);
 						opened[parent.cid] = parent;
 						parent = parent.collection ? parent.collection.parent : null;
@@ -240,7 +240,52 @@ define(function() {
 
 					this.editorModel.set('selectedComponent', nMd);
 					nMd.set('status','selected');
+					this.updateToolbar(nMd);
 				}
+			},
+
+			/**
+			 * Update toolbar if the component has one
+			 * @param {Object} model
+			 */
+			updateToolbar: function(model) {
+				var toolbar = model.get('toolbar');
+				var ppfx = this.ppfx;
+				var showToolbar = this.config.em.get('Config').showToolbar;
+
+				// TODO to refactor
+				if (showToolbar && toolbar && toolbar.length) {
+					var toolbarEl = this.canvas.getToolbarEl();
+					toolbarEl.innerHTML = '';
+					toolbar.forEach(function (item) {
+						var className = ppfx + 'toolbar-item';
+						var addClass = item.className || '';
+						toolbarEl.innerHTML += '<div class="' + ppfx + 'toolbar-item ' + addClass + '" onClick="alert(\'TODO\')"></div>';
+					});
+
+					var view = model.get('view');
+					if(view) {
+						var canvasPos = this.getCanvasPosition();
+						var pos = this.getElementPos(view.el);
+						var toolbarStyle = toolbarEl.style;
+						var unit = 'px';
+						// TODO Fix toolbar over the canvas (the problem is with the fisrt top el)
+						var topPos = (pos.top - toolbarEl.offsetHeight) < canvasPos.top ?
+							canvasPos.top : pos.top - toolbarEl.offsetHeight;
+						//var left = pos.left + badgeW < canvasPos.left ? canvasPos.left : pos.left;
+						toolbarStyle.display = 'flex';
+						toolbarStyle.left = (pos.left + pos.width - toolbarEl.offsetWidth) + unit; //
+						toolbarStyle.top = (pos.top - toolbarEl.offsetHeight) + unit;
+					}
+				}
+			},
+
+			/**
+			 * Return canvas dimensions and positions
+			 * @return {Object}
+			 */
+			getCanvasPosition: function () {
+				return this.canvas.getCanvasView().getPosition();
 			},
 
 			/**
@@ -323,6 +368,7 @@ define(function() {
 				this.em.set('selectedComponent', null);
 				this.toggleClipboard();
 				this.hideBadge();
+				this.canvas.getToolbarEl().style.display = 'none';
 			}
 		};
 });

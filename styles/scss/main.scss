@@ -330,6 +330,18 @@ div.#{$app-prefix}select {
   transition: width 0.35s ease;
 }
 
+.#{$app-prefix}toolbar {
+  position: absolute;
+  background-color: $colorBlue;
+  color: white;
+}
+
+.#{$app-prefix}toolbar-item {
+  padding: 5px 7px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
 .btn-cl {
   font-size: 25px;
   @include opacity(0.3);
