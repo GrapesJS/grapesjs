@@ -96,17 +96,20 @@ define(function() {
 				var key = e.which || e.keyCode;
 				var comp = this.editorModel.get('selectedComponent');
 				var focused = this.frameEl.contentDocument.activeElement.tagName !== 'BODY';
+
+				// On CANC (46) or Backspace (8)
 				if(key == 8 || key == 46) {
 					if(!focused)
 						e.preventDefault();
-					if(comp && !focused){
+					if(comp && !focused) {
 						if(!comp.get('removable'))
-						return;
+							return;
 						comp.set('status','');
 						comp.destroy();
 						this.hideBadge();
 						this.clean();
-						this.editorModel.set('selectedComponent',null);
+						this.hideHighlighter();
+						this.editorModel.set('selectedComponent', null);
 					}
 				}
 			},
@@ -138,8 +141,14 @@ define(function() {
 			onOut: function(e) {
 				e.stopPropagation();
 			  this.hideBadge();
-			  if(this.hl)
-			  	this.hl.css({ left: -10000, top:-10000 });
+				this.hideHighlighter();
+			},
+
+			/**
+			 * Hide Highlighter element
+			 */
+			hideHighlighter: function () {
+				this.canvas.getHighlighter().style.display = 'none';
 			},
 
 			/**
@@ -190,14 +199,14 @@ define(function() {
 			 * @private
 			 */
 			updateHighlighter: function(el, pos) {
-				if(!this.hl)
-					this.hl = $(this.canvas.getHighlighter());
-				this.hl.css({
-					left: pos.left,
-					top: pos.top,
-					height: pos.height,
-					width: pos.width
-				});
+				var hlEl = this.canvas.getHighlighter();
+				var hlStyle = hlEl.style;
+				var unit = 'px';
+				hlStyle.left = pos.left + unit;
+				hlStyle.top = pos.top + unit;
+				hlStyle.height = pos.height + unit;
+				hlStyle.width = pos.width + unit;
+				hlStyle.display = 'block';
 			},
 
 			/**
