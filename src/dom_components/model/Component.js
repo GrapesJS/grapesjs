@@ -42,13 +42,13 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 				classes: '',
 				traits: ['id', 'title'],
 				toolbar: [{
-					className: 'fa fa-arrows',
+					attributes: {class: 'fa fa-arrows'},
 					command: 'tlb-move',
 				},{
-					className: 'fa fa-clone',
+					attributes: {class: 'fa fa-clone'},
 					command: 'tlb-clone',
 				},{
-					className: 'fa fa-trash-o',
+					attributes: {class: 'fa fa-trash-o'},
 					command: 'tlb-delete',
 				}],
 			},

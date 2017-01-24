@@ -11,16 +11,16 @@ define(['./Component'],
 				droppable: false,
 				traits: ['alt'],
 				toolbar: [{
-					className: 'fa fa-arrows',
+					attributes: {class: 'fa fa-arrows'},
 					command: 'tlb-move',
 				},{
-					className: 'fa fa-clone',
+					attributes: {class: 'fa fa-clone'},
 					command: 'tlb-clone',
 				},{
-					className: 'fa fa-pencil',
+					attributes: {class: 'fa fa-pencil'},
 					command: 'tlb-edit',
 				},{
-					className: 'fa fa-trash-o',
+					attributes: {class: 'fa fa-trash-o'},
 					command: 'tlb-delete',
 				}],
 			}),

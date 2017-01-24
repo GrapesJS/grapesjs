@@ -1,8 +1,11 @@
-define(function() {
+define(function(require) {
 		/**
 		 * @class SelectComponent
 		 * @private
 		 * */
+		 var ToolbarView = require('DomComponents/view/ToolbarView');
+		 var Toolbar = require('DomComponents/model/Toolbar');
+
 		return {
 
 			init: function(o){
@@ -16,6 +19,7 @@ define(function() {
 				var config	= this.config.em.get('Config');
 				this.startSelectComponent();
 				this.toggleClipboard(config.copyPaste);
+				this.config.em.on('change:canvasOffset', this.onFrameScroll);
 			},
 
 			/**
@@ -253,15 +257,20 @@ define(function() {
 				var ppfx = this.ppfx;
 				var showToolbar = this.config.em.get('Config').showToolbar;
 
-				// TODO to refactor
 				if (showToolbar && toolbar && toolbar.length) {
-					var toolbarEl = this.canvas.getToolbarEl();
-					toolbarEl.innerHTML = '';
-					toolbar.forEach(function (item) {
-						var className = ppfx + 'toolbar-item';
-						var addClass = item.className || '';
-						toolbarEl.innerHTML += '<div class="' + ppfx + 'toolbar-item ' + addClass + '" onClick="alert(\'TODO\')"></div>';
-					});
+
+					if(!this.toolbar) {
+						var toolbarEl = this.canvas.getToolbarEl();
+						toolbarEl.innerHTML = '';
+						this.toolbar = new Toolbar(toolbar);
+						var toolbarView = new ToolbarView({
+							collection: this.toolbar,
+							editor: this.editor
+						});
+						toolbarEl.appendChild(toolbarView.render().el);
+					}
+
+					this.toolbar.reset(toolbar);
 
 					var view = model.get('view');
 					if(view) {
@@ -281,6 +290,7 @@ define(function() {
 				var pos = elPos || this.getElementPos(el);
 				var toolbarStyle = toolbarEl.style;
 				var unit = 'px';
+				toolbarStyle.display = 'flex';
 				var elTop = pos.top - toolbarEl.offsetHeight;
 				var elLeft = pos.left + pos.width - toolbarEl.offsetWidth;
 				var leftPos = elLeft < canvasPos.left ? canvasPos.left : elLeft;
@@ -290,8 +300,6 @@ define(function() {
 				var topPos = elTop < canvasPos.top ? canvasPos.top : elTop;
 				// This will stop the toolbar when the end of the element is reached
 				topPos = topPos > (pos.top + pos.height) ? (pos.top + pos.height) : topPos;
-
-				toolbarStyle.display = 'flex';
 				toolbarStyle.left = elLeft + unit;
 				toolbarStyle.top = topPos + unit;
 			},
@@ -381,7 +389,9 @@ define(function() {
 				return this.contWindow;
 			},
 
-			run: function(em, sender) {
+			run: function(em) {
+				if(em && em.get)
+					this.editor = em.get('Editor');
 				this.enable();
 			},
 
@@ -393,6 +403,7 @@ define(function() {
 				this.toggleClipboard();
 				this.hideBadge();
 				this.canvas.getToolbarEl().style.display = 'none';
+				this.config.em.off('change:canvasOffset', this.onFrameScroll);
 			}
 		};
 });
