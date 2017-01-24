@@ -26,6 +26,9 @@ define(function () {
 		// Default command
 		defaultCommand: 'select-comp',
 
+		// Show a toolbar when the component is selected
+		showToolbar: 1,
+
 		// If true render a select of available devices
 		showDevices: 1,
 

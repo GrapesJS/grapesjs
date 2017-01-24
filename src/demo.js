@@ -329,5 +329,40 @@ require(['config/require-config'], function() {
 
     window.editor = editor;
 
+		/*
+		// Test toolbar commands
+		var cmd = editor.Commands;
+		cmd.add('tlb-delete', {
+			run: function(ed){
+				var sel = ed.getSelected();
+				if(!sel)
+					return;
+				sel.destroy();
+				ed.Canvas.getToolbarEl().style.display = 'none';
+			},
+		});
+
+		cmd.add('tlb-clone', {
+			run: function(ed){
+				var sel = ed.getSelected();
+				var collection = sel.collection;
+				var index = collection.indexOf(sel);
+				collection.add(sel.clone(), {at: index + 1});
+			},
+		});
+
+		cmd.add('tlb-move', {
+			run: function(ed){
+				var sel = ed.getSelected();
+				ed.editor.stopDefault();
+				var cmdMove = cmd.get('move-comp');
+				cmdMove.onEndMoveFromModel = function() {
+					ed.editor.runDefault();
+				};
+				cmdMove.initSorterFromModel(sel);
+				ed.Canvas.getToolbarEl().style.display = 'none';
+			},
+		});
+		*/
 	});
 });
