@@ -5,6 +5,8 @@
  * * [remove](#remove)
  * * [store](#store)
  * * [load](#load)
+ * * [onClick](#onClick)
+ * * [onDblClick](#onDblClick)
  *
  * Before using this methods you should get first the module from the editor instance, in this way:
  *
@@ -216,6 +218,22 @@ define(function(require) {
 			 * */
 			onSelect: function(f){
 				am.collection.onSelect = f;
+			},
+
+			/**
+			 * Set callback to fire when the asset is clicked
+			 * @param {function} func
+			 */
+			onClick: function(func) {
+				c.onClick = func;
+			},
+
+			/**
+			 * Set callback to fire when the asset is double clicked
+			 * @param {function} func
+			 */
+			onDblClick: function(func) {
+				c.onDblClick = func;
 			},
 
 		};

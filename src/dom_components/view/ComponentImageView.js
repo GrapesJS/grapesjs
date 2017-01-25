@@ -6,13 +6,13 @@ define(['backbone', './ComponentView'],
 		tagName: 'img',
 
 		events: {
-				'dblclick' 	: 'openModal',
+			'dblclick': 'openModal',
 		},
 
 		initialize: function(o){
 			ComponentView.prototype.initialize.apply(this, arguments);
-			this.listenTo( this.model, 'change:src', this.updateSrc);
-			this.listenTo( this.model, 'dblclick active', this.openModal);
+			this.listenTo(this.model, 'change:src', this.updateSrc);
+			this.listenTo(this.model, 'dblclick active', this.openModal);
 			this.classEmpty = this.ppfx + 'plh-image';
 
 			if(this.config.modal)
@@ -40,16 +40,17 @@ define(['backbone', './ComponentView'],
 		 * @param	{Object}	e	Event
 		 * @private
 		 * */
-		openModal: function(e){
-			var that	= this;
-			if(this.modal && this.am){
-				this.modal.setTitle('Select image');
-				this.modal.setContent(this.am.render(1));
-				this.am.setTarget(this.model);
-				this.modal.open();
-				this.am.onSelect(function(){
-					that.modal.close();
-					that.am.setTarget(null);
+		openModal: function(e) {
+			var em = this.opts.config.em;
+			var editor = em ? em.get('Editor') : '';
+
+			if(editor) {
+				editor.runCommand('open-assets', {
+					target: this.model,
+					onSelect: function() {
+						editor.Modal.close();
+						editor.AssetManager.setTarget(null);
+					}
 				});
 			}
 		},

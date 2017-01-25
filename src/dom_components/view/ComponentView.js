@@ -19,11 +19,11 @@ define(['backbone', './ComponentsView'],
 				this.components = this.model.get('components');
 				this.attr = this.model.get("attributes");
 				this.classe = this.attr.class || [];
-				this.listenTo(this.model, 'destroy remove', 	this.remove);
-				this.listenTo(this.model, 'change:style', 		this.updateStyle);
+				this.listenTo(this.model, 'destroy remove', this.remove);
+				this.listenTo(this.model, 'change:style', this.updateStyle);
 				this.listenTo(this.model, 'change:attributes', this.updateAttributes);
-				this.listenTo(this.model, 'change:status', 		this.updateStatus);
-				this.listenTo(this.model, 'change:state', 		this.updateState);
+				this.listenTo(this.model, 'change:status', this.updateStatus);
+				this.listenTo(this.model, 'change:state', this.updateState);
 				this.listenTo(this.model.get('classes'), 'add remove change', this.updateClasses);
 				this.$el.data('model', this.model);
 				this.model.set('view', this);
