@@ -33,7 +33,7 @@ define(['DomComponents',
               obj.get('components').length.should.equal(0);
             });
 
-            it('Clones correctly', function() {
+            it.skip('Clones correctly', function() {
               var sAttr = obj.attributes;
               var cloned = obj.clone();
               var eAttr = cloned.attributes;
