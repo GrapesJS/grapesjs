@@ -157,7 +157,7 @@ GrapesJS is built on top of this amazing open source projects:
 
 The project is sponsored by
 
-<img src="http://grapesjs.com/img/sendloop-logo-l.png" alt="Sendloop"/>
+[![Sendloop](http://grapesjs.com/img/sendloop-logo-l.png)](https://sendloop.com)
 
 
 ## Support
