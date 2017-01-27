@@ -29,6 +29,9 @@ define(function () {
 		// Show a toolbar when the component is selected
 		showToolbar: 0,
 
+		// Allow script tag importing
+		allowScripts: 0,
+
 		// If true render a select of available devices
 		showDevices: 1,
 

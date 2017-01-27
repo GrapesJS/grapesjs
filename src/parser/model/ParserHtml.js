@@ -179,6 +179,7 @@ define(function(require) {
        * @return {Object}
        */
       parse: function(str, parserCss){
+        var config = (c.em && c.em.get('Config')) || {};
         var res = { html: '', css: ''};
         var el = document.createElement('div');
         el.innerHTML = str;
@@ -186,8 +187,10 @@ define(function(require) {
         var i = scripts.length;
 
         // Remove all scripts
-        while (i--)
-          scripts[i].parentNode.removeChild(scripts[i]);
+        if(!config.allowScripts){
+          while (i--)
+            scripts[i].parentNode.removeChild(scripts[i]);
+        }
 
         // Detach style tags and parse them
         if(parserCss){
