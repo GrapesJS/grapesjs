@@ -470,5 +470,13 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
 				this.defaultRunning = 0;
 			},
 
+			/**
+			 * Update canvas dimensions and refresh data useful for tools positioning
+			 * @private
+			 */
+			refreshCanvas: function () {
+	      this.set('canvasOffset', this.get('Canvas').getOffset());
+			},
+
 		});
 	});

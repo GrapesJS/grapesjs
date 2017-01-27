@@ -15,6 +15,7 @@
  * * [store](#store)
  * * [load](#load)
  * * [getContainer](#getcontainer)
+ * * [refresh](#refresh)
  * * [on](#on)
  * * [trigger](#trigger)
  * * [render](#render)
@@ -348,11 +349,26 @@ define(function (require){
 				},
 
 				/**
-				 * Returns container element. The one which was indicated as 'container' on init method
+				 * Returns container element. The one which was indicated as 'container'
+				 * on init method
 				 * @return {HTMLElement}
 				 */
 				getContainer: function(){
 					return c.el;
+				},
+
+				/**
+				 * Update editor dimensions and refresh data useful for positioning of tools
+				 *
+				 * This method could be useful when you update, for example, some position
+				 * of the editor element (eg. canvas, panels, etc.) with CSS, where without
+				 * refresh you'll get misleading position of tools (eg. rich text editor,
+				 * component highlighter, etc.)
+				 *
+				 * @private
+				 */
+				refresh: function () {
+					em.refreshCanvas();
 				},
 
 				/**
