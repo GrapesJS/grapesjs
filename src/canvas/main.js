@@ -180,6 +180,39 @@ define(function(require) {
 			},
 
 			/**
+			 * This method comes handy when you need to attach something like toolbars
+			 * to elements inside the canvas, dealing with all relative position,
+			 * offsets, etc. and returning as result the object with positions which are
+			 * viewable by the user (when the canvas is scrolled the top edge of the element
+			 * is not viewable by the user anymore so the new top edge is the one of the canvas)
+			 *
+			 * The target should be visible before being passed here as invisible elements
+			 * return empty string as width
+			 * @param {HTMLElement} target The target in this case could be the toolbar
+			 * @param {HTMLElement} element The element on which I'd attach the toolbar
+			 * @param {Boolean} toRight Set to true if you want the toolbar attached to the right
+			 * @return {Object}
+			 */
+			getTargetToElementDim: function (target, element, toRight) {
+				var canvasPos = CanvasView.getPosition();
+				var pos = CanvasView.getElementPos(element);
+
+				var elTop = pos.top - target.offsetHeight;
+				var elLeft = pos.left;
+				elLeft += toRight ? pos.width : 0;
+				elLeft = toRight ? (elLeft - target.offsetWidth) : elLeft;
+
+				var leftPos = elLeft < canvasPos.left ? canvasPos.left : elLeft;
+				var topPos = elTop < canvasPos.top ? canvasPos.top : elTop;
+				topPos = topPos > (pos.top + pos.height) ? (pos.top + pos.height) : topPos;
+
+				return {
+					top: topPos,
+					left: leftPos
+				};
+			},
+
+			/**
 			 * Returns wrapper element
 			 * @return {HTMLElement}
 			 * ????

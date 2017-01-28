@@ -115,16 +115,12 @@ define(function(require) {
        * @private
        */
       udpatePosition: function(){
-      	if(!this.lastEl || !c.em)
-      		return;
-      	var u = 'px';
-        var eOffset = c.em.get('canvasOffset');
-        var cvsView = c.em.get('Canvas').getCanvasView();
-        var dims = cvsView.getElementPos(this.lastEl);
-        var toolS = toolbar.el.style;
-        var toolH = toolbar.$el.outerHeight();
-        toolS.top = (dims.top - toolH) + u;
-				toolS.left = (dims.left + eOffset.left) + u;
+				var u = 'px';
+				var canvas = c.em.get('Canvas');
+				var pos = canvas.getTargetToElementDim(toolbar.el, this.lastEl, 1);
+				var toolbarStyle = toolbar.el.style;
+				toolbarStyle.top = pos.top + u;
+				toolbarStyle.left = pos.left + u;
       },
 
 			/**
@@ -136,12 +132,19 @@ define(function(require) {
 				view.$el.wysiwyg({}).focus();
 				this.lastEl = view.el;
 
+				this.show();
+
 				if(c.em){
 					this.udpatePosition();
+
 					c.em.off('change:canvasOffset', this.udpatePosition, this);
 					c.em.on('change:canvasOffset', this.udpatePosition, this);
+
+					// Update position on scrolling
+					c.em.off('canvasScroll', this.udpatePosition, this);
+					c.em.on('canvasScroll', this.udpatePosition, this);
 				}
-				this.show();
+
 				//Avoid closing edit mode clicking on toolbar
 				toolbar.$el.on('mousedown', this.disableProp);
 			},

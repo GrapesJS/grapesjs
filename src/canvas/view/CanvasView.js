@@ -27,6 +27,7 @@ function(Backbone, FrameView) {
       var body = this.frame.el.contentDocument.body;
       this.toolsEl.style.top = '-' + body.scrollTop + u;
       this.toolsEl.style.left = '-' + body.scrollLeft + u;
+			this.em.trigger('canvasScroll');
     },
 
 		/**
@@ -42,12 +43,16 @@ function(Backbone, FrameView) {
         var conf = this.config.em.get('Config');
         body.append(wrap.render()).append(cssc.render());
         var protCss = conf.protectedCss;
-        var frameCss = '.' + ppfx + 'dashed *{outline: 1px dashed rgba(170,170,170,0.7); outline-offset: -2px}' +
+        var frameCss = '.' + ppfx + 'dashed :not([contenteditable]) > *{outline: 1px dashed rgba(170,170,170,0.7); outline-offset: -2px}' +
         							 '.' + ppfx + 'comp-selected{outline: 3px solid #3b97e3 !important}' +
                        '.' + ppfx + 'no-select{user-select: none; -webkit-user-select:none; -moz-user-select: none}'+
                        '.' + ppfx + 'freezed{opacity: 0.5; pointer-events: none}' +
 											 '.' + ppfx + 'no-pointer{pointer-events: none}' +
-                       '.' + ppfx + 'plh-image{background:#f5f5f5; border:none; height:50px; width:50px; display:block; outline:3px solid #ffca6f; cursor:pointer}';
+                       '.' + ppfx + 'plh-image{background:#f5f5f5; border:none; height:50px; width:50px; display:block; outline:3px solid #ffca6f; cursor:pointer}' +
+											 '* ::-webkit-scrollbar-track {background: rgba(0, 0, 0, 0.1)}' +
+											 '* ::-webkit-scrollbar-thumb {background: rgba(255, 255, 255, 0.2)}' +
+											 '* ::-webkit-scrollbar {width: 10px}' +
+											 (conf.canvasCss || '');
         if(protCss)
         	body.append('<style>' + frameCss + protCss + '</style>');
         this.config.em.trigger('loaded');

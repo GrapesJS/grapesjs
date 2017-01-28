@@ -2661,6 +2661,15 @@ $fontColorActive: #4f8ef7;
   padding: 5px;
   cursor: pointer; }
 
+.gjs-editor-cont ::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1); }
+
+.gjs-editor-cont ::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2); }
+
+.gjs-editor-cont ::-webkit-scrollbar {
+  width: 8px; }
+
 /********************* MAIN ************************/
 .clear {
   clear: both; }
@@ -2758,7 +2767,6 @@ div.gjs-select {
   z-index: 1;
   /* This simulate body behaviour */ }
   .gjs-cv-canvas > iframe {
-    background-color: #fff;
     height: 100%;
     outline: medium none;
     width: 100%;
@@ -3970,7 +3978,7 @@ ol.example li.placeholder:before {
   position: absolute;
   border-radius: 3px;
   overflow: hidden;
-  z-index: 5; }
+  z-index: 10; }
   #gjs-rte-toolbar .gjs-rte-btn {
     display: inline-block;
     padding: 5px;

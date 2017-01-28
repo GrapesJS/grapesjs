@@ -162,6 +162,18 @@ $fontV: 20;//random(1000)
   cursor: pointer;
 }
 
+.#{$app-prefix}editor-cont ::-webkit-scrollbar-track {
+  background: $mainDklColor;
+}
+
+.#{$app-prefix}editor-cont ::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.#{$app-prefix}editor-cont ::-webkit-scrollbar {
+  width: 8px;
+}
+
 /********************* MAIN ************************/
 .clear{ clear:both }
 
@@ -274,7 +286,6 @@ div.#{$app-prefix}select {
   z-index:1;
 
   > iframe {
-    background-color: #fff;
     height: 100%;
     outline: medium none;
     width: 100%;
@@ -1430,7 +1441,7 @@ $uploadPadding:	150px 10px;
   position: absolute;
   border-radius: 3px;
   overflow: hidden;
-  z-index: 5;
+  z-index: 10;
 
   .#{$rte-prefix}btn {
   	@extend .#{$app-prefix}color-main;

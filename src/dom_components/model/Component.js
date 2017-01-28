@@ -58,6 +58,7 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 				if(opt && opt.config && opt.config.voidElements.indexOf(this.get('tagName')) >= 0)
 					this.set('void', true);
 
+				this.opt = opt;
 				this.sm = opt ? opt.sm || {} : {};
 				this.config 	= o || {};
 				this.defaultC = this.config.components || [];
@@ -143,7 +144,8 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 	    	}
 	    	attr.status = '';
 				attr.view = '';
-	      return new this.constructor(attr, {sm: this.sm});
+				
+				return new this.constructor(attr, this.opt);
 	    },
 
 			/**

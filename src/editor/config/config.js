@@ -20,14 +20,18 @@ define(function () {
 		// Width for the editor container
 		width: '100%',
 
-		// The css that could only be seen (for instance, inside the code viewer)
-		protectedCss: '*{box-sizing: border-box;}body{margin:0;height:100%}#wrapper{min-height:100%; overflow:auto}',
+		// CSS that could only be seen (for instance, inside the code viewer)
+		protectedCss: '*{box-sizing: border-box;}body{margin:0;height:100%;background:#fff}#wrapper{min-height:100%; overflow:auto}',
+
+		// CSS for the iframe which containing the canvas, useful if you need to custom something inside
+		// (eg. the style of the selected component)
+		canvasCss: '',
 
 		// Default command
 		defaultCommand: 'select-comp',
 
 		// Show a toolbar when the component is selected
-		showToolbar: 0,
+		showToolbar: 1,
 
 		// Allow script tag importing
 		allowScripts: 0,

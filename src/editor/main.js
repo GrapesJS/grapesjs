@@ -27,8 +27,9 @@
  * var editor = grapesjs.init({...});
  * ```
  * Available events
- * #run:{commandName}
- * #stop:{commandName}
+ * #canvasScroll: - Triggered when the canvas is scrolled
+ * #run:{commandName} - Triggered when some command is called to run (eg. editor.runCommand('preview'))
+ * #stop:{commandName} - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
  * #load - When the editor is loaded
  *
  * @module Editor

@@ -101,7 +101,56 @@ define(function(require) {
 				defaultCommands['open-assets'] = require('./view/OpenAssets');
 				defaultCommands.fullscreen = require('./view/Fullscreen');
 				defaultCommands.preview = require('./view/Preview');
-				//this.defaultCommands['resize-comp'] 	= require('./view/ResizeComponent');
+
+				defaultCommands['tlb-delete'] = {
+					run: function(ed){
+						var sel = ed.getSelected();
+
+						if(!sel || !sel.get('removable')) {
+							console.warn('The element is not removable');
+							return;
+						}
+
+						sel.destroy();
+						ed.Canvas.getToolbarEl().style.display = 'none';
+					},
+			  };
+
+				defaultCommands['tlb-clone'] = {
+					run: function(ed){
+						var sel = ed.getSelected();
+
+						if(!sel || !sel.get('copyable')) {
+							console.warn('The element is not clonable');
+							return;
+						}
+
+						var collection = sel.collection;
+						var index = collection.indexOf(sel);
+						collection.add(sel.clone(), {at: index + 1});
+					},
+			  };
+
+				defaultCommands['tlb-move'] = {
+					run: function(ed){
+						var sel = ed.getSelected();
+						var toolbarEl = ed.Canvas.getToolbarEl();
+						var toolbarDisplay = toolbarEl.style.display;
+						var cmdMove = ed.Commands.get('move-comp');
+
+						cmdMove.onEndMoveFromModel = function() {
+						  ed.editor.runDefault();
+							ed.editor.set('selectedComponent', sel);
+							//toolbarEl.style.display = toolbarDisplay;
+							//ed.trigger('canvasScroll'); <- Need first this on SelectComponent
+						};
+
+						ed.editor.stopDefault();
+						cmdMove.initSorterFromModel(sel);
+						sel.set('status', 'selected');
+						toolbarEl.style.display = 'none';
+					},
+			  };
 
 				if(c.em)
 					c.model = c.em.get('Canvas');

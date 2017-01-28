@@ -253,6 +253,7 @@ define(function(require) {
 			 * @param {Object} model
 			 */
 			updateToolbar: function(model) {
+				// if no model get the selectedOne
 				var toolbar = model.get('toolbar');
 				var ppfx = this.ppfx;
 				var showToolbar = this.config.em.get('Config').showToolbar;
@@ -300,8 +301,9 @@ define(function(require) {
 				var topPos = elTop < canvasPos.top ? canvasPos.top : elTop;
 				// This will stop the toolbar when the end of the element is reached
 				topPos = topPos > (pos.top + pos.height) ? (pos.top + pos.height) : topPos;
-				toolbarStyle.left = elLeft + unit;
+
 				toolbarStyle.top = topPos + unit;
+				toolbarStyle.left = leftPos + unit;
 			},
 
 			/**
