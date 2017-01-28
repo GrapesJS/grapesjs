@@ -329,12 +329,6 @@ require(['config/require-config'], function() {
 
     window.editor = editor;
 
-		$(document).ready(function(){
-			console.log('doc ready4');
-		});
-
-		$('.gjs-cv-canvas').css('padding-left', '200px');
-
 		/*
 		// Test toolbar commands
 		var cmd = editor.Commands;
