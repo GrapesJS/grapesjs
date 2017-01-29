@@ -2655,6 +2655,10 @@ $fontColorActive: #4f8ef7;
   z-index: 10;
   width: auto; }
 
+.gjs-grabbing {
+  cursor: grabbing;
+  cursor: -webkit-grabbing; }
+
 .gjs-off-prv {
   position: relative;
   z-index: 10;
@@ -3698,12 +3702,19 @@ ol.example li.placeholder:before {
   box-sizing: border-box;
   height: 90px;
   cursor: all-scroll;
-  margin: 2.5%;
   font-size: 11px;
   font-weight: lighter;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end; }
+  justify-content: flex-end;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+  margin: 10px 2.5% 5px;
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease 0s;
+  transition-property: box-shadow, color; }
+  .gjs-block:hover {
+    box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.15); }
 
 .gjs-block.fa {
   font-size: 2em;

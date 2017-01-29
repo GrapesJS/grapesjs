@@ -147,10 +147,15 @@ $fontV: 20;//random(1000)
   color: $fontColorActive;
 }
 
-.#{$app-prefix}bdrag{
+.#{$app-prefix}bdrag {
   position: absolute;
   z-index: 10;
   width: auto;
+}
+
+.#{$app-prefix}grabbing {
+  cursor: grabbing;
+  cursor: -webkit-grabbing;
 }
 
 .#{$app-prefix}off-prv{
@@ -162,6 +167,7 @@ $fontV: 20;//random(1000)
   cursor: pointer;
 }
 
+// Custom scrollbars for Chrome
 .#{$app-prefix}editor-cont ::-webkit-scrollbar-track {
   background: $mainDklColor;
 }
@@ -1061,24 +1067,34 @@ $lightBorder: rgba(255, 255, 255, 0.05);
 
 /********* Block manager **********/
 
-.#{$app-prefix}blocks-c{
+.#{$app-prefix}blocks-c {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
 }
-.#{$app-prefix}block{
+.#{$app-prefix}block {
   @include user-select(none);
   width: 45%;
   padding: 1em;
   box-sizing: border-box;
   height: 90px;
   cursor:all-scroll;
-  margin: 2.5%;
   font-size: 11px;
   font-weight: lighter;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+  margin: 10px 2.5% 5px;
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease 0s;
+  transition-property: box-shadow, color;
+
+  &:hover {
+    box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.15);
+  }
 }
 
 .#{$app-prefix}block.fa {

@@ -49,6 +49,7 @@ function(Backbone, FrameView) {
                        '.' + ppfx + 'freezed{opacity: 0.5; pointer-events: none}' +
 											 '.' + ppfx + 'no-pointer{pointer-events: none}' +
                        '.' + ppfx + 'plh-image{background:#f5f5f5; border:none; height:50px; width:50px; display:block; outline:3px solid #ffca6f; cursor:pointer}' +
+											 '.' + ppfx + 'grabbing{cursor: grabbing; cursor: -webkit-grabbing}' +
 											 '* ::-webkit-scrollbar-track {background: rgba(0, 0, 0, 0.1)}' +
 											 '* ::-webkit-scrollbar-thumb {background: rgba(255, 255, 255, 0.2)}' +
 											 '* ::-webkit-scrollbar {width: 10px}' +

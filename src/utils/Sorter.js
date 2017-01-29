@@ -30,6 +30,7 @@ define(['backbone'],
         this.offTop = o.offsetTop || 0;
         this.offLeft = o.offsetLeft || 0;
         this.document = o.document || document;
+        this.$document = $(this.document);
         this.dropContent = '';
         this.helper = '';
         this.em = o.em || '';
@@ -130,14 +131,14 @@ define(['backbone'],
           this.eV = this.closest(trg, this.itemSel);
 
         // Create placeholder if not exists
-        if(!this.plh){
+        if(!this.plh) {
           this.plh = this.createPlaceholder();
           this.el.appendChild(this.plh);
         }
 
-        if(this.eV){
+        if(this.eV) {
           this.eV.className += ' ' + this.freezeClass;
-          $(this.document).on('mouseup',this.endMove);
+          this.$document.on('mouseup', this.endMove);
         }
 
         if(this.helper){
@@ -146,8 +147,9 @@ define(['backbone'],
           document.body.appendChild(this.helperEl);
         }
 
-        this.$el.on('mousemove',this.onMove);
-        $(document).on('keypress',this.rollback);
+        this.$el.on('mousemove', this.onMove);
+        $(document).on('keydown', this.rollback);
+        this.$document.on('keydown', this.rollback);
 
         if(typeof this.onStart === 'function')
           this.onStart();
@@ -157,7 +159,7 @@ define(['backbone'],
        * During move
        * @param {Event} e
        * */
-      onMove: function(e){
+      onMove: function(e) {
         this.moved = 1;
 
         // Turn placeholder visibile
@@ -491,8 +493,8 @@ define(['backbone'],
       endMove: function(e){
         var created;
         this.$el.off('mousemove', this.onMove);
-        $(this.document).off('mouseup', this.endMove);
-        $(this.document).off('keypress', this.rollback);
+        this.$document.off('mouseup', this.endMove);
+        this.$document.off('keydown', this.rollback);
         this.plh.style.display = 'none';
         var clsReg = new RegExp('(?:^|\\s)'+this.freezeClass+'(?!\\S)', 'gi');
         if(this.eV)
@@ -570,10 +572,12 @@ define(['backbone'],
        * @param {Event}
        * @param {Bool} Indicates if rollback in anycase
        * */
-      rollback: function(e){
-        $(document).off('keypress',this.rollback);
+      rollback: function(e) {
+        $(document).off('keydown', this.rollback);
+        this.$document.off('keydown', this.rollback);
         var key = e.which || e.keyCode;
-        if(key == 27){
+
+        if (key == 27) {
           this.moved = false;
           this.endMove();
         }
