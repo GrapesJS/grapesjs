@@ -1,5 +1,5 @@
-define(['./ComponentImage'],
-	function (Component) {
+define(['./ComponentImage', './Component'],
+	function (Component, OComponent) {
 
 		return Component.extend({
 
@@ -12,6 +12,7 @@ define(['./ComponentImage'],
 					address: '',
 					zoom: '1',
 					attributes: {frameborder: 0},
+					toolbar: OComponent.prototype.defaults.toolbar,
 					traits: [{
 						label: 'Address',
 						name: 'address',

@@ -1,5 +1,5 @@
-define(['./ComponentImage'],
-	function (Component) {
+define(['./ComponentImage', './Component'],
+	function (Component, OComponent) {
 
 		var yt = 'yt';
 		var vi = 'vi';
@@ -20,7 +20,8 @@ define(['./ComponentImage'],
 					controls: 1,
 					color: '',
 					sources: [],
-					attributes:{allowfullscreen:'allowfullscreen'}
+					attributes:{allowfullscreen:'allowfullscreen'},
+					toolbar: OComponent.prototype.defaults.toolbar,
 			}),
 
 			initialize: function(o, opt) {
