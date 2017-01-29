@@ -3121,7 +3121,8 @@ ol.example li.placeholder:before {
   visibility: visible; }
 
 .gjs-nav-comp-name {
-  padding: 5px; }
+  padding: 5px;
+  box-sizing: content-box; }
 
 /************* END Navigator *************/
 /* pa-refresh pa-rocket pa-trash pa-columns pa-rotate-left/right */

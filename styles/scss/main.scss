@@ -683,6 +683,7 @@ ol.example li.placeholder:before {position: absolute;}
 
 .#{$app-prefix}nav-comp-name {
   padding: 5px;
+  box-sizing: content-box;
 }
 
 /************* END Navigator *************/

@@ -369,7 +369,9 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
 					return;
 
 				var wrp	= cmp.getComponent();
-				return cm.getCode(wrp, 'css', cssc);
+				var protCss = this.config.protectedCss;
+
+				return protCss + cm.getCode(wrp, 'css', cssc);
 			},
 
 			/**
