@@ -273,7 +273,7 @@ define(function(require) {
 
 					this.toolbar.reset(toolbar);
 
-					var view = model.get('view');
+					var view = model.view;
 					if(view) {
 						this.updateToolbarPos(view.el);
 					}
@@ -344,7 +344,7 @@ define(function(require) {
 					var model = this.editorModel.get('selectedComponent');
 
 					if (model) {
-						var view = model.get('view');
+						var view = model.view;
 						this.updateToolbarPos(view.el);
 					}
 				}

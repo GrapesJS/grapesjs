@@ -11,7 +11,7 @@ define(['backbone'], function (Backbone) {
 			this.config = o.config || {};
 			this.pfx = this.config.stylePrefix || '';
 			this.ppfx = this.config.pStylePrefix || '';
-			this.target = md.get('target');
+			this.target = md.target;
 			this.className = this.pfx + 'trait';
 			this.labelClass = this.ppfx + 'label';
 			this.fieldClass = this.ppfx + 'field ' + this.ppfx + 'field-' + md.get('type');

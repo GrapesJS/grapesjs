@@ -220,16 +220,6 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 				return attr;
 			},
 
-			/**
-			 * Avoid circular structure
-			 * @return {Object}
-			 */
-			toJSON: function(){
-				var obj = this.attributes;
-				delete obj.view;
-				return obj;
-			}
-
 		},{
 
 			/**

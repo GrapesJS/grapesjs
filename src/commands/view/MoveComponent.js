@@ -62,7 +62,7 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 					return;
 				// Avoid badge showing on move
 				this.cacheEl = null;
-				var el = model.get('view').el;
+				var el = model.view.el;
 				this.startSelectPosition(el, this.frameEl.contentDocument);
 				this.sorter.draggable = drag;
 				this.sorter.onEndMove = this.onEndMoveFromModel.bind(this);

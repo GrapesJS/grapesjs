@@ -36,8 +36,8 @@ require(['config/require-config'], function() {
 
 			storageManager:{
 				autoload: 0,
-				//storeComponents: 1,
-				//storeStyles: 1,
+				storeComponents: 1,
+				storeStyles: 1,
 			},
 			commands: 		{
 					defaults		: [{
@@ -331,6 +331,61 @@ require(['config/require-config'], function() {
 
     window.editor = editor;
 
+/*
+	// Test custom blocks
+	var bm = editor.BlockManager;
+  bm.get('b1').set({
+    content: {
+      classes: ['blk-row'],
+      droppable: ['.blk-cell'],
+      components: [{
+        classes: ['blk-cell', 'blk1'],
+      }]
+    }
+  });
+  bm.get('b2').set({
+    content: {
+      classes: ['blk-row'],
+      droppable: ['.blk-cell'],
+      components: [{
+        classes: ['blk-cell', 'blk2'],
+      },{
+        classes: ['blk-cell', 'blk2'],
+      }]
+    }
+  });
+  bm.get('b3').set({
+    content: {
+      classes: ['blk-row'],
+      droppable: ['.blk-cell'],
+      components: [{
+        classes: ['blk-cell', 'blk3'],
+      },{
+        classes: ['blk-cell', 'blk3'],
+      },{
+        classes: ['blk-cell', 'blk3'],
+      }]
+    }
+  });
+  bm.get('b4').set({
+    content: {
+      classes: ['blk-row'],
+      droppable: ['.blk-cell'],
+      components: [{
+        classes: ['blk-cell', 'blk37l'],
+      },{
+        classes: ['blk-cell', 'blk37r'],
+      }]
+    }
+  });
+  bm.get('map').set({
+    content: {
+      type: 'map',
+      draggable: ['*:not(#wrapper)'],
+      style: {height: '350px'}
+    },
+  });
+*/
 		/*
 		// Test toolbar commands
 		var cmd = editor.Commands;
