@@ -24,9 +24,12 @@ define(['backbone', 'text!./../template/item.html','require'],
 			this.className	= this.pfx + 'item no-select';
 			this.editBtnCls = this.pfx + 'nav-item-edit';
 			this.inputNameCls = this.ppfx + 'nav-comp-name';
-			this.events		= {};
+			this.caretCls = this.ppfx + 'nav-item-caret';
+			this.titleCls = this.pfx + 'title';
+			this.events = {};
 			this.events['click > #'+this.pfx+'btn-eye'] = 'toggleVisibility';
-			this.events['click .'+this.pfx+'title'] = 'toggleOpening';
+			this.events['click .' + this.caretCls] = 'toggleOpening';
+			this.events['click .' + this.titleCls] = 'handleSelect';
 			this.events['click .' + this.editBtnCls] = 'handleEdit';
 			this.events['blur .' + this.inputNameCls] = 'handleEditEnd';
 
@@ -98,19 +101,28 @@ define(['backbone', 'text!./../template/item.html','require'],
 		toggleOpening: function(e){
 			e.stopPropagation();
 
+			if(!this.model.components.length)
+				return;
+
+			this.model.set('open', !this.model.get('open') );
+		},
+
+		/**
+		 * Handle component selection
+		 * @return {[type]} [description]
+		 */
+		handleSelect: function (e) {
+			e.stopPropagation();
+
 			// Selection
 			if(this.em){
-				var md 	= this.em.get('selectedComponent');
+				var md = this.em.get('selectedComponent');
 				if(md){
 						md.set('status','');
 						this.model.set('status','selected');
 						this.em.set('selectedComponent', this.model);
 				}
 			}
-
-			if(!this.model.components.length)
-				return;
-			this.model.set('open', !this.model.get('open') );
 		},
 
 		/**
@@ -246,6 +258,7 @@ define(['backbone', 'text!./../template/item.html','require'],
 				addClass: (count ? '' : pfx+'no-chld'),
 				editBtnCls: this.editBtnCls,
 				inputNameCls: this.inputNameCls,
+				caretCls: this.caretCls,
 				count: count,
 				visible: vis,
 				hidable: this.config.hidable,
