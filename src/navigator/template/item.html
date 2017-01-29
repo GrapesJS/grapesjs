@@ -5,7 +5,8 @@
 <div class="<%= prefix %>title-c">
   <div class="<%= prefix %>title <%= addClass %>">
   	<i id="<%= prefix %>caret" class="fa fa-chevron-right"></i>
-  	<%= title %>
+		<i class="fa fa-pencil <%= editBtnCls %>"></i>
+		<input class="<%= ppfx %>no-app <%= inputNameCls %>" value="<%= title %>" readonly>
   </div>
 </div>
 

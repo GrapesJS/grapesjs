@@ -12,6 +12,7 @@ define(['backbone', 'text!./../template/item.html','require'],
 			this.opt = o;
 			this.config = o.config;
 			this.em = o.config.em;
+			this.ppfx = this.em.get('Config').stylePrefix;
 			this.sorter = o.sorter || {};
 			this.pfx = this.config.stylePrefix;
 			if(typeof this.model.get('open') == 'undefined')
@@ -21,9 +22,13 @@ define(['backbone', 'text!./../template/item.html','require'],
 			this.listenTo(this.model, 'change:status', this.updateStatus);
 			this.listenTo(this.model, 'change:open', this.updateOpening);
 			this.className	= this.pfx + 'item no-select';
+			this.editBtnCls = this.pfx + 'nav-item-edit';
+			this.inputNameCls = this.ppfx + 'nav-comp-name';
 			this.events		= {};
-			this.events['click > #'+this.pfx+'btn-eye']	= 'toggleVisibility';
-			this.events['click .'+this.pfx+'title']		= 'toggleOpening';
+			this.events['click > #'+this.pfx+'btn-eye'] = 'toggleVisibility';
+			this.events['click .'+this.pfx+'title'] = 'toggleOpening';
+			this.events['click .' + this.editBtnCls] = 'handleEdit';
+			this.events['blur .' + this.inputNameCls] = 'handleEditEnd';
 
 			this.$el.data('model', this.model);
 			this.$el.data('collection', this.model.get('components'));
@@ -32,6 +37,37 @@ define(['backbone', 'text!./../template/item.html','require'],
 				this.events['mousedown > #'+this.pfx+'move']	= 'startSort';
 
 			this.delegateEvents();
+		},
+
+		/**
+		 * Handle the edit of the component name
+		 */
+		handleEdit: function(e) {
+			e.stopPropagation();
+			var inputName = this.getInputName();
+			inputName.readOnly = false;
+			inputName.focus();
+		},
+
+		/**
+		 * Handle with the end of editing of the component name
+		 */
+		handleEditEnd: function (e) {
+			e.stopPropagation();
+			var inputName = this.getInputName();
+			inputName.readOnly = true;
+			this.model.set('customName', inputName.value);
+		},
+
+		/**
+		 * Get the input containing the name of the component
+		 * @return {HTMLElement}
+		 */
+		getInputName: function () {
+			if(!this.inputName) {
+				this.inputName = this.el.querySelector('.' + this.inputNameCls);
+			}
+			return this.inputName;
 		},
 
 		/**
@@ -206,13 +242,17 @@ define(['backbone', 'text!./../template/item.html','require'],
 			var count = this.countChildren(this.model);
 
 			this.$el.html( this.template({
-				title: this.model.getName(),
+				title: this.model.get('customName') || this.model.getName(),
 				addClass: (count ? '' : pfx+'no-chld'),
+				editBtnCls: this.editBtnCls,
+				inputNameCls: this.inputNameCls,
 				count: count,
 				visible: vis,
 				hidable: this.config.hidable,
-				prefix: pfx
+				prefix: pfx,
+				ppfx: this.ppfx
 			}));
+
 			if(typeof ItemsView == 'undefined')
 				ItemsView = require('./ItemsView');
 			this.$components = new ItemsView({

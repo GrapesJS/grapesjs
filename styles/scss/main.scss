@@ -194,7 +194,8 @@ $fontV: 20;//random(1000)
 	box-sizing: border-box;
 	height: 100%;
 }
-.#{$app-prefix}freezed{
+.#{$app-prefix}freezed,
+.#{$nv-prefix}freezed {
   @include opacity(0.50);
   pointer-events: none;
 }
@@ -623,27 +624,29 @@ ol.example li.placeholder:before {position: absolute;}
     cursor:pointer;
     z-index: 1;
 	}
-	.#{$nv-prefix}item .#{$nv-prefix}title {
-		font-size: 11px;
-		padding: 7px 10px 7px 30px;
-	}
 	.#{$nv-prefix}item ##{$nv-prefix}caret {
 		font-size: 7px;
 		width: 8px;
+    margin-right: 5px;
 	}
 }
+
 .#{$nv-prefix}item .#{$nv-prefix}title-c {
   @extend .#{$app-prefix}bg-main;
 }
-.#{$nv-prefix}item .#{$nv-prefix}title {
+
+.#{$nv-prefix}title {
   background-color: $mainDklColor;
-  font-size: 13px;
+  font-size: 11px;
   letter-spacing: 1px;
-  padding: 7px 10px 7px 25px;
+  padding: 3px 10px 5px 30px;
   border-bottom: 1px solid $mainDkColor;
   border-top: 1px solid $mainLhColor;
   cursor:pointer;
+  display: flex;
+  align-items: center;
 }
+
 .#{$nv-prefix}item .#{$nv-prefix}children .#{$nv-prefix}title{
 	border-left: 1px solid lighten($mainDkColor,2%);
 }
@@ -665,6 +668,21 @@ ol.example li.placeholder:before {position: absolute;}
 	&.#{$nv-prefix}selected{
 		border: 2px solid $colorBlue;
 	}
+}
+
+.#{$nv-prefix}nav-item-edit {
+  visibility: hidden;
+}
+
+.#{$nv-prefix}title-c:hover {
+
+  .#{$nv-prefix}nav-item-edit {
+    visibility: visible;
+  }
+}
+
+.#{$app-prefix}nav-comp-name {
+  padding: 5px;
 }
 
 /************* END Navigator *************/

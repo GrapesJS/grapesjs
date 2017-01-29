@@ -2693,7 +2693,8 @@ $fontColorActive: #4f8ef7;
   box-sizing: border-box;
   height: 100%; }
 
-.gjs-freezed {
+.gjs-freezed,
+.gjs-nv-freezed {
   opacity: 0.5;
   filter: alpha(opacity=50);
   pointer-events: none; }
@@ -3070,21 +3071,21 @@ ol.example li.placeholder:before {
     position: absolute;
     cursor: pointer;
     z-index: 1; }
-  .gjs-nv-navigator .gjs-nv-item .gjs-nv-title {
-    font-size: 11px;
-    padding: 7px 10px 7px 30px; }
   .gjs-nv-navigator .gjs-nv-item #gjs-nv-caret {
     font-size: 7px;
-    width: 8px; }
+    width: 8px;
+    margin-right: 5px; }
 
-.gjs-nv-item .gjs-nv-title {
+.gjs-nv-title {
   background-color: rgba(0, 0, 0, 0.1);
-  font-size: 13px;
+  font-size: 11px;
   letter-spacing: 1px;
-  padding: 7px 10px 7px 25px;
+  padding: 3px 10px 5px 30px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.3);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  cursor: pointer; }
+  cursor: pointer;
+  display: flex;
+  align-items: center; }
 
 .gjs-nv-item .gjs-nv-children .gjs-nv-title {
   border-left: 1px solid rgba(5, 5, 5, 0.3); }
@@ -3112,6 +3113,15 @@ ol.example li.placeholder:before {
 
 .gjs-nv-item.gjs-nv-selected {
   border: 2px solid #3b97e3; }
+
+.gjs-nv-nav-item-edit {
+  visibility: hidden; }
+
+.gjs-nv-title-c:hover .gjs-nv-nav-item-edit {
+  visibility: visible; }
+
+.gjs-nav-comp-name {
+  padding: 5px; }
 
 /************* END Navigator *************/
 /* pa-refresh pa-rocket pa-trash pa-columns pa-rotate-left/right */
