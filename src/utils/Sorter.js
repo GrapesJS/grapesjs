@@ -527,21 +527,37 @@ define(['backbone'],
        * @param {HTMLElement} src Element to move
        * @param {Object} pos Object with position coordinates
        * */
-      move: function(dst, src, pos){
+      move: function(dst, src, pos) {
         var index = pos.index;
         var model = $(src).data('model');
         var $dst = $(dst);
         var targetCollection = $dst.data('collection');
         var targetModel = $dst.data('model');
         var droppable = targetModel ? targetModel.get('droppable') : 1;
+        var drag = model && model.get('draggable');
+        var draggable = typeof drag !== 'undefined' ? drag : 1;
+        var toDrag = draggable;
+
+        if(this.dropContent instanceof Object){
+          draggable = this.dropContent.draggable;
+          draggable = typeof draggable !== 'undefined' ? draggable : 1;
+        }
+
+        if(draggable instanceof Array) {
+          toDrag = draggable.join(', ');
+          draggable = this.matches(dst, toDrag);
+        }
 
         // Check if the target could accept the element
         var accepted = 1;
         if(droppable instanceof Array){
+          // When I drag blocks src is the HTMLElement of the block
+          // TODO Create temp Components collection, render comps there and then
+          // make the check
           accepted = this.matches(src, droppable.join(', '));
         }
 
-        if(targetCollection && droppable && accepted){ // TODO && targetModel.get('droppable')
+        if(targetCollection && droppable && accepted && draggable) {
           index = pos.method === 'after' ? index + 1 : index;
           var modelToDrop, modelTemp;
           var opts = {at: index, noIncrement: 1};
@@ -563,13 +579,16 @@ define(['backbone'],
           // This will cause to recalculate children dimensions
           this.prevTarget = null;
           return created;
-        }else{
+        } else {
           var warns = [];
           if(!targetCollection){
             warns.push('target collection not found');
           }
           if(!droppable){
             warns.push('target is not droppable');
+          }
+          if(!draggable){
+            warns.push('component not draggable ', toDrag);
           }
           if(!accepted){
             warns.push('target accepts only [' + droppable.join(', ') + ']');
