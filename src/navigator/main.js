@@ -17,12 +17,6 @@ define(function(require) {
 			opened: c.opened || {}
 		};
 
-		// Check if sort is required
-		if(config.sortable){
-			var ItemSort = require('./view/ItemSort');
-			obj.sorter = new ItemSort({config : config});
-		}
-
 	  this.ItemsView = new ItemsView(obj);
 	}
 

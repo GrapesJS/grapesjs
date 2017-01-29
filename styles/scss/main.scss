@@ -443,19 +443,27 @@ ol.example li.placeholder:before {position: absolute;}
 .#{$app-prefix}badge-warning{
 	background-color: $colorYell;
 }
-.#{$app-prefix}placeholder, .#{$com-prefix}placeholder{
+.#{$app-prefix}placeholder,
+.#{$com-prefix}placeholder,
+.#{$nv-prefix}placeholder {
 	position: absolute;
 	z-index: 10;
   pointer-events: none;
   display: none;
 }
-.#{$app-prefix}placeholder{
+
+.#{$app-prefix}placeholder,
+.#{$nv-prefix}placeholder {
   /*border-width: 3px !important;*/
   border-style: solid !important;
   border-color: $colorGreen;
   outline: none;
+  box-sizing: border-box;
 }
-.#{$app-prefix}placeholder-int, .#{$com-prefix}placeholder-int{
+
+.#{$app-prefix}placeholder-int,
+.#{$com-prefix}placeholder-int,
+.#{$nv-prefix}placeholder-int {
 	background-color: $colorGreen;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
 	height: 100%; width: 100%;

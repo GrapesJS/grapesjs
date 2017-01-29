@@ -2923,19 +2923,25 @@ ol.example li.placeholder:before {
 .gjs-badge-warning {
   background-color: #ffca6f; }
 
-.gjs-placeholder, .gjs-com-placeholder {
+.gjs-placeholder,
+.gjs-com-placeholder,
+.gjs-nv-placeholder {
   position: absolute;
   z-index: 10;
   pointer-events: none;
   display: none; }
 
-.gjs-placeholder {
+.gjs-placeholder,
+.gjs-nv-placeholder {
   /*border-width: 3px !important;*/
   border-style: solid !important;
   border-color: #62c462;
-  outline: none; }
+  outline: none;
+  box-sizing: border-box; }
 
-.gjs-placeholder-int, .gjs-com-placeholder-int {
+.gjs-placeholder-int,
+.gjs-com-placeholder-int,
+.gjs-nv-placeholder-int {
   background-color: #62c462;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
   height: 100%;

@@ -24,9 +24,9 @@ define(['backbone', 'text!./../template/item.html','require'],
 			this.events		= {};
 			this.events['click > #'+this.pfx+'btn-eye']	= 'toggleVisibility';
 			this.events['click .'+this.pfx+'title']		= 'toggleOpening';
-			this.$el.data("model", this.model);
 
-			//TODO listen
+			this.$el.data('model', this.model);
+			this.$el.data('collection', this.model.get('components'));
 
 			if(o.config.sortable)
 				this.events['mousedown > #'+this.pfx+'move']	= 'startSort';
@@ -82,8 +82,10 @@ define(['backbone', 'text!./../template/item.html','require'],
 		 * @param	Event
 		 * */
 		startSort: function(e){
-			if(this.sorter)
-				this.sorter.startMove(this, e);
+			if (this.sorter) {
+				//this.sorter.startMove(this, e);
+				this.sorter.startSort(e.target);
+			}
 		},
 
 		/**

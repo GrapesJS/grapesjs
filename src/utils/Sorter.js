@@ -4,6 +4,7 @@ define(['backbone'],
     return Backbone.View.extend({
 
       initialize: function(opt) {
+        this.opt = opt || {};
         _.bindAll(this,'startSort','onMove','endMove','rollback', 'udpateOffset');
         var o = opt || {};
         this.elT = 0;
@@ -11,8 +12,9 @@ define(['backbone'],
         this.borderOffset = o.borderOffset || 10;
 
         var el = o.container;
-        this.el = typeof el === 'string' ? document.querySelector(o.container) : el;
+        this.el = typeof el === 'string' ? document.querySelector(el) : el;
         this.$el = $(this.el);
+
         this.containerSel = o.containerSel || 'div';
         this.itemSel = o.itemSel || 'div';
         this.draggable = o.draggable || true;
@@ -39,6 +41,15 @@ define(['backbone'],
           this.em.on('change:canvasOffset', this.udpateOffset);
           this.udpateOffset();
         }
+      },
+
+      getContainerEl: function () {
+        if (!this.el) {
+          var el = this.opt.container;
+          this.el = typeof el === 'string' ? document.querySelector(el) : el;
+          this.$el = $(this.el);
+        }
+        return this.el;
       },
 
       /**
@@ -121,7 +132,7 @@ define(['backbone'],
 
       /**
        * Picking component to move
-       * @param {Object} trg
+       * @param {HTMLElement} trg
        * */
       startSort: function(trg){
         this.moved = 0;
@@ -133,7 +144,7 @@ define(['backbone'],
         // Create placeholder if not exists
         if(!this.plh) {
           this.plh = this.createPlaceholder();
-          this.el.appendChild(this.plh);
+          this.getContainerEl().appendChild(this.plh);
         }
 
         if(this.eV) {
