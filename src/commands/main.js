@@ -111,8 +111,10 @@ define(function(require) {
 							return;
 						}
 
-						sel.destroy();
+						//sel.destroy();
+						sel.collection.remove(sel);
 						ed.Canvas.getToolbarEl().style.display = 'none';
+						ed.editor.runDefault();
 					},
 			  };
 

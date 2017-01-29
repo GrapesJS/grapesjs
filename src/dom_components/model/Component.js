@@ -144,7 +144,7 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 	    	}
 	    	attr.status = '';
 				attr.view = '';
-				
+
 				return new this.constructor(attr, this.opt);
 	    },
 
@@ -218,6 +218,16 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 				var attr = this.get('attributes') || {};
 				delete attr.style;
 				return attr;
+			},
+
+			/**
+			 * Avoid circular structure
+			 * @return {Object}
+			 */
+			toJSON: function(){
+				var obj = this.attributes;
+				delete obj.view;
+				return obj;
 			}
 
 		},{

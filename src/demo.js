@@ -36,6 +36,8 @@ require(['config/require-config'], function() {
 
 			storageManager:{
 				autoload: 0,
+				//storeComponents: 1,
+				//storeStyles: 1,
 			},
 			commands: 		{
 					defaults		: [{
