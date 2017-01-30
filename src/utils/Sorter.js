@@ -1,5 +1,6 @@
-define(['backbone'],
-  function(Backbone) {
+define(function(require) {
+
+    var Backbone = require('backbone');
 
     return Backbone.View.extend({
 
@@ -33,7 +34,7 @@ define(['backbone'],
         this.offLeft = o.offsetLeft || 0;
         this.document = o.document || document;
         this.$document = $(this.document);
-        this.dropContent = '';
+        this.dropContent = null;
         this.helper = '';
         this.em = o.em || '';
 
@@ -533,28 +534,42 @@ define(['backbone'],
         var $dst = $(dst);
         var targetCollection = $dst.data('collection');
         var targetModel = $dst.data('model');
-        var droppable = targetModel ? targetModel.get('droppable') : 1;
+
+        // Check if the elemenet is DRAGGABLE to the target
         var drag = model && model.get('draggable');
         var draggable = typeof drag !== 'undefined' ? drag : 1;
         var toDrag = draggable;
 
-        if(this.dropContent instanceof Object){
+        if (this.dropContent instanceof Object) {
           draggable = this.dropContent.draggable;
           draggable = typeof draggable !== 'undefined' ? draggable : 1;
+        } else if (typeof this.dropContent === 'string' && targetCollection) {
+          var sandboxOpts = {silent: true};
+          var sandboxModel = targetCollection.add(this.dropContent, sandboxOpts);
+          draggable = sandboxModel.get && sandboxModel.get('draggable');
+          draggable = typeof draggable !== 'undefined' ? draggable : 1;
+          targetCollection.remove(sandboxModel, sandboxOpts);
         }
 
         if(draggable instanceof Array) {
           toDrag = draggable.join(', ');
           draggable = this.matches(dst, toDrag);
+        }else if(typeof draggable === 'string') {
+          toDrag = draggable;
+          draggable = this.matches(dst, toDrag);
         }
 
-        // Check if the target could accept the element
+        // Check if the target could accept the element to be DROPPED inside
         var accepted = 1;
-        if(droppable instanceof Array){
+        var droppable = targetModel ? targetModel.get('droppable') : 1;
+        var toDrop = draggable;
+        if(droppable instanceof Array) {
           // When I drag blocks src is the HTMLElement of the block
-          // TODO Create temp Components collection, render comps there and then
-          // make the check
-          accepted = this.matches(src, droppable.join(', '));
+          toDrop = droppable.join(', ');
+          accepted = this.matches(src, toDrop);
+        }else if(typeof droppable === 'string') {
+          toDrop = droppable;
+          accepted = this.matches(src, toDrop);
         }
 
         if(targetCollection && droppable && accepted && draggable) {
@@ -588,10 +603,10 @@ define(['backbone'],
             warns.push('target is not droppable');
           }
           if(!draggable){
-            warns.push('component not draggable ', toDrag);
+            warns.push('component not draggable, accepted only by [' + toDrag + ']');
           }
           if(!accepted){
-            warns.push('target accepts only [' + droppable.join(', ') + ']');
+            warns.push('target accepts only [' + toDrop + ']');
           }
           console.warn('Invalid target position: ' + warns.join(', '));
         }

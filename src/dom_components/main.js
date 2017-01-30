@@ -40,6 +40,7 @@ define(function(require) {
 		defaults = require('./config/config'),
 		Component = require('./model/Component'),
 		ComponentView = require('./view/ComponentView');
+
 		var component, componentView;
 		var defaultTypes = {
 			'cell': {

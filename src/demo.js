@@ -331,8 +331,8 @@ require(['config/require-config'], function() {
 
     window.editor = editor;
 
-/*
 	// Test custom blocks
+/*
 	var bm = editor.BlockManager;
   bm.get('b1').set({
     content: {
@@ -344,15 +344,7 @@ require(['config/require-config'], function() {
     }
   });
   bm.get('b2').set({
-    content: {
-      classes: ['blk-row'],
-      droppable: ['.blk-cell'],
-      components: [{
-        classes: ['blk-cell', 'blk2'],
-      },{
-        classes: ['blk-cell', 'blk2'],
-      }]
-    }
+		content: '<div class="blk-row" data-gjs-droppable=".blk-cell" data-gjs-draggable="*:not(#wrapper)"><div data-gjs-draggable=".blk-row" class="blk-cell blk2"></div><div data-gjs-draggable=".blk-row" class="blk-cell blk2"></div></div>',
   });
   bm.get('b3').set({
     content: {

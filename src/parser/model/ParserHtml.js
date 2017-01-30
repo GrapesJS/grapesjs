@@ -4,6 +4,7 @@ define(function(require) {
 
     var TEXT_NODE = 'span';
     var c = config;
+    var modelAttrStart = 'data-gjs-';
 
     return {
 
@@ -100,13 +101,21 @@ define(function(require) {
               model.classes = this.parseClass(nodeValue);
             else if (nodeName == 'contenteditable')
               continue;
-            else
+            else if(nodeName.indexOf(modelAttrStart) === 0){
+              var modelAttr = nodeName.replace(modelAttrStart, '');
+              nodeValue = nodeValue === 'true' ? true : nodeValue;
+              nodeValue = nodeValue === 'false' ? false : nodeValue;
+              model[modelAttr] = nodeValue;
+            }else
               model.attributes[nodeName] = nodeValue;
           }
 
-          // Check for nested elements
+
           var nodeChild = node.childNodes.length;
-          if(nodeChild){
+
+          // Check for nested elements and avoid them if an array
+          // was already given
+          if(nodeChild && !model.components){
             // Avoid infinite text nodes nesting
             var firstChild = node.childNodes[0];
             if(nodeChild === 1 && firstChild.nodeType === 3){

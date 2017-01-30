@@ -340,6 +340,38 @@ define([path + 'model/ParserHtml', path + 'model/ParserCss', 'DomComponents'],
             obj.parse(str).html.should.deep.equal(result);
           });
 
+          it('Parse node with model attributes to fetch', function() {
+            var str = '<div id="test1" data-test="test-value" data-gjs-draggable=".myselector" data-gjs-stuff="test">test2 </div>';
+            var result = {
+              tagName: 'div',
+              draggable: '.myselector',
+              stuff: 'test',
+              attributes: {
+                id: 'test1',
+                'data-test': 'test-value'
+              },
+              type: 'text',
+              content: 'test2 ',
+            };
+            obj.parse(str).html.should.deep.equal(result);
+          });
+
+          it('Parse model attributes with true and false', function() {
+            var str = '<div id="test1" data-test="test-value" data-gjs-draggable="true" data-gjs-stuff="false">test2 </div>';
+            var result = {
+              tagName: 'div',
+              draggable: true,
+              stuff: false,
+              attributes: {
+                id: 'test1',
+                'data-test': 'test-value'
+              },
+              type: 'text',
+              content: 'test2 ',
+            };
+            obj.parse(str).html.should.deep.equal(result);
+          });
+
         });
 
       }

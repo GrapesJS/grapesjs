@@ -664,10 +664,15 @@ ol.example li.placeholder:before {position: absolute;}
   right: 0; top: 0;
   padding: 7px 10px 7px 5px;
 }
+/*
 .#{$nv-prefix}item{
 	&.#{$nv-prefix}selected{
 		border: 2px solid $colorBlue;
 	}
+}
+*/
+.#{$nv-prefix}selected .#{$nv-prefix}title {
+    background-color: rgba(255,255,255,0.1);
 }
 
 .#{$nv-prefix}nav-item-edit {
