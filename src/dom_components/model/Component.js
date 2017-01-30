@@ -41,16 +41,7 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 				attributes: {},
 				classes: '',
 				traits: ['id', 'title'],
-				toolbar: [{
-					attributes: {class: 'fa fa-arrows'},
-					command: 'tlb-move',
-				},{
-					attributes: {class: 'fa fa-clone'},
-					command: 'tlb-clone',
-				},{
-					attributes: {class: 'fa fa-trash-o'},
-					command: 'tlb-delete',
-				}],
+				toolbar: null,
 			},
 
 			initialize: function(o, opt) {
@@ -71,6 +62,36 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 				traits.setTarget(this);
 				traits.add(this.get('traits'));
 				this.set('traits', traits);
+				this.initToolbar();
+			},
+
+			/**
+			 * Init toolbar
+			 */
+			initToolbar: function () {
+				var model = this;
+				if(!model.get('toolbar')) {
+					var tb = [];
+					if(model.get('draggable')) {
+						tb.push({
+							attributes: {class: 'fa fa-arrows'},
+							command: 'tlb-move',
+						});
+					}
+					if(model.get('copyable')) {
+						tb.push({
+							attributes: {class: 'fa fa-clone'},
+							command: 'tlb-clone',
+						});
+					}
+					if(model.get('removable')) {
+						tb.push({
+							attributes: {class: 'fa fa-trash-o'},
+							command: 'tlb-delete',
+						});
+					}
+					model.set('toolbar', tb);
+				}
 			},
 
 			/**
