@@ -1,11 +1,14 @@
-define(['backbone', 'Abstract/view/DomainViews', './TraitView', './TraitSelectView'],
-	function (Backbone, DomainViews, TraitView, TraitSelectView) {
+define(['backbone', 'Abstract/view/DomainViews', './TraitView', './TraitSelectView', './TraitCheckboxView'],
+	function (Backbone, DomainViews, TraitView, TraitSelectView, TraitCheckboxView) {
 
 		return DomainViews.extend({
+
+			itemView: TraitView,
 
 			itemsView: {
 				'text': TraitView,
 				'select': TraitSelectView,
+				'checkbox': TraitCheckboxView,
 			},
 
 			initialize: function(o) {

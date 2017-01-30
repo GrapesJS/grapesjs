@@ -109,7 +109,7 @@ define(['backbone', 'text!./../template/classTag.html'],
     updateInputLabel: function(){
       if(!this.$labelInput)
         this.$labelInput = this.$el.find('input');
-      var size = this.$labelInput.val().length - 2;
+      var size = this.$labelInput.val().length - 1;
       size = size < 1 ? 1 : size;
       this.$labelInput.attr('size', size);
     },

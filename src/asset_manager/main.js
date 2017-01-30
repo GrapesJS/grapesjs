@@ -5,6 +5,8 @@
  * * [remove](#remove)
  * * [store](#store)
  * * [load](#load)
+ * * [onClick](#onClick)
+ * * [onDblClick](#onDblClick)
  *
  * Before using this methods you should get first the module from the editor instance, in this way:
  *
@@ -16,6 +18,7 @@
  * @param {Object} config Configurations
  * @param {Array<Object>} [config.assets=[]] Default assets
  * @param {String} [config.uploadText='Drop files here or click to upload'] Upload text
+ * @param {String} [config.addBtnText='Add image'] Text for the add button
  * @param {String} [config.upload=''] Where to send upload data. Expects as return a JSON with asset/s object
  * as: {data: [{src:'...'}, {src:'...'}]}
  * @return {this}
@@ -215,6 +218,22 @@ define(function(require) {
 			 * */
 			onSelect: function(f){
 				am.collection.onSelect = f;
+			},
+
+			/**
+			 * Set callback to fire when the asset is clicked
+			 * @param {function} func
+			 */
+			onClick: function(func) {
+				c.onClick = func;
+			},
+
+			/**
+			 * Set callback to fire when the asset is double clicked
+			 * @param {function} func
+			 */
+			onDblClick: function(func) {
+				c.onDblClick = func;
 			},
 
 		};

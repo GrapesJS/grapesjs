@@ -11,25 +11,31 @@ require(['config/require-config'], function() {
 			fromElement: true,
 			/*
 			components: [{
+				type: 'text',
 				style:{
 					width:'100px',
-					height:'100px'
+					height:'100px',
+					margin: '50px auto',
 				},
-				traits: ['title']
-			},{
-				style:{
-					width:'150px',
-					height:'100px'
-				},
-				traits: [{name:'title', value: "myTitleTest"}]
-			},{
-				type: 'image'
-			},{
-				type: 'link',
-				content: 'mylink',
-			}],
-			*/
-			storageManager:{ autoload: 0},
+				traits: ['title'],
+				components: [{
+					type: 'textnode',
+					content: 'text node row',
+				},{
+					type: 'textnode',
+					content: ', another text node',
+				},{
+					type: 'link',
+					content: 'someLink',
+				},{
+					type: 'textnode',
+					content: " More text node  ---   ",
+				}],
+			}],*/
+
+			storageManager:{
+				autoload: 0,
+			},
 			commands: 		{
 					defaults		: [{
 													id: 	'open-github',
@@ -59,7 +65,7 @@ require(['config/require-config'], function() {
 													}
 												}],
 			},
-/*
+
 			assetManager: {
 				storageType			: '',
 				storeOnChange		: true,
@@ -77,7 +83,7 @@ require(['config/require-config'], function() {
 					      				   { type: 'image', src : './img/bg-gr-v.png', date: '2015-02-01',height:1, width:1728},
 				      				   ]
 			},
-*/
+
 
 			styleManager : {
 				sectors: [{
@@ -319,7 +325,43 @@ require(['config/require-config'], function() {
 
 		);
 
+
     window.editor = editor;
 
+		/*
+		// Test toolbar commands
+		var cmd = editor.Commands;
+		cmd.add('tlb-delete', {
+			run: function(ed){
+				var sel = ed.getSelected();
+				if(!sel)
+					return;
+				sel.destroy();
+				ed.Canvas.getToolbarEl().style.display = 'none';
+			},
+		});
+
+		cmd.add('tlb-clone', {
+			run: function(ed){
+				var sel = ed.getSelected();
+				var collection = sel.collection;
+				var index = collection.indexOf(sel);
+				collection.add(sel.clone(), {at: index + 1});
+			},
+		});
+
+		cmd.add('tlb-move', {
+			run: function(ed){
+				var sel = ed.getSelected();
+				ed.editor.stopDefault();
+				var cmdMove = cmd.get('move-comp');
+				cmdMove.onEndMoveFromModel = function() {
+					ed.editor.runDefault();
+				};
+				cmdMove.initSorterFromModel(sel);
+				ed.Canvas.getToolbarEl().style.display = 'none';
+			},
+		});
+		*/
 	});
 });

@@ -36,18 +36,57 @@ define(function(require) {
 
 	return function (){
 		var c = {},
-			defaults = require('./config/config'),
-			Component = require('./model/Component'),
-			ComponentText = require('./model/ComponentText'),
-			ComponentImage = require('./model/ComponentImage'),
-			ComponentLink = require('./model/ComponentLink'),
-			ComponentView = require('./view/ComponentView'),
-			ComponentImageView = require('./view/ComponentImageView'),
-			ComponentTextView	= require('./view/ComponentTextView');
-			ComponentLinkView	= require('./view/ComponentLinkView');
+		componentTypes = {},
+		defaults = require('./config/config'),
+		Component = require('./model/Component'),
+		ComponentView = require('./view/ComponentView');
 		var component, componentView;
+		var defaultTypes = {
+			'cell': {
+				model: require('./model/ComponentTableCell'),
+				view: require('./view/ComponentTableCellView'),
+			},
+			'row': {
+				model: require('./model/ComponentTableRow'),
+				view: require('./view/ComponentTableRowView'),
+			},
+			'table': {
+				model: require('./model/ComponentTable'),
+				view: require('./view/ComponentTableView'),
+			},
+			'map': {
+				model: require('./model/ComponentMap'),
+				view: require('./view/ComponentMapView'),
+			},
+			'link': {
+				model: require('./model/ComponentLink'),
+				view: require('./view/ComponentLinkView'),
+			},
+			'video': {
+				model: require('./model/ComponentVideo'),
+				view: require('./view/ComponentVideoView'),
+			},
+			'image': {
+				model: require('./model/ComponentImage'),
+				view: require('./view/ComponentImageView'),
+			},
+			'textnode': {
+				model: require('./model/ComponentTextNode'),
+				view: require('./view/ComponentTextNodeView'),
+			},
+			'text': {
+				model: require('./model/ComponentText'),
+				view: require('./view/ComponentTextView'),
+			},
+			'default': {
+				model: Component,
+				view: ComponentView,
+			},
+		};
 
 	  return {
+
+			componentTypes: defaultTypes,
 
 	  	/**
        * Name of the module
@@ -96,14 +135,22 @@ define(function(require) {
           c.rte = c.em.get('rte') || '';
   				c.modal = c.em.get('Modal') || '';
   				c.am = c.em.get('AssetManager') || '';
+					c.em.get('Parser').compTypes = defaultTypes;
         }
 
-        component = new Component(c.wrapper, { sm: c.em, config: c });
+        component = new Component(c.wrapper, {
+					sm: c.em,
+					config: c,
+					defaultTypes: defaultTypes,
+					componentTypes: componentTypes,
+				});
 				component.set({ attributes: {id: 'wrapper'}});
 				component.get('components').add(c.components);
 			  componentView = new ComponentView({
 					model: component,
 					config: c,
+					defaultTypes: defaultTypes,
+					componentTypes: componentTypes,
 				});
         return this;
       },
@@ -282,6 +329,15 @@ define(function(require) {
 			setComponents: function(components){
 				this.clear().addComponent(components);
 			},
+
+			/**
+			 * Add new component type
+			 * @private
+			 */
+			addComponentType: function(type, methods) {
+				componentTypes[type] = methods;
+				return this;
+			}
 
 		};
 	};

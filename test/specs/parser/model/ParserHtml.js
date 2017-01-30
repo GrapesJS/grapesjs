@@ -1,6 +1,6 @@
 var path = 'Parser/';
-define([path + 'model/ParserHtml', path + 'model/ParserCss'],
-  function(ParserHtml, ParserCss) {
+define([path + 'model/ParserHtml', path + 'model/ParserCss', 'DomComponents'],
+  function(ParserHtml, ParserCss, DomComponents) {
 
     return {
       run : function(){
@@ -9,9 +9,12 @@ define([path + 'model/ParserHtml', path + 'model/ParserCss'],
           var obj;
 
           beforeEach(function () {
+            var dom = new DomComponents();
             obj = new ParserHtml({
               textTags: ['br', 'b', 'i', 'u'],
+              pStylePrefix: 'gjs-',
             });
+            obj.compTypes = dom.componentTypes;
           });
 
           afterEach(function () {
@@ -60,6 +63,12 @@ define([path + 'model/ParserHtml', path + 'model/ParserCss'],
             obj.parseClass(str).should.deep.equal(result);
           });
 
+          it('Parse class string to array with special classes', function() {
+            var str = 'test1 test2    test3 test-4 gjs-test';
+            var result = ['test1', 'test2', 'test3', 'test-4'];
+            obj.parseClass(str).should.deep.equal(result);
+          });
+
           it('Style attribute is isolated', function() {
             var str = '<div id="test1" style="color:black; width:100px; test:value;"></div>';
             var result = {
@@ -89,8 +98,10 @@ define([path + 'model/ParserHtml', path + 'model/ParserCss'],
             var result = {
               tagName: 'img',
               type: 'image',
-              src: './index.html',
-              attributes: { id: 'test1'},
+              attributes: {
+                id: 'test1',
+                src: './index.html',
+              },
             };
             obj.parse(str).html.should.deep.equal(result);
           });
@@ -112,7 +123,44 @@ define([path + 'model/ParserHtml', path + 'model/ParserCss'],
               tagName: 'div',
               attributes: { id: 'test1'},
               type: 'text',
-              content: '<br> test2 <br> a b <b>b</b> <i>i</i> <u>u</u> test ',
+              components: [
+                {tagName: 'br'},
+                {
+                  content: ' test2 ',
+                  type: 'textnode',
+                  tagName: ''
+                },
+                {tagName: 'br'},
+                {
+                  content: ' a b ',
+                  type: 'textnode',
+                  tagName: ''
+                },{
+                  content: 'b',
+                  type: 'text',
+                  tagName: 'b'
+                },{
+                  content: ' ',
+                  type: 'textnode',
+                  tagName: ''
+                },{
+                  content: 'i',
+                  tagName: 'i',
+                  type: 'text'
+                },{
+                  content: ' ',
+                  type: 'textnode',
+                  tagName: ''
+                },{
+                  content: 'u',
+                  tagName: 'u',
+                  type: 'text'
+                },{
+                  content: ' test ',
+                  type: 'textnode',
+                  tagName: ''
+                }
+              ],
             };
             obj.parse(str).html.should.deep.equal(result);
           });
@@ -122,18 +170,51 @@ define([path + 'model/ParserHtml', path + 'model/ParserCss'],
             var result = {
               tagName: 'div',
               attributes: { id: 'test1'},
+              type: 'text',
               components: [{
-                tagName: 'span',
-                type: 'text',
-                content: 'a b <b>b</b> <i>i</i>c ',
+                content: 'a b ',
+                type: 'textnode',
+                tagName: ''
+              },{
+                content: 'b',
+                tagName: 'b',
+                type: 'text'
+              },{
+                content: ' ',
+                type: 'textnode',
+                tagName: ''
+              },{
+                content: 'i',
+                tagName: 'i',
+                type: 'text'
+              },{
+                content: 'c ',
+                type: 'textnode',
+                tagName: ''
               },{
                 tagName: 'div',
                 type: 'text',
                 content: 'ABC',
               },{
-                tagName: 'span',
-                type: 'text',
-                content: '<i>i</i> <u>u</u> test ',
+                content: ' ',
+                type: 'textnode',
+                tagName: ''
+              },{
+                content: 'i',
+                tagName: 'i',
+                type: 'text'
+              },{
+                content: ' ',
+                type: 'textnode',
+                tagName: ''
+              },{
+                content: 'u',
+                tagName: 'u',
+                type: 'text'
+              },{
+                content: ' test ',
+                type: 'textnode',
+                tagName: ''
               }],
             };
             obj.parse(str).html.should.deep.equal(result);
@@ -144,15 +225,18 @@ define([path + 'model/ParserHtml', path + 'model/ParserCss'],
             var result = {
               tagName: 'article',
               attributes: {id: 'test1'},
-              components: [
-                {
+              components: [{
                   tagName: 'div'
+                },{
+                  content: ' ',
+                  type: 'textnode',
+                  tagName: ''
                 },{
                   tagName: 'footer',
                   attributes: { id: 'test2'},
                 },{
-                  tagName: 'span',
-                  type: 'text',
+                  tagName: '',
+                  type: 'textnode',
                   content: '  Text mid ',
                 },{
                   tagName: 'div',
@@ -167,17 +251,18 @@ define([path + 'model/ParserHtml', path + 'model/ParserCss'],
             var str = '<div>content1 <div>nested</div> content2</div>';
             var result = {
               tagName: 'div',
+              type: 'text',
               components: [{
-                tagName: 'span',
-                type: 'text',
+                tagName: '',
+                type: 'textnode',
                 content: 'content1 ',
               },{
                 tagName: 'div',
                 type: 'text',
                 content: 'nested',
               },{
-                tagName: 'span',
-                type: 'text',
+                tagName: '',
+                type: 'textnode',
                 content: ' content2',
               }],
             };
@@ -188,20 +273,18 @@ define([path + 'model/ParserHtml', path + 'model/ParserCss'],
             var str = '<div>content1 <div><span>nested</span></div> content2</div>';
             var result = {
               tagName: 'div',
+              type: 'text',
               components: [{
-                tagName: 'span',
-                type: 'text',
+                tagName: '',
+                type: 'textnode',
                 content: 'content1 ',
               },{
                 tagName: 'div',
-                components: [{
-                  tagName: 'span',
-                  type: 'text',
-                  content: 'nested',
-                }]
-              },{
-                tagName: 'span',
                 type: 'text',
+                content: 'nested',
+              },{
+                tagName: '',
+                type: 'textnode',
                 content: ' content2',
               }],
             };
@@ -239,10 +322,19 @@ define([path + 'model/ParserHtml', path + 'model/ParserCss'],
             var str = '<div> <p>TestText</p> </div>';
             var result = {
               tagName: 'div',
+              type: 'text',
               components: [{
+                tagName: '',
+                type: 'textnode',
+                content: ' ',
+              },{
                 tagName: 'p',
                 content: 'TestText',
                 type: 'text',
+              },{
+                tagName: '',
+                type: 'textnode',
+                content: ' ',
               }],
             };
             obj.parse(str).html.should.deep.equal(result);

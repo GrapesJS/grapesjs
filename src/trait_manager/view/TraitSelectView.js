@@ -6,7 +6,6 @@ define(['backbone','./TraitView'],
 		initialize: function(o) {
 			TraitView.prototype.initialize.apply(this, arguments);
 			var ppfx = this.ppfx;
-			this.fieldClass += ' ' + ppfx + 'select';
 			this.tmpl = '<div class="' + this.fieldClass +'"><div class="' + this.inputhClass +'"></div>'+
 			'<div class="' + ppfx + 'sel-arrow"><div class="' + ppfx + 'd-s-arrow"></div></div> </div>';
 		},
@@ -18,7 +17,8 @@ define(['backbone','./TraitView'],
 		 */
 		getInputEl: function() {
       if(!this.$input){
-        var opts = this.model.get('options') || [];
+				var md = this.model;
+        var opts = md.get('options') || [];
         this.input = '<select>';
 				if(opts.length){
 					_.each(opts, function(el){
@@ -38,6 +38,9 @@ define(['backbone','./TraitView'],
 				}
 				this.input 	+= '</select>';
 				this.$input = $(this.input);
+				var val = md.get('value');
+				if(val)
+					this.$input.val(val);
       }
 			return this.$input.get(0);
 		},

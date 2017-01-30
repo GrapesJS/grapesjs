@@ -38,13 +38,16 @@ define(['backbone','./CommandButtonView', './CommandButtonSelectView'],
       		viewObj = CommandButtonSelectView;
       		break;
       }
-
+			var args = model.get('args');
+			var attrs = {
+				'title': model.get('title'),
+				'data-edit': model.get('command'),
+			};
+			if(args)
+				attrs['data-args'] = args;
       var view = new viewObj({
         model: model,
-        attributes: {
-					'title': model.get('title'),
-					'data-edit': model.get('command'),
-				},
+        attributes: attrs,
       }, this.config);
 
       var rendered = view.render().el;

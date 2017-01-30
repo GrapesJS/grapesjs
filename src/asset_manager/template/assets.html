@@ -1,8 +1,10 @@
 <div class="<%= pfx %>assets-cont">
   <div class="<%= pfx %>assets-header">
-    <form id="login-form" class="<%= pfx %>add-asset">
-      <input class="<%= ppfx %>input" placeholder="http://path/to/the/image.jpg" />
-      <button class="<%= ppfx %>btn-prim">Add image</button>
+    <form class="<%= pfx %>add-asset">
+      <div class="<%= ppfx %>field <%= pfx %>add-field">
+        <input placeholder="http://path/to/the/image.jpg"/>
+      </div>
+      <button class="<%= ppfx %>btn-prim"><%= btnText %></button>
       <div style="clear:both"></div>
     </form>
     <div class="<%= pfx %>dips" style="display:none">

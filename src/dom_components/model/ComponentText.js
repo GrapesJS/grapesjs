@@ -4,8 +4,7 @@ define(['./Component'],
 		return Component.extend({
 
 			defaults: _.extend({}, Component.prototype.defaults, {
-					content 		: '',
-					droppable		: false,
+				droppable: false,
 			}),
 
 		});

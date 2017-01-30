@@ -16,17 +16,19 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyRadio.html'],
 		/** @inheritdoc */
 		renderInput: function() {
 			var pfx	= this.pfx;
+			var ppfx	= this.ppfx;
+			var itemCls = ppfx + 'radio-item-label';
 			if(!this.$input){
 				if(this.list && this.list.length){
 					this.input = '';
 					_.each(this.list,function(el){
-						var cl = el.className ? el.className + ' ' + pfx + 'icon' : '',
+						var cl = el.className ? el.className + ' ' + pfx + 'icon ' + itemCls : '',
 							id = this.property + '-' + el.value,
 							labelTxt = el.name ? el.name : el.value;
 							titleAttr = el.title ? 'title="' + el.title + '"': '';
-						this.input 		+= '<div class="' + pfx + 'el">'+
+						this.input += '<div class="' + ppfx + 'radio-item">'+
 							'<input class="'+pfx+'radio" type="radio" id="'+ id +'" name="'+this.property+'" value="'+el.value+'" />'+
-							'<label class="'+cl+'" ' + titleAttr + ' for="'+ id +'">' + (cl ? '' : labelTxt) + '</label></div>';
+							'<label class="'+(cl ? cl : itemCls)+'" ' + titleAttr + ' for="'+ id +'">' + (cl ? '' : labelTxt) + '</label></div>';
 					},this);
 					this.$inputEl = $(this.input);
 					this.$el.find('#'+ pfx +'input-holder').html(this.$inputEl);

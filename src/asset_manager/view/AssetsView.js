@@ -119,8 +119,9 @@ define(['backbone', './AssetView', './AssetImageView', './FileUploader', 'text!.
 			},this);
 
 			this.$el.html(this.template({
-				pfx:	this.pfx,
+				pfx: this.pfx,
 				ppfx: this.ppfx,
+				btnText: this.config.addBtnText,
 			}));
 
 			this.$el.find('.'+this.pfx + 'assets').append(fragment);

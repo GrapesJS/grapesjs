@@ -11,6 +11,7 @@ define(['backbone'],
          */
         build: function(props){
           var objs = [];
+          var dftFixedValues = ['initial', 'inherit'];
 
           if(typeof props === 'string')
             props = [props];
@@ -24,6 +25,16 @@ define(['backbone'],
             switch(prop){
               case 'border-radius-c':
                 obj.property = 'border-radius';
+                break;
+            }
+
+            // Fixed values
+            switch(prop){
+              case 'margin-top': case 'margin-right': case 'margin-bottom': case 'margin-left':
+              case 'padding-top': case 'padding-right': case 'padding-bottom': case 'padding-left':
+              case 'width': case 'max-width': case 'min-width':
+              case 'height': case 'max-height': case 'min-height':
+                obj.fixedValues = ['initial', 'inherit', 'auto'];
                 break;
             }
 

@@ -15,6 +15,7 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
 				changesCount:	0,
 				storables: [],
 				toLoad: [],
+				opened: {},
 				device: '',
 			},
 

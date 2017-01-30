@@ -6,14 +6,14 @@ define(['backbone','./ItemView'],
 	return Backbone.View.extend({
 
 		initialize: function(o) {
-			this.opt 			= o;
-			this.config		= o.config;
-			this.preview	= o.preview;
-			this.sorter		= o.sorter || {};
-			this.pfx			= o.config.stylePrefix;
-			this.parent		= o.parent;
-			this.listenTo( this.collection, 'add', this.addTo );
-			this.listenTo( this.collection, 'reset', this.render );
+			this.opt = o;
+			this.config = o.config;
+			this.preview = o.preview;
+			this.sorter = o.sorter || {};
+			this.pfx = o.config.stylePrefix;
+			this.parent = o.parent;
+			this.listenTo(this.collection, 'add', this.addTo);
+			this.listenTo(this.collection, 'reset resetNavigator', this.render);
 			this.className 	= this.pfx + 'items';
 
 			if(!this.parent)
@@ -43,10 +43,12 @@ define(['backbone','./ItemView'],
 			var fragment	= fragmentEl || null;
 			var viewObject	= ItemView;
 
-			var view 		= new viewObject({
-				model 	: model,
-				config	: this.config,
-				sorter	: this.sorter,
+			var view = new viewObject({
+				model: model,
+				config: this.config,
+				sorter: this.sorter,
+				isCountable: this.isCountable,
+				opened: this.opt.opened,
 			});
 			var rendered	= view.render().el;
 
@@ -73,13 +75,29 @@ define(['backbone','./ItemView'],
 			return rendered;
 		},
 
+		/**
+		 * Check if the model could be count by the navigator
+		 * @param  {Object}  model
+		 * @return {Boolean}
+		 * @private
+		 */
+		isCountable: function(model, hide) {
+			var type = model.get('type');
+			var tag = model.get('tagName');
+			if((type == 'textnode' || tag == 'br') && hide)
+				return false;
+			return true;
+		},
+
 		render: function() {
 			var fragment = document.createDocumentFragment();
 			this.$el.empty();
 
-			this.collection.each(function(model){
+			this.collection.each(function(model) {
+				if(!this.isCountable(model, this.config.hideTextnode))
+					return;
 				this.addToCollection(model, fragment);
-			},this);
+			}, this);
 
 			this.$el.append(fragment);
 			this.$el.attr('class', _.result(this, 'className'));

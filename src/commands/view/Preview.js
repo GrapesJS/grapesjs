@@ -8,9 +8,16 @@ define(function() {
 				return this.panels;
 			},
 
+			tglPointers: function(editor, v) {
+				var elP = editor.Canvas.getBody().querySelectorAll('.' + this.ppfx + 'no-pointer');
+				_.each(elP, function(item){
+					item.style.pointerEvents = v ? '' : 'all';
+				});
+			},
+
 			run: function(editor, sender) {
-				if(sender)
-					sender.set('active',false);
+				if(sender && sender.set)
+					sender.set('active', false);
 				editor.stopCommand('sw-visibility');
 				var that = this;
 				var panels = this.getPanels(editor);
@@ -26,6 +33,12 @@ define(function() {
 					};
 				}
 				this.helper.style.display = 'inline-block';
+				this.tglPointers(editor);
+
+				/*
+				editor.Canvas.getBody().querySelectorAll('.' + pfx + 'no-pointer').forEach(function(){
+					this.style.pointerEvents = 'all';
+				});*/
 
 				panels.style.display = 'none';
 				var canvasS = canvas.style;
@@ -49,6 +62,7 @@ define(function() {
 					this.helper.style.display = 'none';
 				}
 				editor.trigger('change:canvasOffset');
+				this.tglPointers(editor, 1);
 			}
 		};
 	});

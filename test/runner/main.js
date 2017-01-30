@@ -20,8 +20,9 @@ require(['../src/config/require-config.js', 'config/config.js'], function() {
 	         'specs/parser/main.js',
 	         'specs/grapesjs/main.js',
 	         'specs/utils/main.js'
-	     ], function(chai)
+	     ], function(chai, sinon)
 	     {
+				window.sinon = sinon;
 				var should 	= chai.should(),
 						expect 	= chai.expect;
 

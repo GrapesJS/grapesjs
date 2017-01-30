@@ -12,19 +12,21 @@ define(['backbone', './ComponentsView'],
 			},
 
 			initialize: function(opt){
+				this.opts = opt || {};
 				this.config = opt.config || {};
 				this.pfx = this.config.stylePrefix || '';
 				this.ppfx = this.config.pStylePrefix || '';
 				this.components = this.model.get('components');
 				this.attr = this.model.get("attributes");
 				this.classe = this.attr.class || [];
-				this.listenTo(this.model, 'destroy remove', 	this.remove);
-				this.listenTo(this.model, 'change:style', 		this.updateStyle);
+				this.listenTo(this.model, 'destroy remove', this.remove);
+				this.listenTo(this.model, 'change:style', this.updateStyle);
 				this.listenTo(this.model, 'change:attributes', this.updateAttributes);
-				this.listenTo(this.model, 'change:status', 		this.updateStatus);
-				this.listenTo(this.model, 'change:state', 		this.updateState);
+				this.listenTo(this.model, 'change:status', this.updateStatus);
+				this.listenTo(this.model, 'change:state', this.updateState);
 				this.listenTo(this.model.get('classes'), 'add remove change', this.updateClasses);
-				this.$el.data("model", this.model);
+				this.$el.data('model', this.model);
+				this.model.set('view', this);
 				this.$el.data("collection", this.components);
 
 				if(this.model.get('classes').length)
@@ -178,8 +180,10 @@ define(['backbone', './ComponentsView'],
 				this.updateClasses();
 				this.$el.html(this.model.get('content'));
 				var view = new ComponentsView({
-					collection: this.components,
+					collection: this.model.get('components'),
 					config: this.config,
+					defaultTypes: this.opts.defaultTypes,
+					componentTypes: this.opts.componentTypes,
 				});
 
 				// With childNodes lets avoid wrapping 'div'

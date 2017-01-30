@@ -3,8 +3,8 @@ define(['./AssetView','text!./../template/assetImage.html'],
 	return AssetView.extend({
 
 		events:{
-			'click' 			: 'selected',
-			'dblclick' 		: 'chosen',
+			'click': 'handleClick',
+			'dblclick': 'handleDblClick',
 		},
 
 		template: _.template(assetTemplate),
@@ -17,25 +17,39 @@ define(['./AssetView','text!./../template/assetImage.html'],
 		},
 
 		/**
-		 * Trigger when asset is been selected
+		 * Trigger when the asset is clicked
 		 * @private
 		 * */
-		selected: function(){
-			this.model.collection.trigger('deselectAll');
+		handleClick: function() {
+			var onClick = this.config.onClick;
+			var model = this.model;
+			model.collection.trigger('deselectAll');
 			this.$el.addClass(this.pfx + 'highlight');
 
-			this.updateTarget(this.model.get('src'));
+			if (typeof onClick === 'function') {
+				onClick(model);
+			} else {
+				this.updateTarget(model.get('src'));
+			}
 		},
 
 		/**
-		 * Trigger when asset is been chosen (double clicked)
+		 * Trigger when the asset is double clicked
 		 * @private
 		 * */
-		chosen: function(){
-			this.updateTarget(this.model.get('src'));
-			var f				=  this.model.collection.onSelect;
-			if(f && typeof f == 'function'){
-				f(this.model);
+		handleDblClick: function() {
+			var onDblClick = this.config.onDblClick;
+			var model = this.model;
+
+			if (typeof onDblClick === 'function') {
+				onDblClick(model);
+			} else {
+				this.updateTarget(model.get('src'));
+			}
+
+			var onSelect = model.collection.onSelect;
+			if(typeof onSelect == 'function'){
+				onSelect(this.model);
 			}
 		},
 
@@ -45,9 +59,9 @@ define(['./AssetView','text!./../template/assetImage.html'],
 		 * @private
 		 * */
 		updateTarget: function(v){
-			var target			= this.model.collection.target;
-			if(target && target.set){
-				var attr		= _.clone( target.get('attributes') );
+			var target = this.model.collection.target;
+			if(target && target.set) {
+				var attr = _.clone( target.get('attributes') );
 				target.set('attributes', attr );
 				target.set('src', v );
 			}
@@ -63,18 +77,18 @@ define(['./AssetView','text!./../template/assetImage.html'],
 		},
 
 		render : function(){
-			var name 	= this.model.get('name'),
-				dim  	= this.model.get('width') && this.model.get('height') ?
+			var name = this.model.get('name'),
+				dim = this.model.get('width') && this.model.get('height') ?
 							this.model.get('width')+' x '+this.model.get('height') : '';
-			name		= name ? name : this.model.get('src').split("/").pop();
-			name 		= name && name.length > 30 ? name.substring(0, 30)+'...' : name;
-			dim		 	= dim ? dim + (this.model.get('unitDim') ? this.model.get('unitDim') : ' px' ) : '';
+			name = name ? name : this.model.get('src').split("/").pop();
+			name = name && name.length > 30 ? name.substring(0, 30)+'...' : name;
+			dim = dim ? dim + (this.model.get('unitDim') ? this.model.get('unitDim') : ' px' ) : '';
 			this.$el.html( this.template({
-				name: 	name,
-				src: 	this.model.get('src'),
-				dim:	dim,
-				pfx:	this.pfx,
-				ppfx:	this.ppfx
+				name: name,
+				src: this.model.get('src'),
+				dim: dim,
+				pfx: this.pfx,
+				ppfx: this.ppfx
 			}));
 			this.$el.attr('class', this.className);
 			return this;

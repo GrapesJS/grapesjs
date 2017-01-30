@@ -7,9 +7,9 @@ require.config({
 	baseUrl : "../src",
 
 	paths : {
-		chai 	: '../vendor/chai/chai',
-		sinon : '../vendor/sinon/sinon',
-		mocha	: '../vendor/mocha/mocha',
+		chai 	: '../node_modules/chai/chai',
+		sinon : '../node_modules/sinon/lib/sinon',
+		mocha	: '../node_modules/mocha/mocha',
 	},
 
 	shim: {

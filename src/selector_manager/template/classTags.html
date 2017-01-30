@@ -2,20 +2,20 @@
   <div id="<%= pfx %>label"><%= label %></div>
   <div id="<%= pfx %>status-c">
     <span id="<%= pfx %>input-c">
-      <div class="<%= pfx %>field <%= ppfx %>select">
-        <span id="<%= pfx %>input-holder">
+      <div class="<%= ppfx %>field <%= ppfx %>select">
+        <span id="<%= ppfx %>input-holder">
           <select id="<%= pfx %>states">
             <option value=""><%= statesLabel %></option>
           </select>
         </span>
-        <div class="<%= pfx %>sel-arrow">
-          <div class="<%= pfx %>d-s-arrow"></div>
+        <div class="<%= ppfx %>sel-arrow">
+          <div class="<%= ppfx %>d-s-arrow"></div>
         </div>
       </div>
     </span>
   </div>
 </div>
-<div id="<%= pfx %>tags-field">
+<div id="<%= pfx %>tags-field" class="<%= ppfx %>field">
   <div id="<%= pfx %>tags-c"></div>
   <input id="<%= pfx %>new" />
   <span id="<%= pfx %>add-tag" class="fa fa-plus"></span>
