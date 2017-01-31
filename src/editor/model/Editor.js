@@ -312,7 +312,7 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
 				if(!cmp || !cm)
 					return;
 
-				var wrp	= cmp.getComponent();
+				var wrp	= cmp.getComponents();
 				return cm.getCode(wrp, 'json');
 			},
 
