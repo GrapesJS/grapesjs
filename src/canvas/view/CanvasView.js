@@ -96,27 +96,47 @@ function(Backbone, FrameView) {
 			this.cvsOff = null;
 		},
 
-    /**
-     * Returns element's data info
-     * @param {HTMLElement} el
-     * @return {Object}
-     * @private
-     */
-    getElementPos: function(el){
-      if(!this.frmOff)
-        this.frmOff = this.offset(this.frame.el);
-      if(!this.cvsOff)
-        this.cvsOff = this.offset(this.el);
-      var eo = this.offset(el);
-      var top = eo.top + this.frmOff.top - this.cvsOff.top;
-      var left = eo.left + this.frmOff.left - this.cvsOff.left;
-      return {
-        top: top,
-        left: left,
-        height: el.offsetHeight,
-        width: el.offsetWidth
-      };
-    },
+		/**
+		 * Return frame offset
+		 * @return {Object}
+		 * @private
+		 */
+		getFrameOffset: function () {
+			if(!this.frmOff)
+				this.frmOff = this.offset(this.frame.el);
+			return this.frmOff;
+		},
+
+		/**
+		 * Return canvas offset
+		 * @return {Object}
+		 * @private
+		 */
+		getCanvasOffset: function () {
+			if(!this.cvsOff)
+				this.cvsOff = this.offset(this.el);
+			return this.cvsOff;
+		},
+
+		/**
+		 * Returns element's data info
+		 * @param {HTMLElement} el
+		 * @return {Object}
+		 * @private
+		 */
+		getElementPos: function(el) {
+			var frmOff = this.getFrameOffset();
+			var cvsOff = this.getCanvasOffset();
+			var eo = this.offset(el);
+			var top = eo.top + frmOff.top - cvsOff.top;
+			var left = eo.left + frmOff.left - cvsOff.left;
+			return {
+				top: top,
+				left: left,
+				height: el.offsetHeight,
+				width: el.offsetWidth
+			};
+		},
 
 		/**
 		 * Returns position data of the canvas element
@@ -124,8 +144,8 @@ function(Backbone, FrameView) {
 		 */
 		getPosition: function() {
 			var bEl = this.frame.el.contentDocument.body;
-			var fo = this.frmOff;
-			var co = this.cvsOff;
+			var fo = this.getFrameOffset();
+			var co = this.getCanvasOffset();
 			return {
 				top: fo.top + bEl.scrollTop - co.top,
 				left: fo.left + bEl.scrollLeft - co.left
