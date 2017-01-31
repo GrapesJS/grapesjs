@@ -1,0 +1,38 @@
+/* Scrollbar */
+ .ps-container:hover > .ps-scrollbar-y-rail:hover,
+ .ps-container:hover > .ps-scrollbar-x-rail:hover,
+ .ps-container.ps-active-x > .ps-scrollbar-x-rail,
+ .ps-container.ps-active-y > .ps-scrollbar-y-rail,
+ .ps-container.ps-in-scrolling.ps-y > .ps-scrollbar-y-rail,
+ .ps-container.ps-in-scrolling.ps-x > .ps-scrollbar-x-rail,
+ .ps-container:hover.ps-in-scrolling.ps-x > .ps-scrollbar-x-rail,
+ .ps-container:hover.ps-in-scrolling.ps-y > .ps-scrollbar-y-rail {
+   background-color: rgba(0,0,0,0.3);
+   opacity: 1;
+ }
+
+ .ps-container > .ps-scrollbar-y-rail > .ps-scrollbar-y,
+ .ps-container > .ps-scrollbar-x-rail > .ps-scrollbar-x,
+ .ps-container:hover > .ps-scrollbar-y-rail:hover > .ps-scrollbar-y,
+ .ps-container:hover > .ps-scrollbar-x-rail:hover > .ps-scrollbar-x,
+ .ps-container.ps-in-scrolling.ps-y > .ps-scrollbar-y-rail > .ps-scrollbar-y,
+ .ps-container.ps-in-scrolling.ps-x > .ps-scrollbar-x-rail > .ps-scrollbar-x,
+ .ps-container:hover.ps-in-scrolling.ps-x > .ps-scrollbar-x-rail > .ps-scrollbar-x,
+ .ps-container:hover.ps-in-scrolling.ps-y > .ps-scrollbar-y-rail > .ps-scrollbar-y{
+   background-color: rgba(255,255,255, 0.3);
+   border-radius: 1px;
+   width: 6px;
+ }
+ /*
+ .ps-container:hover > .ps-scrollbar-y-rail:hover > .ps-scrollbar-y,
+ .ps-container:hover > .ps-scrollbar-x-rail:hover > .ps-scrollbar-x {
+   background-color: rgba(255,255,255, 0.4);
+ }
+ */
+ .ps-container > .ps-scrollbar-y-rail {
+   width: 10px;
+ }
+
+ .ps-container > .ps-scrollbar-x-rail {
+   height: 10px;
+ }

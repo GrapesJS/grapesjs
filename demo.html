@@ -5,12 +5,15 @@
     <title>GrapesJS Demo</title>
     <link rel="stylesheet" href="stylesheets/toastr.min.css">
     <link rel="stylesheet" href="stylesheets/grapes.min.css">
+    <link rel="stylesheet" href="stylesheets/grapesjs-preset-webpage.css">
+    <link rel="stylesheet" href="stylesheets/tooltip.css">
     <link rel="stylesheet" href="stylesheets/perfect-scrollbar.css">
     <script src="http://code.jquery.com/jquery-2.2.0.min.js"></script>
     <script src="js/perfect-scrollbar.min.js"></script>
     <script src="js/toastr.min.js"></script>
     <style type="text/css">
         body, html{ height: 100%; margin: 0; }
+
          #wte-pn-options2.wte-pn-panel{box-shadow: none;}
         .icon-add-comp::before, .icon-comp100::before,.icon-comp50::before,.icon-comp30::before,.icon-rm::before{ content: '';}
         .icon-add-comp {
@@ -102,96 +105,22 @@
            opacity: 0.95;
          }
 
-         /* Grapesjs Theme */
-         .gjs-btnt.gjs-pn-active,
-         .gjs-color-active,
-         .gjs-pn-btn.gjs-pn-active,
-         .gjs-pn-btn:active,
-         .gjs-block:hover {
-           color: #c75fbe; }
-
-         #gjs-rte-toolbar .gjs-rte-btn,
-         .gjs-btn-prim,
-         .gjs-btnt,
-         .gjs-clm-tags .gjs-sm-composite.gjs-clm-field,
-         .gjs-clm-tags .gjs-sm-field.gjs-sm-composite,
-         .gjs-clm-tags .gjs-sm-stack #gjs-sm-add,
-         .gjs-color-main,
-         .gjs-mdl-dialog,
-         .gjs-off-prv,
-         .gjs-pn-btn,
-         .gjs-pn-panel,
-         .gjs-sm-sector .gjs-sm-composite.gjs-clm-field,
-         .gjs-sm-sector .gjs-sm-field.gjs-sm-composite,
-         .gjs-sm-sector .gjs-sm-stack #gjs-sm-add {
-           color: #b9a5a6;
+         #gjs-pn-commands {
+            display: none;
          }
 
-         #gjs-rte-toolbar,
-         .gjs-bg-main,
-         .gjs-clm-select option,
-         .gjs-clm-tags .gjs-sm-colorp-c,
-         .gjs-editor,
-         .gjs-mdl-dialog,
-         .gjs-nv-item .gjs-nv-title-c,
-         .gjs-off-prv,
-         .gjs-pn-panel,
-         .gjs-select option,
-         .gjs-sm-sector .gjs-sm-colorp-c,
-         .gjs-sm-select option,
-         .gjs-sm-unit option,
-         .sp-container {
-           background-color: #463a3c; }
+         #gjs-pn-devices-c {
+           width: 85%;
+           z-index: 1;
+         }
 
-         .gjs-block {
-           border: 1px solid rgba(0, 0, 0, 0.2);
-           border-radius: 3px;
-           margin: 10px 2.5% 5px;
-           box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.15);
-           transition: all 0.2s ease 0s; }
+         #gjs-sm-float {
+            display: none;
+         }
 
-         .gjs-block:hover {
-           box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.15); }
-
-
-           /* Scrollbar */
-            .ps-container:hover > .ps-scrollbar-y-rail:hover,
-            .ps-container:hover > .ps-scrollbar-x-rail:hover,
-            .ps-container.ps-active-x > .ps-scrollbar-x-rail,
-            .ps-container.ps-active-y > .ps-scrollbar-y-rail,
-            .ps-container.ps-in-scrolling.ps-y > .ps-scrollbar-y-rail,
-            .ps-container.ps-in-scrolling.ps-x > .ps-scrollbar-x-rail,
-            .ps-container:hover.ps-in-scrolling.ps-x > .ps-scrollbar-x-rail,
-            .ps-container:hover.ps-in-scrolling.ps-y > .ps-scrollbar-y-rail {
-              background-color: rgba(0,0,0,0.3);
-              opacity: 1;
-            }
-
-            .ps-container > .ps-scrollbar-y-rail > .ps-scrollbar-y,
-            .ps-container > .ps-scrollbar-x-rail > .ps-scrollbar-x,
-            .ps-container:hover > .ps-scrollbar-y-rail:hover > .ps-scrollbar-y,
-            .ps-container:hover > .ps-scrollbar-x-rail:hover > .ps-scrollbar-x,
-            .ps-container.ps-in-scrolling.ps-y > .ps-scrollbar-y-rail > .ps-scrollbar-y,
-            .ps-container.ps-in-scrolling.ps-x > .ps-scrollbar-x-rail > .ps-scrollbar-x,
-            .ps-container:hover.ps-in-scrolling.ps-x > .ps-scrollbar-x-rail > .ps-scrollbar-x,
-            .ps-container:hover.ps-in-scrolling.ps-y > .ps-scrollbar-y-rail > .ps-scrollbar-y{
-              background-color: rgba(255,255,255, 0.3);
-              border-radius: 1px;
-              width: 6px;
-            }
-            /*
-            .ps-container:hover > .ps-scrollbar-y-rail:hover > .ps-scrollbar-y,
-            .ps-container:hover > .ps-scrollbar-x-rail:hover > .ps-scrollbar-x {
-              background-color: rgba(255,255,255, 0.4);
-            }
-            */
-            .ps-container > .ps-scrollbar-y-rail {
-              width: 10px;
-            }
-
-            .ps-container > .ps-scrollbar-x-rail {
-              height: : 10px;
-            }
+         [data-tooltip]::after {
+           background: rgba(51, 51, 51, 0.9);
+         }
 
     </style>
   </head>
@@ -970,6 +899,7 @@
     </div>
     <script src="js/grapes.min.js"></script>
     <script src="js/grapesjs-plugin-export.min.js"></script>
+    <script src="js/grapesjs-preset-webpage.js"></script>
     <script type="text/javascript">
 
       var lp = './img/';
@@ -980,51 +910,19 @@
         lp+'work-desk.jpg', lp+'phone-app.png', lp+'bg-gr-v.png'
       ];
 
-      var gr  = grapesjs.init({
-
+      var editor  = grapesjs.init({
 
       height: '100%',
       container : '#gjs',
       fromElement: true,
-      plugins: ['gjs-plugin-export'],
-
-      // Define commands
-      commands: {
-        defaults: [{
-          id: 'open-github',
-          run: function(em, sender){
-            sender.set('active',false);
-            window.open('https://github.com/artf/grapesjs','_blank');
-          },
-        },{
-          id: 'undo',
-          run: function(em, sender){
-            sender.set('active',false);
-            em.UndoManager.undo(true);
-          },
-        },{
-          id: 'redo',
-          run: function(em, sender){
-            sender.set('active',false);
-            em.UndoManager.redo(true);
-          },
-        },{
-          id: 'clean-all',
-          run: function(em, sender){
-            sender.set('active',false);
-            if(confirm('Are you sure to clean the canvas?')){
-              var comps = em.DomComponents.clear();
-            }
-          },
-        }],
-      },
+      plugins: ['gjs-plugin-export', 'gjs-preset-webpage'],
 
       // Insert some default images
       assetManager: {
         assets: images
       },
 
-      // Configure Style Manager // 1481 - 1235
+      // Configure style
       styleManager : {
         sectors: [{
           name: 'General',
@@ -1066,7 +964,7 @@
           },{
             name: 'Typography',
             open: false,
-            buildProps: ['font-family', 'font-size', 'font-weight', 'letter-spacing', 'color', 'line-height', 'text-align', 'text-shadow'],
+            buildProps: ['font-family', 'font-size', 'font-weight', 'letter-spacing', 'color', 'line-height', 'text-align', 'text-decoration', 'text-shadow'],
             properties:[
               { name: 'Font', property: 'font-family'},
               { name: 'Weight', property: 'font-weight'},
@@ -1080,6 +978,15 @@
                   { value : 'center',  name : 'Center',  className: 'fa fa-align-center' },
                   { value : 'right',   name : 'Right',   className: 'fa fa-align-right'},
                   { value : 'justify', name : 'Justify',   className: 'fa fa-align-justify'}
+                ],
+              },{
+                property: 'text-decoration',
+                type: 'radio',
+                defaults: 'none',
+                list: [
+                  { value: 'none', name: 'None', className: 'fa fa-times'},
+                  { value: 'underline', name: 'underline', className: 'fa fa-underline' },
+                  { value: 'line-through', name: 'Line-through', className: 'fa fa-strikethrough'}
                 ],
               },{
                 property: 'text-shadow',
@@ -1302,30 +1209,24 @@
 
     );
 
-    //Add extra buttons
-    gr.Panels.addButton('options', [{
-      id: 'undo',
-      className: 'fa fa-undo icon-undo',
-      command: 'undo',
-      attributes: { title: 'Undo (CTRL/CMD + Z)'}
-    },{
-      id: 'redo',
-      className: 'fa fa-repeat icon-redo',
-      command: 'redo',
-      attributes: { title: 'Redo (CTRL/CMD + SHIFT + Z)' }
-    },{
-      id: 'clean-all',
-      className: 'fa fa-trash icon-blank',
-      command: 'clean-all',
-      attributes: { title: 'Empty canvas' }
-    },{
-      id: 'view-github',
-      className: 'fa fa-github',
-      command: 'open-github',
-      attributes: { title: 'View on Github' }
-    }]);
+    var cmdm = editor.Commands;
+    cmdm.add('open-github', {
+      run: function(em, sender){
+        sender.set('active',false);
+        window.open('https://github.com/artf/grapesjs', '_blank');
+      },
+    });
+    cmdm.add('tlb-edit', {
+        run: function(ed) {
+          alert('At the moment no image editor, maybe soon 😊');
+          //var sel = ed.getSelected();
+          //editorImage = sel;
+          //featherEditor.launch({image: sel.get('view').el});
+        },
+    });
 
-    window.editor = gr;
+    window.editor = editor;
+
 
     // Simple warn notifier
     var origWarn = console.warn;
@@ -1340,9 +1241,20 @@
       origWarn(msg);
     };
 
+
+    // Beautify tooltips
+    $('*[title]').each(function () {
+      var el = $(this);
+      var title = el.attr('title').trim();
+      if(!title)
+        return;
+      el.attr('data-tooltip', el.attr('title'));
+      el.attr('title', '');
+    });
+
     // Beautify  scrollbars
     /*
-    gr.on('load', function() {
+    editor.on('load', function() {
       var el = document.querySelector('#gjs-pn-views-container');
       console.log(el);
       Ps.initialize(el);
