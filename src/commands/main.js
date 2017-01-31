@@ -136,6 +136,13 @@ define(function(require) {
 				defaultCommands['tlb-move'] = {
 					run: function(ed){
 						var sel = ed.getSelected();
+
+						if(!sel || !sel.get('draggable')) {
+							console.warn('The element is not draggable');
+							return;
+						}
+
+
 						var toolbarEl = ed.Canvas.getToolbarEl();
 						var toolbarDisplay = toolbarEl.style.display;
 						var cmdMove = ed.Commands.get('move-comp');

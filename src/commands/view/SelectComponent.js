@@ -19,7 +19,9 @@ define(function(require) {
 				var config	= this.config.em.get('Config');
 				this.startSelectComponent();
 				this.toggleClipboard(config.copyPaste);
-				this.config.em.on('change:canvasOffset', this.onFrameScroll);
+				var em = this.config.em;
+				em.on('change:canvasOffset', this.onFrameScroll);
+				em.on('change:selectedComponent', this.updateToolbar, this);
 			},
 
 			/**
@@ -244,22 +246,25 @@ define(function(require) {
 
 					this.editorModel.set('selectedComponent', nMd);
 					nMd.set('status','selected');
-					this.updateToolbar(nMd);
+					//this.updateToolbar(nMd);
 				}
 			},
 
 			/**
 			 * Update toolbar if the component has one
-			 * @param {Object} model
+			 * @param {Object} mod
 			 */
-			updateToolbar: function(model) {
-				// if no model get the selectedOne
+			updateToolbar: function(mod) {
+				var em = this.config.em;
+				var model = mod == em ? em.get('selectedComponent') : mod;
+				if(!model){
+					return;
+				}
 				var toolbar = model.get('toolbar');
 				var ppfx = this.ppfx;
-				var showToolbar = this.config.em.get('Config').showToolbar;
+				var showToolbar = em.get('Config').showToolbar;
 
 				if (showToolbar && toolbar && toolbar.length) {
-
 					if(!this.toolbar) {
 						var toolbarEl = this.canvas.getToolbarEl();
 						toolbarEl.innerHTML = '';
@@ -272,8 +277,8 @@ define(function(require) {
 					}
 
 					this.toolbar.reset(toolbar);
-
 					var view = model.view;
+
 					if(view) {
 						this.updateToolbarPos(view.el);
 					}
@@ -405,7 +410,8 @@ define(function(require) {
 				this.toggleClipboard();
 				this.hideBadge();
 				this.canvas.getToolbarEl().style.display = 'none';
-				this.config.em.off('change:canvasOffset', this.onFrameScroll);
+				this.em.off('change:canvasOffset', this.onFrameScroll);
+				this.em.off('change:selectedComponent', this.updateToolbar, this);
 			}
 		};
 });
