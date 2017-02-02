@@ -8,7 +8,7 @@ define(['backbone', 'text!./../template/item.html','require'],
 
 		template: _.template(ItemTemplate),
 
-		initialize: function(o){
+		initialize: function(o) {
 			this.opt = o;
 			this.config = o.config;
 			this.em = o.config.em;
@@ -26,6 +26,7 @@ define(['backbone', 'text!./../template/item.html','require'],
 			this.inputNameCls = this.ppfx + 'nav-comp-name';
 			this.caretCls = this.ppfx + 'nav-item-caret';
 			this.titleCls = this.pfx + 'title';
+			this.customNameProp = 'custom-name';
 			this.events = {};
 			this.events['click > #'+this.pfx+'btn-eye'] = 'toggleVisibility';
 			this.events['click .' + this.caretCls] = 'toggleOpening';
@@ -59,7 +60,7 @@ define(['backbone', 'text!./../template/item.html','require'],
 			e.stopPropagation();
 			var inputName = this.getInputName();
 			inputName.readOnly = true;
-			this.model.set('customName', inputName.value);
+			this.model.set(this.customNameProp, inputName.value);
 		},
 
 		/**
@@ -254,7 +255,7 @@ define(['backbone', 'text!./../template/item.html','require'],
 			var count = this.countChildren(this.model);
 
 			this.$el.html( this.template({
-				title: this.model.get('customName') || this.model.getName(),
+				title: this.model.get(this.customNameProp) || this.model.getName(),
 				addClass: (count ? '' : pfx+'no-chld'),
 				editBtnCls: this.editBtnCls,
 				inputNameCls: this.inputNameCls,

@@ -6,7 +6,7 @@ define(function(require) {
 
       initialize: function(opt) {
         this.opt = opt || {};
-        _.bindAll(this,'startSort','onMove','endMove','rollback', 'udpateOffset');
+        _.bindAll(this,'startSort','onMove','endMove','rollback', 'udpateOffset', 'moveDragHelper');
         var o = opt || {};
         this.elT = 0;
         this.elL = 0;
@@ -35,8 +35,8 @@ define(function(require) {
         this.document = o.document || document;
         this.$document = $(this.document);
         this.dropContent = null;
-        this.helper = '';
         this.em = o.em || '';
+        this.dragHelper = null;
 
         if(this.em && this.em.on){
           this.em.on('change:canvasOffset', this.udpateOffset);
@@ -69,6 +69,63 @@ define(function(require) {
       setDropContent: function(content){
         this.dropContent = content;
       },
+
+      /**
+       * Set drag helper
+       * @param {HTMLElement} el
+       * @param {Event} event
+       */
+      setDragHelper: function(el, event) {
+        var ev = event || '';
+        var clonedEl = el.cloneNode(1);
+
+        // Attach style
+        var style = '';
+        var o = getComputedStyle(el);
+        for(var i = 0; i < o.length; i++) {
+          style += o[i] + ':' + o.getPropertyValue(o[i])+';';
+        }
+        clonedEl.style = style;
+        clonedEl.className += ' ' + this.pfx + 'bdrag';
+        document.body.appendChild(clonedEl);
+        this.dragHelper = clonedEl;
+
+        if(ev) {
+          this.moveDragHelper(ev);
+        }
+
+        // Listen mouse move events
+        if(this.em) {
+          $(this.em.get('Canvas').getBody().ownerDocument)
+            .off('mousemove', this.moveDragHelper).on('mousemove', this.moveDragHelper);
+        }
+        $(document)
+          .off('mousemove', this.moveDragHelper).on('mousemove', this.moveDragHelper);
+      },
+
+      /**
+       * Update the position of the helper
+       * @param  {Event} e
+       */
+      moveDragHelper: function(e){
+        if(!this.dragHelper) {
+          return;
+        }
+        var doc = e.target.ownerDocument;
+        var win = doc.defaultView || doc.parentWindow;
+        var addTop = 0;
+        var addLeft = 0;
+        var frame = win.frameElement;
+        if(frame) {
+          var frameRect = frame.getBoundingClientRect(); // maybe to cache ?!?
+          addTop = frameRect.top || 0;
+          addLeft = frameRect.left || 0;
+        }
+        var hStyle = this.dragHelper.style;
+        hStyle.left = (e.pageX - win.pageXOffset + addLeft) + 'px';
+        hStyle.top = (e.pageY - win.pageYOffset + addTop) + 'px';
+      },
+
 
       /**
        * Returns true if the element matches with selector
@@ -153,18 +210,17 @@ define(function(require) {
           this.$document.on('mouseup', this.endMove);
         }
 
-        if(this.helper){
-          this.helperEl = this.helper;
-          this.helperEl.className += ' ' + this.ppfx + 'bdrag';
-          document.body.appendChild(this.helperEl);
-        }
-
         this.$el.on('mousemove', this.onMove);
         $(document).on('keydown', this.rollback);
         this.$document.on('keydown', this.rollback);
 
         if(typeof this.onStart === 'function')
           this.onStart();
+
+        // Avoid strange effects on dragging
+        if(this.em) {
+          this.em.clearSelection();
+        }
       },
 
       /**
@@ -200,12 +256,6 @@ define(function(require) {
           if(this.offLeft)
             this.$plh.css('left', '+=' + this.offLeft + 'px');
           this.lastPos = pos;
-        }
-
-        if(this.helperEl){
-          var helperS = this.helperEl.style;
-          helperS.left = this.rX + 'px';
-          helperS.top = this.rY + 'px';
         }
 
         if(typeof this.onMoveClb === 'function')
@@ -515,11 +565,15 @@ define(function(require) {
           created = this.move(this.target, this.eV, this.lastPos);
         if(this.plh)
           this.plh.style.display = 'none';
-        this.helperEl = '';
-        if(this.helper)
-          this.helper.parentNode.removeChild(this.helper);
+
         if(typeof this.onEndMove === 'function')
           this.onEndMove(created);
+
+        var dragHelper = this.dragHelper;
+        if(dragHelper) {
+          dragHelper.remove();
+          this.dragHelper = null;
+        }
       },
 
       /**

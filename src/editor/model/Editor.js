@@ -480,5 +480,16 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
 	      this.set('canvasOffset', this.get('Canvas').getOffset());
 			},
 
+			/**
+			 * Clear all selected stuf inside the window, sometimes is useful to call before
+			 * doing some dragging opearation
+			 * @param {Window} win If not passed the current one will be used
+			 * @private
+			 */
+			clearSelection: function (win) {
+				var w = win || window;
+				w.getSelection().removeAllRanges();
+			},
+
 		});
 	});

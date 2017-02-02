@@ -5,7 +5,7 @@ function(Backbone, require) {
 
 		initialize: function(o) {
 			this.opts = o || {};
-			this.config = o.config;
+			this.config = o.config || {};
 			this.listenTo( this.collection, 'add', this.addTo );
 			this.listenTo( this.collection, 'reset', this.render );
 		},
@@ -17,9 +17,13 @@ function(Backbone, require) {
 		 * @return	void
 		 * @private
 		 * */
-		addTo: function(model){
+		addTo: function(model) {
 			var i	= this.collection.indexOf(model);
 			this.addToCollection(model, null, i);
+
+			if(this.config.em) {
+				this.config.em.trigger('add:component', model);
+			}
 		},
 
 		/**

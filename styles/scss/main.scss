@@ -135,6 +135,10 @@ $fontV: 20;//random(1000)
 	background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==");
 }
 
+.#{$app-prefix}no-user-select{
+	@include user-select('none');
+}
+
 .#{$app-prefix}bg-main{
   background-color: $mainColor;
 }
@@ -148,14 +152,16 @@ $fontV: 20;//random(1000)
 }
 
 .#{$app-prefix}bdrag {
-  position: absolute;
-  z-index: 10;
+  pointer-events: none !important;
+  position: absolute !important;
+  z-index: 10 !important;
   width: auto;
 }
 
-.#{$app-prefix}grabbing {
-  cursor: grabbing;
-  cursor: -webkit-grabbing;
+.#{$app-prefix}grabbing,
+.#{$app-prefix}grabbing * {
+  cursor: grabbing !important;
+  cursor: -webkit-grabbing !important;
 }
 
 .#{$app-prefix}off-prv{
@@ -624,11 +630,18 @@ ol.example li.placeholder:before {position: absolute;}
     cursor:pointer;
     z-index: 1;
 	}
-	.#{$nv-prefix}item ##{$nv-prefix}caret {
-		font-size: 7px;
-		width: 8px;
-    margin-right: 5px;
-	}
+}
+
+.#{$nv-prefix}item ##{$nv-prefix}caret {
+  font-size: 7px;
+  width: 8px;
+  padding: 5px;
+  cursor: pointer;
+  @include opacity(0.7);
+
+  &:hover {
+    @include opacity(1);
+  }
 }
 
 .#{$nv-prefix}item .#{$nv-prefix}title-c {
@@ -642,7 +655,6 @@ ol.example li.placeholder:before {position: absolute;}
   padding: 3px 10px 5px 30px;
   border-bottom: 1px solid $mainDkColor;
   border-top: 1px solid $mainLhColor;
-  cursor:pointer;
   display: flex;
   align-items: center;
 }
@@ -677,12 +689,20 @@ ol.example li.placeholder:before {position: absolute;}
 
 .#{$nv-prefix}nav-item-edit {
   visibility: hidden;
+  padding: 5px;
+  font-size: 10px;
+  @include opacity(0.7);
+
+  &:hover {
+    @include opacity(1);
+  }
 }
 
 .#{$nv-prefix}title-c:hover {
 
   .#{$nv-prefix}nav-item-edit {
     visibility: visible;
+    cursor: pointer;
   }
 }
 
@@ -1106,6 +1126,8 @@ $lightBorder: rgba(255, 255, 255, 0.05);
 }
 .#{$app-prefix}block {
   @include user-select(none);
+  @extend .#{$app-prefix}bg-main;
+
   width: 45%;
   padding: 1em;
   box-sizing: border-box;

@@ -4,7 +4,7 @@ function(Backbone, BlockView) {
   return Backbone.View.extend({
 
     initialize: function(opts, config) {
-      _.bindAll(this, 'getSorter', 'onDrag', 'onDrop', 'dragHelper', 'moveHelper');
+      _.bindAll(this, 'getSorter', 'onDrag', 'onDrop');
       this.config = config || {};
       this.ppfx = this.config.pStylePrefix || '';
       this.listenTo(this.collection, 'add', this.addTo);
@@ -14,7 +14,6 @@ function(Backbone, BlockView) {
 
       if(this.em){
         this.config.getSorter = this.getSorter;
-        this.config.dragHelper = this.dragHelper;
         this.canvas = this.em.get('Canvas');
       }
     },
@@ -46,16 +45,7 @@ function(Backbone, BlockView) {
       }
       return this.sorter;
     },
-/*
-    updateOffset: function(){
-      if(!this.sorter)
-        return;
-      var sorter = this.sorter;
-      var offDim = this.canvas.getOffset();
-      sorter.offTop = offDim.top;
-      sorter.offLeft = offDim.left;
-    },
-*/
+
     /**
      * Callback when block is on drag
      * @private
@@ -66,19 +56,6 @@ function(Backbone, BlockView) {
       //document.body.style.cursor = 'grabbing';
       this.em.get('Canvas').getBody().className += ' ' + this.grabbingCls;
       document.body.className += ' ' + this.grabbingCls;
-    },
-
-    dragHelper: function(el){
-      el.className += ' ' + this.ppfx + 'bdrag';
-      this.helper = el;
-      document.body.appendChild(el);
-      $(this.em.get('Canvas').getBody().ownerDocument).on('mousemove', this.moveHelper);
-      $(document).on('mousemove', this.moveHelper);
-    },
-
-    moveHelper: function(e){
-      this.helper.style.left = e.pageX + 'px';
-      this.helper.style.top = e.pageY + 'px';
     },
 
     /**
