@@ -8,11 +8,50 @@ define(['backbone', './ComponentView'],
 			'change': 'parseRender',
 		},
 
-		initialize: function(o){
+		initialize: function(o) {
 			ComponentView.prototype.initialize.apply(this, arguments);
 			_.bindAll(this,'disableEditing');
 			this.listenTo(this.model, 'focus active', this.enableEditing);
 			this.rte = this.config.rte || '';
+			this.activeRte = null;
+			this.em = this.config.em;
+		},
+
+		/**
+		 * Enable the component to be editable
+		 * @param {Event} e
+		 * @private
+		 * */
+		enableEditing: function(e) {
+			if(this.rte) {
+				this.activeRte = this.rte.attach(this, this.activeRte);
+				this.rte.focus(this, this.activeRte);
+			}
+			this.toggleEvents(1);
+		},
+
+		/**
+		 * Disable this component to be editable
+		 * @param {Event}
+		 * @private
+		 * */
+		disableEditing: function(e) {
+			if(this.rte) {
+				this.rte.detach(this, this.activeRte);
+			}
+			if(!this.rte.customRte) {
+				this.parseRender();
+			}
+			this.toggleEvents();
+		},
+
+		/**
+		 * Isolate disable propagation method
+		 * @param {Event}
+		 * @private
+		 * */
+		disablePropagation: function(e){
+			e.stopPropagation();
 		},
 
 		/**
@@ -32,38 +71,6 @@ define(['backbone', './ComponentView'],
 			// As the reset was in silent mode I need to notify
 			// the navigator about the change
 			comps.trigger('resetNavigator');
-		},
-
-		/**
-		 * Enable the component to be editable
-		 * @param {Event} e
-		 * @private
-		 * */
-		enableEditing: function(e){
-			if(this.rte)
-				this.rte.attach(this);
-			this.toggleEvents(1);
-		},
-
-		/**
-		 * Disable this component to be editable
-		 * @param {Event}
-		 * @private
-		 * */
-		disableEditing: function(e){
-			if(this.rte)
-				this.rte.detach(this);
-			this.toggleEvents();
-			this.parseRender();
-		},
-
-		/**
-		 * Isolate disable propagation method
-		 * @param {Event}
-		 * @private
-		 * */
-		disablePropagation: function(e){
-			e.stopPropagation();
 		},
 
 		/**

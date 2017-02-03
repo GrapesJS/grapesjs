@@ -330,88 +330,51 @@ require(['config/require-config'], function() {
 
 
     window.editor = editor;
-
-	// Test custom blocks
 /*
-	var bm = editor.BlockManager;
-  bm.get('b1').set({
-    content: {
-      classes: ['blk-row'],
-      droppable: ['.blk-cell'],
-      components: [{
-        classes: ['blk-cell', 'blk1'],
-      }]
-    }
-  });
-  bm.get('b2').set({
-		content: '<div class="blk-row" data-gjs-droppable=".blk-cell" data-gjs-draggable="*:not(#wrapper)"><div data-gjs-draggable=".blk-row" class="blk-cell blk2"></div><div data-gjs-draggable=".blk-row" class="blk-cell blk2"></div></div>',
-  });
-  bm.get('b3').set({
-    content: {
-      classes: ['blk-row'],
-      droppable: ['.blk-cell'],
-      components: [{
-        classes: ['blk-cell', 'blk3'],
-      },{
-        classes: ['blk-cell', 'blk3'],
-      },{
-        classes: ['blk-cell', 'blk3'],
-      }]
-    }
-  });
-  bm.get('b4').set({
-    content: {
-      classes: ['blk-row'],
-      droppable: ['.blk-cell'],
-      components: [{
-        classes: ['blk-cell', 'blk37l'],
-      },{
-        classes: ['blk-cell', 'blk37r'],
-      }]
-    }
-  });
-  bm.get('map').set({
-    content: {
-      type: 'map',
-      draggable: ['*:not(#wrapper)'],
-      style: {height: '350px'}
-    },
-  });
+		editor.setCustomRte({
+
+			enable: function(el, rte) {
+				//rte.status == 'destroyed'
+				el.contentEditable = true;
+				// Jumps on enter, bug: https://dev.ckeditor.com/ticket/9136
+				//toolbar.$el.empty(); // try to hide all inside
+				rteToolbar = editor.RichTextEditor.getToolbarEl();
+				rteToolbar.innerHTML = '';
+
+				rte = CKEDITOR.inline(el, {
+					startupFocus: true,
+					enterMode: CKEDITOR.ENTER_BR,
+					removePlugins: 'liststyle,tabletools,scayt,menubutton,contextmenu,resize',
+					extraPlugins: 'sharedspace',
+					sharedSpaces: {
+						top: rteToolbar,
+					}
+				});
+
+				// Make click event propogate
+				rte.on('contentDom', function() {
+					var editable = rte.editable();
+					editable.attachListener( editable, 'click', function() {
+						el.click();
+					});
+				});
+
+				//rte.focus();
+				return rte;
+			},
+
+			disable: function(el, rte) {
+				el.contentEditable = false;
+				rte.focusManager.blur(true);
+				rte.destroy(true);
+				rte = null;
+			},
+
+			focus: function (el, rte) {
+				//el.contentEditable = true;
+				rte.focus();
+			},
+		});
 */
-		/*
-		// Test toolbar commands
-		var cmd = editor.Commands;
-		cmd.add('tlb-delete', {
-			run: function(ed){
-				var sel = ed.getSelected();
-				if(!sel)
-					return;
-				sel.destroy();
-				ed.Canvas.getToolbarEl().style.display = 'none';
-			},
-		});
-
-		cmd.add('tlb-clone', {
-			run: function(ed){
-				var sel = ed.getSelected();
-				var collection = sel.collection;
-				var index = collection.indexOf(sel);
-				collection.add(sel.clone(), {at: index + 1});
-			},
-		});
-
-		cmd.add('tlb-move', {
-			run: function(ed){
-				var sel = ed.getSelected();
-				ed.editor.stopDefault();
-				var cmdMove = cmd.get('move-comp');
-				cmdMove.onEndMoveFromModel = function() {
-					ed.editor.runDefault();
-				};
-				cmdMove.initSorterFromModel(sel);
-				ed.Canvas.getToolbarEl().style.display = 'none';
-			},
-		});
-		*/
 	});
 });

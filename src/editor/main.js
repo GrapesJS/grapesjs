@@ -374,6 +374,39 @@ define(function (require){
 				},
 
 				/**
+				 * Replace the built-in Rich Text Editor with a custom one.
+				 * @param {Object} obj Custom RTE Interface
+				 * @example
+				 * editor.setCustomRte({
+				 * 	// Function for enabling custom RTE
+				 * 	// el is the HTMLElement of the double clicked Text Component
+				 * 	// rte is the same instance you have returned the first time you call
+				 * 	// enable(). This is useful if need to check if the RTE is already enabled so
+				 * 	// ion this case you'll need to return the RTE and the end of the function
+				 * 	enable: function(el, rte) {
+				 * 		rte = new MyCustomRte(el, {}); // this depends on the Custom RTE API
+				 * 		...
+				 * 		return rte; // return the RTE instance
+				 * 	},
+				 *
+				 * 	// Disable the editor, called for example when you unfocus the Text Component
+				 *  disable: function(el, rte) {
+				 * 		rte.blur(); // this depends on the Custom RTE API
+				 *  }
+				 *
+				 * // Called when the Text Component is focused again. If you returned the RTE instance
+				 * // from the enable function, the enable won't be called again instead will call focus,
+				 * // in this case to avoid double binding of the editor
+				 *  focus: function (el, rte) {
+				 *   rte.focus(); // this depends on the Custom RTE API
+				 *  }
+				 * });
+				 */
+				setCustomRte: function (obj) {
+					this.RichTextEditor.customRte = obj;
+				},
+
+				/**
 				 * Attach event
 				 * @param  {string} event Event name
 				 * @param  {Function} callback Callback function
