@@ -175,6 +175,15 @@ define(['backbone', './ComponentsView'],
 				event.viewResponse = this;
 			},
 
+			/**
+			 * Prevent default helper
+			 * @param  {Event} e
+			 * @private
+			 */
+			prevDef: function (e) {
+				e.preventDefault();
+			},
+
 			render: function() {
 				this.updateAttributes();
 				this.updateClasses();

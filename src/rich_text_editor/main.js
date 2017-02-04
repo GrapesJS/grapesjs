@@ -140,10 +140,7 @@ define(function(require) {
 
 				// If a custom RTE is defined
 				if (customRte) {
-					// No RTE instance was provided
-					if(!rte || rte.status == 'destroyed') {
-						rte = customRte.enable(view.el, rte);
-					}
+					rte = customRte.enable(view.el, rte);
 				} else {
 					view.$el.wysiwyg({}).focus();
 				}
@@ -205,8 +202,6 @@ define(function(require) {
 			 * */
 			show: function() {
 				var toolbarStyle = toolbar.el.style;
-				toolbarStyle.top = 0;
-				toolbarStyle.left = 0;
         toolbarStyle.display = "block";
 			},
 

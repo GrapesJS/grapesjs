@@ -330,16 +330,22 @@ require(['config/require-config'], function() {
 
 
     window.editor = editor;
-/*
 		editor.setCustomRte({
 
 			enable: function(el, rte) {
-				//rte.status == 'destroyed'
+				// Check if laready exists
+				if(rte && rte.status != 'destroyed') {
+					return rte;
+				}
+
 				el.contentEditable = true;
 				// Jumps on enter, bug: https://dev.ckeditor.com/ticket/9136
-				//toolbar.$el.empty(); // try to hide all inside
+
 				rteToolbar = editor.RichTextEditor.getToolbarEl();
-				rteToolbar.innerHTML = '';
+
+				[].forEach.call(rteToolbar.children, function(child) {
+					child.style.display = 'none';
+				});
 
 				rte = CKEDITOR.inline(el, {
 					startupFocus: true,
@@ -354,27 +360,35 @@ require(['config/require-config'], function() {
 				// Make click event propogate
 				rte.on('contentDom', function() {
 					var editable = rte.editable();
-					editable.attachListener( editable, 'click', function() {
+					editable.attachListener(editable, 'click', function() {
 						el.click();
 					});
 				});
-
-				//rte.focus();
 				return rte;
 			},
 
 			disable: function(el, rte) {
 				el.contentEditable = false;
 				rte.focusManager.blur(true);
-				rte.destroy(true);
-				rte = null;
+				console.log('disable ', rte);
+
+				//Prev
+				//el.contentEditable = false;
+				//rte.focusManager.blur(true);
+				//rte.destroy(true);
+				//rte = null;
 			},
 
 			focus: function (el, rte) {
-				//el.contentEditable = true;
+				if(rte.focusManager.hasFocus)
+					return;
+				console.log('focus on', rte);
+
+				//Prev
+				el.contentEditable = true;
 				rte.focus();
 			},
 		});
-*/
+
 	});
 });
