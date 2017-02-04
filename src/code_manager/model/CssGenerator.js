@@ -5,8 +5,37 @@ define(['backbone'],
 		 * */
 		return Backbone.Model.extend({
 
-			initialize: function(){
+			initialize: function() {
 				this.compCls = [];
+			},
+
+			/**
+			 * Get CSS from component
+			 * @param {Model} model
+			 * @return {String}
+			 */
+			buildFromModel: function (model) {
+				var code = '';
+				var style = model.get('style');
+				var classes = model.get('classes');
+
+				// Let's know what classes I've found
+				if(classes) {
+					classes.each(function(model){
+						this.compCls.push(model.get('name'));
+					}, this);
+				}
+
+				if(style && Object.keys(style).length !== 0) {
+					code += '#' + model.cid + '{';
+					for(var prop in style){
+						if(style.hasOwnProperty(prop))
+							code += prop + ':' + style[prop] + ';';
+					}
+					code += '}';
+				}
+
+				return code;
 			},
 
 			/**
@@ -15,28 +44,16 @@ define(['backbone'],
 			 * @return {String}
 			 */
 			buildFromComp: function(model) {
-				var coll 	= model.get('components') || model,
-					code 	= '';
+				var coll = model.get('components') || model,
+					code = '';
 
-				coll.each(function(m){
-					var css = m.get('style'),
-						cls = m.get('classes'),
-						cln = m.get('components');
-					cls.each(function(m){
-						this.compCls.push(m.get('name'));
-					}, this);
+				coll.each(function(m) {
+					var cln = m.get('components');
+					code += this.buildFromModel(m);
 
-					if(css && Object.keys(css).length !== 0){
-						code 	+= '#' + m.cid + '{';
-						for(var prop in css){
-							if(css.hasOwnProperty(prop))
-								code += prop + ':' + css[prop] + ';';
-						}
-						code 	+= '}';
+					if(cln.length){
+						code += this.buildFromComp(cln);
 					}
-
-					if(cln.length)
-						code 	+= this.buildFromComp(cln);
 
 				}, this);
 
@@ -46,7 +63,8 @@ define(['backbone'],
 			/** @inheritdoc */
 			build: function(model, cssc) {
 				this.compCls = [];
-				var code 	= this.buildFromComp(model);
+				var code = this.buildFromModel(model);
+				code += this.buildFromComp(model);
 				var compCls = this.compCls;
 
 				if(cssc){
