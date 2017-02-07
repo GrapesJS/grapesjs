@@ -1,20 +1,24 @@
-define(['backbone'],
-  function(Backbone) {
+define(function(require) {
+
+    var Backbone = require('backbone');
 
     return Backbone.View.extend({
 
       initialize: function(opt) {
-        _.bindAll(this,'startSort','onMove','endMove','rollback', 'udpateOffset');
+        this.opt = opt || {};
+        _.bindAll(this,'startSort','onMove','endMove','rollback', 'udpateOffset', 'moveDragHelper');
         var o = opt || {};
         this.elT = 0;
         this.elL = 0;
         this.borderOffset = o.borderOffset || 10;
 
         var el = o.container;
-        this.el = typeof el === 'string' ? document.querySelector(o.container) : el;
+        this.el = typeof el === 'string' ? document.querySelector(el) : el;
         this.$el = $(this.el);
+
         this.containerSel = o.containerSel || 'div';
         this.itemSel = o.itemSel || 'div';
+        this.draggable = o.draggable || true;
         this.nested = o.nested || 0;
         this.pfx = o.pfx || '';
         this.freezeClass = o.freezeClass || this.pfx + 'freezed';
@@ -29,14 +33,24 @@ define(['backbone'],
         this.offTop = o.offsetTop || 0;
         this.offLeft = o.offsetLeft || 0;
         this.document = o.document || document;
-        this.dropContent = '';
-        this.helper = '';
+        this.$document = $(this.document);
+        this.dropContent = null;
         this.em = o.em || '';
+        this.dragHelper = null;
 
         if(this.em && this.em.on){
           this.em.on('change:canvasOffset', this.udpateOffset);
           this.udpateOffset();
         }
+      },
+
+      getContainerEl: function () {
+        if (!this.el) {
+          var el = this.opt.container;
+          this.el = typeof el === 'string' ? document.querySelector(el) : el;
+          this.$el = $(this.el);
+        }
+        return this.el;
       },
 
       /**
@@ -55,6 +69,63 @@ define(['backbone'],
       setDropContent: function(content){
         this.dropContent = content;
       },
+
+      /**
+       * Set drag helper
+       * @param {HTMLElement} el
+       * @param {Event} event
+       */
+      setDragHelper: function(el, event) {
+        var ev = event || '';
+        var clonedEl = el.cloneNode(1);
+
+        // Attach style
+        var style = '';
+        var o = getComputedStyle(el);
+        for(var i = 0; i < o.length; i++) {
+          style += o[i] + ':' + o.getPropertyValue(o[i])+';';
+        }
+        clonedEl.style = style;
+        clonedEl.className += ' ' + this.pfx + 'bdrag';
+        document.body.appendChild(clonedEl);
+        this.dragHelper = clonedEl;
+
+        if(ev) {
+          this.moveDragHelper(ev);
+        }
+
+        // Listen mouse move events
+        if(this.em) {
+          $(this.em.get('Canvas').getBody().ownerDocument)
+            .off('mousemove', this.moveDragHelper).on('mousemove', this.moveDragHelper);
+        }
+        $(document)
+          .off('mousemove', this.moveDragHelper).on('mousemove', this.moveDragHelper);
+      },
+
+      /**
+       * Update the position of the helper
+       * @param  {Event} e
+       */
+      moveDragHelper: function(e){
+        if(!this.dragHelper) {
+          return;
+        }
+        var doc = e.target.ownerDocument;
+        var win = doc.defaultView || doc.parentWindow;
+        var addTop = 0;
+        var addLeft = 0;
+        var frame = win.frameElement;
+        if(frame) {
+          var frameRect = frame.getBoundingClientRect(); // maybe to cache ?!?
+          addTop = frameRect.top || 0;
+          addLeft = frameRect.left || 0;
+        }
+        var hStyle = this.dragHelper.style;
+        hStyle.left = (e.pageX - win.pageXOffset + addLeft) + 'px';
+        hStyle.top = (e.pageY - win.pageYOffset + addTop) + 'px';
+      },
+
 
       /**
        * Returns true if the element matches with selector
@@ -119,7 +190,7 @@ define(['backbone'],
 
       /**
        * Picking component to move
-       * @param {Object} trg
+       * @param {HTMLElement} trg
        * */
       startSort: function(trg){
         this.moved = 0;
@@ -129,34 +200,34 @@ define(['backbone'],
           this.eV = this.closest(trg, this.itemSel);
 
         // Create placeholder if not exists
-        if(!this.plh){
+        if(!this.plh) {
           this.plh = this.createPlaceholder();
-          this.el.appendChild(this.plh);
+          this.getContainerEl().appendChild(this.plh);
         }
 
-        if(this.eV){
+        if(this.eV) {
           this.eV.className += ' ' + this.freezeClass;
-          $(this.document).on('mouseup',this.endMove);
+          this.$document.on('mouseup', this.endMove);
         }
 
-        if(this.helper){
-          this.helperEl = this.helper;
-          this.helperEl.className += ' ' + this.ppfx + 'bdrag';
-          document.body.appendChild(this.helperEl);
-        }
-
-        this.$el.on('mousemove',this.onMove);
-        $(document).on('keypress',this.rollback);
+        this.$el.on('mousemove', this.onMove);
+        $(document).on('keydown', this.rollback);
+        this.$document.on('keydown', this.rollback);
 
         if(typeof this.onStart === 'function')
           this.onStart();
+
+        // Avoid strange effects on dragging
+        if(this.em) {
+          this.em.clearSelection();
+        }
       },
 
       /**
        * During move
        * @param {Event} e
        * */
-      onMove: function(e){
+      onMove: function(e) {
         this.moved = 1;
 
         // Turn placeholder visibile
@@ -185,12 +256,6 @@ define(['backbone'],
           if(this.offLeft)
             this.$plh.css('left', '+=' + this.offLeft + 'px');
           this.lastPos = pos;
-        }
-
-        if(this.helperEl){
-          var helperS = this.helperEl.style;
-          helperS.left = this.rX + 'px';
-          helperS.top = this.rY + 'px';
         }
 
         if(typeof this.onMoveClb === 'function')
@@ -241,6 +306,10 @@ define(['backbone'],
             default:
                 return;
         }
+        switch (el.tagName) {
+            case 'TR': case 'TBODY': case 'THEAD': case 'TFOOT':
+                return true;
+        }
         switch ($el.css('display')) {
             case 'block':
             case 'list-item':
@@ -261,8 +330,16 @@ define(['backbone'],
       dimsFromTarget: function(target, rX, rY){
         var dims = [];
 
+        // Select the first valuable target
+        // TODO: avoid this check for every standard component,
+        // which generally is ok
         if(!this.matches(target, this.itemSel + ',' + this.containerSel))
           target = this.closest(target, this.itemSel);
+
+        // If draggable is an array the target will be one of those
+        if(this.draggable instanceof Array){
+            target = this.closest(target, this.draggable.join(','));
+        }
 
         if(!target)
           return dims;
@@ -478,8 +555,8 @@ define(['backbone'],
       endMove: function(e){
         var created;
         this.$el.off('mousemove', this.onMove);
-        $(this.document).off('mouseup', this.endMove);
-        $(this.document).off('keypress', this.rollback);
+        this.$document.off('mouseup', this.endMove);
+        this.$document.off('keydown', this.rollback);
         this.plh.style.display = 'none';
         var clsReg = new RegExp('(?:^|\\s)'+this.freezeClass+'(?!\\S)', 'gi');
         if(this.eV)
@@ -488,11 +565,15 @@ define(['backbone'],
           created = this.move(this.target, this.eV, this.lastPos);
         if(this.plh)
           this.plh.style.display = 'none';
-        this.helperEl = '';
-        if(this.helper)
-          this.helper.parentNode.removeChild(this.helper);
+
         if(typeof this.onEndMove === 'function')
           this.onEndMove(created);
+
+        var dragHelper = this.dragHelper;
+        if(dragHelper) {
+          dragHelper.remove();
+          this.dragHelper = null;
+        }
       },
 
       /**
@@ -501,15 +582,51 @@ define(['backbone'],
        * @param {HTMLElement} src Element to move
        * @param {Object} pos Object with position coordinates
        * */
-      move: function(dst, src, pos){
+      move: function(dst, src, pos) {
         var index = pos.index;
         var model = $(src).data('model');
         var $dst = $(dst);
         var targetCollection = $dst.data('collection');
         var targetModel = $dst.data('model');
-        var droppable = targetModel ? targetModel.get('droppable') : 1;
 
-        if(targetCollection && droppable){ // TODO && targetModel.get('droppable')
+        // Check if the elemenet is DRAGGABLE to the target
+        var drag = model && model.get('draggable');
+        var draggable = typeof drag !== 'undefined' ? drag : 1;
+        var toDrag = draggable;
+
+        if (this.dropContent instanceof Object) {
+          draggable = this.dropContent.draggable;
+          draggable = typeof draggable !== 'undefined' ? draggable : 1;
+        } else if (typeof this.dropContent === 'string' && targetCollection) {
+          var sandboxOpts = {silent: true};
+          var sandboxModel = targetCollection.add(this.dropContent, sandboxOpts);
+          draggable = sandboxModel.get && sandboxModel.get('draggable');
+          draggable = typeof draggable !== 'undefined' ? draggable : 1;
+          targetCollection.remove(sandboxModel, sandboxOpts);
+        }
+
+        if(draggable instanceof Array) {
+          toDrag = draggable.join(', ');
+          draggable = this.matches(dst, toDrag);
+        }else if(typeof draggable === 'string') {
+          toDrag = draggable;
+          draggable = this.matches(dst, toDrag);
+        }
+
+        // Check if the target could accept the element to be DROPPED inside
+        var accepted = 1;
+        var droppable = targetModel ? targetModel.get('droppable') : 1;
+        var toDrop = draggable;
+        if(droppable instanceof Array) {
+          // When I drag blocks src is the HTMLElement of the block
+          toDrop = droppable.join(', ');
+          accepted = this.matches(src, toDrop);
+        }else if(typeof droppable === 'string') {
+          toDrop = droppable;
+          accepted = this.matches(src, toDrop);
+        }
+
+        if(targetCollection && droppable && accepted && draggable) {
           index = pos.method === 'after' ? index + 1 : index;
           var modelToDrop, modelTemp;
           var opts = {at: index, noIncrement: 1};
@@ -531,8 +648,22 @@ define(['backbone'],
           // This will cause to recalculate children dimensions
           this.prevTarget = null;
           return created;
-        }else
-          console.warn("Invalid target position");
+        } else {
+          var warns = [];
+          if(!targetCollection){
+            warns.push('target collection not found');
+          }
+          if(!droppable){
+            warns.push('target is not droppable');
+          }
+          if(!draggable){
+            warns.push('component not draggable, accepted only by [' + toDrag + ']');
+          }
+          if(!accepted){
+            warns.push('target accepts only [' + toDrop + ']');
+          }
+          console.warn('Invalid target position: ' + warns.join(', '));
+        }
       },
 
       /**
@@ -540,10 +671,12 @@ define(['backbone'],
        * @param {Event}
        * @param {Bool} Indicates if rollback in anycase
        * */
-      rollback: function(e){
-        $(document).off('keypress',this.rollback);
+      rollback: function(e) {
+        $(document).off('keydown', this.rollback);
+        this.$document.off('keydown', this.rollback);
         var key = e.which || e.keyCode;
-        if(key == 27){
+
+        if (key == 27) {
           this.moved = false;
           this.endMove();
         }

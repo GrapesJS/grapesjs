@@ -28,6 +28,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 			if(!this.model.get('value'))
 				this.model.set('value', this.model.get('defaults'));
 
+			this.listenTo(this.model, 'destroy remove', this.remove);
 			this.listenTo( this.propTarget, 'update', this.targetUpdated);
 			this.listenTo( this.model ,'change:value', this.valueChanged);
 			this.listenTo( this.model ,'targetUpdated', this.targetUpdated);
@@ -58,8 +59,9 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 			this.selectedComponent = this.propTarget.model;
 			this.helperComponent = this.propTarget.helper;
 			if(this.getTarget()){
-				if(!this.sameValue())
+				if(!this.sameValue()){
 					this.renderInputRequest();
+				}
 			}
 		},
 
@@ -213,11 +215,11 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 		 * @param 	{Boolean}	force
 		 * */
 		setValue: function(value, force){
-			var f	= force === 0 ? 0 : 1;
+			var f = force === 0 ? 0 : 1;
 			var def = this.model.get('defaults');
-			var v 	= this.model.get('value') || def;
+			var v = this.model.get('value') || def;
 			if(value || f){
-				v		= value;
+				v = value;
 			}
 			if(this.$input)
 				this.$input.val(v);

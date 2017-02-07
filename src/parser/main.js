@@ -9,6 +9,8 @@ define(function(require) {
 
     return {
 
+      compTypes: '',
+
       /**
        * Name of the module
        * @type {String}
@@ -48,6 +50,7 @@ define(function(require) {
        * @return {Object}
        */
       parseHtml: function(str){
+        pHtml.compTypes = this.compTypes;
         return pHtml.parse(str, pCss);
       },
 

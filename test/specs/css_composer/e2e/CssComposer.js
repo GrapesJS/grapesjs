@@ -39,7 +39,7 @@ define(['GrapesJS'],function(GrapesJS) {
               rulesSet2 = [
                 { selectors: [{name: 'test1'}, {name: 'test2'}], state:':active' },
                 { selectors: [{name: 'test2'}, {name: 'test3'}] },
-                { selectors: [{name: 'test3'}], width:'900px' }
+                { selectors: [{name: 'test3'}], maxWidth:'900px' }
               ];
             });
 
@@ -107,6 +107,11 @@ define(['GrapesJS'],function(GrapesJS) {
               cssc.getAll().length.should.equal(3);
               clsm.getAll().length.should.equal(3);
               coll1.should.deep.equal(coll2);
+            });
+
+            it('Add raw rule objects with width via addCollection', function() {
+              var coll1 = cssc.addCollection(rulesSet2);
+              coll1[2].get('maxWidth').should.equal(rulesSet2[2].maxWidth);
             });
 
         });

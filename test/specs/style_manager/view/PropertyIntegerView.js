@@ -20,7 +20,8 @@ define([path + 'PropertyIntegerView', 'StyleManager/model/Property', 'DomCompone
             var defValue = 'test2value';
             var units = ['px', '%', 'em'];
             var minValue = -15;
-            var maxValue = 15;
+            var maxValue = 75;
+            var unitsElSel = '.field-units select';
 
             before(function () {
               $fixtures  = $("#fixtures");
@@ -63,16 +64,16 @@ define([path + 'PropertyIntegerView', 'StyleManager/model/Property', 'DomCompone
             it('Inputs rendered', function() {
               var prop = view.el;
               prop.querySelector('input[type=text]').should.be.ok;
-              prop.querySelector('select.unit').should.be.ok;
+              prop.querySelector(unitsElSel).should.be.ok;
             });
 
             it('Units rendered', function() {
-              var select = view.el.querySelector('select.unit');
+              var select = view.el.querySelector(unitsElSel);
               select.children.length.should.equal(units.length);
             });
 
             it('Units rendered correctly', function() {
-              var children = view.el.querySelector('select.unit').children;
+              var children = view.el.querySelector(unitsElSel).children;
               children[0].textContent.should.equal(units[0]);
               children[1].textContent.should.equal(units[1]);
               children[2].textContent.should.equal(units[2]);
@@ -178,7 +179,7 @@ define([path + 'PropertyIntegerView', 'StyleManager/model/Property', 'DomCompone
               });
 
               it('Value as default', function() {
-                view.model.get('value').should.equal(intValue);
+                view.model.get('value').should.equal(parseInt(intValue));
                 view.model.get('unit').should.equal(units[1]);
               });
 

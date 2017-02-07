@@ -20,14 +20,27 @@ define(function () {
 		// Width for the editor container
 		width: '100%',
 
-		// The css that could only be seen (for instance, inside the code viewer)
-		protectedCss: '*{box-sizing: border-box;}body{margin:0;height:100%}#wrapper{min-height:100%; overflow:auto}',
+		// CSS that could only be seen (for instance, inside the code viewer)
+		protectedCss: '*{box-sizing: border-box;}body{margin:0;height:auto;background:#fff}#wrapper{min-height:100%; overflow:auto}',
+
+		// CSS for the iframe which containing the canvas, useful if you need to custom something inside
+		// (eg. the style of the selected component)
+		canvasCss: '',
 
 		// Default command
 		defaultCommand: 'select-comp',
 
+		// Show a toolbar when the component is selected
+		showToolbar: 1,
+
+		// Allow script tag importing
+		allowScripts: 0,
+
 		// If true render a select of available devices
 		showDevices: 1,
+
+		// When enabled, on device change media rules won't be created
+		devicePreviewMode: 0,
 
 		// Dom element
 		el: '',
@@ -37,9 +50,6 @@ define(function () {
 
 		//Configurations for Canvas
 		canvas: {},
-
-		//Configurations for Style Manager
-		styleManager: {},
 
 		//Configurations for Layers
 		layers: {},
@@ -86,6 +96,42 @@ define(function () {
 	        name: 'Mobile portrait',
 	        width: '480px',
 	    }],
+		},
+
+		//Configurations for Style Manager
+		styleManager: {
+
+			sectors: [{
+					name: 'General',
+					open: false,
+					buildProps: ['float', 'display', 'position', 'top', 'right', 'left', 'bottom'],
+		    },{
+					name: 'Dimension',
+					open: false,
+					buildProps: ['width', 'height', 'max-width', 'min-height', 'margin', 'padding'],
+		    },{
+					name: 'Typography',
+					open: false,
+					buildProps: ['font-family', 'font-size', 'font-weight', 'letter-spacing', 'color', 'line-height', 'text-align', 'text-shadow'],
+					properties: [{
+					    property: 'text-align',
+					    list        : [
+					        {value: 'left', className: 'fa fa-align-left'},
+					        {value: 'center', className: 'fa fa-align-center' },
+					        {value: 'right', className: 'fa fa-align-right'},
+					        {value: 'justify', className: 'fa fa-align-justify'}
+					    ],
+					}]
+		    },{
+					name: 'Decorations',
+					open: false,
+					buildProps: ['border-radius-c', 'background-color', 'border-radius', 'border', 'box-shadow', 'background'],
+		    },{
+					name: 'Extra',
+					open: false,
+					buildProps: ['transition', 'perspective', 'transform'],
+		    }],
+
 		},
 
 		//Configurations for Block Manager
@@ -170,13 +216,56 @@ define(function () {
 					id: 'image',
 	        label: 'Image',
 	        attributes: {class:'gjs-fonts gjs-f-image'},
-	        content: { type:'image',  activeOnRender: 1},
+	        content: {
+						style: {color: 'black'},
+						type:'image',
+						activeOnRender: 1
+					},
 	      },{
 					id: 'quo',
 	        label: 'Quote',
 	        content: '<blockquote class="quote">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore ipsum dolor sit</blockquote>',
-	        attributes: {class:'gjs-fonts gjs-f-quo'}
-	      }],
+	        attributes: {class:'fa fa-quote-right'}
+	      },{
+					id: 'link',
+	        label: 'Link',
+	        attributes: {class:'fa fa-link'},
+	        content: {
+						type:'link',
+						content:'Link',
+						style:{color: '#d983a6'}
+					},
+	      },{
+					id: 'map',
+	        label: 'Map',
+	        attributes: {class:'fa fa-map-o'},
+	        content: {
+						type: 'map',
+						style: {height: '350px'}
+					},
+	      },{
+					id: 'video',
+	        label: 'Video',
+	        attributes: {class:'fa fa-youtube-play'},
+	        content: {
+						type: 'video',
+						src: 'img/video2.webm',
+						style: {
+							height: '350px',
+							width: '615px',
+						}
+					},
+	      }/*,{
+					id: 'table',
+	        label: 'Table',
+	        attributes: {class:'fa fa-table'},
+	        content: {
+						type: 'table',
+						columns: 3,
+						rows: 5,
+						style: {height: '150px', width: '100%'}
+					},
+	      }*/],
 		},
 
 	};

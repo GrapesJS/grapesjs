@@ -2,10 +2,10 @@
 
 [![Build Status](https://travis-ci.org/artf/grapesjs.svg?branch=master)](https://travis-ci.org/artf/grapesjs)
 
-<p align="center"><img src="http://grapesjs.com/img/grapesjs-demo-template2.jpg" alt="GrapesJS" width="500" align="center"/></p>
+<p align="center"><img src="http://grapesjs.com/img/grapesjs-front-page-m.jpg" alt="GrapesJS" width="500" align="center"/></p>
 <br/>
 
-GrapesJS is a free and open source Web Template Builder which helps you building HTML templates to be used inside sites, newsletters and mobile apps.
+GrapesJS is a free and open source Web Builder Framework which helps you building HTML templates to be used inside sites, newsletters and mobile apps.
 Mainly GrapesJS was designed to be used inside a [CMS] to speed up a creation of dynamic templates. To better understand this concept check the image below
 
 <br/>
@@ -14,22 +14,28 @@ Mainly GrapesJS was designed to be used inside a [CMS] to speed up a creation of
 
 Generally any 'template system', that you'd find in various applications like CMS, is composed by the **structure** (HTML), **style** (CSS) and **variables**, which are then replaced with other templates and contents on server-side and rendered on client.
 
-This demo shows an example of what is possible to achieve: http://grapesjs.com/demo.html
+This demos show examples of what is possible to achieve:
+Webpage Demo - http://grapesjs.com/demo.html
+Newsletter Demo - http://grapesjs.com/demo-newsletter-editor.html
 
 
 ## Features
 
+
+* Blocks
+<p align="center"><img src="http://grapesjs.com/img/sc-grapesjs-blocks-prp.jpg" alt="GrapesJS - Block Manager" height="400" align="center"/></p>
+
 * Style Manager, for component styling<br/>
-<p align="center"><img src="http://grapesjs.com/img/grapesjs-style-manager.png" alt="GrapesJS - Style Manager" height="400" align="center"/></p>
+<p align="center"><img src="http://grapesjs.com/img/sc-grapesjs-style-2.jpg" alt="GrapesJS - Style Manager" height="400" align="center"/></p>
 
 * Layer Manager, that comes handy with nested elements<br/>
-<p align="center"><img src="http://grapesjs.com/img/grapesjs-layer-manager.png" alt="GrapesJS - Layer Manager" height="300" align="center"/></p>
+<p align="center"><img src="http://grapesjs.com/img/sc-grapesjs-layers-2.jpg" alt="GrapesJS - Layer Manager" height="400" align="center"/></p>
 
 * Code Viewer <br/>
-<p align="center"><img src="http://grapesjs.com/img/grapesjs-code-viewer.png" alt="GrapesJS - Code Viewer" height="250" align="center"/></p>
+<p align="center"><img src="http://grapesjs.com/img/sc-grapesjs-code.jpg" alt="GrapesJS - Code Viewer" height="300" align="center"/></p>
 
 * Asset Manager, for uploading and managing images<br/>
-<p align="center"><img src="http://grapesjs.com/img/grapesjs-asset-manager.png" alt="GrapesJS - Asset Manager" height="250" align="center"/></p>
+<p align="center"><img src="http://grapesjs.com/img/sc-grapesjs-assets-1.jpg" alt="GrapesJS - Asset Manager" height="250" align="center"/></p>
 
 * Local and remote storage
 
@@ -135,13 +141,6 @@ API References (draft) could be found here: [API-Reference]
 $ npm test
 ```
 
-## TODOs before beta release
-
-* **Component traits** - traits are some some kind of `attributes` of the component. For example, the `Link`
-  will get `href` for the url/resource address and it's exactly as we see `<a>`, but in case of `Map` component
-  I'd attach `address`, `city` and `zoom` to manage marker position.
-
-
 ## Acknowledgements
 
 GrapesJS is built on top of this amazing open source projects:
@@ -152,6 +151,13 @@ GrapesJS is built on top of this amazing open source projects:
 * [CodeMirror] - versatile text editor
 * [Spectrum] - no hassle colorpicker
 * [FontAwesome] - the iconic font and CSS framework
+
+
+## Sponsors
+
+The project is sponsored by
+
+[![Sendloop](http://grapesjs.com/img/sendloop-logo-l.png)](https://sendloop.com)
 
 
 ## Support

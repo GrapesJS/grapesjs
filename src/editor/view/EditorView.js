@@ -14,26 +14,26 @@ function(Backbone){
 			}, this);
 		},
 
-		render: function(){
+		render: function() {
 			var conf = this.conf;
+			var contEl = $(conf.el || ('body ' + conf.container));
 			this.$el.empty();
-			this.$cont	= $(conf.el || ('body ' + conf.container));
 
 			if(conf.width)
-				this.$cont.css('width', conf.width);
+				contEl.css('width', conf.width);
 
 			if(conf.height)
-				this.$cont.css('height', conf.height);
+				contEl.css('height', conf.height);
 
 			// Canvas
 			this.$el.append(this.model.get('Canvas').render());
 
 			// Panels
 			this.$el.append(this.pn.render());
-
 			this.$el.attr('class', this.className);
 
-			this.$cont.html(this.$el);
+			contEl.addClass(conf.stylePrefix + 'editor-cont');
+			contEl.html(this.$el);
 
 			return this;
 		}

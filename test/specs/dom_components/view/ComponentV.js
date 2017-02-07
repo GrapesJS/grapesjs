@@ -1,6 +1,6 @@
 var path = 'DomComponents/view/';
-define([path + 'ComponentView', 'DomComponents/model/Component'],
-  function(ComponentView, Component) {
+define([path + 'ComponentView', 'DomComponents/model/Component', 'DomComponents'],
+  function(ComponentView, Component, DomComponents) {
 
     return {
       run : function(){
@@ -12,6 +12,8 @@ define([path + 'ComponentView', 'DomComponents/model/Component'],
             var model;
             var view;
             var hClass = 'hc-state';
+            var dcomp;
+            var compOpts;
 
             before(function () {
               $fixtures = $("#fixtures");
@@ -19,6 +21,10 @@ define([path + 'ComponentView', 'DomComponents/model/Component'],
             });
 
             beforeEach(function () {
+              dcomp = new DomComponents();
+              compOpts = {
+                defaultTypes: dcomp.componentTypes,
+              };
               model = new Component();
               view = new ComponentView({
                 model: model
@@ -120,9 +126,10 @@ define([path + 'ComponentView', 'DomComponents/model/Component'],
                   { tagName: 'span'},
                   { attributes: { title: 'test'}}
                 ]
-              });
+              }, compOpts);
               view = new ComponentView({
-                model: model
+                model: model,
+                defaultTypes: dcomp.componentTypes,
               });
               view.render().$el.html().should.equal('<span></span><div title="test"></div>');
             });

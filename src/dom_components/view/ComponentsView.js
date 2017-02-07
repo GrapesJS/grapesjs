@@ -4,7 +4,8 @@ function(Backbone, require) {
 	return Backbone.View.extend({
 
 		initialize: function(o) {
-			this.config			= o.config;
+			this.opts = o || {};
+			this.config = o.config || {};
 			this.listenTo( this.collection, 'add', this.addTo );
 			this.listenTo( this.collection, 'reset', this.render );
 		},
@@ -16,9 +17,13 @@ function(Backbone, require) {
 		 * @return	void
 		 * @private
 		 * */
-		addTo: function(model){
+		addTo: function(model) {
 			var i	= this.collection.indexOf(model);
 			this.addToCollection(model, null, i);
+
+			if(this.config.em) {
+				this.config.em.trigger('add:component', model);
+			}
 		},
 
 		/**
@@ -34,31 +39,24 @@ function(Backbone, require) {
 			if(!this.compView)
 				this.compView	=	require('./ComponentView');
 			var fragment	= fragmentEl || null,
-				viewObject	= this.compView;
+			viewObject	= this.compView;
+			//console.log('Add to collection', model, 'Index',i);
 
-			switch(model.get('type')){
-				case 'text':
-					if(!this.compViewText)
-						this.compViewText	=	require('./ComponentTextView');
-					viewObject	= this.compViewText;
-					break;
-				case 'image':
-					if(!this.compViewImage)
-						this.compViewImage	=	require('./ComponentImageView');
-					viewObject	= this.compViewImage;
-					break;
-				case 'link':
-					if(!this.compViewLink)
-						this.compViewLink	=	require('./ComponentLinkView');
-					viewObject	= this.compViewLink;
-					break;
-			}
+			var dt = this.opts.defaultTypes;
+			var ct = this.opts.componentTypes;
 
-			var view 		= new viewObject({
-				model 	: model,
-				config	: this.config,
+			var type = model.get('type');
+			viewObject = dt[type] ? dt[type].view : dt.default.view;
+
+			var view = new viewObject({
+				model: model,
+				config: this.config,
+				defaultTypes: dt,
+				componentTypes: ct,
 			});
 			var rendered	= view.render().el;
+			if(view.model.get('type') == 'textnode')
+				rendered =  document.createTextNode(view.model.get('content'));
 
 			if(fragment){
 				fragment.appendChild(rendered);

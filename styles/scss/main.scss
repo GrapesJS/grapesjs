@@ -44,7 +44,7 @@ $leftWidth: 15%;
 
 $fontPath: '../fonts';
 $fontName: 'main-fonts';
-$fontV: 5;//random(1000)
+$fontV: 20;//random(1000)
 
 @font-face {
   font-family: 'font3336';
@@ -79,6 +79,13 @@ $fontV: 5;//random(1000)
   appearance: $v;
 }
 
+@mixin transform($v) {
+  -ms-transform: $v;
+  -webkit-transform: $v;
+  -moz-transform: $v;
+  transform: $v;
+}
+
 //.#{$app-prefix}fonts {}
 
 .#{$app-prefix}fonts::before {
@@ -89,16 +96,18 @@ $fontV: 5;//random(1000)
   -moz-osx-font-smoothing: grayscale;
   font-size: 5em;
 }
-.#{$app-prefix}f-b1::before { content: 'q'; }
-.#{$app-prefix}f-b2::before { content: 'w'; }
-.#{$app-prefix}f-b3::before { content: 'e'; }
-.#{$app-prefix}f-b37::before { content: 'r'; }
-.#{$app-prefix}f-hero::before { content: 't'; }
+.#{$app-prefix}f-b1::before { content: 'Q'; }
+.#{$app-prefix}f-b2::before { content: 'W'; }
+.#{$app-prefix}f-b3::before { content: 'E'; }
+.#{$app-prefix}f-b37::before { content: 'R'; }
+.#{$app-prefix}f-hero::before { content: 'T'; }
 .#{$app-prefix}f-h1p::before { content: 'y'; }
 .#{$app-prefix}f-3ba::before { content: 'u'; }
-.#{$app-prefix}f-image::before { content: 'i'; }
+.#{$app-prefix}f-image::before { content: 'I'; }
 .#{$app-prefix}f-text::before { content: 'o'; }
 .#{$app-prefix}f-quo::before { content: 'p'; }
+.#{$app-prefix}f-button::before { content: 'B'; }
+.#{$app-prefix}f-divider::before { content: 'D'; }
 
 
 .#{$app-prefix}invis-invis,
@@ -126,6 +135,10 @@ $fontV: 5;//random(1000)
 	background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==");
 }
 
+.#{$app-prefix}no-user-select{
+	@include user-select('none');
+}
+
 .#{$app-prefix}bg-main{
   background-color: $mainColor;
 }
@@ -138,10 +151,17 @@ $fontV: 5;//random(1000)
   color: $fontColorActive;
 }
 
-.#{$app-prefix}bdrag{
-  position: absolute;
-  z-index: 10;
+.#{$app-prefix}bdrag {
+  pointer-events: none !important;
+  position: absolute !important;
+  z-index: 10 !important;
   width: auto;
+}
+
+.#{$app-prefix}grabbing,
+.#{$app-prefix}grabbing * {
+  cursor: grabbing !important;
+  cursor: -webkit-grabbing !important;
 }
 
 .#{$app-prefix}off-prv{
@@ -153,11 +173,26 @@ $fontV: 5;//random(1000)
   cursor: pointer;
 }
 
+// Custom scrollbars for Chrome
+.#{$app-prefix}editor-cont ::-webkit-scrollbar-track {
+  background: $mainDklColor;
+}
+
+.#{$app-prefix}editor-cont ::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.#{$app-prefix}editor-cont ::-webkit-scrollbar {
+  width: 8px;
+}
+
 /********************* MAIN ************************/
 .clear{ clear:both }
+
 .no-select{
  	@include user-select(none);
 }
+
 .#{$app-prefix}editor{
 	font-family: $mainFont;
 	background-color: $mainColor;
@@ -165,7 +200,8 @@ $fontV: 5;//random(1000)
 	box-sizing: border-box;
 	height: 100%;
 }
-.#{$app-prefix}freezed{
+.#{$app-prefix}freezed,
+.#{$nv-prefix}freezed {
   @include opacity(0.50);
   pointer-events: none;
 }
@@ -235,7 +271,7 @@ div.#{$app-prefix}select {
 }
 .#{$trt-prefix}trait {
   display: flex;
-  justify-content: space-between;
+  justify-content: start;
   padding: 5px 10px;
   font-size: 0.75em;
   font-weight: lighter;
@@ -263,7 +299,6 @@ div.#{$app-prefix}select {
   z-index:1;
 
   > iframe {
-    background-color: #fff;
     height: 100%;
     outline: medium none;
     width: 100%;
@@ -317,6 +352,19 @@ div.#{$app-prefix}select {
 
 .#{$app-prefix}frame{
   transition: width 0.35s ease;
+}
+
+.#{$app-prefix}toolbar {
+  position: absolute;
+  background-color: $colorBlue;
+  color: white;
+  z-index: 10;
+}
+
+.#{$app-prefix}toolbar-item {
+  padding: 5px 7px;
+  font-size: 0.8rem;
+  cursor: pointer;
 }
 
 .btn-cl {
@@ -402,19 +450,27 @@ ol.example li.placeholder:before {position: absolute;}
 .#{$app-prefix}badge-warning{
 	background-color: $colorYell;
 }
-.#{$app-prefix}placeholder, .#{$com-prefix}placeholder{
+.#{$app-prefix}placeholder,
+.#{$com-prefix}placeholder,
+.#{$nv-prefix}placeholder {
 	position: absolute;
 	z-index: 10;
   pointer-events: none;
   display: none;
 }
-.#{$app-prefix}placeholder{
+
+.#{$app-prefix}placeholder,
+.#{$nv-prefix}placeholder {
   /*border-width: 3px !important;*/
   border-style: solid !important;
   border-color: $colorGreen;
   outline: none;
+  box-sizing: border-box;
 }
-.#{$app-prefix}placeholder-int, .#{$com-prefix}placeholder-int{
+
+.#{$app-prefix}placeholder-int,
+.#{$com-prefix}placeholder-int,
+.#{$nv-prefix}placeholder-int {
 	background-color: $colorGreen;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
 	height: 100%; width: 100%;
@@ -553,7 +609,7 @@ ol.example li.placeholder:before {position: absolute;}
 		font-weight: lighter;
 		text-align: left;
 		position: relative;
-		background-color: rgba(0, 0, 0, 0.2);
+		background-color: rgba(0, 0, 0, 0.1);
 	}
 	.#{$nv-prefix}item.#{$nv-prefix}hide {
 	  @include opacity(0.55);
@@ -568,56 +624,91 @@ ol.example li.placeholder:before {position: absolute;}
 		@extend .btn;
 		height: auto !important; width: auto !important;
 		font-size: 13px;
-	    left: 0; top: 0;
-	    padding: 7px 5px 7px 10px;
-	    position: absolute;
-	    color: darken($fontColor, 20%);
-	    cursor:pointer;
-	    z-index: 1;
-	}
-	.#{$nv-prefix}item .#{$nv-prefix}title {
-		font-size: 11px;
-		padding: 7px 10px 7px 30px;
-	}
-	.#{$nv-prefix}item ##{$nv-prefix}caret {
-		font-size: 7px;
-		width: 8px;
+    left: 0; top: 0;
+    padding: 7px 5px 7px 10px;
+    position: absolute;
+    cursor:pointer;
+    z-index: 1;
 	}
 }
+
+.#{$nv-prefix}item ##{$nv-prefix}caret {
+  font-size: 7px;
+  width: 8px;
+  padding: 5px;
+  cursor: pointer;
+  @include opacity(0.7);
+
+  &:hover {
+    @include opacity(1);
+  }
+}
+
 .#{$nv-prefix}item .#{$nv-prefix}title-c {
   @extend .#{$app-prefix}bg-main;
 }
-.#{$nv-prefix}item .#{$nv-prefix}title {
+
+.#{$nv-prefix}title {
   background-color: $mainDklColor;
-  font-size: 13px;
+  font-size: 11px;
   letter-spacing: 1px;
-  padding: 7px 10px 7px 25px;
+  padding: 3px 10px 5px 30px;
   border-bottom: 1px solid $mainDkColor;
   border-top: 1px solid $mainLhColor;
-  cursor:pointer;
+  display: flex;
+  align-items: center;
 }
+
 .#{$nv-prefix}item .#{$nv-prefix}children .#{$nv-prefix}title{
 	border-left: 1px solid lighten($mainDkColor,2%);
 }
 .#{$nv-prefix}item > .#{$nv-prefix}children {
-  margin-left: 15px;
+  margin-left: 7px;
   display: none;
 }
 .#{$nv-prefix}item.open > .#{$nv-prefix}children { display: block; }
 .#{$nv-prefix}item > .#{$nv-prefix}no-chld > ##{$nv-prefix}caret::before{ content:''; }
 .#{$nv-prefix}no-chld > ##{$nv-prefix}caret{ display:none; }
 .#{$nv-prefix}item > ##{$nv-prefix}move {
-	color: darken($fontColor, 20%);
 	position: absolute;
 	cursor: move;
   font-size: 12px;
   right: 0; top: 0;
   padding: 7px 10px 7px 5px;
 }
+/*
 .#{$nv-prefix}item{
 	&.#{$nv-prefix}selected{
 		border: 2px solid $colorBlue;
 	}
+}
+*/
+.#{$nv-prefix}selected .#{$nv-prefix}title {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.#{$nv-prefix}nav-item-edit {
+  visibility: hidden;
+  padding: 5px;
+  font-size: 10px;
+  @include opacity(0.7);
+
+  &:hover {
+    @include opacity(1);
+  }
+}
+
+.#{$nv-prefix}title-c:hover {
+
+  .#{$nv-prefix}nav-item-edit {
+    visibility: visible;
+    cursor: pointer;
+  }
+}
+
+.#{$app-prefix}nav-comp-name {
+  padding: 5px;
+  box-sizing: content-box;
 }
 
 /************* END Navigator *************/
@@ -643,82 +734,10 @@ ol.example li.placeholder:before {position: absolute;}
 		content:  "\f03e";
 	}
 }
-/***********  END Components *************/
 
+$lightBorder: rgba(255, 255, 255, 0.05);
 
-/********* Inputs **********/
-
-$inputFontColor:  $mainLhlColor; /*#d5d5d5*/
-$darkBorder:    rgba(0, 0, 0, 0.15); /*303030*/
-$lightBorder:   rgba(255, 255, 255, 0.05); /*414141*/
-$darkTextShadow:  $mainDkColor; /*#252525*/
-$arrowColor:    $mainLhlColor; /*b1b1b1*/
-
-.#{$app-prefix}label {
-  line-height: 18px;
-}
-
-.#{$app-prefix}field {
-  background-color: $mainDkColor;/*353535*/
-  border: 1px solid rgba(0, 0, 0, 0.1);/*292929*/
-  box-shadow: 1px 1px 0 $mainLhColor;/*575757*/
-  border-radius: 2px;
-  box-sizing: border-box;
-  padding: 0 5px;
-  position: relative;
-
-  input, select{
-    @include appearance(none);
-    color: $inputFontColor;
-    border:none;
-    background-color: transparent;
-    width: 100%;
-    position: relative;
-    padding: 3px 0;
-    z-index:1;
-  }
-
-  select{
-    height: 20px;
-  }
-
-  option{
-    padding: 5px 0;
-  }
-
-  .#{$app-prefix}sel-arrow {
-    height: 100%; width: 9px;
-    position: absolute;
-    right: 0; top: 0;
-    z-index: 0;
-  }
-  .#{$app-prefix}d-s-arrow {
-    bottom: 7px;
-    border-top: 4px solid $arrowColor;
-    position: absolute;
-    height: 0; width: 0;
-    border-left: 3px solid transparent;
-    border-right: 4px solid transparent;
-    cursor:pointer;
-  }
-}
-
-.#{$app-prefix}add-trasp {
-  background: none;
-  border: none;
-  color: $fontColor;
-  cursor: pointer;
-  font-size: 1em;
-  border-radius: 2px;
-  @include opacity(0.75);
-
-  &:hover{  @include opacity(1); }
-  &:active{
-    background-color: rgba(0, 0, 0, 0.2);
-  }
-}
-
-/********* END Inputs **********/
+@import "gjs_inputs";
 
 /********* Device Manager **********/
 
@@ -800,16 +819,14 @@ $arrowColor:    $mainLhlColor; /*b1b1b1*/
 
     input, select {
       background-color: transparent;
-      color: $inputFontColor;
+      color: $mainLhlColor;
       border:none;
       width: 100%;
     }
 	  input {
 		  box-sizing: border-box;
-		  padding: 3px 21px 3px 0;
 		}
 		select {
-      padding: 2px 10px 2px 2px;
 		  position: relative;
 		  z-index:1;
 		  @include appearance(none);
@@ -818,7 +835,7 @@ $arrowColor:    $mainLhlColor; /*b1b1b1*/
 
     select:-moz-focusring{
       color: transparent;
-      text-shadow: 0 0 0 $inputFontColor;
+      text-shadow: 0 0 0 $mainLhlColor;
     }
 
     select:focus, input:focus{
@@ -829,7 +846,7 @@ $arrowColor:    $mainLhlColor; /*b1b1b1*/
 		  position: absolute;
 		  right: 10px; top: 3px;
 		  font-size: 10px;
-		  color: $arrowColor;
+		  color: $mainLhlColor;
 		  cursor:pointer;
 		}
 
@@ -850,11 +867,11 @@ $arrowColor:    $mainLhlColor; /*b1b1b1*/
 		}
 
 		.#{$sm-prefix}u-arrow {
-		  border-bottom: 4px solid $arrowColor;
+		  border-bottom: 4px solid $mainLhlColor;
 		  top: 4px;
 		}
 		.#{$sm-prefix}d-arrow, .#{$sm-prefix}d-s-arrow, .#{$clm-prefix}d-s-arrow{
-		  border-top: 4px solid $arrowColor;
+		  border-top: 4px solid $mainLhlColor;
 		  bottom: 4px;
 		}
 		.#{$sm-prefix}d-s-arrow, .#{$clm-prefix}d-s-arrow{ bottom: 7px; }
@@ -863,7 +880,7 @@ $arrowColor:    $mainLhlColor; /*b1b1b1*/
 		  background-color: $mainDkColor;/*353535*/
 		  border: 1px solid rgba(0, 0, 0, 0.1);/*292929*/
 		  box-shadow: 1px 1px 0 $mainLhColor;/*575757*/
-		  color: $inputFontColor;
+		  color: $mainLhlColor;
 		  border-radius: 2px;
 		  box-sizing: border-box;
 		  padding: 0 5px;
@@ -874,7 +891,7 @@ $arrowColor:    $mainLhlColor; /*b1b1b1*/
     }
 		&.#{$sm-prefix}select{ padding:0; }
 		&.#{$sm-prefix}select select{ height: 20px; }
-		&.#{$sm-prefix}select option { margin: 5px 0;}
+		&.#{$sm-prefix}select option { padding: 3px 0;}
 		&.#{$sm-prefix}composite{
 			background-color: rgba(0,0,0,0.1);
 			border: 1px solid rgba(0, 0, 0, 0.25);
@@ -906,7 +923,7 @@ $arrowColor:    $mainLhlColor; /*b1b1b1*/
 
 	.#{$sm-prefix}list .#{$sm-prefix}el{
 		float:left;
-		border-left: 1px solid $darkTextShadow;
+		border-left: 1px solid $mainDkColor;
 
 		&:first-child{border:none}
 		&:hover{background: $mainDkColor; }
@@ -973,10 +990,6 @@ $arrowColor:    $mainLhlColor; /*b1b1b1*/
 		}
 
 		.#{$sm-prefix}layers {
-		  background-color: rgba(0,0,0,0.13);
-		  border: 1px solid rgba(0,0,0,0.13);
-		  box-shadow: 1px 1px 0 $mainLhColor;
-		  border-radius: 2px;
 		  margin-top: 5px;
 		  min-height: 30px;
 		}
@@ -1071,7 +1084,8 @@ $arrowColor:    $mainLhlColor; /*b1b1b1*/
   .#{$sm-prefix}color-picker {
     background-color: $fontColor;
     cursor: pointer;
-    height: 100%; width: 100%;
+    height: 16px;
+    width: 100%;
     margin-top: -16px;
     box-shadow: 0 0 1px $mainDkColor;
     border-radius: 1px;
@@ -1105,24 +1119,49 @@ $arrowColor:    $mainLhlColor; /*b1b1b1*/
 
 /********* Block manager **********/
 
-.#{$app-prefix}blocks-c{
+.#{$app-prefix}blocks-c {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
 }
-.#{$app-prefix}block{
+.#{$app-prefix}block {
   @include user-select(none);
+  @extend .#{$app-prefix}bg-main;
+
   width: 45%;
   padding: 1em;
   box-sizing: border-box;
   height: 90px;
   cursor:all-scroll;
-  margin: 2.5%;
   font-size: 11px;
   font-weight: lighter;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+  margin: 10px 2.5% 5px;
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease 0s;
+  transition-property: box-shadow, color;
+
+  &:hover {
+    box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.15);
+  }
+}
+
+.#{$app-prefix}block.fa {
+  font-size: 2em;
+  line-height: 2em;
+  padding: 11px;
+}
+
+.#{$app-prefix}block-label {
+  line-height: normal;
+  font-size: 0.65rem;
+  font-weight: normal;
+  font-family: Helvetica, sans-serif;
 }
 
 .#{$app-prefix}block.#{$app-prefix}bdrag{
@@ -1163,7 +1202,6 @@ $paddElClm: 5px 6px;
 	}
 
 	##{$clm-prefix}tags-field{
-		@extend .#{$sm-prefix}field.#{$sm-prefix}integer;
 		clear:both;
 		padding: 5px;
 		margin-bottom: 5px;
@@ -1174,7 +1212,7 @@ $paddElClm: 5px 6px;
 	}
 
 	##{$clm-prefix}add-tag{
-		background-color: rgba(255, 255, 255, 0.2);
+		background-color: rgba(255, 255, 255, 0.15);
 		border-radius: 2px;
     padding: $paddElClm;
     box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.2) inset;
@@ -1205,12 +1243,14 @@ $paddElClm: 5px 6px;
 		font-size: 20px;
     line-height: 0;
     cursor:pointer;
+    color: rgba(255, 255, 255, 0.9);
     @extend  .no-select;
     &:hover{
     	@include opacity(0.7);
     }
 	}
 	##{$clm-prefix}checkbox {
+    color: rgba(255, 255, 255, 0.9);
 		vertical-align: middle;
 		cursor: pointer;
 		font-size: 9px;
@@ -1219,6 +1259,11 @@ $paddElClm: 5px 6px;
 	##{$clm-prefix}tag-label {
 		cursor: text;
 		@extend  .no-select;
+
+    input {
+      width: auto;
+      padding: 0 4px;
+    }
 	}
 }
 /********* END Class manager **********/
@@ -1246,6 +1291,7 @@ $paddElClm: 5px 6px;
   	@extend .#{$app-prefix}bg-main;
     @extend .#{$app-prefix}color-main;
   	text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.05);
+    animation: #{$app-prefix}slide-down 0.215s;
   	margin: 30px auto 0;
   	max-width: 850px;
   	width: 90%;
@@ -1258,7 +1304,11 @@ $paddElClm: 5px 6px;
    		@extend .btn-cl;
    		position: absolute;
    		right: 15px; top: 5px;
-	}
+    }
+}
+
+.#{$mdl-prefix}active .#{$mdl-prefix}dialog {
+  animation: #{$mdl-prefix}slide-down .216s;
 }
 
 .#{$mdl-prefix}header, .#{$mdl-prefix}content{
@@ -1281,24 +1331,29 @@ $paddElClm: 5px 6px;
 }
 
 /********* Assets Manager **********/
-.#{$am-prefix}assets{
+.#{$am-prefix}assets {
   height: 290px;
   overflow: auto;
   clear: both;
 }
 
-.#{$am-prefix}assets-header{
+.#{$am-prefix}assets-header {
   padding: 5px;
 }
 
-.#{$am-prefix}add-asset{
-  input{
+.#{$am-prefix}add-asset {
+  .#{$am-prefix}add-field {
     width: 70%;
+    float: left;
   }
   button{
     width: 25%;
     float: right;
   }
+}
+
+.#{$am-prefix}add-field input {
+  padding: 6px;
 }
 
 .#{$am-prefix}assets-cont {
@@ -1384,7 +1439,7 @@ $uploadPadding:	150px 10px;
 
 	> form {
 	  background-color: $mainDklColor;
-	  border: 2px dashed #999999;
+	  border: 2px dashed;
 	  border-radius: 3px;
 	  position: relative;
 	  text-align: center;
@@ -1456,7 +1511,7 @@ $uploadPadding:	150px 10px;
   position: absolute;
   border-radius: 3px;
   overflow: hidden;
-  z-index: 5;
+  z-index: 10;
 
   .#{$rte-prefix}btn {
   	@extend .#{$app-prefix}color-main;
@@ -1536,7 +1591,36 @@ $uploadPadding:	150px 10px;
   padding:5px 10px 0;
 }
 .sp-palette .sp-thumb-el, .sp-palette .sp-thumb-el:hover{
-  border: 1px solid rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.9);
 }
 
-.#{$app-prefix}hidden{ display: none; }
+.sp-palette .sp-thumb-el:hover, .sp-palette .sp-thumb-el.sp-thumb-active {
+  border-color: rgba(0, 0, 0, 0.9);
+}
+
+
+.#{$app-prefix}hidden {
+  display: none;
+}
+
+@keyframes #{$app-prefix}slide-down {
+  0% {
+      transform: translate(0, -3rem);
+      opacity: 0;
+  }
+  100% {
+      transform: translate(0, 0);
+      opacity: 1;
+  }
+}
+
+@keyframes #{$app-prefix}slide-up {
+  0% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(0, -3rem);
+    opacity: 0;
+  }
+}

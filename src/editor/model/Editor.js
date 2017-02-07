@@ -15,6 +15,7 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
 				changesCount:	0,
 				storables: [],
 				toLoad: [],
+				opened: {},
 				device: '',
 			},
 
@@ -311,7 +312,7 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
 				if(!cmp || !cm)
 					return;
 
-				var wrp	= cmp.getComponent();
+				var wrp	= cmp.getComponents();
 				return cm.getCode(wrp, 'json');
 			},
 
@@ -367,8 +368,10 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
 				if(!cmp || !cm || !cssc)
 					return;
 
-				var wrp	= cmp.getComponent();
-				return cm.getCode(wrp, 'css', cssc);
+				var wrp = cmp.getComponent();
+				var protCss = this.config.protectedCss;
+
+				return protCss + cm.getCode(wrp, 'css', cssc);
 			},
 
 			/**
@@ -467,6 +470,25 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
 					return;
 				command.stop(this, this);
 				this.defaultRunning = 0;
+			},
+
+			/**
+			 * Update canvas dimensions and refresh data useful for tools positioning
+			 * @private
+			 */
+			refreshCanvas: function () {
+	      this.set('canvasOffset', this.get('Canvas').getOffset());
+			},
+
+			/**
+			 * Clear all selected stuf inside the window, sometimes is useful to call before
+			 * doing some dragging opearation
+			 * @param {Window} win If not passed the current one will be used
+			 * @private
+			 */
+			clearSelection: function (win) {
+				var w = win || window;
+				w.getSelection().removeAllRanges();
 			},
 
 		});

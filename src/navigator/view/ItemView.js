@@ -8,12 +8,13 @@ define(['backbone', 'text!./../template/item.html','require'],
 
 		template: _.template(ItemTemplate),
 
-		initialize: function(o){
-			this.opt 			= o;
-			this.config		= o.config;
-			this.em 			= o.config.em;
-			this.sorter		= o.sorter || {};
-			this.pfx			= this.config.stylePrefix;
+		initialize: function(o) {
+			this.opt = o;
+			this.config = o.config;
+			this.em = o.config.em;
+			this.ppfx = this.em.get('Config').stylePrefix;
+			this.sorter = o.sorter || {};
+			this.pfx = this.config.stylePrefix;
 			if(typeof this.model.get('open') == 'undefined')
 				this.model.set('open',false);
 			this.listenTo(this.model.components, 'remove add change reset', this.checkChildren);
@@ -21,12 +22,20 @@ define(['backbone', 'text!./../template/item.html','require'],
 			this.listenTo(this.model, 'change:status', this.updateStatus);
 			this.listenTo(this.model, 'change:open', this.updateOpening);
 			this.className	= this.pfx + 'item no-select';
-			this.events		= {};
-			this.events['click > #'+this.pfx+'btn-eye']	= 'toggleVisibility';
-			this.events['click .'+this.pfx+'title']		= 'toggleOpening';
-			this.$el.data("model", this.model);
+			this.editBtnCls = this.pfx + 'nav-item-edit';
+			this.inputNameCls = this.ppfx + 'nav-comp-name';
+			this.caretCls = this.ppfx + 'nav-item-caret';
+			this.titleCls = this.pfx + 'title';
+			this.customNameProp = 'custom-name';
+			this.events = {};
+			this.events['click > #'+this.pfx+'btn-eye'] = 'toggleVisibility';
+			this.events['click .' + this.caretCls] = 'toggleOpening';
+			this.events['click .' + this.titleCls] = 'handleSelect';
+			this.events['click .' + this.editBtnCls] = 'handleEdit';
+			this.events['blur .' + this.inputNameCls] = 'handleEditEnd';
 
-			//TODO listen
+			this.$el.data('model', this.model);
+			this.$el.data('collection', this.model.get('components'));
 
 			if(o.config.sortable)
 				this.events['mousedown > #'+this.pfx+'move']	= 'startSort';
@@ -35,17 +44,52 @@ define(['backbone', 'text!./../template/item.html','require'],
 		},
 
 		/**
+		 * Handle the edit of the component name
+		 */
+		handleEdit: function(e) {
+			e.stopPropagation();
+			var inputName = this.getInputName();
+			inputName.readOnly = false;
+			inputName.focus();
+		},
+
+		/**
+		 * Handle with the end of editing of the component name
+		 */
+		handleEditEnd: function (e) {
+			e.stopPropagation();
+			var inputName = this.getInputName();
+			inputName.readOnly = true;
+			this.model.set(this.customNameProp, inputName.value);
+		},
+
+		/**
+		 * Get the input containing the name of the component
+		 * @return {HTMLElement}
+		 */
+		getInputName: function () {
+			if(!this.inputName) {
+				this.inputName = this.el.querySelector('.' + this.inputNameCls);
+			}
+			return this.inputName;
+		},
+
+		/**
 		 * Update item opening
 		 *
 		 * @return void
 		 * */
 		updateOpening: function (){
-			if(this.model.get('open')){
+			var opened = this.opt.opened || {};
+			var model = this.model;
+			if(model.get('open')){
 				this.$el.addClass("open");
 				this.$caret.addClass('fa-chevron-down');
+				opened[model.cid] = model;
 			}else{
 				this.$el.removeClass("open");
 				this.$caret.removeClass('fa-chevron-down');
+				delete opened[model.cid];
 			}
 		},
 
@@ -58,19 +102,28 @@ define(['backbone', 'text!./../template/item.html','require'],
 		toggleOpening: function(e){
 			e.stopPropagation();
 
+			if(!this.model.components.length)
+				return;
+
+			this.model.set('open', !this.model.get('open') );
+		},
+
+		/**
+		 * Handle component selection
+		 * @return {[type]} [description]
+		 */
+		handleSelect: function (e) {
+			e.stopPropagation();
+
 			// Selection
 			if(this.em){
-				var md 	= this.em.get('selectedComponent');
+				var md = this.em.get('selectedComponent');
 				if(md){
 						md.set('status','');
 						this.model.set('status','selected');
 						this.em.set('selectedComponent', this.model);
 				}
 			}
-
-			if(!this.model.components.length)
-				return;
-			this.model.set('open', !this.model.get('open') );
 		},
 
 		/**
@@ -78,8 +131,10 @@ define(['backbone', 'text!./../template/item.html','require'],
 		 * @param	Event
 		 * */
 		startSort: function(e){
-			if(this.sorter)
-				this.sorter.startMove(this, e);
+			if (this.sorter) {
+				//this.sorter.startMove(this, e);
+				this.sorter.startSort(e.target);
+			}
 		},
 
 		/**
@@ -161,7 +216,7 @@ define(['backbone', 'text!./../template/item.html','require'],
 		 * @return void
 		 * */
 		checkChildren: function(){
-			var c	= this.model.components.length,
+			var c	= this.countChildren(this.model),
 				pfx	= this.pfx,
 				tC = '> .' + pfx + 'title-c > .' + pfx + 'title';
 			if(!this.$counter)
@@ -176,24 +231,50 @@ define(['backbone', 'text!./../template/item.html','require'],
 			}
 		},
 
-		render : function(){
-			var pfx	= this.pfx,
-				vis	= this.isVisible();
+		/**
+		 * Count children inside model
+		 * @param  {Object} model
+		 * @return {number}
+		 * @private
+		 */
+		countChildren: function(model){
+			var count = 0;
+			model.components.each(function(m){
+				var isCountable = this.opt.isCountable;
+				var hide = this.config.hideTextnode;
+				if(isCountable && !isCountable(m, hide))
+					return;
+				count++;
+			}, this);
+			return count;
+		},
+
+		render: function(){
+			var pfx	= this.pfx;
+			var vis	= this.isVisible();
+			var count = this.countChildren(this.model);
+
 			this.$el.html( this.template({
-				title		: this.model.getName(),
-				addClass	: (this.model.components.length ? '' : pfx+'no-chld'),
-				count		: this.model.components.length,
-				visible		: vis,
-				hidable		: this.config.hidable,
-				prefix		: pfx
+				title: this.model.get(this.customNameProp) || this.model.getName(),
+				addClass: (count ? '' : pfx+'no-chld'),
+				editBtnCls: this.editBtnCls,
+				inputNameCls: this.inputNameCls,
+				caretCls: this.caretCls,
+				count: count,
+				visible: vis,
+				hidable: this.config.hidable,
+				prefix: pfx,
+				ppfx: this.ppfx
 			}));
+
 			if(typeof ItemsView == 'undefined')
 				ItemsView = require('./ItemsView');
-			this.$components	= new ItemsView({
+			this.$components = new ItemsView({
 				collection 	: this.model.components,
-				config		: this.config,
-				sorter		: this.sorter,
-				parent		: this.model
+				config: this.config,
+				sorter: this.sorter,
+				opened: this.opt.opened,
+				parent: this.model
 			}).render().$el;
 			this.$el.find('.'+ pfx +'children').html(this.$components);
 			this.$caret = this.$el.find('> .' + pfx + 'title-c > .' + pfx + 'title > #' + pfx + 'caret');

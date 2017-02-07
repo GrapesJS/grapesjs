@@ -15,6 +15,7 @@
  * * [store](#store)
  * * [load](#load)
  * * [getContainer](#getcontainer)
+ * * [refresh](#refresh)
  * * [on](#on)
  * * [trigger](#trigger)
  * * [render](#render)
@@ -26,8 +27,10 @@
  * var editor = grapesjs.init({...});
  * ```
  * Available events
- * #run:{commandName}
- * #stop:{commandName}
+ * #add:component - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
+ * #canvasScroll - Triggered when the canvas is scrolled
+ * #run:{commandName} - Triggered when some command is called to run (eg. editor.runCommand('preview'))
+ * #stop:{commandName} - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
  * #load - When the editor is loaded
  *
  * @module Editor
@@ -297,32 +300,38 @@ define(function (require){
 				 * Execute command
 				 * @param {string} id Command ID
 				 * @param {Object} options Custom options
+				 * @return {*} The return is defined by the command
 				 * @example
 				 * editor.runCommand('myCommand', {someValue: 1});
 				 */
 				runCommand: function(id, options) {
+					var result;
 					var command = em.get('Commands').get(id);
 
 					if(command){
-						command.run(this, this, options);
+						result = command.run(this, this, options);
 						this.trigger('run:' + id);
 					}
+					return result;
 				},
 
 				/**
 				 * Stop the command if stop method was provided
 				 * @param {string} id Command ID
 				 * @param {Object} options Custom options
+				 * @return {*} The return is defined by the command
 				 * @example
 				 * editor.stopCommand('myCommand', {someValue: 1});
 				 */
 				stopCommand: function(id, options) {
+					var result;
 					var command = em.get('Commands').get(id);
 
 					if(command){
-						command.stop(this, this, options);
+						result = command.stop(this, this, options);
 						this.trigger('stop:' + id);
 					}
+					return result;
 				},
 
 				/**
@@ -342,11 +351,59 @@ define(function (require){
 				},
 
 				/**
-				 * Returns container element. The one which was indicated as 'container' on init method
+				 * Returns container element. The one which was indicated as 'container'
+				 * on init method
 				 * @return {HTMLElement}
 				 */
 				getContainer: function(){
 					return c.el;
+				},
+
+				/**
+				 * Update editor dimensions and refresh data useful for positioning of tools
+				 *
+				 * This method could be useful when you update, for example, some position
+				 * of the editor element (eg. canvas, panels, etc.) with CSS, where without
+				 * refresh you'll get misleading position of tools (eg. rich text editor,
+				 * component highlighter, etc.)
+				 *
+				 * @private
+				 */
+				refresh: function () {
+					em.refreshCanvas();
+				},
+
+				/**
+				 * Replace the built-in Rich Text Editor with a custom one.
+				 * @param {Object} obj Custom RTE Interface
+				 * @example
+				 * editor.setCustomRte({
+				 * 	// Function for enabling custom RTE
+				 * 	// el is the HTMLElement of the double clicked Text Component
+				 * 	// rte is the same instance you have returned the first time you call
+				 * 	// enable(). This is useful if need to check if the RTE is already enabled so
+				 * 	// ion this case you'll need to return the RTE and the end of the function
+				 * 	enable: function(el, rte) {
+				 * 		rte = new MyCustomRte(el, {}); // this depends on the Custom RTE API
+				 * 		...
+				 * 		return rte; // return the RTE instance
+				 * 	},
+				 *
+				 * 	// Disable the editor, called for example when you unfocus the Text Component
+				 *  disable: function(el, rte) {
+				 * 		rte.blur(); // this depends on the Custom RTE API
+				 *  }
+				 *
+				 * // Called when the Text Component is focused again. If you returned the RTE instance
+				 * // from the enable function, the enable won't be called again instead will call focus,
+				 * // in this case to avoid double binding of the editor
+				 *  focus: function (el, rte) {
+				 *   rte.focus(); // this depends on the Custom RTE API
+				 *  }
+				 * });
+				 */
+				setCustomRte: function (obj) {
+					this.RichTextEditor.customRte = obj;
 				},
 
 				/**

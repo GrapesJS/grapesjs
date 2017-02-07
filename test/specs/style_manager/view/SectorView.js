@@ -41,7 +41,6 @@ define([path + 'SectorView', 'StyleManager/model/Sector'],
               var props = sector.querySelector('.properties');
               props.should.be.ok;
               sector.classList.contains('open').should.equal(true);
-              props.style.display.should.equal('block');
             });
 
             it('No properties', function() {
@@ -86,7 +85,7 @@ define([path + 'SectorView', 'StyleManager/model/Sector'],
                 view.remove();
               });
 
-              it('Rendered correctly', function() {
+              it('Rendered correctly2', function() {
                 var sector = view.el;
                 var props = sector.querySelector('.properties');
                 sector.querySelector('.title').innerHTML.should.contain('TestName');

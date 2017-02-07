@@ -64,8 +64,9 @@ define(['GrapesJS', 'PluginManager', 'chai'],
         var editor = obj.init(config);
         var html = editor.getHtml();
         var css = editor.getCss();
+        var protCss = editor.getConfig().protectedCss;
         (html ? html : '').should.be.empty;
-        (css ? css : '').should.be.empty;
+        (css ? css : '').should.equal(protCss);
         editor.getComponents().length.should.equal(0);
         editor.getStyle().length.should.equal(0);
       });
@@ -92,8 +93,9 @@ define(['GrapesJS', 'PluginManager', 'chai'],
         var editor = obj.init(config);
         var html = editor.getHtml();
         var css = editor.getCss();
+        var protCss = editor.getConfig().protectedCss;
         (html ? html : '').should.equal(htmlString);
-        (css ? css : '').should.equal('.test2{color:red;}');// .test3 is discarded in css
+        (css ? css : '').should.equal(protCss + '.test2{color:red;}');// .test3 is discarded in css
         editor.getComponents().length.should.equal(2);
         editor.getStyle().length.should.equal(2);// .test3 is still here
       });

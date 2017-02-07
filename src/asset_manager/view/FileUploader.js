@@ -83,10 +83,10 @@ define(['backbone', 'text!./../template/fileUploader.html'],
 
 		render : function(){
 			this.$el.html( this.template({
-				title		: this.config.uploadText,
-				uploadId	: this.uploadId,
-				disabled	: this.disabled,
-				pfx			: this.pfx
+				title: this.config.uploadText,
+				uploadId: this.uploadId,
+				disabled: this.disabled,
+				pfx: this.pfx
 			}) );
 			this.initDrop();
 			this.$el.attr('class', this.pfx + 'file-uploader');

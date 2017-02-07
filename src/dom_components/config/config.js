@@ -1,16 +1,17 @@
 define(function () {
 	return {
-		stylePrefix		: 'comp-',
+		stylePrefix: 'comp-',
 
-		wrapperId			: 'wrapper',
+		wrapperId: 'wrapper',
 
 		// Default wrapper configuration
-		wrapper			: {
-			removable : false,
-			copyable	: false,
-			stylable	: ['background','background-color','background-image', 'background-repeat','background-attachment','background-position'],
-			draggable	: false,
-			badgable	: false,
+		wrapper: {
+			//classes: ['body'],
+			removable: false,
+			copyable: false,
+			stylable: ['background','background-color','background-image', 'background-repeat','background-attachment','background-position'],
+			draggable: false,
+			badgable: false,
 			components: [],
 		},
 

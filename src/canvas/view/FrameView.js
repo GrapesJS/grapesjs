@@ -8,7 +8,8 @@ function(Backbone) {
     tagName: 'iframe',
 
     attributes: {
-      src: 'about:blank'
+      src: 'about:blank',
+      allowfullscreen: 'allowfullscreen'
     },
 
     initialize: function(o) {

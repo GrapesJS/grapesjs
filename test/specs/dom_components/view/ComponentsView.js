@@ -1,6 +1,6 @@
 var path = 'DomComponents/view/';
-define([path + 'ComponentsView', 'DomComponents/model/Components'],
-  function(ComponentsView, Components) {
+define(['DomComponents', path + 'ComponentsView', 'DomComponents/model/Components'],
+  function(DomComponents, ComponentsView, Components) {
 
     return {
       run : function(){
@@ -10,6 +10,8 @@ define([path + 'ComponentsView', 'DomComponents/model/Components'],
             var $fixture;
             var model;
             var view;
+            var dcomp;
+            var compOpts;
 
             before(function () {
               $fixtures = $("#fixtures");
@@ -17,9 +19,14 @@ define([path + 'ComponentsView', 'DomComponents/model/Components'],
             });
 
             beforeEach(function () {
-              model = new Components([]);
+              dcomp = new DomComponents();
+              compOpts = {
+                defaultTypes: dcomp.componentTypes,
+              };
+              model = new Components([], compOpts);
               view = new ComponentsView({
-                collection: model
+                collection: model,
+                defaultTypes: dcomp.componentTypes,
               });
               $fixture.empty().appendTo($fixtures);
               $fixture.html(view.render().el);

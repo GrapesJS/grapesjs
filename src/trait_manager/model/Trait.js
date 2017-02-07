@@ -7,17 +7,22 @@ define(['backbone'],
         type: 'text', // text, number, range, select
 				label: '',
         name: '',
+				min: '',
+				max: '',
         value: '',
 				target: '',
 				default: '',
 				placeholder: '',
+				changeProp: 0,
         options: [],
 			},
 
 			initialize: function(){
-				if(!this.get('target'))
-          throw new Error('Target not found');
-      },
+				if (this.get('target')) {
+					this.target = this.get('target');
+					this.unset('target');
+				}
+			},
 
     });
 	});
