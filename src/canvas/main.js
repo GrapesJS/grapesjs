@@ -190,26 +190,47 @@ define(function(require) {
 			 * return empty string as width
 			 * @param {HTMLElement} target The target in this case could be the toolbar
 			 * @param {HTMLElement} element The element on which I'd attach the toolbar
-			 * @param {Boolean} toRight Set to true if you want the toolbar attached to the right
+			 * @param {Object} options Custom options
+			 * @param {Boolean} options.toRight Set to true if you want the toolbar attached to the right
 			 * @return {Object}
 			 */
-			getTargetToElementDim: function (target, element, toRight) {
+			getTargetToElementDim: function (target, element, options) {
+				var opts = options || {};
 				var canvasPos = CanvasView.getPosition();
 				var pos = CanvasView.getElementPos(element);
+				var toRight = options.toRight || 0;
+				var targetHeight = opts.targetHeight || target.offsetHeight;
+				var targetWidth = opts.targetWidth || target.offsetWidth;
+				var eventToTrigger = opts.event || null;
 
-				var elTop = pos.top - target.offsetHeight;
+				var elTop = pos.top - targetHeight;
 				var elLeft = pos.left;
 				elLeft += toRight ? pos.width : 0;
-				elLeft = toRight ? (elLeft - target.offsetWidth) : elLeft;
+				elLeft = toRight ? (elLeft - targetWidth) : elLeft;
 
 				var leftPos = elLeft < canvasPos.left ? canvasPos.left : elLeft;
 				var topPos = elTop < canvasPos.top ? canvasPos.top : elTop;
 				topPos = topPos > (pos.top + pos.height) ? (pos.top + pos.height) : topPos;
 
-				return {
+				var result = {
 					top: topPos,
-					left: leftPos
+					left: leftPos,
+					elementTop: pos.top,
+					elementLeft: pos.left,
+					elementWidth: pos.width,
+					elementHeight: pos.height,
+					targetWidth: target.offsetWidth,
+					targetHeight: target.offsetHeight,
+					canvasTop: canvasPos.top,
+					canvasLeft: canvasPos.left,
 				};
+
+				// In this way I can catch data and also change the position strategy
+				if(eventToTrigger && c.em) {
+					c.em.trigger(eventToTrigger, result);
+				}
+
+				return result;
 			},
 
 			/**

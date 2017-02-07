@@ -330,65 +330,6 @@ require(['config/require-config'], function() {
 
 
     window.editor = editor;
-		editor.setCustomRte({
-
-			enable: function(el, rte) {
-				// Check if laready exists
-				if(rte && rte.status != 'destroyed') {
-					return rte;
-				}
-
-				el.contentEditable = true;
-				// Jumps on enter, bug: https://dev.ckeditor.com/ticket/9136
-
-				rteToolbar = editor.RichTextEditor.getToolbarEl();
-
-				[].forEach.call(rteToolbar.children, function(child) {
-					child.style.display = 'none';
-				});
-
-				rte = CKEDITOR.inline(el, {
-					startupFocus: true,
-					enterMode: CKEDITOR.ENTER_BR,
-					removePlugins: 'liststyle,tabletools,scayt,menubutton,contextmenu,resize',
-					extraPlugins: 'sharedspace',
-					sharedSpaces: {
-						top: rteToolbar,
-					}
-				});
-
-				// Make click event propogate
-				rte.on('contentDom', function() {
-					var editable = rte.editable();
-					editable.attachListener(editable, 'click', function() {
-						el.click();
-					});
-				});
-				return rte;
-			},
-
-			disable: function(el, rte) {
-				el.contentEditable = false;
-				rte.focusManager.blur(true);
-				console.log('disable ', rte);
-
-				//Prev
-				//el.contentEditable = false;
-				//rte.focusManager.blur(true);
-				//rte.destroy(true);
-				//rte = null;
-			},
-
-			focus: function (el, rte) {
-				if(rte.focusManager.hasFocus)
-					return;
-				console.log('focus on', rte);
-
-				//Prev
-				el.contentEditable = true;
-				rte.focus();
-			},
-		});
 
 	});
 });

@@ -121,8 +121,9 @@ define(function(require) {
       udpatePosition: function() {
 				var u = 'px';
 				var canvas = c.em.get('Canvas');
-				var pos = canvas.getTargetToElementDim(toolbar.el, this.lastEl, 1);
-				//console.log(toolbar.el, this.lastEl, pos);
+				var pos = canvas.getTargetToElementDim(toolbar.el, this.lastEl, {
+					event: 'rteToolbarPosUpdate',
+				});
 				var toolbarStyle = toolbar.el.style;
 				toolbarStyle.top = pos.top + u;
 				toolbarStyle.left = pos.left + u;
@@ -146,8 +147,6 @@ define(function(require) {
 				}
 
 				this.show();
-
-				//this.udpatePosition();
 
 				if(c.em) {
 					setTimeout(this.udpatePosition.bind(this), 0);
