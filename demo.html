@@ -12,7 +12,16 @@
     <script src="js/perfect-scrollbar.min.js"></script>
     <script src="js/toastr.min.js"></script>
     <style type="text/css">
-        body, html{ height: 100%; margin: 0; }
+        body, html{
+          height: 100%;
+          margin: 0;
+          overflow: hidden;
+        }
+        
+        iframe {
+            user-select: none;
+            -webkit-user-select: none;
+        }
 
          #wte-pn-options2.wte-pn-panel{box-shadow: none;}
         .icon-add-comp::before, .icon-comp100::before,.icon-comp50::before,.icon-comp30::before,.icon-rm::before{ content: '';}

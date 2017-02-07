@@ -63,7 +63,8 @@
 .gjs-sm-sector .gjs-sm-colorp-c,
 .gjs-sm-select option,
 .gjs-sm-unit option,
-.sp-container {
+.sp-container,
+.gjs-block {
   background-color: #463a3c;
 }
 
@@ -92,7 +93,7 @@
   border-radius: 3px;
   margin: 10px 2.5% 5px;
   box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.15);
-  transition: all 0.2s ease 0s;
+  transition: box-shadow 0.2s ease 0s;
 }
 
 .gjs-block:hover {
