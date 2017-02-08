@@ -2899,6 +2899,34 @@ div.gjs-select {
   right: 0;
   cursor: nwse-resize; }
 
+.gjs-resizing .gjs-highlighter,
+.gjs-resizing .gjs-badge {
+  display: none !important; }
+
+.gjs-resizing-tl * {
+  cursor: nwse-resize !important; }
+
+.gjs-resizing-tr * {
+  cursor: nesw-resize !important; }
+
+.gjs-resizing-tc * {
+  cursor: ns-resize !important; }
+
+.gjs-resizing-cl * {
+  cursor: ew-resize !important; }
+
+.gjs-resizing-cr * {
+  cursor: ew-resize !important; }
+
+.gjs-resizing-bl * {
+  cursor: nesw-resize !important; }
+
+.gjs-resizing-bc * {
+  cursor: ns-resize !important; }
+
+.gjs-resizing-br * {
+  cursor: nwse-resize !important; }
+
 .btn-cl, .gjs-mdl-dialog .gjs-mdl-btn-close, .gjs-am-assets-cont #gjs-am-close {
   opacity: 0.3;
   filter: alpha(opacity=30);

@@ -185,23 +185,36 @@ define(['backbone', './ComponentsView'],
 			initResize: function () {
 				var em = this.opts.config.em;
 				var editor = em ? em.get('Editor') : '';
+				var config = em ? em.get('Config') : '';
+				var pfx = config.stylePrefix || '';
+				var attrName = 'data-' + pfx + 'handler';
+				var resizeClass = pfx + 'resizing';
 				var model = this.model;
 				var modelToStyle;
+
+				var toggleBodyClass = function(method, e, opts) {
+					var handlerAttr = e.target.getAttribute(attrName);
+					var resizeHndClass = pfx + 'resizing-' + handlerAttr;
+					var classToAdd = resizeClass;// + ' ' +resizeHndClass;
+					if (opts.docs) {
+						opts.docs.find('body')[method](classToAdd);
+					}
+				};
 
 				if(editor && this.model.get('resizable')) {
 					editor.runCommand('resize', {
 						el: this.el,
 						options: {
-							onStart: function () {
+							onStart: function (e, opts) {
+								toggleBodyClass('addClass', e, opts);
 								modelToStyle = em.get('StyleManager').getModelToStyle(model);
-								// TODO disable component highlighting
 							},
+							// Update all positioned elements
 							onMove: function () {
-								// Update all positioned elements
 								editor.trigger('change:canvasOffset');
 							},
-							onEnd: function () {
-								// TODO enable component highlighting
+							onEnd: function (e, opts) {
+								toggleBodyClass('removeClass', e, opts);
 								editor.trigger('change:canvasOffset');
 							},
 							updateTarget: function(el, rect, store) {

@@ -156,6 +156,43 @@
   cursor: nwse-resize;
 }
 
+.#{$app-prefix}resizing .#{$app-prefix}highlighter,
+.#{$app-prefix}resizing .#{$app-prefix}badge {
+  display: none !important;
+}
+
+.#{$app-prefix}resizing-tl * {
+  cursor: nwse-resize !important;
+}
+
+.#{$app-prefix}resizing-tr * {
+  cursor: nesw-resize !important;
+}
+
+.#{$app-prefix}resizing-tc * {
+  cursor: ns-resize !important;
+}
+
+.#{$app-prefix}resizing-cl * {
+  cursor: ew-resize !important;
+}
+
+.#{$app-prefix}resizing-cr * {
+  cursor: ew-resize !important;
+}
+
+.#{$app-prefix}resizing-bl * {
+  cursor: nesw-resize !important;
+}
+
+.#{$app-prefix}resizing-bc * {
+  cursor: ns-resize !important;
+}
+
+.#{$app-prefix}resizing-br * {
+  cursor: nwse-resize !important;
+}
+
 .btn-cl {
   @include opacity(0.3);
 

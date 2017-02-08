@@ -228,7 +228,7 @@ define(function(require) {
 
       // Start callback
       if(typeof this.onStart === 'function') {
-        this.onStart(e);
+        this.onStart(e, {docs: doc});
       }
     },
 
@@ -282,7 +282,7 @@ define(function(require) {
 
       // Stop callback
       if(typeof this.onEnd === 'function') {
-        this.onEnd(e);
+        this.onEnd(e, {docs: doc});
       }
     },
 
