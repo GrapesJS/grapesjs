@@ -101,6 +101,7 @@ define(function(require) {
 				defaultCommands['open-assets'] = require('./view/OpenAssets');
 				defaultCommands.fullscreen = require('./view/Fullscreen');
 				defaultCommands.preview = require('./view/Preview');
+				defaultCommands.resize = require('./view/Resize');
 
 				defaultCommands['tlb-delete'] = {
 					run: function(ed){

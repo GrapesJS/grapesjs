@@ -4,6 +4,8 @@ define(function(require) {
 
     var Sorter = require('./Sorter');
 
+    var Resizer = require('./Resizer');
+
     return {
       /**
        * Name of the module
@@ -20,6 +22,8 @@ define(function(require) {
       },
 
       Sorter: Sorter,
+
+      Resizer: Resizer,
     };
   };
 

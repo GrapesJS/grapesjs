@@ -3,6 +3,10 @@ define(['backbone', './ComponentsView'],
 
 		return Backbone.View.extend({
 
+			events: {
+				'click': 'initResize',
+			},
+
 			className : function(){
 				return this.getClasses();
 			},
@@ -173,6 +177,46 @@ define(['backbone', './ComponentsView'],
 			 * */
 			eventCall: function(event){
 				event.viewResponse = this;
+			},
+
+			/**
+			 * Init component for resizing
+			 */
+			initResize: function () {
+				var em = this.opts.config.em;
+				var editor = em ? em.get('Editor') : '';
+				var model = this.model;
+				var modelToStyle;
+
+				if(editor && this.model.get('resizable')) {
+					editor.runCommand('resize', {
+						el: this.el,
+						options: {
+							onStart: function () {
+								modelToStyle = em.get('StyleManager').getModelToStyle(model);
+								// TODO disable component highlighting
+							},
+							onMove: function () {
+								// Update all positioned elements
+								editor.trigger('change:canvasOffset');
+							},
+							onEnd: function () {
+								// TODO enable component highlighting
+								editor.trigger('change:canvasOffset');
+							},
+							updateTarget: function(el, rect, store) {
+								if (!modelToStyle) {
+									return;
+								}
+								var style = _.clone(modelToStyle.get('style'));
+								style.width = rect.w;
+								style.height = rect.h;
+								modelToStyle.set('style', style, {avoidStore: !store});
+								em.trigger('targetStyleUpdated');
+							}
+						}
+					});
+				}
 			},
 
 			/**

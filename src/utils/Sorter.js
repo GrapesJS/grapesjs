@@ -104,6 +104,7 @@ define(function(require) {
       },
 
       /**
+       * //TODO Refactor, use canvas.getMouseRelativePos to get mouse's X and Y
        * Update the position of the helper
        * @param  {Event} e
        */

@@ -14,7 +14,7 @@ define(['backbone', './SectorView'],
 			this.listenTo( this.collection, 'add', this.addTo);
 			this.listenTo( this.collection, 'reset', this.render);
 			this.listenTo( this.target, 'change:selectedComponent targetClassAdded targetClassRemoved targetClassUpdated ' +
-				'targetStateUpdated change:device', this.targetUpdated);
+				'targetStateUpdated targetStyleUpdated change:device', this.targetUpdated);
 
 		},
 

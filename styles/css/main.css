@@ -2638,13 +2638,16 @@ $fontColorActive: #4f8ef7;
 .gjs-checker-bg, .checker-bg, .gjs-sm-sector .gjs-sm-property .gjs-sm-layer > #gjs-sm-preview-box, .gjs-clm-tags .gjs-sm-property .gjs-sm-layer > #gjs-sm-preview-box {
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg=="); }
 
-.gjs-no-user-select {
-  -moz-user-select: "none";
-  -khtml-user-select: "none";
-  -webkit-user-select: "none";
-  -ms-user-select: "none";
-  -o-user-select: "none";
-  user-select: "none"; }
+.gjs-no-user-select, .gjs-nav-comp-name {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none; }
+
+.gjs-no-pointer-events, .gjs-resizer-c {
+  pointer-events: none; }
 
 .gjs-bg-main, .gjs-off-prv, .gjs-select option,
 .gjs-clm-select option,
@@ -2797,7 +2800,8 @@ div.gjs-select {
     z-index: 10;
     opacity: 0.55;
     filter: alpha(opacity=55); }
-  .gjs-cv-canvas .gjs-highlighter, .gjs-cv-canvas .gjs-highlighter-sel {
+  .gjs-cv-canvas .gjs-highlighter,
+  .gjs-cv-canvas .gjs-highlighter-sel {
     position: absolute;
     outline: 1px solid #3b97e3;
     pointer-events: none; }
@@ -2835,10 +2839,70 @@ div.gjs-select {
   font-size: 0.8rem;
   cursor: pointer; }
 
+.gjs-resizer-c {
+  position: absolute;
+  z-index: 9; }
+
+.gjs-resizer-h {
+  pointer-events: all;
+  position: absolute;
+  border: 3px solid #3b97e3;
+  width: 10px;
+  height: 10px;
+  background-color: white; }
+
+.gjs-resizer-h-tl {
+  top: 0;
+  left: 0;
+  cursor: nwse-resize; }
+
+.gjs-resizer-h-tr {
+  top: 0;
+  right: 0;
+  cursor: nesw-resize; }
+
+.gjs-resizer-h-tc {
+  top: 0;
+  margin: 0 auto;
+  left: 0;
+  right: 0;
+  cursor: ns-resize; }
+
+.gjs-resizer-h-cl {
+  left: 0;
+  margin: auto 0;
+  top: 0;
+  bottom: 0;
+  cursor: ew-resize; }
+
+.gjs-resizer-h-cr {
+  margin: auto 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  cursor: ew-resize; }
+
+.gjs-resizer-h-bl {
+  bottom: 0;
+  left: 0;
+  cursor: nesw-resize; }
+
+.gjs-resizer-h-bc {
+  bottom: 0;
+  margin: 0 auto;
+  left: 0;
+  right: 0;
+  cursor: ns-resize; }
+
+.gjs-resizer-h-br {
+  bottom: 0;
+  right: 0;
+  cursor: nwse-resize; }
+
 .btn-cl, .gjs-mdl-dialog .gjs-mdl-btn-close, .gjs-am-assets-cont #gjs-am-close {
-  font-size: 25px;
   opacity: 0.3;
   filter: alpha(opacity=30);
+  font-size: 25px;
   cursor: pointer; }
   .btn-cl:hover, .gjs-mdl-dialog .gjs-mdl-btn-close:hover, .gjs-am-assets-cont #gjs-am-close:hover {
     opacity: 0.7;
@@ -2957,7 +3021,7 @@ ol.example li.placeholder:before {
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
   height: 100%;
   width: 100%;
-  pointer-events: 'none';
+  pointer-events: none;
   padding: 1.5px;
   outline: none; }
 

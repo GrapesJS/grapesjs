@@ -9,6 +9,7 @@ define(['./Component'],
 				src: '',
 				void: 1,
 				droppable: false,
+				resizable: true,
 				traits: ['alt'],
 				toolbar: [{
 					attributes: {class: 'fa fa-arrows'},

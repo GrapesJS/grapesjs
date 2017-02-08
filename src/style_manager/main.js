@@ -226,6 +226,38 @@ define(function(require) {
 			},
 
 			/**
+			 * Get what to style inside Style Manager. If you select the component
+			 * without classes the entity is the Component itself and all changes will
+			 * go inside its 'style' property. Otherwise, if the selected component has
+			 * one or more classes, the function will return the corresponding CSS Rule
+			 * @param  {Model} model
+			 * @return {Model}
+			 */
+			getModelToStyle: function (model) {
+				var classes = model.get('classes');
+
+				if(c.em && classes && classes.length) {
+					var previewMode = c.em.get('Config').devicePreviewMode;
+					var device = c.em.getDeviceModel();
+					var state = !previewMode ? model.get('state') : '';
+					var deviceW = device && !previewMode ? device.get('width') : '';
+					var cssC = c.em.get('CssComposer');
+
+					var valid = _.filter(classes.models, function(item) {
+						return item.get('active');
+					});
+
+					var CssRule = cssC.get(valid, state, deviceW);
+
+					if(CssRule) {
+						return CssRule;
+					}
+				}
+
+				return model;
+			},
+
+			/**
 			 * Render sectors and properties
 			 * @return	{HTMLElement}
 			 * */

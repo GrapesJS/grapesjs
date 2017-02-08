@@ -136,7 +136,11 @@ $fontV: 20;//random(1000)
 }
 
 .#{$app-prefix}no-user-select{
-	@include user-select('none');
+	@include user-select(none);
+}
+
+.#{$app-prefix}no-pointer-events{
+  pointer-events: none;
 }
 
 .#{$app-prefix}bg-main{
@@ -287,94 +291,9 @@ div.#{$app-prefix}select {
 }
 
 /*************  CANVAS  ****************/
-.#{$cv-prefix}canvas {
-  background-color: rgba(0, 0, 0, 0.15);
-  box-sizing: border-box;
-  position: absolute;
-  width: (100% - $leftWidth);
-  height: 100%;
-  bottom: 0; left: 0;
-  overflow: hidden;
-  padding-top: 40px;
-  z-index:1;
 
-  > iframe {
-    height: 100%;
-    outline: medium none;
-    width: 100%;
-    border: none;
-    margin: 0 auto;
-    display: block;
-  }
+@import "canvas";
 
-  .#{$app-prefix}ghost{
-    display: none;
-    pointer-events: none;
-    background-color: #5b5b5b;
-    border: 2px dashed #ccc;
-    position: absolute;
-    z-index: 10;
-    @include opacity(0.55);
-  }
-
-  .#{$app-prefix}highlighter, .#{$app-prefix}highlighter-sel{
-    position: absolute;
-    outline: 1px solid $colorBlue;
-    pointer-events: none;
-  }
-
-  .#{$app-prefix}highlighter-warning{
-    outline: 3px solid $colorYell;
-  }
-
-  .#{$app-prefix}highlighter-sel{
-    outline: 3px solid $colorBlue;
-  }
-
-  ##{$app-prefix}tools{
-    width: 100%;
-    position: absolute;
-    top: 0; left: 0;
-    outline: none;
-  }
-
-  	/* This simulate body behaviour */
-  	> div:first-child {
-  		background-color: #fff;
-  		position: relative;
-	    height: 100%;
-	    overflow: auto;
-	    width: 100%;
-	}
-}
-
-.#{$cv-prefix}canvas *{box-sizing: border-box;}
-
-.#{$app-prefix}frame{
-  transition: width 0.35s ease;
-}
-
-.#{$app-prefix}toolbar {
-  position: absolute;
-  background-color: $colorBlue;
-  color: white;
-  z-index: 10;
-}
-
-.#{$app-prefix}toolbar-item {
-  padding: 5px 7px;
-  font-size: 0.8rem;
-  cursor: pointer;
-}
-
-.btn-cl {
-  font-size: 25px;
-  @include opacity(0.3);
-  cursor: pointer;
-  &:hover{
-  	@include opacity(0.7);
-  }
-}
 /*************  RTE  ****************/
 #commands.panel {
     min-width: 35px;
@@ -474,7 +393,7 @@ ol.example li.placeholder:before {position: absolute;}
 	background-color: $colorGreen;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
 	height: 100%; width: 100%;
-	pointer-events: 'none';
+	pointer-events: none;
 	padding: 1.5px;
   outline: none;
 }
@@ -709,6 +628,7 @@ ol.example li.placeholder:before {position: absolute;}
 .#{$app-prefix}nav-comp-name {
   padding: 5px;
   box-sizing: content-box;
+  @extend .#{$app-prefix}no-user-select;
 }
 
 /************* END Navigator *************/

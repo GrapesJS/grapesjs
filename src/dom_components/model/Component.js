@@ -29,6 +29,9 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 				// True if it's possible to clone the component
 				copyable: true,
 
+				// Indicates if it possible to resize the component (at the moment implemented only on Image)
+				resizable: false,
+
 				// TODO
 				mirror: '',
 

@@ -145,6 +145,14 @@ define(function(require) {
 			},
 
 			/**
+			 * Returns resizer element
+			 * @return {HTMLElement}
+			 */
+			getResizerEl: function(){
+				return CanvasView.resizerEl;
+			},
+
+			/**
 			 * Render canvas
 			 * */
 			render: function() {
@@ -231,6 +239,37 @@ define(function(require) {
 				}
 
 				return result;
+			},
+
+			/**
+			 * Instead of simply returning e.clientX and e.clientY this function
+			 * calculates also the offset based on the canvas. This is helpful when you
+			 * need to get X and Y position while moving between the editor area and
+			 * canvas area, which is in the iframe
+			 * @param {Event} e
+			 * @return {Object}
+			 */
+			getMouseRelativePos: function (e, options) {
+				var opts = options || {};
+				var addTop = 0;
+				var addLeft = 0;
+				var subWinOffset = opts.subWinOffset;
+				var doc = e.target.ownerDocument;
+	      var win = doc.defaultView || doc.parentWindow;
+				var frame = win.frameElement;
+				var yOffset = subWinOffset ? win.pageYOffset : 0;
+				var xOffset = subWinOffset ? win.pageXOffset : 0;
+
+				if(frame) {
+					var frameRect = frame.getBoundingClientRect(); // maybe to cache ?!?
+					addTop = frameRect.top || 0;
+					addLeft = frameRect.left || 0;
+				}
+
+				return {
+					y: e.clientY + addTop - yOffset,
+					x: e.clientX + addLeft - xOffset,
+				};
 			},
 
 			/**
