@@ -4,17 +4,17 @@ define(['backbone'],
 		return Backbone.Model.extend({
 
 			defaults: {
-        type: 'text', // text, number, range, select
+				type: 'text', // text, number, range, select
 				label: '',
-        name: '',
+				name: '',
 				min: '',
 				max: '',
-        value: '',
+				value: '',
 				target: '',
 				default: '',
 				placeholder: '',
 				changeProp: 0,
-        options: [],
+				options: [],
 			},
 
 			initialize: function(){
@@ -24,5 +24,5 @@ define(['backbone'],
 				}
 			},
 
-    });
+		});
 	});

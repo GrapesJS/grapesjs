@@ -25,11 +25,11 @@ define(['backbone', 'Abstract/view/DomainViews', './TraitView', './TraitSelectVi
 			 * @private
 			 */
 			updatedCollection: function() {
+				this.el.className = this.className;
 				var comp = this.em.get('selectedComponent');
 				if(comp){
 					this.collection = comp.get('traits');
 					this.render();
-					this.el.className = this.className;
 				}
 			},
 

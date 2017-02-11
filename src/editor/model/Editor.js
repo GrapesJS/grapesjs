@@ -154,9 +154,11 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
 					Backbone.UndoManager.removeUndoType("change");
 					var beforeCache;
 					Backbone.UndoManager.addUndoType("change:style", {
-						"on": function (model, value, opt) {
-							if(!beforeCache)
+						"on": function (model, value, opts) {
+							var opt = opts || {};
+							if(!beforeCache){
 								beforeCache = model.previousAttributes();
+							}
 							if (opt && opt.avoidStore) {
 								return;
 							} else {

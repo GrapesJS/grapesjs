@@ -10,8 +10,9 @@ define(function() {
 			// Create the resizer for the canvas if not yet created
 			if(!canvasResizer) {
 				var canvasView = canvas.getCanvasView();
-				options.prefix = editor.getConfig().stylePrefix;
+				options.ratioDefault = 1;
 				options.appendTo = canvas.getResizerEl();
+				options.prefix = editor.getConfig().stylePrefix;
 				options.posFetcher = canvasView.getElementPos.bind(canvasView);
 				options.mousePosFetcher = canvas.getMouseRelativePos;
 				this.canvasResizer = editor.Utils.Resizer.init(options);

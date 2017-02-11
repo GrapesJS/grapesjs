@@ -6,6 +6,7 @@ define(function(require) {
     // Indicates custom target updating strategy
     updateTarget: null,
     // Function which gets HTMLElement as an arg and returns it relative position
+    ratioDefault: 0,
     posFetcher: null,
     onStart: null,
     onMove: null,
@@ -342,6 +343,7 @@ define(function(require) {
      * @return {Object}
      */
     calc: function(data) {
+      var opts = this.opts || {};
       var startDim = this.startDim;
       var box = {
         t: 0,
@@ -368,7 +370,8 @@ define(function(require) {
       }
 
       // Enforce aspect ratio (unless shift key is being held)
-      if (attr.indexOf('c') < 0 && data.keys.shift) {
+      var ratioActive = opts.ratioDefault ? !data.keys.shift : data.keys.shift;
+      if (attr.indexOf('c') < 0 && ratioActive) {
         var ratio = startDim.w / startDim.h;
         if (box.w / box.h > ratio) {
           box.h = Math.round(box.w / ratio);

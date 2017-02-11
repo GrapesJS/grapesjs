@@ -6,6 +6,7 @@ require(['config/require-config'], function() {
 
 
 		{
+			autorender: 0,
       noticeOnUnload: 0,
 			container	: '#gjs',
 			height: '100%',
@@ -330,6 +331,47 @@ require(['config/require-config'], function() {
 
 
     window.editor = editor;
+/*
+		editor.TraitManager.addType('checkbox', {
+			events:{
+				'change .url-input': 'onChangeUrl'
+			},
 
+			onChangeUrl: function() {
+				var target = this.model.target;
+				var targetColl = target.collection;
+				var targetParent = target.collection.parent;
+
+				// Create link wrapper if not yet exist
+				if(targetParent.get('type') != 'link') {
+					var index = targetColl.indexOf(target);
+					var linkModel = targetColl.add({type: 'link'}, {at: index});
+					targetColl.remove(target);
+					linkModel.get('components').add(target);
+					console.log('Created link');
+				} else {
+					// update it
+					console.log('Link exist ', targetParent);
+				}
+				//this.components.parent = this;
+				console.log('changed url for', targetParent);
+			},
+
+			render : function() {
+				this.$el.html(
+					'<div class="gjs-trt-trait"><div class="gjs-label">Url</div>'+
+						'<div class="gjs-field gjs-field-text">'+
+							'<div class="gjs-input-holder"><input placeholder="google.com" class="url-input"></div>'+
+						'</div>'+
+					'</div>' +
+					'<div class="gjs-trt-trait"><div class="gjs-label">Taget</div>'+
+						'<div class="gjs-field gjs-field-text">'+
+							'<div class="gjs-input-holder"><input class="target-input"></div>'+
+						'</div>'+
+					'</div>');
+				return this;
+			},
+		});*/
+		editor.render();
 	});
 });

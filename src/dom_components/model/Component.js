@@ -4,9 +4,11 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 		return Backbone.Model.extend({
 
 			defaults: {
+				// HTML tag of the component
 				tagName: 'div',
+
+				// Component type, eg. 'text', 'image', 'video', etc.
 				type: '',
-				editable: false,
 
 				// True if the component is removable from the canvas
 				removable: true,
@@ -23,28 +25,47 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 				badgable: true,
 
 				// True if it's possible to style it
-				// Tip:  Indicate an array of css properties is possible to style
+				// Tip:  Indicate an array of CSS properties which is possible to style
 				stylable: true,
 
 				// True if it's possible to clone the component
 				copyable: true,
 
-				// Indicates if it possible to resize the component (at the moment implemented only on Image)
+				// Indicates if it possible to resize the component (at the moment implemented only on Image Components)
 				resizable: false,
 
-				// TODO
-				mirror: '',
-
+				// This property is used by the HTML exporter as void elements do not
+				// have closing tag, eg. <br/>, <hr/>, etc.
 				void: false,
+
+				// Indicates if the component is in some CSS state like ':hover', ':active', etc.
 				state: '',
+
 				status: '',
+
 				previousModel: '',
 				content: '',
 				style: {},
 				attributes: {},
 				classes: '',
 				traits: ['id', 'title'],
+
+				/**
+				 * Set an array of items to show up inside the toolbar (eg. move, clone, delete)
+				 * when the component is selected
+				 * toolbar: [{
+				 * 		attributes: {class: 'fa fa-arrows'},
+				 * 		command: 'tlb-move',
+				 * 	},{
+				 * 		attributes: {class: 'fa fa-clone'},
+				 * 		command: 'tlb-clone',
+				 * }]
+				 */
 				toolbar: null,
+
+				// TODO
+				editable: false,
+				mirror: '',
 			},
 
 			initialize: function(o, opt) {

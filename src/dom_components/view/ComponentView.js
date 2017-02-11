@@ -209,7 +209,7 @@ define(['backbone', './ComponentsView'],
 								toggleBodyClass('addClass', e, opts);
 								modelToStyle = em.get('StyleManager').getModelToStyle(model);
 							},
-							// Update all positioned elements
+							// Update all positioned elements (eg. component toolbar)
 							onMove: function () {
 								editor.trigger('change:canvasOffset');
 							},
@@ -221,11 +221,22 @@ define(['backbone', './ComponentsView'],
 								if (!modelToStyle) {
 									return;
 								}
+								var unit = 'px';
 								var style = _.clone(modelToStyle.get('style'));
-								style.width = rect.w;
-								style.height = rect.h;
-								modelToStyle.set('style', style, {avoidStore: !store});
+								style.width = rect.w + (store ? 1 : 0) + unit;
+								style.height = rect.h + unit;
+								modelToStyle.set('style', style, {avoidStore: 1});
 								em.trigger('targetStyleUpdated');
+
+								// This trick will trigger the Undo Manager. To trigger "change:style"
+								// on the Model you need to provide a new object and after that
+								// Undo Manager will trigger only if values are different (this is why
+								// above I've added + 1 to width if store required)
+								if(store) {
+									var style3 = _.clone(style);
+									style3.width = (rect.w - 1) + unit;
+									modelToStyle.set('style', style3);
+								}
 							}
 						}
 					});
