@@ -68,6 +68,15 @@ define(function(require) {
 				TraitsViewer.itemsView[name] = itemView.extend(trait);
 			},
 
+			/**
+			 * Get trait type
+			 * @param {string} name Type name
+			 * @return {Object}
+			 */
+			getType: function (name) {
+				return TraitsViewer.itemsView[name];
+			},
+
 		};
 	};
 });

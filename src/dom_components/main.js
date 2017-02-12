@@ -333,12 +333,23 @@ define(function(require) {
 
 			/**
 			 * Add new component type
+			 * @param {string} type
+			 * @param {Object} methods
 			 * @private
 			 */
-			addComponentType: function(type, methods) {
-				componentTypes[type] = methods;
+			addType: function(type, methods) {
+				defaultTypes[type] = methods;
 				return this;
-			}
+			},
+
+			/**
+			 * Get component type
+			 * @param {string} type
+			 * @private
+			 */
+			getType: function(type) {
+				return defaultTypes[type];
+			},
 
 		};
 	};

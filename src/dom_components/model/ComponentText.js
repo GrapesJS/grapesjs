@@ -5,6 +5,7 @@ define(['./Component'],
 
 			defaults: _.extend({}, Component.prototype.defaults, {
 				droppable: false,
+				editable: true,
 			}),
 
 		});

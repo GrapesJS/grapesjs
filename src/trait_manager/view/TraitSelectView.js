@@ -38,6 +38,7 @@ define(['backbone','./TraitView'],
 				}
 				this.input 	+= '</select>';
 				this.$input = $(this.input);
+				// TODO check also model attributes in case of changeProp
 				var val = md.get('value');
 				if(val)
 					this.$input.val(val);

@@ -23,7 +23,7 @@ define(['backbone', './ComponentView'],
 		 * @private
 		 * */
 		enableEditing: function(e) {
-			if(this.rte) {
+			if(this.rte && this.model.get('editable')) {
 				this.activeRte = this.rte.attach(this, this.activeRte);
 				this.rte.focus(this, this.activeRte);
 			}
@@ -39,7 +39,7 @@ define(['backbone', './ComponentView'],
 			if(this.rte) {
 				this.rte.detach(this, this.activeRte);
 			}
-			if(!this.rte.customRte) {
+			if(!this.rte.customRte && this.model.get('editable')) {
 				this.parseRender();
 			}
 			this.toggleEvents();
