@@ -333,6 +333,9 @@ require(['config/require-config'], function() {
 
     window.editor = editor;
 
+		
+
+
 		editor.render();
 	});
 });

@@ -42,6 +42,7 @@ define(function(require) {
 		ComponentView = require('./view/ComponentView');
 
 		var component, componentView;
+		/*
 		var defaultTypes = {
 			'cell': {
 				model: require('./model/ComponentTableCell'),
@@ -84,6 +85,59 @@ define(function(require) {
 				view: ComponentView,
 			},
 		};
+		*/
+		var defaultTypes = [
+			{
+				id: 'cell',
+				model: require('./model/ComponentTableCell'),
+				view: require('./view/ComponentTableCellView'),
+			},
+			{
+				id: 'row',
+				model: require('./model/ComponentTableRow'),
+				view: require('./view/ComponentTableRowView'),
+			},
+			{
+				id: 'table',
+				model: require('./model/ComponentTable'),
+				view: require('./view/ComponentTableView'),
+			},
+			{
+				id: 'map',
+				model: require('./model/ComponentMap'),
+				view: require('./view/ComponentMapView'),
+			},
+			{
+				id: 'link',
+				model: require('./model/ComponentLink'),
+				view: require('./view/ComponentLinkView'),
+			},
+			{
+				id: 'video',
+				model: require('./model/ComponentVideo'),
+				view: require('./view/ComponentVideoView'),
+			},
+			{
+				id: 'image',
+				model: require('./model/ComponentImage'),
+				view: require('./view/ComponentImageView'),
+			},
+			{
+				id: 'textnode',
+				model: require('./model/ComponentTextNode'),
+				view: require('./view/ComponentTextNodeView'),
+			},
+			{
+				id: 'text',
+				model: require('./model/ComponentText'),
+				view: require('./view/ComponentTextView'),
+			},
+			{
+				id: 'default',
+				model: Component,
+				view: ComponentView,
+			},
+		];
 
 	  return {
 
@@ -95,6 +149,15 @@ define(function(require) {
        * @private
        */
       name: 'DomComponents',
+
+			/**
+			 * Returns config
+			 * @return {Object} Config object
+			 * @private
+			 */
+			getConfig: function () {
+					return c;
+			},
 
       /**
        * Mandatory for the storage manager
@@ -146,7 +209,11 @@ define(function(require) {
 					componentTypes: componentTypes,
 				});
 				component.set({ attributes: {id: 'wrapper'}});
-				component.get('components').add(c.components);
+
+				if(c.em && !c.em.config.loadCompsOnRender) {
+					component.get('components').add(c.components);
+				}
+
 			  componentView = new ComponentView({
 					model: component,
 					config: c,
@@ -338,8 +405,14 @@ define(function(require) {
 			 * @private
 			 */
 			addType: function(type, methods) {
-				defaultTypes[type] = methods;
-				return this;
+				var compType = this.getType(type);
+				if(compType) {
+					compType.model = methods.model;
+					compType.view = methods.view;
+				} else {
+					methods.id = type;
+					defaultTypes.unshift(methods);
+				}
 			},
 
 			/**
@@ -348,7 +421,15 @@ define(function(require) {
 			 * @private
 			 */
 			getType: function(type) {
-				return defaultTypes[type];
+				var df = defaultTypes;
+
+				for (var it = 0; it < df.length; it++) {
+					var dfId = df[it].id;
+					if(dfId == type) {
+						return df[it];
+					}
+				}
+				return;
 			},
 
 		};

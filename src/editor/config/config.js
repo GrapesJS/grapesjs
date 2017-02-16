@@ -42,6 +42,10 @@ define(function () {
 		// When enabled, on device change media rules won't be created
 		devicePreviewMode: 0,
 
+		// This option makes available custom component types also for loaded
+		// elements inside canvas
+		loadCompsOnRender: 1,
+
 		// Dom element
 		el: '',
 

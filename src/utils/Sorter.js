@@ -134,8 +134,10 @@ define(function(require) {
        * @param {String} selector
        * @return {Boolean}
        */
-      matches: function(el, selector){
-        var els = (el.parentNode || document.body).querySelectorAll(selector);
+      matches: function(el, selector, useBody) {
+        var startEl = el.parentNode || document.body;
+        //startEl = useBody ? startEl.ownerDocument.body : startEl;
+        var els = startEl.querySelectorAll(selector);
         var i = 0;
         while (els[i] && els[i] !== el)
           ++i;
@@ -611,7 +613,7 @@ define(function(require) {
           draggable = this.matches(dst, toDrag);
         }else if(typeof draggable === 'string') {
           toDrag = draggable;
-          draggable = this.matches(dst, toDrag);
+          draggable = this.matches(dst, toDrag, 1);
         }
 
         // Check if the target could accept the element to be DROPPED inside

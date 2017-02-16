@@ -29,13 +29,26 @@ define([ 'backbone', 'require'],
 							options.componentTypes = opt.componentTypes;
 
 					var df = opt.defaultTypes;
-					var cf = opt.componentTypes;
 
+					for (var it = 0; it < df.length; it++) {
+						var dfId = df[it].id;
+						if(dfId == attrs.type) {
+							model = df[it].model;
+							break;
+						}
+					}
+
+					if(!model) {
+						// get the last one
+						model = df[df.length - 1].model;
+					}
+
+					/*
 					if(df[attrs.type]){
 						model = df[attrs.type].model;
 					}else{
 						model = df.default.model;
-					}
+					}*/
 
 					return new model(attrs, options);
 				};
