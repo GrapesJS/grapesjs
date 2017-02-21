@@ -35,7 +35,14 @@ define(['backbone', './ComponentsView'],
 
 				if(this.model.get('classes').length)
 					this.importClasses();
+
+				this.init();
 			},
+
+			/**
+       * Initialize callback
+       */
+      init: function () {},
 
 			/**
 			 * Import, if possible, classes inside main container
@@ -223,7 +230,8 @@ define(['backbone', './ComponentsView'],
 								}
 								var unit = 'px';
 								var style = _.clone(modelToStyle.get('style'));
-								style.width = rect.w + (store ? 1 : 0) + unit;
+								var width = rect.w + (store ? 1 : 0);
+								style.width = width + unit;
 								style.height = rect.h + unit;
 								modelToStyle.set('style', style, {avoidStore: 1});
 								em.trigger('targetStyleUpdated');
@@ -234,7 +242,7 @@ define(['backbone', './ComponentsView'],
 								// above I've added + 1 to width if store required)
 								if(store) {
 									var style3 = _.clone(style);
-									style3.width = (rect.w - 1) + unit;
+									style3.width = (width - 1) + unit;
 									modelToStyle.set('style', style3);
 								}
 							}

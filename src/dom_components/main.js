@@ -42,50 +42,6 @@ define(function(require) {
 		ComponentView = require('./view/ComponentView');
 
 		var component, componentView;
-		/*
-		var defaultTypes = {
-			'cell': {
-				model: require('./model/ComponentTableCell'),
-				view: require('./view/ComponentTableCellView'),
-			},
-			'row': {
-				model: require('./model/ComponentTableRow'),
-				view: require('./view/ComponentTableRowView'),
-			},
-			'table': {
-				model: require('./model/ComponentTable'),
-				view: require('./view/ComponentTableView'),
-			},
-			'map': {
-				model: require('./model/ComponentMap'),
-				view: require('./view/ComponentMapView'),
-			},
-			'link': {
-				model: require('./model/ComponentLink'),
-				view: require('./view/ComponentLinkView'),
-			},
-			'video': {
-				model: require('./model/ComponentVideo'),
-				view: require('./view/ComponentVideoView'),
-			},
-			'image': {
-				model: require('./model/ComponentImage'),
-				view: require('./view/ComponentImageView'),
-			},
-			'textnode': {
-				model: require('./model/ComponentTextNode'),
-				view: require('./view/ComponentTextNodeView'),
-			},
-			'text': {
-				model: require('./model/ComponentText'),
-				view: require('./view/ComponentTextView'),
-			},
-			'default': {
-				model: Component,
-				view: ComponentView,
-			},
-		};
-		*/
 		var defaultTypes = [
 			{
 				id: 'cell',

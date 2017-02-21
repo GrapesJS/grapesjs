@@ -3285,7 +3285,8 @@ ol.example li.placeholder:before {
   padding: 0;
   position: relative; }
   .gjs-field input,
-  .gjs-field select {
+  .gjs-field select,
+  .gjs-field textarea {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -3297,6 +3298,8 @@ ol.example li.placeholder:before {
     position: relative;
     padding: 3px 4px 4px;
     z-index: 1; }
+  .gjs-field textarea {
+    resize: vertical; }
   .gjs-field select {
     height: 20px;
     padding-right: 12px; }
