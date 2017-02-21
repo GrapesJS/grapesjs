@@ -91,13 +91,16 @@
   z-index: 9;
 }
 
+$hndlMargin: -5px;
+
 .#{$app-prefix}resizer-h {
   pointer-events: all;
   position: absolute;
   border: 3px solid $colorBlue;
   width: 10px;
   height: 10px;
-  background-color: white;
+  background-color: #fff;
+  margin: $hndlMargin;
 }
 
 .#{$app-prefix}resizer-h-tl {
@@ -114,7 +117,7 @@
 
 .#{$app-prefix}resizer-h-tc {
   top: 0;
-  margin: 0 auto;
+  margin: $hndlMargin auto;
   left: 0;
   right: 0;
   cursor: ns-resize;
@@ -122,14 +125,14 @@
 
 .#{$app-prefix}resizer-h-cl {
   left: 0;
-  margin: auto 0;
+  margin: auto $hndlMargin;
   top: 0;
   bottom: 0;
   cursor: ew-resize;
 }
 
 .#{$app-prefix}resizer-h-cr {
-  margin: auto 0;
+  margin: auto $hndlMargin;
   top: 0;
   bottom: 0;
   right: 0;
@@ -144,7 +147,7 @@
 
 .#{$app-prefix}resizer-h-bc {
   bottom: 0;
-  margin: 0 auto;
+  margin: $hndlMargin auto;
   left: 0;
   right: 0;
   cursor: ns-resize;

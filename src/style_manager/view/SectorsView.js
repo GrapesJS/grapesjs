@@ -61,8 +61,8 @@ define(['backbone', './SectorView'],
 					el.set('style', {});
 				}else{
 					// Ensure to clean element
-					if(classes.length == 1)
-						el.set('style', {});
+					//if(classes.length == 1)
+						//el.set('style', {});
 				}
 
 				// If the state is not empty, there should be a helper rule in play

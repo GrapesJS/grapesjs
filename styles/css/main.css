@@ -2849,7 +2849,8 @@ div.gjs-select {
   border: 3px solid #3b97e3;
   width: 10px;
   height: 10px;
-  background-color: white; }
+  background-color: #fff;
+  margin: -5px; }
 
 .gjs-resizer-h-tl {
   top: 0;
@@ -2863,20 +2864,20 @@ div.gjs-select {
 
 .gjs-resizer-h-tc {
   top: 0;
-  margin: 0 auto;
+  margin: -5px auto;
   left: 0;
   right: 0;
   cursor: ns-resize; }
 
 .gjs-resizer-h-cl {
   left: 0;
-  margin: auto 0;
+  margin: auto -5px;
   top: 0;
   bottom: 0;
   cursor: ew-resize; }
 
 .gjs-resizer-h-cr {
-  margin: auto 0;
+  margin: auto -5px;
   top: 0;
   bottom: 0;
   right: 0;
@@ -2889,7 +2890,7 @@ div.gjs-select {
 
 .gjs-resizer-h-bc {
   bottom: 0;
-  margin: 0 auto;
+  margin: -5px auto;
   left: 0;
   right: 0;
   cursor: ns-resize; }
