@@ -168,6 +168,10 @@ $fontV: 20;//random(1000)
   cursor: -webkit-grabbing !important;
 }
 
+.#{$app-prefix}grabbing {
+  overflow: hidden;
+}
+
 .#{$app-prefix}off-prv{
   @extend .#{$app-prefix}color-main;
   @extend .#{$app-prefix}bg-main;

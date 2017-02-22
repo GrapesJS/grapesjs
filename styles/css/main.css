@@ -2672,6 +2672,9 @@ $fontColorActive: #4f8ef7;
   cursor: grabbing !important;
   cursor: -webkit-grabbing !important; }
 
+.gjs-grabbing {
+  overflow: hidden; }
+
 .gjs-off-prv {
   position: relative;
   z-index: 10;

@@ -14,6 +14,7 @@ define(['Navigator'], function(Layers) {
 						lyStylePfx = config.layers.stylePrefix || 'nv-';
 
 					config.layers.stylePrefix = config.stylePrefix + lyStylePfx;
+					config.layers.pStylePrefix = config.stylePrefix;
 					config.layers.em 	= em.editor;
 					config.layers.opened = em.editor.get('opened');
 					var layers = new Layers(collection, config.layers);

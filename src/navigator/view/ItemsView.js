@@ -9,7 +9,8 @@ define(['backbone','./ItemView'],
 			this.opt = o;
 			this.config = o.config;
 			this.preview = o.preview;
-			this.pfx = o.config.stylePrefix;
+			this.ppfx = o.config.pStylePrefix || '';
+			this.pfx = o.config.stylePrefix || '';
 			this.parent = o.parent;
 			this.listenTo(this.collection, 'add', this.addTo);
 			this.listenTo(this.collection, 'reset resetNavigator', this.render);
@@ -22,6 +23,7 @@ define(['backbone','./ItemView'],
 					container: this.el,
 					containerSel: '.' + pfx + 'items',
 					itemSel: '.' + pfx + 'item',
+					ppfx: this.ppfx,
 					pfx: pfx,
 					nested: 1
 				});

@@ -21,6 +21,7 @@ define(function(require) {
         this.draggable = o.draggable || true;
         this.nested = o.nested || 0;
         this.pfx = o.pfx || '';
+        this.ppfx = o.ppfx || '';
         this.freezeClass = o.freezeClass || this.pfx + 'freezed';
         this.onStart = o.onStart || '';
         this.onEndMove = o.onEndMove || '';
@@ -68,6 +69,29 @@ define(function(require) {
        */
       setDropContent: function(content){
         this.dropContent = content;
+      },
+
+      /**
+       * Toggle cursor while sorting
+       * @param {Boolean} active
+       */
+      toggleSortCursor: function(active) {
+        var em = this.em;
+        var body = document.body;
+        var pfx = this.ppfx || this.pfx;
+        var sortCls = pfx + 'grabbing';
+        var emBody = em ? em.get('Canvas').getBody() : '';
+        if(active) {
+          body.className += ' ' + sortCls;
+          if(em) {
+            emBody.className += ' ' + sortCls;
+          }
+        } else {
+          body.className = body.className.replace(sortCls, '').trim();
+          if(em) {
+            emBody.className = emBody.className.replace(sortCls, '').trim();
+          }
+        }
       },
 
       /**
@@ -224,6 +248,8 @@ define(function(require) {
         if(this.em) {
           this.em.clearSelection();
         }
+
+        this.toggleSortCursor(1);
       },
 
       /**
@@ -577,6 +603,7 @@ define(function(require) {
           dragHelper.remove();
           this.dragHelper = null;
         }
+        this.toggleSortCursor();
       },
 
       /**

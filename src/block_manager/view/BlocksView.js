@@ -52,10 +52,6 @@ function(Backbone, BlockView) {
      */
     onDrag: function(){
       this.em.stopDefault();
-      //this.em.get('Canvas').getBody().style.cursor = 'grabbing';
-      //document.body.style.cursor = 'grabbing';
-      this.em.get('Canvas').getBody().className += ' ' + this.grabbingCls;
-      document.body.className += ' ' + this.grabbingCls;
     },
 
     /**
@@ -64,10 +60,6 @@ function(Backbone, BlockView) {
      */
     onDrop: function(model){
       this.em.runDefault();
-      var bodyCanvas = this.em.get('Canvas').getBody();
-      var body = document.body;
-      bodyCanvas.className = bodyCanvas.className.replace(this.grabbingCls, '');
-      body.className = body.className.replace(this.grabbingCls, '');
 
       if (model && model.get && model.get('activeOnRender')) {
         model.trigger('active');
