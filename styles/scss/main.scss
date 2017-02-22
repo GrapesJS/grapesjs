@@ -162,6 +162,19 @@ $fontV: 20;//random(1000)
   width: auto;
 }
 
+.#{$app-prefix}drag-helper {
+  background-color: $colorBlue !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  z-index: 10 !important;
+  transform: scale(0.3) !important;
+  transform-origin: top left !important;
+  -webkit-transform-origin: top left !important;
+  margin: 15px !important;
+  transition: none !important;
+  outline: none !important;
+}
+
 .#{$app-prefix}grabbing,
 .#{$app-prefix}grabbing * {
   cursor: grabbing !important;

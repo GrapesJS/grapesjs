@@ -66,6 +66,15 @@ define(['backbone', './SelectComponent','./SelectPosition'],
 				this.startSelectPosition(el, this.frameEl.contentDocument);
 				this.sorter.draggable = drag;
 				this.sorter.onEndMove = this.onEndMoveFromModel.bind(this);
+
+				/*
+				this.sorter.setDragHelper(el);
+				var dragHelper = this.sorter.dragHelper;
+				dragHelper.className = this.ppfx + 'drag-helper';
+				dragHelper.innerHTML = '';
+				dragHelper.backgroundColor = 'white';
+				*/
+
 				this.stopSelectComponent();
 				this.getContentWindow().on('keydown', this.rollback);
 			},

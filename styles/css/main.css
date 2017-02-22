@@ -2667,6 +2667,18 @@ $fontColorActive: #4f8ef7;
   z-index: 10 !important;
   width: auto; }
 
+.gjs-drag-helper {
+  background-color: #3b97e3 !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  z-index: 10 !important;
+  transform: scale(0.3) !important;
+  transform-origin: top left !important;
+  -webkit-transform-origin: top left !important;
+  margin: 15px !important;
+  transition: none !important;
+  outline: none !important; }
+
 .gjs-grabbing,
 .gjs-grabbing * {
   cursor: grabbing !important;

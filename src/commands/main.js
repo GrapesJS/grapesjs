@@ -104,7 +104,7 @@ define(function(require) {
 				defaultCommands.resize = require('./view/Resize');
 
 				defaultCommands['tlb-delete'] = {
-					run: function(ed){
+					run: function(ed) {
 						var sel = ed.getSelected();
 
 						if(!sel || !sel.get('removable')) {
@@ -112,7 +112,6 @@ define(function(require) {
 							return;
 						}
 
-						//sel.destroy();
 						sel.collection.remove(sel);
 						ed.Canvas.getToolbarEl().style.display = 'none';
 						ed.editor.runDefault();

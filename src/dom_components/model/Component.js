@@ -87,7 +87,7 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 
         this.opt = opt;
         this.sm = opt ? opt.sm || {} : {};
-        this.config 	= o || {};
+        this.config = o || {};
         this.defaultC = this.config.components || [];
         this.defaultCl = this.normalizeClasses(this.get('classes') || this.config.classes || []);
         this.components	= new Components(this.defaultC, opt);
@@ -182,7 +182,7 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
        * Override original clone method
        * @private
        */
-      clone: function() {
+      clone: function(reset) {
         var attr = _.clone(this.attributes),
         comp = this.get('components'),
         traits = this.get('traits'),
@@ -190,23 +190,23 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
         attr.components = [];
         attr.classes = [];
         attr.traits = [];
-        if(comp.length){
-          comp.each(function(md,i) {
-            attr.components[i]	= md.clone();
-          });
-        }
-        if(traits.length){
-          traits.each(function(md, i) {
-            attr.traits[i] = md.clone();
-          });
-        }
-        if(cls.length){
-          cls.each(function(md,i) {
-            attr.classes[i]	= md.get('name');
-          });
-        }
+
+        comp.each(function(md,i) {
+          attr.components[i]	= md.clone(1);
+        });
+        traits.each(function(md, i) {
+          attr.traits[i] = md.clone();
+        });
+        cls.each(function(md,i) {
+          attr.classes[i]	= md.get('name');
+        });
+
         attr.status = '';
         attr.view = '';
+
+        if(reset){
+          this.opt.collection = null;
+        }
 
         return new this.constructor(attr, this.opt);
       },
