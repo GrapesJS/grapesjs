@@ -43,13 +43,6 @@ define([ 'backbone', 'require'],
 						model = df[df.length - 1].model;
 					}
 
-					/*
-					if(df[attrs.type]){
-						model = df[attrs.type].model;
-					}else{
-						model = df.default.model;
-					}*/
-
 					return new model(attrs, options);
 				};
 
