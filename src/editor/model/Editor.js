@@ -39,7 +39,22 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
 				this.initUndoManager(); // Is already called (inside components and css composer)
 
 				this.on('change:selectedComponent', this.componentSelected, this);
+        this.on('change:changesCount', this.updateBeforeUnload, this);
 			},
+
+      /**
+       * Set the alert before unload in case it's requested
+       * and there are unsaved changes
+       */
+      updateBeforeUnload: function() {
+        var changes = this.get('changesCount');
+
+        if (this.config.noticeOnUnload && changes) {
+          window.onbeforeunload = function(e) { return 1;};
+        } else {
+          window.onbeforeunload = null;
+        }
+      },
 
 			/**
 			 * Load generic module
