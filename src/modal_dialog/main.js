@@ -15,12 +15,12 @@
  * @module Modal
  */
 define(function(require) {
-	return function() {
-		var c = {},
-		defaults = require('./config/config'),
-		ModalM = require('./model/Modal'),
-		ModalView	= require('./view/ModalView');
-		var model, modal;
+  return function() {
+    var c = {},
+    defaults = require('./config/config'),
+    ModalM = require('./model/Modal'),
+    ModalView	= require('./view/ModalView');
+    var model, modal;
 
 	  return {
 
@@ -39,24 +39,24 @@ define(function(require) {
       init: function(config) {
         c = config || {};
         for (var name in defaults) {
-					if (!(name in c))
-						c[name] = defaults[name];
-				}
+          if (!(name in c))
+            c[name] = defaults[name];
+        }
 
-				var ppfx = c.pStylePrefix;
-				if(ppfx)
-					c.stylePrefix = ppfx + c.stylePrefix;
+        var ppfx = c.pStylePrefix;
+        if(ppfx)
+          c.stylePrefix = ppfx + c.stylePrefix;
 
-				model = new ModalM(c);
-			  modal = new ModalView({
-					model: model,
-				  config: c,
-				});
+        model = new ModalM(c);
+        modal = new ModalView({
+          model: model,
+          config: c,
+        });
 
         if(c.em)
-  				c.em.on('loaded', function(){
-  					this.render().appendTo(c.em.config.el || 'body');
-  				}, this);
+          c.em.on('loaded', function(){
+            this.render().appendTo(c.em.config.el || 'body');
+          }, this);
 
         return this;
       },
@@ -94,10 +94,10 @@ define(function(require) {
        * @example
        * modal.setTitle('New title');
        */
-			setTitle: function(title){
+      setTitle: function(title){
         model.set('title', title);
         return this;
-			},
+      },
 
       /**
        * Returns the title of the modal window
@@ -114,10 +114,11 @@ define(function(require) {
        * @example
        * modal.setContent('<div>Some HTML content</div>');
        */
-			setContent: function(content){
-				model.set('content', content);
+      setContent: function(content){
+        model.set('content', ' ');
+        model.set('content', content);
         return this;
-			},
+      },
 
       /**
        * Get the content of the modal window
@@ -127,14 +128,14 @@ define(function(require) {
         return model.get('content');
       },
 
-			/**
-			 * Returns content element
-			 * @return {HTMLElement}
+      /**
+       * Returns content element
+       * @return {HTMLElement}
        * @private
-			 */
-			getContentEl: function(){
-				return modal.getContent().get(0);
-			},
+       */
+      getContentEl: function(){
+        return modal.getContent().get(0);
+      },
 
       /**
        * Returns modal model
@@ -153,6 +154,6 @@ define(function(require) {
       render: function(){
         return modal.render().$el;
       }
-		};
-	};
+    };
+  };
 });

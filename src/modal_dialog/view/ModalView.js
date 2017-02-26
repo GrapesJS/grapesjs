@@ -21,11 +21,22 @@ define(['backbone', 'text!./../template/modal.html'],
 			},
 
 			/**
+			 * Returns collector element
+			 * @return {HTMLElement}
+			 * @private
+			 */
+			getCollector: function(){
+				if(!this.$collector)
+					this.$collector = this.$el.find('.'+this.pfx+'collector');
+				return this.$collector;
+			},
+
+			/**
 			 * Returns content element
 			 * @return {HTMLElement}
 			 * @private
 			 */
-			getContent: function(){
+			getContent: function() {
 				if(!this.$content)
 					this.$content	= this.$el.find('.'+this.pfx+'content #'+this.pfx+'c');
 				return this.$content;
@@ -36,7 +47,7 @@ define(['backbone', 'text!./../template/modal.html'],
 			 * @return {HTMLElement}
 			 * @private
 			 */
-			getTitle: function(){
+			getTitle: function() {
 				if(!this.$title)
 					this.$title	= this.$el.find('.'+this.pfx+'title');
 				return this.$title.get(0);
@@ -46,10 +57,10 @@ define(['backbone', 'text!./../template/modal.html'],
 			 * Update content
 			 * @private
 			 * */
-			updateContent: function(){
+			updateContent: function() {
 				var content = this.getContent();
-				if(content)
-					content.html(this.model.get('content'));
+				this.getCollector().append(content.children());
+				content.html(this.model.get('content'));
 			},
 
 			/**
@@ -85,7 +96,7 @@ define(['backbone', 'text!./../template/modal.html'],
 			 * Show modal
 			 * @private
 			 * */
-			show: function(){
+			 show: function(){
 				this.model.set('open', 1);
 			},
 

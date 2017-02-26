@@ -2638,7 +2638,8 @@ $fontColorActive: #4f8ef7;
 .gjs-checker-bg, .checker-bg, .gjs-sm-sector .gjs-sm-property .gjs-sm-layer > #gjs-sm-preview-box, .gjs-clm-tags .gjs-sm-property .gjs-sm-layer > #gjs-sm-preview-box {
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg=="); }
 
-.gjs-no-user-select, .gjs-nav-comp-name {
+.gjs-no-user-select, .gjs-grabbing,
+.gjs-grabbing *, .gjs-nav-comp-name {
   -moz-user-select: none;
   -khtml-user-select: none;
   -webkit-user-select: none;

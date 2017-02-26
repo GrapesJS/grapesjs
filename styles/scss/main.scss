@@ -177,6 +177,8 @@ $fontV: 20;//random(1000)
 
 .#{$app-prefix}grabbing,
 .#{$app-prefix}grabbing * {
+  @extend .#{$app-prefix}no-user-select;
+
   cursor: grabbing !important;
   cursor: -webkit-grabbing !important;
 }
