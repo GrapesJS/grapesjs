@@ -163,7 +163,7 @@ function(Backbone, FrameView) {
 				frame.el.onload = this.renderBody;
 			}
 			var ppfx = this.ppfx;
-			this.toolsEl = $('<div>', { id: ppfx + 'tools' }).get(0);
+			toolsEl = $('<div>', { id: ppfx + 'tools' }).get(0);
 			this.hlEl = $('<div>', { class: ppfx + 'highlighter' }).get(0);
 			this.badgeEl = $('<div>', {class: ppfx + 'badge'}).get(0);
 			this.placerEl = $('<div>', {class: ppfx + 'placeholder'}).get(0);
@@ -171,19 +171,24 @@ function(Backbone, FrameView) {
 			this.ghostEl = $('<div>', {class: ppfx + 'ghost'}).get(0);
 			this.toolbarEl = $('<div>', {class: ppfx + 'toolbar'}).get(0);
 			this.resizerEl = $('<div>', {class: ppfx + 'resizer'}).get(0);
+      this.offsetEl = $('<div>', {class: ppfx + 'offset-v'}).get(0);
+      this.fixedOffsetEl = $('<div>', {class: ppfx + 'offset-fixed-v'}).get(0);
 			this.placerEl.appendChild(this.placerIntEl);
-			this.toolsEl.appendChild(this.hlEl);
-			this.toolsEl.appendChild(this.badgeEl);
-			this.toolsEl.appendChild(this.placerEl);
-			this.toolsEl.appendChild(this.ghostEl);
-			this.toolsEl.appendChild(this.toolbarEl);
-			this.toolsEl.appendChild(this.resizerEl);
-			this.$el.append(this.toolsEl);
+			toolsEl.appendChild(this.hlEl);
+			toolsEl.appendChild(this.badgeEl);
+			toolsEl.appendChild(this.placerEl);
+			toolsEl.appendChild(this.ghostEl);
+			toolsEl.appendChild(this.toolbarEl);
+			toolsEl.appendChild(this.resizerEl);
+      toolsEl.appendChild(this.offsetEl);
+      toolsEl.appendChild(this.fixedOffsetEl);
+			this.$el.append(toolsEl);
       var rte = this.em.get('rte');
 
       if(rte)
-        this.toolsEl.appendChild(rte.render());
+        toolsEl.appendChild(rte.render());
 
+      this.toolsEl = toolsEl;
 			this.$el.attr({class: this.className});
 			return this;
 		},

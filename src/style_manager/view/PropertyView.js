@@ -144,7 +144,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 		 * @param		{Mixed}		val	Value
 		 * @param		{Object}	opt	Options
 		 * */
-		valueChanged: function(e, val, opt){
+		valueChanged: function(e, val, opt) {
 			var mVal = this.getValueForTarget();
 
 			if(this.$input)
@@ -170,6 +170,11 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 				onChange(target, this, opt);
 			}else
 				this.updateTargetStyle(value, null, opt);
+
+      var model = this.model;
+      this.config.em.trigger('component:update', model);
+      this.config.em.trigger('component:styleUpdate', model);
+      this.config.em.trigger('component:styleUpdate:' + model.get('property'), model);
 		},
 
 		/**

@@ -2647,7 +2647,10 @@ $fontColorActive: #4f8ef7;
   -o-user-select: none;
   user-select: none; }
 
-.gjs-no-pointer-events, .gjs-resizer-c {
+.gjs-no-pointer-events, .gjs-resizer-c, .gjs-margin-v-el,
+.gjs-padding-v-el,
+.gjs-fixedmargin-v-el,
+.gjs-fixedpadding-v-el {
   pointer-events: none; }
 
 .gjs-bg-main, .gjs-off-prv, .gjs-select option,
@@ -2858,6 +2861,24 @@ div.gjs-select {
 .gjs-resizer-c {
   position: absolute;
   z-index: 9; }
+
+.gjs-margin-v-el,
+.gjs-padding-v-el,
+.gjs-fixedmargin-v-el,
+.gjs-fixedpadding-v-el {
+  opacity: 0.1;
+  filter: alpha(opacity=10);
+  position: absolute;
+  background-color: yellow; }
+
+.gjs-fixedmargin-v-el,
+.gjs-fixedpadding-v-el {
+  opacity: 0.2;
+  filter: alpha(opacity=20); }
+
+.gjs-padding-v-el,
+.gjs-fixedpadding-v-el {
+  background-color: navy; }
 
 .gjs-resizer-h {
   pointer-events: all;

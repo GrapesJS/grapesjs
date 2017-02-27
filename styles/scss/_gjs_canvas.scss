@@ -91,6 +91,32 @@
   z-index: 9;
 }
 
+.#{$app-prefix}margin-v {
+
+}
+
+.#{$app-prefix}margin-v-el,
+.#{$app-prefix}padding-v-el,
+.#{$app-prefix}fixedmargin-v-el,
+.#{$app-prefix}fixedpadding-v-el {
+  @extend .#{$app-prefix}no-pointer-events;
+
+  @include opacity(0.1);
+
+  position: absolute;
+  background-color: yellow;
+}
+
+.#{$app-prefix}fixedmargin-v-el,
+.#{$app-prefix}fixedpadding-v-el {
+  @include opacity(0.2);
+}
+
+.#{$app-prefix}padding-v-el,
+.#{$app-prefix}fixedpadding-v-el {
+  background-color: navy;
+}
+
 $hndlMargin: -5px;
 
 .#{$app-prefix}resizer-h {

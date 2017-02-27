@@ -28,6 +28,8 @@
  * ```
  * Available events
  * #add:component - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
+ * #component:update - Triggered when a component is, generally, updated (moved, styled, etc.)
+ * #component:styleUpdate - Triggered when the style of the component is updated
  * #canvasScroll - Triggered when the canvas is scrolled
  * #run:{commandName} - Triggered when some command is called to run (eg. editor.runCommand('preview'))
  * #stop:{commandName} - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))

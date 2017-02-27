@@ -39,23 +39,23 @@
  */
 define(function(require) {
 
-	return function() {
-		var c = {},
-			commands = {},
-			defaultCommands = {},
-			defaults = require('./config/config'),
-			AbsCommands = require('./view/CommandAbstract');
+  return function() {
+    var c = {},
+    commands = {},
+    defaultCommands = {},
+    defaults = require('./config/config'),
+    AbsCommands = require('./view/CommandAbstract');
 
-		// Need it here as it would be used below
-		var add = function(id, obj){
-			delete obj.initialize;
-			commands[id] = AbsCommands.extend(obj);
-			return this;
-		};
+    // Need it here as it would be used below
+    var add = function(id, obj){
+      delete obj.initialize;
+      commands[id] = AbsCommands.extend(obj);
+      return this;
+    };
 
-		return {
+    return {
 
-			/**
+      /**
        * Name of the module
        * @type {String}
        * @private
@@ -70,99 +70,101 @@ define(function(require) {
       init: function(config) {
         c = config || {};
         for (var name in defaults) {
-					if (!(name in c))
-						c[name] = defaults[name];
-				}
+          if (!(name in c))
+            c[name] = defaults[name];
+        }
 
-				var ppfx = c.pStylePrefix;
-				if(ppfx)
-					c.stylePrefix = ppfx + c.stylePrefix;
+        var ppfx = c.pStylePrefix;
+        if(ppfx)
+          c.stylePrefix = ppfx + c.stylePrefix;
 
-				// Load commands passed via configuration
-				for( var k in c.defaults){
-					var obj = c.defaults[k];
-					if(obj.id)
-						this.add(obj.id, obj);
-				}
+        // Load commands passed via configuration
+        for( var k in c.defaults) {
+          var obj = c.defaults[k];
+          if(obj.id)
+            this.add(obj.id, obj);
+        }
 
-				defaultCommands['select-comp'] = require('./view/SelectComponent');
-				defaultCommands['create-comp'] = require('./view/CreateComponent');
-				defaultCommands['delete-comp'] = require('./view/DeleteComponent');
-				defaultCommands['image-comp'] = require('./view/ImageComponent');
-				defaultCommands['move-comp'] = require('./view/MoveComponent');
-				defaultCommands['text-comp'] = require('./view/TextComponent');
-				defaultCommands['insert-custom'] = require('./view/InsertCustom');
-				defaultCommands['export-template'] = require('./view/ExportTemplate');
-				defaultCommands['sw-visibility'] = require('./view/SwitchVisibility');
-				defaultCommands['open-layers'] = require('./view/OpenLayers');
-				defaultCommands['open-sm'] = require('./view/OpenStyleManager');
-				defaultCommands['open-tm'] = require('./view/OpenTraitManager');
-				defaultCommands['open-blocks'] = require('./view/OpenBlocks');
-				defaultCommands['open-assets'] = require('./view/OpenAssets');
-				defaultCommands.fullscreen = require('./view/Fullscreen');
-				defaultCommands.preview = require('./view/Preview');
-				defaultCommands.resize = require('./view/Resize');
+        defaultCommands['select-comp'] = require('./view/SelectComponent');
+        defaultCommands['create-comp'] = require('./view/CreateComponent');
+        defaultCommands['delete-comp'] = require('./view/DeleteComponent');
+        defaultCommands['image-comp'] = require('./view/ImageComponent');
+        defaultCommands['move-comp'] = require('./view/MoveComponent');
+        defaultCommands['text-comp'] = require('./view/TextComponent');
+        defaultCommands['insert-custom'] = require('./view/InsertCustom');
+        defaultCommands['export-template'] = require('./view/ExportTemplate');
+        defaultCommands['sw-visibility'] = require('./view/SwitchVisibility');
+        defaultCommands['open-layers'] = require('./view/OpenLayers');
+        defaultCommands['open-sm'] = require('./view/OpenStyleManager');
+        defaultCommands['open-tm'] = require('./view/OpenTraitManager');
+        defaultCommands['open-blocks'] = require('./view/OpenBlocks');
+        defaultCommands['open-assets'] = require('./view/OpenAssets');
+        defaultCommands['show-offset'] = require('./view/ShowOffset');
+        defaultCommands.fullscreen = require('./view/Fullscreen');
+        defaultCommands.preview = require('./view/Preview');
+        defaultCommands.resize = require('./view/Resize');
 
-				defaultCommands['tlb-delete'] = {
-					run: function(ed) {
-						var sel = ed.getSelected();
+        defaultCommands['tlb-delete'] = {
+          run: function(ed) {
+            var sel = ed.getSelected();
 
-						if(!sel || !sel.get('removable')) {
-							console.warn('The element is not removable');
-							return;
-						}
+            if(!sel || !sel.get('removable')) {
+              console.warn('The element is not removable');
+              return;
+            }
 
-						sel.collection.remove(sel);
-						ed.Canvas.getToolbarEl().style.display = 'none';
-						ed.editor.runDefault();
-					},
-			  };
+            sel.collection.remove(sel);
+            ed.Canvas.getToolbarEl().style.display = 'none';
+            ed.editor.runDefault();
+            ed.trigger('component:update', sel);
+          },
+        };
 
-				defaultCommands['tlb-clone'] = {
-					run: function(ed){
-						var sel = ed.getSelected();
+        defaultCommands['tlb-clone'] = {
+          run: function(ed) {
+            var sel = ed.getSelected();
 
-						if(!sel || !sel.get('copyable')) {
-							console.warn('The element is not clonable');
-							return;
-						}
+            if(!sel || !sel.get('copyable')) {
+              console.warn('The element is not clonable');
+              return;
+            }
 
-						var collection = sel.collection;
-						var index = collection.indexOf(sel);
-						collection.add(sel.clone(), {at: index + 1});
-					},
-			  };
+            var collection = sel.collection;
+            var index = collection.indexOf(sel);
+            collection.add(sel.clone(), {at: index + 1});
+            ed.trigger('component:update', sel);
+          },
+        };
 
-				defaultCommands['tlb-move'] = {
-					run: function(ed){
-						var sel = ed.getSelected();
+        defaultCommands['tlb-move'] = {
+          run: function(ed){
+            var sel = ed.getSelected();
 
-						if(!sel || !sel.get('draggable')) {
-							console.warn('The element is not draggable');
-							return;
-						}
+            if(!sel || !sel.get('draggable')) {
+              console.warn('The element is not draggable');
+              return;
+            }
 
 
-						var toolbarEl = ed.Canvas.getToolbarEl();
-						var toolbarDisplay = toolbarEl.style.display;
-						var cmdMove = ed.Commands.get('move-comp');
+            var toolbarEl = ed.Canvas.getToolbarEl();
+            var toolbarDisplay = toolbarEl.style.display;
+            var cmdMove = ed.Commands.get('move-comp');
 
-						cmdMove.onEndMoveFromModel = function() {
-						  ed.editor.runDefault();
-							ed.editor.set('selectedComponent', sel);
-							//toolbarEl.style.display = toolbarDisplay;
-							//ed.trigger('canvasScroll'); <- Need first this on SelectComponent
-						};
+            cmdMove.onEndMoveFromModel = function() {
+              ed.editor.runDefault();
+              ed.editor.set('selectedComponent', sel);
+              ed.trigger('component:update', sel);
+            };
 
-						ed.editor.stopDefault();
-						cmdMove.initSorterFromModel(sel);
-						sel.set('status', 'selected');
-						toolbarEl.style.display = 'none';
-					},
-			  };
+            ed.editor.stopDefault();
+            cmdMove.initSorterFromModel(sel);
+            sel.set('status', 'selected');
+            toolbarEl.style.display = 'none';
+          },
+        };
 
-				if(c.em)
-					c.model = c.em.get('Canvas');
+        if(c.em)
+          c.model = c.em.get('Canvas');
 
         return this;
       },
@@ -175,54 +177,54 @@ define(function(require) {
       	this.loadDefaultCommands();
       },
 
-			/**
-			 * Add new command to the collection
-			 * @param	{string} id Command's ID
-			 * @param	{Object} command Object representing you command. Methods `run` and `stop` are required
-			 * @return {this}
-			 * @example
-			 * commands.add('myCommand', {
-			 * 	run:  function(editor, sender){
-			 * 		alert('Hello world!');
-			 * 	},
-			 * 	stop:  function(editor, sender){
-			 * 	},
-			 * });
-			 * */
-			add: add,
+      /**
+       * Add new command to the collection
+       * @param	{string} id Command's ID
+       * @param	{Object} command Object representing you command. Methods `run` and `stop` are required
+       * @return {this}
+       * @example
+       * commands.add('myCommand', {
+       * 	run:  function(editor, sender){
+       * 		alert('Hello world!');
+       * 	},
+       * 	stop:  function(editor, sender){
+       * 	},
+       * });
+       * */
+      add: add,
 
-			/**
-			 * Get command by ID
-			 * @param	{string}	id Command's ID
-			 * @return {Object} Object representing the command
-			 * @example
-			 * var myCommand = commands.get('myCommand');
-			 * myCommand.run();
-			 * */
-			get: function(id){
-				var el = commands[id];
+      /**
+       * Get command by ID
+       * @param	{string}	id Command's ID
+       * @return {Object} Object representing the command
+       * @example
+       * var myCommand = commands.get('myCommand');
+       * myCommand.run();
+       * */
+      get: function(id){
+        var el = commands[id];
 
-				if(typeof el == 'function'){
-					el = new el(c);
-					commands[id]	= el;
-				}
+        if(typeof el == 'function'){
+          el = new el(c);
+          commands[id]	= el;
+        }
 
-				return el;
-			},
+        return el;
+      },
 
-			/**
-			 * Load default commands
-			 * @return {this}
-			 * @private
-			 * */
-			loadDefaultCommands: function(){
-				for (var id in defaultCommands) {
-					this.add(id, defaultCommands[id]);
-				}
+      /**
+       * Load default commands
+       * @return {this}
+       * @private
+       * */
+      loadDefaultCommands: function(){
+        for (var id in defaultCommands) {
+          this.add(id, defaultCommands[id]);
+        }
 
-				return this;
-			},
-		};
+        return this;
+      },
+    };
 
-	};
+  };
 });
