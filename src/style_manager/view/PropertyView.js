@@ -171,10 +171,13 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 			}else
 				this.updateTargetStyle(value, null, opt);
 
-      var model = this.model;
-      this.config.em.trigger('component:update', model);
-      this.config.em.trigger('component:styleUpdate', model);
-      this.config.em.trigger('component:styleUpdate:' + model.get('property'), model);
+      var em = this.config.em;
+      if(em){
+        var model = this.model;
+        em.trigger('component:update', model);
+        em.trigger('component:styleUpdate', model);
+        em.trigger('component:styleUpdate:' + model.get('property'), model);
+      }
 		},
 
 		/**
