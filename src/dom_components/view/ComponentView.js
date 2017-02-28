@@ -3,6 +3,10 @@ define(['backbone', './ComponentsView'],
 
 		return Backbone.View.extend({
 
+			events: {
+				'click': 'initResize',
+			},
+
 			className : function(){
 				return this.getClasses();
 			},
@@ -31,7 +35,14 @@ define(['backbone', './ComponentsView'],
 
 				if(this.model.get('classes').length)
 					this.importClasses();
+
+				this.init();
 			},
+
+			/**
+       * Initialize callback
+       */
+      init: function () {},
 
 			/**
 			 * Import, if possible, classes inside main container
@@ -173,6 +184,71 @@ define(['backbone', './ComponentsView'],
 			 * */
 			eventCall: function(event){
 				event.viewResponse = this;
+			},
+
+			/**
+			 * Init component for resizing
+			 */
+			initResize: function () {
+				var em = this.opts.config.em;
+				var editor = em ? em.get('Editor') : '';
+				var config = em ? em.get('Config') : '';
+				var pfx = config.stylePrefix || '';
+				var attrName = 'data-' + pfx + 'handler';
+				var resizeClass = pfx + 'resizing';
+				var model = this.model;
+				var modelToStyle;
+
+				var toggleBodyClass = function(method, e, opts) {
+					var handlerAttr = e.target.getAttribute(attrName);
+					var resizeHndClass = pfx + 'resizing-' + handlerAttr;
+					var classToAdd = resizeClass;// + ' ' +resizeHndClass;
+					if (opts.docs) {
+						opts.docs.find('body')[method](classToAdd);
+					}
+				};
+
+				if(editor && this.model.get('resizable')) {
+					editor.runCommand('resize', {
+						el: this.el,
+						options: {
+							onStart: function (e, opts) {
+								toggleBodyClass('addClass', e, opts);
+								modelToStyle = em.get('StyleManager').getModelToStyle(model);
+							},
+							// Update all positioned elements (eg. component toolbar)
+							onMove: function () {
+								editor.trigger('change:canvasOffset');
+							},
+							onEnd: function (e, opts) {
+								toggleBodyClass('removeClass', e, opts);
+								editor.trigger('change:canvasOffset');
+							},
+							updateTarget: function(el, rect, store) {
+								if (!modelToStyle) {
+									return;
+								}
+								var unit = 'px';
+								var style = _.clone(modelToStyle.get('style'));
+								var width = rect.w + (store ? 1 : 0);
+								style.width = width + unit;
+								style.height = rect.h + unit;
+								modelToStyle.set('style', style, {avoidStore: 1});
+								em.trigger('targetStyleUpdated');
+
+								// This trick will trigger the Undo Manager. To trigger "change:style"
+								// on the Model you need to provide a new object and after that
+								// Undo Manager will trigger only if values are different (this is why
+								// above I've added + 1 to width if store required)
+								if(store) {
+									var style3 = _.clone(style);
+									style3.width = (width - 1) + unit;
+									modelToStyle.set('style', style3);
+								}
+							}
+						}
+					});
+				}
 			},
 
 			/**

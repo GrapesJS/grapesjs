@@ -6,6 +6,8 @@ require(['config/require-config'], function() {
 
 
 		{
+			allowScripts: 1,
+			autorender: 0,
       noticeOnUnload: 0,
 			container	: '#gjs',
 			height: '100%',
@@ -331,5 +333,6 @@ require(['config/require-config'], function() {
 
     window.editor = editor;
 
+		editor.render();
 	});
 });

@@ -29,12 +29,18 @@ define([ 'backbone', 'require'],
 							options.componentTypes = opt.componentTypes;
 
 					var df = opt.defaultTypes;
-					var cf = opt.componentTypes;
 
-					if(df[attrs.type]){
-						model = df[attrs.type].model;
-					}else{
-						model = df.default.model;
+					for (var it = 0; it < df.length; it++) {
+						var dfId = df[it].id;
+						if(dfId == attrs.type) {
+							model = df[it].model;
+							break;
+						}
+					}
+
+					if(!model) {
+						// get the last one
+						model = df[df.length - 1].model;
 					}
 
 					return new model(attrs, options);

@@ -59,7 +59,7 @@ define(function(require) {
        * @param  {HTMLElement} el DOM
        * @return {Array<Object>}
        */
-      parseNode: function(el){
+      parseNode: function(el) {
         var result = [];
         var nodes = el.childNodes;
 
@@ -74,12 +74,20 @@ define(function(require) {
 
           if(ct){
             var obj = '';
+            /*
             for (var cType in ct) {
               var component = ct[cType].model;
               obj = component.isComponent(node);
               if(obj)
                 break;
+            }*/
+            for (var it = 0; it < ct.length; it++) {
+              var component = ct[it].model;
+              obj = component.isComponent(node);
+              if(obj)
+                break;
             }
+
             model = obj;
           }
 

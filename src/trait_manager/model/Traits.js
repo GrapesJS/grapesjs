@@ -11,7 +11,7 @@ define(['backbone','./Trait', './TraitFactory'],
 
       add: function(models, opt) {
         // Use TraitFactory if necessary
-        if(typeof models === 'string' || models instanceof Array){
+        if(typeof models === 'string' || models instanceof Array) {
           if(typeof models === 'string')
             models = [models];
           for(var i = 0, len = models.length; i < len; i++) {

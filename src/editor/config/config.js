@@ -2,84 +2,91 @@ define(function () {
 	var blkStyle = '.blk-row::after{ content: ""; clear: both; display: block;} .blk-row{padding: 10px;}';
 	return {
 
-		// Style prefix
-		stylePrefix: 'gjs-',
+    // Style prefix
+    stylePrefix: 'gjs-',
 
-		//TEMP
-		components: '',
+    //TEMP
+    components: '',
 
-		// Enable/Disable possibility to copy(ctrl + c) & paste(ctrl + v) components
-		copyPaste: true,
+    // Enable/Disable possibility to copy(ctrl + c) & paste(ctrl + v) components
+    copyPaste: true,
 
-		// Enable/Disable undo manager
-		undoManager: true,
+    // Show an alert before unload the page with unsaved changes
+    noticeOnUnload: true,
 
-		// Height for the editor container
-		height: '900px',
+    // Enable/Disable undo manager
+    undoManager: true,
 
-		// Width for the editor container
-		width: '100%',
+    // Height for the editor container
+    height: '900px',
 
-		// CSS that could only be seen (for instance, inside the code viewer)
-		protectedCss: '*{box-sizing: border-box;}body{margin:0;height:auto;background:#fff}#wrapper{min-height:100%; overflow:auto}',
+    // Width for the editor container
+    width: '100%',
 
-		// CSS for the iframe which containing the canvas, useful if you need to custom something inside
-		// (eg. the style of the selected component)
-		canvasCss: '',
+    // CSS that could only be seen (for instance, inside the code viewer)
+    protectedCss: '*{box-sizing: border-box;}body{margin:0;height:auto;background:#fff}#wrapper{min-height:100%; overflow:auto}',
 
-		// Default command
-		defaultCommand: 'select-comp',
+    // CSS for the iframe which containing the canvas, useful if you need to custom something inside
+    // (eg. the style of the selected component)
+    canvasCss: '',
 
-		// Show a toolbar when the component is selected
-		showToolbar: 1,
+    // Default command
+    defaultCommand: 'select-comp',
 
-		// Allow script tag importing
-		allowScripts: 0,
+    // Show a toolbar when the component is selected
+    showToolbar: 1,
 
-		// If true render a select of available devices
-		showDevices: 1,
+    // Allow script tag importing
+    allowScripts: 0,
 
-		// When enabled, on device change media rules won't be created
-		devicePreviewMode: 0,
+    // If true render a select of available devices
+    showDevices: 1,
 
-		// Dom element
-		el: '',
+    // When enabled, on device change media rules won't be created
+    devicePreviewMode: 0,
 
-		//Configurations for Asset Manager
-		assetManager: {},
+    // This option makes available custom component types also for loaded
+    // elements inside canvas
+    loadCompsOnRender: 1,
 
-		//Configurations for Canvas
-		canvas: {},
+    // Dom element
+    el: '',
 
-		//Configurations for Layers
-		layers: {},
+    //Configurations for Asset Manager
+    assetManager: {},
 
-		//Configurations for Storage Manager
-		storageManager: {},
+    //Configurations for Canvas
+    canvas: {},
 
-		//Configurations for Rich Text Editor
-		rte: {},
+    //Configurations for Layers
+    layers: {},
 
-		//Configurations for DomComponents
-		domComponents: {},
+    //Configurations for Storage Manager
+    storageManager: {},
 
-		//Configurations for Modal Dialog
-		modal: {},
+    //Configurations for Rich Text Editor
+    rte: {},
 
-		//Configurations for Code Manager
-		codeManager: {},
+    //Configurations for DomComponents
+    domComponents: {},
 
-		//Configurations for Panels
-		panels: {},
+    //Configurations for Modal Dialog
+    modal: {},
 
-		//Configurations for Commands
-		commands: {},
+    //Configurations for Code Manager
+    codeManager: {},
 
-		//Configurations for Css Composer
-		cssComposer: {},
+    //Configurations for Panels
+    panels: {},
 
-		//Configurations for Selector Manager
-		selectorManager: {},
+    //Configurations for Commands
+    commands: {},
+
+    //Configurations for Css Composer
+    cssComposer: {},
+
+    //Configurations for Selector Manager
+    selectorManager: {},
 
 		//Configurations for Device Manager
 		deviceManager: {

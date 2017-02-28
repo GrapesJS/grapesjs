@@ -173,8 +173,11 @@ define(['backbone', 'text!./templates/inputNumber.html'],
 			this.docEl.off('mouseup', this.upIncrement);
 			this.docEl.off('mousemove', this.moveIncrement);
 
-			if(this.prValue && this.moved)
-				this.model.set('value', this.prValue - 1, {silent:1}).set('value', this.prValue + 1);
+			if(this.prValue && this.moved) {
+				var value = this.prValue - 1;
+				this.model.set('value', value, {avoidStore: 1})
+					.set('value', value + 1);
+			}
 		},
 
 		/**

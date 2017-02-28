@@ -35,7 +35,8 @@ $colorpSize: 22px;
   position: relative;
 
   input,
-  select {
+  select,
+  textarea {
     @include appearance(none);
 
     color: $inputFontColor;
@@ -46,6 +47,10 @@ $colorpSize: 22px;
     position: relative;
     padding: 3px 4px 4px;
     z-index: 1;
+  }
+
+  textarea {
+    resize: vertical;
   }
 
   select {

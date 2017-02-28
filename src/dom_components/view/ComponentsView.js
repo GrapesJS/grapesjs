@@ -46,7 +46,15 @@ function(Backbone, require) {
 			var ct = this.opts.componentTypes;
 
 			var type = model.get('type');
-			viewObject = dt[type] ? dt[type].view : dt.default.view;
+
+			for (var it = 0; it < dt.length; it++) {
+				var dtId = dt[it].id;
+				if(dtId == type) {
+					viewObject = dt[it].view;
+					break;
+				}
+			}
+			//viewObject = dt[type] ? dt[type].view : dt.default.view;
 
 			var view = new viewObject({
 				model: model,

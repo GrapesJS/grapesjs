@@ -42,48 +42,58 @@ define(function(require) {
 		ComponentView = require('./view/ComponentView');
 
 		var component, componentView;
-		var defaultTypes = {
-			'cell': {
+		var defaultTypes = [
+			{
+				id: 'cell',
 				model: require('./model/ComponentTableCell'),
 				view: require('./view/ComponentTableCellView'),
 			},
-			'row': {
+			{
+				id: 'row',
 				model: require('./model/ComponentTableRow'),
 				view: require('./view/ComponentTableRowView'),
 			},
-			'table': {
+			{
+				id: 'table',
 				model: require('./model/ComponentTable'),
 				view: require('./view/ComponentTableView'),
 			},
-			'map': {
+			{
+				id: 'map',
 				model: require('./model/ComponentMap'),
 				view: require('./view/ComponentMapView'),
 			},
-			'link': {
+			{
+				id: 'link',
 				model: require('./model/ComponentLink'),
 				view: require('./view/ComponentLinkView'),
 			},
-			'video': {
+			{
+				id: 'video',
 				model: require('./model/ComponentVideo'),
 				view: require('./view/ComponentVideoView'),
 			},
-			'image': {
+			{
+				id: 'image',
 				model: require('./model/ComponentImage'),
 				view: require('./view/ComponentImageView'),
 			},
-			'textnode': {
+			{
+				id: 'textnode',
 				model: require('./model/ComponentTextNode'),
 				view: require('./view/ComponentTextNodeView'),
 			},
-			'text': {
+			{
+				id: 'text',
 				model: require('./model/ComponentText'),
 				view: require('./view/ComponentTextView'),
 			},
-			'default': {
+			{
+				id: 'default',
 				model: Component,
 				view: ComponentView,
 			},
-		};
+		];
 
 	  return {
 
@@ -95,6 +105,15 @@ define(function(require) {
        * @private
        */
       name: 'DomComponents',
+
+			/**
+			 * Returns config
+			 * @return {Object} Config object
+			 * @private
+			 */
+			getConfig: function () {
+					return c;
+			},
 
       /**
        * Mandatory for the storage manager
@@ -146,7 +165,11 @@ define(function(require) {
 					componentTypes: componentTypes,
 				});
 				component.set({ attributes: {id: 'wrapper'}});
-				component.get('components').add(c.components);
+
+				if(c.em && !c.em.config.loadCompsOnRender) {
+					component.get('components').add(c.components);
+				}
+
 			  componentView = new ComponentView({
 					model: component,
 					config: c,
@@ -333,12 +356,37 @@ define(function(require) {
 
 			/**
 			 * Add new component type
+			 * @param {string} type
+			 * @param {Object} methods
 			 * @private
 			 */
-			addComponentType: function(type, methods) {
-				componentTypes[type] = methods;
-				return this;
-			}
+			addType: function(type, methods) {
+				var compType = this.getType(type);
+				if(compType) {
+					compType.model = methods.model;
+					compType.view = methods.view;
+				} else {
+					methods.id = type;
+					defaultTypes.unshift(methods);
+				}
+			},
+
+			/**
+			 * Get component type
+			 * @param {string} type
+			 * @private
+			 */
+			getType: function(type) {
+				var df = defaultTypes;
+
+				for (var it = 0; it < df.length; it++) {
+					var dfId = df[it].id;
+					if(dfId == type) {
+						return df[it];
+					}
+				}
+				return;
+			},
 
 		};
 	};

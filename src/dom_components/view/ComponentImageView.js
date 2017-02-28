@@ -7,9 +7,10 @@ define(['backbone', './ComponentView'],
 
 		events: {
 			'dblclick': 'openModal',
+			'click': 'initResize',
 		},
 
-		initialize: function(o){
+		initialize: function(o) {
 			ComponentView.prototype.initialize.apply(this, arguments);
 			this.listenTo(this.model, 'change:src', this.updateSrc);
 			this.listenTo(this.model, 'dblclick active', this.openModal);

@@ -170,12 +170,14 @@ function(Backbone, FrameView) {
 			this.placerIntEl = $('<div>', {class: ppfx + 'placeholder-int'}).get(0);
 			this.ghostEl = $('<div>', {class: ppfx + 'ghost'}).get(0);
 			this.toolbarEl = $('<div>', {class: ppfx + 'toolbar'}).get(0);
+			this.resizerEl = $('<div>', {class: ppfx + 'resizer'}).get(0);
 			this.placerEl.appendChild(this.placerIntEl);
 			this.toolsEl.appendChild(this.hlEl);
 			this.toolsEl.appendChild(this.badgeEl);
 			this.toolsEl.appendChild(this.placerEl);
 			this.toolsEl.appendChild(this.ghostEl);
 			this.toolsEl.appendChild(this.toolbarEl);
+			this.toolsEl.appendChild(this.resizerEl);
 			this.$el.append(this.toolsEl);
       var rte = this.em.get('rte');
 

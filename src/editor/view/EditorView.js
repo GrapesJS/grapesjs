@@ -15,6 +15,15 @@ function(Backbone){
 		},
 
 		render: function() {
+			var model = this.model;
+			var dComps = model.get('DomComponents');
+			var config = model.get('Config');
+
+			if(config.loadCompsOnRender) {
+				dComps.getComponents().add(config.components);
+				dComps.onLoad();
+			}
+
 			var conf = this.conf;
 			var contEl = $(conf.el || ('body ' + conf.container));
 			this.$el.empty();
@@ -26,7 +35,7 @@ function(Backbone){
 				contEl.css('height', conf.height);
 
 			// Canvas
-			this.$el.append(this.model.get('Canvas').render());
+			this.$el.append(model.get('Canvas').render());
 
 			// Panels
 			this.$el.append(this.pn.render());

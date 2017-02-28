@@ -21,6 +21,7 @@ define(function(require) {
         this.draggable = o.draggable || true;
         this.nested = o.nested || 0;
         this.pfx = o.pfx || '';
+        this.ppfx = o.ppfx || '';
         this.freezeClass = o.freezeClass || this.pfx + 'freezed';
         this.onStart = o.onStart || '';
         this.onEndMove = o.onEndMove || '';
@@ -71,6 +72,29 @@ define(function(require) {
       },
 
       /**
+       * Toggle cursor while sorting
+       * @param {Boolean} active
+       */
+      toggleSortCursor: function(active) {
+        var em = this.em;
+        var body = document.body;
+        var pfx = this.ppfx || this.pfx;
+        var sortCls = pfx + 'grabbing';
+        var emBody = em ? em.get('Canvas').getBody() : '';
+        if(active) {
+          body.className += ' ' + sortCls;
+          if(em) {
+            emBody.className += ' ' + sortCls;
+          }
+        } else {
+          body.className = body.className.replace(sortCls, '').trim();
+          if(em) {
+            emBody.className = emBody.className.replace(sortCls, '').trim();
+          }
+        }
+      },
+
+      /**
        * Set drag helper
        * @param {HTMLElement} el
        * @param {Event} event
@@ -104,6 +128,7 @@ define(function(require) {
       },
 
       /**
+       * //TODO Refactor, use canvas.getMouseRelativePos to get mouse's X and Y
        * Update the position of the helper
        * @param  {Event} e
        */
@@ -133,8 +158,10 @@ define(function(require) {
        * @param {String} selector
        * @return {Boolean}
        */
-      matches: function(el, selector){
-        var els = (el.parentNode || document.body).querySelectorAll(selector);
+      matches: function(el, selector, useBody) {
+        var startEl = el.parentNode || document.body;
+        //startEl = useBody ? startEl.ownerDocument.body : startEl;
+        var els = startEl.querySelectorAll(selector);
         var i = 0;
         while (els[i] && els[i] !== el)
           ++i;
@@ -221,6 +248,8 @@ define(function(require) {
         if(this.em) {
           this.em.clearSelection();
         }
+
+        this.toggleSortCursor(1);
       },
 
       /**
@@ -574,6 +603,7 @@ define(function(require) {
           dragHelper.remove();
           this.dragHelper = null;
         }
+        this.toggleSortCursor();
       },
 
       /**
@@ -610,7 +640,7 @@ define(function(require) {
           draggable = this.matches(dst, toDrag);
         }else if(typeof draggable === 'string') {
           toDrag = draggable;
-          draggable = this.matches(dst, toDrag);
+          draggable = this.matches(dst, toDrag, 1);
         }
 
         // Check if the target could accept the element to be DROPPED inside
