@@ -106,4 +106,28 @@ grapesjs.plugins.add('gjs-preset-webpage', (editor, opts) => {
   updateTooltip(pnm.getPanel('options').get('buttons'));
   updateTooltip(pnm.getPanel('views').get('buttons'));
 
+
+
+  /****************** EVENTS *************************/
+
+  // On component change show the Style Manager
+  editor.on('change:selectedComponent', function() {
+    var openLayersBtn = editor.Panels.getButton('views', 'open-layers');
+
+    // Don't switch when the Layer Manager is on or
+    // there is no selected component
+    if((!openLayersBtn || !openLayersBtn.get('active')) &&
+      editor.editor.get('selectedComponent')) {
+      var openSmBtn = editor.Panels.getButton('views', 'open-sm');
+      openSmBtn && openSmBtn.set('active', 1);
+    }
+  });
+
+  // Do stuff on load
+  editor.on('load', function() {
+    // Open block manager
+    var openBlocksBtn = editor.Panels.getButton('views', 'open-blocks');
+    openBlocksBtn && openBlocksBtn.set('active', 1);
+  });
+
 });
