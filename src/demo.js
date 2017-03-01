@@ -1,130 +1,131 @@
 require(['config/require-config'], function() {
 
-	require(['grapesjs/main'],function (grapesjs){
+  require(['grapesjs/main'],function (grapesjs){
 
-		var editor	= grapesjs.init(
+    var editor  = grapesjs.init(
 
 
-		{
-			allowScripts: 1,
-			autorender: 0,
+    {
+      allowScripts: 1,
+      showOffsets: 1,
+      autorender: 0,
       noticeOnUnload: 0,
-			container	: '#gjs',
-			height: '100%',
-			fromElement: true,
-			/*
-			components: [{
-				type: 'text',
-				style:{
-					width:'100px',
-					height:'100px',
-					margin: '50px auto',
-				},
-				traits: ['title'],
-				components: [{
-					type: 'textnode',
-					content: 'text node row',
-				},{
-					type: 'textnode',
-					content: ', another text node',
-				},{
-					type: 'link',
-					content: 'someLink',
-				},{
-					type: 'textnode',
-					content: " More text node  ---   ",
-				}],
-			}],*/
+      container  : '#gjs',
+      height: '100%',
+      fromElement: true,
+      /*
+      components: [{
+        type: 'text',
+        style:{
+          width:'100px',
+          height:'100px',
+          margin: '50px auto',
+        },
+        traits: ['title'],
+        components: [{
+          type: 'textnode',
+          content: 'text node row',
+        },{
+          type: 'textnode',
+          content: ', another text node',
+        },{
+          type: 'link',
+          content: 'someLink',
+        },{
+          type: 'textnode',
+          content: " More text node  ---   ",
+        }],
+      }],*/
 
-			storageManager:{
-				autoload: 0,
-				storeComponents: 1,
-				storeStyles: 1,
-			},
-			commands: 		{
-					defaults		: [{
-													id: 	'open-github',
-													run: 	function(editor, sender){
-														sender.set('active',false);
-														window.open('https://github.com/artf/grapesjs','_blank');
-													}
-												},{
-													id: 	'undo',
-													run: 	function(editor, sender){
-														sender.set('active',false);
-														editor.UndoManager.undo(true);
-													}
-												},{
-													id: 	'redo',
-													run: 	function(editor, sender){
-														sender.set('active',false);
-														editor.UndoManager.redo(true);
-													}
-												},{
-													id: 	'clean-all',
-													run: 	function(editor, sender){
-														sender.set('active',false);
-														if(confirm('Are you sure to clean the canvas?')){
-															var comps = editor.DomComponents.clear();
-														}
-													}
-												}],
-			},
+      storageManager:{
+        autoload: 0,
+        storeComponents: 1,
+        storeStyles: 1,
+      },
+      commands:     {
+          defaults    : [{
+                          id:   'open-github',
+                          run:   function(editor, sender){
+                            sender.set('active',false);
+                            window.open('https://github.com/artf/grapesjs','_blank');
+                          }
+                        },{
+                          id:   'undo',
+                          run:   function(editor, sender){
+                            sender.set('active',false);
+                            editor.UndoManager.undo(true);
+                          }
+                        },{
+                          id:   'redo',
+                          run:   function(editor, sender){
+                            sender.set('active',false);
+                            editor.UndoManager.redo(true);
+                          }
+                        },{
+                          id:   'clean-all',
+                          run:   function(editor, sender){
+                            sender.set('active',false);
+                            if(confirm('Are you sure to clean the canvas?')){
+                              var comps = editor.DomComponents.clear();
+                            }
+                          }
+                        }],
+      },
 
-			assetManager: {
-				storageType			: '',
-				storeOnChange		: true,
-				storeAfterUpload	: true,
-				assets				: [
-					      				   { type: 'image', src : 'http://placehold.it/350x250/78c5d6/fff/image1.jpg', height:350, width:250},
-					      				   { type: 'image', src : 'http://placehold.it/350x250/459ba8/fff/image2.jpg', height:350, width:250},
-					      				   { type: 'image', src : 'http://placehold.it/350x250/79c267/fff/image3.jpg', height:350, width:250},
-					      				   { type: 'image', src : 'http://placehold.it/350x250/c5d647/fff/image4.jpg', height:350, width:250},
-					      				   { type: 'image', src : 'http://placehold.it/350x250/f28c33/fff/image5.jpg', height:350, width:250},
-					      				   { type: 'image', src : 'http://placehold.it/350x250/e868a2/fff/image6.jpg', height:350, width:250},
-					      				   { type: 'image', src : 'http://placehold.it/350x250/cc4360/fff/image7.jpg', height:350, width:250},
-					      				   { type: 'image', src : './img/work-desk.jpg', date: '2015-02-01',height:1080, width:1728},
-					      				   { type: 'image', src : './img/phone-app.png', date: '2015-02-01',height:650, width:320},
-					      				   { type: 'image', src : './img/bg-gr-v.png', date: '2015-02-01',height:1, width:1728},
-				      				   ]
-			},
+      assetManager: {
+        storageType      : '',
+        storeOnChange    : true,
+        storeAfterUpload  : true,
+        assets        : [
+                           { type: 'image', src : 'http://placehold.it/350x250/78c5d6/fff/image1.jpg', height:350, width:250},
+                           { type: 'image', src : 'http://placehold.it/350x250/459ba8/fff/image2.jpg', height:350, width:250},
+                           { type: 'image', src : 'http://placehold.it/350x250/79c267/fff/image3.jpg', height:350, width:250},
+                           { type: 'image', src : 'http://placehold.it/350x250/c5d647/fff/image4.jpg', height:350, width:250},
+                           { type: 'image', src : 'http://placehold.it/350x250/f28c33/fff/image5.jpg', height:350, width:250},
+                           { type: 'image', src : 'http://placehold.it/350x250/e868a2/fff/image6.jpg', height:350, width:250},
+                           { type: 'image', src : 'http://placehold.it/350x250/cc4360/fff/image7.jpg', height:350, width:250},
+                           { type: 'image', src : './img/work-desk.jpg', date: '2015-02-01',height:1080, width:1728},
+                           { type: 'image', src : './img/phone-app.png', date: '2015-02-01',height:650, width:320},
+                           { type: 'image', src : './img/bg-gr-v.png', date: '2015-02-01',height:1, width:1728},
+                         ]
+      },
 
 
-			styleManager : {
-				sectors: [{
-					name: 'General',
-					open: false,
-					buildProps: ['float', 'display', 'position', 'top', 'right', 'left', 'bottom'],
-				},{
-					name: 'Dimension',
-					open: false,
-					buildProps: ['width', 'height', 'max-width', 'min-height', 'margin', 'padding'],
-				},{
-					name: 'Typography',
-					open: false,
-					buildProps: ['font-family', 'font-size', 'font-weight', 'letter-spacing', 'color', 'line-height', 'text-align', 'text-shadow'],
-					properties: [{
-						property: 'text-align',
-						list		: [
-							{value: 'left', className: 'fa fa-align-left'},
-							{value: 'center', className: 'fa fa-align-center' },
-							{value: 'right', className: 'fa fa-align-right'},
-							{value: 'justify', className: 'fa fa-align-justify'}
-						],
-					}]
-				},{
-					name: 'Decorations',
-					open: false,
-					buildProps: ['border-radius-c', 'background-color', 'border-radius', 'border', 'box-shadow', 'background'],
-				},{
-					name: 'Extra',
-					open: false,
-					buildProps: ['transition', 'perspective', 'transform'],
-				},{
-					name: 'Dimension',
-					open: false,
-					buildProps: ['margin'],
-					properties:[{
+      styleManager : {
+        sectors: [{
+          name: 'General',
+          open: false,
+          buildProps: ['float', 'display', 'position', 'top', 'right', 'left', 'bottom'],
+        },{
+          name: 'Dimension',
+          open: false,
+          buildProps: ['width', 'height', 'max-width', 'min-height', 'margin', 'padding'],
+        },{
+          name: 'Typography',
+          open: false,
+          buildProps: ['font-family', 'font-size', 'font-weight', 'letter-spacing', 'color', 'line-height', 'text-align', 'text-shadow'],
+          properties: [{
+            property: 'text-align',
+            list    : [
+              {value: 'left', className: 'fa fa-align-left'},
+              {value: 'center', className: 'fa fa-align-center' },
+              {value: 'right', className: 'fa fa-align-right'},
+              {value: 'justify', className: 'fa fa-align-justify'}
+            ],
+          }]
+        },{
+          name: 'Decorations',
+          open: false,
+          buildProps: ['border-radius-c', 'background-color', 'border-radius', 'border', 'box-shadow', 'background'],
+        },{
+          name: 'Extra',
+          open: false,
+          buildProps: ['transition', 'perspective', 'transform'],
+        },{
+          name: 'Dimension',
+          open: false,
+          buildProps: ['margin'],
+          properties:[{
               name: 'Marginnnn',
               property: 'margin',
               type: 'composite',
@@ -142,19 +143,19 @@ require(['config/require-config'], function() {
                 property: 'margin-left',
               },],
             }/*{
-						name		: 'Center blocksss',
-						property	: 'margins',
-						type		: 'select',
-						defaults 	: '0',
-						list		:	[{
-											value 		: '0',
-											name			: 'Normal',
-										},{
-											value 		: '0 auto',
-											name			: 'Center',
-										}],
-					}*/],
-					},{
+            name    : 'Center blocksss',
+            property  : 'margins',
+            type    : 'select',
+            defaults   : '0',
+            list    :  [{
+                      value     : '0',
+                      name      : 'Normal',
+                    },{
+                      value     : '0 auto',
+                      name      : 'Center',
+                    }],
+          }*/],
+          },{
             name: 'Flex',
             open: false,
             properties: [{
@@ -199,7 +200,7 @@ require(['config/require-config'], function() {
                         className : 'icons-flex icon-dir-col-rev',
                       }],
             },{
-            	name      : 'Wrap',
+              name      : 'Wrap',
               property  : 'flex-wrap',
               type    : 'radio',
               defaults  : 'nowrap',
@@ -322,17 +323,17 @@ require(['config/require-config'], function() {
             }]
           }
 
-				],
+        ],
 
-			},
-		}
+      },
+    }
 
 
-		);
+    );
 
 
     window.editor = editor;
 
-		editor.render();
-	});
+    editor.render();
+  });
 });

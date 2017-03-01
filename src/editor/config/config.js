@@ -20,6 +20,9 @@ define(function () {
     // Show paddings and margins
     showOffsets: false,
 
+    // Show paddings and margins on selected component
+    showOffsetsSelected: false,
+
     // Height for the editor container
     height: '900px',
 
