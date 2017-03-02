@@ -7,14 +7,17 @@ define(function() {
     },
 
     run: function(editor, sender, opts) {
-      if (!editor.getConfig().showOffsets) {
+      var opt = opts || {};
+      var state = opt.state || '';
+      var config = editor.getConfig();
+
+      if (!config.showOffsets ||
+          (!config.showOffsetsSelected && state == 'Fixed') ) {
         return;
       }
 
       var canvas = editor.Canvas;
-      var opt = opts || {};
       var el = opt.el || '';
-      var state = opt.state || '';
       var pos = opt.elPos || canvas.getElementPos(el);
       var style = window.getComputedStyle(el);
       var ppfx = this.ppfx;

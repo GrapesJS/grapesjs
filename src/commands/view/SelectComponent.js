@@ -296,9 +296,8 @@ define(function(require) {
         this.cleanPrevious(md);
         var $el = $(el);
         var nMd = $el.data('model');
-        if(nMd){
+        if(nMd) {
           var em = this.em;
-          var config = em.get('Config');
           var mirror = nMd.get('mirror');
           nMd = mirror ? mirror : nMd;
 
@@ -317,9 +316,7 @@ define(function(require) {
 
           this.editorModel.set('selectedComponent', nMd);
           nMd.set('status','selected');
-          if(config.showOffsetsSelected) {
-            this.showFixedElementOffset(el);
-          }
+          this.showFixedElementOffset(el);
           this.hideElementOffset();
         }
       },
