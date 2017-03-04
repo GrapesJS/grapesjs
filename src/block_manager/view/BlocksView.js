@@ -61,9 +61,14 @@ function(Backbone, BlockView) {
     onDrop: function(model){
       this.em.runDefault();
 
-      if (model && model.get && model.get('activeOnRender')) {
-        model.trigger('active');
-        model.set('activeOnRender', 0);
+      if (model && model.get) {
+        if(model.get('activeOnRender')) {
+          model.trigger('active');
+          model.set('activeOnRender', 0);
+        }
+
+        // Register all its components (eg. for the Undo Manager)
+        this.em.initChildrenComp(model);
       }
     },
 
