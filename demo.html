@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="stylesheets/grapesjs-preset-webpage.css">
     <link rel="stylesheet" href="stylesheets/tooltip.css">
     <link rel="stylesheet" href="stylesheets/perfect-scrollbar.css">
+    <link rel="stylesheet" href="stylesheets/grapesjs-plugin-filestack.css">
+    <script src="https://static.filestackapi.com/v3/filestack-0.1.12.js"></script>
     <script src="http://code.jquery.com/jquery-2.2.0.min.js"></script>
     <script src="js/perfect-scrollbar.min.js"></script>
     <script src="js/toastr.min.js"></script>
@@ -906,8 +908,10 @@
         }
       </style>
     </div>
+
     <script src="js/grapes.min.js"></script>
     <script src="js/grapesjs-plugin-export.min.js"></script>
+    <script src="js/grapesjs-plugin-filestack.min.js"></script>
     <script src="js/grapesjs-preset-webpage.js"></script>
     <script type="text/javascript">
 
@@ -925,7 +929,13 @@
       container : '#gjs',
       fromElement: 1,
       showOffsets: 1,
-      plugins: ['gjs-plugin-export', 'gjs-preset-webpage'],
+      plugins: ['gjs-plugin-export', 'gjs-preset-webpage', 'gjs-plugin-filestack'],
+
+      pluginsOpts: {
+        'gjs-plugin-filestack': {
+          key: 'A1nL8omiAR8W7pHi3cotzz',
+        }
+      },
 
       // Insert some default images
       assetManager: {

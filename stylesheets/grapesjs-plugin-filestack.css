@@ -1,0 +1,33 @@
+.gjs-am-assets-cont .gjs-am-asset-image {
+  border-bottom: none;
+  float: left;
+  width: 20%;
+  height: 150px;
+  box-sizing: border-box;
+  border-radius: 3px;
+  overflow: hidden; }
+
+.gjs-am-assets-cont #gjs-am-meta,
+.gjs-am-assets-cont #gjs-am-preview-cont {
+  width: 100%; }
+
+.gjs-am-assets-cont #gjs-am-preview-cont {
+  height: 100px; }
+
+.gjs-am-assets-cont #gjs-am-close {
+  right: 10px;
+  top: 10px;
+  z-index: 1;
+  line-height: 0; }
+
+.gjs-btn-filestack {
+  margin-bottom: 10px; }
+
+.gjs-am-assets-cont {
+  height: 400px; }
+
+.gjs-am-assets {
+  height: 345px;
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 5px;
+  margin: 0 -10px; }
