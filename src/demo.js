@@ -36,13 +36,13 @@ require(['config/require-config'], function() {
           content: " More text node  ---   ",
         }],
       }],*/
-      /*
+
       storageManager:{
         autoload: 0,
         storeComponents: 1,
         storeStyles: 1,
       },
-      */
+
       commands:     {
           defaults    : [{
                           id:   'open-github',

@@ -113,10 +113,10 @@ define(function(require) {
               return;
             }
 
-            sel.collection.remove(sel);
-            ed.Canvas.getToolbarEl().style.display = 'none';
-            ed.editor.runDefault();
+            sel.set('status', '');
+            sel.destroy();
             ed.trigger('component:update', sel);
+            ed.editor.set('selectedComponent', null);
           },
         };
 
