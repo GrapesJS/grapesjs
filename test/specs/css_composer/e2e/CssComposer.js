@@ -109,6 +109,47 @@ define(['GrapesJS'],function(GrapesJS) {
               coll1.should.deep.equal(coll2);
             });
 
+            it("Extend css rule style, if requested", function() {
+              var style1 = {color: 'red', width: '10px'};
+              var style2 = {height: '20px', width: '20px'};
+              var rule1 = {
+                selectors: ['test1'],
+                style: style1,
+              };
+              var rule2 = {
+                selectors: ['test1'],
+                style: style2,
+              };
+              var ruleOut = cssc.addCollection(rule1)[0];
+              // ruleOut is a Model
+              ruleOut = JSON.parse(JSON.stringify(ruleOut));
+              var ruleResult = {
+                maxWidth: '',
+                selectors: [{
+                 active: true,
+                 label: 'test1',
+                 name: 'test1',
+                 type: 'class',
+                }],
+                state: '',
+                stylable: true,
+                style: {
+                 color: 'red',
+                 width: '10px'
+                }
+              };
+              ruleOut.should.deep.equal(ruleResult);
+              var ruleOut = cssc.addCollection(rule2, {extend: 1})[0];
+              ruleOut = JSON.parse(JSON.stringify(ruleOut));
+              ruleResult.style = {
+                color: 'red',
+                height: '20px',
+                width: '20px',
+              }
+              ruleOut.should.deep.equal(ruleResult);
+
+            });
+
             it('Add raw rule objects with width via addCollection', function() {
               var coll1 = cssc.addCollection(rulesSet2);
               coll1[2].get('maxWidth').should.equal(rulesSet2[2].maxWidth);

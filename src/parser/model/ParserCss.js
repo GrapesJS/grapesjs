@@ -44,9 +44,13 @@ define(function(require) {
           var sels = node.selectorText;
 
           // It's a CSSMediaRule
-          if(node.cssRules){
+          if(node.cssRules) {
             var subRules = this.parseNode(node);
-            var width = node.media.mediaText.match(/-width:(.*)\)/i)[1];
+            var widthA = node.media.mediaText.match(/-width:(.*)\)/i);
+            if(!widthA) {
+              continue;
+            }
+            var width = widthA[1];
             for(var s = 0, lens = subRules.length; s < lens; s++){
               var subRule = subRules[s];
               subRule.maxWidth = width ? width.trim() : '';

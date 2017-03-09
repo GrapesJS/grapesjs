@@ -133,7 +133,7 @@ define([path + 'model/ParserCss',],
             obj.parse(str).should.deep.equal(result);
           });
 
-          // Phantom don't find 'node.conditionText' so will skip it
+          // Phantom doesn't find 'node.conditionText' so will skip it
           it.skip('Parse rules inside media queries', function() {
             var str = '.test1:hover{ color:white }@media (max-width: 992px){ .test1.test2:hover{ color:red } .test2{ color: blue }}';
             var result = [{

@@ -215,11 +215,13 @@ define(function(require) {
         /**
          * Add a raw collection of rule objects
          * This method overrides styles, in case, of already defined rule
-         * @param {Array<Object>} data Array of rule objects
+         * @param {Array<Object>} data Array of rule objects, eg . [{selectors: ['class1'], style: {....}}, ..]
+         * @param {Object} opts Options
          * @return {Array<Model>}
          * @private
          */
-        addCollection: function(data){
+        addCollection: function(data, opts) {
+          var opt = opts || {};
           var result = [];
           var d = data instanceof Array ? data : [data];
           for(var i = 0, l = d.length; i < l; i++){
@@ -237,7 +239,12 @@ define(function(require) {
               newSels.push(selec);
             }
             var model = this.add(newSels, rule.state, rule.maxWidth);
-            model.set('style', rule.style || {});
+            if (opt.extend) {
+              var newStyle = _.extend({}, model.get('style'), rule.style || {});
+              model.set('style', newStyle);
+            } else {
+                model.set('style', rule.style || {});
+            }
             result.push(model);
           }
           return result;
