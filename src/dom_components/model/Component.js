@@ -59,6 +59,9 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
         // Array of classes
         classes: '',
 
+        // Component's javascript
+        script: '',
+
         // Traits
         traits: ['id', 'title'],
 

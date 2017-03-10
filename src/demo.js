@@ -12,9 +12,40 @@ require(['config/require-config'], function() {
       noticeOnUnload: 0,
       container  : '#gjs',
       height: '100%',
-      fromElement: true,
-      /*
+      //fromElement: true,
+
       components: [{
+        script: 'this.innerHTML= "test1";',
+        style: {
+          background: 'red',
+          width:'500px',
+          height:'100px',
+          margin: '50px auto',
+        }
+      },{
+        script: 'this.innerHTML= "test1";',
+        style: {
+          background: 'blue',
+          width:'500px',
+          height:'100px',
+          margin: '50px auto',
+        }
+      },{
+        script: 'this.innerHTML= "test2";',
+        style: {
+          background: 'green',
+          width:'500px',
+          height:'100px',
+          margin: '50px auto',
+        }
+      },{
+        style: {
+          background: 'yellow',
+          width:'500px',
+          height:'100px',
+          margin: '50px auto',
+        }
+      },{
         type: 'text',
         style:{
           width:'100px',
@@ -35,7 +66,7 @@ require(['config/require-config'], function() {
           type: 'textnode',
           content: " More text node  ---   ",
         }],
-      }],*/
+      }],
 
       storageManager:{
         autoload: 0,
