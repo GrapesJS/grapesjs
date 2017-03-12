@@ -12,10 +12,12 @@ require(['config/require-config'], function() {
       noticeOnUnload: 0,
       container  : '#gjs',
       height: '100%',
-      //fromElement: true,
+      fromElement: true,
 
+      /*
       components: [{
-        script: 'this.innerHTML= "test1";',
+        //script: 'var el = this; setInterval(function(){el.style.marginLeft = Math.random() * 50 +"px";}, 1000)',
+        script: 'loadScript = function(){console.log("loaded INSIDE", $);}',
         style: {
           background: 'red',
           width:'500px',
@@ -67,7 +69,7 @@ require(['config/require-config'], function() {
           content: " More text node  ---   ",
         }],
       }],
-
+*/
       storageManager:{
         autoload: 0,
         storeComponents: 1,
@@ -398,5 +400,7 @@ require(['config/require-config'], function() {
     }]);
 
     editor.render();
+
+    var dc = editor.DomComponents.getComponents();
   });
 });

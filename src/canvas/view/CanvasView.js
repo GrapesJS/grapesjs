@@ -173,6 +173,8 @@ function(Backbone, FrameView) {
 
       view.el.id = id;
       view.scriptContainer.html('');
+
+      // TODO isolate
       view.scriptContainer.append('<script>'+
         'var item = document.getElementById("'+id+'");'+
         '(function(){' + script + '}.bind(item))()</script>');

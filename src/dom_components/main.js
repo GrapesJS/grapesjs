@@ -79,6 +79,11 @@ define(function(require) {
         view: require('./view/ComponentImageView'),
       },
       {
+        id: 'script',
+        model: require('./model/ComponentScript'),
+        view: require('./view/ComponentScriptView'),
+      },
+      {
         id: 'textnode',
         model: require('./model/ComponentTextNode'),
         view: require('./view/ComponentTextNodeView'),

@@ -37,6 +37,9 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
         // Allow to edit the content of the component (used on Text components)
         editable: false,
 
+        // Hide the component inside Layers
+        hiddenLayer: false,
+
         // This property is used by the HTML exporter as void elements do not
         // have closing tag, eg. <br/>, <hr/>, etc.
         void: false,
