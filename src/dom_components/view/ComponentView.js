@@ -16,26 +16,28 @@ define(['backbone', './ComponentsView'],
       },
 
       initialize: function(opt) {
+        var model = this.model;
         this.opts = opt || {};
         this.config = this.opts.config || {};
         this.em = this.config.em || '';
         this.pfx = this.config.stylePrefix || '';
         this.ppfx = this.config.pStylePrefix || '';
-        this.components = this.model.get('components');
-        this.attr = this.model.get("attributes");
+        this.components = model.get('components');
+        this.attr = model.get("attributes");
         this.classe = this.attr.class || [];
-        this.listenTo(this.model, 'destroy remove', this.remove);
-        this.listenTo(this.model, 'change:style', this.updateStyle);
-        this.listenTo(this.model, 'change:attributes', this.updateAttributes);
-        this.listenTo(this.model, 'change:status', this.updateStatus);
-        this.listenTo(this.model, 'change:state', this.updateState);
-        this.listenTo(this.model, 'change:script', this.render);
-        this.listenTo(this.model.get('classes'), 'add remove change', this.updateClasses);
-        this.$el.data('model', this.model);
-        this.model.view = this;
+        this.listenTo(model, 'destroy remove', this.remove);
+        this.listenTo(model, 'change:style', this.updateStyle);
+        this.listenTo(model, 'change:attributes', this.updateAttributes);
+        this.listenTo(model, 'change:status', this.updateStatus);
+        this.listenTo(model, 'change:state', this.updateState);
+        this.listenTo(model, 'change:script', this.render);
+        this.listenTo(model, 'change', this.handleChange);
+        this.listenTo(model.get('classes'), 'add remove change', this.updateClasses);
+        this.$el.data('model', model);
+        model.view = this;
         this.$el.data("collection", this.components);
 
-        if(this.model.get('classes').length)
+        if(model.get('classes').length)
           this.importClasses();
 
         this.init();
@@ -45,6 +47,22 @@ define(['backbone', './ComponentsView'],
        * Initialize callback
        */
       init: function () {},
+
+      /**
+       * Handle any property change
+       * @private
+       */
+      handleChange: function () {
+        var em = this.em;
+        if(em) {
+          var model = this.model;
+          em.trigger('component:update', model);
+
+          for(var prop in model.changed) {
+            em.trigger('component:update:' + prop, model);
+          }
+        }
+      },
 
       /**
        * Import, if possible, classes inside main container

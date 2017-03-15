@@ -139,7 +139,6 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
 
         if(!avSt){
           this.store();
-          this.set('changesCount', 0);
         }
       },
 
@@ -220,7 +219,6 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
 
         if(!avSt){
           this.store();
-          this.set('changesCount', 0);
         }
       },
 
@@ -398,7 +396,7 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
        * @return {Object} Stored data
        * @private
        */
-      store: function(){
+      store: function() {
         var sm = this.get('StorageManager');
         var store = {};
         if(!sm)
@@ -412,6 +410,8 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
         });
 
         sm.store(store);
+        this.set('changesCount', 0);
+
         return store;
       },
 

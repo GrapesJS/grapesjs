@@ -21,8 +21,11 @@ function(Backbone, require) {
       var i  = this.collection.indexOf(model);
       this.addToCollection(model, null, i);
 
-      if(this.config.em) {
-        this.config.em.trigger('add:component', model);
+      var em = this.config.em;
+      if(em) {
+        // OLD
+        em.trigger('add:component', model);
+        em.trigger('component:add', model);
       }
     },
 
