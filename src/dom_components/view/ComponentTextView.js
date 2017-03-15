@@ -25,8 +25,12 @@ define(['backbone', './ComponentView'],
     enableEditing: function(e) {
       var editable = this.model.get('editable');
       if(this.rte && editable) {
-        this.activeRte = this.rte.attach(this, this.activeRte);
-        this.rte.focus(this, this.activeRte);
+        try {
+          this.activeRte = this.rte.attach(this, this.activeRte);
+          this.rte.focus(this, this.activeRte);
+        } catch (err) {
+            console.error(err);
+        }
       }
       this.toggleEvents(1);
     },
@@ -41,7 +45,11 @@ define(['backbone', './ComponentView'],
       var editable = model.get('editable');
 
       if(this.rte && editable) {
-        this.rte.detach(this, this.activeRte);
+        try {
+          this.rte.detach(this, this.activeRte);
+        } catch (err) {
+            console.error(err);
+        }
         model.set('content', this.el.innerHTML);
       }
 
