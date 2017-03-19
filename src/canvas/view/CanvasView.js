@@ -161,23 +161,22 @@ function(Backbone, FrameView) {
      * @private
      */
     updateScript: function(view) {
-      var scriptsContainer = this.getJsContainer();
-
       if(!view.scriptContainer) {
         view.scriptContainer = $('<div>');
-        scriptsContainer.append(view.scriptContainer.get(0));
+        this.getJsContainer().append(view.scriptContainer.get(0));
       }
 
       var id = view.model.cid;
       var script = view.model.get('script');
+      var scrStr = 'function(){' + script + '}';
+      scrStr = typeof script == 'function' ? script.toString() : scrStr;
 
       view.el.id = id;
       view.scriptContainer.html('');
 
-      // TODO isolate
-      view.scriptContainer.append('<script>'+
-        'var item = document.getElementById("'+id+'");'+
-        '(function(){' + script + '}.bind(item))()</script>');
+      view.scriptContainer.append('<script>' +
+        'var item = document.getElementById("'+id+'");' +
+        '(' + scrStr + '.bind(item))()</script>');
     },
 
     /**

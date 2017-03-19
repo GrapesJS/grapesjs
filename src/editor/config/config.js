@@ -23,6 +23,9 @@ define(function () {
     // Show paddings and margins on selected component
     showOffsetsSelected: false,
 
+    // Clear the canvas when editor.render() is called
+    clearOnRender: true,
+
     // Height for the editor container
     height: '900px',
 

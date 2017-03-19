@@ -274,6 +274,12 @@ define(function(require) {
        * @private
        */
       updateHighlighter: function(el, pos) {
+        var $el = $(el);
+        var model = $el.data('model');
+        if(!model || (model && model.get('status') == 'selected')) {
+          return;
+        }
+
         var hlEl = this.canvas.getHighlighter();
         var hlStyle = hlEl.style;
         var unit = 'px';
@@ -318,6 +324,7 @@ define(function(require) {
           nMd.set('status','selected');
           this.showFixedElementOffset(el);
           this.hideElementOffset();
+          this.hideHighlighter();
         }
       },
 

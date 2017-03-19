@@ -13,6 +13,7 @@ require(['config/require-config'], function() {
       container  : '#gjs',
       height: '100%',
       fromElement: true,
+      clearOnRender: 0,
 
       /*
       components: [{
@@ -399,8 +400,160 @@ require(['config/require-config'], function() {
       attributes: { title: 'Empty canvas' }
     }]);
 
-    editor.render();
+    var domc = editor.DomComponents;
+    var defaultType = domc.getType('default');
+    var defaultModel = defaultType.model;
+    var defaultView = defaultType.view;
+
+
+    // Slider
+    domc.addType('slider', {
+      model: defaultModel.extend({
+        defaults: _.extend({}, defaultModel.prototype.defaults, {
+          autoRotation: false, // Autoplay
+          switchTime: 3000, // Switch time
+          animSpeed: 600, // Animation Speed/Duration
+          droppable: false,
+          traits: [{
+            type: 'number',
+            label: 'Duration',
+            name: 'animSpeed',
+            changeProp: 1,
+          }/*,{
+            type: 'checkbox',
+            label: 'Autoplay',
+            name: 'autoRotation',
+            changeProp: 1,
+          },{
+            type: 'number',
+            label: 'Autoplay time',
+            name: 'switchTime',
+            changeProp: 1,
+          }*/],
+        }),
+
+        init: function () {
+          this.listenTo(this, 'change:animSpeed change:autoRotation change:switchTime',
+            this.buildScript);
+        },
+
+        buildScript: function() {
+          ///prevSlide, nextSlide
+          var opts = {
+            mask: '.slider-mask',
+            slider: '.slider-slideset',
+            slides: '.slider-slide',
+            btnPrev: '.btn-slider-prev',
+            btnNext: '.btn-slider-next',
+            generatePagination: '.slider-pagination',
+            pagerLinks: '.slider-pagination li a',
+            stretchSlideToMask: true,
+            animSpeed: parseInt(this.get('animSpeed')),
+            //switchTime: parseInt(this.get('switchTime')),
+            //autoRotation: this.get('autoRotation'),
+          };
+          var optsStr = JSON.stringify(opts);
+          var script = 'var $el = window.$(this); $el.scrollGallery('+ optsStr + ')';
+          console.log(script);
+          this.set('script', script);
+        },
+
+      },{
+        isComponent: function(el) {
+          if(el.getAttribute &&
+            el.getAttribute('data-gjs-type') == 'slider'){
+            return {type: 'slider'};
+          }
+        },
+      }),
+      view: defaultView.extend({
+        init: function () {
+          this.listenTo(this.model, 'active', this.updateScript);
+        },
+      }),
+    });
+
+    domc.addType('slide', {
+      model: defaultModel.extend({
+        defaults: _.extend({}, defaultModel.prototype.defaults, {
+          droppable: false,
+          draggable: false,
+        }),
+      },{
+        isComponent: function(el) {
+          if(el.getAttribute &&
+            el.getAttribute('data-gjs-type') == 'slide'){
+            return {type: 'slide'};
+          }
+        },
+      }),
+      view: defaultView.extend({
+        remove: function() {
+          var slider = this.$el.closest('.slider');
+          defaultView.prototype.remove.apply(this, arguments);
+          var model = slider.data('model');
+          if(model) model.trigger('active');
+        },
+      }),
+    });
+
+    domc.addType('slider-nav', {
+      model: defaultModel.extend({
+        defaults: _.extend({}, defaultModel.prototype.defaults, {
+          editable: false,
+          droppable: false,
+          draggable: false,
+          removable: false,
+          copyable: false,
+        }),
+      },{
+        isComponent: function(el) {
+          if(el.getAttribute &&
+            el.getAttribute('data-gjs-type') == 'slider-nav'){
+            return {type: 'slider-nav'};
+          }
+        },
+      }),
+      view: defaultView,
+    });
+
+    domc.addType('slider-set', {
+      model: defaultModel.extend({
+        defaults: _.extend({}, defaultModel.prototype.defaults, {
+          droppable: '[data-gjs-type=slide]',
+          draggable: false,
+          removable: false,
+          copyable: false,
+        }),
+      },{
+        isComponent: function(el) {
+          if(el.getAttribute &&
+            el.getAttribute('data-gjs-type') == 'slider-set'){
+            return {type: 'slider-set'};
+          }
+        },
+      }),
+      view: defaultView.extend({
+        init: function () {
+          var comps = this.model.get('components');
+          this.listenTo(comps, 'add remove change', this.updateSliders);
+        },
+        updateSliders: function() {
+          var slider = this.$el.closest('.slider');
+          var model = slider.data('model');
+          if(model)
+            model.trigger('active');
+        },
+      }),
+    });
 
     var dc = editor.DomComponents.getComponents();
+    //http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js
+    dc.add('<link rel="stylesheet" href="private/main.css">'+
+          '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>'+
+          '<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>' +
+          '<script src="private/jquery.main.js" defer=""></script>');
+
+    editor.render();
   });
 });

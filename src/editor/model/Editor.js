@@ -393,10 +393,11 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
 
       /**
        * Store data to the current storage
+       * @param {Function} clb Callback function
        * @return {Object} Stored data
        * @private
        */
-      store: function() {
+      store: function(clb) {
         var sm = this.get('StorageManager');
         var store = {};
         if(!sm)
@@ -409,7 +410,7 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
             store[el] = obj[el];
         });
 
-        sm.store(store);
+        sm.store(store, clb);
         this.set('changesCount', 0);
 
         return store;
@@ -417,10 +418,11 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
 
       /**
        * Load data from the current storage
+       * @param {Function} clb Callback function
        * @return {Object} Loaded data
        * @private
        */
-      load: function(){
+      load: function(clb) {
         var result = this.getCacheLoad(1);
         this.get('storables').forEach(function(m){
           m.load(result);

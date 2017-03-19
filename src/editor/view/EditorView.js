@@ -21,7 +21,9 @@ function(Backbone){
       var config = model.get('Config');
 
       if(config.loadCompsOnRender) {
-        dComps.clear();
+        if (config.clearOnRender) {
+          dComps.clear();
+        }
         dComps.getComponents().add(config.components);
         um.clear();
         dComps.onLoad();
