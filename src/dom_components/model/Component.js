@@ -290,6 +290,27 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
         return attr;
       },
 
+      /**
+       * Return a shallow copy of the model's attributes for JSON
+       * stringification.
+       * @return {Object}
+       * @private
+       */
+      toJSON: function() {
+        var obj = Backbone.Model.prototype.toJSON.apply(this, arguments);
+        var script = this.get('script');
+
+        // Need to cast script functions to string
+        if (typeof script == 'function') {
+          var scrStr = script.toString();
+          scrStr = scrStr.replace(/^function\s?\(\)\s?\{/, '');
+          scrStr = scrStr.replace(/\}$/, '');
+          obj.script = scrStr;
+        }
+
+        return obj;
+      },
+
     },{
 
       /**

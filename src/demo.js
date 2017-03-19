@@ -414,6 +414,7 @@ require(['config/require-config'], function() {
           switchTime: 3000, // Switch time
           animSpeed: 600, // Animation Speed/Duration
           droppable: false,
+          script : function () {console.log(5);},
           traits: [{
             type: 'number',
             label: 'Duration',
@@ -433,6 +434,11 @@ require(['config/require-config'], function() {
         }),
 
         init: function () {
+          this.listenTo(this, 'change:status',function(){
+            var obj = this.toJSON();
+            console.log(obj);
+            console.log(obj.script);
+          });
           this.listenTo(this, 'change:animSpeed change:autoRotation change:switchTime',
             this.buildScript);
         },
