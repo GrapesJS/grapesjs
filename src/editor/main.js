@@ -3,6 +3,7 @@
  * * [getConfig](#getconfig)
  * * [getHtml](#gethtml)
  * * [getCss](#getcss)
+ * * [getJs](#getjs)
  * * [getComponents](#getcomponents)
  * * [setComponents](#setcomponents)
  * * [getStyle](#getstyle)
@@ -216,6 +217,14 @@ define(function (require){
          */
         getCss: function(){
           return em.getCss();
+        },
+
+        /**
+         * Returns JS of all components
+         * @return {string} JS string
+         */
+        getJs: function(){
+          return em.getJs();
         },
 
         /**

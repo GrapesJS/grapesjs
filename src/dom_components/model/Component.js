@@ -298,18 +298,35 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
        */
       toJSON: function() {
         var obj = Backbone.Model.prototype.toJSON.apply(this, arguments);
-        var script = this.get('script');
+        var scriptStr = this.getScriptString();
 
-        // Need to cast script functions to string
-        if (typeof script == 'function') {
-          var scrStr = script.toString();
-          scrStr = scrStr.replace(/^function\s?\(\)\s?\{/, '');
-          scrStr = scrStr.replace(/\}$/, '');
-          obj.script = scrStr;
+        if (scriptStr) {
+          obj.script = scriptStr;
         }
 
         return obj;
       },
+
+      /**
+       * Return script in string format, cleans 'function() {..' from scripts
+       * if it's a function
+       * @param {string|Function} script
+       * @return {string}
+       * @private
+       */
+      getScriptString: function (script) {
+        var scr = script || this.get('script');
+
+        // Need to cast script functions to string
+        if (typeof scr == 'function') {
+          var scrStr = script.toString().trim();
+          scrStr = scrStr.replace(/^function\s?\(\)\s?\{/, '');
+          scrStr = scrStr.replace(/\}$/, '');
+          scr = scrStr;
+        }
+
+        return scr;
+      }
 
     },{
 

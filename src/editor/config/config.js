@@ -26,6 +26,9 @@ define(function () {
     // Clear the canvas when editor.render() is called
     clearOnRender: true,
 
+    // Return JS of components inside HTML from 'editor.getHtml()'
+    jsInHtml: true,
+
     // Height for the editor container
     height: '900px',
 

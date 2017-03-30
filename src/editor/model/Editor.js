@@ -361,7 +361,7 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
        * @return {string} HTML string
        * @private
        */
-      getHtml: function(){
+      getHtml: function() {
         var cmp = this.get('DomComponents');
         var cm = this.get('CodeManager');
 
@@ -369,7 +369,14 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
           return;
 
         var wrp  = cmp.getComponent();
-        return cm.getCode(wrp, 'html');
+        var html = cm.getCode(wrp, 'html');
+
+        if (this.config.jsInHtml) {
+          var js = this.getJs().trim();
+          html += js ? '<script>'+ js +'</script>' : '';
+        }
+
+        return html;
       },
 
       /**
@@ -377,7 +384,7 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
        * @return {string} CSS string
        * @private
        */
-      getCss: function(){
+      getCss: function() {
         var cmp = this.get('DomComponents');
         var cm = this.get('CodeManager');
         var cssc = this.get('CssComposer');
@@ -389,6 +396,16 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
         var protCss = this.config.protectedCss;
 
         return protCss + cm.getCode(wrp, 'css', cssc);
+      },
+
+      /**
+       * Returns JS of all components
+       * @return {string} JS string
+       * @private
+       */
+      getJs: function() {
+        var wrp = this.get('DomComponents').getWrapper();
+        return this.get('CodeManager').getCode(wrp, 'js');
       },
 
       /**

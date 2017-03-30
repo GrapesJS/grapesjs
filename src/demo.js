@@ -390,8 +390,8 @@ require(['config/require-config'], function() {
       id: 'clean-all',
       className: 'fa fa-trash icon-blank',
       command:  function(editor, sender) {
-        if(sender) sender.set('active',false);
-        if(confirm('Are you sure to clean the canvas?')){
+        if(sender) sender.set('active', false);
+        if(confirm('Are you sure to clean the canvas?')) {
           var comps = editor.DomComponents.clear();
           localStorage.setItem('gjs-css', '');
           localStorage.setItem('gjs-html', '');
@@ -399,6 +399,82 @@ require(['config/require-config'], function() {
       },
       attributes: { title: 'Empty canvas' }
     }]);
+
+    // Blocks
+    var bm = editor.BlockManager;
+    bm.add('timer', {
+      label: 'timer',
+      attributes: {class:'gjs-fonts gjs-f-text'},
+      content: {
+        type: 'timer',
+        startfrom: 'May 5, 2018 20:00:00',
+        activeOnRender: 1,
+      }
+    });
+
+    var domc = editor.DomComponents;
+    var defaultType = domc.getType('default');
+    var defaultModel = defaultType.model;
+    var defaultView = defaultType.view;
+
+    domc.addType('timer', {
+      model: defaultModel.extend({
+        defaults: _.extend({}, defaultModel.prototype.defaults, {
+          startfrom: 'Nov 25, 2018 15:00:00',
+          droppable: false,
+          traits: [{
+            label: 'Start',
+            name: 'startfrom',
+            changeProp: 1,
+          }],
+        }),
+
+        init: function () {
+          this.listenTo(this, 'change:startfrom', this.buildScript);
+          this.listenTo(this, 'active', this.buildScript);
+          this.get('components').add('<span id="timer-c"></span>');
+        },
+
+        buildScript: function() {
+          var startfrom = this.get('startfrom');
+          var fn = function () {
+            var startfrom = $startfrom$;
+            var countDownDate = new Date(startfrom).getTime();
+            var el = this.querySelector('#timer-c');
+            var moveTimer = function() {
+              var now = new Date().getTime();
+              var distance = countDownDate - now;
+              // Time calculations for days, hours, minutes and seconds
+              var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+              var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+              var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+              var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+              el.innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+              // If the count down is finished, write some text
+              if (distance < 0) {
+                clearInterval(x);
+                el.innerHTML = "EXPIRED";
+              }
+            };
+            var x = setInterval(moveTimer, 1000);
+            moveTimer();
+          };
+          var fnStr = this.getScriptString(fn);
+          fnStr = fnStr.replace('$startfrom$', '"'+startfrom+'"');
+          this.set('script', fnStr);
+        },
+
+      }, {
+        isComponent: function(el) {
+          if(el.getAttribute &&
+            el.getAttribute('data-gjs-type') == 'timer') {
+            return {type: 'timer'};
+          }
+        },
+      }),
+      view: defaultView,
+    });
 
     editor.render();
   });
