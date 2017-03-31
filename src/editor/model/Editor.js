@@ -362,14 +362,10 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
        * @private
        */
       getHtml: function() {
+        var js = this.config.jsInHtml ? this.getJs() : '';
         var wrp  = this.get('DomComponents').getComponent();
         var html = this.get('CodeManager').getCode(wrp, 'html');
-
-        if (this.config.jsInHtml) {
-          var js = this.getJs().trim();
-          html += js ? '<script>'+ js +'</script>' : '';
-        }
-
+        html += js ? '<script>'+ js +'</script>' : '';
         return html;
       },
 
@@ -393,7 +389,7 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
        */
       getJs: function() {
         var wrp = this.get('DomComponents').getWrapper();
-        return this.get('CodeManager').getCode(wrp, 'js');
+        return this.get('CodeManager').getCode(wrp, 'js').trim();
       },
 
       /**

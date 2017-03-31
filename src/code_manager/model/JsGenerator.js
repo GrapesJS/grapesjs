@@ -16,7 +16,6 @@ define(['backbone'], function (Backbone) {
           var attr = model.get('attributes');
           attr = _.extend({}, attr, {id: id});
           model.set('attributes', attr);
-          // TODO put above html code or i will not see model changes
 
           var scrStr = 'function(){' + script + '}';
           scrStr = typeof script == 'function' ? script.toString() : scrStr;

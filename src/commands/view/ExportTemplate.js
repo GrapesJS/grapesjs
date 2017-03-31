@@ -65,8 +65,9 @@ define(function() {
 					this.modal.open();
 				}
 				var addCss = this.protCss || '';
-				this.htmlEditor.setContent(this.cm.getCode(this.components, 'html', this.cssc));
-				this.cssEditor.setContent(addCss + this.cm.getCode(this.wrapper, 'css', this.cssc));
+        //this.htmlEditor.setContent(this.cm.getCode(this.components, 'html', this.cssc));
+        this.htmlEditor.setContent(this.em.getHtml());
+        this.cssEditor.setContent(addCss + this.cm.getCode(this.wrapper, 'css', this.cssc));
 
 				if(this.sender)
 					this.sender.set('active',false);
