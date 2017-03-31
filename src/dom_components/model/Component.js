@@ -98,6 +98,7 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
         this.defaultCl = this.normalizeClasses(this.get('classes') || this.config.classes || []);
         this.components	= new Components(this.defaultC, opt);
         this.components.parent = this;
+        this.listenTo(this, 'change:script', this.scriptUpdated);
         this.set('attributes', this.get('attributes') || {});
         this.set('components', this.components);
         this.set('classes', new Selectors(this.defaultCl));
@@ -113,6 +114,13 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
        * Initialize callback
        */
       init: function () {},
+
+      /**
+       * Script updated
+       */
+      scriptUpdated: function() {
+        this.set('scriptUpdated', 1);
+      },
 
       /**
        * Init toolbar

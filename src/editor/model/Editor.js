@@ -362,14 +362,8 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
        * @private
        */
       getHtml: function() {
-        var cmp = this.get('DomComponents');
-        var cm = this.get('CodeManager');
-
-        if(!cmp || !cm)
-          return;
-
-        var wrp  = cmp.getComponent();
-        var html = cm.getCode(wrp, 'html');
+        var wrp  = this.get('DomComponents').getComponent();
+        var html = this.get('CodeManager').getCode(wrp, 'html');
 
         if (this.config.jsInHtml) {
           var js = this.getJs().trim();
@@ -385,17 +379,11 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
        * @private
        */
       getCss: function() {
-        var cmp = this.get('DomComponents');
-        var cm = this.get('CodeManager');
         var cssc = this.get('CssComposer');
-
-        if(!cmp || !cm || !cssc)
-          return;
-
-        var wrp = cmp.getComponent();
+        var wrp = this.get('DomComponents').getComponent();
         var protCss = this.config.protectedCss;
 
-        return protCss + cm.getCode(wrp, 'css', cssc);
+        return protCss + this.get('CodeManager').getCode(wrp, 'css', cssc);
       },
 
       /**

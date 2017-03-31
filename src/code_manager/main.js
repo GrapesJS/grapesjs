@@ -26,6 +26,7 @@ define(function(require) {
 		gHtml = require('./model/HtmlGenerator'),
 		gCss = require('./model/CssGenerator'),
 		gJson = require('./model/JsonGenerator'),
+    gJs = require('./model/JsGenerator'),
 		eCM = require('./model/CodeMirrorEditor'),
 		editorView = require('./view/EditorView');
 
@@ -69,6 +70,7 @@ define(function(require) {
 				defGenerators.html = new gHtml();
 				defGenerators.css	= new gCss();
 				defGenerators.json = new gJson();
+        defGenerators.js = new gJs();
 
 				defViewers.CodeMirror = new eCM();
         return this;

@@ -1,0 +1,70 @@
+define(['backbone'], function (Backbone) {
+
+    return Backbone.Model.extend({
+
+      mapModel: function (model) {
+        var code = '';
+        var script  = model.get('script');
+        var type  = model.get('type');
+        var comps  = model.get('components');
+
+        // TODO
+        var id = model.cid;
+
+        if (script) {
+          // If the component has scripts we need to expose his ID
+          var attr = model.get('attributes');
+          attr = _.extend({}, attr, {id: id});
+          model.set('attributes', attr);
+          // TODO put above html code or i will not see model changes
+
+          var scrStr = 'function(){' + script + '}';
+          scrStr = typeof script == 'function' ? script.toString() : scrStr;
+
+          // If the script was updated, I'll put its code in a separate container
+          if (model.get('scriptUpdated')) {
+              this.mapJs[type+'-'+id] = {ids: [id], code: scrStr};
+          } else {
+            var mapType = this.mapJs[type];
+
+            if(mapType) {
+              mapType.ids.push(id);
+            } else {
+              this.mapJs[type] = {ids: [id], code: scrStr};
+            }
+          }
+
+          /*
+          code = 'var item = document.getElementById("'+id+'");'+
+            '(' + scrStr + '.bind(item))();';
+          */
+        }
+
+        comps.each(function(model) {
+          code += this.mapModel(model);
+        }, this);
+
+        return code;
+      },
+
+      build: function(model) {
+        this.mapJs = {};
+        this.mapModel(model);
+
+        var code = '';
+
+        for(var type in this.mapJs) {
+          var mapType = this.mapJs[type];
+          var ids = '#' + mapType.ids.join(', #');
+          code += 'var items = document.querySelectorAll("'+ids+'");' +
+            'for (var i = 0, len = items.length; i < len; i++) {'+
+              '(' + mapType.code + '.bind(items[i]))();' +
+            '}';
+        }
+
+
+        return code;
+      },
+
+    });
+});

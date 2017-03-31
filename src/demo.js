@@ -431,11 +431,20 @@ require(['config/require-config'], function() {
 
         init: function () {
           this.listenTo(this, 'change:startfrom', this.buildScript);
-          this.listenTo(this, 'active', this.buildScript);
+          this.listenTo(this, 'active', this.activeScript);
           this.get('components').add('<span id="timer-c"></span>');
         },
 
+        activeScript: function () {
+          this.set({'script': this.getScript()}, {silent: 1});
+          this.view.updateScript();
+        },
+
         buildScript: function() {
+          this.set('script', this.getScript());
+        },
+
+        getScript: function() {
           var startfrom = this.get('startfrom');
           var fn = function () {
             var startfrom = $startfrom$;
@@ -461,9 +470,8 @@ require(['config/require-config'], function() {
             moveTimer();
           };
           var fnStr = this.getScriptString(fn);
-          fnStr = fnStr.replace('$startfrom$', '"'+startfrom+'"');
-          this.set('script', fnStr);
-        },
+          return fnStr.replace('$startfrom$', '"'+startfrom+'"');
+        }
 
       }, {
         isComponent: function(el) {
