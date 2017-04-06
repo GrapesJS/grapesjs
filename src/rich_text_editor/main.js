@@ -189,7 +189,8 @@ define(function(require) {
 			focus: function(view, rte) {
 				var customRte = this.customRte;
 				if (customRte) {
-					customRte.focus(view.el, rte);
+					if(customRte.focus)
+            customRte.focus(view.el, rte);
 				} else {
 					this.attach(view);
 				}

@@ -7,8 +7,6 @@ define(['backbone'], function (Backbone) {
         var script  = model.get('script');
         var type  = model.get('type');
         var comps  = model.get('components');
-
-        // TODO
         var id = model.cid;
 
         if (script) {
@@ -32,11 +30,6 @@ define(['backbone'], function (Backbone) {
               this.mapJs[type] = {ids: [id], code: scrStr};
             }
           }
-
-          /*
-          code = 'var item = document.getElementById("'+id+'");'+
-            '(' + scrStr + '.bind(item))();';
-          */
         }
 
         comps.each(function(model) {
