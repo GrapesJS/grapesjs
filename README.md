@@ -44,7 +44,8 @@ Newsletter Demo - http://grapesjs.com/demo-newsletter-editor.html
 
 ## Installation
 
-You can get GrapesJS with `bower install grapesjs` or via `git clone https://github.com/artf/grapesjs.git` to directly use it. For development purpose you should follow instructions below.
+You can get GrapesJS with `npm install grapesjs` or via `git clone https://github.com/artf/grapesjs.git`.
+For development purpose you should follow instructions below.
 
 
 ## Development
