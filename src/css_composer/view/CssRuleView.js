@@ -27,12 +27,15 @@ define(['backbone'],
      * @return {String}
      * @private
      */
-    renderSelectors: function(){
+    renderSelectors: function() {
       var sel = [];
-      this.model.get('selectors').each(function(m){
+      var model = this.model;
+      var add = model.get('selectorsAdd');
+      model.get('selectors').each(function(m){
         sel.push('.' + m.get('name'));
       });
-      return sel.join('');
+      var sels = sel.join('');
+      return sels + (sels && add ? ', ' : '') + add;
     },
 
     /**
