@@ -6,16 +6,21 @@ define(function(require) {
 
       /**
        * Parse selector string to array.
-       * Only concatenated classes are valid as CSS rules inside editor.
+       * Only classe based are valid as CSS rules inside editor, not valid
+       * selectors will be dropped as additional
        * It's ok with the last part of the string as state (:hover, :active)
        * @param  {string} str Selectors string
-       * @return {Array<Array>}
+       * @return {Object}
        * @example
-       * var res = ParserCss.parseSelector('.test1, .test1.test2, .test2.test3');
+       * var res = ParserCss.parseSelector('.test1, .test1.test2, .test2 .test3');
        * console.log(res);
-       * // [['test1'], ['test1', 'test2'], ['test2', 'test3']]
+       * // {
+       * //result: [['test1'], ['test1', 'test2']],
+       * //add: ['.test2 .test3']
+       * //}
        */
-      parseSelector: function(str){
+      parseSelector: function(str) {
+        var add = [];
         var result = [];
         var sels = str.split(',');
         for (var i = 0, len = sels.length; i < len; i++) {
@@ -25,9 +30,14 @@ define(function(require) {
           if (/^(\.{1}[\w\-]+)+(:{1,2}[\w\-()]+)?$/ig.test(sel)) {
             var cls = sel.split('.').filter(Boolean);
             result.push(cls);
+          } else {
+            add.push(sel);
           }
         }
-        return result;
+        return {
+          result: result,
+          add: add,
+        };
       },
 
       /**
@@ -42,6 +52,7 @@ define(function(require) {
         for (var i = 0, len = nodes.length; i < len; i++) {
           var node = nodes[i];
           var sels = node.selectorText;
+          var selsAdd = [];
 
           // It's a CSSMediaRule
           if(node.cssRules) {
@@ -61,15 +72,18 @@ define(function(require) {
           if(!sels)
             continue;
 
-          sels = this.parseSelector(sels);
+          var selsParsed = this.parseSelector(sels);
+          sels = selsParsed.result;
+          selsAdd = selsParsed.add;
 
           // Create style object from the big one
           var stl = node.style;
           var style = {};
-          for(var j = 0, len2 = stl.length; j < len2; j++){
+          for (var j = 0, len2 = stl.length; j < len2; j++) {
             style[stl[j]] = stl[stl[j]];
           }
 
+          var lastRule;
           // For each group of selectors
           for (var k = 0, len3 = sels.length; k < len3; k++) {
             var selArr = sels[k];
@@ -85,7 +99,23 @@ define(function(require) {
 
             model.selectors = selArr;
             model.style = style;
+            lastRule = model;
             result.push(model);
+          }
+
+          // Need to push somewhere not class-based selectors, if some rule was
+          // created will push them there, otherwise will create a new rule
+          if (selsAdd.length) {
+            var selsAddStr = selsAdd.join(', ');
+            if (lastRule) {
+              lastRule.selectorsAdd = selsAddStr;
+            } else {
+              result.push({
+                selectors: [],
+                selectorsAdd: selsAddStr,
+                style: style,
+              });
+            }
           }
 
         }

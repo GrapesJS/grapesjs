@@ -153,6 +153,29 @@ define([path + 'model/ParserCss',],
             obj.parse(str).should.deep.equal(result);
           });
 
+          it('Parse rules with not class-based selectors', function() {
+            var str = ' .class1 .class2, div > .class3 { color:red }';
+            var result = {
+              selectors: [],
+              selectorsAdd: '.class1 .class2, div > .class3',
+              style: { color: 'red'}
+            };
+            obj.parse(str).should.deep.equal(result);
+          });
+
+          it.only('Parse rule with mixed selectors', function() {
+            var str = ' .class1 .class2, .class3, div > .class4, .class5.class6 { color:red }';
+            var result = [{
+              selectors: ['class3'],
+              style: { color: 'red'}
+            },{
+              selectors: ['class5', 'class6'],
+              selectorsAdd: '.class1 .class2, div > .class4',
+              style: { color: 'red'}
+            }];
+            obj.parse(str).should.deep.equal(result);
+          });
+
         });
 
       }
