@@ -250,6 +250,7 @@ define(function(require) {
             } else {
                 model.set('style', rule.style || {});
             }
+
             result.push(model);
           }
 

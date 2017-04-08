@@ -102,8 +102,9 @@ define(['GrapesJS'],function(GrapesJS) {
             });
 
             it('Add raw rule objects twice with addCollection do not duplucate rules', function() {
+              var rulesSet2Copy = JSON.parse(JSON.stringify(rulesSet2));
               var coll1 = cssc.addCollection(rulesSet2);
-              var coll2 = cssc.addCollection(rulesSet2);
+              var coll2 = cssc.addCollection(rulesSet2Copy);
               cssc.getAll().length.should.equal(3);
               clsm.getAll().length.should.equal(3);
               coll1.should.deep.equal(coll2);
@@ -131,6 +132,7 @@ define(['GrapesJS'],function(GrapesJS) {
                  name: 'test1',
                  type: 'class',
                 }],
+                selectorsAdd: '',
                 state: '',
                 stylable: true,
                 style: {
