@@ -19,25 +19,25 @@ define([path + 'model/ParserCss',],
           it('Parse selector', function() {
             var str = '.test';
             var result = [['test']];
-            obj.parseSelector(str).should.deep.equal(result);
+            obj.parseSelector(str).result.should.deep.equal(result);
           });
 
           it('Parse selectors', function() {
             var str = '.test1, .test1.test2, .test2.test3';
             var result = [['test1'], ['test1', 'test2'], ['test2', 'test3']];
-            obj.parseSelector(str).should.deep.equal(result);
+            obj.parseSelector(str).result.should.deep.equal(result);
           });
 
           it('Ignore not valid selectors', function() {
             var str = '.test1.test2, .test2 .test3, div > .test4, #test.test5, .test6';
             var result = [['test1', 'test2'], ['test6']];
-            obj.parseSelector(str).should.deep.equal(result);
+            obj.parseSelector(str).result.should.deep.equal(result);
           });
 
           it('Parse selectors with state', function() {
             var str = '.test1. test2, .test2>test3, .test4.test5:hover';
             var result = [['test4', 'test5:hover']];
-            obj.parseSelector(str).should.deep.equal(result);
+            obj.parseSelector(str).result.should.deep.equal(result);
           });
 
           it('Parse simple rule', function() {
@@ -163,7 +163,7 @@ define([path + 'model/ParserCss',],
             obj.parse(str).should.deep.equal(result);
           });
 
-          it.only('Parse rule with mixed selectors', function() {
+          it('Parse rule with mixed selectors', function() {
             var str = ' .class1 .class2, .class3, div > .class4, .class5.class6 { color:red }';
             var result = [{
               selectors: ['class3'],
