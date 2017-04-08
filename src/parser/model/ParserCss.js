@@ -45,7 +45,7 @@ define(function(require) {
        * @param  {StyleSheet|CSSMediaRule} el
        * @return {Array<Object>}
        */
-      parseNode: function(el){
+      parseNode: function(el) {
         var result = [];
         var nodes = el.cssRules;
 
@@ -83,7 +83,7 @@ define(function(require) {
             style[stl[j]] = stl[stl[j]];
           }
 
-          var lastRule;
+          var lastRule = '';
           // For each group of selectors
           for (var k = 0, len3 = sels.length; k < len3; k++) {
             var selArr = sels[k];
@@ -128,7 +128,7 @@ define(function(require) {
        * @param  {string} str HTML string
        * @return {Object|Array<Object>}
        */
-      parse: function(str){
+      parse: function(str) {
         var el = document.createElement('style');
         /*
         el.innerHTML = ".cssClass {border: 2px solid black; background-color: blue;} " +
