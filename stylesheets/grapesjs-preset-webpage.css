@@ -224,10 +224,6 @@
   margin-bottom: 5px;
 }
 
-#gjs-clm-status-c {
-  display: none;
-}
-
 .anim-spin {
   animation: 0.5s linear 0s normal none infinite running spin;
 }
