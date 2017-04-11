@@ -31,6 +31,31 @@ function(Backbone, FrameView) {
     },
 
     /**
+     * Insert scripts into head, it will call renderBody after all scripts loaded or failed
+     * @private
+     */
+    renderScripts: function () {
+        var frame = this.frame;
+        var that = this;
+
+        frame.el.onload = function () {
+          var scripts = that.config.scripts,
+              counter = 0;
+
+          scripts.map(function (scriptUrl) {
+            var script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = scriptUrl;
+            script.onerror = script.onload = function () {
+              counter++;
+              if (counter == scripts.length) that.renderBody();
+            };
+            frame.el.contentDocument.head.appendChild(script);
+          });
+        };
+    },
+
+    /**
      * Render inside frame's body
      * @private
      */
@@ -198,7 +223,11 @@ function(Backbone, FrameView) {
         this.model.get('frame').set('wrapper', this.wrapper);
         this.$el.append(this.frame.render().el);
         var frame = this.frame;
-        frame.el.onload = this.renderBody;
+        if (this.config.scripts.length === 0) {
+          frame.el.onload = this.renderBody;
+        } else {
+          this.renderScripts(); // will call renderBody later
+        }
       }
       var ppfx = this.ppfx;
       toolsEl = $('<div>', { id: ppfx + 'tools' }).get(0);

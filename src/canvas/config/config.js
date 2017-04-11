@@ -6,5 +6,8 @@ define(function () {
 		// Coming soon
 		rulers: false,
 
+		// append scripts in head
+		scripts: []
+
 	};
 });
