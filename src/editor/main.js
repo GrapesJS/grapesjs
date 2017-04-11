@@ -6,6 +6,7 @@
  * * [getJs](#getjs)
  * * [getComponents](#getcomponents)
  * * [setComponents](#setcomponents)
+ * * [addComponents](#addcomponents)
  * * [getStyle](#getstyle)
  * * [setStyle](#setstyle)
  * * [getSelected](#getselected)
@@ -251,6 +252,23 @@ define(function (require){
         setComponents: function(components){
           em.setComponents(components);
           return this;
+        },
+
+        /**
+         * Add components
+         * @param {Array<Object>|Object|string} components HTML string or components model
+         * @return {Model|Array<Model>}
+         * @example
+         * editor.addComponents('<div class="cls">New component</div>');
+         * // or
+         * editor.addComponents({
+         *  type: 'text',
+         *   classes:['cls'],
+         *   content: 'New component'
+         * });
+         */
+        addComponents: function(components) {
+          return this.getComponents().add(components);
         },
 
         /**
