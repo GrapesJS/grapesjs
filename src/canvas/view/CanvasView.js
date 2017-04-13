@@ -39,19 +39,21 @@ function(Backbone, FrameView) {
         var that = this;
 
         frame.el.onload = function () {
-          var scripts = that.config.scripts,
+          var scripts = that.config.scripts.slice(0),  // clone
               counter = 0;
-
-          scripts.map(function (scriptUrl) {
-            var script = document.createElement('script');
-            script.type = 'text/javascript';
-            script.src = scriptUrl;
-            script.onerror = script.onload = function () {
-              counter++;
-              if (counter == scripts.length) that.renderBody();
-            };
-            frame.el.contentDocument.head.appendChild(script);
-          });
+            
+          function appendScript(scripts) {
+            if (scripts.length > 0) {
+              var script = document.createElement('script');
+              script.type = 'text/javascript';
+              script.src = scripts.shift();
+              script.onerror = script.onload = appendScript.bind(null, scripts);
+              frame.el.contentDocument.head.appendChild(script);
+            } else {
+              that.renderBody();
+            }
+          }
+          appendScript(scripts);
         };
     },
 
