@@ -7,11 +7,11 @@
     <link rel="stylesheet" href="./stylesheets/material.css">
     <link rel="stylesheet" href="./stylesheets/tooltip.css">
     <link rel="stylesheet" href="./stylesheets/toastr.min.css">
-    <link rel="stylesheet" href="./stylesheets/grapesjs-preset-newsletter.css">
+    <link rel="stylesheet" href="./stylesheets/grapesjs-preset-newsletter.css?v=0.2.3">
 
     <script src="./js/jquery.js"></script>
-    <script src="./js/grapes.min.js"></script>
-    <script src="./js/grapesjs-preset-newsletter.min.js"></script>
+    <script src="./js/grapes.min.js?v=0.5.3"></script>
+    <script src="./js/grapesjs-preset-newsletter.min.js?v=0.2.3"></script>
     <script src="./js/toastr.min.js"></script>
     <script src="./js/ajaxable.min.js"></script>
   </head>
@@ -550,6 +550,7 @@
 
       // Set up GrapesJS editor with the Newsletter plugin
       var editor = grapesjs.init({
+        clearOnRender: true,
         height: '100%',
         storageManager:{
           id: 'gjs-nl-',

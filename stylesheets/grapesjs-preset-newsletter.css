@@ -54,14 +54,13 @@
 .gjs-nv-item .gjs-nv-title-c,
 .gjs-off-prv,
 .gjs-pn-panel,
+.gjs-block,
 .gjs-select option,
 .gjs-sm-sector .gjs-sm-colorp-c,
 .gjs-sm-select option,
 .gjs-sm-unit option,
-.sp-container,
-.gjs-block {
-  background-color: #373d49;
-}
+.sp-container {
+  background-color: #373d49; }
 
 .gjs-import-label,
 .gjs-export-label {
@@ -79,18 +78,15 @@
   font-size: 12px; }
 
 /* Extra */
-
 .gjs-block {
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 3px;
   margin: 10px 2.5% 5px;
   box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.15);
-  transition: box-shadow 0.2s ease 0s;
-}
+  transition: box-shadow, color 0.2s ease 0s; }
 
 .gjs-block:hover {
-  box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.15);
-}
+  box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.15); }
 
 #gjs-pn-views-container.gjs-pn-panel {
   padding: 39px 0 0; }
