@@ -107,17 +107,18 @@ define(function(require) {
          * @param {Object} data Object of data to load
          * @return {Object} Loaded rules
          */
-        load: function(data){
+        load: function(data) {
           var d = data || '';
           if(!d && c.stm)
             d = c.em.getCacheLoad();
           var obj = '';
-          if(d.style){
+          if(d.styles) {
             try{
-              obj =  JSON.parse(d.style);
+              obj =  JSON.parse(d.styles);
             }catch(err){}
-          }else if(d.css)
+          } else if (d.css) {
             obj = c.em.get('Parser').parseCss(d.css);
+          }
 
           if(obj)
             rules.reset(obj);

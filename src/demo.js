@@ -15,6 +15,12 @@ require(['config/require-config'], function() {
       fromElement: true,
       clearOnRender: 0,
 
+      storageManager:{
+        autoload: 0,
+        storeComponents: 1,
+        storeStyles: 1,
+      },
+
       /*
       components: [{
         //script: 'var el = this; setInterval(function(){el.style.marginLeft = Math.random() * 50 +"px";}, 1000)',
@@ -71,11 +77,6 @@ require(['config/require-config'], function() {
         }],
       }],
 */
-      storageManager:{
-        autoload: 0,
-        storeComponents: 1,
-        storeStyles: 1,
-      },
 
       commands:     {
           defaults    : [{
