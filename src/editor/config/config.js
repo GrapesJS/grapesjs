@@ -24,7 +24,7 @@ define(function () {
     showOffsetsSelected: false,
 
     // Clear the canvas when editor.render() is called
-    clearOnRender: true,
+    clearOnRender: false,
 
     // Return JS of components inside HTML from 'editor.getHtml()'
     jsInHtml: true,

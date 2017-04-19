@@ -413,6 +413,7 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
 
         sm.store(store, clb);
         this.set('changesCount', 0);
+        this.trigger('storage:store', store);
 
         return store;
       },
@@ -437,7 +438,7 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
        * @return {Object}
        * @private
        */
-      getCacheLoad: function(force){
+      getCacheLoad: function(force) {
         var f = force ? 1 : 0;
         if(this.cacheLoad && !f)
           return this.cacheLoad;
@@ -457,6 +458,7 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
         });
 
         this.cacheLoad = sm.load(load);
+        this.trigger('storage:load', this.cacheLoad);
         return this.cacheLoad;
       },
 

@@ -178,19 +178,7 @@ require(['config/require-config'], function() {
                 name: 'Left',
                 property: 'margin-left',
               },],
-            }/*{
-            name    : 'Center blocksss',
-            property  : 'margins',
-            type    : 'select',
-            defaults   : '0',
-            list    :  [{
-                      value     : '0',
-                      name      : 'Normal',
-                    },{
-                      value     : '0 auto',
-                      name      : 'Center',
-                    }],
-          }*/],
+            }],
           },{
             name: 'Flex',
             open: false,
@@ -362,10 +350,9 @@ require(['config/require-config'], function() {
         ],
 
       },
-    }
 
 
-    );
+    });
 
     window.editor = editor;
 
@@ -393,8 +380,7 @@ require(['config/require-config'], function() {
         if(sender) sender.set('active', false);
         if(confirm('Are you sure to clean the canvas?')) {
           var comps = editor.DomComponents.clear();
-          localStorage.setItem('gjs-css', '');
-          localStorage.setItem('gjs-html', '');
+          localStorage.clear();
         }
       },
       attributes: { title: 'Empty canvas' }
