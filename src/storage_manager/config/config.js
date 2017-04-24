@@ -8,7 +8,7 @@ define(function () {
 		autosave: 1,
 
 		// Indicates if load data inside editor after init
-    autoload: 1,
+		autoload: 1,
 
 		// Indicates which storage to use. Available: local | remote
 		type: 'local',
@@ -48,6 +48,11 @@ define(function () {
 
 		//Callback after request
 		onComplete: function(jqXHR, status){},
+
+		// set contentType paramater of $.ajax
+		// true: application/json; charset=utf-8' 
+		// false: 'x-www-form-urlencoded'
+		contentTypeJson: false 
 
 	};
 });
