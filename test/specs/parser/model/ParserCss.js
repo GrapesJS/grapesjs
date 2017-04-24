@@ -19,25 +19,25 @@ define([path + 'model/ParserCss',],
           it('Parse selector', function() {
             var str = '.test';
             var result = [['test']];
-            obj.parseSelector(str).should.deep.equal(result);
+            obj.parseSelector(str).result.should.deep.equal(result);
           });
 
           it('Parse selectors', function() {
             var str = '.test1, .test1.test2, .test2.test3';
             var result = [['test1'], ['test1', 'test2'], ['test2', 'test3']];
-            obj.parseSelector(str).should.deep.equal(result);
+            obj.parseSelector(str).result.should.deep.equal(result);
           });
 
           it('Ignore not valid selectors', function() {
             var str = '.test1.test2, .test2 .test3, div > .test4, #test.test5, .test6';
             var result = [['test1', 'test2'], ['test6']];
-            obj.parseSelector(str).should.deep.equal(result);
+            obj.parseSelector(str).result.should.deep.equal(result);
           });
 
           it('Parse selectors with state', function() {
             var str = '.test1. test2, .test2>test3, .test4.test5:hover';
             var result = [['test4', 'test5:hover']];
-            obj.parseSelector(str).should.deep.equal(result);
+            obj.parseSelector(str).result.should.deep.equal(result);
           });
 
           it('Parse simple rule', function() {
@@ -149,6 +149,29 @@ define([path + 'model/ParserCss',],
               selectors: ['test2'],
               style: { color: 'blue'},
               maxWidth: '992px',
+            }];
+            obj.parse(str).should.deep.equal(result);
+          });
+
+          it('Parse rules with not class-based selectors', function() {
+            var str = ' .class1 .class2, div > .class3 { color:red }';
+            var result = {
+              selectors: [],
+              selectorsAdd: '.class1 .class2, div > .class3',
+              style: { color: 'red'}
+            };
+            obj.parse(str).should.deep.equal(result);
+          });
+
+          it('Parse rule with mixed selectors', function() {
+            var str = ' .class1 .class2, .class3, div > .class4, .class5.class6 { color:red }';
+            var result = [{
+              selectors: ['class3'],
+              style: { color: 'red'}
+            },{
+              selectors: ['class5', 'class6'],
+              selectorsAdd: '.class1 .class2, div > .class4',
+              style: { color: 'red'}
             }];
             obj.parse(str).should.deep.equal(result);
           });

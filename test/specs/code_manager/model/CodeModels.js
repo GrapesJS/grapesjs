@@ -128,7 +128,28 @@ define([path + 'HtmlGenerator',
               rule.set('style',{'prop1':'value1', 'prop2':'value2'});
 
               this.obj.build(comp, cssc).should.equal('.class1.class2{prop1:value1;prop2:value2;}');
-              this.obj.build(comp, cssc).should.equal('.class1.class2{prop1:value1;prop2:value2;}');
+            });
+
+            it('Build rules with mixed classes', function() {
+              var m1 = comp.get('components').add({tagName: 'article'});
+              var cls1 = m1.get('classes').add({name: 'class1'});
+              var cls2 = m1.get('classes').add({name: 'class2'});
+
+              var cssc = newCssComp();
+              var rule = cssc.add([cls1, cls2]);
+              rule.set('style',{'prop1':'value1', 'prop2':'value2'});
+              rule.set('selectorsAdd', '.class1 .class2, div > .class4');
+
+              this.obj.build(comp, cssc).should.equal('.class1.class2, .class1 .class2, div > .class4{prop1:value1;prop2:value2;}');
+            });
+
+            it('Build rules with only not class based selectors', function() {
+              var cssc = newCssComp();
+              var rule = cssc.add([]);
+              rule.set('style',{'prop1':'value1', 'prop2':'value2'});
+              rule.set('selectorsAdd', '.class1 .class2, div > .class4');
+
+              this.obj.build(comp, cssc).should.equal('.class1 .class2, div > .class4{prop1:value1;prop2:value2;}');
             });
 
             it('Build correctly with class styled out', function() {

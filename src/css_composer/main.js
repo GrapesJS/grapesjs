@@ -107,17 +107,18 @@ define(function(require) {
          * @param {Object} data Object of data to load
          * @return {Object} Loaded rules
          */
-        load: function(data){
+        load: function(data) {
           var d = data || '';
           if(!d && c.stm)
             d = c.em.getCacheLoad();
           var obj = '';
-          if(d.style){
+          if(d.styles) {
             try{
-              obj =  JSON.parse(d.style);
+              obj =  JSON.parse(d.styles);
             }catch(err){}
-          }else if(d.css)
+          } else if (d.css) {
             obj = c.em.get('Parser').parseCss(d.css);
+          }
 
           if(obj)
             rules.reset(obj);
@@ -148,6 +149,7 @@ define(function(require) {
          * @param {Array<Selector>} selectors Array of selectors
          * @param {String} state Css rule state
          * @param {String} width For which device this style is oriented
+         * @param {Object} opts Other options for the rule
          * @return {Model}
          * @example
          * var sm = editor.SelectorManager;
@@ -159,17 +161,18 @@ define(function(require) {
          *   color: '#fff',
          * });
          * */
-        add: function(selectors, state, width) {
+        add: function(selectors, state, width, opts) {
           var s = state || '';
           var w = width || '';
+          var opt = opts || {};
           var rule = this.get(selectors, s, w);
           if(rule)
             return rule;
-          else{
-            rule = new CssRule({
-              state: s,
-              maxWidth: w,
-            });
+          else {
+            opt.state = s;
+            opt.maxWidth = w;
+            opt.selectors = '';
+            rule = new CssRule(opt);
             rule.get('selectors').add(selectors);
             rules.add(rule);
             return rule;
@@ -224,7 +227,8 @@ define(function(require) {
           var opt = opts || {};
           var result = [];
           var d = data instanceof Array ? data : [data];
-          for(var i = 0, l = d.length; i < l; i++){
+
+          for (var i = 0, l = d.length; i < l; i++) {
             var rule = d[i] || {};
             if(!rule.selectors)
               continue;
@@ -234,19 +238,23 @@ define(function(require) {
             var sl = rule.selectors;
             var sels = sl instanceof Array ? sl : [sl];
             var newSels = [];
-            for(var j = 0, le = sels.length; j < le; j++){
+
+            for (var j = 0, le = sels.length; j < le; j++) {
               var selec = sm.add(sels[j]);
               newSels.push(selec);
             }
-            var model = this.add(newSels, rule.state, rule.maxWidth);
+
+            var model = this.add(newSels, rule.state, rule.maxWidth, rule);
             if (opt.extend) {
               var newStyle = _.extend({}, model.get('style'), rule.style || {});
               model.set('style', newStyle);
             } else {
                 model.set('style', rule.style || {});
             }
+
             result.push(model);
           }
+
           return result;
         },
 

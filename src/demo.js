@@ -15,6 +15,12 @@ require(['config/require-config'], function() {
       fromElement: true,
       clearOnRender: 0,
 
+      storageManager:{
+        autoload: 0,
+        storeComponents: 1,
+        storeStyles: 1,
+      },
+
       /*
       components: [{
         //script: 'var el = this; setInterval(function(){el.style.marginLeft = Math.random() * 50 +"px";}, 1000)',
@@ -71,11 +77,6 @@ require(['config/require-config'], function() {
         }],
       }],
 */
-      storageManager:{
-        autoload: 0,
-        storeComponents: 1,
-        storeStyles: 1,
-      },
 
       commands:     {
           defaults    : [{
@@ -177,19 +178,7 @@ require(['config/require-config'], function() {
                 name: 'Left',
                 property: 'margin-left',
               },],
-            }/*{
-            name    : 'Center blocksss',
-            property  : 'margins',
-            type    : 'select',
-            defaults   : '0',
-            list    :  [{
-                      value     : '0',
-                      name      : 'Normal',
-                    },{
-                      value     : '0 auto',
-                      name      : 'Center',
-                    }],
-          }*/],
+            }],
           },{
             name: 'Flex',
             open: false,
@@ -361,10 +350,9 @@ require(['config/require-config'], function() {
         ],
 
       },
-    }
 
 
-    );
+    });
 
     window.editor = editor;
 
@@ -392,8 +380,7 @@ require(['config/require-config'], function() {
         if(sender) sender.set('active', false);
         if(confirm('Are you sure to clean the canvas?')) {
           var comps = editor.DomComponents.clear();
-          localStorage.setItem('gjs-css', '');
-          localStorage.setItem('gjs-html', '');
+          localStorage.clear();
         }
       },
       attributes: { title: 'Empty canvas' }
