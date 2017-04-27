@@ -2,10 +2,7 @@ require(['config/require-config'], function() {
 
   require(['grapesjs/main'],function (grapesjs){
 
-    var editor  = grapesjs.init(
-
-
-    {
+    var editor  = grapesjs.init({
       allowScripts: 1,
       showOffsets: 1,
       autorender: 0,
