@@ -327,7 +327,7 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
 
         // Need to cast script functions to string
         if (typeof scr == 'function') {
-          var scrStr = script.toString().trim();
+          var scrStr = scr.toString().trim();
           scrStr = scrStr.replace(/^function\s?\(\)\s?\{/, '');
           scrStr = scrStr.replace(/\}$/, '');
           scr = scrStr;
