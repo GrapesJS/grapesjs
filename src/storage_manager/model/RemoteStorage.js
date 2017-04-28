@@ -11,6 +11,7 @@ define(['backbone'],
         params: {},
         beforeSend: function(){},
         onComplete: function(){},
+        contentTypeJson: false
       },
 
       /**
@@ -32,7 +33,8 @@ define(['backbone'],
           complete: this.get('onComplete'),
           method: 'POST',
           dataType: 'json',
-          data: fd,
+          contentType: this.get('contentTypeJson') ? 'application/json; charset=utf-8': 'x-www-form-urlencoded',
+          data: this.get('contentTypeJson') ? JSON.stringify(fd): fd,
         }).always(function(){
           if (typeof clb == 'function') {
             clb();
