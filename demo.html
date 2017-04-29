@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="stylesheets/grapesjs-plugin-filestack.css">
     <script src="https://static.filestackapi.com/v3/filestack-0.1.12.js"></script>
     <script src="http://code.jquery.com/jquery-2.2.0.min.js"></script>
+    <script src="//feather.aviary.com/imaging/v3/editor.js"></script>
     <script src="js/perfect-scrollbar.min.js"></script>
     <script src="js/toastr.min.js"></script>
     <style type="text/css">
@@ -909,9 +910,10 @@
       </style>
     </div>
 
-    <script src="js/grapes.min.js"></script>
+    <script src="js/grapes.min.js?v=0.5.7"></script>
     <script src="js/grapesjs-plugin-export.min.js"></script>
     <script src="js/grapesjs-plugin-filestack.min.js"></script>
+    <script src="js/grapesjs-aviary.min.js"></script>
     <script src="js/grapesjs-preset-webpage.js"></script>
     <script type="text/javascript">
 
@@ -930,7 +932,7 @@
       container : '#gjs',
       fromElement: 1,
       showOffsets: 1,
-      plugins: ['gjs-plugin-export', 'gjs-preset-webpage', 'gjs-plugin-filestack'],
+      plugins: ['gjs-plugin-export', 'gjs-preset-webpage', 'gjs-plugin-filestack', 'gjs-aviary'],
 
       pluginsOpts: {
         'gjs-plugin-filestack': {
@@ -1236,14 +1238,6 @@
         sender.set('active',false);
         window.open('https://github.com/artf/grapesjs', '_blank');
       },
-    });
-    cmdm.add('tlb-edit', {
-        run: function(ed) {
-          alert('At the moment no image editor, maybe soon 😊');
-          //var sel = ed.getSelected();
-          //editorImage = sel;
-          //featherEditor.launch({image: sel.get('view').el});
-        },
     });
 
     window.editor = editor;

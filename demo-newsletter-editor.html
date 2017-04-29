@@ -9,9 +9,11 @@
     <link rel="stylesheet" href="./stylesheets/toastr.min.css">
     <link rel="stylesheet" href="./stylesheets/grapesjs-preset-newsletter.css?v=0.2.3">
 
+    <script src="//feather.aviary.com/imaging/v3/editor.js"></script>
     <script src="./js/jquery.js"></script>
-    <script src="./js/grapes.min.js?v=0.5.3"></script>
+    <script src="./js/grapes.min.js?v=0.5.7"></script>
     <script src="./js/grapesjs-preset-newsletter.min.js?v=0.2.3"></script>
+    <script src="./js/grapesjs-aviary.min.js"></script>
     <script src="./js/toastr.min.js"></script>
     <script src="./js/ajaxable.min.js"></script>
   </head>
@@ -552,7 +554,7 @@
       var editor = grapesjs.init({
         clearOnRender: true,
         height: '100%',
-        storageManager:{
+        storageManager: {
           id: 'gjs-nl-',
         },
         assetManager: {
@@ -562,7 +564,7 @@
         },
         container : '#gjs',
         fromElement: true,
-        plugins: ['gjs-preset-newsletter'],
+        plugins: ['gjs-preset-newsletter', 'gjs-aviary'],
         pluginsOpts: {
           'gjs-preset-newsletter': {
             modalLabelImport: 'Paste all your code here below and click import',
