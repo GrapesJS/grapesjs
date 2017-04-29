@@ -10,20 +10,7 @@ define(['./Component'],
         void: 1,
         droppable: false,
         resizable: true,
-        traits: ['alt'],
-        toolbar: [{
-          attributes: {class: 'fa fa-arrows'},
-          command: 'tlb-move',
-        },{
-          attributes: {class: 'fa fa-clone'},
-          command: 'tlb-clone',
-        },{
-          attributes: {class: 'fa fa-pencil'},
-          command: 'tlb-edit',
-        },{
-          attributes: {class: 'fa fa-trash-o'},
-          command: 'tlb-delete',
-        }],
+        traits: ['alt']
       }),
 
       initialize: function(o, opt) {
@@ -31,6 +18,25 @@ define(['./Component'],
         var attr = this.get('attributes');
         if(attr.src)
           this.set('src', attr.src);
+      },
+
+      initToolbar: function() {
+        Component.prototype.initToolbar.apply(this, arguments);
+
+        if (this.sm && this.sm.get) {
+          var cmd = this.sm.get('Commands');
+          var cmdName = 'image-editor';
+
+          // Add Image Editor button only if the default command exists
+          if (cmd.has(cmdName)) {
+            var tb = this.get('toolbar');
+            tb.push({
+              attributes: {class: 'fa fa-pencil'},
+              command: cmdName,
+            });
+            this.set('toolbar', tb);
+          }
+        }
       },
 
       /**
