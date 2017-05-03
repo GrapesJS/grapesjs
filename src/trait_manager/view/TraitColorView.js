@@ -17,7 +17,8 @@ define(['./TraitView', 'Abstract/ui/InputColor'],
         });
         this.input = inputNumber.render();
         this.$input = this.input.colorEl;
-        this.model.set('value', value);
+        value = value || '';
+        this.model.set('value', value).trigger('change:value');
       }
       return this.$input.get(0);
     },
