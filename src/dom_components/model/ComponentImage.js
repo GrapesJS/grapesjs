@@ -10,7 +10,7 @@ define(['./Component'],
         void: 1,
         droppable: false,
         resizable: true,
-        traits: ['alt']
+        traits: ['alt',{type:'color', name:'color'}]
       }),
 
       initialize: function(o, opt) {

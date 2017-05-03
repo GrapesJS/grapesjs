@@ -5,6 +5,7 @@ define(function(require) {
     var TraitSelectView = require('./TraitSelectView');
     var TraitCheckboxView = require('./TraitCheckboxView');
     var TraitNumberView = require('./TraitNumberView');
+    var TraitColorView = require('./TraitColorView');
 
     return DomainViews.extend({
 
@@ -15,6 +16,7 @@ define(function(require) {
         'number': TraitNumberView,
         'select': TraitSelectView,
         'checkbox': TraitCheckboxView,
+        'color': TraitColorView,
       },
 
       initialize: function(o) {
