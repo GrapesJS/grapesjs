@@ -3,6 +3,13 @@ define(['./TraitView', 'Abstract/ui/InputNumber'],
 
   return TraitView.extend({
 
+    getValueForTarget: function () {
+      var model = this.model;
+      var value = model.get('value');
+      var unit = model.get('unit');
+      return value ? (value + unit) : '';
+    },
+
     /**
      * Returns input element
      * @return {HTMLElement}
