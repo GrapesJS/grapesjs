@@ -23,20 +23,20 @@
  */
 define(function(require) {
 
-	return function() {
-		var c = {},
-		defaults = require('./config/config'),
-		rte = require('./view/TextEditorView'),
-		CommandButtons = require('./model/CommandButtons'),
-		CommandButtonsView = require('./view/CommandButtonsView');
-		var tlbPfx, toolbar, commands;
-		var mainSelf;
+  return function() {
+    var c = {},
+    defaults = require('./config/config'),
+    rte = require('./view/TextEditorView'),
+    CommandButtons = require('./model/CommandButtons'),
+    CommandButtonsView = require('./view/CommandButtonsView');
+    var tlbPfx, toolbar, commands;
+    var mainSelf;
 
-		return {
+    return {
 
-			customRte: null,
+      customRte: null,
 
-			/**
+      /**
        * Name of the module
        * @type {String}
        * @private
@@ -49,23 +49,23 @@ define(function(require) {
        * @private
        */
       init: function(config) {
-				mainSelf = this;
+        mainSelf = this;
         c = config || {};
         for (var name in defaults) {
-					if (!(name in c))
-						c[name] = defaults[name];
-				}
+          if (!(name in c))
+            c[name] = defaults[name];
+        }
 
-				var ppfx = c.pStylePrefix;
-				if(ppfx)
-					c.stylePrefix = ppfx + c.stylePrefix;
+        var ppfx = c.pStylePrefix;
+        if(ppfx)
+          c.stylePrefix = ppfx + c.stylePrefix;
 
-				tlbPfx = c.stylePrefix;
+        tlbPfx = c.stylePrefix;
         commands = new CommandButtons(c.commands);
-				toolbar = new CommandButtonsView({
-					collection: commands,
-					config: c,
-				});
+        toolbar = new CommandButtonsView({
+          collection: commands,
+          config: c,
+        });
         return this;
       },
 
@@ -114,132 +114,136 @@ define(function(require) {
         return commands;
       },
 
-			/**
+      /**
        * Triggered when the offset of the editro is changed
        * @private
        */
       udpatePosition: function() {
-				var u = 'px';
-				var canvas = c.em.get('Canvas');
-				var pos = canvas.getTargetToElementDim(toolbar.el, this.lastEl, {
-					event: 'rteToolbarPosUpdate',
-				});
-				var toolbarStyle = toolbar.el.style;
-				toolbarStyle.top = pos.top + u;
-				toolbarStyle.left = pos.left + u;
+        var u = 'px';
+        var canvas = c.em.get('Canvas');
+        var pos = canvas.getTargetToElementDim(toolbar.el, this.lastEl, {
+          event: 'rteToolbarPosUpdate',
+        });
+        var toolbarStyle = toolbar.el.style;
+        toolbarStyle.top = pos.top + u;
+        toolbarStyle.left = pos.left + u;
       },
 
-			/**
-			 * Bind rich text editor to the element
-			 * @param {View} view
-			 * @param {Object} rte The instance of already defined RTE
+      /**
+       * Bind rich text editor to the element
+       * @param {View} view
+       * @param {Object} rte The instance of already defined RTE
        * @private
-			 * */
-			attach: function(view, rte) {
-				this.lastEl = view.el;
-				var customRte = this.customRte;
+       * */
+      attach: function(view, rte) {
+        // lastEl will be used to place the RTE toolbar
+        this.lastEl = view.el;
+        var el = view.getChildrenContainer();
+        var customRte = this.customRte;
 
-				// If a custom RTE is defined
-				if (customRte) {
-					rte = customRte.enable(view.el, rte);
-				} else {
-					view.$el.wysiwyg({}).focus();
-				}
+        // If a custom RTE is defined
+        if (customRte) {
+          rte = customRte.enable(el, rte);
+        } else {
+          $(el).wysiwyg({}).focus();
+        }
 
-				this.show();
+        this.show();
 
-				if(c.em) {
-					setTimeout(this.udpatePosition.bind(this), 0);
-					c.em.off('change:canvasOffset', this.udpatePosition, this);
-					c.em.on('change:canvasOffset', this.udpatePosition, this);
-					// Update position on scrolling
-					c.em.off('canvasScroll', this.udpatePosition, this);
-					c.em.on('canvasScroll', this.udpatePosition, this);
-				}
+        if(c.em) {
+          setTimeout(this.udpatePosition.bind(this), 0);
+          c.em.off('change:canvasOffset', this.udpatePosition, this);
+          c.em.on('change:canvasOffset', this.udpatePosition, this);
+          // Update position on scrolling
+          c.em.off('canvasScroll', this.udpatePosition, this);
+          c.em.on('canvasScroll', this.udpatePosition, this);
+        }
 
-				//Avoid closing edit mode clicking on toolbar
-				toolbar.$el.on('mousedown', this.disableProp);
-				return rte;
-			},
+        //Avoid closing edit mode clicking on toolbar
+        toolbar.$el.on('mousedown', this.disableProp);
+        return rte;
+      },
 
-			/**
-			 * Unbind rich text editor from the element
-			 * @param {View} view
-			 * @param {Object} rte The instance of already defined RTE
-			 * @private
-			 * */
-			detach: function(view, rte) {
-				var customRte = this.customRte;
-				if (customRte) {
-					view.model.set('content', view.el.innerHTML);
-					customRte.disable(view.el, rte);
-				} else {
-					view.$el.wysiwyg('destroy');
-				}
-				this.hide();
-				toolbar.$el.off('mousedown', this.disableProp);
-			},
+      /**
+       * Unbind rich text editor from the element
+       * @param {View} view
+       * @param {Object} rte The instance of already defined RTE
+       * @private
+       * */
+      detach: function(view, rte) {
+        var customRte = this.customRte;
+        var el = view.getChildrenContainer();
+        if (customRte) {
+          view.model.set('content', el.innerHTML);
+          customRte.disable(el, rte);
+        } else {
+          $(el).wysiwyg('destroy');
+        }
+        this.hide();
+        toolbar.$el.off('mousedown', this.disableProp);
+      },
 
-			/**
-			 * Unbind rich text editor from the element
-			 * @param {View} view
-			 * @param {Object} rte The instance of already defined RTE
-			 * @private
-			 * */
-			focus: function(view, rte) {
-				var customRte = this.customRte;
-				if (customRte) {
-					if(customRte.focus)
-            customRte.focus(view.el, rte);
-				} else {
-					this.attach(view);
-				}
-			},
+      /**
+       * Unbind rich text editor from the element
+       * @param {View} view
+       * @param {Object} rte The instance of already defined RTE
+       * @private
+       * */
+      focus: function(view, rte) {
+        var customRte = this.customRte;
+        var el = view.getChildrenContainer();
+        if (customRte) {
+          if(customRte.focus)
+            customRte.focus(el, rte);
+        } else {
+          this.attach(view);
+        }
+      },
 
-			/**
-			 * Show the toolbar
-			 * @private
-			 * */
-			show: function() {
-				var toolbarStyle = toolbar.el.style;
+      /**
+       * Show the toolbar
+       * @private
+       * */
+      show: function() {
+        var toolbarStyle = toolbar.el.style;
         toolbarStyle.display = "block";
-			},
+      },
 
-			/**
-			 * Hide the toolbar
-			 * @private
-			 * */
-			hide: function() {
+      /**
+       * Hide the toolbar
+       * @private
+       * */
+      hide: function() {
         toolbar.el.style.display = "none";
-			},
+      },
 
-			/**
-			 * Isolate the disable propagation method
-			 * @private
-			 * */
-			disableProp: function(e) {
-				e.stopPropagation();
-			},
-
-			/**
-			 * Return toolbar element
-			 * @return {HTMLElement}
+      /**
+       * Isolate the disable propagation method
        * @private
-			 */
-			getToolbarEl: function() {
-				return toolbar.el;
-			},
+       * */
+      disableProp: function(e) {
+        e.stopPropagation();
+      },
 
-			/**
-			 * Render toolbar
-			 * @return {HTMLElement}
+      /**
+       * Return toolbar element
+       * @return {HTMLElement}
        * @private
-			 */
-			render: function(){
-				return toolbar.render().el;
-			}
+       */
+      getToolbarEl: function() {
+        return toolbar.el;
+      },
 
-		};
-	};
+      /**
+       * Render toolbar
+       * @return {HTMLElement}
+       * @private
+       */
+      render: function(){
+        return toolbar.render().el;
+      }
+
+    };
+  };
 
 });
