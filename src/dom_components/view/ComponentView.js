@@ -292,11 +292,47 @@ define(['backbone', './ComponentsView'],
         }
       },
 
-      render: function() {
-        var model = this.model;
-        this.updateAttributes();
-        this.updateClasses();
-        this.$el.html(this.model.get('content'));
+      /**
+       * Return children container
+       * Differently from a simple component where children container is the
+       * component itself
+       * <my-comp>
+       *  <!--
+       *    <child></child> ...
+       *   -->
+       * </my-comp>
+       * You could have the children container more deeper
+       * <my-comp>
+       *  <div></div>
+       *  <div></div>
+       *  <div>
+       *    <div>
+       *      <!--
+       *        <child></child> ...
+       *      -->
+       *    </div>
+       *  </div>
+       * </my-comp>
+       * @return HTMLElement
+       * @private
+       */
+      getChildrenContainer: function() {
+        var container = this.el;
+
+        if (typeof this.getChildrenSelector == 'function') {
+          container = this.el.querySelector(this.getChildrenSelector());
+        } else if (typeof this.getTemplate == 'function') {
+          // Need to find deepest first child
+        }
+
+        return container;
+      },
+
+      /**
+       * Render children components
+       * @private
+       */
+      renderChildren: function() {
         var view = new ComponentsView({
           collection: this.model.get('components'),
           config: this.config,
@@ -304,8 +340,43 @@ define(['backbone', './ComponentsView'],
           componentTypes: this.opts.componentTypes,
         });
 
-        // With childNodes lets avoid wrapping 'div'
-        this.$el.append(view.render(this.$el).el.childNodes);
+        var container = this.getChildrenContainer();
+        var childNodes = view.render($(container)).el.childNodes;
+        childNodes = Array.prototype.slice.call(childNodes);
+
+        for (var i = 0, len = childNodes.length ; i < len; i++) {
+          container.appendChild(childNodes.shift());
+        }
+
+        // If the children container is not the same as the component
+        // (so likely fetched with getChildrenSelector()) is necessary
+        // to disable pointer-events for all nested components as they
+        // might prevent the component to be selected
+        if (container !== this.el) {
+          var disableNode = function(el) {
+            var children = Array.prototype.slice.call(el.children);
+            children.forEach(function (el) {
+              el.style['pointer-events'] = 'none';
+              if (container !== el) {
+                disableNode(el);
+              }
+            });
+          };
+          disableNode(this.el);
+        }
+      },
+
+      renderAttributes: function() {
+        this.updateAttributes();
+        this.updateClasses();
+      },
+
+      render: function() {
+        this.renderAttributes();
+        var model = this.model;
+        var container = this.getChildrenContainer();
+        container.innerHTML = model.get('content');
+        this.renderChildren();
 
         // Render script
         if(model.get('script')) {
