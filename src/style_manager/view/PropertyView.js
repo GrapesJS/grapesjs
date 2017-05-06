@@ -59,6 +59,16 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
     targetUpdated: function(){
       this.selectedComponent = this.propTarget.model;
       this.helperComponent = this.propTarget.helper;
+
+      // Check if need to hide the property
+      if (this.config.hideNotStylable) {
+        if (!this.isTargetStylable() || !this.isComponentStylable()) {
+          this.hide();
+        } else {
+          this.show();
+        }
+      }
+
       if(this.getTarget()){
         if(!this.sameValue()){
           this.renderInputRequest();
@@ -82,7 +92,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
      *
      * @return {String}
      * */
-    getComponentValue: function(){
+    getComponentValue: function() {
       var target = this.getTarget();
 
       if(!target)
@@ -157,16 +167,8 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
         return;
 
       // Check if component is allowed to be styled
-      var hideNoStyle = this.config.hideNotStylable;
       if (!this.isTargetStylable() || !this.isComponentStylable()) {
-        console.log('not stylable ', this.property);
-        if (hideNoStyle) {
-          this.hide();
-        }
         return;
-      } else {
-        console.log('stylable ', this.property);
-        this.show();
       }
 
       value = this.getValueForTarget();
@@ -245,7 +247,6 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
       // Stylable could also be an array indicating with which property
       // the target could be styled
       if(stylable instanceof Array){
-        console.log(this.property, stylable, _.indexOf(stylable, this.property));
         stylable = _.indexOf(stylable, this.property) >= 0;
       }
 
