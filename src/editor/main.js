@@ -30,14 +30,15 @@
  * ```
  *
  * **Available events**
- * #component:add - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
- * #component:update - Triggered when a component is, generally, updated (moved, styled, etc.)
- * #component:styleUpdate - Triggered when the style of the component is updated
- * #component:update:{propertyName} - Listen any property change
- * #canvasScroll - Triggered when the canvas is scrolled
- * #run:{commandName} - Triggered when some command is called to run (eg. editor.runCommand('preview'))
- * #stop:{commandName} - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
- * #load - When the editor is loaded
+ * component:add - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
+ * component:update - Triggered when a component is, generally, updated (moved, styled, etc.)
+ * component:update:{propertyName} - Listen any property change
+ * component:styleUpdate - Triggered when the style of the component is updated
+ * component:styleUpdate:{propertyName} - Listen for a specific style property change
+ * canvasScroll - Triggered when the canvas is scrolled
+ * run:{commandName} - Triggered when some command is called to run (eg. editor.runCommand('preview'))
+ * stop:{commandName} - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
+ * load - When the editor is loaded
  *
  * @module Editor
  * @param {Object} config Configurations
