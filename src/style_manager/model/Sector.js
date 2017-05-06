@@ -1,16 +1,16 @@
 define(['backbone', './Properties', './PropertyFactory'],
-	function(Backbone, Properties, PropertyFactory) {
+  function(Backbone, Properties, PropertyFactory) {
 
-		return Backbone.Model.extend({
+    return Backbone.Model.extend({
 
-			defaults: {
-				id: '',
-				name: '',
-				open: true,
+      defaults: {
+        id: '',
+        name: '',
+        open: true,
         buildProps: '',
         extendBuilded: 1,
-				properties : [],
-			},
+        properties : [],
+      },
 
       initialize: function(opts) {
         var o = opts || {};
@@ -22,7 +22,9 @@ define(['backbone', './Properties', './PropertyFactory'],
         else
           props = this.extendProperties(builded);
 
-        this.set('properties', new Properties(props));
+        var propsModel = new Properties(props);
+        propsModel.sector = this;
+        this.set('properties', propsModel);
       },
 
       /**
@@ -37,7 +39,7 @@ define(['backbone', './Properties', './PropertyFactory'],
         var pLen = props.length;
         var mProps = moProps || this.get('properties');
         var ext = this.get('extendBuilded');
-				var isolated = [];
+        var isolated = [];
 
         for (var i = 0, len = mProps.length; i < len; i++){
           var mProp = mProps[i];
@@ -46,13 +48,13 @@ define(['backbone', './Properties', './PropertyFactory'],
           for(var j = 0; j < pLen; j++){
             var prop = props[j];
             if(mProp.property == prop.property){
-							// Check for nested properties
-							var mPProps = mProp.properties;
-							if(mPProps && mPProps.length){
-								mProp.properties = this.extendProperties(prop.properties, mPProps, 1);
-							}
+              // Check for nested properties
+              var mPProps = mProp.properties;
+              if(mPProps && mPProps.length){
+                mProp.properties = this.extendProperties(prop.properties, mPProps, 1);
+              }
               props[j] = ext ? _.extend(prop, mProp) : mProp;
-							isolated[j] = props[j];
+              isolated[j] = props[j];
               found = 1;
               continue;
             }
@@ -60,8 +62,8 @@ define(['backbone', './Properties', './PropertyFactory'],
 
           if(!found){
             props.push(mProp);
-						isolated.push(mProp);
-					}
+            isolated.push(mProp);
+          }
         }
 
         return ex ? isolated : props;

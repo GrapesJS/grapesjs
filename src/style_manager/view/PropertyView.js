@@ -25,14 +25,16 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
       this.input = this.$input = null;
       this.className = this.pfx  + 'property';
       this.inputHolderId = '#' + this.pfx + 'input-holder';
+      this.sector = this.model.collection.sector;
 
       if(!this.model.get('value'))
         this.model.set('value', this.model.get('defaults'));
 
+      this.listenTo(this.propTarget, 'update', this.targetUpdated);
       this.listenTo(this.model, 'destroy remove', this.remove);
-      this.listenTo( this.propTarget, 'update', this.targetUpdated);
-      this.listenTo( this.model ,'change:value', this.valueChanged);
-      this.listenTo( this.model ,'targetUpdated', this.targetUpdated);
+      this.listenTo(this.model,'change:value', this.valueChanged);
+      this.listenTo(this.model,'targetUpdated', this.targetUpdated);
+      this.listenTo(this.model,'change:visible', this.updateVisibility);
     },
 
     /**
@@ -56,7 +58,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
     /**
      * Fired when the target is updated
      * */
-    targetUpdated: function(){
+    targetUpdated: function() {
       this.selectedComponent = this.propTarget.model;
       this.helperComponent = this.propTarget.helper;
 
@@ -66,6 +68,10 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
           this.hide();
         } else {
           this.show();
+        }
+        // Sector is not passed to Composite and Stack types
+        if (this.sector) {
+          this.sector.trigger('updateVisibility');
         }
       }
 
@@ -270,12 +276,17 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
       this.model.set({value: v}, {silent: true});
     },
 
+    updateVisibility: function() {
+      this.el.style.display = this.model.get('visible') ?
+        'block' : 'none';
+    },
+
     show: function () {
-      this.el.style.display = 'block';
+      this.model.set('visible', 1);
     },
 
     hide: function () {
-      this.el.style.display = 'none';
+      this.model.set('visible', 0);
     },
 
     renderLabel: function(){
