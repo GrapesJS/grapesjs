@@ -158,28 +158,6 @@ require(['config/require-config'], function() {
           open: false,
           buildProps: ['transition', 'perspective', 'transform'],
         },{
-          name: 'Dimension',
-          open: false,
-          buildProps: ['margin'],
-          properties:[{
-              name: 'Marginnnn',
-              property: 'margin',
-              type: 'composite',
-              properties:[{
-                name: 'Top',
-                property: 'margin-top',
-              },{
-                name: 'Right',
-                property: 'margin-right',
-              },{
-                name: 'Bottom',
-                property: 'margin-bottom',
-              },{
-                name: 'Left',
-                property: 'margin-left',
-              },],
-            }],
-          },{
             name: 'Flex',
             open: false,
             properties: [{

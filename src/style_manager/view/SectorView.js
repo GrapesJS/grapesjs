@@ -29,8 +29,9 @@ define(['backbone', './PropertiesView', 'text!./../templates/sector.html'],
     updateVisibility: function () {
       var show;
       this.model.get('properties').each(function(prop) {
-        if (prop.get('visible'))
+        if (prop.get('visible')) {
           show = 1;
+        }
       });
       this.el.style.display = show ? 'block' : 'none';
     },

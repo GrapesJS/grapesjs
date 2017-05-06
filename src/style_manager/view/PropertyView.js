@@ -32,9 +32,13 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 
       this.listenTo(this.propTarget, 'update', this.targetUpdated);
       this.listenTo(this.model, 'destroy remove', this.remove);
-      this.listenTo(this.model,'change:value', this.valueChanged);
-      this.listenTo(this.model,'targetUpdated', this.targetUpdated);
-      this.listenTo(this.model,'change:visible', this.updateVisibility);
+      this.listenTo(this.model, 'change:value', this.valueChanged);
+      this.listenTo(this.model, 'targetUpdated', this.targetUpdated);
+      this.listenTo(this.model, 'change:visible', this.updateVisibility);
+
+      if (this.sector && this.sector.get('name') == 'Decorations') {
+        console.log(this.sector.get('name')+':', this.property, this.model.get('type'));
+      }
     },
 
     /**
@@ -61,7 +65,16 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
     targetUpdated: function() {
       this.selectedComponent = this.propTarget.model;
       this.helperComponent = this.propTarget.helper;
+      this.checkVisibility();
 
+      if(this.getTarget()) {
+        if(!this.sameValue()){
+          this.renderInputRequest();
+        }
+      }
+    },
+
+    checkVisibility: function () {
       // Check if need to hide the property
       if (this.config.hideNotStylable) {
         if (!this.isTargetStylable() || !this.isComponentStylable()) {
@@ -72,12 +85,6 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
         // Sector is not passed to Composite and Stack types
         if (this.sector) {
           this.sector.trigger('updateVisibility');
-        }
-      }
-
-      if(this.getTarget()){
-        if(!this.sameValue()){
-          this.renderInputRequest();
         }
       }
     },
