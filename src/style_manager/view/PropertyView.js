@@ -12,6 +12,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 
     initialize: function(o) {
       this.config = o.config || {};
+      this.em = this.config.em;
       this.pfx = this.config.stylePrefix || '';
       this.ppfx = this.config.pStylePrefix || '';
       this.target = o.target || {};
@@ -157,7 +158,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 
       // Check if component is allowed to be styled
       var hideNoStyle = this.config.hideNotStylable;
-      if (!this.isTargetStylable()) {
+      if (!this.isTargetStylable() || !this.isComponentStylable()) {
         if (hideNoStyle) {
           this.hide();
         }
@@ -213,14 +214,39 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
 
     /**
      * Check if target is stylable with this property
+     * The target could be the Component as the CSS Rule
      * @return {Boolean}
      */
-    isTargetStylable: function(){
+    isTargetStylable: function() {
       var stylable = this.getTarget().get('stylable');
       // Stylable could also be an array indicating with which property
       // the target could be styled
       if(stylable instanceof Array)
         stylable = _.indexOf(stylable, this.property) >= 0;
+      return stylable;
+    },
+
+    /**
+     * Check if the selected component is stylable with this property
+     * The target could be the Component as the CSS Rule
+     * @return {Boolean}
+     */
+    isComponentStylable: function() {
+      var em = this.em;
+      var component = em && em.get('selectedComponent');
+
+      if (!component) {
+        return true;
+      }
+
+      var stylable = component.get('stylable');
+      console.log('ST', stylable);
+      // Stylable could also be an array indicating with which property
+      // the target could be styled
+      if(stylable instanceof Array){
+        stylable = _.indexOf(stylable, this.property) >= 0;
+      }
+
       return stylable;
     },
 
