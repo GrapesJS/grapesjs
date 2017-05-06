@@ -159,11 +159,13 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
       // Check if component is allowed to be styled
       var hideNoStyle = this.config.hideNotStylable;
       if (!this.isTargetStylable() || !this.isComponentStylable()) {
+        console.log('not stylable ', this.property);
         if (hideNoStyle) {
           this.hide();
         }
         return;
       } else {
+        console.log('stylable ', this.property);
         this.show();
       }
 
@@ -240,10 +242,10 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
       }
 
       var stylable = component.get('stylable');
-      console.log('ST', stylable);
       // Stylable could also be an array indicating with which property
       // the target could be styled
       if(stylable instanceof Array){
+        console.log(this.property, stylable, _.indexOf(stylable, this.property));
         stylable = _.indexOf(stylable, this.property) >= 0;
       }
 

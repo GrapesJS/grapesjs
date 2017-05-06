@@ -107,6 +107,20 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
         traits.add(this.get('traits'));
         this.set('traits', traits);
         this.initToolbar();
+
+        // Normalize few properties from strings to arrays
+        var toNormalize = ['stylable'];
+        toNormalize.forEach(function(name) {
+          var value = this.get(name);
+
+          if (typeof value == 'string') {
+            var newValue = value.split(',').map(function(prop) {
+              return prop.trim();
+            });
+            this.set(name, newValue);
+          }
+        }, this);
+
         this.init();
       },
 
