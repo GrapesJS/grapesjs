@@ -25,7 +25,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
       this.input = this.$input = null;
       this.className = this.pfx  + 'property';
       this.inputHolderId = '#' + this.pfx + 'input-holder';
-      this.sector = this.model.collection.sector;
+      this.sector = this.model.collection && this.model.collection.sector;
 
       if(!this.model.get('value'))
         this.model.set('value', this.model.get('defaults'));
@@ -35,10 +35,6 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
       this.listenTo(this.model, 'change:value', this.valueChanged);
       this.listenTo(this.model, 'targetUpdated', this.targetUpdated);
       this.listenTo(this.model, 'change:visible', this.updateVisibility);
-
-      if (this.sector && this.sector.get('name') == 'Decorations') {
-        console.log(this.sector.get('name')+':', this.property, this.model.get('type'));
-      }
     },
 
     /**
