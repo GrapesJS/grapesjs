@@ -29,6 +29,10 @@ define(function () {
     // Return JS of components inside HTML from 'editor.getHtml()'
     jsInHtml: true,
 
+    // On creation of a new Component (via object), if the 'style' attribute is not
+    // empty, all those roles will be moved in its new class
+    forceClass: true,
+
     // Height for the editor container
     height: '900px',
 
