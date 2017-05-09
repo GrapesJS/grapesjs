@@ -224,6 +224,10 @@ $colorpSize: 22px;
 
 .#{$app-prefix}field-select {
   padding: 0;
+
+  option {
+    @extend .#{$app-prefix}bg-main;
+  }
 }
 
 .#{$app-prefix}field-range {

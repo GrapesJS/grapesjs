@@ -2656,7 +2656,7 @@ $fontColorActive: #4f8ef7;
 .gjs-bg-main, .gjs-off-prv, .gjs-select option,
 .gjs-clm-select option,
 .gjs-sm-select option,
-.gjs-sm-unit option, .gjs-pn-panel, .gjs-nv-item .gjs-nv-title-c, .gjs-sm-sector .gjs-sm-colorp-c, .gjs-clm-tags .gjs-sm-colorp-c, .gjs-block, .gjs-mdl-dialog, #gjs-rte-toolbar, .sp-container {
+.gjs-sm-unit option, .gjs-pn-panel, .gjs-nv-item .gjs-nv-title-c, .gjs-field-select option, .gjs-sm-sector .gjs-sm-colorp-c, .gjs-clm-tags .gjs-sm-colorp-c, .gjs-block, .gjs-mdl-dialog, #gjs-rte-toolbar, .sp-container {
   background-color: #444; }
 
 .gjs-color-main, .gjs-off-prv, .gjs-btn-prim, .gjs-pn-panel, .gjs-pn-btn, .gjs-btnt, .gjs-sm-sector .gjs-sm-field.gjs-sm-composite, .gjs-clm-tags .gjs-sm-field.gjs-sm-composite, .gjs-sm-sector .gjs-sm-composite.gjs-clm-field, .gjs-clm-tags .gjs-sm-composite.gjs-clm-field, .gjs-sm-sector .gjs-sm-stack #gjs-sm-add, .gjs-clm-tags .gjs-sm-stack #gjs-sm-add, .gjs-mdl-dialog, #gjs-rte-toolbar .gjs-rte-btn {
