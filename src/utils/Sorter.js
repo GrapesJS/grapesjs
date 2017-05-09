@@ -427,6 +427,14 @@ define(function(require) {
         var dims = [];
         if(!elem)
           return dims;
+
+        // Get children based on getChildrenContainer
+        var $elem = $(elem);
+        var elemData = $elem.data('model');
+        if (elemData) {
+          elem = elemData.view.getChildrenContainer();
+        }
+
         var ch = elem.children; //TODO filter match
         for (var i = 0, len = ch.length; i < len; i++) {
           var el = ch[i];
