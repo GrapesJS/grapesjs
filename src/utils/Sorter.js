@@ -613,7 +613,10 @@ define(function(require) {
        * @param {Object} pos Object with position coordinates
        * */
       move: function(dst, src, pos) {
-        if (this.em) this.em.trigger('component:dragging', [dst, src, pos]);
+        var em = this.em;
+        if (em) em.trigger('component:dragEnd:before', [dst, src, pos]);
+        var warns = [];
+        var modelToDrop, modelTemp;
         var index = pos.index;
         var model = $(src).data('model');
         var $dst = $(dst);
@@ -667,7 +670,6 @@ define(function(require) {
 
         if(targetCollection && droppable && accepted && draggable) {
           index = pos.method === 'after' ? index + 1 : index;
-          var modelToDrop, modelTemp;
           var opts = {at: index, noIncrement: 1};
           if(!this.dropContent){
             modelTemp = targetCollection.add({}, opts);
@@ -688,7 +690,6 @@ define(function(require) {
           this.prevTarget = null;
           return created;
         } else {
-          var warns = [];
           if(!targetCollection){
             warns.push('target collection not found');
           }
@@ -703,6 +704,8 @@ define(function(require) {
           }
           console.warn('Invalid target position: ' + warns.join(', '));
         }
+        if (em)
+          em.trigger('component:dragEnd', [targetCollection, modelToDrop, warns]);
       },
 
       /**
