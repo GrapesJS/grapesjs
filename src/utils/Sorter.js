@@ -614,9 +614,9 @@ define(function(require) {
        * */
       move: function(dst, src, pos) {
         var em = this.em;
-        if (em) em.trigger('component:dragEnd:before', [dst, src, pos]);
+        if (em) em.trigger('component:dragEnd:before', dst, src, pos);
         var warns = [];
-        var modelToDrop, modelTemp;
+        var modelToDrop, modelTemp, created;
         var index = pos.index;
         var model = $(src).data('model');
         var $dst = $(dst);
@@ -624,6 +624,7 @@ define(function(require) {
 
         while ($dst.length && !targetModel) {
           targetModel = $dst.data('model');
+          dst = $dst.get(0);
 
           if (!targetModel)
             $dst = $dst.parent();
@@ -680,7 +681,7 @@ define(function(require) {
             modelToDrop = this.dropContent;
             opts.silent = false;
           }
-          var created = targetCollection.add(modelToDrop, opts);
+          created = targetCollection.add(modelToDrop, opts);
           if(!this.dropContent){
             targetCollection.remove(modelTemp);
           }else{
@@ -688,7 +689,6 @@ define(function(require) {
           }
           // This will cause to recalculate children dimensions
           this.prevTarget = null;
-          return created;
         } else {
           if(!targetCollection){
             warns.push('target collection not found');
@@ -704,8 +704,11 @@ define(function(require) {
           }
           console.warn('Invalid target position: ' + warns.join(', '));
         }
+
         if (em)
-          em.trigger('component:dragEnd', [targetCollection, modelToDrop, warns]);
+          em.trigger('component:dragEnd', targetCollection, modelToDrop, warns);
+
+        return created;
       },
 
       /**
