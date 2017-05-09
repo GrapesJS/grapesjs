@@ -626,6 +626,9 @@ define(function(require) {
           targetModel = $dst.data('model');
           dst = $dst.get(0);
 
+          if (targetModel && targetModel.view)
+            dst = targetModel.view.el;
+
           if (!targetModel)
             $dst = $dst.parent();
         }
