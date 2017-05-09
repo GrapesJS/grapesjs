@@ -613,11 +613,20 @@ define(function(require) {
        * @param {Object} pos Object with position coordinates
        * */
       move: function(dst, src, pos) {
+        if (this.em) this.em.trigger('component:dragging', [dst, src, pos]);
         var index = pos.index;
         var model = $(src).data('model');
         var $dst = $(dst);
+        var targetModel;
+
+        while ($dst.length && !targetModel) {
+          targetModel = $dst.data('model');
+
+          if (!targetModel)
+            $dst = $dst.parent();
+        }
+
         var targetCollection = $dst.data('collection');
-        var targetModel = $dst.data('model');
 
         // Check if the elemenet is DRAGGABLE to the target
         var drag = model && model.get('draggable');
