@@ -88,7 +88,7 @@ define([
           var s1 = sel.add({name: 'test1'});
           var rule = obj.add(sel.models, 'state1', 'width1');
           rule.get('state').should.equal('state1');
-          rule.get('maxWidth').should.equal('width1');
+          rule.get('mediaText').should.equal('width1');
         });
 
         it("Add rule to collection", function() {

@@ -122,19 +122,31 @@ define([path + 'model/ParserCss',],
           });
 
           // Phantom don't find 'node.conditionText' so will skip it
-          it.skip('Parse rule inside media query', function() {
+          it('Parse rule inside media query', function() {
+            var str = '@media only screen and (max-width: 992px){ .test1.test2:hover{ color:red }}';
+            var result = {
+              selectors: ['test1', 'test2'],
+              style: { color: 'red'},
+              state: 'hover',
+              mediaText: 'only screen and (max-width: 992px)',
+            };
+            obj.parse(str).should.deep.equal(result);
+          });
+
+          // Phantom don't find 'node.conditionText' so will skip it
+          it('Parse rule inside media query', function() {
             var str = '@media (max-width: 992px){ .test1.test2:hover{ color:red }}';
             var result = {
               selectors: ['test1', 'test2'],
               style: { color: 'red'},
               state: 'hover',
-              maxWidth: '992px',
+              mediaText: '(max-width: 992px)',
             };
             obj.parse(str).should.deep.equal(result);
           });
 
           // Phantom doesn't find 'node.conditionText' so will skip it
-          it.skip('Parse rules inside media queries', function() {
+          it('Parse rules inside media queries', function() {
             var str = '.test1:hover{ color:white }@media (max-width: 992px){ .test1.test2:hover{ color:red } .test2{ color: blue }}';
             var result = [{
               selectors: ['test1'],
@@ -144,11 +156,11 @@ define([path + 'model/ParserCss',],
               selectors: ['test1', 'test2'],
               style: { color: 'red'},
               state: 'hover',
-              maxWidth: '992px',
+              mediaText: '(max-width: 992px)',
             },{
               selectors: ['test2'],
               style: { color: 'blue'},
-              maxWidth: '992px',
+              mediaText: '(max-width: 992px)',
             }];
             obj.parse(str).should.deep.equal(result);
           });

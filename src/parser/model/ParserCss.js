@@ -57,15 +57,13 @@ define(function(require) {
           // It's a CSSMediaRule
           if(node.cssRules) {
             var subRules = this.parseNode(node);
-            var widthA = node.media.mediaText.match(/-width:(.*)\)/i);
-            if(!widthA) {
-              continue;
-            }
-            var width = widthA[1];
-            for(var s = 0, lens = subRules.length; s < lens; s++){
+            var mediaText = node.media.mediaText;
+
+            for( var s = 0, lens = subRules.length; s < lens; s++) {
               var subRule = subRules[s];
-              subRule.maxWidth = width ? width.trim() : '';
+              subRule.mediaText = mediaText ? mediaText.trim() : '';
             }
+
             result = result.concat(subRules);
           }
 

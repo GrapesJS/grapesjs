@@ -9,7 +9,7 @@ define(['backbone'],
       this.listenTo(this.model, 'change:style', this.render);
       this.listenTo(this.model, 'change:state', this.render);
       this.listenTo(this.model, 'destroy remove', this.remove);
-      this.listenTo(this.model, 'change:maxWidth', this.render);
+      this.listenTo(this.model, 'change:mediaText', this.render);
       this.listenTo(this.model.get('selectors'), 'change', this.selChanged);
     },
 
@@ -60,15 +60,15 @@ define(['backbone'],
         this.selStr = this.renderSelectors();
       var prpStr = this.renderProperties();
       var stateStr = this.model.get('state');
-      var width = this.model.get('maxWidth');
+      var mediaText = this.model.get('mediaText');
       if(this.selStr){
         stateStr = stateStr ? ':' + stateStr : '';
         block = prpStr !== '' ? '{' + prpStr + '}' : '';
       }
       o = this.selStr && block ? this.selStr + stateStr + block : '';
 
-      if(width && o)
-        o = '@media (max-width: ' + width + '){' + o + '}';
+      if(mediaText && o)
+        o = '@media ' + mediaText + '{' + o + '}';
 
       this.$el.html(o);
       return this;

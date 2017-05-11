@@ -13,7 +13,7 @@ define(['backbone', './Selectors'],
                 style: {},
 
                 // On which device width this rule should be rendered, eg. @media (max-width: 1000px)
-                maxWidth: '',
+                mediaText: '',
 
                 // State of the rule, eg: hover | pressed | focused
                 state: '',
@@ -77,7 +77,7 @@ define(['backbone', './Selectors'],
                 if(this.get('state') !== st)
                     return f;
 
-                if(this.get('maxWidth') !== wd)
+                if(this.get('mediaText') !== wd)
                     return f;
 
                 return true;

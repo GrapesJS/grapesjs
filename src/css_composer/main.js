@@ -170,7 +170,7 @@ define(function(require) {
             return rule;
           else {
             opt.state = s;
-            opt.maxWidth = w;
+            opt.mediaText = w;
             opt.selectors = '';
             rule = new CssRule(opt);
             rule.get('selectors').add(selectors);
@@ -244,7 +244,7 @@ define(function(require) {
               newSels.push(selec);
             }
 
-            var model = this.add(newSels, rule.state, rule.maxWidth, rule);
+            var model = this.add(newSels, rule.state, rule.mediaText, rule);
             if (opt.extend) {
               var newStyle = _.extend({}, model.get('style'), rule.style || {});
               model.set('style', newStyle);

@@ -70,8 +70,8 @@ define(['backbone'],
         if(cssc){
           var rules = cssc.getAll();
           var mediaRules = {};
-          rules.each(function(rule){
-            var width = rule.get('maxWidth');
+          rules.each(function(rule) {
+            var width = rule.get('mediaText');
 
             // If width setted will render it later
             if(width){
@@ -93,8 +93,10 @@ define(['backbone'],
             for(var i = 0, len = meRules.length; i < len; i++){
               ruleC += this.buildFromRule(meRules[i]);
             }
-            if(ruleC)
-              code += '@media (max-width: ' + ruleW + '){' + ruleC + '}';
+
+            if (ruleC) {
+              code += '@media ' + ruleW + '{' + ruleC + '}';
+            }
           }
 
         }

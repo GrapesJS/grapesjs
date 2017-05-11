@@ -174,7 +174,7 @@ define([path + 'HtmlGenerator',
               var cssc = newCssComp();
               var rule = cssc.add([cls1, cls2]);
               rule.set('style',{'prop1':'value1'});
-              rule.set('maxWidth', '999px');
+              rule.set('mediaText', '(max-width: 999px)');
 
               this.obj.build(comp, cssc).should.equal('@media (max-width: 999px){.class1.class2{prop1:value1;}}');
             });
@@ -191,12 +191,12 @@ define([path + 'HtmlGenerator',
               var rule2 = cssc.add(cls2);
               rule2.set('style',{'prop2':'value2'});
 
-              var rule3 = cssc.add(cls1, '', '999px');
+              var rule3 = cssc.add(cls1, '', '(max-width: 999px)');
               rule3.set('style',{'prop3':'value3'});
-              var rule4 = cssc.add(cls2, '', '999px');
+              var rule4 = cssc.add(cls2, '', '(max-width: 999px)');
               rule4.set('style',{'prop4':'value4'});
 
-              var rule5 = cssc.add(cls1, '', '100px');
+              var rule5 = cssc.add(cls1, '', '(max-width: 100px)');
               rule5.set('style',{'prop5':'value5'});
 
               this.obj.build(comp, cssc).should.equal('.class1.class2{prop1:value1;}.class2{prop2:value2;}'+
