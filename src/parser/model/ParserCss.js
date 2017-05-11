@@ -80,7 +80,10 @@ define(function(require) {
           var stl = node.style;
           var style = {};
           for (var j = 0, len2 = stl.length; j < len2; j++) {
-            style[stl[j]] = stl[stl[j]];
+            var propName = stl[j];
+            var important = stl.getPropertyPriority(propName);
+            style[propName] = stl[propName] +
+              (important ? ' !' + important : '');
           }
 
           var lastRule = '';

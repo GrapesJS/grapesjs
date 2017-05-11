@@ -176,6 +176,19 @@ define([path + 'model/ParserCss',],
             obj.parse(str).should.deep.equal(result);
           });
 
+          it('Parse rule with important styles', function() {
+            var str = ' .test1 {color:red !important; width: 100px; height: 10px !important}';
+            var result = {
+              selectors: ['test1'],
+              style: {
+                color: 'red !important',
+                height: '10px !important',
+                width: '100px',
+              }
+            };
+            obj.parse(str).should.deep.equal(result);
+          });
+
         });
 
       }

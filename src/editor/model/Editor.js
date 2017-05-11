@@ -10,6 +10,7 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
 
       defaults: {
         clipboard: null,
+        designerMode: false,
         selectedComponent: null,
         previousModel: null,
         changesCount:  0,
@@ -36,7 +37,7 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
           M.onLoad();
         });
 
-        this.initUndoManager(); // Is already called (inside components and css composer)
+        this.initUndoManager();
 
         this.on('change:selectedComponent', this.componentSelected, this);
         this.on('change:changesCount', this.updateBeforeUnload, this);
