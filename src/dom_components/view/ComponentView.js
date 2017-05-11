@@ -133,16 +133,21 @@ define(['backbone', './ComponentsView'],
        * Update attributes
        * @private
        * */
-      updateAttributes: function(){
+      updateAttributes: function() {
+        var model = this.model;
         var attributes = {},
-          attr = this.model.get("attributes");
+          attr = model.get("attributes");
         for(var key in attr) {
             if(attr.hasOwnProperty(key))
               attributes[key] = attr[key];
         }
+
         // Update src
-        if(this.model.get("src"))
-          attributes.src = this.model.get("src");
+        if(model.get('src'))
+          attributes.src = model.get('src');
+
+        if(model.get('highlightable'))
+          attributes['data-highlightable'] = 1;
 
         var styleStr = this.getStyleString();
 

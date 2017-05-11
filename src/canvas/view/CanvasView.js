@@ -74,7 +74,7 @@ function(Backbone, FrameView) {
 
         // I need all this styles to make the editor work properly
         var frameCss = '* {box-sizing: border-box;} body{margin:0;height:auto;background-color:#fff} #wrapper{min-height:100%; overflow:auto}' +
-          '.' + ppfx + 'dashed :not([contenteditable]) > *{outline: 1px dashed rgba(170,170,170,0.7); outline-offset: -2px}' +
+          '.' + ppfx + 'dashed :not([contenteditable]) > *[data-highlightable]{outline: 1px dashed rgba(170,170,170,0.7); outline-offset: -2px}' +
           '.' + ppfx + 'comp-selected{outline: 3px solid #3b97e3 !important}' +
           '.' + ppfx + 'no-select{user-select: none; -webkit-user-select:none; -moz-user-select: none}'+
           '.' + ppfx + 'freezed{opacity: 0.5; pointer-events: none}' +

@@ -28,6 +28,9 @@ define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitMana
         // Tip:  Indicate an array of CSS properties which is possible to style
         stylable: true,
 
+        // Highlightable with 'dotted' style if true
+        highlightable: true,
+
         // True if it's possible to clone the component
         copyable: true,
 
