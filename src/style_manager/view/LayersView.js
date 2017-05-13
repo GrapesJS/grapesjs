@@ -26,6 +26,7 @@ define(['backbone','./LayerView'],
 				pfx: this.config.pStylePrefix,
 			}) : '';
 
+      this.$el.data('model', {});
 			this.$el.data('collection', this.collection);
 		},
 

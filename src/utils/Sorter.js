@@ -629,7 +629,7 @@ define(function(require) {
         var model = $(src).data('model');
         var $dst = $(dst);
         var targetModel;
-
+        console.log($dst, $dst.data('collection'));
         while ($dst.length && !targetModel) {
           targetModel = $dst.data('model');
           dst = $dst.get(0);
@@ -642,7 +642,7 @@ define(function(require) {
         }
 
         var targetCollection = $dst.data('collection');
-
+        console.log(targetCollection, $dst);
         // Check if the elemenet is DRAGGABLE to the target
         var drag = model && model.get('draggable');
         var draggable = typeof drag !== 'undefined' ? drag : 1;
@@ -669,7 +669,7 @@ define(function(require) {
 
         // Check if the target could accept the element to be DROPPED inside
         var accepted = 1;
-        var droppable = targetModel ? targetModel.get('droppable') : 1;
+        var droppable = targetModel && targetModel.get ? targetModel.get('droppable') : 1;
         var toDrop = draggable;
         if(droppable instanceof Array) {
           // When I drag blocks src is the HTMLElement of the block
