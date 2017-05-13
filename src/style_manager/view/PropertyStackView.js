@@ -110,7 +110,8 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
 
       // If detached the value in this case is stacked, eg. substack-prop: 1px, 2px, 3px...
       if (this.model.get('detached')) {
-        var valist = propView.getTargetValue().split(',');
+        var targetValue = propView.getTargetValue();
+        var valist = (targetValue + '').split(',');
         result = valist[layerIndex];
         result = result ? result.trim() : propView.getDefaultValue();
         result = propView.tryFetchFromFunction(result);

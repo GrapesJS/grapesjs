@@ -668,6 +668,7 @@ define([path + 'Sector',
               properties  : [{
                       property: 'background-image',
                       type: 'file',
+                      functionName: 'url',
                       defaults: 'none',
                     },{
                       property: 'background-repeat',
