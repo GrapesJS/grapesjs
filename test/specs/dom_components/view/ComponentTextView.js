@@ -35,7 +35,7 @@ define([path + 'ComponentTextView', 'DomComponents/model/Component'],
             });
 
             it('Component empty', function() {
-              $fixture.html().should.equal('<div></div>');
+              $fixture.html().should.equal('<div data-highlightable="1"></div>');
             });
 
             it('Input content is stored in model', function() {

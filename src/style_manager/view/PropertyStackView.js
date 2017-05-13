@@ -28,6 +28,12 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
       else {
         this.checkVisibility();
         this.refreshLayers();
+
+        /*
+        this.model.get('properties').each(function(prop) {
+          console.log(prop.get('property'), ' - ', prop.get('value'));
+        });
+        */
       }
     },
 
@@ -47,10 +53,11 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
      *
      * @return {Object}
      * */
-    indexChanged: function(e){
-      var layer  = this.getLayers().at(this.model.get('stackIndex'));
+    indexChanged: function(e) {
+      var model = this.model;
+      var layer  = this.getLayers().at(model.get('stackIndex'));
       layer.set('props', this.$props);
-      this.model.get('properties').each(function(prop){
+      model.get('properties').each(function (prop) {
         prop.trigger('targetUpdated');
       });
     },
@@ -68,7 +75,7 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
       var that = this;
       var result = PropertyCompositeView.prototype.getPropsConfig.apply(this, arguments);
 
-      result.onChange = function(el, view, opt){
+      result.onChange = function(el, view, opt) {
         var model = view.model;
         var result = that.build();
 
@@ -91,21 +98,25 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
     },
 
     /**
-     * Extract string from composite value
-     * @param integer  Index
-     * @param View  propView Property view
+     * Extract string from the composite value of the target
+     * @param {integer} index Property index
+     * @param {View} propView Property view
      * @return string
+     * @private
      * */
-    valueOnIndex: function(index, propView){
-      var result   = null;
+    valueOnIndex: function(index, propView) {
+      var result = null;
+      var layerIndex = this.model.get('stackIndex');
+
       // If detached the value in this case is stacked, eg. substack-prop: 1px, 2px, 3px...
-      if(this.model.get('detached')){
-        var valist = propView.componentValue.split(',');
-        result = valist[this.model.get('stackIndex')];
-        result = result ? result.trim() : result;
-      }else{
-        var aStack  = this.getStackValues();
-        var strVar  = aStack[this.model.get('stackIndex')];
+      if (this.model.get('detached')) {
+        var valist = propView.getTargetValue().split(',');
+        result = valist[layerIndex];
+        result = result ? result.trim() : propView.getDefaultValue();
+        result = propView.tryFetchFromFunction(result);
+      } else {
+        var aStack = this.getStackValues();
+        var strVar = aStack[layerIndex];
         if(!strVar)
           return;
         var a    = strVar.split(' ');
@@ -113,11 +124,15 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
           result = a[index];
         }
       }
+
       return result;
     },
 
-    /** @inheritdoc */
-    build: function(){
+    /**
+     * Build composite value
+     * @private
+     * */
+    build: function() {
       var stackIndex = this.model.get('stackIndex');
       if(stackIndex === null)
         return;
@@ -148,15 +163,17 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
      *
      * @return Object
      * */
-    addLayer: function(e){
+    addLayer: function(e) {
       if(this.getTarget()){
         var layers = this.getLayers();
         var layer  = layers.add({ name : 'test' });
         var index  = layers.indexOf(layer);
         layer.set('value', this.getDefaultValue());
+
         // In detached mode valueUpdated will add new 'layer value'
         // to all subprops
         this.valueUpdated();
+
         // This will set subprops with a new default values
         this.model.set('stackIndex', index);
         return layer;
@@ -166,11 +183,13 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
     /**
      * Fired when the input value is updated
      */
-    valueUpdated: function(){
-      if(!this.model.get('detached'))
-        this.model.set('value', this.createValue());
-      else{
-        this.model.get('properties').each(function(prop){
+    valueUpdated: function() {
+      var model = this.model;
+
+      if (!model.get('detached')) {
+        model.set('value', this.createValue());
+      } else {
+        model.get('properties').each(function(prop){
           prop.trigger('change:value');
         });
       }
@@ -216,15 +235,17 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
      * Only for detached stacks
      * @return {Array<string>}
      */
-    getLayersFromTarget: function(){
+    getLayersFromTarget: function() {
       var arr = [];
       var target = this.getTarget();
       if(!target)
         return arr;
       var trgStyle = target.get('style');
-      this.model.get('properties').each(function(prop){
+
+      this.model.get('properties').each(function(prop) {
         var style = trgStyle[prop.get('property')];
-        if(style){
+
+        if (style) {
           var list =  style.split(',');
           for(var i = 0, len = list.length; i < len; i++){
             var val = list[i].trim();
@@ -239,22 +260,25 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
           }
         }
       });
+
       return arr;
     },
 
     /**
      * Refresh layers
      * */
-    refreshLayers: function(){
+    refreshLayers: function() {
       var n = [];
       var a = [];
       var fieldName = 'value';
-      if(this.model.get('detached')){
+      var detached = this.model.get('detached');
+
+      if (detached) {
         fieldName = 'values';
         a = this.getLayersFromTarget();
-      }else{
+      } else {
         var v  = this.getComponentValue();
-        if(v){
+        if (v) {
           // Remove spaces inside functions:
           // eg:
           // From: 1px 1px rgba(2px, 2px, 2px), 2px 2px rgba(3px, 3px, 3px)
@@ -266,17 +290,23 @@ define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack
           a = v.split(', ');
         }
       }
+
       _.each(a, function(e){
         var o = {};
         o[fieldName] = e;
         n.push(o);
       },this);
+
       this.$props.detach();
       var layers = this.getLayers();
       layers.reset();
       layers.add(n);
-      if(!this.model.get('detached'))
+
+      // Avoid updating with detached as it will cause issues on next change
+      if (!detached) {
         this.valueUpdated();
+      }
+
       this.model.set({stackIndex: null}, {silent: true});
     },
 

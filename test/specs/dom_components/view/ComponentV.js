@@ -42,23 +42,23 @@ define([path + 'ComponentView', 'DomComponents/model/Component', 'DomComponents'
             });
 
             it('Component empty', function() {
-              $fixture.html().should.equal('<div></div>');
+              $fixture.html().should.equal('<div data-highlightable="1"></div>');
             });
 
             it('Add helper class on update of state', function() {
               model.set('state', 'test');
-              $fixture.html().should.equal('<div class="' + hClass + '"></div>');
+              $fixture.html().should.equal('<div data-highlightable="1" class="' + hClass + '"></div>');
             });
 
             it('Clean form helper state', function() {
               model.set('state', 'test');
               model.set('state', '');
-              $fixture.html().should.equal('<div class=""></div>');
+              $fixture.html().should.equal('<div data-highlightable="1" class=""></div>');
             });
 
             it('Add helper class on status update', function() {
               model.set('status', 'selected');
-              $fixture.html().should.equal('<div class="selected"></div>');
+              $fixture.html().should.equal('<div data-highlightable="1" class="selected"></div>');
             });
 
             it('Get string of classes', function() {
@@ -131,7 +131,7 @@ define([path + 'ComponentView', 'DomComponents/model/Component', 'DomComponents'
                 model: model,
                 defaultTypes: dcomp.componentTypes,
               });
-              view.render().$el.html().should.equal('<span></span><div title="test"></div>');
+              view.render().$el.html().should.equal('<span data-highlightable="1"></span><div title="test" data-highlightable="1"></div>');
             });
 
         });

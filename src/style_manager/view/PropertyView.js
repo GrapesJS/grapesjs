@@ -91,8 +91,8 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
      *
      * @return {Boolean}
      * */
-    sameValue: function(){
-      return this.getComponentValue() == (this.model.get('value') + this.model.get('unit'));
+    sameValue: function() {
+      return this.getComponentValue() == this.getValueForTarget();
     },
 
 
@@ -102,6 +102,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
      * @return {String}
      * */
     getComponentValue: function() {
+      var propModel = this.model;
       var target = this.getTarget();
 
       if(!target)
@@ -114,7 +115,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
         this.componentValue = this.defaultValue + (this.unit || ''); // todo model
 
       // Check if wrap inside function is required
-      if(this.model.get('functionName')){
+      if (propModel.get('functionName')) {
         var v = this.fetchFromFunction(this.componentValue);
         if(v)
           this.componentValue = v;
@@ -123,7 +124,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
       // This allow to ovveride the normal flow of selecting component value,
       // useful in composite properties
       if(this.customValue && typeof this.customValue === "function"){
-        var index = this.model.collection.indexOf(this.model);
+        var index = propModel.collection.indexOf(propModel);
         var t = this.customValue(this, index);
         if(t)
           this.componentValue = t;
@@ -133,21 +134,67 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
     },
 
     /**
+     * Refactor of getComponentValue
+     * @param {Object} [opts] Options
+     * @param {Boolean} [options.fetchFromFunction]
+     * @param {Boolean} [options.ignoreDefault]
+     * @return string
+     * @private
+     */
+    getTargetValue: function (opts) {
+      var result;
+      var opt = opts || {};
+      var model = this.model;
+      var target = this.getTarget();
+
+      if (!target) {
+        return result;
+      }
+
+      result = target.get('style')[model.get('property')];
+
+      if (!result && !opt.ignoreDefault) {
+        result = this.getDefaultValue();
+      }
+
+      return result;
+    },
+
+    /**
+     * Returns default value
+     * @return {String}
+     * @private
+     */
+    getDefaultValue: function () {
+      return this.model.get('defaults');
+    },
+
+    /**
      * Fetch the string from function type value
      * @param {String} v Function type value
      *
      * @return {String}
      * */
-    fetchFromFunction: function(v){
+    fetchFromFunction: function(v) {
       return v.substring(v.indexOf("(") + 1, v.lastIndexOf(")"));
+    },
+
+    tryFetchFromFunction: function(value) {
+      if (!this.model.get('functionName')) {
+        return value;
+      }
+
+      var start = value.indexOf("(") + 1;
+      var end = value.lastIndexOf(")");
+      return value.substring(start, end);
     },
 
     /**
      * Returns value from inputs
      * @return {string}
      */
-    getValueForTarget: function(){
-      return this.model.getValue();
+    getValueForTarget: function() {
+      return this.model.get('value');
     },
 
     /**

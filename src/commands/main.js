@@ -146,9 +146,7 @@ define(function(require) {
               return;
             }
 
-
             var toolbarEl = ed.Canvas.getToolbarEl();
-            var toolbarDisplay = toolbarEl.style.display;
             var cmdMove = ed.Commands.get('move-comp');
 
             cmdMove.onEndMoveFromModel = function() {

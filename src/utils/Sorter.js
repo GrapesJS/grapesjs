@@ -431,7 +431,7 @@ define(function(require) {
         // Get children based on getChildrenContainer
         var $elem = $(elem);
         var elemData = $elem.data('model');
-        if (elemData) {
+        if (elemData && elemData.view) {
           elem = elemData.view.getChildrenContainer();
         }
 
