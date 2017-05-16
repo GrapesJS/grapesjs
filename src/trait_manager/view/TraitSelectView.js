@@ -16,12 +16,13 @@ define(['backbone','./TraitView'],
      * @private
      */
     getInputEl: function() {
-      if(!this.$input){
+      if(!this.$input) {
         var md = this.model;
         var opts = md.get('options') || [];
-        this.input = '<select>';
-        if(opts.length){
-          _.each(opts, function(el){
+        var input = '<select>';
+
+        if (opts.length) {
+          _.each(opts, function(el) {
             var name, value, style;
             var attrs = '';
             if(typeof el === 'string'){
@@ -33,10 +34,12 @@ define(['backbone','./TraitView'],
               style = el.style ? el.style.replace(/"/g,'&quot;') : '';
               attrs += style ? 'style="' + style + '"' : '';
             }
-            this.input += '<option value="' + value + '" ' + attrs + '>' + name + '</option>';
-          }, this);
+            input += '<option value="' + value + '" ' + attrs + '>' + name + '</option>';
+          });
         }
-        this.input   += '</select>';
+
+        input += '</select>';
+        this.input = input;
         this.$input = $(this.input);
 
         var target = this.target;
