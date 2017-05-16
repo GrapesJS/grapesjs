@@ -629,7 +629,7 @@ define(function(require) {
         var model = $(src).data('model');
         var $dst = $(dst);
         var targetModel;
-        console.log($dst, $dst.data('collection'));
+
         while ($dst.length && !targetModel) {
           targetModel = $dst.data('model');
           dst = $dst.get(0);
@@ -642,7 +642,6 @@ define(function(require) {
         }
 
         var targetCollection = $dst.data('collection');
-        console.log(targetCollection, $dst);
         // Check if the elemenet is DRAGGABLE to the target
         var drag = model && model.get('draggable');
         var draggable = typeof drag !== 'undefined' ? drag : 1;
