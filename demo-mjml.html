@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>GrapesJS MJML Newsletter Builder</title>
+    <meta name="description" content="GrapesJS MJML Newsletter Builder - Next generation tool for building newsletters without coding">
+    <meta name="keywords" content="newsletter builder, web template editor, html builder, html editor">
+    <link rel="stylesheet" href="./stylesheets/grapes.min.css">
+    <link rel="stylesheet" href="./stylesheets/tooltip.css">
+    <link rel="stylesheet" href="./stylesheets/toastr.min.css">
+    <link rel="stylesheet" href="./stylesheets/grapesjs-mjml.css">
+
+    <script src="./js/jquery.js"></script>
+    <script src="./js/grapes.min.js?v=0.5.37"></script>
+    <script src="./js/toastr.min.js"></script>
+    <script src="./js/ajaxable.min.js"></script>
+    <script src="//feather.aviary.com/imaging/v3/editor.js"></script>
+    <script src="./js/ckeditor/ckeditor.js"></script>
+
+    <!-- Plugins -->
+    <script src="./js/grapesjs-plugin-ckeditor.min.js"></script>
+    <script src="./js/grapesjs-mjml.min.js?v=0.0.5"></script>
+    <script src="./js/grapesjs-aviary.min.js"></script>
+    <script src="./js/grapesjs-preset-mjml.js"></script>
+
+  </head>
+  <style>
+    body, html{
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    #gjs-pn-commands,
+    .gjs-clm-tags {
+       display: none;
+    }
+
+    .info-link {
+      text-decoration: none;
+    }
+
+    #info-cont {
+      line-height: 17px;
+    }
+
+    .grapesjs-logo {
+      display: block;
+      height: 90px;
+      margin: 0 auto;
+      width: 90px;
+    }
+
+    .grapesjs-logo path{
+      stroke: #eee !important;
+      stroke-width: 8 !important;
+    }
+
+    /* Toast style */
+    #toast-container {
+      font-size: 13px;
+      font-weight: lighter;
+    }
+    #toast-container > div,
+    #toast-container > div:hover {
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+      font-family: Helvetica, sans-serif;
+    }
+    #toast-container > div{
+      opacity: 0.95;
+    }
+
+    #gjs-pn-devices-c {
+      width: 85%;
+      z-index: 1;
+    }
+  </style>
+  <body>
+
+
+    <div id="gjs" style="height:0px; overflow:hidden">
+
+      <mj-container>
+        <!-- Company Header -->
+        <mj-section background-color="#f0f0f0">
+          <mj-column>
+            <mj-text font-style="italic" font-size="20" color="#626262">
+              My Company
+            </mj-text>
+          </mj-column>
+        </mj-section>
+
+        <!-- Image Header -->
+        <mj-section background-url="http://1.bp.blogspot.com/-TPrfhxbYpDY/Uh3Refzk02I/AAAAAAAALw8/5sUJ0UUGYuw/s1600/New+York+in+The+1960's+-+70's+(2).jpg" background-size="cover" background-repeat="no-repeat">
+          <mj-column>
+            <mj-text align="center" color="#fff" font-size="40" font-family="Helvetica Neue">Slogan here</mj-text>
+            <mj-button background-color="#F63A4D" href="#">
+              Promotion
+            </mj-button>
+          </mj-column>
+        </mj-section>
+
+        <!-- Intro text -->
+        <mj-section background-color="#fafafa">
+          <mj-column width="400">
+            <mj-text font-style="italic" font-size="20" font-family="Helvetica Neue" color="#626262">My Awesome Text</mj-text>
+            <mj-text color="#525252">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin rutrum enim eget magna efficitur, eu semper augue semper. Aliquam erat volutpat. Cras id dui lectus. Vestibulum sed finibus lectus, sit amet suscipit nibh. Proin nec commodo purus. Sed eget
+              nulla elit. Nulla aliquet mollis faucibus.
+            </mj-text>
+            <mj-button background-color="#F45E43" href="#">Learn more</mj-button>
+          </mj-column>
+        </mj-section>
+
+        <!-- Side image -->
+        <mj-section background-color="white">
+          <mj-column>
+            <mj-image width="200" src="https://designspell.files.wordpress.com/2012/01/sciolino-paris-bw.jpg" />
+          </mj-column>
+          <mj-column>
+            <mj-text font-style="italic" font-size="20" font-family="Helvetica Neue" color="#626262">
+              Find amazing places
+            </mj-text>
+            <mj-text color="#525252">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin rutrum enim eget magna efficitur, eu semper augue semper. Aliquam erat volutpat. Cras id dui lectus. Vestibulum sed finibus lectus.</mj-text>
+          </mj-column>
+        </mj-section>
+
+
+        <!-- Icons -->
+        <mj-section background-color="#fbfbfb">
+          <mj-column>
+            <mj-image width="100" src="http://191n.mj.am/img/191n/3s/x0l.png" />
+          </mj-column>
+          <mj-column>
+            <mj-image width="100" src="http://191n.mj.am/img/191n/3s/x01.png" />
+          </mj-column>
+          <mj-column>
+            <mj-image width="100" src="http://191n.mj.am/img/191n/3s/x0s.png" />
+          </mj-column>
+        </mj-section>
+
+        <!-- Footer -->
+        <mj-section background-color="#e7e7e7">
+          <mj-column>
+            <mj-button href="#">Hello There!</mj-button>
+            <mj-social display="facebook twitter" />
+          </mj-column>
+        </mj-section>
+        <!-- Footer -->
+      </mj-container>
+
+
+    </div>
+
+    <div id="info-cont" style="display:none">
+      <br/>
+      <svg class="grapesjs-logo" xmlns="http://www.w3.org/2000/svg" version="1"><g id="gjs-logo"><path d="M40 5l-12.9 7.4 -12.9 7.4c-1.4 0.8-2.7 2.3-3.7 3.9 -0.9 1.6-1.5 3.5-1.5 5.1v14.9 14.9c0 1.7 0.6 3.5 1.5 5.1 0.9 1.6 2.2 3.1 3.7 3.9l12.9 7.4 12.9 7.4c1.4 0.8 3.3 1.2 5.2 1.2 1.9 0 3.8-0.4 5.2-1.2l12.9-7.4 12.9-7.4c1.4-0.8 2.7-2.2 3.7-3.9 0.9-1.6 1.5-3.5 1.5-5.1v-14.9 -12.7c0-4.6-3.8-6-6.8-4.2l-28 16.2" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-width:10;stroke:#fff"/></g></svg>
+      <br/>
+      <div class="gjs-import-label">
+        <b>GrapesJS MJML Newsletter Builder</b> was made not only to show what is possible to achive with the
+        <a class="info-link gjs-color-active" target="_blank" href="http://artf.github.io/grapesjs/">GrapesJS</a>
+        core library, but also to help non-tech people build responsive cross-platform newsletters using the amazing
+        <a class="info-link gjs-color-active" target="_blank" href="https://mjml.io">MJML</a> markup language
+        <br/><br/>
+        For any problem with the builder, open an issue on the main
+        <a class="info-link gjs-color-active" target="_blank" href="https://github.com/artf/grapesjs">GrapesJS repository</a>.
+        <br/><br/>
+        Being a free and open source project contributors and supporters are extremely welcome.
+      </div>
+    </div>
+
+
+    <script type="text/javascript">
+      CKEDITOR.dtd.$editable.a = 1;
+
+      var lp = './img/';
+      var plp = 'http://placehold.it/350x250/';
+      var images = [
+        plp+'78c5d6/fff/image1.jpg', plp+'459ba8/fff/image2.jpg', plp+'79c267/fff/image3.jpg',
+        plp+'c5d647/fff/image4.jpg', plp+'f28c33/fff/image5.jpg', plp+'e868a2/fff/image6.jpg', plp+'cc4360/fff/image7.jpg',
+        lp+'work-desk.jpg', lp+'phone-app.png', lp+'bg-gr-v.png'
+      ];
+
+      // Set up GrapesJS editor with the MJML plugin
+      var editor = grapesjs.init({
+        clearOnRender: true,
+        height: '100%',
+        storageManager: {id: 'gjs-mjml-'},
+        //storageManager:{ autoload: 0 },
+        assetManager: {
+          assets: images,
+          upload: 0,
+          uploadText: 'Uploading is not available in this demo',
+        },
+        container : '#gjs',
+        fromElement: true,
+
+        plugins: ['gjs-mjml', 'gjs-aviary', 'gjs-plugin-ckeditor', 'gjs-preset-mjml'],
+        pluginsOpts: {
+          'gjs-plugin-ckeditor': {
+            position: 'center',
+            options: {
+              startupFocus: true,
+              extraAllowedContent: '*(*);*{*}', // Allows any class and any inline style
+              allowedContent: true, // Disable auto-formatting, class removing, etc.
+              enterMode: CKEDITOR.ENTER_BR,
+              extraPlugins: 'sharedspace,justify,colorbutton,panelbutton,font',
+              toolbar: [
+                { name: 'styles', items: ['Font', 'FontSize' ] },
+                ['Bold', 'Italic', 'Underline', 'Strike'],
+                {name: 'paragraph', items : [ 'NumberedList', 'BulletedList']},
+                {name: 'links', items: ['Link', 'Unlink']},
+                {name: 'colors', items: [ 'TextColor', 'BGColor' ]},
+              ],
+            }
+          }
+        },
+      });
+
+      var mdlClass = 'gjs-mdl-dialog-sm';
+      var pnm = editor.Panels;
+      var cmdm = editor.Commands;
+      var md = editor.Modal;
+
+      // Add info command
+      var infoContainer = document.getElementById("info-cont");
+      cmdm.add('open-info', {
+        run(editor, sender) {
+          sender.set('active', 0);
+          var mdlDialog = document.querySelector('.gjs-mdl-dialog');
+          mdlDialog.className += ' ' + mdlClass;
+          infoContainer.style.display = 'block';
+          md.setTitle('About this demo');
+          md.setContent('');
+          md.setContent(infoContainer);
+          md.open();
+          md.getModel().once('change:open', function() {
+            mdlDialog.className = mdlDialog.className.replace(mdlClass, '');
+          })
+        }
+      });
+      pnm.addButton('options', {
+        id: 'view-info',
+        className: 'fa fa-question-circle',
+        command: 'open-info',
+        attributes: {
+          'title': 'About',
+          'data-tooltip-pos': 'bottom',
+        },
+      });
+
+      // Simple warn notifier
+      var origWarn = console.warn;
+      toastr.options = {
+        closeButton: true,
+        preventDuplicates: true,
+        showDuration: 250,
+        hideDuration: 150
+      };
+      console.warn = function (msg) {
+        toastr.warning(msg);
+        origWarn(msg);
+      };
+
+      $(document).ready(function () {
+        // Beautify tooltips
+        $('*[title]').each(function () {
+          var el = $(this);
+          var title = el.attr('title').trim();
+          if(!title)
+            return;
+          el.attr('data-tooltip', el.attr('title'));
+          el.attr('title', '');
+        });
+      });
+    </script>
+
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-74284223-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
