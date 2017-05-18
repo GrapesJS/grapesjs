@@ -41,8 +41,9 @@ grapesjs.plugins.add('gjs-preset-mjml', (editor, opts) => {
   cmdm.add('clean-all', {
     run: function(editor, sender) {
       sender && sender.set('active',false);
-      if (confirm('Are you sure to clean the canvas?')) {
-        var comps = editor.DomComponents.clear();
+      if (confirm('Are you sure you want to clean the canvas?')) {
+        editor.setComponents('<mj-container><mj-section><mj-column>'+
+          '<mj-text>Start from here</mj-text></mj-column></mj-section></mj-container>');
         localStorage.setItem('gjs-mjml-css', '');
         localStorage.setItem('gjs-mjml-html', '');
       }
@@ -62,12 +63,12 @@ grapesjs.plugins.add('gjs-preset-mjml', (editor, opts) => {
     className: 'fa fa-repeat icon-redo',
     command: 'redo',
     attributes: { title: 'Redo (CTRL/CMD + SHIFT + Z)' }
-  }/*,{
+  },{
     id: 'clean-all',
     className: 'fa fa-trash icon-blank',
     command: 'clean-all',
     attributes: { title: 'Empty canvas' }
-  }*/]);
+  }]);
 
   // Add devices buttons
   var panelDevices = pnm.addPanel({id: 'devices-c'});
