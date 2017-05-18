@@ -152,6 +152,49 @@ define(['GrapesJS'],function(GrapesJS) {
 
             });
 
+            it("Do not extend with different selectorsAdd", function() {
+              var style1 = {color: 'red', width: '10px'};
+              var style2 = {height: '20px', width: '20px'};
+              var rule1 = {
+                selectors: [],
+                selectorsAdd: '*',
+                style: style1,
+              };
+              var rule2 = {
+                selectors: [],
+                selectorsAdd: 'p',
+                style: style2,
+              };
+              var rule1Out = cssc.addCollection(rule1, {extend: 1})[0];
+              var rule2Out = cssc.addCollection(rule2, {extend: 1})[0];
+              rule1Out = JSON.parse(JSON.stringify(rule1Out));
+              rule2Out = JSON.parse(JSON.stringify(rule2Out));
+              var rule1Result = {
+                mediaText: '',
+                selectors: [],
+                selectorsAdd: '*',
+                state: '',
+                stylable: true,
+                style: {
+                 color: 'red',
+                 width: '10px'
+                }
+              };
+              var rule2Result = {
+                mediaText: '',
+                selectors: [],
+                selectorsAdd: 'p',
+                state: '',
+                stylable: true,
+                style: {
+                  height: '20px',
+                  width: '20px',
+                }
+              };
+              rule1Out.should.deep.equal(rule1Result);
+              rule2Out.should.deep.equal(rule2Result);
+            });
+
             it('Add raw rule objects with width via addCollection', function() {
               var coll1 = cssc.addCollection(rulesSet2);
               coll1[2].get('mediaText').should.equal(rulesSet2[2].mediaText);

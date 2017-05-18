@@ -42,12 +42,15 @@ define(['backbone', './Selectors'],
              * @param   {Object} selectors Collection of selectors
              * @param   {String} state Css rule state
              * @param   {String} width For which device this style is oriented
+             * @param {Object} ruleProps Other rule props
              * @return  {Boolean}
              * @private
              */
-            compare: function(selectors, state, width){
+            compare: function(selectors, state, width, ruleProps){
+                var otherRule = ruleProps || {};
                 var st = state || '';
                 var wd = width || '';
+                var selectorsAdd = otherRule.selectorsAdd || '';
                 var cId = 'cid';
                 //var a1 = _.pluck(selectors.models || selectors, cId);
                 //var a2 = _.pluck(this.get('selectors').models, cId);
@@ -78,6 +81,9 @@ define(['backbone', './Selectors'],
                     return f;
 
                 if(this.get('mediaText') !== wd)
+                    return f;
+
+                if(this.get('selectorsAdd') !== selectorsAdd)
                     return f;
 
                 return true;

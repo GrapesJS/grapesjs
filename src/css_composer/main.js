@@ -165,7 +165,7 @@ define(function(require) {
           var s = state || '';
           var w = width || '';
           var opt = opts || {};
-          var rule = this.get(selectors, s, w);
+          var rule = this.get(selectors, s, w, opt);
           if(rule)
             return rule;
           else {
@@ -184,6 +184,7 @@ define(function(require) {
          * @param {Array<Selector>} selectors Array of selectors
          * @param {String} state Css rule state
          * @param {String} width For which device this style is oriented
+         * @param {Object} ruleProps Other rule props
          * @return  {Model|null}
          * @example
          * var sm = editor.SelectorManager;
@@ -196,12 +197,12 @@ define(function(require) {
          *   color: '#000',
          * });
          * */
-        get: function(selectors, state, width) {
+        get: function(selectors, state, width, ruleProps) {
           var rule = null;
-          rules.each(function(m){
+          rules.each(function(m) {
             if(rule)
               return;
-            if(m.compare(selectors, state, width))
+            if(m.compare(selectors, state, width, ruleProps))
               rule = m;
           });
           return rule;
