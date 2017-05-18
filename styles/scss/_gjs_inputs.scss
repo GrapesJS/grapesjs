@@ -109,6 +109,8 @@ $colorpSize: 22px;
 }
 
 .#{$app-prefix}field-colorp-c {
+  @extend .#{$app-prefix}checker-bg;
+
   height: 100%;
   position: relative;
   width: 100%;

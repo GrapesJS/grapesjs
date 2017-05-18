@@ -2635,7 +2635,7 @@ $fontColorActive: #4f8ef7;
   opacity: 0.5;
   filter: alpha(opacity=50); }
 
-.gjs-checker-bg, .checker-bg, .gjs-sm-sector .gjs-sm-property .gjs-sm-layer > #gjs-sm-preview-box, .gjs-clm-tags .gjs-sm-property .gjs-sm-layer > #gjs-sm-preview-box {
+.gjs-checker-bg, .gjs-field-colorp-c, .checker-bg, .gjs-sm-sector .gjs-sm-property .gjs-sm-layer > #gjs-sm-preview-box, .gjs-clm-tags .gjs-sm-property .gjs-sm-layer > #gjs-sm-preview-box {
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg=="); }
 
 .gjs-no-user-select, .gjs-grabbing,
@@ -3374,7 +3374,7 @@ ol.example li.placeholder:before {
   top: 0;
   width: 22px;
   z-index: 10; }
-  .gjs-field-colorp .gjs-checker-bg {
+  .gjs-field-colorp .gjs-checker-bg, .gjs-field-colorp .gjs-field-colorp-c {
     height: 100%;
     width: 100%;
     border-radius: 1px; }
@@ -3831,7 +3831,7 @@ ol.example li.placeholder:before {
     box-sizing: border-box;
     border-radius: 2px;
     padding: 2px; }
-    .gjs-sm-sector .gjs-sm-colorp-c .gjs-checker-bg, .gjs-clm-tags .gjs-sm-colorp-c .gjs-checker-bg {
+    .gjs-sm-sector .gjs-sm-colorp-c .gjs-checker-bg, .gjs-clm-tags .gjs-sm-colorp-c .gjs-checker-bg, .gjs-sm-sector .gjs-sm-colorp-c .gjs-field-colorp-c, .gjs-clm-tags .gjs-sm-colorp-c .gjs-field-colorp-c {
       height: 100%;
       width: 100%;
       border-radius: 1px; }
