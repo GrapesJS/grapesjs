@@ -28,12 +28,12 @@ define([path + 'Selector',
             });
 
             it('escapeName test', function() {
-              this.obj.escapeName('@Te sT*').should.equal('-te-st-');
+              this.obj.escapeName('@Te sT*').should.equal('-Te-sT-');
             });
 
             it('Name is corrected at instantiation', function() {
               this.obj  = new Selector({ name: '@Te sT*'});
-              this.obj.get('name').should.equal('-te-st-');
+              this.obj.get('name').should.equal('-Te-sT-');
             });
 
 
