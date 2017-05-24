@@ -2,10 +2,10 @@ define(function () {
 	return {
 
     // Style prefix
-    stylePrefix     : 'clm-',
+    stylePrefix: 'clm-',
 
     // Default classes
-    selectors : [],
+    selectors: [],
 
     // Label for classes
     label: 'Classes',

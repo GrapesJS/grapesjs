@@ -3,7 +3,7 @@ define(['backbone','./Selector'],
 
     return Backbone.Collection.extend({
 
-      model:  Selector,
+      model: Selector,
 
     });
 });
