@@ -38,6 +38,7 @@ define(function(require) {
         this.dropContent = null;
         this.em = o.em || '';
         this.dragHelper = null;
+        this.canvasRelative = o.canvasRelative || 0;
 
         if(this.em && this.em.on){
           this.em.on('change:canvasOffset', this.udpateOffset);
@@ -269,21 +270,34 @@ define(function(require) {
         var eO = this.offset(this.el);
         this.elT = this.wmargin ? Math.abs(eO.top) : eO.top;
         this.elL = this.wmargin ? Math.abs(eO.left): eO.left;
-        this.rY = (e.pageY - this.elT) + this.el.scrollTop;
-        this.rX = (e.pageX - this.elL) + this.el.scrollLeft;
-        var dims = this.dimsFromTarget(e.target, this.rX, this.rY);
+        var rY = (e.pageY - this.elT) + this.el.scrollTop;
+        var rX = (e.pageX - this.elL) + this.el.scrollLeft;
+
+        if (this.canvasRelative && this.em) {
+          var mousePos = this.em.get('Canvas').getMouseRelativeCanvas(e);
+          rX = mousePos.x;
+          rY = mousePos.y;
+        }
+
+        var dims = this.dimsFromTarget(e.target, rX, rY);
         this.lastDims = dims;
-        var pos = this.findPosition(dims, this.rX, this.rY);
+        var pos = this.findPosition(dims, rX, rY);
         // If there is a significant changes with the pointer
         if( !this.lastPos ||
             (this.lastPos.index != pos.index || this.lastPos.method != pos.method)){
           this.movePlaceholder(this.plh, dims, pos, this.prevTargetDim);
           if(!this.$plh)
             this.$plh = $(this.plh);
-          if(this.offTop)
-            this.$plh.css('top', '+=' + this.offTop + 'px');
-          if(this.offLeft)
-            this.$plh.css('left', '+=' + this.offLeft + 'px');
+
+          // With canvasRelative the offset is calculated automatically for
+          // each element
+          if (!this.canvasRelative) {
+            if(this.offTop)
+              this.$plh.css('top', '+=' + this.offTop + 'px');
+            if(this.offLeft)
+              this.$plh.css('left', '+=' + this.offLeft + 'px');
+          }
+
           this.lastPos = pos;
         }
 
@@ -411,11 +425,26 @@ define(function(require) {
        * @param {HTMLElement} el
        * @return {Array<number>}
        */
-      getDim: function(el){
-        var o = this.offset(el);
-        var top = this.relative ? el.offsetTop : o.top - (this.wmargin ? -1 : 1) * this.elT;
-        var left = this.relative ? el.offsetLeft : o.left - (this.wmargin ? -1 : 1) * this.elL;
-        return [top, left, el.offsetHeight, el.offsetWidth];
+      getDim: function(el) {
+        var top, left, height, width;
+
+        if (this.canvasRelative && this.em) {
+          var pos = this.em.get('Canvas').getElementPos(el);
+          top = pos.top;
+          left = pos.left;
+          height = pos.height;
+          width = pos.width;
+        } else {
+          var o = this.offset(el);
+          top = this.relative ? el.offsetTop : o.top - (this.wmargin ? -1 : 1) * this.elT;
+          left = this.relative ? el.offsetLeft : o.left - (this.wmargin ? -1 : 1) * this.elL;
+          height = el.offsetHeight;
+          width = el.offsetWidth;
+        }
+
+        //console.log('get dim', top, left, this.canvasRelative);
+
+        return [top, left, height, width];
       },
 
       /**

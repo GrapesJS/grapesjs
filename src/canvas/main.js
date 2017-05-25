@@ -283,8 +283,8 @@ define(function(require) {
         var yOffset = subWinOffset ? win.pageYOffset : 0;
         var xOffset = subWinOffset ? win.pageXOffset : 0;
 
-        if(frame) {
-          var frameRect = frame.getBoundingClientRect(); // maybe to cache ?!?
+        if (frame) {
+          var frameRect = frame.getBoundingClientRect();
           addTop = frameRect.top || 0;
           addLeft = frameRect.left || 0;
         }
@@ -292,6 +292,26 @@ define(function(require) {
         return {
           y: e.clientY + addTop - yOffset,
           x: e.clientX + addLeft - xOffset,
+        };
+      },
+
+      /**
+       * X and Y mouse position relative to the canvas
+       * @param {Event} e
+       * @return {Object}
+       */
+      getMouseRelativeCanvas: function (e, options) {
+        var opts = options || {};
+        var frame = this.getFrameEl();
+        var body = this.getBody();
+        var addTop = frame.offsetTop || 0;
+        var addLeft = frame.offsetLeft || 0;
+        var yOffset = body.scrollTop || 0;
+        var xOffset = body.scrollLeft || 0;
+
+        return {
+          y: e.clientY + addTop + yOffset,
+          x: e.clientX + addLeft + xOffset,
         };
       },
 

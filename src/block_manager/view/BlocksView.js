@@ -40,7 +40,8 @@ function(Backbone, BlockView) {
           direction: 'a',
           wmargin: 1,
           nested: 1,
-          em: this.em
+          em: this.em,
+          canvasRelative: 1,
         });
       }
       return this.sorter;
