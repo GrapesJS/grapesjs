@@ -43,7 +43,7 @@ define(['backbone', './SectorView'],
       var pt = this.propTarget;
       var device = this.target.getDeviceModel();
       var state = !previewMode ? el.get('state') : '';
-      var mediaText = device && !previewMode ?
+      var mediaText = device && !previewMode && device.get('width')?
         '(max-width: ' + device.get('width') + ')' : '';
       pt.helper = null;
 
