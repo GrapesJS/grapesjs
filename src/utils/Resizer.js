@@ -21,7 +21,7 @@ var defaults = {
 
 var createHandler = function (name, opts) {
   var pfx = opts.prefix || '';
-  var el = this.document.createElement('i');
+  var el = document.createElement('i');
   el.className = pfx + 'resizer-h ' + pfx + 'resizer-h-' + name;
   el.setAttribute('data-' + pfx + 'handler', name);
   return el;

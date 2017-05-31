@@ -2,7 +2,26 @@ var Backbone = require('backbone');
 var AssetView = require('./AssetView');
 var AssetImageView = require('./AssetImageView');
 var FileUploader = require('./FileUploader');
-var assetsTemplate = require('text!./../template/assets.html');
+var assetsTemplate = `
+<div class="<%= pfx %>assets-cont">
+  <div class="<%= pfx %>assets-header">
+    <form class="<%= pfx %>add-asset">
+      <div class="<%= ppfx %>field <%= pfx %>add-field">
+        <input placeholder="http://path/to/the/image.jpg"/>
+      </div>
+      <button class="<%= ppfx %>btn-prim"><%= btnText %></button>
+      <div style="clear:both"></div>
+    </form>
+    <div class="<%= pfx %>dips" style="display:none">
+      <button class="fa fa-th <%= ppfx %>btnt"></button>
+      <button class="fa fa-th-list <%= ppfx %>btnt"></button>
+    </div>
+  </div>
+  <div class="<%= pfx %>assets"></div>
+  <div style="clear:both"></div>
+</div>
+
+`;
 
 module.exports = Backbone.View.extend({
 

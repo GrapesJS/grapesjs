@@ -1,5 +1,11 @@
 var Backbone = require('backbone');
-var fileUploaderTemplate = require('text!./../template/fileUploader.html');
+var fileUploaderTemplate = `
+<form>
+  <div id="<%= pfx %>title"><%= title %></div>
+  <input type="file" id="<%= uploadId %>" name="file" accept="image/*" <%= disabled ? 'disabled' : '' %> multiple/>
+  <div style="clear:both;"></div>
+</form>
+`;
 
 module.exports = Backbone.View.extend({
 

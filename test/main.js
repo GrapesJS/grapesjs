@@ -1,13 +1,17 @@
 import expect from 'expect';
 import sinon from 'sinon';
-//import grapesjs from './../src/main.js';
-//const grapesjs = require('./../src/main.js');
+import grapesjs from './../src';
+//import AssetManager from './specs/asset_manager';
 
-describe('Main', function() {
-  describe('Startup', function() {
-    it('Main object should be loaded', function() {
-      var grru = require('./../src');
+describe('Main', () => {
+
+  describe('Startup', () => {
+    it('Main object should be loaded', () => {
       //Grapes = require('editor/main');
+      expect(grapesjs).toExist();
     });
   });
+
+  require('./specs/asset_manager/main.js');
+
 });
