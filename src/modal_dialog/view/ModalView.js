@@ -1,6 +1,8 @@
-define(['backbone', 'text!./../template/modal.html'],
-	function (Backbone, modalTemplate) {
-		return Backbone.View.extend({
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var modalTemplate = require('text!./../template/modal.html');
+		module.exports = Backbone.View.extend({
 
 			template: _.template(modalTemplate),
 

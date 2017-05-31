@@ -1,5 +1,10 @@
-define(['backbone', 'text!./../template/item.html','require'], function (Backbone, ItemTemplate, require) {
-  return Backbone.View.extend({
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var ItemTemplate = require('text!./../template/item.html');
+  var ItemsView;
+
+  module.exports = Backbone.View.extend({
 
     template: _.template(ItemTemplate),
 

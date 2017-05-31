@@ -1,7 +1,9 @@
-define(['backbone', 'text!./../template/devices.html'],
-function(Backbone, devicesTemplate) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var devicesTemplate = require('text!./../template/devices.html');
 
-  return Backbone.View.extend({
+  module.exports = Backbone.View.extend({
 
     template: _.template(devicesTemplate),
 

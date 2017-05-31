@@ -1,6 +1,9 @@
-define(['backbone','./CommandButtonView', './CommandButtonSelectView'],
-	function (Backbone, CommandButtonView, CommandButtonSelectView) {
-	return Backbone.View.extend({
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var CommandButtonView = require('./CommandButtonView');
+  var CommandButtonSelectView = require('./CommandButtonSelectView');
+	module.exports = Backbone.View.extend({
 
 		attributes : {
 			'data-role':	'editor-toolbar',

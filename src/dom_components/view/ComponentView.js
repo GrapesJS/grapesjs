@@ -1,7 +1,9 @@
-define(['backbone', './ComponentsView'],
-  function (Backbone, ComponentsView) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var ComponentsView = require('./ComponentsView');
 
-    return Backbone.View.extend({
+    module.exports = Backbone.View.extend({
 
       events: {
         'click': 'initResize',

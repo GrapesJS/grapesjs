@@ -1,6 +1,8 @@
-define(['./AssetView','text!./../template/assetImage.html'],
-	function (AssetView, assetTemplate) {
-	return AssetView.extend({
+define(function(require, exports, module){
+  'use strict';
+  var AssetView = require('./AssetView');
+  var assetTemplate = require('text!./../template/assetImage.html');
+	module.exports = AssetView.extend({
 
 		events:{
 			'click': 'handleClick',

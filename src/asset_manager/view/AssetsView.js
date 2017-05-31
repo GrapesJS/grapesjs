@@ -1,6 +1,11 @@
-define(['backbone', './AssetView', './AssetImageView', './FileUploader', 'text!./../template/assets.html'],
-	function (Backbone, AssetView, AssetImageView, FileUploader, assetsTemplate) {
-	return Backbone.View.extend({
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var AssetView = require('./AssetView');
+  var AssetImageView = require('./AssetImageView');
+  var FileUploader = require('./FileUploader');
+  var assetsTemplate = require('text!./../template/assets.html');
+	module.exports = Backbone.View.extend({
 
 		template: _.template(assetsTemplate),
 

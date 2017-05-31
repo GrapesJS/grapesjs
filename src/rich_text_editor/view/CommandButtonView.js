@@ -1,6 +1,7 @@
-define(['backbone'],
-	function (Backbone) {
-	return Backbone.View.extend({
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+	module.exports = Backbone.View.extend({
 
 		tagName: 'a',
 

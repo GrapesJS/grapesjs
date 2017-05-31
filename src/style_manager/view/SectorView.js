@@ -1,9 +1,12 @@
-define(['backbone', './PropertiesView', 'text!./../templates/sector.html'],
-  function (Backbone, PropertiesView, sectorTemplate) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var PropertiesView = require('./PropertiesView');
+  var sectorTemplate = require('text!./../templates/sector.html');
   /**
    * @class SectorView
    * */
-  return Backbone.View.extend({
+  module.exports = Backbone.View.extend({
 
     template: _.template(sectorTemplate),
 

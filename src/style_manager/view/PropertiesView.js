@@ -1,11 +1,18 @@
-define(['backbone','./PropertyView', './PropertyIntegerView', './PropertyRadioView', './PropertySelectView',
-        './PropertyColorView', './PropertyFileView', './PropertyCompositeView', './PropertyStackView'],
-  function (Backbone, PropertyView, PropertyIntegerView, PropertyRadioView, PropertySelectView,
-      PropertyColorView, PropertyFileView, PropertyCompositeView, PropertyStackView) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var PropertyView = require('./PropertyView');
+  var PropertyIntegerView = require('./PropertyIntegerView');
+  var PropertyRadioView = require('./PropertyRadioView');
+  var PropertySelectView = require('./PropertySelectView');
+  var PropertyColorView = require('./PropertyColorView');
+  var PropertyFileView = require('./PropertyFileView');
+  var PropertyCompositeView = require('./PropertyCompositeView');
+  var PropertyStackView = require('./PropertyStackView');
   /**
    * @class PropertiesView
    * */
-  return Backbone.View.extend({
+  module.exports = Backbone.View.extend({
 
     initialize: function(o) {
       this.config     = o.config || {};

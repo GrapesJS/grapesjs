@@ -1,6 +1,8 @@
-define(['backbone', './CommandButtonView'],
-	function (Backbone, CommandButtonView) {
-	return CommandButtonView.extend({
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var CommandButtonView = require('./CommandButtonView');
+	module.exports = CommandButtonView.extend({
 
 		initialize: function(o, config){
 			CommandButtonView.prototype.initialize.apply(this, arguments);

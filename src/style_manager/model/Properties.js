@@ -1,7 +1,9 @@
-define([ 'backbone', './Property'],
-	function (Backbone, Property) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var Property = require('./Property');
 
-		return Backbone.Collection.extend({
+		module.exports = Backbone.Collection.extend({
 
 			model: Property,
 

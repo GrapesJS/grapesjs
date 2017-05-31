@@ -1,7 +1,9 @@
-define(['backbone','./SelectPosition'],
-	function(Backbone, SelectPosition) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var SelectPosition = require('./SelectPosition');
 
-		return _.extend({}, SelectPosition, {
+		module.exports = _.extend({}, SelectPosition, {
 
 			init: function(opt) {
 				_.bindAll(this,'startDraw','draw','endDraw','rollback');

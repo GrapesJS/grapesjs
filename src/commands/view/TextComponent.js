@@ -1,10 +1,12 @@
-define(['backbone', './CreateComponent'],
-	function(Backbone, CreateComponent) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var CreateComponent = require('./CreateComponent');
 		/**
 		 * @class TextComponent
 		 * @private
 		 * */
-		return _.extend({}, CreateComponent, {
+		module.exports = _.extend({}, CreateComponent, {
 
 			/**
 			 * This event is triggered at the beginning of a draw operation

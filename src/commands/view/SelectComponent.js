@@ -5,6 +5,7 @@ define(function(require) {
      * */
      var ToolbarView = require('DomComponents/view/ToolbarView');
      var Toolbar = require('DomComponents/model/Toolbar');
+     var key = require('keymaster');
 
     return {
 

@@ -1,10 +1,11 @@
-define(['backbone'],
-	function(Backbone) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
 		/**
 		 * @class CommandAbstract
 		 * @private
 		 * */
-		return Backbone.View.extend({
+		module.exports = Backbone.View.extend({
 
 			/**
 			 * Initialize method that can't be removed

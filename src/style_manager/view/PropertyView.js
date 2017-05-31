@@ -1,9 +1,12 @@
-define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templates/propertyInput.html'],
-  function (Backbone, propertyLabel, propertyTemplate) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var propertyLabel = require('text!./../templates/propertyLabel.html');
+  var propertyTemplate = require('text!./../templates/propertyInput.html');
   /**
    * @class PropertyView
    * */
-  return Backbone.View.extend({
+  module.exports = Backbone.View.extend({
 
     template: _.template(propertyTemplate),
     templateLabel: _.template(propertyLabel),
@@ -227,7 +230,7 @@ define(['backbone', 'text!./../templates/propertyLabel.html', 'text!./../templat
         return;
       }
 
-      value = this.getValueForTarget();
+      var value = this.getValueForTarget();
 
       var func = model.get('functionName');
       if(func)

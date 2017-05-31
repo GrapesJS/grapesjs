@@ -1,7 +1,9 @@
-define(['backbone','./Selector'],
-  function (Backbone, Selector) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var Selector = require('./Selector');
 
-    return Backbone.Collection.extend({
+    module.exports = Backbone.Collection.extend({
 
       model: Selector,
 

@@ -1,7 +1,9 @@
-define(['backbone', 'text!./templates/inputNumber.html'],
-  function (Backbone, inputTemplate) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var inputTemplate = require('text!./templates/inputNumber.html');
 
-  return Backbone.View.extend({
+  module.exports = Backbone.View.extend({
 
     events: {},
 

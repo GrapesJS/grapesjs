@@ -1,7 +1,9 @@
-define([ 'backbone', './Layer'],
-	function (Backbone, Layer) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var Layer = require('./Layer');
 
-		return Backbone.Collection.extend({
+		module.exports = Backbone.Collection.extend({
 
 			model: Layer,
 

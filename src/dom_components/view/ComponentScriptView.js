@@ -1,7 +1,9 @@
-define(['backbone', './ComponentImageView'],
-  function (Backbone, ComponentView) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var ComponentView = require('./ComponentImageView');
 
-  return ComponentView.extend({
+  module.exports = ComponentView.extend({
 
     tagName: 'script',
 

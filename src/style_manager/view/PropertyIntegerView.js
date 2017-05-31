@@ -1,7 +1,10 @@
-define(['backbone','./PropertyView', 'Abstract/ui/InputNumber'],
-  function (Backbone, PropertyView, InputNumber) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var PropertyView = require('./PropertyView');
+  var InputNumber = require('Abstract/ui/InputNumber');
 
-  return PropertyView.extend({
+  module.exports = PropertyView.extend({
 
     initialize: function(options) {
       PropertyView.prototype.initialize.apply(this, arguments);

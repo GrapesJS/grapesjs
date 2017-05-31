@@ -1,6 +1,7 @@
-define([ 'backbone', 'require'],
-  function (Backbone, require) {
-    return Backbone.Collection.extend({
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+    module.exports = Backbone.Collection.extend({
 
       initialize: function(models, opt){
 

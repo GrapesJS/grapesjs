@@ -1,7 +1,10 @@
-define(['backbone', 'Abstract/view/DomainViews', './ToolbarButtonView'],
-	function (Backbone, DomainViews, ToolbarButtonView) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var DomainViews = require('Abstract/view/DomainViews');
+  var ToolbarButtonView = require('./ToolbarButtonView');
 
-		return DomainViews.extend({
+		module.exports = DomainViews.extend({
 
 			itemView: ToolbarButtonView,
 

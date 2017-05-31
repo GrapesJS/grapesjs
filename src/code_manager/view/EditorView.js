@@ -1,9 +1,11 @@
-define(['backbone', 'text!./../template/editor.html'], 
-	function (Backbone, vTemplate) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var vTemplate = require('text!./../template/editor.html');
 		/** 
 		 * @class EditorView
 		 * */
-		return Backbone.View.extend({
+		module.exports = Backbone.View.extend({
 			
 			template: _.template(vTemplate),
 			

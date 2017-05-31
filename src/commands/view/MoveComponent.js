@@ -1,7 +1,10 @@
-define(['backbone', './SelectComponent','./SelectPosition'],
-  function(Backbone, SelectComponent, SelectPosition) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var SelectComponent = require('./SelectComponent');
+  var SelectPosition = require('./SelectPosition');
 
-    return _.extend({}, SelectPosition, SelectComponent, {
+    module.exports = _.extend({}, SelectPosition, SelectComponent, {
 
       init: function(o){
         SelectComponent.init.apply(this, arguments);

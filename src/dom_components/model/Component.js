@@ -1,7 +1,11 @@
-define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitManager/model/Traits'],
-  function (Backbone, Components, Selectors, Traits) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var Components = require('./Components');
+  var Selectors = require('SelectorManager/model/Selectors');
+  var Traits = require('TraitManager/model/Traits');
 
-    return Backbone.Model.extend({
+    module.exports = Backbone.Model.extend({
 
       defaults: {
         // HTML tag of the component

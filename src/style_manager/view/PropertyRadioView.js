@@ -1,9 +1,12 @@
-define(['backbone','./PropertyView', 'text!./../templates/propertyRadio.html'],
-  function (Backbone, PropertyView, propertyTemplate) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var PropertyView = require('./PropertyView');
+  var propertyTemplate = require('text!./../templates/propertyRadio.html');
   /**
    * @class PropertyRadioView
    * */
-  return PropertyView.extend({
+  module.exports = PropertyView.extend({
 
     template: _.template(propertyTemplate),
 
@@ -27,7 +30,7 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyRadio.html'],
             var cl = el.className ? el.className + ' ' + pfx + 'icon ' + itemCls : '',
             id = prop + '-' + el.value,
             labelTxt = el.name ? el.name : el.value;
-            titleAttr = el.title ? 'title="' + el.title + '"': '';
+            var titleAttr = el.title ? 'title="' + el.title + '"': '';
             input += '<div class="' + ppfx + 'radio-item">'+
               '<input class="'+pfx+'radio" type="radio" id="'+ id +'" name="'+prop+'" value="'+el.value+'" />'+
               '<label class="'+(cl ? cl : itemCls)+'" ' + titleAttr + ' for="'+ id +'">' + (cl ? '' : labelTxt) + '</label></div>';

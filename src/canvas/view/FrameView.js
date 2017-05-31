@@ -1,9 +1,10 @@
-define(['backbone'],
-function(Backbone) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
   /**
    * @class CanvasView
    * */
-  return Backbone.View.extend({
+  module.exports = Backbone.View.extend({
 
     tagName: 'iframe',
 

@@ -1,7 +1,9 @@
-define(['backbone', './BlockView'],
-function(Backbone, BlockView) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var BlockView = require('./BlockView');
 
-  return Backbone.View.extend({
+  module.exports = Backbone.View.extend({
 
     initialize: function(opts, config) {
       _.bindAll(this, 'getSorter', 'onDrag', 'onDrop');

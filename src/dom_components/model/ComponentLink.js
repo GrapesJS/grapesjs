@@ -1,7 +1,8 @@
-define(['./ComponentText'],
-	function (Component) {
+define(function(require, exports, module){
+  'use strict';
+  var Component = require('./ComponentText');
 
-		return Component.extend({
+		module.exports = Component.extend({
 
 			defaults: _.extend({}, Component.prototype.defaults, {
 					type: 'link',

@@ -1,7 +1,11 @@
-define(['backbone', './Input', 'Spectrum', 'text!./templates/inputColor.html'],
-	function (Backbone, Input, Spectrum, inputTemplate) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var Input = require('./Input');
+  var Spectrum = require('Spectrum');
+  var inputTemplate = require('text!./templates/inputColor.html');
 
-	return Input.extend({
+	module.exports = Input.extend({
 
 		template: _.template(inputTemplate),
 

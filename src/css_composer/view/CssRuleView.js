@@ -1,6 +1,7 @@
-define(['backbone'],
-  function (Backbone) {
-  return Backbone.View.extend({
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  module.exports = Backbone.View.extend({
 
     tagName: 'style',
 
@@ -52,9 +53,9 @@ define(['backbone'],
       return sel.join('');
     },
 
-    render : function(){
+    render : function() {
       var block = '',
-        selStr = '';
+        selStr = '',
         o = '';
       if(!this.selStr)
         this.selStr = this.renderSelectors();

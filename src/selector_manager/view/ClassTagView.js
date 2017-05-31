@@ -1,6 +1,8 @@
-define(['backbone', 'text!./../template/classTag.html'],
-  function (Backbone, tagTemplate) {
-  return Backbone.View.extend({
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var tagTemplate = require('text!./../template/classTag.html');
+  module.exports = Backbone.View.extend({
 
     template: _.template(tagTemplate),
 

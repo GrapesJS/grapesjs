@@ -1,9 +1,10 @@
-define([ 'backbone','require'],
-	function (Backbone, require) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
 	/**
 	 * @class Button
 	 * */
-	return Backbone.Model.extend({
+	module.exports = Backbone.Model.extend({
 
 		defaults :{
 			id: '',

@@ -1,9 +1,11 @@
-define(['backbone','./FrameView'],
-function(Backbone, FrameView) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var FrameView = require('./FrameView');
   /**
    * @class CanvasView
    * */
-  return Backbone.View.extend({
+  module.exports = Backbone.View.extend({
 
     initialize: function(o) {
       _.bindAll(this, 'renderBody', 'onFrameScroll', 'clearOff');
@@ -235,7 +237,7 @@ function(Backbone, FrameView) {
         }
       }
       var ppfx = this.ppfx;
-      toolsEl = $('<div>', { id: ppfx + 'tools' }).get(0);
+      var toolsEl = $('<div>', { id: ppfx + 'tools' }).get(0);
       this.hlEl = $('<div>', { class: ppfx + 'highlighter' }).get(0);
       this.badgeEl = $('<div>', {class: ppfx + 'badge'}).get(0);
       this.placerEl = $('<div>', {class: ppfx + 'placeholder'}).get(0);

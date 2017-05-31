@@ -1,7 +1,8 @@
-define(['./TraitView'],
-  function (TraitView) {
+define(function(require, exports, module){
+  'use strict';
+  var TraitView = require('./TraitView');
 
-  return TraitView.extend({
+  module.exports = TraitView.extend({
 
     initialize: function(o) {
       TraitView.prototype.initialize.apply(this, arguments);

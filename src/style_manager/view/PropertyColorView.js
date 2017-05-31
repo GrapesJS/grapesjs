@@ -1,7 +1,10 @@
-define(['backbone','./PropertyView', 'Abstract/ui/InputColor'],
-	function (Backbone, PropertyView, InputColor) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var PropertyView = require('./PropertyView');
+  var InputColor = require('Abstract/ui/InputColor');
 
-	return PropertyView.extend({
+	module.exports = PropertyView.extend({
 
 		renderTemplate: function(){},
 

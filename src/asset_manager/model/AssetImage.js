@@ -1,6 +1,8 @@
-define(['backbone', './Asset'],
-	function (Backbone, Asset) {
-		return Asset.extend({
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var Asset = require('./Asset');
+		module.exports = Asset.extend({
 
 			defaults: _.extend({}, Asset.prototype.defaults, {
 				type: 		'image',

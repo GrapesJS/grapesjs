@@ -1,7 +1,9 @@
-define(['./TraitView', 'Abstract/ui/InputNumber'],
-  function (TraitView, InputNumber) {
+define(function(require, exports, module){
+  'use strict';
+  var TraitView = require('./TraitView');
+  var InputNumber = require('Abstract/ui/InputNumber');
 
-  return TraitView.extend({
+  module.exports = TraitView.extend({
 
     getValueForTarget: function () {
       var model = this.model;

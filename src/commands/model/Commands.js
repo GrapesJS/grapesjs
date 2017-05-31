@@ -1,9 +1,11 @@
-define([ 'backbone','./Command'], 
-	function (Backbone, Command) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var Command = require('./Command');
 		/**
 		 * @class Commands
 		 * */
-		return Backbone.Collection.extend({
+		module.exports = Backbone.Collection.extend({
 			
 			model: Command,
 			

@@ -1,7 +1,9 @@
-define([ 'backbone','./Panel'],
-	function (Backbone, Panel) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var Panel = require('./Panel');
 
-		return Backbone.Collection.extend({
+		module.exports = Backbone.Collection.extend({
 
 			model: Panel,
 

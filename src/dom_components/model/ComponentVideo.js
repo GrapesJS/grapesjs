@@ -1,10 +1,12 @@
-define(['./ComponentImage', './Component'],
-	function (Component, OComponent) {
+define(function(require, exports, module){
+  'use strict';
+  var Component = require('./ComponentImage');
+  var OComponent = require('./Component');
 
 		var yt = 'yt';
 		var vi = 'vi';
 
-		return Component.extend({
+		module.exports = Component.extend({
 
 			defaults: _.extend({}, Component.prototype.defaults, {
 					type: 'video',

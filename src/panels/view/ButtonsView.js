@@ -1,9 +1,11 @@
-define(['backbone','./ButtonView'],
-	function (Backbone, ButtonView) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var ButtonView = require('./ButtonView');
 	/**
 	 * @class ButtonsView
 	 * */
-	return Backbone.View.extend({
+	module.exports = Backbone.View.extend({
 
 		initialize: function(o) {
 			this.opt = o || {};

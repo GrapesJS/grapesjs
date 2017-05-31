@@ -1,9 +1,11 @@
-define(['backbone', 'text!./../templates/layer.html'],
-  function (Backbone, layerTemplate) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var layerTemplate = require('text!./../templates/layer.html');
   /**
    * @class LayerView
    * */
-  return Backbone.View.extend({
+  module.exports = Backbone.View.extend({
 
     events:{
       'click': 'updateIndex',

@@ -1,4 +1,5 @@
 //webpack --display-reasons
+var webpack = require('webpack');
 var name = 'grapesjs';
 
 module.exports = {
@@ -8,6 +9,11 @@ module.exports = {
       library: name,
       libraryTarget: 'umd',
   },
+  plugins: [
+      new webpack.ProvidePlugin({
+        $: 'jquery',
+      })
+  ],
   resolve: {
     modulesDirectories: ['src', 'node_modules'],
     alias: {

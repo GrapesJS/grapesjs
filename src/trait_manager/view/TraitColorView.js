@@ -1,7 +1,9 @@
-define(['./TraitView', 'Abstract/ui/InputColor'],
-  function (TraitView, InputColor) {
+define(function(require, exports, module){
+  'use strict';
+  var TraitView = require('./TraitView');
+  var InputColor = require('Abstract/ui/InputColor');
 
-  return TraitView.extend({
+  module.exports = TraitView.extend({
     /**
      * Returns input element
      * @return {HTMLElement}

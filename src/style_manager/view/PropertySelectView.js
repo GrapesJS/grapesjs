@@ -1,9 +1,12 @@
-define(['backbone','./PropertyView', 'text!./../templates/propertySelect.html'],
-  function (Backbone, PropertyView, propertyTemplate) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var PropertyView = require('./PropertyView');
+  var propertyTemplate = require('text!./../templates/propertySelect.html');
   /**
    * @class PropertySelectView
    * */
-  return PropertyView.extend({
+  module.exports = PropertyView.extend({
 
     template: _.template(propertyTemplate),
 

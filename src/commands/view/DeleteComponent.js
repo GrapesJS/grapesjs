@@ -1,10 +1,12 @@
-define(['backbone', './SelectComponent'],
-	function(Backbone, SelectComponent) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var SelectComponent = require('./SelectComponent');
 		/**
 		 * @class DeleteComponent
 		 * @private
 		 * */
-		return _.extend({},SelectComponent,{
+		module.exports = _.extend({},SelectComponent,{
 
 			init: function(o){
 				_.bindAll(this, 'startDelete', 'stopDelete', 'onDelete');

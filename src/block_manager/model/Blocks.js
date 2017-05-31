@@ -1,7 +1,9 @@
-define(['backbone','./Block'],
-  function (Backbone, Block) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var Block = require('./Block');
 
-    return Backbone.Collection.extend({
+    module.exports = Backbone.Collection.extend({
 
       model: Block,
 

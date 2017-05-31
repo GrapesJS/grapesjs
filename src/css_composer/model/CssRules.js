@@ -1,6 +1,8 @@
-define(['backbone','./CssRule'],
-  function (Backbone, CssRule) {
-    return Backbone.Collection.extend({
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var CssRule = require('./CssRule');
+    module.exports = Backbone.Collection.extend({
 
       initialize: function(models, opt){
 

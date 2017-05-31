@@ -1,12 +1,48 @@
-var deps = ['Utils', 'StorageManager', 'DeviceManager', 'Parser', 'SelectorManager', 'ModalDialog', 'CodeManager', 'Panels',
-        'RichTextEditor', 'StyleManager', 'AssetManager', 'CssComposer', 'DomComponents', 'Canvas', 'Commands', 'BlockManager', 'TraitManager'];
+define(function(require, exports, module){
+  'use strict';
+  var deps = [
+    require('Utils'),
+    require('StorageManager'),
+    require('DeviceManager'),
+    require('Parser'),
+    require('SelectorManager'),
+    require('ModalDialog'),
+    require('CodeManager'),
+    require('Panels'),
+    require('RichTextEditor'),
+    require('StyleManager'),
+    require('AssetManager'),
+    require('CssComposer'),
+    require('DomComponents'),
+    require('Canvas'),
+    require('Commands'),
+    require('BlockManager'),
+    require('TraitManager'),
+  ];
 
-// r.js do not see deps if I pass them as a variable
-// http://stackoverflow.com/questions/27545412/optimization-fails-when-passing-a-variable-with-a-list-of-dependencies-to-define
-define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'DeviceManager', 'Parser', 'SelectorManager',
-'ModalDialog', 'CodeManager', 'Panels', 'RichTextEditor', 'StyleManager', 'AssetManager', 'CssComposer', 'DomComponents',
-'Canvas', 'Commands', 'BlockManager', 'TraitManager'], function(){
-    return Backbone.Model.extend({
+  require('backbone');
+  require('backboneUndo');
+  var key = require('keymaster');
+  /*
+  require('Utils');
+  require('StorageManager');
+  require('DeviceManager');
+  require('Parser');
+  require('SelectorManager');
+  require('ModalDialog');
+  require('CodeManager');
+  require('Panels');
+  require('RichTextEditor');
+  require('StyleManager');
+  require('AssetManager');
+  require('CssComposer');
+  require('DomComponents');
+  require('Canvas');
+  require('Commands');
+  require('BlockManager');
+  require('TraitManager');
+  */
+    module.exports = Backbone.Model.extend({
 
       defaults: {
         clipboard: null,
@@ -64,7 +100,7 @@ define(['backbone', 'backboneUndo', 'keymaster', 'Utils', 'StorageManager', 'Dev
        */
       loadModule: function(moduleName) {
         var c = this.config;
-        var M = new require(moduleName)();
+        var M = new moduleName();
         var name = M.name.charAt(0).toLowerCase() + M.name.slice(1);
         var cfg = c[name] || c[M.name] || {};
         cfg.pStylePrefix = c.pStylePrefix || '';

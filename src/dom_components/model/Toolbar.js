@@ -1,6 +1,8 @@
-define(['backbone','./ToolbarButton'],
-  function (Backbone, ToolbarButton) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var ToolbarButton = require('./ToolbarButton');
 
-    return Backbone.Collection.extend({model: ToolbarButton});
+    module.exports = Backbone.Collection.extend({model: ToolbarButton});
 
 });

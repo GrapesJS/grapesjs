@@ -1,6 +1,7 @@
-define(['backbone'],
-  function (Backbone) {
-    return Backbone.Model.extend({
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+    module.exports = Backbone.Model.extend({
 
       idAttribute: 'name',
 

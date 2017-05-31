@@ -1,9 +1,11 @@
-define(['StyleManager'], function(StyleManager) {
+define(function(require, exports, module){
+  'use strict';
+  var StyleManager = require('StyleManager');
 		/**
 		 * @class OpenStyleManager
 		 * @private
 		 * */
-		return {
+		module.exports = {
 
 			run: function(em, sender) {
 				this.sender	= sender;

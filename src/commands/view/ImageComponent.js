@@ -1,10 +1,12 @@
-define(['backbone', './InsertCustom'],
-	function(Backbone, InsertCustom) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var InsertCustom = require('./InsertCustom');
 		/**
 		 * @class ImageComponent
 		 * @private
 		 * */
-		return _.extend({}, InsertCustom, {
+		module.exports = _.extend({}, InsertCustom, {
 
 			/**
 			 * Trigger before insert

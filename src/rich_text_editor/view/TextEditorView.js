@@ -1,6 +1,6 @@
-/*jslint browser:true*/
-define(['jquery'],
-  function ($) {
+define(function(require, exports, module){
+  'use strict';
+  var $ = require('jquery');
 
   var readFileIntoDataUrl = function (fileInfo) {
     var loader = $.Deferred(),
@@ -232,5 +232,5 @@ define(['jquery'],
     fileUploadError: function (reason, detail) { console.log("File upload error", reason, detail); }
   };
 
-  return $;
+  module.exports = $;
 });

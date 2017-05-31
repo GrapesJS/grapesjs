@@ -1,8 +1,9 @@
-/*jshint scripturl:true*/
-define(['backbone', './ComponentTextView'],
-	function (Backbone, ComponentView) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var ComponentView = require('./ComponentTextView');
 
-	return ComponentView.extend({
+	module.exports = ComponentView.extend({
 
 		events: {
 			'dblclick': 'enableEditing',

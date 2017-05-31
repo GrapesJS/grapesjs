@@ -1,9 +1,11 @@
-define(['Navigator'], function(Layers) {
+define(function(require, exports, module){
+  'use strict';
+  var Layers = require('Navigator');
   /**
    * @class OpenStyleManager
    * @private
    * */
-  return {
+  module.exports = {
 
     run: function(em, sender) {
       if(!this.$layers) {

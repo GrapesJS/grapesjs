@@ -1,9 +1,14 @@
-define(['backbone','./PropertyCompositeView', 'text!./../templates/propertyStack.html','./../model/Layers','./LayersView'],
-  function (Backbone, PropertyCompositeView, propertyTemplate, Layers, LayersView) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var PropertyCompositeView = require('./PropertyCompositeView');
+  var propertyTemplate = require('text!./../templates/propertyStack.html');
+  var Layers = require('./../model/Layers');
+  var LayersView = require('./LayersView');
   /**
    * @class PropertyStackView
    * */
-  return PropertyCompositeView.extend({
+  module.exports = PropertyCompositeView.extend({
 
     template: _.template(propertyTemplate),
 

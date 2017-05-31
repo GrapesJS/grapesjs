@@ -1,6 +1,8 @@
-define(['backbone', './Selectors'],
-    function (Backbone, Selectors) {
-    	return Backbone.Model.extend({
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var Selectors = require('./Selectors');
+    	module.exports = Backbone.Model.extend({
 
     		defaults: {
                 // Css selectors

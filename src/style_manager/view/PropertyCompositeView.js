@@ -1,9 +1,12 @@
-define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html','require'],
-  function (Backbone, PropertyView, propertyTemplate, require) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var PropertyView = require('./PropertyView');
+  var propertyTemplate = require('text!./../templates/propertyComposite.html');
   /**
    * @class PropertyCompositeView
    * */
-  return PropertyView.extend({
+  module.exports = PropertyView.extend({
 
     template: _.template(propertyTemplate),
 
@@ -64,7 +67,7 @@ define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html
     getPropsConfig: function(opts){
       var that = this;
 
-      result = {
+      var result = {
         config: this.config,
         collection: this.props,
         target: this.target,

@@ -1,6 +1,8 @@
-define(['backbone', 'text!./../template/fileUploader.html'],
-	function (Backbone, fileUploaderTemplate) {
-	return Backbone.View.extend({
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var fileUploaderTemplate = require('text!./../template/fileUploader.html');
+	module.exports = Backbone.View.extend({
 
 		template: 	_.template(fileUploaderTemplate),
 

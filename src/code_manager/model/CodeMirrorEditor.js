@@ -1,14 +1,14 @@
-define(['backbone',
-        'codemirror/lib/codemirror',
-        'codemirror/mode/htmlmixed/htmlmixed',
-        'codemirror/mode/css/css',
-        'formatting'
-        ],
-	function(Backbone, CodeMirror, htmlMode, cssMode, formatting) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var CodeMirror = require('codemirror/lib/codemirror');
+  var htmlMode = require('codemirror/mode/htmlmixed/htmlmixed');
+  var cssMode = require('codemirror/mode/css/css');
+  var formatting = require('formatting');
 		/**
 		 * @class CodeViewer
 		 * */
-		return Backbone.Model.extend({
+		module.exports = Backbone.Model.extend({
 
 			defaults: {
 				input		: '',

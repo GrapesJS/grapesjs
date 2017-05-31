@@ -1,7 +1,10 @@
-define(['backbone','./Trait', './TraitFactory'],
-  function (Backbone, Trait, TraitFactory) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var Trait = require('./Trait');
+  var TraitFactory = require('./TraitFactory');
 
-    return Backbone.Collection.extend({
+    module.exports = Backbone.Collection.extend({
 
       model: Trait,
 

@@ -1,9 +1,11 @@
-define(['backbone','./ItemView'],
-  function (Backbone, ItemView) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var ItemView = require('./ItemView');
   /**
    * @class ItemsView
    * */
-  return Backbone.View.extend({
+  module.exports = Backbone.View.extend({
 
     initialize: function(o) {
       this.opt = o;

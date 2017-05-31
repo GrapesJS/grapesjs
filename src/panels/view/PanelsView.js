@@ -1,10 +1,12 @@
-define(['backbone','./PanelView'],
-	function (Backbone, PanelView) {
+define(function(require, exports, module){
+  'use strict';
+  var Backbone = require('backbone');
+  var PanelView = require('./PanelView');
 	/**
 	 * @class ItemsView
 	 * @private
 	 * */
-	return Backbone.View.extend({
+	module.exports = Backbone.View.extend({
 
 		initialize: function(o) {
 			this.opt = o || {};
