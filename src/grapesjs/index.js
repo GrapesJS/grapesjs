@@ -4,8 +4,10 @@ define(function (require) {
 
     var c = config || {},
     defaults = require('./config/config'),
-    Editor = require('editor/main'),
+    Editor = require('editor'),
     PluginManager = require('PluginManager');
+
+    window['_'] = require('underscore');
 
     var plugins = new PluginManager();
     var editors = [];
