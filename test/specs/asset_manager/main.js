@@ -1,14 +1,8 @@
-var modulePath = './../../../test/specs/asset_manager';
-
-define(['StorageManager','AssetManager',
-		modulePath + '/model/Asset',
-		modulePath + '/model/AssetImage',
-		modulePath + '/model/Assets',
-		modulePath + '/view/AssetView',
-		modulePath + '/view/AssetImageView',
-		modulePath + '/view/AssetsView',
-		modulePath + '/view/FileUploader'],
-	function(StorageManager, AssetManager, Asset, AssetImage, Assets, AssetView, AssetImageView, AssetsView, FileUploader) {
+define(function(require, exports, module){
+  'use strict';
+  var StorageManager = require('StorageManager');
+  var AssetManager = require('AssetManager');
+  var FileUploader = require('undefined');
 
 		describe('Asset Manager', function() {
 

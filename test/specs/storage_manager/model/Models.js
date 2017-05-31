@@ -1,9 +1,8 @@
-var path = 'StorageManager/model/';
-define([path + 'LocalStorage',
-        path + 'RemoteStorage'],
-  function(LocalStorage, RemoteStorage) {
+define(function(require, exports, module){
+  'use strict';
+  var RemoteStorage = require('undefined');
 
-    return {
+    module.exports = {
       run : function(){
 
         describe('LocalStorage', function() {

@@ -1,31 +1,26 @@
-define(function(require) {
+module.exports = function(){
 
-  var Utils = function(){
+  var Sorter = require('./Sorter');
 
-    var Sorter = require('./Sorter');
+  var Resizer = require('./Resizer');
 
-    var Resizer = require('./Resizer');
+  return {
+    /**
+     * Name of the module
+     * @type {String}
+     * @private
+     */
+    name: 'Utils',
 
-    return {
-      /**
-       * Name of the module
-       * @type {String}
-       * @private
-       */
-      name: 'Utils',
+    /**
+     * Initialize module
+     */
+    init: function() {
+      return this;
+    },
 
-      /**
-       * Initialize module
-       */
-      init: function() {
-        return this;
-      },
+    Sorter: Sorter,
 
-      Sorter: Sorter,
-
-      Resizer: Resizer,
-    };
+    Resizer: Resizer,
   };
-
-  return Utils;
-});
+};

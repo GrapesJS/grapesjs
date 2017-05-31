@@ -1,9 +1,7 @@
-var modulePath = './../../../test/specs/block_manager';
-
-define([ 'BlockManager',
-        modulePath + '/view/BlocksView',
-         ],
-  function(BlockManager, BlocksView) {
+define(function(require, exports, module){
+  'use strict';
+  var BlockManager = require('BlockManager');
+  var BlocksView = require('undefined');
 
     describe('BlockManager', function() {
 

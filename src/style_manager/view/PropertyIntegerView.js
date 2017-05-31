@@ -1,44 +1,41 @@
-define(function(require, exports, module){
-  'use strict';
-  var Backbone = require('backbone');
-  var PropertyView = require('./PropertyView');
-  var InputNumber = require('Abstract/ui/InputNumber');
+var Backbone = require('backbone');
+var PropertyView = require('./PropertyView');
+var InputNumber = require('Abstract/ui/InputNumber');
 
-  module.exports = PropertyView.extend({
+module.exports = PropertyView.extend({
 
-    initialize: function(options) {
-      PropertyView.prototype.initialize.apply(this, arguments);
-      this.listenTo( this.model ,'change:unit', this.valueChanged);
-    },
+  initialize: function(options) {
+    PropertyView.prototype.initialize.apply(this, arguments);
+    this.listenTo( this.model ,'change:unit', this.valueChanged);
+  },
 
-    /**
-     * Returns value from inputs
-     * @return {string}
-     */
-    getValueForTarget: function() {
-      var model = this.model;
-      return model.get('value') + model.get('unit');
-    },
+  /**
+   * Returns value from inputs
+   * @return {string}
+   */
+  getValueForTarget: function() {
+    var model = this.model;
+    return model.get('value') + model.get('unit');
+  },
 
-    renderInput: function() {
-      if (!this.input) {
-        var inputNumber = new InputNumber({
-          model: this.model,
-          ppfx: this.ppfx
-        });
-        this.input = inputNumber.render();
-        this.$el.append(this.input.$el);
-        this.$input = this.input.inputEl;
-        this.$unit = this.input.unitEl;
-      }
-      this.setValue(this.componentValue);
-    },
+  renderInput: function() {
+    if (!this.input) {
+      var inputNumber = new InputNumber({
+        model: this.model,
+        ppfx: this.ppfx
+      });
+      this.input = inputNumber.render();
+      this.$el.append(this.input.$el);
+      this.$input = this.input.inputEl;
+      this.$unit = this.input.unitEl;
+    }
+    this.setValue(this.componentValue);
+  },
 
-    renderTemplate: function(){},
+  renderTemplate: function(){},
 
-    setValue: function(value) {
-      this.input.setValue(value, {silent: 1});
-    },
+  setValue: function(value) {
+    this.input.setValue(value, {silent: 1});
+  },
 
-  });
 });

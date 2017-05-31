@@ -1,56 +1,51 @@
-define(function(require, exports, module){
-  'use strict';
-  var Backbone = require('backbone');
+var Backbone = require('backbone');
+
+module.exports = Backbone.View.extend({
+
+  tagName: 'iframe',
+
+  attributes: {
+    src: 'about:blank',
+    allowfullscreen: 'allowfullscreen'
+  },
+
+  initialize: function(o) {
+    _.bindAll(this, 'udpateOffset');
+    this.config = o.config || {};
+    this.ppfx = this.config.pStylePrefix || '';
+    this.em = this.config.em;
+    this.motionsEv = 'transitionend oTransitionEnd transitionend webkitTransitionEnd';
+    this.listenTo(this.em, 'change:device', this.updateWidth);
+  },
+
   /**
-   * @class CanvasView
-   * */
-  module.exports = Backbone.View.extend({
+   * Update width of the frame
+   * @private
+   */
+  updateWidth: function(model){
+    var device = this.em.getDeviceModel();
+    this.el.style.width = device ? device.get('width') : '';
+    this.udpateOffset();
+    this.$el.on(this.motionsEv, this.udpateOffset);
+  },
 
-    tagName: 'iframe',
+  udpateOffset: function(){
+    var offset = this.em.get('Canvas').getOffset();
+    this.em.set('canvasOffset', offset);
+    this.$el.off(this.motionsEv, this.udpateOffset);
+  },
 
-    attributes: {
-      src: 'about:blank',
-      allowfullscreen: 'allowfullscreen'
-    },
+  getBody: function(){
+    this.$el.contents().find('body');
+  },
 
-    initialize: function(o) {
-      _.bindAll(this, 'udpateOffset');
-      this.config = o.config || {};
-      this.ppfx = this.config.pStylePrefix || '';
-      this.em = this.config.em;
-      this.motionsEv = 'transitionend oTransitionEnd transitionend webkitTransitionEnd';
-      this.listenTo(this.em, 'change:device', this.updateWidth);
-    },
+  getWrapper: function(){
+    return this.$el.contents().find('body > div');
+  },
 
-    /**
-     * Update width of the frame
-     * @private
-     */
-    updateWidth: function(model){
-      var device = this.em.getDeviceModel();
-      this.el.style.width = device ? device.get('width') : '';
-      this.udpateOffset();
-      this.$el.on(this.motionsEv, this.udpateOffset);
-    },
+  render: function() {
+    this.$el.attr({class: this.ppfx + 'frame'});
+    return this;
+  },
 
-    udpateOffset: function(){
-      var offset = this.em.get('Canvas').getOffset();
-      this.em.set('canvasOffset', offset);
-      this.$el.off(this.motionsEv, this.udpateOffset);
-    },
-
-    getBody: function(){
-      this.$el.contents().find('body');
-    },
-
-    getWrapper: function(){
-      return this.$el.contents().find('body > div');
-    },
-
-    render: function() {
-      this.$el.attr({class: this.ppfx + 'frame'});
-      return this;
-    },
-
-  });
 });

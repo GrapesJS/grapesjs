@@ -1,8 +1,9 @@
-var path = 'CssComposer/view/';
-define([path + 'CssRuleView', 'CssComposer/model/CssRule'],
-  function(CssRuleView, CssRule) {
+define(function(require, exports, module){
+  'use strict';
+  var CssRuleView = require('undefined');
+  var CssRule = require('CssComposer/model/CssRule');
 
-    return {
+    module.exports = {
       run : function(){
           describe('CssRuleView', function() {
 

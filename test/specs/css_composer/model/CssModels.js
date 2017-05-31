@@ -1,11 +1,9 @@
-var path = 'CssComposer/model/';
-define([path + 'CssRule',
-        path + 'CssRules',
-        path + 'Selectors',
-        'SelectorManager/model/Selector'],
-	function(CssRule, CssRules, Selectors, Selector) {
+define(function(require, exports, module){
+  'use strict';
+  var Selectors = require('undefined');
+  var Selector = require('SelectorManager/model/Selector');
 
-    return {
+    module.exports = {
       run : function(){
           describe('CssRule', function() {
 

@@ -1,51 +1,46 @@
-define(function(require, exports, module){
-  'use strict';
-  var Backbone = require('backbone');
-  var CodeMirror = require('codemirror/lib/codemirror');
-  var htmlMode = require('codemirror/mode/htmlmixed/htmlmixed');
-  var cssMode = require('codemirror/mode/css/css');
-  var formatting = require('formatting');
-		/**
-		 * @class CodeViewer
-		 * */
-		module.exports = Backbone.Model.extend({
+var Backbone = require('backbone');
+var CodeMirror = require('codemirror/lib/codemirror');
+var htmlMode = require('codemirror/mode/htmlmixed/htmlmixed');
+var cssMode = require('codemirror/mode/css/css');
+var formatting = require('formatting');
 
-			defaults: {
-				input		: '',
-				label		: '',
-				codeName 	: '',
-				theme		: '',
-				readOnly 	: true,
-				lineNumbers	: true,
-			},
+module.exports = Backbone.Model.extend({
 
-			/** @inheritdoc */
-			init: function(el)
-			{
-				this.editor	= CodeMirror.fromTextArea(el, {
-					dragDrop: false,
-          lineWrapping: true,
-					lineNumbers: this.get('lineNumbers'),
-					readOnly: this.get('readOnly'),
-				  mode: this.get('codeName'),
-				  theme: this.get('theme'),
-				});
+  defaults: {
+    input    : '',
+    label    : '',
+    codeName   : '',
+    theme    : '',
+    readOnly   : true,
+    lineNumbers  : true,
+  },
 
-				return this;
-			},
+  /** @inheritdoc */
+  init: function(el)
+  {
+    this.editor  = CodeMirror.fromTextArea(el, {
+      dragDrop: false,
+      lineWrapping: true,
+      lineNumbers: this.get('lineNumbers'),
+      readOnly: this.get('readOnly'),
+      mode: this.get('codeName'),
+      theme: this.get('theme'),
+    });
 
-			/** @inheritdoc */
-			setContent	: function(v)
-			{
-				if(!this.editor)
-					return;
-				this.editor.setValue(v);
-				if(this.editor.autoFormatRange){
-					CodeMirror.commands.selectAll(this.editor);
-					this.editor.autoFormatRange(this.editor.getCursor(true), this.editor.getCursor(false) );
-					CodeMirror.commands.goDocStart(this.editor);
-				}
-			},
+    return this;
+  },
 
-        });
-	});
+  /** @inheritdoc */
+  setContent  : function(v)
+  {
+    if(!this.editor)
+      return;
+    this.editor.setValue(v);
+    if(this.editor.autoFormatRange){
+      CodeMirror.commands.selectAll(this.editor);
+      this.editor.autoFormatRange(this.editor.getCursor(true), this.editor.getCursor(false) );
+      CodeMirror.commands.goDocStart(this.editor);
+    }
+  },
+
+});

@@ -1,30 +1,27 @@
-define(function(require, exports, module){
-  'use strict';
-  var Component = require('./Component');
+var Component = require('./Component');
 
-    module.exports = Component.extend({
+module.exports = Component.extend({
 
-      defaults: _.extend({}, Component.prototype.defaults, {
-        type: 'script',
-        droppable: false,
-        draggable: false,
-        hiddenLayer: true,
-      }),
+  defaults: _.extend({}, Component.prototype.defaults, {
+    type: 'script',
+    droppable: false,
+    draggable: false,
+    hiddenLayer: true,
+  }),
 
-    }, {
+}, {
 
-      isComponent: function(el) {
-        if (el.tagName == 'SCRIPT') {
-          var result = {type: 'script'};
+  isComponent: function(el) {
+    if (el.tagName == 'SCRIPT') {
+      var result = {type: 'script'};
 
-          if (el.src) {
-            result.src = el.src;
-            result.onload = el.onload;
-          }
+      if (el.src) {
+        result.src = el.src;
+        result.onload = el.onload;
+      }
 
-          return result;
-        }
-      },
+      return result;
+    }
+  },
 
-    });
 });

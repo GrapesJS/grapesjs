@@ -1,61 +1,58 @@
-define(function(require, exports, module){
-  'use strict';
-  var Backbone = require('backbone');
+var Backbone = require('backbone');
 
-    module.exports = Backbone.Model.extend({
+module.exports = Backbone.Model.extend({
 
-      defaults: {
-        checkLocal: true,
-      },
+  defaults: {
+    checkLocal: true,
+  },
 
-      /**
-      * @private
-      */
-      store: function(data, clb) {
-        this.checkStorageEnvironment();
+  /**
+  * @private
+  */
+  store: function(data, clb) {
+    this.checkStorageEnvironment();
 
-        for(var key in data)
-          localStorage.setItem(key, data[key]);
+    for(var key in data)
+      localStorage.setItem(key, data[key]);
 
-        if (typeof clb == 'function') {
-          clb();
-        }
-      },
+    if (typeof clb == 'function') {
+      clb();
+    }
+  },
 
-      /**
-       * @private
-       */
-      load: function(keys){
-        this.checkStorageEnvironment();
-        var result = {};
+  /**
+   * @private
+   */
+  load: function(keys){
+    this.checkStorageEnvironment();
+    var result = {};
 
-        for (var i = 0, len = keys.length; i < len; i++){
-          var value = localStorage.getItem(keys[i]);
-          if(value)
-            result[keys[i]] = value;
-        }
+    for (var i = 0, len = keys.length; i < len; i++){
+      var value = localStorage.getItem(keys[i]);
+      if(value)
+        result[keys[i]] = value;
+    }
 
-        return result;
-      },
+    return result;
+  },
 
-      /**
-       * @private
-       */
-      remove: function(keys) {
-        this.checkStorageEnvironment();
+  /**
+   * @private
+   */
+  remove: function(keys) {
+    this.checkStorageEnvironment();
 
-        for (var i = 0, len = keys.length; i < len; i++)
-          localStorage.removeItem(keys[i]);
-      },
+    for (var i = 0, len = keys.length; i < len; i++)
+      localStorage.removeItem(keys[i]);
+  },
 
-      /**
-       * Check storage environment
-       * @private
-       * */
-      checkStorageEnvironment: function() {
-        if(this.get('checkLocal') && !localStorage)
-          console.warn("Your browser doesn't support localStorage");
-      },
+  /**
+   * Check storage environment
+   * @private
+   * */
+  checkStorageEnvironment: function() {
+    if(this.get('checkLocal') && !localStorage)
+      console.warn("Your browser doesn't support localStorage");
+  },
 
-    });
 });

@@ -1,136 +1,129 @@
-define(function(require, exports, module){
-  'use strict';
-  var Backbone = require('backbone');
-  var PropertyView = require('./PropertyView');
-  var propertyTemplate = require('text!./../templates/propertyFile.html');
-  /**
-   * @class PropertyColorView
-   * */
-  module.exports = PropertyView.extend({
+var Backbone = require('backbone');
+var PropertyView = require('./PropertyView');
+var propertyTemplate = require('text!./../templates/propertyFile.html');
 
-    template: _.template(propertyTemplate),
+module.exports = PropertyView.extend({
 
-    initialize: function(options) {
-      PropertyView.prototype.initialize.apply(this, arguments);
-      this.assets    = this.target.get('assets');
-      this.modal    = this.target.get('Modal');
-      this.am      = this.target.get('AssetManager');
-      this.className   = this.className + ' '+ this.pfx +'file';
-      this.events['click #'+this.pfx+'close']    = 'removeFile';
-      this.events['click #'+this.pfx+'images']  = 'openAssetManager';
-      this.delegateEvents();
-    },
+  template: _.template(propertyTemplate),
 
-    /** @inheritdoc */
-    renderInput: function() {
-      if (!this.$input) {
-        this.$input = $('<input>', {placeholder: this.defaultValue, type: 'text' });
-      }
+  initialize: function(options) {
+    PropertyView.prototype.initialize.apply(this, arguments);
+    this.assets    = this.target.get('assets');
+    this.modal    = this.target.get('Modal');
+    this.am      = this.target.get('AssetManager');
+    this.className   = this.className + ' '+ this.pfx +'file';
+    this.events['click #'+this.pfx+'close']    = 'removeFile';
+    this.events['click #'+this.pfx+'images']  = 'openAssetManager';
+    this.delegateEvents();
+  },
 
-      if (!this.$preview) {
-        this.$preview = this.$el.find('#' + this.pfx + 'preview-file');
-      }
+  /** @inheritdoc */
+  renderInput: function() {
+    if (!this.$input) {
+      this.$input = $('<input>', {placeholder: this.defaultValue, type: 'text' });
+    }
 
-      if (!this.$previewBox) {
-        this.$previewBox = this.$el.find('#' + this.pfx + 'preview-box');
-      }
+    if (!this.$preview) {
+      this.$preview = this.$el.find('#' + this.pfx + 'preview-file');
+    }
 
-      if(!this.componentValue || this.componentValue == this.defaultValue)
-        this.setPreviewView(0);
-      else
-        this.setPreviewView(1);
+    if (!this.$previewBox) {
+      this.$previewBox = this.$el.find('#' + this.pfx + 'preview-box');
+    }
 
-      this.setValue(this.componentValue, 0);
-    },
-
-    /**
-     * Change visibility of the preview box
-     * @param bool Visibility
-     *
-     * @return void
-     * */
-    setPreviewView: function(v){
-      if(!this.$previewBox)
-        return;
-      if(v)
-        this.$previewBox.addClass(this.pfx + 'show');
-      else
-        this.$previewBox.removeClass(this.pfx + 'show');
-    },
-
-    /**
-     * Spread url
-     * @param string Url
-     *
-     * @return void
-     * */
-    spreadUrl: function(url) {
-      this.setValue(url);
+    if(!this.componentValue || this.componentValue == this.defaultValue)
+      this.setPreviewView(0);
+    else
       this.setPreviewView(1);
-    },
 
-    /**
-     * Shows file preview
-     * @param string Value
-     * */
-    setPreview: function(url) {
-      if(this.$preview)
-        this.$preview.css('background-image', "url(" + url + ")");
-    },
+    this.setValue(this.componentValue, 0);
+  },
 
-    /** @inheritdoc */
-    setValue: function(value, f){
-      PropertyView.prototype.setValue.apply(this, arguments);
-      this.setPreview(value);
-    },
+  /**
+   * Change visibility of the preview box
+   * @param bool Visibility
+   *
+   * @return void
+   * */
+  setPreviewView: function(v){
+    if(!this.$previewBox)
+      return;
+    if(v)
+      this.$previewBox.addClass(this.pfx + 'show');
+    else
+      this.$previewBox.removeClass(this.pfx + 'show');
+  },
 
-    /** @inheritdoc */
-    renderTemplate: function(){
-      this.$el.append( this.template({
-        upload  : 'Upload',
-        assets  : 'Images',
-        pfx    : this.pfx
-      }));
-    },
+  /**
+   * Spread url
+   * @param string Url
+   *
+   * @return void
+   * */
+  spreadUrl: function(url) {
+    this.setValue(url);
+    this.setPreviewView(1);
+  },
 
-    /** @inheritdoc */
-    cleanValue: function(){
-      this.setPreviewView(0);
-      this.model.set({value: ''},{silent: true});
-    },
+  /**
+   * Shows file preview
+   * @param string Value
+   * */
+  setPreview: function(url) {
+    if(this.$preview)
+      this.$preview.css('background-image', "url(" + url + ")");
+  },
 
-    /**
-     * Remove file from input
-     *
-     * @return void
-     * */
-    removeFile:function(){
-      this.model.set('value',this.defaultValue);
-      PropertyView.prototype.cleanValue.apply(this, arguments);
-      this.setPreviewView(0);
-    },
+  /** @inheritdoc */
+  setValue: function(value, f){
+    PropertyView.prototype.setValue.apply(this, arguments);
+    this.setPreview(value);
+  },
 
-    /**
-     * Open dialog for image selecting
-     * @param  {Object}  e  Event
-     *
-     * @return void
-     * */
-    openAssetManager: function(e){
-      var that  = this;
-      if(this.modal && this.am){
-        this.modal.setTitle('Select image');
-        this.modal.setContent(this.am.render());
-        this.am.setTarget(null);
-        this.modal.open();
-        this.am.onSelect(function(model){
-          that.modal.close();
-          that.spreadUrl(model.get('src'));
-          that.valueChanged(e);
-        });
-      }
-    },
+  /** @inheritdoc */
+  renderTemplate: function(){
+    this.$el.append( this.template({
+      upload  : 'Upload',
+      assets  : 'Images',
+      pfx    : this.pfx
+    }));
+  },
 
+  /** @inheritdoc */
+  cleanValue: function(){
+    this.setPreviewView(0);
+    this.model.set({value: ''},{silent: true});
+  },
 
-  });
+  /**
+   * Remove file from input
+   *
+   * @return void
+   * */
+  removeFile:function(){
+    this.model.set('value',this.defaultValue);
+    PropertyView.prototype.cleanValue.apply(this, arguments);
+    this.setPreviewView(0);
+  },
+
+  /**
+   * Open dialog for image selecting
+   * @param  {Object}  e  Event
+   *
+   * @return void
+   * */
+  openAssetManager: function(e){
+    var that  = this;
+    if(this.modal && this.am){
+      this.modal.setTitle('Select image');
+      this.modal.setContent(this.am.render());
+      this.am.setTarget(null);
+      this.modal.open();
+      this.am.onSelect(function(model){
+        that.modal.close();
+        that.spreadUrl(model.get('src'));
+        that.valueChanged(e);
+      });
+    }
+  },
 });

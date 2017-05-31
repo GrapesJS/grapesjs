@@ -1,72 +1,66 @@
-define(function(require, exports, module){
-  'use strict';
-  var Backbone = require('backbone');
-  var PanelView = require('./PanelView');
-	/**
-	 * @class ItemsView
-	 * @private
-	 * */
-	module.exports = Backbone.View.extend({
+var Backbone = require('backbone');
+var PanelView = require('./PanelView');
 
-		initialize: function(o) {
-			this.opt = o || {};
-			this.config = this.opt.config || {};
-			this.pfx = this.config.stylePrefix || '';
-			this.listenTo( this.collection, 'add', this.addTo );
-			this.listenTo( this.collection, 'reset', this.render );
-			this.className = this.pfx + 'panels';
-		},
+module.exports = Backbone.View.extend({
 
-		/**
-		 * Add to collection
-		 * @param Object Model
-		 *
-		 * @return Object
-		 * @private
-		 * */
-		addTo: function(model){
-			this.addToCollection(model);
-		},
+  initialize: function(o) {
+    this.opt = o || {};
+    this.config = this.opt.config || {};
+    this.pfx = this.config.stylePrefix || '';
+    this.listenTo( this.collection, 'add', this.addTo );
+    this.listenTo( this.collection, 'reset', this.render );
+    this.className = this.pfx + 'panels';
+  },
 
-		/**
-		 * Add new object to collection
-		 * @param	Object	Model
-		 * @param	Object 	Fragment collection
-		 * @param	integer	Index of append
-		 *
-		 * @return Object Object created
-		 * @private
-		 * */
-		addToCollection: function(model, fragmentEl){
-			var fragment = fragmentEl || null;
-			var viewObject = PanelView;
+  /**
+   * Add to collection
+   * @param Object Model
+   *
+   * @return Object
+   * @private
+   * */
+  addTo: function(model){
+    this.addToCollection(model);
+  },
 
-			var view = new viewObject({
-				model: model,
-				config: this.config,
-			});
-			var rendered = view.render().el;
+  /**
+   * Add new object to collection
+   * @param  Object  Model
+   * @param  Object   Fragment collection
+   * @param  integer  Index of append
+   *
+   * @return Object Object created
+   * @private
+   * */
+  addToCollection: function(model, fragmentEl){
+    var fragment = fragmentEl || null;
+    var viewObject = PanelView;
 
-			if(fragment){
-				fragment.appendChild(rendered);
-			}else{
-				this.$el.append(rendered);
-			}
+    var view = new viewObject({
+      model: model,
+      config: this.config,
+    });
+    var rendered = view.render().el;
 
-			return rendered;
-		},
+    if(fragment){
+      fragment.appendChild(rendered);
+    }else{
+      this.$el.append(rendered);
+    }
 
-		render: function() {
-			var fragment = document.createDocumentFragment();
-			this.$el.empty();
+    return rendered;
+  },
 
-			this.collection.each(function(model){
-				this.addToCollection(model, fragment);
-			}, this);
+  render: function() {
+    var fragment = document.createDocumentFragment();
+    this.$el.empty();
 
-			this.$el.append(fragment);
-			this.$el.attr('class', _.result(this, 'className'));
-			return this;
-		}
-	});
+    this.collection.each(function(model){
+      this.addToCollection(model, fragment);
+    }, this);
+
+    this.$el.append(fragment);
+    this.$el.attr('class', _.result(this, 'className'));
+    return this;
+  }
 });

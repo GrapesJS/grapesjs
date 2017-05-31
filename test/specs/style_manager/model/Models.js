@@ -1,20 +1,8 @@
-var path = 'StyleManager/model/';
-define([path + 'Sector',
-        path + 'Sectors',
-        path + 'PropertyFactory',
-        path + 'Property',
-        path + 'Properties',
-        path + 'Layer',
-        path + 'Layers'],
-  function(Sector,
-          Sectors,
-          PropertyFactory,
-          Property,
-          Properties,
-          Layer,
-          Layers) {
+define(function(require, exports, module){
+  'use strict';
+  var Layers = require('undefined');
 
-    return {
+    module.exports = {
       run : function(){
 
         describe('Sector', function() {

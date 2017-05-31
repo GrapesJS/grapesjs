@@ -1,15 +1,12 @@
-define(function(require, exports, module){
-  'use strict';
-  var Backbone = require('backbone');
+var Backbone = require('backbone');
 
-    module.exports = Backbone.Model.extend({
+module.exports = Backbone.Model.extend({
 
-      defaults :{
-        wrapper: '',
-        width: '',
-        height: '',
-        attributes: {},
-      },
+  defaults :{
+    wrapper: '',
+    width: '',
+    height: '',
+    attributes: {},
+  },
 
-    });
-  });
+});

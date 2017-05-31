@@ -1,8 +1,8 @@
-var path = 'Parser/';
-define([path + 'model/ParserCss',],
-  function(ParserCss) {
+define(function(require, exports, module){
+  'use strict';
+  var ParserCss = require('undefined');
 
-    return {
+    module.exports = {
       run : function(){
 
         describe('ParserCss', function() {

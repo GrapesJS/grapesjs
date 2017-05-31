@@ -1,23 +1,7 @@
-var modulePath = './../../../test/specs/panels';
-
-define([
-				'Panels',
-				modulePath + '/model/PanelModels',
-				modulePath + '/view/PanelView',
-				modulePath + '/view/PanelsView',
-				modulePath + '/view/ButtonView',
-				modulePath + '/view/ButtonsView',
-				modulePath + '/e2e/PanelsE2e'
-				 ],
-	function(
-					Panels,
-					Models,
-					PanelView,
-					PanelsView,
-					ButtonView,
-					ButtonsView,
-					e2e
-					) {
+define(function(require, exports, module){
+  'use strict';
+  var Panels = require('Panels');
+  var e2e = require('undefined');
 
 		describe('Panels', function() {
 

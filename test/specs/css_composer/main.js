@@ -1,21 +1,8 @@
-var modulePath = './../../../test/specs/css_composer';
-
-define([
-        'CssComposer',
-        modulePath + '/model/CssModels',
-        modulePath + '/view/CssRuleView',
-        modulePath + '/view/CssRulesView',
-        modulePath + '/e2e/CssComposer',
-        './../test_utils.js'
-         ],
-  function(
-          CssComposer,
-          Models,
-          CssRuleView,
-          CssRulesView,
-          e2e,
-          utils
-          ) {
+define(function(require, exports, module){
+  'use strict';
+  var CssComposer = require('CssComposer');
+  var e2e = require('undefined');
+  var utils = require('./../test_utils.js');
 
     describe('Css Composer', function() {
 

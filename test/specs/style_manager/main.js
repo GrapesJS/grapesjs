@@ -1,33 +1,7 @@
-var modulePath = './../../../test/specs/style_manager';
-
-define([
-        'StyleManager',
-        modulePath + '/model/Models',
-        modulePath + '/view/SectorView',
-        modulePath + '/view/SectorsView',
-        modulePath + '/view/PropertyView',
-        modulePath + '/view/PropertySelectView',
-        modulePath + '/view/PropertyRadioView',
-        modulePath + '/view/PropertyIntegerView',
-        modulePath + '/view/PropertyColorView',
-        modulePath + '/view/PropertyCompositeView',
-        modulePath + '/view/PropertyStackView',
-        modulePath + '/view/LayerView',
-         ],
-  function(
-          StyleManager,
-          Models,
-          SectorView,
-          SectorsView,
-          PropertyView,
-          PropertySelectView,
-          PropertyRadioView,
-          PropertyIntegerView,
-          PropertyColorView,
-          PropertyCompositeView,
-          PropertyStackView,
-          LayerView
-          ) {
+define(function(require, exports, module){
+  'use strict';
+  var StyleManager = require('StyleManager');
+  var LayerView = require('undefined');
 
     describe('StyleManager', function() {
 

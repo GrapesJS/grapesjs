@@ -1,12 +1,11 @@
-var path = 'CodeManager/model/';
-define([path + 'HtmlGenerator',
-  path + 'CssGenerator',
-  'DomComponents',
-  'DomComponents/model/Component',
-  'CssComposer'],
-  function(HtmlGenerator, CssGenerator, DomComponents, Component, CssComposer) {
+define(function(require, exports, module){
+  'use strict';
+  var CssGenerator = require('undefined');
+  var DomComponents = require('DomComponents');
+  var Component = require('DomComponents/model/Component');
+  var CssComposer = require('CssComposer');
 
-    return {
+    module.exports = {
       run : function(){
           var comp;
 

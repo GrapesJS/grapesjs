@@ -1,7 +1,8 @@
-define(['AssetManager/model/AssetImage'],
-	function(AssetImage) {
+define(function(require, exports, module){
+  'use strict';
+  var AssetImage = require('AssetManager/model/AssetImage');
 
-		return {
+		module.exports = {
 			run: function() {
 
 				describe('AssetImage', function() {

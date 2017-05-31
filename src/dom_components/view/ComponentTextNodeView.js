@@ -1,6 +1,3 @@
-define(function(require, exports, module){
-  'use strict';
-  var Backbone = require('backbone');
+var Backbone = require('backbone');
 
-		module.exports = Backbone.View.extend({});
-});
+module.exports = Backbone.View.extend({});

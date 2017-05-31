@@ -1,13 +1,7 @@
-var modulePath = './../../../test/specs/storage_manager';
-
-define([
-        'StorageManager',
-        modulePath + '/model/Models',
-         ],
-  function(
-          StorageManager,
-          Models
-          ) {
+define(function(require, exports, module){
+  'use strict';
+  var StorageManager = require('StorageManager');
+  var Models = require('undefined');
 
     describe('Storage Manager', function() {
 

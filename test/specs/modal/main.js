@@ -1,9 +1,7 @@
-var modulePath = './../../../test/specs/modal';
-
-define([ 'ModalDialog',
-        modulePath + '/view/ModalView',
-         ],
-  function(Modal, ModalView) {
+define(function(require, exports, module){
+  'use strict';
+  var Modal = require('ModalDialog');
+  var ModalView = require('undefined');
 
     describe('Modal dialog', function() {
 

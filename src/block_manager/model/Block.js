@@ -1,14 +1,11 @@
-define(function(require, exports, module){
-  'use strict';
-  var Backbone = require('backbone');
+var Backbone = require('backbone');
 
-    module.exports = Backbone.Model.extend({
+module.exports = Backbone.Model.extend({
 
-      defaults :{
-        label: '',
-        content: '',
-        attributes: {},
-      },
+  defaults :{
+    label: '',
+    content: '',
+    attributes: {},
+  },
 
-    });
-  });
+});

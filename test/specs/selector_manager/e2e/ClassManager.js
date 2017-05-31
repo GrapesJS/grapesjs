@@ -1,8 +1,10 @@
+define(function(require, exports, module){
+  'use strict';
+  var GrapesJS = require('GrapesJS');
+  var Selectors = require('SelectorManager/model/Selectors');
+  var ClassTagsView = require('SelectorManager/view/ClassTagsView');
 
-define(['GrapesJS', 'SelectorManager/model/Selectors', 'SelectorManager/view/ClassTagsView'],
-	function(GrapesJS, Selectors, ClassTagsView) {
-
-    return {
+    module.exports = {
       run : function(){
           describe('E2E tests', function() {
 

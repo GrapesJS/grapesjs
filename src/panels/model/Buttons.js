@@ -1,47 +1,42 @@
-define(function(require, exports, module){
-  'use strict';
-  var Backbone = require('backbone');
-  var Button = require('./Button');
-		/**
-		 * @class Buttons
-		 * */
-		module.exports = Backbone.Collection.extend({
+var Backbone = require('backbone');
+var Button = require('./Button');
 
-			model: Button,
+module.exports = Backbone.Collection.extend({
 
-			/**
-			 * Deactivate all buttons, except one passed
-			 * @param	{Object}	except	Model to ignore
-			 * @param	{Boolean}	r 		Recursive flag
-			 *
-			 * @return	void
-			 * */
-			deactivateAllExceptOne: function(except, r){
-				this.forEach(function(model, index) {
-					if(model !== except){
-						model.set('active', false);
-						if(r && model.get('buttons').length)
-							model.get('buttons').deactivateAllExceptOne(except,r);
-					}
-				});
-			},
+  model: Button,
 
-			/**
-			 * Deactivate all buttons
-			 * @param	{String}	ctx Context string
-			 *
-			 * @return	void
-			 * */
-			deactivateAll: function(ctx){
-				var context = ctx || '';
-				this.forEach(function(model, index) {
-					if( model.get('context') == context ){
-						model.set('active', false);
-						if(model.get('buttons').length)
-							model.get('buttons').deactivateAll(context);
-					}
-				});
-			},
+  /**
+   * Deactivate all buttons, except one passed
+   * @param  {Object}  except  Model to ignore
+   * @param  {Boolean}  r     Recursive flag
+   *
+   * @return  void
+   * */
+  deactivateAllExceptOne: function(except, r){
+    this.forEach(function(model, index) {
+      if(model !== except){
+        model.set('active', false);
+        if(r && model.get('buttons').length)
+          model.get('buttons').deactivateAllExceptOne(except,r);
+      }
+    });
+  },
 
-		});
+  /**
+   * Deactivate all buttons
+   * @param  {String}  ctx Context string
+   *
+   * @return  void
+   * */
+  deactivateAll: function(ctx){
+    var context = ctx || '';
+    this.forEach(function(model, index) {
+      if( model.get('context') == context ){
+        model.set('active', false);
+        if(model.get('buttons').length)
+          model.get('buttons').deactivateAll(context);
+      }
+    });
+  },
+
 });

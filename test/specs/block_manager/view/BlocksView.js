@@ -1,8 +1,9 @@
-var path = 'BlockManager/view/';
-define([path + 'BlocksView', 'BlockManager/model/Blocks'],
-  function(BlocksView, Blocks) {
+define(function(require, exports, module){
+  'use strict';
+  var BlocksView = require('undefined');
+  var Blocks = require('BlockManager/model/Blocks');
 
-    return {
+    module.exports = {
       run : function(){
           describe('BlocksView', function() {
 

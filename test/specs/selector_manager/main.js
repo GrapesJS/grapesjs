@@ -1,19 +1,7 @@
-var modulePath = './../../../test/specs/selector_manager';
-
-define([
-				'SelectorManager',
-				modulePath + '/model/SelectorModels',
-				modulePath + '/view/ClassTagView',
-				modulePath + '/view/ClassTagsView',
-				modulePath + '/e2e/ClassManager'
-				 ],
-	function(
-					SelectorManager,
-					Models,
-					ClassTagView,
-					ClassTagsView,
-					e2e
-					) {
+define(function(require, exports, module){
+  'use strict';
+  var SelectorManager = require('SelectorManager');
+  var e2e = require('undefined');
 
 		describe('SelectorManager', function() {
 

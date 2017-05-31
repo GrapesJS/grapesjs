@@ -1,7 +1,10 @@
-define(['AssetManager/view/AssetView', 'AssetManager/model/Asset', 'AssetManager/model/Assets'],
-	function(AssetView, Asset, Assets) {
+define(function(require, exports, module){
+  'use strict';
+  var AssetView = require('AssetManager/view/AssetView');
+  var Asset = require('AssetManager/model/Asset');
+  var Assets = require('AssetManager/model/Assets');
 
-		return {
+		module.exports = {
 			run: function() {
 
 				describe('AssetView', function() {

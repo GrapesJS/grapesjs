@@ -1,7 +1,8 @@
-define(['AssetManager/view/FileUploader'],
-	function(FileUploader) {
+define(function(require, exports, module){
+  'use strict';
+  var FileUploader = require('AssetManager/view/FileUploader');
 
-		return {
+		module.exports = {
 			run: function() {
 
 				describe('File Uploader', function() {

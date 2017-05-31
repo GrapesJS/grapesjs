@@ -1,7 +1,8 @@
-define(['AssetManager/model/Asset'],
-	function(Asset) {
+define(function(require, exports, module){
+  'use strict';
+  var Asset = require('AssetManager/model/Asset');
 
-		return {
+		module.exports = {
 			run: function(){
 
 				describe('Asset', function() {

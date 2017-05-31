@@ -1,9 +1,7 @@
-var modulePath = './../../../test/specs/device_manager';
-
-define([ 'DeviceManager',
-        modulePath + '/view/DevicesView',
-         ],
-  function(DeviceManager, DevicesView) {
+define(function(require, exports, module){
+  'use strict';
+  var DeviceManager = require('DeviceManager');
+  var DevicesView = require('undefined');
 
     describe('DeviceManager', function() {
 

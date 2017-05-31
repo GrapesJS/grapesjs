@@ -1,8 +1,8 @@
-var path = 'Utils/';
-define([path + 'Sorter',],
-  function(Sorter) {
+define(function(require, exports, module){
+  'use strict';
+  var Sorter = require('undefined');
 
-    return {
+    module.exports = {
       run : function(){
 
         describe('Sorter', function() {

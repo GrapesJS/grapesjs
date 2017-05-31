@@ -1,16 +1,14 @@
-define(function () {
-	return {
+module.exports = {
 
-		stylePrefix: 'cv-',
+  stylePrefix: 'cv-',
 
-		// Coming soon
-		rulers: false,
+  // Coming soon
+  rulers: false,
 
-		/*
-		 * append scripts in head of iframe before renderBody content
-		 * need to manually maintain the same scripts in cms's render template
-		*/ 
-		scripts: []
+  /*
+   * append scripts in head of iframe before renderBody content
+   * need to manually maintain the same scripts in cms's render template
+  */
+  scripts: []
 
-	};
-});
+};

@@ -52,111 +52,107 @@
  *  statesLabel: '- Selecte State -',
  * }
  */
-define(function(require) {
+module.exports = function(config) {
+  var c = config || {},
+  defaults = require('./config/config'),
+  Selectors = require('./model/Selectors'),
+  ClassTagsView = require('./view/ClassTagsView');
+  var selectors, selectorTags;
 
-  return function(config) {
-    var c = config || {},
-    defaults = require('./config/config');
-    Selectors = require('./model/Selectors');
-    ClassTagsView = require('./view/ClassTagsView');
-    var selectors, selectorTags;
+  return {
 
-    return {
+    /**
+     * Name of the module
+     * @type {String}
+     * @private
+     */
+    name: 'SelectorManager',
 
-      /**
-       * Name of the module
-       * @type {String}
-       * @private
-       */
-      name: 'SelectorManager',
+    /**
+     * Initialize module. Automatically called with a new instance of the editor
+     * @param {Object} config Configurations
+     * @return {this}
+     * @private
+     */
+    init: function(conf) {
+      c = conf || {};
 
-      /**
-       * Initialize module. Automatically called with a new instance of the editor
-       * @param {Object} config Configurations
-       * @return {this}
-       * @private
-       */
-      init: function(conf) {
-        c = conf || {};
+      for (var name in defaults) {
+        if (!(name in c))
+          c[name] = defaults[name];
+      }
 
-        for (var name in defaults) {
-          if (!(name in c))
-            c[name] = defaults[name];
-        }
+      var ppfx = c.pStylePrefix;
+      if(ppfx)
+        c.stylePrefix = ppfx + c.stylePrefix;
 
-        var ppfx = c.pStylePrefix;
-        if(ppfx)
-          c.stylePrefix = ppfx + c.stylePrefix;
+      selectors = new Selectors(c.selectors, {
+        em: c.em,
+        config: c,
+      });
+      selectorTags = new ClassTagsView({
+        collection: selectors,
+        config: c,
+      });
+      return this;
+    },
 
-        selectors = new Selectors(c.selectors, {
-          em: c.em,
+    /**
+     * Add the new selector to collection if it's not already exists. Class type is a default one
+     * @param {String} name Selector name
+     * @param {Object} opts Selector options
+     * @param {String} [opts.label=''] Label for the selector, if it's not provided the label will be the same as the name
+     * @param {String} [opts.type='class'] Type of the selector. At the moment, only 'class' is available
+     * @return {Model}
+     * @example
+     * var selector = selectorManager.add('selectorName');
+     * // Same as
+     * var selector = selectorManager.add('selectorName', {
+     *   type: 'class',
+     *   label: 'selectorName'
+     * });
+     * */
+    add: function(name, opts){
+      var obj = opts || {};
+      obj.name = name.name || name;
+      return selectors.add(obj);
+    },
+
+    /**
+     * Get the selector by its name
+     * @param {String} name Selector name
+     * @return {Model|null}
+     * @example
+     * var selector = selectorManager.get('selectorName');
+     * */
+    get: function(name) {
+      return selectors.where({name: name})[0];
+    },
+
+    /**
+     * Get all selectors
+     * @return {Collection}
+     * */
+    getAll: function() {
+      return selectors;
+    },
+
+    /**
+     * Render class selectors. If an array of selectors is provided a new instance of the collection will be rendered
+     * @param {Array<Object>} selectors
+     * @return {HTMLElement}
+     * @private
+     */
+    render: function(selectors) {
+      if(selectors){
+        var view = new ClassTagsView({
+          collection: new Selectors(selectors),
           config: c,
         });
-        selectorTags = new ClassTagsView({
-          collection: selectors,
-          config: c,
-        });
-        return this;
-      },
+        return view.render().el;
+      }else
+        return selectorTags.render().el;
+    },
 
-      /**
-       * Add the new selector to collection if it's not already exists. Class type is a default one
-       * @param {String} name Selector name
-       * @param {Object} opts Selector options
-       * @param {String} [opts.label=''] Label for the selector, if it's not provided the label will be the same as the name
-       * @param {String} [opts.type='class'] Type of the selector. At the moment, only 'class' is available
-       * @return {Model}
-       * @example
-       * var selector = selectorManager.add('selectorName');
-       * // Same as
-       * var selector = selectorManager.add('selectorName', {
-       *   type: 'class',
-       *   label: 'selectorName'
-       * });
-       * */
-      add: function(name, opts){
-        var obj = opts || {};
-        obj.name = name.name || name;
-        return selectors.add(obj);
-      },
-
-      /**
-       * Get the selector by its name
-       * @param {String} name Selector name
-       * @return {Model|null}
-       * @example
-       * var selector = selectorManager.get('selectorName');
-       * */
-      get: function(name) {
-        return selectors.where({name: name})[0];
-      },
-
-      /**
-       * Get all selectors
-       * @return {Collection}
-       * */
-      getAll: function() {
-        return selectors;
-      },
-
-      /**
-       * Render class selectors. If an array of selectors is provided a new instance of the collection will be rendered
-       * @param {Array<Object>} selectors
-       * @return {HTMLElement}
-       * @private
-       */
-      render: function(selectors) {
-        if(selectors){
-          var view = new ClassTagsView({
-            collection: new Selectors(selectors),
-            config: c,
-          });
-          return view.render().el;
-        }else
-          return selectorTags.render().el;
-      },
-
-    };
   };
-
-});
+};

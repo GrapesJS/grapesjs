@@ -1,11 +1,8 @@
-var path = 'Panels/model/';
-define([path + 'Button',
-        path + 'Buttons',
-        path + 'Panel',
-        path + 'Panels'],
-	function(Button, Buttons, Panel, Panels) {
+define(function(require, exports, module){
+  'use strict';
+  var Panels = require('undefined');
 
-    return {
+    module.exports = {
       run : function(){
         describe('Button', function() {
 

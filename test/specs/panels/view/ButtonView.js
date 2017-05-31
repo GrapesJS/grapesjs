@@ -1,8 +1,9 @@
-var path = 'Panels/view/';
-define([path + 'ButtonView', 'Panels/model/Button'],
-  function(ButtonView, Button) {
+define(function(require, exports, module){
+  'use strict';
+  var ButtonView = require('undefined');
+  var Button = require('Panels/model/Button');
 
-    return {
+    module.exports = {
       run : function(){
 
           describe('ButtonView', function() {

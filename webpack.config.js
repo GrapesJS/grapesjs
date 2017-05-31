@@ -21,7 +21,7 @@ if(env !== 'dev'){
 
 plugins.push(new webpack.ProvidePlugin({$: 'jquery'}));
 module.exports = {
-  entry: './src/main',
+  entry: './src',
   output: {
       filename: './dist/' + name + '.min.js',
       library: 'grapesjs',
