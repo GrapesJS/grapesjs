@@ -1,14 +1,21 @@
 //webpack --display-reasons
+//Remove jquery https://github.com/webpack/webpack/issues/1275
+//Migrateing https://webpack.js.org/guides/migrating/
 var webpack = require('webpack');
 var pkg = require('./package.json');
 var env = process.env.WEBPACK_ENV;
-var name = 'grapesjs';
+var name = 'grapes';
 var plugins = [];
 
 if(env !== 'dev'){
   plugins = [
-    new webpack.optimize.UglifyJsPlugin({minimize: true}),
-    new webpack.BannerPlugin(pkg.name + ' - ' + pkg.version)
+    new webpack.optimize.UglifyJsPlugin({
+      //sourceMap: true,
+      minimize: true,
+      compressor: {warnings: false},
+    }),
+    new webpack.BannerPlugin(pkg.name + ' - ' + pkg.version),
+    //v2 new webpack.BannerPlugin({banner: 'Banner v2'});
   ]
 }
 
@@ -17,7 +24,7 @@ module.exports = {
   entry: './src/main',
   output: {
       filename: './dist/' + name + '.min.js',
-      library: name,
+      library: 'grapesjs',
       libraryTarget: 'umd',
   },
   plugins: plugins,
