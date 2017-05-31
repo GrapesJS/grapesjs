@@ -28,6 +28,15 @@ module.exports = {
       libraryTarget: 'umd',
   },
   plugins: plugins,
+  module: {
+    loaders: [{
+        test: /\.js$/,
+        loader: 'babel-loader',
+        include: /src/,
+        exclude: /node_modules/,
+        query: {presets: ['es2015']}
+    }],
+  },
   resolve: {
     modulesDirectories: ['src', 'node_modules'],
     alias: {

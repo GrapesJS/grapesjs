@@ -36,7 +36,7 @@ define(function (require) {
        *   style: '.hello{color: red}',
        * })
        */
-      init: function(config) {
+      init(config) {
         var c = config || {};
         var els = c.container;
 
