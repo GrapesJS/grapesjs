@@ -1,9 +1,6 @@
-define([ 'backbone','./Panel'],
-	function (Backbone, Panel) {
+var Backbone = require('backbone');
+var Panel = require('./Panel');
 
-		return Backbone.Collection.extend({
-
-			model: Panel,
-
-		});
+module.exports = Backbone.Collection.extend({
+  model: Panel,
 });

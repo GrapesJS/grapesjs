@@ -1,10 +1,9 @@
-var modulePath = 'TraitManager';
-define([modulePath+'/view/TraitView',
-modulePath+'/model/Trait',
-'DomComponents/model/Component'],
-	function(TraitView, Trait, Component) {
+define(function(require, exports, module){
+  'use strict';
+  var Trait = require('undefined');
+  var Component = require('DomComponents/model/Component');
 
-		return {
+		module.exports = {
 			run: function(){
 
 				describe('TraitView', function() {

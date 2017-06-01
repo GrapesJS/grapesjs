@@ -1,18 +1,17 @@
-define(['backbone', './Frame'],
-	function(Backbone, Frame){
+var Backbone = require('backbone');
+var Frame = require('./Frame');
 
-		return Backbone.Model.extend({
+module.exports = Backbone.Model.extend({
 
-			defaults :{
-        frame: '',
-				wrapper: '',
-				rulers: false,
-			},
+  defaults :{
+    frame: '',
+    wrapper: '',
+    rulers: false,
+  },
 
-      initialize: function(config) {
-        var conf = this.conf || {};
-        this.set('frame', new Frame(conf.frame));
-      },
+  initialize(config) {
+    var conf = this.conf || {};
+    this.set('frame', new Frame(conf.frame));
+  },
 
-		});
-	});
+});

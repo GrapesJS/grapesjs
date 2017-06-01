@@ -1,6 +1,4 @@
-define(['backbone', './ComponentView'],
-	function (Backbone, ComponentView) {
+var Backbone = require('backbone');
+var ComponentView = require('./ComponentView');
 
-	return ComponentView.extend({
-	});
-});
+module.exports = ComponentView.extend({});

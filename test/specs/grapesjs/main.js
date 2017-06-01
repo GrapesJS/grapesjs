@@ -1,5 +1,8 @@
-define(['GrapesJS', 'PluginManager', 'chai'],
- function(GrapesJS, PluginManager, chai) {
+define(function(require, exports, module){
+  'use strict';
+  var GrapesJS = require('GrapesJS');
+  var PluginManager = require('PluginManager');
+  var chai = require('chai');
 
   describe('GrapesJS', function() {
 

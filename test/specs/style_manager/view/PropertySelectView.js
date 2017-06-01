@@ -1,8 +1,10 @@
-var path = 'StyleManager/view/';
-define([path + 'PropertySelectView', 'StyleManager/model/Property', 'DomComponents/model/Component'],
-  function(PropertySelectView, Property, Component) {
+define(function(require, exports, module){
+  'use strict';
+  var PropertySelectView = require('undefined');
+  var Property = require('StyleManager/model/Property');
+  var Component = require('DomComponents/model/Component');
 
-    return {
+    module.exports = {
       run : function(){
 
           describe('PropertySelectView', function() {

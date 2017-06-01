@@ -1,14 +1,12 @@
-define(['backbone'],
-  function(Backbone){
+var Backbone = require('backbone');
 
-    return Backbone.Model.extend({
+module.exports = Backbone.Model.extend({
 
-      idAttribute: 'name',
+  idAttribute: 'name',
 
-      defaults :{
-        name: '',
-        width: '',
-      },
+  defaults :{
+    name: '',
+    width: '',
+  },
 
-    });
-  });
+});

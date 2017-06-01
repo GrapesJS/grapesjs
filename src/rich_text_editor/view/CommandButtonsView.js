@@ -1,75 +1,76 @@
-define(['backbone','./CommandButtonView', './CommandButtonSelectView'],
-	function (Backbone, CommandButtonView, CommandButtonSelectView) {
-	return Backbone.View.extend({
+var Backbone = require('backbone');
+var CommandButtonView = require('./CommandButtonView');
+var CommandButtonSelectView = require('./CommandButtonSelectView');
 
-		attributes : {
-			'data-role':	'editor-toolbar',
-		},
+module.exports = Backbone.View.extend({
 
-		initialize: function(o){
-			this.config = o.config || {};
-			var pfx = this.config.stylePrefix || '';
-			this.id = pfx + this.config.toolbarId;
-			this.listenTo(this.collection, 'add', this.addTo);
-			this.$el.data('helper', 1);
-		},
+  attributes : {
+    'data-role':  'editor-toolbar',
+  },
 
-		/**
-     * Add new model to the collection
-     * @param {Model} model
-     * @private
-     * */
-    addTo: function(model){
-      this.add(model);
-    },
+  initialize(o) {
+    this.config = o.config || {};
+    var pfx = this.config.stylePrefix || '';
+    this.id = pfx + this.config.toolbarId;
+    this.listenTo(this.collection, 'add', this.addTo);
+    this.$el.data('helper', 1);
+  },
 
-		/**
-     * Render new model inside the view
-     * @param {Model} model
-     * @param {Object} fragment Fragment collection
-     * @private
-     * */
-    add: function(model, fragment) {
-      var frag = fragment || null;
-      var viewObj = CommandButtonView;
+  /**
+   * Add new model to the collection
+   * @param {Model} model
+   * @private
+   * */
+  addTo(model) {
+    this.add(model);
+  },
 
-      switch (model.get('type')) {
-      	case 'select':
-      		viewObj = CommandButtonSelectView;
-      		break;
-      }
-			var args = model.get('args');
-			var attrs = {
-				'title': model.get('title'),
-				'data-edit': model.get('command'),
-			};
-			if(args)
-				attrs['data-args'] = args;
-      var view = new viewObj({
-        model: model,
-        attributes: attrs,
-      }, this.config);
+  /**
+   * Render new model inside the view
+   * @param {Model} model
+   * @param {Object} fragment Fragment collection
+   * @private
+   * */
+  add(model, fragment) {
+    var frag = fragment || null;
+    var viewObj = CommandButtonView;
 
-      var rendered = view.render().el;
+    switch (model.get('type')) {
+      case 'select':
+        viewObj = CommandButtonSelectView;
+        break;
+    }
+    var args = model.get('args');
+    var attrs = {
+      'title': model.get('title'),
+      'data-edit': model.get('command'),
+    };
+    if(args)
+      attrs['data-args'] = args;
+    var view = new viewObj({
+      model,
+      attributes: attrs,
+    }, this.config);
 
-      if(frag)
-        frag.appendChild(rendered);
-      else
-        this.$el.append(rendered);
-    },
+    var rendered = view.render().el;
 
-		render: function() {
-			var frag = document.createDocumentFragment();
-			this.$el.empty();
+    if(frag)
+      frag.appendChild(rendered);
+    else
+      this.$el.append(rendered);
+  },
 
-			this.collection.each(function(model){
-				this.add(model, frag);
-			}, this);
+  render() {
+    var frag = document.createDocumentFragment();
+    this.$el.empty();
 
-			this.$el.append(frag);
-			this.$el.attr('id',  this.id );
-			return this;
-		}
+    this.collection.each(function(model){
+      this.add(model, frag);
+    }, this);
 
-	});
+    this.$el.append(frag);
+    this.$el.attr('id',  this.id );
+    return this;
+  }
+
 });

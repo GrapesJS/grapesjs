@@ -1,8 +1,9 @@
-var path = 'DomComponents/view/';
-define([path + 'ComponentTextView', 'DomComponents/model/Component'],
-  function(ComponentTextView, Component) {
+define(function(require, exports, module){
+  'use strict';
+  var ComponentTextView = require('undefined');
+  var Component = require('DomComponents/model/Component');
 
-    return {
+    module.exports = {
       run : function(){
 
           describe('ComponentTextView', function() {

@@ -1,25 +1,24 @@
-define([ 'backbone', 'require'],
-  function (Backbone, require) {
-    return Backbone.Collection.extend({
+var Backbone = require('backbone');
 
-      initialize: function(models, opt){
+module.exports = Backbone.Collection.extend({
 
-        this.model  = function(attrs, opts) {
-          var model;
+  initialize(models, opt) {
 
-          switch(1){
+    this.model  = function(attrs, opts) {
+      var model;
 
-            default:
-              if(!this.ClassTag)
-                this.ClassTag = require("SelectorManager/model/Selector");
-              model = new this.ClassTag(attrs, opts);
+      switch(1){
 
-          }
+        default:
+          if(!this.ClassTag)
+            this.ClassTag = require("selector_manager/model/Selector");
+          model = new this.ClassTag(attrs, opts);
 
-          return  model;
-        };
+      }
 
-      },
+      return  model;
+    };
 
-    });
+  },
+
 });

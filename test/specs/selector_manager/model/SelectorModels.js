@@ -1,9 +1,8 @@
-var path = 'SelectorManager/model/';
-define([path + 'Selector',
-        path + 'Selectors'],
-	function(Selector, Selectors) {
+define(function(require, exports, module){
+  'use strict';
+  var Selectors = require('undefined');
 
-    return {
+    module.exports = {
       run : function(){
           describe('Selector', function() {
 

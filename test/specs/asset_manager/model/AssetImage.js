@@ -1,27 +1,25 @@
-define(['AssetManager/model/AssetImage'],
-	function(AssetImage) {
+var AssetImage = require('asset_manager/model/AssetImage');
 
-		return {
-			run: function() {
+module.exports = {
+  run: function() {
 
-				describe('AssetImage', function() {
-					it('Object exists', function() {
-						AssetImage.should.be.exist;
-					});
+    describe('AssetImage', function() {
+      it('Object exists', function() {
+        expect(AssetImage).toExist();
+      });
 
-					it('Has default values', function() {
-						var obj = new AssetImage({});
-						obj.get('type').should.equal("image");
-						obj.get('src').should.equal("");
-						obj.get('unitDim').should.equal("px");
-						obj.get('height').should.equal(0);
-						obj.get('width').should.equal(0);
-						obj.getExtension().should.be.empty;
-						obj.getFilename().should.be.empty;
-					});
+      it('Has default values', function() {
+        var obj = new AssetImage({});
+        expect(obj.get('type')).toEqual('image');
+        expect(obj.get('src')).toNotExist();
+        expect(obj.get('unitDim')).toEqual('px');
+        expect(obj.get('height')).toEqual(0);
+        expect(obj.get('width')).toEqual(0);
+        expect(obj.getExtension()).toNotExist();
+        expect(obj.getFilename()).toNotExist();
+      });
 
-				});
+    });
 
-			}
-		};
-});
+  }
+};

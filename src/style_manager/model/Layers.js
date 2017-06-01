@@ -1,24 +1,23 @@
-define([ 'backbone', './Layer'],
-	function (Backbone, Layer) {
+var Backbone = require('backbone');
+var Layer = require('./Layer');
 
-		return Backbone.Collection.extend({
+module.exports = Backbone.Collection.extend({
 
-			model: Layer,
+  model: Layer,
 
-      initialize: function(){
-        this.idx = 1;
-        this.on('add', this.onAdd);
-        this.on('reset', this.onReset);
-      },
+  initialize() {
+    this.idx = 1;
+    this.on('add', this.onAdd);
+    this.on('reset', this.onReset);
+  },
 
-      onAdd: function(model, c, opts){
-        if(!opts.noIncrement)
-          model.set('index', this.idx++);
-      },
+  onAdd(model, c, opts) {
+    if(!opts.noIncrement)
+      model.set('index', this.idx++);
+  },
 
-      onReset: function(){
-        this.idx = 1;
-      },
+  onReset() {
+    this.idx = 1;
+  },
 
-		});
 });

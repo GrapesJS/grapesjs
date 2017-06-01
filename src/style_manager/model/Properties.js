@@ -1,9 +1,6 @@
-define([ 'backbone', './Property'],
-	function (Backbone, Property) {
+var Backbone = require('backbone');
+var Property = require('./Property');
 
-		return Backbone.Collection.extend({
-
-			model: Property,
-
-		});
+module.exports = Backbone.Collection.extend({
+  model: Property,
 });

@@ -1,28 +1,26 @@
-define(['backbone'],
-	function(Backbone) {
+var Backbone = require('backbone');
 
-		return Backbone.Model.extend({
+module.exports = Backbone.Model.extend({
 
-			defaults: {
-				type: 'text', // text, number, range, select
-				label: '',
-				name: '',
-				min: '',
-				max: '',
-				value: '',
-				target: '',
-				default: '',
-				placeholder: '',
-				changeProp: 0,
-				options: [],
-			},
+  defaults: {
+    type: 'text', // text, number, range, select
+    label: '',
+    name: '',
+    min: '',
+    max: '',
+    value: '',
+    target: '',
+    default: '',
+    placeholder: '',
+    changeProp: 0,
+    options: [],
+  },
 
-			initialize: function(){
-				if (this.get('target')) {
-					this.target = this.get('target');
-					this.unset('target');
-				}
-			},
+  initialize() {
+    if (this.get('target')) {
+      this.target = this.get('target');
+      this.unset('target');
+    }
+  },
 
-		});
-	});
+});

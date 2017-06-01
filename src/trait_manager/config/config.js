@@ -1,6 +1,4 @@
-define(function () {
-	return {
-		stylePrefix: 'trt-',
-		labelContainer: 'Component settings',
-	};
-});
+module.exports = {
+  stylePrefix: 'trt-',
+  labelContainer: 'Component settings',
+};

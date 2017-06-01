@@ -1,8 +1,9 @@
-var path = 'StyleManager/view/';
-define([path + 'SectorView', 'StyleManager/model/Sector'],
-  function(SectorView, Sector) {
+define(function(require, exports, module){
+  'use strict';
+  var SectorView = require('undefined');
+  var Sector = require('StyleManager/model/Sector');
 
-    return {
+    module.exports = {
       run : function(){
 
           describe('SectorView', function() {

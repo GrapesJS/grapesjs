@@ -1,7 +1,9 @@
-define(['TraitManager/model/Trait', 'DomComponents/model/Component'],
-	function(Trait, Component) {
+define(function(require, exports, module){
+  'use strict';
+  var Trait = require('TraitManager/model/Trait');
+  var Component = require('DomComponents/model/Component');
 
-		return {
+		module.exports = {
 			run: function(){
 
 				describe('TraitModels', function() {

@@ -1,13 +1,7 @@
-var modulePath = './../../../test/specs/code_manager';
-
-define([
-				'CodeManager',
-				modulePath + '/model/CodeModels',
-				 ],
-	function(
-					CodeManager,
-					Models
-					) {
+define(function(require, exports, module){
+  'use strict';
+  var CodeManager = require('CodeManager');
+  var Models = require('undefined');
 
 		describe('Code Manager', function() {
 

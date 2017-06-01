@@ -1,22 +1,21 @@
-define(['backbone'],
-	function (Backbone) {
-		return Backbone.Model.extend({
+var Backbone = require('backbone');
 
-			idAttribute: 'command',
+module.exports = Backbone.Model.extend({
 
-			defaults: {
-				command: '',
-				type: '',
-				title: '',
-				class: '',
-        options: [],
-			},
+  idAttribute: 'command',
 
-			initialize: function() {
-				var opts = this.get('options');
-				if(opts.length)
-					this.set('type', 'select');
-			},
+  defaults: {
+    command: '',
+    type: '',
+    title: '',
+    class: '',
+    options: [],
+  },
 
-		});
+  initialize() {
+    var opts = this.get('options');
+    if(opts.length)
+      this.set('type', 'select');
+  },
+
 });

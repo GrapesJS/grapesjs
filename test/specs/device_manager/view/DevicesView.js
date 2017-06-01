@@ -1,8 +1,9 @@
-var path = 'DeviceManager/view/';
-define([path + 'DevicesView', 'DeviceManager/model/Devices'],
-  function(DevicesView, Devices) {
+define(function(require, exports, module){
+  'use strict';
+  var DevicesView = require('undefined');
+  var Devices = require('DeviceManager/model/Devices');
 
-    return {
+    module.exports = {
       run : function(){
           describe('DevicesView', function() {
 

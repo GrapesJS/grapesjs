@@ -1,8 +1,9 @@
-var path = 'Panels/view/';
-define([path + 'PanelsView', 'Panels/model/Panels'],
-  function(PanelsView, Panels) {
+define(function(require, exports, module){
+  'use strict';
+  var PanelsView = require('undefined');
+  var Panels = require('Panels/model/Panels');
 
-    return {
+    module.exports = {
       run : function(){
           describe('PanelsView', function() {
 

@@ -1,22 +1,8 @@
-var modulePath = './../../../test/specs/dom_components';
-
-define([
-				'DomComponents',
-				 modulePath + '/model/Component',
-				 modulePath + '/view/ComponentV',
-				 modulePath + '/view/ComponentsView',
-				 modulePath + '/view/ComponentTextView',
-				 modulePath + '/view/ComponentImageView',
-				 './../test_utils.js'
-				 ],
-	function(DomComponents,
-					ComponentModels,
-					ComponentView,
-					ComponentsView,
-					ComponentTextView,
-					ComponentImageView,
-					utils
-					) {
+define(function(require, exports, module){
+  'use strict';
+  var DomComponents = require('DomComponents');
+  var ComponentImageView = require('undefined');
+  var utils = require('./../test_utils.js');
 
 		describe('DOM Components', function() {
 

@@ -1,15 +1,7 @@
-var modulePath = './../../../test/specs/parser';
-
-define([
-        'Parser',
-        modulePath + '/model/ParserHtml',
-        modulePath + '/model/ParserCss'
-         ],
-  function(
-          Parser,
-          ParserHtml,
-          ParserCss
-          ) {
+define(function(require, exports, module){
+  'use strict';
+  var Parser = require('Parser');
+  var ParserCss = require('undefined');
 
     describe('Parser', function() {
 
