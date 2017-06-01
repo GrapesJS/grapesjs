@@ -19,6 +19,9 @@ Webpage Demo - http://grapesjs.com/demo.html
 Newsletter Demo - http://grapesjs.com/demo-newsletter-editor.html
 
 
+
+
+
 ## Features
 
 
@@ -42,45 +45,46 @@ Newsletter Demo - http://grapesjs.com/demo-newsletter-editor.html
 * Default built-in commands (basically for creating and managing different components)
 
 
+
+
+
 ## Installation
 
-You can get GrapesJS with `npm install grapesjs` or via `git clone https://github.com/artf/grapesjs.git`.
+* `npm i grapesjs` / `yarn add grapesjs`
+* `git clone https://github.com/artf/grapesjs.git`
+
 For development purpose you should follow instructions below.
+
+
+
 
 
 ## Development
 
-GrapesJS uses [RequireJS](http://requirejs.org/) to organize its files inside `src` folder and [Grunt](http://gruntjs.com/) for build them to `dist`
+GrapesJS uses [Webpack2](https://github.com/webpack/webpack) as a module bundler and [Babel](https://github.com/babel/babel) as a compiler.
 
-Clone the repository and enter inside the folder
+Clone the repository and install all the necessary dependencies
 
 ```sh
-$ npm install -g grunt-cli
 $ git clone https://github.com/artf/grapesjs.git
 $ cd grapesjs
+$ npm i
 ```
 
-Install all necessary dependencies
-
-```sh
-$ npm install
-```
-
-Build GrapesJS
-
-```sh
-$ npm run build
-```
-
-Launch server, which also gonna watch some files, and try out the demo on `localhost:8000`
+Start the dev server
 
 ```sh
 $ npm start
 ```
 
-Tests are already available inside browser on `localhost:8000/test`
+Build before the commit. This will also increase the patch level version of the package
 
-If [Grunt](http://gruntjs.com/) is already installed globally you could change the port by using `grunt dev --port 9000`
+```sh
+$ npm run build
+```
+
+
+
 
 
 ## Usage
@@ -126,14 +130,23 @@ You could also grab the content directly from the element with `fromElement` pro
 For more practical example I suggest to look up the code inside this demo: http://grapesjs.com/demo.html
 
 
-## Configuration
+
+
+
+## Documentation
 
 Check the getting started guide here: [wiki]
 
 
+
+
+
 ## API
 
-API References (draft) could be found here: [API-Reference]
+API References could be found here: [API-Reference]
+
+
+
 
 
 ## Testing
@@ -142,16 +155,8 @@ API References (draft) could be found here: [API-Reference]
 $ npm test
 ```
 
-## Acknowledgements
 
-GrapesJS is built on top of this amazing open source projects:
 
-* [Backbone] - gives Backbone to web applications
-* [Backbone.Undo] - a simple Backbone undo-manager
-* [Keymaster] - keyboard shortcuts
-* [CodeMirror] - versatile text editor
-* [Spectrum] - no hassle colorpicker
-* [FontAwesome] - the iconic font and CSS framework
 
 
 ## Sponsors
@@ -161,6 +166,9 @@ The project is sponsored by
 [![Sendloop](http://grapesjs.com/img/sendloop-logo-l.png)](https://sendloop.com)
 
 
+
+
+
 ## Support
 
 If you like the project support it with a donation of your choice.
@@ -168,17 +176,14 @@ If you like the project support it with a donation of your choice.
 [![PayPalMe](http://grapesjs.com/img/ppme.png)](https://paypal.me/grapesjs)
 
 
+
+
+
 ## License
 
 BSD 3-clause
 
 
-[Backbone]: <http://backbonejs.org/>
-[Backbone.Undo]: <http://backbone.undojs.com/>
-[Keymaster]: <https://github.com/madrobby/keymaster>
-[CodeMirror]: <http://codemirror.net/>
-[Spectrum]: <https://github.com/bgrins/spectrum>
-[FontAwesome]: <https://fortawesome.github.io/Font-Awesome/>
 [wiki]: <https://github.com/artf/grapesjs/wiki>
 [API-Reference]: <https://github.com/artf/grapesjs/wiki/API-Reference>
 [CMS]: <https://it.wikipedia.org/wiki/Content_management_system>
