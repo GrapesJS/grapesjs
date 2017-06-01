@@ -1,8 +1,9 @@
-var path = 'Parser/';
-define([path + 'model/ParserHtml', path + 'model/ParserCss', 'DomComponents'],
-  function(ParserHtml, ParserCss, DomComponents) {
+define(function(require, exports, module){
+  'use strict';
+  var ParserCss = require('undefined');
+  var DomComponents = require('DomComponents');
 
-    return {
+    module.exports = {
       run : function(){
 
         describe('ParserHtml', function() {

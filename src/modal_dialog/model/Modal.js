@@ -1,12 +1,9 @@
-define(['backbone'],
-	function(Backbone) {
-		return Backbone.Model.extend({
+var Backbone = require('backbone');
 
-			defaults: {
-				title: '',
-				content: '',
-				open: false,
-			}
-
-    });
-	});
+module.exports = Backbone.Model.extend({
+  defaults: {
+    title: '',
+    content: '',
+    open: false,
+  }
+});

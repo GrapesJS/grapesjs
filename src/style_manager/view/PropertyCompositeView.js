@@ -1,142 +1,146 @@
-define(['backbone','./PropertyView', 'text!./../templates/propertyComposite.html','require'],
-	function (Backbone, PropertyView, propertyTemplate, require) {
-	/**
-	 * @class PropertyCompositeView
-	 * */
-	return PropertyView.extend({
+var Backbone = require('backbone');
+var PropertyView = require('./PropertyView');
 
-		template: _.template(propertyTemplate),
+module.exports = PropertyView.extend({
 
-		initialize: function(o) {
-			PropertyView.prototype.initialize.apply(this, arguments);
-			_.bindAll(this, 'build');
-			this.config = o.config || {};
-			this.className = this.className + ' '+ this.pfx +'composite';
-		},
+  template: _.template(`
+  <div class="<%= pfx %>field <%= pfx %>composite">
+  	<span id='<%= pfx %>input-holder'></span>
+  </div>
+  <div style="clear:both"></div>`),
 
-		/**
-		 * Fired when the input value is updated
-		 */
-		valueUpdated: function(){
-			if(!this.model.get('detached'))
-				PropertyView.prototype.valueUpdated.apply(this, arguments);
-		},
+  initialize(o) {
+    PropertyView.prototype.initialize.apply(this, arguments);
+    _.bindAll(this, 'build');
+    this.config = o.config || {};
+    this.className = this.className + ' '+ this.pfx +'composite';
+  },
 
-		/**
-		 * Renders input
-		 * */
-		renderInput: function() {
-			var props	= this.model.get('properties');
-			var detached = this.model.get('detached');
-			if(props && props.length){
-				if(!this.$input)
-					this.$input = $('<input>', {value: 0, type: 'hidden' });
+  /**
+   * Fired when the input value is updated
+   */
+  valueUpdated(...args) {
+    if(!this.model.get('detached'))
+      PropertyView.prototype.valueUpdated.apply(this, args);
+  },
 
-				if(!this.props){
-					this.props = this.model.get('properties');
-				}
+  /**
+   * Renders input
+   * */
+  renderInput() {
+    var model = this.model;
+    var props = model.get('properties') || [];
+    var self = this;
 
-				if(!this.$props){
-					//Not yet supported nested composite
-					this.props.each(function(prop, index){
-						if(prop && prop.get('type') == 'composite'){
-							this.props.remove(prop);
-							console.warn('Nested composite types not yet allowed.');
-						}
-					}, this);
+    if (props.length) {
+      if(!this.$input)
+        this.$input = $('<input>', {value: 0, type: 'hidden' });
 
-					var PropertiesView = require('./PropertiesView');
-					var propsView = new PropertiesView(this.getPropsConfig());
-					this.$props = propsView.render().$el;
-					this.$el.find('#'+ this.pfx +'input-holder').html(this.$props);
-				}
-			}
-		},
+      if (!this.props) {
+        this.props = model.get('properties');
+      }
 
-		/**
-		 * Returns configurations that should be past to properties
-		 * @param {Object} opts
-		 * @return {Object}
-		 */
-		getPropsConfig: function(opts){
-			var that = this;
+      if (!this.$props) {
+        //Not yet supported nested composite
+        this.props.each(function(prop, index) {
+          if(prop && prop.get('type') == 'composite') {
+            this.props.remove(prop);
+            console.warn('Nested composite types not yet allowed.');
+          }
+          prop.parent = model;
+        }, this);
 
-			result = {
-				config: this.config,
-				collection: this.props,
-				target: this.target,
-				propTarget: this.propTarget,
-				// On any change made to children I need to update composite value
-				onChange: function(el, view, opts){
-					var result = that.build();
-					that.model.set('value', result, opts);
-				},
-				// Each child property will receive a full composite string, eg. '0px 0px 10px 0px'
-				// I need to extract from that string the corresponding one to that property.
-				customValue: function(property, mIndex){
-					return that.valueOnIndex(mIndex, property);
-				},
-			};
+        var PropertiesView = require('./PropertiesView');
+        var propsView = new PropertiesView(this.getPropsConfig());
+        this.$props = propsView.render().$el;
+        this.$el.find('#'+ this.pfx +'input-holder').html(this.$props);
+      }
+    }
+  },
 
-			// If detached let follow its standard flow
-			if(this.model.get('detached'))
-				delete result.onChange;
+  /**
+   * Returns configurations that should be past to properties
+   * @param {Object} opts
+   * @return {Object}
+   */
+  getPropsConfig(opts) {
+    var that = this;
 
-			return result;
-		},
+    var result = {
+      config: this.config,
+      collection: this.props,
+      target: this.target,
+      propTarget: this.propTarget,
+      // On any change made to children I need to update composite value
+      onChange(el, view, opts) {
+        var result = that.build();
+        that.model.set('value', result, opts);
+      },
+      // Each child property will receive a full composite string, eg. '0px 0px 10px 0px'
+      // I need to extract from that string the corresponding one to that property.
+      customValue(property, mIndex) {
+        return that.valueOnIndex(mIndex, property);
+      },
+    };
 
-		/**
-		 * Get default value of the property
-		 * @return {string}
-		 * */
-		getDefaultValue: function(){
-			var str = '';
-			this.props.each(function(prop, index){
-				str += prop.get('defaults') + prop.get('unit') + ' ';
-			});
-			return str.replace(/ +$/,'');
-		},
+    // If detached let follow its standard flow
+    if(this.model.get('detached'))
+      delete result.onChange;
 
-		/**
-		 * Extract string from composite value
-		 * @param {number} index Index
-		 * @param {Object} view Property view
-		 * @return {string}
-		 * */
-		valueOnIndex: function(index, view){
-			var result = null;
-			var a = this.getComponentValue().split(' ');
-			if(a.length && a[index]){
-				result = a[index];
-				if(view && view.model && view.model.get('functionName')){
-					var v = this.fetchFromFunction(result);
-					if(v)
-						result = v;
-				}
-			}
-			return result;
-		},
+    return result;
+  },
 
-		/**
-		 * Build composite value
-		 * @param {Object} selectedEl Selected element
-		 * @param {Object} propertyView Property view
-		 * @param {Object} opts Options
-		 * @return {string}
-		 * */
-		build: function(selectedEl, propertyView, opts){
-			var result 	= '';
-			this.model.get('properties').each(function(prop){
-				var v		= prop.getValue();
-					func	= prop.get('functionName');
+  /**
+   * Get default value of the property
+   * @return {string}
+   * */
+  getDefaultValue() {
+    var str = '';
+    this.props.each((prop, index) => {
+      str += prop.get('defaults') + prop.get('unit') + ' ';
+    });
+    return str.replace(/ +$/,'');
+  },
 
-				if(func)
-					v =  func + '(' + v + ')';
+  /**
+   * Extract string from composite value
+   * @param {number} index Index
+   * @param {Object} view Property view
+   * @return {string}
+   * */
+  valueOnIndex(index, view) {
+    var result = null;
+    var a = this.getComponentValue().split(' ');
+    if(a.length && a[index]){
+      result = a[index];
+      if(view && view.model && view.model.get('functionName')){
+        var v = this.fetchFromFunction(result);
+        if(v)
+          result = v;
+      }
+    }
+    return result;
+  },
 
-				result 	+= v + ' ';
-			});
-			return result.replace(/ +$/,'');
-		},
+  /**
+   * Build composite value
+   * @param {Object} selectedEl Selected element
+   * @param {Object} propertyView Property view
+   * @param {Object} opts Options
+   * @return {string}
+   * */
+  build(selectedEl, propertyView, opts) {
+    var result   = '';
+    this.model.get('properties').each(prop => {
+      var v    = prop.getValue();
+        func  = prop.get('functionName');
 
-	});
+      if(func)
+        v =  func + '(' + v + ')';
+
+      result   += v + ' ';
+    });
+    return result.replace(/ +$/,'');
+  },
+
 });

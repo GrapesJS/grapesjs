@@ -1,14 +1,12 @@
-define(function () {
-	return {
+module.exports = {
 
-    // Style prefix
-    stylePrefix: 'css-',
+  // Style prefix
+  stylePrefix: 'css-',
 
-    // Custom CSS string to render on top
-    'staticRules': '',
+  // Custom CSS string to render on top
+  'staticRules': '',
 
-    // Default CSS style
-    rules: [],
+  // Default CSS style
+  rules: [],
 
-	};
-});
+};

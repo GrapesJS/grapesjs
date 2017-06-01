@@ -1,8 +1,9 @@
-var path = 'StyleManager/view/';
-define([path + 'LayerView', 'StyleManager/model/Layers'],
-  function(LayerView, Layers) {
+define(function(require, exports, module){
+  'use strict';
+  var LayerView = require('undefined');
+  var Layers = require('StyleManager/model/Layers');
 
-    return {
+    module.exports = {
       run : function(){
 
           describe('LayerView', function() {

@@ -1,8 +1,9 @@
-var path = 'DomComponents/view/';
-define([path + 'ComponentTextView', 'DomComponents/model/Component'],
-  function(ComponentTextView, Component) {
+define(function(require, exports, module){
+  'use strict';
+  var ComponentTextView = require('undefined');
+  var Component = require('DomComponents/model/Component');
 
-    return {
+    module.exports = {
       run : function(){
 
           describe('ComponentTextView', function() {
@@ -35,7 +36,7 @@ define([path + 'ComponentTextView', 'DomComponents/model/Component'],
             });
 
             it('Component empty', function() {
-              $fixture.html().should.equal('<div></div>');
+              $fixture.html().should.equal('<div data-highlightable="1"></div>');
             });
 
             it('Input content is stored in model', function() {

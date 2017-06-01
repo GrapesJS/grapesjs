@@ -1,67 +1,68 @@
-define(['backbone', './Asset', './AssetImage'],
-	function (Backbone, Asset, AssetImage) {
-		return Backbone.Collection.extend({
+var Backbone = require('backbone');
+var Asset = require('./Asset');
+var AssetImage = require('./AssetImage');
 
-			model:	AssetImage,
+module.exports = Backbone.Collection.extend({
 
-      initialize: function(models, opt){
+	model:	AssetImage,
 
-        this.model = function(attrs, options) {
-          var model;
-          switch(attrs.type){
-            default:
-              model = new AssetImage(attrs, options);
-          }
-          return  model;
-        };
+  initialize(models, opt) {
 
-      },
+    this.model = (attrs, options) => {
+      var model;
+      switch(attrs.type){
+        default:
+          model = new AssetImage(attrs, options);
+      }
+      return  model;
+    };
 
-      /**
-       * Add new image asset to the collection
-       * @param {string} url URL of the image
-       * @param {Object} opts Options
-       * @return {this}
-       * @private
-       */
-      addImg: function(url, opts){
-        this.add({
-          type: 'image',
-          src: url,
-        }, opts);
-        return this;
-      },
+  },
 
-      /**
-       * Prevent inserting assets with the same 'src'
-       * Seems like idAttribute is not working with dynamic model assignament
-       * @private
-       */
-      add: function(models, opt) {
-        var mods = [];
-        models = models instanceof Array ? models : [models];
+  /**
+   * Add new image asset to the collection
+   * @param {string} url URL of the image
+   * @param {Object} opts Options
+   * @return {this}
+   * @private
+   */
+  addImg(url, opts) {
+    this.add({
+      type: 'image',
+      src: url,
+    }, opts);
+    return this;
+  },
 
-        for (var i = 0, len = models.length; i < len; i++) {
-          var model = models[i];
+  /**
+   * Prevent inserting assets with the same 'src'
+   * Seems like idAttribute is not working with dynamic model assignament
+   * @private
+   */
+  add(models, opt) {
+    var mods = [];
+    models = models instanceof Array ? models : [models];
 
-          if(typeof model === 'string')
-            model = {src: model, type: 'image'};
+    for (var i = 0, len = models.length; i < len; i++) {
+      var model = models[i];
 
-          if(!model || !model.src)
-            continue;
+      if(typeof model === 'string')
+        model = {src: model, type: 'image'};
 
-          var found = this.where({src: model.src});
+      if(!model || !model.src)
+        continue;
 
-          if(!found.length)
-            mods.push(model);
-        }
+      var found = this.where({src: model.src});
 
-        if(mods.length == 1)
-          mods = mods[0];
+      if(!found.length)
+        mods.push(model);
+    }
 
-        return Backbone.Collection.prototype.add.apply(this, [mods, opt]);
-      },
+    if(mods.length == 1)
+      mods = mods[0];
+
+    return Backbone.Collection.prototype.add.apply(this, [mods, opt]);
+  },
 
 
-		});
 });

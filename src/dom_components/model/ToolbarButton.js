@@ -1,13 +1,10 @@
-define(['backbone'],
-  function(Backbone) {
+var Backbone = require('backbone');
 
-    return Backbone.Model.extend({
+module.exports = Backbone.Model.extend({
 
-      defaults: {
-	       command: '',
-         attributes: {},
-      },
+  defaults: {
+     command: '',
+     attributes: {},
+  },
 
-
-    });
-  });
+});

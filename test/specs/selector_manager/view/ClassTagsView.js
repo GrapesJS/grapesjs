@@ -1,8 +1,9 @@
-var path = 'SelectorManager/view/';
-define([path + 'ClassTagsView', 'SelectorManager/model/Selectors'],
-  function(ClassTagsView, Selectors) {
+define(function(require, exports, module){
+  'use strict';
+  var ClassTagsView = require('undefined');
+  var Selectors = require('SelectorManager/model/Selectors');
 
-    return {
+    module.exports = {
       run : function(){
           describe('ClassTagsView', function() {
 

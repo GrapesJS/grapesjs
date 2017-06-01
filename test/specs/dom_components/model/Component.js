@@ -1,15 +1,15 @@
-define(['DomComponents',
-        'DomComponents/model/Component',
-        'DomComponents/model/ComponentImage',
-        'DomComponents/model/ComponentText',
-        'DomComponents/model/ComponentLink',
-        'DomComponents/model/ComponentMap',
-        'DomComponents/model/ComponentVideo',
-        'DomComponents/model/Components'],
-	function(DomComponents, Component, ComponentImage, ComponentText,
-    ComponentLink, ComponentMap, ComponentVideo, Components) {
+define(function(require, exports, module){
+  'use strict';
+  var DomComponents = require('DomComponents');
+  var Component = require('DomComponents/model/Component');
+  var ComponentImage = require('DomComponents/model/ComponentImage');
+  var ComponentText = require('DomComponents/model/ComponentText');
+  var ComponentLink = require('DomComponents/model/ComponentLink');
+  var ComponentMap = require('DomComponents/model/ComponentMap');
+  var ComponentVideo = require('DomComponents/model/ComponentVideo');
+  var Components = require('DomComponents/model/Components');
 
-    return {
+    module.exports = {
       run : function(){
           var obj;
           var dcomp;

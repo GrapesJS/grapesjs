@@ -1,8 +1,8 @@
-var path = 'Commands/model/';
-define([path + 'Command', path + 'Commands'],
-  function(Command, Commands) {
+define(function(require, exports, module){
+  'use strict';
+  var Commands = require('undefined');
 
-    return {
+    module.exports = {
       run : function(){
         describe('Command', function() {
           var obj;

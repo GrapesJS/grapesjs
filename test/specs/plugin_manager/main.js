@@ -1,6 +1,6 @@
-var modulePath = './../../../test/specs/plugin_manager';
-
-define(['PluginManager'], function(PluginManager) {
+define(function(require, exports, module){
+  'use strict';
+  var PluginManager = require('PluginManager');
 
     describe('PluginManager', function() {
 

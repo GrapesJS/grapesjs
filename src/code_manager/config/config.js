@@ -1,8 +1,6 @@
-define(function () {
-	return {
-		// Style prefix
-		stylePrefix: 'cm-',
+module.exports = {
+  // Style prefix
+  stylePrefix: 'cm-',
 
-		inlineCss: false,
-	};
-});
+  inlineCss: false,
+};

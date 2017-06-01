@@ -1,8 +1,9 @@
-var path = 'CssComposer/view/';
-define([path + 'CssRuleView', 'CssComposer/model/CssRule'],
-  function(CssRuleView, CssRule) {
+define(function(require, exports, module){
+  'use strict';
+  var CssRuleView = require('undefined');
+  var CssRule = require('CssComposer/model/CssRule');
 
-    return {
+    module.exports = {
       run : function(){
           describe('CssRuleView', function() {
 
@@ -101,7 +102,7 @@ define([path + 'CssRuleView', 'CssComposer/model/CssRule'],
 
               it('Render media queries', function() {
                 this.regView.model.set('style', {'prop':'value'});
-                this.regView.model.set('maxWidth', '999px');
+                this.regView.model.set('mediaText', '(max-width: 999px)');
                 this.regView.$el.html().should.equal('@media (max-width: 999px){.test1.test2{prop:value;}}');
               });
 

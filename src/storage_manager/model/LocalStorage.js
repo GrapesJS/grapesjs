@@ -1,56 +1,58 @@
-define(['backbone'],
-	function (Backbone) {
+var Backbone = require('backbone');
 
-		return Backbone.Model.extend({
+module.exports = Backbone.Model.extend({
 
-			defaults: {
-				checkLocal: true,
-			},
+  defaults: {
+    checkLocal: true,
+  },
 
-			/**
-			* @private
-			*/
-			store: function(data) {
-				this.checkStorageEnvironment();
+  /**
+  * @private
+  */
+  store(data, clb) {
+    this.checkStorageEnvironment();
 
-				for(var key in data)
-					localStorage.setItem(key, data[key]);
-			},
+    for(var key in data)
+      localStorage.setItem(key, data[key]);
 
-			/**
-			 * @private
-			 */
-			load: function(keys){
-				this.checkStorageEnvironment();
-				var result = {};
+    if (typeof clb == 'function') {
+      clb();
+    }
+  },
 
-				for (var i = 0, len = keys.length; i < len; i++){
-					var value = localStorage.getItem(keys[i]);
-					if(value)
-						result[keys[i]] = value;
-				}
+  /**
+   * @private
+   */
+  load(keys) {
+    this.checkStorageEnvironment();
+    var result = {};
 
-				return result;
-			},
+    for (var i = 0, len = keys.length; i < len; i++){
+      var value = localStorage.getItem(keys[i]);
+      if(value)
+        result[keys[i]] = value;
+    }
 
-			/**
-			 * @private
-			 */
-			remove: function(keys) {
-				this.checkStorageEnvironment();
+    return result;
+  },
 
-				for (var i = 0, len = keys.length; i < len; i++)
-					localStorage.removeItem(keys[i]);
-			},
+  /**
+   * @private
+   */
+  remove(keys) {
+    this.checkStorageEnvironment();
 
-			/**
-			 * Check storage environment
-			 * @private
-			 * */
-			checkStorageEnvironment: function() {
-				if(this.get('checkLocal') && !localStorage)
-					console.warn("Your browser doesn't support localStorage");
-			},
+    for (var i = 0, len = keys.length; i < len; i++)
+      localStorage.removeItem(keys[i]);
+  },
 
-		});
+  /**
+   * Check storage environment
+   * @private
+   * */
+  checkStorageEnvironment() {
+    if(this.get('checkLocal') && !localStorage)
+      console.warn("Your browser doesn't support localStorage");
+  },
+
 });

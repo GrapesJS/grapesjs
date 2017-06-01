@@ -1,417 +1,501 @@
-define(function(require) {
-		/**
-		 * @class SelectComponent
-		 * @private
-		 * */
-		 var ToolbarView = require('DomComponents/view/ToolbarView');
-		 var Toolbar = require('DomComponents/model/Toolbar');
+var ToolbarView = require('dom_components/view/ToolbarView');
+var Toolbar = require('dom_components/model/Toolbar');
+var key = require('keymaster');
 
-		return {
+module.exports = {
 
-			init: function(o){
-				_.bindAll(this, 'onHover', 'onOut', 'onClick', 'onKeyPress');
-			},
+  init(o) {
+    _.bindAll(this, 'onHover', 'onOut', 'onClick', 'onKeyPress');
+  },
 
 
-			enable: function() {
-				_.bindAll(this, 'copyComp', 'pasteComp', 'onFrameScroll');
-				this.frameOff = this.canvasOff = this.adjScroll = null;
-				var config	= this.config.em.get('Config');
-				this.startSelectComponent();
-				this.toggleClipboard(config.copyPaste);
-				var em = this.config.em;
-				em.on('change:canvasOffset', this.onFrameScroll);
-				em.on('change:selectedComponent', this.updateToolbar, this);
-			},
+  enable() {
+    _.bindAll(this, 'copyComp', 'pasteComp', 'onFrameScroll');
+    this.frameOff = this.canvasOff = this.adjScroll = null;
+    var config  = this.config.em.get('Config');
+    this.startSelectComponent();
+    this.toggleClipboard(config.copyPaste);
+    var em = this.config.em;
 
-			/**
-			 * Toggle clipboard function
-			 * @param  {Boolean} active
-			 * @return {this}
-			 * @private
-			 */
-			toggleClipboard: function(active){
-				var en = active || 0;
-				if(en){
-					key('⌘+c, ctrl+c', this.copyComp);
-					key('⌘+v, ctrl+v', this.pasteComp);
-				}else{
-					key.unbind('⌘+c, ctrl+c');
-					key.unbind('⌘+v, ctrl+v');
-				}
-			},
+    em.on('component:update', this.updateAttached, this);
+    em.on('change:canvasOffset', this.updateAttached, this);
+    em.on('change:selectedComponent', this.updateToolbar, this);
+  },
 
-			/**
-			 * Copy component to the clipboard
-			 * @private
-			 */
-			copyComp: function() {
-				var el = this.editorModel.get('selectedComponent');
-				if(el && el.get('copyable'))
-					this.editorModel.set('clipboard', el);
-			},
+  /**
+   * Toggle clipboard function
+   * @param  {Boolean} active
+   * @return {this}
+   * @private
+   */
+  toggleClipboard(active) {
+    var en = active || 0;
+    if(en){
+      key('⌘+c, ctrl+c', this.copyComp);
+      key('⌘+v, ctrl+v', this.pasteComp);
+    }else{
+      key.unbind('⌘+c, ctrl+c');
+      key.unbind('⌘+v, ctrl+v');
+    }
+  },
 
-			/**
-			 * Paste component from clipboard
-			 * @private
-			 */
-			pasteComp: function() {
-				var clp = this.editorModel.get('clipboard'),
-						sel = this.editorModel.get('selectedComponent');
-				if(clp && sel && sel.collection){
-					var index = sel.collection.indexOf(sel),
-							clone = clp.clone();
-					sel.collection.add(clone, { at: index + 1 });
-				}
-			},
+  /**
+   * Copy component to the clipboard
+   * @private
+   */
+  copyComp() {
+    var el = this.editorModel.get('selectedComponent');
+    if(el && el.get('copyable'))
+      this.editorModel.set('clipboard', el);
+  },
 
-			/**
-			 * Start select component event
-			 * @private
-			 * */
-			startSelectComponent: function() {
-				this.selEl = $(this.getCanvasBody()).find('*');
-				this.selEl.on('mouseover', this.onHover)
-					.on('mouseout', this.onOut)
-					.on('click', this.onClick);
-				var cw = this.getContentWindow();
-				cw.on('scroll', this.onFrameScroll);
-				cw.on('keydown', this.onKeyPress);
-			},
+  /**
+   * Paste component from clipboard
+   * @private
+   */
+  pasteComp() {
+    var clp = this.editorModel.get('clipboard'),
+        sel = this.editorModel.get('selectedComponent');
+    if(clp && sel && sel.collection){
+      var index = sel.collection.indexOf(sel),
+          clone = clp.clone();
+      sel.collection.add(clone, { at: index + 1 });
+    }
+  },
 
-			/**
-			 * Stop select component event
-			 * @private
-			 * */
-			stopSelectComponent: function() {
-				if(this.selEl)
-					this.selEl.trigger('mouseout').off('mouseover', this.onHover)
-						.off('mouseout', this.onOut)
-						.off('click', this.onClick);
-				this.selEl = null;
-				var cw = this.getContentWindow();
-				cw.off('scroll', this.onFrameScroll);
-				cw.off('keydown', this.onKeyPress);
-			},
+  /**
+   * Returns canavs body el
+   */
+  getCanvasBodyEl() {
+    if(!this.$bodyEl) {
+      this.$bodyEl = $(this.getCanvasBody());
+    }
+    return this.$bodyEl;
+  },
 
-			/**
-			 * On key press event
-			 * @private
-			 * */
-			onKeyPress: function(e) {
-				var key = e.which || e.keyCode;
-				var comp = this.editorModel.get('selectedComponent');
-				var focused = this.frameEl.contentDocument.activeElement.tagName !== 'BODY';
+  /**
+   * Start select component event
+   * @private
+   * */
+  startSelectComponent() {
+   this.toggleSelectComponent(1);
+  },
 
-				// On CANC (46) or Backspace (8)
-				if(key == 8 || key == 46) {
-					if(!focused)
-						e.preventDefault();
-					if(comp && !focused) {
-						if(!comp.get('removable'))
-							return;
-						comp.set('status','');
-						comp.destroy();
-						this.hideBadge();
-						this.clean();
-						this.hideHighlighter();
-						this.editorModel.set('selectedComponent', null);
-					}
-				}
-			},
+  /**
+   * Stop select component event
+   * @private
+   * */
+  stopSelectComponent() {
+   this.toggleSelectComponent();
+  },
 
-			/**
-			 * Hover command
-			 * @param {Object}	e
-			 * @private
-			 */
-			onHover: function(e) {
-				e.stopPropagation();
-				var trg = e.target;
-				// Adjust tools scroll top
-				if(!this.adjScroll){
-					this.adjScroll = 1;
-					this.onFrameScroll(e);
-				}
-				var pos = this.getElementPos(trg);
-			  this.updateBadge(trg, pos);
-				// Not mirrored
-			  this.updateHighlighter(trg, pos);
-			},
+  /**
+   * Toggle select component event
+   * @private
+   * */
+  toggleSelectComponent(enable) {
+    var el = '*';
+    var method = enable ? 'on' : 'off';
+    this.getCanvasBodyEl()
+      [method]('mouseover', el, this.onHover)
+      [method]('mouseout', el, this.onOut)
+      [method]('click', el, this.onClick);
 
-			/**
-			 * Out command
-			 * @param {Object}	e
-			 * @private
-			 */
-			onOut: function(e) {
-				e.stopPropagation();
-			  this.hideBadge();
-				this.hideHighlighter();
-			},
+    var cw = this.getContentWindow();
+    cw[method]('scroll', this.onFrameScroll);
+    cw[method]('keydown', this.onKeyPress);
+  },
 
-			/**
-			 * Hide Highlighter element
-			 */
-			hideHighlighter: function () {
-				this.canvas.getHighlighter().style.display = 'none';
-			},
+  /**
+   * On key press event
+   * @private
+   * */
+  onKeyPress(e) {
+    var key = e.which || e.keyCode;
+    var comp = this.editorModel.get('selectedComponent');
+    var focused = this.frameEl.contentDocument.activeElement.tagName !== 'BODY';
 
-			/**
-			 * Hover command
-			 * @param {Object}	e
-			 * @private
-			 */
-			onClick: function(e) {
-				var m = $(e.target).data('model');
-				if(!m)
-					return;
-				var s	= m.get('stylable');
-				if(!(s instanceof Array) && !s)
-					return;
-				this.onSelect(e, e.target);
-			},
+    // On CANC (46) or Backspace (8)
+    if(key == 8 || key == 46) {
+      if(!focused)
+        e.preventDefault();
+      if(comp && !focused) {
+        if(!comp.get('removable'))
+          return;
+        comp.set('status','');
+        comp.destroy();
+        this.hideBadge();
+        this.clean();
+        this.hideHighlighter();
+        this.editorModel.set('selectedComponent', null);
+      }
+    }
+  },
 
-			/**
-			 * Update badge for the component
-			 * @param {Object} Component
-			 * @param {Object} pos Position object
-			 * @private
-			 * */
-			updateBadge: function(el, pos) {
-				var $el = $(el);
-				this.cacheEl = el;
-				var model = $el.data("model");
-				if(!model || !model.get('badgable'))
-					return;
-				var badge = this.getBadge();
-				badge.innerHTML = model.getName();
-				var bStyle = badge.style;
-				var u = 'px';
-				bStyle.display = 'block';
-				var canvasPos = this.canvas.getCanvasView().getPosition();
-				var badgeH = badge ? badge.offsetHeight : 0;
-				var badgeW = badge ? badge.offsetWidth : 0;
-				var top = pos.top - badgeH < canvasPos.top ? canvasPos.top : pos.top - badgeH;
-				var left = pos.left + badgeW < canvasPos.left ? canvasPos.left : pos.left;
-				bStyle.top = top + u;
-				bStyle.left = left + u;
-			},
+  /**
+   * Hover command
+   * @param {Object}  e
+   * @private
+   */
+  onHover(e) {
+    e.stopPropagation();
+    var trg = e.target;
 
-			/**
-			 * Update highlighter element
-			 * @param {HTMLElement} el
-			 * @param {Object} pos Position object
-			 * @private
-			 */
-			updateHighlighter: function(el, pos) {
-				var hlEl = this.canvas.getHighlighter();
-				var hlStyle = hlEl.style;
-				var unit = 'px';
-				hlStyle.left = pos.left + unit;
-				hlStyle.top = pos.top + unit;
-				hlStyle.height = pos.height + unit;
-				hlStyle.width = pos.width + unit;
-				hlStyle.display = 'block';
-			},
+    // Adjust tools scroll top
+    if(!this.adjScroll){
+      this.adjScroll = 1;
+      this.onFrameScroll(e);
+      this.updateAttached();
+    }
 
-			/**
-			 * Say what to do after the component was selected
-			 * @param {Object}	e
-			 * @param {Object}	el
-			 * @private
-			 * */
-			onSelect: function(e, el) {
-				e.stopPropagation();
-				var md 	= this.editorModel.get('selectedComponent');
-				this.cleanPrevious(md);
-				var $el = $(el);
-				var nMd = $el.data('model');
-				if(nMd){
-					var mirror = nMd.get('mirror');
-					nMd = mirror ? mirror : nMd;
+    var pos = this.getElementPos(trg);
+    this.updateBadge(trg, pos);
+    this.updateHighlighter(trg, pos);
+    this.showElementOffset(trg, pos);
+  },
 
-					// Close all opened components inside Navigator
-					var opened = this.em.get('opened');
-					for (var cid in opened){
-						var m = opened[cid];
-						m.set('open', 0);
-					}
-					var parent = nMd.collection ? nMd.collection.parent : null;
-					while(parent) {
-						parent.set('open', 1);
-						opened[parent.cid] = parent;
-						parent = parent.collection ? parent.collection.parent : null;
-					}
+  /**
+   * Out command
+   * @param {Object}  e
+   * @private
+   */
+  onOut(e) {
+    e.stopPropagation();
+    this.hideBadge();
+    this.hideHighlighter();
+    this.hideElementOffset();
+  },
 
-					this.editorModel.set('selectedComponent', nMd);
-					nMd.set('status','selected');
-					//this.updateToolbar(nMd);
-				}
-			},
+  /**
+   * Show element offset viewer
+   * @param {HTMLElement}  el
+   * @param {Object} pos
+   */
+  showElementOffset(el, pos) {
+    var $el = $(el);
+    var model = $el.data('model');
+    if(model && model.get('status') == 'selected'){
+      return;
+    }
+    this.editor.runCommand('show-offset', {
+      el,
+      elPos: pos,
+    });
+  },
 
-			/**
-			 * Update toolbar if the component has one
-			 * @param {Object} mod
-			 */
-			updateToolbar: function(mod) {
-				var em = this.config.em;
-				var model = mod == em ? em.get('selectedComponent') : mod;
-				if(!model){
-					return;
-				}
-				var toolbar = model.get('toolbar');
-				var ppfx = this.ppfx;
-				var showToolbar = em.get('Config').showToolbar;
+  /**
+   * Hide element offset viewer
+   * @param {HTMLElement}  el
+   * @param {Object} pos
+   */
+  hideElementOffset(el, pos) {
+    this.editor.stopCommand('show-offset');
+  },
 
-				if (showToolbar && toolbar && toolbar.length) {
-					if(!this.toolbar) {
-						var toolbarEl = this.canvas.getToolbarEl();
-						toolbarEl.innerHTML = '';
-						this.toolbar = new Toolbar(toolbar);
-						var toolbarView = new ToolbarView({
-							collection: this.toolbar,
-							editor: this.editor
-						});
-						toolbarEl.appendChild(toolbarView.render().el);
-					}
+  /**
+   * Show fixed element offset viewer
+   * @param {HTMLElement}  el
+   * @param {Object} pos
+   */
+  showFixedElementOffset(el, pos) {
+    this.editor.runCommand('show-offset', {
+      el,
+      elPos: pos,
+      state: 'Fixed',
+    });
+  },
 
-					this.toolbar.reset(toolbar);
-					var view = model.view;
+  /**
+   * Hide fixed element offset viewer
+   * @param {HTMLElement}  el
+   * @param {Object} pos
+   */
+  hideFixedElementOffset(el, pos) {
+    if(this.editor)
+      this.editor.stopCommand('show-offset', {state: 'Fixed'});
+  },
 
-					if(view) {
-						this.updateToolbarPos(view.el);
-					}
-				}
-			},
+  /**
+   * Hide Highlighter element
+   */
+  hideHighlighter() {
+    this.canvas.getHighlighter().style.display = 'none';
+  },
 
-			/**
-			 * Update toolbar positions
-			 * @param {HTMLElement} el
-			 * @param {Object} pos
-			 */
-			updateToolbarPos: function(el, elPos) {
-				var toolbarEl = this.canvas.getToolbarEl();
-				var canvasPos = this.getCanvasPosition();
-				var pos = elPos || this.getElementPos(el);
-				var toolbarStyle = toolbarEl.style;
-				var unit = 'px';
-				toolbarStyle.display = 'flex';
-				var elTop = pos.top - toolbarEl.offsetHeight;
-				var elLeft = pos.left + pos.width - toolbarEl.offsetWidth;
-				var leftPos = elLeft < canvasPos.left ? canvasPos.left : elLeft;
+  /**
+   * Hover command
+   * @param {Object}  e
+   * @private
+   */
+  onClick(e) {
+    var m = $(e.target).data('model');
+    if(!m)
+      return;
+    var s  = m.get('stylable');
+    if(!(s instanceof Array) && !s)
+      return;
+    this.onSelect(e, e.target);
+  },
 
-				// This will make the toolbar follow the window up
-				// and down while scrolling
-				var topPos = elTop < canvasPos.top ? canvasPos.top : elTop;
-				// This will stop the toolbar when the end of the element is reached
-				topPos = topPos > (pos.top + pos.height) ? (pos.top + pos.height) : topPos;
+  /**
+   * Update badge for the component
+   * @param {Object} Component
+   * @param {Object} pos Position object
+   * @private
+   * */
+  updateBadge(el, pos) {
+    var $el = $(el);
+    this.cacheEl = el;
+    var model = $el.data("model");
+    if(!model || !model.get('badgable'))
+      return;
+    var badge = this.getBadge();
+    badge.innerHTML = model.getName();
+    var bStyle = badge.style;
+    var u = 'px';
+    bStyle.display = 'block';
+    var canvasPos = this.canvas.getCanvasView().getPosition();
+    var badgeH = badge ? badge.offsetHeight : 0;
+    var badgeW = badge ? badge.offsetWidth : 0;
+    var top = pos.top - badgeH < canvasPos.top ? canvasPos.top : pos.top - badgeH;
+    var left = pos.left + badgeW < canvasPos.left ? canvasPos.left : pos.left;
+    bStyle.top = top + u;
+    bStyle.left = left + u;
+  },
 
-				toolbarStyle.top = topPos + unit;
-				toolbarStyle.left = leftPos + unit;
-			},
+  /**
+   * Update highlighter element
+   * @param {HTMLElement} el
+   * @param {Object} pos Position object
+   * @private
+   */
+  updateHighlighter(el, pos) {
+    var $el = $(el);
+    var model = $el.data('model');
+    if(!model || (model && model.get('status') == 'selected')) {
+      return;
+    }
 
-			/**
-			 * Return canvas dimensions and positions
-			 * @return {Object}
-			 */
-			getCanvasPosition: function () {
-				return this.canvas.getCanvasView().getPosition();
-			},
+    var hlEl = this.canvas.getHighlighter();
+    var hlStyle = hlEl.style;
+    var unit = 'px';
+    hlStyle.left = pos.left + unit;
+    hlStyle.top = pos.top + unit;
+    hlStyle.height = pos.height + unit;
+    hlStyle.width = pos.width + unit;
+    hlStyle.display = 'block';
+  },
 
-			/**
-			 * Removes all highlighting effects on components
-			 * @private
-			 * */
-			clean: function() {
-				if(this.selEl)
-					this.selEl.removeClass(this.hoverClass);
-			},
+  /**
+   * Say what to do after the component was selected
+   * @param {Object}  e
+   * @param {Object}  el
+   * @private
+   * */
+  onSelect(e, el) {
+    e.stopPropagation();
+    var md   = this.editorModel.get('selectedComponent');
+    this.cleanPrevious(md);
+    var $el = $(el);
+    var nMd = $el.data('model');
+    if(nMd) {
+      var em = this.em;
+      var mirror = nMd.get('mirror');
+      nMd = mirror ? mirror : nMd;
 
-			/**
-			 * Returns badge element
-			 * @return {HTMLElement}
-			 * @private
-			 */
-			getBadge: function(){
-				return this.canvas.getBadgeEl();
-			},
+      // Close all opened components inside Navigator
+      var opened = em.get('opened');
+      for (var cid in opened){
+        var m = opened[cid];
+        m.set('open', 0);
+      }
+      var parent = nMd.collection ? nMd.collection.parent : null;
+      while(parent) {
+        parent.set('open', 1);
+        opened[parent.cid] = parent;
+        parent = parent.collection ? parent.collection.parent : null;
+      }
 
-			/**
-			 * On frame scroll callback
-			 * @private
-			 */
-			onFrameScroll: function(e){
-				var el = this.cacheEl;
-				if(el){
-					var elPos = this.getElementPos(el);
-					this.updateBadge(el, elPos);
-					var model = this.editorModel.get('selectedComponent');
+      this.editorModel.set('selectedComponent', nMd);
+      nMd.set('status','selected');
+      this.showFixedElementOffset(el);
+      this.hideElementOffset();
+      this.hideHighlighter();
+    }
+  },
 
-					if (model) {
-						var view = model.view;
-						this.updateToolbarPos(view.el);
-					}
-				}
-			},
+  /**
+   * Update toolbar if the component has one
+   * @param {Object} mod
+   */
+  updateToolbar(mod) {
+    var em = this.config.em;
+    var model = mod == em ? em.get('selectedComponent') : mod;
+    if(!model){
+      return;
+    }
+    var toolbar = model.get('toolbar');
+    var ppfx = this.ppfx;
+    var showToolbar = em.get('Config').showToolbar;
+    var toolbarEl = this.canvas.getToolbarEl();
+    var toolbarStyle = toolbarEl.style;
 
-			/**
-			 * Returns element's data info
-			 * @param {HTMLElement} el
-			 * @return {Object}
-			 * @private
-			 */
-			getElementPos: function(el, badge){
-				return this.canvas.getCanvasView().getElementPos(el);
-			},
+    if (showToolbar && toolbar && toolbar.length) {
+      toolbarStyle.display = 'flex';
+      if(!this.toolbar) {
+        toolbarEl.innerHTML = '';
+        this.toolbar = new Toolbar(toolbar);
+        var toolbarView = new ToolbarView({
+          collection: this.toolbar,
+          editor: this.editor
+        });
+        toolbarEl.appendChild(toolbarView.render().el);
+      }
 
-			/**
-			 * Hide badge
-			 * @private
-			 * */
-			hideBadge: function () {
-				this.getBadge().style.display = 'none';
-			},
+      this.toolbar.reset(toolbar);
+      var view = model.view;
 
-			/**
-			 * Clean previous model from different states
-			 * @param {Component} model
-			 * @private
-			 */
-			cleanPrevious: function(model) {
-				if(model)
-					model.set({
-						status: '',
-						state: '',
-					});
-			},
+      if(view) {
+        this.updateToolbarPos(view.el);
+      }
+    } else {
+      toolbarStyle.display = 'none';
+    }
+  },
 
-			/**
-			 * Returns content window
-			 * @private
-			 */
-			getContentWindow: function(){
-				if(!this.contWindow)
-					this.contWindow = $(this.frameEl.contentWindow);
-				return this.contWindow;
-			},
+  /**
+   * Update toolbar positions
+   * @param {HTMLElement} el
+   * @param {Object} pos
+   */
+  updateToolbarPos(el, elPos) {
+    var unit = 'px';
+    var toolbarEl = this.canvas.getToolbarEl();
+    var toolbarStyle = toolbarEl.style;
+    var pos = this.canvas.getTargetToElementDim(toolbarEl, el, {
+      elPos,
+      event: 'toolbarPosUpdate',
+    });
+    var leftPos = pos.left + pos.elementWidth - pos.targetWidth;
+    toolbarStyle.top = pos.top + unit;
+    toolbarStyle.left = leftPos + unit;
+  },
 
-			run: function(em) {
-				if(em && em.get)
-					this.editor = em.get('Editor');
-				this.enable();
-			},
+  /**
+   * Return canvas dimensions and positions
+   * @return {Object}
+   */
+  getCanvasPosition() {
+    return this.canvas.getCanvasView().getPosition();
+  },
 
-			stop: function() {
-				this.stopSelectComponent();
-				this.cleanPrevious(this.em.get('selectedComponent'));
-				this.clean();
-				this.em.set('selectedComponent', null);
-				this.toggleClipboard();
-				this.hideBadge();
-				this.canvas.getToolbarEl().style.display = 'none';
-				this.em.off('change:canvasOffset', this.onFrameScroll);
-				this.em.off('change:selectedComponent', this.updateToolbar, this);
-			}
-		};
-});
+  /**
+   * Removes all highlighting effects on components
+   * @private
+   * */
+  clean() {
+    if(this.selEl)
+      this.selEl.removeClass(this.hoverClass);
+  },
+
+  /**
+   * Returns badge element
+   * @return {HTMLElement}
+   * @private
+   */
+  getBadge() {
+    return this.canvas.getBadgeEl();
+  },
+
+  /**
+   * On frame scroll callback
+   * @private
+   */
+  onFrameScroll(e) {
+    var el = this.cacheEl;
+    if (el) {
+      var elPos = this.getElementPos(el);
+      this.updateBadge(el, elPos);
+      var model = this.em.get('selectedComponent');
+
+      if (model) {
+        this.updateToolbarPos(model.view.el);
+      }
+    }
+  },
+
+  /**
+   * Update attached elements, eg. component toolbar
+   * @return {[type]} [description]
+   */
+  updateAttached() {
+    var model = this.em.get('selectedComponent');
+    if (model) {
+      var view = model.view;
+      this.updateToolbarPos(view.el);
+      this.showFixedElementOffset(view.el);
+    }
+  },
+
+  /**
+   * Returns element's data info
+   * @param {HTMLElement} el
+   * @return {Object}
+   * @private
+   */
+  getElementPos(el, badge) {
+    return this.canvas.getCanvasView().getElementPos(el);
+  },
+
+  /**
+   * Hide badge
+   * @private
+   * */
+  hideBadge() {
+    this.getBadge().style.display = 'none';
+  },
+
+  /**
+   * Clean previous model from different states
+   * @param {Component} model
+   * @private
+   */
+  cleanPrevious(model) {
+    if(model)
+      model.set({
+        status: '',
+        state: '',
+      });
+  },
+
+  /**
+   * Returns content window
+   * @private
+   */
+  getContentWindow() {
+    if(!this.contWindow)
+      this.contWindow = $(this.frameEl.contentWindow);
+    return this.contWindow;
+  },
+
+  run(em) {
+    if(em && em.get)
+      this.editor = em.get('Editor');
+    this.enable();
+  },
+
+  stop() {
+    this.stopSelectComponent();
+    this.cleanPrevious(this.em.get('selectedComponent'));
+    this.clean();
+    this.em.set('selectedComponent', null);
+    this.toggleClipboard();
+    this.hideBadge();
+    this.hideFixedElementOffset();
+    this.canvas.getToolbarEl().style.display = 'none';
+
+    this.em.off('component:update', this.updateAttached, this);
+    this.em.off('change:canvasOffset', this.updateAttached, this);
+    this.em.off('change:selectedComponent', this.updateToolbar, this);
+  }
+};

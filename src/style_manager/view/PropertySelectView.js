@@ -1,38 +1,43 @@
-define(['backbone','./PropertyView', 'text!./../templates/propertySelect.html'],
-	function (Backbone, PropertyView, propertyTemplate) {
-	/**
-	 * @class PropertySelectView
-	 * */
-	return PropertyView.extend({
+var Backbone = require('backbone');
+var PropertyView = require('./PropertyView');
 
-		template: _.template(propertyTemplate),
+module.exports = PropertyView.extend({
 
-		initialize: function(options) {
-			PropertyView.prototype.initialize.apply(this, arguments);
-			this.list = this.model.get('list') || [];
-		},
+  template: _.template(`
+  <div class="<%= ppfx %>field <%= ppfx %>select">
+    <span id='<%= pfx %>input-holder'></span>
+    <div class="<%= ppfx %>sel-arrow">
+      <div class="<%= ppfx %>d-s-arrow"></div>
+    </div>
+  </div>
+  <div style="clear:both"></div>`),
 
-		/** @inheritdoc */
-		renderInput: function() {
-			var pfx	= this.pfx;
-			if(!this.$input){
-				this.input = '<select>';
+  initialize(options) {
+    PropertyView.prototype.initialize.apply(this, arguments);
+    this.list = this.model.get('list') || [];
+  },
 
-				if(this.list && this.list.length){
-					_.each(this.list,function(el){
-						var name = el.name ? el.name : el.value;
-						var style = el.style ? el.style.replace(/"/g,'&quot;') : '';
-						var styleAttr = style ? 'style="' + style + '"' : '';
-						this.input += '<option value="'+el.value.replace(/"/g,'&quot;')+'" ' + styleAttr + '>'+name+'</option>';
-					}, this);
-				}
+  /** @inheritdoc */
+  renderInput() {
+    var pfx  = this.pfx;
+    if(!this.$input){
+      var input = '<select>';
 
-				this.input 	+= '</select>';
-				this.$input = $(this.input);
-				this.$el.find('#'+ pfx +'input-holder').html(this.$input);
-			}
-			this.setValue(this.componentValue, 0);
-		},
+      if (this.list && this.list.length) {
+        _.each(this.list, el => {
+          var name = el.name ? el.name : el.value;
+          var style = el.style ? el.style.replace(/"/g,'&quot;') : '';
+          var styleAttr = style ? 'style="' + style + '"' : '';
+          input += '<option value="'+el.value.replace(/"/g,'&quot;')+'" ' + styleAttr + '>'+name+'</option>';
+        });
+      }
 
-	});
+      input += '</select>';
+      this.input = input;
+      this.$input = $(this.input);
+      this.$el.find('#'+ pfx +'input-holder').html(this.$input);
+    }
+    this.setValue(this.componentValue, 0);
+  },
+
 });

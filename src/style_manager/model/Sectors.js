@@ -1,9 +1,6 @@
-define([ 'backbone', './Sector'],
-	function (Backbone, Sector) {
+var Backbone = require('backbone');
+var Sector = require('./Sector');
 
-		return Backbone.Collection.extend({
-
-			model: Sector,
-
-		});
+module.exports = Backbone.Collection.extend({
+	model: Sector,
 });

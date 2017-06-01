@@ -1,61 +1,61 @@
-define(['backbone','./CssRuleView'],
-  function (Backbone, CssRuleView) {
-  return Backbone.View.extend({
+var Backbone = require('backbone');
+var CssRuleView = require('./CssRuleView');
 
-    initialize: function(o) {
-      this.config = o.config || {};
-      this.pfx = this.config.stylePrefix || '';
-      this.className = this.pfx + 'rules';
-      this.listenTo( this.collection, 'add', this.addTo );
-      this.listenTo( this.collection, 'reset', this.render );
-    },
+module.exports = Backbone.View.extend({
 
-    /**
-     * Add to collection
-     * @param {Object} model
-     * @private
-     * */
-    addTo: function(model){
-      //console.log('Added');
-      this.addToCollection(model);
-    },
+  initialize(o) {
+    this.config = o.config || {};
+    this.pfx = this.config.stylePrefix || '';
+    this.className = this.pfx + 'rules';
+    this.listenTo( this.collection, 'add', this.addTo );
+    this.listenTo( this.collection, 'reset', this.render );
+  },
 
-    /**
-     * Add new object to collection
-     * @param {Object} model
-     * @param {Object} fragmentEl
-     * @return {Object}
-     * @private
-     * */
-    addToCollection: function(model, fragmentEl){
-      var fragment  = fragmentEl || null;
-      var viewObject  = CssRuleView;
+  /**
+   * Add to collection
+   * @param {Object} model
+   * @private
+   * */
+  addTo(model) {
+    //console.log('Added');
+    this.addToCollection(model);
+  },
 
-      var view = new viewObject({
-          model: model,
-          config: this.config,
-      });
-      var rendered  = view.render().el;
+  /**
+   * Add new object to collection
+   * @param {Object} model
+   * @param {Object} fragmentEl
+   * @return {Object}
+   * @private
+   * */
+  addToCollection(model, fragmentEl) {
+    var fragment  = fragmentEl || null;
+    var viewObject  = CssRuleView;
 
-      if(fragment)
-        fragment.appendChild( rendered );
-      else
-        this.$el.append(rendered);
+    var view = new viewObject({
+        model,
+        config: this.config,
+    });
+    var rendered  = view.render().el;
 
-      return rendered;
-    },
+    if(fragment)
+      fragment.appendChild( rendered );
+    else
+      this.$el.append(rendered);
 
-    render: function() {
-      var fragment = document.createDocumentFragment();
-      this.$el.empty();
+    return rendered;
+  },
 
-      this.collection.each(function(model){
-        this.addToCollection(model, fragment);
-      }, this);
+  render() {
+    var fragment = document.createDocumentFragment();
+    this.$el.empty();
 
-      this.$el.append(fragment);
-      this.$el.attr('class', this.className);
-      return this;
-    }
-  });
+    this.collection.each(function(model){
+      this.addToCollection(model, fragment);
+    }, this);
+
+    this.$el.append(fragment);
+    this.$el.attr('class', this.className);
+    return this;
+  }
 });

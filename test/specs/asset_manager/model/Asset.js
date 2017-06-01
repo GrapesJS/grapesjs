@@ -1,36 +1,34 @@
-define(['AssetManager/model/Asset'],
-	function(Asset) {
+var Asset = require('asset_manager/model/Asset');
 
-		return {
-			run: function(){
+module.exports = {
+  run: function(){
 
-				describe('Asset', function() {
-					it('Object exists', function() {
-						Asset.should.be.exist;
-					});
+    describe('Asset', function() {
+      it('Object exists', function() {
+        expect(Asset).toExist();
+      });
 
-					it('Has default values', function() {
-						var obj 	= new Asset({});
-						obj.get('type').should.equal("");
-						obj.get('src').should.equal("");
-						obj.getExtension().should.be.empty;
-						obj.getFilename().should.be.empty;
-					});
+      it('Has default values', function() {
+        var obj   = new Asset({});
+        expect(obj.get('type')).toNotExist();
+        expect(obj.get('src')).toNotExist();
+        expect(obj.getExtension()).toNotExist();
+        expect(obj.getFilename()).toNotExist();
+      });
 
-					it('Test getFilename', function() {
-						var obj 	= new Asset({ type:'image', src: 'ch/eck/t.e.s.t'});
-						obj.getFilename().should.equal('t.e.s.t');
-						var obj 	= new Asset({ type:'image', src: 'ch/eck/1234abc'});
-						obj.getFilename().should.equal('1234abc');
-					});
+      it('Test getFilename', function() {
+        var obj = new Asset({ type:'image', src: 'ch/eck/t.e.s.t'});
+        expect(obj.getFilename()).toEqual('t.e.s.t');
+        var obj = new Asset({ type:'image', src: 'ch/eck/1234abc'});
+        expect(obj.getFilename()).toEqual('1234abc');
+      });
 
-					it('Test getExtension', function() {
-						var obj 	= new Asset({ type:'image', src: 'ch/eck/t.e.s.t'});
-						obj.getExtension().should.equal('t');
-						var obj 	= new Asset({ type:'image', src: 'ch/eck/1234abc.'});
-						obj.getExtension().should.equal('');
-					});
-				});
-			}
-		}
-});
+      it('Test getExtension', function() {
+        var obj   = new Asset({ type:'image', src: 'ch/eck/t.e.s.t'});
+        expect(obj.getExtension()).toEqual('t');
+        var obj   = new Asset({ type:'image', src: 'ch/eck/1234abc.'});
+        expect(obj.getExtension()).toEqual('');
+      });
+    });
+  }
+}

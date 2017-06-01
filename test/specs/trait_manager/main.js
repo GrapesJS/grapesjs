@@ -1,10 +1,7 @@
-var modulePath = './../../../test/specs/trait_manager';
-
-define([ 'TraitManager',
-        modulePath + '/model/TraitsModel',
-        modulePath + '/view/TraitsView',
-         ],
-  function(TraitManager, TraitsModel, TraitsView) {
+define(function(require, exports, module){
+  'use strict';
+  var TraitManager = require('TraitManager');
+  var TraitsView = require('undefined');
 
     describe('TraitManager', function() {
 

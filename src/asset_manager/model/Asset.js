@@ -1,31 +1,30 @@
-define(['backbone'],
-	function (Backbone) {
-		return Backbone.Model.extend({
+var Backbone = require('backbone');
 
-			idAttribute: 'src',
+module.exports = Backbone.Model.extend({
 
-			defaults: {
-				type:	'',
-				src:	'',
-			},
+  idAttribute: 'src',
 
-			/**
-			 * Get filename of the asset
-			 * @return	{string}
-			 * @private
-			 * */
-			getFilename: function(){
-				return  this.get('src').split('/').pop();
-			},
+  defaults: {
+    type:  '',
+    src:  '',
+  },
 
-			/**
-			 * Get extension of the asset
-			 * @return	{string}
-			 * @private
-			 * */
-			getExtension: function(){
-				return  this.getFilename().split('.').pop();
-			},
+  /**
+   * Get filename of the asset
+   * @return  {string}
+   * @private
+   * */
+  getFilename() {
+    return  this.get('src').split('/').pop();
+  },
 
-		});
+  /**
+   * Get extension of the asset
+   * @return  {string}
+   * @private
+   * */
+  getExtension() {
+    return  this.getFilename().split('.').pop();
+  },
+
 });

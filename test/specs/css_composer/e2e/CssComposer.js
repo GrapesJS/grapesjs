@@ -1,7 +1,8 @@
+define(function(require, exports, module){
+  'use strict';
+  var GrapesJS = require('GrapesJS');
 
-define(['GrapesJS'],function(GrapesJS) {
-
-    return {
+    module.exports = {
       run : function(){
           describe('E2E tests', function() {
 
@@ -39,7 +40,7 @@ define(['GrapesJS'],function(GrapesJS) {
               rulesSet2 = [
                 { selectors: [{name: 'test1'}, {name: 'test2'}], state:':active' },
                 { selectors: [{name: 'test2'}, {name: 'test3'}] },
-                { selectors: [{name: 'test3'}], maxWidth:'900px' }
+                { selectors: [{name: 'test3'}], mediaText:'(max-width: 900px)' }
               ];
             });
 
@@ -102,16 +103,102 @@ define(['GrapesJS'],function(GrapesJS) {
             });
 
             it('Add raw rule objects twice with addCollection do not duplucate rules', function() {
+              var rulesSet2Copy = JSON.parse(JSON.stringify(rulesSet2));
               var coll1 = cssc.addCollection(rulesSet2);
-              var coll2 = cssc.addCollection(rulesSet2);
+              var coll2 = cssc.addCollection(rulesSet2Copy);
               cssc.getAll().length.should.equal(3);
               clsm.getAll().length.should.equal(3);
               coll1.should.deep.equal(coll2);
             });
 
+            it("Extend css rule style, if requested", function() {
+              var style1 = {color: 'red', width: '10px'};
+              var style2 = {height: '20px', width: '20px'};
+              var rule1 = {
+                selectors: ['test1'],
+                style: style1,
+              };
+              var rule2 = {
+                selectors: ['test1'],
+                style: style2,
+              };
+              var ruleOut = cssc.addCollection(rule1)[0];
+              // ruleOut is a Model
+              ruleOut = JSON.parse(JSON.stringify(ruleOut));
+              var ruleResult = {
+                mediaText: '',
+                selectors: [{
+                 active: true,
+                 label: 'test1',
+                 name: 'test1',
+                 type: 'class',
+                }],
+                selectorsAdd: '',
+                state: '',
+                stylable: true,
+                style: {
+                 color: 'red',
+                 width: '10px'
+                }
+              };
+              ruleOut.should.deep.equal(ruleResult);
+              var ruleOut = cssc.addCollection(rule2, {extend: 1})[0];
+              ruleOut = JSON.parse(JSON.stringify(ruleOut));
+              ruleResult.style = {
+                color: 'red',
+                height: '20px',
+                width: '20px',
+              }
+              ruleOut.should.deep.equal(ruleResult);
+
+            });
+
+            it("Do not extend with different selectorsAdd", function() {
+              var style1 = {color: 'red', width: '10px'};
+              var style2 = {height: '20px', width: '20px'};
+              var rule1 = {
+                selectors: [],
+                selectorsAdd: '*',
+                style: style1,
+              };
+              var rule2 = {
+                selectors: [],
+                selectorsAdd: 'p',
+                style: style2,
+              };
+              var rule1Out = cssc.addCollection(rule1, {extend: 1})[0];
+              var rule2Out = cssc.addCollection(rule2, {extend: 1})[0];
+              rule1Out = JSON.parse(JSON.stringify(rule1Out));
+              rule2Out = JSON.parse(JSON.stringify(rule2Out));
+              var rule1Result = {
+                mediaText: '',
+                selectors: [],
+                selectorsAdd: '*',
+                state: '',
+                stylable: true,
+                style: {
+                 color: 'red',
+                 width: '10px'
+                }
+              };
+              var rule2Result = {
+                mediaText: '',
+                selectors: [],
+                selectorsAdd: 'p',
+                state: '',
+                stylable: true,
+                style: {
+                  height: '20px',
+                  width: '20px',
+                }
+              };
+              rule1Out.should.deep.equal(rule1Result);
+              rule2Out.should.deep.equal(rule2Result);
+            });
+
             it('Add raw rule objects with width via addCollection', function() {
               var coll1 = cssc.addCollection(rulesSet2);
-              coll1[2].get('maxWidth').should.equal(rulesSet2[2].maxWidth);
+              coll1[2].get('mediaText').should.equal(rulesSet2[2].mediaText);
             });
 
         });

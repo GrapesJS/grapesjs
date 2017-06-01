@@ -1,15 +1,14 @@
-define(['backbone', 'Abstract/view/DomainViews', './ToolbarButtonView'],
-	function (Backbone, DomainViews, ToolbarButtonView) {
+var Backbone = require('backbone');
+var DomainViews = require('domain_abstract/view/DomainViews');
+var ToolbarButtonView = require('./ToolbarButtonView');
 
-		return DomainViews.extend({
+module.exports = DomainViews.extend({
 
-			itemView: ToolbarButtonView,
+  itemView: ToolbarButtonView,
 
-			initialize: function(opts) {
-				this.config = {editor: opts.editor || ''};
-				this.listenTo(this.collection, 'reset', this.render);
-			},
-
-		});
+  initialize(opts) {
+    this.config = {editor: opts.editor || ''};
+    this.listenTo(this.collection, 'reset', this.render);
+  },
 
 });

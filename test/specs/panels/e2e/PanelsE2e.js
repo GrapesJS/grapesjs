@@ -1,8 +1,8 @@
+define(function(require, exports, module){
+  'use strict';
+  var GrapesJS = require('GrapesJS');
 
-define(['GrapesJS'],
-  function(GrapesJS) {
-
-    return {
+    module.exports = {
       run : function(){
 
           describe('E2E tests', function() {

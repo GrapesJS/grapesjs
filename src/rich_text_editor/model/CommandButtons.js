@@ -1,8 +1,6 @@
-define([ 'backbone','./CommandButton'],
-	function (Backbone, CommandButton) {
-		return Backbone.Collection.extend({
+var Backbone = require('backbone');
+var CommandButton = require('./CommandButton');
 
-			model: CommandButton,
-
-		});
+module.exports = Backbone.Collection.extend({
+	model: CommandButton,
 });

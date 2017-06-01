@@ -1,116 +1,114 @@
-define(['backbone','./LayerView'],
-	function (Backbone, LayerView) {
-	/**
-	 * @class LayersView
-	 * */
-	return Backbone.View.extend({
+var Backbone = require('backbone');
+var LayerView = require('./LayerView');
 
-		initialize: function(o) {
-			this.config = o.config || {};
-			this.stackModel	= o.stackModel;
-			this.preview = o.preview;
-			this.pfx = this.config.stylePrefix || '';
-			this.ppfx = this.config.pStylePrefix || '';
-			this.className	= this.pfx + 'layers ' + this.ppfx + 'field';
-			this.listenTo( this.collection, 'add', this.addTo);
-			this.listenTo( this.collection, 'deselectAll', this.deselectAll );
-			this.listenTo( this.collection, 'reset', this.render);
+module.exports = Backbone.View.extend({
 
-			var em = this.config.em || '';
-			var utils = em ? em.get('Utils') : '';
+  initialize(o) {
+    this.config = o.config || {};
+    this.stackModel  = o.stackModel;
+    this.preview = o.preview;
+    this.pfx = this.config.stylePrefix || '';
+    this.ppfx = this.config.pStylePrefix || '';
+    this.className  = this.pfx + 'layers ' + this.ppfx + 'field';
+    this.listenTo( this.collection, 'add', this.addTo);
+    this.listenTo( this.collection, 'deselectAll', this.deselectAll );
+    this.listenTo( this.collection, 'reset', this.render);
 
-			this.sorter = utils ? new utils.Sorter({
-				container: this.el,
-				containerSel: '.' + this.pfx + 'layers',
-				itemSel: '.' + this.pfx + 'layer',
-				pfx: this.config.pStylePrefix,
-			}) : '';
+    var em = this.config.em || '';
+    var utils = em ? em.get('Utils') : '';
 
-			this.$el.data('collection', this.collection);
-		},
+    this.sorter = utils ? new utils.Sorter({
+      container: this.el,
+      containerSel: '.' + this.pfx + 'layers',
+      itemSel: '.' + this.pfx + 'layer',
+      pfx: this.config.pStylePrefix,
+    }) : '';
 
-		/**
-		 * Add to collection
-		 * @param Object Model
-		 *
-		 * @return Object
-		 * */
-		addTo: function(model){
-			var i	= this.collection.indexOf(model);
-			this.addToCollection(model, null, i);
-		},
+    this.$el.data('model', {});
+    this.$el.data('collection', this.collection);
+  },
 
-		/**
-		 * Add new object to collection
-		 * @param Object Model
-		 * @param Object Fragment collection
-		 * @param	{number} index Index of append
-		 *
-		 * @return Object Object created
-		 * */
-		addToCollection: function(model, fragmentEl, index){
-			var fragment = fragmentEl || null;
-			var viewObject = LayerView;
+  /**
+   * Add to collection
+   * @param Object Model
+   *
+   * @return Object
+   * */
+  addTo(model) {
+    var i  = this.collection.indexOf(model);
+    this.addToCollection(model, null, i);
+  },
 
-			if(typeof this.preview !== 'undefined'){
-				model.set('preview', this.preview);
-			}
+  /**
+   * Add new object to collection
+   * @param Object Model
+   * @param Object Fragment collection
+   * @param  {number} index Index of append
+   *
+   * @return Object Object created
+   * */
+  addToCollection(model, fragmentEl, index) {
+    var fragment = fragmentEl || null;
+    var viewObject = LayerView;
 
-			var view = new viewObject({
-					model: model,
-					stackModel: this.stackModel,
-					config: this.config,
-					sorter: this.sorter
-			});
-			var rendered	= view.render().el;
+    if(typeof this.preview !== 'undefined'){
+      model.set('preview', this.preview);
+    }
 
-			if(fragment){
-				fragment.appendChild( rendered );
-			}else{
-				if(typeof index != 'undefined'){
-					var method	= 'before';
-					// If the added model is the last of collection
-					// need to change the logic of append
-					if(this.$el.children().length == index){
-						index--;
-						method = 'after';
-					}
-					// In case the added is new in the collection index will be -1
-					if(index < 0){
-						this.$el.append(rendered);
-					}else
-						this.$el.children().eq(index)[method](rendered);
-				}else
-					this.$el.append(rendered);
-			}
+    var view = new viewObject({
+        model,
+        stackModel: this.stackModel,
+        config: this.config,
+        sorter: this.sorter
+    });
+    var rendered  = view.render().el;
 
-			return rendered;
-		},
+    if(fragment){
+      fragment.appendChild( rendered );
+    }else{
+      if(typeof index != 'undefined'){
+        var method  = 'before';
+        // If the added model is the last of collection
+        // need to change the logic of append
+        if(this.$el.children().length == index){
+          index--;
+          method = 'after';
+        }
+        // In case the added is new in the collection index will be -1
+        if(index < 0){
+          this.$el.append(rendered);
+        }else
+          this.$el.children().eq(index)[method](rendered);
+      }else
+        this.$el.append(rendered);
+    }
 
-		/**
-		 * Deselect all
-		 *
-		 * @return void
-		 * */
-		deselectAll: function(){
-			this.$el.find('.'+ this.pfx  +'layer').removeClass(this.pfx + 'active');
-		},
+    return rendered;
+  },
 
-		render: function() {
-			var fragment = document.createDocumentFragment();
-			this.$el.empty();
+  /**
+   * Deselect all
+   *
+   * @return void
+   * */
+  deselectAll() {
+    this.$el.find('.'+ this.pfx  +'layer').removeClass(this.pfx + 'active');
+  },
 
-			this.collection.each(function(model){
-				this.addToCollection(model, fragment);
-			},this);
+  render() {
+    var fragment = document.createDocumentFragment();
+    this.$el.empty();
 
-			this.$el.append(fragment);
-			this.$el.attr('class', this.className);
+    this.collection.each(function(model){
+      this.addToCollection(model, fragment);
+    },this);
 
-			if(this.sorter)
-				this.sorter.plh = null;
+    this.$el.append(fragment);
+    this.$el.attr('class', this.className);
 
-			return this;
-		}
-	});
+    if(this.sorter)
+      this.sorter.plh = null;
+
+    return this;
+  }
 });

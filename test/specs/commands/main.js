@@ -1,13 +1,7 @@
-var modulePath = './../../../test/specs/commands';
-
-define([
-        'Commands',
-        modulePath + '/model/CommandModels',
-        ],
-  function(
-          Commands,
-          Models
-          ) {
+define(function(require, exports, module){
+  'use strict';
+  var Commands = require('Commands');
+  var Models = require('undefined');
 
     describe('Commands', function() {
 

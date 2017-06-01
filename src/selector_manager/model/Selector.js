@@ -1,32 +1,31 @@
-define(['backbone'],
-	function (Backbone) {
-		return Backbone.Model.extend({
+var Backbone = require('backbone');
 
-      idAttribute: 'name',
+module.exports = Backbone.Model.extend({
 
-			defaults: {
-				name: '',
-        label: '',
-        type: 'class',
-        active: true,
-			},
+  idAttribute: 'name',
 
-			initialize: function() {
-			  this.set('name', this.escapeName(this.get('name')));
-        var label = this.get('label').trim();
-        if(!label)
-          this.set('label', this.get('name'));
-			},
+  defaults: {
+    name: '',
+    label: '',
+    type: 'class',
+    active: true,
+  },
 
-			/**
-       * Escape string
-       * @param {string} name
-       * @return {string}
-       * @private
-       */
-      escapeName: function(name) {
-        return name.toLowerCase().replace(/([^a-z0-9\w]+)/gi, '-');
-      },
+  initialize() {
+    this.set('name', this.escapeName(this.get('name')));
+    var label = this.get('label').trim();
+    if(!label)
+      this.set('label', this.get('name'));
+  },
 
-		});
+  /**
+   * Escape string
+   * @param {string} name
+   * @return {string}
+   * @private
+   */
+  escapeName(name) {
+    return name.replace(/([^a-z0-9\w]+)/gi, '-');
+  },
+
 });

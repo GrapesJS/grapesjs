@@ -1,5 +1,3 @@
-define(['backbone'],
-	function (Backbone) {
+var Backbone = require('backbone');
 
-		return Backbone.View.extend({});
-});
+module.exports = Backbone.View.extend({});

@@ -1,23 +1,19 @@
-define(['backbone'],
-	function (Backbone) {
-		/**
-		 * @class HtmlGenerator
-		 * */
-		return Backbone.Model.extend({
+var Backbone = require('backbone');
 
-			/** @inheritdoc */
-			build: function(model, cssc){
-				var coll = model.get('components') || model,
-					code = '';
+module.exports = Backbone.Model.extend({
 
-				coll.each(function(m){
-					code += m.toHTML({
-						cssc: cssc
-					});
-				}, this);
+  /** @inheritdoc */
+  build(model, cssc) {
+    var coll = model.get('components') || model,
+      code = '';
 
-				return code;
-			},
+    coll.each(m => {
+      code += m.toHTML({
+        cssc
+      });
+    }, this);
 
-		});
+    return code;
+  },
+
 });

@@ -1,82 +1,78 @@
-define(['StyleManager'], function(StyleManager) {
-		/**
-		 * @class OpenStyleManager
-		 * @private
-		 * */
-		return {
+var StyleManager = require('style_manager');
 
-			run: function(em, sender) {
-				this.sender	= sender;
-				if(!this.$cn){
-					var config		= em.getConfig(),
-							panels		= em.Panels;
-					// Main container
-					this.$cn = $('<div/>');
-					// Secondary container
-					this.$cn2 = $('<div/>');
-					this.$cn.append(this.$cn2);
+module.exports = {
 
-					// Device Manager
-					var dvm = em.DeviceManager;
-					if(dvm && config.showDevices){
-						var devicePanel = panels.addPanel({ id: 'devices-c'});
-						devicePanel.set('appendContent', dvm.render()).trigger('change:appendContent');
-					}
+  run(em, sender) {
+    this.sender  = sender;
+    if(!this.$cn){
+      var config    = em.getConfig(),
+          panels    = em.Panels;
+      // Main container
+      this.$cn = $('<div/>');
+      // Secondary container
+      this.$cn2 = $('<div/>');
+      this.$cn.append(this.$cn2);
 
-					// Class Manager container
-					var clm = em.SelectorManager;
-					if(clm)
-						this.$cn2.append(clm.render([]));
+      // Device Manager
+      var dvm = em.DeviceManager;
+      if(dvm && config.showDevices){
+        var devicePanel = panels.addPanel({ id: 'devices-c'});
+        devicePanel.set('appendContent', dvm.render()).trigger('change:appendContent');
+      }
 
-					this.$cn2.append(em.StyleManager.render());
-					var smConfig = em.StyleManager.getConfig();
-					// Create header
-					this.$header	= $('<div>', {
-						class: smConfig.stylePrefix + 'header',
-						text: smConfig.textNoElement,
-					});
-					//this.$cn = this.$cn.add(this.$header);
-					this.$cn.append(this.$header);
+      // Class Manager container
+      var clm = em.SelectorManager;
+      if(clm)
+        this.$cn2.append(clm.render([]));
 
-					// Create panel if not exists
-					if(!panels.getPanel('views-container'))
-						this.panel	= panels.addPanel({ id: 'views-container'});
-					else
-						this.panel	= panels.getPanel('views-container');
+      this.$cn2.append(em.StyleManager.render());
+      var smConfig = em.StyleManager.getConfig();
+      // Create header
+      this.$header  = $('<div>', {
+        class: smConfig.stylePrefix + 'header',
+        text: smConfig.textNoElement,
+      });
+      //this.$cn = this.$cn.add(this.$header);
+      this.$cn.append(this.$header);
 
-					// Add all containers to the panel
-					this.panel.set('appendContent', this.$cn).trigger('change:appendContent');
+      // Create panel if not exists
+      if(!panels.getPanel('views-container'))
+        this.panel  = panels.addPanel({ id: 'views-container'});
+      else
+        this.panel  = panels.getPanel('views-container');
 
-					this.target = em.editor;
-					this.listenTo( this.target ,'change:selectedComponent', this.toggleSm);
-				}
-				this.toggleSm();
-			},
+      // Add all containers to the panel
+      this.panel.set('appendContent', this.$cn).trigger('change:appendContent');
 
-			/**
-			 * Toggle Style Manager visibility
-			 * @private
-			 */
-			toggleSm: function() {
-					if(!this.sender.get('active'))
-						return;
-					if(this.target.get('selectedComponent')){
-							this.$cn2.show();
-							this.$header.hide();
-					}else{
-							this.$cn2.hide();
-							this.$header.show();
-					}
-			},
+      this.target = em.editor;
+      this.listenTo( this.target ,'change:selectedComponent', this.toggleSm);
+    }
+    this.toggleSm();
+  },
 
-			stop: function() {
-				// Hide secondary container if exists
-				if(this.$cn2)
-					this.$cn2.hide();
+  /**
+   * Toggle Style Manager visibility
+   * @private
+   */
+  toggleSm() {
+      if(!this.sender.get('active'))
+        return;
+      if(this.target.get('selectedComponent')){
+          this.$cn2.show();
+          this.$header.hide();
+      }else{
+          this.$cn2.hide();
+          this.$header.show();
+      }
+  },
 
-				// Hide header container if exists
-				if(this.$header)
-					this.$header.hide();
-			}
-		};
-	});
+  stop() {
+    // Hide secondary container if exists
+    if(this.$cn2)
+      this.$cn2.hide();
+
+    // Hide header container if exists
+    if(this.$header)
+      this.$header.hide();
+  }
+};

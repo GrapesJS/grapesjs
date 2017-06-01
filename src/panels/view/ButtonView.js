@@ -1,324 +1,309 @@
-define(['backbone','require'],
-function(Backbone, require) {
-	/**
-	 * @class ButtonView
-	 * */
-	return Backbone.View.extend({
+var Backbone = require('backbone');
 
-		tagName: 'span',
+module.exports = Backbone.View.extend({
 
-		initialize: function(o){
-			_.bindAll(this, 'startTimer', 'stopTimer', 'showButtons', 'hideButtons','closeOnKeyPress','onDrop', 'initSorter', 'stopDrag');
-			var cls = this.model.get('className');
-			this.config = o.config || {};
-			this.em = this.config.em || {};
-			this.pfx = this.config.stylePrefix || '';
-			this.ppfx = this.config.pStylePrefix || '';
-			this.id = this.pfx + this.model.get('id');
-			this.activeCls = this.pfx + 'active';
-			this.btnsVisCls = this.pfx + 'visible';
-			this.parentM = o.parentM || null;
-			this.className = this.pfx + 'btn' + (cls ? ' ' + cls : '');
-			this.listenTo(this.model, 'change:active updateActive', this.updateActive);
-			this.listenTo(this.model, 'checkActive', this.checkActive);
-			this.listenTo(this.model, 'change:bntsVis', this.updateBtnsVis);
-			this.listenTo(this.model, 'change:attributes', this.updateAttributes);
-			this.listenTo(this.model, 'change:className', this.updateClassName);
+  tagName: 'span',
 
-			if(this.model.get('buttons').length){
-				this.$el.on('mousedown', this.startTimer);
-				this.$el.append($('<div>',{class: this.pfx + 'arrow-rd'}));
-			}
+  initialize(o) {
+    _.bindAll(this, 'startTimer', 'stopTimer', 'showButtons', 'hideButtons','closeOnKeyPress','onDrop', 'initSorter', 'stopDrag');
+    var cls = this.model.get('className');
+    this.config = o.config || {};
+    this.em = this.config.em || {};
+    this.pfx = this.config.stylePrefix || '';
+    this.ppfx = this.config.pStylePrefix || '';
+    this.id = this.pfx + this.model.get('id');
+    this.activeCls = this.pfx + 'active';
+    this.btnsVisCls = this.pfx + 'visible';
+    this.parentM = o.parentM || null;
+    this.className = this.pfx + 'btn' + (cls ? ' ' + cls : '');
+    this.listenTo(this.model, 'change:active updateActive', this.updateActive);
+    this.listenTo(this.model, 'checkActive', this.checkActive);
+    this.listenTo(this.model, 'change:bntsVis', this.updateBtnsVis);
+    this.listenTo(this.model, 'change:attributes', this.updateAttributes);
+    this.listenTo(this.model, 'change:className', this.updateClassName);
 
-			if(this.em && this.em.get)
-				this.commands	= this.em.get('Commands');
+    if(this.model.get('buttons').length){
+      this.$el.on('mousedown', this.startTimer);
+      this.$el.append($('<div>',{class: this.pfx + 'arrow-rd'}));
+    }
 
-			this.events = {};
+    if(this.em && this.em.get)
+      this.commands  = this.em.get('Commands');
 
-			if(this.model.get('dragDrop')){
-				this.events.mousedown = 'initDrag';
-				this.em.on('loaded', this.initSorter);
-			}else
-				this.events.click = 'clicked';
-			this.delegateEvents();
-		},
+    this.events = {};
 
-		initSorter: function(){
-			if(this.em.Canvas){
-				var canvas = this.em.Canvas;
-				this.canvasEl = canvas.getBody();
-				this.sorter = new this.em.Utils.Sorter({
-					container: this.canvasEl,
-					placer: canvas.getPlacerEl(),
-					containerSel: '*',
-					itemSel: '*',
-					pfx: this.ppfx,
-					onMove: this.onDrag,
-					onEndMove: this.onDrop,
-					document: canvas.getFrameEl().contentDocument,
-					direction: 'a',
-					wmargin: 1,
-					nested: 1,
-				});
-				var offDim = canvas.getOffset();
-				this.sorter.offTop = offDim.top;
-				this.sorter.offLeft = offDim.left;
-			}
-		},
+    if(this.model.get('dragDrop')){
+      this.events.mousedown = 'initDrag';
+      this.em.on('loaded', this.initSorter);
+    }else
+      this.events.click = 'clicked';
+    this.delegateEvents();
+  },
 
-		/**
-		 * Init dragging element
-		 * @private
-		 */
-		initDrag: function(){
-			this.model.collection.deactivateAll(this.model.get('context'));
-			this.sorter.startSort(this.el);
-			this.sorter.setDropContent(this.model.get('options').content);
-			this.canvasEl.style.cursor = 'grabbing';
-			$(document).on('mouseup', this.stopDrag);
-		},
+  initSorter() {
+    if(this.em.Canvas){
+      var canvas = this.em.Canvas;
+      this.canvasEl = canvas.getBody();
+      this.sorter = new this.em.Utils.Sorter({
+        container: this.canvasEl,
+        placer: canvas.getPlacerEl(),
+        containerSel: '*',
+        itemSel: '*',
+        pfx: this.ppfx,
+        onMove: this.onDrag,
+        onEndMove: this.onDrop,
+        document: canvas.getFrameEl().contentDocument,
+        direction: 'a',
+        wmargin: 1,
+        nested: 1,
+      });
+      var offDim = canvas.getOffset();
+      this.sorter.offTop = offDim.top;
+      this.sorter.offLeft = offDim.left;
+    }
+  },
 
-		/**
-		 * Stop dragging
-		 * @private
-		 */
-		stopDrag: function(){
-			$(document).off('mouseup', this.stopDrag);
-			this.sorter.endMove();
-		},
+  /**
+   * Init dragging element
+   * @private
+   */
+  initDrag() {
+    this.model.collection.deactivateAll(this.model.get('context'));
+    this.sorter.startSort(this.el);
+    this.sorter.setDropContent(this.model.get('options').content);
+    this.canvasEl.style.cursor = 'grabbing';
+    $(document).on('mouseup', this.stopDrag);
+  },
 
-		/**
-		 * During drag method
-		 * @private
-		 */
-		onDrag: function(e){},
+  /**
+   * Stop dragging
+   * @private
+   */
+  stopDrag() {
+    $(document).off('mouseup', this.stopDrag);
+    this.sorter.endMove();
+  },
 
-		/**
-		 * During drag method
-		 * @private
-		 */
-		onDrop: function(e){
-			this.canvasEl.style.cursor = 'default';
-		},
+  /**
+   * During drag method
+   * @private
+   */
+  onDrag(e) {},
 
-		/**
-		 * Updates class name of the button
-		 *
-		 * @return 	void
-		 * */
-		updateClassName: function()
-		{
-			var cls = this.model.get('className');
-			this.$el.attr('class', this.pfx + 'btn' + (cls ? ' ' + cls : ''));
-		},
+  /**
+   * During drag method
+   * @private
+   */
+  onDrop(e) {
+    this.canvasEl.style.cursor = 'default';
+  },
 
-		/**
-		 * Updates attributes of the button
-		 *
-		 * @return 	void
-		 * */
-		updateAttributes: function()
-		{
-			this.$el.attr(this.model.get("attributes"));
-		},
+  /**
+   * Updates class name of the button
+   *
+   * @return   void
+   * */
+  updateClassName() {
+    var cls = this.model.get('className');
+    this.$el.attr('class', this.pfx + 'btn' + (cls ? ' ' + cls : ''));
+  },
 
-		/**
-		 * Updates visibility of children buttons
-		 *
-		 * @return	void
-		 * */
-		updateBtnsVis: function()
-		{
-			if(!this.$buttons)
-				return;
+  /**
+   * Updates attributes of the button
+   *
+   * @return   void
+   * */
+  updateAttributes() {
+    this.$el.attr(this.model.get("attributes"));
+  },
 
-			if(this.model.get('bntsVis'))
-				this.$buttons.addClass(this.btnsVisCls);
-			else
-				this.$buttons.removeClass(this.btnsVisCls);
-		},
+  /**
+   * Updates visibility of children buttons
+   *
+   * @return  void
+   * */
+  updateBtnsVis() {
+    if(!this.$buttons)
+      return;
 
-		/**
-		 * Start timer for showing children buttons
-		 *
-		 * @return	void
-		 * */
-		startTimer: function()
-		{
-			this.timeout = setTimeout(this.showButtons, this.config.delayBtnsShow);
-			$(document).on('mouseup', this.stopTimer);
-		},
+    if(this.model.get('bntsVis'))
+      this.$buttons.addClass(this.btnsVisCls);
+    else
+      this.$buttons.removeClass(this.btnsVisCls);
+  },
 
-		/**
-		 * Stop timer for showing children buttons
-		 *
-		 * @return	void
-		 * */
-		stopTimer: function()
-		{
-			$(document).off('mouseup', 	this.stopTimer);
-			if(this.timeout)
-				clearTimeout(this.timeout);
-		},
+  /**
+   * Start timer for showing children buttons
+   *
+   * @return  void
+   * */
+  startTimer() {
+    this.timeout = setTimeout(this.showButtons, this.config.delayBtnsShow);
+    $(document).on('mouseup', this.stopTimer);
+  },
 
-		/**
-		 * Show children buttons
-		 *
-		 * @return 	void
-		 * */
-		showButtons: function()
-		{
-			clearTimeout(this.timeout);
-			this.model.set('bntsVis', true);
-			$(document).on('mousedown',	this.hideButtons);
-			$(document).on('keypress',	this.closeOnKeyPress);
-		},
+  /**
+   * Stop timer for showing children buttons
+   *
+   * @return  void
+   * */
+  stopTimer() {
+    $(document).off('mouseup',   this.stopTimer);
+    if(this.timeout)
+      clearTimeout(this.timeout);
+  },
 
-		/**
-		 * Hide children buttons
-		 *
-		 * @return 	void
-		 * */
-		hideButtons: function(e)
-		{
-			if(e){ $(e.target).trigger('click'); }
-			this.model.set('bntsVis', false);
-			$(document).off('mousedown',	this.hideButtons);
-			$(document).off('keypress', 	this.closeOnKeyPress);
-		},
+  /**
+   * Show children buttons
+   *
+   * @return   void
+   * */
+  showButtons() {
+    clearTimeout(this.timeout);
+    this.model.set('bntsVis', true);
+    $(document).on('mousedown',  this.hideButtons);
+    $(document).on('keypress',  this.closeOnKeyPress);
+  },
 
-		/**
-		 * Close buttons on ESC key press
-		 * @param 	{Object}	e	Event
-		 *
-		 * @return 	void
-		 * */
-		closeOnKeyPress: function(e)
-		{
-			var key = e.which || e.keyCode;
-			if(key == 27)
-				this.hideButtons();
-		},
+  /**
+   * Hide children buttons
+   *
+   * @return   void
+   * */
+  hideButtons(e) {
+    if(e){ $(e.target).trigger('click'); }
+    this.model.set('bntsVis', false);
+    $(document).off('mousedown',  this.hideButtons);
+    $(document).off('keypress',   this.closeOnKeyPress);
+  },
 
-		/**
-		 * Update active status of the button
-		 *
-		 * @return 	void
-		 * */
-		updateActive: function(){
-			var command	= null;
-			var editor = this.em && this.em.get ? this.em.get('Editor') : null;
-			var commandName = this.model.get('command');
+  /**
+   * Close buttons on ESC key press
+   * @param   {Object}  e  Event
+   *
+   * @return   void
+   * */
+  closeOnKeyPress(e) {
+    var key = e.which || e.keyCode;
+    if(key == 27)
+      this.hideButtons();
+  },
 
-			if (this.commands && typeof commandName === 'string') {
-				command	= this.commands.get(commandName);
-			} else if (commandName !== null && typeof commandName === 'object') {
-				command = commandName;
-			} else if (typeof commandName === 'function') {
-				command = {run: commandName};
-			}
+  /**
+   * Update active status of the button
+   *
+   * @return   void
+   * */
+  updateActive() {
+    var command  = null;
+    var editor = this.em && this.em.get ? this.em.get('Editor') : null;
+    var commandName = this.model.get('command');
 
-			if(this.model.get('active')){
+    if (this.commands && typeof commandName === 'string') {
+      command  = this.commands.get(commandName);
+    } else if (commandName !== null && typeof commandName === 'object') {
+      command = commandName;
+    } else if (typeof commandName === 'function') {
+      command = {run: commandName};
+    }
 
-				this.model.collection.deactivateAll(this.model.get('context'));
-				this.model.set('active', true, { silent: true }).trigger('checkActive');
+    if(this.model.get('active')){
 
-				if(this.parentM)
-					this.parentM.set('active', true, { silent: true }).trigger('checkActive');
+      this.model.collection.deactivateAll(this.model.get('context'));
+      this.model.set('active', true, { silent: true }).trigger('checkActive');
 
-				if(command && command.run){
-					command.run(editor, this.model, this.model.get('options'));
-					editor.trigger('run:' + commandName);
-				}
-			}else{
-				this.$el.removeClass(this.activeCls);
+      if(this.parentM)
+        this.parentM.set('active', true, { silent: true }).trigger('checkActive');
 
-				this.model.collection.deactivateAll(this.model.get('context'));
+      if(command && command.run){
+        command.run(editor, this.model, this.model.get('options'));
+        editor.trigger('run:' + commandName);
+      }
+    }else{
+      this.$el.removeClass(this.activeCls);
 
-				if(this.parentM)
-					this.parentM.set('active', false, { silent: true }).trigger('checkActive');
+      this.model.collection.deactivateAll(this.model.get('context'));
 
-				if(command && command.stop){
-					command.stop(editor, this.model, this.model.get('options'));
-					editor.trigger('stop:' + commandName);
-				}
-			}
-		},
+      if(this.parentM)
+        this.parentM.set('active', false, { silent: true }).trigger('checkActive');
 
-		/**
-		 * Update active style status
-		 *
-		 * @return 	void
-		 * */
-		checkActive: function(){
-			if(this.model.get('active'))
-				this.$el.addClass(this.activeCls);
-			else
-				this.$el.removeClass(this.activeCls);
-		},
+      if(command && command.stop){
+        command.stop(editor, this.model, this.model.get('options'));
+        editor.trigger('stop:' + commandName);
+      }
+    }
+  },
 
-		/**
-		 * Triggered when button is clicked
-		 * @param	{Object}	e	Event
-		 *
-		 * @return 	void
-		 * */
-		clicked: function(e)
-		{
-			if(this.model.get('bntsVis') )
-				return;
+  /**
+   * Update active style status
+   *
+   * @return   void
+   * */
+  checkActive() {
+    if(this.model.get('active'))
+      this.$el.addClass(this.activeCls);
+    else
+      this.$el.removeClass(this.activeCls);
+  },
 
-			if(this.parentM)
-				this.swapParent();
-			var active = this.model.get('active');
-			this.model.set('active', !active);
+  /**
+   * Triggered when button is clicked
+   * @param  {Object}  e  Event
+   *
+   * @return   void
+   * */
+  clicked(e) {
+    if(this.model.get('bntsVis') )
+      return;
 
-			// If the stop is requested
-			var command = this.em.get('Commands').get('select-comp');
+    if(this.parentM)
+      this.swapParent();
+    var active = this.model.get('active');
+    this.model.set('active', !active);
 
-			if(active){
-				if(this.model.get('runDefaultCommand'))
-					this.em.runDefault();
-			}else{
-				if(this.model.get('stopDefaultCommand'))
-					this.em.stopDefault();
-			}
-		},
+    // If the stop is requested
+    var command = this.em.get('Commands').get('select-comp');
 
-		/**
-		 * Updates parent model swapping properties
-		 *
-		 * @return	void
-		 * */
-		swapParent: function()
-		{
-			this.parentM.collection.deactivateAll(this.model.get('context'));
-			this.parentM.set('attributes', 	this.model.get('attributes'));
-			this.parentM.set('options', 	this.model.get('options'));
-			this.parentM.set('command', 	this.model.get('command'));
-			this.parentM.set('className', 	this.model.get('className'));
-			this.parentM.set('active', true, { silent: true }).trigger('checkActive');
-		},
+    if(active){
+      if(this.model.get('runDefaultCommand'))
+        this.em.runDefault();
+    }else{
+      if(this.model.get('stopDefaultCommand'))
+        this.em.stopDefault();
+    }
+  },
 
-		render: function()
-		{
-			this.updateAttributes();
-			this.$el.attr('class', this.className);
+  /**
+   * Updates parent model swapping properties
+   *
+   * @return  void
+   * */
+  swapParent() {
+    this.parentM.collection.deactivateAll(this.model.get('context'));
+    this.parentM.set('attributes',   this.model.get('attributes'));
+    this.parentM.set('options',   this.model.get('options'));
+    this.parentM.set('command',   this.model.get('command'));
+    this.parentM.set('className',   this.model.get('className'));
+    this.parentM.set('active', true, { silent: true }).trigger('checkActive');
+  },
 
-			if(this.model.get('buttons').length){
-				var btnsView = require('./ButtonsView');								//Avoid Circular Dependencies
-				var view = new btnsView({
-						collection 	: this.model.get('buttons'),
-						config		: this.config,
-						parentM		: this.model
-				});
-				this.$buttons	= view.render().$el;
-				this.$buttons.append($('<div>',{class: this.pfx + 'arrow-l'}));
-				this.$el.append(this.$buttons);											//childNodes avoids wrapping 'div'
-			}
+  render() {
+    this.updateAttributes();
+    this.$el.attr('class', this.className);
 
-			return this;
-		},
+    if(this.model.get('buttons').length){
+      var btnsView = require('./ButtonsView');                //Avoid Circular Dependencies
+      var view = new btnsView({
+          collection   : this.model.get('buttons'),
+          config    : this.config,
+          parentM    : this.model
+      });
+      this.$buttons  = view.render().$el;
+      this.$buttons.append($('<div>',{class: this.pfx + 'arrow-l'}));
+      this.$el.append(this.$buttons);                      //childNodes avoids wrapping 'div'
+    }
 
-	});
+    return this;
+  },
+
 });
