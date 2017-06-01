@@ -39,17 +39,17 @@ module.exports = {
 
           it('Has preview box', function() {
             var $asset = this.view.$el;
-            expect($asset.find('#preview').get(0).length).toEqual(1);
+            expect($asset.find('#preview').length).toEqual(1);
           });
 
           it('Has meta box', function() {
             var $asset = this.view.$el;
-            expect($asset.find('#meta').get(0).length).toEqual(1);
+            expect($asset.find('#meta').length).toEqual(1);
           });
 
           it('Has close button', function() {
             var $asset = this.view.$el;
-            expect($asset.find('#close').get(0).length).toEqual(1);
+            expect($asset.find('#close').length).toEqual(1);
           });
 
       });

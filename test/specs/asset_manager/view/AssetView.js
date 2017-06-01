@@ -32,11 +32,11 @@ module.exports = {
       });
 
       it('Object exists', function() {
-        AssetView.should.be.exist;
+        expect(AssetView).toExist();
       });
 
       it('Has correct prefix', function() {
-        this.view.pfx.should.equal('');
+        expect(this.view.pfx).toEqual('');
       });
 
     });

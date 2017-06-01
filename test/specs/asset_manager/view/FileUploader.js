@@ -25,29 +25,29 @@ module.exports = {
       });
 
       it('Object exists', function() {
-        FileUploader.should.be.exist;
+        expect(FileUploader).toExist();
       });
 
       it('Has correct prefix', function() {
-        this.view.pfx.should.equal('');
+        expect(this.view.pfx).toNotExist();
       });
 
       describe('Should be rendered correctly', function() {
 
           it('Has title', function() {
-            this.view.$el.find('#title').should.have.property(0);
+            expect(this.view.$el.find('#title').length).toEqual(1);
           });
 
           it('Title is empty', function() {
-            this.view.$el.find('#title').html().should.equal('');
+            expect(this.view.$el.find('#title').html()).toEqual('');
           });
 
           it('Has file input', function() {
-            this.view.$el.find('input[type=file]').should.have.property(0);
+            expect(this.view.$el.find('input[type=file]').length).toEqual(1);
           });
 
           it('File input is enabled', function() {
-            this.view.$el.find('input[type=file]').prop('disabled').should.equal(true);
+            expect(this.view.$el.find('input[type=file]').prop('disabled')).toEqual(true);
           });
 
       });
@@ -59,7 +59,7 @@ module.exports = {
               uploadText : 'Test',
             } });
             view.render();
-            view.$el.find('#title').html().should.equal('Test');
+            expect(view.$el.find('#title').html()).toEqual('Test');
           });
 
           it('Could be disabled', function() {
@@ -67,7 +67,7 @@ module.exports = {
               disableUpload: true,
             } });
             view.render();
-            view.$el.find('input[type=file]').prop('disabled').should.equal(true);
+            expect(view.$el.find('input[type=file]').prop('disabled')).toEqual(true);
           });
 
       });

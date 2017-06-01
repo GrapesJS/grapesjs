@@ -54,7 +54,6 @@ module.exports = {
       it("Render correctly new image asset", function (){
         this.coll.add({ type: 'image', src: 'test'});
         var asset = this.view.getAssetsEl().firstChild;
-        asset.tagName.should.equal('DIV');
         expect(asset.tagName).toEqual('DIV');
         expect(asset.innerHTML).toExist();
       });
