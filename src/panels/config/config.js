@@ -15,19 +15,7 @@ module.exports = {
   // Default panels fa-sliders for features
   defaults: [{
     id: 'commands',
-    buttons: [{
-      id: crc,
-      command: crc,
-      className: 'fa fa-pencil-square-o',
-      attributes: { title  : 'Create element' },
-      stopDefaultCommand: 1,
-    },{
-      id: mvc,
-      command: mvc,
-      className: 'fa fa-arrows',
-      attributes: { title: 'Move elements' },
-      stopDefaultCommand: 1,
-    }],
+    buttons: [{}],
   },{
     id: 'options',
     buttons: [{
