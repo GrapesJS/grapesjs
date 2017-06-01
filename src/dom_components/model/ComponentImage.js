@@ -76,7 +76,7 @@ module.exports = Component.extend({
       search: el.search,
       hash: el.hash,
       port: el.port,
-      query: query,
+      query,
     };
   },
 

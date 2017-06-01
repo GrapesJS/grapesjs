@@ -129,7 +129,7 @@ module.exports = () => {
      * var sector = styleManager.getSector('mySector');
      * */
     getSector(id) {
-      var res  = sectors.where({id: id});
+      var res  = sectors.where({id});
       return res.length ? res[0] : null;
     },
 

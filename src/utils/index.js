@@ -19,8 +19,8 @@ module.exports = () => {
       return this;
     },
 
-    Sorter: Sorter,
+    Sorter,
 
-    Resizer: Resizer,
+    Resizer,
   };
 };

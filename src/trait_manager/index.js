@@ -7,7 +7,7 @@ module.exports = () => {
 
   return {
 
-    TraitsView: TraitsView,
+    TraitsView,
 
     /**
      * Name of the module

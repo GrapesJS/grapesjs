@@ -164,8 +164,8 @@ module.exports = () => {
       component = new Component(c.wrapper, {
         sm: c.em,
         config: c,
-        defaultTypes: defaultTypes,
-        componentTypes: componentTypes,
+        defaultTypes,
+        componentTypes,
       });
       component.set({ attributes: {id: 'wrapper'}});
 
@@ -176,8 +176,8 @@ module.exports = () => {
       componentView = new ComponentView({
         model: component,
         config: c,
-        defaultTypes: defaultTypes,
-        componentTypes: componentTypes,
+        defaultTypes,
+        componentTypes,
       });
       return this;
     },

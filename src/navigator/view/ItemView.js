@@ -275,7 +275,7 @@ module.exports = Backbone.View.extend({
       editBtnCls: this.editBtnCls,
       inputNameCls: this.inputNameCls,
       caretCls: this.caretCls,
-      count: count,
+      count,
       visible: vis,
       hidable: this.config.hidable,
       prefix: pfx,

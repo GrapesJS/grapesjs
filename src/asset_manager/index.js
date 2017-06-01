@@ -119,7 +119,7 @@ module.exports = () => {
      * var asset = assetManager.get('http://img.jpg');
      */
     get(src) {
-      return assets.where({src: src})[0];
+      return assets.where({src})[0];
     },
 
     /**

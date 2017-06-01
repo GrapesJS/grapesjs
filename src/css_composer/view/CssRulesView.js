@@ -33,7 +33,7 @@ module.exports = Backbone.View.extend({
     var viewObject  = CssRuleView;
 
     var view = new viewObject({
-        model: model,
+        model,
         config: this.config,
     });
     var rendered  = view.render().el;

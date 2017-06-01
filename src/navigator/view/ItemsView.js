@@ -22,7 +22,7 @@ module.exports = Backbone.View.extend({
         containerSel: '.' + pfx + 'items',
         itemSel: '.' + pfx + 'item',
         ppfx: this.ppfx,
-        pfx: pfx,
+        pfx,
         nested: 1
       });
     }
@@ -60,7 +60,7 @@ module.exports = Backbone.View.extend({
     var viewObject  = ItemView;
 
     var view = new viewObject({
-      model: model,
+      model,
       config: this.config,
       sorter: this.sorter,
       isCountable: this.isCountable,

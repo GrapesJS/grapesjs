@@ -48,7 +48,7 @@ module.exports = Backbone.View.extend({
     if(args)
       attrs['data-args'] = args;
     var view = new viewObj({
-      model: model,
+      model,
       attributes: attrs,
     }, this.config);
 

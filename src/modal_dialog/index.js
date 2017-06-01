@@ -48,7 +48,7 @@ module.exports = () => {
 
       model = new ModalM(c);
       modal = new ModalView({
-        model: model,
+        model,
         config: c,
       });
 

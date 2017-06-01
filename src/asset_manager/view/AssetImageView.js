@@ -96,9 +96,9 @@ module.exports = AssetView.extend({
     name = name && name.length > 30 ? name.substring(0, 30)+'...' : name;
     dim = dim ? dim + (this.model.get('unitDim') ? this.model.get('unitDim') : ' px' ) : '';
     this.$el.html( this.template({
-      name: name,
+      name,
       src: this.model.get('src'),
-      dim: dim,
+      dim,
       pfx: this.pfx,
       ppfx: this.ppfx
     }));

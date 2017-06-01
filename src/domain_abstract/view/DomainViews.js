@@ -38,7 +38,7 @@ module.exports = Backbone.View.extend({
       itemView = this.itemsView[typeField];
     }
     var view = new itemView({
-      model: model,
+      model,
       config: this.config
     }, this.config);
     var rendered = view.render().el;

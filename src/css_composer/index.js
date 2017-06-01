@@ -34,7 +34,7 @@ module.exports = () => {
 
   return {
 
-      Selectors: Selectors,
+      Selectors,
 
       /**
        * Name of the module

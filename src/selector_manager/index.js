@@ -126,7 +126,7 @@ module.exports = config => {
      * var selector = selectorManager.get('selectorName');
      * */
     get(name) {
-      return selectors.where({name: name})[0];
+      return selectors.where({name})[0];
     },
 
     /**

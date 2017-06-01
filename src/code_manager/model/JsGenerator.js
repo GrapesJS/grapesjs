@@ -12,7 +12,7 @@ module.exports = Backbone.Model.extend({
     if (script) {
       // If the component has scripts we need to expose his ID
       var attr = model.get('attributes');
-      attr = _.extend({}, attr, {id: id});
+      attr = _.extend({}, attr, {id});
       model.set('attributes', attr);
 
       var scrStr = 'function(){' + script + '}';

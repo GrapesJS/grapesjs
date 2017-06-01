@@ -28,9 +28,9 @@ module.exports = {
     var $input     = $('<textarea>'),
 
       editor    = this.codeMirror.clone().set({
-        label    : label,
-        codeName  : codeName,
-        theme    : theme,
+        label,
+        codeName,
+        theme,
         input    : $input[0],
       }),
 

@@ -226,7 +226,7 @@ module.exports = Backbone.View.extend({
     var fragment  = fragmentEl || null;
 
     var view = new ClassTagView({
-        model:  model,
+        model,
         config: this.config,
         coll: this.collection,
     });

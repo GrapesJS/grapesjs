@@ -234,15 +234,15 @@ module.exports = Backbone.View.extend({
       val = val < min ? min : val;
 
     return {
-      force: force,
+      force,
       value: val,
-      unit: unit
+      unit
     };
   },
 
   render() {
     var ppfx = this.ppfx;
-    this.$el.html(this.template({ppfx: ppfx}));
+    this.$el.html(this.template({ppfx}));
     this.$el.find('.'+ ppfx +'input-holder').html(this.getInputEl());
     this.$el.find('.' + ppfx + 'field-units').html(this.getUnitEl());
     this.$el.addClass(this.contClass);

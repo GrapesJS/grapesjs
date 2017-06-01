@@ -35,7 +35,7 @@ module.exports = {
     var canvasOff = this.offset(this.canvas.getElement());
     var top = frameOff.top - canvasOff.top;
     var left = frameOff.left - canvasOff.left;
-    return { top: top, left: left };
+    return { top, left };
   },
 
   /**

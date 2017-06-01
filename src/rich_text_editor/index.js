@@ -101,7 +101,7 @@ module.exports = () => {
      * var cm = rte.get('fontSize');
      */
     get(command) {
-      return commands.where({command: command})[0];
+      return commands.where({command})[0];
     },
 
     /**

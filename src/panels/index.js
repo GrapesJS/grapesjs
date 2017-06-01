@@ -124,7 +124,7 @@ module.exports = () => {
      * var myPanel = panelManager.getPanel('myNewPanel');
      */
     getPanel(id) {
-      var res  = panels.where({id: id});
+      var res  = panels.where({id});
       return res.length ? res[0] : null;
     },
 
@@ -174,7 +174,7 @@ module.exports = () => {
     getButton(panelId, id) {
       var pn  = this.getPanel(panelId);
       if(pn){
-        var res  = pn.get('buttons').where({id: id});
+        var res  = pn.get('buttons').where({id});
         return res.length ? res[0] : null;
       }
       return null;
@@ -201,7 +201,7 @@ module.exports = () => {
         });
     },
 
-    Panel: Panel,
+    Panel,
 
   };
 };

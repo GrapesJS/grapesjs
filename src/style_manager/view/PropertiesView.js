@@ -44,7 +44,7 @@ module.exports = Backbone.View.extend({
       }
 
       var view = new objView({
-        model: model,
+        model,
         name: model.get('name'),
         id: this.pfx + model.get('property'),
         target: this.target,

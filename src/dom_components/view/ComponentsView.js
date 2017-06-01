@@ -59,7 +59,7 @@ module.exports = Backbone.View.extend({
     //viewObject = dt[type] ? dt[type].view : dt.default.view;
 
     var view = new viewObject({
-      model: model,
+      model,
       config: this.config,
       defaultTypes: dt,
       componentTypes: ct,

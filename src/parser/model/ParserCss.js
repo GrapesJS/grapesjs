@@ -30,8 +30,8 @@ module.exports = config => ({
       }
     }
     return {
-      result: result,
-      add: add,
+      result,
+      add,
     };
   },
 
@@ -109,7 +109,7 @@ module.exports = config => ({
           result.push({
             selectors: [],
             selectorsAdd: selsAddStr,
-            style: style,
+            style,
           });
         }
       }

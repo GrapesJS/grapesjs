@@ -9,7 +9,7 @@ module.exports = Backbone.Model.extend({
 
     coll.each(m => {
       code += m.toHTML({
-        cssc: cssc
+        cssc
       });
     }, this);
 

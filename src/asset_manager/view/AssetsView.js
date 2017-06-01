@@ -109,7 +109,7 @@ module.exports = Backbone.View.extend({
       viewObject  = AssetImageView;
 
     var view     = new viewObject({
-      model  : model,
+      model,
       config  : this.config,
     });
     var rendered  = view.render().el;

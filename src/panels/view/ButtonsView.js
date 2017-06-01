@@ -35,7 +35,7 @@ module.exports = Backbone.View.extend({
     var viewObject  = ButtonView;
 
     var view     = new viewObject({
-      model   : model,
+      model,
       config  : this.config,
       parentM  : this.parentM
     });

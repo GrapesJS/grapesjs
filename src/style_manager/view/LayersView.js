@@ -56,7 +56,7 @@ module.exports = Backbone.View.extend({
     }
 
     var view = new viewObject({
-        model: model,
+        model,
         stackModel: this.stackModel,
         config: this.config,
         sorter: this.sorter

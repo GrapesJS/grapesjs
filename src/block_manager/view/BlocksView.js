@@ -91,7 +91,7 @@ module.exports = Backbone.View.extend({
   add(model, fragment) {
     var frag = fragment || null;
     var view = new BlockView({
-      model: model,
+      model,
       attributes: model.get('attributes'),
     }, this.config);
     var rendered = view.render().el;

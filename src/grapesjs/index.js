@@ -12,9 +12,9 @@
 
   return {
 
-    editors: editors,
+    editors,
 
-    plugins: plugins,
+    plugins,
 
     /**
      * Initializes an editor based on passed options

@@ -10,8 +10,8 @@ function Navigator(collection, c) {
   }
 
   var obj = {
-    collection: collection,
-    config: config,
+    collection,
+    config,
     opened: c.opened || {}
   };
 

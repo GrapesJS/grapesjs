@@ -178,7 +178,7 @@ module.exports = {
       return;
     }
     this.editor.runCommand('show-offset', {
-      el: el,
+      el,
       elPos: pos,
     });
   },
@@ -199,7 +199,7 @@ module.exports = {
    */
   showFixedElementOffset(el, pos) {
     this.editor.runCommand('show-offset', {
-      el: el,
+      el,
       elPos: pos,
       state: 'Fixed',
     });
@@ -373,7 +373,7 @@ module.exports = {
     var toolbarEl = this.canvas.getToolbarEl();
     var toolbarStyle = toolbarEl.style;
     var pos = this.canvas.getTargetToElementDim(toolbarEl, el, {
-      elPos: elPos,
+      elPos,
       event: 'toolbarPosUpdate',
     });
     var leftPos = pos.left + pos.elementWidth - pos.targetWidth;

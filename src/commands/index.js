@@ -189,7 +189,7 @@ module.exports = () => {
      * 	},
      * });
      * */
-    add: add,
+    add,
 
     /**
      * Get command by ID

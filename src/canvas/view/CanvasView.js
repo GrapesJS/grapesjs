@@ -161,8 +161,8 @@ module.exports = Backbone.View.extend({
     var top = eo.top + frmOff.top - cvsOff.top;
     var left = eo.left + frmOff.left - cvsOff.left;
     return {
-      top: top,
-      left: left,
+      top,
+      left,
       height: el.offsetHeight,
       width: el.offsetWidth
     };

@@ -103,7 +103,7 @@ module.exports = Backbone.View.extend({
     var viewObject = SectorView;
 
     var view = new viewObject({
-      model: model,
+      model,
       id: this.pfx + model.get('name').replace(' ','_').toLowerCase(),
       name: model.get('name'),
       properties: model.get('properties'),
