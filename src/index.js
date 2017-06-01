@@ -1,2 +1,1 @@
-const grapesjs = require('./grapesjs');
-module.exports = grapesjs;
+module.exports = require('./grapesjs');

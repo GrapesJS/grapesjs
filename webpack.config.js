@@ -1,6 +1,5 @@
 //webpack --display-reasons
 //Remove jquery https://github.com/webpack/webpack/issues/1275
-//Migrateing https://webpack.js.org/guides/migrating/
 var webpack = require('webpack');
 var pkg = require('./package.json');
 var env = process.env.WEBPACK_ENV;
@@ -27,6 +26,7 @@ module.exports = {
       library: 'grapesjs',
       libraryTarget: 'umd',
   },
+  externals: {jquery: 'jQuery'},
   plugins: plugins,
   module: {
     loaders: [{
