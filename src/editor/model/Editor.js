@@ -486,7 +486,7 @@ module.exports = Backbone.Model.extend({
     this.get('storables').forEach(m => {
       var key = m.storageKey;
       key = typeof key === 'function' ? key() : key;
-      keys = key instanceof Array ? key : [key];
+      var keys = key instanceof Array ? key : [key];
       keys.forEach(k => {
         load.push(k);
       });
