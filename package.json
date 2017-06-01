@@ -37,8 +37,8 @@
     "ttf2eot": "^2.0.0",
     "ttf2woff": "^2.0.1",
     "ttf2woff2": "^2.0.3",
-    "webpack": "^1.13.1",
-    "webpack-dev-server": "^1.14.1"
+    "webpack": "^2.6.1",
+    "webpack-dev-server": "^2.4.5"
   },
   "keywords": [
     "wte",

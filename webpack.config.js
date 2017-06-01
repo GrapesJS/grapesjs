@@ -38,7 +38,7 @@ module.exports = {
     }],
   },
   resolve: {
-    modulesDirectories: ['src', 'node_modules'],
+    modules: ['src', 'node_modules'],
     alias: {
       jquery: 'jquery/dist/jquery',
       underscore: 'underscore/underscore',
