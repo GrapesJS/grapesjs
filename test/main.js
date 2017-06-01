@@ -1,5 +1,3 @@
-import expect from 'expect';
-import sinon from 'sinon';
 import grapesjs from './../src';
 //import AssetManager from './specs/asset_manager';
 

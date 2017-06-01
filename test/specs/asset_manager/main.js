@@ -22,6 +22,7 @@ describe('Asset Manager', function() {
 
     beforeEach(function () {
       imgObj = {
+        type: 'image',
         src: 'path/to/image',
         width: 101,
         height: 102,
@@ -35,57 +36,57 @@ describe('Asset Manager', function() {
     });
 
     it('Object exists', function() {
-      obj.should.be.exist;
+      expect(obj).toExist();
     });
 
     it('No assets inside', function() {
-      obj.getAll().length.should.be.empty;
+      expect(obj.getAll().length).toEqual(0);
     });
 
     it('Add new asset', function() {
       obj.add(imgObj);
-      obj.getAll().length.should.equal(1);
+      expect(obj.getAll().length).toEqual(1);
     });
 
     it('Added asset has correct data', function() {
       obj.add(imgObj);
       var asset = obj.get(imgObj.src);
-      asset.get('width').should.equal(imgObj.width);
-      asset.get('height').should.equal(imgObj.height);
-      asset.get('type').should.equal('image');
+      expect(asset.get('width')).toEqual(imgObj.width);
+      expect(asset.get('height')).toEqual(imgObj.height);
+      expect(asset.get('type')).toEqual(imgObj.type);
     });
 
     it('Add asset with src', function() {
       obj.add(imgObj.src);
       var asset = obj.get(imgObj.src);
-      asset.get('type').should.equal('image');
-      asset.get('src').should.equal(imgObj.src);
+      expect(asset.get('type')).toEqual('image');
+      expect(asset.get('src')).toEqual(imgObj.src);
     });
 
     it('Add asset with more src', function() {
       obj.add([imgObj.src, imgObj.src + '2']);
-      obj.getAll().length.should.equal(2);
+      expect(obj.getAll().length).toEqual(2);
       var asset1 = obj.getAll().at(0);
       var asset2 = obj.getAll().at(1);
-      asset1.get('src').should.equal(imgObj.src);
-      asset2.get('src').should.equal(imgObj.src + '2');
+      expect(asset1.get('src')).toEqual(imgObj.src);
+      expect(asset2.get('src')).toEqual(imgObj.src + '2');
     });
 
     it('Src is unique', function() {
       obj.add(imgObj);
       obj.add(imgObj);
-      obj.getAll().length.should.equal(1);
+      expect(obj.getAll().length).toEqual(1);
     });
 
     it('Remove asset', function() {
       obj.add(imgObj);
       obj.remove(imgObj.src);
-      obj.getAll().length.should.equal(0);
+      expect(obj.getAll().length).toEqual(0);
     });
 
     it('Render assets', function() {
       obj.add(imgObj);
-      obj.render().should.not.be.empty;
+      expect(obj.render()).toExist();
     });
 
     describe('With storage', function() {
@@ -113,9 +114,9 @@ describe('Asset Manager', function() {
         obj.remove(imgObj.src);
         obj.load();
         var asset = obj.get(imgObj.src);
-        asset.get('width').should.equal(imgObj.width);
-        asset.get('height').should.equal(imgObj.height);
-        asset.get('type').should.equal('image');
+        expect(asset.get('width')).toEqual(imgObj.width);
+        expect(asset.get('height')).toEqual(imgObj.height);
+        expect(asset.get('type')).toEqual('image');
       });
 
     });

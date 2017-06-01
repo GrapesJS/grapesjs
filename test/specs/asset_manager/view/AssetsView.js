@@ -33,35 +33,36 @@ module.exports = {
       });
 
       it('Object exists', function() {
-        AssetsView.should.be.exist;
+        expect(AssetsView).toExist();
       });
 
       it("Collection is empty", function (){
-        this.view.getAssetsEl().innerHTML.should.be.empty;
+        expect(this.view.getAssetsEl().innerHTML).toNotExist();
       });
 
       it("Add new asset", function (){
         sinon.stub(this.view, "addAsset");
         this.coll.add({src: 'test'});
-        this.view.addAsset.calledOnce.should.equal(true);
+        expect(this.view.addAsset.calledOnce).toEqual(true);
       });
 
       it("Render new asset", function (){
         this.coll.add({src: 'test'});
-        this.view.getAssetsEl().innerHTML.should.not.be.empty;
+        expect(this.view.getAssetsEl().innerHTML).toExist();
       });
 
       it("Render correctly new image asset", function (){
         this.coll.add({ type: 'image', src: 'test'});
         var asset = this.view.getAssetsEl().firstChild;
         asset.tagName.should.equal('DIV');
-        asset.innerHTML.should.not.be.empty;
+        expect(asset.tagName).toEqual('DIV');
+        expect(asset.innerHTML).toExist();
       });
 
       it("Clean collection from asset", function (){
         var model = this.coll.add({src: 'test'});
         this.coll.remove(model);
-        this.view.getAssetsEl().innerHTML.should.be.empty;
+        expect(this.view.getAssetsEl().innerHTML).toNotExist();
       });
 
       it("Deselect works", function (){
@@ -69,15 +70,15 @@ module.exports = {
         var $asset = this.view.$el.children().first();
         $asset.attr('class', this.view.pfx + 'highlight');
         this.coll.trigger('deselectAll');
-        $asset.attr('class').should.be.empty;
+        expect($asset.attr('class')).toNotExist();
       });
 
       it("Returns not empty assets element", function (){
-        obj.getAssetsEl().should.be.ok;
+        expect(obj.getAssetsEl()).toExist();
       });
 
       it("Returns not empty url input", function (){
-        obj.getInputUrl().should.be.ok;
+        expect(obj.getInputUrl()).toExist();
       });
 
       it("Add image asset from input string", function (){
@@ -86,7 +87,7 @@ module.exports = {
           preventDefault: function(){}
         });
         var asset = obj.collection.at(0);
-        asset.get('src').should.equal('test');
+        expect(asset.get('src')).toEqual('test');
       });
 
     });

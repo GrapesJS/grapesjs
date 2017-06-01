@@ -8,8 +8,8 @@ module.exports = {
     describe('AssetImageView', function() {
 
       before(function () {
-        this.$fixtures   = $("#fixtures");
-        this.$fixture   = $('<div class="asset-fixture"></div>');
+        this.$fixtures = $("#fixtures");
+        this.$fixture = $('<div class="asset-fixture"></div>');
       });
 
       beforeEach(function () {
@@ -24,54 +24,56 @@ module.exports = {
       });
 
       afterEach(function () {
-        delete this.view;
+        this.view = null;
       });
 
       after(function () {
-        this.$fixture.remove();
+        this.$fixture.empty();
       });
 
       it('Object exists', function() {
-        AssetImageView.should.be.exist;
+        expect(AssetImageView).toExist();
       });
 
       describe('Asset should be rendered correctly', function() {
 
           it('Has preview box', function() {
             var $asset = this.view.$el;
-            $asset.find('#preview').should.have.property(0);
+            expect($asset.find('#preview').get(0).length).toEqual(1);
           });
 
           it('Has meta box', function() {
             var $asset = this.view.$el;
-            $asset.find('#meta').should.have.property(0);
+            expect($asset.find('#meta').get(0).length).toEqual(1);
           });
 
           it('Has close button', function() {
             var $asset = this.view.$el;
-            $asset.find('#close').should.have.property(0);
+            expect($asset.find('#close').get(0).length).toEqual(1);
           });
 
       });
 
       it('Could be selected', function() {
-        sinon.stub(this.view, 'updateTarget');
+        var spy = expect.spyOn(this.view, 'updateTarget');
         this.view.$el.trigger('click');
-        this.view.$el.attr('class').should.contain('highlight');
-        this.view.updateTarget.calledOnce.should.equal(true);
+        expect(this.view.$el.attr('class')).toInclude('highlight');
+        expect(spy).toHaveBeenCalled();
       });
 
       it('Could be chosen', function() {
         sinon.stub(this.view, 'updateTarget');
+        var spy = expect.spyOn(this.view, 'updateTarget');
         this.view.$el.trigger('dblclick');
-        this.view.updateTarget.calledOnce.should.equal(true);
+        expect(spy).toHaveBeenCalled();
+        //this.view.updateTarget.calledOnce.should.equal(true);
       });
 
       it('Could be removed', function() {
-        var spy     = sinon.spy();
+        var spy = sinon.spy();
         this.view.model.on("remove", spy);
         this.view.$el.find('#close').trigger('click');
-        spy.called.should.equal(true);
+        expect(spy.called).toEqual(true);
       });
 
     });

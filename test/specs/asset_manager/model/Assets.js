@@ -15,35 +15,35 @@ module.exports = {
       });
 
       it('Object exists', function() {
-        obj.should.be.exist;
+        expect(obj).toExist();
       });
 
       it('Collection is empty', function() {
-        obj.length.should.equal(0);
+        expect(obj.length).toEqual(0);
       });
 
       it("Can't insert assets without src", function() {
         obj.add({});
-        obj.length.should.equal(0);
+        expect(obj.length).toEqual(0);
         obj.add([{},{},{}]);
-        obj.length.should.equal(0);
+        expect(obj.length).toEqual(0);
       });
 
       it("Insert assets only with src", function() {
         obj.add([{},{src:'test'},{}]);
-        obj.length.should.equal(1);
+        expect(obj.length).toEqual(1);
       });
 
       it('addImg creates new asset', function() {
         obj.addImg('/img/path');
-        obj.length.should.equal(1);
+        expect(obj.length).toEqual(1);
       });
 
       it('addImg asset is correct', function() {
         obj.addImg('/img/path');
         var asset = obj.at(0);
-        asset.get('type').should.equal('image');
-        asset.get('src').should.equal('/img/path');
+        expect(asset.get('type')).toEqual('image');
+        expect(asset.get('src')).toEqual('/img/path');
       });
 
     });
