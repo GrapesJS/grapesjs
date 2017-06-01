@@ -1,11 +1,16 @@
 var Backbone = require('backbone');
 var Input = require('./Input');
 var Spectrum = require('Spectrum');
-var inputTemplate = require('text!./templates/inputColor.html');
 
 module.exports = Input.extend({
 
-  template: _.template(inputTemplate),
+  template: _.template(`
+  <div class='<%= ppfx %>input-holder'></div>
+  <div class="<%= ppfx %>field-colorp">
+    <div class="<%= ppfx %>field-colorp-c">
+      <div class="<%= ppfx %>checker-bg"></div>
+    </div>
+  </div>`),
 
   initialize: function(opts) {
     Input.prototype.initialize.apply(this, arguments);

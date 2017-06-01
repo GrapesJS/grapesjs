@@ -1,10 +1,28 @@
 var Backbone = require('backbone');
-var ItemTemplate = require('text!./../template/item.html');
 var ItemsView;
 
 module.exports = Backbone.View.extend({
 
-  template: _.template(ItemTemplate),
+  template: _.template(`
+  <% if (hidable) { %>
+  	<i id="<%= prefix %>btn-eye" class="btn fa fa-eye <%= (visible ? '' : 'fa-eye-slash') %>"></i>
+  <% } %>
+
+  <div class="<%= prefix %>title-c">
+    <div class="<%= prefix %>title <%= addClass %>">
+    	<i id="<%= prefix %>caret" class="fa fa-chevron-right <%= caretCls %>"></i>
+  		<i class="fa fa-pencil <%= editBtnCls %>"></i>
+  		<input class="<%= ppfx %>no-app <%= inputNameCls %>" value="<%= title %>" readonly>
+    </div>
+  </div>
+
+  <div id="<%= prefix %>counter"><%= (count ? count : '') %></div>
+
+  <div id="<%= prefix %>move">
+  	<i class="fa fa-arrows"></i>
+  </div>
+
+  <div class="<%= prefix %>children"></div>`),
 
   initialize: function(o) {
     this.opt = o;

@@ -1,8 +1,19 @@
 var Backbone = require('backbone');
-var modalTemplate = require('text!./../template/modal.html');
-module.exports = Backbone.View.extend({
 
-  template: _.template(modalTemplate),
+module.exports = Backbone.View.extend({
+  template: _.template(`
+    <div class="<%= pfx %>dialog">
+      <div class="<%= pfx %>header">
+        <div class="<%= pfx %>title"><%= title %></div>
+        <div class="<%= pfx %>btn-close">&Cross;</div>
+      </div>
+      <div class="<%= pfx %>content">
+        <div id="<%= pfx %>c"> <%= content %> </div>
+        <div style="clear:both"></div>
+      </div>
+    </div>
+    <div class="<%= pfx %>backlayer"></div>
+    <div class="<%= pfx %>collector" style="display: none"></div>`),
 
   events: {},
 

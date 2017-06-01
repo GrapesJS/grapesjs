@@ -1,12 +1,16 @@
 var Backbone = require('backbone');
 var PropertyCompositeView = require('./PropertyCompositeView');
-var propertyTemplate = require('text!./../templates/propertyStack.html');
 var Layers = require('./../model/Layers');
 var LayersView = require('./LayersView');
 
 module.exports = PropertyCompositeView.extend({
 
-  template: _.template(propertyTemplate),
+  template: _.template(`
+  <div class="<%= pfx %>field <%= pfx %>stack">
+    <button id='<%= pfx %>add'>+</button>
+    <span id='<%= pfx %>input-holder'></span>
+  </div>
+  <div style="clear:both"></div>`),
 
   initialize: function(o) {
     PropertyCompositeView.prototype.initialize.apply(this, arguments);

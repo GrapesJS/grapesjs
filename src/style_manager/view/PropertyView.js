@@ -1,11 +1,18 @@
 var Backbone = require('backbone');
-var propertyLabel = require('text!./../templates/propertyLabel.html');
-var propertyTemplate = require('text!./../templates/propertyInput.html');
 
 module.exports = Backbone.View.extend({
+  template: _.template(`
+  <div class="<%= ppfx %>field">
+    <span id='<%= pfx %>input-holder'></span>
+  </div>
+  <div style="clear:both"></div>`),
 
-  template: _.template(propertyTemplate),
-  templateLabel: _.template(propertyLabel),
+  templateLabel: _.template(`
+  <div class="<%= pfx %>label">
+    <div class="<%= pfx %>icon <%= icon %>" title="<%= info %>">
+      <%= label %>
+    </div>
+  </div>`),
 
   events: {'change': 'valueUpdated'},
 

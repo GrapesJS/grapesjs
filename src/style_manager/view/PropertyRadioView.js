@@ -1,10 +1,13 @@
 var Backbone = require('backbone');
 var PropertyView = require('./PropertyView');
-var propertyTemplate = require('text!./../templates/propertyRadio.html');
 
 module.exports = PropertyView.extend({
 
-  template: _.template(propertyTemplate),
+  template: _.template(`
+  <div class="<%= ppfx %>field <%= ppfx %>field-radio">
+    <span id='<%= pfx %>input-holder'></span>
+  </div>
+  <div style="clear:both"></div>`),
 
   initialize: function(options) {
     PropertyView.prototype.initialize.apply(this, arguments);

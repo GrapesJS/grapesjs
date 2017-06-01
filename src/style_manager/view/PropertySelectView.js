@@ -1,10 +1,16 @@
 var Backbone = require('backbone');
 var PropertyView = require('./PropertyView');
-var propertyTemplate = require('text!./../templates/propertySelect.html');
 
 module.exports = PropertyView.extend({
 
-  template: _.template(propertyTemplate),
+  template: _.template(`
+  <div class="<%= ppfx %>field <%= ppfx %>select">
+    <span id='<%= pfx %>input-holder'></span>
+    <div class="<%= ppfx %>sel-arrow">
+      <div class="<%= ppfx %>d-s-arrow"></div>
+    </div>
+  </div>
+  <div style="clear:both"></div>`),
 
   initialize: function(options) {
     PropertyView.prototype.initialize.apply(this, arguments);

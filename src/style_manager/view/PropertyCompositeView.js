@@ -1,10 +1,13 @@
 var Backbone = require('backbone');
 var PropertyView = require('./PropertyView');
-var propertyTemplate = require('text!./../templates/propertyComposite.html');
 
 module.exports = PropertyView.extend({
 
-  template: _.template(propertyTemplate),
+  template: _.template(`
+  <div class="<%= pfx %>field <%= pfx %>composite">
+  	<span id='<%= pfx %>input-holder'></span>
+  </div>
+  <div style="clear:both"></div>`),
 
   initialize: function(o) {
     PropertyView.prototype.initialize.apply(this, arguments);

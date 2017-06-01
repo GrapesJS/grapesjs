@@ -1,9 +1,18 @@
 var Backbone = require('backbone');
-var devicesTemplate = require('text!./../template/devices.html');
 
 module.exports = Backbone.View.extend({
 
-  template: _.template(devicesTemplate),
+  template: _.template(`
+    <div class="<%= ppfx %>device-label"><%= deviceLabel %></div>
+    <div class="<%= ppfx %>field <%= ppfx %>select">
+      <span id="<%= ppfx %>input-holder">
+        <select class="<%= ppfx %>devices"></select>
+      </span>
+      <div class="<%= ppfx %>sel-arrow">
+        <div class="<%= ppfx %>d-s-arrow"></div>
+      </div>
+    </div>
+    <button style="display:none" class="<%= ppfx %>add-trasp">+</button>`),
 
   events: {
     'change': 'updateDevice'

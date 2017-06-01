@@ -1,5 +1,4 @@
 var Backbone = require('backbone');
-var inputTemplate = require('text!./templates/input.html');
 
 module.exports = Backbone.View.extend({
 
@@ -7,7 +6,7 @@ module.exports = Backbone.View.extend({
     'change': 'handleChange',
   },
 
-  template: _.template(inputTemplate),
+  template: _.template(`<span class='<%= holderClass %>'></span>`),
 
   initialize: function(opts) {
     var opt = opts || {};

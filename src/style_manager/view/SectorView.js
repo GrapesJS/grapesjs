@@ -1,10 +1,13 @@
 var Backbone = require('backbone');
 var PropertiesView = require('./PropertiesView');
-var sectorTemplate = require('text!./../templates/sector.html');
 
 module.exports = Backbone.View.extend({
 
-  template: _.template(sectorTemplate),
+  template: _.template(`
+  <div class="<%= pfx %>title">
+    <i id="<%= pfx %>caret" class="fa"></i>
+    <%= label %>
+  </div>`),
 
   events:{},
 

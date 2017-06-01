@@ -11,7 +11,6 @@
     "url": "https://github.com/artf/grapesjs.git"
   },
   "dependencies": {
-    "amd-to-common": "^1.1.1",
     "backbone": "^1.3.3",
     "backbone-undo": "^0.2.5",
     "codemirror": "^5.21.0",
@@ -20,10 +19,7 @@
     "jquery": "^3.1.1",
     "keymaster": "^1.6.2",
     "spectrum-colorpicker": "^1.8.0",
-    "text-loader": "^0.0.1",
-    "underscore": "^1.8.3",
-    "webpack": "^1.13.1",
-    "webpack-dev-server": "^1.14.1"
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "babel-core": "^6.24.1",
@@ -36,13 +32,13 @@
     "jsdom": "^11.0.0",
     "mocha": "^3.1.2",
     "node-sass": "^3.4.2",
-    "requirejs": "^2.3.2",
-    "requirejs-text": "^2.0.12",
     "sinon": "^1.17.6",
     "svg2ttf": "^4.0.1",
     "ttf2eot": "^2.0.0",
     "ttf2woff": "^2.0.1",
-    "ttf2woff2": "^2.0.3"
+    "ttf2woff2": "^2.0.3",
+    "webpack": "^1.13.1",
+    "webpack-dev-server": "^1.14.1"
   },
   "keywords": [
     "wte",

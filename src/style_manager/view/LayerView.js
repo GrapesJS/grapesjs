@@ -1,5 +1,4 @@
 var Backbone = require('backbone');
-var layerTemplate = require('text!./../templates/layer.html');
 
 module.exports = Backbone.View.extend({
 
@@ -7,7 +6,17 @@ module.exports = Backbone.View.extend({
     'click': 'updateIndex',
   },
 
-  template: _.template(layerTemplate),
+  template: _.template(`
+  <div id="<%= pfx %>move">
+    <i class="fa fa-arrows"></i>
+  </div>
+  <div id="<%= pfx %>label"><%= label %></div>
+  <div id="<%= pfx %>preview-box">
+  	<div id="<%= pfx %>preview"></div>
+  </div>
+  <div id="<%= pfx %>close-layer" class="<%= pfx %>btn-close">&Cross;</div>
+  <div id="<%= pfx %>inputs"></div>
+  <div style="clear:both"></div>`),
 
   initialize: function(o) {
     this.stackModel = o.stackModel || {};

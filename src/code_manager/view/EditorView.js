@@ -1,9 +1,12 @@
 var Backbone = require('backbone');
-var vTemplate = require('text!./../template/editor.html');
 
 module.exports = Backbone.View.extend({
 
-  template: _.template(vTemplate),
+  template: _.template(`
+  <div class="<%= pfx %>editor" id="<%= pfx %><%= codeName %>">
+  	<div id="<%= pfx %>title"><%= label %></div>
+  	<div id="<%= pfx %>code"></div>
+  </div>`),
 
   initialize: function(o){
     this.config = o.config || {};

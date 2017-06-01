@@ -1,8 +1,12 @@
 var Backbone = require('backbone');
-var tagTemplate = require('text!./../template/classTag.html');
-module.exports = Backbone.View.extend({
 
-  template: _.template(tagTemplate),
+module.exports = Backbone.View.extend({
+  template: _.template(`
+  <span id="<%= pfx %>checkbox" class="fa"></span>
+  <span id="<%= pfx %>tag-label">
+      <input class="<%= ppfx %>no-app" value="<%= label %>" <%= inputProp %>/>
+  </span>
+  <span id="<%= pfx %>close">&Cross;</span>`),
 
   events: {},
 

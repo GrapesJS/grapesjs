@@ -1,11 +1,16 @@
 var Backbone = require('backbone');
-var inputTemplate = require('text!./templates/inputNumber.html');
 
 module.exports = Backbone.View.extend({
 
   events: {},
 
-  template: _.template(inputTemplate),
+  template: _.template(`
+  <span class='<%= ppfx %>input-holder'></span>
+  <span class='<%= ppfx %>field-units'></span>
+  <div class="<%= ppfx %>field-arrows">
+    <div class="<%= ppfx %>field-arrow-u"></div>
+    <div class="<%= ppfx %>field-arrow-d"></div>
+  </div>`),
 
   initialize: function(opts) {
     _.bindAll(this, 'moveIncrement', 'upIncrement');

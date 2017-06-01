@@ -1,10 +1,35 @@
 var Backbone = require('backbone');
-var tagsTemplate = require('text!./../template/classTags.html');
 var ClassTagView = require('./ClassTagView');
 
 module.exports = Backbone.View.extend({
-
-  template: _.template(tagsTemplate),
+  template: _.template(`
+  <div id="<%= pfx %>up">
+    <div id="<%= pfx %>label"><%= label %></div>
+    <div id="<%= pfx %>status-c">
+      <span id="<%= pfx %>input-c">
+        <div class="<%= ppfx %>field <%= ppfx %>select">
+          <span id="<%= ppfx %>input-holder">
+            <select id="<%= pfx %>states">
+              <option value=""><%= statesLabel %></option>
+            </select>
+          </span>
+          <div class="<%= ppfx %>sel-arrow">
+            <div class="<%= ppfx %>d-s-arrow"></div>
+          </div>
+        </div>
+      </span>
+    </div>
+  </div>
+  <div id="<%= pfx %>tags-field" class="<%= ppfx %>field">
+    <div id="<%= pfx %>tags-c"></div>
+    <input id="<%= pfx %>new" />
+    <span id="<%= pfx %>add-tag" class="fa fa-plus"></span>
+  </div>
+  <div id="<%= pfx %>sel-help">
+    <div id="<%= pfx %>label">Selected</div>
+    <div id="<%= pfx %>sel"></div>
+    <div style="clear:both"></div>
+  </div>`),
 
   events: {},
 
