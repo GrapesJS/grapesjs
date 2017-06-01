@@ -8,12 +8,12 @@ module.exports = Backbone.View.extend({
   	<div id="<%= pfx %>code"></div>
   </div>`),
 
-  initialize: function(o){
+  initialize(o) {
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix;
   },
 
-  render: function(){
+  render() {
     var obj = this.model.toJSON();
     obj.pfx = this.pfx;
     this.$el.html( this.template(obj) );

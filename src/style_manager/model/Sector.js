@@ -13,7 +13,7 @@ module.exports = Backbone.Model.extend({
     properties : [],
   },
 
-  initialize: function(opts) {
+  initialize(opts) {
     var o = opts || {};
     var props = [];
     var builded = this.buildProperties(o.buildProps);
@@ -36,7 +36,7 @@ module.exports = Backbone.Model.extend({
    * @return {Array<Object>} Final props
    * @private
    */
-  extendProperties: function(props, moProps, ex){
+  extendProperties(props, moProps, ex) {
     var pLen = props.length;
     var mProps = moProps || this.get('properties');
     var ext = this.get('extendBuilded');
@@ -76,7 +76,7 @@ module.exports = Backbone.Model.extend({
    * @return {Array<Object>}
    * @private
    */
-  buildProperties: function(props){
+  buildProperties(props) {
     var r;
     var buildP = props || [];
 

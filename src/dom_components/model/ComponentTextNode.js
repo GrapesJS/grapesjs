@@ -7,13 +7,13 @@ module.exports = Component.extend({
     editable: true,
   }),
 
-  toHTML: function() {
+  toHTML() {
     return this.get('content');
   },
 
 }, {
 
-  isComponent: function(el) {
+  isComponent(el) {
     var result = '';
     if(el.nodeType === 3){
       result = {

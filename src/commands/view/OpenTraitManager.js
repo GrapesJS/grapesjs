@@ -1,6 +1,6 @@
 module.exports = {
 
-  run: function(editor, sender) {
+  run(editor, sender) {
     var config = editor.Config;
     var pfx = config.stylePrefix;
     var tm = editor.TraitManager;
@@ -23,7 +23,7 @@ module.exports = {
     this.obj.style.display = 'block';
   },
 
-  stop: function() {
+  stop() {
     if(this.obj)
       this.obj.style.display = 'none';
   }

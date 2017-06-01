@@ -1,6 +1,6 @@
 module.exports = {
 
-  run: function(editor, sender) {
+  run(editor, sender) {
     this.sender = sender;
     this.wrapper = editor.DomComponents.getWrapper();
     this.components = editor.DomComponents.getComponents();
@@ -21,7 +21,7 @@ module.exports = {
    * @return  {Object}  Editor
    * @private
    * */
-  buildEditor: function(codeName, theme, label) {
+  buildEditor(codeName, theme, label) {
     if(!this.codeMirror)
       this.codeMirror    = this.cm.getViewer('CodeMirror');
 
@@ -44,7 +44,7 @@ module.exports = {
     return { el: editor, $el: $editor };
   },
 
-  enable: function() {
+  enable() {
     if(!this.$editors){
       var oHtmlEd      = this.buildEditor('htmlmixed', 'hopscotch', 'HTML'),
         oCsslEd      = this.buildEditor('css', 'hopscotch', 'CSS');
@@ -68,5 +68,5 @@ module.exports = {
       this.sender.set('active',false);
   },
 
-  stop: function(){}
+  stop() {}
 };

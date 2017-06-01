@@ -2,7 +2,7 @@ var Backbone = require('backbone');
 
 module.exports = Backbone.Model.extend({
 
-  initialize: function() {
+  initialize() {
     this.compCls = [];
   },
 
@@ -11,7 +11,7 @@ module.exports = Backbone.Model.extend({
    * @param {Model} model
    * @return {String}
    */
-  buildFromModel: function (model) {
+  buildFromModel(model) {
     var code = '';
     var style = model.get('style');
     var classes = model.get('classes');
@@ -40,7 +40,7 @@ module.exports = Backbone.Model.extend({
    * @param {Model} model
    * @return {String}
    */
-  buildFromComp: function(model) {
+  buildFromComp(model) {
     var coll = model.get('components') || model,
       code = '';
 
@@ -58,7 +58,7 @@ module.exports = Backbone.Model.extend({
   },
 
   /** @inheritdoc */
-  build: function(model, cssc) {
+  build(model, cssc) {
     this.compCls = [];
     var code = this.buildFromModel(model);
     code += this.buildFromComp(model);
@@ -105,7 +105,7 @@ module.exports = Backbone.Model.extend({
    * @param {Model} rule
    * @return {string} CSS string
    */
-  buildFromRule: function(rule) {
+  buildFromRule(rule) {
     var result = '';
     var selectorsAdd = rule.get('selectorsAdd');
     var selectors = rule.get('selectors');

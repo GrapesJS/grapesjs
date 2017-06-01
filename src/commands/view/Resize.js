@@ -1,6 +1,6 @@
 module.exports = {
 
-  run: function(editor, sender, opts) {
+  run(editor, sender, opts) {
     var el = (opts && opts.el) || '';
     var canvas = editor.Canvas;
     var canvasResizer = this.canvasResizer;
@@ -22,7 +22,7 @@ module.exports = {
     canvasResizer.focus(el);
   },
 
-  stop: function() {
+  stop() {
     if(this.canvasResizer)
       this.canvasResizer.blur();
   },

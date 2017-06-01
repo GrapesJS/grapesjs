@@ -2,7 +2,7 @@ var Backbone = require('backbone');
 
 module.exports = Backbone.Collection.extend({
 
-  initialize: function(models, opt){
+  initialize(models, opt) {
 
     this.model  = function(attrs, opts) {
       var model;

@@ -16,7 +16,7 @@ module.exports = PropertyView.extend({
   </div>
   <div style="clear:both"></div>`),
 
-  initialize: function(options) {
+  initialize(options) {
     PropertyView.prototype.initialize.apply(this, arguments);
     this.assets    = this.target.get('assets');
     this.modal    = this.target.get('Modal');
@@ -28,7 +28,7 @@ module.exports = PropertyView.extend({
   },
 
   /** @inheritdoc */
-  renderInput: function() {
+  renderInput() {
     if (!this.$input) {
       this.$input = $('<input>', {placeholder: this.defaultValue, type: 'text' });
     }
@@ -55,7 +55,7 @@ module.exports = PropertyView.extend({
    *
    * @return void
    * */
-  setPreviewView: function(v){
+  setPreviewView(v) {
     if(!this.$previewBox)
       return;
     if(v)
@@ -70,7 +70,7 @@ module.exports = PropertyView.extend({
    *
    * @return void
    * */
-  spreadUrl: function(url) {
+  spreadUrl(url) {
     this.setValue(url);
     this.setPreviewView(1);
   },
@@ -79,19 +79,19 @@ module.exports = PropertyView.extend({
    * Shows file preview
    * @param string Value
    * */
-  setPreview: function(url) {
+  setPreview(url) {
     if(this.$preview)
       this.$preview.css('background-image', "url(" + url + ")");
   },
 
   /** @inheritdoc */
-  setValue: function(value, f){
+  setValue(value, f) {
     PropertyView.prototype.setValue.apply(this, arguments);
     this.setPreview(value);
   },
 
   /** @inheritdoc */
-  renderTemplate: function(){
+  renderTemplate() {
     this.$el.append( this.template({
       upload  : 'Upload',
       assets  : 'Images',
@@ -100,7 +100,7 @@ module.exports = PropertyView.extend({
   },
 
   /** @inheritdoc */
-  cleanValue: function(){
+  cleanValue() {
     this.setPreviewView(0);
     this.model.set({value: ''},{silent: true});
   },
@@ -110,7 +110,7 @@ module.exports = PropertyView.extend({
    *
    * @return void
    * */
-  removeFile:function(...args) {
+  removeFile(...args) {
     this.model.set('value',this.defaultValue);
     PropertyView.prototype.cleanValue.apply(this, args);
     this.setPreviewView(0);
@@ -122,7 +122,7 @@ module.exports = PropertyView.extend({
    *
    * @return void
    * */
-  openAssetManager: function(e){
+  openAssetManager(e) {
     var that  = this;
     if(this.modal && this.am){
       this.modal.setTitle('Select image');

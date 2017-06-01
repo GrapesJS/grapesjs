@@ -3,7 +3,7 @@ var Backbone = require('backbone');
 module.exports = Backbone.Model.extend({
 
   /** @inheritdoc */
-  build: function(model, cssc){
+  build(model, cssc) {
     var coll = model.get('components') || model,
       code = '';
 

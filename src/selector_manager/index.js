@@ -74,7 +74,7 @@ module.exports = config => {
      * @return {this}
      * @private
      */
-    init: function(conf) {
+    init(conf) {
       c = conf || {};
 
       for (var name in defaults) {
@@ -112,7 +112,7 @@ module.exports = config => {
      *   label: 'selectorName'
      * });
      * */
-    add: function(name, opts){
+    add(name, opts) {
       var obj = opts || {};
       obj.name = name.name || name;
       return selectors.add(obj);
@@ -125,7 +125,7 @@ module.exports = config => {
      * @example
      * var selector = selectorManager.get('selectorName');
      * */
-    get: function(name) {
+    get(name) {
       return selectors.where({name: name})[0];
     },
 
@@ -133,7 +133,7 @@ module.exports = config => {
      * Get all selectors
      * @return {Collection}
      * */
-    getAll: function() {
+    getAll() {
       return selectors;
     },
 
@@ -143,7 +143,7 @@ module.exports = config => {
      * @return {HTMLElement}
      * @private
      */
-    render: function(selectors) {
+    render(selectors) {
       if(selectors){
         var view = new ClassTagsView({
           collection: new Selectors(selectors),

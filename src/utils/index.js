@@ -15,7 +15,7 @@ module.exports = () => {
     /**
      * Initialize module
      */
-    init: function() {
+    init() {
       return this;
     },
 

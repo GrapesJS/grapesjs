@@ -3,7 +3,7 @@ var BlockView = require('./BlockView');
 
 module.exports = Backbone.View.extend({
 
-  initialize: function(opts, config) {
+  initialize(opts, config) {
     _.bindAll(this, 'getSorter', 'onDrag', 'onDrop');
     this.config = config || {};
     this.ppfx = this.config.pStylePrefix || '';
@@ -22,7 +22,7 @@ module.exports = Backbone.View.extend({
    * Get sorter
    * @private
    */
-  getSorter: function(){
+  getSorter() {
     if(!this.em)
       return;
     if(!this.sorter){
@@ -51,7 +51,7 @@ module.exports = Backbone.View.extend({
    * Callback when block is on drag
    * @private
    */
-  onDrag: function(){
+  onDrag() {
     this.em.stopDefault();
   },
 
@@ -59,7 +59,7 @@ module.exports = Backbone.View.extend({
    * Callback when block is dropped
    * @private
    */
-  onDrop: function(model){
+  onDrop(model) {
     this.em.runDefault();
 
     if (model && model.get) {
@@ -78,7 +78,7 @@ module.exports = Backbone.View.extend({
    * @param {Model} model
    * @private
    * */
-  addTo: function(model){
+  addTo(model) {
     this.add(model);
   },
 
@@ -88,7 +88,7 @@ module.exports = Backbone.View.extend({
    * @param {Object} fragment Fragment collection
    * @private
    * */
-  add: function(model, fragment){
+  add(model, fragment) {
     var frag = fragment || null;
     var view = new BlockView({
       model: model,
@@ -104,7 +104,7 @@ module.exports = Backbone.View.extend({
 
 
 
-  render: function() {
+  render() {
     var frag = document.createDocumentFragment();
     this.$el.empty();
 

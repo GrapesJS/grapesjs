@@ -3,7 +3,7 @@ var InputNumber = require('domain_abstract/ui/InputNumber');
 
 module.exports = TraitView.extend({
 
-  getValueForTarget: function () {
+  getValueForTarget() {
     var model = this.model;
     var value = model.get('value');
     var unit = model.get('unit');
@@ -15,7 +15,7 @@ module.exports = TraitView.extend({
    * @return {HTMLElement}
    * @private
    */
-  getInputEl: function() {
+  getInputEl() {
     if (!this.$input) {
       var value = this.getModelValue();
       var inputNumber = new InputNumber({
@@ -36,7 +36,7 @@ module.exports = TraitView.extend({
    * Renders input
    * @private
    * */
-  renderField: function() {
+  renderField() {
     if(!this.$input){
       this.$el.append(this.tmpl);
       this.getInputEl();

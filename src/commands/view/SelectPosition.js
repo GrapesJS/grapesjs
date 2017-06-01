@@ -5,7 +5,7 @@ module.exports = {
    * @param {HTMLElement} trg
    * @private
    * */
-  startSelectPosition: function(trg, doc) {
+  startSelectPosition(trg, doc) {
     this.isPointed = false;
     var utils = this.editorModel.get('Utils');
     if(utils && !this.sorter)
@@ -30,7 +30,7 @@ module.exports = {
    * @return {Object}
    * @private
    */
-  getOffsetDim: function() {
+  getOffsetDim() {
     var frameOff = this.offset(this.canvas.getFrameEl());
     var canvasOff = this.offset(this.canvas.getElement());
     var top = frameOff.top - canvasOff.top;
@@ -42,7 +42,7 @@ module.exports = {
    * Stop select position event
    * @private
    * */
-  stopSelectPosition: function() {
+  stopSelectPosition() {
     this.posTargetCollection = null;
     this.posIndex   = this.posMethod=='after' && this.cDim.length!==0 ? this.posIndex + 1 : this.posIndex; //Normalize
     if(this.sorter){
@@ -62,7 +62,7 @@ module.exports = {
    * Enabel select position
    * @private
    */
-  enable: function() {
+  enable() {
     this.startSelectPosition();
   },
 
@@ -74,7 +74,7 @@ module.exports = {
    * @return {Boolean}
    * @private
    * */
-  nearFloat: function(index, method, dims) {
+  nearFloat(index, method, dims) {
     var i = index || 0;
     var m = method || 'before';
     var len = dims.length;
@@ -88,11 +88,11 @@ module.exports = {
   },
 
 
-  run: function() {
+  run() {
     this.enable();
   },
 
-  stop: function() {
+  stop() {
     this.stopSelectPosition();
     this.$wrapper.css('cursor','');
     this.$wrapper.unbind();

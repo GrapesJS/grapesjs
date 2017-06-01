@@ -55,7 +55,7 @@ module.exports = () => {
      * }
      * ...
      */
-    init: function(config) {
+    init(config) {
       c = config || {};
       for (var name in defaults){
         if (!(name in c))
@@ -72,7 +72,7 @@ module.exports = () => {
      * Callback executed after the module is loaded
      * @private
      */
-    onLoad: function(){
+    onLoad() {
       this.loadDefaultProviders().setCurrent(c.type);
     },
 
@@ -80,7 +80,7 @@ module.exports = () => {
      * Checks if autosave is enabled
      * @return {Boolean}
      * */
-    isAutosave: function(){
+    isAutosave() {
       return !!c.autosave;
     },
 
@@ -89,7 +89,7 @@ module.exports = () => {
      * @param  {Boolean}  v
      * @return {this}
      * */
-    setAutosave  : function(v){
+    setAutosave(v) {
       c.autosave = !!v;
       return this;
     },
@@ -98,7 +98,7 @@ module.exports = () => {
      * Returns number of steps required before trigger autosave
      * @return {number}
      * */
-    getStepsBeforeSave: function(){
+    getStepsBeforeSave() {
       return c.stepsBeforeSave;
     },
 
@@ -107,7 +107,7 @@ module.exports = () => {
      * @param  {number} v
      * @return {this}
      * */
-    setStepsBeforeSave: function(v){
+    setStepsBeforeSave(v) {
       c.stepsBeforeSave  = v;
       return this;
     },
@@ -135,7 +135,7 @@ module.exports = () => {
      *   }
      * });
      * */
-    add: function(id, storage) {
+    add(id, storage) {
       storages[id] = storage;
       return this;
     },
@@ -145,7 +145,7 @@ module.exports = () => {
      * @param {string} id Storage ID
      * @return {Object|null}
      * */
-    get: function(id){
+    get(id) {
       return storages[id] || null;
     },
 
@@ -153,7 +153,7 @@ module.exports = () => {
      * Returns all storages
      * @return   {Array}
      * */
-    getStorages: function() {
+    getStorages() {
       return storages;
     },
 
@@ -161,7 +161,7 @@ module.exports = () => {
      * Returns current storage type
      * @return {string}
      * */
-    getCurrent: function() {
+    getCurrent() {
       return c.currentStorage;
     },
 
@@ -170,7 +170,7 @@ module.exports = () => {
      * @param {string} id Storage ID
      * @return {this}
      * */
-    setCurrent: function(id) {
+    setCurrent(id) {
       c.currentStorage = id;
       return this;
     },
@@ -183,7 +183,7 @@ module.exports = () => {
      * @example
      * storageManager.store({item1: value1, item2: value2});
      * */
-    store: function(data, clb) {
+    store(data, clb) {
       var st = this.get(this.getCurrent());
       var dataF = {};
 
@@ -203,7 +203,7 @@ module.exports = () => {
      * var data2 = storageManager.load('item1');
      * // data2 -> {item1: value1}
      * */
-    load: function(keys){
+    load(keys) {
       var st = this.get(this.getCurrent());
       var keysF = [];
       var result = {};
@@ -231,7 +231,7 @@ module.exports = () => {
      * @return {this}
      * @private
      * */
-    loadDefaultProviders  : function() {
+    loadDefaultProviders() {
       for (var id in defaultStorages)
         this.add(id, defaultStorages[id]);
       return this;
@@ -242,7 +242,7 @@ module.exports = () => {
      * @return {Object}
      * @private
      * */
-    getConfig  : function() {
+    getConfig() {
       return c;
     },
 

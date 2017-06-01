@@ -24,7 +24,7 @@ module.exports = Component.extend({
       toolbar: OComponent.prototype.defaults.toolbar,
   }),
 
-  initialize: function(o, opt) {
+  initialize(o, opt) {
     var traits = [];
     var prov = this.get('provider');
     switch (prov) {
@@ -48,7 +48,7 @@ module.exports = Component.extend({
   /**
    * Set attributes by src string
    */
-  parseFromSrc: function() {
+  parseFromSrc() {
     var prov = this.get('provider');
     var uri = this.parseUri(this.get('src'));
     var qr = uri.query;
@@ -73,7 +73,7 @@ module.exports = Component.extend({
    * Update src on change of video ID
    * @private
    */
-  updateSrc: function() {
+  updateSrc() {
     var prov = this.get('provider');
     switch (prov) {
       case yt:
@@ -90,7 +90,7 @@ module.exports = Component.extend({
    * @return {Object}
    * @private
    */
-  getAttrToHTML: function(...args) {
+  getAttrToHTML(...args) {
     var attr = Component.prototype.getAttrToHTML.apply(this, args);
     var prov = this.get('provider');
     switch (prov) {
@@ -111,7 +111,7 @@ module.exports = Component.extend({
    * Update traits by provider
    * @private
    */
-  updateTraits: function() {
+  updateTraits() {
     var prov = this.get('provider');
     var traits = this.getSourceTraits();
     switch (prov) {
@@ -137,7 +137,7 @@ module.exports = Component.extend({
    * @return {Object}
    * @private
    */
-  getProviderTrait: function() {
+  getProviderTrait() {
     return {
       type: 'select',
       label: 'Provider',
@@ -157,7 +157,7 @@ module.exports = Component.extend({
    * @return {Array<Object>}
    * @private
    */
-  getSourceTraits: function() {
+  getSourceTraits() {
     return [
       this.getProviderTrait(), {
         label: 'Source',
@@ -174,7 +174,7 @@ module.exports = Component.extend({
    * @return {Array<Object>}
    * @private
    */
-  getYoutubeTraits: function() {
+  getYoutubeTraits() {
     return [
       this.getProviderTrait(), {
         label: 'Video ID',
@@ -193,7 +193,7 @@ module.exports = Component.extend({
    * @return {Array<Object>}
    * @private
    */
-  getVimeoTraits: function() {
+  getVimeoTraits() {
     return [
       this.getProviderTrait(), {
         label: 'Video ID',
@@ -216,7 +216,7 @@ module.exports = Component.extend({
    * @return {Object}
    * @private
    */
-  getAutoplayTrait: function(){
+  getAutoplayTrait() {
     return {
       type: 'checkbox',
       label: 'Autoplay',
@@ -230,7 +230,7 @@ module.exports = Component.extend({
    * @return {Object}
    * @private
    */
-  getLoopTrait: function(){
+  getLoopTrait() {
     return {
       type: 'checkbox',
       label: 'Loop',
@@ -244,7 +244,7 @@ module.exports = Component.extend({
    * @return {Object}
    * @private
    */
-  getControlsTrait: function(){
+  getControlsTrait() {
     return {
       type: 'checkbox',
       label: 'Controls',
@@ -259,7 +259,7 @@ module.exports = Component.extend({
    * @return {string}
    * @private
    */
-  getYoutubeSrc: function() {
+  getYoutubeSrc() {
     var url = this.get('ytUrl');
     url += this.get('videoId') + '?';
     url += this.get('autoplay') ? '&autoplay=1' : '';
@@ -273,7 +273,7 @@ module.exports = Component.extend({
    * @return {string}
    * @private
    */
-  getVimeoSrc: function() {
+  getVimeoSrc() {
     var url = this.get('viUrl');
     url += this.get('videoId') + '?';
     url += this.get('autoplay') ? '&autoplay=1' : '';
@@ -293,7 +293,7 @@ module.exports = Component.extend({
    * @return {Object}
    * @private
    */
-  isComponent: function(el) {
+  isComponent(el) {
     var result = '';
     var isYtProv = /youtube\.com\/embed/.test(el.src);
     var isViProv = /player\.vimeo\.com\/video/.test(el.src);

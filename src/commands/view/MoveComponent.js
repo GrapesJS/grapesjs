@@ -4,7 +4,7 @@ var SelectPosition = require('./SelectPosition');
 
 module.exports = _.extend({}, SelectPosition, SelectComponent, {
 
-  init: function(o){
+  init(o) {
     SelectComponent.init.apply(this, arguments);
     _.bindAll(this, 'initSorter','rollback', 'onEndMove');
     this.opt = o;
@@ -13,7 +13,7 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
     this.noSelClass  = this.ppfx + 'no-select';
   },
 
-  enable: function(...args) {
+  enable(...args) {
     SelectComponent.enable.apply(this, args);
     this.getBadgeEl().addClass(this.badgeClass);
     this.getHighlighterEl().addClass(this.hoverClass);
@@ -29,14 +29,14 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
    * Overwrite for doing nothing
    * @private
    */
-  toggleClipboard: function(){},
+  toggleClipboard() {},
 
   /**
    * Delegate sorting
    * @param  {Event} e
    * @private
    * */
-  initSorter: function(e){
+  initSorter(e) {
     var el = $(e.target).data('model');
     var drag = el.get('draggable');
     if(!drag)
@@ -57,7 +57,7 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
    * @param  {Object} model
    * @private
    */
-  initSorterFromModel: function(model) {
+  initSorterFromModel(model) {
     var drag = model.get('draggable');
     if(!drag)
       return;
@@ -80,7 +80,7 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
     this.getContentWindow().on('keydown', this.rollback);
   },
 
-  onEndMoveFromModel: function() {
+  onEndMoveFromModel() {
     this.getContentWindow().off('keydown', this.rollback);
   },
 
@@ -88,7 +88,7 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
    * Callback after sorting
    * @private
    */
-  onEndMove: function(){
+  onEndMove() {
     this.enable();
     this.getContentWindow().off('keydown', this.rollback);
   },
@@ -99,7 +99,7 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
    * @param {Object} Selected element
    * @private
    * */
-  onSelect: function(e,el){},
+  onSelect(e, el) {},
 
   /**
    * Used to bring the previous situation before start moving the component
@@ -107,7 +107,7 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
    * @param {Boolean} Indicates if rollback in anycase
    * @private
    * */
-  rollback: function(e, force){
+  rollback(e, force) {
     var key = e.which || e.keyCode;
     if(key == this.opt.ESCAPE_KEY || force){
       this.sorter.moved = false;
@@ -121,7 +121,7 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
    * @return {HTMLElement}
    * @private
    */
-  getBadgeEl: function(){
+  getBadgeEl() {
     if(!this.$badge)
       this.$badge = $(this.getBadge());
     return this.$badge;
@@ -132,13 +132,13 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
    * @return {HTMLElement}
    * @private
    */
-  getHighlighterEl: function(){
+  getHighlighterEl() {
     if(!this.$hl)
       this.$hl = $(this.canvas.getHighlighter());
     return this.$hl;
   },
 
-  stop: function(...args) {
+  stop(...args) {
     SelectComponent.stop.apply(this, args);
     this.getBadgeEl().removeClass(this.badgeClass);
     this.getHighlighterEl().removeClass(this.hoverClass);

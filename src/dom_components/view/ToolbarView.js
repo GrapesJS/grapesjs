@@ -6,7 +6,7 @@ module.exports = DomainViews.extend({
 
   itemView: ToolbarButtonView,
 
-  initialize: function(opts) {
+  initialize(opts) {
     this.config = {editor: opts.editor || ''};
     this.listenTo(this.collection, 'reset', this.render);
   },

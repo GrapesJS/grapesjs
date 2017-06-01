@@ -3,7 +3,7 @@ var SectorView = require('./SectorView');
 
 module.exports = Backbone.View.extend({
 
-  initialize: function(o) {
+  initialize(o) {
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
     this.target = o.target || {};
@@ -24,7 +24,7 @@ module.exports = Backbone.View.extend({
    * @return {Object}
    * @private
    * */
-  addTo: function(model){
+  addTo(model) {
     this.addToCollection(model);
   },
 
@@ -32,7 +32,7 @@ module.exports = Backbone.View.extend({
    * Fired when target is updated
    * @private
    */
-  targetUpdated: function() {
+  targetUpdated() {
     var el = this.target.get('selectedComponent');
 
     if(!el)
@@ -98,7 +98,7 @@ module.exports = Backbone.View.extend({
    * @return {Object} Object created
    * @private
    * */
-  addToCollection: function(model, fragmentEl){
+  addToCollection(model, fragmentEl) {
     var fragment = fragmentEl || null;
     var viewObject = SectorView;
 
@@ -122,7 +122,7 @@ module.exports = Backbone.View.extend({
     return rendered;
   },
 
-  render: function() {
+  render() {
     var fragment = document.createDocumentFragment();
     this.$el.empty();
 

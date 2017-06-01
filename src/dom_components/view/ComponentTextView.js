@@ -8,7 +8,7 @@ module.exports = ComponentView.extend({
     'change': 'parseRender',
   },
 
-  initialize: function(o) {
+  initialize(o) {
     ComponentView.prototype.initialize.apply(this, arguments);
     _.bindAll(this,'disableEditing');
     this.listenTo(this.model, 'focus active', this.enableEditing);
@@ -22,7 +22,7 @@ module.exports = ComponentView.extend({
    * @param {Event} e
    * @private
    * */
-  enableEditing: function(e) {
+  enableEditing(e) {
     var editable = this.model.get('editable');
     if(this.rte && editable) {
       try {
@@ -40,7 +40,7 @@ module.exports = ComponentView.extend({
    * @param {Event}
    * @private
    * */
-  disableEditing: function(e) {
+  disableEditing(e) {
     var model = this.model;
     var editable = model.get('editable');
 
@@ -66,7 +66,7 @@ module.exports = ComponentView.extend({
    * @param {Event}
    * @private
    * */
-  disablePropagation: function(e){
+  disablePropagation(e) {
     e.stopPropagation();
   },
 
@@ -74,7 +74,7 @@ module.exports = ComponentView.extend({
    * Parse content and re-render it
    * @private
    */
-  parseRender: function() {
+  parseRender() {
     var el = this.getChildrenContainer();
     var comps = this.model.get('components');
     var opts = {silent: true};
@@ -94,7 +94,7 @@ module.exports = ComponentView.extend({
    * Enable/Disable events
    * @param {Boolean} enable
    */
-  toggleEvents: function(enable) {
+  toggleEvents(enable) {
     var method = enable ? 'on' : 'off';
 
     // The ownerDocument is from the frame

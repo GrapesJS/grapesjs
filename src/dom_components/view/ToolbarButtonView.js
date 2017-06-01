@@ -5,15 +5,15 @@ module.exports = Backbone.View.extend({
     'mousedown': 'handleClick',
   },
 
-  attributes: function () {
+  attributes() {
     return this.model.get('attributes');
   },
 
-  initialize: function(opts) {
+  initialize(opts) {
     this.editor = opts.config.editor;
 	},
 
-  handleClick: function() {
+  handleClick() {
     var command = this.model.get('command');
 
     if (typeof command === 'function') {
@@ -25,7 +25,7 @@ module.exports = Backbone.View.extend({
     }
   },
 
-  render: function () {
+  render() {
     var config = this.editor.getConfig();
     this.el.className += ' ' + config.stylePrefix + 'toolbar-item';
     return this;

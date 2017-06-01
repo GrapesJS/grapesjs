@@ -7,7 +7,7 @@ module.exports = Backbone.View.extend({
 	 * @param	{Object}	o Options
 	 * @private
 	 * */
-	initialize: function(o) {
+	initialize(o) {
 		this.config				= o || {};
 		this.editorModel 	= this.em = this.config.em || {};
 		this.pfx					= this.config.stylePrefix;
@@ -38,13 +38,13 @@ module.exports = Backbone.View.extend({
 	 * @param  {[type]} e [description]
 	 * @return {[type]}   [description]
 	 */
-	onFrameScroll: function(e){},
+	onFrameScroll(e) {},
 
 	/**
 	 * Returns canval element
 	 * @return {HTMLElement}
 	 */
-	getCanvas: function(){
+	getCanvas() {
 		return this.canvas.getElement();
 	},
 
@@ -52,7 +52,7 @@ module.exports = Backbone.View.extend({
 	 * Get canvas body element
 	 * @return {HTMLElement}
 	 */
-	getCanvasBody: function(){
+	getCanvasBody() {
 		return this.canvas.getBody();
 	},
 
@@ -60,7 +60,7 @@ module.exports = Backbone.View.extend({
 	 * Get canvas wrapper element
 	 * @return {HTMLElement}
 	 */
-	getCanvasWrapper: function(){
+	getCanvasWrapper() {
 		return this.canvas.getWrapperEl();
 	},
 
@@ -68,7 +68,7 @@ module.exports = Backbone.View.extend({
 	 * Get canvas wrapper element
 	 * @return {HTMLElement}
 	 */
-	getCanvasTools: function(){
+	getCanvasTools() {
 		return this.canvas.getToolsEl();
 	},
 
@@ -77,7 +77,7 @@ module.exports = Backbone.View.extend({
    * @param  {HTMLElement} el
    * @return {Object}
    */
-  offset: function(el){
+  offset(el) {
     var rect = el.getBoundingClientRect();
     return {
       top: rect.top + el.ownerDocument.body.scrollTop,
@@ -90,7 +90,7 @@ module.exports = Backbone.View.extend({
 	 * @param	{Object}	o 	Options
 	 * @private
 	 * */
-	init: function(o){},
+	init(o) {},
 
 	/**
 	 * Method that run command
@@ -98,7 +98,7 @@ module.exports = Backbone.View.extend({
 	 * @param	{Object}	sender	Button sender
 	 * @private
 	 * */
-	run: function(em, sender) {},
+	run(em, sender) {},
 
 	/**
 	 * Method that stop command
@@ -106,6 +106,6 @@ module.exports = Backbone.View.extend({
 	 * @param	{Object}	sender	Button sender
 	 * @private
 	 * */
-	stop: function(em, sender) {},
+	stop(em, sender) {},
 
 });

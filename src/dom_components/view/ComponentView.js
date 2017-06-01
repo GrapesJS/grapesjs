@@ -7,15 +7,15 @@ module.exports = Backbone.View.extend({
     'click': 'initResize',
   },
 
-  className : function(){
+  className() {
     return this.getClasses();
   },
 
-  tagName: function(){
+  tagName() {
     return this.model.get('tagName');
   },
 
-  initialize: function(opt) {
+  initialize(opt) {
     var model = this.model;
     this.opts = opt || {};
     this.config = this.opts.config || {};
@@ -46,13 +46,13 @@ module.exports = Backbone.View.extend({
   /**
    * Initialize callback
    */
-  init: function () {},
+  init() {},
 
   /**
    * Handle any property change
    * @private
    */
-  handleChange: function () {
+  handleChange() {
     var em = this.em;
     if(em) {
       var model = this.model;
@@ -68,7 +68,7 @@ module.exports = Backbone.View.extend({
    * Import, if possible, classes inside main container
    * @private
    * */
-  importClasses: function(){
+  importClasses() {
     var clm = this.config.em.get('SelectorManager');
 
     if(clm){
@@ -83,7 +83,7 @@ module.exports = Backbone.View.extend({
    * @param  {Event} e
    * @private
    * */
-  updateState: function(e){
+  updateState(e) {
     var cl = 'hc-state';
     var state = this.model.get('state');
 
@@ -99,7 +99,7 @@ module.exports = Backbone.View.extend({
    * @param  {Event} e
    * @private
    * */
-  updateStatus: function(e){
+  updateStatus(e) {
     var s = this.model.get('status'),
         pfx = this.pfx;
     switch(s) {
@@ -120,7 +120,7 @@ module.exports = Backbone.View.extend({
    * @return  {Array}|null
    * @private
    * */
-  getClasses: function(){
+  getClasses() {
     var attr = this.model.get("attributes"),
       classes  = attr['class'] || [];
     if(classes.length){
@@ -133,7 +133,7 @@ module.exports = Backbone.View.extend({
    * Update attributes
    * @private
    * */
-  updateAttributes: function() {
+  updateAttributes() {
     var model = this.model;
     var attributes = {},
       attr = model.get("attributes");
@@ -161,7 +161,7 @@ module.exports = Backbone.View.extend({
    * Update style attribute
    * @private
    * */
-  updateStyle: function(){
+  updateStyle() {
     this.$el.attr('style', this.getStyleString());
   },
 
@@ -170,7 +170,7 @@ module.exports = Backbone.View.extend({
    * @return  {string}
    * @private
    * */
-  getStyleString: function(){
+  getStyleString() {
     var style  = '';
     this.style = this.model.get('style');
     for(var key in this.style) {
@@ -185,7 +185,7 @@ module.exports = Backbone.View.extend({
    * Update classe attribute
    * @private
    * */
-  updateClasses: function(){
+  updateClasses() {
     var str = '';
 
     this.model.get('classes').each(model => {
@@ -207,14 +207,14 @@ module.exports = Backbone.View.extend({
    * @param object Event that generated the request
    * @private
    * */
-  eventCall: function(event){
+  eventCall(event) {
     event.viewResponse = this;
   },
 
   /**
    * Init component for resizing
    */
-  initResize: function () {
+  initResize() {
     var em = this.opts.config.em;
     var editor = em ? em.get('Editor') : '';
     var config = em ? em.get('Config') : '';
@@ -237,19 +237,19 @@ module.exports = Backbone.View.extend({
       editor.runCommand('resize', {
         el: this.el,
         options: {
-          onStart: function (e, opts) {
+          onStart(e, opts) {
             toggleBodyClass('addClass', e, opts);
             modelToStyle = em.get('StyleManager').getModelToStyle(model);
           },
           // Update all positioned elements (eg. component toolbar)
-          onMove: function () {
+          onMove() {
             editor.trigger('change:canvasOffset');
           },
-          onEnd: function (e, opts) {
+          onEnd(e, opts) {
             toggleBodyClass('removeClass', e, opts);
             editor.trigger('change:canvasOffset');
           },
-          updateTarget: function(el, rect, store) {
+          updateTarget(el, rect, store) {
             if (!modelToStyle) {
               return;
             }
@@ -281,7 +281,7 @@ module.exports = Backbone.View.extend({
    * @param  {Event} e
    * @private
    */
-  prevDef: function (e) {
+  prevDef(e) {
     e.preventDefault();
   },
 
@@ -289,7 +289,7 @@ module.exports = Backbone.View.extend({
    * Render component's script
    * @private
    */
-  updateScript: function () {
+  updateScript() {
     var em = this.em;
     if(em) {
       var canvas = em.get('Canvas');
@@ -321,7 +321,7 @@ module.exports = Backbone.View.extend({
    * @return HTMLElement
    * @private
    */
-  getChildrenContainer: function() {
+  getChildrenContainer() {
     var container = this.el;
 
     if (typeof this.getChildrenSelector == 'function') {
@@ -337,7 +337,7 @@ module.exports = Backbone.View.extend({
    * Render children components
    * @private
    */
-  renderChildren: function() {
+  renderChildren() {
     var view = new ComponentsView({
       collection: this.model.get('components'),
       config: this.config,
@@ -371,12 +371,12 @@ module.exports = Backbone.View.extend({
     }
   },
 
-  renderAttributes: function() {
+  renderAttributes() {
     this.updateAttributes();
     this.updateClasses();
   },
 
-  render: function() {
+  render() {
     this.renderAttributes();
     var model = this.model;
     var container = this.getChildrenContainer();

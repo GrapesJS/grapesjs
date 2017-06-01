@@ -12,7 +12,7 @@ module.exports = Input.extend({
     </div>
   </div>`),
 
-  initialize: function(opts) {
+  initialize(opts) {
     Input.prototype.initialize.apply(this, arguments);
     var ppfx = this.ppfx;
     this.colorCls = ppfx + 'field-color-picker';
@@ -25,7 +25,7 @@ module.exports = Input.extend({
   /**
    * Updates the view when the model is changed
    * */
-  handleModelChange: function(...args) {
+  handleModelChange(...args) {
     Input.prototype.handleModelChange.apply(this, args);
 
     var value = this.model.get('value');
@@ -41,7 +41,7 @@ module.exports = Input.extend({
    * Get the color input element
    * @return {HTMLElement}
    */
-  getColorEl: function() {
+  getColorEl() {
     if(!this.colorEl) {
       var model = this.model;
       var colorEl = $('<div>', {class: this.colorCls});
@@ -55,11 +55,11 @@ module.exports = Input.extend({
         chooseText: 'Ok',
         cancelText: '⨯',
         palette: [],
-        move: function(color) {
+        move(color) {
           var c  = color.getAlpha() == 1 ? color.toHexString() : color.toRgbString();
           cpStyle.backgroundColor = c;
         },
-        change: function(color) {
+        change(color) {
           var c  = color.getAlpha() == 1 ? color.toHexString() : color.toRgbString();
           c = c.replace(/ /g,'');
           cpStyle.backgroundColor = c;
@@ -71,7 +71,7 @@ module.exports = Input.extend({
     return this.colorEl;
   },
 
-  render: function(...args) {
+  render(...args) {
     Input.prototype.render.apply(this, args);
     this.$el.find('.' + this.colorHolderClass).html(this.getColorEl());
     return this;

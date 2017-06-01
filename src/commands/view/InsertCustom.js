@@ -3,7 +3,7 @@ var CreateComponent = require('./CreateComponent');
 
 module.exports = _.extend({}, CreateComponent, {
 
-  init: function(...args) {
+  init(...args) {
     CreateComponent.init.apply(this, args);
     _.bindAll(this, 'insertComponent');
     this.allowDraw = 0;
@@ -13,7 +13,7 @@ module.exports = _.extend({}, CreateComponent, {
    * Run method
    * @private
    * */
-  run: function(em, sender, options) {
+  run(em, sender, options) {
     this.em = em;
     this.sender = sender;
     this.opt = options || {};
@@ -21,7 +21,7 @@ module.exports = _.extend({}, CreateComponent, {
     this.enable();
   },
 
-  enable: function(...args) {
+  enable(...args) {
     CreateComponent.enable.apply(this, args);
     this.$wr.on('click', this.insertComponent);
   },
@@ -30,7 +30,7 @@ module.exports = _.extend({}, CreateComponent, {
    * Start insert event
    * @private
    * */
-  insertComponent: function(){
+  insertComponent() {
     this.$wr.off('click', this.insertComponent);
     this.stopSelectPosition();
     var object = this.buildContent();
@@ -58,14 +58,14 @@ module.exports = _.extend({}, CreateComponent, {
    * @param   {Object}  obj
    * @private
    * */
-  beforeInsert: function(obj){},
+  beforeInsert(obj) {},
 
   /**
    * Trigger after insert
    * @param  {Object}  model  Model created after insert
    * @private
    * */
-  afterInsert: function(model){},
+  afterInsert(model) {},
 
   /**
    * Create different object, based on content, to insert inside canvas
@@ -73,7 +73,7 @@ module.exports = _.extend({}, CreateComponent, {
    * @return   {Object}
    * @private
    * */
-  buildContent: function(){
+  buildContent() {
     return this.opt.content || {};
   },
 });

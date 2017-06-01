@@ -18,7 +18,7 @@ module.exports = Component.extend({
    * @return {Object}
    * @private
    */
-  isComponent: function(el) {
+  isComponent(el) {
     var result = '';
     var tag = el.tagName;
     if(tag == 'TD' || tag == 'TH'){

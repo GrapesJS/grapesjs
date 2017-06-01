@@ -6,15 +6,15 @@ module.exports = Backbone.Model.extend({
     urlStore: '',
     urlLoad: '',
     params: {},
-    beforeSend: function(){},
-    onComplete: function(){},
+    beforeSend() {},
+    onComplete() {},
     contentTypeJson: false
   },
 
   /**
    * @private
    */
-  store: function(data, clb) {
+  store(data, clb) {
     var fd = {},
     params = this.get('params');
 
@@ -42,7 +42,7 @@ module.exports = Backbone.Model.extend({
   /**
    * @private
    */
-  load: function(keys){
+  load(keys) {
     var result = {},
     fd = {},
     params = this.get('params');

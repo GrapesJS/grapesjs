@@ -227,7 +227,7 @@ $.fn.wysiwyg.defaults = {
   selectionMarker: 'edit-focus-marker',
   selectionColor: 'darkgrey',
   dragAndDropImages: true,
-  fileUploadError: function (reason, detail) { console.log("File upload error", reason, detail); }
+  fileUploadError(reason, detail) { console.log("File upload error", reason, detail); }
 };
 
 module.exports = $;

@@ -2,7 +2,7 @@ var Backbone = require('backbone');
 
 module.exports = Backbone.Collection.extend({
 
-  initialize: function(models, opt){
+  initialize(models, opt) {
 
     this.on('add', this.onAdd);
 
@@ -47,7 +47,7 @@ module.exports = Backbone.Collection.extend({
 
   },
 
-  add: function(models, opt){
+  add(models, opt) {
     if(typeof models === 'string'){
       var parsed = this.editor.get('Parser').parseHtml(models);
       models = parsed.html;
@@ -61,7 +61,7 @@ module.exports = Backbone.Collection.extend({
     return Backbone.Collection.prototype.add.apply(this, [models, opt]);
   },
 
-  onAdd: function(model, c, opts){
+  onAdd(model, c, opts) {
     var style = model.get('style');
     var em = this.editor;
 

@@ -2,7 +2,7 @@ var Layers = require('navigator');
 
 module.exports = {
 
-  run: function(em, sender) {
+  run(em, sender) {
     if(!this.$layers) {
       var collection = em.DomComponents.getComponent().get('components'),
       config = em.getConfig(),
@@ -27,7 +27,7 @@ module.exports = {
     this.$layers.show();
   },
 
-  stop: function() {
+  stop() {
     if(this.$layers)
       this.$layers.hide();
   }

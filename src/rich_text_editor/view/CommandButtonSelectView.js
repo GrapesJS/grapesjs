@@ -3,11 +3,11 @@ var CommandButtonView = require('./CommandButtonView');
 
 module.exports = CommandButtonView.extend({
 
-  initialize: function(o, config){
+  initialize(o, config) {
     CommandButtonView.prototype.initialize.apply(this, arguments);
   },
 
-  getInput: function() {
+  getInput() {
     var m = this.model;
     if(!this.input){
       var cmd = m.get('command');
@@ -27,14 +27,14 @@ module.exports = CommandButtonView.extend({
     return this.input;
   },
 
-  getInputCont: function() {
+  getInputCont() {
     var input = this.getInput();
     var pfx = this.ppfx;
     var cont = $('<div class="'+pfx+'field '+pfx+'select"><div class="'+pfx+'sel-arrow"><div class="'+pfx+'d-s-arrow"></div></div></div>');
     return cont.append(input);
   },
 
-  render: function(...args) {
+  render(...args) {
     CommandButtonView.prototype.render.apply(this, args);
     this.$el.html(this.getInputCont());
     return this;

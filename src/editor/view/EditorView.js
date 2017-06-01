@@ -2,7 +2,7 @@ var Backbone = require('backbone');
 
 module.exports = Backbone.View.extend({
 
-  initialize: function() {
+  initialize() {
     this.pn = this.model.get('Panels');
     this.conf = this.model.config;
     this.className = this.conf.stylePrefix + 'editor';
@@ -13,7 +13,7 @@ module.exports = Backbone.View.extend({
     }, this);
   },
 
-  render: function() {
+  render() {
     var model = this.model;
     var um = model.get('UndoManager');
     var dComps = model.get('DomComponents');

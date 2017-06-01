@@ -191,7 +191,7 @@ module.exports = config => {
      * @return {this}
      * @private
      */
-    init: function(){
+    init() {
       em.init(this);
       return this;
     },
@@ -200,7 +200,7 @@ module.exports = config => {
      * Returns configuration object
      * @return {Object}
      */
-    getConfig: function(){
+    getConfig() {
       return c;
     },
 
@@ -208,7 +208,7 @@ module.exports = config => {
      * Returns HTML built inside canvas
      * @return {string} HTML string
      */
-    getHtml: function(){
+    getHtml() {
       return em.getHtml();
     },
 
@@ -216,7 +216,7 @@ module.exports = config => {
      * Returns CSS built inside canvas
      * @return {string} CSS string
      */
-    getCss: function(){
+    getCss() {
       return em.getCss();
     },
 
@@ -224,7 +224,7 @@ module.exports = config => {
      * Returns JS of all components
      * @return {string} JS string
      */
-    getJs: function(){
+    getJs() {
       return em.getJs();
     },
 
@@ -232,7 +232,7 @@ module.exports = config => {
      * Returns components in JSON format object
      * @return {Object}
      */
-    getComponents: function(){
+    getComponents() {
       return em.get('DomComponents').getComponents();
     },
 
@@ -249,7 +249,7 @@ module.exports = config => {
      *   content: 'New component'
      * });
      */
-    setComponents: function(components){
+    setComponents(components) {
       em.setComponents(components);
       return this;
     },
@@ -267,7 +267,7 @@ module.exports = config => {
      *   content: 'New component'
      * });
      */
-    addComponents: function(components) {
+    addComponents(components) {
       return this.getComponents().add(components);
     },
 
@@ -275,7 +275,7 @@ module.exports = config => {
      * Returns style in JSON format object
      * @return {Object}
      */
-    getStyle: function(){
+    getStyle() {
       return em.get('CssComposer').getAll();
     },
 
@@ -291,7 +291,7 @@ module.exports = config => {
      *   style: { color: 'red' }
      * });
      */
-    setStyle: function(style){
+    setStyle(style) {
       em.setStyle(style);
       return this;
     },
@@ -300,7 +300,7 @@ module.exports = config => {
      * Returns selected component, if there is one
      * @return {grapesjs.Component}
      */
-    getSelected: function(){
+    getSelected() {
       return em.getSelected();
     },
 
@@ -311,7 +311,7 @@ module.exports = config => {
      * @example
      * editor.setDevice('Tablet');
      */
-    setDevice: function(name){
+    setDevice(name) {
       return em.set('device', name);
     },
 
@@ -323,7 +323,7 @@ module.exports = config => {
      * console.log(device);
      * // 'Tablet'
      */
-    getDevice: function(){
+    getDevice() {
       return em.get('device');
     },
 
@@ -335,7 +335,7 @@ module.exports = config => {
      * @example
      * editor.runCommand('myCommand', {someValue: 1});
      */
-    runCommand: function(id, options) {
+    runCommand(id, options) {
       var result;
       var command = em.get('Commands').get(id);
 
@@ -354,7 +354,7 @@ module.exports = config => {
      * @example
      * editor.stopCommand('myCommand', {someValue: 1});
      */
-    stopCommand: function(id, options) {
+    stopCommand(id, options) {
       var result;
       var command = em.get('Commands').get(id);
 
@@ -370,7 +370,7 @@ module.exports = config => {
      * @param {Function} clb Callback function
      * @return {Object} Stored data
      */
-    store: function(clb) {
+    store(clb) {
       return em.store(clb);
     },
 
@@ -378,7 +378,7 @@ module.exports = config => {
      * Load data from the current storage
      * @return {Object} Stored data
      */
-    load: function() {
+    load() {
       return em.load();
     },
 
@@ -387,7 +387,7 @@ module.exports = config => {
      * on init method
      * @return {HTMLElement}
      */
-    getContainer: function(){
+    getContainer() {
       return c.el;
     },
 
@@ -401,7 +401,7 @@ module.exports = config => {
      *
      * @private
      */
-    refresh: function () {
+    refresh() {
       em.refreshCanvas();
     },
 
@@ -434,7 +434,7 @@ module.exports = config => {
      *  }
      * });
      */
-    setCustomRte: function (obj) {
+    setCustomRte(obj) {
       this.RichTextEditor.customRte = obj;
     },
 
@@ -444,7 +444,7 @@ module.exports = config => {
      * @param  {Function} callback Callback function
      * @return {this}
      */
-    on: function(event, callback){
+    on(event, callback) {
       return em.on(event, callback);
     },
 
@@ -453,7 +453,7 @@ module.exports = config => {
      * @param  {string} event Event to trigger
      * @return {this}
      */
-    trigger: function(event){
+    trigger(event) {
       return em.trigger(event);
     },
 
@@ -462,7 +462,7 @@ module.exports = config => {
      * @return {HTMLElement}
      * @private
      */
-    getEl: function(){
+    getEl() {
       return editorView.el;
     },
 
@@ -471,7 +471,7 @@ module.exports = config => {
      * @return {Model}
      * @private
      */
-    getModel: function(){
+    getModel() {
       return em;
     },
 
@@ -479,7 +479,7 @@ module.exports = config => {
      * Render editor
      * @return {HTMLElement}
      */
-    render: function() {
+    render() {
       return  editorView.render().el;
     },
 

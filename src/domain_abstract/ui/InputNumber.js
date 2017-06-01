@@ -12,7 +12,7 @@ module.exports = Backbone.View.extend({
     <div class="<%= ppfx %>field-arrow-d"></div>
   </div>`),
 
-  initialize: function(opts) {
+  initialize(opts) {
     _.bindAll(this, 'moveIncrement', 'upIncrement');
     var opt = opts || {};
     var ppfx = opt.ppfx || '';
@@ -37,7 +37,7 @@ module.exports = Backbone.View.extend({
    * @param {string} value
    * @param {Object} opts
    */
-  setValue: function(value, opts) {
+  setValue(value, opts) {
     var opt = opts || {};
     var valid = this.validateInputValue(value, {deepCheck: 1});
     var validObj = {value: valid.value};
@@ -59,7 +59,7 @@ module.exports = Backbone.View.extend({
   /**
    * Handled when the view is changed
    */
-  handleChange: function (e) {
+  handleChange(e) {
     e.stopPropagation();
     this.setValue(this.getInputEl().value);
   },
@@ -67,7 +67,7 @@ module.exports = Backbone.View.extend({
   /**
    * Handled when the view is changed
    */
-  handleUnitChange: function (e) {
+  handleUnitChange(e) {
     e.stopPropagation();
     var value = this.getUnitEl().value;
     this.model.set('unit', value);
@@ -76,7 +76,7 @@ module.exports = Backbone.View.extend({
   /**
    * Updates the view when the model is changed
    * */
-  handleModelChange: function() {
+  handleModelChange() {
     var m = this.model;
     this.getInputEl().value = m.get('value');
     var unit = this.getUnitEl();
@@ -90,7 +90,7 @@ module.exports = Backbone.View.extend({
    * Get the input element
    * @return {HTMLElement}
    */
-  getInputEl: function() {
+  getInputEl() {
     if(!this.inputEl) {
       this.inputEl = $('<input>', {
         type: 'text',
@@ -105,7 +105,7 @@ module.exports = Backbone.View.extend({
    * Get the unit element
    * @return {HTMLElement}
    */
-  getUnitEl: function() {
+  getUnitEl() {
     if(!this.unitEl) {
       var model = this.model;
       var units = model.get('units') || [];
@@ -125,7 +125,7 @@ module.exports = Backbone.View.extend({
   /**
    * Invoked when the up arrow is clicked
    * */
-  upArrowClick: function() {
+  upArrowClick() {
     var value  = this.model.get('value');
     value = isNaN(value) ? 1 : parseInt(value, 10) + 1;
     var valid = this.validateInputValue(value);
@@ -135,7 +135,7 @@ module.exports = Backbone.View.extend({
   /**
    * Invoked when the down arrow is clicked
    * */
-  downArrowClick: function(){
+  downArrowClick() {
     var value  = this.model.get('value');
     value = isNaN(value) ? 0 : parseInt(value, 10) - 1;
     var valid = this.validateInputValue(value);
@@ -148,7 +148,7 @@ module.exports = Backbone.View.extend({
    *
    * @return void
    * */
-  downIncrement: function(e) {
+  downIncrement(e) {
     e.preventDefault();
     this.moved = 0;
     var value = this.model.get('value');
@@ -163,7 +163,7 @@ module.exports = Backbone.View.extend({
    *
    * @return bool
    * */
-  moveIncrement: function (ev) {
+  moveIncrement(ev) {
     this.moved = 1;
     var pos = parseInt(ev.data.val - ev.pageY + ev.data.y, 10);
     this.prValue = this.validateInputValue(pos).value;//Math.max(this.min, Math.min(this.max, pos) );
@@ -177,7 +177,7 @@ module.exports = Backbone.View.extend({
    *
    * @return void
    * */
-  upIncrement: function (e) {
+  upIncrement(e) {
     this.docEl.off('mouseup', this.upIncrement);
     this.docEl.off('mousemove', this.moveIncrement);
 
@@ -194,7 +194,7 @@ module.exports = Backbone.View.extend({
    * @param {Object} opts Options
    * @return {Object} Validated string
    */
-  validateInputValue: function(value, opts) {
+  validateInputValue(value, opts) {
     var force = 0;
     var opt = opts || {};
     var model = this.model;
@@ -240,7 +240,7 @@ module.exports = Backbone.View.extend({
     };
   },
 
-  render: function() {
+  render() {
     var ppfx = this.ppfx;
     this.$el.html(this.template({ppfx: ppfx}));
     this.$el.find('.'+ ppfx +'input-holder').html(this.getInputEl());

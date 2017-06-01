@@ -18,7 +18,7 @@ module.exports = Backbone.View.extend({
     'change': 'updateDevice'
   },
 
-  initialize: function(o) {
+  initialize(o) {
     this.config = o.config || {};
     this.em = this.config.em;
     this.ppfx = this.config.pStylePrefix || '';
@@ -32,13 +32,13 @@ module.exports = Backbone.View.extend({
    * @return {[type]} [description]
    * @private
    */
-  startAdd: function(){},
+  startAdd() {},
 
   /**
    * Update device of the editor
    * @private
    */
-  updateDevice: function(){
+  updateDevice() {
     var em = this.em;
     if(em){
       var devEl = this.devicesEl;
@@ -51,7 +51,7 @@ module.exports = Backbone.View.extend({
    * Update select value on device update
    * @private
    */
-  updateSelect: function(){
+  updateSelect() {
     var em = this.em;
     var devEl = this.devicesEl;
     if(em && em.getDeviceModel && devEl){
@@ -66,7 +66,7 @@ module.exports = Backbone.View.extend({
    * @return {string} String of options
    * @private
    */
-  getOptions: function(){
+  getOptions() {
     var result = '';
     this.collection.each(device => {
       var name = device.get('name');
@@ -75,7 +75,7 @@ module.exports = Backbone.View.extend({
     return result;
   },
 
-  render: function() {
+  render() {
     var pfx = this.ppfx;
     this.$el.html(this.template({
       ppfx: pfx,

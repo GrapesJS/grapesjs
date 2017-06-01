@@ -6,7 +6,7 @@ module.exports = Backbone.Collection.extend({
 
 	model:	AssetImage,
 
-  initialize: function(models, opt){
+  initialize(models, opt) {
 
     this.model = (attrs, options) => {
       var model;
@@ -26,7 +26,7 @@ module.exports = Backbone.Collection.extend({
    * @return {this}
    * @private
    */
-  addImg: function(url, opts){
+  addImg(url, opts) {
     this.add({
       type: 'image',
       src: url,
@@ -39,7 +39,7 @@ module.exports = Backbone.Collection.extend({
    * Seems like idAttribute is not working with dynamic model assignament
    * @private
    */
-  add: function(models, opt) {
+  add(models, opt) {
     var mods = [];
     models = models instanceof Array ? models : [models];
 

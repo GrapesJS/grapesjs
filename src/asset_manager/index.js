@@ -62,7 +62,7 @@ module.exports = () => {
      * @param {Object} config Configurations
      * @private
      */
-    init: function(config){
+    init(config) {
       c = config || {};
       var defaults = require('./config/config');
 
@@ -107,7 +107,7 @@ module.exports = () => {
      * 	src: './path/to/img.png',
      * }]);
      */
-    add: function(asset){
+    add(asset) {
       return assets.add(asset);
     },
 
@@ -118,7 +118,7 @@ module.exports = () => {
      * @example
      * var asset = assetManager.get('http://img.jpg');
      */
-    get: function(src){
+    get(src) {
       return assets.where({src: src})[0];
     },
 
@@ -126,7 +126,7 @@ module.exports = () => {
      * Return all assets
      * @return {Collection}
      */
-    getAll: function(){
+    getAll() {
       return assets;
     },
 
@@ -137,7 +137,7 @@ module.exports = () => {
      * @example
      * assetManager.remove('http://img.jpg');
      */
-    remove: function(src){
+    remove(src) {
       var asset = this.get(src);
       this.getAll().remove(asset);
       return this;
@@ -150,7 +150,7 @@ module.exports = () => {
      * @example
      * var assets = assetManager.store();
      */
-    store: function(noStore){
+    store(noStore) {
       var obj = {};
       var assets = JSON.stringify(this.getAll().toJSON());
       obj[this.storageKey] = assets;
@@ -174,7 +174,7 @@ module.exports = () => {
      * });
      *
      */
-    load: function(data){
+    load(data) {
       var d = data || '';
       var name = this.storageKey;
       if(!d && c.stm)
@@ -193,7 +193,7 @@ module.exports = () => {
      * @return {HTMLElement}
      * @private
      */
-    render: function(f){
+    render(f) {
       if(!this.rendered || f)
         this.rendered	= am.render().$el.add(fu.render().$el);
       return	this.rendered;
@@ -206,7 +206,7 @@ module.exports = () => {
      * @param	{Object}	m Model
      * @private
      * */
-    setTarget: function(m){
+    setTarget(m) {
       am.collection.target = m;
     },
 
@@ -215,7 +215,7 @@ module.exports = () => {
      * @param	{Object}	f Callback function
      * @private
      * */
-    onSelect: function(f){
+    onSelect(f) {
       am.collection.onSelect = f;
     },
 
@@ -223,7 +223,7 @@ module.exports = () => {
      * Set callback to fire when the asset is clicked
      * @param {function} func
      */
-    onClick: function(func) {
+    onClick(func) {
       c.onClick = func;
     },
 
@@ -231,7 +231,7 @@ module.exports = () => {
      * Set callback to fire when the asset is double clicked
      * @param {function} func
      */
-    onDblClick: function(func) {
+    onDblClick(func) {
       c.onDblClick = func;
     },
 

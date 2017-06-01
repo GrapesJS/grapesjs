@@ -42,7 +42,7 @@ module.exports = () => {
        * ...
        * @return {this}
        */
-      init: function(config) {
+      init(config) {
         c = config || {};
         for (var name in defaults) {
           if (!(name in c))
@@ -66,7 +66,7 @@ module.exports = () => {
        * @example
        * deviceManager.add('Tablet', '900px');
        */
-      add: function(name, width, opts){
+      add(name, width, opts) {
         var obj = opts || {};
         obj.name = name;
         obj.width = width;
@@ -81,7 +81,7 @@ module.exports = () => {
        * console.log(JSON.stringify(device));
        * // {name: 'Tablet', width: '900px'}
        */
-      get: function(name){
+      get(name) {
         return devices.get(name);
       },
 
@@ -93,7 +93,7 @@ module.exports = () => {
        * console.log(JSON.stringify(devices));
        * // [{name: 'Desktop', width: ''}, ...]
        */
-      getAll: function(){
+      getAll() {
         return devices;
       },
 
@@ -102,7 +102,7 @@ module.exports = () => {
        * @return {string} HTML string
        * @private
        */
-      render: function(){
+      render() {
         return view.render().el;
       },
 

@@ -9,7 +9,7 @@ module.exports = Component.extend({
       droppable: ['th', 'td']
   }),
 
-  initialize: function(o, opt) {
+  initialize(o, opt) {
     Component.prototype.initialize.apply(this, arguments);
 
     // Clean the row from non cell components
@@ -33,7 +33,7 @@ module.exports = Component.extend({
    * @return {Object}
    * @private
    */
-  isComponent: function(el) {
+  isComponent(el) {
     var result = '';
     if(el.tagName == 'TR'){
       result = {type: 'row'};

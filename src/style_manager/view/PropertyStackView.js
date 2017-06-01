@@ -12,7 +12,7 @@ module.exports = PropertyCompositeView.extend({
   </div>
   <div style="clear:both"></div>`),
 
-  initialize: function(o) {
+  initialize(o) {
     PropertyCompositeView.prototype.initialize.apply(this, arguments);
     this.model.set('stackIndex', null);
     this.className   = this.pfx  + 'property '+ this.pfx +'stack';
@@ -27,7 +27,7 @@ module.exports = PropertyCompositeView.extend({
    * With detached mode the component will be always empty as its value
    * so we gonna check all props and fine if there is some differences.
    * */
-  targetUpdated: function(...args) {
+  targetUpdated(...args) {
     if(!this.model.get('detached'))
       PropertyCompositeView.prototype.targetUpdated.apply(this, args);
     else {
@@ -46,7 +46,7 @@ module.exports = PropertyCompositeView.extend({
    * Returns the collection of layers
    * @return {Collection}
    */
-  getLayers: function(){
+  getLayers() {
     return this.model.get('layers');
   },
 
@@ -58,7 +58,7 @@ module.exports = PropertyCompositeView.extend({
    *
    * @return {Object}
    * */
-  indexChanged: function(e) {
+  indexChanged(e) {
     var model = this.model;
     var layer  = this.getLayers().at(model.get('stackIndex'));
     layer.set('props', this.$props);
@@ -71,12 +71,12 @@ module.exports = PropertyCompositeView.extend({
    * Get array of values from layers
    * @return Array
    * */
-  getStackValues: function(){
+  getStackValues() {
     return this.getLayers().pluck('value');
   },
 
   /** @inheritDoc */
-  getPropsConfig: function(opts){
+  getPropsConfig(opts) {
     var that = this;
     var result = PropertyCompositeView.prototype.getPropsConfig.apply(this, arguments);
 
@@ -109,7 +109,7 @@ module.exports = PropertyCompositeView.extend({
    * @return string
    * @private
    * */
-  valueOnIndex: function(index, propView) {
+  valueOnIndex(index, propView) {
     var result = null;
     var layerIndex = this.model.get('stackIndex');
 
@@ -138,7 +138,7 @@ module.exports = PropertyCompositeView.extend({
    * Build composite value
    * @private
    * */
-  build: function(...args) {
+  build(...args) {
     var stackIndex = this.model.get('stackIndex');
     if(stackIndex === null)
       return;
@@ -169,7 +169,7 @@ module.exports = PropertyCompositeView.extend({
    *
    * @return Object
    * */
-  addLayer: function(e) {
+  addLayer(e) {
     if(this.getTarget()){
       var layers = this.getLayers();
       var layer  = layers.add({ name : 'test' });
@@ -189,7 +189,7 @@ module.exports = PropertyCompositeView.extend({
   /**
    * Fired when the input value is updated
    */
-  valueUpdated: function() {
+  valueUpdated() {
     var model = this.model;
 
     if (!model.get('detached')) {
@@ -205,7 +205,7 @@ module.exports = PropertyCompositeView.extend({
    * Create value by layers
    * @return string
    * */
-  createValue: function(){
+  createValue() {
     return this.getStackValues().join(', ');
   },
 
@@ -213,7 +213,7 @@ module.exports = PropertyCompositeView.extend({
    * Render layers
    * @return self
    * */
-  renderLayers: function() {
+  renderLayers() {
     if(!this.$field)
       this.$field = this.$el.find('> .' + this.pfx + 'field');
 
@@ -231,7 +231,7 @@ module.exports = PropertyCompositeView.extend({
   },
 
   /** @inheritdoc */
-  renderInput: function(...args) {
+  renderInput(...args) {
     PropertyCompositeView.prototype.renderInput.apply(this, args);
     this.refreshLayers();
   },
@@ -241,7 +241,7 @@ module.exports = PropertyCompositeView.extend({
    * Only for detached stacks
    * @return {Array<string>}
    */
-  getLayersFromTarget: function() {
+  getLayersFromTarget() {
     var arr = [];
     var target = this.getTarget();
     if(!target)
@@ -273,7 +273,7 @@ module.exports = PropertyCompositeView.extend({
   /**
    * Refresh layers
    * */
-  refreshLayers: function() {
+  refreshLayers() {
     var n = [];
     var a = [];
     var fieldName = 'value';
@@ -316,7 +316,7 @@ module.exports = PropertyCompositeView.extend({
     this.model.set({stackIndex: null}, {silent: true});
   },
 
-  render : function(){
+  render() {
     this.renderLabel();
     this.renderField();
     this.renderLayers();

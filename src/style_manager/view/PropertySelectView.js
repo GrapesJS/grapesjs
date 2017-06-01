@@ -12,13 +12,13 @@ module.exports = PropertyView.extend({
   </div>
   <div style="clear:both"></div>`),
 
-  initialize: function(options) {
+  initialize(options) {
     PropertyView.prototype.initialize.apply(this, arguments);
     this.list = this.model.get('list') || [];
   },
 
   /** @inheritdoc */
-  renderInput: function() {
+  renderInput() {
     var pfx  = this.pfx;
     if(!this.$input){
       var input = '<select>';

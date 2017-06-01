@@ -7,7 +7,7 @@ module.exports = ComponentView.extend({
 
   events: {},
 
-  initialize: function(o){
+  initialize(o) {
     ComponentView.prototype.initialize.apply(this, arguments);
     this.listenTo(this.model, 'change:loop change:autoplay change:controls change:color', this.updateVideo);
     this.listenTo(this.model, 'change:provider', this.updateProvider);
@@ -17,7 +17,7 @@ module.exports = ComponentView.extend({
    * Rerender on update of the provider
    * @private
    */
-  updateProvider: function() {
+  updateProvider() {
     var prov = this.model.get('provider');
     this.el.innerHTML = '';
     this.el.appendChild(this.renderByProvider(prov));
@@ -27,7 +27,7 @@ module.exports = ComponentView.extend({
    * Update the source of the video
    * @private
    */
-  updateSrc: function() {
+  updateSrc() {
     var prov = this.model.get('provider');
     var src = this.model.get('src');
     switch (prov) {
@@ -45,7 +45,7 @@ module.exports = ComponentView.extend({
    * Update video parameters
    * @private
    */
-  updateVideo: function() {
+  updateVideo() {
     var prov = this.model.get('provider');
     var videoEl = this.videoEl;
     var md = this.model;
@@ -60,7 +60,7 @@ module.exports = ComponentView.extend({
     }
   },
 
-  renderByProvider: function(prov) {
+  renderByProvider(prov) {
     var videoEl;
     switch (prov) {
       case 'yt':
@@ -76,14 +76,14 @@ module.exports = ComponentView.extend({
     return videoEl;
   },
 
-  renderSource: function() {
+  renderSource() {
     var el = document.createElement('video');
     el.src = this.model.get('src');
     this.initVideoEl(el);
     return el;
   },
 
-  renderYoutube: function() {
+  renderYoutube() {
     var el = document.createElement('iframe');
     el.src = this.model.getYoutubeSrc();
     el.frameBorder = 0;
@@ -92,7 +92,7 @@ module.exports = ComponentView.extend({
     return el;
   },
 
-  renderVimeo: function() {
+  renderVimeo() {
     var el = document.createElement('iframe');
     el.src = this.model.getVimeoSrc();
     el.frameBorder = 0;
@@ -101,13 +101,13 @@ module.exports = ComponentView.extend({
     return el;
   },
 
-  initVideoEl: function(el){
+  initVideoEl(el) {
     el.className = this.ppfx + 'no-pointer';
     el.style.height = '100%';
     el.style.width = '100%';
   },
 
-  render: function(...args) {
+  render(...args) {
     ComponentView.prototype.render.apply(this, args);
     this.updateClasses();
     var prov = this.model.get('provider');

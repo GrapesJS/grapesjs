@@ -11,7 +11,7 @@ module.exports = () => {
      * Used inside RTE
      * @private
      */
-    getCanvasView: function() {
+    getCanvasView() {
       return CanvasView;
     },
 
@@ -26,7 +26,7 @@ module.exports = () => {
      * Initialize module. Automatically called with a new instance of the editor
      * @param {Object} config Configurations
      */
-    init: function(config) {
+    init(config) {
       c = config || {};
       for (var name in defaults) {
         if (!(name in c))
@@ -55,7 +55,7 @@ module.exports = () => {
      * @param	{Object}	wrp Wrapper
      *
      * */
-    setWrapper: function(wrp) {
+    setWrapper(wrp) {
       canvas.set('wrapper', wrp);
     },
 
@@ -63,7 +63,7 @@ module.exports = () => {
      * Returns canvas element
      * @return {HTMLElement}
      */
-    getElement: function(){
+    getElement() {
       return CanvasView.el;
     },
 
@@ -71,7 +71,7 @@ module.exports = () => {
      * Returns frame element of the canvas
      * @return {HTMLElement}
      */
-    getFrameEl: function(){
+    getFrameEl() {
       return CanvasView.frame.el;
     },
 
@@ -79,7 +79,7 @@ module.exports = () => {
      * Returns body element of the frame
      * @return {HTMLElement}
      */
-    getBody: function(){
+    getBody() {
       return CanvasView.frame.el.contentDocument.body;
     },
 
@@ -87,7 +87,7 @@ module.exports = () => {
      * Returns body wrapper element of the frame
      * @return {HTMLElement}
      */
-    getWrapperEl: function(){
+    getWrapperEl() {
       return this.getBody().querySelector('#wrapper');
     },
 
@@ -95,7 +95,7 @@ module.exports = () => {
      * Returns element containing canvas tools
      * @return {HTMLElement}
      */
-    getToolsEl: function(){
+    getToolsEl() {
       return CanvasView.toolsEl;
     },
 
@@ -103,7 +103,7 @@ module.exports = () => {
      * Returns highlighter element
      * @return {HTMLElement}
      */
-    getHighlighter: function(){
+    getHighlighter() {
       return CanvasView.hlEl;
     },
 
@@ -111,7 +111,7 @@ module.exports = () => {
      * Returns badge element
      * @return {HTMLElement}
      */
-    getBadgeEl: function(){
+    getBadgeEl() {
       return CanvasView.badgeEl;
     },
 
@@ -119,7 +119,7 @@ module.exports = () => {
      * Returns placer element
      * @return {HTMLElement}
      */
-    getPlacerEl: function(){
+    getPlacerEl() {
       return CanvasView.placerEl;
     },
 
@@ -128,7 +128,7 @@ module.exports = () => {
      * @return {HTMLElement}
      * @private
      */
-    getGhostEl: function(){
+    getGhostEl() {
       return CanvasView.ghostEl;
     },
 
@@ -136,7 +136,7 @@ module.exports = () => {
      * Returns toolbar element
      * @return {HTMLElement}
      */
-    getToolbarEl: function() {
+    getToolbarEl() {
       return CanvasView.toolbarEl;
     },
 
@@ -144,7 +144,7 @@ module.exports = () => {
      * Returns resizer element
      * @return {HTMLElement}
      */
-    getResizerEl: function() {
+    getResizerEl() {
       return CanvasView.resizerEl;
     },
 
@@ -152,7 +152,7 @@ module.exports = () => {
      * Returns offset viewer element
      * @return {HTMLElement}
      */
-    getOffsetViewerEl: function() {
+    getOffsetViewerEl() {
       return CanvasView.offsetEl;
     },
 
@@ -160,14 +160,14 @@ module.exports = () => {
      * Returns fixed offset viewer element
      * @return {HTMLElement}
      */
-    getFixedOffsetViewerEl: function() {
+    getFixedOffsetViewerEl() {
       return CanvasView.fixedOffsetEl;
     },
 
     /**
      * Render canvas
      * */
-    render: function() {
+    render() {
       return CanvasView.render().el;
     },
 
@@ -176,7 +176,7 @@ module.exports = () => {
      * @return {Object}
      * @private
      */
-    getOffset: function() {
+    getOffset() {
       var frameOff = this.offset(this.getFrameEl());
       var canvasOff = this.offset(this.getElement());
       return {
@@ -191,7 +191,7 @@ module.exports = () => {
     * @return {Object}
     * @private
     */
-    offset: function(el){
+    offset(el) {
       var rect = el.getBoundingClientRect();
       return {
         top: rect.top + document.body.scrollTop,
@@ -204,7 +204,7 @@ module.exports = () => {
      * @param {HTMLElement} el
      * @return {Object}
      */
-    getElementPos: function(el) {
+    getElementPos(el) {
       return CanvasView.getElementPos(el);
     },
 
@@ -223,7 +223,7 @@ module.exports = () => {
      * @param {Boolean} options.toRight Set to true if you want the toolbar attached to the right
      * @return {Object}
      */
-    getTargetToElementDim: function (target, element, options) {
+    getTargetToElementDim(target, element, options) {
       var opts = options || {};
       var canvasPos = CanvasView.getPosition();
       var pos = opts.elPos || CanvasView.getElementPos(element);
@@ -270,7 +270,7 @@ module.exports = () => {
      * @param {Event} e
      * @return {Object}
      */
-    getMouseRelativePos: function (e, options) {
+    getMouseRelativePos(e, options) {
       var opts = options || {};
       var addTop = 0;
       var addLeft = 0;
@@ -298,7 +298,7 @@ module.exports = () => {
      * @param {Event} e
      * @return {Object}
      */
-    getMouseRelativeCanvas: function (e, options) {
+    getMouseRelativeCanvas(e, options) {
       var opts = options || {};
       var frame = this.getFrameEl();
       var body = this.getBody();
@@ -318,7 +318,7 @@ module.exports = () => {
      * @return {HTMLElement}
      * ????
      */
-    getFrameWrapperEl: function(){
+    getFrameWrapperEl() {
       return CanvasView.frame.getWrapper();
     },
   };

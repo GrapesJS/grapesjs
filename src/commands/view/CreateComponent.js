@@ -3,7 +3,7 @@ var SelectPosition = require('./SelectPosition');
 
 module.exports = _.extend({}, SelectPosition, {
 
-  init: function(opt) {
+  init(opt) {
     _.bindAll(this,'startDraw','draw','endDraw','rollback');
     this.config = opt || {};
     this.hType = this.config.newFixedH ? 'height' : 'min-height';
@@ -14,7 +14,7 @@ module.exports = _.extend({}, SelectPosition, {
    * Start with enabling to select position and listening to start drawning
    * @private
    * */
-  enable: function(...args) {
+  enable(...args) {
     SelectPosition.enable.apply(this, args);
     this.$wr.css('cursor','crosshair');
     if(this.allowDraw)
@@ -27,7 +27,7 @@ module.exports = _.extend({}, SelectPosition, {
    * @param   {Object} e  Event
    * @private
    * */
-  startDraw : function(e) {
+  startDraw(e) {
     e.preventDefault();
     this.stopSelectPosition();
     this.ghost.style.display = 'block';
@@ -47,7 +47,7 @@ module.exports = _.extend({}, SelectPosition, {
    * Enable/Disable events
    * @param {Boolean} enable
    */
-  toggleEvents: function(enable) {
+  toggleEvents(enable) {
     var method = enable ? 'on' : 'off';
     this.$wr[method]('mousemove', this.draw);
     this.$wr[method]('mouseup', this.endDraw);
@@ -61,7 +61,7 @@ module.exports = _.extend({}, SelectPosition, {
    * @param   {Object}  e  Event
    * @private
    * */
-  draw: function(e) {
+  draw(e) {
     this.isDragged = true;
     this.updateComponentSize(e);
   },
@@ -71,7 +71,7 @@ module.exports = _.extend({}, SelectPosition, {
    * @param   {Object}  e Event
    * @private
    * */
-  endDraw : function(e) {
+  endDraw(e) {
     this.toggleEvents();
     var model = {};
     // Only if the mouse was moved
@@ -95,7 +95,7 @@ module.exports = _.extend({}, SelectPosition, {
    * @param {string} method Before or after of the children
    * @param {Object} opts Options
    */
-  create: function(target, component, index, method, opts) {
+  create(target, component, index, method, opts) {
     index = method === 'after' ? index + 1 : index;
     var opt = opts || {};
     var $trg = $(target);
@@ -115,7 +115,7 @@ module.exports = _.extend({}, SelectPosition, {
    * @return   {Object}   Component updated
    * @private
    * */
-  setRequirements: function(component) {
+  setRequirements(component) {
     var c  = this.config;
     var compStl = component.style;
     // Check min width
@@ -150,7 +150,7 @@ module.exports = _.extend({}, SelectPosition, {
    * @param   {Object}   e  Event
    * @private
    * */
-  updateComponentSize : function (e) {
+  updateComponentSize(e) {
     var y = e.pageY + this.frameOff.top;
      var x = e.pageX + this.frameOff.left;
     var start = this.startPos;
@@ -173,7 +173,7 @@ module.exports = _.extend({}, SelectPosition, {
    * Update size
    * @private
    */
-  updateSize: function(top, left, width, height){
+  updateSize(top, left, width, height) {
     var u = 'px';
     var ghStl = this.ghost.style;
     var compStl = this.tempComponent.style;
@@ -189,7 +189,7 @@ module.exports = _.extend({}, SelectPosition, {
    * @param   {Boolean}   forse  Indicates if rollback in anycase
    * @private
    * */
-  rollback: function(e, force) {
+  rollback(e, force) {
     var key = e.which || e.keyCode;
     if(key == this.config.ESCAPE_KEY || force){
       this.isDragged = false;
@@ -203,7 +203,7 @@ module.exports = _.extend({}, SelectPosition, {
    * @param   {Object}  component  Object component before creation
    * @private
    * */
-  beforeDraw: function(component){
+  beforeDraw(component) {
     component.editable = false;//set this component editable
   },
 
@@ -212,17 +212,17 @@ module.exports = _.extend({}, SelectPosition, {
    * @param   {Object}  model  Component model created
    * @private
    * */
-  afterDraw: function(model){},
+  afterDraw(model) {},
 
 
-  run: function(editor, sender, opts){
+  run(editor, sender, opts) {
     this.editor = editor;
     this.sender  = sender;
     this.$wr = this.$wrapper;
     this.enable();
   },
 
-  stop: function(){
+  stop() {
     this.stopSelectPosition();
     this.$wrapper.css('cursor','');
     this.$wrapper.unbind();

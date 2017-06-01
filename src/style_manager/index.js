@@ -68,7 +68,7 @@ module.exports = () => {
      * @return {Object}
      * @private
      */
-    getConfig: function(){
+    getConfig() {
       return c;
     },
 
@@ -76,7 +76,7 @@ module.exports = () => {
      * Initialize module. Automatically called with a new instance of the editor
      * @param {Object} config Configurations
      */
-    init: function(config) {
+    init(config) {
       c = config || {};
       for (var name in defaults) {
         if (!(name in c))
@@ -112,7 +112,7 @@ module.exports = () => {
      *   properties: [{ name: 'My property'}]
      * });
      * */
-    addSector: function(id, sector){
+    addSector(id, sector) {
       var result = this.getSector(id);
       if(!result){
         sector.id = id;
@@ -128,7 +128,7 @@ module.exports = () => {
      * @example
      * var sector = styleManager.getSector('mySector');
      * */
-    getSector: function(id){
+    getSector(id) {
       var res  = sectors.where({id: id});
       return res.length ? res[0] : null;
     },
@@ -137,7 +137,7 @@ module.exports = () => {
      * Get all sectors
      * @return {Sectors} Collection of sectors
      * */
-    getSectors: function(){
+    getSectors() {
       return sectors;
     },
 
@@ -176,7 +176,7 @@ module.exports = () => {
      *    }],
      * });
      */
-    addProperty: function(sectorId, property){
+    addProperty(sectorId, property) {
       var prop = null;
       var sector = this.getSector(sectorId);
 
@@ -194,7 +194,7 @@ module.exports = () => {
      * @example
      * var property = styleManager.getProperty('mySector','min-height');
      */
-    getProperty: function(sectorId, name){
+    getProperty(sectorId, name) {
       var prop = null;
       var sector = this.getSector(sectorId);
 
@@ -213,7 +213,7 @@ module.exports = () => {
      * @example
      * var properties = styleManager.getProperties('mySector');
      */
-    getProperties: function(sectorId){
+    getProperties(sectorId) {
       var props = null;
       var sector = this.getSector(sectorId);
 
@@ -231,7 +231,7 @@ module.exports = () => {
      * @param  {Model} model
      * @return {Model}
      */
-    getModelToStyle: function (model) {
+    getModelToStyle(model) {
       var classes = model.get('classes');
 
       if(c.em && classes && classes.length) {
@@ -257,7 +257,7 @@ module.exports = () => {
      * Render sectors and properties
      * @return  {HTMLElement}
      * */
-    render: function(){
+    render() {
       return SectView.render().el;
     },
 

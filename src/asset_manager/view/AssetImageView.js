@@ -21,7 +21,7 @@ module.exports = AssetView.extend({
 
   template: _.template(assetTemplate),
 
-  initialize: function(o) {
+  initialize(o) {
     AssetView.prototype.initialize.apply(this, arguments);
     this.className  += ' ' + this.pfx + 'asset-image';
     this.events['click #' + this.pfx + 'close']  = 'removeItem';
@@ -32,7 +32,7 @@ module.exports = AssetView.extend({
    * Trigger when the asset is clicked
    * @private
    * */
-  handleClick: function() {
+  handleClick() {
     var onClick = this.config.onClick;
     var model = this.model;
     model.collection.trigger('deselectAll');
@@ -49,7 +49,7 @@ module.exports = AssetView.extend({
    * Trigger when the asset is double clicked
    * @private
    * */
-  handleDblClick: function() {
+  handleDblClick() {
     var onDblClick = this.config.onDblClick;
     var model = this.model;
 
@@ -70,7 +70,7 @@ module.exports = AssetView.extend({
    * @param  {String}  v   Value
    * @private
    * */
-  updateTarget: function(v){
+  updateTarget(v) {
     var target = this.model.collection.target;
     if(target && target.set) {
       var attr = _.clone( target.get('attributes') );
@@ -83,12 +83,12 @@ module.exports = AssetView.extend({
    * Remove asset from collection
    * @private
    * */
-  removeItem: function(e){
+  removeItem(e) {
     e.stopPropagation();
     this.model.collection.remove(this.model);
   },
 
-  render : function(){
+  render() {
     var name = this.model.get('name'),
       dim = this.model.get('width') && this.model.get('height') ?
             this.model.get('width')+' x '+this.model.get('height') : '';

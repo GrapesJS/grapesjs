@@ -14,7 +14,7 @@ module.exports = Backbone.Model.extend({
    * @return  {string}
    * @private
    * */
-  getFilename: function(){
+  getFilename() {
     return  this.get('src').split('/').pop();
   },
 
@@ -23,7 +23,7 @@ module.exports = Backbone.Model.extend({
    * @return  {string}
    * @private
    * */
-  getExtension: function(){
+  getExtension() {
     return  this.getFilename().split('.').pop();
   },
 

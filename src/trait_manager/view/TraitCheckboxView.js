@@ -2,7 +2,7 @@ var TraitView = require('./TraitView');
 
 module.exports = TraitView.extend({
 
-  initialize: function(o) {
+  initialize(o) {
     TraitView.prototype.initialize.apply(this, arguments);
     var iconCls = this.ppfx + 'chk-icon';
     this.tmpl = '<div class="' + this.fieldClass +'"><label class="' + this.inputhClass +'"><i class="' + iconCls +'"></i></label></div>';
@@ -12,7 +12,7 @@ module.exports = TraitView.extend({
    * Fires when the input is changed
    * @private
    */
-  onChange: function() {
+  onChange() {
     this.model.set('value', this.getInputEl().checked);
   },
 
@@ -21,7 +21,7 @@ module.exports = TraitView.extend({
    * @return {HTMLElement}
    * @private
    */
-  getInputEl: function(...args) {
+  getInputEl(...args) {
     var first;
     if(!this.$input)
       first = 1;

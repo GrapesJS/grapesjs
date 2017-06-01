@@ -46,7 +46,7 @@ module.exports = () => {
      * @param {Object} config Configurations
      * @private
      */
-    init: function(config) {
+    init(config) {
       mainSelf = this;
       c = config || {};
       for (var name in defaults) {
@@ -87,7 +87,7 @@ module.exports = () => {
      *   ]
      * });
      */
-    add: function(command, opts) {
+    add(command, opts) {
       var obj = opts || {};
       obj.command = command;
       return commands.add(obj);
@@ -100,7 +100,7 @@ module.exports = () => {
      * @example
      * var cm = rte.get('fontSize');
      */
-    get: function(command) {
+    get(command) {
       return commands.where({command: command})[0];
     },
 
@@ -108,7 +108,7 @@ module.exports = () => {
      * Returns the collection of commands
      * @return {Collection}
      */
-    getAll: function(){
+    getAll() {
       return commands;
     },
 
@@ -116,7 +116,7 @@ module.exports = () => {
      * Triggered when the offset of the editro is changed
      * @private
      */
-    udpatePosition: function() {
+    udpatePosition() {
       var u = 'px';
       var canvas = c.em.get('Canvas');
       var pos = canvas.getTargetToElementDim(toolbar.el, this.lastEl, {
@@ -133,7 +133,7 @@ module.exports = () => {
      * @param {Object} rte The instance of already defined RTE
      * @private
      * */
-    attach: function(view, rte) {
+    attach(view, rte) {
       // lastEl will be used to place the RTE toolbar
       this.lastEl = view.el;
       var el = view.getChildrenContainer();
@@ -168,7 +168,7 @@ module.exports = () => {
      * @param {Object} rte The instance of already defined RTE
      * @private
      * */
-    detach: function(view, rte) {
+    detach(view, rte) {
       var customRte = this.customRte;
       var el = view.getChildrenContainer();
       if (customRte) {
@@ -187,7 +187,7 @@ module.exports = () => {
      * @param {Object} rte The instance of already defined RTE
      * @private
      * */
-    focus: function(view, rte) {
+    focus(view, rte) {
       var customRte = this.customRte;
       var el = view.getChildrenContainer();
       if (customRte) {
@@ -202,7 +202,7 @@ module.exports = () => {
      * Show the toolbar
      * @private
      * */
-    show: function() {
+    show() {
       var toolbarStyle = toolbar.el.style;
       toolbarStyle.display = "block";
     },
@@ -211,7 +211,7 @@ module.exports = () => {
      * Hide the toolbar
      * @private
      * */
-    hide: function() {
+    hide() {
       toolbar.el.style.display = "none";
     },
 
@@ -219,7 +219,7 @@ module.exports = () => {
      * Isolate the disable propagation method
      * @private
      * */
-    disableProp: function(e) {
+    disableProp(e) {
       e.stopPropagation();
     },
 
@@ -228,7 +228,7 @@ module.exports = () => {
      * @return {HTMLElement}
      * @private
      */
-    getToolbarEl: function() {
+    getToolbarEl() {
       return toolbar.el;
     },
 
@@ -237,7 +237,7 @@ module.exports = () => {
      * @return {HTMLElement}
      * @private
      */
-    render: function(){
+    render() {
       return toolbar.render().el;
     }
 

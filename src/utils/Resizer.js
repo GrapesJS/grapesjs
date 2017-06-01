@@ -44,7 +44,7 @@ module.exports = {
    * Init the Resizer with options
    * @param  {Object} options
    */
-  init: function(options) {
+  init(options) {
     var opts = options || {};
     var pfx = opts.prefix || '';
     var appendTo = opts.appendTo || document.body;
@@ -96,7 +96,7 @@ module.exports = {
    * Update options
    * @param {Object} options
    */
-  setOptions: function (options) {
+  setOptions(options) {
     var opts = options || {};
 
     for (var opt in opts) {
@@ -111,7 +111,7 @@ module.exports = {
    * @param  {HTMLElement} el
    * @return {Boolean}
    */
-  isHandler: function(el) {
+  isHandler(el) {
     var handlers = this.handlers;
 
     for (var n in handlers) {
@@ -125,14 +125,14 @@ module.exports = {
    * Returns the focused element
    * @return {HTMLElement}
    */
-  getFocusedEl: function() {
+  getFocusedEl() {
     return this.el;
   },
 
   /**
    * Returns documents
    */
-  getDocumentEl: function() {
+  getDocumentEl() {
     if (!this.$doc) {
       this.$doc = $([this.el.ownerDocument, document]);
     }
@@ -144,7 +144,7 @@ module.exports = {
    * @param  {HTMLElement} el
    * @return {Object}
    */
-  getElementPos: function (el) {
+  getElementPos(el) {
     var posFetcher = this.posFetcher || '';
     return posFetcher ? posFetcher(el) : getBoundingRect(el);
   },
@@ -153,7 +153,7 @@ module.exports = {
    * Focus resizer on the element, attaches handlers to it
    * @param {HTMLElement} el
    */
-  focus: function(el) {
+  focus(el) {
     // Avoid focusing on already focused element
     if (el && el === this.el) {
       return;
@@ -176,7 +176,7 @@ module.exports = {
   /**
    * Blur from element
    */
-  blur: function () {
+  blur() {
     this.container.style.display = 'none';
     if(this.el) {
       var doc = $([this.el.ownerDocument, document]);
@@ -189,7 +189,7 @@ module.exports = {
    * Start resizing
    * @param  {Event} e
    */
-  start: function(e) {
+  start(e) {
     //Right or middel click
     if (e.button !== 0) {
       return;
@@ -235,7 +235,7 @@ module.exports = {
    * While resizing
    * @param  {Event} e
    */
-  move: function(e) {
+  move(e) {
     var mouseFetch = this.mousePosFetcher;
     var currentPos = mouseFetch ? mouseFetch(e) : {
       x: e.clientX,
@@ -272,7 +272,7 @@ module.exports = {
    * Stop resizing
    * @param  {Event} e
    */
-  stop: function(e) {
+  stop(e) {
     var doc = this.getDocumentEl();
     doc.off('mousemove', this.move);
     doc.off('keydown', this.handleKeyDown);
@@ -288,7 +288,7 @@ module.exports = {
   /**
    * Update rect
    */
-  updateRect: function(store) {
+  updateRect(store) {
     var elStyle = this.el.style;
     var conStyle = this.container.style;
     var rect = this.rectDim;
@@ -315,7 +315,7 @@ module.exports = {
    * Handle ESC key
    * @param  {Event} e
    */
-  handleKeyDown: function (e) {
+  handleKeyDown(e) {
     if (e.keyCode === 27) {
       // Rollback to initial dimensions
       this.rectDim = this.startDim;
@@ -327,7 +327,7 @@ module.exports = {
    * Handle mousedown to check if it's possible to start resizing
    * @param  {Event} e
    */
-  handleMouseDown: function(e) {
+  handleMouseDown(e) {
     var el = e.target;
     if (this.isHandler(el)) {
       this.start(e);
@@ -340,7 +340,7 @@ module.exports = {
    * All positioning logic
    * @return {Object}
    */
-  calc: function(data) {
+  calc(data) {
     var opts = this.opts || {};
     var startDim = this.startDim;
     var box = {

@@ -18,7 +18,7 @@ module.exports = Backbone.View.extend({
   <div id="<%= pfx %>inputs"></div>
   <div style="clear:both"></div>`),
 
-  initialize: function(o) {
+  initialize(o) {
     this.stackModel = o.stackModel || {};
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
@@ -41,7 +41,7 @@ module.exports = Backbone.View.extend({
    * Delegate sorting
    * @param  {Event} e
    * */
-  initSorter: function(e){
+  initSorter(e) {
     if(this.sorter)
       this.sorter.startSort(this.el);
   },
@@ -50,7 +50,7 @@ module.exports = Backbone.View.extend({
    * Returns properties
    * @return {Collection|null}
    */
-  getProps: function(){
+  getProps() {
     if(this.stackModel.get)
       return this.stackModel.get('properties');
     else
@@ -60,7 +60,7 @@ module.exports = Backbone.View.extend({
   /**
    * Emitted when the value is changed
    */
-  valueChanged: function() {
+  valueChanged() {
     var preview = this.model.get('preview');
 
     if(!preview)
@@ -84,7 +84,7 @@ module.exports = Backbone.View.extend({
    * @param {Collection} props
    * @param {Element} $el
    */
-  onPreview: function(props, $el) {
+  onPreview(props, $el) {
     var  aV = this.model.get('value').split(' ');
     var lim = 3;
     var nV = '';
@@ -115,14 +115,14 @@ module.exports = Backbone.View.extend({
   /**
    * Show inputs on this layer
    * */
-  showProps:function(){
+  showProps() {
     this.$props = this.model.get('props');
     this.$el.find('#' + this.pfx + 'inputs').html(this.$props.show());
     this.model.set({props: null }, {silent: true });
   },
 
   /** @inheritdoc */
-  remove: function(e){
+  remove(e) {
     // Prevent from revoming all events on props
     if(this.$props)
       this.$props.detach();
@@ -148,7 +148,7 @@ module.exports = Backbone.View.extend({
    *
    * @return void
    * */
-  updateIndex: function(e) {
+  updateIndex(e) {
     var i = this.getIndex();
     this.stackModel.set('stackIndex', i);
 
@@ -162,7 +162,7 @@ module.exports = Backbone.View.extend({
    * Fetch model index
    * @return {number} Index
    */
-  getIndex: function() {
+  getIndex() {
     var index = 0;
     var model = this.model;
 
@@ -173,7 +173,7 @@ module.exports = Backbone.View.extend({
     return index;
   },
 
-  render : function(){
+  render() {
     this.$el.html( this.template({
       label: 'Layer ' + this.model.get('index'),
       pfx: this.pfx,

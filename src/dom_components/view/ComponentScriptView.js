@@ -7,7 +7,7 @@ module.exports = ComponentView.extend({
 
   events: {},
 
-  render: function() {
+  render() {
     var model = this.model;
     var src = model.get('src');
     var em = this.em;

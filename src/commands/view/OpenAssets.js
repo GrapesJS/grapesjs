@@ -1,6 +1,6 @@
 module.exports = {
 
-  run: function(editor, sender, opts) {
+  run(editor, sender, opts) {
     var opt = opts || {};
     var config = editor.getConfig();
     var modal = editor.Modal;

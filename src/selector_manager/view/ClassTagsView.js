@@ -33,7 +33,7 @@ module.exports = Backbone.View.extend({
 
   events: {},
 
-  initialize: function(o) {
+  initialize(o) {
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
@@ -65,7 +65,7 @@ module.exports = Backbone.View.extend({
    * @param {Object} model Removed model
    * @private
    */
-  tagRemoved: function(model){
+  tagRemoved(model) {
     this.updateStateVis();
   },
 
@@ -74,7 +74,7 @@ module.exports = Backbone.View.extend({
    * @return {string} String of options
    * @private
    */
-  getStateOptions: function(){
+  getStateOptions() {
     var strInput = '';
     for(var i = 0; i < this.states.length; i++){
       strInput += '<option value="' + this.states[i].name + '">' + this.states[i].label + '</option>';
@@ -87,7 +87,7 @@ module.exports = Backbone.View.extend({
    * @param {Object} model
    * @private
    */
-  addNew: function(model){
+  addNew(model) {
     this.addToClasses(model);
   },
 
@@ -96,7 +96,7 @@ module.exports = Backbone.View.extend({
    * @param {Object} e
    * @private
    */
-  startNewTag: function(e) {
+  startNewTag(e) {
     this.$addBtn.hide();
     this.$input.show().focus();
   },
@@ -106,7 +106,7 @@ module.exports = Backbone.View.extend({
    * @param {Object} e
    * @private
    */
-  endNewTag: function(e) {
+  endNewTag(e) {
     this.$addBtn.show();
     this.$input.hide().val('');
   },
@@ -116,7 +116,7 @@ module.exports = Backbone.View.extend({
    * @param  {Object} e
    * @private
    */
-  onInputKeyUp: function(e) {
+  onInputKeyUp(e) {
     if (e.keyCode === 13)
       this.addNewTag(this.$input.val());
     else if(e.keyCode === 27)
@@ -128,7 +128,7 @@ module.exports = Backbone.View.extend({
    * @param  {Object} e
    * @private
    */
-  componentChanged: function(e){
+  componentChanged(e) {
     this.compTarget = this.target.get('selectedComponent');
     if(this.compTarget)
       this.getStates().val(this.compTarget.get('state'));
@@ -142,7 +142,7 @@ module.exports = Backbone.View.extend({
    * inside collection
    * @private
    */
-  updateStateVis: function(){
+  updateStateVis() {
     if(this.collection.length)
       this.getStatesC().css('display','block');
     else
@@ -155,7 +155,7 @@ module.exports = Backbone.View.extend({
    * @return {this}
    * @private
    */
-  updateSelector: function(){
+  updateSelector() {
     this.compTarget = this.target.get('selectedComponent');
     if(!this.compTarget || !this.compTarget.get)
       return;
@@ -177,7 +177,7 @@ module.exports = Backbone.View.extend({
    * @param  {Object} e
    * @private
    */
-  stateChanged: function(e){
+  stateChanged(e) {
     if(this.compTarget){
       this.compTarget.set('state', this.$states.val());
       if(this.target)
@@ -191,7 +191,7 @@ module.exports = Backbone.View.extend({
    * @param  {Object} e
    * @private
    */
-  addNewTag: function(name){
+  addNewTag(name) {
     if(!name)
       return;
 
@@ -222,7 +222,7 @@ module.exports = Backbone.View.extend({
    * @return {Object} Object created
    * @private
    * */
-  addToClasses: function(model, fragmentEl) {
+  addToClasses(model, fragmentEl) {
     var fragment  = fragmentEl || null;
 
     var view = new ClassTagView({
@@ -245,7 +245,7 @@ module.exports = Backbone.View.extend({
    * @return {this}
    * @private
    */
-  renderClasses: function() {
+  renderClasses() {
     var fragment = document.createDocumentFragment();
 
     this.collection.each(function(model){
@@ -263,7 +263,7 @@ module.exports = Backbone.View.extend({
    * @return {HTMLElement}
    * @private
    */
-  getClasses: function() {
+  getClasses() {
     if(!this.$classes)
       this.$classes = this.$el.find('#' + this.pfx + 'tags-c');
     return this.$classes;
@@ -274,7 +274,7 @@ module.exports = Backbone.View.extend({
    * @return {HTMLElement}
    * @private
    */
-  getStates: function() {
+  getStates() {
     if(!this.$states)
       this.$states = this.$el.find('#' + this.stateInputId);
     return this.$states;
@@ -285,13 +285,13 @@ module.exports = Backbone.View.extend({
    * @return {HTMLElement}
    * @private
    */
-  getStatesC: function() {
+  getStatesC() {
     if(!this.$statesC)
       this.$statesC = this.$el.find('#' + this.stateInputC);
     return this.$statesC;
   },
 
-  render : function(){
+  render() {
     this.$el.html( this.template({
       label: this.config.label,
       statesLabel: this.config.statesLabel,

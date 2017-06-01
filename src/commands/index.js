@@ -67,7 +67,7 @@ module.exports = () => {
      * @param {Object} config Configurations
      * @private
      */
-    init: function(config) {
+    init(config) {
       c = config || {};
       for (var name in defaults) {
         if (!(name in c))
@@ -105,7 +105,7 @@ module.exports = () => {
       defaultCommands.resize = require('./view/Resize');
 
       defaultCommands['tlb-delete'] = {
-        run: function(ed) {
+        run(ed) {
           var sel = ed.getSelected();
 
           if(!sel || !sel.get('removable')) {
@@ -121,7 +121,7 @@ module.exports = () => {
       };
 
       defaultCommands['tlb-clone'] = {
-        run: function(ed) {
+        run(ed) {
           var sel = ed.getSelected();
 
           if(!sel || !sel.get('copyable')) {
@@ -137,7 +137,7 @@ module.exports = () => {
       };
 
       defaultCommands['tlb-move'] = {
-        run: function(ed){
+        run(ed) {
           var sel = ed.getSelected();
 
           if(!sel || !sel.get('draggable')) {
@@ -171,7 +171,7 @@ module.exports = () => {
      * On load callback
      * @private
      */
-    onLoad: function() {
+    onLoad() {
     	this.loadDefaultCommands();
     },
 
@@ -199,7 +199,7 @@ module.exports = () => {
      * var myCommand = commands.get('myCommand');
      * myCommand.run();
      * */
-    get: function(id) {
+    get(id) {
       var el = commands[id];
 
       if(typeof el == 'function'){
@@ -215,7 +215,7 @@ module.exports = () => {
      * @param	{string}	id Command's ID
      * @return {Boolean}
      * */
-    has: function(id) {
+    has(id) {
       return !!commands[id];
     },
 
@@ -224,7 +224,7 @@ module.exports = () => {
      * @return {this}
      * @private
      * */
-    loadDefaultCommands: function(){
+    loadDefaultCommands() {
       for (var id in defaultCommands) {
         this.add(id, defaultCommands[id]);
       }

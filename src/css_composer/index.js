@@ -48,7 +48,7 @@ module.exports = () => {
        * @type {String}
        * @private
        */
-      storageKey: function(){
+      storageKey() {
         var keys = [];
         var smc = (c.stm && c.stm.getConfig()) || {};
         if(smc.storeCss)
@@ -63,7 +63,7 @@ module.exports = () => {
        * @param {Object} config Configurations
        * @private
        */
-      init: function(config) {
+      init(config) {
         c = config || {};
         for (var name in defaults) {
           if (!(name in c))
@@ -92,7 +92,7 @@ module.exports = () => {
        * On load callback
        * @private
        */
-      onLoad: function(){
+      onLoad() {
         if(c.stm && c.stm.getConfig().autoload)
             this.load();
 
@@ -107,7 +107,7 @@ module.exports = () => {
        * @param {Object} data Object of data to load
        * @return {Object} Loaded rules
        */
-      load: function(data) {
+      load(data) {
         var d = data || '';
         if(!d && c.stm)
           d = c.em.getCacheLoad();
@@ -130,7 +130,7 @@ module.exports = () => {
        * @param {Boolean} noStore If true, won't store
        * @return {Object} Data to store
        */
-      store: function(noStore){
+      store(noStore) {
         if(!c.stm)
           return;
         var obj = {};
@@ -161,7 +161,7 @@ module.exports = () => {
        *   color: '#fff',
        * });
        * */
-      add: function(selectors, state, width, opts) {
+      add(selectors, state, width, opts) {
         var s = state || '';
         var w = width || '';
         var opt = opts || {};
@@ -197,7 +197,7 @@ module.exports = () => {
        *   color: '#000',
        * });
        * */
-      get: function(selectors, state, width, ruleProps) {
+      get(selectors, state, width, ruleProps) {
         var rule = null;
         rules.each(m => {
           if(rule)
@@ -212,7 +212,7 @@ module.exports = () => {
        * Get the collection of rules
        * @return {Collection}
        * */
-      getAll: function() {
+      getAll() {
         return rules;
       },
 
@@ -224,7 +224,7 @@ module.exports = () => {
        * @return {Array<Model>}
        * @private
        */
-      addCollection: function(data, opts) {
+      addCollection(data, opts) {
         var opt = opts || {};
         var result = [];
         var d = data instanceof Array ? data : [data];
@@ -264,7 +264,7 @@ module.exports = () => {
        * @return {HTMLElement}
        * @private
        */
-      render: function() {
+      render() {
         return rulesView.render().el;
       }
 

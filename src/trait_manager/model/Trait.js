@@ -16,7 +16,7 @@ module.exports = Backbone.Model.extend({
     options: [],
   },
 
-  initialize: function(){
+  initialize() {
     if (this.get('target')) {
       this.target = this.get('target');
       this.unset('target');

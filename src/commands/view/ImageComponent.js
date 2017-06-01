@@ -9,7 +9,7 @@ module.exports = _.extend({}, InsertCustom, {
    * @private
    *
    * */
-  beforeInsert: function(object){
+  beforeInsert(object) {
     object.type = 'image';
     object.style = {};
     object.attributes = {};
@@ -25,7 +25,7 @@ module.exports = _.extend({}, InsertCustom, {
    * @param  {Object}  model  Model created after insert
    * @private
    * */
-  afterInsert: function(model){
+  afterInsert(model) {
     model.trigger('dblclick');
     if(this.sender)
       this.sender.set('active', false);

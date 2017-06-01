@@ -1,6 +1,6 @@
 module.exports = {
 
-  run: function(editor, sender) {
+  run(editor, sender) {
     var config = editor.Config;
     var pfx = config.stylePrefix;
     var bm = editor.BlockManager;
@@ -19,7 +19,7 @@ module.exports = {
     this.blocks.style.display = 'block';
   },
 
-  stop: function() {
+  stop() {
     if(this.blocks)
       this.blocks.style.display = 'none';
   }

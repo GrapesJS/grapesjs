@@ -1,19 +1,19 @@
 module.exports = {
 
-  getPanels: function(editor){
+  getPanels(editor) {
     if(!this.panels)
       this.panels = editor.Panels.getPanelsEl();
     return this.panels;
   },
 
-  tglPointers: function(editor, v) {
+  tglPointers(editor, v) {
     var elP = editor.Canvas.getBody().querySelectorAll('.' + this.ppfx + 'no-pointer');
     _.each(elP, item => {
       item.style.pointerEvents = v ? '' : 'all';
     });
   },
 
-  run: function(editor, sender) {
+  run(editor, sender) {
     if(sender && sender.set)
       sender.set('active', false);
     editor.stopCommand('sw-visibility');
@@ -49,7 +49,7 @@ module.exports = {
     editor.trigger('change:canvasOffset');
   },
 
-  stop: function(editor, sender) {
+  stop(editor, sender) {
     var panels = this.getPanels(editor);
     editor.runCommand('sw-visibility');
     editor.getModel().runDefault();

@@ -35,7 +35,7 @@ module.exports = () => {
      * @param {Object} config Configurations
      * @private
      */
-    init: function(config) {
+    init(config) {
       c = config || {};
       for (var name in defaults) {
         if (!(name in c))
@@ -64,7 +64,7 @@ module.exports = () => {
      * Open the modal window
      * @return {this}
      */
-    open: function(){
+    open() {
       modal.show();
       return this;
     },
@@ -73,7 +73,7 @@ module.exports = () => {
      * Close the modal window
      * @return {this}
      */
-    close: function(){
+    close() {
       modal.hide();
       return this;
     },
@@ -82,7 +82,7 @@ module.exports = () => {
      * Checks if the modal window is open
      * @return {Boolean}
      */
-    isOpen: function(){
+    isOpen() {
       return !!model.get('open');
     },
 
@@ -93,7 +93,7 @@ module.exports = () => {
      * @example
      * modal.setTitle('New title');
      */
-    setTitle: function(title){
+    setTitle(title) {
       model.set('title', title);
       return this;
     },
@@ -102,7 +102,7 @@ module.exports = () => {
      * Returns the title of the modal window
      * @return {string}
      */
-    getTitle: function(){
+    getTitle() {
       return model.get('title');
     },
 
@@ -113,7 +113,7 @@ module.exports = () => {
      * @example
      * modal.setContent('<div>Some HTML content</div>');
      */
-    setContent: function(content){
+    setContent(content) {
       model.set('content', ' ');
       model.set('content', content);
       return this;
@@ -123,7 +123,7 @@ module.exports = () => {
      * Get the content of the modal window
      * @return {string}
      */
-    getContent: function(){
+    getContent() {
       return model.get('content');
     },
 
@@ -132,7 +132,7 @@ module.exports = () => {
      * @return {HTMLElement}
      * @private
      */
-    getContentEl: function(){
+    getContentEl() {
       return modal.getContent().get(0);
     },
 
@@ -141,7 +141,7 @@ module.exports = () => {
      * @return {Model}
      * @private
      */
-    getModel: function(){
+    getModel() {
       return model;
     },
 
@@ -150,7 +150,7 @@ module.exports = () => {
      * @return {HTMLElement}
      * @private
      */
-    render: function(){
+    render() {
       return modal.render().$el;
     }
   };

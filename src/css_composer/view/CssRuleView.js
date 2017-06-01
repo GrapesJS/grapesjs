@@ -4,7 +4,7 @@ module.exports = Backbone.View.extend({
 
   tagName: 'style',
 
-  initialize: function(o) {
+  initialize(o) {
     this.config = o.config || {};
     this.listenTo(this.model, 'change:style', this.render);
     this.listenTo(this.model, 'change:state', this.render);
@@ -17,7 +17,7 @@ module.exports = Backbone.View.extend({
    * Triggered when some selector is changed
    * @private
    */
-  selChanged: function(){
+  selChanged() {
     this.selStr = this.renderSelectors();
     this.render();
   },
@@ -27,7 +27,7 @@ module.exports = Backbone.View.extend({
    * @return {String}
    * @private
    */
-  renderSelectors: function() {
+  renderSelectors() {
     var sel = [];
     var model = this.model;
     var add = model.get('selectorsAdd');
@@ -43,7 +43,7 @@ module.exports = Backbone.View.extend({
    * @return {String}
    * @private
    */
-  renderProperties: function(){
+  renderProperties() {
     var sel = [],
       props = this.model.get('style');
     for (var prop in props){
@@ -52,7 +52,7 @@ module.exports = Backbone.View.extend({
     return sel.join('');
   },
 
-  render : function() {
+  render() {
     var block = '',
       selStr = '',
       o = '';

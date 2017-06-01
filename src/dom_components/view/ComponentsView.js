@@ -2,7 +2,7 @@ var Backbone = require('backbone');
 
 module.exports = Backbone.View.extend({
 
-  initialize: function(o) {
+  initialize(o) {
     this.opts = o || {};
     this.config = o.config || {};
     this.listenTo( this.collection, 'add', this.addTo );
@@ -16,7 +16,7 @@ module.exports = Backbone.View.extend({
    * @return  void
    * @private
    * */
-  addTo: function(model) {
+  addTo(model) {
     var i  = this.collection.indexOf(model);
     this.addToCollection(model, null, i);
 
@@ -37,7 +37,7 @@ module.exports = Backbone.View.extend({
    * @return   {Object}   Object rendered
    * @private
    * */
-  addToCollection: function(model, fragmentEl, index){
+  addToCollection(model, fragmentEl, index) {
     if(!this.compView)
       this.compView  =  require('./ComponentView');
     var fragment  = fragmentEl || null,
@@ -97,7 +97,7 @@ module.exports = Backbone.View.extend({
     return rendered;
   },
 
-  render: function($p) {
+  render($p) {
     var fragment   = document.createDocumentFragment();
     this.$parent  = $p || this.$el;
     this.$el.empty();

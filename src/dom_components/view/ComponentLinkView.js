@@ -7,7 +7,7 @@ module.exports = ComponentView.extend({
     'dblclick': 'enableEditing',
   },
 
-  render: function(...args) {
+  render(...args) {
     ComponentView.prototype.render.apply(this, args);
 
     // I need capturing instead of bubbling as bubbled clicks from other

@@ -3,7 +3,7 @@ var ItemView = require('./ItemView');
 
 module.exports = Backbone.View.extend({
 
-  initialize: function(o) {
+  initialize(o) {
     this.opt = o;
     this.config = o.config;
     this.preview = o.preview;
@@ -42,7 +42,7 @@ module.exports = Backbone.View.extend({
    *
    * @return Object
    * */
-  addTo: function(model){
+  addTo(model) {
     var i  = this.collection.indexOf(model);
     this.addToCollection(model, null, i);
   },
@@ -55,7 +55,7 @@ module.exports = Backbone.View.extend({
    *
    * @return Object Object created
    * */
-  addToCollection: function(model, fragmentEl, index){
+  addToCollection(model, fragmentEl, index) {
     var fragment  = fragmentEl || null;
     var viewObject  = ItemView;
 
@@ -97,7 +97,7 @@ module.exports = Backbone.View.extend({
    * @return {Boolean}
    * @private
    */
-  isCountable: function(model, hide) {
+  isCountable(model, hide) {
     var type = model.get('type');
     var tag = model.get('tagName');
     if( ((type == 'textnode' || tag == 'br') && hide) ||
@@ -107,7 +107,7 @@ module.exports = Backbone.View.extend({
     return true;
   },
 
-  render: function() {
+  render() {
     var fragment = document.createDocumentFragment();
     this.$el.empty();
 

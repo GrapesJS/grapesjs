@@ -21,7 +21,7 @@ module.exports = Component.extend({
       */
   }),
 
-  initialize: function(o, opt) {
+  initialize(o, opt) {
     Component.prototype.initialize.apply(this, arguments);
     var components = this.get('components');
     var rows = this.get('rows');
@@ -78,7 +78,7 @@ module.exports = Component.extend({
    * @return {Object}
    * @private
    */
-  isComponent: function(el) {
+  isComponent(el) {
     var result = '';
     if(el.tagName == 'TABLE'){
       result = {type: 'table'};

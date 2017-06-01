@@ -2,7 +2,7 @@ var Backbone = require('backbone');
 
 module.exports = Backbone.View.extend({
 
-  initialize: function(opt) {
+  initialize(opt) {
     this.opt = opt || {};
     _.bindAll(this,'startSort','onMove','endMove','rollback', 'udpateOffset', 'moveDragHelper');
     var o = opt || {};
@@ -44,7 +44,7 @@ module.exports = Backbone.View.extend({
     }
   },
 
-  getContainerEl: function () {
+  getContainerEl() {
     if (!this.el) {
       var el = this.opt.container;
       this.el = typeof el === 'string' ? document.querySelector(el) : el;
@@ -56,7 +56,7 @@ module.exports = Backbone.View.extend({
   /**
    * Triggered when the offset of the editro is changed
    */
-  udpateOffset: function(){
+  udpateOffset() {
     var offset = this.em.get('canvasOffset');
     this.offTop = offset.top;
     this.offLeft = offset.left;
@@ -66,7 +66,7 @@ module.exports = Backbone.View.extend({
    * Set content to drop
    * @param {String|Object} content
    */
-  setDropContent: function(content){
+  setDropContent(content) {
     this.dropContent = content;
   },
 
@@ -74,7 +74,7 @@ module.exports = Backbone.View.extend({
    * Toggle cursor while sorting
    * @param {Boolean} active
    */
-  toggleSortCursor: function(active) {
+  toggleSortCursor(active) {
     var em = this.em;
     var body = document.body;
     var pfx = this.ppfx || this.pfx;
@@ -98,7 +98,7 @@ module.exports = Backbone.View.extend({
    * @param {HTMLElement} el
    * @param {Event} event
    */
-  setDragHelper: function(el, event) {
+  setDragHelper(el, event) {
     var ev = event || '';
     var clonedEl = el.cloneNode(1);
 
@@ -131,7 +131,7 @@ module.exports = Backbone.View.extend({
    * Update the position of the helper
    * @param  {Event} e
    */
-  moveDragHelper: function(e){
+  moveDragHelper(e) {
     if(!this.dragHelper) {
       return;
     }
@@ -157,7 +157,7 @@ module.exports = Backbone.View.extend({
    * @param {String} selector
    * @return {Boolean}
    */
-  matches: function(el, selector, useBody) {
+  matches(el, selector, useBody) {
     var startEl = el.parentNode || document.body;
     //startEl = useBody ? startEl.ownerDocument.body : startEl;
     var els = startEl.querySelectorAll(selector);
@@ -173,7 +173,7 @@ module.exports = Backbone.View.extend({
    * @param {String} selector
    * @return {Element|null}
    */
-  closest: function(el, selector){
+  closest(el, selector) {
     if(!el)
       return;
     var elem = el.parentNode;
@@ -190,7 +190,7 @@ module.exports = Backbone.View.extend({
    * @param  {HTMLElement} el
    * @return {Object}
    */
-  offset: function(el){
+  offset(el) {
     var rect = el.getBoundingClientRect();
     return {
       top: rect.top + document.body.scrollTop,
@@ -202,7 +202,7 @@ module.exports = Backbone.View.extend({
    * Create placeholder
    * @return {HTMLElement}
    */
-  createPlaceholder: function(){
+  createPlaceholder() {
     var pfx = this.pfx;
     var el = document.createElement('div');
     var ins = document.createElement('div');
@@ -218,7 +218,7 @@ module.exports = Backbone.View.extend({
    * Picking component to move
    * @param {HTMLElement} trg
    * */
-  startSort: function(trg){
+  startSort(trg) {
     this.moved = 0;
     this.eV = trg;
 
@@ -255,7 +255,7 @@ module.exports = Backbone.View.extend({
    * During move
    * @param {Event} e
    * */
-  onMove: function(e) {
+  onMove(e) {
     this.moved = 1;
 
     // Turn placeholder visibile
@@ -311,7 +311,7 @@ module.exports = Backbone.View.extend({
    * @return {Boolean}
    * @private
    * */
-  isInFlow:  function(el, parent) {
+  isInFlow(el, parent) {
       if(!el)
         return false;
 
@@ -332,7 +332,7 @@ module.exports = Backbone.View.extend({
    * @return {Boolean}
    * @private
    */
-  styleInFlow: function(el, parent) {
+  styleInFlow(el, parent) {
     var style = el.style;
     var $el = $(el);
     if (style.overflow && style.overflow !== 'visible')
@@ -368,7 +368,7 @@ module.exports = Backbone.View.extend({
    * @param {number} rY Relative Y position
    * @return {Array<Array>}
    */
-  dimsFromTarget: function(target, rX, rY){
+  dimsFromTarget(target, rX, rY) {
     var dims = [];
 
     // Select the first valuable target
@@ -423,7 +423,7 @@ module.exports = Backbone.View.extend({
    * @param {HTMLElement} el
    * @return {Array<number>}
    */
-  getDim: function(el) {
+  getDim(el) {
     var top, left, height, width;
 
     if (this.canvasRelative && this.em) {
@@ -450,7 +450,7 @@ module.exports = Backbone.View.extend({
    * @param {HTMLELement} el Element root
    * @retun {Array}
    * */
-  getChildrenDim: function(elem){
+  getChildrenDim(elem) {
     var dims = [];
     if(!elem)
       return dims;
@@ -491,7 +491,7 @@ module.exports = Backbone.View.extend({
    * @param {number} rY Relative Y position
    * @return {Boolean}
    * */
-  nearBorders: function(dim, rX, rY){
+  nearBorders(dim, rX, rY) {
     var result = 0;
     var off = this.borderOffset;
     var x = rX || 0;
@@ -514,7 +514,7 @@ module.exports = Backbone.View.extend({
    * @param {number} posY Y coordindate
    * @retun {Object}
    * */
-  findPosition: function( dims, posX, posY ){
+  findPosition(dims, posX, posY) {
     var result = {index: 0, method: 'before'};
     var leftLimit = 0, xLimit = 0, dimRight = 0, yLimit = 0, xCenter = 0, yCenter = 0, dimDown = 0, dim = 0;
     // Each dim is: Top, Left, Height, Width
@@ -566,7 +566,7 @@ module.exports = Backbone.View.extend({
    * @param {Object} pos Position object
    * @param {Array<number>} trgDim target dimensions
    * */
-  movePlaceholder: function(plh, dims, pos, trgDim){
+  movePlaceholder(plh, dims, pos, trgDim) {
     var marg = 0, t = 0, l = 0, w = 0, h = 0,
     un = 'px', margI = 5, brdCol = '#62c462', brd = 3,
     method = pos.method;
@@ -616,7 +616,7 @@ module.exports = Backbone.View.extend({
    *
    * @return void
    * */
-  endMove: function(e){
+  endMove(e) {
     var created;
     this.$el.off('mousemove', this.onMove);
     this.$document.off('mouseup', this.endMove);
@@ -647,7 +647,7 @@ module.exports = Backbone.View.extend({
    * @param {HTMLElement} src Element to move
    * @param {Object} pos Object with position coordinates
    * */
-  move: function(dst, src, pos) {
+  move(dst, src, pos) {
     var em = this.em;
     if (em) em.trigger('component:dragEnd:before', dst, src, pos);
     var warns = [];
@@ -753,7 +753,7 @@ module.exports = Backbone.View.extend({
    * @param {Event}
    * @param {Bool} Indicates if rollback in anycase
    * */
-  rollback: function(e) {
+  rollback(e) {
     $(document).off('keydown', this.rollback);
     this.$document.off('keydown', this.rollback);
     var key = e.which || e.keyCode;

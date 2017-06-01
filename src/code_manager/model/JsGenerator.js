@@ -2,7 +2,7 @@ var Backbone = require('backbone');
 
 module.exports = Backbone.Model.extend({
 
-  mapModel: function (model) {
+  mapModel(model) {
     var code = '';
     var script  = model.get('script');
     var type  = model.get('type');
@@ -39,7 +39,7 @@ module.exports = Backbone.Model.extend({
     return code;
   },
 
-  build: function(model) {
+  build(model) {
     this.mapJs = {};
     this.mapModel(model);
 

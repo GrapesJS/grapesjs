@@ -6,7 +6,7 @@ module.exports = Backbone.View.extend({
     mousedown: 'onDrag'
   },
 
-  initialize: function(o, config) {
+  initialize(o, config) {
     _.bindAll(this, 'onDrop');
     this.config = config || {};
     this.ppfx = this.config.pStylePrefix || '';
@@ -18,7 +18,7 @@ module.exports = Backbone.View.extend({
    * Start block dragging
    * @private
    */
-  onDrag: function(e) {
+  onDrag(e) {
     if(!this.config.getSorter)
       return;
     this.config.em.refreshCanvas();
@@ -33,12 +33,12 @@ module.exports = Backbone.View.extend({
    * Drop block
    * @private
    */
-  onDrop: function() {
+  onDrop() {
     this.doc.off('mouseup', this.onDrop);
     this.config.getSorter().endMove();
   },
 
-  render: function() {
+  render() {
     var className = this.ppfx + 'block';
     this.$el.addClass(className);
     this.el.innerHTML = '<div class="' + className + '-label">' + this.model.get('label') + '</div>';

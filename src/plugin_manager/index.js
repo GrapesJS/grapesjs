@@ -27,7 +27,7 @@ module.exports = config => {
      *   })
      * });
      */
-    add: function(id, plugin){
+    add(id, plugin) {
       if(plugins[id])
         return this;
       plugins[id] = plugin;
@@ -42,7 +42,7 @@ module.exports = config => {
      * var plugin = PluginManager.get('some-plugin');
      * plugin(editor);
      */
-    get: function(id){
+    get(id) {
       return plugins[id];
     },
 
@@ -50,7 +50,7 @@ module.exports = config => {
      * Returns object with all plugins
      * @return {Object}
      */
-    getAll: function(){
+    getAll() {
       return plugins;
     }
 

@@ -5,18 +5,18 @@ module.exports = Backbone.Collection.extend({
 
   model: Layer,
 
-  initialize: function(){
+  initialize() {
     this.idx = 1;
     this.on('add', this.onAdd);
     this.on('reset', this.onReset);
   },
 
-  onAdd: function(model, c, opts){
+  onAdd(model, c, opts) {
     if(!opts.noIncrement)
       model.set('index', this.idx++);
   },
 
-  onReset: function(){
+  onReset() {
     this.idx = 1;
   },
 

@@ -12,14 +12,14 @@ module.exports = Component.extend({
     traits: ['alt']
   }),
 
-  initialize: function(o, opt) {
+  initialize(o, opt) {
     Component.prototype.initialize.apply(this, arguments);
     var attr = this.get('attributes');
     if(attr.src)
       this.set('src', attr.src);
   },
 
-  initToolbar: function(...args) {
+  initToolbar(...args) {
     Component.prototype.initToolbar.apply(this, args);
 
     if (this.sm && this.sm.get) {
@@ -43,7 +43,7 @@ module.exports = Component.extend({
    * @return {Object}
    * @private
    */
-  getAttrToHTML: function(...args) {
+  getAttrToHTML(...args) {
     var attr = Component.prototype.getAttrToHTML.apply(this, args);
     delete attr.onmousedown;
     var src = this.get('src');
@@ -58,7 +58,7 @@ module.exports = Component.extend({
    * @return {object}
    * @private
    */
-  parseUri: function(uri) {
+  parseUri(uri) {
     var el = document.createElement('a');
     el.href = uri;
     var query = {};
@@ -90,7 +90,7 @@ module.exports = Component.extend({
    * @return {Object}
    * @private
    */
-  isComponent: function(el) {
+  isComponent(el) {
     var result = '';
     if(el.tagName == 'IMG'){
       result = {type: 'image'};

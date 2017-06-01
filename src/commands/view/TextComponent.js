@@ -8,7 +8,7 @@ module.exports = _.extend({}, CreateComponent, {
    * @param   {Object}   component  Object component before creation
    * @private
    * */
-  beforeDraw: function(component){
+  beforeDraw(component) {
     component.type = 'text';
     if(!component.style)
       component.style  = {};
@@ -20,7 +20,7 @@ module.exports = _.extend({}, CreateComponent, {
    * @param   {Object}  model  Component model created
    * @private
    * */
-  afterDraw: function(model){
+  afterDraw(model) {
     if(!model || !model.set)
       return;
     model.trigger('focus');

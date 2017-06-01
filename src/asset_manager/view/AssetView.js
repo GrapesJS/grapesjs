@@ -1,7 +1,7 @@
 var Backbone = require('backbone');
 
 module.exports = Backbone.View.extend({
-  initialize: function(o) {
+  initialize(o) {
     this.options = o;
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';

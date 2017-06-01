@@ -91,7 +91,7 @@ module.exports = Backbone.Model.extend({
     mirror: '',
   },
 
-  initialize: function(o, opt) {
+  initialize(o, opt) {
     // Check void elements
     if(opt && opt.config && opt.config.voidElements.indexOf(this.get('tagName')) >= 0)
       this.set('void', true);
@@ -130,19 +130,19 @@ module.exports = Backbone.Model.extend({
   /**
    * Initialize callback
    */
-  init: function () {},
+  init() {},
 
   /**
    * Script updated
    */
-  scriptUpdated: function() {
+  scriptUpdated() {
     this.set('scriptUpdated', 1);
   },
 
   /**
    * Init toolbar
    */
-   initToolbar: function () {
+   initToolbar() {
     var model = this;
     if(!model.get('toolbar')) {
       var tb = [];
@@ -173,7 +173,7 @@ module.exports = Backbone.Model.extend({
    * @param  {Array} traits
    * @private
    */
-  loadTraits: function(traits) {
+  loadTraits(traits) {
     var trt = new Traits();
     trt.setTarget(this);
     trt.add(traits);
@@ -186,7 +186,7 @@ module.exports = Backbone.Model.extend({
    * @return {Array}
    * @private
    */
-  normalizeClasses: function(arr) {
+  normalizeClasses(arr) {
      var res = [];
 
      if(!this.sm.get)
@@ -214,7 +214,7 @@ module.exports = Backbone.Model.extend({
    * Override original clone method
    * @private
    */
-  clone: function(reset) {
+  clone(reset) {
     var attr = _.clone(this.attributes),
     comp = this.get('components'),
     traits = this.get('traits'),
@@ -248,7 +248,7 @@ module.exports = Backbone.Model.extend({
    * @return {string}
    * @private
    * */
-  getName: function() {
+  getName() {
     if(!this.name){
       var id = this.cid.replace(/\D/g,''),
       type = this.get('type');
@@ -266,7 +266,7 @@ module.exports = Backbone.Model.extend({
    * @return {string} HTML string
    * @private
    */
-  toHTML: function(opts) {
+  toHTML(opts) {
     var code = '';
     var m = this;
     var tag = m.get('tagName'),
@@ -309,7 +309,7 @@ module.exports = Backbone.Model.extend({
    * @return {Object}
    * @private
    */
-  getAttrToHTML: function() {
+  getAttrToHTML() {
     var attr = this.get('attributes') || {};
     delete attr.style;
     return attr;
@@ -321,7 +321,7 @@ module.exports = Backbone.Model.extend({
    * @return {Object}
    * @private
    */
-  toJSON: function(...args) {
+  toJSON(...args) {
     var obj = Backbone.Model.prototype.toJSON.apply(this, args);
     var scriptStr = this.getScriptString();
 
@@ -339,7 +339,7 @@ module.exports = Backbone.Model.extend({
    * @return {string}
    * @private
    */
-  getScriptString: function (script) {
+  getScriptString(script) {
     var scr = script || this.get('script');
 
     // Need to cast script functions to string
@@ -363,7 +363,7 @@ module.exports = Backbone.Model.extend({
    * @return {Object}
    * @private
    */
-  isComponent: function(el) {
+  isComponent(el) {
     return {tagName: el.tagName ? el.tagName.toLowerCase() : ''};
   },
 

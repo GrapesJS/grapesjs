@@ -8,7 +8,7 @@ module.exports = Backbone.View.extend({
 
   template: _.template(`<span class='<%= holderClass %>'></span>`),
 
-  initialize: function(opts) {
+  initialize(opts) {
     var opt = opts || {};
     var ppfx = opt.ppfx || '';
     this.target = opt.target || {};
@@ -21,7 +21,7 @@ module.exports = Backbone.View.extend({
   /**
    * Handled when the view is changed
    */
-  handleChange: function (e) {
+  handleChange(e) {
     e.stopPropagation();
     this.setValue(this.getInputEl().value);
   },
@@ -31,7 +31,7 @@ module.exports = Backbone.View.extend({
    * @param {string} value
    * @param {Object} opts
    */
-  setValue: function(value, opts) {
+  setValue(value, opts) {
     var opt = opts || {};
     var model = this.model;
     model.set({
@@ -48,7 +48,7 @@ module.exports = Backbone.View.extend({
   /**
    * Updates the view when the model is changed
    * */
-  handleModelChange: function() {
+  handleModelChange() {
     this.getInputEl().value = this.model.get('value');
   },
 
@@ -56,7 +56,7 @@ module.exports = Backbone.View.extend({
    * Get the input element
    * @return {HTMLElement}
    */
-  getInputEl: function() {
+  getInputEl() {
     if(!this.inputEl) {
       this.inputEl = $('<input>', {
         type: 'text',
@@ -67,7 +67,7 @@ module.exports = Backbone.View.extend({
     return this.inputEl.get(0);
   },
 
-  render: function() {
+  render() {
     var el = this.$el;
     el.addClass(this.inputClass);
     el.html(this.template({

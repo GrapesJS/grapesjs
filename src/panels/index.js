@@ -66,7 +66,7 @@ module.exports = () => {
      * Initialize module. Automatically called with a new instance of the editor
      * @param {Object} config Configurations
      */
-    init: function(config) {
+    init(config) {
       c = config || {};
       for (var name in defaults) {
         if (!(name in c))
@@ -89,7 +89,7 @@ module.exports = () => {
      * Returns the collection of panels
      * @return {Collection} Collection of panel
      */
-    getPanels: function(){
+    getPanels() {
       return panels;
     },
 
@@ -97,7 +97,7 @@ module.exports = () => {
      * Returns panels element
      * @return {HTMLElement}
      */
-    getPanelsEl: function(){
+    getPanelsEl() {
       return PanelsViewObj.el;
     },
 
@@ -112,7 +112,7 @@ module.exports = () => {
      *  buttons  : [...],
      * });
      */
-    addPanel: function(panel){
+    addPanel(panel) {
       return panels.add(panel);
     },
 
@@ -123,7 +123,7 @@ module.exports = () => {
      * @example
      * var myPanel = panelManager.getPanel('myNewPanel');
      */
-    getPanel: function(id){
+    getPanel(id) {
       var res  = panels.where({id: id});
       return res.length ? res[0] : null;
     },
@@ -158,7 +158,7 @@ module.exports = () => {
      *   ...
      * }
      */
-    addButton: function(panelId, button){
+    addButton(panelId, button) {
       var pn  = this.getPanel(panelId);
       return pn ? pn.get('buttons').add(button) : null;
     },
@@ -171,7 +171,7 @@ module.exports = () => {
      * @example
      * var button = panelManager.getButton('myPanel','myButton');
      */
-    getButton: function(panelId, id){
+    getButton(panelId, id) {
       var pn  = this.getPanel(panelId);
       if(pn){
         var res  = pn.get('buttons').where({id: id});
@@ -184,7 +184,7 @@ module.exports = () => {
      * Render panels and buttons
      * @return {HTMLElement}
      */
-    render: function(){
+    render() {
       return PanelsViewObj.render().el;
     },
 
@@ -192,7 +192,7 @@ module.exports = () => {
      * Active activable buttons
      * @private
      */
-    active: function() {
+    active() {
       this.getPanels().each(p => {
           p.get('buttons').each(btn => {
             if(btn.get('active'))

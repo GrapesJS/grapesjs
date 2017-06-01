@@ -11,7 +11,7 @@ module.exports = Backbone.Model.extend({
     active: true,
   },
 
-  initialize: function() {
+  initialize() {
     this.set('name', this.escapeName(this.get('name')));
     var label = this.get('label').trim();
     if(!label)
@@ -24,7 +24,7 @@ module.exports = Backbone.Model.extend({
    * @return {string}
    * @private
    */
-  escapeName: function(name) {
+  escapeName(name) {
     return name.replace(/([^a-z0-9\w]+)/gi, '-');
   },
 

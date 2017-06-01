@@ -10,7 +10,7 @@ module.exports = Backbone.Model.extend({
     buttons: [],
   },
 
-  initialize: function(options) {
+  initialize(options) {
     this.btn = this.get('buttons') || [];
     this.buttons = new Buttons(this.btn);
     this.set('buttons', this.buttons);

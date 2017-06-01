@@ -4,7 +4,7 @@ module.exports = Backbone.View.extend({
 
   tagName: 'span',
 
-  initialize: function(o) {
+  initialize(o) {
     _.bindAll(this, 'startTimer', 'stopTimer', 'showButtons', 'hideButtons','closeOnKeyPress','onDrop', 'initSorter', 'stopDrag');
     var cls = this.model.get('className');
     this.config = o.config || {};
@@ -40,7 +40,7 @@ module.exports = Backbone.View.extend({
     this.delegateEvents();
   },
 
-  initSorter: function(){
+  initSorter() {
     if(this.em.Canvas){
       var canvas = this.em.Canvas;
       this.canvasEl = canvas.getBody();
@@ -67,7 +67,7 @@ module.exports = Backbone.View.extend({
    * Init dragging element
    * @private
    */
-  initDrag: function(){
+  initDrag() {
     this.model.collection.deactivateAll(this.model.get('context'));
     this.sorter.startSort(this.el);
     this.sorter.setDropContent(this.model.get('options').content);
@@ -79,7 +79,7 @@ module.exports = Backbone.View.extend({
    * Stop dragging
    * @private
    */
-  stopDrag: function(){
+  stopDrag() {
     $(document).off('mouseup', this.stopDrag);
     this.sorter.endMove();
   },
@@ -88,13 +88,13 @@ module.exports = Backbone.View.extend({
    * During drag method
    * @private
    */
-  onDrag: function(e){},
+  onDrag(e) {},
 
   /**
    * During drag method
    * @private
    */
-  onDrop: function(e){
+  onDrop(e) {
     this.canvasEl.style.cursor = 'default';
   },
 
@@ -103,8 +103,7 @@ module.exports = Backbone.View.extend({
    *
    * @return   void
    * */
-  updateClassName: function()
-  {
+  updateClassName() {
     var cls = this.model.get('className');
     this.$el.attr('class', this.pfx + 'btn' + (cls ? ' ' + cls : ''));
   },
@@ -114,8 +113,7 @@ module.exports = Backbone.View.extend({
    *
    * @return   void
    * */
-  updateAttributes: function()
-  {
+  updateAttributes() {
     this.$el.attr(this.model.get("attributes"));
   },
 
@@ -124,8 +122,7 @@ module.exports = Backbone.View.extend({
    *
    * @return  void
    * */
-  updateBtnsVis: function()
-  {
+  updateBtnsVis() {
     if(!this.$buttons)
       return;
 
@@ -140,8 +137,7 @@ module.exports = Backbone.View.extend({
    *
    * @return  void
    * */
-  startTimer: function()
-  {
+  startTimer() {
     this.timeout = setTimeout(this.showButtons, this.config.delayBtnsShow);
     $(document).on('mouseup', this.stopTimer);
   },
@@ -151,8 +147,7 @@ module.exports = Backbone.View.extend({
    *
    * @return  void
    * */
-  stopTimer: function()
-  {
+  stopTimer() {
     $(document).off('mouseup',   this.stopTimer);
     if(this.timeout)
       clearTimeout(this.timeout);
@@ -163,8 +158,7 @@ module.exports = Backbone.View.extend({
    *
    * @return   void
    * */
-  showButtons: function()
-  {
+  showButtons() {
     clearTimeout(this.timeout);
     this.model.set('bntsVis', true);
     $(document).on('mousedown',  this.hideButtons);
@@ -176,8 +170,7 @@ module.exports = Backbone.View.extend({
    *
    * @return   void
    * */
-  hideButtons: function(e)
-  {
+  hideButtons(e) {
     if(e){ $(e.target).trigger('click'); }
     this.model.set('bntsVis', false);
     $(document).off('mousedown',  this.hideButtons);
@@ -190,8 +183,7 @@ module.exports = Backbone.View.extend({
    *
    * @return   void
    * */
-  closeOnKeyPress: function(e)
-  {
+  closeOnKeyPress(e) {
     var key = e.which || e.keyCode;
     if(key == 27)
       this.hideButtons();
@@ -202,7 +194,7 @@ module.exports = Backbone.View.extend({
    *
    * @return   void
    * */
-  updateActive: function(){
+  updateActive() {
     var command  = null;
     var editor = this.em && this.em.get ? this.em.get('Editor') : null;
     var commandName = this.model.get('command');
@@ -247,7 +239,7 @@ module.exports = Backbone.View.extend({
    *
    * @return   void
    * */
-  checkActive: function(){
+  checkActive() {
     if(this.model.get('active'))
       this.$el.addClass(this.activeCls);
     else
@@ -260,8 +252,7 @@ module.exports = Backbone.View.extend({
    *
    * @return   void
    * */
-  clicked: function(e)
-  {
+  clicked(e) {
     if(this.model.get('bntsVis') )
       return;
 
@@ -287,8 +278,7 @@ module.exports = Backbone.View.extend({
    *
    * @return  void
    * */
-  swapParent: function()
-  {
+  swapParent() {
     this.parentM.collection.deactivateAll(this.model.get('context'));
     this.parentM.set('attributes',   this.model.get('attributes'));
     this.parentM.set('options',   this.model.get('options'));
@@ -297,8 +287,7 @@ module.exports = Backbone.View.extend({
     this.parentM.set('active', true, { silent: true }).trigger('checkActive');
   },
 
-  render: function()
-  {
+  render() {
     this.updateAttributes();
     this.$el.attr('class', this.className);
 

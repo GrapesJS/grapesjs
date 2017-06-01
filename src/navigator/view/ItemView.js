@@ -24,7 +24,7 @@ module.exports = Backbone.View.extend({
 
   <div class="<%= prefix %>children"></div>`),
 
-  initialize: function(o) {
+  initialize(o) {
     this.opt = o;
     this.config = o.config;
     this.em = o.config.em;
@@ -62,7 +62,7 @@ module.exports = Backbone.View.extend({
   /**
    * Handle the edit of the component name
    */
-  handleEdit: function(e) {
+  handleEdit(e) {
     e.stopPropagation();
     var inputName = this.getInputName();
     inputName.readOnly = false;
@@ -72,7 +72,7 @@ module.exports = Backbone.View.extend({
   /**
    * Handle with the end of editing of the component name
    */
-  handleEditEnd: function (e) {
+  handleEditEnd(e) {
     e.stopPropagation();
     var inputName = this.getInputName();
     inputName.readOnly = true;
@@ -83,7 +83,7 @@ module.exports = Backbone.View.extend({
    * Get the input containing the name of the component
    * @return {HTMLElement}
    */
-  getInputName: function () {
+  getInputName() {
     if(!this.inputName) {
       this.inputName = this.el.querySelector('.' + this.inputNameCls);
     }
@@ -95,7 +95,7 @@ module.exports = Backbone.View.extend({
    *
    * @return void
    * */
-  updateOpening: function (){
+  updateOpening() {
     var opened = this.opt.opened || {};
     var model = this.model;
     if(model.get('open')){
@@ -115,7 +115,7 @@ module.exports = Backbone.View.extend({
    *
    * @return void
    * */
-  toggleOpening: function(e){
+  toggleOpening(e) {
     e.stopPropagation();
 
     if(!this.model.components.length)
@@ -128,7 +128,7 @@ module.exports = Backbone.View.extend({
    * Handle component selection
    * @return {[type]} [description]
    */
-  handleSelect: function (e) {
+  handleSelect(e) {
     e.stopPropagation();
     var em = this.em;
 
@@ -146,7 +146,7 @@ module.exports = Backbone.View.extend({
    * Delegate to sorter
    * @param	Event
    * */
-  startSort: function(e){
+  startSort(e) {
     if (this.sorter) {
       this.sorter.startSort(e.target);
     }
@@ -156,7 +156,7 @@ module.exports = Backbone.View.extend({
    * Freeze item
    * @return	void
    * */
-  freeze: function(){
+  freeze() {
     this.$el.addClass(this.pfx + 'opac50');
     this.model.set('open',0);
   },
@@ -165,7 +165,7 @@ module.exports = Backbone.View.extend({
    * Unfreeze item
    * @return	void
    * */
-  unfreeze: function(){
+  unfreeze() {
     this.$el.removeClass(this.pfx + 'opac50');
   },
 
@@ -173,7 +173,7 @@ module.exports = Backbone.View.extend({
    * Update item on status change
    * @param	Event
    * */
-  updateStatus: function(e) {
+  updateStatus(e) {
     var status = this.model.get('status');
     var cls = this.pfx + 'selected';
     var el = this.$el;
@@ -194,7 +194,7 @@ module.exports = Backbone.View.extend({
    *
    * @return 	void
    * */
-  toggleVisibility: function(e){
+  toggleVisibility(e) {
     if(!this.$eye)
       this.$eye = this.$el.find('> #'+this.pfx+'btn-eye');
 
@@ -217,7 +217,7 @@ module.exports = Backbone.View.extend({
    *
    * @return bool
    * */
-  isVisible: function(){
+  isVisible() {
     var css = this.model.get('style'),
       pr = css.display;
     if(pr && pr == 'none' )
@@ -230,7 +230,7 @@ module.exports = Backbone.View.extend({
    *
    * @return void
    * */
-  checkChildren: function(){
+  checkChildren() {
     var c = this.countChildren(this.model),
     pfx = this.pfx,
     tC = '> .' + pfx + 'title-c > .' + pfx + 'title';
@@ -252,7 +252,7 @@ module.exports = Backbone.View.extend({
    * @return {number}
    * @private
    */
-  countChildren: function(model){
+  countChildren(model) {
     var count = 0;
     model.components.each(function(m){
       var isCountable = this.opt.isCountable;
@@ -264,7 +264,7 @@ module.exports = Backbone.View.extend({
     return count;
   },
 
-  render: function(){
+  render() {
     var pfx = this.pfx;
     var vis = this.isVisible();
     var count = this.countChildren(this.model);

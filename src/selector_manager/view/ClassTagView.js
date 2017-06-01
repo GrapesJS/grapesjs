@@ -10,7 +10,7 @@ module.exports = Backbone.View.extend({
 
   events: {},
 
-  initialize: function(o) {
+  initialize(o) {
     this.config = o.config || {};
     this.coll = o.coll || null;
     this.pfx = this.config.stylePrefix || '';
@@ -35,7 +35,7 @@ module.exports = Backbone.View.extend({
    * Start editing tag
    * @private
    */
-  startEditTag: function(){
+  startEditTag() {
     this.$labelInput.prop(this.inputProp, false);
   },
 
@@ -44,7 +44,7 @@ module.exports = Backbone.View.extend({
    * old one will be restored otherwise will be changed
    * @private
    */
-  endEditTag: function(){
+  endEditTag() {
     var value = this.$labelInput.val();
     var next = this.model.escapeName(value);
 
@@ -65,7 +65,7 @@ module.exports = Backbone.View.extend({
    * Update status of the tag
    * @private
    */
-  changeStatus: function(){
+  changeStatus() {
     this.model.set('active', !this.model.get('active'));
     this.target.trigger('targetClassUpdated');
   },
@@ -75,7 +75,7 @@ module.exports = Backbone.View.extend({
    * @param {Object} e
    * @private
    */
-  removeTag: function(e){
+  removeTag(e) {
     var comp = this.target.get('selectedComponent');
 
     if(comp)
@@ -93,7 +93,7 @@ module.exports = Backbone.View.extend({
    * Update status of the checkbox
    * @private
    */
-  updateStatus: function(){
+  updateStatus() {
     if(!this.$chk)
       this.$chk = this.$el.find('#' + this.pfx + 'checkbox');
 
@@ -110,7 +110,7 @@ module.exports = Backbone.View.extend({
    * Update label's input
    * @private
    */
-  updateInputLabel: function(){
+  updateInputLabel() {
     if(!this.$labelInput)
       this.$labelInput = this.$el.find('input');
     var size = this.$labelInput.val().length - 1;
@@ -119,7 +119,7 @@ module.exports = Backbone.View.extend({
   },
 
 
-  render : function(){
+  render() {
     this.$el.html( this.template({
       label: this.model.get('label'),
       pfx: this.pfx,

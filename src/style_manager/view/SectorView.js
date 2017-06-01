@@ -11,7 +11,7 @@ module.exports = Backbone.View.extend({
 
   events:{},
 
-  initialize: function(o) {
+  initialize(o) {
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
     this.target = o.target || {};
@@ -28,7 +28,7 @@ module.exports = Backbone.View.extend({
   /**
    * If all properties are hidden this will hide the sector
    */
-  updateVisibility: function () {
+  updateVisibility() {
     var show;
     this.model.get('properties').each(prop => {
       if (prop.get('visible')) {
@@ -41,8 +41,7 @@ module.exports = Backbone.View.extend({
   /**
    * Update visibility
    */
-  updateOpen: function()
-  {
+  updateOpen() {
     if(this.model.get('open'))
       this.show();
     else
@@ -52,8 +51,7 @@ module.exports = Backbone.View.extend({
   /**
    * Show the content of the sector
    * */
-  show : function()
-  {
+  show() {
     this.$el.addClass(this.pfx + "open");
     this.$el.find('.' + this.pfx + 'properties').show();
     this.$caret.removeClass(this.caretR).addClass(this.caretD);
@@ -62,8 +60,7 @@ module.exports = Backbone.View.extend({
   /**
    * Hide the content of the sector
    * */
-  hide : function()
-  {
+  hide() {
     this.$el.removeClass(this.pfx + "open");
     this.$el.find('.' + this.pfx + 'properties').hide();
     this.$caret.removeClass(this.caretD).addClass(this.caretR);
@@ -72,14 +69,12 @@ module.exports = Backbone.View.extend({
   /**
    * Toggle visibility
    * */
-  toggle: function()
-  {
+  toggle() {
     var v = this.model.get('open') ? 0 : 1;
     this.model.set('open', v);
   },
 
-  render : function()
-  {
+  render() {
     this.$el.html(this.template({
       pfx: this.pfx,
       label: this.model.get('name'),
@@ -91,8 +86,7 @@ module.exports = Backbone.View.extend({
     return this;
   },
 
-  renderProperties: function()
-  {
+  renderProperties() {
     var objs = this.model.get('properties');
 
     if(objs){

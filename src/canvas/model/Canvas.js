@@ -9,7 +9,7 @@ module.exports = Backbone.Model.extend({
     rulers: false,
   },
 
-  initialize: function(config) {
+  initialize(config) {
     var conf = this.conf || {};
     this.set('frame', new Frame(conf.frame));
   },

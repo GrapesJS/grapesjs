@@ -27,7 +27,7 @@ module.exports = Backbone.View.extend({
 
   template: _.template(assetsTemplate),
 
-  initialize: function(o) {
+  initialize(o) {
     this.options = o;
     this.config = o.config;
     this.pfx = this.config.stylePrefix || '';
@@ -47,7 +47,7 @@ module.exports = Backbone.View.extend({
    * @return {this}
    * @private
    */
-  addFromStr: function(e){
+  addFromStr(e) {
     e.preventDefault();
 
     var input = this.getInputUrl();
@@ -69,7 +69,7 @@ module.exports = Backbone.View.extend({
    * @return {HTMLElement}
    * @private
    */
-  getAssetsEl: function(){
+  getAssetsEl() {
     //if(!this.assets) // Not able to cache as after the rerender it losses the ref
     this.assets = this.el.querySelector('.' + this.pfx + 'assets');
     return this.assets;
@@ -80,7 +80,7 @@ module.exports = Backbone.View.extend({
    * @return {HTMLElement}
    * @private
    */
-  getInputUrl: function(){
+  getInputUrl() {
     if(!this.inputUrl || !this.inputUrl.value)
       this.inputUrl = this.el.querySelector('.'+this.pfx+'add-asset input');
     return this.inputUrl;
@@ -90,7 +90,7 @@ module.exports = Backbone.View.extend({
    * Add asset to collection
    * @private
    * */
-  addToAsset: function(model){
+  addToAsset(model) {
     this.addAsset(model);
   },
 
@@ -101,7 +101,7 @@ module.exports = Backbone.View.extend({
    * @return Object Object created
    * @private
    * */
-  addAsset: function(model, fragmentEl){
+  addAsset(model, fragmentEl) {
     var fragment  = fragmentEl || null;
     var viewObject  = AssetView;
 
@@ -129,11 +129,11 @@ module.exports = Backbone.View.extend({
    * Deselect all assets
    * @private
    * */
-  deselectAll: function(){
+  deselectAll() {
     this.$el.find('.' + this.pfx + 'highlight').removeClass(this.pfx + 'highlight');
   },
 
-  render: function() {
+  render() {
     var fragment = document.createDocumentFragment();
     this.$el.empty();
 

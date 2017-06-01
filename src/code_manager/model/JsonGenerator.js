@@ -3,7 +3,7 @@ var Backbone = require('backbone');
 module.exports = Backbone.Model.extend({
 
   /** @inheritdoc */
-  build: function(model) {
+  build(model) {
     var json  = model.toJSON();
     this.beforeEach(json);
 
@@ -29,7 +29,7 @@ module.exports = Backbone.Model.extend({
    * Execute on each object
    * @param {Object} obj
    */
-  beforeEach: function(obj) {
+  beforeEach(obj) {
     delete obj.status;
   }
 

@@ -3,7 +3,7 @@ var CssRuleView = require('./CssRuleView');
 
 module.exports = Backbone.View.extend({
 
-  initialize: function(o) {
+  initialize(o) {
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
     this.className = this.pfx + 'rules';
@@ -16,7 +16,7 @@ module.exports = Backbone.View.extend({
    * @param {Object} model
    * @private
    * */
-  addTo: function(model){
+  addTo(model) {
     //console.log('Added');
     this.addToCollection(model);
   },
@@ -28,7 +28,7 @@ module.exports = Backbone.View.extend({
    * @return {Object}
    * @private
    * */
-  addToCollection: function(model, fragmentEl){
+  addToCollection(model, fragmentEl) {
     var fragment  = fragmentEl || null;
     var viewObject  = CssRuleView;
 
@@ -46,7 +46,7 @@ module.exports = Backbone.View.extend({
     return rendered;
   },
 
-  render: function() {
+  render() {
     var fragment = document.createDocumentFragment();
     this.$el.empty();
 

@@ -16,8 +16,7 @@ module.exports = Backbone.Model.extend({
   },
 
   /** @inheritdoc */
-  init: function(el)
-  {
+  init(el) {
     this.editor  = CodeMirror.fromTextArea(el, {
       dragDrop: false,
       lineWrapping: true,
@@ -31,8 +30,7 @@ module.exports = Backbone.Model.extend({
   },
 
   /** @inheritdoc */
-  setContent  : function(v)
-  {
+  setContent(v) {
     if(!this.editor)
       return;
     this.editor.setValue(v);

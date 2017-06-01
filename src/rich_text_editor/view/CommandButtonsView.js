@@ -8,7 +8,7 @@ module.exports = Backbone.View.extend({
     'data-role':  'editor-toolbar',
   },
 
-  initialize: function(o){
+  initialize(o) {
     this.config = o.config || {};
     var pfx = this.config.stylePrefix || '';
     this.id = pfx + this.config.toolbarId;
@@ -21,7 +21,7 @@ module.exports = Backbone.View.extend({
    * @param {Model} model
    * @private
    * */
-  addTo: function(model) {
+  addTo(model) {
     this.add(model);
   },
 
@@ -31,7 +31,7 @@ module.exports = Backbone.View.extend({
    * @param {Object} fragment Fragment collection
    * @private
    * */
-  add: function(model, fragment) {
+  add(model, fragment) {
     var frag = fragment || null;
     var viewObj = CommandButtonView;
 
@@ -60,7 +60,7 @@ module.exports = Backbone.View.extend({
       this.$el.append(rendered);
   },
 
-  render: function() {
+  render() {
     var frag = document.createDocumentFragment();
     this.$el.empty();
 

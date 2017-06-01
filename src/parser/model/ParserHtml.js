@@ -17,7 +17,7 @@ module.exports = config => {
      * console.log(stl);
      * // {color: 'black', width: '100px', test: 'value'}
      */
-    parseStyle: function(str){
+    parseStyle(str) {
       var result = {};
       var decls = str.split(';');
       for (var i = 0, len = decls.length; i < len; i++) {
@@ -39,7 +39,7 @@ module.exports = config => {
      * console.log(res);
      * // ['test1', 'test2', 'test3']
      */
-    parseClass: function(str){
+    parseClass(str) {
       var result = [];
       var cls = str.split(' ');
       for (var i = 0, len = cls.length; i < len; i++) {
@@ -57,7 +57,7 @@ module.exports = config => {
      * @param  {HTMLElement} el DOM
      * @return {Array<Object>}
      */
-    parseNode: function(el) {
+    parseNode(el) {
       var result = [];
       var nodes = el.childNodes;
 
@@ -193,7 +193,7 @@ module.exports = config => {
      * @param  {ParserCss} parserCss In case there is style tags inside HTML
      * @return {Object}
      */
-    parse: function(str, parserCss){
+    parse(str, parserCss) {
       var config = (c.em && c.em.get('Config')) || {};
       var res = { html: '', css: ''};
       var el = document.createElement('div');

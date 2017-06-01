@@ -10,7 +10,7 @@ module.exports = Backbone.View.extend({
 
   itemType: 'type',
 
-  initialize: function(opts, config) {
+  initialize(opts, config) {
     this.config = config || {};
   },
 
@@ -20,7 +20,7 @@ module.exports = Backbone.View.extend({
    * @param {Model} model
    * @private
    * */
-  addTo: function(model){
+  addTo(model) {
     this.add(model);
   },
 
@@ -30,7 +30,7 @@ module.exports = Backbone.View.extend({
    * @param {Object} fragment Fragment collection
    * @private
    * */
-  add: function(model, fragment){
+  add(model, fragment) {
     var frag = fragment || null;
     var itemView = this.itemView;
     var typeField = model.get(this.itemType);
@@ -51,7 +51,7 @@ module.exports = Backbone.View.extend({
 
 
 
-  render: function() {
+  render() {
     var frag = document.createDocumentFragment();
     this.$el.empty();
 

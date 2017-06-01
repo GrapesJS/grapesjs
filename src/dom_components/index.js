@@ -114,7 +114,7 @@ module.exports = () => {
      * @return {Object} Config object
      * @private
      */
-    getConfig: function () {
+    getConfig() {
         return c;
     },
 
@@ -123,7 +123,7 @@ module.exports = () => {
      * @type {String}
      * @private
      */
-    storageKey: function(){
+    storageKey() {
       var keys = [];
       var smc = (c.stm && c.stm.getConfig()) || {};
       if(smc.storeHtml)
@@ -139,7 +139,7 @@ module.exports = () => {
      * @param {Object} config Configurations
      * @private
      */
-    init: function(config) {
+    init(config) {
       c = config || {};
       if(c.em)
         c.components = c.em.config.components || c.components;
@@ -186,7 +186,7 @@ module.exports = () => {
      * On load callback
      * @private
      */
-    onLoad: function(){
+    onLoad() {
       if(c.stm && c.stm.getConfig().autoload)
           this.load();
 
@@ -203,7 +203,7 @@ module.exports = () => {
      * @param {Object} data Object of data to load
      * @return {Object} Loaded data
      */
-    load: function(data){
+    load(data) {
       var d = data || '';
       if(!d && c.stm)
         d = c.em.getCacheLoad();
@@ -225,7 +225,7 @@ module.exports = () => {
      * @param {Boolean} noStore If true, won't store
      * @return {Object} Data to store
      */
-    store: function(noStore){
+    store(noStore) {
       if(!c.stm)
         return;
       var obj = {};
@@ -244,7 +244,7 @@ module.exports = () => {
      * @return {Object}
      * @private
      */
-    getComponent  : function(){
+    getComponent() {
       return component;
     },
 
@@ -258,7 +258,7 @@ module.exports = () => {
      * wrapper.set('style', {'background-color': 'red'});
      * wrapper.set('attributes', {'title': 'Hello!'});
      */
-    getWrapper: function(){
+    getWrapper() {
       return this.getComponent();
     },
 
@@ -289,7 +289,7 @@ module.exports = () => {
      * // Remove comp2
      * wrapperChildren.remove(comp2);
      */
-    getComponents: function(){
+    getComponents() {
       return this.getWrapper().get('components');
     },
 
@@ -321,7 +321,7 @@ module.exports = () => {
      *   attributes: { title: 'here' }
      * });
      */
-    addComponent: function(component){
+    addComponent(component) {
       return this.getComponents().add(component);
     },
 
@@ -332,7 +332,7 @@ module.exports = () => {
      * updated immediately
      * @return {HTMLElement}
      */
-    render: function(){
+    render() {
       return componentView.render().el;
     },
 
@@ -340,7 +340,7 @@ module.exports = () => {
      * Remove all components
      * @return {this}
      */
-    clear: function(){
+    clear() {
       var c = this.getComponents();
       for(var i = 0, len = c.length; i < len; i++)
         c.pop();
@@ -353,7 +353,7 @@ module.exports = () => {
      * @return {this}
      * @private
      */
-    setComponents: function(components){
+    setComponents(components) {
       this.clear().addComponent(components);
     },
 
@@ -363,7 +363,7 @@ module.exports = () => {
      * @param {Object} methods
      * @private
      */
-    addType: function(type, methods) {
+    addType(type, methods) {
       var compType = this.getType(type);
       if(compType) {
         compType.model = methods.model;
@@ -379,7 +379,7 @@ module.exports = () => {
      * @param {string} type
      * @private
      */
-    getType: function(type) {
+    getType(type) {
       var df = defaultTypes;
 
       for (var it = 0; it < df.length; it++) {

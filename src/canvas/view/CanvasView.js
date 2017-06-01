@@ -3,7 +3,7 @@ var FrameView = require('./FrameView');
 
 module.exports = Backbone.View.extend({
 
-  initialize: function(o) {
+  initialize(o) {
     _.bindAll(this, 'renderBody', 'onFrameScroll', 'clearOff');
     this.config = o.config || {};
     this.em = this.config.em || {};
@@ -20,7 +20,7 @@ module.exports = Backbone.View.extend({
    * Update tools position
    * @private
    */
-  onFrameScroll: function(){
+  onFrameScroll() {
     var u = 'px';
     var body = this.frame.el.contentDocument.body;
     this.toolsEl.style.top = '-' + body.scrollTop + u;
@@ -32,7 +32,7 @@ module.exports = Backbone.View.extend({
    * Insert scripts into head, it will call renderBody after all scripts loaded or failed
    * @private
    */
-  renderScripts: function () {
+  renderScripts() {
       var frame = this.frame;
       var that = this;
 
@@ -59,7 +59,7 @@ module.exports = Backbone.View.extend({
    * Render inside frame's body
    * @private
    */
-  renderBody: function() {
+  renderBody() {
     var wrap = this.model.get('frame').get('wrapper');
     var em = this.config.em;
     if(wrap) {
@@ -108,7 +108,7 @@ module.exports = Backbone.View.extend({
    * @param  {HTMLElement} el
    * @return {Object}
    */
-  offset: function(el){
+  offset(el) {
     var rect = el.getBoundingClientRect();
     var docBody = el.ownerDocument.body;
     return {
@@ -121,7 +121,7 @@ module.exports = Backbone.View.extend({
    * Cleare cached offsets
    * @private
    */
-  clearOff: function(){
+  clearOff() {
     this.frmOff = null;
     this.cvsOff = null;
   },
@@ -131,7 +131,7 @@ module.exports = Backbone.View.extend({
    * @return {Object}
    * @private
    */
-  getFrameOffset: function () {
+  getFrameOffset() {
     if(!this.frmOff)
       this.frmOff = this.offset(this.frame.el);
     return this.frmOff;
@@ -142,7 +142,7 @@ module.exports = Backbone.View.extend({
    * @return {Object}
    * @private
    */
-  getCanvasOffset: function () {
+  getCanvasOffset() {
     if(!this.cvsOff)
       this.cvsOff = this.offset(this.el);
     return this.cvsOff;
@@ -154,7 +154,7 @@ module.exports = Backbone.View.extend({
    * @return {Object}
    * @private
    */
-  getElementPos: function(el) {
+  getElementPos(el) {
     var frmOff = this.getFrameOffset();
     var cvsOff = this.getCanvasOffset();
     var eo = this.offset(el);
@@ -173,7 +173,7 @@ module.exports = Backbone.View.extend({
    * @return {Object} obj Position object
    * @private
    */
-  getPosition: function() {
+  getPosition() {
     var bEl = this.frame.el.contentDocument.body;
     var fo = this.getFrameOffset();
     var co = this.getCanvasOffset();
@@ -188,7 +188,7 @@ module.exports = Backbone.View.extend({
    * @param {View} view Component's View
    * @private
    */
-  updateScript: function(view) {
+  updateScript(view) {
     if(!view.scriptContainer) {
       view.scriptContainer = $('<div>');
       this.getJsContainer().append(view.scriptContainer.get(0));
@@ -211,7 +211,7 @@ module.exports = Backbone.View.extend({
    * Get javascript container
    * @private
    */
-  getJsContainer: function () {
+  getJsContainer() {
     if (!this.jsContainer) {
       this.jsContainer = $('<div>', {class: this.ppfx + 'js-cont'}).get(0);
     }
@@ -219,7 +219,7 @@ module.exports = Backbone.View.extend({
   },
 
 
-  render: function() {
+  render() {
     this.wrapper  = this.model.get('wrapper');
 
     if(this.wrapper && typeof this.wrapper.render == 'function'){

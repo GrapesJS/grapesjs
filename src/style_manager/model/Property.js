@@ -23,7 +23,7 @@ module.exports = Backbone.Model.extend({
     fixedValues: ['initial', 'inherit'],
   },
 
-  initialize: function(opt) {
+  initialize(opt) {
     var o = opt || {};
     var type = this.get('type');
     var name = this.get('name');
@@ -50,7 +50,7 @@ module.exports = Backbone.Model.extend({
    * @return {string} Value
    * @private
    */
-  getValue: function() {
+  getValue() {
     var result = '';
     var type = this.get('type');
 

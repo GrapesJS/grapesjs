@@ -6,7 +6,7 @@ module.exports = (() => ({
    * @param  {Array<string>|string} props Array of properties name
    * @return {Array<Object>}
    */
-  build: function(props){
+  build(props) {
     var objs = [];
 
     if(typeof props === 'string')

@@ -2,7 +2,7 @@ var StyleManager = require('style_manager');
 
 module.exports = {
 
-  run: function(em, sender) {
+  run(em, sender) {
     this.sender  = sender;
     if(!this.$cn){
       var config    = em.getConfig(),
@@ -54,7 +54,7 @@ module.exports = {
    * Toggle Style Manager visibility
    * @private
    */
-  toggleSm: function() {
+  toggleSm() {
       if(!this.sender.get('active'))
         return;
       if(this.target.get('selectedComponent')){
@@ -66,7 +66,7 @@ module.exports = {
       }
   },
 
-  stop: function() {
+  stop() {
     // Hide secondary container if exists
     if(this.$cn2)
       this.$cn2.hide();

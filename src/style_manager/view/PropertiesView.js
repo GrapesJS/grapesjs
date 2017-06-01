@@ -10,7 +10,7 @@ var PropertyStackView = require('./PropertyStackView');
 
 module.exports = Backbone.View.extend({
 
-  initialize: function(o) {
+  initialize(o) {
     this.config     = o.config || {};
     this.pfx       = this.config.stylePrefix || '';
     this.target      = o.target || {};
@@ -20,7 +20,7 @@ module.exports = Backbone.View.extend({
     this.customValue  = o.customValue || {};
   },
 
-  render: function() {
+  render() {
     var fragment = document.createDocumentFragment();
 
     this.collection.each(function(model){

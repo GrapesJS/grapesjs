@@ -9,7 +9,7 @@ module.exports = Backbone.Model.extend({
   /**
   * @private
   */
-  store: function(data, clb) {
+  store(data, clb) {
     this.checkStorageEnvironment();
 
     for(var key in data)
@@ -23,7 +23,7 @@ module.exports = Backbone.Model.extend({
   /**
    * @private
    */
-  load: function(keys){
+  load(keys) {
     this.checkStorageEnvironment();
     var result = {};
 
@@ -39,7 +39,7 @@ module.exports = Backbone.Model.extend({
   /**
    * @private
    */
-  remove: function(keys) {
+  remove(keys) {
     this.checkStorageEnvironment();
 
     for (var i = 0, len = keys.length; i < len; i++)
@@ -50,7 +50,7 @@ module.exports = Backbone.Model.extend({
    * Check storage environment
    * @private
    * */
-  checkStorageEnvironment: function() {
+  checkStorageEnvironment() {
     if(this.get('checkLocal') && !localStorage)
       console.warn("Your browser doesn't support localStorage");
   },

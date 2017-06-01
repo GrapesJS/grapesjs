@@ -12,7 +12,7 @@ module.exports = Backbone.Model.extend({
     options: [],
   },
 
-  initialize: function() {
+  initialize() {
     var opts = this.get('options');
     if(opts.length)
       this.set('type', 'select');

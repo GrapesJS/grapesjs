@@ -6,11 +6,11 @@ module.exports = Backbone.Collection.extend({
 
   model: Trait,
 
-  setTarget: function(target){
+  setTarget(target) {
     this.target = target;
   },
 
-  add: function(models, opt) {
+  add(models, opt) {
     // Use TraitFactory if necessary
     if(typeof models === 'string' || models instanceof Array) {
       if(typeof models === 'string')

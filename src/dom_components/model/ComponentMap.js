@@ -38,7 +38,7 @@ module.exports = Component.extend({
   }),
 
 
-  initialize: function(o, opt) {
+  initialize(o, opt) {
     if(this.get('src'))
       this.parseFromSrc();
     else
@@ -47,7 +47,7 @@ module.exports = Component.extend({
     this.listenTo(this, 'change:address change:zoom change:mapType', this.updateSrc);
   },
 
-  updateSrc: function() {
+  updateSrc() {
     this.set('src', this.getMapUrl());
   },
 
@@ -56,7 +56,7 @@ module.exports = Component.extend({
    * @return {string}
    * @private
    */
-  getMapUrl: function() {
+  getMapUrl() {
     var md = this;
     var addr = md.get('address');
     var zoom = md.get('zoom');
@@ -74,7 +74,7 @@ module.exports = Component.extend({
    * Set attributes by src string
    * @private
    */
-  parseFromSrc: function() {
+  parseFromSrc() {
     var uri = this.parseUri(this.get('src'));
     var qr = uri.query;
     if(qr.q)
@@ -95,7 +95,7 @@ module.exports = Component.extend({
    * @return {Object}
    * @private
    */
-  isComponent: function(el) {
+  isComponent(el) {
     var result = '';
     if(el.tagName == 'IFRAME' &&
       /maps\.google\.com/.test(el.src) ){

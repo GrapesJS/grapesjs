@@ -3,7 +3,7 @@ var ButtonsView = require('./ButtonsView');
 
 module.exports = Backbone.View.extend({
 
-  initialize: function(o) {
+  initialize(o) {
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
     this.buttons = this.model.get('buttons');
@@ -16,19 +16,19 @@ module.exports = Backbone.View.extend({
   /**
    * Append content of the panel
    * */
-  appendContent: function() {
+  appendContent() {
     this.$el.append(this.model.get('appendContent'));
   },
 
   /**
    * Update content
    * */
-  updateContent: function() {
+  updateContent() {
     this.$el.html(this.model.get('content'));
   },
 
 
-  render: function() {
+  render() {
     this.$el.attr('class', _.result(this, 'className'));
 
     if(this.id)

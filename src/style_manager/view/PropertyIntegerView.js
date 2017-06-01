@@ -4,7 +4,7 @@ var InputNumber = require('domain_abstract/ui/InputNumber');
 
 module.exports = PropertyView.extend({
 
-  initialize: function(options) {
+  initialize(options) {
     PropertyView.prototype.initialize.apply(this, arguments);
     this.listenTo( this.model ,'change:unit', this.valueChanged);
   },
@@ -13,12 +13,12 @@ module.exports = PropertyView.extend({
    * Returns value from inputs
    * @return {string}
    */
-  getValueForTarget: function() {
+  getValueForTarget() {
     var model = this.model;
     return model.get('value') + model.get('unit');
   },
 
-  renderInput: function() {
+  renderInput() {
     if (!this.input) {
       var inputNumber = new InputNumber({
         model: this.model,
@@ -32,9 +32,9 @@ module.exports = PropertyView.extend({
     this.setValue(this.componentValue);
   },
 
-  renderTemplate: function(){},
+  renderTemplate() {},
 
-  setValue: function(value) {
+  setValue(value) {
     this.input.setValue(value, {silent: 1});
   },
 

@@ -10,7 +10,7 @@ module.exports = ComponentView.extend({
     'click': 'initResize',
   },
 
-  initialize: function(o) {
+  initialize(o) {
     ComponentView.prototype.initialize.apply(this, arguments);
     this.listenTo(this.model, 'change:src', this.updateSrc);
     this.listenTo(this.model, 'dblclick active', this.openModal);
@@ -27,7 +27,7 @@ module.exports = ComponentView.extend({
    * Update src attribute
    * @private
    * */
-  updateSrc: function() {
+  updateSrc() {
     var src = this.model.get("src");
     this.$el.attr('src', src);
     if(!src)
@@ -41,14 +41,14 @@ module.exports = ComponentView.extend({
    * @param  {Object}  e  Event
    * @private
    * */
-  openModal: function(e) {
+  openModal(e) {
     var em = this.opts.config.em;
     var editor = em ? em.get('Editor') : '';
 
     if(editor) {
       editor.runCommand('open-assets', {
         target: this.model,
-        onSelect: function() {
+        onSelect() {
           editor.Modal.close();
           editor.AssetManager.setTarget(null);
         }
@@ -56,7 +56,7 @@ module.exports = ComponentView.extend({
     }
   },
 
-  render: function() {
+  render() {
     this.updateAttributes();
     this.updateClasses();
 

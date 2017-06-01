@@ -6,7 +6,7 @@ module.exports = Backbone.View.extend({
     'change': 'onChange'
   },
 
-  initialize: function(o) {
+  initialize(o) {
     var md = this.model;
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
@@ -25,11 +25,11 @@ module.exports = Backbone.View.extend({
    * Fires when the input is changed
    * @private
    */
-  onChange: function() {
+  onChange() {
     this.model.set('value', this.getInputEl().value);
   },
 
-  getValueForTarget: function () {
+  getValueForTarget() {
     return this.model.get('value');
   },
 
@@ -37,7 +37,7 @@ module.exports = Backbone.View.extend({
    * On change callback
    * @private
    */
-  onValueChange: function() {
+  onValueChange() {
     var m = this.model;
     var trg = this.target;
     var name = m.get('name');
@@ -56,7 +56,7 @@ module.exports = Backbone.View.extend({
    * Render label
    * @private
    */
-  renderLabel: function() {
+  renderLabel() {
     this.$el.html('<div class="' + this.labelClass + '">' + this.getLabel() + '</div>');
   },
 
@@ -65,7 +65,7 @@ module.exports = Backbone.View.extend({
    * @return {string}
    * @private
    */
-  getLabel: function() {
+  getLabel() {
     var model = this.model;
     var label = model.get('label') || model.get('name');
     return label.charAt(0).toUpperCase() + label.slice(1).replace(/-/g,' ');
@@ -76,7 +76,7 @@ module.exports = Backbone.View.extend({
    * @return {HTMLElement}
    * @private
    */
-  getInputEl: function() {
+  getInputEl() {
     if(!this.$input) {
       var md = this.model;
       var trg = this.target;
@@ -100,7 +100,7 @@ module.exports = Backbone.View.extend({
     return this.$input.get(0);
   },
 
-  getModelValue: function () {
+  getModelValue() {
     var value;
     var model = this.model;
     var target = this.target;
@@ -120,7 +120,7 @@ module.exports = Backbone.View.extend({
    * Renders input
    * @private
    * */
-  renderField: function(){
+  renderField() {
     if(!this.$input){
       this.$el.append(this.tmpl);
       var el = this.getInputEl();
@@ -128,7 +128,7 @@ module.exports = Backbone.View.extend({
     }
   },
 
-  render : function() {
+  render() {
     this.renderLabel();
     this.renderField();
     this.el.className = this.className;

@@ -7,7 +7,7 @@ module.exports = TraitView.extend({
    * @return {HTMLElement}
    * @private
    */
-  getInputEl: function() {
+  getInputEl() {
     if (!this.$input) {
       var value = this.getModelValue();
       var inputNumber = new InputColor({
@@ -27,7 +27,7 @@ module.exports = TraitView.extend({
    * Renders input
    * @private
    * */
-  renderField: function() {
+  renderField() {
     if(!this.$input){
       this.getInputEl();
       this.$el.append(this.input.el);

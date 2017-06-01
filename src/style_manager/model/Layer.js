@@ -10,7 +10,7 @@ module.exports = Backbone.Model.extend({
     preview: false,
   },
 
-  initialize: function(){
+  initialize() {
     var value = this.get('value');
 
     // If there is no value I'll try to get it from values

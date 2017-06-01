@@ -9,7 +9,7 @@ module.exports = PropertyView.extend({
   </div>
   <div style="clear:both"></div>`),
 
-  initialize: function(o) {
+  initialize(o) {
     PropertyView.prototype.initialize.apply(this, arguments);
     _.bindAll(this, 'build');
     this.config = o.config || {};
@@ -19,7 +19,7 @@ module.exports = PropertyView.extend({
   /**
    * Fired when the input value is updated
    */
-  valueUpdated: function(...args) {
+  valueUpdated(...args) {
     if(!this.model.get('detached'))
       PropertyView.prototype.valueUpdated.apply(this, args);
   },
@@ -27,7 +27,7 @@ module.exports = PropertyView.extend({
   /**
    * Renders input
    * */
-  renderInput: function() {
+  renderInput() {
     var model = this.model;
     var props = model.get('properties') || [];
     var self = this;
@@ -63,7 +63,7 @@ module.exports = PropertyView.extend({
    * @param {Object} opts
    * @return {Object}
    */
-  getPropsConfig: function(opts){
+  getPropsConfig(opts) {
     var that = this;
 
     var result = {
@@ -72,13 +72,13 @@ module.exports = PropertyView.extend({
       target: this.target,
       propTarget: this.propTarget,
       // On any change made to children I need to update composite value
-      onChange: function(el, view, opts){
+      onChange(el, view, opts) {
         var result = that.build();
         that.model.set('value', result, opts);
       },
       // Each child property will receive a full composite string, eg. '0px 0px 10px 0px'
       // I need to extract from that string the corresponding one to that property.
-      customValue: function(property, mIndex){
+      customValue(property, mIndex) {
         return that.valueOnIndex(mIndex, property);
       },
     };
@@ -94,7 +94,7 @@ module.exports = PropertyView.extend({
    * Get default value of the property
    * @return {string}
    * */
-  getDefaultValue: function(){
+  getDefaultValue() {
     var str = '';
     this.props.each((prop, index) => {
       str += prop.get('defaults') + prop.get('unit') + ' ';
@@ -108,7 +108,7 @@ module.exports = PropertyView.extend({
    * @param {Object} view Property view
    * @return {string}
    * */
-  valueOnIndex: function(index, view){
+  valueOnIndex(index, view) {
     var result = null;
     var a = this.getComponentValue().split(' ');
     if(a.length && a[index]){
@@ -129,7 +129,7 @@ module.exports = PropertyView.extend({
    * @param {Object} opts Options
    * @return {string}
    * */
-  build: function(selectedEl, propertyView, opts){
+  build(selectedEl, propertyView, opts) {
     var result   = '';
     this.model.get('properties').each(prop => {
       var v    = prop.getValue();

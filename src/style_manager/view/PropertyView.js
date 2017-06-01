@@ -16,7 +16,7 @@ module.exports = Backbone.View.extend({
 
   events: {'change': 'valueUpdated'},
 
-  initialize: function(o) {
+  initialize(o) {
     this.config = o.config || {};
     this.em = this.config.em;
     this.pfx = this.config.stylePrefix || '';
@@ -47,7 +47,7 @@ module.exports = Backbone.View.extend({
    * Returns selected target which should have 'style' property
    * @return {Model|null}
    */
-  getTarget: function(){
+  getTarget() {
     if(this.selectedComponent)
       return this.selectedComponent;
     return this.propTarget ? this.propTarget.model : null;
@@ -56,7 +56,7 @@ module.exports = Backbone.View.extend({
   /**
    * Fired when the input value is updated
    */
-  valueUpdated: function(){
+  valueUpdated() {
     if(this.$input)
       this.model.set('value', this.getInputValue());
   },
@@ -64,7 +64,7 @@ module.exports = Backbone.View.extend({
   /**
    * Fired when the target is updated
    * */
-  targetUpdated: function() {
+  targetUpdated() {
     this.selectedComponent = this.propTarget.model;
     this.helperComponent = this.propTarget.helper;
     this.checkVisibility();
@@ -76,7 +76,7 @@ module.exports = Backbone.View.extend({
     }
   },
 
-  checkVisibility: function () {
+  checkVisibility() {
     // Check if need to hide the property
     if (this.config.hideNotStylable) {
       if (!this.isTargetStylable() || !this.isComponentStylable()) {
@@ -97,7 +97,7 @@ module.exports = Backbone.View.extend({
    *
    * @return {Boolean}
    * */
-  sameValue: function() {
+  sameValue() {
     return this.getComponentValue() == this.getValueForTarget();
   },
 
@@ -107,7 +107,7 @@ module.exports = Backbone.View.extend({
    *
    * @return {String}
    * */
-  getComponentValue: function() {
+  getComponentValue() {
     var propModel = this.model;
     var target = this.getTarget();
 
@@ -147,7 +147,7 @@ module.exports = Backbone.View.extend({
    * @return string
    * @private
    */
-  getTargetValue: function (opts) {
+  getTargetValue(opts) {
     var result;
     var opt = opts || {};
     var model = this.model;
@@ -171,7 +171,7 @@ module.exports = Backbone.View.extend({
    * @return {String}
    * @private
    */
-  getDefaultValue: function () {
+  getDefaultValue() {
     return this.model.get('defaults');
   },
 
@@ -181,11 +181,11 @@ module.exports = Backbone.View.extend({
    *
    * @return {String}
    * */
-  fetchFromFunction: function(v) {
+  fetchFromFunction(v) {
     return v.substring(v.indexOf("(") + 1, v.lastIndexOf(")"));
   },
 
-  tryFetchFromFunction: function(value) {
+  tryFetchFromFunction(value) {
     if (!this.model.get('functionName')) {
       return value;
     }
@@ -199,7 +199,7 @@ module.exports = Backbone.View.extend({
    * Returns value from inputs
    * @return {string}
    */
-  getValueForTarget: function() {
+  getValueForTarget() {
     return this.model.get('value');
   },
 
@@ -207,7 +207,7 @@ module.exports = Backbone.View.extend({
    * Returns value from input
    * @return {string}
    */
-  getInputValue: function(){
+  getInputValue() {
     return this.$input ? this.$input.val() : '';
   },
 
@@ -217,7 +217,7 @@ module.exports = Backbone.View.extend({
    * @param    {Mixed}    val  Value
    * @param    {Object}  opt  Options
    * */
-  valueChanged: function(e, val, opt) {
+  valueChanged(e, val, opt) {
     var mVal = this.getValueForTarget();
     var em = this.config.em;
     var model = this.model;
@@ -260,7 +260,7 @@ module.exports = Backbone.View.extend({
    * @param  {string} propertyName
    * @param  {Object} opts
    */
-  updateTargetStyle: function(propertyValue, propertyName, opts){
+  updateTargetStyle(propertyValue, propertyName, opts) {
     var propName = propertyName || this.property;
     var value = propertyValue || '';
     var avSt = opts ? opts.avoidStore : 0;
@@ -283,7 +283,7 @@ module.exports = Backbone.View.extend({
    * The target could be the Component as the CSS Rule
    * @return {Boolean}
    */
-  isTargetStylable: function() {
+  isTargetStylable() {
     var stylable = this.getTarget().get('stylable');
     // Stylable could also be an array indicating with which property
     // the target could be styled
@@ -297,7 +297,7 @@ module.exports = Backbone.View.extend({
    * The target could be the Component as the CSS Rule
    * @return {Boolean}
    */
-  isComponentStylable: function() {
+  isComponentStylable() {
     var em = this.em;
     var component = em && em.get('selectedComponent');
 
@@ -320,7 +320,7 @@ module.exports = Backbone.View.extend({
    * @param   {String}  value
    * @param   {Boolean}  force
    * */
-  setValue: function(value, force){
+  setValue(value, force) {
     var f = force === 0 ? 0 : 1;
     var def = this.model.get('defaults');
     var v = this.model.get('value') || def;
@@ -332,20 +332,20 @@ module.exports = Backbone.View.extend({
     this.model.set({value: v}, {silent: true});
   },
 
-  updateVisibility: function() {
+  updateVisibility() {
     this.el.style.display = this.model.get('visible') ?
       'block' : 'none';
   },
 
-  show: function () {
+  show() {
     this.model.set('visible', 1);
   },
 
-  hide: function () {
+  hide() {
     this.model.set('visible', 0);
   },
 
-  renderLabel: function(){
+  renderLabel() {
     this.$el.html( this.templateLabel({
       pfx    : this.pfx,
       ppfx  : this.ppfx,
@@ -358,7 +358,7 @@ module.exports = Backbone.View.extend({
   /**
    * Render field property
    * */
-  renderField : function() {
+  renderField() {
     this.renderTemplate();
     this.renderInput();
     delete this.componentValue;
@@ -367,7 +367,7 @@ module.exports = Backbone.View.extend({
   /**
    * Render loaded template
    * */
-  renderTemplate: function(){
+  renderTemplate() {
     this.$el.append( this.template({
       pfx    : this.pfx,
       ppfx  : this.ppfx,
@@ -380,7 +380,7 @@ module.exports = Backbone.View.extend({
   /**
    * Renders input, to override
    * */
-  renderInput: function(){
+  renderInput() {
     if(!this.$input){
       this.$input = $('<input>', {
         placeholder: this.model.get('defaults'),
@@ -394,18 +394,18 @@ module.exports = Backbone.View.extend({
   /**
    * Request to render input of the property
    * */
-  renderInputRequest: function(){
+  renderInputRequest() {
     this.renderInput();
   },
 
   /**
    * Clean input
    * */
-  cleanValue: function(){
+  cleanValue() {
     this.setValue('');
   },
 
-  render : function(){
+  render() {
     this.renderLabel();
     this.renderField();
     this.$el.attr('class', this.className);

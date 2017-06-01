@@ -21,7 +21,7 @@ module.exports = () => {
      * @return {Object}
      * @private
      */
-    getConfig: function() {
+    getConfig() {
       return c;
     },
 
@@ -29,7 +29,7 @@ module.exports = () => {
      * Initialize module. Automatically called with a new instance of the editor
      * @param {Object} config Configurations
      */
-    init: function(config) {
+    init(config) {
       c = config || {};
       for (var name in defaults) {
         if (!(name in c))
@@ -52,7 +52,7 @@ module.exports = () => {
      * Get Traits viewer
      * @private
      */
-    getTraitsViewer: function() {
+    getTraitsViewer() {
       return TraitsViewer;
     },
 
@@ -61,7 +61,7 @@ module.exports = () => {
      * @param {string} name Type name
      * @param {Object} methods Object representing the trait
      */
-    addType: function (name, trait) {
+    addType(name, trait) {
       var itemView = TraitsViewer.itemView;
       TraitsViewer.itemsView[name] = itemView.extend(trait);
     },
@@ -71,7 +71,7 @@ module.exports = () => {
      * @param {string} name Type name
      * @return {Object}
      */
-    getType: function (name) {
+    getType(name) {
       return TraitsViewer.itemsView[name];
     },
 

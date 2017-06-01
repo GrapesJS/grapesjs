@@ -23,7 +23,7 @@ module.exports = Backbone.Model.extend({
     stylable: true,
 	},
 
-  initialize: function(c, opt) {
+  initialize(c, opt) {
       this.config   = c || {};
       this.sm = opt ? opt.sm || {} : {};
       this.slct = this.config.selectors || [];
@@ -47,7 +47,7 @@ module.exports = Backbone.Model.extend({
    * @return  {Boolean}
    * @private
    */
-  compare: function(selectors, state, width, ruleProps){
+  compare(selectors, state, width, ruleProps) {
       var otherRule = ruleProps || {};
       var st = state || '';
       var wd = width || '';

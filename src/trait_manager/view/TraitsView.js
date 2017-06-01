@@ -17,7 +17,7 @@ module.exports = DomainViews.extend({
     'color': TraitColorView,
   },
 
-  initialize: function(o) {
+  initialize(o) {
     this.config = o.config || {};
     this.em = o.editor;
     this.pfx = this.config.stylePrefix || '';
@@ -30,7 +30,7 @@ module.exports = DomainViews.extend({
    * Update view collection
    * @private
    */
-  updatedCollection: function() {
+  updatedCollection() {
     this.el.className = this.className;
     var comp = this.em.get('selectedComponent');
     if(comp){

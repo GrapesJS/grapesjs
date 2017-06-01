@@ -3,13 +3,13 @@ var SelectComponent = require('./SelectComponent');
 
 module.exports = _.extend({},SelectComponent,{
 
-  init: function(o){
+  init(o) {
     _.bindAll(this, 'startDelete', 'stopDelete', 'onDelete');
     this.hoverClass  = this.pfx + 'hover-delete';
     this.badgeClass  = this.pfx + 'badge-red';
   },
 
-  enable: function() {
+  enable() {
     var that = this;
     this.$el.find('*')
       .mouseover(this.startDelete)
@@ -22,7 +22,7 @@ module.exports = _.extend({},SelectComponent,{
    * @param {Object}  e
    * @private
    */
-  startDelete: function(e) {
+  startDelete(e) {
       e.stopPropagation();
       var $this   =  $(e.target);
 
@@ -39,7 +39,7 @@ module.exports = _.extend({},SelectComponent,{
    * @param {Object}  e
    * @private
    */
-  stopDelete: function(e) {
+  stopDelete(e) {
       e.stopPropagation();
       var $this   =  $(e.target);
       $this.removeClass(this.hoverClass);
@@ -54,7 +54,7 @@ module.exports = _.extend({},SelectComponent,{
    * @param {Object}  e
    * @private
    */
-  onDelete: function(e) {
+  onDelete(e) {
     e.stopPropagation();
     var $this = $(e.target);
 
@@ -72,7 +72,7 @@ module.exports = _.extend({},SelectComponent,{
    * @param   {Object}  model
    * @private
    * */
-  updateBadgeLabel: function (model) {
+  updateBadgeLabel(model) {
     this.badge.html( 'Remove ' + model.getName() );
   },
 

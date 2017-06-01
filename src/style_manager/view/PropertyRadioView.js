@@ -9,14 +9,14 @@ module.exports = PropertyView.extend({
   </div>
   <div style="clear:both"></div>`),
 
-  initialize: function(options) {
+  initialize(options) {
     PropertyView.prototype.initialize.apply(this, arguments);
     this.list = this.model.get('list') || [];
     this.className = this.className + ' '+ this.pfx +'list';
   },
 
   /** @inheritdoc */
-  renderInput: function() {
+  renderInput() {
     var pfx = this.pfx;
     var ppfx = this.ppfx;
     var itemCls = ppfx + 'radio-item-label';
@@ -48,12 +48,12 @@ module.exports = PropertyView.extend({
    * Returns value from input
    * @return {string}
    */
-  getInputValue: function(){
+  getInputValue() {
     return this.$input ? this.$el.find('input:checked').val() : '';
   },
 
   /** @inheritdoc */
-  setValue: function(value){
+  setValue(value) {
     var v = this.model.get('value') || this.defaultValue;
 
     if(value)

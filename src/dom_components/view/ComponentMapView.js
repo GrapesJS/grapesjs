@@ -7,7 +7,7 @@ module.exports = ComponentView.extend({
 
   events: {},
 
-  initialize: function(o){
+  initialize(o) {
     ComponentView.prototype.initialize.apply(this, arguments);
     this.classEmpty = this.ppfx + 'plh-map';
   },
@@ -16,11 +16,11 @@ module.exports = ComponentView.extend({
    * Update the map on the canvas
    * @private
    */
-  updateSrc: function() {
+  updateSrc() {
     this.getIframe().src = this.model.get('src');
   },
 
-  getIframe: function() {
+  getIframe() {
     if(!this.iframe){
       var ifrm = document.createElement("iframe");
       ifrm.src = this.model.get('src');
@@ -33,7 +33,7 @@ module.exports = ComponentView.extend({
     return this.iframe;
   },
 
-  render: function(...args) {
+  render(...args) {
     ComponentView.prototype.render.apply(this, args);
     this.updateClasses();
     this.el.appendChild(this.getIframe());

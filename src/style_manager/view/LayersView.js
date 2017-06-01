@@ -3,7 +3,7 @@ var LayerView = require('./LayerView');
 
 module.exports = Backbone.View.extend({
 
-  initialize: function(o) {
+  initialize(o) {
     this.config = o.config || {};
     this.stackModel  = o.stackModel;
     this.preview = o.preview;
@@ -34,7 +34,7 @@ module.exports = Backbone.View.extend({
    *
    * @return Object
    * */
-  addTo: function(model){
+  addTo(model) {
     var i  = this.collection.indexOf(model);
     this.addToCollection(model, null, i);
   },
@@ -47,7 +47,7 @@ module.exports = Backbone.View.extend({
    *
    * @return Object Object created
    * */
-  addToCollection: function(model, fragmentEl, index){
+  addToCollection(model, fragmentEl, index) {
     var fragment = fragmentEl || null;
     var viewObject = LayerView;
 
@@ -91,11 +91,11 @@ module.exports = Backbone.View.extend({
    *
    * @return void
    * */
-  deselectAll: function(){
+  deselectAll() {
     this.$el.find('.'+ this.pfx  +'layer').removeClass(this.pfx + 'active');
   },
 
-  render: function() {
+  render() {
     var fragment = document.createDocumentFragment();
     this.$el.empty();
 

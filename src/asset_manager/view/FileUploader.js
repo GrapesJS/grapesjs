@@ -13,7 +13,7 @@ module.exports = Backbone.View.extend({
 
   events:   {},
 
-  initialize: function(o) {
+  initialize(o) {
     this.options   = o || {};
     this.config    = o.config  || {};
     this.pfx      = this.config.stylePrefix || '';
@@ -29,7 +29,7 @@ module.exports = Backbone.View.extend({
    * @param  {Object}  e Event
    * @private
    * */
-  uploadFile : function(e){
+  uploadFile(e) {
     var files    = e.dataTransfer ? e.dataTransfer.files : e.target.files,
       formData   = new FormData();
     for (var i = 0; i < files.length; i++) {
@@ -43,12 +43,12 @@ module.exports = Backbone.View.extend({
       beforeSend  : this.config.beforeSend,
       complete  : this.config.onComplete,
       xhrFields  : {
-        onprogress: function (e) {
+        onprogress(e) {
           if (e.lengthComputable) {
             /*var result = e.loaded / e.total * 100 + '%';*/
           }
         },
-        onload: function (e) {
+        onload(e) {
             //progress.value = 100;
         }
       },
@@ -64,7 +64,7 @@ module.exports = Backbone.View.extend({
    * Make input file droppable
    * @private
    * */
-  initDrop: function(){
+  initDrop() {
     var that  = this;
     if(!this.uploadForm){
       this.uploadForm = this.$el.find('form').get(0);
@@ -88,7 +88,7 @@ module.exports = Backbone.View.extend({
     }
   },
 
-  render : function(){
+  render() {
     this.$el.html( this.template({
       title: this.config.uploadText,
       uploadId: this.uploadId,

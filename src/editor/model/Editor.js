@@ -54,7 +54,7 @@ module.exports = Backbone.Model.extend({
     device: '',
   },
 
-  initialize: function(c) {
+  initialize(c) {
     this.config = c;
     this.set('Config', c);
 
@@ -81,7 +81,7 @@ module.exports = Backbone.Model.extend({
    * Set the alert before unload in case it's requested
    * and there are unsaved changes
    */
-  updateBeforeUnload: function() {
+  updateBeforeUnload() {
     var changes = this.get('changesCount');
 
     if (this.config.noticeOnUnload && changes) {
@@ -96,7 +96,7 @@ module.exports = Backbone.Model.extend({
    * @param {String} moduleName Module name
    * @return {this}
    */
-  loadModule: function(moduleName) {
+  loadModule(moduleName) {
     var c = this.config;
     var M = new moduleName();
     var name = M.name.charAt(0).toLowerCase() + M.name.slice(1);
@@ -130,7 +130,7 @@ module.exports = Backbone.Model.extend({
    * @return {this}
    * @private
    */
-  init: function(editor){
+  init(editor) {
     this.set('Editor', editor);
   },
 
@@ -139,7 +139,7 @@ module.exports = Backbone.Model.extend({
    * @param {Object} collection
    * @private
    */
-  listenRules: function(collection) {
+  listenRules(collection) {
     this.stopListening(collection, 'add remove', this.listenRule);
     this.listenTo(collection, 'add remove', this.listenRule);
     collection.each(function(model){
@@ -152,7 +152,7 @@ module.exports = Backbone.Model.extend({
    * @param {Object} model
    * @private
    */
-  listenRule: function(model) {
+  listenRule(model) {
     this.stopListening(model, 'change:style', this.ruleUpdated);
     this.listenTo(model, 'change:style', this.ruleUpdated);
   },
@@ -164,7 +164,7 @@ module.exports = Backbone.Model.extend({
    * @param  {Object}  opt  Options
    * @private
    * */
-  ruleUpdated: function(model, val, opt) {
+  ruleUpdated(model, val, opt) {
     var count = this.get('changesCount') + 1,
         avSt  = opt ? opt.avoidStore : 0;
     this.set('changesCount', count);
@@ -181,7 +181,7 @@ module.exports = Backbone.Model.extend({
    * Initialize Undo manager
    * @private
    * */
-  initUndoManager: function() {
+  initUndoManager() {
     if(this.um)
       return;
     var cmp = this.get('DomComponents');
@@ -243,7 +243,7 @@ module.exports = Backbone.Model.extend({
    * @param  {Object}  opt  Options
    * @private
    * */
-  componentsUpdated: function(model, val, opt){
+  componentsUpdated(model, val, opt) {
     var updatedCount = this.get('changesCount') + 1,
         avSt  = opt ? opt.avoidStore : 0;
     this.set('changesCount', updatedCount);
@@ -264,7 +264,7 @@ module.exports = Backbone.Model.extend({
    * @param   {Object}   Options
    * @private
    * */
-  componentSelected: function(model, val, options){
+  componentSelected(model, val, options) {
     if(!this.get('selectedComponent'))
       this.trigger('deselect-comp');
     else
@@ -278,7 +278,7 @@ module.exports = Backbone.Model.extend({
    * @param  {Object}  opt  Options
    * @private
    * */
-  updateComponents: function(model, val, opt) {
+  updateComponents(model, val, opt) {
     var comps  = model.get('components'),
         classes  = model.get('classes'),
         avSt  = opt ? opt.avoidStore : 0;
@@ -309,7 +309,7 @@ module.exports = Backbone.Model.extend({
    * @param {Object}  model
    * @private
    */
-  initChildrenComp: function(model) {
+  initChildrenComp(model) {
       var comps  = model.get('components');
       this.updateComponents(model, null, { avoidStore : 1 });
       comps.each(function(md) {
@@ -326,7 +326,7 @@ module.exports = Backbone.Model.extend({
    * @param  {Object}  opt  Options
    * @private
    * */
-  rmComponents: function(model, val, opt){
+  rmComponents(model, val, opt) {
     var avSt  = opt ? opt.avoidStore : 0;
 
     if(!avSt)
@@ -338,7 +338,7 @@ module.exports = Backbone.Model.extend({
    * @return {Component|null}
    * @private
    */
-  getSelected: function(){
+  getSelected() {
     return this.get('selectedComponent');
   },
 
@@ -348,7 +348,7 @@ module.exports = Backbone.Model.extend({
    * @return {this}
    * @private
    */
-  setComponents: function(components){
+  setComponents(components) {
     return this.get('DomComponents').setComponents(components);
   },
 
@@ -357,7 +357,7 @@ module.exports = Backbone.Model.extend({
    * @return {Components}
    * @private
    */
-  getComponents: function(){
+  getComponents() {
     var cmp = this.get('DomComponents');
     var cm = this.get('CodeManager');
 
@@ -374,7 +374,7 @@ module.exports = Backbone.Model.extend({
    * @return {this}
    * @private
    */
-  setStyle: function(style){
+  setStyle(style) {
     var rules = this.get('CssComposer').getAll();
     for(var i = 0, len = rules.length; i < len; i++)
       rules.pop();
@@ -387,7 +387,7 @@ module.exports = Backbone.Model.extend({
    * @return {Rules}
    * @private
    */
-  getStyle: function(){
+  getStyle() {
     return this.get('CssComposer').getAll();
   },
 
@@ -396,7 +396,7 @@ module.exports = Backbone.Model.extend({
    * @return {string} HTML string
    * @private
    */
-  getHtml: function() {
+  getHtml() {
     var js = this.config.jsInHtml ? this.getJs() : '';
     var wrp  = this.get('DomComponents').getComponent();
     var html = this.get('CodeManager').getCode(wrp, 'html');
@@ -409,7 +409,7 @@ module.exports = Backbone.Model.extend({
    * @return {string} CSS string
    * @private
    */
-  getCss: function() {
+  getCss() {
     var cssc = this.get('CssComposer');
     var wrp = this.get('DomComponents').getComponent();
     var protCss = this.config.protectedCss;
@@ -422,7 +422,7 @@ module.exports = Backbone.Model.extend({
    * @return {string} JS string
    * @private
    */
-  getJs: function() {
+  getJs() {
     var wrp = this.get('DomComponents').getWrapper();
     return this.get('CodeManager').getCode(wrp, 'js').trim();
   },
@@ -433,7 +433,7 @@ module.exports = Backbone.Model.extend({
    * @return {Object} Stored data
    * @private
    */
-  store: function(clb) {
+  store(clb) {
     var sm = this.get('StorageManager');
     var store = {};
     if(!sm)
@@ -459,7 +459,7 @@ module.exports = Backbone.Model.extend({
    * @return {Object} Loaded data
    * @private
    */
-  load: function(clb) {
+  load(clb) {
     var result = this.getCacheLoad(1);
     this.get('storables').forEach(m => {
       m.load(result);
@@ -473,7 +473,7 @@ module.exports = Backbone.Model.extend({
    * @return {Object}
    * @private
    */
-  getCacheLoad: function(force) {
+  getCacheLoad(force) {
     var f = force ? 1 : 0;
     if(this.cacheLoad && !f)
       return this.cacheLoad;
@@ -501,7 +501,7 @@ module.exports = Backbone.Model.extend({
    * Returns device model by name
    * @return {Device|null}
    */
-  getDeviceModel: function(){
+  getDeviceModel() {
     var name = this.get('device');
     return this.get('DeviceManager').get(name);
   },
@@ -510,7 +510,7 @@ module.exports = Backbone.Model.extend({
    * Run default command if setted
    * @private
    */
-  runDefault: function(){
+  runDefault() {
     var command = this.get('Commands').get(this.config.defaultCommand);
     if(!command || this.defaultRunning)
       return;
@@ -523,7 +523,7 @@ module.exports = Backbone.Model.extend({
    * Stop default command
    * @private
    */
-  stopDefault: function(){
+  stopDefault() {
     var command = this.get('Commands').get(this.config.defaultCommand);
     if(!command)
       return;
@@ -535,7 +535,7 @@ module.exports = Backbone.Model.extend({
    * Update canvas dimensions and refresh data useful for tools positioning
    * @private
    */
-  refreshCanvas: function () {
+  refreshCanvas() {
     this.set('canvasOffset', this.get('Canvas').getOffset());
   },
 
@@ -545,7 +545,7 @@ module.exports = Backbone.Model.extend({
    * @param {Window} win If not passed the current one will be used
    * @private
    */
-  clearSelection: function (win) {
+  clearSelection(win) {
     var w = win || window;
     w.getSelection().removeAllRanges();
   },

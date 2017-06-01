@@ -11,7 +11,7 @@ module.exports = Component.extend({
 
 }, {
 
-  isComponent: function(el) {
+  isComponent(el) {
     if (el.tagName == 'SCRIPT') {
       var result = {type: 'script'};
 

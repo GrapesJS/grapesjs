@@ -4,12 +4,12 @@ var key = require('keymaster');
 
 module.exports = {
 
-  init: function(o){
+  init(o) {
     _.bindAll(this, 'onHover', 'onOut', 'onClick', 'onKeyPress');
   },
 
 
-  enable: function() {
+  enable() {
     _.bindAll(this, 'copyComp', 'pasteComp', 'onFrameScroll');
     this.frameOff = this.canvasOff = this.adjScroll = null;
     var config  = this.config.em.get('Config');
@@ -28,7 +28,7 @@ module.exports = {
    * @return {this}
    * @private
    */
-  toggleClipboard: function(active){
+  toggleClipboard(active) {
     var en = active || 0;
     if(en){
       key('⌘+c, ctrl+c', this.copyComp);
@@ -43,7 +43,7 @@ module.exports = {
    * Copy component to the clipboard
    * @private
    */
-  copyComp: function() {
+  copyComp() {
     var el = this.editorModel.get('selectedComponent');
     if(el && el.get('copyable'))
       this.editorModel.set('clipboard', el);
@@ -53,7 +53,7 @@ module.exports = {
    * Paste component from clipboard
    * @private
    */
-  pasteComp: function() {
+  pasteComp() {
     var clp = this.editorModel.get('clipboard'),
         sel = this.editorModel.get('selectedComponent');
     if(clp && sel && sel.collection){
@@ -66,7 +66,7 @@ module.exports = {
   /**
    * Returns canavs body el
    */
-  getCanvasBodyEl: function() {
+  getCanvasBodyEl() {
     if(!this.$bodyEl) {
       this.$bodyEl = $(this.getCanvasBody());
     }
@@ -77,7 +77,7 @@ module.exports = {
    * Start select component event
    * @private
    * */
-  startSelectComponent: function() {
+  startSelectComponent() {
    this.toggleSelectComponent(1);
   },
 
@@ -85,7 +85,7 @@ module.exports = {
    * Stop select component event
    * @private
    * */
-  stopSelectComponent: function() {
+  stopSelectComponent() {
    this.toggleSelectComponent();
   },
 
@@ -93,7 +93,7 @@ module.exports = {
    * Toggle select component event
    * @private
    * */
-  toggleSelectComponent: function(enable) {
+  toggleSelectComponent(enable) {
     var el = '*';
     var method = enable ? 'on' : 'off';
     this.getCanvasBodyEl()
@@ -110,7 +110,7 @@ module.exports = {
    * On key press event
    * @private
    * */
-  onKeyPress: function(e) {
+  onKeyPress(e) {
     var key = e.which || e.keyCode;
     var comp = this.editorModel.get('selectedComponent');
     var focused = this.frameEl.contentDocument.activeElement.tagName !== 'BODY';
@@ -137,7 +137,7 @@ module.exports = {
    * @param {Object}  e
    * @private
    */
-  onHover: function(e) {
+  onHover(e) {
     e.stopPropagation();
     var trg = e.target;
 
@@ -159,7 +159,7 @@ module.exports = {
    * @param {Object}  e
    * @private
    */
-  onOut: function(e) {
+  onOut(e) {
     e.stopPropagation();
     this.hideBadge();
     this.hideHighlighter();
@@ -171,7 +171,7 @@ module.exports = {
    * @param {HTMLElement}  el
    * @param {Object} pos
    */
-  showElementOffset: function(el, pos) {
+  showElementOffset(el, pos) {
     var $el = $(el);
     var model = $el.data('model');
     if(model && model.get('status') == 'selected'){
@@ -188,7 +188,7 @@ module.exports = {
    * @param {HTMLElement}  el
    * @param {Object} pos
    */
-  hideElementOffset: function(el, pos) {
+  hideElementOffset(el, pos) {
     this.editor.stopCommand('show-offset');
   },
 
@@ -197,7 +197,7 @@ module.exports = {
    * @param {HTMLElement}  el
    * @param {Object} pos
    */
-  showFixedElementOffset: function(el, pos) {
+  showFixedElementOffset(el, pos) {
     this.editor.runCommand('show-offset', {
       el: el,
       elPos: pos,
@@ -210,7 +210,7 @@ module.exports = {
    * @param {HTMLElement}  el
    * @param {Object} pos
    */
-  hideFixedElementOffset: function(el, pos) {
+  hideFixedElementOffset(el, pos) {
     if(this.editor)
       this.editor.stopCommand('show-offset', {state: 'Fixed'});
   },
@@ -218,7 +218,7 @@ module.exports = {
   /**
    * Hide Highlighter element
    */
-  hideHighlighter: function () {
+  hideHighlighter() {
     this.canvas.getHighlighter().style.display = 'none';
   },
 
@@ -227,7 +227,7 @@ module.exports = {
    * @param {Object}  e
    * @private
    */
-  onClick: function(e) {
+  onClick(e) {
     var m = $(e.target).data('model');
     if(!m)
       return;
@@ -243,7 +243,7 @@ module.exports = {
    * @param {Object} pos Position object
    * @private
    * */
-  updateBadge: function(el, pos) {
+  updateBadge(el, pos) {
     var $el = $(el);
     this.cacheEl = el;
     var model = $el.data("model");
@@ -269,7 +269,7 @@ module.exports = {
    * @param {Object} pos Position object
    * @private
    */
-  updateHighlighter: function(el, pos) {
+  updateHighlighter(el, pos) {
     var $el = $(el);
     var model = $el.data('model');
     if(!model || (model && model.get('status') == 'selected')) {
@@ -292,7 +292,7 @@ module.exports = {
    * @param {Object}  el
    * @private
    * */
-  onSelect: function(e, el) {
+  onSelect(e, el) {
     e.stopPropagation();
     var md   = this.editorModel.get('selectedComponent');
     this.cleanPrevious(md);
@@ -328,7 +328,7 @@ module.exports = {
    * Update toolbar if the component has one
    * @param {Object} mod
    */
-  updateToolbar: function(mod) {
+  updateToolbar(mod) {
     var em = this.config.em;
     var model = mod == em ? em.get('selectedComponent') : mod;
     if(!model){
@@ -368,7 +368,7 @@ module.exports = {
    * @param {HTMLElement} el
    * @param {Object} pos
    */
-  updateToolbarPos: function(el, elPos) {
+  updateToolbarPos(el, elPos) {
     var unit = 'px';
     var toolbarEl = this.canvas.getToolbarEl();
     var toolbarStyle = toolbarEl.style;
@@ -385,7 +385,7 @@ module.exports = {
    * Return canvas dimensions and positions
    * @return {Object}
    */
-  getCanvasPosition: function () {
+  getCanvasPosition() {
     return this.canvas.getCanvasView().getPosition();
   },
 
@@ -393,7 +393,7 @@ module.exports = {
    * Removes all highlighting effects on components
    * @private
    * */
-  clean: function() {
+  clean() {
     if(this.selEl)
       this.selEl.removeClass(this.hoverClass);
   },
@@ -403,7 +403,7 @@ module.exports = {
    * @return {HTMLElement}
    * @private
    */
-  getBadge: function(){
+  getBadge() {
     return this.canvas.getBadgeEl();
   },
 
@@ -411,7 +411,7 @@ module.exports = {
    * On frame scroll callback
    * @private
    */
-  onFrameScroll: function(e){
+  onFrameScroll(e) {
     var el = this.cacheEl;
     if (el) {
       var elPos = this.getElementPos(el);
@@ -428,7 +428,7 @@ module.exports = {
    * Update attached elements, eg. component toolbar
    * @return {[type]} [description]
    */
-  updateAttached: function() {
+  updateAttached() {
     var model = this.em.get('selectedComponent');
     if (model) {
       var view = model.view;
@@ -443,7 +443,7 @@ module.exports = {
    * @return {Object}
    * @private
    */
-  getElementPos: function(el, badge){
+  getElementPos(el, badge) {
     return this.canvas.getCanvasView().getElementPos(el);
   },
 
@@ -451,7 +451,7 @@ module.exports = {
    * Hide badge
    * @private
    * */
-  hideBadge: function () {
+  hideBadge() {
     this.getBadge().style.display = 'none';
   },
 
@@ -460,7 +460,7 @@ module.exports = {
    * @param {Component} model
    * @private
    */
-  cleanPrevious: function(model) {
+  cleanPrevious(model) {
     if(model)
       model.set({
         status: '',
@@ -472,19 +472,19 @@ module.exports = {
    * Returns content window
    * @private
    */
-  getContentWindow: function(){
+  getContentWindow() {
     if(!this.contWindow)
       this.contWindow = $(this.frameEl.contentWindow);
     return this.contWindow;
   },
 
-  run: function(em) {
+  run(em) {
     if(em && em.get)
       this.editor = em.get('Editor');
     this.enable();
   },
 
-  stop: function() {
+  stop() {
     this.stopSelectComponent();
     this.cleanPrevious(this.em.get('selectedComponent'));
     this.clean();

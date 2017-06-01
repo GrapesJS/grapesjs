@@ -19,7 +19,7 @@ function Navigator(collection, c) {
 }
 
 Navigator.prototype  = {
-    render  : function(){
+    render() {
       return this.ItemsView.render().$el;
     },
 };

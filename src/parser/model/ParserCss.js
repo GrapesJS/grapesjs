@@ -14,7 +14,7 @@ module.exports = config => ({
    * //add: ['.test2 .test3']
    * //}
    */
-  parseSelector: function(str) {
+  parseSelector(str) {
     var add = [];
     var result = [];
     var sels = str.split(',');
@@ -40,7 +40,7 @@ module.exports = config => ({
    * @param  {StyleSheet|CSSMediaRule} el
    * @return {Array<Object>}
    */
-  parseNode: function(el) {
+  parseNode(el) {
     var result = [];
     var nodes = el.cssRules;
 
@@ -124,7 +124,7 @@ module.exports = config => ({
    * @param  {string} str HTML string
    * @return {Object|Array<Object>}
    */
-  parse: function(str) {
+  parse(str) {
     var el = document.createElement('style');
     /*
     el.innerHTML = ".cssClass {border: 2px solid black; background-color: blue;} " +

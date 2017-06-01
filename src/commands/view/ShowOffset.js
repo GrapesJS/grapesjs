@@ -1,11 +1,11 @@
 module.exports = {
 
-  getOffsetMethod: function(state) {
+  getOffsetMethod(state) {
     var method = state || '';
     return 'get' + method + 'OffsetViewerEl';
   },
 
-  run: function(editor, sender, opts) {
+  run(editor, sender, opts) {
     var opt = opts || {};
     var state = opt.state || '';
     var config = editor.getConfig();
@@ -135,7 +135,7 @@ module.exports = {
     prStyle.left = pos.left + pos.width - padRight + unit;
   },
 
-  stop: function(editor, sender, opts) {
+  stop(editor, sender, opts) {
     var opt = opts || {};
     var state = opt.state || '';
     var method = this.getOffsetMethod(state);

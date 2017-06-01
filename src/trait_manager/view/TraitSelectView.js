@@ -3,7 +3,7 @@ var TraitView = require('./TraitView');
 
 module.exports = TraitView.extend({
 
-  initialize: function(o) {
+  initialize(o) {
     TraitView.prototype.initialize.apply(this, arguments);
     var ppfx = this.ppfx;
     this.tmpl = '<div class="' + this.fieldClass +'"><div class="' + this.inputhClass +'"></div>'+
@@ -15,7 +15,7 @@ module.exports = TraitView.extend({
    * @return {HTMLElement}
    * @private
    */
-  getInputEl: function() {
+  getInputEl() {
     if(!this.$input) {
       var md = this.model;
       var opts = md.get('options') || [];

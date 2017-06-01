@@ -17,7 +17,7 @@ module.exports = Backbone.View.extend({
 
   events: {},
 
-  initialize: function(o) {
+  initialize(o) {
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
     this.listenTo(this.model, 'change:open', this.updateOpen);
@@ -36,7 +36,7 @@ module.exports = Backbone.View.extend({
    * @return {HTMLElement}
    * @private
    */
-  getCollector: function(){
+  getCollector() {
     if(!this.$collector)
       this.$collector = this.$el.find('.'+this.pfx+'collector');
     return this.$collector;
@@ -47,7 +47,7 @@ module.exports = Backbone.View.extend({
    * @return {HTMLElement}
    * @private
    */
-  getContent: function() {
+  getContent() {
     if(!this.$content)
       this.$content  = this.$el.find('.'+this.pfx+'content #'+this.pfx+'c');
     return this.$content;
@@ -58,7 +58,7 @@ module.exports = Backbone.View.extend({
    * @return {HTMLElement}
    * @private
    */
-  getTitle: function() {
+  getTitle() {
     if(!this.$title)
       this.$title  = this.$el.find('.'+this.pfx+'title');
     return this.$title.get(0);
@@ -68,7 +68,7 @@ module.exports = Backbone.View.extend({
    * Update content
    * @private
    * */
-  updateContent: function() {
+  updateContent() {
     var content = this.getContent();
     this.getCollector().append(content.children());
     content.html(this.model.get('content'));
@@ -78,7 +78,7 @@ module.exports = Backbone.View.extend({
    * Update title
    * @private
    * */
-  updateTitle: function(){
+  updateTitle() {
     var title = this.getTitle();
     if(title)
       title.innerHTML = this.model.get('title');
@@ -88,7 +88,7 @@ module.exports = Backbone.View.extend({
    * Update open
    * @private
    * */
-  updateOpen: function(){
+  updateOpen() {
     if(this.model.get('open'))
       this.$el.show();
     else
@@ -99,7 +99,7 @@ module.exports = Backbone.View.extend({
    * Hide modal
    * @private
    * */
-  hide: function(){
+  hide() {
     this.model.set('open', 0);
   },
 
@@ -107,11 +107,11 @@ module.exports = Backbone.View.extend({
    * Show modal
    * @private
    * */
-   show: function(){
+   show() {
     this.model.set('open', 1);
   },
 
-  render: function(){
+  render() {
     var  obj = this.model.toJSON();
     obj.pfx = this.pfx;
     this.$el.html( this.template(obj) );

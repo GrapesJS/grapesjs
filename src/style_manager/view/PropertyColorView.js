@@ -4,9 +4,9 @@ var InputColor = require('domain_abstract/ui/InputColor');
 
 module.exports = PropertyView.extend({
 
-  renderTemplate: function(){},
+  renderTemplate() {},
 
-  renderInput: function() {
+  renderInput() {
     if (!this.input) {
       var inputColor = new InputColor({
         target: this.target,
@@ -21,7 +21,7 @@ module.exports = PropertyView.extend({
     this.setValue(this.componentValue);
   },
 
-  setValue: function(value){
+  setValue(value) {
     this.input.setValue(value, {silent: 1});
   },
 

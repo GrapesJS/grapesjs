@@ -3,7 +3,7 @@ var ButtonView = require('./ButtonView');
 
 module.exports = Backbone.View.extend({
 
-  initialize: function(o) {
+  initialize(o) {
     this.opt = o || {};
     this.config = this.opt.config || {};
     this.pfx = this.config.stylePrefix || '';
@@ -19,7 +19,7 @@ module.exports = Backbone.View.extend({
    *
    * @return Object
    * */
-  addTo: function(model) {
+  addTo(model) {
     this.addToCollection(model);
   },
 
@@ -30,7 +30,7 @@ module.exports = Backbone.View.extend({
    *
    * @return Object Object created
    * */
-  addToCollection: function(model, fragmentEl){
+  addToCollection(model, fragmentEl) {
     var fragment  = fragmentEl || null;
     var viewObject  = ButtonView;
 
@@ -50,7 +50,7 @@ module.exports = Backbone.View.extend({
     return rendered;
   },
 
-  render: function() {
+  render() {
     var fragment = document.createDocumentFragment();
     this.$el.empty();
 

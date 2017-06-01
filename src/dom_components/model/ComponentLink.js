@@ -13,7 +13,7 @@ module.exports = Component.extend({
    * @return {Object}
    * @private
    */
-  getAttrToHTML: function(...args) {
+  getAttrToHTML(...args) {
     var attr = Component.prototype.getAttrToHTML.apply(this, args);
     delete attr.onmousedown;
     return attr;
@@ -29,7 +29,7 @@ module.exports = Component.extend({
    * @return {Object}
    * @private
    */
-  isComponent: function(el) {
+  isComponent(el) {
     var result = '';
     if(el.tagName == 'A'){
       result = {type: 'link'};

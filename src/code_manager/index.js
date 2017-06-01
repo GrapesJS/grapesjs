@@ -35,7 +35,7 @@ module.exports = () => {
 
   return {
 
-    getConfig: function() {
+    getConfig() {
       return c;
     },
 
@@ -54,7 +54,7 @@ module.exports = () => {
      * Initialize module. Automatically called with a new instance of the editor
      * @param {Object} config Configurations
      */
-    init: function(config) {
+    init(config) {
       c = config || {};
       for (var name in defaults) {
         if (!(name in c))
@@ -77,7 +77,7 @@ module.exports = () => {
     /**
      * Callback on load
      */
-    onLoad: function(){
+    onLoad() {
       this.loadDefaultGenerators().loadDefaultViewers();
     },
 
@@ -94,7 +94,7 @@ module.exports = () => {
      *   }
      * });
      * */
-    addGenerator: function(id, generator) {
+    addGenerator(id, generator) {
       generators[id] = generator;
       return this;
     },
@@ -109,7 +109,7 @@ module.exports = () => {
      *   //extend
      * };
      * */
-    getGenerator: function(id) {
+    getGenerator(id) {
       return generators[id] || null;
     },
 
@@ -117,7 +117,7 @@ module.exports = () => {
      * Returns all code generators
      * @return {Array<Object>}
      * */
-    getGenerators: function() {
+    getGenerators() {
       return generators;
     },
 
@@ -139,7 +139,7 @@ module.exports = () => {
      *   }
      * });
      * */
-    addViewer: function(id, viewer) {
+    addViewer(id, viewer) {
       viewers[id] = viewer;
       return this;
     },
@@ -151,7 +151,7 @@ module.exports = () => {
      * @example
      * var viewer = codeManager.getViewer('ace');
      * */
-    getViewer: function(id) {
+    getViewer(id) {
       return viewers[id] || null;
     },
 
@@ -159,7 +159,7 @@ module.exports = () => {
      * Returns all code viewers
      * @return {Array<Object>}
      * */
-    getViewers: function() {
+    getViewers() {
       return viewers;
     },
 
@@ -174,7 +174,7 @@ module.exports = () => {
      * // ...
      * codeManager.updateViewer(AceViewer, 'code');
      * */
-    updateViewer: function(viewer, code) {
+    updateViewer(viewer, code) {
       viewer.setContent(code);
     },
 
@@ -187,7 +187,7 @@ module.exports = () => {
      * @example
      * var codeStr = codeManager.getCode(model, 'html');
      * */
-    getCode: function(model, genId, opt) {
+    getCode(model, genId, opt) {
       var generator  = this.getGenerator(genId);
       return generator ? generator.build(model, opt) : '';
     },
@@ -197,7 +197,7 @@ module.exports = () => {
      * @return {this}
      * @private
      * */
-    loadDefaultGenerators: function() {
+    loadDefaultGenerators() {
       for (var id in defGenerators)
         this.addGenerator(id, defGenerators[id]);
 
@@ -209,7 +209,7 @@ module.exports = () => {
      * @return {this}
      * @private
      * */
-    loadDefaultViewers: function() {
+    loadDefaultViewers() {
       for (var id in defViewers)
         this.addViewer(id, defViewers[id]);
 

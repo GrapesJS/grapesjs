@@ -31,7 +31,7 @@ module.exports = () => {
      * }
      * ...
      */
-    init: function(config) {
+    init(config) {
       c = config || {};
       for (var name in defaults) {
         if (!(name in c))
@@ -47,12 +47,12 @@ module.exports = () => {
      * @param  {string} str HTML string
      * @return {Object}
      */
-    parseHtml: function(str){
+    parseHtml(str) {
       pHtml.compTypes = this.compTypes;
       return pHtml.parse(str, pCss);
     },
 
-    parseCss: function(str){
+    parseCss(str) {
       return pCss.parse(str);
     },
 

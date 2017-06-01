@@ -3,7 +3,7 @@ var CssRule = require('./CssRule');
 
 module.exports = Backbone.Collection.extend({
 
-  initialize: function(models, opt){
+  initialize(models, opt) {
 
     // Inject editor
     if(opt && opt.sm)
@@ -25,7 +25,7 @@ module.exports = Backbone.Collection.extend({
 
   },
 
-  add: function(models, opt){
+  add(models, opt) {
     if(typeof models === 'string')
       models = this.editor.get('Parser').parseCss(models);
     return Backbone.Collection.prototype.add.apply(this, [models, opt]);

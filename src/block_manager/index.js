@@ -47,7 +47,7 @@ module.exports = () => {
        * @return {this}
        * @private
        */
-      init: function(config) {
+      init(config) {
         c = config || {};
         for (var name in defaults) {
           if (!(name in c))
@@ -75,7 +75,7 @@ module.exports = () => {
        *   }
        * });
        */
-      add: function(id, opts){
+      add(id, opts) {
         var obj = opts || {};
         obj.id = id;
         return blocks.add(obj);
@@ -89,7 +89,7 @@ module.exports = () => {
        * console.log(JSON.stringify(block));
        * // {label: 'Heading', content: '<h1>Put your ...', ...}
        */
-      get: function(id){
+      get(id) {
         return blocks.get(id);
       },
 
@@ -101,7 +101,7 @@ module.exports = () => {
        * console.log(JSON.stringify(blocks));
        * // [{label: 'Heading', content: '<h1>Put your ...'}, ...]
        */
-      getAll: function(){
+      getAll() {
         return blocks;
       },
 
@@ -109,7 +109,7 @@ module.exports = () => {
        * Render blocks
        * @return {HTMLElement}
        */
-      render: function(){
+      render() {
         return view.render().el;
       },
 

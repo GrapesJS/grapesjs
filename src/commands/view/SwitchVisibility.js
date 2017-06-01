@@ -1,10 +1,10 @@
 module.exports = {
 
-  run: function(ed) {
+  run(ed) {
     ed.Canvas.getBody().className = this.ppfx + 'dashed';
   },
 
-  stop: function(ed) {
+  stop(ed) {
     ed.Canvas.getBody().className = "";
   }
 
