@@ -1,4 +1,4 @@
-module.exports = function(){
+module.exports = () => {
 
   var Sorter = require('./Sorter');
 

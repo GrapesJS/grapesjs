@@ -96,7 +96,7 @@ module.exports = PropertyView.extend({
    * */
   getDefaultValue: function(){
     var str = '';
-    this.props.each(function(prop, index){
+    this.props.each((prop, index) => {
       str += prop.get('defaults') + prop.get('unit') + ' ';
     });
     return str.replace(/ +$/,'');
@@ -131,7 +131,7 @@ module.exports = PropertyView.extend({
    * */
   build: function(selectedEl, propertyView, opts){
     var result   = '';
-    this.model.get('properties').each(function(prop){
+    this.model.get('properties').each(prop => {
       var v    = prop.getValue();
         func  = prop.get('functionName');
 

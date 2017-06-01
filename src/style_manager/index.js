@@ -47,7 +47,7 @@
  * }
  * ...
  */
-module.exports = function() {
+module.exports = () => {
   var c = {},
   defaults = require('./config/config'),
   Sectors = require('./model/Sectors'),
@@ -241,9 +241,7 @@ module.exports = function() {
         var deviceW = device && !previewMode ? device.get('width') : '';
         var cssC = c.em.get('CssComposer');
 
-        var valid = _.filter(classes.models, function(item) {
-          return item.get('active');
-        });
+        var valid = _.filter(classes.models, item => item.get('active'));
 
         var CssRule = cssC.get(valid, state, deviceW);
 

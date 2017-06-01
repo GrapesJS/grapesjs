@@ -14,7 +14,7 @@
  * ```
  * @module Modal
  */
-module.exports = function() {
+module.exports = () => {
   var c = {},
   defaults = require('./config/config'),
   ModalM = require('./model/Modal'),

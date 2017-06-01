@@ -69,7 +69,7 @@
  * });
  */
 
-module.exports = function(config) {
+module.exports = config => {
   var c = config || {},
   defaults = require('./config/config'),
   EditorModel = require('./model/Editor'),

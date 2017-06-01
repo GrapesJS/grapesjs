@@ -129,7 +129,7 @@ module.exports = PropertyView.extend({
       this.modal.setContent(this.am.render());
       this.am.setTarget(null);
       this.modal.open();
-      this.am.onSelect(function(model){
+      this.am.onSelect(model => {
         that.modal.close();
         that.spreadUrl(model.get('src'));
         that.valueChanged(e);

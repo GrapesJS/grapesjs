@@ -8,7 +8,7 @@ module.exports = Backbone.Collection.extend({
 
   initialize: function(models, opt){
 
-    this.model = function(attrs, options) {
+    this.model = (attrs, options) => {
       var model;
       switch(attrs.type){
         default:

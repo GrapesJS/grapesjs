@@ -22,7 +22,7 @@ module.exports = TraitView.extend({
       var input = '<select>';
 
       if (opts.length) {
-        _.each(opts, function(el) {
+        _.each(opts, el => {
           var name, value, style;
           var attrs = '';
           if(typeof el === 'string'){

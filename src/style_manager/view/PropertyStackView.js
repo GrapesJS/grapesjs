@@ -62,7 +62,7 @@ module.exports = PropertyCompositeView.extend({
     var model = this.model;
     var layer  = this.getLayers().at(model.get('stackIndex'));
     layer.set('props', this.$props);
-    model.get('properties').each(function (prop) {
+    model.get('properties').each(prop => {
       prop.trigger('targetUpdated');
     });
   },
@@ -80,7 +80,7 @@ module.exports = PropertyCompositeView.extend({
     var that = this;
     var result = PropertyCompositeView.prototype.getPropsConfig.apply(this, arguments);
 
-    result.onChange = function(el, view, opt) {
+    result.onChange = (el, view, opt) => {
       var model = view.model;
       var result = that.build();
 
@@ -88,7 +88,7 @@ module.exports = PropertyCompositeView.extend({
         var propVal = '';
         var index = model.collection.indexOf(model);
 
-        that.getLayers().each(function(layer){
+        that.getLayers().each(layer => {
           var val = layer.get('values')[model.get('property')];
           if(val)
             propVal += (propVal ? ',' : '') + val;
@@ -150,7 +150,7 @@ module.exports = PropertyCompositeView.extend({
     // Store properties values inside layer, in this way it's more reliable
     //  to fetch them later
     var valObj = {};
-    this.model.get('properties').each(function(prop){
+    this.model.get('properties').each(prop => {
       var v    = prop.getValue(),
         func  = prop.get('functionName');
       if(func)
@@ -195,7 +195,7 @@ module.exports = PropertyCompositeView.extend({
     if (!model.get('detached')) {
       model.set('value', this.createValue());
     } else {
-      model.get('properties').each(function(prop){
+      model.get('properties').each(prop => {
         prop.trigger('change:value');
       });
     }
@@ -248,7 +248,7 @@ module.exports = PropertyCompositeView.extend({
       return arr;
     var trgStyle = target.get('style');
 
-    this.model.get('properties').each(function(prop) {
+    this.model.get('properties').each(prop => {
       var style = trgStyle[prop.get('property')];
 
       if (style) {
@@ -289,7 +289,7 @@ module.exports = PropertyCompositeView.extend({
         // eg:
         // From: 1px 1px rgba(2px, 2px, 2px), 2px 2px rgba(3px, 3px, 3px)
         // To: 1px 1px rgba(2px,2px,2px), 2px 2px rgba(3px,3px,3px)
-        v.replace(/\(([\w\s,.]*)\)/g, function(match){
+        v.replace(/\(([\w\s,.]*)\)/g, match => {
           var cleaned = match.replace(/,\s*/g, ',');
           v = v.replace(match, cleaned);
         });
@@ -297,7 +297,7 @@ module.exports = PropertyCompositeView.extend({
       }
     }
 
-    _.each(a, function(e){
+    _.each(a, e => {
       var o = {};
       o[fieldName] = e;
       n.push(o);

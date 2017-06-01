@@ -52,7 +52,7 @@
  *  statesLabel: '- Selecte State -',
  * }
  */
-module.exports = function(config) {
+module.exports = config => {
   var c = config || {},
   defaults = require('./config/config'),
   Selectors = require('./model/Selectors'),

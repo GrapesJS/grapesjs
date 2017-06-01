@@ -36,7 +36,7 @@ module.exports = Backbone.View.extend({
       var frame = this.frame;
       var that = this;
 
-      frame.el.onload = function () {
+      frame.el.onload = () => {
         var scripts = that.config.scripts.slice(0),  // clone
             counter = 0;
 
@@ -94,10 +94,10 @@ module.exports = Backbone.View.extend({
       // I need to delegate all events to the parent document
       var doc = document;
       var fdoc = this.frame.el.contentDocument;
-      fdoc.addEventListener('keydown', function(e){
+      fdoc.addEventListener('keydown', e => {
         doc.dispatchEvent(new KeyboardEvent(e.type, e));
       });
-      fdoc.addEventListener('keyup', function(e){
+      fdoc.addEventListener('keyup', e => {
         doc.dispatchEvent(new KeyboardEvent(e.type, e));
       });
     }

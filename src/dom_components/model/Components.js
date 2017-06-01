@@ -12,7 +12,7 @@ module.exports = Backbone.Collection.extend({
     if(opt && opt.sm)
       this.editor = opt.sm;
 
-    this.model  = function(attrs, options) {
+    this.model  = (attrs, options) => {
       var model;
 
       if(!options.sm && opt && opt.sm)

@@ -24,7 +24,7 @@ module.exports = PropertyView.extend({
       var input = '<select>';
 
       if (this.list && this.list.length) {
-        _.each(this.list, function(el) {
+        _.each(this.list, el => {
           var name = el.name ? el.name : el.value;
           var style = el.style ? el.style.replace(/"/g,'&quot;') : '';
           var styleAttr = style ? 'style="' + style + '"' : '';

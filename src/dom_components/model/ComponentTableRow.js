@@ -15,7 +15,7 @@ module.exports = Component.extend({
     // Clean the row from non cell components
     var cells = [];
     var components = this.get('components');
-    components.each(function(model){
+    components.each(model => {
       if(model.get('type') == 'cell'){
         cells.push(model);
       }

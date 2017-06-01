@@ -1,4 +1,4 @@
-define(function(require, exports, module){
+define((require, exports, module) => {
   'use strict';
   var Backbone = require('backbone');
   var Device = require('./Device');

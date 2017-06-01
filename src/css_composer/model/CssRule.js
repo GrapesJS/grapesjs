@@ -57,12 +57,8 @@ module.exports = Backbone.Model.extend({
       //var a2 = _.pluck(this.get('selectors').models, cId);
       if(!(selectors instanceof Array) && !selectors.models)
         selectors = [selectors];
-      var a1 = _.map((selectors.models || selectors), function(model) {
-        return model.get('name');
-      });
-      var a2 = _.map(this.get('selectors').models, function(model) {
-        return model.get('name');
-      });
+      var a1 = _.map((selectors.models || selectors), model => model.get('name'));
+      var a2 = _.map(this.get('selectors').models, model => model.get('name'));
       var f = false;
 
       if(a1.length !== a2.length)

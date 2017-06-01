@@ -8,7 +8,7 @@ module.exports = {
 
   tglPointers: function(editor, v) {
     var elP = editor.Canvas.getBody().querySelectorAll('.' + this.ppfx + 'no-pointer');
-    _.each(elP, function(item){
+    _.each(elP, item => {
       item.style.pointerEvents = v ? '' : 'all';
     });
   },
@@ -26,7 +26,7 @@ module.exports = {
       this.helper = document.createElement('span');
       this.helper.className = pfx + 'off-prv fa fa-eye-slash';
       editorEl.appendChild(this.helper);
-      this.helper.onclick = function(){
+      this.helper.onclick = () => {
         that.stop(editor);
       };
     }

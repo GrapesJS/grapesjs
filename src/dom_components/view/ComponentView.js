@@ -72,7 +72,7 @@ module.exports = Backbone.View.extend({
     var clm = this.config.em.get('SelectorManager');
 
     if(clm){
-      this.model.get('classes').each(function(m){
+      this.model.get('classes').each(m => {
           clm.add(m.get('name'));
       });
     }
@@ -188,7 +188,7 @@ module.exports = Backbone.View.extend({
   updateClasses: function(){
     var str = '';
 
-    this.model.get('classes').each(function(model){
+    this.model.get('classes').each(model => {
       str += model.get('name') + ' ';
     });
     str = str.trim();
@@ -224,7 +224,7 @@ module.exports = Backbone.View.extend({
     var model = this.model;
     var modelToStyle;
 
-    var toggleBodyClass = function(method, e, opts) {
+    var toggleBodyClass = (method, e, opts) => {
       var handlerAttr = e.target.getAttribute(attrName);
       var resizeHndClass = pfx + 'resizing-' + handlerAttr;
       var classToAdd = resizeClass;// + ' ' +resizeHndClass;
@@ -358,9 +358,9 @@ module.exports = Backbone.View.extend({
     // to disable pointer-events for all nested components as they
     // might prevent the component to be selected
     if (container !== this.el) {
-      var disableNode = function(el) {
+      var disableNode = el => {
         var children = Array.prototype.slice.call(el.children);
-        children.forEach(function (el) {
+        children.forEach(el => {
           el.style['pointer-events'] = 'none';
           if (container !== el) {
             disableNode(el);

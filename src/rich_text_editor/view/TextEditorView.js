@@ -1,9 +1,9 @@
 var $ = require('jquery');
 
-var readFileIntoDataUrl = function (fileInfo) {
+var readFileIntoDataUrl = fileInfo => {
   var loader = $.Deferred(),
     fReader = new FileReader();
-  fReader.onload = function (e) {
+  fReader.onload = e => {
     loader.resolve(e.target.result);
   };
   fReader.onerror = loader.reject;
@@ -20,7 +20,7 @@ $.fn.wysiwyg = function (userOptions) {
     selectedRange,
     options,
     toolbarBtnSelector,
-    updateToolbar = function () {
+    updateToolbar = () => {
       var actCls = options.activeToolbarClass;
       if (actCls) {
         $(options.toolbarSelector).find(toolbarBtnSelector).each(function () {
@@ -35,7 +35,7 @@ $.fn.wysiwyg = function (userOptions) {
         });
       }
     },
-    execCommand = function (commandWithArgs, valueArg) {
+    execCommand = (commandWithArgs, valueArg) => {
       var commandArr = commandWithArgs.split(' '),
         command = commandArr.shift(),
         args = commandArr.join(' ') + (valueArg || '');
@@ -63,16 +63,16 @@ $.fn.wysiwyg = function (userOptions) {
       });
     },
     */
-    getCurrentRange = function () {
+    getCurrentRange = () => {
       var sel = window.getSelection();
       if (sel.getRangeAt && sel.rangeCount) {
         return sel.getRangeAt(0);
       }
     },
-    saveSelection = function () {
+    saveSelection = () => {
       selectedRange = getCurrentRange();
     },
-    restoreSelection = function () {
+    restoreSelection = () => {
       var selection = window.getSelection();
       if (selectedRange) {
         try {
@@ -85,13 +85,13 @@ $.fn.wysiwyg = function (userOptions) {
         selection.addRange(selectedRange);
       }
     },
-    insertFiles = function (files) {
+    insertFiles = files => {
       editor.focus();
-      $.each(files, function (idx, fileInfo) {
+      $.each(files, (idx, fileInfo) => {
         if (/^image\//.test(fileInfo.type)) {
-          $.when(readFileIntoDataUrl(fileInfo)).done(function (dataUrl) {
+          $.when(readFileIntoDataUrl(fileInfo)).done(dataUrl => {
             execCommand('insertimage', dataUrl);
-          }).fail(function (e) {
+          }).fail(e => {
             options.fileUploadError("file-reader", e);
           });
         } else {
@@ -99,7 +99,7 @@ $.fn.wysiwyg = function (userOptions) {
         }
       });
     },
-    markSelection = function (input, color) {
+    markSelection = (input, color) => {
       restoreSelection();
       if (document.queryCommandSupported('hiliteColor')) {
         document.execCommand('hiliteColor', 0, color || 'transparent');
@@ -107,7 +107,7 @@ $.fn.wysiwyg = function (userOptions) {
       saveSelection();
       input.data(options.selectionMarker, color);
     },
-    bindToolbar = function (toolbar, options) {
+    bindToolbar = (toolbar, options) => {
       toolbar.find(toolbarBtnSelector).unbind().click(function () {
         restoreSelection();
         //editor.focus(); // cause defocus on selects
@@ -164,9 +164,9 @@ $.fn.wysiwyg = function (userOptions) {
         this.value = '';
       });
     },
-    initFileDrops = function () {
+    initFileDrops = () => {
       editor.on('dragenter dragover', false)
-        .on('drop', function (e) {
+        .on('drop', e => {
           var dataTransfer = e.originalEvent.dataTransfer;
           e.stopPropagation();
           e.preventDefault();
@@ -190,11 +190,11 @@ $.fn.wysiwyg = function (userOptions) {
     initFileDrops();
   }
   bindToolbar($(options.toolbarSelector), options);
-  editor.attr('contenteditable', true).on('mouseup keyup mouseout', function () {
+  editor.attr('contenteditable', true).on('mouseup keyup mouseout', () => {
       saveSelection();
       updateToolbar();
     });
-  $(window).bind('touchend', function (e) {
+  $(window).bind('touchend', e => {
     var isInside = (editor.is(e.target) || editor.has(e.target).length > 0),
       currentRange = getCurrentRange(),
       clear = currentRange && (currentRange.startContainer === currentRange.endContainer && currentRange.startOffset === currentRange.endOffset);

@@ -32,7 +32,7 @@
  * }
  * ...
  */
-module.exports = function () {
+module.exports = () => {
   var c = {},
   componentTypes = {},
   defaults = require('./config/config'),

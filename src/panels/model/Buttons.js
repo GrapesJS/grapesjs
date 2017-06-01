@@ -13,7 +13,7 @@ module.exports = Backbone.Collection.extend({
    * @return  void
    * */
   deactivateAllExceptOne: function(except, r){
-    this.forEach(function(model, index) {
+    this.forEach((model, index) => {
       if(model !== except){
         model.set('active', false);
         if(r && model.get('buttons').length)
@@ -30,7 +30,7 @@ module.exports = Backbone.Collection.extend({
    * */
   deactivateAll: function(ctx){
     var context = ctx || '';
-    this.forEach(function(model, index) {
+    this.forEach((model, index) => {
       if( model.get('context') == context ){
         model.set('active', false);
         if(model.get('buttons').length)

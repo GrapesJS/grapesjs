@@ -67,7 +67,7 @@ module.exports = Backbone.Model.extend({
     }, this);
 
     // Call modules with onLoad callback
-    this.get('toLoad').forEach(function(M){
+    this.get('toLoad').forEach(M => {
       M.onLoad();
     });
 
@@ -85,7 +85,7 @@ module.exports = Backbone.Model.extend({
     var changes = this.get('changesCount');
 
     if (this.config.noticeOnUnload && changes) {
-      window.onbeforeunload = function(e) { return 1;};
+      window.onbeforeunload = e => 1;
     } else {
       window.onbeforeunload = null;
     }
@@ -193,11 +193,11 @@ module.exports = Backbone.Model.extend({
       });
       this.UndoManager = this.um;
       this.set('UndoManager', this.um);
-      key('⌘+z, ctrl+z', function(){
+      key('⌘+z, ctrl+z', () => {
         that.um.undo(true);
         that.trigger('component:update');
       });
-      key('⌘+shift+z, ctrl+shift+z', function(){
+      key('⌘+shift+z, ctrl+shift+z', () => {
         that.um.redo(true);
         that.trigger('component:update');
       });
@@ -440,7 +440,7 @@ module.exports = Backbone.Model.extend({
       return;
 
     // Fetch what to store
-    this.get('storables').forEach(function(m){
+    this.get('storables').forEach(m => {
       var obj = m.store(1);
       for(var el in obj)
         store[el] = obj[el];
@@ -461,7 +461,7 @@ module.exports = Backbone.Model.extend({
    */
   load: function(clb) {
     var result = this.getCacheLoad(1);
-    this.get('storables').forEach(function(m){
+    this.get('storables').forEach(m => {
       m.load(result);
     });
     return result;
@@ -483,11 +483,11 @@ module.exports = Backbone.Model.extend({
     if(!sm)
       return {};
 
-    this.get('storables').forEach(function(m){
+    this.get('storables').forEach(m => {
       var key = m.storageKey;
       key = typeof key === 'function' ? key() : key;
       keys = key instanceof Array ? key : [key];
-      keys.forEach(function(k){
+      keys.forEach(k => {
         load.push(k);
       });
     });

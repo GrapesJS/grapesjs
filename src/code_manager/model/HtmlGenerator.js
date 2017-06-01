@@ -7,7 +7,7 @@ module.exports = Backbone.Model.extend({
     var coll = model.get('components') || model,
       code = '';
 
-    coll.each(function(m){
+    coll.each(m => {
       code += m.toHTML({
         cssc: cssc
       });

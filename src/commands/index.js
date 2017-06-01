@@ -39,7 +39,7 @@
  * ...
  */
 
-module.exports = function() {
+module.exports = () => {
   var c = {},
   commands = {},
   defaultCommands = {},
@@ -148,7 +148,7 @@ module.exports = function() {
           var toolbarEl = ed.Canvas.getToolbarEl();
           var cmdMove = ed.Commands.get('move-comp');
 
-          cmdMove.onEndMoveFromModel = function() {
+          cmdMove.onEndMoveFromModel = () => {
             ed.editor.runDefault();
             ed.editor.set('selectedComponent', sel);
             ed.trigger('component:update', sel);

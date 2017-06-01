@@ -19,7 +19,7 @@ var defaults = {
   br: 1,
 };
 
-var createHandler = function (name, opts) {
+var createHandler = (name, opts) => {
   var pfx = opts.prefix || '';
   var el = document.createElement('i');
   el.className = pfx + 'resizer-h ' + pfx + 'resizer-h-' + name;
@@ -27,7 +27,7 @@ var createHandler = function (name, opts) {
   return el;
 };
 
-var getBoundingRect = function(el, win) {
+var getBoundingRect = (el, win) => {
   var w = win || window;
   var rect = el.getBoundingClientRect();
   return {

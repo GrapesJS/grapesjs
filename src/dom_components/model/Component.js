@@ -119,9 +119,7 @@ module.exports = Backbone.Model.extend({
       var value = this.get(name);
 
       if (typeof value == 'string') {
-        var newValue = value.split(',').map(function(prop) {
-          return prop.trim();
-        });
+        var newValue = value.split(',').map(prop => prop.trim());
         this.set(name, newValue);
       }
     }, this);
@@ -198,7 +196,7 @@ module.exports = Backbone.Model.extend({
     if(!clm)
       return;
 
-    arr.forEach(function(val){
+    arr.forEach(val => {
       var name = '';
 
       if(typeof val === 'string')
@@ -225,13 +223,13 @@ module.exports = Backbone.Model.extend({
     attr.classes = [];
     attr.traits = [];
 
-    comp.each(function(md,i) {
+    comp.each((md, i) => {
       attr.components[i]	= md.clone(1);
     });
-    traits.each(function(md, i) {
+    traits.each((md, i) => {
       attr.traits[i] = md.clone();
     });
-    cls.each(function(md,i) {
+    cls.each((md, i) => {
       attr.classes[i]	= md.get('name');
     });
 
@@ -284,7 +282,7 @@ module.exports = Backbone.Model.extend({
     }
     // Build the string of classes
     var strCls = '';
-    m.get('classes').each(function(m){
+    m.get('classes').each(m => {
       strCls += ' ' + m.get('name');
     });
     strCls = strCls !== '' ? ' class="' + strCls.trim() + '"' : '';
@@ -296,7 +294,7 @@ module.exports = Backbone.Model.extend({
 
     code += '<' + tag + strCls + attrId + strAttr + (sTag ? '/' : '') + '>' + m.get('content');
 
-    m.get('components').each(function(m) {
+    m.get('components').each(m => {
       code += m.toHTML();
     });
 

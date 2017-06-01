@@ -1,4 +1,4 @@
-module.exports = function() {
+module.exports = () => {
   var c = {},
   defaults = require('./config/config'),
   Canvas = require('./model/Canvas'),

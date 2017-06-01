@@ -30,7 +30,7 @@ module.exports = Backbone.View.extend({
    */
   updateVisibility: function () {
     var show;
-    this.model.get('properties').each(function(prop) {
+    this.model.get('properties').each(prop => {
       if (prop.get('visible')) {
         show = 1;
       }

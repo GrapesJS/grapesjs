@@ -68,7 +68,7 @@ module.exports = Backbone.View.extend({
    */
   getOptions: function(){
     var result = '';
-    this.collection.each(function(device){
+    this.collection.each(device => {
       var name = device.get('name');
       result += '<option value="' + name+ '">' + name + '</option>';
     });

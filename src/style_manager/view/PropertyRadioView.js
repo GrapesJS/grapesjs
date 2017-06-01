@@ -25,7 +25,7 @@ module.exports = PropertyView.extend({
     if(!this.$input) {
       if(this.list && this.list.length) {
         var input = '';
-        _.each(this.list, function(el) {
+        _.each(this.list, el => {
           var cl = el.className ? el.className + ' ' + pfx + 'icon ' + itemCls : '',
           id = prop + '-' + el.value,
           labelTxt = el.name ? el.name : el.value;

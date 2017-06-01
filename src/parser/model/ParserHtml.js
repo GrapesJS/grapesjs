@@ -1,4 +1,4 @@
-module.exports = function(config) {
+module.exports = config => {
 
   var TEXT_NODE = 'span';
   var c = config;

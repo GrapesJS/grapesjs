@@ -44,7 +44,7 @@
  * }
  * ...
  */
-module.exports = function(){
+module.exports = () => {
   var c = {},
   defaults = require('./config/config'),
   Panel = require('./model/Panel'),
@@ -193,8 +193,8 @@ module.exports = function(){
      * @private
      */
     active: function() {
-      this.getPanels().each(function(p){
-          p.get('buttons').each(function(btn){
+      this.getPanels().each(p => {
+          p.get('buttons').each(btn => {
             if(btn.get('active'))
               btn.trigger('updateActive');
           });

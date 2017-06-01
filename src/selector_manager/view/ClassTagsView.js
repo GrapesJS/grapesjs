@@ -161,7 +161,7 @@ module.exports = Backbone.View.extend({
       return;
     var result = '';
     var models = this.compTarget.get('classes');
-    models.each(function(model){
+    models.each(model => {
       if(model.get('active'))
         result += '.' + model.get('name');
     });

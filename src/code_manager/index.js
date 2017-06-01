@@ -17,7 +17,7 @@
  *
  * @module CodeManager
  */
-module.exports = function() {
+module.exports = () => {
 
   var c = {},
   defaults = require('./config/config'),

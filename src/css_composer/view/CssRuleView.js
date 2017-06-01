@@ -31,7 +31,7 @@ module.exports = Backbone.View.extend({
     var sel = [];
     var model = this.model;
     var add = model.get('selectorsAdd');
-    model.get('selectors').each(function(m){
+    model.get('selectors').each(m => {
       sel.push('.' + m.get('name'));
     });
     var sels = sel.join('');

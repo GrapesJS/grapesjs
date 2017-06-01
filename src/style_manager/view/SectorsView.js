@@ -49,9 +49,7 @@ module.exports = Backbone.View.extend({
 
     if(classes.length){
       var cssC = this.target.get('CssComposer');
-      var valid = _.filter(classes.models, function(item) {
-        return item.get('active');
-      });
+      var valid = _.filter(classes.models, item => item.get('active'));
       var iContainer = cssC.get(valid, state, mediaText);
 
       if(!iContainer){

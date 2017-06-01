@@ -34,7 +34,7 @@
  * }
  */
 
-module.exports = function() {
+module.exports = () => {
   var c = {},
   Assets = require('./model/Assets'),
   AssetsView = require('./view/AssetsView'),

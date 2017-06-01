@@ -32,7 +32,7 @@ module.exports = Backbone.Model.extend({
       dataType: 'json',
       contentType: this.get('contentTypeJson') ? 'application/json; charset=utf-8': 'x-www-form-urlencoded',
       data: this.get('contentTypeJson') ? JSON.stringify(fd): fd,
-    }).always(function(){
+    }).always(() => {
       if (typeof clb == 'function') {
         clb();
       }
@@ -59,7 +59,7 @@ module.exports = Backbone.Model.extend({
       data: fd,
       async: false,
       method: 'GET',
-    }).done(function(d){
+    }).done(d => {
       result = d;
     });
     return result;

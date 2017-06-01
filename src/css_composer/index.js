@@ -22,7 +22,7 @@
  * }
  */
 
-module.exports = function() {
+module.exports = () => {
   var c = {},
   defaults = require('./config/config'),
   CssRule = require('./model/CssRule'),
@@ -199,7 +199,7 @@ module.exports = function() {
        * */
       get: function(selectors, state, width, ruleProps) {
         var rule = null;
-        rules.each(function(m) {
+        rules.each(m => {
           if(rule)
             return;
           if(m.compare(selectors, state, width, ruleProps))

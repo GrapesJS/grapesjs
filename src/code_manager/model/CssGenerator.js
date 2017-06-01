@@ -116,7 +116,7 @@ module.exports = Backbone.Model.extend({
     var compCls = this.compCls;
 
     // Get string of selectors
-    selectors.each(function(selector){
+    selectors.each(selector => {
       strSel += '.' + selector.get('name');
       if(compCls.indexOf(selector.get('name')) > -1)
         found = 1;

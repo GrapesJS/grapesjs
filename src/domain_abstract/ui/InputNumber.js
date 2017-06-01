@@ -111,7 +111,7 @@ module.exports = Backbone.View.extend({
       var units = model.get('units') || [];
       if(units.length){
         var unitStr = '<select class="' + this.unitCls + '">';
-        _.each(units, function(unit){
+        _.each(units, unit => {
           var selected = unit == model.get('unit') ? 'selected': '';
           unitStr += '<option ' + selected + ' >' + unit + '</option>';
         });

@@ -21,7 +21,7 @@
  * http://www.quirksmode.org/dom/execCommand.html
  * @module RichTextEditor
  */
-module.exports = function() {
+module.exports = () => {
   var c = {},
   defaults = require('./config/config'),
   rte = require('./view/TextEditorView'),

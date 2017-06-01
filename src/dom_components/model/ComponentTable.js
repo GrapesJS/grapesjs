@@ -53,9 +53,9 @@ module.exports = Component.extend({
 
     // Clean table from non rows
     var rowsColl = [];
-    components.each(function(model){
+    components.each(model => {
       if(model.get('type') != 'row'){
-        model.get('components').each(function(row) {
+        model.get('components').each(row => {
           if(row.get('type') == 'row'){
             row.collection = components;
             rowsColl.push(row);

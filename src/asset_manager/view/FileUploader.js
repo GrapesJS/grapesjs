@@ -53,9 +53,9 @@ module.exports = Backbone.View.extend({
         }
       },
       cache: false, contentType: false, processData: false
-    }).done(function(data){
+    }).done(data => {
       target.add(data.data);
-    }).always(function(){
+    }).always(() => {
       //turnOff loading
     });
   },
