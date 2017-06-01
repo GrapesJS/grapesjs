@@ -7,8 +7,8 @@ module.exports = ComponentView.extend({
     'dblclick': 'enableEditing',
   },
 
-  render: function() {
-    ComponentView.prototype.render.apply(this, arguments);
+  render: function(...args) {
+    ComponentView.prototype.render.apply(this, args);
 
     // I need capturing instead of bubbling as bubbled clicks from other
     // children will execute the link event

@@ -3,8 +3,8 @@ var CreateComponent = require('./CreateComponent');
 
 module.exports = _.extend({}, CreateComponent, {
 
-  init: function(){
-    CreateComponent.init.apply(this, arguments);
+  init: function(...args) {
+    CreateComponent.init.apply(this, args);
     _.bindAll(this, 'insertComponent');
     this.allowDraw = 0;
   },
@@ -21,8 +21,8 @@ module.exports = _.extend({}, CreateComponent, {
     this.enable();
   },
 
-  enable: function(){
-    CreateComponent.enable.apply(this, arguments);
+  enable: function(...args) {
+    CreateComponent.enable.apply(this, args);
     this.$wr.on('click', this.insertComponent);
   },
 

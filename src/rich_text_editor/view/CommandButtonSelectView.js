@@ -34,8 +34,8 @@ module.exports = CommandButtonView.extend({
     return cont.append(input);
   },
 
-  render: function() {
-    CommandButtonView.prototype.render.apply(this, arguments);
+  render: function(...args) {
+    CommandButtonView.prototype.render.apply(this, args);
     this.$el.html(this.getInputCont());
     return this;
   }

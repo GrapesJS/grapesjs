@@ -321,8 +321,8 @@ module.exports = Backbone.Model.extend({
    * @return {Object}
    * @private
    */
-  toJSON: function() {
-    var obj = Backbone.Model.prototype.toJSON.apply(this, arguments);
+  toJSON: function(...args) {
+    var obj = Backbone.Model.prototype.toJSON.apply(this, args);
     var scriptStr = this.getScriptString();
 
     if (scriptStr) {

@@ -19,9 +19,9 @@ module.exports = PropertyView.extend({
   /**
    * Fired when the input value is updated
    */
-  valueUpdated: function(){
+  valueUpdated: function(...args) {
     if(!this.model.get('detached'))
-      PropertyView.prototype.valueUpdated.apply(this, arguments);
+      PropertyView.prototype.valueUpdated.apply(this, args);
   },
 
   /**

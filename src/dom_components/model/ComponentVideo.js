@@ -90,8 +90,8 @@ module.exports = Component.extend({
    * @return {Object}
    * @private
    */
-  getAttrToHTML: function() {
-    var attr = Component.prototype.getAttrToHTML.apply(this, arguments);
+  getAttrToHTML: function(...args) {
+    var attr = Component.prototype.getAttrToHTML.apply(this, args);
     var prov = this.get('provider');
     switch (prov) {
       case yt: case vi:

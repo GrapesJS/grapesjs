@@ -13,8 +13,8 @@ module.exports = Component.extend({
    * @return {Object}
    * @private
    */
-  getAttrToHTML: function() {
-    var attr = Component.prototype.getAttrToHTML.apply(this, arguments);
+  getAttrToHTML: function(...args) {
+    var attr = Component.prototype.getAttrToHTML.apply(this, args);
     delete attr.onmousedown;
     return attr;
   },

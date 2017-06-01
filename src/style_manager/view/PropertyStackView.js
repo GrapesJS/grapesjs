@@ -27,9 +27,9 @@ module.exports = PropertyCompositeView.extend({
    * With detached mode the component will be always empty as its value
    * so we gonna check all props and fine if there is some differences.
    * */
-  targetUpdated: function(){
+  targetUpdated: function(...args) {
     if(!this.model.get('detached'))
-      PropertyCompositeView.prototype.targetUpdated.apply(this, arguments);
+      PropertyCompositeView.prototype.targetUpdated.apply(this, args);
     else {
       this.checkVisibility();
       this.refreshLayers();
@@ -138,11 +138,11 @@ module.exports = PropertyCompositeView.extend({
    * Build composite value
    * @private
    * */
-  build: function() {
+  build: function(...args) {
     var stackIndex = this.model.get('stackIndex');
     if(stackIndex === null)
       return;
-    var result = PropertyCompositeView.prototype.build.apply(this, arguments);
+    var result = PropertyCompositeView.prototype.build.apply(this, args);
     var model = this.getLayers().at(stackIndex);
     if(!model)
       return;
@@ -231,8 +231,8 @@ module.exports = PropertyCompositeView.extend({
   },
 
   /** @inheritdoc */
-  renderInput: function() {
-    PropertyCompositeView.prototype.renderInput.apply(this, arguments);
+  renderInput: function(...args) {
+    PropertyCompositeView.prototype.renderInput.apply(this, args);
     this.refreshLayers();
   },
 

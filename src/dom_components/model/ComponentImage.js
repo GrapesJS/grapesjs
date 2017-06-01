@@ -19,8 +19,8 @@ module.exports = Component.extend({
       this.set('src', attr.src);
   },
 
-  initToolbar: function() {
-    Component.prototype.initToolbar.apply(this, arguments);
+  initToolbar: function(...args) {
+    Component.prototype.initToolbar.apply(this, args);
 
     if (this.sm && this.sm.get) {
       var cmd = this.sm.get('Commands');
@@ -43,8 +43,8 @@ module.exports = Component.extend({
    * @return {Object}
    * @private
    */
-  getAttrToHTML: function() {
-    var attr = Component.prototype.getAttrToHTML.apply(this, arguments);
+  getAttrToHTML: function(...args) {
+    var attr = Component.prototype.getAttrToHTML.apply(this, args);
     delete attr.onmousedown;
     var src = this.get('src');
     if(src)

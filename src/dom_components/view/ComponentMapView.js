@@ -33,8 +33,8 @@ module.exports = ComponentView.extend({
     return this.iframe;
   },
 
-  render: function() {
-    ComponentView.prototype.render.apply(this, arguments);
+  render: function(...args) {
+    ComponentView.prototype.render.apply(this, args);
     this.updateClasses();
     this.el.appendChild(this.getIframe());
     return this;

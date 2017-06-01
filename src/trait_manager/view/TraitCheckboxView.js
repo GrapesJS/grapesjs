@@ -21,11 +21,11 @@ module.exports = TraitView.extend({
    * @return {HTMLElement}
    * @private
    */
-  getInputEl: function() {
+  getInputEl: function(...args) {
     var first;
     if(!this.$input)
       first = 1;
-    var el = TraitView.prototype.getInputEl.apply(this, arguments);
+    var el = TraitView.prototype.getInputEl.apply(this, args);
     if(first){
       var md = this.model;
       var name = md.get('name');

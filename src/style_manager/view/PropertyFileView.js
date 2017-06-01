@@ -110,9 +110,9 @@ module.exports = PropertyView.extend({
    *
    * @return void
    * */
-  removeFile:function(){
+  removeFile:function(...args) {
     this.model.set('value',this.defaultValue);
-    PropertyView.prototype.cleanValue.apply(this, arguments);
+    PropertyView.prototype.cleanValue.apply(this, args);
     this.setPreviewView(0);
   },
 

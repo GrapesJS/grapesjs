@@ -14,8 +14,8 @@ module.exports = _.extend({}, SelectPosition, {
    * Start with enabling to select position and listening to start drawning
    * @private
    * */
-  enable: function() {
-    SelectPosition.enable.apply(this, arguments);
+  enable: function(...args) {
+    SelectPosition.enable.apply(this, args);
     this.$wr.css('cursor','crosshair');
     if(this.allowDraw)
       this.$wr.on('mousedown', this.startDraw);

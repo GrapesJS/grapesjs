@@ -107,8 +107,8 @@ module.exports = ComponentView.extend({
     el.style.width = '100%';
   },
 
-  render: function() {
-    ComponentView.prototype.render.apply(this, arguments);
+  render: function(...args) {
+    ComponentView.prototype.render.apply(this, args);
     this.updateClasses();
     var prov = this.model.get('provider');
     this.el.appendChild(this.renderByProvider(prov));

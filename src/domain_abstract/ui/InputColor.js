@@ -25,8 +25,8 @@ module.exports = Input.extend({
   /**
    * Updates the view when the model is changed
    * */
-  handleModelChange: function() {
-    Input.prototype.handleModelChange.apply(this, arguments);
+  handleModelChange: function(...args) {
+    Input.prototype.handleModelChange.apply(this, args);
 
     var value = this.model.get('value');
     var colorEl = this.getColorEl();
@@ -71,8 +71,8 @@ module.exports = Input.extend({
     return this.colorEl;
   },
 
-  render: function() {
-    Input.prototype.render.apply(this, arguments);
+  render: function(...args) {
+    Input.prototype.render.apply(this, args);
     this.$el.find('.' + this.colorHolderClass).html(this.getColorEl());
     return this;
   }

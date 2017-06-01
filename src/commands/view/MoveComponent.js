@@ -13,8 +13,8 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
     this.noSelClass  = this.ppfx + 'no-select';
   },
 
-  enable: function() {
-    SelectComponent.enable.apply(this, arguments);
+  enable: function(...args) {
+    SelectComponent.enable.apply(this, args);
     this.getBadgeEl().addClass(this.badgeClass);
     this.getHighlighterEl().addClass(this.hoverClass);
     var wp = this.$wrapper;
@@ -138,8 +138,8 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
     return this.$hl;
   },
 
-  stop: function(){
-    SelectComponent.stop.apply(this, arguments);
+  stop: function(...args) {
+    SelectComponent.stop.apply(this, args);
     this.getBadgeEl().removeClass(this.badgeClass);
     this.getHighlighterEl().removeClass(this.hoverClass);
     var wp = this.$wrapper;
