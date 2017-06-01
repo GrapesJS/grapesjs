@@ -1,6 +1,6 @@
 /* stylelint-disable */
 @import "spectrum";
-@import "font-awesome";
+@import "node_modules/font-awesome/scss/font-awesome";
 
 $app-prefix: 	'gjs-';
 $nv-prefix: 	$app-prefix + 'nv-';
