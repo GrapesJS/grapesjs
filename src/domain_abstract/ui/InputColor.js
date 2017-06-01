@@ -1,6 +1,6 @@
 var Backbone = require('backbone');
 var Input = require('./Input');
-var Spectrum = require('Spectrum');
+var Spectrum = require('spectrum-colorpicker');
 
 module.exports = Input.extend({
 

@@ -1,25 +1,25 @@
 var deps = [
 require('Utils'),
-require('StorageManager'),
-require('DeviceManager'),
-require('Parser'),
-require('SelectorManager'),
-require('ModalDialog'),
-require('CodeManager'),
-require('Panels'),
-require('RichTextEditor'),
-require('StyleManager'),
-require('AssetManager'),
-require('CssComposer'),
-require('DomComponents'),
-require('Canvas'),
-require('Commands'),
-require('BlockManager'),
-require('TraitManager'),
+require('storage_manager'),
+require('device_manager'),
+require('parser'),
+require('selector_manager'),
+require('modal_dialog'),
+require('code_manager'),
+require('panels'),
+require('rich_text_editor'),
+require('style_manager'),
+require('asset_manager'),
+require('css_composer'),
+require('dom_components'),
+require('canvas'),
+require('commands'),
+require('block_manager'),
+require('trait_manager'),
 ];
 
 require('backbone');
-require('backboneUndo');
+require('backbone-undo');
 var key = require('keymaster');
 /*
 require('Utils');

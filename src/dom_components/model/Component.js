@@ -1,7 +1,7 @@
 var Backbone = require('backbone');
 var Components = require('./Components');
-var Selectors = require('SelectorManager/model/Selectors');
-var Traits = require('TraitManager/model/Traits');
+var Selectors = require('selector_manager/model/Selectors');
+var Traits = require('trait_manager/model/Traits');
 
 module.exports = Backbone.Model.extend({
 

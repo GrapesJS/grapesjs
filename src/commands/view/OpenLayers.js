@@ -1,4 +1,4 @@
-var Layers = require('Navigator');
+var Layers = require('navigator');
 
 module.exports = {
 

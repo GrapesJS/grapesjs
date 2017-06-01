@@ -1,5 +1,5 @@
-var ToolbarView = require('DomComponents/view/ToolbarView');
-var Toolbar = require('DomComponents/model/Toolbar');
+var ToolbarView = require('dom_components/view/ToolbarView');
+var Toolbar = require('dom_components/model/Toolbar');
 var key = require('keymaster');
 
 module.exports = {

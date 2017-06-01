@@ -1,6 +1,6 @@
 var Backbone = require('backbone');
 var PropertyView = require('./PropertyView');
-var InputNumber = require('Abstract/ui/InputNumber');
+var InputNumber = require('domain_abstract/ui/InputNumber');
 
 module.exports = PropertyView.extend({
 

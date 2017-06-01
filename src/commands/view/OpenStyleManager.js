@@ -1,4 +1,4 @@
-var StyleManager = require('StyleManager');
+var StyleManager = require('style_manager');
 
 module.exports = {
 
