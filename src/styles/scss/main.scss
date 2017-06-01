@@ -1,6 +1,8 @@
 /* stylelint-disable */
 @import "spectrum";
 @import "node_modules/font-awesome/scss/font-awesome";
+@import "node_modules/codemirror/lib/codemirror";
+@import "node_modules/codemirror/theme/hopscotch";
 
 $app-prefix: 	'gjs-';
 $nv-prefix: 	$app-prefix + 'nv-';
