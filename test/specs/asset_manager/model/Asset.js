@@ -1,7 +1,7 @@
 var Asset = require('asset_manager/model/Asset');
 
 module.exports = {
-  run: function(){
+  run() {
 
     describe('Asset', () => {
       it('Object exists', () => {

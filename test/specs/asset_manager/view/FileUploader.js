@@ -1,7 +1,7 @@
 var FileUploader = require('asset_manager/view/FileUploader');
 
 module.exports = {
-  run: function() {
+  run() {
 
     describe('File Uploader', () => {
 

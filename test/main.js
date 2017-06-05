@@ -10,6 +10,8 @@ describe('Main', () => {
     });
   });
 
-  require('./specs/asset_manager/main.js');
+  const path = './specs/';
+  require(`${path}asset_manager`);
+  require(`${path}block_manager`);
 
 });

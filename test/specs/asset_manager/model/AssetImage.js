@@ -1,7 +1,7 @@
 var AssetImage = require('asset_manager/model/AssetImage');
 
 module.exports = {
-  run: function() {
+  run() {
 
     describe('AssetImage', () => {
       it('Object exists', () => {

@@ -2,7 +2,7 @@ var AssetsView = require('asset_manager/view/AssetsView');
 var Assets = require('asset_manager/model/Assets');
 
 module.exports = {
-  run: function() {
+  run() {
 
     describe('AssetsView', () => {
 
@@ -83,7 +83,7 @@ module.exports = {
       it("Add image asset from input string", () => {
         obj.getInputUrl().value = "test";
         obj.addFromStr({
-          preventDefault: function(){}
+          preventDefault() {}
         });
         var asset = obj.collection.at(0);
         expect(asset.get('src')).toEqual('test');

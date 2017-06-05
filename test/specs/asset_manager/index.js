@@ -12,10 +12,10 @@ describe('Asset Manager', () => {
     var storage;
     var storageId = 'testStorage';
     var storageMock = {
-      store: function(data){
+      store(data) {
         storage = data;
       },
-      load: function(keys){
+      load(keys) {
         return storage;
       },
     };

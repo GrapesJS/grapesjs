@@ -3,7 +3,7 @@ var AssetImage = require('asset_manager/model/AssetImage');
 var Assets = require('asset_manager/model/Assets');
 
 module.exports = {
-  run: function() {
+  run() {
 
     describe('AssetImageView', () => {
 
@@ -17,7 +17,7 @@ module.exports = {
         var model = coll.add({ type:'image', src: '/test' });
         this.view = new AssetImageView({
           config : {},
-          model: model
+          model
         });
         this.$fixture.empty().appendTo(this.$fixtures);
         this.$fixture.html(this.view.render().el);
