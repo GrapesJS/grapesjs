@@ -5,7 +5,7 @@ var Assets = require('asset_manager/model/Assets');
 module.exports = {
   run: function() {
 
-    describe('AssetImageView', function() {
+    describe('AssetImageView', () => {
 
       before(function () {
         this.$fixtures = $("#fixtures");
@@ -31,11 +31,11 @@ module.exports = {
         this.$fixture.empty();
       });
 
-      it('Object exists', function() {
+      it('Object exists', () => {
         expect(AssetImageView).toExist();
       });
 
-      describe('Asset should be rendered correctly', function() {
+      describe('Asset should be rendered correctly', () => {
 
           it('Has preview box', function() {
             var $asset = this.view.$el;

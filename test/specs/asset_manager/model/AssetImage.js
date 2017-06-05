@@ -3,12 +3,12 @@ var AssetImage = require('asset_manager/model/AssetImage');
 module.exports = {
   run: function() {
 
-    describe('AssetImage', function() {
-      it('Object exists', function() {
+    describe('AssetImage', () => {
+      it('Object exists', () => {
         expect(AssetImage).toExist();
       });
 
-      it('Has default values', function() {
+      it('Has default values', () => {
         var obj = new AssetImage({});
         expect(obj.get('type')).toEqual('image');
         expect(obj.get('src')).toNotExist();
