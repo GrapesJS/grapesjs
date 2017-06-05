@@ -2,52 +2,52 @@ const ComponentImageView = require('dom_components/view/ComponentImageView');
 const Component = require('dom_components/model/Component');
 
 module.exports = {
-  run : function(){
+  run() {
 
-      describe('ComponentImageView', function() {
+      describe('ComponentImageView', () => {
 
         var $fixtures;
         var $fixture;
         var model;
         var view;
 
-        before(function () {
+        before(() => {
           $fixtures = $("#fixtures");
           $fixture = $('<div class="components-fixture"></div>');
         });
 
-        beforeEach(function () {
+        beforeEach(() => {
           model = new Component();
           view = new ComponentImageView({
-            model: model
+            model
           });
           $fixture.empty().appendTo($fixtures);
           $fixture.html(view.render().el);
         });
 
-        afterEach(function () {
+        afterEach(() => {
           view.remove();
         });
 
-        after(function () {
+        after(() => {
           $fixture.remove();
         });
 
-        it('Component empty', function() {
+        it('Component empty', () => {
           expect(view.el.getAttribute('onmousedown')).toEqual('return false');
           expect(view.el.getAttribute('class')).toEqual(view.classEmpty);
         });
 
-        it('TagName is <img>', function() {
+        it('TagName is <img>', () => {
           expect(view.el.tagName).toEqual('IMG');
         });
 
-        it('Update src attribute', function() {
+        it('Update src attribute', () => {
           model.set('src', './');
           expect(view.el.getAttribute('src')).toEqual('./');
         });
 
-        it('Renders correctly', function() {
+        it('Renders correctly', () => {
           expect(view.render()).toExist();
         });
     });

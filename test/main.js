@@ -14,5 +14,6 @@ describe('Main', () => {
   require(`${path}code_manager`);
   require(`${path}commands`);
   require(`${path}css_composer`);
+  require(`${path}device_manager`);
   require(`${path}dom_components`);
 });

@@ -15,7 +15,7 @@ module.exports = {
           fixture = $('<div class="csscomposer-fixture"></div>');
         });
 
-        beforeEach(function(done) {
+        beforeEach(done => {
           //this.timeout(5000);
           gjs = grapesjs.init({
             stylePrefix: '',

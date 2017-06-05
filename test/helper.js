@@ -30,6 +30,7 @@ global._ = _;
 global.expect = expect;
 global.sinon = sinon;
 global.grapesjs = grapesjs;
+global.Backbone = Backbone;
 window.$ = $;
 Backbone.$ = $;
 

@@ -6,9 +6,9 @@ const ComponentTextView = require('./view/ComponentTextView');
 const ComponentImageView = require('./view/ComponentImageView');
 const utils = require('./../test_utils.js');
 
-describe('DOM Components', function() {
+describe('DOM Components', () => {
 
-  describe('Main', function() {
+  describe('Main', () => {
 
     var obj;
     var config;
@@ -17,48 +17,46 @@ describe('DOM Components', function() {
       config: {
         loadCompsOnRender: 0,
       },
-      get: function(){return;},
-      getHtml: function(){return 'testHtml';},
-      getComponents: function(){return {test: 1};},
-      getCacheLoad: function(){
+      get() {return;},
+      getHtml() {return 'testHtml';},
+      getComponents() {return {test: 1};},
+      getCacheLoad() {
         return storagMock.load();
       }
     };
     // Methods
-    var setSmConfig = function(){
+    var setSmConfig = () => {
       config.stm = storagMock;
-      config.stm.getConfig =  function(){
-        return {
-          storeHtml: 1,
-          storeComponents: 1,
-        }
-      };
+      config.stm.getConfig =  () => ({
+        storeHtml: 1,
+        storeComponents: 1
+      });
     };
-    var setEm = function(){
+    var setEm = () => {
       config.em = editorModel;
     }
 
 
-    beforeEach(function () {
+    beforeEach(() => {
       config = {};
       obj = new DomComponents().init(config);
     });
 
-    afterEach(function () {
+    afterEach(() => {
       obj = null;
     });
 
-    it('Object exists', function() {
+    it('Object exists', () => {
       expect(DomComponents).toExist();
     });
 
-    it('storageKey returns array', function() {
+    it('storageKey returns array', () => {
       expect(obj.storageKey() instanceof Array).toEqual(true);
     });
 
-    it('storageKey returns correct composition', function() {
+    it('storageKey returns correct composition', () => {
       config.stm = {
-        getConfig: function(){
+        getConfig() {
           return {
             storeHtml: 1,
             storeComponents: 1,
@@ -68,7 +66,7 @@ describe('DOM Components', function() {
       expect(obj.storageKey()).toEqual(['html', 'components']);
     });
 
-    it('Store data', function() {
+    it('Store data', () => {
       setSmConfig();
       setEm();
       var expected = {
@@ -78,32 +76,32 @@ describe('DOM Components', function() {
       expect(obj.store(1)).toEqual(expected);
     });
 
-    it('Store and load data', function() {
+    it('Store and load data', () => {
       setSmConfig();
       setEm();
       obj.store();
       expect(obj.load()).toEqual({test: 1});
     });
 
-    it('Wrapper exists', function() {
+    it('Wrapper exists', () => {
       expect(obj.getWrapper()).toExist();
     });
 
-    it('No components inside', function() {
+    it('No components inside', () => {
       expect(obj.getComponents().length).toEqual(0);
     });
 
-    it('Add new component', function() {
+    it('Add new component', () => {
       var comp = obj.addComponent({});
       expect(obj.getComponents().length).toEqual(1);
     });
 
-    it('Add more components at once', function() {
+    it('Add more components at once', () => {
       var comp = obj.addComponent([{},{}]);
       expect(obj.getComponents().length).toEqual(2);
     });
 
-    it('Render wrapper', function() {
+    it('Render wrapper', () => {
       expect(obj.render()).toExist();
     });
   });

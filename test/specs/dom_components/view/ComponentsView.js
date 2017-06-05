@@ -3,8 +3,8 @@ const ComponentsView = require('dom_components/view/ComponentsView');
 const Components = require('dom_components/model/Components');
 
 module.exports = {
-  run : function() {
-      describe('ComponentsView', function() {
+  run() {
+      describe('ComponentsView', () => {
 
         var $fixtures;
         var $fixture;
@@ -13,12 +13,12 @@ module.exports = {
         var dcomp;
         var compOpts;
 
-        before(function () {
+        before(() => {
           $fixtures = $("#fixtures");
           $fixture = $('<div class="components-fixture"></div>');
         });
 
-        beforeEach(function () {
+        beforeEach(() => {
           dcomp = new DomComponents();
           compOpts = {
             defaultTypes: dcomp.componentTypes,
@@ -32,25 +32,25 @@ module.exports = {
           $fixture.html(view.render().el);
         });
 
-        afterEach(function () {
+        afterEach(() => {
           view.collection.reset();
         });
 
-        after(function () {
+        after(() => {
           $fixture.remove();
         });
 
-        it("Collection is empty", function (){
+        it("Collection is empty", () => {
           expect(view.$el.html()).toNotExist();
         });
 
-        it("Add new component", function (){
+        it("Add new component", () => {
           sinon.stub(view, "addToCollection");
           view.collection.add({});
           expect(view.addToCollection.calledOnce).toEqual(true);
         });
 
-        it("Render new component", function (){
+        it("Render new component", () => {
           view.collection.add({});
           expect(view.$el.html()).toExist();
         });

@@ -8,14 +8,14 @@ const ComponentVideo = require('dom_components/model/ComponentVideo');
 const Components = require('dom_components/model/Components');
 
 module.exports = {
-  run : function(){
+  run() {
       var obj;
       var dcomp;
       var compOpts;
 
-      describe('Component', function() {
+      describe('Component', () => {
 
-        beforeEach(function () {
+        beforeEach(() => {
           obj = new Component();
           dcomp = new DomComponents();
           compOpts = {
@@ -23,15 +23,15 @@ module.exports = {
           };
         });
 
-        afterEach(function () {
+        afterEach(() => {
           obj = null;
         });
 
-        it('Has no children', function() {
+        it('Has no children', () => {
           expect(obj.get('components').length).toEqual(0);
         });
 
-        it('Clones correctly', function() {
+        it('Clones correctly', () => {
           var sAttr = obj.attributes;
           var cloned = obj.clone();
           var eAttr = cloned.attributes;
@@ -42,7 +42,7 @@ module.exports = {
           expect(sAttr.length).toEqual(eAttr.length);
         });
 
-        it('Clones correctly with traits', function() {
+        it('Clones correctly with traits', () => {
           obj.get('traits').at(0).set('value', 'testTitle');
           var cloned = obj.clone();
           cloned.set('stylable', 0);
@@ -51,21 +51,21 @@ module.exports = {
           expect(obj.get('stylable')).toEqual(true);
         });
 
-        it('Has expected name', function() {
+        it('Has expected name', () => {
           expect(obj.getName()).toEqual('Box');
         });
 
-        it('Has expected name 2', function() {
+        it('Has expected name 2', () => {
           obj.cid = 'c999';
           obj.set('type','testType');
           expect(obj.getName()).toEqual('TestType');
         });
 
-        it('Component toHTML', function() {
+        it('Component toHTML', () => {
           expect(obj.toHTML()).toEqual('<div></div>');
         });
 
-        it('Component toHTML with attributes', function() {
+        it('Component toHTML with attributes', () => {
           obj = new Component({
             tagName: 'article',
             attributes: {
@@ -76,40 +76,40 @@ module.exports = {
           expect(obj.toHTML()).toEqual('<article data-test1="value1" data-test2="value2"></article>');
         });
 
-        it('Component toHTML with classes', function() {
+        it('Component toHTML with classes', () => {
           obj = new Component({
             tagName: 'article'
           });
-          ['class1', 'class2'].forEach(function(item){
+          ['class1', 'class2'].forEach(item => {
             obj.get('classes').add({name: item});
           });
           expect(obj.toHTML()).toEqual('<article class="class1 class2"></article>');
         });
 
-        it('Component toHTML with children', function() {
+        it('Component toHTML with children', () => {
           obj = new Component({tagName: 'article'}, compOpts);
           obj.get('components').add({tagName: 'span'});
           expect(obj.toHTML()).toEqual('<article><span></span></article>');
         });
 
-        it('Component toHTML with more children', function() {
+        it('Component toHTML with more children', () => {
           obj = new Component({tagName: 'article'}, compOpts);
           obj.get('components').add([{tagName: 'span'}, {tagName: 'div'}]);
           expect(obj.toHTML()).toEqual('<article><span></span><div></div></article>');
         });
 
-        it('Component toHTML with no closing tag', function() {
+        it('Component toHTML with no closing tag', () => {
           obj = new Component({void: 1});
           expect(obj.toHTML()).toEqual('<div/>');
         });
 
-        it('Component parse empty div', function() {
+        it('Component parse empty div', () => {
           var el = document.createElement('div');
           obj = Component.isComponent(el);
           expect(obj).toEqual({tagName: 'div'});
         });
 
-        it('Component parse span', function() {
+        it('Component parse span', () => {
           var el = document.createElement('span');
           obj = Component.isComponent(el);
           expect(obj).toEqual({tagName: 'span'});
@@ -117,30 +117,30 @@ module.exports = {
 
     });
 
-    describe('Image Component', function() {
+    describe('Image Component', () => {
 
-        beforeEach(function () {
+        beforeEach(() => {
           obj = new ComponentImage();
         });
 
-        afterEach(function () {
+        afterEach(() => {
           obj = null;
         });
 
-        it('Has src property', function() {
+        it('Has src property', () => {
           expect(obj.has('src')).toEqual(true);
         });
 
-        it('Not droppable', function() {
+        it('Not droppable', () => {
           expect(obj.get('droppable')).toEqual(false);
         });
 
-        it('ComponentImage toHTML', function() {
+        it('ComponentImage toHTML', () => {
           obj = new ComponentImage();
           expect(obj.toHTML()).toEqual('<img/>');
         });
 
-        it('Component toHTML with attributes', function() {
+        it('Component toHTML with attributes', () => {
           obj = new ComponentImage({
             attributes: {'alt': 'AltTest'},
             src: 'testPath'
@@ -148,19 +148,19 @@ module.exports = {
           expect(obj.toHTML()).toEqual('<img alt="AltTest" src="testPath"/>');
         });
 
-        it('Refuse not img element', function() {
+        it('Refuse not img element', () => {
           var el = document.createElement('div');
           obj = ComponentImage.isComponent(el);
           expect(obj).toEqual('');
         });
 
-        it('Component parse img element', function() {
+        it('Component parse img element', () => {
           var el = document.createElement('img');
           obj = ComponentImage.isComponent(el);
           expect(obj).toEqual({type: 'image'});
         });
 
-        it('Component parse img element with src', function() {
+        it('Component parse img element with src', () => {
           var el = document.createElement('img');
           el.src = 'http://localhost/';
           obj = ComponentImage.isComponent(el);
@@ -169,25 +169,25 @@ module.exports = {
 
     });
 
-    describe('Text Component', function() {
+    describe('Text Component', () => {
 
-        beforeEach(function () {
+        beforeEach(() => {
           obj  = new ComponentText();
         });
 
-        afterEach(function () {
+        afterEach(() => {
           obj = null;
         });
 
-        it('Has content property', function() {
+        it('Has content property', () => {
           expect(obj.has('content')).toEqual(true);
         });
 
-        it('Not droppable', function() {
+        it('Not droppable', () => {
           expect(obj.get('droppable')).toEqual(false);
         });
 
-        it('Component toHTML with attributes', function() {
+        it('Component toHTML with attributes', () => {
           obj = new ComponentText({
             attributes: {'data-test': 'value'},
             content: 'test content'
@@ -197,9 +197,9 @@ module.exports = {
 
     });
 
-    describe('Link Component', function() {
+    describe('Link Component', () => {
 
-      it('Component parse a element', function() {
+      it('Component parse a element', () => {
         var el = document.createElement('a');
         obj = ComponentLink.isComponent(el);
         expect(obj).toEqual({type: 'link'});
@@ -207,16 +207,16 @@ module.exports = {
 
     });
 
-    describe('Map Component', function() {
+    describe('Map Component', () => {
 
-      it('Component parse map iframe', function() {
+      it('Component parse map iframe', () => {
         var src = 'https://maps.google.com/maps?&q=London,UK&z=11&t=q&output=embed';
         var el = $('<iframe src="' + src + '"></iframe>');
         obj = ComponentMap.isComponent(el.get(0));
-        expect(obj).toEqual({type: 'map', src: src});
+        expect(obj).toEqual({type: 'map', src});
       });
 
-      it('Component parse not map iframe', function() {
+      it('Component parse not map iframe', () => {
         var el = $('<iframe src="https://www.youtube.com/watch?v=jNQXAC9IVRw"></iframe>');
         obj = ComponentMap.isComponent(el.get(0));
         expect(obj).toEqual('');
@@ -224,53 +224,53 @@ module.exports = {
 
     });
 
-    describe('Video Component', function() {
+    describe('Video Component', () => {
 
-      it('Component parse video', function() {
+      it('Component parse video', () => {
         var src = 'http://localhost/';
         var el = $('<video src="' + src + '"></video>');
         obj = ComponentVideo.isComponent(el.get(0));
-        expect(obj).toEqual({type: 'video', src: src});
+        expect(obj).toEqual({type: 'video', src});
       });
 
-      it('Component parse youtube video iframe', function() {
+      it('Component parse youtube video iframe', () => {
         var src = 'http://www.youtube.com/embed/jNQXAC9IVRw?';
         var el = $('<iframe src="' + src + '"></video>');
         obj = ComponentVideo.isComponent(el.get(0));
-        expect(obj).toEqual({type: 'video', provider: 'yt', src: src});
+        expect(obj).toEqual({type: 'video', provider: 'yt', src});
       });
 
-      it('Component parse vimeo video iframe', function() {
+      it('Component parse vimeo video iframe', () => {
         var src = 'http://player.vimeo.com/video/2?';
         var el = $('<iframe src="' + src + '"></video>');
         obj = ComponentVideo.isComponent(el.get(0));
-        expect(obj).toEqual({type: 'video', provider: 'vi', src: src});
+        expect(obj).toEqual({type: 'video', provider: 'vi', src});
       });
 
     });
 
-    describe('Components', function() {
+    describe('Components', () => {
 
-        beforeEach(function () {
+        beforeEach(() => {
           dcomp = new DomComponents();
           compOpts = {
             defaultTypes: dcomp.componentTypes,
           }
         });
 
-        it('Creates component correctly', function() {
+        it('Creates component correctly', () => {
           var c = new Components({}, compOpts);
           var m = c.add({});
           expect(m instanceof Component).toEqual(true);
         });
 
-        it('Creates image component correctly', function() {
+        it('Creates image component correctly', () => {
           var c = new Components({}, compOpts);
           var m = c.add({ type: 'image' });
           expect(m instanceof ComponentImage).toEqual(true);
         });
 
-        it('Creates text component correctly', function() {
+        it('Creates text component correctly', () => {
           var c = new Components({}, compOpts);
           var m = c.add({ type: 'text' });
           expect(m instanceof ComponentText).toEqual(true);
