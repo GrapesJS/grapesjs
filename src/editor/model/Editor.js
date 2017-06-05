@@ -18,28 +18,10 @@ require('block_manager'),
 require('trait_manager'),
 ];
 
-require('backbone');
-require('backbone-undo');
+var Backbone = require('backbone');
+var UndoManager = require('backbone-undo');
 var key = require('keymaster');
-/*
-require('Utils');
-require('StorageManager');
-require('DeviceManager');
-require('Parser');
-require('SelectorManager');
-require('ModalDialog');
-require('CodeManager');
-require('Panels');
-require('RichTextEditor');
-require('StyleManager');
-require('AssetManager');
-require('CssComposer');
-require('DomComponents');
-require('Canvas');
-require('Commands');
-require('BlockManager');
-require('TraitManager');
-*/
+
 module.exports = Backbone.Model.extend({
 
   defaults: {
@@ -187,7 +169,7 @@ module.exports = Backbone.Model.extend({
     var cmp = this.get('DomComponents');
     if(cmp && this.config.undoManager){
       var that = this;
-      this.um = new Backbone.UndoManager({
+      this.um = new UndoManager({
           register: [cmp.getComponents(), this.get('CssComposer').getAll()],
           track: true
       });
@@ -202,9 +184,9 @@ module.exports = Backbone.Model.extend({
         that.trigger('component:update');
       });
 
-      Backbone.UndoManager.removeUndoType("change");
+      UndoManager.removeUndoType("change");
       var beforeCache;
-      Backbone.UndoManager.addUndoType("change:style", {
+      UndoManager.addUndoType("change:style", {
         "on": function (model, value, opts) {
           var opt = opts || {};
           if(!beforeCache){

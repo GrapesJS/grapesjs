@@ -1,5 +1,3 @@
-var $ = require('jquery');
-
 var readFileIntoDataUrl = fileInfo => {
   var loader = $.Deferred(),
     fReader = new FileReader();

@@ -1,55 +1,53 @@
-define(function(require, exports, module){
-  'use strict';
-  var CssRulesView = require('undefined');
-  var CssRules = require('CssComposer/model/CssRules');
+var CssRulesView = require('css_composer/view/CssRulesView');
+var CssRules = require('css_composer/model/CssRules');
 
-    module.exports = {
-      run : function(){
-          describe('CssRulesView', function() {
+module.exports = {
+  run() {
+      describe('CssRulesView', () => {
 
-            before(function () {
-              this.$fixtures  = $("#fixtures");
-              this.$fixture   = $('<div class="cssrules-fixture"></div>');
-            });
+        let obj;
 
-            beforeEach(function () {
-              var col = new CssRules([]);
-              this.view = new CssRulesView({
-                collection: col
-              });
-              this.$fixture.empty().appendTo(this.$fixtures);
-              this.$fixture.html(this.view.render().el);
-            });
-
-            afterEach(function () {
-              this.view.collection.reset();
-            });
-
-            after(function () {
-              this.$fixture.remove();
-            });
-
-            it('Object exists', function() {
-              CssRulesView.should.be.exist;
-            });
-
-            it("Collection is empty", function (){
-              this.view.$el.html().should.be.empty;
-            });
-
-            it("Add new rule", function (){
-              sinon.stub(this.view, "addToCollection");
-              this.view.collection.add({});
-              this.view.addToCollection.calledOnce.should.equal(true);
-            });
-
-            it("Render new rule", function (){
-              this.view.collection.add({});
-              this.view.$el.html().should.not.be.empty;
-            });
-
+        before(function () {
+          this.$fixtures = $("#fixtures");
+          this.$fixture = $('<div class="cssrules-fixture"></div>');
         });
-      }
-    };
 
-});
+        beforeEach(function () {
+          var col = new CssRules([]);
+          obj = new CssRulesView({
+            collection: col
+          });
+          this.$fixture.empty().appendTo(this.$fixtures);
+          this.$fixture.html(obj.render().el);
+        });
+
+        afterEach(() => {
+          obj.collection.reset();
+        });
+
+        after(function () {
+          this.$fixture.remove();
+        });
+
+        it('Object exists', () => {
+          expect(CssRulesView).toExist();
+        });
+
+        it("Collection is empty", () => {
+          expect(obj.$el.html()).toNotExist();
+        });
+
+        it("Add new rule", () => {
+          sinon.stub(obj, "addToCollection");
+          obj.collection.add({});
+          expect(obj.addToCollection.calledOnce).toExist(true);
+        });
+
+        it("Render new rule", () => {
+          obj.collection.add({});
+          expect(obj.$el.html()).toExist();
+        });
+
+    });
+  }
+};

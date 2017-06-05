@@ -1,4 +1,4 @@
-define(() => ({
+module.exports = {
   storageMock: function() {
     var db = {};
     return {
@@ -14,4 +14,4 @@ define(() => ({
       },
     };
   }
-}));
+};

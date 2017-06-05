@@ -1,82 +1,81 @@
-define(function(require, exports, module){
-  'use strict';
-  var Selectors = require('undefined');
-  var Selector = require('SelectorManager/model/Selector');
+var CssRule = require('css_composer/model/CssRule');
+var CssRules = require('css_composer/model/CssRules');
+var Selectors = require('selector_manager/model/Selectors');
+var Selector = require('selector_manager/model/Selector');
 
-    module.exports = {
-      run : function(){
-          describe('CssRule', function() {
+module.exports = {
+  run() {
+      describe('CssRule', () => {
+        let obj;
 
-            beforeEach(function () {
-              this.obj  = new CssRule();
-            });
-
-            afterEach(function () {
-              delete this.obj;
-            });
-
-            it('Has selectors property', function() {
-              this.obj.has('selectors').should.equal(true);
-            });
-
-            it('Has style property', function() {
-              this.obj.has('style').should.equal(true);
-            });
-
-            it('Has state property', function() {
-              this.obj.has('state').should.equal(true);
-            });
-
-            it('No default selectors', function() {
-              this.obj.get('selectors').length.should.equal(0);
-            });
-
-            it('Compare returns true with the same selectors', function() {
-              var s1 = this.obj.get('selectors').add({ name: 'test1' });
-              var s2 = this.obj.get('selectors').add({ name: 'test2' });
-              this.obj.compare([s1, s2]).should.equal(true);
-            });
-
-            it('Compare with different state', function() {
-              var s1 = this.obj.get('selectors').add({ name: 'test1' });
-              var s2 = this.obj.get('selectors').add({ name: 'test2' });
-              this.obj.set('state','hover');
-              this.obj.compare([s1, s2]).should.equal(false);
-              this.obj.compare([s1, s2], 'hover').should.equal(true);
-            });
-
-            it('Compare with different mediaText', function() {
-              var s1 = this.obj.get('selectors').add({ name: 'test1' });
-              var s2 = this.obj.get('selectors').add({ name: 'test2' });
-              this.obj.set('state','hover');
-              this.obj.set('mediaText','1000');
-              this.obj.compare([s1, s2]).should.equal(false);
-              this.obj.compare([s1, s2], 'hover').should.equal(false);
-              this.obj.compare([s2, s1], 'hover', '1000').should.equal(true);
-            });
-
+        beforeEach(() => {
+          obj = new CssRule();
         });
 
-        describe('CssRules', function() {
-
-            it('Creates collection item correctly', function() {
-              var c = new CssRules();
-              var m = c.add({});
-              m.should.be.an.instanceOf(CssRule);
-            });
-
+        afterEach(() => {
+          obj = null;
         });
 
-         describe('Selectors', function() {
-
-            it('Creates collection item correctly', function() {
-              var c = new Selectors();
-              var m = c.add({});
-              m.should.be.an.instanceOf(Selector);
-            });
-
+        it('Has selectors property', () => {
+          expect(obj.has('selectors')).toEqual(true);
         });
-      }
-    };
 
-});
+        it('Has style property', () => {
+          expect(obj.has('style')).toEqual(true);
+        });
+
+        it('Has state property', () => {
+          expect(obj.has('state')).toEqual(true);
+        });
+
+        it('No default selectors', () => {
+          expect(obj.get('selectors').length).toEqual(0);
+        });
+
+        it('Compare returns true with the same selectors', () => {
+          var s1 = obj.get('selectors').add({ name: 'test1' });
+          var s2 = obj.get('selectors').add({ name: 'test2' });
+          expect(obj.compare([s1, s2])).toEqual(true);
+        });
+
+        it('Compare with different state', () => {
+          var s1 = obj.get('selectors').add({ name: 'test1' });
+          var s2 = obj.get('selectors').add({ name: 'test2' });
+          obj.set('state','hover');
+          expect(obj.compare([s1, s2])).toEqual(false);
+          expect(obj.compare([s1, s2], 'hover')).toEqual(true);
+        });
+
+        it('Compare with different mediaText', () => {
+          var s1 = obj.get('selectors').add({ name: 'test1' });
+          var s2 = obj.get('selectors').add({ name: 'test2' });
+          obj.set('state','hover');
+          obj.set('mediaText','1000');
+          expect(obj.compare([s1, s2])).toEqual(false);
+          expect(obj.compare([s1, s2], 'hover')).toEqual(false);
+          expect(obj.compare([s2, s1], 'hover', '1000')).toEqual(true);
+        });
+
+    });
+
+    describe('CssRules', () => {
+
+        it('Creates collection item correctly', () => {
+          var c = new CssRules();
+          var m = c.add({});
+          expect(m instanceof CssRule).toEqual(true);
+        });
+
+    });
+
+     describe('Selectors', () => {
+
+        it('Creates collection item correctly', () => {
+          var c = new Selectors();
+          var m = c.add({});
+          expect(m instanceof Selector).toEqual(true);
+        });
+
+    });
+  }
+};

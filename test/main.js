@@ -1,11 +1,9 @@
-import grapesjs from './../src';
-//import AssetManager from './specs/asset_manager';
+//import grapesjs from './../src';
 
 describe('Main', () => {
 
   describe('Startup', () => {
     it('Main object should be loaded', () => {
-      //Grapes = require('editor/main');
       expect(grapesjs).toExist();
     });
   });
@@ -14,5 +12,6 @@ describe('Main', () => {
   require(`${path}asset_manager`);
   require(`${path}block_manager`);
   require(`${path}code_manager`);
-
+  require(`${path}commands`);
+  require(`${path}css_composer`);
 });
