@@ -13,5 +13,6 @@ describe('Main', () => {
   const path = './specs/';
   require(`${path}asset_manager`);
   require(`${path}block_manager`);
+  require(`${path}code_manager`);
 
 });
