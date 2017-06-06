@@ -16,4 +16,5 @@ describe('Main', () => {
   require(`${path}css_composer`);
   require(`${path}device_manager`);
   require(`${path}dom_components`);
+  require(`${path}grapesjs`);
 });
