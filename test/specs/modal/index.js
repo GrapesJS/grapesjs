@@ -1,7 +1,7 @@
 const Modal = require('modal_dialog');
 const ModalView = require('./view/ModalView');
 
-describe.only('Modal dialog', () => {
+describe('Modal dialog', () => {
 
   describe('Main', () => {
 

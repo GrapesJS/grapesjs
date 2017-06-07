@@ -18,4 +18,5 @@ describe('Main', () => {
   require(`${path}dom_components`);
   require(`${path}grapesjs`);
   require(`${path}modal`);
+  require(`${path}panels`);
 });

@@ -1,77 +1,73 @@
-define(function(require, exports, module){
-  'use strict';
-  var PanelView = require('undefined');
-  var Panel = require('Panels/model/Panel');
+const PanelView = require('panels/view/PanelView');
+const Panel = require('panels/model/Panel');
 
-    module.exports = {
-      run : function(){
+module.exports = {
+  run() {
 
-          describe('PanelView', function() {
+      describe('PanelView', () => {
 
-            var $fixtures;
-            var $fixture;
-            var model;
-            var view;
+        var $fixtures;
+        var $fixture;
+        var model;
+        var view;
 
-            before(function () {
-              $fixtures  = $("#fixtures");
-              $fixture   = $('<div class="cssrule-fixture"></div>');
+        before(() => {
+          $fixtures  = $("#fixtures");
+          $fixture   = $('<div class="cssrule-fixture"></div>');
+        });
+
+        beforeEach(() => {
+          model = new Panel();
+          view = new PanelView({
+            model
+          });
+          $fixture.empty().appendTo($fixtures);
+          $fixture.html(view.render().el);
+        });
+
+        afterEach(() => {
+          view.remove();
+        });
+
+        after(() => {
+          $fixture.remove();
+        });
+
+        it('Panel empty', () => {
+          expect($fixture.html()).toEqual('<div class="panel"></div>');
+        });
+
+        it('Append content', () => {
+          model.set('appendContent','test');
+          model.set('appendContent','test2');
+          expect(view.$el.html()).toEqual('testtest2');
+        });
+
+        it('Update content', () => {
+          model.set('content','test');
+          model.set('content','test2');
+          expect(view.$el.html()).toEqual('test2');
+        });
+
+        describe('Init with options', () => {
+
+          beforeEach(() => {
+            model = new Panel({
+              buttons: [{}]
             });
-
-            beforeEach(function () {
-              model = new Panel();
-              view = new PanelView({
-                model: model
-              });
-              $fixture.empty().appendTo($fixtures);
-              $fixture.html(view.render().el);
+            view = new PanelView({
+              model
             });
+            $fixture.empty().appendTo($fixtures);
+            $fixture.html(view.render().el);
+          });
 
-            afterEach(function () {
-              view.remove();
-            });
-
-            after(function () {
-              $fixture.remove();
-            });
-
-            it('Panel empty', function() {
-              $fixture.html().should.be.equal('<div class="panel"></div>');
-            });
-
-            it('Append content', function() {
-              model.set('appendContent','test');
-              model.set('appendContent','test2');
-              view.$el.html().should.be.equal('testtest2');
-            });
-
-            it('Update content', function() {
-              model.set('content','test');
-              model.set('content','test2');
-              view.$el.html().should.be.equal('test2');
-            });
-
-            describe('Init with options', function() {
-
-              beforeEach(function () {
-                model = new Panel({
-                  buttons: [{}]
-                });
-                view = new PanelView({
-                  model: model
-                });
-                $fixture.empty().appendTo($fixtures);
-                $fixture.html(view.render().el);
-              });
-
-              afterEach(function () {
-                view.remove();
-              });
-
-            });
+          afterEach(() => {
+            view.remove();
+          });
 
         });
-      }
-    };
 
-});
+    });
+  }
+};
