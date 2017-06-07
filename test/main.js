@@ -17,4 +17,5 @@ describe('Main', () => {
   require(`${path}device_manager`);
   require(`${path}dom_components`);
   require(`${path}grapesjs`);
+  require(`${path}modal`);
 });
