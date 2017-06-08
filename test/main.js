@@ -20,4 +20,5 @@ describe('Main', () => {
   require(`${path}modal`);
   require(`${path}panels`);
   require(`${path}parser`);
+  require(`${path}plugin_manager`);
 });

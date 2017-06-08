@@ -5,7 +5,7 @@ const DomComponents = require('dom_components');
 module.exports = {
   run() {
 
-    describe.only('ParserHtml', () => {
+    describe('ParserHtml', () => {
       var obj;
 
       beforeEach(() => {

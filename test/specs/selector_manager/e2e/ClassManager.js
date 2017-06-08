@@ -1,18 +1,18 @@
-define(function(require, exports, module){
+define((require, exports, module) => {
   'use strict';
   var GrapesJS = require('GrapesJS');
   var Selectors = require('SelectorManager/model/Selectors');
   var ClassTagsView = require('SelectorManager/view/ClassTagsView');
 
     module.exports = {
-      run : function(){
-          describe('E2E tests', function() {
+      run() {
+          describe('E2E tests', () => {
 
             /**
              * Create tags viewer
              * @param  {Object} ctx
              */
-            var instClassTagViewer = function(ctx){
+            var instClassTagViewer = ctx => {
               var $clm;
               var clm = ctx.gjs.editor.get('SelectorManager');
               if(clm){
@@ -53,7 +53,7 @@ define(function(require, exports, module){
               this.$fixture.remove();
             });
 
-            describe('Interaction with Components', function() {
+            describe('Interaction with Components', () => {
 
               beforeEach(function () {
                 this.wrapper = this.gjs.editor.get('DomComponents').getWrapper().get('components');
