@@ -6,7 +6,7 @@ const PanelsView = require('./view/PanelsView');
 const ButtonView = require('./view/ButtonView');
 const ButtonsView = require('./view/ButtonsView');
 
-describe.only('Panels', () => {
+describe('Panels', () => {
 
   describe('Main', () => {
 
