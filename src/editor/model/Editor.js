@@ -1,5 +1,5 @@
 var deps = [
-require('Utils'),
+require('utils'),
 require('storage_manager'),
 require('device_manager'),
 require('parser'),
