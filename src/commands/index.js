@@ -103,6 +103,7 @@ module.exports = () => {
       defaultCommands.fullscreen = require('./view/Fullscreen');
       defaultCommands.preview = require('./view/Preview');
       defaultCommands.resize = require('./view/Resize');
+      defaultCommands.drag = require('./view/Drag');
 
       defaultCommands['tlb-delete'] = {
         run(ed) {
@@ -137,7 +138,7 @@ module.exports = () => {
       };
 
       defaultCommands['tlb-move'] = {
-        run(ed) {
+        run(ed, sender, opts) {
           var sel = ed.getSelected();
 
           if(!sel || !sel.get('draggable')) {
@@ -146,18 +147,27 @@ module.exports = () => {
           }
 
           var toolbarEl = ed.Canvas.getToolbarEl();
-          var cmdMove = ed.Commands.get('move-comp');
+          toolbarEl.style.display = 'none';
 
+          if (ed.getModel().get('designerMode')) {
+            // TODO move grabbing func in editor/canvas from the Sorter
+            editor.runCommand('drag', {
+              el: sel.view.el,
+              options: {
+                event: opts && opts.event,
+              }
+            });
+          }
+
+          var cmdMove = ed.Commands.get('move-comp');
           cmdMove.onEndMoveFromModel = () => {
             ed.editor.runDefault();
             ed.editor.set('selectedComponent', sel);
             ed.trigger('component:update', sel);
           };
-
           ed.editor.stopDefault();
           cmdMove.initSorterFromModel(sel);
           sel.set('status', 'selected');
-          toolbarEl.style.display = 'none';
         },
       };
 
