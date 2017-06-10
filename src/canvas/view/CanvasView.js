@@ -154,12 +154,17 @@ module.exports = Backbone.View.extend({
    * @return {Object}
    * @private
    */
-  getElementPos(el) {
+  getElementPos(el, opts) {
+    var opt = opts || {};
     var frmOff = this.getFrameOffset();
     var cvsOff = this.getCanvasOffset();
     var eo = this.offset(el);
-    var top = eo.top + frmOff.top - cvsOff.top;
-    var left = eo.left + frmOff.left - cvsOff.left;
+
+    var frmTop = opt.avoidFrameOffset ? 0 : frmOff.top;
+    var frmLeft = opt.avoidFrameOffset ? 0 : frmOff.left;
+
+    var top = eo.top + frmTop - cvsOff.top;
+    var left = eo.left + frmLeft - cvsOff.left;
     return {
       top,
       left,

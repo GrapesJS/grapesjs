@@ -23,7 +23,9 @@ module.exports = {
    */
   getElementRect(el) {
     var posFetcher = this.opts.posFetcher || '';
-    return posFetcher ? posFetcher(el) : getBoundingRect(el);
+    return posFetcher ? posFetcher(el, {
+      avoidFrameOffset: 1,
+    }) : getBoundingRect(el);
   },
 
   /**
@@ -57,22 +59,20 @@ module.exports = {
     if (el && el === this.el) {
       return;
     }
+
     this.getDocumentEl(el);
     this.blur();
     this.el = el;
     this.handlers = this.opts.dragHandlers || [el];
 
-    this.el.style.position = 'absolute';
-    this.el.style.margin = 0;
 
-
-    var elRect = this.getElementRect(el);
-    console.log('elRect', elRect);
+    var elRect = this.getElementRect(el); //<-- TODO have wrong top:left
+    this.elRect = elRect;
     this.startTop = elRect.top;
     this.startLeft = elRect.left;
-    // setModelTop, setModelLeft
 
     // TODO init snapper
+
 		this.getDocumentEl().on('mousedown', this.handleMouseDown);
   },
 
@@ -80,7 +80,6 @@ module.exports = {
    * Blur from the focused element
    */
   blur() {
-    console.log('BLUR');
     this.getDocumentEl().off('mousedown', this.handleMouseDown);
     this.el = null;
   },
@@ -91,22 +90,45 @@ module.exports = {
    */
   start(e) {
     this.startPos = this.getMousePos(e);
-    var doc = this.getDocumentEl();
-    console.log('startPos', this.startPos);
-    doc.on('mousemove', this.drag);
-    doc.on('mouseup', this.stop);
+    var docs = this.getDocumentEl();
+    docs.on('mousemove', this.drag);
+    docs.on('mouseup', this.stop);
+
+    // Start callback
+    var onStart = this.opts.onStart;
+    if(typeof onStart === 'function') {
+      onStart(e, {
+        docs,
+        el: this.el,
+        start: this.startPos,
+        elRect: this.elRect,
+      });
+    }
+
     this.drag(e);
   },
 
   /**
    * Stop dragging
    */
-  stop() {
-    console.log('Stop');
-    var doc = this.getDocumentEl();
-    doc.off('mousemove', this.drag);
-    doc.off('mouseup', this.stop);
+  stop(e) {
+    var docs = this.getDocumentEl();
+    docs.off('mousemove', this.drag);
+    docs.off('mouseup', this.stop);
     this.lockedAxis = null;
+
+    // Stop callback
+    var onEnd = this.opts.onEnd;
+    if(typeof onEnd === 'function') {
+      onEnd(e, {
+        docs,
+        delta: this.delta,
+        end: {
+          x: this.startLeft + this.delta.x,
+          y: this.startTop + this.delta.y,
+        }
+      });
+    }
   },
 
   /**
@@ -115,7 +137,6 @@ module.exports = {
    */
   handleMouseDown(e) {
     var el = e.target;
-    console.log('handleMouseDown');
     if (this.isHandler(el)) {
       this.start(e);
     }
@@ -168,7 +189,6 @@ module.exports = {
       if (el) {
         docs.push(el.ownerDocument);
       }
-      console.log(docs);
       this.$doc = $(docs);
     }
     return this.$doc;
@@ -192,14 +212,13 @@ module.exports = {
    * @param  {Event} event
    */
   drag(e) {
-    console.log('dragging');
     var lockedAxis = this.lockedAxis;
     var currentPos = this.getMousePos(e);
     var delta = {
       x: currentPos.x - this.startPos.x,
       y: currentPos.y - this.startPos.y
     };
-    // lock one axis
+    // Lock one axis
     if (e.shiftKey) {
       if (!lockedAxis) {
         var relX = delta.x;
@@ -227,7 +246,21 @@ module.exports = {
     }
 
     this.lockedAxis = lockedAxis;
+    this.delta = delta;
     this.move(delta.x, delta.y);
+
+    // Drag callback
+    const onDrag = this.opts.onDrag;
+    if(typeof onDrag === 'function') {
+      onDrag(e, {
+        delta,
+        current: {
+          x: this.startLeft + delta.x,
+          y: this.startTop + delta.y
+        },
+        lockedAxis
+      });
+    }
 
     // In case the mouse button was released outside of the window
     if (e.which === 0) {
@@ -235,27 +268,56 @@ module.exports = {
     }
   },
 
+  /**
+   * Move the element
+   * @param  {integer} x
+   * @param  {integer} y
+   */
   move: function(x, y) {
-    console.log(`Drag X: ${x} Y: ${y}`);
     this.moveX(x);
     this.moveY(y);
   },
 
+  /**
+   * Move in x direction
+   * @param  {integer} x
+   */
   moveX(x) {
     var el = this.el;
     var opts = this.opts;
-    //el.style.left += x;
-    // Top & left are component related
-    console.log('X ', this.startLeft, x, this.startLeft + x);
-    el.style.left =  this.startLeft + x + 'px';
+    var xPos = this.startLeft + x;
+    const setX = this.opts.setX;
+
+    if (typeof setX === 'function') {
+      setX(xPos, {
+        el,
+        start: this.startLeft,
+        delta: x,
+      });
+    } else {
+      el.style.left =  xPos + 'px';
+    }
   },
 
+  /**
+   * Move in y direction
+   * @param  {integer} y
+   */
   moveY(y) {
     var el = this.el;
     var opts = this.opts;
-    //el.style.top += y;
-    console.log('Y ', this.startTop, y, this.startTop + y);
-    el.style.top =  this.startTop + y + 'px';
+    var yPos = this.startTop + y;
+    const setY = this.opts.setY;
+
+    if (typeof setY === 'function') {
+      setY(yPos, {
+        el,
+        start: this.startTop,
+        delta: y,
+      });
+    } else {
+      el.style.top =  yPos + 'px';
+    }
   },
 
 };

@@ -5,13 +5,13 @@ module.exports = {
     var canvas = editor.Canvas;
     var dragger = this.dragger;
     var options = opts.options || {};
+    var canvasView = canvas.getCanvasView();
+    options.prefix = editor.getConfig().stylePrefix;
+    options.mousePosFetcher = canvas.getMouseRelativePos;
+    options.posFetcher = canvasView.getElementPos.bind(canvasView);
 
     // Create the resizer for the canvas if not yet created
     if(!dragger) {
-      var canvasView = canvas.getCanvasView();
-      options.prefix = editor.getConfig().stylePrefix;
-      options.posFetcher = canvasView.getElementPos.bind(canvasView);
-      options.mousePosFetcher = canvas.getMouseRelativePos;
       dragger = editor.Utils.Dragger.init(options);
       this.dragger = dragger;
     }
@@ -22,6 +22,8 @@ module.exports = {
     if (options.event) {
       dragger.start(options.event);
     }
+
+    return dragger;
   },
 
   stop() {

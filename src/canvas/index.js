@@ -204,8 +204,8 @@ module.exports = () => {
      * @param {HTMLElement} el
      * @return {Object}
      */
-    getElementPos(el) {
-      return CanvasView.getElementPos(el);
+    getElementPos(el, opts) {
+      return CanvasView.getElementPos(el, opts);
     },
 
     /**
