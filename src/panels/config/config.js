@@ -17,7 +17,7 @@ module.exports = {
     id: 'commands',
     buttons: [{}],
   },{
-    id: 'option',
+    id: 'options',
     buttons: [{
       active: true,
       id: swv,

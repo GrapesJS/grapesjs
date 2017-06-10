@@ -10,38 +10,9 @@
   </head>
   <style>
     body, html{ height: 100%; margin: 0;}
-
-    .panel-options-c {
-      background-color: red;
-      padding: 5px;
-    }
-
-    .panel-block-c {
-      background-color: blue;
-      padding: 5px;
-    }
   </style>
   <body>
-
-    <div class="panel-options">
-      <div class="title">My options panel</div>
-      <div class="panel-options-c"></div>
-    </div>
-
-    <div class="panel-options">
-      <div class="title">My options panel 2</div>
-      <div class="panel-options-c"></div>
-    </div>
-
-    <div class="panel-block">
-      <div class="title">My block</div>
-      <div class="panel-block-c"></div>
-    </div>
-
-    <div id="gjs2" style="height:0px; overflow:hidden;">
-    </div>
-
-    <div id="gjs" style="height:0px; overflow:hidden; display:none;">
+    <div id="gjs" style="height:0px; overflow:hidden;">
       <header class="header-banner">
         <div class="container-width">
           <div class="logo-container">
@@ -829,9 +800,8 @@
       showOffsets: 1,
       autorender: 0,
       noticeOnUnload: 0,
-      container  : '#gjs2',
-      height: '200px',
-      width: '900px',
+      container  : '#gjs',
+      height: '100%',
       fromElement: true,
       clearOnRender: 0,
 
@@ -1185,40 +1155,7 @@
       attributes: { title: 'Empty canvas' }
     }]);
 
-    //pnm.getPanels().reset();
     editor.render();
-
-    pnm.addPanel({
-      id: 'options',
-      appendTo: '.panel-options-c',
-      resizable: true,
-      buttons: [{
-        id: 'sw-visibility',
-        active: true,
-        className: 'fa fa-square-o',
-        command: 'sw-visibility',
-        context: 'sw-visibility',
-        attributes: { title: 'View components' },
-      },{
-        id: 'preview',
-        className: 'fa fa-eye',
-        command: 'preview',
-        context: 'preview',
-        attributes: { title: 'Preview' },
-      },{
-        id: 'fullscreen',
-        className: 'fa fa-arrows-alt',
-        command: 'fullscreen',
-        context: 'fullscreen',
-        attributes: { title: 'Fullscreen' },
-      },{
-        id: 'export-template',
-        className: 'fa fa-code',
-        command: 'export-template',
-        attributes: { title: 'View code' },
-      }],
-    });
-
     </script>
   </body>
 </html>

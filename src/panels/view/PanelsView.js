@@ -51,9 +51,8 @@ module.exports = Backbone.View.extend({
         this.$el.append(rendered);
       }
     }
-    
-    view.initResize();
 
+    view.initResize();
     return rendered;
   },
 
