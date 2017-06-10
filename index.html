@@ -10,10 +10,38 @@
   </head>
   <style>
     body, html{ height: 100%; margin: 0;}
+
+    .panel-options-c {
+      background-color: red;
+      padding: 5px;
+    }
+
+    .panel-block-c {
+      background-color: blue;
+      padding: 5px;
+    }
   </style>
   <body>
 
-    <div id="gjs" style="height:0px; overflow:hidden">
+    <div class="panel-options">
+      <div class="title">My options panel</div>
+      <div class="panel-options-c"></div>
+    </div>
+
+    <div class="panel-options">
+      <div class="title">My options panel 2</div>
+      <div class="panel-options-c"></div>
+    </div>
+
+    <div class="panel-block">
+      <div class="title">My block</div>
+      <div class="panel-block-c"></div>
+    </div>
+
+    <div id="gjs2" style="height:0px; overflow:hidden;">
+    </div>
+
+    <div id="gjs" style="height:0px; overflow:hidden; display:none;">
       <header class="header-banner">
         <div class="container-width">
           <div class="logo-container">
@@ -801,8 +829,9 @@
       showOffsets: 1,
       autorender: 0,
       noticeOnUnload: 0,
-      container  : '#gjs',
-      height: '100%',
+      container  : '#gjs2',
+      height: '200px',
+      width: '500px',
       fromElement: true,
       clearOnRender: 0,
 
@@ -870,33 +899,33 @@
 */
 
       commands:     {
-          defaults    : [{
-                          id:   'open-github',
-                          run:   function(editor, sender){
-                            sender.set('active',false);
-                            window.open('https://github.com/artf/grapesjs','_blank');
-                          }
-                        },{
-                          id:   'undo',
-                          run:   function(editor, sender){
-                            sender.set('active',false);
-                            editor.UndoManager.undo(true);
-                          }
-                        },{
-                          id:   'redo',
-                          run:   function(editor, sender){
-                            sender.set('active',false);
-                            editor.UndoManager.redo(true);
-                          }
-                        },{
-                          id:   'clean-all',
-                          run:   function(editor, sender){
-                            sender.set('active',false);
-                            if(confirm('Are you sure to clean the canvas?')){
-                              var comps = editor.DomComponents.clear();
-                            }
-                          }
-                        }],
+          defaults: [{
+            id:   'open-github',
+            run:   function(editor, sender){
+              sender.set('active',false);
+              window.open('https://github.com/artf/grapesjs','_blank');
+            }
+          },{
+            id:   'undo',
+            run:   function(editor, sender){
+              sender.set('active',false);
+              editor.UndoManager.undo(true);
+            }
+          },{
+            id:   'redo',
+            run:   function(editor, sender){
+              sender.set('active',false);
+              editor.UndoManager.redo(true);
+            }
+          },{
+            id:   'clean-all',
+            run:   function(editor, sender){
+              sender.set('active',false);
+              if(confirm('Are you sure to clean the canvas?')){
+                var comps = editor.DomComponents.clear();
+              }
+            }
+          }],
       },
 
       assetManager: {
@@ -904,17 +933,17 @@
         storeOnChange    : true,
         storeAfterUpload  : true,
         assets        : [
-                           { type: 'image', src : 'http://placehold.it/350x250/78c5d6/fff/image1.jpg', height:350, width:250},
-                           { type: 'image', src : 'http://placehold.it/350x250/459ba8/fff/image2.jpg', height:350, width:250},
-                           { type: 'image', src : 'http://placehold.it/350x250/79c267/fff/image3.jpg', height:350, width:250},
-                           { type: 'image', src : 'http://placehold.it/350x250/c5d647/fff/image4.jpg', height:350, width:250},
-                           { type: 'image', src : 'http://placehold.it/350x250/f28c33/fff/image5.jpg', height:350, width:250},
-                           { type: 'image', src : 'http://placehold.it/350x250/e868a2/fff/image6.jpg', height:350, width:250},
-                           { type: 'image', src : 'http://placehold.it/350x250/cc4360/fff/image7.jpg', height:350, width:250},
-                           { type: 'image', src : './img/work-desk.jpg', date: '2015-02-01',height:1080, width:1728},
-                           { type: 'image', src : './img/phone-app.png', date: '2015-02-01',height:650, width:320},
-                           { type: 'image', src : './img/bg-gr-v.png', date: '2015-02-01',height:1, width:1728},
-                         ]
+           { type: 'image', src : 'http://placehold.it/350x250/78c5d6/fff/image1.jpg', height:350, width:250},
+           { type: 'image', src : 'http://placehold.it/350x250/459ba8/fff/image2.jpg', height:350, width:250},
+           { type: 'image', src : 'http://placehold.it/350x250/79c267/fff/image3.jpg', height:350, width:250},
+           { type: 'image', src : 'http://placehold.it/350x250/c5d647/fff/image4.jpg', height:350, width:250},
+           { type: 'image', src : 'http://placehold.it/350x250/f28c33/fff/image5.jpg', height:350, width:250},
+           { type: 'image', src : 'http://placehold.it/350x250/e868a2/fff/image6.jpg', height:350, width:250},
+           { type: 'image', src : 'http://placehold.it/350x250/cc4360/fff/image7.jpg', height:350, width:250},
+           { type: 'image', src : './img/work-desk.jpg', date: '2015-02-01',height:1080, width:1728},
+           { type: 'image', src : './img/phone-app.png', date: '2015-02-01',height:650, width:320},
+           { type: 'image', src : './img/bg-gr-v.png', date: '2015-02-01',height:1, width:1728},
+         ]
       },
 
 
@@ -1155,6 +1184,37 @@
       },
       attributes: { title: 'Empty canvas' }
     }]);
+
+    pnm.getPanels().reset();
+    pnm.addPanel({
+      id: 'options',
+      appendTo: '.panel-options-c',
+      buttons: [{
+        id: 'sw-visibility',
+        active: true,
+        className: 'fa fa-square-o',
+        command: 'sw-visibility',
+        context: 'sw-visibility',
+        attributes: { title: 'View components' },
+      },{
+        id: 'preview',
+        className: 'fa fa-eye',
+        command: 'preview',
+        context: 'preview',
+        attributes: { title: 'Preview' },
+      },{
+        id: 'fullscreen',
+        className: 'fa fa-arrows-alt',
+        command: 'fullscreen',
+        context: 'fullscreen',
+        attributes: { title: 'Fullscreen' },
+      },{
+        id: 'export-template',
+        className: 'fa fa-code',
+        command: 'export-template',
+        attributes: { title: 'View code' },
+      }],
+    });
 
     editor.render();
     </script>
