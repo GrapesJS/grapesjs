@@ -38,14 +38,13 @@ var getBoundingRect = (el, win) => {
   };
 };
 
-module.exports = {
+class Resizer {
 
   /**
    * Init the Resizer with options
    * @param  {Object} options
    */
-  init(options) {
-    var opts = options || {};
+  constructor(opts = {}) {
     var pfx = opts.prefix || '';
     var appendTo = opts.appendTo || document.body;
 
@@ -90,7 +89,7 @@ module.exports = {
     this.onEnd = opts.onEnd;
 
     return this;
-  },
+  }
 
   /**
    * Update options
@@ -104,7 +103,7 @@ module.exports = {
         this[opt] = opts[opt];
       }
     }
-  },
+  }
 
   /**
    * Detects if the passed element is a resize handler
@@ -119,7 +118,7 @@ module.exports = {
     }
 
     return false;
-  },
+  }
 
   /**
    * Returns the focused element
@@ -127,7 +126,7 @@ module.exports = {
    */
   getFocusedEl() {
     return this.el;
-  },
+  }
 
   /**
    * Returns documents
@@ -137,7 +136,7 @@ module.exports = {
       this.$doc = $([this.el.ownerDocument, document]);
     }
     return this.$doc;
-  },
+  }
 
   /**
    * Return element position
@@ -147,7 +146,7 @@ module.exports = {
   getElementPos(el) {
     var posFetcher = this.posFetcher || '';
     return posFetcher ? posFetcher(el) : getBoundingRect(el);
-  },
+  }
 
   /**
    * Focus resizer on the element, attaches handlers to it
@@ -171,7 +170,7 @@ module.exports = {
     this.container.style.display = 'block';
 
 		this.getDocumentEl().on('mousedown', this.handleMouseDown);
-  },
+  }
 
   /**
    * Blur from element
@@ -183,7 +182,7 @@ module.exports = {
       this.getDocumentEl().off('mousedown', this.handleMouseDown);
       this.el = null;
     }
-  },
+  }
 
   /**
    * Start resizing
@@ -229,7 +228,7 @@ module.exports = {
     if(typeof this.onStart === 'function') {
       this.onStart(e, {docs: doc});
     }
-  },
+  }
 
   /**
    * While resizing
@@ -266,7 +265,7 @@ module.exports = {
     if (e.which === 0) {
       this.stop(e);
     }
-  },
+  }
 
   /**
    * Stop resizing
@@ -283,7 +282,7 @@ module.exports = {
     if(typeof this.onEnd === 'function') {
       this.onEnd(e, {docs: doc});
     }
-  },
+  }
 
   /**
    * Update rect
@@ -309,7 +308,7 @@ module.exports = {
     conStyle.top = rectEl.top + unit;
     conStyle.width = rectEl.width + unit;
     conStyle.height = rectEl.height + unit;
-  },
+  }
 
   /**
    * Handle ESC key
@@ -321,7 +320,7 @@ module.exports = {
       this.rectDim = this.startDim;
       this.stop(e);
     }
-  },
+  }
 
   /**
    * Handle mousedown to check if it's possible to start resizing
@@ -334,7 +333,7 @@ module.exports = {
     }else if(el !== this.el){
       this.blur();
     }
-  },
+  }
 
   /**
    * All positioning logic
@@ -386,6 +385,11 @@ module.exports = {
     }
 
     return box;
-  },
+  }
+}
 
+module.exports = {
+  init(opts) {
+    return new Resizer(opts);
+  }
 };
