@@ -831,7 +831,7 @@
       noticeOnUnload: 0,
       container  : '#gjs2',
       height: '200px',
-      width: '500px',
+      width: '900px',
       fromElement: true,
       clearOnRender: 0,
 
@@ -1185,10 +1185,13 @@
       attributes: { title: 'Empty canvas' }
     }]);
 
-    pnm.getPanels().reset();
+    //pnm.getPanels().reset();
+    editor.render();
+
     pnm.addPanel({
       id: 'options',
       appendTo: '.panel-options-c',
+      resizable: true,
       buttons: [{
         id: 'sw-visibility',
         active: true,
@@ -1216,7 +1219,6 @@
       }],
     });
 
-    editor.render();
     </script>
   </body>
 </html>

@@ -185,6 +185,31 @@ $hndlMargin: -5px;
   cursor: nwse-resize;
 }
 
+.#{$pn-prefix}panel {
+  .#{$app-prefix}resizer-h {
+    background-color: rgba(0, 0, 0, 0.2);
+    border: none;
+    opacity: 0;
+    transition: opacity 0.25s;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  .#{$app-prefix}resizer-h-tc,
+  .#{$app-prefix}resizer-h-bc {
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .#{$app-prefix}resizer-h-cr,
+  .#{$app-prefix}resizer-h-cl {
+    margin: auto 0;
+    height: 100%;
+  }
+}
+
 .#{$app-prefix}resizing .#{$app-prefix}highlighter,
 .#{$app-prefix}resizing .#{$app-prefix}badge {
   display: none !important;

@@ -34,9 +34,7 @@ module.exports = Backbone.View.extend({
    * */
   addToCollection(model, fragmentEl) {
     var fragment = fragmentEl || null;
-    var viewObject = PanelView;
-
-    var view = new viewObject({
+    var view = new PanelView({
       model,
       config: this.config,
     });
@@ -46,14 +44,15 @@ module.exports = Backbone.View.extend({
     if (appendTo) {
       var appendEl = document.querySelector(appendTo);
       appendEl.appendChild(rendered);
-      return rendered;
-    }
-
-    if (fragment) {
-      fragment.appendChild(rendered);
     } else {
-      this.$el.append(rendered);
+      if (fragment) {
+        fragment.appendChild(rendered);
+      } else {
+        this.$el.append(rendered);
+      }
     }
+    
+    view.initResize();
 
     return rendered;
   },
