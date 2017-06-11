@@ -9,7 +9,11 @@ module.exports = Backbone.View.extend({
     this.config = config || {};
     this.categories = opts.categories || '';
     this.renderedCategories = [];
-    this.ppfx = this.config.pStylePrefix || '';
+    var ppfx = this.config.pStylePrefix || '';
+    this.ppfx = ppfx;
+    this.noCatClass = `${ppfx}blocks-no-cat`;
+    this.blockContClass = `${ppfx}blocks-c`;
+    this.catsClass = `${ppfx}block-categories`;
     this.listenTo(this.collection, 'add', this.addTo);
     this.em = this.config.em;
     this.tac = 'test-tac';
@@ -118,11 +122,7 @@ module.exports = Backbone.View.extend({
           model: catModel
         }, this.config).render();
         this.renderedCategories[catId] = catView;
-
-        if(frag)
-          frag.appendChild(catView.el);
-        else
-          this.$el.append(catView.el);
+        this.getCategoriesEl().appendChild(catView.el);
       }
 
       catView.append(rendered);
@@ -132,21 +132,45 @@ module.exports = Backbone.View.extend({
     if(frag)
       frag.appendChild(rendered);
     else
-      this.$el.append(rendered);
+      this.append(rendered);
   },
 
+  getCategoriesEl() {
+    if (!this.catsEl) {
+      this.catsEl = this.el.querySelector(`.${this.catsClass}`);
+    }
 
+    return this.catsEl;
+  },
+
+  getBlocksEl() {
+    if (!this.blocksEl) {
+      this.blocksEl = this.el.querySelector(`.${this.noCatClass} .${this.blockContClass}`);
+    }
+
+    return this.blocksEl;
+  },
+
+  append(el) {
+    this.getBlocksEl().appendChild(el);
+  },
 
   render() {
+    var ppfx = this.ppfx;
     var frag = document.createDocumentFragment();
-    this.$el.empty();
+    this.el.innerHTML = `
+      <div class="${this.catsClass}"></div>
+      <div class="${this.noCatClass}">
+        <div class="${this.blockContClass}"></div>
+      </div>
+    `;
 
     this.collection.each(function(model){
       this.add(model, frag);
     }, this);
 
-    this.$el.append(frag);
-    this.$el.addClass(this.ppfx + 'blocks-c');
+    this.append(frag);
+    this.$el.addClass(this.blockContClass + 's');
     return this;
   },
 
