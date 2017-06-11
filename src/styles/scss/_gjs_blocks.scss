@@ -7,6 +7,10 @@
 .#{$app-prefix}block-category {
   width: 100%;
 
+  &.#{$app-prefix}open {
+    @extend .#{$app-prefix}category-open;
+  }
+
   .#{$app-prefix}title {
     @extend .#{$app-prefix}category-title;
   }

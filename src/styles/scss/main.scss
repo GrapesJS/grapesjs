@@ -714,6 +714,10 @@ $lightBorder: rgba(255, 255, 255, 0.05);
 
 /********* General **********/
 
+.#{$app-prefix}category-open {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+}
+
 .#{$app-prefix}category-title {
   @extend .no-select;
 
@@ -721,7 +725,7 @@ $lightBorder: rgba(255, 255, 255, 0.05);
   background-color: $mainDklColor;
   font-size: 13px;
   letter-spacing: 1px;
-  padding: 12px 10px 12px 20px;
+  padding: 9px 10px 9px 20px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.25);
   text-align: left;
   position: relative;
