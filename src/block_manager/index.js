@@ -29,6 +29,7 @@ module.exports = () => {
   var c = {},
   defaults = require('./config/config'),
   Blocks = require('./model/Blocks'),
+  BlockCategories = require('./model/Categories'),
   BlocksView = require('./view/BlocksView');
   var blocks, view;
 
@@ -54,7 +55,10 @@ module.exports = () => {
             c[name] = defaults[name];
         }
         blocks = new Blocks(c.blocks);
-        view = new BlocksView({ collection: blocks }, c);
+        view = new BlocksView({
+          collection: blocks,
+          categories: new BlockCategories(),
+        }, c);
         return this;
       },
 

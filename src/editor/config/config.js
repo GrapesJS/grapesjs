@@ -157,19 +157,22 @@ module.exports = {
 
   //Configurations for Block Manager
   blockManager: {
-    'blocks': [{
+    blocks: [{
         id: 'b1',
         label: '1 Block',
+        category: 'Standard',
         content: '<div class="blk-row"><div class="blk1"></div></div><style>'+ blkStyle +'.blk1{width: 100%;padding: 10px;min-height: 75px;}</style>',
         attributes: {class:'gjs-fonts gjs-f-b1'}
       },{
         id: 'b2',
         label: '2 Blocks',
+        category: 'Standard',
         content: '<div class="blk-row"><div class="blk2"></div><div class="blk2"></div></div><style>'+ blkStyle +'.blk2{float: left;width: 50%;padding: 10px;min-height: 75px;}</style>',
         attributes: {class:'gjs-fonts gjs-f-b2'}
       },{
         id: 'b3',
         label: '3 Blocks',
+        category: 'Standard',
         content: '<div class="blk-row"><div class="blk3"></div><div class="blk3"></div><div class="blk3"></div></div><style>'+ blkStyle +'.blk3{float: left;width: 33.3333%;padding: 10px;min-height: 75px;}</style>',
         attributes: {class:'gjs-fonts gjs-f-b3'}
       },{
@@ -180,6 +183,7 @@ module.exports = {
       },{
         id: 'hero',
         label: 'Hero section',
+        category: 'Extra',
         content: '<header class="header-banner"> <div class="container-width">'+
             '<div class="logo-container"><div class="logo">GrapesJS</div></div>'+
             '<nav class="navbar">'+
@@ -191,11 +195,13 @@ module.exports = {
       },{
         id: 'h1p',
         label: 'Text section',
+        category: 'Extra',
         content: '<h1 class="heading">Insert title here</h1><p class="paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>',
         attributes: {class:'gjs-fonts gjs-f-h1p'}
       },{
         id: '3ba',
         label: 'Badges',
+        category: 'Extra',
         content: '<div class="badges">'+
           '<div class="badge">'+
             '<div class="badge-header"></div>'+
@@ -236,6 +242,7 @@ module.exports = {
       },{
         id: 'image',
         label: 'Image',
+        category: 'Media',
         attributes: {class:'gjs-fonts gjs-f-image'},
         content: {
           style: {color: 'black'},
@@ -250,6 +257,7 @@ module.exports = {
       },{
         id: 'link',
         label: 'Link',
+        category: 'Basic',
         attributes: {class:'fa fa-link'},
         content: {
           type:'link',
@@ -259,6 +267,7 @@ module.exports = {
       },{
         id: 'map',
         label: 'Map',
+        category: 'Extra',
         attributes: {class:'fa fa-map-o'},
         content: {
           type: 'map',
@@ -267,6 +276,7 @@ module.exports = {
       },{
         id: 'video',
         label: 'Video',
+        category: 'Media',
         attributes: {class:'fa fa-youtube-play'},
         content: {
           type: 'video',

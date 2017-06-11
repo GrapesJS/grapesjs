@@ -1,5 +1,7 @@
 module.exports = {
 
-  'blocks': [],
+  blocks: [],
+
+  appendTo: '',
 
 };

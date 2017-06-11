@@ -1,11 +1,14 @@
 var Backbone = require('backbone');
 var BlockView = require('./BlockView');
+var CategoryView = require('./CategoryView');
 
 module.exports = Backbone.View.extend({
 
   initialize(opts, config) {
     _.bindAll(this, 'getSorter', 'onDrag', 'onDrop');
     this.config = config || {};
+    this.categories = opts.categories || '';
+    this.renderedCategories = [];
     this.ppfx = this.config.pStylePrefix || '';
     this.listenTo(this.collection, 'add', this.addTo);
     this.em = this.config.em;
@@ -95,6 +98,36 @@ module.exports = Backbone.View.extend({
       attributes: model.get('attributes'),
     }, this.config);
     var rendered = view.render().el;
+    var category = model.get('category');
+
+    // Check for categories
+    if (category && this.categories) {
+      if (typeof category == 'string') {
+        category = {
+          id: category,
+          label: category
+        };
+      }
+
+      var catModel = this.categories.add(category);
+      var catId = catModel.get('id');
+      var catView = this.renderedCategories[catId];
+
+      if (!catView) {
+        catView = new CategoryView({
+          model: catModel
+        }, this.config).render();
+        this.renderedCategories[catId] = catView;
+
+        if(frag)
+          frag.appendChild(catView.el);
+        else
+          this.$el.append(catView.el);
+      }
+
+      catView.append(rendered);
+      return;
+    }
 
     if(frag)
       frag.appendChild(rendered);
