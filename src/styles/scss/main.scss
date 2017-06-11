@@ -752,22 +752,20 @@ $lightBorder: rgba(255, 255, 255, 0.05);
 }
 .#{$sm-prefix}sector {
 	clear:both;
-	border-bottom: 1px solid $mainDkColor;
 	font-weight: lighter;
 	text-align:left;
 
-	##{$sm-prefix}caret{
+  ##{$sm-prefix}caret{
 		padding-right: 5px;
 		font-size: 11px;
 	}
 
-	.#{$sm-prefix}title{
-	  background-color: $mainDklColor;
-	  font-size: 13px;
-	  letter-spacing: 1px;
-	  padding: 12px 10px 12px 20px;
-	  border-top: 1px solid $mainLhColor;
-	  cursor: pointer;
+  &.#{$sm-prefix}open {
+    @extend .#{$app-prefix}category-open;
+  }
+
+	.#{$sm-prefix}title {
+	  @extend .#{$app-prefix}category-title;
 	}
 
 	.#{$sm-prefix}label {
