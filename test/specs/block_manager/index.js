@@ -1,7 +1,7 @@
 var BlockManager = require('block_manager');
 var BlocksView = require('./view/BlocksView');
 
-describe('BlockManager', () => {
+describe.only('BlockManager', () => {
 
   describe('Main', () => {
 
@@ -29,6 +29,10 @@ describe('BlockManager', () => {
 
     it('No blocks inside', () => {
       expect(obj.getAll().length).toEqual(0);
+    });
+
+    it('No categories inside', () => {
+      expect(obj.getCategories().length).toEqual(0);
     });
 
     it('Add new block', () => {

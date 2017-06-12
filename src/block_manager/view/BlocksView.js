@@ -116,6 +116,7 @@ module.exports = Backbone.View.extend({
       var catModel = this.categories.add(category);
       var catId = catModel.get('id');
       var catView = this.renderedCategories[catId];
+      model.set('category', catModel);
 
       if (!catView) {
         catView = new CategoryView({
