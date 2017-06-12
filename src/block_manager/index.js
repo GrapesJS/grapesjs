@@ -119,7 +119,8 @@ module.exports = () => {
       },
 
       /**
-       * Get all available categories
+       * Get all available categories.
+       * Is possible to add categories only with blocks via 'add()' method
        * @return {Array|Collection}
        */
       getCategories() {

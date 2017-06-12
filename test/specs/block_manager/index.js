@@ -1,7 +1,7 @@
 var BlockManager = require('block_manager');
 var BlocksView = require('./view/BlocksView');
 
-describe.only('BlockManager', () => {
+describe('BlockManager', () => {
 
   describe('Main', () => {
 
