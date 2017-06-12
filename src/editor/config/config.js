@@ -160,30 +160,31 @@ module.exports = {
     blocks: [{
         id: 'b1',
         label: '1 Block',
-        category: 'Standard',
+        category: 'Basic',
         content: '<div class="blk-row"><div class="blk1"></div></div><style>'+ blkStyle +'.blk1{width: 100%;padding: 10px;min-height: 75px;}</style>',
         attributes: {class:'gjs-fonts gjs-f-b1'}
       },{
         id: 'b2',
         label: '2 Blocks',
-        category: 'Standard',
+        category: 'Basic',
         content: '<div class="blk-row"><div class="blk2"></div><div class="blk2"></div></div><style>'+ blkStyle +'.blk2{float: left;width: 50%;padding: 10px;min-height: 75px;}</style>',
         attributes: {class:'gjs-fonts gjs-f-b2'}
       },{
         id: 'b3',
         label: '3 Blocks',
-        category: 'Standard',
+        category: 'Basic',
         content: '<div class="blk-row"><div class="blk3"></div><div class="blk3"></div><div class="blk3"></div></div><style>'+ blkStyle +'.blk3{float: left;width: 33.3333%;padding: 10px;min-height: 75px;}</style>',
         attributes: {class:'gjs-fonts gjs-f-b3'}
       },{
         id: 'b4',
         label: '3/7 Block',
+        category: 'Basic',
         content: '<div class="blk-row"><div class="blk37l"></div><div class="blk37r"></div></div></div><style>'+ blkStyle +'.blk37l{float: left;width: 30%;padding: 10px;min-height: 75px;}.blk37r{float: left;width: 70%;padding: 10px;min-height: 75px;}</style>',
         attributes: {class:'gjs-fonts gjs-f-b37'}
       },{
         id: 'hero',
         label: 'Hero section',
-        category: 'Extra',
+        category: 'Section',
         content: '<header class="header-banner"> <div class="container-width">'+
             '<div class="logo-container"><div class="logo">GrapesJS</div></div>'+
             '<nav class="navbar">'+
@@ -195,13 +196,13 @@ module.exports = {
       },{
         id: 'h1p',
         label: 'Text section',
-        category: 'Extra',
+        category: 'Typography',
         content: '<h1 class="heading">Insert title here</h1><p class="paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>',
         attributes: {class:'gjs-fonts gjs-f-h1p'}
       },{
         id: '3ba',
         label: 'Badges',
-        category: 'Extra',
+        category: 'Section',
         content: '<div class="badges">'+
           '<div class="badge">'+
             '<div class="badge-header"></div>'+
@@ -233,6 +234,7 @@ module.exports = {
         id: 'text',
         label: 'Text',
         attributes: {class:'gjs-fonts gjs-f-text'},
+        category: 'Basic',
         content: {
           type:'text',
           content:'Insert your text here',
@@ -242,7 +244,7 @@ module.exports = {
       },{
         id: 'image',
         label: 'Image',
-        category: 'Media',
+        category: 'Basic',
         attributes: {class:'gjs-fonts gjs-f-image'},
         content: {
           style: {color: 'black'},
@@ -252,6 +254,7 @@ module.exports = {
       },{
         id: 'quo',
         label: 'Quote',
+        category: 'Typography',
         content: '<blockquote class="quote">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore ipsum dolor sit</blockquote>',
         attributes: {class:'fa fa-quote-right'}
       },{
@@ -276,7 +279,7 @@ module.exports = {
       },{
         id: 'video',
         label: 'Video',
-        category: 'Media',
+        category: 'Basic',
         attributes: {class:'fa fa-youtube-play'},
         content: {
           type: 'video',
