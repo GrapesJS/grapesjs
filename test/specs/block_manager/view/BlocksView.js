@@ -38,21 +38,21 @@ module.exports = {
         });
 
         it("No children inside", () => {
-          expect(view.el.children.length).toEqual(0);
+          expect(view.getBlocksEl().children.length).toEqual(0);
         });
 
         it("Render children on add", () => {
           model.add({});
-          expect(view.el.children.length).toEqual(1);
+          expect(view.getBlocksEl().children.length).toEqual(1);
           model.add([{},{}]);
-          expect(view.el.children.length).toEqual(3);
+          expect(view.getBlocksEl().children.length).toEqual(3);
         });
 
         it("Destroy children on remove", () => {
           model.add([{},{}]);
-          expect(view.el.children.length).toEqual(2);
+          expect(view.getBlocksEl().children.length).toEqual(2);
           model.at(0).destroy();
-          expect(view.el.children.length).toEqual(1);
+          expect(view.getBlocksEl().children.length).toEqual(1);
         });
 
         describe('With configs', () => {
@@ -74,11 +74,11 @@ module.exports = {
           });
 
           it("Render children", () => {
-            expect(view.el.children.length).toEqual(2);
+            expect(view.getBlocksEl().children.length).toEqual(2);
           });
 
           it("Render container", () => {
-            expect(view.el.getAttribute('class')).toEqual(ppfx + 'blocks-c');
+            expect(view.getBlocksEl().getAttribute('class')).toEqual(ppfx + 'blocks-c');
           });
 
         });
