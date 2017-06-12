@@ -16,7 +16,7 @@ module.exports = {
         });
 
         beforeEach(done => {
-          this.timeout(5000);
+          //this.timeout(5000);
           gjs = grapesjs.init({
             stylePrefix: '',
             storageManager: { autoload: 0, type:'none' },

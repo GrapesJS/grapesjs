@@ -65,7 +65,7 @@
     "build:css": "node-sass src/styles/scss/main.scss dist/css/grapes.min.css --output-style compressed",
     "v:patch": "npm version --no-git-tag-version patch",
     "start": "WEBPACK_ENV=dev webpack-dev-server --progress --colors & npm run build:css -- -w",
-    "test": "NODE_PATH=./src mocha --compilers js:babel-core/register --require test/helper.js --recursive test/main.js",
+    "test": "NODE_PATH=./src mocha --compilers js:babel-core/register --require test/helper.js --timeout 10000 --recursive test/main.js",
     "test:dev": "npm test -- -R min -w"
   }
 }
