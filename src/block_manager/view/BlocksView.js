@@ -116,17 +116,18 @@ module.exports = Backbone.View.extend({
       var catModel = this.categories.add(category);
       var catId = catModel.get('id');
       var catView = this.renderedCategories[catId];
+      var categories = this.getCategoriesEl();
       model.set('category', catModel);
 
-      if (!catView) {
+      if (!catView && categories) {
         catView = new CategoryView({
           model: catModel
         }, this.config).render();
         this.renderedCategories[catId] = catView;
-        this.getCategoriesEl().appendChild(catView.el);
+        categories.appendChild(catView.el);
       }
 
-      catView.append(rendered);
+      catView && catView.append(rendered);
       return;
     }
 
@@ -153,7 +154,8 @@ module.exports = Backbone.View.extend({
   },
 
   append(el) {
-    this.getBlocksEl().appendChild(el);
+    let blocks = this.getBlocksEl();
+    blocks && blocks.appendChild(el);
   },
 
   render() {
