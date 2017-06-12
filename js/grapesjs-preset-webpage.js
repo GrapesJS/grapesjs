@@ -1,6 +1,8 @@
 grapesjs.plugins.add('gjs-preset-webpage', (editor, opts) => {
   var opt = opts || {};
   var config = editor.getConfig();
+  var pfx = editor.getConfig().stylePrefix;
+  var modal = editor.Modal;
 
   config.showDevices = 0;
 
@@ -11,6 +13,29 @@ grapesjs.plugins.add('gjs-preset-webpage', (editor, opts) => {
       item.set('attributes', attrs);
     });
   }
+
+  /****************** IMPORTER *************************/
+
+  var codeViewer = editor.CodeManager.getViewer('CodeMirror').clone();
+  let container = document.createElement('div');
+  var btnImp = document.createElement('button');
+
+  // Init import button
+  btnImp.innerHTML = 'Import';
+  btnImp.className = pfx + 'btn-prim ' + pfx + 'btn-import';
+  btnImp.onclick = function() {
+    var code = codeViewer.editor.getValue();
+    editor.DomComponents.getWrapper().set('content', '');
+    editor.setComponents(code.trim());
+    modal.close();
+  };
+
+  // Init code viewer
+  codeViewer.set({
+    codeName: 'htmlmixed',
+    theme: opt.codeViewerTheme || 'hopscotch',
+    readOnly: 0
+  });
 
 
   /****************** COMMANDS *************************/
@@ -54,12 +79,45 @@ grapesjs.plugins.add('gjs-preset-webpage', (editor, opts) => {
     }
   });
 
+  cmdm.add('html-import', {
+    run: function(editor, sender) {
+      sender && sender.set('active', 0);
+
+      var modalContent = modal.getContentEl();
+      var viewer = codeViewer.editor;
+      modal.setTitle('Import Template');
+
+      // Init code viewer if not yet instantiated
+      if (!viewer) {
+        var txtarea = document.createElement('textarea');
+        var labelEl = document.createElement('div');
+        labelEl.className = pfx + 'import-label';
+        labelEl.innerHTML = 'Paste here your HTML/CSS and click Import';
+        container.appendChild(labelEl);
+        container.appendChild(txtarea);
+        container.appendChild(btnImp);
+        codeViewer.init(txtarea);
+        viewer = codeViewer.editor;
+      }
+
+      modal.setContent('');
+      modal.setContent(container);
+      codeViewer.setContent(
+          '<div class="txt-red">Hello world!</div>' +
+          '<style>\n.txt-red {color: red;padding: 30px\n}</style>'
+      );
+      modal.open();
+      viewer.refresh();
+    }
+  });
+
   /****************** BLOCKS *************************/
 
   var bm = editor.BlockManager;
   bm.add('link-block', {
     label: 'Link Block',
     attributes: {class:'fa fa-link'},
+    category: 'Basic',
     content: {
       type:'link',
       editable: false,
@@ -86,6 +144,11 @@ grapesjs.plugins.add('gjs-preset-webpage', (editor, opts) => {
     className: 'fa fa-repeat icon-redo',
     command: 'redo',
     attributes: { title: 'Redo (CTRL/CMD + SHIFT + Z)' }
+  },{
+    id: 'import',
+    className: 'fa fa-download',
+    command: 'html-import',
+    attributes: { title: 'Import' }
   },{
     id: 'clean-all',
     className: 'fa fa-trash icon-blank',
@@ -142,6 +205,22 @@ grapesjs.plugins.add('gjs-preset-webpage', (editor, opts) => {
 
   // Do stuff on load
   editor.on('load', function() {
+    // Load and show settings
+    var openTmBtn = pnm.getButton('views', 'open-tm');
+    openTmBtn && openTmBtn.set('active', 1);
+
+    // Add Settings Sector
+    var traitsSector = $('<div class="gjs-sm-sector no-select">'+
+      '<div class="gjs-sm-title"><span class="icon-settings fa fa-cog"></span>' +
+      ' Settings</div>' +
+      '<div class="gjs-sm-properties" style="display: none;"></div></div>');
+    var traitsProps = traitsSector.find('.gjs-sm-properties');
+    traitsProps.append($('.gjs-trt-traits'));
+    $('#gjs-sm-sectors').before(traitsSector);
+    traitsSector.find('.gjs-sm-title').on('click', function(){
+      traitsProps.toggle();
+    });
+
     // Open block manager
     var openBlocksBtn = editor.Panels.getButton('views', 'open-blocks');
     openBlocksBtn && openBlocksBtn.set('active', 1);

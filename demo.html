@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>GrapesJS Demo</title>
+    <title>GrapesJS Demo - Open Source Website Page Builder</title>
     <link rel="stylesheet" href="stylesheets/toastr.min.css">
     <link rel="stylesheet" href="stylesheets/grapes.min.css">
     <link rel="stylesheet" href="stylesheets/grapesjs-preset-webpage.css">
@@ -117,23 +117,20 @@
            opacity: 0.95;
          }
 
-         #gjs-pn-commands {
-            display: none;
-         }
-
          #gjs-pn-devices-c {
            width: 85%;
            z-index: 1;
          }
 
-         #gjs-sm-float {
+         #gjs-sm-float,
+         #gjs-pn-commands,
+         #gjs-pn-views .fa-cog {
             display: none;
          }
 
          [data-tooltip]::after {
            background: rgba(51, 51, 51, 0.9);
          }
-
     </style>
   </head>
   <body>
@@ -910,7 +907,7 @@
       </style>
     </div>
 
-    <script src="js/grapes.min.js?v0.5.41"></script>
+    <script src="js/grapes.min.js?v0.8.4"></script>
     <script src="js/grapesjs-plugin-export.min.js"></script>
     <script src="js/grapesjs-plugin-filestack.min.js"></script>
     <script src="js/grapesjs-aviary.min.js"></script>
