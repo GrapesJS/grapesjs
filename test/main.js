@@ -21,4 +21,5 @@ describe('Main', () => {
   require(`${path}panels`);
   require(`${path}parser`);
   require(`${path}plugin_manager`);
+  require(`${path}selector_manager`);
 });

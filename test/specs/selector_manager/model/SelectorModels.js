@@ -1,52 +1,50 @@
-define(function(require, exports, module){
-  'use strict';
-  var Selectors = require('undefined');
+const Selector = require('selector_manager/model/Selector');
+const Selectors = require('selector_manager/model/Selectors');
 
-    module.exports = {
-      run : function(){
-          describe('Selector', function() {
+module.exports = {
+  run() {
+      describe('Selector', () => {
+        var obj;
 
-            beforeEach(function () {
-              this.obj  = new Selector();
-            });
-
-            afterEach(function () {
-              delete this.obj;
-            });
-
-            it('Has name property', function() {
-              this.obj.has('name').should.equal(true);
-            });
-
-            it('Has label property', function() {
-              this.obj.has('label').should.equal(true);
-            });
-
-            it('Has active property', function() {
-              this.obj.has('active').should.equal(true);
-            });
-
-            it('escapeName test', function() {
-              this.obj.escapeName('@Te sT*').should.equal('-Te-sT-');
-            });
-
-            it('Name is corrected at instantiation', function() {
-              this.obj  = new Selector({ name: '@Te sT*'});
-              this.obj.get('name').should.equal('-Te-sT-');
-            });
-
-
+        beforeEach(() => {
+          obj  = new Selector();
         });
-        describe('Selectors', function() {
 
-            it('Creates collection item correctly', function() {
-              var c = new Selectors();
-              var m = c.add({});
-              m.should.be.an.instanceOf(Selector);
-            });
-
+        afterEach(() => {
+          obj = null;
         });
-      }
-    };
 
-});
+        it('Has name property', () => {
+          expect(obj.has('name')).toEqual(true);
+        });
+
+        it('Has label property', () => {
+          expect(obj.has('label')).toEqual(true);
+        });
+
+        it('Has active property', () => {
+          expect(obj.has('active')).toEqual(true);
+        });
+
+        it('escapeName test', () => {
+          expect(obj.escapeName('@Te sT*')).toEqual('-Te-sT-');
+        });
+
+        it('Name is corrected at instantiation', () => {
+          obj  = new Selector({ name: '@Te sT*'});
+          expect(obj.get('name')).toEqual('-Te-sT-');
+        });
+
+
+    });
+    describe('Selectors', () => {
+
+        it('Creates collection item correctly', () => {
+          var c = new Selectors();
+          var m = c.add({});
+          expect(m instanceof Selector).toEqual(true);
+        });
+
+    });
+  }
+};
