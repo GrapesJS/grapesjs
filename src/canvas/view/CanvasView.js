@@ -67,7 +67,6 @@ module.exports = Backbone.View.extend({
       var body = this.frame.$el.contents().find('body');
       var cssc = em.get('CssComposer');
       var conf = em.get('Config');
-      body.append(wrap.render()).append(cssc.render());
       var protCss = conf.protectedCss;
 
       // I need all this styles to make the editor work properly
@@ -85,6 +84,7 @@ module.exports = Backbone.View.extend({
         (conf.canvasCss || '');
       frameCss += protCss || '';
       body.append('<style>' + frameCss + '</style>');
+      body.append(wrap.render()).append(cssc.render());
       body.append(this.getJsContainer());
       em.trigger('loaded');
       this.frame.el.contentWindow.onscroll = this.onFrameScroll;
