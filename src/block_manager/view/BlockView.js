@@ -19,6 +19,11 @@ module.exports = Backbone.View.extend({
    * @private
    */
   onDrag(e) {
+    //Right or middel click
+    if (e.button !== 0) {
+      return;
+    }
+
     if(!this.config.getSorter)
       return;
     this.config.em.refreshCanvas();
