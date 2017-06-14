@@ -43,6 +43,7 @@ module.exports = Backbone.View.extend({
         pfx: this.ppfx,
         onStart: this.onDrag,
         onEndMove: this.onDrop,
+        onMove: this.onMove,
         document: canvas.getFrameEl().contentDocument,
         direction: 'a',
         wmargin: 1,
@@ -58,8 +59,13 @@ module.exports = Backbone.View.extend({
    * Callback when block is on drag
    * @private
    */
-  onDrag() {
+  onDrag(e) {
     this.em.stopDefault();
+    this.em.trigger('block:drag:start', e);
+  },
+
+  onMove(e) {
+    this.em.trigger('block:drag:move', e);
   },
 
   /**
@@ -78,6 +84,7 @@ module.exports = Backbone.View.extend({
       // Register all its components (eg. for the Undo Manager)
       this.em.initChildrenComp(model);
     }
+    this.em.trigger('block:drag:stop', model);
   },
 
   /**
