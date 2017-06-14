@@ -161,6 +161,9 @@ module.exports = Backbone.View.extend({
   render() {
     var ppfx = this.ppfx;
     var frag = document.createDocumentFragment();
+    this.catsEl = null;
+    this.blocksEl = null;
+    this.renderedCategories = [];
     this.el.innerHTML = `
       <div class="${this.catsClass}"></div>
       <div class="${this.noCatClass}">
@@ -173,7 +176,7 @@ module.exports = Backbone.View.extend({
     }, this);
 
     this.append(frag);
-    this.$el.addClass(this.blockContClass + 's');
+    this.$el.addClass(this.blockContClass + 's')
     return this;
   },
 
