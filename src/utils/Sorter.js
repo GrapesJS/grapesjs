@@ -108,7 +108,7 @@ module.exports = Backbone.View.extend({
     for(var i = 0; i < o.length; i++) {
       style += o[i] + ':' + o.getPropertyValue(o[i])+';';
     }
-    clonedEl.style = style;
+    clonedEl.setAttribute('style', style);
     clonedEl.className += ' ' + this.pfx + 'bdrag';
     document.body.appendChild(clonedEl);
     this.dragHelper = clonedEl;
