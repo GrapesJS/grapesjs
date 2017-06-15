@@ -731,7 +731,17 @@
           text-align: right;
           margin-bottom: 15px;
         }
-        .sub-input{
+
+        .form {
+          border-radius: 3px;
+          padding: 10px 15px;
+          background-color: rgba(0,0,0,0.2);
+        }
+
+        .input,
+        .textarea,
+        .select,
+        .sub-input {
           width: 100%;
           margin-bottom: 15px;
           padding: 7px 10px;
@@ -740,9 +750,20 @@
           background-color: #554c57;
           border: none;
         }
+
+        .select {
+          height: 30px;
+        }
+
+        .label {
+          width: 100%;
+          display: block;
+        }
+
+        .button,
         .sub-btn{
           width: 100%;
-          margin-bottom: 15px;
+          margin: 15px 0;
           background-color: #785580;
           border: none;
           color:#fff;
@@ -910,6 +931,7 @@
     <script src="js/grapes.min.js?v0.8.8"></script>
     <script src="js/grapesjs-plugin-export.min.js"></script>
     <script src="js/grapesjs-plugin-filestack.min.js"></script>
+    <script src="js/grapesjs-plugin-forms.min.js"></script>
     <script src="js/grapesjs-aviary.min.js"></script>
     <script src="js/grapesjs-preset-webpage.js"></script>
     <script type="text/javascript">
@@ -929,8 +951,8 @@
       container : '#gjs',
       fromElement: 1,
       showOffsets: 1,
-      plugins: ['gjs-plugin-export', 'gjs-preset-webpage', 'gjs-plugin-filestack', 'gjs-aviary'],
-
+      plugins: ['gjs-plugin-export', 'gjs-preset-webpage', 'gjs-plugin-filestack',
+        'gjs-aviary', 'gjs-plugin-forms'],
       pluginsOpts: {
         'gjs-plugin-filestack': {
           key: 'A1nL8omiAR8W7pHi3cotzz',

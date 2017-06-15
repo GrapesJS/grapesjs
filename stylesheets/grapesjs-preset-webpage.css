@@ -1,3 +1,7 @@
+.gjs-block-svg {
+  width: 61%;
+}
+
 .gjs-clm-tags .gjs-sm-title,
 .gjs-sm-sector .gjs-sm-title {
   border-top: none;
@@ -33,8 +37,10 @@
 .gjs-color-active,
 .gjs-pn-btn.gjs-pn-active,
 .gjs-pn-btn:active,
-.gjs-block:hover {
-  color: rgb(217, 131, 166);
+.gjs-block:hover,
+.gjs-block:hover .gjs-block-svg-path {
+  color: #d97aa6;
+  fill: #d97aa6;
 }
 
 #gjs-rte-toolbar .gjs-rte-btn,
@@ -48,10 +54,12 @@
 .gjs-off-prv,
 .gjs-pn-btn,
 .gjs-pn-panel,
+.gjs-block-svg-path,
 .gjs-sm-sector .gjs-sm-composite.gjs-clm-field,
 .gjs-sm-sector .gjs-sm-field.gjs-sm-composite,
 .gjs-sm-sector .gjs-sm-stack #gjs-sm-add {
   color: #b9a5a6;
+  fill: #b9a5a6;
 }
 
 #gjs-rte-toolbar,
