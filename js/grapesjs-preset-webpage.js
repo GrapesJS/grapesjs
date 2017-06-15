@@ -1,4 +1,4 @@
-grapesjs.plugins.add('gjs-preset-webpage', (editor, opts) => {
+grapesjs.plugins.add('gjs-preset-webpage', function(editor, opts) {
   var opt = opts || {};
   var config = editor.getConfig();
   var pfx = editor.getConfig().stylePrefix;
@@ -17,7 +17,7 @@ grapesjs.plugins.add('gjs-preset-webpage', (editor, opts) => {
   /****************** IMPORTER *************************/
 
   var codeViewer = editor.CodeManager.getViewer('CodeMirror').clone();
-  let container = document.createElement('div');
+  var container = document.createElement('div');
   var btnImp = document.createElement('button');
 
   // Init import button
