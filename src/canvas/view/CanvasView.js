@@ -207,9 +207,15 @@ module.exports = Backbone.View.extend({
     view.el.id = id;
     view.scriptContainer.html('');
 
-    view.scriptContainer.append('<script>' +
-      'var item = document.getElementById("'+id+'");' +
-      '(' + scrStr + '.bind(item))()</script>');
+    // In editor, I make use of setTimeout as during the append process of elements
+    // those will not be available immediatly, therefore 'item' variable
+    view.scriptContainer.append(`<script>
+        setTimeout(function() {
+          var item = document.getElementById('${id}');
+          console.log('item: ', item);
+          (${scrStr}.bind(item))()
+        }, 1);
+      </script>`);
   },
 
   /**

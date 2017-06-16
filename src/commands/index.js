@@ -160,7 +160,6 @@ module.exports = () => {
             em.set('selectedComponent', sel);
             ed.trigger('component:update', sel);
             dragger && dragger.blur();
-            console.log('onEnd ', opts);
           };
 
           const onDrag = (e, opts) => {
