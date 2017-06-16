@@ -26,12 +26,19 @@ module.exports = () => ({
       }
 
       // Fixed values
-      switch(prop){
+      switch(prop) {
         case 'margin-top': case 'margin-right': case 'margin-bottom': case 'margin-left':
         case 'padding-top': case 'padding-right': case 'padding-bottom': case 'padding-left':
         case 'width': case 'max-width': case 'min-width':
         case 'height': case 'max-height': case 'min-height':
           obj.fixedValues = ['initial', 'inherit', 'auto'];
+          break;
+        case 'font-size':
+          obj.fixedValues = ['medium', 'xx-small', 'x-small', 'small', 'large',
+            'x-large', 'xx-large', 'smaller', 'larger', 'length', 'initial', 'inherit'];
+          break;
+        case 'letter-spacing': case 'line-height':
+          obj.fixedValues = ['normal', 'initial', 'inherit'];
           break;
       }
 
