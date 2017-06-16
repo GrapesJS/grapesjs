@@ -212,7 +212,6 @@ module.exports = Backbone.View.extend({
     view.scriptContainer.append(`<script>
         setTimeout(function() {
           var item = document.getElementById('${id}');
-          console.log('item: ', item);
           (${scrStr}.bind(item))()
         }, 1);
       </script>`);
