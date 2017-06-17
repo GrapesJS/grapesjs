@@ -59,6 +59,10 @@ module.exports = {
   // When enabled, on device change media rules won't be created
   devicePreviewMode: 0,
 
+  // THe condition to use for media queries, eg. 'max-width'
+  // Comes handy for mobile-first cases
+  mediaCondition: 'max-width',
+
   // This option makes available custom component types also for loaded
   // elements inside canvas
   loadCompsOnRender: 1,
@@ -104,18 +108,21 @@ module.exports = {
 
   //Configurations for Device Manager
   deviceManager: {
-    'devices': [{
+    devices: [{
         name: 'Desktop',
         width: '',
       },{
         name: 'Tablet',
-        width: '992px',
+        width: '768px',
+        widthMedia: '992px',
       },{
         name: 'Mobile landscape',
-        width: '768px',
+        width: '568px',
+        widthMedia: '768px',
       },{
         name: 'Mobile portrait',
-        width: '480px',
+        width: '320px',
+        widthMedia: '480px',
     }],
   },
 

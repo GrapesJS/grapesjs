@@ -33,22 +33,25 @@ module.exports = Backbone.View.extend({
    * @private
    */
   targetUpdated() {
-    var el = this.target.get('selectedComponent');
+    var em = this.target;
+    var el = em.get('selectedComponent');
 
     if(!el)
       return;
 
-    var previewMode = this.target.get('Config').devicePreviewMode;
+    const config = em.get('Config');
+    var previewMode = config.devicePreviewMode;
     var classes = el.get('classes');
     var pt = this.propTarget;
-    var device = this.target.getDeviceModel();
+    var device = em.getDeviceModel();
     var state = !previewMode ? el.get('state') : '';
-    var mediaText = device && !previewMode && device.get('width')?
-      '(max-width: ' + device.get('width') + ')' : '';
+    var widthMedia = device && device.get('widthMedia');
+    var mediaText = device && !previewMode && widthMedia ?
+      `(${config.mediaCondition}: ${widthMedia})` : '';
     pt.helper = null;
 
     if(classes.length){
-      var cssC = this.target.get('CssComposer');
+      var cssC = em.get('CssComposer');
       var valid = _.filter(classes.models, item => item.get('active'));
       var iContainer = cssC.get(valid, state, mediaText);
 
@@ -67,7 +70,7 @@ module.exports = Backbone.View.extend({
       // If the state is not empty, there should be a helper rule in play
       // The helper rule will get the same style of the iContainer
       if(state){
-        var clm = this.target.get('SelectorManager');
+        var clm = em.get('SelectorManager');
         var helperClass = clm.add('hc-state');
         var helperRule = cssC.get([helperClass]);
         if(!helperRule)
