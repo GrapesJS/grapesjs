@@ -67,7 +67,13 @@ module.exports = Backbone.View.extend({
       var body = this.frame.$el.contents().find('body');
       var cssc = em.get('CssComposer');
       var conf = em.get('Config');
+      var confCanvas = conf.canvas;
       var protCss = conf.protectedCss;
+      var externalStyles = '';
+
+      confCanvas.styles.forEach((style) => {
+        externalStyles += `<link rel="stylesheet" href="${style}"/>`;
+      });
 
       // I need all this styles to make the editor work properly
       var frameCss = '* {box-sizing: border-box;} body{margin:0;height:auto;background-color:#fff} #wrapper{min-height:100%; overflow:auto}' +
@@ -83,6 +89,11 @@ module.exports = Backbone.View.extend({
         '* ::-webkit-scrollbar {width: 10px}' +
         (conf.canvasCss || '');
       frameCss += protCss || '';
+
+      if (externalStyles) {
+        body.append(externalStyles);
+      }
+
       body.append('<style>' + frameCss + '</style>');
       body.append(wrap.render()).append(cssc.render());
       body.append(this.getJsContainer());
