@@ -149,12 +149,14 @@ $fontV: 20;//random(1000)
   background-color: $mainColor;
 }
 
-.#{$app-prefix}color-main{
+.#{$app-prefix}color-main {
   color: $fontColor;
+  fill: $fontColor;
 }
 
-.#{$app-prefix}color-active{
+.#{$app-prefix}color-active {
   color: $fontColorActive;
+  fill: $fontColorActive;
 }
 
 .#{$app-prefix}bdrag {

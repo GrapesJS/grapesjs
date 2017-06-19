@@ -47,6 +47,14 @@
   }
 }
 
+.#{$app-prefix}block-svg {
+  width: 61%;
+}
+
+.#{$app-prefix}block-svg-path {
+  @extend .#{$app-prefix}color-main;
+}
+
 .#{$app-prefix}block.fa {
   font-size: 2em;
   line-height: 2em;
