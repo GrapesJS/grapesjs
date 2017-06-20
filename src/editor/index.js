@@ -19,6 +19,7 @@
  * * [getContainer](#getcontainer)
  * * [refresh](#refresh)
  * * [on](#on)
+ * * [off](#off)
  * * [trigger](#trigger)
  * * [render](#render)
  *
@@ -446,6 +447,16 @@ module.exports = config => {
      */
     on(event, callback) {
       return em.on(event, callback);
+    },
+
+    /**
+     * Detach event
+     * @param  {string} event Event name
+     * @param  {Function} callback Callback function
+     * @return {this}
+     */
+    off(event, callback) {
+      return em.off(event, callback);
     },
 
     /**
