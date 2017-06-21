@@ -67,7 +67,7 @@ module.exports = Backbone.View.extend({
       var body = this.frame.$el.contents().find('body');
       var cssc = em.get('CssComposer');
       var conf = em.get('Config');
-      var confCanvas = conf.canvas;
+      var confCanvas = this.config;
       var protCss = conf.protectedCss;
       var externalStyles = '';
 
@@ -75,8 +75,28 @@ module.exports = Backbone.View.extend({
         externalStyles += `<link rel="stylesheet" href="${style}"/>`;
       });
 
+      let baseCss = `
+        * {
+          box-sizing: border-box;
+        }
+        html, body, #wrapper {
+          min-height: 100%;
+        }
+        html {
+          height: 100%;
+        }
+        body {
+          margin: 0;
+          height: auto;
+          background-color: #fff
+        }
+        #wrapper {
+          overflow: auto
+        }
+      `;
+
       // I need all this styles to make the editor work properly
-      var frameCss = '* {box-sizing: border-box;} body{margin:0;height:auto;background-color:#fff} #wrapper{min-height:100%; overflow:auto}' +
+      var frameCss = baseCss +
         '.' + ppfx + 'dashed :not([contenteditable]) > *[data-highlightable]{outline: 1px dashed rgba(170,170,170,0.7); outline-offset: -2px}' +
         '.' + ppfx + 'comp-selected{outline: 3px solid #3b97e3 !important}' +
         '.' + ppfx + 'no-select{user-select: none; -webkit-user-select:none; -moz-user-select: none}'+
