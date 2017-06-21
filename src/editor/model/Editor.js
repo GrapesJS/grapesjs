@@ -135,26 +135,28 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   listenRule(model) {
-    this.stopListening(model, 'change:style', this.ruleUpdated);
-    this.listenTo(model, 'change:style', this.ruleUpdated);
+    this.stopListening(model, 'change:style', this.componentsUpdated);
+    this.listenTo(model, 'change:style', this.componentsUpdated);
   },
 
   /**
-   * Triggered when rule is updated
+   * Triggered when something in components is changed
    * @param  {Object}  model
    * @param  {Mixed}    val  Value
    * @param  {Object}  opt  Options
    * @private
    * */
-  ruleUpdated(model, val, opt) {
-    var count = this.get('changesCount') + 1,
-        avSt  = opt ? opt.avoidStore : 0;
-    this.set('changesCount', count);
+  componentsUpdated(model, val, opt) {
+    var count = this.get('changesCount') + 1;
+    var avoidStore = opt ? opt.avoidStore : 0;
     var stm = this.get('StorageManager');
-    if(stm.isAutosave() && count < stm.getStepsBeforeSave())
-      return;
+    this.set('changesCount', count);
 
-    if(!avSt){
+    if (!stm.isAutosave() || count < stm.getStepsBeforeSave()) {
+      return;
+    }
+
+    if (!avoidStore) {
       this.store();
     }
   },
@@ -215,27 +217,6 @@ module.exports = Backbone.Model.extend({
           that.trigger('change:selectedComponent');
         }
       });
-    }
-  },
-
-  /**
-   * Triggered when components are updated
-   * @param  {Object}  model
-   * @param  {Mixed}    val  Value
-   * @param  {Object}  opt  Options
-   * @private
-   * */
-  componentsUpdated(model, val, opt) {
-    var updatedCount = this.get('changesCount') + 1,
-        avSt  = opt ? opt.avoidStore : 0;
-    this.set('changesCount', updatedCount);
-    var stm = this.get('StorageManager');
-    if(stm.isAutosave() && updatedCount < stm.getStepsBeforeSave()){
-      return;
-    }
-
-    if(!avSt){
-      this.store();
     }
   },
 
