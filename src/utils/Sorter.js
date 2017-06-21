@@ -231,8 +231,9 @@ module.exports = Backbone.View.extend({
       this.getContainerEl().appendChild(this.plh);
     }
 
-    if(this.eV) {
-      this.eV.className += ' ' + this.freezeClass;
+    if(trg) {
+      var className = trg.getAttribute('class');
+      trg.setAttribute('class', `${className} ${this.freezeClass}`);
       this.$document.on('mouseup', this.endMove);
     }
 
@@ -623,10 +624,15 @@ module.exports = Backbone.View.extend({
     this.$document.off('keydown', this.rollback);
     this.plh.style.display = 'none';
     var clsReg = new RegExp('(?:^|\\s)'+this.freezeClass+'(?!\\S)', 'gi');
-    if(this.eV)
-      this.eV.className = this.eV.className.replace(clsReg, '');
+    let trg = this.eV;
+
+    if (trg) {
+      var className = (trg.getAttribute('class')+'').replace(clsReg, '');
+      trg.setAttribute('class', className);
+    }
+
     if(this.moved)
-      created = this.move(this.target, this.eV, this.lastPos);
+      created = this.move(this.target, trg, this.lastPos);
     if(this.plh)
       this.plh.style.display = 'none';
 
