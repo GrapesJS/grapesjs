@@ -10,7 +10,7 @@ module.exports = Component.extend({
 }, {
 
   isComponent(el) {
-    if (el instanceof SVGElement) {
+    if (SVGElement && el instanceof SVGElement) {
       return {type: 'svg'};
     }
   },

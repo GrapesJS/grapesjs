@@ -44,6 +44,7 @@ global.sinon = sinon;
 global.grapesjs = grapesjs;
 global.Backbone = Backbone;
 global.localStorage = localStorage;
+global.SVGElement = global.Element;
 window.$ = $;
 Backbone.$ = $;
 
