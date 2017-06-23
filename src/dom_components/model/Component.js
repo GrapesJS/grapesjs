@@ -260,6 +260,10 @@ module.exports = Backbone.Model.extend({
     return this.name;
   },
 
+  getCurrentName() {
+    return this.get('custom-name') || this.getName();
+  },
+
   /**
    * Return HTML string of the component
    * @param {Object} opts Options
