@@ -70,35 +70,35 @@ module.exports = {
 
         it('Rendered correctly', function() {
           var prop = view.el;
-          $fixture.get(0).querySelector('.property').should.be.ok;
-          prop.querySelector('.label').should.be.ok;
-          prop.querySelector('.field').should.be.ok;
+          expect($fixture.get(0).querySelector('.property')).toExist();
+          expect(prop.querySelector('.label')).toExist();
+          expect(prop.querySelector('.field')).toExist();
         });
 
         it('Properties rendered', function() {
           var prop = view.el;
-          prop.querySelector('.properties').should.be.ok;
+          expect(prop.querySelector('.properties')).toExist();
         });
 
         it('Properties rendered correctly', function() {
           var children = view.el.querySelector('.properties').children;
-          children.length.should.equal(properties.length + 1);
-          children[0].id.should.equal(properties[0].property);
-          children[1].id.should.equal(properties[1].property);
-          children[2].id.should.equal(properties[2].property);
+          expect(children.length).toEqual(properties.length + 1);
+          expect(children[0].id).toEqual(properties[0].property);
+          expect(children[1].id).toEqual(properties[1].property);
+          expect(children[2].id).toEqual(properties[2].property);
         });
 
         it('Props should exist', function() {
-          view.$props.should.be.ok;
+          expect(view.$props).toExist();
         });
 
         it('Input value is empty', function() {
-          view.model.get('value').should.be.empty;
+          expect(view.model.get('value')).toNotExist();
         });
 
         it('Update input on value change', function() {
           view.model.set('value', propValue);
-          view.$input.val().should.equal(propValue);
+          expect(view.$input.val()).toEqual(propValue);
         });
 
         describe('With target setted', function() {
@@ -135,13 +135,13 @@ module.exports = {
           it('Update model on input change', function() {
             $prop1.val(propValue).trigger('change');
             $prop3.val(prop3Val).trigger('change');
-            view.model.get('value').should.equal(finalResult);
+            expect(view.model.get('value')).toEqual(finalResult);
           });
 
           it('Update value on models change', function() {
             view.model.get('properties').at(0).set('value', propValue);
             view.model.get('properties').at(2).set('value', prop3Val);
-            view.model.get('value').should.equal(finalResult);
+            expect(view.model.get('value')).toEqual(finalResult);
           });
 
           it('Update target on value change', function() {
@@ -149,7 +149,7 @@ module.exports = {
             var compStyle = view.getTarget().get('style');
             var assertStyle = {};
             assertStyle[propName] = propValue + ' 0% val2';
-            compStyle.should.deep.equal(assertStyle);
+            expect(compStyle).toEqual(assertStyle);
           });
 
           it('Update target on detached value change', function() {
@@ -169,7 +169,7 @@ module.exports = {
             var compStyle = view.getTarget().get('style');
             var assertStyle = {};
             assertStyle[properties[0].property] = $prop1.val();
-            compStyle.should.deep.equal(assertStyle);
+            expect(compStyle).toEqual(assertStyle);
           });
 
           it('Update value and input on target swap', function() {
@@ -177,8 +177,8 @@ module.exports = {
             style[propName] = finalResult;
             component.set('style', style);
             view.propTarget.trigger('update');
-            $prop1.val().should.equal(propValue);
-            $prop3.val().should.equal(prop3Val);
+            expect($prop1.val()).toEqual(propValue);
+            expect($prop3.val()).toEqual(prop3Val);
           });
 
           it('Update value after multiple swaps', function() {
@@ -189,24 +189,24 @@ module.exports = {
             style[propName] = propValue + '2 ' + prop2Val + '2' + prop2Unit + ' ' + 'val1';
             component.set('style', style);
             view.propTarget.trigger('update');
-            $prop1.val().should.equal(propValue + '2');
-            $prop2.val().should.equal('2');
-            $prop3.val().should.equal('val1');
+            expect($prop1.val()).toEqual(propValue + '2');
+            expect($prop2.val()).toEqual('2');
+            expect($prop3.val()).toEqual('val1');
           });
 
           it('The value is correctly extracted from the composite string', function() {
             var style = {};
             style[propName] = 'value1 value2 value3 value4';
             component.set('style', style);
-            view.valueOnIndex(2).should.equal('value3');
-            view.valueOnIndex(0).should.equal('value1');
-            (view.valueOnIndex(4) === null).should.equal(true);
+            expect(view.valueOnIndex(2)).toEqual('value3');
+            expect(view.valueOnIndex(0)).toEqual('value1');
+            expect(view.valueOnIndex(4)).toEqual(null);
           });
 
           it('Build value from properties', function() {
             view.model.get('properties').at(0).set('value', propValue);
             view.model.get('properties').at(2).set('value', prop3Val);
-            view.build().should.equal(finalResult);
+            expect(view.build()).toEqual(finalResult);
           });
 
         })
@@ -228,7 +228,7 @@ module.exports = {
           });
 
           it('Value as default', function() {
-            view.model.get('value').should.equal(defValue);
+            expect(view.model.get('value')).toEqual(defValue);
           });
 
         });
