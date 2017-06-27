@@ -34,12 +34,12 @@ module.exports = {
         });
 
         it("Collection is empty", function (){
-          view.el.innerHTML.should.be.empty;
+          expect(view.el.innerHTML).toEqual('');
         });
 
         it("Add new sectors", function (){
           view.collection.add([{}, {}]);
-          view.el.children.length.should.equal(2);
+          expect(view.el.children.length).toEqual(2);
         });
 
     });
