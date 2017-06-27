@@ -253,6 +253,31 @@ module.exports = Backbone.View.extend({
   },
 
   /**
+   * Get the model from HTMLElement target
+   * @return {Model|null}
+   */
+  getModelFromTarget(el) {
+    let elem = el || this.target;
+    return $(elem).data('model');
+  },
+
+  /**
+   * Highlight target
+   * @param  {Model|null} model
+   */
+  selectTargetModel(model) {
+    var prevModel = this.targetModel;
+    if (prevModel) {
+      prevModel.set('status', '');
+    }
+
+    if (model && model.set) {
+      model.set('status', 'selected-parent');
+      this.targetModel = model;
+    }
+  },
+
+  /**
    * During move
    * @param {Event} e
    * */
@@ -279,6 +304,10 @@ module.exports = Backbone.View.extend({
     }
 
     var dims = this.dimsFromTarget(e.target, rX, rY);
+
+    let targetModel = this.getModelFromTarget(this.target);
+    this.selectTargetModel(targetModel);
+
     this.lastDims = dims;
     var pos = this.findPosition(dims, rX, rY);
     // If there is a significant changes with the pointer
@@ -640,10 +669,13 @@ module.exports = Backbone.View.extend({
       this.onEndMove(created);
 
     var dragHelper = this.dragHelper;
+
     if(dragHelper) {
       dragHelper.remove();
       this.dragHelper = null;
     }
+
+    this.selectTargetModel();
     this.toggleSortCursor();
   },
 

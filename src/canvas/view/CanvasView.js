@@ -75,6 +75,9 @@ module.exports = Backbone.View.extend({
         externalStyles += `<link rel="stylesheet" href="${style}"/>`;
       });
 
+      // rgb(255, 202, 111)
+      const colorWarn = '#ffca6f';
+
       let baseCss = `
         * {
           box-sizing: border-box;
@@ -95,10 +98,19 @@ module.exports = Backbone.View.extend({
         }
       `;
 
+      let layoutCss = `
+        .${ppfx}comp-selected{
+          outline: 3px solid #3b97e3 !important
+        }
+        .${ppfx}comp-selected-parent{
+          outline: 2px solid ${colorWarn} !important
+        }
+      `;
+
       // I need all this styles to make the editor work properly
       var frameCss = baseCss +
         '.' + ppfx + 'dashed :not([contenteditable]) > *[data-highlightable]{outline: 1px dashed rgba(170,170,170,0.7); outline-offset: -2px}' +
-        '.' + ppfx + 'comp-selected{outline: 3px solid #3b97e3 !important}' +
+        layoutCss +
         '.' + ppfx + 'no-select{user-select: none; -webkit-user-select:none; -moz-user-select: none}'+
         '.' + ppfx + 'freezed{opacity: 0.5; pointer-events: none}' +
         '.' + ppfx + 'no-pointer{pointer-events: none}' +

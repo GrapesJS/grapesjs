@@ -100,16 +100,22 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   updateStatus(e) {
-    var s = this.model.get('status'),
-        pfx = this.pfx;
+    var s = this.model.get('status');
+    var pfx = this.pfx;
+    var selectedClass = pfx + 'selected';
+    var selectedParentClass = selectedClass + '-parent';
+
     switch(s) {
         case 'selected':
-          this.$el.addClass(pfx + 'selected');
+          this.$el.addClass(selectedClass);
+            break;
+        case 'selected-parent':
+          this.$el.addClass(selectedParentClass);
             break;
         case 'moving':
             break;
         default:
-          this.$el.removeClass(pfx + 'selected');
+          this.$el.removeClass(`${selectedClass} ${selectedParentClass}`);
     }
   },
 
