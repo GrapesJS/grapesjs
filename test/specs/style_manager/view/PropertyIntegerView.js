@@ -56,60 +56,60 @@ module.exports = {
 
         it('Rendered correctly', function() {
           var prop = view.el;
-          $fixture.get(0).querySelector('.property').should.be.ok;
-          prop.querySelector('.label').should.be.ok;
-          prop.querySelector('.field').should.be.ok;
+          expect($fixture.get(0).querySelector('.property')).toExist();
+          expect(prop.querySelector('.label')).toExist();
+          expect(prop.querySelector('.field')).toExist();
         });
 
         it('Inputs rendered', function() {
           var prop = view.el;
-          prop.querySelector('input[type=text]').should.be.ok;
-          prop.querySelector(unitsElSel).should.be.ok;
+          expect(prop.querySelector('input[type=text]')).toExist();
+          expect(prop.querySelector(unitsElSel)).toExist();
         });
 
         it('Units rendered', function() {
           var select = view.el.querySelector(unitsElSel);
-          select.children.length.should.equal(units.length);
+          expect(select.children.length).toEqual(units.length);
         });
 
         it('Units rendered correctly', function() {
           var children = view.el.querySelector(unitsElSel).children;
-          children[0].textContent.should.equal(units[0]);
-          children[1].textContent.should.equal(units[1]);
-          children[2].textContent.should.equal(units[2]);
+          expect(children[0].textContent).toEqual(units[0]);
+          expect(children[1].textContent).toEqual(units[1]);
+          expect(children[2].textContent).toEqual(units[2]);
         });
 
         it('Inputs should exist', function() {
-          view.$input.should.be.ok;
-          view.$unit.should.be.ok;
+          expect(view.$input).toExist();
+          expect(view.$unit).toExist();
         });
 
         it('Input value is empty', function() {
-          view.model.get('value').should.be.empty;
-          view.model.get('unit').should.equal('px');
+          expect(view.model.get('value')).toNotExist();
+          expect(view.model.get('unit')).toEqual('px');
         });
 
         it('Update model on setValue', function() {
           view.setValue(intValue + unitValue);
-          view.model.get('value').should.equal(parseFloat(intValue));
-          view.model.get('unit').should.equal(unitValue);
-          view.$input.val().should.equal(intValue);
-          view.$unit.val().should.equal(unitValue);
+          expect(view.model.get('value')).toEqual(parseFloat(intValue));
+          expect(view.model.get('unit')).toEqual(unitValue);
+          expect(view.$input.val()).toEqual(intValue);
+          expect(view.$unit.val()).toEqual(unitValue);
         });
 
         it('Update model on input change', function() {
           view.$input.val(123).trigger('change');
-          view.model.get('value').should.equal(123);
+          expect(view.model.get('value')).toEqual(123);
         });
 
         it('Update model on unit change', function() {
           view.$unit.val(units[1]).trigger('change');
-          view.model.get('unit').should.equal(units[1]);
+          expect(view.model.get('unit')).toEqual(units[1]);
         });
 
         it('Update input on value change', function() {
           view.model.set('value', intValue);
-          view.getInputValue().should.equal(intValue);
+          expect(view.getInputValue()).toEqual(intValue);
         });
 
         it('Update target on value change', function() {
@@ -118,7 +118,7 @@ module.exports = {
           var compStyle = view.selectedComponent.get('style');
           var assertStyle = {};
           assertStyle[propName] = propValue;
-          compStyle.should.deep.equal(assertStyle);
+          expect(compStyle).toEqual(assertStyle);
         });
 
         describe('With target setted', function() {
@@ -138,8 +138,8 @@ module.exports = {
             style[propName] = propValue;
             component.set('style', style);
             view.propTarget.trigger('update');
-            view.model.get('value').should.equal(parseFloat(intValue));
-            view.getInputValue().should.equal(intValue);
+            expect(view.model.get('value')).toEqual(parseFloat(intValue));
+            expect(view.getInputValue()).toEqual(intValue);
           });
 
           it('Update value after multiple swaps', function() {
@@ -150,10 +150,10 @@ module.exports = {
             style[propName] = '20em';
             component.set('style', style);
             view.propTarget.trigger('update');
-            view.model.get('value').should.equal(20);
-            view.model.get('unit').should.equal('em');
-            view.$input.val().should.equal('20');
-            view.$unit.val().should.equal('em');
+            expect(view.model.get('value')).toEqual(20);
+            expect(view.model.get('unit')).toEqual('em');
+            expect(view.$input.val()).toEqual('20');
+            expect(view.$unit.val()).toEqual('em');
           });
 
         })
@@ -179,25 +179,25 @@ module.exports = {
           });
 
           it('Value as default', function() {
-            view.model.get('value').should.equal(parseInt(intValue));
-            view.model.get('unit').should.equal(units[1]);
+            expect(view.model.get('value')).toEqual(parseInt(intValue));
+            expect(view.model.get('unit')).toEqual(units[1]);
           });
 
           it('Input value is as default', function() {
-            view.$input.val().should.equal(intValue);
-            view.$unit.val().should.equal(units[1]);
+            expect(view.$input.val()).toEqual(intValue);
+            expect(view.$unit.val()).toEqual(units[1]);
           });
 
           it('Input follows min', function() {
             view.$input.val(minValue - 50).trigger('change');
-            view.model.get('value').should.equal(minValue);
-            view.$input.val().should.equal(minValue + "");
+            expect(view.model.get('value')).toEqual(minValue);
+            expect(view.$input.val()).toEqual(minValue + "");
           });
 
           it('Input follows max', function() {
             view.$input.val(maxValue + 50).trigger('change');
-            view.model.get('value').should.equal(maxValue);
-            view.$input.val().should.equal(maxValue + "");
+            expect(view.model.get('value')).toEqual(maxValue);
+            expect(view.$input.val()).toEqual(maxValue + "");
           });
 
         });

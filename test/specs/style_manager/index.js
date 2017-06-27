@@ -184,8 +184,8 @@ describe.only('StyleManager', function() {
     PropertyView.run();
     PropertySelectView.run();
     PropertyRadioView.run();
-    /*
     PropertyIntegerView.run();
+    /*
     PropertyColorView.run();
     PropertyCompositeView.run();
     PropertyStackView.run();
