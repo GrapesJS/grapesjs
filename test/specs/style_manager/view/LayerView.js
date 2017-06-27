@@ -41,21 +41,21 @@ module.exports = {
 
         it('Rendered correctly', function() {
           var layer = view.el;
-          $fixture.get(0).querySelector('.layer').should.be.ok;
-          layer.querySelector('#label').should.be.ok;
-          layer.querySelector('#close-layer').should.be.ok;
-          layer.querySelector('#inputs').should.be.ok;
-          layer.querySelector('#inputs').innerHTML.should.be.empty;
-          layer.querySelector('#preview').should.be.ok;
+          expect($fixture.get(0).querySelector('.layer')).toExist();
+          expect(layer.querySelector('#label')).toExist();
+          expect(layer.querySelector('#close-layer')).toExist();
+          expect(layer.querySelector('#inputs')).toExist();
+          expect(layer.querySelector('#inputs').innerHTML).toNotExist();
+          expect(layer.querySelector('#preview')).toExist();
         });
 
         it('getIndex returns default value', function() {
-          view.getIndex().should.equal(0);
+          expect(view.getIndex()).toEqual(0);
         });
 
         it('No preview', function() {
           var style = view.el.querySelector('#preview').style;
-          style.cssText.should.be.empty;
+          expect(style.cssText).toNotExist();
         });
 
         it('Changes on value trigger onPreview', function() {
@@ -63,13 +63,13 @@ module.exports = {
           view.onPreview = function(){called = 1};
           view.model.set('preview', true);
           view.model.set('value', 'test');
-          called.should.equal(1);
+          expect(called).toEqual(1);
         });
 
         it('Update props', function() {
           view.model.set('props', $('<div>'));
-          view.el.querySelector('#inputs').innerHTML.should.not.be.empty;
-          (view.model.get('props') === null).should.equal(true);
+          expect(view.el.querySelector('#inputs').innerHTML).toExist();
+          expect(view.model.get('props')).toEqual(null);
         });
 
     });
