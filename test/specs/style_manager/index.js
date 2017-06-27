@@ -14,7 +14,7 @@ const LayerView = require('./view/LayerView');
 describe.only('StyleManager', function() {
 
   describe('Main', function() {
-
+    /*
     var obj;
 
     beforeEach(function () {
@@ -176,7 +176,10 @@ describe.only('StyleManager', function() {
 
     });
 
+    */
+
     Models.run();
+    /*
     SectorView.run();
     SectorsView.run();
     PropertyView.run();
@@ -187,6 +190,7 @@ describe.only('StyleManager', function() {
     PropertyCompositeView.run();
     PropertyStackView.run();
     LayerView.run();
+    */
   });
 
 });

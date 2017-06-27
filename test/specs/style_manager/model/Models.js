@@ -1,9 +1,15 @@
+const Sector = require('style_manager/model/Sector');
+const Sectors = require('style_manager/model/Sectors');
+const Property = require('style_manager/model/Property');
+const Properties = require('style_manager/model/Properties');
+const Layer = require('style_manager/model/Layer');
 const Layers = require('style_manager/model/Layers');
+const PropertyFactory = require('style_manager/model/PropertyFactory');
 
 module.exports = {
   run : function(){
 
-    describe.only('Sector', function() {
+    describe('Sector', function() {
 
       var obj;
       var confToExt;
@@ -27,24 +33,24 @@ module.exports = {
       });
 
       it('Has id property', function() {
-        obj.has('id').should.equal(true);
+        expect(obj.has('id')).toEqual(true);
       });
 
       it('Has no properties', function() {
-        obj.get('properties').length.should.equal(0);
+        expect(obj.get('properties').length).toEqual(0);
       });
 
       it('Init with properties', function() {
         obj = new Sector({
           properties: [{}, {}]
         });
-        obj.get('properties').length.should.equal(2);
+        expect(obj.get('properties').length).toEqual(2);
       });
 
       it('Build properties', function() {
         var res = obj.buildProperties(['display', 'float']);
-        res.length.should.equal(2);
-        res[0].should.deep.equal({
+        expect(res.length).toEqual(2);
+        expect(res[0]).toEqual({
           property: 'display',
           type: 'select',
           defaults: 'block',
@@ -59,19 +65,19 @@ module.exports = {
 
       it('Extend properties', function() {
         obj = new Sector(confToExt);
-        obj.get('properties').length.should.equal(3);
+        expect(obj.get('properties').length).toEqual(3);
         var prop0 = obj.get('properties').at(0);
-        prop0.get('type').should.equal('radio');
-        prop0.get('defaults').should.equal('block');
+        expect(prop0.get('type')).toEqual('radio');
+        expect(prop0.get('defaults')).toEqual('block');
       });
 
       it('Do not extend properties', function() {
         confToExt.extendBuilded = 0;
         obj = new Sector(confToExt);
-        obj.get('properties').length.should.equal(3);
+        expect(obj.get('properties').length).toEqual(3);
         var prop0 = obj.get('properties').at(0);
-        prop0.get('type').should.equal('radio');
-        prop0.get('defaults').should.equal('');
+        expect(prop0.get('type')).toEqual('radio');
+        expect(prop0.get('defaults')).toEqual('');
       });
 
       it('Extend composed properties', function() {
@@ -88,14 +94,14 @@ module.exports = {
           }]
         });
         var sectProps = obj.get('properties');
-        sectProps.length.should.equal(2);
+        expect(sectProps.length).toEqual(2);
         var prop0 = obj.get('properties').at(0);
         var propProps = prop0.get('properties');
 
-        propProps.length.should.equal(2);
+        expect(propProps.length).toEqual(2);
         var propTop = propProps.at(0);
-        propTop.get('name').should.equal('Top');
-        propTop.get('type').should.equal('integer');
+        expect(propTop.get('name')).toEqual('Top');
+        expect(propTop.get('type')).toEqual('integer');
       });
 
     });
@@ -113,7 +119,7 @@ module.exports = {
       });
 
       it('Object exists', function() {
-        obj.should.be.ok;
+        expect(obj).toExist();
       });
 
     });
@@ -131,15 +137,15 @@ module.exports = {
       });
 
       it('Has property field', function() {
-        obj.has('property').should.equal(true);
+        expect(obj.has('property')).toEqual(true);
       });
 
       it('Has no properties', function() {
-        obj.get('properties').length.should.equal(0);
+        expect(obj.get('properties').length).toEqual(0);
       });
 
       it('Has no layers', function() {
-        obj.get('layers').length.should.equal(0);
+        expect(obj.get('layers').length).toEqual(0);
       });
 
     });
@@ -157,7 +163,7 @@ module.exports = {
       });
 
       it('Object exists', function() {
-        obj.should.be.ok;
+        expect(obj).toExist();
       });
 
     });
@@ -175,11 +181,11 @@ module.exports = {
       });
 
       it('Has index property', function() {
-        obj.has('index').should.equal(true);
+        expect(obj.has('index')).toEqual(true);
       });
 
       it('Is active', function() {
-        obj.get('active').should.equal(true);
+        expect(obj.get('active')).toEqual(true);
       });
 
     });
@@ -197,18 +203,18 @@ module.exports = {
       });
 
       it('Object exists', function() {
-        obj.should.be.ok;
+        expect(obj).toExist();
       });
 
       it('Init index on add', function() {
         var model = obj.add({});
-        model.get('index').should.equal(1);
+        expect(model.get('index')).toEqual(1);
       });
 
       it('Increment index', function() {
         var model = obj.add({});
         var model2 = obj.add({});
-        model2.get('index').should.equal(2);
+        expect(model2.get('index')).toEqual(2);
       });
 
       it('Cache index', function() {
@@ -216,14 +222,14 @@ module.exports = {
         var model2 = obj.add({});
         obj.remove(model2);
         var model3 = obj.add({});
-        model3.get('index').should.equal(3);
+        expect(model3.get('index')).toEqual(3);
       });
 
       it('Reset index on reset', function() {
         var model = obj.add({});
         var model2 = obj.add({});
         obj.reset();
-        obj.idx.should.equal(1);
+        expect(obj.idx).toEqual(1);
       });
 
     });
@@ -241,11 +247,11 @@ module.exports = {
       });
 
       it('Object exists', function() {
-        obj.should.be.ok;
+        expect(obj).toExist();
       });
 
       it('Build single prop', function() {
-        obj.build('float').should.deep.equal([{
+        expect(obj.build('float')).toEqual([{
           property: 'float',
           type: 'radio',
           defaults: 'none',
@@ -258,7 +264,7 @@ module.exports = {
       });
 
       it('Build display', function() {
-        obj.build('display').should.deep.equal([{
+        expect(obj.build('display')).toEqual([{
           property: 'display',
           type: 'select',
           defaults: 'block',
@@ -272,7 +278,7 @@ module.exports = {
       });
 
       it('Build position', function() {
-        obj.build('position').should.deep.equal([{
+        expect(obj.build('position')).toEqual([{
           property: 'position',
           type: 'radio',
           defaults: 'static',
@@ -292,13 +298,13 @@ module.exports = {
           defaults : 0,
         }
         res.property = 'top';
-        obj.build('top').should.deep.equal([res]);
+        expect(obj.build('top')).toEqual([res]);
         res.property = 'right';
-        obj.build('right').should.deep.equal([res]);
+        expect(obj.build('right')).toEqual([res]);
         res.property = 'bottom';
-        obj.build('bottom').should.deep.equal([res]);
+        expect(obj.build('bottom')).toEqual([res]);
         res.property = 'left';
-        obj.build('left').should.deep.equal([res]);
+        expect(obj.build('left')).toEqual([res]);
       });
 
       it('Build width and height family', function() {
@@ -310,17 +316,17 @@ module.exports = {
           min: 0,
         }
         res.property = 'width';
-        obj.build('width').should.deep.equal([res]);
+        expect(obj.build('width')).toEqual([res]);
         res.property = 'height';
-        obj.build('height').should.deep.equal([res]);
+        expect(obj.build('height')).toEqual([res]);
         res.property = 'min-height';
-        obj.build('min-height').should.deep.equal([res]);
+        expect(obj.build('min-height')).toEqual([res]);
         res.property = 'max-height';
-        obj.build('max-height').should.deep.equal([res]);
+        expect(obj.build('max-height')).toEqual([res]);
         res.property = 'min-width';
-        obj.build('min-width').should.deep.equal([res]);
+        expect(obj.build('min-width')).toEqual([res]);
         res.property = 'max-width';
-        obj.build('max-width').should.deep.equal([res]);
+        expect(obj.build('max-width')).toEqual([res]);
       });
 
       it('Build margin', function() {
@@ -353,7 +359,7 @@ module.exports = {
                   defaults  : 0,
                 },],
         };
-        obj.build('margin').should.deep.equal([res]);
+        expect(obj.build('margin')).toEqual([res]);
       });
 
       it('Build padding', function() {
@@ -386,7 +392,7 @@ module.exports = {
                   defaults  : 0,
                 },],
         };
-        obj.build('padding').should.deep.equal([res]);
+        expect(obj.build('padding')).toEqual([res]);
       });
 
       it('Build font-family', function() {
@@ -414,7 +420,7 @@ module.exports = {
             {name: 'Verdana', value: 'Verdana, Geneva' + ss,  style: ff + 'Verdana, Geneva' + ss + sty},
           ],
         };
-        obj.build('font-family').should.deep.equal([res]);
+        expect(obj.build('font-family')).toEqual([res]);
       });
 
       it('Build font-size', function() {
@@ -423,9 +429,23 @@ module.exports = {
           units: ['px','em', 'rem', '%'],
           defaults: 'medium',
           min: 0,
+          fixedValues: [
+            "medium",
+            "xx-small",
+            "x-small",
+            "small",
+            "large",
+            "x-large",
+            "xx-large",
+            "smaller",
+            "larger",
+            "length",
+            "initial",
+            "inherit"
+          ]
         };
         res.property = 'font-size';
-        obj.build('font-size').should.deep.equal([res]);
+        expect(obj.build('font-size')).toEqual([res]);
       });
 
       it('Build letter-spacing', function() {
@@ -433,9 +453,14 @@ module.exports = {
           type: 'integer',
           units: ['px','em', 'rem', '%'],
           defaults: 'normal',
+          fixedValues: [
+            "normal",
+            "initial",
+            "inherit"
+          ]
         };
         res.property = 'letter-spacing';
-        obj.build('letter-spacing').should.deep.equal([res]);
+        expect(obj.build('letter-spacing')).toEqual([res]);
       });
 
       it('Build font-weight', function() {
@@ -453,7 +478,7 @@ module.exports = {
                    { value : '900', name : 'Ultra-Bold', }],
         };
         res.property = 'font-weight';
-        obj.build('font-weight').should.deep.equal([res]);
+        expect(obj.build('font-weight')).toEqual([res]);
       });
 
       it('Build color', function() {
@@ -462,7 +487,7 @@ module.exports = {
           type: 'color',
           defaults: 'black',
         };
-        obj.build('color').should.deep.equal([res]);
+        expect(obj.build('color')).toEqual([res]);
       });
 
       it('Build line-height', function() {
@@ -470,9 +495,14 @@ module.exports = {
           type: 'integer',
           units: ['px','em', 'rem', '%'],
           defaults: 'normal',
+          fixedValues: [
+            "normal",
+            "initial",
+            "inherit"
+          ]
         };
         res.property = 'line-height';
-        obj.build('line-height').should.deep.equal([res]);
+        expect(obj.build('line-height')).toEqual([res]);
       });
 
       it('Build text-align', function() {
@@ -485,7 +515,7 @@ module.exports = {
                  { value : 'justify'}],
         };
         res.property = 'text-align';
-        obj.build('text-align').should.deep.equal([res]);
+        expect(obj.build('text-align')).toEqual([res]);
       });
 
       it('Build text-shadow', function() {
@@ -515,7 +545,7 @@ module.exports = {
                 },],
         };
         res.property = 'text-shadow';
-        obj.build('text-shadow').should.deep.equal([res]);
+        expect(obj.build('text-shadow')).toEqual([res]);
       });
 
       it('Build border-radius-c', function() {
@@ -526,7 +556,7 @@ module.exports = {
           min: 0,
         };
         res.property = 'border-radius';
-        obj.build('border-radius-c').should.deep.equal([res]);
+        expect(obj.build('border-radius-c')).toEqual([res]);
       });
 
       it('Build border-radius', function() {
@@ -560,7 +590,7 @@ module.exports = {
                 },],
         };
         res.property = 'border-radius';
-        obj.build('border-radius').should.deep.equal([res]);
+        expect(obj.build('border-radius')).toEqual([res]);
       });
 
       it('Build background-color', function() {
@@ -569,7 +599,7 @@ module.exports = {
           defaults: 'none'
         };
         res.property = 'background-color';
-        obj.build('background-color').should.deep.equal([res]);
+        expect(obj.build('background-color')).toEqual([res]);
       });
 
       it('Build border', function() {
@@ -601,7 +631,7 @@ module.exports = {
                   defaults: 'black',
                 }],
         };
-        obj.build('border').should.deep.equal([res]);
+        expect(obj.build('border')).toEqual([res]);
       });
 
       it('Build box-shadow', function() {
@@ -642,7 +672,7 @@ module.exports = {
                           {value : 'inset', name: 'Inside' }],
                 }],
         };
-        obj.build('box-shadow').should.deep.equal([res]);
+        expect(obj.build('box-shadow')).toEqual([res]);
       });
 
       it('Build background', function() {
@@ -695,7 +725,7 @@ module.exports = {
                            { value : 'contain'}],
                 }],
         };
-        obj.build('background').should.deep.equal([res]);
+        expect(obj.build('background')).toEqual([res]);
       });
 
       it('Build transition', function() {
@@ -730,7 +760,7 @@ module.exports = {
                        { value : 'ease-in-out'}],
             }],
         };
-        obj.build('transition').should.deep.equal([res]);
+        expect(obj.build('transition')).toEqual([res]);
       });
 
       it('Build perspective', function() {
@@ -741,7 +771,7 @@ module.exports = {
           defaults : 0,
           min: 0,
         };
-        obj.build('perspective').should.deep.equal([res]);
+        expect(obj.build('perspective')).toEqual([res]);
       });
 
       it('Build transform', function() {
@@ -783,7 +813,7 @@ module.exports = {
                   functionName: 'scaleZ',
                 }],
         };
-        obj.build('transform').should.deep.equal([res]);
+        expect(obj.build('transform')).toEqual([res]);
       });
 
       it('Build cursor', function() {
@@ -801,7 +831,7 @@ module.exports = {
                  { value : 'move'},
                  { value : 'text'}],
         };
-        obj.build('cursor').should.deep.equal([res]);
+        expect(obj.build('cursor')).toEqual([res]);
       });
 
       it('Build overflow', function() {
@@ -814,7 +844,7 @@ module.exports = {
                  { value : 'scroll'},
                  { value : 'auto'}],
         };
-        obj.build('overflow').should.deep.equal([res]);
+        expect(obj.build('overflow')).toEqual([res]);
       });
 
     });
