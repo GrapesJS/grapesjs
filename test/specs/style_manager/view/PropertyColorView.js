@@ -50,41 +50,41 @@ module.exports = {
 
         it('Rendered correctly', function() {
           var prop = view.el;
-          $fixture.get(0).querySelector('.property').should.be.ok;
-          prop.querySelector('.label').should.be.ok;
-          prop.querySelector('.field').should.be.ok;
+          expect($fixture.get(0).querySelector('.property')).toExist();
+          expect(prop.querySelector('.label')).toExist();
+          expect(prop.querySelector('.field')).toExist();
         });
 
         it('Inputs rendered', function() {
           var prop = view.el;
-          prop.querySelector('input[type=text]').should.be.ok;
-          prop.querySelector('.field-color-picker').should.be.ok;
+          expect(prop.querySelector('input[type=text]')).toExist();
+          expect(prop.querySelector('.field-color-picker')).toExist();
         });
 
         it('Inputs should exist', function() {
-          view.$input.should.be.ok;
-          view.$color.should.be.ok;
+          expect(view.$input).toExist();
+          expect(view.$color).toExist();
         });
 
         it('Input value is empty', function() {
-          view.model.get('value').should.be.empty;
-          view.$input.val().should.be.empty;
+          expect(view.model.get('value')).toNotExist();
+          expect(view.$input.val()).toNotExist();
         });
 
         it('Update model on setValue', function() {
           view.setValue(propValue);
-          view.model.get('value').should.equal(propValue);
-          view.$input.val().should.equal(propValue);
+          expect(view.model.get('value')).toEqual(propValue);
+          expect(view.$input.val()).toEqual(propValue);
         });
 
         it('Update model on input change', function() {
           view.$input.val(propValue).trigger('change');
-          view.model.get('value').should.equal(propValue);
+          expect(view.model.get('value')).toEqual(propValue);
         });
 
         it('Update input on value change', function() {
           view.model.set('value', propValue);
-          view.getInputValue().should.equal(propValue);
+          expect(view.getInputValue()).toEqual(propValue);
         });
 
         it('Update target on value change', function() {
@@ -93,7 +93,7 @@ module.exports = {
           var compStyle = view.selectedComponent.get('style');
           var assertStyle = {};
           assertStyle[propName] = propValue;
-          compStyle.should.deep.equal(assertStyle);
+          expect(compStyle).toEqual(assertStyle);
         });
 
         describe('With target setted', function() {
@@ -113,8 +113,8 @@ module.exports = {
             style[propName] = propValue;
             component.set('style', style);
             view.propTarget.trigger('update');
-            view.model.get('value').should.equal(propValue);
-            view.getInputValue().should.equal(propValue);
+            expect(view.model.get('value')).toEqual(propValue);
+            expect(view.getInputValue()).toEqual(propValue);
           });
 
           it('Update value after multiple swaps', function() {
@@ -125,8 +125,8 @@ module.exports = {
             style[propName] = '#123123';
             component.set('style', style);
             view.propTarget.trigger('update');
-            view.model.get('value').should.equal('#123123');
-            view.$input.val().should.equal('#123123');
+            expect(view.model.get('value')).toEqual('#123123');
+            expect(view.getInputValue()).toEqual('#123123');
           });
 
         })
@@ -148,11 +148,11 @@ module.exports = {
           });
 
           it('Value as default', function() {
-            view.model.get('value').should.equal(propValue);
+            expect(view.model.get('value')).toEqual(propValue);
           });
 
           it('Input value is as default', function() {
-            view.$input.val().should.equal(propValue);
+            expect(view.$input.val()).toEqual(propValue);
           });
 
         });
