@@ -52,48 +52,48 @@ module.exports = {
 
         it('Rendered correctly', function() {
           var prop = view.el;
-          $fixture.get(0).querySelector('.property').should.be.ok;
-          prop.querySelector('.label').should.be.ok;
-          prop.querySelector('.field').should.be.ok;
+          expect($fixture.get(0).querySelector('.property')).toExist();
+          expect(prop.querySelector('.label')).toExist();
+          expect(prop.querySelector('.field')).toExist();
         });
 
         it('Select rendered', function() {
           var prop = view.el;
-          prop.querySelector('select').should.be.ok;
+          expect(prop.querySelector('select')).toExist();
         });
 
         it('Options rendered', function() {
           var select = view.el.querySelector('select');
-          select.children.length.should.equal(options.length);
+          expect(select.children.length).toEqual(options.length);
         });
 
         it('Options rendered correctly', function() {
           var select = view.el.querySelector('select');
           var children = select.children;
-          children[0].value.should.equal(options[0].value);
-          children[1].value.should.equal(options[1].value);
-          children[0].textContent.should.equal(options[0].value);
-          children[1].textContent.should.equal(options[1].name);
-          children[0].getAttribute('style').should.equal(options[0].style);
-          (children[1].getAttribute('style') == null).should.equal(true);
+          expect(children[0].value).toEqual(options[0].value);
+          expect(children[1].value).toEqual(options[1].value);
+          expect(children[0].textContent).toEqual(options[0].value);
+          expect(children[1].textContent).toEqual(options[1].name);
+          expect(children[0].getAttribute('style')).toEqual(options[0].style);
+          expect(children[1].getAttribute('style')).toEqual(null);
         });
 
         it('Input should exist', function() {
-          view.$input.should.be.ok;
+          expect(view.$input).toExist();
         });
 
         it('Input value is empty', function() {
-          view.model.get('value').should.be.empty;
+          expect(view.model.get('value')).toNotExist();
         });
 
         it('Update model on input change', function() {
           view.$input.val(propValue).trigger('change');
-          view.model.get('value').should.equal(propValue);
+          expect(view.model.get('value')).toEqual(propValue);
         });
 
         it('Update input on value change', function() {
           view.model.set('value', propValue);
-          view.$input.val().should.equal(propValue);
+          expect(view.$input.val()).toEqual(propValue);
         });
 
         it('Update target on value change', function() {
@@ -102,7 +102,7 @@ module.exports = {
           var compStyle = view.selectedComponent.get('style');
           var assertStyle = {};
           assertStyle[propName] = propValue;
-          compStyle.should.deep.equal(assertStyle);
+          expect(compStyle).toEqual(assertStyle);
         });
 
         describe('With target setted', function() {
@@ -122,8 +122,8 @@ module.exports = {
             style[propName] = propValue;
             component.set('style', style);
             view.propTarget.trigger('update');
-            view.model.get('value').should.equal(propValue);
-            view.$input.val().should.equal(propValue);
+            expect(view.model.get('value')).toEqual(propValue);
+            expect(view.$input.val()).toEqual(propValue);
           });
 
           it('Update value after multiple swaps', function() {
@@ -134,8 +134,8 @@ module.exports = {
             style[propName] = 'test2value';
             component.set('style', style);
             view.propTarget.trigger('update');
-            view.model.get('value').should.equal('test2value');
-            view.$input.val().should.equal('test2value');
+            expect(view.model.get('value')).toEqual('test2value');
+            expect(view.$input.val()).toEqual('test2value');
           });
 
         })
@@ -158,7 +158,7 @@ module.exports = {
           });
 
           it('Value as default', function() {
-            view.model.get('value').should.equal(defValue);
+            expect(view.model.get('value')).toEqual(defValue);
           });
 
           it('Empty value as default', function() {
@@ -178,11 +178,11 @@ module.exports = {
               model: model
             });
             $fixture.html(view.render().el);
-            view.$input.val().should.equal('');
+            expect(view.$input.val()).toEqual('');
           });
 
           it('Input value is as default', function() {
-            view.$input.val().should.equal(defValue);
+            expect(view.$input.val()).toEqual(defValue);
           });
 
         });
