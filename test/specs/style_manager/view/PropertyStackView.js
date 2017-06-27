@@ -75,35 +75,35 @@ module.exports = {
 
         it('Rendered correctly', function() {
           var prop = view.el;
-          $fixture.get(0).querySelector('.property').should.be.ok;
-          prop.querySelector('.label').should.be.ok;
-          prop.querySelector('.field').should.be.ok;
-          prop.querySelector('#add').should.be.ok;
+          expect($fixture.get(0).querySelector('.property')).toExist();
+          expect(prop.querySelector('.label')).toExist();
+          expect(prop.querySelector('.field')).toExist();
+          expect(prop.querySelector('#add')).toExist();
         });
 
         it('Layers rendered', function() {
-          view.el.querySelector('.layers').should.be.ok;
+          expect(view.el.querySelector('.layers')).toExist();
         });
 
         it('Layers should exist', function() {
-          view.$props.should.be.ok;
+          expect(view.$props).toExist();
         });
 
         it('Layers rendered correctly', function() {
           var children = view.$props.get(0).children;
-          children.length.should.equal(properties.length + 1);
-          children[0].id.should.equal(properties[0].property);
-          children[1].id.should.equal(properties[1].property);
-          children[2].id.should.equal(properties[2].property);
+          expect(children.length).toEqual(properties.length + 1);
+          expect(children[0].id).toEqual(properties[0].property);
+          expect(children[1].id).toEqual(properties[1].property);
+          expect(children[2].id).toEqual(properties[2].property);
         });
 
         it('Input value is empty', function() {
-          view.model.get('value').should.be.empty;
+          expect(view.model.get('value')).toNotExist();
         });
 
         it('Layers container is empty', function() {
           var layers = view.el.querySelector('.layers');
-          layers.innerHTML.should.be.empty;
+          expect(layers.innerHTML).toNotExist();
         });
 
         describe('With layers', function() {
@@ -124,21 +124,21 @@ module.exports = {
           });
 
           it('Layers inserted', function() {
-            view.getLayers().length.should.equal(layers.length);
+            expect(view.getLayers().length).toEqual(layers.length);
           });
 
           it('Get value on index', function() {
             view.model.set('stackIndex', 1);
-            view.valueOnIndex(1).should.equal('lval22');
+            expect(view.valueOnIndex(1)).toEqual('lval22');
           });
 
           it('createValue merges layers', function() {
-            view.createValue().should.equal('lval1, lval2 lval22, lval3 lval32 lval33');
+            expect(view.createValue()).toEqual('lval1, lval2 lval22, lval3 lval32 lval33');
           });
 
           it('Add layer', function() {
             view.addLayer();
-            view.getLayers().length.should.equal(layers.length+1);
+            expect(view.getLayers().length).toEqual(layers.length + 1);
           });
 
         });
@@ -178,13 +178,13 @@ module.exports = {
           it('Update model on input change', function() {
             $prop1.val(propValue).trigger('change');
             $prop3.val(prop3Val).trigger('change');
-            view.model.get('value').should.equal(finalResult);
+            expect(view.model.get('value')).toEqual(finalResult);
           });
 
           it('Update value on models change', function() {
             view.model.get('properties').at(0).set('value', propValue);
             view.model.get('properties').at(2).set('value', prop3Val);
-            view.model.get('value').should.equal(finalResult);
+            expect(view.model.get('value')).toEqual(finalResult);
           });
 
           it('Update target on value change', function() {
@@ -192,7 +192,7 @@ module.exports = {
             var compStyle = view.getTarget().get('style');
             var assertStyle = {};
             assertStyle[propName] = propValue + ' 0% val2';
-            compStyle.should.deep.equal(assertStyle);
+            expect(compStyle).toEqual(assertStyle);
           });
 
           it('Update value and input on target swap', function() {
@@ -202,8 +202,8 @@ module.exports = {
             component.set('style', style);
             view.propTarget.trigger('update');
             var layers = view.getLayers();
-            layers.at(0).get('value').should.equal(finalResult);
-            layers.at(1).get('value').should.equal(finalResult2);
+            expect(layers.at(0).get('value')).toEqual(finalResult);
+            expect(layers.at(1).get('value')).toEqual(finalResult2);
           });
 
           it('Update value after multiple swaps', function() {
@@ -216,8 +216,8 @@ module.exports = {
             component.set('style', style);
             view.propTarget.trigger('update');
             var layers = view.getLayers();
-            layers.at(0).get('value').should.equal(finalResult);
-            layers.at(1).get('value').should.equal(finalResult2);
+            expect(layers.at(0).get('value')).toEqual(finalResult);
+            expect(layers.at(1).get('value')).toEqual(finalResult2);
           });
 
           it('The value is correctly extracted from the composite string', function() {
@@ -226,9 +226,10 @@ module.exports = {
             component.set('style', style);
             view.propTarget.trigger('update');
             view.model.set('stackIndex', 1);
-            view.valueOnIndex(0).should.equal('value3');
-            view.valueOnIndex(1).should.equal('value4');
-            (view.valueOnIndex(2) === null).should.equal(true);
+            expect(view.valueOnIndex(0)).toEqual('value3');
+            expect(view.valueOnIndex(1)).toEqual('value4');
+            expect(view.valueOnIndex(2)).toEqual(null);
+
           });
 
           it('The value is correctly extracted from the string with functions', function() {
@@ -237,15 +238,15 @@ module.exports = {
             component.set('style', style);
             view.propTarget.trigger('update');
             view.model.set('stackIndex', 1);
-            view.valueOnIndex(0).should.equal('func(4ddb,aAS5b,sS.6b)');
-            view.valueOnIndex(1).should.equal('value3');
-            (view.valueOnIndex(2) === null).should.equal(true);
+            expect(view.valueOnIndex(0)).toEqual('func(4ddb,aAS5b,sS.6b)');
+            expect(view.valueOnIndex(1)).toEqual('value3');
+            expect(view.valueOnIndex(2)).toEqual(null);
           });
 
           it('Build value from properties', function() {
             view.model.get('properties').at(0).set('value', propValue);
             view.model.get('properties').at(2).set('value', prop3Val);
-            view.build().should.equal(finalResult);
+            expect(view.build()).toEqual(finalResult);
           });
 
         });
@@ -303,7 +304,7 @@ module.exports = {
               subprop2: 'C',
               subprop3: 'Y',
             }];
-            view.getLayersFromTarget().should.deep.equal(result);
+            expect(view.getLayersFromTarget()).toEqual(result);
           });
 
           it('Update target on detached value change', function() {
@@ -313,7 +314,7 @@ module.exports = {
             assertStyle[properties[0].property] = $prop1.val();
             assertStyle[properties[1].property] = '0%';
             assertStyle[properties[2].property] = properties[2].defaults;
-            compStyle.should.deep.equal(assertStyle);
+            expect(compStyle).toEqual(assertStyle);
           });
 
           it('Update value and input on target swap', function() {
@@ -321,18 +322,18 @@ module.exports = {
             component.set('style', compStyle);
             view.propTarget.trigger('update');
             var layers = view.getLayers();
-            layers.length.should.equal(3);
-            layers.at(0).get('values').should.deep.equal({
+            expect(layers.length).toEqual(3);
+            expect(layers.at(0).get('values')).toEqual({
               subprop1: '1px',
               subprop2: 'A',
               subprop3: 'W',
             });
-            layers.at(1).get('values').should.deep.equal({
+            expect(layers.at(1).get('values')).toEqual({
               subprop1: '20px',
               subprop2: 'B',
               subprop3: 'X',
             });
-            layers.at(2).get('values').should.deep.equal({
+            expect(layers.at(2).get('values')).toEqual({
               subprop1: '30px',
               subprop2: 'C',
               subprop3: 'Y',
