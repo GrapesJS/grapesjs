@@ -3,9 +3,9 @@ const Property = require('style_manager/model/Property');
 const Component = require('dom_components/model/Component');
 
 module.exports = {
-  run : function(){
+  run() {
 
-      describe('PropertyCompositeView', function() {
+      describe('PropertyCompositeView', () => {
 
         var component;
         var $fixtures;
@@ -36,51 +36,51 @@ module.exports = {
           },
         ];
 
-        before(function () {
+        before(() => {
           $fixtures  = $("#fixtures");
           $fixture   = $('<div class="sm-fixture"></div>');
         });
 
-        beforeEach(function () {
+        beforeEach(() => {
           target = new Component();
           component = new Component();
           target.model = component;
           model = new Property({
             type: 'composite',
             property: propName,
-            properties: properties
+            properties
           });
           view = new PropertyCompositeView({
-            model: model
+            model
           });
           $fixture.empty().appendTo($fixtures);
           $fixture.html(view.render().el);
         });
 
-        afterEach(function () {
+        afterEach(() => {
           //view.remove(); // strange errors ???
         });
 
-        after(function () {
+        after(() => {
           $fixture.remove();
           component = null;
           view = null;
           model = null;
         });
 
-        it('Rendered correctly', function() {
+        it('Rendered correctly', () => {
           var prop = view.el;
           expect($fixture.get(0).querySelector('.property')).toExist();
           expect(prop.querySelector('.label')).toExist();
           expect(prop.querySelector('.field')).toExist();
         });
 
-        it('Properties rendered', function() {
+        it('Properties rendered', () => {
           var prop = view.el;
           expect(prop.querySelector('.properties')).toExist();
         });
 
-        it('Properties rendered correctly', function() {
+        it('Properties rendered correctly', () => {
           var children = view.el.querySelector('.properties').children;
           expect(children.length).toEqual(properties.length + 1);
           expect(children[0].id).toEqual(properties[0].property);
@@ -88,20 +88,20 @@ module.exports = {
           expect(children[2].id).toEqual(properties[2].property);
         });
 
-        it('Props should exist', function() {
+        it('Props should exist', () => {
           expect(view.$props).toExist();
         });
 
-        it('Input value is empty', function() {
+        it('Input value is empty', () => {
           expect(view.model.get('value')).toNotExist();
         });
 
-        it('Update input on value change', function() {
+        it('Update input on value change', () => {
           view.model.set('value', propValue);
           expect(view.$input.val()).toEqual(propValue);
         });
 
-        describe('With target setted', function() {
+        describe('With target setted', () => {
 
           var prop2Val;
           var prop3Val;
@@ -111,14 +111,14 @@ module.exports = {
           var $prop2;
           var $prop3;
 
-          beforeEach(function () {
+          beforeEach(() => {
             model = new Property({
               type: 'composite',
               property: propName,
-              properties: properties
+              properties
             });
             view = new PropertyCompositeView({
-              model: model,
+              model,
               propTarget: target
             });
             $fixture.empty().appendTo($fixtures);
@@ -132,19 +132,19 @@ module.exports = {
             $prop3 = view.$props.find('#' + properties[2].property + ' select');
           });
 
-          it('Update model on input change', function() {
+          it('Update model on input change', () => {
             $prop1.val(propValue).trigger('change');
             $prop3.val(prop3Val).trigger('change');
             expect(view.model.get('value')).toEqual(finalResult);
           });
 
-          it('Update value on models change', function() {
+          it('Update value on models change', () => {
             view.model.get('properties').at(0).set('value', propValue);
             view.model.get('properties').at(2).set('value', prop3Val);
             expect(view.model.get('value')).toEqual(finalResult);
           });
 
-          it('Update target on value change', function() {
+          it('Update target on value change', () => {
             $prop1.val(propValue).trigger('change');
             var compStyle = view.getTarget().get('style');
             var assertStyle = {};
@@ -152,15 +152,15 @@ module.exports = {
             expect(compStyle).toEqual(assertStyle);
           });
 
-          it('Update target on detached value change', function() {
+          it('Update target on detached value change', () => {
             model = new Property({
               type: 'composite',
               property: propName,
-              properties: properties,
+              properties,
               detached: true,
             });
             view = new PropertyCompositeView({
-              model: model,
+              model,
               propTarget: target
             });
             $fixture.html(view.render().el);
@@ -172,7 +172,7 @@ module.exports = {
             expect(compStyle).toEqual(assertStyle);
           });
 
-          it('Update value and input on target swap', function() {
+          it('Update value and input on target swap', () => {
             var style = {};
             style[propName] = finalResult;
             component.set('style', style);
@@ -181,7 +181,7 @@ module.exports = {
             expect($prop3.val()).toEqual(prop3Val);
           });
 
-          it('Update value after multiple swaps', function() {
+          it('Update value after multiple swaps', () => {
             var style = {};
             style[propName] = finalResult;
             component.set('style', style);
@@ -194,7 +194,7 @@ module.exports = {
             expect($prop3.val()).toEqual('val1');
           });
 
-          it('The value is correctly extracted from the composite string', function() {
+          it('The value is correctly extracted from the composite string', () => {
             var style = {};
             style[propName] = 'value1 value2 value3 value4';
             component.set('style', style);
@@ -203,7 +203,7 @@ module.exports = {
             expect(view.valueOnIndex(4)).toEqual(null);
           });
 
-          it('Build value from properties', function() {
+          it('Build value from properties', () => {
             view.model.get('properties').at(0).set('value', propValue);
             view.model.get('properties').at(2).set('value', prop3Val);
             expect(view.build()).toEqual(finalResult);
@@ -211,23 +211,23 @@ module.exports = {
 
         })
 
-        describe('Init property', function() {
+        describe('Init property', () => {
 
-          beforeEach(function () {
+          beforeEach(() => {
             model = new Property({
               type: 'composite',
               property: propName,
-              properties: properties,
+              properties,
               defaults: defValue,
             });
             view = new PropertyCompositeView({
-              model: model
+              model
             });
             $fixture.empty().appendTo($fixtures);
             $fixture.html(view.render().el);
           });
 
-          it('Value as default', function() {
+          it('Value as default', () => {
             expect(view.model.get('value')).toEqual(defValue);
           });
 

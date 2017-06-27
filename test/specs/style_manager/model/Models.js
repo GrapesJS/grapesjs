@@ -7,14 +7,14 @@ const Layers = require('style_manager/model/Layers');
 const PropertyFactory = require('style_manager/model/PropertyFactory');
 
 module.exports = {
-  run : function(){
+  run() {
 
-    describe('Sector', function() {
+    describe('Sector', () => {
 
       var obj;
       var confToExt;
 
-      beforeEach(function () {
+      beforeEach(() => {
         confToExt = {
           buildProps: ['display', 'float'],
           properties: [{
@@ -28,26 +28,26 @@ module.exports = {
         obj = new Sector();
       });
 
-      afterEach(function () {
+      afterEach(() => {
         obj = null;
       });
 
-      it('Has id property', function() {
+      it('Has id property', () => {
         expect(obj.has('id')).toEqual(true);
       });
 
-      it('Has no properties', function() {
+      it('Has no properties', () => {
         expect(obj.get('properties').length).toEqual(0);
       });
 
-      it('Init with properties', function() {
+      it('Init with properties', () => {
         obj = new Sector({
           properties: [{}, {}]
         });
         expect(obj.get('properties').length).toEqual(2);
       });
 
-      it('Build properties', function() {
+      it('Build properties', () => {
         var res = obj.buildProperties(['display', 'float']);
         expect(res.length).toEqual(2);
         expect(res[0]).toEqual({
@@ -63,7 +63,7 @@ module.exports = {
         });
       });
 
-      it('Extend properties', function() {
+      it('Extend properties', () => {
         obj = new Sector(confToExt);
         expect(obj.get('properties').length).toEqual(3);
         var prop0 = obj.get('properties').at(0);
@@ -71,7 +71,7 @@ module.exports = {
         expect(prop0.get('defaults')).toEqual('block');
       });
 
-      it('Do not extend properties', function() {
+      it('Do not extend properties', () => {
         confToExt.extendBuilded = 0;
         obj = new Sector(confToExt);
         expect(obj.get('properties').length).toEqual(3);
@@ -80,7 +80,7 @@ module.exports = {
         expect(prop0.get('defaults')).toEqual('');
       });
 
-      it('Extend composed properties', function() {
+      it('Extend composed properties', () => {
         obj = new Sector({
           buildProps: ['margin', 'float'],
           properties: [{
@@ -106,118 +106,118 @@ module.exports = {
 
     });
 
-    describe('Sectors', function() {
+    describe('Sectors', () => {
 
       var obj;
 
-      beforeEach(function () {
+      beforeEach(() => {
         obj = new Sectors();
       });
 
-      afterEach(function () {
+      afterEach(() => {
         obj = null;
       });
 
-      it('Object exists', function() {
+      it('Object exists', () => {
         expect(obj).toExist();
       });
 
     });
 
-    describe('Property', function() {
+    describe('Property', () => {
 
       var obj;
 
-      beforeEach(function () {
+      beforeEach(() => {
         obj = new Property();
       });
 
-      afterEach(function () {
+      afterEach(() => {
         obj = null;
       });
 
-      it('Has property field', function() {
+      it('Has property field', () => {
         expect(obj.has('property')).toEqual(true);
       });
 
-      it('Has no properties', function() {
+      it('Has no properties', () => {
         expect(obj.get('properties').length).toEqual(0);
       });
 
-      it('Has no layers', function() {
+      it('Has no layers', () => {
         expect(obj.get('layers').length).toEqual(0);
       });
 
     });
 
-    describe('Properties', function() {
+    describe('Properties', () => {
 
       var obj;
 
-      beforeEach(function () {
+      beforeEach(() => {
         obj = new Properties();
       });
 
-      afterEach(function () {
+      afterEach(() => {
         obj = null;
       });
 
-      it('Object exists', function() {
+      it('Object exists', () => {
         expect(obj).toExist();
       });
 
     });
 
-    describe('Layer', function() {
+    describe('Layer', () => {
 
       var obj;
 
-      beforeEach(function () {
+      beforeEach(() => {
         obj = new Layer();
       });
 
-      afterEach(function () {
+      afterEach(() => {
         obj = null;
       });
 
-      it('Has index property', function() {
+      it('Has index property', () => {
         expect(obj.has('index')).toEqual(true);
       });
 
-      it('Is active', function() {
+      it('Is active', () => {
         expect(obj.get('active')).toEqual(true);
       });
 
     });
 
-    describe('Layers', function() {
+    describe('Layers', () => {
 
       var obj;
 
-      beforeEach(function () {
+      beforeEach(() => {
         obj = new Layers();
       });
 
-      afterEach(function () {
+      afterEach(() => {
         obj = null;
       });
 
-      it('Object exists', function() {
+      it('Object exists', () => {
         expect(obj).toExist();
       });
 
-      it('Init index on add', function() {
+      it('Init index on add', () => {
         var model = obj.add({});
         expect(model.get('index')).toEqual(1);
       });
 
-      it('Increment index', function() {
+      it('Increment index', () => {
         var model = obj.add({});
         var model2 = obj.add({});
         expect(model2.get('index')).toEqual(2);
       });
 
-      it('Cache index', function() {
+      it('Cache index', () => {
         var model = obj.add({});
         var model2 = obj.add({});
         obj.remove(model2);
@@ -225,7 +225,7 @@ module.exports = {
         expect(model3.get('index')).toEqual(3);
       });
 
-      it('Reset index on reset', function() {
+      it('Reset index on reset', () => {
         var model = obj.add({});
         var model2 = obj.add({});
         obj.reset();
@@ -234,23 +234,23 @@ module.exports = {
 
     });
 
-    describe('PropertyFactory', function() {
+    describe('PropertyFactory', () => {
 
       var obj;
 
-      beforeEach(function () {
+      beforeEach(() => {
         obj = new PropertyFactory();
       });
 
-      afterEach(function () {
+      afterEach(() => {
         obj = null;
       });
 
-      it('Object exists', function() {
+      it('Object exists', () => {
         expect(obj).toExist();
       });
 
-      it('Build single prop', function() {
+      it('Build single prop', () => {
         expect(obj.build('float')).toEqual([{
           property: 'float',
           type: 'radio',
@@ -263,7 +263,7 @@ module.exports = {
         }]);
       });
 
-      it('Build display', function() {
+      it('Build display', () => {
         expect(obj.build('display')).toEqual([{
           property: 'display',
           type: 'select',
@@ -277,7 +277,7 @@ module.exports = {
         }]);
       });
 
-      it('Build position', function() {
+      it('Build position', () => {
         expect(obj.build('position')).toEqual([{
           property: 'position',
           type: 'radio',
@@ -291,7 +291,7 @@ module.exports = {
         }]);
       });
 
-      it('Build top, left, right, bottom', function() {
+      it('Build top, left, right, bottom', () => {
         var res = {
           type: 'integer',
           units: ['px','%'],
@@ -307,7 +307,7 @@ module.exports = {
         expect(obj.build('left')).toEqual([res]);
       });
 
-      it('Build width and height family', function() {
+      it('Build width and height family', () => {
         var res = {
           type: 'integer',
           units: ['px','%'],
@@ -329,7 +329,7 @@ module.exports = {
         expect(obj.build('max-width')).toEqual([res]);
       });
 
-      it('Build margin', function() {
+      it('Build margin', () => {
         var res = {
           property: 'margin',
           type: 'composite',
@@ -362,7 +362,7 @@ module.exports = {
         expect(obj.build('margin')).toEqual([res]);
       });
 
-      it('Build padding', function() {
+      it('Build padding', () => {
         var res = {
           property: 'padding',
           type: 'composite',
@@ -395,7 +395,7 @@ module.exports = {
         expect(obj.build('padding')).toEqual([res]);
       });
 
-      it('Build font-family', function() {
+      it('Build font-family', () => {
         var ss = ', sans-serif';
         var ms = ', monospace';
         var ff = 'font-family: ';
@@ -423,7 +423,7 @@ module.exports = {
         expect(obj.build('font-family')).toEqual([res]);
       });
 
-      it('Build font-size', function() {
+      it('Build font-size', () => {
         var res = {
           type: 'integer',
           units: ['px','em', 'rem', '%'],
@@ -448,7 +448,7 @@ module.exports = {
         expect(obj.build('font-size')).toEqual([res]);
       });
 
-      it('Build letter-spacing', function() {
+      it('Build letter-spacing', () => {
         var res = {
           type: 'integer',
           units: ['px','em', 'rem', '%'],
@@ -463,7 +463,7 @@ module.exports = {
         expect(obj.build('letter-spacing')).toEqual([res]);
       });
 
-      it('Build font-weight', function() {
+      it('Build font-weight', () => {
         var res = {
           type: 'select',
           defaults: '400',
@@ -481,7 +481,7 @@ module.exports = {
         expect(obj.build('font-weight')).toEqual([res]);
       });
 
-      it('Build color', function() {
+      it('Build color', () => {
         var res = {
           property: 'color',
           type: 'color',
@@ -490,7 +490,7 @@ module.exports = {
         expect(obj.build('color')).toEqual([res]);
       });
 
-      it('Build line-height', function() {
+      it('Build line-height', () => {
         var res = {
           type: 'integer',
           units: ['px','em', 'rem', '%'],
@@ -505,7 +505,7 @@ module.exports = {
         expect(obj.build('line-height')).toEqual([res]);
       });
 
-      it('Build text-align', function() {
+      it('Build text-align', () => {
         var res = {
           type: 'radio',
           defaults: 'left',
@@ -518,7 +518,7 @@ module.exports = {
         expect(obj.build('text-align')).toEqual([res]);
       });
 
-      it('Build text-shadow', function() {
+      it('Build text-shadow', () => {
         var res = {
           type: 'stack',
           preview: true,
@@ -548,7 +548,7 @@ module.exports = {
         expect(obj.build('text-shadow')).toEqual([res]);
       });
 
-      it('Build border-radius-c', function() {
+      it('Build border-radius-c', () => {
         var res = {
           type: 'integer',
           units: ['px', '%'],
@@ -559,7 +559,7 @@ module.exports = {
         expect(obj.build('border-radius-c')).toEqual([res]);
       });
 
-      it('Build border-radius', function() {
+      it('Build border-radius', () => {
         var res = {
           property: 'border-radius',
           type: 'composite',
@@ -593,7 +593,7 @@ module.exports = {
         expect(obj.build('border-radius')).toEqual([res]);
       });
 
-      it('Build background-color', function() {
+      it('Build background-color', () => {
         var res = {
           type : 'color',
           defaults: 'none'
@@ -602,7 +602,7 @@ module.exports = {
         expect(obj.build('background-color')).toEqual([res]);
       });
 
-      it('Build border', function() {
+      it('Build border', () => {
         var res = {
           property: 'border',
           type: 'composite',
@@ -634,7 +634,7 @@ module.exports = {
         expect(obj.build('border')).toEqual([res]);
       });
 
-      it('Build box-shadow', function() {
+      it('Build box-shadow', () => {
         var res = {
           property: 'box-shadow',
           type: 'stack',
@@ -675,7 +675,7 @@ module.exports = {
         expect(obj.build('box-shadow')).toEqual([res]);
       });
 
-      it('Build background', function() {
+      it('Build background', () => {
         var res = {
           property: 'background',
           type: 'stack',
@@ -728,7 +728,7 @@ module.exports = {
         expect(obj.build('background')).toEqual([res]);
       });
 
-      it('Build transition', function() {
+      it('Build transition', () => {
         var res = {
           property: 'transition',
           type: 'stack',
@@ -763,7 +763,7 @@ module.exports = {
         expect(obj.build('transition')).toEqual([res]);
       });
 
-      it('Build perspective', function() {
+      it('Build perspective', () => {
         var res = {
           property: 'perspective',
           type: 'integer',
@@ -774,7 +774,7 @@ module.exports = {
         expect(obj.build('perspective')).toEqual([res]);
       });
 
-      it('Build transform', function() {
+      it('Build transform', () => {
         var res = {
           property: 'transform',
           type: 'composite',
@@ -816,7 +816,7 @@ module.exports = {
         expect(obj.build('transform')).toEqual([res]);
       });
 
-      it('Build cursor', function() {
+      it('Build cursor', () => {
         var res = {
           type: 'select',
           property: 'cursor',
@@ -834,7 +834,7 @@ module.exports = {
         expect(obj.build('cursor')).toEqual([res]);
       });
 
-      it('Build overflow', function() {
+      it('Build overflow', () => {
         var res = {
           type: 'select',
           property: 'overflow',

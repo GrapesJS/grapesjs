@@ -11,125 +11,124 @@ const PropertyCompositeView = require('./view/PropertyCompositeView');
 const PropertyStackView = require('./view/PropertyStackView');
 const LayerView = require('./view/LayerView');
 
-describe.only('StyleManager', function() {
+describe('StyleManager', () => {
 
-  describe('Main', function() {
-    /*
+  describe('Main', () => {
     var obj;
 
-    beforeEach(function () {
+    beforeEach(() => {
       obj = new StyleManager().init({
         sectors: []
       });
     });
 
-    afterEach(function () {
+    afterEach(() => {
       obj = null;
     });
 
-    it('Object exists', function() {
-      obj.should.be.ok;
+    it('Object exists', () => {
+      expect(obj).toExist();
     });
 
-    it('No sectors', function() {
-      obj.getSectors().length.should.equal(0);
+    it('No sectors', () => {
+      expect(obj.getSectors().length).toEqual(0);
     });
 
-    it('Add sector', function() {
+    it('Add sector', () => {
       obj.addSector('test', {
         name: 'Test name'
       });
-      obj.getSectors().length.should.equal(1);
       var sector = obj.getSectors().at(0);
-      sector.get('id').should.equal('test');
-      sector.get('name').should.equal('Test name');
+      expect(obj.getSectors().length).toEqual(1);
+      expect(sector.get('id')).toEqual('test');
+      expect(sector.get('name')).toEqual('Test name');
     });
 
-     it('Add sectors', function() {
+     it('Add sectors', () => {
       obj.addSector('test', {});
       obj.addSector('test2', {});
-      obj.getSectors().length.should.equal(2);
+      expect(obj.getSectors().length).toEqual(2);
      });
 
-    it("Can't create more than one sector with the same id", function() {
+    it("Can't create more than one sector with the same id", () => {
       var sect1 = obj.addSector('test', {});
       var sect2 = obj.addSector('test', {});
-      obj.getSectors().length.should.equal(1);
-      sect1.should.deep.equal(sect2);
+      expect(obj.getSectors().length).toEqual(1);
+      expect(sect1).toEqual(sect2);
     });
 
-    it('Get inexistent sector', function() {
-      (obj.getSector('test') == null).should.equal(true);
+    it('Get inexistent sector', () => {
+      expect(obj.getSector('test')).toEqual(null);
     });
 
-    it('Get sector', function() {
+    it('Get sector', () => {
       var sect1 = obj.addSector('test', { name: 'Test' });
       var sect2 = obj.getSector('test');
-      sect1.should.deep.equal(sect2);
+      expect(sect1).toEqual(sect2);
     });
 
-    it('Add property to inexistent sector', function() {
-      (obj.addProperty('test', {}) == null).should.equal(true);
+    it('Add property to inexistent sector', () => {
+      expect(obj.addProperty('test', {})).toEqual(null);
     });
 
-    it('Add property', function() {
+    it('Add property', () => {
       obj.addSector('test', {});
-      (obj.addProperty('test', {}) == null).should.equal(false);
-      obj.getProperties('test').length.should.equal(1);
+      expect(obj.addProperty('test', {})).toExist();
+      expect(obj.getProperties('test').length).toEqual(1);
     });
 
-    it('Check added property', function() {
+    it('Check added property', () => {
       obj.addSector('test', {});
       var prop = obj.addProperty('test', {
         'name': 'test',
       });
-      prop.get('name').should.equal('test');
+      expect(prop.get('name')).toEqual('test');
     });
 
-    it('Add properties', function() {
+    it('Add properties', () => {
       obj.addSector('test', {});
       obj.addProperty('test', [{}, {}]);
-      obj.getProperties('test').length.should.equal(2);
+      expect(obj.getProperties('test').length).toEqual(2);
     });
 
-    it('Get property from inexistent sector', function() {
-      (obj.getProperty('test', 'test-prop') == null).should.equal(true);
+    it('Get property from inexistent sector', () => {
+      expect(obj.getProperty('test', 'test-prop')).toEqual(null);
     });
 
-    it("Can't get properties without proper name", function() {
+    it("Can't get properties without proper name", () => {
       obj.addSector('test', {});
       obj.addProperty('test', [{}, {}]);
-      obj.getProperty('test', 'test-prop').should.be.empty;
+      expect(obj.getProperty('test', 'test-prop')).toEqual([]);
     });
 
-    it("Get property with proper name", function() {
+    it("Get property with proper name", () => {
       obj.addSector('test', {});
       var prop1 = obj.addProperty('test', {property: 'test-prop'});
       var prop2 = obj.getProperty('test', 'test-prop');
-      prop1.should.deep.equal(prop2);
+      expect(prop1).toEqual(prop2);
     });
 
-    it("Get properties with proper name", function() {
+    it("Get properties with proper name", () => {
       obj.addSector('test', {});
       var prop1 = obj.addProperty('test',[
         {property: 'test-prop'},
         {property: 'test-prop'}
       ]);
-      obj.getProperty('test', 'test-prop').length.should.equal(2);
+      expect(obj.getProperty('test', 'test-prop').length).toEqual(2);
     });
 
-    it('Get inexistent properties', function() {
-      (obj.getProperties('test') == null).should.equal(true);
-      (obj.getProperties() == null).should.equal(true);
+    it('Get inexistent properties', () => {
+      expect(obj.getProperties('test')).toEqual(null);
+      expect(obj.getProperties()).toEqual(null);
     });
 
-    it('Renders correctly', function() {
-      obj.render().should.be.ok;
+    it('Renders correctly', () => {
+      expect(obj.render()).toExist();
     });
 
-    describe('Init with configuration', function() {
+    describe('Init with configuration', () => {
 
-      beforeEach(function () {
+      beforeEach(() => {
         obj = new StyleManager().init({
           sectors: [{
             id: 'dim',
@@ -152,31 +151,29 @@ describe.only('StyleManager', function() {
         });
       });
 
-      afterEach(function () {
+      afterEach(() => {
         obj = null;
       });
 
-      it('Sectors added', function() {
-        obj.getSectors().length.should.equal(2);
+      it('Sectors added', () => {
+        expect(obj.getSectors().length).toEqual(2);
         var sect1 = obj.getSector('dim');
-        sect1.get('name').should.equal('Dimension');
+        expect(sect1.get('name')).toEqual('Dimension');
       });
 
-      it('Properties added', function() {
+      it('Properties added', () => {
         var sect1 = obj.getSector('dim');
         var sect2 = obj.getSector('pos');
-        sect1.get('properties').length.should.equal(2);
-        sect2.get('properties').length.should.equal(1);
+        expect(sect1.get('properties').length).toEqual(2);
+        expect(sect2.get('properties').length).toEqual(1);
       });
 
-      it('Property is correct', function() {
+      it('Property is correct', () => {
         var prop1 = obj.getProperty('dim', 'width');
-        prop1.get('name').should.equal('Width');
+        expect(prop1.get('name')).toEqual('Width');
       });
 
     });
-
-    */
 
     Models.run();
     SectorView.run();

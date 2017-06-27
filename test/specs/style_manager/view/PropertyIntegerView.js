@@ -3,9 +3,9 @@ const Property = require('style_manager/model/Property');
 const Component = require('dom_components/model/Component');
 
 module.exports = {
-  run : function(){
+  run() {
 
-      describe('PropertyIntegerView', function() {
+      describe('PropertyIntegerView', () => {
 
         var component;
         var $fixtures;
@@ -23,73 +23,73 @@ module.exports = {
         var maxValue = 75;
         var unitsElSel = '.field-units select';
 
-        before(function () {
+        before(() => {
           $fixtures  = $("#fixtures");
           $fixture   = $('<div class="sm-fixture"></div>');
         });
 
-        beforeEach(function () {
+        beforeEach(() => {
           target = new Component();
           component = new Component();
           model = new Property({
             type: 'integer',
-            units: units,
+            units,
             property: propName
           });
           view = new PropertyIntegerView({
-            model: model
+            model
           });
           $fixture.empty().appendTo($fixtures);
           $fixture.html(view.render().el);
         });
 
-        afterEach(function () {
+        afterEach(() => {
           //view.remove(); // strange errors ???
         });
 
-        after(function () {
+        after(() => {
           $fixture.remove();
           component = null;
           view = null;
           model = null;
         });
 
-        it('Rendered correctly', function() {
+        it('Rendered correctly', () => {
           var prop = view.el;
           expect($fixture.get(0).querySelector('.property')).toExist();
           expect(prop.querySelector('.label')).toExist();
           expect(prop.querySelector('.field')).toExist();
         });
 
-        it('Inputs rendered', function() {
+        it('Inputs rendered', () => {
           var prop = view.el;
           expect(prop.querySelector('input[type=text]')).toExist();
           expect(prop.querySelector(unitsElSel)).toExist();
         });
 
-        it('Units rendered', function() {
+        it('Units rendered', () => {
           var select = view.el.querySelector(unitsElSel);
           expect(select.children.length).toEqual(units.length);
         });
 
-        it('Units rendered correctly', function() {
+        it('Units rendered correctly', () => {
           var children = view.el.querySelector(unitsElSel).children;
           expect(children[0].textContent).toEqual(units[0]);
           expect(children[1].textContent).toEqual(units[1]);
           expect(children[2].textContent).toEqual(units[2]);
         });
 
-        it('Inputs should exist', function() {
+        it('Inputs should exist', () => {
           expect(view.$input).toExist();
           expect(view.$unit).toExist();
         });
 
-        it('Input value is empty', function() {
+        it('Input value is empty', () => {
           expect(view.model.get('value')).toNotExist();
           expect(view.model.get('unit')).toEqual('px');
         });
 
-        it('Update model on setValue', function() {
+        it('Update model on setValue', () => {
           view.setValue(intValue + unitValue);
           expect(view.model.get('value')).toEqual(parseFloat(intValue));
           expect(view.model.get('unit')).toEqual(unitValue);
@@ -97,22 +97,22 @@ module.exports = {
           expect(view.$unit.val()).toEqual(unitValue);
         });
 
-        it('Update model on input change', function() {
+        it('Update model on input change', () => {
           view.$input.val(123).trigger('change');
           expect(view.model.get('value')).toEqual(123);
         });
 
-        it('Update model on unit change', function() {
+        it('Update model on unit change', () => {
           view.$unit.val(units[1]).trigger('change');
           expect(view.model.get('unit')).toEqual(units[1]);
         });
 
-        it('Update input on value change', function() {
+        it('Update input on value change', () => {
           view.model.set('value', intValue);
           expect(view.getInputValue()).toEqual(intValue);
         });
 
-        it('Update target on value change', function() {
+        it('Update target on value change', () => {
           view.selectedComponent = component;
           view.model.set('value', intValue);
           var compStyle = view.selectedComponent.get('style');
@@ -121,19 +121,19 @@ module.exports = {
           expect(compStyle).toEqual(assertStyle);
         });
 
-        describe('With target setted', function() {
+        describe('With target setted', () => {
 
-          beforeEach(function () {
+          beforeEach(() => {
             target.model = component;
             view = new PropertyIntegerView({
-              model: model,
+              model,
               propTarget: target
             });
             $fixture.empty().appendTo($fixtures);
             $fixture.html(view.render().el);
           });
 
-          it('Update value and input on target swap', function() {
+          it('Update value and input on target swap', () => {
             var style = {};
             style[propName] = propValue;
             component.set('style', style);
@@ -142,7 +142,7 @@ module.exports = {
             expect(view.getInputValue()).toEqual(intValue);
           });
 
-          it('Update value after multiple swaps', function() {
+          it('Update value after multiple swaps', () => {
             var style = {};
             style[propName] = propValue;
             component.set('style', style);
@@ -158,13 +158,13 @@ module.exports = {
 
         })
 
-        describe('Init property', function() {
+        describe('Init property', () => {
 
-          beforeEach(function () {
+          beforeEach(() => {
             component = new Component();
             model = new Property({
               type: 'integer',
-              units: units,
+              units,
               property: propName,
               defaults: intValue,
               min: minValue,
@@ -172,29 +172,29 @@ module.exports = {
               unit: units[1],
             });
             view = new PropertyIntegerView({
-              model: model
+              model
             });
             $fixture.empty().appendTo($fixtures);
             $fixture.html(view.render().el);
           });
 
-          it('Value as default', function() {
+          it('Value as default', () => {
             expect(view.model.get('value')).toEqual(parseInt(intValue));
             expect(view.model.get('unit')).toEqual(units[1]);
           });
 
-          it('Input value is as default', function() {
+          it('Input value is as default', () => {
             expect(view.$input.val()).toEqual(intValue);
             expect(view.$unit.val()).toEqual(units[1]);
           });
 
-          it('Input follows min', function() {
+          it('Input follows min', () => {
             view.$input.val(minValue - 50).trigger('change');
             expect(view.model.get('value')).toEqual(minValue);
             expect(view.$input.val()).toEqual(minValue + "");
           });
 
-          it('Input follows max', function() {
+          it('Input follows max', () => {
             view.$input.val(maxValue + 50).trigger('change');
             expect(view.model.get('value')).toEqual(maxValue);
             expect(view.$input.val()).toEqual(maxValue + "");

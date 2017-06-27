@@ -2,21 +2,21 @@ const SectorsView = require('style_manager/view/SectorsView');
 const Sectors = require('style_manager/model/Sectors');
 
 module.exports = {
-  run : function(){
+  run() {
 
-      describe('SectorsView', function() {
+      describe('SectorsView', () => {
 
         var $fixtures;
         var $fixture;
         var model;
         var view;
 
-        before(function () {
+        before(() => {
           $fixtures  = $("#fixtures");
           $fixture   = $('<div class="sectors-fixture"></div>');
         });
 
-        beforeEach(function () {
+        beforeEach(() => {
           model = new Sectors([]);
           view = new SectorsView({
             collection: model
@@ -25,19 +25,19 @@ module.exports = {
           $fixture.html(view.render().el);
         });
 
-        afterEach(function () {
+        afterEach(() => {
           view.collection.reset();
         });
 
-        after(function () {
+        after(() => {
           $fixture.remove();
         });
 
-        it("Collection is empty", function (){
+        it("Collection is empty", () => {
           expect(view.el.innerHTML).toEqual('');
         });
 
-        it("Add new sectors", function (){
+        it("Add new sectors", () => {
           view.collection.add([{}, {}]);
           expect(view.el.children.length).toEqual(2);
         });

@@ -2,9 +2,9 @@ const LayerView = require('style_manager/view/LayerView');
 const Layers = require('style_manager/model/Layers');
 
 module.exports = {
-  run : function(){
+  run() {
 
-      describe('LayerView', function() {
+      describe('LayerView', () => {
 
         var component;
         var $fixtures;
@@ -13,33 +13,33 @@ module.exports = {
         var model;
         var view;
 
-        before(function () {
+        before(() => {
           $fixtures  = $("#fixtures");
           $fixture   = $('<div class="layer-fixture"></div>');
         });
 
-        beforeEach(function () {
+        beforeEach(() => {
           var coll = new Layers();
           model = coll.add({});
           view = new LayerView({
-            model: model
+            model
           });
           $fixture.empty().appendTo($fixtures);
           $fixture.html(view.render().el);
         });
 
-        afterEach(function () {
+        afterEach(() => {
           view.remove();
         });
 
-        after(function () {
+        after(() => {
           $fixture.remove();
           component = null;
           view = null;
           model = null;
         });
 
-        it('Rendered correctly', function() {
+        it('Rendered correctly', () => {
           var layer = view.el;
           expect($fixture.get(0).querySelector('.layer')).toExist();
           expect(layer.querySelector('#label')).toExist();
@@ -49,24 +49,24 @@ module.exports = {
           expect(layer.querySelector('#preview')).toExist();
         });
 
-        it('getIndex returns default value', function() {
+        it('getIndex returns default value', () => {
           expect(view.getIndex()).toEqual(0);
         });
 
-        it('No preview', function() {
+        it('No preview', () => {
           var style = view.el.querySelector('#preview').style;
           expect(style.cssText).toNotExist();
         });
 
-        it('Changes on value trigger onPreview', function() {
+        it('Changes on value trigger onPreview', () => {
           var called = 0;
-          view.onPreview = function(){called = 1};
+          view.onPreview = () => {called = 1};
           view.model.set('preview', true);
           view.model.set('value', 'test');
           expect(called).toEqual(1);
         });
 
-        it('Update props', function() {
+        it('Update props', () => {
           view.model.set('props', $('<div>'));
           expect(view.el.querySelector('#inputs').innerHTML).toExist();
           expect(view.model.get('props')).toEqual(null);

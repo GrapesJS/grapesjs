@@ -3,9 +3,9 @@ const Property = require('style_manager/model/Property');
 const Component = require('dom_components/model/Component');
 
 module.exports = {
-  run : function(){
+  run() {
 
-      describe('PropertySelectView', function() {
+      describe('PropertySelectView', () => {
 
         var component;
         var $fixtures;
@@ -21,12 +21,12 @@ module.exports = {
               {name: 'test2', value: 'test2value'}
             ];
 
-        before(function () {
+        before(() => {
           $fixtures  = $("#fixtures");
           $fixture   = $('<div class="sm-fixture"></div>');
         });
 
-        beforeEach(function () {
+        beforeEach(() => {
           target = new Component();
           component = new Component();
           model = new Property({
@@ -35,39 +35,39 @@ module.exports = {
             property: propName
           });
           view = new PropertySelectView({
-            model: model
+            model
           });
           $fixture.empty().appendTo($fixtures);
           $fixture.html(view.render().el);
         });
 
-        afterEach(function () {
+        afterEach(() => {
           //view.remove(); // strange errors ???
         });
 
-        after(function () {
+        after(() => {
           $fixture.remove();
           component = null;
         });
 
-        it('Rendered correctly', function() {
+        it('Rendered correctly', () => {
           var prop = view.el;
           expect($fixture.get(0).querySelector('.property')).toExist();
           expect(prop.querySelector('.label')).toExist();
           expect(prop.querySelector('.field')).toExist();
         });
 
-        it('Select rendered', function() {
+        it('Select rendered', () => {
           var prop = view.el;
           expect(prop.querySelector('select')).toExist();
         });
 
-        it('Options rendered', function() {
+        it('Options rendered', () => {
           var select = view.el.querySelector('select');
           expect(select.children.length).toEqual(options.length);
         });
 
-        it('Options rendered correctly', function() {
+        it('Options rendered correctly', () => {
           var select = view.el.querySelector('select');
           var children = select.children;
           expect(children[0].value).toEqual(options[0].value);
@@ -78,25 +78,25 @@ module.exports = {
           expect(children[1].getAttribute('style')).toEqual(null);
         });
 
-        it('Input should exist', function() {
+        it('Input should exist', () => {
           expect(view.$input).toExist();
         });
 
-        it('Input value is empty', function() {
+        it('Input value is empty', () => {
           expect(view.model.get('value')).toNotExist();
         });
 
-        it('Update model on input change', function() {
+        it('Update model on input change', () => {
           view.$input.val(propValue).trigger('change');
           expect(view.model.get('value')).toEqual(propValue);
         });
 
-        it('Update input on value change', function() {
+        it('Update input on value change', () => {
           view.model.set('value', propValue);
           expect(view.$input.val()).toEqual(propValue);
         });
 
-        it('Update target on value change', function() {
+        it('Update target on value change', () => {
           view.selectedComponent = component;
           view.model.set('value', propValue);
           var compStyle = view.selectedComponent.get('style');
@@ -105,19 +105,19 @@ module.exports = {
           expect(compStyle).toEqual(assertStyle);
         });
 
-        describe('With target setted', function() {
+        describe('With target setted', () => {
 
-          beforeEach(function () {
+          beforeEach(() => {
             target.model = component;
             view = new PropertySelectView({
-              model: model,
+              model,
               propTarget: target
             });
             $fixture.empty().appendTo($fixtures);
             $fixture.html(view.render().el);
           });
 
-          it('Update value and input on target swap', function() {
+          it('Update value and input on target swap', () => {
             var style = {};
             style[propName] = propValue;
             component.set('style', style);
@@ -126,7 +126,7 @@ module.exports = {
             expect(view.$input.val()).toEqual(propValue);
           });
 
-          it('Update value after multiple swaps', function() {
+          it('Update value after multiple swaps', () => {
             var style = {};
             style[propName] = propValue;
             component.set('style', style);
@@ -140,9 +140,9 @@ module.exports = {
 
         })
 
-        describe('Init property', function() {
+        describe('Init property', () => {
 
-          beforeEach(function () {
+          beforeEach(() => {
             component = new Component();
             model = new Property({
               type: 'select',
@@ -151,17 +151,17 @@ module.exports = {
               property: propName
             });
             view = new PropertySelectView({
-              model: model
+              model
             });
             $fixture.empty().appendTo($fixtures);
             $fixture.html(view.render().el);
           });
 
-          it('Value as default', function() {
+          it('Value as default', () => {
             expect(view.model.get('value')).toEqual(defValue);
           });
 
-          it('Empty value as default', function() {
+          it('Empty value as default', () => {
             options = [
                 {value: 'test1value', name: 'test1'},
                 {value: 'test2value', name: 'test2'},
@@ -175,13 +175,13 @@ module.exports = {
               property: 'emptyDefault'
             });
             view = new PropertySelectView({
-              model: model
+              model
             });
             $fixture.html(view.render().el);
             expect(view.$input.val()).toEqual('');
           });
 
-          it('Input value is as default', function() {
+          it('Input value is as default', () => {
             expect(view.$input.val()).toEqual(defValue);
           });
 

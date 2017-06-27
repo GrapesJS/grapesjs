@@ -3,9 +3,9 @@ const Property = require('style_manager/model/Property');
 const Component = require('dom_components/model/Component');
 
 module.exports = {
-  run : function(){
+  run() {
 
-      describe('PropertyStackView', function() {
+      describe('PropertyStackView', () => {
 
         var component;
         var $fixtures;
@@ -41,39 +41,39 @@ module.exports = {
           },
         ];
 
-        before(function () {
+        before(() => {
           $fixtures  = $("#fixtures");
           $fixture   = $('<div class="sm-fixture"></div>');
         });
 
-        beforeEach(function () {
+        beforeEach(() => {
           target = new Component();
           component = new Component();
           target.model = component;
           model = new Property({
             type: 'stack',
             property: propName,
-            properties: properties
+            properties
           });
           view = new PropertyStackView({
-            model: model
+            model
           });
           $fixture.empty().appendTo($fixtures);
           $fixture.html(view.render().el);
         });
 
-        afterEach(function () {
+        afterEach(() => {
           //view.remove(); // strange errors ???
         });
 
-        after(function () {
+        after(() => {
           $fixture.remove();
           component = null;
           view = null;
           model = null;
         });
 
-        it('Rendered correctly', function() {
+        it('Rendered correctly', () => {
           var prop = view.el;
           expect($fixture.get(0).querySelector('.property')).toExist();
           expect(prop.querySelector('.label')).toExist();
@@ -81,15 +81,15 @@ module.exports = {
           expect(prop.querySelector('#add')).toExist();
         });
 
-        it('Layers rendered', function() {
+        it('Layers rendered', () => {
           expect(view.el.querySelector('.layers')).toExist();
         });
 
-        it('Layers should exist', function() {
+        it('Layers should exist', () => {
           expect(view.$props).toExist();
         });
 
-        it('Layers rendered correctly', function() {
+        it('Layers rendered correctly', () => {
           var children = view.$props.get(0).children;
           expect(children.length).toEqual(properties.length + 1);
           expect(children[0].id).toEqual(properties[0].property);
@@ -97,25 +97,25 @@ module.exports = {
           expect(children[2].id).toEqual(properties[2].property);
         });
 
-        it('Input value is empty', function() {
+        it('Input value is empty', () => {
           expect(view.model.get('value')).toNotExist();
         });
 
-        it('Layers container is empty', function() {
+        it('Layers container is empty', () => {
           var layers = view.el.querySelector('.layers');
           expect(layers.innerHTML).toNotExist();
         });
 
-        describe('With layers', function() {
+        describe('With layers', () => {
 
-          beforeEach(function () {
+          beforeEach(() => {
             model = new Property({
               type: 'stack',
               property: propName,
-              properties: properties,
+              properties,
             });
             view = new PropertyStackView({
-              model: model,
+              model,
               propTarget: target
             });
             $fixture.empty().appendTo($fixtures);
@@ -123,27 +123,27 @@ module.exports = {
             model.get('layers').add(layers);
           });
 
-          it('Layers inserted', function() {
+          it('Layers inserted', () => {
             expect(view.getLayers().length).toEqual(layers.length);
           });
 
-          it('Get value on index', function() {
+          it('Get value on index', () => {
             view.model.set('stackIndex', 1);
             expect(view.valueOnIndex(1)).toEqual('lval22');
           });
 
-          it('createValue merges layers', function() {
+          it('createValue merges layers', () => {
             expect(view.createValue()).toEqual('lval1, lval2 lval22, lval3 lval32 lval33');
           });
 
-          it('Add layer', function() {
+          it('Add layer', () => {
             view.addLayer();
             expect(view.getLayers().length).toEqual(layers.length + 1);
           });
 
         });
 
-        describe('With target setted', function() {
+        describe('With target setted', () => {
 
           var prop2Val;
           var prop3Val;
@@ -153,14 +153,14 @@ module.exports = {
           var $prop2;
           var $prop3;
 
-          beforeEach(function () {
+          beforeEach(() => {
             model = new Property({
               type: 'stack',
               property: propName,
-              properties: properties
+              properties
             });
             view = new PropertyStackView({
-              model: model,
+              model,
               propTarget: target
             });
             $fixture.empty().appendTo($fixtures);
@@ -175,19 +175,19 @@ module.exports = {
             $prop3 = view.$props.find('#' + properties[2].property + ' select');
           });
 
-          it('Update model on input change', function() {
+          it('Update model on input change', () => {
             $prop1.val(propValue).trigger('change');
             $prop3.val(prop3Val).trigger('change');
             expect(view.model.get('value')).toEqual(finalResult);
           });
 
-          it('Update value on models change', function() {
+          it('Update value on models change', () => {
             view.model.get('properties').at(0).set('value', propValue);
             view.model.get('properties').at(2).set('value', prop3Val);
             expect(view.model.get('value')).toEqual(finalResult);
           });
 
-          it('Update target on value change', function() {
+          it('Update target on value change', () => {
             $prop1.val(propValue).trigger('change');
             var compStyle = view.getTarget().get('style');
             var assertStyle = {};
@@ -195,7 +195,7 @@ module.exports = {
             expect(compStyle).toEqual(assertStyle);
           });
 
-          it('Update value and input on target swap', function() {
+          it('Update value and input on target swap', () => {
             var style = {};
             var finalResult2 = 'A B C';
             style[propName] = finalResult + ', ' + finalResult2;
@@ -206,7 +206,7 @@ module.exports = {
             expect(layers.at(1).get('value')).toEqual(finalResult2);
           });
 
-          it('Update value after multiple swaps', function() {
+          it('Update value after multiple swaps', () => {
             var style = {};
             var finalResult2 = 'A2 B2 C2';
             style[propName] = finalResult;
@@ -220,7 +220,7 @@ module.exports = {
             expect(layers.at(1).get('value')).toEqual(finalResult2);
           });
 
-          it('The value is correctly extracted from the composite string', function() {
+          it('The value is correctly extracted from the composite string', () => {
             var style = {};
             style[propName] = 'value1 value2, value3 value4';
             component.set('style', style);
@@ -232,7 +232,7 @@ module.exports = {
 
           });
 
-          it('The value is correctly extracted from the string with functions', function() {
+          it('The value is correctly extracted from the string with functions', () => {
             var style = {};
             style[propName] = 'func(a1a, s2a,d3a) value1 value2, func(4ddb,   aAS5b, sS.6b) value3';
             component.set('style', style);
@@ -243,7 +243,7 @@ module.exports = {
             expect(view.valueOnIndex(2)).toEqual(null);
           });
 
-          it('Build value from properties', function() {
+          it('Build value from properties', () => {
             view.model.get('properties').at(0).set('value', propValue);
             view.model.get('properties').at(2).set('value', prop3Val);
             expect(view.build()).toEqual(finalResult);
@@ -251,7 +251,7 @@ module.exports = {
 
         });
 
-        describe('Detached with target setted', function() {
+        describe('Detached with target setted', () => {
 
           var prop2Val;
           var prop3Val;
@@ -267,15 +267,15 @@ module.exports = {
             subprop555: 'T, T, T',
           };
 
-          beforeEach(function () {
+          beforeEach(() => {
             model = new Property({
               type: 'stack',
               property: propName,
-              properties: properties,
+              properties,
               detached: true,
             });
             view = new PropertyStackView({
-              model: model,
+              model,
               propTarget: target
             });
             $fixture.html(view.render().el);
@@ -289,7 +289,7 @@ module.exports = {
             $prop3 = view.$props.find('#' + properties[2].property + ' select');
           });
 
-          it('Returns correctly layers array from target', function() {
+          it('Returns correctly layers array from target', () => {
             component.set('style', compStyle);
             var result = [{
               subprop1: '1px',
@@ -307,7 +307,7 @@ module.exports = {
             expect(view.getLayersFromTarget()).toEqual(result);
           });
 
-          it('Update target on detached value change', function() {
+          it('Update target on detached value change', () => {
             $prop1.val(propValue).trigger('change');
             var compStyle = view.getTarget().get('style');
             var assertStyle = {};
@@ -317,7 +317,7 @@ module.exports = {
             expect(compStyle).toEqual(assertStyle);
           });
 
-          it('Update value and input on target swap', function() {
+          it('Update value and input on target swap', () => {
             var style = {};
             component.set('style', compStyle);
             view.propTarget.trigger('update');
