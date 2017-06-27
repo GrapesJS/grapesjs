@@ -52,49 +52,48 @@ module.exports = {
 
         it('Rendered correctly', function() {
           var prop = view.el;
-          $fixture.get(0).querySelector('.property').should.be.ok;
-          prop.querySelector('.label').should.be.ok;
-          prop.querySelector('.field').should.be.ok;
+          expect($fixture.get(0).querySelector('.property')).toExist();
+          expect(prop.querySelector('.label')).toExist();
+          expect(prop.querySelector('.field')).toExist();
         });
 
         it('Radio rendered', function() {
           var prop = view.el;
-          prop.querySelector('input[type=radio]').should.be.ok;
+          expect(prop.querySelector('input[type=radio]')).toExist();
         });
 
         it('Options rendered', function() {
           var input = view.el.querySelector('#input-holder');
-          input.children.length.should.equal(options.length);
+          expect(input.children.length).toEqual(options.length);
         });
 
         it('Options rendered correctly', function() {
           var children = view.el.querySelector('#input-holder').children;
-          children[0].querySelector('label').textContent.should.equal('test1value');
-          children[1].querySelector('label').textContent.should.equal('test2');
-          children[0].querySelector('input').value.should.equal(options[0].value);
-          children[1].querySelector('input').value.should.equal(options[1].value);
-          children[0].querySelector('label').getAttribute('title').should.equal(options[0].title);
-          (children[1].querySelector('label').getAttribute('title') == null)
-            .should.equal(true);
+          expect(children[0].querySelector('label').textContent).toEqual('test1value');
+          expect(children[1].querySelector('label').textContent).toEqual('test2');
+          expect(children[0].querySelector('input').value).toEqual(options[0].value);
+          expect(children[1].querySelector('input').value).toEqual(options[1].value);
+          expect(children[0].querySelector('label').getAttribute('title')).toEqual(options[0].title);
+          expect(children[1].querySelector('label').getAttribute('title')).toEqual(null);
         });
 
         it('Input should exist', function() {
-          view.$input.should.be.ok;
+          expect(view.$input).toExist();
         });
 
         it('Input value is empty', function() {
-          view.model.get('value').should.be.empty;
+          expect(view.model.get('value')).toNotExist();
         });
 
         it('Update model on input change', function() {
           view.setValue(propValue);
-          view.model.get('value').should.equal(propValue);
-          view.getInputValue().should.equal(propValue);
+          expect(view.model.get('value')).toEqual(propValue);
+          expect(view.getInputValue()).toEqual(propValue);
         });
 
         it('Update input on value change', function() {
           view.model.set('value', propValue);
-          view.getInputValue().should.equal(propValue);
+          expect(view.getInputValue()).toEqual(propValue);
         });
 
         it('Update target on value change', function() {
@@ -103,7 +102,7 @@ module.exports = {
           var compStyle = view.selectedComponent.get('style');
           var assertStyle = {};
           assertStyle[propName] = propValue;
-          compStyle.should.deep.equal(assertStyle);
+          expect(compStyle).toEqual(assertStyle);
         });
 
         describe('With target setted', function() {
@@ -123,8 +122,8 @@ module.exports = {
             style[propName] = propValue;
             component.set('style', style);
             view.propTarget.trigger('update');
-            view.model.get('value').should.equal(propValue);
-            view.getInputValue().should.equal(propValue);
+            expect(view.model.get('value')).toEqual(propValue);
+            expect(view.getInputValue()).toEqual(propValue);
           });
 
           it('Update value after multiple swaps', function() {
@@ -135,8 +134,8 @@ module.exports = {
             style[propName] = 'test2value';
             component.set('style', style);
             view.propTarget.trigger('update');
-            view.model.get('value').should.equal('test2value');
-            view.getInputValue().should.equal('test2value');
+            expect(view.model.get('value')).toEqual('test2value');
+            expect(view.getInputValue()).toEqual('test2value');
           });
 
         })
@@ -159,11 +158,11 @@ module.exports = {
           });
 
           it('Value as default', function() {
-            view.model.get('value').should.equal(defValue);
+            expect(view.model.get('value')).toEqual(defValue);
           });
 
           it('Input value is as default', function() {
-            view.getInputValue().should.equal(defValue);
+            expect(view.getInputValue()).toEqual(defValue);
           });
 
         });
