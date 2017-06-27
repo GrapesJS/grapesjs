@@ -35,30 +35,29 @@ module.exports = {
 
         it('Rendered correctly', function() {
           var sector = view.el;
-          sector.should.be.ok;
-          sector.querySelector('.title').should.be.ok;
+          expect(sector.querySelector('.title')).toExist();
           var props = sector.querySelector('.properties');
-          props.should.be.ok;
-          sector.classList.contains('open').should.equal(true);
+          expect(props).toExist();
+          expect(sector.classList.contains('open')).toEqual(true);
         });
 
         it('No properties', function() {
           var props = view.el.querySelector('.properties');
-          props.innerHTML.should.equal('<div class="clear"></div>');
+          expect(props.innerHTML).toEqual('<div class="clear"></div>');
         });
 
         it('Update on open', function() {
           var sector = view.el;
           var props = sector.querySelector('.properties');
           model.set('open', false);
-          sector.classList.contains('open').should.equal(false);
-          props.style.display.should.equal('none');
+          expect(sector.classList.contains('open')).toEqual(false);
+          expect(props.style.display).toEqual('none');
         });
 
         it('Toggle on click', function() {
           var sector = view.el;
           view.$el.find('.title').click();
-          sector.classList.contains('open').should.equal(false);
+          expect(sector.classList.contains('open')).toEqual(false);
         });
 
         describe('Init with options', function() {
@@ -87,15 +86,15 @@ module.exports = {
           it('Rendered correctly2', function() {
             var sector = view.el;
             var props = sector.querySelector('.properties');
-            sector.querySelector('.title').innerHTML.should.contain('TestName');
-            props.should.be.ok;
-            sector.classList.contains('open').should.equal(false);
-            props.style.display.should.equal('none');
+            expect(sector.querySelector('.title').innerHTML).toContain('TestName');
+            expect(props).toExist();
+            expect(sector.classList.contains('open')).toEqual(false);
+            expect(props.style.display).toEqual('none');
           });
 
           it('Has properties', function() {
             var props = view.el.querySelector('.properties');
-            props.children.length.should.equal(4); // Last one is 'clear' element
+            expect(props.children.length).toEqual(4); // Last one is 'clear' element
           });
 
         });

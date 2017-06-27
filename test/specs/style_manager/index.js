@@ -179,8 +179,8 @@ describe.only('StyleManager', function() {
     */
 
     Models.run();
-    /*
     SectorView.run();
+    /*
     SectorsView.run();
     PropertyView.run();
     PropertySelectView.run();
