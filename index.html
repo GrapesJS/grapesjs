@@ -806,7 +806,7 @@
       clearOnRender: 0,
 
       storageManager:{
-        autoload: 0,
+        autoload: 1,
         storeComponents: 1,
         storeStyles: 1,
       },
@@ -1172,6 +1172,14 @@
       }
     },
   });
+
+    editor.on('storage:store', function(store) {
+      console.log('Stored', store);
+    });
+
+    editor.on('storage:load', function(loaded) {
+      console.log('Loaded', loaded);
+    });
 
     editor.render();
     </script>

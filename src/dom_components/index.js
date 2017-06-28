@@ -192,9 +192,6 @@ module.exports = () => {
      * @private
      */
     onLoad() {
-      if(c.stm && c.stm.getConfig().autoload)
-          this.load();
-
       if(c.stm && c.stm.isAutosave()){
         c.em.initUndoManager();
         c.em.initChildrenComp(this.getWrapper());
@@ -220,8 +217,15 @@ module.exports = () => {
       }else if(d.html)
         obj = d.html;
 
-      if(obj)
+      console.log(obj);
+
+      if (obj) {
+        console.log('Before', this.getComponents().length);
+        this.clear();
         this.getComponents().reset(obj);
+        console.log('After', this.getComponents().length);
+      }
+
       return obj;
     },
 
@@ -239,8 +243,11 @@ module.exports = () => {
         obj.html = c.em.getHtml();
       if(keys.indexOf('components') >= 0)
         obj.components = JSON.stringify(c.em.getComponents());
-      if(!noStore)
+
+      if (!noStore) {
         c.stm.store(obj);
+      }
+
       return obj;
     },
 

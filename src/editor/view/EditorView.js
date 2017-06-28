@@ -23,8 +23,10 @@ module.exports = Backbone.View.extend({
       if (config.clearOnRender) {
         dComps.clear();
       }
-      dComps.getComponents().add(config.components);
+      dComps.getComponents().reset(config.components);
       um.clear();
+      model.loadOnStart();
+      // This will init loaded components
       dComps.onLoad();
     }
 

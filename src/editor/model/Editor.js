@@ -21,6 +21,7 @@ require('trait_manager'),
 var Backbone = require('backbone');
 var UndoManager = require('backbone-undo');
 var key = require('keymaster');
+var timedInterval;
 
 module.exports = Backbone.Model.extend({
 
@@ -53,10 +54,23 @@ module.exports = Backbone.Model.extend({
       M.onLoad();
     });
 
+    this.loadOnStart();
     this.initUndoManager();
 
     this.on('change:selectedComponent', this.componentSelected, this);
     this.on('change:changesCount', this.updateBeforeUnload, this);
+  },
+
+  /**
+   * Load on start if it was requested
+   * @private
+   */
+  loadOnStart() {
+    const sm = this.get('StorageManager');
+
+    if (sm && sm.getConfig().autoload) {
+      this.load();
+    }
   },
 
   /**
@@ -409,9 +423,11 @@ module.exports = Backbone.Model.extend({
         store[el] = obj[el];
     });
 
-    sm.store(store, clb);
+    sm.store(store, () => {
+      clb && clb();
+      this.trigger('storage:store', store);
+    });
     this.set('changesCount', 0);
-    this.trigger('storage:store', store);
 
     return store;
   },
