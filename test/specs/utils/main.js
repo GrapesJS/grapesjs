@@ -1,9 +1,9 @@
-define(function(require, exports, module){
+define((require, exports, module) => {
   'use strict';
   var Utils = require('Utils');
   var Sorter = require('undefined');
 
-    describe('Utils', function() {
+    describe('Utils', () => {
 
       Sorter.run();
 
