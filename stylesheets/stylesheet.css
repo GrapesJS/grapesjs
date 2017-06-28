@@ -1,3 +1,4 @@
+/* stylelint-disable */
 * {
   box-sizing: border-box;
 }
@@ -537,7 +538,7 @@ a {
     font-size: 1rem; } }
 
 .btns-cont {
-  margin-bottom: 70px;
+  margin-bottom: 50px;
   position: relative;
   z-index: 10;
 }
@@ -735,6 +736,55 @@ a {
 .info-card canvas, .info-card #img-c > div{
   width: 100% !important;
 }
+
+#carbonads {
+  margin: 0 auto 50px;
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: 400px;
+  background-color: rgba(0,0,0,0.15);
+  padding: 15px;
+  border-radius: 3px;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+#carbonads span {
+  display: block;
+  overflow: hidden;
+  text-align: left;
+}
+
+.carbon-wrap {
+  font-size: 14px;
+}
+
+.carbon-img {
+  float: left;
+  margin-right: 15px;
+}
+
+.carbon-img img {
+  border-radius: 3px;
+}
+
+#carbonads a {
+  color: rgba(255,255,255,0.95);
+  text-shadow: none;
+}
+
+#carbonads a:hover {
+  text-decoration: none;
+}
+
+.carbon-poweredby {
+  display: block;
+  float: right;
+  margin-top: -1.9em;
+  font-size: 13px;
+  opacity: 0.75;
+}
+
 @media (max-width: 1300px) {
   .info-card #img-c{
     width: 100%;
