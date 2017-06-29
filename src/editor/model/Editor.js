@@ -439,7 +439,7 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   load(clb) {
-    var result = this.getCacheLoad(1);
+    var result = this.getCacheLoad(1, clb);
     this.get('storables').forEach(m => {
       m.load(result);
     });
@@ -449,10 +449,11 @@ module.exports = Backbone.Model.extend({
   /**
    * Returns cached load
    * @param {Boolean} force Force to reload
+   * @param {Function} clb Callback function
    * @return {Object}
    * @private
    */
-  getCacheLoad(force) {
+  getCacheLoad(force, clb) {
     var f = force ? 1 : 0;
     if(this.cacheLoad && !f)
       return this.cacheLoad;
@@ -471,8 +472,10 @@ module.exports = Backbone.Model.extend({
       });
     });
 
-    this.cacheLoad = sm.load(load);
-    this.trigger('storage:load', this.cacheLoad);
+    this.cacheLoad = sm.load(load, (loaded) => {
+      clb && clb(loaded);
+      this.trigger('storage:load', loaded);
+    });
     return this.cacheLoad;
   },
 

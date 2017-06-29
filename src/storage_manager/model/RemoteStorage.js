@@ -42,7 +42,7 @@ module.exports = Backbone.Model.extend({
   /**
    * @private
    */
-  load(keys) {
+  load(keys, clb) {
     var result = {},
     fd = {},
     params = this.get('params');
@@ -61,6 +61,10 @@ module.exports = Backbone.Model.extend({
       method: 'GET',
     }).done(d => {
       result = d;
+    }).always((res) => {
+      if (typeof clb == 'function') {
+        clb(res);
+      }
     });
     return result;
   },
