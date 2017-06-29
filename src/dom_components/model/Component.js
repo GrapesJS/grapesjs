@@ -124,6 +124,7 @@ module.exports = Backbone.Model.extend({
       }
     }, this);
 
+    this.set('status', '');
     this.init();
   },
 
