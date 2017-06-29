@@ -21,6 +21,12 @@ module.exports = Backbone.View.extend({
     this.uploadId  = this.pfx + 'uploadFile';
     this.disabled  = !this.config.upload;
     this.events['change #' + this.uploadId]  = 'uploadFile';
+    let uploadFile = this.config.uploadFile;
+
+    if (uploadFile) {
+      this.uploadFile = uploadFile.bind(this);
+    }
+
     this.delegateEvents();
   },
 
