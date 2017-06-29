@@ -217,13 +217,9 @@ module.exports = () => {
       }else if(d.html)
         obj = d.html;
 
-      console.log(obj);
-
       if (obj) {
-        console.log('Before', this.getComponents().length);
         this.clear();
         this.getComponents().reset(obj);
-        console.log('After', this.getComponents().length);
       }
 
       return obj;
