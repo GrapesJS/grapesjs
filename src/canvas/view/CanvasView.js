@@ -156,7 +156,9 @@ module.exports = Backbone.View.extend({
     var docBody = el.ownerDocument.body;
     return {
       top: rect.top + docBody.scrollTop,
-      left: rect.left + docBody.scrollLeft
+      left: rect.left + docBody.scrollLeft,
+      width: rect.width,
+      height: rect.height,
     };
   },
 
@@ -174,8 +176,8 @@ module.exports = Backbone.View.extend({
    * @return {Object}
    * @private
    */
-  getFrameOffset() {
-    if(!this.frmOff)
+  getFrameOffset(force = 0) {
+    if(!this.frmOff || force)
       this.frmOff = this.offset(this.frame.el);
     return this.frmOff;
   },

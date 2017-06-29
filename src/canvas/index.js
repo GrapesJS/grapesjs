@@ -4,6 +4,7 @@ module.exports = () => {
   Canvas = require('./model/Canvas'),
   CanvasView = require('./view/CanvasView');
   var canvas;
+  var frameRect;
 
   return {
 
@@ -47,6 +48,9 @@ module.exports = () => {
       if(cm)
         this.setWrapper(cm);
 
+      this.startAutoscroll = this.startAutoscroll.bind(this);
+      this.stopAutoscroll = this.stopAutoscroll.bind(this);
+      this.autoscroll = this.autoscroll.bind(this);
       return this;
     },
 
@@ -311,6 +315,59 @@ module.exports = () => {
         y: e.clientY + addTop + yOffset,
         x: e.clientX + addLeft + xOffset,
       };
+    },
+
+    /**
+     * Start autoscroll
+     */
+    startAutoscroll() {
+      this.dragging = 1;
+      let toListen = this.getScrollListeners();
+      frameRect = CanvasView.getFrameOffset(1);
+      toListen.on('mousemove', this.autoscroll);
+      toListen.on('mouseup', this.stopAutoscroll);
+    },
+
+    autoscroll(e) {
+      e.preventDefault();
+      if (this.dragging) {
+        let frameWindow = this.getFrameEl().contentWindow;
+        let actualTop = frameWindow.document.body.scrollTop;
+        let nextTop = actualTop;
+        let clientY = e.clientY;
+        let limitTop = 50;
+        let limitBottom = frameRect.height - limitTop;
+
+        if (clientY < limitTop) {
+          nextTop -= (limitTop - clientY);
+        }
+
+        if (clientY > limitBottom) {
+          nextTop += (clientY - limitBottom);
+        }
+
+        //console.log(`actualTop: ${actualTop} clientY: ${clientY} nextTop: ${nextTop} frameHeigh: ${frameRect.height}`);
+        frameWindow.scrollTo(0, nextTop);
+      }
+    },
+
+    /**
+     * Stop autoscroll
+     */
+    stopAutoscroll() {
+      this.dragging = 0;
+      let toListen = this.getScrollListeners();
+      toListen.off('mousemove', this.autoscroll);
+      toListen.off('mouseup', this.stopAutoscroll);
+    },
+
+    getScrollListeners() {
+      if (!this.scrollListeners) {
+        this.scrollListeners =
+          $(this.getFrameEl().contentWindow, this.getElement());
+      }
+
+      return this.scrollListeners;
     },
 
     /**

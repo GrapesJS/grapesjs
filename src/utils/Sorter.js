@@ -81,11 +81,13 @@ module.exports = Backbone.View.extend({
     var sortCls = pfx + 'grabbing';
     var emBody = em ? em.get('Canvas').getBody() : '';
     if(active) {
+      em && em.get('Canvas').startAutoscroll();
       body.className += ' ' + sortCls;
       if(em) {
         emBody.className += ' ' + sortCls;
       }
     } else {
+      em && em.get('Canvas').stopAutoscroll();
       body.className = body.className.replace(sortCls, '').trim();
       if(em) {
         emBody.className = emBody.className.replace(sortCls, '').trim();
