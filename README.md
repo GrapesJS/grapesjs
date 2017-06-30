@@ -171,11 +171,15 @@ The project is sponsored by
 
 ## Support
 
-If you like the project support it with a donation of your choice.
+If you like the project support it with a donation of your choice or become a backer/sponsor via [Open Collective](https://opencollective.com/grapesjs)
 
 [![PayPalMe](http://grapesjs.com/img/ppme.png)](https://paypal.me/grapesjs)
 
+<a href="https://opencollective.com/grapesjs/sponsors/0/website" target="_blank"><img src="https://opencollective.com/grapesjs/sponsors/0/avatar"></a>
+<a href="https://opencollective.com/grapesjs/sponsors/1/website" target="_blank"><img src="https://opencollective.com/grapesjs/sponsors/1/avatar"></a>
 
+<a href="https://opencollective.com/grapesjs/backers/0/website" target="_blank"><img src="https://opencollective.com/grapesjs/backers/0/avatar"></a>
+<a href="https://opencollective.com/grapesjs/backers/1/website" target="_blank"><img src="https://opencollective.com/grapesjs/backers/1/avatar"></a>
 
 
 
