@@ -216,10 +216,10 @@ module.exports = () => {
         }catch(err){}
       }else if(d.html)
         obj = d.html;
-
       if (obj) {
         this.clear();
-        this.getComponents().reset(obj);
+        this.getComponents().reset();
+        this.getComponents().add(obj);
       }
 
       return obj;

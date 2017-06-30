@@ -161,18 +161,21 @@ module.exports = Backbone.Model.extend({
    * @private
    * */
   componentsUpdated(model, val, opt) {
-    var count = this.get('changesCount') + 1;
-    var avoidStore = opt ? opt.avoidStore : 0;
-    var stm = this.get('StorageManager');
-    this.set('changesCount', count);
+    timedInterval && clearInterval(timedInterval);
+    timedInterval = setTimeout(() => {
+      var count = this.get('changesCount') + 1;
+      var avoidStore = opt ? opt.avoidStore : 0;
+      var stm = this.get('StorageManager');
+      this.set('changesCount', count);
 
-    if (!stm.isAutosave() || count < stm.getStepsBeforeSave()) {
-      return;
-    }
+      if (!stm.isAutosave() || count < stm.getStepsBeforeSave()) {
+        return;
+      }
 
-    if (!avoidStore) {
-      this.store();
-    }
+      if (!avoidStore) {
+        this.store();
+      }
+    }, 0);
   },
 
   /**
