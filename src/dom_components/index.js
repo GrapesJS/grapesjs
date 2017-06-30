@@ -82,6 +82,11 @@ module.exports = () => {
       view: require('./view/ComponentScriptView'),
     },
     {
+      id: 'svg',
+      model: require('./model/ComponentSvg'),
+      view: require('./view/ComponentSvgView'),
+    },
+    {
       id: 'textnode',
       model: require('./model/ComponentTextNode'),
       view: require('./view/ComponentTextNodeView'),
@@ -187,9 +192,6 @@ module.exports = () => {
      * @private
      */
     onLoad() {
-      if(c.stm && c.stm.getConfig().autoload)
-          this.load();
-
       if(c.stm && c.stm.isAutosave()){
         c.em.initUndoManager();
         c.em.initChildrenComp(this.getWrapper());
@@ -214,9 +216,12 @@ module.exports = () => {
         }catch(err){}
       }else if(d.html)
         obj = d.html;
+      if (obj) {
+        this.clear();
+        this.getComponents().reset();
+        this.getComponents().add(obj);
+      }
 
-      if(obj)
-        this.getComponents().reset(obj);
       return obj;
     },
 
@@ -234,8 +239,11 @@ module.exports = () => {
         obj.html = c.em.getHtml();
       if(keys.indexOf('components') >= 0)
         obj.components = JSON.stringify(c.em.getComponents());
-      if(!noStore)
+
+      if (!noStore) {
         c.stm.store(obj);
+      }
+
       return obj;
     },
 

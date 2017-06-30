@@ -1,56 +1,52 @@
-define(function(require, exports, module){
-  'use strict';
-  var ButtonsView = require('undefined');
-  var Buttons = require('Panels/model/Buttons');
+const ButtonsView = require('panels/view/ButtonsView');
+const Buttons = require('panels/model/Buttons');
 
-    module.exports = {
-      run : function(){
-          describe('ButtonsView', function() {
+module.exports = {
+  run() {
+      describe('ButtonsView', () => {
 
-            var $fixtures;
-            var $fixture;
-            var model;
-            var view;
+        var $fixtures;
+        var $fixture;
+        var model;
+        var view;
 
-            before(function () {
-              $fixtures  = $("#fixtures");
-              $fixture   = $('<div class="cssrules-fixture"></div>');
-            });
-
-            beforeEach(function () {
-              model = new Buttons([]);
-              view = new ButtonsView({
-                collection: model
-              });
-              $fixture.empty().appendTo($fixtures);
-              $fixture.html(view.render().el);
-            });
-
-            afterEach(function () {
-              view.collection.reset();
-            });
-
-            after(function () {
-              $fixture.remove();
-            });
-
-            it("Collection is empty", function (){
-              view.$el.html().should.be.empty;
-            });
-
-            it("Add new button", function (){
-              sinon.stub(view, "addToCollection");
-              view.collection.add({});
-              view.addToCollection.calledOnce.should.equal(true);
-            });
-
-            it("Render new button", function (){
-              view.collection.add({});
-              view.$el.html().should.not.be.empty;
-            });
-
+        before(() => {
+          $fixtures  = $("#fixtures");
+          $fixture   = $('<div class="cssrules-fixture"></div>');
         });
-      }
-    };
 
-});
+        beforeEach(() => {
+          model = new Buttons([]);
+          view = new ButtonsView({
+            collection: model
+          });
+          $fixture.empty().appendTo($fixtures);
+          $fixture.html(view.render().el);
+        });
+
+        afterEach(() => {
+          view.collection.reset();
+        });
+
+        after(() => {
+          $fixture.remove();
+        });
+
+        it("Collection is empty", () => {
+          expect(view.$el.html()).toEqual('');
+        });
+
+        it("Add new button", () => {
+          sinon.stub(view, "addToCollection");
+          view.collection.add({});
+          expect(view.addToCollection.calledOnce).toEqual(true);
+        });
+
+        it("Render new button", () => {
+          view.collection.add({});
+          expect(view.$el.html()).toExist();
+        });
+
+    });
+  }
+};

@@ -2,9 +2,9 @@ var AssetsView = require('asset_manager/view/AssetsView');
 var Assets = require('asset_manager/model/Assets');
 
 module.exports = {
-  run: function() {
+  run() {
 
-    describe('AssetsView', function() {
+    describe('AssetsView', () => {
 
       var obj;
 
@@ -32,7 +32,7 @@ module.exports = {
         this.$fixture.remove();
       });
 
-      it('Object exists', function() {
+      it('Object exists', () => {
         expect(AssetsView).toExist();
       });
 
@@ -72,18 +72,18 @@ module.exports = {
         expect($asset.attr('class')).toNotExist();
       });
 
-      it("Returns not empty assets element", function (){
+      it("Returns not empty assets element", () => {
         expect(obj.getAssetsEl()).toExist();
       });
 
-      it("Returns not empty url input", function (){
+      it("Returns not empty url input", () => {
         expect(obj.getInputUrl()).toExist();
       });
 
-      it("Add image asset from input string", function (){
+      it("Add image asset from input string", () => {
         obj.getInputUrl().value = "test";
         obj.addFromStr({
-          preventDefault: function(){}
+          preventDefault() {}
         });
         var asset = obj.collection.at(0);
         expect(asset.get('src')).toEqual('test');

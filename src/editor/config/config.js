@@ -38,7 +38,7 @@ module.exports = {
   width: '100%',
 
   // CSS that could only be seen (for instance, inside the code viewer)
-  protectedCss: '',
+  protectedCss: '*{box-sizing: border-box;} body{margin: 0;}',
 
   // CSS for the iframe which containing the canvas, useful if you need to custom something inside
   // (eg. the style of the selected component)
@@ -58,6 +58,10 @@ module.exports = {
 
   // When enabled, on device change media rules won't be created
   devicePreviewMode: 0,
+
+  // THe condition to use for media queries, eg. 'max-width'
+  // Comes handy for mobile-first cases
+  mediaCondition: 'max-width',
 
   // This option makes available custom component types also for loaded
   // elements inside canvas
@@ -104,18 +108,21 @@ module.exports = {
 
   //Configurations for Device Manager
   deviceManager: {
-    'devices': [{
+    devices: [{
         name: 'Desktop',
         width: '',
       },{
         name: 'Tablet',
-        width: '992px',
+        width: '768px',
+        widthMedia: '992px',
       },{
         name: 'Mobile landscape',
-        width: '768px',
+        width: '568px',
+        widthMedia: '768px',
       },{
         name: 'Mobile portrait',
-        width: '480px',
+        width: '320px',
+        widthMedia: '480px',
     }],
   },
 
@@ -157,29 +164,34 @@ module.exports = {
 
   //Configurations for Block Manager
   blockManager: {
-    'blocks': [{
+    blocks: [{
         id: 'b1',
         label: '1 Block',
+        category: 'Basic',
         content: '<div class="blk-row"><div class="blk1"></div></div><style>'+ blkStyle +'.blk1{width: 100%;padding: 10px;min-height: 75px;}</style>',
         attributes: {class:'gjs-fonts gjs-f-b1'}
       },{
         id: 'b2',
         label: '2 Blocks',
+        category: 'Basic',
         content: '<div class="blk-row"><div class="blk2"></div><div class="blk2"></div></div><style>'+ blkStyle +'.blk2{float: left;width: 50%;padding: 10px;min-height: 75px;}</style>',
         attributes: {class:'gjs-fonts gjs-f-b2'}
       },{
         id: 'b3',
         label: '3 Blocks',
+        category: 'Basic',
         content: '<div class="blk-row"><div class="blk3"></div><div class="blk3"></div><div class="blk3"></div></div><style>'+ blkStyle +'.blk3{float: left;width: 33.3333%;padding: 10px;min-height: 75px;}</style>',
         attributes: {class:'gjs-fonts gjs-f-b3'}
       },{
         id: 'b4',
         label: '3/7 Block',
+        category: 'Basic',
         content: '<div class="blk-row"><div class="blk37l"></div><div class="blk37r"></div></div></div><style>'+ blkStyle +'.blk37l{float: left;width: 30%;padding: 10px;min-height: 75px;}.blk37r{float: left;width: 70%;padding: 10px;min-height: 75px;}</style>',
         attributes: {class:'gjs-fonts gjs-f-b37'}
       },{
         id: 'hero',
         label: 'Hero section',
+        category: 'Section',
         content: '<header class="header-banner"> <div class="container-width">'+
             '<div class="logo-container"><div class="logo">GrapesJS</div></div>'+
             '<nav class="navbar">'+
@@ -191,11 +203,13 @@ module.exports = {
       },{
         id: 'h1p',
         label: 'Text section',
+        category: 'Typography',
         content: '<h1 class="heading">Insert title here</h1><p class="paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>',
         attributes: {class:'gjs-fonts gjs-f-h1p'}
       },{
         id: '3ba',
         label: 'Badges',
+        category: 'Section',
         content: '<div class="badges">'+
           '<div class="badge">'+
             '<div class="badge-header"></div>'+
@@ -227,6 +241,7 @@ module.exports = {
         id: 'text',
         label: 'Text',
         attributes: {class:'gjs-fonts gjs-f-text'},
+        category: 'Basic',
         content: {
           type:'text',
           content:'Insert your text here',
@@ -236,6 +251,7 @@ module.exports = {
       },{
         id: 'image',
         label: 'Image',
+        category: 'Basic',
         attributes: {class:'gjs-fonts gjs-f-image'},
         content: {
           style: {color: 'black'},
@@ -245,11 +261,13 @@ module.exports = {
       },{
         id: 'quo',
         label: 'Quote',
+        category: 'Typography',
         content: '<blockquote class="quote">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore ipsum dolor sit</blockquote>',
         attributes: {class:'fa fa-quote-right'}
       },{
         id: 'link',
         label: 'Link',
+        category: 'Basic',
         attributes: {class:'fa fa-link'},
         content: {
           type:'link',
@@ -259,6 +277,7 @@ module.exports = {
       },{
         id: 'map',
         label: 'Map',
+        category: 'Extra',
         attributes: {class:'fa fa-map-o'},
         content: {
           type: 'map',
@@ -267,6 +286,7 @@ module.exports = {
       },{
         id: 'video',
         label: 'Video',
+        category: 'Basic',
         attributes: {class:'fa fa-youtube-play'},
         content: {
           type: 'video',

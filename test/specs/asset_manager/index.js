@@ -2,9 +2,9 @@ var StorageManager = require('storage_manager');
 var AssetManager = require('asset_manager');
 var FileUploader = require('./view/FileUploader');
 
-describe('Asset Manager', function() {
+describe('Asset Manager', () => {
 
-  describe('Main', function() {
+  describe('Main', () => {
 
     var obj;
     var imgObj;
@@ -12,15 +12,15 @@ describe('Asset Manager', function() {
     var storage;
     var storageId = 'testStorage';
     var storageMock = {
-      store: function(data){
+      store(data) {
         storage = data;
       },
-      load: function(keys){
+      load(keys) {
         return storage;
       },
     };
 
-    beforeEach(function () {
+    beforeEach(() => {
       imgObj = {
         type: 'image',
         src: 'path/to/image',
@@ -31,24 +31,24 @@ describe('Asset Manager', function() {
       obj.init();
     });
 
-    afterEach(function () {
+    afterEach(() => {
       obj = null;
     });
 
-    it('Object exists', function() {
+    it('Object exists', () => {
       expect(obj).toExist();
     });
 
-    it('No assets inside', function() {
+    it('No assets inside', () => {
       expect(obj.getAll().length).toEqual(0);
     });
 
-    it('Add new asset', function() {
+    it('Add new asset', () => {
       obj.add(imgObj);
       expect(obj.getAll().length).toEqual(1);
     });
 
-    it('Added asset has correct data', function() {
+    it('Added asset has correct data', () => {
       obj.add(imgObj);
       var asset = obj.get(imgObj.src);
       expect(asset.get('width')).toEqual(imgObj.width);
@@ -56,14 +56,14 @@ describe('Asset Manager', function() {
       expect(asset.get('type')).toEqual(imgObj.type);
     });
 
-    it('Add asset with src', function() {
+    it('Add asset with src', () => {
       obj.add(imgObj.src);
       var asset = obj.get(imgObj.src);
       expect(asset.get('type')).toEqual('image');
       expect(asset.get('src')).toEqual(imgObj.src);
     });
 
-    it('Add asset with more src', function() {
+    it('Add asset with more src', () => {
       obj.add([imgObj.src, imgObj.src + '2']);
       expect(obj.getAll().length).toEqual(2);
       var asset1 = obj.getAll().at(0);
@@ -72,28 +72,28 @@ describe('Asset Manager', function() {
       expect(asset2.get('src')).toEqual(imgObj.src + '2');
     });
 
-    it('Src is unique', function() {
+    it('Src is unique', () => {
       obj.add(imgObj);
       obj.add(imgObj);
       expect(obj.getAll().length).toEqual(1);
     });
 
-    it('Remove asset', function() {
+    it('Remove asset', () => {
       obj.add(imgObj);
       obj.remove(imgObj.src);
       expect(obj.getAll().length).toEqual(0);
     });
 
-    it('Render assets', function() {
+    it('Render assets', () => {
       obj.add(imgObj);
       expect(obj.render()).toExist();
     });
 
-    describe('With storage', function() {
+    describe('With storage', () => {
 
       var storageManager;
 
-      beforeEach(function () {
+      beforeEach(() => {
         storageManager = new StorageManager().init({
           autoload: 0,
           type: storageId
@@ -104,11 +104,11 @@ describe('Asset Manager', function() {
         storageManager.add(storageId, storageMock);
       });
 
-      afterEach(function () {
+      afterEach(() => {
         storageManager = null;
       });
 
-      it('Store and load data', function() {
+      it('Store and load data', () => {
         obj.add(imgObj);
         obj.store();
         obj.remove(imgObj.src);

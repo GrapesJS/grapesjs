@@ -5,8 +5,6 @@
   Editor = require('editor'),
   PluginManager = require('plugin_manager');
 
-  window['_'] = require('underscore');
-
   var plugins = new PluginManager();
   var editors = [];
 

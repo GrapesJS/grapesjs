@@ -17,6 +17,7 @@ module.exports = {
     if(sender && sender.set)
       sender.set('active', false);
     editor.stopCommand('sw-visibility');
+    editor.getModel().stopDefault();
     var that = this;
     var panels = this.getPanels(editor);
     var canvas = editor.Canvas.getElement();

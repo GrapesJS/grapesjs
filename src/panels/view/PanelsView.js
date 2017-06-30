@@ -7,8 +7,8 @@ module.exports = Backbone.View.extend({
     this.opt = o || {};
     this.config = this.opt.config || {};
     this.pfx = this.config.stylePrefix || '';
-    this.listenTo( this.collection, 'add', this.addTo );
-    this.listenTo( this.collection, 'reset', this.render );
+    this.listenTo(this.collection, 'add', this.addTo );
+    this.listenTo(this.collection, 'reset', this.render );
     this.className = this.pfx + 'panels';
   },
 
@@ -34,20 +34,25 @@ module.exports = Backbone.View.extend({
    * */
   addToCollection(model, fragmentEl) {
     var fragment = fragmentEl || null;
-    var viewObject = PanelView;
-
-    var view = new viewObject({
+    var view = new PanelView({
       model,
       config: this.config,
     });
     var rendered = view.render().el;
+    var appendTo = model.get('appendTo');
 
-    if(fragment){
-      fragment.appendChild(rendered);
-    }else{
-      this.$el.append(rendered);
+    if (appendTo) {
+      var appendEl = document.querySelector(appendTo);
+      appendEl.appendChild(rendered);
+    } else {
+      if (fragment) {
+        fragment.appendChild(rendered);
+      } else {
+        this.$el.append(rendered);
+      }
     }
 
+    view.initResize();
     return rendered;
   },
 
@@ -60,7 +65,7 @@ module.exports = Backbone.View.extend({
     }, this);
 
     this.$el.append(fragment);
-    this.$el.attr('class', _.result(this, 'className'));
+    this.$el.attr('class', this.className);
     return this;
   }
 });

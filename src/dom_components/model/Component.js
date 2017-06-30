@@ -124,6 +124,7 @@ module.exports = Backbone.Model.extend({
       }
     }, this);
 
+    this.set('status', '');
     this.init();
   },
 
@@ -258,6 +259,10 @@ module.exports = Backbone.Model.extend({
       this.name 	= tag.charAt(0).toUpperCase() + tag.slice(1);
     }
     return this.name;
+  },
+
+  getCurrentName() {
+    return this.get('custom-name') || this.getName();
   },
 
   /**

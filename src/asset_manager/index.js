@@ -180,10 +180,12 @@ module.exports = () => {
       if(!d && c.stm)
         d = c.stm.load(name);
       var assets = [];
+
       try{
         assets = JSON.parse(d[name]);
       }catch(err){}
-      this.getAll().add(assets);
+
+      this.getAll().reset(assets);
       return assets;
     },
 

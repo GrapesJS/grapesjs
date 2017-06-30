@@ -81,11 +81,13 @@ module.exports = Backbone.View.extend({
     var sortCls = pfx + 'grabbing';
     var emBody = em ? em.get('Canvas').getBody() : '';
     if(active) {
+      em && em.get('Canvas').startAutoscroll();
       body.className += ' ' + sortCls;
       if(em) {
         emBody.className += ' ' + sortCls;
       }
     } else {
+      em && em.get('Canvas').stopAutoscroll();
       body.className = body.className.replace(sortCls, '').trim();
       if(em) {
         emBody.className = emBody.className.replace(sortCls, '').trim();
@@ -108,7 +110,7 @@ module.exports = Backbone.View.extend({
     for(var i = 0; i < o.length; i++) {
       style += o[i] + ':' + o.getPropertyValue(o[i])+';';
     }
-    clonedEl.style = style;
+    clonedEl.setAttribute('style', style);
     clonedEl.className += ' ' + this.pfx + 'bdrag';
     document.body.appendChild(clonedEl);
     this.dragHelper = clonedEl;
@@ -231,8 +233,9 @@ module.exports = Backbone.View.extend({
       this.getContainerEl().appendChild(this.plh);
     }
 
-    if(this.eV) {
-      this.eV.className += ' ' + this.freezeClass;
+    if(trg) {
+      var className = trg.getAttribute('class');
+      trg.setAttribute('class', `${className} ${this.freezeClass}`);
       this.$document.on('mouseup', this.endMove);
     }
 
@@ -249,6 +252,31 @@ module.exports = Backbone.View.extend({
     }
 
     this.toggleSortCursor(1);
+  },
+
+  /**
+   * Get the model from HTMLElement target
+   * @return {Model|null}
+   */
+  getModelFromTarget(el) {
+    let elem = el || this.target;
+    return $(elem).data('model');
+  },
+
+  /**
+   * Highlight target
+   * @param  {Model|null} model
+   */
+  selectTargetModel(model) {
+    var prevModel = this.targetModel;
+    if (prevModel) {
+      prevModel.set('status', '');
+    }
+
+    if (model && model.set) {
+      model.set('status', 'selected-parent');
+      this.targetModel = model;
+    }
   },
 
   /**
@@ -278,6 +306,10 @@ module.exports = Backbone.View.extend({
     }
 
     var dims = this.dimsFromTarget(e.target, rX, rY);
+
+    let targetModel = this.getModelFromTarget(this.target);
+    this.selectTargetModel(targetModel);
+
     this.lastDims = dims;
     var pos = this.findPosition(dims, rX, rY);
     // If there is a significant changes with the pointer
@@ -623,10 +655,15 @@ module.exports = Backbone.View.extend({
     this.$document.off('keydown', this.rollback);
     this.plh.style.display = 'none';
     var clsReg = new RegExp('(?:^|\\s)'+this.freezeClass+'(?!\\S)', 'gi');
-    if(this.eV)
-      this.eV.className = this.eV.className.replace(clsReg, '');
+    let trg = this.eV;
+
+    if (trg) {
+      var className = (trg.getAttribute('class')+'').replace(clsReg, '');
+      trg.setAttribute('class', className);
+    }
+
     if(this.moved)
-      created = this.move(this.target, this.eV, this.lastPos);
+      created = this.move(this.target, trg, this.lastPos);
     if(this.plh)
       this.plh.style.display = 'none';
 
@@ -634,10 +671,13 @@ module.exports = Backbone.View.extend({
       this.onEndMove(created);
 
     var dragHelper = this.dragHelper;
+
     if(dragHelper) {
       dragHelper.remove();
       this.dragHelper = null;
     }
+
+    this.selectTargetModel();
     this.toggleSortCursor();
   },
 

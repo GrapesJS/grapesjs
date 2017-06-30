@@ -1,5 +1,5 @@
 var deps = [
-require('Utils'),
+require('utils'),
 require('storage_manager'),
 require('device_manager'),
 require('parser'),
@@ -18,28 +18,11 @@ require('block_manager'),
 require('trait_manager'),
 ];
 
-require('backbone');
-require('backbone-undo');
+var Backbone = require('backbone');
+var UndoManager = require('backbone-undo');
 var key = require('keymaster');
-/*
-require('Utils');
-require('StorageManager');
-require('DeviceManager');
-require('Parser');
-require('SelectorManager');
-require('ModalDialog');
-require('CodeManager');
-require('Panels');
-require('RichTextEditor');
-require('StyleManager');
-require('AssetManager');
-require('CssComposer');
-require('DomComponents');
-require('Canvas');
-require('Commands');
-require('BlockManager');
-require('TraitManager');
-*/
+var timedInterval;
+
 module.exports = Backbone.Model.extend({
 
   defaults: {
@@ -71,10 +54,23 @@ module.exports = Backbone.Model.extend({
       M.onLoad();
     });
 
+    this.loadOnStart();
     this.initUndoManager();
 
     this.on('change:selectedComponent', this.componentSelected, this);
     this.on('change:changesCount', this.updateBeforeUnload, this);
+  },
+
+  /**
+   * Load on start if it was requested
+   * @private
+   */
+  loadOnStart() {
+    const sm = this.get('StorageManager');
+
+    if (sm && sm.getConfig().autoload) {
+      this.load();
+    }
   },
 
   /**
@@ -153,28 +149,33 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   listenRule(model) {
-    this.stopListening(model, 'change:style', this.ruleUpdated);
-    this.listenTo(model, 'change:style', this.ruleUpdated);
+    this.stopListening(model, 'change:style', this.componentsUpdated);
+    this.listenTo(model, 'change:style', this.componentsUpdated);
   },
 
   /**
-   * Triggered when rule is updated
+   * Triggered when something in components is changed
    * @param  {Object}  model
    * @param  {Mixed}    val  Value
    * @param  {Object}  opt  Options
    * @private
    * */
-  ruleUpdated(model, val, opt) {
-    var count = this.get('changesCount') + 1,
-        avSt  = opt ? opt.avoidStore : 0;
-    this.set('changesCount', count);
-    var stm = this.get('StorageManager');
-    if(stm.isAutosave() && count < stm.getStepsBeforeSave())
-      return;
+  componentsUpdated(model, val, opt) {
+    timedInterval && clearInterval(timedInterval);
+    timedInterval = setTimeout(() => {
+      var count = this.get('changesCount') + 1;
+      var avoidStore = opt ? opt.avoidStore : 0;
+      var stm = this.get('StorageManager');
+      this.set('changesCount', count);
 
-    if(!avSt){
-      this.store();
-    }
+      if (!stm.isAutosave() || count < stm.getStepsBeforeSave()) {
+        return;
+      }
+
+      if (!avoidStore) {
+        this.store();
+      }
+    }, 0);
   },
 
   /**
@@ -187,7 +188,7 @@ module.exports = Backbone.Model.extend({
     var cmp = this.get('DomComponents');
     if(cmp && this.config.undoManager){
       var that = this;
-      this.um = new Backbone.UndoManager({
+      this.um = new UndoManager({
           register: [cmp.getComponents(), this.get('CssComposer').getAll()],
           track: true
       });
@@ -202,9 +203,9 @@ module.exports = Backbone.Model.extend({
         that.trigger('component:update');
       });
 
-      Backbone.UndoManager.removeUndoType("change");
+      UndoManager.removeUndoType("change");
       var beforeCache;
-      Backbone.UndoManager.addUndoType("change:style", {
+      UndoManager.addUndoType("change:style", {
         "on": function (model, value, opts) {
           var opt = opts || {};
           if(!beforeCache){
@@ -233,27 +234,6 @@ module.exports = Backbone.Model.extend({
           that.trigger('change:selectedComponent');
         }
       });
-    }
-  },
-
-  /**
-   * Triggered when components are updated
-   * @param  {Object}  model
-   * @param  {Mixed}    val  Value
-   * @param  {Object}  opt  Options
-   * @private
-   * */
-  componentsUpdated(model, val, opt) {
-    var updatedCount = this.get('changesCount') + 1,
-        avSt  = opt ? opt.avoidStore : 0;
-    this.set('changesCount', updatedCount);
-    var stm = this.get('StorageManager');
-    if(stm.isAutosave() && updatedCount < stm.getStepsBeforeSave()){
-      return;
-    }
-
-    if(!avSt){
-      this.store();
     }
   },
 
@@ -446,9 +426,11 @@ module.exports = Backbone.Model.extend({
         store[el] = obj[el];
     });
 
-    sm.store(store, clb);
+    sm.store(store, () => {
+      clb && clb();
+      this.trigger('storage:store', store);
+    });
     this.set('changesCount', 0);
-    this.trigger('storage:store', store);
 
     return store;
   },
@@ -460,7 +442,7 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   load(clb) {
-    var result = this.getCacheLoad(1);
+    var result = this.getCacheLoad(1, clb);
     this.get('storables').forEach(m => {
       m.load(result);
     });
@@ -470,10 +452,11 @@ module.exports = Backbone.Model.extend({
   /**
    * Returns cached load
    * @param {Boolean} force Force to reload
+   * @param {Function} clb Callback function
    * @return {Object}
    * @private
    */
-  getCacheLoad(force) {
+  getCacheLoad(force, clb) {
     var f = force ? 1 : 0;
     if(this.cacheLoad && !f)
       return this.cacheLoad;
@@ -492,8 +475,10 @@ module.exports = Backbone.Model.extend({
       });
     });
 
-    this.cacheLoad = sm.load(load);
-    this.trigger('storage:load', this.cacheLoad);
+    this.cacheLoad = sm.load(load, (loaded) => {
+      clb && clb(loaded);
+      this.trigger('storage:load', loaded);
+    });
     return this.cacheLoad;
   },
 

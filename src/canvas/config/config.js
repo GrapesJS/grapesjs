@@ -6,9 +6,22 @@ module.exports = {
   rulers: false,
 
   /*
-   * append scripts in head of iframe before renderBody content
-   * need to manually maintain the same scripts in cms's render template
+   * Append external scripts in head of the iframe before renderBody content
+   * In this case, you have to add them manually later in the final HTML page
+   * @example
+   * scripts: [
+   *  'https://...',
+   * ]
   */
-  scripts: []
+  scripts: [],
+
+  /*
+   * Append external styles. This styles won't be added to the final HTML/CSS
+   * @example
+   * styles: [
+   *  'https://...',
+   * ]
+  */
+  styles: [],
 
 };

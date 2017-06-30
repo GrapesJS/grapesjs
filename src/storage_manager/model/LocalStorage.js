@@ -23,7 +23,7 @@ module.exports = Backbone.Model.extend({
   /**
    * @private
    */
-  load(keys) {
+  load(keys, clb) {
     this.checkStorageEnvironment();
     var result = {};
 
@@ -31,6 +31,10 @@ module.exports = Backbone.Model.extend({
       var value = localStorage.getItem(keys[i]);
       if(value)
         result[keys[i]] = value;
+    }
+
+    if (typeof clb == 'function') {
+      clb(result);
     }
 
     return result;

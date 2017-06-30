@@ -103,6 +103,7 @@ module.exports = () => {
       defaultCommands.fullscreen = require('./view/Fullscreen');
       defaultCommands.preview = require('./view/Preview');
       defaultCommands.resize = require('./view/Resize');
+      defaultCommands.drag = require('./view/Drag');
 
       defaultCommands['tlb-delete'] = {
         run(ed) {
@@ -137,27 +138,59 @@ module.exports = () => {
       };
 
       defaultCommands['tlb-move'] = {
-        run(ed) {
+        run(ed, sender, opts) {
           var sel = ed.getSelected();
+          var dragger;
 
           if(!sel || !sel.get('draggable')) {
             console.warn('The element is not draggable');
             return;
           }
 
-          var toolbarEl = ed.Canvas.getToolbarEl();
-          var cmdMove = ed.Commands.get('move-comp');
-
-          cmdMove.onEndMoveFromModel = () => {
-            ed.editor.runDefault();
-            ed.editor.set('selectedComponent', sel);
-            ed.trigger('component:update', sel);
+          const onStart = (e, opts) => {
+            console.log('start mouse pos ', opts.start);
+            console.log('el rect ', opts.elRect);
+            var el = opts.el;
+            el.style.position = 'absolute';
+            el.style.margin = 0;
           };
 
-          ed.editor.stopDefault();
-          cmdMove.initSorterFromModel(sel);
-          sel.set('status', 'selected');
+          const onEnd = (e, opts) => {
+            em.runDefault();
+            em.set('selectedComponent', sel);
+            ed.trigger('component:update', sel);
+            dragger && dragger.blur();
+          };
+
+          const onDrag = (e, opts) => {
+            console.log('Delta ', opts.delta);
+            console.log('Current ', opts.current);
+          };
+
+          var toolbarEl = ed.Canvas.getToolbarEl();
           toolbarEl.style.display = 'none';
+          var em = ed.getModel();
+          em.stopDefault();
+
+          if (em.get('designerMode')) {
+            // TODO move grabbing func in editor/canvas from the Sorter
+            dragger = editor.runCommand('drag', {
+              el: sel.view.el,
+              options: {
+                event: opts && opts.event,
+                onStart,
+                onDrag,
+                onEnd
+              }
+            });
+          } else {
+            var cmdMove = ed.Commands.get('move-comp');
+            cmdMove.onEndMoveFromModel = onEnd;
+            cmdMove.initSorterFromModel(sel);
+          }
+
+
+          sel.set('status', 'selected');
         },
       };
 

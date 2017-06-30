@@ -3,9 +3,9 @@ var Asset = require('asset_manager/model/Asset');
 var Assets = require('asset_manager/model/Assets');
 
 module.exports = {
-  run: function() {
+  run() {
 
-    describe('AssetView', function() {
+    describe('AssetView', () => {
 
       before(function () {
         this.$fixtures   = $("#fixtures");
@@ -17,7 +17,7 @@ module.exports = {
         var model = coll.add({src: 'test'});
         this.view = new AssetView({
           config : {},
-          model: model
+          model
         });
         this.$fixture.empty().appendTo(this.$fixtures);
         this.$fixture.html(this.view.render().el);
@@ -31,7 +31,7 @@ module.exports = {
         this.$fixture.remove();
       });
 
-      it('Object exists', function() {
+      it('Object exists', () => {
         expect(AssetView).toExist();
       });
 

@@ -1,14 +1,15 @@
 module.exports = {
 
   run(editor, sender, opts) {
-    var el = (opts && opts.el) || '';
+    var opt = opts || {};
+    var el = opt.el || '';
     var canvas = editor.Canvas;
     var canvasResizer = this.canvasResizer;
-    var options = opts.options || {};
+    var options = opt.options || {};
+    var canvasView = canvas.getCanvasView();
 
     // Create the resizer for the canvas if not yet created
-    if(!canvasResizer) {
-      var canvasView = canvas.getCanvasView();
+    if(!canvasResizer || opt.forceNew) {
       options.ratioDefault = 1;
       options.appendTo = canvas.getResizerEl();
       options.prefix = editor.getConfig().stylePrefix;
@@ -20,6 +21,7 @@ module.exports = {
 
     canvasResizer.setOptions(options);
     canvasResizer.focus(el);
+    return canvasResizer;
   },
 
   stop() {

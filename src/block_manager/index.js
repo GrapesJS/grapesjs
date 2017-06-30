@@ -2,6 +2,7 @@
  * * [add](#add)
  * * [get](#get)
  * * [getAll](#getall)
+ * * [getCategories](#getcategories)
  * * [render](#render)
  *
  * Block manager helps managing various, draggable, piece of contents that could be easily reused inside templates.
@@ -29,8 +30,10 @@ module.exports = () => {
   var c = {},
   defaults = require('./config/config'),
   Blocks = require('./model/Blocks'),
+  BlockCategories = require('./model/Categories'),
   BlocksView = require('./view/BlocksView');
   var blocks, view;
+  var categories = [];
 
   return {
 
@@ -54,7 +57,11 @@ module.exports = () => {
             c[name] = defaults[name];
         }
         blocks = new Blocks(c.blocks);
-        view = new BlocksView({ collection: blocks }, c);
+        categories = new BlockCategories(),
+        view = new BlocksView({
+          collection: blocks,
+          categories,
+        }, c);
         return this;
       },
 
@@ -64,12 +71,18 @@ module.exports = () => {
        * @param {Object} opts Options
        * @param {string} opts.label Name of the block
        * @param {string} opts.content HTML content
+       * @param {string|Object} opts.category Group the block inside a catgegory.
+       *                                      You should pass objects with id property, eg:
+       *                                      {id: 'some-uid', label: 'My category'}
+       *                                      The string will be converted in:
+       *                                      'someid' => {id: 'someid', label: 'someid'}
        * @param {Object} [opts.attributes={}] Block attributes
        * @return {Block} Added block
        * @example
        * blockManager.add('h1-block', {
        *   label: 'Heading',
        *   content: '<h1>Put your title here</h1>',
+       *   category: 'Basic',
        *   attributes: {
        *     title: 'Insert h1 block'
        *   }
@@ -82,7 +95,7 @@ module.exports = () => {
       },
 
       /**
-       * Return block by id
+       * Return the block by id
        * @param  {string} id Block id
        * @example
        * var block = blockManager.get('h1-block');
@@ -103,6 +116,15 @@ module.exports = () => {
        */
       getAll() {
         return blocks;
+      },
+
+      /**
+       * Get all available categories.
+       * Is possible to add categories only with blocks via 'add()' method
+       * @return {Array|Collection}
+       */
+      getCategories() {
+        return categories;
       },
 
       /**

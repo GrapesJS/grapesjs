@@ -19,8 +19,15 @@ module.exports = Backbone.View.extend({
    * @private
    */
   onDrag(e) {
-    if(!this.config.getSorter)
+    //Right or middel click
+    if (e.button !== 0) {
       return;
+    }
+
+    if(!this.config.getSorter) {
+      return;
+    }
+
     this.config.em.refreshCanvas();
     var sorter = this.config.getSorter();
     sorter.setDragHelper(this.el, e);

@@ -30,7 +30,6 @@ module.exports = {
       className: 'fa fa-eye',
       command: prv,
       context: prv,
-      stopDefaultCommand: 1,
       attributes: { title: 'Preview' },
     },{
       id: ful,

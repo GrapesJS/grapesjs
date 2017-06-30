@@ -1,8 +1,8 @@
 module.exports = () => {
 
-  var Sorter = require('./Sorter');
-
-  var Resizer = require('./Resizer');
+  const Sorter = require('./Sorter');
+  const Resizer = require('./Resizer');
+  const Dragger = require('./Dragger');
 
   return {
     /**
@@ -20,7 +20,7 @@ module.exports = () => {
     },
 
     Sorter,
-
     Resizer,
+    Dragger,
   };
 };

@@ -19,6 +19,7 @@
  * * [getContainer](#getcontainer)
  * * [refresh](#refresh)
  * * [on](#on)
+ * * [off](#off)
  * * [trigger](#trigger)
  * * [render](#render)
  *
@@ -35,6 +36,8 @@
  * component:update:{propertyName} - Listen any property change
  * component:styleUpdate - Triggered when the style of the component is updated
  * component:styleUpdate:{propertyName} - Listen for a specific style property change
+ * storage:load - Triggered when something was loaded from the storage, loaded object passed as an argumnet
+ * storage:store - Triggered when something is stored to the storage, stored object passed as an argumnet
  * canvasScroll - Triggered when the canvas is scrolled
  * run:{commandName} - Triggered when some command is called to run (eg. editor.runCommand('preview'))
  * stop:{commandName} - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
@@ -446,6 +449,16 @@ module.exports = config => {
      */
     on(event, callback) {
       return em.on(event, callback);
+    },
+
+    /**
+     * Detach event
+     * @param  {string} event Event name
+     * @param  {Function} callback Callback function
+     * @return {this}
+     */
+    off(event, callback) {
+      return em.off(event, callback);
     },
 
     /**

@@ -1,0 +1,74 @@
+.#{$app-prefix}blocks-c {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.#{$app-prefix}block-category {
+  width: 100%;
+
+  &.#{$app-prefix}open {
+    @extend .#{$app-prefix}category-open;
+  }
+
+  .#{$app-prefix}title {
+    @extend .#{$app-prefix}category-title;
+  }
+
+  .#{$app-prefix}caret-icon {
+    margin-right: 5px;
+  }
+}
+
+.#{$app-prefix}block {
+  @include user-select(none);
+
+  @extend .#{$app-prefix}bg-main;
+
+  width: 45%;
+  padding: 1em;
+  box-sizing: border-box;
+  height: 90px;
+  cursor: all-scroll;
+  font-size: 11px;
+  font-weight: lighter;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+  margin: 10px 2.5% 5px;
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease 0s;
+  transition-property: box-shadow, color;
+
+  &:hover {
+    box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.15);
+  }
+}
+
+.#{$app-prefix}block-svg {
+  width: 61%;
+}
+
+.#{$app-prefix}block-svg-path {
+  @extend .#{$app-prefix}color-main;
+}
+
+.#{$app-prefix}block.fa {
+  font-size: 2em;
+  line-height: 2em;
+  padding: 11px;
+}
+
+.#{$app-prefix}block-label {
+  line-height: normal;
+  font-size: 0.65rem;
+  font-weight: normal;
+  font-family: Helvetica, sans-serif;
+}
+
+.#{$app-prefix}block.#{$app-prefix}bdrag {
+  width: auto;
+  padding: 0;
+}

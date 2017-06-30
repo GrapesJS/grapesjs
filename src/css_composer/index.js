@@ -93,9 +93,6 @@ module.exports = () => {
        * @private
        */
       onLoad() {
-        if(c.stm && c.stm.getConfig().autoload)
-            this.load();
-
         if(c.stm && c.stm.isAutosave())
           c.em.listenRules(this.getAll());
       },

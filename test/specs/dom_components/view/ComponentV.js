@@ -1,143 +1,139 @@
-define(function(require, exports, module){
-  'use strict';
-  var ComponentView = require('undefined');
-  var Component = require('DomComponents/model/Component');
-  var DomComponents = require('DomComponents');
+const ComponentView = require('dom_components/view/ComponentView');
+const Component = require('dom_components/model/Component');
+const DomComponents = require('dom_components');
 
-    module.exports = {
-      run : function(){
+module.exports = {
+  run() {
 
-          describe('ComponentView', function() {
+      describe('ComponentView', () => {
 
-            var $fixtures;
-            var $fixture;
-            var model;
-            var view;
-            var hClass = 'hc-state';
-            var dcomp;
-            var compOpts;
+        var $fixtures;
+        var $fixture;
+        var model;
+        var view;
+        var hClass = 'hc-state';
+        var dcomp;
+        var compOpts;
 
-            before(function () {
-              $fixtures = $("#fixtures");
-              $fixture = $('<div class="components-fixture"></div>');
-            });
-
-            beforeEach(function () {
-              dcomp = new DomComponents();
-              compOpts = {
-                defaultTypes: dcomp.componentTypes,
-              };
-              model = new Component();
-              view = new ComponentView({
-                model: model
-              });
-              $fixture.empty().appendTo($fixtures);
-              $fixture.html(view.render().el);
-            });
-
-            afterEach(function () {
-              view.remove();
-            });
-
-            after(function () {
-              $fixture.remove();
-            });
-
-            it('Component empty', function() {
-              $fixture.html().should.equal('<div data-highlightable="1"></div>');
-            });
-
-            it('Add helper class on update of state', function() {
-              model.set('state', 'test');
-              $fixture.html().should.equal('<div data-highlightable="1" class="' + hClass + '"></div>');
-            });
-
-            it('Clean form helper state', function() {
-              model.set('state', 'test');
-              model.set('state', '');
-              $fixture.html().should.equal('<div data-highlightable="1" class=""></div>');
-            });
-
-            it('Add helper class on status update', function() {
-              model.set('status', 'selected');
-              $fixture.html().should.equal('<div data-highlightable="1" class="selected"></div>');
-            });
-
-            it('Get string of classes', function() {
-              model.set('attributes', { class: ['test', 'test2']});
-              view.getClasses().should.equal('test test2');
-            });
-
-            it('Update attributes', function() {
-              model.set('attributes', {
-                title: 'value',
-                'data-test': 'value2',
-              });
-              view.el.getAttribute('title').should.equal('value');
-              view.el.getAttribute('data-test').should.equal('value2');
-            });
-
-            it('Update style', function() {
-              model.set('style', {
-                color: 'red',
-                float: 'left'
-              });
-              view.el.getAttribute('style').should.equal('color:red;float:left;');
-            });
-
-            it('Clean style', function() {
-              model.set('style', { color: 'red'});
-              model.set('style', {});
-              view.el.getAttribute('style').should.equal('');
-            });
-
-            it('Get style string', function() {
-              model.set('style',  {
-                color: 'red',
-                float: 'left'
-              });
-              view.getStyleString().should.equal('color:red;float:left;');
-            });
-
-            it('Add class', function() {
-              model.get('classes').add({name: 'test'});
-               view.el.getAttribute('class').should.equal('test');
-            });
-
-            it('Add classes', function() {
-              model.get('classes').add([{name: 'test'}, {name: 'test2'}]);
-              view.el.getAttribute('class').should.equal('test test2');
-            });
-
-            it('Update on remove of some class', function() {
-              var cls1 = model.get('classes').add({name: 'test'});
-              var cls12 = model.get('classes').add({name: 'test2'});
-              model.get('classes').remove(cls1);
-              view.el.getAttribute('class').should.equal('test2');
-            });
-
-            it('Init with different tag', function() {
-              model = new Component({ tagName: 'span' });
-              view = new ComponentView({ model: model });
-              view.render().el.tagName.should.equal('SPAN');
-            });
-
-            it('Init with nested components', function() {
-              model = new Component({
-                components: [
-                  { tagName: 'span'},
-                  { attributes: { title: 'test'}}
-                ]
-              }, compOpts);
-              view = new ComponentView({
-                model: model,
-                defaultTypes: dcomp.componentTypes,
-              });
-              view.render().$el.html().should.equal('<span data-highlightable="1"></span><div title="test" data-highlightable="1"></div>');
-            });
-
+        before(() => {
+          $fixtures = $("#fixtures");
+          $fixture = $('<div class="components-fixture"></div>');
         });
-      }
-    };
 
-});
+        beforeEach(() => {
+          dcomp = new DomComponents();
+          compOpts = {
+            defaultTypes: dcomp.componentTypes,
+          };
+          model = new Component();
+          view = new ComponentView({
+            model
+          });
+          $fixture.empty().appendTo($fixtures);
+          $fixture.html(view.render().el);
+        });
+
+        afterEach(() => {
+          view.remove();
+        });
+
+        after(() => {
+          $fixture.remove();
+        });
+
+        it('Component empty', () => {
+          expect($fixture.html()).toEqual('<div data-highlightable="1"></div>');
+        });
+
+        it('Add helper class on update of state', () => {
+          model.set('state', 'test');
+          expect($fixture.html()).toEqual('<div data-highlightable="1" class="' + hClass + '"></div>');
+        });
+
+        it('Clean form helper state', () => {
+          model.set('state', 'test');
+          model.set('state', '');
+          expect($fixture.html()).toEqual('<div data-highlightable="1" class=""></div>');
+        });
+
+        it('Add helper class on status update', () => {
+          model.set('status', 'selected');
+          expect($fixture.html()).toEqual('<div data-highlightable="1" class="selected"></div>');
+        });
+
+        it('Get string of classes', () => {
+          model.set('attributes', { class: ['test', 'test2']});
+          expect(view.getClasses()).toEqual('test test2');
+        });
+
+        it('Update attributes', () => {
+          model.set('attributes', {
+            title: 'value',
+            'data-test': 'value2',
+          });
+          expect(view.el.getAttribute('title')).toEqual('value');
+          expect(view.el.getAttribute('data-test')).toEqual('value2');
+        });
+
+        it('Update style', () => {
+          model.set('style', {
+            color: 'red',
+            float: 'left'
+          });
+          expect(view.el.getAttribute('style')).toEqual('color:red;float:left;');
+        });
+
+        it('Clean style', () => {
+          model.set('style', { color: 'red'});
+          model.set('style', {});
+          expect(view.el.getAttribute('style')).toEqual('');
+        });
+
+        it('Get style string', () => {
+          model.set('style',  {
+            color: 'red',
+            float: 'left'
+          });
+          expect(view.getStyleString()).toEqual('color:red;float:left;');
+        });
+
+        it('Add class', () => {
+          model.get('classes').add({name: 'test'});
+          expect(view.el.getAttribute('class')).toEqual('test');
+        });
+
+        it('Add classes', () => {
+          model.get('classes').add([{name: 'test'}, {name: 'test2'}]);
+          expect(view.el.getAttribute('class')).toEqual('test test2');
+        });
+
+        it('Update on remove of some class', () => {
+          var cls1 = model.get('classes').add({name: 'test'});
+          var cls12 = model.get('classes').add({name: 'test2'});
+          model.get('classes').remove(cls1);
+          expect(view.el.getAttribute('class')).toEqual('test2');
+        });
+
+        it('Init with different tag', () => {
+          model = new Component({ tagName: 'span' });
+          view = new ComponentView({ model });
+          expect(view.render().el.tagName).toEqual('SPAN');
+        });
+
+        it('Init with nested components', () => {
+          model = new Component({
+            components: [
+              { tagName: 'span'},
+              { attributes: { title: 'test'}}
+            ]
+          }, compOpts);
+          view = new ComponentView({
+            model,
+            defaultTypes: dcomp.componentTypes,
+          });
+          expect(view.render().$el.html()).toEqual('<span data-highlightable="1"></span><div title="test" data-highlightable="1"></div>');
+        });
+
+    });
+  }
+};

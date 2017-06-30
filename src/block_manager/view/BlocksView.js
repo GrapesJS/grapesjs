@@ -1,12 +1,19 @@
 var Backbone = require('backbone');
 var BlockView = require('./BlockView');
+var CategoryView = require('./CategoryView');
 
 module.exports = Backbone.View.extend({
 
   initialize(opts, config) {
     _.bindAll(this, 'getSorter', 'onDrag', 'onDrop');
     this.config = config || {};
-    this.ppfx = this.config.pStylePrefix || '';
+    this.categories = opts.categories || '';
+    this.renderedCategories = [];
+    var ppfx = this.config.pStylePrefix || '';
+    this.ppfx = ppfx;
+    this.noCatClass = `${ppfx}blocks-no-cat`;
+    this.blockContClass = `${ppfx}blocks-c`;
+    this.catsClass = `${ppfx}block-categories`;
     this.listenTo(this.collection, 'add', this.addTo);
     this.em = this.config.em;
     this.tac = 'test-tac';
@@ -36,6 +43,7 @@ module.exports = Backbone.View.extend({
         pfx: this.ppfx,
         onStart: this.onDrag,
         onEndMove: this.onDrop,
+        onMove: this.onMove,
         document: canvas.getFrameEl().contentDocument,
         direction: 'a',
         wmargin: 1,
@@ -51,8 +59,13 @@ module.exports = Backbone.View.extend({
    * Callback when block is on drag
    * @private
    */
-  onDrag() {
+  onDrag(e) {
     this.em.stopDefault();
+    this.em.trigger('block:drag:start', e);
+  },
+
+  onMove(e) {
+    this.em.trigger('block:drag:move', e);
   },
 
   /**
@@ -71,6 +84,7 @@ module.exports = Backbone.View.extend({
       // Register all its components (eg. for the Undo Manager)
       this.em.initChildrenComp(model);
     }
+    this.em.trigger('block:drag:stop', model);
   },
 
   /**
@@ -95,25 +109,81 @@ module.exports = Backbone.View.extend({
       attributes: model.get('attributes'),
     }, this.config);
     var rendered = view.render().el;
+    var category = model.get('category');
+
+    // Check for categories
+    if (category && this.categories) {
+      if (typeof category == 'string') {
+        category = {
+          id: category,
+          label: category
+        };
+      }
+
+      var catModel = this.categories.add(category);
+      var catId = catModel.get('id');
+      var catView = this.renderedCategories[catId];
+      var categories = this.getCategoriesEl();
+      model.set('category', catModel);
+
+      if (!catView && categories) {
+        catView = new CategoryView({
+          model: catModel
+        }, this.config).render();
+        this.renderedCategories[catId] = catView;
+        categories.appendChild(catView.el);
+      }
+
+      catView && catView.append(rendered);
+      return;
+    }
 
     if(frag)
       frag.appendChild(rendered);
     else
-      this.$el.append(rendered);
+      this.append(rendered);
   },
 
+  getCategoriesEl() {
+    if (!this.catsEl) {
+      this.catsEl = this.el.querySelector(`.${this.catsClass}`);
+    }
 
+    return this.catsEl;
+  },
+
+  getBlocksEl() {
+    if (!this.blocksEl) {
+      this.blocksEl = this.el.querySelector(`.${this.noCatClass} .${this.blockContClass}`);
+    }
+
+    return this.blocksEl;
+  },
+
+  append(el) {
+    let blocks = this.getBlocksEl();
+    blocks && blocks.appendChild(el);
+  },
 
   render() {
+    var ppfx = this.ppfx;
     var frag = document.createDocumentFragment();
-    this.$el.empty();
+    this.catsEl = null;
+    this.blocksEl = null;
+    this.renderedCategories = [];
+    this.el.innerHTML = `
+      <div class="${this.catsClass}"></div>
+      <div class="${this.noCatClass}">
+        <div class="${this.blockContClass}"></div>
+      </div>
+    `;
 
     this.collection.each(function(model){
       this.add(model, frag);
     }, this);
 
-    this.$el.append(frag);
-    this.$el.addClass(this.ppfx + 'blocks-c');
+    this.append(frag);
+    this.$el.addClass(this.blockContClass + 's')
     return this;
   },
 

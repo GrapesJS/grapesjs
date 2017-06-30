@@ -149,12 +149,14 @@ $fontV: 20;//random(1000)
   background-color: $mainColor;
 }
 
-.#{$app-prefix}color-main{
+.#{$app-prefix}color-main {
   color: $fontColor;
+  fill: $fontColor;
 }
 
-.#{$app-prefix}color-active{
+.#{$app-prefix}color-active {
   color: $fontColorActive;
+  fill: $fontColorActive;
 }
 
 .#{$app-prefix}bdrag {
@@ -712,6 +714,26 @@ $lightBorder: rgba(255, 255, 255, 0.05);
 /********* END Device Manager **********/
 
 
+/********* General **********/
+
+.#{$app-prefix}category-open {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+}
+
+.#{$app-prefix}category-title {
+  @extend .no-select;
+
+  font-weight: lighter;
+  background-color: $mainDklColor;
+  font-size: 13px;
+  letter-spacing: 1px;
+  padding: 9px 10px 9px 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+  text-align: left;
+  position: relative;
+  cursor: pointer;
+}
+
 /********* Style Manager **********/
 
 .#{$sm-prefix}close-btn{
@@ -732,22 +754,20 @@ $lightBorder: rgba(255, 255, 255, 0.05);
 }
 .#{$sm-prefix}sector {
 	clear:both;
-	border-bottom: 1px solid $mainDkColor;
 	font-weight: lighter;
 	text-align:left;
 
-	##{$sm-prefix}caret{
+  ##{$sm-prefix}caret{
 		padding-right: 5px;
 		font-size: 11px;
 	}
 
-	.#{$sm-prefix}title{
-	  background-color: $mainDklColor;
-	  font-size: 13px;
-	  letter-spacing: 1px;
-	  padding: 12px 10px 12px 20px;
-	  border-top: 1px solid $mainLhColor;
-	  cursor:pointer;
+  &.#{$sm-prefix}open {
+    @extend .#{$app-prefix}category-open;
+  }
+
+	.#{$sm-prefix}title {
+	  @extend .#{$app-prefix}category-title;
 	}
 
 	.#{$sm-prefix}label {
@@ -1056,61 +1076,7 @@ $lightBorder: rgba(255, 255, 255, 0.05);
 }
 /********* END Style Manager **********/
 
-
-
-/********* Block manager **********/
-
-.#{$app-prefix}blocks-c {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-}
-.#{$app-prefix}block {
-  @include user-select(none);
-  @extend .#{$app-prefix}bg-main;
-
-  width: 45%;
-  padding: 1em;
-  box-sizing: border-box;
-  height: 90px;
-  cursor:all-scroll;
-  font-size: 11px;
-  font-weight: lighter;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
-  margin: 10px 2.5% 5px;
-  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.15);
-  transition: all 0.2s ease 0s;
-  transition-property: box-shadow, color;
-
-  &:hover {
-    box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.15);
-  }
-}
-
-.#{$app-prefix}block.fa {
-  font-size: 2em;
-  line-height: 2em;
-  padding: 11px;
-}
-
-.#{$app-prefix}block-label {
-  line-height: normal;
-  font-size: 0.65rem;
-  font-weight: normal;
-  font-family: Helvetica, sans-serif;
-}
-
-.#{$app-prefix}block.#{$app-prefix}bdrag{
- width: auto;
- padding: 0;
-}
-
-/********* END Block manager **********/
+@import "gjs_blocks";
 
 
 

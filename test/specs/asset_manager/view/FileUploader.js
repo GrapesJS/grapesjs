@@ -1,9 +1,9 @@
 var FileUploader = require('asset_manager/view/FileUploader');
 
 module.exports = {
-  run: function() {
+  run() {
 
-    describe('File Uploader', function() {
+    describe('File Uploader', () => {
 
       before(function () {
         this.$fixtures   = $("#fixtures");
@@ -24,7 +24,7 @@ module.exports = {
         this.$fixture.remove();
       });
 
-      it('Object exists', function() {
+      it('Object exists', () => {
         expect(FileUploader).toExist();
       });
 
@@ -32,7 +32,7 @@ module.exports = {
         expect(this.view.pfx).toNotExist();
       });
 
-      describe('Should be rendered correctly', function() {
+      describe('Should be rendered correctly', () => {
 
           it('Has title', function() {
             expect(this.view.$el.find('#title').length).toEqual(1);
@@ -52,9 +52,9 @@ module.exports = {
 
       });
 
-      describe('Interprets configurations correctly', function() {
+      describe('Interprets configurations correctly', () => {
 
-          it('Has correct title', function() {
+          it('Has correct title', () => {
             var view = new FileUploader({ config : {
               uploadText : 'Test',
             } });
@@ -62,7 +62,7 @@ module.exports = {
             expect(view.$el.find('#title').html()).toEqual('Test');
           });
 
-          it('Could be disabled', function() {
+          it('Could be disabled', () => {
             var view = new FileUploader({ config : {
               disableUpload: true,
             } });

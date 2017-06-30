@@ -18,7 +18,8 @@ if(env !== 'dev'){
   ]
 }
 
-plugins.push(new webpack.ProvidePlugin({$: 'jquery'}));
+plugins.push(new webpack.ProvidePlugin({_: 'underscore'}));
+
 module.exports = {
   entry: './src',
   output: {

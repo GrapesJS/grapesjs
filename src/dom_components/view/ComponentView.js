@@ -100,16 +100,22 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   updateStatus(e) {
-    var s = this.model.get('status'),
-        pfx = this.pfx;
+    var s = this.model.get('status');
+    var pfx = this.pfx;
+    var selectedClass = pfx + 'selected';
+    var selectedParentClass = selectedClass + '-parent';
+
     switch(s) {
         case 'selected':
-          this.$el.addClass(pfx + 'selected');
+          this.$el.addClass(selectedClass);
+            break;
+        case 'selected-parent':
+          this.$el.addClass(selectedParentClass);
             break;
         case 'moving':
             break;
         default:
-          this.$el.removeClass(pfx + 'selected');
+          this.$el.removeClass(`${selectedClass} ${selectedParentClass}`);
     }
   },
 
@@ -290,6 +296,10 @@ module.exports = Backbone.View.extend({
    * @private
    */
   updateScript() {
+    if (!this.model.get('script')) {
+      return;
+    }
+
     var em = this.em;
     if(em) {
       var canvas = em.get('Canvas');
@@ -382,12 +392,7 @@ module.exports = Backbone.View.extend({
     var container = this.getChildrenContainer();
     container.innerHTML = model.get('content');
     this.renderChildren();
-
-    // Render script
-    if(model.get('script')) {
-      this.updateScript();
-    }
-
+    this.updateScript();
     return this;
   },
 
