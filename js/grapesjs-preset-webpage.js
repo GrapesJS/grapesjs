@@ -73,8 +73,7 @@ grapesjs.plugins.add('gjs-preset-webpage', function(editor, opts) {
       sender && sender.set('active',false);
       if(confirm('Are you sure to clean the canvas?')){
         var comps = editor.DomComponents.clear();
-        localStorage.setItem('gjs-css', '');
-        localStorage.setItem('gjs-html', '');
+        localStorage.clear();
       }
     }
   });

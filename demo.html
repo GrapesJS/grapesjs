@@ -928,7 +928,7 @@
       </style>
     </div>
 
-    <script src="js/grapes.min.js?v0.8.16"></script>
+    <script src="js/grapes.min.js?v0.8.19"></script>
     <script src="js/grapesjs-plugin-export.min.js"></script>
     <script src="js/grapesjs-plugin-filestack.min.js"></script>
     <script src="js/grapesjs-plugin-forms.min.js"></script>
@@ -946,7 +946,6 @@
 
       var editor  = grapesjs.init({
 
-      clearOnRender: true,
       height: '100%',
       container : '#gjs',
       fromElement: 1,
@@ -962,6 +961,11 @@
       // Insert some default images
       assetManager: {
         assets: images
+      },
+
+      storageManager:{
+        storeComponents: 1,
+        storeStyles: 1,
       },
 
       // Configure style
@@ -1294,6 +1298,16 @@
       Ps.initialize(el);
     });
     */
+
+
+     // Store and load events
+     editor.on('storage:load', function(e) {
+       console.log('Loaded ', e);
+     })
+     editor.on('storage:store', function(e) {
+       console.log('Stored ', e);
+     })
+
     </script>
 
     <script>
