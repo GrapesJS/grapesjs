@@ -220,26 +220,27 @@ module.exports = Backbone.View.extend({
 
   /**
    * Picking component to move
-   * @param {HTMLElement} trg
+   * @param {HTMLElement} src
    * */
-  startSort(trg) {
+  startSort(src) {
     this.dropModel = null;
     this.moved = 0;
+    //this.$document = $([document, trg.ownerDocument]);
 
-    if(trg && !this.matches(trg, this.itemSel + ',' + this.containerSel))
-      trg = this.closest(trg, this.itemSel);
+    if(src && !this.matches(src, this.itemSel + ',' + this.containerSel))
+      src = this.closest(src, this.itemSel);
 
-    this.eV = trg;
+    this.eV = src;
 
     // Create placeholder if not exists
-    if(!this.plh) {
+    if (!this.plh) {
       this.plh = this.createPlaceholder();
       this.getContainerEl().appendChild(this.plh);
     }
 
-    if(trg) {
-      var className = trg.getAttribute('class');
-      trg.setAttribute('class', `${className} ${this.freezeClass}`);
+    if (src) {
+      var srcModel = this.getSourceModel();
+      srcModel.set('status', 'freezed');
       this.$document.on('mouseup', this.endMove);
     }
 
@@ -728,15 +729,15 @@ module.exports = Backbone.View.extend({
     this.$document.off('keydown', this.rollback);
     this.plh.style.display = 'none';
     var clsReg = new RegExp('(?:^|\\s)'+this.freezeClass+'(?!\\S)', 'gi');
-    let trg = this.eV;
+    let src = this.eV;
 
-    if (trg) {
-      var className = (trg.getAttribute('class')+'').replace(clsReg, '');
-      trg.setAttribute('class', className);
+    if (src) {
+      var srcModel = this.getSourceModel();
+      srcModel.set('status', 'selected');
     }
 
     if(this.moved)
-      created = this.move(this.target, trg, this.lastPos);
+      created = this.move(this.target, src, this.lastPos);
     if(this.plh)
       this.plh.style.display = 'none';
 
