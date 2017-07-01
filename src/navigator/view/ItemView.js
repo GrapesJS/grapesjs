@@ -1,4 +1,5 @@
 var Backbone = require('backbone');
+var ComponentView = require('dom_components/view/ComponentView');
 var ItemsView;
 
 module.exports = Backbone.View.extend({
@@ -174,18 +175,7 @@ module.exports = Backbone.View.extend({
    * @param	Event
    * */
   updateStatus(e) {
-    var status = this.model.get('status');
-    var cls = this.pfx + 'selected';
-    var el = this.$el;
-    switch(status) {
-      case 'selected':
-        el.addClass(cls);
-          break;
-      case 'moving':
-          break;
-      default:
-        el.removeClass(cls);
-    }
+    ComponentView.prototype.updateStatus.apply(this, arguments);
   },
 
   /**

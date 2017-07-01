@@ -733,6 +733,7 @@ module.exports = Backbone.View.extend({
 
     if (src) {
       var srcModel = this.getSourceModel();
+      srcModel.set('status', '');
       srcModel.set('status', 'selected');
     }
 
