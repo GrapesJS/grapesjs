@@ -432,25 +432,34 @@ module.exports = Backbone.View.extend({
     let src = srcModel.view.el;
     let trgModel = this.getTargetModel(trg);
     trg = trgModel.view.el;
-    console.log('Sorce', src, 'Target', trgModel, trg);
+    let result = {
+      result: true,
+      src,
+      srcModel,
+      trg,
+      trgModel
+    };
 
     // Check if the target could accept the source
     let droppable = trgModel.get('droppable');
     droppable = droppable instanceof Array ? droppable.join(', ') : droppable;
+    result.dropInfo = droppable;
     droppable = typeof droppable === 'string' ? src.matches(droppable) : droppable;
-    console.log('Target droppable', droppable);
+    result.droppable = droppable;
 
     // check if the source is draggable in target
     let draggable = srcModel.get('draggable');
     draggable = draggable instanceof Array ? draggable.join(', ') : draggable;
+    result.dragInfo = draggable;
     draggable = typeof draggable === 'string' ? trg.matches(draggable) : draggable;
-    console.log('Source draggable', draggable);
+    result.draggable = draggable;
 
     if (!droppable || !draggable) {
-      return false;
+      result.result = false;
     }
 
-    return true;
+    console.log(result);
+    return result;
   },
 
   /**
@@ -487,7 +496,7 @@ module.exports = Backbone.View.extend({
       this.targetP = this.closest(target, this.containerSel);
 
       // Check if the source is valid with the target
-      if (!this.validTarget(target)) {
+      if (!this.validTarget(target).result) {
         return this.dimsFromTarget(this.targetP, rX, rY);
       }
 
@@ -753,105 +762,63 @@ module.exports = Backbone.View.extend({
    * */
   move(dst, src, pos) {
     var em = this.em;
-    if (em) em.trigger('component:dragEnd:before', dst, src, pos);
+    em && em.trigger('component:dragEnd:before', dst, src, pos);
     var warns = [];
-    var modelToDrop, modelTemp, created;
     var index = pos.index;
-    var model = $(src).data('model');
-    var $dst = $(dst);
-    var targetModel;
-
-    while ($dst.length && !targetModel) {
-      targetModel = $dst.data('model');
-      dst = $dst.get(0);
-
-      if (targetModel && targetModel.view)
-        dst = targetModel.view.el;
-
-      if (!targetModel)
-        $dst = $dst.parent();
-    }
-
-    var targetCollection = $dst.data('collection');
-    // Check if the elemenet is DRAGGABLE to the target
-    var drag = model && model.get('draggable');
-    var draggable = typeof drag !== 'undefined' ? drag : 1;
-    var toDrag = draggable;
-
-    // dropContent is for example the one used inside Blocks content
+    var modelToDrop, modelTemp, created;
+    var validTarget = this.validTarget(dst);
+    var targetCollection = $(dst).data('collection');
+    var model = validTarget.srcModel;
+    var droppable = validTarget.droppable;
+    var draggable = validTarget.draggable;
+    var dropInfo = validTarget.dropInfo;
+    var dragInfo = validTarget.dragInfo;
     var dropContent = this.dropContent;
 
-    if (dropContent instanceof Object) {
-      draggable = dropContent.draggable;
-      draggable = typeof draggable !== 'undefined' ? draggable : 1;
-    } else if (typeof dropContent === 'string' && targetCollection) {
-      var sandboxModel = targetCollection.add(dropContent);
-      src = sandboxModel.view ? sandboxModel.view.el : src;
-      draggable = sandboxModel.get && sandboxModel.get('draggable');
-      draggable = typeof draggable !== 'undefined' ? draggable : 1;
-      targetCollection.remove(sandboxModel);
-    }
+    console.log('MOVE ', validTarget);
 
-    if (draggable instanceof Array) {
-      toDrag = draggable.join(', ');
-      draggable = this.matches(dst, toDrag);
-    } else if (typeof draggable === 'string') {
-      toDrag = draggable;
-      draggable = this.matches(dst, toDrag, 1);
-    }
-
-    // Check if the target could accept the element to be DROPPED inside
-    var accepted = 1;
-    var droppable = targetModel && targetModel.get ? targetModel.get('droppable') : 1;
-    var toDrop = draggable;
-
-    if (droppable instanceof Array) {
-      // When I drag blocks src is the HTMLElement of the block
-      toDrop = droppable.join(', ');
-      accepted = this.matches(src, toDrop);
-    } else if (typeof droppable === 'string') {
-      toDrop = droppable;
-      accepted = src.matches(toDrop);
-    }
-
-    if(targetCollection && droppable && accepted && draggable) {
+    if (targetCollection && droppable && draggable) {
       index = pos.method === 'after' ? index + 1 : index;
       var opts = {at: index, noIncrement: 1};
-      if(!dropContent){
-        modelTemp = targetCollection.add({}, opts);
-        if(model)
-          modelToDrop = model.collection.remove(model);
 
-      }else{
+      if (!dropContent) {
+        modelTemp = targetCollection.add({}, opts);
+
+        if (model) {
+          modelToDrop = model.collection.remove(model);
+        }
+      } else {
         modelToDrop = dropContent;
         opts.silent = false;
       }
+
       created = targetCollection.add(modelToDrop, opts);
+
       if (!dropContent) {
         targetCollection.remove(modelTemp);
-      }else{
+      } else {
         this.dropContent = null;
       }
+
       // This will cause to recalculate children dimensions
       this.prevTarget = null;
     } else {
-      if(!targetCollection){
-        warns.push('target collection not found');
+      if (!targetCollection) {
+        warns.push('Target collection not found');
       }
-      if(!droppable){
-        warns.push('target is not droppable');
+
+      if (!droppable) {
+        warns.push(`Target is not droppable, accepts [${dropInfo}]`);
       }
-      if(!draggable){
-        warns.push('component not draggable, accepted only by [' + toDrag + ']');
+
+      if (!draggable) {
+        warns.push(`Component not draggable, acceptable by [${dragInfo}]`);
       }
-      if(!accepted){
-        warns.push('target accepts only [' + toDrop + ']');
-      }
+
       console.warn('Invalid target position: ' + warns.join(', '));
     }
 
-    if (em)
-      em.trigger('component:dragEnd', targetCollection, modelToDrop, warns);
+    em && em.trigger('component:dragEnd', targetCollection, modelToDrop, warns);
 
     return created;
   },
