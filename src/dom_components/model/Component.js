@@ -329,6 +329,7 @@ module.exports = Backbone.Model.extend({
   toJSON(...args) {
     var obj = Backbone.Model.prototype.toJSON.apply(this, args);
     var scriptStr = this.getScriptString();
+    delete obj.toolbar;
 
     if (scriptStr) {
       obj.script = scriptStr;

@@ -34,6 +34,10 @@ module.exports = Backbone.View.extend({
 
     // For the sorter
     this.$el.data('collection', this.collection);
+
+    if (this.parent) {
+      this.$el.data('model', this.parent);
+    }
   },
 
   /**

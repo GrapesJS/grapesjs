@@ -134,10 +134,12 @@ module.exports = Backbone.View.extend({
    * @param  {Event} e
    */
   moveDragHelper(e) {
-    if(!this.dragHelper) {
+    var doc = e.target.ownerDocument;
+
+    if(!this.dragHelper || !doc) {
       return;
     }
-    var doc = e.target.ownerDocument;
+
     var win = doc.defaultView || doc.parentWindow;
     var addTop = 0;
     var addLeft = 0;
@@ -221,11 +223,13 @@ module.exports = Backbone.View.extend({
    * @param {HTMLElement} trg
    * */
   startSort(trg) {
+    this.dropModel = null;
     this.moved = 0;
-    this.eV = trg;
 
     if(trg && !this.matches(trg, this.itemSel + ',' + this.containerSel))
-      this.eV = this.closest(trg, this.itemSel);
+      trg = this.closest(trg, this.itemSel);
+
+    this.eV = trg;
 
     // Create placeholder if not exists
     if(!this.plh) {
@@ -258,9 +262,34 @@ module.exports = Backbone.View.extend({
    * Get the model from HTMLElement target
    * @return {Model|null}
    */
-  getModelFromTarget(el) {
+  getTargetModel(el) {
     let elem = el || this.target;
     return $(elem).data('model');
+  },
+
+  /**
+   * Get the model of the current source element (element to drag)
+   * @return {Model}
+   */
+  getSourceModel() {
+    var src = this.eV;
+    let dropContent = this.dropContent;
+    let dropModel = this.dropModel;
+    const em = this.em;
+
+    if (dropContent && em) {
+      if (!dropModel) {
+        let comps = em.get('DomComponents').getComponents();
+        let tempModel = comps.add(dropContent);
+        dropModel = comps.remove(tempModel);
+        this.dropModel = dropModel;
+      }
+      return dropModel;
+    }
+
+    if (src) {
+      return $(src).data('model');
+    }
   },
 
   /**
@@ -307,7 +336,7 @@ module.exports = Backbone.View.extend({
 
     var dims = this.dimsFromTarget(e.target, rX, rY);
 
-    let targetModel = this.getModelFromTarget(this.target);
+    let targetModel = this.getTargetModel(this.target);
     this.selectTargetModel(targetModel);
 
     this.lastDims = dims;
@@ -394,6 +423,37 @@ module.exports = Backbone.View.extend({
   },
 
   /**
+   * Check if the target is valid with the actual source
+   * @param  {HTMLElement} trg
+   * @return {Boolean}
+   */
+  validTarget(trg) {
+    let srcModel = this.getSourceModel();
+    let src = srcModel.view.el;
+    let trgModel = this.getTargetModel(trg);
+    trg = trgModel.view.el;
+    console.log('Sorce', src, 'Target', trgModel, trg);
+
+    // Check if the target could accept the source
+    let droppable = trgModel.get('droppable');
+    droppable = droppable instanceof Array ? droppable.join(', ') : droppable;
+    droppable = typeof droppable === 'string' ? src.matches(droppable) : droppable;
+    console.log('Target droppable', droppable);
+
+    // check if the source is draggable in target
+    let draggable = srcModel.get('draggable');
+    draggable = draggable instanceof Array ? draggable.join(', ') : draggable;
+    draggable = typeof draggable === 'string' ? trg.matches(draggable) : draggable;
+    console.log('Source draggable', draggable);
+
+    if (!droppable || !draggable) {
+      return false;
+    }
+
+    return true;
+  },
+
+  /**
    * Get dimensions of nodes relative to the coordinates
    * @param  {HTMLElement} target
    * @param {number} rX Relative X position
@@ -404,29 +464,33 @@ module.exports = Backbone.View.extend({
     var dims = [];
 
     // Select the first valuable target
-    // TODO: avoid this check for every standard component,
-    // which generally is ok
-    if(!this.matches(target, this.itemSel + ',' + this.containerSel))
+    if (!target.matches(`${this.itemSel}, ${this.containerSel}`)) {
       target = this.closest(target, this.itemSel);
+    }
 
     // If draggable is an array the target will be one of those
-    if(this.draggable instanceof Array){
-        target = this.closest(target, this.draggable.join(','));
+    if (this.draggable instanceof Array) {
+      target = this.closest(target, this.draggable.join(','));
     }
 
-    if(!target)
+    if (!target) {
       return dims;
+    }
 
     // Check if the target is different from the previous one
-    if(this.prevTarget){
-      if(this.prevTarget != target){
+    if (this.prevTarget && this.prevTarget != target) {
         this.prevTarget = null;
-      }
     }
 
-    // New target encountered
-    if(!this.prevTarget){
+    // New target found
+    if (!this.prevTarget) {
       this.targetP = this.closest(target, this.containerSel);
+
+      // Check if the source is valid with the target
+      if (!this.validTarget(target)) {
+        return this.dimsFromTarget(this.targetP, rX, rY);
+      }
+
       this.prevTarget = target;
       this.prevTargetDim = this.getDim(target);
       this.cacheDimsP = this.getChildrenDim(this.targetP);
@@ -442,7 +506,7 @@ module.exports = Backbone.View.extend({
     // Generally also on every new target the poiner enters near
     // to borders, so have to to check always
     if(this.nearBorders(this.prevTargetDim, rX, rY) ||
-       (!this.nested && !this.cacheDims.length)){
+       (!this.nested && !this.cacheDims.length)) {
       dims = this.cacheDimsP;
       this.target = this.targetP;
     }
@@ -714,21 +778,24 @@ module.exports = Backbone.View.extend({
     var draggable = typeof drag !== 'undefined' ? drag : 1;
     var toDrag = draggable;
 
-    if (this.dropContent instanceof Object) {
-      draggable = this.dropContent.draggable;
+    // dropContent is for example the one used inside Blocks content
+    var dropContent = this.dropContent;
+
+    if (dropContent instanceof Object) {
+      draggable = dropContent.draggable;
       draggable = typeof draggable !== 'undefined' ? draggable : 1;
-    } else if (typeof this.dropContent === 'string' && targetCollection) {
-      var sandboxOpts = {silent: true};
-      var sandboxModel = targetCollection.add(this.dropContent, sandboxOpts);
+    } else if (typeof dropContent === 'string' && targetCollection) {
+      var sandboxModel = targetCollection.add(dropContent);
+      src = sandboxModel.view ? sandboxModel.view.el : src;
       draggable = sandboxModel.get && sandboxModel.get('draggable');
       draggable = typeof draggable !== 'undefined' ? draggable : 1;
-      targetCollection.remove(sandboxModel, sandboxOpts);
+      targetCollection.remove(sandboxModel);
     }
 
-    if(draggable instanceof Array) {
+    if (draggable instanceof Array) {
       toDrag = draggable.join(', ');
       draggable = this.matches(dst, toDrag);
-    }else if(typeof draggable === 'string') {
+    } else if (typeof draggable === 'string') {
       toDrag = draggable;
       draggable = this.matches(dst, toDrag, 1);
     }
@@ -737,29 +804,30 @@ module.exports = Backbone.View.extend({
     var accepted = 1;
     var droppable = targetModel && targetModel.get ? targetModel.get('droppable') : 1;
     var toDrop = draggable;
-    if(droppable instanceof Array) {
+
+    if (droppable instanceof Array) {
       // When I drag blocks src is the HTMLElement of the block
       toDrop = droppable.join(', ');
       accepted = this.matches(src, toDrop);
-    }else if(typeof droppable === 'string') {
+    } else if (typeof droppable === 'string') {
       toDrop = droppable;
-      accepted = this.matches(src, toDrop);
+      accepted = src.matches(toDrop);
     }
 
     if(targetCollection && droppable && accepted && draggable) {
       index = pos.method === 'after' ? index + 1 : index;
       var opts = {at: index, noIncrement: 1};
-      if(!this.dropContent){
+      if(!dropContent){
         modelTemp = targetCollection.add({}, opts);
         if(model)
           modelToDrop = model.collection.remove(model);
 
       }else{
-        modelToDrop = this.dropContent;
+        modelToDrop = dropContent;
         opts.silent = false;
       }
       created = targetCollection.add(modelToDrop, opts);
-      if(!this.dropContent){
+      if (!dropContent) {
         targetCollection.remove(modelTemp);
       }else{
         this.dropContent = null;
