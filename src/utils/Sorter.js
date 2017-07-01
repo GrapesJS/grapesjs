@@ -26,6 +26,7 @@ module.exports = Backbone.View.extend({
     this.direction = o.direction || 'v'; // v (vertical), h (horizontal), a (auto)
     this.onMoveClb = o.onMove || '';
     this.relative = o.relative || 0;
+    this.ignoreViewChildren = o.ignoreViewChildren || 0;
     this.plh = o.placer || '';
     // Frame offset
     this.wmargin = o.wmargin || 0;
@@ -240,7 +241,7 @@ module.exports = Backbone.View.extend({
 
     if (src) {
       var srcModel = this.getSourceModel();
-      srcModel.set('status', 'freezed');
+      srcModel && srcModel.set('status', 'freezed');
       this.$document.on('mouseup', this.endMove);
     }
 
@@ -459,7 +460,6 @@ module.exports = Backbone.View.extend({
       result.result = false;
     }
 
-    console.log(result);
     return result;
   },
 
@@ -505,6 +505,7 @@ module.exports = Backbone.View.extend({
       this.prevTargetDim = this.getDim(target);
       this.cacheDimsP = this.getChildrenDim(this.targetP);
       this.cacheDims = this.getChildrenDim(target);
+      //console.log('dims', this.cacheDims, target);
     }
 
     // If the target is the previous one will return the cached dims
@@ -556,23 +557,26 @@ module.exports = Backbone.View.extend({
    * @param {HTMLELement} el Element root
    * @retun {Array}
    * */
-  getChildrenDim(elem) {
+  getChildrenDim(trg) {
     var dims = [];
-    if(!elem)
+    if(!trg)
       return dims;
 
     // Get children based on getChildrenContainer
-    var $elem = $(elem);
-    var elemData = $elem.data('model');
-    if (elemData && elemData.view) {
-      elem = elemData.view.getChildrenContainer();
+    var trgModel = this.getTargetModel(trg);
+    if (trgModel && trgModel.view && !this.ignoreViewChildren) {
+      trg = trgModel.view.getChildrenContainer();
     }
 
-    var ch = elem.children; //TODO filter match
+    var ch = trg.children;
+
     for (var i = 0, len = ch.length; i < len; i++) {
       var el = ch[i];
-      if(!this.matches(el, this.itemSel))
+
+      if (!el.matches(this.itemSel)) {
         continue;
+      }
+
       var dim = this.getDim(el);
       var dir = this.direction;
 
@@ -581,12 +585,13 @@ module.exports = Backbone.View.extend({
       else if(dir == 'h')
         dir = false;
       else
-        dir = this.isInFlow(el, elem);
+        dir = this.isInFlow(el, trg);
 
       dim.push(dir);
       dim.push(el);
       dims.push(dim);
     }
+
     return dims;
   },
 
@@ -733,8 +738,10 @@ module.exports = Backbone.View.extend({
 
     if (src) {
       var srcModel = this.getSourceModel();
-      srcModel.set('status', '');
-      srcModel.set('status', 'selected');
+      if (srcModel) {
+        srcModel.set('status', '');
+        srcModel.set('status', 'selected');
+      }
     }
 
     if(this.moved)
@@ -776,8 +783,6 @@ module.exports = Backbone.View.extend({
     var dropInfo = validTarget.dropInfo;
     var dragInfo = validTarget.dragInfo;
     var dropContent = this.dropContent;
-
-    console.log('MOVE ', validTarget);
 
     if (targetCollection && droppable && draggable) {
       index = pos.method === 'after' ? index + 1 : index;
