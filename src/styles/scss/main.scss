@@ -530,6 +530,10 @@ ol.example li.placeholder:before {position: absolute;}
 
 /************* Navigator *************/
 
+.#{$nv-prefix}selected-parent {
+	border: 1px solid $colorYell;
+}
+
 .#{$nv-prefix}opac50{
 	@include opacity(0.50);
 }
