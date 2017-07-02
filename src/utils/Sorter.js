@@ -27,6 +27,7 @@ module.exports = Backbone.View.extend({
     this.onMoveClb = o.onMove || '';
     this.relative = o.relative || 0;
     this.ignoreViewChildren = o.ignoreViewChildren || 0;
+    this.ignoreModels = o.ignoreModels || 0;
     this.plh = o.placer || '';
     // Frame offset
     this.wmargin = o.wmargin || 0;
@@ -299,6 +300,10 @@ module.exports = Backbone.View.extend({
    * @param  {Model|null} model
    */
   selectTargetModel(model) {
+    if (model instanceof Backbone.Collection) {
+      return;
+    }
+
     var prevModel = this.targetModel;
     if (prevModel) {
       prevModel.set('status', '');
@@ -449,6 +454,7 @@ module.exports = Backbone.View.extend({
 
     // Check if the target could accept the source
     let droppable = trgModel.get('droppable');
+    droppable = droppable instanceof Backbone.Collection ? 1 : droppable;
     droppable = droppable instanceof Array ? droppable.join(', ') : droppable;
     result.dropInfo = droppable;
     droppable = typeof droppable === 'string' ? src.matches(droppable) : droppable;
@@ -502,7 +508,8 @@ module.exports = Backbone.View.extend({
       this.targetP = this.closest(target, this.containerSel);
 
       // Check if the source is valid with the target
-      if (!this.validTarget(target).valid) {
+      let validResult = this.validTarget(target);
+      if (!validResult.valid && this.targetP) {
         return this.dimsFromTarget(this.targetP, rX, rY);
       }
 
@@ -510,7 +517,6 @@ module.exports = Backbone.View.extend({
       this.prevTargetDim = this.getDim(target);
       this.cacheDimsP = this.getChildrenDim(this.targetP);
       this.cacheDims = this.getChildrenDim(target);
-      //console.log('dims', this.cacheDims, target);
     }
 
     // If the target is the previous one will return the cached dims
@@ -519,6 +525,7 @@ module.exports = Backbone.View.extend({
 
     // Target when I will drop element to sort
     this.target = this.prevTarget;
+
     // Generally also on every new target the poiner enters near
     // to borders, so have to to check always
     if(this.nearBorders(this.prevTargetDim, rX, rY) ||
@@ -526,6 +533,7 @@ module.exports = Backbone.View.extend({
       dims = this.cacheDimsP;
       this.target = this.targetP;
     }
+
     this.lastPos = null;
     return dims;
   },
@@ -780,14 +788,15 @@ module.exports = Backbone.View.extend({
     var warns = [];
     var index = pos.index;
     var modelToDrop, modelTemp, created;
-    var validTarget = this.validTarget(dst);
+    var validResult = this.validTarget(dst);
     var targetCollection = $(dst).data('collection');
-    var model = validTarget.srcModel;
-    var droppable = validTarget.droppable;
-    var draggable = validTarget.draggable;
-    var dropInfo = validTarget.dropInfo;
-    var dragInfo = validTarget.dragInfo;
+    var model = validResult.srcModel;
+    var droppable = validResult.droppable;
+    var draggable = validResult.draggable;
+    var dropInfo = validResult.dropInfo;
+    var dragInfo = validResult.dragInfo;
     var dropContent = this.dropContent;
+    droppable = validResult.trgModel instanceof Backbone.Collection ? 1 : droppable;
 
     if (targetCollection && droppable && draggable) {
       index = pos.method === 'after' ? index + 1 : index;

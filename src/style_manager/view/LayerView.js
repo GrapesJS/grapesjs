@@ -19,21 +19,26 @@ module.exports = Backbone.View.extend({
   <div style="clear:both"></div>`),
 
   initialize(o) {
+    let model = this.model;
     this.stackModel = o.stackModel || {};
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
     this.className = this.pfx + 'layer';
     this.sorter = o.sorter || null;
-    this.listenTo(this.model, 'destroy remove', this.remove);
-    this.listenTo(this.model, 'change:value', this.valueChanged);
-    this.listenTo(this.model, 'change:props', this.showProps);
+    this.listenTo(model, 'destroy remove', this.remove);
+    this.listenTo(model, 'change:value', this.valueChanged);
+    this.listenTo(model, 'change:props', this.showProps);
     this.events['click #' + this.pfx + 'close-layer'] = 'remove';
     this.events['mousedown > #' + this.pfx + 'move'] = 'initSorter';
 
-    if( !this.model.get('preview') ){
+    if (!model.get('preview')) {
       this.$el.addClass(this.pfx + 'no-preview');
     }
-    this.$el.data('model', this.model);
+
+    // For the sorter
+    model.view = this;
+    model.set({droppable: 0, draggable: 1});
+    this.$el.data('model', model);
     this.delegateEvents();
   },
 

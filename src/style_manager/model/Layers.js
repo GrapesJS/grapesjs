@@ -18,6 +18,6 @@ module.exports = Backbone.Collection.extend({
 
   onReset() {
     this.idx = 1;
-  },
+  }
 
 });
