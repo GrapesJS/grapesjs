@@ -431,16 +431,21 @@ module.exports = Backbone.View.extend({
    */
   validTarget(trg) {
     let srcModel = this.getSourceModel();
-    let src = srcModel.view.el;
+    let src = srcModel && srcModel.view && srcModel.view.el;
     let trgModel = this.getTargetModel(trg);
-    trg = trgModel.view.el;
+    trg = trgModel && trgModel.view && trgModel.view.el;
     let result = {
-      result: true,
+      valid: true,
       src,
       srcModel,
       trg,
       trgModel
     };
+
+    if (!src || !trg) {
+      result.valid = false;
+      return result;
+    }
 
     // Check if the target could accept the source
     let droppable = trgModel.get('droppable');
@@ -457,7 +462,7 @@ module.exports = Backbone.View.extend({
     result.draggable = draggable;
 
     if (!droppable || !draggable) {
-      result.result = false;
+      result.valid = false;
     }
 
     return result;
@@ -497,7 +502,7 @@ module.exports = Backbone.View.extend({
       this.targetP = this.closest(target, this.containerSel);
 
       // Check if the source is valid with the target
-      if (!this.validTarget(target).result) {
+      if (!this.validTarget(target).valid) {
         return this.dimsFromTarget(this.targetP, rX, rY);
       }
 
