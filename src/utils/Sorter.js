@@ -548,10 +548,15 @@ module.exports = Backbone.View.extend({
 
     if (this.canvasRelative && this.em) {
       var pos = this.em.get('Canvas').getElementPos(el);
-      top = pos.top;
-      left = pos.left;
-      height = pos.height;
-      width = pos.width;
+      var styles = window.getComputedStyle(el);
+      var marginTop = parseFloat(styles['marginTop']);
+      var marginBottom = parseFloat(styles['marginBottom']);
+      var marginRight = parseFloat(styles['marginRight']);
+      var marginLeft = parseFloat(styles['marginLeft']);
+      top = pos.top - marginTop;
+      left = pos.left - marginLeft;
+      height = pos.height + marginTop + marginBottom;
+      width = pos.width + marginLeft + marginRight;
     } else {
       var o = this.offset(el);
       top = this.relative ? el.offsetTop : o.top - (this.wmargin ? -1 : 1) * this.elT;
