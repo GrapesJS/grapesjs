@@ -530,8 +530,11 @@ module.exports = Backbone.View.extend({
     // to borders, so have to to check always
     if(this.nearBorders(this.prevTargetDim, rX, rY) ||
        (!this.nested && !this.cacheDims.length)) {
-      dims = this.cacheDimsP;
-      this.target = this.targetP;
+        if (!this.validTarget(this.targetP).valid) {
+          return this.dimsFromTarget(this.targetP, rX, rY);
+        }
+        dims = this.cacheDimsP;
+        this.target = this.targetP;
     }
 
     this.lastPos = null;
