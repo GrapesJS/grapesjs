@@ -928,12 +928,13 @@
       </style>
     </div>
 
-    <script src="js/grapes.min.js?v0.8.19"></script>
+    <script src="js/grapes.min.js?v0.8.21"></script>
     <script src="js/grapesjs-plugin-export.min.js"></script>
     <script src="js/grapesjs-plugin-filestack.min.js"></script>
+    <script src="js/grapesjs-blocks-basic.min.js"></script>
+    <script src="js/grapesjs-preset-webpage.js"></script>
     <script src="js/grapesjs-plugin-forms.min.js"></script>
     <script src="js/grapesjs-aviary.min.js"></script>
-    <script src="js/grapesjs-preset-webpage.js"></script>
     <script type="text/javascript">
 
       var lp = './img/';
@@ -951,7 +952,7 @@
       fromElement: 1,
       showOffsets: 1,
       plugins: ['gjs-plugin-export', 'gjs-preset-webpage', 'gjs-plugin-filestack',
-        'gjs-aviary', 'gjs-plugin-forms'],
+        'gjs-aviary', 'gjs-blocks-basic', 'gjs-plugin-forms'],
       pluginsOpts: {
         'gjs-plugin-filestack': {
           key: 'A1nL8omiAR8W7pHi3cotzz',
@@ -1275,7 +1276,9 @@
       hideDuration: 150
     };
     console.warn = function (msg) {
-      toastr.warning(msg);
+      if (msg.indexOf('[undefined]') == -1) {
+        toastr.warning(msg);
+      }
       origWarn(msg);
     };
 
