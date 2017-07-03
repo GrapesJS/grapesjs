@@ -14,7 +14,7 @@
   <body>
     <div id="gjs" style="height:0px; overflow:hidden;">
       <header class="header-banner">
-        <div class="container-width" data-gjs-droppable=".blk-row">
+        <div class="container-width">
           <div class="logo-container">
             <div class="logo">GrapesJS</div>
           </div>
@@ -786,6 +786,14 @@
           height: 75px;
         }
 
+        .cell30 {
+          width: 30%;
+        }
+
+        .cell70 {
+          width: 70%;
+        }
+
         @media (max-width: 768px){
           .foot-form-cont{
             width:400px;
@@ -794,7 +802,7 @@
             width: auto;
           }
 
-          .cell {
+          .cell, .cell30, .cell70 {
             width: 100%;
             display: block;
           }
@@ -911,8 +919,8 @@
             category: 'Basic',
             attributes: {class:'gjs-fonts gjs-f-b37'},
             content: `<div class="row" data-gjs-droppable=".cell" data-gjs-custom-name="Row">
-                <div class="cell" data-gjs-draggable=".row" style="width:30%" data-gjs-custom-name="Cell"></div>
-                <div class="cell" data-gjs-draggable=".row" style="width:70%" data-gjs-custom-name="Cell"></div>
+                <div class="cell cell30" data-gjs-draggable=".row" data-gjs-custom-name="Cell"></div>
+                <div class="cell cell70" data-gjs-draggable=".row" data-gjs-custom-name="Cell"></div>
               </div>`,
           },{
             id: 'hero',
@@ -1267,22 +1275,22 @@
     }]);
 
     var bm = editor.BlockManager;
-  bm.add('link-block', {
-    label: 'Link Block',
-    attributes: {class:'fa fa-link'},
-    category: 'Basic',
-    content: {
-      type:'link',
-      editable: false,
-      droppable: true,
-      style:{
-        display: 'inline-block',
-        padding: '5px',
-        'min-height': '50px',
-        'min-width': '50px'
-      }
-    },
-  });
+    bm.add('link-block', {
+      label: 'Link Block',
+      attributes: {class:'fa fa-link'},
+      category: 'Basic',
+      content: {
+        type:'link',
+        editable: false,
+        droppable: true,
+        style:{
+          display: 'inline-block',
+          padding: '5px',
+          'min-height': '50px',
+          'min-width': '50px'
+        }
+      },
+    });
 
     /*
     // Store and load events
