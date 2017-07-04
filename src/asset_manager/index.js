@@ -185,7 +185,10 @@ module.exports = () => {
         assets = JSON.parse(d[name]);
       }catch(err){}
 
-      this.getAll().reset(assets);
+      if (assets && assets.length) {
+        this.getAll().reset(assets);
+      }
+
       return assets;
     },
 
