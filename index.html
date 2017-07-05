@@ -858,9 +858,9 @@
             }
           },{
             id:   'clean-all',
-            run:   function(editor, sender){
+            run:   function(editor, sender) {
               sender.set('active',false);
-              if(confirm('Are you sure to clean the canvas?')){
+              if(confirm('Are you sure to clean the canvas?')) {
                 var comps = editor.DomComponents.clear();
               }
             }
@@ -1299,7 +1299,6 @@
     editor.on('storage:store', function(e) {
       console.log('STORE ', e);
     })
-
     editor.render();
     </script>
   </body>

@@ -242,7 +242,7 @@ module.exports = Backbone.View.extend({
 
     if (src) {
       var srcModel = this.getSourceModel();
-      srcModel && srcModel.set('status', 'freezed');
+      srcModel && srcModel.set && srcModel.set('status', 'freezed');
       this.$document.on('mouseup', this.endMove);
     }
 
@@ -285,7 +285,7 @@ module.exports = Backbone.View.extend({
         let comps = em.get('DomComponents').getComponents();
         let tempModel = comps.add(dropContent);
         dropModel = comps.remove(tempModel);
-        this.dropModel = dropModel;
+        this.dropModel = dropModel instanceof Array ? dropModel[0] : dropModel;
       }
       return dropModel;
     }
@@ -759,7 +759,7 @@ module.exports = Backbone.View.extend({
 
     if (src) {
       var srcModel = this.getSourceModel();
-      if (srcModel) {
+      if (srcModel && srcModel.set) {
         srcModel.set('status', '');
         srcModel.set('status', 'selected');
       }
