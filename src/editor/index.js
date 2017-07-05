@@ -379,10 +379,11 @@ module.exports = config => {
 
     /**
      * Load data from the current storage
+     * @param {Function} clb Callback function
      * @return {Object} Stored data
      */
-    load() {
-      return em.load();
+    load(clb) {
+      return em.load(clb);
     },
 
     /**
