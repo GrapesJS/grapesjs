@@ -32,8 +32,9 @@ module.exports = Backbone.View.extend({
     this.config = o.config;
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
-    this.listenTo( this.collection, 'add', this.addToAsset );
-    this.listenTo( this.collection, 'deselectAll', this.deselectAll );
+    this.listenTo(this.collection, 'add', this.addToAsset );
+    this.listenTo(this.collection, 'deselectAll', this.deselectAll);
+    this.listenTo(this.collection, 'reset', this.render);
     this.className  = this.pfx + 'assets';
 
     this.events = {};
