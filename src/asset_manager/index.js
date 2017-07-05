@@ -179,11 +179,13 @@ module.exports = () => {
       var name = this.storageKey;
       if(!d && c.stm)
         d = c.stm.load(name);
-      var assets = [];
+      var assets = d[name] || [];
 
-      try{
-        assets = JSON.parse(d[name]);
-      }catch(err){}
+      if (typeof assets == 'string') {
+        try {
+          assets = JSON.parse(d[name]);
+        } catch(err) {}
+      }
 
       if (assets && assets.length) {
         this.getAll().reset(assets);
