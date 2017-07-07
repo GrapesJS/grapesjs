@@ -428,9 +428,9 @@ module.exports = Backbone.Model.extend({
 
     sm.store(store, () => {
       clb && clb();
+      this.set('changesCount', 0);
       this.trigger('storage:store', store);
     });
-    this.set('changesCount', 0);
 
     return store;
   },
