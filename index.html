@@ -1381,6 +1381,27 @@
         }
       },
     });
+    /*
+    bm.add('testblock', {
+      label: 'TEST Block',
+      attributes: {class:'fa fa-rocket'},
+      category: 'Basic',
+      content: `<div class="testblock">TEST</div>
+      <style>
+        .testblock {
+          width: 200px;
+          height: 200px;
+          background-color: red;
+        }
+
+        @media (max-width: 768px) {
+          .testblock {
+            background-color: green;
+          }
+        }
+      </style>
+      `,
+    });*/
 
     // Store and load events
     editor.on('storage:load', function(e) {
@@ -1389,191 +1410,6 @@
     editor.on('storage:store', function(e) {
       console.log('STORE ', e);
     })
-
-    let dc = editor.DomComponents;
-  const defaultType = dc.getType('default');
-  const textType = dc.getType('text');
-  const defaultModel = defaultType.model;
-  const defaultView = defaultType.view;
-  const textModel = textType.model;
-  const textView = textType.view;
-
-  dc.addType('burger-menu', {
-    model: defaultModel.extend({
-      defaults: Object.assign({}, defaultModel.prototype.defaults, {
-        'custom-name': 'Burger Menu',
-        draggable: false, //'[data-gjs=nav], [data-gjs=nav] *',
-        droppable: false,
-        copyable: false,
-        removable: false,
-        script: function () {
-          var timer;
-          var toggled = false;
-          var time = 1000;
-          var transEndAdded;
-          var isAnimating = 0;
-          var stringCollapse = 'gjs-collapse';
-          var clickEvent = 'click';
-
-          var getElHeight = function(el) {
-            var style = window.getComputedStyle(el);
-            var elDisplay = style.display;
-            var elPos = style.position;
-            var elVis = style.visibility;
-            var currentHeight = style.height;
-            var currentMaxHeight = style.maxHeight;
-            var elMaxHeight = style.maxHeight.replace('px', '').replace('%', '');
-
-            if (elDisplay !== 'none' && elMaxHeight !== '0') {
-              return el.offsetHeight;
-            }
-
-            el.style.height = 'auto';
-            el.style.display = 'block';
-            el.style.position = 'absolute';
-            el.style.visibility = 'hidden';
-            //el.style.maxHeight = 'auto';
-            var height = el.offsetHeight;
-            /*
-            el.style.height = currentHeight;
-            el.style.display = '';
-            el.style.position = elPos;
-            el.style.visibility = elVis;
-            */
-            el.style.height = '';
-            el.style.display = '';
-            el.style.position = '';
-            el.style.visibility = '';
-            //el.style.maxHeight = currentMaxHeight;
-
-            return height;
-          };
-
-          var toggleSlide = function(el) {
-            /*
-            clearInterval(timer);
-            var elMaxHeight = getElHeight(el);
-            var currentHeight = parseInt(el.style.height) || 0;
-            var start = (new Date()).getTime();
-            var heightToSet = (toggled = !toggled) ? elMaxHeight : 0;
-            var disp = heightToSet - currentHeight;
-
-            if (heightToSet) {
-              el.style.display = 'block';
-            }
-
-            timer = setInterval(function() {
-                var diffTime = (new Date()).getTime() - start;
-                if (diffTime <= time) {
-                    var pos = currentHeight + Math.floor(disp * diffTime / time);
-                    el.style.height =  pos + 'px';
-                } else {
-                    el.style.height = heightToSet + 'px';
-                    clearInterval(timer);
-                }
-            }, 1);
-            */
-            isAnimating = 1;
-            var elMaxHeight = getElHeight(el);
-            console.log('Max height', elMaxHeight);
-            el.style.display = 'block';
-            el.style.transition = 'max-height 0.25s ease-in-out';
-            el.style.overflowY = 'hidden';
-
-            if (el.style.maxHeight == '') {
-              console.log('No maxHeight');
-              el.style.maxHeight = 0;
-            }
-
-            if(parseInt(el.style.maxHeight) == 0) {
-                console.log('Set maxHeight FROM 0');
-                el.style.maxHeight = '0';
-                setTimeout(function() {
-                    el.style.maxHeight = elMaxHeight + 'px';
-                }, 10);
-            } else {
-              console.log('Set maxHeight TO 0');
-                el.style.maxHeight = '0';
-            }
-          }
-
-          var toggle = function(e) {
-            e.preventDefault();
-
-            if (isAnimating) {
-              console.log('Already animated');
-              return;
-            }
-
-            var navParent = this.closest('[data-gjs=nav]');
-            var navItems = navParent.querySelector('[data-gjs=nav-items]');
-            toggleSlide(navItems);
-
-            if (!transEndAdded) {
-              navItems.addEventListener('transitionend', function() {
-                console.log('transitionend', parseInt(navItems.style.maxHeight), ' ', navItems.style.display);
-                isAnimating = 0;
-                transEndAdded = 1;
-                if (parseInt(navItems.style.maxHeight) == 0) {
-                  navItems.style.display = '';
-                  navItems.style.maxHeight = '';
-                }
-              });
-            }
-            //var isVisible = navItems.style.display == 'block';
-            //navItems.style.display = isVisible ? '' : 'block';
-          };
-
-          if ( !(stringCollapse in this ) ) {
-            console.log('Menu add click addEventListener');
-            this.addEventListener(clickEvent, toggle);
-          }
-
-          this[stringCollapse] = 1;
-        },
-      }),
-    }, {
-      isComponent(el) {
-        if(el.getAttribute &&
-          el.getAttribute('data-gjs-type') == 'burger-menu') {
-          return {type: 'burger-menu'};
-        }
-      },
-    }),
-    view: defaultView,
-  });
-
-
-  bm.add('navbar', {
-    label: 'Navbar',
-    attributes: {class:'fa fa-link'},
-    category: 'Extra',
-    content: `
-      <div class="navbar" data-gjs-droppable="false" data-gjs-custom-name="Navbar" data-gjs="nav">
-        <div class="navbar-container" data-gjs-droppable="false" data-gjs-draggable="false"
-          data-gjs-removable="false" data-gjs-copyable="false" data-gjs-highlightable="false"
-          data-gjs-custom-name="Navbar Container">
-
-          <a href="/" class="navbar-brand" data-gjs-droppable="true"></a>
-
-          <div class="burger" data-gjs-type="burger-menu">
-            <div class="burger-line" data-gjs-custom-name="Burger Line" data-gjs-droppable="false" data-gjs-draggable="false"></div>
-            <div class="burger-line" data-gjs-custom-name="Burger Line" data-gjs-droppable="false" data-gjs-draggable="false"></div>
-            <div class="burger-line" data-gjs-custom-name="Burger Line" data-gjs-droppable="false" data-gjs-draggable="false"></div>
-          </div>
-
-          <div class="nav-items" data-gjs="nav-items" data-gjs-custom-name="Nav">
-            <nav class="navbar-items" data-gjs="navbar-items" data-gjs-custom-name="Navbar">
-              <a href="#" class="navbar-item" data-gjs-custom-name="Navbar Item" data-gjs-draggable="[data-gjs=navbar-items]">Home</a>
-              <a href="#" class="navbar-item" data-gjs-custom-name="Navbar Item" data-gjs-draggable="[data-gjs=navbar-items]">About</a>
-              <a href="#" class="navbar-item" data-gjs-custom-name="Navbar Item" data-gjs-draggable="[data-gjs=navbar-items]">Contact</a>
-            </nav>
-          </div>
-
-        </div>
-      </div>
-    `,
-  });
 
     editor.render();
     </script>

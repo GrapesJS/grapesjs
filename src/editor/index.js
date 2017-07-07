@@ -260,6 +260,10 @@ module.exports = config => {
     /**
      * Add components
      * @param {Array<Object>|Object|string} components HTML string or components model
+     * @param {Object} opts Options
+     * @param {Boolean} [opts.avoidUpdateStyle=false] If the HTML string contains styles,
+     * by default, they will be created and, if already exist, updated. When this option
+     * is true, styles already created will not be updated.
      * @return {Model|Array<Model>}
      * @example
      * editor.addComponents('<div class="cls">New component</div>');
@@ -270,8 +274,8 @@ module.exports = config => {
      *   content: 'New component'
      * });
      */
-    addComponents(components) {
-      return this.getComponents().add(components);
+    addComponents(components, opts) {
+      return this.getComponents().add(components, opts);
     },
 
     /**
