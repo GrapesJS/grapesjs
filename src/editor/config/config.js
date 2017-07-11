@@ -62,6 +62,12 @@ module.exports = {
   // Comes handy for mobile-first cases
   mediaCondition: 'max-width',
 
+  // Starting tag for variable inside scripts in Components
+  tagVarStart: '{[ ',
+
+  // Ending tag for variable inside scripts in Components
+  tagVarEnd: ' ]}',
+
   // This option makes available custom component types also for loaded
   // elements inside canvas
   loadCompsOnRender: 1,

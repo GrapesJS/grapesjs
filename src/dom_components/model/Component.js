@@ -255,8 +255,7 @@ module.exports = Backbone.Model.extend({
    * */
   getName() {
     if(!this.name){
-      var id = this.cid.replace(/\D/g,''),
-      type = this.get('type');
+      var type = this.get('type');
       var tag = this.get('tagName');
       tag = tag == 'div' ? 'box' : tag;
       tag = type ? type : tag;
@@ -297,9 +296,8 @@ module.exports = Backbone.Model.extend({
     strCls = strCls !== '' ? ' class="' + strCls.trim() + '"' : '';
 
     // If style is not empty I need an ID attached to the component
-    // TODO: need to refactor in case of 'ID Trait'
     if(!_.isEmpty(m.get('style')))
-      attrId = ' id="' + m.cid + '" ';
+      attrId = ' id="' + m.getId() + '" ';
 
     code += '<' + tag + strCls + attrId + strAttr + (sTag ? '/' : '') + '>' + m.get('content');
 
@@ -360,6 +358,10 @@ module.exports = Backbone.Model.extend({
   getScriptString(script) {
     var scr = script || this.get('script');
 
+    if (!scr) {
+      return scr;
+    }
+
     // Need to convert script functions to strings
     if (typeof scr == 'function') {
       var scrStr = scr.toString().trim();
@@ -369,9 +371,10 @@ module.exports = Backbone.Model.extend({
       scr = lines.join('\n');
     }
 
-    var varTagStart = escapeRegExp('{[ ');
-    var varTagEnd = escapeRegExp(' ]}');
-    var reg = new RegExp(`${varTagStart}(\\w+)${varTagEnd}`, 'g');
+    var config = this.sm.config || {};
+    var tagVarStart = escapeRegExp(config.tagVarStart || '{[ ');
+    var tagVarEnd = escapeRegExp(config.tagVarEnd || ' ]}');
+    var reg = new RegExp(`${tagVarStart}(\\w+)${tagVarEnd}`, 'g');
     scr = scr.replace(reg, (match, v) => {
       // If at least one match is found I have to track this change for a
       // better optimization inside JS generator
