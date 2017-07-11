@@ -1365,6 +1365,7 @@
     }]);
 
     var bm = editor.BlockManager;
+    /*
     bm.add('link-block', {
       label: 'Link Block',
       attributes: {class:'fa fa-link'},
@@ -1380,28 +1381,26 @@
           'min-width': '50px'
         }
       },
-    });
-    /*
-    bm.add('testblock', {
-      label: 'TEST Block',
-      attributes: {class:'fa fa-rocket'},
-      category: 'Basic',
-      content: `<div class="testblock">TEST</div>
-      <style>
-        .testblock {
-          width: 200px;
-          height: 200px;
-          background-color: red;
-        }
-
-        @media (max-width: 768px) {
-          .testblock {
-            background-color: green;
-          }
-        }
-      </style>
-      `,
     });*/
+
+    var domc = editor.DomComponents;
+    var defaultType = domc.getType('default');
+    var defaultModel = defaultType.model;
+    var defaultView = defaultType.view;
+
+    /*
+    domc.addType('default', {
+      model: defaultModel.extend({
+        defaults: Object.assign({}, defaultModel.prototype.defaults, {
+          traits: [{
+            name: 'title',
+            label: 'Título',
+            placeholder: 'Insira um texto aqui'
+          }]
+        }),
+      }),
+    });
+    */
 
     // Store and load events
     editor.on('storage:load', function(e) {

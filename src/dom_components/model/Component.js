@@ -3,6 +3,10 @@ var Components = require('./Components');
 var Selectors = require('selector_manager/model/Selectors');
 var Traits = require('trait_manager/model/Traits');
 
+const escapeRegExp = (str) => {
+  return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
+}
+
 module.exports = Backbone.Model.extend({
 
   defaults: {
@@ -348,13 +352,24 @@ module.exports = Backbone.Model.extend({
   getScriptString(script) {
     var scr = script || this.get('script');
 
-    // Need to cast script functions to string
+    // Need to convert script functions to strings
     if (typeof scr == 'function') {
       var scrStr = scr.toString().trim();
-      scrStr = scrStr.replace(/^function\s?\(\)\s?\{/, '');
-      scrStr = scrStr.replace(/\}$/, '');
-      scr = scrStr;
+      var lines = scrStr.split('\n');
+      lines.shift();
+      lines.pop();
+      scr = lines.join('\n');
     }
+
+    var varTagStart = escapeRegExp('{[ ');
+    var varTagEnd = escapeRegExp(' ]}');
+    var reg = new RegExp(`${varTagStart}(\\w+)${varTagEnd}`, 'g');
+    scr = scr.replace(reg, (match, v) => {
+      // If at least one match is found I have to track this change for a
+      // better optimization inside JS generator
+      this.scriptUpdated();
+      return this.attributes[v];
+    })
 
     return scr;
   }
