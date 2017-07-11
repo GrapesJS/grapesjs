@@ -15,8 +15,9 @@ module.exports = Backbone.Model.extend({
       attr = _.extend({}, attr, {id});
       model.set('attributes', attr);
 
-      var scrStr = 'function(){' + script + '}';
-      scrStr = typeof script == 'function' ? script.toString() : scrStr;
+      //var scrStr = 'function(){' + script + '}';
+      //scrStr = typeof script == 'function' ? script.toString() : scrStr;
+      var scrStr = model.getScriptString();
 
       // If the script was updated, I'll put its code in a separate container
       if (model.get('scriptUpdated')) {

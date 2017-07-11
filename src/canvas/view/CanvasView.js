@@ -244,11 +244,8 @@ module.exports = Backbone.View.extend({
       this.getJsContainer().append(view.scriptContainer.get(0));
     }
 
-    var id = view.model.cid;
-    var script = view.model.get('script');
-    var scrStr = 'function(){' + script + '}';
-    scrStr = typeof script == 'function' ? script.toString() : scrStr;
-
+    var model = view.model;
+    var id = model.cid;
     view.el.id = id;
     view.scriptContainer.html('');
 
@@ -258,7 +255,7 @@ module.exports = Backbone.View.extend({
         setTimeout(function() {
           var item = document.getElementById('${id}');
           if (!item) return;
-          (${scrStr}.bind(item))()
+          (function(){${model.getScriptString()}}.bind(item))()
         }, 1);
       </script>`);
   },
