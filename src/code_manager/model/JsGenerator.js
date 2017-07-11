@@ -7,7 +7,7 @@ module.exports = Backbone.Model.extend({
     var script  = model.get('script');
     var type  = model.get('type');
     var comps  = model.get('components');
-    var id = model.cid;
+    var id = model.getId();
 
     if (script) {
       // If the component has scripts we need to expose his ID

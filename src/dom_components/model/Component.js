@@ -343,6 +343,14 @@ module.exports = Backbone.Model.extend({
   },
 
   /**
+   * Return model id
+   * @return {string}
+   */
+  getId() {
+    return this.cid;
+  },
+
+  /**
    * Return script in string format, cleans 'function() {..' from scripts
    * if it's a function
    * @param {string|Function} script
