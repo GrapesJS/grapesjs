@@ -484,6 +484,10 @@ module.exports = Backbone.View.extend({
   dimsFromTarget(target, rX, rY) {
     var dims = [];
 
+    if (!target) {
+      return dims;
+    }
+
     // Select the first valuable target
     if (!target.matches(`${this.itemSel}, ${this.containerSel}`)) {
       target = this.closest(target, this.itemSel);
