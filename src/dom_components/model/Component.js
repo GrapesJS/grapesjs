@@ -365,10 +365,8 @@ module.exports = Backbone.Model.extend({
     // Need to convert script functions to strings
     if (typeof scr == 'function') {
       var scrStr = scr.toString().trim();
-      var lines = scrStr.split('\n');
-      lines.shift();
-      lines.pop();
-      scr = lines.join('\n');
+      scrStr = scrStr.replace(/^function[\s\w]*\(\)\s?\{/, '').replace(/\}$/, '');
+      scr = scrStr.trim();
     }
 
     var config = this.sm.config || {};
