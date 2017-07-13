@@ -14,9 +14,6 @@ module.exports = Backbone.Model.extend({
       var attr = model.get('attributes');
       attr = _.extend({}, attr, {id});
       model.set('attributes', attr);
-
-      //var scrStr = 'function(){' + script + '}';
-      //scrStr = typeof script == 'function' ? script.toString() : scrStr;
       var scrStr = model.getScriptString();
 
       // If the script was updated, I'll put its code in a separate container
@@ -49,10 +46,11 @@ module.exports = Backbone.Model.extend({
     for(var type in this.mapJs) {
       var mapType = this.mapJs[type];
       var ids = '#' + mapType.ids.join(', #');
-      code += 'var items = document.querySelectorAll("'+ids+'");' +
-        'for (var i = 0, len = items.length; i < len; i++) {'+
-          '(' + mapType.code + '.bind(items[i]))();' +
-        '}';
+      code += `
+        var items = document.querySelectorAll('${ids}');
+        for (var i = 0, len = items.length; i < len; i++) {
+          (function(){${mapType.code}}.bind(items[i]))();
+        }`;
     }
 
 
