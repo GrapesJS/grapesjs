@@ -9,8 +9,8 @@
     <link rel="stylesheet" href="stylesheets/tooltip.css">
     <link rel="stylesheet" href="stylesheets/perfect-scrollbar.css">
     <link rel="stylesheet" href="stylesheets/grapesjs-plugin-filestack.css">
-    <script src="https://static.filestackapi.com/v3/filestack-0.1.12.js"></script>
-    <script src="http://code.jquery.com/jquery-2.2.0.min.js"></script>
+    <script src="//static.filestackapi.com/v3/filestack-0.1.12.js"></script>
+    <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="//feather.aviary.com/imaging/v3/editor.js"></script>
     <script src="js/perfect-scrollbar.min.js"></script>
     <script src="js/toastr.min.js"></script>
@@ -140,7 +140,7 @@
           <div class="logo-container">
             <div class="logo">GrapesJS</div>
           </div>
-          <nav class="navbar">
+          <nav class="menu">
             <div class="menu-item">BUILDER</div>
             <div class="menu-item">TEMPLATE</div>
             <div class="menu-item">WEB</div>
@@ -396,7 +396,7 @@
           color: #4d114f;
           font-size: 23px;
         }
-        .navbar{
+        .menu {
           float: right;
           width: 50%;
         }
@@ -928,13 +928,14 @@
       </style>
     </div>
 
-    <script src="js/grapes.min.js?v0.9.5"></script>
+    <script src="js/grapes.min.js?v0.9.7"></script>
     <script src="js/grapesjs-plugin-export.min.js"></script>
     <script src="js/grapesjs-plugin-filestack.min.js"></script>
     <script src="js/grapesjs-blocks-basic.min.js"></script>
     <script src="js/grapesjs-preset-webpage.js"></script>
     <script src="js/grapesjs-plugin-forms.min.js"></script>
     <script src="js/grapesjs-aviary.min.js"></script>
+    <script src="js/grapesjs-navbar.min.js"></script>
     <script type="text/javascript">
 
       var lp = './img/';
@@ -952,7 +953,8 @@
       fromElement: 1,
       showOffsets: 1,
       plugins: ['gjs-plugin-export', 'gjs-plugin-filestack',
-        'gjs-aviary', 'gjs-blocks-basic', 'gjs-preset-webpage', 'gjs-plugin-forms'],
+        'gjs-aviary', 'gjs-blocks-basic', 'gjs-preset-webpage',
+        'gjs-navbar', 'gjs-plugin-forms'],
       pluginsOpts: {
         'gjs-plugin-filestack': {
           key: 'A1nL8omiAR8W7pHi3cotzz',
