@@ -1,4 +1,4 @@
-export default class Stylable {
+export default {
 
   /**
    * To trigger the style change event on models I have to
@@ -8,7 +8,7 @@ export default class Stylable {
    */
   newStyle(prop) {
     return Object.assign({}, this.getStyle(), prop);
-  }
+  },
 
   /**
    * Get style object
@@ -16,7 +16,7 @@ export default class Stylable {
    */
   getStyle() {
     return this.get('style');
-  }
+  },
 
   /**
    * Set new style object
@@ -24,7 +24,7 @@ export default class Stylable {
    */
   setStyle(prop = {}) {
     this.set('style', this.newStyle(prop));
-  }
+  },
 
   /**
    * Add style property
@@ -43,7 +43,7 @@ export default class Stylable {
 
     prop = this.newStyle(prop);
     this.set('style', prop);
-  }
+  },
 
   /**
    * Remove style property

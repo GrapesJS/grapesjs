@@ -1,3 +1,5 @@
+import Styleable from 'domain_abstract/model/Styleable';
+
 var Backbone = require('backbone');
 var Components = require('./Components');
 var Selectors = require('selector_manager/model/Selectors');
@@ -7,7 +9,7 @@ const escapeRegExp = (str) => {
   return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
 }
 
-module.exports = Backbone.Model.extend({
+module.exports = Backbone.Model.extend(Styleable).extend({
 
   defaults: {
     // HTML tag of the component
