@@ -62,6 +62,9 @@ module.exports = Backbone.Model.extend({
     // Content of the component (not escaped) which will be appended before children rendering
     content: '',
 
+    // Component icon, this string will be inserted before the name, eg. '<i class="fa fa-square-o"></i>'
+    icon: '',
+
     // Component related style
     style: {},
 
@@ -259,6 +262,15 @@ module.exports = Backbone.Model.extend({
     let name = this.get('type') || tag;
     name = name.charAt(0).toUpperCase() + name.slice(1);
     return customName || name;
+  },
+
+  /**
+   * Get the icon string
+   * @return {string}
+   */
+  getIcon() {
+    let icon = this.get('icon');
+    return icon ? icon + ' ' : '';
   },
 
   /**

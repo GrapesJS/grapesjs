@@ -13,6 +13,7 @@ module.exports = Backbone.View.extend({
     <div class="<%= prefix %>title <%= addClass %>">
     	<i id="<%= prefix %>caret" class="fa fa-chevron-right <%= caretCls %>"></i>
   		<i class="fa fa-pencil <%= editBtnCls %>"></i>
+      <%= icon %>
   		<input class="<%= ppfx %>no-app <%= inputNameCls %>" value="<%= title %>" readonly>
     </div>
   </div>
@@ -261,6 +262,7 @@ module.exports = Backbone.View.extend({
 
     this.$el.html( this.template({
       title: model.getName(),
+      icon: model.getIcon(),
       addClass: (count ? '' : pfx+'no-chld'),
       editBtnCls: this.editBtnCls,
       inputNameCls: this.inputNameCls,
