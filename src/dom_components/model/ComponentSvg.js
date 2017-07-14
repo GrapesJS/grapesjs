@@ -4,7 +4,9 @@ module.exports = Component.extend({
 
   getName() {
     let name = this.get('tagName');
-    return name.charAt(0).toUpperCase() + name.slice(1);
+    let customName = this.get('custom-name');
+    name = name.charAt(0).toUpperCase() + name.slice(1);
+    return customName || name;
   },
 
 }, {
