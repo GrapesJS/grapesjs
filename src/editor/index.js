@@ -312,6 +312,22 @@ module.exports = config => {
     },
 
     /**
+     * Get stylable entity from the selected component.
+     * If you select the component without classes the entity is the Component
+     * itself and all changes will go inside its 'style' property. Otherwise,
+     * if the selected component has one or more classes, the function will
+     * return the corresponding CSS Rule
+     * @return {Model}
+     */
+    getSelectedToStyle() {
+      let selected = em.getSelected();
+
+      if (selected) {
+        return this.StyleManager.getModelToStyle(selected);
+      }
+    },
+
+    /**
      * Set device to the editor. If the device exists it will
      * change the canvas to the proper width
      * @return {this}
