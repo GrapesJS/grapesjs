@@ -250,7 +250,7 @@ module.exports = {
     if(!model || !model.get('badgable'))
       return;
     var badge = this.getBadge();
-    badge.innerHTML = model.getCurrentName();
+    badge.innerHTML = model.getName();
     var bStyle = badge.style;
     var u = 'px';
     bStyle.display = 'block';
