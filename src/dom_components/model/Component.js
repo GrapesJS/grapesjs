@@ -254,7 +254,9 @@ module.exports = Backbone.Model.extend({
    * */
   getName() {
     let customName = this.get('custom-name');
-    let name = this.get('type') || this.get('tagName');
+    let tag = this.get('tagName');
+    tag = tag == 'div' ? 'box' : tag;
+    let name = this.get('type') || tag;
     name = name.charAt(0).toUpperCase() + name.slice(1);
     return customName || name;
   },

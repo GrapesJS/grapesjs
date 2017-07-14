@@ -43,7 +43,6 @@ module.exports = Backbone.View.extend({
     this.inputNameCls = this.ppfx + 'nav-comp-name';
     this.caretCls = this.ppfx + 'nav-item-caret';
     this.titleCls = this.pfx + 'title';
-    this.customNameProp = 'custom-name';
     this.events = {};
     this.events['click > #'+this.pfx+'btn-eye'] = 'toggleVisibility';
     this.events['click .' + this.caretCls] = 'toggleOpening';
@@ -77,7 +76,7 @@ module.exports = Backbone.View.extend({
     e.stopPropagation();
     var inputName = this.getInputName();
     inputName.readOnly = true;
-    this.model.set(this.customNameProp, inputName.value);
+    this.model.set('custom-name', inputName.value);
   },
 
   /**
@@ -255,12 +254,13 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
+    let model = this.model;
     var pfx = this.pfx;
     var vis = this.isVisible();
-    var count = this.countChildren(this.model);
+    var count = this.countChildren(model);
 
     this.$el.html( this.template({
-      title: this.model.get(this.customNameProp) || this.model.getName(),
+      title: model.getName(),
       addClass: (count ? '' : pfx+'no-chld'),
       editBtnCls: this.editBtnCls,
       inputNameCls: this.inputNameCls,
@@ -275,15 +275,15 @@ module.exports = Backbone.View.extend({
     if(typeof ItemsView == 'undefined')
     	ItemsView = require('./ItemsView');
     this.$components = new ItemsView({
-      collection 	: this.model.components,
+      collection 	: model.components,
       config: this.config,
       sorter: this.sorter,
       opened: this.opt.opened,
-      parent: this.model
+      parent: model
     }).render().$el;
     this.$el.find('.'+ pfx +'children').html(this.$components);
     this.$caret = this.$el.find('> .' + pfx + 'title-c > .' + pfx + 'title > #' + pfx + 'caret');
-    if(!this.model.get('draggable') || !this.config.sortable){
+    if(!model.get('draggable') || !this.config.sortable){
     	this.$el.find('> #' + pfx + 'move').detach();
     }
     if(!vis)
