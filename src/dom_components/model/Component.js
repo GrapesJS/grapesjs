@@ -249,23 +249,14 @@ module.exports = Backbone.Model.extend({
   },
 
   /**
-   * Get name of the component
+   * Get the name of the component
    * @return {string}
-   * @private
    * */
   getName() {
-    if(!this.name){
-      var type = this.get('type');
-      var tag = this.get('tagName');
-      tag = tag == 'div' ? 'box' : tag;
-      tag = type ? type : tag;
-      this.name 	= tag.charAt(0).toUpperCase() + tag.slice(1);
-    }
-    return this.name;
-  },
-
-  getCurrentName() {
-    return this.get('custom-name') || this.getName();
+    let customName = this.get('custom-name');
+    let name = this.get('type') || this.get('tagName');
+    name = name.charAt(0).toUpperCase() + name.slice(1);
+    return customName || name;
   },
 
   /**
