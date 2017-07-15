@@ -305,7 +305,7 @@ module.exports = config => {
 
     /**
      * Returns selected component, if there is one
-     * @return {grapesjs.Component}
+     * @return {Model}
      */
     getSelected() {
       return em.getSelected();

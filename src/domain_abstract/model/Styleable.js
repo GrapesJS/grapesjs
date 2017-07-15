@@ -6,7 +6,7 @@ export default {
    * @param {Object} prop
    * @return {Object}
    */
-  newStyle(prop) {
+  extendStyle(prop) {
     return Object.assign({}, this.getStyle(), prop);
   },
 
@@ -21,9 +21,10 @@ export default {
   /**
    * Set new style object
    * @param {Object} prop
+   * @param {Object} opts
    */
-  setStyle(prop = {}) {
-    this.set('style', this.newStyle(prop));
+  setStyle(prop = {}, opts = {}) {
+    this.set('style', Object.assign({}, prop), opts);
   },
 
   /**
@@ -34,15 +35,17 @@ export default {
    * this.addStyle({color: 'red'});
    * this.addStyle('color', 'blue');
    */
-  addStyle(prop, value = '') {
+  addStyle(prop, value = '', opts = {}) {
     if (typeof prop == 'string') {
       prop = {
         prop: value
       };
+    } else {
+      opts = value || {};
     }
 
-    prop = this.newStyle(prop);
-    this.set('style', prop);
+    prop = this.extendStyle(prop);
+    this.set('style', prop, opts);
   },
 
   /**

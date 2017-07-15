@@ -45,12 +45,27 @@ module.exports = Backbone.View.extend({
 
   /**
    * Returns selected target which should have 'style' property
+   * @deprecated
    * @return {Model|null}
    */
   getTarget() {
-    if(this.selectedComponent)
-      return this.selectedComponent;
-    return this.propTarget ? this.propTarget.model : null;
+    return this.propTarget && this.propTarget.model;
+  },
+
+  /**
+   * Returns Styleable model
+   * @return {Model|null}
+   */
+  getTargetModel() {
+    return this.propTarget && this.propTarget.model;
+  },
+
+  /**
+   * Returns helper Styleable model
+   * @return {Model|null}
+   */
+  getHelperModel() {
+    return this.propTarget && this.propTarget.helper;
   },
 
   /**
@@ -62,25 +77,67 @@ module.exports = Backbone.View.extend({
   },
 
   /**
-   * Fired when the target is updated
+   * Fired when the target is changed
    * */
   targetUpdated() {
-    this.selectedComponent = this.propTarget.model;
-    this.helperComponent = this.propTarget.helper;
-    this.checkVisibility();
+    if (!this.checkVisibility()) {
+      return;
+    }
 
+    let value = '';
+    let status = '';
+    let targetValue = this.getTargetValue({ignoreDefault: 1});
+    let defaultValue = this.getDefaultValue();
+    let computedValue = this.getComputedValue();
+
+    if (targetValue) {
+      value = targetValue;
+      status = 'updated';
+    } else if (computedValue && computedValue != defaultValue) {
+      value = computedValue;
+      status = 'computed';
+    } else {
+      value = defaultValue;
+      status = '';
+    }
+
+    this.setValue(value, 1);
+    this.model.set('status', status);
+
+    if (this.model.get('property') == 'font-size') {
+      console.log('FS', targetValue, defaultValue, computedValue);
+    }
+
+    /*
+    get targetValue
+    if targetValue
+      setValue(targetValue)
+      setStatus('updated');
+    elseif computedValue != defaultValue
+      setValue(computedValue)
+      setStatus('computed');
+    else
+      setValue(defaultValue)
+      setStatus('');
+     */
+
+     /*
     if(this.getTarget()) {
       if(!this.sameValue()){
         this.renderInputRequest();
       }
     }
+    */
   },
 
   checkVisibility() {
+    var result = 1;
+
     // Check if need to hide the property
     if (this.config.hideNotStylable) {
       if (!this.isTargetStylable() || !this.isComponentStylable()) {
         this.hide();
+        result = 0;
       } else {
         this.show();
       }
@@ -89,6 +146,8 @@ module.exports = Backbone.View.extend({
         this.sector.trigger('updateVisibility');
       }
     }
+
+    return result;
   },
 
   /**
@@ -96,20 +155,20 @@ module.exports = Backbone.View.extend({
    * same of the value of the model
    *
    * @return {Boolean}
-   * */
+   * *
   sameValue() {
     return this.getComponentValue() == this.getValueForTarget();
   },
+  */
 
 
   /**
    * Get the value from the selected component of this property
-   *
    * @return {String}
    * */
   getComponentValue() {
     var propModel = this.model;
-    var target = this.getTarget();
+    var target = this.getTargetModel();
 
     if(!target)
       return;
@@ -147,9 +206,8 @@ module.exports = Backbone.View.extend({
    * @return string
    * @private
    */
-  getTargetValue(opts) {
+  getTargetValue(opts = {}) {
     var result;
-    var opt = opts || {};
     var model = this.model;
     var target = this.getTarget();
 
@@ -157,9 +215,9 @@ module.exports = Backbone.View.extend({
       return result;
     }
 
-    result = target.get('style')[model.get('property')];
+    result = target.getStyle()[model.get('property')];
 
-    if (!result && !opt.ignoreDefault) {
+    if (!result && !opts.ignoreDefault) {
       result = this.getDefaultValue();
     }
 
@@ -173,6 +231,16 @@ module.exports = Backbone.View.extend({
    */
   getDefaultValue() {
     return this.model.get('defaults');
+  },
+
+  /**
+   * Returns computed value
+   * @return {String}
+   * @private
+   */
+  getComputedValue() {
+    let computed = this.propTarget.computed;
+    return computed && computed[this.model.get('property')];
   },
 
   /**
@@ -274,8 +342,9 @@ module.exports = Backbone.View.extend({
 
     target.set('style', targetStyle, { avoidStore : avSt});
 
-    if(this.helperComponent)
-      this.helperComponent.set('style', targetStyle, { avoidStore : avSt});
+    // Helper exists when is active a State in Style Manager
+    let helper = this.getHelperModel();
+    helper && helper.setStyle(targetStyle, {avoidStore: avSt});
   },
 
   /**
@@ -346,12 +415,13 @@ module.exports = Backbone.View.extend({
   },
 
   renderLabel() {
-    this.$el.html( this.templateLabel({
-      pfx    : this.pfx,
-      ppfx  : this.ppfx,
-      icon  : this.model.get('icon'),
-      info  : this.model.get('info'),
-      label  : this.model.get('name'),
+    let model = this.model;
+    this.$el.html(this.templateLabel({
+      pfx: this.pfx,
+      ppfx: this.ppfx,
+      icon: model.get('icon'),
+      info: model.get('info'),
+      label: model.get('name'),
     }));
   },
 

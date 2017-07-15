@@ -48,6 +48,8 @@ module.exports = Backbone.View.extend({
     var widthMedia = device && device.get('widthMedia');
     var mediaText = device && !previewMode && widthMedia ?
       `(${config.mediaCondition}: ${widthMedia})` : '';
+    var stateStr = state ? `:${state}` : null;
+    pt.computed = window.getComputedStyle(el.view.el, stateStr);
     pt.helper = null;
 
     if(classes.length){
