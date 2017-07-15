@@ -41,6 +41,26 @@ module.exports = Backbone.View.extend({
     this.listenTo(this.model, 'change:value', this.valueChanged);
     this.listenTo(this.model, 'targetUpdated', this.targetUpdated);
     this.listenTo(this.model, 'change:visible', this.updateVisibility);
+    this.listenTo(this.model, 'change:status', this.updateStatus);
+  },
+
+  updateStatus() {
+    const status = this.model.get('status');
+    const pfx = this.pfx;
+    const ppfx = this.ppfx;
+    const updatedCls = `${ppfx}active-color`;
+    const computedCls = `${ppfx}warn-color`;
+    const labelEl = this.$el.find(`> .${pfx}label`);
+    labelEl.removeClass(`${updatedCls} ${computedCls}`);
+
+    switch (status) {
+      case 'updated':
+        labelEl.addClass(updatedCls);
+        break;
+      case 'computed':
+        labelEl.addClass(computedCls);
+        break;
+    }
   },
 
   /**
@@ -103,10 +123,6 @@ module.exports = Backbone.View.extend({
 
     this.setValue(value, 1);
     this.model.set('status', status);
-
-    if (this.model.get('property') == 'font-size') {
-      console.log('FS', targetValue, defaultValue, computedValue);
-    }
 
     /*
     get targetValue
