@@ -284,17 +284,22 @@ module.exports = Backbone.Model.extend(Styleable).extend({
   toHTML(opts) {
     var code = '';
     var m = this;
-    var tag = m.get('tagName'),
-    sTag = m.get('void'),
-    attrId = '';
-    // Build the string of attributes
+    var tag = m.get('tagName');
+    var idFound = 0;
+    var sTag = m.get('void');
+    var attrId = '';
     var strAttr = '';
     var attr = this.getAttrToHTML();
-    for(var prop in attr){
+
+    for (var prop in attr) {
+      if (prop == 'id') {
+        idFound = 1;
+      }
       var val = attr[prop];
       strAttr += typeof val !== undefined && val !== '' ?
         ' ' + prop + '="' + val + '"' : '';
     }
+
     // Build the string of classes
     var strCls = '';
     m.get('classes').each(m => {
@@ -303,7 +308,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     strCls = strCls !== '' ? ' class="' + strCls.trim() + '"' : '';
 
     // If style is not empty I need an ID attached to the component
-    if(!_.isEmpty(m.get('style')))
+    if(!_.isEmpty(m.get('style')) && !idFound)
       attrId = ' id="' + m.getId() + '" ';
 
     code += '<' + tag + strCls + attrId + strAttr + (sTag ? '/' : '') + '>' + m.get('content');
@@ -352,7 +357,8 @@ module.exports = Backbone.Model.extend(Styleable).extend({
    * @return {string}
    */
   getId() {
-    return this.cid;
+    let attrs = this.get('attributes') || {};
+    return attrs.id || this.cid;
   },
 
   /**
