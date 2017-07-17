@@ -99,7 +99,7 @@ module.exports = PropertyView.extend({
     this.props.each((prop, index) => {
       str += prop.get('defaults') + prop.get('unit') + ' ';
     });
-    return str.replace(/ +$/,'');
+    return this.model.get('defaults') || str.replace(/ +$/,'');
   },
 
   /**

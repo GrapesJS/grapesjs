@@ -41,12 +41,13 @@ module.exports = PropertyView.extend({
       this.$previewBox = this.$el.find('#' + this.pfx + 'preview-box');
     }
 
-    if(!this.componentValue || this.componentValue == this.defaultValue)
-      this.setPreviewView(0);
-    else
-      this.setPreviewView(1);
-
     this.setValue(this.componentValue, 0);
+  },
+
+  setValue(value, f) {
+    PropertyView.prototype.setValue.apply(this, arguments);
+    this.setPreviewView(value && value != this.getDefaultValue());
+    this.setPreview(value);
   },
 
   /**
@@ -84,11 +85,6 @@ module.exports = PropertyView.extend({
       this.$preview.css('background-image', "url(" + url + ")");
   },
 
-  /** @inheritdoc */
-  setValue(value, f) {
-    PropertyView.prototype.setValue.apply(this, arguments);
-    this.setPreview(value);
-  },
 
   /** @inheritdoc */
   renderTemplate() {

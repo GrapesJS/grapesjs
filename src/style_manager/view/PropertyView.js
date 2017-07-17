@@ -14,7 +14,9 @@ module.exports = Backbone.View.extend({
     </div>
   </div>`),
 
-  events: {'change': 'valueUpdated'},
+  events: {
+    'change': 'valueUpdated'
+  },
 
   initialize(o) {
     this.config = o.config || {};
@@ -92,8 +94,15 @@ module.exports = Backbone.View.extend({
    * Fired when the input value is updated
    */
   valueUpdated() {
-    if(this.$input)
-      this.model.set('value', this.getInputValue());
+    this.model.set('value', this.getInputValue());
+    this.elementUpdated();
+  },
+
+  /**
+   * Fired when the element of the property is updated
+   */
+  elementUpdated() {
+    this.model.set('status', 'updated');
   },
 
   /**
@@ -109,41 +118,44 @@ module.exports = Backbone.View.extend({
     let targetValue = this.getTargetValue({ignoreDefault: 1});
     let defaultValue = this.getDefaultValue();
     let computedValue = this.getComputedValue();
+    const config = this.config;
+    const em = config.em;
+    const model = this.model;
 
     if (targetValue) {
       value = targetValue;
-      status = 'updated';
-    } else if (computedValue && computedValue != defaultValue) {
+
+      if (config.highlightChanged) {
+        status = 'updated';
+      }
+    } else if (computedValue && config.showComputed &&
+        computedValue != defaultValue) {
       value = computedValue;
-      status = 'computed';
+
+      if (config.highlightComputed) {
+        status = 'computed';
+      }
     } else {
       value = defaultValue;
       status = '';
     }
 
+    //value = this.tryFetchFromFunction(value);
     this.setValue(value, 1);
     this.model.set('status', status);
 
-    /*
-    get targetValue
-    if targetValue
-      setValue(targetValue)
-      setStatus('updated');
-    elseif computedValue != defaultValue
-      setValue(computedValue)
-      setStatus('computed');
-    else
-      setValue(defaultValue)
-      setStatus('');
-     */
+    if (em) {
+      em.trigger('styleManager:change', this);
+      em.trigger(`styleManager:change:${model.get('property')}`, this);
+    }
 
-     /*
+    /*
     if(this.getTarget()) {
       if(!this.sameValue()){
         this.renderInputRequest();
       }
-    }
-    */
+    }*/
+
   },
 
   checkVisibility() {
@@ -171,11 +183,10 @@ module.exports = Backbone.View.extend({
    * same of the value of the model
    *
    * @return {Boolean}
-   * *
+   * */
   sameValue() {
     return this.getComponentValue() == this.getValueForTarget();
   },
-  */
 
 
   /**
@@ -226,6 +237,7 @@ module.exports = Backbone.View.extend({
     var result;
     var model = this.model;
     var target = this.getTarget();
+    var customFetchValue = this.customValue;
 
     if (!target) {
       return result;
@@ -235,6 +247,15 @@ module.exports = Backbone.View.extend({
 
     if (!result && !opts.ignoreDefault) {
       result = this.getDefaultValue();
+    }
+
+    if (typeof customFetchValue == 'function' && !opts.ignoreCustomValue) {
+      let index = model.collection.indexOf(model);
+      let customValue = customFetchValue(this, index);
+
+      if (customValue) {
+        result = customValue;
+      }
     }
 
     return result;
@@ -256,7 +277,9 @@ module.exports = Backbone.View.extend({
    */
   getComputedValue() {
     let computed = this.propTarget.computed;
-    return computed && computed[this.model.get('property')];
+    const valid = this.config.validComputed;
+    const property = this.model.get('property');
+    return computed && valid.indexOf(property) >= 0 && computed[property];
   },
 
   /**
@@ -274,9 +297,10 @@ module.exports = Backbone.View.extend({
       return value;
     }
 
-    var start = value.indexOf("(") + 1;
-    var end = value.lastIndexOf(")");
-    return value.substring(start, end);
+    var valueStr = value + '';
+    var start = valueStr.indexOf("(") + 1;
+    var end = valueStr.lastIndexOf(")");
+    return valueStr.substring(start, end);
   },
 
   /**

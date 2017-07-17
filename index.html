@@ -1320,6 +1320,14 @@
       console.log('STORE ', e);
     })
 
+    editor.on('styleManager:change:text-shadow', function(view) {
+      var model = view.model;
+      let targetValue = view.getTargetValue({ignoreDefault: 1});
+      let computedValue = view.getComputedValue();
+      let defaultValue = view.getDefaultValue();
+      console.log('Style of ', model.get('property'), 'Target: ', targetValue, 'Computed:', computedValue, 'Default:', defaultValue);
+    })
+
     editor.render();
     </script>
   </body>

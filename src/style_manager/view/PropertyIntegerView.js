@@ -6,7 +6,8 @@ module.exports = PropertyView.extend({
 
   initialize(options) {
     PropertyView.prototype.initialize.apply(this, arguments);
-    this.listenTo( this.model ,'change:unit', this.valueChanged);
+    this.listenTo(this.model, 'change:unit', this.valueChanged);
+    this.listenTo(this.model, 'el:change', this.elementUpdated);
   },
 
   /**
@@ -35,8 +36,6 @@ module.exports = PropertyView.extend({
   renderTemplate() {},
 
   setValue(value) {
-    if(this.model.get('property') == 'font-size')
-      console.log('set value int', value);
     this.input.setValue(value, {silent: 1});
   },
 

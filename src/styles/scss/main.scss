@@ -88,17 +88,18 @@ $fontV: 20;//random(1000)
   transform: $v;
 }
 
-//.#{$app-prefix}fonts {}
+$colorActive: #71b7f1;
+$colorWarn: #ffca6f;
 
 .#{$app-prefix}active {
   &-color {
-    color: $colorBlue;
+    color: $colorActive;
   }
 }
 
 .#{$app-prefix}warn {
   &-color {
-    color: $colorYell;
+    color: $colorWarn;
   }
 }
 

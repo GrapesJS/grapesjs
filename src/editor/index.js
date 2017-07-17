@@ -36,6 +36,8 @@
  * component:update:{propertyName} - Listen any property change
  * component:styleUpdate - Triggered when the style of the component is updated
  * component:styleUpdate:{propertyName} - Listen for a specific style property change
+ * styleManager:change - Triggered on style property change from new selected component, the view of the property is passed as an argument to the callback
+ * styleManager:change:{propertyName} - As above but for a specific style property
  * storage:load - Triggered when something was loaded from the storage, loaded object passed as an argumnet
  * storage:store - Triggered when something is stored to the storage, stored object passed as an argumnet
  * canvasScroll - Triggered when the canvas is scrolled
