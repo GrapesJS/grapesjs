@@ -13,6 +13,8 @@ module.exports = {
         var target;
         var model;
         var view;
+        var propTarget;
+        var options;
         var propName = 'testprop';
         var propValue = 'test1value';
         var defValue = 'test2value';
@@ -27,6 +29,7 @@ module.exports = {
         });
 
         beforeEach(() => {
+          propTarget = Object.assign({}, Backbone.Events);
           target = new Component();
           component = new Component();
           model = new Property({
@@ -34,8 +37,10 @@ module.exports = {
             list: options,
             property: propName
           });
+          propTarget.model = component;
           view = new PropertySelectView({
-            model
+            model,
+            propTarget
           });
           $fixture.empty().appendTo($fixtures);
           $fixture.html(view.render().el);

@@ -13,6 +13,7 @@ module.exports = {
         var target;
         var model;
         var view;
+        var propTarget;
         var propName = 'testprop';
         var propValue = '#fff';
         var defValue = 'test2value';
@@ -30,8 +31,11 @@ module.exports = {
             type: 'color',
             property: propName
           });
+          propTarget = Object.assign({}, Backbone.Events);
+          propTarget.model = component;
           view = new PropertyColorView({
-            model
+            model,
+            propTarget
           });
           $fixture.empty().appendTo($fixtures);
           $fixture.html(view.render().el);
