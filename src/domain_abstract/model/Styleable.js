@@ -45,7 +45,7 @@ export default {
     }
 
     prop = this.extendStyle(prop);
-    this.set('style', prop, opts);
+    this.setStyle(prop, opts);
   },
 
   /**
@@ -53,7 +53,7 @@ export default {
    * @param {string} prop
    */
   removeStyle(prop) {
-    let style = this.getStyle();
+    let style = Object.assign({}, this.getStyle());
     delete style[prop];
     this.setStyle(style);
   }

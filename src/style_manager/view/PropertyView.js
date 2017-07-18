@@ -9,9 +9,10 @@ module.exports = Backbone.View.extend({
 
   templateLabel: _.template(`
   <div class="<%= pfx %>label">
-    <div class="<%= pfx %>icon <%= icon %>" title="<%= info %>">
+    <span class="<%= pfx %>icon <%= icon %>" title="<%= info %>">
       <%= label %>
-    </div>
+    </span>
+    <b class="<%= pfx %>clear">&Cross;</b>
   </div>`),
 
   events: {
@@ -31,8 +32,9 @@ module.exports = Backbone.View.extend({
     this.defaultValue = this.model.get('defaults');
     this.property = this.model.get('property');
     this.input = this.$input = null;
-    this.className = this.pfx  + 'property';
-    this.inputHolderId = '#' + this.pfx + 'input-holder';
+    const pfx = this.pfx;
+    this.className = pfx + 'property';
+    this.inputHolderId = '#' + pfx + 'input-holder';
     this.sector = this.model.collection && this.model.collection.sector;
 
     if(!this.model.get('value'))
@@ -44,6 +46,8 @@ module.exports = Backbone.View.extend({
     this.listenTo(this.model, 'targetUpdated', this.targetUpdated);
     this.listenTo(this.model, 'change:visible', this.updateVisibility);
     this.listenTo(this.model, 'change:status', this.updateStatus);
+    this.events[`click .${pfx}clear`] = 'clear';
+    this.delegateEvents();
   },
 
   updateStatus() {
@@ -53,16 +57,36 @@ module.exports = Backbone.View.extend({
     const updatedCls = `${ppfx}active-color`;
     const computedCls = `${ppfx}warn-color`;
     const labelEl = this.$el.find(`> .${pfx}label`);
+    const clearStyle = this.getClearEl().style;
     labelEl.removeClass(`${updatedCls} ${computedCls}`);
+    clearStyle.display = 'none';
 
     switch (status) {
       case 'updated':
         labelEl.addClass(updatedCls);
+        clearStyle.display = 'inline';
         break;
       case 'computed':
         labelEl.addClass(computedCls);
         break;
     }
+  },
+
+  /**
+   * Clear the property
+   */
+  clear() {
+    const target = this.getTargetModel();
+    target.removeStyle(this.model.get('property'));
+    this.targetUpdated();
+  },
+
+  /**
+   * Get clear element
+   * @return {HTMLElement}
+   */
+  getClearEl() {
+    return this.el.querySelector(`.${this.pfx}clear`);
   },
 
   /**
@@ -236,7 +260,7 @@ module.exports = Backbone.View.extend({
   getTargetValue(opts = {}) {
     var result;
     var model = this.model;
-    var target = this.getTarget();
+    var target = this.getTargetModel();
     var customFetchValue = this.customValue;
 
     if (!target) {
@@ -519,6 +543,7 @@ module.exports = Backbone.View.extend({
     this.renderLabel();
     this.renderField();
     this.$el.attr('class', this.className);
+    this.updateStatus();
     return this;
   },
 

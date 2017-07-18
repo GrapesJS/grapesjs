@@ -1,3 +1,12 @@
+
+.#{$sm-prefix} {
+  &clear {
+    font-size: 1rem;
+    line-height: 0;
+    cursor: pointer;
+  }
+}
+
 .#{$sm-prefix}close-btn {
   display: block;
   font-size: 23px;
