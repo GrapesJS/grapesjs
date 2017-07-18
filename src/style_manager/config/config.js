@@ -20,6 +20,9 @@ module.exports = {
   // is set to false, highlightComputed will not take effect
   showComputed: true,
 
+  // Adds the possibility to clear property value from the target style
+  clearProperties: false,
+
   // Properties which are valid to be shown as computed
   // (Identified as inherited properties: https://developer.mozilla.org/en-US/docs/Web/CSS/inheritance)
   validComputed: ['border-collapse', 'border-spacing', 'caption-side', 'color', 'cursor', 'direction', 'empty-cells',

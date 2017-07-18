@@ -54,6 +54,7 @@ module.exports = Backbone.View.extend({
     const status = this.model.get('status');
     const pfx = this.pfx;
     const ppfx = this.ppfx;
+    const config = this.config;
     const updatedCls = `${ppfx}active-color`;
     const computedCls = `${ppfx}warn-color`;
     const labelEl = this.$el.find(`> .${pfx}label`);
@@ -64,7 +65,10 @@ module.exports = Backbone.View.extend({
     switch (status) {
       case 'updated':
         labelEl.addClass(updatedCls);
-        clearStyle.display = 'inline';
+
+        if (config.clearProperties) {
+          clearStyle.display = 'inline';
+        }
         break;
       case 'computed':
         labelEl.addClass(computedCls);
