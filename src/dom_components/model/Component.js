@@ -1,9 +1,15 @@
+import Styleable from 'domain_abstract/model/Styleable';
+
 var Backbone = require('backbone');
 var Components = require('./Components');
 var Selectors = require('selector_manager/model/Selectors');
 var Traits = require('trait_manager/model/Traits');
 
-module.exports = Backbone.Model.extend({
+const escapeRegExp = (str) => {
+  return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
+}
+
+module.exports = Backbone.Model.extend(Styleable).extend({
 
   defaults: {
     // HTML tag of the component
@@ -57,6 +63,9 @@ module.exports = Backbone.Model.extend({
 
     // Content of the component (not escaped) which will be appended before children rendering
     content: '',
+
+    // Component icon, this string will be inserted before the name, eg. '<i class="fa fa-square-o"></i>'
+    icon: '',
 
     // Component related style
     style: {},
@@ -124,6 +133,7 @@ module.exports = Backbone.Model.extend({
       }
     }, this);
 
+    this.set('status', '');
     this.init();
   },
 
@@ -244,20 +254,25 @@ module.exports = Backbone.Model.extend({
   },
 
   /**
-   * Get name of the component
+   * Get the name of the component
    * @return {string}
-   * @private
    * */
   getName() {
-    if(!this.name){
-      var id = this.cid.replace(/\D/g,''),
-      type = this.get('type');
-      var tag = this.get('tagName');
-      tag = tag == 'div' ? 'box' : tag;
-      tag = type ? type : tag;
-      this.name 	= tag.charAt(0).toUpperCase() + tag.slice(1);
-    }
-    return this.name;
+    let customName = this.get('custom-name');
+    let tag = this.get('tagName');
+    tag = tag == 'div' ? 'box' : tag;
+    let name = this.get('type') || tag;
+    name = name.charAt(0).toUpperCase() + name.slice(1);
+    return customName || name;
+  },
+
+  /**
+   * Get the icon string
+   * @return {string}
+   */
+  getIcon() {
+    let icon = this.get('icon');
+    return icon ? icon + ' ' : '';
   },
 
   /**
@@ -269,17 +284,22 @@ module.exports = Backbone.Model.extend({
   toHTML(opts) {
     var code = '';
     var m = this;
-    var tag = m.get('tagName'),
-    sTag = m.get('void'),
-    attrId = '';
-    // Build the string of attributes
+    var tag = m.get('tagName');
+    var idFound = 0;
+    var sTag = m.get('void');
+    var attrId = '';
     var strAttr = '';
     var attr = this.getAttrToHTML();
-    for(var prop in attr){
+
+    for (var prop in attr) {
+      if (prop == 'id') {
+        idFound = 1;
+      }
       var val = attr[prop];
       strAttr += typeof val !== undefined && val !== '' ?
         ' ' + prop + '="' + val + '"' : '';
     }
+
     // Build the string of classes
     var strCls = '';
     m.get('classes').each(m => {
@@ -288,9 +308,8 @@ module.exports = Backbone.Model.extend({
     strCls = strCls !== '' ? ' class="' + strCls.trim() + '"' : '';
 
     // If style is not empty I need an ID attached to the component
-    // TODO: need to refactor in case of 'ID Trait'
-    if(!_.isEmpty(m.get('style')))
-      attrId = ' id="' + m.cid + '" ';
+    if(!_.isEmpty(m.get('style')) && !idFound)
+      attrId = ' id="' + m.getId() + '" ';
 
     code += '<' + tag + strCls + attrId + strAttr + (sTag ? '/' : '') + '>' + m.get('content');
 
@@ -324,12 +343,22 @@ module.exports = Backbone.Model.extend({
   toJSON(...args) {
     var obj = Backbone.Model.prototype.toJSON.apply(this, args);
     var scriptStr = this.getScriptString();
+    delete obj.toolbar;
 
     if (scriptStr) {
       obj.script = scriptStr;
     }
 
     return obj;
+  },
+
+  /**
+   * Return model id
+   * @return {string}
+   */
+  getId() {
+    let attrs = this.get('attributes') || {};
+    return attrs.id || this.cid;
   },
 
   /**
@@ -342,13 +371,27 @@ module.exports = Backbone.Model.extend({
   getScriptString(script) {
     var scr = script || this.get('script');
 
-    // Need to cast script functions to string
+    if (!scr) {
+      return scr;
+    }
+
+    // Need to convert script functions to strings
     if (typeof scr == 'function') {
       var scrStr = scr.toString().trim();
-      scrStr = scrStr.replace(/^function\s?\(\)\s?\{/, '');
-      scrStr = scrStr.replace(/\}$/, '');
-      scr = scrStr;
+      scrStr = scrStr.replace(/^function[\s\w]*\(\)\s?\{/, '').replace(/\}$/, '');
+      scr = scrStr.trim();
     }
+
+    var config = this.sm.config || {};
+    var tagVarStart = escapeRegExp(config.tagVarStart || '{[ ');
+    var tagVarEnd = escapeRegExp(config.tagVarEnd || ' ]}');
+    var reg = new RegExp(`${tagVarStart}(\\w+)${tagVarEnd}`, 'g');
+    scr = scr.replace(reg, (match, v) => {
+      // If at least one match is found I have to track this change for a
+      // better optimization inside JS generator
+      this.scriptUpdated();
+      return this.attributes[v];
+    })
 
     return scr;
   }

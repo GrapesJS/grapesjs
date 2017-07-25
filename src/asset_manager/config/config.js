@@ -13,4 +13,12 @@ module.exports =  {
 
   // Label for the add button
   addBtnText: 'Add image',
+
+  // Custom uploadFile function
+  // @example
+  // uploadFile: function(e) {
+  //   var files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
+  //   // ...send somewhere
+  // }
+  uploadFile: '',
 };

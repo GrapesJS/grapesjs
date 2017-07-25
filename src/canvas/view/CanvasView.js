@@ -67,13 +67,50 @@ module.exports = Backbone.View.extend({
       var body = this.frame.$el.contents().find('body');
       var cssc = em.get('CssComposer');
       var conf = em.get('Config');
-      body.append(wrap.render()).append(cssc.render());
+      var confCanvas = this.config;
       var protCss = conf.protectedCss;
+      var externalStyles = '';
+
+      confCanvas.styles.forEach((style) => {
+        externalStyles += `<link rel="stylesheet" href="${style}"/>`;
+      });
+
+      // rgb(255, 202, 111)
+      const colorWarn = '#ffca6f';
+
+      let baseCss = `
+        * {
+          box-sizing: border-box;
+        }
+        html, body, #wrapper {
+          min-height: 100%;
+        }
+        html {
+          height: 100%;
+        }
+        body {
+          margin: 0;
+          height: auto;
+          background-color: #fff
+        }
+        #wrapper {
+          overflow: auto
+        }
+      `;
+
+      let layoutCss = `
+        .${ppfx}comp-selected{
+          outline: 3px solid #3b97e3 !important
+        }
+        .${ppfx}comp-selected-parent{
+          outline: 2px solid ${colorWarn} !important
+        }
+      `;
 
       // I need all this styles to make the editor work properly
-      var frameCss = '* {box-sizing: border-box;} body{margin:0;height:auto;background-color:#fff} #wrapper{min-height:100%; overflow:auto}' +
+      var frameCss = baseCss +
         '.' + ppfx + 'dashed :not([contenteditable]) > *[data-highlightable]{outline: 1px dashed rgba(170,170,170,0.7); outline-offset: -2px}' +
-        '.' + ppfx + 'comp-selected{outline: 3px solid #3b97e3 !important}' +
+        layoutCss +
         '.' + ppfx + 'no-select{user-select: none; -webkit-user-select:none; -moz-user-select: none}'+
         '.' + ppfx + 'freezed{opacity: 0.5; pointer-events: none}' +
         '.' + ppfx + 'no-pointer{pointer-events: none}' +
@@ -84,7 +121,13 @@ module.exports = Backbone.View.extend({
         '* ::-webkit-scrollbar {width: 10px}' +
         (conf.canvasCss || '');
       frameCss += protCss || '';
+
+      if (externalStyles) {
+        body.append(externalStyles);
+      }
+
       body.append('<style>' + frameCss + '</style>');
+      body.append(wrap.render()).append(cssc.render());
       body.append(this.getJsContainer());
       em.trigger('loaded');
       this.frame.el.contentWindow.onscroll = this.onFrameScroll;
@@ -113,7 +156,9 @@ module.exports = Backbone.View.extend({
     var docBody = el.ownerDocument.body;
     return {
       top: rect.top + docBody.scrollTop,
-      left: rect.left + docBody.scrollLeft
+      left: rect.left + docBody.scrollLeft,
+      width: rect.width,
+      height: rect.height,
     };
   },
 
@@ -131,8 +176,8 @@ module.exports = Backbone.View.extend({
    * @return {Object}
    * @private
    */
-  getFrameOffset() {
-    if(!this.frmOff)
+  getFrameOffset(force = 0) {
+    if(!this.frmOff || force)
       this.frmOff = this.offset(this.frame.el);
     return this.frmOff;
   },
@@ -199,17 +244,19 @@ module.exports = Backbone.View.extend({
       this.getJsContainer().append(view.scriptContainer.get(0));
     }
 
-    var id = view.model.cid;
-    var script = view.model.get('script');
-    var scrStr = 'function(){' + script + '}';
-    scrStr = typeof script == 'function' ? script.toString() : scrStr;
-
+    var model = view.model;
+    var id = model.getId();
     view.el.id = id;
     view.scriptContainer.html('');
-
-    view.scriptContainer.append('<script>' +
-      'var item = document.getElementById("'+id+'");' +
-      '(' + scrStr + '.bind(item))()</script>');
+    // In editor, I make use of setTimeout as during the append process of elements
+    // those will not be available immediatly, therefore 'item' variable
+    view.scriptContainer.append(`<script>
+        setTimeout(function() {
+          var item = document.getElementById('${id}');
+          if (!item) return;
+          (function(){${model.getScriptString()}}.bind(item))()
+        }, 1);
+      </script>`);
   },
 
   /**

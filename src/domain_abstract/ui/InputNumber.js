@@ -62,6 +62,7 @@ module.exports = Backbone.View.extend({
   handleChange(e) {
     e.stopPropagation();
     this.setValue(this.getInputEl().value);
+    this.elementUpdated();
   },
 
   /**
@@ -71,6 +72,14 @@ module.exports = Backbone.View.extend({
     e.stopPropagation();
     var value = this.getUnitEl().value;
     this.model.set('unit', value);
+    this.elementUpdated();
+  },
+
+  /**
+   * Fired when the element of the property is updated
+   */
+  elementUpdated() {
+    this.model.trigger('el:change');
   },
 
   /**
@@ -185,6 +194,7 @@ module.exports = Backbone.View.extend({
       var value = this.prValue - 1;
       this.model.set('value', value, {avoidStore: 1})
         .set('value', value + 1);
+      this.elementUpdated();
     }
   },
 

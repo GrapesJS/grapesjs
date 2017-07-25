@@ -24,7 +24,7 @@ module.exports = Backbone.Model.extend({
     }
 
     if(style && Object.keys(style).length !== 0) {
-      code += '#' + model.cid + '{';
+      code += '#' + model.getId() + '{';
       for(var prop in style){
         if(style.hasOwnProperty(prop))
           code += prop + ':' + style[prop] + ';';

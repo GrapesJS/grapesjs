@@ -1,15 +1,15 @@
 module.exports = {
-  storageMock: function() {
+  storageMock() {
     var db = {};
     return {
       id: 'testStorage',
-      store: function(data){
+      store(data) {
         db = data;
       },
-      load: function(keys){
+      load(keys) {
         return db;
       },
-      getDb: function(){
+      getDb() {
         return db;
       },
     };

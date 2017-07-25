@@ -93,9 +93,6 @@ module.exports = () => {
        * @private
        */
       onLoad() {
-        if(c.stm && c.stm.getConfig().autoload)
-            this.load();
-
         if(c.stm && c.stm.isAutosave())
           c.em.listenRules(this.getAll());
       },
@@ -224,8 +221,7 @@ module.exports = () => {
        * @return {Array<Model>}
        * @private
        */
-      addCollection(data, opts) {
-        var opt = opts || {};
+      addCollection(data, opts = {}) {
         var result = [];
         var d = data instanceof Array ? data : [data];
 
@@ -245,12 +241,15 @@ module.exports = () => {
             newSels.push(selec);
           }
 
+          var modelExists = this.get(newSels, rule.state, rule.mediaText, rule);
           var model = this.add(newSels, rule.state, rule.mediaText, rule);
-          if (opt.extend) {
-            var newStyle = _.extend({}, model.get('style'), rule.style || {});
-            model.set('style', newStyle);
-          } else {
-              model.set('style', rule.style || {});
+          var updateStyle = !modelExists || !opts.avoidUpdateStyle;
+          const style = rule.style || {};
+
+          if (updateStyle) {
+            let styleUpdate = opts.extend ?
+              Object.assign({}, model.get('style'), style) : style;
+            model.set('style', styleUpdate);
           }
 
           result.push(model);

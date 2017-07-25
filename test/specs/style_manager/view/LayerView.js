@@ -1,81 +1,77 @@
-define(function(require, exports, module){
-  'use strict';
-  var LayerView = require('undefined');
-  var Layers = require('StyleManager/model/Layers');
+const LayerView = require('style_manager/view/LayerView');
+const Layers = require('style_manager/model/Layers');
 
-    module.exports = {
-      run : function(){
+module.exports = {
+  run() {
 
-          describe('LayerView', function() {
+      describe('LayerView', () => {
 
-            var component;
-            var $fixtures;
-            var $fixture;
-            var target;
-            var model;
-            var view;
+        var component;
+        var $fixtures;
+        var $fixture;
+        var target;
+        var model;
+        var view;
 
-            before(function () {
-              $fixtures  = $("#fixtures");
-              $fixture   = $('<div class="layer-fixture"></div>');
-            });
-
-            beforeEach(function () {
-              var coll = new Layers();
-              model = coll.add({});
-              view = new LayerView({
-                model: model
-              });
-              $fixture.empty().appendTo($fixtures);
-              $fixture.html(view.render().el);
-            });
-
-            afterEach(function () {
-              view.remove();
-            });
-
-            after(function () {
-              $fixture.remove();
-              delete component;
-              delete view;
-              delete model;
-            });
-
-            it('Rendered correctly', function() {
-              var layer = view.el;
-              $fixture.get(0).querySelector('.layer').should.be.ok;
-              layer.querySelector('#label').should.be.ok;
-              layer.querySelector('#close-layer').should.be.ok;
-              layer.querySelector('#inputs').should.be.ok;
-              layer.querySelector('#inputs').innerHTML.should.be.empty;
-              layer.querySelector('#preview').should.be.ok;
-            });
-
-            it('getIndex returns default value', function() {
-              view.getIndex().should.equal(0);
-            });
-
-            it('No preview', function() {
-              var style = view.el.querySelector('#preview').style;
-              style.cssText.should.be.empty;
-            });
-
-            it('Changes on value trigger onPreview', function() {
-              var called = 0;
-              view.onPreview = function(){called = 1};
-              view.model.set('preview', true);
-              view.model.set('value', 'test');
-              called.should.equal(1);
-            });
-
-            it('Update props', function() {
-              view.model.set('props', $('<div>'));
-              view.el.querySelector('#inputs').innerHTML.should.not.be.empty;
-              (view.model.get('props') === null).should.equal(true);
-            });
-
+        before(() => {
+          $fixtures  = $("#fixtures");
+          $fixture   = $('<div class="layer-fixture"></div>');
         });
-      }
-    };
 
-});
+        beforeEach(() => {
+          var coll = new Layers();
+          model = coll.add({});
+          view = new LayerView({
+            model
+          });
+          $fixture.empty().appendTo($fixtures);
+          $fixture.html(view.render().el);
+        });
+
+        afterEach(() => {
+          view.remove();
+        });
+
+        after(() => {
+          $fixture.remove();
+          component = null;
+          view = null;
+          model = null;
+        });
+
+        it('Rendered correctly', () => {
+          var layer = view.el;
+          expect($fixture.get(0).querySelector('.layer')).toExist();
+          expect(layer.querySelector('#label')).toExist();
+          expect(layer.querySelector('#close-layer')).toExist();
+          expect(layer.querySelector('#inputs')).toExist();
+          expect(layer.querySelector('#inputs').innerHTML).toNotExist();
+          expect(layer.querySelector('#preview')).toExist();
+        });
+
+        it('getIndex returns default value', () => {
+          expect(view.getIndex()).toEqual(0);
+        });
+
+        it('No preview', () => {
+          var style = view.el.querySelector('#preview').style;
+          expect(style.cssText).toNotExist();
+        });
+
+        it('Changes on value trigger onPreview', () => {
+          var called = 0;
+          view.onPreview = () => {called = 1};
+          view.model.set('preview', true);
+          view.model.set('value', 'test');
+          expect(called).toEqual(1);
+        });
+
+        it('Update props', () => {
+          view.model.set('props', $('<div>'));
+          expect(view.el.querySelector('#inputs').innerHTML).toExist();
+          expect(view.model.get('props')).toEqual(null);
+        });
+
+    });
+  }
+};

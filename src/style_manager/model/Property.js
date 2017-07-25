@@ -17,6 +17,7 @@ module.exports = Backbone.Model.extend({
     detached: false,
     visible: true,
     functionName: '',
+    status: '',
     properties: [],
     layers: [],
     list: [],

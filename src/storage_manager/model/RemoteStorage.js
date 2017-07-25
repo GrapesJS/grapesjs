@@ -24,7 +24,7 @@ module.exports = Backbone.Model.extend({
     for(var key in params)
       fd[key] = params[key];
 
-    $.ajax({
+    let req = $.ajax({
       url: this.get('urlStore'),
       beforeSend: this.get('beforeSend'),
       complete: this.get('onComplete'),
@@ -32,7 +32,10 @@ module.exports = Backbone.Model.extend({
       dataType: 'json',
       contentType: this.get('contentTypeJson') ? 'application/json; charset=utf-8': 'x-www-form-urlencoded',
       data: this.get('contentTypeJson') ? JSON.stringify(fd): fd,
-    }).always(() => {
+    });
+
+    // Assign always callback when possible
+    req && req.always && req.always(() => {
       if (typeof clb == 'function') {
         clb();
       }
@@ -42,7 +45,7 @@ module.exports = Backbone.Model.extend({
   /**
    * @private
    */
-  load(keys) {
+  load(keys, clb) {
     var result = {},
     fd = {},
     params = this.get('params');
@@ -52,7 +55,7 @@ module.exports = Backbone.Model.extend({
 
     fd.keys = keys;
 
-    $.ajax({
+    let req = $.ajax({
       url: this.get('urlLoad'),
       beforeSend: this.get('beforeSend'),
       complete: this.get('onComplete'),
@@ -61,6 +64,13 @@ module.exports = Backbone.Model.extend({
       method: 'GET',
     }).done(d => {
       result = d;
+    });
+
+    // Assign always callback when possible
+    req && req.always && req.always((res) => {
+      if (typeof clb == 'function') {
+        clb(res);
+      }
     });
     return result;
   },

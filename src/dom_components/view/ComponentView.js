@@ -100,16 +100,34 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   updateStatus(e) {
-    var s = this.model.get('status'),
-        pfx = this.pfx;
-    switch(s) {
+    var el = this.el;
+    var status = this.model.get('status');
+    var pfx = this.pfx;
+    var ppfx = this.ppfx;
+    var selectedCls = pfx + 'selected';
+    var selectedParentCls = selectedCls + '-parent';
+    var freezedCls = `${ppfx}freezed`;
+    var actualCls = el.getAttribute('class') || '';
+    var cls = '';
+
+    switch (status) {
         case 'selected':
-          this.$el.addClass(pfx + 'selected');
-            break;
-        case 'moving':
-            break;
+          cls = `${actualCls} ${selectedCls}`;
+          break;
+        case 'selected-parent':
+          cls = `${actualCls} ${selectedParentCls}`;
+          break;
+        case 'freezed':
+          cls = `${actualCls} ${freezedCls}`;
+          break;
         default:
-          this.$el.removeClass(pfx + 'selected');
+          this.$el.removeClass(`${selectedCls} ${selectedParentCls} ${freezedCls}`);
+    }
+
+    cls = cls.trim();
+
+    if (cls) {
+      el.setAttribute('class', cls);
     }
   },
 
@@ -290,6 +308,10 @@ module.exports = Backbone.View.extend({
    * @private
    */
   updateScript() {
+    if (!this.model.get('script')) {
+      return;
+    }
+
     var em = this.em;
     if(em) {
       var canvas = em.get('Canvas');
@@ -382,12 +404,7 @@ module.exports = Backbone.View.extend({
     var container = this.getChildrenContainer();
     container.innerHTML = model.get('content');
     this.renderChildren();
-
-    // Render script
-    if(model.get('script')) {
-      this.updateScript();
-    }
-
+    this.updateScript();
     return this;
   },
 
