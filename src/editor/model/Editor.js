@@ -276,7 +276,7 @@ module.exports = Backbone.Model.extend({
     this.stopListening(classes, 'add remove', this.componentsUpdated);
     this.listenTo(classes, 'add remove', this.componentsUpdated);
 
-    var evn = 'change:style change:content';
+    var evn = 'change:style change:content change:attributes';
     this.stopListening(model, evn, this.componentsUpdated);
     this.listenTo(model, evn, this.componentsUpdated);
 
