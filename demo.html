@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>GrapesJS Demo - Open Source Website Page Builder</title>
     <link rel="stylesheet" href="stylesheets/toastr.min.css">
-    <link rel="stylesheet" href="stylesheets/grapes.min.css">
+    <link rel="stylesheet" href="stylesheets/grapes.min.css?v0.9.9">
     <link rel="stylesheet" href="stylesheets/grapesjs-preset-webpage.css">
     <link rel="stylesheet" href="stylesheets/tooltip.css">
     <link rel="stylesheet" href="stylesheets/perfect-scrollbar.css">
@@ -928,7 +928,7 @@
       </style>
     </div>
 
-    <script src="js/grapes.min.js?v0.9.7"></script>
+    <script src="js/grapes.min.js?v0.9.10"></script>
     <script src="js/grapesjs-plugin-export.min.js"></script>
     <script src="js/grapesjs-plugin-filestack.min.js"></script>
     <script src="js/grapesjs-blocks-basic.min.js"></script>
@@ -936,6 +936,7 @@
     <script src="js/grapesjs-plugin-forms.min.js"></script>
     <script src="js/grapesjs-aviary.min.js"></script>
     <script src="js/grapesjs-navbar.min.js"></script>
+    <script src="js/grapesjs-component-countdown.min.js"></script>
     <script type="text/javascript">
 
       var lp = './img/';
@@ -952,9 +953,11 @@
       container : '#gjs',
       fromElement: 1,
       showOffsets: 1,
-      plugins: ['gjs-plugin-export', 'gjs-plugin-filestack',
+      plugins: [
+        'gjs-plugin-export', 'gjs-plugin-filestack',
         'gjs-aviary', 'gjs-blocks-basic', 'gjs-preset-webpage',
-        'gjs-navbar', 'gjs-plugin-forms'],
+        'gjs-navbar', 'gjs-component-countdown', 'gjs-plugin-forms'
+      ],
       pluginsOpts: {
         'gjs-plugin-filestack': {
           key: 'A1nL8omiAR8W7pHi3cotzz',
