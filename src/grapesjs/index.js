@@ -1,5 +1,4 @@
  module.exports = (config => {
-
   var c = config || {},
   defaults = require('./config/config'),
   Editor = require('editor'),
@@ -35,6 +34,11 @@
     init(config) {
       var c = config || {};
       var els = c.container;
+
+      // Make a missing $ more verbose
+      if (typeof $ == 'undefined') {
+        throw 'jQuery not found';
+      }
 
       // Set default options
       for (var name in defaults) {
