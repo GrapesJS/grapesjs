@@ -113,7 +113,7 @@ module.exports = () => {
     },
 
     /**
-     * Triggered when the offset of the editro is changed
+     * Triggered when the offset of the editor is changed
      * @private
      */
     udpatePosition() {
@@ -122,6 +122,7 @@ module.exports = () => {
       var pos = canvas.getTargetToElementDim(toolbar.el, this.lastEl, {
         event: 'rteToolbarPosUpdate',
       });
+      console.log(pos);
       var toolbarStyle = toolbar.el.style;
       toolbarStyle.top = pos.top + u;
       toolbarStyle.left = pos.left + u;
