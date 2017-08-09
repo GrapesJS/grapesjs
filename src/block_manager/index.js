@@ -138,11 +138,10 @@ module.exports = () => {
       /**
        * Remove block by id
        * @param {string} id Block id
+       * @return {Block} Removed block
        */
       remove(id) {
-        var result = blocks.remove(id);
-        this.render();
-        return result;
+        return blocks.remove(id);
       },
 
   };
