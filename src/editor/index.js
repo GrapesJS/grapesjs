@@ -10,6 +10,7 @@
  * * [getStyle](#getstyle)
  * * [setStyle](#setstyle)
  * * [getSelected](#getselected)
+ * * [getSelectedToStyle](#getselectedtostyle)
  * * [setDevice](#setdevice)
  * * [getDevice](#getdevice)
  * * [runCommand](#runcommand)
@@ -84,10 +85,9 @@ module.exports = config => {
     if (!(name in c))
       c[name] = defaults[name];
   }
+
   c.pStylePrefix = c.stylePrefix;
-
   var em = new EditorModel(c);
-
   var editorView = new EditorView({
       model: em,
       config: c,
@@ -314,9 +314,9 @@ module.exports = config => {
     },
 
     /**
-     * Get stylable entity from the selected component.
-     * If you select the component without classes the entity is the Component
-     * itself and all changes will go inside its 'style' property. Otherwise,
+     * Get a stylable entity from the selected component.
+     * If you select a component without classes the entity is the Component
+     * itself and all changes will go inside its 'style' attribute. Otherwise,
      * if the selected component has one or more classes, the function will
      * return the corresponding CSS Rule
      * @return {Model}
@@ -516,7 +516,13 @@ module.exports = config => {
      * @return {HTMLElement}
      */
     render() {
-      return  editorView.render().el;
+      editorView.render();
+
+      em.get('modules').forEach((module) => {
+        module.postRender && module.postRender(editorView);
+      });
+
+      return editorView.el;
     },
 
   };

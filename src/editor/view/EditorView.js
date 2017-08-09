@@ -3,6 +3,7 @@ var Backbone = require('backbone');
 module.exports = Backbone.View.extend({
 
   initialize() {
+    this.model.view = this;
     this.pn = this.model.get('Panels');
     this.conf = this.model.config;
     this.className = this.conf.stylePrefix + 'editor';
