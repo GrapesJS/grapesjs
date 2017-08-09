@@ -140,7 +140,9 @@ module.exports = () => {
        * @param {string} id Block id
        */
       remove(id) {
-        return blocks.remove(id);
+        var result = blocks.remove(id);
+        this.render();
+        return result;
       },
 
   };
