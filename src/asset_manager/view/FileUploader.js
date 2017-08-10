@@ -138,12 +138,11 @@ module.exports = Backbone.View.extend({
     cleanEditorElCls();
 
     if (c.dropzone && 'draggable' in edEl) {
-      edEl.ondragover = onDragOver;
-      edEl.ondragleave = onDragLeave;
-      edEl.ondrop = onDrop;
-      frameEl.ondragover = onDragOver;
-      frameEl.ondragleave = onDragLeave;
-      frameEl.ondrop = onDrop;
+      [edEl, frameEl].forEach((item) => {
+        item.ondragover = onDragOver;
+        item.ondragleave = onDragLeave;
+        item.ondrop = onDrop;
+      });
     }
   },
 
