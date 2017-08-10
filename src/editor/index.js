@@ -516,12 +516,15 @@ module.exports = config => {
      * @return {HTMLElement}
      */
     render() {
-      editorView.render();
-
-      em.get('modules').forEach((module) => {
-        module.postRender && module.postRender(editorView);
+      // Do post render stuff after the iframe is loaded otherwise it'll
+      // be empty during tests
+      em.on('loaded', () => {
+        em.get('modules').forEach((module) => {
+          module.postRender && module.postRender(editorView);
+        });
       });
 
+      editorView.render();
       return editorView.el;
     },
 
