@@ -41,12 +41,13 @@ module.exports = PropertyView.extend({
       this.$previewBox = this.$el.find('#' + this.pfx + 'preview-box');
     }
 
-    if(!this.componentValue || this.componentValue == this.defaultValue)
-      this.setPreviewView(0);
-    else
-      this.setPreviewView(1);
-
     this.setValue(this.componentValue, 0);
+  },
+
+  setValue(value, f) {
+    PropertyView.prototype.setValue.apply(this, arguments);
+    this.setPreviewView(value && value != this.getDefaultValue());
+    this.setPreview(value);
   },
 
   /**
@@ -84,11 +85,6 @@ module.exports = PropertyView.extend({
       this.$preview.css('background-image', "url(" + url + ")");
   },
 
-  /** @inheritdoc */
-  setValue(value, f) {
-    PropertyView.prototype.setValue.apply(this, arguments);
-    this.setPreview(value);
-  },
 
   /** @inheritdoc */
   renderTemplate() {
@@ -124,15 +120,20 @@ module.exports = PropertyView.extend({
    * */
   openAssetManager(e) {
     var that  = this;
-    if(this.modal && this.am){
+    var em = this.em;
+    var editor = em ? em.get('Editor') : '';
+
+    if(editor) {
       this.modal.setTitle('Select image');
       this.modal.setContent(this.am.render());
       this.am.setTarget(null);
-      this.modal.open();
-      this.am.onSelect(model => {
-        that.modal.close();
-        that.spreadUrl(model.get('src'));
-        that.valueChanged(e);
+      editor.runCommand('open-assets', {
+        target: this.model,
+        onSelect(target) {
+          that.modal.close();
+          that.spreadUrl(target.get('src'));
+          that.valueChanged(e);
+        }
       });
     }
   },

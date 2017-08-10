@@ -13,6 +13,7 @@ module.exports = {
         var target;
         var model;
         var view;
+        var propTarget;
         var propName = 'testprop';
         var propValue = 'test1value';
         var defValue = 'test2value';
@@ -34,8 +35,11 @@ module.exports = {
             list: options,
             property: propName
           });
+          propTarget = Object.assign({}, Backbone.Events);
+          propTarget.model = component;
           view = new PropertyRadioView({
-            model
+            model,
+            propTarget
           });
           $fixture.empty().appendTo($fixtures);
           $fixture.html(view.render().el);

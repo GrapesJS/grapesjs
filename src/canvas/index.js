@@ -55,6 +55,14 @@ module.exports = () => {
     },
 
     /**
+     * Return config object
+     * @return {Object}
+     */
+    getConfig() {
+      return c;
+    },
+
+    /**
      * Add wrapper
      * @param	{Object}	wrp Wrapper
      *
@@ -201,6 +209,18 @@ module.exports = () => {
         top: rect.top + document.body.scrollTop,
         left: rect.left + document.body.scrollLeft
       };
+    },
+
+    /**
+     * Set custom badge naming strategy
+     * @param  {Function} f
+     * @example
+     * canvas.setCustomBadgeLabel(function(model){
+     *  return ComponentModel.getName();
+     * });
+     */
+    setCustomBadgeLabel(f) {
+      c.customBadgeLabel = f;
     },
 
     /**

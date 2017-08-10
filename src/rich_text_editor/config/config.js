@@ -1,7 +1,12 @@
 module.exports = {
   stylePrefix  : 'rte-',
   toolbarId  : 'toolbar',
-  containerId  : 'wrapper',
+
+  // If true, moves the toolbar below the element when the top canvas
+  // edge is reached
+  adjustToolbar: 1,
+
+  // Default toolbar commands
   commands  : [{
     command: 'bold',
     title: 'Bold',

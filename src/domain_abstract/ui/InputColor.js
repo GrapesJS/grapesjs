@@ -47,6 +47,11 @@ module.exports = Input.extend({
       var colorEl = $('<div>', {class: this.colorCls});
       var cpStyle = colorEl.get(0).style;
       var elToAppend = this.target && this.target.config ? this.target.config.el : '';
+
+      if (typeof colorEl.spectrum == 'undefined') {
+        throw 'Spectrum missing, probably you load jQuery twice';
+      }
+
       colorEl.spectrum({
         appendTo: elToAppend || 'body',
         maxSelectionSize: 8,

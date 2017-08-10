@@ -216,7 +216,8 @@ module.exports = () => {
         }catch(err){}
       }else if(d.html)
         obj = d.html;
-      if (obj) {
+
+      if (obj && obj.length) {
         this.clear();
         this.getComponents().reset();
         this.getComponents().add(obj);

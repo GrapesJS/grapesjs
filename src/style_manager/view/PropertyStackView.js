@@ -7,7 +7,7 @@ module.exports = PropertyCompositeView.extend({
 
   template: _.template(`
   <div class="<%= pfx %>field <%= pfx %>stack">
-    <button id='<%= pfx %>add'>+</button>
+    <button type="button" id='<%= pfx %>add'>+</button>
     <span id='<%= pfx %>input-holder'></span>
   </div>
   <div style="clear:both"></div>`),
@@ -28,18 +28,13 @@ module.exports = PropertyCompositeView.extend({
    * so we gonna check all props and fine if there is some differences.
    * */
   targetUpdated(...args) {
-    if(!this.model.get('detached'))
+    if (!this.model.get('detached')) {
       PropertyCompositeView.prototype.targetUpdated.apply(this, args);
-    else {
+    } else {
       this.checkVisibility();
-      this.refreshLayers();
-
-      /*
-      this.model.get('properties').each(function(prop) {
-        console.log(prop.get('property'), ' - ', prop.get('value'));
-      });
-      */
     }
+
+    this.refreshLayers();
   },
 
   /**
@@ -115,7 +110,7 @@ module.exports = PropertyCompositeView.extend({
 
     // If detached the value in this case is stacked, eg. substack-prop: 1px, 2px, 3px...
     if (this.model.get('detached')) {
-      var targetValue = propView.getTargetValue();
+      var targetValue = propView.getTargetValue({ignoreCustomValue: 1});
       var valist = (targetValue + '').split(',');
       result = valist[layerIndex];
       result = result ? result.trim() : propView.getDefaultValue();
@@ -283,7 +278,10 @@ module.exports = PropertyCompositeView.extend({
       fieldName = 'values';
       a = this.getLayersFromTarget();
     } else {
-      var v  = this.getComponentValue();
+      //var v  = this.getComponentValue();
+      var v = this.getTargetValue();
+      var vDef = this.getDefaultValue();
+      v = v == vDef ? '' : v;
       if (v) {
         // Remove spaces inside functions:
         // eg:
@@ -321,6 +319,7 @@ module.exports = PropertyCompositeView.extend({
     this.renderField();
     this.renderLayers();
     this.$el.attr('class', this.className);
+    this.updateStatus();
     return this;
   },
 

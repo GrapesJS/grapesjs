@@ -25,7 +25,7 @@ module.exports = config => {
         if(!decl)
           continue;
         var prop = decl.split(':');
-        result[prop[0].trim()] = prop[1].trim();
+        result[prop[0].trim()] = prop.slice(1).join(':').trim();
       }
       return result;
     },

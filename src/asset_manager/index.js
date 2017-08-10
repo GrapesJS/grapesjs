@@ -179,13 +179,18 @@ module.exports = () => {
       var name = this.storageKey;
       if(!d && c.stm)
         d = c.stm.load(name);
-      var assets = [];
+      var assets = d[name] || [];
 
-      try{
-        assets = JSON.parse(d[name]);
-      }catch(err){}
+      if (typeof assets == 'string') {
+        try {
+          assets = JSON.parse(d[name]);
+        } catch(err) {}
+      }
 
-      this.getAll().reset(assets);
+      if (assets && assets.length) {
+        this.getAll().reset(assets);
+      }
+
       return assets;
     },
 
@@ -199,6 +204,10 @@ module.exports = () => {
       if(!this.rendered || f)
         this.rendered	= am.render().$el.add(fu.render().$el);
       return	this.rendered;
+    },
+
+    postRender(editorView) {
+      fu.initDropzone(editorView);
     },
 
     //-------

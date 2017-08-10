@@ -24,4 +24,13 @@ module.exports = {
   */
   styles: [],
 
+  /**
+   * Add custom badge naming strategy
+   * @example
+   * customBadgeLabel: function(ComponentModel) {
+   *  return ComponentModel.getName();
+   * }
+   */
+  customBadgeLabel: '',
+
 };

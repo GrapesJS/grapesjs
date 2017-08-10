@@ -94,14 +94,17 @@ module.exports = Backbone.View.extend({
    * @private
    */
   updateStatus() {
+    var chkOn = 'fa-check-square-o';
+    var chkOff = 'fa-square-o';
+
     if(!this.$chk)
       this.$chk = this.$el.find('#' + this.pfx + 'checkbox');
 
     if(this.model.get('active')){
-      this.$chk.removeClass('fa-circle-o').addClass('fa-dot-circle-o');
+      this.$chk.removeClass(chkOff).addClass(chkOn);
       this.$el.removeClass('opac50');
     }else{
-      this.$chk.removeClass('fa-dot-circle-o').addClass('fa-circle-o');
+      this.$chk.removeClass(chkOn).addClass(chkOff);
       this.$el.addClass('opac50');
     }
   },

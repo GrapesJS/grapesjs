@@ -245,16 +245,21 @@ module.exports = {
    * */
   updateBadge(el, pos) {
     var $el = $(el);
+    var canvas = this.canvas;
+    var config = canvas.getConfig();
+    var customeLabel = config.customBadgeLabel;
     this.cacheEl = el;
     var model = $el.data("model");
     if(!model || !model.get('badgable'))
       return;
     var badge = this.getBadge();
-    badge.innerHTML = model.getCurrentName();
+    var badgeLabel = model.getIcon() + model.getName();
+    badgeLabel = customeLabel ? customeLabel(model) : badgeLabel;
+    badge.innerHTML = badgeLabel;
     var bStyle = badge.style;
     var u = 'px';
     bStyle.display = 'block';
-    var canvasPos = this.canvas.getCanvasView().getPosition();
+    var canvasPos = canvas.getCanvasView().getPosition();
     var badgeH = badge ? badge.offsetHeight : 0;
     var badgeW = badge ? badge.offsetWidth : 0;
     var top = pos.top - badgeH < canvasPos.top ? canvasPos.top : pos.top - badgeH;

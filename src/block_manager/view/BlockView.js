@@ -10,7 +10,7 @@ module.exports = Backbone.View.extend({
     _.bindAll(this, 'onDrop');
     this.config = config || {};
     this.ppfx = this.config.pStylePrefix || '';
-    this.listenTo(this.model, 'destroy', this.remove);
+    this.listenTo(this.model, 'destroy remove', this.remove);
     this.doc = $(document);
   },
 

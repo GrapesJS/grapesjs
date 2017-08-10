@@ -47,14 +47,19 @@ module.exports = Backbone.Collection.extend({
 
   },
 
-  add(models, opt) {
-    if(typeof models === 'string'){
+  add(models, opt = {}) {
+    if (typeof models === 'string') {
       var parsed = this.editor.get('Parser').parseHtml(models);
       models = parsed.html;
 
       var cssc = this.editor.get('CssComposer');
-      if(parsed.css && cssc){
-        var added = cssc.addCollection(parsed.css, {extend: 1});
+
+      if (parsed.css && cssc) {
+        var {avoidUpdateStyle} = opt;
+        var added = cssc.addCollection(parsed.css, {
+          extend: 1,
+          avoidUpdateStyle
+        });
       }
     }
 

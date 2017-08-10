@@ -522,6 +522,7 @@ module.exports = {
         var res = {
           type: 'stack',
           preview: true,
+          defaults: "none",
           properties  : [{
                   property: 'text-shadow-h',
                   type:     'integer',

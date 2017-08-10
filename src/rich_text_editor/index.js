@@ -113,7 +113,7 @@ module.exports = () => {
     },
 
     /**
-     * Triggered when the offset of the editro is changed
+     * Triggered when the offset of the editor is changed
      * @private
      */
     udpatePosition() {
@@ -122,6 +122,14 @@ module.exports = () => {
       var pos = canvas.getTargetToElementDim(toolbar.el, this.lastEl, {
         event: 'rteToolbarPosUpdate',
       });
+
+      if (c.adjustToolbar) {
+        // Move the toolbar down when the top canvas edge is reached
+        if (pos.top <= pos.canvasTop) {
+          pos.top = pos.elementTop + pos.elementHeight;
+        }
+      }
+
       var toolbarStyle = toolbar.el.style;
       toolbarStyle.top = pos.top + u;
       toolbarStyle.left = pos.left + u;

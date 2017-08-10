@@ -13,6 +13,8 @@ module.exports = {
         var target;
         var model;
         var view;
+        var propTarget;
+        var options;
         var propName = 'testprop';
         var propValue = 'testvalue';
         var defValue = 'testDefault';
@@ -23,12 +25,16 @@ module.exports = {
         });
 
         beforeEach(() => {
+          propTarget = Object.assign({}, Backbone.Events);
           target = new Component();
           component = new Component();
           model = new Property({property: propName});
-          view = new PropertyView({
-            model
-          });
+          propTarget.model = component;
+          options = {
+            model,
+            propTarget
+          };
+          view = new PropertyView(options);
           $fixture.empty().appendTo($fixtures);
           $fixture.html(view.render().el);
         });
@@ -82,34 +88,30 @@ module.exports = {
         });
 
         it('Update target on value change', () => {
-          view.selectedComponent = component;
           view.model.set('value', propValue);
-          var compStyle = view.selectedComponent.get('style');
+          var compStyle = view.getTargetModel().get('style');
           var assertStyle = {};
           assertStyle[propName] = propValue;
           expect(compStyle).toEqual(assertStyle);
         });
 
         it('Update target on value change with functionName', () => {
-          view.selectedComponent = component;
           view.model.set('functionName', 'testfunc');
           view.model.set('value', propValue);
-          var compStyle = view.selectedComponent.get('style');
+          var compStyle = view.getTargetModel().get('style');
           var assertStyle = {};
           assertStyle[propName] = 'testfunc(' + propValue + ')';
           expect(compStyle).toEqual(assertStyle);
         });
 
         it('Clean target from the property if its value is empty', () => {
-          view.selectedComponent = component;
           view.model.set('value', propValue);
           view.model.set('value', '');
-          var compStyle = view.selectedComponent.get('style');
+          var compStyle = view.getTargetModel().get('style');
           expect(compStyle).toEqual({});
         });
 
         it('Check stylable element', () => {
-          view.selectedComponent = component;
           expect(view.isTargetStylable()).toEqual(true);
           component.set('stylable', false);
           expect(view.isTargetStylable()).toEqual(false);
@@ -122,12 +124,10 @@ module.exports = {
         });
 
         it('Target style is empty without values', () => {
-          view.selectedComponent = component;
           expect(view.getComponentValue()).toNotExist();
         });
 
         it('Target style is correct', () => {
-          view.selectedComponent = component;
           var style = {};
           style[propName] = propValue;
           component.set('style', style);
@@ -135,7 +135,6 @@ module.exports = {
         });
 
         it('Target style is empty with an other style', () => {
-          view.selectedComponent = component;
           var style = {};
           style[propName + '2'] = propValue;
           component.set('style', style);

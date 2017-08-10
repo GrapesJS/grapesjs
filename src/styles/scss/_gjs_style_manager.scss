@@ -1,0 +1,454 @@
+
+.#{$sm-prefix} {
+  &clear {
+    font-size: 1rem;
+    line-height: 0;
+    cursor: pointer;
+  }
+}
+
+.#{$sm-prefix}close-btn {
+  display: block;
+  font-size: 23px;
+  position: absolute;
+  cursor: pointer;
+  right: 5px;
+  top: 0;
+
+  @include opacity(0.2);
+
+  &:hover {
+    @include opacity(0.7);
+  }
+}
+
+.#{$sm-prefix}header {
+  font-size: 11px;
+  font-weight: lighter;
+  padding: 10px;
+}
+
+.#{$sm-prefix}sector {
+  clear: both;
+  font-weight: lighter;
+  text-align: left;
+
+  ##{$sm-prefix}caret {
+    padding-right: 5px;
+    font-size: 11px;
+  }
+
+  &.#{$sm-prefix}open {
+    @extend .#{$app-prefix}category-open;
+  }
+
+  .#{$sm-prefix}title {
+    @extend .#{$app-prefix}category-title;
+  }
+
+  .#{$sm-prefix}label {
+    margin: 5px 5px 2px 0;
+  }
+
+  /* ------------------Field-------------------- */
+
+  .#{$sm-prefix}field {
+    width: 100%;
+    position: relative;
+
+    input,
+    select {
+      background-color: transparent;
+      color: $mainLhlColor;
+      border: none;
+      width: 100%;
+    }
+
+    input {
+      box-sizing: border-box;
+    }
+
+    select {
+      position: relative;
+      z-index: 1;
+
+      @include appearance(none);
+
+      &::-ms-expand {
+        display: none;
+      }
+    }
+
+    select:-moz-focusring {
+      color: transparent;
+      text-shadow: 0 0 0 $mainLhlColor;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+    }
+
+    .#{$sm-prefix}unit {
+      position: absolute;
+      right: 10px;
+      top: 3px;
+      font-size: 10px;
+      color: $mainLhlColor;
+      cursor: pointer;
+    }
+
+    .#{$clm-prefix}sel-arrow,
+    .#{$sm-prefix}int-arrows,
+    .#{$sm-prefix}sel-arrow {
+      height: 100%;
+      width: 9px;
+      position: absolute;
+      right: 0;
+      top: 0;
+      cursor: ns-resize;
+    }
+
+    .#{$sm-prefix}sel-arrow {
+      cursor: pointer;
+    }
+
+    .#{$clm-prefix}d-s-arrow,
+    .#{$sm-prefix}d-arrow,
+    .#{$sm-prefix}d-s-arrow,
+    .#{$sm-prefix}u-arrow {
+      position: absolute;
+      height: 0;
+      width: 0;
+      border-left: 3px solid transparent;
+      border-right: 4px solid transparent;
+      cursor: pointer;
+    }
+
+    .#{$sm-prefix}u-arrow {
+      border-bottom: 4px solid $mainLhlColor;
+      top: 4px;
+    }
+
+    .#{$clm-prefix}d-s-arrow,
+    .#{$sm-prefix}d-arrow,
+    .#{$sm-prefix}d-s-arrow {
+      border-top: 4px solid $mainLhlColor;
+      bottom: 4px;
+    }
+
+    .#{$clm-prefix}d-s-arrow,
+    .#{$sm-prefix}d-s-arrow {
+      bottom: 7px;
+    }
+
+    &.#{$sm-prefix}color,
+    &.#{$sm-prefix}input,
+    &.#{$sm-prefix}integer,
+    &.#{$sm-prefix}list,
+    &.#{$sm-prefix}select {
+      background-color: $mainDkColor;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      box-shadow: 1px 1px 0 $mainLhColor;
+      color: $mainLhlColor;
+      border-radius: 2px;
+      box-sizing: border-box;
+      padding: 0 5px;
+    }
+
+    &.#{$sm-prefix}composite {
+      @extend .#{$app-prefix}color-main;
+
+      border-radius: 2px;
+    }
+
+    &.#{$sm-prefix}select {
+      padding: 0;
+    }
+
+    &.#{$sm-prefix}select select {
+      height: 20px;
+    }
+
+    &.#{$sm-prefix}select option {
+      padding: 3px 0;
+    }
+
+    &.#{$sm-prefix}composite {
+      background-color: rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(0, 0, 0, 0.25);
+    }
+
+    &.#{$sm-prefix}list {
+      width: auto;
+      padding: 0;
+      overflow: hidden;
+      float: left;
+
+      input {
+        display: none;
+      }
+
+      label {
+        cursor: pointer;
+        padding: 5px;
+        display: block;
+      }
+
+      .#{$sm-prefix}radio:checked + label {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .#{$sm-prefix}icon {
+        background-repeat: no-repeat;
+        background-position: center;
+        text-shadow: none;
+        line-height: normal;
+        //padding: 5px 19px;
+      }
+    }
+
+    &.#{$sm-prefix}integer select {
+      width: auto;
+      padding: 0;
+    }
+  }
+
+  /* ------------------END Field-------------------- */
+
+  .#{$sm-prefix}list .#{$sm-prefix}el {
+    float: left;
+    border-left: 1px solid $mainDkColor;
+
+    &:first-child {
+      border: none;
+    }
+
+    &:hover {
+      background: $mainDkColor;
+    }
+  }
+
+  .#{$sm-prefix}properties {
+    font-size: 11px;
+    padding: 10px 5px;
+  }
+
+  /* ------------------Property-------------------- */
+
+  .#{$sm-prefix}property {
+    box-sizing: border-box;
+    float: left;
+    width: 50%;
+    margin-bottom: 5px;
+    padding: 0 5px;
+
+    &.#{$sm-prefix}composite,
+    &.#{$sm-prefix}file,
+    &.#{$sm-prefix}list,
+    &.#{$sm-prefix}stack {
+      width: 100%;
+    }
+
+    .#{$sm-prefix}btn {
+      background-color: lighten($mainDkColor, 13%);
+      border-radius: 2px;
+      box-shadow: 1px 1px 0 lighten($mainDkColor, 2%), 1px 1px 0 lighten($mainDkColor, 17%) inset;
+      padding: 5px;
+      position: relative;
+      text-align: center;
+      height: auto;
+      width: 100%;
+      cursor: pointer;
+      color: $fontColor;
+      box-sizing: border-box;
+      text-shadow: -1px -1px 0 $mainDkColor;
+      border: none;
+
+      @include opacity(0.85);
+    }
+
+    .#{$sm-prefix}btn-c {
+      box-sizing: border-box;
+      float: left;
+      width: 100%;
+      padding: 0 5px;
+    }
+
+    &.#{$sm-prefix}file ##{$sm-prefix}preview-box {
+      background-color: $lightBorder;
+      border-radius: 2px;
+      margin-top: 5px;
+      position: relative;
+      overflow: hidden;
+
+      &.#{$sm-prefix}show {
+        border: 1px solid darken($lightBorder, 1%);
+        padding: 3px 5px;
+      }
+
+      ##{$sm-prefix}close {
+        @extend .#{$sm-prefix}close-btn;
+
+        display: block;
+      }
+    }
+
+    &.#{$sm-prefix}file .#{$sm-prefix}show ##{$sm-prefix}preview-file {
+      height: 50px;
+    }
+
+    &.#{$sm-prefix}file ##{$sm-prefix}preview-file {
+      background-size: auto 100%;
+      background-repeat: no-repeat;
+      background-position: center center;
+    }
+
+    .#{$sm-prefix}layers {
+      margin-top: 5px;
+      min-height: 30px;
+    }
+
+    .#{$sm-prefix}layer {
+      background-color: rgba(255, 255, 255, 0.055);
+      border-radius: 2px;
+      box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2), 1px 1px 0 rgba(255, 255, 255, 0.055) inset;
+      margin: 2px;
+      padding: 7px;
+      position: relative;
+      cursor: pointer;
+
+      > ##{$sm-prefix}preview-box {
+        @extend .checker-bg;
+
+        height: 15px;
+        position: absolute;
+        right: 27px;
+        top: 6px;
+        width: 15px;
+      }
+
+      ##{$sm-prefix}preview,
+      ##{$sm-prefix}preview-box {
+        border-radius: 2px;
+      }
+
+      ##{$sm-prefix}close-layer {
+        display: block;
+        font-size: 23px;
+        position: absolute;
+        cursor: pointer;
+        right: 5px;
+        top: 0;
+
+        @include opacity(0.5);
+
+        &:hover {
+          @include opacity(0.8);
+        }
+      }
+
+      > ##{$sm-prefix}preview-box ##{$sm-prefix}preview {
+        background-color: white;
+        height: 100%;
+        width: 100%;
+        background-size: cover !important;
+      }
+
+      &.#{$sm-prefix}active {
+        background-color: rgba(255, 255, 255, 0.12);
+      }
+
+      &.#{$sm-prefix}no-preview ##{$sm-prefix}preview-box {
+        display: none;
+      }
+    }
+  }
+
+  ##{$sm-prefix}text-shadow ##{$sm-prefix}preview::after {
+    color: #000;
+    content: "T";
+    font-weight: 900;
+    line-height: 17px;
+    padding: 0 4px;
+  }
+
+  /* ------------------END Property-------------------- */
+
+  .#{$sm-prefix}stack .#{$sm-prefix}properties {
+    padding-top: 5px;
+  }
+
+  .#{$sm-prefix}stack ##{$sm-prefix}add {
+    @extend .#{$app-prefix}color-main;
+
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 22px;
+    line-height: 10px;
+    position: absolute;
+    right: 0;
+    top: -20px;
+    opacity: 0.75;
+
+    &:hover {
+      @include opacity(1);
+    }
+  }
+
+  .#{$sm-prefix}colorp-c {
+    @extend .#{$app-prefix}bg-main;
+
+    height: 100%;
+    width: 20px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    box-sizing: border-box;
+    border-radius: 2px;
+    padding: 2px;
+
+    .#{$app-prefix}checker-bg {
+      height: 100%;
+      width: 100%;
+      border-radius: 1px;
+    }
+  }
+
+  .#{$sm-prefix}color-picker {
+    background-color: $fontColor;
+    cursor: pointer;
+    height: 16px;
+    width: 100%;
+    margin-top: -16px;
+    box-shadow: 0 0 1px $mainDkColor;
+    border-radius: 1px;
+  }
+
+  .#{$sm-prefix}btn-upload ##{$sm-prefix}upload {
+    left: 0;
+    top: 0;
+    position: absolute;
+    width: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .#{$sm-prefix}btn-upload ##{$sm-prefix}label {
+    padding: 2px 0;
+  }
+}
+
+.#{$sm-prefix}layer > ##{$sm-prefix}move {
+  @include opacity(0.7);
+
+  cursor: move;
+  font-size: 12px;
+  float: left;
+  margin: 0 5px 0 0;
+
+  &:hover {
+    @include opacity(0.9);
+  }
+}

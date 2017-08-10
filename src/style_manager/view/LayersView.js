@@ -9,23 +9,29 @@ module.exports = Backbone.View.extend({
     this.preview = o.preview;
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
-    this.className  = this.pfx + 'layers ' + this.ppfx + 'field';
-    this.listenTo( this.collection, 'add', this.addTo);
-    this.listenTo( this.collection, 'deselectAll', this.deselectAll );
-    this.listenTo( this.collection, 'reset', this.render);
+    let pfx = this.pfx;
+    let ppfx = this.ppfx;
+    let collection = this.collection;
+    this.className = `${pfx}layers ${ppfx}field`;
+    this.listenTo(collection, 'add', this.addTo);
+    this.listenTo(collection, 'deselectAll', this.deselectAll );
+    this.listenTo(collection, 'reset', this.render);
 
     var em = this.config.em || '';
     var utils = em ? em.get('Utils') : '';
 
     this.sorter = utils ? new utils.Sorter({
       container: this.el,
-      containerSel: '.' + this.pfx + 'layers',
-      itemSel: '.' + this.pfx + 'layer',
+      ignoreViewChildren: 1,
+      containerSel: `.${pfx}layers`,
+      itemSel: `.${pfx}layer`,
       pfx: this.config.pStylePrefix,
     }) : '';
 
-    this.$el.data('model', {});
-    this.$el.data('collection', this.collection);
+    // For the Sorter
+    collection.view = this;
+    this.$el.data('model', collection);
+    this.$el.data('collection', collection);
   },
 
   /**

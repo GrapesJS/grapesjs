@@ -13,15 +13,17 @@ module.exports = Backbone.View.extend({
 
   events:   {},
 
-  initialize(o) {
-    this.options   = o || {};
-    this.config    = o.config  || {};
-    this.pfx      = this.config.stylePrefix || '';
-    this.target    = this.collection || {};
-    this.uploadId  = this.pfx + 'uploadFile';
-    this.disabled  = !this.config.upload;
+  initialize(opts = {}) {
+    this.options = opts;
+    const c = opts.config || {};
+    this.config = c;
+    this.pfx = c.stylePrefix || '';
+    this.ppfx = c.pStylePrefix || '';
+    this.target = this.collection || {};
+    this.uploadId = this.pfx + 'uploadFile';
+    this.disabled = !c.upload;
     this.events['change #' + this.uploadId]  = 'uploadFile';
-    let uploadFile = this.config.uploadFile;
+    let uploadFile = c.uploadFile;
 
     if (uploadFile) {
       this.uploadFile = uploadFile.bind(this);
@@ -91,6 +93,56 @@ module.exports = Backbone.View.extend({
           return;
         };
       }
+    }
+  },
+
+  initDropzone(ev) {
+    let addedCls = 0;
+    const c = this.config;
+    const em = ev.model;
+    const edEl = ev.el;
+    const editor = em && em.get('Editor');
+    const frameEl = ev.model.get('Canvas').getBody();
+    const ppfx = this.ppfx;
+    const updatedCls = `${ppfx}dropzone-active`;
+    const dropzoneCls = `${ppfx}dropzone`;
+    const cleanEditorElCls = () => {
+      edEl.className = edEl.className.replace(updatedCls, '').trim();
+      addedCls = 0;
+    }
+    const onDragOver = () => {
+      if (!addedCls) {
+        edEl.className += ` ${updatedCls}`;
+        addedCls = 1;
+      }
+      return false;
+    };
+    const onDragLeave = () => {
+      cleanEditorElCls();
+      return false;
+    };
+    const onDrop = (e) => {
+      cleanEditorElCls();
+      e.preventDefault();
+      this.uploadFile(e);
+
+      if (c.openAssetsOnDrop && editor) {
+        const target = editor.getSelected();
+        editor.runCommand('open-assets', {target});
+      }
+
+      return false;
+    };
+
+    ev.$el.append(`<div class="${dropzoneCls}">${c.dropzoneContent}</div>`);
+    cleanEditorElCls();
+
+    if (c.dropzone && 'draggable' in edEl) {
+      [edEl, frameEl].forEach((item) => {
+        item.ondragover = onDragOver;
+        item.ondragleave = onDragLeave;
+        item.ondrop = onDrop;
+      });
     }
   },
 

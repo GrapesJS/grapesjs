@@ -95,9 +95,9 @@ module.exports = () => ({
       }
 
       // Defaults
-      switch(prop){
+      switch(prop) {
         case 'float': case 'background-color':
-        case 'background-image':
+        case 'background-image': case 'text-shadow':
           obj.defaults = 'none';
           break;
         case 'display':

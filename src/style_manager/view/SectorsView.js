@@ -48,7 +48,13 @@ module.exports = Backbone.View.extend({
     var widthMedia = device && device.get('widthMedia');
     var mediaText = device && !previewMode && widthMedia ?
       `(${config.mediaCondition}: ${widthMedia})` : '';
+    var stateStr = state ? `:${state}` : null;
+    var view = el.view;
     pt.helper = null;
+
+    if (view) {
+      pt.computed = window.getComputedStyle(view.el, stateStr);
+    }
 
     if(classes.length){
       var cssC = em.get('CssComposer');

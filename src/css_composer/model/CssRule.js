@@ -1,7 +1,9 @@
+import Styleable from 'domain_abstract/model/Styleable';
+
 var Backbone = require('backbone');
 var Selectors = require('./Selectors');
 
-module.exports = Backbone.Model.extend({
+module.exports = Backbone.Model.extend(Styleable).extend({
 
 	defaults: {
     // Css selectors

@@ -21,4 +21,14 @@ module.exports =  {
   //   // ...send somewhere
   // }
   uploadFile: '',
+
+  // Enable an upload dropzone on the entire editor (not document) when dragging
+  // files over it
+  dropzone: 1,
+
+  // Open the asset manager once files are been dropped via the dropzone
+  openAssetsOnDrop: 1,
+
+  // Any dropzone content to append inside dropzone element
+  dropzoneContent: '',
 };

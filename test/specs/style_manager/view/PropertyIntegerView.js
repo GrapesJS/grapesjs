@@ -13,6 +13,7 @@ module.exports = {
         var target;
         var model;
         var view;
+        var propTarget;
         var propName = 'testprop';
         var intValue = '55';
         var unitValue = 'px';
@@ -36,8 +37,11 @@ module.exports = {
             units,
             property: propName
           });
+          propTarget = Object.assign({}, Backbone.Events);
+          propTarget.model = component;
           view = new PropertyIntegerView({
-            model
+            model,
+            propTarget
           });
           $fixture.empty().appendTo($fixtures);
           $fixture.html(view.render().el);

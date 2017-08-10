@@ -1,5 +1,4 @@
  module.exports = (config => {
-
   var c = config || {},
   defaults = require('./config/config'),
   Editor = require('editor'),
@@ -36,6 +35,11 @@
       var c = config || {};
       var els = c.container;
 
+      // Make a missing $ more verbose
+      if (typeof $ == 'undefined') {
+        throw 'jQuery not found';
+      }
+
       // Set default options
       for (var name in defaults) {
         if (!(name in c))
@@ -48,17 +52,18 @@
       c.el = document.querySelector(els);
       var editor = new Editor(c).init();
 
-      // Execute all plugins
+      // Execute plugins
       var plugs = plugins.getAll();
-      for (var id in plugs){
-        // Check if plugin is requested
-        if(c.plugins.indexOf(id) < 0)
-          continue;
 
-        var opts = c.pluginsOpts[id] || {};
-        var plug = plugins.get(id);
-        plug(editor, opts);
-      }
+      c.plugins.forEach((pluginId) => {
+        let plugin = plugins.get(pluginId);
+
+        if (plugin) {
+          plugin(editor, c.pluginsOpts[pluginId] || {});
+        } else {
+          console.warn(`Plugin ${pluginId} not found`);
+        }
+      });
 
       if(c.autorender)
         editor.render();
