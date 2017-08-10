@@ -57,6 +57,16 @@ module.exports = {
         expect(obj.parseStyle(str)).toEqual(result)
       });
 
+      it('Parse style string with values containing colon to object', () => {
+        var str = 'background-image:url("https://some-website.ex"); test:value;';
+        var result = {
+          'background-image': 'url("https://some-website.ex")',
+          'test': 'value',
+        };
+        expect(obj.parseStyle(str)).toEqual(result)
+      });
+
+
       it('Parse class string to array', () => {
         var str = 'test1 test2    test3 test-4';
         var result = ['test1', 'test2', 'test3', 'test-4'];
