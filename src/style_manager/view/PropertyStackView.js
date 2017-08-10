@@ -319,6 +319,7 @@ module.exports = PropertyCompositeView.extend({
     this.renderField();
     this.renderLayers();
     this.$el.attr('class', this.className);
+    this.updateStatus();
     return this;
   },
 

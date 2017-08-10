@@ -55,8 +55,8 @@ module.exports = Backbone.View.extend({
     const pfx = this.pfx;
     const ppfx = this.ppfx;
     const config = this.config;
-    const updatedCls = `${ppfx}active-color`;
-    const computedCls = `${ppfx}warn-color`;
+    const updatedCls = `${ppfx}color-hl`;
+    const computedCls = `${ppfx}color-warn`;
     const labelEl = this.$el.find(`> .${pfx}label`);
     const clearStyle = this.getClearEl().style;
     labelEl.removeClass(`${updatedCls} ${computedCls}`);

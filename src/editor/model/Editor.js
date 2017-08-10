@@ -161,6 +161,12 @@ module.exports = Backbone.Model.extend({
    * @private
    * */
   componentsUpdated(model, val, opt) {
+    var temp = opt ? opt.temporary : 0;
+    if (temp) {
+      //component has been added temporarily - do not update storage or record changes
+      return;
+    }
+
     timedInterval && clearInterval(timedInterval);
     timedInterval = setTimeout(() => {
       var count = this.get('changesCount') + 1;
@@ -276,12 +282,12 @@ module.exports = Backbone.Model.extend({
     this.stopListening(classes, 'add remove', this.componentsUpdated);
     this.listenTo(classes, 'add remove', this.componentsUpdated);
 
-    var evn = 'change:style change:content';
+    var evn = 'change:style change:content change:attributes';
     this.stopListening(model, evn, this.componentsUpdated);
     this.listenTo(model, evn, this.componentsUpdated);
 
     if(!avSt)
-      this.componentsUpdated();
+      this.componentsUpdated(model, val, opt);
   },
 
   /**
@@ -310,7 +316,7 @@ module.exports = Backbone.Model.extend({
     var avSt  = opt ? opt.avoidStore : 0;
 
     if(!avSt)
-      this.componentsUpdated();
+      this.componentsUpdated(model, val, opt);
   },
 
   /**

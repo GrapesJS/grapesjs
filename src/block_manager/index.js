@@ -135,6 +135,16 @@ module.exports = () => {
         return view.render().el;
       },
 
+      /**
+       * Remove block by id
+       * @param {string} id Block id
+       */
+      remove(id) {
+        var result = blocks.remove(id);
+        this.render();
+        return result;
+      },
+
   };
 
 };

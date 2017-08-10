@@ -88,18 +88,35 @@ $fontV: 20;//random(1000)
   transform: $v;
 }
 
-$colorActive: #71b7f1;
+/* Color Helpers */
+$colorHighlight: #71b7f1;
 $colorWarn: #ffca6f;
 
-.#{$app-prefix}active {
-  &-color {
-    color: $colorActive;
+.#{$app-prefix}bg {
+  &-main {
+    background-color: $mainColor;
   }
 }
 
-.#{$app-prefix}warn {
-  &-color {
+.#{$app-prefix}color {
+  &-main {
+    color: $fontColor;
+    fill: $fontColor;
+  }
+
+  &-active {
+    color: $fontColorActive;
+    fill: $fontColorActive;
+  }
+
+  &-warn {
     color: $colorWarn;
+    fill: $colorWarn;
+  }
+
+  &-hl {
+    color: $colorHighlight;
+    fill: $colorHighlight;
   }
 }
 
@@ -156,20 +173,6 @@ $colorWarn: #ffca6f;
 
 .#{$app-prefix}no-pointer-events{
   pointer-events: none;
-}
-
-.#{$app-prefix}bg-main{
-  background-color: $mainColor;
-}
-
-.#{$app-prefix}color-main {
-  color: $fontColor;
-  fill: $fontColor;
-}
-
-.#{$app-prefix}color-active {
-  color: $fontColorActive;
-  fill: $fontColorActive;
 }
 
 .#{$app-prefix}bdrag {
