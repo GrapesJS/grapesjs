@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>GrapesJS Newsletter Editor</title>
-    <link rel="stylesheet" href="./stylesheets/grapes.min.css">
+    <link rel="stylesheet" href="./stylesheets/grapes.min.css?v=0.9.12">
     <link rel="stylesheet" href="./stylesheets/material.css">
     <link rel="stylesheet" href="./stylesheets/tooltip.css">
     <link rel="stylesheet" href="./stylesheets/toastr.min.css">
@@ -11,7 +11,9 @@
 
     <script src="//feather.aviary.com/imaging/v3/editor.js"></script>
     <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="./js/grapes.min.js"></script>
+    <script src="./js/ckeditor/ckeditor.js"></script>
+    <script src="./js/grapes.min.js?v=0.9.12"></script>
+    <script src="./js/grapesjs-plugin-ckeditor.min.js"></script>
     <script src="./js/grapesjs-preset-newsletter.min.js?v=0.2.3"></script>
     <script src="./js/grapesjs-aviary.min.js"></script>
     <script src="./js/toastr.min.js"></script>
@@ -564,7 +566,7 @@
         },
         container : '#gjs',
         fromElement: true,
-        plugins: ['gjs-preset-newsletter', 'gjs-aviary'],
+        plugins: ['gjs-preset-newsletter', 'gjs-aviary', 'gjs-plugin-ckeditor'],
         pluginsOpts: {
           'gjs-preset-newsletter': {
             modalLabelImport: 'Paste all your code here below and click import',
@@ -579,6 +581,23 @@
               color: 'rgb(111, 119, 125)',
               margin: 0,
               padding: 0,
+            }
+          },
+          'gjs-plugin-ckeditor': {
+            position: 'center',
+            options: {
+              startupFocus: true,
+              extraAllowedContent: '*(*);*{*}', // Allows any class and any inline style
+              allowedContent: true, // Disable auto-formatting, class removing, etc.
+              enterMode: CKEDITOR.ENTER_BR,
+              extraPlugins: 'sharedspace,justify,colorbutton,panelbutton,font',
+              toolbar: [
+                { name: 'styles', items: ['Font', 'FontSize' ] },
+                ['Bold', 'Italic', 'Underline', 'Strike'],
+                {name: 'paragraph', items : [ 'NumberedList', 'BulletedList']},
+                {name: 'links', items: ['Link', 'Unlink']},
+                {name: 'colors', items: [ 'TextColor', 'BGColor' ]},
+              ],
             }
           }
         }
@@ -635,13 +654,13 @@
             statusFormElC.style.opacity = '0';
             statusFormEl.removeAttribute('data-tooltip');
             md.close();
-          } else if(res.errors){
+          } else if(res.errors || res.errors == '') {
+            var err = res.errors || 'Server error';
             statusFormEl.className = 'fa fa-exclamation-circle';
-            statusFormEl.setAttribute('data-tooltip', res.errors);
+            statusFormEl.setAttribute('data-tooltip', err);
             statusFormElC.className = 'form-status text-danger';
           }
         });
-
       // Add info command
       var infoContainer = document.getElementById("info-cont");
       cmdm.add('open-info', {
@@ -658,11 +677,6 @@
             mdlDialog.className = mdlDialog.className.replace(mdlClass, '');
           })
         }
-      });
-      cmdm.add('tlb-edit', {
-          run: function(ed) {
-            alert('At the moment no image editor, maybe soon 😊');
-          },
       });
       pnm.addButton('options', {
         id: 'view-info',
