@@ -608,9 +608,10 @@
       var mdlClass = 'gjs-mdl-dialog-sm';
       var pnm = editor.Panels;
       var cmdm = editor.Commands;
+      var md = editor.Modal;
+      /*
       var testContainer = document.getElementById("test-form");
       var contentEl = testContainer.querySelector('input[name=body]');
-      var md = editor.Modal;
       cmdm.add('send-test', {
         run(editor, sender) {
           sender.set('active', 0);
@@ -640,7 +641,6 @@
         },
       });
 
-      //fa fa-refresh
       var statusFormElC = document.querySelector('.form-status');
       var statusFormEl = document.querySelector('.form-status i');
       var ajaxTest = ajaxable(testContainer).
@@ -661,6 +661,8 @@
             statusFormElC.className = 'form-status text-danger';
           }
         });
+      */
+
       // Add info command
       var infoContainer = document.getElementById("info-cont");
       cmdm.add('open-info', {
@@ -676,6 +678,22 @@
           md.getModel().once('change:open', function() {
             mdlDialog.className = mdlDialog.className.replace(mdlClass, '');
           })
+        }
+      });
+      pnm.addButton('options', {
+        id: 'clear-all',
+        className: 'fa fa-trash icon-blank',
+        attributes: {title: 'Empty canvas'},
+        command: {
+          run: function(editor, sender) {
+            sender && sender.set('active', false);
+            if(confirm('Are you sure to clean the canvas?')){
+              editor.DomComponents.clear();
+              setTimeout(function(){
+                localStorage.clear()
+              },0)
+            }
+          }
         }
       });
       pnm.addButton('options', {
