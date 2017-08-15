@@ -29,7 +29,7 @@ module.exports = ComponentView.extend({
         this.activeRte = this.rte.attach(this, this.activeRte);
         this.rte.focus(this, this.activeRte);
       } catch (err) {
-          console.error(err);
+        console.error(err);
       }
     }
     this.toggleEvents(1);
@@ -51,6 +51,8 @@ module.exports = ComponentView.extend({
         console.error(err);
       }
       var el = this.getChildrenContainer();
+      // Avoid double content by removing its children components
+      model.get('components').reset();
       model.set('content', el.innerHTML);
     }
 

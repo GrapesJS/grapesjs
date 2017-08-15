@@ -6,6 +6,8 @@
     <link rel="stylesheet" href="dist/css/grapes.min.css">
     <script src="node_modules/jquery/dist/jquery.min.js"></script>
     <script src="dist/grapes.min.js"></script>
+    <script src="private/ckeditor/ckeditor.js"></script>
+    <script src="private/grapesjs-plugin-ckeditor.min.js"></script>
 
   </head>
   <style>
@@ -24,7 +26,7 @@
             <div class="menu-item">WEB</div>
           </nav>
           <div class="clearfix"></div>
-          <div class="lead-title">Build your templates without coding</div>
+          <div class="lead-title">Build your templates without coding <br/></div>
           <div class="sub-lead-title">All text blocks could be edited easily with double clicking on it. You can create new text blocks with the command from the left panel</div>
           <div class="lead-btn">Hover me</div>
         </div>
@@ -822,6 +824,17 @@
 
 
     {
+      plugins: ['gjs-plugin-ckeditor'],
+        pluginsOpts: {
+          'gjs-plugin-ckeditor': {
+            position: 'center',
+            options: {
+              enterMode: CKEDITOR.ENTER_BR,
+              language: 'en',
+              //skin: 'moono-dark',
+            }
+          }
+        },
       allowScripts: 1,
       showOffsets: 1,
       autorender: 0,

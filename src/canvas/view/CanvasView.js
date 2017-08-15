@@ -75,7 +75,6 @@ module.exports = Backbone.View.extend({
         externalStyles += `<link rel="stylesheet" href="${style}"/>`;
       });
 
-      // rgb(255, 202, 111)
       const colorWarn = '#ffca6f';
 
       let baseCss = `
@@ -85,18 +84,23 @@ module.exports = Backbone.View.extend({
         html, body, #wrapper {
           min-height: 100%;
         }
-        html {
-          height: 100%;
-        }
         body {
           margin: 0;
-          height: auto;
+          height: 100%;
           background-color: #fff
         }
         #wrapper {
           overflow: auto
         }
       `;
+      // Remove `html { height: 100%;}` from the baseCss as it gives jumpings
+      // effects (on ENTER) with RTE like CKEditor (maybe some bug there?!?)
+      // With `body {height: auto;}` jumps in CKEditor are removed but in
+      // Firefox is impossible to drag stuff in empty canvas, so bring back
+      // `body {height: 100%;}`.
+      // For the moment I give the priority to Firefox as it might be
+      // CKEditor's issue
+
 
       let layoutCss = `
         .${ppfx}comp-selected{

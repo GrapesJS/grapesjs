@@ -128,7 +128,13 @@ module.exports = Backbone.View.extend({
 
       if (c.openAssetsOnDrop && editor) {
         const target = editor.getSelected();
-        editor.runCommand('open-assets', {target});
+        editor.runCommand('open-assets', {
+          target,
+          onSelect() {
+            editor.Modal.close();
+            editor.AssetManager.setTarget(null);
+          }
+        });
       }
 
       return false;
