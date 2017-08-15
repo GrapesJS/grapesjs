@@ -11,7 +11,9 @@ module.exports = ComponentView.extend({
   initialize(o) {
     ComponentView.prototype.initialize.apply(this, arguments);
     _.bindAll(this,'disableEditing');
-    this.listenTo(this.model, 'focus active', this.enableEditing);
+    const model = this.model;
+    this.listenTo(model, 'focus active', this.enableEditing);
+    this.listenTo(model, 'change:content', this.updateContent);
     this.rte = this.config.rte || '';
     this.activeRte = null;
     this.em = this.config.em;

@@ -184,6 +184,14 @@ module.exports = Backbone.View.extend({
   },
 
   /**
+   * Update component content
+   * @private
+   * */
+  updateContent() {
+    this.getChildrenContainer().innerHTML = this.model.get('content');
+  },
+
+  /**
    * Return style string
    * @return  {string}
    * @private
@@ -401,8 +409,7 @@ module.exports = Backbone.View.extend({
   render() {
     this.renderAttributes();
     var model = this.model;
-    var container = this.getChildrenContainer();
-    container.innerHTML = model.get('content');
+    this.updateContent();
     this.renderChildren();
     this.updateScript();
     return this;
