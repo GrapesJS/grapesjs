@@ -212,10 +212,9 @@ module.exports = Backbone.Model.extend({
         that.trigger('component:update');
       });
 
-      UndoManager.removeUndoType("change");
       var beforeCache;
-      UndoManager.addUndoType("change:style", {
-        "on": function (model, value, opts) {
+      const customUndoType = {
+        on: function (model, value, opts) {
           var opt = opts || {};
           if(!beforeCache){
             beforeCache = model.previousAttributes();
@@ -232,17 +231,20 @@ module.exports = Backbone.Model.extend({
             return obj;
           }
         },
-        "undo": function (model, bf, af, opt) {
+        undo: function (model, bf, af, opt) {
           model.set(bf);
           // Update also inputs inside Style Manager
           that.trigger('change:selectedComponent');
         },
-        "redo": function (model, bf, af, opt) {
+        redo: function (model, bf, af, opt) {
           model.set(af);
           // Update also inputs inside Style Manager
           that.trigger('change:selectedComponent');
         }
-      });
+      };
+      UndoManager.removeUndoType("change");
+      UndoManager.addUndoType("change:style", customUndoType);
+      UndoManager.addUndoType("change:content", customUndoType);
     }
   },
 
