@@ -43,6 +43,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     copyable: true,
 
     // Indicates if it's possible to resize the component (at the moment implemented only on Image Components)
+    // It's also possible to pass an object as options for the Resizer
     resizable: false,
 
     // Allow to edit the content of the component (used on Text components)

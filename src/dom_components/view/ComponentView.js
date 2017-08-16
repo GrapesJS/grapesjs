@@ -248,6 +248,7 @@ module.exports = Backbone.View.extend({
     var attrName = 'data-' + pfx + 'handler';
     var resizeClass = pfx + 'resizing';
     var model = this.model;
+    var resizable = model.get('resizable');
     var modelToStyle;
 
     var toggleBodyClass = (method, e, opts) => {
@@ -259,7 +260,7 @@ module.exports = Backbone.View.extend({
       }
     };
 
-    if(editor && model.get('resizable')) {
+    if(editor && resizable) {
       let resizeOptions = {
         onStart(e, opts) {
           toggleBodyClass('addClass', e, opts);
@@ -290,6 +291,11 @@ module.exports = Backbone.View.extend({
           }
         }
       };
+
+      if (typeof resizable == 'object') {
+        resizeOptions = Object.assign(resizeOptions, resizable);
+      }
+
       editor.runCommand('resize', {
         el: this.el,
         options: resizeOptions
