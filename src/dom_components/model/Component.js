@@ -114,6 +114,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     this.components	= new Components(this.defaultC, opt);
     this.components.parent = this;
     this.listenTo(this, 'change:script', this.scriptUpdated);
+    this.listenTo(this, 'change:traits', this.traitsUpdated);
     this.set('attributes', this.get('attributes') || {});
     this.set('components', this.components);
     this.set('classes', new Selectors(this.defaultCl));
@@ -148,6 +149,23 @@ module.exports = Backbone.Model.extend(Styleable).extend({
    */
   scriptUpdated() {
     this.set('scriptUpdated', 1);
+  },
+
+  /**
+   * Once traits are updated I have to populates model's attributes
+   */
+  traitsUpdated() {
+    let found = 0;
+    const attrs = Object.assign({}, this.get('attributes'));
+
+    this.get('traits').each((trait) => {
+      found = 1;
+      if (!trait.get('changeProp')) {
+        attrs[trait.get('name')] = trait.getInitValue();
+      }
+    });
+
+    found && this.set('attributes', attrs);
   },
 
   /**

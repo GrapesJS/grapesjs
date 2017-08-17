@@ -23,4 +23,8 @@ module.exports = Backbone.Model.extend({
     }
   },
 
+  getInitValue() {
+    return this.get('value') || this.get('default');
+  }
+
 });
