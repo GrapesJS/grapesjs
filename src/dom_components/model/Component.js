@@ -161,7 +161,10 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     this.get('traits').each((trait) => {
       found = 1;
       if (!trait.get('changeProp')) {
-        attrs[trait.get('name')] = trait.getInitValue();
+        const value = trait.getInitValue();
+        if (value) {
+          attrs[trait.get('name')] = value;
+        }
       }
     });
 
