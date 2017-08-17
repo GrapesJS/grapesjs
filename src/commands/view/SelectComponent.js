@@ -304,38 +304,10 @@ module.exports = {
    * */
   onSelect(e, el) {
     e.stopPropagation();
-    //var md = this.editorModel.get('selectedComponent');
-    //this.cleanPrevious(md);
-    //var $el = $(el);
-    //var nMd = $el.data('model');
     var model = $(el).data('model');
 
     if (model) {
-      /*
-      var em = this.em;
-      var mirror = nMd.get('mirror');
-      nMd = mirror ? mirror : nMd;
-
-      // Close all opened components inside Navigator
-      var opened = em.get('opened');
-
-      for (var cid in opened) {
-        var m = opened[cid];
-        m.set('open', 0);
-      }
-
-      var parent = nMd.collection ? nMd.collection.parent : null;
-
-      while (parent) {
-        parent.set('open', 1);
-        opened[parent.cid] = parent;
-        parent = parent.collection ? parent.collection.parent : null;
-      }
-      */
-
-      //this.editorModel.set('selectedComponent', nMd);
       this.editor.select(model);
-      //nMd.set('status','selected');
       this.showFixedElementOffset(el);
       this.hideElementOffset();
       this.hideHighlighter();

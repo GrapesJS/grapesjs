@@ -1329,7 +1329,8 @@
     })
 
     editor.on('block:drag:stop', function(model) {
-      editor.select(model);
+      console.log(model);
+      model && editor.select(model);
     });
 
     editor.render();

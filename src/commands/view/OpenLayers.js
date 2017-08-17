@@ -3,7 +3,7 @@ var Layers = require('navigator');
 module.exports = {
 
   run(em, sender) {
-    if(!this.$layers) {
+    if (!this.$layers) {
       var collection = em.DomComponents.getComponent().get('components'),
       config = em.getConfig(),
       panels = em.Panels,
@@ -13,7 +13,7 @@ module.exports = {
       config.layers.pStylePrefix = config.stylePrefix;
       config.layers.em 	= em.editor;
       config.layers.opened = em.editor.get('opened');
-      var layers = new Layers(collection, config.layers);
+      var layers = new Layers().init(collection, config.layers);
       this.$layers = layers.render();
 
       // Check if panel exists otherwise crate it
