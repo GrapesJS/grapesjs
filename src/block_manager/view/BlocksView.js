@@ -73,7 +73,8 @@ module.exports = Backbone.View.extend({
    * @private
    */
   onDrop(model) {
-    this.em.runDefault();
+    const em = this.em;
+    em.runDefault();
 
     if (model && model.get) {
       if(model.get('activeOnRender')) {
@@ -82,9 +83,9 @@ module.exports = Backbone.View.extend({
       }
 
       // Register all its components (eg. for the Undo Manager)
-      this.em.initChildrenComp(model);
+      em.initChildrenComp(model);
+      em.trigger('block:drag:stop', model);
     }
-    this.em.trigger('block:drag:stop', model);
   },
 
   /**

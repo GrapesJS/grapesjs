@@ -769,8 +769,10 @@ module.exports = Backbone.View.extend({
       }
     }
 
-    if(this.moved)
+    if (this.moved) {
       created = this.move(this.target, src, this.lastPos);
+    }
+
     if(this.plh)
       this.plh.style.display = 'none';
 
