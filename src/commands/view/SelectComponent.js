@@ -304,12 +304,14 @@ module.exports = {
    * */
   onSelect(e, el) {
     e.stopPropagation();
-    var md   = this.editorModel.get('selectedComponent');
-    this.cleanPrevious(md);
-    var $el = $(el);
-    var nMd = $el.data('model');
+    //var md = this.editorModel.get('selectedComponent');
+    //this.cleanPrevious(md);
+    //var $el = $(el);
+    //var nMd = $el.data('model');
+    var model = $(el).data('model');
 
-    if (nMd) {
+    if (model) {
+      /*
       var em = this.em;
       var mirror = nMd.get('mirror');
       nMd = mirror ? mirror : nMd;
@@ -329,9 +331,11 @@ module.exports = {
         opened[parent.cid] = parent;
         parent = parent.collection ? parent.collection.parent : null;
       }
+      */
 
-      this.editorModel.set('selectedComponent', nMd);
-      nMd.set('status','selected');
+      //this.editorModel.set('selectedComponent', nMd);
+      this.editor.select(model);
+      //nMd.set('status','selected');
       this.showFixedElementOffset(el);
       this.hideElementOffset();
       this.hideHighlighter();
@@ -563,9 +567,8 @@ module.exports = {
     return this.contWindow;
   },
 
-  run(em) {
-    if(em && em.get)
-      this.editor = em.get('Editor');
+  run(editor) {
+    this.editor = editor && editor.get('Editor');
     this.enable();
   },
 

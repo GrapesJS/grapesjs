@@ -146,8 +146,11 @@ module.exports = () => {
      */
     init(config) {
       c = config || {};
-      if(c.em)
-        c.components = c.em.config.components || c.components;
+      const em = c.em;
+
+      if (em) {
+        c.components = em.config.components || c.components;
+      }
 
       for (var name in defaults) {
         if (!(name in c))
@@ -159,22 +162,23 @@ module.exports = () => {
         c.stylePrefix = ppfx + c.stylePrefix;
 
       // Load dependencies
-      if(c.em){
-        c.rte = c.em.get('rte') || '';
-        c.modal = c.em.get('Modal') || '';
-        c.am = c.em.get('AssetManager') || '';
-        c.em.get('Parser').compTypes = defaultTypes;
+      if (em) {
+        c.rte = em.get('rte') || '';
+        c.modal = em.get('Modal') || '';
+        c.am = em.get('AssetManager') || '';
+        em.get('Parser').compTypes = defaultTypes;
+        em.on('change:selectedComponent', this.componentChanged, this);
       }
 
       component = new Component(c.wrapper, {
-        sm: c.em,
+        sm: em,
         config: c,
         defaultTypes,
         componentTypes,
       });
       component.set({ attributes: {id: 'wrapper'}});
 
-      if(c.em && !c.em.config.loadCompsOnRender) {
+      if(em && !em.config.loadCompsOnRender) {
         component.get('components').add(c.components);
       }
 
@@ -399,6 +403,26 @@ module.exports = () => {
       }
       return;
     },
+
+    /**
+     * Triggered when the selected component is changed
+     * @private
+     */
+    componentChanged() {
+      const em = c.em;
+      const model = em.get('selectedComponent');
+      const previousModel = em.previous('selectedComponent');
+
+      // Deselect the previous component
+      if (previousModel) {
+        previousModel.set({
+          status: '',
+          state: '',
+        });
+      }
+
+      model && model.set('status','selected');
+    }
 
   };
 };
