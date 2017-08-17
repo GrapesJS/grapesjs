@@ -1328,6 +1328,10 @@
       //console.log('Style of ', model.get('property'), 'Target: ', targetValue, 'Computed:', computedValue, 'Default:', defaultValue);
     })
 
+    editor.on('block:drag:stop', function(model) {
+      editor.select(model);
+    });
+
     editor.render();
     </script>
   </body>

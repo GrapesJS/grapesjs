@@ -334,6 +334,21 @@ module.exports = Backbone.Model.extend({
   },
 
   /**
+   * Select a component
+   * @param  {Component|HTMLElement} el Component to select
+   * @private
+   */
+  setSelected(el) {
+    let model = el;
+
+    if (el instanceof HTMLElement) {
+      model = $(el).data('model');
+    }
+
+    this.set('selectedComponent', model);
+  },
+
+  /**
    * Set components inside editor's canvas. This method overrides actual components
    * @param {Object|string} components HTML string or components model
    * @return {this}

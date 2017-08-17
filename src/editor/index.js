@@ -330,14 +330,31 @@ module.exports = config => {
     },
 
     /**
+     * Select a component
+     * @param  {Component|HTMLElement} el Component to select
+     * @return {this}
+     * @example
+     * // Select dropped block
+     * editor.on('block:drag:stop', function(model) {
+     *  editor.select(model);
+     * });
+     */
+    select(el) {
+      em.setSelected(el);
+      return this;
+    },
+
+    /**
      * Set device to the editor. If the device exists it will
      * change the canvas to the proper width
+     * @param {string} name Name of the device
      * @return {this}
      * @example
      * editor.setDevice('Tablet');
      */
     setDevice(name) {
-      return em.set('device', name);
+      em.set('device', name);
+      return this;
     },
 
     /**
