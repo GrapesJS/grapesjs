@@ -1,6 +1,7 @@
 var ToolbarView = require('dom_components/view/ToolbarView');
 var Toolbar = require('dom_components/model/Toolbar');
 var key = require('keymaster');
+let showOffsets;
 
 module.exports = {
 
@@ -16,6 +17,7 @@ module.exports = {
     this.startSelectComponent();
     this.toggleClipboard(config.copyPaste);
     var em = this.config.em;
+    showOffsets = 1;
 
     em.on('component:update', this.updateAttached, this);
     em.on('change:canvasOffset', this.updateAttached, this);
@@ -174,9 +176,12 @@ module.exports = {
   showElementOffset(el, pos) {
     var $el = $(el);
     var model = $el.data('model');
-    if(model && model.get('status') == 'selected'){
+
+    if ( (model && model.get('status') == 'selected') ||
+        !showOffsets){
       return;
     }
+
     this.editor.runCommand('show-offset', {
       el,
       elPos: pos,
@@ -303,19 +308,23 @@ module.exports = {
     this.cleanPrevious(md);
     var $el = $(el);
     var nMd = $el.data('model');
-    if(nMd) {
+
+    if (nMd) {
       var em = this.em;
       var mirror = nMd.get('mirror');
       nMd = mirror ? mirror : nMd;
 
       // Close all opened components inside Navigator
       var opened = em.get('opened');
-      for (var cid in opened){
+
+      for (var cid in opened) {
         var m = opened[cid];
         m.set('open', 0);
       }
+
       var parent = nMd.collection ? nMd.collection.parent : null;
-      while(parent) {
+
+      while (parent) {
         parent.set('open', 1);
         opened[parent.cid] = parent;
         parent = parent.collection ? parent.collection.parent : null;
@@ -326,6 +335,77 @@ module.exports = {
       this.showFixedElementOffset(el);
       this.hideElementOffset();
       this.hideHighlighter();
+      this.initResize(el);
+    }
+  },
+
+  /**
+   * Init resizer on the element if possible
+   * @param  {HTMLElement} el
+   * @private
+   */
+  initResize(el) {
+    var em = this.em;
+    var editor = em ? em.get('Editor') : '';
+    var config = em ? em.get('Config') : '';
+    var pfx = config.stylePrefix || '';
+    var attrName = 'data-' + pfx + 'handler';
+    var resizeClass = pfx + 'resizing';
+    var model = em.get('selectedComponent');
+    var resizable = model.get('resizable');
+    var modelToStyle;
+
+    var toggleBodyClass = (method, e, opts) => {
+      var handlerAttr = e.target.getAttribute(attrName);
+      var resizeHndClass = pfx + 'resizing-' + handlerAttr;
+      var classToAdd = resizeClass;// + ' ' +resizeHndClass;
+      if (opts.docs) {
+        opts.docs.find('body')[method](classToAdd);
+      }
+    };
+
+    if (editor && resizable) {
+      let options = {
+        onStart(e, opts) {
+          toggleBodyClass('addClass', e, opts);
+          modelToStyle = em.get('StyleManager').getModelToStyle(model);
+          showOffsets = 0;
+        },
+        // Update all positioned elements (eg. component toolbar)
+        onMove() {
+          editor.trigger('change:canvasOffset');
+        },
+        onEnd(e, opts) {
+          toggleBodyClass('removeClass', e, opts);
+          editor.trigger('change:canvasOffset');
+          showOffsets = 1;
+        },
+        updateTarget(el, rect, store) {
+          if (!modelToStyle) {
+            return;
+          }
+
+          const unit = 'px';
+          const style = modelToStyle.getStyle();
+          style.width = rect.w + unit;
+          style.height = rect.h + unit;
+          modelToStyle.setStyle(style, {avoidStore: 1});
+          em.trigger('targetStyleUpdated');
+
+          if (store) {
+            modelToStyle.trigger('change:style', modelToStyle, style, {});
+          }
+        }
+      };
+
+      if (typeof resizable == 'object') {
+        options = Object.assign(options, resizable);
+      }
+
+      editor.runCommand('resize', {el, options});
+
+      // On undo/redo the resizer rect is not updating, need somehow to call
+      // this.updateRect on undo/redo action
     }
   },
 

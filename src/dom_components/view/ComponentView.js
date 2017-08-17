@@ -3,10 +3,6 @@ var ComponentsView = require('./ComponentsView');
 
 module.exports = Backbone.View.extend({
 
-  events: {
-    'click': 'initResize',
-  },
-
   className() {
     return this.getClasses();
   },
@@ -235,72 +231,6 @@ module.exports = Backbone.View.extend({
    * */
   eventCall(event) {
     event.viewResponse = this;
-  },
-
-  /**
-   * Init component for resizing
-   */
-  initResize(e) {
-    var em = this.opts.config.em;
-    var editor = em ? em.get('Editor') : '';
-    var config = em ? em.get('Config') : '';
-    var pfx = config.stylePrefix || '';
-    var attrName = 'data-' + pfx + 'handler';
-    var resizeClass = pfx + 'resizing';
-    var model = this.model;
-    var resizable = model.get('resizable');
-    var modelToStyle;
-
-    var toggleBodyClass = (method, e, opts) => {
-      var handlerAttr = e.target.getAttribute(attrName);
-      var resizeHndClass = pfx + 'resizing-' + handlerAttr;
-      var classToAdd = resizeClass;// + ' ' +resizeHndClass;
-      if (opts.docs) {
-        opts.docs.find('body')[method](classToAdd);
-      }
-    };
-
-    if(editor && resizable) {
-      let resizeOptions = {
-        onStart(e, opts) {
-          toggleBodyClass('addClass', e, opts);
-          modelToStyle = em.get('StyleManager').getModelToStyle(model);
-        },
-        // Update all positioned elements (eg. component toolbar)
-        onMove() {
-          editor.trigger('change:canvasOffset');
-        },
-        onEnd(e, opts) {
-          toggleBodyClass('removeClass', e, opts);
-          editor.trigger('change:canvasOffset');
-        },
-        updateTarget(el, rect, store) {
-          if (!modelToStyle) {
-            return;
-          }
-
-          const unit = 'px';
-          const style = modelToStyle.getStyle();
-          style.width = rect.w + unit;
-          style.height = rect.h + unit;
-          modelToStyle.setStyle(style, {avoidStore: 1});
-          em.trigger('targetStyleUpdated');
-
-          if (store) {
-            modelToStyle.setStyle(style);
-          }
-        }
-      };
-
-      if (typeof resizable == 'object') {
-        resizeOptions = Object.assign(resizeOptions, resizable);
-      }
-
-      editor.runCommand('resize', {
-        el: this.el,
-        options: resizeOptions
-      });
-    }
   },
 
   /**
