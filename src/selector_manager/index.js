@@ -82,23 +82,31 @@ module.exports = config => {
           c[name] = defaults[name];
       }
 
-      var ppfx = c.pStylePrefix;
-      if(ppfx)
+      const em = c.em;
+      const ppfx = c.pStylePrefix;
+
+      if (ppfx) {
         c.stylePrefix = ppfx + c.stylePrefix;
+      }
 
       selectors = new Selectors(c.selectors, {
-        em: c.em,
+        em,
         config: c,
       });
       selectorTags = new ClassTagsView({
         collection: selectors,
         config: c,
       });
+
+      selectors.on('add', (model) => {
+        em.trigger('selector:add', model);
+      });
+
       return this;
     },
 
     /**
-     * Add the new selector to collection if it's not already exists. Class type is a default one
+     * Add a new selector to collection if it's not already exists. Class type is a default one
      * @param {String} name Selector name
      * @param {Object} opts Selector options
      * @param {String} [opts.label=''] Label for the selector, if it's not provided the label will be the same as the name
@@ -112,10 +120,10 @@ module.exports = config => {
      *   label: 'selectorName'
      * });
      * */
-    add(name, opts) {
-      var obj = opts || {};
-      obj.name = name.name || name;
-      return selectors.add(obj);
+    add(name, opts = {}) {
+      const em = c.em;
+      opts.name = name.name || name;
+      return selectors.add(opts);
     },
 
     /**

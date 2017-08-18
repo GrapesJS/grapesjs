@@ -7,8 +7,19 @@ module.exports = Backbone.Model.extend({
   defaults: {
     name: '',
     label: '',
+
+    // Type of the selector
     type: 'class',
+
+    // If not active it's not selectable by the style manager (uncheckboxed)
     active: true,
+
+    // Can't be seen by the style manager, therefore even by the user
+    // Will be rendered only in export code
+    private: false,
+
+    // If true, can't be removed by the user, from the attacched element
+    protected: false,
   },
 
   initialize() {

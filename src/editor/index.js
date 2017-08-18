@@ -41,6 +41,7 @@
  * styleManager:change:{propertyName} - As above but for a specific style property
  * storage:load - Triggered when something was loaded from the storage, loaded object passed as an argumnet
  * storage:store - Triggered when something is stored to the storage, stored object passed as an argumnet
+ * selector:add - Triggers when a new selector/class is created
  * canvasScroll - Triggered when the canvas is scrolled
  * run:{commandName} - Triggered when some command is called to run (eg. editor.runCommand('preview'))
  * stop:{commandName} - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
