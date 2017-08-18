@@ -130,10 +130,15 @@ module.exports = Backbone.View.extend({
    */
   componentChanged(e) {
     this.compTarget = this.target.get('selectedComponent');
-    if(this.compTarget)
-      this.getStates().val(this.compTarget.get('state'));
-    var models = this.compTarget ? this.compTarget.get('classes').models : [];
-    this.collection.reset(models);
+    const target = this.compTarget;
+    let validSelectors = [];
+
+    if (target) {
+      this.getStates().val(target.get('state'));
+      validSelectors = target.get('classes').getStyleable();
+    }
+
+    this.collection.reset(validSelectors);
     this.updateStateVis();
   },
 
@@ -160,16 +165,17 @@ module.exports = Backbone.View.extend({
     if(!this.compTarget || !this.compTarget.get)
       return;
     var result = '';
-    var models = this.compTarget.get('classes');
-    models.each(model => {
+    this.collection.each(model => {
       if(model.get('active'))
         result += '.' + model.get('name');
     });
     var state = this.compTarget.get('state');
     result = state ? result + ':' + state : result;
     var el = this.el.querySelector('#' + this.pfx + 'sel');
-    if(el)
+
+    if (el) {
       el.innerHTML = result;
+    }
   },
 
   /**
