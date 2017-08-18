@@ -46,17 +46,46 @@ class Resizer {
    * @param  {Object} options
    */
   constructor(opts = {}) {
-    var pfx = opts.prefix || '';
-    var appendTo = opts.appendTo || document.body;
+    this.setOptions(opts);
+    return this;
+  }
 
+  /**
+   * Setup options
+   * @param {Object} options
+   */
+  setOptions(options = {}) {
+    // Setup default options
     for (var name in defaults) {
-      if (!(name in opts))
-        opts[name] = defaults[name];
+      if (!(name in options))
+        options[name] = defaults[name];
     }
 
-    var container = document.createElement('div');
-    container.className = pfx + 'resizer-c';
-    appendTo.appendChild(container);
+    this.opts = options;
+    this.setup();
+  }
+
+  /**
+   * Setup resizer
+   */
+  setup() {
+    const opts = this.opts;
+    const pfx = opts.prefix || '';
+    const appendTo = opts.appendTo || document.body;
+    let container;
+
+    // Create container if not yet exist
+    if (!this.container) {
+      container = document.createElement('div');
+      container.className = pfx + 'resizer-c';
+      appendTo.appendChild(container);
+      this.container = container;
+    }
+
+    container = this.container;
+    while (container.firstChild) {
+      container.removeChild(container.firstChild);
+    }
 
     // Create handlers
     var handlers = {
@@ -70,14 +99,14 @@ class Resizer {
       br: opts.br ? createHandler('br', opts) : '',
     };
 
-    for (var n in handlers) {
-      if(handlers[n])
-        container.appendChild(handlers[n]);
+    for (let n in handlers) {
+      const handler = handlers[n];
+      if (handler) {
+        container.appendChild(handler);
+      }
     }
 
-    this.container = container;
     this.handlers = handlers;
-    this.opts = opts;
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.move = this.move.bind(this);
@@ -88,22 +117,6 @@ class Resizer {
     this.onStart = opts.onStart;
     this.onMove = opts.onMove;
     this.onEnd = opts.onEnd;
-
-    return this;
-  }
-
-  /**
-   * Update options
-   * @param {Object} options
-   */
-  setOptions(options) {
-    var opts = options || {};
-
-    for (var opt in opts) {
-      if(opt in defaults) {
-        this[opt] = opts[opt];
-      }
-    }
   }
 
   /**

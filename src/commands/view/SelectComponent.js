@@ -329,6 +329,7 @@ module.exports = {
     var resizeClass = pfx + 'resizing';
     var model = em.get('selectedComponent');
     var resizable = model.get('resizable');
+    var options = {};
     var modelToStyle;
 
     var toggleBodyClass = (method, e, opts) => {
@@ -340,11 +341,14 @@ module.exports = {
       }
     };
 
+
     if (editor && resizable) {
-      let options = {
-        onStart(e, opts) {
+      console.log('Init resize on ', model, options);
+      options = {
+        onStart: function(e, opts) {
           toggleBodyClass('addClass', e, opts);
           modelToStyle = em.get('StyleManager').getModelToStyle(model);
+          console.log(modelToStyle, 'model', model);
           showOffsets = 0;
         },
         // Update all positioned elements (eg. component toolbar)
