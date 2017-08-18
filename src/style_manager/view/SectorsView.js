@@ -56,26 +56,25 @@ module.exports = Backbone.View.extend({
       pt.computed = window.getComputedStyle(view.el, stateStr);
     }
 
-    if(classes.length){
+    if (classes.length) {
       var cssC = em.get('CssComposer');
-      var valid = _.filter(classes.models, item => item.get('active'));
+      var valid = classes.getStyleable();
       var iContainer = cssC.get(valid, state, mediaText);
 
-      if(!iContainer){
+      if (!iContainer && valid.length) {
         iContainer = cssC.add(valid, state, mediaText);
-        // Get styles from the component
         iContainer.set('style', el.get('style'));
-        //cssC.addRule(iContainer);
         el.set('style', {});
-      }else{
-        // Ensure to clean element
-        //if(classes.length == 1)
-          //el.set('style', {});
+      } else {
+        // In this case it's just a Component without any valid selector
+        pt.model = el;
+        pt.trigger('update');
+        return;
       }
 
       // If the state is not empty, there should be a helper rule in play
       // The helper rule will get the same style of the iContainer
-      if(state){
+      if (state) {
         var clm = em.get('SelectorManager');
         var helperClass = clm.add('hc-state');
         var helperRule = cssC.get([helperClass]);
