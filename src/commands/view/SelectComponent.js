@@ -343,12 +343,10 @@ module.exports = {
 
 
     if (editor && resizable) {
-      console.log('Init resize on ', model, options);
       options = {
-        onStart: function(e, opts) {
+        onStart(e, opts) {
           toggleBodyClass('addClass', e, opts);
           modelToStyle = em.get('StyleManager').getModelToStyle(model);
-          console.log(modelToStyle, 'model', model);
           showOffsets = 0;
         },
         // Update all positioned elements (eg. component toolbar)

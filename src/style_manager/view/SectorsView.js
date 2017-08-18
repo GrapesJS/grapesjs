@@ -65,7 +65,9 @@ module.exports = Backbone.View.extend({
         iContainer = cssC.add(valid, state, mediaText);
         iContainer.set('style', el.get('style'));
         el.set('style', {});
-      } else {
+      }
+
+      if (!iContainer) {
         // In this case it's just a Component without any valid selector
         pt.model = el;
         pt.trigger('update');
