@@ -135,7 +135,7 @@ module.exports = Backbone.View.extend({
 
     if (target) {
       this.getStates().val(target.get('state'));
-      validSelectors = target.get('classes').getStyleable();
+      validSelectors = target.get('classes').getValid();
     }
 
     this.collection.reset(validSelectors);

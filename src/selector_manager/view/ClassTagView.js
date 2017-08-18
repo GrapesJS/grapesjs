@@ -129,8 +129,8 @@ module.exports = Backbone.View.extend({
       ppfx: this.ppfx,
       inputProp: this.inputProp,
     }));
-    this.updateStatus();
     this.$el.attr('class', this.className);
+    this.updateStatus();
     this.updateInputLabel();
     return this;
   },

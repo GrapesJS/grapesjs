@@ -28,10 +28,6 @@ module.exports = {
   //      private: true,
   //   }
   // },
-  propertyMap: {
-    '.row, .cell': {
-      private: true,
-    }
-  },
+  propertyMap: {},
 
 };
