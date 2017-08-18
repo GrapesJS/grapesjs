@@ -366,7 +366,6 @@ module.exports = {
           const {store, selectedHandler} = options;
           const onlyHeight = ['tc', 'bc'].indexOf(selectedHandler) >= 0;
           const onlyWidth = ['cl', 'cr'].indexOf(selectedHandler) >= 0;
-
           const unit = 'px';
           const style = modelToStyle.getStyle();
 

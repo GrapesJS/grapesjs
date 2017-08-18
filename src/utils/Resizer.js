@@ -291,7 +291,6 @@ class Resizer {
     doc.off('keydown', this.handleKeyDown);
     doc.off('mouseup', this.stop);
     this.updateRect(1);
-    this.selectedHandler = '';
 
     // Stop callback
     if (typeof this.onEnd === 'function') {
