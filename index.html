@@ -1331,6 +1331,9 @@
     editor.on('selector:add', function(model) {
       if(model.get('name') == 'row')
         console.log('added .row class', model);
+
+      if(model.get('name') == 'cell')
+        console.log('added .cell class', model);
     });
 
     editor.render();

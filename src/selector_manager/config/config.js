@@ -25,12 +25,12 @@ module.exports = {
   // // not visible by the user
   // propertyMap: {
   //   '.row, .cell': {
-  //      private: false,
+  //      private: true,
   //   }
   // },
   propertyMap: {
     '.row, .cell': {
-      private: false,
+      private: true,
     }
   },
 

@@ -39,4 +39,23 @@ module.exports = Backbone.Model.extend({
     return name.replace(/([^a-z0-9\w]+)/gi, '-');
   },
 
+  /**
+   * Get full selector name
+   * @return {string}
+   */
+  getFullName() {
+    let init = '';
+
+    switch (this.get('type')) {
+      case 'class':
+        init = '.';
+        break;
+      case 'id':
+        init = '#';
+        break;
+    }
+
+    return init + this.get('name');
+  }
+
 });
