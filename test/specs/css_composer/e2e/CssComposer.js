@@ -128,6 +128,8 @@ module.exports = {
              label: 'test1',
              name: 'test1',
              type: 'class',
+             private: false,
+             protected: false,
             }],
             selectorsAdd: '',
             state: '',
