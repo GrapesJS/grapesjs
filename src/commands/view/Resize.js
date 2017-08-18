@@ -18,7 +18,7 @@ module.exports = {
       this.canvasResizer = editor.Utils.Resizer.init(options);
       canvasResizer = this.canvasResizer;
     }
-    console.log('Resizer opts', options, el);
+
     canvasResizer.setOptions(options);
     canvasResizer.focus(el);
     return canvasResizer;

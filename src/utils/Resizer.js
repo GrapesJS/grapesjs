@@ -291,9 +291,10 @@ class Resizer {
     doc.off('keydown', this.handleKeyDown);
     doc.off('mouseup', this.stop);
     this.updateRect(1);
+    this.selectedHandler = '';
 
     // Stop callback
-    if(typeof this.onEnd === 'function') {
+    if (typeof this.onEnd === 'function') {
       this.onEnd(e, {docs: doc});
     }
   }
@@ -305,10 +306,14 @@ class Resizer {
     var elStyle = this.el.style;
     var conStyle = this.container.style;
     var rect = this.rectDim;
+    const selectedHandler = this.getSelectedHandler();
 
     // Use custom updating strategy if requested
     if (typeof this.updateTarget === 'function') {
-      this.updateTarget(this.el, rect, store);
+      this.updateTarget(this.el, rect, {
+        store,
+        selectedHandler
+      });
     } else {
       elStyle.width = rect.w + 'px';
       elStyle.height = rect.h + 'px';
@@ -322,6 +327,22 @@ class Resizer {
     conStyle.top = rectEl.top + unit;
     conStyle.width = rectEl.width + unit;
     conStyle.height = rectEl.height + unit;
+  }
+
+  /**
+   * Get selected handler name
+   * @return {string}
+   */
+  getSelectedHandler() {
+    var handlers = this.handlers;
+
+    if (!this.selectedHandler) {
+      return;
+    }
+
+    for (let n in handlers) {
+      if (handlers[n] === this.selectedHandler) return n;
+    }
   }
 
   /**
@@ -343,8 +364,10 @@ class Resizer {
   handleMouseDown(e) {
     var el = e.target;
     if (this.isHandler(el)) {
+      this.selectedHandler = el;
       this.start(e);
     }else if(el !== this.el){
+      this.selectedHandler = '';
       this.blur();
     }
   }

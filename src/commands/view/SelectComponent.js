@@ -358,15 +358,26 @@ module.exports = {
           editor.trigger('change:canvasOffset');
           showOffsets = 1;
         },
-        updateTarget(el, rect, store) {
+        updateTarget(el, rect, options = {}) {
           if (!modelToStyle) {
             return;
           }
 
+          const {store, selectedHandler} = options;
+          const onlyHeight = ['tc', 'bc'].indexOf(selectedHandler) >= 0;
+          const onlyWidth = ['cl', 'cr'].indexOf(selectedHandler) >= 0;
+
           const unit = 'px';
           const style = modelToStyle.getStyle();
-          style.width = rect.w + unit;
-          style.height = rect.h + unit;
+
+          if (!onlyHeight) {
+            style.width = rect.w + unit;
+          }
+
+          if (!onlyWidth) {
+            style.height = rect.h + unit;
+          }
+
           modelToStyle.setStyle(style, {avoidStore: 1});
           em.trigger('targetStyleUpdated');
 
