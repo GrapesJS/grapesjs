@@ -1293,31 +1293,6 @@
       },
     });*/
 
-    let resizerBtm = {tl: 0, tc: 0, tr: 0, cl: 0, cr:0, bl:0, br: 0};
-  bm.add('column1',{
-    content: {
-      'custom-name': 'Row grid',
-      classes: ['row'],
-      droppable: '[data-column]',
-      attributes: {'data-columns': 1},
-      resizable: resizerBtm,
-      components: [{
-        classes: ['cell'],
-        resizable: Object.assign({}, resizerBtm, {cr: 1}),
-        attributes: {'data-column': 1},
-        draggable: '[data-columns]',
-        'custom-name': 'Cell grid',
-      }]
-    },
-  });
-  editor.on('selector:add', (selector) => {
-    console.log('Added ', selector.getFullName());
-    if (['.row', '.cell'].indexOf(selector.getFullName()) >= 0 ) {
-      selector.set({private: 1});
-      console.log('Updated ',selector.getFullName());
-    }
-  });
-
     var domc = editor.DomComponents;
     var defaultType = domc.getType('default');
     var defaultModel = defaultType.model;
