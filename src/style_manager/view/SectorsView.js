@@ -46,10 +46,10 @@ module.exports = Backbone.View.extend({
     var device = em.getDeviceModel();
     var state = !previewMode ? el.get('state') : '';
     var widthMedia = device && device.get('widthMedia');
-    var mediaText = device && !previewMode && widthMedia ?
-      `(${config.mediaCondition}: ${widthMedia})` : '';
     var stateStr = state ? `:${state}` : null;
     var view = el.view;
+    var mediaText = device && !previewMode && widthMedia ?
+      `(${config.mediaCondition}: ${widthMedia})` : '';
     pt.helper = null;
 
     if (view) {

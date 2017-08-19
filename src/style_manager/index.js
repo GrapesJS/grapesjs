@@ -240,12 +240,10 @@ module.exports = () => {
         var state = !previewMode ? model.get('state') : '';
         var deviceW = device && !previewMode ? device.get('width') : '';
         var cssC = c.em.get('CssComposer');
-
-        var valid = _.filter(classes.models, item => item.get('active'));
-
+        var valid = classes.getStyleable();
         var CssRule = cssC.get(valid, state, deviceW);
 
-        if(CssRule) {
+        if(CssRule && valid.length) {
           return CssRule;
         }
       }
