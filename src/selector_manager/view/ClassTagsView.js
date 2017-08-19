@@ -197,23 +197,28 @@ module.exports = Backbone.View.extend({
    * @param  {Object} e
    * @private
    */
-  addNewTag(name) {
-    if(!name)
+  addNewTag(label) {
+    const target = this.target;
+    const component = this.compTarget;
+
+    if (!label.trim()) {
       return;
+    }
 
-    if(this.target){
-      var cm = this.target.get('SelectorManager');
-      var model = cm.add(name);
+    if (target) {
+      const sm = target.get('SelectorManager');
+      var model = sm.add({label});
 
-      if(this.compTarget){
-        var targetCls = this.compTarget.get('classes');
-        var lenB = targetCls.length;
-        targetCls.add(model);
-        var lenA = targetCls.length;
+      if (component) {
+        var compCls = component.get('classes');
+        var lenB = compCls.length;
+        compCls.add(model);
+        var lenA = compCls.length;
         this.collection.add(model);
 
-        if(lenA > lenB)
-          this.target.trigger('targetClassAdded');
+        if (lenA > lenB) {
+          target.trigger('targetClassAdded');
+        }
 
         this.updateStateVis();
       }

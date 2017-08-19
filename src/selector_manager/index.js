@@ -55,6 +55,7 @@
 module.exports = config => {
   var c = config || {},
   defaults = require('./config/config'),
+  Selector = require('./model/Selector'),
   Selectors = require('./model/Selectors'),
   ClassTagsView = require('./view/ClassTagsView');
   var selectors, selectorTags;
@@ -89,15 +90,13 @@ module.exports = config => {
         c.stylePrefix = ppfx + c.stylePrefix;
       }
 
-      selectors = new Selectors(c.selectors, {
-        em,
-        config: c,
-      });
       selectorTags = new ClassTagsView({
-        collection: selectors,
+        collection: new Selectors([], {em,config: c}),
         config: c,
       });
 
+      // Global selectors container
+      selectors = new Selectors(c.selectors);
       selectors.on('add', (model) =>
         em.trigger('selector:add', model));
 
@@ -120,11 +119,20 @@ module.exports = config => {
      * });
      * */
     add(name, opts = {}) {
-      const selector = this.get(name);
+      if (typeof name == 'object') {
+        opts = name;
+      } else {
+        opts.name = name;
+      }
+
+      if (opts.label && !opts.name) {
+        opts.name = Selector.escapeName(opts.label);
+      }
+
+      const cname = opts.name;
+      const selector = cname ? this.get(cname) : selectors.where(opts)[0];
 
       if (!selector) {
-        console.log('Add pls', selector);
-        opts.name = name.name || name;
         return selectors.add(opts);
       }
 

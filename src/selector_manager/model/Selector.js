@@ -1,6 +1,6 @@
 var Backbone = require('backbone');
 
-module.exports = Backbone.Model.extend({
+const Selector = Backbone.Model.extend({
 
   idAttribute: 'name',
 
@@ -23,20 +23,16 @@ module.exports = Backbone.Model.extend({
   },
 
   initialize() {
-    this.set('name', this.escapeName(this.get('name')));
-    var label = this.get('label').trim();
-    if(!label)
-      this.set('label', this.get('name'));
-  },
+    const name = this.get('name');
+    const label = this.get('label');
 
-  /**
-   * Escape string
-   * @param {string} name
-   * @return {string}
-   * @private
-   */
-  escapeName(name) {
-    return name.replace(/([^a-z0-9\w]+)/gi, '-');
+    if (!name) {
+      this.set('name', label);
+    } else if (!label) {
+      this.set('label', name);
+    }
+
+    this.set('name', Selector.escapeName(this.get('name')));
   },
 
   /**
@@ -58,4 +54,16 @@ module.exports = Backbone.Model.extend({
     return init + this.get('name');
   }
 
+}, {
+  /**
+   * Escape string
+   * @param {string} name
+   * @return {string}
+   * @private
+   */
+  escapeName(name) {
+    return name.trim().replace(/([^a-z0-9\w]+)/gi, '-');
+  },
 });
+
+module.exports = Selector;
