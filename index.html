@@ -1293,9 +1293,8 @@
       },
     });*/
 
-    var resizerBtm = {tl: 0, tc: 0, tr: 0, cl: 0, cr:0, bl:0, br: 0};
-  bm.add('column1', {
-    label: 'Col1',
+    let resizerBtm = {tl: 0, tc: 0, tr: 0, cl: 0, cr:0, bl:0, br: 0};
+  bm.add('column1',{
     content: {
       'custom-name': 'Row grid',
       classes: ['row'],
@@ -1304,13 +1303,19 @@
       resizable: resizerBtm,
       components: [{
         classes: ['cell'],
-        resizable: resizerBtm,
+        resizable: Object.assign({}, resizerBtm, {cr: 1}),
         attributes: {'data-column': 1},
         draggable: '[data-columns]',
         'custom-name': 'Cell grid',
       }]
-      //components: `<div data-column="1" class="cell" data-gjs-draggable=".row" data-gjs-custom-name="Cell"></div>`
     },
+  });
+  editor.on('selector:add', (selector) => {
+    console.log('Added ', selector.getFullName());
+    if (['.row', '.cell'].indexOf(selector.getFullName()) >= 0 ) {
+      selector.set({private: 1});
+      console.log('Updated ',selector.getFullName());
+    }
   });
 
     var domc = editor.DomComponents;

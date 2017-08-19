@@ -98,26 +98,10 @@ module.exports = config => {
         config: c,
       });
 
-      selectors.on('add', this.selectorAdded);
+      selectors.on('add', (model) =>
+        em.trigger('selector:add', model));
 
       return this;
-    },
-
-    selectorAdded(model) {
-      const em = c.em;
-      const propertyMap = c.propertyMap;
-      let props = {};
-
-      Object.keys(propertyMap).forEach((selectors) => {
-        selectors.split(',').forEach((selector) => {
-          if (selector.trim() == model.getFullName()) {
-            props = Object.assign(props, propertyMap[selectors]);
-          }
-        });
-      });
-
-      model.set(props);
-      em.trigger('selector:add', model);
     },
 
     /**
@@ -136,9 +120,15 @@ module.exports = config => {
      * });
      * */
     add(name, opts = {}) {
-      const em = c.em;
-      opts.name = name.name || name;
-      return selectors.add(opts);
+      const selector = this.get(name);
+
+      if (!selector) {
+        console.log('Add pls', selector);
+        opts.name = name.name || name;
+        return selectors.add(opts);
+      }
+
+      return selector;
     },
 
     /**
