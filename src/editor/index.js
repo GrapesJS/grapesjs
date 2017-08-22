@@ -31,21 +31,21 @@
  * var editor = grapesjs.init({...});
  * ```
  *
- * **Available events**
- * component:add - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
- * component:update - Triggered when a component is, generally, updated (moved, styled, etc.)
- * component:update:{propertyName} - Listen any property change
- * component:styleUpdate - Triggered when the style of the component is updated
- * component:styleUpdate:{propertyName} - Listen for a specific style property change
- * styleManager:change - Triggered on style property change from new selected component, the view of the property is passed as an argument to the callback
- * styleManager:change:{propertyName} - As above but for a specific style property
- * storage:load - Triggered when something was loaded from the storage, loaded object passed as an argumnet
- * storage:store - Triggered when something is stored to the storage, stored object passed as an argumnet
- * selector:add - Triggers when a new selector/class is created
- * canvasScroll - Triggered when the canvas is scrolled
- * run:{commandName} - Triggered when some command is called to run (eg. editor.runCommand('preview'))
- * stop:{commandName} - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
- * load - When the editor is loaded
+ * **Available Events**
+ * `component:add` - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
+ * `component:update` - Triggered when a component is, generally, updated (moved, styled, etc.)
+ * `component:update:{propertyName}` - Listen any property change
+ * `component:styleUpdate` - Triggered when the style of the component is updated
+ * `component:styleUpdate:{propertyName}` - Listen for a specific style property change
+ * `styleManager:change` - Triggered on style property change from new selected component, the view of the property is passed as an argument to the callback
+ * `styleManager:change:{propertyName}` - As above but for a specific style property
+ * `storage:load` - Triggered when something was loaded from the storage, loaded object passed as an argumnet
+ * `storage:store` - Triggered when something is stored to the storage, stored object passed as an argumnet
+ * `selector:add` - Triggers when a new selector/class is created
+ * `canvasScroll` - Triggered when the canvas is scrolled
+ * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
+ * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
+ * `load` - When the editor is loaded
  *
  * @module Editor
  * @param {Object} config Configurations
@@ -104,16 +104,19 @@ module.exports = config => {
 
     /**
      * @property {DomComponents}
+     * @private
      */
     DomComponents: em.get('DomComponents'),
 
     /**
      * @property {CssComposer}
+     * @private
      */
     CssComposer: em.get('CssComposer'),
 
     /**
      * @property {StorageManager}
+     * @private
      */
     StorageManager: em.get('StorageManager'),
 
@@ -124,71 +127,85 @@ module.exports = config => {
 
     /**
      * @property {BlockManager}
+     * @private
      */
     BlockManager: em.get('BlockManager'),
 
     /**
      * @property {TraitManager}
+     * @private
      */
     TraitManager: em.get('TraitManager'),
 
     /**
      * @property {SelectorManager}
+     * @private
      */
     SelectorManager: em.get('SelectorManager'),
 
     /**
      * @property {CodeManager}
+     * @private
      */
     CodeManager: em.get('CodeManager'),
 
     /**
      * @property {Commands}
+     * @private
      */
     Commands: em.get('Commands'),
 
     /**
      * @property {Modal}
+     * @private
      */
     Modal: em.get('Modal'),
 
     /**
      * @property {Panels}
+     * @private
      */
     Panels: em.get('Panels'),
 
     /**
      * @property {StyleManager}
+     * @private
      */
     StyleManager: em.get('StyleManager'),
 
     /**
      * @property {Canvas}
+     * @private
      */
     Canvas: em.get('Canvas'),
 
     /**
      * @property {UndoManager}
+     * @private
      */
     UndoManager: em.get('UndoManager'),
 
     /**
      * @property {DeviceManager}
+     * @private
      */
     DeviceManager: em.get('DeviceManager'),
 
     /**
      * @property {RichTextEditor}
+     * @private
      */
     RichTextEditor: em.get('rte'),
 
     /**
      * @property {Utils}
+     * @private
      */
     Utils: em.get('Utils'),
 
     /**
      * @property {Utils}
+     * @private
      */
     Config: em.get('Config'),
 

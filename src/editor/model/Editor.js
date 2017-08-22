@@ -78,6 +78,7 @@ module.exports = Backbone.Model.extend({
   /**
    * Set the alert before unload in case it's requested
    * and there are unsaved changes
+   * @private
    */
   updateBeforeUnload() {
     var changes = this.get('changesCount');
@@ -93,6 +94,7 @@ module.exports = Backbone.Model.extend({
    * Load generic module
    * @param {String} moduleName Module name
    * @return {this}
+   * @private
    */
   loadModule(moduleName) {
     var c = this.config;
@@ -512,6 +514,7 @@ module.exports = Backbone.Model.extend({
   /**
    * Returns device model by name
    * @return {Device|null}
+   * @private
    */
   getDeviceModel() {
     var name = this.get('device');

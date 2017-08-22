@@ -1,12 +1,13 @@
 /**
  *
- * - [addSector](#addsector)
- * - [getSector](#getsector)
- * - [getSectors](#getsectors)
- * - [addProperty](#addproperty)
- * - [getProperty](#getproperty)
- * - [getProperties](#getproperties)
- * - [render](#render)
+ * * [addSector](#addsector)
+ * * [getSector](#getsector)
+ * * [getSectors](#getsectors)
+ * * [addProperty](#addproperty)
+ * * [getProperty](#getproperty)
+ * * [getProperties](#getproperties)
+ * * [getModelToStyle](#getmodeltostyle)
+ * * [render](#render)
  *
  * With Style Manager you basically build categories (called sectors) of CSS properties which could
  * be used to custom components and classes.
