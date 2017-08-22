@@ -17,8 +17,10 @@ module.exports = () => {
       }
 
       let View = ItemsView;
+      const level = 0;
       const opened = opts.opened || {};
       const options = {
+        level,
         config,
         opened
       }

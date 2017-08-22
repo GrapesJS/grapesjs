@@ -6,6 +6,7 @@ module.exports = Backbone.View.extend({
   initialize(o = {}) {
     this.opt = o;
     const config = o.config || {};
+    this.level = o.level;
     this.config = config;
     this.preview = o.preview;
     this.ppfx = config.pStylePrefix || '';
@@ -60,10 +61,12 @@ module.exports = Backbone.View.extend({
    * @return Object Object created
    * */
   addToCollection(model, fragmentEl, index) {
+    const level = this.level;
     var fragment  = fragmentEl || null;
     var viewObject  = ItemView;
 
     var view = new viewObject({
+      level,
       model,
       config: this.config,
       sorter: this.sorter,
