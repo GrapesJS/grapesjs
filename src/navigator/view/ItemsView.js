@@ -3,22 +3,23 @@ var ItemView = require('./ItemView');
 
 module.exports = Backbone.View.extend({
 
-  initialize(o) {
+  initialize(o = {}) {
     this.opt = o;
-    this.config = o.config;
+    const config = o.config || {};
+    this.config = config;
     this.preview = o.preview;
-    this.ppfx = o.config.pStylePrefix || '';
-    this.pfx = o.config.stylePrefix || '';
+    this.ppfx = config.pStylePrefix || '';
+    this.pfx = config.stylePrefix || '';
     this.parent = o.parent;
     this.listenTo(this.collection, 'add', this.addTo);
     this.listenTo(this.collection, 'reset resetNavigator', this.render);
     this.className   = this.pfx + 'items';
 
-    if(this.config.sortable && !this.opt.sorter){
+    if (config.sortable && !this.opt.sorter) {
       var pfx = this.pfx;
-      var utils = this.config.em.get('Utils');
+      var utils = config.em.get('Utils');
       this.opt.sorter = new utils.Sorter({
-        container: this.el,
+        container: config.sortContainer || this.el,
         containerSel: '.' + pfx + 'items',
         itemSel: '.' + pfx + 'item',
         ppfx: this.ppfx,

@@ -3,7 +3,7 @@ var Layers = require('navigator');
 module.exports = {
 
   run(em, sender) {
-    if (!this.$layers) {
+    if (!this.toAppend) {
       var collection = em.DomComponents.getComponent().get('components');
       var config = em.getConfig();
       var pfx = config.stylePrefix;
@@ -14,8 +14,6 @@ module.exports = {
       config.layers.pStylePrefix = config.stylePrefix;
       config.layers.em 	= em.editor;
       config.layers.opened = em.editor.get('opened');
-      var layers = new Layers().init(collection, config.layers);
-      this.$layers = layers.render();
 
       // Check if panel exists otherwise crate it
       if(!panels.getPanel('views-container'))
@@ -24,14 +22,17 @@ module.exports = {
         this.panel = panels.getPanel('views-container');
 
       const toAppend = $(`<div class="${pfx}layers"></div>`);
-      toAppend.append(this.$layers);
       this.panel.set('appendContent', toAppend).trigger('change:appendContent');
+      config.layers.sortContainer = toAppend.get(0);
+      const layers = new Layers().init(collection, config.layers);
+      this.$layers = layers.render();
+      toAppend.append(this.$layers);
+      this.toAppend = toAppend;
     }
-    this.$layers.show();
+    this.toAppend.show();
   },
 
   stop() {
-    if(this.$layers)
-      this.$layers.hide();
+    this.toAppend && this.toAppend.hide();
   }
 };
