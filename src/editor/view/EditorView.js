@@ -47,9 +47,8 @@ module.exports = Backbone.View.extend({
     // Panels
     this.$el.append(this.pn.render());
     this.$el.attr('class', this.className);
-
     contEl.addClass(conf.stylePrefix + 'editor-cont');
-    contEl.html(this.$el);
+    contEl.empty().append(this.$el);
 
     return this;
   }

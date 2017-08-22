@@ -89,10 +89,7 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   updateOpen() {
-    if(this.model.get('open'))
-      this.$el.show();
-    else
-      this.$el.hide();
+    this.el.style.display = this.model.get('open') ? '' : 'none';
   },
 
   /**

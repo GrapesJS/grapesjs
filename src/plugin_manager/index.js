@@ -28,10 +28,12 @@ module.exports = config => {
      * });
      */
     add(id, plugin) {
-      if(plugins[id])
-        return this;
+      if (plugins[id]) {
+        return plugins[id];
+      }
+
       plugins[id] = plugin;
-      return this;
+      return plugin;
     },
 
     /**

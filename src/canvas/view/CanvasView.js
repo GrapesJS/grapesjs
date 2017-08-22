@@ -64,7 +64,8 @@ module.exports = Backbone.View.extend({
     var em = this.config.em;
     if(wrap) {
       var ppfx = this.ppfx;
-      var body = this.frame.$el.contents().find('body');
+      //var body = this.frame.$el.contents().find('body');
+      var body = $(this.frame.el.contentWindow.document.body);
       var cssc = em.get('CssComposer');
       var conf = em.get('Config');
       var confCanvas = this.config;
