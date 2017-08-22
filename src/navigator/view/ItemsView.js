@@ -108,7 +108,7 @@ module.exports = Backbone.View.extend({
     var type = model.get('type');
     var tag = model.get('tagName');
     if( ((type == 'textnode' || tag == 'br') && hide) ||
-        model.get('hiddenLayer')) {
+        model.get('layerable')) {
       return false;
     }
     return true;
