@@ -417,13 +417,16 @@ ol.example li.placeholder:before {position: absolute;}
   display: none;
 }
 
+$animSpeed: 0.2s;
+
 .#{$app-prefix}placeholder,
 .#{$nv-prefix}placeholder {
-  /*border-width: 3px !important;*/
   border-style: solid !important;
   border-color: $colorGreen;
   outline: none;
   box-sizing: border-box;
+  transition: top $animSpeed, left $animSpeed,
+    width $animSpeed, height $animSpeed;
 }
 
 .#{$app-prefix}placeholder-int,
