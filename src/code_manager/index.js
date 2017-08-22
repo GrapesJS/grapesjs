@@ -187,7 +187,7 @@ module.exports = () => {
      * @example
      * var codeStr = codeManager.getCode(model, 'html');
      * */
-    getCode(model, genId, opt) {
+    getCode(model, genId, opt = {}) {
       var generator  = this.getGenerator(genId);
       return generator ? generator.build(model, opt) : '';
     },

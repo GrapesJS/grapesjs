@@ -406,10 +406,15 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   getHtml() {
-    var js = this.config.jsInHtml ? this.getJs() : '';
+    const config = this.config;
+    const exportWrapper = config.exportWrapper;
+    const wrappesIsBody = config.wrappesIsBody;
+    const js = config.jsInHtml ? this.getJs() : '';
     var wrp  = this.get('DomComponents').getComponent();
-    var html = this.get('CodeManager').getCode(wrp, 'html');
-    html += js ? '<script>'+ js +'</script>' : '';
+    var html = this.get('CodeManager').getCode(wrp, 'html', {
+      exportWrapper, wrappesIsBody
+    });
+    html += js ? `<script>${js}</script>` : '';
     return html;
   },
 
