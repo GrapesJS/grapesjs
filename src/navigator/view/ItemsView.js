@@ -24,6 +24,7 @@ module.exports = Backbone.View.extend({
         itemSel: '.' + pfx + 'item',
         ppfx: this.ppfx,
         ignoreViewChildren: 1,
+        avoidSelectOnEnd: 1,
         pfx,
         nested: 1
       });

@@ -39,6 +39,7 @@ module.exports = Backbone.View.extend({
     this.em = o.em || '';
     this.dragHelper = null;
     this.canvasRelative = o.canvasRelative || 0;
+    this.selectOnEnd = !o.avoidSelectOnEnd;
 
     if(this.em && this.em.on){
       this.em.on('change:canvasOffset', this.udpateOffset);
@@ -765,7 +766,7 @@ module.exports = Backbone.View.extend({
       var srcModel = this.getSourceModel();
       if (srcModel && srcModel.set) {
         srcModel.set('status', '');
-        srcModel.set('status', 'selected');
+        this.selectOnEnd && srcModel.set('status', 'selected');
       }
     }
 

@@ -138,6 +138,13 @@ module.exports = Backbone.View.extend({
    * @param	Event
    * */
   startSort(e) {
+    e.stopPropagation();
+
+    //Right or middel click
+    if (e.button !== 0) {
+      return;
+    }
+
     this.sorter && this.sorter.startSort(e.target);
   },
 
