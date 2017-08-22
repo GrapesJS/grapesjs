@@ -30,9 +30,6 @@ module.exports = Backbone.View.extend({
 
     this.sorter = this.opt.sorter || '';
 
-    if(!this.parent)
-      this.className  += ' ' + this.pfx + this.config.containerId;
-
     // For the sorter
     this.$el.data('collection', this.collection);
 

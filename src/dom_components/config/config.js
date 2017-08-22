@@ -3,21 +3,21 @@ module.exports = {
 
   wrapperId: 'wrapper',
 
+  wrapperName: 'Body',
+
   // Default wrapper configuration
   wrapper: {
-    //classes: ['body'],
     removable: false,
     copyable: false,
-    stylable: ['background','background-color','background-image', 'background-repeat','background-attachment','background-position'],
     draggable: false,
     badgable: false,
     components: [],
+    stylable: ['background','background-color','background-image',
+      'background-repeat','background-attachment','background-position'],
   },
 
   // Could be used for default components
   components: [],
-
-  rte: {},
 
   // Class for new image component
   imageCompClass  : 'fa fa-picture-o',
@@ -26,5 +26,7 @@ module.exports = {
   oAssetsOnCreate  : true,
 
   // List of void elements
-  voidElements: ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'menuitem', 'meta', 'param', 'source', 'track', 'wbr'],
+  voidElements: ['area', 'base', 'br', 'col', 'embed', 'hr', 'img',
+    'input', 'keygen', 'link', 'menuitem', 'meta', 'param', 'source',
+    'track', 'wbr'],
 };

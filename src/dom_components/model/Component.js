@@ -95,19 +95,15 @@ module.exports = Backbone.Model.extend(Styleable).extend({
       * }]
     */
     toolbar: null,
-
-    // TODO
-    previousModel: '',
-    mirror: '',
   },
 
   initialize(o, opt) {
     // Check void elements
     if(opt && opt.config && opt.config.voidElements.indexOf(this.get('tagName')) >= 0)
       this.set('void', true);
-
+    const em = opt ? opt.sm || {} : {};
     this.opt = opt;
-    this.sm = opt ? opt.sm || {} : {};
+    this.sm = em;
     this.config = o || {};
     this.defaultC = this.config.components || [];
     this.defaultCl = this.normalizeClasses(this.get('classes') || this.config.classes || []);

@@ -3,7 +3,9 @@ module.exports = {
   sortable: 1,
   hidable: 1,
   hideTextnode: 1,
-  containerId: 'navigator',
   itemClass: 'item',
   itemsClass: 'items',
+
+  // Indicates if the wrapper is visible in layers
+  showWrapper: 1,
 };

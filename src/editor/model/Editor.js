@@ -336,16 +336,17 @@ module.exports = Backbone.Model.extend({
   /**
    * Select a component
    * @param  {Component|HTMLElement} el Component to select
+   * @param  {Object} opts Options, optional
    * @private
    */
-  setSelected(el) {
+  setSelected(el, opts = {}) {
     let model = el;
 
     if (el instanceof HTMLElement) {
       model = $(el).data('model');
     }
 
-    this.set('selectedComponent', model);
+    this.set('selectedComponent', model, opts);
   },
 
   /**

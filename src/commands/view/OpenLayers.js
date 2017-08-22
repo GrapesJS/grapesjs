@@ -4,10 +4,11 @@ module.exports = {
 
   run(em, sender) {
     if (!this.$layers) {
-      var collection = em.DomComponents.getComponent().get('components'),
-      config = em.getConfig(),
-      panels = em.Panels,
-      lyStylePfx = config.layers.stylePrefix || 'nv-';
+      var collection = em.DomComponents.getComponent().get('components');
+      var config = em.getConfig();
+      var pfx = config.stylePrefix;
+      var panels = em.Panels;
+      var lyStylePfx = config.layers.stylePrefix || 'nv-';
 
       config.layers.stylePrefix = config.stylePrefix + lyStylePfx;
       config.layers.pStylePrefix = config.stylePrefix;
@@ -22,7 +23,9 @@ module.exports = {
       else
         this.panel = panels.getPanel('views-container');
 
-      this.panel.set('appendContent', this.$layers).trigger('change:appendContent');
+      const toAppend = $(`<div class="${pfx}layers"></div>`);
+      toAppend.append(this.$layers);
+      this.panel.set('appendContent', toAppend).trigger('change:appendContent');
     }
     this.$layers.show();
   },

@@ -2,6 +2,7 @@ module.exports = () => {
   let itemsView;
   let config = {};
   const defaults = require('./config/config');
+  const ItemView = require('./view/ItemView');
   const ItemsView = require('./view/ItemsView');
 
   return {
@@ -15,11 +16,22 @@ module.exports = () => {
           config[name] = defaults[name];
       }
 
-      itemsView = new ItemsView({
-        collection,
+      let View = ItemsView;
+      const opened = opts.opened || {};
+      const options = {
         config,
-        opened: opts.opened || {}
-      });
+        opened
+      }
+
+      // Show wrapper if requested
+      if (config.showWrapper && collection.parent) {
+        View = ItemView;
+        options.model = collection.parent;
+      } else {
+        options.collection = collection
+      }
+
+      itemsView = new View(options);
       em && em.on('change:selectedComponent', this.componentChanged);
       this.componentChanged();
 
@@ -30,7 +42,11 @@ module.exports = () => {
      * Triggered when the selected component is changed
      * @private
      */
-    componentChanged() {
+    componentChanged(e, md, opts = {}) {
+      if (opts.fromLayers) {
+        return;
+      }
+
       const em = config.em;
       const opened = em.get('opened');
       const model = em.get('selectedComponent');

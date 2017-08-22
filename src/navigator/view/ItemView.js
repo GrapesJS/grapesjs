@@ -31,7 +31,7 @@ module.exports = Backbone.View.extend({
     this.config = o.config;
     this.em = o.config.em;
     this.ppfx = this.em.get('Config').stylePrefix;
-    this.sorter = o.sorter || {};
+    this.sorter = o.sorter || '';
     this.pfx = this.config.stylePrefix;
     if(typeof this.model.get('open') == 'undefined')
       this.model.set('open',false);
@@ -101,11 +101,11 @@ module.exports = Backbone.View.extend({
     var model = this.model;
     if(model.get('open')){
       this.$el.addClass("open");
-      this.$caret.addClass('fa-chevron-down');
+      this.getCaret().addClass('fa-chevron-down');
       opened[model.cid] = model;
     }else{
       this.$el.removeClass("open");
-      this.$caret.removeClass('fa-chevron-down');
+      this.getCaret().removeClass('fa-chevron-down');
       delete opened[model.cid];
     }
   },
@@ -127,20 +127,10 @@ module.exports = Backbone.View.extend({
 
   /**
    * Handle component selection
-   * @return {[type]} [description]
    */
   handleSelect(e) {
     e.stopPropagation();
-    var em = this.em;
-
-    if(em){
-      var model = em.get('selectedComponent');
-      if(model){
-        model.set('status', '');
-      }
-      this.model.set('status', 'selected');
-      em.set('selectedComponent', this.model);
-    }
+    this.em && this.em.setSelected(this.model, {fromLayers: 1});
   },
 
   /**
@@ -148,9 +138,7 @@ module.exports = Backbone.View.extend({
    * @param	Event
    * */
   startSort(e) {
-    if (this.sorter) {
-      this.sorter.startSort(e.target);
-    }
+    this.sorter && this.sorter.startSort(e.target);
   },
 
   /**
@@ -254,6 +242,14 @@ module.exports = Backbone.View.extend({
     return count;
   },
 
+  getCaret() {
+    if (!this.caret) {
+      const pfx = this.pfx;
+      this.caret = this.$el.find(`> .${pfx}title-c > .${pfx}title > #${pfx}caret`);
+    }
+    return this.caret;
+  },
+
   render() {
     let model = this.model;
     var pfx = this.pfx;
@@ -284,7 +280,6 @@ module.exports = Backbone.View.extend({
       parent: model
     }).render().$el;
     this.$el.find('.'+ pfx +'children').html(this.$components);
-    this.$caret = this.$el.find('> .' + pfx + 'title-c > .' + pfx + 'title > #' + pfx + 'caret');
     if(!model.get('draggable') || !this.config.sortable){
     	this.$el.find('> #' + pfx + 'move').detach();
     }

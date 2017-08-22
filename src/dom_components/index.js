@@ -170,6 +170,7 @@ module.exports = () => {
         em.on('change:selectedComponent', this.componentChanged, this);
       }
 
+      c.wrapper['custom-name'] = c.wrapperName;
       component = new Component(c.wrapper, {
         sm: em,
         config: c,
