@@ -161,16 +161,18 @@ module.exports = Backbone.View.extend({
    * @private
    */
   updateSelector() {
-    this.compTarget = this.target.get('selectedComponent');
-    if(!this.compTarget || !this.compTarget.get)
+    const selected = this.target.get('selectedComponent');
+    this.compTarget = selected;
+    if(!selected || !selected.get)
       return;
     var result = '';
     this.collection.each(model => {
       if(model.get('active'))
         result += '.' + model.get('name');
     });
-    var state = this.compTarget.get('state');
+    var state = selected.get('state');
     result = state ? result + ':' + state : result;
+    result = result || selected.getName();
     var el = this.el.querySelector('#' + this.pfx + 'sel');
 
     if (el) {
