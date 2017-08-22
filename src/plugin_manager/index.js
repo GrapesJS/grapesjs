@@ -17,7 +17,7 @@ module.exports = config => {
      * Add new plugin. Plugins could not be overwritten
      * @param {string} id Plugin ID
      * @param {Function} plugin Function which contains all plugin logic
-     * @return {this}
+     * @return {Function} The plugin function
      * @example
      * PluginManager.add('some-plugin', function(editor){
      *   editor.Commands.add('new-command', {

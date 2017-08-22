@@ -186,6 +186,7 @@ $ npm test
 * [grapesjs-blocks-basic](https://github.com/artf/grapesjs-blocks-basic) - Basic set of blocks
 * [grapesjs-plugin-forms](https://github.com/artf/grapesjs-plugin-forms) - Set of form components and blocks
 * [grapesjs-navbar](https://github.com/artf/grapesjs-navbar) - Simple navbar component
+* [grapesjs-component-countdown](https://github.com/artf/grapesjs-component-countdown) - Simple countdown component
 
 ### Presets
 * [grapesjs-preset-newsletter](https://github.com/artf/grapesjs-preset-newsletter) - Newsletter Builder
