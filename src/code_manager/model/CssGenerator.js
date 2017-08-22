@@ -58,13 +58,14 @@ module.exports = Backbone.Model.extend({
   },
 
   /** @inheritdoc */
-  build(model, cssc) {
+  build(model, opts = {}) {
+    const cssc = opts.cssc;
     this.compCls = [];
     var code = this.buildFromModel(model);
     code += this.buildFromComp(model);
     var compCls = this.compCls;
 
-    if(cssc){
+    if (cssc) {
       var rules = cssc.getAll();
       var mediaRules = {};
       rules.each(function(rule) {

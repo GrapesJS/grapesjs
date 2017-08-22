@@ -428,7 +428,9 @@ module.exports = Backbone.Model.extend({
     var wrp = this.get('DomComponents').getComponent();
     var protCss = this.config.protectedCss;
 
-    return protCss + this.get('CodeManager').getCode(wrp, 'css', cssc);
+    return protCss + this.get('CodeManager').getCode(wrp, 'css', {
+      cssc
+    });
   },
 
   /**
