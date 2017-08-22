@@ -424,12 +424,14 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   getCss() {
+    const config = this.config;
+    const wrappesIsBody = config.wrappesIsBody;
     var cssc = this.get('CssComposer');
     var wrp = this.get('DomComponents').getComponent();
-    var protCss = this.config.protectedCss;
+    var protCss = config.protectedCss;
 
     return protCss + this.get('CodeManager').getCode(wrp, 'css', {
-      cssc
+      cssc, wrappesIsBody
     });
   },
 
