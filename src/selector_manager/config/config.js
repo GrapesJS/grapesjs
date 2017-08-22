@@ -12,6 +12,8 @@ module.exports = {
   // Label for states
   statesLabel: '- State -',
 
+  selectedLabel: 'Selected',
+
   // States
   states: [
       { name: 'hover', label: 'Hover' },

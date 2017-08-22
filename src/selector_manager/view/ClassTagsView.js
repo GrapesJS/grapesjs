@@ -26,7 +26,7 @@ module.exports = Backbone.View.extend({
     <span id="<%= pfx %>add-tag" class="fa fa-plus"></span>
   </div>
   <div id="<%= pfx %>sel-help">
-    <div id="<%= pfx %>label">Selected</div>
+    <div id="<%= pfx %>label"><%= selectedLabel %></div>
     <div id="<%= pfx %>sel"></div>
     <div style="clear:both"></div>
   </div>`),
@@ -303,11 +303,13 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    this.$el.html( this.template({
-      label: this.config.label,
-      statesLabel: this.config.statesLabel,
+    const config = this.config;
+    this.$el.html(this.template({
+      selectedLabel: config.selectedLabel,
+      statesLabel: config.statesLabel,
+      label: config.label,
       pfx: this.pfx,
-      ppfx: this.ppfx
+      ppfx: this.ppfx,
     }));
     this.$input = this.$el.find('input#' + this.newInputId);
     this.$addBtn = this.$el.find('#' + this.addBtnId);
