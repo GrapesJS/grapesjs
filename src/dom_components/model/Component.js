@@ -50,7 +50,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     editable: false,
 
     // Hide the component inside Layers
-    layerable: false,
+    layerable: true,
 
     // This property is used by the HTML exporter as void elements do not
     // have closing tag, eg. <br/>, <hr/>, etc.
