@@ -28,7 +28,7 @@ module.exports = Backbone.Model.extend({
       let selector = `#${model.getId()}`;
       selector = wrappesIsBody && model.get('wrapper') ?
         'body' : selector;
-      code += `${selector} {`;
+      code += `${selector}{`;
       for(var prop in style){
         if(style.hasOwnProperty(prop))
           code += prop + ':' + style[prop] + ';';

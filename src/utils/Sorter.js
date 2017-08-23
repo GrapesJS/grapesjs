@@ -766,7 +766,8 @@ module.exports = Backbone.View.extend({
       var srcModel = this.getSourceModel();
       if (srcModel && srcModel.set) {
         srcModel.set('status', '');
-        this.selectOnEnd && srcModel.set('status', 'selected');
+        srcModel.set('status', 'selected');
+        //this.selectOnEnd && srcModel.set('status', 'selected');
       }
     }
 
