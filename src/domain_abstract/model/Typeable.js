@@ -1,4 +1,28 @@
+const Model = Backbone.Model;
+const View = Backbone.View;
+
 export default {
+
+  initialize(models, opts) {
+    this.model = (attrs, options) => {
+      let modelType = this.getType(attrs.type);
+      const baseType = this.getBaseType();
+      const Model = modelType ? modelType.model : baseType.model;
+      return new Model(attrs, options);
+    };
+    const init = this.init;
+    init && init();
+  },
+
+  /**
+   * Returns the base type (last object in the stack)
+   * @return {Object}
+   */
+  getBaseType() {
+    const types = this.getTypes();
+    return types[types.length - 1];
+  },
+
   /**
    * Get types
    * @return {Array}
@@ -38,13 +62,18 @@ export default {
    */
   addType(id, definition) {
     const type = this.getType(id);
+    let {model, view, isType} = definition;
+    model = model instanceof Model ? model : Model.extend(model);
+    view = view instanceof View ? view : View.extend(view);
 
     if (type) {
-      type.model = definition.model;
-      type.view = definition.view;
-      type.isType = definition.isType;
+      type.model = model;
+      type.view = view;
+      type.isType = isType || type.isType;
     } else {
       definition.id = id;
+      definition.model = model;
+      definition.view = view;
       this.getTypes().unshift(definition);
     }
   }
