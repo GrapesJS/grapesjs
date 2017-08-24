@@ -21,13 +21,10 @@ module.exports = Backbone.Collection.extend({
       if(opt && opt.config)
         options.config = opt.config;
 
-      if(opt && opt.defaultTypes)
-          options.defaultTypes = opt.defaultTypes;
-
       if(opt && opt.componentTypes)
           options.componentTypes = opt.componentTypes;
 
-      var df = opt.defaultTypes;
+      var df = opt.componentTypes;
 
       for (var it = 0; it < df.length; it++) {
         var dfId = df[it].id;

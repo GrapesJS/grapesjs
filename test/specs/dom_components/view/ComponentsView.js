@@ -21,12 +21,12 @@ module.exports = {
         beforeEach(() => {
           dcomp = new DomComponents();
           compOpts = {
-            defaultTypes: dcomp.componentTypes,
+            componentTypes: dcomp.componentTypes,
           };
           model = new Components([], compOpts);
           view = new ComponentsView({
             collection: model,
-            defaultTypes: dcomp.componentTypes,
+            componentTypes: dcomp.componentTypes,
           });
           $fixture.empty().appendTo($fixtures);
           $fixture.html(view.render().el);

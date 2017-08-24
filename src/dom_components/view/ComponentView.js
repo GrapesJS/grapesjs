@@ -302,7 +302,6 @@ module.exports = Backbone.View.extend({
     var view = new ComponentsView({
       collection: this.model.get('components'),
       config: this.config,
-      defaultTypes: this.opts.defaultTypes,
       componentTypes: this.opts.componentTypes,
     });
 

@@ -23,7 +23,7 @@ module.exports = {
         beforeEach(() => {
           dcomp = new DomComponents();
           compOpts = {
-            defaultTypes: dcomp.componentTypes,
+            componentTypes: dcomp.componentTypes,
           };
           model = new Component();
           view = new ComponentView({
@@ -129,7 +129,7 @@ module.exports = {
           }, compOpts);
           view = new ComponentView({
             model,
-            defaultTypes: dcomp.componentTypes,
+            componentTypes: dcomp.componentTypes,
           });
           expect(view.render().$el.html()).toEqual('<span data-highlightable="1"></span><div title="test" data-highlightable="1"></div>');
         });

@@ -34,13 +34,12 @@
  */
 module.exports = () => {
   var c = {},
-  componentTypes = {},
   defaults = require('./config/config'),
   Component = require('./model/Component'),
   ComponentView = require('./view/ComponentView');
 
   var component, componentView;
-  var defaultTypes = [
+  var componentTypes = [
     {
       id: 'cell',
       model: require('./model/ComponentTableCell'),
@@ -105,7 +104,7 @@ module.exports = () => {
 
   return {
 
-    componentTypes: defaultTypes,
+    componentTypes,
 
     /**
      * Name of the module
@@ -166,27 +165,42 @@ module.exports = () => {
         c.rte = em.get('rte') || '';
         c.modal = em.get('Modal') || '';
         c.am = em.get('AssetManager') || '';
-        em.get('Parser').compTypes = defaultTypes;
+        em.get('Parser').compTypes = componentTypes;
         em.on('change:selectedComponent', this.componentChanged, this);
       }
 
-      c.wrapper['custom-name'] = c.wrapperName;
-      component = new Component(c.wrapper, {
+      // Build wrapper
+      let components = c.components;
+      let wrapper = Object.assign({}, c.wrapper);
+      wrapper['custom-name'] = c.wrapperName;
+      wrapper.wrapper = 1;
+
+      // Components might be a wrapper
+      if (components && components.constructor === Object && components.wrapper) {
+        wrapper = Object.assign({}, components);
+        components = components.components || [];
+        wrapper.components = [];
+
+        // Have to put back the real object of components
+        if (em) {
+          em.config.components = components;
+        }
+      }
+
+      component = new Component(wrapper, {
         sm: em,
         config: c,
-        defaultTypes,
         componentTypes,
       });
       component.set({ attributes: {id: 'wrapper'}});
 
       if(em && !em.config.loadCompsOnRender) {
-        component.get('components').add(c.components);
+        component.get('components').add(components);
       }
 
       componentView = new ComponentView({
         model: component,
         config: c,
-        defaultTypes,
         componentTypes,
       });
       return this;
@@ -198,7 +212,6 @@ module.exports = () => {
      */
     onLoad() {
       if(c.stm && c.stm.isAutosave()){
-        //console.log('OnLoad', this.getWrapper().get('components'));
         c.em.initUndoManager();
         c.em.initChildrenComp(this.getWrapper());
       }
@@ -405,7 +418,7 @@ module.exports = () => {
         compType.view = methods.view;
       } else {
         methods.id = type;
-        defaultTypes.unshift(methods);
+        componentTypes.unshift(methods);
       }
     },
 
@@ -415,7 +428,7 @@ module.exports = () => {
      * @private
      */
     getType(type) {
-      var df = defaultTypes;
+      var df = componentTypes;
 
       for (var it = 0; it < df.length; it++) {
         var dfId = df[it].id;

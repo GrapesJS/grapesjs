@@ -15,6 +15,26 @@ export default {
   },
 
   /**
+   * Recognize type by any value
+   * @param  {mixed} value
+   * @return {Object} Found type
+   */
+  recognizeType(value) {
+    const types = this.getTypes();
+
+    for (let i = 0; i < types.length; i++) {
+      const type = types[i];
+      let typeFound = type.isType(value);
+      typeFound = typeof typeFound == 'boolean' && typeFound ?
+        {type: type.id} : typeFound;
+
+      if (typeFound) {
+        return typeFound;
+      }
+    }
+  },
+
+  /**
    * Returns the base type (last object in the stack)
    * @return {Object}
    */

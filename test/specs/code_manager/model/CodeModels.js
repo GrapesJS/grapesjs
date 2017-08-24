@@ -14,7 +14,7 @@ module.exports = {
           obj = new HtmlGenerator();
           var dcomp = new DomComponents();
           comp = new Component({}, {
-            defaultTypes: dcomp.componentTypes,
+            componentTypes: dcomp.componentTypes,
           });
         });
 
@@ -64,7 +64,7 @@ module.exports = {
           obj  = new CssGenerator();
           var dcomp = new DomComponents();
           comp = new Component({}, {
-            defaultTypes: dcomp.componentTypes,
+            componentTypes: dcomp.componentTypes,
           });
         });
 

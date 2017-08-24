@@ -7,8 +7,6 @@ module.exports = {
 
   // Default wrapper configuration
   wrapper: {
-    // Need this property for exports
-    wrapper: 1,
     style: {margin: 0},
     removable: false,
     copyable: false,
