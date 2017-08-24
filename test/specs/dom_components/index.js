@@ -39,7 +39,9 @@ describe('DOM Components', () => {
 
 
     beforeEach(() => {
-      config = {};
+      config = {
+        storeWrapper: 1,
+      };
       obj = new DomComponents().init(config);
     });
 
