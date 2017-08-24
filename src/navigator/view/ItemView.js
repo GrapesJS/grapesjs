@@ -38,7 +38,7 @@ module.exports = Backbone.View.extend({
     this.pfx = this.config.stylePrefix;
     if(typeof this.model.get('open') == 'undefined')
       this.model.set('open',false);
-    this.listenTo(this.model.components, 'remove add change reset', this.checkChildren);
+    this.listenTo(this.model.get('components'), 'remove add change reset', this.checkChildren);
     this.listenTo(this.model, 'destroy remove', this.remove);
     this.listenTo(this.model, 'change:status', this.updateStatus);
     this.listenTo(this.model, 'change:open', this.updateOpening);
@@ -122,7 +122,7 @@ module.exports = Backbone.View.extend({
   toggleOpening(e) {
     e.stopPropagation();
 
-    if(!this.model.components.length)
+    if(!this.model.get('components').length)
       return;
 
     this.model.set('open', !this.model.get('open') );
@@ -242,7 +242,7 @@ module.exports = Backbone.View.extend({
    */
   countChildren(model) {
     var count = 0;
-    model.components.each(function(m){
+    model.get('components').each(function(m){
       var isCountable = this.opt.isCountable;
       var hide = this.config.hideTextnode;
       if(isCountable && !isCountable(m, hide))
@@ -285,7 +285,7 @@ module.exports = Backbone.View.extend({
     if(typeof ItemsView == 'undefined')
     	ItemsView = require('./ItemsView');
     this.$components = new ItemsView({
-      collection: model.components,
+      collection: model.get('components'),
       config: this.config,
       sorter: this.sorter,
       opened: this.opt.opened,

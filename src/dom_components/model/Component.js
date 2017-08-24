@@ -112,8 +112,6 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     this.set('attributes', this.get('attributes') || {});
     this.listenTo(this, 'change:script', this.scriptUpdated);
     this.listenTo(this, 'change:traits', this.traitsUpdated);
-    //this.defaultCl = this.normalizeClasses(this.get('classes') || this.config.classes || []);
-    //this.set('classes', new Selectors(this.defaultCl));
     this.loadTraits();
     this.initClasses();
     this.initComponents();
