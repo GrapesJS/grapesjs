@@ -262,8 +262,9 @@ module.exports = () => {
       }
 
       if (keys.indexOf('components') >= 0) {
-        obj.components = JSON.stringify(this.getWrapper());
-        //obj.components = JSON.stringify(this.getComponents());
+        const toStore = c.storeWrapper ?
+          this.getWrapper() : this.getComponents();
+        obj.components = JSON.stringify(toStore);
       }
 
       if (!noStore) {

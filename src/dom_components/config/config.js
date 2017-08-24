@@ -23,10 +23,15 @@ module.exports = {
   components: [],
 
   // Class for new image component
-  imageCompClass  : 'fa fa-picture-o',
+  imageCompClass: 'fa fa-picture-o',
 
   // Open assets manager on create of image component
-  oAssetsOnCreate  : true,
+  oAssetsOnCreate: true,
+
+  // TODO to remove
+  // Editor should also store the wrapper informations, but as this change might
+  // break stuff I set ii as an opt-in option, for now.
+  storeWrapper: 0,
 
   // List of void elements
   voidElements: ['area', 'base', 'br', 'col', 'embed', 'hr', 'img',
