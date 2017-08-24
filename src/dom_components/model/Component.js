@@ -114,7 +114,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     this.listenTo(this, 'change:traits', this.traitsUpdated);
     //this.defaultCl = this.normalizeClasses(this.get('classes') || this.config.classes || []);
     //this.set('classes', new Selectors(this.defaultCl));
-    this.loadTraits(this.get('traits'));
+    this.loadTraits();
     this.initClasses();
     this.initComponents();
     this.initToolbar();
@@ -165,9 +165,14 @@ module.exports = Backbone.Model.extend(Styleable).extend({
   traitsUpdated() {
     let found = 0;
     const attrs = Object.assign({}, this.get('attributes'));
-    this.loadTraits(this.get('traits'), {silent: 1});
+    const traits = this.get('traits');
 
-    this.get('traits').each((trait) => {
+    if (!(traits instanceof Traits)) {
+      this.loadTraits();
+      return;
+    }
+
+    traits.each((trait) => {
       found = 1;
       if (!trait.get('changeProp')) {
         const value = trait.getInitValue();
@@ -217,8 +222,14 @@ module.exports = Backbone.Model.extend(Styleable).extend({
   loadTraits(traits, opts = {}) {
     var trt = new Traits();
     trt.setTarget(this);
-    trt.add(traits);
+    traits = traits || this.get('traits');
+
+    if (traits.length) {
+      trt.add(traits);
+    }
+
     this.set('traits', trt, opts);
+    return this;
   },
 
   /**

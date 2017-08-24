@@ -14,6 +14,7 @@ module.exports = {
     copyable: false,
     draggable: false,
     components: [],
+    traits: [],
     stylable: ['background','background-color','background-image',
       'background-repeat','background-attachment','background-position'],
   },

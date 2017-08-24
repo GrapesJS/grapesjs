@@ -234,7 +234,8 @@ module.exports = () => {
 
         // If the result is an object I consider it the wrapper
         if (isObj) {
-          this.getWrapper().set(result).initComponents().initClasses();
+          this.getWrapper().set(result)
+          .initComponents().initClasses().loadTraits();
         } else {
           this.getComponents().add(result);
         }
