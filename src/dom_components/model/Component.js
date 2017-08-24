@@ -97,27 +97,26 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     toolbar: null,
   },
 
-  initialize(o, opt) {
+  initialize(props = {}, opt = {}) {
+    const em = opt.sm || {};
+
     // Check void elements
-    if(opt && opt.config && opt.config.voidElements.indexOf(this.get('tagName')) >= 0)
-      this.set('void', true);
-    const em = opt ? opt.sm || {} : {};
+    if(opt && opt.config &&
+      opt.config.voidElements.indexOf(this.get('tagName')) >= 0) {
+        this.set('void', true);
+    }
+
     this.opt = opt;
     this.sm = em;
-    this.config = o || {};
-    this.defaultC = this.config.components || [];
-    this.defaultCl = this.normalizeClasses(this.get('classes') || this.config.classes || []);
-    this.components	= new Components(this.defaultC, opt);
-    this.components.parent = this;
+    this.config = props;
     this.set('attributes', this.get('attributes') || {});
     this.listenTo(this, 'change:script', this.scriptUpdated);
     this.listenTo(this, 'change:traits', this.traitsUpdated);
-    this.set('components', this.components);
-    this.set('classes', new Selectors(this.defaultCl));
-    var traits = new Traits();
-    traits.setTarget(this);
-    traits.add(this.get('traits'));
-    this.set('traits', traits);
+    //this.defaultCl = this.normalizeClasses(this.get('classes') || this.config.classes || []);
+    //this.set('classes', new Selectors(this.defaultCl));
+    this.loadTraits(this.get('traits'));
+    this.initClasses();
+    this.initComponents();
     this.initToolbar();
 
     // Normalize few properties from strings to arrays
@@ -133,6 +132,19 @@ module.exports = Backbone.Model.extend(Styleable).extend({
 
     this.set('status', '');
     this.init();
+  },
+
+  initClasses() {
+    const classes = this.normalizeClasses(this.get('classes') || this.config.classes || []);
+    this.set('classes', new Selectors(classes));
+    return this;
+  },
+
+  initComponents() {
+    let comps = new Components(this.get('components'), this.opt);
+    comps.parent = this;
+    this.set('components', comps);
+    return this;
   },
 
   /**
@@ -153,6 +165,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
   traitsUpdated() {
     let found = 0;
     const attrs = Object.assign({}, this.get('attributes'));
+    this.loadTraits(this.get('traits'), {silent: 1});
 
     this.get('traits').each((trait) => {
       found = 1;
@@ -201,11 +214,11 @@ module.exports = Backbone.Model.extend(Styleable).extend({
    * @param  {Array} traits
    * @private
    */
-  loadTraits(traits) {
+  loadTraits(traits, opts = {}) {
     var trt = new Traits();
     trt.setTarget(this);
     trt.add(traits);
-    this.set('traits', trt);
+    this.set('traits', trt, opts);
   },
 
   /**

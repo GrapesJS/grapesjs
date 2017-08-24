@@ -13,7 +13,6 @@ module.exports = {
     removable: false,
     copyable: false,
     draggable: false,
-    badgable: false,
     components: [],
     stylable: ['background','background-color','background-image',
       'background-repeat','background-attachment','background-position'],

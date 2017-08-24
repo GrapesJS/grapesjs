@@ -198,6 +198,7 @@ module.exports = () => {
      */
     onLoad() {
       if(c.stm && c.stm.isAutosave()){
+        //console.log('OnLoad', this.getWrapper().get('components'));
         c.em.initUndoManager();
         c.em.initChildrenComp(this.getWrapper());
       }
@@ -210,25 +211,36 @@ module.exports = () => {
      * @param {Object} data Object of data to load
      * @return {Object} Loaded data
      */
-    load(data) {
-      var d = data || '';
-      if(!d && c.stm)
-        d = c.em.getCacheLoad();
-      var obj = '';
-      if(d.components){
-        try{
-          obj =  JSON.parse(d.components);
-        }catch(err){}
-      }else if(d.html)
-        obj = d.html;
+    load(data = '') {
+      let result = '';
 
-      if (obj && obj.length) {
-        this.clear();
-        this.getComponents().reset();
-        this.getComponents().add(obj);
+      if (!data && c.stm) {
+        data = c.em.getCacheLoad();
       }
 
-      return obj;
+      if (data.components) {
+        try {
+          result = JSON.parse(data.components);
+        } catch (err) {}
+      } else if (data.html) {
+        result = data.html;
+      }
+
+      const isObj = result && result.constructor === Object;
+
+      if ((result && result.length) || isObj) {
+        this.clear();
+        this.getComponents().reset();
+
+        // If the result is an object I consider it the wrapper
+        if (isObj) {
+          this.getWrapper().set(result).initComponents().initClasses();
+        } else {
+          this.getComponents().add(result);
+        }
+      }
+
+      return result;
     },
 
     /**
@@ -237,14 +249,21 @@ module.exports = () => {
      * @return {Object} Data to store
      */
     store(noStore) {
-      if(!c.stm)
+      if(!c.stm) {
         return;
+      }
+
       var obj = {};
       var keys = this.storageKey();
-      if(keys.indexOf('html') >= 0)
+
+      if (keys.indexOf('html') >= 0) {
         obj.html = c.em.getHtml();
-      if(keys.indexOf('components') >= 0)
-        obj.components = JSON.stringify(c.em.getComponents());
+      }
+
+      if (keys.indexOf('components') >= 0) {
+        obj.components = JSON.stringify(this.getWrapper());
+        //obj.components = JSON.stringify(this.getComponents());
+      }
 
       if (!noStore) {
         c.stm.store(obj);

@@ -832,7 +832,7 @@
       clearOnRender: 0,
 
       storageManager:{
-        autoload: 0,
+        autoload: 1,
         storeComponents: 1,
         storeStyles: 1,
       },
@@ -1267,8 +1267,11 @@
       command:  function(editor, sender) {
         if(sender) sender.set('active', false);
         if(confirm('Are you sure to clean the canvas?')) {
-          var comps = editor.DomComponents.clear();
-          localStorage.clear();
+          editor.CssComposer.getAll().reset();
+          editor.DomComponents.clear();
+          setTimeout(function() {
+            localStorage.clear();
+          }, 0);
         }
       },
       attributes: { title: 'Empty canvas' }
