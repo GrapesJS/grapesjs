@@ -1,15 +1,14 @@
-var Backbone = require('backbone');
-var fileUploaderTemplate = `
-<form>
-  <div id="<%= pfx %>title"><%= title %></div>
-  <input type="file" id="<%= uploadId %>" name="file" accept="image/*" <%= disabled ? 'disabled' : '' %> multiple/>
-  <div style="clear:both;"></div>
-</form>
-`;
+import fetch from 'utils/fetch';
 
 module.exports = Backbone.View.extend({
 
-  template:   _.template(fileUploaderTemplate),
+  template: _.template(`
+  <form>
+    <div id="<%= pfx %>title"><%= title %></div>
+    <input type="file" id="<%= uploadId %>" name="file" accept="image/*" <%= disabled ? 'disabled' : '' %> multiple/>
+    <div style="clear:both;"></div>
+  </form>
+  `),
 
   events:   {},
 
@@ -32,18 +31,79 @@ module.exports = Backbone.View.extend({
     this.delegateEvents();
   },
 
+  onUploadStart() {
+    const em = this.config.em;
+    em && em.trigger('asset:upload:start');
+  },
+
+  onUploadEnd() {
+    const em = this.config.em;
+    em && em.trigger('asset:upload:end');
+  },
+
+  onUploadError(err) {
+    console.error(err);
+    this.onUploadEnd(err);
+  },
+
+  onUploadResponse(res) {
+    const em = this.config.em;
+    const config = this.config;
+    const target = this.target;
+    em && em.trigger('asset:upload:response', res);
+
+    if (config.autoAdd && target) {
+      if ((req.status/200|0) == 1) {
+        const json = JSON.parse(req.responseText);
+        target.add(json.data);
+      } else {
+        onUploadError(res);
+        return;
+      }
+    }
+
+    this.onUploadEnd(res);
+  },
+
   /**
    * Upload files
    * @param  {Object}  e Event
+   * @return {Promise}
    * @private
    * */
   uploadFile(e) {
-    var files    = e.dataTransfer ? e.dataTransfer.files : e.target.files,
-      formData   = new FormData();
-    for (var i = 0; i < files.length; i++) {
-        formData.append('files[]', files[i]);
-      }
+    const files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
+    const formData = new FormData();
+    const config = this.config;
+    const params = config.params;
+
+    for (let i = 0; i < files.length; i++) {
+      formData.append('files[]', files[i]);
+    }
+
+    for (let param in params) {
+      formData.append(param, params[param]);
+    }
+
     var target = this.target;
+    const url = config.upload;
+
+    if (url) {
+      this.onUploadStart();
+      return fetch(url, {
+        method: 'post',
+        credentials: 'include',
+        headers: config.headers,
+        body: formData,
+      }).then(this.onUploadResponse)
+      .catch(this.onUploadError);
+    }
+
+    //onStart upload:start
+    //onEnd upload:end
+    //onResponse upload:response
+    //autoAdd
+    /*
     $.ajax({
       url      : this.config.upload,
       type    : 'POST',
@@ -53,7 +113,7 @@ module.exports = Backbone.View.extend({
       xhrFields  : {
         onprogress(e) {
           if (e.lengthComputable) {
-            /*var result = e.loaded / e.total * 100 + '%';*/
+            var result = e.loaded / e.total * 100 + '%';
           }
         },
         onload(e) {
@@ -66,6 +126,8 @@ module.exports = Backbone.View.extend({
     }).always(() => {
       //turnOff loading
     });
+
+    */
   },
 
   /**
@@ -124,6 +186,7 @@ module.exports = Backbone.View.extend({
     const onDrop = (e) => {
       cleanEditorElCls();
       e.preventDefault();
+      e.stopPropagation();
       this.uploadFile(e);
 
       if (c.openAssetsOnDrop && editor) {

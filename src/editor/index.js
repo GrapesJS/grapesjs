@@ -32,20 +32,23 @@
  * ```
  *
  * **Available Events**
- * `component:add` - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
- * `component:update` - Triggered when a component is, generally, updated (moved, styled, etc.)
- * `component:update:{propertyName}` - Listen any property change
- * `component:styleUpdate` - Triggered when the style of the component is updated
- * `component:styleUpdate:{propertyName}` - Listen for a specific style property change
- * `styleManager:change` - Triggered on style property change from new selected component, the view of the property is passed as an argument to the callback
- * `styleManager:change:{propertyName}` - As above but for a specific style property
- * `storage:load` - Triggered when something was loaded from the storage, loaded object passed as an argumnet
- * `storage:store` - Triggered when something is stored to the storage, stored object passed as an argumnet
- * `selector:add` - Triggers when a new selector/class is created
- * `canvasScroll` - Triggered when the canvas is scrolled
- * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
- * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
- * `load` - When the editor is loaded
+ * * `component:add` - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
+ * * `component:update` - Triggered when a component is, generally, updated (moved, styled, etc.)
+ * * `component:update:{propertyName}` - Listen any property change
+ * * `component:styleUpdate` - Triggered when the style of the component is updated
+ * * `component:styleUpdate:{propertyName}` - Listen for a specific style property change
+ * * `asset:upload:start` - Before the upload is started
+ * * `asset:upload:end` - After the upload is ended
+ * * `asset:upload:response` - On upload response, passes a response object as the argument
+ * * `styleManager:change` - Triggered on style property change from new selected component, the view of the property is passed as an argument to the callback
+ * * `styleManager:change:{propertyName}` - As above but for a specific style property
+ * * `storage:load` - Triggered when something was loaded from the storage, loaded object passed as an argumnet
+ * * `storage:store` - Triggered when something is stored to the storage, stored object passed as an argumnet
+ * * `selector:add` - Triggers when a new selector/class is created
+ * * `canvasScroll` - Triggered when the canvas is scrolled
+ * * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
+ * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
+ * * `load` - When the editor is loaded
  *
  * @module Editor
  * @param {Object} config Configurations

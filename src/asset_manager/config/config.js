@@ -8,6 +8,25 @@ module.exports =  {
   // Url where uploads will be send, set false to disable upload
   upload: 'http://localhost/assets/upload',
 
+  // Custom headers to pass with the upload request
+  headers: {},
+
+  // Custom parameters to pass with the upload request, eg. csrf token
+  params: {},
+
+  // If true, tries to add automatically uploaded assets.
+  // To make it work the server should respond with a JSON containing assets
+  // in a data key, eg:
+  // {
+  //  data: [
+  //    'https://.../image.png',
+  //    ...
+  //    {src: 'https://.../image2.png'},
+  //    ...
+  //  ]
+  // }
+  autoAdd: 1,
+
   // Text on upload input
   uploadText: 'Drop files here or click to upload',
 
