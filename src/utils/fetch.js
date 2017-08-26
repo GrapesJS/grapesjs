@@ -12,7 +12,11 @@ export default typeof fetch == 'function' ? fetch.bind() : (url, options) => {
       req.setRequestHeader(k, options.headers[k]);
     }
 
-    req.onload = e => res(req);
+    req.onload = e => res({
+      status: req.status,
+      statusText: req.statusText,
+      text: () => Promise.resolve(req.responseText)
+    });
     req.onerror = rej;
 
     // Actually, fetch doesn't support onProgress feature

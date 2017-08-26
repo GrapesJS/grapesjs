@@ -5,8 +5,10 @@ module.exports =  {
   // Style prefix
   stylePrefix: 'am-',
 
-  // Url where uploads will be send, set false to disable upload
-  upload: 'http://localhost/assets/upload',
+  // Upload endpoint, set `false` to disable upload
+  // upload: 'https://endpoint/upload/assets',
+  // upload: false,
+  upload: 0,
 
   // Custom headers to pass with the upload request
   headers: {},

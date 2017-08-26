@@ -31,38 +31,52 @@ module.exports = Backbone.View.extend({
     this.delegateEvents();
   },
 
+  /**
+   * Triggered before the upload is started
+   * @private
+   */
   onUploadStart() {
     const em = this.config.em;
     em && em.trigger('asset:upload:start');
   },
 
-  onUploadEnd() {
+  /**
+   * Triggered after the upload is ended
+   * @param  {Object|string} res End result
+   * @private
+   */
+  onUploadEnd(res) {
     const em = this.config.em;
-    em && em.trigger('asset:upload:end');
+    em && em.trigger('asset:upload:end', res);
   },
 
+  /**
+   * Triggered on upload error
+   * @param  {Object} err Error
+   * @private
+   */
   onUploadError(err) {
     console.error(err);
     this.onUploadEnd(err);
   },
 
-  onUploadResponse(res) {
+  /**
+   * Triggered on upload response
+   * @param  {string} text Response text
+   * @private
+   */
+  onUploadResponse(text) {
     const em = this.config.em;
     const config = this.config;
     const target = this.target;
-    em && em.trigger('asset:upload:response', res);
+    const json = JSON.parse(text);
+    em && em.trigger('asset:upload:response', json);
 
     if (config.autoAdd && target) {
-      if ((req.status/200|0) == 1) {
-        const json = JSON.parse(req.responseText);
-        target.add(json.data);
-      } else {
-        onUploadError(res);
-        return;
-      }
+      target.add(json.data);
     }
 
-    this.onUploadEnd(res);
+    this.onUploadEnd(text);
   },
 
   /**
@@ -87,7 +101,6 @@ module.exports = Backbone.View.extend({
 
     var target = this.target;
     const url = config.upload;
-
     if (url) {
       this.onUploadStart();
       return fetch(url, {
@@ -95,39 +108,13 @@ module.exports = Backbone.View.extend({
         credentials: 'include',
         headers: config.headers,
         body: formData,
-      }).then(this.onUploadResponse)
-      .catch(this.onUploadError);
+      }).then(res => (res.status/200|0) == 1 ?
+        res.text() : res.text().then((text) =>
+          Promise.reject(text)
+        ))
+      .then((text) => this.onUploadResponse(text))
+      .catch(err => this.onUploadError(err));
     }
-
-    //onStart upload:start
-    //onEnd upload:end
-    //onResponse upload:response
-    //autoAdd
-    /*
-    $.ajax({
-      url      : this.config.upload,
-      type    : 'POST',
-      data    : formData,
-      beforeSend  : this.config.beforeSend,
-      complete  : this.config.onComplete,
-      xhrFields  : {
-        onprogress(e) {
-          if (e.lengthComputable) {
-            var result = e.loaded / e.total * 100 + '%';
-          }
-        },
-        onload(e) {
-            //progress.value = 100;
-        }
-      },
-      cache: false, contentType: false, processData: false
-    }).done(data => {
-      target.add(data.data);
-    }).always(() => {
-      //turnOff loading
-    });
-
-    */
   },
 
   /**

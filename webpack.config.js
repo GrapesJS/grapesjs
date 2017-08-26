@@ -34,8 +34,7 @@ module.exports = {
         test: /\.js$/,
         loader: 'babel-loader',
         include: /src/,
-        exclude: /node_modules/,
-        query: {presets: ['es2015']}
+        exclude: /node_modules/
     }],
   },
   resolve: {
