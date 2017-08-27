@@ -94,7 +94,7 @@ module.exports = Backbone.View.extend({
     const params = config.params;
 
     for (let i = 0; i < files.length; i++) {
-      body.append('files[]', files[i]);
+      body.append(`${config.uploadName}[]`, files[i]);
     }
 
     for (let param in params) {

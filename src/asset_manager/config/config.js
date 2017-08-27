@@ -10,6 +10,9 @@ module.exports =  {
   // upload: false,
   upload: 0,
 
+  // The name used in POST to pass uploaded files
+  uploadName: 'files',
+
   // Custom headers to pass with the upload request
   headers: {},
 
