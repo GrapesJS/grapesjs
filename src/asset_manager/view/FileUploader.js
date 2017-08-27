@@ -102,6 +102,11 @@ module.exports = Backbone.View.extend({
     var target = this.target;
     const url = config.upload;
     const headers = config.headers;
+    const reqHead = 'X-Requested-With';
+
+    if (typeof headers[reqHead] == 'undefined') {
+      headers[reqHead] = 'XMLHttpRequest';
+    }
 
     if (url) {
       this.onUploadStart();
