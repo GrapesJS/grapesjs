@@ -39,6 +39,7 @@
  * * `component:styleUpdate:{propertyName}` - Listen for a specific style property change
  * * `asset:upload:start` - Before the upload is started
  * * `asset:upload:end` - After the upload is ended
+ * * `asset:upload:error` - On any error in upload, passes the error as an argument
  * * `asset:upload:response` - On upload response, passes the result as an argument
  * * `styleManager:change` - Triggered on style property change from new selected component, the view of the property is passed as an argument to the callback
  * * `styleManager:change:{propertyName}` - As above but for a specific style property

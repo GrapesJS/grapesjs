@@ -56,8 +56,10 @@ module.exports = Backbone.View.extend({
    * @private
    */
   onUploadError(err) {
+    const em = this.config.em;
     console.error(err);
     this.onUploadEnd(err);
+    em && em.trigger('asset:upload:error', err);
   },
 
   /**
