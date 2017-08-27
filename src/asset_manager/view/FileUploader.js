@@ -87,27 +87,29 @@ module.exports = Backbone.View.extend({
    * */
   uploadFile(e) {
     const files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
-    const formData = new FormData();
+    const body = new FormData();
     const config = this.config;
     const params = config.params;
 
     for (let i = 0; i < files.length; i++) {
-      formData.append('files[]', files[i]);
+      body.append('files[]', files[i]);
     }
 
     for (let param in params) {
-      formData.append(param, params[param]);
+      body.append(param, params[param]);
     }
 
     var target = this.target;
     const url = config.upload;
+    const headers = config.headers;
+
     if (url) {
       this.onUploadStart();
       return fetch(url, {
         method: 'post',
         credentials: 'include',
-        headers: config.headers,
-        body: formData,
+        headers,
+        body,
       }).then(res => (res.status/200|0) == 1 ?
         res.text() : res.text().then((text) =>
           Promise.reject(text)
@@ -150,8 +152,9 @@ module.exports = Backbone.View.extend({
     const c = this.config;
     const em = ev.model;
     const edEl = ev.el;
-    const editor = em && em.get('Editor');
-    const frameEl = ev.model.get('Canvas').getBody();
+    const editor = em.get('Editor');
+    const container = em.get('Config').el;
+    const frameEl = em.get('Canvas').getBody();
     const ppfx = this.ppfx;
     const updatedCls = `${ppfx}dropzone-active`;
     const dropzoneCls = `${ppfx}dropzone`;
@@ -193,7 +196,7 @@ module.exports = Backbone.View.extend({
     ev.$el.append(`<div class="${dropzoneCls}">${c.dropzoneContent}</div>`);
     cleanEditorElCls();
 
-    if (c.dropzone && 'draggable' in edEl) {
+    if ('draggable' in edEl) {
       [edEl, frameEl].forEach((item) => {
         item.ondragover = onDragOver;
         item.ondragleave = onDragLeave;

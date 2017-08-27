@@ -207,7 +207,7 @@ module.exports = () => {
     },
 
     postRender(editorView) {
-      fu.initDropzone(editorView);
+      c.dropzone && fu.initDropzone(editorView);
     },
 
     //-------
