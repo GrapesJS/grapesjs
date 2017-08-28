@@ -4,13 +4,24 @@ const View = Backbone.View;
 export default {
 
   initialize(models, opts) {
-    this.model = (attrs, options) => {
-      let modelType = this.getType(attrs.type);
-      const baseType = this.getBaseType();
-      const Model = modelType ? modelType.model : baseType.model;
-      return new Model(attrs, options);
+    this.model = (attrs = {}, options = {}) => {
+      let Model, type;
+
+      if (attrs && attrs.type) {
+        type = this.getType(attrs.type);
+        Model = type ? type.model : this.getBaseType().model;
+      } else {
+        const typeFound = this.recognizeType(attrs);
+        type = typeFound.type;
+        Model = type.model;
+        attrs = typeFound.attributes;
+      }
+
+      const model = new Model(attrs, options);
+      model.typeView = type.view;
+      return model;
     };
-    const init = this.init;
+    const init = this.init && this.init.bind(this);
     init && init();
   },
 
@@ -29,8 +40,17 @@ export default {
         {type: type.id} : typeFound;
 
       if (typeFound) {
-        return typeFound;
+        return {
+          type,
+          attributes: typeFound,
+        };
       }
+    }
+
+    // If, for any reason, the type is not found it'll return the base one
+    return {
+      type: this.getBaseType(),
+      attributes: value,
     }
   },
 
@@ -54,7 +74,7 @@ export default {
   /**
    * Get type
    * @param {string} id Type ID
-   *
+   * @return {Object} Type definition
    */
   getType(id) {
     const types = this.getTypes();

@@ -5,8 +5,13 @@
  * * [remove](#remove)
  * * [store](#store)
  * * [load](#load)
+ * * [getContainer](#getcontainer)
+ * * [getAssetsEl](#getassetsel)
  * * [onClick](#onClick)
  * * [onDblClick](#onDblClick)
+ * * [addType](#addtype)
+ * * [getType](#gettype)
+ * * [getTypes](#gettypes)
  *
  * Before using this methods you should get first the module from the editor instance, in this way:
  *
@@ -35,11 +40,12 @@
  */
 
 module.exports = () => {
-  var c = {},
-  Assets = require('./model/Assets'),
-  AssetsView = require('./view/AssetsView'),
-  FileUpload = require('./view/FileUploader'),
-  assets, am, fu;
+  let c = {};
+  const defaults = require('./config/config');
+  const Assets = require('./model/Assets');
+  const AssetsView = require('./view/AssetsView');
+  const FileUpload = require('./view/FileUploader');
+  let assets, am, fu;
 
   return {
 
@@ -64,24 +70,42 @@ module.exports = () => {
      */
     init(config) {
       c = config || {};
-      var defaults = require('./config/config');
 
-      for (var name in defaults) {
+      for (let name in defaults) {
         if (!(name in c))
           c[name] = defaults[name];
       }
 
-      var ppfx = c.pStylePrefix;
-      if(ppfx)
-        c.stylePrefix = ppfx + c.stylePrefix;
+      const ppfx = c.pStylePrefix;
+      const em = c.em;
 
+      if (ppfx) {
+        c.stylePrefix = ppfx + c.stylePrefix;
+      }
+
+      // Global assets collection
       assets = new Assets(c.assets);
-      var obj = {
-        collection: assets,
+      const obj = {
+        // Collection visible in asset manager
+        collection: new Assets([]),
+        globalCollection: assets,
         config: c,
       };
-      am = new AssetsView(obj);
       fu = new FileUpload(obj);
+      obj.fu = fu;
+      am = new AssetsView(obj);
+
+      // Setup the sync between the global and public collections
+      assets.listenTo(assets, 'add', (model) => {
+        this.getAllVisible().add(model);
+        em && em.trigger('asset:add', model);
+      });
+
+      assets.listenTo(assets, 'remove', (model) => {
+        this.getAllVisible().remove(model);
+        em && em.trigger('asset:remove', model);
+      });
+
       return this;
     },
 
@@ -123,11 +147,19 @@ module.exports = () => {
     },
 
     /**
-     * Return all assets
+     * Return global collection
      * @return {Collection}
      */
     getAll() {
       return assets;
+    },
+
+    /**
+     * Return visible collection
+     * @return {Collection}
+     */
+    getAllVisible() {
+      return am.collection;
     },
 
     /**
@@ -195,19 +227,69 @@ module.exports = () => {
     },
 
     /**
+     * Return the Asset Manager Container
+     * @return {HTMLElement}
+     */
+    getContainer() {
+      return am.el;
+    },
+
+    /**
+     *  Get assets element container
+     * @return {HTMLElement}
+     */
+    getAssetsEl() {
+      return am.el.querySelector('[data-el=assets]');
+    },
+
+    /**
      * Render assets
-     * @param  {Boolean} f 	Force to render, otherwise cached version will be returned
+     * @param  {Boolean} f Force to render, otherwise cached version will be returned
      * @return {HTMLElement}
      * @private
      */
-    render(f) {
-      if(!this.rendered || f)
-        this.rendered	= am.render().$el.add(fu.render().$el);
-      return	this.rendered;
+    render(assets = []) {
+      const toRender = assets.length ? assets : this.getAll().models;
+      am.collection.reset(toRender);
+      return this.getContainer();
     },
 
     postRender(editorView) {
       c.dropzone && fu.initDropzone(editorView);
+    },
+
+    /**
+     * Add new type
+     * @param {string} id Type ID
+     * @param {Object} definition Definition of the type. Each definition contains
+     *                            `model` (business logic), `view` (presentation logic)
+     *                            and `isType` function which recognize the type of the
+     *                            passed entity
+     * addType('my-type', {
+     *  model: {},
+     *  view: {},
+     *  isType: (value) => {},
+     * })
+     */
+    addType(id, definition) {
+      this.getAll().addType(id, definition);
+    },
+
+    /**
+     * Get type
+     * @param {string} id Type ID
+     * @return {Object} Type definition
+     */
+    getType(id) {
+      return this.getAll().getType(id);
+    },
+
+    /**
+     * Get types
+     * @return {Array}
+     */
+    getTypes() {
+      return this.getAll().getTypes();
     },
 
     //-------

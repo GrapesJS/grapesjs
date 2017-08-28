@@ -1,12 +1,23 @@
 var Backbone = require('backbone');
 
 module.exports = Backbone.View.extend({
-  initialize(o) {
+
+  initialize(o = {}) {
     this.options = o;
+    this.collection = o.collection;
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
     this.className = this.pfx + 'asset';
-    this.listenTo( this.model, 'destroy remove', this.remove);
+    this.listenTo(this.model, 'destroy remove', this.remove);
+    const init = this.init && this.init.bind(this);
+    init && init(o);
+  },
+
+  render() {
+    const el = this.el;
+    el.innerHTML = this.template(this, this.model);
+    el.className = this.className;
+    return this;
   },
 });

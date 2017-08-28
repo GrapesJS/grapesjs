@@ -37,6 +37,8 @@
  * * `component:update:{propertyName}` - Listen any property change
  * * `component:styleUpdate` - Triggered when the style of the component is updated
  * * `component:styleUpdate:{propertyName}` - Listen for a specific style property change
+ * * `asset:add` - New asset added
+ * * `asset:remove` - Asset removed
  * * `asset:upload:start` - Before the upload is started
  * * `asset:upload:end` - After the upload is ended
  * * `asset:upload:error` - On any error in upload, passes the error as an argument

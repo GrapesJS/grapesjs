@@ -12,9 +12,10 @@ module.exports = {
     // old API
     assetManager.setTarget(opt.target);
     assetManager.onSelect(opt.onSelect);
+    assetManager.render();
 
     modal.setTitle(opt.modalTitle || 'Select image');
-    modal.setContent(assetManager.render());
+    modal.setContent(assetManager.getContainer());
     modal.open();
   },
 
