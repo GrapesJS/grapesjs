@@ -6,9 +6,18 @@ module.exports = require('./AssetView').extend({
     'click [data-toggle=asset-remove]': 'removeItem',
   },
 
-  template(view, model) {
-    const pfx = view.pfx;
-    const ppfx = view.ppfx;
+  getPreview() {
+    const pfx = this.pfx;
+    const src = this.model.get('src');
+    return `
+      <div id="${pfx}preview" style="background-image: url(${src});"></div>
+      <div id="${pfx}preview-bg" class="${this.ppfx}checker-bg"></div>
+    `;
+  },
+
+  getInfo() {
+    const pfx = this.pfx;
+    const model = this.model;
     let name = model.get('name');
     let width = model.get('width');
     let height = model.get('height');
@@ -16,16 +25,8 @@ module.exports = require('./AssetView').extend({
     let dim = width && height ? `${width}x${height}${unit}` : '';
     name = name || model.getFilename();
     return `
-      <div id="${pfx}preview-cont">
-        <div id="${pfx}preview" style="background-image: url(${model.get('src')});"></div>
-        <div id="${pfx}preview-bg" class="${ppfx}checker-bg"></div>
-      </div>
-      <div id="${pfx}meta">
-        <div id="${pfx}name">${name}</div>
-        <div id="${pfx}dimensions">${dim}</div>
-      </div>
-      <div id="${pfx}close" data-toggle="asset-remove">&Cross;</div>
-      <div style="clear:both"></div>
+      <div id="${pfx}name">${name}</div>
+      <div id="${pfx}dimensions">${dim}</div>
     `;
   },
 
