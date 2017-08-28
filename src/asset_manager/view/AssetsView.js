@@ -1,4 +1,3 @@
-var Backbone = require('backbone');
 var AssetView = require('./AssetView');
 var AssetImageView = require('./AssetImageView');
 var FileUploader = require('./FileUploader');

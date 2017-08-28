@@ -1,5 +1,4 @@
-var Backbone = require('backbone');
-var Asset = require('./Asset');
+const Asset = require('./Asset');
 
 module.exports = Asset.extend({
 
