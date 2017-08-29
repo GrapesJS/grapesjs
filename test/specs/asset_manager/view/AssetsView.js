@@ -1,4 +1,5 @@
 var AssetsView = require('asset_manager/view/AssetsView');
+var FileUploader = require('asset_manager/view/FileUploader');
 var Assets = require('asset_manager/model/Assets');
 
 module.exports = {
@@ -14,10 +15,12 @@ module.exports = {
       });
 
       beforeEach(function () {
-        this.coll   = new Assets([]);
+        this.coll = new Assets([]);
         this.view = new AssetsView({
-          config : {},
-          collection: this.coll
+          config: {},
+          collection: this.coll,
+          globalCollection: new Assets([]),
+          fu: new FileUploader({})
         });
         obj = this.view;
         this.$fixture.empty().appendTo(this.$fixtures);
@@ -85,7 +88,7 @@ module.exports = {
         obj.addFromStr({
           preventDefault() {}
         });
-        var asset = obj.collection.at(0);
+        var asset = obj.options.globalCollection.at(0);
         expect(asset.get('src')).toEqual('test');
       });
 

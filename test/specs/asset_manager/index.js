@@ -72,12 +72,6 @@ describe('Asset Manager', () => {
       expect(asset2.get('src')).toEqual(imgObj.src + '2');
     });
 
-    it('Src is unique', () => {
-      obj.add(imgObj);
-      obj.add(imgObj);
-      expect(obj.getAll().length).toEqual(1);
-    });
-
     it('Remove asset', () => {
       obj.add(imgObj);
       obj.remove(imgObj.src);
