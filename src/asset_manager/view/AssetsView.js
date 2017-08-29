@@ -40,11 +40,6 @@ module.exports = Backbone.View.extend({
     this.listenTo(this.collection, 'add', this.addToAsset );
     this.listenTo(this.collection, 'deselectAll', this.deselectAll);
     this.listenTo(this.collection, 'reset', this.render);
-    /*
-    this.events = {};
-    this.events.submit = 'addFromStr';
-    this.delegateEvents();
-    */
   },
 
   /**

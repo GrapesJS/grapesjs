@@ -63,6 +63,10 @@ module.exports = () => {
      */
     storageKey: 'assets',
 
+    getConfig() {
+      return c;
+    },
+
     /**
      * Initialize module
      * @param {Object} config Configurations
@@ -84,7 +88,7 @@ module.exports = () => {
       }
 
       // Global assets collection
-      assets = new Assets(c.assets);
+      assets = new Assets([]);
       const obj = {
         // Collection visible in asset manager
         collection: new Assets([]),
@@ -257,6 +261,9 @@ module.exports = () => {
 
     postRender(editorView) {
       c.dropzone && fu.initDropzone(editorView);
+
+      // Leave it here for custom types
+      assets.add(c.assets, {silent: 1});
     },
 
     /**

@@ -2,6 +2,7 @@ const Model = Backbone.Model;
 const View = Backbone.View;
 
 export default {
+  types: [],
 
   initialize(models, opts) {
     this.model = (attrs = {}, options = {}) => {
@@ -68,7 +69,7 @@ export default {
    * @return {Array}
    */
   getTypes() {
-    return [];
+    return this.types;
   },
 
   /**
@@ -104,9 +105,9 @@ export default {
     const type = this.getType(id);
     const ModelInst = type ? type.model : Model;
     const ViewInst = type ? type.view : View;
-    let {model, view, isType} = definition;
-    model = model instanceof Model ? model : ModelInst.extend(model);
-    view = view instanceof View ? view : ViewInst.extend(view);
+    let {model, view, isType} = definition;;
+    model = model instanceof Model ? model : ModelInst.extend(model || {});
+    view = view instanceof View ? view : ViewInst.extend(view || {});
 
     if (type) {
       type.model = model;
