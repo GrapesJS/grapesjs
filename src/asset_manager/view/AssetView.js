@@ -15,13 +15,13 @@ module.exports = Backbone.View.extend({
   template() {
     const pfx = this.pfx;
     return `
-      <div id="${pfx}preview-cont">
+      <div class="${pfx}preview-cont">
         ${this.getPreview()}
       </div>
-      <div id="${pfx}meta">
+      <div class="${pfx}meta">
         ${this.getInfo()}
       </div>
-      <div id="${pfx}close" data-toggle="asset-remove">&Cross;</div>
+      <div class="${pfx}close" data-toggle="asset-remove">&Cross;</div>
       <div style="clear:both"></div>
     `;
   },

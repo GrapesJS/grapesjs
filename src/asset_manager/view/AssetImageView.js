@@ -10,8 +10,8 @@ module.exports = require('./AssetView').extend({
     const pfx = this.pfx;
     const src = this.model.get('src');
     return `
-      <div id="${pfx}preview" style="background-image: url(${src});"></div>
-      <div id="${pfx}preview-bg" class="${this.ppfx}checker-bg"></div>
+      <div class="${pfx}preview" style="background-image: url(${src});"></div>
+      <div class="${pfx}preview-bg ${this.ppfx}checker-bg"></div>
     `;
   },
 
@@ -25,8 +25,8 @@ module.exports = require('./AssetView').extend({
     let dim = width && height ? `${width}x${height}${unit}` : '';
     name = name || model.getFilename();
     return `
-      <div id="${pfx}name">${name}</div>
-      <div id="${pfx}dimensions">${dim}</div>
+      <div class="${pfx}name">${name}</div>
+      <div class="${pfx}dimensions">${dim}</div>
     `;
   },
 
