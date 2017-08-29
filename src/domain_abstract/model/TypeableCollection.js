@@ -102,9 +102,11 @@ export default {
    */
   addType(id, definition) {
     const type = this.getType(id);
+    const ModelInst = type ? type.model : Model;
+    const ViewInst = type ? type.view : View;
     let {model, view, isType} = definition;
-    model = model instanceof Model ? model : Model.extend(model);
-    view = view instanceof View ? view : View.extend(view);
+    model = model instanceof Model ? model : ModelInst.extend(model);
+    view = view instanceof View ? view : ViewInst.extend(view);
 
     if (type) {
       type.model = model;

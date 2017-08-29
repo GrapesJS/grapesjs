@@ -40,11 +40,19 @@ module.exports =  {
 
   // Custom uploadFile function
   // @example
-  // uploadFile: function(e) {
+  // uploadFile: (e) => {
   //   var files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
   //   // ...send somewhere
   // }
   uploadFile: '',
+
+  // Handle the image url submit from the built-in 'Add image' form
+  // @example
+  // handleAdd: (textFromInput) => {
+  //   // some check...
+  //   editor.AssetManager.add(textFromInput);
+  // }
+  handleAdd: '',
 
   // Enable an upload dropzone on the entire editor (not document) when dragging
   // files over it

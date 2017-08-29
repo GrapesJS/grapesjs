@@ -112,6 +112,7 @@ module.exports = () => {
     /**
      * Add new asset/s to the collection. URLs are supposed to be unique
      * @param {string|Object|Array<string>|Array<Object>} asset URL strings or an objects representing the resource.
+     * @param {Object} [opts] Options
      * @return {Model}
      * @example
      * // In case of strings, would be interpreted as images
@@ -131,8 +132,8 @@ module.exports = () => {
      * 	src: './path/to/img.png',
      * }]);
      */
-    add(asset) {
-      return assets.add(asset);
+    add(asset, opts = {}) {
+      return assets.add(asset, opts);
     },
 
     /**

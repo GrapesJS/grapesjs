@@ -4,6 +4,10 @@ var FileUploader = require('./FileUploader');
 
 module.exports = Backbone.View.extend({
 
+  events: {
+    submit: 'handleSubmit',
+  },
+
   template(view) {
     const pfx = view.pfx;
     const ppfx = view.ppfx;
@@ -36,10 +40,11 @@ module.exports = Backbone.View.extend({
     this.listenTo(this.collection, 'add', this.addToAsset );
     this.listenTo(this.collection, 'deselectAll', this.deselectAll);
     this.listenTo(this.collection, 'reset', this.render);
-
+    /*
     this.events = {};
     this.events.submit = 'addFromStr';
     this.delegateEvents();
+    */
   },
 
   /**
@@ -48,19 +53,24 @@ module.exports = Backbone.View.extend({
    * @return {this}
    * @private
    */
-  addFromStr(e) {
+  handleSubmit(e) {
     e.preventDefault();
-    const input = this.getInputUrl();
+    const input = this.getAddInput();
     const url = input.value.trim();
+    const handleAdd = this.config.handleAdd;
 
     if (!url) {
       return;
     }
 
-    this.options.globalCollection.add(url, {at: 0});
-    this.getAssetsEl().scrollTop = 0;
     input.value = '';
-    return this;
+    this.getAssetsEl().scrollTop = 0;
+
+    if (handleAdd) {
+      handleAdd(url);
+    } else {
+      this.options.globalCollection.add(url, {at: 0});
+    }
   },
 
   /**
@@ -78,7 +88,7 @@ module.exports = Backbone.View.extend({
    * @return {HTMLElement}
    * @private
    */
-  getInputUrl() {
+  getAddInput() {
     if(!this.inputUrl || !this.inputUrl.value)
       this.inputUrl = this.el.querySelector(`.${this.pfx}add-asset input`);
     return this.inputUrl;
