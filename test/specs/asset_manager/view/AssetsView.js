@@ -80,12 +80,12 @@ module.exports = {
       });
 
       it("Returns not empty url input", () => {
-        expect(obj.getInputUrl()).toExist();
+        expect(obj.getAddInput()).toExist();
       });
 
       it("Add image asset from input string", () => {
-        obj.getInputUrl().value = "test";
-        obj.addFromStr({
+        obj.getAddInput().value = "test";
+        obj.handleSubmit({
           preventDefault() {}
         });
         var asset = obj.options.globalCollection.at(0);
