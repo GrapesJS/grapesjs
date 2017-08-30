@@ -16,20 +16,20 @@ module.exports = {
   stepsBeforeSave: 1,
 
   //Enable/Disable components model (JSON format)
-  storeComponents: false,
+  storeComponents: 1,
 
   //Enable/Disable styles model (JSON format)
-  storeStyles: false,
+  storeStyles: 1,
 
   //Enable/Disable saving HTML template
-  storeHtml: true,
+  storeHtml: 1,
 
   //Enable/Disable saving HTML template
-  storeCss: true,
+  storeCss: 1,
 
   // ONLY FOR LOCAL STORAGE
   // If enabled, checks if browser supports Local Storage
-  checkLocal: true,
+  checkLocal: 1,
 
   // ONLY FOR REMOTE STORAGE
   // Custom params that should be passed with each store/load request
