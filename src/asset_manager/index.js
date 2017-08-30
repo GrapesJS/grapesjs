@@ -249,12 +249,12 @@ module.exports = () => {
 
     /**
      * Render assets
-     * @param  {Boolean} f Force to render, otherwise cached version will be returned
+     * @param  {array} assets Assets to render, without the argument will render
+     *                        all global assets
      * @return {HTMLElement}
-     * @private
      */
-    render(assets = []) {
-      const toRender = assets.length ? assets : this.getAll().models;
+    render(assets) {
+      const toRender = assets || this.getAll().models;
       am.collection.reset(toRender);
       return this.getContainer();
     },

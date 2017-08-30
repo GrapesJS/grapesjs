@@ -138,17 +138,15 @@ module.exports = Backbone.View.extend({
   render() {
     const pfx = this.pfx;
     const ppfx = this.ppfx;
+    const noAssets = this.config.noAssets;
     const fuRendered = this.options.fu.render().el;
     const fragment = document.createDocumentFragment();
     this.$el.empty();
-
-    this.collection.each((model) => {
-      this.addAsset(model, fragment);
-    });
-
+    this.collection.each((model) => this.addAsset(model, fragment));
     this.$el.append(fuRendered).append(this.template(this));
     this.el.className = `${ppfx}asset-manager`;
-    this.$el.find(`.${pfx}assets`).append(fragment);
+    const assetsEl = this.$el.find(`.${pfx}assets`);
+    assetsEl.append(fragment.childNodes.length ? fragment : noAssets);
     return this;
   }
 });

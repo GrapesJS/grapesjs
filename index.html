@@ -831,11 +831,6 @@
       fromElement: true,
       clearOnRender: 0,
 
-      storageManager: {
-        autoload: 1,
-        storeComponents: 1,
-        storeStyles: 1,
-      },
 
       commands:     {
           defaults: [{
@@ -1268,7 +1263,6 @@
       command:  function(editor, sender) {
         if(sender) sender.set('active', false);
         if(confirm('Are you sure to clean the canvas?')) {
-          editor.CssComposer.getAll().reset();
           editor.DomComponents.clear();
           setTimeout(function() {
             localStorage.clear();
