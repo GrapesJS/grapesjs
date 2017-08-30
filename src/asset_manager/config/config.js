@@ -4,7 +4,7 @@ module.exports =  {
 
   // Content to add where there is no assets to show
   // eg. 'No <b>assets</b> here, drag to upload'
-  noAssets: '',
+  noAssets: 'No assets',
 
   // Style prefix
   stylePrefix: 'am-',

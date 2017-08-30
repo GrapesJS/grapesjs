@@ -37,9 +37,11 @@ module.exports = Backbone.View.extend({
     this.config = o.config;
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
-    this.listenTo(this.collection, 'add', this.addToAsset );
-    this.listenTo(this.collection, 'deselectAll', this.deselectAll);
-    this.listenTo(this.collection, 'reset', this.render);
+    const coll = this.collection;
+    this.listenTo(coll, 'reset', this.render);
+    this.listenTo(coll, 'add', this.addToAsset);
+    this.listenTo(coll, 'remove', this.removedAsset);
+    this.listenTo(coll, 'deselectAll', this.deselectAll);
   },
 
   /**
@@ -90,10 +92,24 @@ module.exports = Backbone.View.extend({
   },
 
   /**
+   * Triggered when an asset is removed
+   * @param {Asset} model Removed asset
+   * @private
+   */
+  removedAsset(model) {
+    if (!this.collection.length) {
+      this.toggleNoAssets();
+    }
+  },
+
+  /**
    * Add asset to collection
    * @private
    * */
   addToAsset(model) {
+    if (this.collection.length == 1) {
+      this.toggleNoAssets(1);
+    }
     this.addAsset(model);
   },
 
@@ -127,6 +143,21 @@ module.exports = Backbone.View.extend({
   },
 
   /**
+   * Checks if to show noAssets
+   * @param {Boolean} hide
+   * @private
+   */
+  toggleNoAssets(hide) {
+    const assetsEl = this.$el.find(`.${this.pfx}assets`);
+
+    if (hide) {
+      assetsEl.empty();
+    } else {
+      assetsEl.append(this.config.noAssets);
+    }
+  },
+
+  /**
    * Deselect all assets
    * @private
    * */
@@ -138,15 +169,15 @@ module.exports = Backbone.View.extend({
   render() {
     const pfx = this.pfx;
     const ppfx = this.ppfx;
-    const noAssets = this.config.noAssets;
+    //const noAssets = this.config.noAssets;
     const fuRendered = this.options.fu.render().el;
     const fragment = document.createDocumentFragment();
     this.$el.empty();
     this.collection.each((model) => this.addAsset(model, fragment));
     this.$el.append(fuRendered).append(this.template(this));
     this.el.className = `${ppfx}asset-manager`;
-    const assetsEl = this.$el.find(`.${pfx}assets`);
-    assetsEl.append(fragment.childNodes.length ? fragment : noAssets);
+    this.toggleNoAssets(this.collection.length);
+    this.$el.find(`.${pfx}assets`).append(fragment);
     return this;
   }
 });
