@@ -255,6 +255,11 @@ module.exports = () => {
      */
     render(assets) {
       const toRender = assets || this.getAll().models;
+
+      if (!am.rendered) {
+        am.render();
+      }
+
       am.collection.reset(toRender);
       return this.getContainer();
     },

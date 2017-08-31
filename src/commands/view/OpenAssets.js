@@ -1,21 +1,24 @@
 module.exports = {
 
-  run(editor, sender, opts) {
-    var opt = opts || {};
-    var config = editor.getConfig();
-    var modal = editor.Modal;
-    var assetManager = editor.AssetManager;
+  run(editor, sender, opts = {}) {
+    const modal = editor.Modal;
+    const am = editor.AssetManager;
+    const config = am.getConfig();
+    const title = opts.modalTitle || config.modalTitle || '';
 
-    assetManager.onClick(opt.onClick);
-    assetManager.onDblClick(opt.onDblClick);
+    am.setTarget(opts.target);
+    am.onClick(opts.onClick);
+    am.onDblClick(opts.onDblClick);
+    am.onSelect(opts.onSelect);
 
-    // old API
-    assetManager.setTarget(opt.target);
-    assetManager.onSelect(opt.onSelect);
-    assetManager.render();
+    if (!this.rendered) {
+      console.log('render now');
+      am.render();
+      this.rendered = 1;
+    }
 
-    modal.setTitle(opt.modalTitle || 'Select image');
-    modal.setContent(assetManager.getContainer());
+    modal.setTitle(title);
+    modal.setContent(am.getContainer());
     modal.open();
   },
 

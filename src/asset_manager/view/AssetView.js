@@ -3,9 +3,11 @@ module.exports = Backbone.View.extend({
   initialize(o = {}) {
     this.options = o;
     this.collection = o.collection;
-    this.config = o.config || {};
-    this.pfx = this.config.stylePrefix || '';
-    this.ppfx = this.config.pStylePrefix || '';
+    const config = o.config || {};
+    this.config = config;
+    this.pfx = config.stylePrefix || '';
+    this.ppfx = config.pStylePrefix || '';
+    this.em = config.em;
     this.className = this.pfx + 'asset';
     this.listenTo(this.model, 'destroy remove', this.remove);
     const init = this.init && this.init.bind(this);

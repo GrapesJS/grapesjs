@@ -1,10 +1,16 @@
 module.exports =  {
   // Default assets
+  // eg. [
+  //  'https://...image1.png',
+  //  'https://...image2.png',
+  //  {type: 'image', src: 'https://...image3.png', someOtherCustomProp: 1},
+  //  ..
+  // ]
   assets: [],
 
   // Content to add where there is no assets to show
   // eg. 'No <b>assets</b> here, drag to upload'
-  noAssets: 'No assets',
+  noAssets: '',
 
   // Style prefix
   stylePrefix: 'am-',
@@ -67,4 +73,7 @@ module.exports =  {
 
   // Any dropzone content to append inside dropzone element
   dropzoneContent: '',
+
+  // Default title for the asset manager modal
+  modalTitle: 'Select Image',
 };

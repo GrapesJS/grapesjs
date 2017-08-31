@@ -57,6 +57,7 @@ module.exports = require('./AssetView').extend({
    * @private
    * */
   handleDblClick() {
+    const em = this.em;
     var onDblClick = this.config.onDblClick;
     var model = this.model;
 
@@ -64,6 +65,7 @@ module.exports = require('./AssetView').extend({
       onDblClick(model);
     } else {
       this.updateTarget(model.get('src'));
+      em && em.get('Modal').close();
     }
 
     var onSelect = this.collection.onSelect;

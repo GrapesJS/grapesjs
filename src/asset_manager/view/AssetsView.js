@@ -38,7 +38,7 @@ module.exports = Backbone.View.extend({
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
     const coll = this.collection;
-    this.listenTo(coll, 'reset', this.render);
+    this.listenTo(coll, 'reset', this.renderAssets);
     this.listenTo(coll, 'add', this.addToAsset);
     this.listenTo(coll, 'remove', this.removedAsset);
     this.listenTo(coll, 'deselectAll', this.deselectAll);
@@ -166,18 +166,22 @@ module.exports = Backbone.View.extend({
     this.$el.find(`.${pfx}highlight`).removeClass(`${pfx}highlight`);
   },
 
-  render() {
-    const pfx = this.pfx;
-    const ppfx = this.ppfx;
-    //const noAssets = this.config.noAssets;
-    const fuRendered = this.options.fu.render().el;
+  renderAssets() {
     const fragment = document.createDocumentFragment();
-    this.$el.empty();
-    this.collection.each((model) => this.addAsset(model, fragment));
-    this.$el.append(fuRendered).append(this.template(this));
-    this.el.className = `${ppfx}asset-manager`;
+    const assets = this.$el.find(`.${this.pfx}assets`);
+    assets.empty();
     this.toggleNoAssets(this.collection.length);
-    this.$el.find(`.${pfx}assets`).append(fragment);
+    this.collection.each((model) => this.addAsset(model, fragment));
+    assets.append(fragment);
+  },
+
+  render() {
+    const fuRendered = this.options.fu.render().el;
+    this.$el.empty();
+    this.$el.append(fuRendered).append(this.template(this));
+    this.el.className = `${this.ppfx}asset-manager`;
+    this.renderAssets();
+    this.rendered = 1;
     return this;
   }
 });

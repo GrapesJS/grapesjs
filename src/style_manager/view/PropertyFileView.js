@@ -125,7 +125,7 @@ module.exports = PropertyView.extend({
 
     if(editor) {
       this.modal.setTitle('Select image');
-      this.modal.setContent(this.am.render());
+      this.modal.setContent(this.am.getContainer());
       this.am.setTarget(null);
       editor.runCommand('open-assets', {
         target: this.model,
