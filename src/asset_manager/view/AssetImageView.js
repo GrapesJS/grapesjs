@@ -1,9 +1,9 @@
 module.exports = require('./AssetView').extend({
 
   events: {
-    click: 'handleClick',
-    dblclick: 'handleDblClick',
-    'click [data-toggle=asset-remove]': 'removeItem',
+    click: 'onClick',
+    dblclick: 'onDblClick',
+    'click [data-toggle=asset-remove]': 'onRemove',
   },
 
   getPreview() {
@@ -36,10 +36,10 @@ module.exports = require('./AssetView').extend({
   },
 
   /**
-   * Trigger when the asset is clicked
+   * Triggered when the asset is clicked
    * @private
    * */
-  handleClick() {
+  onClick() {
     var onClick = this.config.onClick;
     var model = this.model;
     this.collection.trigger('deselectAll');
@@ -53,10 +53,10 @@ module.exports = require('./AssetView').extend({
   },
 
   /**
-   * Trigger when the asset is double clicked
+   * Triggered when the asset is double clicked
    * @private
    * */
-  handleDblClick() {
+  onDblClick() {
     const em = this.em;
     var onDblClick = this.config.onDblClick;
     var model = this.model;
@@ -78,7 +78,7 @@ module.exports = require('./AssetView').extend({
    * Remove asset from collection
    * @private
    * */
-  removeItem(e) {
+  onRemove(e) {
     e.stopPropagation();
     this.model.collection.remove(this.model);
   }

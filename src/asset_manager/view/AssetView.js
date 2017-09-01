@@ -10,6 +10,7 @@ module.exports = Backbone.View.extend({
     this.em = config.em;
     this.className = this.pfx + 'asset';
     this.listenTo(this.model, 'destroy remove', this.remove);
+    this.model.view = this;
     const init = this.init && this.init.bind(this);
     init && init(o);
   },
@@ -23,8 +24,9 @@ module.exports = Backbone.View.extend({
       <div class="${pfx}meta">
         ${this.getInfo()}
       </div>
-      <div class="${pfx}close" data-toggle="asset-remove">&Cross;</div>
-      <div style="clear:both"></div>
+      <div class="${pfx}close" data-toggle="asset-remove">
+        &Cross;
+      </div>
     `;
   },
 

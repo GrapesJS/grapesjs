@@ -12,7 +12,9 @@ module.exports = {
     am.onSelect(opts.onSelect);
 
     if (!this.rendered) {
-      am.render();
+      am.render(am.getAll().filter(
+        asset => asset.get('type') == 'image'
+      ));
       this.rendered = 1;
     }
 

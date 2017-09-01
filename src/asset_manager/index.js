@@ -2,16 +2,15 @@
  * * [add](#add)
  * * [get](#get)
  * * [getAll](#getall)
+ * * [getAllVisible](#getallvisible)
  * * [remove](#remove)
- * * [store](#store)
- * * [load](#load)
  * * [getContainer](#getcontainer)
  * * [getAssetsEl](#getassetsel)
- * * [onClick](#onClick)
- * * [onDblClick](#onDblClick)
  * * [addType](#addtype)
  * * [getType](#gettype)
  * * [getTypes](#gettypes)
+ * * [store](#store)
+ * * [load](#load)
  *
  * Before using this methods you should get first the module from the editor instance, in this way:
  *
@@ -152,7 +151,7 @@ module.exports = () => {
     },
 
     /**
-     * Return global collection
+     * Return the global collection, containing all the assets
      * @return {Collection}
      */
     getAll() {
@@ -160,7 +159,7 @@ module.exports = () => {
     },
 
     /**
-     * Return visible collection
+     * Return the visible collection, which containes assets actually rendered
      * @return {Collection}
      */
     getAllVisible() {
@@ -208,7 +207,7 @@ module.exports = () => {
      * // to load automatically all the stuff
      * var assets = assetManager.load({
      * 	assets: [...]
-     * });
+     * })
      *
      */
     load(data) {
@@ -252,6 +251,15 @@ module.exports = () => {
      * @param  {array} assets Assets to render, without the argument will render
      *                        all global assets
      * @return {HTMLElement}
+     * @example
+     * // Render all assets
+     * assetManager.render();
+     *
+     * // Render some of the assets
+     * const assets = assetManager.getAll();
+     * assetManager.render(assets.filter(
+     *  asset => asset.get('category') == 'cats'
+     * ));
      */
     render(assets) {
       const toRender = assets || this.getAll().models;
@@ -262,13 +270,6 @@ module.exports = () => {
 
       am.collection.reset(toRender);
       return this.getContainer();
-    },
-
-    postRender(editorView) {
-      c.dropzone && fu.initDropzone(editorView);
-
-      // Leave it here for custom types
-      assets.add(c.assets, {silent: 1});
     },
 
     /**
@@ -307,6 +308,13 @@ module.exports = () => {
 
     //-------
 
+    postRender(editorView) {
+      c.dropzone && fu.initDropzone(editorView);
+
+      // Leave it here for custom types
+      assets.add(c.assets, {silent: 1});
+    },
+
     /**
      * Set new target
      * @param	{Object}	m Model
@@ -328,6 +336,7 @@ module.exports = () => {
     /**
      * Set callback to fire when the asset is clicked
      * @param {function} func
+     * @private
      */
     onClick(func) {
       c.onClick = func;
@@ -336,6 +345,7 @@ module.exports = () => {
     /**
      * Set callback to fire when the asset is double clicked
      * @param {function} func
+     * @private
      */
     onDblClick(func) {
       c.onDblClick = func;

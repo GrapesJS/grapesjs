@@ -7,8 +7,9 @@ module.exports = Component.extend({
     tagName: 'img',
     src: '',
     void: 1,
-    droppable: false,
-    resizable: true,
+    droppable: 0,
+    highlightable: 0,
+    resizable: 1,
     traits: ['alt']
   }),
 
