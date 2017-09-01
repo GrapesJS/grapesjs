@@ -12,7 +12,6 @@ module.exports = {
     am.onSelect(opts.onSelect);
 
     if (!this.rendered) {
-      console.log('render now');
       am.render();
       this.rendered = 1;
     }

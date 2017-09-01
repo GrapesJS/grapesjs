@@ -103,9 +103,10 @@ export default {
    */
   addType(id, definition) {
     const type = this.getType(id);
-    const ModelInst = type ? type.model : Model;
-    const ViewInst = type ? type.view : View;
-    let {model, view, isType} = definition;;
+    const baseType = this.getBaseType();
+    const ModelInst = type ? type.model : baseType.model;
+    const ViewInst = type ? type.view : baseType.view;
+    let {model, view, isType} = definition;
     model = model instanceof Model ? model : ModelInst.extend(model || {});
     view = view instanceof View ? view : ViewInst.extend(view || {});
 
@@ -117,6 +118,11 @@ export default {
       definition.id = id;
       definition.model = model;
       definition.view = view;
+      definition.isType = isType || function(value) {
+        if (value && value.type == id) {
+          return true;
+        }
+      };
       this.getTypes().unshift(definition);
     }
   }
