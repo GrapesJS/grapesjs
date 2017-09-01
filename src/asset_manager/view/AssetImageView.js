@@ -48,7 +48,7 @@ module.exports = require('./AssetView').extend({
     if (typeof onClick === 'function') {
       onClick(model);
     } else {
-      this.updateTarget(model.get('src'));
+      this.updateTarget(this.collection.target);
     }
   },
 
@@ -64,28 +64,13 @@ module.exports = require('./AssetView').extend({
     if (typeof onDblClick === 'function') {
       onDblClick(model);
     } else {
-      this.updateTarget(model.get('src'));
+      this.updateTarget(this.collection.target);
       em && em.get('Modal').close();
     }
 
     var onSelect = this.collection.onSelect;
     if (typeof onSelect == 'function') {
       onSelect(this.model);
-    }
-  },
-
-  /**
-   * Update target if exists
-   * @param  {String}  v   Value
-   * @private
-   * */
-  updateTarget(v) {
-    const target = this.collection.target;
-
-    if (target && target.set) {
-      var attr = _.clone(target.get('attributes'));
-      target.set('attributes', attr );
-      target.set('src', v );
     }
   },
 

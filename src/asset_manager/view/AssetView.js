@@ -28,6 +28,18 @@ module.exports = Backbone.View.extend({
     `;
   },
 
+  /**
+   * Update target if exists
+   * @param {Model} target
+   * @private
+   * */
+  updateTarget(target) {
+    if (target && target.set) {
+      target.set('attributes', _.clone(target.get('attributes')));
+      target.set('src', this.model.get('src'));
+    }
+  },
+
   getPreview() {
     return '';
   },
