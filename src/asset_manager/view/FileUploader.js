@@ -75,7 +75,7 @@ module.exports = Backbone.View.extend({
     em && em.trigger('asset:upload:response', json);
 
     if (config.autoAdd && target) {
-      target.add(json.data);
+      target.add(json.data, {at: 0});
     }
 
     this.onUploadEnd(text);
