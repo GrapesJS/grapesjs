@@ -136,6 +136,12 @@ module.exports = () => {
      * }]);
      */
     add(asset, opts = {}) {
+
+      // Put the model at the beginning
+      if (typeof opts.at == 'undefined') {
+        opts.at = 0;
+      }
+
       return assets.add(asset, opts);
     },
 
@@ -307,6 +313,14 @@ module.exports = () => {
     },
 
     //-------
+
+    AssetsView() {
+      return am;
+    },
+
+    FileUploader() {
+      return fu;
+    },
 
     postRender(editorView) {
       c.dropzone && fu.initDropzone(editorView);
