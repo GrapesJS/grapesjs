@@ -152,8 +152,9 @@ module.exports = Backbone.View.extend({
     var attributes = {},
       attr = model.get("attributes");
     for(var key in attr) {
-        if(attr.hasOwnProperty(key))
+        if (key && attr.hasOwnProperty(key)) {
           attributes[key] = attr[key];
+        }
     }
 
     // Update src
