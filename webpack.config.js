@@ -1,5 +1,3 @@
-//webpack --display-reasons
-//Remove jquery https://github.com/webpack/webpack/issues/1275
 var webpack = require('webpack');
 var pkg = require('./package.json');
 var env = process.env.WEBPACK_ENV;

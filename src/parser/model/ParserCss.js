@@ -74,6 +74,7 @@ module.exports = config => ({
       var style = {};
       for (var j = 0, len2 = stl.length; j < len2; j++) {
         var propName = stl[j];
+        //console.log('Style', stl, propName, ': ', stl.getPropertyValue(propName));
         var important = stl.getPropertyPriority(propName);
         style[propName] = stl[propName] +
           (important ? ' !' + important : '');

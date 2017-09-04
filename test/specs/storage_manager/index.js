@@ -60,7 +60,9 @@ describe('Storage Manager', () => {
     });
 
     it('Load do not execute if empty', () => {
-      expect(obj.load(['item'])).toEqual({});
+      obj.load(['item'], (res) => {
+        expect(res).toEqual({});
+      });
     });
 
     it('Load default storages ', () => {
@@ -106,9 +108,10 @@ describe('Storage Manager', () => {
         data2[id + 'item2'] = 'testData2';
 
         obj.store(data);
-        var load = obj.load(['item', 'item2']);
-        expect(storeValue).toEqual(data2);
-        expect(load).toEqual(data);
+        obj.load(['item', 'item2'], (res) => {
+          expect(storeValue).toEqual(data2);
+          expect(res).toEqual(data);
+        });
       });
 
     });

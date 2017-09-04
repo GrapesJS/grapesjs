@@ -202,30 +202,23 @@ module.exports = () => {
     },
 
     /**
-     * Load data from the passed object, if the object is empty will try to fetch them
-     * autonomously from the storage manager.
-     * The fetched data will be added to the collection
+     * Load data from the passed object.
+     * The fetched data will be added to the collection.
      * @param {Object} data Object of data to load
      * @return {Object} Loaded assets
      * @example
-     * var assets = assetManager.load();
-     * // The format below will be used by the editor model
-     * // to load automatically all the stuff
      * var assets = assetManager.load({
      * 	assets: [...]
      * })
      *
      */
-    load(data) {
-      var d = data || '';
-      var name = this.storageKey;
-      if(!d && c.stm)
-        d = c.stm.load(name);
-      var assets = d[name] || [];
+    load(data = {}) {
+      const name = this.storageKey;
+      let assets = data[name] || [];
 
       if (typeof assets == 'string') {
         try {
-          assets = JSON.parse(d[name]);
+          assets = JSON.parse(data[name]);
         } catch(err) {}
       }
 

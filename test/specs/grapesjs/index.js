@@ -151,8 +151,9 @@ describe('GrapesJS', () => {
       var editor = obj.init(config);
       editor.setComponents(htmlString);
       editor.store();
-      var data = editor.load();
-      expect(data.html).toEqual(htmlString);
+      editor.load((data) => {
+        expect(data.html).toEqual(htmlString);
+      });
     });
 
     it('Execute plugins with custom options', () => {

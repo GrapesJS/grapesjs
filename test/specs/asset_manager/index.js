@@ -106,7 +106,7 @@ describe('Asset Manager', () => {
         obj.add(imgObj);
         obj.store();
         obj.remove(imgObj.src);
-        obj.load();
+        obj.load({assets: storage['gjs-assets']});
         var asset = obj.get(imgObj.src);
         expect(asset.get('width')).toEqual(imgObj.width);
         expect(asset.get('height')).toEqual(imgObj.height);
