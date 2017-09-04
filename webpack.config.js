@@ -27,7 +27,7 @@ module.exports = {
       library: 'grapesjs',
       libraryTarget: 'umd',
   },
-  externals: {jquery: 'jQuery'},
+  externals: ['jquery'],
   plugins: plugins,
   module: {
     loaders: [{
