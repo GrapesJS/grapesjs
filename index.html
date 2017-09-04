@@ -1310,6 +1310,22 @@
     });
     */
 
+    var am = editor.AssetManager;
+
+    am.addType('svg-icon', {
+      // `value` is for example the argument passed in `am.add(VALUE);`
+      isType(value) {
+        // The condition is intentionally simple
+        if (value.substring(0, 5) == '<svg ') {
+          return {
+            type: 'svg-icon',
+            svgContent: value
+          };
+        }
+      }
+    })
+
+    
     // Store and load events
     editor.on('storage:load', function(e) {
       console.log('LOAD ', e);
