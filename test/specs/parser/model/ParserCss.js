@@ -199,6 +199,22 @@ module.exports = {
         expect(obj.parse(str)).toEqual(result)
       });
 
+      it('Parse rule with CSS variables', () => {
+        var str = `:root {
+            --some-color: red;
+            --some-width: 55px;
+        }`;
+        var result = {
+          selectors: [],
+          selectorsAdd: ':root',
+          style: {
+            '--some-color': 'red',
+            '--some-width': '55px',
+          }
+        };
+        expect(obj.parse(str)).toEqual(result)
+      });
+
     });
 
   }
