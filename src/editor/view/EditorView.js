@@ -20,17 +20,6 @@ module.exports = Backbone.View.extend({
     var dComps = model.get('DomComponents');
     var config = model.get('Config');
 
-    if(config.loadCompsOnRender) {
-      if (config.clearOnRender) {
-        dComps.clear();
-      }
-      dComps.getComponents().reset(config.components);
-      model.loadOnStart();
-      um.clear();
-      // This will init loaded components
-      dComps.onLoad();
-    }
-
     var conf = this.conf;
     var contEl = $(conf.el || ('body ' + conf.container));
     this.$el.empty();

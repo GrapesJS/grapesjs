@@ -79,7 +79,6 @@ module.exports = () => {
 
         c.sm = c.em; // TODO Refactor
         rules = new CssRules([], c);
-        rules.add(c.rules);
 
         rulesView = new CssRulesView({
           collection: rules,
@@ -93,8 +92,16 @@ module.exports = () => {
        * @private
        */
       onLoad() {
-        if(c.stm && c.stm.isAutosave())
-          c.em.listenRules(this.getAll());
+        rules.add(c.rules);
+      },
+
+      /**
+       * Do stuff after load
+       * @param  {Editor} em
+       * @private
+       */
+      postLoad(em) {
+        em.listenRules(this.getAll());
       },
 
       /**
@@ -106,19 +113,25 @@ module.exports = () => {
        */
       load(data) {
         var d = data || '';
-        if(!d && c.stm)
+
+        if (!d && c.stm) {
           d = c.em.getCacheLoad();
-        var obj = '';
+        }
+
+        var obj = d.styles || '';
+
         if(d.styles) {
-          try{
+          try {
             obj =  JSON.parse(d.styles);
-          }catch(err){}
+          } catch (err) {}
         } else if (d.css) {
           obj = c.em.get('Parser').parseCss(d.css);
         }
 
-        if(obj)
+        if (obj) {
           rules.reset(obj);
+        }
+
         return obj;
       },
 

@@ -560,7 +560,7 @@ module.exports = config => {
       // Do post render stuff after the iframe is loaded otherwise it'll
       // be empty during tests
       em.on('loaded', () => {
-        em.get('modules').forEach((module) => {
+        em.get('modules').forEach(module => {
           module.postRender && module.postRender(editorView);
         });
       });

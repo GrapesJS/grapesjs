@@ -327,7 +327,7 @@ module.exports = () => {
       c.dropzone && fu.initDropzone(editorView);
 
       // Reset assets for custom types
-      const last = this.lastLoad;
+      const last = this.lastLoad || {};
       const assets = last.length ? last : c.assets;
       const all = this.getAll();
       all.reset();

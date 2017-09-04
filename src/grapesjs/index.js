@@ -46,15 +46,15 @@
           c[name] = defaults[name];
       }
 
-      if(!els)
+      if (!els) {
         throw new Error("'container' is required");
+      }
 
       c.el = document.querySelector(els);
       var editor = new Editor(c).init();
 
-      // Execute plugins
+      // Load plugins
       var plugs = plugins.getAll();
-
       c.plugins.forEach((pluginId) => {
         let plugin = plugins.get(pluginId);
 
@@ -65,8 +65,12 @@
         }
       });
 
-      if(c.autorender)
-        editor.render();
+      // Execute `onLoad` on modules once all plugins are initialized.
+      // A plugin might have extended/added some custom type so this
+      // is a good point to load stuff like components, css rules, etc.
+      editor.getModel().loadOnStart();
+
+      c.autorender && editor.render();
 
       editors.push(editor);
       return editor;

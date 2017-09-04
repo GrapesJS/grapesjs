@@ -20,9 +20,6 @@ module.exports = {
   // Show paddings and margins on selected component
   showOffsetsSelected: false,
 
-  // Clear the canvas when editor.render() is called
-  clearOnRender: false,
-
   // On creation of a new Component (via object), if the 'style' attribute is not
   // empty, all those roles will be moved in its new class
   forceClass: true,
@@ -64,10 +61,6 @@ module.exports = {
 
   // Ending tag for variable inside scripts in Components
   tagVarEnd: ' ]}',
-
-  // This option makes available custom component types also for loaded
-  // elements inside canvas
-  loadCompsOnRender: 1,
 
   // Return JS of components inside HTML from 'editor.getHtml()'
   jsInHtml: true,

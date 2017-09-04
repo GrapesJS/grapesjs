@@ -184,6 +184,7 @@ module.exports = () => {
         // Have to put back the real object of components
         if (em) {
           em.config.components = components;
+          c.components = components;
         }
       }
 
@@ -193,10 +194,6 @@ module.exports = () => {
         componentTypes,
       });
       component.set({ attributes: {id: 'wrapper'}});
-
-      if(em && !em.config.loadCompsOnRender) {
-        component.get('components').add(components);
-      }
 
       componentView = new ComponentView({
         model: component,
@@ -211,10 +208,16 @@ module.exports = () => {
      * @private
      */
     onLoad() {
-      if(c.stm && c.stm.isAutosave()){
-        c.em.initUndoManager();
-        c.em.initChildrenComp(this.getWrapper());
-      }
+      this.getComponents().reset(c.components);
+    },
+
+    /**
+     * Do stuff after load
+     * @param  {Editor} em
+     * @private
+     */
+    postLoad(em) {
+      em.initChildrenComp(this.getWrapper());
     },
 
     /**

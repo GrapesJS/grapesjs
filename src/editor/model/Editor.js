@@ -30,7 +30,7 @@ module.exports = Backbone.Model.extend({
     designerMode: false,
     selectedComponent: null,
     previousModel: null,
-    changesCount:  0,
+    changesCount: 0,
     storables: [],
     modules: [],
     toLoad: [],
@@ -51,12 +51,6 @@ module.exports = Backbone.Model.extend({
       this.loadModule(name);
     }, this);
 
-    // Call modules with onLoad callback
-    this.get('toLoad').forEach(M => {
-      M.onLoad();
-    });
-
-    this.loadOnStart();
     this.initUndoManager();
 
     this.on('change:selectedComponent', this.componentSelected, this);
@@ -64,14 +58,36 @@ module.exports = Backbone.Model.extend({
   },
 
   /**
-   * Load on start if it was requested
+   * Should be called after all modules and plugins are loaded
+   * @param {Function} clb
    * @private
    */
-  loadOnStart() {
+  loadOnStart(clb = null) {
     const sm = this.get('StorageManager');
 
+    // Generally, with `onLoad`, the module will try to load the data from
+    // its configurations
+    this.get('toLoad').forEach(module => {
+      module.onLoad();
+    });
+
+    // Stuff to do post load (eg. init undo manager for loaded components)
+    const postLoad = () => {
+      // I've initialized undo manager in initialize() because otherwise the
+      // editor will unable to fetch the instance via 'editor.UndoManager' but
+      // I need to cleare the stack now as it was dirtied by 'onLoad' method
+      this.um.clear();
+      this.initUndoManager();
+      this.get('modules').forEach(module =>
+        module.postLoad && module.postLoad(this)
+      );
+      clb && clb();
+    };
+
     if (sm && sm.getConfig().autoload) {
-      this.load();
+      this.load(postLoad);
+    } else {
+      postLoad();
     }
   },
 
@@ -154,28 +170,27 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   listenRule(model) {
-    this.stopListening(model, 'change:style', this.componentsUpdated);
-    this.listenTo(model, 'change:style', this.componentsUpdated);
+    this.stopListening(model, 'change:style', this.handleUpdates);
+    this.listenTo(model, 'change:style', this.handleUpdates);
   },
 
   /**
-   * Triggered when something in components is changed
-   * @param  {Object}  model
-   * @param  {Mixed}    val  Value
-   * @param  {Object}  opt  Options
+   * This method handles updates on the editor and tries to store them
+   * if requested and if the changesCount is exceeded
+   * @param  {Object} model
+   * @param  {any} val  Value
+   * @param  {Object} opt  Options
    * @private
    * */
-  componentsUpdated(model, val, opt) {
-    var temp = opt ? opt.temporary : 0;
-    if (temp) {
-      //component has been added temporarily - do not update storage or record changes
+  handleUpdates(model, val, opt = {}) {
+    // Component has been added temporarily - do not update storage or record changes
+    if (opt.temporary) {
       return;
     }
 
     timedInterval && clearInterval(timedInterval);
     timedInterval = setTimeout(() => {
       var count = this.get('changesCount') + 1;
-      var avoidStore = opt ? opt.avoidStore : 0;
       var stm = this.get('StorageManager');
       this.set('changesCount', count);
 
@@ -183,7 +198,7 @@ module.exports = Backbone.Model.extend({
         return;
       }
 
-      if (!avoidStore) {
+      if (!opt.avoidStore) {
         this.store();
       }
     }, 0);
@@ -194,10 +209,11 @@ module.exports = Backbone.Model.extend({
    * @private
    * */
   initUndoManager() {
-    if(this.um)
+    if (this.um) {
       return;
+    }
     var cmp = this.get('DomComponents');
-    if(cmp && this.config.undoManager){
+    if(cmp && this.config.undoManager) {
       var that = this;
       this.um = new UndoManager({
           register: [cmp.getComponents(), this.get('CssComposer').getAll()],
@@ -286,15 +302,15 @@ module.exports = Backbone.Model.extend({
     this.listenTo(comps, 'add', this.updateComponents);
     this.listenTo(comps, 'remove', this.rmComponents);
 
-    this.stopListening(classes, 'add remove', this.componentsUpdated);
-    this.listenTo(classes, 'add remove', this.componentsUpdated);
+    this.stopListening(classes, 'add remove', this.handleUpdates);
+    this.listenTo(classes, 'add remove', this.handleUpdates);
 
     var evn = 'change:style change:content change:attributes';
-    this.stopListening(model, evn, this.componentsUpdated);
-    this.listenTo(model, evn, this.componentsUpdated);
+    this.stopListening(model, evn, this.handleUpdates);
+    this.listenTo(model, evn, this.handleUpdates);
 
     if(!avSt)
-      this.componentsUpdated(model, val, opt);
+      this.handleUpdates(model, val, opt);
   },
 
   /**
@@ -323,7 +339,7 @@ module.exports = Backbone.Model.extend({
     var avSt  = opt ? opt.avoidStore : 0;
 
     if(!avSt)
-      this.componentsUpdated(model, val, opt);
+      this.handleUpdates(model, val, opt);
   },
 
   /**
@@ -476,15 +492,14 @@ module.exports = Backbone.Model.extend({
   /**
    * Load data from the current storage
    * @param {Function} clb Callback function
-   * @return {Object} Loaded data
    * @private
    */
-  load(clb) {
-    var result = this.getCacheLoad(1, clb);
-    this.get('storables').forEach(m => {
-      m.load(result);
+  load(clb = null) {
+    this.getCacheLoad(1, (res) => {
+      console.log('LOADED in em.load', res);
+      this.get('storables').forEach(module => module.load(res));
+      clb && clb(res);
     });
-    return result;
   },
 
   /**
@@ -513,11 +528,11 @@ module.exports = Backbone.Model.extend({
       });
     });
 
-    this.cacheLoad = sm.load(load, (loaded) => {
-      clb && clb(loaded);
-      this.trigger('storage:load', loaded);
+    sm.load(load, res => {
+      this.cacheLoad = res;
+      clb && clb(res);
+      this.trigger('storage:load', res);
     });
-    return this.cacheLoad;
   },
 
   /**
