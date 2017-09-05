@@ -4,15 +4,14 @@ var env = process.env.WEBPACK_ENV;
 var name = 'grapes';
 var plugins = [];
 
-if(env !== 'dev'){
+if(env !== 'dev') {
   plugins = [
+    new webpack.optimize.ModuleConcatenationPlugin(),
     new webpack.optimize.UglifyJsPlugin({
-      //sourceMap: true,
       minimize: true,
       compressor: {warnings: false},
     }),
     new webpack.BannerPlugin(pkg.name + ' - ' + pkg.version),
-    //v2 new webpack.BannerPlugin({banner: 'Banner v2'});
   ]
 }
 
@@ -27,6 +26,7 @@ module.exports = {
   },
   externals: {
     jquery: {
+      commonjs2: 'jquery',
       commonjs: 'jquery',
       amd: 'jquery',
       root: 'jQuery'
