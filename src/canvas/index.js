@@ -338,6 +338,15 @@ module.exports = () => {
     },
 
     /**
+     * Detects if some input is focused (input elements, text components, etc.)
+     * Used internally, for example, to avoid undo/redo in text editing mode
+     * @return {Boolean}
+     */
+    isInputFocused() {
+      return this.getFrameEl().contentDocument.activeElement.tagName !== 'BODY';
+    },
+
+    /**
      * Start autoscroll
      */
     startAutoscroll() {
