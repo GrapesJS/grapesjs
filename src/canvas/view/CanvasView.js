@@ -179,13 +179,30 @@ module.exports = Backbone.View.extend({
 
       // When the iframe is focused the event dispatcher is not the same so
       // I need to delegate all events to the parent document
-      var doc = document;
-      var fdoc = this.frame.el.contentDocument;
+      const doc = document;
+      const fdoc = this.frame.el.contentDocument;
+
+      // Unfortunately just creating `KeyboardEvent(e.type, e)` is not enough,
+      // the keyCode/which will be always `0`. Even if it's an old/deprecated
+      // property keymaster (and many others) still use it... using `defineProperty`
+      // hack seems the only way
+      const createCustomEvent = (e) => {
+        var oEvent = new KeyboardEvent(e.type, e);
+        oEvent.keyCodeVal = e.keyCode;
+        ['keyCode', 'which'].forEach(prop => {
+          Object.defineProperty(oEvent, prop, {
+            get() {
+              return this.keyCodeVal;
+            }
+          });
+        });
+        return oEvent;
+      }
       fdoc.addEventListener('keydown', e => {
-        doc.dispatchEvent(new KeyboardEvent(e.type, e));
+        doc.dispatchEvent(createCustomEvent(e));
       });
       fdoc.addEventListener('keyup', e => {
-        doc.dispatchEvent(new KeyboardEvent(e.type, e));
+        doc.dispatchEvent(createCustomEvent(e));
       });
     }
   },

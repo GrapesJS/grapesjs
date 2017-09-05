@@ -404,17 +404,24 @@ module.exports = {
   updateToolbar(mod) {
     var em = this.config.em;
     var model = mod == em ? em.get('selectedComponent') : mod;
-    if(!model){
-      return;
-    }
-    var toolbar = model.get('toolbar');
-    var ppfx = this.ppfx;
-    var showToolbar = em.get('Config').showToolbar;
     var toolbarEl = this.canvas.getToolbarEl();
     var toolbarStyle = toolbarEl.style;
 
+    if (!model) {
+      // By putting `toolbarStyle.display = 'none'` will cause kind
+      // of freezed effect with component selection (probably by iframe
+      // switching)
+      toolbarStyle.opacity = 0;
+      return;
+    }
+
+    var toolbar = model.get('toolbar');
+    var ppfx = this.ppfx;
+    var showToolbar = em.get('Config').showToolbar;
+
     if (showToolbar && toolbar && toolbar.length) {
-      toolbarStyle.display = 'flex';
+      toolbarStyle.opacity = '';
+      toolbarStyle.display = '';
       if(!this.toolbar) {
         toolbarEl.innerHTML = '';
         this.toolbar = new Toolbar(toolbar);

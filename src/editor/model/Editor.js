@@ -221,10 +221,12 @@ module.exports = Backbone.Model.extend({
       });
       this.UndoManager = this.um;
       this.set('UndoManager', this.um);
+
       key('⌘+z, ctrl+z', () => {
         that.um.undo(true);
         that.trigger('component:update');
       });
+
       key('⌘+shift+z, ctrl+shift+z', () => {
         that.um.redo(true);
         that.trigger('component:update');
