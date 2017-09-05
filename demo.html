@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>GrapesJS Demo - Open Source Website Page Builder</title>
     <link rel="stylesheet" href="stylesheets/toastr.min.css">
-    <link rel="stylesheet" href="stylesheets/grapes.min.css?v0.9.32">
+    <link rel="stylesheet" href="stylesheets/grapes.min.css?v0.10.2">
     <link rel="stylesheet" href="stylesheets/grapesjs-preset-webpage.css">
     <link rel="stylesheet" href="stylesheets/tooltip.css">
     <link rel="stylesheet" href="stylesheets/perfect-scrollbar.css">
@@ -130,6 +130,11 @@
 
          [data-tooltip]::after {
            background: rgba(51, 51, 51, 0.9);
+         }
+
+         .gjs-am-preview-cont {
+           height: 100px;
+           width: 100%;
          }
     </style>
   </head>
@@ -928,7 +933,7 @@
       </style>
     </div>
 
-    <script src="js/grapes.min.js?v0.9.32"></script>
+    <script src="js/grapes.min.js?v0.10.2"></script>
     <script src="js/grapesjs-plugin-export.min.js"></script>
     <script src="js/grapesjs-plugin-filestack.min.js"></script>
     <script src="js/grapesjs-blocks-basic.min.js"></script>
@@ -938,7 +943,6 @@
     <script src="js/grapesjs-navbar.min.js"></script>
     <script src="js/grapesjs-component-countdown.min.js"></script>
     <script type="text/javascript">
-
       var lp = './img/';
       var plp = 'http://placehold.it/350x250/';
       var images = [
