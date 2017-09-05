@@ -69,16 +69,10 @@ module.exports = () => {
       defGenerators.css  = new gCss();
       defGenerators.json = new gJson();
       defGenerators.js = new gJs();
-
       defViewers.CodeMirror = new eCM();
-      return this;
-    },
-
-    /**
-     * Callback on load
-     */
-    onLoad() {
       this.loadDefaultGenerators().loadDefaultViewers();
+
+      return this;
     },
 
     /**

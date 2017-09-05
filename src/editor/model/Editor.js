@@ -23,6 +23,10 @@ var UndoManager = require('backbone-undo');
 var key = require('keymaster');
 var timedInterval;
 
+if (!Backbone.$) {
+  Backbone.$ = $;
+}
+
 module.exports = Backbone.Model.extend({
 
   defaults: {

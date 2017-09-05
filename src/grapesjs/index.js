@@ -1,4 +1,6 @@
- module.exports = (config => {
+import { isUndefined } from 'underscore';
+
+module.exports = (config => {
   var c = config || {},
   defaults = require('./config/config'),
   Editor = require('editor'),
@@ -36,7 +38,7 @@
       var els = c.container;
 
       // Make a missing $ more verbose
-      if (typeof $ == 'undefined') {
+      if (isUndefined($)) {
         throw 'jQuery not found';
       }
 

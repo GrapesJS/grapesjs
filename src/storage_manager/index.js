@@ -65,15 +65,8 @@ module.exports = () => {
       defaultStorages.remote  = new RemoteStorage(c);
       defaultStorages.local = new LocalStorage(c);
       c.currentStorage = c.type;
-      return this;
-    },
-
-    /**
-     * Callback executed after the module is loaded
-     * @private
-     */
-    onLoad() {
       this.loadDefaultProviders().setCurrent(c.type);
+      return this;
     },
 
     /**
