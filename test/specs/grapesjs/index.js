@@ -59,6 +59,18 @@ describe('GrapesJS', () => {
       var editor = obj.init(config);
       expect(editor).toExist();
     });
+    
+    it('Init new editor with node for container', () => {
+      var configAlt = {
+        container: document.createElement('div'),
+        storageManager: {
+          autoload: 0,
+          type:'none'
+        },
+      }
+      var editor = obj.init(configAlt);
+      expect(editor).toExist();
+    });
 
     it('New editor is empty', () => {
       var editor = obj.init(config);
