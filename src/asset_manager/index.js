@@ -226,7 +226,6 @@ module.exports = () => {
         this.getAll().reset(assets);
       }
 
-      this.lastLoad = assets;
       return assets;
     },
 
@@ -316,15 +315,12 @@ module.exports = () => {
       return fu;
     },
 
+    onLoad() {
+      this.getAll().reset(c.assets);
+    },
+
     postRender(editorView) {
       c.dropzone && fu.initDropzone(editorView);
-
-      // Reset assets for custom types
-      const last = this.lastLoad || {};
-      const assets = last.length ? last : c.assets;
-      const all = this.getAll();
-      all.reset();
-      all.add(assets, {silent: 1});
     },
 
     /**

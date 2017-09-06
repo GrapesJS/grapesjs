@@ -1,13 +1,11 @@
-import { isUndefined } from 'underscore';
+import { isUndefined, defaults } from 'underscore';
 
-module.exports = (config => {
-  var c = config || {},
-  defaults = require('./config/config'),
-  Editor = require('editor'),
-  PluginManager = require('plugin_manager');
-
-  var plugins = new PluginManager();
-  var editors = [];
+module.exports = (() => {
+  const defaultConfig = require('./config/config');
+  const Editor = require('editor');
+  const PluginManager = require('plugin_manager');
+  const plugins = new PluginManager();
+  const editors = [];
 
   return {
 
@@ -33,35 +31,28 @@ module.exports = (config => {
      *   style: '.hello{color: red}',
      * })
      */
-    init(config) {
-      var c = config || {};
-      var els = c.container;
+    init(config = {}) {
+      const els = config.container;
 
       // Make a missing $ more verbose
       if (isUndefined($)) {
         throw 'jQuery not found';
       }
 
-      // Set default options
-      for (var name in defaults) {
-        if (!(name in c))
-          c[name] = defaults[name];
-      }
-
       if (!els) {
         throw new Error("'container' is required");
       }
 
-      c.el = document.querySelector(els);
-      var editor = new Editor(c).init();
+      defaults(config, defaultConfig);
+      config.el = document.querySelector(els);
+      const editor = new Editor(config).init();
 
       // Load plugins
-      var plugs = plugins.getAll();
-      c.plugins.forEach((pluginId) => {
-        let plugin = plugins.get(pluginId);
+      config.plugins.forEach(pluginId => {
+        const plugin = plugins.get(pluginId);
 
         if (plugin) {
-          plugin(editor, c.pluginsOpts[pluginId] || {});
+          plugin(editor, config.pluginsOpts[pluginId] || {});
         } else {
           console.warn(`Plugin ${pluginId} not found`);
         }
@@ -72,7 +63,7 @@ module.exports = (config => {
       // is a good point to load stuff like components, css rules, etc.
       editor.getModel().loadOnStart();
 
-      c.autorender && editor.render();
+      config.autorender && editor.render();
 
       editors.push(editor);
       return editor;

@@ -6,20 +6,23 @@ export default {
 
   initialize(models, opts) {
     this.model = (attrs = {}, options = {}) => {
-      let Model, type;
+      let Model, View, type;
 
       if (attrs && attrs.type) {
+        const baseType = this.getBaseType();
         type = this.getType(attrs.type);
-        Model = type ? type.model : this.getBaseType().model;
+        Model = type ? type.model : baseType.model;
+        View = type ? type.view : baseType.view;
       } else {
         const typeFound = this.recognizeType(attrs);
         type = typeFound.type;
         Model = type.model;
+        View = type.view;
         attrs = typeFound.attributes;
       }
 
       const model = new Model(attrs, options);
-      model.typeView = type.view;
+      model.typeView = View;
       return model;
     };
     const init = this.init && this.init.bind(this);
