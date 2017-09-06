@@ -4,49 +4,9 @@
 @import "node_modules/codemirror/lib/codemirror";
 @import "node_modules/codemirror/theme/hopscotch";
 
-$app-prefix: 	'gjs-';
-$nv-prefix: 	$app-prefix + 'nv-';
-$rte-prefix: 	$app-prefix + 'rte-';
-$comp-prefix: $app-prefix + 'comp-';
-$mdl-prefix: 	$app-prefix + 'mdl-';
-$am-prefix: 	$app-prefix + 'am-';
-$cm-prefix: 	$app-prefix + 'cm-';
-$pn-prefix: 	$app-prefix + 'pn-';
-$com-prefix: 	$app-prefix + 'com-';
-$sm-prefix: 	$app-prefix + 'sm-';
-$cv-prefix: 	$app-prefix + 'cv-';
-$clm-prefix: 	$app-prefix + 'clm-';
-$trt-prefix: 	$app-prefix + 'trt-';
 
-/* Dark theme */
-$mainColor:		#444; /* Light: #573454 Dark: #3b2639 -moz-linear-gradient(top, #fca99b 0%, #6e2842 100%) */
-$fontColor:   #ddd; /* l: #d8d7db */
-$fontColorActive: #f8f8f8;
+@import "gjs_variables.scss";
 
-/* Light theme
-$mainColor: #fff;
-$fontColor: #9299a3;
-$fontColorActive: #4f8ef7;
-*/
-
-$mainDkColor:	rgba(0, 0, 0, 0.3);/* darken($mainColor, 4%) - #383838 */
-$mainDklColor: rgba(0, 0, 0, 0.1);
-$mainLhColor:	rgba(255, 255, 255, 0.1); /* #515151 */
-$mainLhlColor: rgba(255, 255, 255, 0.7);
-$fontColorDk:	#777;
-$mainFont:		Helvetica, sans-serif;
-$colorBlue:		#3b97e3;
-$colorRed: 		#dd3636;
-$colorYell:		#ffca6f;
-$colorGreen:	#62c462;
-$tagBg: #804f7b;
-$secColor: $tagBg;
-$imageCompDim:	50px;
-$leftWidth: 15%;
-
-$fontPath: '../fonts';
-$fontName: 'main-fonts';
-$fontV: 20;//random(1000)
 
 @font-face {
   font-family: 'font3336';
@@ -88,9 +48,6 @@ $fontV: 20;//random(1000)
   transform: $v;
 }
 
-/* Color Helpers */
-$colorHighlight: #71b7f1;
-$colorWarn: #ffca6f;
 
 .#{$app-prefix}bg {
   &-main {
@@ -417,8 +374,6 @@ ol.example li.placeholder:before {position: absolute;}
   display: none;
 }
 
-$animSpeed: 0.2s;
-
 .#{$app-prefix}placeholder,
 .#{$nv-prefix}placeholder {
   border-style: solid !important;
@@ -555,7 +510,8 @@ $animSpeed: 0.2s;
 	display:	block;
 	background-color: #f5f5f5;
 	color: 	$fontColorDk;
-	height: $imageCompDim; width: $imageCompDim;
+  height: $imageCompDim;
+  width: $imageCompDim;
 	line-height: $imageCompDim;
 	outline: 3px solid $colorYell;
 	outline-offset: -3px;
@@ -568,7 +524,6 @@ $animSpeed: 0.2s;
 	}
 }
 
-$lightBorder: rgba(255, 255, 255, 0.05);
 
 @import "gjs_inputs";
 
@@ -637,8 +592,6 @@ $lightBorder: rgba(255, 255, 255, 0.05);
 @import "gjs_layers";
 
 /********* Class manager **********/
-$addBtnBg: lighten($mainDkColor, 10%);
-$paddElClm: 5px 6px;
 
 .#{$clm-prefix}field{
 		@extend .#{$sm-prefix}field
@@ -798,8 +751,6 @@ $paddElClm: 5px 6px;
 @import "gjs_assets";
 
 /********* File uploader **********/
-
-$uploadPadding:	150px 10px;
 
 .#{$am-prefix}file-uploader {
 	width: 55%;

@@ -1,9 +1,4 @@
 /********* Input style **********/
-$inputFontColor: $mainLhlColor; /* #d5d5d5 */
-$arrowColor: $mainLhlColor; /* b1b1b1 */
-$darkTextShadow: $mainDkColor; /* #252525 */
-$darkBorder: rgba(0, 0, 0, 0.15); /* 303030 */
-$colorpSize: 22px;
 
 @mixin rangeThumbStyle() {
   height: 10px;
