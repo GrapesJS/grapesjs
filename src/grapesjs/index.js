@@ -18,7 +18,7 @@ module.exports = (config => {
     /**
      * Initializes an editor based on passed options
      * @param {Object} config Configuration object
-     * @param {string} config.container Selector which indicates where render the editor
+     * @param {string|DomNode} config.container Selector which indicates where render the editor
      * @param {Object|string} config.components='' HTML string or Component model in JSON format
      * @param {Object|string} config.style='' CSS string or CSS model in JSON format
      * @param {Boolean} [config.fromElement=false] If true, will fetch HTML and CSS from selected container
@@ -52,7 +52,12 @@ module.exports = (config => {
         throw new Error("'container' is required");
       }
 
-      c.el = document.querySelector(els);
+      if (els instanceof window.HTMLElement) {
+        c.el = els;
+      }
+      else {
+        c.el = document.querySelector(els);
+      }
       var editor = new Editor(c).init();
 
       // Load plugins
