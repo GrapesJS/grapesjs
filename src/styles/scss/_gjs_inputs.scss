@@ -22,35 +22,31 @@
 
 .#{$app-prefix}field {
   background-color: $mainDkColor;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 1px 1px 0 $mainLhColor;
+  border: none;
+  box-shadow: none;
   border-radius: 2px;
   box-sizing: border-box;
   padding: 0;
   position: relative;
+  color: $inputFontColor;
 
   input,
   select,
   textarea {
     @include appearance(none);
 
-    color: $inputFontColor;
+    color: inherit;
     border: none;
     background-color: transparent;
     box-sizing: border-box;
     width: 100%;
     position: relative;
-    padding: 3px 4px 4px;
+    padding: $inputPadding;
     z-index: 1;
   }
 
   textarea {
     resize: vertical;
-  }
-
-  select {
-    height: 20px;
-    padding-right: 12px;
   }
 
   option {
@@ -67,7 +63,10 @@
   }
 
   .#{$app-prefix}d-s-arrow {
-    bottom: 7px;
+    bottom: 0;
+    top: 0;
+    margin: auto;
+    right: $inputPadding;
     border-top: 4px solid $arrowColor;
     position: absolute;
     height: 0;
@@ -75,6 +74,22 @@
     border-left: 3px solid transparent;
     border-right: 4px solid transparent;
     cursor: pointer;
+  }
+
+  .#{$app-prefix}field-number {
+    padding-right: 30px;
+  }
+
+  &-arrows {
+    position: absolute;
+    cursor: ns-resize;
+    margin: auto;
+    height: 20px;
+    width: 9px;
+    z-index: 10;
+    bottom: 0;
+    right: $inputPadding - 2px;
+    top: 0;
   }
 }
 
@@ -169,17 +184,15 @@
 .#{$app-prefix}radio-item-label {
   cursor: pointer;
   display: block;
-  padding: 4px;
+  padding: $inputPadding;
 }
 
 .#{$app-prefix}field-units {
   position: absolute;
-  right: 0;
+  margin: auto;
+  right: 10px;
+  bottom: 0;
   top: 0;
-
-  select {
-    padding: 0 12px 0 0;
-  }
 }
 
 .#{$app-prefix}field-unit {
@@ -189,16 +202,6 @@
   font-size: 10px;
   color: $arrowColor;
   cursor: pointer;
-}
-
-.#{$app-prefix}field-arrows {
-  z-index: 10;
-  cursor: ns-resize;
-  height: 100%;
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 9px;
 }
 
 .#{$app-prefix}field-arrow-u,
@@ -262,6 +265,21 @@
 
   input::-ms-track {
     @include rangeTrackStyle();
+  }
+}
+
+.#{$app-prefix}btn-prim {
+  @extend .#{$app-prefix}color-main;
+
+  background-color: $mainLhColor;
+  border-radius: 2px;
+  padding: 3px 6px;
+  padding: $inputPadding;
+  cursor: pointer;
+  border: none;
+
+  &:active {
+    background-color: $mainLhColor;
   }
 }
 

@@ -1327,6 +1327,26 @@
       //console.log('Style of ', model.get('property'), 'Target: ', targetValue, 'Computed:', computedValue, 'Default:', defaultValue);
     });
 
+    var am = editor.AssetManager;
+
+    am.addType('image', {
+  // As you adding on top of an already defined type you can avoid indicating
+  // `am.getType('image').view.extend({...` the editor will do it by default
+  // but you can eventually extend some other type
+  view: {
+    // If you want to see more methods to extend check out
+    // https://github.com/artf/grapesjs/blob/dev/src/asset_manager/view/AssetImageView.js
+    onRemove(e) {
+      e.stopPropagation();
+      const model = this.model;
+
+      if (confirm('Are you sure?')) {
+        model.collection.remove(model);
+      }
+    }
+  },
+})
+
 
     editor.render();
     </script>

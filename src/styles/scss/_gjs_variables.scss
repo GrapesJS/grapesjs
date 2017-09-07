@@ -60,6 +60,7 @@ $arrowColor: $mainLhlColor !default; /* b1b1b1 */
 $darkTextShadow: $mainDkColor !default; /* #252525 */
 $darkBorder: rgba(0, 0, 0, 0.15) !default; /* 303030 */
 $colorpSize: 22px !default;
+$inputPadding: 5px !default; // Has to be a single value
 
 /* Class manager */
 $addBtnBg: lighten($mainDkColor, 10%) !default;

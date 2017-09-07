@@ -205,30 +205,6 @@
   @include opacity(0.50);
   pointer-events: none;
 }
-.#{$app-prefix}btn-prim{
-  @extend .#{$app-prefix}color-main;
-  background-color: $mainLhColor;
-  border-radius: 2px;
-  padding: 3px 6px;
-  cursor: pointer;
-  padding: 0.5em;
-  border: none;
-}
-.#{$app-prefix}btn-prim:active{
-  background-color: $mainLhColor;
-}
-.#{$app-prefix}input{
-  background-color: $mainDkColor;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 2px;
-  box-shadow: 1px 1px 0 $mainLhColor;
-  box-sizing: border-box;
-  color: $fontColor;
-  padding: 0.5em 1em;
-}
-.#{$app-prefix}select {
-  @extend .#{$app-prefix}input;
-}
 
 div.#{$app-prefix}select {
   padding: 0;
