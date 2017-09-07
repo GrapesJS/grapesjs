@@ -6,6 +6,11 @@ module.exports = PropertyView.extend({
 
   renderTemplate() {},
 
+  initialize(options) {
+    PropertyView.prototype.initialize.apply(this, arguments);
+    this.className += ` ${this.pfx}file`;
+  },
+
   renderInput() {
     if (!this.input) {
       var inputColor = new InputColor({
