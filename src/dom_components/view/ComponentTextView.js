@@ -25,16 +25,21 @@ module.exports = ComponentView.extend({
    * @private
    * */
   enableEditing(e) {
-    var editable = this.model.get('editable');
-    if(this.rte && editable) {
-      try {
-        this.activeRte = this.rte.attach(this, this.activeRte);
-        this.rte.focus(this, this.activeRte);
-      } catch (err) {
-        console.error(err);
+    var parentModel = this.$el.parent().data('model');
+    var isParentEditable = parentModel && parentModel.get('editable');
+
+    if (!isParentEditable) {
+      var editable = this.model.get('editable');
+      if(this.rte && editable) {
+        try {
+          this.activeRte = this.rte.attach(this, this.activeRte);
+          this.rte.focus(this, this.activeRte);
+        } catch (err) {
+          console.error(err);
+        }
       }
+      this.toggleEvents(1);
     }
-    this.toggleEvents(1);
   },
 
   /**
