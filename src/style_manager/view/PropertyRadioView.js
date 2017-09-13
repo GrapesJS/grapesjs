@@ -11,7 +11,8 @@ module.exports = PropertyView.extend({
 
   initialize(options) {
     PropertyView.prototype.initialize.apply(this, arguments);
-    this.list = this.model.get('list') || [];
+    const model = this.model;
+    this.list = model.get('list') || model.get('options') || [];
     this.className = this.className + ' '+ this.pfx +'list';
   },
 

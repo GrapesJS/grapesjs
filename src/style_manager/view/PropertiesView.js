@@ -11,13 +11,13 @@ var PropertyStackView = require('./PropertyStackView');
 module.exports = Backbone.View.extend({
 
   initialize(o) {
-    this.config     = o.config || {};
-    this.pfx       = this.config.stylePrefix || '';
-    this.target      = o.target || {};
+    this.config = o.config || {};
+    this.pfx = this.config.stylePrefix || '';
+    this.target = o.target || {};
     this.propTarget = o.propTarget || {};
-    this.onChange    = o.onChange || {};
-    this.onInputRender  = o.onInputRender || {};
-    this.customValue  = o.customValue || {};
+    this.onChange = o.onChange || {};
+    this.onInputRender = o.onInputRender || {};
+    this.customValue = o.customValue || {};
   },
 
   render() {
@@ -26,6 +26,9 @@ module.exports = Backbone.View.extend({
     this.collection.each(function(model){
       var objView  = PropertyView;
 
+      console.log(`property ${model.get('property')}, type:  ${model.get('type')}, ${model.typeView}`);
+      objView = model.typeView;
+      /*
       switch(model.get('type')){
         case 'integer':
           objView  = PropertyIntegerView;   break;
@@ -42,6 +45,7 @@ module.exports = Backbone.View.extend({
         case 'stack':
           objView  = PropertyStackView;  break;
       }
+      */
 
       var view = new objView({
         model,
