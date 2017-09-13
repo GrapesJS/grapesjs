@@ -20,12 +20,14 @@ module.exports = Backbone.View.extend({
     this.ppfx = c.pStylePrefix || '';
     this.target = this.options.globalCollection || {};
     this.uploadId = this.pfx + 'uploadFile';
-    this.disabled = !c.upload;
+    this.disabled = c.disabled !== undefined ? c.disabled : !c.upload && !c.embedAsBase64;
     this.events['change #' + this.uploadId]  = 'uploadFile';
     let uploadFile = c.uploadFile;
 
     if (uploadFile) {
       this.uploadFile = uploadFile.bind(this);
+    } else if (c.embedAsBase64) {
+      this.uploadFile = this.constructor.embedAsBase64;
     }
 
     this.delegateEvents();
@@ -71,7 +73,7 @@ module.exports = Backbone.View.extend({
     const em = this.config.em;
     const config = this.config;
     const target = this.target;
-    const json = JSON.parse(text);
+    const json = typeof text === 'text' ? JSON.parse(text) : text;
     em && em.trigger('asset:upload:response', json);
 
     if (config.autoAdd && target) {
@@ -224,4 +226,91 @@ module.exports = Backbone.View.extend({
     return this;
   },
 
+}, {
+  embedAsBase64: function (e) {
+    // List files dropped
+    const files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
+    const response = { data: [] };
+
+    // Unlikely, widely supported now
+    if (!FileReader) {
+      this.onUploadError(new Error('Unsupported platform, FileReader is not defined'));
+      return;
+    }
+
+    const promises = [];
+    const mimeTypeMatcher = /^(.+)\/(.+)$/;
+
+    for (const file of files) {
+      // For each file a reader (to read the base64 URL)
+      // and a promise (to track and merge results and errors)
+      const promise = new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.addEventListener('load', (event) => {
+          let type;
+          const name = file.name;
+
+          // Try to find the MIME type of the file.
+          const match = mimeTypeMatcher.exec(file.type);
+          if (match) {
+            type = match[1]; // The first part in the MIME, "image" in image/png
+          } else {
+            type = file.type;
+          }
+
+          // If it's an image, try to find its size
+          if (type === 'image') {
+            const data = {
+              src: reader.result,
+              name,
+              type,
+              height: 0,
+              width: 0
+            };
+
+            const image = new Image();
+            image.addEventListener('error', (error) => {
+              reject(error);
+            });
+            image.addEventListener('load', () => {
+              data.height = image.height;
+              data.width = image.width;
+              resolve(data);
+            });
+            image.src = data.src;
+
+          } else if (type) {
+            // Not an image, but has a type
+            resolve({
+              src: reader.result,
+              name,
+              type
+            });
+          } else {
+            // No type found, resolve with the URL only
+            resolve(reader.result);
+          }
+        });
+        reader.addEventListener('error', (error) => {
+          reject(error);
+        });
+        reader.addEventListener('abort', (error) => {
+          reject('Aborted');
+        });
+
+        reader.readAsDataURL(file);
+      });
+
+      promises.push(promise);
+    }
+
+    Promise
+      .all(promises)
+      .then((data) => {
+        response.data = data;
+        this.onUploadResponse(response);
+      }, (error) =>  {
+        this.onUploadError(error);
+      });
+  }
 });
