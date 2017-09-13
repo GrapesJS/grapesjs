@@ -23,31 +23,8 @@ module.exports = Backbone.View.extend({
   render() {
     var fragment = document.createDocumentFragment();
 
-    this.collection.each(function(model){
-      var objView  = PropertyView;
-
-      console.log(`property ${model.get('property')}, type:  ${model.get('type')}, ${model.typeView}`);
-      objView = model.typeView;
-      /*
-      switch(model.get('type')){
-        case 'integer':
-          objView  = PropertyIntegerView;   break;
-        case 'radio':
-          objView  = PropertyRadioView;  break;
-        case 'select':
-          objView  = PropertySelectView;  break;
-        case 'color':
-          objView  = PropertyColorView;  break;
-        case 'file':
-          objView  = PropertyFileView;    break;
-        case 'composite':
-          objView  = PropertyCompositeView;break;
-        case 'stack':
-          objView  = PropertyStackView;  break;
-      }
-      */
-
-      var view = new objView({
+    this.collection.each((model) => {
+      var view = new model.typeView({
         model,
         name: model.get('name'),
         id: this.pfx + model.get('property'),
@@ -63,7 +40,7 @@ module.exports = Backbone.View.extend({
       }
 
       fragment.appendChild(view.render().el);
-    },this);
+    });
 
     this.$el.append(fragment);
     this.$el.append($('<div>', {class: "clear"}));

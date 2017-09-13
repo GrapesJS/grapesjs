@@ -7,20 +7,20 @@ module.exports = Backbone.Model.extend({
     name: '',
     property: '',
     type: '',
-    units: [],
-    unit: '',
+    units: [], // int
+    unit: '', // int
     defaults: '',
     info: '',
     value: '',
     icon: '',
-    preview: false,
-    detached: false,
+    preview: false, // stack
+    detached: false, // composite
     visible: true,
     functionName: '',
     status: '',
-    properties: [],
-    layers: [],
-    list: [],
+    properties: [], // composite
+    layers: [], // stack
+    list: [], // select/radio
     fixedValues: ['initial', 'inherit'],
   },
 
