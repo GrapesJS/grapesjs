@@ -67,4 +67,22 @@ module.exports = Backbone.Model.extend({
     return result;
   },
 
+  /**
+   * Get a complete value of the property.
+   * This probably will replace the getValue when all
+   * properties models will be splitted
+   * @param {string} val Custom value to replace the one on the model
+   * @return {string}
+   */
+  getFullValue(val) {
+    const fn = this.get('functionName');
+    let value = val || this.get('value');
+
+    if (fn) {
+      value = `${fn}(${value})`;
+    }
+
+    return value;
+  },
+
 });
