@@ -411,10 +411,9 @@ module.exports = Backbone.View.extend({
     }
 
     target.setStyle(style, opts);
-    console.log('update target with ',style, opts, target.getStyle(), target.cid, target.attributes);
     // Helper is used by `states` like ':hover' to show its preview
     const helper = this.getHelperModel();
-    helper && helper.setStyle(targetStyle, opts);
+    helper && helper.setStyle(style, opts);
   },
 
   /**
