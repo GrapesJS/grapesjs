@@ -130,16 +130,10 @@ module.exports = PropertyView.extend({
    * @return {string}
    * */
   build(selectedEl, propertyView, opts) {
-    var result = '';
-    this.model.get('properties').each(prop => {
-      var v = prop.getValue();
-      var func = prop.get('functionName');
-
-      if(func)
-        v =  func + '(' + v + ')';
-
-      result   += v + ' ';
-    });
+    let result = '';
+    this.model.get('properties').each(prop =>
+      result += `${prop.getFullValue()} `
+    );
     return result.replace(/ +$/,'');
   },
 

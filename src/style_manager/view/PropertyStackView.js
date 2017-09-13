@@ -143,14 +143,10 @@ module.exports = PropertyCompositeView.extend({
       return;
 
     // Store properties values inside layer, in this way it's more reliable
-    //  to fetch them later
+    // to fetch them later
     var valObj = {};
     this.model.get('properties').each(prop => {
-      var v    = prop.getValue(),
-        func  = prop.get('functionName');
-      if(func)
-        v =  func + '(' + v + ')';
-      valObj[prop.get('property')] = v;
+      valObj[prop.get('property')] = prop.getFullValue();
     });
     model.set('values', valObj);
 

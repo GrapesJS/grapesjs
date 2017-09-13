@@ -372,12 +372,7 @@ module.exports = Backbone.View.extend({
       return;
     }
 
-    var value = this.getValueForTarget();
-
-    var func = model.get('functionName');
-    if(func)
-      value =  func + '(' + value + ')';
-
+    const value = this.model.getFullValue();
     var target = this.getTarget();
     var onChange = this.onChange;
 
