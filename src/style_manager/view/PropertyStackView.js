@@ -79,7 +79,7 @@ module.exports = PropertyCompositeView.extend({
       var model = view.model;
       var result = that.build();
 
-      if(that.model.get('detached')){
+      if (that.model.get('detached')) {
         var propVal = '';
         var index = model.collection.indexOf(model);
 
@@ -90,8 +90,9 @@ module.exports = PropertyCompositeView.extend({
         });
 
         view.updateTargetStyle(propVal, null, opt);
-      }else
+      } else {
         that.model.set('value', result, opt);
+      }
     };
 
     return result;
@@ -137,7 +138,8 @@ module.exports = PropertyCompositeView.extend({
     var stackIndex = this.model.get('stackIndex');
     if(stackIndex === null)
       return;
-    var result = PropertyCompositeView.prototype.build.apply(this, args);
+    let result = '';
+    this.model.get('properties').each(prop => result += `${prop.getFullValue()} `);
     var model = this.getLayers().at(stackIndex);
     if(!model)
       return;
@@ -151,7 +153,8 @@ module.exports = PropertyCompositeView.extend({
     model.set('values', valObj);
 
     model.set('value', result);
-    return this.createValue();
+    //return this.createValue();//this.model.getFullValue();
+    return this.model.getFullValue();
   },
 
   /**

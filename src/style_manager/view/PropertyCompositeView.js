@@ -11,7 +11,6 @@ module.exports = PropertyView.extend({
 
   initialize(o) {
     PropertyView.prototype.initialize.apply(this, arguments);
-    _.bindAll(this, 'build');
     this.config = o.config || {};
     this.className = this.className + ' '+ this.pfx +'composite';
   },
@@ -65,6 +64,7 @@ module.exports = PropertyView.extend({
    */
   getPropsConfig(opts) {
     var that = this;
+    const model = this.model;
 
     var result = {
       config: this.config,
@@ -73,8 +73,8 @@ module.exports = PropertyView.extend({
       propTarget: this.propTarget,
       // On any change made to children I need to update composite value
       onChange(el, view, opts) {
-        var result = that.build();
-        that.model.set('value', result, opts);
+        var result = model.getFullValue();
+        model.set('value', result, opts);
       },
       // Each child property will receive a full composite string, eg. '0px 0px 10px 0px'
       // I need to extract from that string the corresponding one to that property.
@@ -84,8 +84,9 @@ module.exports = PropertyView.extend({
     };
 
     // If detached let follow its standard flow
-    if(this.model.get('detached'))
+    if (model.get('detached')) {
       delete result.onChange;
+    }
 
     return result;
   },
@@ -120,21 +121,6 @@ module.exports = PropertyView.extend({
       }
     }
     return result;
-  },
-
-  /**
-   * Build composite value
-   * @param {Object} selectedEl Selected element
-   * @param {Object} propertyView Property view
-   * @param {Object} opts Options
-   * @return {string}
-   * */
-  build(selectedEl, propertyView, opts) {
-    let result = '';
-    this.model.get('properties').each(prop =>
-      result += `${prop.getFullValue()} `
-    );
-    return result.replace(/ +$/,'');
   },
 
 });

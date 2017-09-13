@@ -18,4 +18,14 @@ module.exports = Property.extend({
     properties: [],
   }),
 
+  getFullValue() {
+    if (this.get('detached')) {
+      return '';
+    }
+
+    let result = '';
+    this.get('properties').each(prop => result += `${prop.getFullValue()} `);
+    return result.trim();
+  },
+
 });
