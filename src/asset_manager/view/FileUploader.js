@@ -20,7 +20,7 @@ module.exports = Backbone.View.extend({
     this.ppfx = c.pStylePrefix || '';
     this.target = this.options.globalCollection || {};
     this.uploadId = this.pfx + 'uploadFile';
-    this.disabled = c.disabled !== undefined ? c.disabled : !c.upload && !c.embedAsBase64;
+    this.disabled = c.disableUpload !== undefined ? c.disableUpload : !c.upload && !c.embedAsBase64;
     this.events['change #' + this.uploadId]  = 'uploadFile';
     let uploadFile = c.uploadFile;
 

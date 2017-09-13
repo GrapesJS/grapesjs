@@ -65,7 +65,7 @@ module.exports = {
 
           it('Could be disabled', () => {
             var view = new FileUploader({ config : {
-              disabled: true,
+              disableUpload: true,
               upload: 'something'
             } });
             view.render();
