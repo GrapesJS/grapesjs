@@ -35,6 +35,7 @@ module.exports = Backbone.View.extend({
   targetUpdated() {
     var em = this.target;
     var el = em.get('selectedComponent');
+    const um = em.get('UndoManager');
 
     if(!el)
       return;
@@ -62,9 +63,15 @@ module.exports = Backbone.View.extend({
       var iContainer = cssC.get(valid, state, mediaText);
 
       if (!iContainer && valid.length) {
+        // I stop undo manager here as after adding the CSSRule (generally after
+        // selecting the component) and calling undo() it will remove the rule from
+        // the collection, therefore updating it in style manager will not affect it
+        // #268
+        um.stopTracking();
         iContainer = cssC.add(valid, state, mediaText);
         iContainer.set('style', el.get('style'));
         el.set('style', {});
+        um.startTracking();
       }
 
       if (!iContainer) {

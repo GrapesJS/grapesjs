@@ -139,6 +139,7 @@ module.exports = Backbone.View.extend({
     value = isNaN(value) ? 1 : parseInt(value, 10) + 1;
     var valid = this.validateInputValue(value);
     this.model.set('value', valid.value);
+    this.elementUpdated();
   },
 
   /**
@@ -149,6 +150,7 @@ module.exports = Backbone.View.extend({
     value = isNaN(value) ? 0 : parseInt(value, 10) - 1;
     var valid = this.validateInputValue(value);
     this.model.set('value', valid.value);
+    this.elementUpdated();
   },
 
   /**

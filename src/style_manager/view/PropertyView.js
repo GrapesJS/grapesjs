@@ -220,6 +220,7 @@ module.exports = Backbone.View.extend({
   /**
    * Get the value from the selected component of this property
    * @return {String}
+   * @deprecated use getTargetValue
    * */
   getComponentValue() {
     var propModel = this.model;
@@ -332,7 +333,8 @@ module.exports = Backbone.View.extend({
   },
 
   /**
-   * Returns value from inputs
+   * Returns the value composed for the target
+   * TODO put here the check for functionName
    * @return {string}
    */
   getValueForTarget() {
@@ -348,7 +350,8 @@ module.exports = Backbone.View.extend({
   },
 
   /**
-   * Property was changed, so I need to update the component too
+   * Triggers when the 'value' of the model changes, so I have to update
+   * the target model
    * @param   {Object}  e  Events
    * @param    {Mixed}    val  Value
    * @param    {Object}  opt  Options
@@ -392,27 +395,26 @@ module.exports = Backbone.View.extend({
 
   /**
    * Update target style
-   * @param  {string} propertyValue
-   * @param  {string} propertyName
+   * @param  {string} value
+   * @param  {string} name
    * @param  {Object} opts
    */
-  updateTargetStyle(propertyValue, propertyName, opts) {
-    var propName = propertyName || this.property;
-    var value = propertyValue || '';
-    var avSt = opts ? opts.avoidStore : 0;
-    var target = this.getTarget();
-    var targetStyle = _.clone(target.get('style'));
+  updateTargetStyle(value, name = '', opts = {}) {
+    const property = name || this.model.get('property');
+    const target = this.getTarget();
+    const style = target.getStyle();
 
-    if(value)
-      targetStyle[propName] = value;
-    else
-      delete targetStyle[propName];
+    if (value) {
+      style[property] = value;
+    } else {
+      delete style[property];
+    }
 
-    target.set('style', targetStyle, { avoidStore : avSt});
-
-    // Helper exists when is active a State in Style Manager
-    let helper = this.getHelperModel();
-    helper && helper.setStyle(targetStyle, {avoidStore: avSt});
+    target.setStyle(style, opts);
+    console.log('update target with ',style, opts, target.getStyle(), target.cid, target.attributes);
+    // Helper is used by `states` like ':hover' to show its preview
+    const helper = this.getHelperModel();
+    helper && helper.setStyle(targetStyle, opts);
   },
 
   /**

@@ -25,7 +25,7 @@
           </nav>
           <div class="clearfix"></div>
           <div class="lead-title">Build your templates without coding</div>
-          <div class="sub-lead-title">All text blocks could be edited easily with double clicking on it. You can create new text blocks with the command from the left panel</div>
+          <div class="sub-lead-titleTEST">All text blocks could be edited easily with double clicking on it. You can create new text blocks with the command from the left panel</div>
           <div class="lead-btn">Hover me</div>
         </div>
       </header>
@@ -831,6 +831,7 @@
       fromElement: true,
       clearOnRender: 0,
 
+      storageManager: {autoload: 0},
 
       commands:     {
           defaults: [{
@@ -1326,27 +1327,6 @@
       let defaultValue = view.getDefaultValue();
       //console.log('Style of ', model.get('property'), 'Target: ', targetValue, 'Computed:', computedValue, 'Default:', defaultValue);
     });
-
-    var am = editor.AssetManager;
-
-    am.addType('image', {
-  // As you adding on top of an already defined type you can avoid indicating
-  // `am.getType('image').view.extend({...` the editor will do it by default
-  // but you can eventually extend some other type
-  view: {
-    // If you want to see more methods to extend check out
-    // https://github.com/artf/grapesjs/blob/dev/src/asset_manager/view/AssetImageView.js
-    onRemove(e) {
-      e.stopPropagation();
-      const model = this.model;
-
-      if (confirm('Are you sure?')) {
-        model.collection.remove(model);
-      }
-    }
-  },
-})
-
 
     editor.render();
     </script>
