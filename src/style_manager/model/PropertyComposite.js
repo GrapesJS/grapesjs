@@ -24,10 +24,15 @@ module.exports = Property.extend({
     this.set('properties', new Properties(properties));
   },
 
-  getDefaultValue() {
+  /**
+   * Returns default value
+   * @param  {Boolean} defaultProps Force to get defaults from properties
+   * @return {string}
+   */
+  getDefaultValue(defaultProps) {
     let value = this.get('defaults');
 
-    if (value) {
+    if (value && !defaultProps) {
       return value;
     }
 

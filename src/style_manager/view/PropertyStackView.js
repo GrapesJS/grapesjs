@@ -4,7 +4,7 @@ var Layers = require('./../model/Layers');
 var LayersView = require('./LayersView');
 
 module.exports = PropertyCompositeView.extend({
-  
+
   templateField() {
     const pfx = this.pfx;
     const ppfx = this.ppfx;
@@ -162,17 +162,14 @@ module.exports = PropertyCompositeView.extend({
   },
 
   /**
-   * Add layer
-   * @param Event
-   *
-   * @return Object
+   * Add new layer
    * */
-  addLayer(e) {
-    if(this.getTarget()){
-      var layers = this.getLayers();
-      var layer  = layers.add({ name : 'test' });
-      var index  = layers.indexOf(layer);
-      layer.set('value', this.getDefaultValue());
+  addLayer() {
+    if (this.getTarget()) {
+      const layers = this.getLayers();
+      const layer = layers.add({name: 'New'});
+      const index = layers.indexOf(layer);
+      layer.set('value', this.model.getDefaultValue(1));
 
       // In detached mode valueUpdated will add new 'layer value'
       // to all subprops
@@ -180,7 +177,6 @@ module.exports = PropertyCompositeView.extend({
 
       // This will set subprops with a new default values
       this.model.set('stackIndex', index);
-      return layer;
     }
   },
 
