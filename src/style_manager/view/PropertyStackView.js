@@ -276,7 +276,6 @@ module.exports = PropertyCompositeView.extend({
       fieldName = 'values';
       a = this.getLayersFromTarget();
     } else {
-      //var v  = this.getComponentValue();
       var v = this.getTargetValue();
       var vDef = this.getDefaultValue();
       v = v == vDef ? '' : v;

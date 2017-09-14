@@ -214,49 +214,11 @@ module.exports = Backbone.View.extend({
    * @return {Boolean}
    * */
   sameValue() {
-    return this.getComponentValue() == this.getValueForTarget();
-  },
-
-
-  /**
-   * Get the value from the selected component of this property
-   * @return {String}
-   * @deprecated use getTargetValue
-   * */
-  getComponentValue() {
-    var propModel = this.model;
-    var target = this.getTargetModel();
-
-    if(!target)
-      return;
-
-    var targetProp = target.get('style')[this.property];
-    if(targetProp)
-      this.componentValue = targetProp;
-    else
-      this.componentValue = this.model.getDefaultValue() + (this.unit || ''); // todo model
-
-    // Check if wrap inside function is required
-    if (propModel.get('functionName')) {
-      var v = this.fetchFromFunction(this.componentValue);
-      if(v)
-        this.componentValue = v;
-    }
-
-    // This allow to ovveride the normal flow of selecting component value,
-    // useful in composite properties
-    if(this.customValue && typeof this.customValue === "function"){
-      var index = propModel.collection.indexOf(propModel);
-      var t = this.customValue(this, index);
-      if(t)
-        this.componentValue = t;
-    }
-
-    return this.componentValue;
+    return this.getTargetValue() == this.getValueForTarget();
   },
 
   /**
-   * Refactor of getComponentValue
+   * Get the value of this property from the target (eg, Component, CSSRule)
    * @param {Object} [opts] Options
    * @param {Boolean} [options.fetchFromFunction]
    * @param {Boolean} [options.ignoreDefault]
