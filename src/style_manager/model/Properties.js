@@ -1,11 +1,3 @@
-/*
-var Backbone = require('backbone');
-var Property = require('./Property');
-
-module.exports = Backbone.Collection.extend({
-  model: Property,
-});
-*/
 import TypeableCollection from 'domain_abstract/model/TypeableCollection';
 const Property = require('./Property');
 

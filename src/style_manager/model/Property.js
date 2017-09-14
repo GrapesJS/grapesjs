@@ -68,6 +68,22 @@ module.exports = Backbone.Model.extend({
   },
 
   /**
+   * Parse a raw value, generally fetched from the target, for this property
+   * @param  {string} value
+   * @return {string}
+   */
+  parseValue(value) {
+    if (!this.get('functionName')) {
+      return value;
+    }
+
+    let valueStr = value + '';
+    let start = valueStr.indexOf('(') + 1;
+    let end = valueStr.lastIndexOf(')');
+    return valueStr.substring(start, end);
+  },
+
+  /**
    * Get the default value
    * @return {string}
    * @private

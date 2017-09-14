@@ -98,17 +98,21 @@ module.exports = PropertyView.extend({
    * @return {string}
    * */
   valueOnIndex(index, view) {
-    var result = null;
-    var a = this.getComponentValue().split(' ');
-    if(a.length && a[index]){
-      result = a[index];
-      if(view && view.model && view.model.get('functionName')){
-        var v = this.fetchFromFunction(result);
-        if(v)
-          result = v;
-      }
+    let value;
+    const model = view.model;
+    const targetValue = this.getTargetValue({ignoreDefault: 1});
+
+    // If the target value of the composite is not empty I'll fetch
+    // the corresponding value from the requested index, otherwise try
+    // to get the value of the sub-property
+    if (targetValue) {
+      const values = targetValue.split(' ');
+      value = model.parseValue(values[index]);
+    } else {
+      value = view.getTargetValue({ignoreCustomValue: 1});
     }
-    return result;
+
+    return value;
   },
 
 });

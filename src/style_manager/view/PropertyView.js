@@ -274,6 +274,7 @@ module.exports = Backbone.View.extend({
     }
 
     result = target.getStyle()[model.get('property')];
+    result = model.parseValue(result);
 
     if (!result && !opts.ignoreDefault) {
       result = this.getDefaultValue();
