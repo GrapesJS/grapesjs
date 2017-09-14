@@ -1,5 +1,5 @@
 const PropertyStackView = require('style_manager/view/PropertyStackView');
-const Property = require('style_manager/model/Property');
+const Property = require('style_manager/model/PropertyStack');
 const Component = require('dom_components/model/Component');
 
 module.exports = {
@@ -178,7 +178,7 @@ module.exports = {
           it('Update model on input change', () => {
             $prop1.val(propValue).trigger('change');
             $prop3.val(prop3Val).trigger('change');
-            expect(view.model.get('value')).toEqual(finalResult);
+            expect(model.getFullValue()).toEqual(finalResult);
           });
 
           it('Update value on models change', () => {

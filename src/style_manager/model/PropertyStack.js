@@ -16,7 +16,7 @@ module.exports = Property.extend({
 
     const layers = this.get('layers');
     let val = layers.length ? layers.pluck('value').join(', ') : '';
-    return val;
+    return val.trim();
   },
 
 });

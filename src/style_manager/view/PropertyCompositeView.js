@@ -73,8 +73,7 @@ module.exports = PropertyView.extend({
       propTarget: this.propTarget,
       // On any change made to children I need to update composite value
       onChange(el, view, opts) {
-        var result = model.getFullValue();
-        model.set('value', result, opts);
+        model.set('value', model.getFullValue(), opts);
       },
       // Each child property will receive a full composite string, eg. '0px 0px 10px 0px'
       // I need to extract from that string the corresponding one to that property.
@@ -99,7 +98,6 @@ module.exports = PropertyView.extend({
    * */
   valueOnIndex(index, view) {
     let value;
-    const model = view.model;
     const targetValue = this.getTargetValue({ignoreDefault: 1});
 
     // If the target value of the composite is not empty I'll fetch
@@ -107,7 +105,7 @@ module.exports = PropertyView.extend({
     // to get the value of the sub-property
     if (targetValue) {
       const values = targetValue.split(' ');
-      value = model.parseValue(values[index]);
+      value = view ? view.model.parseValue(values[index]) : values[index];
     } else {
       value = view.getTargetValue({ignoreCustomValue: 1});
     }

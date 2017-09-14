@@ -71,7 +71,8 @@ module.exports = require('backbone').Collection.extend(TypeableCollection).exten
       model: Property,
       view: require('./../view/PropertyView'),
       isType(value) {
-        return 1;
+        value.type = 'base';
+        return value;
       }
     }
   ]
