@@ -30,7 +30,7 @@ module.exports = PropertyView.extend({
   /** @inheritdoc */
   renderInput() {
     if (!this.$input) {
-      this.$input = $('<input>', {placeholder: this.defaultValue, type: 'text' });
+      this.$input = $('<input>', {placeholder: this.model.getDefaultValue(), type: 'text' });
     }
 
     if (!this.$preview) {
@@ -107,7 +107,7 @@ module.exports = PropertyView.extend({
    * @return void
    * */
   removeFile(...args) {
-    this.model.set('value',this.defaultValue);
+    this.model.set('value', this.model.getDefaultValue());
     PropertyView.prototype.cleanValue.apply(this, args);
     this.setPreviewView(0);
   },

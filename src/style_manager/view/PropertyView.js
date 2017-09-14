@@ -29,23 +29,24 @@ module.exports = Backbone.View.extend({
     this.onChange = o.onChange || {};
     this.onInputRender = o.onInputRender  || {};
     this.customValue  = o.customValue  || {};
-    this.defaultValue = this.model.get('defaults');
-    this.property = this.model.get('property');
+    const model = this.model;
+    this.property = model.get('property');
     this.input = this.$input = null;
     const pfx = this.pfx;
     this.className = pfx + 'property';
     this.inputHolderId = '#' + pfx + 'input-holder';
-    this.sector = this.model.collection && this.model.collection.sector;
+    this.sector = model.collection && model.collection.sector;
 
-    if(!this.model.get('value'))
-      this.model.set('value', this.model.get('defaults'));
+    if (!model.get('value')) {
+      model.set('value', model.getDefaultValue());
+    }
 
     this.listenTo(this.propTarget, 'update', this.targetUpdated);
-    this.listenTo(this.model, 'destroy remove', this.remove);
-    this.listenTo(this.model, 'change:value', this.valueChanged);
-    this.listenTo(this.model, 'targetUpdated', this.targetUpdated);
-    this.listenTo(this.model, 'change:visible', this.updateVisibility);
-    this.listenTo(this.model, 'change:status', this.updateStatus);
+    this.listenTo(model, 'destroy remove', this.remove);
+    this.listenTo(model, 'change:value', this.valueChanged);
+    this.listenTo(model, 'targetUpdated', this.targetUpdated);
+    this.listenTo(model, 'change:visible', this.updateVisibility);
+    this.listenTo(model, 'change:status', this.updateStatus);
     this.events[`click .${pfx}clear`] = 'clear';
     this.delegateEvents();
   },
@@ -233,7 +234,7 @@ module.exports = Backbone.View.extend({
     if(targetProp)
       this.componentValue = targetProp;
     else
-      this.componentValue = this.defaultValue + (this.unit || ''); // todo model
+      this.componentValue = this.model.getDefaultValue() + (this.unit || ''); // todo model
 
     // Check if wrap inside function is required
     if (propModel.get('functionName')) {
@@ -296,7 +297,7 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getDefaultValue() {
-    return this.model.get('defaults');
+    return this.model.getDefaultValue();
   },
 
   /**
@@ -455,7 +456,7 @@ module.exports = Backbone.View.extend({
    * */
   setValue(value, force) {
     var f = force === 0 ? 0 : 1;
-    var def = this.model.get('defaults');
+    var def = this.model.getDefaultValue();
     var v = this.model.get('value') || def;
     if(value || f){
       v = value;
@@ -517,7 +518,7 @@ module.exports = Backbone.View.extend({
   renderInput() {
     if(!this.$input){
       this.$input = $('<input>', {
-        placeholder: this.model.get('defaults'),
+        placeholder: this.model.getDefaultValue(),
         type: 'text'
       });
       this.$el.find(this.inputHolderId).html(this.$input);

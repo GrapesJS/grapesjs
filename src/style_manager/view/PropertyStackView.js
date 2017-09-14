@@ -153,7 +153,6 @@ module.exports = PropertyCompositeView.extend({
     model.set('values', valObj);
 
     model.set('value', result);
-    //return this.createValue();//this.model.getFullValue();
     return this.model.getFullValue();
   },
 

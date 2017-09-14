@@ -55,7 +55,7 @@ module.exports = PropertyView.extend({
 
   /** @inheritdoc */
   setValue(value) {
-    var v = this.model.get('value') || this.defaultValue;
+    var v = this.model.get('value') || this.model.getDefaultValue();
 
     if(value)
       v  = value;

@@ -92,18 +92,6 @@ module.exports = PropertyView.extend({
   },
 
   /**
-   * Get default value of the property
-   * @return {string}
-   * */
-  getDefaultValue() {
-    var str = '';
-    this.props.each((prop, index) => {
-      str += prop.get('defaults') + prop.get('unit') + ' ';
-    });
-    return this.model.get('defaults') || str.replace(/ +$/,'');
-  },
-
-  /**
    * Extract string from composite value
    * @param {number} index Index
    * @param {Object} view Property view

@@ -18,6 +18,19 @@ module.exports = Property.extend({
     properties: [],
   }),
 
+  getDefaultValue() {
+    let value = this.get('defaults');
+
+    if (value) {
+      return value;
+    }
+
+    value = '';
+    const properties = this.get('properties');
+    properties.each((prop, index) => value += `${prop.getDefaultValue()} `);
+    return value.trim();
+  },
+
   getFullValue() {
     if (this.get('detached')) {
       return '';
