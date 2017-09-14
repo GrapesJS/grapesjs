@@ -4,8 +4,6 @@ var InputColor = require('domain_abstract/ui/InputColor');
 
 module.exports = PropertyView.extend({
 
-  renderTemplate() {},
-
   initialize(options) {
     PropertyView.prototype.initialize.apply(this, arguments);
     this.className += ` ${this.pfx}file`;

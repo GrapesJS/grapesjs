@@ -4,13 +4,18 @@ var Layers = require('./../model/Layers');
 var LayersView = require('./LayersView');
 
 module.exports = PropertyCompositeView.extend({
-
-  template: _.template(`
-  <div class="<%= pfx %>field <%= pfx %>stack">
-    <button type="button" id='<%= pfx %>add'>+</button>
-    <span id='<%= pfx %>input-holder'></span>
-  </div>
-  <div style="clear:both"></div>`),
+  
+  templateField() {
+    const pfx = this.pfx;
+    const ppfx = this.ppfx;
+    return `
+      <div class="${pfx}field ${pfx}stack">
+        <button type="button" id="${pfx}add">+</button>
+        <span id="${pfx}input-holder"></span>
+      </div>
+      <div style="clear:both"></div>
+    `;
+  },
 
   initialize(o) {
     PropertyCompositeView.prototype.initialize.apply(this, arguments);
@@ -115,7 +120,7 @@ module.exports = PropertyCompositeView.extend({
       var valist = (targetValue + '').split(',');
       result = valist[layerIndex];
       result = result ? result.trim() : propView.getDefaultValue();
-      result = propView.tryFetchFromFunction(result);
+      result = propView.model.parseValue(result);
     } else {
       var aStack = this.getStackValues();
       var strVar = aStack[layerIndex];
@@ -312,8 +317,9 @@ module.exports = PropertyCompositeView.extend({
   },
 
   render() {
-    this.renderLabel();
-    this.renderField();
+    const el = this.el;
+    el.innerHTML = this.template(this.model);
+    this.renderInput();
     this.renderLayers();
     this.$el.attr('class', this.className);
     this.updateStatus();

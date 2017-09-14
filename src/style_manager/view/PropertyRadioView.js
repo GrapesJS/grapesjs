@@ -3,11 +3,16 @@ var PropertyView = require('./PropertyView');
 
 module.exports = PropertyView.extend({
 
-  template: _.template(`
-  <div class="<%= ppfx %>field <%= ppfx %>field-radio">
-    <span id='<%= pfx %>input-holder'></span>
-  </div>
-  <div style="clear:both"></div>`),
+  templateField() {
+    const pfx = this.pfx;
+    const ppfx = this.ppfx;
+    return `
+      <div class="${ppfx}field ${ppfx}field-radio">
+        <span id="${pfx}input-holder"></span>
+      </div>
+      <div style="clear:both"></div>
+    `;
+  },
 
   initialize(options) {
     PropertyView.prototype.initialize.apply(this, arguments);

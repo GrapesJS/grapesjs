@@ -2,19 +2,28 @@ var Backbone = require('backbone');
 var PropertyView = require('./PropertyView');
 
 module.exports = PropertyView.extend({
-  template: _.template(`<div class="<%= pfx %>field <%= pfx %>file">
-    <div id='<%= pfx %>input-holder'>
-      <div class="<%= pfx %>btn-c">
-        <button class="<%= pfx %>btn" id="<%= pfx %>images" type="button"><%= assets %></button>
+
+  templateField() {
+    const pfx = this.pfx;
+    const ppfx = this.ppfx;
+    return `
+    <div class="${pfx}field ${pfx}file">
+      <div id='${pfx}input-holder'>
+        <div class="${pfx}btn-c">
+          <button class="${pfx}btn" id="${pfx}images" type="button">
+            ${this.assets}
+          </button>
+        </div>
+        <div style="clear:both;"></div>
       </div>
-      <div style="clear:both;"></div>
+      <div id="${pfx}preview-box">
+        <div id="${pfx}preview-file"></div>
+        <div id="${pfx}close">&Cross;</div>
+      </div>
     </div>
-    <div id="<%= pfx %>preview-box">
-      <div id="<%= pfx %>preview-file"></div>
-      <div id="<%= pfx %>close">&Cross;</div>
-    </div>
-  </div>
-  <div style="clear:both"></div>`),
+    <div style="clear:both"></div>
+    `;
+  },
 
   initialize(options) {
     PropertyView.prototype.initialize.apply(this, arguments);
@@ -83,16 +92,6 @@ module.exports = PropertyView.extend({
   setPreview(url) {
     if(this.$preview)
       this.$preview.css('background-image', "url(" + url + ")");
-  },
-
-
-  /** @inheritdoc */
-  renderTemplate() {
-    this.$el.append( this.template({
-      upload  : 'Upload',
-      assets  : 'Images',
-      pfx    : this.pfx
-    }));
   },
 
   /** @inheritdoc */
