@@ -19,11 +19,13 @@ module.exports = PropertyCompositeView.extend({
 
   initialize(o) {
     PropertyCompositeView.prototype.initialize.apply(this, arguments);
-    this.model.set('stackIndex', null);
-    this.className   = this.pfx  + 'property '+ this.pfx +'stack';
-    this.events['click #'+this.pfx+'add']  = 'addLayer';
-    this.listenTo( this.model ,'change:stackIndex', this.indexChanged);
-    this.listenTo( this.model ,'updateValue', this.valueUpdated);
+    const model = this.model;
+    const pfx = this.pfx;
+    model.set('stackIndex', null);
+    this.className = `${pfx}property ${pfx}stack`;
+    this.events[`click #${pfx}add`] = 'addLayer';
+    this.listenTo(model, 'change:stackIndex', this.indexChanged);
+    this.listenTo(model, 'updateValue', this.valueUpdated);
     this.delegateEvents();
   },
 
@@ -111,16 +113,19 @@ module.exports = PropertyCompositeView.extend({
    * @private
    * */
   valueOnIndex(index, propView) {
-    var result = null;
-    var layerIndex = this.model.get('stackIndex');
+    let result;
+    const model = this.model;
+    const layerIndex = model.get('stackIndex');
 
     // If detached the value in this case is stacked, eg. substack-prop: 1px, 2px, 3px...
-    if (this.model.get('detached')) {
+    if (model.get('detached')) {
       var targetValue = propView.getTargetValue({ignoreCustomValue: 1});
       var valist = (targetValue + '').split(',');
       result = valist[layerIndex];
       result = result ? result.trim() : propView.getDefaultValue();
       result = propView.model.parseValue(result);
+
+      //console.log('Value property', propView.model.get('property'), ': ', result, 'TARGET-VALUE', targetValue, valist);
     } else {
       var aStack = this.getStackValues();
       var strVar = aStack[layerIndex];

@@ -6,12 +6,13 @@ module.exports = PropertyView.extend({
   templateField() {
     const pfx = this.pfx;
     const ppfx = this.ppfx;
+    const assetsLabel = this.config.assetsLabel || 'Images';
     return `
     <div class="${pfx}field ${pfx}file">
       <div id='${pfx}input-holder'>
         <div class="${pfx}btn-c">
           <button class="${pfx}btn" id="${pfx}images" type="button">
-            ${this.assets}
+            ${assetsLabel}
           </button>
         </div>
         <div style="clear:both;"></div>
@@ -27,10 +28,10 @@ module.exports = PropertyView.extend({
 
   initialize(options) {
     PropertyView.prototype.initialize.apply(this, arguments);
-    this.assets    = this.target.get('assets');
-    this.modal    = this.target.get('Modal');
-    this.am      = this.target.get('AssetManager');
-    this.className   = this.className + ' '+ this.pfx +'file';
+    this.assets = this.target.get('assets');
+    this.modal = this.target.get('Modal');
+    this.am = this.target.get('AssetManager');
+    this.className = this.className + ' '+ this.pfx +'file';
     this.events['click #'+this.pfx+'close']    = 'removeFile';
     this.events['click #'+this.pfx+'images']  = 'openAssetManager';
     this.delegateEvents();

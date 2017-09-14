@@ -37,10 +37,18 @@ module.exports = require('backbone').Model.extend({
       return value;
     }
 
+    const args = [];
     let valueStr = value + '';
     let start = valueStr.indexOf('(') + 1;
     let end = valueStr.lastIndexOf(')');
-    return valueStr.substring(start, end);
+    args.push(start);
+
+    // Will try even if the last closing parentheses is not found
+    if (end >= 0) {
+      args.push(end);
+    }
+
+    return String.prototype.substring.apply(valueStr, args);
   },
 
   /**

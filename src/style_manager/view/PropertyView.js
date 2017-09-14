@@ -231,6 +231,10 @@ module.exports = Backbone.View.extend({
     }
 
     result = target.getStyle()[model.get('property')];
+
+    // TODO when stack type asks the sub-property (in valueOnIndex method)
+    // to provide its target value and its detached, I should avoid parsing
+    // (at least is wrong applying 'functionName' cleaning)
     result = model.parseValue(result);
 
     if (!result && !opts.ignoreDefault) {
