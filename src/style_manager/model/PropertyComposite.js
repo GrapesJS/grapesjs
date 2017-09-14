@@ -18,6 +18,12 @@ module.exports = Property.extend({
     properties: [],
   }),
 
+  init() {
+    const properties = this.get('properties') || [];
+    const Properties = require('./Properties');
+    this.set('properties', new Properties(properties));
+  },
+
   getDefaultValue() {
     let value = this.get('defaults');
 
