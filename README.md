@@ -109,7 +109,7 @@ $ npm run build
 JQuery is the only hard dependency so you have to include it before using GrapesJS
 
 ```html
-<script src="http://code.jquery.com/jquery-2.2.0.min.js"></script>
+<script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
 ```
 After that include scripts from GrapesJS with all your configurations
 
