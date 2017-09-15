@@ -1,5 +1,6 @@
 var FileUploader = require('asset_manager/view/FileUploader');
 
+
 module.exports = {
   run() {
 
@@ -65,9 +66,19 @@ module.exports = {
           it('Could be disabled', () => {
             var view = new FileUploader({ config : {
               disableUpload: true,
+              upload: 'something'
             } });
             view.render();
             expect(view.$el.find('input[type=file]').prop('disabled')).toEqual(true);
+          });
+          
+          it('Handles embedAsBase64 parameter', () => {
+            var view = new FileUploader({ config : {
+              embedAsBase64: true
+            } });
+            view.render();
+            expect(view.$el.find('input[type=file]').prop('disabled')).toEqual(false);
+            expect(view.uploadFile).toEqual(FileUploader.embedAsBase64);
           });
 
       });
