@@ -40,7 +40,7 @@ module.exports = Backbone.View.extend({
     this.ppfx = this.config.pStylePrefix || '';
     this.target = o.target || {};
     this.propTarget = o.propTarget || {};
-    this.onChange = o.onChange || {};
+    this.onChange = o.onChange;
     this.onInputRender = o.onInputRender  || {};
     this.customValue  = o.customValue  || {};
     const model = this.model;
@@ -183,9 +183,9 @@ module.exports = Backbone.View.extend({
       status = '';
     }
 
-    // Maybe in some cases I should set here a value on the model (silently)
+    model.set('value', value, {silent: 1});
     this.setValue(value, 1);
-    this.model.set('status', status);
+    model.set('status', status);
 
     if (em) {
       em.trigger('styleManager:change', this);
@@ -298,16 +298,12 @@ module.exports = Backbone.View.extend({
     const onChange = this.onChange;
     this.setValue(value);
 
-    if (!target) {
-      return;
-    }
-
     // Check if component is allowed to be styled
-    if (!this.isTargetStylable() || !this.isComponentStylable()) {
+    if (!target || !this.isTargetStylable() || !this.isComponentStylable()) {
       return;
     }
 
-    if (onChange && typeof onChange === "function") {
+    if (onChange) {
       onChange(target, this, opt);
     } else {
       this.updateTargetStyle(value, null, opt);
@@ -382,9 +378,10 @@ module.exports = Backbone.View.extend({
   },
 
   /**
-   * Set value to the input
-   * @param   {String}  value
-   * @param   {Boolean}  force
+   * Set the value to property input
+   * @param {String} value
+   * @param {Boolean} force
+   * @private
    * */
   setValue(value, force) {
     const model = this.model;
@@ -398,8 +395,6 @@ module.exports = Backbone.View.extend({
 
     const input = this.$input;
     input && input.val(v);
-
-    //this.model.set({value: v}, {silent: true});
   },
 
   updateVisibility() {

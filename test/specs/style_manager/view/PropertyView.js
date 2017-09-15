@@ -75,12 +75,6 @@ module.exports = {
           expect(view.model.get('value')).toEqual(propValue);
         });
 
-        // Tests getValueForTarget()
-        it('Get value for target', () => {
-          view.model.set('value', propValue);
-          expect(view.getValueForTarget()).toEqual(propValue);
-        });
-
         // Tests valueChanged() -> ...
         it('Update input on value change', () => {
           view.model.set('value', propValue);

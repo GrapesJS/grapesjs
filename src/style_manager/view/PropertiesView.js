@@ -15,7 +15,7 @@ module.exports = Backbone.View.extend({
     this.pfx = this.config.stylePrefix || '';
     this.target = o.target || {};
     this.propTarget = o.propTarget || {};
-    this.onChange = o.onChange || {};
+    this.onChange = o.onChange;
     this.onInputRender = o.onInputRender || {};
     this.customValue = o.customValue || {};
   },
