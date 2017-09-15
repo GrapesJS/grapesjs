@@ -97,7 +97,8 @@ module.exports = {
 
         it('Update input on value change', () => {
           view.model.set('value', propValue);
-          expect(view.$input.val()).toEqual(propValue);
+          // Fetch always values from properties
+          expect(view.$input.val()).toEqual('0% val2');
         });
 
         describe('With target setted', () => {

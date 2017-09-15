@@ -246,7 +246,7 @@ module.exports = {
           it('Build value from properties', () => {
             view.model.get('properties').at(0).set('value', propValue);
             view.model.get('properties').at(2).set('value', prop3Val);
-            expect(view.build()).toEqual(finalResult);
+            expect(view.model.getFullValue()).toEqual(finalResult);
           });
 
         });
