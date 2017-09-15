@@ -79,26 +79,30 @@ module.exports = PropertyCompositeView.extend({
 
   /** @inheritDoc */
   getPropsConfig(opts) {
-    var that = this;
+    const model = this.model;
+    const detached = model.get('detached');
     var result = PropertyCompositeView.prototype.getPropsConfig.apply(this, arguments);
 
     result.onChange = (el, view, opt) => {
-      var model = view.model;
-      var result = that.build();
+      const subModel = view.model;
+      const subProperty = subModel.get('property');
+      this.build();
 
-      if (that.model.get('detached')) {
+      if (detached) {
         var propVal = '';
-        var index = model.collection.indexOf(model);
+        var index = subModel.collection.indexOf(subModel);
 
-        that.getLayers().each(layer => {
-          var val = layer.get('values')[model.get('property')];
-          if(val)
+        this.getLayers().each(layer => {
+          var val = layer.get('values')[subProperty];
+          if (val) {
             propVal += (propVal ? ',' : '') + val;
+          }
         });
 
+        console.log(`Property ${subProperty}, value to set: ${propVal}`);
         view.updateTargetStyle(propVal, null, opt);
       } else {
-        that.model.set('value', result, opt);
+        model.set('value', model.getFullValue(), opt);
       }
     };
 
@@ -145,25 +149,28 @@ module.exports = PropertyCompositeView.extend({
    * @private
    * */
   build(...args) {
-    var stackIndex = this.model.get('stackIndex');
-    if(stackIndex === null)
+    let value = '';
+    let values = {};
+    const model = this.model;
+    const stackIndex = model.get('stackIndex');
+    const properties = model.get('properties');
+
+    if (stackIndex === null) {
       return;
-    let result = '';
-    this.model.get('properties').each(prop => result += `${prop.getFullValue()} `);
-    var model = this.getLayers().at(stackIndex);
-    if(!model)
-      return;
+    }
 
     // Store properties values inside layer, in this way it's more reliable
     // to fetch them later
-    var valObj = {};
-    this.model.get('properties').each(prop => {
-      valObj[prop.get('property')] = prop.getFullValue();
+    console.log(`START Property ${model.get('property')}`);
+    properties.each(prop => {
+      const propValue = prop.getFullValue();
+      values[prop.get('property')] = propValue;
+      value += `${propValue} `;
     });
-    model.set('values', valObj);
 
-    model.set('value', result);
-    return this.model.getFullValue();
+    const layerModel = this.getLayers().at(stackIndex);
+    layerModel && layerModel.set({values, value});
+    console.log(`END Property ${model.get('property')} value: ${value} values: `, values);
   },
 
   /**

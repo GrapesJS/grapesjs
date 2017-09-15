@@ -296,9 +296,8 @@ module.exports = Backbone.View.extend({
     const target = this.getTarget();
     const onChange = this.onChange;
 
-    if (this.$input) {
-      this.setValue(value);
-    }
+    console.log('BEFORE valueChanged ', model.get('property'), value, 'this value: ', model.get('value'));
+    this.setValue(value);
 
     if (!target) {
       return;
@@ -389,15 +388,19 @@ module.exports = Backbone.View.extend({
    * @param   {Boolean}  force
    * */
   setValue(value, force) {
-    var f = force === 0 ? 0 : 1;
-    var def = this.model.getDefaultValue();
-    var v = this.model.get('value') || def;
-    if(value || f){
+    const model = this.model;
+    const f = force === 0 ? 0 : 1;
+    const def = model.getDefaultValue();
+    let v = model.get('value') || def;
+
+    if (value || f) {
       v = value;
     }
-    if(this.$input)
-      this.$input.val(v);
-    this.model.set({value: v}, {silent: true});
+
+    const input = this.$input;
+    input && input.val(v);
+
+    //this.model.set({value: v}, {silent: true});
   },
 
   updateVisibility() {

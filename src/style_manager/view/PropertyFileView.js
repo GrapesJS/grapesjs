@@ -82,7 +82,7 @@ module.exports = PropertyView.extend({
    * @return void
    * */
   spreadUrl(url) {
-    this.setValue(url);
+    this.model.set('value', url);
     this.setPreviewView(1);
   },
 
@@ -90,9 +90,9 @@ module.exports = PropertyView.extend({
    * Shows file preview
    * @param string Value
    * */
-  setPreview(url) {
-    if(this.$preview)
-      this.$preview.css('background-image', "url(" + url + ")");
+  setPreview(value) {
+    const preview = this.$preview;
+    preview && preview.css('background-image', value);
   },
 
   /** @inheritdoc */
@@ -132,7 +132,6 @@ module.exports = PropertyView.extend({
         onSelect(target) {
           that.modal.close();
           that.spreadUrl(target.get('src'));
-          that.valueChanged(e);
         }
       });
     }
