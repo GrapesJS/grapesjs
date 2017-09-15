@@ -183,6 +183,7 @@ module.exports = Backbone.View.extend({
       status = '';
     }
 
+    // Maybe in some cases I should set here a value on the model (silently)
     this.setValue(value, 1);
     this.model.set('status', status);
 
@@ -295,8 +296,6 @@ module.exports = Backbone.View.extend({
     const value = model.getFullValue();
     const target = this.getTarget();
     const onChange = this.onChange;
-
-    console.log('BEFORE valueChanged ', model.get('property'), value, 'this value: ', model.get('value'));
     this.setValue(value);
 
     if (!target) {

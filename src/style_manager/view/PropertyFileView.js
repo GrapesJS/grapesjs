@@ -67,12 +67,8 @@ module.exports = PropertyView.extend({
    * @return void
    * */
   setPreviewView(v) {
-    if(!this.$previewBox)
-      return;
-    if(v)
-      this.$previewBox.addClass(this.pfx + 'show');
-    else
-      this.$previewBox.removeClass(this.pfx + 'show');
+    const pv = this.$previewBox;
+    pv && pv[v ? 'addClass' : 'removeClass'](`${this.pfx}show`);
   },
 
   /**
@@ -92,6 +88,7 @@ module.exports = PropertyView.extend({
    * */
   setPreview(value) {
     const preview = this.$preview;
+    value = value && value.indexOf('url(') < 0 ? `url(${value})` : value;
     preview && preview.css('background-image', value);
   },
 

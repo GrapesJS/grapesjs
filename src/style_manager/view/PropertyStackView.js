@@ -64,9 +64,7 @@ module.exports = PropertyCompositeView.extend({
     var model = this.model;
     var layer  = this.getLayers().at(model.get('stackIndex'));
     layer.set('props', this.$props);
-    model.get('properties').each(prop => {
-      prop.trigger('targetUpdated');
-    });
+    model.get('properties').each(prop => prop.trigger('targetUpdated'));
   },
 
   /**
@@ -99,7 +97,6 @@ module.exports = PropertyCompositeView.extend({
           }
         });
 
-        console.log(`Property ${subProperty}, value to set: ${propVal}`);
         view.updateTargetStyle(propVal, null, opt);
       } else {
         model.set('value', model.getFullValue(), opt);
@@ -128,8 +125,6 @@ module.exports = PropertyCompositeView.extend({
       result = valist[layerIndex];
       result = result ? result.trim() : propView.getDefaultValue();
       result = propView.model.parseValue(result);
-
-      //console.log('Value property', propView.model.get('property'), ': ', result, 'TARGET-VALUE', targetValue, valist);
     } else {
       var aStack = this.getStackValues();
       var strVar = aStack[layerIndex];
@@ -161,7 +156,6 @@ module.exports = PropertyCompositeView.extend({
 
     // Store properties values inside layer, in this way it's more reliable
     // to fetch them later
-    console.log(`START Property ${model.get('property')}`);
     properties.each(prop => {
       const propValue = prop.getFullValue();
       values[prop.get('property')] = propValue;
@@ -170,7 +164,6 @@ module.exports = PropertyCompositeView.extend({
 
     const layerModel = this.getLayers().at(stackIndex);
     layerModel && layerModel.set({values, value});
-    console.log(`END Property ${model.get('property')} value: ${value} values: `, values);
   },
 
   /**
