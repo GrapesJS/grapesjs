@@ -55,6 +55,7 @@
 module.exports = config => {
   var c = config || {},
   defaults = require('./config/config'),
+  Selector = require('./model/Selector'),
   Selectors = require('./model/Selectors'),
   ClassTagsView = require('./view/ClassTagsView');
   var selectors, selectorTags;
@@ -82,23 +83,28 @@ module.exports = config => {
           c[name] = defaults[name];
       }
 
-      var ppfx = c.pStylePrefix;
-      if(ppfx)
-        c.stylePrefix = ppfx + c.stylePrefix;
+      const em = c.em;
+      const ppfx = c.pStylePrefix;
 
-      selectors = new Selectors(c.selectors, {
-        em: c.em,
-        config: c,
-      });
+      if (ppfx) {
+        c.stylePrefix = ppfx + c.stylePrefix;
+      }
+
       selectorTags = new ClassTagsView({
-        collection: selectors,
+        collection: new Selectors([], {em,config: c}),
         config: c,
       });
+
+      // Global selectors container
+      selectors = new Selectors(c.selectors);
+      selectors.on('add', (model) =>
+        em.trigger('selector:add', model));
+
       return this;
     },
 
     /**
-     * Add the new selector to collection if it's not already exists. Class type is a default one
+     * Add a new selector to collection if it's not already exists. Class type is a default one
      * @param {String} name Selector name
      * @param {Object} opts Selector options
      * @param {String} [opts.label=''] Label for the selector, if it's not provided the label will be the same as the name
@@ -112,10 +118,25 @@ module.exports = config => {
      *   label: 'selectorName'
      * });
      * */
-    add(name, opts) {
-      var obj = opts || {};
-      obj.name = name.name || name;
-      return selectors.add(obj);
+    add(name, opts = {}) {
+      if (typeof name == 'object') {
+        opts = name;
+      } else {
+        opts.name = name;
+      }
+
+      if (opts.label && !opts.name) {
+        opts.name = Selector.escapeName(opts.label);
+      }
+
+      const cname = opts.name;
+      const selector = cname ? this.get(cname) : selectors.where(opts)[0];
+
+      if (!selector) {
+        return selectors.add(opts);
+      }
+
+      return selector;
     },
 
     /**

@@ -11,39 +11,20 @@ var PropertyStackView = require('./PropertyStackView');
 module.exports = Backbone.View.extend({
 
   initialize(o) {
-    this.config     = o.config || {};
-    this.pfx       = this.config.stylePrefix || '';
-    this.target      = o.target || {};
+    this.config = o.config || {};
+    this.pfx = this.config.stylePrefix || '';
+    this.target = o.target || {};
     this.propTarget = o.propTarget || {};
-    this.onChange    = o.onChange || {};
-    this.onInputRender  = o.onInputRender || {};
-    this.customValue  = o.customValue || {};
+    this.onChange = o.onChange;
+    this.onInputRender = o.onInputRender || {};
+    this.customValue = o.customValue || {};
   },
 
   render() {
     var fragment = document.createDocumentFragment();
 
-    this.collection.each(function(model){
-      var objView  = PropertyView;
-
-      switch(model.get('type')){
-        case 'integer':
-          objView  = PropertyIntegerView;   break;
-        case 'radio':
-          objView  = PropertyRadioView;  break;
-        case 'select':
-          objView  = PropertySelectView;  break;
-        case 'color':
-          objView  = PropertyColorView;  break;
-        case 'file':
-          objView  = PropertyFileView;    break;
-        case 'composite':
-          objView  = PropertyCompositeView;break;
-        case 'stack':
-          objView  = PropertyStackView;  break;
-      }
-
-      var view = new objView({
+    this.collection.each((model) => {
+      var view = new model.typeView({
         model,
         name: model.get('name'),
         id: this.pfx + model.get('property'),
@@ -59,7 +40,7 @@ module.exports = Backbone.View.extend({
       }
 
       fragment.appendChild(view.render().el);
-    },this);
+    });
 
     this.$el.append(fragment);
     this.$el.append($('<div>', {class: "clear"}));

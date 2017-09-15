@@ -15,7 +15,7 @@ export default {
    * @return {Object}
    */
   getStyle() {
-    return this.get('style');
+    return Object.assign({}, this.get('style'));
   },
 
   /**
@@ -53,7 +53,7 @@ export default {
    * @param {string} prop
    */
   removeStyle(prop) {
-    let style = Object.assign({}, this.getStyle());
+    let style = this.getStyle();
     delete style[prop];
     this.setStyle(style);
   }

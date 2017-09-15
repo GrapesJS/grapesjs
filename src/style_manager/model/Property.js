@@ -1,70 +1,82 @@
-var Backbone = require('backbone');
-var Layers = require('./Layers');
-
-module.exports = Backbone.Model.extend({
+module.exports = require('backbone').Model.extend({
 
   defaults: {
     name: '',
     property: '',
     type: '',
-    units: [],
-    unit: '',
     defaults: '',
     info: '',
     value: '',
     icon: '',
-    preview: false,
-    detached: false,
-    visible: true,
     functionName: '',
     status: '',
-    properties: [],
-    layers: [],
-    list: [],
+    visible: true,
     fixedValues: ['initial', 'inherit'],
   },
 
   initialize(opt) {
     var o = opt || {};
-    var type = this.get('type');
     var name = this.get('name');
     var prop = this.get('property');
-    var props = this.get('properties');
 
-    if(!name)
+    if (!name) {
       this.set('name', prop.charAt(0).toUpperCase() + prop.slice(1).replace(/-/g,' '));
-
-    if(props.length){
-      var Properties = require('./Properties');
-      this.set('properties', new Properties(props));
     }
 
-    switch(type){
-      case 'stack':
-        this.set('layers', new Layers());
-        break;
-    }
+    const init = this.init && this.init.bind(this);
+    init && init();
   },
 
   /**
-   * Return value
-   * @return {string} Value
-   * @private
+   * Parse a raw value, generally fetched from the target, for this property
+   * @param  {string} value
+   * @return {string}
    */
-  getValue() {
-    var result = '';
-    var type = this.get('type');
-
-    switch(type){
-      case 'integer':
-        result = this.get('value') + this.get('unit');
-        break;
-      default:
-        result = this.get('value');
-        break;
+  parseValue(value) {
+    if (!this.get('functionName')) {
+      return value;
     }
 
-    return result;
+    const args = [];
+    let valueStr = value + '';
+    let start = valueStr.indexOf('(') + 1;
+    let end = valueStr.lastIndexOf(')');
+    args.push(start);
+
+    // Will try even if the last closing parentheses is not found
+    if (end >= 0) {
+      args.push(end);
+    }
+
+    return String.prototype.substring.apply(valueStr, args);
+  },
+
+  /**
+   * Get the default value
+   * @return {string}
+   * @private
+   */
+  getDefaultValue() {
+    return this.get('defaults');
+  },
+
+  /**
+   * Get a complete value of the property.
+   * This probably will replace the getValue when all
+   * properties models will be splitted
+   * @param {string} val Custom value to replace the one on the model
+   * @return {string}
+   * @private
+   */
+  getFullValue(val) {
+    const fn = this.get('functionName');
+    let value = val || this.get('value');
+
+    if (fn) {
+      value = `${fn}(${value})`;
+    }
+
+    return value;
   },
 
 });

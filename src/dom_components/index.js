@@ -34,13 +34,12 @@
  */
 module.exports = () => {
   var c = {},
-  componentTypes = {},
   defaults = require('./config/config'),
   Component = require('./model/Component'),
   ComponentView = require('./view/ComponentView');
 
   var component, componentView;
-  var defaultTypes = [
+  var componentTypes = [
     {
       id: 'cell',
       model: require('./model/ComponentTableCell'),
@@ -105,7 +104,7 @@ module.exports = () => {
 
   return {
 
-    componentTypes: defaultTypes,
+    componentTypes,
 
     /**
      * Name of the module
@@ -146,8 +145,11 @@ module.exports = () => {
      */
     init(config) {
       c = config || {};
-      if(c.em)
-        c.components = c.em.config.components || c.components;
+      const em = c.em;
+
+      if (em) {
+        c.components = em.config.components || c.components;
+      }
 
       for (var name in defaults) {
         if (!(name in c))
@@ -159,29 +161,43 @@ module.exports = () => {
         c.stylePrefix = ppfx + c.stylePrefix;
 
       // Load dependencies
-      if(c.em){
-        c.rte = c.em.get('rte') || '';
-        c.modal = c.em.get('Modal') || '';
-        c.am = c.em.get('AssetManager') || '';
-        c.em.get('Parser').compTypes = defaultTypes;
+      if (em) {
+        c.rte = em.get('rte') || '';
+        c.modal = em.get('Modal') || '';
+        c.am = em.get('AssetManager') || '';
+        em.get('Parser').compTypes = componentTypes;
+        em.on('change:selectedComponent', this.componentChanged, this);
       }
 
-      component = new Component(c.wrapper, {
-        sm: c.em,
+      // Build wrapper
+      let components = c.components;
+      let wrapper = Object.assign({}, c.wrapper);
+      wrapper['custom-name'] = c.wrapperName;
+      wrapper.wrapper = 1;
+
+      // Components might be a wrapper
+      if (components && components.constructor === Object && components.wrapper) {
+        wrapper = Object.assign({}, components);
+        components = components.components || [];
+        wrapper.components = [];
+
+        // Have to put back the real object of components
+        if (em) {
+          em.config.components = components;
+          c.components = components;
+        }
+      }
+
+      component = new Component(wrapper, {
+        sm: em,
         config: c,
-        defaultTypes,
         componentTypes,
       });
       component.set({ attributes: {id: 'wrapper'}});
 
-      if(c.em && !c.em.config.loadCompsOnRender) {
-        component.get('components').add(c.components);
-      }
-
       componentView = new ComponentView({
         model: component,
         config: c,
-        defaultTypes,
         componentTypes,
       });
       return this;
@@ -192,10 +208,16 @@ module.exports = () => {
      * @private
      */
     onLoad() {
-      if(c.stm && c.stm.isAutosave()){
-        c.em.initUndoManager();
-        c.em.initChildrenComp(this.getWrapper());
-      }
+      this.getComponents().reset(c.components);
+    },
+
+    /**
+     * Do stuff after load
+     * @param  {Editor} em
+     * @private
+     */
+    postLoad(em) {
+      em.initChildrenComp(this.getWrapper());
     },
 
     /**
@@ -205,25 +227,37 @@ module.exports = () => {
      * @param {Object} data Object of data to load
      * @return {Object} Loaded data
      */
-    load(data) {
-      var d = data || '';
-      if(!d && c.stm)
-        d = c.em.getCacheLoad();
-      var obj = '';
-      if(d.components){
-        try{
-          obj =  JSON.parse(d.components);
-        }catch(err){}
-      }else if(d.html)
-        obj = d.html;
+    load(data = '') {
+      let result = '';
 
-      if (obj && obj.length) {
-        this.clear();
-        this.getComponents().reset();
-        this.getComponents().add(obj);
+      if (!data && c.stm) {
+        data = c.em.getCacheLoad();
       }
 
-      return obj;
+      if (data.components) {
+        try {
+          result = JSON.parse(data.components);
+        } catch (err) {}
+      } else if (data.html) {
+        result = data.html;
+      }
+
+      const isObj = result && result.constructor === Object;
+
+      if ((result && result.length) || isObj) {
+        this.clear();
+        this.getComponents().reset();
+
+        // If the result is an object I consider it the wrapper
+        if (isObj) {
+          this.getWrapper().set(result)
+          .initComponents().initClasses().loadTraits();
+        } else {
+          this.getComponents().add(result);
+        }
+      }
+
+      return result;
     },
 
     /**
@@ -232,14 +266,22 @@ module.exports = () => {
      * @return {Object} Data to store
      */
     store(noStore) {
-      if(!c.stm)
+      if(!c.stm) {
         return;
+      }
+
       var obj = {};
       var keys = this.storageKey();
-      if(keys.indexOf('html') >= 0)
+
+      if (keys.indexOf('html') >= 0) {
         obj.html = c.em.getHtml();
-      if(keys.indexOf('components') >= 0)
-        obj.components = JSON.stringify(c.em.getComponents());
+      }
+
+      if (keys.indexOf('components') >= 0) {
+        const toStore = c.storeWrapper ?
+          this.getWrapper() : this.getComponents();
+        obj.components = JSON.stringify(toStore);
+      }
 
       if (!noStore) {
         c.stm.store(obj);
@@ -379,7 +421,7 @@ module.exports = () => {
         compType.view = methods.view;
       } else {
         methods.id = type;
-        defaultTypes.unshift(methods);
+        componentTypes.unshift(methods);
       }
     },
 
@@ -389,7 +431,7 @@ module.exports = () => {
      * @private
      */
     getType(type) {
-      var df = defaultTypes;
+      var df = componentTypes;
 
       for (var it = 0; it < df.length; it++) {
         var dfId = df[it].id;
@@ -399,6 +441,26 @@ module.exports = () => {
       }
       return;
     },
+
+    /**
+     * Triggered when the selected component is changed
+     * @private
+     */
+    componentChanged() {
+      const em = c.em;
+      const model = em.get('selectedComponent');
+      const previousModel = em.previous('selectedComponent');
+
+      // Deselect the previous component
+      if (previousModel) {
+        previousModel.set({
+          status: '',
+          state: '',
+        });
+      }
+
+      model && model.set('status','selected');
+    }
 
   };
 };

@@ -3,10 +3,6 @@ var ComponentsView = require('./ComponentsView');
 
 module.exports = Backbone.View.extend({
 
-  events: {
-    'click': 'initResize',
-  },
-
   className() {
     return this.getClasses();
   },
@@ -156,8 +152,9 @@ module.exports = Backbone.View.extend({
     var attributes = {},
       attr = model.get("attributes");
     for(var key in attr) {
-        if(attr.hasOwnProperty(key))
+        if (key && attr.hasOwnProperty(key)) {
           attributes[key] = attr[key];
+        }
     }
 
     // Update src
@@ -181,6 +178,14 @@ module.exports = Backbone.View.extend({
    * */
   updateStyle() {
     this.$el.attr('style', this.getStyleString());
+  },
+
+  /**
+   * Update component content
+   * @private
+   * */
+  updateContent() {
+    this.getChildrenContainer().innerHTML = this.model.get('content');
   },
 
   /**
@@ -227,71 +232,6 @@ module.exports = Backbone.View.extend({
    * */
   eventCall(event) {
     event.viewResponse = this;
-  },
-
-  /**
-   * Init component for resizing
-   */
-  initResize() {
-    var em = this.opts.config.em;
-    var editor = em ? em.get('Editor') : '';
-    var config = em ? em.get('Config') : '';
-    var pfx = config.stylePrefix || '';
-    var attrName = 'data-' + pfx + 'handler';
-    var resizeClass = pfx + 'resizing';
-    var model = this.model;
-    var modelToStyle;
-
-    var toggleBodyClass = (method, e, opts) => {
-      var handlerAttr = e.target.getAttribute(attrName);
-      var resizeHndClass = pfx + 'resizing-' + handlerAttr;
-      var classToAdd = resizeClass;// + ' ' +resizeHndClass;
-      if (opts.docs) {
-        opts.docs.find('body')[method](classToAdd);
-      }
-    };
-
-    if(editor && this.model.get('resizable')) {
-      editor.runCommand('resize', {
-        el: this.el,
-        options: {
-          onStart(e, opts) {
-            toggleBodyClass('addClass', e, opts);
-            modelToStyle = em.get('StyleManager').getModelToStyle(model);
-          },
-          // Update all positioned elements (eg. component toolbar)
-          onMove() {
-            editor.trigger('change:canvasOffset');
-          },
-          onEnd(e, opts) {
-            toggleBodyClass('removeClass', e, opts);
-            editor.trigger('change:canvasOffset');
-          },
-          updateTarget(el, rect, store) {
-            if (!modelToStyle) {
-              return;
-            }
-            var unit = 'px';
-            var style = _.clone(modelToStyle.get('style'));
-            var width = rect.w + (store ? 1 : 0);
-            style.width = width + unit;
-            style.height = rect.h + unit;
-            modelToStyle.set('style', style, {avoidStore: 1});
-            em.trigger('targetStyleUpdated');
-
-            // This trick will trigger the Undo Manager. To trigger "change:style"
-            // on the Model you need to provide a new object and after that
-            // Undo Manager will trigger only if values are different (this is why
-            // above I've added + 1 to width if store required)
-            if(store) {
-              var style3 = _.clone(style);
-              style3.width = (width - 1) + unit;
-              modelToStyle.set('style', style3);
-            }
-          }
-        }
-      });
-    }
   },
 
   /**
@@ -363,7 +303,6 @@ module.exports = Backbone.View.extend({
     var view = new ComponentsView({
       collection: this.model.get('components'),
       config: this.config,
-      defaultTypes: this.opts.defaultTypes,
       componentTypes: this.opts.componentTypes,
     });
 
@@ -401,8 +340,7 @@ module.exports = Backbone.View.extend({
   render() {
     this.renderAttributes();
     var model = this.model;
-    var container = this.getChildrenContainer();
-    container.innerHTML = model.get('content');
+    this.updateContent();
     this.renderChildren();
     this.updateScript();
     return this;

@@ -35,6 +35,7 @@ module.exports = Backbone.View.extend({
   targetUpdated() {
     var em = this.target;
     var el = em.get('selectedComponent');
+    const um = em.get('UndoManager');
 
     if(!el)
       return;
@@ -46,36 +47,43 @@ module.exports = Backbone.View.extend({
     var device = em.getDeviceModel();
     var state = !previewMode ? el.get('state') : '';
     var widthMedia = device && device.get('widthMedia');
-    var mediaText = device && !previewMode && widthMedia ?
-      `(${config.mediaCondition}: ${widthMedia})` : '';
     var stateStr = state ? `:${state}` : null;
     var view = el.view;
+    var mediaText = device && !previewMode && widthMedia ?
+      `(${config.mediaCondition}: ${widthMedia})` : '';
     pt.helper = null;
 
     if (view) {
       pt.computed = window.getComputedStyle(view.el, stateStr);
     }
 
-    if(classes.length){
+    if (classes.length) {
       var cssC = em.get('CssComposer');
-      var valid = _.filter(classes.models, item => item.get('active'));
+      var valid = classes.getStyleable();
       var iContainer = cssC.get(valid, state, mediaText);
 
-      if(!iContainer){
+      if (!iContainer && valid.length) {
+        // I stop undo manager here as after adding the CSSRule (generally after
+        // selecting the component) and calling undo() it will remove the rule from
+        // the collection, therefore updating it in style manager will not affect it
+        // #268
+        um.stopTracking();
         iContainer = cssC.add(valid, state, mediaText);
-        // Get styles from the component
         iContainer.set('style', el.get('style'));
-        //cssC.addRule(iContainer);
         el.set('style', {});
-      }else{
-        // Ensure to clean element
-        //if(classes.length == 1)
-          //el.set('style', {});
+        um.startTracking();
+      }
+
+      if (!iContainer) {
+        // In this case it's just a Component without any valid selector
+        pt.model = el;
+        pt.trigger('update');
+        return;
       }
 
       // If the state is not empty, there should be a helper rule in play
       // The helper rule will get the same style of the iContainer
-      if(state){
+      if (state) {
         var clm = em.get('SelectorManager');
         var helperClass = clm.add('hc-state');
         var helperRule = cssC.get([helperClass]);

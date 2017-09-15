@@ -26,7 +26,7 @@ module.exports = Backbone.View.extend({
     <span id="<%= pfx %>add-tag" class="fa fa-plus"></span>
   </div>
   <div id="<%= pfx %>sel-help">
-    <div id="<%= pfx %>label">Selected</div>
+    <div id="<%= pfx %>label"><%= selectedLabel %></div>
     <div id="<%= pfx %>sel"></div>
     <div style="clear:both"></div>
   </div>`),
@@ -130,10 +130,15 @@ module.exports = Backbone.View.extend({
    */
   componentChanged(e) {
     this.compTarget = this.target.get('selectedComponent');
-    if(this.compTarget)
-      this.getStates().val(this.compTarget.get('state'));
-    var models = this.compTarget ? this.compTarget.get('classes').models : [];
-    this.collection.reset(models);
+    const target = this.compTarget;
+    let validSelectors = [];
+
+    if (target) {
+      this.getStates().val(target.get('state'));
+      validSelectors = target.get('classes').getValid();
+    }
+
+    this.collection.reset(validSelectors);
     this.updateStateVis();
   },
 
@@ -156,20 +161,23 @@ module.exports = Backbone.View.extend({
    * @private
    */
   updateSelector() {
-    this.compTarget = this.target.get('selectedComponent');
-    if(!this.compTarget || !this.compTarget.get)
+    const selected = this.target.get('selectedComponent');
+    this.compTarget = selected;
+    if(!selected || !selected.get)
       return;
     var result = '';
-    var models = this.compTarget.get('classes');
-    models.each(model => {
+    this.collection.each(model => {
       if(model.get('active'))
         result += '.' + model.get('name');
     });
-    var state = this.compTarget.get('state');
+    var state = selected.get('state');
     result = state ? result + ':' + state : result;
+    result = result || selected.getName();
     var el = this.el.querySelector('#' + this.pfx + 'sel');
-    if(el)
+
+    if (el) {
       el.innerHTML = result;
+    }
   },
 
   /**
@@ -191,23 +199,28 @@ module.exports = Backbone.View.extend({
    * @param  {Object} e
    * @private
    */
-  addNewTag(name) {
-    if(!name)
+  addNewTag(label) {
+    const target = this.target;
+    const component = this.compTarget;
+
+    if (!label.trim()) {
       return;
+    }
 
-    if(this.target){
-      var cm = this.target.get('SelectorManager');
-      var model = cm.add(name);
+    if (target) {
+      const sm = target.get('SelectorManager');
+      var model = sm.add({label});
 
-      if(this.compTarget){
-        var targetCls = this.compTarget.get('classes');
-        var lenB = targetCls.length;
-        targetCls.add(model);
-        var lenA = targetCls.length;
+      if (component) {
+        var compCls = component.get('classes');
+        var lenB = compCls.length;
+        compCls.add(model);
+        var lenA = compCls.length;
         this.collection.add(model);
 
-        if(lenA > lenB)
-          this.target.trigger('targetClassAdded');
+        if (lenA > lenB) {
+          target.trigger('targetClassAdded');
+        }
 
         this.updateStateVis();
       }
@@ -292,11 +305,13 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    this.$el.html( this.template({
-      label: this.config.label,
-      statesLabel: this.config.statesLabel,
+    const config = this.config;
+    this.$el.html(this.template({
+      selectedLabel: config.selectedLabel,
+      statesLabel: config.statesLabel,
+      label: config.label,
       pfx: this.pfx,
-      ppfx: this.ppfx
+      ppfx: this.ppfx,
     }));
     this.$input = this.$el.find('input#' + this.newInputId);
     this.$addBtn = this.$el.find('#' + this.addBtnId);

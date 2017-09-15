@@ -20,12 +20,6 @@ module.exports = {
   // Show paddings and margins on selected component
   showOffsetsSelected: false,
 
-  // Clear the canvas when editor.render() is called
-  clearOnRender: false,
-
-  // Return JS of components inside HTML from 'editor.getHtml()'
-  jsInHtml: true,
-
   // On creation of a new Component (via object), if the 'style' attribute is not
   // empty, all those roles will be moved in its new class
   forceClass: true,
@@ -37,7 +31,7 @@ module.exports = {
   width: '100%',
 
   // CSS that could only be seen (for instance, inside the code viewer)
-  protectedCss: '*{box-sizing: border-box;} body{margin: 0;}',
+  protectedCss: '*{box-sizing: border-box;}',
 
   // CSS for the iframe which containing the canvas, useful if you need to custom something inside
   // (eg. the style of the selected component)
@@ -68,9 +62,14 @@ module.exports = {
   // Ending tag for variable inside scripts in Components
   tagVarEnd: ' ]}',
 
-  // This option makes available custom component types also for loaded
-  // elements inside canvas
-  loadCompsOnRender: 1,
+  // Return JS of components inside HTML from 'editor.getHtml()'
+  jsInHtml: true,
+
+  // Show the wrapper component in the final code, eg. in editor.getHtml()
+  exportWrapper: 0,
+
+  // The wrapper, if visible, will be shown as a `<body>`
+  wrappesIsBody: 1,
 
   // Dom element
   el: '',

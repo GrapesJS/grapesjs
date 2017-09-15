@@ -831,11 +831,7 @@
       fromElement: true,
       clearOnRender: 0,
 
-      storageManager:{
-        autoload: 0,
-        storeComponents: 1,
-        storeStyles: 1,
-      },
+      storageManager: {autoload: 0},
 
       commands:     {
           defaults: [{
@@ -868,10 +864,11 @@
       },
 
       assetManager: {
-        storageType      : '',
-        storeOnChange    : true,
-        storeAfterUpload  : true,
-        assets        : [
+        upload: 'https://test.page',
+        params: {
+          _token: 'pCYrSwjuiV0t5NVtZpQDY41Gn5lNUwo3it1FIkAj',
+        },
+        assets: [
            { type: 'image', src : 'http://placehold.it/350x250/78c5d6/fff/image1.jpg', height:350, width:250},
            { type: 'image', src : 'http://placehold.it/350x250/459ba8/fff/image2.jpg', height:350, width:250},
            { type: 'image', src : 'http://placehold.it/350x250/79c267/fff/image3.jpg', height:350, width:250},
@@ -1267,8 +1264,10 @@
       command:  function(editor, sender) {
         if(sender) sender.set('active', false);
         if(confirm('Are you sure to clean the canvas?')) {
-          var comps = editor.DomComponents.clear();
-          localStorage.clear();
+          editor.DomComponents.clear();
+          setTimeout(function() {
+            localStorage.clear();
+          }, 0);
         }
       },
       attributes: { title: 'Empty canvas' }
@@ -1312,6 +1311,7 @@
     });
     */
 
+
     // Store and load events
     editor.on('storage:load', function(e) {
       console.log('LOAD ', e);
@@ -1326,7 +1326,7 @@
       let computedValue = view.getComputedValue();
       let defaultValue = view.getDefaultValue();
       //console.log('Style of ', model.get('property'), 'Target: ', targetValue, 'Computed:', computedValue, 'Default:', defaultValue);
-    })
+    });
 
     editor.render();
     </script>

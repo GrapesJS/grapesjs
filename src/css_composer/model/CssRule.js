@@ -26,18 +26,21 @@ module.exports = Backbone.Model.extend(Styleable).extend({
 	},
 
   initialize(c, opt) {
-      this.config   = c || {};
-      this.sm = opt ? opt.sm || {} : {};
-      this.slct = this.config.selectors || [];
+      this.config = c || {};
+      const em = opt && opt.sm;
+      let selectors = this.config.selectors || [];
+      this.em = em;
 
-      if(this.sm.get){
-          var slct = [];
-          for(var i = 0; i < this.slct.length; i++)
-              slct.push(this.sm.get('SelectorManager').add(this.slct[i].name || this.slct[i]));
-          this.slct = slct;
+      if (em) {
+        const sm = em.get('SelectorManager');
+        const slct = [];
+        selectors.forEach((selector) => {
+          slct.push(sm.add(selector));
+        });
+        selectors = slct;
       }
 
-      this.set('selectors', new Selectors(this.slct));
+      this.set('selectors', new Selectors(selectors));
   },
 
   /**

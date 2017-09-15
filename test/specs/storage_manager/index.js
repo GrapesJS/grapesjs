@@ -37,10 +37,6 @@ describe('Storage Manager', () => {
       expect(obj.getStepsBeforeSave()).toEqual(5);
     });
 
-    it('No storages inside', () => {
-      expect(obj.getStorages()).toEqual({});
-    });
-
     it('Add and get new storage', () => {
       obj.add('test', 'gen');
       expect(obj.get('test')).toEqual('gen');
@@ -57,10 +53,6 @@ describe('Storage Manager', () => {
 
     it('Store do not execute if empty', () => {
       expect(obj.store({item:'test'})).toEqual(null);
-    });
-
-    it('Load do not execute if empty', () => {
-      expect(obj.load(['item'])).toEqual({});
     });
 
     it('Load default storages ', () => {
@@ -106,9 +98,10 @@ describe('Storage Manager', () => {
         data2[id + 'item2'] = 'testData2';
 
         obj.store(data);
-        var load = obj.load(['item', 'item2']);
-        expect(storeValue).toEqual(data2);
-        expect(load).toEqual(data);
+        obj.load(['item', 'item2'], (res) => {
+          expect(storeValue).toEqual(data2);
+          expect(res).toEqual(data);
+        });
       });
 
     });

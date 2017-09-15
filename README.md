@@ -109,7 +109,7 @@ $ npm run build
 JQuery is the only hard dependency so you have to include it before using GrapesJS
 
 ```html
-<script src="http://code.jquery.com/jquery-2.2.0.min.js"></script>
+<script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
 ```
 After that include scripts from GrapesJS with all your configurations
 
@@ -186,10 +186,16 @@ $ npm test
 * [grapesjs-blocks-basic](https://github.com/artf/grapesjs-blocks-basic) - Basic set of blocks
 * [grapesjs-plugin-forms](https://github.com/artf/grapesjs-plugin-forms) - Set of form components and blocks
 * [grapesjs-navbar](https://github.com/artf/grapesjs-navbar) - Simple navbar component
+* [grapesjs-component-countdown](https://github.com/artf/grapesjs-component-countdown) - Simple countdown component
 
 ### Presets
 * [grapesjs-preset-newsletter](https://github.com/artf/grapesjs-preset-newsletter) - Newsletter Builder
 * [grapesjs-mjml](https://github.com/artf/grapesjs-mjml) - Newsletter Builder with MJML components
+
+
+Find out more about plugins here: [Creating plugins](https://github.com/artf/grapesjs/wiki/Creating-plugins)
+
+
 
 
 

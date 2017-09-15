@@ -2,18 +2,23 @@ var Backbone = require('backbone');
 
 module.exports = Backbone.Model.extend({
 
-  /** @inheritdoc */
-  build(model, cssc) {
-    var coll = model.get('components') || model,
-      code = '';
+  build(model, opts = {}) {
+    const models = model.get('components');
 
-    coll.each(m => {
-      code += m.toHTML({
-        cssc
-      });
-    }, this);
+    if (opts.exportWrapper) {
+      return opts.wrappesIsBody ?
+        `<body>${this.buildModels(models)}</body>` : model.toHTML();
+    }
 
-    return code;
+    return this.buildModels(models);
   },
+
+  buildModels(models) {
+    let code = '';
+    models.each(model => {
+      code += model.toHTML();
+    });
+    return code;
+  }
 
 });

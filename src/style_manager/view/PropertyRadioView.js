@@ -3,15 +3,21 @@ var PropertyView = require('./PropertyView');
 
 module.exports = PropertyView.extend({
 
-  template: _.template(`
-  <div class="<%= ppfx %>field <%= ppfx %>field-radio">
-    <span id='<%= pfx %>input-holder'></span>
-  </div>
-  <div style="clear:both"></div>`),
+  templateField() {
+    const pfx = this.pfx;
+    const ppfx = this.ppfx;
+    return `
+      <div class="${ppfx}field ${ppfx}field-radio">
+        <span id="${pfx}input-holder"></span>
+      </div>
+      <div style="clear:both"></div>
+    `;
+  },
 
   initialize(options) {
     PropertyView.prototype.initialize.apply(this, arguments);
-    this.list = this.model.get('list') || [];
+    const model = this.model;
+    this.list = model.get('list') || model.get('options') || [];
     this.className = this.className + ' '+ this.pfx +'list';
   },
 
@@ -54,7 +60,7 @@ module.exports = PropertyView.extend({
 
   /** @inheritdoc */
   setValue(value) {
-    var v = this.model.get('value') || this.defaultValue;
+    var v = this.model.get('value') || this.model.getDefaultValue();
 
     if(value)
       v  = value;

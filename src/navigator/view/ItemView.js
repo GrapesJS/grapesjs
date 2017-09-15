@@ -6,36 +6,39 @@ module.exports = Backbone.View.extend({
 
   template: _.template(`
   <% if (hidable) { %>
-  	<i id="<%= prefix %>btn-eye" class="btn fa fa-eye <%= (visible ? '' : 'fa-eye-slash') %>"></i>
+    <i id="<%= prefix %>btn-eye" class="btn fa fa-eye <%= (visible ? '' : 'fa-eye-slash') %>"></i>
   <% } %>
 
   <div class="<%= prefix %>title-c">
-    <div class="<%= prefix %>title <%= addClass %>">
-    	<i id="<%= prefix %>caret" class="fa fa-chevron-right <%= caretCls %>"></i>
-  		<i class="fa fa-pencil <%= editBtnCls %>"></i>
-      <%= icon %>
-  		<input class="<%= ppfx %>no-app <%= inputNameCls %>" value="<%= title %>" readonly>
+    <div class="<%= prefix %>title <%= addClass %>" style="padding-left: <%= 42 + level * 10 %>px">
+      <div class="<%= prefix %>title-inn">
+        <i class="fa fa-pencil <%= editBtnCls %>"></i>
+        <i id="<%= prefix %>caret" class="fa fa-chevron-right <%= caretCls %>"></i>
+        <%= icon %>
+        <input class="<%= ppfx %>no-app <%= inputNameCls %>" value="<%= title %>" readonly>
+      </div>
     </div>
   </div>
 
   <div id="<%= prefix %>counter"><%= (count ? count : '') %></div>
 
   <div id="<%= prefix %>move">
-  	<i class="fa fa-arrows"></i>
+    <i class="fa fa-arrows"></i>
   </div>
 
   <div class="<%= prefix %>children"></div>`),
 
-  initialize(o) {
+  initialize(o = {}) {
     this.opt = o;
+    this.level = o.level;
     this.config = o.config;
     this.em = o.config.em;
     this.ppfx = this.em.get('Config').stylePrefix;
-    this.sorter = o.sorter || {};
+    this.sorter = o.sorter || '';
     this.pfx = this.config.stylePrefix;
     if(typeof this.model.get('open') == 'undefined')
       this.model.set('open',false);
-    this.listenTo(this.model.components, 'remove add change reset', this.checkChildren);
+    this.listenTo(this.model.get('components'), 'remove add change reset', this.checkChildren);
     this.listenTo(this.model, 'destroy remove', this.remove);
     this.listenTo(this.model, 'change:status', this.updateStatus);
     this.listenTo(this.model, 'change:open', this.updateOpening);
@@ -101,11 +104,11 @@ module.exports = Backbone.View.extend({
     var model = this.model;
     if(model.get('open')){
       this.$el.addClass("open");
-      this.$caret.addClass('fa-chevron-down');
+      this.getCaret().addClass('fa-chevron-down');
       opened[model.cid] = model;
     }else{
       this.$el.removeClass("open");
-      this.$caret.removeClass('fa-chevron-down');
+      this.getCaret().removeClass('fa-chevron-down');
       delete opened[model.cid];
     }
   },
@@ -119,7 +122,7 @@ module.exports = Backbone.View.extend({
   toggleOpening(e) {
     e.stopPropagation();
 
-    if(!this.model.components.length)
+    if(!this.model.get('components').length)
       return;
 
     this.model.set('open', !this.model.get('open') );
@@ -127,20 +130,10 @@ module.exports = Backbone.View.extend({
 
   /**
    * Handle component selection
-   * @return {[type]} [description]
    */
   handleSelect(e) {
     e.stopPropagation();
-    var em = this.em;
-
-    if(em){
-      var model = em.get('selectedComponent');
-      if(model){
-        model.set('status', '');
-      }
-      this.model.set('status', 'selected');
-      em.set('selectedComponent', this.model);
-    }
+    this.em && this.em.setSelected(this.model, {fromLayers: 1});
   },
 
   /**
@@ -148,9 +141,14 @@ module.exports = Backbone.View.extend({
    * @param	Event
    * */
   startSort(e) {
-    if (this.sorter) {
-      this.sorter.startSort(e.target);
+    e.stopPropagation();
+
+    //Right or middel click
+    if (e.button !== 0) {
+      return;
     }
+
+    this.sorter && this.sorter.startSort(e.target);
   },
 
   /**
@@ -244,7 +242,7 @@ module.exports = Backbone.View.extend({
    */
   countChildren(model) {
     var count = 0;
-    model.components.each(function(m){
+    model.get('components').each(function(m){
       var isCountable = this.opt.isCountable;
       var hide = this.config.hideTextnode;
       if(isCountable && !isCountable(m, hide))
@@ -254,11 +252,20 @@ module.exports = Backbone.View.extend({
     return count;
   },
 
+  getCaret() {
+    if (!this.caret) {
+      const pfx = this.pfx;
+      this.caret = this.$el.find(`> .${pfx}title-c > .${pfx}title > .${pfx}title-inn > #${pfx}caret`);
+    }
+    return this.caret;
+  },
+
   render() {
     let model = this.model;
     var pfx = this.pfx;
     var vis = this.isVisible();
     var count = this.countChildren(model);
+    const level = this.level + 1;
 
     this.$el.html( this.template({
       title: model.getName(),
@@ -271,20 +278,21 @@ module.exports = Backbone.View.extend({
       visible: vis,
       hidable: this.config.hidable,
       prefix: pfx,
-      ppfx: this.ppfx
+      ppfx: this.ppfx,
+      level
     }));
 
     if(typeof ItemsView == 'undefined')
     	ItemsView = require('./ItemsView');
     this.$components = new ItemsView({
-      collection 	: model.components,
+      collection: model.get('components'),
       config: this.config,
       sorter: this.sorter,
       opened: this.opt.opened,
-      parent: model
+      parent: model,
+      level
     }).render().$el;
     this.$el.find('.'+ pfx +'children').html(this.$components);
-    this.$caret = this.$el.find('> .' + pfx + 'title-c > .' + pfx + 'title > #' + pfx + 'caret');
     if(!model.get('draggable') || !this.config.sortable){
     	this.$el.find('> #' + pfx + 'move').detach();
     }

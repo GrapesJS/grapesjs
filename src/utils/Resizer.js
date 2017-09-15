@@ -9,14 +9,15 @@ var defaults = {
   onStart: null,
   onMove: null,
   onEnd: null,
-  tl: 1,
-  tc: 1,
-  tr: 1,
-  cl: 1,
-  cr: 1,
-  bl: 1,
-  bc: 1,
-  br: 1,
+  // Handlers
+  tl: 1, // Top left
+  tc: 1, // Top center
+  tr: 1, // Top right
+  cl: 1, // Center left
+  cr: 1, // Center right
+  bl: 1, // Bottom left
+  bc: 1, // Bottom center
+  br: 1, // Bottom right
 };
 
 var createHandler = (name, opts) => {
@@ -45,17 +46,46 @@ class Resizer {
    * @param  {Object} options
    */
   constructor(opts = {}) {
-    var pfx = opts.prefix || '';
-    var appendTo = opts.appendTo || document.body;
+    this.setOptions(opts);
+    return this;
+  }
 
+  /**
+   * Setup options
+   * @param {Object} options
+   */
+  setOptions(options = {}) {
+    // Setup default options
     for (var name in defaults) {
-      if (!(name in opts))
-        opts[name] = defaults[name];
+      if (!(name in options))
+        options[name] = defaults[name];
     }
 
-    var container = document.createElement('div');
-    container.className = pfx + 'resizer-c';
-    appendTo.appendChild(container);
+    this.opts = options;
+    this.setup();
+  }
+
+  /**
+   * Setup resizer
+   */
+  setup() {
+    const opts = this.opts;
+    const pfx = opts.prefix || '';
+    const appendTo = opts.appendTo || document.body;
+    let container;
+
+    // Create container if not yet exist
+    if (!this.container) {
+      container = document.createElement('div');
+      container.className = pfx + 'resizer-c';
+      appendTo.appendChild(container);
+      this.container = container;
+    }
+
+    container = this.container;
+    while (container.firstChild) {
+      container.removeChild(container.firstChild);
+    }
 
     // Create handlers
     var handlers = {
@@ -69,14 +99,14 @@ class Resizer {
       br: opts.br ? createHandler('br', opts) : '',
     };
 
-    for (var n in handlers) {
-      if(handlers[n])
-        container.appendChild(handlers[n]);
+    for (let n in handlers) {
+      const handler = handlers[n];
+      if (handler) {
+        container.appendChild(handler);
+      }
     }
 
-    this.container = container;
     this.handlers = handlers;
-    this.opts = opts;
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.move = this.move.bind(this);
@@ -87,22 +117,6 @@ class Resizer {
     this.onStart = opts.onStart;
     this.onMove = opts.onMove;
     this.onEnd = opts.onEnd;
-
-    return this;
-  }
-
-  /**
-   * Update options
-   * @param {Object} options
-   */
-  setOptions(options) {
-    var opts = options || {};
-
-    for (var opt in opts) {
-      if(opt in defaults) {
-        this[opt] = opts[opt];
-      }
-    }
   }
 
   /**
@@ -279,7 +293,7 @@ class Resizer {
     this.updateRect(1);
 
     // Stop callback
-    if(typeof this.onEnd === 'function') {
+    if (typeof this.onEnd === 'function') {
       this.onEnd(e, {docs: doc});
     }
   }
@@ -291,10 +305,14 @@ class Resizer {
     var elStyle = this.el.style;
     var conStyle = this.container.style;
     var rect = this.rectDim;
+    const selectedHandler = this.getSelectedHandler();
 
     // Use custom updating strategy if requested
     if (typeof this.updateTarget === 'function') {
-      this.updateTarget(this.el, rect, store);
+      this.updateTarget(this.el, rect, {
+        store,
+        selectedHandler
+      });
     } else {
       elStyle.width = rect.w + 'px';
       elStyle.height = rect.h + 'px';
@@ -308,6 +326,22 @@ class Resizer {
     conStyle.top = rectEl.top + unit;
     conStyle.width = rectEl.width + unit;
     conStyle.height = rectEl.height + unit;
+  }
+
+  /**
+   * Get selected handler name
+   * @return {string}
+   */
+  getSelectedHandler() {
+    var handlers = this.handlers;
+
+    if (!this.selectedHandler) {
+      return;
+    }
+
+    for (let n in handlers) {
+      if (handlers[n] === this.selectedHandler) return n;
+    }
   }
 
   /**
@@ -329,8 +363,10 @@ class Resizer {
   handleMouseDown(e) {
     var el = e.target;
     if (this.isHandler(el)) {
+      this.selectedHandler = el;
       this.start(e);
     }else if(el !== this.el){
+      this.selectedHandler = '';
       this.blur();
     }
   }

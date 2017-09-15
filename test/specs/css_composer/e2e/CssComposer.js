@@ -54,9 +54,9 @@ module.exports = {
         it('Rules are correctly imported from default property', () => {
           var gj = grapesjs.init({
             stylePrefix: '',
-            storageManager: { autoload: 0, type:'none' },
-            assetManager: { storageType: 'none', },
-            cssComposer: { rules: rulesSet},
+            storageManager: {autoload: 0, type:'none' },
+            assetManager: {storageType: 'none', },
+            cssComposer: {rules: rulesSet},
             container: 'csscomposer-fixture',
           });
           var cssc = gj.editor.get('CssComposer');
@@ -68,8 +68,10 @@ module.exports = {
 
         it('New rule adds correctly the class inside selector manager', () => {
           var rules = cssc.getAll();
-          rules.add({ selectors: [{name: 'test1'}] });
-          expect(clsm.getAll().at(0).get('name')).toEqual('test1');
+          rules.add({ selectors: [{name: 'test1', private: true}] });
+          var rule = clsm.getAll().at(0);
+          expect(rule.get('name')).toEqual('test1');
+          expect(rule.get('private')).toEqual(true);
         });
 
         it('New rules are correctly imported inside selector manager', () => {
@@ -128,6 +130,8 @@ module.exports = {
              label: 'test1',
              name: 'test1',
              type: 'class',
+             private: false,
+             protected: false,
             }],
             selectorsAdd: '',
             state: '',

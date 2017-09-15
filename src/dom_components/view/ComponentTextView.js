@@ -11,7 +11,9 @@ module.exports = ComponentView.extend({
   initialize(o) {
     ComponentView.prototype.initialize.apply(this, arguments);
     _.bindAll(this,'disableEditing');
-    this.listenTo(this.model, 'focus active', this.enableEditing);
+    const model = this.model;
+    this.listenTo(model, 'focus active', this.enableEditing);
+    this.listenTo(model, 'change:content', this.updateContent);
     this.rte = this.config.rte || '';
     this.activeRte = null;
     this.em = this.config.em;
@@ -29,7 +31,7 @@ module.exports = ComponentView.extend({
         this.activeRte = this.rte.attach(this, this.activeRte);
         this.rte.focus(this, this.activeRte);
       } catch (err) {
-          console.error(err);
+        console.error(err);
       }
     }
     this.toggleEvents(1);
@@ -51,6 +53,8 @@ module.exports = ComponentView.extend({
         console.error(err);
       }
       var el = this.getChildrenContainer();
+      // Avoid double content by removing its children components
+      model.get('components').reset();
       model.set('content', el.innerHTML);
     }
 

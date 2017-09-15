@@ -1,4 +1,5 @@
 var Backbone = require('backbone');
+const Selector = require('./../model/Selector');
 
 module.exports = Backbone.View.extend({
   template: _.template(`
@@ -46,7 +47,7 @@ module.exports = Backbone.View.extend({
    */
   endEditTag() {
     var value = this.$labelInput.val();
-    var next = this.model.escapeName(value);
+    var next = Selector.escapeName(value);
 
     if(this.target){
       var clsm = this.target.get('SelectorManager');
@@ -129,8 +130,8 @@ module.exports = Backbone.View.extend({
       ppfx: this.ppfx,
       inputProp: this.inputProp,
     }));
-    this.updateStatus();
     this.$el.attr('class', this.className);
+    this.updateStatus();
     this.updateInputLabel();
     return this;
   },

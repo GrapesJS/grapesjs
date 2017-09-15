@@ -121,7 +121,7 @@ module.exports = {
           view.model.set('value', intValue);
           var compStyle = view.selectedComponent.get('style');
           var assertStyle = {};
-          assertStyle[propName] = propValue;
+          assertStyle[propName] = intValue;
           expect(compStyle).toEqual(assertStyle);
         });
 

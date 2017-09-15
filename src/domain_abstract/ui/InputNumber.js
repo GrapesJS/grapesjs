@@ -19,7 +19,7 @@ module.exports = Backbone.View.extend({
     var contClass = opt.contClass || (ppfx + 'field');
     this.ppfx = ppfx;
     this.docEl = $(document);
-    this.inputCls = ppfx + 'input-number';
+    this.inputCls = ppfx + 'field-number';
     this.unitCls = ppfx + 'input-unit';
     this.contClass = contClass;
     this.events['click .' + ppfx + 'field-arrow-u'] = 'upArrowClick';
@@ -139,6 +139,7 @@ module.exports = Backbone.View.extend({
     value = isNaN(value) ? 1 : parseInt(value, 10) + 1;
     var valid = this.validateInputValue(value);
     this.model.set('value', valid.value);
+    this.elementUpdated();
   },
 
   /**
@@ -149,6 +150,7 @@ module.exports = Backbone.View.extend({
     value = isNaN(value) ? 0 : parseInt(value, 10) - 1;
     var valid = this.validateInputValue(value);
     this.model.set('value', valid.value);
+    this.elementUpdated();
   },
 
   /**

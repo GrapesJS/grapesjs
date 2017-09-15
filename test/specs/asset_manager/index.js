@@ -72,12 +72,6 @@ describe('Asset Manager', () => {
       expect(asset2.get('src')).toEqual(imgObj.src + '2');
     });
 
-    it('Src is unique', () => {
-      obj.add(imgObj);
-      obj.add(imgObj);
-      expect(obj.getAll().length).toEqual(1);
-    });
-
     it('Remove asset', () => {
       obj.add(imgObj);
       obj.remove(imgObj.src);
@@ -112,7 +106,7 @@ describe('Asset Manager', () => {
         obj.add(imgObj);
         obj.store();
         obj.remove(imgObj.src);
-        obj.load();
+        obj.load({assets: storage['gjs-assets']});
         var asset = obj.get(imgObj.src);
         expect(asset.get('width')).toEqual(imgObj.width);
         expect(asset.get('height')).toEqual(imgObj.height);

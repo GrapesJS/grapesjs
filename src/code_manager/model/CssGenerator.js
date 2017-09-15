@@ -11,10 +11,11 @@ module.exports = Backbone.Model.extend({
    * @param {Model} model
    * @return {String}
    */
-  buildFromModel(model) {
+  buildFromModel(model, opts = {}) {
     var code = '';
     var style = model.get('style');
     var classes = model.get('classes');
+    const wrappesIsBody = opts.wrappesIsBody;
 
     // Let's know what classes I've found
     if(classes) {
@@ -24,7 +25,10 @@ module.exports = Backbone.Model.extend({
     }
 
     if(style && Object.keys(style).length !== 0) {
-      code += '#' + model.getId() + '{';
+      let selector = `#${model.getId()}`;
+      selector = wrappesIsBody && model.get('wrapper') ?
+        'body' : selector;
+      code += `${selector}{`;
       for(var prop in style){
         if(style.hasOwnProperty(prop))
           code += prop + ':' + style[prop] + ';';
@@ -58,13 +62,14 @@ module.exports = Backbone.Model.extend({
   },
 
   /** @inheritdoc */
-  build(model, cssc) {
+  build(model, opts = {}) {
+    const cssc = opts.cssc;
     this.compCls = [];
-    var code = this.buildFromModel(model);
+    var code = this.buildFromModel(model, opts);
     code += this.buildFromComp(model);
     var compCls = this.compCls;
 
-    if(cssc){
+    if (cssc) {
       var rules = cssc.getAll();
       var mediaRules = {};
       rules.each(function(rule) {

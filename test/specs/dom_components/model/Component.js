@@ -19,7 +19,7 @@ module.exports = {
           obj = new Component();
           dcomp = new DomComponents();
           compOpts = {
-            defaultTypes: dcomp.componentTypes,
+            componentTypes: dcomp.componentTypes,
           };
         });
 
@@ -254,7 +254,7 @@ module.exports = {
         beforeEach(() => {
           dcomp = new DomComponents();
           compOpts = {
-            defaultTypes: dcomp.componentTypes,
+            componentTypes: dcomp.componentTypes,
           }
         });
 

@@ -6,7 +6,7 @@ module.exports = Component.extend({
     type: 'script',
     droppable: false,
     draggable: false,
-    hiddenLayer: true,
+    layerable: false,
   }),
 
 }, {

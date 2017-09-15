@@ -16,6 +16,7 @@ module.exports = {
         var coll   = new Assets();
         var model = coll.add({ type:'image', src: '/test' });
         this.view = new AssetImageView({
+          collection: new Assets(),
           config : {},
           model
         });
@@ -39,17 +40,17 @@ module.exports = {
 
           it('Has preview box', function() {
             var $asset = this.view.$el;
-            expect($asset.find('#preview').length).toEqual(1);
+            expect($asset.find('.preview').length).toEqual(1);
           });
 
           it('Has meta box', function() {
             var $asset = this.view.$el;
-            expect($asset.find('#meta').length).toEqual(1);
+            expect($asset.find('.meta').length).toEqual(1);
           });
 
           it('Has close button', function() {
             var $asset = this.view.$el;
-            expect($asset.find('#close').length).toEqual(1);
+            expect($asset.find('[data-toggle=asset-remove]').length).toEqual(1);
           });
 
       });
@@ -72,7 +73,7 @@ module.exports = {
       it('Could be removed', function() {
         var spy = sinon.spy();
         this.view.model.on("remove", spy);
-        this.view.$el.find('#close').trigger('click');
+        this.view.$el.find('[data-toggle=asset-remove]').trigger('click');
         expect(spy.called).toEqual(true);
       });
 

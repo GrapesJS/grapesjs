@@ -1,15 +1,14 @@
-var Backbone = require('backbone');
-var fileUploaderTemplate = `
-<form>
-  <div id="<%= pfx %>title"><%= title %></div>
-  <input type="file" id="<%= uploadId %>" name="file" accept="image/*" <%= disabled ? 'disabled' : '' %> multiple/>
-  <div style="clear:both;"></div>
-</form>
-`;
+import fetch from 'utils/fetch';
 
 module.exports = Backbone.View.extend({
 
-  template:   _.template(fileUploaderTemplate),
+  template: _.template(`
+  <form>
+    <div id="<%= pfx %>title"><%= title %></div>
+    <input type="file" id="<%= uploadId %>" name="file" accept="image/*" <%= disabled ? 'disabled' : '' %> multiple/>
+    <div style="clear:both;"></div>
+  </form>
+  `),
 
   events:   {},
 
@@ -19,53 +18,114 @@ module.exports = Backbone.View.extend({
     this.config = c;
     this.pfx = c.stylePrefix || '';
     this.ppfx = c.pStylePrefix || '';
-    this.target = this.collection || {};
+    this.target = this.options.globalCollection || {};
     this.uploadId = this.pfx + 'uploadFile';
-    this.disabled = !c.upload;
+    this.disabled = c.disableUpload !== undefined ? c.disableUpload : !c.upload && !c.embedAsBase64;
     this.events['change #' + this.uploadId]  = 'uploadFile';
     let uploadFile = c.uploadFile;
 
     if (uploadFile) {
       this.uploadFile = uploadFile.bind(this);
+    } else if (c.embedAsBase64) {
+      this.uploadFile = this.constructor.embedAsBase64;
     }
 
     this.delegateEvents();
   },
 
   /**
+   * Triggered before the upload is started
+   * @private
+   */
+  onUploadStart() {
+    const em = this.config.em;
+    em && em.trigger('asset:upload:start');
+  },
+
+  /**
+   * Triggered after the upload is ended
+   * @param  {Object|string} res End result
+   * @private
+   */
+  onUploadEnd(res) {
+    const em = this.config.em;
+    em && em.trigger('asset:upload:end', res);
+  },
+
+  /**
+   * Triggered on upload error
+   * @param  {Object} err Error
+   * @private
+   */
+  onUploadError(err) {
+    const em = this.config.em;
+    console.error(err);
+    this.onUploadEnd(err);
+    em && em.trigger('asset:upload:error', err);
+  },
+
+  /**
+   * Triggered on upload response
+   * @param  {string} text Response text
+   * @private
+   */
+  onUploadResponse(text) {
+    const em = this.config.em;
+    const config = this.config;
+    const target = this.target;
+    const json = typeof text === 'text' ? JSON.parse(text) : text;
+    em && em.trigger('asset:upload:response', json);
+
+    if (config.autoAdd && target) {
+      target.add(json.data, {at: 0});
+    }
+
+    this.onUploadEnd(text);
+  },
+
+  /**
    * Upload files
    * @param  {Object}  e Event
+   * @return {Promise}
    * @private
    * */
   uploadFile(e) {
-    var files    = e.dataTransfer ? e.dataTransfer.files : e.target.files,
-      formData   = new FormData();
-    for (var i = 0; i < files.length; i++) {
-        formData.append('files[]', files[i]);
-      }
+    const files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
+    const body = new FormData();
+    const config = this.config;
+    const params = config.params;
+
+    for (let i = 0; i < files.length; i++) {
+      body.append(`${config.uploadName}[]`, files[i]);
+    }
+
+    for (let param in params) {
+      body.append(param, params[param]);
+    }
+
     var target = this.target;
-    $.ajax({
-      url      : this.config.upload,
-      type    : 'POST',
-      data    : formData,
-      beforeSend  : this.config.beforeSend,
-      complete  : this.config.onComplete,
-      xhrFields  : {
-        onprogress(e) {
-          if (e.lengthComputable) {
-            /*var result = e.loaded / e.total * 100 + '%';*/
-          }
-        },
-        onload(e) {
-            //progress.value = 100;
-        }
-      },
-      cache: false, contentType: false, processData: false
-    }).done(data => {
-      target.add(data.data);
-    }).always(() => {
-      //turnOff loading
-    });
+    const url = config.upload;
+    const headers = config.headers;
+    const reqHead = 'X-Requested-With';
+
+    if (typeof headers[reqHead] == 'undefined') {
+      headers[reqHead] = 'XMLHttpRequest';
+    }
+
+    if (url) {
+      this.onUploadStart();
+      return fetch(url, {
+        method: 'post',
+        credentials: 'include',
+        headers,
+        body,
+      }).then(res => (res.status/200|0) == 1 ?
+        res.text() : res.text().then((text) =>
+          Promise.reject(text)
+        ))
+      .then((text) => this.onUploadResponse(text))
+      .catch(err => this.onUploadError(err));
+    }
   },
 
   /**
@@ -101,8 +161,9 @@ module.exports = Backbone.View.extend({
     const c = this.config;
     const em = ev.model;
     const edEl = ev.el;
-    const editor = em && em.get('Editor');
-    const frameEl = ev.model.get('Canvas').getBody();
+    const editor = em.get('Editor');
+    const container = em.get('Config').el;
+    const frameEl = em.get('Canvas').getBody();
     const ppfx = this.ppfx;
     const updatedCls = `${ppfx}dropzone-active`;
     const dropzoneCls = `${ppfx}dropzone`;
@@ -124,11 +185,18 @@ module.exports = Backbone.View.extend({
     const onDrop = (e) => {
       cleanEditorElCls();
       e.preventDefault();
+      e.stopPropagation();
       this.uploadFile(e);
 
       if (c.openAssetsOnDrop && editor) {
         const target = editor.getSelected();
-        editor.runCommand('open-assets', {target});
+        editor.runCommand('open-assets', {
+          target,
+          onSelect() {
+            editor.Modal.close();
+            editor.AssetManager.setTarget(null);
+          }
+        });
       }
 
       return false;
@@ -137,7 +205,7 @@ module.exports = Backbone.View.extend({
     ev.$el.append(`<div class="${dropzoneCls}">${c.dropzoneContent}</div>`);
     cleanEditorElCls();
 
-    if (c.dropzone && 'draggable' in edEl) {
+    if ('draggable' in edEl) {
       [edEl, frameEl].forEach((item) => {
         item.ondragover = onDragOver;
         item.ondragleave = onDragLeave;
@@ -158,4 +226,91 @@ module.exports = Backbone.View.extend({
     return this;
   },
 
+}, {
+  embedAsBase64: function (e) {
+    // List files dropped
+    const files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
+    const response = { data: [] };
+
+    // Unlikely, widely supported now
+    if (!FileReader) {
+      this.onUploadError(new Error('Unsupported platform, FileReader is not defined'));
+      return;
+    }
+
+    const promises = [];
+    const mimeTypeMatcher = /^(.+)\/(.+)$/;
+
+    for (const file of files) {
+      // For each file a reader (to read the base64 URL)
+      // and a promise (to track and merge results and errors)
+      const promise = new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.addEventListener('load', (event) => {
+          let type;
+          const name = file.name;
+
+          // Try to find the MIME type of the file.
+          const match = mimeTypeMatcher.exec(file.type);
+          if (match) {
+            type = match[1]; // The first part in the MIME, "image" in image/png
+          } else {
+            type = file.type;
+          }
+
+          // If it's an image, try to find its size
+          if (type === 'image') {
+            const data = {
+              src: reader.result,
+              name,
+              type,
+              height: 0,
+              width: 0
+            };
+
+            const image = new Image();
+            image.addEventListener('error', (error) => {
+              reject(error);
+            });
+            image.addEventListener('load', () => {
+              data.height = image.height;
+              data.width = image.width;
+              resolve(data);
+            });
+            image.src = data.src;
+
+          } else if (type) {
+            // Not an image, but has a type
+            resolve({
+              src: reader.result,
+              name,
+              type
+            });
+          } else {
+            // No type found, resolve with the URL only
+            resolve(reader.result);
+          }
+        });
+        reader.addEventListener('error', (error) => {
+          reject(error);
+        });
+        reader.addEventListener('abort', (error) => {
+          reject('Aborted');
+        });
+
+        reader.readAsDataURL(file);
+      });
+
+      promises.push(promise);
+    }
+
+    Promise
+      .all(promises)
+      .then((data) => {
+        response.data = data;
+        this.onUploadResponse(response);
+      }, (error) =>  {
+        this.onUploadError(error);
+      });
+  }
 });

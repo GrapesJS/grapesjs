@@ -114,10 +114,10 @@ module.exports = () => {
             return;
           }
 
-          sel.set('status', '');
+          ed.select(null);
           sel.destroy();
-          ed.trigger('component:update', sel);
-          ed.editor.set('selectedComponent', null);
+          ed.trigger('change:canvasOffset');
+          //ed.refresh();//change:canvasOffset
         },
       };
 

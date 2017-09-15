@@ -69,16 +69,10 @@ module.exports = () => {
       defGenerators.css  = new gCss();
       defGenerators.json = new gJson();
       defGenerators.js = new gJs();
-
       defViewers.CodeMirror = new eCM();
-      return this;
-    },
-
-    /**
-     * Callback on load
-     */
-    onLoad() {
       this.loadDefaultGenerators().loadDefaultViewers();
+
+      return this;
     },
 
     /**
@@ -187,7 +181,7 @@ module.exports = () => {
      * @example
      * var codeStr = codeManager.getCode(model, 'html');
      * */
-    getCode(model, genId, opt) {
+    getCode(model, genId, opt = {}) {
       var generator  = this.getGenerator(genId);
       return generator ? generator.build(model, opt) : '';
     },

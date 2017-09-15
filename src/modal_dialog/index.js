@@ -52,12 +52,12 @@ module.exports = () => {
         config: c,
       });
 
-      if(c.em)
-        c.em.on('loaded', function(){
-          this.render().appendTo(c.em.config.el || 'body');
-        }, this);
-
       return this;
+    },
+
+    postRender(editorView) {
+      // c.em.config.el || 'body'
+      this.render().appendTo(editorView.el);
     },
 
     /**

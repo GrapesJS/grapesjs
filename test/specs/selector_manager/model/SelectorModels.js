@@ -27,7 +27,7 @@ module.exports = {
         });
 
         it('escapeName test', () => {
-          expect(obj.escapeName('@Te sT*')).toEqual('-Te-sT-');
+          expect(Selector.escapeName('@Te sT*')).toEqual('-Te-sT-');
         });
 
         it('Name is corrected at instantiation', () => {

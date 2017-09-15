@@ -72,11 +72,12 @@ module.exports = config => ({
       // Create style object from the big one
       var stl = node.style;
       var style = {};
+
       for (var j = 0, len2 = stl.length; j < len2; j++) {
-        var propName = stl[j];
-        var important = stl.getPropertyPriority(propName);
-        style[propName] = stl[propName] +
-          (important ? ' !' + important : '');
+        const propName = stl[j];
+        const propValue = stl.getPropertyValue(propName);
+        const important = stl.getPropertyPriority(propName);
+        style[propName] = `${propValue}${important ? ` !${important}` : ''}`
       }
 
       var lastRule = '';

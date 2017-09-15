@@ -43,13 +43,14 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     copyable: true,
 
     // Indicates if it's possible to resize the component (at the moment implemented only on Image Components)
+    // It's also possible to pass an object as options for the Resizer
     resizable: false,
 
     // Allow to edit the content of the component (used on Text components)
     editable: false,
 
     // Hide the component inside Layers
-    hiddenLayer: false,
+    layerable: true,
 
     // This property is used by the HTML exporter as void elements do not
     // have closing tag, eg. <br/>, <hr/>, etc.
@@ -94,32 +95,26 @@ module.exports = Backbone.Model.extend(Styleable).extend({
       * }]
     */
     toolbar: null,
-
-    // TODO
-    previousModel: '',
-    mirror: '',
   },
 
-  initialize(o, opt) {
+  initialize(props = {}, opt = {}) {
+    const em = opt.sm || {};
+
     // Check void elements
-    if(opt && opt.config && opt.config.voidElements.indexOf(this.get('tagName')) >= 0)
-      this.set('void', true);
+    if(opt && opt.config &&
+      opt.config.voidElements.indexOf(this.get('tagName')) >= 0) {
+        this.set('void', true);
+    }
 
     this.opt = opt;
-    this.sm = opt ? opt.sm || {} : {};
-    this.config = o || {};
-    this.defaultC = this.config.components || [];
-    this.defaultCl = this.normalizeClasses(this.get('classes') || this.config.classes || []);
-    this.components	= new Components(this.defaultC, opt);
-    this.components.parent = this;
-    this.listenTo(this, 'change:script', this.scriptUpdated);
+    this.sm = em;
+    this.config = props;
     this.set('attributes', this.get('attributes') || {});
-    this.set('components', this.components);
-    this.set('classes', new Selectors(this.defaultCl));
-    var traits = new Traits();
-    traits.setTarget(this);
-    traits.add(this.get('traits'));
-    this.set('traits', traits);
+    this.listenTo(this, 'change:script', this.scriptUpdated);
+    this.listenTo(this, 'change:traits', this.traitsUpdated);
+    this.loadTraits();
+    this.initClasses();
+    this.initComponents();
     this.initToolbar();
 
     // Normalize few properties from strings to arrays
@@ -137,6 +132,19 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     this.init();
   },
 
+  initClasses() {
+    const classes = this.normalizeClasses(this.get('classes') || this.config.classes || []);
+    this.set('classes', new Selectors(classes));
+    return this;
+  },
+
+  initComponents() {
+    let comps = new Components(this.get('components'), this.opt);
+    comps.parent = this;
+    this.set('components', comps);
+    return this;
+  },
+
   /**
    * Initialize callback
    */
@@ -147,6 +155,32 @@ module.exports = Backbone.Model.extend(Styleable).extend({
    */
   scriptUpdated() {
     this.set('scriptUpdated', 1);
+  },
+
+  /**
+   * Once traits are updated I have to populates model's attributes
+   */
+  traitsUpdated() {
+    let found = 0;
+    const attrs = Object.assign({}, this.get('attributes'));
+    const traits = this.get('traits');
+
+    if (!(traits instanceof Traits)) {
+      this.loadTraits();
+      return;
+    }
+
+    traits.each((trait) => {
+      found = 1;
+      if (!trait.get('changeProp')) {
+        const value = trait.getInitValue();
+        if (value) {
+          attrs[trait.get('name')] = value;
+        }
+      }
+    });
+
+    found && this.set('attributes', attrs);
   },
 
   /**
@@ -183,11 +217,17 @@ module.exports = Backbone.Model.extend(Styleable).extend({
    * @param  {Array} traits
    * @private
    */
-  loadTraits(traits) {
+  loadTraits(traits, opts = {}) {
     var trt = new Traits();
     trt.setTarget(this);
-    trt.add(traits);
-    this.set('traits', trt);
+    traits = traits || this.get('traits');
+
+    if (traits.length) {
+      trt.add(traits);
+    }
+
+    this.set('traits', trt, opts);
+    return this;
   },
 
   /**

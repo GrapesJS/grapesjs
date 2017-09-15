@@ -14,7 +14,7 @@ module.exports = {
           obj = new HtmlGenerator();
           var dcomp = new DomComponents();
           comp = new Component({}, {
-            defaultTypes: dcomp.componentTypes,
+            componentTypes: dcomp.componentTypes,
           });
         });
 
@@ -64,7 +64,7 @@ module.exports = {
           obj  = new CssGenerator();
           var dcomp = new DomComponents();
           comp = new Component({}, {
-            defaultTypes: dcomp.componentTypes,
+            componentTypes: dcomp.componentTypes,
           });
         });
 
@@ -100,7 +100,7 @@ module.exports = {
           var rule = cssc.add(cls1);
           rule.set('style',{'prop1':'value1', 'prop2':'value2'});
 
-          expect(obj.build(comp, cssc)).toEqual('.class1{prop1:value1;prop2:value2;}');
+          expect(obj.build(comp, {cssc})).toEqual('.class1{prop1:value1;prop2:value2;}');
         });
 
         it('Build correctly component styled with class and state', () => {
@@ -112,7 +112,7 @@ module.exports = {
           rule.set('style',{'prop1':'value1', 'prop2':'value2'});
           rule.set('state', 'hover');
 
-          expect(obj.build(comp, cssc)).toEqual('.class1:hover{prop1:value1;prop2:value2;}');
+          expect(obj.build(comp, {cssc})).toEqual('.class1:hover{prop1:value1;prop2:value2;}');
         });
 
 
@@ -125,7 +125,7 @@ module.exports = {
           var rule = cssc.add([cls1, cls2]);
           rule.set('style',{'prop1':'value1', 'prop2':'value2'});
 
-          expect(obj.build(comp, cssc)).toEqual('.class1.class2{prop1:value1;prop2:value2;}');
+          expect(obj.build(comp, {cssc})).toEqual('.class1.class2{prop1:value1;prop2:value2;}');
         });
 
         it('Build rules with mixed classes', () => {
@@ -138,7 +138,7 @@ module.exports = {
           rule.set('style',{'prop1':'value1', 'prop2':'value2'});
           rule.set('selectorsAdd', '.class1 .class2, div > .class4');
 
-          expect(obj.build(comp, cssc)).toEqual('.class1.class2, .class1 .class2, div > .class4{prop1:value1;prop2:value2;}');
+          expect(obj.build(comp, {cssc})).toEqual('.class1.class2, .class1 .class2, div > .class4{prop1:value1;prop2:value2;}');
         });
 
         it('Build rules with only not class based selectors', () => {
@@ -147,7 +147,7 @@ module.exports = {
           rule.set('style',{'prop1':'value1', 'prop2':'value2'});
           rule.set('selectorsAdd', '.class1 .class2, div > .class4');
 
-          expect(obj.build(comp, cssc)).toEqual('.class1 .class2, div > .class4{prop1:value1;prop2:value2;}');
+          expect(obj.build(comp, {cssc})).toEqual('.class1 .class2, div > .class4{prop1:value1;prop2:value2;}');
         });
 
         it('Build correctly with class styled out', () => {
@@ -161,7 +161,7 @@ module.exports = {
           var rule2 = cssc.add(cls2);
           rule2.set('style',{'prop2':'value2'});
 
-          expect(obj.build(comp, cssc)).toEqual('.class1.class2{prop1:value1;}.class2{prop2:value2;}');
+          expect(obj.build(comp, {cssc})).toEqual('.class1.class2{prop1:value1;}.class2{prop2:value2;}');
         });
 
         it('Rule with media query', () => {
@@ -174,7 +174,7 @@ module.exports = {
           rule.set('style',{'prop1':'value1'});
           rule.set('mediaText', '(max-width: 999px)');
 
-          expect(obj.build(comp, cssc)).toEqual('@media (max-width: 999px){.class1.class2{prop1:value1;}}');
+          expect(obj.build(comp, {cssc})).toEqual('@media (max-width: 999px){.class1.class2{prop1:value1;}}');
         });
 
         it('Rules mixed with media queries', () => {
@@ -197,7 +197,7 @@ module.exports = {
           var rule5 = cssc.add(cls1, '', '(max-width: 100px)');
           rule5.set('style',{'prop5':'value5'});
 
-          expect(obj.build(comp, cssc)).toEqual('.class1.class2{prop1:value1;}.class2{prop2:value2;}'+
+          expect(obj.build(comp, {cssc})).toEqual('.class1.class2{prop1:value1;}.class2{prop2:value2;}'+
             '@media (max-width: 999px){.class1{prop3:value3;}.class2{prop4:value4;}}'+
             '@media (max-width: 100px){.class1{prop5:value5;}}');
         });
@@ -211,7 +211,7 @@ module.exports = {
           rule.set('style',{'prop1':'value1', 'prop2':'value2'});
 
           comp.get('components').remove(m1);
-          expect(obj.build(comp, cssc)).toEqual('');
+          expect(obj.build(comp, {cssc})).toEqual('');
         });
     })
   }

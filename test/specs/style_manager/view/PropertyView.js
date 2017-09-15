@@ -75,12 +75,6 @@ module.exports = {
           expect(view.model.get('value')).toEqual(propValue);
         });
 
-        // Tests getValueForTarget()
-        it('Get value for target', () => {
-          view.model.set('value', propValue);
-          expect(view.getValueForTarget()).toEqual(propValue);
-        });
-
         // Tests valueChanged() -> ...
         it('Update input on value change', () => {
           view.model.set('value', propValue);
@@ -124,21 +118,21 @@ module.exports = {
         });
 
         it('Target style is empty without values', () => {
-          expect(view.getComponentValue()).toNotExist();
+          expect(view.getTargetValue()).toNotExist();
         });
 
         it('Target style is correct', () => {
           var style = {};
           style[propName] = propValue;
           component.set('style', style);
-          expect(view.getComponentValue()).toEqual(propValue);
+          expect(view.getTargetValue()).toEqual(propValue);
         });
 
         it('Target style is empty with an other style', () => {
           var style = {};
           style[propName + '2'] = propValue;
           component.set('style', style);
-          expect(view.getComponentValue()).toNotExist();
+          expect(view.getTargetValue()).toNotExist();
         });
 
         it('Fetch value from function', () => {
@@ -147,7 +141,7 @@ module.exports = {
           style[propName] = 'testfun(' + propValue + ')';
           component.set('style', style);
           view.model.set('functionName', 'testfun');
-          expect(view.getComponentValue()).toEqual(propValue);
+          expect(view.getTargetValue()).toEqual(propValue);
         });
 
         describe('With target setted', () => {

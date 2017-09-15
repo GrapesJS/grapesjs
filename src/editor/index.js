@@ -31,20 +31,27 @@
  * var editor = grapesjs.init({...});
  * ```
  *
- * **Available events**
- * component:add - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
- * component:update - Triggered when a component is, generally, updated (moved, styled, etc.)
- * component:update:{propertyName} - Listen any property change
- * component:styleUpdate - Triggered when the style of the component is updated
- * component:styleUpdate:{propertyName} - Listen for a specific style property change
- * styleManager:change - Triggered on style property change from new selected component, the view of the property is passed as an argument to the callback
- * styleManager:change:{propertyName} - As above but for a specific style property
- * storage:load - Triggered when something was loaded from the storage, loaded object passed as an argumnet
- * storage:store - Triggered when something is stored to the storage, stored object passed as an argumnet
- * canvasScroll - Triggered when the canvas is scrolled
- * run:{commandName} - Triggered when some command is called to run (eg. editor.runCommand('preview'))
- * stop:{commandName} - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
- * load - When the editor is loaded
+ * **Available Events**
+ * * `component:add` - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
+ * * `component:update` - Triggered when a component is, generally, updated (moved, styled, etc.)
+ * * `component:update:{propertyName}` - Listen any property change
+ * * `component:styleUpdate` - Triggered when the style of the component is updated
+ * * `component:styleUpdate:{propertyName}` - Listen for a specific style property change
+ * * `asset:add` - New asset added
+ * * `asset:remove` - Asset removed
+ * * `asset:upload:start` - Before the upload is started
+ * * `asset:upload:end` - After the upload is ended
+ * * `asset:upload:error` - On any error in upload, passes the error as an argument
+ * * `asset:upload:response` - On upload response, passes the result as an argument
+ * * `styleManager:change` - Triggered on style property change from new selected component, the view of the property is passed as an argument to the callback
+ * * `styleManager:change:{propertyName}` - As above but for a specific style property
+ * * `storage:load` - Triggered when something was loaded from the storage, loaded object passed as an argumnet
+ * * `storage:store` - Triggered when something is stored to the storage, stored object passed as an argumnet
+ * * `selector:add` - Triggers when a new selector/class is created
+ * * `canvasScroll` - Triggered when the canvas is scrolled
+ * * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
+ * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
+ * * `load` - When the editor is loaded
  *
  * @module Editor
  * @param {Object} config Configurations
@@ -103,16 +110,19 @@ module.exports = config => {
 
     /**
      * @property {DomComponents}
+     * @private
      */
     DomComponents: em.get('DomComponents'),
 
     /**
      * @property {CssComposer}
+     * @private
      */
     CssComposer: em.get('CssComposer'),
 
     /**
      * @property {StorageManager}
+     * @private
      */
     StorageManager: em.get('StorageManager'),
 
@@ -123,71 +133,85 @@ module.exports = config => {
 
     /**
      * @property {BlockManager}
+     * @private
      */
     BlockManager: em.get('BlockManager'),
 
     /**
      * @property {TraitManager}
+     * @private
      */
     TraitManager: em.get('TraitManager'),
 
     /**
      * @property {SelectorManager}
+     * @private
      */
     SelectorManager: em.get('SelectorManager'),
 
     /**
      * @property {CodeManager}
+     * @private
      */
     CodeManager: em.get('CodeManager'),
 
     /**
      * @property {Commands}
+     * @private
      */
     Commands: em.get('Commands'),
 
     /**
      * @property {Modal}
+     * @private
      */
     Modal: em.get('Modal'),
 
     /**
      * @property {Panels}
+     * @private
      */
     Panels: em.get('Panels'),
 
     /**
      * @property {StyleManager}
+     * @private
      */
     StyleManager: em.get('StyleManager'),
 
     /**
      * @property {Canvas}
+     * @private
      */
     Canvas: em.get('Canvas'),
 
     /**
      * @property {UndoManager}
+     * @private
      */
     UndoManager: em.get('UndoManager'),
 
     /**
      * @property {DeviceManager}
+     * @private
      */
     DeviceManager: em.get('DeviceManager'),
 
     /**
      * @property {RichTextEditor}
+     * @private
      */
     RichTextEditor: em.get('rte'),
 
     /**
      * @property {Utils}
+     * @private
      */
     Utils: em.get('Utils'),
 
     /**
      * @property {Utils}
+     * @private
      */
     Config: em.get('Config'),
 
@@ -330,14 +354,31 @@ module.exports = config => {
     },
 
     /**
+     * Select a component
+     * @param  {Component|HTMLElement} el Component to select
+     * @return {this}
+     * @example
+     * // Select dropped block
+     * editor.on('block:drag:stop', function(model) {
+     *  editor.select(model);
+     * });
+     */
+    select(el) {
+      em.setSelected(el);
+      return this;
+    },
+
+    /**
      * Set device to the editor. If the device exists it will
      * change the canvas to the proper width
+     * @param {string} name Name of the device
      * @return {this}
      * @example
      * editor.setDevice('Tablet');
      */
     setDevice(name) {
-      return em.set('device', name);
+      em.set('device', name);
+      return this;
     },
 
     /**
@@ -519,7 +560,7 @@ module.exports = config => {
       // Do post render stuff after the iframe is loaded otherwise it'll
       // be empty during tests
       em.on('loaded', () => {
-        em.get('modules').forEach((module) => {
+        em.get('modules').forEach(module => {
           module.postRender && module.postRender(editorView);
         });
       });

@@ -23,4 +23,21 @@ module.exports = Backbone.Model.extend({
     }
   },
 
+  /**
+   * Get the initial value of the trait
+   * @return {string}
+   */
+  getInitValue() {
+    const target = this.target;
+    const name = this.get('name');
+    let value;
+
+    if (target) {
+      const attrs = target.get('attributes');
+      value = this.get('changeProp') ? target.get(name) : attrs[name];
+    }
+
+    return value || this.get('value') || this.get('default');
+  }
+
 });

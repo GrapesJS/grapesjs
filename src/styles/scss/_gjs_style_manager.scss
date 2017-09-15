@@ -246,7 +246,8 @@
     &.#{$sm-prefix}composite,
     &.#{$sm-prefix}file,
     &.#{$sm-prefix}list,
-    &.#{$sm-prefix}stack {
+    &.#{$sm-prefix}stack,
+    &.#{$sm-prefix}color {
       width: 100%;
     }
 
@@ -306,14 +307,14 @@
 
     .#{$sm-prefix}layers {
       margin-top: 5px;
+      padding: 1px 3px;
       min-height: 30px;
     }
 
     .#{$sm-prefix}layer {
       background-color: rgba(255, 255, 255, 0.055);
       border-radius: 2px;
-      box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2), 1px 1px 0 rgba(255, 255, 255, 0.055) inset;
-      margin: 2px;
+      margin: 2px 0;
       padding: 7px;
       position: relative;
       cursor: pointer;

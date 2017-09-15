@@ -44,8 +44,7 @@ module.exports = Backbone.View.extend({
     viewObject  = this.compView;
     //console.log('Add to collection', model, 'Index',i);
 
-    var dt = this.opts.defaultTypes;
-    var ct = this.opts.componentTypes;
+    var dt = this.opts.componentTypes;
 
     var type = model.get('type');
 
@@ -61,8 +60,7 @@ module.exports = Backbone.View.extend({
     var view = new viewObject({
       model,
       config: this.config,
-      defaultTypes: dt,
-      componentTypes: ct,
+      componentTypes: dt,
     });
     var rendered  = view.render().el;
     if(view.model.get('type') == 'textnode')

@@ -4,49 +4,9 @@
 @import "node_modules/codemirror/lib/codemirror";
 @import "node_modules/codemirror/theme/hopscotch";
 
-$app-prefix: 	'gjs-';
-$nv-prefix: 	$app-prefix + 'nv-';
-$rte-prefix: 	$app-prefix + 'rte-';
-$comp-prefix: $app-prefix + 'comp-';
-$mdl-prefix: 	$app-prefix + 'mdl-';
-$am-prefix: 	$app-prefix + 'am-';
-$cm-prefix: 	$app-prefix + 'cm-';
-$pn-prefix: 	$app-prefix + 'pn-';
-$com-prefix: 	$app-prefix + 'com-';
-$sm-prefix: 	$app-prefix + 'sm-';
-$cv-prefix: 	$app-prefix + 'cv-';
-$clm-prefix: 	$app-prefix + 'clm-';
-$trt-prefix: 	$app-prefix + 'trt-';
 
-/* Dark theme */
-$mainColor:		#444; /* Light: #573454 Dark: #3b2639 -moz-linear-gradient(top, #fca99b 0%, #6e2842 100%) */
-$fontColor:   #ddd; /* l: #d8d7db */
-$fontColorActive: #f8f8f8;
+@import "gjs_variables.scss";
 
-/* Light theme
-$mainColor: #fff;
-$fontColor: #9299a3;
-$fontColorActive: #4f8ef7;
-*/
-
-$mainDkColor:	rgba(0, 0, 0, 0.3);/* darken($mainColor, 4%) - #383838 */
-$mainDklColor: rgba(0, 0, 0, 0.1);
-$mainLhColor:	rgba(255, 255, 255, 0.1); /* #515151 */
-$mainLhlColor: rgba(255, 255, 255, 0.7);
-$fontColorDk:	#777;
-$mainFont:		Helvetica, sans-serif;
-$colorBlue:		#3b97e3;
-$colorRed: 		#dd3636;
-$colorYell:		#ffca6f;
-$colorGreen:	#62c462;
-$tagBg: #804f7b;
-$secColor: $tagBg;
-$imageCompDim:	50px;
-$leftWidth: 15%;
-
-$fontPath: '../fonts';
-$fontName: 'main-fonts';
-$fontV: 20;//random(1000)
 
 @font-face {
   font-family: 'font3336';
@@ -88,9 +48,6 @@ $fontV: 20;//random(1000)
   transform: $v;
 }
 
-/* Color Helpers */
-$colorHighlight: #71b7f1;
-$colorWarn: #ffca6f;
 
 .#{$app-prefix}bg {
   &-main {
@@ -248,30 +205,6 @@ $colorWarn: #ffca6f;
   @include opacity(0.50);
   pointer-events: none;
 }
-.#{$app-prefix}btn-prim{
-  @extend .#{$app-prefix}color-main;
-  background-color: $mainLhColor;
-  border-radius: 2px;
-  padding: 3px 6px;
-  cursor: pointer;
-  padding: 0.5em;
-  border: none;
-}
-.#{$app-prefix}btn-prim:active{
-  background-color: $mainLhColor;
-}
-.#{$app-prefix}input{
-  background-color: $mainDkColor;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 2px;
-  box-shadow: 1px 1px 0 $mainLhColor;
-  box-sizing: border-box;
-  color: $fontColor;
-  padding: 0.5em 1em;
-}
-.#{$app-prefix}select {
-  @extend .#{$app-prefix}input;
-}
 
 div.#{$app-prefix}select {
   padding: 0;
@@ -419,11 +352,12 @@ ol.example li.placeholder:before {position: absolute;}
 
 .#{$app-prefix}placeholder,
 .#{$nv-prefix}placeholder {
-  /*border-width: 3px !important;*/
   border-style: solid !important;
   border-color: $colorGreen;
   outline: none;
   box-sizing: border-box;
+  transition: top $animSpeed, left $animSpeed,
+    width $animSpeed, height $animSpeed;
 }
 
 .#{$app-prefix}placeholder-int,
@@ -543,139 +477,6 @@ ol.example li.placeholder:before {position: absolute;}
 	}
 }
 
-
-/************* Navigator *************/
-
-.#{$nv-prefix}selected-parent {
-	border: 1px solid $colorYell;
-}
-
-.#{$nv-prefix}opac50{
-	@include opacity(0.50);
-}
-.#{$nv-prefix}navigator{
-	position:relative;
-	height: 100%;
-	##{$nv-prefix}placeholder{
-		width: 100%;
-		position: absolute;
-		##{$nv-prefix}plh-int{
-	    	height: 100%;
-	    	padding: 1px;
-	    	&.#{$nv-prefix}insert{
-	    		background-color: $colorGreen;
-	    	}
-		}
-	}
-	.#{$nv-prefix}item {
-		font-weight: lighter;
-		text-align: left;
-		position: relative;
-		background-color: rgba(0, 0, 0, 0.1);
-	}
-	.#{$nv-prefix}item.#{$nv-prefix}hide {
-	  @include opacity(0.55);
-	}
-	.#{$nv-prefix}item ##{$nv-prefix}counter {
-	  font-size: 10px;
-	  position: absolute;
-	  right: 27px;
-	  top: 9px;
-	}
-	.#{$nv-prefix}item ##{$nv-prefix}btn-eye{
-		@extend .btn;
-		height: auto !important; width: auto !important;
-		font-size: 13px;
-    left: 0; top: 0;
-    padding: 7px 5px 7px 10px;
-    position: absolute;
-    cursor:pointer;
-    z-index: 1;
-	}
-}
-
-.#{$nv-prefix}item ##{$nv-prefix}caret {
-  font-size: 7px;
-  width: 8px;
-  padding: 5px;
-  cursor: pointer;
-  @include opacity(0.7);
-
-  &:hover {
-    @include opacity(1);
-  }
-}
-
-.#{$nv-prefix}item .#{$nv-prefix}title-c {
-  @extend .#{$app-prefix}bg-main;
-}
-
-.#{$nv-prefix}title {
-  background-color: $mainDklColor;
-  font-size: 11px;
-  letter-spacing: 1px;
-  padding: 3px 10px 5px 30px;
-  border-bottom: 1px solid $mainDkColor;
-  border-top: 1px solid $mainLhColor;
-  display: flex;
-  align-items: center;
-}
-
-.#{$nv-prefix}item .#{$nv-prefix}children .#{$nv-prefix}title{
-	border-left: 1px solid lighten($mainDkColor,2%);
-}
-.#{$nv-prefix}item > .#{$nv-prefix}children {
-  margin-left: 7px;
-  display: none;
-}
-.#{$nv-prefix}item.open > .#{$nv-prefix}children { display: block; }
-.#{$nv-prefix}item > .#{$nv-prefix}no-chld > ##{$nv-prefix}caret::before{ content:''; }
-.#{$nv-prefix}no-chld > ##{$nv-prefix}caret{ display:none; }
-.#{$nv-prefix}item > ##{$nv-prefix}move {
-	position: absolute;
-	cursor: move;
-  font-size: 12px;
-  right: 0; top: 0;
-  padding: 7px 10px 7px 5px;
-}
-/*
-.#{$nv-prefix}item{
-	&.#{$nv-prefix}selected{
-		border: 2px solid $colorBlue;
-	}
-}
-*/
-.#{$nv-prefix}selected .#{$nv-prefix}title {
-    background-color: rgba(255,255,255,0.1);
-}
-
-.#{$nv-prefix}nav-item-edit {
-  visibility: hidden;
-  padding: 5px;
-  font-size: 10px;
-  @include opacity(0.7);
-
-  &:hover {
-    @include opacity(1);
-  }
-}
-
-.#{$nv-prefix}title-c:hover {
-
-  .#{$nv-prefix}nav-item-edit {
-    visibility: visible;
-    cursor: pointer;
-  }
-}
-
-.#{$app-prefix}nav-comp-name {
-  padding: 5px;
-  box-sizing: content-box;
-  @extend .#{$app-prefix}no-user-select;
-}
-
-/************* END Navigator *************/
-
 /* pa-refresh pa-rocket pa-trash pa-columns pa-rotate-left/right */
 .btn.expand{ background-image: none;}
 
@@ -685,7 +486,8 @@ ol.example li.placeholder:before {position: absolute;}
 	display:	block;
 	background-color: #f5f5f5;
 	color: 	$fontColorDk;
-	height: $imageCompDim; width: $imageCompDim;
+  height: $imageCompDim;
+  width: $imageCompDim;
 	line-height: $imageCompDim;
 	outline: 3px solid $colorYell;
 	outline-offset: -3px;
@@ -698,7 +500,6 @@ ol.example li.placeholder:before {position: absolute;}
 	}
 }
 
-$lightBorder: rgba(255, 255, 255, 0.05);
 
 @import "gjs_inputs";
 
@@ -762,11 +563,11 @@ $lightBorder: rgba(255, 255, 255, 0.05);
 
 @import "gjs_blocks";
 
+/************* Navigator *************/
 
+@import "gjs_layers";
 
 /********* Class manager **********/
-$addBtnBg: lighten($mainDkColor, 10%);
-$paddElClm: 5px 6px;
 
 .#{$clm-prefix}field{
 		@extend .#{$sm-prefix}field
@@ -926,8 +727,6 @@ $paddElClm: 5px 6px;
 @import "gjs_assets";
 
 /********* File uploader **********/
-
-$uploadPadding:	150px 10px;
 
 .#{$am-prefix}file-uploader {
 	width: 55%;

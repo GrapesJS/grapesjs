@@ -1,4 +1,3 @@
-var Backbone = require('backbone');
 var PropertyView = require('./PropertyView');
 var InputNumber = require('domain_abstract/ui/InputNumber');
 
@@ -8,15 +7,6 @@ module.exports = PropertyView.extend({
     PropertyView.prototype.initialize.apply(this, arguments);
     this.listenTo(this.model, 'change:unit', this.valueChanged);
     this.listenTo(this.model, 'el:change', this.elementUpdated);
-  },
-
-  /**
-   * Returns value from inputs
-   * @return {string}
-   */
-  getValueForTarget() {
-    var model = this.model;
-    return model.get('value') + model.get('unit');
   },
 
   renderInput() {
@@ -32,8 +22,6 @@ module.exports = PropertyView.extend({
     }
     this.setValue(this.componentValue);
   },
-
-  renderTemplate() {},
 
   setValue(value) {
     this.input.setValue(value, {silent: 1});

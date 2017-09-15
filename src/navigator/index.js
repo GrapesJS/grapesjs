@@ -1,27 +1,72 @@
-function Navigator(collection, c) {
-  var config = c,
-    defaults = require('./config/config'),
-    ItemsView = require('./view/ItemsView');
+module.exports = () => {
+  let itemsView;
+  let config = {};
+  const defaults = require('./config/config');
+  const ItemView = require('./view/ItemView');
+  const ItemsView = require('./view/ItemsView');
 
-  // Set default options
-  for (var name in defaults) {
-    if (!(name in config))
-      config[name] = defaults[name];
-  }
+  return {
+    init(collection, opts) {
+      config = opts || config;
+      const em = config.em;
 
-  var obj = {
-    collection,
-    config,
-    opened: c.opened || {}
-  };
+      // Set default options
+      for (var name in defaults) {
+        if (!(name in config))
+          config[name] = defaults[name];
+      }
 
-  this.ItemsView = new ItemsView(obj);
-}
+      let View = ItemsView;
+      const level = 0;
+      const opened = opts.opened || {};
+      const options = {
+        level,
+        config,
+        opened
+      }
 
-Navigator.prototype  = {
-    render() {
-      return this.ItemsView.render().$el;
+      // Show wrapper if requested
+      if (config.showWrapper && collection.parent) {
+        View = ItemView;
+        options.model = collection.parent;
+      } else {
+        options.collection = collection
+      }
+
+      itemsView = new View(options);
+      em && em.on('change:selectedComponent', this.componentChanged);
+      this.componentChanged();
+
+      return this;
     },
-};
 
-module.exports = Navigator;
+    /**
+     * Triggered when the selected component is changed
+     * @private
+     */
+    componentChanged(e, md, opts = {}) {
+      if (opts.fromLayers) {
+        return;
+      }
+
+      const em = config.em;
+      const opened = em.get('opened');
+      const model = em.get('selectedComponent');
+      let parent = model && model.collection ? model.collection.parent : null;
+
+      for (let cid in opened) {
+        opened[cid].set('open', 0);
+      }
+
+      while (parent) {
+        parent.set('open', 1);
+        opened[parent.cid] = parent;
+        parent = parent.collection ? parent.collection.parent : null;
+      }
+    },
+
+    render() {
+      return itemsView.render().$el;
+    },
+  }
+};
