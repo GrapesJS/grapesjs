@@ -20,12 +20,9 @@ module.exports = PropertyView.extend({
     this.className = this.className + ' '+ this.pfx +'composite';
   },
 
-  /**
-   * Fired when the input value is updated
-   */
-  valueUpdated(...args) {
+  inputValueChanged(...args) {
     if(!this.model.get('detached'))
-      PropertyView.prototype.valueUpdated.apply(this, args);
+      PropertyView.prototype.inputValueChanged.apply(this, args);
   },
 
   /**

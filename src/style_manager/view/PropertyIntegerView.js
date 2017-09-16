@@ -5,8 +5,9 @@ module.exports = PropertyView.extend({
 
   initialize(options) {
     PropertyView.prototype.initialize.apply(this, arguments);
-    this.listenTo(this.model, 'change:unit', this.valueChanged);
-    this.listenTo(this.model, 'el:change', this.elementUpdated);
+    const model = this.model;
+    this.listenTo(model, 'change:unit', this.modelValueChanged);
+    this.listenTo(model, 'el:change', this.elementUpdated);
   },
 
   renderInput() {

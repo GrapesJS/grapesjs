@@ -25,7 +25,7 @@ module.exports = PropertyCompositeView.extend({
     this.className = `${pfx}property ${pfx}stack`;
     this.events[`click #${pfx}add`] = 'addLayer';
     this.listenTo(model, 'change:stackIndex', this.indexChanged);
-    this.listenTo(model, 'updateValue', this.valueUpdated);
+    this.listenTo(model, 'updateValue', this.inputValueChanged);
     this.delegateEvents();
   },
 
@@ -176,19 +176,16 @@ module.exports = PropertyCompositeView.extend({
       const index = layers.indexOf(layer);
       layer.set('value', this.model.getDefaultValue(1));
 
-      // In detached mode valueUpdated will add new 'layer value'
+      // In detached mode inputValueChanged will add new 'layer value'
       // to all subprops
-      this.valueUpdated();
+      this.inputValueChanged();
 
       // This will set subprops with a new default values
       this.model.set('stackIndex', index);
     }
   },
 
-  /**
-   * Fired when the input value is updated
-   */
-  valueUpdated() {
+  inputValueChanged() {
     var model = this.model;
 
     if (!model.get('detached')) {
@@ -311,7 +308,7 @@ module.exports = PropertyCompositeView.extend({
 
     // Avoid updating with detached as it will cause issues on next change
     if (!detached) {
-      this.valueUpdated();
+      this.inputValueChanged();
     }
 
     this.model.set({stackIndex: null}, {silent: true});

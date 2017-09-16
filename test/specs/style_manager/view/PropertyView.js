@@ -69,13 +69,13 @@ module.exports = {
           expect(view.model.get('value')).toNotExist();
         });
 
-        // Tests valueUpdated()
+        // Tests inputValueChanged()
         it('Update model on input change', () => {
           view.$input.val(propValue).trigger('change');
           expect(view.model.get('value')).toEqual(propValue);
         });
 
-        // Tests valueChanged() -> ...
+        // Tests modelValueChanged() -> ...
         it('Update input on value change', () => {
           view.model.set('value', propValue);
           expect(view.$input.val()).toEqual(propValue);

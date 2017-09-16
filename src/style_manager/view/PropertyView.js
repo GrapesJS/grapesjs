@@ -14,7 +14,7 @@ module.exports = Backbone.View.extend({
         </span>
         <b class="${pfx}clear">&Cross;</b>
       </div>
-      ${this.templateField()}
+      ${this.templateField(model)}
     `;
   },
 
@@ -30,7 +30,7 @@ module.exports = Backbone.View.extend({
   },
 
   events: {
-    'change': 'valueUpdated'
+    'change': 'inputValueChanged'
   },
 
   initialize(o) {
@@ -57,7 +57,7 @@ module.exports = Backbone.View.extend({
 
     this.listenTo(this.propTarget, 'update', this.targetUpdated);
     this.listenTo(model, 'destroy remove', this.remove);
-    this.listenTo(model, 'change:value', this.valueChanged);
+    this.listenTo(model, 'change:value', this.modelValueChanged);
     this.listenTo(model, 'targetUpdated', this.targetUpdated);
     this.listenTo(model, 'change:visible', this.updateVisibility);
     this.listenTo(model, 'change:status', this.updateStatus);
@@ -134,9 +134,10 @@ module.exports = Backbone.View.extend({
   },
 
   /**
-   * Fired when the input value is updated
+   * Triggers when the value of element input/s is changed, so have to update
+   * the value of the model which will propogate those changes to the target
    */
-  valueUpdated() {
+  inputValueChanged() {
     this.model.set('value', this.getInputValue());
     this.elementUpdated();
   },
@@ -284,13 +285,13 @@ module.exports = Backbone.View.extend({
   },
 
   /**
-   * Triggers when the 'value' of the model changes, so I have to update
-   * the target model
-   * @param   {Object}  e  Events
-   * @param    {Mixed}    val  Value
-   * @param    {Object}  opt  Options
+   * Triggers when the `value` of the model changes, so the target and
+   * the input element should be updated
+   * @param {Object} e  Event
+   * @param {Mixed} val  Value
+   * @param {Object} opt  Options
    * */
-  valueChanged(e, val, opt) {
+  modelValueChanged(e, val, opt) {
     const em = this.config.em;
     const model = this.model;
     const value = model.getFullValue();
@@ -434,8 +435,8 @@ module.exports = Backbone.View.extend({
   render() {
     const el = this.el;
     el.innerHTML = this.template(this.model);
-    this.renderInput();
     el.className = this.className;
+    this.renderInput();
     this.updateStatus();
     return this;
   },
