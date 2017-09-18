@@ -7,6 +7,9 @@
  * * [getProperty](#getproperty)
  * * [getProperties](#getproperties)
  * * [getModelToStyle](#getmodeltostyle)
+ * * [addType](#addtype)
+ * * [getType](#gettype)
+ * * [getTypes](#gettypes)
  * * [render](#render)
  *
  * With Style Manager you basically build categories (called sectors) of CSS properties which could
@@ -52,7 +55,9 @@ module.exports = () => {
   var c = {},
   defaults = require('./config/config'),
   Sectors = require('./model/Sectors'),
+  Properties = require('./model/Properties'),
   SectorsView = require('./view/SectorsView');
+  let properties;
   var sectors, SectView;
 
   return {
@@ -88,6 +93,7 @@ module.exports = () => {
       if(ppfx)
         c.stylePrefix = ppfx + c.stylePrefix;
 
+      properties = new Properties();
       sectors = new Sectors(c.sectors);
       SectView   = new SectorsView({
         collection: sectors,
@@ -250,6 +256,44 @@ module.exports = () => {
       }
 
       return model;
+    },
+
+    /**
+     * Add new property type
+     * @param {string} id Type ID
+     * @param {Object} definition Definition of the type. Each definition contains
+     *                            `model` (business logic), `view` (presentation logic)
+     *                            and `isType` function which recognize the type of the
+     *                            passed entity
+     * addType('my-type', {
+     *  model: {},
+     *  view: {},
+     *  isType: (value) => {
+     *    if (value && value.type == 'my-type') {
+     *      return value;
+     *    }
+     *  },
+     * })
+     */
+    addType(id, definition) {
+      properties.addType(id, definition);
+    },
+
+    /**
+     * Get type
+     * @param {string} id Type ID
+     * @return {Object} Type definition
+     */
+    getType(id) {
+      return properties.getType(id);
+    },
+
+    /**
+     * Get all types
+     * @return {Array}
+     */
+    getTypes() {
+      return properties.getTypes();
     },
 
     /**
