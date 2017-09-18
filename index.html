@@ -1324,7 +1324,7 @@
       var model = view.model;
       let targetValue = view.getTargetValue({ignoreDefault: 1});
       let computedValue = view.getComputedValue();
-      let defaultValue = view.getDefaultValue();
+      let defaultValue = view.model.getDefaultValue();
       //console.log('Style of ', model.get('property'), 'Target: ', targetValue, 'Computed:', computedValue, 'Default:', defaultValue);
     });
 

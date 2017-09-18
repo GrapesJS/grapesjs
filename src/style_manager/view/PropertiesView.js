@@ -39,7 +39,8 @@ module.exports = Backbone.View.extend({
         view.customValue = this.customValue;
       }
 
-      fragment.appendChild(view.render().el);
+      view.render();
+      fragment.appendChild(view.el);
     });
 
     this.$el.append(fragment);

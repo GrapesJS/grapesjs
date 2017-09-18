@@ -1,22 +1,17 @@
-var Backbone = require('backbone');
-var PropertyView = require('./PropertyView');
+const PropertyView = require('./PropertyView');
 
 module.exports = PropertyView.extend({
 
-  templateField() {
+  templateInput() {
     const pfx = this.pfx;
-    const ppfx = this.ppfx;
     return `
       <div class="${pfx}field ${pfx}composite">
         <span id="${pfx}input-holder"></span>
       </div>
-      <div style="clear:both"></div>
     `;
   },
 
-  initialize(o) {
-    PropertyView.prototype.initialize.apply(this, arguments);
-    this.config = o.config || {};
+  init() {
     this.className = this.className + ' '+ this.pfx +'composite';
   },
 
@@ -28,7 +23,7 @@ module.exports = PropertyView.extend({
   /**
    * Renders input
    * */
-  renderInput() {
+  onRender() {
     var model = this.model;
     var props = model.get('properties') || [];
     var self = this;

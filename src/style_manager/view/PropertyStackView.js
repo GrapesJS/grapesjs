@@ -5,7 +5,7 @@ var LayersView = require('./LayersView');
 
 module.exports = PropertyCompositeView.extend({
 
-  templateField() {
+  templateInput() {
     const pfx = this.pfx;
     const ppfx = this.ppfx;
     return `
@@ -13,12 +13,10 @@ module.exports = PropertyCompositeView.extend({
         <button type="button" id="${pfx}add">+</button>
         <span id="${pfx}input-holder"></span>
       </div>
-      <div style="clear:both"></div>
     `;
   },
 
-  initialize(o) {
-    PropertyCompositeView.prototype.initialize.apply(this, arguments);
+  init() {
     const model = this.model;
     const pfx = this.pfx;
     model.set('stackIndex', null);
@@ -116,6 +114,7 @@ module.exports = PropertyCompositeView.extend({
   valueOnIndex(index, propView) {
     let result;
     const model = this.model;
+    const propModel = propView.model;
     const layerIndex = model.get('stackIndex');
 
     // If detached the value in this case is stacked, eg. substack-prop: 1px, 2px, 3px...
@@ -123,8 +122,8 @@ module.exports = PropertyCompositeView.extend({
       var targetValue = propView.getTargetValue({ignoreCustomValue: 1});
       var valist = (targetValue + '').split(',');
       result = valist[layerIndex];
-      result = result ? result.trim() : propView.getDefaultValue();
-      result = propView.model.parseValue(result);
+      result = result ? result.trim() : propModel.getDefaultValue();
+      result = propModel.parseValue(result);
     } else {
       var aStack = this.getStackValues();
       var strVar = aStack[layerIndex];
@@ -174,14 +173,15 @@ module.exports = PropertyCompositeView.extend({
       const layers = this.getLayers();
       const layer = layers.add({name: 'New'});
       const index = layers.indexOf(layer);
-      layer.set('value', this.model.getDefaultValue(1));
+      const model = this.model;
+      layer.set('value', model.getDefaultValue(1));
 
       // In detached mode inputValueChanged will add new 'layer value'
       // to all subprops
       this.inputValueChanged();
 
       // This will set subprops with a new default values
-      this.model.set('stackIndex', index);
+      model.set('stackIndex', index);
     }
   },
 
@@ -224,12 +224,6 @@ module.exports = PropertyCompositeView.extend({
     this.$field.append(this.$layers.render().el);
     this.$props.hide();
     return this;
-  },
-
-  /** @inheritdoc */
-  renderInput(...args) {
-    PropertyCompositeView.prototype.renderInput.apply(this, args);
-    this.refreshLayers();
   },
 
   /**
@@ -280,7 +274,7 @@ module.exports = PropertyCompositeView.extend({
       a = this.getLayersFromTarget();
     } else {
       var v = this.getTargetValue();
-      var vDef = this.getDefaultValue();
+      var vDef = this.model.getDefaultValue();
       v = v == vDef ? '' : v;
       if (v) {
         // Remove spaces inside functions:
@@ -314,14 +308,10 @@ module.exports = PropertyCompositeView.extend({
     this.model.set({stackIndex: null}, {silent: true});
   },
 
-  render() {
-    const el = this.el;
-    el.innerHTML = this.template(this.model);
-    this.renderInput();
+  onRender(...args) {
+    PropertyCompositeView.prototype.onRender.apply(this, args);
+    this.refreshLayers();
     this.renderLayers();
-    this.$el.attr('class', this.className);
-    this.updateStatus();
-    return this;
   },
 
 });

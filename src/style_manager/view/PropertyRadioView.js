@@ -1,28 +1,22 @@
-var Backbone = require('backbone');
-var PropertyView = require('./PropertyView');
+module.exports = require('./PropertyView').extend({
 
-module.exports = PropertyView.extend({
-
-  templateField() {
+  templateInput() {
     const pfx = this.pfx;
     const ppfx = this.ppfx;
     return `
       <div class="${ppfx}field ${ppfx}field-radio">
         <span id="${pfx}input-holder"></span>
       </div>
-      <div style="clear:both"></div>
     `;
   },
 
-  initialize(options) {
-    PropertyView.prototype.initialize.apply(this, arguments);
+  init() {
     const model = this.model;
     this.list = model.get('list') || model.get('options') || [];
     this.className = this.className + ' '+ this.pfx +'list';
   },
 
-  /** @inheritdoc */
-  renderInput() {
+  onRender() {
     var pfx = this.pfx;
     var ppfx = this.ppfx;
     var itemCls = ppfx + 'radio-item-label';
@@ -60,7 +54,8 @@ module.exports = PropertyView.extend({
 
   /** @inheritdoc */
   setValue(value) {
-    var v = this.model.get('value') || this.model.getDefaultValue();
+    const model = this.model;
+    var v = model.get('value') || model.getDefaultValue();
 
     if(value)
       v  = value;
@@ -68,7 +63,7 @@ module.exports = PropertyView.extend({
     if(this.$input)
       this.$input.filter('[value="'+v+'"]').prop('checked', true);
 
-    this.model.set({value: v},{silent: true});
+    model.set({value: v}, {silent: true});
   },
 
 });

@@ -1,15 +1,17 @@
 var Backbone = require('backbone');
-var PropertyView = require('./PropertyView');
 var InputColor = require('domain_abstract/ui/InputColor');
 
-module.exports = PropertyView.extend({
+module.exports = require('./PropertyIntegerView').extend({
 
-  initialize(options) {
-    PropertyView.prototype.initialize.apply(this, arguments);
+  init() {
     this.className += ` ${this.pfx}file`;
   },
 
-  renderInput() {
+  setValue(value) {
+    this.input.setValue(value, {silent: 1});
+  },
+
+  onRender() {
     if (!this.input) {
       var inputColor = new InputColor({
         target: this.target,
@@ -21,11 +23,6 @@ module.exports = PropertyView.extend({
       this.$input = this.input.inputEl;
       this.$color = this.input.colorEl;
     }
-    this.setValue(this.componentValue);
-  },
-
-  setValue(value) {
-    this.input.setValue(value, {silent: 1});
   },
 
 });

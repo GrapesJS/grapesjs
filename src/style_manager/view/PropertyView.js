@@ -4,28 +4,31 @@ module.exports = Backbone.View.extend({
 
   template(model) {
     const pfx = this.pfx;
-    const name = model.get('name');
-    const icon = model.get('icon');
-    const info = model.get('info');
     return `
       <div class="${pfx}label">
-        <span class="${pfx}icon ${icon}" title="${info}">
-          ${name}
-        </span>
-        <b class="${pfx}clear">&Cross;</b>
+        ${this.templateLabel(model)}
       </div>
-      ${this.templateField(model)}
+      ${this.templateInput(model)}
     `;
   },
 
-  templateField() {
+  templateLabel(model) {
     const pfx = this.pfx;
-    const ppfx = this.ppfx;
+    const icon = model.get('icon');
+    const info = model.get('info');
     return `
-      <div class="${ppfx}field">
-        <span id="${pfx}input-holder"></span>
+      <span class="${pfx}icon ${icon}" title="${info}">
+        ${model.get('name')}
+      </span>
+      <b class="${pfx}clear">&Cross;</b>
+    `;
+  },
+
+  templateInput(model) {
+    return `
+      <div class="${this.ppfx}field">
+        <input placeholder="${model.getDefaultValue()}"/>
       </div>
-      <div style="clear:both"></div>
     `;
   },
 
@@ -33,7 +36,7 @@ module.exports = Backbone.View.extend({
     'change': 'inputValueChanged'
   },
 
-  initialize(o) {
+  initialize(o = {}) {
     this.config = o.config || {};
     this.em = this.config.em;
     this.pfx = this.config.stylePrefix || '';
@@ -63,8 +66,16 @@ module.exports = Backbone.View.extend({
     this.listenTo(model, 'change:status', this.updateStatus);
     this.events[`click .${pfx}clear`] = 'clear';
     this.delegateEvents();
+
+    const init = this.init && this.init.bind(this);
+    init && init();
   },
 
+  /**
+   * Triggers when the status changes. The status indicates if the value of
+   * the proprerty is changed or inherited
+   * @private
+   */
   updateStatus() {
     const status = this.model.get('status');
     const pfx = this.pfx;
@@ -92,7 +103,7 @@ module.exports = Backbone.View.extend({
   },
 
   /**
-   * Clear the property
+   * Clear the property from the target
    */
   clear() {
     const target = this.getTargetModel();
@@ -157,14 +168,14 @@ module.exports = Backbone.View.extend({
       return;
     }
 
-    let value = '';
-    let status = '';
-    let targetValue = this.getTargetValue({ignoreDefault: 1});
-    let defaultValue = this.getDefaultValue();
-    let computedValue = this.getComputedValue();
     const config = this.config;
     const em = config.em;
     const model = this.model;
+    let value = '';
+    let status = '';
+    let targetValue = this.getTargetValue({ignoreDefault: 1});
+    let defaultValue = model.getDefaultValue();
+    let computedValue = this.getComputedValue();
 
     if (targetValue) {
       value = targetValue;
@@ -240,7 +251,7 @@ module.exports = Backbone.View.extend({
     result = model.parseValue(result);
 
     if (!result && !opts.ignoreDefault) {
-      result = this.getDefaultValue();
+      result = model.getDefaultValue();
     }
 
     if (typeof customFetchValue == 'function' && !opts.ignoreCustomValue) {
@@ -253,15 +264,6 @@ module.exports = Backbone.View.extend({
     }
 
     return result;
-  },
-
-  /**
-   * Returns default value
-   * @return {String}
-   * @private
-   */
-  getDefaultValue() {
-    return this.model.getDefaultValue();
   },
 
   /**
@@ -412,20 +414,6 @@ module.exports = Backbone.View.extend({
   },
 
   /**
-   * Renders input, to override
-   * */
-  renderInput() {
-    if(!this.$input){
-      this.$input = $('<input>', {
-        placeholder: this.model.getDefaultValue(),
-        type: 'text'
-      });
-      this.$el.find(this.inputHolderId).html(this.$input);
-    }
-    this.setValue(this.componentValue, 0);
-  },
-
-  /**
    * Clean input
    * */
   cleanValue() {
@@ -436,9 +424,10 @@ module.exports = Backbone.View.extend({
     const el = this.el;
     el.innerHTML = this.template(this.model);
     el.className = this.className;
-    this.renderInput();
     this.updateStatus();
-    return this;
+
+    const onRender = this.onRender && this.onRender.bind(this);
+    onRender && onRender();
   },
 
 });

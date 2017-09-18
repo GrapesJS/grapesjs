@@ -1,9 +1,6 @@
-var Backbone = require('backbone');
-var PropertyView = require('./PropertyView');
+module.exports = require('./PropertyView').extend({
 
-module.exports = PropertyView.extend({
-
-  templateField() {
+  templateInput() {
     const pfx = this.pfx;
     const ppfx = this.ppfx;
     return `
@@ -13,20 +10,17 @@ module.exports = PropertyView.extend({
           <div class="${ppfx}d-s-arrow"></div>
         </div>
       </div>
-      <div style="clear:both"></div>
     `;
   },
 
-  initialize(options) {
-    PropertyView.prototype.initialize.apply(this, arguments);
+  init() {
     const model = this.model;
     this.list = model.get('list') || model.get('options') || [];
   },
 
-  /** @inheritdoc */
-  renderInput() {
+  onRender() {
     var pfx  = this.pfx;
-    if(!this.$input){
+    if (!this.$input) {
       var input = '<select>';
 
       if (this.list && this.list.length) {
@@ -43,7 +37,6 @@ module.exports = PropertyView.extend({
       this.$input = $(this.input);
       this.$el.find('#'+ pfx +'input-holder').html(this.$input);
     }
-    this.setValue(this.componentValue, 0);
   },
 
 });

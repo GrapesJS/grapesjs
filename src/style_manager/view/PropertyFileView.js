@@ -3,7 +3,7 @@ var PropertyView = require('./PropertyView');
 
 module.exports = PropertyView.extend({
 
-  templateField() {
+  templateInput() {
     const pfx = this.pfx;
     const ppfx = this.ppfx;
     const assetsLabel = this.config.assetsLabel || 'Images';
@@ -22,12 +22,10 @@ module.exports = PropertyView.extend({
         <div id="${pfx}close">&Cross;</div>
       </div>
     </div>
-    <div style="clear:both"></div>
     `;
   },
 
-  initialize(options) {
-    PropertyView.prototype.initialize.apply(this, arguments);
+  init() {
     this.assets = this.target.get('assets');
     this.modal = this.target.get('Modal');
     this.am = this.target.get('AssetManager');
@@ -37,8 +35,7 @@ module.exports = PropertyView.extend({
     this.delegateEvents();
   },
 
-  /** @inheritdoc */
-  renderInput() {
+  onRender() {
     if (!this.$input) {
       this.$input = $('<input>', {placeholder: this.model.getDefaultValue(), type: 'text' });
     }
@@ -56,7 +53,7 @@ module.exports = PropertyView.extend({
 
   setValue(value, f) {
     PropertyView.prototype.setValue.apply(this, arguments);
-    this.setPreviewView(value && value != this.getDefaultValue());
+    this.setPreviewView(value && value != this.model.getDefaultValue());
     this.setPreview(value);
   },
 

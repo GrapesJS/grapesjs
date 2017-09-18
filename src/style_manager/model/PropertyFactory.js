@@ -121,7 +121,7 @@ module.exports = () => ({
           obj.defaults = 1;
           break;
         case 'box-shadow-blur':
-          obj.defaults = 5;
+          obj.defaults = '5px';
           break;
         case 'min-height': case 'min-width': case 'max-height': case 'max-width':
         case 'width': case 'height':
