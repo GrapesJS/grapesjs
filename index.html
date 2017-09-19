@@ -1274,6 +1274,11 @@
     }]);
 
     var bm = editor.BlockManager;
+    bm.add('mappy', {
+      label: 'Map',
+      attributes: {class:'fa fa-marker'},
+      content: {type: 'map'}
+    })
     /*
     bm.add('link-block', {
       label: 'Link Block',

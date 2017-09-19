@@ -11,9 +11,9 @@
 
 @mixin rangeTrackStyle() {
   background-color: $mainDkColor;
-  border: 1px solid $darkBorder;
   border-radius: 1px;
-  height: 2px;
+  margin-top: 3px;
+  height: 3px;
 }
 
 .#{$app-prefix}label {
@@ -238,33 +238,37 @@
 
   input {
     margin: 0;
-  }
 
-  input::-moz-range-thumb {
-    @include rangeThumbStyle();
-  }
+    &:focus {
+      outline: none;
+    }
 
-  input::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    margin-top: -5px;
+    &::-webkit-slider-thumb {
+     -webkit-appearance: none;
+     margin-top: -4px;
 
-    @include rangeThumbStyle();
-  }
+     @include rangeThumbStyle();
+    }
 
-  input::-ms-thumb {
-    @include rangeThumbStyle();
-  }
+    &::-moz-range-thumb {
+     @include rangeThumbStyle();
+    }
 
-  input::-moz-range-track {
-    @include rangeTrackStyle();
-  }
+    &::-ms-thumb {
+     @include rangeThumbStyle();
+    }
 
-  input::-webkit-slider-runnable-track {
-    @include rangeTrackStyle();
-  }
+    &::-moz-range-track {
+     @include rangeTrackStyle();
+    }
 
-  input::-ms-track {
-    @include rangeTrackStyle();
+    &::-webkit-slider-runnable-track {
+     @include rangeTrackStyle();
+    }
+
+    &::-ms-track {
+     @include rangeTrackStyle();
+    }
   }
 }
 
