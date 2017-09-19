@@ -135,10 +135,13 @@ module.exports = Backbone.View.extend({
    * Invoked when the up arrow is clicked
    * */
   upArrowClick() {
-    var value  = this.model.get('value');
-    value = isNaN(value) ? 1 : parseInt(value, 10) + 1;
+    const model = this.model;
+    const step = model.get('step');
+    let value  = model.get('value');
+    //value = isNaN(value) ? 1 * step : parseFloat(value);
+    value = this.normalizeValue(value + step);
     var valid = this.validateInputValue(value);
-    this.model.set('value', valid.value);
+    model.set('value', valid.value);
     this.elementUpdated();
   },
 
@@ -146,10 +149,12 @@ module.exports = Backbone.View.extend({
    * Invoked when the down arrow is clicked
    * */
   downArrowClick() {
-    var value  = this.model.get('value');
-    value = isNaN(value) ? 0 : parseInt(value, 10) - 1;
+    const model = this.model;
+    const step = model.get('step');
+    let value  = model.get('value');
+    value = this.normalizeValue(value - step);
     var valid = this.validateInputValue(value);
-    this.model.set('value', valid.value);
+    model.set('value', valid.value);
     this.elementUpdated();
   },
 
@@ -163,8 +168,8 @@ module.exports = Backbone.View.extend({
     e.preventDefault();
     this.moved = 0;
     var value = this.model.get('value');
-    value = isNaN(value) ? 0 : parseInt(value, 10);
-    var current = {y: e.pageY, val: value };
+    value = this.normalizeValue(value);
+    var current = {y: e.pageY, val: value};
     this.docEl.mouseup(current, this.upIncrement);
     this.docEl.mousemove(current, this.moveIncrement);
   },
@@ -176,9 +181,11 @@ module.exports = Backbone.View.extend({
    * */
   moveIncrement(ev) {
     this.moved = 1;
-    var pos = parseInt(ev.data.val - ev.pageY + ev.data.y, 10);
-    this.prValue = this.validateInputValue(pos).value;//Math.max(this.min, Math.min(this.max, pos) );
-    this.model.set('value', this.prValue, {avoidStore: 1});
+    const model = this.model;
+    const step = model.get('step');
+    var pos = this.normalizeValue(ev.data.val + (ev.data.y - ev.pageY) * step);
+    this.prValue = this.validateInputValue(pos).value;
+    model.set('value', this.prValue, {avoidStore: 1});
     return false;
   },
 
@@ -189,15 +196,35 @@ module.exports = Backbone.View.extend({
    * @return void
    * */
   upIncrement(e) {
+    const model = this.model;
+    const step = model.get('step');
     this.docEl.off('mouseup', this.upIncrement);
     this.docEl.off('mousemove', this.moveIncrement);
 
     if(this.prValue && this.moved) {
-      var value = this.prValue - 1;
-      this.model.set('value', value, {avoidStore: 1})
-        .set('value', value + 1);
+      var value = this.prValue - step;
+      model.set('value', value, {avoidStore: 1})
+        .set('value', value + step);
       this.elementUpdated();
     }
+  },
+
+  normalizeValue(value, defValue = 0) {
+    const model = this.model;
+    const step = model.get('step');
+    let stepDecimals = 0;
+
+    if (isNaN(value)) {
+      return defValue;
+    }
+
+    value = parseFloat(value);
+
+    if (Math.floor(value) !== value) {
+      stepDecimals = step.toString().split('.')[1].length || 0;
+    }
+
+    return stepDecimals ? parseFloat(value.toFixed(stepDecimals)) : value;
   },
 
   /**

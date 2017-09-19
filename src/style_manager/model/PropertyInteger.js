@@ -8,6 +8,15 @@ module.exports = Property.extend({
 
     // Selected unit, eg. 'px'
     unit: '',
+
+    // Integer value steps
+    step: 1,
+
+    // Minimum value
+    min: '',
+
+    // Maximum value
+    max: '',
   }),
 
   getFullValue() {
