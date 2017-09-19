@@ -29,8 +29,10 @@ module.exports = PropertyView.extend({
     var self = this;
 
     if (props.length) {
-      if(!this.$input)
+      if (!this.$input) {
         this.$input = $('<input>', {value: 0, type: 'hidden' });
+        this.input = this.$input.get(0);
+      }
 
       if (!this.props) {
         this.props = model.get('properties');
@@ -102,9 +104,13 @@ module.exports = PropertyView.extend({
     // to get the value of the sub-property
     if (targetValue) {
       const values = targetValue.split(' ');
-      value = view ? view.model.parseValue(values[index]) : values[index];
+      value = values[index];
     } else {
-      value = view.getTargetValue({ignoreCustomValue: 1});
+      value = view && view.getTargetValue({ignoreCustomValue: 1, ignoreDefault: 1});
+    }
+
+    if (view) {
+      value = view.model.parseValue(value);
     }
 
     return value;

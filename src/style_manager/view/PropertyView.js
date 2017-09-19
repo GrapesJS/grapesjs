@@ -121,11 +121,10 @@ module.exports = Backbone.View.extend({
 
   /**
    * Returns selected target which should have 'style' property
-   * @deprecated
    * @return {Model|null}
    */
   getTarget() {
-    return this.propTarget && this.propTarget.model;
+    return this.getTargetModel();
   },
 
   /**
@@ -283,7 +282,8 @@ module.exports = Backbone.View.extend({
    * @return {string}
    */
   getInputValue() {
-    return this.$input ? this.$input.val() : '';
+    const input = this.getInputEl();
+    return input ? input.value : '';
   },
 
   /**
@@ -299,7 +299,7 @@ module.exports = Backbone.View.extend({
     const value = model.getFullValue();
     const target = this.getTarget();
     const onChange = this.onChange;
-    this.setValue(value);
+    this.setRawValue(value);
 
     // Check if component is allowed to be styled
     if (!target || !this.isTargetStylable() || !this.isComponentStylable()) {
@@ -381,6 +381,18 @@ module.exports = Backbone.View.extend({
   },
 
   /**
+   * Passed a raw value you have to update the input element, generally
+   * is the value fetched from targets, so you can receive values with
+   * functions, units, etc. (eg. `rotateY(45deg)`)
+   * get also
+   * @param {string} value
+   * @private
+   */
+  setRawValue(value) {
+    this.setValue(this.model.parseValue(value));
+  },
+
+  /**
    * Set the value to property input
    * @param {String} value
    * @param {Boolean} force
@@ -396,8 +408,16 @@ module.exports = Backbone.View.extend({
       v = value;
     }
 
-    const input = this.$input;
-    input && input.val(v);
+    const input = this.getInputEl();
+    input && (input.value = v);
+  },
+
+  getInputEl() {
+    if (!this.input) {
+      this.input = this.el.querySelector('input');
+    }
+
+    return this.input;
   },
 
   updateVisibility() {

@@ -24,46 +24,38 @@ module.exports = require('./PropertyView').extend({
 
     if(!this.$input) {
       if(this.list && this.list.length) {
-        var input = '';
+        let inputStr = '';
         _.each(this.list, el => {
           var cl = el.className ? el.className + ' ' + pfx + 'icon ' + itemCls : '',
           id = prop + '-' + el.value,
           labelTxt = el.name ? el.name : el.value;
           var titleAttr = el.title ? 'title="' + el.title + '"': '';
-          input += '<div class="' + ppfx + 'radio-item">'+
+          inputStr += '<div class="' + ppfx + 'radio-item">'+
             '<input class="'+pfx+'radio" type="radio" id="'+ id +'" name="'+prop+'" value="'+el.value+'" />'+
             '<label class="'+(cl ? cl : itemCls)+'" ' + titleAttr + ' for="'+ id +'">' + (cl ? '' : labelTxt) + '</label></div>';
         });
-        this.input = input;
-        this.$inputEl = $(this.input);
+        this.$inputEl = $(inputStr);
+        this.input = this.$inputEl.get(0);
         this.$el.find('#'+ pfx +'input-holder').html(this.$inputEl);
         this.$input = this.$inputEl.find('input[name="'+this.property+'"]');
       }
     }
-
-    this.setValue(this.componentValue);
   },
 
-  /**
-   * Returns value from input
-   * @return {string}
-   */
   getInputValue() {
     return this.$input ? this.$el.find('input:checked').val() : '';
   },
 
-  /** @inheritdoc */
   setValue(value) {
     const model = this.model;
     var v = model.get('value') || model.getDefaultValue();
 
-    if(value)
+    if (value) {
       v  = value;
+    }
 
     if(this.$input)
-      this.$input.filter('[value="'+v+'"]').prop('checked', true);
-
-    model.set({value: v}, {silent: true});
+      this.$input.filter(`[value="${v}"]`).prop('checked', true);
   },
 
 });

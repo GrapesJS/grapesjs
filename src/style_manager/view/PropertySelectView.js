@@ -20,22 +20,22 @@ module.exports = require('./PropertyView').extend({
 
   onRender() {
     var pfx  = this.pfx;
+    const options = this.list;
+
     if (!this.$input) {
-      var input = '<select>';
+      let optionsStr = '';
 
-      if (this.list && this.list.length) {
-        _.each(this.list, el => {
-          var name = el.name ? el.name : el.value;
-          var style = el.style ? el.style.replace(/"/g,'&quot;') : '';
-          var styleAttr = style ? 'style="' + style + '"' : '';
-          input += '<option value="'+el.value.replace(/"/g,'&quot;')+'" ' + styleAttr + '>'+name+'</option>';
-        });
-      }
+      options.forEach(option => {
+        let name = option.name || option.value;
+        let style = option.style ? option.style.replace(/"/g,'&quot;') : '';
+        let styleAttr = style ? `style="${style}"` : '';
+        let value = option.value.replace(/"/g,'&quot;');
+        optionsStr += `<option value="${value}" ${styleAttr}>${name}</option>`;
+      });
 
-      input += '</select>';
-      this.input = input;
-      this.$input = $(this.input);
-      this.$el.find('#'+ pfx +'input-holder').html(this.$input);
+      this.$input = $(`<select>${optionsStr}</select>`);
+      this.input = this.$input.get(0);
+      this.$el.find(`#${pfx}input-holder`).html(this.$input);
     }
   },
 
