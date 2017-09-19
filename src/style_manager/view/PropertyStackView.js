@@ -114,7 +114,7 @@ module.exports = PropertyCompositeView.extend({
   valueOnIndex(index, propView) {
     let result;
     const model = this.model;
-    const propModel = propView.model;
+    const propModel = propView && propView.model;
     const layerIndex = model.get('stackIndex');
 
     // If detached the value in this case is stacked, eg. substack-prop: 1px, 2px, 3px...

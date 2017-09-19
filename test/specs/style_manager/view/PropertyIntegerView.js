@@ -44,7 +44,8 @@ module.exports = {
             propTarget
           });
           $fixture.empty().appendTo($fixtures);
-          $fixture.html(view.render().el);
+          view.render();
+          $fixture.html(view.el);
         });
 
         afterEach(() => {
@@ -90,14 +91,13 @@ module.exports = {
 
         it('Input value is empty', () => {
           expect(view.model.get('value')).toNotExist();
-          expect(view.model.get('unit')).toEqual('px');
         });
 
         it('Update model on setValue', () => {
           view.setValue(intValue + unitValue);
           expect(view.model.get('value')).toEqual(parseFloat(intValue));
           expect(view.model.get('unit')).toEqual(unitValue);
-          expect(view.$input.val()).toEqual(intValue);
+          expect(view.getInputValue()).toEqual(intValue);
           expect(view.$unit.val()).toEqual(unitValue);
         });
 
@@ -134,7 +134,8 @@ module.exports = {
               propTarget: target
             });
             $fixture.empty().appendTo($fixtures);
-            $fixture.html(view.render().el);
+            view.render();
+            $fixture.html(view.el);
           });
 
           it('Update value and input on target swap', () => {
@@ -156,7 +157,7 @@ module.exports = {
             view.propTarget.trigger('update');
             expect(view.model.get('value')).toEqual(20);
             expect(view.model.get('unit')).toEqual('em');
-            expect(view.$input.val()).toEqual('20');
+            expect(view.getInputValue()).toEqual('20');
             expect(view.$unit.val()).toEqual('em');
           });
 
@@ -179,7 +180,8 @@ module.exports = {
               model
             });
             $fixture.empty().appendTo($fixtures);
-            $fixture.html(view.render().el);
+            view.render();
+            $fixture.html(view.el);
           });
 
           it('Value as default', () => {
@@ -188,20 +190,20 @@ module.exports = {
           });
 
           it('Input value is as default', () => {
-            expect(view.$input.val()).toEqual(intValue);
+            expect(view.getInputValue()).toEqual('');
             expect(view.$unit.val()).toEqual(units[1]);
           });
 
           it('Input follows min', () => {
             view.$input.val(minValue - 50).trigger('change');
             expect(view.model.get('value')).toEqual(minValue);
-            expect(view.$input.val()).toEqual(minValue + "");
+            expect(view.getInputValue()).toEqual(minValue + "");
           });
 
           it('Input follows max', () => {
             view.$input.val(maxValue + 50).trigger('change');
             expect(view.model.get('value')).toEqual(maxValue);
-            expect(view.$input.val()).toEqual(maxValue + "");
+            expect(view.getInputValue()).toEqual(maxValue + "");
           });
 
         });

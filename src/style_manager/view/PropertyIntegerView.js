@@ -18,19 +18,21 @@ module.exports = require('./PropertyView').extend({
   },
 
   setValue(value) {
-    this.input.setValue(value, {silent: 1});
+    this.inputInst.setValue(value, {silent: 1});
   },
 
   onRender() {
     if (!this.input) {
-      var inputNumber = new InputNumber({
+      const inputNumber = new InputNumber({
         model: this.model,
         ppfx: this.ppfx
       });
-      this.input = inputNumber.render();
-      this.$el.append(this.input.$el);
-      this.$input = this.input.inputEl;
-      this.$unit = this.input.unitEl;
+      const input = inputNumber.render();
+      this.$el.append(input.$el);
+      this.$input = input.inputEl;
+      this.$unit = input.unitEl;
+      this.input = this.$input.get(0);
+      this.inputInst = input;
     }
   },
 

@@ -19,6 +19,15 @@ module.exports = Property.extend({
     max: '',
   }),
 
+  init() {
+    const unit = this.get('unit');
+    const units = this.get('units');
+
+    if (units.length && !unit) {
+      this.set('unit', units[0]);
+    }
+  },
+
   getFullValue() {
     let value = this.get('value') + this.get('unit');
     return Property.prototype.getFullValue.apply(this, [value]);

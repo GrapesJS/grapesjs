@@ -646,7 +646,7 @@ module.exports = {
                   property: 'box-shadow-blur',
                   type: 'integer',
                   units: ['px'],
-                  defaults: 5,
+                  defaults: '5px',
                   min: 0,
                 },{
                   property: 'box-shadow-spread',

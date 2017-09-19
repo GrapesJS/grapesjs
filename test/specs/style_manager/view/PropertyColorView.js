@@ -38,7 +38,8 @@ module.exports = {
             propTarget
           });
           $fixture.empty().appendTo($fixtures);
-          $fixture.html(view.render().el);
+          view.render();
+          $fixture.html(view.el);
         });
 
         afterEach(() => {
@@ -72,13 +73,12 @@ module.exports = {
 
         it('Input value is empty', () => {
           expect(view.model.get('value')).toNotExist();
-          expect(view.$input.val()).toNotExist();
+          expect(view.getInputValue()).toNotExist();
         });
 
         it('Update model on setValue', () => {
           view.setValue(propValue);
-          expect(view.model.get('value')).toEqual(propValue);
-          expect(view.$input.val()).toEqual(propValue);
+          expect(view.getInputValue()).toEqual(propValue);
         });
 
         it('Update model on input change', () => {
@@ -109,7 +109,8 @@ module.exports = {
               propTarget: target
             });
             $fixture.empty().appendTo($fixtures);
-            $fixture.html(view.render().el);
+            view.render();
+            $fixture.html(view.el);
           });
 
           it('Update value and input on target swap', () => {
@@ -148,15 +149,16 @@ module.exports = {
               model
             });
             $fixture.empty().appendTo($fixtures);
-            $fixture.html(view.render().el);
+            view.render();
+            $fixture.html(view.el);
           });
 
           it('Value as default', () => {
             expect(view.model.get('value')).toEqual(propValue);
           });
 
-          it('Input value is as default', () => {
-            expect(view.$input.val()).toEqual(propValue);
+          it('Input value is empty', () => {
+            expect(view.getInputValue()).toEqual('');
           });
 
         });

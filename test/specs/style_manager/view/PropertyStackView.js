@@ -59,7 +59,8 @@ module.exports = {
             model
           });
           $fixture.empty().appendTo($fixtures);
-          $fixture.html(view.render().el);
+          view.render();
+          $fixture.html(view.el);
         });
 
         afterEach(() => {
@@ -119,7 +120,8 @@ module.exports = {
               propTarget: target
             });
             $fixture.empty().appendTo($fixtures);
-            $fixture.html(view.render().el);
+            view.render();
+            $fixture.html(view.el);
             model.get('layers').add(layers);
           });
 
@@ -164,7 +166,8 @@ module.exports = {
               propTarget: target
             });
             $fixture.empty().appendTo($fixtures);
-            $fixture.html(view.render().el);
+            view.render();
+            $fixture.html(view.el);
             prop3Val = properties[2].list[2].value;
             prop2Val = properties[1].defaults;
             prop2Unit = properties[1].units[0];
@@ -278,7 +281,8 @@ module.exports = {
               model,
               propTarget: target
             });
-            $fixture.html(view.render().el);
+            view.render();
+            $fixture.html(view.el);
             prop3Val = properties[2].list[2].value;
             prop2Val = properties[1].defaults;
             prop2Unit = properties[1].units[0];

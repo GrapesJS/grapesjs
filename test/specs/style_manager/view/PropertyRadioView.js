@@ -42,7 +42,8 @@ module.exports = {
             propTarget
           });
           $fixture.empty().appendTo($fixtures);
-          $fixture.html(view.render().el);
+          view.render();
+          $fixture.html(view.el);
         });
 
         afterEach(() => {
@@ -91,7 +92,6 @@ module.exports = {
 
         it('Update model on input change', () => {
           view.setValue(propValue);
-          expect(view.model.get('value')).toEqual(propValue);
           expect(view.getInputValue()).toEqual(propValue);
         });
 
@@ -118,7 +118,8 @@ module.exports = {
               propTarget: target
             });
             $fixture.empty().appendTo($fixtures);
-            $fixture.html(view.render().el);
+            view.render();
+            $fixture.html(view.el);
           });
 
           it('Update value and input on target swap', () => {
@@ -158,7 +159,8 @@ module.exports = {
               model
             });
             $fixture.empty().appendTo($fixtures);
-            $fixture.html(view.render().el);
+            view.render()
+            $fixture.html(view.el);
           });
 
           it('Value as default', () => {
@@ -166,7 +168,7 @@ module.exports = {
           });
 
           it('Input value is as default', () => {
-            expect(view.getInputValue()).toEqual(defValue);
+            expect(view.model.getDefaultValue()).toEqual(defValue);
           });
 
         });

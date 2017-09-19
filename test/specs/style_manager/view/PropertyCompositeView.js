@@ -53,7 +53,8 @@ module.exports = {
             model
           });
           $fixture.empty().appendTo($fixtures);
-          $fixture.html(view.render().el);
+          view.render();
+          $fixture.html(view.el);
         });
 
         afterEach(() => {
@@ -98,7 +99,7 @@ module.exports = {
         it('Update input on value change', () => {
           view.model.set('value', propValue);
           // Fetch always values from properties
-          expect(view.$input.val()).toEqual('0% val2');
+          expect(view.getInputValue()).toEqual('0% val2');
         });
 
         describe('With target setted', () => {
@@ -122,7 +123,8 @@ module.exports = {
               propTarget: target
             });
             $fixture.empty().appendTo($fixtures);
-            $fixture.html(view.render().el);
+            view.render();
+            $fixture.html(view.el);
             prop2Val = properties[1].defaults;
             prop2Unit = properties[1].units[0];
             prop3Val = properties[2].list[2].value;
@@ -163,7 +165,8 @@ module.exports = {
               model,
               propTarget: target
             });
-            $fixture.html(view.render().el);
+            view.render();
+            $fixture.html(view.el);
             $prop1 = view.$props.find('#' + properties[0].property + ' input');
             $prop1.val(propValue).trigger('change');
             var compStyle = view.getTarget().get('style');
@@ -224,7 +227,8 @@ module.exports = {
               model
             });
             $fixture.empty().appendTo($fixtures);
-            $fixture.html(view.render().el);
+            view.render();
+            $fixture.html(view.el);
           });
 
           it('Value as default', () => {
