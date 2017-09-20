@@ -25,15 +25,14 @@ module.exports = Input.extend({
   /**
    * Updates the view when the model is changed
    * */
-  handleModelChange(...args) {
-    Input.prototype.handleModelChange.apply(this, args);
+  handleModelChange() {
+    Input.prototype.handleModelChange.apply(this, arguments);
 
     var value = this.model.get('value');
     var colorEl = this.getColorEl();
 
     // If no color selected I will set white for the picker
     value = value === 'none' ? '#fff' : value;
-    colorEl.spectrum('set', value);
     colorEl.get(0).style.backgroundColor = value;
   },
 
@@ -52,6 +51,13 @@ module.exports = Input.extend({
         throw 'Spectrum missing, probably you load jQuery twice';
       }
 
+      const getColor = color => {
+        let cl = color.getAlpha() == 1 ? color.toHexString() : color.toRgbString();
+        return cl.replace(/ /g, '');
+      }
+
+      let changed = 0;
+      let previousСolor;
       colorEl.spectrum({
         appendTo: elToAppend || 'body',
         maxSelectionSize: 8,
@@ -61,14 +67,29 @@ module.exports = Input.extend({
         cancelText: '⨯',
         palette: [],
         move(color) {
-          var c  = color.getAlpha() == 1 ? color.toHexString() : color.toRgbString();
-          cpStyle.backgroundColor = c;
+          const cl = getColor(color);
+          cpStyle.backgroundColor = cl;
+          model.set('value', cl, {avoidStore: 1});
         },
         change(color) {
-          var c  = color.getAlpha() == 1 ? color.toHexString() : color.toRgbString();
-          c = c.replace(/ /g,'');
-          cpStyle.backgroundColor = c;
-          model.set('value', c);
+          changed = 1;
+          const cl = getColor(color);
+          cpStyle.backgroundColor = cl;
+          model.set('value', '', {avoidStore: 1});
+          model.set('value', cl);
+          colorEl.spectrum('set', cl);
+        },
+        show(color) {
+          changed = 0;
+          console.log('Show color', color, getColor(color));
+          previousСolor = getColor(color);
+        },
+        hide(color) {
+           if (!changed && previousСolor) {
+             cpStyle.backgroundColor = previousСolor;
+             colorEl.spectrum('set', previousСolor);
+             model.set('value', previousСolor, {avoidStore: 1});
+           }
         }
       });
       this.colorEl = colorEl;
