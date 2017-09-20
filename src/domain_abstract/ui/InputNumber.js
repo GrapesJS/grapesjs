@@ -16,7 +16,7 @@ module.exports = Backbone.View.extend({
     _.bindAll(this, 'moveIncrement', 'upIncrement');
     var opt = opts || {};
     var ppfx = opt.ppfx || '';
-    var contClass = opt.contClass || (ppfx + 'field');
+    var contClass = opt.contClass || (`${ppfx}field ${ppfx}field-integer`);
     this.ppfx = ppfx;
     this.docEl = $(document);
     this.inputCls = ppfx + 'field-number';

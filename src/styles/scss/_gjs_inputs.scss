@@ -47,6 +47,12 @@
   &select select:focus {
     outline: none;
   }
+
+  &field {
+    &-range {
+      flex: 9 1 auto;
+    }
+  }
 }
 
 .#{$app-prefix}select option,

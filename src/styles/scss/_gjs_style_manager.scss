@@ -236,6 +236,14 @@
 
   /* ------------------Property-------------------- */
 
+  .#{$sm-prefix} {
+    &slider {
+      .#{$app-prefix}field-integer {
+        flex: 1 1 65px;
+      }
+    }
+  }
+
   .#{$sm-prefix}property {
     box-sizing: border-box;
     float: left;
