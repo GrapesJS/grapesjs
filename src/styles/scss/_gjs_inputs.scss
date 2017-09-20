@@ -16,12 +16,44 @@
   height: 3px;
 }
 
-.#{$app-prefix}label {
-  line-height: 18px;
+.#{$app-prefix} {
+  &label {
+    line-height: 18px;
+  }
+
+  &fields {
+    display: flex;
+  }
+
+  &select {
+    padding: 0;
+    width: 100%;
+
+    select {
+      padding-right: 10px;
+    }
+  }
+
+  &select:-moz-focusring,
+  &select select:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 $mainLhlColor;
+  }
+
+  &input:focus,
+  &button:focus,
+  &btn-prim:focus,
+  &select:focus,
+  &select select:focus {
+    outline: none;
+  }
 }
 
-.#{$app-prefix}fields {
-  display: flex;
+.#{$app-prefix}select option,
+.#{$clm-prefix}select option,
+.#{$sm-prefix}select option,
+.#{$sm-prefix}unit option {
+  @extend .#{$app-prefix}bg-main;
 }
 
 .#{$app-prefix}field {

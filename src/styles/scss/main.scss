@@ -206,36 +206,6 @@
   pointer-events: none;
 }
 
-div.#{$app-prefix}select {
-  padding: 0;
-}
-
-.#{$app-prefix}select select {
-  padding-right: 10px;
-}
-
-.#{$app-prefix}select:-moz-focusring,
-.#{$app-prefix}select select:-moz-focusring {
-  color: transparent;
-  text-shadow: 0 0 0 $mainLhlColor;
-}
-
-.#{$app-prefix}input:focus,
-.#{$app-prefix}button:focus,
-.#{$app-prefix}btn-prim:focus,
-.#{$app-prefix}select:focus,
-.#{$app-prefix}select select:focus {
-  outline: none;
-}
-
-.#{$app-prefix}select option,
-.#{$clm-prefix}select option,
-.#{$sm-prefix}select option,
-.#{$sm-prefix}unit option {
-  @extend .#{$app-prefix}bg-main;
-  //background-color: $mainDkColor;
-}
-
 /*************  TRAITS  ****************/
 .#{$app-prefix}traits-label {
   border-bottom: 1px solid $mainDkColor;
