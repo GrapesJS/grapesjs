@@ -29,7 +29,6 @@ module.exports = PropertyView.extend({
     this.assets = this.target.get('assets');
     this.modal = this.target.get('Modal');
     this.am = this.target.get('AssetManager');
-    this.className = this.className + ' '+ this.pfx +'file';
     this.events['click #'+this.pfx+'close']    = 'removeFile';
     this.events['click #'+this.pfx+'images']  = 'openAssetManager';
     this.delegateEvents();

@@ -20,7 +20,6 @@ module.exports = PropertyCompositeView.extend({
     const model = this.model;
     const pfx = this.pfx;
     model.set('stackIndex', null);
-    this.className = `${pfx}property ${pfx}stack`;
     this.events[`click #${pfx}add`] = 'addLayer';
     this.listenTo(model, 'change:stackIndex', this.indexChanged);
     this.listenTo(model, 'updateValue', this.inputValueChanged);
@@ -210,8 +209,9 @@ module.exports = PropertyCompositeView.extend({
    * @return self
    * */
   renderLayers() {
-    if(!this.$field)
-      this.$field = this.$el.find('> .' + this.pfx + 'field');
+    if (!this.fieldEl) {
+      this.fieldEl = this.el.querySelector(`.${this.pfx}field`);
+    }
 
     if(!this.$layers)
       this.$layers = new LayersView({
@@ -221,9 +221,8 @@ module.exports = PropertyCompositeView.extend({
         config: this.config
       });
 
-    this.$field.append(this.$layers.render().el);
+    this.fieldEl.appendChild(this.$layers.render().el);
     this.$props.hide();
-    return this;
   },
 
   /**

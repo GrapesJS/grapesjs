@@ -13,14 +13,10 @@ module.exports = require('./PropertyView').extend({
     `;
   },
 
-  init() {
-    const model = this.model;
-    this.list = model.get('list') || model.get('options') || [];
-  },
-
   onRender() {
     var pfx  = this.pfx;
-    const options = this.list;
+    const model = this.model;
+    const options = model.get('list') || model.get('options') || [];
 
     if (!this.$input) {
       let optionsStr = '';

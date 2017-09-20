@@ -3,10 +3,6 @@ var InputColor = require('domain_abstract/ui/InputColor');
 
 module.exports = require('./PropertyIntegerView').extend({
 
-  init() {
-    this.className += ` ${this.pfx}file`;
-  },
-
   setValue(value, opts = {}) {
     opts = Object.assign({}, opts, {silent: 1});
     this.inputInst.setValue(value, opts);

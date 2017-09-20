@@ -52,7 +52,6 @@ module.exports = Backbone.View.extend({
     this.property = model.get('property');
     this.input = this.$input = null;
     const pfx = this.pfx;
-    this.className = pfx + 'property';
     this.inputHolderId = '#' + pfx + 'input-holder';
     this.sector = model.collection && model.collection.sector;
 
@@ -436,9 +435,11 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
+    const pfx = this.pfx;
+    const model = this.model;
     const el = this.el;
-    el.innerHTML = this.template(this.model);
-    el.className = this.className;
+    el.innerHTML = this.template(model);
+    el.className = `${pfx}property ${pfx}${model.get('type')}`;
     this.updateStatus();
 
     const onRender = this.onRender && this.onRender.bind(this);
