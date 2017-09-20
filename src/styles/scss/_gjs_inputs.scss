@@ -20,6 +20,10 @@
   line-height: 18px;
 }
 
+.#{$app-prefix}fields {
+  display: flex;
+}
+
 .#{$app-prefix}field {
   background-color: $mainDkColor;
   border: none;
@@ -43,6 +47,10 @@
     position: relative;
     padding: $inputPadding;
     z-index: 1;
+
+    &:focus {
+      outline: none;
+    }
   }
 
   textarea {

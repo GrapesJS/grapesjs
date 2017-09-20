@@ -8,7 +8,9 @@ module.exports = Backbone.View.extend({
       <div class="${pfx}label">
         ${this.templateLabel(model)}
       </div>
-      ${this.templateInput(model)}
+      <div class="${this.ppfx}fields">
+        ${this.templateInput(model)}
+      </div>
     `;
   },
 

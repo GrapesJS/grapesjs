@@ -2,13 +2,8 @@ const InputNumber = require('domain_abstract/ui/InputNumber');
 
 module.exports = require('./PropertyView').extend({
 
-  template(model) {
-    const pfx = this.pfx;
-    return `
-      <div class="${pfx}label">
-        ${this.templateLabel(model)}
-      </div>
-    `;
+  templateInput() {
+    return '';
   },
 
   init() {
@@ -22,13 +17,16 @@ module.exports = require('./PropertyView').extend({
   },
 
   onRender() {
+    const ppfx = this.ppfx;
+
     if (!this.input) {
       const inputNumber = new InputNumber({
         model: this.model,
         ppfx: this.ppfx
       });
       const input = inputNumber.render();
-      this.$el.append(input.$el);
+      const fields = this.el.querySelector(`.${ppfx}fields`);
+      fields.appendChild(input.el);
       this.$input = input.inputEl;
       this.$unit = input.unitEl;
       this.input = this.$input.get(0);
