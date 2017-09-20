@@ -1037,7 +1037,14 @@
         sectors: [{
           name: 'General',
           open: false,
-          buildProps: ['float', 'display', 'position', 'top', 'right', 'left', 'bottom'],
+          buildProps: ['opacity', 'float', 'display', 'position', 'top', 'right', 'left', 'bottom'],
+          properties: [{
+            type: 'slider',
+            property: 'opacity',
+            step: 0.01,
+            max: 1,
+            min:0,
+          }]
         },{
           name: 'Dimension',
           open: false,
@@ -1274,11 +1281,6 @@
     }]);
 
     var bm = editor.BlockManager;
-    bm.add('mappy', {
-      label: 'Map',
-      attributes: {class:'fa fa-marker'},
-      content: {type: 'map'}
-    })
     /*
     bm.add('link-block', {
       label: 'Link Block',

@@ -258,6 +258,7 @@
      @include rangeThumbStyle();
     }
 
+    /* -moz-range-progress */
     &::-moz-range-track {
      @include rangeTrackStyle();
     }

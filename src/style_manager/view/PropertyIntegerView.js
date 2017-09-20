@@ -1,4 +1,4 @@
-var InputNumber = require('domain_abstract/ui/InputNumber');
+const InputNumber = require('domain_abstract/ui/InputNumber');
 
 module.exports = require('./PropertyView').extend({
 

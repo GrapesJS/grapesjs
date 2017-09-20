@@ -58,6 +58,15 @@ module.exports = require('backbone').Collection.extend(TypeableCollection).exten
         }
       }
     },{
+      id: 'slider',
+      model: require('./PropertySlider'),
+      view: require('./../view/PropertySliderView'),
+      isType(value) {
+        if (value && value.type == 'slider') {
+          return value;
+        }
+      }
+    },{
       id: 'integer',
       model: require('./PropertyInteger'),
       view: require('./../view/PropertyIntegerView'),
