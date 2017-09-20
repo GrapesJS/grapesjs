@@ -25,7 +25,7 @@ module.exports = Input.extend({
   /**
    * Updates the view when the model is changed
    * */
-  handleModelChange() {
+  handleModelChange(mdl, vl, opts = {}) {
     Input.prototype.handleModelChange.apply(this, arguments);
 
     var value = this.model.get('value');
@@ -34,6 +34,12 @@ module.exports = Input.extend({
     // If no color selected I will set white for the picker
     value = value === 'none' ? '#fff' : value;
     colorEl.get(0).style.backgroundColor = value;
+
+    // Prevent usuless palette updating
+    if (!opts.avoidStore) {
+      console.log('COlor to set', value, mdl, vl, opts);
+      colorEl.spectrum('set', value);
+    }
   },
 
   /**
@@ -59,6 +65,7 @@ module.exports = Input.extend({
       let changed = 0;
       let previousСolor;
       colorEl.spectrum({
+        //color: "#f00"
         appendTo: elToAppend || 'body',
         maxSelectionSize: 8,
         showPalette: true,
