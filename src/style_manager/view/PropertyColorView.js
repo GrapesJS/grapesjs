@@ -7,8 +7,9 @@ module.exports = require('./PropertyIntegerView').extend({
     this.className += ` ${this.pfx}file`;
   },
 
-  setValue(value) {
-    this.inputInst.setValue(value, {silent: 1});
+  setValue(value, opts = {}) {
+    opts = Object.assign({}, opts, {silent: 1});
+    this.inputInst.setValue(value, opts);
   },
 
   onRender() {

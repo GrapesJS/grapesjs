@@ -41,14 +41,14 @@ module.exports = Backbone.View.extend({
     // Generally I get silent when I need to reflect data to view without
     // reupdating the target
     if(opt.silent) {
-      this.handleModelChange();
+      this.handleModelChange(model, value, opt);
     }
   },
 
   /**
    * Updates the view when the model is changed
    * */
-  handleModelChange() {
+  handleModelChange(model, value, opts) {
     this.getInputEl().value = this.model.get('value');
   },
 

@@ -15,31 +15,36 @@ module.exports = Input.extend({
   initialize(opts) {
     Input.prototype.initialize.apply(this, arguments);
     var ppfx = this.ppfx;
-    this.colorCls = ppfx + 'field-color-picker';
-    this.inputClass = ppfx + 'field ' + ppfx + 'field-color';
-    this.colorHolderClass = ppfx + 'field-colorp-c';
+    this.colorCls = `${ppfx}field-color-picker`;
+    this.inputClass = `${ppfx}field ${ppfx}field-color`;
+    this.colorHolderClass = `${ppfx}field-colorp-c`;
+  },
 
-    this.listenTo(this.model, 'change:value', this.handleModelChange);
+  /**
+   * Set value to the model
+   * @param {string} val
+   * @param {Object} opts
+   */
+  setValue(val, opts = {}) {
+    const model = this.model;
+    const value = val || model.get('defaults');
+    const inputEl = this.getInputEl();
+    const colorEl = this.getColorEl();
+    const valueClr = value != 'none' ? value : '';
+    inputEl.value = value;
+    colorEl.get(0).style.backgroundColor = valueClr;
+
+    if (opts.targetUpdate) {
+      colorEl.spectrum('set', valueClr);
+      this.noneColor = value == 'none';
+    }
   },
 
   /**
    * Updates the view when the model is changed
    * */
-  handleModelChange(mdl, vl, opts = {}) {
-    Input.prototype.handleModelChange.apply(this, arguments);
-
-    var value = this.model.get('value');
-    var colorEl = this.getColorEl();
-
-    // If no color selected I will set white for the picker
-    value = value === 'none' ? '#fff' : value;
-    colorEl.get(0).style.backgroundColor = value;
-
-    // Prevent usuless palette updating
-    if (!opts.avoidStore) {
-      console.log('COlor to set', value, mdl, vl, opts);
-      colorEl.spectrum('set', value);
-    }
+  handleModelChange(model, value, opts) {
+    this.setValue(value, opts);
   },
 
   /**
@@ -47,7 +52,8 @@ module.exports = Input.extend({
    * @return {HTMLElement}
    */
   getColorEl() {
-    if(!this.colorEl) {
+    if (!this.colorEl) {
+      const self = this;
       var model = this.model;
       var colorEl = $('<div>', {class: this.colorCls});
       var cpStyle = colorEl.get(0).style;
@@ -65,7 +71,6 @@ module.exports = Input.extend({
       let changed = 0;
       let previousСolor;
       colorEl.spectrum({
-        //color: "#f00"
         appendTo: elToAppend || 'body',
         maxSelectionSize: 8,
         showPalette: true,
@@ -84,15 +89,17 @@ module.exports = Input.extend({
           cpStyle.backgroundColor = cl;
           model.set('value', '', {avoidStore: 1});
           model.set('value', cl);
-          colorEl.spectrum('set', cl);
+          self.noneColor = 0;
         },
         show(color) {
           changed = 0;
-          console.log('Show color', color, getColor(color));
           previousСolor = getColor(color);
         },
         hide(color) {
            if (!changed && previousСolor) {
+             if (self.noneColor) {
+               previousСolor = '';
+             }
              cpStyle.backgroundColor = previousСolor;
              colorEl.spectrum('set', previousСolor);
              model.set('value', previousСolor, {avoidStore: 1});

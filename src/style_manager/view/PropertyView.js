@@ -195,7 +195,7 @@ module.exports = Backbone.View.extend({
     }
 
     model.set('value', value, {silent: 1});
-    this.setValue(value, 1);
+    this.setValue(value, {targetUpdate: 1});
     model.set('status', status);
 
     if (em) {
@@ -398,18 +398,11 @@ module.exports = Backbone.View.extend({
    * @param {Boolean} force
    * @private
    * */
-  setValue(value, force) {
+  setValue(value, opts = {}) {
     const model = this.model;
-    const f = force === 0 ? 0 : 1;
-    const def = model.getDefaultValue();
-    let v = model.get('value') || def;
-
-    if (value || f) {
-      v = value;
-    }
-
+    let val = value || model.get('value') || model.getDefaultValue();
     const input = this.getInputEl();
-    input && (input.value = v);
+    input && (input.value = val);
   },
 
   getInputEl() {
