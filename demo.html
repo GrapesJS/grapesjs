@@ -134,9 +134,14 @@
          }
 
          #gjs-sm-float,
-         #gjs-pn-commands,
-         #gjs-pn-views .fa-cog {
+         #gjs-pn-views .fa-cog,
+         #gjs-pn-commands .gjs-pn-buttons {
             display: none;
+         }
+
+         .gjs-pn-panel#gjs-pn-commands {
+           width: 200px;
+           box-shadow: none;
          }
 
          [data-tooltip]::after {
@@ -147,9 +152,35 @@
            height: 100px;
            width: 100%;
          }
+
+         .gjs-logo {
+           height: 25px;
+         }
+
+         .gjs-logo-cont {
+            position: absolute;
+            left: 25px;
+            top: 8px;
+          }
+
+          .gjs-logo-version {
+            position: absolute;
+            background-color: #756467;
+            font-size: 10px;
+            padding: 1px 7px;
+            border-radius: 15px;
+            bottom: 2px;
+            right: -43px;
+          }
     </style>
   </head>
   <body>
+    <div style="display: none">
+      <div class="gjs-logo-cont">
+        <img class="gjs-logo" src="img/grapesjs-logo-cl.png">
+        <div class="gjs-logo-version"></div>
+      </div>
+    </div>
     <div id="gjs" style="height:0px; overflow:hidden">
       <header class="header-banner">
         <div class="container-width">
@@ -1313,10 +1344,16 @@
      // Store and load events
      editor.on('storage:load', function(e) {
        console.log('Loaded ', e);
-     })
+     });
      editor.on('storage:store', function(e) {
        console.log('Stored ', e);
-     })
+     });
+     editor.on('load', function() {
+       var logoCont = document.querySelector('.gjs-logo-cont');
+       document.querySelector('.gjs-logo-version').innerHTML = 'v' + grapesjs.version;
+       var logoPanel = document.querySelector('#gjs-pn-commands');
+       logoPanel.appendChild(logoCont);
+     });
 
     </script>
 
