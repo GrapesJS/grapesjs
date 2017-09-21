@@ -14,15 +14,18 @@ module.exports = Backbone.View.extend({
 	},
 
   handleClick(event) {
-    var opts = {event};
-    var command = this.model.get('command');
+    event.preventDefault();
+    event.stopPropagation();
+    const opts = {event};
+    const command = this.model.get('command');
+    const editor = this.editor;
 
     if (typeof command === 'function') {
-      command(this.editor, null, opts);
+      command(editor, null, opts);
     }
 
     if (typeof command === 'string') {
-      this.editor.runCommand(command, opts);
+      editor.runCommand(command, opts);
     }
   },
 
