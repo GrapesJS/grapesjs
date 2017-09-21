@@ -117,7 +117,6 @@ module.exports = () => {
 
           ed.select(null);
           sel.destroy();
-          ed.trigger('change:canvasOffset');
         },
       };
 

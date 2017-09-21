@@ -37,6 +37,7 @@
  * * `component:update:{propertyName}` - Listen any property change
  * * `component:styleUpdate` - Triggered when the style of the component is updated
  * * `component:styleUpdate:{propertyName}` - Listen for a specific style property change
+ * * `component:selected` - New component selected
  * * `asset:add` - New asset added
  * * `asset:remove` - Asset removed
  * * `asset:upload:start` - Before the upload is started
