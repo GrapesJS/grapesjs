@@ -100,6 +100,7 @@ module.exports = () => {
       defaultCommands['open-blocks'] = require('./view/OpenBlocks');
       defaultCommands['open-assets'] = require('./view/OpenAssets');
       defaultCommands['show-offset'] = require('./view/ShowOffset');
+      defaultCommands['select-parent'] = require('./view/SelectParent');
       defaultCommands.fullscreen = require('./view/Fullscreen');
       defaultCommands.preview = require('./view/Preview');
       defaultCommands.resize = require('./view/Resize');
@@ -117,7 +118,6 @@ module.exports = () => {
           ed.select(null);
           sel.destroy();
           ed.trigger('change:canvasOffset');
-          //ed.refresh();//change:canvasOffset
         },
       };
 

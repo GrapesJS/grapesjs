@@ -1037,15 +1037,7 @@
         sectors: [{
           name: 'General',
           open: false,
-          buildProps: ['opacity', 'float', 'display', 'position', 'top', 'right', 'left', 'bottom'],
-          properties: [{
-            type: 'slider',
-            property: 'opacity',
-            defaults: 1,
-            step: 0.01,
-            max: 1,
-            min:0,
-          }]
+          buildProps: ['float', 'display', 'position', 'top', 'right', 'left', 'bottom']
         },{
           name: 'Dimension',
           open: false,
@@ -1070,7 +1062,15 @@
         },{
           name: 'Extra',
           open: false,
-          buildProps: ['transition', 'perspective', 'transform'],
+          buildProps: ['opacity', 'transition', 'perspective', 'transform'],
+          properties: [{
+            type: 'slider',
+            property: 'opacity',
+            defaults: 1,
+            step: 0.01,
+            max: 1,
+            min:0,
+          }]
         },{
             name: 'Flex',
             open: false,
