@@ -9,6 +9,9 @@ module.exports = (() => {
 
   return {
 
+    // Will be replaced on build
+    version: '<# VERSION #>',
+
     editors,
 
     plugins,

@@ -35,6 +35,13 @@ module.exports = {
   plugins: plugins,
   module: {
     loaders: [{
+        test: /grapesjs\/index\.js$/,
+        loader: 'string-replace-loader',
+        query: {
+          search: '<# VERSION #>',
+          replace: pkg.version
+        }
+      },{
         test: /\.js$/,
         loader: 'babel-loader',
         include: /src/,
