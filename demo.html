@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>GrapesJS Demo - Open Source Website Page Builder</title>
     <link rel="stylesheet" href="stylesheets/toastr.min.css">
-    <link rel="stylesheet" href="stylesheets/grapes.min.css?v0.10.6">
+    <link rel="stylesheet" href="stylesheets/grapes.min.css?v0.10.7">
     <link rel="stylesheet" href="stylesheets/grapesjs-preset-webpage.css">
     <link rel="stylesheet" href="stylesheets/tooltip.css">
     <link rel="stylesheet" href="stylesheets/perfect-scrollbar.css">
@@ -15,7 +15,7 @@
     <script src="js/perfect-scrollbar.min.js"></script>
     <script src="js/toastr.min.js"></script>
 
-    <script src="js/grapes.min.js?v0.10.6"></script>
+    <script src="js/grapes.min.js?v0.10.7"></script>
     <script src="js/grapesjs-plugin-export.min.js"></script>
     <script src="js/grapesjs-plugin-filestack.min.js"></script>
     <script src="js/grapesjs-blocks-basic.min.js"></script>
@@ -1057,8 +1057,15 @@
           },{
             name: 'Decorations',
             open: false,
-            buildProps: [ 'background-color', 'border-radius', 'border', 'box-shadow', 'background'],
+            buildProps: ['opacity', 'background-color', 'border-radius', 'border', 'box-shadow', 'background'],
             properties: [{
+              type: 'slider',
+              property: 'opacity',
+              defaults: 1,
+              step: 0.01,
+              max: 1,
+              min:0,
+            },{
               property: 'border-radius',
               properties  : [
                 { name: 'Top', property: 'border-top-left-radius'},
@@ -1302,16 +1309,6 @@
       el.attr('data-tooltip', el.attr('title'));
       el.attr('title', '');
     });
-
-    // Beautify  scrollbars
-    /*
-    editor.on('load', function() {
-      var el = document.querySelector('#gjs-pn-views-container');
-      console.log(el);
-      Ps.initialize(el);
-    });
-    */
-
 
      // Store and load events
      editor.on('storage:load', function(e) {

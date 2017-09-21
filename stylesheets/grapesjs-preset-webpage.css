@@ -15,11 +15,6 @@
   text-shadow: none;
 }
 
-.gjs-field {
-  background-color: rgba(0, 0, 0, 0.15);
-  box-shadow: none;
-}
-
 .gjs-trt-trait {
   font-size: 11px;
 }
