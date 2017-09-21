@@ -82,7 +82,8 @@ module.exports = {
         });
 
         it('Update model on input change', () => {
-          view.$input.val(propValue).trigger('change');
+          view.getInputEl().value = propValue;
+          view.inputValueChanged();
           expect(view.model.get('value')).toEqual(propValue);
         });
 
