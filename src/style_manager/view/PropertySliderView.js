@@ -1,6 +1,7 @@
 const InputNumber = require('domain_abstract/ui/InputNumber');
+const Property = require('./PropertyIntegerView');
 
-module.exports = require('./PropertyIntegerView').extend({
+module.exports = Property.extend({
 
   events: {
     'change': 'inputValueChanged',
@@ -46,4 +47,13 @@ module.exports = require('./PropertyIntegerView').extend({
     this.getSliderEl().value = value;
     this.inputInst.setValue(value, {silent: 1});
   },
+
+  onRender() {
+    Property.prototype.onRender.apply(this, arguments);
+    const model = this.model;
+
+    if (!model.get('showInput')) {
+      this.inputInst.el.style.display = 'none';
+    }
+  }
 });
