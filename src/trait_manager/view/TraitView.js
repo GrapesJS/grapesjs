@@ -81,14 +81,18 @@ module.exports = Backbone.View.extend({
       var md = this.model;
       var trg = this.target;
       var name = md.get('name');
-      const plh = md.get('placeholder') || md.get('default');
+      const plh = md.get('placeholder') || md.get('default') || '';
       const type = md.get('type') || 'text';
       const attrs = trg.get('attributes');
       const min = md.get('min');
       const max = md.get('max');
       const value = md.get('changeProp') ?
         trg.get(name) : md.get('value') || attrs[name];
-      const input = $(`<input type="${type} placeholder="${plh}" value="${value}">`);
+      const input = $(`<input type="${type}" placeholder="${plh}">`);
+
+      if (value) {
+        input.prop('value', value);
+      }
 
       if (min) {
         input.prop('min', min);
