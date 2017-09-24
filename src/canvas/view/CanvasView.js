@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var FrameView = require('./FrameView');
+const Backbone = require('backbone');
+const FrameView = require('./FrameView');
 
 module.exports = Backbone.View.extend({
 
@@ -346,6 +346,7 @@ module.exports = Backbone.View.extend({
       }
     }
     var ppfx = this.ppfx;
+    /*
     var toolsEl = $('<div>', { id: ppfx + 'tools' }).get(0);
     this.hlEl = $('<div>', { class: ppfx + 'highlighter' }).get(0);
     this.badgeEl = $('<div>', {class: ppfx + 'badge'}).get(0);
@@ -365,7 +366,53 @@ module.exports = Backbone.View.extend({
     toolsEl.appendChild(this.resizerEl);
     toolsEl.appendChild(this.offsetEl);
     toolsEl.appendChild(this.fixedOffsetEl);
+    */
+    var toolsEl = $(`<div id="${ppfx}tools"></div>`).get(0);
+    this.hlEl = $(`<div class="${ppfx}highlighter"></div>`).get(0);
+    this.badgeEl = $(`<div class="${ppfx}badge"></div>`).get(0);
+    this.placerEl = $(`<div class="${ppfx}placeholder"></div>`).get(0);
+    this.placerIntEl = $(`<div class="${ppfx}placeholder-int"></div>`).get(0);
+    this.ghostEl = $(`<div class="${ppfx}ghost"></div>`).get(0);
+    this.toolbarEl = $(`<div class="${ppfx}toolbar"></div>`).get(0);
+    this.resizerEl = $(`<div class="${ppfx}resizer"></div>`).get(0);
+    this.offsetEl = $(`<div class="${ppfx}offset-v"></div>`).get(0);
+    this.fixedOffsetEl = $(`<div class="${ppfx}offset-fixed-v"></div>`).get(0);
+    this.placerEl.appendChild(this.placerIntEl);
+    toolsEl.appendChild(this.hlEl);
+    toolsEl.appendChild(this.badgeEl);
+    toolsEl.appendChild(this.placerEl);
+    toolsEl.appendChild(this.ghostEl);
+    toolsEl.appendChild(this.toolbarEl);
+    toolsEl.appendChild(this.resizerEl);
+    toolsEl.appendChild(this.offsetEl);
+    toolsEl.appendChild(this.fixedOffsetEl);
     this.$el.append(toolsEl);
+    /*
+    this.$el.append(`
+      <div id="${ppfx}tools">
+        <div class="${ppfx}highlighter"></div>
+        <div class="${ppfx}badge"></div>
+        <div class="${ppfx}placeholder">
+          <div class="${ppfx}placeholder-int"></div>
+        </div>
+        <div class="${ppfx}ghost"></div>
+        <div class="${ppfx}toolbar"></div>
+        <div class="${ppfx}resizer"></div>
+        <div class="${ppfx}offset-v"></div>
+        <div class="${ppfx}offset-fixed-v"></div>
+      </div>
+    `);
+    const el = this.el;
+    const toolsEl = el.querySelector(`#${ppfx}tools`);
+    this.hlEl = el.querySelector(`.${ppfx}highlighter`);
+    this.badgeEl = el.querySelector(`.${ppfx}badge`);
+    this.placerEl = el.querySelector(`.${ppfx}placeholder`);
+    this.ghostEl = el.querySelector(`.${ppfx}ghost`);
+    this.toolbarEl = el.querySelector(`.${ppfx}toolbar`);
+    this.resizerEl = el.querySelector(`.${ppfx}resizer`);
+    this.offsetEl = el.querySelector(`.${ppfx}offset-v`);
+    this.fixedOffsetEl = el.querySelector(`.${ppfx}offset-fixed-v`);
+    */
     var rte = this.em.get('rte');
 
     if(rte)
