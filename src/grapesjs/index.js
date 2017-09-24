@@ -1,14 +1,14 @@
 import { isUndefined, defaults } from 'underscore';
 
 module.exports = (() => {
+  const cash = require('cash-dom');
+  require('utils/cashAdds')(cash);
+
   const defaultConfig = require('./config/config');
   const Editor = require('editor');
   const PluginManager = require('plugin_manager');
-  const cash = require('cash-dom');
   const plugins = new PluginManager();
   const editors = [];
-
-  require('utils/cashAdds')(cash);
 
   return {
 

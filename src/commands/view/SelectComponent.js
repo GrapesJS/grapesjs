@@ -1,7 +1,9 @@
 var ToolbarView = require('dom_components/view/ToolbarView');
 var Toolbar = require('dom_components/model/Toolbar');
 var key = require('keymaster');
+var Backbone = require('backbone');
 let showOffsets;
+const $ = Backbone.$;
 
 module.exports = {
 
@@ -140,11 +142,12 @@ module.exports = {
    * @private
    */
   onHover(e) {
+    const model = $(e.target).data('model');
     e.stopPropagation();
     var trg = e.target;
 
     // Adjust tools scroll top
-    if(!this.adjScroll){
+    if (!this.adjScroll) {
       this.adjScroll = 1;
       this.onFrameScroll(e);
       this.updateAttached();
@@ -282,6 +285,7 @@ module.exports = {
   updateHighlighter(el, pos) {
     var $el = $(el);
     var model = $el.data('model');
+
     if(!model || (model && model.get('status') == 'selected')) {
       return;
     }
