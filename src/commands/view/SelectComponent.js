@@ -1,7 +1,7 @@
-var ToolbarView = require('dom_components/view/ToolbarView');
-var Toolbar = require('dom_components/model/Toolbar');
-var key = require('keymaster');
-var Backbone = require('backbone');
+const ToolbarView = require('dom_components/view/ToolbarView');
+const Toolbar = require('dom_components/model/Toolbar');
+const key = require('keymaster');
+const Backbone = require('backbone');
 let showOffsets;
 const $ = Backbone.$;
 

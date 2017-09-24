@@ -57,7 +57,7 @@ module.exports = Input.extend({
       const self = this;
       var model = this.model;
 
-      var colorEl = $('<div>', {class: this.colorCls});
+      var colorEl = $(`<div class="${this.colorCls}">`);
       var cpStyle = colorEl.get(0).style;
       var elToAppend = this.target && this.target.config ? this.target.config.el : '';
 

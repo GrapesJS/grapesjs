@@ -26,7 +26,7 @@ module.exports = PropertyView.extend({
 
     if (props.length) {
       if (!this.$input) {
-        this.$input = $('<input>', {value: 0, type: 'hidden' });
+        this.$input = $('<input type="hidden" value="0">');
         this.input = this.$input.get(0);
       }
 

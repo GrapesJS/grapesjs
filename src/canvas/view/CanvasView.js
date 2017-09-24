@@ -326,7 +326,7 @@ module.exports = Backbone.View.extend({
    */
   getJsContainer() {
     if (!this.jsContainer) {
-      this.jsContainer = $('<div>', {class: this.ppfx + 'js-cont'}).get(0);
+      this.jsContainer = $(`<div class="${this.ppfx}js-cont">`).get(0);
     }
     return this.jsContainer;
   },

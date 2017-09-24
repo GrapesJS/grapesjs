@@ -36,7 +36,8 @@ module.exports = PropertyView.extend({
 
   onRender() {
     if (!this.$input) {
-      this.$input = $('<input>', {placeholder: this.model.getDefaultValue(), type: 'text' });
+      const plh = this.model.getDefaultValue();
+      this.$input = $(`<input placeholder="${plh}">`);
     }
 
     if (!this.$preview) {

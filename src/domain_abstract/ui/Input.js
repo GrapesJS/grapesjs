@@ -58,11 +58,9 @@ module.exports = Backbone.View.extend({
    */
   getInputEl() {
     if(!this.inputEl) {
-      this.inputEl = $('<input>', {
-        type: 'text',
-        class: this.inputCls,
-        placeholder: this.model.get('defaults')
-      });
+      const plh = this.model.get('defaults');
+      const cls = this.inputCls;
+      this.inputEl = $(`<input type="text" class="${cls}" placeholder="${plh}">`);
     }
     return this.inputEl.get(0);
   },

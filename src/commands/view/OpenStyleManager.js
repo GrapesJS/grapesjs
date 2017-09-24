@@ -27,12 +27,9 @@ module.exports = {
 
       this.$cn2.append(em.StyleManager.render());
       var smConfig = em.StyleManager.getConfig();
+      const pfx = smConfig.stylePrefix;
       // Create header
-      this.$header  = $('<div>', {
-        class: smConfig.stylePrefix + 'header',
-        text: smConfig.textNoElement,
-      });
-      //this.$cn = this.$cn.add(this.$header);
+      this.$header  = $(`<div class="${pfx}header">${smConfig.textNoElement}</div>`);
       this.$cn.append(this.$header);
 
       // Create panel if not exists
