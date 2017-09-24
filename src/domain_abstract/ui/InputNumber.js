@@ -1,4 +1,7 @@
-var Backbone = require('backbone');
+import {on, off} from 'utils/mixins'
+
+const Backbone = require('backbone');
+const $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
 
@@ -18,16 +21,15 @@ module.exports = Backbone.View.extend({
     var ppfx = opt.ppfx || '';
     var contClass = opt.contClass || (`${ppfx}field ${ppfx}field-integer`);
     this.ppfx = ppfx;
-    this.docEl = $(document);
+    this.doc = document;
     this.inputCls = ppfx + 'field-number';
     this.unitCls = ppfx + 'input-unit';
     this.contClass = contClass;
-    this.events['click .' + ppfx + 'field-arrow-u'] = 'upArrowClick';
-    this.events['click .' + ppfx + 'field-arrow-d'] = 'downArrowClick';
-    this.events['mousedown .' + ppfx + 'field-arrows'] = 'downIncrement';
-    this.events['change .' + this.inputCls] = 'handleChange';
-    this.events['change .' + this.unitCls] = 'handleUnitChange';
-
+    this.events[`click .${ppfx}field-arrow-u`] = 'upArrowClick';
+    this.events[`click .${ppfx}field-arrow-d`] = 'downArrowClick';
+    this.events[`mousedown .${ppfx}field-arrows`] = 'downIncrement';
+    this.events[`change .${this.inputCls}`] = 'handleChange';
+    this.events[`change .${this.unitCls}`] = 'handleUnitChange';
     this.listenTo(this.model, 'change:unit change:value', this.handleModelChange);
     this.delegateEvents();
   },
@@ -136,7 +138,6 @@ module.exports = Backbone.View.extend({
     const model = this.model;
     const step = model.get('step');
     let value  = model.get('value');
-    //value = isNaN(value) ? 1 * step : parseFloat(value);
     value = this.normalizeValue(value + step);
     var valid = this.validateInputValue(value);
     model.set('value', valid.value);
@@ -167,9 +168,9 @@ module.exports = Backbone.View.extend({
     this.moved = 0;
     var value = this.model.get('value');
     value = this.normalizeValue(value);
-    var current = {y: e.pageY, val: value};
-    this.docEl.mouseup(current, this.upIncrement);
-    this.docEl.mousemove(current, this.moveIncrement);
+    this.current = {y: e.pageY, val: value};
+    on(this.doc, 'mousemove', this.moveIncrement);
+    on(this.doc, 'mouseup', this.upIncrement);
   },
 
   /** While the increment is clicked, moving the mouse will update input value
@@ -181,7 +182,8 @@ module.exports = Backbone.View.extend({
     this.moved = 1;
     const model = this.model;
     const step = model.get('step');
-    var pos = this.normalizeValue(ev.data.val + (ev.data.y - ev.pageY) * step);
+    const data = this.current;
+    var pos = this.normalizeValue(data.val + (data.y - ev.pageY) * step);
     this.prValue = this.validateInputValue(pos).value;
     model.set('value', this.prValue, {avoidStore: 1});
     return false;
@@ -189,15 +191,12 @@ module.exports = Backbone.View.extend({
 
   /**
    * Stop moveIncrement method
-   * @param Object
-   *
-   * @return void
    * */
-  upIncrement(e) {
+  upIncrement() {
     const model = this.model;
     const step = model.get('step');
-    this.docEl.off('mouseup', this.upIncrement);
-    this.docEl.off('mousemove', this.moveIncrement);
+    off(this.doc, 'mouseup', this.upIncrement);
+    off(this.doc, 'mousemove', this.moveIncrement);
 
     if(this.prValue && this.moved) {
       var value = this.prValue - step;
