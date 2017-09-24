@@ -1,6 +1,7 @@
 var Backbone = require('backbone');
 var Input = require('./Input');
 var Spectrum = require('spectrum-colorpicker');
+const $ = Backbone.$;
 
 module.exports = Input.extend({
 
@@ -55,6 +56,7 @@ module.exports = Input.extend({
     if (!this.colorEl) {
       const self = this;
       var model = this.model;
+
       var colorEl = $('<div>', {class: this.colorCls});
       var cpStyle = colorEl.get(0).style;
       var elToAppend = this.target && this.target.config ? this.target.config.el : '';

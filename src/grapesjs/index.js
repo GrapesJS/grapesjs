@@ -4,8 +4,11 @@ module.exports = (() => {
   const defaultConfig = require('./config/config');
   const Editor = require('editor');
   const PluginManager = require('plugin_manager');
+  const cash = require('cash-dom');
   const plugins = new PluginManager();
   const editors = [];
+
+  require('utils/cashAdds')(cash);
 
   return {
 
@@ -36,10 +39,12 @@ module.exports = (() => {
      */
     init(config = {}) {
       const els = config.container;
+      let $ = $ || '';
 
       // Make a missing $ more verbose
-      if (isUndefined($)) {
-        throw 'jQuery not found';
+      if (!$) {
+        $ = cash;
+        window.$ = $;
       }
 
       if (!els) {

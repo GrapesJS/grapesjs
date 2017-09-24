@@ -18,10 +18,10 @@ require('block_manager'),
 require('trait_manager'),
 ];
 
-var Backbone = require('backbone');
-var UndoManager = require('backbone-undo');
-var key = require('keymaster');
-var timedInterval;
+const Backbone = require('backbone');
+const UndoManager = require('backbone-undo');
+const key = require('keymaster');
+let timedInterval;
 
 if (!Backbone.$) {
   Backbone.$ = $;
