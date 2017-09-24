@@ -1,4 +1,4 @@
-import { isUndefined, defaults } from 'underscore';
+import { defaults } from 'underscore';
 
 module.exports = (() => {
   const cash = require('cash-dom');

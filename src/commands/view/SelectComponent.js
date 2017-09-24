@@ -142,7 +142,6 @@ module.exports = {
    * @private
    */
   onHover(e) {
-    const model = $(e.target).data('model');
     e.stopPropagation();
     var trg = e.target;
 
