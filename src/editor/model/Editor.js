@@ -25,6 +25,15 @@ const UndoManager = require('backbone-undo');
 const key = require('keymaster');
 let timedInterval;
 
+const cash = require('cash-dom');
+require('utils/cashAdds')(cash);
+let $ = $ || '';
+
+if (!$) {
+  $ = cash;
+  window.$ = $;
+}
+
 if (!Backbone.$) {
   Backbone.$ = $;
 }

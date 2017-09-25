@@ -1,9 +1,6 @@
 import { defaults } from 'underscore';
 
 module.exports = (() => {
-  const cash = require('cash-dom');
-  require('utils/cashAdds')(cash);
-
   const defaultConfig = require('./config/config');
   const Editor = require('editor');
   const PluginManager = require('plugin_manager');
@@ -39,13 +36,6 @@ module.exports = (() => {
      */
     init(config = {}) {
       const els = config.container;
-      let $ = $ || '';
-
-      // Make a missing $ more verbose
-      if (!$) {
-        $ = cash;
-        window.$ = $;
-      }
 
       if (!els) {
         throw new Error("'container' is required");
