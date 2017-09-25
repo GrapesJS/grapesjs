@@ -46,8 +46,11 @@
  * * `asset:upload:response` - On upload response, passes the result as an argument
  * * `styleManager:change` - Triggered on style property change from new selected component, the view of the property is passed as an argument to the callback
  * * `styleManager:change:{propertyName}` - As above but for a specific style property
+ * * `storage:start` - Before the storage request is started
  * * `storage:load` - Triggered when something was loaded from the storage, loaded object passed as an argumnet
  * * `storage:store` - Triggered when something is stored to the storage, stored object passed as an argumnet
+ * * `storage:end` - After the storage request is ended
+ * * `storage:error` - On any error on storage request, passes the error as an argument
  * * `selector:add` - Triggers when a new selector/class is created
  * * `canvasScroll` - Triggered when the canvas is scrolled
  * * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))

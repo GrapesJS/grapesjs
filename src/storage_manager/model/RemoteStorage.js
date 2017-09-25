@@ -1,6 +1,7 @@
-var Backbone = require('backbone');
+import fetch from 'utils/fetch';
+import { isUndefined } from 'underscore';
 
-module.exports = Backbone.Model.extend({
+module.exports = require('backbone').Model.extend({
 
   defaults: {
     urlStore: '',
@@ -12,67 +13,110 @@ module.exports = Backbone.Model.extend({
   },
 
   /**
+   * Triggered before the request is started
    * @private
    */
-  store(data, clb) {
-    var fd = {},
-    params = this.get('params');
-
-    for(var k in data)
-      fd[k] = data[k];
-
-    for(var key in params)
-      fd[key] = params[key];
-
-    let req = $.ajax({
-      url: this.get('urlStore'),
-      beforeSend: this.get('beforeSend'),
-      complete: this.get('onComplete'),
-      method: 'POST',
-      dataType: 'json',
-      contentType: this.get('contentTypeJson') ? 'application/json; charset=utf-8': 'x-www-form-urlencoded',
-      data: this.get('contentTypeJson') ? JSON.stringify(fd): fd,
-    });
-
-    // Assign always callback when possible
-    req && req.always && req.always(() => {
-      if (typeof clb == 'function') {
-        clb();
-      }
-    });
+  onStart() {
+    const em = this.get('em');
+    const before = this.get('beforeSend');
+    before && before();
+    em && em.trigger('storage:start');
   },
 
   /**
+   * Triggered on request error
+   * @param  {Object} err Error
    * @private
    */
+  onError(err) {
+    const em = this.get('em');
+    console.error(err);
+    em && em.trigger('storage:error', err);
+    this.onEnd(err);
+  },
+
+  /**
+   * Triggered after the request is ended
+   * @param  {Object|string} res End result
+   * @private
+   */
+  onEnd(res) {
+    const em = this.get('em');
+    em && em.trigger('storage:end', res);
+  },
+
+  /**
+   * Triggered on request response
+   * @param  {string} text Response text
+   * @private
+   */
+  onResponse(text, clb) {
+    const em = this.get('em');
+    const complete = this.get('onComplete');
+    const typeJson = this.get('contentTypeJson');
+    const res = typeJson && typeof text === 'text' ? JSON.parse(text): text;
+    complete && complete(res);
+    clb && clb(res);
+    em && em.trigger('storage:response', res);
+    this.onEnd(text);
+  },
+
+  store(data, clb) {
+    const body = new FormData();
+
+    for (let key in data) {
+      body.append(key, data[key]);
+    }
+
+    this.request(this.get('urlStore'), {body}, clb);
+  },
+
   load(keys, clb) {
-    var result = {},
-    fd = {},
-    params = this.get('params');
+    const body = new FormData();
+    body.append('keys', keys);
+    this.request(this.get('urlLoad'), {body}, clb);
+  },
 
-    for(var key in params)
-      fd[key] = params[key];
+  /**
+   * Execute remote request
+   * @param  {string} url Url
+   * @param  {Object} [opts={}] Options
+   * @param  {[type]} [clb=null] Callback
+   * @private
+   */
+  request(url, opts = {}, clb = null) {
+    const typeJson = this.get('contentTypeJson');
+    const headers = this.get('headers');
+    const params = this.get('params');
+    const reqHead = 'X-Requested-With';
+    const typeHead = 'Content-Type';
+    const body = opts.body;
 
-    fd.keys = keys;
+    for (let param in params) {
+      body.append(param, params[param]);
+    }
 
-    let req = $.ajax({
-      url: this.get('urlLoad'),
-      beforeSend: this.get('beforeSend'),
-      complete: this.get('onComplete'),
-      data: fd,
-      async: false,
-      method: 'GET',
-    }).done(d => {
-      result = d;
-    });
+    if (isUndefined(headers[reqHead])) {
+      headers[reqHead] = 'XMLHttpRequest';
+    }
 
-    // Assign always callback when possible
-    req && req.always && req.always((res) => {
-      if (typeof clb == 'function') {
-        clb(res);
-      }
-    });
-    return result;
+    if (isUndefined(headers[typeHead])) {
+      headers[typeHead] = typeJson ?
+        'application/json; charset=utf-8' : 'x-www-form-urlencoded';
+    }
+
+    this.onStart();
+    fetch(url, {
+      method: opts.method || 'post',
+      credentials: 'include',
+      headers,
+      body,
+    }).then(res => (res.status/200|0) == 1 ?
+      res.text() : res.text().then((text) =>
+        Promise.reject(text)
+      ))
+    .then((text) => this.onResponse(text, clb))
+    .catch(err => this.onError(err));
   },
 
 });
