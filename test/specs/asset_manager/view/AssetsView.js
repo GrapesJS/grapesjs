@@ -8,31 +8,24 @@ module.exports = {
     describe('AssetsView', () => {
 
       var obj;
-
-      before(function () {
-        this.$fixtures   = $("#fixtures");
-        this.$fixture   = $('<div class="assets-fixture"></div>');
-      });
+      var coll;
 
       beforeEach(function () {
-        this.coll = new Assets([]);
-        this.view = new AssetsView({
+        coll = new Assets([]);
+        obj = new AssetsView({
           config: {},
-          collection: this.coll,
+          collection: coll,
           globalCollection: new Assets([]),
           fu: new FileUploader({})
         });
-        obj = this.view;
-        this.$fixture.empty().appendTo(this.$fixtures);
-        this.$fixture.html(this.view.render().el);
+        obj = obj;
+        document.body.innerHTML = '<div id="fixtures"></div>';
+        obj.render();
+        document.body.querySelector('#fixtures').appendChild(obj.el);
       });
 
       afterEach(function () {
-        this.view.collection.reset();
-      });
-
-      after(function () {
-        this.$fixture.remove();
+        obj.collection.reset();
       });
 
       it('Object exists', () => {
@@ -40,38 +33,38 @@ module.exports = {
       });
 
       it("Collection is empty", function (){
-        expect(this.view.getAssetsEl().innerHTML).toNotExist();
+        expect(obj.getAssetsEl().innerHTML).toNotExist();
       });
 
       it("Add new asset", function (){
-        sinon.stub(this.view, "addAsset");
-        this.coll.add({src: 'test'});
-        expect(this.view.addAsset.calledOnce).toEqual(true);
+        sinon.stub(obj, "addAsset");
+        coll.add({src: 'test'});
+        expect(obj.addAsset.calledOnce).toEqual(true);
       });
 
       it("Render new asset", function (){
-        this.coll.add({src: 'test'});
-        expect(this.view.getAssetsEl().innerHTML).toExist();
+        coll.add({src: 'test'});
+        expect(obj.getAssetsEl().innerHTML).toExist();
       });
 
       it("Render correctly new image asset", function (){
-        this.coll.add({ type: 'image', src: 'test'});
-        var asset = this.view.getAssetsEl().firstChild;
+        coll.add({ type: 'image', src: 'test'});
+        var asset = obj.getAssetsEl().firstChild;
         expect(asset.tagName).toEqual('DIV');
         expect(asset.innerHTML).toExist();
       });
 
       it("Clean collection from asset", function (){
-        var model = this.coll.add({src: 'test'});
-        this.coll.remove(model);
-        expect(this.view.getAssetsEl().innerHTML).toNotExist();
+        var model = coll.add({src: 'test'});
+        coll.remove(model);
+        expect(obj.getAssetsEl().innerHTML).toNotExist();
       });
 
       it("Deselect works", function (){
-        this.coll.add([{},{}]);
-        var $asset = this.view.$el.children().first();
-        $asset.attr('class', this.view.pfx + 'highlight');
-        this.coll.trigger('deselectAll');
+        coll.add([{},{}]);
+        var $asset = obj.$el.children().first();
+        $asset.attr('class', obj.pfx + 'highlight');
+        coll.trigger('deselectAll');
         expect($asset.attr('class')).toNotExist();
       });
 
