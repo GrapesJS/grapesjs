@@ -372,8 +372,11 @@ module.exports = Backbone.View.extend({
     this.offsetEl = el.querySelector(`.${ppfx}offset-v`);
     this.fixedOffsetEl = el.querySelector(`.${ppfx}offset-fixed-v`);
 
-    if(rte)
-      toolsEl.appendChild(rte.render());
+    if (rte) {
+      const rteEl = rte.render();
+      rteEl.style.pointerEvents = 'all';
+      toolsEl.appendChild(rteEl);
+    }
 
     this.toolsEl = toolsEl;
     this.el.className = this.className;

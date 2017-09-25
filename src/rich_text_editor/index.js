@@ -27,6 +27,7 @@ module.exports = () => {
   rte = require('./view/TextEditorView'),
   CommandButtons = require('./model/CommandButtons'),
   CommandButtonsView = require('./view/CommandButtonsView');
+  const $ = require('backbone').$;
   var tlbPfx, toolbar, commands;
   var mainSelf;
 

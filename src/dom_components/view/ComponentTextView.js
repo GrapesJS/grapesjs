@@ -1,5 +1,6 @@
-var Backbone = require('backbone');
-var ComponentView = require('./ComponentView');
+import {on, off} from 'utils/mixins'
+
+const ComponentView = require('./ComponentView');
 
 module.exports = ComponentView.extend({
 
@@ -100,11 +101,12 @@ module.exports = ComponentView.extend({
    */
   toggleEvents(enable) {
     var method = enable ? 'on' : 'off';
+    const mixins = {on, off};
 
     // The ownerDocument is from the frame
-    var elDocs = [this.el.ownerDocument, document, this.rte];
-    $(elDocs).off('mousedown', this.disableEditing);
-    $(elDocs)[method]('mousedown', this.disableEditing);
+    var elDocs = [this.el.ownerDocument, document];
+    mixins.off(elDocs, 'mousedown', this.disableEditing);
+    mixins[method](elDocs, 'mousedown', this.disableEditing);
 
     // Avoid closing edit mode on component click
     this.$el.off('mousedown', this.disablePropagation);
