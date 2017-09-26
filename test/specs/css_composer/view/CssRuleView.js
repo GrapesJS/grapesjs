@@ -3,7 +3,7 @@ var CssRule = require('css_composer/model/CssRule');
 
 module.exports = {
   run() {
-      describe.only('CssRuleView', () => {
+      describe('CssRuleView', () => {
 
         let obj;
         let fixtures;
