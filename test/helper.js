@@ -7,7 +7,6 @@ import { JSDOM } from 'jsdom';
 
 const dom = new JSDOM('<!doctype html><html><body></body></html>');
 const window = dom.window;
-//const $ = jquery(window);
 
 // Fix for the spectrum lib
 var Module = require('module');
@@ -15,6 +14,7 @@ var originalRequire = Module.prototype.require;
 
 Module.prototype.require = function(name) {
   if (name == 'jquery') {
+    console.log('REQUIRE jquery', Backbone.$);
     return Backbone.$;
   }
   return originalRequire.apply(this, arguments);
@@ -50,6 +50,7 @@ grapesjs.init({container: 'body',autorender: 0, storageManager: {
   autoload: 0,
   type:'none'
 },});
+
 window.$ = Backbone.$;
 
 Object.keys(window).forEach((key) => {

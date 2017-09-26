@@ -30,9 +30,6 @@ module.exports = {
   plugins: plugins,
   module: {
     loaders: [{
-        test: /backbone\.js$/,
-        use: ['imports-loader?define=>false']
-      },{
         test: /grapesjs\/index\.js$/,
         loader: 'string-replace-loader',
         query: {
@@ -48,5 +45,8 @@ module.exports = {
   },
   resolve: {
     modules: ['src', 'node_modules'],
+    alias: {
+      jquery: 'cash-dom'
+    }
   },
 }

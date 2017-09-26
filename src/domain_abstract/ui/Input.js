@@ -1,12 +1,10 @@
-var Backbone = require('backbone');
+const $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
 
   events: {
     'change': 'handleChange',
   },
-
-  template: _.template(`<span class='<%= holderClass %>'></span>`),
 
   initialize(opts) {
     var opt = opts || {};
@@ -66,13 +64,12 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    var el = this.$el;
+    const el = this.$el;
+    const ppfx = this.ppfx;
+    const holderClass = `${ppfx}input-holder`;
     el.addClass(this.inputClass);
-    el.html(this.template({
-      holderClass: this.inputHolderClass,
-      ppfx: this.ppfx
-    }));
-    el.find('.'+ this.inputHolderClass).html(this.getInputEl());
+    el.html(`<span class="${holderClass}"></span>`);
+    el.find(`.${holderClass}`).append(this.getInputEl());
     return this;
   }
 

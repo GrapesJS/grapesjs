@@ -1,5 +1,5 @@
-const Backbone = require('backbone');
 const FrameView = require('./FrameView');
+const $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
 

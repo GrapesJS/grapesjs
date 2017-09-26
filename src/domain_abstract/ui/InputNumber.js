@@ -102,7 +102,7 @@ module.exports = Backbone.View.extend({
    * @return {HTMLElement}
    */
   getInputEl() {
-    if(!this.inputEl) {
+    if (!this.inputEl) {
       const cls = this.inputCls;
       const plh = this.model.get('defaults');
       this.inputEl = $(`<input type="text" class="${cls}" placeholder="${plh}">`);
@@ -277,11 +277,12 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    var ppfx = this.ppfx;
-    this.$el.html(this.template({ppfx}));
-    this.$el.find('.'+ ppfx +'input-holder').html(this.getInputEl());
-    this.$el.find('.' + ppfx + 'field-units').html(this.getUnitEl());
-    this.$el.addClass(this.contClass);
+    const ppfx = this.ppfx;
+    const el = this.$el;
+    el.html(this.template({ppfx}));
+    el.find(`.${ppfx}input-holder`).append(this.getInputEl());
+    el.find(`.${ppfx}field-units`).html(this.getUnitEl());
+    el.addClass(this.contClass);
     return this;
   }
 

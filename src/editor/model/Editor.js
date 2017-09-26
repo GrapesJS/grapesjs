@@ -25,18 +25,17 @@ const UndoManager = require('backbone-undo');
 const key = require('keymaster');
 let timedInterval;
 
-const cash = require('cash-dom');
-require('utils/cashAdds')(cash);
-let $ = $ || '';
+require('utils/cashAdds')(Backbone.$);
 
+/*
 if (!$) {
   $ = cash;
   window.$ = $;
 }
-
+console.log(Backbone.$);
 if (!Backbone.$) {
   Backbone.$ = $;
-}
+}*/
 
 module.exports = Backbone.Model.extend({
 

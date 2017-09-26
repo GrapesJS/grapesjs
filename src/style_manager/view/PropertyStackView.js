@@ -1,4 +1,3 @@
-var Backbone = require('backbone');
 var PropertyCompositeView = require('./PropertyCompositeView');
 var Layers = require('./../model/Layers');
 var LayersView = require('./LayersView');
