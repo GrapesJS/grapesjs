@@ -80,6 +80,9 @@ describe('SelectorManager', () => {
   Models.run();
   ClassTagView.run();
   ClassTagsView.run();
-  e2e.run();
+
+  describe.skip('E2E', () => {
+    e2e.run();
+  });
 
 });

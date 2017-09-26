@@ -2,7 +2,7 @@ const PluginManager = require('plugin_manager');
 
 describe('GrapesJS', () => {
 
-  describe('Main', () => {
+  describe.skip('Main', () => {
 
     var obj;
     var fixtures;
@@ -26,7 +26,6 @@ describe('GrapesJS', () => {
 
     before(() => {
       editorName = 'editor-fixture';
-      fixtures = $("#fixtures");
     });
 
     beforeEach(() => {
@@ -41,14 +40,16 @@ describe('GrapesJS', () => {
         },
       }
       obj = grapesjs;
-      fixture = $('<div id="' + editorName + '"></div>');
-      fixture.empty().appendTo(fixtures);
+      //fixture = $('<div id="' + editorName + '"></div>');
+      //fixture.empty().appendTo(fixtures);
+
+      document.body.innerHTML = `<div id="fixtures"><div id="${editorName}"></div></div>`;
+      fixtures = document.body.querySelector('#fixtures');
     });
 
     afterEach(() => {
       config = {};
       obj = null;
-      fixture.remove();
     });
 
     it('Main object should be loaded', () => {
@@ -59,7 +60,7 @@ describe('GrapesJS', () => {
       var editor = obj.init(config);
       expect(editor).toExist();
     });
-    
+
     it('Init new editor with node for container', () => {
       var configAlt = {
         container: document.createElement('div'),
@@ -101,7 +102,7 @@ describe('GrapesJS', () => {
 
     it.skip('Init editor from element', () => {
       config.fromElement = 1;
-      fixture.html(documentEl);
+      fixtures.innerHTML = documentEl;
       var editor = obj.init(config);
       var html = editor.getHtml();
       var css = editor.getCss();

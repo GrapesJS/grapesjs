@@ -46,7 +46,10 @@ global.navigator = {
 };
 
 // Need this to trigger the cash generation
-grapesjs.init({container: 'body', autorender: 0});
+grapesjs.init({container: 'body',autorender: 0, storageManager: {
+  autoload: 0,
+  type:'none'
+},});
 window.$ = Backbone.$;
 
 Object.keys(window).forEach((key) => {
