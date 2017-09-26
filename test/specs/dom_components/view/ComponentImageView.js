@@ -6,31 +6,20 @@ module.exports = {
 
       describe('ComponentImageView', () => {
 
-        var $fixtures;
-        var $fixture;
         var model;
         var view;
-
-        before(() => {
-          $fixtures = $("#fixtures");
-          $fixture = $('<div class="components-fixture"></div>');
-        });
 
         beforeEach(() => {
           model = new Component();
           view = new ComponentImageView({
             model
           });
-          $fixture.empty().appendTo($fixtures);
-          $fixture.html(view.render().el);
+          document.body.innerHTML = '<div id="fixtures"></div>';
+          document.body.querySelector('#fixtures').appendChild(view.render().el);
         });
 
         afterEach(() => {
           view.remove();
-        });
-
-        after(() => {
-          $fixture.remove();
         });
 
         it('Component empty', () => {
