@@ -6,12 +6,17 @@ module.exports = Backbone.View.extend({
     'change': 'handleChange',
   },
 
-  initialize(opts) {
-    var opt = opts || {};
-    var ppfx = opt.ppfx || '';
-    this.target = opt.target || {};
+  template() {
+    const holderClass = this.holderClass;
+    return `<span class="${holderClass}"></span>`;
+  },
+
+  initialize(opts = {}) {
+    const ppfx = opts.ppfx || '';
+    this.target = opts.target || {};
     this.inputClass = ppfx + 'field';
     this.inputHolderClass = ppfx + 'input-holder';
+    this.holderClass = `${ppfx}input-holder`;
     this.ppfx = ppfx;
     this.listenTo(this.model, 'change:value', this.handleModelChange);
   },
@@ -66,9 +71,9 @@ module.exports = Backbone.View.extend({
   render() {
     const el = this.$el;
     const ppfx = this.ppfx;
-    const holderClass = `${ppfx}input-holder`;
+    const holderClass = this.holderClass;
     el.addClass(this.inputClass);
-    el.html(`<span class="${holderClass}"></span>`);
+    el.html(this.template());
     el.find(`.${holderClass}`).append(this.getInputEl());
     return this;
   }
