@@ -2,6 +2,7 @@ module.exports = ({$, Backbone}) => {
   if (Backbone) {
     const ViewProt = Backbone.View.prototype;
     const eventNsMap = {};
+    ViewProt.eventNsMap = eventNsMap;
 
     ViewProt.delegate = function(eventName, selector, listener) {
       const vid = '.delegateEvents' + this.cid;
@@ -26,7 +27,7 @@ module.exports = ({$, Backbone}) => {
 
         if (eventMap) {
           eventMap.forEach(({eventName, selector, listener}) => {
-            this.$el.off(eventName, selector, listener);
+            this.$el.off(eventName);
           });
         }
       }
@@ -41,7 +42,7 @@ module.exports = ({$, Backbone}) => {
       if (eventMap) {
         eventMap.forEach(({eventName, selector, listener}) => {
           if (eventName == ev && selector == sel) {
-            this.$el.off(eventName, selector, listener);
+            this.$el.off(eventName);
           }
         });
       }

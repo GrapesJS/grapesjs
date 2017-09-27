@@ -48,7 +48,7 @@ module.exports = PropertyView.extend({
         var PropertiesView = require('./PropertiesView');
         var propsView = new PropertiesView(this.getPropsConfig());
         this.$props = propsView.render().$el;
-        this.$el.find('#'+ this.pfx +'input-holder').html(this.$props);
+        this.$el.find(`#${this.pfx}input-holder`).append(this.$props);
       }
     }
   },

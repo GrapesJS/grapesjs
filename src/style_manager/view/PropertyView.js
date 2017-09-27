@@ -50,7 +50,7 @@ module.exports = Backbone.View.extend({
     this.customValue  = o.customValue  || {};
     const model = this.model;
     this.property = model.get('property');
-    this.input = this.$input = null;
+    this.input = null;
     const pfx = this.pfx;
     this.inputHolderId = '#' + pfx + 'input-holder';
     this.sector = model.collection && model.collection.sector;

@@ -125,10 +125,12 @@ module.exports = Backbone.View.extend({
           unitStr += '<option ' + selected + ' >' + unit + '</option>';
         });
         unitStr += '</select>';
-        this.unitEl = $(unitStr);
+        const temp = document.createElement('div');
+        temp.innerHTML = unitStr;
+        this.unitEl = temp.firstChild;
       }
     }
-    return this.unitEl && this.unitEl.get(0);
+    return this.unitEl;
   },
 
   /**
@@ -281,7 +283,8 @@ module.exports = Backbone.View.extend({
     const el = this.$el;
     el.html(this.template({ppfx}));
     el.find(`.${ppfx}input-holder`).append(this.getInputEl());
-    el.find(`.${ppfx}field-units`).html(this.getUnitEl());
+    const unit = this.getUnitEl();
+    unit && el.find(`.${ppfx}field-units`).get(0).appendChild(unit);
     el.addClass(this.contClass);
     return this;
   }
