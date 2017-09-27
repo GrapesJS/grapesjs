@@ -53,6 +53,151 @@ module.exports = ({$, Backbone}) => {
 
   if ($) {
     const fn = $.fn;
+
+    const splitNamespace = function(name) {
+      const namespaceArray = name.split('.')
+      return ( name.indexOf('.') !== 0 ? [namespaceArray[0], namespaceArray.slice(1)] : [null, namespaceArray] );
+    }
+    /*
+    const CashEvent = function(node, eventName, namespaces, delegate, originalCallback, runOnce) {
+
+      const eventCache = getData(node,'_cashEvents') || setData(node, '_cashEvents', {});
+      const remove = function(c, namespace){
+        if ( c && originalCallback !== c ) { return; }
+        if ( namespace && this.namespaces.indexOf(namespace) < 0 ) { return; }
+        node.removeEventListener(eventName, callback);
+      };
+      const callback = function(e) {
+        var t = this;
+        if (delegate) {
+          t = e.target;
+
+          while (t && !matches(t, delegate)) {
+            if (t === this) {
+              return (t = false);
+            }
+            t = t.parentNode;
+          }
+        }
+
+        if (t) {
+          originalCallback.call(t, e, e.data);
+          if ( runOnce ) { remove(); }
+        }
+
+      };
+
+      this.remove = remove;
+      this.namespaces = namespaces;
+
+      node.addEventListener(eventName, callback);
+
+      eventCache[eventName] = eventCache[eventName] || [];
+      eventCache[eventName].push(this);
+
+      return this;
+    }
+    */
+
+    const on = $.prototype.on;
+    const off = $.prototype.off;
+    const trigger = $.prototype.trigger;
+    const offset = $.prototype.offset;
+    const getEvents = (eventName) => eventName.split(/[,\s]+/g);
+    const getNamespaces = (eventName) => eventName.split('.');
+
+    fn.on = function(eventName, delegate, callback, runOnce) {
+
+      if (typeof eventName == 'string') {
+        const events = getEvents(eventName);
+
+        if (events.length == 1) {
+          eventName = events[0];
+          let namespaces = getNamespaces(eventName);
+
+          if (eventName.indexOf('.') !== 0) {
+            eventName = namespaces[0];
+          }
+
+          namespaces = namespaces.slice(1);
+
+          if (namespaces.length) {
+            console.log('Found event with namespaces', namespaces, eventName, delegate, this);
+            const cashNs = this.data('_cashNs') || [];
+            this.data('_cashNs', namespaces); // for each ns need to store '.store' => eventName, delegate, callback
+          }
+
+          return on.call(this, eventName, delegate, callback, runOnce);
+        } else {
+          events.forEach((eventName) =>
+            this.on(eventName, delegate, callback, runOnce));
+          return this;
+        }
+      } else {
+        return on.call(this, eventName, delegate, callback, runOnce)
+      }
+    }
+
+    fn.off = function(eventName, callback) {
+      if (typeof eventName == 'string') {
+        const events = getEvents(eventName);
+
+        if (events.length == 1) {
+          eventName = events[0];
+          let namespaces = getNamespaces(eventName);
+
+          if (eventName.indexOf('.') !== 0) {
+            eventName = namespaces[0];
+          }
+
+          namespaces = namespaces.slice(1);
+
+          if (namespaces.length) {
+            // Have to off only with the same namespace
+          }
+
+          return off.call(this, eventName, callback);
+        } else {
+          events.forEach((eventName) => this.off(eventName, callback));
+          return this;
+        }
+      } else {
+        return off.call(this, eventName, callback);
+      }
+    }
+
+    fn.trigger = function(eventName, data) {
+      if (eventName instanceof $.Event) {
+        return this.trigger(eventName.type, data);
+      }
+
+      if (typeof eventName == 'string') {
+        const events = getEvents(eventName);
+
+        if (events.length == 1) {
+          eventName = events[0];
+          let namespaces = getNamespaces(eventName);
+
+          if (eventName.indexOf('.') !== 0) {
+            eventName = namespaces[0];
+          }
+
+          namespaces = namespaces.slice(1);
+
+          if (namespaces.length) {
+            // have to trigger with same namespaces and eventName
+          }
+
+          return trigger.call(this, eventName, data);
+        } else {
+          events.forEach((eventName) => this.trigger(eventName, data));
+          return this;
+        }
+      } else {
+        return trigger.call(this, eventName, data);
+      }
+    }
+
     fn.hide = function() {
       return this.css('display', 'none');
     }
@@ -70,6 +215,10 @@ module.exports = ({$, Backbone}) => {
     // For spectrum compatibility
     fn.bind = function(ev, h) {
       return this.on(ev, h);
+    }
+
+    fn.unbind = function(ev, h) {
+      return this.off(ev, h);
     }
 
     fn.click = function(h) {
@@ -95,6 +244,32 @@ module.exports = ({$, Backbone}) => {
       });
     }
 
+    fn.scrollLeft = function() {
+      return this.get(0).scrollLeft;
+    }
+
+    fn.scrollTop = function() {
+      return this.get(0).scrollTop;
+    }
+
+    fn.offset = function(coords) {
+      let top, left;
+
+      if (coords) {
+        top = coords.top;
+        left = coords.left;
+      }
+
+      if (typeof top != 'undefined') {
+        this.css('top', `${top}px`);
+      }
+      if (typeof left != 'undefined') {
+        this.css('left', `${left}px`);
+      }
+
+      return offset.call(this);
+    };
+
     $.map = function(items, clb) {
       const ar = [];
 
@@ -107,6 +282,15 @@ module.exports = ({$, Backbone}) => {
 
     $.inArray = function(val, arr) {
       return arr.indexOf(val);
+    }
+
+    $.Event = function(src, props) {
+      if (!(this instanceof $.Event) ) {
+        return new $.Event(src, props);
+      }
+
+      this.type = src;
+      this.isDefaultPrevented = () => false;
     }
   }
 }
