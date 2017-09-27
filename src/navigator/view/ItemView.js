@@ -48,7 +48,7 @@ module.exports = Backbone.View.extend({
     this.caretCls = this.ppfx + 'nav-item-caret';
     this.titleCls = this.pfx + 'title';
     this.events = {};
-    this.events['click > #'+this.pfx+'btn-eye'] = 'toggleVisibility';
+    this.events['click #'+this.pfx+'btn-eye'] = 'toggleVisibility';
     this.events['click .' + this.caretCls] = 'toggleOpening';
     this.events['click .' + this.titleCls] = 'handleSelect';
     this.events['click .' + this.editBtnCls] = 'handleEdit';
@@ -58,7 +58,7 @@ module.exports = Backbone.View.extend({
     this.$el.data('collection', this.model.get('components'));
 
     if(o.config.sortable)
-      this.events['mousedown > #'+this.pfx+'move']	= 'startSort';
+      this.events['mousedown  #'+this.pfx+'move']	= 'startSort';
 
     this.delegateEvents();
   },
@@ -183,8 +183,11 @@ module.exports = Backbone.View.extend({
    * @return 	void
    * */
   toggleVisibility(e) {
+    e.stopPropagation();
+    const pfx = this.pfx;
+
     if(!this.$eye)
-      this.$eye = this.$el.find('> #'+this.pfx+'btn-eye');
+      this.$eye = this.$el.children(`#${pfx}btn-eye`);
 
     var cCss = _.clone(this.model.get('style')),
     hClass = this.pfx + 'hide';
@@ -219,18 +222,23 @@ module.exports = Backbone.View.extend({
    * @return void
    * */
   checkChildren() {
-    var c = this.countChildren(this.model),
-    pfx = this.pfx,
-    tC = '> .' + pfx + 'title-c > .' + pfx + 'title';
-    if(!this.$counter)
-      this.$counter	= this.$el.find('> #' + pfx + 'counter');
-    if(c){
-      this.$el.find(tC).removeClass(pfx + 'no-chld');
+    const model = this.model;
+    const c = this.countChildren(model);
+    const pfx = this.pfx;
+    const noChildCls = `${pfx}no-chld`;
+    const title = this.$el.children(`.${pfx}title-c`).children(`.${pfx}title`);
+    //tC = `> .${pfx}title-c > .${pfx}title`;
+    if (!this.$counter) {
+      this.$counter	= this.$el.children(`#${pfx}counter`);
+    }
+
+    if (c) {
+      title.removeClass(noChildCls);
       this.$counter.html(c);
-    }else{
-      this.$el.find(tC).addClass(pfx + 'no-chld');
+    } else {
+      title.addClass(noChildCls);
       this.$counter.empty();
-      this.model.set('open',0);
+      model.set('open', 0);
     }
   },
 
@@ -255,8 +263,9 @@ module.exports = Backbone.View.extend({
   getCaret() {
     if (!this.caret) {
       const pfx = this.pfx;
-      this.caret = this.$el.find(`> .${pfx}title-c > .${pfx}title > .${pfx}title-inn > #${pfx}caret`);
+      this.caret = this.$el.find(`.${pfx}title-c > .${pfx}title > .${pfx}title-inn > #${pfx}caret`);
     }
+
     return this.caret;
   },
 
@@ -265,9 +274,10 @@ module.exports = Backbone.View.extend({
     var pfx = this.pfx;
     var vis = this.isVisible();
     var count = this.countChildren(model);
+    const el = this.$el;
     const level = this.level + 1;
 
-    this.$el.html( this.template({
+    el.html( this.template({
       title: model.getName(),
       icon: model.getIcon(),
       addClass: (count ? '' : pfx+'no-chld'),
@@ -292,13 +302,15 @@ module.exports = Backbone.View.extend({
       parent: model,
       level
     }).render().$el;
-    this.$el.find('.'+ pfx +'children').html(this.$components);
-    if(!model.get('draggable') || !this.config.sortable){
-    	this.$el.find('> #' + pfx + 'move').detach();
+    el.find(`.${pfx}children`).append(this.$components);
+
+    if(!model.get('draggable') || !this.config.sortable) {
+    	el.children(`#${pfx}move`).remove();
     }
+
     if(!vis)
       this.className += ' ' + pfx + 'hide';
-    this.$el.attr('class', _.result(this, 'className'));
+    el.attr('class', _.result(this, 'className'));
     this.updateOpening();
     this.updateStatus();
     return this;
