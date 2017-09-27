@@ -41,15 +41,15 @@ module.exports = require('./PropertyView').extend({
       }
     }
   },
-  /*
+
   getInputValue() {
-    return this.$input ? this.$el.find('input:checked').val() : '';
+    const inputChk = this.getCheckedEl();
+    return inputChk ? inputChk.value : '';
   },
-*/
-  getInputValue() {
+
+  getCheckedEl() {
     const input = this.getInputEl();
-    const inputIn = input ? input.querySelector('input:checked') : '';
-    return inputIn ? inputIn.value : '';
+    return input ? input.querySelector('input:checked') : '';
   },
 
   setValue(value) {
@@ -57,7 +57,13 @@ module.exports = require('./PropertyView').extend({
     let val = value || model.get('value') || model.getDefaultValue();
     const input = this.getInputEl();
     const inputIn = input ? input.querySelector(`[value="${val}"]`) : '';
-    inputIn && (inputIn.checked = true);
+
+    if (inputIn) {
+      inputIn.checked = true
+    } else {
+      const inputChk = this.getCheckedEl();
+      inputChk && (inputChk.checked = false);
+    }
   },
 
 });
