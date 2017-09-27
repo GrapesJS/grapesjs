@@ -1,6 +1,6 @@
-var Backbone = require('backbone');
-var SelectComponent = require('./SelectComponent');
-var SelectPosition = require('./SelectPosition');
+const SelectComponent = require('./SelectComponent');
+const SelectPosition = require('./SelectPosition');
+const $ = Backbone.$;
 
 module.exports = _.extend({}, SelectPosition, SelectComponent, {
 

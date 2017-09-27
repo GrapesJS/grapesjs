@@ -21,6 +21,8 @@
  * http://www.quirksmode.org/dom/execCommand.html
  * @module RichTextEditor
  */
+const $ = Backbone.$;
+
 module.exports = () => {
   var c = {},
   defaults = require('./config/config'),

@@ -1,4 +1,4 @@
-const $ = require('backbone').$;
+const $ = Backbone.$;
 
 module.exports = {
 

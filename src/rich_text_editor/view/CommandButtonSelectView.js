@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var CommandButtonView = require('./CommandButtonView');
+const CommandButtonView = require('./CommandButtonView');
+const $ = Backbone.$;
 
 module.exports = CommandButtonView.extend({
 

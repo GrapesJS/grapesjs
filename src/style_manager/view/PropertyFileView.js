@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var PropertyView = require('./PropertyView');
+const PropertyView = require('./PropertyView');
+const $ = Backbone.$;
 
 module.exports = PropertyView.extend({
 

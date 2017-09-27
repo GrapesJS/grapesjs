@@ -1,3 +1,5 @@
+const $ = Backbone.$;
+
 var getBoundingRect = (el, win) => {
   var w = win || window;
   var rect = el.getBoundingClientRect();

@@ -293,7 +293,7 @@ module.exports = PropertyCompositeView.extend({
       n.push(o);
     },this);
 
-    this.$props.detach();
+    //this.$props.detach();
     var layers = this.getLayers();
     layers.reset();
     layers.add(n);

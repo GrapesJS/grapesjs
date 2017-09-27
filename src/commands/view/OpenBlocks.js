@@ -1,3 +1,5 @@
+const $ = Backbone.$;
+
 module.exports = {
 
   run(editor, sender) {
@@ -6,7 +8,7 @@ module.exports = {
     var bm = editor.BlockManager;
     var panelC;
     if(!this.blocks){
-      this.blocks = $('<div/>').get(0);
+      this.blocks = $('<div></div>').get(0);
       this.blocks.appendChild(bm.render());
       var panels = editor.Panels;
       if(!panels.getPanel('views-container'))

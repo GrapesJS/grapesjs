@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var TraitView = require('./TraitView');
+const TraitView = require('./TraitView');
+const $ = Backbone.$;
 
 module.exports = TraitView.extend({
 
