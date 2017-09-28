@@ -109,9 +109,17 @@ module.exports = Input.extend({
            }
         }
       });
+
       this.colorEl = colorEl;
     }
     return this.colorEl;
   },
+
+  render() {
+    Input.prototype.render.call(this);
+    // This will make the color input available on render
+    this.getColorEl();
+    return this;
+  }
 
 });
