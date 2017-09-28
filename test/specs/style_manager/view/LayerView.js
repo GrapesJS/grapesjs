@@ -7,16 +7,10 @@ module.exports = {
       describe('LayerView', () => {
 
         var component;
-        var $fixtures;
-        var $fixture;
+        var fixtures;
         var target;
         var model;
         var view;
-
-        before(() => {
-          $fixtures  = $("#fixtures");
-          $fixture   = $('<div class="layer-fixture"></div>');
-        });
 
         beforeEach(() => {
           var coll = new Layers();
@@ -24,16 +18,12 @@ module.exports = {
           view = new LayerView({
             model
           });
-          $fixture.empty().appendTo($fixtures);
-          $fixture.html(view.render().el);
-        });
-
-        afterEach(() => {
-          view.remove();
+          document.body.innerHTML = '<div id="fixtures"></div>';
+          fixtures = document.body.firstChild;
+          fixtures.appendChild(view.render().el);
         });
 
         after(() => {
-          $fixture.remove();
           component = null;
           view = null;
           model = null;
@@ -41,7 +31,7 @@ module.exports = {
 
         it('Rendered correctly', () => {
           var layer = view.el;
-          expect($fixture.get(0).querySelector('.layer')).toExist();
+          expect(fixtures.querySelector('.layer')).toExist();
           expect(layer.querySelector('#label')).toExist();
           expect(layer.querySelector('#close-layer')).toExist();
           expect(layer.querySelector('#inputs')).toExist();

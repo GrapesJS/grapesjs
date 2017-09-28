@@ -177,7 +177,7 @@ describe('StyleManager', () => {
 
     Models.run();
 
-    describe.only('Views', () => {
+    describe('Views', () => {
       SectorView.run();
       SectorsView.run();
       PropertyView.run();
