@@ -8,8 +8,7 @@ module.exports = {
       describe('PropertyStackView', () => {
 
         var component;
-        var $fixtures;
-        var $fixture;
+        var fixtures;
         var target;
         var model;
         var view;
@@ -41,11 +40,6 @@ module.exports = {
           },
         ];
 
-        before(() => {
-          $fixtures  = $("#fixtures");
-          $fixture   = $('<div class="sm-fixture"></div>');
-        });
-
         beforeEach(() => {
           target = new Component();
           component = new Component();
@@ -58,9 +52,10 @@ module.exports = {
           view = new PropertyStackView({
             model
           });
-          $fixture.empty().appendTo($fixtures);
+          document.body.innerHTML = '<div id="fixtures"></div>';
+          fixtures = document.body.firstChild;
           view.render();
-          $fixture.html(view.el);
+          fixtures.appendChild(view.el);
         });
 
         afterEach(() => {
@@ -68,7 +63,6 @@ module.exports = {
         });
 
         after(() => {
-          $fixture.remove();
           component = null;
           view = null;
           model = null;
@@ -76,7 +70,7 @@ module.exports = {
 
         it('Rendered correctly', () => {
           var prop = view.el;
-          expect($fixture.get(0).querySelector('.property')).toExist();
+          expect(fixtures.querySelector('.property')).toExist();
           expect(prop.querySelector('.label')).toExist();
           expect(prop.querySelector('.field')).toExist();
           expect(prop.querySelector('#add')).toExist();
@@ -92,7 +86,7 @@ module.exports = {
 
         it('Layers rendered correctly', () => {
           var children = view.$props.get(0).children;
-          expect(children.length).toEqual(properties.length + 1);
+          expect(children.length).toEqual(properties.length);
           expect(children[0].id).toEqual(properties[0].property);
           expect(children[1].id).toEqual(properties[1].property);
           expect(children[2].id).toEqual(properties[2].property);
@@ -119,9 +113,9 @@ module.exports = {
               model,
               propTarget: target
             });
-            $fixture.empty().appendTo($fixtures);
+            fixtures.innerHTML = '';
             view.render();
-            $fixture.html(view.el);
+            fixtures.appendChild(view.el);
             model.get('layers').add(layers);
           });
 
@@ -165,9 +159,9 @@ module.exports = {
               model,
               propTarget: target
             });
-            $fixture.empty().appendTo($fixtures);
+            fixtures.innerHTML = '';
             view.render();
-            $fixture.html(view.el);
+            fixtures.appendChild(view.el);
             prop3Val = properties[2].list[2].value;
             prop2Val = properties[1].defaults;
             prop2Unit = properties[1].units[0];
@@ -281,8 +275,9 @@ module.exports = {
               model,
               propTarget: target
             });
+            fixtures.innerHTML = '';
             view.render();
-            $fixture.html(view.el);
+            fixtures.appendChild(view.el);
             prop3Val = properties[2].list[2].value;
             prop2Val = properties[1].defaults;
             prop2Unit = properties[1].units[0];
