@@ -223,15 +223,15 @@ module.exports = ({$, Backbone}) => {
     }
 
     fn.click = function(h) {
-      return this.on('click', h);
+      return h ? this.on('click', h) : this.trigger('click');
     }
 
     fn.change = function(h) {
-      return this.on('change', h);
+      return h ? this.on('change', h) : this.trigger('change');
     }
 
     fn.keydown = function(h) {
-      return this.on('keydown', h);
+      return h ? this.on('keydown', h) : this.trigger('keydown');
     }
 
     fn.delegate = function(selector, events, data, handler) {
