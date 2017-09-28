@@ -1,3 +1,4 @@
+import $ from 'cash-dom';
 import { defaults } from 'underscore';
 
 module.exports = (() => {
@@ -9,12 +10,14 @@ module.exports = (() => {
 
   return {
 
-    // Will be replaced on build
-    version: '<# VERSION #>',
+    $,
 
     editors,
 
     plugins,
+
+    // Will be replaced on build
+    version: '<# VERSION #>',
 
     /**
      * Initializes an editor based on passed options

@@ -1,5 +1,6 @@
 const Input = require('./Input');
-const Spectrum = require('spectrum-colorpicker');
+//require('spectrum-colorpicker');
+require('utils/ColorPicker');
 const $ = Backbone.$;
 
 module.exports = Input.extend({
@@ -63,7 +64,6 @@ module.exports = Input.extend({
       var colorEl = $(`<div class="${this.colorCls}"></div>`);
       var cpStyle = colorEl.get(0).style;
       var elToAppend = this.target && this.target.config ? this.target.config.el : '';
-
       const getColor = color => {
         let cl = color.getAlpha() == 1 ? color.toHexString() : color.toRgbString();
         return cl.replace(/ /g, '');
@@ -71,6 +71,8 @@ module.exports = Input.extend({
 
       let changed = 0;
       let previousСolor;
+      this.$el.find(`.${this.colorHolderClass}`).append(colorEl);
+
       colorEl.spectrum({
         appendTo: elToAppend || 'body',
         maxSelectionSize: 8,
@@ -111,11 +113,5 @@ module.exports = Input.extend({
     }
     return this.colorEl;
   },
-
-  render() {
-    Input.prototype.render.apply(this, arguments);
-    this.$el.find(`.${this.colorHolderClass}`).append(this.getColorEl());
-    return this;
-  }
 
 });

@@ -1,7 +1,6 @@
 import _ from 'underscore';
 import expect from 'expect';
 import sinon from 'sinon';
-import grapesjs from './../src';
 import { JSDOM } from 'jsdom';
 
 const dom = new JSDOM('<!doctype html><html><body></body></html>');
@@ -34,7 +33,7 @@ global.document = window.document;
 global._ = _;
 global.expect = expect;
 global.sinon = sinon;
-global.grapesjs = grapesjs;
+global.grapesjs = require('./../src');
 global.Backbone = require('Backbone');
 global.localStorage = localStorage;
 global.SVGElement = global.Element;

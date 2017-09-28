@@ -79,7 +79,7 @@ describe('SelectorManager', () => {
 
   Models.run();
 
-  describe.only('Views', () => {
+  describe('Views', () => {
     ClassTagView.run();
     ClassTagsView.run();
   });

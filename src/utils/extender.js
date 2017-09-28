@@ -246,11 +246,17 @@ module.exports = ({$, Backbone}) => {
     }
 
     fn.scrollLeft = function() {
-      return this.get(0).scrollLeft;
+      let el = this.get(0);
+      el = el.nodeType == 9 ? el.defaultView : el;
+      let win = el instanceof Window ? el : null;
+      return win ? win.pageXOffset : el.scrollLeft || 0;
     }
 
     fn.scrollTop = function() {
-      return this.get(0).scrollTop;
+      let el = this.get(0);
+      el = el.nodeType == 9 ? el.defaultView : el;
+      let win = el instanceof Window ? el : null;
+      return win ? win.pageYOffset : el.scrollTop || 0;
     }
 
     fn.offset = function(coords) {
