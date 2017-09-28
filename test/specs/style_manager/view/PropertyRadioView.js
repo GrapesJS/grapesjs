@@ -8,8 +8,7 @@ module.exports = {
       describe('PropertyRadioView', () => {
 
         var component;
-        var $fixtures;
-        var $fixture;
+        var fixtures;
         var target;
         var model;
         var view;
@@ -21,11 +20,6 @@ module.exports = {
               { value: 'test1value', 'title': 'testtitle'},
               { name: 'test2', value: 'test2value'}
             ];
-
-        before(() => {
-          $fixtures  = $("#fixtures");
-          $fixture   = $('<div class="sm-fixture"></div>');
-        });
 
         beforeEach(() => {
           target = new Component();
@@ -41,9 +35,10 @@ module.exports = {
             model,
             propTarget
           });
-          $fixture.empty().appendTo($fixtures);
+          document.body.innerHTML = '<div id="fixtures"></div>';
+          fixtures = document.body.firstChild;
           view.render();
-          $fixture.html(view.el);
+          fixtures.appendChild(view.el);
         });
 
         afterEach(() => {
@@ -51,13 +46,12 @@ module.exports = {
         });
 
         after(() => {
-          $fixture.remove();
           component = null;
         });
 
         it('Rendered correctly', () => {
           var prop = view.el;
-          expect($fixture.get(0).querySelector('.property')).toExist();
+          expect(fixtures.querySelector('.property')).toExist();
           expect(prop.querySelector('.label')).toExist();
           expect(prop.querySelector('.field')).toExist();
         });
@@ -68,12 +62,12 @@ module.exports = {
         });
 
         it('Options rendered', () => {
-          var input = view.el.querySelector('#input-holder');
+          var input = view.el.querySelector('#input-holder').firstChild;
           expect(input.children.length).toEqual(options.length);
         });
 
         it('Options rendered correctly', () => {
-          var children = view.el.querySelector('#input-holder').children;
+          var children = view.el.querySelector('#input-holder').firstChild.children;
           expect(children[0].querySelector('label').textContent).toEqual('test1value');
           expect(children[1].querySelector('label').textContent).toEqual('test2');
           expect(children[0].querySelector('input').value).toEqual(options[0].value);
@@ -83,7 +77,7 @@ module.exports = {
         });
 
         it('Input should exist', () => {
-          expect(view.$input).toExist();
+          expect(view.input).toExist();
         });
 
         it('Input value is empty', () => {
@@ -117,9 +111,9 @@ module.exports = {
               model,
               propTarget: target
             });
-            $fixture.empty().appendTo($fixtures);
+            fixtures.innerHTML = '';
             view.render();
-            $fixture.html(view.el);
+            fixtures.appendChild(view.el);
           });
 
           it('Update value and input on target swap', () => {
@@ -158,9 +152,9 @@ module.exports = {
             view = new PropertyRadioView({
               model
             });
-            $fixture.empty().appendTo($fixtures);
-            view.render()
-            $fixture.html(view.el);
+            fixtures.innerHTML = '';
+            view.render();
+            fixtures.appendChild(view.el);
           });
 
           it('Value as default', () => {
