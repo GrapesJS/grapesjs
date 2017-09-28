@@ -30,6 +30,7 @@ var localStorage = {
 
 global.window = window;
 global.document = window.document;
+global.FormData = window.FormData;
 global._ = _;
 global.expect = expect;
 global.sinon = sinon;

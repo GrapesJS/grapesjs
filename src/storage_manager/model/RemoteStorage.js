@@ -3,6 +3,8 @@ import { isUndefined } from 'underscore';
 
 module.exports = require('backbone').Model.extend({
 
+  fetch,
+
   defaults: {
     urlStore: '',
     urlLoad: '',
@@ -86,14 +88,14 @@ module.exports = require('backbone').Model.extend({
    */
   request(url, opts = {}, clb = null) {
     const typeJson = this.get('contentTypeJson');
-    const headers = this.get('headers');
+    const headers = this.get('headers') || {};
     const params = this.get('params');
     const reqHead = 'X-Requested-With';
     const typeHead = 'Content-Type';
     const body = opts.body;
 
     for (let param in params) {
-      body.append(param, params[param]);
+      body && body.append(param, params[param]);
     }
 
     if (isUndefined(headers[reqHead])) {
@@ -106,7 +108,7 @@ module.exports = require('backbone').Model.extend({
     }
 
     this.onStart();
-    fetch(url, {
+    this.fetch(url, {
       method: opts.method || 'post',
       credentials: 'include',
       headers,
