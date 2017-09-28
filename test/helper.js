@@ -1,21 +1,18 @@
 import _ from 'underscore';
 import expect from 'expect';
 import sinon from 'sinon';
-import Backbone from 'backbone';
 import grapesjs from './../src';
 import { JSDOM } from 'jsdom';
 
 const dom = new JSDOM('<!doctype html><html><body></body></html>');
 const window = dom.window;
 
-// Fix for the spectrum lib
+// Fix for the require of jquery
 var Module = require('module');
 var originalRequire = Module.prototype.require;
-
 Module.prototype.require = function(name) {
   if (name == 'jquery') {
-    console.log('REQUIRE jquery', Backbone.$);
-    return Backbone.$;
+    return originalRequire.call(this, 'cash-dom');
   }
   return originalRequire.apply(this, arguments);
 };
@@ -38,20 +35,11 @@ global._ = _;
 global.expect = expect;
 global.sinon = sinon;
 global.grapesjs = grapesjs;
-global.Backbone = Backbone;
+global.Backbone = require('Backbone');
 global.localStorage = localStorage;
 global.SVGElement = global.Element;
-global.navigator = {
-  userAgent: 'node.js'
-};
-
-// Need this to trigger the cash generation
-grapesjs.init({container: 'body',autorender: 0, storageManager: {
-  autoload: 0,
-  type:'none'
-},});
-
 window.$ = Backbone.$;
+global.navigator = {userAgent: 'node.js'};
 
 Object.keys(window).forEach((key) => {
   if (!(key in global)) {

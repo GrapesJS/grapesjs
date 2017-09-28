@@ -122,8 +122,9 @@ module.exports = ({$, Backbone}) => {
           namespaces = namespaces.slice(1);
 
           if (namespaces.length) {
-            console.log('Found event with namespaces', namespaces, eventName, delegate, this);
+            //console.log('Found event with namespaces', namespaces, eventName, delegate, this);
             const cashNs = this.data('_cashNs') || [];
+            // cashNs[namespace]
             this.data('_cashNs', namespaces); // for each ns need to store '.store' => eventName, delegate, callback
           }
 

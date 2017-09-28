@@ -33,7 +33,6 @@
     "documentation": "^5.3.0",
     "eslint": "^4.1.1",
     "expect": "^1.20.2",
-    "imports-loader": "^0.7.1",
     "istanbul": "^0.4.2",
     "jsdom": "^11.2.0",
     "mocha": "^3.1.2",

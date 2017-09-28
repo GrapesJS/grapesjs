@@ -3,7 +3,7 @@ const Modal = require('modal_dialog/model/Modal');
 
 module.exports = {
   run() {
-      describe.only('ModalView', () => {
+      describe('ModalView', () => {
 
         var model;
         var view;

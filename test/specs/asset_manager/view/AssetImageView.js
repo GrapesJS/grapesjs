@@ -50,7 +50,7 @@ module.exports = {
 
       it('Could be selected', function() {
         var spy = expect.spyOn(obj, 'updateTarget');
-        obj.onClick();
+        obj.$el.trigger('click');
         expect(obj.$el.attr('class')).toInclude('highlight');
         expect(spy).toHaveBeenCalled();
       });
@@ -58,7 +58,7 @@ module.exports = {
       it('Could be chosen', function() {
         sinon.stub(obj, 'updateTarget');
         var spy = expect.spyOn(obj, 'updateTarget');
-        obj.onDblClick();
+        obj.$el.trigger('dblclick');
         expect(spy).toHaveBeenCalled();
         //obj.updateTarget.calledOnce.should.equal(true);
       });

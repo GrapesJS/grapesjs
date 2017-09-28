@@ -1,4 +1,3 @@
-const Backbone = require('backbone');
 const Input = require('./Input');
 const Spectrum = require('spectrum-colorpicker');
 const $ = Backbone.$;

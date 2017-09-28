@@ -5,31 +5,23 @@ module.exports = {
   run() {
       describe('PanelsView', () => {
 
-        var $fixtures;
+        var fixtures;
         var $fixture;
         var model;
         var view;
-
-        before(() => {
-          $fixtures  = $("#fixtures");
-          $fixture   = $('<div class="cssrules-fixture"></div>');
-        });
 
         beforeEach(() => {
           model = new Panels([]);
           view = new PanelsView({
             collection: model
           });
-          $fixture.empty().appendTo($fixtures);
-          $fixture.html(view.render().el);
+          document.body.innerHTML = '<div id="fixtures"></div>';
+          fixtures = document.body.querySelector('#fixtures');
+          fixtures.appendChild(view.render().el);
         });
 
         afterEach(() => {
           view.collection.reset();
-        });
-
-        after(() => {
-          $fixture.remove();
         });
 
         it("Collection is empty", () => {
