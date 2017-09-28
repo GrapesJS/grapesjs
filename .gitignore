@@ -2,7 +2,8 @@
 .settings/
 .sass-cache/
 .project
-npm-debug.log
+.idea
+npm-debug.log*
 style/.sass-cache/
 
 img/
