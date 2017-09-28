@@ -115,8 +115,11 @@ module.exports = Backbone.View.extend({
    * @private
    */
   updateInputLabel() {
-    if(!this.$labelInput)
+    if(!this.$labelInput) {
       this.$labelInput = this.$el.find('input');
+    }
+
+    this.$labelInput.prop(this.inputProp, true);
     var size = this.$labelInput.val().length - 1;
     size = size < 1 ? 1 : size;
     this.$labelInput.attr('size', size);
