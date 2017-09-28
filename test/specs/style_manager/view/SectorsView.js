@@ -16,7 +16,7 @@ module.exports = {
             collection: model
           });
           document.body.innerHTML = '<div id="fixtures"></div>';
-          fixtures = document.body.querySelector('#fixtures');
+          fixtures = document.body.firstChild;
           fixtures.appendChild(view.render().el);
         });
 
