@@ -7,7 +7,7 @@ module.exports = Backbone.View.extend({
   },
 
   template: _.template(`
-  <div id="<%= pfx %>move">
+  <div id="<%= pfx %>move" data-move-layer>
     <i class="fa fa-arrows"></i>
   </div>
   <div id="<%= pfx %>label"><%= label %></div>
@@ -29,7 +29,7 @@ module.exports = Backbone.View.extend({
     this.listenTo(model, 'change:value', this.valueChanged);
     this.listenTo(model, 'change:props', this.showProps);
     this.events['click #' + this.pfx + 'close-layer'] = 'remove';
-    this.events['mousedown > #' + this.pfx + 'move'] = 'initSorter';
+    this.events['mousedown [data-move-layer]'] = 'initSorter';
 
     if (!model.get('preview')) {
       this.$el.addClass(this.pfx + 'no-preview');
@@ -129,8 +129,7 @@ module.exports = Backbone.View.extend({
   /** @inheritdoc */
   remove(e) {
     // Prevent from revoming all events on props
-    if(this.$props)
-      this.$props.detach();
+    //if(this.$props) this.$props.detach();
 
     if(e && e.stopPropagation)
       e.stopPropagation();
