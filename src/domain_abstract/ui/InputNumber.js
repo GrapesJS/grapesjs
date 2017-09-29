@@ -5,8 +5,6 @@ const $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
 
-  events: {},
-
   template: _.template(`
   <span class='<%= ppfx %>input-holder'></span>
   <span class='<%= ppfx %>field-units'></span>
@@ -25,6 +23,7 @@ module.exports = Backbone.View.extend({
     this.inputCls = ppfx + 'field-number';
     this.unitCls = ppfx + 'input-unit';
     this.contClass = contClass;
+    this.events = {};
     this.events[`click .${ppfx}field-arrow-u`] = 'upArrowClick';
     this.events[`click .${ppfx}field-arrow-d`] = 'downArrowClick';
     this.events[`mousedown .${ppfx}field-arrows`] = 'downIncrement';

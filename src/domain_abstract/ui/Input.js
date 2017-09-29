@@ -22,11 +22,19 @@ module.exports = Backbone.View.extend({
   },
 
   /**
+   * Fired when the element of the property is updated
+   */
+  elementUpdated() {
+    this.model.trigger('el:change');
+  },
+
+  /**
    * Handled when the view is changed
    */
   handleChange(e) {
     e.stopPropagation();
-    this.setValue(this.getInputEl().value);
+    this.model.set('value', this.getInputEl().value);
+    this.elementUpdated();
   },
 
   /**
@@ -34,25 +42,18 @@ module.exports = Backbone.View.extend({
    * @param {string} value
    * @param {Object} opts
    */
-  setValue(value, opts) {
-    var opt = opts || {};
-    var model = this.model;
-    model.set({
-      value: value || model.get('defaults')
-    }, opt);
-
-    // Generally I get silent when I need to reflect data to view without
-    // reupdating the target
-    if(opt.silent) {
-      this.handleModelChange(model, value, opt);
-    }
+  setValue(value, opts = {}) {
+    const model = this.model;
+    let val = value || model.get('defaults');
+    const input = this.getInputEl();
+    input && (input.value = val);
   },
 
   /**
    * Updates the view when the model is changed
    * */
   handleModelChange(model, value, opts) {
-    this.getInputEl().value = this.model.get('value');
+    this.setValue(value, opts);
   },
 
   /**
