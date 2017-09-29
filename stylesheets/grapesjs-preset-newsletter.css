@@ -1,4 +1,5 @@
-/* #008f73 #4c9790 */
+/* Class names prefixes */
+/* Colors / Theme */
 .gjs-clm-tags .gjs-sm-title,
 .gjs-sm-sector .gjs-sm-title {
   border-top: none; }
@@ -42,8 +43,7 @@
 .gjs-sm-sector .gjs-sm-composite.gjs-clm-field,
 .gjs-sm-sector .gjs-sm-field.gjs-sm-composite,
 .gjs-sm-sector .gjs-sm-stack #gjs-sm-add {
-  color: #a0aabf;
-  /* #a0aabf #d0d6e2 */ }
+  color: #a0aabf; }
 
 #gjs-rte-toolbar,
 .gjs-bg-main,
