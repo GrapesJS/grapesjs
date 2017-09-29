@@ -84,5 +84,11 @@ module.exports = require('backbone').Collection.extend(TypeableCollection).exten
         return value;
       }
     }
-  ]
+  ],
+
+  getFullValue() {
+    let result = '';
+    this.each(model => result += `${model.getFullValue()} `);
+    return result.trim();
+  }
 });

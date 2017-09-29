@@ -18,6 +18,12 @@ module.exports = Backbone.Collection.extend({
 
   onReset() {
     this.idx = 1;
+  },
+
+  getFullValue() {
+    let result = [];
+    this.each(layer => result.push(layer.getFullValue()));
+    return result.join(', ');
   }
 
 });

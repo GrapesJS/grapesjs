@@ -1,35 +1,40 @@
-var Backbone = require('backbone');
-
 module.exports = Backbone.View.extend({
 
   events:{
-    'click': 'updateIndex',
+    click: 'updateIndex',
+    'click [data-close-layer]': 'remove',
+    'mousedown [data-move-layer]': 'initSorter',
   },
 
-  template: _.template(`
-  <div id="<%= pfx %>move" data-move-layer>
-    <i class="fa fa-arrows"></i>
-  </div>
-  <div id="<%= pfx %>label"><%= label %></div>
-  <div id="<%= pfx %>preview-box">
-  	<div id="<%= pfx %>preview"></div>
-  </div>
-  <div id="<%= pfx %>close-layer" class="<%= pfx %>btn-close">&Cross;</div>
-  <div id="<%= pfx %>inputs"></div>
-  <div style="clear:both"></div>`),
+  template(model) {
+    const pfx = this.pfx;
+    const label = `Layer ${model.get('index')}`;
+
+    return `
+      <div id="${pfx}move" data-move-layer>
+        <i class="fa fa-arrows"></i>
+      </div>
+      <div id="${pfx}label">${label}</div>
+      <div id="${pfx}preview-box">
+      	<div id="${pfx}preview"></div>
+      </div>
+      <div id="${pfx}close-layer" class="${pfx}btn-close" data-close-layer>
+        &Cross;
+      </div>
+      <div id="${pfx}inputs" data-properties></div>
+      <div style="clear:both"></div>
+    `
+  },
 
   initialize(o) {
     let model = this.model;
     this.stackModel = o.stackModel || {};
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
-    this.className = this.pfx + 'layer';
     this.sorter = o.sorter || null;
     this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model, 'change:value', this.valueChanged);
     this.listenTo(model, 'change:props', this.showProps);
-    this.events['click #' + this.pfx + 'close-layer'] = 'remove';
-    this.events['mousedown [data-move-layer]'] = 'initSorter';
 
     if (!model.get('preview')) {
       this.$el.addClass(this.pfx + 'no-preview');
@@ -39,7 +44,6 @@ module.exports = Backbone.View.extend({
     model.view = this;
     model.set({droppable: 0, draggable: 1});
     this.$el.data('model', model);
-    this.delegateEvents();
   },
 
   /**
@@ -178,12 +182,19 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    this.$el.html( this.template({
-      label: 'Layer ' + this.model.get('index'),
-      pfx: this.pfx,
-    }));
-    this.$el.attr('class', this.className);
-    this.valueChanged();
+    const PropertiesView = require('./PropertiesView');
+    const className = `${this.pfx}layer`;
+    const model = this.model;
+    const el = this.el;
+    const properties = new PropertiesView({
+      collection: model.get('properties'),
+      config: this.config
+    }).render().el;
+    el.innerHTML = this.template(model);
+    el.className = className;
+    console.log('Append to ', el.querySelector('[data-properties]'), 'props', properties);
+    el.querySelector('[data-properties]').appendChild(properties);
+    //this.valueChanged();
     return this;
   },
 

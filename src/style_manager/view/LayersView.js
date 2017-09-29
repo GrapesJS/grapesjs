@@ -55,13 +55,12 @@ module.exports = Backbone.View.extend({
    * */
   addToCollection(model, fragmentEl, index) {
     var fragment = fragmentEl || null;
-    var viewObject = LayerView;
 
     if(typeof this.preview !== 'undefined'){
       model.set('preview', this.preview);
     }
 
-    var view = new viewObject({
+    var view = new LayerView({
         model,
         stackModel: this.stackModel,
         config: this.config,
