@@ -2,7 +2,7 @@ const PluginManager = require('plugin_manager');
 
 describe('GrapesJS', () => {
 
-  describe.skip('Main', () => {
+  describe.only('Main', () => {
 
     var obj;
     var fixtures;

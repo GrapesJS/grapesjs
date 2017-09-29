@@ -1211,7 +1211,7 @@
     // https://github.com/bgrins/TinyColor
     // Brian Grinstead, MIT License
 
-    (function() {
+    //(function() {
 
     var trimLeft = /^[\s,#]+/,
         trimRight = /\s+$/,
@@ -2310,7 +2310,7 @@
     }
 
     window.tinycolor = tinycolor;
-    })();
+    //})();
 
     $(function () {
         if ($.fn.spectrum.load) {
