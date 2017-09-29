@@ -65,11 +65,8 @@ module.exports = {
         });
 
         it('Could be removed', () => {
-          var spy = sinon.spy();
-          obj.config.target = { get() {} };
-          sinon.stub(obj.config.target, 'get').returns(0);
           obj.$el.find('#close').trigger('click');
-          expect(fixtures.innerHTML).toNotExist();
+          setTimeout(() => expect(fixtures.innerHTML).toNotExist(), 0)
         });
 
         it('On remove triggers event', () => {
