@@ -229,7 +229,7 @@ describe('GrapesJS', () => {
       expect(editor.getDevice()).toEqual('Tablet');
     });
 
-    it('Init new editor with custom plugin override default commands', () => {
+    it('Init new editor with custom plugin overrides default commands', () => {
       var editor,
           pluginName = 'test-plugin-opts';
 
