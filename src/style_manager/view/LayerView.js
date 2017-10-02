@@ -211,7 +211,6 @@ module.exports = Backbone.View.extend({
     const className = `${this.pfx}layer`;
     const model = this.model;
     const el = this.el;
-    console.log(propsConfig);
     const properties = new PropertiesView({
       collection: model.get('properties'),
       config: this.config,

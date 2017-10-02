@@ -176,8 +176,7 @@ module.exports = PropertyCompositeView.extend({
     this.elementUpdated();
 
     // If not detached I'll just put all the values from layers to property
-    // eg.
-    // background: layer1Value, layer2Value, layer3Value, ...
+    // eg. background: layer1Value, layer2Value, layer3Value, ...
     if (!model.get('detached')) {
       model.set('value', this.getLayerValues());
     } else {
@@ -185,6 +184,20 @@ module.exports = PropertyCompositeView.extend({
         prop.trigger('change:value');
       });
     }
+  },
+
+  /**
+   * The value that should update view inputs.
+   * In case of a detached property the value might something like this
+   * @param {string} value
+   * @param {Object} [opts={}]
+   * @private
+   */
+  setValue(value, opts = {}) {
+    const model = this.model;
+    let val = value || model.get('value') || model.getDefaultValue();
+    //const input = this.getInputEl();
+    //input && (input.value = val);
   },
 
   /**
