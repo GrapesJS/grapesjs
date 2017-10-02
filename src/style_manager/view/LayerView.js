@@ -32,6 +32,7 @@ module.exports = Backbone.View.extend({
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
     this.sorter = o.sorter || null;
+    this.propsConfig = o.propsConfig || {};
     this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model, 'change:value', this.valueChanged);
     this.listenTo(model, 'change:active', this.updateVisibility);
@@ -206,12 +207,17 @@ module.exports = Backbone.View.extend({
 
   render() {
     const PropertiesView = require('./PropertiesView');
+    const propsConfig = this.propsConfig;
     const className = `${this.pfx}layer`;
     const model = this.model;
     const el = this.el;
+    console.log(propsConfig);
     const properties = new PropertiesView({
       collection: model.get('properties'),
-      config: this.config
+      config: this.config,
+      customValue: propsConfig.customValue,
+      propTarget: propsConfig.propTarget,
+      onChange: propsConfig.onChange,
     }).render().el;
     el.innerHTML = this.template(model);
     el.className = className;

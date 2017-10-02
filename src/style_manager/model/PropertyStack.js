@@ -18,13 +18,7 @@ module.exports = Property.extend({
   },
 
   getFullValue() {
-    if (this.get('detached')) {
-      return '';
-    }
-
-    const layers = this.get('layers');
-    let val = layers.length ? layers.pluck('value').join(', ') : '';
-    return val.trim();
+    return this.get('detached') ? '' : this.get('layers').getFullValue();
   },
 
 });

@@ -86,6 +86,16 @@ module.exports = require('backbone').Collection.extend(TypeableCollection).exten
     }
   ],
 
+  deepClone() {
+    const collection = this.clone();
+    collection.reset(collection.map(model => {
+      const cloned = model.clone();
+      cloned.typeView = model.typeView;
+      return cloned;
+    }));
+    return collection;
+  },
+
   getFullValue() {
     let result = '';
     this.each(model => result += `${model.getFullValue()} `);
