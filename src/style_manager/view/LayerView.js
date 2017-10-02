@@ -1,7 +1,7 @@
 module.exports = Backbone.View.extend({
 
   events:{
-    click: 'updateIndex',
+    click: 'active',
     'click [data-close-layer]': 'remove',
     'mousedown [data-move-layer]': 'initSorter',
   },
@@ -34,6 +34,7 @@ module.exports = Backbone.View.extend({
     this.sorter = o.sorter || null;
     this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model, 'change:value', this.valueChanged);
+    this.listenTo(model, 'change:active', this.updateVisibility);
     this.listenTo(model, 'change:props', this.showProps);
 
     if (!model.get('preview')) {
@@ -155,7 +156,7 @@ module.exports = Backbone.View.extend({
    * @param Event
    *
    * @return void
-   * */
+   * *
   updateIndex(e) {
     var i = this.getIndex();
     this.stackModel.set('stackIndex', i);
@@ -165,6 +166,7 @@ module.exports = Backbone.View.extend({
 
     this.$el.addClass(this.pfx + 'active');
   },
+  */
 
   /**
    * Fetch model index
@@ -181,6 +183,27 @@ module.exports = Backbone.View.extend({
     return index;
   },
 
+  getPropertiesWrapper() {
+    if (!this.propsWrapEl) {
+      this.propsWrapEl = this.el.querySelector('[data-properties]');
+    }
+    return this.propsWrapEl;
+  },
+
+  active() {
+    const model = this.model;
+    const collection = model.collection;
+    collection.active(collection.indexOf(model));
+  },
+
+  updateVisibility() {
+    const pfx = this.pfx;
+    const wrapEl = this.getPropertiesWrapper();
+    const active = this.model.get('active');
+    wrapEl.style.display = active ? '' : 'none';
+    this.$el[active ? 'addClass' : 'removeClass'](`${pfx}active`);
+  },
+
   render() {
     const PropertiesView = require('./PropertiesView');
     const className = `${this.pfx}layer`;
@@ -192,8 +215,8 @@ module.exports = Backbone.View.extend({
     }).render().el;
     el.innerHTML = this.template(model);
     el.className = className;
-    console.log('Append to ', el.querySelector('[data-properties]'), 'props', properties);
-    el.querySelector('[data-properties]').appendChild(properties);
+    this.getPropertiesWrapper().appendChild(properties);
+    this.updateVisibility();
     //this.valueChanged();
     return this;
   },

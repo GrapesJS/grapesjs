@@ -57,9 +57,8 @@ module.exports = PropertyCompositeView.extend({
    * */
   indexChanged(e) {
     const model = this.model;
-    console.log('New layer index', model.get('stackIndex'));
+    this.getLayers().active(model.get('stackIndex'));
     /*
-
     var layer  = this.getLayers().at(model.get('stackIndex'));
     layer.set('props', this.$props);
     model.get('properties').each(prop => prop.trigger('targetUpdated'));
@@ -80,14 +79,15 @@ module.exports = PropertyCompositeView.extend({
       if (detached) {
         var propVal = '';
         var index = subModel.collection.indexOf(subModel);
-
+        /*
+        this.getLayers().getPropertyValues(subProperty)
         this.getLayers().each(layer => {
           var val = layer.get('values')[subProperty];
           if (val) {
             propVal += (propVal ? ',' : '') + val;
           }
         });
-
+        */
         view.updateTargetStyle(propVal, null, opt);
       } else {
         model.set('value', model.getFullValue(), opt);
@@ -167,7 +167,6 @@ module.exports = PropertyCompositeView.extend({
       properties: model.get('properties')
     });
     console.log('Props ', model.get('properties'), 'layer props', layer.get('properties'));
-    const index = layers.indexOf(layer);
     //layer.set('value', model.getDefaultValue(1));
 
     // In detached mode inputValueChanged will add new 'layer value'
@@ -175,7 +174,7 @@ module.exports = PropertyCompositeView.extend({
     this.inputValueChanged();
 
     // This will set subprops with a new default values
-    model.set('stackIndex', index);
+    model.set('stackIndex', layers.indexOf(layer));
   },
 
 
@@ -210,6 +209,7 @@ module.exports = PropertyCompositeView.extend({
   renderLayers() {
     const fieldEl = this.el.querySelector(`.${this.pfx}field`);
     const layers = new LayersView({
+      // TODO Here I should put the onChange method
       collection: this.getLayers(),
       stackModel: this.model,
       preview: this.model.get('preview'),

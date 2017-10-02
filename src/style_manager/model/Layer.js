@@ -30,6 +30,16 @@ module.exports = Backbone.Model.extend({
     }
   },
 
+  getPropertyValue(property) {
+    let result = '';
+    this.get('properties').each(prop => {
+      if (prop.get('property') == property) {
+        result = prop.getFullValue();
+      }
+    });
+    return result;
+  },
+
   getFullValue() {
     let result = [];
     this.get('properties').each(prop => result.push(prop.getFullValue()));
