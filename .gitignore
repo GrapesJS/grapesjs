@@ -14,3 +14,4 @@ vendor/
 coverage/
 node_modules/
 bower_components/
+grapesjs-*.tgz
