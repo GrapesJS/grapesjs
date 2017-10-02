@@ -64,7 +64,7 @@ module.exports = Backbone.View.extend({
     if(typeof this.preview !== 'undefined'){
       model.set('preview', this.preview);
     }
-    console.log('Layer addToCollection', model.get('properties'));
+
     var view = new LayerView({
         model,
         config,

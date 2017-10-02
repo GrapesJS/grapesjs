@@ -4,7 +4,7 @@ module.exports = Backbone.Model.extend({
     index: '',
     value: '',
     values: {},
-    active: true,
+    active: false,
     preview: false,
     properties: [],
   },

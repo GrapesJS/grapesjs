@@ -9,6 +9,7 @@ module.exports = PropertyCompositeView.extend({
     return `
       <div class="${pfx}field ${pfx}stack">
         <button type="button" id="${pfx}add" data-add-layer>+</button>
+        <div data-layers-wrapper></div>
       </div>
     `;
   },
@@ -180,6 +181,7 @@ module.exports = PropertyCompositeView.extend({
     if (!model.get('detached')) {
       model.set('value', this.getLayerValues());
     } else {
+      // TODO to check
       model.get('properties').each(prop => {
         prop.trigger('change:value');
       });
@@ -215,7 +217,7 @@ module.exports = PropertyCompositeView.extend({
   renderLayers() {
     const self = this;
     const model = this.model;
-    const fieldEl = this.el.querySelector(`.${this.pfx}field`);
+    const fieldEl = this.el.querySelector('[data-layers-wrapper]');
     const layers = new LayersView({
       collection: this.getLayers(),
       stackModel: model,
@@ -248,80 +250,63 @@ module.exports = PropertyCompositeView.extend({
   },
 
   /**
-   * Returns array suitale for layers from target style
+   * Returns array suitable for layers from target style
    * Only for detached stacks
    * @return {Array<string>}
    */
   getLayersFromTarget() {
-    var arr = [];
-    var target = this.getTarget();
-    if(!target)
-      return arr;
-    var trgStyle = target.get('style');
+    const layers = [];
+    const model = this.model;
+    const target = this.getTarget();
+    const trgStyle = target ? target.getStyle() : {};
 
-    this.model.get('properties').each(prop => {
-      var style = trgStyle[prop.get('property')];
+    // For detached, I have to fetch values from all sub properties
+    model.get('properties').each(propModel => {
+      let propertyObj = propModel.attributes;
+      const property = propModel.get('property');
+      const style = trgStyle[property];
+      const values = style ? style.split(', ') : [];
+      values.forEach((value, i) => {
+        value = value.trim();
+        const layer = layers[i];
+        propertyObj = Object.assign({}, propertyObj, {value});
 
-      if (style) {
-        var list =  style.split(',');
-        for(var i = 0, len = list.length; i < len; i++){
-          var val = list[i].trim();
-
-          if(arr[i]){
-            arr[i][prop.get('property')] = val;
-          }else{
-            var vals = {};
-            vals[prop.get('property')] = val;
-            arr[i] = vals;
-          }
+        if (layer) {
+          layer.properties.push(propertyObj);
+        } else {
+          layers[i] = {
+            properties: [propertyObj]
+          };
         }
-      }
+      });
     });
 
-    return arr;
+    return layers;
   },
 
   /**
    * Refresh layers
    * */
   refreshLayers() {
-    var n = [];
-    var a = [];
+    let layersObj = [];
+    let layerValues = [];
     var fieldName = 'value';
     const model = this.model;
+    const layers = this.getLayers();
     const detached = model.get('detached');
 
     // With detached layers values will be assigned to their properties
     if (detached) {
       fieldName = 'values';
-      a = this.getLayersFromTarget();
+      layerValues = this.getLayersFromTarget();
     } else {
-      var v = this.getTargetValue();
-      var vDef = model.getDefaultValue();
-      v = v == vDef ? '' : v;
-      if (v) {
-        // Remove spaces inside functions:
-        // eg:
-        // From: 1px 1px rgba(2px, 2px, 2px), 2px 2px rgba(3px, 3px, 3px)
-        // To: 1px 1px rgba(2px,2px,2px), 2px 2px rgba(3px,3px,3px)
-        v.replace(/\(([\w\s,.]*)\)/g, match => {
-          var cleaned = match.replace(/,\s*/g, ',');
-          v = v.replace(match, cleaned);
-        });
-        a = v.split(', ');
-      }
+      let value = this.getTargetValue();
+      value = value == model.getDefaultValue() ? '' : value;
+      layersObj = layers.getLayersFromValue(value);
     }
 
-    _.each(a, e => {
-      var o = {};
-      o[fieldName] = e;
-      n.push(o);
-    },this);
-
-    //this.$props.detach();
-    var layers = this.getLayers();
     layers.reset();
-    layers.add(n);
+    layers.add(layersObj);
 
     // Avoid updating with detached as it will cause issues on next change
     if (!detached) {

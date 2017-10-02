@@ -96,6 +96,22 @@ module.exports = require('backbone').Collection.extend(TypeableCollection).exten
     return collection;
   },
 
+  /**
+   * Parse a value and return an array splitted by properties
+   * @param  {string} value
+   * @return {Array}
+   * @return
+   */
+  parseValue(value) {
+    const properties = [];
+    const values = value.split(' ');
+    values.forEach((value, i) => {
+      const property = this.at(i);
+      properties.push(Object.assign({}, property.attributes, {value}));
+    });
+    return properties;
+  },
+
   getFullValue() {
     let result = '';
     this.each(model => result += `${model.getFullValue()} `);
