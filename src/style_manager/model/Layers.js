@@ -42,6 +42,40 @@ module.exports = Backbone.Collection.extend({
     return layers;
   },
 
+  /**
+   * Get layers from a style object (for detached properties), eg:
+   * sub-propname1: sub-propvalue11, sub-propvalue12, sub-propvalue13, ...
+   * sub-propname2: sub-propvalue21, sub-propvalue22, sub-propvalue23, ...
+   * sub-propname3: sub-propvalue31, sub-propvalue32, sub-propvalue33, ...
+   * @param  {Object} styleObj
+   * @return {Array}
+   * @private
+   */
+  getLayersFromStyle(styleObj) {
+    const layers = [];
+
+    this.properties.each(propModel => {
+      const style = styleObj[propModel.get('property')];
+      const values = style ? style.split(', ') : [];
+      values.forEach((value, i) => {
+        value = value.trim();
+        const layer = layers[i];
+        const propertyObj = Object.assign({}, propModel.attributes, {value});
+
+        if (layer) {
+          layer.properties.push(propertyObj);
+        } else {
+          layers[i] = {
+            properties: [propertyObj]
+          };
+        }
+      });
+    });
+
+    return layers;
+  },
+
+
   active(index) {
     this.each(layer => layer.set('active', 0));
     const layer = this.at(index);

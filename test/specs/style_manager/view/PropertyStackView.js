@@ -303,6 +303,7 @@ module.exports = {
               subprop2: 'C',
               subprop3: 'Y',
             }];
+            // replaced with Layers.getLayersFromStyle
             expect(view.getLayersFromTarget()).toEqual(result);
           });
 

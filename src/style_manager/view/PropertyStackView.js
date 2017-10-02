@@ -250,55 +250,20 @@ module.exports = PropertyCompositeView.extend({
   },
 
   /**
-   * Returns array suitable for layers from target style
-   * Only for detached stacks
-   * @return {Array<string>}
-   */
-  getLayersFromTarget() {
-    const layers = [];
-    const model = this.model;
-    const target = this.getTarget();
-    const trgStyle = target ? target.getStyle() : {};
-
-    // For detached, I have to fetch values from all sub properties
-    model.get('properties').each(propModel => {
-      let propertyObj = propModel.attributes;
-      const property = propModel.get('property');
-      const style = trgStyle[property];
-      const values = style ? style.split(', ') : [];
-      values.forEach((value, i) => {
-        value = value.trim();
-        const layer = layers[i];
-        propertyObj = Object.assign({}, propertyObj, {value});
-
-        if (layer) {
-          layer.properties.push(propertyObj);
-        } else {
-          layers[i] = {
-            properties: [propertyObj]
-          };
-        }
-      });
-    });
-
-    return layers;
-  },
-
-  /**
    * Refresh layers
    * */
   refreshLayers() {
     let layersObj = [];
-    let layerValues = [];
-    var fieldName = 'value';
     const model = this.model;
     const layers = this.getLayers();
     const detached = model.get('detached');
 
     // With detached layers values will be assigned to their properties
     if (detached) {
-      fieldName = 'values';
-      layerValues = this.getLayersFromTarget();
+      const target = this.getTarget();
+      const style = target ? target.getStyle() : {};
+      layersObj = layers.getLayersFromStyle(style);
+      console.log(layersObj);
     } else {
       let value = this.getTargetValue();
       value = value == model.getDefaultValue() ? '' : value;
