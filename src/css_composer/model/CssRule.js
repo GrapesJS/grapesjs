@@ -1,4 +1,4 @@
-import Styleable from 'domain_abstract/model/Styleable';
+import Styleable from '../../domain_abstract/model/Styleable';
 
 var Backbone = require('backbone');
 var Selectors = require('./Selectors');

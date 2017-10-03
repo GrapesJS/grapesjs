@@ -1,4 +1,4 @@
-import fetch from 'utils/fetch';
+import fetch from '../../utils/fetch';
 
 module.exports = Backbone.View.extend({
 

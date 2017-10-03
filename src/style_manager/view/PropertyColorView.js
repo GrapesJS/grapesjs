@@ -1,5 +1,5 @@
 var Backbone = require('backbone');
-var InputColor = require('domain_abstract/ui/InputColor');
+var InputColor = require('../../domain_abstract/ui/InputColor');
 
 module.exports = require('./PropertyIntegerView').extend({
 

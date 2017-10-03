@@ -2,8 +2,8 @@ import { isUndefined, defaults } from 'underscore';
 
 module.exports = (() => {
   const defaultConfig = require('./config/config');
-  const Editor = require('editor');
-  const PluginManager = require('plugin_manager');
+  const Editor = require('../editor');
+  const PluginManager = require('../plugin_manager');
   const plugins = new PluginManager();
   const editors = [];
 

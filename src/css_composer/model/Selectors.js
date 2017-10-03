@@ -11,7 +11,7 @@ module.exports = Backbone.Collection.extend({
 
         default:
           if(!this.ClassTag)
-            this.ClassTag = require("selector_manager/model/Selector");
+            this.ClassTag = require("../../selector_manager/model/Selector");
           model = new this.ClassTag(attrs, opts);
 
       }

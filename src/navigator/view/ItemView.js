@@ -1,5 +1,5 @@
 var Backbone = require('backbone');
-var ComponentView = require('dom_components/view/ComponentView');
+var ComponentView = require('../../dom_components/view/ComponentView');
 var ItemsView;
 
 module.exports = Backbone.View.extend({

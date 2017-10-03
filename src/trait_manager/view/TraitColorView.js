@@ -1,5 +1,5 @@
 var TraitView = require('./TraitView');
-var InputColor = require('domain_abstract/ui/InputColor');
+var InputColor = require('../../domain_abstract/ui/InputColor');
 
 module.exports = TraitView.extend({
   /**

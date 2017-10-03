@@ -1,5 +1,5 @@
 var TraitView = require('./TraitView');
-var InputNumber = require('domain_abstract/ui/InputNumber');
+var InputNumber = require('../../domain_abstract/ui/InputNumber');
 
 module.exports = TraitView.extend({
 

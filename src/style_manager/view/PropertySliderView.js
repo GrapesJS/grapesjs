@@ -1,4 +1,4 @@
-const InputNumber = require('domain_abstract/ui/InputNumber');
+const InputNumber = require('../../domain_abstract/ui/InputNumber');
 const Property = require('./PropertyIntegerView');
 
 module.exports = Property.extend({

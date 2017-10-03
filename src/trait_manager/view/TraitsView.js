@@ -1,4 +1,4 @@
-var DomainViews = require('domain_abstract/view/DomainViews');
+var DomainViews = require('../../domain_abstract/view/DomainViews');
 var TraitView = require('./TraitView');
 var TraitSelectView = require('./TraitSelectView');
 var TraitCheckboxView = require('./TraitCheckboxView');

@@ -1,9 +1,9 @@
-import Styleable from 'domain_abstract/model/Styleable';
+import Styleable from '../../domain_abstract/model/Styleable';
 
 var Backbone = require('backbone');
 var Components = require('./Components');
-var Selectors = require('selector_manager/model/Selectors');
-var Traits = require('trait_manager/model/Traits');
+var Selectors = require('../../selector_manager/model/Selectors');
+var Traits = require('../../trait_manager/model/Traits');
 
 const escapeRegExp = (str) => {
   return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
