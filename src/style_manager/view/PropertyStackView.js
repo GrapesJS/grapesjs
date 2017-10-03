@@ -126,16 +126,10 @@ module.exports = PropertyCompositeView.extend({
 
     layers.reset();
     layers.add(layersObj);
-
-    // Avoid updating with detached as it will cause issues on next change
-    if (!detached) {
-      this.inputValueChanged();
-    }
-
     model.set({stackIndex: null}, {silent: true});
   },
 
-  onRender(...args) {
+  onRender() {
     const self = this;
     const model = this.model;
     const fieldEl = this.el.querySelector('[data-layers-wrapper]');
@@ -150,9 +144,6 @@ module.exports = PropertyCompositeView.extend({
         if (model.get('detached')) {
           const subProp = subModel.get('property');
           const values = self.getLayers().getPropertyValues(subProp);
-          if (subProp == 'background-image') {
-            console.log('value is', values, self.getLayers());
-          }
           view.updateTargetStyle(values, null, opt);
         } else {
           model.set('value', model.getFullValue(), opt);
