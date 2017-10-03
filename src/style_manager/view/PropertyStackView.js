@@ -233,7 +233,7 @@ module.exports = PropertyCompositeView.extend({
           if (model.get('detached')) {
             const subProp = subModel.get('property');
             const values = self.getLayers().getPropertyValues(subProp);
-            view.updateTargetStyle(propVal, null, opt);
+            view.updateTargetStyle(values, null, opt);
           } else {
             model.set('value', model.getFullValue(), opt);
           }
