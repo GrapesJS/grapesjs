@@ -60,47 +60,12 @@ module.exports = PropertyCompositeView.extend({
     this.getLayers().active(model.get('stackIndex'));
   },
 
-  /**
-   * Extract string from the composite value of the target
-   * @param {integer} index Property index
-   * @param {View} propView Property view
-   * @return string
-   * @private
-   * */
-  valueOnIndex(index, propView) {
-    let result;
-    const model = this.model;
-    const propModel = propView && propView.model;
-    const layerIndex = model.get('stackIndex');
-
-    // If detached the value in this case is stacked, eg. substack-prop: 1px, 2px, 3px...
-    if (model.get('detached')) {
-      var targetValue = propView.getTargetValue({ignoreCustomValue: 1});
-      var valist = (targetValue + '').split(',');
-      result = valist[layerIndex];
-      result = result ? result.trim() : propModel.getDefaultValue();
-      result = propModel.parseValue(result);
-    } else {
-      var aStack = this.getLayerValues();
-      var strVar = aStack[layerIndex];
-      if(!strVar)
-        return;
-      var a    = strVar.split(' ');
-      if(a.length && a[index]){
-        result = a[index];
-      }
-    }
-
-    return result;
-  },
-
   addLayer() {
     const model = this.model;
     const layers = this.getLayers();
-    const layer = layers.add({
-      name: 'New',
-      properties: model.get('properties').deepClone(),
-    });
+    const properties = model.get('properties').deepClone();
+    properties.each(property => property.set('value', ''));
+    const layer = layers.add({properties});
 
     // In detached mode inputValueChanged will add new 'layer value'
     // to all subprops
@@ -120,14 +85,6 @@ module.exports = PropertyCompositeView.extend({
     if (!model.get('detached')) {
       model.set('value', this.getLayerValues());
     } else {
-      /*
-      const layer = model.get('layers').at(0);
-      layer && layer.get('properties').each(prop => prop.trigger('change:value'));
-      !layer && this.model.get('properties').each(prop => {
-        console.log('Prop', prop);
-        prop.trigger('change:value')
-      })
-      */
       model.get('properties').each(prop => prop.trigger('change:value'))
     }
   },
@@ -145,62 +102,6 @@ module.exports = PropertyCompositeView.extend({
    * */
   getLayerValues() {
     return this.getLayers().getFullValue();
-  },
-
-  /**
-   * Render layers
-   * @return self
-   * */
-  renderLayers() {
-    const self = this;
-    const model = this.model;
-    const fieldEl = this.el.querySelector('[data-layers-wrapper]');
-    const PropertiesView = require('./PropertiesView');
-    const propsConfig = {
-      propTarget: this.propTarget,
-
-      // Things to do when a single sub-property is changed
-      onChange(el, view, opt) {
-        const subModel = view.model;
-
-        if (model.get('detached')) {
-          const subProp = subModel.get('property');
-          const values = self.getLayers().getPropertyValues(subProp);
-          if (subProp == 'background-image') {
-            console.log('value is', values, self.getLayers());
-          }
-          view.updateTargetStyle(values, null, opt);
-        } else {
-          model.set('value', model.getFullValue(), opt);
-        }
-      },
-
-      // How to get a value on a single sub-property.
-      // eg. When the target is updated
-      customValue(property, mIndex) {
-        //return self.valueOnIndex(mIndex, property);
-      }
-    };
-    const layers = new LayersView({
-      collection: this.getLayers(),
-      stackModel: model,
-      preview: model.get('preview'),
-      config: this.config,
-      propsConfig,
-    }).render().el;
-
-    // Will use it to propogate changes
-    new PropertiesView({
-      collection: this.model.get('properties'),
-      stackModel: model,
-      config: this.config,
-      onChange: propsConfig.onChange,
-      propTarget: propsConfig.propTarget,
-      customValue: propsConfig.customValue,
-    }).render();
-
-    //model.get('properties')
-    fieldEl.appendChild(layers);
   },
 
   /**
@@ -235,8 +136,49 @@ module.exports = PropertyCompositeView.extend({
   },
 
   onRender(...args) {
-    //PropertyCompositeView.prototype.onRender.apply(this, args);
-    this.renderLayers();
+    const self = this;
+    const model = this.model;
+    const fieldEl = this.el.querySelector('[data-layers-wrapper]');
+    const PropertiesView = require('./PropertiesView');
+    const propsConfig = {
+      propTarget: this.propTarget,
+
+      // Things to do when a single sub-property is changed
+      onChange(el, view, opt) {
+        const subModel = view.model;
+
+        if (model.get('detached')) {
+          const subProp = subModel.get('property');
+          const values = self.getLayers().getPropertyValues(subProp);
+          if (subProp == 'background-image') {
+            console.log('value is', values, self.getLayers());
+          }
+          view.updateTargetStyle(values, null, opt);
+        } else {
+          model.set('value', model.getFullValue(), opt);
+        }
+      },
+    };
+    const layers = new LayersView({
+      collection: this.getLayers(),
+      stackModel: model,
+      preview: model.get('preview'),
+      config: this.config,
+      propsConfig,
+    }).render().el;
+
+    // Will use it to propogate changes
+    new PropertiesView({
+      collection: this.model.get('properties'),
+      stackModel: model,
+      config: this.config,
+      onChange: propsConfig.onChange,
+      propTarget: propsConfig.propTarget,
+      customValue: propsConfig.customValue,
+    }).render();
+
+    //model.get('properties')
+    fieldEl.appendChild(layers);
   },
 
 });

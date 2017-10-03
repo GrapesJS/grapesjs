@@ -57,9 +57,10 @@ module.exports = Backbone.Collection.extend({
    */
   getLayersFromStyle(styleObj) {
     const layers = [];
-    const propNames = this.properties.pluck('property');
+    const properties = this.properties;
+    const propNames = properties.pluck('property');
 
-    this.properties.each(propModel => {
+    properties.each(propModel => {
       const style = styleObj[propModel.get('property')];
       const values = style ? style.split(', ') : [];
       values.forEach((value, i) => {
@@ -77,10 +78,10 @@ module.exports = Backbone.Collection.extend({
       });
     });
 
-    // Now whit all layers are in, will check missing properties
+    // Now whit all layers in, will check missing properties
     layers.forEach(layer => {
       const layerProprs = layer.properties.map(prop => prop.property);
-      this.properties.each(propModel => {
+      properties.each(propModel => {
         const propertyName = propModel.get('property');
 
         if (layerProprs.indexOf(propertyName) < 0) {
