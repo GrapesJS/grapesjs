@@ -60,39 +60,6 @@ module.exports = PropertyCompositeView.extend({
     this.getLayers().active(model.get('stackIndex'));
   },
 
-  /** @inheritDoc *
-  getPropsConfig(opts) {
-    const model = this.model;
-    const detached = model.get('detached');
-    var result = PropertyCompositeView.prototype.getPropsConfig.apply(this, arguments);
-
-    result.onChange = (el, view, opt) => {
-      const subModel = view.model;
-      const subProperty = subModel.get('property');
-      this.build();
-
-      if (detached) {
-        var propVal = '';
-        var index = subModel.collection.indexOf(subModel);
-        /*
-        this.getLayers().getPropertyValues(subProperty)
-        this.getLayers().each(layer => {
-          var val = layer.get('values')[subProperty];
-          if (val) {
-            propVal += (propVal ? ',' : '') + val;
-          }
-        });
-        **
-        view.updateTargetStyle(propVal, null, opt);
-      } else {
-        model.set('value', model.getFullValue(), opt);
-      }
-    };
-
-    return result;
-  },
-  */
-
   /**
    * Extract string from the composite value of the target
    * @param {integer} index Property index
@@ -127,34 +94,6 @@ module.exports = PropertyCompositeView.extend({
     return result;
   },
 
-  /**
-   * Build composite value
-   * @private
-   * *
-  build(...args) {
-    let value = '';
-    let values = {};
-    const model = this.model;
-    const stackIndex = model.get('stackIndex');
-    const properties = model.get('properties');
-
-    if (stackIndex === null) {
-      return;
-    }
-
-    // Store properties values inside layer, in this way it's more reliable
-    // to fetch them later
-    properties.each(prop => {
-      const propValue = prop.getFullValue();
-      values[prop.get('property')] = propValue;
-      value += `${propValue} `;
-    });
-
-    const layerModel = this.getLayers().at(stackIndex);
-    layerModel && layerModel.set({values, value});
-  },
-  */
-
   addLayer() {
     const model = this.model;
     const layers = this.getLayers();
@@ -181,10 +120,15 @@ module.exports = PropertyCompositeView.extend({
     if (!model.get('detached')) {
       model.set('value', this.getLayerValues());
     } else {
-      // TODO to check
-      model.get('properties').each(prop => {
-        prop.trigger('change:value');
-      });
+      /*
+      const layer = model.get('layers').at(0);
+      layer && layer.get('properties').each(prop => prop.trigger('change:value'));
+      !layer && this.model.get('properties').each(prop => {
+        console.log('Prop', prop);
+        prop.trigger('change:value')
+      })
+      */
+      model.get('properties').each(prop => prop.trigger('change:value'))
     }
   },
 
@@ -218,34 +162,48 @@ module.exports = PropertyCompositeView.extend({
     const self = this;
     const model = this.model;
     const fieldEl = this.el.querySelector('[data-layers-wrapper]');
+    const PropertiesView = require('./PropertiesView');
+    const propsConfig = {
+      propTarget: this.propTarget,
+
+      // Things to do when a single sub-property is changed
+      onChange(el, view, opt) {
+        const subModel = view.model;
+
+        if (model.get('detached')) {
+          const subProp = subModel.get('property');
+          const values = self.getLayers().getPropertyValues(subProp);
+          view.updateTargetStyle(values, null, opt);
+        } else {
+          model.set('value', model.getFullValue(), opt);
+        }
+      },
+
+      // How to get a value on a single sub-property.
+      // eg. When the target is updated
+      customValue(property, mIndex) {
+        return self.valueOnIndex(mIndex, property);
+      }
+    };
     const layers = new LayersView({
       collection: this.getLayers(),
       stackModel: model,
       preview: model.get('preview'),
       config: this.config,
-      propsConfig: {
-        propTarget: this.propTarget,
-
-        // Things to do when a single sub-property is changed
-        onChange(el, view, opt) {
-          const subModel = view.model;
-
-          if (model.get('detached')) {
-            const subProp = subModel.get('property');
-            const values = self.getLayers().getPropertyValues(subProp);
-            view.updateTargetStyle(values, null, opt);
-          } else {
-            model.set('value', model.getFullValue(), opt);
-          }
-        },
-
-        // How to get a value on a single sub-property.
-        // eg. When the target is updated
-        customValue(property, mIndex) {
-          return self.valueOnIndex(mIndex, property);
-        }
-      }
+      propsConfig,
     }).render().el;
+
+    // Will use it to propogate changes
+    new PropertiesView({
+      collection: this.model.get('properties'),
+      stackModel: model,
+      config: this.config,
+      onChange: propsConfig.onChange,
+      propTarget: propsConfig.propTarget,
+      customValue: propsConfig.customValue,
+    }).render().el;
+
+    //model.get('properties')
     fieldEl.appendChild(layers);
   },
 
@@ -263,7 +221,6 @@ module.exports = PropertyCompositeView.extend({
       const target = this.getTarget();
       const style = target ? target.getStyle() : {};
       layersObj = layers.getLayersFromStyle(style);
-      console.log(layersObj);
     } else {
       let value = this.getTargetValue();
       value = value == model.getDefaultValue() ? '' : value;

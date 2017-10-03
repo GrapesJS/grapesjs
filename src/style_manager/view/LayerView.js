@@ -106,14 +106,19 @@ module.exports = Backbone.View.extend({
     if(e && e.stopPropagation)
       e.stopPropagation();
 
+    const model = this.model;
+    const collection = model.collection;
+    const stackModel = this.stackModel;
+
     Backbone.View.prototype.remove.apply(this, arguments);
 
-    if(this.model.collection.contains(this.model))
-      this.model.collection.remove(this.model);
+    if (collection.contains(model)) {
+      collection.remove(model);
+    }
 
-    if(this.stackModel && this.stackModel.set){
-      this.stackModel.set({stackIndex: null}, {silent: true});
-      this.stackModel.trigger('updateValue');
+    if (stackModel && stackModel.set) {
+      stackModel.set({stackIndex: null}, {silent: true});
+      stackModel.trigger('updateValue');
     }
   },
 
