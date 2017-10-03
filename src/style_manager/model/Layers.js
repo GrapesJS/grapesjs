@@ -21,7 +21,8 @@ module.exports = Backbone.Collection.extend({
 
   /**
    * Get layers from a value string (for not detached properties),
-   * eg: propertyName: layer1Value, layer2Value, layer3Value, ...;
+   * example of input:
+   * `layer1Value, layer2Value, layer3Value, ...`
    * @param  {string} value
    * @return {Array}
    * @private
@@ -43,10 +44,13 @@ module.exports = Backbone.Collection.extend({
   },
 
   /**
-   * Get layers from a style object (for detached properties), eg:
-   * sub-propname1: sub-propvalue11, sub-propvalue12, sub-propvalue13, ...
-   * sub-propname2: sub-propvalue21, sub-propvalue22, sub-propvalue23, ...
-   * sub-propname3: sub-propvalue31, sub-propvalue32, sub-propvalue33, ...
+   * Get layers from a style object (for detached properties),
+   * example of input:
+   * {
+   *  subPropname1: sub-propvalue11, sub-propvalue12, sub-propvalue13, ...
+   *  subPropname2: sub-propvalue21, sub-propvalue22, sub-propvalue23, ...
+   *  subPropname3: sub-propvalue31, sub-propvalue32, sub-propvalue33, ...
+   * }
    * @param  {Object} styleObj
    * @return {Array}
    * @private
@@ -59,7 +63,7 @@ module.exports = Backbone.Collection.extend({
       const style = styleObj[propModel.get('property')];
       const values = style ? style.split(', ') : [];
       values.forEach((value, i) => {
-        value = value.trim();
+        value = propModel.parseValue(value.trim());
         const layer = layers[i];
         const propertyObj = Object.assign({}, propModel.attributes, {value});
 

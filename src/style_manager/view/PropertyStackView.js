@@ -133,18 +133,11 @@ module.exports = PropertyCompositeView.extend({
   },
 
   /**
-   * The value that should update view inputs.
-   * In case of a detached property the value might something like this
-   * @param {string} value
-   * @param {Object} [opts={}]
+   * There is no need to handle input update by the property itself,
+   * this will be done by layers
    * @private
    */
-  setValue(value, opts = {}) {
-    const model = this.model;
-    let val = value || model.get('value') || model.getDefaultValue();
-    //const input = this.getInputEl();
-    //input && (input.value = val);
-  },
+  setValue() {},
 
   /**
    * Create value by layers
@@ -173,6 +166,9 @@ module.exports = PropertyCompositeView.extend({
         if (model.get('detached')) {
           const subProp = subModel.get('property');
           const values = self.getLayers().getPropertyValues(subProp);
+          if (subProp == 'background-image') {
+            console.log('value is', values, self.getLayers());
+          }
           view.updateTargetStyle(values, null, opt);
         } else {
           model.set('value', model.getFullValue(), opt);
@@ -182,7 +178,7 @@ module.exports = PropertyCompositeView.extend({
       // How to get a value on a single sub-property.
       // eg. When the target is updated
       customValue(property, mIndex) {
-        return self.valueOnIndex(mIndex, property);
+        //return self.valueOnIndex(mIndex, property);
       }
     };
     const layers = new LayersView({
@@ -201,7 +197,7 @@ module.exports = PropertyCompositeView.extend({
       onChange: propsConfig.onChange,
       propTarget: propsConfig.propTarget,
       customValue: propsConfig.customValue,
-    }).render().el;
+    }).render();
 
     //model.get('properties')
     fieldEl.appendChild(layers);
