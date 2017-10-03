@@ -60,39 +60,6 @@ module.exports = Backbone.View.extend({
   },
 
   /**
-   * Returns properties
-   * @return {Collection|null}
-   *
-  getProps() {
-    if(this.stackModel.get)
-      return this.stackModel.get('properties');
-    else
-      return null;
-  },*/
-
-  /**
-   * Emitted when the value is changed
-   *
-  valueChanged() {
-    var preview = this.model.get('preview');
-
-    if(!preview)
-      return;
-
-    if(!this.$preview)
-        this.$preview = this.$el.find('#' + this.pfx + 'preview');
-
-    var prw = '';
-    var props = this.getProps();
-    var previewEl = this.$preview;
-    if (typeof preview === 'function') {
-      preview(props, previewEl);
-    } else {
-      this.onPreview(props, previewEl);
-    }
-  },*/
-
-  /**
    * Show inputs on this layer
    * */
   showProps() {
@@ -121,21 +88,6 @@ module.exports = Backbone.View.extend({
       stackModel.trigger('updateValue');
     }
   },
-
-  /**
-   * Fetch model index
-   * @return {number} Index
-   *
-  getIndex() {
-    var index = 0;
-    var model = this.model;
-
-    if (model.collection) {
-      index = model.collection.indexOf(model);
-    }
-
-    return index;
-  },*/
 
   /**
    * Default method for changing preview box
