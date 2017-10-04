@@ -66,6 +66,7 @@
   "scripts": {
     "lint": "eslint src",
     "build": "cross-env WEBPACK_ENV=prod && npm run lint && npm run test && npm run v:patch && webpack && npm run build:css",
+    "build-n": "cross-env WEBPACK_ENV=prod && npm run lint && npm run test && webpack && npm run build:css",
     "build:css": "node-sass src/styles/scss/main.scss dist/css/grapes.min.css --output-style compressed",
     "v:patch": "npm version --no-git-tag-version patch",
     "start": "cross-env WEBPACK_ENV=dev webpack-dev-server --progress --colors & npm run build:css -- -w",
