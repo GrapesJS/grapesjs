@@ -109,7 +109,7 @@ $.fn.wysiwyg = function (userOptions) {
       input.data(options.selectionMarker, color);
     },
     bindToolbar = (toolbar, options) => {
-      toolbar.find(toolbarBtnSelector).off().on('click',function () {
+      toolbar.find(toolbarBtnSelector).off('click').on('click',function () {
         restoreSelection();
         //editor.focus(); // cause defocus on selects
         var doc = editor.get(0).ownerDocument;
@@ -120,6 +120,7 @@ $.fn.wysiwyg = function (userOptions) {
           args = args.replace('${content}', doc.getSelection());
           execCommand(comm, args);
         }else{
+          console.log('exec', comm);
           doc.execCommand(comm);
         }
         saveSelection();
