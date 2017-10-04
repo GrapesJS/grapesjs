@@ -184,7 +184,7 @@ module.exports = {
           });
 
           it('Input value is as default', () => {
-            expect(view.getInputValue()).toEqual('');
+            expect(view.getInputValue()).toEqual(intValue);
             expect(view.$unit.val()).toEqual(units[1]);
           });
 

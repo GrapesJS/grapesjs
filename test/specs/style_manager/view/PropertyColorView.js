@@ -154,8 +154,8 @@ module.exports = {
             expect(view.model.get('value')).toEqual(propValue);
           });
 
-          it('Input value is empty', () => {
-            expect(view.getInputValue()).toEqual('');
+          it('Input value is the default', () => {
+            expect(view.getInputValue()).toEqual(propValue);
           });
 
         });
