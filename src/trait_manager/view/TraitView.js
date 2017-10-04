@@ -130,8 +130,10 @@ module.exports = Backbone.View.extend({
   renderField() {
     if(!this.$input){
       this.$el.append(this.tmpl);
-      var el = this.getInputEl();
-      this.$el.find('.' + this.inputhClass).prepend(el);
+      const el = this.getInputEl();
+      // I use prepand expecially for checkbox traits
+      const inputWrap = this.el.querySelector(`.${this.inputhClass}`);
+      inputWrap.insertBefore(el, inputWrap.childNodes[0]);
     }
   },
 

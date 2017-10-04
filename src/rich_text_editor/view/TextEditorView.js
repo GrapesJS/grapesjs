@@ -120,7 +120,6 @@ $.fn.wysiwyg = function (userOptions) {
           args = args.replace('${content}', doc.getSelection());
           execCommand(comm, args);
         }else{
-          console.log('exec', comm);
           doc.execCommand(comm);
         }
         saveSelection();
