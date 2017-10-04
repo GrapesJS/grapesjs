@@ -35,9 +35,7 @@ module.exports = Backbone.View.extend({
     this.propsConfig = o.propsConfig || {};
     this.customPreview = o.onPreview;
     this.listenTo(model, 'destroy remove', this.remove);
-    this.listenTo(model, 'change:value', this.valueChanged);
     this.listenTo(model, 'change:active', this.updateVisibility);
-    this.listenTo(model, 'change:props', this.showProps);
     this.listenTo(model.get('properties'), 'change', this.updatePreview);
 
     if (!model.get('preview')) {
@@ -57,15 +55,6 @@ module.exports = Backbone.View.extend({
   initSorter(e) {
     if(this.sorter)
       this.sorter.startSort(this.el);
-  },
-
-  /**
-   * Show inputs on this layer
-   * */
-  showProps() {
-    this.$props = this.model.get('props');
-    this.$el.find('#' + this.pfx + 'inputs').html(this.$props.show());
-    this.model.set({props: null }, {silent: true });
   },
 
 

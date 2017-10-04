@@ -34,32 +34,27 @@ module.exports = {
           expect(fixtures.querySelector('.layer')).toExist();
           expect(layer.querySelector('#label')).toExist();
           expect(layer.querySelector('#close-layer')).toExist();
-          expect(layer.querySelector('#inputs')).toExist();
-          expect(layer.querySelector('#inputs').innerHTML).toNotExist();
-          expect(layer.querySelector('#preview')).toExist();
+          expect(view.getPropertiesWrapper()).toExist();
+          expect(view.getPreviewEl()).toExist();
         });
 
-        it('getIndex returns default value', () => {
-          expect(view.getIndex()).toEqual(0);
-        });
+        it('Is not active by default', () => {
+          expect(view.$el.hasClass('active')).toEqual(false);
+        })
+
+        it('Is possible to activate it', () => {
+          view.model.set('active', 1);
+          expect(view.$el.hasClass('active')).toEqual(true);
+        })
+
+        it('Is possible to activate it with active()', () => {
+          view.active();
+          expect(view.$el.hasClass('active')).toEqual(true);
+        })
 
         it('No preview', () => {
           var style = view.el.querySelector('#preview').style;
           expect(style.cssText).toNotExist();
-        });
-
-        it('Changes on value trigger onPreview', () => {
-          var called = 0;
-          view.onPreview = () => {called = 1};
-          view.model.set('preview', true);
-          view.model.set('value', 'test');
-          expect(called).toEqual(1);
-        });
-
-        it('Update props', () => {
-          view.model.set('props', $('<div>'));
-          expect(view.el.querySelector('#inputs').innerHTML).toExist();
-          expect(view.model.get('props')).toEqual(null);
         });
 
     });
