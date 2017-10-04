@@ -196,15 +196,9 @@ module.exports = () => {
       if(c.em)
         c.model = c.em.get('Canvas');
 
-      return this;
-    },
+      this.loadDefaultCommands()
 
-    /**
-     * On load callback
-     * @private
-     */
-    onLoad() {
-    	this.loadDefaultCommands();
+      return this;
     },
 
     /**
@@ -258,7 +252,7 @@ module.exports = () => {
      * */
     loadDefaultCommands() {
       for (var id in defaultCommands) {
-        this.add(id, defaultCommands[id]);
+          this.add(id, defaultCommands[id]);
       }
 
       return this;
