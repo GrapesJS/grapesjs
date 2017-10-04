@@ -3,6 +3,7 @@ grapesjs.plugins.add('gjs-preset-webpage', function(editor, opts) {
   var config = editor.getConfig();
   var pfx = editor.getConfig().stylePrefix;
   var modal = editor.Modal;
+  var $ = window.$ || grapesjs.$;
 
   config.showDevices = 0;
 
@@ -281,7 +282,13 @@ grapesjs.plugins.add('gjs-preset-webpage', function(editor, opts) {
     traitsProps.append($('.gjs-trt-traits'));
     $('#gjs-sm-sectors').before(traitsSector);
     traitsSector.find('.gjs-sm-title').on('click', function(){
-      traitsProps.toggle();
+      var traitStyle = traitsProps.get(0).style;
+      var hidden = traitStyle.display == 'none';
+      if (hidden) {
+        traitStyle.display = 'block';
+      } else {
+        traitStyle.display = 'none';
+      }
     });
 
     // Open block manager
