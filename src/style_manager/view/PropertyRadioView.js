@@ -59,7 +59,7 @@ module.exports = require('./PropertyView').extend({
     const inputIn = input ? input.querySelector(`[value="${val}"]`) : '';
 
     if (inputIn) {
-      inputIn.checked = true
+      inputIn.checked = true;
     } else {
       const inputChk = this.getCheckedEl();
       inputChk && (inputChk.checked = false);

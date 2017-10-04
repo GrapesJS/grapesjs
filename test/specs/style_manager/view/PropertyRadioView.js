@@ -21,6 +21,11 @@ module.exports = {
               { name: 'test2', value: 'test2value'}
             ];
 
+        // Have some issue with getCheckedEl() and jsdom
+        // this view.getInputEl().querySelector('input:checked') return null
+        // but view.getInputEl().querySelectorAll('input:checked')[0] works
+        var getCheckedEl = (view) => view.getInputEl().querySelectorAll('input:checked')[0];
+
         beforeEach(() => {
           target = new Component();
           component = new Component();
@@ -86,12 +91,12 @@ module.exports = {
 
         it('Update model on input change', () => {
           view.setValue(propValue);
-          expect(view.getInputValue()).toEqual(propValue);
+          expect(getCheckedEl(view).value).toEqual(propValue);
         });
 
         it('Update input on value change', () => {
           view.model.set('value', propValue);
-          expect(view.getInputValue()).toEqual(propValue);
+          expect(getCheckedEl(view).value).toEqual(propValue);
         });
 
         it('Update target on value change', () => {
@@ -122,7 +127,7 @@ module.exports = {
             component.set('style', style);
             view.propTarget.trigger('update');
             expect(view.model.get('value')).toEqual(propValue);
-            expect(view.getInputValue()).toEqual(propValue);
+            expect(getCheckedEl(view).value).toEqual(propValue);
           });
 
           it('Update value after multiple swaps', () => {
@@ -134,7 +139,7 @@ module.exports = {
             component.set('style', style);
             view.propTarget.trigger('update');
             expect(view.model.get('value')).toEqual('test2value');
-            expect(view.getInputValue()).toEqual('test2value');
+            expect(getCheckedEl(view).value).toEqual('test2value');
           });
 
         })

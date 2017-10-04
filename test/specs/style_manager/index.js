@@ -11,7 +11,7 @@ const PropertyCompositeView = require('./view/PropertyCompositeView');
 const PropertyStackView = require('./view/PropertyStackView');
 const LayerView = require('./view/LayerView');
 
-describe('StyleManager', () => {
+describe.only('StyleManager', () => {
 
   describe('Main', () => {
     var obj;

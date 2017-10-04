@@ -215,8 +215,8 @@ module.exports = {
             expect(input.getAttribute('placeholder')).toEqual(defValue);
           });
 
-          it('Input value is empty', () => {
-            expect(view.getInputValue()).toEqual('');
+          it('Input value is set up to default', () => {
+            expect(view.getInputValue()).toEqual(defValue);
           });
 
         });
