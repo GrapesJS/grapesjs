@@ -229,6 +229,22 @@ describe('GrapesJS', () => {
       expect(editor.getDevice()).toEqual('Tablet');
     });
 
+    // Problems with iframe loading
+    it.skip('Init new editor with custom plugin overrides default commands', () => {
+      var editor,
+          pluginName = 'test-plugin-opts';
+
+      obj.plugins.add(pluginName, (edt, opts) => {
+        let cmdm = edt.Commands;
+        // Overwrite export template
+        cmdm.add('export-template', {test: 1});
+      });
+      config.plugins = [pluginName];
+
+      editor = obj.init(config);
+      expect(editor.Commands.get('export-template').test).toEqual(1);
+    });
+
   });
 
 });

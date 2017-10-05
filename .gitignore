@@ -2,7 +2,8 @@
 .settings/
 .sass-cache/
 .project
-npm-debug.log
+.idea
+npm-debug.log*
 style/.sass-cache/
 
 img/
@@ -13,3 +14,4 @@ vendor/
 coverage/
 node_modules/
 bower_components/
+grapesjs-*.tgz
