@@ -50,11 +50,6 @@ module.exports = (() => {
       config.el = els instanceof window.HTMLElement ? els : document.querySelector(els);
       const editor = new Editor(config).init();
 
-      // Execute `onLoad` on modules once all plugins are initialized.
-      // A plugin might have extended/added some custom type so this
-      // is a good point to load stuff like components, css rules, etc.
-      editor.getModel().loadOnStart();
-
       // Load plugins
       config.plugins.forEach(pluginId => {
         const plugin = plugins.get(pluginId);
@@ -65,6 +60,11 @@ module.exports = (() => {
           console.warn(`Plugin ${pluginId} not found`);
         }
       });
+
+      // Execute `onLoad` on modules once all plugins are initialized.
+      // A plugin might have extended/added some custom type so this
+      // is a good point to load stuff like components, css rules, etc.
+      editor.getModel().loadOnStart();
 
       config.autorender && editor.render();
 
