@@ -80,14 +80,26 @@ module.exports = ComponentView.extend({
    * @private
    */
   parseRender() {
+    const model = this.model;
     var el = this.getChildrenContainer();
-    var comps = this.model.get('components');
+    var comps = model.get('components');
     var opts = {silent: true};
+    const clean = model => {
+      model.set({
+        highlightable: 0,
+        removable: 0,
+        draggable: 0,
+        copyable: 0,
+        toolbar: '',
+      }, opts);
+      model.get('components').each(model => clean(model));
+    }
 
     // Avoid re-render on reset with silent option
     comps.reset(null, opts);
     comps.add(el.innerHTML, opts);
-    this.model.set('content', '');
+    comps.each(model => clean(model));
+    model.set('content', '');
     this.render();
 
     // As the reset was in silent mode I need to notify
