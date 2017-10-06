@@ -56,7 +56,7 @@ module.exports = require('backbone').Model.extend({
     const em = this.get('em');
     const complete = this.get('onComplete');
     const typeJson = this.get('contentTypeJson');
-    const res = typeJson && typeof text === 'text' ? JSON.parse(text): text;
+    const res = typeJson && typeof text === 'string' ? JSON.parse(text): text;
     complete && complete(res);
     clb && clb(res);
     em && em.trigger('storage:response', res);
@@ -64,19 +64,17 @@ module.exports = require('backbone').Model.extend({
   },
 
   store(data, clb) {
-    const body = new FormData();
+    const body = {};
 
     for (let key in data) {
-      body.append(key, data[key]);
+      body[key] = data[key];
     }
 
     this.request(this.get('urlStore'), {body}, clb);
   },
 
   load(keys, clb) {
-    const body = new FormData();
-    body.append('keys', keys);
-    this.request(this.get('urlLoad'), {body}, clb);
+    this.request(this.get('urlLoad'), {body: {keys}}, clb);
   },
 
   /**
@@ -92,19 +90,32 @@ module.exports = require('backbone').Model.extend({
     const params = this.get('params');
     const reqHead = 'X-Requested-With';
     const typeHead = 'Content-Type';
-    const body = opts.body;
+    const bodyObj = opts.body || {};
+    let body;
 
     for (let param in params) {
-      body && body.append(param, params[param]);
+      bodyObj[param] = params[param];
     }
 
     if (isUndefined(headers[reqHead])) {
       headers[reqHead] = 'XMLHttpRequest';
     }
 
-    if (isUndefined(headers[typeHead])) {
-      headers[typeHead] = typeJson ?
-        'application/json; charset=utf-8' : 'x-www-form-urlencoded';
+    // With `fetch`, have to send FormData without any 'Content-Type'
+    // https://stackoverflow.com/questions/39280438/fetch-missing-boundary-in-multipart-form-data-post
+
+    if (isUndefined(headers[typeHead]) && typeJson) {
+      headers[typeHead] = 'application/json; charset=utf-8';
+    }
+
+    if (typeJson) {
+      body = JSON.stringify(bodyObj);
+    } else {
+      body = new FormData();
+
+      for (let bodyKey in bodyObj) {
+        body.append(bodyKey, bodyObj[bodyKey]);
+      }
     }
 
     this.onStart();

@@ -327,12 +327,7 @@ module.exports = {
     var modelToStyle;
 
     var toggleBodyClass = (method, e, opts) => {
-      var handlerAttr = e.target.getAttribute(attrName);
-      var resizeHndClass = pfx + 'resizing-' + handlerAttr;
-      var classToAdd = resizeClass;// + ' ' +resizeHndClass;
-      if (opts.docs) {
-        opts.docs.find('body')[method](classToAdd);
-      }
+      opts.docs && opts.docs.find('body')[method](resizeClass);
     };
 
 
