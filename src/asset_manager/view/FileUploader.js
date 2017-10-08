@@ -73,7 +73,7 @@ module.exports = Backbone.View.extend({
     const em = this.config.em;
     const config = this.config;
     const target = this.target;
-    const json = typeof text === 'text' ? JSON.parse(text) : text;
+    const json = typeof text === 'string' ? JSON.parse(text) : text;
     em && em.trigger('asset:upload:response', json);
 
     if (config.autoAdd && target) {
