@@ -3,6 +3,7 @@
  * * [get](#get)
  * * [getAll](#getall)
  * * [getCategories](#getcategories)
+ * * [getContainer](#getcontainer)
  * * [render](#render)
  *
  * Block manager helps managing various, draggable, piece of contents that could be easily reused inside templates.
@@ -32,7 +33,7 @@ module.exports = () => {
   Blocks = require('./model/Blocks'),
   BlockCategories = require('./model/Categories'),
   BlocksView = require('./view/BlocksView');
-  var blocks, view;
+  var blocks, blocksVisible, blocksView;
   var categories = [];
 
   return {
@@ -52,17 +53,52 @@ module.exports = () => {
        */
       init(config) {
         c = config || {};
-        for (var name in defaults) {
-          if (!(name in c))
+        const em = c.em;
+
+        for (let name in defaults) {
+          if (!(name in c)) {
             c[name] = defaults[name];
+          }
         }
-        blocks = new Blocks(c.blocks);
+
+        // Global blocks collection
+        blocks = new Blocks([]);
+        blocksVisible = new Blocks([]);
         categories = new BlockCategories(),
-        view = new BlocksView({
-          collection: blocks,
+        blocksView = new BlocksView({
+          // Visible collection
+          collection: blocksVisible,
           categories,
         }, c);
+
+        // Setup the sync between the global and public collections
+        blocks.listenTo(blocks, 'add', model => {
+          blocksVisible.add(model);
+          em && em.trigger('block:add', model);
+        });
+
+        blocks.listenTo(blocks, 'remove', model => {
+          blocksVisible.remove(model);
+          em && em.trigger('block:remove', model);
+        });
+
         return this;
+      },
+
+      /**
+       * Get configuration object
+       * @return {Object}
+       */
+      getConfig() {
+        return c;
+      },
+
+      /**
+       * Loading blocks with `onLoad` allows to init starting collection
+       * from plugins
+       */
+      onLoad() {
+        this.getAll().reset(c.blocks);
       },
 
       /**
@@ -98,7 +134,7 @@ module.exports = () => {
        * Return the block by id
        * @param  {string} id Block id
        * @example
-       * var block = blockManager.get('h1-block');
+       * const block = blockManager.get('h1-block');
        * console.log(JSON.stringify(block));
        * // {label: 'Heading', content: '<h1>Put your ...', ...}
        */
@@ -110,7 +146,7 @@ module.exports = () => {
        * Return all blocks
        * @return {Collection}
        * @example
-       * var blocks = blockManager.getAll();
+       * const blocks = blockManager.getAll();
        * console.log(JSON.stringify(blocks));
        * // [{label: 'Heading', content: '<h1>Put your ...'}, ...]
        */
@@ -119,8 +155,25 @@ module.exports = () => {
       },
 
       /**
+       * Return the visible collection, which containes blocks actually rendered
+       * @return {Collection}
+       */
+      getAllVisible() {
+        return blocksVisible;
+      },
+
+      /**
+       * Remove a block by id
+       * @param {string} id Block id
+       * @return {Block} Removed block
+       */
+      remove(id) {
+        return blocks.remove(id);
+      },
+
+      /**
        * Get all available categories.
-       * Is possible to add categories only with blocks via 'add()' method
+       * It's possible to add categories only within blocks via 'add()' method
        * @return {Array|Collection}
        */
       getCategories() {
@@ -128,20 +181,36 @@ module.exports = () => {
       },
 
       /**
-       * Render blocks
+       * Return the Blocks container element
        * @return {HTMLElement}
        */
-      render() {
-        return view.render().el;
+      getContainer() {
+        return blocksView.el;
       },
 
       /**
-       * Remove block by id
-       * @param {string} id Block id
-       * @return {Block} Removed block
+       * Render blocks
+       * @param  {Array} blocks Blocks to render, without the argument will render
+       *                        all global blocks
+       * @example
+       * // Render all blocks
+       * blockManager.render();
+       *
+       * // Render some blocks
+       * const blocks = blockManager.getAll();
+       * blockManager.render(blocks.filter(
+       *  block => block.get('category') == 'sections'
+       * ));
        */
-      remove(id) {
-        return blocks.remove(id);
+      render(blocks) {
+        const toRender = blocks || this.getAll().models;
+
+        if (!blocksView.rendered) {
+          blocksView.render();
+          blocksView.rendered = 1;
+        }
+
+        blocksView.collection.reset(toRender);
       },
 
   };
