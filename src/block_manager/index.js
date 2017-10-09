@@ -99,11 +99,11 @@ module.exports = () => {
       },
 
       /**
-       * Loading blocks with `onLoad` allows to init starting collection
-       * from plugins
+       * Load default blocks if the collection is empty
        */
       onLoad() {
-        this.getAll().reset(c.blocks);
+        const blocks = this.getAll();
+        !blocks.length && blocks.reset(c.blocks);
       },
 
       /**

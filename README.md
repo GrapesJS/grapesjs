@@ -38,7 +38,6 @@ Newsletter Demo - http://grapesjs.com/demo-newsletter-editor.html
 * [API](#api)
 * [Testing](#testing)
 * [Plugins](#plugins)
-* [Sponsors](#sponsors)
 * [Support](#support)
 * [License](#license)
 
@@ -200,16 +199,6 @@ $ npm test
 
 
 Find out more about plugins here: [Creating plugins](https://github.com/artf/grapesjs/wiki/Creating-plugins)
-
-
-
-
-
-## Sponsors
-
-The project is sponsored by
-
-[![Sendloop](http://grapesjs.com/img/sendloop-logo-l.png)](https://sendloop.com)
 
 
 
