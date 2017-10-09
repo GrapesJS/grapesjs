@@ -6,31 +6,22 @@ module.exports = {
 
       describe('SectorsView', () => {
 
-        var $fixtures;
-        var $fixture;
+        var fixtures;
         var model;
         var view;
-
-        before(() => {
-          $fixtures  = $("#fixtures");
-          $fixture   = $('<div class="sectors-fixture"></div>');
-        });
 
         beforeEach(() => {
           model = new Sectors([]);
           view = new SectorsView({
             collection: model
           });
-          $fixture.empty().appendTo($fixtures);
-          $fixture.html(view.render().el);
+          document.body.innerHTML = '<div id="fixtures"></div>';
+          fixtures = document.body.firstChild;
+          fixtures.appendChild(view.render().el);
         });
 
         afterEach(() => {
           view.collection.reset();
-        });
-
-        after(() => {
-          $fixture.remove();
         });
 
         it("Collection is empty", () => {

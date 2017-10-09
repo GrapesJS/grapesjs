@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var ComponentsView = require('./ComponentsView');
+const ComponentsView = require('./ComponentsView');
+const $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
 
@@ -29,9 +29,18 @@ module.exports = Backbone.View.extend({
     this.listenTo(model, 'change:script', this.render);
     this.listenTo(model, 'change', this.handleChange);
     this.listenTo(model.get('classes'), 'add remove change', this.updateClasses);
-    this.$el.data('model', model);
+
+    const $el = this.$el;
+    const el = this.el;
+    const em = this.em;
+    $el.data('model', model);
+    $el.data('collection', this.components);
     model.view = this;
-    this.$el.data("collection", this.components);
+
+    if (em) {
+      em.data(el, 'model', model);
+      em.data(el, 'collection', model.get('components'));
+    }
 
     if(model.get('classes').length)
       this.importClasses();

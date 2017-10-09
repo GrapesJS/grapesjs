@@ -1,12 +1,11 @@
-var Backbone = require('backbone');
-var PropertyView = require('./PropertyView');
-var PropertyIntegerView = require('./PropertyIntegerView');
-var PropertyRadioView = require('./PropertyRadioView');
-var PropertySelectView = require('./PropertySelectView');
-var PropertyColorView = require('./PropertyColorView');
-var PropertyFileView = require('./PropertyFileView');
-var PropertyCompositeView = require('./PropertyCompositeView');
-var PropertyStackView = require('./PropertyStackView');
+const PropertyView = require('./PropertyView');
+const PropertyIntegerView = require('./PropertyIntegerView');
+const PropertyRadioView = require('./PropertyRadioView');
+const PropertySelectView = require('./PropertySelectView');
+const PropertyColorView = require('./PropertyColorView');
+const PropertyFileView = require('./PropertyFileView');
+const PropertyCompositeView = require('./PropertyCompositeView');
+const PropertyStackView = require('./PropertyStackView');
 
 module.exports = Backbone.View.extend({
 
@@ -44,7 +43,6 @@ module.exports = Backbone.View.extend({
     });
 
     this.$el.append(fragment);
-    this.$el.append($('<div>', {class: "clear"}));
     this.$el.attr('class', this.pfx + 'properties');
     return this;
   }

@@ -7,11 +7,6 @@ module.exports = {
 
     describe('AssetView', () => {
 
-      before(function () {
-        this.$fixtures   = $("#fixtures");
-        this.$fixture   = $('<div class="asset-fixture"></div>');
-      });
-
       beforeEach(function () {
         var coll   = new Assets();
         var model = coll.add({src: 'test'});
@@ -19,16 +14,12 @@ module.exports = {
           config : {},
           model
         });
-        this.$fixture.empty().appendTo(this.$fixtures);
-        this.$fixture.html(this.view.render().el);
+        document.body.innerHTML = '<div id="fixtures"></div>';
+        document.body.querySelector('#fixtures').appendChild(this.view.render().el);
       });
 
       afterEach(function () {
         this.view.remove();
-      });
-
-      after(function () {
-        this.$fixture.remove();
       });
 
       it('Object exists', () => {

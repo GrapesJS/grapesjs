@@ -6,35 +6,26 @@ module.exports = {
 
       describe('PanelView', () => {
 
-        var $fixtures;
-        var $fixture;
+        var fixtures;
         var model;
         var view;
-
-        before(() => {
-          $fixtures  = $("#fixtures");
-          $fixture   = $('<div class="cssrule-fixture"></div>');
-        });
 
         beforeEach(() => {
           model = new Panel();
           view = new PanelView({
             model
           });
-          $fixture.empty().appendTo($fixtures);
-          $fixture.html(view.render().el);
+          document.body.innerHTML = '<div id="fixtures"></div>';
+          fixtures = document.body.querySelector('#fixtures');
+          fixtures.appendChild(view.render().el);
         });
 
         afterEach(() => {
           view.remove();
         });
 
-        after(() => {
-          $fixture.remove();
-        });
-
         it('Panel empty', () => {
-          expect($fixture.html()).toEqual('<div class="panel"></div>');
+          expect(fixtures.innerHTML).toEqual('<div class="panel"></div>');
         });
 
         it('Append content', () => {
@@ -58,8 +49,9 @@ module.exports = {
             view = new PanelView({
               model
             });
-            $fixture.empty().appendTo($fixtures);
-            $fixture.html(view.render().el);
+            document.body.innerHTML = '<div id="fixtures"></div>';
+            fixtures = document.body.querySelector('#fixtures');
+            fixtures.appendChild(view.render().el);
           });
 
           afterEach(() => {

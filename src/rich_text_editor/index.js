@@ -21,12 +21,15 @@
  * http://www.quirksmode.org/dom/execCommand.html
  * @module RichTextEditor
  */
+const $ = Backbone.$;
+
 module.exports = () => {
   var c = {},
   defaults = require('./config/config'),
   rte = require('./view/TextEditorView'),
   CommandButtons = require('./model/CommandButtons'),
   CommandButtonsView = require('./view/CommandButtonsView');
+  const $ = require('backbone').$;
   var tlbPfx, toolbar, commands;
   var mainSelf;
 

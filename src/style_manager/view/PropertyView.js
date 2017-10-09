@@ -1,5 +1,3 @@
-var Backbone = require('backbone');
-
 module.exports = Backbone.View.extend({
 
   template(model) {
@@ -50,7 +48,7 @@ module.exports = Backbone.View.extend({
     this.customValue  = o.customValue  || {};
     const model = this.model;
     this.property = model.get('property');
-    this.input = this.$input = null;
+    this.input = null;
     const pfx = this.pfx;
     this.inputHolderId = '#' + pfx + 'input-holder';
     this.sector = model.collection && model.collection.sector;
@@ -84,7 +82,7 @@ module.exports = Backbone.View.extend({
     const config = this.config;
     const updatedCls = `${ppfx}color-hl`;
     const computedCls = `${ppfx}color-warn`;
-    const labelEl = this.$el.find(`> .${pfx}label`);
+    const labelEl = this.$el.children(`.${pfx}label`);
     const clearStyle = this.getClearEl().style;
     labelEl.removeClass(`${updatedCls} ${computedCls}`);
     clearStyle.display = 'none';
@@ -444,6 +442,7 @@ module.exports = Backbone.View.extend({
 
     const onRender = this.onRender && this.onRender.bind(this);
     onRender && onRender();
+    this.setValue(model.get('value'), {targetUpdate: 1});
   },
 
 });

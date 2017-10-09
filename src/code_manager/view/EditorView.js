@@ -18,7 +18,7 @@ module.exports = Backbone.View.extend({
     obj.pfx = this.pfx;
     this.$el.html( this.template(obj) );
     this.$el.attr('class', this.pfx + 'editor-c');
-    this.$el.find('#'+this.pfx+'code').html(this.model.get('input'));
+    this.$el.find('#'+this.pfx+'code').append(this.model.get('input'));
     return this;
   },
 

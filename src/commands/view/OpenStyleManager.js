@@ -1,16 +1,18 @@
-var StyleManager = require('style_manager');
+const StyleManager = require('style_manager');
+const Backbone = require('backbone');
+const $ = Backbone.$;
 
 module.exports = {
 
   run(em, sender) {
     this.sender  = sender;
-    if(!this.$cn){
+    if (!this.$cn) {
       var config    = em.getConfig(),
           panels    = em.Panels;
       // Main container
-      this.$cn = $('<div/>');
+      this.$cn = $('<div></div>');
       // Secondary container
-      this.$cn2 = $('<div/>');
+      this.$cn2 = $('<div></div>');
       this.$cn.append(this.$cn2);
 
       // Device Manager
@@ -27,12 +29,9 @@ module.exports = {
 
       this.$cn2.append(em.StyleManager.render());
       var smConfig = em.StyleManager.getConfig();
+      const pfx = smConfig.stylePrefix;
       // Create header
-      this.$header  = $('<div>', {
-        class: smConfig.stylePrefix + 'header',
-        text: smConfig.textNoElement,
-      });
-      //this.$cn = this.$cn.add(this.$header);
+      this.$header  = $(`<div class="${pfx}header">${smConfig.textNoElement}</div>`);
       this.$cn.append(this.$header);
 
       // Create panel if not exists

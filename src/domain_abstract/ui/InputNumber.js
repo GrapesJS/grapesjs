@@ -1,8 +1,9 @@
-var Backbone = require('backbone');
+import {on, off} from 'utils/mixins'
+
+const Backbone = require('backbone');
+const $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
-
-  events: {},
 
   template: _.template(`
   <span class='<%= ppfx %>input-holder'></span>
@@ -18,16 +19,16 @@ module.exports = Backbone.View.extend({
     var ppfx = opt.ppfx || '';
     var contClass = opt.contClass || (`${ppfx}field ${ppfx}field-integer`);
     this.ppfx = ppfx;
-    this.docEl = $(document);
+    this.doc = document;
     this.inputCls = ppfx + 'field-number';
     this.unitCls = ppfx + 'input-unit';
     this.contClass = contClass;
-    this.events['click .' + ppfx + 'field-arrow-u'] = 'upArrowClick';
-    this.events['click .' + ppfx + 'field-arrow-d'] = 'downArrowClick';
-    this.events['mousedown .' + ppfx + 'field-arrows'] = 'downIncrement';
-    this.events['change .' + this.inputCls] = 'handleChange';
-    this.events['change .' + this.unitCls] = 'handleUnitChange';
-
+    this.events = {};
+    this.events[`click .${ppfx}field-arrow-u`] = 'upArrowClick';
+    this.events[`click .${ppfx}field-arrow-d`] = 'downArrowClick';
+    this.events[`mousedown .${ppfx}field-arrows`] = 'downIncrement';
+    this.events[`change .${this.inputCls}`] = 'handleChange';
+    this.events[`change .${this.unitCls}`] = 'handleUnitChange';
     this.listenTo(this.model, 'change:unit change:value', this.handleModelChange);
     this.delegateEvents();
   },
@@ -100,12 +101,10 @@ module.exports = Backbone.View.extend({
    * @return {HTMLElement}
    */
   getInputEl() {
-    if(!this.inputEl) {
-      this.inputEl = $('<input>', {
-        type: 'text',
-        class: this.inputCls,
-        placeholder: this.model.get('defaults')
-      });
+    if (!this.inputEl) {
+      const cls = this.inputCls;
+      const plh = this.model.get('defaults');
+      this.inputEl = $(`<input type="text" class="${cls}" placeholder="${plh}">`);
     }
     return this.inputEl.get(0);
   },
@@ -125,10 +124,12 @@ module.exports = Backbone.View.extend({
           unitStr += '<option ' + selected + ' >' + unit + '</option>';
         });
         unitStr += '</select>';
-        this.unitEl = $(unitStr);
+        const temp = document.createElement('div');
+        temp.innerHTML = unitStr;
+        this.unitEl = temp.firstChild;
       }
     }
-    return this.unitEl && this.unitEl.get(0);
+    return this.unitEl;
   },
 
   /**
@@ -138,7 +139,6 @@ module.exports = Backbone.View.extend({
     const model = this.model;
     const step = model.get('step');
     let value  = model.get('value');
-    //value = isNaN(value) ? 1 * step : parseFloat(value);
     value = this.normalizeValue(value + step);
     var valid = this.validateInputValue(value);
     model.set('value', valid.value);
@@ -169,9 +169,9 @@ module.exports = Backbone.View.extend({
     this.moved = 0;
     var value = this.model.get('value');
     value = this.normalizeValue(value);
-    var current = {y: e.pageY, val: value};
-    this.docEl.mouseup(current, this.upIncrement);
-    this.docEl.mousemove(current, this.moveIncrement);
+    this.current = {y: e.pageY, val: value};
+    on(this.doc, 'mousemove', this.moveIncrement);
+    on(this.doc, 'mouseup', this.upIncrement);
   },
 
   /** While the increment is clicked, moving the mouse will update input value
@@ -183,7 +183,8 @@ module.exports = Backbone.View.extend({
     this.moved = 1;
     const model = this.model;
     const step = model.get('step');
-    var pos = this.normalizeValue(ev.data.val + (ev.data.y - ev.pageY) * step);
+    const data = this.current;
+    var pos = this.normalizeValue(data.val + (data.y - ev.pageY) * step);
     this.prValue = this.validateInputValue(pos).value;
     model.set('value', this.prValue, {avoidStore: 1});
     return false;
@@ -191,15 +192,12 @@ module.exports = Backbone.View.extend({
 
   /**
    * Stop moveIncrement method
-   * @param Object
-   *
-   * @return void
    * */
-  upIncrement(e) {
+  upIncrement() {
     const model = this.model;
     const step = model.get('step');
-    this.docEl.off('mouseup', this.upIncrement);
-    this.docEl.off('mousemove', this.moveIncrement);
+    off(this.doc, 'mouseup', this.upIncrement);
+    off(this.doc, 'mousemove', this.moveIncrement);
 
     if(this.prValue && this.moved) {
       var value = this.prValue - step;
@@ -280,11 +278,13 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    var ppfx = this.ppfx;
-    this.$el.html(this.template({ppfx}));
-    this.$el.find('.'+ ppfx +'input-holder').html(this.getInputEl());
-    this.$el.find('.' + ppfx + 'field-units').html(this.getUnitEl());
-    this.$el.addClass(this.contClass);
+    const ppfx = this.ppfx;
+    const el = this.$el;
+    el.html(this.template({ppfx}));
+    el.find(`.${ppfx}input-holder`).append(this.getInputEl());
+    const unit = this.getUnitEl();
+    unit && el.find(`.${ppfx}field-units`).get(0).appendChild(unit);
+    el.addClass(this.contClass);
     return this;
   }
 

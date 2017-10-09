@@ -1,3 +1,5 @@
+const $ = Backbone.$;
+
 module.exports = {
 
   run(editor, sender) {
@@ -8,7 +10,7 @@ module.exports = {
     if(!this.obj){
       var tmView = tm.getTraitsViewer();
       var confTm = tm.getConfig();
-      this.obj = $('<div/>')
+      this.obj = $('<div></div>')
       .append('<div class="'+pfx+'traits-label">' + confTm.labelContainer + '</div>')
       .get(0);
       this.obj.appendChild(tmView.render().el);

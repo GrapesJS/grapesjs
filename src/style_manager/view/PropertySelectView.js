@@ -1,3 +1,5 @@
+const $ = Backbone.$;
+
 module.exports = require('./PropertyView').extend({
 
   templateInput() {
@@ -18,7 +20,7 @@ module.exports = require('./PropertyView').extend({
     const model = this.model;
     const options = model.get('list') || model.get('options') || [];
 
-    if (!this.$input) {
+    if (!this.input) {
       let optionsStr = '';
 
       options.forEach(option => {
@@ -29,9 +31,9 @@ module.exports = require('./PropertyView').extend({
         optionsStr += `<option value="${value}" ${styleAttr}>${name}</option>`;
       });
 
-      this.$input = $(`<select>${optionsStr}</select>`);
-      this.input = this.$input.get(0);
-      this.$el.find(`#${pfx}input-holder`).html(this.$input);
+      const inputH = this.el.querySelector(`#${pfx}input-holder`);
+      inputH.innerHTML = `<select>${optionsStr}</select>`;
+      this.input = inputH.firstChild;
     }
   },
 

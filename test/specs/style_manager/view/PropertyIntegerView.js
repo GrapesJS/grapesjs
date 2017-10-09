@@ -8,8 +8,7 @@ module.exports = {
       describe('PropertyIntegerView', () => {
 
         var component;
-        var $fixtures;
-        var $fixture;
+        var fixtures;
         var target;
         var model;
         var view;
@@ -23,11 +22,6 @@ module.exports = {
         var minValue = -15;
         var maxValue = 75;
         var unitsElSel = '.field-units select';
-
-        before(() => {
-          $fixtures  = $("#fixtures");
-          $fixture   = $('<div class="sm-fixture"></div>');
-        });
 
         beforeEach(() => {
           target = new Component();
@@ -43,9 +37,10 @@ module.exports = {
             model,
             propTarget
           });
-          $fixture.empty().appendTo($fixtures);
+          document.body.innerHTML = '<div id="fixtures"></div>';
+          fixtures = document.body.firstChild;
           view.render();
-          $fixture.html(view.el);
+          fixtures.appendChild(view.el);
         });
 
         afterEach(() => {
@@ -53,7 +48,6 @@ module.exports = {
         });
 
         after(() => {
-          $fixture.remove();
           component = null;
           view = null;
           model = null;
@@ -61,7 +55,7 @@ module.exports = {
 
         it('Rendered correctly', () => {
           var prop = view.el;
-          expect($fixture.get(0).querySelector('.property')).toExist();
+          expect(fixtures.querySelector('.property')).toExist();
           expect(prop.querySelector('.label')).toExist();
           expect(prop.querySelector('.field')).toExist();
         });
@@ -85,8 +79,8 @@ module.exports = {
         });
 
         it('Inputs should exist', () => {
-          expect(view.$input).toExist();
-          expect(view.$unit).toExist();
+          expect(view.input).toExist();
+          expect(view.unit).toExist();
         });
 
         it('Input value is empty', () => {
@@ -98,7 +92,7 @@ module.exports = {
           expect(view.model.get('value')).toEqual(parseFloat(intValue));
           expect(view.model.get('unit')).toEqual(unitValue);
           expect(view.getInputValue()).toEqual(intValue);
-          expect(view.$unit.val()).toEqual(unitValue);
+          expect(view.unit.value).toEqual(unitValue);
         });
 
         it('Update model on input change', () => {
@@ -133,9 +127,9 @@ module.exports = {
               model,
               propTarget: target
             });
-            $fixture.empty().appendTo($fixtures);
+            fixtures.innerHTML = '';
             view.render();
-            $fixture.html(view.el);
+            fixtures.appendChild(view.el);
           });
 
           it('Update value and input on target swap', () => {
@@ -179,9 +173,9 @@ module.exports = {
             view = new PropertyIntegerView({
               model
             });
-            $fixture.empty().appendTo($fixtures);
+            fixtures.innerHTML = '';
             view.render();
-            $fixture.html(view.el);
+            fixtures.appendChild(view.el);
           });
 
           it('Value as default', () => {
@@ -190,7 +184,7 @@ module.exports = {
           });
 
           it('Input value is as default', () => {
-            expect(view.getInputValue()).toEqual('');
+            expect(view.getInputValue()).toEqual(intValue);
             expect(view.$unit.val()).toEqual(units[1]);
           });
 

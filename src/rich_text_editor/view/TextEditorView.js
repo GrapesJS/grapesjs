@@ -1,3 +1,6 @@
+const Backbone = require('backbone');
+const $ = Backbone.$;
+
 var readFileIntoDataUrl = fileInfo => {
   var loader = $.Deferred(),
     fReader = new FileReader();
@@ -106,7 +109,7 @@ $.fn.wysiwyg = function (userOptions) {
       input.data(options.selectionMarker, color);
     },
     bindToolbar = (toolbar, options) => {
-      toolbar.find(toolbarBtnSelector).unbind().click(function () {
+      toolbar.find(toolbarBtnSelector).off('click').on('click',function () {
         restoreSelection();
         //editor.focus(); // cause defocus on selects
         var doc = editor.get(0).ownerDocument;
@@ -121,7 +124,7 @@ $.fn.wysiwyg = function (userOptions) {
         }
         saveSelection();
       });
-      toolbar.find('[data-toggle=dropdown]').click(restoreSelection);
+      toolbar.find('[data-toggle=dropdown]').on('click', restoreSelection);
       var dName = '[data-' + options.commandRole + ']';
       toolbar.find('select'+dName).on('webkitspeechchange change', function(){
         var newValue = this.value;
@@ -153,7 +156,7 @@ $.fn.wysiwyg = function (userOptions) {
           markSelection(input, false);
         }
       });
-      toolbar.find('input[type=file][data-' + options.commandRole + ']').change(function () {
+      toolbar.find('input[type=file][data-' + options.commandRole + ']').on('change', function () {
         restoreSelection();
         if (this.type === 'file' && this.files && this.files.length > 0) {
           insertFiles(this.files);
@@ -176,8 +179,8 @@ $.fn.wysiwyg = function (userOptions) {
   /** Disable the editor
    * @date 2015-03-19 */
   if(typeof userOptions=='string' && userOptions=='destroy'){
-    editor.attr('contenteditable', false).unbind('mouseup keyup mouseout dragenter dragover');
-    $(window).unbind('touchend');
+    editor.attr('contenteditable', false).off('mouseup keyup mouseout dragenter dragover');
+    $(window).off('touchend');
     return this;
   }
   options = $.extend({}, $.fn.wysiwyg.defaults, userOptions);
@@ -192,7 +195,7 @@ $.fn.wysiwyg = function (userOptions) {
       saveSelection();
       updateToolbar();
     });
-  $(window).bind('touchend', e => {
+  $(window).on('touchend', e => {
     var isInside = (editor.is(e.target) || editor.has(e.target).length > 0),
       currentRange = getCurrentRange(),
       clear = currentRange && (currentRange.startContainer === currentRange.endContainer && currentRange.startOffset === currentRange.endOffset);

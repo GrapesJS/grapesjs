@@ -14,17 +14,13 @@ module.exports = Property.extend({
   init() {
     Property.prototype.init.apply(this, arguments);
     const layers = this.get('layers');
-    this.set('layers', new Layers(layers));
+    const layersColl = new Layers(layers);
+    layersColl.properties = this.get('properties');
+    this.set('layers', layersColl);
   },
 
   getFullValue() {
-    if (this.get('detached')) {
-      return '';
-    }
-
-    const layers = this.get('layers');
-    let val = layers.length ? layers.pluck('value').join(', ') : '';
-    return val.trim();
+    return this.get('detached') ? '' : this.get('layers').getFullValue();
   },
 
 });

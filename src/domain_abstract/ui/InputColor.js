@@ -1,20 +1,25 @@
-var Backbone = require('backbone');
-var Input = require('./Input');
-var Spectrum = require('spectrum-colorpicker');
+const Input = require('./Input');
+//require('spectrum-colorpicker');
+require('utils/ColorPicker');
+const $ = Backbone.$;
 
 module.exports = Input.extend({
 
-  template: _.template(`
-  <div class='<%= ppfx %>input-holder'></div>
-  <div class="<%= ppfx %>field-colorp">
-    <div class="<%= ppfx %>field-colorp-c">
-      <div class="<%= ppfx %>checker-bg"></div>
-    </div>
-  </div>`),
+  template() {
+    const ppfx = this.ppfx;
+    return `
+      <div class="${ppfx}input-holder"></div>
+      <div class="${ppfx}field-colorp">
+        <div class="${ppfx}field-colorp-c">
+          <div class="${ppfx}checker-bg"></div>
+        </div>
+      </div>
+    `;
+  },
 
   initialize(opts) {
     Input.prototype.initialize.apply(this, arguments);
-    var ppfx = this.ppfx;
+    const ppfx = this.ppfx;
     this.colorCls = `${ppfx}field-color-picker`;
     this.inputClass = `${ppfx}field ${ppfx}field-color`;
     this.colorHolderClass = `${ppfx}field-colorp-c`;
@@ -55,14 +60,10 @@ module.exports = Input.extend({
     if (!this.colorEl) {
       const self = this;
       var model = this.model;
-      var colorEl = $('<div>', {class: this.colorCls});
+
+      var colorEl = $(`<div class="${this.colorCls}"></div>`);
       var cpStyle = colorEl.get(0).style;
       var elToAppend = this.target && this.target.config ? this.target.config.el : '';
-
-      if (typeof colorEl.spectrum == 'undefined') {
-        throw 'Spectrum missing, probably you load jQuery twice';
-      }
-
       const getColor = color => {
         let cl = color.getAlpha() == 1 ? color.toHexString() : color.toRgbString();
         return cl.replace(/ /g, '');
@@ -70,6 +71,8 @@ module.exports = Input.extend({
 
       let changed = 0;
       let previousСolor;
+      this.$el.find(`.${this.colorHolderClass}`).append(colorEl);
+
       colorEl.spectrum({
         appendTo: elToAppend || 'body',
         maxSelectionSize: 8,
@@ -106,14 +109,16 @@ module.exports = Input.extend({
            }
         }
       });
+
       this.colorEl = colorEl;
     }
     return this.colorEl;
   },
 
-  render(...args) {
-    Input.prototype.render.apply(this, args);
-    this.$el.find('.' + this.colorHolderClass).html(this.getColorEl());
+  render() {
+    Input.prototype.render.call(this);
+    // This will make the color input available on render
+    this.getColorEl();
     return this;
   }
 

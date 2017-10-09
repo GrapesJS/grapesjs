@@ -9,8 +9,6 @@ module.exports = Backbone.View.extend({
   </span>
   <span id="<%= pfx %>close">&Cross;</span>`),
 
-  events: {},
-
   initialize(o) {
     this.config = o.config || {};
     this.coll = o.coll || null;
@@ -22,6 +20,7 @@ module.exports = Backbone.View.extend({
     this.closeId = this.pfx + 'close';
     this.chkId = this.pfx + 'checkbox';
     this.labelId = this.pfx + 'tag-label';
+    this.events = {};
     this.events['click #' + this.closeId ] = 'removeTag';
     this.events['click #' + this.chkId ] = 'changeStatus';
     this.events['dblclick #' + this.labelId ] = 'startEditTag';
@@ -77,17 +76,15 @@ module.exports = Backbone.View.extend({
    * @private
    */
   removeTag(e) {
-    var comp = this.target.get('selectedComponent');
-
-    if(comp)
-      comp.get('classes').remove(this.model);
-
-    if(this.coll){
-      this.coll.remove(this.model);
-      this.target.trigger('targetClassRemoved');
-    }
-
-    this.remove();
+    const em = this.target;
+    const model = this.model;
+    const coll = this.coll;
+    const el = this.el;
+    const sel = em && em.get('selectedComponent');
+    sel && sel.get & sel.get('classes').remove(model);
+    coll && coll.remove(model);
+    setTimeout(() => this.remove(), 0);
+    em && em.trigger('targetClassRemoved');
   },
 
   /**
@@ -115,8 +112,11 @@ module.exports = Backbone.View.extend({
    * @private
    */
   updateInputLabel() {
-    if(!this.$labelInput)
+    if(!this.$labelInput) {
       this.$labelInput = this.$el.find('input');
+    }
+
+    this.$labelInput.prop(this.inputProp, true);
     var size = this.$labelInput.val().length - 1;
     size = size < 1 ? 1 : size;
     this.$labelInput.attr('size', size);

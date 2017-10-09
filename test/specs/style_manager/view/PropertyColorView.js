@@ -8,8 +8,7 @@ module.exports = {
       describe('PropertyColorView', () => {
 
         var component;
-        var $fixtures;
-        var $fixture;
+        var fixtures;
         var target;
         var model;
         var view;
@@ -19,9 +18,7 @@ module.exports = {
         var defValue = 'test2value';
 
         before(() => {
-          $.fn.spectrum = () => {};
-          $fixtures  = $("#fixtures");
-          $fixture   = $('<div class="sm-fixture"></div>');
+          $.fn.spectrum = function() {return this};
         });
 
         beforeEach(() => {
@@ -37,9 +34,10 @@ module.exports = {
             model,
             propTarget
           });
-          $fixture.empty().appendTo($fixtures);
+          document.body.innerHTML = '<div id="fixtures"></div>';
+          fixtures = document.body.firstChild;
           view.render();
-          $fixture.html(view.el);
+          fixtures.appendChild(view.el);
         });
 
         afterEach(() => {
@@ -47,7 +45,6 @@ module.exports = {
         });
 
         after(() => {
-          $fixture.remove();
           component = null;
           view = null;
           model = null;
@@ -55,7 +52,7 @@ module.exports = {
 
         it('Rendered correctly', () => {
           var prop = view.el;
-          expect($fixture.get(0).querySelector('.property')).toExist();
+          expect(fixtures.querySelector('.property')).toExist();
           expect(prop.querySelector('.label')).toExist();
           expect(prop.querySelector('.field')).toExist();
         });
@@ -63,7 +60,6 @@ module.exports = {
         it('Inputs rendered', () => {
           var prop = view.el;
           expect(prop.querySelector('input[type=text]')).toExist();
-          expect(prop.querySelector('.field-color-picker')).toExist();
         });
 
         it('Inputs should exist', () => {
@@ -109,9 +105,9 @@ module.exports = {
               model,
               propTarget: target
             });
-            $fixture.empty().appendTo($fixtures);
+            fixtures.innerHTML = '';
             view.render();
-            $fixture.html(view.el);
+            fixtures.appendChild(view.el);
           });
 
           it('Update value and input on target swap', () => {
@@ -149,17 +145,17 @@ module.exports = {
             view = new PropertyColorView({
               model
             });
-            $fixture.empty().appendTo($fixtures);
+            fixtures.innerHTML = '';
             view.render();
-            $fixture.html(view.el);
+            fixtures.appendChild(view.el);
           });
 
           it('Value as default', () => {
             expect(view.model.get('value')).toEqual(propValue);
           });
 
-          it('Input value is empty', () => {
-            expect(view.getInputValue()).toEqual('');
+          it('Input value is the default', () => {
+            expect(view.getInputValue()).toEqual(propValue);
           });
 
         });

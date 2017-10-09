@@ -1,31 +1,36 @@
-var deps = [
-require('utils'),
-require('storage_manager'),
-require('device_manager'),
-require('parser'),
-require('selector_manager'),
-require('modal_dialog'),
-require('code_manager'),
-require('panels'),
-require('rich_text_editor'),
-require('style_manager'),
-require('asset_manager'),
-require('css_composer'),
-require('dom_components'),
-require('canvas'),
-require('commands'),
-require('block_manager'),
-require('trait_manager'),
+import { isUndefined, defaults } from 'underscore';
+
+const deps = [
+  require('utils'),
+  require('storage_manager'),
+  require('device_manager'),
+  require('parser'),
+  require('selector_manager'),
+  require('modal_dialog'),
+  require('code_manager'),
+  require('panels'),
+  require('rich_text_editor'),
+  require('style_manager'),
+  require('asset_manager'),
+  require('css_composer'),
+  require('dom_components'),
+  require('canvas'),
+  require('commands'),
+  require('block_manager'),
+  require('trait_manager'),
 ];
 
-var Backbone = require('backbone');
-var UndoManager = require('backbone-undo');
-var key = require('keymaster');
-var timedInterval;
+const Backbone = require('backbone');
+const UndoManager = require('backbone-undo');
+const key = require('keymaster');
+let timedInterval;
 
-if (!Backbone.$) {
-  Backbone.$ = $;
-}
+require('utils/extender')({
+  Backbone: Backbone,
+  $: Backbone.$
+});
+
+const $ = Backbone.$;
 
 module.exports = Backbone.Model.extend({
 
@@ -606,5 +611,27 @@ module.exports = Backbone.Model.extend({
     var w = win || window;
     w.getSelection().removeAllRanges();
   },
+
+  /**
+   * Set/get data from the HTMLElement
+   * @param  {HTMLElement} el
+   * @param  {string} name Data name
+   * @param  {any} value Date value
+   * @return {any}
+   * @private
+   */
+  data(el, name, value) {
+    const varName = '_gjs-data';
+
+    if (!el[varName]) {
+      el[varName] = {};
+    }
+
+    if (isUndefined(value)) {
+      return el[varName][name];
+    } else {
+      el[varName][name] = value;
+    }
+  }
 
 });

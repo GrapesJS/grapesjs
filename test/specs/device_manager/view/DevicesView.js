@@ -11,26 +11,17 @@ module.exports = {
         var view;
         var editorModel;
 
-        before(() => {
-          $fixtures  = $("#fixtures");
-          $fixture   = $('<div class="devices-fixture"></div>');
-        });
-
         beforeEach(() => {
           model = new Devices([]);
           view = new DevicesView({
             collection: model
           });
-          $fixture.empty().appendTo($fixtures);
-          $fixture.html(view.render().el);
+          document.body.innerHTML = '<div id="fixtures"></div>';
+          document.body.querySelector('#fixtures').appendChild(view.render().el);
         });
 
         afterEach(() => {
           view.collection.reset();
-        });
-
-        after(() => {
-          $fixture.remove();
         });
 
         it("The content is not empty", () => {
@@ -58,8 +49,8 @@ module.exports = {
               collection: model,
               config: { em: editorModel }
             });
-            $fixture.empty().appendTo($fixtures);
-            $fixture.html(view.render().el);
+            document.body.innerHTML = '<div id="fixtures"></div>';
+            document.body.querySelector('#fixtures').appendChild(view.render().el);
           });
 
           it("Update device on select change", () => {

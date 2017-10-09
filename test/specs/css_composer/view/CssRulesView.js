@@ -7,26 +7,17 @@ module.exports = {
 
         let obj;
 
-        before(function () {
-          this.$fixtures = $("#fixtures");
-          this.$fixture = $('<div class="cssrules-fixture"></div>');
-        });
-
         beforeEach(function () {
           var col = new CssRules([]);
           obj = new CssRulesView({
             collection: col
           });
-          this.$fixture.empty().appendTo(this.$fixtures);
-          this.$fixture.html(obj.render().el);
+          document.body.innerHTML = '<div id="fixtures"></div>';
+          document.body.querySelector('#fixtures').appendChild(obj.render().el);
         });
 
         afterEach(() => {
           obj.collection.reset();
-        });
-
-        after(function () {
-          this.$fixture.remove();
         });
 
         it('Object exists', () => {

@@ -1,4 +1,5 @@
 const PropertyView = require('./PropertyView');
+const $ = Backbone.$;
 
 module.exports = PropertyView.extend({
 
@@ -26,7 +27,7 @@ module.exports = PropertyView.extend({
 
     if (props.length) {
       if (!this.$input) {
-        this.$input = $('<input>', {value: 0, type: 'hidden' });
+        this.$input = $('<input type="hidden" value="0">');
         this.input = this.$input.get(0);
       }
 
@@ -47,7 +48,7 @@ module.exports = PropertyView.extend({
         var PropertiesView = require('./PropertiesView');
         var propsView = new PropertiesView(this.getPropsConfig());
         this.$props = propsView.render().$el;
-        this.$el.find('#'+ this.pfx +'input-holder').html(this.$props);
+        this.$el.find(`#${this.pfx}input-holder`).append(this.$props);
       }
     }
   },
