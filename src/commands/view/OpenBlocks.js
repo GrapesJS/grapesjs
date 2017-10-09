@@ -7,9 +7,10 @@ module.exports = {
     var pfx = config.stylePrefix;
     var bm = editor.BlockManager;
     var panelC;
-    if(!this.blocks){
+    if (!this.blocks) {
       this.blocks = $('<div></div>').get(0);
-      this.blocks.appendChild(bm.render());
+      bm.render();
+      this.blocks.appendChild(bm.getContainer());
       var panels = editor.Panels;
       if(!panels.getPanel('views-container'))
         panelC = panels.addPanel({id: 'views-container'});

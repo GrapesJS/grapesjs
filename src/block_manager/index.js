@@ -82,6 +82,10 @@ module.exports = () => {
           em && em.trigger('block:remove', model);
         });
 
+        blocks.listenTo(blocks, 'reset', coll => {
+          blocksVisible.reset(coll.models);
+        });
+
         return this;
       },
 
@@ -98,6 +102,7 @@ module.exports = () => {
        * from plugins
        */
       onLoad() {
+        console.log('On load', c.blocks);
         this.getAll().reset(c.blocks);
       },
 
