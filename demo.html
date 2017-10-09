@@ -4,18 +4,17 @@
     <meta charset="utf-8">
     <title>GrapesJS Demo - Open Source Website Page Builder</title>
     <link rel="stylesheet" href="stylesheets/toastr.min.css">
-    <link rel="stylesheet" href="stylesheets/grapes.min.css?v0.10.8">
+    <link rel="stylesheet" href="stylesheets/grapes.min.css?v0.12.3">
     <link rel="stylesheet" href="stylesheets/grapesjs-preset-webpage.css">
     <link rel="stylesheet" href="stylesheets/tooltip.css">
     <link rel="stylesheet" href="stylesheets/perfect-scrollbar.css">
     <link rel="stylesheet" href="stylesheets/grapesjs-plugin-filestack.css">
-    <script src="//static.filestackapi.com/v3/filestack-0.1.12.js"></script>
-    <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="//static.filestackapi.com/v3/filestack.js"></script>
     <script src="//feather.aviary.com/imaging/v3/editor.js"></script>
     <script src="js/perfect-scrollbar.min.js"></script>
     <script src="js/toastr.min.js"></script>
 
-    <script src="js/grapes.min.js?v0.10.8"></script>
+    <script src="js/grapes.min.js?v0.12.3"></script>
     <script src="js/grapesjs-plugin-export.min.js"></script>
     <script src="js/grapesjs-plugin-filestack.min.js"></script>
     <script src="js/grapesjs-blocks-basic.min.js"></script>
@@ -996,7 +995,7 @@
       ],
       pluginsOpts: {
         'gjs-plugin-filestack': {
-          key: 'A1nL8omiAR8W7pHi3cotzz',
+          key: 'AYmqZc2e8RLGLE7TGkX3Hz',
         }
       },
 
@@ -1332,14 +1331,16 @@
 
 
     // Beautify tooltips
-    $('*[title]').each(function () {
-      var el = $(this);
-      var title = el.attr('title').trim();
+    var titles = document.querySelectorAll('*[title]');
+    for (var i = 0; i < titles.length; i++) {
+      var el = titles[i];
+      var title = el.getAttribute('title');
+      title = title ? title.trim(): '';
       if(!title)
-        return;
-      el.attr('data-tooltip', el.attr('title'));
-      el.attr('title', '');
-    });
+        break;
+      el.setAttribute('data-tooltip', title);
+      el.setAttribute('title', '');
+    }
 
      // Store and load events
      editor.on('storage:load', function(e) {
