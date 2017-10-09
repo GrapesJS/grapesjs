@@ -111,13 +111,6 @@ $ npm run build
 
 ## Usage
 
-JQuery is the only hard dependency so you have to include it before using GrapesJS
-
-```html
-<script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
-```
-After that include scripts from GrapesJS with all your configurations
-
 ```html
 <link rel="stylesheet" href="path/to/grapes.min.css">
 <script src="path/to/grapes.min.js"></script>
