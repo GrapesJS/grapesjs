@@ -152,8 +152,11 @@
 .gjs-field-radio {
   width: 100%; }
 
-.gjs-field-radio #gjs-sm-input-holder {
-  display: flex; }
+.gjs-field-radio #gjs-sm-input-holder,
+.gjs-field-radio #gjs-sm-input-holder > div {
+  display: flex;
+  width: 100%;
+}
 
 .gjs-radio-item {
   flex: 1 0 auto;

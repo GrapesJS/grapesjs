@@ -3,16 +3,15 @@
   <head>
     <meta charset="utf-8">
     <title>GrapesJS Newsletter Editor</title>
-    <link rel="stylesheet" href="./stylesheets/grapes.min.css?v0.10.6">
+    <link rel="stylesheet" href="./stylesheets/grapes.min.css?v0.12.3">
     <link rel="stylesheet" href="./stylesheets/material.css">
     <link rel="stylesheet" href="./stylesheets/tooltip.css">
     <link rel="stylesheet" href="./stylesheets/toastr.min.css">
     <link rel="stylesheet" href="./stylesheets/grapesjs-preset-newsletter.css?v=0.2.15">
 
     <script src="//feather.aviary.com/imaging/v3/editor.js"></script>
-    <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="./js/ckeditor/ckeditor.js"></script>
-    <script src="js/grapes.min.js?v0.10.6"></script>
+    <script src="js/grapes.min.js?v0.12.3"></script>
     <script src="./js/grapesjs-plugin-ckeditor.min.js"></script>
     <script src="./js/grapesjs-preset-newsletter.min.js?v=0.2.15"></script>
     <script src="./js/grapesjs-aviary.min.js"></script>
@@ -719,19 +718,17 @@
         origWarn(msg);
       };
 
-      $(document).ready(function () {
-
-        // Beautify tooltips
-        $('*[title]').each(function () {
-          var el = $(this);
-          var title = el.attr('title').trim();
-          if(!title)
-            return;
-          el.attr('data-tooltip', el.attr('title'));
-          el.attr('title', '');
-        });
-
-      });
+      // Beautify tooltips
+      var titles = document.querySelectorAll('*[title]');
+      for (var i = 0; i < titles.length; i++) {
+        var el = titles[i];
+        var title = el.getAttribute('title');
+        title = title ? title.trim(): '';
+        if(!title)
+          break;
+        el.setAttribute('data-tooltip', title);
+        el.setAttribute('title', '');
+      }
     </script>
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
