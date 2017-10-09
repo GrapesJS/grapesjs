@@ -198,14 +198,21 @@ module.exports = () => {
        * @param  {Array} blocks Blocks to render, without the argument will render
        *                        all global blocks
        * @example
-       * // Render all blocks
+       * // Render all blocks (inside the global collection)
        * blockManager.render();
        *
-       * // Render some blocks
+       * // Render new set of blocks
        * const blocks = blockManager.getAll();
        * blockManager.render(blocks.filter(
        *  block => block.get('category') == 'sections'
        * ));
+       * // Or a new set from an array
+       * blockManager.render([
+       *  {label: 'Label text', content: '<div>Content</div>'}
+       * ]);
+       *
+       * // Back to blocks from the global collection
+       * blockManager.render();
        */
       render(blocks) {
         const toRender = blocks || this.getAll().models;
