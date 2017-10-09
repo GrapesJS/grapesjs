@@ -2,6 +2,7 @@
  * * [add](#add)
  * * [get](#get)
  * * [getAll](#getall)
+ * * [getAllVisible](#getallvisible)
  * * [getCategories](#getcategories)
  * * [getContainer](#getcontainer)
  * * [render](#render)
@@ -102,7 +103,6 @@ module.exports = () => {
        * from plugins
        */
       onLoad() {
-        console.log('On load', c.blocks);
         this.getAll().reset(c.blocks);
       },
 
