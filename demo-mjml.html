@@ -5,13 +5,13 @@
     <title>GrapesJS MJML Newsletter Builder</title>
     <meta name="description" content="GrapesJS MJML Newsletter Builder - Next generation tool for building newsletters without coding">
     <meta name="keywords" content="newsletter builder, web template editor, html builder, html editor">
-    <link rel="stylesheet" href="./stylesheets/grapes.min.css?v0.10.2">
+    <link rel="stylesheet" href="./stylesheets/grapes.min.css?v0.12.3">
     <link rel="stylesheet" href="./stylesheets/tooltip.css">
     <link rel="stylesheet" href="./stylesheets/toastr.min.css">
     <link rel="stylesheet" href="./stylesheets/grapesjs-mjml.css">
 
     <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="js/grapes.min.js?v0.10.6"></script>
+    <script src="js/grapes.min.js?v0.12.3"></script>
     <script src="./js/toastr.min.js"></script>
     <script src="./js/ajaxable.min.js"></script>
     <script src="//feather.aviary.com/imaging/v3/editor.js"></script>
@@ -263,17 +263,17 @@
         origWarn(msg);
       };
 
-      $(document).ready(function () {
-        // Beautify tooltips
-        $('*[title]').each(function () {
-          var el = $(this);
-          var title = el.attr('title').trim();
-          if(!title)
-            return;
-          el.attr('data-tooltip', el.attr('title'));
-          el.attr('title', '');
-        });
-      });
+      // Beautify tooltips
+      var titles = document.querySelectorAll('*[title]');
+      for (var i = 0; i < titles.length; i++) {
+        var el = titles[i];
+        var title = el.getAttribute('title');
+        title = title ? title.trim(): '';
+        if(!title)
+          break;
+        el.setAttribute('data-tooltip', title);
+        el.setAttribute('title', '');
+      }
     </script>
 
     <script>
