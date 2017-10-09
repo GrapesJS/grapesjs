@@ -657,6 +657,10 @@ a {
   opacity: 0;
 }
 
+.sponsors, .backers {
+  margin: 50px 0 0;
+}
+
 .footer-content {
   background-color: #222;
   min-height: 350px;
