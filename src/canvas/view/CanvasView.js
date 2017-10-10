@@ -362,7 +362,6 @@ module.exports = Backbone.View.extend({
       </div>
     `);
     const el = this.el;
-    const rte = this.em.get('rte');
     const toolsEl = el.querySelector(`#${ppfx}tools`);
     this.hlEl = el.querySelector(`.${ppfx}highlighter`);
     this.badgeEl = el.querySelector(`.${ppfx}badge`);
@@ -372,13 +371,6 @@ module.exports = Backbone.View.extend({
     this.resizerEl = el.querySelector(`.${ppfx}resizer`);
     this.offsetEl = el.querySelector(`.${ppfx}offset-v`);
     this.fixedOffsetEl = el.querySelector(`.${ppfx}offset-fixed-v`);
-
-    if (rte) {
-      const rteEl = rte.render();
-      rteEl.style.pointerEvents = 'all';
-      toolsEl.appendChild(rteEl);
-    }
-
     this.toolsEl = toolsEl;
     this.el.className = this.className;
     return this;

@@ -29,7 +29,7 @@ const actions = {
     title: 'Link',
     result: (rte) => {
       const url = window.prompt('Enter the link URL')
-      if (url) rte.exec('createLink', url)
+      if (url) rte.exec('createLink', url)//class="link"
     }
   },
 }
@@ -43,14 +43,20 @@ export default class RichTextEditor {
       return el[RTE_KEY];
     }
 
+    el.oninput = e => settings.onChange && settings.onChange(e.target.innerHTML);
+    el.onkeydown = e => (e.which === 9 && e.preventDefault());
+    el[RTE_KEY] = this;
+    this.el = el;
+    this.doc = el.ownerDocument;
+
     settings.actions = settings.actions
       ? settings.actions.map(action => {
         if (typeof action === 'string') {
-          return actions[action]
+          return actions[action];
         } else if (actions[action.name]) {
-          return { ...actions[action.name], ...action }
+          return {...actions[action.name], ...action};
         }
-        return action
+        return action;
       }) : Object.keys(actions).map(action => actions[action])
 
     settings.classes = { ...{
@@ -71,12 +77,6 @@ export default class RichTextEditor {
       settings.actions.forEach(action => this.addAction(action))
     }
 
-    el.oninput = e => settings.onChange(e.target.innerHTML)
-    el.onkeydown = e => (e.which === 9 && e.preventDefault());
-    el[RTE_KEY] = this;
-
-    this.el = el;
-    this.doc = el.ownerDocument;
     this.settings = settings;
     this.classes = classes;
     settings.styleWithCSS && this.exec('styleWithCSS');

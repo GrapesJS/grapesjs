@@ -12,9 +12,10 @@ module.exports = ComponentView.extend({
     ComponentView.prototype.initialize.apply(this, arguments);
     this.disableEditing = this.disableEditing.bind(this);
     const model = this.model;
+    const em = this.em;
     this.listenTo(model, 'focus active', this.enableEditing);
     this.listenTo(model, 'change:content', this.updateContent);
-    this.rte = this.config.rte || '';
+    this.rte = em && em.get('rte');
     this.activeRte = null;
   },
 

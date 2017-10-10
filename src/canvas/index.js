@@ -106,7 +106,7 @@ module.exports = () => {
     },
 
     /**
-     * Returns element containing canvas tools
+     * Returns element containing all canvas tools
      * @return {HTMLElement}
      */
     getToolsEl() {

@@ -30,8 +30,7 @@ module.exports = () => {
   CommandButtons = require('./model/CommandButtons'),
   CommandButtonsView = require('./view/CommandButtonsView');
   const $ = require('backbone').$;
-  var tlbPfx, toolbar, commands;
-  var mainSelf;
+  let toolbar, commands;
 
   return {
 
@@ -50,24 +49,37 @@ module.exports = () => {
      * @private
      */
     init(config) {
-      mainSelf = this;
       c = config || {};
-      for (var name in defaults) {
-        if (!(name in c))
+
+      for (let name in defaults) {
+        if (!(name in c)) {
           c[name] = defaults[name];
+        }
       }
 
-      var ppfx = c.pStylePrefix;
-      if(ppfx)
-        c.stylePrefix = ppfx + c.stylePrefix;
+      const ppfx = c.pStylePrefix;
 
-      tlbPfx = c.stylePrefix;
+      if (ppfx) {
+        c.stylePrefix = ppfx + c.stylePrefix;
+      }
+
+      toolbar = document.createElement('div');
+      toolbar.className = `${ppfx}rte-toolbar`;
+
+      /*
       commands = new CommandButtons(c.commands);
       toolbar = new CommandButtonsView({
         collection: commands,
         config: c,
       });
+      */
       return this;
+    },
+
+    postRender(ev) {
+      const canvas = ev.model.get('Canvas');
+      toolbar.style.pointerEvents = 'all';
+      canvas.getToolsEl().appendChild(toolbar);
     },
 
     /**
@@ -145,6 +157,7 @@ module.exports = () => {
      * @private
      * */
     attach(view, rte) {
+      const em = c.em;
       // lastEl will be used to place the RTE toolbar
       this.lastEl = view.el;
       var el = view.getChildrenContainer();
@@ -159,13 +172,13 @@ module.exports = () => {
 
       this.show();
 
-      if(c.em) {
+      if (em) {
         setTimeout(this.udpatePosition.bind(this), 0);
-        c.em.off('change:canvasOffset', this.udpatePosition, this);
-        c.em.on('change:canvasOffset', this.udpatePosition, this);
+        em.off('change:canvasOffset', this.udpatePosition, this);
+        em.on('change:canvasOffset', this.udpatePosition, this);
         // Update position on scrolling
-        c.em.off('canvasScroll', this.udpatePosition, this);
-        c.em.on('canvasScroll', this.udpatePosition, this);
+        em.off('canvasScroll', this.udpatePosition, this);
+        em.on('canvasScroll', this.udpatePosition, this);
       }
 
       //Avoid closing edit mode clicking on toolbar
@@ -214,8 +227,7 @@ module.exports = () => {
      * @private
      * */
     show() {
-      var toolbarStyle = toolbar.el.style;
-      toolbarStyle.display = "block";
+      toolbar.style.display = '';
     },
 
     /**
@@ -223,7 +235,7 @@ module.exports = () => {
      * @private
      * */
     hide() {
-      toolbar.el.style.display = "none";
+      toolbar.style.display = 'none';
     },
 
     /**
@@ -240,17 +252,7 @@ module.exports = () => {
      * @private
      */
     getToolbarEl() {
-      return toolbar.el;
+      return toolbar;
     },
-
-    /**
-     * Render toolbar
-     * @return {HTMLElement}
-     * @private
-     */
-    render() {
-      return toolbar.render().el;
-    }
-
   };
 };
