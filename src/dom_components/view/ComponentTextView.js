@@ -82,8 +82,11 @@ module.exports = ComponentView.extend({
         comps.reset();
         comps.add(content);
         comps.each(model => clean(model));
-        // With rerender is possible to see changes applied after clean
+
+        // With rerender it's possible to see changes applied
+        // after clean method
         this.render();
+        comps.trigger('resetNavigator');
       }
     }
 

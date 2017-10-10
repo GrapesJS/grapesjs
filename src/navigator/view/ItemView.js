@@ -4,16 +4,25 @@ var ItemsView;
 
 module.exports = Backbone.View.extend({
 
+  events: {
+    'mousedown [data-toggle-move]': 'startSort',
+    'click [data-toggle-visible]': 'toggleVisibility',
+    'click [data-toggle-select]': 'handleSelect',
+    'click [data-toggle-open]': 'toggleOpening',
+    'click [data-toggle-edit]': 'handleEdit',
+    'focusout input': 'handleEditEnd',
+  },
+
   template: _.template(`
   <% if (hidable) { %>
-    <i id="<%= prefix %>btn-eye" class="btn fa fa-eye <%= (visible ? '' : 'fa-eye-slash') %>"></i>
+    <i id="<%= prefix %>btn-eye" class="btn fa fa-eye <%= (visible ? '' : 'fa-eye-slash') %>" data-toggle-visible></i>
   <% } %>
 
   <div class="<%= prefix %>title-c">
-    <div class="<%= prefix %>title <%= addClass %>" style="padding-left: <%= 42 + level * 10 %>px">
+    <div class="<%= prefix %>title <%= addClass %>" style="padding-left: <%= 42 + level * 10 %>px" data-toggle-select>
       <div class="<%= prefix %>title-inn">
-        <i class="fa fa-pencil <%= editBtnCls %>"></i>
-        <i id="<%= prefix %>caret" class="fa fa-chevron-right <%= caretCls %>"></i>
+        <i class="fa fa-pencil <%= editBtnCls %>" data-toggle-edit></i>
+        <i id="<%= prefix %>caret" class="fa fa-chevron-right <%= caretCls %>" data-toggle-open></i>
         <%= icon %>
         <input class="<%= ppfx %>no-app <%= inputNameCls %>" value="<%= title %>" readonly>
       </div>
@@ -22,7 +31,7 @@ module.exports = Backbone.View.extend({
 
   <div id="<%= prefix %>counter"><%= (count ? count : '') %></div>
 
-  <div id="<%= prefix %>move">
+  <div id="<%= prefix %>move" data-toggle-move>
     <i class="fa fa-arrows"></i>
   </div>
 
@@ -50,20 +59,8 @@ module.exports = Backbone.View.extend({
     this.inputNameCls = `${ppfx}nav-comp-name`;
     this.caretCls = `${ppfx}nav-item-caret`;
     this.titleCls = `${pfx}title`;
-    this.events = {};
-    this.events[`click #${pfx}btn-eye`] = 'toggleVisibility';
-    this.events['click .' + this.caretCls] = 'toggleOpening';
-    this.events['click .' + this.titleCls] = 'handleSelect';
-    this.events['click .' + this.editBtnCls] = 'handleEdit';
-    this.events['blur .' + this.inputNameCls] = 'handleEditEnd';
-
     this.$el.data('model', model);
     this.$el.data('collection', components);
-
-    if(o.config.sortable)
-      this.events['mousedown  #'+pfx+'move']	= 'startSort';
-
-    this.delegateEvents();
   },
 
   /**
