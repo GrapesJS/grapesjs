@@ -1,12 +1,13 @@
-var Backbone = require('backbone');
+import { isUndefined } from 'underscore'
 
 module.exports = Backbone.View.extend({
 
   initialize(o) {
     this.opts = o || {};
     this.config = o.config || {};
-    this.listenTo( this.collection, 'add', this.addTo );
-    this.listenTo( this.collection, 'reset', this.render );
+    const coll = this.collection;
+    this.listenTo(coll, 'add', this.addTo);
+    this.listenTo(coll, 'reset', this.resetChildren);
   },
 
   /**
@@ -17,7 +18,7 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   addTo(model) {
-    var i  = this.collection.indexOf(model);
+    var i = this.collection.indexOf(model);
     this.addToCollection(model, null, i);
 
     var em = this.config.em;
@@ -42,7 +43,6 @@ module.exports = Backbone.View.extend({
       this.compView  =  require('./ComponentView');
     var fragment  = fragmentEl || null,
     viewObject  = this.compView;
-    //console.log('Add to collection', model, 'Index',i);
 
     var dt = this.opts.componentTypes;
 
@@ -66,44 +66,47 @@ module.exports = Backbone.View.extend({
     if(view.model.get('type') == 'textnode')
       rendered =  document.createTextNode(view.model.get('content'));
 
-    if(fragment){
+    if (fragment) {
       fragment.appendChild(rendered);
-    }else{
-      var p  = this.$parent;
-      var pc = p.children;
-      if(typeof index != 'undefined'){
-        var method  = 'before';
+    } else {
+      const parent  = this.parentEl;
+      const children = parent.childNodes;
+
+      if (!isUndefined(index)) {
+        const lastIndex = children.length == index;
+
         // If the added model is the last of collection
         // need to change the logic of append
-        if(pc && p.children().length == index){
+        if (lastIndex) {
           index--;
-          method  = 'after';
         }
+
         // In case the added is new in the collection index will be -1
-        if(index < 0) {
-          p.append(rendered);
-        }else {
-          if(pc) {
-            p.children().eq(index)[method](rendered);
-          }
+        if (lastIndex || !children.length) {
+          parent.appendChild(rendered);
+        } else {
+          parent.insertBefore(rendered, children[index]);
         }
-      }else{
-        p.append(rendered);
+      } else {
+        parent.appendChild(rendered);
       }
     }
 
     return rendered;
   },
 
-  render($p) {
-    var fragment   = document.createDocumentFragment();
-    this.$parent  = $p || this.$el;
-    this.$el.empty();
-    this.collection.each(function(model){
-      this.addToCollection(model, fragment);
-    },this);
-    this.$el.append(fragment);
+  resetChildren() {
+    this.parentEl.innerHTML = '';
+    this.collection.each(model => this.addToCollection(model));
+  },
 
+  render(parent) {
+    const el = this.el;
+    const frag = document.createDocumentFragment();
+    this.parentEl  = parent || this.el;
+    this.collection.each(model => this.addToCollection(model, frag));
+    el.innerHTML = '';
+    el.appendChild(frag);
     return this;
   }
 

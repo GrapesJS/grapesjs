@@ -6,18 +6,16 @@ module.exports = ComponentView.extend({
 
   events: {
     'dblclick': 'enableEditing',
-    'change': 'parseRender',
   },
 
   initialize(o) {
     ComponentView.prototype.initialize.apply(this, arguments);
-    _.bindAll(this,'disableEditing');
+    this.disableEditing = this.disableEditing.bind(this);
     const model = this.model;
     this.listenTo(model, 'focus active', this.enableEditing);
     this.listenTo(model, 'change:content', this.updateContent);
     this.rte = this.config.rte || '';
     this.activeRte = null;
-    this.em = this.config.em;
   },
 
   /**
@@ -26,15 +24,18 @@ module.exports = ComponentView.extend({
    * @private
    * */
   enableEditing(e) {
-    var editable = this.model.get('editable');
-    if(this.rte && editable) {
+    const editable = this.model.get('editable');
+    const rte = this.rte;
+
+    if (rte && editable) {
       try {
-        this.activeRte = this.rte.attach(this, this.activeRte);
-        this.rte.focus(this, this.activeRte);
+        this.activeRte = rte.attach(this, this.activeRte);
+        rte.focus(this, this.activeRte);
       } catch (err) {
         console.error(err);
       }
     }
+
     this.toggleEvents(1);
   },
 
@@ -44,23 +45,46 @@ module.exports = ComponentView.extend({
    * @private
    * */
   disableEditing(e) {
-    var model = this.model;
-    var editable = model.get('editable');
+    const model = this.model;
+    const editable = model.get('editable');
+    const rte = this.rte;
 
-    if(this.rte && editable) {
+    if (rte && editable) {
       try {
-        this.rte.detach(this, this.activeRte);
+        rte.detach(this, this.activeRte);
       } catch (err) {
         console.error(err);
       }
-      var el = this.getChildrenContainer();
-      // Avoid double content by removing its children components
-      model.get('components').reset();
-      model.set('content', el.innerHTML);
-    }
 
-    if(!this.rte.customRte && editable) {
-      this.parseRender();
+      const content = this.getChildrenContainer().innerHTML;
+      const comps = model.get('components');
+
+      // If there is a custom RTE the content is just baked staticly
+      // inside 'content'
+      if (rte.customRte) {
+        // Avoid double content by removing its children components
+        comps.reset();
+        model.set('content', content);
+      } else {
+        const clean = model => {
+          model.set({
+            highlightable: 0,
+            removable: 0,
+            draggable: 0,
+            copyable: 0,
+            toolbar: '',
+          });
+          model.get('components').each(model => clean(model));
+        }
+
+        // Avoid re-render on reset with silent option
+        model.set('content', '');
+        comps.reset();
+        comps.add(content);
+        comps.each(model => clean(model));
+        // With rerender is possible to see changes applied after clean
+        this.render();
+      }
     }
 
     this.toggleEvents();
@@ -73,38 +97,6 @@ module.exports = ComponentView.extend({
    * */
   disablePropagation(e) {
     e.stopPropagation();
-  },
-
-  /**
-   * Parse content and re-render it
-   * @private
-   */
-  parseRender() {
-    const model = this.model;
-    var el = this.getChildrenContainer();
-    var comps = model.get('components');
-    var opts = {silent: true};
-    const clean = model => {
-      model.set({
-        highlightable: 0,
-        removable: 0,
-        draggable: 0,
-        copyable: 0,
-        toolbar: '',
-      }, opts);
-      model.get('components').each(model => clean(model));
-    }
-
-    // Avoid re-render on reset with silent option
-    comps.reset(null, opts);
-    comps.add(el.innerHTML, opts);
-    comps.each(model => clean(model));
-    model.set('content', '');
-    this.render();
-
-    // As the reset was in silent mode I need to notify
-    // the navigator about the change
-    comps.trigger('resetNavigator');
   },
 
   /**

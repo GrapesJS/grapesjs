@@ -1,5 +1,4 @@
 const ComponentsView = require('./ComponentsView');
-const $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
 
@@ -12,15 +11,16 @@ module.exports = Backbone.View.extend({
   },
 
   initialize(opt) {
-    var model = this.model;
+    const model = this.model;
     this.opts = opt || {};
     this.config = this.opts.config || {};
     this.em = this.config.em || '';
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
-    this.components = model.get('components');
-    this.attr = model.get("attributes");
+    this.attr = model.get('attributes');
     this.classe = this.attr.class || [];
+    const $el = this.$el;
+    const classes = model.get('classes');
     this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model, 'change:style', this.updateStyle);
     this.listenTo(model, 'change:attributes', this.updateAttributes);
@@ -28,24 +28,18 @@ module.exports = Backbone.View.extend({
     this.listenTo(model, 'change:state', this.updateState);
     this.listenTo(model, 'change:script', this.render);
     this.listenTo(model, 'change', this.handleChange);
-    this.listenTo(model.get('classes'), 'add remove change', this.updateClasses);
-
-    const $el = this.$el;
-    const el = this.el;
-    const em = this.em;
+    this.listenTo(classes, 'add remove change', this.updateClasses);
     $el.data('model', model);
-    $el.data('collection', this.components);
+    $el.data('collection', model.get('components'));
     model.view = this;
-
-    if (em) {
-      em.data(el, 'model', model);
-      em.data(el, 'collection', model.get('components'));
-    }
-
-    if(model.get('classes').length)
-      this.importClasses();
-
+    classes.length && this.importClasses();
     this.init();
+  },
+
+  remove() {
+    Backbone.View.prototype.remove.apply(this);
+    const children = this.childrenView;
+    children && children.stopListening();
   },
 
   /**
@@ -309,15 +303,16 @@ module.exports = Backbone.View.extend({
    * @private
    */
   renderChildren() {
-    var view = new ComponentsView({
+    const container = this.getChildrenContainer();
+    const view = new ComponentsView({
       collection: this.model.get('components'),
       config: this.config,
       componentTypes: this.opts.componentTypes,
     });
 
-    var container = this.getChildrenContainer();
-    var childNodes = view.render($(container)).el.childNodes;
-    childNodes = Array.prototype.slice.call(childNodes);
+    view.render(container);
+    this.childrenView = view;
+    const childNodes = Array.prototype.slice.call(view.el.childNodes);
 
     for (var i = 0, len = childNodes.length ; i < len; i++) {
       container.appendChild(childNodes.shift());
@@ -348,7 +343,6 @@ module.exports = Backbone.View.extend({
 
   render() {
     this.renderAttributes();
-    var model = this.model;
     this.updateContent();
     this.renderChildren();
     this.updateScript();
