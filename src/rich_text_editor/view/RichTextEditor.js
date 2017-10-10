@@ -1,6 +1,8 @@
 // The initial version of this RTE was borrowed from https://github.com/jaredreich/pell
 // and adapted to the GrapesJS's need
 
+const RTE_KEY = '_rte';
+
 const actions = {
   bold: {
     icon: '<b>B</b>',
@@ -37,8 +39,8 @@ export default class RichTextEditor {
   constructor(settings = {}) {
     const el = settings.element;
 
-    if (el.rte) {
-      return el.rte;
+    if (el[RTE_KEY]) {
+      return el[RTE_KEY];
     }
 
     settings.actions = settings.actions
@@ -71,7 +73,7 @@ export default class RichTextEditor {
 
     el.oninput = e => settings.onChange(e.target.innerHTML)
     el.onkeydown = e => (e.which === 9 && e.preventDefault());
-    el.rte = this;
+    el[RTE_KEY] = this;
 
     this.el = el;
     this.doc = el.ownerDocument;
@@ -83,8 +85,19 @@ export default class RichTextEditor {
     return this;
   }
 
+  enable() {
+    this.actionbar().style.display = '';
+    this.el.contentEditable = true;
+    this.syncActions();
+  }
+
+  disable() {
+    this.actionbar().style.display = 'none';
+    this.el.contentEditable = false;
+  }
+
   /**
-   * Sync actions with a current rte
+   * Sync actions with the current RTE
    */
   syncActions() {
     this.actions().forEach(action => {
@@ -99,40 +112,58 @@ export default class RichTextEditor {
    */
   addAction(action) {
     const btn = document.createElement('span');
+    const icon = action.icon;
     btn.className = this.classes.button;
-    btn.insertAdjacentHTML('afterbegin', action.icon);
     btn.title = action.title;
     action.btn = btn;
+
+    if (typeof icon == 'string') {
+      btn.innerHTML = icon;
+    } else {
+      btn.appendChild(icon);
+    }
+
     this.actionbar().appendChild(btn);
   }
 
-  enable() {
-    this.actionbar().style.display = '';
-    el.contentEditable = true;
-    this.syncActions();
-  }
-
-  disable() {
-    this.actionbar().style.display = 'none';
-    el.contentEditable = false;
-  }
-
+  /**
+   * Get the array of current actions
+   * @return {Array}
+   */
   actions() {
     return this.settings.actions;
   }
 
+  /**
+   * Returns the Selection instance
+   * @return {Selection}
+   */
   selection() {
     this.doc.getSelection()
   }
 
+  /**
+   * Execute the command
+   * @param  {string} command Command name
+   * @param  {any} [value=null Command's arguments
+   */
   exec(command, value = null) {
     this.doc.execCommand(command, false, value);
   }
 
+  /**
+   * Get the actionbar element
+   * @return {HTMLElement}
+   */
   actionbar() {
     return this.actionbar;
   }
 
+  /**
+   * Set custom HTML to the selection, useful as the default 'insertHTML' command
+   * doesn't work in the same way on all browsers
+   * @param  {string} value HTML string
+   */
   insertHTML(value) {
     const doc = this.doc;
     const sel = doc.getSelection();
