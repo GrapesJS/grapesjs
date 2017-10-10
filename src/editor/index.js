@@ -207,7 +207,7 @@ module.exports = config => {
      * @property {RichTextEditor}
      * @private
      */
-    RichTextEditor: em.get('rte'),
+    RichTextEditor: em.get('RichTextEditor'),
 
     /**
      * @property {Utils}

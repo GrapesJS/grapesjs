@@ -162,7 +162,6 @@ module.exports = () => {
 
       // Load dependencies
       if (em) {
-        c.rte = em.get('rte') || '';
         c.modal = em.get('Modal') || '';
         c.am = em.get('AssetManager') || '';
         em.get('Parser').compTypes = componentTypes;

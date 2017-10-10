@@ -41,7 +41,7 @@ module.exports = () => {
      * @type {String}
      * @private
      */
-    name: 'rte',
+    name: 'RichTextEditor',
 
     /**
      * Initialize module. Automatically called with a new instance of the editor

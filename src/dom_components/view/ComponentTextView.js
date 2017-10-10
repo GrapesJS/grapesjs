@@ -15,7 +15,7 @@ module.exports = ComponentView.extend({
     const em = this.em;
     this.listenTo(model, 'focus active', this.enableEditing);
     this.listenTo(model, 'change:content', this.updateContent);
-    this.rte = em && em.get('rte');
+    this.rte = em && em.get('RichTextEditor');
     this.activeRte = null;
   },
 
