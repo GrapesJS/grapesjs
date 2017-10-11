@@ -26,13 +26,9 @@ import RichTextEditor from './model/RichTextEditor';
 import {on, off} from 'utils/mixins'
 
 module.exports = () => {
-  let config = {},
-  defaults = require('./config/config'),
-  rte = require('./view/TextEditorView'),
-  CommandButtons = require('./model/CommandButtons'),
-  CommandButtonsView = require('./view/CommandButtonsView');
-  const $ = require('backbone').$;
-  let toolbar, commands, lastEl;
+  let config = {};
+  const defaults = require('./config/config');
+  let toolbar, actions, lastEl;
 
   return {
 
@@ -50,8 +46,8 @@ module.exports = () => {
      * @param {Object} opts Options
      * @private
      */
-    init(opts) {
-      config = opts || {};
+    init(opts = {}) {
+      config = opts;
 
       for (let name in defaults) {
         if (!(name in config)) {
@@ -65,6 +61,7 @@ module.exports = () => {
         config.stylePrefix = ppfx + config.stylePrefix;
       }
 
+      actions = config.actions || [];
       toolbar = document.createElement('div');
       toolbar.className = `${ppfx}rte-toolbar`;
 
@@ -88,29 +85,28 @@ module.exports = () => {
     },
 
     /**
-     * Add a new command to the toolbar
-     * @param {string} command Command name
-     * @param {Object} opts Command options
-     * @return {Model} Added command
+     * Add a new action to the RTE toolbar
+     * @param {string} name Action name
+     * @param {Object} opts Action options
      * @example
-     * var cm = rte.add('bold', {
-     *   title: 'Make bold',
-     *   class: 'fa fa-bold',
+     * rte.add('bold', {
+     *   icon: '<b>B</b>',
+     *   title: 'Bold',
+     *   result: rte => rte.exec('bold')
      * });
-     * // With arguments
-     * var cm = rte.add('fontSize', {
-     *   title: 'Font size',
-     *   options: [
-     *     {name: 'Big', value: 5},
-     *     {name: 'Normal', value: 3},
-     *     {name: 'Small', value: 1}
-     *   ]
+     * rte.add('link', {
+     *   icon: 'L',
+     *   title: 'Link',
+     *   result: rte => {
+     *    const url = window.prompt('Enter the link URL')
+     *    if (url) rte.exec('createLink', url)
+     *   }
      * });
      */
-    add(command, opts) {
-      var obj = opts || {};
-      obj.command = command;
-      return commands.add(obj);
+    add(name, opts = {}) {
+      opts.name = name;
+      actions.push(opts);
+      //gloabl.addAction();
     },
 
     /**
