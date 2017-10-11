@@ -135,7 +135,7 @@ module.exports = () => {
     udpatePosition() {
       var u = 'px';
       var canvas = config.em.get('Canvas');
-      var pos = canvas.getTargetToElementDim(toolbar.el, lastEl, {
+      var pos = canvas.getTargetToElementDim(toolbar, lastEl, {
         event: 'rteToolbarPosUpdate',
       });
 
@@ -146,7 +146,7 @@ module.exports = () => {
         }
       }
 
-      var toolbarStyle = toolbar.el.style;
+      const toolbarStyle = toolbar.style;
       toolbarStyle.top = pos.top + u;
       toolbarStyle.left = pos.left + u;
     },

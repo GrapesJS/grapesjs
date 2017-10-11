@@ -67,6 +67,8 @@ export default class RichTextEditor {
     const classes = settings.classes;
     let actionbar = settings.actionbar;
     this.actionbar = actionbar;
+    this.settings = settings;
+    this.classes = classes;
 
     if (!actionbar) {
       const actionbarCont = settings.actionbarContainer;
@@ -77,8 +79,6 @@ export default class RichTextEditor {
       settings.actions.forEach(action => this.addAction(action))
     }
 
-    this.settings = settings;
-    this.classes = classes;
     settings.styleWithCSS && this.exec('styleWithCSS');
     this.syncActions();
 
@@ -86,13 +86,13 @@ export default class RichTextEditor {
   }
 
   enable() {
-    this.actionbar().style.display = '';
+    this.actionbarEl().style.display = '';
     this.el.contentEditable = true;
     this.syncActions();
   }
 
   disable() {
-    this.actionbar().style.display = 'none';
+    this.actionbarEl().style.display = 'none';
     this.el.contentEditable = false;
   }
 
@@ -123,7 +123,7 @@ export default class RichTextEditor {
       btn.appendChild(icon);
     }
 
-    this.actionbar().appendChild(btn);
+    this.actionbarEl().appendChild(btn);
   }
 
   /**
@@ -155,7 +155,7 @@ export default class RichTextEditor {
    * Get the actionbar element
    * @return {HTMLElement}
    */
-  actionbar() {
+  actionbarEl() {
     return this.actionbar;
   }
 

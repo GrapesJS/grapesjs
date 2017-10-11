@@ -1,0 +1,33 @@
+.#{$rte-prefix}toolbar {
+  @extend .#{$app-prefix}bg-main;
+
+  display: none;
+  border: 1px solid $mainDkColor;
+  position: absolute;
+  border-radius: 3px;
+  z-index: 10;
+
+  &-btn {
+  	@extend .#{$app-prefix}color-main;
+
+    display: inline-block;
+    padding: 5px;
+    min-width: 25px;
+    border-right: 1px solid $mainDkColor;
+    text-align: center;
+    cursor: pointer;
+    outline: none;
+
+    &:last-child {
+      border-right: none;
+    }
+
+    &.btn-info {
+      background-color: $mainDkColor;
+    }
+
+    &:hover {
+      background-color: $mainLhColor;
+    }
+  }
+}
