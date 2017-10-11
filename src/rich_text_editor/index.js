@@ -164,6 +164,7 @@ module.exports = () => {
       const pfx = this.pfx;
       const el = view.getChildrenContainer();
       const customRte = this.customRte;
+      const actionbar = this.actionbar;
       const actionbarContainer = toolbar;
       const classes = {
         actionbar: `${pfx}actionbar`,
@@ -172,7 +173,11 @@ module.exports = () => {
 
       toolbar.style.display = '';
       rte = customRte ? customRte.enable(el, rte) :
-        new RichTextEditor({el, actionbarContainer, classes}).enable();
+        new RichTextEditor({el, actionbarContainer, classes, actionbar}).enable();
+
+      if (rte.actionbar) {
+        this.actionbar = rte.actionbar;
+      }
 
       if (em) {
         setTimeout(this.udpatePosition.bind(this), 0);

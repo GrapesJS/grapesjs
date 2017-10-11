@@ -65,6 +65,7 @@ module.exports = ComponentView.extend({
       } else {
         const clean = model => {
           model.set({
+            editable: 0,
             highlightable: 0,
             removable: 0,
             draggable: 0,

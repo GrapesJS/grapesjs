@@ -25,7 +25,7 @@ const actions = {
     result: (rte) => rte.exec('strikeThrough')
   },
   link: {
-    icon: '&#128279;',
+    icon: 'Link',
     title: 'Link',
     result: (rte) => {
       const url = window.prompt('Enter the link URL')
@@ -43,8 +43,8 @@ export default class RichTextEditor {
       return el[RTE_KEY];
     }
 
-    el.oninput = e => settings.onChange && settings.onChange(e.target.innerHTML);
-    el.onkeydown = e => (e.which === 9 && e.preventDefault());
+    //el.oninput = e => settings.onChange && settings.onChange(e.target.innerHTML);
+    //el.onkeydown = e => (e.which === 9 && e.preventDefault());
     el[RTE_KEY] = this;
     this.el = el;
     this.doc = el.ownerDocument;
