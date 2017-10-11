@@ -61,6 +61,7 @@ module.exports = () => {
         config.stylePrefix = ppfx + config.stylePrefix;
       }
 
+      this.pfx = config.stylePrefix;
       actions = config.actions || [];
       toolbar = document.createElement('div');
       toolbar.className = `${ppfx}rte-toolbar`;
@@ -133,9 +134,9 @@ module.exports = () => {
      * @private
      */
     udpatePosition() {
-      var u = 'px';
-      var canvas = config.em.get('Canvas');
-      var pos = canvas.getTargetToElementDim(toolbar, lastEl, {
+      const un = 'px';
+      const canvas = config.em.get('Canvas');
+      const pos = canvas.getTargetToElementDim(toolbar, lastEl, {
         event: 'rteToolbarPosUpdate',
       });
 
@@ -147,8 +148,8 @@ module.exports = () => {
       }
 
       const toolbarStyle = toolbar.style;
-      toolbarStyle.top = pos.top + u;
-      toolbarStyle.left = pos.left + u;
+      toolbarStyle.top = pos.top + un;
+      toolbarStyle.left = pos.left + un;
     },
 
     /**
@@ -160,13 +161,18 @@ module.exports = () => {
     enable(view, rte) {
       lastEl = view.el;
       const em = config.em;
+      const pfx = this.pfx;
       const el = view.getChildrenContainer();
       const customRte = this.customRte;
       const actionbarContainer = toolbar;
+      const classes = {
+        actionbar: `${pfx}actionbar`,
+        button: `${pfx}action`,
+      };
 
       toolbar.style.display = '';
       rte = customRte ? customRte.enable(el, rte) :
-        new RichTextEditor({el, actionbarContainer});
+        new RichTextEditor({el, actionbarContainer, classes}).enable();
 
       if (em) {
         setTimeout(this.udpatePosition.bind(this), 0);

@@ -61,7 +61,7 @@ export default class RichTextEditor {
 
     settings.classes = { ...{
       actionbar: 'actionbar',
-      button: 'button',
+      button: 'action',
     }, ...settings.classes};
 
     const classes = settings.classes;
@@ -89,11 +89,13 @@ export default class RichTextEditor {
     this.actionbarEl().style.display = '';
     this.el.contentEditable = true;
     this.syncActions();
+    return this;
   }
 
   disable() {
     this.actionbarEl().style.display = 'none';
     this.el.contentEditable = false;
+    return this;
   }
 
   /**
