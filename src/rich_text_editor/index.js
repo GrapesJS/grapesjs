@@ -3,6 +3,7 @@
  * * [get](#get)
  * * [getAll](#getall)
  * * [remove](#remove)
+ * * [getToolbarEl](#gettoolbarel)
  *
  * This module allows to customize the toolbar of the Rich Text Editor and use commands from the HTML Editing APIs.
  * For more info about HTML Editing APIs check here:
@@ -21,16 +22,17 @@
  * http://www.quirksmode.org/dom/execCommand.html
  * @module RichTextEditor
  */
-const $ = Backbone.$;
+import RichTextEditor from './model/RichTextEditor';
+import {on, off} from 'utils/mixins'
 
 module.exports = () => {
-  var c = {},
+  let config = {},
   defaults = require('./config/config'),
   rte = require('./view/TextEditorView'),
   CommandButtons = require('./model/CommandButtons'),
   CommandButtonsView = require('./view/CommandButtonsView');
   const $ = require('backbone').$;
-  let toolbar, commands;
+  let toolbar, commands, lastEl;
 
   return {
 
@@ -45,26 +47,29 @@ module.exports = () => {
 
     /**
      * Initialize module. Automatically called with a new instance of the editor
-     * @param {Object} config Configurations
+     * @param {Object} opts Options
      * @private
      */
-    init(config) {
-      c = config || {};
+    init(opts) {
+      config = opts || {};
 
       for (let name in defaults) {
-        if (!(name in c)) {
-          c[name] = defaults[name];
+        if (!(name in config)) {
+          config[name] = defaults[name];
         }
       }
 
-      const ppfx = c.pStylePrefix;
+      const ppfx = config.pStylePrefix;
 
       if (ppfx) {
-        c.stylePrefix = ppfx + c.stylePrefix;
+        config.stylePrefix = ppfx + config.stylePrefix;
       }
 
       toolbar = document.createElement('div');
       toolbar.className = `${ppfx}rte-toolbar`;
+
+      //Avoid closing on toolbar clicking
+      on(toolbar, 'mousedown', e => e.stopPropagation());
 
       /*
       commands = new CommandButtons(c.commands);
@@ -133,12 +138,12 @@ module.exports = () => {
      */
     udpatePosition() {
       var u = 'px';
-      var canvas = c.em.get('Canvas');
-      var pos = canvas.getTargetToElementDim(toolbar.el, this.lastEl, {
+      var canvas = config.em.get('Canvas');
+      var pos = canvas.getTargetToElementDim(toolbar.el, lastEl, {
         event: 'rteToolbarPosUpdate',
       });
 
-      if (c.adjustToolbar) {
+      if (config.adjustToolbar) {
         // Move the toolbar down when the top canvas edge is reached
         if (pos.top <= pos.canvasTop) {
           pos.top = pos.elementTop + pos.elementHeight;
@@ -151,26 +156,19 @@ module.exports = () => {
     },
 
     /**
-     * Bind rich text editor to the element
+     * Enable rich text editor on the element
      * @param {View} view
      * @param {Object} rte The instance of already defined RTE
      * @private
      * */
-    attach(view, rte) {
-      const em = c.em;
-      // lastEl will be used to place the RTE toolbar
-      this.lastEl = view.el;
-      var el = view.getChildrenContainer();
-      var customRte = this.customRte;
+    enable(view, rte) {
+      lastEl = view.el;
+      const em = config.em;
+      const el = view.getChildrenContainer();
+      const customRte = this.customRte;
 
-      // If a custom RTE is defined
-      if (customRte) {
-        rte = customRte.enable(el, rte);
-      } else {
-        $(el).wysiwyg({}).focus();
-      }
-
-      this.show();
+      rte = customRte ? customRte.enable(el, rte) : new RichTextEditor({el});
+      toolbar.style.display = '';
 
       if (em) {
         setTimeout(this.udpatePosition.bind(this), 0);
@@ -181,8 +179,6 @@ module.exports = () => {
         em.on('canvasScroll', this.udpatePosition, this);
       }
 
-      //Avoid closing edit mode clicking on toolbar
-      toolbar.$el.on('mousedown', this.disableProp);
       return rte;
     },
 
@@ -192,17 +188,17 @@ module.exports = () => {
      * @param {Object} rte The instance of already defined RTE
      * @private
      * */
-    detach(view, rte) {
-      var customRte = this.customRte;
+    disable(view, rte) {
+      const customRte = this.customRte;
       var el = view.getChildrenContainer();
+
       if (customRte) {
-        view.model.set('content', el.innerHTML);
         customRte.disable(el, rte);
       } else {
-        $(el).wysiwyg('destroy');
+        rte.disable();
       }
-      this.hide();
-      toolbar.$el.off('mousedown', this.disableProp);
+
+      toolbar.style.display = 'none';
     },
 
     /**
@@ -223,31 +219,7 @@ module.exports = () => {
     },
 
     /**
-     * Show the toolbar
-     * @private
-     * */
-    show() {
-      toolbar.style.display = '';
-    },
-
-    /**
-     * Hide the toolbar
-     * @private
-     * */
-    hide() {
-      toolbar.style.display = 'none';
-    },
-
-    /**
-     * Isolate the disable propagation method
-     * @private
-     * */
-    disableProp(e) {
-      e.stopPropagation();
-    },
-
-    /**
-     * Return toolbar element
+     * Return the toolbar element
      * @return {HTMLElement}
      * @private
      */

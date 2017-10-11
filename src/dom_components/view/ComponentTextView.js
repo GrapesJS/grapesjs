@@ -19,11 +19,10 @@ module.exports = ComponentView.extend({
   },
 
   /**
-   * Enable the component to be editable
-   * @param {Event} e
+   * Enable element content editing
    * @private
    * */
-  enableEditing(e) {
+  enableEditing() {
     const editable = this.model.get('editable');
     const rte = this.rte;
 
@@ -40,11 +39,10 @@ module.exports = ComponentView.extend({
   },
 
   /**
-   * Disable this component to be editable
-   * @param {Event}
+   * Disable element content editing
    * @private
    * */
-  disableEditing(e) {
+  disableEditing() {
     const model = this.model;
     const editable = model.get('editable');
     const rte = this.rte;
