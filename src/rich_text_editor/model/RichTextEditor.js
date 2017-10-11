@@ -6,27 +6,30 @@ const RTE_KEY = '_rte';
 const actions = {
   bold: {
     icon: '<b>B</b>',
-    title: 'Bold',
+    attributes: {title: 'Bold'},
     result: (rte) => rte.exec('bold')
   },
   italic: {
     icon: '<i>I</i>',
-    title: 'Italic',
+    attributes: {title: 'Italic'},
     result: (rte) => rte.exec('italic')
   },
   underline: {
     icon: '<u>U</u>',
-    title: 'Underline',
+    attributes: {title: 'Underline'},
     result: (rte) => rte.exec('underline')
   },
   strikethrough: {
     icon: '<strike>S</strike>',
-    title: 'Strike-through',
+    attributes: {title: 'Strike-through'},
     result: (rte) => rte.exec('strikeThrough')
   },
   link: {
-    icon: 'Link',
-    title: 'Link',
+    icon: `<span style="transform:rotate(45deg)">&supdsub;</span>`,
+    attributes: {
+      style: 'font-size:1.4rem;padding:0 4px 2px;',
+      title: 'Link',
+    },
     result: (rte) => {
       const url = window.prompt('Enter the link URL')
       if (url) rte.exec('createLink', url)//class="link"
@@ -115,9 +118,13 @@ export default class RichTextEditor {
   addAction(action) {
     const btn = document.createElement('span');
     const icon = action.icon;
+    const attr = action.attributes || {};
     btn.className = this.classes.button;
-    btn.title = action.title;
     action.btn = btn;
+
+    for (let key in attr) {
+      btn.setAttribute(key, attr[key]);
+    }
 
     if (typeof icon == 'string') {
       btn.innerHTML = icon;
