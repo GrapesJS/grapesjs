@@ -157,7 +157,7 @@ module.exports = () => {
 
     /**
      * Enable rich text editor on the element
-     * @param {View} view
+     * @param {View} view Component view
      * @param {Object} rte The instance of already defined RTE
      * @private
      * */
@@ -166,17 +166,17 @@ module.exports = () => {
       const em = config.em;
       const el = view.getChildrenContainer();
       const customRte = this.customRte;
+      const actionbarContainer = toolbar;
 
-      rte = customRte ? customRte.enable(el, rte) : new RichTextEditor({el});
       toolbar.style.display = '';
+      rte = customRte ? customRte.enable(el, rte) :
+        new RichTextEditor({el, actionbarContainer});
 
       if (em) {
         setTimeout(this.udpatePosition.bind(this), 0);
-        em.off('change:canvasOffset', this.udpatePosition, this);
-        em.on('change:canvasOffset', this.udpatePosition, this);
-        // Update position on scrolling
-        em.off('canvasScroll', this.udpatePosition, this);
-        em.on('canvasScroll', this.udpatePosition, this);
+        const event = 'change:canvasOffset canvasScroll';
+        em.off(event, this.udpatePosition, this);
+        em.on(event, this.udpatePosition, this);
       }
 
       return rte;
@@ -199,23 +199,6 @@ module.exports = () => {
       }
 
       toolbar.style.display = 'none';
-    },
-
-    /**
-     * Unbind rich text editor from the element
-     * @param {View} view
-     * @param {Object} rte The instance of already defined RTE
-     * @private
-     * */
-    focus(view, rte) {
-      var customRte = this.customRte;
-      var el = view.getChildrenContainer();
-      if (customRte) {
-        if(customRte.focus)
-          customRte.focus(el, rte);
-      } else {
-        this.attach(view);
-      }
     },
 
     /**

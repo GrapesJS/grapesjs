@@ -29,7 +29,6 @@ module.exports = ComponentView.extend({
     if (rte && editable) {
       try {
         this.activeRte = rte.enable(this, this.activeRte);
-        rte.focus(this, this.activeRte);
       } catch (err) {
         console.error(err);
       }
