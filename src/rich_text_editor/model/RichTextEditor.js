@@ -37,7 +37,7 @@ const actions = {
 export default class RichTextEditor {
 
   constructor(settings = {}) {
-    const el = settings.element;
+    const el = settings.el;
 
     if (el[RTE_KEY]) {
       return el[RTE_KEY];

@@ -16,7 +16,6 @@ module.exports = ComponentView.extend({
     this.listenTo(model, 'focus active', this.enableEditing);
     this.listenTo(model, 'change:content', this.updateContent);
     this.rte = em && em.get('RichTextEditor');
-    this.activeRte = null;
   },
 
   /**
@@ -30,7 +29,7 @@ module.exports = ComponentView.extend({
 
     if (rte && editable) {
       try {
-        this.activeRte = rte.attach(this, this.activeRte);
+        this.activeRte = rte.enable(this, this.activeRte);
         rte.focus(this, this.activeRte);
       } catch (err) {
         console.error(err);
@@ -52,7 +51,7 @@ module.exports = ComponentView.extend({
 
     if (rte && editable) {
       try {
-        rte.detach(this, this.activeRte);
+        rte.disable(this, this.activeRte);
       } catch (err) {
         console.error(err);
       }
