@@ -1,5 +1,6 @@
 const ComponentTextView = require('dom_components/view/ComponentTextView');
 const Component = require('dom_components/model/Component');
+const grapesjs = require('grapesjs');
 
 module.exports = {
   run() {
@@ -40,6 +41,42 @@ module.exports = {
           view = new ComponentTextView({ model });
           fixtures.appendChild(view.render().el);
           expect(view.el.innerHTML).toEqual('test');
+        });
+
+        it('Enable and disable editing triggers events', () => {
+          var triggeredOnStart = false, triggeredOnEnd = false;
+
+          // There may be a better way to handle this than
+          // initializing an entire instance of the editor
+          // but we need access to things like the Parser
+          // and this was easier than mocking everything.
+          model = new Component({
+            editable: true
+          });
+          var components = model.get('components');
+          components.editor = grapesjs.init({
+            autorender: false,
+            container: '#gjs'
+          }).editor;
+          model.set('components', components);
+
+          view = new ComponentTextView({ model });
+          view.rte = {
+            attach: () => { },
+            detach: () => { },
+            focus: () => { }
+          };
+          view.em = _.extend({}, Backbone.Events);
+          fixtures.appendChild(view.render().el);
+
+          view.em.on('rte:attach', () => { triggeredOnStart = true; });
+          view.em.on('rte:detach', () => { triggeredOnEnd = true; });
+
+          view.enableEditing();
+          view.disableEditing();
+
+          expect(triggeredOnStart).toEqual(true);
+          expect(triggeredOnEnd).toEqual(true);
         });
 
     });
