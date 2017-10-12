@@ -2,7 +2,6 @@
  * * [add](#add)
  * * [get](#get)
  * * [getAll](#getall)
- * * [remove](#remove)
  * * [getToolbarEl](#gettoolbarel)
  *
  * This module allows to customize the toolbar of the Rich Text Editor and use commands from the HTML Editing APIs.
@@ -28,7 +27,7 @@ import {on, off} from 'utils/mixins'
 module.exports = () => {
   let config = {};
   const defaults = require('./config/config');
-  let toolbar, actions, lastEl;
+  let toolbar, actions, lastEl, globalRte;
 
   return {
 
@@ -65,6 +64,7 @@ module.exports = () => {
       actions = config.actions || [];
       toolbar = document.createElement('div');
       toolbar.className = `${ppfx}rte-toolbar`;
+      globalRte = this.initRte(document.createElement('div'));
 
       //Avoid closing on toolbar clicking
       on(toolbar, 'mousedown', e => e.stopPropagation());
@@ -77,48 +77,89 @@ module.exports = () => {
       canvas.getToolsEl().appendChild(toolbar);
     },
 
+
     /**
-     * Add a new action to the RTE toolbar
+     * Init the built-in RTE
+     * @param  {HTMLElement} el
+     * @return {RichTextEditor}
+     * @private
+     */
+    initRte(el) {
+      const pfx = this.pfx;
+      const actionbarContainer = toolbar;
+      const actionbar = this.actionbar;
+      const actions = this.actions || config.actions;
+      const classes = {
+        actionbar: `${pfx}actionbar`,
+        button: `${pfx}action`,
+        active: `${pfx}active`,
+      };
+      const rte = new RichTextEditor({
+        el,
+        classes,
+        actions,
+        actionbar,
+        actionbarContainer,
+      });
+
+      if (rte.actionbar) {
+        this.actionbar = rte.actionbar;
+      }
+
+      if (rte.actions) {
+        this.actions = rte.actions;
+      }
+
+      return rte;
+    },
+
+    /**
+     * Add a new action to the built-in RTE toolbar
      * @param {string} name Action name
-     * @param {Object} opts Action options
+     * @param {Object} action Action options
      * @example
      * rte.add('bold', {
      *   icon: '<b>B</b>',
-     *   title: 'Bold',
+     *   attributes: {title: 'Bold',}
      *   result: rte => rte.exec('bold')
      * });
      * rte.add('link', {
      *   icon: 'L',
-     *   title: 'Link',
-     *   result: rte => {
-     *    const url = window.prompt('Enter the link URL')
-     *    if (url) rte.exec('createLink', url)
-     *   }
+     *   attributes: {title: 'Link',}
+     *   result: rte =>
+     *    rte.insertHTML(`<a href="#">${rte.selection()}</a>`)
      * });
      */
-    add(name, opts = {}) {
-      opts.name = name;
-      actions.push(opts);
-      //gloabl.addAction();
+    add(name, action = {}) {
+      action.name = name;
+      globalRte.getActions().push(action);
+      globalRte.addAction(action, {sync: 1});
     },
 
     /**
-     * Get the command by its name
-     * @param {string} command Command name
-     * @return {Model}
+     * Get the action by its name
+     * @param {string} name Action name
+     * @return {Object}
      * @example
-     * var cm = rte.get('fontSize');
+     * const action = rte.get('bold');
+     * // {name: 'bold', ...}
      */
-    get(command) {
-      return commands.where({command})[0];
+    get(name) {
+      let result;
+      globalRte.getActions().forEach(action => {
+        if (action.name == name) {
+          result = action;
+        }
+      });
+      return result;
     },
 
     /**
-     * Returns the collection of commands
-     * @return {Collection}
+     * Get all actions
+     * @return {Array}
      */
     getAll() {
-      return commands;
+      return globalRte.getActions();
     },
 
     /**
@@ -153,24 +194,11 @@ module.exports = () => {
     enable(view, rte) {
       lastEl = view.el;
       const em = config.em;
-      const pfx = this.pfx;
       const el = view.getChildrenContainer();
       const customRte = this.customRte;
-      const actionbar = this.actionbar;
-      const actionbarContainer = toolbar;
-      const classes = {
-        actionbar: `${pfx}actionbar`,
-        button: `${pfx}action`,
-        active: `${pfx}active`,
-      };
 
       toolbar.style.display = '';
-      rte = customRte ? customRte.enable(el, rte) :
-        new RichTextEditor({el, actionbarContainer, classes, actionbar}).enable();
-
-      if (rte.actionbar) {
-        this.actionbar = rte.actionbar;
-      }
+      rte = customRte ? customRte.enable(el, rte) : this.initRte(el).enable();
 
       if (em) {
         setTimeout(this.udpatePosition.bind(this), 0);
@@ -190,6 +218,7 @@ module.exports = () => {
      * */
     disable(view, rte) {
       const customRte = this.customRte;
+      const style = toolbar.style;
       var el = view.getChildrenContainer();
 
       if (customRte) {
@@ -198,13 +227,14 @@ module.exports = () => {
         rte.disable();
       }
 
-      toolbar.style.display = 'none';
+      style.display = 'none';
+      style.top = 0;
+      style.left = 0;
     },
 
     /**
-     * Return the toolbar element
+     * Get the toolbar element
      * @return {HTMLElement}
-     * @private
      */
     getToolbarEl() {
       return toolbar;

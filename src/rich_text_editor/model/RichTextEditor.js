@@ -5,7 +5,7 @@ import {on, off} from 'utils/mixins'
 
 const RTE_KEY = '_rte';
 
-const actions = {
+const defActions = {
   bold: {
     name: 'bold',
     icon: '<b>B</b>',
@@ -38,6 +38,12 @@ const actions = {
     },
     result: (rte) => rte.insertHTML(`<a class="link" href="">${rte.selection()}</a>`)
   },
+  avoid: {
+    name: 'avoid',
+    icon: '<strike>avoid</strike>',
+    attributes: {title: 'avoid'},
+    result: (rte) => rte.insertHTML(`<b>Avoid</b>`)
+  },
 }
 
 export default class RichTextEditor {
@@ -49,22 +55,25 @@ export default class RichTextEditor {
       return el[RTE_KEY];
     }
 
-    //el.oninput = e => settings.onChange && settings.onChange(e.target.innerHTML);
-    //el.onkeydown = e => (e.which === 9 && e.preventDefault());
     el[RTE_KEY] = this;
     this.el = el;
     this.doc = el.ownerDocument;
+    //el.oninput = e => settings.onChange && settings.onChange(e.target.innerHTML);
+    //el.onkeydown = e => (e.which === 9 && e.preventDefault());
+
     this.updateActiveActions = this.updateActiveActions.bind(this);
 
-    settings.actions = settings.actions
-      ? settings.actions.map(action => {
+    const settAct = settings.actions || [];
+    settAct.forEach((action, i) => {
         if (typeof action === 'string') {
-          return actions[action];
-        } else if (actions[action.name]) {
-          return {...actions[action.name], ...action};
+          action = defActions[action];
+        } else if (defActions[action.name]) {
+          action = {...defActions[action.name], ...action};
         }
-        return action;
-      }) : Object.keys(actions).map(action => actions[action])
+        settAct[i] = action;
+    });
+    const actions = settAct.length ? settAct :
+      Object.keys(defActions).map(action => defActions[action])
 
     settings.classes = { ...{
       actionbar: 'actionbar',
@@ -77,6 +86,7 @@ export default class RichTextEditor {
     this.actionbar = actionbar;
     this.settings = settings;
     this.classes = classes;
+    this.actions = actions;
 
     if (!actionbar) {
       const actionbarCont = settings.actionbarContainer;
@@ -84,7 +94,7 @@ export default class RichTextEditor {
       actionbar.className = classes.actionbar;
       actionbarCont.appendChild(actionbar);
       this.actionbar = actionbar;
-      settings.actions.forEach(action => this.addAction(action))
+      actions.forEach(action => this.addAction(action))
     }
 
     settings.styleWithCSS && this.exec('styleWithCSS');
@@ -94,7 +104,7 @@ export default class RichTextEditor {
   }
 
   updateActiveActions() {
-    this.actions().forEach(action => {
+    this.getActions().forEach(action => {
       const btn = action.btn;
       const active = this.classes.active;
       btn.className = btn.className.replace(active, '').trim();
@@ -110,6 +120,7 @@ export default class RichTextEditor {
     this.el.contentEditable = true;
     on(this.el, 'mouseup keyup', this.updateActiveActions)
     this.syncActions();
+    this.updateActiveActions();
     this.el.focus();
     return this;
   }
@@ -125,7 +136,7 @@ export default class RichTextEditor {
    * Sync actions with the current RTE
    */
   syncActions() {
-    this.actions().forEach(action => {
+    this.getActions().forEach(action => {
       const event = action.event || 'click';
       action.btn[`on${event}`] = e => {
         action.result(this);
@@ -137,8 +148,10 @@ export default class RichTextEditor {
   /**
    * Add new action to the actionbar
    * @param {Object} action
+   * @param {Object} [opts={}]
    */
-  addAction(action) {
+  addAction(action, opts = {}) {
+    const sync = opts.sync;
     const btn = document.createElement('span');
     const icon = action.icon;
     const attr = action.attributes || {};
@@ -156,14 +169,18 @@ export default class RichTextEditor {
     }
 
     this.actionbarEl().appendChild(btn);
+
+    if (sync) {
+      this.syncActions();
+    }
   }
 
   /**
    * Get the array of current actions
    * @return {Array}
    */
-  actions() {
-    return this.settings.actions;
+  getActions() {
+    return this.actions;
   }
 
   /**
