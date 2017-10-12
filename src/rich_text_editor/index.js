@@ -2,6 +2,7 @@
  * * [add](#add)
  * * [get](#get)
  * * [getAll](#getall)
+ * * [remove](#remove)
  * * [getToolbarEl](#gettoolbarel)
  *
  * This module allows to customize the toolbar of the Rich Text Editor and use commands from the HTML Editing APIs.
@@ -165,6 +166,28 @@ module.exports = () => {
      */
     getAll() {
       return globalRte.getActions();
+    },
+
+    /**
+     * Remove the action from the toolbar
+     * @param  {string} name
+     * @return {Object} Removed action
+     * @example
+     * const action = rte.remove('bold');
+     * // {name: 'bold', ...}
+     */
+    remove(name) {
+      const actions = this.getAll();
+      const action = this.get(name);
+
+      if (action) {
+        const btn = action.btn;
+        const index = actions.indexOf(action);
+        btn.parentNode.removeChild(btn);
+        actions.splice(index, 1);
+      }
+
+      return action;
     },
 
     /**
