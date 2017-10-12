@@ -23,6 +23,10 @@ module.exports = ComponentView.extend({
    * @private
    * */
   enableEditing() {
+    if (this.rteEnabled) {
+      return;
+    }
+
     const editable = this.model.get('editable');
     const rte = this.rte;
 
@@ -34,6 +38,7 @@ module.exports = ComponentView.extend({
       }
     }
 
+    this.rteEnabled = 1;
     this.toggleEvents(1);
   },
 
@@ -88,6 +93,7 @@ module.exports = ComponentView.extend({
       }
     }
 
+    this.rteEnabled = 0;
     this.toggleEvents();
   },
 

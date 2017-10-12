@@ -163,6 +163,14 @@ module.exports = () => {
     },
 
     /**
+     * Get the toolbar element
+     * @return {HTMLElement}
+     */
+    getToolbarEl() {
+      return toolbar;
+    },
+
+    /**
      * Triggered when the offset of the editor is changed
      * @private
      */
@@ -205,6 +213,7 @@ module.exports = () => {
         const event = 'change:canvasOffset canvasScroll';
         em.off(event, this.udpatePosition, this);
         em.on(event, this.udpatePosition, this);
+        em.trigger('rte:enable', view, rte);
       }
 
       return rte;
@@ -217,6 +226,7 @@ module.exports = () => {
      * @private
      * */
     disable(view, rte) {
+      const em = config.em;
       const customRte = this.customRte;
       const style = toolbar.style;
       var el = view.getChildrenContainer();
@@ -230,14 +240,7 @@ module.exports = () => {
       style.display = 'none';
       style.top = 0;
       style.left = 0;
-    },
-
-    /**
-     * Get the toolbar element
-     * @return {HTMLElement}
-     */
-    getToolbarEl() {
-      return toolbar;
+      em && em.trigger('rte:disable', view, rte);
     },
   };
 };

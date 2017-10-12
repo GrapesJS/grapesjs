@@ -58,8 +58,6 @@ export default class RichTextEditor {
     el[RTE_KEY] = this;
     this.el = el;
     this.doc = el.ownerDocument;
-    //el.oninput = e => settings.onChange && settings.onChange(e.target.innerHTML);
-    //el.onkeydown = e => (e.which === 9 && e.preventDefault());
 
     this.updateActiveActions = this.updateActiveActions.bind(this);
 
