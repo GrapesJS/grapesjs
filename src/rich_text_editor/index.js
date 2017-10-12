@@ -1,10 +1,4 @@
 /**
- * * [add](#add)
- * * [get](#get)
- * * [getAll](#getall)
- * * [remove](#remove)
- * * [getToolbarEl](#gettoolbarel)
- *
  * This module allows to customize the toolbar of the Rich Text Editor and use commands from the HTML Editing APIs.
  * For more info about HTML Editing APIs check here:
  * https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand
@@ -130,12 +124,28 @@ module.exports = () => {
      * });
      * rte.add('link', {
      *   icon: document.getElementById('t'),
-     *   // Bind the 'result' on 'onclick' listener
-     *   event: 'click',
      *   attributes: {title: 'Link',}
      *   // Example on it's easy to wrap a selected content
      *   result: rte => rte.insertHTML(`<a href="#">${rte.selection()}</a>`)
      * });
+     * // An example with fontSize
+     * rte.add('fontSize', {
+     *   icon: `<select class="gjs-field">
+     *         <option>1</option>
+     *         <option>4</option>
+     *         <option>7</option>
+     *       </select>`,
+     *     // Bind the 'result' on 'change' listener
+     *   event: 'change',
+     *   result: (rte, action) => rte.exec('fontSize', action.btn.firstChild.value),
+     *   // Callback on any input change (mousedown, keydown, etc..)
+     *   update: (rte, action) => {
+     *     const value = rte.doc.queryCommandValue(action.name);
+     *     if (value != 'false') { // value is a string
+     *       action.btn.firstChild.value = value;
+     *     }
+     *    }
+     *   })
      */
     add(name, action = {}) {
       action.name = name;

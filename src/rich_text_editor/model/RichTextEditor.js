@@ -102,12 +102,18 @@ export default class RichTextEditor {
   updateActiveActions() {
     this.getActions().forEach(action => {
       const btn = action.btn;
+      const update = action.update;
       const active = this.classes.active;
+      const name = action.name;
+      const doc = this.doc;
       btn.className = btn.className.replace(active, '').trim();
 
-      if (this.doc.queryCommandState(action.name)) {
+      // doc.queryCommandValue(name) != 'false'
+      if (doc.queryCommandState(name)) {
         btn.className += ` ${active}`;
       }
+
+      update && update(this, action);
     })
   }
 
@@ -141,7 +147,7 @@ export default class RichTextEditor {
     this.getActions().forEach(action => {
       const event = action.event || 'click';
       action.btn[`on${event}`] = e => {
-        action.result(this);
+        action.result(this, action);
         this.updateActiveActions();
       };
     })
