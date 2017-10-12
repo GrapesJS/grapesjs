@@ -31,6 +31,7 @@ module.exports = ComponentView.extend({
       try {
         this.activeRte = this.rte.attach(this, this.activeRte);
         this.rte.focus(this, this.activeRte);
+        this.em.trigger('rte:attach', this.model);
       } catch (err) {
         console.error(err);
       }
@@ -50,6 +51,7 @@ module.exports = ComponentView.extend({
     if(this.rte && editable) {
       try {
         this.rte.detach(this, this.activeRte);
+        this.em.trigger('rte:detach', this.model);
       } catch (err) {
         console.error(err);
       }
