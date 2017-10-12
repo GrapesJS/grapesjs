@@ -60,13 +60,15 @@ module.exports = ComponentView.extend({
 
       const content = this.getChildrenContainer().innerHTML;
       const comps = model.get('components');
+      comps.length && comps.reset();
 
       // If there is a custom RTE the content is just baked staticly
       // inside 'content'
       if (rte.customRte) {
         // Avoid double content by removing its children components
-        comps.reset();
-        model.set('content', content);
+        // and force to trigger change
+        model.set('content', '')
+        .set('content', content);
       } else {
         const clean = model => {
           model.set({
@@ -76,19 +78,14 @@ module.exports = ComponentView.extend({
             draggable: 0,
             copyable: 0,
             toolbar: '',
-          });
+          })
           model.get('components').each(model => clean(model));
         }
 
         // Avoid re-render on reset with silent option
         model.set('content', '');
-        comps.reset();
         comps.add(content);
         comps.each(model => clean(model));
-
-        // With rerender it's possible to see changes applied
-        // after clean method
-        this.render();
         comps.trigger('resetNavigator');
       }
     }

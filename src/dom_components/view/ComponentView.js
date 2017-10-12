@@ -23,7 +23,7 @@ module.exports = Backbone.View.extend({
     const classes = model.get('classes');
     this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model, 'change:style', this.updateStyle);
-    this.listenTo(model, 'change:attributes', this.updateAttributes);
+    this.listenTo(model, 'change:attributes change:highlightable', this.updateAttributes);
     this.listenTo(model, 'change:status', this.updateStatus);
     this.listenTo(model, 'change:state', this.updateState);
     this.listenTo(model, 'change:script', this.render);
@@ -153,7 +153,7 @@ module.exports = Backbone.View.extend({
   updateAttributes() {
     var model = this.model;
     var attributes = {},
-      attr = model.get("attributes");
+      attr = model.get('attributes');
     for(var key in attr) {
         if (key && attr.hasOwnProperty(key)) {
           attributes[key] = attr[key];
@@ -171,7 +171,7 @@ module.exports = Backbone.View.extend({
 
     if(styleStr)
       attributes.style = styleStr;
-
+      console.log(attributes);
     this.$el.attr(attributes);
   },
 
