@@ -6,7 +6,7 @@
  *
  * This module allows to customize the toolbar of the Rich Text Editor and use commands from the HTML Editing APIs.
  * For more info about HTML Editing APIs check here:
- * https://developer.mozilla.org/it/docs/Web/API/Document/execCommand
+ * https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand
  *
  * It's highly recommended to keep this toolbar as small as possible, especially from styling commands (eg. 'fontSize')
  * and leave this task to the Style Manager.
@@ -16,9 +16,6 @@
  * ```js
  * var rte = editor.RichTextEditor;
  * ```
- * Complete list of commands
- * https://developer.mozilla.org/it/docs/Web/API/Document/execCommand
- * http://www.quirksmode.org/dom/execCommand.html
  * @module RichTextEditor
  */
 import RichTextEditor from './model/RichTextEditor';
@@ -71,6 +68,12 @@ module.exports = () => {
       return this;
     },
 
+
+    /**
+     * Post render callback
+     * @param  {View} ev
+     * @private
+     */
     postRender(ev) {
       const canvas = ev.model.get('Canvas');
       toolbar.style.pointerEvents = 'all';
@@ -124,10 +127,10 @@ module.exports = () => {
      *   result: rte => rte.exec('bold')
      * });
      * rte.add('link', {
-     *   icon: 'L',
+     *   icon: document.getElementById('t'),
+     *   event: 'click',
      *   attributes: {title: 'Link',}
-     *   result: rte =>
-     *    rte.insertHTML(`<a href="#">${rte.selection()}</a>`)
+     *   result: rte => rte.insertHTML(`<a href="#">${rte.selection()}</a>`)
      * });
      */
     add(name, action = {}) {
