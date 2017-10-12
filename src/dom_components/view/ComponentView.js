@@ -23,7 +23,8 @@ module.exports = Backbone.View.extend({
     const classes = model.get('classes');
     this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model, 'change:style', this.updateStyle);
-    this.listenTo(model, 'change:attributes change:highlightable', this.updateAttributes);
+    this.listenTo(model, 'change:attributes', this.updateAttributes);
+    this.listenTo(model, 'change:highlightable', this.updateHighlight);
     this.listenTo(model, 'change:status', this.updateStatus);
     this.listenTo(model, 'change:state', this.updateState);
     this.listenTo(model, 'change:script', this.render);
@@ -131,6 +132,45 @@ module.exports = Backbone.View.extend({
   },
 
   /**
+   * Update highlight attribute
+   * @private
+   * */
+  updateHighlight() {
+    const hl = this.model.get('highlightable');
+    this.setAttribute('data-highlightable', hl ? 1 : '');
+  },
+
+  /**
+   * Update style attribute
+   * @private
+   * */
+  updateStyle() {
+    this.setAttribute('style', this.getStyleString());
+  },
+
+  /**
+   * Update classe attribute
+   * @private
+   * */
+  updateClasses() {
+    const str = this.model.get('classes').pluck('name').join(' ');
+    this.setAttribute('class', str);
+
+    // Regenerate status class
+    this.updateStatus();
+  },
+
+  /**
+   * Update single attribute
+   * @param {[type]} name  [description]
+   * @param {[type]} value [description]
+   */
+  setAttribute(name, value) {
+    const el = this.$el;
+    value ? el.attr(name, value) : el.removeAttr(name);
+  },
+
+  /**
    * Get classes from attributes.
    * This method is called before initialize
    *
@@ -151,36 +191,19 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   updateAttributes() {
-    var model = this.model;
-    var attributes = {},
-      attr = model.get('attributes');
-    for(var key in attr) {
-        if (key && attr.hasOwnProperty(key)) {
-          attributes[key] = attr[key];
-        }
+    const model = this.model;
+    const attrs = {}
+    const attr = model.get('attributes');
+    const src = model.get('src');
+
+    for (let key in attr) {
+      attrs[key] = attr[key];
     }
 
-    // Update src
-    if(model.get('src'))
-      attributes.src = model.get('src');
-
-    if(model.get('highlightable'))
-      attributes['data-highlightable'] = 1;
-
-    var styleStr = this.getStyleString();
-
-    if(styleStr)
-      attributes.style = styleStr;
-      console.log(attributes);
-    this.$el.attr(attributes);
-  },
-
-  /**
-   * Update style attribute
-   * @private
-   * */
-  updateStyle() {
-    this.$el.attr('style', this.getStyleString());
+    src && (attrs.src = src);
+    this.$el.attr(attrs);
+    this.updateHighlight();
+    this.updateStyle();
   },
 
   /**
@@ -205,27 +228,6 @@ module.exports = Backbone.View.extend({
     }
 
     return style;
-  },
-
-  /**
-   * Update classe attribute
-   * @private
-   * */
-  updateClasses() {
-    var str = '';
-
-    this.model.get('classes').each(model => {
-      str += model.get('name') + ' ';
-    });
-    str = str.trim();
-
-    if(str)
-      this.$el.attr('class', str);
-    else
-      this.$el.removeAttr('class');
-
-    // Regenerate status class
-    this.updateStatus();
   },
 
   /**
