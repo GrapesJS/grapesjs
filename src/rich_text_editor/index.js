@@ -68,14 +68,6 @@ module.exports = () => {
 
       //Avoid closing on toolbar clicking
       on(toolbar, 'mousedown', e => e.stopPropagation());
-
-      /*
-      commands = new CommandButtons(c.commands);
-      toolbar = new CommandButtonsView({
-        collection: commands,
-        config: c,
-      });
-      */
       return this;
     },
 

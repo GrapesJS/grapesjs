@@ -30,10 +30,7 @@ const actions = {
       style: 'font-size:1.4rem;padding:0 4px 2px;',
       title: 'Link',
     },
-    result: (rte) => {
-      const url = window.prompt('Enter the link URL')
-      if (url) rte.exec('createLink', url)//class="link"
-    }
+    result: (rte) => rte.insertHTML(`<a class="link" href="">${rte.selection()}</a>`)
   },
 }
 
@@ -148,7 +145,7 @@ export default class RichTextEditor {
    * @return {Selection}
    */
   selection() {
-    this.doc.getSelection()
+    return this.doc.getSelection()
   }
 
   /**
@@ -174,21 +171,23 @@ export default class RichTextEditor {
    * @param  {string} value HTML string
    */
   insertHTML(value) {
+    let lastNode;
     const doc = this.doc;
     const sel = doc.getSelection();
 
     if (sel && sel.rangeCount) {
       const node = doc.createElement('div');
       const range = sel.getRangeAt(0);
-      range.collapse(true);
-      node.outerHTML = value.replace('${content}', sel);
-      range.insertNode(node);
+      range.deleteContents();
+      node.innerHTML = value;
+      Array.prototype.slice.call(node.childNodes).forEach(nd => {
+        range.insertNode(nd);
+        lastNode = nd;
+      })
 
-      // Move the caret immediately after the inserted node
-      range.setStartAfter(node);
-      range.collapse(true);
       sel.removeAllRanges();
       sel.addRange(range);
+      this.el.focus();
     }
   }
 }
