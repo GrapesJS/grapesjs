@@ -77,7 +77,7 @@ module.exports = {
         it('Clean style', () => {
           model.set('style', { color: 'red'});
           model.set('style', {});
-          expect(view.el.getAttribute('style')).toEqual('');
+          expect(view.el.getAttribute('style')).toEqual(null);
         });
 
         it('Get style string', () => {

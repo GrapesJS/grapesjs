@@ -213,6 +213,12 @@ module.exports = ({$, Backbone}) => {
       return this;
     }
 
+    fn.remove = function () {
+      return this.each(node => {
+        return node.parentNode && node.parentNode.removeChild(node);
+      });
+    },
+
     // For spectrum compatibility
     fn.bind = function(ev, h) {
       return this.on(ev, h);

@@ -54,6 +54,8 @@
  * * `storage:end` - After the storage request is ended
  * * `storage:error` - On any error on storage request, passes the error as an argument
  * * `selector:add` - Triggers when a new selector/class is created
+ * * `rte:enable` - RTE enabled. The view, on which RTE is enabled, is passed as an argument
+ * * `rte:disable` - RTE disabled. The view, on which RTE is disabled, is passed as an argument
  * * `canvasScroll` - Triggered when the canvas is scrolled
  * * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
  * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
@@ -207,7 +209,7 @@ module.exports = config => {
      * @property {RichTextEditor}
      * @private
      */
-    RichTextEditor: em.get('rte'),
+    RichTextEditor: em.get('RichTextEditor'),
 
     /**
      * @property {Utils}
