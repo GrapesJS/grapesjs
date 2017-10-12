@@ -6,27 +6,20 @@ module.exports = {
       describe('CssRuleView', () => {
 
         let obj;
-
-        before(function () {
-          this.$fixtures  = $("#fixtures");
-          this.$fixture   = $('<div class="cssrule-fixture"></div>');
-        });
+        let fixtures;
 
         beforeEach(function () {
           var m = new CssRule();
           obj = new CssRuleView({
             model: m
           });
-          this.$fixture.empty().appendTo(this.$fixtures);
-          this.$fixture.html(obj.render().el);
+          document.body.innerHTML = '<div id="fixtures"></div>';
+          fixtures = document.body.querySelector('#fixtures');
+          fixtures.appendChild(obj.render().el);
         });
 
         afterEach(() => {
           obj.model.destroy();
-        });
-
-        after(function () {
-          this.$fixture.remove();
         });
 
         it('Object exists', () => {
@@ -54,12 +47,12 @@ module.exports = {
         });
 
         it('Empty style inside', function() {
-          expect(this.$fixture.html()).toEqual('<style></style>');
+          expect(fixtures.innerHTML).toEqual('<style></style>');
         });
 
         it('On update of style always empty as there is no selectors', function() {
           obj.model.set('style', {'prop':'value'});
-          expect(this.$fixture.html()).toEqual('<style></style>');
+          expect(fixtures.innerHTML).toEqual('<style></style>');
         });
 
         describe('CssRuleView with selectors', () => {
@@ -74,6 +67,9 @@ module.exports = {
               model: m
             });
             objReg.render();
+            document.body.innerHTML = '<div id="fixtures"></div>';
+            fixtures = document.body.querySelector('#fixtures');
+            fixtures.appendChild(objReg.el);
           });
 
           afterEach(() => {

@@ -1,44 +1,35 @@
-var Backbone = require('backbone');
-var PropertyView = require('./PropertyView');
+const PropertyView = require('./PropertyView');
+const $ = Backbone.$;
 
 module.exports = PropertyView.extend({
 
-  templateField() {
+  templateInput() {
     const pfx = this.pfx;
-    const ppfx = this.ppfx;
     return `
       <div class="${pfx}field ${pfx}composite">
         <span id="${pfx}input-holder"></span>
       </div>
-      <div style="clear:both"></div>
     `;
   },
 
-  initialize(o) {
-    PropertyView.prototype.initialize.apply(this, arguments);
-    this.config = o.config || {};
-    this.className = this.className + ' '+ this.pfx +'composite';
-  },
-
-  /**
-   * Fired when the input value is updated
-   */
-  valueUpdated(...args) {
+  inputValueChanged(...args) {
     if(!this.model.get('detached'))
-      PropertyView.prototype.valueUpdated.apply(this, args);
+      PropertyView.prototype.inputValueChanged.apply(this, args);
   },
 
   /**
    * Renders input
    * */
-  renderInput() {
+  onRender() {
     var model = this.model;
     var props = model.get('properties') || [];
     var self = this;
 
     if (props.length) {
-      if(!this.$input)
-        this.$input = $('<input>', {value: 0, type: 'hidden' });
+      if (!this.$input) {
+        this.$input = $('<input type="hidden" value="0">');
+        this.input = this.$input.get(0);
+      }
 
       if (!this.props) {
         this.props = model.get('properties');
@@ -57,7 +48,7 @@ module.exports = PropertyView.extend({
         var PropertiesView = require('./PropertiesView');
         var propsView = new PropertiesView(this.getPropsConfig());
         this.$props = propsView.render().$el;
-        this.$el.find('#'+ this.pfx +'input-holder').html(this.$props);
+        this.$el.find(`#${this.pfx}input-holder`).append(this.$props);
       }
     }
   },
@@ -110,9 +101,13 @@ module.exports = PropertyView.extend({
     // to get the value of the sub-property
     if (targetValue) {
       const values = targetValue.split(' ');
-      value = view ? view.model.parseValue(values[index]) : values[index];
+      value = values[index];
     } else {
-      value = view.getTargetValue({ignoreCustomValue: 1});
+      value = view && view.getTargetValue({ignoreCustomValue: 1, ignoreDefault: 1});
+    }
+
+    if (view) {
+      value = view.model.parseValue(value);
     }
 
     return value;

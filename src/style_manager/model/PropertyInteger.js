@@ -8,7 +8,25 @@ module.exports = Property.extend({
 
     // Selected unit, eg. 'px'
     unit: '',
+
+    // Integer value steps
+    step: 1,
+
+    // Minimum value
+    min: '',
+
+    // Maximum value
+    max: '',
   }),
+
+  init() {
+    const unit = this.get('unit');
+    const units = this.get('units');
+
+    if (units.length && !unit) {
+      this.set('unit', units[0]);
+    }
+  },
 
   getFullValue() {
     let value = this.get('value') + this.get('unit');

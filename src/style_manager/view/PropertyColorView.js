@@ -1,31 +1,27 @@
-var Backbone = require('backbone');
-var PropertyView = require('./PropertyView');
-var InputColor = require('domain_abstract/ui/InputColor');
+const InputColor = require('domain_abstract/ui/InputColor');
 
-module.exports = PropertyView.extend({
+module.exports = require('./PropertyIntegerView').extend({
 
-  initialize(options) {
-    PropertyView.prototype.initialize.apply(this, arguments);
-    this.className += ` ${this.pfx}file`;
+  setValue(value, opts = {}) {
+    opts = Object.assign({}, opts, {silent: 1});
+    this.inputInst.setValue(value, opts);
   },
 
-  renderInput() {
+  onRender() {
     if (!this.input) {
-      var inputColor = new InputColor({
+      const ppfx = this.ppfx;
+      const inputColor = new InputColor({
         target: this.target,
         model: this.model,
-        ppfx: this.ppfx
+        ppfx
       });
-      this.input = inputColor.render();
-      this.$el.append(this.input.$el);
-      this.$input = this.input.inputEl;
-      this.$color = this.input.colorEl;
+      const input = inputColor.render();
+      this.el.querySelector(`.${ppfx}fields`).appendChild(input.el);
+      this.$input = input.inputEl;
+      this.$color = input.colorEl;
+      this.input = this.$input.get(0);
+      this.inputInst = input;
     }
-    this.setValue(this.componentValue);
-  },
-
-  setValue(value) {
-    this.input.setValue(value, {silent: 1});
   },
 
 });

@@ -190,6 +190,12 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     var model = this;
     if(!model.get('toolbar')) {
       var tb = [];
+      if(model.collection) {
+        tb.push({
+          attributes: {class: 'fa fa-arrow-up'},
+          command: 'select-parent',
+        });
+      }
       if(model.get('draggable')) {
         tb.push({
           attributes: {class: 'fa fa-arrows'},

@@ -65,7 +65,8 @@ describe('BlockManager', () => {
     });
 
     it('Render blocks', () => {
-      expect(obj.render()).toExist();
+      obj.render();
+      expect(obj.getContainer()).toExist();
     });
 
   });

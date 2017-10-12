@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <title>GrapesJS</title>
     <link rel="stylesheet" href="dist/css/grapes.min.css">
-    <script src="node_modules/jquery/dist/jquery.min.js"></script>
     <script src="dist/grapes.min.js"></script>
 
   </head>
@@ -1037,7 +1036,7 @@
         sectors: [{
           name: 'General',
           open: false,
-          buildProps: ['float', 'display', 'position', 'top', 'right', 'left', 'bottom'],
+          buildProps: ['float', 'display', 'position', 'top', 'right', 'left', 'bottom']
         },{
           name: 'Dimension',
           open: false,
@@ -1062,7 +1061,15 @@
         },{
           name: 'Extra',
           open: false,
-          buildProps: ['transition', 'perspective', 'transform'],
+          buildProps: ['opacity', 'transition', 'perspective', 'transform'],
+          properties: [{
+            type: 'slider',
+            property: 'opacity',
+            defaults: 1,
+            step: 0.01,
+            max: 1,
+            min:0,
+          }]
         },{
             name: 'Flex',
             open: false,
@@ -1324,7 +1331,7 @@
       var model = view.model;
       let targetValue = view.getTargetValue({ignoreDefault: 1});
       let computedValue = view.getComputedValue();
-      let defaultValue = view.getDefaultValue();
+      let defaultValue = view.model.getDefaultValue();
       //console.log('Style of ', model.get('property'), 'Target: ', targetValue, 'Computed:', computedValue, 'Default:', defaultValue);
     });
 

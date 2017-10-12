@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var FrameView = require('./FrameView');
+const FrameView = require('./FrameView');
+const $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
 
@@ -311,13 +311,14 @@ module.exports = Backbone.View.extend({
     view.scriptContainer.html('');
     // In editor, I make use of setTimeout as during the append process of elements
     // those will not be available immediatly, therefore 'item' variable
-    view.scriptContainer.append(`<script>
+    const script = document.createElement('script');
+    script.innerText = `
         setTimeout(function() {
           var item = document.getElementById('${id}');
           if (!item) return;
           (function(){${model.getScriptString()}}.bind(item))()
-        }, 1);
-      </script>`);
+        }, 1);`;
+    view.scriptContainer.get(0).appendChild(script);
   },
 
   /**
@@ -326,7 +327,7 @@ module.exports = Backbone.View.extend({
    */
   getJsContainer() {
     if (!this.jsContainer) {
-      this.jsContainer = $('<div>', {class: this.ppfx + 'js-cont'}).get(0);
+      this.jsContainer = $(`<div class="${this.ppfx}js-cont">`).get(0);
     }
     return this.jsContainer;
   },
@@ -346,33 +347,32 @@ module.exports = Backbone.View.extend({
       }
     }
     var ppfx = this.ppfx;
-    var toolsEl = $('<div>', { id: ppfx + 'tools' }).get(0);
-    this.hlEl = $('<div>', { class: ppfx + 'highlighter' }).get(0);
-    this.badgeEl = $('<div>', {class: ppfx + 'badge'}).get(0);
-    this.placerEl = $('<div>', {class: ppfx + 'placeholder'}).get(0);
-    this.placerIntEl = $('<div>', {class: ppfx + 'placeholder-int'}).get(0);
-    this.ghostEl = $('<div>', {class: ppfx + 'ghost'}).get(0);
-    this.toolbarEl = $('<div>', {class: ppfx + 'toolbar'}).get(0);
-    this.resizerEl = $('<div>', {class: ppfx + 'resizer'}).get(0);
-    this.offsetEl = $('<div>', {class: ppfx + 'offset-v'}).get(0);
-    this.fixedOffsetEl = $('<div>', {class: ppfx + 'offset-fixed-v'}).get(0);
-    this.placerEl.appendChild(this.placerIntEl);
-    toolsEl.appendChild(this.hlEl);
-    toolsEl.appendChild(this.badgeEl);
-    toolsEl.appendChild(this.placerEl);
-    toolsEl.appendChild(this.ghostEl);
-    toolsEl.appendChild(this.toolbarEl);
-    toolsEl.appendChild(this.resizerEl);
-    toolsEl.appendChild(this.offsetEl);
-    toolsEl.appendChild(this.fixedOffsetEl);
-    this.$el.append(toolsEl);
-    var rte = this.em.get('rte');
-
-    if(rte)
-      toolsEl.appendChild(rte.render());
-
+    this.$el.append(`
+      <div id="${ppfx}tools" style="pointer-events:none">
+        <div class="${ppfx}highlighter"></div>
+        <div class="${ppfx}badge"></div>
+        <div class="${ppfx}placeholder">
+          <div class="${ppfx}placeholder-int"></div>
+        </div>
+        <div class="${ppfx}ghost"></div>
+        <div class="${ppfx}toolbar" style="pointer-events:all"></div>
+        <div class="${ppfx}resizer"></div>
+        <div class="${ppfx}offset-v"></div>
+        <div class="${ppfx}offset-fixed-v"></div>
+      </div>
+    `);
+    const el = this.el;
+    const toolsEl = el.querySelector(`#${ppfx}tools`);
+    this.hlEl = el.querySelector(`.${ppfx}highlighter`);
+    this.badgeEl = el.querySelector(`.${ppfx}badge`);
+    this.placerEl = el.querySelector(`.${ppfx}placeholder`);
+    this.ghostEl = el.querySelector(`.${ppfx}ghost`);
+    this.toolbarEl = el.querySelector(`.${ppfx}toolbar`);
+    this.resizerEl = el.querySelector(`.${ppfx}resizer`);
+    this.offsetEl = el.querySelector(`.${ppfx}offset-v`);
+    this.fixedOffsetEl = el.querySelector(`.${ppfx}offset-fixed-v`);
     this.toolsEl = toolsEl;
-    this.$el.attr({class: this.className});
+    this.el.className = this.className;
     return this;
   },
 

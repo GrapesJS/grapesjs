@@ -1,3 +1,5 @@
+const $ = Backbone.$;
+
 module.exports = {
 
   /**

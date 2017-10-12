@@ -1,3 +1,5 @@
+const $ = Backbone.$;
+
 module.exports = {
 
   run(editor, sender) {
@@ -50,7 +52,7 @@ module.exports = {
       var oCsslEd = this.buildEditor('css', 'hopscotch', 'CSS');
       this.htmlEditor = oHtmlEd.el;
       this.cssEditor = oCsslEd.el;
-      this.$editors = $('<div>', {class: this.pfx + 'export-dl'});
+      this.$editors = $(`<div class="${this.pfx}export-dl">`);
       this.$editors.append(oHtmlEd.$el).append(oCsslEd.$el);
     }
 

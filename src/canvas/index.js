@@ -1,3 +1,5 @@
+import {on, off} from 'utils/mixins'
+
 module.exports = () => {
   var c = {},
   defaults = require('./config/config'),
@@ -104,7 +106,7 @@ module.exports = () => {
     },
 
     /**
-     * Returns element containing canvas tools
+     * Returns element containing all canvas tools
      * @return {HTMLElement}
      */
     getToolsEl() {
@@ -353,8 +355,8 @@ module.exports = () => {
       this.dragging = 1;
       let toListen = this.getScrollListeners();
       frameRect = CanvasView.getFrameOffset(1);
-      toListen.on('mousemove', this.autoscroll);
-      toListen.on('mouseup', this.stopAutoscroll);
+      on(toListen, 'mousemove', this.autoscroll);
+      on(toListen, 'mouseup', this.stopAutoscroll);
     },
 
     autoscroll(e) {
@@ -386,17 +388,12 @@ module.exports = () => {
     stopAutoscroll() {
       this.dragging = 0;
       let toListen = this.getScrollListeners();
-      toListen.off('mousemove', this.autoscroll);
-      toListen.off('mouseup', this.stopAutoscroll);
+      off(toListen, 'mousemove', this.autoscroll);
+      off(toListen, 'mouseup', this.stopAutoscroll);
     },
 
     getScrollListeners() {
-      if (!this.scrollListeners) {
-        this.scrollListeners =
-          $(this.getFrameEl().contentWindow, this.getElement());
-      }
-
-      return this.scrollListeners;
+      return [this.getFrameEl().contentWindow, this.getElement()];
     },
 
     /**

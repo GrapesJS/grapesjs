@@ -9,8 +9,7 @@ module.exports = {
       describe('PropertyCompositeView', () => {
 
         var component;
-        var $fixtures;
-        var $fixture;
+        var fixtures;
         var target;
         var model;
         var view;
@@ -35,11 +34,6 @@ module.exports = {
             ]
         }];
 
-        before(() => {
-          $fixtures  = $("#fixtures");
-          $fixture   = $('<div class="sm-fixture"></div>');
-        });
-
         beforeEach(() => {
           target = new Component();
           component = new Component();
@@ -52,16 +46,13 @@ module.exports = {
           view = new PropertyCompositeView({
             model
           });
-          $fixture.empty().appendTo($fixtures);
-          $fixture.html(view.render().el);
-        });
-
-        afterEach(() => {
-          //view.remove(); // strange errors ???
+          document.body.innerHTML = '<div id="fixtures"></div>';
+          fixtures = document.body.firstChild;
+          view.render();
+          fixtures.appendChild(view.el);
         });
 
         after(() => {
-          $fixture.remove();
           component = null;
           view = null;
           model = null;
@@ -69,7 +60,7 @@ module.exports = {
 
         it('Rendered correctly', () => {
           var prop = view.el;
-          expect($fixture.get(0).querySelector('.property')).toExist();
+          expect(fixtures.querySelector('.property')).toExist();
           expect(prop.querySelector('.label')).toExist();
           expect(prop.querySelector('.field')).toExist();
         });
@@ -81,7 +72,7 @@ module.exports = {
 
         it('Properties rendered correctly', () => {
           var children = view.el.querySelector('.properties').children;
-          expect(children.length).toEqual(properties.length + 1);
+          expect(children.length).toEqual(properties.length);
           expect(children[0].id).toEqual(properties[0].property);
           expect(children[1].id).toEqual(properties[1].property);
           expect(children[2].id).toEqual(properties[2].property);
@@ -98,7 +89,7 @@ module.exports = {
         it('Update input on value change', () => {
           view.model.set('value', propValue);
           // Fetch always values from properties
-          expect(view.$input.val()).toEqual('0% val2');
+          expect(view.getInputValue()).toEqual('0% val2');
         });
 
         describe('With target setted', () => {
@@ -121,8 +112,9 @@ module.exports = {
               model,
               propTarget: target
             });
-            $fixture.empty().appendTo($fixtures);
-            $fixture.html(view.render().el);
+            fixtures.innerHTML = '';
+            view.render();
+            fixtures.appendChild(view.el);
             prop2Val = properties[1].defaults;
             prop2Unit = properties[1].units[0];
             prop3Val = properties[2].list[2].value;
@@ -163,7 +155,9 @@ module.exports = {
               model,
               propTarget: target
             });
-            $fixture.html(view.render().el);
+            fixtures.innerHTML = '';
+            view.render();
+            fixtures.appendChild(view.el);
             $prop1 = view.$props.find('#' + properties[0].property + ' input');
             $prop1.val(propValue).trigger('change');
             var compStyle = view.getTarget().get('style');
@@ -223,8 +217,9 @@ module.exports = {
             view = new PropertyCompositeView({
               model
             });
-            $fixture.empty().appendTo($fixtures);
-            $fixture.html(view.render().el);
+            fixtures.innerHTML = '';
+            view.render();
+            fixtures.appendChild(view.el);
           });
 
           it('Value as default', () => {

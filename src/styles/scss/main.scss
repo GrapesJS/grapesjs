@@ -206,36 +206,6 @@
   pointer-events: none;
 }
 
-div.#{$app-prefix}select {
-  padding: 0;
-}
-
-.#{$app-prefix}select select {
-  padding-right: 10px;
-}
-
-.#{$app-prefix}select:-moz-focusring,
-.#{$app-prefix}select select:-moz-focusring {
-  color: transparent;
-  text-shadow: 0 0 0 $mainLhlColor;
-}
-
-.#{$app-prefix}input:focus,
-.#{$app-prefix}button:focus,
-.#{$app-prefix}btn-prim:focus,
-.#{$app-prefix}select:focus,
-.#{$app-prefix}select select:focus {
-  outline: none;
-}
-
-.#{$app-prefix}select option,
-.#{$clm-prefix}select option,
-.#{$sm-prefix}select option,
-.#{$sm-prefix}unit option {
-  @extend .#{$app-prefix}bg-main;
-  //background-color: $mainDkColor;
-}
-
 /*************  TRAITS  ****************/
 .#{$app-prefix}traits-label {
   border-bottom: 1px solid $mainDkColor;
@@ -266,40 +236,9 @@ div.#{$app-prefix}select {
 
 @import "gjs_canvas";
 
-/*************  RTE  ****************/
-#commands.panel {
-    min-width: 35px;
-    height: 100%;
-    z-index:3;
-}
-#options.panel{ z-index:4; bottom: 0;}
-#views.panel {
-	width: 16.5%;
-	font-weight: lighter;
-	color:  $fontColor;
-	right:0; top:0;
-  	z-index: 3;
-  	height: 100%;
-  	padding:0;
-}
-#views.panel .c{height:100%}
-#commands.panel, #options.panel {width: 3.5%; left:0;}
-#options .c { display: table;  margin: 0 auto; }
-
-/*********TEST**********/
-body.dragging, body.dragging * { cursor: move !important;}
-.dragged {
-	position: absolute;
-	@include opacity(0.50);
-	z-index: 2000;}
-ol.example li.placeholder {position: relative;}
-ol.example li.placeholder:before {position: absolute;}
-/*********END-TEST**********/
+/********* COMMANDS **********/
 
 .no-dots, .ui-resizable-handle{ border: none !important; margin:0 !important; outline: none !important; }
-
-
-/********* COMMANDS **********/
 
 .#{$com-prefix}dashed *{
 	outline: 1px dashed #888;
@@ -799,33 +738,7 @@ ol.example li.placeholder:before {position: absolute;}
 
 /*************RTE****************/
 
-##{$rte-prefix}toolbar {
-  @extend .#{$app-prefix}bg-main;
-  display: none;
-  border: 1px solid $mainDkColor;
-  position: absolute;
-  border-radius: 3px;
-  z-index: 10;
-
-  .#{$rte-prefix}btn {
-  	@extend .#{$app-prefix}color-main;
-    display: inline-block;
-		padding: 5px;
-		min-width:	25px;
-		border-right: 1px solid $mainDkColor;
-		text-align: center;
-		cursor: pointer;
-		outline: none;
-
-	  	&:last-child{ border-right:none; }
-	  	&.btn-info{ background-color: $mainDkColor;}
-	  	&:hover {  background-color: $mainLhColor;}
-	}
-
-  select{
-    height: 16px;
-  }
-}
+@import 'gjs_rte';
 
 /********* Spectrum **********/
 

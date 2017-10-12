@@ -8,8 +8,7 @@ module.exports = {
       describe('PropertyView', () => {
 
         var component;
-        var $fixtures;
-        var $fixture;
+        var fixtures;
         var target;
         var model;
         var view;
@@ -18,11 +17,6 @@ module.exports = {
         var propName = 'testprop';
         var propValue = 'testvalue';
         var defValue = 'testDefault';
-
-        before(() => {
-          $fixtures  = $("#fixtures");
-          $fixture   = $('<div class="sm-fixture"></div>');
-        });
 
         beforeEach(() => {
           propTarget = Object.assign({}, Backbone.Events);
@@ -35,8 +29,10 @@ module.exports = {
             propTarget
           };
           view = new PropertyView(options);
-          $fixture.empty().appendTo($fixtures);
-          $fixture.html(view.render().el);
+          document.body.innerHTML = '<div id="fixtures"></div>';
+          fixtures = document.body.firstChild;
+          view.render();
+          fixtures.appendChild(view.el);
         });
 
         afterEach(() => {
@@ -44,41 +40,41 @@ module.exports = {
         });
 
         after(() => {
-          $fixture.remove();
           component = null;
         });
 
         it('Rendered correctly', () => {
           var prop = view.el;
-          expect($fixture.get(0).querySelector('.property')).toExist();
+          expect(fixtures.querySelector('.property')).toExist();
           expect(prop.querySelector('.label')).toExist();
           expect(prop.querySelector('.field')).toExist();
         });
 
         it('Input should exist', () => {
-          expect(view.$input).toExist();
+          expect(view.getInputEl()).toExist();
         });
 
         it('Input value is empty', () => {
           expect(view.model.get('value')).toNotExist();
-          expect(view.$input.val()).toNotExist();
+          expect(view.getInputValue()).toNotExist();
         });
 
         it('Model not change without update trigger', () => {
-          view.$input.val(propValue);
+          view.getInputEl().value = propValue;
           expect(view.model.get('value')).toNotExist();
         });
 
-        // Tests valueUpdated()
+        // Tests inputValueChanged()
         it('Update model on input change', () => {
-          view.$input.val(propValue).trigger('change');
+          view.getInputEl().value = propValue;
+          view.inputValueChanged();
           expect(view.model.get('value')).toEqual(propValue);
         });
 
-        // Tests valueChanged() -> ...
+        // Tests modelValueChanged() -> ...
         it('Update input on value change', () => {
           view.model.set('value', propValue);
-          expect(view.$input.val()).toEqual(propValue);
+          expect(view.getInputValue()).toEqual(propValue);
         });
 
         it('Update target on value change', () => {
@@ -152,8 +148,9 @@ module.exports = {
               model,
               propTarget: target
             });
-            $fixture.empty().appendTo($fixtures);
-            $fixture.html(view.render().el);
+            fixtures.innerHTML = '';
+            view.render();
+            fixtures.appendChild(view.el);
           });
 
           it('updateTargetStyle', () => {
@@ -176,7 +173,7 @@ module.exports = {
             component.set('style', style);
             view.propTarget.trigger('update');
             expect(view.model.get('value')).toEqual(propValue);
-            expect(view.$input.val()).toEqual(propValue);
+            expect(view.getInputValue()).toEqual(propValue);
           });
 
           it('Update value after multiple swaps', () => {
@@ -188,7 +185,7 @@ module.exports = {
             component.set('style', style);
             view.propTarget.trigger('update');
             expect(view.model.get('value')).toEqual(propValue + '2');
-            expect(view.$input.val()).toEqual(propValue + '2');
+            expect(view.getInputValue()).toEqual(propValue + '2');
           });
 
         })
@@ -204,8 +201,9 @@ module.exports = {
             view = new PropertyView({
               model
             });
-            $fixture.empty().appendTo($fixtures);
-            $fixture.html(view.render().el);
+            fixtures.innerHTML = '';
+            view.render();
+            fixtures.appendChild(view.el);
           });
 
           it('Value as default', () => {
@@ -213,11 +211,12 @@ module.exports = {
           });
 
           it('Placeholder as default', () => {
-            expect(view.$input.attr('placeholder')).toEqual(defValue);
+            var input = view.getInputEl();
+            expect(input.getAttribute('placeholder')).toEqual(defValue);
           });
 
-          it('Input value is empty', () => {
-            expect(view.$input.val()).toEqual(defValue);
+          it('Input value is set up to default', () => {
+            expect(view.getInputValue()).toEqual(defValue);
           });
 
         });

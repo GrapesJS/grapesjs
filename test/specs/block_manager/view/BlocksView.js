@@ -13,24 +13,15 @@ module.exports = {
         var editorModel;
         var ppfx;
 
-        before(() => {
-          $fixtures = $('#fixtures');
-          $fixture = $('<div class="devices-fixture"></div>');
-        });
-
         beforeEach(() => {
           model = new Blocks([]);
           view = new BlocksView({ collection: model });
-          $fixture.empty().appendTo($fixtures);
-          $fixture.html(view.render().el);
+          document.body.innerHTML = '<div id="fixtures"></div>';
+          document.body.querySelector('#fixtures').appendChild(view.render().el);
         });
 
         afterEach(() => {
           view.collection.reset();
-        });
-
-        after(() => {
-          $fixture.remove();
         });
 
         it("The container is not empty", () => {
@@ -69,8 +60,8 @@ module.exports = {
             },{
               pStylePrefix: ppfx
             });
-            $fixture.empty().appendTo($fixtures);
-            $fixture.html(view.render().el);
+            document.body.innerHTML = '<div id="fixtures"></div>';
+            document.body.querySelector('#fixtures').appendChild(view.render().el);
           });
 
           it("Render children", () => {

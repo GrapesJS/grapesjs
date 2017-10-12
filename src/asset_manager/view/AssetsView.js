@@ -153,7 +153,8 @@ module.exports = Backbone.View.extend({
     if (hide) {
       assetsEl.empty();
     } else {
-      assetsEl.append(this.config.noAssets);
+      const noAssets = this.config.noAssets;
+      noAssets && assetsEl.append(noAssets);
     }
   },
 

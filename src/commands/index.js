@@ -100,6 +100,7 @@ module.exports = () => {
       defaultCommands['open-blocks'] = require('./view/OpenBlocks');
       defaultCommands['open-assets'] = require('./view/OpenAssets');
       defaultCommands['show-offset'] = require('./view/ShowOffset');
+      defaultCommands['select-parent'] = require('./view/SelectParent');
       defaultCommands.fullscreen = require('./view/Fullscreen');
       defaultCommands.preview = require('./view/Preview');
       defaultCommands.resize = require('./view/Resize');
@@ -116,8 +117,6 @@ module.exports = () => {
 
           ed.select(null);
           sel.destroy();
-          ed.trigger('change:canvasOffset');
-          //ed.refresh();//change:canvasOffset
         },
       };
 
@@ -197,15 +196,9 @@ module.exports = () => {
       if(c.em)
         c.model = c.em.get('Canvas');
 
-      return this;
-    },
+      this.loadDefaultCommands()
 
-    /**
-     * On load callback
-     * @private
-     */
-    onLoad() {
-    	this.loadDefaultCommands();
+      return this;
     },
 
     /**
@@ -259,7 +252,7 @@ module.exports = () => {
      * */
     loadDefaultCommands() {
       for (var id in defaultCommands) {
-        this.add(id, defaultCommands[id]);
+          this.add(id, defaultCommands[id]);
       }
 
       return this;

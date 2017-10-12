@@ -1,6 +1,8 @@
-var Backbone = require('backbone');
-var SelectComponent = require('./SelectComponent');
-var SelectPosition = require('./SelectPosition');
+import {on, off} from 'utils/mixins'
+
+const SelectComponent = require('./SelectComponent');
+const SelectPosition = require('./SelectPosition');
+const $ = Backbone.$;
 
 module.exports = _.extend({}, SelectPosition, SelectComponent, {
 
@@ -49,7 +51,7 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
     this.sorter.onEndMove = this.onEndMove.bind(this);
     this.stopSelectComponent();
     this.$wrapper.off('mousedown', this.initSorter);
-    this.getContentWindow().on('keydown', this.rollback);
+    on(this.getContentWindow(), 'keydown', this.rollback);
   },
 
   /**
@@ -77,11 +79,11 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
     */
 
     this.stopSelectComponent();
-    this.getContentWindow().on('keydown', this.rollback);
+    on(this.getContentWindow(), 'keydown', this.rollback);
   },
 
   onEndMoveFromModel() {
-    this.getContentWindow().off('keydown', this.rollback);
+    off(this.getContentWindow(), 'keydown', this.rollback);
   },
 
   /**
@@ -90,7 +92,7 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
    */
   onEndMove() {
     this.enable();
-    this.getContentWindow().off('keydown', this.rollback);
+    off(this.getContentWindow(), 'keydown', this.rollback);
   },
 
   /**

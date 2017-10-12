@@ -14,7 +14,9 @@ module.exports = Backbone.View.extend({
     this.noCatClass = `${ppfx}blocks-no-cat`;
     this.blockContClass = `${ppfx}blocks-c`;
     this.catsClass = `${ppfx}block-categories`;
-    this.listenTo(this.collection, 'add', this.addTo);
+    const coll = this.collection;
+    this.listenTo(coll, 'add', this.addTo);
+    this.listenTo(coll, 'reset', this.render);
     this.em = this.config.em;
     this.tac = 'test-tac';
     this.grabbingCls = this.ppfx + 'grabbing';
@@ -167,8 +169,7 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    var ppfx = this.ppfx;
-    var frag = document.createDocumentFragment();
+    const frag = document.createDocumentFragment();
     this.catsEl = null;
     this.blocksEl = null;
     this.renderedCategories = [];
@@ -179,10 +180,7 @@ module.exports = Backbone.View.extend({
       </div>
     `;
 
-    this.collection.each(function(model){
-      this.add(model, frag);
-    }, this);
-
+    this.collection.each(model => this.add(model, frag));
     this.append(frag);
     this.$el.addClass(this.blockContClass + 's')
     return this;

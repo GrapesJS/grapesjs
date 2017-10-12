@@ -48,8 +48,7 @@ module.exports = Property.extend({
     }
 
     let result = '';
-    this.get('properties').each(prop => result += `${prop.getFullValue()} `);
-    return result.trim();
+    return this.get('properties').getFullValue();
   },
 
 });

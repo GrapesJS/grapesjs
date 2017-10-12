@@ -1,7 +1,11 @@
-var ToolbarView = require('dom_components/view/ToolbarView');
-var Toolbar = require('dom_components/model/Toolbar');
-var key = require('keymaster');
+import {on, off} from 'utils/mixins'
+
+const ToolbarView = require('dom_components/view/ToolbarView');
+const Toolbar = require('dom_components/model/Toolbar');
+const key = require('keymaster');
+const Backbone = require('backbone');
 let showOffsets;
+const $ = Backbone.$;
 
 module.exports = {
 
@@ -66,16 +70,6 @@ module.exports = {
   },
 
   /**
-   * Returns canavs body el
-   */
-  getCanvasBodyEl() {
-    if(!this.$bodyEl) {
-      this.$bodyEl = $(this.getCanvasBody());
-    }
-    return this.$bodyEl;
-  },
-
-  /**
    * Start select component event
    * @private
    * */
@@ -96,16 +90,15 @@ module.exports = {
    * @private
    * */
   toggleSelectComponent(enable) {
-    var el = '*';
-    var method = enable ? 'on' : 'off';
-    this.getCanvasBodyEl()
-      [method]('mouseover', el, this.onHover)
-      [method]('mouseout', el, this.onOut)
-      [method]('click', el, this.onClick);
-
-    var cw = this.getContentWindow();
-    cw[method]('scroll', this.onFrameScroll);
-    cw[method]('keydown', this.onKeyPress);
+    const method = enable ? 'on' : 'off';
+    const methods = {on, off};
+    const body = this.getCanvasBody();
+    const win = this.getContentWindow();
+    methods[method](body, 'mouseover', this.onHover);
+    methods[method](body, 'mouseout', this.onOut);
+    methods[method](body, 'click', this.onClick);
+    methods[method](win, 'scroll', this.onFrameScroll);
+    methods[method](win, 'keydown', this.onKeyPress);
   },
 
   /**
@@ -144,7 +137,7 @@ module.exports = {
     var trg = e.target;
 
     // Adjust tools scroll top
-    if(!this.adjScroll){
+    if (!this.adjScroll) {
       this.adjScroll = 1;
       this.onFrameScroll(e);
       this.updateAttached();
@@ -282,6 +275,7 @@ module.exports = {
   updateHighlighter(el, pos) {
     var $el = $(el);
     var model = $el.data('model');
+
     if(!model || (model && model.get('status') == 'selected')) {
       return;
     }
@@ -333,12 +327,7 @@ module.exports = {
     var modelToStyle;
 
     var toggleBodyClass = (method, e, opts) => {
-      var handlerAttr = e.target.getAttribute(attrName);
-      var resizeHndClass = pfx + 'resizing-' + handlerAttr;
-      var classToAdd = resizeClass;// + ' ' +resizeHndClass;
-      if (opts.docs) {
-        opts.docs.find('body')[method](classToAdd);
-      }
+      opts.docs && opts.docs.find('body')[method](resizeClass);
     };
 
 
@@ -553,9 +542,7 @@ module.exports = {
    * @private
    */
   getContentWindow() {
-    if(!this.contWindow)
-      this.contWindow = $(this.frameEl.contentWindow);
-    return this.contWindow;
+    return this.frameEl.contentWindow;
   },
 
   run(editor) {

@@ -37,6 +37,9 @@
  * * `component:update:{propertyName}` - Listen any property change
  * * `component:styleUpdate` - Triggered when the style of the component is updated
  * * `component:styleUpdate:{propertyName}` - Listen for a specific style property change
+ * * `component:selected` - New component selected
+ * * `block:add` - New block added
+ * * `block:remove` - Block removed
  * * `asset:add` - New asset added
  * * `asset:remove` - Asset removed
  * * `asset:upload:start` - Before the upload is started
@@ -45,9 +48,14 @@
  * * `asset:upload:response` - On upload response, passes the result as an argument
  * * `styleManager:change` - Triggered on style property change from new selected component, the view of the property is passed as an argument to the callback
  * * `styleManager:change:{propertyName}` - As above but for a specific style property
+ * * `storage:start` - Before the storage request is started
  * * `storage:load` - Triggered when something was loaded from the storage, loaded object passed as an argumnet
  * * `storage:store` - Triggered when something is stored to the storage, stored object passed as an argumnet
+ * * `storage:end` - After the storage request is ended
+ * * `storage:error` - On any error on storage request, passes the error as an argument
  * * `selector:add` - Triggers when a new selector/class is created
+ * * `rte:enable` - RTE enabled. The view, on which RTE is enabled, is passed as an argument
+ * * `rte:disable` - RTE disabled. The view, on which RTE is disabled, is passed as an argument
  * * `canvasScroll` - Triggered when the canvas is scrolled
  * * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
  * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
@@ -201,7 +209,7 @@ module.exports = config => {
      * @property {RichTextEditor}
      * @private
      */
-    RichTextEditor: em.get('rte'),
+    RichTextEditor: em.get('RichTextEditor'),
 
     /**
      * @property {Utils}

@@ -176,16 +176,19 @@ describe('StyleManager', () => {
     });
 
     Models.run();
-    SectorView.run();
-    SectorsView.run();
-    PropertyView.run();
-    PropertySelectView.run();
-    PropertyRadioView.run();
-    PropertyIntegerView.run();
-    PropertyColorView.run();
-    PropertyCompositeView.run();
-    PropertyStackView.run();
-    LayerView.run();
+
+    describe('Views', () => {
+      SectorView.run();
+      SectorsView.run();
+      PropertyView.run();
+      PropertySelectView.run();
+      PropertyRadioView.run();
+      PropertyIntegerView.run();
+      PropertyColorView.run();
+      PropertyCompositeView.run();
+      PropertyStackView.run();
+      LayerView.run();
+    });
   });
 
 });

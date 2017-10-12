@@ -1,6 +1,5 @@
-var Backbone = require('backbone');
-var Sector = require('./Sector');
+const Sector = require('./Sector');
 
-module.exports = Backbone.Collection.extend({
+module.exports = require('backbone').Collection.extend({
 	model: Sector,
 });

@@ -1,9 +1,9 @@
-var Backbone = require('backbone');
-var PropertyView = require('./PropertyView');
+const PropertyView = require('./PropertyView');
+const $ = Backbone.$;
 
 module.exports = PropertyView.extend({
 
-  templateField() {
+  templateInput() {
     const pfx = this.pfx;
     const ppfx = this.ppfx;
     const assetsLabel = this.config.assetsLabel || 'Images';
@@ -22,25 +22,22 @@ module.exports = PropertyView.extend({
         <div id="${pfx}close">&Cross;</div>
       </div>
     </div>
-    <div style="clear:both"></div>
     `;
   },
 
-  initialize(options) {
-    PropertyView.prototype.initialize.apply(this, arguments);
-    this.assets = this.target.get('assets');
-    this.modal = this.target.get('Modal');
-    this.am = this.target.get('AssetManager');
-    this.className = this.className + ' '+ this.pfx +'file';
+  init() {
+    const em = this.em;
+    this.modal = em.get('Modal');
+    this.am = em.get('AssetManager');
     this.events['click #'+this.pfx+'close']    = 'removeFile';
     this.events['click #'+this.pfx+'images']  = 'openAssetManager';
     this.delegateEvents();
   },
 
-  /** @inheritdoc */
-  renderInput() {
+  onRender() {
     if (!this.$input) {
-      this.$input = $('<input>', {placeholder: this.model.getDefaultValue(), type: 'text' });
+      const plh = this.model.getDefaultValue();
+      this.$input = $(`<input placeholder="${plh}">`);
     }
 
     if (!this.$preview) {
@@ -56,7 +53,7 @@ module.exports = PropertyView.extend({
 
   setValue(value, f) {
     PropertyView.prototype.setValue.apply(this, arguments);
-    this.setPreviewView(value && value != this.getDefaultValue());
+    this.setPreviewView(value && value != this.model.getDefaultValue());
     this.setPreview(value);
   },
 

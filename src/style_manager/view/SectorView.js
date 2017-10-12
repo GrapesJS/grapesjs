@@ -4,25 +4,25 @@ var PropertiesView = require('./PropertiesView');
 module.exports = Backbone.View.extend({
 
   template: _.template(`
-  <div class="<%= pfx %>title">
+  <div class="<%= pfx %>title" data-sector-title>
     <i id="<%= pfx %>caret" class="fa"></i>
     <%= label %>
   </div>`),
 
-  events:{},
+  events:{
+    'click [data-sector-title]': 'toggle'
+  },
 
   initialize(o) {
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
     this.target = o.target || {};
     this.propTarget = o.propTarget || {};
-    this.open = this.model.get('open');
     this.caretR = 'fa-caret-right';
     this.caretD = 'fa-caret-down';
-    this.listenTo(this.model, 'change:open', this.updateOpen);
-    this.listenTo(this.model, 'updateVisibility', this.updateVisibility);
-    this.events['click .' + this.pfx + 'title']  = 'toggle';
-    this.delegateEvents();
+    const model = this.model;
+    this.listenTo(model, 'change:open', this.updateOpen);
+    this.listenTo(model, 'updateVisibility', this.updateVisibility);
   },
 
   /**
@@ -53,7 +53,7 @@ module.exports = Backbone.View.extend({
    * */
   show() {
     this.$el.addClass(this.pfx + "open");
-    this.$el.find('.' + this.pfx + 'properties').show();
+    this.getPropertiesEl().style.display = '';
     this.$caret.removeClass(this.caretR).addClass(this.caretD);
   },
 
@@ -62,14 +62,18 @@ module.exports = Backbone.View.extend({
    * */
   hide() {
     this.$el.removeClass(this.pfx + "open");
-    this.$el.find('.' + this.pfx + 'properties').hide();
+    this.getPropertiesEl().style.display = 'none';
     this.$caret.removeClass(this.caretD).addClass(this.caretR);
+  },
+
+  getPropertiesEl() {
+    return this.$el.find(`.${this.pfx}properties`).get(0);
   },
 
   /**
    * Toggle visibility
    * */
-  toggle() {
+  toggle(e) {
     var v = this.model.get('open') ? 0 : 1;
     this.model.set('open', v);
   },

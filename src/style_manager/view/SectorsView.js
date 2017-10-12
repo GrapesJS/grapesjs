@@ -1,5 +1,4 @@
-var Backbone = require('backbone');
-var SectorView = require('./SectorView');
+const SectorView = require('./SectorView');
 
 module.exports = Backbone.View.extend({
 
@@ -117,9 +116,7 @@ module.exports = Backbone.View.extend({
    * */
   addToCollection(model, fragmentEl) {
     var fragment = fragmentEl || null;
-    var viewObject = SectorView;
-
-    var view = new viewObject({
+    var view = new SectorView({
       model,
       id: this.pfx + model.get('name').replace(' ','_').toLowerCase(),
       name: model.get('name'),

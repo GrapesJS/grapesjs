@@ -57,7 +57,8 @@ module.exports = () => {
      */
     init(config) {
       c = config || {};
-      for (var name in defaults){
+
+      for (var name in defaults) {
         if (!(name in c))
           c[name] = defaults[name];
       }

@@ -15,7 +15,10 @@ if(env !== 'dev') {
   ]
 }
 
-plugins.push(new webpack.ProvidePlugin({_: 'underscore'}));
+plugins.push(new webpack.ProvidePlugin({
+  _: 'underscore',
+  Backbone: 'backbone'
+}));
 
 module.exports = {
   entry: './src',
@@ -24,17 +27,16 @@ module.exports = {
       library: 'grapesjs',
       libraryTarget: 'umd',
   },
-  externals: {
-    jquery: {
-      commonjs2: 'jquery',
-      commonjs: 'jquery',
-      amd: 'jquery',
-      root: 'jQuery'
-    }
-  },
   plugins: plugins,
   module: {
     loaders: [{
+        test: /grapesjs\/index\.js$/,
+        loader: 'string-replace-loader',
+        query: {
+          search: '<# VERSION #>',
+          replace: pkg.version
+        }
+      },{
         test: /\.js$/,
         loader: 'babel-loader',
         include: /src/,
@@ -43,5 +45,8 @@ module.exports = {
   },
   resolve: {
     modules: ['src', 'node_modules'],
+    alias: {
+      jquery: 'cash-dom'
+    }
   },
 }

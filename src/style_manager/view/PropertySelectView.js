@@ -1,9 +1,8 @@
-var Backbone = require('backbone');
-var PropertyView = require('./PropertyView');
+const $ = Backbone.$;
 
-module.exports = PropertyView.extend({
+module.exports = require('./PropertyView').extend({
 
-  templateField() {
+  templateInput() {
     const pfx = this.pfx;
     const ppfx = this.ppfx;
     return `
@@ -13,37 +12,29 @@ module.exports = PropertyView.extend({
           <div class="${ppfx}d-s-arrow"></div>
         </div>
       </div>
-      <div style="clear:both"></div>
     `;
   },
 
-  initialize(options) {
-    PropertyView.prototype.initialize.apply(this, arguments);
-    const model = this.model;
-    this.list = model.get('list') || model.get('options') || [];
-  },
-
-  /** @inheritdoc */
-  renderInput() {
+  onRender() {
     var pfx  = this.pfx;
-    if(!this.$input){
-      var input = '<select>';
+    const model = this.model;
+    const options = model.get('list') || model.get('options') || [];
 
-      if (this.list && this.list.length) {
-        _.each(this.list, el => {
-          var name = el.name ? el.name : el.value;
-          var style = el.style ? el.style.replace(/"/g,'&quot;') : '';
-          var styleAttr = style ? 'style="' + style + '"' : '';
-          input += '<option value="'+el.value.replace(/"/g,'&quot;')+'" ' + styleAttr + '>'+name+'</option>';
-        });
-      }
+    if (!this.input) {
+      let optionsStr = '';
 
-      input += '</select>';
-      this.input = input;
-      this.$input = $(this.input);
-      this.$el.find('#'+ pfx +'input-holder').html(this.$input);
+      options.forEach(option => {
+        let name = option.name || option.value;
+        let style = option.style ? option.style.replace(/"/g,'&quot;') : '';
+        let styleAttr = style ? `style="${style}"` : '';
+        let value = option.value.replace(/"/g,'&quot;');
+        optionsStr += `<option value="${value}" ${styleAttr}>${name}</option>`;
+      });
+
+      const inputH = this.el.querySelector(`#${pfx}input-holder`);
+      inputH.innerHTML = `<select>${optionsStr}</select>`;
+      this.input = inputH.firstChild;
     }
-    this.setValue(this.componentValue, 0);
   },
 
 });
