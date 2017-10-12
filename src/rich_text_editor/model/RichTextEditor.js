@@ -32,18 +32,13 @@ const defActions = {
   },
   link: {
     icon: `<span style="transform:rotate(45deg)">&supdsub;</span>`,
+    name: 'link',
     attributes: {
       style: 'font-size:1.4rem;padding:0 4px 2px;',
       title: 'Link',
     },
     result: (rte) => rte.insertHTML(`<a class="link" href="">${rte.selection()}</a>`)
-  },
-  avoid: {
-    name: 'avoid',
-    icon: '<strike>avoid</strike>',
-    attributes: {title: 'avoid'},
-    result: (rte) => rte.insertHTML(`<b>Avoid</b>`)
-  },
+  }
 }
 
 export default class RichTextEditor {
@@ -56,9 +51,7 @@ export default class RichTextEditor {
     }
 
     el[RTE_KEY] = this;
-    this.el = el;
-    this.doc = el.ownerDocument;
-
+    this.setEl(el);
     this.updateActiveActions = this.updateActiveActions.bind(this);
 
     const settAct = settings.actions || [];
@@ -101,6 +94,11 @@ export default class RichTextEditor {
     return this;
   }
 
+  setEl(el) {
+    this.el = el;
+    this.doc = el.ownerDocument;
+  }
+
   updateActiveActions() {
     this.getActions().forEach(action => {
       const btn = action.btn;
@@ -114,19 +112,25 @@ export default class RichTextEditor {
   }
 
   enable() {
+    if (this.enabled) {
+      return this;
+    }
+
     this.actionbarEl().style.display = '';
     this.el.contentEditable = true;
     on(this.el, 'mouseup keyup', this.updateActiveActions)
     this.syncActions();
     this.updateActiveActions();
     this.el.focus();
+    this.enabled = 1;
     return this;
   }
 
   disable() {
     this.actionbarEl().style.display = 'none';
     this.el.contentEditable = false;
-    off(this.el, 'mouseup keyup', this.updateActiveActions)
+    off(this.el, 'mouseup keyup', this.updateActiveActions);
+    this.enabled = 0;
     return this;
   }
 
@@ -169,6 +173,7 @@ export default class RichTextEditor {
     this.actionbarEl().appendChild(btn);
 
     if (sync) {
+      this.actions.push(action);
       this.syncActions();
     }
   }

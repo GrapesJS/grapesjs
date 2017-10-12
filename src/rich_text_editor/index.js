@@ -104,6 +104,7 @@ module.exports = () => {
         actionbar,
         actionbarContainer,
       });
+      globalRte && globalRte.setEl(el);
 
       if (rte.actionbar) {
         this.actionbar = rte.actionbar;
@@ -135,7 +136,6 @@ module.exports = () => {
      */
     add(name, action = {}) {
       action.name = name;
-      globalRte.getActions().push(action);
       globalRte.addAction(action, {sync: 1});
     },
 
