@@ -129,8 +129,10 @@ module.exports = () => {
      * });
      * rte.add('link', {
      *   icon: document.getElementById('t'),
+     *   // Bind the 'result' on 'onclick' listener
      *   event: 'click',
      *   attributes: {title: 'Link',}
+     *   // Example on it's easy to wrap a selected content
      *   result: rte => rte.insertHTML(`<a href="#">${rte.selection()}</a>`)
      * });
      */
