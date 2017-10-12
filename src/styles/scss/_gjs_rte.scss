@@ -30,12 +30,12 @@
       border-right: none;
     }
 
-    &.btn-info {
-      background-color: $mainDkColor;
-    }
-
     &:hover {
       background-color: $mainLhColor;
     }
+  }
+
+  &active {
+    background-color: $mainDkColor;
   }
 }

@@ -1,25 +1,31 @@
 // The initial version of this RTE was borrowed from https://github.com/jaredreich/pell
 // and adapted to the GrapesJS's need
 
+import {on, off} from 'utils/mixins'
+
 const RTE_KEY = '_rte';
 
 const actions = {
   bold: {
+    name: 'bold',
     icon: '<b>B</b>',
     attributes: {title: 'Bold'},
     result: (rte) => rte.exec('bold')
   },
   italic: {
+    name: 'italic',
     icon: '<i>I</i>',
     attributes: {title: 'Italic'},
     result: (rte) => rte.exec('italic')
   },
   underline: {
+    name: 'underline',
     icon: '<u>U</u>',
     attributes: {title: 'Underline'},
     result: (rte) => rte.exec('underline')
   },
   strikethrough: {
+    name: 'strikethrough',
     icon: '<strike>S</strike>',
     attributes: {title: 'Strike-through'},
     result: (rte) => rte.exec('strikeThrough')
@@ -48,6 +54,7 @@ export default class RichTextEditor {
     el[RTE_KEY] = this;
     this.el = el;
     this.doc = el.ownerDocument;
+    this.updateActiveActions = this.updateActiveActions.bind(this);
 
     settings.actions = settings.actions
       ? settings.actions.map(action => {
@@ -62,6 +69,7 @@ export default class RichTextEditor {
     settings.classes = { ...{
       actionbar: 'actionbar',
       button: 'action',
+      active: 'active',
     }, ...settings.classes};
 
     const classes = settings.classes;
@@ -85,16 +93,31 @@ export default class RichTextEditor {
     return this;
   }
 
+  updateActiveActions() {
+    this.actions().forEach(action => {
+      const btn = action.btn;
+      const active = this.classes.active;
+      btn.className = btn.className.replace(active, '').trim();
+
+      if (this.doc.queryCommandState(action.name)) {
+        btn.className += ` ${active}`;
+      }
+    })
+  }
+
   enable() {
     this.actionbarEl().style.display = '';
     this.el.contentEditable = true;
+    on(this.el, 'mouseup keyup', this.updateActiveActions)
     this.syncActions();
+    this.el.focus();
     return this;
   }
 
   disable() {
     this.actionbarEl().style.display = 'none';
     this.el.contentEditable = false;
+    off(this.el, 'mouseup keyup', this.updateActiveActions)
     return this;
   }
 
@@ -104,7 +127,10 @@ export default class RichTextEditor {
   syncActions() {
     this.actions().forEach(action => {
       const event = action.event || 'click';
-      action.btn[`on${event}`] = e => action.result(this);
+      action.btn[`on${event}`] = e => {
+        action.result(this);
+        this.updateActiveActions();
+      };
     })
   }
 

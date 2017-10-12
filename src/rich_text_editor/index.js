@@ -161,6 +161,7 @@ module.exports = () => {
       const classes = {
         actionbar: `${pfx}actionbar`,
         button: `${pfx}action`,
+        active: `${pfx}active`,
       };
 
       toolbar.style.display = '';
