@@ -1,4 +1,4 @@
-const $ = Backbone.$;
+import {on, off} from 'utils/mixins';
 
 module.exports = Backbone.View.extend({
 
@@ -6,12 +6,11 @@ module.exports = Backbone.View.extend({
     mousedown: 'startDrag'
   },
 
-  initialize(o, config) {
-    _.bindAll(this, 'endDrag');
-    this.config = config || {};
-    this.ppfx = this.config.pStylePrefix || '';
+  initialize(o, config = {}) {
+    this.config = config;
+    this.endDrag = this.endDrag.bind(this);
+    this.ppfx = config.pStylePrefix || '';
     this.listenTo(this.model, 'destroy remove', this.remove);
-    this.doc = $(document);
   },
 
   /**
@@ -33,7 +32,7 @@ module.exports = Backbone.View.extend({
     sorter.setDragHelper(this.el, e);
     sorter.startSort(this.el);
     sorter.setDropContent(this.model.get('content'));
-    this.doc.on('mouseup', this.endDrag);
+    on(document, 'mouseup', this.endDrag);
   },
 
   /**
@@ -41,7 +40,7 @@ module.exports = Backbone.View.extend({
    * @private
    */
   endDrag(e) {
-    this.doc.off('mouseup', this.endDrag);
+    off(document, 'mouseup', this.endDrag);
     const sorter = this.config.getSorter();
 
     // After dropping the block in the canvas the mouseup event is not yet
@@ -53,9 +52,10 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    var className = this.ppfx + 'block';
-    this.$el.addClass(className);
-    this.el.innerHTML = '<div class="' + className + '-label">' + this.model.get('label') + '</div>';
+    const el = this.el;
+    const className = `${this.ppfx}block`;
+    el.className += ` ${className}`;
+    el.innerHTML = `<div class="${className}-label">${this.model.get('label')}</div>`;
     return this;
   },
 
