@@ -69,7 +69,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     icon: '',
 
     // Component related style
-    style: {},
+    style: '',
 
     // Key-value object of the component's attributes
     attributes: '',
@@ -98,7 +98,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
   },
 
   initialize(props = {}, opt = {}) {
-    const em = opt.sm || {};
+    const em = opt.sm || opt.em || {};
 
     // Check void elements
     if(opt && opt.config &&
@@ -108,6 +108,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
 
     this.opt = opt;
     this.sm = em;
+    this.em = em;
     this.config = props;
     this.set('attributes', this.get('attributes') || {});
     this.listenTo(this, 'change:script', this.scriptUpdated);
@@ -131,6 +132,71 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     this.set('status', '');
     this.init();
   },
+
+
+  /**
+   * Update attributes of the model
+   * @param {Object} attrs Key value attributes
+   * @example
+   * model.setAttributes({id: 'test', 'data-key': 'value'});
+   */
+  setAttributes(attrs) {
+    attrs = { ...attrs };
+
+    // Handle classes
+    const classes = attrs.class;
+    classes && this.setClass(classes);
+    delete attrs.class;
+
+    // Handle style
+    const style = attrs.style;
+    style && this.setStyle(style);
+    delete attrs.style;
+
+    this.set('attributes', attrs);
+  },
+
+
+  /**
+   * Return attributes
+   * @return {Object}
+   */
+  getAttributes() {
+    return this.get('attributes');
+  },
+
+
+  /**
+   * Add classes
+   * @param {Array|string} classes Array or string of classes
+   * @return {Array} Array of added selectors
+   * @example
+   * model.addClass('class1');
+   * model.addClass('class1 class2');
+   * model.addClass(['class1', 'class2']);
+   * // -> [SelectorObject, ...]
+   */
+  addClass(classes) {
+    const added = this.em.get('SelectorManager').addClass(classes);
+    return this.get('classes').add(added);
+  },
+
+
+  /**
+   * Set classes (resets current collection)
+   * @param {Array|string} classes Array or string of classes
+   * @return {Array} Array of added selectors
+   * @example
+   * model.setClass('class1');
+   * model.setClass('class1 class2');
+   * model.setClass(['class1', 'class2']);
+   * // -> [SelectorObject, ...]
+   */
+  setClass(classes) {
+    this.get('classes').reset();
+    return this.addClass(classes);
+  },
+
 
   initClasses() {
     const classes = this.normalizeClasses(this.get('classes') || this.config.classes || []);

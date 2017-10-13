@@ -6,18 +6,22 @@ const ComponentLink = require('dom_components/model/ComponentLink');
 const ComponentMap = require('dom_components/model/ComponentMap');
 const ComponentVideo = require('dom_components/model/ComponentVideo');
 const Components = require('dom_components/model/Components');
+const Selector = require('selector_manager/model/Selector');
+const Editor = require('editor/model/Editor');
 const $ = Backbone.$;
 
 module.exports = {
   run() {
-      var obj;
-      var dcomp;
-      var compOpts;
+      let obj;
+      let dcomp;
+      let compOpts;
+      let em;
 
       describe('Component', () => {
 
         beforeEach(() => {
-          obj = new Component();
+          em = new Editor({});
+          obj = new Component({}, {em});
           dcomp = new DomComponents();
           compOpts = {
             componentTypes: dcomp.componentTypes,
@@ -116,6 +120,68 @@ module.exports = {
           expect(obj).toEqual({tagName: 'span'});
         });
 
+        it('setClass single class string', () => {
+          obj.setClass('class1');
+          const result = obj.get('classes').models;
+          expect(result.length).toEqual(1);
+          expect(result[0] instanceof Selector).toEqual(true);
+          expect(result[0].get('name')).toEqual('class1');
+        });
+
+        it('setClass multiple class string', () => {
+          obj.setClass('class1 class2');
+          const result = obj.get('classes').models;
+          expect(result.length).toEqual(2);
+        });
+
+        it('setClass single class array', () => {
+          obj.setClass(['class1']);
+          const result = obj.get('classes').models;
+          expect(result.length).toEqual(1);
+        });
+
+        it('setClass multiple class array', () => {
+          obj.setClass(['class1', 'class2']);
+          const result = obj.get('classes').models;
+          expect(result.length).toEqual(2);
+        });
+
+        it('addClass multiple array', () => {
+          obj.addClass(['class1', 'class2']);
+          const result = obj.get('classes').models;
+          expect(result.length).toEqual(2);
+        });
+
+        it('addClass avoid same name classes', () => {
+          obj.addClass(['class1', 'class2']);
+          obj.addClass(['class1', 'class3']);
+          const result = obj.get('classes').models;
+          expect(result.length).toEqual(3);
+        });
+
+        it('setAttributes', () => {
+          obj.setAttributes({
+            id: 'test',
+            'data-test': 'value',
+            class: 'class1 class2',
+            style: 'color: white; background: #fff'
+          });
+          expect(obj.getAttributes()).toEqual({
+            id: 'test',
+            'data-test': 'value',
+          });
+          expect(obj.get('classes').length).toEqual(2);
+          expect(obj.getStyle()).toEqual({
+            color: 'white',
+            background: '#fff',
+          });
+        });
+
+        it('setAttributes overwrites correctly', () => {
+          obj.setAttributes({id: 'test', 'data-test': 'value'});
+          obj.setAttributes({'data-test': 'value2'});
+          expect(obj.getAttributes()).toEqual({'data-test': 'value2'});
+        });
     });
 
     describe('Image Component', () => {

@@ -1,4 +1,5 @@
 var SelectorManager = require('selector_manager');
+var Selector = require('selector_manager/model/Selector');
 var Models = require('./model/SelectorModels');
 var ClassTagView = require('./view/ClassTagView');
 var ClassTagsView = require('./view/ClassTagsView');
@@ -73,6 +74,36 @@ describe('SelectorManager', () => {
 
     it('Get empty class', () => {
       expect(obj.get('test')).toEqual(undefined);
+    });
+
+    it('addClass single class string', () => {
+      const result = obj.addClass('class1');
+      expect(result.length).toEqual(1);
+      expect(result[0] instanceof Selector).toEqual(true);
+      expect(result[0].get('name')).toEqual('class1');
+    });
+
+    it('addClass multiple class string', () => {
+      const result = obj.addClass('class1 class2');
+      expect(result.length).toEqual(2);
+      expect(obj.getAll().length).toEqual(2);
+    });
+
+    it('addClass single class array', () => {
+      const result = obj.addClass(['class1']);
+      expect(result.length).toEqual(1);
+    });
+
+    it('addClass multiple class array', () => {
+      const result = obj.addClass(['class1', 'class2']);
+      expect(result.length).toEqual(2);
+    });
+
+    it('addClass Avoid same name classes', () => {
+      obj.addClass('class1');
+      const result = obj.addClass('class1');
+      expect(obj.getAll().length).toEqual(1);
+      expect(result.length).toEqual(1);
     });
 
   });

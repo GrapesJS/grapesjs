@@ -23,14 +23,13 @@ module.exports = ComponentView.extend({
    * @private
    * */
   enableEditing() {
-    if (this.rteEnabled) {
+    const rte = this.rte;
+
+    if (this.rteEnabled || !this.model.get('editable')) {
       return;
     }
 
-    const editable = this.model.get('editable');
-    const rte = this.rte;
-
-    if (rte && editable) {
+    if (rte) {
       try {
         this.activeRte = rte.enable(this, this.activeRte);
       } catch (err) {

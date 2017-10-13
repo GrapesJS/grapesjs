@@ -1,3 +1,7 @@
+import { isString } from 'underscore';
+import ParserHtml from 'parser/model/ParserHtml';
+
+const parseStyle = ParserHtml().parseStyle;
 export default {
 
   /**
@@ -20,10 +24,14 @@ export default {
 
   /**
    * Set new style object
-   * @param {Object} prop
+   * @param {Object|string} prop
    * @param {Object} opts
    */
   setStyle(prop = {}, opts = {}) {
+    if (isString(prop)) {
+      prop = parseStyle(prop);
+    }
+
     this.set('style', Object.assign({}, prop), opts);
   },
 
