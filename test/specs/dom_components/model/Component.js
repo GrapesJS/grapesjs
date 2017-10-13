@@ -200,10 +200,37 @@ module.exports = {
 
     describe('Link Component', () => {
 
-      it('Component parse a element', () => {
-        var el = document.createElement('a');
-        obj = ComponentLink.isComponent(el);
+      const aEl = document.createElement('a');
+
+      it('Component parse link element', () => {
+        obj = ComponentLink.isComponent(aEl);
         expect(obj).toEqual({type: 'link'});
+      });
+
+      it('Component parse link element with text content', () => {
+        aEl.innerHTML = 'some text here ';
+        obj = ComponentLink.isComponent(aEl);
+        expect(obj).toEqual({type: 'link'});
+      });
+
+      it('Component parse link element with not only text content', () => {
+        aEl.innerHTML = '<div>Some</div> text <div>here </div>';
+        obj = ComponentLink.isComponent(aEl);
+        expect(obj).toEqual({type: 'link'});
+      });
+
+      it('Component parse link element with only not text content', () => {
+        aEl.innerHTML = `<div>Some</div>
+        <div>text</div>
+        <div>here </div>`;
+        obj = ComponentLink.isComponent(aEl);
+        expect(obj).toEqual({type: 'link', editable: 0});
+      });
+
+      it('Link element with only an image inside is not editable', () => {
+        aEl.innerHTML = '<img src="##"/>';
+        obj = ComponentLink.isComponent(aEl);
+        expect(obj).toEqual({type: 'link', editable: 0});
       });
 
     });
