@@ -114,8 +114,13 @@ module.exports = config => {
             const lastChar = nodeValue && nodeValue.substr(valueLen - 1);
             nodeValue = nodeValue === 'true' ? true : nodeValue;
             nodeValue = nodeValue === 'false' ? false : nodeValue;
-            nodeValue = (firstChar == '{' && lastChar == '}') ||
-              (firstChar == '[' && lastChar == ']') ? JSON.parse(nodeValue) : nodeValue;
+            // Try to json parse where is possible
+            // I can get false positive here (eg. a selector '[data-attr]')
+            // so put it under try/catch and let fail silently
+            try {
+              nodeValue = (firstChar == '{' && lastChar == '}') ||
+                (firstChar == '[' && lastChar == ']') ? JSON.parse(nodeValue) : nodeValue;
+            } catch (e) {}
             model[modelAttr] = nodeValue;
           } else {
             model.attributes[nodeName] = nodeValue;
