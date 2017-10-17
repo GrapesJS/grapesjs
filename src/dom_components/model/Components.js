@@ -9,8 +9,8 @@ module.exports = Backbone.Collection.extend({
     this.config = opt && opt.config ? opt.config : null;
 
     // Inject editor
-    if(opt && opt.sm)
-      this.editor = opt.sm;
+    if(opt && (opt.sm || opt.em))
+      this.editor = opt.sm || opt.em;
 
     this.model  = (attrs, options) => {
       var model;

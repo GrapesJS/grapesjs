@@ -1,3 +1,4 @@
+import { isUndefined, isArray } from 'underscore';
 import Styleable from 'domain_abstract/model/Styleable';
 
 var Backbone = require('backbone');
@@ -215,6 +216,49 @@ module.exports = Backbone.Model.extend(Styleable).extend({
    * Initialize callback
    */
   init() {},
+
+
+  /**
+   * Add new component children
+   * @param  {Component|string} components Component to add
+   * @param {Object} [opts={}] Options, same as in `model.add()`(from backbone)
+   * @return {Array} Array of appended components
+   * @example
+   * someModel.get('components').lenght // -> 0
+   * const videoComponent = someModel.append('<video></video><div></div>')[0];
+   * // This will add 2 components (`video` and `div`) to your `someModel`
+   * someModel.get('components').lenght // -> 2
+   * // You can pass components directly
+   * otherModel.append(otherModel2);
+   * otherModel.append([otherModel3, otherModel4]);
+   */
+  append(components, opts = {}) {
+    const result = this.components().add(components, opts);
+    return isArray(result) ? result : [result];
+  },
+
+
+  /**
+   * Set new collection if `components` are provided, otherwise the
+   * current collection is returned
+   * @param  {Component|string} [components] Components to set
+   * @return {Collection|undefined}
+   * @example
+   * // Get current collection
+   * const collection = model.components();
+   * // Set new collection
+   * model.components('<span></span><div></div>');
+   */
+  components(components) {
+    const coll = this.get('components');
+
+    if (isUndefined(components)) {
+      return coll;
+    } else {
+      coll.reset();
+      components && this.append(components);
+    }
+  },
 
   /**
    * Script updated

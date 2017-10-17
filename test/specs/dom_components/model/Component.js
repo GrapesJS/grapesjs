@@ -17,15 +17,16 @@ module.exports = {
       let compOpts;
       let em;
 
-      describe('Component', () => {
+      describe.only('Component', () => {
 
         beforeEach(() => {
           em = new Editor({});
-          obj = new Component({}, {em});
           dcomp = new DomComponents();
           compOpts = {
+            em,
             componentTypes: dcomp.componentTypes,
           };
+          obj = new Component({}, compOpts);
         });
 
         afterEach(() => {
@@ -181,6 +182,37 @@ module.exports = {
           obj.setAttributes({id: 'test', 'data-test': 'value'});
           obj.setAttributes({'data-test': 'value2'});
           expect(obj.getAttributes()).toEqual({'data-test': 'value2'});
+        });
+
+        it('append() returns always an array', () => {
+          let result = obj.append('<span>text1</span>');
+          expect(result.length).toEqual(1);
+          result = obj.append('<span>text1</span><div>text2</div>');
+          expect(result.length).toEqual(2);
+        });
+
+        it('append() new components as string', () => {
+          obj.append('<span>text1</span><div>text2</div>');
+          const comps = obj.components();
+          expect(comps.length).toEqual(2);
+          expect(comps.models[0].get('tagName')).toEqual('span');
+          expect(comps.models[1].get('tagName')).toEqual('div');
+        });
+
+        it('append() new components as Objects', () => {
+          obj.append([{}, {}]);
+          const comps = obj.components();
+          expect(comps.length).toEqual(2);
+          obj.append({});
+          expect(comps.length).toEqual(3);
+        });
+
+        it('components() set new collection', () => {
+          obj.append([{}, {}]);
+          obj.components('<span>test</div>');
+          const result = obj.components();
+          expect(result.length).toEqual(1);
+          expect(result.models[0].get('tagName')).toEqual('span');
         });
     });
 
