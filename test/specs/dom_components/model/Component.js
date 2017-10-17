@@ -17,7 +17,7 @@ module.exports = {
       let compOpts;
       let em;
 
-      describe.only('Component', () => {
+      describe('Component', () => {
 
         beforeEach(() => {
           em = new Editor({});

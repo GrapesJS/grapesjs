@@ -107,13 +107,19 @@ module.exports = config => {
             model.classes = this.parseClass(nodeValue);
           else if (nodeName == 'contenteditable')
             continue;
-          else if(nodeName.indexOf(modelAttrStart) === 0){
-            var modelAttr = nodeName.replace(modelAttrStart, '');
+          else if (nodeName.indexOf(modelAttrStart) === 0) {
+            const modelAttr = nodeName.replace(modelAttrStart, '');
+            const valueLen = nodeValue.length;
+            const firstChar = nodeValue && nodeValue.substr(0, 1);
+            const lastChar = nodeValue && nodeValue.substr(valueLen - 1);
             nodeValue = nodeValue === 'true' ? true : nodeValue;
             nodeValue = nodeValue === 'false' ? false : nodeValue;
+            nodeValue = (firstChar == '{' && lastChar == '}') ||
+              (firstChar == '[' && lastChar == ']') ? JSON.parse(nodeValue) : nodeValue;
             model[modelAttr] = nodeValue;
-          }else
+          } else {
             model.attributes[nodeName] = nodeValue;
+          }
         }
 
 

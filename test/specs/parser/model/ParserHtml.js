@@ -5,7 +5,7 @@ const DomComponents = require('dom_components');
 module.exports = {
   run() {
 
-    describe('ParserHtml', () => {
+    describe.only('ParserHtml', () => {
       var obj;
 
       beforeEach(() => {
@@ -377,6 +377,34 @@ module.exports = {
             'data-test': 'test-value'
           },
           type: 'text',
+          content: 'test2 ',
+        };
+        expect(obj.parse(str).html).toEqual(result);
+      });
+
+      it('Parse attributes with object inside', () => {
+        var str = `<div data-gjs-test='{ "prop1": "value1", "prop2": 10, "prop3": true}'>test2 </div>`;
+        var result = {
+          tagName: 'div',
+          attributes: {},
+          type: 'text',
+          test: {
+            prop1: 'value1',
+            prop2: 10,
+            prop3: true,
+          },
+          content: 'test2 ',
+        };
+        expect(obj.parse(str).html).toEqual(result);
+      });
+
+      it('Parse attributes with arrays inside', () => {
+        var str = `<div data-gjs-test='["value1", "value2"]'>test2 </div>`;
+        var result = {
+          tagName: 'div',
+          attributes: {},
+          type: 'text',
+          test: ['value1', 'value2'],
           content: 'test2 ',
         };
         expect(obj.parse(str).html).toEqual(result);

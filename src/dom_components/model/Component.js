@@ -98,6 +98,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     toolbar: null,
   },
 
+
   initialize(props = {}, opt = {}) {
     const em = opt.sm || opt.em || {};
 
@@ -205,12 +206,14 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     return this;
   },
 
+
   initComponents() {
     let comps = new Components(this.get('components'), this.opt);
     comps.parent = this;
     this.set('components', comps);
     return this;
   },
+
 
   /**
    * Initialize callback
@@ -260,12 +263,14 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     }
   },
 
+
   /**
    * Script updated
    */
   scriptUpdated() {
     this.set('scriptUpdated', 1);
   },
+
 
   /**
    * Once traits are updated I have to populates model's attributes
@@ -292,6 +297,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
 
     found && this.set('attributes', attrs);
   },
+
 
   /**
    * Init toolbar
@@ -328,6 +334,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     }
   },
 
+
   /**
    * Load traits
    * @param  {Array} traits
@@ -345,6 +352,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     this.set('traits', trt, opts);
     return this;
   },
+
 
   /**
    * Normalize input classes from array to array of objects
@@ -375,6 +383,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     });
     return res;
   },
+
 
   /**
    * Override original clone method
@@ -409,6 +418,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     return new this.constructor(attr, this.opt);
   },
 
+
   /**
    * Get the name of the component
    * @return {string}
@@ -422,6 +432,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     return customName || name;
   },
 
+
   /**
    * Get the icon string
    * @return {string}
@@ -430,6 +441,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     let icon = this.get('icon');
     return icon ? icon + ' ' : '';
   },
+
 
   /**
    * Return HTML string of the component
@@ -479,6 +491,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     return code;
   },
 
+
   /**
    * Returns object of attributes for HTML
    * @return {Object}
@@ -489,6 +502,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     delete attr.style;
     return attr;
   },
+
 
   /**
    * Return a shallow copy of the model's attributes for JSON
@@ -508,6 +522,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     return obj;
   },
 
+
   /**
    * Return model id
    * @return {string}
@@ -516,6 +531,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     let attrs = this.get('attributes') || {};
     return attrs.id || this.cid;
   },
+
 
   /**
    * Return script in string format, cleans 'function() {..' from scripts
