@@ -2,6 +2,10 @@ var Component = require('./Component');
 
 module.exports = Component.extend({
 
+  defaults: { ...Component.prototype.defaults,
+    highlightable: 0,
+  },
+
   getName() {
     let name = this.get('tagName');
     let customName = this.get('custom-name');
