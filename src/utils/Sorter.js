@@ -266,9 +266,9 @@ module.exports = Backbone.View.extend({
       srcModel && srcModel.set && srcModel.set('status', 'freezed');
     }
 
-    on(container, 'mousemove', this.onMove)
-    on(docs, 'mouseup', this.endMove)
-    on(document, 'keydown', this.rollback)
+    on(container, 'mousemove', this.onMove);
+    on(docs, 'mouseup', this.endMove);
+    on(docs, 'keydown', this.rollback);
     onStart && onStart();
 
     // Avoid strange effects on dragging
@@ -770,10 +770,11 @@ module.exports = Backbone.View.extend({
   endMove(e) {
     console.log('endmove');
     var created;
+    const docs = this.getDocuments();
     const container = this.getContainerEl();
     off(container, 'mousemove', this.onMove);
-    off(document, 'mouseup', this.endMove);
-    off(document, 'keydown', this.rollback);
+    off(docs, 'mouseup', this.endMove);
+    off(docs, 'keydown', this.rollback);
     //this.$document.off('mouseup', this.endMove);
     //this.$document.off('keydown', this.rollback);
     this.plh.style.display = 'none';
@@ -885,15 +886,13 @@ module.exports = Backbone.View.extend({
    * @param {Bool} Indicates if rollback in anycase
    * */
   rollback(e) {
-    $(document).off('keydown', this.rollback);
-    this.$document.off('keydown', this.rollback);
-    var key = e.which || e.keyCode;
+    off(this.getDocuments(), 'keydown', this.rollback);
+    const key = e.which || e.keyCode;
 
     if (key == 27) {
-      this.moved = false;
+      this.moved = 0;
       this.endMove();
     }
-    return;
   },
 
 });
