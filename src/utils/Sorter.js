@@ -57,6 +57,15 @@ module.exports = Backbone.View.extend({
     return this.el;
   },
 
+
+  getDocuments() {
+    const em = this.em;
+    const canvasDoc = em && em.get('Canvas').getBody().ownerDocument;
+    const docs = [document];
+    canvasDoc && docs.push(canvasDoc);
+    return docs;
+  },
+
   /**
    * Triggered when the offset of the editro is changed
    */
@@ -227,11 +236,15 @@ module.exports = Backbone.View.extend({
    * @param {HTMLElement} src
    * */
   startSort(src) {
+    const em = this.em;
     const itemSel = this.itemSel;
     const contSel = this.containerSel;
+    const container = this.getContainerEl();
+    const docs = this.getDocuments();
+    const onStart = this.onStart;
+    let plh = this.plh;
     this.dropModel = null;
     this.moved = 0;
-    //this.$document = $([document, trg.ownerDocument]);
 
     // Check if the start element is a valid one, if not get the
     // closest valid one
@@ -242,29 +255,24 @@ module.exports = Backbone.View.extend({
     this.eV = src;
 
     // Create placeholder if not yet exists
-    if (!this.plh) {
-      this.plh = this.createPlaceholder();
-      this.getContainerEl().appendChild(this.plh);
+    if (!plh) {
+      plh = this.createPlaceholder();
+      container.appendChild(plh);
+      this.plh = plh;
     }
 
     if (src) {
       const srcModel = this.getSourceModel(src);
       srcModel && srcModel.set && srcModel.set('status', 'freezed');
-      this.$document.on('mouseup', this.endMove);
     }
 
-    this.$el.on('mousemove', this.onMove);
-    $(document).on('keydown', this.rollback);
-    this.$document.on('keydown', this.rollback);
-
-    if(typeof this.onStart === 'function')
-      this.onStart();
+    on(container, 'mousemove', this.onMove)
+    on(docs, 'mouseup', this.endMove)
+    on(document, 'keydown', this.rollback)
+    onStart && onStart();
 
     // Avoid strange effects on dragging
-    if(this.em) {
-      this.em.clearSelection();
-    }
-
+    em && em.clearSelection();
     this.toggleSortCursor(1);
   },
 
@@ -328,7 +336,7 @@ module.exports = Backbone.View.extend({
    * */
   onMove(e) {
     this.moved = 1;
-
+    console.log('moviing');
     // Turn placeholder visibile
     var plh = this.plh;
     var dsp = plh.style.display;
@@ -760,10 +768,14 @@ module.exports = Backbone.View.extend({
    * @return void
    * */
   endMove(e) {
+    console.log('endmove');
     var created;
-    this.$el.off('mousemove', this.onMove);
-    this.$document.off('mouseup', this.endMove);
-    this.$document.off('keydown', this.rollback);
+    const container = this.getContainerEl();
+    off(container, 'mousemove', this.onMove);
+    off(document, 'mouseup', this.endMove);
+    off(document, 'keydown', this.rollback);
+    //this.$document.off('mouseup', this.endMove);
+    //this.$document.off('keydown', this.rollback);
     this.plh.style.display = 'none';
     var clsReg = new RegExp('(?:^|\\s)'+this.freezeClass+'(?!\\S)', 'gi');
     let src = this.eV;
