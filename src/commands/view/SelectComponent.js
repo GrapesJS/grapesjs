@@ -295,6 +295,7 @@ module.exports = {
    * @private
    * */
   onSelect() {
+    const editor = this.editor;
     const model = this.em.getSelected();
 
     if (model) {
@@ -303,6 +304,8 @@ module.exports = {
       this.hideElementOffset();
       this.hideHighlighter();
       this.initResize(el);
+    } else {
+      editor.stopCommand('resize');
     }
   },
 
