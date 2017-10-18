@@ -90,6 +90,7 @@ module.exports = {
    * @private
    * */
   toggleSelectComponent(enable) {
+    const em = this.em;
     const method = enable ? 'on' : 'off';
     const methods = {on, off};
     const body = this.getCanvasBody();
@@ -99,6 +100,7 @@ module.exports = {
     methods[method](body, 'click', this.onClick);
     methods[method](win, 'scroll', this.onFrameScroll);
     methods[method](win, 'keydown', this.onKeyPress);
+    em[method]('change:selectedComponent', this.onSelect, this);
   },
 
   /**
@@ -221,18 +223,14 @@ module.exports = {
   },
 
   /**
-   * Hover command
-   * @param {Object}  e
+   * On element click
+   * @param {Event}  e
    * @private
    */
   onClick(e) {
-    var m = $(e.target).data('model');
-    if(!m)
-      return;
-    var s  = m.get('stylable');
-    if(!(s instanceof Array) && !s)
-      return;
-    this.onSelect(e, e.target);
+    e.stopPropagation();
+    const model = $(e.target).data('model');
+    model && this.editor.select(model);
   },
 
   /**
@@ -296,12 +294,11 @@ module.exports = {
    * @param {Object}  el
    * @private
    * */
-  onSelect(e, el) {
-    e.stopPropagation();
-    var model = $(el).data('model');
+  onSelect() {
+    const model = this.em.getSelected();
 
     if (model) {
-      this.editor.select(model);
+      const el = model.view.el;
       this.showFixedElementOffset(el);
       this.hideElementOffset();
       this.hideHighlighter();
