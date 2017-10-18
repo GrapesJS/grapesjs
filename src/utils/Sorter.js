@@ -1,3 +1,4 @@
+import {on, off} from 'utils/mixins';
 const $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
@@ -226,23 +227,28 @@ module.exports = Backbone.View.extend({
    * @param {HTMLElement} src
    * */
   startSort(src) {
+    const itemSel = this.itemSel;
+    const contSel = this.containerSel;
     this.dropModel = null;
     this.moved = 0;
     //this.$document = $([document, trg.ownerDocument]);
 
-    if(src && !this.matches(src, this.itemSel + ',' + this.containerSel))
-      src = this.closest(src, this.itemSel);
+    // Check if the start element is a valid one, if not get the
+    // closest valid one
+    if (src && !this.matches(src, `${itemSel}, ${contSel}`)) {
+      src = this.closest(src, itemSel);
+    }
 
     this.eV = src;
 
-    // Create placeholder if not exists
+    // Create placeholder if not yet exists
     if (!this.plh) {
       this.plh = this.createPlaceholder();
       this.getContainerEl().appendChild(this.plh);
     }
 
     if (src) {
-      var srcModel = this.getSourceModel();
+      const srcModel = this.getSourceModel(src);
       srcModel && srcModel.set && srcModel.set('status', 'freezed');
       this.$document.on('mouseup', this.endMove);
     }
@@ -275,8 +281,8 @@ module.exports = Backbone.View.extend({
    * Get the model of the current source element (element to drag)
    * @return {Model}
    */
-  getSourceModel() {
-    var src = this.eV;
+  getSourceModel(source) {
+    var src = source || this.eV;
     let dropContent = this.dropContent;
     let dropModel = this.dropModel;
     const em = this.em;
