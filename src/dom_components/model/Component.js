@@ -22,7 +22,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     // True if the component is removable from the canvas
     removable: true,
 
-    // Indicates if it's possible to drag the component inside other
+    // Indicates if it's possible to drag the component inside others
     // Tip: Indicate an array of selectors where it could be dropped inside
     draggable: true,
 
@@ -84,6 +84,19 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     // Traits
     traits: ['id', 'title'],
 
+    // Indicates an array of properties which will be inhereted by
+    // all NEW appended children
+    //
+    // If you create a model likes this
+    //  removable: false,
+    //  draggable: false,
+    //  propagate: ['removable', 'draggable']
+    // When you append some new component inside, the new added model
+    // will get the exact same properties indicated in `propagate` array
+    // (as the `propagate` property itself)
+    //
+    propagate: '',
+
     /**
       * Set an array of items to show up inside the toolbar (eg. move, clone, delete)
       * when the component is selected
@@ -132,6 +145,8 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     }, this);
 
     this.set('status', '');
+    const propagate = this.get('propagate');
+    propagate && this.set('propagate', isArray(propagate) ? propagate : [propagate]);
     this.init();
   },
 

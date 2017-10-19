@@ -214,6 +214,18 @@ module.exports = {
           expect(result.length).toEqual(1);
           expect(result.models[0].get('tagName')).toEqual('span');
         });
+
+
+        it.only('Propagate properties to children', () => {
+          obj.append({propagate: 'removable'});
+          const result = obj.components();
+          const newObj = result.models[0];
+          expect(newObj.get('removable')).toEqual(true);
+          newObj.set('removable', false);
+          newObj.append({});
+          const child = newObj.components().models[0];
+          expect(child.get('removable')).toEqual(false);
+        });
     });
 
     describe('Image Component', () => {
