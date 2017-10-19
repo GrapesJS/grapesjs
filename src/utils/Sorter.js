@@ -358,9 +358,9 @@ module.exports = Backbone.View.extend({
     this.rX = rX;
     this.rY = rY;
     this.eventMove = e;
-    var target = this.getTargetFromEl(e.target);
+
+    //var target = this.getTargetFromEl(e.target);
     var dims = this.dimsFromTarget(e.target, rX, rY);
-    console.log(this.target, 'sec ',target);
     let targetModel = this.getTargetModel(this.target);
     this.selectTargetModel(targetModel);
 
@@ -475,14 +475,14 @@ module.exports = Backbone.View.extend({
     droppable = droppable instanceof Backbone.Collection ? 1 : droppable;
     droppable = droppable instanceof Array ? droppable.join(', ') : droppable;
     result.dropInfo = droppable;
-    droppable = typeof droppable === 'string' ? src.matches(droppable) : droppable;
+    droppable = typeof droppable === 'string' ? this.matches(src, droppable) : droppable;
     result.droppable = droppable;
 
     // check if the source is draggable in target
     let draggable = srcModel.get('draggable');
     draggable = draggable instanceof Array ? draggable.join(', ') : draggable;
     result.dragInfo = draggable;
-    draggable = typeof draggable === 'string' ? trg.matches(draggable) : draggable;
+    draggable = typeof draggable === 'string' ? this.matches(trg, draggable) : draggable;
     result.draggable = draggable;
 
     if (!droppable || !draggable) {
@@ -507,7 +507,7 @@ module.exports = Backbone.View.extend({
     }
 
     // Select the first valuable target
-    if (!target.matches(`${this.itemSel}, ${this.containerSel}`)) {
+    if (!this.matches(target, `${this.itemSel}, ${this.containerSel}`)) {
       target = this.closest(target, this.itemSel);
     }
 
@@ -552,11 +552,12 @@ module.exports = Backbone.View.extend({
     // triggers nearBorders(), so have to take care of this
     if(this.nearBorders(this.prevTargetDim, rX, rY) ||
        (!this.nested && !this.cacheDims.length)) {
-        if (!this.validTarget(this.targetP).valid) {
-          return this.dimsFromTarget(this.targetP, rX, rY);
+        const targetParent = this.targetP;
+
+        if (targetParent && this.validTarget(targetParent).valid) {
+          dims = this.cacheDimsP;
+          this.target = targetParent;
         }
-        dims = this.cacheDimsP;
-        this.target = this.targetP;
     }
 
     this.lastPos = null;
@@ -610,11 +611,9 @@ module.exports = Backbone.View.extend({
     if (this.nearElBorders(target)) {
       targetParent = this.closest(target, containerSel);
 
-      if (targetParent && !this.validTarget(targetParent).valid) {
-        targetParent = this.getTargetFromEl(targetParent);
+      if (targetParent && this.validTarget(targetParent).valid) {
+        target = targetParent;
       }
-
-      targetParent && (target = targetParent);
     }
 
     return target;
@@ -706,7 +705,7 @@ module.exports = Backbone.View.extend({
     for (var i = 0, len = ch.length; i < len; i++) {
       var el = ch[i];
 
-      if (!el.matches(this.itemSel)) {
+      if (!this.matches(el, this.itemSel)) {
         continue;
       }
 
@@ -861,7 +860,6 @@ module.exports = Backbone.View.extend({
    * @return void
    * */
   endMove(e) {
-    console.log('endmove');
     var created;
     const docs = this.getDocuments();
     const container = this.getContainerEl();
