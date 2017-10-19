@@ -36,7 +36,7 @@ module.exports = require('./PropertyView').extend({
         });
 
         const inputHld = this.el.querySelector(`#${pfx}input-holder`);
-        inputHld.innerHTML = `<div>${inputStr}</div>`;
+        inputHld.innerHTML = `<div class="${ppfx}radio-items">${inputStr}</div>`;
         this.input = inputHld.firstChild;
       }
     }

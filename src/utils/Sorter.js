@@ -57,6 +57,15 @@ module.exports = Backbone.View.extend({
     return this.el;
   },
 
+
+  getDocuments() {
+    const em = this.em;
+    const canvasDoc = em && em.get('Canvas').getBody().ownerDocument;
+    const docs = [document];
+    canvasDoc && docs.push(canvasDoc);
+    return docs;
+  },
+
   /**
    * Triggered when the offset of the editro is changed
    */
@@ -227,11 +236,15 @@ module.exports = Backbone.View.extend({
    * @param {HTMLElement} src
    * */
   startSort(src) {
+    const em = this.em;
     const itemSel = this.itemSel;
     const contSel = this.containerSel;
+    const container = this.getContainerEl();
+    const docs = this.getDocuments();
+    const onStart = this.onStart;
+    let plh = this.plh;
     this.dropModel = null;
     this.moved = 0;
-    //this.$document = $([document, trg.ownerDocument]);
 
     // Check if the start element is a valid one, if not get the
     // closest valid one
@@ -242,29 +255,24 @@ module.exports = Backbone.View.extend({
     this.eV = src;
 
     // Create placeholder if not yet exists
-    if (!this.plh) {
-      this.plh = this.createPlaceholder();
-      this.getContainerEl().appendChild(this.plh);
+    if (!plh) {
+      plh = this.createPlaceholder();
+      container.appendChild(plh);
+      this.plh = plh;
     }
 
     if (src) {
       const srcModel = this.getSourceModel(src);
       srcModel && srcModel.set && srcModel.set('status', 'freezed');
-      this.$document.on('mouseup', this.endMove);
     }
 
-    this.$el.on('mousemove', this.onMove);
-    $(document).on('keydown', this.rollback);
-    this.$document.on('keydown', this.rollback);
-
-    if(typeof this.onStart === 'function')
-      this.onStart();
+    on(container, 'mousemove', this.onMove);
+    on(docs, 'mouseup', this.endMove);
+    on(docs, 'keydown', this.rollback);
+    onStart && onStart();
 
     // Avoid strange effects on dragging
-    if(this.em) {
-      this.em.clearSelection();
-    }
-
+    em && em.clearSelection();
     this.toggleSortCursor(1);
   },
 
@@ -328,7 +336,6 @@ module.exports = Backbone.View.extend({
    * */
   onMove(e) {
     this.moved = 1;
-
     // Turn placeholder visibile
     var plh = this.plh;
     var dsp = plh.style.display;
@@ -348,8 +355,12 @@ module.exports = Backbone.View.extend({
       rY = mousePos.y;
     }
 
-    var dims = this.dimsFromTarget(e.target, rX, rY);
+    this.rX = rX;
+    this.rY = rY;
+    this.eventMove = e;
 
+    //var target = this.getTargetFromEl(e.target);
+    var dims = this.dimsFromTarget(e.target, rX, rY);
     let targetModel = this.getTargetModel(this.target);
     this.selectTargetModel(targetModel);
 
@@ -464,14 +475,14 @@ module.exports = Backbone.View.extend({
     droppable = droppable instanceof Backbone.Collection ? 1 : droppable;
     droppable = droppable instanceof Array ? droppable.join(', ') : droppable;
     result.dropInfo = droppable;
-    droppable = typeof droppable === 'string' ? src.matches(droppable) : droppable;
+    droppable = typeof droppable === 'string' ? this.matches(src, droppable) : droppable;
     result.droppable = droppable;
 
     // check if the source is draggable in target
     let draggable = srcModel.get('draggable');
     draggable = draggable instanceof Array ? draggable.join(', ') : draggable;
     result.dragInfo = draggable;
-    draggable = typeof draggable === 'string' ? trg.matches(draggable) : draggable;
+    draggable = typeof draggable === 'string' ? this.matches(trg, draggable) : draggable;
     result.draggable = draggable;
 
     if (!droppable || !draggable) {
@@ -496,7 +507,7 @@ module.exports = Backbone.View.extend({
     }
 
     // Select the first valuable target
-    if (!target.matches(`${this.itemSel}, ${this.containerSel}`)) {
+    if (!this.matches(target, `${this.itemSel}, ${this.containerSel}`)) {
       target = this.closest(target, this.itemSel);
     }
 
@@ -537,19 +548,108 @@ module.exports = Backbone.View.extend({
     // Target when I will drop element to sort
     this.target = this.prevTarget;
 
-    // Generally also on every new target the poiner enters near
-    // to borders, so have to to check always
+    // Generally, on any new target the poiner enters inside its area and
+    // triggers nearBorders(), so have to take care of this
     if(this.nearBorders(this.prevTargetDim, rX, rY) ||
        (!this.nested && !this.cacheDims.length)) {
-        if (!this.validTarget(this.targetP).valid) {
-          return this.dimsFromTarget(this.targetP, rX, rY);
+        const targetParent = this.targetP;
+
+        if (targetParent && this.validTarget(targetParent).valid) {
+          dims = this.cacheDimsP;
+          this.target = targetParent;
         }
-        dims = this.cacheDimsP;
-        this.target = this.targetP;
     }
 
     this.lastPos = null;
     return dims;
+  },
+
+
+  /**
+   * Get valid target from element
+   * This method should replace dimsFromTarget()
+   * @param  {HTMLElement} el
+   * @return {HTMLElement}
+   */
+  getTargetFromEl(el) {
+    let target = el;
+    let targetParent;
+    let targetPrev = this.targetPrev;
+    const containerSel = this.containerSel;
+
+    // Select the first valuable target
+    if (!this.matches(target, `${this.itemSel}, ${containerSel}`)) {
+      target = this.closest(target, this.itemSel);
+    }
+
+    // If draggable is an array the target will be one of those
+    // TODO check if this options is used somewhere
+    if (this.draggable instanceof Array) {
+      target = this.closest(target, this.draggable.join(','));
+    }
+
+    // Check if the target is different from the previous one
+    if (targetPrev && targetPrev != target) {
+        this.targetPrev = '';
+    }
+
+    // New target found
+    if (!this.targetPrev) {
+      targetParent = this.closest(target, containerSel);
+
+      // If the current target is not valid (src/trg reasons) try with
+      // the parent one (if exists)
+      if (!this.validTarget(target).valid && targetParent) {
+        return this.getTargetFromEl(targetParent);
+      }
+
+      this.targetPrev = target;
+    }
+
+    // Generally, on any new target the poiner enters inside its area and
+    // triggers nearBorders(), so have to take care of this
+    if (this.nearElBorders(target)) {
+      targetParent = this.closest(target, containerSel);
+
+      if (targetParent && this.validTarget(targetParent).valid) {
+        target = targetParent;
+      }
+    }
+
+    return target;
+  },
+
+
+  /**
+   * Check if the current pointer is neare to element borders
+   * @return {Boolen}
+   */
+  nearElBorders(el) {
+    const off = 10;
+    const rect = el.getBoundingClientRect();
+    const body = el.ownerDocument.body;
+    const {x, y} = this.getCurrentPos();
+    const top = rect.top + body.scrollTop;
+    const left = rect.left + body.scrollLeft;
+    const width = rect.width;
+    const height = rect.height;
+
+    //console.log(pos, {top, left});
+    if ( y < (top + off) || // near top edge
+        y > (top + height - off) || // near bottom edge
+        x < (left + off) || // near left edge
+        x > (left + width - off)  // near right edge
+      ) {
+        return 1;
+    }
+  },
+
+
+  getCurrentPos() {
+    const ev = this.eventMove;
+    const x = ev.pageX || 0;
+    const y = ev.pageY || 0;
+    return {x, y};
   },
 
   /**
@@ -605,7 +705,7 @@ module.exports = Backbone.View.extend({
     for (var i = 0, len = ch.length; i < len; i++) {
       var el = ch[i];
 
-      if (!el.matches(this.itemSel)) {
+      if (!this.matches(el, this.itemSel)) {
         continue;
       }
 
@@ -761,9 +861,13 @@ module.exports = Backbone.View.extend({
    * */
   endMove(e) {
     var created;
-    this.$el.off('mousemove', this.onMove);
-    this.$document.off('mouseup', this.endMove);
-    this.$document.off('keydown', this.rollback);
+    const docs = this.getDocuments();
+    const container = this.getContainerEl();
+    off(container, 'mousemove', this.onMove);
+    off(docs, 'mouseup', this.endMove);
+    off(docs, 'keydown', this.rollback);
+    //this.$document.off('mouseup', this.endMove);
+    //this.$document.off('keydown', this.rollback);
     this.plh.style.display = 'none';
     var clsReg = new RegExp('(?:^|\\s)'+this.freezeClass+'(?!\\S)', 'gi');
     let src = this.eV;
@@ -873,15 +977,13 @@ module.exports = Backbone.View.extend({
    * @param {Bool} Indicates if rollback in anycase
    * */
   rollback(e) {
-    $(document).off('keydown', this.rollback);
-    this.$document.off('keydown', this.rollback);
-    var key = e.which || e.keyCode;
+    off(this.getDocuments(), 'keydown', this.rollback);
+    const key = e.which || e.keyCode;
 
     if (key == 27) {
-      this.moved = false;
+      this.moved = 0;
       this.endMove();
     }
-    return;
   },
 
 });

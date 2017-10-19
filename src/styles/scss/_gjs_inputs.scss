@@ -137,6 +137,10 @@
     right: $inputPadding - 2px;
     top: 0;
   }
+
+  &-color {
+    width: 100%;
+  }
 }
 
 .#{$app-prefix}field-color {
@@ -207,7 +211,8 @@
 }
 
 .#{$app-prefix}radio-item {
-  float: left;
+  flex: 1 1 auto;
+  text-align: center;
   border-left: 1px solid $darkTextShadow;
 
   &:first-child {
@@ -224,6 +229,10 @@
 
   input:checked + .#{$app-prefix}radio-item-label {
     background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  &s {
+    display: flex;
   }
 }
 
