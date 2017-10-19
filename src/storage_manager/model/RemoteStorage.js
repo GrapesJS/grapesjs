@@ -74,7 +74,7 @@ module.exports = require('backbone').Model.extend({
   },
 
   load(keys, clb) {
-    this.request(this.get('urlLoad'), {body: {keys}}, clb);
+    this.request(this.get('urlLoad'), {body: {keys}, method: 'get'}, clb);
   },
 
   /**
