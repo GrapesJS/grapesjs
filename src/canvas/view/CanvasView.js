@@ -16,6 +16,21 @@ module.exports = Backbone.View.extend({
     });
   },
 
+
+  /**
+   * Checks if the element is visible in the canvas's viewport
+   * @param  {HTMLElement}  el
+   * @return {Boolean}
+   */
+  isElInViewport(el) {
+    const rect = el.getBoundingClientRect();
+    const frameRect = this.getFrameOffset(1);
+    const rTop = rect.top;
+    const rLeft = rect.left;
+    return rTop >= 0 && rLeft >= 0 &&
+          rTop <= frameRect.height && rLeft <= frameRect.width;
+  },
+
   /**
    * Update tools position
    * @private
