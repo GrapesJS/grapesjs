@@ -336,7 +336,6 @@ module.exports = Backbone.View.extend({
    * */
   onMove(e) {
     this.moved = 1;
-    console.log('moviing');
     // Turn placeholder visibile
     var plh = this.plh;
     var dsp = plh.style.display;
@@ -356,8 +355,12 @@ module.exports = Backbone.View.extend({
       rY = mousePos.y;
     }
 
+    this.rX = rX;
+    this.rY = rY;
+    this.eventMove = e;
+    var target = this.getTargetFromEl(e.target);
     var dims = this.dimsFromTarget(e.target, rX, rY);
-
+    console.log(this.target, 'sec ',target);
     let targetModel = this.getTargetModel(this.target);
     this.selectTargetModel(targetModel);
 
@@ -545,8 +548,8 @@ module.exports = Backbone.View.extend({
     // Target when I will drop element to sort
     this.target = this.prevTarget;
 
-    // Generally also on every new target the poiner enters near
-    // to borders, so have to to check always
+    // Generally, on any new target the poiner enters inside its area and
+    // triggers nearBorders(), so have to take care of this
     if(this.nearBorders(this.prevTargetDim, rX, rY) ||
        (!this.nested && !this.cacheDims.length)) {
         if (!this.validTarget(this.targetP).valid) {
@@ -558,6 +561,96 @@ module.exports = Backbone.View.extend({
 
     this.lastPos = null;
     return dims;
+  },
+
+
+  /**
+   * Get valid target from element
+   * This method should replace dimsFromTarget()
+   * @param  {HTMLElement} el
+   * @return {HTMLElement}
+   */
+  getTargetFromEl(el) {
+    let target = el;
+    let targetParent;
+    let targetPrev = this.targetPrev;
+    const containerSel = this.containerSel;
+
+    // Select the first valuable target
+    if (!this.matches(target, `${this.itemSel}, ${containerSel}`)) {
+      target = this.closest(target, this.itemSel);
+    }
+
+    // If draggable is an array the target will be one of those
+    // TODO check if this options is used somewhere
+    if (this.draggable instanceof Array) {
+      target = this.closest(target, this.draggable.join(','));
+    }
+
+    // Check if the target is different from the previous one
+    if (targetPrev && targetPrev != target) {
+        this.targetPrev = '';
+    }
+
+    // New target found
+    if (!this.targetPrev) {
+      targetParent = this.closest(target, containerSel);
+
+      // If the current target is not valid (src/trg reasons) try with
+      // the parent one (if exists)
+      if (!this.validTarget(target).valid && targetParent) {
+        return this.getTargetFromEl(targetParent);
+      }
+
+      this.targetPrev = target;
+    }
+
+    // Generally, on any new target the poiner enters inside its area and
+    // triggers nearBorders(), so have to take care of this
+    if (this.nearElBorders(target)) {
+      targetParent = this.closest(target, containerSel);
+
+      if (targetParent && !this.validTarget(targetParent).valid) {
+        targetParent = this.getTargetFromEl(targetParent);
+      }
+
+      targetParent && (target = targetParent);
+    }
+
+    return target;
+  },
+
+
+  /**
+   * Check if the current pointer is neare to element borders
+   * @return {Boolen}
+   */
+  nearElBorders(el) {
+    const off = 10;
+    const rect = el.getBoundingClientRect();
+    const body = el.ownerDocument.body;
+    const {x, y} = this.getCurrentPos();
+    const top = rect.top + body.scrollTop;
+    const left = rect.left + body.scrollLeft;
+    const width = rect.width;
+    const height = rect.height;
+
+    //console.log(pos, {top, left});
+    if ( y < (top + off) || // near top edge
+        y > (top + height - off) || // near bottom edge
+        x < (left + off) || // near left edge
+        x > (left + width - off)  // near right edge
+      ) {
+        return 1;
+    }
+  },
+
+
+  getCurrentPos() {
+    const ev = this.eventMove;
+    const x = ev.pageX || 0;
+    const y = ev.pageY || 0;
+    return {x, y};
   },
 
   /**
