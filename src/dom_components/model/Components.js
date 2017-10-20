@@ -18,6 +18,9 @@ module.exports = Backbone.Collection.extend({
       if(!options.sm && opt && opt.sm)
         options.sm = opt.sm;
 
+      if(!options.em && opt && opt.em)
+        options.em = opt.em;
+
       if(opt && opt.config)
         options.config = opt.config;
 

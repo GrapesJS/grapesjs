@@ -115,6 +115,23 @@ module.exports = Backbone.Model.extend(Styleable).extend({
   initialize(props = {}, opt = {}) {
     const em = opt.sm || opt.em || {};
 
+    // Propagate properties from parent if indicated
+    const parent = this.parent();
+    const parentAttr = parent && parent.attributes;
+
+    if (parentAttr && parentAttr.propagate) {
+      let newAttr = {};
+      const toPropagate = parentAttr.propagate;
+      toPropagate.forEach(prop => newAttr[prop] = parent.get(prop));
+      newAttr.propagate = toPropagate;
+      newAttr = {...newAttr, ...props};
+      this.set(newAttr);
+    }
+
+    const propagate = this.get('propagate');
+    propagate && this.set('propagate', isArray(propagate) ? propagate : [propagate]);
+
+
     // Check void elements
     if(opt && opt.config &&
       opt.config.voidElements.indexOf(this.get('tagName')) >= 0) {
@@ -145,8 +162,6 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     }, this);
 
     this.set('status', '');
-    const propagate = this.get('propagate');
-    propagate && this.set('propagate', isArray(propagate) ? propagate : [propagate]);
     this.init();
   },
 
@@ -223,8 +238,11 @@ module.exports = Backbone.Model.extend(Styleable).extend({
 
 
   initComponents() {
-    let comps = new Components(this.get('components'), this.opt);
+    // Have to add components after the init, otherwise the parent
+    // is not visible
+    const comps = new Components(null, this.opt);
     comps.parent = this;
+    comps.reset(this.get('components'));
     this.set('components', comps);
     return this;
   },
@@ -276,6 +294,16 @@ module.exports = Backbone.Model.extend(Styleable).extend({
       coll.reset();
       components && this.append(components);
     }
+  },
+
+
+  /**
+   * Get parent model
+   * @return {Component}
+   */
+  parent() {
+    const coll = this.collection;
+    return coll && coll.parent;
   },
 
 

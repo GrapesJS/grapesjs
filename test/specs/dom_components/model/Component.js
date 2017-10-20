@@ -216,15 +216,57 @@ module.exports = {
         });
 
 
-        it.only('Propagate properties to children', () => {
+        it('Propagate properties to children', () => {
           obj.append({propagate: 'removable'});
           const result = obj.components();
           const newObj = result.models[0];
           expect(newObj.get('removable')).toEqual(true);
           newObj.set('removable', false);
-          newObj.append({});
+          newObj.append({draggable: false});
           const child = newObj.components().models[0];
           expect(child.get('removable')).toEqual(false);
+          expect(child.get('propagate')).toEqual(['removable']);
+        });
+
+        it('Ability to stop/change propagation chain', () => {
+          obj.append({
+            removable: false,
+            draggable: false,
+            propagate: ['removable', 'draggable']
+          });
+          const result = obj.components();
+          const newObj = result.models[0];
+          newObj.components(`
+          <div id="comp01">
+            <div id="comp11">comp1</div>
+            <div id="comp12" data-gjs-stop="1" data-gjs-removable="true" data-gjs-draggable="true" data-gjs-propagate='["stop"]'>
+              <div id="comp21">comp21</div>
+              <div id="comp22">comp22</div>
+            </div>
+            <div id="comp13">
+              <div id="comp31">comp31</div>
+              <div id="comp32">comp32</div>
+            </div>
+          </div>
+          <div id="comp02">TEST</div>`);
+          const notInhereted = model => {
+            expect(model.get('stop')).toEqual(1);
+            expect(model.get('removable')).toEqual(true);
+            expect(model.get('draggable')).toEqual(true);
+            expect(model.get('propagate')).toEqual(['stop']);
+            model.components().each(model => inhereted(model))
+          };
+          const inhereted = model => {
+            if (model.get('stop')) {
+              notInhereted(model);
+            } else {
+              expect(model.get('removable')).toEqual(false);
+              expect(model.get('draggable')).toEqual(false);
+              expect(model.get('propagate')).toEqual(['removable', 'draggable']);
+              model.components().each(model => inhereted(model))
+            }
+          }
+          newObj.components().each(model => inhereted(model))
         });
     });
 
