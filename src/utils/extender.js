@@ -51,7 +51,7 @@ module.exports = ({$, Backbone}) => {
     };
   }
 
-  if ($) {
+  if ($ && $.prototype.constructor.name !== 'jQuery') {
     const fn = $.fn;
 
     const splitNamespace = function(name) {
@@ -293,8 +293,10 @@ module.exports = ({$, Backbone}) => {
       return ar;
     }
 
-    $.inArray = function(val, arr) {
-      return arr.indexOf(val);
+    const indexOf = Array.prototype.indexOf;
+
+    $.inArray = function(val, arr, i) {
+      return arr == null ? -1 : indexOf.call( arr, val, i );
     }
 
     $.Event = function(src, props) {
