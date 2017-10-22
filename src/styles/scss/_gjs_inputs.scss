@@ -138,7 +138,8 @@
     top: 0;
   }
 
-  &-color {
+  &-color,
+  &-radio {
     width: 100%;
   }
 }
@@ -185,13 +186,6 @@
   border-radius: 1px;
   position: absolute;
   top: 0;
-}
-
-.#{$app-prefix}field-radio {
-  float: left;
-  overflow: hidden;
-  padding: 0;
-  width: auto;
 }
 
 /* ??? */
