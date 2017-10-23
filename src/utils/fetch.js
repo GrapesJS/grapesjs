@@ -5,7 +5,6 @@ window.Promise = window.Promise || Promise;
 export default typeof fetch == 'function' ? fetch.bind() : (url, options) => {
   return new Promise((res, rej) => {
     const req = new XMLHttpRequest();
-    const bodilessMethods = ['get', 'head', 'options', 'delete'];
     req.open(options.method || 'get', url);
     req.withCredentials = options.credentials == 'include';
 
@@ -25,11 +24,7 @@ export default typeof fetch == 'function' ? fetch.bind() : (url, options) => {
       req.upload.onprogress = options.onProgress;
     }
 
-    if (bodilessMethods.includes(options.method)) {
-      req.send();
-    } else {
-      req.send(options.body);
-    }
-
+    // Include body only if present
+    options.body ? req.send(options.body) : req.send();
   });
 }

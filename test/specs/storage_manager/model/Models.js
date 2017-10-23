@@ -98,7 +98,7 @@ module.exports = {
         obj.load(['item1', 'item2']);
         const callResult = obj.fetch;
         expect(callResult.called).toEqual(true);
-        expect(callResult.firstCall.args[0]).toEqual(`${endpointLoad}?keys=item1,item2`);
+        expect(callResult.firstCall.args[0]).toEqual(endpointLoad);
       });
 
     });

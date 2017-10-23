@@ -74,15 +74,7 @@ module.exports = require('backbone').Model.extend({
   },
 
   load(keys, clb) {
-    let queryString = '';
-    keys.forEach(function(key, index, keys) {
-      queryString += key;
-      if (index < keys.length - 1) {
-        queryString += ',';
-      }
-    }, this);
-
-    this.request(`${this.get('urlLoad')}?keys=${queryString}`, {method: 'get'}, clb);
+    this.request(this.get('urlLoad'), {method: 'get'}, clb);
   },
 
   /**
@@ -133,18 +125,18 @@ module.exports = require('backbone').Model.extend({
       headers,
     };
 
-    // Body should not be included on GET, HEAD, OPTIONS or DELETE methods
-    if (!bodilessMethods.includes(fetchOptions.method)) {
+    // Body should only be included on POST method
+    if (fetchOptions.method === 'post') {
       fetchOptions.body = body;
     }
 
     this.onStart();
-    this.fetch(url, fetchOptions).then(res => (res.status/200|0) == 1 ?
-      res.text() : res.text().then((text) =>
-        Promise.reject(text)
-      ))
-    .then((text) => this.onResponse(text, clb))
-    .catch(err => this.onError(err));
+    this.fetch(url, fetchOptions)
+      .then(res => (res.status/200|0) == 1
+        ? res.text()
+        : res.text().then((text) => Promise.reject(text)))
+      .then((text) => this.onResponse(text, clb))
+      .catch(err => this.onError(err));
   },
 
 });
