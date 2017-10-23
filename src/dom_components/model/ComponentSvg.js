@@ -17,7 +17,11 @@ module.exports = Component.extend({
 
   isComponent(el) {
     if (SVGElement && el instanceof SVGElement) {
-      return {type: 'svg'};
+      return {
+        // Some SVG elements require uppercase letters (eg. <linearGradient>)
+        tagName: el.tagName,
+        type: 'svg',
+      };
     }
   },
 

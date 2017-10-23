@@ -56,8 +56,7 @@ module.exports = {
         it('Rules are correctly imported from default property', () => {
           var gj = grapesjs.init({
             stylePrefix: '',
-            storageManager: {autoload: 0, type:'none' },
-            assetManager: {storageType: 'none', },
+            storageManager: {autoload: 0, type:'none'},
             cssComposer: {rules: rulesSet},
             container: 'csscomposer-fixture',
           });

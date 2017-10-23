@@ -29,6 +29,7 @@ module.exports = Backbone.Collection.extend({
     if (typeof models === 'string') {
       models = this.editor.get('Parser').parseCss(models);
     }
+    opt.em = this.editor;
     return Backbone.Collection.prototype.add.apply(this, [models, opt]);
   },
 

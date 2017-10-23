@@ -1326,9 +1326,6 @@
     editor.on('storage:store', function(e) {
       console.log('STORE ', e);
     })
-    editor.on('change:changesCount', function(e) {
-      console.log('update changesCount ', editor.getModel().get('changesCount'));
-    })
 
     editor.on('styleManager:change:text-shadow', function(view) {
       var model = view.model;
