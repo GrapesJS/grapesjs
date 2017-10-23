@@ -25,9 +25,9 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     stylable: true,
 	},
 
-  initialize(c, opt) {
+  initialize(c, opt = {}) {
       this.config = c || {};
-      const em = opt && opt.sm;
+      const em = opt.em;
       let selectors = this.config.selectors || [];
       this.em = em;
 

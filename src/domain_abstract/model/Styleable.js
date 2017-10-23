@@ -33,6 +33,10 @@ export default {
     }
 
     this.set('style', Object.assign({}, prop), opts);
+
+    for (let pr in prop) {
+      this.trigger(`change:style:${pr}`);
+    }
   },
 
   /**

@@ -1,4 +1,5 @@
-import {on, off} from 'utils/mixins'
+import {bindAll} from 'underscore';
+import {on, off} from 'utils/mixins';
 
 const ToolbarView = require('dom_components/view/ToolbarView');
 const Toolbar = require('dom_components/model/Toolbar');
@@ -10,12 +11,12 @@ const $ = Backbone.$;
 module.exports = {
 
   init(o) {
-    _.bindAll(this, 'onHover', 'onOut', 'onClick', 'onKeyPress');
+    bindAll(this, 'onHover', 'onOut', 'onClick', 'onKeyPress',
+      'copyComp', 'pasteComp', 'onFrameScroll');
   },
 
 
   enable() {
-    _.bindAll(this, 'copyComp', 'pasteComp', 'onFrameScroll');
     this.frameOff = this.canvasOff = this.adjScroll = null;
     var config  = this.config.em.get('Config');
     this.startSelectComponent();
@@ -25,7 +26,6 @@ module.exports = {
 
     em.on('component:update', this.updateAttached, this);
     em.on('change:canvasOffset', this.updateAttached, this);
-    em.on('change:selectedComponent', this.updateToolbar, this);
   },
 
   /**
@@ -297,6 +297,7 @@ module.exports = {
   onSelect() {
     const editor = this.editor;
     const model = this.em.getSelected();
+    this.updateToolbar(model);
 
     if (model) {
       const el = model.view.el;
@@ -319,22 +320,28 @@ module.exports = {
     var editor = em ? em.get('Editor') : '';
     var config = em ? em.get('Config') : '';
     var pfx = config.stylePrefix || '';
-    var attrName = 'data-' + pfx + 'handler';
-    var resizeClass = pfx + 'resizing';
+    var attrName = `data-${pfx}handler`;
+    var resizeClass = `${pfx}resizing`;
     var model = em.get('selectedComponent');
     var resizable = model.get('resizable');
     var options = {};
     var modelToStyle;
 
     var toggleBodyClass = (method, e, opts) => {
-      opts.docs && opts.docs.find('body')[method](resizeClass);
+      const docs = opts.docs;
+      docs && docs.forEach(doc => {
+        const body = doc.body;
+        const cls = body.className || '';
+        body.className = (method == 'add' ?
+          `${cls} ${resizeClass}` : cls.replace(resizeClass, '')).trim();
+      });
     };
 
 
     if (editor && resizable) {
       options = {
         onStart(e, opts) {
-          toggleBodyClass('addClass', e, opts);
+          toggleBodyClass('add', e, opts);
           modelToStyle = em.get('StyleManager').getModelToStyle(model);
           showOffsets = 0;
         },
@@ -343,7 +350,7 @@ module.exports = {
           editor.trigger('change:canvasOffset');
         },
         onEnd(e, opts) {
-          toggleBodyClass('removeClass', e, opts);
+          toggleBodyClass('remove', e, opts);
           editor.trigger('change:canvasOffset');
           showOffsets = 1;
         },
@@ -367,7 +374,8 @@ module.exports = {
           }
 
           modelToStyle.setStyle(style, {avoidStore: 1});
-          em.trigger('targetStyleUpdated');
+          const updateEvent = `update:component:style`;
+          em && em.trigger(`${updateEvent}:height ${updateEvent}:width`);
 
           if (store) {
             modelToStyle.trigger('change:style', modelToStyle, style, {});

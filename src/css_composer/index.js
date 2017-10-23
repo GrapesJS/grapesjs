@@ -77,9 +77,8 @@ module.exports = () => {
         var elStyle = (c.em && c.em.config.style) || '';
         c.rules = elStyle || c.rules;
 
-        c.sm = c.em; // TODO Refactor
+        c.sm = c.em;
         rules = new CssRules([], c);
-
         rulesView = new CssRulesView({
           collection: rules,
           config: c,
@@ -182,7 +181,7 @@ module.exports = () => {
           opt.state = s;
           opt.mediaText = w;
           opt.selectors = '';
-          rule = new CssRule(opt);
+          rule = new CssRule(opt, c);
           rule.get('selectors').add(selectors);
           rules.add(rule);
           return rule;

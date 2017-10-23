@@ -1,3 +1,5 @@
+import {bindAll} from 'underscore';
+
 module.exports = Backbone.View.extend({
 
   template(model) {
@@ -37,8 +39,10 @@ module.exports = Backbone.View.extend({
   },
 
   initialize(o = {}) {
+    bindAll(this, 'targetUpdated');
     this.config = o.config || {};
-    this.em = this.config.em;
+    const em = this.config.em;
+    this.em = em;
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
     this.target = o.target || {};
@@ -57,6 +61,7 @@ module.exports = Backbone.View.extend({
       model.set('value', model.getDefaultValue());
     }
 
+    em && em.on(`update:component:style:${this.property}`, this.targetUpdated);
     this.listenTo(this.propTarget, 'update', this.targetUpdated);
     this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model, 'change:value', this.modelValueChanged);

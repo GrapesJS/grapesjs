@@ -25,8 +25,8 @@ module.exports = {
   },
 
   stop() {
-    if(this.canvasResizer)
-      this.canvasResizer.blur();
+    const resizer = this.canvasResizer;
+    resizer && resizer.blur();
   },
 
 };

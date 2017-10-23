@@ -1,6 +1,9 @@
+import {bindAll, defaults} from 'underscore';
+import {on, off} from 'utils/mixins';
+
 const $ = Backbone.$;
 
-var defaults = {
+var defaultOpts = {
   // Function which returns custom X and Y coordinates of the mouse
   mousePosFetcher: null,
   // Indicates custom target updating strategy
@@ -49,6 +52,7 @@ class Resizer {
    */
   constructor(opts = {}) {
     this.setOptions(opts);
+    bindAll(this, 'handleKeyDown', 'handleMouseDown', 'move', 'stop')
     return this;
   }
 
@@ -57,13 +61,7 @@ class Resizer {
    * @param {Object} options
    */
   setOptions(options = {}) {
-    // Setup default options
-    for (var name in defaults) {
-      if (!(name in options))
-        options[name] = defaults[name];
-    }
-
-    this.opts = options;
+    this.opts = defaults(options, defaultOpts);
     this.setup();
   }
 
@@ -74,45 +72,31 @@ class Resizer {
     const opts = this.opts;
     const pfx = opts.prefix || '';
     const appendTo = opts.appendTo || document.body;
-    let container;
+    let container = this.container;
 
     // Create container if not yet exist
-    if (!this.container) {
+    if (!container) {
       container = document.createElement('div');
-      container.className = pfx + 'resizer-c';
+      container.className = `${pfx}resizer-c`;
       appendTo.appendChild(container);
       this.container = container;
     }
 
-    container = this.container;
     while (container.firstChild) {
       container.removeChild(container.firstChild);
     }
 
     // Create handlers
-    var handlers = {
-      tl: opts.tl ? createHandler('tl', opts) : '',
-      tc: opts.tc ? createHandler('tc', opts) : '',
-      tr: opts.tr ? createHandler('tr', opts) : '',
-      cl: opts.cl ? createHandler('cl', opts) : '',
-      cr: opts.cr ? createHandler('cr', opts) : '',
-      bl: opts.bl ? createHandler('bl', opts) : '',
-      bc: opts.bc ? createHandler('bc', opts) : '',
-      br: opts.br ? createHandler('br', opts) : '',
-    };
+    const handlers = {};
+    ['tl', 'tc', 'tr', 'cl', 'cr', 'bl', 'bc', 'br'].forEach(hdl =>
+      handlers[hdl] = opts[hdl] ? createHandler(hdl, opts) : '');
 
     for (let n in handlers) {
       const handler = handlers[n];
-      if (handler) {
-        container.appendChild(handler);
-      }
+      handler && container.appendChild(handler);
     }
 
     this.handlers = handlers;
-    this.handleKeyDown = this.handleKeyDown.bind(this);
-    this.handleMouseDown = this.handleMouseDown.bind(this);
-    this.move = this.move.bind(this);
-    this.stop = this.stop.bind(this);
     this.mousePosFetcher = opts.mousePosFetcher;
     this.updateTarget = opts.updateTarget;
     this.posFetcher = opts.posFetcher;
@@ -148,10 +132,7 @@ class Resizer {
    * Returns documents
    */
   getDocumentEl() {
-    if (!this.$doc) {
-      this.$doc = $([this.el.ownerDocument, document]);
-    }
-    return this.$doc;
+    return [this.el.ownerDocument, document];
   }
 
   /**
@@ -174,18 +155,19 @@ class Resizer {
       return;
     }
 
+    // Show the handlers
     this.el = el;
+    var unit = 'px';
     var rect = this.getElementPos(el);
     var container = this.container;
     var contStyle = container.style;
-    var unit = 'px';
     contStyle.left = rect.left + unit;
     contStyle.top = rect.top + unit;
     contStyle.width = rect.width + unit;
     contStyle.height = rect.height + unit;
-    this.container.style.display = 'block';
+    container.style.display = 'block';
 
-		this.getDocumentEl().on('mousedown', this.handleMouseDown);
+    on(this.getDocumentEl(), 'mousedown', this.handleMouseDown);
   }
 
   /**
@@ -193,9 +175,9 @@ class Resizer {
    */
   blur() {
     this.container.style.display = 'none';
-    if(this.el) {
-      var doc = $([this.el.ownerDocument, document]);
-      this.getDocumentEl().off('mousedown', this.handleMouseDown);
+
+    if (this.el) {
+      off(this.getDocumentEl(), 'mousedown', this.handleMouseDown);
       this.el = null;
     }
   }
@@ -235,9 +217,9 @@ class Resizer {
 
     // Listen events
     var doc = this.getDocumentEl();
-    doc.on('mousemove', this.move);
-    doc.on('keydown', this.handleKeyDown);
-    doc.on('mouseup', this.stop);
+    on(doc, 'mousemove', this.move);
+    on(doc, 'keydown', this.handleKeyDown);
+    on(doc, 'mouseup', this.stop);
     this.move(e);
 
     // Start callback
@@ -251,6 +233,7 @@ class Resizer {
    * @param  {Event} e
    */
   move(e) {
+    const onMove = this.onMove;
     var mouseFetch = this.mousePosFetcher;
     var currentPos = mouseFetch ? mouseFetch(e) : {
       x: e.clientX,
@@ -267,15 +250,12 @@ class Resizer {
       ctrl: e.ctrlKey,
       alt: e.altKey
     };
-    //console.log('move resizer ', this.currentPos);
 
     this.rectDim = this.calc(this);
     this.updateRect(0);
 
     // Move callback
-    if(typeof this.onMove === 'function') {
-      this.onMove(e);
-    }
+    onMove && onMove(e);
 
     // In case the mouse button was released outside of the window
     if (e.which === 0) {
@@ -289,9 +269,9 @@ class Resizer {
    */
   stop(e) {
     var doc = this.getDocumentEl();
-    doc.off('mousemove', this.move);
-    doc.off('keydown', this.handleKeyDown);
-    doc.off('mouseup', this.stop);
+    off(doc, 'mousemove', this.move);
+    off(doc, 'keydown', this.handleKeyDown);
+    off(doc, 'mouseup', this.stop);
     this.updateRect(1);
 
     // Stop callback
@@ -304,26 +284,28 @@ class Resizer {
    * Update rect
    */
   updateRect(store) {
-    var elStyle = this.el.style;
-    var conStyle = this.container.style;
-    var rect = this.rectDim;
+    const el = this.el;
+    const rect = this.rectDim;
+    const conStyle = this.container.style;
+    const updateTarget = this.updateTarget;
     const selectedHandler = this.getSelectedHandler();
 
     // Use custom updating strategy if requested
-    if (typeof this.updateTarget === 'function') {
-      this.updateTarget(this.el, rect, {
+    if (typeof updateTarget === 'function') {
+      updateTarget(el, rect, {
         store,
         selectedHandler
       });
     } else {
+      const elStyle = el.style;
       elStyle.width = rect.w + 'px';
       elStyle.height = rect.h + 'px';
       //elStyle.top = rect.top + 'px';
       //elStyle.left = rect.left + 'px';
     }
 
-    var rectEl = this.getElementPos(this.el);
-    var unit = 'px';
+    const unit = 'px';
+    const rectEl = this.getElementPos(el);
     conStyle.left = rectEl.left + unit;
     conStyle.top = rectEl.top + unit;
     conStyle.width = rectEl.width + unit;
