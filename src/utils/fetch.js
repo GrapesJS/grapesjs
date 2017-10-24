@@ -24,6 +24,7 @@ export default typeof fetch == 'function' ? fetch.bind() : (url, options) => {
       req.upload.onprogress = options.onProgress;
     }
 
-    req.send(options.body);
+    // Include body only if present
+    options.body ? req.send(options.body) : req.send();
   });
 }
