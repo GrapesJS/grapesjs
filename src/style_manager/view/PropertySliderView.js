@@ -1,4 +1,3 @@
-const InputNumber = require('domain_abstract/ui/InputNumber');
 const Property = require('./PropertyIntegerView');
 
 module.exports = Property.extend({
@@ -31,6 +30,7 @@ module.exports = Property.extend({
   inputValueChanged() {
     const model = this.model;
     const step = model.get('step');
+    console.log('slider ', this.getSliderEl().value, ' input', this.getInputEl().value);
     this.getInputEl().value = this.getSliderEl().value;
     const value = this.getInputValue() - step;
     model.set('value', value, {avoidStore: 1}).set('value', value + step);
