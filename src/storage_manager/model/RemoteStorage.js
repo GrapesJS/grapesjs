@@ -74,7 +74,7 @@ module.exports = require('backbone').Model.extend({
   },
 
   load(keys, clb) {
-    this.request(this.get('urlLoad'), {body: {keys}}, clb);
+    this.request(this.get('urlLoad'), {method: 'get'}, clb);
   },
 
   /**
@@ -91,6 +91,8 @@ module.exports = require('backbone').Model.extend({
     const reqHead = 'X-Requested-With';
     const typeHead = 'Content-Type';
     const bodyObj = opts.body || {};
+    const bodilessMethods = ['get', 'head', 'options', 'delete'];
+    let fetchOptions;
     let body;
 
     for (let param in params) {
@@ -117,19 +119,24 @@ module.exports = require('backbone').Model.extend({
         body.append(bodyKey, bodyObj[bodyKey]);
       }
     }
-
-    this.onStart();
-    this.fetch(url, {
+    fetchOptions = {
       method: opts.method || 'post',
       credentials: 'include',
       headers,
-      body,
-    }).then(res => (res.status/200|0) == 1 ?
-      res.text() : res.text().then((text) =>
-        Promise.reject(text)
-      ))
-    .then((text) => this.onResponse(text, clb))
-    .catch(err => this.onError(err));
+    };
+
+    // Body should only be included on POST method
+    if (fetchOptions.method === 'post') {
+      fetchOptions.body = body;
+    }
+
+    this.onStart();
+    this.fetch(url, fetchOptions)
+      .then(res => (res.status/200|0) == 1
+        ? res.text()
+        : res.text().then((text) => Promise.reject(text)))
+      .then((text) => this.onResponse(text, clb))
+      .catch(err => this.onError(err));
   },
 
 });
