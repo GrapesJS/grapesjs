@@ -91,7 +91,6 @@ module.exports = require('backbone').Model.extend({
     const reqHead = 'X-Requested-With';
     const typeHead = 'Content-Type';
     const bodyObj = opts.body || {};
-    const bodilessMethods = ['get', 'head', 'options', 'delete'];
     let fetchOptions;
     let body;
 
