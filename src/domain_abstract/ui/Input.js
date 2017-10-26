@@ -31,21 +31,10 @@ module.exports = Backbone.View.extend({
 
 
   /**
-   * Handled when the view is changed
-   */
-  handleChange(e) {
-    e.stopPropagation();
-    this.model.set('value', this.getInputEl().value);
-    this.elementUpdated();
-  },
-
-
-  /**
-   * Set value to the model
+   * Set value to the input element
    * @param {string} value
-   * @param {Object} opts
    */
-  setValue(value, opts = {}) {
+  setValue(value) {
     const model = this.model;
     let val = value || model.get('defaults');
     const input = this.getInputEl();
@@ -58,6 +47,16 @@ module.exports = Backbone.View.extend({
    * */
   handleModelChange(model, value, opts) {
     this.setValue(value, opts);
+  },
+
+
+  /**
+   * Handled when the view is changed
+   */
+  handleChange(e) {
+    e.stopPropagation();
+    this.model.set('value', this.getInputEl().value);
+    this.elementUpdated();
   },
 
 

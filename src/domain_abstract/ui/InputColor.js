@@ -1,6 +1,5 @@
-const Input = require('./Input');
-//require('spectrum-colorpicker');
 require('utils/ColorPicker');
+const Input = require('./Input');
 const $ = Backbone.$;
 
 module.exports = Input.extend({
@@ -17,7 +16,7 @@ module.exports = Input.extend({
     `;
   },
 
-  initialize(opts) {
+  initialize() {
     Input.prototype.initialize.apply(this, arguments);
     const ppfx = this.ppfx;
     this.colorCls = `${ppfx}field-color-picker`;
@@ -43,13 +42,6 @@ module.exports = Input.extend({
       colorEl.spectrum('set', valueClr);
       this.noneColor = value == 'none';
     }
-  },
-
-  /**
-   * Updates the view when the model is changed
-   * */
-  handleModelChange(model, value, opts) {
-    this.setValue(value, opts);
   },
 
   /**
