@@ -151,7 +151,8 @@ module.exports = Backbone.View.extend({
    * Triggers when the value of element input/s is changed, so have to update
    * the value of the model which will propogate those changes to the target
    */
-  inputValueChanged() {
+  inputValueChanged(e) {
+    e.stopPropagation();
     this.model.set('value', this.getInputValue());
     this.elementUpdated();
   },
