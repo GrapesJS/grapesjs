@@ -152,9 +152,9 @@ module.exports = Input.extend({
   downArrowClick() {
     const model = this.model;
     const step = model.get('step');
-    let value  = model.get('value');
-    value = this.normalizeValue(value - step);
-    var valid = this.validateInputValue(value);
+    const value  = model.get('value');
+    const val = this.normalizeValue(value - step);
+    var valid = this.validateInputValue(val);
     model.set('value', valid.value);
     this.elementUpdated();
   },
@@ -241,7 +241,7 @@ module.exports = Input.extend({
     var force = 0;
     var opt = opts || {};
     var model = this.model;
-    var val = value || model.get('defaults');
+    var val = value !== '' ? value : model.get('defaults');
     var units = model.get('units') || [];
     var unit = model.get('unit') || (units.length && units[0]) || '';
     var max = model.get('max');
