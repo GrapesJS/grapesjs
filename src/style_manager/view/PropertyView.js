@@ -152,7 +152,7 @@ module.exports = Backbone.View.extend({
    * the value of the model which will propogate those changes to the target
    */
   inputValueChanged(e) {
-    e.stopPropagation();
+    e && e.stopPropagation();
     this.model.set('value', this.getInputValue());
     this.elementUpdated();
   },

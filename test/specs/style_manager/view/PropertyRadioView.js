@@ -67,12 +67,12 @@ module.exports = {
         });
 
         it('Options rendered', () => {
-          var input = view.el.querySelector('#input-holder').firstChild;
+          var input = view.el.querySelector('.field').firstChild;
           expect(input.children.length).toEqual(options.length);
         });
 
         it('Options rendered correctly', () => {
-          var children = view.el.querySelector('#input-holder').firstChild.children;
+          var children = view.el.querySelector('.field').firstChild.children;
           expect(children[0].querySelector('label').textContent).toEqual('test1value');
           expect(children[1].querySelector('label').textContent).toEqual('test2');
           expect(children[0].querySelector('input').value).toEqual(options[0].value);
