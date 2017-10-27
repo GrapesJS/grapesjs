@@ -13,11 +13,11 @@ const deps = [
   require('style_manager'),
   require('asset_manager'),
   require('css_composer'),
+  require('trait_manager'),
   require('dom_components'),
   require('canvas'),
   require('commands'),
-  require('block_manager'),
-  require('trait_manager'),
+  require('block_manager')
 ];
 
 const Backbone = require('backbone');

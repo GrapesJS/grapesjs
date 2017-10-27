@@ -138,6 +138,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
         this.set('void', true);
     }
 
+    opt.em = em;
     this.opt = opt;
     this.sm = em;
     this.em = em;
@@ -384,7 +385,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
    * @private
    */
   loadTraits(traits, opts = {}) {
-    var trt = new Traits();
+    var trt = new Traits([], this.opt);
     trt.setTarget(this);
     traits = traits || this.get('traits');
 
