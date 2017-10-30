@@ -18,6 +18,10 @@ module.exports = Backbone.Model.extend({
     var props = [];
     var builded = this.buildProperties(o.buildProps);
 
+    if (!this.get('id')) {
+      this.set('id', this.get('name'))
+    }
+
     if(!builded)
       props = this.get('properties');
     else
