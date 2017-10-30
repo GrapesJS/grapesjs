@@ -21,6 +21,14 @@ module.exports = () => {
   const defaults = require('./config/config');
   let toolbar, actions, lastEl, globalRte;
 
+  const hideToolbar = () => {
+    const style = toolbar.style;
+    const size = '-100px';
+    style.top = size;
+    style.left = size;
+    style.display = 'none';
+  };
+
   return {
 
     customRte: null,
@@ -72,6 +80,7 @@ module.exports = () => {
     postRender(ev) {
       const canvas = ev.model.get('Canvas');
       toolbar.style.pointerEvents = 'all';
+      hideToolbar();
       canvas.getToolsEl().appendChild(toolbar);
     },
 
@@ -266,7 +275,6 @@ module.exports = () => {
     disable(view, rte) {
       const em = config.em;
       const customRte = this.customRte;
-      const style = toolbar.style;
       var el = view.getChildrenContainer();
 
       if (customRte) {
@@ -275,9 +283,7 @@ module.exports = () => {
         rte.disable();
       }
 
-      style.display = 'none';
-      style.top = 0;
-      style.left = 0;
+      hideToolbar();
       em && em.trigger('rte:disable', view, rte);
     },
   };

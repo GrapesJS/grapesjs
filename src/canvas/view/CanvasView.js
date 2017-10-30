@@ -121,13 +121,13 @@ module.exports = Backbone.View.extend({
       var frameCss = `
         ${baseCss}
 
-        .${ppfx}dashed :not([contenteditable]) > *[data-highlightable] {
+        .${ppfx}dashed *[data-highlightable] {
           outline: 1px dashed rgba(170,170,170,0.7);
           outline-offset: -2px
         }
 
         .${ppfx}comp-selected {
-          outline: 3px solid #3b97e3 !important
+          outline: 3px solid #3b97e3 !important;
         }
 
         .${ppfx}comp-selected-parent {
