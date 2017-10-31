@@ -14,6 +14,7 @@ module.exports = require('backbone').Model.extend({
     fixedValues: ['initial', 'inherit'],
   },
 
+
   initialize(opt) {
     var o = opt || {};
     var name = this.get('name');
@@ -26,6 +27,24 @@ module.exports = require('backbone').Model.extend({
     const init = this.init && this.init.bind(this);
     init && init();
   },
+
+  /**
+   * Update value
+   * @param {any} value
+   * @param {Boolen} [complete=true] Indicates if it's a final state
+   * @param {Object} [opts={}] Options
+   */
+  setValue(value, complete = 1, opts = {}) {
+    this.set('value', value, { ...opts, avoidStore: 1});
+
+    // It's important to set an empty value, otherwise the
+    // UndoManager won't see the change
+    if (complete) {
+      this.set('value', '', opts);
+      this.set('value', value, opts);
+    }
+  },
+
 
   /**
    * Parse a raw value, generally fetched from the target, for this property
@@ -51,6 +70,7 @@ module.exports = require('backbone').Model.extend({
     return String.prototype.substring.apply(valueStr, args);
   },
 
+
   /**
    * Get the default value
    * @return {string}
@@ -59,6 +79,7 @@ module.exports = require('backbone').Model.extend({
   getDefaultValue() {
     return this.get('defaults');
   },
+
 
   /**
    * Get a complete value of the property.
