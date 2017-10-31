@@ -16,7 +16,7 @@ module.exports = Backbone.View.extend({
       <div class="${pfx}assets-header">
         <form class="${pfx}add-asset">
           <div class="${ppfx}field ${pfx}add-field">
-            <input placeholder="http://path/to/the/image.jpg"/>
+            <input placeholder="${view.config.inputPlaceholder}"/>
           </div>
           <button class="${ppfx}btn-prim">${view.config.addBtnText}</button>
           <div style="clear:both"></div>
