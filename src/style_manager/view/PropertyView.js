@@ -298,13 +298,17 @@ module.exports = Backbone.View.extend({
    * @param {Mixed} val  Value
    * @param {Object} opt  Options
    * */
-  modelValueChanged(e, val, opt) {
+  modelValueChanged(e, val, opt = {}) {
     const em = this.config.em;
     const model = this.model;
     const value = model.getFullValue();
     const target = this.getTarget();
     const onChange = this.onChange;
-    this.setRawValue(value);
+
+    // I don't need to update the input if the change comes from it
+    if (!opt.fromInput) {
+      this.setRawValue(value);
+    }
 
     // Check if component is allowed to be styled
     if (!target || !this.isTargetStylable() || !this.isComponentStylable()) {
