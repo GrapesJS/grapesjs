@@ -209,19 +209,6 @@ module.exports = Backbone.Model.extend({
       if (!opt.avoidStore) {
         this.set('changesCount', this.get('changesCount') + 1, opt)
       }
-      /*
-      var count = this.get('changesCount') + 1;
-      var stm = this.get('StorageManager');
-
-      if (!stm.isAutosave() || count < stm.getStepsBeforeSave()) {
-        return;
-      }
-
-      if (!opt.avoidStore) {
-        this.set('changesCount', count)
-        this.store();
-      }
-      */
     }, 0);
   },
 

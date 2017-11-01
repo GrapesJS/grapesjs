@@ -20,7 +20,7 @@ module.exports = Backbone.Collection.extend({
 
     // Use TraitFactory if necessary
     if (isString(models) || isArray(models)) {
-      const tm = em.get('TraitManager');
+      const tm = em && em.get && em.get('TraitManager');
       const tmOpts = tm && tm.getConfig();
       const tf = TraitFactory(tmOpts);
 
