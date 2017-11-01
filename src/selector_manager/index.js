@@ -68,6 +68,15 @@ module.exports = config => {
      * @private
      */
     name: 'SelectorManager',
+    
+    /**
+     * Get configuration object
+     * @return {Object}
+     * @private
+     */
+    getConfig() {
+      return c;
+    },
 
     /**
      * Initialize module. Automatically called with a new instance of the editor
