@@ -224,7 +224,8 @@ module.exports = Input.extend({
     value = parseFloat(value);
 
     if (Math.floor(value) !== value) {
-      stepDecimals = step.toString().split('.')[1].length || 0;
+      const side = step.toString().split('.')[1];
+      stepDecimals = side ? side.length : 0;
     }
 
     return stepDecimals ? parseFloat(value.toFixed(stepDecimals)) : value;
