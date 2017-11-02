@@ -33,6 +33,10 @@ module.exports = {
         expect(obj.get('buttons').length).toEqual(1);
       });
 
+      it('Has a disable attribute with default value as false', () => {
+        expect(obj.get('disable')).toEqual(false);
+      });
+
     });
 
     describe('Buttons', () => {
