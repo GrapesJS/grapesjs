@@ -435,26 +435,24 @@ module.exports = {
       it('Build font-family', () => {
         var ss = ', sans-serif';
         var ms = ', monospace';
-        var ff = 'font-family: ';
-        var sty = '; font-size:15px';
         var res = {
           property: 'font-family',
           type: 'select',
           defaults: 'Arial, Helvetica' + ss,
           list:[
-            {name: 'Arial', value: 'Arial, Helvetica' + ss, style: ff + 'Arial, Helvetica' + ss + sty},
-            {name: 'Arial Black', value: 'Arial Black, Gadget' + ss,  style: ff + 'Arial Black, Gadget' + ss + sty},
-            {name: 'Brush Script MT', value: 'Brush Script MT' + ss,  style: ff + 'Brush Script MT' + ss + sty},
-            {name: 'Comic Sans MS', value: 'Comic Sans MS, cursive' + ss,  style: ff + 'Comic Sans MS, cursive' + ss + sty},
-            {name: 'Courier New', value: 'Courier New, Courier' + ms,  style: ff + 'Courier New, Courier' + ms + sty},
-            {name: 'Georgia', value: 'Georgia, serif',  style: ff + 'Georgia, serif' + sty},
-            {name: 'Helvetica', value: 'Helvetica, serif',  style: ff + 'Helvetica, serif' + sty},
-            {name: 'Impact', value: 'Impact, Charcoal' + ss,  style: ff + 'Impact, Charcoal' + ss + sty},
-            {name: 'Lucida Sans Unicode', value: 'Lucida Sans Unicode, Lucida Grande' + ss,  style: ff + 'Lucida Sans Unicode, Lucida Grande' + ss + sty},
-            {name: 'Tahoma', value: 'Tahoma, Geneva' + ss,  style: ff + 'Tahoma, Geneva' + ss + sty},
-            {name: 'Times New Roman', value: 'Times New Roman, Times, serif',  style: ff + 'Times New Roman, Times, serif' + sty},
-            {name: 'Trebuchet MS', value: 'Trebuchet MS, Helvetica' + ss,  style: ff + 'Trebuchet MS, Helvetica' + ss + sty},
-            {name: 'Verdana', value: 'Verdana, Geneva' + ss,  style: ff + 'Verdana, Geneva' + ss + sty},
+            {name: 'Arial', value: 'Arial, Helvetica' + ss},
+            {name: 'Arial Black', value: 'Arial Black, Gadget' + ss},
+            {name: 'Brush Script MT', value: 'Brush Script MT' + ss},
+            {name: 'Comic Sans MS', value: 'Comic Sans MS, cursive' + ss},
+            {name: 'Courier New', value: 'Courier New, Courier' + ms},
+            {name: 'Georgia', value: 'Georgia, serif'},
+            {name: 'Helvetica', value: 'Helvetica, serif'},
+            {name: 'Impact', value: 'Impact, Charcoal' + ss},
+            {name: 'Lucida Sans Unicode', value: 'Lucida Sans Unicode, Lucida Grande' + ss},
+            {name: 'Tahoma', value: 'Tahoma, Geneva' + ss},
+            {name: 'Times New Roman', value: 'Times New Roman, Times, serif'},
+            {name: 'Trebuchet MS', value: 'Trebuchet MS, Helvetica' + ss},
+            {name: 'Verdana', value: 'Verdana, Geneva' + ss},
           ],
         };
         expect(obj.build('font-family')).toEqual([res]);
