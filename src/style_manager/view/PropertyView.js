@@ -154,7 +154,7 @@ module.exports = Backbone.View.extend({
    */
   inputValueChanged(e) {
     e && e.stopPropagation();
-    this.model.set('value', this.getInputValue());
+    this.model.setValue(this.getInputValue(), 1, { fromInput: 1 });
     this.elementUpdated();
   },
 
