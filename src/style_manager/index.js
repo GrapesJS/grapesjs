@@ -97,7 +97,7 @@ module.exports = () => {
         c.stylePrefix = ppfx + c.stylePrefix;
 
       properties = new Properties();
-      sectors = new Sectors(c.sectors);
+      sectors = new Sectors(c.sectors, c);
       SectView   = new SectorsView({
         collection: sectors,
         target: c.em,

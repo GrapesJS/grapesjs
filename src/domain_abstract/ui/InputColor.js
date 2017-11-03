@@ -7,21 +7,22 @@ module.exports = Input.extend({
   template() {
     const ppfx = this.ppfx;
     return `
-      <div class="${ppfx}input-holder"></div>
+      <div class="${this.holderClass()}"></div>
       <div class="${ppfx}field-colorp">
-        <div class="${ppfx}field-colorp-c">
+        <div class="${ppfx}field-colorp-c" data-colorp-c>
           <div class="${ppfx}checker-bg"></div>
         </div>
       </div>
     `;
   },
 
-  initialize() {
-    Input.prototype.initialize.apply(this, arguments);
+  inputClass() {
     const ppfx = this.ppfx;
-    this.colorCls = `${ppfx}field-color-picker`;
-    this.inputClass = `${ppfx}field ${ppfx}field-color`;
-    this.colorHolderClass = `${ppfx}field-colorp-c`;
+    return `${ppfx}field ${ppfx}field-color`;
+  },
+
+  holderClass() {
+    return `${this.ppfx}input-holder`;
   },
 
   /**
@@ -53,7 +54,7 @@ module.exports = Input.extend({
       const self = this;
       var model = this.model;
 
-      var colorEl = $(`<div class="${this.colorCls}"></div>`);
+      var colorEl = $(`<div class="${this.ppfx}field-color-picker"></div>`);
       var cpStyle = colorEl.get(0).style;
       var elToAppend = this.target && this.target.config ? this.target.config.el : '';
       const getColor = color => {
@@ -63,7 +64,7 @@ module.exports = Input.extend({
 
       let changed = 0;
       let previousСolor;
-      this.$el.find(`.${this.colorHolderClass}`).append(colorEl);
+      this.$el.find(`[data-colorp-c]`).append(colorEl);
 
       colorEl.spectrum({
         appendTo: elToAppend || 'body',

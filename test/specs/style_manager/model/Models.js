@@ -1,6 +1,7 @@
 const Sector = require('style_manager/model/Sector');
 const Sectors = require('style_manager/model/Sectors');
 const Property = require('style_manager/model/Property');
+const PropertyInteger = require('style_manager/model/PropertyInteger');
 const Properties = require('style_manager/model/Properties');
 const Layer = require('style_manager/model/Layer');
 const Layers = require('style_manager/model/Layers');
@@ -125,7 +126,6 @@ module.exports = {
     });
 
     describe('Property', () => {
-
       var obj;
 
       beforeEach(() => {
@@ -140,6 +140,59 @@ module.exports = {
         expect(obj.has('property')).toEqual(true);
       });
 
+      it('parseValue', () => {
+        const result = { value: 'testValue' };
+        expect(obj.parseValue('testValue')).toEqual(result);
+      });
+
+      it('parseValue with function but without functionName', () => {
+        const result = { value: 'fn(testValue)' };
+        expect(obj.parseValue('fn(testValue)')).toEqual(result);
+      });
+
+      it('parseValue with function and functionName', () => {
+        obj = new Property({ functionName: 'fn' });
+        const result = { value: 'testValue' };
+        expect(obj.parseValue('fn(testValue)')).toEqual(result);
+        expect(obj.parseValue('fn(testValue')).toEqual(result);
+      });
+    });
+
+    describe('PropertyInteger', () => {
+      var obj;
+
+      beforeEach(() => {
+        obj = new PropertyInteger({units: ['px', 'deg']});
+      });
+
+      afterEach(() => {
+        obj = null;
+      });
+
+      it('parseValue with units', () => {
+        const result = { value: 20, unit: 'px' };
+        expect(obj.parseValue('20px')).toEqual(result);
+      });
+
+      it('parse input value with function', () => {
+        obj = new PropertyInteger({units: ['px', 'deg'], functionName: 'test'});
+        const result = { value: 55, unit: 'deg' };
+        expect(obj.parseValue('test(55deg)')).toEqual(result);
+      });
+
+      it('parse input value with min', () => {
+        obj = new PropertyInteger({units: ['px'], min: 10});
+        const result = { value: 10, unit: 'px' };
+        expect(obj.parseValue('1px')).toEqual(result);
+        expect(obj.parseValue('15px')).toEqual({ value: 15, unit: 'px' });
+      });
+
+      it('parse input value with max', () => {
+        obj = new PropertyInteger({units: ['px'], max: 100});
+        const result = { value: 100, unit: 'px' };
+        expect(obj.parseValue('200px')).toEqual(result);
+        expect(obj.parseValue('95px')).toEqual({ value: 95, unit: 'px' });
+      });
     });
 
     describe('Properties', () => {

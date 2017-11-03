@@ -35,29 +35,37 @@ module.exports = require('backbone').Model.extend({
    * @param {Object} [opts={}] Options
    */
   setValue(value, complete = 1, opts = {}) {
-    this.set('value', value, { ...opts, avoidStore: 1});
+    const parsed = this.parseValue(value);
+    this.set(parsed, { ...opts, avoidStore: 1});
 
     // It's important to set an empty value, otherwise the
     // UndoManager won't see the change
     if (complete) {
       this.set('value', '', opts);
-      this.set('value', value, opts);
+      this.set(parsed, opts);
     }
   },
 
 
   /**
    * Parse a raw value, generally fetched from the target, for this property
-   * @param  {string} value
-   * @return {string}
+   * @param  {string} value Raw value string
+   * @return {Object}
+   * @example
+   * // example with an Input type
+   * prop.parseValue('translateX(10deg)');
+   * // -> { value: 10, unit: 'deg', functionName: 'translateX' }
+   *
    */
   parseValue(value) {
+    const result = { value };
+
     if (!this.get('functionName')) {
-      return value;
+      return result;
     }
 
     const args = [];
-    let valueStr = value + '';
+    let valueStr = `${value}`;
     let start = valueStr.indexOf('(') + 1;
     let end = valueStr.lastIndexOf(')');
     args.push(start);
@@ -67,7 +75,8 @@ module.exports = require('backbone').Model.extend({
       args.push(end);
     }
 
-    return String.prototype.substring.apply(valueStr, args);
+    result.value = String.prototype.substring.apply(valueStr, args);
+    return result;
   },
 
 

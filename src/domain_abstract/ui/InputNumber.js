@@ -27,15 +27,16 @@ module.exports = Input.extend({
     `;
   },
 
+  inputClass() {
+    const ppfx = this.ppfx;
+    return this.opts.contClass || `${ppfx}field ${ppfx}field-integer`;
+  },
+
 
   initialize(opts = {}) {
     Input.prototype.initialize.apply(this, arguments);
     bindAll(this, 'moveIncrement', 'upIncrement');
-    const ppfx = this.ppfx;
     this.doc = document;
-    this.inputCls = `${ppfx}field-number`;
-    this.unitCls = `${ppfx}input-unit`;
-    this.inputClass = opts.contClass || `${ppfx}field ${ppfx}field-integer`;;
     this.listenTo(this.model, 'change:unit', this.handleModelChange);
   },
 
@@ -123,7 +124,7 @@ module.exports = Input.extend({
         });
 
         const temp = document.createElement('div');
-        temp.innerHTML = `<select class="${this.unitCls}">${options.join('')}</select>`;
+        temp.innerHTML = `<select class="${this.ppfx}input-unit">${options.join('')}</select>`;
         this.unitEl = temp.firstChild;
       }
     }

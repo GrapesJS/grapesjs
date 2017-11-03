@@ -107,7 +107,7 @@ module.exports = PropertyView.extend({
     }
 
     if (view) {
-      value = view.model.parseValue(value);
+      value = view.model.parseValue(value).value;
     }
 
     return value;

@@ -56,6 +56,7 @@ module.exports = Backbone.View.extend({
     const pfx = this.pfx;
     this.inputHolderId = '#' + pfx + 'input-holder';
     this.sector = model.collection && model.collection.sector;
+    model.view = this;
 
     if (!model.get('value')) {
       model.set('value', model.getDefaultValue());
@@ -199,8 +200,7 @@ module.exports = Backbone.View.extend({
       status = '';
     }
 
-    model.set('value', value, {silent: 1});
-    this.setValue(value, {targetUpdate: 1});
+    model.setValue(value, 0, { fromTarget: 1 });
     model.set('status', status);
 
     if (em) {
@@ -248,11 +248,6 @@ module.exports = Backbone.View.extend({
     }
 
     result = target.getStyle()[model.get('property')];
-
-    // TODO when stack type asks the sub-property (in valueOnIndex method)
-    // to provide its target value and its detached, I should avoid parsing
-    // (at least is wrong applying 'functionName' cleaning)
-    result = model.parseValue(result);
 
     if (!result && !opts.ignoreDefault) {
       result = model.getDefaultValue();
@@ -305,9 +300,9 @@ module.exports = Backbone.View.extend({
     const target = this.getTarget();
     const onChange = this.onChange;
 
-    // I don't need to update the input if the change comes from it
+    // Avoid element update if the change comes from it
     if (!opt.fromInput) {
-      this.setRawValue(value);
+      this.setValue(value);
     }
 
     // Check if component is allowed to be styled
@@ -315,10 +310,13 @@ module.exports = Backbone.View.extend({
       return;
     }
 
-    if (onChange) {
-      onChange(target, this, opt);
-    } else {
-      this.updateTargetStyle(value, null, opt);
+    // Avoid target update if the changes comes from it
+    if (!opt.fromTarget) {
+      if (onChange) {
+        onChange(target, this, opt);
+      } else {
+        this.updateTargetStyle(value, null, opt);
+      }
     }
 
     if (em) {
@@ -401,18 +399,19 @@ module.exports = Backbone.View.extend({
     this.setValue(this.model.parseValue(value));
   },
 
+
   /**
-   * Set the value to property input
-   * @param {String} value
-   * @param {Boolean} force
-   * @private
+   * Update the element input.
+   * Usually the value is a result of `model.getFullValue()`
+   * @param {String} value The value from the model
    * */
-  setValue(value, opts = {}) {
+  setValue(value) {
     const model = this.model;
-    let val = value || model.get('value') || model.getDefaultValue();
+    let val = value || model.getDefaultValue();
     const input = this.getInputEl();
     input && (input.value = val);
   },
+
 
   getInputEl() {
     if (!this.input) {

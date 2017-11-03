@@ -49,8 +49,33 @@
   }
 
   &field {
+    input,
+    select,
+    textarea {
+      @include appearance(none);
+
+      color: inherit;
+      border: none;
+      background-color: transparent;
+      box-sizing: border-box;
+      width: 100%;
+      position: relative;
+      padding: $inputPadding;
+      z-index: 1;
+
+      &:focus {
+        outline: none;
+      }
+    }
+
     &-range {
       flex: 9 1 auto;
+    }
+
+    &-integer {
+      input {
+        padding-right: 30px;
+      }
     }
   }
 }
@@ -71,25 +96,6 @@
   padding: 0;
   position: relative;
   color: $inputFontColor;
-
-  input,
-  select,
-  textarea {
-    @include appearance(none);
-
-    color: inherit;
-    border: none;
-    background-color: transparent;
-    box-sizing: border-box;
-    width: 100%;
-    position: relative;
-    padding: $inputPadding;
-    z-index: 1;
-
-    &:focus {
-      outline: none;
-    }
-  }
 
   textarea {
     resize: vertical;
@@ -120,10 +126,6 @@
     border-left: 3px solid transparent;
     border-right: 4px solid transparent;
     cursor: pointer;
-  }
-
-  .#{$app-prefix}field-number {
-    padding-right: 30px;
   }
 
   &-arrows {

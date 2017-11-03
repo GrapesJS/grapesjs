@@ -8,16 +8,24 @@ module.exports = Backbone.View.extend({
 
 
   template() {
-    return `<span class="${this.holderClass}"></span>`;
+    return `<span class="${this.holderClass()}"></span>`;
+  },
+
+
+  inputClass() {
+    return `${this.ppfx}field`;
+  },
+
+  holderClass() {
+    return `${this.ppfx}input-holder`;
   },
 
 
   initialize(opts = {}) {
     const ppfx = opts.ppfx || '';
+    this.opts = opts;
     this.ppfx = ppfx;
     this.target = opts.target || {};
-    this.inputClass = `${ppfx}field`;
-    this.holderClass = `${ppfx}input-holder`;
     this.listenTo(this.model, 'change:value', this.handleModelChange);
   },
 
@@ -67,8 +75,7 @@ module.exports = Backbone.View.extend({
   getInputEl() {
     if (!this.inputEl) {
       const plh = this.model.get('defaults');
-      const cls = this.inputCls;
-      this.inputEl = $(`<input type="text" class="${cls}" placeholder="${plh}">`);
+      this.inputEl = $(`<input type="text" placeholder="${plh}">`);
     }
 
     return this.inputEl.get(0);
@@ -77,9 +84,9 @@ module.exports = Backbone.View.extend({
 
   render() {
     const el = this.$el;
-    el.addClass(this.inputClass);
+    el.addClass(this.inputClass());
     el.html(this.template());
-    el.find(`.${this.holderClass}`).append(this.getInputEl());
+    el.find(`.${this.holderClass()}`).append(this.getInputEl());
     return this;
   }
 

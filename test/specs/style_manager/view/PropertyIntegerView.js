@@ -1,11 +1,12 @@
 const PropertyIntegerView = require('style_manager/view/PropertyIntegerView');
 const Property = require('style_manager/model/Property');
+const PropertyInteger = require('style_manager/model/PropertyInteger');
 const Component = require('dom_components/model/Component');
 
 module.exports = {
   run() {
 
-      describe('PropertyIntegerView', () => {
+      describe.only('PropertyIntegerView', () => {
 
         var component;
         var fixtures;
@@ -26,8 +27,7 @@ module.exports = {
         beforeEach(() => {
           target = new Component();
           component = new Component();
-          model = new Property({
-            type: 'integer',
+          model = new PropertyInteger({
             units,
             property: propName
           });
@@ -161,8 +161,7 @@ module.exports = {
 
           beforeEach(() => {
             component = new Component();
-            model = new Property({
-              type: 'integer',
+            model = new PropertyInteger({
               units,
               property: propName,
               defaults: intValue,
