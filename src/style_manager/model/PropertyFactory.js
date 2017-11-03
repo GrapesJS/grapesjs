@@ -209,7 +209,8 @@ module.exports = () => ({
       }
 
       // Min/Max
-      switch(prop){
+      switch(prop) {
+        case 'padding-top': case 'padding-right': case 'padding-bottom': case 'padding-left':
         case 'min-height': case 'min-width': case 'max-height': case 'max-width':
         case 'width': case 'height':
         case 'font-size':

@@ -28,6 +28,7 @@ module.exports = require('backbone').Model.extend({
     init && init();
   },
 
+
   /**
    * Update value
    * @param {any} value

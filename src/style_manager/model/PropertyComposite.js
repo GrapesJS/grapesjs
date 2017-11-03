@@ -16,13 +16,36 @@ module.exports = Property.extend({
 
     // Array of sub properties
     properties: [],
+
+    // Separator between properties
+    separator: ' ',
   }),
+
 
   init() {
     const properties = this.get('properties') || [];
     const Properties = require('./Properties');
     this.set('properties', new Properties(properties));
+    this.listenTo(this, 'change:value', this.updateValues)
   },
+
+
+  /**
+   * Update property values
+   */
+  updateValues() {
+    const values = this.get('value').split(this.get('separator'));
+    this.get('properties').each((property, i) => {
+      const len = values.length;
+      // Try to get value from a shorthand:
+      // 11px -> 11px 11px 11px 11xp
+      // 11px 22px -> 11px 22px 11px 22xp
+      const value = values[i] || values[(i % len) + (len != 1 && len % 2 ? 1 : 0)];
+      // There some issue with UndoManager
+      //property.setValue(value, 0, {fromParent: 1});
+    });
+  },
+
 
   /**
    * Returns default value
@@ -42,12 +65,12 @@ module.exports = Property.extend({
     return value.trim();
   },
 
+
   getFullValue() {
     if (this.get('detached')) {
       return '';
     }
 
-    let result = '';
     return this.get('properties').getFullValue();
   },
 
