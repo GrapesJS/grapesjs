@@ -58,13 +58,13 @@ module.exports = {
         it('Disable the button', () => {
           model.set('disable', true, {silent: true});
           view.updateDisable();
-          expect(view.el.getAttribute('class')).toEqual(btnClass + ' disable');
+          expect(view.el.getAttribute('class')).toEqual(btnClass + ' active');
         });
         
         it('Enable the disabled button', () => {
           model.set('disable', true, {silent: true});
           view.updateDisable();
-          expect(view.el.getAttribute('class')).toEqual(btnClass + ' disable');
+          expect(view.el.getAttribute('class')).toEqual(btnClass + ' active');
           model.set('disable', false, {silent: true});
           view.updateDisable();
           expect(view.el.getAttribute('class')).toEqual(btnClass);
