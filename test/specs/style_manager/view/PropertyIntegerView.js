@@ -6,7 +6,7 @@ const Component = require('dom_components/model/Component');
 module.exports = {
   run() {
 
-      describe.only('PropertyIntegerView', () => {
+      describe('PropertyIntegerView', () => {
 
         var component;
         var fixtures;
@@ -111,12 +111,9 @@ module.exports = {
         });
 
         it('Update target on value change', () => {
-          view.selectedComponent = component;
-          view.model.set('value', intValue);
-          var compStyle = view.selectedComponent.get('style');
-          var assertStyle = {};
-          assertStyle[propName] = intValue;
-          expect(compStyle).toEqual(assertStyle);
+          const val = `${intValue}%`;
+          view.model.setValue(val);
+          expect(view.getTargetValue()).toEqual(val);
         });
 
         describe('With target setted', () => {

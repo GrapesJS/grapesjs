@@ -462,24 +462,28 @@ module.exports = {
                   type    : 'integer',
                   units   : ['px','%'],
                   defaults  : 0,
+                  min: 0,
                 },{
                   property  : 'padding-right',
                   fixedValues: ['initial', 'inherit', 'auto'],
                   type    : 'integer',
                   units   : ['px','%'],
                   defaults  : 0,
+                  min: 0,
                 },{
                   property  : 'padding-bottom',
                   fixedValues: ['initial', 'inherit', 'auto'],
                   type    : 'integer',
                   units   : ['px','%'],
                   defaults  : 0,
+                  min: 0,
                 },{
                   property  : 'padding-left',
                   fixedValues: ['initial', 'inherit', 'auto'],
                   type    : 'integer',
                   units   : ['px','%'],
                   defaults  : 0,
+                  min: 0,
                 },],
         };
         expect(obj.build('padding')).toEqual([res]);
