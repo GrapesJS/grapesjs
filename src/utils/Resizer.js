@@ -1,7 +1,5 @@
-import {bindAll, defaults} from 'underscore';
-import {on, off} from 'utils/mixins';
-
-const $ = Backbone.$;
+import { bindAll, defaults, isFunction } from 'underscore';
+import { on, off } from 'utils/mixins';
 
 var defaultOpts = {
   // Function which returns custom X and Y coordinates of the mouse
@@ -14,6 +12,26 @@ var defaultOpts = {
   onStart: null,
   onMove: null,
   onEnd: null,
+
+  // Minimum dimension
+  minDim: 32,
+
+  // Unit used for height resizing
+  unitHeight: 'px',
+
+  // Unit used for width resizing
+  unitWidth: 'px',
+
+  // The key used for height resizing
+  keyHeight: 'height',
+
+  // The key used for width resizing
+  keyWidth: 'width',
+
+  // If true, will override unitHeight and unitWidth, on start, with units
+  // from the current focused element (currently used only in SelectComponent)
+  currentUnit: 1,
+
   // Handlers
   tl: 1, // Top left
   tc: 1, // Top center
@@ -55,6 +73,16 @@ class Resizer {
     bindAll(this, 'handleKeyDown', 'handleMouseDown', 'move', 'stop')
     return this;
   }
+
+
+  /**
+   * Get current connfiguration options
+   * @return {Object}
+   */
+  getConfig() {
+    return this.opts;
+  }
+
 
   /**
    * Setup options
@@ -193,9 +221,11 @@ class Resizer {
     }
     e.preventDefault();
     e.stopPropagation();
-    var opts = this.opts || {};
-    var attrName = 'data-' + opts.prefix + 'handler';
-    var rect = this.getElementPos(this.el);
+    const el = this.el;
+    const resizer = this;
+    const config = this.opts || {};
+    var attrName = 'data-' + config.prefix + 'handler';
+    var rect = this.getElementPos(el);
     this.handlerAttr = e.target.getAttribute(attrName);
     this.clickedHandler = e.target;
     this.startDim = {
@@ -221,11 +251,8 @@ class Resizer {
     on(doc, 'keydown', this.handleKeyDown);
     on(doc, 'mouseup', this.stop);
     this.move(e);
-
-    // Start callback
-    if(typeof this.onStart === 'function') {
-      this.onStart(e, {docs: doc});
-    }
+    isFunction(this.onStart) &&
+      this.onStart(e, {docs: doc, config, el, resizer});
   }
 
   /**
@@ -268,16 +295,13 @@ class Resizer {
    * @param  {Event} e
    */
   stop(e) {
+    const config = this.opts;
     var doc = this.getDocumentEl();
     off(doc, 'mousemove', this.move);
     off(doc, 'keydown', this.handleKeyDown);
     off(doc, 'mouseup', this.stop);
     this.updateRect(1);
-
-    // Stop callback
-    if (typeof this.onEnd === 'function') {
-      this.onEnd(e, {docs: doc});
-    }
+    isFunction(this.onEnd) && this.onEnd(e, {docs: doc, config});
   }
 
   /**
@@ -285,31 +309,34 @@ class Resizer {
    */
   updateRect(store) {
     const el = this.el;
+    const resizer = this;
+    const config = this.opts;
     const rect = this.rectDim;
     const conStyle = this.container.style;
     const updateTarget = this.updateTarget;
     const selectedHandler = this.getSelectedHandler();
+    const { unitHeight, unitWidth } = config;
 
     // Use custom updating strategy if requested
-    if (typeof updateTarget === 'function') {
+    if (isFunction(updateTarget)) {
       updateTarget(el, rect, {
         store,
-        selectedHandler
+        selectedHandler,
+        resizer,
+        config
       });
     } else {
       const elStyle = el.style;
-      elStyle.width = rect.w + 'px';
-      elStyle.height = rect.h + 'px';
-      //elStyle.top = rect.top + 'px';
-      //elStyle.left = rect.left + 'px';
+      elStyle.width = rect.w + unitWidth;
+      elStyle.height = rect.h + unitHeight;
     }
 
-    const unit = 'px';
+    const unitRect = 'px';
     const rectEl = this.getElementPos(el);
-    conStyle.left = rectEl.left + unit;
-    conStyle.top = rectEl.top + unit;
-    conStyle.width = rectEl.width + unit;
-    conStyle.height = rectEl.height + unit;
+    conStyle.left = rectEl.left + unitRect;
+    conStyle.top = rectEl.top + unitRect;
+    conStyle.width = rectEl.width + unitRect;
+    conStyle.height = rectEl.height + unitRect;
   }
 
   /**
@@ -362,6 +389,7 @@ class Resizer {
   calc(data) {
     var opts = this.opts || {};
     var startDim = this.startDim;
+    var minDim = opts.minDim;
     var box = {
       t: 0,
       l: 0,
@@ -374,16 +402,16 @@ class Resizer {
 
     var attr = data.handlerAttr;
     if (~attr.indexOf('r')) {
-      box.w = Math.max(32, startDim.w + data.delta.x);
+      box.w = Math.max(minDim, startDim.w + data.delta.x);
     }
     if (~attr.indexOf('b')) {
-      box.h = Math.max(32, startDim.h + data.delta.y);
+      box.h = Math.max(minDim, startDim.h + data.delta.y);
     }
     if (~attr.indexOf('l')) {
-      box.w = Math.max(32, startDim.w - data.delta.x);
+      box.w = Math.max(minDim, startDim.w - data.delta.x);
     }
     if (~attr.indexOf('t')) {
-      box.h = Math.max(32, startDim.h - data.delta.y);
+      box.h = Math.max(minDim, startDim.h - data.delta.y);
     }
 
     // Enforce aspect ratio (unless shift key is being held)

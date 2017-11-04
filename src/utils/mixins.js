@@ -16,4 +16,12 @@ const off = (el, ev, fn) => {
   }
 }
 
-export {on, off}
+const getUnitFromValue = (value) => {
+  return value.replace(parseFloat(value), '');
+}
+
+export {
+  on,
+  off,
+  getUnitFromValue
+}

@@ -1,5 +1,5 @@
-import {bindAll} from 'underscore';
-import {on, off} from 'utils/mixins';
+import { bindAll } from 'underscore';
+import { on, off, getUnitFromValue} from 'utils/mixins';
 
 const ToolbarView = require('dom_components/view/ToolbarView');
 const Toolbar = require('dom_components/model/Toolbar');
@@ -340,37 +340,54 @@ module.exports = {
 
     if (editor && resizable) {
       options = {
-        onStart(e, opts) {
+        // Here the resizer is updated with the current element height and width
+        onStart(e, opts = {}) {
+          const { el, config, resizer } = opts;
+          const { keyHeight, keyWidth, currentUnit } = config;
           toggleBodyClass('add', e, opts);
           modelToStyle = em.get('StyleManager').getModelToStyle(model);
+          const computedStyle = getComputedStyle(el);
+          const modelStyle = modelToStyle.getStyle();
+          const currentWidth = modelStyle[keyWidth] || computedStyle[keyWidth];
+          const currentHeight = modelStyle[keyHeight] || computedStyle[keyHeight];
+          resizer.startDim.w = parseFloat(currentWidth);
+          resizer.startDim.h = parseFloat(currentHeight);
           showOffsets = 0;
+
+          if (currentUnit) {
+            config.unitHeight = getUnitFromValue(currentHeight);
+            config.unitWidth = getUnitFromValue(currentWidth);
+          }
         },
+
         // Update all positioned elements (eg. component toolbar)
         onMove() {
           editor.trigger('change:canvasOffset');
         },
+
         onEnd(e, opts) {
           toggleBodyClass('remove', e, opts);
           editor.trigger('change:canvasOffset');
           showOffsets = 1;
         },
+
         updateTarget(el, rect, options = {}) {
           if (!modelToStyle) {
             return;
           }
 
-          const {store, selectedHandler} = options;
+          const { store, selectedHandler, config} = options;
+          const { keyHeight, keyWidth } = config;
           const onlyHeight = ['tc', 'bc'].indexOf(selectedHandler) >= 0;
           const onlyWidth = ['cl', 'cr'].indexOf(selectedHandler) >= 0;
-          const unit = 'px';
           const style = modelToStyle.getStyle();
 
           if (!onlyHeight) {
-            style.width = rect.w + unit;
+            style[keyWidth] = rect.w + config.unitWidth;
           }
 
           if (!onlyWidth) {
-            style.height = rect.h + unit;
+            style[keyHeight] = rect.h + config.unitHeight;
           }
 
           modelToStyle.setStyle(style, {avoidStore: 1});
