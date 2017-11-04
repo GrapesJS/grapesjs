@@ -250,9 +250,8 @@ class Resizer {
     on(doc, 'mousemove', this.move);
     on(doc, 'keydown', this.handleKeyDown);
     on(doc, 'mouseup', this.stop);
+    isFunction(this.onStart) && this.onStart(e, {docs: doc, config, el, resizer});
     this.move(e);
-    isFunction(this.onStart) &&
-      this.onStart(e, {docs: doc, config, el, resizer});
   }
 
   /**
