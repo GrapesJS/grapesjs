@@ -1,4 +1,5 @@
-import {bindAll} from 'underscore';
+import { bindAll } from 'underscore';
+import { camelCase } from 'utils/mixins';
 
 module.exports = Backbone.View.extend({
 
@@ -271,10 +272,18 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getComputedValue() {
-    let computed = this.propTarget.computed;
-    const valid = this.config.validComputed;
+    const target = this.propTarget;
+    const computed = target.computed;
+    const computedDef = target.computedDefault;
+    const avoid = this.config.avoidComputed;
     const property = this.model.get('property');
-    return computed && valid.indexOf(property) >= 0 && computed[property];
+    const notToSkip = avoid.indexOf(property) < 0;
+    const value = computed[property];
+    const valueDef = computedDef[camelCase(property)];
+    if (property == 'padding-top') {
+      console.log('value',value, 'valuedef', valueDef, computedDef);
+    }
+    return computed && notToSkip && valueDef !== value && value;
   },
 
   /**

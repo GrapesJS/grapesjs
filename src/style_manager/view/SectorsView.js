@@ -1,3 +1,5 @@
+import { extend } from 'underscore';
+
 const SectorView = require('./SectorView');
 
 module.exports = Backbone.View.extend({
@@ -8,8 +10,15 @@ module.exports = Backbone.View.extend({
     this.target = o.target || {};
 
     // The taget that will emit events for properties
-    this.propTarget   = {};
-    _.extend(this.propTarget, Backbone.Events);
+    const target = {};
+    extend(target, Backbone.Events);
+    const body = document.body;
+    const dummy = document.createElement(`el-${new Date().getTime()}`);
+    body.appendChild(dummy);
+    target.computedDefault = { ...window.getComputedStyle(dummy) };
+    body.removeChild(dummy);
+    this.propTarget = target;
+
     this.listenTo( this.collection, 'add', this.addTo);
     this.listenTo( this.collection, 'reset', this.render);
     this.listenTo( this.target, 'change:selectedComponent targetClassAdded targetClassRemoved targetClassUpdated ' +
