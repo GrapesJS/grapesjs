@@ -164,7 +164,18 @@ module.exports = Backbone.View.extend({
    */
   elementUpdated() {
     this.model.set('status', 'updated');
+    const parent = this.model.parent;
+    const parentView = parent && parent.view;
+    parentView && parentView.elementUpdated();
   },
+
+
+  setStatus(value) {
+    this.model.set('status', value);
+    const parent = this.model.parent;
+    parent && parent.set('status', value);
+  },
+
 
   /**
    * Fired when the target is changed
@@ -202,7 +213,7 @@ module.exports = Backbone.View.extend({
     }
 
     model.setValue(value, 0, { fromTarget: 1 });
-    model.set('status', status);
+    this.setStatus(status);
 
     if (em) {
       em.trigger('styleManager:change', this);
@@ -280,9 +291,6 @@ module.exports = Backbone.View.extend({
     const notToSkip = avoid.indexOf(property) < 0;
     const value = computed[property];
     const valueDef = computedDef[camelCase(property)];
-    if (property == 'padding-top') {
-      console.log('value',value, 'valuedef', valueDef, computedDef);
-    }
     return computed && notToSkip && valueDef !== value && value;
   },
 

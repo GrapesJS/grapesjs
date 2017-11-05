@@ -1298,7 +1298,7 @@
         }
       },
     });*/
-
+    /*
     bm.add('b1-2', {
         label: 'Flex Block',
         category: 'Basic',
@@ -1325,6 +1325,7 @@
           </style>
           `
       })
+    */
 
     var domc = editor.DomComponents;
     var defaultType = domc.getType('default');
@@ -1354,12 +1355,12 @@
       console.log('STORE ', e);
     })
 
-    editor.on('styleManager:change:padding-top', function(view) {
+    editor.on('styleManager:change:padding', function(view) {
       var model = view.model;
       let targetValue = view.getTargetValue({ignoreDefault: 1});
       let computedValue = view.getComputedValue();
       let defaultValue = view.model.getDefaultValue();
-      console.log('Style of ', model.get('property'), 'Target: ', targetValue, 'Computed:', computedValue, 'Default:', defaultValue);
+      //console.log('Style of ', model.get('property'), 'Target: ', targetValue, 'Computed:', computedValue, 'Default:', defaultValue);
     });
 
     editor.render();
