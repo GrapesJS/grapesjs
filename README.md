@@ -31,7 +31,7 @@ Newsletter Demo - http://grapesjs.com/demo-newsletter-editor.html
 ## Table of contents
 
 * [Features](#features)
-* [Installation](#installation)
+* [Download](#download)
 * [Development](#development)
 * [Usage](#usage)
 * [Documentation](#documentation)
@@ -70,12 +70,21 @@ Newsletter Demo - http://grapesjs.com/demo-newsletter-editor.html
 
 
 
-## Installation
+## Download
 
-* `npm i grapesjs` / `yarn add grapesjs`
-* `git clone https://github.com/artf/grapesjs.git`
+* CDNs
+  * UNPKG
+    * `https://unpkg.com/grapesjs`
+    * `https://unpkg.com/grapesjs/dist/css/grapes.min.css`
+  * CDNJS
+    * `https://cdnjs.cloudflare.com/ajax/libs/grapesjs/0.12.17/grapes.min.js`
+    * `https://cdnjs.cloudflare.com/ajax/libs/grapesjs/0.12.17/css/grapes.min.css`
+* NPM
+  * `npm i grapesjs`
+* GIT
+  * `git clone https://github.com/artf/grapesjs.git`
 
-For development purpose you should follow instructions below.
+For the development purpose you should follow instructions below.
 
 
 
@@ -99,11 +108,7 @@ Start the dev server
 $ npm start
 ```
 
-Build before the commit. This will also increase the patch level version of the package
-
-```sh
-$ npm run build
-```
+Once the development server is started you should be able to reach the demo page (eg. `http://localhost:8080`)
 
 
 
@@ -205,9 +210,13 @@ If you like the project support it with a donation of your choice or become a ba
 
 <a href="https://opencollective.com/grapesjs/sponsors/0/website" target="_blank"><img src="https://opencollective.com/grapesjs/sponsors/0/avatar"></a>
 <a href="https://opencollective.com/grapesjs/sponsors/1/website" target="_blank"><img src="https://opencollective.com/grapesjs/sponsors/1/avatar"></a>
+<a href="https://opencollective.com/grapesjs/sponsors/2/website" target="_blank"><img src="https://opencollective.com/grapesjs/sponsors/2/avatar"></a>
+<a href="https://opencollective.com/grapesjs/sponsors/3/website" target="_blank"><img src="https://opencollective.com/grapesjs/sponsors/3/avatar"></a>
 
 <a href="https://opencollective.com/grapesjs/backers/0/website" target="_blank"><img src="https://opencollective.com/grapesjs/backers/0/avatar"></a>
 <a href="https://opencollective.com/grapesjs/backers/1/website" target="_blank"><img src="https://opencollective.com/grapesjs/backers/1/avatar"></a>
+<a href="https://opencollective.com/grapesjs/backers/2/website" target="_blank"><img src="https://opencollective.com/grapesjs/backers/2/avatar"></a>
+<a href="https://opencollective.com/grapesjs/backers/3/website" target="_blank"><img src="https://opencollective.com/grapesjs/backers/3/avatar"></a>
 
 
 
