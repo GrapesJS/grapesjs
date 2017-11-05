@@ -17,10 +17,15 @@ module.exports = Component.extend({
 
   isComponent(el) {
     if (SVGElement && el instanceof SVGElement) {
+      // Some SVG elements require uppercase letters (eg. <linearGradient>)
+      const tagName = el.tagName;
+      // Make the root resizable
+      const resizable = tagName == 'svg' ? true : false;
+
       return {
-        // Some SVG elements require uppercase letters (eg. <linearGradient>)
-        tagName: el.tagName,
+        tagName,
         type: 'svg',
+        resizable
       };
     }
   },

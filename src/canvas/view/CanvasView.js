@@ -284,16 +284,13 @@ module.exports = Backbone.View.extend({
     var frmTop = opt.avoidFrameOffset ? 0 : frmOff.top;
     var frmLeft = opt.avoidFrameOffset ? 0 : frmOff.left;
 
-    var top = eo.top + frmTop - cvsOff.top;
-    var left = eo.left + frmLeft - cvsOff.left;
-    return {
-      top,
-      left,
+    const top = eo.top + frmTop - cvsOff.top;
+    const left = eo.left + frmLeft - cvsOff.left;
+    // clientHeight/clientWidth are for SVGs
+    const height = el.offsetHeight || el.clientHeight;
+    const width = el.offsetWidth || el.clientWidth;
 
-      // clientHeight/clientWidth are for SVGs
-      height: el.offsetHeight || el.clientHeight,
-      width: el.offsetWidth || el.clientWidth,
-    };
+    return { top, left, height, width };
   },
 
   /**
