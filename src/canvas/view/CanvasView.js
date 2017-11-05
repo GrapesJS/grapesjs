@@ -289,8 +289,10 @@ module.exports = Backbone.View.extend({
     return {
       top,
       left,
-      height: el.offsetHeight,
-      width: el.offsetWidth
+
+      // clientHeight/clientWidth are for SVGs
+      height: el.offsetHeight || el.clientHeight,
+      width: el.offsetWidth || el.clientWidth,
     };
   },
 
