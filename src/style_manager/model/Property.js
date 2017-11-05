@@ -49,6 +49,19 @@ module.exports = require('backbone').Model.extend({
 
 
   /**
+   * Like `setValue` but, in addition, prevents the update of the input element
+   * as the changes should come from the input itself.
+   * This method is useful with the definition of custom properties
+   * @param {any} value
+   * @param {Boolen} [complete=true] Indicates if it's a final state
+   * @param {Object} [opts={}] Options
+   */
+  setValueFromInput(value, complete, opts = {}) {
+    this.setValue(value, complete, {...opts, fromInput: 1});
+  },
+
+
+  /**
    * Parse a raw value, generally fetched from the target, for this property
    * @param  {string} value Raw value string
    * @return {Object}

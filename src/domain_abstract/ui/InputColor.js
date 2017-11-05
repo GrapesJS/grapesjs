@@ -39,7 +39,8 @@ module.exports = Input.extend({
     inputEl.value = value;
     colorEl.get(0).style.backgroundColor = valueClr;
 
-    if (opts.targetUpdate) {
+    // This prevents from adding multiple thumbs in spectrum
+    if (opts.fromTarget) {
       colorEl.spectrum('set', valueClr);
       this.noneColor = value == 'none';
     }
@@ -77,14 +78,13 @@ module.exports = Input.extend({
         move(color) {
           const cl = getColor(color);
           cpStyle.backgroundColor = cl;
-          model.set('value', cl, {avoidStore: 1});
+          model.setValueFromInput(cl, 0);
         },
         change(color) {
           changed = 1;
           const cl = getColor(color);
           cpStyle.backgroundColor = cl;
-          model.set('value', '', {avoidStore: 1});
-          model.set('value', cl);
+          model.setValueFromInput(cl);
           self.noneColor = 0;
         },
         show(color) {
@@ -98,7 +98,7 @@ module.exports = Input.extend({
              }
              cpStyle.backgroundColor = previousСolor;
              colorEl.spectrum('set', previousСolor);
-             model.set('value', previousСolor, {avoidStore: 1});
+             model.setValueFromInput(previousСolor, 0);
            }
         }
       });

@@ -31,12 +31,13 @@
       </div>
       <style>
         .panel {
-          background-color:rgb(217, 131, 166);
-          max-width:700px;
-          margin:150px auto 0px auto;
+          width: 90%;
+          max-width: 700px;
+          border-radius: 3px;
           padding: 30px 20px;
+          margin: 150px auto 0px;
+          background-color: #d983a6;
           box-shadow: 0px 3px 10px 0px rgba(0,0,0,0.25);
-          border-radius:3px;
           color:rgba(255,255,255,0.75);
           font: caption;
           font-weight: 100;
@@ -110,6 +111,12 @@
           ],
         },
       });
+
+      editor.BlockManager.add('testBlock', {
+        label: 'Block',
+        attributes: { class:'gjs-fonts gjs-f-b1' },
+        content: `<div style="padding:100px; text-align:center">Test block</div>`
+      })
     </script>
   </body>
 </html>
