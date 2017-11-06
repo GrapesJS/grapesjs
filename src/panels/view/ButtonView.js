@@ -13,6 +13,7 @@ module.exports = Backbone.View.extend({
     this.ppfx = this.config.pStylePrefix || '';
     this.id = this.pfx + this.model.get('id');
     this.activeCls = this.pfx + 'active';
+    this.disableCls = this.pfx + 'active';
     this.btnsVisCls = this.pfx + 'visible';
     this.parentM = o.parentM || null;
     this.className = this.pfx + 'btn' + (cls ? ' ' + cls : '');
@@ -21,6 +22,7 @@ module.exports = Backbone.View.extend({
     this.listenTo(this.model, 'change:bntsVis', this.updateBtnsVis);
     this.listenTo(this.model, 'change:attributes', this.updateAttributes);
     this.listenTo(this.model, 'change:className', this.updateClassName);
+    this.listenTo(this.model, 'change:disable', this.updateDisable);
 
     if(this.model.get('buttons').length){
       this.$el.on('mousedown', this.startTimer);
@@ -234,6 +236,15 @@ module.exports = Backbone.View.extend({
     }
   },
 
+  updateDisable() {
+    if(this.model.get('disable')) {
+      this.$el.addClass(this.disableCls);
+    } else {
+      this.$el.removeClass(this.disableCls);
+    }
+  
+  },
+
   /**
    * Update active style status
    *
@@ -255,9 +266,18 @@ module.exports = Backbone.View.extend({
   clicked(e) {
     if(this.model.get('bntsVis') )
       return;
+    
+    if(this.model.get('disable') )
+    return;
+
+    this.toogleActive();
+  },
+
+  toogleActive() {
 
     if(this.parentM)
       this.swapParent();
+
     var active = this.model.get('active');
     this.model.set('active', !active);
 
