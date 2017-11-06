@@ -84,7 +84,8 @@
 .#{$clm-prefix}select option,
 .#{$sm-prefix}select option,
 .#{$sm-prefix}unit option {
-  @extend .#{$app-prefix}bg-main;
+  background-color: $mainColor;
+  color: $fontColor;
 }
 
 .#{$app-prefix}field {
@@ -99,10 +100,6 @@
 
   textarea {
     resize: vertical;
-  }
-
-  option {
-    padding: 3px 0;
   }
 
   .#{$app-prefix}sel-arrow {
@@ -275,10 +272,6 @@
 
 .#{$app-prefix}field-select {
   padding: 0;
-
-  option {
-    @extend .#{$app-prefix}bg-main;
-  }
 }
 
 .#{$app-prefix}field-range {

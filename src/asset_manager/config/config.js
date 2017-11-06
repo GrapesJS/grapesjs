@@ -1,4 +1,4 @@
-module.exports =  {
+module.exports = {
   // Default assets
   // eg. [
   //  'https://...image1.png',
@@ -76,4 +76,7 @@ module.exports =  {
 
   // Default title for the asset manager modal
   modalTitle: 'Select Image',
+
+  //Default placeholder for input
+  inputPlaceholder: 'http://path/to/the/image.jpg'
 };

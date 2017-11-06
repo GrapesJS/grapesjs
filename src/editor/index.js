@@ -542,7 +542,7 @@ module.exports = config => {
      * @return {this}
      */
     trigger(event) {
-      return em.trigger(event);
+      return em.trigger.apply(em, arguments);
     },
 
     /**
