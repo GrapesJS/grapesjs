@@ -7,6 +7,7 @@ const on = (el, ev, fn) => {
   }
 }
 
+
 const off = (el, ev, fn) => {
   ev = ev.split(/\s+/);
   el = el instanceof Array ? el : [el];
@@ -16,4 +17,25 @@ const off = (el, ev, fn) => {
   }
 }
 
-export {on, off}
+
+const getUnitFromValue = (value) => {
+  return value.replace(parseFloat(value), '');
+}
+
+
+const upFirst = value => value[0].toUpperCase() + value.toLowerCase().slice(1);
+
+
+const camelCase = value => {
+  const values = value.split('-');
+  return values[0].toLowerCase() + values.slice(1).map(upFirst);
+}
+
+
+export {
+  on,
+  off,
+  upFirst,
+  camelCase,
+  getUnitFromValue
+}

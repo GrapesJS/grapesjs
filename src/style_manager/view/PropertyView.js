@@ -1,3 +1,6 @@
+import { bindAll } from 'underscore';
+import { camelCase } from 'utils/mixins';
+
 module.exports = Backbone.View.extend({
 
   template(model) {
@@ -37,8 +40,10 @@ module.exports = Backbone.View.extend({
   },
 
   initialize(o = {}) {
+    bindAll(this, 'targetUpdated');
     this.config = o.config || {};
-    this.em = this.config.em;
+    const em = this.config.em;
+    this.em = em;
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
     this.target = o.target || {};
@@ -52,11 +57,13 @@ module.exports = Backbone.View.extend({
     const pfx = this.pfx;
     this.inputHolderId = '#' + pfx + 'input-holder';
     this.sector = model.collection && model.collection.sector;
+    model.view = this;
 
     if (!model.get('value')) {
       model.set('value', model.getDefaultValue());
     }
 
+    em && em.on(`update:component:style:${this.property}`, this.targetUpdated);
     this.listenTo(this.propTarget, 'update', this.targetUpdated);
     this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model, 'change:value', this.modelValueChanged);
@@ -146,8 +153,9 @@ module.exports = Backbone.View.extend({
    * Triggers when the value of element input/s is changed, so have to update
    * the value of the model which will propogate those changes to the target
    */
-  inputValueChanged() {
-    this.model.set('value', this.getInputValue());
+  inputValueChanged(e) {
+    e && e.stopPropagation();
+    this.model.setValue(this.getInputValue(), 1, { fromInput: 1 });
     this.elementUpdated();
   },
 
@@ -156,7 +164,18 @@ module.exports = Backbone.View.extend({
    */
   elementUpdated() {
     this.model.set('status', 'updated');
+    const parent = this.model.parent;
+    const parentView = parent && parent.view;
+    parentView && parentView.elementUpdated();
   },
+
+
+  setStatus(value) {
+    this.model.set('status', value);
+    const parent = this.model.parent;
+    parent && parent.set('status', value);
+  },
+
 
   /**
    * Fired when the target is changed
@@ -193,9 +212,8 @@ module.exports = Backbone.View.extend({
       status = '';
     }
 
-    model.set('value', value, {silent: 1});
-    this.setValue(value, {targetUpdate: 1});
-    model.set('status', status);
+    model.setValue(value, 0, { fromTarget: 1 });
+    this.setStatus(status);
 
     if (em) {
       em.trigger('styleManager:change', this);
@@ -243,11 +261,6 @@ module.exports = Backbone.View.extend({
 
     result = target.getStyle()[model.get('property')];
 
-    // TODO when stack type asks the sub-property (in valueOnIndex method)
-    // to provide its target value and its detached, I should avoid parsing
-    // (at least is wrong applying 'functionName' cleaning)
-    result = model.parseValue(result);
-
     if (!result && !opts.ignoreDefault) {
       result = model.getDefaultValue();
     }
@@ -270,10 +283,15 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getComputedValue() {
-    let computed = this.propTarget.computed;
-    const valid = this.config.validComputed;
+    const target = this.propTarget;
+    const computed = target.computed || {};
+    const computedDef = target.computedDefault || {};
+    const avoid = this.config.avoidComputed || [];
     const property = this.model.get('property');
-    return computed && valid.indexOf(property) >= 0 && computed[property];
+    const notToSkip = avoid.indexOf(property) < 0;
+    const value = computed[property];
+    const valueDef = computedDef[camelCase(property)];
+    return computed && notToSkip && valueDef !== value && value;
   },
 
   /**
@@ -292,23 +310,32 @@ module.exports = Backbone.View.extend({
    * @param {Mixed} val  Value
    * @param {Object} opt  Options
    * */
-  modelValueChanged(e, val, opt) {
+  modelValueChanged(e, val, opt = {}) {
     const em = this.config.em;
     const model = this.model;
     const value = model.getFullValue();
     const target = this.getTarget();
     const onChange = this.onChange;
-    this.setRawValue(value);
+
+    // Avoid element update if the change comes from it
+    if (!opt.fromInput) {
+      this.setValue(value);
+    }
 
     // Check if component is allowed to be styled
     if (!target || !this.isTargetStylable() || !this.isComponentStylable()) {
       return;
     }
 
-    if (onChange) {
-      onChange(target, this, opt);
-    } else {
-      this.updateTargetStyle(value, null, opt);
+    // Avoid target update if the changes comes from it
+    if (!opt.fromTarget) {
+      // The onChange is used by Composite/Stack properties, so I'd avoid sending
+      // it back if the change comes from one of those
+      if (onChange && !opt.fromParent) {
+        onChange(target, this, opt);
+      } else {
+        this.updateTargetStyle(value, null, opt);
+      }
     }
 
     if (em) {
@@ -391,18 +418,19 @@ module.exports = Backbone.View.extend({
     this.setValue(this.model.parseValue(value));
   },
 
+
   /**
-   * Set the value to property input
-   * @param {String} value
-   * @param {Boolean} force
-   * @private
+   * Update the element input.
+   * Usually the value is a result of `model.getFullValue()`
+   * @param {String} value The value from the model
    * */
-  setValue(value, opts = {}) {
+  setValue(value) {
     const model = this.model;
-    let val = value || model.get('value') || model.getDefaultValue();
+    let val = value || model.getDefaultValue();
     const input = this.getInputEl();
     input && (input.value = val);
   },
+
 
   getInputEl() {
     if (!this.input) {

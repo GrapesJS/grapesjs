@@ -49,8 +49,33 @@
   }
 
   &field {
+    input,
+    select,
+    textarea {
+      @include appearance(none);
+
+      color: inherit;
+      border: none;
+      background-color: transparent;
+      box-sizing: border-box;
+      width: 100%;
+      position: relative;
+      padding: $inputPadding;
+      z-index: 1;
+
+      &:focus {
+        outline: none;
+      }
+    }
+
     &-range {
       flex: 9 1 auto;
+    }
+
+    &-integer {
+      input {
+        padding-right: 30px;
+      }
     }
   }
 }
@@ -59,7 +84,8 @@
 .#{$clm-prefix}select option,
 .#{$sm-prefix}select option,
 .#{$sm-prefix}unit option {
-  @extend .#{$app-prefix}bg-main;
+  background-color: $mainColor;
+  color: $fontColor;
 }
 
 .#{$app-prefix}field {
@@ -72,31 +98,8 @@
   position: relative;
   color: $inputFontColor;
 
-  input,
-  select,
-  textarea {
-    @include appearance(none);
-
-    color: inherit;
-    border: none;
-    background-color: transparent;
-    box-sizing: border-box;
-    width: 100%;
-    position: relative;
-    padding: $inputPadding;
-    z-index: 1;
-
-    &:focus {
-      outline: none;
-    }
-  }
-
   textarea {
     resize: vertical;
-  }
-
-  option {
-    padding: 3px 0;
   }
 
   .#{$app-prefix}sel-arrow {
@@ -122,10 +125,6 @@
     cursor: pointer;
   }
 
-  .#{$app-prefix}field-number {
-    padding-right: 30px;
-  }
-
   &-arrows {
     position: absolute;
     cursor: ns-resize;
@@ -136,6 +135,11 @@
     bottom: 0;
     right: $inputPadding - 2px;
     top: 0;
+  }
+
+  &-color,
+  &-radio {
+    width: 100%;
   }
 }
 
@@ -183,13 +187,6 @@
   top: 0;
 }
 
-.#{$app-prefix}field-radio {
-  float: left;
-  overflow: hidden;
-  padding: 0;
-  width: auto;
-}
-
 /* ??? */
 .#{$app-prefix}field-checkbox {
   padding: 0;
@@ -207,7 +204,8 @@
 }
 
 .#{$app-prefix}radio-item {
-  float: left;
+  flex: 1 1 auto;
+  text-align: center;
   border-left: 1px solid $darkTextShadow;
 
   &:first-child {
@@ -224,6 +222,10 @@
 
   input:checked + .#{$app-prefix}radio-item-label {
     background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  &s {
+    display: flex;
   }
 }
 
@@ -270,10 +272,6 @@
 
 .#{$app-prefix}field-select {
   padding: 0;
-
-  option {
-    @extend .#{$app-prefix}bg-main;
-  }
 }
 
 .#{$app-prefix}field-range {

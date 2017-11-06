@@ -1,8 +1,4 @@
 /**
- * * [add](#add)
- * * [get](#get)
- * * [getAll](#getall)
- *
  * Selectors in GrapesJS are used in CSS Composer inside Rules and in Components as classes. To get better this concept let's take
  * a look at this code:
  *
@@ -52,6 +48,9 @@
  *  statesLabel: '- Selecte State -',
  * }
  */
+
+import { isString } from 'underscore'
+
 module.exports = config => {
   var c = config || {},
   defaults = require('./config/config'),
@@ -147,6 +146,28 @@ module.exports = config => {
 
       return selector;
     },
+
+    /**
+     * Add class selectors
+     * @param {Array|string} classes Array or string of classes
+     * @return {Array} Array of added selectors
+     * @example
+     * sm.addClass('class1');
+     * sm.addClass('class1 class2');
+     * sm.addClass(['class1', 'class2']);
+     * // -> [SelectorObject, ...]
+     */
+    addClass(classes) {
+      const added = [];
+
+      if (isString(classes)) {
+        classes = classes.trim().split(' ');
+      }
+
+      classes.forEach(name => added.push(selectors.add({name})))
+      return added;
+    },
+
 
     /**
      * Get the selector by its name

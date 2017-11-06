@@ -13,11 +13,11 @@ const deps = [
   require('style_manager'),
   require('asset_manager'),
   require('css_composer'),
+  require('trait_manager'),
   require('dom_components'),
   require('canvas'),
   require('commands'),
-  require('block_manager'),
-  require('trait_manager'),
+  require('block_manager')
 ];
 
 const Backbone = require('backbone');
@@ -63,7 +63,7 @@ module.exports = Backbone.Model.extend({
     this.initUndoManager();
 
     this.on('change:selectedComponent', this.componentSelected, this);
-    this.on('change:changesCount', this.updateBeforeUnload, this);
+    this.on('change:changesCount', this.updateChanges, this);
   },
 
   /**
@@ -100,20 +100,27 @@ module.exports = Backbone.Model.extend({
     }
   },
 
+
   /**
    * Set the alert before unload in case it's requested
    * and there are unsaved changes
    * @private
    */
-  updateBeforeUnload() {
-    var changes = this.get('changesCount');
+  updateChanges() {
+    const stm = this.get('StorageManager');
+    const changes = this.get('changesCount');
 
     if (this.config.noticeOnUnload && changes) {
       window.onbeforeunload = e => 1;
     } else {
       window.onbeforeunload = null;
     }
+
+    if (stm.isAutosave() && changes >= stm.getStepsBeforeSave()) {
+      this.store();
+    }
   },
+
 
   /**
    * Load generic module
@@ -199,16 +206,8 @@ module.exports = Backbone.Model.extend({
 
     timedInterval && clearInterval(timedInterval);
     timedInterval = setTimeout(() => {
-      var count = this.get('changesCount') + 1;
-      var stm = this.get('StorageManager');
-      this.set('changesCount', count);
-
-      if (!stm.isAutosave() || count < stm.getStepsBeforeSave()) {
-        return;
-      }
-
       if (!opt.avoidStore) {
-        this.store();
+        this.set('changesCount', this.get('changesCount') + 1, opt)
       }
     }, 0);
   },

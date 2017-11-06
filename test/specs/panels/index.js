@@ -93,6 +93,15 @@ describe('Panels', () => {
       expect(spy.called).toEqual(true);
     });
 
+    it("Disable correctly buttons flagged as disabled", () => {
+      var spy = sinon.spy();
+      var panel = obj.addPanel({id: 'test'});
+      var btn = obj.addButton('test', {id:'btn', disable: true});
+      btn.on('change:disable', spy);
+      obj.disableButtons();
+      expect(spy.called).toEqual(true);
+    });
+
   });
 
   Models.run();

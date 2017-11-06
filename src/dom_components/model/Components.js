@@ -9,14 +9,17 @@ module.exports = Backbone.Collection.extend({
     this.config = opt && opt.config ? opt.config : null;
 
     // Inject editor
-    if(opt && opt.sm)
-      this.editor = opt.sm;
+    if(opt && (opt.sm || opt.em))
+      this.editor = opt.sm || opt.em;
 
     this.model  = (attrs, options) => {
       var model;
 
       if(!options.sm && opt && opt.sm)
         options.sm = opt.sm;
+
+      if(!options.em && opt && opt.em)
+        options.em = opt.em;
 
       if(opt && opt.config)
         options.config = opt.config;
@@ -67,7 +70,7 @@ module.exports = Backbone.Collection.extend({
     var style = model.get('style');
     var em = this.editor;
 
-    if(!_.isEmpty(style) && em && em.get('Config').forceClass){
+    if (!_.isEmpty(style) && em && em.get && em.get('Config').forceClass) {
       var cssC = this.editor.get('CssComposer');
       var newClass = this.editor.get('SelectorManager').add(model.cid);
       model.set({style:{}});

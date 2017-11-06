@@ -200,6 +200,19 @@ module.exports = () => {
           });
         });
     },
+    
+    /**
+     * Disable buttons flagged as disabled
+     * @private
+     */
+    disableButtons() {
+      this.getPanels().each(p => {
+          p.get('buttons').each(btn => {
+            if(btn.get('disable'))
+              btn.trigger('change:disable');
+          });
+        });
+    },
 
     Panel,
 

@@ -5,7 +5,6 @@ module.exports = require('./PropertyView').extend({
     const ppfx = this.ppfx;
     return `
       <div class="${ppfx}field ${ppfx}field-radio">
-        <span id="${pfx}input-holder"></span>
       </div>
     `;
   },
@@ -35,8 +34,8 @@ module.exports = require('./PropertyView').extend({
           `;
         });
 
-        const inputHld = this.el.querySelector(`#${pfx}input-holder`);
-        inputHld.innerHTML = `<div>${inputStr}</div>`;
+        const inputHld = this.el.querySelector(`.${ppfx}field`);
+        inputHld.innerHTML = `<div class="${ppfx}radio-items">${inputStr}</div>`;
         this.input = inputHld.firstChild;
       }
     }

@@ -1,9 +1,10 @@
+import { defaults } from 'underscore';
+
 module.exports = () => {
-  var c = {},
-  defaults = require('./config/config'),
-  Traits = require('./model/Traits'),
-  TraitsView = require('./view/TraitsView');
-  var TraitsViewer;
+  let c = {};
+  const defaultOpts = require('./config/config');
+  const TraitsView = require('./view/TraitsView');
+  let TraitsViewer;
 
   return {
 
@@ -29,16 +30,11 @@ module.exports = () => {
      * Initialize module. Automatically called with a new instance of the editor
      * @param {Object} config Configurations
      */
-    init(config) {
-      c = config || {};
-      for (var name in defaults) {
-        if (!(name in c))
-          c[name] = defaults[name];
-      }
-
-      var ppfx = c.pStylePrefix;
-      if(ppfx)
-        c.stylePrefix = ppfx + c.stylePrefix;
+    init(config = {}) {
+      c = config;
+      defaults(c, defaultOpts);
+      const ppfx = c.pStylePrefix;
+      ppfx && (c.stylePrefix = `${ppfx}${c.stylePrefix}`);
       TraitsViewer = new TraitsView({
         collection: [],
         editor: c.em,

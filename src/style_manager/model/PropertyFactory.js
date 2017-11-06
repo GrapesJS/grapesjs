@@ -209,7 +209,8 @@ module.exports = () => ({
       }
 
       // Min/Max
-      switch(prop){
+      switch(prop) {
+        case 'padding-top': case 'padding-right': case 'padding-bottom': case 'padding-left':
         case 'min-height': case 'min-width': case 'max-height': case 'max-width':
         case 'width': case 'height':
         case 'font-size':
@@ -290,17 +291,26 @@ module.exports = () => ({
           break;
         case 'font-family':
           var ss = ', sans-serif';
-          var s = ', serif';
-          var fonts = ['Arial, Helvetica' + ss, 'Arial Black, Gadget' + ss, 'Brush Script MT' + ss,
-            'Comic Sans MS, cursive' + ss, 'Courier New, Courier, monospace', 'Georgia, serif', 'Helvetica, serif',
-            'Impact, Charcoal' + ss, 'Lucida Sans Unicode, Lucida Grande' + ss, 'Tahoma, Geneva' + ss,
-            'Times New Roman, Times, serif', 'Trebuchet MS, Helvetica' + ss, 'Verdana, Geneva' + ss];
+          var fonts = [
+            'Arial, Helvetica' + ss,
+            'Arial Black, Gadget' + ss,
+            'Brush Script MT' + ss,
+            'Comic Sans MS, cursive' + ss,
+            'Courier New, Courier, monospace',
+            'Georgia, serif',
+            'Helvetica, serif',
+            'Impact, Charcoal' + ss,
+            'Lucida Sans Unicode, Lucida Grande' + ss,
+            'Tahoma, Geneva' + ss,
+            'Times New Roman, Times, serif',
+            'Trebuchet MS, Helvetica' + ss,
+            'Verdana, Geneva' + ss
+          ];
           obj.list = [];
           for(var j = 0, l = fonts.length; j < l; j++){
             var font = {};
             font.value = fonts[j];
             font.name = fonts[j].split(',')[0];
-            font.style = 'font-family: ' + fonts[j] + '; font-size:15px';
             obj.list.push(font);
           }
           break;

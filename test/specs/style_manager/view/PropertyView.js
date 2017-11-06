@@ -133,11 +133,10 @@ module.exports = {
 
         it('Fetch value from function', () => {
           view.selectedComponent = component;
-          var style = {};
-          style[propName] = 'testfun(' + propValue + ')';
-          component.set('style', style);
+          const val = `testfun(${propValue})`;
+          component.set('style', {[propName]: val});
           view.model.set('functionName', 'testfun');
-          expect(view.getTargetValue()).toEqual(propValue);
+          expect(view.getTargetValue()).toEqual(val);
         });
 
         describe('With target setted', () => {

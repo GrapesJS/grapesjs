@@ -89,6 +89,7 @@
  *   style: '.txt-red{color: red}',
  * });
  */
+import $ from 'cash-dom';
 
 module.exports = config => {
   var c = config || {},
@@ -109,6 +110,8 @@ module.exports = config => {
   });
 
   return {
+
+    $,
 
     /**
      * @property {EditorModel}
@@ -539,7 +542,7 @@ module.exports = config => {
      * @return {this}
      */
     trigger(event) {
-      return em.trigger(event);
+      return em.trigger.apply(em, arguments);
     },
 
     /**

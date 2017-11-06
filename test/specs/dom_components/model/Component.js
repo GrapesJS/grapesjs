@@ -6,22 +6,27 @@ const ComponentLink = require('dom_components/model/ComponentLink');
 const ComponentMap = require('dom_components/model/ComponentMap');
 const ComponentVideo = require('dom_components/model/ComponentVideo');
 const Components = require('dom_components/model/Components');
+const Selector = require('selector_manager/model/Selector');
+const Editor = require('editor/model/Editor');
 const $ = Backbone.$;
 
 module.exports = {
   run() {
-      var obj;
-      var dcomp;
-      var compOpts;
+      let obj;
+      let dcomp;
+      let compOpts;
+      let em;
 
       describe('Component', () => {
 
         beforeEach(() => {
-          obj = new Component();
+          em = new Editor({});
           dcomp = new DomComponents();
           compOpts = {
+            em,
             componentTypes: dcomp.componentTypes,
           };
+          obj = new Component({}, compOpts);
         });
 
         afterEach(() => {
@@ -116,6 +121,153 @@ module.exports = {
           expect(obj).toEqual({tagName: 'span'});
         });
 
+        it('setClass single class string', () => {
+          obj.setClass('class1');
+          const result = obj.get('classes').models;
+          expect(result.length).toEqual(1);
+          expect(result[0] instanceof Selector).toEqual(true);
+          expect(result[0].get('name')).toEqual('class1');
+        });
+
+        it('setClass multiple class string', () => {
+          obj.setClass('class1 class2');
+          const result = obj.get('classes').models;
+          expect(result.length).toEqual(2);
+        });
+
+        it('setClass single class array', () => {
+          obj.setClass(['class1']);
+          const result = obj.get('classes').models;
+          expect(result.length).toEqual(1);
+        });
+
+        it('setClass multiple class array', () => {
+          obj.setClass(['class1', 'class2']);
+          const result = obj.get('classes').models;
+          expect(result.length).toEqual(2);
+        });
+
+        it('addClass multiple array', () => {
+          obj.addClass(['class1', 'class2']);
+          const result = obj.get('classes').models;
+          expect(result.length).toEqual(2);
+        });
+
+        it('addClass avoid same name classes', () => {
+          obj.addClass(['class1', 'class2']);
+          obj.addClass(['class1', 'class3']);
+          const result = obj.get('classes').models;
+          expect(result.length).toEqual(3);
+        });
+
+        it('setAttributes', () => {
+          obj.setAttributes({
+            id: 'test',
+            'data-test': 'value',
+            class: 'class1 class2',
+            style: 'color: white; background: #fff'
+          });
+          expect(obj.getAttributes()).toEqual({
+            id: 'test',
+            'data-test': 'value',
+          });
+          expect(obj.get('classes').length).toEqual(2);
+          expect(obj.getStyle()).toEqual({
+            color: 'white',
+            background: '#fff',
+          });
+        });
+
+        it('setAttributes overwrites correctly', () => {
+          obj.setAttributes({id: 'test', 'data-test': 'value'});
+          obj.setAttributes({'data-test': 'value2'});
+          expect(obj.getAttributes()).toEqual({'data-test': 'value2'});
+        });
+
+        it('append() returns always an array', () => {
+          let result = obj.append('<span>text1</span>');
+          expect(result.length).toEqual(1);
+          result = obj.append('<span>text1</span><div>text2</div>');
+          expect(result.length).toEqual(2);
+        });
+
+        it('append() new components as string', () => {
+          obj.append('<span>text1</span><div>text2</div>');
+          const comps = obj.components();
+          expect(comps.length).toEqual(2);
+          expect(comps.models[0].get('tagName')).toEqual('span');
+          expect(comps.models[1].get('tagName')).toEqual('div');
+        });
+
+        it('append() new components as Objects', () => {
+          obj.append([{}, {}]);
+          const comps = obj.components();
+          expect(comps.length).toEqual(2);
+          obj.append({});
+          expect(comps.length).toEqual(3);
+        });
+
+        it('components() set new collection', () => {
+          obj.append([{}, {}]);
+          obj.components('<span>test</div>');
+          const result = obj.components();
+          expect(result.length).toEqual(1);
+          expect(result.models[0].get('tagName')).toEqual('span');
+        });
+
+
+        it('Propagate properties to children', () => {
+          obj.append({propagate: 'removable'});
+          const result = obj.components();
+          const newObj = result.models[0];
+          expect(newObj.get('removable')).toEqual(true);
+          newObj.set('removable', false);
+          newObj.append({draggable: false});
+          const child = newObj.components().models[0];
+          expect(child.get('removable')).toEqual(false);
+          expect(child.get('propagate')).toEqual(['removable']);
+        });
+
+        it('Ability to stop/change propagation chain', () => {
+          obj.append({
+            removable: false,
+            draggable: false,
+            propagate: ['removable', 'draggable']
+          });
+          const result = obj.components();
+          const newObj = result.models[0];
+          newObj.components(`
+          <div id="comp01">
+            <div id="comp11">comp1</div>
+            <div id="comp12" data-gjs-stop="1" data-gjs-removable="true" data-gjs-draggable="true" data-gjs-propagate='["stop"]'>
+              <div id="comp21">comp21</div>
+              <div id="comp22">comp22</div>
+            </div>
+            <div id="comp13">
+              <div id="comp31">comp31</div>
+              <div id="comp32">comp32</div>
+            </div>
+          </div>
+          <div id="comp02">TEST</div>`);
+          const notInhereted = model => {
+            expect(model.get('stop')).toEqual(1);
+            expect(model.get('removable')).toEqual(true);
+            expect(model.get('draggable')).toEqual(true);
+            expect(model.get('propagate')).toEqual(['stop']);
+            model.components().each(model => inhereted(model))
+          };
+          const inhereted = model => {
+            if (model.get('stop')) {
+              notInhereted(model);
+            } else {
+              expect(model.get('removable')).toEqual(false);
+              expect(model.get('draggable')).toEqual(false);
+              expect(model.get('propagate')).toEqual(['removable', 'draggable']);
+              model.components().each(model => inhereted(model))
+            }
+          }
+          newObj.components().each(model => inhereted(model))
+        });
     });
 
     describe('Image Component', () => {
@@ -200,10 +352,37 @@ module.exports = {
 
     describe('Link Component', () => {
 
-      it('Component parse a element', () => {
-        var el = document.createElement('a');
-        obj = ComponentLink.isComponent(el);
+      const aEl = document.createElement('a');
+
+      it('Component parse link element', () => {
+        obj = ComponentLink.isComponent(aEl);
         expect(obj).toEqual({type: 'link'});
+      });
+
+      it('Component parse link element with text content', () => {
+        aEl.innerHTML = 'some text here ';
+        obj = ComponentLink.isComponent(aEl);
+        expect(obj).toEqual({type: 'link'});
+      });
+
+      it('Component parse link element with not only text content', () => {
+        aEl.innerHTML = '<div>Some</div> text <div>here </div>';
+        obj = ComponentLink.isComponent(aEl);
+        expect(obj).toEqual({type: 'link'});
+      });
+
+      it('Component parse link element with only not text content', () => {
+        aEl.innerHTML = `<div>Some</div>
+        <div>text</div>
+        <div>here </div>`;
+        obj = ComponentLink.isComponent(aEl);
+        expect(obj).toEqual({type: 'link', editable: 0});
+      });
+
+      it('Link element with only an image inside is not editable', () => {
+        aEl.innerHTML = '<img src="##"/>';
+        obj = ComponentLink.isComponent(aEl);
+        expect(obj).toEqual({type: 'link', editable: 0});
       });
 
     });

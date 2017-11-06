@@ -1,4 +1,5 @@
-import {on, off} from 'utils/mixins'
+import { bindAll } from 'underscore';
+import { on, off, getUnitFromValue} from 'utils/mixins';
 
 const ToolbarView = require('dom_components/view/ToolbarView');
 const Toolbar = require('dom_components/model/Toolbar');
@@ -10,12 +11,12 @@ const $ = Backbone.$;
 module.exports = {
 
   init(o) {
-    _.bindAll(this, 'onHover', 'onOut', 'onClick', 'onKeyPress');
+    bindAll(this, 'onHover', 'onOut', 'onClick', 'onKeyPress',
+      'copyComp', 'pasteComp', 'onFrameScroll');
   },
 
 
   enable() {
-    _.bindAll(this, 'copyComp', 'pasteComp', 'onFrameScroll');
     this.frameOff = this.canvasOff = this.adjScroll = null;
     var config  = this.config.em.get('Config');
     this.startSelectComponent();
@@ -25,7 +26,6 @@ module.exports = {
 
     em.on('component:update', this.updateAttached, this);
     em.on('change:canvasOffset', this.updateAttached, this);
-    em.on('change:selectedComponent', this.updateToolbar, this);
   },
 
   /**
@@ -90,6 +90,7 @@ module.exports = {
    * @private
    * */
   toggleSelectComponent(enable) {
+    const em = this.em;
     const method = enable ? 'on' : 'off';
     const methods = {on, off};
     const body = this.getCanvasBody();
@@ -99,6 +100,7 @@ module.exports = {
     methods[method](body, 'click', this.onClick);
     methods[method](win, 'scroll', this.onFrameScroll);
     methods[method](win, 'keydown', this.onKeyPress);
+    em[method]('change:selectedComponent', this.onSelect, this);
   },
 
   /**
@@ -221,18 +223,14 @@ module.exports = {
   },
 
   /**
-   * Hover command
-   * @param {Object}  e
+   * On element click
+   * @param {Event}  e
    * @private
    */
   onClick(e) {
-    var m = $(e.target).data('model');
-    if(!m)
-      return;
-    var s  = m.get('stylable');
-    if(!(s instanceof Array) && !s)
-      return;
-    this.onSelect(e, e.target);
+    e.stopPropagation();
+    const model = $(e.target).data('model');
+    model && this.editor.select(model);
   },
 
   /**
@@ -296,16 +294,19 @@ module.exports = {
    * @param {Object}  el
    * @private
    * */
-  onSelect(e, el) {
-    e.stopPropagation();
-    var model = $(el).data('model');
+  onSelect() {
+    const editor = this.editor;
+    const model = this.em.getSelected();
+    this.updateToolbar(model);
 
     if (model) {
-      this.editor.select(model);
+      const el = model.view.el;
       this.showFixedElementOffset(el);
       this.hideElementOffset();
       this.hideHighlighter();
       this.initResize(el);
+    } else {
+      editor.stopCommand('resize');
     }
   },
 
@@ -319,55 +320,79 @@ module.exports = {
     var editor = em ? em.get('Editor') : '';
     var config = em ? em.get('Config') : '';
     var pfx = config.stylePrefix || '';
-    var attrName = 'data-' + pfx + 'handler';
-    var resizeClass = pfx + 'resizing';
+    var attrName = `data-${pfx}handler`;
+    var resizeClass = `${pfx}resizing`;
     var model = em.get('selectedComponent');
     var resizable = model.get('resizable');
     var options = {};
     var modelToStyle;
 
     var toggleBodyClass = (method, e, opts) => {
-      opts.docs && opts.docs.find('body')[method](resizeClass);
+      const docs = opts.docs;
+      docs && docs.forEach(doc => {
+        const body = doc.body;
+        const cls = body.className || '';
+        body.className = (method == 'add' ?
+          `${cls} ${resizeClass}` : cls.replace(resizeClass, '')).trim();
+      });
     };
 
 
     if (editor && resizable) {
       options = {
-        onStart(e, opts) {
-          toggleBodyClass('addClass', e, opts);
+        // Here the resizer is updated with the current element height and width
+        onStart(e, opts = {}) {
+          const { el, config, resizer } = opts;
+          const { keyHeight, keyWidth, currentUnit } = config;
+          toggleBodyClass('add', e, opts);
           modelToStyle = em.get('StyleManager').getModelToStyle(model);
+          const computedStyle = getComputedStyle(el);
+          const modelStyle = modelToStyle.getStyle();
+          const currentWidth = modelStyle[keyWidth] || computedStyle[keyWidth];
+          const currentHeight = modelStyle[keyHeight] || computedStyle[keyHeight];
+          resizer.startDim.w = parseFloat(currentWidth);
+          resizer.startDim.h = parseFloat(currentHeight);
           showOffsets = 0;
+
+          if (currentUnit) {
+            config.unitHeight = getUnitFromValue(currentHeight);
+            config.unitWidth = getUnitFromValue(currentWidth);
+          }
         },
+
         // Update all positioned elements (eg. component toolbar)
         onMove() {
           editor.trigger('change:canvasOffset');
         },
+
         onEnd(e, opts) {
-          toggleBodyClass('removeClass', e, opts);
+          toggleBodyClass('remove', e, opts);
           editor.trigger('change:canvasOffset');
           showOffsets = 1;
         },
+
         updateTarget(el, rect, options = {}) {
           if (!modelToStyle) {
             return;
           }
 
-          const {store, selectedHandler} = options;
+          const { store, selectedHandler, config} = options;
+          const { keyHeight, keyWidth } = config;
           const onlyHeight = ['tc', 'bc'].indexOf(selectedHandler) >= 0;
           const onlyWidth = ['cl', 'cr'].indexOf(selectedHandler) >= 0;
-          const unit = 'px';
           const style = modelToStyle.getStyle();
 
           if (!onlyHeight) {
-            style.width = rect.w + unit;
+            style[keyWidth] = rect.w + config.unitWidth;
           }
 
           if (!onlyWidth) {
-            style.height = rect.h + unit;
+            style[keyHeight] = rect.h + config.unitHeight;
           }
 
           modelToStyle.setStyle(style, {avoidStore: 1});
-          em.trigger('targetStyleUpdated');
+          const updateEvent = `update:component:style`;
+          em && em.trigger(`${updateEvent}:height ${updateEvent}:width`);
 
           if (store) {
             modelToStyle.trigger('change:style', modelToStyle, style, {});

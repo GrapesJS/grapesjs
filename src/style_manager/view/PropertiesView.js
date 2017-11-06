@@ -17,33 +17,49 @@ module.exports = Backbone.View.extend({
     this.onChange = o.onChange;
     this.onInputRender = o.onInputRender || {};
     this.customValue = o.customValue || {};
+    const coll = this.collection;
+    this.listenTo(coll, 'add', this.addTo);
+    this.listenTo(coll, 'reset', this.render);
   },
 
-  render() {
-    var fragment = document.createDocumentFragment();
 
-    this.collection.each((model) => {
-      var view = new model.typeView({
-        model,
-        name: model.get('name'),
-        id: this.pfx + model.get('property'),
-        target: this.target,
-        propTarget: this.propTarget,
-        onChange: this.onChange,
-        onInputRender: this.onInputRender,
-        config: this.config,
-      });
+  addTo(model) {
+    this.add(model);
+  },
 
-      if(model.get('type') != 'composite'){
-        view.customValue = this.customValue;
-      }
 
-      view.render();
-      fragment.appendChild(view.el);
+  add(model, frag) {
+    var view = new model.typeView({
+      model,
+      name: model.get('name'),
+      id: this.pfx + model.get('property'),
+      target: this.target,
+      propTarget: this.propTarget,
+      onChange: this.onChange,
+      onInputRender: this.onInputRender,
+      config: this.config,
     });
 
+    if (model.get('type') != 'composite') {
+      view.customValue = this.customValue;
+    }
+
+    view.render();
+    const el = view.el;
+
+    if (frag) {
+      frag.appendChild(el);
+    } else {
+      this.el.appendChild(el);
+    }
+  },
+
+
+  render() {
+    const fragment = document.createDocumentFragment();
+    this.collection.each(model => this.add(model, fragment));
     this.$el.append(fragment);
-    this.$el.attr('class', this.pfx + 'properties');
+    this.$el.attr('class', `${this.pfx}properties`);
     return this;
   }
 });

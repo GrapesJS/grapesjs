@@ -1,37 +1,45 @@
-import {on, off} from 'utils/mixins'
-
+import { bindAll } from 'underscore';
+import {on, off} from 'utils/mixins';
+const Input = require('./Input');
 const Backbone = require('backbone');
 const $ = Backbone.$;
 
-module.exports = Backbone.View.extend({
+module.exports = Input.extend({
 
-  template: _.template(`
-  <span class='<%= ppfx %>input-holder'></span>
-  <span class='<%= ppfx %>field-units'></span>
-  <div class="<%= ppfx %>field-arrows">
-    <div class="<%= ppfx %>field-arrow-u"></div>
-    <div class="<%= ppfx %>field-arrow-d"></div>
-  </div>`),
-
-  initialize(opts) {
-    _.bindAll(this, 'moveIncrement', 'upIncrement');
-    var opt = opts || {};
-    var ppfx = opt.ppfx || '';
-    var contClass = opt.contClass || (`${ppfx}field ${ppfx}field-integer`);
-    this.ppfx = ppfx;
-    this.doc = document;
-    this.inputCls = ppfx + 'field-number';
-    this.unitCls = ppfx + 'input-unit';
-    this.contClass = contClass;
-    this.events = {};
-    this.events[`click .${ppfx}field-arrow-u`] = 'upArrowClick';
-    this.events[`click .${ppfx}field-arrow-d`] = 'downArrowClick';
-    this.events[`mousedown .${ppfx}field-arrows`] = 'downIncrement';
-    this.events[`change .${this.inputCls}`] = 'handleChange';
-    this.events[`change .${this.unitCls}`] = 'handleUnitChange';
-    this.listenTo(this.model, 'change:unit change:value', this.handleModelChange);
-    this.delegateEvents();
+  events: {
+    'change input': 'handleChange',
+    'change select': 'handleUnitChange',
+    'click [data-arrow-up]': 'upArrowClick',
+    'click [data-arrow-down]': 'downArrowClick',
+    'mousedown [data-arrows]': 'downIncrement',
   },
+
+
+  template() {
+    const ppfx = this.ppfx;
+    return `
+      <span class="${ppfx}input-holder"></span>
+      <span class="${ppfx}field-units"></span>
+      <div class="${ppfx}field-arrows" data-arrows>
+        <div class="${ppfx}field-arrow-u" data-arrow-up></div>
+        <div class="${ppfx}field-arrow-d" data-arrow-down></div>
+      </div>
+    `;
+  },
+
+  inputClass() {
+    const ppfx = this.ppfx;
+    return this.opts.contClass || `${ppfx}field ${ppfx}field-integer`;
+  },
+
+
+  initialize(opts = {}) {
+    Input.prototype.initialize.apply(this, arguments);
+    bindAll(this, 'moveIncrement', 'upIncrement');
+    this.doc = document;
+    this.listenTo(this.model, 'change:unit', this.handleModelChange);
+  },
+
 
   /**
    * Set value to the model
@@ -57,6 +65,7 @@ module.exports = Backbone.View.extend({
     }
   },
 
+
   /**
    * Handled when the view is changed
    */
@@ -65,6 +74,7 @@ module.exports = Backbone.View.extend({
     this.setValue(this.getInputEl().value);
     this.elementUpdated();
   },
+
 
   /**
    * Handled when the view is changed
@@ -76,6 +86,7 @@ module.exports = Backbone.View.extend({
     this.elementUpdated();
   },
 
+
   /**
    * Fired when the element of the property is updated
    */
@@ -83,54 +94,44 @@ module.exports = Backbone.View.extend({
     this.model.trigger('el:change');
   },
 
+
   /**
    * Updates the view when the model is changed
    * */
   handleModelChange() {
-    var m = this.model;
-    this.getInputEl().value = m.get('value');
-    var unit = this.getUnitEl();
-
-    if (unit) {
-      unit.value = m.get('unit');
-    }
+    const model = this.model;
+    this.getInputEl().value = model.get('value');
+    const unitEl = this.getUnitEl();
+    unitEl && (unitEl.value = model.get('unit'));
   },
 
-  /**
-   * Get the input element
-   * @return {HTMLElement}
-   */
-  getInputEl() {
-    if (!this.inputEl) {
-      const cls = this.inputCls;
-      const plh = this.model.get('defaults');
-      this.inputEl = $(`<input type="text" class="${cls}" placeholder="${plh}">`);
-    }
-    return this.inputEl.get(0);
-  },
 
   /**
    * Get the unit element
    * @return {HTMLElement}
    */
   getUnitEl() {
-    if(!this.unitEl) {
-      var model = this.model;
-      var units = model.get('units') || [];
-      if(units.length){
-        var unitStr = '<select class="' + this.unitCls + '">';
-        _.each(units, unit => {
-          var selected = unit == model.get('unit') ? 'selected': '';
-          unitStr += '<option ' + selected + ' >' + unit + '</option>';
+    if (!this.unitEl) {
+      const model = this.model;
+      const units = model.get('units') || [];
+
+      if (units.length) {
+        const options = [];
+
+        units.forEach(unit => {
+          const selected = unit == model.get('unit') ? 'selected' : '';
+          options.push(`<option ${selected}>${unit}</option>`);
         });
-        unitStr += '</select>';
+
         const temp = document.createElement('div');
-        temp.innerHTML = unitStr;
+        temp.innerHTML = `<select class="${this.ppfx}input-unit">${options.join('')}</select>`;
         this.unitEl = temp.firstChild;
       }
     }
+
     return this.unitEl;
   },
+
 
   /**
    * Invoked when the up arrow is clicked
@@ -145,18 +146,20 @@ module.exports = Backbone.View.extend({
     this.elementUpdated();
   },
 
+
   /**
    * Invoked when the down arrow is clicked
    * */
   downArrowClick() {
     const model = this.model;
     const step = model.get('step');
-    let value  = model.get('value');
-    value = this.normalizeValue(value - step);
-    var valid = this.validateInputValue(value);
+    const value  = model.get('value');
+    const val = this.normalizeValue(value - step);
+    var valid = this.validateInputValue(val);
     model.set('value', valid.value);
     this.elementUpdated();
   },
+
 
   /**
    * Change easily integer input value with click&drag method
@@ -174,6 +177,7 @@ module.exports = Backbone.View.extend({
     on(this.doc, 'mouseup', this.upIncrement);
   },
 
+
   /** While the increment is clicked, moving the mouse will update input value
    * @param Object
    *
@@ -189,6 +193,7 @@ module.exports = Backbone.View.extend({
     model.set('value', this.prValue, {avoidStore: 1});
     return false;
   },
+
 
   /**
    * Stop moveIncrement method
@@ -207,6 +212,7 @@ module.exports = Backbone.View.extend({
     }
   },
 
+
   normalizeValue(value, defValue = 0) {
     const model = this.model;
     const step = model.get('step');
@@ -219,11 +225,13 @@ module.exports = Backbone.View.extend({
     value = parseFloat(value);
 
     if (Math.floor(value) !== value) {
-      stepDecimals = step.toString().split('.')[1].length || 0;
+      const side = step.toString().split('.')[1];
+      stepDecimals = side ? side.length : 0;
     }
 
     return stepDecimals ? parseFloat(value.toFixed(stepDecimals)) : value;
   },
+
 
   /**
    * Validate input value
@@ -235,7 +243,7 @@ module.exports = Backbone.View.extend({
     var force = 0;
     var opt = opts || {};
     var model = this.model;
-    var val = value || model.get('defaults');
+    var val = value !== '' ? value : model.get('defaults');
     var units = model.get('units') || [];
     var unit = model.get('unit') || (units.length && units[0]) || '';
     var max = model.get('max');
@@ -277,14 +285,11 @@ module.exports = Backbone.View.extend({
     };
   },
 
+
   render() {
-    const ppfx = this.ppfx;
-    const el = this.$el;
-    el.html(this.template({ppfx}));
-    el.find(`.${ppfx}input-holder`).append(this.getInputEl());
+    Input.prototype.render.call(this);
     const unit = this.getUnitEl();
-    unit && el.find(`.${ppfx}field-units`).get(0).appendChild(unit);
-    el.addClass(this.contClass);
+    unit && this.$el.find(`.${this.ppfx}field-units`).get(0).appendChild(unit);
     return this;
   }
 

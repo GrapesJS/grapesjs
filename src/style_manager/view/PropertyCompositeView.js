@@ -13,8 +13,11 @@ module.exports = PropertyView.extend({
   },
 
   inputValueChanged(...args) {
-    if(!this.model.get('detached'))
+    // If it's not detached (eg. 'padding: 1px 2px 3px 4px;') it will follow
+    // the same flow of PropertyView
+    if (!this.model.get('detached')) {
       PropertyView.prototype.inputValueChanged.apply(this, args);
+    }
   },
 
   /**
@@ -107,7 +110,7 @@ module.exports = PropertyView.extend({
     }
 
     if (view) {
-      value = view.model.parseValue(value);
+      value = view.model.parseValue(value).value;
     }
 
     return value;

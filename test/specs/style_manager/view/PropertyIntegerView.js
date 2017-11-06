@@ -1,5 +1,6 @@
 const PropertyIntegerView = require('style_manager/view/PropertyIntegerView');
 const Property = require('style_manager/model/Property');
+const PropertyInteger = require('style_manager/model/PropertyInteger');
 const Component = require('dom_components/model/Component');
 
 module.exports = {
@@ -26,8 +27,7 @@ module.exports = {
         beforeEach(() => {
           target = new Component();
           component = new Component();
-          model = new Property({
-            type: 'integer',
+          model = new PropertyInteger({
             units,
             property: propName
           });
@@ -111,12 +111,9 @@ module.exports = {
         });
 
         it('Update target on value change', () => {
-          view.selectedComponent = component;
-          view.model.set('value', intValue);
-          var compStyle = view.selectedComponent.get('style');
-          var assertStyle = {};
-          assertStyle[propName] = intValue;
-          expect(compStyle).toEqual(assertStyle);
+          const val = `${intValue}%`;
+          view.model.setValue(val);
+          expect(view.getTargetValue()).toEqual(val);
         });
 
         describe('With target setted', () => {
@@ -161,8 +158,7 @@ module.exports = {
 
           beforeEach(() => {
             component = new Component();
-            model = new Property({
-              type: 'integer',
+            model = new PropertyInteger({
               units,
               property: propName,
               defaults: intValue,

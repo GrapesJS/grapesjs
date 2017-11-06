@@ -16,6 +16,21 @@ module.exports = Backbone.View.extend({
     });
   },
 
+
+  /**
+   * Checks if the element is visible in the canvas's viewport
+   * @param  {HTMLElement}  el
+   * @return {Boolean}
+   */
+  isElInViewport(el) {
+    const rect = el.getBoundingClientRect();
+    const frameRect = this.getFrameOffset(1);
+    const rTop = rect.top;
+    const rLeft = rect.left;
+    return rTop >= 0 && rLeft >= 0 &&
+          rTop <= frameRect.height && rLeft <= frameRect.width;
+  },
+
   /**
    * Update tools position
    * @private
@@ -106,13 +121,13 @@ module.exports = Backbone.View.extend({
       var frameCss = `
         ${baseCss}
 
-        .${ppfx}dashed :not([contenteditable]) > *[data-highlightable] {
+        .${ppfx}dashed *[data-highlightable] {
           outline: 1px dashed rgba(170,170,170,0.7);
-          outline-offset: -2px
+          outline-offset: -3px
         }
 
         .${ppfx}comp-selected {
-          outline: 3px solid #3b97e3 !important
+          outline: 3px solid #3b97e3 !important;
         }
 
         .${ppfx}comp-selected-parent {
@@ -269,14 +284,13 @@ module.exports = Backbone.View.extend({
     var frmTop = opt.avoidFrameOffset ? 0 : frmOff.top;
     var frmLeft = opt.avoidFrameOffset ? 0 : frmOff.left;
 
-    var top = eo.top + frmTop - cvsOff.top;
-    var left = eo.left + frmLeft - cvsOff.left;
-    return {
-      top,
-      left,
-      height: el.offsetHeight,
-      width: el.offsetWidth
-    };
+    const top = eo.top + frmTop - cvsOff.top;
+    const left = eo.left + frmLeft - cvsOff.left;
+    // clientHeight/clientWidth are for SVGs
+    const height = el.offsetHeight || el.clientHeight;
+    const width = el.offsetWidth || el.clientWidth;
+
+    return { top, left, height, width };
   },
 
   /**

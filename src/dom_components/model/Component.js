@@ -1,3 +1,4 @@
+import { isUndefined, isArray } from 'underscore';
 import Styleable from 'domain_abstract/model/Styleable';
 
 var Backbone = require('backbone');
@@ -21,7 +22,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     // True if the component is removable from the canvas
     removable: true,
 
-    // Indicates if it's possible to drag the component inside other
+    // Indicates if it's possible to drag the component inside others
     // Tip: Indicate an array of selectors where it could be dropped inside
     draggable: true,
 
@@ -69,7 +70,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     icon: '',
 
     // Component related style
-    style: {},
+    style: '',
 
     // Key-value object of the component's attributes
     attributes: '',
@@ -82,6 +83,19 @@ module.exports = Backbone.Model.extend(Styleable).extend({
 
     // Traits
     traits: ['id', 'title'],
+
+    // Indicates an array of properties which will be inhereted by
+    // all NEW appended children
+    //
+    // If you create a model likes this
+    //  removable: false,
+    //  draggable: false,
+    //  propagate: ['removable', 'draggable']
+    // When you append some new component inside, the new added model
+    // will get the exact same properties indicated in `propagate` array
+    // (as the `propagate` property itself)
+    //
+    propagate: '',
 
     /**
       * Set an array of items to show up inside the toolbar (eg. move, clone, delete)
@@ -97,8 +111,26 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     toolbar: null,
   },
 
+
   initialize(props = {}, opt = {}) {
-    const em = opt.sm || {};
+    const em = opt.sm || opt.em || {};
+
+    // Propagate properties from parent if indicated
+    const parent = this.parent();
+    const parentAttr = parent && parent.attributes;
+
+    if (parentAttr && parentAttr.propagate) {
+      let newAttr = {};
+      const toPropagate = parentAttr.propagate;
+      toPropagate.forEach(prop => newAttr[prop] = parent.get(prop));
+      newAttr.propagate = toPropagate;
+      newAttr = {...newAttr, ...props};
+      this.set(newAttr);
+    }
+
+    const propagate = this.get('propagate');
+    propagate && this.set('propagate', isArray(propagate) ? propagate : [propagate]);
+
 
     // Check void elements
     if(opt && opt.config &&
@@ -106,8 +138,10 @@ module.exports = Backbone.Model.extend(Styleable).extend({
         this.set('void', true);
     }
 
+    opt.em = em;
     this.opt = opt;
     this.sm = em;
+    this.em = em;
     this.config = props;
     this.set('attributes', this.get('attributes') || {});
     this.listenTo(this, 'change:script', this.scriptUpdated);
@@ -132,23 +166,147 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     this.init();
   },
 
+
+  /**
+   * Update attributes of the model
+   * @param {Object} attrs Key value attributes
+   * @example
+   * model.setAttributes({id: 'test', 'data-key': 'value'});
+   */
+  setAttributes(attrs) {
+    attrs = { ...attrs };
+
+    // Handle classes
+    const classes = attrs.class;
+    classes && this.setClass(classes);
+    delete attrs.class;
+
+    // Handle style
+    const style = attrs.style;
+    style && this.setStyle(style);
+    delete attrs.style;
+
+    this.set('attributes', attrs);
+  },
+
+
+  /**
+   * Return attributes
+   * @return {Object}
+   */
+  getAttributes() {
+    return this.get('attributes');
+  },
+
+
+  /**
+   * Add classes
+   * @param {Array|string} classes Array or string of classes
+   * @return {Array} Array of added selectors
+   * @example
+   * model.addClass('class1');
+   * model.addClass('class1 class2');
+   * model.addClass(['class1', 'class2']);
+   * // -> [SelectorObject, ...]
+   */
+  addClass(classes) {
+    const added = this.em.get('SelectorManager').addClass(classes);
+    return this.get('classes').add(added);
+  },
+
+
+  /**
+   * Set classes (resets current collection)
+   * @param {Array|string} classes Array or string of classes
+   * @return {Array} Array of added selectors
+   * @example
+   * model.setClass('class1');
+   * model.setClass('class1 class2');
+   * model.setClass(['class1', 'class2']);
+   * // -> [SelectorObject, ...]
+   */
+  setClass(classes) {
+    this.get('classes').reset();
+    return this.addClass(classes);
+  },
+
+
   initClasses() {
     const classes = this.normalizeClasses(this.get('classes') || this.config.classes || []);
     this.set('classes', new Selectors(classes));
     return this;
   },
 
+
   initComponents() {
-    let comps = new Components(this.get('components'), this.opt);
+    // Have to add components after the init, otherwise the parent
+    // is not visible
+    const comps = new Components(null, this.opt);
     comps.parent = this;
+    comps.reset(this.get('components'));
     this.set('components', comps);
     return this;
   },
+
 
   /**
    * Initialize callback
    */
   init() {},
+
+
+  /**
+   * Add new component children
+   * @param  {Component|string} components Component to add
+   * @param {Object} [opts={}] Options, same as in `model.add()`(from backbone)
+   * @return {Array} Array of appended components
+   * @example
+   * someModel.get('components').lenght // -> 0
+   * const videoComponent = someModel.append('<video></video><div></div>')[0];
+   * // This will add 2 components (`video` and `div`) to your `someModel`
+   * someModel.get('components').lenght // -> 2
+   * // You can pass components directly
+   * otherModel.append(otherModel2);
+   * otherModel.append([otherModel3, otherModel4]);
+   */
+  append(components, opts = {}) {
+    const result = this.components().add(components, opts);
+    return isArray(result) ? result : [result];
+  },
+
+
+  /**
+   * Set new collection if `components` are provided, otherwise the
+   * current collection is returned
+   * @param  {Component|string} [components] Components to set
+   * @return {Collection|undefined}
+   * @example
+   * // Get current collection
+   * const collection = model.components();
+   * // Set new collection
+   * model.components('<span></span><div></div>');
+   */
+  components(components) {
+    const coll = this.get('components');
+
+    if (isUndefined(components)) {
+      return coll;
+    } else {
+      coll.reset();
+      components && this.append(components);
+    }
+  },
+
+
+  /**
+   * Get parent model
+   * @return {Component}
+   */
+  parent() {
+    const coll = this.collection;
+    return coll && coll.parent;
+  },
+
 
   /**
    * Script updated
@@ -156,6 +314,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
   scriptUpdated() {
     this.set('scriptUpdated', 1);
   },
+
 
   /**
    * Once traits are updated I have to populates model's attributes
@@ -182,6 +341,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
 
     found && this.set('attributes', attrs);
   },
+
 
   /**
    * Init toolbar
@@ -218,13 +378,14 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     }
   },
 
+
   /**
    * Load traits
    * @param  {Array} traits
    * @private
    */
   loadTraits(traits, opts = {}) {
-    var trt = new Traits();
+    var trt = new Traits([], this.opt);
     trt.setTarget(this);
     traits = traits || this.get('traits');
 
@@ -235,6 +396,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     this.set('traits', trt, opts);
     return this;
   },
+
 
   /**
    * Normalize input classes from array to array of objects
@@ -265,6 +427,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     });
     return res;
   },
+
 
   /**
    * Override original clone method
@@ -299,6 +462,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     return new this.constructor(attr, this.opt);
   },
 
+
   /**
    * Get the name of the component
    * @return {string}
@@ -312,6 +476,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     return customName || name;
   },
 
+
   /**
    * Get the icon string
    * @return {string}
@@ -320,6 +485,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     let icon = this.get('icon');
     return icon ? icon + ' ' : '';
   },
+
 
   /**
    * Return HTML string of the component
@@ -369,6 +535,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     return code;
   },
 
+
   /**
    * Returns object of attributes for HTML
    * @return {Object}
@@ -379,6 +546,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     delete attr.style;
     return attr;
   },
+
 
   /**
    * Return a shallow copy of the model's attributes for JSON
@@ -398,6 +566,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     return obj;
   },
 
+
   /**
    * Return model id
    * @return {string}
@@ -406,6 +575,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     let attrs = this.get('attributes') || {};
     return attrs.id || this.cid;
   },
+
 
   /**
    * Return script in string format, cleans 'function() {..' from scripts

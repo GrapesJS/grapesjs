@@ -64,7 +64,7 @@ module.exports = Backbone.Collection.extend({
       const style = styleObj[propModel.get('property')];
       const values = style ? style.split(', ') : [];
       values.forEach((value, i) => {
-        value = propModel.parseValue(value.trim());
+        value = propModel.parseValue(value.trim()).value;
         const layer = layers[i];
         const propertyObj = Object.assign({}, propModel.attributes, {value});
 

@@ -14,6 +14,7 @@ module.exports = require('backbone').Model.extend({
     fixedValues: ['initial', 'inherit'],
   },
 
+
   initialize(opt) {
     var o = opt || {};
     var name = this.get('name');
@@ -27,18 +28,58 @@ module.exports = require('backbone').Model.extend({
     init && init();
   },
 
+
+  /**
+   * Update value
+   * @param {any} value
+   * @param {Boolen} [complete=true] Indicates if it's a final state
+   * @param {Object} [opts={}] Options
+   */
+  setValue(value, complete = 1, opts = {}) {
+    const parsed = this.parseValue(value);
+    this.set(parsed, { ...opts, avoidStore: 1});
+
+    // It's important to set an empty value, otherwise the
+    // UndoManager won't see the change
+    if (complete) {
+      this.set('value', '', opts);
+      this.set(parsed, opts);
+    }
+  },
+
+
+  /**
+   * Like `setValue` but, in addition, prevents the update of the input element
+   * as the changes should come from the input itself.
+   * This method is useful with the definition of custom properties
+   * @param {any} value
+   * @param {Boolen} [complete=true] Indicates if it's a final state
+   * @param {Object} [opts={}] Options
+   */
+  setValueFromInput(value, complete, opts = {}) {
+    this.setValue(value, complete, {...opts, fromInput: 1});
+  },
+
+
   /**
    * Parse a raw value, generally fetched from the target, for this property
-   * @param  {string} value
-   * @return {string}
+   * @param  {string} value Raw value string
+   * @return {Object}
+   * @example
+   * // example with an Input type
+   * prop.parseValue('translateX(10deg)');
+   * // -> { value: 10, unit: 'deg', functionName: 'translateX' }
+   *
    */
   parseValue(value) {
+    const result = { value };
+
     if (!this.get('functionName')) {
-      return value;
+      return result;
     }
 
     const args = [];
-    let valueStr = value + '';
+    let valueStr = `${value}`;
     let start = valueStr.indexOf('(') + 1;
     let end = valueStr.lastIndexOf(')');
     args.push(start);
@@ -48,8 +89,10 @@ module.exports = require('backbone').Model.extend({
       args.push(end);
     }
 
-    return String.prototype.substring.apply(valueStr, args);
+    result.value = String.prototype.substring.apply(valueStr, args);
+    return result;
   },
+
 
   /**
    * Get the default value
@@ -59,6 +102,7 @@ module.exports = require('backbone').Model.extend({
   getDefaultValue() {
     return this.get('defaults');
   },
+
 
   /**
    * Get a complete value of the property.

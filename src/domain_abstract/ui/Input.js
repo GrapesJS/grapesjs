@@ -6,20 +6,29 @@ module.exports = Backbone.View.extend({
     'change': 'handleChange',
   },
 
+
   template() {
-    const holderClass = this.holderClass;
-    return `<span class="${holderClass}"></span>`;
+    return `<span class="${this.holderClass()}"></span>`;
   },
+
+
+  inputClass() {
+    return `${this.ppfx}field`;
+  },
+
+  holderClass() {
+    return `${this.ppfx}input-holder`;
+  },
+
 
   initialize(opts = {}) {
     const ppfx = opts.ppfx || '';
-    this.target = opts.target || {};
-    this.inputClass = ppfx + 'field';
-    this.inputHolderClass = ppfx + 'input-holder';
-    this.holderClass = `${ppfx}input-holder`;
+    this.opts = opts;
     this.ppfx = ppfx;
+    this.target = opts.target || {};
     this.listenTo(this.model, 'change:value', this.handleModelChange);
   },
+
 
   /**
    * Fired when the element of the property is updated
@@ -27,6 +36,27 @@ module.exports = Backbone.View.extend({
   elementUpdated() {
     this.model.trigger('el:change');
   },
+
+
+  /**
+   * Set value to the input element
+   * @param {string} value
+   */
+  setValue(value) {
+    const model = this.model;
+    let val = value || model.get('defaults');
+    const input = this.getInputEl();
+    input && (input.value = val);
+  },
+
+
+  /**
+   * Updates the view when the model is changed
+   * */
+  handleModelChange(model, value, opts) {
+    this.setValue(value, opts);
+  },
+
 
   /**
    * Handled when the view is changed
@@ -37,45 +67,26 @@ module.exports = Backbone.View.extend({
     this.elementUpdated();
   },
 
-  /**
-   * Set value to the model
-   * @param {string} value
-   * @param {Object} opts
-   */
-  setValue(value, opts = {}) {
-    const model = this.model;
-    let val = value || model.get('defaults');
-    const input = this.getInputEl();
-    input && (input.value = val);
-  },
-
-  /**
-   * Updates the view when the model is changed
-   * */
-  handleModelChange(model, value, opts) {
-    this.setValue(value, opts);
-  },
 
   /**
    * Get the input element
    * @return {HTMLElement}
    */
   getInputEl() {
-    if(!this.inputEl) {
+    if (!this.inputEl) {
       const plh = this.model.get('defaults');
-      const cls = this.inputCls;
-      this.inputEl = $(`<input type="text" class="${cls}" placeholder="${plh}">`);
+      this.inputEl = $(`<input type="text" placeholder="${plh}">`);
     }
+
     return this.inputEl.get(0);
   },
 
+
   render() {
     const el = this.$el;
-    const ppfx = this.ppfx;
-    const holderClass = this.holderClass;
-    el.addClass(this.inputClass);
+    el.addClass(this.inputClass());
     el.html(this.template());
-    el.find(`.${holderClass}`).append(this.getInputEl());
+    el.find(`.${this.holderClass()}`).append(this.getInputEl());
     return this;
   }
 
