@@ -32,8 +32,8 @@ Newsletter Demo - http://grapesjs.com/demo-newsletter-editor.html
 
 * [Features](#features)
 * [Download](#download)
-* [Development](#development)
 * [Usage](#usage)
+* [Development](#development)
 * [Documentation](#documentation)
 * [API](#api)
 * [Testing](#testing)
@@ -90,30 +90,6 @@ For the development purpose you should follow instructions below.
 
 
 
-## Development
-
-GrapesJS uses [Webpack](https://github.com/webpack/webpack) as a module bundler and [Babel](https://github.com/babel/babel) as a compiler.
-
-Clone the repository and install all the necessary dependencies
-
-```sh
-$ git clone https://github.com/artf/grapesjs.git
-$ cd grapesjs
-$ npm i
-```
-
-Start the dev server
-
-```sh
-$ npm start
-```
-
-Once the development server is started you should be able to reach the demo page (eg. `http://localhost:8080`)
-
-
-
-
-
 ## Usage
 
 ```html
@@ -148,6 +124,30 @@ You could also grab the content directly from the element with `fromElement` pro
 ```
 
 For more practical example I suggest to look up the code inside this demo: http://grapesjs.com/demo.html
+
+
+
+
+
+## Development
+
+GrapesJS uses [Webpack](https://github.com/webpack/webpack) as a module bundler and [Babel](https://github.com/babel/babel) as a compiler.
+
+Clone the repository and install all the necessary dependencies
+
+```sh
+$ git clone https://github.com/artf/grapesjs.git
+$ cd grapesjs
+$ npm i
+```
+
+Start the dev server
+
+```sh
+$ npm start
+```
+
+Once the development server is started you should be able to reach the demo page (eg. `http://localhost:8080`)
 
 
 

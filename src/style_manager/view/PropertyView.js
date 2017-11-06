@@ -284,9 +284,9 @@ module.exports = Backbone.View.extend({
    */
   getComputedValue() {
     const target = this.propTarget;
-    const computed = target.computed;
-    const computedDef = target.computedDefault;
-    const avoid = this.config.avoidComputed;
+    const computed = target.computed || {};
+    const computedDef = target.computedDefault || {};
+    const avoid = this.config.avoidComputed || [];
     const property = this.model.get('property');
     const notToSkip = avoid.indexOf(property) < 0;
     const value = computed[property];
