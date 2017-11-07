@@ -190,6 +190,7 @@ $ npm test
 * [grapesjs-plugin-forms](https://github.com/artf/grapesjs-plugin-forms) - Set of form components and blocks
 * [grapesjs-navbar](https://github.com/artf/grapesjs-navbar) - Simple navbar component
 * [grapesjs-component-countdown](https://github.com/artf/grapesjs-component-countdown) - Simple countdown component
+* [grapesjs-style-gradient](https://github.com/artf/grapesjs-style-gradient) - Add a gradient type input
 
 ### Presets
 * [grapesjs-preset-newsletter](https://github.com/artf/grapesjs-preset-newsletter) - Newsletter Builder
