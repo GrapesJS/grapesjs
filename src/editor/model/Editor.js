@@ -283,6 +283,7 @@ module.exports = Backbone.Model.extend({
 
       UndoManager.removeUndoType("change");
       UndoManager.addUndoType("change:style", customUndoType);
+      UndoManager.addUndoType("change:attributes", customUndoType);
       UndoManager.addUndoType("change:content", customUndoType);
     }
   },
