@@ -48,6 +48,7 @@ module.exports = Backbone.View.extend({
     if(!el)
       return;
 
+    // TODO make use of getModelToStyle here
     const config = em.get('Config');
     var previewMode = config.devicePreviewMode;
     var classes = el.get('classes');

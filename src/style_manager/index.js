@@ -249,16 +249,20 @@ module.exports = () => {
      * @return {Model}
      */
     getModelToStyle(model) {
-      var classes = model.get('classes');
+      const classes = model.get('classes');
+      const em = c.em;
 
-      if(c.em && classes && classes.length) {
-        var previewMode = c.em.get('Config').devicePreviewMode;
-        var device = c.em.getDeviceModel();
-        var state = !previewMode ? model.get('state') : '';
-        var deviceW = device && !previewMode ? device.get('width') : '';
-        var cssC = c.em.get('CssComposer');
-        var valid = classes.getStyleable();
-        var CssRule = cssC.get(valid, state, deviceW);
+      if (em && classes && classes.length) {
+        const emConfig = em.get('Config');
+        const previewMode = emConfig.devicePreviewMode;
+        const device = em.getDeviceModel();
+        const state = !previewMode ? model.get('state') : '';
+        const widthMedia = device && device.get('widthMedia');
+        const deviceW = device && !previewMode && widthMedia ?
+          `(${emConfig.mediaCondition}: ${widthMedia})` : '';
+        const cssC = em.get('CssComposer');
+        const valid = classes.getStyleable();
+        const CssRule = cssC.get(valid, state, deviceW);
 
         if(CssRule && valid.length) {
           return CssRule;
