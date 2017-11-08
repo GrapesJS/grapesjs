@@ -83,6 +83,7 @@
 .#{$app-prefix}select option,
 .#{$clm-prefix}select option,
 .#{$sm-prefix}select option,
+.#{$app-prefix}fields option,
 .#{$sm-prefix}unit option {
   background-color: $mainColor;
   color: $fontColor;
