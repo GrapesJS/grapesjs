@@ -392,7 +392,7 @@ module.exports = {
 
           modelToStyle.setStyle(style, {avoidStore: 1});
           const updateEvent = `update:component:style`;
-          em && em.trigger(`${updateEvent}:height ${updateEvent}:width`);
+          em && em.trigger(`${updateEvent}:${keyHeight} ${updateEvent}:${keyWidth}`);
 
           if (store) {
             modelToStyle.trigger('change:style', modelToStyle, style, {});

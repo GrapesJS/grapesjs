@@ -34,8 +34,13 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     badgable: true,
 
     // True if it's possible to style it
-    // Tip:  Indicate an array of CSS properties which is possible to style
+    // Tip:
+    // Indicate an array of CSS properties which is possible to style, eg. ['color', 'width']
+    // All other properties will be hidden from the style manager
     stylable: true,
+
+    // Indicate an array of style properties which should be hidden from the style manager
+    unstylable: '',
 
     // Highlightable with 'dotted' style if true
     highlightable: true,
