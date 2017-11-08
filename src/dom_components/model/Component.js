@@ -39,6 +39,9 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     // All other properties will be hidden from the style manager
     stylable: true,
 
+    // Indicate an array of style properties to show up which has been marked as `toRequire`
+    'stylable-require': '',
+
     // Indicate an array of style properties which should be hidden from the style manager
     unstylable: '',
 

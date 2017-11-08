@@ -375,9 +375,15 @@ module.exports = Backbone.View.extend({
    * @return {Boolean}
    */
   isTargetStylable(target) {
+    if (this.model.get('id') == 'flex-width') {
+      //debugger;
+    }
     const trg = target || this.getTarget();
-    const property = this.model.get('property');
+    const model = this.model;
+    const property = model.get('property');
+    const toRequire = model.get('toRequire');
     const unstylable = trg.get('unstylable');
+    const stylableReq = trg.get('stylable-require');
     let stylable = trg.get('stylable');
 
     // Stylable could also be an array indicating with which property
@@ -389,6 +395,11 @@ module.exports = Backbone.View.extend({
     // Check if the property was signed as unstylable
     if (isArray(unstylable)) {
       stylable = unstylable.indexOf(property) < 0;
+    }
+
+    // Check if the property is available only if requested
+    if (toRequire) {
+      stylable = (stylableReq && stylableReq.indexOf(property) >= 0) || !target;
     }
 
     return stylable;
