@@ -1,6 +1,8 @@
-var Backbone = require('backbone');
+import { bindAll } from 'underscore'
 
-module.exports = Backbone.View.extend({
+const motionsEv = 'transitionend oTransitionEnd transitionend webkitTransitionEnd';
+
+module.exports = require('backbone').View.extend({
 
   tagName: 'iframe',
 
@@ -10,11 +12,10 @@ module.exports = Backbone.View.extend({
   },
 
   initialize(o) {
-    _.bindAll(this, 'udpateOffset');
+    bindAll(this, 'udpateOffset');
     this.config = o.config || {};
     this.ppfx = this.config.pStylePrefix || '';
     this.em = this.config.em;
-    this.motionsEv = 'transitionend oTransitionEnd transitionend webkitTransitionEnd';
     this.listenTo(this.em, 'change:device', this.updateWidth);
   },
 
@@ -23,16 +24,20 @@ module.exports = Backbone.View.extend({
    * @private
    */
   updateWidth(model) {
-    var device = this.em.getDeviceModel();
+    const em = this.em;
+    const device = em.getDeviceModel();
     this.el.style.width = device ? device.get('width') : '';
     this.udpateOffset();
-    this.$el.on(this.motionsEv, this.udpateOffset);
+    em.stopDefault({ preserveSelected: 1 });
+    this.$el.on(motionsEv, this.udpateOffset);
   },
 
   udpateOffset() {
-    var offset = this.em.get('Canvas').getOffset();
-    this.em.set('canvasOffset', offset);
-    this.$el.off(this.motionsEv, this.udpateOffset);
+    const em = this.em;
+    const offset = em.get('Canvas').getOffset();
+    em.set('canvasOffset', offset);
+    em.runDefault({ preserveSelected: 1 });
+    this.$el.off(motionsEv, this.udpateOffset);
   },
 
   getBody() {

@@ -570,26 +570,28 @@ module.exports = Backbone.Model.extend({
 
   /**
    * Run default command if setted
+   * @param {Object} [opts={}] Options
    * @private
    */
-  runDefault() {
+  runDefault(opts = {}) {
     var command = this.get('Commands').get(this.config.defaultCommand);
     if(!command || this.defaultRunning)
       return;
-    command.stop(this, this);
-    command.run(this, this);
+    command.stop(this, this, opts);
+    command.run(this, this, opts);
     this.defaultRunning = 1;
   },
 
   /**
    * Stop default command
+   * @param {Object} [opts={}] Options
    * @private
    */
-  stopDefault() {
+  stopDefault(opts = {}) {
     var command = this.get('Commands').get(this.config.defaultCommand);
     if(!command)
       return;
-    command.stop(this, this);
+    command.stop(this, this, opts);
     this.defaultRunning = 0;
   },
 

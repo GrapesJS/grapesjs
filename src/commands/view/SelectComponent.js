@@ -555,11 +555,10 @@ module.exports = {
    * @private
    */
   cleanPrevious(model) {
-    if(model)
-      model.set({
-        status: '',
-        state: '',
-      });
+    model && model.set({
+      status: '',
+      state: '',
+    });
   },
 
   /**
@@ -573,20 +572,21 @@ module.exports = {
   run(editor) {
     this.editor = editor && editor.get('Editor');
     this.enable();
+    this.onSelect();
   },
 
-  stop() {
+  stop(editor, sender, opts = {}) {
+    const em = this.em;
     this.stopSelectComponent();
-    this.cleanPrevious(this.em.get('selectedComponent'));
+    !opts.preserveSelected && em.setSelected(null);
     this.clean();
-    this.em.set('selectedComponent', null);
     this.toggleClipboard();
     this.hideBadge();
     this.hideFixedElementOffset();
     this.canvas.getToolbarEl().style.display = 'none';
 
-    this.em.off('component:update', this.updateAttached, this);
-    this.em.off('change:canvasOffset', this.updateAttached, this);
-    this.em.off('change:selectedComponent', this.updateToolbar, this);
+    em.off('component:update', this.updateAttached, this);
+    em.off('change:canvasOffset', this.updateAttached, this);
+    em.off('change:selectedComponent', this.updateToolbar, this);
   }
 };
