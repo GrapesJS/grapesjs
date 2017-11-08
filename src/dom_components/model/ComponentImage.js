@@ -8,6 +8,7 @@ module.exports = Component.extend({
     src: '',
     void: 1,
     droppable: 0,
+    editable: 1,
     highlightable: 0,
     resizable: 1,
     traits: ['alt']
