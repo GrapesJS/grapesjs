@@ -45,7 +45,7 @@ module.exports = ComponentView.extend({
     var em = this.opts.config.em;
     var editor = em ? em.get('Editor') : '';
 
-    if(editor) {
+    if(editor && this.model.get('editable')) {
       editor.runCommand('open-assets', {
         target: this.model,
         onSelect() {
