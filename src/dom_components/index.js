@@ -33,10 +33,12 @@
  * ...
  */
 module.exports = () => {
-  var c = {},
-  defaults = require('./config/config'),
-  Component = require('./model/Component'),
-  ComponentView = require('./view/ComponentView');
+  var c = {};
+  const defaults = require('./config/config');
+  const Component = require('./model/Component');
+  const ComponentView = require('./view/ComponentView');
+  const Components = require('./model/Components');
+  const ComponentsView = require('./view/ComponentsView');
 
   var component, componentView;
   var componentTypes = [
@@ -103,6 +105,10 @@ module.exports = () => {
   ];
 
   return {
+
+    Components,
+
+    ComponentsView,
 
     componentTypes,
 
