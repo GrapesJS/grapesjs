@@ -167,6 +167,12 @@ module.exports = Backbone.Model.extend({
     this.set('Editor', editor);
   },
 
+
+  getEditor() {
+    return this.get('Editor');
+  },
+
+
   /**
    * Listen for new rules
    * @param {Object} collection
