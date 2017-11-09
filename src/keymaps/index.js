@@ -1,15 +1,16 @@
 import { defaults, isString } from 'underscore';
+
 const keymaster = require('keymaster').noConflict();
 
 module.exports = () => {
   let config;
   const configDef = {};
   const keymaps = {};
-  console.log('called');
 
   return {
 
     keymaster,
+
 
     name: 'Keymaps',
 
