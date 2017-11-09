@@ -384,7 +384,7 @@ module.exports = Backbone.Model.extend({
   setSelected(el, opts = {}) {
     let model = el;
 
-    if (el instanceof HTMLElement) {
+    if (el instanceof window.HTMLElement) {
       model = $(el).data('model');
     }
 
