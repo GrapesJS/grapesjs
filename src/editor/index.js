@@ -173,6 +173,12 @@ module.exports = config => {
     Commands: em.get('Commands'),
 
     /**
+     * @property {Keymaps}
+     * @private
+     */
+    Keymaps: em.get('Keymaps'),
+
+    /**
      * @property {Modal}
      * @private
      */

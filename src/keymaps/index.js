@@ -5,8 +5,11 @@ module.exports = () => {
   let config;
   const configDef = {};
   const keymaps = {};
+  console.log('called');
 
   return {
+
+    keymaster,
 
     name: 'Keymaps',
 
@@ -48,20 +51,20 @@ module.exports = () => {
     add(id, keys, handler) {
       const em = this.em;
       const cmd = em.get('Commands');
-      const keymap = { keys, handler };
+      const editor = em.getEditor();
+      const keymap = { id, keys, handler };
       const pk = keymaps[id];
       pk && this.remove(id);
       keymaps[id] = keymap;
-      keymaster(keys, id, () => {
+      keymaster(keys, (e, h) => {
+        // It's safer putting handlers resolution inside the callback
         handler = isString(handler) ? cmd.get(handler) : handler;
-        handler(em.getEditor());
-        em.trigger(`keymap:emit`, id, keymap);
-        em.trigger(`keymap:emit:${id}`, keymap);
-        console.log('executed', id);
+        typeof handler == 'object' ? handler.run(editor) : handler(editor);
+        const args = [id, h.shortcut, e];
+        em.trigger('keymap:emit', ...args);
+        em.trigger(`keymap:emit:${id}`, ...args);
       });
-      em.trigger('keymap:add', id, keymap);
-      // emit
-      //keymaster.unbind(keys, id);
+      em.trigger('keymap:add', keymap);
     },
 
 
@@ -101,8 +104,8 @@ module.exports = () => {
 
       if (keymap) {
         delete keymaps[id];
-        keymaster.unbind(keymap.keys, id);
-        em && em.trigger('keymap:remove', id, keymap);
+        keymaster.unbind(keymap.keys);
+        em && em.trigger('keymap:remove', keymap);
         return keymap;
       }
     },

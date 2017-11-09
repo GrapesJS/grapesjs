@@ -2,6 +2,7 @@ import { isUndefined, defaults } from 'underscore';
 
 const deps = [
   require('utils'),
+  require('keymaps'),
   require('storage_manager'),
   require('device_manager'),
   require('parser'),
