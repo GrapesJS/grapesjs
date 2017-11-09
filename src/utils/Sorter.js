@@ -271,7 +271,7 @@ module.exports = Backbone.View.extend({
     em && em.clearSelection();
     this.toggleSortCursor(1);
 
-    em && em.trigger('component:drag-start', src, srcModel);
+    em && em.trigger('sorter:drag:start', src, srcModel);
   },
 
   /**
@@ -391,7 +391,7 @@ module.exports = Backbone.View.extend({
     if(typeof this.onMoveClb === 'function')
       this.onMoveClb(e);
 
-    em && em.trigger('component:drag', {
+    em && em.trigger('sorter:drag', {
       target,
       targetModel,
       dims,
@@ -544,7 +544,7 @@ module.exports = Backbone.View.extend({
 
       // Check if the source is valid with the target
       let validResult = this.validTarget(target);
-      em && em.trigger('component:drag-validation', validResult);
+      em && em.trigger('sorter:drag:validation', validResult);
 
       if (!validResult.valid && this.targetP) {
         return this.dimsFromTarget(this.targetP, rX, rY);
@@ -617,7 +617,7 @@ module.exports = Backbone.View.extend({
       // If the current target is not valid (src/trg reasons) try with
       // the parent one (if exists)
       const validResult = this.validTarget(target);
-      em && em.trigger('component:drag-validation', validResult);
+      em && em.trigger('sorter:drag:validation', validResult);
 
       if (!validResult.valid && targetParent) {
         return this.getTargetFromEl(targetParent);
@@ -930,7 +930,7 @@ module.exports = Backbone.View.extend({
    * */
   move(dst, src, pos) {
     var em = this.em;
-    em && em.trigger('component:dragEnd:before', dst, src, pos);
+    em && em.trigger('component:dragEnd:before', dst, src, pos); // @depricated
     var warns = [];
     var index = pos.index;
     var modelToDrop, modelTemp, created;
@@ -986,7 +986,8 @@ module.exports = Backbone.View.extend({
       console.warn('Invalid target position: ' + warns.join(', '));
     }
 
-    em && em.trigger('component:dragEnd', targetCollection, modelToDrop, warns);
+    em && em.trigger('component:dragEnd', targetCollection, modelToDrop, warns); // @depricated
+    em && em.trigger('sorter:drag:end', targetCollection, modelToDrop, warns);
 
     return created;
   },
