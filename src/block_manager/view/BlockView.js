@@ -30,8 +30,8 @@ module.exports = Backbone.View.extend({
     this.config.em.refreshCanvas();
     var sorter = this.config.getSorter();
     sorter.setDragHelper(this.el, e);
-    sorter.startSort(this.el);
     sorter.setDropContent(this.model.get('content'));
+    sorter.startSort(this.el);
     on(document, 'mouseup', this.endDrag);
   },
 

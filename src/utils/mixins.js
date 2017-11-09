@@ -1,3 +1,6 @@
+const elProt = window.Element.prototype;
+const matches = elProt.matches || elProt.webkitMatchesSelector || elProt.mozMatchesSelector || elProt.msMatchesSelector;
+
 const on = (el, ev, fn) => {
   ev = ev.split(/\s+/);
   el = el instanceof Array ? el : [el];
@@ -36,6 +39,7 @@ export {
   on,
   off,
   upFirst,
+  matches,
   camelCase,
   getUnitFromValue
 }
