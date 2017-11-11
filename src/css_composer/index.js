@@ -24,12 +24,14 @@
  */
 
 module.exports = () => {
+  let em;
   var c = {},
   defaults = require('./config/config'),
   CssRule = require('./model/CssRule'),
   CssRules = require('./model/CssRules'),
   Selectors = require('./model/Selectors'),
-  CssRulesView = require('./view/CssRulesView');
+  CssRulesView = require('./view/CssRulesView'),
+  Selector = require('selector_manager/model/Selector');
 
   var rules, rulesView;
 
@@ -79,6 +81,7 @@ module.exports = () => {
         c.rules = elStyle || c.rules;
 
         c.sm = c.em;
+        em = c.em;
         rules = new CssRules([], c);
         rulesView = new CssRulesView({
           collection: rules,
@@ -273,22 +276,19 @@ module.exports = () => {
 
 
       /**
-       * Add/update a css rule
-       * @param {string} selector Selector string, eg. '.class1.class2, #id1'
+       * Add/update a css rule with id selector
+       * @param {string} name Id selector name, eg. 'my-id'
        * @param {Object} style  Style properties and values
        */
-      set(selector, style, opts = {}) {
+      setIdStyle(name, style = {}, opts = {}) {
         const state = opts.state || '';
         const media = opts.mediaText || '';
-        // opts.state, opts.media
-        /*
-        1. from selectorString to selectorObjects (using Selectors API)
-          [
-              [{'class1'}, {'class2'}],
-              [{'id1'}, {'class2'}]
-          ]
-        2. add(selectors, state, media)
-         */
+        const sm = em.get('SelectorManager');
+        const selector = sm.add({ name, type: Selector.TYPE_ID });
+        console.log(media);
+        const rule = this.add(selector, state, media);
+        rule.setStyle(style);
+        return rule;
       },
 
 
