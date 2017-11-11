@@ -614,6 +614,20 @@ module.exports = Backbone.Model.extend({
     w.getSelection().removeAllRanges();
   },
 
+
+  /**
+   * Get current media text
+   * @return {string}
+   */
+  getCurrentMedia() {
+    const config = this.config;
+    const device = this.getDeviceModel();
+    const condition = config.mediaCondition;
+    const width = device && device.get('widthMedia');
+    return device && width ? `(${condition}: ${width})` : '';
+  },
+
+
   /**
    * Set/get data from the HTMLElement
    * @param  {HTMLElement} el
