@@ -1,6 +1,7 @@
 /**
  * * [add](#add)
  * * [get](#get)
+ * * [set](#set)
  * * [getAll](#getall)
  * * [load](#load)
  * * [store](#store)
@@ -269,6 +270,27 @@ module.exports = () => {
 
         return result;
       },
+
+
+      /**
+       * Add/update a css rule
+       * @param {string} selector Selector string, eg. '.class1.class2, #id1'
+       * @param {Object} style  Style properties and values
+       */
+      set(selector, style, opts = {}) {
+        const state = opts.state || '';
+        const media = opts.mediaText || '';
+        // opts.state, opts.media
+        /*
+        1. from selectorString to selectorObjects (using Selectors API)
+          [
+              [{'class1'}, {'class2'}],
+              [{'id1'}, {'class2'}]
+          ]
+        2. add(selectors, state, media)
+         */
+      },
+
 
       /**
        * Render the block of CSS rules

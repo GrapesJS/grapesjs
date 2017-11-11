@@ -1,10 +1,10 @@
 import { isUndefined, isArray } from 'underscore';
 import Styleable from 'domain_abstract/model/Styleable';
 
-var Backbone = require('backbone');
-var Components = require('./Components');
-var Selectors = require('selector_manager/model/Selectors');
-var Traits = require('trait_manager/model/Traits');
+const Backbone = require('backbone');
+const Components = require('./Components');
+const Selectors = require('selector_manager/model/Selectors');
+const Traits = require('trait_manager/model/Traits');
 
 const escapeRegExp = (str) => {
   return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
@@ -158,18 +158,6 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     this.initClasses();
     this.initComponents();
     this.initToolbar();
-
-    // Normalize few properties from strings to arrays
-    var toNormalize = ['stylable'];
-    toNormalize.forEach(function(name) {
-      var value = this.get(name);
-
-      if (typeof value == 'string') {
-        var newValue = value.split(',').map(prop => prop.trim());
-        this.set(name, newValue);
-      }
-    }, this);
-
     this.set('status', '');
     this.init();
   },
@@ -329,7 +317,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
    */
   traitsUpdated() {
     let found = 0;
-    const attrs = Object.assign({}, this.get('attributes'));
+    const attrs = { ...this.get('attributes') };
     const traits = this.get('traits');
 
     if (!(traits instanceof Traits)) {

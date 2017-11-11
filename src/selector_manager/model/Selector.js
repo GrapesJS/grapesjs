@@ -1,15 +1,19 @@
 var Backbone = require('backbone');
 
+const TYPE_CLASS = 1;
+const TYPE_ID = 2;
+
 const Selector = Backbone.Model.extend({
 
   idAttribute: 'name',
 
   defaults: {
     name: '',
+
     label: '',
 
     // Type of the selector
-    type: 'class',
+    type: TYPE_CLASS,
 
     // If not active it's not selectable by the style manager (uncheckboxed)
     active: true,
@@ -18,7 +22,7 @@ const Selector = Backbone.Model.extend({
     // Will be rendered only in export code
     private: false,
 
-    // If true, can't be removed by the user, from the attacched element
+    // If true, can't be removed from the attacched element
     protected: false,
   },
 
@@ -43,10 +47,10 @@ const Selector = Backbone.Model.extend({
     let init = '';
 
     switch (this.get('type')) {
-      case 'class':
+      case TYPE_CLASS:
         init = '.';
         break;
-      case 'id':
+      case TYPE_ID:
         init = '#';
         break;
     }
@@ -55,6 +59,12 @@ const Selector = Backbone.Model.extend({
   }
 
 }, {
+  // All type selectors: https://developer.mozilla.org/it/docs/Web/CSS/CSS_Selectors
+  // Here I define only what I need
+  TYPE_CLASS,
+
+  TYPE_ID,
+
   /**
    * Escape string
    * @param {string} name

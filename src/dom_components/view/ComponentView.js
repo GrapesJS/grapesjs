@@ -145,7 +145,13 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   updateStyle() {
-    this.setAttribute('style', this.getStyleString());
+    const em = this.em;
+    const model = this.model;
+    const selector = `#${model.getId()}`;
+    const style = model.getStyle();
+    const state = model.get('state');
+    em.get('CssComposer').set(selector, style, { state });
+    //this.setAttribute('style', this.getStyleString());
   },
 
   /**

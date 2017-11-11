@@ -28,13 +28,11 @@ module.exports = Backbone.View.extend({
    * @private
    */
   renderSelectors() {
-    var sel = [];
-    var model = this.model;
-    var add = model.get('selectorsAdd');
-    model.get('selectors').each(m => {
-      sel.push('.' + m.get('name'));
-    });
-    var sels = sel.join('');
+    const sel = [];
+    const model = this.model;
+    model.get('selectors').each(model => sel.push(model.getFullName()));
+    const sels = sel.join('');
+    const add = model.get('selectorsAdd');
     return sels + (sels && add ? ', ' : '') + add;
   },
 

@@ -61,6 +61,10 @@ module.exports = config => {
 
   return {
 
+    Selector,
+
+    Selectors,
+
     /**
      * Name of the module
      * @type {String}
