@@ -282,10 +282,9 @@ module.exports = () => {
        */
       setIdStyle(name, style = {}, opts = {}) {
         const state = opts.state || '';
-        const media = opts.mediaText || '';
+        const media = opts.mediaText || this._getCurrentMedia();
         const sm = em.get('SelectorManager');
         const selector = sm.add({ name, type: Selector.TYPE_ID });
-        console.log(media);
         const rule = this.add(selector, state, media);
         rule.setStyle(style);
         return rule;
@@ -299,7 +298,15 @@ module.exports = () => {
        */
       render() {
         return rulesView.render().el;
-      }
+      },
 
+
+      _getCurrentMedia() {
+        const config = em.get('Config');
+        const device = em.getDeviceModel();
+        const condition = config.mediaCondition;
+        const width = device && device.get('widthMedia');
+        return device && width ? `(${condition}: ${width})` : '';
+      },
     };
 };
