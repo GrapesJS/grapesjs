@@ -1,7 +1,7 @@
 import Styleable from 'domain_abstract/model/Styleable';
 
 var Backbone = require('backbone');
-var Selectors = require('./Selectors');
+var Selectors = require('selector_manager/model/Selectors');
 
 module.exports = Backbone.Model.extend(Styleable).extend({
 
@@ -25,23 +25,52 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     stylable: true,
 	},
 
+
   initialize(c, opt = {}) {
-      this.config = c || {};
-      const em = opt.em;
-      let selectors = this.config.selectors || [];
-      this.em = em;
+    this.config = c || {};
+    const em = opt.em;
+    let selectors = this.config.selectors || [];
+    this.em = em;
 
-      if (em) {
-        const sm = em.get('SelectorManager');
-        const slct = [];
-        selectors.forEach((selector) => {
-          slct.push(sm.add(selector));
-        });
-        selectors = slct;
-      }
+    if (em) {
+      const sm = em.get('SelectorManager');
+      const slct = [];
+      selectors.forEach((selector) => {
+        slct.push(sm.add(selector));
+      });
+      selectors = slct;
+    }
 
-      this.set('selectors', new Selectors(selectors));
+    this.set('selectors', new Selectors(selectors));
   },
+
+
+  /**
+   * Returns CSS string of the rule
+   * @return {string}
+   */
+  toCSS() {
+    let result = '';
+    let sels = [];
+    const state = this.get('state');
+    const media = this.get('mediaText');
+    const style = this.styleToString();
+    const addSelector = this.get('selectorsAdd');
+    const selectors = this.get('selectors').getFullString();
+    selectors && sels.push(selectors);
+    addSelector && sels.push(addSelector);
+
+    if (style && sels.length) {
+      result = `${sels.join(',')} {${style}}`;
+    }
+
+    if (media && result) {
+      result = `@media ${media}{${result}}`;
+    }
+
+    return result;
+  },
+
 
   /**
    * Compare the actual model with parameters
