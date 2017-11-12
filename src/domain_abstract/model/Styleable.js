@@ -14,6 +14,7 @@ export default {
     return { ...this.getStyle(), ...prop};
   },
 
+
   /**
    * Get style object
    * @return {Object}
@@ -21,6 +22,7 @@ export default {
   getStyle() {
     return { ...this.get('style') };
   },
+
 
   /**
    * Set new style object
@@ -41,6 +43,7 @@ export default {
 
     return prop;
   },
+
 
   /**
    * Add style property
@@ -63,6 +66,7 @@ export default {
     this.setStyle(prop, opts);
   },
 
+
   /**
    * Remove style property
    * @param {string} prop
@@ -71,5 +75,21 @@ export default {
     let style = this.getStyle();
     delete style[prop];
     this.setStyle(style);
-  }
+  },
+
+
+  /**
+   * Returns string of style properties
+   * @return {String}
+   */
+  styleToString() {
+    const result = [];
+    const style = this.getStyle();
+
+    for (let prop in style) {
+      result.push(`${prop}:${style[prop]}`);
+    }
+
+    return result.join(';');
+  },
 }

@@ -10,13 +10,14 @@ module.exports = Backbone.View.extend({
     return this.model.get('tagName');
   },
 
-  initialize(opt) {
+  initialize(opt = {}) {
     const model = this.model;
-    this.opts = opt || {};
-    this.config = this.opts.config || {};
-    this.em = this.config.em || '';
-    this.pfx = this.config.stylePrefix || '';
-    this.ppfx = this.config.pStylePrefix || '';
+    const config = opt.config || {};
+    this.opts = opt;
+    this.config = config;
+    this.em = config.em || '';
+    this.pfx = config.stylePrefix || '';
+    this.ppfx = config.pStylePrefix || '';
     this.attr = model.get('attributes');
     this.classe = this.attr.class || [];
     const $el = this.$el;
@@ -150,7 +151,13 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   updateStyle() {
-    this.setAttribute('style', this.getStyleString());
+    if (this.config.avoidInlineStyle) {
+      const model = this.model;
+      this.el.id = model.getId();
+      model.setStyle(model.getStyle());
+    } else {
+      this.setAttribute('style', this.getStyleString());
+    }
   },
 
 
@@ -224,7 +231,6 @@ module.exports = Backbone.View.extend({
     }
 
     src && (attrs.src = src);
-    //attrs.id = model.getId();
     this.$el.attr(attrs);
     this.updateHighlight();
     this.updateStyle();

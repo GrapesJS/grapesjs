@@ -11,5 +11,11 @@ module.exports = Backbone.Collection.extend({
 
   getValid() {
     return _.filter(this.models, item => !item.get('private'));
+  },
+
+  getFullString() {
+    const result = [];
+    this.each(selector => result.push(selector.getFullName()));
+    return result.join('').trim();
   }
 });
