@@ -253,13 +253,9 @@ module.exports = () => {
       const em = c.em;
 
       if (em && classes && classes.length) {
-        const emConfig = em.get('Config');
-        const previewMode = emConfig.devicePreviewMode;
-        const device = em.getDeviceModel();
-        const state = !previewMode ? model.get('state') : '';
-        const widthMedia = device && device.get('widthMedia');
-        const deviceW = device && !previewMode && widthMedia ?
-          `(${emConfig.mediaCondition}: ${widthMedia})` : '';
+        const conf = em.get('Config');
+        const state = !conf.devicePreviewMode ? model.get('state') : '';
+        const deviceW = em.getCurrentMedia();
         const cssC = em.get('CssComposer');
         const valid = classes.getStyleable();
         const CssRule = cssC.get(valid, state, deviceW);
