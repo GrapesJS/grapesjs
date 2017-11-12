@@ -279,8 +279,10 @@ module.exports = () => {
        * Add/update a css rule with id selector
        * @param {string} name Id selector name, eg. 'my-id'
        * @param {Object} style  Style properties and values
+       * @param {Object} [opts={}]  Custom options
+       * @return {CssRule}
        */
-      setIdStyle(name, style = {}, opts = {}) {
+      setIdRule(name, style = {}, opts = {}) {
         const state = opts.state || '';
         const media = opts.mediaText || em.getCurrentMedia();
         const sm = em.get('SelectorManager');

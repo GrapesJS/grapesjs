@@ -144,15 +144,9 @@ module.exports = Backbone.View.extend({
    * Update style attribute
    * @private
    * */
-  updateStyle(mod, val, opts = {}) {
-    const em = this.em;
-    const model = this.model;
-    const style = model.getStyle();
-    const state = model.get('state');
-    const cc = em.get('CssComposer');
-    cc.setIdStyle(model.getId(), style, { ...opts, state });
+  updateStyle() {
+    //this.setAttribute('style', this.getStyleString());
   },
-
 
   /**
    * Update classe attribute
@@ -207,7 +201,6 @@ module.exports = Backbone.View.extend({
     }
 
     src && (attrs.src = src);
-    attrs.id = model.getId();
     this.$el.attr(attrs);
     this.updateHighlight();
     this.updateStyle();

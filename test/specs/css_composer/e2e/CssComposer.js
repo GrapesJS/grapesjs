@@ -130,7 +130,7 @@ module.exports = {
              active: true,
              label: 'test1',
              name: 'test1',
-             type: 'class',
+             type: clsm.Selector.TYPE_CLASS,
              private: false,
              protected: false,
             }],

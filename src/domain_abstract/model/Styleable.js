@@ -26,6 +26,7 @@ export default {
    * Set new style object
    * @param {Object|string} prop
    * @param {Object} opts
+   * @return {Object} Applied properties
    */
   setStyle(prop = {}, opts = {}) {
     if (isString(prop)) {
@@ -37,6 +38,8 @@ export default {
     for (let pr in prop) {
       this.trigger(`change:style:${pr}`);
     }
+
+    return prop;
   },
 
   /**

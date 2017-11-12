@@ -1,12 +1,17 @@
 const PropertyStackView = require('style_manager/view/PropertyStackView');
 const Property = require('style_manager/model/PropertyStack');
 const Component = require('dom_components/model/Component');
+const Editor = require('editor/model/Editor');
+const DomComponents = require('dom_components');
 
 module.exports = {
   run() {
 
       describe('PropertyStackView', () => {
 
+        let em;
+        let dcomp;
+        let compOpts;
         var component;
         var fixtures;
         var target;
@@ -41,8 +46,11 @@ module.exports = {
         ];
 
         beforeEach(() => {
-          target = new Component();
-          component = new Component();
+          em = new Editor({});
+          dcomp = new DomComponents();
+          compOpts = { em, componentTypes: dcomp.componentTypes };
+          target = new Component({}, compOpts);
+          component = new Component({}, compOpts);
           target.model = component;
           model = new Property({
             type: 'stack',

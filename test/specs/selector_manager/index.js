@@ -44,7 +44,7 @@ describe('SelectorManager', () => {
 
     it('Default new selector is a class type', () => {
       obj.add('test');
-      expect(obj.get('test').get('type')).toEqual('class');
+      expect(obj.get('test').get('type')).toEqual(obj.Selector.TYPE_CLASS);
     });
 
     it('Check name property', () => {
