@@ -11,7 +11,7 @@ export default {
    * @return {Object}
    */
   extendStyle(prop) {
-    return Object.assign({}, this.getStyle(), prop);
+    return { ...this.getStyle(), ...prop};
   },
 
   /**
@@ -19,7 +19,7 @@ export default {
    * @return {Object}
    */
   getStyle() {
-    return Object.assign({}, this.get('style'));
+    return { ...this.get('style') };
   },
 
   /**
@@ -32,7 +32,7 @@ export default {
       prop = parseStyle(prop);
     }
 
-    this.set('style', Object.assign({}, prop), opts);
+    this.set('style', { ...prop }, opts);
 
     for (let pr in prop) {
       this.trigger(`change:style:${pr}`);

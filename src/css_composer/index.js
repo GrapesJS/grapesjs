@@ -286,7 +286,7 @@ module.exports = () => {
         const sm = em.get('SelectorManager');
         const selector = sm.add({ name, type: Selector.TYPE_ID });
         const rule = this.add(selector, state, media);
-        rule.setStyle(style);
+        rule.setStyle(style, opts);
         return rule;
       },
 
