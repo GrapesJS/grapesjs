@@ -18,6 +18,13 @@ module.exports = {
       'background-size'],
   },
 
+  // Usually when you update the `style` of the component this changes the
+  // element's `style` attribute. Unfortunately, inline styling doesn't allow
+  // use of media queries (@media) or even pseudo selectors (eg. :hover).
+  // When `avoidInlineStyle` is true all the styles are inserted inside the
+  // relative css rule
+  avoidInlineStyle: 0,
+
   // Could be used for default components
   components: [],
 

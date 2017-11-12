@@ -64,6 +64,7 @@ module.exports = Backbone.View.extend({
     }
   },
 
+
   /**
    * Import, if possible, classes inside main container
    * @private
@@ -77,6 +78,7 @@ module.exports = Backbone.View.extend({
       });
     }
   },
+
 
   /**
    * Fires on state update. If the state is not empty will add a helper class
@@ -93,6 +95,7 @@ module.exports = Backbone.View.extend({
       this.$el.removeClass(cl);
     }
   },
+
 
   /**
    * Update item on status change
@@ -131,6 +134,7 @@ module.exports = Backbone.View.extend({
     }
   },
 
+
   /**
    * Update highlight attribute
    * @private
@@ -140,13 +144,32 @@ module.exports = Backbone.View.extend({
     this.setAttribute('data-highlightable', hl ? 1 : '');
   },
 
+
   /**
    * Update style attribute
    * @private
    * */
   updateStyle() {
-    //this.setAttribute('style', this.getStyleString());
+    this.setAttribute('style', this.getStyleString());
   },
+
+
+  /**
+   * Return style string
+   * @return  {string}
+   * @private
+   * */
+  getStyleString() {
+    var style  = '';
+    this.style = this.model.get('style');
+    for(var key in this.style) {
+        if(this.style.hasOwnProperty(key))
+          style += key + ':' + this.style[key] + ';';
+    }
+
+    return style;
+  },
+
 
   /**
    * Update classe attribute
@@ -201,6 +224,7 @@ module.exports = Backbone.View.extend({
     }
 
     src && (attrs.src = src);
+    //attrs.id = model.getId();
     this.$el.attr(attrs);
     this.updateHighlight();
     this.updateStyle();
@@ -212,31 +236,6 @@ module.exports = Backbone.View.extend({
    * */
   updateContent() {
     this.getChildrenContainer().innerHTML = this.model.get('content');
-  },
-
-  /**
-   * Return style string
-   * @return  {string}
-   * @private
-   * */
-  getStyleString() {
-    var style  = '';
-    this.style = this.model.get('style');
-    for(var key in this.style) {
-        if(this.style.hasOwnProperty(key))
-          style += key + ':' + this.style[key] + ';';
-    }
-
-    return style;
-  },
-
-  /**
-   * Reply to event call
-   * @param object Event that generated the request
-   * @private
-   * */
-  eventCall(event) {
-    event.viewResponse = this;
   },
 
   /**

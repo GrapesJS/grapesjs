@@ -150,7 +150,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     this.opt = opt;
     this.sm = em;
     this.em = em;
-    this.config = props;
+    this.config = opt.config || {};
     this.set('attributes', this.get('attributes') || {});
     this.listenTo(this, 'change:script', this.scriptUpdated);
     this.listenTo(this, 'change:traits', this.traitsUpdated);
@@ -185,33 +185,24 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     this.set('attributes', attrs);
   },
 
+
   getStyle() {
     const rule = this.rule;
-    return rule ? rule.getStyle() : Styleable.getStyle.call(this);
+    const avoidInline = this.config.avoidInlineStyle;
+    return rule && avoidInline ? rule.getStyle() : Styleable.getStyle.call(this);
   },
+
 
   setStyle(prop = {}, opts = {}) {
-    prop = Styleable.setStyle.call(this, prop, {silent: 1, avoidStore: 1});
-    const state = this.get('state');
-    const cc = this.em.get('CssComposer');
-    this.rule = cc.setIdRule(this.getId(), prop, { ...opts, state });
-  },
-
-  // setStyle / getStyle
-  /*
-
-  setStyle(prop = {}, opts = {}) {
-    if (isString(prop)) {
-      prop = parseStyle(prop);
-    }
-
-    this.set('style', { ...prop }, opts);
-
-    for (let pr in prop) {
-      this.trigger(`change:style:${pr}`);
+    if (this.config.avoidInlineStyle) {
+      prop = Styleable.setStyle.call(this, prop, {silent: 1, avoidStore: 1});
+      const state = this.get('state');
+      const cc = this.em.get('CssComposer');
+      this.rule = cc.setIdRule(this.getId(), prop, { ...opts, state });
+    } else {
+      Styleable.setStyle.apply(this, arguments);
     }
   },
-   */
 
 
   /**
@@ -256,7 +247,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
 
 
   initClasses() {
-    const classes = this.normalizeClasses(this.get('classes') || this.config.classes || []);
+    const classes = this.normalizeClasses(this.get('classes') || []);
     this.set('classes', new Selectors(classes));
     return this;
   },
