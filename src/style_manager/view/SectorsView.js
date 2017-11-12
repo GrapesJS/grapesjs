@@ -50,16 +50,12 @@ module.exports = Backbone.View.extend({
 
     // TODO make use of getModelToStyle here
     const config = em.get('Config');
-    var previewMode = config.devicePreviewMode;
     var classes = el.get('classes');
     var pt = this.propTarget;
-    var device = em.getDeviceModel();
-    var state = !previewMode ? el.get('state') : '';
-    var widthMedia = device && device.get('widthMedia');
+    var state = !config.devicePreviewMode ? el.get('state') : '';
     var stateStr = state ? `:${state}` : null;
     var view = el.view;
-    var mediaText = device && !previewMode && widthMedia ?
-      `(${config.mediaCondition}: ${widthMedia})` : '';
+    const media = em.getCurrentMedia();
     pt.helper = null;
 
     if (view) {
@@ -69,7 +65,7 @@ module.exports = Backbone.View.extend({
     if (classes.length) {
       var cssC = em.get('CssComposer');
       var valid = classes.getStyleable();
-      var iContainer = cssC.get(valid, state, mediaText);
+      var iContainer = cssC.get(valid, state, media);
 
       if (!iContainer && valid.length) {
         // I stop undo manager here as after adding the CSSRule (generally after
@@ -77,7 +73,7 @@ module.exports = Backbone.View.extend({
         // the collection, therefore updating it in style manager will not affect it
         // #268
         um.stopTracking();
-        iContainer = cssC.add(valid, state, mediaText);
+        iContainer = cssC.add(valid, state, media);
         iContainer.set('style', el.get('style'));
         el.set('style', {});
         um.startTracking();

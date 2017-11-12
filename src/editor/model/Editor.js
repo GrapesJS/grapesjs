@@ -616,15 +616,16 @@ module.exports = Backbone.Model.extend({
 
 
   /**
-   * Get current media text
+   * Get the current media text
    * @return {string}
    */
   getCurrentMedia() {
     const config = this.config;
     const device = this.getDeviceModel();
     const condition = config.mediaCondition;
+    const preview = config.devicePreviewMode;
     const width = device && device.get('widthMedia');
-    return device && width ? `(${condition}: ${width})` : '';
+    return device && width && !preview ? `(${condition}: ${width})` : '';
   },
 
 
