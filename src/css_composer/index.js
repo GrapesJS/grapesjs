@@ -294,6 +294,20 @@ module.exports = () => {
 
 
       /**
+       * Get css rule by id selector
+       * @param {string} name Id selector name, eg. 'my-id'
+       * @param  {Object} [opts={}]  Custom options
+       * @return {CssRule}
+       */
+      getIdRule(name, opts = {}) {
+        const state = opts.state || '';
+        const media = opts.mediaText || em.getCurrentMedia();
+        const selector = em.get('SelectorManager').get(name, Selector.TYPE_ID);
+        return selector && this.get(selector, state, media);
+      },
+
+
+      /**
        * Render the block of CSS rules
        * @return {HTMLElement}
        * @private

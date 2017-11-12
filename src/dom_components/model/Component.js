@@ -187,9 +187,18 @@ module.exports = Backbone.Model.extend(Styleable).extend({
 
 
   getStyle() {
-    const rule = this.rule;
-    const avoidInline = this.config.avoidInlineStyle;
-    return rule && avoidInline ? rule.getStyle() : Styleable.getStyle.call(this);
+    if (this.config.avoidInlineStyle) {
+      const state = this.get('state');
+      const cc = this.em.get('CssComposer');
+      const rule = cc.getIdRule(this.getId(), { state });
+      this.rule = rule;
+
+      if (rule) {
+        return rule.getStyle();
+      }
+    }
+
+    return Styleable.getStyle.call(this);
   },
 
 

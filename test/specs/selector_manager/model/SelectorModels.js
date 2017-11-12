@@ -38,7 +38,7 @@ module.exports = {
 
     });
 
-    describe.only('Selectors', () => {
+    describe('Selectors', () => {
         var obj;
 
         beforeEach(() => {
