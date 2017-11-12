@@ -1,4 +1,4 @@
-import { isUndefined, isArray } from 'underscore';
+import { isUndefined, isArray, isEmpty, has } from 'underscore';
 import Styleable from 'domain_abstract/model/Styleable';
 
 const Backbone = require('backbone');
@@ -219,7 +219,19 @@ module.exports = Backbone.Model.extend(Styleable).extend({
    * @return {Object}
    */
   getAttributes() {
-    return this.get('attributes');
+    const classes = [];
+    const attributes = this.get('attributes') || {};
+
+    // Add classes
+    this.get('classes').each(cls => classes.push(cls.get('name')));
+    classes.length && (attributes.class = classes.join(' '));
+
+    // If style is not empty I need an ID attached to the component
+    if (!isEmpty(this.get('style')) && !has(attributes, 'id')) {
+      attributes.id = this.getId();
+    }
+
+    return attributes;
   },
 
 
@@ -518,43 +530,25 @@ module.exports = Backbone.Model.extend(Styleable).extend({
    * @private
    */
   toHTML(opts) {
-    var code = '';
-    var m = this;
-    var tag = m.get('tagName');
-    var idFound = 0;
-    var sTag = m.get('void');
-    var attrId = '';
-    var strAttr = '';
-    var attr = this.getAttrToHTML();
+    const model = this;
+    const attrs = [];
+    const classes = [];
+    const tag = model.get('tagName');
+    const sTag = model.get('void');
+    const attributes = this.getAttrToHTML();
 
-    for (var prop in attr) {
-      if (prop == 'id') {
-        idFound = 1;
+    for (let attr in attributes) {
+      const value = attributes[attr];
+
+      if (!isUndefined(value) && value !== '') {
+          attrs.push(`${attr}="${value}"`);
       }
-      var val = attr[prop];
-      strAttr += typeof val !== undefined && val !== '' ?
-        ' ' + prop + '="' + val + '"' : '';
     }
 
-    // Build the string of classes
-    var strCls = '';
-    m.get('classes').each(m => {
-      strCls += ' ' + m.get('name');
-    });
-    strCls = strCls !== '' ? ' class="' + strCls.trim() + '"' : '';
-
-    // If style is not empty I need an ID attached to the component
-    if(!_.isEmpty(m.get('style')) && !idFound)
-      attrId = ' id="' + m.getId() + '" ';
-
-    code += '<' + tag + strCls + attrId + strAttr + (sTag ? '/' : '') + '>' + m.get('content');
-
-    m.get('components').each(m => {
-      code += m.toHTML();
-    });
-
-    if(!sTag)
-      code += '</'+tag+'>';
+    let attrString = attrs.length ? ` ${attrs.join(' ')}` : '';
+    let code = `<${tag}${attrString}${sTag ? '/' : ''}>${model.get('content')}`;
+    model.get('components').each(comp => code += comp.toHTML());
+    !sTag && (code += `</${tag}>`);
 
     return code;
   },
@@ -566,7 +560,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
    * @private
    */
   getAttrToHTML() {
-    var attr = this.get('attributes') || {};
+    var attr = this.getAttributes();
     delete attr.style;
     return attr;
   },

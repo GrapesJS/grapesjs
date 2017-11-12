@@ -169,6 +169,7 @@ module.exports = {
           });
           expect(obj.getAttributes()).toEqual({
             id: 'test',
+            class: 'class1 class2',
             'data-test': 'value',
           });
           expect(obj.get('classes').length).toEqual(2);

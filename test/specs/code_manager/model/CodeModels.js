@@ -54,7 +54,7 @@ module.exports = {
           ['class1', 'class2'].forEach(item => {
             m1.get('classes').add({name: item});
           });
-          expect(obj.build(comp)).toEqual('<article class="class1 class2" data-test1="value1" data-test2="value2"></article>');
+          expect(obj.build(comp)).toEqual('<article data-test1="value1" data-test2="value2" class="class1 class2"></article>');
         });
     });
 
