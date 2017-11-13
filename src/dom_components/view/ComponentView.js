@@ -1,3 +1,5 @@
+import { isArray } from 'underscore';
+
 const ComponentsView = require('./ComponentsView');
 
 module.exports = Backbone.View.extend({
@@ -210,8 +212,13 @@ module.exports = Backbone.View.extend({
   getClasses() {
     var attr = this.model.get("attributes"),
       classes  = attr['class'] || [];
-    if(classes.length){
-      return classes.join(" ");
+    classes = isArray(classes) ? classes : [classes];
+
+    if (classes.length) {
+      if (!classes.join) {
+        console.log('class is',classes);
+      }
+      return classes.join(' ');
     }else
       return null;
   },

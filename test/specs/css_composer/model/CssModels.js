@@ -69,7 +69,7 @@ module.exports = {
         it('toCSS returns simple CSS', () => {
           obj.get('selectors').add({ name: 'test1' });
           obj.setStyle({color: 'red'});
-          expect(obj.toCSS()).toEqual(`.test1 {color:red}`);
+          expect(obj.toCSS()).toEqual(`.test1 {color:red;}`);
         });
 
         it('toCSS wraps correctly inside media rule', () => {
@@ -77,7 +77,7 @@ module.exports = {
           obj.set('mediaText', media);
           obj.get('selectors').add({ name: 'test1' });
           obj.setStyle({color: 'red'});
-          expect(obj.toCSS()).toEqual(`@media ${media}{.test1 {color:red}}`);
+          expect(obj.toCSS()).toEqual(`@media ${media}{.test1 {color:red;}}`);
         });
 
     });

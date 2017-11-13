@@ -58,7 +58,7 @@ module.exports = {
         });
     });
 
-    describe.only('CssGenerator', () => {
+    describe('CssGenerator', () => {
         var newCssComp = () => new CssComposer().init();
         beforeEach(() => {
           obj  = new CssGenerator();
