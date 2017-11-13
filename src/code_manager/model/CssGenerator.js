@@ -14,15 +14,18 @@ module.exports = require('backbone').Model.extend({
    */
   buildFromModel(model, opts = {}) {
     let code = '';
+    const em = this.em;
+    const dc = em && em.get('DomComponents');
+    const avoidInline = dc && dc.getConfig().avoidInlineStyle;
     const style = model.get('style');
     const classes = model.get('classes');
     const wrappesIsBody = opts.wrappesIsBody;
-    this.ids.push(model.getId());
+    this.ids.push(`#${model.getId()}`);
 
     // Let's know what classes I've found
     classes.each(model => this.compCls.push(model.getFullName()));
 
-    if (style && keys(style).length) {
+    if (style && keys(style).length && !avoidInline) {
       let selector = `#${model.getId()}`;
       selector = wrappesIsBody && model.get('wrapper') ? 'body' : selector;
       code = `${selector}{${model.styleToString()}}`;
@@ -36,6 +39,7 @@ module.exports = require('backbone').Model.extend({
 
   build(model, opts = {}) {
     const cssc = opts.cssc;
+    this.em = opts.em || '';
     this.compCls = [];
     this.ids = [];
     var code = this.buildFromModel(model, opts);
@@ -62,15 +66,13 @@ module.exports = require('backbone').Model.extend({
       });
 
       // Get media rules
-      for (var ruleW in mediaRules) {
-        var meRules = mediaRules[ruleW];
-        var ruleC = '';
-        for(var i = 0, len = meRules.length; i < len; i++){
-          ruleC += this.buildFromRule(meRules[i]);
-        }
+      for (let media in mediaRules) {
+        let rulesStr = '';
+        const mRules = mediaRules[media];
+        mRules.forEach(rule => rulesStr += this.buildFromRule(rule));
 
-        if (ruleC) {
-          code += '@media ' + ruleW + '{' + ruleC + '}';
+        if (rulesStr) {
+          code += `@media ${media}{${rulesStr}}`;
         }
       }
 
@@ -92,7 +94,8 @@ module.exports = require('backbone').Model.extend({
 
     // This will not render a rule if there is no its component
     rule.get('selectors').each(selector => {
-      if (this.compCls.indexOf(selector.getFullName()) >= 0) {
+      const name = selector.getFullName();
+      if (this.compCls.indexOf(name) >= 0 || this.ids.indexOf(name) >= 0) {
         found = 1;
       }
     });
