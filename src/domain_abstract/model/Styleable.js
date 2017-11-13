@@ -87,9 +87,9 @@ export default {
     const style = this.getStyle();
 
     for (let prop in style) {
-      result.push(`${prop}:${style[prop]}`);
+      result.push(`${prop}:${style[prop]};`);
     }
 
-    return result.join(';');
+    return result.join('');
   },
 }

@@ -46,22 +46,33 @@ module.exports = Backbone.Model.extend(Styleable).extend({
 
 
   /**
+   * Return selectors fo the rule as a string
+   * @return {string}
+   */
+  selectorsToString(opts = {}) {
+    const result = [];
+    const state = this.get('state');
+    const addSelector = this.get('selectorsAdd');
+    const selectors = this.get('selectors').getFullString();
+    const stateStr = state ? `:${state}` : '';
+    selectors && result.push(`${selectors}${stateStr}`);
+    addSelector && !opts.skipAdd && result.push(addSelector);
+    return result.join(', ');
+  },
+
+
+  /**
    * Returns CSS string of the rule
    * @return {string}
    */
   toCSS() {
     let result = '';
-    let sels = [];
-    const state = this.get('state');
     const media = this.get('mediaText');
     const style = this.styleToString();
-    const addSelector = this.get('selectorsAdd');
-    const selectors = this.get('selectors').getFullString();
-    selectors && sels.push(selectors);
-    addSelector && sels.push(addSelector);
+    const selectors = this.selectorsToString();
 
-    if (style && sels.length) {
-      result = `${sels.join(',')} {${style}}`;
+    if (selectors && style) {
+      result = `${selectors} {${style}}`;
     }
 
     if (media && result) {
