@@ -238,10 +238,12 @@ module.exports = config => {
 
     /**
      * Returns configuration object
-     * @return {Object}
+     * @param  {string} [prop] Property name
+     * @return {any} Returns the configuration object or
+     *  the value of the specified property
      */
-    getConfig() {
-      return c;
+    getConfig(prop) {
+      return em.getConfig(prop);
     },
 
     /**

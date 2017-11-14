@@ -66,6 +66,19 @@ module.exports = Backbone.Model.extend({
     this.on('change:changesCount', this.updateChanges, this);
   },
 
+
+  /**
+   * Get configurations
+   * @param  {string} [prop] Property name
+   * @return {any} Returns the configuration object or
+   *  the value of the specified property
+   */
+  getConfig(prop) {
+    const config = this.config;
+    return isUndefined(prop) ? config : config[prop];
+  },
+
+
   /**
    * Should be called after all modules and plugins are loaded
    * @param {Function} clb

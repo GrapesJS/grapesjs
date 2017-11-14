@@ -62,7 +62,7 @@ module.exports = {
         });
     });
 
-    describe.only('CssGenerator', () => {
+    describe('CssGenerator', () => {
         var newCssComp = () => new CssComposer().init();
         beforeEach(() => {
           em = new Editor({});
@@ -221,17 +221,27 @@ module.exports = {
           expect(obj.build(comp, {cssc})).toEqual('');
         });
 
-        it('Render correctly a rule with avoidInlineStyle option and not', () => {
-          em.get('DomComponents').getConfig().avoidInlineStyle = 1;
+        it('Render correctly a rule without avoidInlineStyle option', () => {
           comp.setStyle({color: 'red'});
           const id = comp.getId();
           const result = `#${id}{color:red;}`;
           expect(obj.build(comp, {cssc: cc})).toEqual(result);
-          expect(obj.build(comp, {cssc: cc, em})).toEqual('');
+        });
+
+        it('Render correctly a rule with avoidInlineStyle option', () => {
+          em.getConfig().avoidInlineStyle = 1;
+          comp = new Component({}, {
+            em,
+            componentTypes: dcomp.componentTypes,
+          });
+          comp.setStyle({color: 'red'});
+          const id = comp.getId();
+          const result = `#${id}{color:red;}`;
+          expect(obj.build(comp, {cssc: cc, em})).toEqual(result);
         });
 
         it('Render correctly a rule with avoidInlineStyle and state', () => {
-          em.get('DomComponents').getConfig().avoidInlineStyle = 1;
+          em.getConfig().avoidInlineStyle = 1;
           const state = 'hover';
           comp.config.avoidInlineStyle = 1;
           comp.set('state', state);
@@ -242,7 +252,7 @@ module.exports = {
         });
 
         it('Render correctly a rule with avoidInlineStyle and w/o state', () => {
-          em.get('DomComponents').getConfig().avoidInlineStyle = 1;
+          em.getConfig().avoidInlineStyle = 1;
           const state = 'hover';
           comp.config.avoidInlineStyle = 1;
           comp.setStyle({color: 'blue'});

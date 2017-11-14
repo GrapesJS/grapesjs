@@ -187,9 +187,11 @@ module.exports = Backbone.Model.extend(Styleable).extend({
 
 
   getStyle() {
-    if (this.config.avoidInlineStyle) {
+    const em = this.em;
+
+    if (em.getConfig('avoidInlineStyle')) {
       const state = this.get('state');
-      const cc = this.em.get('CssComposer');
+      const cc = em.get('CssComposer');
       const rule = cc.getIdRule(this.getId(), { state });
       this.rule = rule;
 
@@ -203,10 +205,12 @@ module.exports = Backbone.Model.extend(Styleable).extend({
 
 
   setStyle(prop = {}, opts = {}) {
-    if (this.config.avoidInlineStyle) {
+    const em = this.em;
+
+    if (em.getConfig('avoidInlineStyle')) {
       prop = Styleable.setStyle.call(this, prop, {silent: 1, avoidStore: 1});
       const state = this.get('state');
-      const cc = this.em.get('CssComposer');
+      const cc = em.get('CssComposer');
       this.rule = cc.setIdRule(this.getId(), prop, { ...opts, state });
     } else {
       prop = Styleable.setStyle.apply(this, arguments);
