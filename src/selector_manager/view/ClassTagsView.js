@@ -159,30 +159,28 @@ module.exports = Backbone.View.extend({
     this.updateSelector();
   },
 
+
   /**
    * Udpate selector helper
    * @return {this}
    * @private
    */
   updateSelector() {
-    const selected = this.target.get('selectedComponent');
+    const selected = this.target.getSelected();
     this.compTarget = selected;
-    if(!selected || !selected.get)
-      return;
-    var result = '';
-    this.collection.each(model => {
-      if(model.get('active'))
-        result += '.' + model.get('name');
-    });
-    var state = selected.get('state');
-    result = state ? result + ':' + state : result;
-    result = result || selected.getName();
-    var el = this.el.querySelector('#' + this.pfx + 'sel');
 
-    if (el) {
-      el.innerHTML = result;
+    if (!selected || !selected.get) {
+      return;
     }
+
+    const state = selected.get('state');
+    let result = this.collection.getFullString();
+    result = result || `#${selected.getId()}`;
+    result += state ? `:${state}` : '';
+    const el = this.el.querySelector('#' + this.pfx + 'sel');
+    el && (el.innerHTML = result);
   },
+
 
   /**
    * Triggered when the select with states is changed
