@@ -8,7 +8,7 @@ const Editor = require('editor/model/Editor');
 
 describe('Css Composer', () => {
 
-  describe.only('Main', () => {
+  describe('Main', () => {
 
     var obj;
     var em;

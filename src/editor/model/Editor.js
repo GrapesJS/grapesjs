@@ -47,7 +47,7 @@ module.exports = Backbone.Model.extend({
     device: '',
   },
 
-  initialize(c) {
+  initialize(c = {}) {
     this.config = c;
     this.set('Config', c);
     this.set('modules', []);

@@ -209,8 +209,10 @@ module.exports = Backbone.Model.extend(Styleable).extend({
       const cc = this.em.get('CssComposer');
       this.rule = cc.setIdRule(this.getId(), prop, { ...opts, state });
     } else {
-      Styleable.setStyle.apply(this, arguments);
+      prop = Styleable.setStyle.apply(this, arguments);
     }
+
+    return prop;
   },
 
 
