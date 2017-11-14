@@ -215,12 +215,10 @@ module.exports = Backbone.View.extend({
     classes = isArray(classes) ? classes : [classes];
 
     if (classes.length) {
-      if (!classes.join) {
-        console.log('class is',classes);
-      }
       return classes.join(' ');
-    }else
+    } else {
       return null;
+    }
   },
 
   /**
