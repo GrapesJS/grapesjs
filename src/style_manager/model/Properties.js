@@ -107,7 +107,7 @@ module.exports = require('backbone').Collection.extend(TypeableCollection).exten
     const values = value.split(' ');
     values.forEach((value, i) => {
       const property = this.at(i);
-      properties.push(Object.assign({}, property.attributes, {value}));
+      properties.push({ ...property.attributes, ...{ value } });
     });
     return properties;
   },

@@ -401,7 +401,7 @@ module.exports = {
       };
 
       if (typeof resizable == 'object') {
-        options = Object.assign(options, resizable);
+        options = { ...options, ...resizable };
       }
 
       editor.runCommand('resize', {el, options});

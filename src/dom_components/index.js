@@ -176,13 +176,13 @@ module.exports = () => {
 
       // Build wrapper
       let components = c.components;
-      let wrapper = Object.assign({}, c.wrapper);
+      let wrapper = { ...c.wrapper };
       wrapper['custom-name'] = c.wrapperName;
       wrapper.wrapper = 1;
 
       // Components might be a wrapper
       if (components && components.constructor === Object && components.wrapper) {
-        wrapper = Object.assign({}, components);
+        wrapper = { ...components };
         components = components.components || [];
         wrapper.components = [];
 

@@ -265,8 +265,7 @@ module.exports = () => {
           const style = rule.style || {};
 
           if (updateStyle) {
-            let styleUpdate = opts.extend ?
-              Object.assign({}, model.get('style'), style) : style;
+            let styleUpdate = opts.extend ? { ...model.get('style'), ...style } : style;
             model.set('style', styleUpdate);
           }
 

@@ -3,7 +3,7 @@ const InputColor = require('domain_abstract/ui/InputColor');
 module.exports = require('./PropertyIntegerView').extend({
 
   setValue(value, opts = {}) {
-    opts = Object.assign({}, opts, {silent: 1});
+    opts = { ...opts, silent: 1 };
     this.inputInst.setValue(value, opts);
   },
 
