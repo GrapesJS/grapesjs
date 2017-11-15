@@ -1,7 +1,7 @@
 import Styleable from 'domain_abstract/model/Styleable';
 
 var Backbone = require('backbone');
-var Selectors = require('./Selectors');
+var Selectors = require('selector_manager/model/Selectors');
 
 module.exports = Backbone.Model.extend(Styleable).extend({
 
@@ -23,25 +23,71 @@ module.exports = Backbone.Model.extend(Styleable).extend({
 
     // Indicates if the rule is stylable
     stylable: true,
+
+    // If true, sets '!important' on all properties
+    // You can use an array to specify properties to set important
+    // Used in view
+    important: 0,
 	},
 
+
   initialize(c, opt = {}) {
-      this.config = c || {};
-      const em = opt.em;
-      let selectors = this.config.selectors || [];
-      this.em = em;
+    this.config = c || {};
+    const em = opt.em;
+    let selectors = this.config.selectors || [];
+    this.em = em;
 
-      if (em) {
-        const sm = em.get('SelectorManager');
-        const slct = [];
-        selectors.forEach((selector) => {
-          slct.push(sm.add(selector));
-        });
-        selectors = slct;
-      }
+    if (em) {
+      const sm = em.get('SelectorManager');
+      const slct = [];
+      selectors.forEach((selector) => {
+        slct.push(sm.add(selector));
+      });
+      selectors = slct;
+    }
 
-      this.set('selectors', new Selectors(selectors));
+    this.set('selectors', new Selectors(selectors));
   },
+
+
+  /**
+   * Return selectors fo the rule as a string
+   * @return {string}
+   */
+  selectorsToString(opts = {}) {
+    const result = [];
+    const state = this.get('state');
+    const addSelector = this.get('selectorsAdd');
+    const selectors = this.get('selectors').getFullString();
+    const stateStr = state ? `:${state}` : '';
+    selectors && result.push(`${selectors}${stateStr}`);
+    addSelector && !opts.skipAdd && result.push(addSelector);
+    return result.join(', ');
+  },
+
+
+  /**
+   * Returns CSS string of the rule
+   * @param {Object} [opts={}] Options
+   * @return {string}
+   */
+  toCSS(opts = {}) {
+    let result = '';
+    const media = this.get('mediaText');
+    const style = this.styleToString(opts);
+    const selectors = this.selectorsToString();
+
+    if (selectors && style) {
+      result = `${selectors}{${style}}`;
+    }
+
+    if (media && result) {
+      result = `@media ${media}{${result}}`;
+    }
+
+    return result;
+  },
+
 
   /**
    * Compare the actual model with parameters

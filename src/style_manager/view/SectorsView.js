@@ -9,7 +9,7 @@ module.exports = Backbone.View.extend({
     this.pfx = this.config.stylePrefix || '';
     this.target = o.target || {};
 
-    // The taget that will emit events for properties
+    // The target that will emit events for properties
     const target = {};
     extend(target, Backbone.Events);
     const body = document.body;
@@ -18,10 +18,10 @@ module.exports = Backbone.View.extend({
     target.computedDefault = { ...window.getComputedStyle(dummy) };
     body.removeChild(dummy);
     this.propTarget = target;
-
-    this.listenTo( this.collection, 'add', this.addTo);
-    this.listenTo( this.collection, 'reset', this.render);
-    this.listenTo( this.target, 'change:selectedComponent targetClassAdded targetClassRemoved targetClassUpdated ' +
+    const coll = this.collection;
+    this.listenTo(coll, 'add', this.addTo);
+    this.listenTo(coll, 'reset', this.render);
+    this.listenTo(this.target, 'change:selectedComponent targetClassAdded targetClassRemoved targetClassUpdated ' +
       'targetStateUpdated targetStyleUpdated change:device', this.targetUpdated);
 
   },
@@ -42,34 +42,63 @@ module.exports = Backbone.View.extend({
    */
   targetUpdated() {
     var em = this.target;
-    var el = em.get('selectedComponent');
+    let model = em.getSelected();
     const um = em.get('UndoManager');
+    const cc = em.get('CssComposer');
+    const avoidInline = em.getConfig('avoidInlineStyle');
 
-    if(!el)
+    if (!model) {
       return;
+    }
 
-    // TODO make use of getModelToStyle here
+    const id = model.getId();
     const config = em.get('Config');
-    var previewMode = config.devicePreviewMode;
-    var classes = el.get('classes');
+    var classes = model.get('classes');
     var pt = this.propTarget;
-    var device = em.getDeviceModel();
-    var state = !previewMode ? el.get('state') : '';
-    var widthMedia = device && device.get('widthMedia');
+    const state = !config.devicePreviewMode ? model.get('state') : '';
+    const opts = { state };
     var stateStr = state ? `:${state}` : null;
-    var view = el.view;
-    var mediaText = device && !previewMode && widthMedia ?
-      `(${config.mediaCondition}: ${widthMedia})` : '';
+    var view = model.view;
+    const media = em.getCurrentMedia();
     pt.helper = null;
 
     if (view) {
-      pt.computed = window.getComputedStyle(view.el, stateStr);
+      pt.computed = window.getComputedStyle(view.el, state ? `:${state}` : null);
+    }
+
+    const appendStateRule = (style = {}) => {
+      const sm = em.get('SelectorManager');
+      const helperClass = sm.add('hc-state');
+      let helperRule = cc.get([helperClass]);
+
+      if (!helperRule) {
+        helperRule = cc.add([helperClass]);
+      } else {
+        // I will make it last again, otherwise it could be overridden
+        const rules = cc.getAll();
+        rules.remove(helperRule);
+        rules.add(helperRule);
+      }
+
+      helperRule.set('important', 1);
+      helperRule.setStyle(style);
+      pt.helper = helperRule;
+    };
+
+    // If true the model will be always a rule
+    if (avoidInline) {
+      const ruleId = cc.getIdRule(id, opts);
+
+      if (!ruleId) {
+        model = cc.setIdRule(id, {}, opts);
+      } else {
+        model = ruleId;
+      }
     }
 
     if (classes.length) {
-      var cssC = em.get('CssComposer');
       var valid = classes.getStyleable();
-      var iContainer = cssC.get(valid, state, mediaText);
+      var iContainer = cc.get(valid, state, media);
 
       if (!iContainer && valid.length) {
         // I stop undo manager here as after adding the CSSRule (generally after
@@ -77,42 +106,34 @@ module.exports = Backbone.View.extend({
         // the collection, therefore updating it in style manager will not affect it
         // #268
         um.stopTracking();
-        iContainer = cssC.add(valid, state, mediaText);
-        iContainer.set('style', el.get('style'));
-        el.set('style', {});
+        iContainer = cc.add(valid, state, media);
+        iContainer.setStyle(model.getStyle());
+        model.setStyle({});
         um.startTracking();
       }
 
       if (!iContainer) {
         // In this case it's just a Component without any valid selector
-        pt.model = el;
+        pt.model = model;
         pt.trigger('update');
         return;
       }
 
       // If the state is not empty, there should be a helper rule in play
       // The helper rule will get the same style of the iContainer
-      if (state) {
-        var clm = em.get('SelectorManager');
-        var helperClass = clm.add('hc-state');
-        var helperRule = cssC.get([helperClass]);
-        if(!helperRule)
-          helperRule = cssC.add([helperClass]);
-        else{
-          // I will make it last again, otherwise it could be overridden
-          cssC.getAll().remove(helperRule);
-          cssC.getAll().add(helperRule);
-        }
-        helperRule.set('style', iContainer.get('style'));
-        pt.helper = helperRule;
-      }
+      state && appendStateRule(iContainer.getStyle());
 
       pt.model = iContainer;
       pt.trigger('update');
       return;
     }
 
-    pt.model = el;
+    if (state) {
+      const ruleState = cc.getIdRule(id, opts);
+      state && appendStateRule(ruleState && ruleState.getStyle());
+    }
+
+    pt.model = model;
     pt.trigger('update');
   },
 

@@ -1,8 +1,10 @@
-import { isString } from 'underscore';
+import { isString, isArray } from 'underscore';
 import ParserHtml from 'parser/model/ParserHtml';
 
 const parseStyle = ParserHtml().parseStyle;
 export default {
+
+  parseStyle,
 
   /**
    * To trigger the style change event on models I have to
@@ -11,33 +13,39 @@ export default {
    * @return {Object}
    */
   extendStyle(prop) {
-    return Object.assign({}, this.getStyle(), prop);
+    return { ...this.getStyle(), ...prop};
   },
+
 
   /**
    * Get style object
    * @return {Object}
    */
   getStyle() {
-    return Object.assign({}, this.get('style'));
+    return { ...this.get('style') };
   },
+
 
   /**
    * Set new style object
    * @param {Object|string} prop
    * @param {Object} opts
+   * @return {Object} Applied properties
    */
   setStyle(prop = {}, opts = {}) {
     if (isString(prop)) {
       prop = parseStyle(prop);
     }
 
-    this.set('style', Object.assign({}, prop), opts);
+    this.set('style', { ...prop }, opts);
 
     for (let pr in prop) {
       this.trigger(`change:style:${pr}`);
     }
+
+    return prop;
   },
+
 
   /**
    * Add style property
@@ -60,6 +68,7 @@ export default {
     this.setStyle(prop, opts);
   },
 
+
   /**
    * Remove style property
    * @param {string} prop
@@ -68,5 +77,25 @@ export default {
     let style = this.getStyle();
     delete style[prop];
     this.setStyle(style);
-  }
+  },
+
+
+  /**
+   * Returns string of style properties
+   * @param {Object} [opts={}] Options
+   * @return {String}
+   */
+  styleToString(opts = {}) {
+    const result = [];
+    const style = this.getStyle();
+
+    for (let prop in style) {
+      const imp = opts.important;
+      const important = isArray(imp) ? imp.indexOf(prop) >= 0 : imp;
+      const value = `${style[prop]}${important ? ' !important' : ''}`;
+      result.push(`${prop}:${value};`);
+    }
+
+    return result.join('');
+  },
 }

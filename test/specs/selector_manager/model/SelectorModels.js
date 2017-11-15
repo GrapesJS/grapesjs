@@ -37,12 +37,33 @@ module.exports = {
 
 
     });
+
     describe('Selectors', () => {
+        var obj;
+
+        beforeEach(() => {
+          obj = new Selectors();
+        });
 
         it('Creates collection item correctly', () => {
           var c = new Selectors();
           var m = c.add({});
           expect(m instanceof Selector).toEqual(true);
+        });
+
+        it('getFullString with single class', () => {
+          obj.add({name: 'test'});
+          expect(obj.getFullString()).toEqual('.test');
+        });
+
+        it('getFullString with multiple classes', () => {
+          obj.add([{name: 'test'}, {name: 'test2'}]);
+          expect(obj.getFullString()).toEqual('.test.test2');
+        });
+
+        it('getFullString with mixed selectors', () => {
+          obj.add([{name: 'test'}, {name: 'test2', type: Selector.TYPE_ID}]);
+          expect(obj.getFullString()).toEqual('.test#test2');
         });
 
     });

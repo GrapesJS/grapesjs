@@ -56,6 +56,30 @@ module.exports = {
           expect(obj.compare([s2, s1], 'hover', '1000')).toEqual(true);
         });
 
+        it('toCSS returns empty if there is no style', () => {
+          var s1 = obj.get('selectors').add({ name: 'test1' });
+          expect(obj.toCSS()).toEqual('');
+        });
+
+        it('toCSS returns empty if there is no selectors', () => {
+          obj.setStyle({color: 'red'});
+          expect(obj.toCSS()).toEqual('');
+        });
+
+        it('toCSS returns simple CSS', () => {
+          obj.get('selectors').add({ name: 'test1' });
+          obj.setStyle({color: 'red'});
+          expect(obj.toCSS()).toEqual(`.test1{color:red;}`);
+        });
+
+        it('toCSS wraps correctly inside media rule', () => {
+          const media = '(max-width: 768px)';
+          obj.set('mediaText', media);
+          obj.get('selectors').add({ name: 'test1' });
+          obj.setStyle({color: 'red'});
+          expect(obj.toCSS()).toEqual(`@media ${media}{.test1{color:red;}}`);
+        });
+
     });
 
     describe('CssRules', () => {

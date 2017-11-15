@@ -1,9 +1,12 @@
 /**
  * * [add](#add)
  * * [get](#get)
+ * * [set](#set)
  * * [getAll](#getall)
  * * [load](#load)
  * * [store](#store)
+ * * [setIdRule](#setidrule)
+ * * [getIdRule](#getidrule)
  *
  * This module contains and manage CSS rules for the template inside the canvas
  * Before using the methods you should get first the module from the editor instance, in this way:
@@ -23,12 +26,14 @@
  */
 
 module.exports = () => {
+  let em;
   var c = {},
   defaults = require('./config/config'),
   CssRule = require('./model/CssRule'),
   CssRules = require('./model/CssRules'),
-  Selectors = require('./model/Selectors'),
   CssRulesView = require('./view/CssRulesView');
+  const Selectors = require('selector_manager/model/Selectors');
+  const Selector = require('selector_manager/model/Selector');
 
   var rules, rulesView;
 
@@ -78,6 +83,7 @@ module.exports = () => {
         c.rules = elStyle || c.rules;
 
         c.sm = c.em;
+        em = c.em;
         rules = new CssRules([], c);
         rulesView = new CssRulesView({
           collection: rules,
@@ -270,6 +276,39 @@ module.exports = () => {
         return result;
       },
 
+
+      /**
+       * Add/update a css rule with id selector
+       * @param {string} name Id selector name, eg. 'my-id'
+       * @param {Object} style  Style properties and values
+       * @param {Object} [opts={}]  Custom options
+       * @return {CssRule}
+       */
+      setIdRule(name, style = {}, opts = {}) {
+        const state = opts.state || '';
+        const media = opts.mediaText || em.getCurrentMedia();
+        const sm = em.get('SelectorManager');
+        const selector = sm.add({ name, type: Selector.TYPE_ID });
+        const rule = this.add(selector, state, media);
+        rule.setStyle(style, opts);
+        return rule;
+      },
+
+
+      /**
+       * Get css rule by id selector
+       * @param {string} name Id selector name, eg. 'my-id'
+       * @param  {Object} [opts={}]  Custom options
+       * @return {CssRule}
+       */
+      getIdRule(name, opts = {}) {
+        const state = opts.state || '';
+        const media = opts.mediaText || em.getCurrentMedia();
+        const selector = em.get('SelectorManager').get(name, Selector.TYPE_ID);
+        return selector && this.get(selector, state, media);
+      },
+
+
       /**
        * Render the block of CSS rules
        * @return {HTMLElement}
@@ -277,7 +316,7 @@ module.exports = () => {
        */
       render() {
         return rulesView.render().el;
-      }
+      },
 
     };
 };

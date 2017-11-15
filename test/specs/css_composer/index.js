@@ -1,16 +1,17 @@
-var Models = require('./model/CssModels');
-var CssRuleView = require('./view/CssRuleView');
-var CssRulesView = require('./view/CssRulesView');
-var CssComposer = require('css_composer');
-var e2e = require('./e2e/CssComposer');
-var utils = require('./../test_utils.js');
+const Models = require('./model/CssModels');
+const CssRuleView = require('./view/CssRuleView');
+const CssRulesView = require('./view/CssRulesView');
+const CssComposer = require('css_composer');
+const e2e = require('./e2e/CssComposer');
+const utils = require('./../test_utils.js');
+const Editor = require('editor/model/Editor');
 
 describe('Css Composer', () => {
 
   describe('Main', () => {
 
     var obj;
-
+    var em;
     var config;
     var storagMock = utils.storageMock();
     var editorModel = {
@@ -33,7 +34,8 @@ describe('Css Composer', () => {
 
 
     beforeEach(() => {
-      config = {};
+      em = new Editor({});
+      config = {em};
       obj = new CssComposer().init(config);
     });
 
@@ -156,6 +158,26 @@ describe('Css Composer', () => {
 
     it("Renders correctly", () => {
       expect(obj.render()).toExist();
+    });
+
+    it('Create a rule with id selector by using setIdRule()', () => {
+      const name = 'test';
+      obj.setIdRule(name, {color: 'red'});
+      expect(obj.getAll().length).toEqual(1);
+      const rule = obj.getIdRule(name);
+      expect(rule.selectorsToString()).toEqual(`#${name}`);
+      expect(rule.styleToString()).toEqual(`color:red;`);
+      expect(rule.styleToString({important: 1})).toEqual(`color:red !important;`);
+      expect(rule.styleToString({important: ['color']})).toEqual(`color:red !important;`);
+    });
+
+    it('Create a rule with id selector and state by using setIdRule()', () => {
+      const name = 'test';
+      const state = 'hover';
+      obj.setIdRule(name, {color: 'red'}, {state});
+      expect(obj.getAll().length).toEqual(1);
+      const rule = obj.getIdRule(name, {state});
+      expect(rule.selectorsToString()).toEqual(`#${name}:${state}`);
     });
 
   });

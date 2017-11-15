@@ -47,7 +47,7 @@ module.exports = Backbone.Model.extend({
     device: '',
   },
 
-  initialize(c) {
+  initialize(c = {}) {
     this.config = c;
     this.set('Config', c);
     this.set('modules', []);
@@ -65,6 +65,19 @@ module.exports = Backbone.Model.extend({
     this.on('change:selectedComponent', this.componentSelected, this);
     this.on('change:changesCount', this.updateChanges, this);
   },
+
+
+  /**
+   * Get configurations
+   * @param  {string} [prop] Property name
+   * @return {any} Returns the configuration object or
+   *  the value of the specified property
+   */
+  getConfig(prop) {
+    const config = this.config;
+    return isUndefined(prop) ? config : config[prop];
+  },
+
 
   /**
    * Should be called after all modules and plugins are loaded
@@ -613,6 +626,21 @@ module.exports = Backbone.Model.extend({
     var w = win || window;
     w.getSelection().removeAllRanges();
   },
+
+
+  /**
+   * Get the current media text
+   * @return {string}
+   */
+  getCurrentMedia() {
+    const config = this.config;
+    const device = this.getDeviceModel();
+    const condition = config.mediaCondition;
+    const preview = config.devicePreviewMode;
+    const width = device && device.get('widthMedia');
+    return device && width && !preview ? `(${condition}: ${width})` : '';
+  },
+
 
   /**
    * Set/get data from the HTMLElement

@@ -71,6 +71,12 @@ module.exports = {
   // The wrapper, if visible, will be shown as a `<body>`
   wrappesIsBody: 1,
 
+  // Usually when you update the `style` of the component this changes the
+  // element's `style` attribute. Unfortunately, inline styling doesn't allow
+  // use of media queries (@media) or even pseudo selectors (eg. :hover).
+  // When `avoidInlineStyle` is true all styles are inserted inside the css rule
+  avoidInlineStyle: 0,
+
   // Dom element
   el: '',
 

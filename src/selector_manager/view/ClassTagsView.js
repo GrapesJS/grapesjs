@@ -33,7 +33,7 @@ module.exports = Backbone.View.extend({
 
   events: {},
 
-  initialize(o) {
+  initialize(o = {}) {
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
@@ -48,7 +48,8 @@ module.exports = Backbone.View.extend({
     this.events['keyup #' + this.newInputId] = 'onInputKeyUp';
     this.events['change #' + this.stateInputId] = 'stateChanged';
 
-    this.target  = this.config.em;
+    this.target = this.config.em;
+    this.em = this.target;
 
     this.listenTo(this.target ,'change:selectedComponent',this.componentChanged);
     this.listenTo(this.target, 'targetClassUpdated', this.updateSelector);
@@ -148,12 +149,16 @@ module.exports = Backbone.View.extend({
    * @private
    */
   updateStateVis() {
-    if(this.collection.length)
+    const em = this.em;
+    const avoidInline = em && em.getConfig('avoidInlineStyle');
+
+    if(this.collection.length || avoidInline)
       this.getStatesC().css('display','block');
     else
       this.getStatesC().css('display','none');
     this.updateSelector();
   },
+
 
   /**
    * Udpate selector helper
@@ -161,24 +166,21 @@ module.exports = Backbone.View.extend({
    * @private
    */
   updateSelector() {
-    const selected = this.target.get('selectedComponent');
+    const selected = this.target.getSelected();
     this.compTarget = selected;
-    if(!selected || !selected.get)
-      return;
-    var result = '';
-    this.collection.each(model => {
-      if(model.get('active'))
-        result += '.' + model.get('name');
-    });
-    var state = selected.get('state');
-    result = state ? result + ':' + state : result;
-    result = result || selected.getName();
-    var el = this.el.querySelector('#' + this.pfx + 'sel');
 
-    if (el) {
-      el.innerHTML = result;
+    if (!selected || !selected.get) {
+      return;
     }
+
+    const state = selected.get('state');
+    let result = this.collection.getFullString();
+    result = result || `#${selected.getId()}`;
+    result += state ? `:${state}` : '';
+    const el = this.el.querySelector('#' + this.pfx + 'sel');
+    el && (el.innerHTML = result);
   },
+
 
   /**
    * Triggered when the select with states is changed

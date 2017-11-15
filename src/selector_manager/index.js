@@ -61,6 +61,10 @@ module.exports = config => {
 
   return {
 
+    Selector,
+
+    Selectors,
+
     /**
      * Name of the module
      * @type {String}
@@ -129,7 +133,7 @@ module.exports = config => {
       }
 
       const cname = opts.name;
-      const selector = cname ? this.get(cname) : selectors.where(opts)[0];
+      const selector = cname ? this.get(cname, opts.type) : selectors.where(opts)[0];
 
       if (!selector) {
         return selectors.add(opts);
@@ -163,12 +167,13 @@ module.exports = config => {
     /**
      * Get the selector by its name
      * @param {String} name Selector name
+     * @param {String} tyoe Selector type
      * @return {Model|null}
      * @example
      * var selector = selectorManager.get('selectorName');
      * */
-    get(name) {
-      return selectors.where({name})[0];
+    get(name, type = Selector.TYPE_CLASS) {
+      return selectors.where({name, type})[0];
     },
 
     /**
