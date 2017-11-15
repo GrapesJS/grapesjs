@@ -1,7 +1,3 @@
-import Promise from 'promise-polyfill';
-
-window.Promise = window.Promise || Promise;
-
 export default typeof fetch == 'function' ? fetch.bind() : (url, options) => {
   return new Promise((res, rej) => {
     const req = new XMLHttpRequest();
