@@ -15,9 +15,11 @@ module.exports = {
 
       describe('HtmlGenerator', () => {
         beforeEach(() => {
+          em = new Editor();
           obj = new HtmlGenerator();
           dcomp = new DomComponents();
           comp = new Component({}, {
+            em,
             componentTypes: dcomp.componentTypes,
           });
         });

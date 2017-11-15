@@ -121,7 +121,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
 
 
   initialize(props = {}, opt = {}) {
-    const em = opt.sm || opt.em || {};
+    const em = opt.sm || opt.em || '';
 
     // Propagate properties from parent if indicated
     const parent = this.parent();
@@ -189,7 +189,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
   getStyle() {
     const em = this.em;
 
-    if (em.getConfig('avoidInlineStyle')) {
+    if (em && em.getConfig('avoidInlineStyle')) {
       const state = this.get('state');
       const cc = em.get('CssComposer');
       const rule = cc.getIdRule(this.getId(), { state });
@@ -207,7 +207,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
   setStyle(prop = {}, opts = {}) {
     const em = this.em;
 
-    if (em.getConfig('avoidInlineStyle')) {
+    if (em && em.getConfig('avoidInlineStyle')) {
       prop = Styleable.setStyle.call(this, prop, {silent: 1, avoidStore: 1});
       const state = this.get('state');
       const cc = em.get('CssComposer');
@@ -501,7 +501,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
       this.opt.collection = null;
     }
 
-    if (em.getConfig('avoidInlineStyle') && !isEmpty(style)) {
+    if (em && em.getConfig('avoidInlineStyle') && !isEmpty(style)) {
       attr.style = style;
     }
 

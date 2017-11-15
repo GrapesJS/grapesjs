@@ -5,12 +5,14 @@ const ComponentView = require('./view/ComponentV');
 const ComponentsView = require('./view/ComponentsView');
 const ComponentTextView = require('./view/ComponentTextView');
 const ComponentImageView = require('./view/ComponentImageView');
+const Editor = require('editor/model/Editor');
 const utils = require('./../test_utils.js');
 
 describe('DOM Components', () => {
 
   describe('Main', () => {
 
+    var em;
     var obj;
     var config;
     var storagMock = utils.storageMock();
@@ -39,7 +41,9 @@ describe('DOM Components', () => {
 
 
     beforeEach(() => {
+      em = new Editor();
       config = {
+        em,
         storeWrapper: 1,
       };
       obj = new DomComponents().init(config);
