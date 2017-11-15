@@ -2,16 +2,12 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 var pkg = require('./package.json');
 var webpack = require('webpack');
 var fs = require('fs');
-var name = 'grapes';
 var plugins = [];
 
 if (process.env.WEBPACK_ENV !== 'dev') {
   plugins = [
     new webpack.optimize.ModuleConcatenationPlugin(),
-    new webpack.optimize.UglifyJsPlugin({
-      minimize: true,
-      compressor: {warnings: false},
-    }),
+    new webpack.optimize.UglifyJsPlugin({ minimize:true, compressor: {warnings:false}}),
     new webpack.BannerPlugin(pkg.name + ' - ' + pkg.version),
   ]
 } else {
@@ -30,7 +26,7 @@ plugins.push(new webpack.ProvidePlugin({
 module.exports = {
   entry: ['babel-polyfill', './src'],
   output: {
-      filename: './dist/' + name + '.min.js',
+      filename: './dist/grapes.min.js',
       library: 'grapesjs',
       libraryTarget: 'umd',
   },
