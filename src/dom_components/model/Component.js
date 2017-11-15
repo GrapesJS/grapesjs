@@ -1,4 +1,4 @@
-import { isUndefined, isArray, isEmpty, has } from 'underscore';
+import { isUndefined, isArray, isEmpty, has, clone } from 'underscore';
 import Styleable from 'domain_abstract/model/Styleable';
 
 const Backbone = require('backbone');
@@ -233,7 +233,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     classes.length && (attributes.class = classes.join(' '));
 
     // If style is not empty I need an ID attached to the component
-    if (!isEmpty(this.get('style')) && !has(attributes, 'id')) {
+    if (!isEmpty(this.getStyle()) && !has(attributes, 'id')) {
       attributes.id = this.getId();
     }
 
@@ -476,21 +476,21 @@ module.exports = Backbone.Model.extend(Styleable).extend({
    * @private
    */
   clone(reset) {
-    var attr = _.clone(this.attributes),
-    comp = this.get('components'),
-    traits = this.get('traits'),
-    cls = this.get('classes');
+    const em = this.em;
+    const style = this.getStyle();
+    const attr = clone(this.attributes);
+    delete attr.attributes.id;
     attr.components = [];
     attr.classes = [];
     attr.traits = [];
 
-    comp.each((md, i) => {
+    this.get('components').each((md, i) => {
       attr.components[i]	= md.clone(1);
     });
-    traits.each((md, i) => {
+    this.get('traits').each((md, i) => {
       attr.traits[i] = md.clone();
     });
-    cls.each((md, i) => {
+    this.get('classes').each((md, i) => {
       attr.classes[i]	= md.get('name');
     });
 
@@ -499,6 +499,10 @@ module.exports = Backbone.Model.extend(Styleable).extend({
 
     if(reset){
       this.opt.collection = null;
+    }
+
+    if (em.getConfig('avoidInlineStyle') && !isEmpty(style)) {
+      attr.style = style;
     }
 
     return new this.constructor(attr, this.opt);

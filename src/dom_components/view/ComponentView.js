@@ -154,30 +154,14 @@ module.exports = Backbone.View.extend({
    * */
   updateStyle() {
     const em = this.em;
+    const model = this.model;
+
     if (em && em.get('avoidInlineStyle')) {
-      const model = this.model;
       this.el.id = model.getId();
       model.setStyle(model.getStyle());
     } else {
-      this.setAttribute('style', this.getStyleString());
+      this.setAttribute('style', model.styleToString());
     }
-  },
-
-
-  /**
-   * Return style string
-   * @return  {string}
-   * @private
-   * */
-  getStyleString() {
-    var style  = '';
-    this.style = this.model.get('style');
-    for(var key in this.style) {
-        if(this.style.hasOwnProperty(key))
-          style += key + ':' + this.style[key] + ';';
-    }
-
-    return style;
   },
 
 
