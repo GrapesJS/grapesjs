@@ -80,6 +80,7 @@ module.exports = Backbone.View.extend({
         rules.add(helperRule);
       }
 
+      helperRule.set('important', 1);
       helperRule.setStyle(style);
       pt.helper = helperRule;
     };
@@ -130,11 +131,6 @@ module.exports = Backbone.View.extend({
     if (state) {
       const ruleState = cc.getIdRule(id, opts);
       state && appendStateRule(ruleState && ruleState.getStyle());
-      if (ruleState) {
-        console.log(ruleState, ruleState.toCSS());
-      } else {
-        console.log('NO RULE');
-      }
     }
 
     pt.model = model;

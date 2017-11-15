@@ -167,6 +167,8 @@ describe('Css Composer', () => {
       const rule = obj.getIdRule(name);
       expect(rule.selectorsToString()).toEqual(`#${name}`);
       expect(rule.styleToString()).toEqual(`color:red;`);
+      expect(rule.styleToString({important: 1})).toEqual(`color:red !important;`);
+      expect(rule.styleToString({important: ['color']})).toEqual(`color:red !important;`);
     });
 
     it('Create a rule with id selector and state by using setIdRule()', () => {

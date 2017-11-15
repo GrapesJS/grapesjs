@@ -26,26 +26,6 @@ module.exports = {
           expect(CssRuleView).toExist();
         });
 
-        it('Correct behaviour of renderSelectors with single selector', () => {
-          obj.model.get('selectors').add({name: 'test'});
-          expect(obj.renderSelectors()).toEqual('.test');
-        });
-
-        it('Correct behaviour of renderSelectors with multiple selectors', () => {
-          obj.model.get('selectors').add([{name: 'test2'}, {name: 'test1'}]);
-          expect(obj.renderSelectors()).toEqual('.test2.test1');
-        });
-
-        it('Correct behaviour of renderProperties with single property', () => {
-          obj.model.set('style', {'prop': 'value'});
-          expect(obj.renderProperties()).toEqual('prop:value;');
-        });
-
-        it('Correct behaviour of renderProperties with multiple properties', () => {
-          obj.model.set('style', {'prop2': 'value2', 'prop3': 'value3'});
-          expect(obj.renderProperties()).toEqual('prop2:value2;prop3:value3;');
-        });
-
         it('Empty style inside', function() {
           expect(fixtures.innerHTML).toEqual('<style></style>');
         });

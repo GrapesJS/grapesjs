@@ -1,8 +1,10 @@
-import { isString } from 'underscore';
+import { isString, isArray } from 'underscore';
 import ParserHtml from 'parser/model/ParserHtml';
 
 const parseStyle = ParserHtml().parseStyle;
 export default {
+
+  parseStyle,
 
   /**
    * To trigger the style change event on models I have to
@@ -80,14 +82,18 @@ export default {
 
   /**
    * Returns string of style properties
+   * @param {Object} [opts={}] Options
    * @return {String}
    */
-  styleToString() {
+  styleToString(opts = {}) {
     const result = [];
     const style = this.getStyle();
 
     for (let prop in style) {
-      result.push(`${prop}:${style[prop]};`);
+      const imp = opts.important;
+      const important = isArray(imp) ? imp.indexOf(prop) >= 0 : imp;
+      const value = `${style[prop]}${important ? ' !important' : ''}`;
+      result.push(`${prop}:${value};`);
     }
 
     return result.join('');

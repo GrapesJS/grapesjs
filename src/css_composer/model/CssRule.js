@@ -23,6 +23,11 @@ module.exports = Backbone.Model.extend(Styleable).extend({
 
     // Indicates if the rule is stylable
     stylable: true,
+
+    // If true, sets '!important' on all properties
+    // You can use an array to specify properties to set important
+    // Used in view
+    important: 0,
 	},
 
 
@@ -63,12 +68,13 @@ module.exports = Backbone.Model.extend(Styleable).extend({
 
   /**
    * Returns CSS string of the rule
+   * @param {Object} [opts={}] Options
    * @return {string}
    */
-  toCSS() {
+  toCSS(opts = {}) {
     let result = '';
     const media = this.get('mediaText');
-    const style = this.styleToString();
+    const style = this.styleToString(opts);
     const selectors = this.selectorsToString();
 
     if (selectors && style) {
