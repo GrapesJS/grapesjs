@@ -28,7 +28,7 @@ plugins.push(new webpack.ProvidePlugin({
 }));
 
 module.exports = {
-  entry: './src',
+  entry: ['babel-polyfill', './src'],
   output: {
       filename: './dist/' + name + '.min.js',
       library: 'grapesjs',
