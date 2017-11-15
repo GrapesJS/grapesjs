@@ -5,6 +5,8 @@
  * * [getAll](#getall)
  * * [load](#load)
  * * [store](#store)
+ * * [setIdRule](#setidrule)
+ * * [getIdRule](#getidrule)
  *
  * This module contains and manage CSS rules for the template inside the canvas
  * Before using the methods you should get first the module from the editor instance, in this way:
