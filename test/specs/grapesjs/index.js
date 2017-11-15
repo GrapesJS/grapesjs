@@ -16,11 +16,12 @@ describe('GrapesJS', () => {
     var storage;
     var storageId = 'testStorage';
     var storageMock = {
-      store(data) {
+      store(data, clb) {
         storage = data;
+        clb();
       },
-      load(keys) {
-        return storage;
+      load(keys, clb) {
+        return clb(storage);
       },
     };
 
@@ -36,7 +37,8 @@ describe('GrapesJS', () => {
         container: '#' + editorName,
         storageManager: {
           autoload: 0,
-          type:'none'
+          autosave: 0,
+          type: ''
         },
       }
       obj = grapesjs;
@@ -45,11 +47,6 @@ describe('GrapesJS', () => {
 
       document.body.innerHTML = `<div id="fixtures"><div id="${editorName}"></div></div>`;
       fixtures = document.body.querySelector('#fixtures');
-    });
-
-    afterEach(() => {
-      config = {};
-      obj = null;
     });
 
     it('Main object should be loaded', () => {
@@ -76,7 +73,7 @@ describe('GrapesJS', () => {
     it('New editor is empty', () => {
       var editor = obj.init(config);
       var html = editor.getHtml();
-      var css = editor.getCss();
+      //var css = editor.getCss();
       var protCss = editor.getConfig().protectedCss;
       expect((html ? html : '')).toNotExist();
       //expect((css ? css : '')).toEqual(protCss);
@@ -154,7 +151,7 @@ describe('GrapesJS', () => {
       expect(styles.at(1).get('selectors').at(0).get('name')).toEqual('test5');
     });
 
-    it('Adds new storage as plugin and store data there', () => {
+    it.skip('Adds new storage as plugin and store data there', done => {
       var pluginName = storageId + '-plugin';
       obj.plugins.add(pluginName, edt => {
         edt.StorageManager.add(storageId, storageMock);
@@ -163,9 +160,11 @@ describe('GrapesJS', () => {
       config.plugins = [pluginName];
       var editor = obj.init(config);
       editor.setComponents(htmlString);
-      editor.store();
-      editor.load((data) => {
-        expect(data.html).toEqual(htmlString);
+      editor.store(() => {
+        editor.load((data) => {
+          expect(data.html).toEqual(htmlString);
+          done();
+        });
       });
     });
 
@@ -182,8 +181,7 @@ describe('GrapesJS', () => {
       expect(editor.customValue).toEqual('TEST');
     });
 
-    // Problems with iframe loading
-    it.skip('Execute custom command', () => {
+    it('Execute custom command', () => {
       var editor = obj.init(config);
       editor.testVal = '';
       editor.setComponents(htmlString);
@@ -196,7 +194,7 @@ describe('GrapesJS', () => {
       expect(editor.testVal).toEqual(htmlString + '5');
     });
 
-    it.skip('Stop custom command', () => {
+    it('Stop custom command', () => {
       var editor = obj.init(config);
       editor.testVal = '';
       editor.setComponents(htmlString);
@@ -231,7 +229,7 @@ describe('GrapesJS', () => {
     });
 
     // Problems with iframe loading
-    it.skip('Init new editor with custom plugin overrides default commands', () => {
+    it('Init new editor with custom plugin overrides default commands', () => {
       var editor,
           pluginName = 'test-plugin-opts';
 

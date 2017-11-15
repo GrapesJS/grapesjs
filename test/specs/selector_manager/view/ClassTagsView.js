@@ -1,5 +1,6 @@
 const ClassTagsView = require('selector_manager/view/ClassTagsView');
 const Selectors = require('selector_manager/model/Selectors');
+const Editor = require('editor/model/Editor');
 
 module.exports = {
   run() {
@@ -11,6 +12,7 @@ module.exports = {
         var testLabel;
         var coll;
         var target;
+        var em;
 
         before(() => {
           document.body.innerHTML = '<div id="fixtures"></div>';
@@ -23,10 +25,8 @@ module.exports = {
         });
 
         beforeEach(function () {
-          target = { get() {} };
+          target = new Editor();
           coll = new Selectors();
-          _.extend(target, Backbone.Events);
-
           view = new ClassTagsView({
             config : { em: target },
             collection: coll
@@ -74,16 +74,13 @@ module.exports = {
           expect(this.input.css('display')).toNotEqual('none');
         });
 
-        it.skip('Stop tag creation', function() {
+        it('Stop tag creation', function() {
           this.btnAdd.trigger('click');
           this.input.val('test')
           this.input.trigger('blur');
-          //(this.btnAdd.css('display') !== 'none').should.equal(true);
-          //(this.input.css('display') == 'none').should.equal(true);
-          //this.input.val().should.equal('');
           expect(this.btnAdd.css('display')).toNotEqual('none');
           expect(this.input.css('display')).toEqual('none');
-          expect(this.input.val()).toEqual('');
+          expect(this.input.val()).toEqual(null);
         });
 
         it.skip('Check keyup of ESC on input', function() {

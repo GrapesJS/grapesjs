@@ -24,7 +24,7 @@ module.exports = {
   //Enable/Disable saving HTML template
   storeHtml: 1,
 
-  //Enable/Disable saving HTML template
+  //Enable/Disable saving CSS template
   storeCss: 1,
 
   // ONLY FOR LOCAL STORAGE

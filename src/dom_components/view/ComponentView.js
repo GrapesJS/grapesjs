@@ -154,7 +154,7 @@ module.exports = Backbone.View.extend({
    * */
   updateStyle() {
     const em = this.em;
-    if (em.get('avoidInlineStyle')) {
+    if (em && em.get('avoidInlineStyle')) {
       const model = this.model;
       this.el.id = model.getId();
       model.setStyle(model.getStyle());

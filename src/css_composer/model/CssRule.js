@@ -78,7 +78,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     const selectors = this.selectorsToString();
 
     if (selectors && style) {
-      result = `${selectors} {${style}}`;
+      result = `${selectors}{${style}}`;
     }
 
     if (media && result) {
