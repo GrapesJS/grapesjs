@@ -115,17 +115,18 @@ module.exports = () => {
      * @return {this}
      * @example
      * storageManager.add('local2', {
-     *   load: function(keys){
+     *   load: function(keys, clb) {
      *     var res = {};
      *     for (var i = 0, len = keys.length; i < len; i++){
      *       var v = localStorage.getItem(keys[i]);
      *       if(v) res[keys[i]] = v;
      *     }
-     *     return res;
+     *     clb(res); // might be called inside some async method
      *   },
-     *   store: function(data){
+     *   store: function(data, clb) {
      *     for(var key in data)
      *       localStorage.setItem(key, data[key]);
+     *     clb(); // might be called inside some async method
      *   }
      * });
      * */
