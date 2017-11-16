@@ -185,24 +185,26 @@ module.exports = Backbone.View.extend({
    * @return 	void
    * */
   toggleVisibility(e) {
-    e.stopPropagation();
+    e && e.stopPropagation();
     const pfx = this.pfx;
+    const model = this.model;
+    const hClass = `${pfx}hide`;
+    const style = model.getStyle();
+    const hideIcon = 'fa-eye-slash';
+    const $el = this.$el;
+    !this.$eye && (this.$eye = $el.children(`#${pfx}btn-eye`));
 
-    if(!this.$eye)
-      this.$eye = this.$el.children(`#${pfx}btn-eye`);
-
-    var cCss = _.clone(this.model.get('style')),
-    hClass = this.pfx + 'hide';
-    if(this.isVisible()){
-      this.$el.addClass(hClass);
-      this.$eye.addClass('fa-eye-slash');
-      cCss.display = 'none';
-    }else{
-      this.$el.removeClass(hClass);
-      this.$eye.removeClass('fa-eye-slash');
-      delete cCss.display;
+    if (this.isVisible()) {
+      $el.addClass(hClass);
+      this.$eye.addClass(hideIcon);
+      style.display = 'none';
+    } else {
+      $el.removeClass(hClass);
+      this.$eye.removeClass(hideIcon);
+      delete style.display;
     }
-    this.model.set('style', cCss);
+
+    model.setStyle(style);
   },
 
   /**
