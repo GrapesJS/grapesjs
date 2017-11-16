@@ -193,6 +193,8 @@ module.exports = Backbone.View.extend({
 
     var cCss = _.clone(this.model.get('style')),
     hClass = this.pfx + 'hide';
+    if (typeof(cCss) === 'string')
+      cCss = (cCss === '' ? {} : JSON.parse(cCss));
     if(this.isVisible()){
       this.$el.addClass(hClass);
       this.$eye.addClass('fa-eye-slash');
