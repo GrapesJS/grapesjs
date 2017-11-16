@@ -1,7 +1,7 @@
 const Editor = require('editor/model/Editor');
 const Keymaps = require('keymaps');
 
-describe.only('Keymaps', () => {
+describe('Keymaps', () => {
 
   describe('Main', () => {
 
@@ -17,45 +17,44 @@ describe.only('Keymaps', () => {
       expect(obj).toExist();
     });
 
-    it('No device inside', () => {
+    it('No keymaps inside', () => {
       var coll = obj.getAll();
-      expect(coll.length).toEqual(0);
+      expect(coll).toEqual({});
     });
 
-    it('Add new device', () => {
-      var model = obj.add(testNameDevice, testWidthDevice);
-      expect(obj.getAll().length).toEqual(1);
+    it('Add new keymap', () => {
+      const id = 'test';
+      const keys = 'ctrl+a';
+      const handler = () => {};
+      const model = obj.add(id, 'ctrl+a', handler);
+      expect(obj.get(id)).toEqual({id, keys, handler});
     });
 
-    it('Added device has correct data', () => {
-      var model = obj.add(testNameDevice, testWidthDevice);
-      expect(model.get('name')).toEqual(testNameDevice);
-      expect(model.get('width')).toEqual(testWidthDevice);
+    it('Add keymap event triggers', () => {
+      let called = 0;
+      em.on('keymap:add', () => called = 1);
+      const model = obj.add('tes', 'ctrl+a');
+      expect(called).toEqual(1);
     });
 
-    it('Add device width options', () => {
-      var model = obj.add(testNameDevice, testWidthDevice, {opt: 'value'});
-      expect(model.get('opt')).toEqual('value');
+    it('Remove keymap', () => {
+      const id = 'test';
+      const keys = 'ctrl+a';
+      const handler = () => {};
+      const model = obj.add(id, 'ctrl+a', handler);
+      const removed = obj.remove(id);
+      expect(obj.get(id)).toEqual(undefined);
+      expect(obj.getAll()).toEqual({});
+      expect(removed).toEqual({id, keys, handler});
     });
 
-    it('The name of the device is unique', () => {
-      var model = obj.add(testNameDevice, testWidthDevice);
-      var model2 = obj.add(testNameDevice, '2px');
-      expect(model).toEqual(model2);
+    it('Remove keymap event triggers', () => {
+      let called = 0;
+      em.on('keymap:remove', () => called = 1);
+      const model = obj.add('tes', 'ctrl+a');
+      const removed = obj.remove('tes');
+      expect(called).toEqual(1);
     });
-
-    it('Get device by name', () => {
-      var model = obj.add(testNameDevice, testWidthDevice);
-      var model2 = obj.get(testNameDevice);
-      expect(model).toEqual(model2);
-    });
-
-    it('Render devices', () => {
-      expect(obj.render()).toExist();
-    });
-
   });
-
-  DevicesView.run();
 
 });

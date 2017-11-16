@@ -9,6 +9,7 @@ describe('Main', () => {
   });
 
   const path = './specs/';
+  require(`${path}keymaps`);
   require(`${path}asset_manager`);
   require(`${path}block_manager`);
   require(`${path}code_manager`);

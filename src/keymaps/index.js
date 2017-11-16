@@ -9,7 +9,7 @@
  */
 import { defaults, isString } from 'underscore';
 
-const keymaster = require('keymaster').noConflict();
+const keymaster = require('keymaster');
 
 module.exports = () => {
   let config;
@@ -103,7 +103,7 @@ module.exports = () => {
      * @return {Object}
      * @example
      * keymaps.getAll();
-     * // -> [{...}, {...}, ...];
+     * // -> {id1: {}, id2: {}};
      */
     getAll() {
       return keymaps;
