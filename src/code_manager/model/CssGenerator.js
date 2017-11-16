@@ -1,4 +1,4 @@
-import { keys } from 'underscore';
+import { isEmpty } from 'underscore';
 
 module.exports = require('backbone').Model.extend({
 
@@ -19,14 +19,15 @@ module.exports = require('backbone').Model.extend({
     const style = model.get('style');
     const classes = model.get('classes');
     const wrappesIsBody = opts.wrappesIsBody;
+    const isWrapper = model.get('wrapper');
     this.ids.push(`#${model.getId()}`);
 
     // Let's know what classes I've found
     classes.each(model => this.compCls.push(model.getFullName()));
 
-    if (style && keys(style).length && !avoidInline) {
+    if ((!isEmpty(style) && !avoidInline) || isWrapper) {
       let selector = `#${model.getId()}`;
-      selector = wrappesIsBody && model.get('wrapper') ? 'body' : selector;
+      selector = wrappesIsBody && isWrapper ? 'body' : selector;
       code = `${selector}{${model.styleToString()}}`;
     }
 

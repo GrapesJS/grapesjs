@@ -9,7 +9,7 @@ module.exports = Backbone.View.extend({
     'click [data-toggle-visible]': 'toggleVisibility',
     'click [data-toggle-select]': 'handleSelect',
     'click [data-toggle-open]': 'toggleOpening',
-    'click [data-toggle-edit]': 'handleEdit',
+    'dblclick input': 'handleEdit',
     'focusout input': 'handleEditEnd',
   },
 
@@ -19,9 +19,8 @@ module.exports = Backbone.View.extend({
   <% } %>
 
   <div class="<%= prefix %>title-c">
-    <div class="<%= prefix %>title <%= addClass %>" style="padding-left: <%= 42 + level * 10 %>px" data-toggle-select>
+    <div class="<%= prefix %>title <%= addClass %>" style="padding-left: <%= 30 + level * 10 %>px" data-toggle-select>
       <div class="<%= prefix %>title-inn">
-        <i class="fa fa-pencil <%= editBtnCls %>" data-toggle-edit></i>
         <i id="<%= prefix %>caret" class="fa fa-chevron-right <%= caretCls %>" data-toggle-open></i>
         <%= icon %>
         <input class="<%= ppfx %>no-app <%= inputNameCls %>" value="<%= title %>" readonly>
