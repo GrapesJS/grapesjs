@@ -31,34 +31,48 @@
  * var editor = grapesjs.init({...});
  * ```
  *
- * **Available Events**
+ * # Available Events
+ * ## Components
  * * `component:add` - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
  * * `component:update` - Triggered when a component is, generally, updated (moved, styled, etc.)
  * * `component:update:{propertyName}` - Listen any property change
  * * `component:styleUpdate` - Triggered when the style of the component is updated
  * * `component:styleUpdate:{propertyName}` - Listen for a specific style property change
  * * `component:selected` - New component selected
+ * ## Blocks
  * * `block:add` - New block added
  * * `block:remove` - Block removed
+ * ## Assets
  * * `asset:add` - New asset added
  * * `asset:remove` - Asset removed
  * * `asset:upload:start` - Before the upload is started
  * * `asset:upload:end` - After the upload is ended
  * * `asset:upload:error` - On any error in upload, passes the error as an argument
  * * `asset:upload:response` - On upload response, passes the result as an argument
+ * ## Keymaps
+ * * `keymap:add` - New keymap added. The new keyamp object is passed as an argument
+ * * `keymap:emit` - Some keymap emitted, in arguments you get keymapId, shortcutUsed, Event
+ * * `keymap:emit:{keymapId}` - `keymapId` emitted, in arguments you get keymapId, shortcutUsed, Event
+ * * `keymap:remove` - Keymap removed. The removed keyamp object is passed as an argument
+ * ## Style Manager
  * * `styleManager:change` - Triggered on style property change from new selected component, the view of the property is passed as an argument to the callback
  * * `styleManager:change:{propertyName}` - As above but for a specific style property
+ * ## Storages
  * * `storage:start` - Before the storage request is started
  * * `storage:load` - Triggered when something was loaded from the storage, loaded object passed as an argumnet
  * * `storage:store` - Triggered when something is stored to the storage, stored object passed as an argumnet
  * * `storage:end` - After the storage request is ended
  * * `storage:error` - On any error on storage request, passes the error as an argument
+ * ## Selectors
  * * `selector:add` - Triggers when a new selector/class is created
+ * ## RTE
  * * `rte:enable` - RTE enabled. The view, on which RTE is enabled, is passed as an argument
  * * `rte:disable` - RTE disabled. The view, on which RTE is disabled, is passed as an argument
- * * `canvasScroll` - Triggered when the canvas is scrolled
+ * ## Commands
  * * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
  * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
+ * ## General
+ * * `canvasScroll` - Triggered when the canvas is scrolle
  * * `load` - When the editor is loaded
  *
  * @module Editor

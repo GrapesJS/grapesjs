@@ -1,3 +1,12 @@
+/**
+ * This module allows to create shortcuts for functions and commands (via command id)
+ *
+ * You can access the module in this way
+ * ```js
+ * const keymaps = editor.Keymaps;
+ * ```
+ *
+ */
 import { defaults, isString } from 'underscore';
 
 const keymaster = require('keymaster').noConflict();
@@ -30,8 +39,7 @@ module.exports = () => {
      * @private
      */
     init(opts = {}) {
-      config = opts;
-      defaults(config, configDef);
+      config = { ...opts, ...configDef };
       this.em = config.em;
       return this;
     },
@@ -39,11 +47,13 @@ module.exports = () => {
     /**
      * Add new keymap
      * @param {string} id Keymap id
-     * @param {string} keys Keymap keys, eg. '⌘+z, ctrl+z'
+     * @param {string} keys Keymap keys, eg. `ctrl+a`, `⌘+z, ctrl+z`
      * @param {Function|string} handler Keymap handler, might be a function
+     * @return {Object} Added keymap
      *  or just a command id as a string
      * @example
-     * keymaps.add('ns:my-keymap', '⌘+s, ctrl+s', () => {
+     * // 'ns' is just a custom namespace
+     * keymaps.add('ns:my-keymap', '⌘+s, ctrl+s', editor => {
      *  console.log('do stuff');
      * });
      * // or
@@ -66,6 +76,7 @@ module.exports = () => {
         em.trigger(`keymap:emit:${id}`, ...args);
       });
       em.trigger('keymap:add', keymap);
+      return keymap;
     },
 
 
@@ -85,6 +96,9 @@ module.exports = () => {
     /**
      * Get all keymaps
      * @return {Object}
+     * @example
+     * keymaps.getAll();
+     * // -> [{...}, {...}, ...];
      */
     getAll() {
       return keymaps;
