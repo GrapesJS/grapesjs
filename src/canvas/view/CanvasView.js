@@ -5,6 +5,7 @@ module.exports = Backbone.View.extend({
 
   initialize(o) {
     _.bindAll(this, 'renderBody', 'onFrameScroll', 'clearOff');
+    window.onscroll = this.clearOff
     this.config = o.config || {};
     this.em = this.config.em || {};
     this.ppfx  = this.config.pStylePrefix || '';
