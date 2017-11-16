@@ -51,9 +51,9 @@
  * * `asset:upload:response` - On upload response, passes the result as an argument
  * ## Keymaps
  * * `keymap:add` - New keymap added. The new keyamp object is passed as an argument
+ * * `keymap:remove` - Keymap removed. The removed keyamp object is passed as an argument
  * * `keymap:emit` - Some keymap emitted, in arguments you get keymapId, shortcutUsed, Event
  * * `keymap:emit:{keymapId}` - `keymapId` emitted, in arguments you get keymapId, shortcutUsed, Event
- * * `keymap:remove` - Keymap removed. The removed keyamp object is passed as an argument
  * ## Style Manager
  * * `styleManager:change` - Triggered on style property change from new selected component, the view of the property is passed as an argument to the callback
  * * `styleManager:change:{propertyName}` - As above but for a specific style property

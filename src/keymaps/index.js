@@ -53,11 +53,16 @@ module.exports = () => {
      *  or just a command id as a string
      * @example
      * // 'ns' is just a custom namespace
-     * keymaps.add('ns:my-keymap', '⌘+s, ctrl+s', editor => {
+     * keymaps.add('ns:my-keymap', '⌘+j, ⌘+u, ctrl+j, alt+u', editor => {
      *  console.log('do stuff');
      * });
      * // or
      * keymaps.add('ns:my-keymap', '⌘+s, ctrl+s', 'some-gjs-command');
+     *
+     * // listen to events
+     * editor.on('keymap:emit', (id, shortcut, e) => {
+     *  // ...
+     * })
      */
     add(id, keys, handler) {
       const em = this.em;
