@@ -1,4 +1,5 @@
-import { isString, isArray } from 'underscore';
+import { isString, isArray, keys } from 'underscore';
+import { shallowDiff } from 'utils/mixins';
 import ParserHtml from 'parser/model/ParserHtml';
 
 const parseStyle = ParserHtml().parseStyle;
@@ -37,13 +38,13 @@ export default {
       prop = parseStyle(prop);
     }
 
-    this.set('style', { ...prop }, opts);
+    const propOrig = this.getStyle();
+    const propNew = { ...prop };
+    this.set('style', propNew, opts);
+    const diff = shallowDiff(propOrig, propNew);
+    keys(diff).forEach(pr => this.trigger(`change:style:${pr}`));
 
-    for (let pr in prop) {
-      this.trigger(`change:style:${pr}`);
-    }
-
-    return prop;
+    return propNew;
   },
 
 

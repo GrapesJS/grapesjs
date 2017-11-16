@@ -54,6 +54,7 @@ module.exports = Backbone.View.extend({
     this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model, 'change:status', this.updateStatus);
     this.listenTo(model, 'change:open', this.updateOpening);
+    this.listenTo(model, 'change:style:display', this.updateVisibility);
     this.className = `${pfx}item no-select`;
     this.editBtnCls = `${pfx}nav-item-edit`;
     this.inputNameCls = `${ppfx}nav-comp-name`;
@@ -62,6 +63,50 @@ module.exports = Backbone.View.extend({
     this.$el.data('model', model);
     this.$el.data('collection', components);
   },
+
+
+  getVisibilityEl () {
+    if (!this.eyeEl) {
+      this.eyeEl = this.$el.children(`#${this.pfx}btn-eye`);
+    }
+
+    return this.eyeEl;
+  },
+
+
+  updateVisibility() {
+    const pfx = this.pfx;
+    const model = this.model;
+    const hClass = `${pfx}hide`;
+    const hideIcon = 'fa-eye-slash';
+    const hidden = model.getStyle().display == 'none';
+    const method = hidden ? 'addClass' : 'removeClass';
+    this.$el[method](hClass);
+    this.getVisibilityEl()[method](hideIcon);
+  },
+
+
+  /**
+   * Toggle visibility
+   * @param	Event
+   *
+   * @return 	void
+   * */
+  toggleVisibility(e) {
+    e && e.stopPropagation();
+    const model = this.model;
+    const style = model.getStyle();
+    const hidden = style.display == 'none';
+
+    if (hidden) {
+      delete style.display;
+    } else {
+      style.display = 'none';
+    }
+
+    model.setStyle(style);
+  },
+
 
   /**
    * Handle the edit of the component name
@@ -72,6 +117,7 @@ module.exports = Backbone.View.extend({
     inputName.readOnly = false;
     inputName.focus();
   },
+
 
   /**
    * Handle with the end of editing of the component name
@@ -178,34 +224,6 @@ module.exports = Backbone.View.extend({
     ComponentView.prototype.updateStatus.apply(this, arguments);
   },
 
-  /**
-   * Toggle visibility
-   * @param	Event
-   *
-   * @return 	void
-   * */
-  toggleVisibility(e) {
-    e && e.stopPropagation();
-    const pfx = this.pfx;
-    const model = this.model;
-    const hClass = `${pfx}hide`;
-    const style = model.getStyle();
-    const hideIcon = 'fa-eye-slash';
-    const $el = this.$el;
-    !this.$eye && (this.$eye = $el.children(`#${pfx}btn-eye`));
-
-    if (this.isVisible()) {
-      $el.addClass(hClass);
-      this.$eye.addClass(hideIcon);
-      style.display = 'none';
-    } else {
-      $el.removeClass(hClass);
-      this.$eye.removeClass(hideIcon);
-      delete style.display;
-    }
-
-    model.setStyle(style);
-  },
 
   /**
    * Check if component is visible
@@ -319,6 +337,7 @@ module.exports = Backbone.View.extend({
     el.attr('class', _.result(this, 'className'));
     this.updateOpening();
     this.updateStatus();
+    this.updateVisibility();
     return this;
   },
 

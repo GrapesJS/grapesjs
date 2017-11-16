@@ -1,4 +1,5 @@
-import { isUndefined, isArray, isEmpty, has, clone } from 'underscore';
+import { isUndefined, isArray, isEmpty, has, clone, isString, keys } from 'underscore';
+import { shallowDiff } from 'utils/mixins';
 import Styleable from 'domain_abstract/model/Styleable';
 
 const Backbone = require('backbone');
@@ -208,10 +209,13 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     const em = this.em;
 
     if (em && em.getConfig('avoidInlineStyle')) {
-      prop = Styleable.setStyle.call(this, prop, {silent: 1, avoidStore: 1});
+      prop = isString(prop) ? this.parseStyle(prop) : prop;
       const state = this.get('state');
       const cc = em.get('CssComposer');
+      const propOrig = this.getStyle();
       this.rule = cc.setIdRule(this.getId(), prop, { ...opts, state });
+      const diff = shallowDiff(propOrig, prop);
+      keys(diff).forEach(pr => this.trigger(`change:style:${pr}`));
     } else {
       prop = Styleable.setStyle.apply(this, arguments);
     }
