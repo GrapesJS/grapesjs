@@ -2,6 +2,7 @@ import { isUndefined, defaults } from 'underscore';
 
 const deps = [
   require('utils'),
+  require('keymaps'),
   require('storage_manager'),
   require('device_manager'),
   require('parser'),
@@ -179,6 +180,12 @@ module.exports = Backbone.Model.extend({
   init(editor) {
     this.set('Editor', editor);
   },
+
+
+  getEditor() {
+    return this.get('Editor');
+  },
+
 
   /**
    * Listen for new rules
