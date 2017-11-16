@@ -7,7 +7,7 @@
  * ```
  *
  */
-import { defaults, isString } from 'underscore';
+import { isString } from 'underscore';
 
 const keymaster = require('keymaster');
 
