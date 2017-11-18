@@ -48,7 +48,7 @@ module.exports = () => {
   AbsCommands = require('./view/CommandAbstract');
 
   // Need it here as it would be used below
-  var add = function(id, obj){
+  var add = function(id, obj) {
     if (isFunction(obj)) {
       obj = { run: obj };
     }
