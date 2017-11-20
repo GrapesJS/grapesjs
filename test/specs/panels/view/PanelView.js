@@ -25,7 +25,8 @@ module.exports = {
         });
 
         it('Panel empty', () => {
-          expect(fixtures.innerHTML).toEqual('<div class="panel"></div>');
+          fixtures.firstChild.className = "";
+          expect(fixtures.innerHTML).toEqual('<div class=""></div>');
         });
 
         it('Append content', () => {

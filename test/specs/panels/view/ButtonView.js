@@ -44,7 +44,7 @@ module.exports = {
         it('Check enable active', () => {
           model.set('active', true, {silent: true});
           view.checkActive();
-          expect(view.el.getAttribute('class')).toEqual(btnClass + ' active');
+          expect(view.el.getAttribute('class')).toContain(btnClass + ' active');
         });
 
         it('Check disable active', () => {
@@ -60,7 +60,7 @@ module.exports = {
           view.updateDisable();
           expect(view.el.getAttribute('class')).toEqual(btnClass + ' active');
         });
-        
+
         it('Enable the disabled button', () => {
           model.set('disable', true, {silent: true});
           view.updateDisable();
