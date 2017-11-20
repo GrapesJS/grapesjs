@@ -31,7 +31,7 @@ module.exports = Backbone.View.extend({
 
     el.append(model.get('Canvas').render());
     el.append(this.pn.render());
-    el.attr('class', `${pfx}editor`);
+    el.attr('class', `${pfx}editor ${pfx}one-bg ${pfx}two-color`);
     contEl.addClass(`${pfx}editor-cont`).empty().append(el);
 
     return this;

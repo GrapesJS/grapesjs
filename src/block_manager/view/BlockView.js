@@ -53,8 +53,9 @@ module.exports = Backbone.View.extend({
 
   render() {
     const el = this.el;
-    const className = `${this.ppfx}block`;
-    el.className += ` ${className}`;
+    const pfx = this.ppfx;
+    const className = `${pfx}block`;
+    el.className += ` ${className} ${pfx}one-bg ${pfx}four-color-h`;
     el.innerHTML = `<div class="${className}-label">${this.model.get('label')}</div>`;
     return this;
   },

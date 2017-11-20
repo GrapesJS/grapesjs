@@ -90,14 +90,13 @@
 }
 
 .#{$app-prefix}field {
-  background-color: $mainDkColor;
+  background-color: rgba(0, 0, 0, 0.2);
   border: none;
   box-shadow: none;
   border-radius: 2px;
   box-sizing: border-box;
   padding: 0;
   position: relative;
-  color: $inputFontColor;
 
   textarea {
     resize: vertical;
@@ -320,8 +319,7 @@
 }
 
 .#{$app-prefix}btn-prim {
-  @extend .#{$app-prefix}color-main;
-
+  color: inherit;
   background-color: $mainLhColor;
   border-radius: 2px;
   padding: 3px 6px;

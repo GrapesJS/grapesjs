@@ -10,14 +10,16 @@ module.exports = Backbone.View.extend({
     var cls = this.model.get('className');
     this.config = o.config || {};
     this.em = this.config.em || {};
-    this.pfx = this.config.stylePrefix || '';
+    const pfx = this.config.stylePrefix || '';
+    const ppfx = this.config.pStylePrefix || '';
+    this.pfx = pfx;
     this.ppfx = this.config.pStylePrefix || '';
-    this.id = this.pfx + this.model.get('id');
-    this.activeCls = this.pfx + 'active';
-    this.disableCls = this.pfx + 'active';
-    this.btnsVisCls = this.pfx + 'visible';
+    this.id = pfx + this.model.get('id');
+    this.activeCls = `${pfx}active ${ppfx}four-color`;
+    this.disableCls = pfx + 'active';
+    this.btnsVisCls = pfx + 'visible';
     this.parentM = o.parentM || null;
-    this.className = this.pfx + 'btn' + (cls ? ' ' + cls : '');
+    this.className = pfx + 'btn' + (cls ? ' ' + cls : '');
     this.listenTo(this.model, 'change:active updateActive', this.updateActive);
     this.listenTo(this.model, 'checkActive', this.checkActive);
     this.listenTo(this.model, 'change:bntsVis', this.updateBtnsVis);
@@ -27,7 +29,7 @@ module.exports = Backbone.View.extend({
 
     if(this.model.get('buttons').length){
       this.$el.on('mousedown', this.startTimer);
-      this.$el.append($('<div>',{class: this.pfx + 'arrow-rd'}));
+      this.$el.append($('<div>',{class: pfx + 'arrow-rd'}));
     }
 
     if(this.em && this.em.get)

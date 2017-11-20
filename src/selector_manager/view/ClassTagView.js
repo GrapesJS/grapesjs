@@ -16,7 +16,6 @@ module.exports = Backbone.View.extend({
     this.ppfx = this.config.pStylePrefix || '';
     this.inputProp = 'readonly';
     this.target = this.config.em;
-    this.className = this.pfx + 'tag';
     this.closeId = this.pfx + 'close';
     this.chkId = this.pfx + 'checkbox';
     this.labelId = this.pfx + 'tag-label';
@@ -124,13 +123,15 @@ module.exports = Backbone.View.extend({
 
 
   render() {
+    const pfx = this.pfx;
+    const ppfx = this.ppfx;
     this.$el.html( this.template({
       label: this.model.get('label'),
-      pfx: this.pfx,
-      ppfx: this.ppfx,
+      pfx,
+      ppfx,
       inputProp: this.inputProp,
     }));
-    this.$el.attr('class', this.className);
+    this.$el.attr('class', `${pfx}tag ${ppfx}three-bg`);
     this.updateStatus();
     this.updateInputLabel();
     return this;

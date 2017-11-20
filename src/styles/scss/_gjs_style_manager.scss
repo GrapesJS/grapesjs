@@ -167,8 +167,6 @@
     }
 
     &.#{$sm-prefix}composite {
-      @extend .#{$app-prefix}color-main;
-
       border-radius: 2px;
     }
 

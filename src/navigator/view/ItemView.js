@@ -18,7 +18,7 @@ module.exports = Backbone.View.extend({
     <i id="<%= prefix %>btn-eye" class="btn fa fa-eye <%= (visible ? '' : 'fa-eye-slash') %>" data-toggle-visible></i>
   <% } %>
 
-  <div class="<%= prefix %>title-c">
+  <div class="<%= prefix %>title-c <%= ppfx %>one-bg">
     <div class="<%= prefix %>title <%= addClass %>" style="padding-left: <%= 30 + level * 10 %>px" data-toggle-select>
       <div class="<%= prefix %>title-inn">
         <i id="<%= prefix %>caret" class="fa fa-chevron-right <%= caretCls %>" data-toggle-open></i>
@@ -298,7 +298,7 @@ module.exports = Backbone.View.extend({
     const el = this.$el;
     const level = this.level + 1;
 
-    el.html( this.template({
+    el.html(this.template({
       title: model.getName(),
       icon: model.getIcon(),
       addClass: (count ? '' : pfx+'no-chld'),
