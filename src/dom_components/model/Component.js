@@ -554,7 +554,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     for (let attr in attributes) {
       const value = attributes[attr];
 
-      if (!isUndefined(value) && value !== '') {
+      if (!isUndefined(value)) {
           attrs.push(`${attr}="${value}"`);
       }
     }
