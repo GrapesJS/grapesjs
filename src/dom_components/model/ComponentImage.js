@@ -2,7 +2,7 @@ var Component = require('./Component');
 
 module.exports = Component.extend({
 
-  defaults: _.extend({}, Component.prototype.defaults, {
+  defaults: { ...Component.prototype.defaults,
     type: 'image',
     tagName: 'img',
     src: '',
@@ -12,7 +12,7 @@ module.exports = Component.extend({
     highlightable: 0,
     resizable: 1,
     traits: ['alt']
-  }),
+  },
 
   initialize(o, opt) {
     Component.prototype.initialize.apply(this, arguments);

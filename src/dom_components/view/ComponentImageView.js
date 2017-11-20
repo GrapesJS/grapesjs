@@ -11,30 +11,28 @@ module.exports = ComponentView.extend({
   },
 
   initialize(o) {
+    const model = this.model;
     ComponentView.prototype.initialize.apply(this, arguments);
-    this.listenTo(this.model, 'change:src', this.updateSrc);
-    this.listenTo(this.model, 'dblclick active', this.openModal);
-    this.classEmpty = this.ppfx + 'plh-image';
-
-    if(this.config.modal)
-      this.modal = this.config.modal;
-
-    if(this.config.am)
-      this.am = this.config.am;
+    this.listenTo(model, 'change:src', this.updateSrc);
+    this.listenTo(model, 'dblclick active', this.openModal);
+    this.classEmpty = `${this.ppfx}plh-image`;
+    const config = this.config;
+    config.modal && (this.modal = config.modal);
+    config.am && (this.am = config.am);
   },
+
 
   /**
    * Update src attribute
    * @private
    * */
   updateSrc() {
-    var src = this.model.get("src");
-    this.$el.attr('src', src);
-    if(!src)
-      this.$el.addClass(this.classEmpty);
-    else
-      this.$el.removeClass(this.classEmpty);
+    const src = this.model.get("src");
+    const el = this.$el;
+    el.attr('src', src);
+    el[src ? 'removeClass' : 'addClass'](this.classEmpty);
   },
+
 
   /**
    * Open dialog for image changing
@@ -55,6 +53,7 @@ module.exports = ComponentView.extend({
       });
     }
   },
+
 
   render() {
     this.updateAttributes();
