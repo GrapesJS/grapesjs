@@ -14,7 +14,11 @@ $cv-prefix:         $app-prefix + 'cv-' !default;
 $clm-prefix:        $app-prefix + 'clm-' !default;
 $trt-prefix:        $app-prefix + 'trt-' !default;
 
-/* New Pattern Color System - */
+/*
+  New Pattern Color System
+  With this should be easier to overwrite colors
+  not only in SCSS but even CSS
+*/
 $primaryColor:      #444 !default;
 $secondaryColor:    #ddd !default;
 $tertiaryColor:     #804f7b !default;

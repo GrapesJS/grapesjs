@@ -51,50 +51,18 @@
 $prefix: $app-prefix;
 
 .#{$prefix} {
-  &one {
-    &-bg {
-      background-color: $primaryColor;
-    }
-
-    &-color {
-      color: $primaryColor;
-    }
-  }
-
-  &two {
-    &-bg {
-      background-color: $secondaryColor;
-    }
-
-    &-color {
-      color: $secondaryColor;
-    }
-  }
-
-  &three {
-    &-bg {
-      background-color: $tertiaryColor;
-    }
-
-    &-color {
-      color: $tertiaryColor;
-
-      &-h:hover {
-        color: $tertiaryColor;
+  @each $cnum, $ccol in (one, $primaryColor), (two, $secondaryColor), (three, $tertiaryColor), (four, $quaternaryColor) {
+    &#{$cnum} {
+      &-bg {
+        background-color: $ccol;
       }
-    }
-  }
 
-  &four {
-    &-bg {
-      background-color: $quaternaryColor;
-    }
+      &-color {
+        color: $ccol;
 
-    &-color {
-      color: $quaternaryColor;
-
-      &-h:hover {
-        color: $quaternaryColor;
+        &-h:hover {
+          color: $ccol;
+        }
       }
     }
   }
