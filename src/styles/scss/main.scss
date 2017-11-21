@@ -760,7 +760,6 @@ $prefix: $app-prefix;
   .sp-hue{ left: 90%; }
   .sp-color{right: 15%;}
   .sp-container {
-    @extend .#{$app-prefix}bg-main;
     border: 1px solid $mainDkColor;
     box-shadow: 0 0 7px $mainDkColor;
     border-radius: 3px;

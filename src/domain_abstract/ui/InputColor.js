@@ -53,6 +53,7 @@ module.exports = Input.extend({
   getColorEl() {
     if (!this.colorEl) {
       const self = this;
+      const ppfx = this.ppfx;
       var model = this.model;
 
       var colorEl = $(`<div class="${this.ppfx}field-color-picker"></div>`);
@@ -66,8 +67,8 @@ module.exports = Input.extend({
       let changed = 0;
       let previousСolor;
       this.$el.find(`[data-colorp-c]`).append(colorEl);
-
       colorEl.spectrum({
+        containerClassName: `${ppfx}one-bg ${ppfx}two-color`,
         appendTo: elToAppend || 'body',
         maxSelectionSize: 8,
         showPalette: true,

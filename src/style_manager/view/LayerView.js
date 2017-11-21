@@ -156,6 +156,7 @@ module.exports = Backbone.View.extend({
     const properties = new PropertiesView({
       collection: model.get('properties'),
       config: this.config,
+      target: propsConfig.target,
       customValue: propsConfig.customValue,
       propTarget: propsConfig.propTarget,
       onChange: propsConfig.onChange,
