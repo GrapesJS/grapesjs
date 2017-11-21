@@ -50,7 +50,7 @@
 }
 
 .#{$app-prefix}block-svg-path {
-  @extend .#{$app-prefix}color-main;
+  fill: currentColor;
 }
 
 .#{$app-prefix}block.fa {
