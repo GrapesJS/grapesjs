@@ -4,19 +4,27 @@ const webpack = require('webpack');
 const fs = require('fs');
 let plugins = [];
 
-module.exports = (env = {}) => {
-  if (env.prod) {
+module.exports = env => {
+
+  const output = {
+    filename: './dist/grapes.min.js',
+    library: 'grapesjs',
+    libraryTarget: 'umd',
+  };
+
+  if (env == 'prod') {
     plugins = [
       new webpack.optimize.ModuleConcatenationPlugin(),
       new webpack.optimize.UglifyJsPlugin({ minimize:true, compressor: {warnings:false}}),
       new webpack.BannerPlugin(`${pkg.name} - ${pkg.version}`),
-    ]
+    ];
+  } else if (env == 'dev') {
+    output.filename = './dist/grapes.js';
   } else {
     const index = 'index.html';
     const indexDev = `_${index}`;
-    plugins.push(new HtmlWebpackPlugin({
-      template: fs.existsSync(indexDev) ? indexDev : index
-    }));
+    const template = fs.existsSync(indexDev) ? indexDev : index;
+    plugins.push(new HtmlWebpackPlugin({ template }));
   }
 
   plugins.push(new webpack.ProvidePlugin({
@@ -26,24 +34,20 @@ module.exports = (env = {}) => {
 
   return {
     entry: './src',
-    output: {
-        filename: './dist/grapes.min.js',
-        library: 'grapesjs',
-        libraryTarget: 'umd',
-    },
+    output: output,
     plugins: plugins,
     module: {
       loaders: [{
-          test: /grapesjs\/index\.js$/,
-          loader: 'string-replace-loader',
-          query: {
-            search: '<# VERSION #>',
-            replace: pkg.version
-          }
-        },{
-          test: /\.js$/,
-          loader: 'babel-loader',
-          include: /src/
+        test: /grapesjs\/index\.js$/,
+        loader: 'string-replace-loader',
+        query: {
+          search: '<# VERSION #>',
+          replace: pkg.version
+        }
+      },{
+        test: /\.js$/,
+        loader: 'babel-loader',
+        include: /src/
       }],
     },
     resolve: {
@@ -51,6 +55,6 @@ module.exports = (env = {}) => {
       alias: {
         jquery: 'cash-dom'
       }
-    },
+    }
   };
 }
