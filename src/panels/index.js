@@ -2,6 +2,7 @@
  *
  * * [addPanel](#addpanel)
  * * [addButton](#addbutton)
+ * * [removeButton](#removebutton)
  * * [getButton](#getbutton)
  * * [getPanel](#getpanel)
  * * [getPanels](#getpanels)
@@ -115,6 +116,24 @@ module.exports = () => {
     addPanel(panel) {
       return panels.add(panel);
     },
+    
+    /**
+     * Remove a panel from the collection
+     * @param {Object|Panel|String} panel Object with right properties or an instance of Panel or Painel id
+     * @return {Panel} Removed panel. Useful in case passed argument was an Object
+     * @example
+     * const newPanel = panelManager.removePanel({
+     *   id: 'myNewPanel',
+     *  visible  : true,
+     *  buttons  : [...],
+     * });
+     * 
+     * const newPanel = panelManager.removePanel('myNewPanel');
+     * 
+     */
+    removePanel(panel) {
+      return panels.remove(panel);
+    },
 
     /**
      * Get panel by ID
@@ -161,6 +180,29 @@ module.exports = () => {
     addButton(panelId, button) {
       var pn  = this.getPanel(panelId);
       return pn ? pn.get('buttons').add(button) : null;
+    },
+    
+    /**
+     * Remove button from the panel
+     * @param {string} panelId Panel's ID
+     * @param {Object|Button|String} button Button object or instance of Button or button id
+     * @return {Button|null} Removed button. 
+     * @example
+     * const removedButton = panelManager.removeButton('myNewPanel',{
+     *   id: 'myNewButton',
+     *   className: 'someClass',
+     *   command: 'someCommand',
+     *   attributes: { title: 'Some title'},
+     *   active: false,
+     * });
+     * 
+     * // It's also possible to use the button id
+     * const removedButton = panelManager.removeButton('myNewPanel','myNewButton');
+     * 
+     */
+    removeButton(panelId, button) {
+      var pn  = this.getPanel(panelId);
+      return pn && pn.get('buttons').remove(button);
     },
 
     /**

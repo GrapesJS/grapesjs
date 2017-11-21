@@ -102,6 +102,60 @@ describe('Panels', () => {
       expect(spy.called).toEqual(true);
     });
 
+    it("Can't remove button to non existent panel", () => {
+      expect(obj.removeButton('test', {id:'btn'})).toEqual(null);
+    });
+
+    describe('Removes button', () => {
+      it("Remove button correctly with object", () => {
+        var panel = obj.addPanel({id: 'test'});
+        var btn = obj.addButton('test', {id:'btn'});
+        expect(panel.get('buttons').length).toEqual(1);
+        expect(panel.get('buttons').at(0).get('id')).toEqual('btn');
+        expect(obj.removeButton('test', {id:'btn'})).toEqual(btn);
+        expect(panel.get('buttons').length).toEqual(0);
+      });
+      
+      it("Remove button correctly with sting", () => {
+        var panel = obj.addPanel({id: 'test'});
+        var btn = obj.addButton('test', {id:'btn'});
+        expect(panel.get('buttons').length).toEqual(1);
+        expect(panel.get('buttons').at(0).get('id')).toEqual('btn');
+        expect(obj.removeButton('test', 'btn')).toEqual(btn);
+        expect(panel.get('buttons').length).toEqual(0);
+      });
+    });
+
+
+    describe('Removes Panel', () => {
+
+      it("Removes panel correctly via object", () => {
+        var panel = obj.addPanel({id: 'test'});
+        expect(panel.get('id')).toEqual('test');
+        obj.removePanel({id: 'test'});
+        expect(panel.get('id')).toEqual('test');
+      });
+  
+      it("Removes panel correctly via Panel instance", () => {
+        var oPanel = new obj.Panel({id: 'test'});
+        var panel = obj.addPanel(oPanel);
+        expect(panel).toEqual(oPanel);
+        expect(panel.get('id')).toEqual('test');
+        obj.removePanel(oPanel);
+        expect(obj.getPanels.length).toEqual(0);
+      });
+      
+      it("Removes panel correctly via id", () => {
+        var oPanel = new obj.Panel({id: 'test'});
+        var panel = obj.addPanel(oPanel);
+        expect(panel).toEqual(oPanel);
+        expect(panel.get('id')).toEqual('test');
+        obj.removePanel('test');
+        expect(obj.getPanels.length).toEqual(0);
+      });
+    });
+
+
   });
 
   Models.run();
