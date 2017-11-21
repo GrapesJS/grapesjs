@@ -3,11 +3,12 @@
   <head>
     <meta charset="utf-8">
     <title>GrapesJS Newsletter Editor</title>
-    <link rel="stylesheet" href="./stylesheets/grapes.min.css?v0.12.5">
-    <link rel="stylesheet" href="./stylesheets/material.css">
-    <link rel="stylesheet" href="./stylesheets/tooltip.css">
-    <link rel="stylesheet" href="./stylesheets/toastr.min.css">
-    <link rel="stylesheet" href="./stylesheets/grapesjs-preset-newsletter.css?v=0.2.15">
+    <link rel="stylesheet" href="stylesheets/grapes.min.css?v0.12.5">
+    <link rel="stylesheet" href="stylesheets/material.css">
+    <link rel="stylesheet" href="stylesheets/tooltip.css">
+    <link rel="stylesheet" href="stylesheets/toastr.min.css">
+    <link rel="stylesheet" href="stylesheets/grapesjs-preset-newsletter.css?v=0.2.15">
+    <link rel="stylesheet" href="stylesheets/demos.css">
 
     <script src="//feather.aviary.com/imaging/v3/editor.js"></script>
     <script src="js/grapes.min.js?v0.12.5"></script>
@@ -19,47 +20,20 @@
     <script src="./js/ajaxable.min.js"></script>
   </head>
   <style>
-    body, html{
-      height: 100%;
-      margin: 0;
-      overflow: hidden;
-    }
-    iframe {
-        user-select: none;
-        -webkit-user-select: none;
-    }
-
     .nl-link {
       color: inherit;
     }
-    .info-link {
-      text-decoration: none;
-    }
-    #info-cont {
-      line-height: 17px;
-    }
-    .grapesjs-logo {
-      display: block;
-      height: 90px;
-      margin: 0 auto;
-      width: 90px;
-    }
-    .grapesjs-logo path{
-      stroke: #eee !important;
-      stroke-width: 8 !important;
+
+    .gjs-clm-tag {
+      color: white;
     }
 
-    #toast-container {
-      font-size: 13px;
-      font-weight: lighter;
+    .gjs-four-color {
+      color: #35d7bb;
     }
-    #toast-container > div,
-    #toast-container > div:hover{
-      box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
-      font-family: Helvetica, sans-serif;
-    }
-    #toast-container > div{
-      opacity: 0.95;
+
+    .gjs-logo-version {
+      background-color: #5a606d;
     }
   </style>
   <body>
@@ -522,22 +496,36 @@
     </form>
 
 
-    <div id="info-cont" style="display:none">
+    <div id="info-panel" style="display:none">
       <br/>
-      <svg class="grapesjs-logo" xmlns="http://www.w3.org/2000/svg" version="1"><g id="gjs-logo"><path d="M40 5l-12.9 7.4 -12.9 7.4c-1.4 0.8-2.7 2.3-3.7 3.9 -0.9 1.6-1.5 3.5-1.5 5.1v14.9 14.9c0 1.7 0.6 3.5 1.5 5.1 0.9 1.6 2.2 3.1 3.7 3.9l12.9 7.4 12.9 7.4c1.4 0.8 3.3 1.2 5.2 1.2 1.9 0 3.8-0.4 5.2-1.2l12.9-7.4 12.9-7.4c1.4-0.8 2.7-2.2 3.7-3.9 0.9-1.6 1.5-3.5 1.5-5.1v-14.9 -12.7c0-4.6-3.8-6-6.8-4.2l-28 16.2" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-width:10;stroke:#fff"/></g></svg>
+      <svg class="info-panel-logo" xmlns="http://www.w3.org/2000/svg" version="1"><g id="gjs-logo"><path d="M40 5l-12.9 7.4 -12.9 7.4c-1.4 0.8-2.7 2.3-3.7 3.9 -0.9 1.6-1.5 3.5-1.5 5.1v14.9 14.9c0 1.7 0.6 3.5 1.5 5.1 0.9 1.6 2.2 3.1 3.7 3.9l12.9 7.4 12.9 7.4c1.4 0.8 3.3 1.2 5.2 1.2 1.9 0 3.8-0.4 5.2-1.2l12.9-7.4 12.9-7.4c1.4-0.8 2.7-2.2 3.7-3.9 0.9-1.6 1.5-3.5 1.5-5.1v-14.9 -12.7c0-4.6-3.8-6-6.8-4.2l-28 16.2" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-width:10;stroke:#fff"/></g></svg>
       <br/>
-      <div class="gjs-import-label">
+      <div class="info-panel-label">
         <b>GrapesJS Newsletter Builder</b> is a showcase of what/how is possible to build an editor using the
-        <a class="info-link gjs-color-active" target="_blank" href="http://artf.github.io/grapesjs/">GrapesJS</a>
-        core library. Is not intended to represent a complete builder solution.
+        <a class="info-panel-link gjs-four-color" target="_blank" href="http://artf.github.io/grapesjs/">GrapesJS</a>
+        core library
         <br/><br/>
         For any tip about this demo (or newsletters construction in general) check the
-        <a class="info-link gjs-color-active" target="_blank" href="https://github.com/artf/grapesjs-preset-newsletter">Newsletter Preset repository</a>
+        <a class="info-panel-link gjs-four-color" target="_blank" href="https://github.com/artf/grapesjs-preset-newsletter">Newsletter Preset repository</a>
         and open an issue. For any problem with the builder itself, open an issue on the main
-        <a class="info-link gjs-color-active" target="_blank" href="https://github.com/artf/grapesjs">GrapesJS repository</a>.
+        <a class="info-panel-link gjs-four-color" target="_blank" href="https://github.com/artf/grapesjs">GrapesJS repository</a>
         <br/><br/>
         Being a free and open source project contributors and supporters are extremely welcome.
+        If you like the project support it with a donation of your choice or become a backer/sponsor via
+        <a class="info-panel-link gjs-four-color" target="_blank" href="https://opencollective.com/grapesjs">Open Collective</a>
       </div>
+    </div>
+
+    <div style="display: none">
+      <div class="gjs-logo-cont">
+        <a href="//grapesjs.com"><img class="gjs-logo" src="img/grapesjs-logo-cl.png"></a>
+        <div class="gjs-logo-version"></div>
+      </div>
+    </div>
+
+
+    <div class="ad-cont">
+      <div id="code-sponsor-widget"></div>
     </div>
 
 
@@ -663,7 +651,7 @@
       */
 
       // Add info command
-      var infoContainer = document.getElementById("info-cont");
+      var infoContainer = document.getElementById("info-panel");
       cmdm.add('open-info', {
         run(editor, sender) {
           sender.set('active', 0);
@@ -679,10 +667,20 @@
           })
         }
       });
-      pnm.addButton('options', {
+      pnm.addButton('options', [{
+        id: 'undo',
+        className: 'fa fa-undo',
+        attributes: {title: 'Undo'},
+        command: function(){ editor.runCommand('core:undo') }
+      },{
+        id: 'redo',
+        className: 'fa fa-repeat',
+        attributes: {title: 'Redo'},
+        command: function(){ editor.runCommand('core:redo') }
+      },{
         id: 'clear-all',
         className: 'fa fa-trash icon-blank',
-        attributes: {title: 'Empty canvas'},
+        attributes: {title: 'Clear canvas'},
         command: {
           run: function(editor, sender) {
             sender && sender.set('active', false);
@@ -694,8 +692,7 @@
             }
           }
         }
-      });
-      pnm.addButton('options', {
+      },{
         id: 'view-info',
         className: 'fa fa-question-circle',
         command: 'open-info',
@@ -703,7 +700,7 @@
           'title': 'About',
           'data-tooltip-pos': 'bottom',
         },
-      });
+      }]);
 
       // Simple warn notifier
       var origWarn = console.warn;
@@ -729,6 +726,21 @@
         el.setAttribute('data-tooltip', title);
         el.setAttribute('title', '');
       }
+
+
+      // Do stuff on load
+      editor.on('load', function() {
+        var $ = grapesjs.$;
+
+        // Show logo with the version
+        var logoCont = document.querySelector('.gjs-logo-cont');
+        document.querySelector('.gjs-logo-version').innerHTML = 'v' + grapesjs.version;
+        var logoPanel = document.querySelector('#gjs-pn-commands');
+        logoPanel.appendChild(logoCont);
+
+        // Move Ad
+        $('#gjs').append($('.ad-cont'));
+      });
     </script>
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -739,5 +751,6 @@
       ga('create', 'UA-74284223-1', 'auto');
       ga('send', 'pageview');
     </script>
+    <script type="text/javascript" src="https://app.codesponsor.io/scripts/OoCl1gjRd-YmpYfszYJ1Dg?theme=dark&width=100%25"></script>
   </body>
 </html>

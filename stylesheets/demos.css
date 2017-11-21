@@ -1,0 +1,92 @@
+body,
+html {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+#toast-container {
+  font-size: 13px;
+  font-weight: lighter;
+}
+
+#toast-container > div,
+#toast-container > div:hover {
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+  font-family: Helvetica, sans-serif;
+}
+
+#toast-container > div {
+  opacity: 0.95;
+}
+
+/* LOGO VERSION */
+
+#gjs-pn-commands .gjs-pn-buttons {
+  display: none;
+}
+
+.gjs-logo {
+  height: 25px;
+}
+
+.gjs-logo-cont {
+  position: relative;
+  display: inline-block;
+  top: 3px;
+}
+
+.gjs-logo-version {
+  position: absolute;
+  font-size: 10px;
+  padding: 1px 7px;
+  border-radius: 15px;
+  bottom: 2px;
+  right: -43px;
+}
+
+/* INFO PANEL */
+
+.gjs-mdl-dialog-sm {
+  width: 300px;
+}
+
+#info-panel {
+  line-height: 17px;
+}
+
+.info-panel-logo {
+  display: block;
+  height: 90px;
+  margin: 0 auto;
+  width: 90px;
+}
+
+.info-panel-logo path {
+  stroke: #eee !important;
+  stroke-width: 8 !important;
+}
+
+.info-panel-label {
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.info-panel-link {
+  text-decoration: none;
+}
+
+/* ADS */
+
+.gjs-pn-panel#gjs-pn-views-container {
+  height: calc(100% - 150px);
+}
+
+.ad-cont {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  width: 15%;
+  height: 150px;
+}

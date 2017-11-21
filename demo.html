@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="stylesheets/grapesjs-preset-webpage.min.css">
     <link rel="stylesheet" href="stylesheets/tooltip.css">
     <link rel="stylesheet" href="stylesheets/grapesjs-plugin-filestack.css">
+    <link rel="stylesheet" href="stylesheets/demos.css">
+
     <script src="//static.filestackapi.com/v3/filestack.js"></script>
     <script src="//feather.aviary.com/imaging/v3/editor.js"></script>
     <script src="js/toastr.min.js"></script>
@@ -16,13 +18,6 @@
     <script src="js/grapesjs-preset-webpage.min.js"></script>
 
     <style type="text/css">
-        body,
-        html {
-          height: 100%;
-          margin: 0;
-          overflow: hidden;
-        }
-
         .icon-add-comp::before, .icon-comp100::before,.icon-comp50::before,.icon-comp30::before,.icon-rm::before{ content: '';}
         .icon-add-comp {
           background: url("./img/icon-sq-a.png") no-repeat center;
@@ -86,21 +81,6 @@
          background: url("./img/flex-al-center.png") no-repeat center;
         }
 
-         #toast-container {
-           font-size: 13px;
-           font-weight: lighter;
-         }
-
-         #toast-container > div,
-         #toast-container > div:hover {
-           box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
-           font-family: Helvetica, sans-serif;
-         }
-
-         #toast-container > div {
-           opacity: 0.95;
-         }
-
          [data-tooltip]::after {
            background: rgba(51, 51, 51, 0.9);
          }
@@ -110,8 +90,7 @@
          }
 
          #gjs-sm-float,
-         #gjs-pn-views .fa-cog,
-         #gjs-pn-commands .gjs-pn-buttons {
+         #gjs-pn-views .fa-cog {
             display: none;
          }
 
@@ -120,54 +99,9 @@
            width: 100%;
          }
 
-        .gjs-logo {
-          height: 25px;
-        }
-
-        .gjs-logo-cont {
-          position: relative;
-          display: inline-block;
-          top: 3px;
-        }
-
-        .gjs-logo-version {
-          position: absolute;
-          background-color: #756467;
-          font-size: 10px;
-          padding: 1px 7px;
-          border-radius: 15px;
-          bottom: 2px;
-          right: -43px;
-        }
-
-        .gjs-mdl-dialog-sm {
-          width: 300px;
-        }
-
-        #info-panel {
-          line-height: 17px;
-        }
-
-        .info-panel-logo {
-          display: block;
-          height: 90px;
-          margin: 0 auto;
-          width: 90px;
-        }
-
-        .info-panel-logo path {
-            stroke: #eee !important;
-            stroke-width: 8 !important;
-        }
-
-        .info-panel-label {
-          margin-bottom: 10px;
-          font-size: 13px;
-        }
-
-        .info-panel-link {
-          text-decoration: none;
-        }
+         .gjs-logo-version {
+           background-color: #756467;
+         }
 
         .gjs-pn-panel#gjs-pn-views {
           padding: 0;
@@ -189,19 +123,6 @@
         .CodeMirror {
           min-height: 450px;
           margin-bottom: 8px;
-        }
-
-        .gjs-pn-panel#gjs-pn-views-container {
-          height: calc(100% - 150px);
-        }
-
-        .ad-cont {
-          position: absolute;
-          right: 0;
-          bottom: 0;
-          z-index: 2;
-          width: 15%;
-          height: 150px;
         }
     </style>
   </head>
@@ -1472,6 +1393,7 @@
         var openBlocksBtn = editor.Panels.getButton('views', 'open-blocks');
         openBlocksBtn && openBlocksBtn.set('active', 1);
 
+        // Move Ad
         $('#gjs').append($('.ad-cont'));
       });
 
