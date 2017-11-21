@@ -168,8 +168,8 @@ module.exports = Backbone.View.extend({
       // TODO: Cache ?!?
       var frameRect = frame.getBoundingClientRect();
       var ownerDocBodyRect = frame.ownerDocument.body.getBoundingClientRect();
-      addTop = frameRect.top - ownerDocBodyRect.top;
-      addLeft = frameRect.left - ownerDocBodyRect.left;
+      addTop = frameRect.top - ownerDocBodyRect.top - doc.body.scrollTop;
+      addLeft = frameRect.left - ownerDocBodyRect.left - doc.body.scrollLeft;
     }
     dragHelperStyle.top = (e.pageY + addTop) + 'px';
     dragHelperStyle.left = (e.pageX + addLeft) + 'px';
