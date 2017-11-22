@@ -62,6 +62,9 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     // Hide the component inside Layers
     layerable: true,
 
+    // Allow component to be selected when clicked
+    selectable: true,
+
     // This property is used by the HTML exporter as void elements do not
     // have closing tag, eg. <br/>, <hr/>, etc.
     void: false,

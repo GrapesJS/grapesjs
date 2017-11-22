@@ -409,6 +409,10 @@ module.exports = Backbone.Model.extend({
       model = $(el).data('model');
     }
 
+    if (model && !model.get("selectable")) {
+      return;
+    }
+
     this.set('selectedComponent', model, opts);
   },
 
