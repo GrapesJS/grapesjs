@@ -23059,7 +23059,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.12.43',
+    version: '0.12.45',
 
     /**
      * Initializes an editor based on passed options
