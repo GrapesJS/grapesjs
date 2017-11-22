@@ -62,6 +62,9 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     // Hide the component inside Layers
     layerable: true,
 
+    // Shows a highlight outline when hovering on the element if true
+    hoverable: true,
+
     // This property is used by the HTML exporter as void elements do not
     // have closing tag, eg. <br/>, <hr/>, etc.
     void: false,
