@@ -62,6 +62,9 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     // Hide the component inside Layers
     layerable: true,
 
+    // Allow component to be selected when clicked
+    selectable: true,
+
     // Shows a highlight outline when hovering on the element if true
     hoverable: true,
 
