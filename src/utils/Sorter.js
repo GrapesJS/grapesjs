@@ -148,32 +148,35 @@ module.exports = Backbone.View.extend({
    * @param  {Event} e
    */
   moveDragHelper(e) {
-    var doc = e.target.ownerDocument;
+    const doc = e.target.ownerDocument;
 
     if(!this.dragHelper || !doc) {
       return;
     }
 
-    var addTop = 0;
-    var addLeft = 0;
-    var window = doc.defaultView || doc.parentWindow;
-    var frame = window.frameElement;
-    var dragHelperStyle = this.dragHelper.style;
+    let posY = e.pageY;
+    let posX = e.pageX;
+    let addTop = 0;
+    let addLeft = 0;
+    const window = doc.defaultView || doc.parentWindow;
+    const frame = window.frameElement;
+    const dragHelperStyle = this.dragHelper.style;
 
     // If frame is present that means mouse has moved over the editor's canvas,
     // which is rendered inside the iframe and the mouse move event comes from
     // the iframe, not the parent window. Mouse position relative to the frame's
     // parent window needs to account for the frame's position relative to the
     // parent window.
-    if(frame) {
-      // TODO: Cache ?!?
-      var frameRect = frame.getBoundingClientRect();
-      var ownerDocBodyRect = frame.ownerDocument.body.getBoundingClientRect();
-      addTop = frameRect.top - ownerDocBodyRect.top - doc.body.scrollTop;
-      addLeft = frameRect.left - ownerDocBodyRect.left - doc.body.scrollLeft;
+    if (frame) {
+      const frameRect = frame.getBoundingClientRect();
+      addTop = frameRect.top + document.documentElement.scrollTop;
+      addLeft = frameRect.left + document.documentElement.scrollLeft;
+      posY = e.clientY;
+      posX = e.clientX;
     }
-    dragHelperStyle.top = (e.pageY + addTop) + 'px';
-    dragHelperStyle.left = (e.pageX + addLeft) + 'px';
+
+    dragHelperStyle.top = (posY + addTop) + 'px';
+    dragHelperStyle.left = (posX + addLeft) + 'px';
   },
 
 
