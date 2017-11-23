@@ -447,11 +447,8 @@ module.exports = {
       }
 
       this.toolbar.reset(toolbar);
-      var view = model.view;
-
-      if(view) {
-        this.updateToolbarPos(view.el);
-      }
+      const view = model.view;
+      view && this.updateToolbarPos(view.el);
     } else {
       toolbarStyle.display = 'none';
     }
@@ -466,6 +463,7 @@ module.exports = {
     var unit = 'px';
     var toolbarEl = this.canvas.getToolbarEl();
     var toolbarStyle = toolbarEl.style;
+    toolbarStyle.display = 'block';
     var pos = this.canvas.getTargetToElementDim(toolbarEl, el, {
       elPos,
       event: 'toolbarPosUpdate',
@@ -473,6 +471,7 @@ module.exports = {
     var leftPos = pos.left + pos.elementWidth - pos.targetWidth;
     toolbarStyle.top = pos.top + unit;
     toolbarStyle.left = leftPos + unit;
+    toolbarStyle.display = '';
   },
 
   /**
@@ -522,9 +521,10 @@ module.exports = {
    * Update attached elements, eg. component toolbar
    * @return {[type]} [description]
    */
-  updateAttached() {
-    var model = this.em.get('selectedComponent');
-    if (model) {
+  updateAttached(updated) {
+    const model = this.em.get('selectedComponent');
+
+    if (model && updated === model) {
       var view = model.view;
       this.updateToolbarPos(view.el);
       this.showFixedElementOffset(view.el);
