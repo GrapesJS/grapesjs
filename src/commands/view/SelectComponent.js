@@ -274,7 +274,7 @@ module.exports = {
     var $el = $(el);
     var model = $el.data('model');
 
-    if(!model || (model && model.get('status') == 'selected')) {
+    if(!model || !model.get("hoverable") || model.get('status') == 'selected') {
       return;
     }
 
