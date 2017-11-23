@@ -4,8 +4,10 @@ var ButtonsView = require('./ButtonsView');
 module.exports = Backbone.View.extend({
 
   initialize(o) {
-    this.config = o.config || {};
-    this.pfx = this.config.stylePrefix || '';
+    const config = o.config || {};
+    this.config = config;
+    this.pfx = config.stylePrefix || '';
+    this.ppfx = config.pStylePrefix || '';
     this.buttons = this.model.get('buttons');
     this.className = this.pfx + 'panel';
     this.id = this.pfx + this.model.get('id');
@@ -76,20 +78,20 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    this.$el.attr('class', this.className);
-
-    if(this.id)
-      this.$el.attr('id', this.id);
+    const el = this.$el;
+    const pfx = this.ppfx;
+    el.attr('class', `${this.className} ${pfx}one-bg`);
+    this.id && el.attr('id', this.id);
 
     if (this.buttons.length) {
       var buttons  = new ButtonsView({
         collection: this.buttons,
         config: this.config,
       });
-      this.$el.append(buttons.render().el);
+      el.append(buttons.render().el);
     }
 
-    this.$el.append(this.model.get('content'));
+    el.append(this.model.get('content'));
     return this;
   },
 

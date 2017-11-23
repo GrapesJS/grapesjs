@@ -48,6 +48,26 @@
   transform: $v;
 }
 
+$prefix: $app-prefix;
+
+.#{$prefix} {
+  @each $cnum, $ccol in (one, $primaryColor), (two, $secondaryColor), (three, $tertiaryColor), (four, $quaternaryColor) {
+    &#{$cnum} {
+      &-bg {
+        background-color: $ccol;
+      }
+
+      &-color {
+        color: $ccol;
+
+        &-h:hover {
+          color: $ccol;
+        }
+      }
+    }
+  }
+}
+
 
 .#{$app-prefix}bg {
   &-main {
@@ -193,9 +213,9 @@
  	@include user-select(none);
 }
 
-.#{$app-prefix}editor{
+.#{$app-prefix}editor {
 	font-family: $mainFont;
-	background-color: $mainColor;
+	//background-color: $mainColor;
 	position:relative;
 	box-sizing: border-box;
 	height: 100%;
@@ -219,7 +239,6 @@
   display: flex;
   justify-content: start;
   padding: 5px 10px;
-  font-size: 0.75em;
   font-weight: lighter;
 
   .#{$app-prefix}label {
@@ -313,8 +332,8 @@
 /********* PANELS **********/
 
 .#{$pn-prefix}panel {
-  @extend .#{$app-prefix}bg-main;
-  @extend .#{$app-prefix}color-main;
+  //@extend .#{$app-prefix}bg-main;
+  //@extend .#{$app-prefix}color-main;
   display: inline-block;
   padding: 5px;
   position: absolute;
@@ -362,14 +381,13 @@
   }
 }
 
-.#{$pn-prefix}buttons{
+.#{$pn-prefix}buttons {
   align-items: center;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
 }
 
-.#{$pn-prefix}btn, .#{$app-prefix}btnt{
-  @extend .#{$app-prefix}color-main;
+.#{$pn-prefix}btn, .#{$app-prefix}btnt {
 	box-sizing: border-box;
 	height: 30px; width: 30px;
 	line-height: 21px;
@@ -382,8 +400,7 @@
 	padding: 5px;
 	position: relative;
 
-	&.#{$pn-prefix}active{
-    @extend .#{$app-prefix}color-active;
+	&.#{$pn-prefix}active {
 		background-color: rgba(0, 0, 0, 0.15);
     box-shadow: 0 0 3px rgba(0, 0, 0, 0.25) inset;
 	}
@@ -559,14 +576,10 @@
 	}
 
 	.#{$clm-prefix}tag {
-		background-color: $tagBg;
-		border: 1px solid darken($tagBg, 12%);
-		box-shadow: 1px 1px lighten($tagBg, 9%) inset;
-		text-shadow: 1px 1px darken($tagBg, 7%);
 		display: inline-block;
 		border-radius:3px;
 		margin: 0 3px 3px 0;
-    padding: 4px;
+    padding: 5px;
     cursor: default;
 	}
 	##{$clm-prefix}close {
@@ -619,8 +632,6 @@
 }
 
 .#{$mdl-prefix}dialog {
-  	@extend .#{$app-prefix}bg-main;
-    @extend .#{$app-prefix}color-main;
   	text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.05);
     animation: #{$app-prefix}slide-down 0.215s;
   	margin: 30px auto 0;
@@ -646,14 +657,13 @@
 	padding:10px 15px;
 	clear: both;
 }
+
 .#{$mdl-prefix}header{
 	position: relative;
 	border-bottom: 1px solid $mainDkColor;
 	padding: 15px 15px 7px;
 }
-.#{$mdl-prefix}content{
-	border-top: 1px solid $mainLhColor;
-}
+
 .#{$app-prefix}export-dl::after{
   content: "";
   clear: both;
@@ -749,7 +759,6 @@
   .sp-hue{ left: 90%; }
   .sp-color{right: 15%;}
   .sp-container {
-    @extend .#{$app-prefix}bg-main;
     border: 1px solid $mainDkColor;
     box-shadow: 0 0 7px $mainDkColor;
     border-radius: 3px;

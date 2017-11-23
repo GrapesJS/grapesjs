@@ -23,8 +23,6 @@
 .#{$app-prefix}block {
   @include user-select(none);
 
-  @extend .#{$app-prefix}bg-main;
-
   width: 45%;
   padding: 1em;
   box-sizing: border-box;
@@ -52,7 +50,7 @@
 }
 
 .#{$app-prefix}block-svg-path {
-  @extend .#{$app-prefix}color-main;
+  fill: currentColor;
 }
 
 .#{$app-prefix}block.fa {

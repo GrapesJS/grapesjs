@@ -1,29 +1,4 @@
 /**
- *
- * * [getConfig](#getconfig)
- * * [getHtml](#gethtml)
- * * [getCss](#getcss)
- * * [getJs](#getjs)
- * * [getComponents](#getcomponents)
- * * [setComponents](#setcomponents)
- * * [addComponents](#addcomponents)
- * * [getStyle](#getstyle)
- * * [setStyle](#setstyle)
- * * [getSelected](#getselected)
- * * [getSelectedToStyle](#getselectedtostyle)
- * * [setDevice](#setdevice)
- * * [getDevice](#getdevice)
- * * [runCommand](#runcommand)
- * * [stopCommand](#stopcommand)
- * * [store](#store)
- * * [load](#load)
- * * [getContainer](#getcontainer)
- * * [refresh](#refresh)
- * * [on](#on)
- * * [off](#off)
- * * [trigger](#trigger)
- * * [render](#render)
- *
  * Editor class contains the top level API which you'll probably use to custom the editor or extend it with plugins.
  * You get the Editor instance on init method
  *
@@ -75,7 +50,6 @@
  * * `canvasScroll` - Triggered when the canvas is scrolle
  * * `load` - When the editor is loaded
  *
- * @module Editor
  * @param {Object} config Configurations
  * @param {string} config.container='' Selector for the editor container, eg. '#myEditor'
  * @param {string|Array<Object>} [config.components=''] HTML string or object of components

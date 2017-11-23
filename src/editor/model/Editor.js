@@ -281,9 +281,9 @@ module.exports = Backbone.Model.extend({
             return;
           } else {
             var obj = {
-                "object": model,
-                "before": beforeCache,
-                "after": model.toJSON()
+                object: model,
+                before: beforeCache,
+                after: model.toJSON()
             };
             beforeCache = null;
             return obj;
@@ -305,6 +305,7 @@ module.exports = Backbone.Model.extend({
       UndoManager.addUndoType("change:style", customUndoType);
       UndoManager.addUndoType("change:attributes", customUndoType);
       UndoManager.addUndoType("change:content", customUndoType);
+      UndoManager.addUndoType("change:src", customUndoType);
     }
   },
 
@@ -349,7 +350,7 @@ module.exports = Backbone.Model.extend({
     this.stopListening(classes, 'add remove', this.handleUpdates);
     this.listenTo(classes, 'add remove', this.handleUpdates);
 
-    var evn = 'change:style change:content change:attributes';
+    var evn = 'change:style change:content change:attributes change:src';
     this.stopListening(model, evn, this.handleUpdates);
     this.listenTo(model, evn, this.handleUpdates);
 
@@ -406,6 +407,10 @@ module.exports = Backbone.Model.extend({
 
     if (el instanceof window.HTMLElement) {
       model = $(el).data('model');
+    }
+
+    if (model && !model.get("selectable")) {
+      return;
     }
 
     this.set('selectedComponent', model, opts);

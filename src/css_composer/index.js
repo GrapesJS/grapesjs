@@ -3,6 +3,7 @@
  * * [get](#get)
  * * [set](#set)
  * * [getAll](#getall)
+ * * [clear](#clear)
  * * [load](#load)
  * * [store](#store)
  * * [setIdRule](#setidrule)
@@ -230,6 +231,17 @@ module.exports = () => {
       getAll() {
         return rules;
       },
+
+
+      /**
+       * Remove all rules
+       * @return {this}
+       */
+      clear() {
+        this.getAll().reset();
+        return this;
+      },
+
 
       /**
        * Add a raw collection of rule objects

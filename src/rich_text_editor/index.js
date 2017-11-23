@@ -63,7 +63,7 @@ module.exports = () => {
       this.pfx = config.stylePrefix;
       actions = config.actions || [];
       toolbar = document.createElement('div');
-      toolbar.className = `${ppfx}rte-toolbar`;
+      toolbar.className = `${ppfx}rte-toolbar ${ppfx}one-bg`;
       globalRte = this.initRte(document.createElement('div'));
 
       //Avoid closing on toolbar clicking

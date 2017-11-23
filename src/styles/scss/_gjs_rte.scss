@@ -1,6 +1,5 @@
 .#{$rte-prefix} {
   &toolbar {
-    @extend .#{$app-prefix}bg-main;
     @extend .#{$app-prefix}no-user-select;
 
     border: 1px solid $mainDkColor;
@@ -14,8 +13,6 @@
   }
 
   &action {
-  	@extend .#{$app-prefix}color-main;
-
     display: flex;
     align-items: center;
     justify-content: center;

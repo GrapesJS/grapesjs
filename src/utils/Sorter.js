@@ -115,23 +115,24 @@ module.exports = Backbone.View.extend({
    * @param {Event} event
    */
   setDragHelper(el, event) {
-    var ev = event || '';
-    var clonedEl = el.cloneNode(1);
+    const ev = event || '';
+    const clonedEl = el.cloneNode(1);
+    const rect = el.getBoundingClientRect();
+    const computed = getComputedStyle(el);
+    let style = '';
 
-    // Attach style
-    var style = '';
-    var o = getComputedStyle(el);
-    for(var i = 0; i < o.length; i++) {
-      style += o[i] + ':' + o.getPropertyValue(o[i])+';';
+    for (var i = 0; i < computed.length; i++) {
+      const prop = computed[i];
+      style += `${prop}:${computed.getPropertyValue(prop)};`;
     }
-    clonedEl.setAttribute('style', style);
-    clonedEl.className += ' ' + this.pfx + 'bdrag';
+
     document.body.appendChild(clonedEl);
+    clonedEl.className += ` ${this.pfx}bdrag`;
+    clonedEl.setAttribute('style', style);
     this.dragHelper = clonedEl;
-
-    if(ev) {
-      this.moveDragHelper(ev);
-    }
+    clonedEl.style.width = `${rect.width}px`;
+    clonedEl.style.height = `${rect.height}px`;
+    ev && this.moveDragHelper(ev);
 
     // Listen mouse move events
     if(this.em) {

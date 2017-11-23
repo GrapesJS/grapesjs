@@ -14,9 +14,15 @@ $cv-prefix:         $app-prefix + 'cv-' !default;
 $clm-prefix:        $app-prefix + 'clm-' !default;
 $trt-prefix:        $app-prefix + 'trt-' !default;
 
-
-/* Colors / Theme */
-
+/*
+  New Pattern Color System
+  With this should be easier to overwrite colors
+  not only in SCSS but even CSS
+*/
+$primaryColor:      #444 !default;
+$secondaryColor:    #ddd !default;
+$tertiaryColor:     #804f7b !default;
+$quaternaryColor:   #d278c9 !default;
 
 /* Dark theme */
 $mainColor:         #444 !default; /* Light: #573454 Dark: #3b2639 -moz-linear-gradient(top, #fca99b 0%, #6e2842 100%) */

@@ -82,6 +82,16 @@ module.exports = {
           expect(obj.toHTML()).toEqual('<article data-test1="value1" data-test2="value2"></article>');
         });
 
+        it('Component toHTML with value-less attribute', () => {
+          obj = new Component({
+            tagName: 'div',
+            attributes: {
+              'data-is-a-test': ''
+            }
+          });
+          expect(obj.toHTML()).toEqual('<div data-is-a-test=""></div>');
+        });
+
         it('Component toHTML with classes', () => {
           obj = new Component({
             tagName: 'article'

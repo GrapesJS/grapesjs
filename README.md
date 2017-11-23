@@ -193,6 +193,7 @@ $ npm test
 * [grapesjs-style-gradient](https://github.com/artf/grapesjs-style-gradient) - Add a gradient type input
 
 ### Presets
+* [grapesjs-preset-webpage](https://github.com/artf/grapesjs-preset-webpage) - Webpage Builder
 * [grapesjs-preset-newsletter](https://github.com/artf/grapesjs-preset-newsletter) - Newsletter Builder
 * [grapesjs-mjml](https://github.com/artf/grapesjs-mjml) - Newsletter Builder with MJML components
 

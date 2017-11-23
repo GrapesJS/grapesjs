@@ -1,9 +1,9 @@
 module.exports = require('./AssetView').extend({
 
   events: {
+    'click [data-toggle=asset-remove]': 'onRemove',
     click: 'onClick',
     dblclick: 'onDblClick',
-    'click [data-toggle=asset-remove]': 'onRemove',
   },
 
   getPreview() {
@@ -79,7 +79,7 @@ module.exports = require('./AssetView').extend({
    * @private
    * */
   onRemove(e) {
-    e.stopPropagation();
+    e.stopImmediatePropagation();
     this.model.collection.remove(this.model);
   }
 });
