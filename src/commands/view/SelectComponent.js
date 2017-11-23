@@ -522,9 +522,9 @@ module.exports = {
    * @return {[type]} [description]
    */
   updateAttached(updated) {
-    const model = this.em.get('selectedComponent');
+    const model = this.em.getSelected();
 
-    if (model && updated === model) {
+    if (model) {
       var view = model.view;
       this.updateToolbarPos(view.el);
       this.showFixedElementOffset(view.el);
