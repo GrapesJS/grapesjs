@@ -91,6 +91,7 @@ module.exports = ComponentView.extend({
 
     this.rteEnabled = 0;
     this.toggleEvents();
+    this.render();
   },
 
   /**
