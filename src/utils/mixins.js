@@ -78,6 +78,19 @@ const camelCase = value => {
   return values[0].toLowerCase() + values.slice(1).map(upFirst);
 }
 
+const normalizeFloat = (value, step = 1, valueDef = 0) => {
+  let stepDecimals = 0;
+  if (isNaN(value)) return valueDef;
+  value = parseFloat(value);
+
+  if (Math.floor(value) !== value) {
+    const side = step.toString().split('.')[1];
+    stepDecimals = side ? side.length : 0;
+  }
+
+  return stepDecimals ? parseFloat(value.toFixed(stepDecimals)) : value;
+}
+
 
 export {
   on,
@@ -86,5 +99,6 @@ export {
   matches,
   camelCase,
   shallowDiff,
+  normalizeFloat,
   getUnitFromValue
 }
