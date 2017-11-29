@@ -4,8 +4,10 @@ var CssRuleView = require('./CssRuleView');
 module.exports = Backbone.View.extend({
 
   initialize(o) {
-    this.config = o.config || {};
-    this.pfx = this.config.stylePrefix || '';
+    const config = o.config || {};
+    this.config = config;
+    this.em = config.em;
+    this.pfx = config.stylePrefix || '';
     this.className = this.pfx + 'rules';
     const coll = this.collection;
     this.listenTo(coll, 'add', this.addTo );
@@ -51,7 +53,7 @@ module.exports = Backbone.View.extend({
     const frag = document.createDocumentFragment();
     $el.empty();
     this.collection.each(model => this.addToCollection(model, frag));
-    $el.append(fragment);
+    $el.append(frag);
     $el.attr('class', this.className);
     return this;
   }
