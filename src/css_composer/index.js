@@ -241,7 +241,6 @@ module.exports = () => {
        */
       clear() {
         this.getAll().reset();
-        em && em.get('DomComponents').getWrapper().setStyle('');
         return this;
       },
 
