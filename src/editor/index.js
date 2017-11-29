@@ -244,16 +244,17 @@ module.exports = config => {
      * Returns HTML built inside canvas
      * @return {string} HTML string
      */
-    getHtml() {
-      return em.getHtml();
+    getHtml(opts) {
+      return em.getHtml(opts);
     },
 
     /**
      * Returns CSS built inside canvas
+     * @param {Object} [opts={}] Options
      * @return {string} CSS string
      */
-    getCss() {
-      return em.getCss();
+    getCss(opts) {
+      return em.getCss(opts);
     },
 
     /**

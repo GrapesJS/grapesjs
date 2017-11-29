@@ -485,15 +485,17 @@ module.exports = Backbone.Model.extend({
 
   /**
    * Returns CSS built inside canvas
+   * @param {Object} [opts={}] Options
    * @return {string} CSS string
    * @private
    */
-  getCss() {
+  getCss(opts = {}) {
     const config = this.config;
     const wrappesIsBody = config.wrappesIsBody;
-    var cssc = this.get('CssComposer');
-    var wrp = this.get('DomComponents').getComponent();
-    var protCss = config.protectedCss;
+    const avoidProt = opts.avoidProtected;
+    const cssc = this.get('CssComposer');
+    const wrp = this.get('DomComponents').getComponent();
+    const protCss = !avoidProt ? config.protectedCss : '';
 
     return protCss + this.get('CodeManager').getCode(wrp, 'css', {
       cssc, wrappesIsBody
