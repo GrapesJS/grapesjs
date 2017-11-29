@@ -240,7 +240,10 @@ module.exports = () => {
        * @return {this}
        */
       clear() {
+        console.log('Before', em.get('DomComponents').getWrapper().getStyle());
+        em && em.get('DomComponents').getWrapper().setStyle('');
         this.getAll().reset();
+        console.log('After', em.get('DomComponents').getWrapper().getStyle());
         return this;
       },
 
