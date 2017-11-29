@@ -175,4 +175,8 @@ module.exports = {
   //Configurations for Block Manager
   blockManager: {},
 
+
+  // Texts
+
+  textViewCode: 'View Code',
 };
