@@ -291,7 +291,7 @@ module.exports = () => {
 
 
       /**
-       * Add/update a css rule with id selector
+       * Add/update the CSS rule with id selector
        * @param {string} name Id selector name, eg. 'my-id'
        * @param {Object} style  Style properties and values
        * @param {Object} [opts={}]  Custom options, like `state` and `mediaText`
@@ -315,7 +315,7 @@ module.exports = () => {
 
 
       /**
-       * Get css rule by id selector
+       * Get the CSS rule by id selector
        * @param {string} name Id selector name, eg. 'my-id'
        * @param  {Object} [opts={}]  Custom options, like `state` and `mediaText`
        * @return {CssRule}
@@ -332,7 +332,7 @@ module.exports = () => {
 
 
       /**
-       * Add/update a css rule with class selector
+       * Add/update the CSS rule with class selector
        * @param {string} name Class selector name, eg. 'my-class'
        * @param {Object} style  Style properties and values
        * @param {Object} [opts={}]  Custom options, like `state` and `mediaText`
@@ -356,7 +356,7 @@ module.exports = () => {
 
 
       /**
-       * Get css rule by class selector
+       * Get the CSS rule by class selector
        * @param {string} name Class selector name, eg. 'my-class'
        * @param  {Object} [opts={}]  Custom options, like `state` and `mediaText`
        * @return {CssRule}
