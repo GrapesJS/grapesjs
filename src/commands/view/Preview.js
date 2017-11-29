@@ -28,7 +28,7 @@ module.exports = {
       this.helper.className = pfx + 'off-prv fa fa-eye-slash';
       editorEl.appendChild(this.helper);
       this.helper.onclick = () => {
-        that.stop(editor);
+        editor.stopCommand('preview');
       };
     }
     this.helper.style.display = 'inline-block';

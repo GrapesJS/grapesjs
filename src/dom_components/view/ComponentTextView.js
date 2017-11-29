@@ -82,7 +82,7 @@ module.exports = ComponentView.extend({
         }
 
         // Avoid re-render on reset with silent option
-        model.set('content', '');
+        model.set('content', '').trigger('change:content', model);
         comps.add(content);
         comps.each(model => clean(model));
         comps.trigger('resetNavigator');
