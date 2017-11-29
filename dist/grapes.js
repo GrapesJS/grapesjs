@@ -3566,7 +3566,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscor
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getUnitFromValue = exports.shallowDiff = exports.camelCase = exports.matches = exports.upFirst = exports.off = exports.on = undefined;
+exports.getUnitFromValue = exports.normalizeFloat = exports.shallowDiff = exports.camelCase = exports.matches = exports.upFirst = exports.off = exports.on = undefined;
 
 var _underscore = __webpack_require__(1);
 
@@ -3657,12 +3657,29 @@ var camelCase = function camelCase(value) {
   return values[0].toLowerCase() + values.slice(1).map(upFirst);
 };
 
+var normalizeFloat = function normalizeFloat(value) {
+  var step = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+  var valueDef = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+
+  var stepDecimals = 0;
+  if (isNaN(value)) return valueDef;
+  value = parseFloat(value);
+
+  if (Math.floor(value) !== value) {
+    var side = step.toString().split('.')[1];
+    stepDecimals = side ? side.length : 0;
+  }
+
+  return stepDecimals ? parseFloat(value.toFixed(stepDecimals)) : value;
+};
+
 exports.on = on;
 exports.off = off;
 exports.upFirst = upFirst;
 exports.matches = matches;
 exports.camelCase = camelCase;
 exports.shallowDiff = shallowDiff;
+exports.normalizeFloat = normalizeFloat;
 exports.getUnitFromValue = getUnitFromValue;
 
 /***/ }),
@@ -3743,6 +3760,12 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
 
     // Hide the component inside Layers
     layerable: true,
+
+    // Allow component to be selected when clicked
+    selectable: true,
+
+    // Shows a highlight outline when hovering on the element if true
+    hoverable: true,
 
     // This property is used by the HTML exporter as void elements do not
     // have closing tag, eg. <br/>, <hr/>, etc.
@@ -5058,9 +5081,9 @@ module.exports = Backbone.View.extend({
     }
 
     if (em) {
-      em.trigger('component:update', model);
-      em.trigger('component:styleUpdate', model);
-      em.trigger('component:styleUpdate:' + model.get('property'), model);
+      em.trigger('component:update', target);
+      em.trigger('component:styleUpdate', target);
+      em.trigger('component:styleUpdate:' + model.get('property'), target);
     }
   },
 
@@ -17753,7 +17776,7 @@ module.exports = {
     var $el = $(el);
     var model = $el.data('model');
 
-    if (!model || model && model.get('status') == 'selected') {
+    if (!model || !model.get("hoverable") || model.get('status') == 'selected') {
       return;
     }
 
@@ -17939,10 +17962,7 @@ module.exports = {
 
       this.toolbar.reset(toolbar);
       var view = model.view;
-
-      if (view) {
-        this.updateToolbarPos(view.el);
-      }
+      view && this.updateToolbarPos(view.el);
     } else {
       toolbarStyle.display = 'none';
     }
@@ -17958,6 +17978,7 @@ module.exports = {
     var unit = 'px';
     var toolbarEl = this.canvas.getToolbarEl();
     var toolbarStyle = toolbarEl.style;
+    toolbarStyle.display = 'block';
     var pos = this.canvas.getTargetToElementDim(toolbarEl, el, {
       elPos: elPos,
       event: 'toolbarPosUpdate'
@@ -17965,6 +17986,7 @@ module.exports = {
     var leftPos = pos.left + pos.elementWidth - pos.targetWidth;
     toolbarStyle.top = pos.top + unit;
     toolbarStyle.left = leftPos + unit;
+    toolbarStyle.display = '';
   },
 
 
@@ -18018,8 +18040,9 @@ module.exports = {
    * Update attached elements, eg. component toolbar
    * @return {[type]} [description]
    */
-  updateAttached: function updateAttached() {
-    var model = this.em.get('selectedComponent');
+  updateAttached: function updateAttached(updated) {
+    var model = this.em.getSelected();
+
     if (model) {
       var view = model.view;
       this.updateToolbarPos(view.el);
@@ -21107,9 +21130,9 @@ module.exports = Property.extend({
 module.exports = __webpack_require__(43).extend({
 
   events: {
+    'click [data-toggle=asset-remove]': 'onRemove',
     click: 'onClick',
-    dblclick: 'onDblClick',
-    'click [data-toggle=asset-remove]': 'onRemove'
+    dblclick: 'onDblClick'
   },
 
   getPreview: function getPreview() {
@@ -21180,7 +21203,7 @@ module.exports = __webpack_require__(43).extend({
    * @private
    * */
   onRemove: function onRemove(e) {
-    e.stopPropagation();
+    e.stopImmediatePropagation();
     this.model.collection.remove(this.model);
   }
 });
@@ -23059,7 +23082,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.12.45',
+    version: '0.12.46',
 
     /**
      * Initializes an editor based on passed options
@@ -24369,6 +24392,10 @@ module.exports = Backbone.Model.extend({
       model = $(el).data('model');
     }
 
+    if (model && !model.get("selectable")) {
+      return;
+    }
+
     this.set('selectedComponent', model, opts);
   },
 
@@ -24846,7 +24873,6 @@ module.exports = Backbone.View.extend({
 
 
   /**
-   * //TODO Refactor, use canvas.getMouseRelativePos to get mouse's X and Y
    * Update the position of the helper
    * @param  {Event} e
    */
@@ -24857,18 +24883,29 @@ module.exports = Backbone.View.extend({
       return;
     }
 
-    var win = doc.defaultView || doc.parentWindow;
+    var posY = e.pageY;
+    var posX = e.pageX;
     var addTop = 0;
     var addLeft = 0;
-    var frame = win.frameElement;
+    var window = doc.defaultView || doc.parentWindow;
+    var frame = window.frameElement;
+    var dragHelperStyle = this.dragHelper.style;
+
+    // If frame is present that means mouse has moved over the editor's canvas,
+    // which is rendered inside the iframe and the mouse move event comes from
+    // the iframe, not the parent window. Mouse position relative to the frame's
+    // parent window needs to account for the frame's position relative to the
+    // parent window.
     if (frame) {
-      var frameRect = frame.getBoundingClientRect(); // maybe to cache ?!?
-      addTop = frameRect.top || 0;
-      addLeft = frameRect.left || 0;
+      var frameRect = frame.getBoundingClientRect();
+      addTop = frameRect.top + document.documentElement.scrollTop;
+      addLeft = frameRect.left + document.documentElement.scrollLeft;
+      posY = e.clientY;
+      posX = e.clientX;
     }
-    var hStyle = this.dragHelper.style;
-    hStyle.left = e.pageX - win.pageXOffset + addLeft + 'px';
-    hStyle.top = e.pageY - win.pageYOffset + addTop + 'px';
+
+    dragHelperStyle.top = posY + addTop + 'px';
+    dragHelperStyle.left = posX + addLeft + 'px';
   },
 
 
@@ -25740,8 +25777,14 @@ var defaultOpts = {
   onMove: null,
   onEnd: null,
 
+  // Resize unit step
+  step: 1,
+
   // Minimum dimension
   minDim: 32,
+
+  // Maximum dimension
+  maxDim: '',
 
   // Unit used for height resizing
   unitHeight: 'px',
@@ -26172,30 +26215,49 @@ var Resizer = function () {
   }, {
     key: 'calc',
     value: function calc(data) {
+      var value = void 0;
       var opts = this.opts || {};
+      var step = opts.step;
       var startDim = this.startDim;
       var minDim = opts.minDim;
+      var maxDim = opts.maxDim;
+      var deltaX = data.delta.x;
+      var deltaY = data.delta.y;
+      var startW = startDim.w;
+      var startH = startDim.h;
       var box = {
         t: 0,
         l: 0,
-        w: startDim.w,
-        h: startDim.h
+        w: startW,
+        h: startH
       };
 
       if (!data) return;
 
       var attr = data.handlerAttr;
       if (~attr.indexOf('r')) {
-        box.w = Math.max(minDim, startDim.w + data.delta.x);
+        value = (0, _mixins.normalizeFloat)(startW + deltaX * step, step);
+        value = Math.max(minDim, value);
+        maxDim && (value = Math.min(maxDim, value));
+        box.w = value;
       }
       if (~attr.indexOf('b')) {
-        box.h = Math.max(minDim, startDim.h + data.delta.y);
+        value = (0, _mixins.normalizeFloat)(startH + deltaY * step, step);
+        value = Math.max(minDim, value);
+        maxDim && (value = Math.min(maxDim, value));
+        box.h = value;
       }
       if (~attr.indexOf('l')) {
-        box.w = Math.max(minDim, startDim.w - data.delta.x);
+        value = (0, _mixins.normalizeFloat)(startW - deltaX * step, step);
+        value = Math.max(minDim, value);
+        maxDim && (value = Math.min(maxDim, value));
+        box.w = value;
       }
       if (~attr.indexOf('t')) {
-        box.h = Math.max(minDim, startDim.h - data.delta.y);
+        value = (0, _mixins.normalizeFloat)(startH - deltaY * step, step);
+        value = Math.max(minDim, value);
+        maxDim && (value = Math.min(maxDim, value));
+        box.h = value;
       }
 
       // Enforce aspect ratio (unless shift key is being held)

@@ -8,6 +8,8 @@
  * * [store](#store)
  * * [setIdRule](#setidrule)
  * * [getIdRule](#getidrule)
+ * * [setClassRule](#setclassrule)
+ * * [getClassRule](#getclassrule)
  *
  * This module contains and manage CSS rules for the template inside the canvas
  * Before using the methods you should get first the module from the editor instance, in this way:
@@ -292,8 +294,14 @@ module.exports = () => {
        * Add/update a css rule with id selector
        * @param {string} name Id selector name, eg. 'my-id'
        * @param {Object} style  Style properties and values
-       * @param {Object} [opts={}]  Custom options
-       * @return {CssRule}
+       * @param {Object} [opts={}]  Custom options, like `state` and `mediaText`
+       * @return {CssRule} The new/updated rule
+       * @example
+       * const rule = cc.setIdRule('myid', { color: 'red' });
+       * const ruleHover = cc.setIdRule('myid', { color: 'blue' }, { state: 'hover' });
+       * // This will add current CSS:
+       * // #myid { color: red }
+       * // #myid:hover { color: blue }
        */
       setIdRule(name, style = {}, opts = {}) {
         const state = opts.state || '';
@@ -309,13 +317,57 @@ module.exports = () => {
       /**
        * Get css rule by id selector
        * @param {string} name Id selector name, eg. 'my-id'
-       * @param  {Object} [opts={}]  Custom options
+       * @param  {Object} [opts={}]  Custom options, like `state` and `mediaText`
        * @return {CssRule}
+       * @example
+       * const rule = cc.getIdRule('myid');
+       * const ruleHover = cc.setIdRule('myid', { state: 'hover' });
        */
       getIdRule(name, opts = {}) {
         const state = opts.state || '';
         const media = opts.mediaText || em.getCurrentMedia();
         const selector = em.get('SelectorManager').get(name, Selector.TYPE_ID);
+        return selector && this.get(selector, state, media);
+      },
+
+
+      /**
+       * Add/update a css rule with class selector
+       * @param {string} name Class selector name, eg. 'my-class'
+       * @param {Object} style  Style properties and values
+       * @param {Object} [opts={}]  Custom options, like `state` and `mediaText`
+       * @return {CssRule} The new/updated rule
+       * @example
+       * const rule = cc.setClassRule('myclass', { color: 'red' });
+       * const ruleHover = cc.setClassRule('myclass', { color: 'blue' }, { state: 'hover' });
+       * // This will add current CSS:
+       * // .myclass { color: red }
+       * // .myclass:hover { color: blue }
+       */
+      setClassRule(name, style = {}, opts = {}) {
+        const state = opts.state || '';
+        const media = opts.mediaText || em.getCurrentMedia();
+        const sm = em.get('SelectorManager');
+        const selector = sm.add({ name, type: Selector.TYPE_CLASS });
+        const rule = this.add(selector, state, media);
+        rule.setStyle(style, opts);
+        return rule;
+      },
+
+
+      /**
+       * Get css rule by class selector
+       * @param {string} name Class selector name, eg. 'my-class'
+       * @param  {Object} [opts={}]  Custom options, like `state` and `mediaText`
+       * @return {CssRule}
+       * @example
+       * const rule = cc.getClassRule('myclass');
+       * const ruleHover = cc.getClassRule('myclass', { state: 'hover' });
+       */
+      getClassRule(name, opts = {}) {
+        const state = opts.state || '';
+        const media = opts.mediaText || em.getCurrentMedia();
+        const selector = em.get('SelectorManager').get(name, Selector.TYPE_CLASS);
         return selector && this.get(selector, state, media);
       },
 
