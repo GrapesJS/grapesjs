@@ -20,10 +20,8 @@ module.exports = Backbone.Model.extend({
     this.editor  = CodeMirror.fromTextArea(el, {
       dragDrop: false,
       lineWrapping: true,
-      lineNumbers: this.get('lineNumbers'),
-      readOnly: this.get('readOnly'),
       mode: this.get('codeName'),
-      theme: this.get('theme'),
+      ...this.attributes,
     });
 
     return this;
