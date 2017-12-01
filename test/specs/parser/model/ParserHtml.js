@@ -283,15 +283,17 @@ module.exports = {
         var str = '<div>content1 <div><span>nested</span></div> content2</div>';
         var result = {
           tagName: 'div',
-          type: 'text',
           components: [{
             tagName: '',
             type: 'textnode',
             content: 'content1 ',
           },{
             tagName: 'div',
-            type: 'text',
-            content: 'nested',
+            components: [{
+              tagName: 'span',
+              type: 'text',
+              content: 'nested',
+            }],
           },{
             tagName: '',
             type: 'textnode',
