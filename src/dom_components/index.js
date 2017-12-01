@@ -58,6 +58,21 @@ module.exports = () => {
       view: require('./view/ComponentTableView'),
     },
     {
+      id: 'thead',
+      model: require('./model/ComponentTableHead'),
+      view: require('./view/ComponentTableHeadView'),
+    },
+    {
+      id: 'tbody',
+      model: require('./model/ComponentTableBody'),
+      view: require('./view/ComponentTableBodyView'),
+    },
+    {
+      id: 'tfoot',
+      model: require('./model/ComponentTableFoot'),
+      view: require('./view/ComponentTableFootView'),
+    },
+    {
       id: 'map',
       model: require('./model/ComponentMap'),
       view: require('./view/ComponentMapView'),

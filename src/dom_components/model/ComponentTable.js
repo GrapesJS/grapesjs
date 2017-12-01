@@ -5,7 +5,7 @@ module.exports = Component.extend({
   defaults: _.extend({}, Component.prototype.defaults, {
       type: 'table',
       tagName: 'table',
-      droppable: ['tr', 'tbody', 'thead', 'tfoot'],
+      droppable: ['tbody', 'thead', 'tfoot'],
       columns: 3,
       rows: 2,
       /*
@@ -65,7 +65,7 @@ module.exports = Component.extend({
         rowsColl.push(model);
       }
     });
-    components.reset(rowsColl);
+    // TODO: create tbody element if it doesn't exist? components.reset(rowsColl);
   },
 
 },{
