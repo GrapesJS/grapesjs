@@ -214,12 +214,13 @@ $prefix: $app-prefix;
 }
 
 .#{$app-prefix}editor {
-	font-family: $mainFont;
-	//background-color: $mainColor;
-	position:relative;
-	box-sizing: border-box;
-	height: 100%;
+  font-family: $mainFont;
+  font-size: $fontSize;
+  position: relative;
+  box-sizing: border-box;
+  height: 100%;
 }
+
 .#{$app-prefix}freezed,
 .#{$nv-prefix}freezed {
   @include opacity(0.50);
@@ -459,36 +460,7 @@ $prefix: $app-prefix;
 
 @import "gjs_inputs";
 
-/********* Device Manager **********/
-
-.#{$app-prefix}devices-c {
-  display: flex;
-  align-items: center;
-  padding: 3px;
-  /*
-  padding: 10px 5px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-  margin-bottom: 10px;
-  */
-
-  .#{$app-prefix}device-label {
-    flex-grow: 2;
-    font-size: 0.7em;
-    text-align: left;
-    margin-right: 10px;
-  }
-
-  .#{$app-prefix}select{
-    flex-grow: 20;
-  }
-
-  .#{$app-prefix}add-trasp{
-    flex-grow: 1;
-    margin-left: 5px;
-  }
-}
-
-/********* END Device Manager **********/
+@import "gjs_devices";
 
 
 /********* General **********/
