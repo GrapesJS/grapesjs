@@ -143,43 +143,50 @@ module.exports = config => {
         }
 
         // Check if it's a text node and if could be moved to the prevous model
-        if(model.type == 'textnode'){
-          var prevIsText = nodePrev && nodePrev.type == 'textnode';
-          if(prevIsText){
+        if (model.type == 'textnode') {
+          if (nodePrev && nodePrev.type == 'textnode') {
             nodePrev.content += model.content;
             continue;
           }
+
           // Throw away empty nodes (keep spaces)
-          var content = node.nodeValue;
-          if(content != ' ' && !content.trim()){
+          const content = node.nodeValue;
+          if (content != ' ' && !content.trim()) {
             continue;
           }
         }
 
         // If all children are texts and there is some textnode the parent should
         // be text too otherwise I'm unable to edit texnodes
-        var comps = model.components;
-        if(!model.type && comps){
-          var allTxt = 1;
-          var foundTextNode = 0;
-          for(var ci = 0; ci < comps.length; ci++){
-            var comp = comps[ci];
-            if(comp.type != 'text' &&
-              comp.type != 'textnode' &&
-              c.textTags.indexOf(comp.tagName) < 0 ){
+        const comps = model.components;
+        if (!model.type && comps) {
+          let allTxt = 1;
+          let foundTextNode = 0;
+
+          for (let ci = 0; ci < comps.length; ci++) {
+            const comp = comps[ci];
+            const cType = comp.type;
+
+            if (['text', 'textnode'].indexOf(cType) < 0 &&
+                c.textTags.indexOf(comp.tagName) < 0 ) {
               allTxt = 0;
               break;
             }
-            if(comp.type == 'textnode')
+
+            if (cType == 'textnode') {
               foundTextNode = 1;
+            }
           }
-          if(allTxt && foundTextNode)
+
+          if (allTxt && foundTextNode) {
             model.type = 'text';
+          }
         }
 
         // If tagName is still empty and is not a textnode, do not push it
-        if(!model.tagName && model.type != 'textnode')
+        if (!model.tagName && model.type != 'textnode') {
           continue;
+        }
 
         result.push(model);
       }
