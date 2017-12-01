@@ -586,62 +586,7 @@ $prefix: $app-prefix;
 
 /********* Modal dialog **********/
 
-.#{$mdl-prefix}backlayer {
-	background-color: #000;
-  	position: absolute;
-  	top: 0; left: 0;
-    z-index: 1;
-  	width:100%; height:100%;
-  	@include opacity(0.5);
-}
-
-.#{$mdl-prefix}container {
-		font-family: $mainFont;
-  	position: absolute;
-  	top: 0; left: 0;
-    z-index: 10;
-  	width:100%; height:100%;
-}
-
-.#{$mdl-prefix}dialog {
-  	text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.05);
-    animation: #{$app-prefix}slide-down 0.215s;
-  	margin: 30px auto 0;
-  	max-width: 850px;
-  	width: 90%;
-   	border-radius: 3px;
-   	font-weight: lighter;
-   	position:relative;
-   	z-index: 2;
-
-   	.#{$mdl-prefix}btn-close {
-   		@extend .btn-cl;
-   		position: absolute;
-   		right: 15px; top: 5px;
-    }
-}
-
-.#{$mdl-prefix}active .#{$mdl-prefix}dialog {
-  animation: #{$mdl-prefix}slide-down .216s;
-}
-
-.#{$mdl-prefix}header, .#{$mdl-prefix}content{
-	padding:10px 15px;
-	clear: both;
-}
-
-.#{$mdl-prefix}header{
-	position: relative;
-	border-bottom: 1px solid $mainDkColor;
-	padding: 15px 15px 7px;
-}
-
-.#{$app-prefix}export-dl::after{
-  content: "";
-  clear: both;
-  display:block;
-  margin-bottom:10px;
-}
+@import "gjs_modal";
 
 /********* Assets Manager **********/
 
@@ -707,7 +652,6 @@ $prefix: $app-prefix;
 	}
 	&##{$cm-prefix}css {
 		padding-left: 10px;
-		border-left: 1px solid $mainLhColor;
 		##{$cm-prefix}title { color: #ddca7e;}
 	}
 	##{$cm-prefix}title {
