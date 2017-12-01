@@ -12,6 +12,13 @@ module.exports = require('backbone').Model.extend({
     status: '',
     visible: true,
     fixedValues: ['initial', 'inherit'],
+
+    // If true, will be hidden by default and will show up only for targets
+    // which require this property (via `stylable-require`)
+    // Use case:
+    // you can add all SVG CSS properties with toRequire as true
+    // and then require them on SVG Components
+    toRequire: 0,
   },
 
 

@@ -38,6 +38,7 @@
  * },
  * ...
  */
+import { isFunction } from 'underscore';
 
 module.exports = () => {
   var c = {},
@@ -47,7 +48,11 @@ module.exports = () => {
   AbsCommands = require('./view/CommandAbstract');
 
   // Need it here as it would be used below
-  var add = function(id, obj){
+  var add = function(id, obj) {
+    if (isFunction(obj)) {
+      obj = { run: obj };
+    }
+
     delete obj.initialize;
     commands[id] = AbsCommands.extend(obj);
     return this;
@@ -85,6 +90,7 @@ module.exports = () => {
           this.add(obj.id, obj);
       }
 
+      const ViewCode = require('./view/ExportTemplate');
       defaultCommands['select-comp'] = require('./view/SelectComponent');
       defaultCommands['create-comp'] = require('./view/CreateComponent');
       defaultCommands['delete-comp'] = require('./view/DeleteComponent');
@@ -92,7 +98,7 @@ module.exports = () => {
       defaultCommands['move-comp'] = require('./view/MoveComponent');
       defaultCommands['text-comp'] = require('./view/TextComponent');
       defaultCommands['insert-custom'] = require('./view/InsertCustom');
-      defaultCommands['export-template'] = require('./view/ExportTemplate');
+      defaultCommands['export-template'] = ViewCode;
       defaultCommands['sw-visibility'] = require('./view/SwitchVisibility');
       defaultCommands['open-layers'] = require('./view/OpenLayers');
       defaultCommands['open-sm'] = require('./view/OpenStyleManager');
@@ -193,6 +199,14 @@ module.exports = () => {
         },
       };
 
+      // Core commands
+      defaultCommands['core:undo'] = e => e.UndoManager.undo(1);
+      defaultCommands['core:redo'] = e => e.UndoManager.redo(1);
+      defaultCommands['core:canvas-clear'] = e => {
+        e.DomComponents.clear();
+        e.CssComposer.clear();
+      };
+
       if(c.em)
         c.model = c.em.get('Canvas');
 
@@ -204,16 +218,20 @@ module.exports = () => {
     /**
      * Add new command to the collection
      * @param	{string} id Command's ID
-     * @param	{Object} command Object representing you command. Methods `run` and `stop` are required
+     * @param	{Object|Function} command Object representing your command,
+     *  By passing just a function it's intended as a stateless command
+     *  (just like passing an object with only `run` method).
      * @return {this}
      * @example
      * commands.add('myCommand', {
-     * 	run:  function(editor, sender){
+     * 	run(editor, sender) {
      * 		alert('Hello world!');
      * 	},
-     * 	stop:  function(editor, sender){
+     * 	stop(editor, sender) {
      * 	},
      * });
+     * // As a function
+     * commands.add('myCommand2', editor => { ... });
      * */
     add,
 

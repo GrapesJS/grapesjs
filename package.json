@@ -1,11 +1,11 @@
 {
   "name": "grapesjs",
   "description": "Free and Open Source Web Builder Framework",
-  "version": "0.12.25",
+  "version": "0.12.50",
   "author": "Artur Arseniev",
   "license": "BSD-3-Clause",
   "homepage": "http://grapesjs.com",
-  "main": "dist/grapes.min.js",
+  "main": "dist/grapes.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/artf/grapesjs.git"
@@ -18,7 +18,6 @@
     "codemirror-formatting": "^1.0.0",
     "font-awesome": "^4.7.0",
     "keymaster": "^1.6.2",
-    "promise-polyfill": "^6.0.2",
     "spectrum-colorpicker": "^1.8.0",
     "underscore": "^1.8.3"
   },
@@ -26,6 +25,7 @@
     "babel-core": "^6.24.1",
     "babel-loader": "^7.0.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "promise-polyfill": "^6.0.2",
     "babel-preset-env": "^1.6.1",
     "chai": "^4.1.2",
     "cross-env": "^5.0.5",
@@ -74,11 +74,13 @@
   },
   "scripts": {
     "lint": "eslint src",
-    "build": "cross-env WEBPACK_ENV=prod && npm run lint && npm run test && npm run v:patch && webpack && npm run build:css",
-    "build-n": "cross-env WEBPACK_ENV=prod && npm run lint && npm run test && webpack && npm run build:css",
+    "check": "npm run lint && npm run test",
+    "build": "npm run check && npm run v:patch && npm run build-dev && webpack --env=prod",
+    "build-n": "npm run check && npm run build:css && webpack --env=prod",
+    "build-dev": "webpack --env=dev && npm run build:css",
     "build:css": "node-sass src/styles/scss/main.scss dist/css/grapes.min.css --output-style compressed",
     "v:patch": "npm version --no-git-tag-version patch",
-    "start": "cross-env WEBPACK_ENV=dev webpack-dev-server --progress --colors & npm run build:css -- -w",
+    "start": "webpack-dev-server --open --progress --colors & npm run build:css -- -w",
     "test": "cross-env NODE_PATH=./src mocha --compilers js:babel-core/register --require test/helper.js --timeout 10000 --recursive test/main.js",
     "test:dev": "npm test -- -R min -w"
   }

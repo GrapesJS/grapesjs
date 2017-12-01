@@ -66,7 +66,7 @@ module.exports = Backbone.Collection.extend({
       values.forEach((value, i) => {
         value = propModel.parseValue(value.trim()).value;
         const layer = layers[i];
-        const propertyObj = Object.assign({}, propModel.attributes, {value});
+        const propertyObj = { ...propModel.attributes, ...{ value } };
 
         if (layer) {
           layer.properties.push(propertyObj);
@@ -85,7 +85,7 @@ module.exports = Backbone.Collection.extend({
         const propertyName = propModel.get('property');
 
         if (layerProprs.indexOf(propertyName) < 0) {
-          layer.properties.push(Object.assign({}, propModel.attributes))
+          layer.properties.push({ ...propModel.attributes })
         }
       })
     });

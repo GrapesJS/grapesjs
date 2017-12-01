@@ -1,24 +1,9 @@
 /**
- * - [isAutosave](#isautosave)
- * - [setAutosave](#setautosave)
- * - [getStepsBeforeSave](#getstepsbeforesave)
- * - [setStepsBeforeSave](#setstepsbeforesave)
- * - [getStorages](#getstorages)
- * - [getCurrent](#getcurrent)
- * - [setCurrent](#setcurrent)
- * - [add](#add)
- * - [get](#get)
- * - [store](#store)
- * - [load](#load)
- *
- *
  * Before using methods you should get first the module from the editor instance, in this way:
  *
  * ```js
  * var storageManager = editor.StorageManager;
  * ```
- *
- * @module StorageManager
  */
 module.exports = () => {
   var c = {},
@@ -47,6 +32,7 @@ module.exports = () => {
      * @param {number} [config.stepsBeforeSave=1] If autosave enabled, indicates how many steps/changes are necessary
      * before autosave is triggered
      * @param {string} [config.type='local'] Default storage type. Available: 'local' | 'remote' | ''(do not store)
+     * @private
      * @example
      * ...
      * {
@@ -115,17 +101,18 @@ module.exports = () => {
      * @return {this}
      * @example
      * storageManager.add('local2', {
-     *   load: function(keys){
+     *   load: function(keys, clb) {
      *     var res = {};
      *     for (var i = 0, len = keys.length; i < len; i++){
      *       var v = localStorage.getItem(keys[i]);
      *       if(v) res[keys[i]] = v;
      *     }
-     *     return res;
+     *     clb(res); // might be called inside some async method
      *   },
-     *   store: function(data){
+     *   store: function(data, clb) {
      *     for(var key in data)
      *       localStorage.setItem(key, data[key]);
+     *     clb(); // might be called inside some async method
      *   }
      * });
      * */

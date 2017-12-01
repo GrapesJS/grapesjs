@@ -135,6 +135,7 @@ module.exports = PropertyCompositeView.extend({
     const fieldEl = this.el.querySelector('[data-layers-wrapper]');
     const PropertiesView = require('./PropertiesView');
     const propsConfig = {
+      target: this.target,
       propTarget: this.propTarget,
 
       // Things to do when a single sub-property is changed
@@ -160,6 +161,7 @@ module.exports = PropertyCompositeView.extend({
 
     // Will use it to propogate changes
     new PropertiesView({
+      target: this.target,
       collection: this.model.get('properties'),
       stackModel: model,
       config: this.config,

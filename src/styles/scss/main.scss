@@ -48,6 +48,26 @@
   transform: $v;
 }
 
+$prefix: $app-prefix;
+
+.#{$prefix} {
+  @each $cnum, $ccol in (one, $primaryColor), (two, $secondaryColor), (three, $tertiaryColor), (four, $quaternaryColor) {
+    &#{$cnum} {
+      &-bg {
+        background-color: $ccol;
+      }
+
+      &-color {
+        color: $ccol;
+
+        &-h:hover {
+          color: $ccol;
+        }
+      }
+    }
+  }
+}
+
 
 .#{$app-prefix}bg {
   &-main {
@@ -193,13 +213,14 @@
  	@include user-select(none);
 }
 
-.#{$app-prefix}editor{
-	font-family: $mainFont;
-	background-color: $mainColor;
-	position:relative;
-	box-sizing: border-box;
-	height: 100%;
+.#{$app-prefix}editor {
+  font-family: $mainFont;
+  font-size: $fontSize;
+  position: relative;
+  box-sizing: border-box;
+  height: 100%;
 }
+
 .#{$app-prefix}freezed,
 .#{$nv-prefix}freezed {
   @include opacity(0.50);
@@ -219,7 +240,6 @@
   display: flex;
   justify-content: start;
   padding: 5px 10px;
-  font-size: 0.75em;
   font-weight: lighter;
 
   .#{$app-prefix}label {
@@ -313,8 +333,8 @@
 /********* PANELS **********/
 
 .#{$pn-prefix}panel {
-  @extend .#{$app-prefix}bg-main;
-  @extend .#{$app-prefix}color-main;
+  //@extend .#{$app-prefix}bg-main;
+  //@extend .#{$app-prefix}color-main;
   display: inline-block;
   padding: 5px;
   position: absolute;
@@ -362,14 +382,13 @@
   }
 }
 
-.#{$pn-prefix}buttons{
+.#{$pn-prefix}buttons {
   align-items: center;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
 }
 
-.#{$pn-prefix}btn, .#{$app-prefix}btnt{
-  @extend .#{$app-prefix}color-main;
+.#{$pn-prefix}btn, .#{$app-prefix}btnt {
 	box-sizing: border-box;
 	height: 30px; width: 30px;
 	line-height: 21px;
@@ -382,8 +401,7 @@
 	padding: 5px;
 	position: relative;
 
-	&.#{$pn-prefix}active{
-    @extend .#{$app-prefix}color-active;
+	&.#{$pn-prefix}active {
 		background-color: rgba(0, 0, 0, 0.15);
     box-shadow: 0 0 3px rgba(0, 0, 0, 0.25) inset;
 	}
@@ -442,36 +460,7 @@
 
 @import "gjs_inputs";
 
-/********* Device Manager **********/
-
-.#{$app-prefix}devices-c {
-  display: flex;
-  align-items: center;
-  padding: 3px;
-  /*
-  padding: 10px 5px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-  margin-bottom: 10px;
-  */
-
-  .#{$app-prefix}device-label {
-    flex-grow: 2;
-    font-size: 0.7em;
-    text-align: left;
-    margin-right: 10px;
-  }
-
-  .#{$app-prefix}select{
-    flex-grow: 20;
-  }
-
-  .#{$app-prefix}add-trasp{
-    flex-grow: 1;
-    margin-left: 5px;
-  }
-}
-
-/********* END Device Manager **********/
+@import "gjs_devices";
 
 
 /********* General **********/
@@ -559,14 +548,10 @@
 	}
 
 	.#{$clm-prefix}tag {
-		background-color: $tagBg;
-		border: 1px solid darken($tagBg, 12%);
-		box-shadow: 1px 1px lighten($tagBg, 9%) inset;
-		text-shadow: 1px 1px darken($tagBg, 7%);
 		display: inline-block;
 		border-radius:3px;
 		margin: 0 3px 3px 0;
-    padding: 4px;
+    padding: 5px;
     cursor: default;
 	}
 	##{$clm-prefix}close {
@@ -601,65 +586,7 @@
 
 /********* Modal dialog **********/
 
-.#{$mdl-prefix}backlayer {
-	background-color: #000;
-  	position: absolute;
-  	top: 0; left: 0;
-    z-index: 1;
-  	width:100%; height:100%;
-  	@include opacity(0.5);
-}
-
-.#{$mdl-prefix}container {
-		font-family: $mainFont;
-  	position: absolute;
-  	top: 0; left: 0;
-    z-index: 10;
-  	width:100%; height:100%;
-}
-
-.#{$mdl-prefix}dialog {
-  	@extend .#{$app-prefix}bg-main;
-    @extend .#{$app-prefix}color-main;
-  	text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.05);
-    animation: #{$app-prefix}slide-down 0.215s;
-  	margin: 30px auto 0;
-  	max-width: 850px;
-  	width: 90%;
-   	border-radius: 3px;
-   	font-weight: lighter;
-   	position:relative;
-   	z-index: 2;
-
-   	.#{$mdl-prefix}btn-close {
-   		@extend .btn-cl;
-   		position: absolute;
-   		right: 15px; top: 5px;
-    }
-}
-
-.#{$mdl-prefix}active .#{$mdl-prefix}dialog {
-  animation: #{$mdl-prefix}slide-down .216s;
-}
-
-.#{$mdl-prefix}header, .#{$mdl-prefix}content{
-	padding:10px 15px;
-	clear: both;
-}
-.#{$mdl-prefix}header{
-	position: relative;
-	border-bottom: 1px solid $mainDkColor;
-	padding: 15px 15px 7px;
-}
-.#{$mdl-prefix}content{
-	border-top: 1px solid $mainLhColor;
-}
-.#{$app-prefix}export-dl::after{
-  content: "";
-  clear: both;
-  display:block;
-  margin-bottom:10px;
-}
+@import "gjs_modal";
 
 /********* Assets Manager **********/
 
@@ -725,7 +652,6 @@
 	}
 	&##{$cm-prefix}css {
 		padding-left: 10px;
-		border-left: 1px solid $mainLhColor;
 		##{$cm-prefix}title { color: #ddca7e;}
 	}
 	##{$cm-prefix}title {
@@ -742,69 +668,69 @@
 
 /********* Spectrum **********/
 
-.sp-hue, .sp-slider{ cursor: row-resize;}
-.sp-color, .sp-dragger{ cursor: crosshair;}
-.sp-alpha-inner, .sp-alpha-handle{cursor: col-resize;}
-.sp-hue{ left: 90%; }
-.sp-color{right: 15%;}
-.sp-container {
-  @extend .#{$app-prefix}bg-main;
-  border: 1px solid $mainDkColor;
-  box-shadow: 0 0 7px $mainDkColor;
-  border-radius: 3px;
-}
-.sp-picker-container{border:none;}
-.colpick_dark .colpick_color {  outline: 1px solid $mainDkColor;}
-.sp-cancel, .sp-cancel:hover {
-  bottom: -8px;
-  color: #777 !important;
-  font-size: 25px;
-  left: 0;
-  position: absolute;
-  text-decoration:none;
-}
-.sp-alpha-handle {
-  background-color: #ccc;
-  border: 1px solid #555;
-  width: 4px;
-}
-.sp-color, .sp-hue { border: 1px solid #333333;}
-.sp-slider {
-  background-color: #ccc;
-  border: 1px solid #555;
-  height: 3px;
-  left: -4px;
-  width: 22px;
-}
-.sp-dragger{background:transparent; box-shadow: 0 0 0 1px #111;}
-.sp-button-container{
-	float: none;
-	width: 100%;
-	position: relative;
-	text-align: right;
-}
-.sp-container button, .sp-container button:hover, .sp-container button:active{
-	background: $mainDkColor;
-  border-color: $mainDkColor;
-  color: $fontColor;
-  text-shadow: none;
-  box-shadow: none;
-  padding: 3px 5px;
-}
-.sp-palette-container{
-  border: none;
-  float:none;
-  margin:0;
-  padding:5px 10px 0;
-}
-.sp-palette .sp-thumb-el, .sp-palette .sp-thumb-el:hover{
-  border: 1px solid rgba(0, 0, 0, 0.9);
-}
+.#{$app-prefix}editor-cont {
+  .sp-hue, .sp-slider{ cursor: row-resize;}
+  .sp-color, .sp-dragger{ cursor: crosshair;}
+  .sp-alpha-inner, .sp-alpha-handle{cursor: col-resize;}
+  .sp-hue{ left: 90%; }
+  .sp-color{right: 15%;}
+  .sp-container {
+    border: 1px solid $mainDkColor;
+    box-shadow: 0 0 7px $mainDkColor;
+    border-radius: 3px;
+  }
+  .sp-picker-container{border:none;}
+  .colpick_dark .colpick_color {  outline: 1px solid $mainDkColor;}
+  .sp-cancel, .sp-cancel:hover {
+    bottom: -8px;
+    color: #777 !important;
+    font-size: 25px;
+    left: 0;
+    position: absolute;
+    text-decoration:none;
+  }
+  .sp-alpha-handle {
+    background-color: #ccc;
+    border: 1px solid #555;
+    width: 4px;
+  }
+  .sp-color, .sp-hue { border: 1px solid #333333;}
+  .sp-slider {
+    background-color: #ccc;
+    border: 1px solid #555;
+    height: 3px;
+    left: -4px;
+    width: 22px;
+  }
+  .sp-dragger{background:transparent; box-shadow: 0 0 0 1px #111;}
+  .sp-button-container{
+  	float: none;
+  	width: 100%;
+  	position: relative;
+  	text-align: right;
+  }
+  .sp-container button, .sp-container button:hover, .sp-container button:active{
+  	background: $mainDkColor;
+    border-color: $mainDkColor;
+    color: $fontColor;
+    text-shadow: none;
+    box-shadow: none;
+    padding: 3px 5px;
+  }
+  .sp-palette-container{
+    border: none;
+    float:none;
+    margin:0;
+    padding:5px 10px 0;
+  }
+  .sp-palette .sp-thumb-el, .sp-palette .sp-thumb-el:hover{
+    border: 1px solid rgba(0, 0, 0, 0.9);
+  }
 
-.sp-palette .sp-thumb-el:hover, .sp-palette .sp-thumb-el.sp-thumb-active {
-  border-color: rgba(0, 0, 0, 0.9);
+  .sp-palette .sp-thumb-el:hover, .sp-palette .sp-thumb-el.sp-thumb-active {
+    border-color: rgba(0, 0, 0, 0.9);
+  }
 }
-
 
 .#{$app-prefix}hidden {
   display: none;

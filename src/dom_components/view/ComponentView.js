@@ -1,3 +1,5 @@
+import { isArray } from 'underscore';
+
 const ComponentsView = require('./ComponentsView');
 
 module.exports = Backbone.View.extend({
@@ -10,13 +12,14 @@ module.exports = Backbone.View.extend({
     return this.model.get('tagName');
   },
 
-  initialize(opt) {
+  initialize(opt = {}) {
     const model = this.model;
-    this.opts = opt || {};
-    this.config = this.opts.config || {};
-    this.em = this.config.em || '';
-    this.pfx = this.config.stylePrefix || '';
-    this.ppfx = this.config.pStylePrefix || '';
+    const config = opt.config || {};
+    this.opts = opt;
+    this.config = config;
+    this.em = config.em || '';
+    this.pfx = config.stylePrefix || '';
+    this.ppfx = config.pStylePrefix || '';
     this.attr = model.get('attributes');
     this.classe = this.attr.class || [];
     const $el = this.$el;
@@ -64,6 +67,7 @@ module.exports = Backbone.View.extend({
     }
   },
 
+
   /**
    * Import, if possible, classes inside main container
    * @private
@@ -77,6 +81,7 @@ module.exports = Backbone.View.extend({
       });
     }
   },
+
 
   /**
    * Fires on state update. If the state is not empty will add a helper class
@@ -93,6 +98,7 @@ module.exports = Backbone.View.extend({
       this.$el.removeClass(cl);
     }
   },
+
 
   /**
    * Update item on status change
@@ -131,6 +137,7 @@ module.exports = Backbone.View.extend({
     }
   },
 
+
   /**
    * Update highlight attribute
    * @private
@@ -140,13 +147,23 @@ module.exports = Backbone.View.extend({
     this.setAttribute('data-highlightable', hl ? 1 : '');
   },
 
+
   /**
    * Update style attribute
    * @private
    * */
   updateStyle() {
-    this.setAttribute('style', this.getStyleString());
+    const em = this.em;
+    const model = this.model;
+
+    if (em && em.get('avoidInlineStyle')) {
+      this.el.id = model.getId();
+      model.setStyle(model.getStyle());
+    } else {
+      this.setAttribute('style', model.styleToString());
+    }
   },
+
 
   /**
    * Update classe attribute
@@ -180,10 +197,13 @@ module.exports = Backbone.View.extend({
   getClasses() {
     var attr = this.model.get("attributes"),
       classes  = attr['class'] || [];
-    if(classes.length){
-      return classes.join(" ");
-    }else
+    classes = isArray(classes) ? classes : [classes];
+
+    if (classes.length) {
+      return classes.join(' ');
+    } else {
       return null;
+    }
   },
 
   /**
@@ -212,31 +232,6 @@ module.exports = Backbone.View.extend({
    * */
   updateContent() {
     this.getChildrenContainer().innerHTML = this.model.get('content');
-  },
-
-  /**
-   * Return style string
-   * @return  {string}
-   * @private
-   * */
-  getStyleString() {
-    var style  = '';
-    this.style = this.model.get('style');
-    for(var key in this.style) {
-        if(this.style.hasOwnProperty(key))
-          style += key + ':' + this.style[key] + ';';
-    }
-
-    return style;
-  },
-
-  /**
-   * Reply to event call
-   * @param object Event that generated the request
-   * @private
-   * */
-  eventCall(event) {
-    event.viewResponse = this;
   },
 
   /**

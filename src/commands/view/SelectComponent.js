@@ -274,7 +274,7 @@ module.exports = {
     var $el = $(el);
     var model = $el.data('model');
 
-    if(!model || (model && model.get('status') == 'selected')) {
+    if(!model || !model.get("hoverable") || model.get('status') == 'selected') {
       return;
     }
 
@@ -392,7 +392,7 @@ module.exports = {
 
           modelToStyle.setStyle(style, {avoidStore: 1});
           const updateEvent = `update:component:style`;
-          em && em.trigger(`${updateEvent}:height ${updateEvent}:width`);
+          em && em.trigger(`${updateEvent}:${keyHeight} ${updateEvent}:${keyWidth}`);
 
           if (store) {
             modelToStyle.trigger('change:style', modelToStyle, style, {});
@@ -401,7 +401,7 @@ module.exports = {
       };
 
       if (typeof resizable == 'object') {
-        options = Object.assign(options, resizable);
+        options = { ...options, ...resizable };
       }
 
       editor.runCommand('resize', {el, options});
@@ -447,11 +447,8 @@ module.exports = {
       }
 
       this.toolbar.reset(toolbar);
-      var view = model.view;
-
-      if(view) {
-        this.updateToolbarPos(view.el);
-      }
+      const view = model.view;
+      view && this.updateToolbarPos(view.el);
     } else {
       toolbarStyle.display = 'none';
     }
@@ -466,6 +463,7 @@ module.exports = {
     var unit = 'px';
     var toolbarEl = this.canvas.getToolbarEl();
     var toolbarStyle = toolbarEl.style;
+    toolbarStyle.display = 'block';
     var pos = this.canvas.getTargetToElementDim(toolbarEl, el, {
       elPos,
       event: 'toolbarPosUpdate',
@@ -473,6 +471,7 @@ module.exports = {
     var leftPos = pos.left + pos.elementWidth - pos.targetWidth;
     toolbarStyle.top = pos.top + unit;
     toolbarStyle.left = leftPos + unit;
+    toolbarStyle.display = '';
   },
 
   /**
@@ -522,8 +521,9 @@ module.exports = {
    * Update attached elements, eg. component toolbar
    * @return {[type]} [description]
    */
-  updateAttached() {
-    var model = this.em.get('selectedComponent');
+  updateAttached(updated) {
+    const model = this.em.getSelected();
+
     if (model) {
       var view = model.view;
       this.updateToolbarPos(view.el);
@@ -555,11 +555,10 @@ module.exports = {
    * @private
    */
   cleanPrevious(model) {
-    if(model)
-      model.set({
-        status: '',
-        state: '',
-      });
+    model && model.set({
+      status: '',
+      state: '',
+    });
   },
 
   /**
@@ -573,20 +572,21 @@ module.exports = {
   run(editor) {
     this.editor = editor && editor.get('Editor');
     this.enable();
+    this.onSelect();
   },
 
-  stop() {
+  stop(editor, sender, opts = {}) {
+    const em = this.em;
     this.stopSelectComponent();
-    this.cleanPrevious(this.em.get('selectedComponent'));
+    !opts.preserveSelected && em.setSelected(null);
     this.clean();
-    this.em.set('selectedComponent', null);
     this.toggleClipboard();
     this.hideBadge();
     this.hideFixedElementOffset();
     this.canvas.getToolbarEl().style.display = 'none';
 
-    this.em.off('component:update', this.updateAttached, this);
-    this.em.off('change:canvasOffset', this.updateAttached, this);
-    this.em.off('change:selectedComponent', this.updateToolbar, this);
+    em.off('component:update', this.updateAttached, this);
+    em.off('change:canvasOffset', this.updateAttached, this);
+    em.off('change:selectedComponent', this.updateToolbar, this);
   }
 };

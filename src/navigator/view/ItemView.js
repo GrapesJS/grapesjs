@@ -9,7 +9,7 @@ module.exports = Backbone.View.extend({
     'click [data-toggle-visible]': 'toggleVisibility',
     'click [data-toggle-select]': 'handleSelect',
     'click [data-toggle-open]': 'toggleOpening',
-    'click [data-toggle-edit]': 'handleEdit',
+    'dblclick input': 'handleEdit',
     'focusout input': 'handleEditEnd',
   },
 
@@ -18,10 +18,9 @@ module.exports = Backbone.View.extend({
     <i id="<%= prefix %>btn-eye" class="btn fa fa-eye <%= (visible ? '' : 'fa-eye-slash') %>" data-toggle-visible></i>
   <% } %>
 
-  <div class="<%= prefix %>title-c">
-    <div class="<%= prefix %>title <%= addClass %>" style="padding-left: <%= 42 + level * 10 %>px" data-toggle-select>
+  <div class="<%= prefix %>title-c <%= ppfx %>one-bg">
+    <div class="<%= prefix %>title <%= addClass %>" style="padding-left: <%= 30 + level * 10 %>px" data-toggle-select>
       <div class="<%= prefix %>title-inn">
-        <i class="fa fa-pencil <%= editBtnCls %>" data-toggle-edit></i>
         <i id="<%= prefix %>caret" class="fa fa-chevron-right <%= caretCls %>" data-toggle-open></i>
         <%= icon %>
         <input class="<%= ppfx %>no-app <%= inputNameCls %>" value="<%= title %>" readonly>
@@ -54,6 +53,7 @@ module.exports = Backbone.View.extend({
     this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model, 'change:status', this.updateStatus);
     this.listenTo(model, 'change:open', this.updateOpening);
+    this.listenTo(model, 'change:style:display', this.updateVisibility);
     this.className = `${pfx}item no-select`;
     this.editBtnCls = `${pfx}nav-item-edit`;
     this.inputNameCls = `${ppfx}nav-comp-name`;
@@ -62,6 +62,50 @@ module.exports = Backbone.View.extend({
     this.$el.data('model', model);
     this.$el.data('collection', components);
   },
+
+
+  getVisibilityEl () {
+    if (!this.eyeEl) {
+      this.eyeEl = this.$el.children(`#${this.pfx}btn-eye`);
+    }
+
+    return this.eyeEl;
+  },
+
+
+  updateVisibility() {
+    const pfx = this.pfx;
+    const model = this.model;
+    const hClass = `${pfx}hide`;
+    const hideIcon = 'fa-eye-slash';
+    const hidden = model.getStyle().display == 'none';
+    const method = hidden ? 'addClass' : 'removeClass';
+    this.$el[method](hClass);
+    this.getVisibilityEl()[method](hideIcon);
+  },
+
+
+  /**
+   * Toggle visibility
+   * @param	Event
+   *
+   * @return 	void
+   * */
+  toggleVisibility(e) {
+    e && e.stopPropagation();
+    const model = this.model;
+    const style = model.getStyle();
+    const hidden = style.display == 'none';
+
+    if (hidden) {
+      delete style.display;
+    } else {
+      style.display = 'none';
+    }
+
+    model.setStyle(style);
+  },
+
 
   /**
    * Handle the edit of the component name
@@ -72,6 +116,7 @@ module.exports = Backbone.View.extend({
     inputName.readOnly = false;
     inputName.focus();
   },
+
 
   /**
    * Handle with the end of editing of the component name
@@ -178,32 +223,6 @@ module.exports = Backbone.View.extend({
     ComponentView.prototype.updateStatus.apply(this, arguments);
   },
 
-  /**
-   * Toggle visibility
-   * @param	Event
-   *
-   * @return 	void
-   * */
-  toggleVisibility(e) {
-    e.stopPropagation();
-    const pfx = this.pfx;
-
-    if(!this.$eye)
-      this.$eye = this.$el.children(`#${pfx}btn-eye`);
-
-    var cCss = _.clone(this.model.get('style')),
-    hClass = this.pfx + 'hide';
-    if(this.isVisible()){
-      this.$el.addClass(hClass);
-      this.$eye.addClass('fa-eye-slash');
-      cCss.display = 'none';
-    }else{
-      this.$el.removeClass(hClass);
-      this.$eye.removeClass('fa-eye-slash');
-      delete cCss.display;
-    }
-    this.model.set('style', cCss);
-  },
 
   /**
    * Check if component is visible
@@ -279,7 +298,7 @@ module.exports = Backbone.View.extend({
     const el = this.$el;
     const level = this.level + 1;
 
-    el.html( this.template({
+    el.html(this.template({
       title: model.getName(),
       icon: model.getIcon(),
       addClass: (count ? '' : pfx+'no-chld'),
@@ -317,6 +336,7 @@ module.exports = Backbone.View.extend({
     el.attr('class', _.result(this, 'className'));
     this.updateOpening();
     this.updateStatus();
+    this.updateVisibility();
     return this;
   },
 

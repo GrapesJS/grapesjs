@@ -1,29 +1,4 @@
 /**
- *
- * * [getConfig](#getconfig)
- * * [getHtml](#gethtml)
- * * [getCss](#getcss)
- * * [getJs](#getjs)
- * * [getComponents](#getcomponents)
- * * [setComponents](#setcomponents)
- * * [addComponents](#addcomponents)
- * * [getStyle](#getstyle)
- * * [setStyle](#setstyle)
- * * [getSelected](#getselected)
- * * [getSelectedToStyle](#getselectedtostyle)
- * * [setDevice](#setdevice)
- * * [getDevice](#getdevice)
- * * [runCommand](#runcommand)
- * * [stopCommand](#stopcommand)
- * * [store](#store)
- * * [load](#load)
- * * [getContainer](#getcontainer)
- * * [refresh](#refresh)
- * * [on](#on)
- * * [off](#off)
- * * [trigger](#trigger)
- * * [render](#render)
- *
  * Editor class contains the top level API which you'll probably use to custom the editor or extend it with plugins.
  * You get the Editor instance on init method
  *
@@ -31,37 +6,53 @@
  * var editor = grapesjs.init({...});
  * ```
  *
- * **Available Events**
+ * # Available Events
+ *
+ * ## Components
  * * `component:add` - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
- * * `component:update` - Triggered when a component is, generally, updated (moved, styled, etc.)
- * * `component:update:{propertyName}` - Listen any property change
- * * `component:styleUpdate` - Triggered when the style of the component is updated
- * * `component:styleUpdate:{propertyName}` - Listen for a specific style property change
- * * `component:selected` - New component selected
+ * * `component:update` - Triggered when a component is updated (moved, styled, etc.), the model is passed as an argument to the callback
+ * * `component:update:{propertyName}` - Listen any property change, the model is passed as an argument to the callback
+ * * `component:styleUpdate` - Triggered when the style of the component is updated, the model is passed as an argument to the callback
+ * * `component:styleUpdate:{propertyName}` - Listen for a specific style property change, the model is passed as an argument to the callback
+ * * `component:selected` - New component selected, the selected model is passed as an argument to the callback
+ * ## Blocks
  * * `block:add` - New block added
  * * `block:remove` - Block removed
+ * * `block:drag:start` - Started dragging new block, Event object is passed as an argument
+ * * `block:drag:stop` - Block dropped inside canvas, the new model is passed as an argument to the callback
+ * ## Assets
  * * `asset:add` - New asset added
  * * `asset:remove` - Asset removed
  * * `asset:upload:start` - Before the upload is started
  * * `asset:upload:end` - After the upload is ended
  * * `asset:upload:error` - On any error in upload, passes the error as an argument
  * * `asset:upload:response` - On upload response, passes the result as an argument
+ * ## Keymaps
+ * * `keymap:add` - New keymap added. The new keyamp object is passed as an argument
+ * * `keymap:remove` - Keymap removed. The removed keyamp object is passed as an argument
+ * * `keymap:emit` - Some keymap emitted, in arguments you get keymapId, shortcutUsed, Event
+ * * `keymap:emit:{keymapId}` - `keymapId` emitted, in arguments you get keymapId, shortcutUsed, Event
+ * ## Style Manager
  * * `styleManager:change` - Triggered on style property change from new selected component, the view of the property is passed as an argument to the callback
  * * `styleManager:change:{propertyName}` - As above but for a specific style property
+ * ## Storages
  * * `storage:start` - Before the storage request is started
  * * `storage:load` - Triggered when something was loaded from the storage, loaded object passed as an argumnet
  * * `storage:store` - Triggered when something is stored to the storage, stored object passed as an argumnet
  * * `storage:end` - After the storage request is ended
  * * `storage:error` - On any error on storage request, passes the error as an argument
+ * ## Selectors
  * * `selector:add` - Triggers when a new selector/class is created
+ * ## RTE
  * * `rte:enable` - RTE enabled. The view, on which RTE is enabled, is passed as an argument
  * * `rte:disable` - RTE disabled. The view, on which RTE is disabled, is passed as an argument
- * * `canvasScroll` - Triggered when the canvas is scrolled
+ * ## Commands
  * * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
  * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
+ * ## General
+ * * `canvasScroll` - Triggered when the canvas is scrolle
  * * `load` - When the editor is loaded
  *
- * @module Editor
  * @param {Object} config Configurations
  * @param {string} config.container='' Selector for the editor container, eg. '#myEditor'
  * @param {string|Array<Object>} [config.components=''] HTML string or object of components
@@ -173,6 +164,12 @@ module.exports = config => {
     Commands: em.get('Commands'),
 
     /**
+     * @property {Keymaps}
+     * @private
+     */
+    Keymaps: em.get('Keymaps'),
+
+    /**
      * @property {Modal}
      * @private
      */
@@ -238,26 +235,29 @@ module.exports = config => {
 
     /**
      * Returns configuration object
-     * @return {Object}
+     * @param  {string} [prop] Property name
+     * @return {any} Returns the configuration object or
+     *  the value of the specified property
      */
-    getConfig() {
-      return c;
+    getConfig(prop) {
+      return em.getConfig(prop);
     },
 
     /**
      * Returns HTML built inside canvas
      * @return {string} HTML string
      */
-    getHtml() {
-      return em.getHtml();
+    getHtml(opts) {
+      return em.getHtml(opts);
     },
 
     /**
      * Returns CSS built inside canvas
+     * @param {Object} [opts={}] Options
      * @return {string} CSS string
      */
-    getCss() {
-      return em.getCss();
+    getCss(opts) {
+      return em.getCss(opts);
     },
 
     /**

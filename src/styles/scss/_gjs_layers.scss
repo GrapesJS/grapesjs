@@ -62,10 +62,6 @@
   }
 }
 
-.#{$nv-prefix}item .#{$nv-prefix}title-c {
-  @extend .#{$app-prefix}bg-main;
-}
-
 .#{$nv-prefix}title {
   @extend .#{$app-prefix}category-title;
 

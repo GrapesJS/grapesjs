@@ -1,5 +1,5 @@
 import { bindAll, defaults, isFunction } from 'underscore';
-import { on, off } from 'utils/mixins';
+import { on, off, normalizeFloat } from 'utils/mixins';
 
 var defaultOpts = {
   // Function which returns custom X and Y coordinates of the mouse
@@ -13,8 +13,14 @@ var defaultOpts = {
   onMove: null,
   onEnd: null,
 
+  // Resize unit step
+  step: 1,
+
   // Minimum dimension
   minDim: 32,
+
+  // Maximum dimension
+  maxDim: '',
 
   // Unit used for height resizing
   unitHeight: 'px',
@@ -269,7 +275,7 @@ class Resizer {
     this.currentPos = currentPos;
     this.delta = {
       x: currentPos.x - this.startPos.x,
-      y: currentPos.y - this.startPos.y
+      y: currentPos.y - this.startPos.y,
     };
     this.keys = {
       shift: e.shiftKey,
@@ -386,14 +392,21 @@ class Resizer {
    * @return {Object}
    */
   calc(data) {
-    var opts = this.opts || {};
-    var startDim = this.startDim;
-    var minDim = opts.minDim;
+    let value;
+    const opts = this.opts || {};
+    const step = opts.step;
+    const startDim = this.startDim;
+    const minDim = opts.minDim;
+    const maxDim = opts.maxDim;
+    const deltaX = data.delta.x;
+    const deltaY = data.delta.y;
+    const startW = startDim.w;
+    const startH = startDim.h;
     var box = {
       t: 0,
       l: 0,
-      w: startDim.w,
-      h: startDim.h
+      w: startW,
+      h: startH
     };
 
     if (!data)
@@ -401,16 +414,28 @@ class Resizer {
 
     var attr = data.handlerAttr;
     if (~attr.indexOf('r')) {
-      box.w = Math.max(minDim, startDim.w + data.delta.x);
+      value = normalizeFloat(startW + deltaX * step, step);
+      value = Math.max(minDim, value);
+      maxDim && (value = Math.min(maxDim, value));
+      box.w = value;
     }
     if (~attr.indexOf('b')) {
-      box.h = Math.max(minDim, startDim.h + data.delta.y);
+      value = normalizeFloat(startH + deltaY * step, step);
+      value = Math.max(minDim, value);
+      maxDim && (value = Math.min(maxDim, value));
+      box.h = value;
     }
     if (~attr.indexOf('l')) {
-      box.w = Math.max(minDim, startDim.w - data.delta.x);
+      value = normalizeFloat(startW - deltaX * step, step);
+      value = Math.max(minDim, value);
+      maxDim && (value = Math.min(maxDim, value));
+      box.w = value;
     }
     if (~attr.indexOf('t')) {
-      box.h = Math.max(minDim, startDim.h - data.delta.y);
+      value = normalizeFloat(startH - deltaY * step, step);
+      value = Math.max(minDim, value);
+      maxDim && (value = Math.min(maxDim, value));
+      box.h = value;
     }
 
     // Enforce aspect ratio (unless shift key is being held)

@@ -2,16 +2,17 @@ var Component = require('./Component');
 
 module.exports = Component.extend({
 
-  defaults: _.extend({}, Component.prototype.defaults, {
+  defaults: { ...Component.prototype.defaults,
     type: 'image',
     tagName: 'img',
     src: '',
     void: 1,
     droppable: 0,
+    editable: 1,
     highlightable: 0,
     resizable: 1,
     traits: ['alt']
-  }),
+  },
 
   initialize(o, opt) {
     Component.prototype.initialize.apply(this, arguments);

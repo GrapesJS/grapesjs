@@ -1,4 +1,4 @@
-import { bindAll } from 'underscore';
+import { bindAll, isArray } from 'underscore';
 import { camelCase } from 'utils/mixins';
 
 module.exports = Backbone.View.extend({
@@ -87,7 +87,7 @@ module.exports = Backbone.View.extend({
     const pfx = this.pfx;
     const ppfx = this.ppfx;
     const config = this.config;
-    const updatedCls = `${ppfx}color-hl`;
+    const updatedCls = `${ppfx}four-color`;
     const computedCls = `${ppfx}color-warn`;
     const labelEl = this.$el.children(`.${pfx}label`);
     const clearStyle = this.getClearEl().style;
@@ -339,9 +339,9 @@ module.exports = Backbone.View.extend({
     }
 
     if (em) {
-      em.trigger('component:update', model);
-      em.trigger('component:styleUpdate', model);
-      em.trigger('component:styleUpdate:' + model.get('property'), model);
+      em.trigger('component:update', target);
+      em.trigger('component:styleUpdate', target);
+      em.trigger('component:styleUpdate:' + model.get('property'), target);
     }
   },
 
@@ -374,12 +374,34 @@ module.exports = Backbone.View.extend({
    * The target could be the Component as the CSS Rule
    * @return {Boolean}
    */
-  isTargetStylable() {
-    var stylable = this.getTarget().get('stylable');
+  isTargetStylable(target) {
+    if (this.model.get('id') == 'flex-width') {
+      //debugger;
+    }
+    const trg = target || this.getTarget();
+    const model = this.model;
+    const property = model.get('property');
+    const toRequire = model.get('toRequire');
+    const unstylable = trg.get('unstylable');
+    const stylableReq = trg.get('stylable-require');
+    let stylable = trg.get('stylable');
+
     // Stylable could also be an array indicating with which property
     // the target could be styled
-    if(stylable instanceof Array)
-      stylable = _.indexOf(stylable, this.property) >= 0;
+    if (isArray(stylable)) {
+      stylable = stylable.indexOf(property) >= 0;
+    }
+
+    // Check if the property was signed as unstylable
+    if (isArray(unstylable)) {
+      stylable = unstylable.indexOf(property) < 0;
+    }
+
+    // Check if the property is available only if requested
+    if (toRequire) {
+      stylable = (stylableReq && stylableReq.indexOf(property) >= 0) || !target;
+    }
+
     return stylable;
   },
 
@@ -389,21 +411,14 @@ module.exports = Backbone.View.extend({
    * @return {Boolean}
    */
   isComponentStylable() {
-    var em = this.em;
-    var component = em && em.get('selectedComponent');
+    const em = this.em;
+    const component = em && em.get('selectedComponent');
 
     if (!component) {
       return true;
     }
 
-    var stylable = component.get('stylable');
-    // Stylable could also be an array indicating with which property
-    // the target could be styled
-    if(stylable instanceof Array){
-      stylable = _.indexOf(stylable, this.property) >= 0;
-    }
-
-    return stylable;
+    return this.isTargetStylable(component);
   },
 
   /**

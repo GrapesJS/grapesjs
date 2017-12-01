@@ -80,14 +80,6 @@ module.exports = {
           expect(view.el.getAttribute('style')).toEqual(null);
         });
 
-        it('Get style string', () => {
-          model.set('style',  {
-            color: 'red',
-            float: 'left'
-          });
-          expect(view.getStyleString()).toEqual('color:red;float:left;');
-        });
-
         it('Add class', () => {
           model.get('classes').add({name: 'test'});
           expect(view.el.getAttribute('class')).toEqual('test');

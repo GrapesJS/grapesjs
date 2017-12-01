@@ -66,7 +66,7 @@ module.exports = {
       it('Could be removed', function() {
         var spy = sinon.spy();
         obj.model.on("remove", spy);
-        obj.onRemove({stopPropagation() {}});
+        obj.onRemove({stopImmediatePropagation() {}});
         expect(spy.called).toEqual(true);
       });
 

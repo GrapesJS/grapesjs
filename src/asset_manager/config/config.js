@@ -66,7 +66,9 @@ module.exports = {
 
   // Enable an upload dropzone on the entire editor (not document) when dragging
   // files over it
-  dropzone: 1,
+  // If active the dropzone disable/hide the upload dropzone in asset modal,
+  // otherwise you will get double drops (#507)
+  dropzone: 0,
 
   // Open the asset manager once files are been dropped via the dropzone
   openAssetsOnDrop: 1,

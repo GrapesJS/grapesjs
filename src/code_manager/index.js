@@ -182,6 +182,7 @@ module.exports = () => {
      * var codeStr = codeManager.getCode(model, 'html');
      * */
     getCode(model, genId, opt = {}) {
+      opt.em = c.em;
       var generator  = this.getGenerator(genId);
       return generator ? generator.build(model, opt) : '';
     },

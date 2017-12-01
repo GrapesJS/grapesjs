@@ -1,4 +1,5 @@
-import {on, off} from 'utils/mixins';
+import { isString } from 'underscore';
+import { on, off, matches } from 'utils/mixins';
 const $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
@@ -114,23 +115,24 @@ module.exports = Backbone.View.extend({
    * @param {Event} event
    */
   setDragHelper(el, event) {
-    var ev = event || '';
-    var clonedEl = el.cloneNode(1);
+    const ev = event || '';
+    const clonedEl = el.cloneNode(1);
+    const rect = el.getBoundingClientRect();
+    const computed = getComputedStyle(el);
+    let style = '';
 
-    // Attach style
-    var style = '';
-    var o = getComputedStyle(el);
-    for(var i = 0; i < o.length; i++) {
-      style += o[i] + ':' + o.getPropertyValue(o[i])+';';
+    for (var i = 0; i < computed.length; i++) {
+      const prop = computed[i];
+      style += `${prop}:${computed.getPropertyValue(prop)};`;
     }
-    clonedEl.setAttribute('style', style);
-    clonedEl.className += ' ' + this.pfx + 'bdrag';
+
     document.body.appendChild(clonedEl);
+    clonedEl.className += ` ${this.pfx}bdrag`;
+    clonedEl.setAttribute('style', style);
     this.dragHelper = clonedEl;
-
-    if(ev) {
-      this.moveDragHelper(ev);
-    }
+    clonedEl.style.width = `${rect.width}px`;
+    clonedEl.style.height = `${rect.height}px`;
+    ev && this.moveDragHelper(ev);
 
     // Listen mouse move events
     if(this.em) {
@@ -142,29 +144,39 @@ module.exports = Backbone.View.extend({
   },
 
   /**
-   * //TODO Refactor, use canvas.getMouseRelativePos to get mouse's X and Y
    * Update the position of the helper
    * @param  {Event} e
    */
   moveDragHelper(e) {
-    var doc = e.target.ownerDocument;
+    const doc = e.target.ownerDocument;
 
     if(!this.dragHelper || !doc) {
       return;
     }
 
-    var win = doc.defaultView || doc.parentWindow;
-    var addTop = 0;
-    var addLeft = 0;
-    var frame = win.frameElement;
-    if(frame) {
-      var frameRect = frame.getBoundingClientRect(); // maybe to cache ?!?
-      addTop = frameRect.top || 0;
-      addLeft = frameRect.left || 0;
+    let posY = e.pageY;
+    let posX = e.pageX;
+    let addTop = 0;
+    let addLeft = 0;
+    const window = doc.defaultView || doc.parentWindow;
+    const frame = window.frameElement;
+    const dragHelperStyle = this.dragHelper.style;
+
+    // If frame is present that means mouse has moved over the editor's canvas,
+    // which is rendered inside the iframe and the mouse move event comes from
+    // the iframe, not the parent window. Mouse position relative to the frame's
+    // parent window needs to account for the frame's position relative to the
+    // parent window.
+    if (frame) {
+      const frameRect = frame.getBoundingClientRect();
+      addTop = frameRect.top + document.documentElement.scrollTop;
+      addLeft = frameRect.left + document.documentElement.scrollLeft;
+      posY = e.clientY;
+      posX = e.clientX;
     }
-    var hStyle = this.dragHelper.style;
-    hStyle.left = (e.pageX - win.pageXOffset + addLeft) + 'px';
-    hStyle.top = (e.pageY - win.pageYOffset + addTop) + 'px';
+
+    dragHelperStyle.top = (posY + addTop) + 'px';
+    dragHelperStyle.left = (posX + addLeft) + 'px';
   },
 
 
@@ -175,13 +187,7 @@ module.exports = Backbone.View.extend({
    * @return {Boolean}
    */
   matches(el, selector, useBody) {
-    var startEl = el.parentNode || document.body;
-    //startEl = useBody ? startEl.ownerDocument.body : startEl;
-    var els = startEl.querySelectorAll(selector);
-    var i = 0;
-    while (els[i] && els[i] !== el)
-      ++i;
-    return !!els[i];
+    return matches.call(el, selector);
   },
 
   /**
@@ -242,6 +248,7 @@ module.exports = Backbone.View.extend({
     const container = this.getContainerEl();
     const docs = this.getDocuments();
     const onStart = this.onStart;
+    let srcModel;
     let plh = this.plh;
     this.dropModel = null;
     this.moved = 0;
@@ -262,7 +269,7 @@ module.exports = Backbone.View.extend({
     }
 
     if (src) {
-      const srcModel = this.getSourceModel(src);
+      srcModel = this.getSourceModel(src);
       srcModel && srcModel.set && srcModel.set('status', 'freezed');
     }
 
@@ -274,6 +281,8 @@ module.exports = Backbone.View.extend({
     // Avoid strange effects on dragging
     em && em.clearSelection();
     this.toggleSortCursor(1);
+
+    em && em.trigger('sorter:drag:start', src, srcModel);
   },
 
   /**
@@ -284,6 +293,7 @@ module.exports = Backbone.View.extend({
     let elem = el || this.target;
     return $(elem).data('model');
   },
+
 
   /**
    * Get the model of the current source element (element to drag)
@@ -310,6 +320,7 @@ module.exports = Backbone.View.extend({
     }
   },
 
+
   /**
    * Highlight target
    * @param  {Model|null} model
@@ -335,11 +346,13 @@ module.exports = Backbone.View.extend({
    * @param {Event} e
    * */
   onMove(e) {
+    const em = this.em;
     this.moved = 1;
+
     // Turn placeholder visibile
     var plh = this.plh;
     var dsp = plh.style.display;
-    if(!dsp || dsp === 'none')
+    if (!dsp || dsp === 'none')
       plh.style.display = 'block';
 
     // Cache all necessary positions
@@ -349,8 +362,8 @@ module.exports = Backbone.View.extend({
     var rY = (e.pageY - this.elT) + this.el.scrollTop;
     var rX = (e.pageX - this.elL) + this.el.scrollLeft;
 
-    if (this.canvasRelative && this.em) {
-      var mousePos = this.em.get('Canvas').getMouseRelativeCanvas(e);
+    if (this.canvasRelative && em) {
+      var mousePos = em.get('Canvas').getMouseRelativeCanvas(e);
       rX = mousePos.x;
       rY = mousePos.y;
     }
@@ -359,9 +372,10 @@ module.exports = Backbone.View.extend({
     this.rY = rY;
     this.eventMove = e;
 
-    //var target = this.getTargetFromEl(e.target);
-    var dims = this.dimsFromTarget(e.target, rX, rY);
-    let targetModel = this.getTargetModel(this.target);
+    //var targetNew = this.getTargetFromEl(e.target);
+    const dims = this.dimsFromTarget(e.target, rX, rY);
+    const target = this.target;
+    const targetModel = this.getTargetModel(target);
     this.selectTargetModel(targetModel);
 
     this.lastDims = dims;
@@ -387,6 +401,15 @@ module.exports = Backbone.View.extend({
 
     if(typeof this.onMoveClb === 'function')
       this.onMoveClb(e);
+
+    em && em.trigger('sorter:drag', {
+      target,
+      targetModel,
+      dims,
+      pos,
+      x: rX,
+      y: rY,
+    });
   },
 
   /**
@@ -475,14 +498,14 @@ module.exports = Backbone.View.extend({
     droppable = droppable instanceof Backbone.Collection ? 1 : droppable;
     droppable = droppable instanceof Array ? droppable.join(', ') : droppable;
     result.dropInfo = droppable;
-    droppable = typeof droppable === 'string' ? this.matches(src, droppable) : droppable;
+    droppable = isString(droppable) ? this.matches(src, droppable) : droppable;
     result.droppable = droppable;
 
     // check if the source is draggable in target
     let draggable = srcModel.get('draggable');
     draggable = draggable instanceof Array ? draggable.join(', ') : draggable;
     result.dragInfo = draggable;
-    draggable = typeof draggable === 'string' ? this.matches(trg, draggable) : draggable;
+    draggable = isString(draggable) ? this.matches(trg, draggable) : draggable;
     result.draggable = draggable;
 
     if (!droppable || !draggable) {
@@ -500,6 +523,7 @@ module.exports = Backbone.View.extend({
    * @return {Array<Array>}
    */
   dimsFromTarget(target, rX, rY) {
+    const em = this.em;
     var dims = [];
 
     if (!target) {
@@ -531,6 +555,8 @@ module.exports = Backbone.View.extend({
 
       // Check if the source is valid with the target
       let validResult = this.validTarget(target);
+      em && em.trigger('sorter:drag:validation', validResult);
+
       if (!validResult.valid && this.targetP) {
         return this.dimsFromTarget(this.targetP, rX, rY);
       }
@@ -575,11 +601,13 @@ module.exports = Backbone.View.extend({
     let target = el;
     let targetParent;
     let targetPrev = this.targetPrev;
+    const em = this.em;
     const containerSel = this.containerSel;
+    const itemSel = this.itemSel;
 
     // Select the first valuable target
-    if (!this.matches(target, `${this.itemSel}, ${containerSel}`)) {
-      target = this.closest(target, this.itemSel);
+    if (!this.matches(target, `${itemSel}, ${containerSel}`)) {
+      target = this.closest(target, itemSel);
     }
 
     // If draggable is an array the target will be one of those
@@ -599,7 +627,10 @@ module.exports = Backbone.View.extend({
 
       // If the current target is not valid (src/trg reasons) try with
       // the parent one (if exists)
-      if (!this.validTarget(target).valid && targetParent) {
+      const validResult = this.validTarget(target);
+      em && em.trigger('sorter:drag:validation', validResult);
+
+      if (!validResult.valid && targetParent) {
         return this.getTargetFromEl(targetParent);
       }
 
@@ -910,7 +941,7 @@ module.exports = Backbone.View.extend({
    * */
   move(dst, src, pos) {
     var em = this.em;
-    em && em.trigger('component:dragEnd:before', dst, src, pos);
+    em && em.trigger('component:dragEnd:before', dst, src, pos); // @depricated
     var warns = [];
     var index = pos.index;
     var modelToDrop, modelTemp, created;
@@ -966,7 +997,8 @@ module.exports = Backbone.View.extend({
       console.warn('Invalid target position: ' + warns.join(', '));
     }
 
-    em && em.trigger('component:dragEnd', targetCollection, modelToDrop, warns);
+    em && em.trigger('component:dragEnd', targetCollection, modelToDrop, warns); // @depricated
+    em && em.trigger('sorter:drag:end', targetCollection, modelToDrop, warns);
 
     return created;
   },

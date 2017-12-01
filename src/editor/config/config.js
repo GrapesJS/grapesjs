@@ -31,7 +31,7 @@ module.exports = {
   width: '100%',
 
   // CSS that could only be seen (for instance, inside the code viewer)
-  protectedCss: '*{box-sizing: border-box;}',
+  protectedCss: '* { box-sizing: border-box; } body {margin: 0;}',
 
   // CSS for the iframe which containing the canvas, useful if you need to custom something inside
   // (eg. the style of the selected component)
@@ -70,6 +70,12 @@ module.exports = {
 
   // The wrapper, if visible, will be shown as a `<body>`
   wrappesIsBody: 1,
+
+  // Usually when you update the `style` of the component this changes the
+  // element's `style` attribute. Unfortunately, inline styling doesn't allow
+  // use of media queries (@media) or even pseudo selectors (eg. :hover).
+  // When `avoidInlineStyle` is true all styles are inserted inside the css rule
+  avoidInlineStyle: 0,
 
   // Dom element
   el: '',
@@ -169,4 +175,8 @@ module.exports = {
   //Configurations for Block Manager
   blockManager: {},
 
+
+  // Texts
+
+  textViewCode: 'Code',
 };

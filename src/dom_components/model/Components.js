@@ -1,4 +1,6 @@
-var Backbone = require('backbone');
+import { isEmpty } from 'underscore';
+
+const Backbone = require('backbone');
 
 module.exports = Backbone.Collection.extend({
 
@@ -67,16 +69,18 @@ module.exports = Backbone.Collection.extend({
   },
 
   onAdd(model, c, opts) {
-    var style = model.get('style');
-    var em = this.editor;
+    const em = this.editor;
+    const style = model.get('style');
+    const avoidInline = em && em.getConfig('avoidInlineStyle');
 
-    if (!_.isEmpty(style) && em && em.get && em.get('Config').forceClass) {
-      var cssC = this.editor.get('CssComposer');
-      var newClass = this.editor.get('SelectorManager').add(model.cid);
-      model.set({style:{}});
-      model.get('classes').add(newClass);
-      var rule = cssC.add(newClass);
-      rule.set('style', style);
+    if (!isEmpty(style) && !avoidInline &&
+      em && em.get && em.get('Config').forceClass) {
+        var cssC = this.editor.get('CssComposer');
+        var newClass = this.editor.get('SelectorManager').add(model.cid);
+        model.set({style:{}});
+        model.get('classes').add(newClass);
+        var rule = cssC.add(newClass);
+        rule.set('style', style);
     }
   },
 

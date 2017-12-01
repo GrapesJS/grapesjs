@@ -1,5 +1,7 @@
 const PropertySelectView = require('style_manager/view/PropertySelectView');
 const Property = require('style_manager/model/Property');
+const Editor = require('editor/model/Editor');
+const DomComponents = require('dom_components');
 const Component = require('dom_components/model/Component');
 
 module.exports = {
@@ -7,6 +9,9 @@ module.exports = {
 
       describe('PropertySelectView', () => {
 
+        let em;
+        let dcomp;
+        let compOpts;
         var component;
         var fixtures;
         var target;
@@ -23,9 +28,12 @@ module.exports = {
             ];
 
         beforeEach(() => {
-          propTarget = Object.assign({}, Backbone.Events);
-          target = new Component();
-          component = new Component();
+          em = new Editor({});
+          dcomp = new DomComponents();
+          compOpts = { em, componentTypes: dcomp.componentTypes };
+          propTarget = { ...Backbone.Events };
+          target = new Component({}, compOpts);
+          component = new Component({}, compOpts);
           model = new Property({
             type: 'select',
             list: options,

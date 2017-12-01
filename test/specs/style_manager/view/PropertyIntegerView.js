@@ -2,12 +2,17 @@ const PropertyIntegerView = require('style_manager/view/PropertyIntegerView');
 const Property = require('style_manager/model/Property');
 const PropertyInteger = require('style_manager/model/PropertyInteger');
 const Component = require('dom_components/model/Component');
+const Editor = require('editor/model/Editor');
+const DomComponents = require('dom_components');
 
 module.exports = {
   run() {
 
       describe('PropertyIntegerView', () => {
 
+        let em;
+        let dcomp;
+        let compOpts;
         var component;
         var fixtures;
         var target;
@@ -25,13 +30,16 @@ module.exports = {
         var unitsElSel = '.field-units select';
 
         beforeEach(() => {
-          target = new Component();
-          component = new Component();
+          em = new Editor({});
+          dcomp = new DomComponents();
+          compOpts = { em, componentTypes: dcomp.componentTypes };
+          propTarget = { ...Backbone.Events };
+          target = new Component({}, compOpts);
+          component = new Component({}, compOpts);
           model = new PropertyInteger({
             units,
             property: propName
           });
-          propTarget = Object.assign({}, Backbone.Events);
           propTarget.model = component;
           view = new PropertyIntegerView({
             model,

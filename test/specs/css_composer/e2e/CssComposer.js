@@ -130,10 +130,11 @@ module.exports = {
              active: true,
              label: 'test1',
              name: 'test1',
-             type: 'class',
+             type: clsm.Selector.TYPE_CLASS,
              private: false,
              protected: false,
             }],
+            important: 0,
             selectorsAdd: '',
             state: '',
             stylable: true,
@@ -172,6 +173,7 @@ module.exports = {
           rule1Out = JSON.parse(JSON.stringify(rule1Out));
           rule2Out = JSON.parse(JSON.stringify(rule2Out));
           var rule1Result = {
+            important: 0,
             mediaText: '',
             selectors: [],
             selectorsAdd: '*',
@@ -183,6 +185,7 @@ module.exports = {
             }
           };
           var rule2Result = {
+            important: 0,
             mediaText: '',
             selectors: [],
             selectorsAdd: 'p',
