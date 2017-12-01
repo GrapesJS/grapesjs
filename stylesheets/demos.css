@@ -90,3 +90,32 @@ html {
   width: 15%;
   height: 150px;
 }
+
+#carbonads {
+  padding: 20px 10px;
+}
+
+.carbon-img {
+  float: right;
+  margin-left: 10px;
+}
+
+.carbon-img img {
+  border-radius: 3px;
+  max-width: 100px !important;
+  max-height: 77px;
+}
+
+.carbon-text {
+  color: rgba(255, 255, 255, 0.75);
+  font: caption;
+  text-decoration: none;
+  font-weight: lighter;
+}
+
+.carbon-poweredby {
+  font: caption;
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+  float: right;
+}
