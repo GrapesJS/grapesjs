@@ -6,11 +6,6 @@
 <p align="center"><img src="http://grapesjs.com/img/grapesjs-front-page-m.jpg" alt="GrapesJS" width="500" align="center"/></p>
 
 
-<a target='_blank' rel='nofollow' href='https://app.codesponsor.io/link/nb9nPYf2XqCE1PbgcQj6gf4D/artf/grapesjs'>
-  <img alt='Sponsor' width='888' height='68' src='https://app.codesponsor.io/embed/nb9nPYf2XqCE1PbgcQj6gf4D/artf/grapesjs.svg' />
-</a>
-
-
 GrapesJS is a free and open source Web Builder Framework which helps you building HTML templates to be used inside sites, newsletters and mobile apps.
 Mainly GrapesJS was designed to be used inside a [CMS] to speed up a creation of dynamic templates. To better understand this concept check the image below
 
@@ -210,15 +205,15 @@ If you like the project support it with a donation of your choice or become a ba
 
 [![PayPalMe](http://grapesjs.com/img/ppme.png)](https://paypal.me/grapesjs)
 
-<a href="https://opencollective.com/grapesjs/sponsors/0/website" target="_blank"><img src="https://opencollective.com/grapesjs/sponsors/0/avatar"></a>
-<a href="https://opencollective.com/grapesjs/sponsors/1/website" target="_blank"><img src="https://opencollective.com/grapesjs/sponsors/1/avatar"></a>
-<a href="https://opencollective.com/grapesjs/sponsors/2/website" target="_blank"><img src="https://opencollective.com/grapesjs/sponsors/2/avatar"></a>
-<a href="https://opencollective.com/grapesjs/sponsors/3/website" target="_blank"><img src="https://opencollective.com/grapesjs/sponsors/3/avatar"></a>
+<a href="https://opencollective.com/grapesjs/sponsors/0/website"><img src="https://opencollective.com/grapesjs/sponsors/0/avatar"></a>
+<a href="https://opencollective.com/grapesjs/sponsors/1/website"><img src="https://opencollective.com/grapesjs/sponsors/1/avatar"></a>
+<a href="https://opencollective.com/grapesjs/sponsors/2/website"><img src="https://opencollective.com/grapesjs/sponsors/2/avatar"></a>
+<a href="https://opencollective.com/grapesjs/sponsors/3/website"><img src="https://opencollective.com/grapesjs/sponsors/3/avatar"></a>
 
-<a href="https://opencollective.com/grapesjs/backers/0/website" target="_blank"><img src="https://opencollective.com/grapesjs/backers/0/avatar"></a>
-<a href="https://opencollective.com/grapesjs/backers/1/website" target="_blank"><img src="https://opencollective.com/grapesjs/backers/1/avatar"></a>
-<a href="https://opencollective.com/grapesjs/backers/2/website" target="_blank"><img src="https://opencollective.com/grapesjs/backers/2/avatar"></a>
-<a href="https://opencollective.com/grapesjs/backers/3/website" target="_blank"><img src="https://opencollective.com/grapesjs/backers/3/avatar"></a>
+<a href="https://opencollective.com/grapesjs/backers/0/website"><img src="https://opencollective.com/grapesjs/backers/0/avatar"></a>
+<a href="https://opencollective.com/grapesjs/backers/1/website"><img src="https://opencollective.com/grapesjs/backers/1/avatar"></a>
+<a href="https://opencollective.com/grapesjs/backers/2/website"><img src="https://opencollective.com/grapesjs/backers/2/avatar"></a>
+<a href="https://opencollective.com/grapesjs/backers/3/website"><img src="https://opencollective.com/grapesjs/backers/3/avatar"></a>
 
 
 

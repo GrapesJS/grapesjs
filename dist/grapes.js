@@ -17496,8 +17496,8 @@ var _underscore = __webpack_require__(1);
 
 var _mixins = __webpack_require__(2);
 
-var ToolbarView = __webpack_require__(177);
-var Toolbar = __webpack_require__(179);
+var ToolbarView = __webpack_require__(178);
+var Toolbar = __webpack_require__(180);
 var key = __webpack_require__(17);
 var Backbone = __webpack_require__(0);
 var showOffsets = void 0;
@@ -18467,8 +18467,8 @@ module.exports = function (config) {
 
 
     /**
-     * Fetch data from node
-     * @param  {HTMLElement} el DOM
+     * Get data from the node element
+     * @param  {HTMLElement} el DOM element to traverse
      * @return {Array<Object>}
      */
     parseNode: function parseNode(el) {
@@ -18477,90 +18477,91 @@ module.exports = function (config) {
 
       for (var i = 0, len = nodes.length; i < len; i++) {
         var node = nodes[i];
-        var model = {};
         var attrs = node.attributes || [];
         var attrsLen = attrs.length;
-        var prevI = result.length - 1;
-        var prevSib = result[prevI];
+        var nodePrev = result[result.length - 1];
+        var nodeChild = node.childNodes.length;
         var ct = this.compTypes;
+        var model = {};
 
+        // Start with understanding what kind of component it is
         if (ct) {
           var obj = '';
-          /*
-          for (var cType in ct) {
-            var component = ct[cType].model;
-            obj = component.isComponent(node);
-            if(obj)
-              break;
-          }*/
+
+          // Iterate over all available Component Types and
+          // the first with a valid result will be that component
           for (var it = 0; it < ct.length; it++) {
-            var component = ct[it].model;
-            obj = component.isComponent(node);
+            obj = ct[it].model.isComponent(node);
             if (obj) break;
           }
 
           model = obj;
         }
 
-        if (!model.tagName) model.tagName = node.tagName ? node.tagName.toLowerCase() : '';
+        // Set tag name if not yet done
+        if (!model.tagName) {
+          model.tagName = node.tagName ? node.tagName.toLowerCase() : '';
+        }
 
-        if (attrsLen) model.attributes = {};
+        if (attrsLen) {
+          model.attributes = {};
+        }
 
-        // Store attributes
+        // Parse attributes
         for (var j = 0; j < attrsLen; j++) {
           var nodeName = attrs[j].nodeName;
           var nodeValue = attrs[j].nodeValue;
 
-          //Isolate few attributes
-          if (nodeName == 'style') model.style = this.parseStyle(nodeValue);else if (nodeName == 'class') model.classes = this.parseClass(nodeValue);else if (nodeName == 'contenteditable') continue;else if (nodeName.indexOf(modelAttrStart) === 0) {
+          // Isolate attributes
+          if (nodeName == 'style') {
+            model.style = this.parseStyle(nodeValue);
+          } else if (nodeName == 'class') {
+            model.classes = this.parseClass(nodeValue);
+          } else if (nodeName == 'contenteditable') {
+            continue;
+          } else if (nodeName.indexOf(modelAttrStart) === 0) {
             var modelAttr = nodeName.replace(modelAttrStart, '');
             var valueLen = nodeValue.length;
             var firstChar = nodeValue && nodeValue.substr(0, 1);
             var lastChar = nodeValue && nodeValue.substr(valueLen - 1);
             nodeValue = nodeValue === 'true' ? true : nodeValue;
             nodeValue = nodeValue === 'false' ? false : nodeValue;
-            // Try to json parse where is possible
+
+            // Try to parse JSON where it's possible
             // I can get false positive here (eg. a selector '[data-attr]')
             // so put it under try/catch and let fail silently
             try {
               nodeValue = firstChar == '{' && lastChar == '}' || firstChar == '[' && lastChar == ']' ? JSON.parse(nodeValue) : nodeValue;
             } catch (e) {}
+
             model[modelAttr] = nodeValue;
           } else {
             model.attributes[nodeName] = nodeValue;
           }
         }
 
-        var nodeChild = node.childNodes.length;
-
-        // Check for nested elements and avoid them if an array
-        // was already given
+        // Check for nested elements but avoid it if already provided
         if (nodeChild && !model.components) {
-          // Avoid infinite text nodes nesting
+          // Avoid infinite nested text nodes
           var firstChild = node.childNodes[0];
+
+          // If there is only one child and it's a TEXTNODE
+          // just make it content of the current node
           if (nodeChild === 1 && firstChild.nodeType === 3) {
-            if (!model.type) {
-              model.type = 'text';
-            }
+            !model.type && (model.type = 'text');
             model.content = firstChild.nodeValue;
           } else {
-            var parsed = this.parseNode(node);
-            // From: <div> <span>TEST</span> </div> <-- span is text type
-            // TO: <div> TEST </div> <-- div become text type
-            if (parsed.length == 1 && parsed[0].type == 'text' && parsed[0].tagName == TEXT_NODE) {
-              model.type = 'text';
-              model.content = parsed[0].content;
-            } else model.components = parsed;
+            model.components = this.parseNode(node);
           }
         }
 
         // Check if it's a text node and if could be moved to the prevous model
         if (model.type == 'textnode') {
-          var prevIsText = prevSib && prevSib.type == 'textnode';
-          if (prevIsText) {
-            prevSib.content += model.content;
+          if (nodePrev && nodePrev.type == 'textnode') {
+            nodePrev.content += model.content;
             continue;
           }
+
           // Throw away empty nodes (keep spaces)
           var content = node.nodeValue;
           if (content != ' ' && !content.trim()) {
@@ -18574,19 +18575,30 @@ module.exports = function (config) {
         if (!model.type && comps) {
           var allTxt = 1;
           var foundTextNode = 0;
+
           for (var ci = 0; ci < comps.length; ci++) {
             var comp = comps[ci];
-            if (comp.type != 'text' && comp.type != 'textnode' && c.textTags.indexOf(comp.tagName) < 0) {
+            var cType = comp.type;
+
+            if (['text', 'textnode'].indexOf(cType) < 0 && c.textTags.indexOf(comp.tagName) < 0) {
               allTxt = 0;
               break;
             }
-            if (comp.type == 'textnode') foundTextNode = 1;
+
+            if (cType == 'textnode') {
+              foundTextNode = 1;
+            }
           }
-          if (allTxt && foundTextNode) model.type = 'text';
+
+          if (allTxt && foundTextNode) {
+            model.type = 'text';
+          }
         }
 
         // If tagName is still empty and is not a textnode, do not push it
-        if (!model.tagName && model.type != 'textnode') continue;
+        if (!model.tagName && model.type != 'textnode') {
+          continue;
+        }
 
         result.push(model);
       }
@@ -20857,7 +20869,7 @@ module.exports = Input.extend({
       };
 
       var changed = 0;
-      var previousСolor = void 0;
+      var previousColor = void 0;
       this.$el.find('[data-colorp-c]').append(colorEl);
       colorEl.spectrum({
         containerClassName: ppfx + 'one-bg ' + ppfx + 'two-color',
@@ -20882,16 +20894,16 @@ module.exports = Input.extend({
         },
         show: function show(color) {
           changed = 0;
-          previousСolor = getColor(color);
+          previousColor = getColor(color);
         },
         hide: function hide(color) {
-          if (!changed && previousСolor) {
+          if (!changed && previousColor) {
             if (self.noneColor) {
-              previousСolor = '';
+              previousColor = '';
             }
-            cpStyle.backgroundColor = previousСolor;
-            colorEl.spectrum('set', previousСolor);
-            model.setValueFromInput(previousСolor, 0);
+            cpStyle.backgroundColor = previousColor;
+            colorEl.spectrum('set', previousColor);
+            model.setValueFromInput(previousColor, 0);
           }
         }
       });
@@ -22306,7 +22318,7 @@ module.exports = ComponentView.extend({
         };
 
         // Avoid re-render on reset with silent option
-        model.set('content', '');
+        model.set('content', '').trigger('change:content', model);
         comps.add(content);
         comps.each(function (model) {
           return clean(model);
@@ -23082,7 +23094,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.12.46',
+    version: '0.12.50',
 
     /**
      * Initializes an editor based on passed options
@@ -23358,17 +23370,18 @@ module.exports = function (config) {
      * Returns HTML built inside canvas
      * @return {string} HTML string
      */
-    getHtml: function getHtml() {
-      return em.getHtml();
+    getHtml: function getHtml(opts) {
+      return em.getHtml(opts);
     },
 
 
     /**
      * Returns CSS built inside canvas
+     * @param {Object} [opts={}] Options
      * @return {string} CSS string
      */
-    getCss: function getCss() {
-      return em.getCss();
+    getCss: function getCss(opts) {
+      return em.getCss(opts);
     },
 
 
@@ -23724,16 +23737,19 @@ module.exports = function (config) {
     * ```
     *
     * # Available Events
+    *
     * ## Components
     * * `component:add` - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
-    * * `component:update` - Triggered when a component is, generally, updated (moved, styled, etc.)
-    * * `component:update:{propertyName}` - Listen any property change
-    * * `component:styleUpdate` - Triggered when the style of the component is updated
-    * * `component:styleUpdate:{propertyName}` - Listen for a specific style property change
-    * * `component:selected` - New component selected
+    * * `component:update` - Triggered when a component is updated (moved, styled, etc.), the model is passed as an argument to the callback
+    * * `component:update:{propertyName}` - Listen any property change, the model is passed as an argument to the callback
+    * * `component:styleUpdate` - Triggered when the style of the component is updated, the model is passed as an argument to the callback
+    * * `component:styleUpdate:{propertyName}` - Listen for a specific style property change, the model is passed as an argument to the callback
+    * * `component:selected` - New component selected, the selected model is passed as an argument to the callback
     * ## Blocks
     * * `block:add` - New block added
     * * `block:remove` - Block removed
+    * * `block:drag:start` - Started dragging new block, Event object is passed as an argument
+    * * `block:drag:stop` - Block dropped inside canvas, the new model is passed as an argument to the callback
     * ## Assets
     * * `asset:add` - New asset added
     * * `asset:remove` - Asset removed
@@ -23835,7 +23851,7 @@ module.exports = {
   width: '100%',
 
   // CSS that could only be seen (for instance, inside the code viewer)
-  protectedCss: '*{box-sizing: border-box;}',
+  protectedCss: '* { box-sizing: border-box; } body {margin: 0;}',
 
   // CSS for the iframe which containing the canvas, useful if you need to custom something inside
   // (eg. the style of the selected component)
@@ -23972,8 +23988,11 @@ module.exports = {
   },
 
   //Configurations for Block Manager
-  blockManager: {}
+  blockManager: {},
 
+  // Texts
+
+  textViewCode: 'Code'
 };
 
 /***/ }),
@@ -24473,15 +24492,19 @@ module.exports = Backbone.Model.extend({
 
   /**
    * Returns CSS built inside canvas
+   * @param {Object} [opts={}] Options
    * @return {string} CSS string
    * @private
    */
   getCss: function getCss() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
     var config = this.config;
     var wrappesIsBody = config.wrappesIsBody;
+    var avoidProt = opts.avoidProtected;
     var cssc = this.get('CssComposer');
     var wrp = this.get('DomComponents').getComponent();
-    var protCss = config.protectedCss;
+    var protCss = !avoidProt ? config.protectedCss : '';
 
     return protCss + this.get('CodeManager').getCode(wrp, 'css', {
       cssc: cssc, wrappesIsBody: wrappesIsBody
@@ -28363,7 +28386,7 @@ module.exports = function () {
 
 module.exports = {
 
-  textTags: ['br', 'b', 'i', 'u']
+  textTags: ['br', 'b', 'i', 'u', 'a', 'ul', 'ol']
 
 };
 
@@ -29857,8 +29880,6 @@ module.exports = Backbone.Model.extend({
 "use strict";
 
 
-var _underscore = __webpack_require__(1);
-
 module.exports = __webpack_require__(0).Model.extend({
   initialize: function initialize() {
     this.compCls = [];
@@ -29879,7 +29900,7 @@ module.exports = __webpack_require__(0).Model.extend({
     var code = '';
     var em = this.em;
     var avoidInline = em && em.getConfig('avoidInlineStyle');
-    var style = model.get('style');
+    var style = model.styleToString();
     var classes = model.get('classes');
     var wrappesIsBody = opts.wrappesIsBody;
     var isWrapper = model.get('wrapper');
@@ -29890,10 +29911,10 @@ module.exports = __webpack_require__(0).Model.extend({
       return _this.compCls.push(model.getFullName());
     });
 
-    if (!(0, _underscore.isEmpty)(style) && !avoidInline || isWrapper) {
+    if ((!avoidInline || isWrapper) && style) {
       var selector = '#' + model.getId();
       selector = wrappesIsBody && isWrapper ? 'body' : selector;
-      code = selector + '{' + model.styleToString() + '}';
+      code = selector + '{' + style + '}';
     }
 
     var components = model.components();
@@ -30098,6 +30119,8 @@ module.exports = Backbone.Model.extend({
 "use strict";
 
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var Backbone = __webpack_require__(0);
 var CodeMirror = __webpack_require__(6);
 var htmlMode = __webpack_require__(99);
@@ -30117,14 +30140,11 @@ module.exports = Backbone.Model.extend({
 
   /** @inheritdoc */
   init: function init(el) {
-    this.editor = CodeMirror.fromTextArea(el, {
+    this.editor = CodeMirror.fromTextArea(el, _extends({
       dragDrop: false,
       lineWrapping: true,
-      lineNumbers: this.get('lineNumbers'),
-      readOnly: this.get('readOnly'),
-      mode: this.get('codeName'),
-      theme: this.get('theme')
-    });
+      mode: this.get('codeName')
+    }, this.attributes));
 
     return this;
   },
@@ -37311,7 +37331,9 @@ module.exports = {
 
   // Enable an upload dropzone on the entire editor (not document) when dragging
   // files over it
-  dropzone: 1,
+  // If active the dropzone disable/hide the upload dropzone in asset modal,
+  // otherwise you will get double drops (#507)
+  dropzone: 0,
 
   // Open the asset manager once files are been dropped via the dropzone
   openAssetsOnDrop: 1,
@@ -37622,6 +37644,8 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
  * * [store](#store)
  * * [setIdRule](#setidrule)
  * * [getIdRule](#getidrule)
+ * * [setClassRule](#setclassrule)
+ * * [getClassRule](#getclassrule)
  *
  * This module contains and manage CSS rules for the template inside the canvas
  * Before using the methods you should get first the module from the editor instance, in this way:
@@ -37899,11 +37923,17 @@ module.exports = function () {
 
 
     /**
-     * Add/update a css rule with id selector
+     * Add/update the CSS rule with id selector
      * @param {string} name Id selector name, eg. 'my-id'
      * @param {Object} style  Style properties and values
-     * @param {Object} [opts={}]  Custom options
-     * @return {CssRule}
+     * @param {Object} [opts={}]  Custom options, like `state` and `mediaText`
+     * @return {CssRule} The new/updated rule
+     * @example
+     * const rule = cc.setIdRule('myid', { color: 'red' });
+     * const ruleHover = cc.setIdRule('myid', { color: 'blue' }, { state: 'hover' });
+     * // This will add current CSS:
+     * // #myid { color: red }
+     * // #myid:hover { color: blue }
      */
     setIdRule: function setIdRule(name) {
       var style = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -37920,10 +37950,13 @@ module.exports = function () {
 
 
     /**
-     * Get css rule by id selector
+     * Get the CSS rule by id selector
      * @param {string} name Id selector name, eg. 'my-id'
-     * @param  {Object} [opts={}]  Custom options
+     * @param  {Object} [opts={}]  Custom options, like `state` and `mediaText`
      * @return {CssRule}
+     * @example
+     * const rule = cc.getIdRule('myid');
+     * const ruleHover = cc.setIdRule('myid', { state: 'hover' });
      */
     getIdRule: function getIdRule(name) {
       var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -37931,6 +37964,52 @@ module.exports = function () {
       var state = opts.state || '';
       var media = opts.mediaText || em.getCurrentMedia();
       var selector = em.get('SelectorManager').get(name, Selector.TYPE_ID);
+      return selector && this.get(selector, state, media);
+    },
+
+
+    /**
+     * Add/update the CSS rule with class selector
+     * @param {string} name Class selector name, eg. 'my-class'
+     * @param {Object} style  Style properties and values
+     * @param {Object} [opts={}]  Custom options, like `state` and `mediaText`
+     * @return {CssRule} The new/updated rule
+     * @example
+     * const rule = cc.setClassRule('myclass', { color: 'red' });
+     * const ruleHover = cc.setClassRule('myclass', { color: 'blue' }, { state: 'hover' });
+     * // This will add current CSS:
+     * // .myclass { color: red }
+     * // .myclass:hover { color: blue }
+     */
+    setClassRule: function setClassRule(name) {
+      var style = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+      var state = opts.state || '';
+      var media = opts.mediaText || em.getCurrentMedia();
+      var sm = em.get('SelectorManager');
+      var selector = sm.add({ name: name, type: Selector.TYPE_CLASS });
+      var rule = this.add(selector, state, media);
+      rule.setStyle(style, opts);
+      return rule;
+    },
+
+
+    /**
+     * Get the CSS rule by class selector
+     * @param {string} name Class selector name, eg. 'my-class'
+     * @param  {Object} [opts={}]  Custom options, like `state` and `mediaText`
+     * @return {CssRule}
+     * @example
+     * const rule = cc.getClassRule('myclass');
+     * const ruleHover = cc.getClassRule('myclass', { state: 'hover' });
+     */
+    getClassRule: function getClassRule(name) {
+      var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+      var state = opts.state || '';
+      var media = opts.mediaText || em.getCurrentMedia();
+      var selector = em.get('SelectorManager').get(name, Selector.TYPE_CLASS);
       return selector && this.get(selector, state, media);
     },
 
@@ -38018,11 +38097,14 @@ var CssRuleView = __webpack_require__(137);
 
 module.exports = Backbone.View.extend({
   initialize: function initialize(o) {
-    this.config = o.config || {};
-    this.pfx = this.config.stylePrefix || '';
+    var config = o.config || {};
+    this.config = config;
+    this.em = config.em;
+    this.pfx = config.stylePrefix || '';
     this.className = this.pfx + 'rules';
-    this.listenTo(this.collection, 'add', this.addTo);
-    this.listenTo(this.collection, 'reset', this.render);
+    var coll = this.collection;
+    this.listenTo(coll, 'add', this.addTo);
+    this.listenTo(coll, 'reset', this.render);
   },
 
 
@@ -38032,7 +38114,6 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   addTo: function addTo(model) {
-    //console.log('Added');
     this.addToCollection(model);
   },
 
@@ -38059,15 +38140,16 @@ module.exports = Backbone.View.extend({
     return rendered;
   },
   render: function render() {
-    var fragment = document.createDocumentFragment();
-    this.$el.empty();
+    var _this = this;
 
+    var $el = this.$el;
+    var frag = document.createDocumentFragment();
+    $el.empty();
     this.collection.each(function (model) {
-      this.addToCollection(model, fragment);
-    }, this);
-
-    this.$el.append(fragment);
-    this.$el.attr('class', this.className);
+      return _this.addToCollection(model, frag);
+    });
+    $el.append(frag);
+    $el.attr('class', this.className);
     return this;
   }
 });
@@ -38080,7 +38162,6 @@ module.exports = Backbone.View.extend({
 
 
 module.exports = __webpack_require__(0).View.extend({
-
   tagName: 'style',
 
   initialize: function initialize() {
@@ -38982,7 +39063,6 @@ module.exports = {
 
   // Default wrapper configuration
   wrapper: {
-    style: { margin: 0 },
     removable: false,
     copyable: false,
     draggable: false,
@@ -41211,14 +41291,15 @@ module.exports = function () {
         if (obj.id) this.add(obj.id, obj);
       }
 
+      var ViewCode = __webpack_require__(177);
       defaultCommands['select-comp'] = __webpack_require__(21);
       defaultCommands['create-comp'] = __webpack_require__(22);
-      defaultCommands['delete-comp'] = __webpack_require__(181);
-      defaultCommands['image-comp'] = __webpack_require__(182);
-      defaultCommands['move-comp'] = __webpack_require__(183);
-      defaultCommands['text-comp'] = __webpack_require__(184);
+      defaultCommands['delete-comp'] = __webpack_require__(182);
+      defaultCommands['image-comp'] = __webpack_require__(183);
+      defaultCommands['move-comp'] = __webpack_require__(184);
+      defaultCommands['text-comp'] = __webpack_require__(185);
       defaultCommands['insert-custom'] = __webpack_require__(53);
-      defaultCommands['export-template'] = __webpack_require__(185);
+      defaultCommands['export-template'] = ViewCode;
       defaultCommands['sw-visibility'] = __webpack_require__(186);
       defaultCommands['open-layers'] = __webpack_require__(187);
       defaultCommands['open-sm'] = __webpack_require__(190);
@@ -41605,11 +41686,73 @@ module.exports = Backbone.View.extend({
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+/* WEBPACK VAR INJECTION */(function(Backbone) {
+
+var $ = Backbone.$;
+
+module.exports = {
+  run: function run(editor, sender) {
+    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+    sender && sender.set && sender.set('active', 0);
+    var config = editor.getConfig();
+    var modal = editor.Modal;
+    var pfx = config.stylePrefix;
+    this.cm = editor.CodeManager || null;
+
+    if (!this.$editors) {
+      var oHtmlEd = this.buildEditor('htmlmixed', 'hopscotch', 'HTML');
+      var oCsslEd = this.buildEditor('css', 'hopscotch', 'CSS');
+      this.htmlEditor = oHtmlEd.el;
+      this.cssEditor = oCsslEd.el;
+      var $editors = $('<div class="' + pfx + 'export-dl"></div>');
+      $editors.append(oHtmlEd.$el).append(oCsslEd.$el);
+      this.$editors = $editors;
+    }
+
+    modal.setTitle(config.textViewCode);
+    modal.setContent(this.$editors);
+    modal.open();
+    this.htmlEditor.setContent(editor.getHtml());
+    this.cssEditor.setContent(editor.getCss());
+  },
+  stop: function stop(editor) {
+    var modal = editor.Modal;
+    modal && modal.close();
+  },
+  buildEditor: function buildEditor(codeName, theme, label) {
+    var input = document.createElement('textarea');
+    !this.codeMirror && (this.codeMirror = this.cm.getViewer('CodeMirror'));
+
+    var el = this.codeMirror.clone().set({
+      label: label,
+      codeName: codeName,
+      theme: theme,
+      input: input
+    });
+
+    var $el = new this.cm.EditorView({
+      model: el,
+      config: this.cm.getConfig()
+    }).render().$el;
+
+    el.init(input);
+
+    return { el: el, $el: $el };
+  }
+};
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+
+/***/ }),
+/* 178 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 
 
 var Backbone = __webpack_require__(0);
 var DomainViews = __webpack_require__(47);
-var ToolbarButtonView = __webpack_require__(178);
+var ToolbarButtonView = __webpack_require__(179);
 
 module.exports = DomainViews.extend({
 
@@ -41622,7 +41765,7 @@ module.exports = DomainViews.extend({
 });
 
 /***/ }),
-/* 178 */
+/* 179 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41664,19 +41807,19 @@ module.exports = Backbone.View.extend({
 });
 
 /***/ }),
-/* 179 */
+/* 180 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var ToolbarButton = __webpack_require__(180);
+var ToolbarButton = __webpack_require__(181);
 
 module.exports = Backbone.Collection.extend({ model: ToolbarButton });
 
 /***/ }),
-/* 180 */
+/* 181 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41694,7 +41837,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 181 */
+/* 182 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41777,7 +41920,7 @@ module.exports = _.extend({}, SelectComponent, {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-/* 182 */
+/* 183 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41818,7 +41961,7 @@ module.exports = _.extend({}, InsertCustom, {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 183 */
+/* 184 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41985,7 +42128,7 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-/* 184 */
+/* 185 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42020,83 +42163,6 @@ module.exports = _.extend({}, CreateComponent, {
   }
 });
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
-
-/***/ }),
-/* 185 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(Backbone) {
-
-var $ = Backbone.$;
-
-module.exports = {
-  run: function run(editor, sender) {
-    this.sender = sender;
-    this.wrapper = editor.DomComponents.getWrapper();
-    this.components = editor.DomComponents.getComponents();
-    this.modal = editor.Modal || null;
-    this.cm = editor.CodeManager || null;
-    this.cssc = editor.CssComposer || null;
-    this.protCss = editor.Config.protectedCss;
-    this.pfx = editor.Config.stylePrefix || '';
-    this.enable();
-  },
-
-
-  /**
-   * Build editor
-   * @param  {String}  codeName
-   * @param  {String}  theme
-   * @param  {String}  label
-   *
-   * @return  {Object}  Editor
-   * @private
-   * */
-  buildEditor: function buildEditor(codeName, theme, label) {
-    if (!this.codeMirror) this.codeMirror = this.cm.getViewer('CodeMirror');
-
-    var $input = $('<textarea>'),
-        editor = this.codeMirror.clone().set({
-      label: label,
-      codeName: codeName,
-      theme: theme,
-      input: $input[0]
-    }),
-        $editor = new this.cm.EditorView({
-      model: editor,
-      config: this.cm.getConfig()
-    }).render().$el;
-
-    editor.init($input[0]);
-
-    return { el: editor, $el: $editor };
-  },
-  enable: function enable() {
-    if (!this.$editors) {
-      var oHtmlEd = this.buildEditor('htmlmixed', 'hopscotch', 'HTML');
-      var oCsslEd = this.buildEditor('css', 'hopscotch', 'CSS');
-      this.htmlEditor = oHtmlEd.el;
-      this.cssEditor = oCsslEd.el;
-      this.$editors = $('<div class="' + this.pfx + 'export-dl">');
-      this.$editors.append(oHtmlEd.$el).append(oCsslEd.$el);
-    }
-
-    if (this.modal) {
-      this.modal.setTitle('Export template');
-      this.modal.setContent(this.$editors);
-      this.modal.open();
-    }
-    var em = this.em;
-    var addCss = this.protCss || '';
-    this.htmlEditor.setContent(em.getHtml());
-    this.cssEditor.setContent(em.getCss());
-
-    if (this.sender) this.sender.set('active', false);
-  },
-  stop: function stop() {}
-};
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
 /* 186 */
@@ -42709,7 +42775,7 @@ module.exports = {
       this.helper.className = pfx + 'off-prv fa fa-eye-slash';
       editorEl.appendChild(this.helper);
       this.helper.onclick = function () {
-        that.stop(editor);
+        editor.stopCommand('preview');
       };
     }
     this.helper.style.display = 'inline-block';

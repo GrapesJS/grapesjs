@@ -1,5 +1,5 @@
 module.exports = {
 
-  textTags: ['br', 'b', 'i', 'u', 'a'],
+  textTags: ['br', 'b', 'i', 'u', 'a', 'ul', 'ol'],
 
 };
