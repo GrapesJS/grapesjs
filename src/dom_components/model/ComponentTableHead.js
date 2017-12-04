@@ -1,8 +1,8 @@
-var Component = require('./Component');
+var ComponentTableBody = require('./ComponentTableBody');
 
-module.exports = Component.extend({
+module.exports = ComponentTableBody.extend({
 
-  defaults: _.extend({}, Component.prototype.defaults, {
+  defaults: _.extend({}, ComponentTableBody.prototype.defaults, {
     type: 'thead',
     tagName: 'thead',
     droppable: ['tr']

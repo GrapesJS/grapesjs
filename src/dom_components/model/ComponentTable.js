@@ -6,19 +6,6 @@ module.exports = Component.extend({
       type: 'table',
       tagName: 'table',
       droppable: ['tbody', 'thead', 'tfoot'],
-      columns: 3,
-      rows: 2,
-      /*
-      traits: [{
-        label: 'Columns',
-        name: 'columns',
-        changeProp: 1,
-      },{
-        label: 'Rows',
-        name: 'rows',
-        changeProp: 1,
-      }]
-      */
   }),
 
   initialize(o, opt) {
@@ -29,43 +16,8 @@ module.exports = Component.extend({
 
     // Init components if empty
     if(!components.length){
-      var rowsToAdd = [];
-
-      while(rows--){
-        var columnsToAdd = [];
-        var clm = columns;
-
-        while (clm--) {
-          columnsToAdd.push({
-            type: 'cell',
-            classes: ['cell']
-          });
-        }
-
-        rowsToAdd.push({
-          type: 'row',
-          classes: ['row'],
-          components: columnsToAdd
-        });
-      }
-      components.add(rowsToAdd);
+      components.add({type: 'tbody'});
     }
-
-    // Clean table from non rows
-    var rowsColl = [];
-    components.each(model => {
-      if(model.get('type') != 'row'){
-        model.get('components').each(row => {
-          if(row.get('type') == 'row'){
-            row.collection = components;
-            rowsColl.push(row);
-          }
-        });
-      }else{
-        rowsColl.push(model);
-      }
-    });
-    // TODO: create tbody element if it doesn't exist? components.reset(rowsColl);
   },
 
 },{
