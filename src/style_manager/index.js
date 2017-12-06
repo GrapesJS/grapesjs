@@ -221,6 +221,20 @@ module.exports = () => {
 
 
     /**
+     * Remove a property from the sector
+     * @param  {string} sectorId Sector id
+     * @param  {string} name CSS property name, eg. 'min-height'
+     * @return {Property} Removed property
+     * @example
+     * const property = styleManager.removeProperty('mySector', 'min-height');
+     */
+    removeProperty(sectorId, name) {
+      const props = this.getProperties(sectorId);
+      return props && props.remove(this.getProperty(sectorId, name));
+    },
+
+
+    /**
      * Get properties of the sector
      * @param  {string} sectorId Sector id
      * @return {Properties} Collection of properties
