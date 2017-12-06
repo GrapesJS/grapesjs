@@ -1,18 +1,4 @@
 /**
- *
- * * [addSector](#addsector)
- * * [getSector](#getsector)
- * * [getSectors](#getsectors)
- * * [addProperty](#addproperty)
- * * [getProperty](#getproperty)
- * * [getProperties](#getproperties)
- * * [getModelToStyle](#getmodeltostyle)
- * * [addType](#addtype)
- * * [getType](#gettype)
- * * [getTypes](#gettypes)
- * * [createType](#createtype)
- * * [render](#render)
- *
  * With Style Manager you basically build categories (called sectors) of CSS properties which could
  * be used to custom components and classes.
  * You can init the editor with all sectors and properties via configuration
@@ -143,6 +129,18 @@ module.exports = () => {
     getSector(id) {
       var res  = sectors.where({id});
       return res.length ? res[0] : null;
+    },
+
+
+    /**
+     * Remove a sector by id
+     * @param  {string} id Sector id
+     * @return {Sector} Removed sector
+     * @example
+     * const removed = styleManager.removeSector('mySector');
+     */
+    removeSector(id) {
+      return this.getSectors().remove(this.getSector(id));
     },
 
 
