@@ -6,6 +6,10 @@ module.exports = Backbone.View.extend({
     'change': 'onChange'
   },
 
+  attributes() {
+    return this.model.get('attributes');
+  },
+
   initialize(o) {
     var md = this.model;
     this.config = o.config || {};
