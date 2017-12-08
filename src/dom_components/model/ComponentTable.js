@@ -14,16 +14,8 @@ module.exports = Component.extend({
     !components.length && components.add({ type: 'tbody' });
   },
 
-},{
+}, {
 
-  /**
-   * Detect if the passed element is a valid component.
-   * In case the element is valid an object abstracted
-   * from the element will be returned
-   * @param {HTMLElement}
-   * @return {Object}
-   * @private
-   */
   isComponent(el) {
     let result = '';
 
