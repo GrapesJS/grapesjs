@@ -1,16 +1,17 @@
 $frameAnimation: 0.35s ease;
+$canvasTop: 40px;
 
 .#{$cv-prefix}canvas {
   background-color: rgba(0, 0, 0, 0.15);
   box-sizing: border-box;
-  position: absolute;
   width: (100% - $leftWidth);
-  height: 100%;
+  height: calc(100% - $canvasTop);
   bottom: 0;
-  left: 0;
   overflow: hidden;
-  padding-top: 40px;
   z-index: 1;
+  position: absolute;
+  left: 0;
+  top: 40px;
 
   .#{$app-prefix}ghost {
     display: none;
