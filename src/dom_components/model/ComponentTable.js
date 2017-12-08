@@ -1,23 +1,17 @@
-var Component = require('./Component');
+const Component = require('./Component');
 
 module.exports = Component.extend({
 
-  defaults: _.extend({}, Component.prototype.defaults, {
+  defaults: { ...Component.prototype.defaults,
       type: 'table',
       tagName: 'table',
       droppable: ['tbody', 'thead', 'tfoot'],
-  }),
+  },
 
   initialize(o, opt) {
     Component.prototype.initialize.apply(this, arguments);
-    var components = this.get('components');
-    var rows = this.get('rows');
-    var columns = this.get('columns');
-
-    // Init components if empty
-    if(!components.length){
-      components.add({type: 'tbody'});
-    }
+    const components = this.get('components');
+    !components.length && components.add({ type: 'tbody' });
   },
 
 },{
@@ -31,10 +25,12 @@ module.exports = Component.extend({
    * @private
    */
   isComponent(el) {
-    var result = '';
-    if(el.tagName == 'TABLE'){
-      result = {type: 'table'};
+    let result = '';
+
+    if (el.tagName == 'TABLE') {
+      result = { type: 'table' };
     }
+
     return result;
   },
 
