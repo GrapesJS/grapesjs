@@ -178,7 +178,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
    * // -> false
    */
   is(type) {
-    return !!this.get('type') == type;
+    return !!(this.get('type') == type);
   },
 
 
