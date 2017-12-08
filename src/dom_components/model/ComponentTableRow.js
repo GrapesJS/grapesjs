@@ -5,7 +5,6 @@ module.exports = Component.extend({
   defaults: _.extend({}, Component.prototype.defaults, {
       type: 'row',
       tagName: 'tr',
-      draggable: ['table', 'tbody', 'thead'],
       droppable: ['th', 'td']
   }),
 

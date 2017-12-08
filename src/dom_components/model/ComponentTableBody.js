@@ -3,9 +3,11 @@ var Component = require('./Component');
 module.exports = Component.extend({
 
   defaults: _.extend({}, Component.prototype.defaults, {
-      type: 'table',
-      tagName: 'table',
-      droppable: ['tbody', 'thead', 'tfoot'],
+    type: 'tbody',
+    tagName: 'tbody',
+    droppable: ['tr'],
+    columns: 1,
+    rows: 1,
   }),
 
   initialize(o, opt) {
@@ -16,7 +18,26 @@ module.exports = Component.extend({
 
     // Init components if empty
     if(!components.length){
-      components.add({type: 'tbody'});
+      var rowsToAdd = [];
+
+      while(rows--){
+        var columnsToAdd = [];
+        var clm = columns;
+
+        while (clm--) {
+          columnsToAdd.push({
+            type: 'cell',
+            classes: ['cell']
+          });
+        }
+
+        rowsToAdd.push({
+          type: 'row',
+          classes: ['row'],
+          components: columnsToAdd
+        });
+      }
+      components.add(rowsToAdd);
     }
   },
 
@@ -32,8 +53,8 @@ module.exports = Component.extend({
    */
   isComponent(el) {
     var result = '';
-    if(el.tagName == 'TABLE'){
-      result = {type: 'table'};
+    if(el.tagName == 'TBODY'){
+      result = {type: 'tbody'};
     }
     return result;
   },
