@@ -37,6 +37,7 @@ module.exports = () => {
        * }
        * ...
        * @return {this}
+       * @private
        */
       init(config) {
         c = config || {};
