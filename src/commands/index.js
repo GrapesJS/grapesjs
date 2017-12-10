@@ -200,8 +200,8 @@ module.exports = () => {
       };
 
       // Core commands
-      defaultCommands['core:undo'] = e => e.UndoManager.undo(1);
-      defaultCommands['core:redo'] = e => e.UndoManager.redo(1);
+      defaultCommands['core:undo'] = e => e.UndoManager.undo();
+      defaultCommands['core:redo'] = e => e.UndoManager.redo();
       defaultCommands['core:canvas-clear'] = e => {
         e.DomComponents.clear();
         e.CssComposer.clear();

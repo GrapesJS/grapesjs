@@ -106,7 +106,11 @@ module.exports = () => {
       this.em = em;
       um = new UndoManager({ track: true, register: [] });
       um.changeUndoType('change', { condition: false });
-      const updated = () => em.trigger('change:selectedComponent');
+      const updated = () => {
+        em.trigger('change:selectedComponent');
+        em.trigger('change:canvasOffset');
+        console.log('updated');
+      };
       const customUndoType = {
         on(object, value, opt = {}) {
           !beforeCache && (beforeCache = object.previousAttributes());
