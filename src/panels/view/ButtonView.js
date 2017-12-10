@@ -208,7 +208,7 @@ module.exports = Backbone.View.extend({
     var commandName = model.get('command');
 
     if (this.commands && isString(commandName)) {
-      command  = this.commands.get(commandName);
+      command  = this.commands.get(commandName) || {};
     } else if (isFunction(commandName)) {
       command = { run: commandName };
     } else if (commandName !== null && isObject(commandName)) {
