@@ -34,6 +34,7 @@
  */
 module.exports = () => {
   var c = {};
+  let em;
   const defaults = require('./config/config');
   const Component = require('./model/Component');
   const ComponentView = require('./view/ComponentView');
@@ -166,7 +167,7 @@ module.exports = () => {
      */
     init(config) {
       c = config || {};
-      const em = c.em;
+      em = c.em;
 
       if (em) {
         c.components = em.config.components || c.components;
@@ -228,7 +229,10 @@ module.exports = () => {
      * @private
      */
     onLoad() {
-      this.getComponents().reset(c.components);
+      const comps = this.getComponents();
+      comps.reset(c.components);
+      const um = em && em.get('UndoManager');
+      um && um.add(comps);
     },
 
     /**

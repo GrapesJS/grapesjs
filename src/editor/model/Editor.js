@@ -3,6 +3,7 @@ import { isUndefined, defaults } from 'underscore';
 const deps = [
   require('utils'),
   require('keymaps'),
+  require('undo_manager'),
   require('storage_manager'),
   require('device_manager'),
   require('parser'),
@@ -58,9 +59,7 @@ module.exports = Backbone.Model.extend({
 
     // Load modules
     deps.forEach(name => this.loadModule(name));
-
-    this.initUndoManager();
-
+    //this.initUndoManager();
     this.on('change:selectedComponent', this.componentSelected, this);
     this.on('change:changesCount', this.updateChanges, this);
   },
@@ -97,8 +96,8 @@ module.exports = Backbone.Model.extend({
       // I've initialized undo manager in initialize() because otherwise the
       // editor will unable to fetch the instance via 'editor.UndoManager' but
       // I need to cleare the stack now as it was dirtied by 'onLoad' method
-      this.um.clear();
-      this.initUndoManager();
+      //this.um && this.um.clear();
+      //this.initUndoManager();
       this.get('modules').forEach(module =>
         module.postLoad && module.postLoad(this)
       );
@@ -231,7 +230,7 @@ module.exports = Backbone.Model.extend({
   /**
    * Initialize Undo manager
    * @private
-   * */
+   * *
   initUndoManager() {
     const canvas = this.get('Canvas');
 
@@ -304,6 +303,7 @@ module.exports = Backbone.Model.extend({
       UndoManager.addUndoType("change:src", customUndoType);
     }
   },
+  */
 
   /**
    * Callback on component selection

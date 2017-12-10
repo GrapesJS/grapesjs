@@ -1,5 +1,5 @@
 /**
- * This module allows to create shortcuts for functions and commands (via command id)
+ * This module allows to manage the stack of changes applied on canvas
  *
  * You can access the module in this way
  * ```js
@@ -10,8 +10,10 @@
 import UndoManager from 'backbone-undo';
 
 module.exports = () => {
+  let em;
   let config;
   let um;
+  let beforeCache;
   const configDef = {};
   const keymaps = {};
 
@@ -100,8 +102,42 @@ module.exports = () => {
      */
     init(opts = {}) {
       config = { ...opts, ...configDef };
-      this.em = config.em;
+      em = config.em;
+      this.em = em;
       um = new UndoManager({ track: true, register: [] });
+      um.changeUndoType('change', { condition: false });
+      const updated = () => em.trigger('change:selectedComponent');
+      const customUndoType = {
+        on(object, value, opt = {}) {
+          !beforeCache && (beforeCache = object.previousAttributes());
+
+          if (opt.avoidStore) {
+            return;
+          } else {
+            const result = {
+              object,
+              before: beforeCache,
+              after: object.toJSON()
+            };
+            beforeCache = null;
+            return result;
+          }
+        },
+
+        undo(model, bf, af, opt) {
+          model.set(bf);
+          updated();
+        },
+
+        redo(model, bf, af, opt) {
+          model.set(af);
+          updated();
+        }
+      };
+
+      const events = ['style', 'attributes', 'content', 'src'];
+      events.forEach(ev => um.addUndoType(`change:${ev}`, customUndoType));
+
       return this;
     },
 
@@ -145,7 +181,7 @@ module.exports = () => {
      * Start/resume tracking changes
      */
     start() {
-      em.startTracking();
+      um.startTracking();
     },
 
 
@@ -153,7 +189,7 @@ module.exports = () => {
      * Stop tracking changes
      */
     stop() {
-      em.stopTracking();
+      um.stopTracking();
     },
 
 
@@ -161,7 +197,7 @@ module.exports = () => {
      * Undo last change
      */
     undo() {
-      em.undo(1);
+      um.undo(1);
     },
 
 
@@ -169,7 +205,7 @@ module.exports = () => {
      * Undo all changes
      */
     undoAll() {
-      em.undoAll();
+      um.undoAll();
     },
 
 
@@ -177,7 +213,7 @@ module.exports = () => {
      * Redo last change
      */
     redo() {
-      em.redo(1);
+      um.redo(1);
     },
 
 
@@ -185,7 +221,25 @@ module.exports = () => {
      * Redo all changes
      */
     redoAll() {
-      em.redoAll();
+      um.redoAll();
+    },
+
+
+    /**
+     * Checks if there is an available undo
+     * @return {Boolean}
+     */
+    hasUndo() {
+      return um.isAvailable('undo');
+    },
+
+
+    /**
+     * Checks if there is an available redo
+     * @return {Boolean}
+     */
+    hasRedo() {
+      return um.isAvailable('redo');
     },
 
 
@@ -194,14 +248,14 @@ module.exports = () => {
      * @return {Array}
      */
     getStack() {
-
+      return um.stack;
     },
 
     /**
      * Clear the stack
      */
     clear() {
-
+      um.clear();
     }
   };
 };

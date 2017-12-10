@@ -18,9 +18,6 @@ module.exports = {
   // Enable/Disable the possibility to copy(ctrl + c) & paste(ctrl + v) components
   copyPaste: true,
 
-  // Enable/Disable undo manager
-  undoManager: true,
-
   // Storage Manager
   storageManager: {},
 
