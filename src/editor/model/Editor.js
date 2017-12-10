@@ -57,9 +57,7 @@ module.exports = Backbone.Model.extend({
       this.config.components = c.el.innerHTML;
 
     // Load modules
-    deps.forEach(function(name){
-      this.loadModule(name);
-    }, this);
+    deps.forEach(name => this.loadModule(name));
 
     this.initUndoManager();
 
@@ -151,22 +149,20 @@ module.exports = Backbone.Model.extend({
 
     // Check if module is storable
     var sm = this.get('StorageManager');
-    if(Mod.storageKey && Mod.store && Mod.load && sm){
+
+    if (Mod.storageKey && Mod.store && Mod.load && sm) {
       cfg.stm = sm;
       var storables = this.get('storables');
       storables.push(Mod);
       this.set('storables', storables);
     }
+
     cfg.em = this;
     Mod.init({ ...cfg });
 
     // Bind the module to the editor model if public
-    if(!Mod.private)
-      this.set(Mod.name, Mod);
-
-    if(Mod.onLoad)
-      this.get('toLoad').push(Mod);
-
+    !Mod.private && this.set(Mod.name, Mod);
+    Mod.onLoad && this.get('toLoad').push(Mod);
     this.get('modules').push(Mod);
     return this;
   },
