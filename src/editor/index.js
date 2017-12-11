@@ -571,6 +571,7 @@ module.exports = config => {
       // Do post render stuff after the iframe is loaded otherwise it'll
       // be empty during tests
       em.on('loaded', () => {
+        this.UndoManager.clear();
         em.get('modules').forEach(module => {
           module.postRender && module.postRender(editorView);
         });

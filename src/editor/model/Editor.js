@@ -88,11 +88,10 @@ module.exports = Backbone.Model.extend({
       module.onLoad();
     });
 
-    // Stuff to do post load (eg. init undo manager for loaded components)
+    // Stuff to do post load
     const postLoad = () => {
-      this.get('modules').forEach(module =>
-        module.postLoad && module.postLoad(this)
-      );
+      const modules = this.get('modules');
+      modules.forEach(module => module.postLoad && module.postLoad(this));
       clb && clb();
     };
 

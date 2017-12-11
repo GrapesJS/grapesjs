@@ -1,5 +1,5 @@
 /**
- * This module allows to manage the stack of changes applied on canvas
+ * This module allows to manage the stack of changes applied in canvas
  *
  * You can access the module in this way
  * ```js
