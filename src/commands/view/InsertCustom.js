@@ -47,9 +47,6 @@ module.exports = _.extend({}, CreateComponent, {
     if(!model)
       return;
 
-    if(this.em)
-        this.em.editor.initChildrenComp(model);
-
     this.afterInsert(model, this);
   },
 

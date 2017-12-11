@@ -231,8 +231,8 @@ module.exports = () => {
     onLoad() {
       const comps = this.getComponents();
       comps.reset(c.components);
-      const um = em && em.get('UndoManager');
-      um && um.add(comps);
+      //const um = em && em.get('UndoManager');
+      //um && um.add(comps);
     },
 
     /**
@@ -241,8 +241,43 @@ module.exports = () => {
      * @private
      */
     postLoad(em) {
-      em.initChildrenComp(this.getWrapper());
+      this.handleChanges(this.getWrapper(), null, { avoidStore: 1 });
     },
+
+
+    /**
+     * Handle component changes
+     * @private
+     */
+    handleChanges(model, value, opts = {}) {
+      const comps = model.get('components');
+      const um = em.get('UndoManager');
+      const handleUpdates = em.handleUpdates.bind(em);
+      um && um.add(model) && comps && um.add(comps);
+      const evn = 'change:style change:content change:attributes change:src';
+
+      [ [comps, 'add', this.handleChanges],
+        [comps, 'remove', this.handleRemoves],
+        [model, evn, handleUpdates],
+        [model.get('classes'), 'add remove', handleUpdates],
+      ].forEach(els => {
+        em.stopListening(els[0], els[1], els[2]);
+        em.listenTo(els[0], els[1], els[2]);
+      });
+
+      !opts.avoidStore && handleUpdates('', '', opts);
+      comps.each(model => this.handleChanges(model));
+    },
+
+
+    /**
+     * Triggered when some component is removed
+     * @private
+     * */
+    handleRemoves(model, value, opts = {}) {
+      !opts.avoidStore && em.handleUpdates(model, value, opts);
+    },
+
 
     /**
      * Load components from the passed object, if the object is empty will try to fetch them

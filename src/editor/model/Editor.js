@@ -358,16 +358,15 @@ module.exports = Backbone.Model.extend({
    * Init stuff like storage for already existing elements
    * @param {Object}  model
    * @private
-   */
+   *
   initChildrenComp(model) {
       var comps  = model.get('components');
       this.updateComponents(model, null, { avoidStore : 1 });
-      comps.each(function(md) {
+      comps.each(md => {
           this.initChildrenComp(md);
-          if(this.um)
-            this.um.register(md);
-      }, this);
-  },
+          this.um && this.um.register(md);
+      });
+  },*/
 
   /**
    * Triggered when some component is removed updated
