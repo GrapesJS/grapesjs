@@ -247,12 +247,13 @@ module.exports = () => {
      * @private
      */
     handleChanges(model, value, opts = {}) {
-      const comps = model.get('components');
+      const comps = model.components();
       const um = em.get('UndoManager');
       const handleUpdates = em.handleUpdates.bind(em);
       const handleChanges = this.handleChanges.bind(this);
       const handleRemoves = this.handleRemoves.bind(this);
-      um && um.add(model) && comps && um.add(comps);
+      um && um.add(model);
+      um && comps && um.add(comps);
       const evn = 'change:style change:content change:attributes change:src';
 
       [ [model, evn, handleUpdates],
@@ -265,7 +266,7 @@ module.exports = () => {
       });
 
       !opts.avoidStore && handleUpdates('', '', opts);
-      comps.each(model => this.handleChanges(model));
+      comps.each(model => this.handleChanges(model, value, opts));
     },
 
 

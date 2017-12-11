@@ -31,6 +31,7 @@ module.exports = () => {
       em = config.em;
       this.em = em;
       um = new UndoManager({ track: true, register: [] });
+      um.changeUndoType('change', { condition: false });
       const customUndoType = {
         on(object, value, opt = {}) {
           !beforeCache && (beforeCache = object.previousAttributes());
@@ -59,7 +60,6 @@ module.exports = () => {
 
       const events = ['style', 'attributes', 'content', 'src'];
       events.forEach(ev => um.addUndoType(`change:${ev}`, customUndoType));
-      um.changeUndoType('change', { condition: false });
       um.on('undo redo', () => em.trigger('change:selectedComponent change:canvasOffset'));
 
       return this;
