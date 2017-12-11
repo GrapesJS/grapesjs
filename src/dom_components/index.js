@@ -229,10 +229,7 @@ module.exports = () => {
      * @private
      */
     onLoad() {
-      const comps = this.getComponents();
-      comps.reset(c.components);
-      //const um = em && em.get('UndoManager');
-      //um && um.add(comps);
+      this.getComponents().reset(c.components);
     },
 
     /**
