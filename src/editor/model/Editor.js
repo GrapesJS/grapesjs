@@ -354,33 +354,6 @@ module.exports = Backbone.Model.extend({
       this.handleUpdates(model, val, opt);
   },
 
-  /**
-   * Init stuff like storage for already existing elements
-   * @param {Object}  model
-   * @private
-   *
-  initChildrenComp(model) {
-      var comps  = model.get('components');
-      this.updateComponents(model, null, { avoidStore : 1 });
-      comps.each(md => {
-          this.initChildrenComp(md);
-          this.um && this.um.register(md);
-      });
-  },*/
-
-  /**
-   * Triggered when some component is removed updated
-   * @param  {Object}  model
-   * @param  {Mixed}    val  Value
-   * @param  {Object}  opt  Options
-   * @private
-   * */
-  rmComponents(model, val, opt) {
-    var avSt  = opt ? opt.avoidStore : 0;
-
-    if(!avSt)
-      this.handleUpdates(model, val, opt);
-  },
 
   /**
    * Returns model of the selected component
