@@ -23,7 +23,6 @@ const deps = [
 ];
 
 const Backbone = require('backbone');
-const UndoManager = require('backbone-undo');
 const key = require('keymaster');
 let timedInterval;
 
@@ -59,7 +58,6 @@ module.exports = Backbone.Model.extend({
 
     // Load modules
     deps.forEach(name => this.loadModule(name));
-    //this.initUndoManager();
     this.on('change:selectedComponent', this.componentSelected, this);
     this.on('change:changesCount', this.updateChanges, this);
   },
@@ -93,11 +91,6 @@ module.exports = Backbone.Model.extend({
 
     // Stuff to do post load (eg. init undo manager for loaded components)
     const postLoad = () => {
-      // I've initialized undo manager in initialize() because otherwise the
-      // editor will unable to fetch the instance via 'editor.UndoManager' but
-      // I need to cleare the stack now as it was dirtied by 'onLoad' method
-      //this.um && this.um.clear();
-      //this.initUndoManager();
       this.get('modules').forEach(module =>
         module.postLoad && module.postLoad(this)
       );
