@@ -253,12 +253,14 @@ module.exports = () => {
       const comps = model.get('components');
       const um = em.get('UndoManager');
       const handleUpdates = em.handleUpdates.bind(em);
+      const handleChanges = this.handleChanges.bind(this);
+      const handleRemoves = this.handleRemoves.bind(this);
       um && um.add(model) && comps && um.add(comps);
       const evn = 'change:style change:content change:attributes change:src';
 
-      [ [comps, 'add', this.handleChanges],
-        [comps, 'remove', this.handleRemoves],
-        [model, evn, handleUpdates],
+      [ [model, evn, handleUpdates],
+        [comps, 'add', handleChanges],
+        [comps, 'remove', handleRemoves],
         [model.get('classes'), 'add remove', handleUpdates],
       ].forEach(els => {
         em.stopListening(els[0], els[1], els[2]);

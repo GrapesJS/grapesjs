@@ -264,43 +264,6 @@ module.exports = Backbone.Model.extend({
         that.um.redo(true);
         that.trigger('component:update');
       });
-
-      var beforeCache;
-      const customUndoType = {
-        on: function (model, value, opts) {
-          var opt = opts || {};
-          if(!beforeCache){
-            beforeCache = model.previousAttributes();
-          }
-          if (opt && opt.avoidStore) {
-            return;
-          } else {
-            var obj = {
-                object: model,
-                before: beforeCache,
-                after: model.toJSON()
-            };
-            beforeCache = null;
-            return obj;
-          }
-        },
-        undo: function (model, bf, af, opt) {
-          model.set(bf);
-          // Update also inputs inside Style Manager
-          that.trigger('change:selectedComponent');
-        },
-        redo: function (model, bf, af, opt) {
-          model.set(af);
-          // Update also inputs inside Style Manager
-          that.trigger('change:selectedComponent');
-        }
-      };
-
-      UndoManager.removeUndoType("change");
-      UndoManager.addUndoType("change:style", customUndoType);
-      UndoManager.addUndoType("change:attributes", customUndoType);
-      UndoManager.addUndoType("change:content", customUndoType);
-      UndoManager.addUndoType("change:src", customUndoType);
     }
   },
   */
