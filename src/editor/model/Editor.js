@@ -186,7 +186,7 @@ module.exports = Backbone.Model.extend({
    * Listen for new rules
    * @param {Object} collection
    * @private
-   */
+   *
   listenRules(collection) {
     this.stopListening(collection, 'add remove', this.listenRule);
     this.listenTo(collection, 'add remove', this.listenRule);
@@ -199,11 +199,11 @@ module.exports = Backbone.Model.extend({
    * Listen for rule changes
    * @param {Object} model
    * @private
-   */
+   *
   listenRule(model) {
     this.stopListening(model, 'change:style', this.handleUpdates);
     this.listenTo(model, 'change:style', this.handleUpdates);
-  },
+  },*/
 
   /**
    * This method handles updates on the editor and tries to store them
