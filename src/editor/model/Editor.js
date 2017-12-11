@@ -23,7 +23,6 @@ const deps = [
 ];
 
 const Backbone = require('backbone');
-const key = require('keymaster');
 let timedInterval;
 
 require('utils/extender')({
