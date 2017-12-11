@@ -3,7 +3,7 @@
  *
  * You can access the module in this way
  * ```js
- * const undoManager = editor.UndoManager;
+ * const um = editor.UndoManager;
  * ```
  *
  */
@@ -70,6 +70,9 @@ module.exports = () => {
     /**
      * Get module configurations
      * @return {Object} Configuration object
+     * @example
+     * const config = um.getConfig();
+     * // { ... }
      */
     getConfig() {
       return config;
@@ -78,83 +81,120 @@ module.exports = () => {
 
     /**
      * Add an entity (Model/Collection) to track
+     * Note: New Components and CSSRules will be added automatically
      * @param {Model|Collection} entity Entity to track
+     * @return {this}
+     * @example
+     * um.add(someModelOrCollection);
      */
     add(entity) {
       um.register(entity);
+      return this;
     },
 
 
     /**
      * Remove and stop tracking the entity (Model/Collection)
      * @param {Model|Collection} entity Entity to remove
+     * @return {this}
+     * @example
+     * um.remove(someModelOrCollection);
      */
     remove(entity) {
       um.unregister(entity);
+      return this;
     },
 
 
     /**
      * Remove all entities
+     * @return {this}
+     * @example
+     * um.removeAll();
      */
     removeAll() {
-      um.unregisterAll()
+      um.unregisterAll();
+      return this;
     },
 
 
     /**
      * Start/resume tracking changes
+     * @return {this}
+     * @example
+     * um.start();
      */
     start() {
       um.startTracking();
+      return this;
     },
 
 
     /**
      * Stop tracking changes
+     * @return {this}
+     * @example
+     * um.stop();
      */
     stop() {
       um.stopTracking();
+      return this;
     },
 
 
     /**
      * Undo last change
+     * @return {this}
+     * @example
+     * um.undo();
      */
     undo() {
-      if (em.get('Canvas').isInputFocused()) return;
-      um.undo(1);
+      if (!em.get('Canvas').isInputFocused()) um.undo(1);
+      return this;
     },
 
 
     /**
      * Undo all changes
+     * @return {this}
+     * @example
+     * um.undoAll();
      */
     undoAll() {
       um.undoAll();
+      return this;
     },
 
 
     /**
      * Redo last change
+     * @return {this}
+     * @example
+     * um.redo();
      */
     redo() {
-      if (em.get('Canvas').isInputFocused()) return;
-      um.redo(1);
+      if (!em.get('Canvas').isInputFocused()) um.redo(1);
+      return this;
     },
 
 
     /**
      * Redo all changes
+     * @return {this}
+     * @example
+     * um.redoAll();
      */
     redoAll() {
       um.redoAll();
+      return this;
     },
 
 
     /**
-     * Checks if there is an available undo
+     * Checks if exists an available undo
      * @return {Boolean}
+     * @example
+     * um.hasUndo();
      */
     hasUndo() {
       return um.isAvailable('undo');
@@ -162,8 +202,10 @@ module.exports = () => {
 
 
     /**
-     * Checks if there is an available redo
+     * Checks if exists an available redo
      * @return {Boolean}
+     * @example
+     * um.hasRedo();
      */
     hasRedo() {
       return um.isAvailable('redo');
@@ -172,7 +214,10 @@ module.exports = () => {
 
     /**
      * Get stack of changes
-     * @return {Array}
+     * @return {Collection}
+     * @example
+     * const stack = um.getStack();
+     * stack.each(item => ...);
      */
     getStack() {
       return um.stack;
@@ -180,9 +225,13 @@ module.exports = () => {
 
     /**
      * Clear the stack
+     * @return {this}
+     * @example
+     * um.clear();
      */
     clear() {
       um.clear();
+      return this;
     }
   };
 };
