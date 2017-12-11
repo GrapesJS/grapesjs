@@ -183,29 +183,6 @@ module.exports = Backbone.Model.extend({
 
 
   /**
-   * Listen for new rules
-   * @param {Object} collection
-   * @private
-   *
-  listenRules(collection) {
-    this.stopListening(collection, 'add remove', this.listenRule);
-    this.listenTo(collection, 'add remove', this.listenRule);
-    collection.each(function(model){
-      this.listenRule(model);
-    }, this);
-  },
-
-  /**
-   * Listen for rule changes
-   * @param {Object} model
-   * @private
-   *
-  listenRule(model) {
-    this.stopListening(model, 'change:style', this.handleUpdates);
-    this.listenTo(model, 'change:style', this.handleUpdates);
-  },*/
-
-  /**
    * This method handles updates on the editor and tries to store them
    * if requested and if the changesCount is exceeded
    * @param  {Object} model
@@ -227,23 +204,6 @@ module.exports = Backbone.Model.extend({
     }, 0);
   },
 
-  /**
-   * Initialize Undo manager
-   * @private
-   * *
-  initUndoManager() {
-
-    var cmp = this.get('DomComponents');
-    if(cmp && this.config.undoManager) {
-      var that = this;
-      this.um = new UndoManager({
-          register: [cmp.getComponents(), this.get('CssComposer').getAll()],
-          track: true
-      });
-
-    }
-  },
-  */
 
   /**
    * Callback on component selection
