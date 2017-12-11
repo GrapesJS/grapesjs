@@ -321,39 +321,6 @@ module.exports = Backbone.Model.extend({
     }
   },
 
-  /**
-   * Triggered when components are updated
-   * @param  {Object}  model
-   * @param  {Mixed}    val  Value
-   * @param  {Object}  opt  Options
-   * @private
-   * */
-  updateComponents(model, val, opt) {
-    var comps  = model.get('components'),
-        classes  = model.get('classes'),
-        avSt  = opt ? opt.avoidStore : 0;
-
-    // Observe component with Undo Manager
-    if(this.um)
-      this.um.register(comps);
-
-    // Call stopListening for not creating nested listeners
-    this.stopListening(comps, 'add', this.updateComponents);
-    this.stopListening(comps, 'remove', this.rmComponents);
-    this.listenTo(comps, 'add', this.updateComponents);
-    this.listenTo(comps, 'remove', this.rmComponents);
-
-    this.stopListening(classes, 'add remove', this.handleUpdates);
-    this.listenTo(classes, 'add remove', this.handleUpdates);
-
-    var evn = 'change:style change:content change:attributes change:src';
-    this.stopListening(model, evn, this.handleUpdates);
-    this.listenTo(model, evn, this.handleUpdates);
-
-    if(!avSt)
-      this.handleUpdates(model, val, opt);
-  },
-
 
   /**
    * Returns model of the selected component
