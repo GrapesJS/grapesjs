@@ -51,6 +51,8 @@
  * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
  * ## General
  * * `canvasScroll` - Triggered when the canvas is scrolle
+ * * `undo` - Undo executed
+ * * `redo` - Redo executed
  * * `load` - When the editor is loaded
  *
  * @param {Object} config Configurations

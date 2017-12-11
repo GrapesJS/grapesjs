@@ -61,6 +61,7 @@ module.exports = () => {
       const events = ['style', 'attributes', 'content', 'src'];
       events.forEach(ev => um.addUndoType(`change:${ev}`, customUndoType));
       um.on('undo redo', () => em.trigger('change:selectedComponent change:canvasOffset'));
+      ['undo', 'redo'].forEach(ev => um.on(ev, () => em.trigger(ev)));
 
       return this;
     },
