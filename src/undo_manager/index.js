@@ -201,6 +201,7 @@ module.exports = () => {
      * Undo last change
      */
     undo() {
+      if (em.get('Canvas').isInputFocused()) return;
       um.undo(1);
     },
 
@@ -217,6 +218,7 @@ module.exports = () => {
      * Redo last change
      */
     redo() {
+      if (em.get('Canvas').isInputFocused()) return;
       um.redo(1);
     },
 

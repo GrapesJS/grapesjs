@@ -232,11 +232,6 @@ module.exports = Backbone.Model.extend({
    * @private
    * *
   initUndoManager() {
-    const canvas = this.get('Canvas');
-
-    if (this.um) {
-      return;
-    }
 
     var cmp = this.get('DomComponents');
     if(cmp && this.config.undoManager) {
@@ -245,25 +240,7 @@ module.exports = Backbone.Model.extend({
           register: [cmp.getComponents(), this.get('CssComposer').getAll()],
           track: true
       });
-      this.UndoManager = this.um;
-      this.set('UndoManager', this.um);
 
-      key('⌘+z, ctrl+z', () => {
-        if (canvas.isInputFocused()) {
-          return;
-        }
-
-        that.um.undo(true);
-        that.trigger('component:update');
-      });
-
-      key('⌘+shift+z, ctrl+shift+z', () => {
-        if (canvas.isInputFocused()) {
-          return;
-        }
-        that.um.redo(true);
-        that.trigger('component:update');
-      });
     }
   },
   */
