@@ -1,8 +1,4 @@
 /**
- * * [add](#add)
- * * [get](#get)
- * * [getAll](#getall)
- *
  * Before using methods you should get first the module from the editor instance, in this way:
  *
  * ```js
@@ -41,6 +37,7 @@ module.exports = () => {
        * }
        * ...
        * @return {this}
+       * @private
        */
       init(config) {
         c = config || {};
@@ -65,6 +62,10 @@ module.exports = () => {
        * @return {Device} Added device
        * @example
        * deviceManager.add('Tablet', '900px');
+       * deviceManager.add('Tablet2', '900px', {
+       *  height: '300px',
+       *  widthMedia: '810px', // the width that will be used for the CSS media
+       * });
        */
       add(name, width, opts) {
         var obj = opts || {};

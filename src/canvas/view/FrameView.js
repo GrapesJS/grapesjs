@@ -16,17 +16,19 @@ module.exports = require('backbone').View.extend({
     this.config = o.config || {};
     this.ppfx = this.config.pStylePrefix || '';
     this.em = this.config.em;
-    this.listenTo(this.em, 'change:device', this.updateWidth);
+    this.listenTo(this.em, 'change:device', this.updateDim);
   },
 
   /**
-   * Update width of the frame
+   * Update dimensions of the frame
    * @private
    */
-  updateWidth(model) {
+  updateDim(model) {
     const em = this.em;
     const device = em.getDeviceModel();
-    this.el.style.width = device ? device.get('width') : '';
+    const style = this.el.style;
+    style.width = device ? device.get('width') : '';
+    style.height = device ? device.get('height') : '';
     this.udpateOffset();
     em.stopDefault({ preserveSelected: 1 });
     this.$el.on(motionsEv, this.udpateOffset);

@@ -339,9 +339,9 @@ module.exports = Backbone.View.extend({
     }
 
     if (em) {
-      em.trigger('component:update', model);
-      em.trigger('component:styleUpdate', model);
-      em.trigger('component:styleUpdate:' + model.get('property'), model);
+      em.trigger('component:update', target);
+      em.trigger('component:styleUpdate', target);
+      em.trigger('component:styleUpdate:' + model.get('property'), target);
     }
   },
 

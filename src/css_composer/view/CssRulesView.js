@@ -4,11 +4,14 @@ var CssRuleView = require('./CssRuleView');
 module.exports = Backbone.View.extend({
 
   initialize(o) {
-    this.config = o.config || {};
-    this.pfx = this.config.stylePrefix || '';
+    const config = o.config || {};
+    this.config = config;
+    this.em = config.em;
+    this.pfx = config.stylePrefix || '';
     this.className = this.pfx + 'rules';
-    this.listenTo( this.collection, 'add', this.addTo );
-    this.listenTo( this.collection, 'reset', this.render );
+    const coll = this.collection;
+    this.listenTo(coll, 'add', this.addTo );
+    this.listenTo(coll, 'reset', this.render );
   },
 
   /**
@@ -17,7 +20,6 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   addTo(model) {
-    //console.log('Added');
     this.addToCollection(model);
   },
 
@@ -47,15 +49,12 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    var fragment = document.createDocumentFragment();
-    this.$el.empty();
-
-    this.collection.each(function(model){
-      this.addToCollection(model, fragment);
-    }, this);
-
-    this.$el.append(fragment);
-    this.$el.attr('class', this.className);
+    const $el = this.$el;
+    const frag = document.createDocumentFragment();
+    $el.empty();
+    this.collection.each(model => this.addToCollection(model, frag));
+    $el.append(frag);
+    $el.attr('class', this.className);
     return this;
   }
 });

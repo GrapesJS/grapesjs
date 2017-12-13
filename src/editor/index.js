@@ -7,16 +7,19 @@
  * ```
  *
  * # Available Events
+ *
  * ## Components
  * * `component:add` - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
- * * `component:update` - Triggered when a component is, generally, updated (moved, styled, etc.)
- * * `component:update:{propertyName}` - Listen any property change
- * * `component:styleUpdate` - Triggered when the style of the component is updated
- * * `component:styleUpdate:{propertyName}` - Listen for a specific style property change
- * * `component:selected` - New component selected
+ * * `component:update` - Triggered when a component is updated (moved, styled, etc.), the model is passed as an argument to the callback
+ * * `component:update:{propertyName}` - Listen any property change, the model is passed as an argument to the callback
+ * * `component:styleUpdate` - Triggered when the style of the component is updated, the model is passed as an argument to the callback
+ * * `component:styleUpdate:{propertyName}` - Listen for a specific style property change, the model is passed as an argument to the callback
+ * * `component:selected` - New component selected, the selected model is passed as an argument to the callback
  * ## Blocks
  * * `block:add` - New block added
  * * `block:remove` - Block removed
+ * * `block:drag:start` - Started dragging new block, Event object is passed as an argument
+ * * `block:drag:stop` - Block dropped inside canvas, the new model is passed as an argument to the callback
  * ## Assets
  * * `asset:add` - New asset added
  * * `asset:remove` - Asset removed
@@ -244,16 +247,17 @@ module.exports = config => {
      * Returns HTML built inside canvas
      * @return {string} HTML string
      */
-    getHtml() {
-      return em.getHtml();
+    getHtml(opts) {
+      return em.getHtml(opts);
     },
 
     /**
      * Returns CSS built inside canvas
+     * @param {Object} [opts={}] Options
      * @return {string} CSS string
      */
-    getCss() {
-      return em.getCss();
+    getCss(opts) {
+      return em.getCss(opts);
     },
 
     /**

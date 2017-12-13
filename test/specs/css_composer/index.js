@@ -180,6 +180,24 @@ describe('Css Composer', () => {
       expect(rule.selectorsToString()).toEqual(`#${name}:${state}`);
     });
 
+    it('Create a rule with class selector by using setClassRule()', () => {
+      const name = 'test';
+      obj.setClassRule(name, {color: 'red'});
+      expect(obj.getAll().length).toEqual(1);
+      const rule = obj.getClassRule(name);
+      expect(rule.selectorsToString()).toEqual(`.${name}`);
+      expect(rule.styleToString()).toEqual(`color:red;`);
+    });
+
+    it('Create a rule with class selector and state by using setClassRule()', () => {
+      const name = 'test';
+      const state = 'hover';
+      obj.setClassRule(name, {color: 'red'}, {state});
+      expect(obj.getAll().length).toEqual(1);
+      const rule = obj.getClassRule(name, {state});
+      expect(rule.selectorsToString()).toEqual(`.${name}:${state}`);
+    });
+
   });
 
   Models.run();

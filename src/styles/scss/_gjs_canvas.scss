@@ -1,23 +1,17 @@
+$frameAnimation: 0.35s ease;
+$canvasTop: 40px;
+
 .#{$cv-prefix}canvas {
   background-color: rgba(0, 0, 0, 0.15);
   box-sizing: border-box;
-  position: absolute;
   width: (100% - $leftWidth);
-  height: 100%;
+  height: calc(100% - $canvasTop);
   bottom: 0;
-  left: 0;
   overflow: hidden;
-  padding-top: 40px;
   z-index: 1;
-
-  > iframe {
-    height: 100%;
-    outline: medium none;
-    width: 100%;
-    border: none;
-    margin: 0 auto;
-    display: block;
-  }
+  position: absolute;
+  left: 0;
+  top: 40px;
 
   .#{$app-prefix}ghost {
     display: none;
@@ -69,7 +63,18 @@
 }
 
 .#{$app-prefix}frame {
-  transition: width 0.35s ease;
+  outline: medium none;
+  height: 100%;
+  width: 100%;
+  border: none;
+  margin: auto;
+  display: block;
+  transition: width $frameAnimation, height $frameAnimation;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 
 .#{$app-prefix}toolbar {

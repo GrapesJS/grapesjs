@@ -40,7 +40,6 @@ $mainDklColor:      rgba(0, 0, 0, 0.1) !default;
 $mainLhColor:       rgba(255, 255, 255, 0.1) !default; /* #515151 */
 $mainLhlColor:      rgba(255, 255, 255, 0.7) !default;
 $fontColorDk:       #777 !default;
-$mainFont:          Helvetica, sans-serif !default;
 $colorBlue:         #3b97e3 !default;
 $colorRed:          #dd3636 !default;
 $colorYell:         #ffca6f !default;
@@ -77,6 +76,8 @@ $uploadPadding:     150px 10px !default;
 $animSpeed:         0.2s !default;
 
 /* Fonts */
+$mainFont:          Helvetica, sans-serif !default;
 $fontPath:          '../fonts' !default;
 $fontName:          'main-fonts' !default;
+$fontSize:           0.7rem;
 $fontV:             20 !default;//random(1000)

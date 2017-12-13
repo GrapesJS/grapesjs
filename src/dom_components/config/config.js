@@ -7,7 +7,6 @@ module.exports = {
 
   // Default wrapper configuration
   wrapper: {
-    style: {margin: 0},
     removable: false,
     copyable: false,
     draggable: false,

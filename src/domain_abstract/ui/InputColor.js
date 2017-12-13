@@ -65,7 +65,7 @@ module.exports = Input.extend({
       }
 
       let changed = 0;
-      let previousСolor;
+      let previousColor;
       this.$el.find(`[data-colorp-c]`).append(colorEl);
       colorEl.spectrum({
         containerClassName: `${ppfx}one-bg ${ppfx}two-color`,
@@ -90,16 +90,16 @@ module.exports = Input.extend({
         },
         show(color) {
           changed = 0;
-          previousСolor = getColor(color);
+          previousColor = getColor(color);
         },
         hide(color) {
-           if (!changed && previousСolor) {
+           if (!changed && previousColor) {
              if (self.noneColor) {
-               previousСolor = '';
+               previousColor = '';
              }
-             cpStyle.backgroundColor = previousСolor;
-             colorEl.spectrum('set', previousСolor);
-             model.setValueFromInput(previousСolor, 0);
+             cpStyle.backgroundColor = previousColor;
+             colorEl.spectrum('set', previousColor);
+             model.setValueFromInput(previousColor, 0);
            }
         }
       });

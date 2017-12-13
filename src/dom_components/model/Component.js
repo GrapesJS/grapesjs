@@ -169,6 +169,18 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     this.init();
   },
 
+  /**
+   * Check component's type
+   * @param  {string}  type Component type
+   * @return {Boolean}
+   * @example
+   * model.is('image')
+   * // -> false
+   */
+  is(type) {
+    return !!(this.get('type') == type);
+  },
+
 
   /**
    * Update attributes of the model

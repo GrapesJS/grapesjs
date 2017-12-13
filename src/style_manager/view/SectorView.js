@@ -23,6 +23,7 @@ module.exports = Backbone.View.extend({
     const model = this.model;
     this.listenTo(model, 'change:open', this.updateOpen);
     this.listenTo(model, 'updateVisibility', this.updateVisibility);
+    this.listenTo(model, 'destroy remove', this.remove);
   },
 
   /**

@@ -1,7 +1,5 @@
 module.exports = require('backbone').View.extend({
-
   tagName: 'style',
-
 
   initialize(o = {}) {
     this.config = o.config || {};
