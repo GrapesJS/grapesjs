@@ -84,8 +84,6 @@ module.exports = Backbone.View.extend({
         model.set('activeOnRender', 0);
       }
 
-      // Register all its components (eg. for the Undo Manager)
-      em.initChildrenComp(model);
       em.trigger('block:drag:stop', model);
     }
   },

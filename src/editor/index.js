@@ -51,6 +51,8 @@
  * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
  * ## General
  * * `canvasScroll` - Triggered when the canvas is scrolle
+ * * `undo` - Undo executed
+ * * `redo` - Redo executed
  * * `load` - When the editor is loaded
  *
  * @param {Object} config Configurations
@@ -571,6 +573,7 @@ module.exports = config => {
       // Do post render stuff after the iframe is loaded otherwise it'll
       // be empty during tests
       em.on('loaded', () => {
+        this.UndoManager.clear();
         em.get('modules').forEach(module => {
           module.postRender && module.postRender(editorView);
         });

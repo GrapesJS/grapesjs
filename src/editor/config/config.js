@@ -11,9 +11,6 @@ module.exports = {
   // Show an alert before unload the page with unsaved changes
   noticeOnUnload: true,
 
-  // Enable/Disable undo manager
-  undoManager: true,
-
   // Show paddings and margins
   showOffsets: false,
 
@@ -79,6 +76,9 @@ module.exports = {
 
   // Dom element
   el: '',
+
+  // Configurations for Undo Manager
+  undoManager: {},
 
   //Configurations for Asset Manager
   assetManager: {},

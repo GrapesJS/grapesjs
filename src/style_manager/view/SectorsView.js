@@ -105,11 +105,11 @@ module.exports = Backbone.View.extend({
         // selecting the component) and calling undo() it will remove the rule from
         // the collection, therefore updating it in style manager will not affect it
         // #268
-        um.stopTracking();
+        um.stop();
         iContainer = cc.add(valid, state, media);
         iContainer.setStyle(model.getStyle());
         model.setStyle({});
-        um.startTracking();
+        um.start();
       }
 
       if (!iContainer) {
