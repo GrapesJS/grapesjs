@@ -161,6 +161,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     this.set('attributes', this.get('attributes') || {});
     this.listenTo(this, 'change:script', this.scriptUpdated);
     this.listenTo(this, 'change:traits', this.traitsUpdated);
+    this.listenTo(this, 'change:tagName', this.tagUpdated);
     this.loadTraits();
     this.initClasses();
     this.initComponents();
@@ -179,6 +180,17 @@ module.exports = Backbone.Model.extend(Styleable).extend({
    */
   is(type) {
     return !!(this.get('type') == type);
+  },
+
+
+  /**
+   * Once the tag is updated I have to remove the node and replace it
+   */
+  tagUpdated() {
+    const coll = this.collection;
+    const at = coll.indexOf(this);
+    coll.remove(this);
+    coll.add(this, { at });
   },
 
 
