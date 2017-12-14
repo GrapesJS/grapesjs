@@ -1,5 +1,6 @@
 var Backbone = require('backbone');
 var ComponentView = require('./ComponentImageView');
+var OComponentView = require('./ComponentView');
 
 module.exports = ComponentView.extend({
 
@@ -8,7 +9,8 @@ module.exports = ComponentView.extend({
   events: {},
 
   initialize(o) {
-    ComponentView.prototype.initialize.apply(this, arguments);
+    OComponentView.prototype.initialize.apply(this, arguments);
+    this.listenTo(this.model, 'change:src', this.updateSrc);
     this.listenTo(this.model, 'change:loop change:autoplay change:controls change:color', this.updateVideo);
     this.listenTo(this.model, 'change:provider', this.updateProvider);
   },
