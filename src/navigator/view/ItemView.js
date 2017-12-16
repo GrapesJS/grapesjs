@@ -1,8 +1,7 @@
-var Backbone = require('backbone');
-var ComponentView = require('dom_components/view/ComponentView');
-var ItemsView;
+const ComponentView = require('dom_components/view/ComponentView');
+let ItemsView;
 
-module.exports = Backbone.View.extend({
+module.exports = require('backbone').View.extend({
 
   events: {
     'mousedown [data-toggle-move]': 'startSort',
@@ -15,7 +14,7 @@ module.exports = Backbone.View.extend({
 
   template: _.template(`
   <% if (hidable) { %>
-    <i id="<%= prefix %>btn-eye" class="btn fa fa-eye <%= (visible ? '' : 'fa-eye-slash') %>" data-toggle-visible></i>
+    <i id="<%= prefix %>btn-eye" class="<%= prefix %>btn fa fa-eye <%= (visible ? '' : 'fa-eye-slash') %>" data-toggle-visible></i>
   <% } %>
 
   <div class="<%= prefix %>title-c <%= ppfx %>one-bg">
