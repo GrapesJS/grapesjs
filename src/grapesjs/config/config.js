@@ -15,8 +15,6 @@ module.exports = {
   fromElement: 0,
 
   // ---
-  // Enable/Disable the possibility to copy(ctrl + c) & paste(ctrl + v) components
-  copyPaste: true,
 
   // Storage Manager
   storageManager: {},

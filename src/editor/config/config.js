@@ -5,9 +5,6 @@ module.exports = {
   //TEMP
   components: '',
 
-  // Enable/Disable possibility to copy(ctrl + c) & paste(ctrl + v) components
-  copyPaste: true,
-
   // Show an alert before unload the page with unsaved changes
   noticeOnUnload: true,
 
