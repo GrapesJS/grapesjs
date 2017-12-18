@@ -232,6 +232,11 @@ module.exports = () => {
     clear() {
       um.clear();
       return this;
+    },
+
+
+    getInstance() {
+      return um;
     }
   };
 };

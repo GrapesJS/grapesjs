@@ -100,8 +100,6 @@ module.exports = () => {
       postLoad(em) {
         const ev = 'add remove';
         const rules = this.getAll();
-        const um = em.get('UndoManager');
-        um && um.add(rules);
         em.stopListening(rules, ev, this.handleChange);
         em.listenTo(rules, ev, this.handleChange);
         rules.each(rule => this.handleChange(rule));
@@ -114,6 +112,8 @@ module.exports = () => {
        */
       handleChange(model) {
         const ev = 'change:style';
+        const um = em.get('UndoManager');
+        um && um.add(model);
         const handleUpdates = em.handleUpdates.bind(em);
         em.stopListening(model, ev, handleUpdates);
         em.listenTo(model, ev, handleUpdates);

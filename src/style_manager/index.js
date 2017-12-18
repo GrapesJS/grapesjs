@@ -261,19 +261,29 @@ module.exports = () => {
      * @return {Model}
      */
     getModelToStyle(model) {
-      const classes = model.get('classes');
       const em = c.em;
+      const classes = model.get('classes');
+      const id = model.getId();
 
-      if (em && classes && classes.length) {
-        const conf = em.get('Config');
-        const state = !conf.devicePreviewMode ? model.get('state') : '';
-        const deviceW = em.getCurrentMedia();
+      if (em) {
+        const config = em.getConfig();
         const cssC = em.get('CssComposer');
-        const valid = classes.getStyleable();
-        const CssRule = cssC.get(valid, state, deviceW);
+        const avoidInline = config.avoidInlineStyle;
+        const state = !config.devicePreviewMode ? model.get('state') : '';
+        const opts = { state };
 
-        if(CssRule && valid.length) {
-          return CssRule;
+        // If true the model will be always a rule
+        if (avoidInline) {
+          const rule = cssC.getIdRule(id, opts);
+          return rule ? rule : cssC.setIdRule(id, {}, opts);
+        } else if (classes && classes.length) {
+          const deviceW = em.getCurrentMedia();
+          const valid = classes.getStyleable();
+          const CssRule = cssC.get(valid, state, deviceW);
+
+          if (CssRule && valid.length) {
+            return CssRule;
+          }
         }
       }
 
