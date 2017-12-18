@@ -11,8 +11,7 @@ const $ = Backbone.$;
 module.exports = {
 
   init(o) {
-    bindAll(this, 'onHover', 'onOut', 'onClick', 'onKeyPress',
-      'copyComp', 'pasteComp', 'onFrameScroll');
+    bindAll(this, 'onHover', 'onOut', 'onClick', 'onKeyPress', 'onFrameScroll');
   },
 
 
@@ -20,7 +19,6 @@ module.exports = {
     this.frameOff = this.canvasOff = this.adjScroll = null;
     var config  = this.config.em.get('Config');
     this.startSelectComponent();
-    this.toggleClipboard(config.copyPaste);
     var em = this.config.em;
     showOffsets = 1;
 
@@ -35,6 +33,7 @@ module.exports = {
    * @private
    */
   toggleClipboard(active) {
+    /*
     var en = active || 0;
     if(en){
       key('⌘+c, ctrl+c', this.copyComp);
@@ -42,7 +41,7 @@ module.exports = {
     }else{
       key.unbind('⌘+c, ctrl+c');
       key.unbind('⌘+v, ctrl+v');
-    }
+    }*/
   },
 
   /**
@@ -580,7 +579,6 @@ module.exports = {
     this.stopSelectComponent();
     !opts.preserveSelected && em.setSelected(null);
     this.clean();
-    this.toggleClipboard();
     this.hideBadge();
     this.hideFixedElementOffset();
     this.canvas.getToolbarEl().style.display = 'none';

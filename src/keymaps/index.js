@@ -24,6 +24,14 @@ module.exports = () => {
       'core:redo': {
         keys: '⌘+shift+z, ctrl+shift+z',
         handler: 'core:redo',
+      },
+      'core:copy': {
+        keys: '⌘+c, ctrl+c',
+        handler: 'core:copy',
+      },
+      'core:paste': {
+        keys: '⌘+v, ctrl+v',
+        handler: 'core:paste',
       }
     }
   };
