@@ -16,12 +16,14 @@ module.exports = require('backbone').View.extend({
     `;
   },
 
+
   events: {
     'click [data-tag-remove]': 'removeTag',
     'click [data-tag-status]': 'changeStatus',
     'dblclick [data-tag-name]': 'startEditTag',
     'focusout [data-tag-name]': 'endEditTag',
   },
+
 
   initialize(o) {
     this.config = o.config || {};
@@ -80,6 +82,7 @@ module.exports = require('backbone').View.extend({
     }
   },
 
+
   /**
    * Update status of the tag
    * @private
@@ -106,6 +109,7 @@ module.exports = require('backbone').View.extend({
     setTimeout(() => this.remove(), 0);
     em && em.trigger('targetClassRemoved');
   },
+
 
   /**
    * Update status of the checkbox

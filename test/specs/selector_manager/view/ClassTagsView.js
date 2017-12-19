@@ -132,7 +132,7 @@ module.exports = {
 
         it("New tag correctly added", function() {
           coll.add({ label: 'test' });
-          expect(this.$tags.children().first().find('#tag-label input').val()).toEqual('test');
+          expect(this.$tags.children().first().find('[data-tag-name]').text()).toEqual('test');
         });
 
         it("States are hidden in case no tags", function() {
