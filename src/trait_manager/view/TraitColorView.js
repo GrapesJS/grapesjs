@@ -11,6 +11,7 @@ module.exports = TraitView.extend({
     if (!this.$input) {
       var value = this.getModelValue();
       var inputNumber = new InputColor({
+        target: this.config.em,
         contClass: this.ppfx + 'field-color',
         model: this.model,
         ppfx: this.ppfx
