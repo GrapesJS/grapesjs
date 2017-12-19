@@ -170,6 +170,34 @@ module.exports = {
           expect(result.length).toEqual(3);
         });
 
+        it('removeClass by string', () => {
+          obj.addClass(['class1', 'class2']);
+          obj.removeClass('class2');
+          const result = obj.get('classes').models;
+          expect(result.length).toEqual(1);
+        });
+
+        it('removeClass by string with multiple classes', () => {
+          obj.addClass(['class1', 'class2']);
+          obj.removeClass('class2 class1');
+          const result = obj.get('classes').models;
+          expect(result.length).toEqual(0);
+        });
+
+        it('removeClass by array', () => {
+          obj.addClass(['class1', 'class2']);
+          obj.removeClass(['class1', 'class2']);
+          const result = obj.get('classes').models;
+          expect(result.length).toEqual(0);
+        });
+
+        it('removeClass do nothing with undefined classes', () => {
+          obj.addClass(['class1', 'class2']);
+          obj.removeClass(['class3']);
+          const result = obj.get('classes').models;
+          expect(result.length).toEqual(2);
+        });
+
         it('setAttributes', () => {
           obj.setAttributes({
             id: 'test',

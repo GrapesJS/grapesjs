@@ -4,6 +4,7 @@ import Styleable from 'domain_abstract/model/Styleable';
 
 const Backbone = require('backbone');
 const Components = require('./Components');
+const Selector = require('selector_manager/model/Selector');
 const Selectors = require('selector_manager/model/Selectors');
 const Traits = require('trait_manager/model/Traits');
 
@@ -304,6 +305,34 @@ module.exports = Backbone.Model.extend(Styleable).extend({
   setClass(classes) {
     this.get('classes').reset();
     return this.addClass(classes);
+  },
+
+
+  /**
+   * Remove classes
+   * @param {Array|string} classes Array or string of classes
+   * @return {Array} Array of removed selectors
+   * @example
+   * model.removeClass('class1');
+   * model.removeClass('class1 class2');
+   * model.removeClass(['class1', 'class2']);
+   * // -> [SelectorObject, ...]
+   */
+  removeClass(classes) {
+    const removed = [];
+    classes = isArray(classes) ? classes : [classes];
+    const selectors = this.get('classes');
+    const type = Selector.TYPE_CLASS;
+
+    classes.forEach(classe => {
+      const classes = classe.split(' ');
+      classes.forEach(name => {
+        const selector = selectors.where({ name, type })[0];
+        selector && removed.push(selectors.remove(selector));
+      })
+    });
+
+    return removed;
   },
 
 
