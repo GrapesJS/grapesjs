@@ -210,11 +210,23 @@ If you like the project support it with a donation of your choice or become a ba
 <a href="https://opencollective.com/grapesjs/sponsors/1/website"><img src="https://opencollective.com/grapesjs/sponsors/1/avatar"></a>
 <a href="https://opencollective.com/grapesjs/sponsors/2/website"><img src="https://opencollective.com/grapesjs/sponsors/2/avatar"></a>
 <a href="https://opencollective.com/grapesjs/sponsors/3/website"><img src="https://opencollective.com/grapesjs/sponsors/3/avatar"></a>
+<a href="https://opencollective.com/grapesjs/sponsors/4/website"><img src="https://opencollective.com/grapesjs/sponsors/4/avatar"></a>
+<a href="https://opencollective.com/grapesjs/sponsors/5/website"><img src="https://opencollective.com/grapesjs/sponsors/5/avatar"></a>
+<a href="https://opencollective.com/grapesjs/sponsors/6/website"><img src="https://opencollective.com/grapesjs/sponsors/6/avatar"></a>
+<a href="https://opencollective.com/grapesjs/sponsors/7/website"><img src="https://opencollective.com/grapesjs/sponsors/7/avatar"></a>
+<a href="https://opencollective.com/grapesjs/sponsors/8/website"><img src="https://opencollective.com/grapesjs/sponsors/8/avatar"></a>
+<a href="https://opencollective.com/grapesjs/sponsors/9/website"><img src="https://opencollective.com/grapesjs/sponsors/9/avatar"></a>
 
 <a href="https://opencollective.com/grapesjs/backers/0/website"><img src="https://opencollective.com/grapesjs/backers/0/avatar"></a>
 <a href="https://opencollective.com/grapesjs/backers/1/website"><img src="https://opencollective.com/grapesjs/backers/1/avatar"></a>
 <a href="https://opencollective.com/grapesjs/backers/2/website"><img src="https://opencollective.com/grapesjs/backers/2/avatar"></a>
 <a href="https://opencollective.com/grapesjs/backers/3/website"><img src="https://opencollective.com/grapesjs/backers/3/avatar"></a>
+<a href="https://opencollective.com/grapesjs/backers/4/website"><img src="https://opencollective.com/grapesjs/backers/4/avatar"></a>
+<a href="https://opencollective.com/grapesjs/backers/5/website"><img src="https://opencollective.com/grapesjs/backers/5/avatar"></a>
+<a href="https://opencollective.com/grapesjs/backers/6/website"><img src="https://opencollective.com/grapesjs/backers/6/avatar"></a>
+<a href="https://opencollective.com/grapesjs/backers/7/website"><img src="https://opencollective.com/grapesjs/backers/7/avatar"></a>
+<a href="https://opencollective.com/grapesjs/backers/8/website"><img src="https://opencollective.com/grapesjs/backers/8/avatar"></a>
+<a href="https://opencollective.com/grapesjs/backers/9/website"><img src="https://opencollective.com/grapesjs/backers/9/avatar"></a>
 
 
 
