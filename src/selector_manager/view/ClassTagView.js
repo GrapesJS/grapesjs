@@ -14,7 +14,7 @@ module.exports = Backbone.View.extend({
     'click [data-tag-remove]': 'removeTag',
     'click [data-tag-status]': 'changeStatus',
     'dblclick [data-tag-name]': 'startEditTag',
-    'keypress [data-tag-name]': 'updateInputLabel',
+    'keypress [data-tag-name]': 'updateInputLength',
     'focusout [data-tag-name]': 'endEditTag',
   },
 
@@ -74,6 +74,18 @@ module.exports = Backbone.View.extend({
     }
   },
 
+
+  /**
+   * Update input's length
+   * @private
+   */
+  updateInputLength() {
+    const inputEl = this.getInputEl();
+    let size = inputEl.value.length - 1;
+    size = size < 1 ? 1 : size;
+    inputEl.size = size;
+  },
+
   /**
    * Update status of the tag
    * @private
@@ -121,21 +133,6 @@ module.exports = Backbone.View.extend({
     }
   },
 
-  /**
-   * Update label's input
-   * @private
-   */
-  updateInputLabel() {
-    if(!this.$labelInput) {
-      this.$labelInput = this.$el.find('input');
-    }
-
-    this.$labelInput.prop(this.inputProp, true);
-    var size = this.$labelInput.val().length - 1;
-    size = size < 1 ? 1 : size;
-    this.$labelInput.attr('size', size);
-  },
-
 
   render() {
     const pfx = this.pfx;
@@ -148,7 +145,7 @@ module.exports = Backbone.View.extend({
     }));
     this.$el.attr('class', `${pfx}tag ${ppfx}three-bg`);
     this.updateStatus();
-    this.updateInputLabel();
+    this.updateInputLength();
     return this;
   },
 
