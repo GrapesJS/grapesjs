@@ -1,14 +1,22 @@
-var Backbone = require('backbone');
 const Selector = require('./../model/Selector');
 const inputProp = 'readOnly';
 
-module.exports = Backbone.View.extend({
-  template: _.template(`
-  <span id="<%= pfx %>checkbox" class="fa" data-tag-status></span>
-  <span id="<%= pfx %>tag-label">
-      <input class="<%= ppfx %>no-app" value="<%= label %>" <%= inputProp %> data-tag-name>
-  </span>
-  <span id="<%= pfx %>close" data-tag-remove>&Cross;</span>`),
+module.exports = require('backbone').View.extend({
+
+  template() {
+    const pfx = this.pfx;
+    const ppfx = this.ppfx;
+    const label = this.model.get('label') || '';
+    return `
+      <span id="${pfx}checkbox" class="fa" data-tag-status></span>
+      <span id="${pfx}tag-label">
+          <input class="${ppfx}no-app" value="${label}" ${inputProp} data-tag-name>
+      </span>
+      <span id="${pfx}close" data-tag-remove>
+        &Cross;
+      </span>
+    `;
+  },
 
   events: {
     'click [data-tag-remove]': 'removeTag',
@@ -137,12 +145,7 @@ module.exports = Backbone.View.extend({
   render() {
     const pfx = this.pfx;
     const ppfx = this.ppfx;
-    this.$el.html( this.template({
-      label: this.model.get('label'),
-      pfx,
-      ppfx,
-      inputProp: this.inputProp,
-    }));
+    this.$el.html(this.template());
     this.$el.attr('class', `${pfx}tag ${ppfx}three-bg`);
     this.updateStatus();
     this.updateInputLength();
