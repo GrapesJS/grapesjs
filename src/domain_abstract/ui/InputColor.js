@@ -58,7 +58,8 @@ module.exports = Input.extend({
 
       var colorEl = $(`<div class="${this.ppfx}field-color-picker"></div>`);
       var cpStyle = colorEl.get(0).style;
-      var elToAppend = this.target && this.target.config ? this.target.config.el : '';
+      var elToAppend = this.em && this.em.config ? this.em.config.el : '';
+      var colorPickerConfig = this.em && this.em.getConfig && this.em.getConfig("colorPicker") || {};
       const getColor = color => {
         let cl = color.getAlpha() == 1 ? color.toHexString() : color.toRgbString();
         return cl.replace(/ /g, '');
@@ -76,6 +77,10 @@ module.exports = Input.extend({
         chooseText: 'Ok',
         cancelText: '⨯',
         palette: [],
+
+        // config expanded here so that the functions below are not overridden
+        ...colorPickerConfig,
+
         move(color) {
           const cl = getColor(color);
           cpStyle.backgroundColor = cl;
