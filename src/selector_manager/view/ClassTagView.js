@@ -1,5 +1,5 @@
 const Selector = require('./../model/Selector');
-const inputProp = 'readOnly';
+const inputProp = 'contentEditable';
 
 module.exports = require('backbone').View.extend({
 
@@ -9,9 +9,7 @@ module.exports = require('backbone').View.extend({
     const label = this.model.get('label') || '';
     return `
       <span id="${pfx}checkbox" class="fa" data-tag-status></span>
-      <span id="${pfx}tag-label">
-          <input class="${ppfx}no-app" value="${label}" ${inputProp} data-tag-name>
-      </span>
+      <span id="${pfx}tag-label" data-tag-name>${label}</span>
       <span id="${pfx}close" data-tag-remove>
         &Cross;
       </span>
@@ -22,7 +20,6 @@ module.exports = require('backbone').View.extend({
     'click [data-tag-remove]': 'removeTag',
     'click [data-tag-status]': 'changeStatus',
     'dblclick [data-tag-name]': 'startEditTag',
-    'keypress [data-tag-name]': 'updateInputLength',
     'focusout [data-tag-name]': 'endEditTag',
   },
 
@@ -31,7 +28,6 @@ module.exports = require('backbone').View.extend({
     this.coll = o.coll || null;
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
-    this.inputProp = 'readonly';
     this.target = this.config.em;
     this.listenTo(this.model, 'change:active', this.updateStatus);
   },
@@ -55,7 +51,9 @@ module.exports = require('backbone').View.extend({
    * @private
    */
   startEditTag() {
-    this.getInputEl()[inputProp] = false;
+    const inputEl = this.getInputEl();
+    inputEl[inputProp] = true;
+    inputEl.focus();
   },
 
 
@@ -67,31 +65,19 @@ module.exports = require('backbone').View.extend({
   endEditTag() {
     const model = this.model;
     const inputEl = this.getInputEl();
-    const label = inputEl.value;
+    const label = inputEl.textContent;
     const name = Selector.escapeName(label);
     const em = this.target;
     const sm = em && em.get('SelectorManager');
-    inputEl[inputProp] = true;
+    inputEl[inputProp] = false;
 
     if (sm) {
       if (sm.get(name)) {
-        inputEl.value = model.get('label');
+        inputEl.innerText = model.get('label');
       } else {
         model.set({ name, label });
       }
     }
-  },
-
-
-  /**
-   * Update input's length
-   * @private
-   */
-  updateInputLength() {
-    const inputEl = this.getInputEl();
-    let size = inputEl.value.length - 1;
-    size = size < 1 ? 1 : size;
-    inputEl.size = size;
   },
 
   /**
@@ -148,7 +134,6 @@ module.exports = require('backbone').View.extend({
     this.$el.html(this.template());
     this.$el.attr('class', `${pfx}tag ${ppfx}three-bg`);
     this.updateStatus();
-    this.updateInputLength();
     return this;
   },
 

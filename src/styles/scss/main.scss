@@ -573,13 +573,8 @@ $prefix: $app-prefix;
 	}
 
 	##{$clm-prefix}tag-label {
-		cursor: text;
-		@extend  .no-select;
-
-    input {
-      width: auto;
-      padding: 0 4px;
-    }
+    padding: 0 3px;
+    cursor: text;
 	}
 }
 /********* END Class manager **********/
