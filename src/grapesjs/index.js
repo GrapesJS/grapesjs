@@ -1,5 +1,8 @@
 import $ from 'cash-dom';
 import { defaults } from 'underscore';
+import polyfills from 'utils/polyfills';
+
+polyfills();
 
 module.exports = (() => {
   const defaultConfig = require('./config/config');
