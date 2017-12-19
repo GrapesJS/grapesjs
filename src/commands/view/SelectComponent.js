@@ -4,9 +4,8 @@ import { on, off, getUnitFromValue} from 'utils/mixins';
 const ToolbarView = require('dom_components/view/ToolbarView');
 const Toolbar = require('dom_components/model/Toolbar');
 const key = require('keymaster');
-const Backbone = require('backbone');
+const $ = require('backbone').$;
 let showOffsets;
-const $ = Backbone.$;
 
 module.exports = {
 
@@ -24,48 +23,6 @@ module.exports = {
 
     em.on('component:update', this.updateAttached, this);
     em.on('change:canvasOffset', this.updateAttached, this);
-  },
-
-  /**
-   * Toggle clipboard function
-   * @param  {Boolean} active
-   * @return {this}
-   * @private
-   */
-  toggleClipboard(active) {
-    /*
-    var en = active || 0;
-    if(en){
-      key('⌘+c, ctrl+c', this.copyComp);
-      key('⌘+v, ctrl+v', this.pasteComp);
-    }else{
-      key.unbind('⌘+c, ctrl+c');
-      key.unbind('⌘+v, ctrl+v');
-    }*/
-  },
-
-  /**
-   * Copy component to the clipboard
-   * @private
-   */
-  copyComp() {
-    var el = this.editorModel.get('selectedComponent');
-    if(el && el.get('copyable'))
-      this.editorModel.set('clipboard', el);
-  },
-
-  /**
-   * Paste component from clipboard
-   * @private
-   */
-  pasteComp() {
-    var clp = this.editorModel.get('clipboard'),
-        sel = this.editorModel.get('selectedComponent');
-    if(clp && sel && sel.collection){
-      var index = sel.collection.indexOf(sel),
-          clone = clp.clone();
-      sel.collection.add(clone, { at: index + 1 });
-    }
   },
 
   /**
