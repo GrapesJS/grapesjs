@@ -185,6 +185,27 @@ module.exports = Backbone.Model.extend(Styleable).extend({
 
 
   /**
+   * Find inner models by query string
+   * ATTENTION: this method works only with alredy rendered component
+   * @param  {string}  query Query string
+   * @return {Array} Array of models
+   * @example
+   * model.find('div > .class');
+   * // -> [Component, Component, ...]
+   */
+  find(query) {
+    const result = [];
+
+    this.view.$el.find(query).each((el, i, $el) => {
+      const model = $el.data('model');
+      model && result.push(model);
+    });
+
+    return result;
+  },
+
+
+  /**
    * Once the tag is updated I have to remove the node and replace it
    */
   tagUpdated() {
