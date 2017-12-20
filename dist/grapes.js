@@ -4627,7 +4627,8 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
   clone: function clone(reset) {
     var em = this.em;
     var style = this.getStyle();
-    var attr = (0, _underscore.clone)(this.attributes);
+    var attr = _extends({}, this.attributes);
+    attr.attributes = _extends({}, attr.attributes);
     delete attr.attributes.id;
     attr.components = [];
     attr.classes = [];
@@ -23211,7 +23212,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.12.55',
+    version: '0.12.56',
 
     /**
      * Initializes an editor based on passed options
@@ -35878,7 +35879,7 @@ module.exports = function () {
       if (customRte) {
         customRte.disable(el, rte);
       } else {
-        rte.disable();
+        rte && rte.disable();
       }
 
       hideToolbar();

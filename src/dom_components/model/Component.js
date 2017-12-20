@@ -562,7 +562,8 @@ module.exports = Backbone.Model.extend(Styleable).extend({
   clone(reset) {
     const em = this.em;
     const style = this.getStyle();
-    const attr = clone(this.attributes);
+    const attr = { ...this.attributes };
+    attr.attributes = { ...attr.attributes };
     delete attr.attributes.id;
     attr.components = [];
     attr.classes = [];
