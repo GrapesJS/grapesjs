@@ -199,8 +199,8 @@ module.exports = () => {
 
       st && st.load(keysF, res => {
         // Restore keys name
+        var reg = new RegExp('^' + c.id + '');
         for (var itemKey in res) {
-          var reg = new RegExp('^' + c.id + '');
           var itemKeyR = itemKey.replace(reg, '');
           result[itemKeyR] = res[itemKey];
         }
