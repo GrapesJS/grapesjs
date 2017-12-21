@@ -168,6 +168,8 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     this.initComponents();
     this.initToolbar();
     this.set('status', '');
+    this.listenTo(this.get('classes'), 'add remove change',
+      () => this.emitUpdate('classes'));
     this.init();
   },
 
@@ -282,7 +284,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
    */
   getAttributes() {
     const classes = [];
-    const attributes = this.get('attributes') || {};
+    const attributes = { ...this.get('attributes') };
 
     // Add classes
     this.get('classes').each(cls => classes.push(cls.get('name')));
@@ -723,7 +725,14 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     })
 
     return scr;
-  }
+  },
+
+
+  emitUpdate(property) {
+    const em = this.em;
+    const event = 'component:update' + (property ? `:${property}` : '');
+    em && em.trigger(event, this.model);
+  },
 
 },{
 

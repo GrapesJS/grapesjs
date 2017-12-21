@@ -89,7 +89,6 @@ module.exports = require('backbone').View.extend({
    */
   changeStatus() {
     this.model.set('active', !this.model.get('active'));
-    this.target.trigger('targetClassUpdated');
   },
 
 
@@ -107,7 +106,6 @@ module.exports = require('backbone').View.extend({
     sel && sel.get & sel.get('classes').remove(model);
     coll && coll.remove(model);
     setTimeout(() => this.remove(), 0);
-    em && em.trigger('targetClassRemoved');
   },
 
 

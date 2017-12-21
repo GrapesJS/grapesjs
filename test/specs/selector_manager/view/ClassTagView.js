@@ -69,14 +69,6 @@ module.exports = {
           setTimeout(() => expect(fixtures.innerHTML).toNotExist(), 0)
         });
 
-        it('On remove triggers event', () => {
-          var spy = sinon.spy();
-          sinon.stub(obj.target, 'get').returns(0);
-          obj.target.on("targetClassRemoved", spy);
-          obj.$el.find('#close').trigger('click');
-          expect(spy.called).toEqual(true);
-        });
-
         it('Checkbox toggles status', () => {
           var spy     = sinon.spy();
           obj.model.on("change:active", spy);
@@ -89,7 +81,7 @@ module.exports = {
         it('On toggle triggers event', () => {
           var spy = sinon.spy();
           sinon.stub(obj.target, 'get').returns(0);
-          obj.target.on("targetClassUpdated", spy);
+          obj.target.on("component:update:classes", spy);
           obj.$el.find('#checkbox').trigger('click');
           expect(spy.called).toEqual(true);
         });

@@ -19,10 +19,10 @@ module.exports = Backbone.View.extend({
     body.removeChild(dummy);
     this.propTarget = target;
     const coll = this.collection;
+    const events = 'change:selectedComponent component:update:classes change:device';
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.render);
-    this.listenTo(this.target, 'change:selectedComponent targetClassAdded targetClassRemoved targetClassUpdated ' +
-      'targetStateUpdated targetStyleUpdated change:device', this.targetUpdated);
+    this.listenTo(this.target, events, this.targetUpdated);
 
   },
 

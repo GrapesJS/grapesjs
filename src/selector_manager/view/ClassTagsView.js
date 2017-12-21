@@ -52,7 +52,7 @@ module.exports = Backbone.View.extend({
     this.em = this.target;
 
     this.listenTo(this.target ,'change:selectedComponent',this.componentChanged);
-    this.listenTo(this.target, 'targetClassUpdated', this.updateSelector);
+    this.listenTo(this.target, 'component:update:classes', this.updateSelector);
 
     this.listenTo(this.collection, 'add', this.addNew);
     this.listenTo(this.collection, 'reset', this.renderClasses);
@@ -190,8 +190,6 @@ module.exports = Backbone.View.extend({
   stateChanged(e) {
     if(this.compTarget){
       this.compTarget.set('state', this.$states.val());
-      if(this.target)
-        this.target.trigger('targetStateUpdated');
       this.updateSelector();
     }
   },
@@ -219,11 +217,6 @@ module.exports = Backbone.View.extend({
         compCls.add(model);
         var lenA = compCls.length;
         this.collection.add(model);
-
-        if (lenA > lenB) {
-          target.trigger('targetClassAdded');
-        }
-
         this.updateStateVis();
       }
     }

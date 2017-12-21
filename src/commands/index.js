@@ -139,7 +139,7 @@ module.exports = () => {
           var collection = sel.collection;
           var index = collection.indexOf(sel);
           collection.add(sel.clone(), {at: index + 1});
-          ed.trigger('component:update', sel);
+          sel.emitUpdate()
         },
       };
 
@@ -164,7 +164,7 @@ module.exports = () => {
           const onEnd = (e, opts) => {
             em.runDefault();
             em.set('selectedComponent', sel);
-            ed.trigger('component:update', sel);
+            sel.emitUpdate()
             dragger && dragger.blur();
           };
 

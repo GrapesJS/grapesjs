@@ -198,6 +198,13 @@ module.exports = {
           expect(result.length).toEqual(2);
         });
 
+        it('removeClass actually removes classes from attributes', () => {
+          obj.addClass('class1');
+          obj.removeClass('class1');
+          const result = obj.getAttributes();
+          expect(result.class).toEqual(undefined);
+        });
+
         it('setAttributes', () => {
           obj.setAttributes({
             id: 'test',
