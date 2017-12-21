@@ -1,9 +1,10 @@
 module.exports = {
 
   run(editor) {
-    var comp = editor.getSelected() && editor.getSelected().parent();
+    const sel = editor.getSelected();
+    let comp = sel && sel.parent();
 
-    // recurse through the parent() chain until a selectable parent is found
+    // Recurse through the parent() chain until a selectable parent is found
     while (comp && !comp.get("selectable")) {
       comp = comp.parent();
     }
