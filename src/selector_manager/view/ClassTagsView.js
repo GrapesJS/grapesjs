@@ -174,7 +174,8 @@ module.exports = Backbone.View.extend({
     }
 
     const state = selected.get('state');
-    let result = this.collection.getFullString();
+    const coll = this.collection;
+    let result = coll.getFullString(coll.getStyleable());
     result = result || `#${selected.getId()}`;
     result += state ? `:${state}` : '';
     const el = this.el.querySelector('#' + this.pfx + 'sel');

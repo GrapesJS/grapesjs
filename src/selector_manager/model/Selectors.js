@@ -1,21 +1,22 @@
-var Backbone = require('backbone');
-var Selector = require('./Selector');
+import { filter } from 'underscore';
+const Selector = require('./Selector');
 
-module.exports = Backbone.Collection.extend({
+module.exports = require('backbone').Collection.extend({
   model: Selector,
 
   getStyleable() {
-    return _.filter(this.models, item =>
+    return filter(this.models, item =>
       item.get('active') && !item.get('private'));
   },
 
   getValid() {
-    return _.filter(this.models, item => !item.get('private'));
+    return filter(this.models, item => !item.get('private'));
   },
 
-  getFullString() {
+  getFullString(collection) {
     const result = [];
-    this.each(selector => result.push(selector.getFullName()));
+    const coll = collection || this;
+    coll.forEach(selector => result.push(selector.getFullName()));
     return result.join('').trim();
   }
 });
