@@ -98,7 +98,7 @@ module.exports = {
             var model = components.add({});
             gjs.editor.set('selectedComponent', model);
             tagEl.addNewTag('test');
-            gjs.editor.on("targetClassAdded", spy);
+            gjs.editor.on("component:update:classes", spy);
             tagEl.addNewTag('test');
             expect(spy.called).toEqual(false);
             tagEl.addNewTag('test2');

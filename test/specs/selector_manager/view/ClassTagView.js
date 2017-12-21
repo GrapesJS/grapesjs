@@ -78,14 +78,6 @@ module.exports = {
           expect(spy.called).toEqual(true);
         });
 
-        it('On toggle triggers event', () => {
-          var spy = sinon.spy();
-          sinon.stub(obj.target, 'get').returns(0);
-          obj.target.on("component:update:classes", spy);
-          obj.$el.find('#checkbox').trigger('click');
-          expect(spy.called).toEqual(true);
-        });
-
         it('Label input is disabled', () => {
           expect(obj.getInputEl().contentEditable).toNotEqual(true);
         });
