@@ -19,9 +19,8 @@
 
     <!-- Plugins -->
     <script src="./js/grapesjs-plugin-ckeditor.min.js"></script>
-    <script src="./js/grapesjs-mjml.min.js?v=0.0.5"></script>
+    <script src="./js/grapesjs-mjml.min.js?v=0.0.27"></script>
     <script src="./js/grapesjs-aviary.min.js"></script>
-    <script src="./js/grapesjs-preset-mjml.js"></script>
 
   </head>
   <style>
@@ -42,6 +41,7 @@
 
     <div id="gjs" style="height:0px; overflow:hidden">
 
+      <mjml><mj-body>
       <mj-container>
         <!-- Company Header -->
         <mj-section background-color="#f0f0f0">
@@ -111,7 +111,7 @@
         </mj-section>
         <!-- Footer -->
       </mj-container>
-
+      </mj-body></mjml>
 
     </div>
 
@@ -172,7 +172,7 @@
         container : '#gjs',
         fromElement: true,
 
-        plugins: ['gjs-mjml', 'gjs-aviary', 'gjs-plugin-ckeditor', 'gjs-preset-mjml'],
+        plugins: ['gjs-mjml', 'gjs-aviary', 'gjs-plugin-ckeditor'],
         pluginsOpts: {
           'gjs-plugin-ckeditor': {
             position: 'center',
