@@ -127,6 +127,7 @@ module.exports = Backbone.View.extend({
       pt.trigger('update');
       return;
     }
+    else delete model.getAttributes().class;
 
     if (state) {
       const ruleState = cc.getIdRule(id, opts);
