@@ -6,8 +6,7 @@
 <p align="center"><img src="http://grapesjs.com/img/grapesjs-front-page-m.jpg" alt="GrapesJS" width="500" align="center"/></p>
 
 
-GrapesJS is a free and open source Web Builder Framework which helps you building HTML templates to be used inside sites, newsletters and mobile apps.
-Mainly GrapesJS was designed to be used inside a [CMS] to speed up a creation of dynamic templates. To better understand this concept check the image below
+GrapesJS is a free and open source Web Builder Framework which helps building HTML templates, faster and easily, to be delivered in sites, newsletters or mobile apps. Mainly, GrapesJS was designed to be used inside a [CMS] to speed up the creation of dynamic templates. To better understand this concept check the image below
 
 <br/>
 <p align="center"><img src="http://grapesjs.com/img/gjs-concept.png" alt="GrapesJS - Style Manager" height="400" align="center"/></p>
