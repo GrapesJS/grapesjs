@@ -157,17 +157,14 @@ module.exports = Backbone.View.extend({
   inputValueChanged(e) {
     e && e.stopPropagation();
     this.model.setValue(this.getInputValue(), 1, { fromInput: 1 });
-    this.elementUpdated();
   },
+
 
   /**
    * Fired when the element of the property is updated
    */
   elementUpdated() {
-    this.model.set('status', 'updated');
-    const parent = this.model.parent;
-    const parentView = parent && parent.view;
-    parentView && parentView.elementUpdated();
+    this.setStatus('updated');
   },
 
 
