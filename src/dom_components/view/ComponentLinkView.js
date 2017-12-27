@@ -3,10 +3,6 @@ var ComponentView = require('./ComponentTextView');
 
 module.exports = ComponentView.extend({
 
-  events: {
-    'dblclick': 'enableEditing',
-  },
-
   render(...args) {
     ComponentView.prototype.render.apply(this, args);
 
