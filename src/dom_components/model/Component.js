@@ -630,9 +630,10 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     const tag = model.get('tagName');
     const sTag = model.get('void');
     const attributes = this.getAttrToHTML();
+    const mode_attributes = new Backbone.Model(attributes);
 
     for (let attr in attributes) {
-      const value = attributes[attr];
+      const value = mode_attributes.escape(attr);
 
       if (!isUndefined(value)) {
           attrs.push(`${attr}="${value}"`);

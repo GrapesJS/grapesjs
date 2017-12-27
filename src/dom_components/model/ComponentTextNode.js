@@ -8,7 +8,7 @@ module.exports = Component.extend({
   }),
 
   toHTML() {
-    return this.get('content');
+    return this.escape('content');
   },
 
 }, {
