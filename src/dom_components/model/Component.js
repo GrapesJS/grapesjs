@@ -163,6 +163,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     this.listenTo(this, 'change:script', this.scriptUpdated);
     this.listenTo(this, 'change:traits', this.traitsUpdated);
     this.listenTo(this, 'change:tagName', this.tagUpdated);
+    this.listenTo(this, 'change:attributes', this.attrUpdated);
     this.loadTraits();
     this.initClasses();
     this.initComponents();
@@ -215,6 +216,17 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     const at = coll.indexOf(this);
     coll.remove(this);
     coll.add(this, { at });
+  },
+
+
+  /**
+   * Emit changes for each updated attribute
+   */
+  attrUpdated() {
+    const attrPrev = { ...this.previous('attributes') };
+    const attrCurrent = { ...this.get('attributes') };
+    const diff = shallowDiff(attrPrev, attrCurrent);
+    keys(diff).forEach(pr => this.trigger(`change:attributes:${pr}`));
   },
 
 
