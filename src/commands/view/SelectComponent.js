@@ -101,20 +101,20 @@ module.exports = {
       this.updateAttached();
     }
     var model = $(trg).data('model');
-    if (typeof model != 'undefined') {
+    if (model != 'undefined') {
 
       if (!model.get("selectable")) {
         var comp = model && model.parent();
 
         // recurse through the parent() chain until a selectable parent is found
-        while (comp && !comp.get("selectable")) {
+        while (comp && !comp.get("hoverable")) {
           comp = comp.parent();
         }
         trg = comp.view.el;
       }
 
     }
-    
+
     var pos = this.getElementPos(trg);
     this.updateBadge(trg, pos);
     this.updateHighlighter(trg, pos);
