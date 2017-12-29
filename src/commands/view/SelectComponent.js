@@ -193,20 +193,15 @@ module.exports = {
   onClick(e) {
     e.stopPropagation();
     const model = $(e.target).data('model');
-     if (typeof model != 'undefined') {
-      if (model.get("selectable")) {
+    const editor = this.editor;
 
-        model && this.editor.select(model);
-
+    if (model) {
+      if (model.get('selectable')) {
+        editor.select(model);
       } else {
-        var comp = model && model.parent();
-
-        // recurse through the parent() chain until a selectable parent is found
-        while (comp && !comp.get("selectable")) {
-          comp = comp.parent();
-        }
-
-        comp && editor.select(comp);
+        let parent =  model.parent();
+        while (parent && !parent.get('selectable')) parent = parent.parent();
+        parent && editor.select(parent);
       }
     }
   },
