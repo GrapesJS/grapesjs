@@ -92,7 +92,8 @@ module.exports = {
    */
   onHover(e) {
     e.stopPropagation();
-    var trg = e.target;
+    let trg = e.target;
+    const model = $(trg).data('model');
 
     // Adjust tools scroll top
     if (!this.adjScroll) {
@@ -100,22 +101,14 @@ module.exports = {
       this.onFrameScroll(e);
       this.updateAttached();
     }
-    var model = $(trg).data('model');
-    if (model != 'undefined') {
 
-      if (!model.get("selectable")) {
-        var comp = model && model.parent();
-
-        // recurse through the parent() chain until a selectable parent is found
-        while (comp && !comp.get("hoverable")) {
-          comp = comp.parent();
-        }
-        trg = comp.view.el;
-      }
-
+    if (model && !model.get('hoverable')) {
+      let comp = model && model.parent();
+      while (comp && !comp.get('hoverable')) comp = comp.parent();
+      comp && (trg = comp.view.el);
     }
 
-    var pos = this.getElementPos(trg);
+    const pos = this.getElementPos(trg);
     this.updateBadge(trg, pos);
     this.updateHighlighter(trg, pos);
     this.showElementOffset(trg, pos);
