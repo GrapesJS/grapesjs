@@ -100,6 +100,20 @@ module.exports = {
       this.onFrameScroll(e);
       this.updateAttached();
     }
+    var model = $(trg).data('model');
+    if (model != 'undefined') {
+
+      if (!model.get("selectable")) {
+        var comp = model && model.parent();
+
+        // recurse through the parent() chain until a selectable parent is found
+        while (comp && !comp.get("hoverable")) {
+          comp = comp.parent();
+        }
+        trg = comp.view.el;
+      }
+
+    }
 
     var pos = this.getElementPos(trg);
     this.updateBadge(trg, pos);
@@ -186,7 +200,22 @@ module.exports = {
   onClick(e) {
     e.stopPropagation();
     const model = $(e.target).data('model');
-    model && this.editor.select(model);
+     if (typeof model != 'undefined') {
+      if (model.get("selectable")) {
+
+        model && this.editor.select(model);
+
+      } else {
+        var comp = model && model.parent();
+
+        // recurse through the parent() chain until a selectable parent is found
+        while (comp && !comp.get("selectable")) {
+          comp = comp.parent();
+        }
+
+        comp && editor.select(comp);
+      }
+    }
   },
 
   /**
