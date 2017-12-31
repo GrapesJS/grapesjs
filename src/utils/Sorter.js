@@ -89,6 +89,8 @@ module.exports = Backbone.View.extend({
    * @param {Boolean} active
    */
   toggleSortCursor(active) {
+    //console.log('disabled toggleSortCursor');
+    //return;
     var em = this.em;
     var body = document.body;
     var pfx = this.ppfx || this.pfx;

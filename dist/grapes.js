@@ -3747,14 +3747,11 @@ module.exports = Backbone.View.extend({
    * @private
    */
   handleChange: function handleChange() {
-    var em = this.em;
-    if (em) {
-      var model = this.model;
-      em.trigger('component:update', model);
+    var model = this.model;
+    model.emitUpdate();
 
-      for (var prop in model.changed) {
-        em.trigger('component:update:' + prop, model);
-      }
+    for (var prop in model.changed) {
+      model.emitUpdate(prop);
     }
   },
 
@@ -4190,6 +4187,8 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
   },
 
   initialize: function initialize() {
+    var _this = this;
+
     var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -4227,11 +4226,15 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
     this.listenTo(this, 'change:script', this.scriptUpdated);
     this.listenTo(this, 'change:traits', this.traitsUpdated);
     this.listenTo(this, 'change:tagName', this.tagUpdated);
+    this.listenTo(this, 'change:attributes', this.attrUpdated);
     this.loadTraits();
     this.initClasses();
     this.initComponents();
     this.initToolbar();
     this.set('status', '');
+    this.listenTo(this.get('classes'), 'add remove change', function () {
+      return _this.emitUpdate('classes');
+    });
     this.init();
   },
 
@@ -4282,6 +4285,21 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
 
 
   /**
+   * Emit changes for each updated attribute
+   */
+  attrUpdated: function attrUpdated() {
+    var _this2 = this;
+
+    var attrPrev = _extends({}, this.previous('attributes'));
+    var attrCurrent = _extends({}, this.get('attributes'));
+    var diff = (0, _mixins.shallowDiff)(attrPrev, attrCurrent);
+    (0, _underscore.keys)(diff).forEach(function (pr) {
+      return _this2.trigger('change:attributes:' + pr);
+    });
+  },
+
+
+  /**
    * Update attributes of the model
    * @param {Object} attrs Key value attributes
    * @example
@@ -4319,7 +4337,7 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
     return _Styleable2.default.getStyle.call(this);
   },
   setStyle: function setStyle() {
-    var _this = this;
+    var _this3 = this;
 
     var prop = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -4334,7 +4352,7 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
       this.rule = cc.setIdRule(this.getId(), prop, _extends({}, opts, { state: state }));
       var diff = (0, _mixins.shallowDiff)(propOrig, prop);
       (0, _underscore.keys)(diff).forEach(function (pr) {
-        return _this.trigger('change:style:' + pr);
+        return _this3.trigger('change:style:' + pr);
       });
     } else {
       prop = _Styleable2.default.setStyle.apply(this, arguments);
@@ -4350,7 +4368,7 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
    */
   getAttributes: function getAttributes() {
     var classes = [];
-    var attributes = this.get('attributes') || {};
+    var attributes = _extends({}, this.get('attributes'));
 
     // Add classes
     this.get('classes').each(function (cls) {
@@ -4769,7 +4787,7 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
    * @private
    */
   getScriptString: function getScriptString(script) {
-    var _this2 = this;
+    var _this4 = this;
 
     var scr = script || this.get('script');
 
@@ -4791,11 +4809,16 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
     scr = scr.replace(reg, function (match, v) {
       // If at least one match is found I have to track this change for a
       // better optimization inside JS generator
-      _this2.scriptUpdated();
-      return _this2.attributes[v];
+      _this4.scriptUpdated();
+      return _this4.attributes[v];
     });
 
     return scr;
+  },
+  emitUpdate: function emitUpdate(property) {
+    var em = this.em;
+    var event = 'component:update' + (property ? ':' + property : '');
+    em && em.trigger(event, this.model);
   }
 }, {
 
@@ -4823,6 +4846,10 @@ var _underscore = __webpack_require__(1);
 
 var _mixins = __webpack_require__(2);
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var clearProp = 'data-clear-style';
+
 module.exports = Backbone.View.extend({
   template: function template(model) {
     var pfx = this.pfx;
@@ -4832,16 +4859,16 @@ module.exports = Backbone.View.extend({
     var pfx = this.pfx;
     var icon = model.get('icon');
     var info = model.get('info');
-    return '\n      <span class="' + pfx + 'icon ' + icon + '" title="' + info + '">\n        ' + model.get('name') + '\n      </span>\n      <b class="' + pfx + 'clear">&Cross;</b>\n    ';
+    return '\n      <span class="' + pfx + 'icon ' + icon + '" title="' + info + '">\n        ' + model.get('name') + '\n      </span>\n      <b class="' + pfx + 'clear" ' + clearProp + '>&Cross;</b>\n    ';
   },
   templateInput: function templateInput(model) {
     return '\n      <div class="' + this.ppfx + 'field">\n        <input placeholder="' + model.getDefaultValue() + '"/>\n      </div>\n    ';
   },
 
 
-  events: {
+  events: _defineProperty({
     'change': 'inputValueChanged'
-  },
+  }, 'click [' + clearProp + ']', 'clear'),
 
   initialize: function initialize() {
     var o = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -4876,8 +4903,6 @@ module.exports = Backbone.View.extend({
     this.listenTo(model, 'targetUpdated', this.targetUpdated);
     this.listenTo(model, 'change:visible', this.updateVisibility);
     this.listenTo(model, 'change:status', this.updateStatus);
-    this.events['click .' + pfx + 'clear'] = 'clear';
-    this.delegateEvents();
 
     var init = this.init && this.init.bind(this);
     init && init();
@@ -4931,7 +4956,7 @@ module.exports = Backbone.View.extend({
    * @return {HTMLElement}
    */
   getClearEl: function getClearEl() {
-    return this.el.querySelector('.' + this.pfx + 'clear');
+    return this.el.querySelector('[' + clearProp + ']');
   },
 
 
@@ -4977,10 +5002,7 @@ module.exports = Backbone.View.extend({
    * Fired when the element of the property is updated
    */
   elementUpdated: function elementUpdated() {
-    this.model.set('status', 'updated');
-    var parent = this.model.parent;
-    var parentView = parent && parent.view;
-    parentView && parentView.elementUpdated();
+    this.setStatus('updated');
   },
   setStatus: function setStatus(value) {
     this.model.set('status', value);
@@ -15066,8 +15088,11 @@ module.exports = Selector;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(Backbone, _) {
 
+
+var _underscore = __webpack_require__(1);
+
+var Backbone = __webpack_require__(0);
 var $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
@@ -15080,17 +15105,19 @@ module.exports = Backbone.View.extend({
     return this.model.get('attributes');
   },
   initialize: function initialize(o) {
-    var md = this.model;
+    var model = this.model;
+    var name = model.get('name');
+    var target = model.target;
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
-    this.target = md.target;
+    this.target = target;
     this.className = this.pfx + 'trait';
     this.labelClass = this.ppfx + 'label';
-    this.fieldClass = this.ppfx + 'field ' + this.ppfx + 'field-' + md.get('type');
+    this.fieldClass = this.ppfx + 'field ' + this.ppfx + 'field-' + model.get('type');
     this.inputhClass = this.ppfx + 'input-holder';
-    md.off('change:value', this.onValueChange);
-    this.listenTo(md, 'change:value', this.onValueChange);
+    model.off('change:value', this.onValueChange);
+    this.listenTo(model, 'change:value', this.onValueChange);
     this.tmpl = '<div class="' + this.fieldClass + '"><div class="' + this.inputhClass + '"></div></div>';
   },
 
@@ -15105,24 +15132,27 @@ module.exports = Backbone.View.extend({
   getValueForTarget: function getValueForTarget() {
     return this.model.get('value');
   },
+  setInputValue: function setInputValue(value) {
+    this.getInputEl().value = value;
+  },
 
 
   /**
    * On change callback
    * @private
    */
-  onValueChange: function onValueChange() {
-    var m = this.model;
+  onValueChange: function onValueChange(model, value) {
+    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+    var mod = this.model;
     var trg = this.target;
-    var name = m.get('name');
-    var value = this.getValueForTarget();
-    // Chabge property if requested otherwise attributes
-    if (m.get('changeProp')) {
-      trg.set(name, value);
+    var name = mod.get('name');
+
+    if (opts.fromTarget) {
+      this.setInputValue(mod.get('value'));
     } else {
-      var attrs = _.clone(trg.get('attributes'));
-      attrs[name] = value;
-      trg.set('attributes', attrs);
+      var _value = this.getValueForTarget();
+      mod.setTargetValue(_value);
     }
   },
 
@@ -15219,7 +15249,6 @@ module.exports = Backbone.View.extend({
     return this;
   }
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
 /* 9 */
@@ -16196,33 +16225,34 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(_) {
 
-var Backbone = __webpack_require__(0);
+
+var _underscore = __webpack_require__(1);
+
 var Selector = __webpack_require__(7);
 
-module.exports = Backbone.Collection.extend({
+module.exports = __webpack_require__(0).Collection.extend({
   model: Selector,
 
   getStyleable: function getStyleable() {
-    return _.filter(this.models, function (item) {
+    return (0, _underscore.filter)(this.models, function (item) {
       return item.get('active') && !item.get('private');
     });
   },
   getValid: function getValid() {
-    return _.filter(this.models, function (item) {
+    return (0, _underscore.filter)(this.models, function (item) {
       return !item.get('private');
     });
   },
-  getFullString: function getFullString() {
+  getFullString: function getFullString(collection) {
     var result = [];
-    this.each(function (selector) {
+    var coll = collection || this;
+    coll.forEach(function (selector) {
       return result.push(selector.getFullName());
     });
     return result.join('').trim();
   }
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
 /* 11 */
@@ -17430,12 +17460,20 @@ module.exports = {
   onHover: function onHover(e) {
     e.stopPropagation();
     var trg = e.target;
+    var model = $(trg).data('model');
 
     // Adjust tools scroll top
     if (!this.adjScroll) {
       this.adjScroll = 1;
       this.onFrameScroll(e);
       this.updateAttached();
+    }
+
+    if (model && !model.get('hoverable')) {
+      var comp = model && model.parent();
+      while (comp && !comp.get('hoverable')) {
+        comp = comp.parent();
+      }comp && (trg = comp.view.el);
     }
 
     var pos = this.getElementPos(trg);
@@ -17528,7 +17566,18 @@ module.exports = {
   onClick: function onClick(e) {
     e.stopPropagation();
     var model = $(e.target).data('model');
-    model && this.editor.select(model);
+    var editor = this.editor;
+
+    if (model) {
+      if (model.get('selectable')) {
+        editor.select(model);
+      } else {
+        var parent = model.parent();
+        while (parent && !parent.get('selectable')) {
+          parent = parent.parent();
+        }parent && editor.select(parent);
+      }
+    }
   },
 
 
@@ -17775,6 +17824,7 @@ module.exports = {
     var unit = 'px';
     var toolbarEl = this.canvas.getToolbarEl();
     var toolbarStyle = toolbarEl.style;
+    var origDisp = toolbarStyle.display;
     toolbarStyle.display = 'block';
     var pos = this.canvas.getTargetToElementDim(toolbarEl, el, {
       elPos: elPos,
@@ -17783,7 +17833,7 @@ module.exports = {
     var leftPos = pos.left + pos.elementWidth - pos.targetWidth;
     toolbarStyle.top = pos.top + unit;
     toolbarStyle.left = leftPos + unit;
-    toolbarStyle.display = '';
+    toolbarStyle.display = origDisp;
   },
 
 
@@ -23212,7 +23262,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.12.56',
+    version: '0.12.57',
 
     /**
      * Initializes an editor based on passed options
@@ -30025,8 +30075,8 @@ module.exports = function () {
         keysF.push(c.id + keys[i]);
       }st && st.load(keysF, function (res) {
         // Restore keys name
+        var reg = new RegExp('^' + c.id + '');
         for (var itemKey in res) {
-          var reg = new RegExp('^' + c.id + '');
           var itemKeyR = itemKey.replace(reg, '');
           result[itemKeyR] = res[itemKey];
         }
@@ -31838,7 +31888,7 @@ module.exports = Backbone.View.extend({
     this.em = this.target;
 
     this.listenTo(this.target, 'change:selectedComponent', this.componentChanged);
-    this.listenTo(this.target, 'targetClassUpdated', this.updateSelector);
+    this.listenTo(this.target, 'component:update:classes', this.updateSelector);
 
     this.listenTo(this.collection, 'add', this.addNew);
     this.listenTo(this.collection, 'reset', this.renderClasses);
@@ -31962,7 +32012,8 @@ module.exports = Backbone.View.extend({
     }
 
     var state = selected.get('state');
-    var result = this.collection.getFullString();
+    var coll = this.collection;
+    var result = coll.getFullString(coll.getStyleable());
     result = result || '#' + selected.getId();
     result += state ? ':' + state : '';
     var el = this.el.querySelector('#' + this.pfx + 'sel');
@@ -31978,7 +32029,6 @@ module.exports = Backbone.View.extend({
   stateChanged: function stateChanged(e) {
     if (this.compTarget) {
       this.compTarget.set('state', this.$states.val());
-      if (this.target) this.target.trigger('targetStateUpdated');
       this.updateSelector();
     }
   },
@@ -32007,11 +32057,6 @@ module.exports = Backbone.View.extend({
         compCls.add(model);
         var lenA = compCls.length;
         this.collection.add(model);
-
-        if (lenA > lenB) {
-          target.trigger('targetClassAdded');
-        }
-
         this.updateStateVis();
       }
     }
@@ -32203,7 +32248,6 @@ module.exports = __webpack_require__(0).View.extend({
    */
   changeStatus: function changeStatus() {
     this.model.set('active', !this.model.get('active'));
-    this.target.trigger('targetClassUpdated');
   },
 
 
@@ -32225,7 +32269,6 @@ module.exports = __webpack_require__(0).View.extend({
     setTimeout(function () {
       return _this.remove();
     }, 0);
-    em && em.trigger('targetClassRemoved');
   },
 
 
@@ -36255,7 +36298,7 @@ module.exports = {
   showComputed: true,
 
   // Adds the possibility to clear property value from the target style
-  clearProperties: false,
+  clearProperties: 0,
 
   // Properties not to take in account for computed styles
   avoidComputed: ['width', 'height']
@@ -39594,9 +39637,10 @@ module.exports = Backbone.View.extend({
     body.removeChild(dummy);
     this.propTarget = target;
     var coll = this.collection;
+    var events = 'change:selectedComponent component:update:classes change:device';
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.render);
-    this.listenTo(this.target, 'change:selectedComponent targetClassAdded targetClassRemoved targetClassUpdated ' + 'targetStateUpdated targetStyleUpdated change:device', this.targetUpdated);
+    this.listenTo(this.target, events, this.targetUpdated);
   },
 
 
@@ -42216,9 +42260,11 @@ module.exports = Backbone.Collection.extend({
 "use strict";
 
 
-var Backbone = __webpack_require__(0);
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-module.exports = Backbone.Model.extend({
+var _underscore = __webpack_require__(1);
+
+module.exports = __webpack_require__(0).Model.extend({
 
   defaults: {
     type: 'text', // text, number, range, select
@@ -42235,9 +42281,38 @@ module.exports = Backbone.Model.extend({
   },
 
   initialize: function initialize() {
-    if (this.get('target')) {
-      this.target = this.get('target');
+    var target = this.get('target');
+    var name = this.get('name');
+    var changeProp = this.get('changeProp');
+
+    if (target) {
+      this.target = target;
       this.unset('target');
+      var targetEvent = changeProp ? 'change:' + name : 'change:attributes:' + name;
+      this.listenTo(target, targetEvent, this.targetUpdated);
+    }
+  },
+  targetUpdated: function targetUpdated() {
+    var value = this.getTargetValue();
+    !(0, _underscore.isUndefined)(value) && this.set({ value: value }, { fromTarget: 1 });
+  },
+  getTargetValue: function getTargetValue() {
+    var name = this.get('name');
+    var target = this.target;
+    var prop = this.get('changeProp');
+    if (target) return prop ? target.get(name) : target.getAttributes()[name];
+  },
+  setTargetValue: function setTargetValue(value) {
+    var target = this.target;
+    var name = this.get('name');
+    if ((0, _underscore.isUndefined)(value)) return;
+
+    if (this.get('changeProp')) {
+      target.set(name, value);
+    } else {
+      var attrs = _extends({}, target.get('attributes'));
+      attrs[name] = value;
+      target.set('attributes', attrs);
     }
   },
 
@@ -42797,11 +42872,6 @@ var Backbone = __webpack_require__(0);
 var ComponentView = __webpack_require__(52);
 
 module.exports = ComponentView.extend({
-
-  events: {
-    'dblclick': 'enableEditing'
-  },
-
   render: function render() {
     for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
@@ -44436,7 +44506,7 @@ module.exports = function () {
           var collection = sel.collection;
           var index = collection.indexOf(sel);
           collection.add(sel.clone(), { at: index + 1 });
-          ed.trigger('component:update', sel);
+          sel.emitUpdate();
         }
       };
 
@@ -44461,7 +44531,7 @@ module.exports = function () {
           var onEnd = function onEnd(e, opts) {
             em.runDefault();
             em.set('selectedComponent', sel);
-            ed.trigger('component:update', sel);
+            sel.emitUpdate();
             dragger && dragger.blur();
           };
 
@@ -45780,9 +45850,15 @@ module.exports = {
 
 module.exports = {
   run: function run(editor) {
-    var comp = editor.getSelected();
-    var coll = comp && comp.collection;
-    coll && coll.parent && editor.select(coll.parent);
+    var sel = editor.getSelected();
+    var comp = sel && sel.parent();
+
+    // Recurse through the parent() chain until a selectable parent is found
+    while (comp && !comp.get("selectable")) {
+      comp = comp.parent();
+    }
+
+    comp && editor.select(comp);
   }
 };
 
