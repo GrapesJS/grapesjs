@@ -89,25 +89,22 @@ module.exports = Backbone.View.extend({
    * @param {Boolean} active
    */
   toggleSortCursor(active) {
-    //console.log('disabled toggleSortCursor');
-    //return;
     var em = this.em;
     var body = document.body;
     var pfx = this.ppfx || this.pfx;
     var sortCls = pfx + 'grabbing';
     var emBody = em ? em.get('Canvas').getBody() : '';
-    if(active) {
+
+    // Avoid updating body className as it causes a huge repaint
+    // Noticeable with "fast" drag of blocks
+    if (active) {
       em && em.get('Canvas').startAutoscroll();
-      body.className += ' ' + sortCls;
-      if(em) {
-        emBody.className += ' ' + sortCls;
-      }
+      //body.className += ' ' + sortCls;
+      //if (em) emBody.className += ' ' + sortCls;
     } else {
       em && em.get('Canvas').stopAutoscroll();
-      body.className = body.className.replace(sortCls, '').trim();
-      if(em) {
-        emBody.className = emBody.className.replace(sortCls, '').trim();
-      }
+      //body.className = body.className.replace(sortCls, '').trim();
+      //if(em) emBody.className = emBody.className.replace(sortCls, '').trim();
     }
   },
 
