@@ -101,7 +101,7 @@ module.exports = {
       this.updateAttached();
     }
     var model = $(trg).data('model');
-    if (model != 'undefined') {
+    if (typeof model != 'undefined') {
 
       if (!model.get("selectable")) {
         var comp = model && model.parent();
