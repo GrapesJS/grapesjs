@@ -23262,7 +23262,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.12.57',
+    version: '0.12.58',
 
     /**
      * Initializes an editor based on passed options
@@ -24883,18 +24883,17 @@ module.exports = Backbone.View.extend({
     var pfx = this.ppfx || this.pfx;
     var sortCls = pfx + 'grabbing';
     var emBody = em ? em.get('Canvas').getBody() : '';
+
+    // Avoid updating body className as it causes a huge repaint
+    // Noticeable with "fast" drag of blocks
     if (active) {
       em && em.get('Canvas').startAutoscroll();
-      body.className += ' ' + sortCls;
-      if (em) {
-        emBody.className += ' ' + sortCls;
-      }
+      //body.className += ' ' + sortCls;
+      //if (em) emBody.className += ' ' + sortCls;
     } else {
       em && em.get('Canvas').stopAutoscroll();
-      body.className = body.className.replace(sortCls, '').trim();
-      if (em) {
-        emBody.className = emBody.className.replace(sortCls, '').trim();
-      }
+      //body.className = body.className.replace(sortCls, '').trim();
+      //if(em) emBody.className = emBody.className.replace(sortCls, '').trim();
     }
   },
 
@@ -43880,11 +43879,18 @@ module.exports = function () {
      * Start autoscroll
      */
     startAutoscroll: function startAutoscroll() {
+      var _this = this;
+
       this.dragging = 1;
       var toListen = this.getScrollListeners();
       frameRect = CanvasView.getFrameOffset(1);
-      (0, _mixins.on)(toListen, 'mousemove', this.autoscroll);
-      (0, _mixins.on)(toListen, 'mouseup', this.stopAutoscroll);
+
+      // By detaching those from the stack avoid browsers lags
+      // Noticeable with "fast" drag of blocks
+      setTimeout(function () {
+        (0, _mixins.on)(toListen, 'mousemove', _this.autoscroll);
+        (0, _mixins.on)(toListen, 'mouseup', _this.stopAutoscroll);
+      }, 0);
     },
     autoscroll: function autoscroll(e) {
       e.preventDefault();
