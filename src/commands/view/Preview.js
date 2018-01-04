@@ -1,5 +1,7 @@
 module.exports = {
-
+  
+  isVisibility:false,
+  
   getPanels(editor) {
     if(!this.panels)
       this.panels = editor.Panels.getPanelsEl();
@@ -14,9 +16,21 @@ module.exports = {
   },
 
   run(editor, sender) {
+    //store the show border property before run preview command
+    if(editor.Canvas.getBody().className==this.ppfx+"dashed"){
+      this.isVisibility=true ;
+    }
+    else{
+      this.isVisibility=false ;
+    }
+
     if(sender && sender.set)
       sender.set('active', false);
-    editor.stopCommand('sw-visibility');
+    
+    if(this.isVisibility){
+    editor.stopCommand('sw-visibility');      
+    }
+
     editor.getModel().stopDefault();
     var that = this;
     var panels = this.getPanels(editor);
@@ -52,7 +66,11 @@ module.exports = {
 
   stop(editor, sender) {
     var panels = this.getPanels(editor);
+
+     if(this.isVisibility){
     editor.runCommand('sw-visibility');
+    }
+
     editor.getModel().runDefault();
     panels.style.display = 'block';
     var canvas = editor.Canvas.getElement();
