@@ -1,6 +1,6 @@
-var Backbone = require('backbone');
+import { isUndefined } from 'underscore';
 
-module.exports = Backbone.Model.extend({
+module.exports = require('backbone').Model.extend({
 
   defaults: {
     type: 'text', // text, number, range, select
@@ -16,12 +16,49 @@ module.exports = Backbone.Model.extend({
     options: [],
   },
 
+
   initialize() {
-    if (this.get('target')) {
-      this.target = this.get('target');
+    const target = this.get('target');
+    const name = this.get('name');
+    const changeProp = this.get('changeProp');
+
+    if (target) {
+      this.target = target;
       this.unset('target');
+      const targetEvent = changeProp ? `change:${name}` : `change:attributes:${name}`;
+      this.listenTo(target, targetEvent, this.targetUpdated);
     }
   },
+
+
+  targetUpdated() {
+    const value = this.getTargetValue();
+    !isUndefined(value) && this.set({ value }, { fromTarget: 1 });
+  },
+
+
+  getTargetValue() {
+    const name = this.get('name');
+    const target = this.target;
+    const prop = this.get('changeProp');
+    if (target) return prop ? target.get(name) : target.getAttributes()[name];
+  },
+
+
+  setTargetValue(value) {
+    const target = this.target;
+    const name = this.get('name');
+    if (isUndefined(value)) return;
+
+    if (this.get('changeProp')) {
+      target.set(name, value);
+    } else {
+      const attrs = { ...target.get('attributes') };
+      attrs[name] = value;
+      target.set('attributes', attrs);
+    }
+  },
+
 
   /**
    * Get the initial value of the trait

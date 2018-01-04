@@ -25,7 +25,7 @@ module.exports = Backbone.View.extend({
     const ppfx = opts.ppfx || '';
     this.opts = opts;
     this.ppfx = ppfx;
-    this.target = opts.target || {};
+    this.em = opts.target || {};
     this.listenTo(this.model, 'change:value', this.handleModelChange);
   },
 

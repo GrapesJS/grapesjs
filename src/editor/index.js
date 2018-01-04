@@ -51,6 +51,8 @@
  * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
  * ## General
  * * `canvasScroll` - Triggered when the canvas is scrolle
+ * * `undo` - Undo executed
+ * * `redo` - Redo executed
  * * `load` - When the editor is loaded
  *
  * @param {Object} config Configurations
@@ -58,7 +60,6 @@
  * @param {string|Array<Object>} [config.components=''] HTML string or object of components
  * @param {string|Array<Object>} [config.style=''] CSS string or object of rules
  * @param {Boolean} [config.fromElement=false] If true, will fetch HTML and CSS from selected container
- * @param {Boolean} [config.copyPaste=true] Enable/Disable the possibility to copy(ctrl + c) & paste(ctrl + v) components
  * @param {Boolean} [config.undoManager=true] Enable/Disable undo manager
  * @param {Boolean} [config.autorender=true] If true renders editor on init
  * @param {Boolean} [config.noticeOnUnload=true] Enable/Disable alert message before unload the page
@@ -571,6 +572,7 @@ module.exports = config => {
       // Do post render stuff after the iframe is loaded otherwise it'll
       // be empty during tests
       em.on('loaded', () => {
+        this.UndoManager.clear();
         em.get('modules').forEach(module => {
           module.postRender && module.postRender(editorView);
         });

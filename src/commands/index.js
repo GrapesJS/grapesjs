@@ -41,6 +41,7 @@
 import { isFunction } from 'underscore';
 
 module.exports = () => {
+  let em;
   var c = {},
   commands = {},
   defaultCommands = {},
@@ -78,7 +79,7 @@ module.exports = () => {
         if (!(name in c))
           c[name] = defaults[name];
       }
-
+      em = c.em;
       var ppfx = c.pStylePrefix;
       if(ppfx)
         c.stylePrefix = ppfx + c.stylePrefix;
@@ -138,7 +139,7 @@ module.exports = () => {
           var collection = sel.collection;
           var index = collection.indexOf(sel);
           collection.add(sel.clone(), {at: index + 1});
-          ed.trigger('component:update', sel);
+          sel.emitUpdate()
         },
       };
 
@@ -163,7 +164,7 @@ module.exports = () => {
           const onEnd = (e, opts) => {
             em.runDefault();
             em.set('selectedComponent', sel);
-            ed.trigger('component:update', sel);
+            sel.emitUpdate()
             dragger && dragger.blur();
           };
 
@@ -200,11 +201,30 @@ module.exports = () => {
       };
 
       // Core commands
-      defaultCommands['core:undo'] = e => e.UndoManager.undo(1);
-      defaultCommands['core:redo'] = e => e.UndoManager.redo(1);
+      defaultCommands['core:undo'] = e => e.UndoManager.undo();
+      defaultCommands['core:redo'] = e => e.UndoManager.redo();
       defaultCommands['core:canvas-clear'] = e => {
         e.DomComponents.clear();
         e.CssComposer.clear();
+      };
+      defaultCommands['core:copy'] = ed => {
+        const em = ed.getModel();
+        const model = ed.getSelected();
+
+        if (model && model.get('copyable') && !ed.Canvas.isInputFocused()) {
+          em.set('clipboard', model);
+        }
+      };
+      defaultCommands['core:paste'] = ed => {
+        const em = ed.getModel();
+        const clp = em.get('clipboard');
+        const model = ed.getSelected();
+        const coll = model && model.collection;
+
+        if (coll && clp && !ed.Canvas.isInputFocused()) {
+          const at = coll.indexOf(model) + 1;
+          coll.add(clp.clone(), { at });
+        }
       };
 
       if(c.em)

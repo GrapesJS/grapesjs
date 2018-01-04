@@ -1,5 +1,8 @@
 import $ from 'cash-dom';
 import { defaults } from 'underscore';
+import polyfills from 'utils/polyfills';
+
+polyfills();
 
 module.exports = (() => {
   const defaultConfig = require('./config/config');
@@ -26,7 +29,6 @@ module.exports = (() => {
      * @param {Object|string} config.components='' HTML string or Component model in JSON format
      * @param {Object|string} config.style='' CSS string or CSS model in JSON format
      * @param {Boolean} [config.fromElement=false] If true, will fetch HTML and CSS from selected container
-     * @param {Boolean} [config.copyPaste=true] Enable/Disable the possibility to copy(ctrl+c) & paste(ctrl+v) components
      * @param {Boolean} [config.undoManager=true] Enable/Disable undo manager
      * @param {Array} [config.plugins=[]] Array of plugins to execute on start
      * @return {grapesjs.Editor} GrapesJS editor instance

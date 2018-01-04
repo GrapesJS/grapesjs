@@ -1,18 +1,4 @@
 /**
- *
- * * [addSector](#addsector)
- * * [getSector](#getsector)
- * * [getSectors](#getsectors)
- * * [addProperty](#addproperty)
- * * [getProperty](#getproperty)
- * * [getProperties](#getproperties)
- * * [getModelToStyle](#getmodeltostyle)
- * * [addType](#addtype)
- * * [getType](#gettype)
- * * [getTypes](#gettypes)
- * * [createType](#createtype)
- * * [render](#render)
- *
  * With Style Manager you basically build categories (called sectors) of CSS properties which could
  * be used to custom components and classes.
  * You can init the editor with all sectors and properties via configuration
@@ -147,6 +133,18 @@ module.exports = () => {
 
 
     /**
+     * Remove a sector by id
+     * @param  {string} id Sector id
+     * @return {Sector} Removed sector
+     * @example
+     * const removed = styleManager.removeSector('mySector');
+     */
+    removeSector(id) {
+      return this.getSectors().remove(this.getSector(id));
+    },
+
+
+    /**
      * Get all sectors
      * @return {Sectors} Collection of sectors
      * */
@@ -223,6 +221,20 @@ module.exports = () => {
 
 
     /**
+     * Remove a property from the sector
+     * @param  {string} sectorId Sector id
+     * @param  {string} name CSS property name, eg. 'min-height'
+     * @return {Property} Removed property
+     * @example
+     * const property = styleManager.removeProperty('mySector', 'min-height');
+     */
+    removeProperty(sectorId, name) {
+      const props = this.getProperties(sectorId);
+      return props && props.remove(this.getProperty(sectorId, name));
+    },
+
+
+    /**
      * Get properties of the sector
      * @param  {string} sectorId Sector id
      * @return {Properties} Collection of properties
@@ -249,19 +261,25 @@ module.exports = () => {
      * @return {Model}
      */
     getModelToStyle(model) {
-      const classes = model.get('classes');
       const em = c.em;
+      const classes = model.get('classes');
+      const id = model.getId();
 
-      if (em && classes && classes.length) {
-        const conf = em.get('Config');
-        const state = !conf.devicePreviewMode ? model.get('state') : '';
-        const deviceW = em.getCurrentMedia();
+      if (em) {
+        const config = em.getConfig();
         const cssC = em.get('CssComposer');
+        const state = !config.devicePreviewMode ? model.get('state') : '';
         const valid = classes.getStyleable();
-        const CssRule = cssC.get(valid, state, deviceW);
+        const hasClasses = valid.length;
+        const opts = { state };
 
-        if(CssRule && valid.length) {
-          return CssRule;
+        if (hasClasses) {
+          const deviceW = em.getCurrentMedia();
+          const CssRule = cssC.get(valid, state, deviceW);
+          if (CssRule) return CssRule;
+        } else if (config.avoidInlineStyle) {
+          const rule = cssC.getIdRule(id, opts);
+          return rule ? rule : cssC.setIdRule(id, {}, opts);
         }
       }
 

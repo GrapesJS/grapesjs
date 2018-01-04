@@ -1,8 +1,8 @@
-var Backbone = require('backbone');
-var ComponentView = require('dom_components/view/ComponentView');
-var ItemsView;
+import { isUndefined } from 'underscore';
+const ComponentView = require('dom_components/view/ComponentView');
+let ItemsView;
 
-module.exports = Backbone.View.extend({
+module.exports = require('backbone').View.extend({
 
   events: {
     'mousedown [data-toggle-move]': 'startSort',
@@ -13,28 +13,36 @@ module.exports = Backbone.View.extend({
     'focusout input': 'handleEditEnd',
   },
 
-  template: _.template(`
-  <% if (hidable) { %>
-    <i id="<%= prefix %>btn-eye" class="btn fa fa-eye <%= (visible ? '' : 'fa-eye-slash') %>" data-toggle-visible></i>
-  <% } %>
 
-  <div class="<%= prefix %>title-c <%= ppfx %>one-bg">
-    <div class="<%= prefix %>title <%= addClass %>" style="padding-left: <%= 30 + level * 10 %>px" data-toggle-select>
-      <div class="<%= prefix %>title-inn">
-        <i id="<%= prefix %>caret" class="fa fa-chevron-right <%= caretCls %>" data-toggle-open></i>
-        <%= icon %>
-        <input class="<%= ppfx %>no-app <%= inputNameCls %>" value="<%= title %>" readonly>
+  template(model) {
+    const pfx = this.pfx;
+    const ppfx = this.ppfx;
+    const hidable = this.config.hidable;
+    const count = this.countChildren(model);
+    const addClass = !count ? `${pfx}no-chld` : '';
+    const level = this.level + 1;
+    return `
+      ${ hidable ?
+        `<i id="${pfx}btn-eye" class="${pfx}btn fa fa-eye ${this.isVisible() ? '' : 'fa-eye-slash'}" data-toggle-visible></i>`
+        : ''}
+
+      <div class="${pfx}title-c ${ppfx}one-bg">
+        <div class="${pfx}title ${addClass}" style="padding-left: ${30 + level * 10}px" data-toggle-select>
+          <div class="${pfx}title-inn">
+            <i id="${pfx}caret" class="fa fa-chevron-right ${this.caretCls}" data-toggle-open></i>
+            ${model.getIcon()}
+            <input class="${ppfx}no-app ${this.inputNameCls}" value="${model.getName()}" readonly>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
+      <div id="${pfx}counter">${ count ? count : '' }</div>
+      <div id="${pfx}move" data-toggle-move>
+        <i class="fa fa-arrows"></i>
+      </div>
+      <div class="${pfx}children"></div>
+    `;
+  },
 
-  <div id="<%= prefix %>counter"><%= (count ? count : '') %></div>
-
-  <div id="<%= prefix %>move" data-toggle-move>
-    <i class="fa fa-arrows"></i>
-  </div>
-
-  <div class="<%= prefix %>children"></div>`),
 
   initialize(o = {}) {
     this.opt = o;
@@ -291,29 +299,14 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    let model = this.model;
+    const model = this.model;
     var pfx = this.pfx;
     var vis = this.isVisible();
-    var count = this.countChildren(model);
     const el = this.$el;
     const level = this.level + 1;
+    el.html(this.template(model));
 
-    el.html(this.template({
-      title: model.getName(),
-      icon: model.getIcon(),
-      addClass: (count ? '' : pfx+'no-chld'),
-      editBtnCls: this.editBtnCls,
-      inputNameCls: this.inputNameCls,
-      caretCls: this.caretCls,
-      count,
-      visible: vis,
-      hidable: this.config.hidable,
-      prefix: pfx,
-      ppfx: this.ppfx,
-      level
-    }));
-
-    if (typeof ItemsView == 'undefined') {
+    if (isUndefined(ItemsView)) {
       ItemsView = require('./ItemsView');
     }
 
@@ -331,9 +324,8 @@ module.exports = Backbone.View.extend({
     	el.children(`#${pfx}move`).remove();
     }
 
-    if(!vis)
-      this.className += ' ' + pfx + 'hide';
-    el.attr('class', _.result(this, 'className'));
+    !vis && (this.className += ` ${pfx}hide`);
+    el.attr('class', this.className);
     this.updateOpening();
     this.updateStatus();
     this.updateVisibility();

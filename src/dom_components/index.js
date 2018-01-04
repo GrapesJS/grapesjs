@@ -34,6 +34,7 @@
  */
 module.exports = () => {
   var c = {};
+  let em;
   const defaults = require('./config/config');
   const Component = require('./model/Component');
   const ComponentView = require('./view/ComponentView');
@@ -56,6 +57,21 @@ module.exports = () => {
       id: 'table',
       model: require('./model/ComponentTable'),
       view: require('./view/ComponentTableView'),
+    },
+    {
+      id: 'thead',
+      model: require('./model/ComponentTableHead'),
+      view: require('./view/ComponentTableHeadView'),
+    },
+    {
+      id: 'tbody',
+      model: require('./model/ComponentTableBody'),
+      view: require('./view/ComponentTableBodyView'),
+    },
+    {
+      id: 'tfoot',
+      model: require('./model/ComponentTableFoot'),
+      view: require('./view/ComponentTableFootView'),
     },
     {
       id: 'map',
@@ -151,7 +167,7 @@ module.exports = () => {
      */
     init(config) {
       c = config || {};
-      const em = c.em;
+      em = c.em;
 
       if (em) {
         c.components = em.config.components || c.components;
@@ -222,8 +238,46 @@ module.exports = () => {
      * @private
      */
     postLoad(em) {
-      em.initChildrenComp(this.getWrapper());
+      this.handleChanges(this.getWrapper(), null, { avoidStore: 1 });
     },
+
+
+    /**
+     * Handle component changes
+     * @private
+     */
+    handleChanges(model, value, opts = {}) {
+      const comps = model.components();
+      const um = em.get('UndoManager');
+      const handleUpdates = em.handleUpdates.bind(em);
+      const handleChanges = this.handleChanges.bind(this);
+      const handleRemoves = this.handleRemoves.bind(this);
+      um && um.add(model);
+      um && comps && um.add(comps);
+      const evn = 'change:style change:content change:attributes change:src';
+
+      [ [model, evn, handleUpdates],
+        [comps, 'add', handleChanges],
+        [comps, 'remove', handleRemoves],
+        [model.get('classes'), 'add remove', handleUpdates],
+      ].forEach(els => {
+        em.stopListening(els[0], els[1], els[2]);
+        em.listenTo(els[0], els[1], els[2]);
+      });
+
+      !opts.avoidStore && handleUpdates('', '', opts);
+      comps.each(model => this.handleChanges(model, value, opts));
+    },
+
+
+    /**
+     * Triggered when some component is removed
+     * @private
+     * */
+    handleRemoves(model, value, opts = {}) {
+      !opts.avoidStore && em.handleUpdates(model, value, opts);
+    },
+
 
     /**
      * Load components from the passed object, if the object is empty will try to fetch them

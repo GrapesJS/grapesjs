@@ -203,12 +203,12 @@ module.exports = Backbone.View.extend({
     const model = this.model;
     const context = model.get('context');
     const parent = this.parentM;
-    var command  = null;
+    let command = {};
     var editor = this.em && this.em.get ? this.em.get('Editor') : null;
     var commandName = model.get('command');
 
     if (this.commands && isString(commandName)) {
-      command  = this.commands.get(commandName);
+      command  = this.commands.get(commandName) || {};
     } else if (isFunction(commandName)) {
       command = { run: commandName };
     } else if (commandName !== null && isObject(commandName)) {
@@ -220,7 +220,7 @@ module.exports = Backbone.View.extend({
       model.set('active', true, { silent: true }).trigger('checkActive');
       parent && parent.set('active', true, { silent: true }).trigger('checkActive');
 
-      if (command && command.run) {
+      if (command.run) {
         command.run(editor, model, model.get('options'));
         editor.trigger('run:' + commandName);
       }
@@ -232,7 +232,7 @@ module.exports = Backbone.View.extend({
       model.collection.deactivateAll(context);
       parent && parent.set('active', false, { silent: true }).trigger('checkActive');
 
-      if (command && command.stop) {
+      if (command.stop) {
         command.stop(editor, model, model.get('options'));
         editor.trigger('stop:' + commandName);
       }

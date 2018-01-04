@@ -69,14 +69,6 @@ module.exports = {
           setTimeout(() => expect(fixtures.innerHTML).toNotExist(), 0)
         });
 
-        it('On remove triggers event', () => {
-          var spy = sinon.spy();
-          sinon.stub(obj.target, 'get').returns(0);
-          obj.target.on("targetClassRemoved", spy);
-          obj.$el.find('#close').trigger('click');
-          expect(spy.called).toEqual(true);
-        });
-
         it('Checkbox toggles status', () => {
           var spy     = sinon.spy();
           obj.model.on("change:active", spy);
@@ -86,31 +78,19 @@ module.exports = {
           expect(spy.called).toEqual(true);
         });
 
-        it('On toggle triggers event', () => {
-          var spy = sinon.spy();
-          sinon.stub(obj.target, 'get').returns(0);
-          obj.target.on("targetClassUpdated", spy);
-          obj.$el.find('#checkbox').trigger('click');
-          expect(spy.called).toEqual(true);
-        });
-
         it('Label input is disabled', () => {
-          var inputProp = obj.inputProp;
-          var label = obj.$labelInput.get(0);
-          expect(obj.$labelInput.prop(inputProp)).toEqual(true);
+          expect(obj.getInputEl().contentEditable).toNotEqual(true);
         });
 
         it('On double click label input is enable', () => {
-          var inputProp = obj.inputProp;
           obj.$el.find('#tag-label').trigger('dblclick');
-          expect(obj.$labelInput.prop(inputProp)).toEqual(false);
+          expect(obj.getInputEl().contentEditable).toEqual(true);
         });
 
         it('On blur label input turns back disabled', () => {
-          var inputProp = obj.inputProp;
           obj.$el.find('#tag-label').trigger('dblclick');
           obj.endEditTag();
-          expect(obj.$labelInput.prop(inputProp)).toEqual(true);
+          expect(obj.getInputEl().contentEditable).toEqual(false);
         });
 
     });

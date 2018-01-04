@@ -1,6 +1,7 @@
 const ComponentView = require('dom_components/view/ComponentView');
 const Component = require('dom_components/model/Component');
 const DomComponents = require('dom_components');
+const Editor = require('editor/model/Editor');
 
 module.exports = {
   run() {
@@ -13,13 +14,16 @@ module.exports = {
         var hClass = 'hc-state';
         var dcomp;
         var compOpts;
+        let em;
 
         beforeEach(() => {
+          em = new Editor({});
           dcomp = new DomComponents();
           compOpts = {
+            em,
             componentTypes: dcomp.componentTypes,
           };
-          model = new Component();
+          model = new Component({}, compOpts);
           view = new ComponentView({
             model
           });
@@ -119,6 +123,13 @@ module.exports = {
           fixtures.innerHTML = '';
           fixtures.appendChild(view.render().el);
           expect(view.$el.html()).toEqual('<span data-highlightable="1"></span><div title="test" data-highlightable="1"></div>');
+        });
+
+        it('removeClass removes classes from attributes', () => {
+          model.addClass('class1');
+          model.removeClass('class1');
+          const result = model.getAttributes();
+          expect(result.class).toEqual(undefined);
         });
 
     });

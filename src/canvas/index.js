@@ -351,8 +351,13 @@ module.exports = () => {
       this.dragging = 1;
       let toListen = this.getScrollListeners();
       frameRect = CanvasView.getFrameOffset(1);
-      on(toListen, 'mousemove', this.autoscroll);
-      on(toListen, 'mouseup', this.stopAutoscroll);
+
+      // By detaching those from the stack avoid browsers lags
+      // Noticeable with "fast" drag of blocks
+      setTimeout(() => {
+        on(toListen, 'mousemove', this.autoscroll);
+        on(toListen, 'mouseup', this.stopAutoscroll);
+      }, 0);
     },
 
     autoscroll(e) {

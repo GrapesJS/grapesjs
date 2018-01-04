@@ -3,6 +3,7 @@ import { isUndefined, defaults } from 'underscore';
 const deps = [
   require('utils'),
   require('keymaps'),
+  require('undo_manager'),
   require('storage_manager'),
   require('device_manager'),
   require('parser'),
@@ -22,8 +23,6 @@ const deps = [
 ];
 
 const Backbone = require('backbone');
-const UndoManager = require('backbone-undo');
-const key = require('keymaster');
 let timedInterval;
 
 require('utils/extender')({
@@ -57,12 +56,7 @@ module.exports = Backbone.Model.extend({
       this.config.components = c.el.innerHTML;
 
     // Load modules
-    deps.forEach(function(name){
-      this.loadModule(name);
-    }, this);
-
-    this.initUndoManager();
-
+    deps.forEach(name => this.loadModule(name));
     this.on('change:selectedComponent', this.componentSelected, this);
     this.on('change:changesCount', this.updateChanges, this);
   },
@@ -94,16 +88,10 @@ module.exports = Backbone.Model.extend({
       module.onLoad();
     });
 
-    // Stuff to do post load (eg. init undo manager for loaded components)
+    // Stuff to do post load
     const postLoad = () => {
-      // I've initialized undo manager in initialize() because otherwise the
-      // editor will unable to fetch the instance via 'editor.UndoManager' but
-      // I need to cleare the stack now as it was dirtied by 'onLoad' method
-      this.um.clear();
-      this.initUndoManager();
-      this.get('modules').forEach(module =>
-        module.postLoad && module.postLoad(this)
-      );
+      const modules = this.get('modules');
+      modules.forEach(module => module.postLoad && module.postLoad(this));
       clb && clb();
     };
 
@@ -151,22 +139,20 @@ module.exports = Backbone.Model.extend({
 
     // Check if module is storable
     var sm = this.get('StorageManager');
-    if(Mod.storageKey && Mod.store && Mod.load && sm){
+
+    if (Mod.storageKey && Mod.store && Mod.load && sm) {
       cfg.stm = sm;
       var storables = this.get('storables');
       storables.push(Mod);
       this.set('storables', storables);
     }
+
     cfg.em = this;
     Mod.init({ ...cfg });
 
     // Bind the module to the editor model if public
-    if(!Mod.private)
-      this.set(Mod.name, Mod);
-
-    if(Mod.onLoad)
-      this.get('toLoad').push(Mod);
-
+    !Mod.private && this.set(Mod.name, Mod);
+    Mod.onLoad && this.get('toLoad').push(Mod);
     this.get('modules').push(Mod);
     return this;
   },
@@ -186,29 +172,6 @@ module.exports = Backbone.Model.extend({
     return this.get('Editor');
   },
 
-
-  /**
-   * Listen for new rules
-   * @param {Object} collection
-   * @private
-   */
-  listenRules(collection) {
-    this.stopListening(collection, 'add remove', this.listenRule);
-    this.listenTo(collection, 'add remove', this.listenRule);
-    collection.each(function(model){
-      this.listenRule(model);
-    }, this);
-  },
-
-  /**
-   * Listen for rule changes
-   * @param {Object} model
-   * @private
-   */
-  listenRule(model) {
-    this.stopListening(model, 'change:style', this.handleUpdates);
-    this.listenTo(model, 'change:style', this.handleUpdates);
-  },
 
   /**
    * This method handles updates on the editor and tries to store them
@@ -232,82 +195,6 @@ module.exports = Backbone.Model.extend({
     }, 0);
   },
 
-  /**
-   * Initialize Undo manager
-   * @private
-   * */
-  initUndoManager() {
-    const canvas = this.get('Canvas');
-
-    if (this.um) {
-      return;
-    }
-
-    var cmp = this.get('DomComponents');
-    if(cmp && this.config.undoManager) {
-      var that = this;
-      this.um = new UndoManager({
-          register: [cmp.getComponents(), this.get('CssComposer').getAll()],
-          track: true
-      });
-      this.UndoManager = this.um;
-      this.set('UndoManager', this.um);
-
-      key('⌘+z, ctrl+z', () => {
-        if (canvas.isInputFocused()) {
-          return;
-        }
-
-        that.um.undo(true);
-        that.trigger('component:update');
-      });
-
-      key('⌘+shift+z, ctrl+shift+z', () => {
-        if (canvas.isInputFocused()) {
-          return;
-        }
-        that.um.redo(true);
-        that.trigger('component:update');
-      });
-
-      var beforeCache;
-      const customUndoType = {
-        on: function (model, value, opts) {
-          var opt = opts || {};
-          if(!beforeCache){
-            beforeCache = model.previousAttributes();
-          }
-          if (opt && opt.avoidStore) {
-            return;
-          } else {
-            var obj = {
-                object: model,
-                before: beforeCache,
-                after: model.toJSON()
-            };
-            beforeCache = null;
-            return obj;
-          }
-        },
-        undo: function (model, bf, af, opt) {
-          model.set(bf);
-          // Update also inputs inside Style Manager
-          that.trigger('change:selectedComponent');
-        },
-        redo: function (model, bf, af, opt) {
-          model.set(af);
-          // Update also inputs inside Style Manager
-          that.trigger('change:selectedComponent');
-        }
-      };
-
-      UndoManager.removeUndoType("change");
-      UndoManager.addUndoType("change:style", customUndoType);
-      UndoManager.addUndoType("change:attributes", customUndoType);
-      UndoManager.addUndoType("change:content", customUndoType);
-      UndoManager.addUndoType("change:src", customUndoType);
-    }
-  },
 
   /**
    * Callback on component selection
@@ -325,67 +212,6 @@ module.exports = Backbone.Model.extend({
     }
   },
 
-  /**
-   * Triggered when components are updated
-   * @param  {Object}  model
-   * @param  {Mixed}    val  Value
-   * @param  {Object}  opt  Options
-   * @private
-   * */
-  updateComponents(model, val, opt) {
-    var comps  = model.get('components'),
-        classes  = model.get('classes'),
-        avSt  = opt ? opt.avoidStore : 0;
-
-    // Observe component with Undo Manager
-    if(this.um)
-      this.um.register(comps);
-
-    // Call stopListening for not creating nested listeners
-    this.stopListening(comps, 'add', this.updateComponents);
-    this.stopListening(comps, 'remove', this.rmComponents);
-    this.listenTo(comps, 'add', this.updateComponents);
-    this.listenTo(comps, 'remove', this.rmComponents);
-
-    this.stopListening(classes, 'add remove', this.handleUpdates);
-    this.listenTo(classes, 'add remove', this.handleUpdates);
-
-    var evn = 'change:style change:content change:attributes change:src';
-    this.stopListening(model, evn, this.handleUpdates);
-    this.listenTo(model, evn, this.handleUpdates);
-
-    if(!avSt)
-      this.handleUpdates(model, val, opt);
-  },
-
-  /**
-   * Init stuff like storage for already existing elements
-   * @param {Object}  model
-   * @private
-   */
-  initChildrenComp(model) {
-      var comps  = model.get('components');
-      this.updateComponents(model, null, { avoidStore : 1 });
-      comps.each(function(md) {
-          this.initChildrenComp(md);
-          if(this.um)
-            this.um.register(md);
-      }, this);
-  },
-
-  /**
-   * Triggered when some component is removed updated
-   * @param  {Object}  model
-   * @param  {Mixed}    val  Value
-   * @param  {Object}  opt  Options
-   * @private
-   * */
-  rmComponents(model, val, opt) {
-    var avSt  = opt ? opt.avoidStore : 0;
-
-    if(!avSt)
-      this.handleUpdates(model, val, opt);
-  },
 
   /**
    * Returns model of the selected component

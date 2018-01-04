@@ -56,14 +56,11 @@ module.exports = Backbone.View.extend({
    * @private
    */
   handleChange() {
-    var em = this.em;
-    if(em) {
-      var model = this.model;
-      em.trigger('component:update', model);
+    const model = this.model;
+    model.emitUpdate();
 
-      for(var prop in model.changed) {
-        em.trigger('component:update:' + prop, model);
-      }
+    for (let prop in model.changed) {
+      model.emitUpdate(prop);
     }
   },
 

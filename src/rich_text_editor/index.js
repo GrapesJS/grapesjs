@@ -280,7 +280,7 @@ module.exports = () => {
       if (customRte) {
         customRte.disable(el, rte);
       } else {
-        rte.disable();
+        rte && rte.disable();
       }
 
       hideToolbar();

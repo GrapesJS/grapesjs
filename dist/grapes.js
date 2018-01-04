@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 57);
+/******/ 	return __webpack_require__(__webpack_require__.s = 58);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -93,7 +93,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
   // Set up Backbone appropriately for the environment. Start with AMD.
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1), __webpack_require__(8), exports], __WEBPACK_AMD_DEFINE_RESULT__ = function(_, $, exports) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1), __webpack_require__(9), exports], __WEBPACK_AMD_DEFINE_RESULT__ = function(_, $, exports) {
       // Export global even in AMD case in case this script is loaded with
       // others that may still expect a global Backbone.
       root.Backbone = factory(root, exports, _, $);
@@ -3687,702 +3687,11 @@ exports.getUnitFromValue = getUnitFromValue;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _underscore = __webpack_require__(1);
-
-var _mixins = __webpack_require__(2);
-
-var _Styleable = __webpack_require__(46);
-
-var _Styleable2 = _interopRequireDefault(_Styleable);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var Backbone = __webpack_require__(0);
-var Components = __webpack_require__(48);
-var Selectors = __webpack_require__(10);
-var Traits = __webpack_require__(147);
-
-var escapeRegExp = function escapeRegExp(str) {
-  return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
-};
-
-module.exports = Backbone.Model.extend(_Styleable2.default).extend({
-
-  defaults: {
-    // HTML tag of the component
-    tagName: 'div',
-
-    // Component type, eg. 'text', 'image', 'video', etc.
-    type: '',
-
-    // True if the component is removable from the canvas
-    removable: true,
-
-    // Indicates if it's possible to drag the component inside others
-    // Tip: Indicate an array of selectors where it could be dropped inside
-    draggable: true,
-
-    // Indicates if it's possible to drop other components inside
-    // Tip: Indicate an array of selectors which could be dropped inside
-    droppable: true,
-
-    // Set false if don't want to see the badge (with the name) over the component
-    badgable: true,
-
-    // True if it's possible to style it
-    // Tip:
-    // Indicate an array of CSS properties which is possible to style, eg. ['color', 'width']
-    // All other properties will be hidden from the style manager
-    stylable: true,
-
-    // Indicate an array of style properties to show up which has been marked as `toRequire`
-    'stylable-require': '',
-
-    // Indicate an array of style properties which should be hidden from the style manager
-    unstylable: '',
-
-    // Highlightable with 'dotted' style if true
-    highlightable: true,
-
-    // True if it's possible to clone the component
-    copyable: true,
-
-    // Indicates if it's possible to resize the component (at the moment implemented only on Image Components)
-    // It's also possible to pass an object as options for the Resizer
-    resizable: false,
-
-    // Allow to edit the content of the component (used on Text components)
-    editable: false,
-
-    // Hide the component inside Layers
-    layerable: true,
-
-    // Allow component to be selected when clicked
-    selectable: true,
-
-    // Shows a highlight outline when hovering on the element if true
-    hoverable: true,
-
-    // This property is used by the HTML exporter as void elements do not
-    // have closing tag, eg. <br/>, <hr/>, etc.
-    void: false,
-
-    // Indicates if the component is in some CSS state like ':hover', ':active', etc.
-    state: '',
-
-    // State, eg. 'selected'
-    status: '',
-
-    // Content of the component (not escaped) which will be appended before children rendering
-    content: '',
-
-    // Component icon, this string will be inserted before the name, eg. '<i class="fa fa-square-o"></i>'
-    icon: '',
-
-    // Component related style
-    style: '',
-
-    // Key-value object of the component's attributes
-    attributes: '',
-
-    // Array of classes
-    classes: '',
-
-    // Component's javascript
-    script: '',
-
-    // Traits
-    traits: ['id', 'title'],
-
-    // Indicates an array of properties which will be inhereted by
-    // all NEW appended children
-    //
-    // If you create a model likes this
-    //  removable: false,
-    //  draggable: false,
-    //  propagate: ['removable', 'draggable']
-    // When you append some new component inside, the new added model
-    // will get the exact same properties indicated in `propagate` array
-    // (as the `propagate` property itself)
-    //
-    propagate: '',
-
-    /**
-      * Set an array of items to show up inside the toolbar (eg. move, clone, delete)
-      * when the component is selected
-      * toolbar: [{
-      *     attributes: {class: 'fa fa-arrows'},
-      *     command: 'tlb-move',
-      *   },{
-      *     attributes: {class: 'fa fa-clone'},
-      *     command: 'tlb-clone',
-      * }]
-    */
-    toolbar: null
-  },
-
-  initialize: function initialize() {
-    var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-    var em = opt.sm || opt.em || '';
-
-    // Propagate properties from parent if indicated
-    var parent = this.parent();
-    var parentAttr = parent && parent.attributes;
-
-    if (parentAttr && parentAttr.propagate) {
-      var newAttr = {};
-      var toPropagate = parentAttr.propagate;
-      toPropagate.forEach(function (prop) {
-        return newAttr[prop] = parent.get(prop);
-      });
-      newAttr.propagate = toPropagate;
-      newAttr = _extends({}, newAttr, props);
-      this.set(newAttr);
-    }
-
-    var propagate = this.get('propagate');
-    propagate && this.set('propagate', (0, _underscore.isArray)(propagate) ? propagate : [propagate]);
-
-    // Check void elements
-    if (opt && opt.config && opt.config.voidElements.indexOf(this.get('tagName')) >= 0) {
-      this.set('void', true);
-    }
-
-    opt.em = em;
-    this.opt = opt;
-    this.sm = em;
-    this.em = em;
-    this.config = opt.config || {};
-    this.set('attributes', this.get('attributes') || {});
-    this.listenTo(this, 'change:script', this.scriptUpdated);
-    this.listenTo(this, 'change:traits', this.traitsUpdated);
-    this.loadTraits();
-    this.initClasses();
-    this.initComponents();
-    this.initToolbar();
-    this.set('status', '');
-    this.init();
-  },
-
-
-  /**
-   * Update attributes of the model
-   * @param {Object} attrs Key value attributes
-   * @example
-   * model.setAttributes({id: 'test', 'data-key': 'value'});
-   */
-  setAttributes: function setAttributes(attrs) {
-    attrs = _extends({}, attrs);
-
-    // Handle classes
-    var classes = attrs.class;
-    classes && this.setClass(classes);
-    delete attrs.class;
-
-    // Handle style
-    var style = attrs.style;
-    style && this.setStyle(style);
-    delete attrs.style;
-
-    this.set('attributes', attrs);
-  },
-  getStyle: function getStyle() {
-    var em = this.em;
-
-    if (em && em.getConfig('avoidInlineStyle')) {
-      var state = this.get('state');
-      var cc = em.get('CssComposer');
-      var rule = cc.getIdRule(this.getId(), { state: state });
-      this.rule = rule;
-
-      if (rule) {
-        return rule.getStyle();
-      }
-    }
-
-    return _Styleable2.default.getStyle.call(this);
-  },
-  setStyle: function setStyle() {
-    var _this = this;
-
-    var prop = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-    var em = this.em;
-
-    if (em && em.getConfig('avoidInlineStyle')) {
-      prop = (0, _underscore.isString)(prop) ? this.parseStyle(prop) : prop;
-      var state = this.get('state');
-      var cc = em.get('CssComposer');
-      var propOrig = this.getStyle();
-      this.rule = cc.setIdRule(this.getId(), prop, _extends({}, opts, { state: state }));
-      var diff = (0, _mixins.shallowDiff)(propOrig, prop);
-      (0, _underscore.keys)(diff).forEach(function (pr) {
-        return _this.trigger('change:style:' + pr);
-      });
-    } else {
-      prop = _Styleable2.default.setStyle.apply(this, arguments);
-    }
-
-    return prop;
-  },
-
-
-  /**
-   * Return attributes
-   * @return {Object}
-   */
-  getAttributes: function getAttributes() {
-    var classes = [];
-    var attributes = this.get('attributes') || {};
-
-    // Add classes
-    this.get('classes').each(function (cls) {
-      return classes.push(cls.get('name'));
-    });
-    classes.length && (attributes.class = classes.join(' '));
-
-    // If style is not empty I need an ID attached to the component
-    if (!(0, _underscore.isEmpty)(this.getStyle()) && !(0, _underscore.has)(attributes, 'id')) {
-      attributes.id = this.getId();
-    }
-
-    return attributes;
-  },
-
-
-  /**
-   * Add classes
-   * @param {Array|string} classes Array or string of classes
-   * @return {Array} Array of added selectors
-   * @example
-   * model.addClass('class1');
-   * model.addClass('class1 class2');
-   * model.addClass(['class1', 'class2']);
-   * // -> [SelectorObject, ...]
-   */
-  addClass: function addClass(classes) {
-    var added = this.em.get('SelectorManager').addClass(classes);
-    return this.get('classes').add(added);
-  },
-
-
-  /**
-   * Set classes (resets current collection)
-   * @param {Array|string} classes Array or string of classes
-   * @return {Array} Array of added selectors
-   * @example
-   * model.setClass('class1');
-   * model.setClass('class1 class2');
-   * model.setClass(['class1', 'class2']);
-   * // -> [SelectorObject, ...]
-   */
-  setClass: function setClass(classes) {
-    this.get('classes').reset();
-    return this.addClass(classes);
-  },
-  initClasses: function initClasses() {
-    var classes = this.normalizeClasses(this.get('classes') || []);
-    this.set('classes', new Selectors(classes));
-    return this;
-  },
-  initComponents: function initComponents() {
-    // Have to add components after the init, otherwise the parent
-    // is not visible
-    var comps = new Components(null, this.opt);
-    comps.parent = this;
-    comps.reset(this.get('components'));
-    this.set('components', comps);
-    return this;
-  },
-
-
-  /**
-   * Initialize callback
-   */
-  init: function init() {},
-
-
-  /**
-   * Add new component children
-   * @param  {Component|string} components Component to add
-   * @param {Object} [opts={}] Options, same as in `model.add()`(from backbone)
-   * @return {Array} Array of appended components
-   * @example
-   * someModel.get('components').lenght // -> 0
-   * const videoComponent = someModel.append('<video></video><div></div>')[0];
-   * // This will add 2 components (`video` and `div`) to your `someModel`
-   * someModel.get('components').lenght // -> 2
-   * // You can pass components directly
-   * otherModel.append(otherModel2);
-   * otherModel.append([otherModel3, otherModel4]);
-   */
-  append: function append(components) {
-    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-    var result = this.components().add(components, opts);
-    return (0, _underscore.isArray)(result) ? result : [result];
-  },
-
-
-  /**
-   * Set new collection if `components` are provided, otherwise the
-   * current collection is returned
-   * @param  {Component|string} [components] Components to set
-   * @return {Collection|undefined}
-   * @example
-   * // Get current collection
-   * const collection = model.components();
-   * // Set new collection
-   * model.components('<span></span><div></div>');
-   */
-  components: function components(_components) {
-    var coll = this.get('components');
-
-    if ((0, _underscore.isUndefined)(_components)) {
-      return coll;
-    } else {
-      coll.reset();
-      _components && this.append(_components);
-    }
-  },
-
-
-  /**
-   * Get parent model
-   * @return {Component}
-   */
-  parent: function parent() {
-    var coll = this.collection;
-    return coll && coll.parent;
-  },
-
-
-  /**
-   * Script updated
-   */
-  scriptUpdated: function scriptUpdated() {
-    this.set('scriptUpdated', 1);
-  },
-
-
-  /**
-   * Once traits are updated I have to populates model's attributes
-   */
-  traitsUpdated: function traitsUpdated() {
-    var found = 0;
-    var attrs = _extends({}, this.get('attributes'));
-    var traits = this.get('traits');
-
-    if (!(traits instanceof Traits)) {
-      this.loadTraits();
-      return;
-    }
-
-    traits.each(function (trait) {
-      found = 1;
-      if (!trait.get('changeProp')) {
-        var value = trait.getInitValue();
-        if (value) {
-          attrs[trait.get('name')] = value;
-        }
-      }
-    });
-
-    found && this.set('attributes', attrs);
-  },
-
-
-  /**
-   * Init toolbar
-   */
-  initToolbar: function initToolbar() {
-    var model = this;
-    if (!model.get('toolbar')) {
-      var tb = [];
-      if (model.collection) {
-        tb.push({
-          attributes: { class: 'fa fa-arrow-up' },
-          command: 'select-parent'
-        });
-      }
-      if (model.get('draggable')) {
-        tb.push({
-          attributes: { class: 'fa fa-arrows' },
-          command: 'tlb-move'
-        });
-      }
-      if (model.get('copyable')) {
-        tb.push({
-          attributes: { class: 'fa fa-clone' },
-          command: 'tlb-clone'
-        });
-      }
-      if (model.get('removable')) {
-        tb.push({
-          attributes: { class: 'fa fa-trash-o' },
-          command: 'tlb-delete'
-        });
-      }
-      model.set('toolbar', tb);
-    }
-  },
-
-
-  /**
-   * Load traits
-   * @param  {Array} traits
-   * @private
-   */
-  loadTraits: function loadTraits(traits) {
-    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-    var trt = new Traits([], this.opt);
-    trt.setTarget(this);
-    traits = traits || this.get('traits');
-
-    if (traits.length) {
-      trt.add(traits);
-    }
-
-    this.set('traits', trt, opts);
-    return this;
-  },
-
-
-  /**
-   * Normalize input classes from array to array of objects
-   * @param {Array} arr
-   * @return {Array}
-   * @private
-   */
-  normalizeClasses: function normalizeClasses(arr) {
-    var res = [];
-
-    if (!this.sm.get) return;
-
-    var clm = this.sm.get('SelectorManager');
-    if (!clm) return;
-
-    arr.forEach(function (val) {
-      var name = '';
-
-      if (typeof val === 'string') name = val;else name = val.name;
-
-      var model = clm.add(name);
-      res.push(model);
-    });
-    return res;
-  },
-
-
-  /**
-   * Override original clone method
-   * @private
-   */
-  clone: function clone(reset) {
-    var em = this.em;
-    var style = this.getStyle();
-    var attr = (0, _underscore.clone)(this.attributes);
-    delete attr.attributes.id;
-    attr.components = [];
-    attr.classes = [];
-    attr.traits = [];
-
-    this.get('components').each(function (md, i) {
-      attr.components[i] = md.clone(1);
-    });
-    this.get('traits').each(function (md, i) {
-      attr.traits[i] = md.clone();
-    });
-    this.get('classes').each(function (md, i) {
-      attr.classes[i] = md.get('name');
-    });
-
-    attr.status = '';
-    attr.view = '';
-
-    if (reset) {
-      this.opt.collection = null;
-    }
-
-    if (em && em.getConfig('avoidInlineStyle') && !(0, _underscore.isEmpty)(style)) {
-      attr.style = style;
-    }
-
-    return new this.constructor(attr, this.opt);
-  },
-
-
-  /**
-   * Get the name of the component
-   * @return {string}
-   * */
-  getName: function getName() {
-    var customName = this.get('custom-name');
-    var tag = this.get('tagName');
-    tag = tag == 'div' ? 'box' : tag;
-    var name = this.get('type') || tag;
-    name = name.charAt(0).toUpperCase() + name.slice(1);
-    return customName || name;
-  },
-
-
-  /**
-   * Get the icon string
-   * @return {string}
-   */
-  getIcon: function getIcon() {
-    var icon = this.get('icon');
-    return icon ? icon + ' ' : '';
-  },
-
-
-  /**
-   * Return HTML string of the component
-   * @param {Object} opts Options
-   * @return {string} HTML string
-   * @private
-   */
-  toHTML: function toHTML(opts) {
-    var model = this;
-    var attrs = [];
-    var classes = [];
-    var tag = model.get('tagName');
-    var sTag = model.get('void');
-    var attributes = this.getAttrToHTML();
-
-    for (var attr in attributes) {
-      var value = attributes[attr];
-
-      if (!(0, _underscore.isUndefined)(value)) {
-        attrs.push(attr + '="' + value + '"');
-      }
-    }
-
-    var attrString = attrs.length ? ' ' + attrs.join(' ') : '';
-    var code = '<' + tag + attrString + (sTag ? '/' : '') + '>' + model.get('content');
-    model.get('components').each(function (comp) {
-      return code += comp.toHTML();
-    });
-    !sTag && (code += '</' + tag + '>');
-
-    return code;
-  },
-
-
-  /**
-   * Returns object of attributes for HTML
-   * @return {Object}
-   * @private
-   */
-  getAttrToHTML: function getAttrToHTML() {
-    var attr = this.getAttributes();
-    delete attr.style;
-    return attr;
-  },
-
-
-  /**
-   * Return a shallow copy of the model's attributes for JSON
-   * stringification.
-   * @return {Object}
-   * @private
-   */
-  toJSON: function toJSON() {
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    var obj = Backbone.Model.prototype.toJSON.apply(this, args);
-    var scriptStr = this.getScriptString();
-    delete obj.toolbar;
-
-    if (scriptStr) {
-      obj.script = scriptStr;
-    }
-
-    return obj;
-  },
-
-
-  /**
-   * Return model id
-   * @return {string}
-   */
-  getId: function getId() {
-    var attrs = this.get('attributes') || {};
-    return attrs.id || this.cid;
-  },
-
-
-  /**
-   * Return script in string format, cleans 'function() {..' from scripts
-   * if it's a function
-   * @param {string|Function} script
-   * @return {string}
-   * @private
-   */
-  getScriptString: function getScriptString(script) {
-    var _this2 = this;
-
-    var scr = script || this.get('script');
-
-    if (!scr) {
-      return scr;
-    }
-
-    // Need to convert script functions to strings
-    if (typeof scr == 'function') {
-      var scrStr = scr.toString().trim();
-      scrStr = scrStr.replace(/^function[\s\w]*\(\)\s?\{/, '').replace(/\}$/, '');
-      scr = scrStr.trim();
-    }
-
-    var config = this.sm.config || {};
-    var tagVarStart = escapeRegExp(config.tagVarStart || '{[ ');
-    var tagVarEnd = escapeRegExp(config.tagVarEnd || ' ]}');
-    var reg = new RegExp(tagVarStart + '(\\w+)' + tagVarEnd, 'g');
-    scr = scr.replace(reg, function (match, v) {
-      // If at least one match is found I have to track this change for a
-      // better optimization inside JS generator
-      _this2.scriptUpdated();
-      return _this2.attributes[v];
-    });
-
-    return scr;
-  }
-}, {
-
-  /**
-   * Detect if the passed element is a valid component.
-   * In case the element is valid an object abstracted
-   * from the element will be returned
-   * @param {HTMLElement}
-   * @return {Object}
-   * @private
-   */
-  isComponent: function isComponent(el) {
-    return { tagName: el.tagName ? el.tagName.toLowerCase() : '' };
-  }
-});
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
 /* WEBPACK VAR INJECTION */(function(Backbone) {
 
 var _underscore = __webpack_require__(1);
 
-var ComponentsView = __webpack_require__(49);
+var ComponentsView = __webpack_require__(50);
 
 module.exports = Backbone.View.extend({
   className: function className() {
@@ -4438,14 +3747,11 @@ module.exports = Backbone.View.extend({
    * @private
    */
   handleChange: function handleChange() {
-    var em = this.em;
-    if (em) {
-      var model = this.model;
-      em.trigger('component:update', model);
+    var model = this.model;
+    model.emitUpdate();
 
-      for (var prop in model.changed) {
-        em.trigger('component:update:' + prop, model);
-      }
+    for (var prop in model.changed) {
+      model.emitUpdate(prop);
     }
   },
 
@@ -4737,6 +4043,799 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _underscore = __webpack_require__(1);
+
+var _mixins = __webpack_require__(2);
+
+var _Styleable = __webpack_require__(47);
+
+var _Styleable2 = _interopRequireDefault(_Styleable);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Backbone = __webpack_require__(0);
+var Components = __webpack_require__(49);
+var Selector = __webpack_require__(7);
+var Selectors = __webpack_require__(10);
+var Traits = __webpack_require__(152);
+
+var escapeRegExp = function escapeRegExp(str) {
+  return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
+};
+
+module.exports = Backbone.Model.extend(_Styleable2.default).extend({
+
+  defaults: {
+    // HTML tag of the component
+    tagName: 'div',
+
+    // Component type, eg. 'text', 'image', 'video', etc.
+    type: '',
+
+    // True if the component is removable from the canvas
+    removable: true,
+
+    // Indicates if it's possible to drag the component inside others
+    // Tip: Indicate an array of selectors where it could be dropped inside
+    draggable: true,
+
+    // Indicates if it's possible to drop other components inside
+    // Tip: Indicate an array of selectors which could be dropped inside
+    droppable: true,
+
+    // Set false if don't want to see the badge (with the name) over the component
+    badgable: true,
+
+    // True if it's possible to style it
+    // Tip:
+    // Indicate an array of CSS properties which is possible to style, eg. ['color', 'width']
+    // All other properties will be hidden from the style manager
+    stylable: true,
+
+    // Indicate an array of style properties to show up which has been marked as `toRequire`
+    'stylable-require': '',
+
+    // Indicate an array of style properties which should be hidden from the style manager
+    unstylable: '',
+
+    // Highlightable with 'dotted' style if true
+    highlightable: true,
+
+    // True if it's possible to clone the component
+    copyable: true,
+
+    // Indicates if it's possible to resize the component (at the moment implemented only on Image Components)
+    // It's also possible to pass an object as options for the Resizer
+    resizable: false,
+
+    // Allow to edit the content of the component (used on Text components)
+    editable: false,
+
+    // Hide the component inside Layers
+    layerable: true,
+
+    // Allow component to be selected when clicked
+    selectable: true,
+
+    // Shows a highlight outline when hovering on the element if true
+    hoverable: true,
+
+    // This property is used by the HTML exporter as void elements do not
+    // have closing tag, eg. <br/>, <hr/>, etc.
+    void: false,
+
+    // Indicates if the component is in some CSS state like ':hover', ':active', etc.
+    state: '',
+
+    // State, eg. 'selected'
+    status: '',
+
+    // Content of the component (not escaped) which will be appended before children rendering
+    content: '',
+
+    // Component icon, this string will be inserted before the name, eg. '<i class="fa fa-square-o"></i>'
+    icon: '',
+
+    // Component related style
+    style: '',
+
+    // Key-value object of the component's attributes
+    attributes: '',
+
+    // Array of classes
+    classes: '',
+
+    // Component's javascript
+    script: '',
+
+    // Traits
+    traits: ['id', 'title'],
+
+    // Indicates an array of properties which will be inhereted by
+    // all NEW appended children
+    //
+    // If you create a model likes this
+    //  removable: false,
+    //  draggable: false,
+    //  propagate: ['removable', 'draggable']
+    // When you append some new component inside, the new added model
+    // will get the exact same properties indicated in `propagate` array
+    // (as the `propagate` property itself)
+    //
+    propagate: '',
+
+    /**
+      * Set an array of items to show up inside the toolbar (eg. move, clone, delete)
+      * when the component is selected
+      * toolbar: [{
+      *     attributes: {class: 'fa fa-arrows'},
+      *     command: 'tlb-move',
+      *   },{
+      *     attributes: {class: 'fa fa-clone'},
+      *     command: 'tlb-clone',
+      * }]
+    */
+    toolbar: null
+  },
+
+  initialize: function initialize() {
+    var _this = this;
+
+    var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    var em = opt.sm || opt.em || '';
+
+    // Propagate properties from parent if indicated
+    var parent = this.parent();
+    var parentAttr = parent && parent.attributes;
+
+    if (parentAttr && parentAttr.propagate) {
+      var newAttr = {};
+      var toPropagate = parentAttr.propagate;
+      toPropagate.forEach(function (prop) {
+        return newAttr[prop] = parent.get(prop);
+      });
+      newAttr.propagate = toPropagate;
+      newAttr = _extends({}, newAttr, props);
+      this.set(newAttr);
+    }
+
+    var propagate = this.get('propagate');
+    propagate && this.set('propagate', (0, _underscore.isArray)(propagate) ? propagate : [propagate]);
+
+    // Check void elements
+    if (opt && opt.config && opt.config.voidElements.indexOf(this.get('tagName')) >= 0) {
+      this.set('void', true);
+    }
+
+    opt.em = em;
+    this.opt = opt;
+    this.sm = em;
+    this.em = em;
+    this.config = opt.config || {};
+    this.set('attributes', this.get('attributes') || {});
+    this.listenTo(this, 'change:script', this.scriptUpdated);
+    this.listenTo(this, 'change:traits', this.traitsUpdated);
+    this.listenTo(this, 'change:tagName', this.tagUpdated);
+    this.listenTo(this, 'change:attributes', this.attrUpdated);
+    this.loadTraits();
+    this.initClasses();
+    this.initComponents();
+    this.initToolbar();
+    this.set('status', '');
+    this.listenTo(this.get('classes'), 'add remove change', function () {
+      return _this.emitUpdate('classes');
+    });
+    this.init();
+  },
+
+
+  /**
+   * Check component's type
+   * @param  {string}  type Component type
+   * @return {Boolean}
+   * @example
+   * model.is('image')
+   * // -> false
+   */
+  is: function is(type) {
+    return !!(this.get('type') == type);
+  },
+
+
+  /**
+   * Find inner models by query string
+   * ATTENTION: this method works only with alredy rendered component
+   * @param  {string}  query Query string
+   * @return {Array} Array of models
+   * @example
+   * model.find('div > .class');
+   * // -> [Component, Component, ...]
+   */
+  find: function find(query) {
+    var result = [];
+
+    this.view.$el.find(query).each(function (el, i, $el) {
+      var model = $el.data('model');
+      model && result.push(model);
+    });
+
+    return result;
+  },
+
+
+  /**
+   * Once the tag is updated I have to remove the node and replace it
+   */
+  tagUpdated: function tagUpdated() {
+    var coll = this.collection;
+    var at = coll.indexOf(this);
+    coll.remove(this);
+    coll.add(this, { at: at });
+  },
+
+
+  /**
+   * Emit changes for each updated attribute
+   */
+  attrUpdated: function attrUpdated() {
+    var _this2 = this;
+
+    var attrPrev = _extends({}, this.previous('attributes'));
+    var attrCurrent = _extends({}, this.get('attributes'));
+    var diff = (0, _mixins.shallowDiff)(attrPrev, attrCurrent);
+    (0, _underscore.keys)(diff).forEach(function (pr) {
+      return _this2.trigger('change:attributes:' + pr);
+    });
+  },
+
+
+  /**
+   * Update attributes of the model
+   * @param {Object} attrs Key value attributes
+   * @example
+   * model.setAttributes({id: 'test', 'data-key': 'value'});
+   */
+  setAttributes: function setAttributes(attrs) {
+    attrs = _extends({}, attrs);
+
+    // Handle classes
+    var classes = attrs.class;
+    classes && this.setClass(classes);
+    delete attrs.class;
+
+    // Handle style
+    var style = attrs.style;
+    style && this.setStyle(style);
+    delete attrs.style;
+
+    this.set('attributes', attrs);
+  },
+  getStyle: function getStyle() {
+    var em = this.em;
+
+    if (em && em.getConfig('avoidInlineStyle')) {
+      var state = this.get('state');
+      var cc = em.get('CssComposer');
+      var rule = cc.getIdRule(this.getId(), { state: state });
+      this.rule = rule;
+
+      if (rule) {
+        return rule.getStyle();
+      }
+    }
+
+    return _Styleable2.default.getStyle.call(this);
+  },
+  setStyle: function setStyle() {
+    var _this3 = this;
+
+    var prop = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    var em = this.em;
+
+    if (em && em.getConfig('avoidInlineStyle')) {
+      prop = (0, _underscore.isString)(prop) ? this.parseStyle(prop) : prop;
+      var state = this.get('state');
+      var cc = em.get('CssComposer');
+      var propOrig = this.getStyle();
+      this.rule = cc.setIdRule(this.getId(), prop, _extends({}, opts, { state: state }));
+      var diff = (0, _mixins.shallowDiff)(propOrig, prop);
+      (0, _underscore.keys)(diff).forEach(function (pr) {
+        return _this3.trigger('change:style:' + pr);
+      });
+    } else {
+      prop = _Styleable2.default.setStyle.apply(this, arguments);
+    }
+
+    return prop;
+  },
+
+
+  /**
+   * Return attributes
+   * @return {Object}
+   */
+  getAttributes: function getAttributes() {
+    var classes = [];
+    var attributes = _extends({}, this.get('attributes'));
+
+    // Add classes
+    this.get('classes').each(function (cls) {
+      return classes.push(cls.get('name'));
+    });
+    classes.length && (attributes.class = classes.join(' '));
+
+    // If style is not empty I need an ID attached to the component
+    if (!(0, _underscore.isEmpty)(this.getStyle()) && !(0, _underscore.has)(attributes, 'id')) {
+      attributes.id = this.getId();
+    }
+
+    return attributes;
+  },
+
+
+  /**
+   * Add classes
+   * @param {Array|string} classes Array or string of classes
+   * @return {Array} Array of added selectors
+   * @example
+   * model.addClass('class1');
+   * model.addClass('class1 class2');
+   * model.addClass(['class1', 'class2']);
+   * // -> [SelectorObject, ...]
+   */
+  addClass: function addClass(classes) {
+    var added = this.em.get('SelectorManager').addClass(classes);
+    return this.get('classes').add(added);
+  },
+
+
+  /**
+   * Set classes (resets current collection)
+   * @param {Array|string} classes Array or string of classes
+   * @return {Array} Array of added selectors
+   * @example
+   * model.setClass('class1');
+   * model.setClass('class1 class2');
+   * model.setClass(['class1', 'class2']);
+   * // -> [SelectorObject, ...]
+   */
+  setClass: function setClass(classes) {
+    this.get('classes').reset();
+    return this.addClass(classes);
+  },
+
+
+  /**
+   * Remove classes
+   * @param {Array|string} classes Array or string of classes
+   * @return {Array} Array of removed selectors
+   * @example
+   * model.removeClass('class1');
+   * model.removeClass('class1 class2');
+   * model.removeClass(['class1', 'class2']);
+   * // -> [SelectorObject, ...]
+   */
+  removeClass: function removeClass(classes) {
+    var removed = [];
+    classes = (0, _underscore.isArray)(classes) ? classes : [classes];
+    var selectors = this.get('classes');
+    var type = Selector.TYPE_CLASS;
+
+    classes.forEach(function (classe) {
+      var classes = classe.split(' ');
+      classes.forEach(function (name) {
+        var selector = selectors.where({ name: name, type: type })[0];
+        selector && removed.push(selectors.remove(selector));
+      });
+    });
+
+    return removed;
+  },
+  initClasses: function initClasses() {
+    var classes = this.normalizeClasses(this.get('classes') || []);
+    this.set('classes', new Selectors(classes));
+    return this;
+  },
+  initComponents: function initComponents() {
+    // Have to add components after the init, otherwise the parent
+    // is not visible
+    var comps = new Components(null, this.opt);
+    comps.parent = this;
+    comps.reset(this.get('components'));
+    this.set('components', comps);
+    return this;
+  },
+
+
+  /**
+   * Initialize callback
+   */
+  init: function init() {},
+
+
+  /**
+   * Add new component children
+   * @param  {Component|string} components Component to add
+   * @param {Object} [opts={}] Options, same as in `model.add()`(from backbone)
+   * @return {Array} Array of appended components
+   * @example
+   * someModel.get('components').lenght // -> 0
+   * const videoComponent = someModel.append('<video></video><div></div>')[0];
+   * // This will add 2 components (`video` and `div`) to your `someModel`
+   * someModel.get('components').lenght // -> 2
+   * // You can pass components directly
+   * otherModel.append(otherModel2);
+   * otherModel.append([otherModel3, otherModel4]);
+   */
+  append: function append(components) {
+    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    var result = this.components().add(components, opts);
+    return (0, _underscore.isArray)(result) ? result : [result];
+  },
+
+
+  /**
+   * Set new collection if `components` are provided, otherwise the
+   * current collection is returned
+   * @param  {Component|string} [components] Components to set
+   * @return {Collection|undefined}
+   * @example
+   * // Get current collection
+   * const collection = model.components();
+   * // Set new collection
+   * model.components('<span></span><div></div>');
+   */
+  components: function components(_components) {
+    var coll = this.get('components');
+
+    if ((0, _underscore.isUndefined)(_components)) {
+      return coll;
+    } else {
+      coll.reset();
+      _components && this.append(_components);
+    }
+  },
+
+
+  /**
+   * Get parent model
+   * @return {Component}
+   */
+  parent: function parent() {
+    var coll = this.collection;
+    return coll && coll.parent;
+  },
+
+
+  /**
+   * Script updated
+   */
+  scriptUpdated: function scriptUpdated() {
+    this.set('scriptUpdated', 1);
+  },
+
+
+  /**
+   * Once traits are updated I have to populates model's attributes
+   */
+  traitsUpdated: function traitsUpdated() {
+    var found = 0;
+    var attrs = _extends({}, this.get('attributes'));
+    var traits = this.get('traits');
+
+    if (!(traits instanceof Traits)) {
+      this.loadTraits();
+      return;
+    }
+
+    traits.each(function (trait) {
+      found = 1;
+      if (!trait.get('changeProp')) {
+        var value = trait.getInitValue();
+        if (value) {
+          attrs[trait.get('name')] = value;
+        }
+      }
+    });
+
+    found && this.set('attributes', attrs);
+  },
+
+
+  /**
+   * Init toolbar
+   */
+  initToolbar: function initToolbar() {
+    var model = this;
+    if (!model.get('toolbar')) {
+      var tb = [];
+      if (model.collection) {
+        tb.push({
+          attributes: { class: 'fa fa-arrow-up' },
+          command: 'select-parent'
+        });
+      }
+      if (model.get('draggable')) {
+        tb.push({
+          attributes: { class: 'fa fa-arrows' },
+          command: 'tlb-move'
+        });
+      }
+      if (model.get('copyable')) {
+        tb.push({
+          attributes: { class: 'fa fa-clone' },
+          command: 'tlb-clone'
+        });
+      }
+      if (model.get('removable')) {
+        tb.push({
+          attributes: { class: 'fa fa-trash-o' },
+          command: 'tlb-delete'
+        });
+      }
+      model.set('toolbar', tb);
+    }
+  },
+
+
+  /**
+   * Load traits
+   * @param  {Array} traits
+   * @private
+   */
+  loadTraits: function loadTraits(traits) {
+    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    var trt = new Traits([], this.opt);
+    trt.setTarget(this);
+    traits = traits || this.get('traits');
+
+    if (traits.length) {
+      trt.add(traits);
+    }
+
+    this.set('traits', trt, opts);
+    return this;
+  },
+
+
+  /**
+   * Normalize input classes from array to array of objects
+   * @param {Array} arr
+   * @return {Array}
+   * @private
+   */
+  normalizeClasses: function normalizeClasses(arr) {
+    var res = [];
+
+    if (!this.sm.get) return;
+
+    var clm = this.sm.get('SelectorManager');
+    if (!clm) return;
+
+    arr.forEach(function (val) {
+      var name = '';
+
+      if (typeof val === 'string') name = val;else name = val.name;
+
+      var model = clm.add(name);
+      res.push(model);
+    });
+    return res;
+  },
+
+
+  /**
+   * Override original clone method
+   * @private
+   */
+  clone: function clone(reset) {
+    var em = this.em;
+    var style = this.getStyle();
+    var attr = _extends({}, this.attributes);
+    attr.attributes = _extends({}, attr.attributes);
+    delete attr.attributes.id;
+    attr.components = [];
+    attr.classes = [];
+    attr.traits = [];
+
+    this.get('components').each(function (md, i) {
+      attr.components[i] = md.clone(1);
+    });
+    this.get('traits').each(function (md, i) {
+      attr.traits[i] = md.clone();
+    });
+    this.get('classes').each(function (md, i) {
+      attr.classes[i] = md.get('name');
+    });
+
+    attr.status = '';
+    attr.view = '';
+
+    if (reset) {
+      this.opt.collection = null;
+    }
+
+    if (em && em.getConfig('avoidInlineStyle') && !(0, _underscore.isEmpty)(style)) {
+      attr.style = style;
+    }
+
+    return new this.constructor(attr, this.opt);
+  },
+
+
+  /**
+   * Get the name of the component
+   * @return {string}
+   * */
+  getName: function getName() {
+    var customName = this.get('custom-name');
+    var tag = this.get('tagName');
+    tag = tag == 'div' ? 'box' : tag;
+    var name = this.get('type') || tag;
+    name = name.charAt(0).toUpperCase() + name.slice(1);
+    return customName || name;
+  },
+
+
+  /**
+   * Get the icon string
+   * @return {string}
+   */
+  getIcon: function getIcon() {
+    var icon = this.get('icon');
+    return icon ? icon + ' ' : '';
+  },
+
+
+  /**
+   * Return HTML string of the component
+   * @param {Object} opts Options
+   * @return {string} HTML string
+   * @private
+   */
+  toHTML: function toHTML(opts) {
+    var model = this;
+    var attrs = [];
+    var classes = [];
+    var tag = model.get('tagName');
+    var sTag = model.get('void');
+    var attributes = this.getAttrToHTML();
+
+    for (var attr in attributes) {
+      var value = attributes[attr];
+
+      if (!(0, _underscore.isUndefined)(value)) {
+        attrs.push(attr + '="' + value + '"');
+      }
+    }
+
+    var attrString = attrs.length ? ' ' + attrs.join(' ') : '';
+    var code = '<' + tag + attrString + (sTag ? '/' : '') + '>' + model.get('content');
+    model.get('components').each(function (comp) {
+      return code += comp.toHTML();
+    });
+    !sTag && (code += '</' + tag + '>');
+
+    return code;
+  },
+
+
+  /**
+   * Returns object of attributes for HTML
+   * @return {Object}
+   * @private
+   */
+  getAttrToHTML: function getAttrToHTML() {
+    var attr = this.getAttributes();
+    delete attr.style;
+    return attr;
+  },
+
+
+  /**
+   * Return a shallow copy of the model's attributes for JSON
+   * stringification.
+   * @return {Object}
+   * @private
+   */
+  toJSON: function toJSON() {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    var obj = Backbone.Model.prototype.toJSON.apply(this, args);
+    var scriptStr = this.getScriptString();
+    delete obj.toolbar;
+
+    if (scriptStr) {
+      obj.script = scriptStr;
+    }
+
+    return obj;
+  },
+
+
+  /**
+   * Return model id
+   * @return {string}
+   */
+  getId: function getId() {
+    var attrs = this.get('attributes') || {};
+    return attrs.id || this.cid;
+  },
+
+
+  /**
+   * Return script in string format, cleans 'function() {..' from scripts
+   * if it's a function
+   * @param {string|Function} script
+   * @return {string}
+   * @private
+   */
+  getScriptString: function getScriptString(script) {
+    var _this4 = this;
+
+    var scr = script || this.get('script');
+
+    if (!scr) {
+      return scr;
+    }
+
+    // Need to convert script functions to strings
+    if (typeof scr == 'function') {
+      var scrStr = scr.toString().trim();
+      scrStr = scrStr.replace(/^function[\s\w]*\(\)\s?\{/, '').replace(/\}$/, '');
+      scr = scrStr.trim();
+    }
+
+    var config = this.sm.config || {};
+    var tagVarStart = escapeRegExp(config.tagVarStart || '{[ ');
+    var tagVarEnd = escapeRegExp(config.tagVarEnd || ' ]}');
+    var reg = new RegExp(tagVarStart + '(\\w+)' + tagVarEnd, 'g');
+    scr = scr.replace(reg, function (match, v) {
+      // If at least one match is found I have to track this change for a
+      // better optimization inside JS generator
+      _this4.scriptUpdated();
+      return _this4.attributes[v];
+    });
+
+    return scr;
+  },
+  emitUpdate: function emitUpdate(property) {
+    var em = this.em;
+    var event = 'component:update' + (property ? ':' + property : '');
+    em && em.trigger(event, this.model);
+  }
+}, {
+
+  /**
+   * Detect if the passed element is a valid component.
+   * In case the element is valid an object abstracted
+   * from the element will be returned
+   * @param {HTMLElement}
+   * @return {Object}
+   * @private
+   */
+  isComponent: function isComponent(el) {
+    return { tagName: el.tagName ? el.tagName.toLowerCase() : '' };
+  }
+});
+
+/***/ }),
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -4747,6 +4846,10 @@ var _underscore = __webpack_require__(1);
 
 var _mixins = __webpack_require__(2);
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var clearProp = 'data-clear-style';
+
 module.exports = Backbone.View.extend({
   template: function template(model) {
     var pfx = this.pfx;
@@ -4756,16 +4859,16 @@ module.exports = Backbone.View.extend({
     var pfx = this.pfx;
     var icon = model.get('icon');
     var info = model.get('info');
-    return '\n      <span class="' + pfx + 'icon ' + icon + '" title="' + info + '">\n        ' + model.get('name') + '\n      </span>\n      <b class="' + pfx + 'clear">&Cross;</b>\n    ';
+    return '\n      <span class="' + pfx + 'icon ' + icon + '" title="' + info + '">\n        ' + model.get('name') + '\n      </span>\n      <b class="' + pfx + 'clear" ' + clearProp + '>&Cross;</b>\n    ';
   },
   templateInput: function templateInput(model) {
     return '\n      <div class="' + this.ppfx + 'field">\n        <input placeholder="' + model.getDefaultValue() + '"/>\n      </div>\n    ';
   },
 
 
-  events: {
+  events: _defineProperty({
     'change': 'inputValueChanged'
-  },
+  }, 'click [' + clearProp + ']', 'clear'),
 
   initialize: function initialize() {
     var o = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -4800,8 +4903,6 @@ module.exports = Backbone.View.extend({
     this.listenTo(model, 'targetUpdated', this.targetUpdated);
     this.listenTo(model, 'change:visible', this.updateVisibility);
     this.listenTo(model, 'change:status', this.updateStatus);
-    this.events['click .' + pfx + 'clear'] = 'clear';
-    this.delegateEvents();
 
     var init = this.init && this.init.bind(this);
     init && init();
@@ -4855,7 +4956,7 @@ module.exports = Backbone.View.extend({
    * @return {HTMLElement}
    */
   getClearEl: function getClearEl() {
-    return this.el.querySelector('.' + this.pfx + 'clear');
+    return this.el.querySelector('[' + clearProp + ']');
   },
 
 
@@ -4901,10 +5002,7 @@ module.exports = Backbone.View.extend({
    * Fired when the element of the property is updated
    */
   elementUpdated: function elementUpdated() {
-    this.model.set('status', 'updated');
-    var parent = this.model.parent;
-    var parentView = parent && parent.view;
-    parentView && parentView.elementUpdated();
+    this.setStatus('updated');
   },
   setStatus: function setStatus(value) {
     this.model.set('status', value);
@@ -14903,8 +15001,98 @@ return CodeMirror$1;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(Backbone, _) {
 
+
+var Backbone = __webpack_require__(0);
+
+var TYPE_CLASS = 1;
+var TYPE_ID = 2;
+
+var Selector = Backbone.Model.extend({
+
+  idAttribute: 'name',
+
+  defaults: {
+    name: '',
+
+    label: '',
+
+    // Type of the selector
+    type: TYPE_CLASS,
+
+    // If not active it's not selectable by the style manager (uncheckboxed)
+    active: true,
+
+    // Can't be seen by the style manager, therefore even by the user
+    // Will be rendered only in export code
+    private: false,
+
+    // If true, can't be removed from the attacched element
+    protected: false
+  },
+
+  initialize: function initialize() {
+    var name = this.get('name');
+    var label = this.get('label');
+
+    if (!name) {
+      this.set('name', label);
+    } else if (!label) {
+      this.set('label', name);
+    }
+
+    this.set('name', Selector.escapeName(this.get('name')));
+  },
+
+
+  /**
+   * Get full selector name
+   * @return {string}
+   */
+  getFullName: function getFullName() {
+    var init = '';
+
+    switch (this.get('type')) {
+      case TYPE_CLASS:
+        init = '.';
+        break;
+      case TYPE_ID:
+        init = '#';
+        break;
+    }
+
+    return init + this.get('name');
+  }
+}, {
+  // All type selectors: https://developer.mozilla.org/it/docs/Web/CSS/CSS_Selectors
+  // Here I define only what I need
+  TYPE_CLASS: TYPE_CLASS,
+
+  TYPE_ID: TYPE_ID,
+
+  /**
+   * Escape string
+   * @param {string} name
+   * @return {string}
+   * @private
+   */
+  escapeName: function escapeName(name) {
+    return ('' + name).trim().replace(/([^a-z0-9\w-]+)/gi, '-');
+  }
+});
+
+module.exports = Selector;
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _underscore = __webpack_require__(1);
+
+var Backbone = __webpack_require__(0);
 var $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
@@ -14913,18 +15101,23 @@ module.exports = Backbone.View.extend({
     'change': 'onChange'
   },
 
+  attributes: function attributes() {
+    return this.model.get('attributes');
+  },
   initialize: function initialize(o) {
-    var md = this.model;
+    var model = this.model;
+    var name = model.get('name');
+    var target = model.target;
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
-    this.target = md.target;
+    this.target = target;
     this.className = this.pfx + 'trait';
     this.labelClass = this.ppfx + 'label';
-    this.fieldClass = this.ppfx + 'field ' + this.ppfx + 'field-' + md.get('type');
+    this.fieldClass = this.ppfx + 'field ' + this.ppfx + 'field-' + model.get('type');
     this.inputhClass = this.ppfx + 'input-holder';
-    md.off('change:value', this.onValueChange);
-    this.listenTo(md, 'change:value', this.onValueChange);
+    model.off('change:value', this.onValueChange);
+    this.listenTo(model, 'change:value', this.onValueChange);
     this.tmpl = '<div class="' + this.fieldClass + '"><div class="' + this.inputhClass + '"></div></div>';
   },
 
@@ -14939,24 +15132,27 @@ module.exports = Backbone.View.extend({
   getValueForTarget: function getValueForTarget() {
     return this.model.get('value');
   },
+  setInputValue: function setInputValue(value) {
+    this.getInputEl().value = value;
+  },
 
 
   /**
    * On change callback
    * @private
    */
-  onValueChange: function onValueChange() {
-    var m = this.model;
+  onValueChange: function onValueChange(model, value) {
+    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+    var mod = this.model;
     var trg = this.target;
-    var name = m.get('name');
-    var value = this.getValueForTarget();
-    // Chabge property if requested otherwise attributes
-    if (m.get('changeProp')) {
-      trg.set(name, value);
+    var name = mod.get('name');
+
+    if (opts.fromTarget) {
+      this.setInputValue(mod.get('value'));
     } else {
-      var attrs = _.clone(trg.get('attributes'));
-      attrs[name] = value;
-      trg.set('attributes', attrs);
+      var _value = this.getValueForTarget();
+      mod.setTargetValue(_value);
     }
   },
 
@@ -15053,10 +15249,9 @@ module.exports = Backbone.View.extend({
     return this;
   }
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16026,124 +16221,38 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
 });
 
 /***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var Backbone = __webpack_require__(0);
-
-var TYPE_CLASS = 1;
-var TYPE_ID = 2;
-
-var Selector = Backbone.Model.extend({
-
-  idAttribute: 'name',
-
-  defaults: {
-    name: '',
-
-    label: '',
-
-    // Type of the selector
-    type: TYPE_CLASS,
-
-    // If not active it's not selectable by the style manager (uncheckboxed)
-    active: true,
-
-    // Can't be seen by the style manager, therefore even by the user
-    // Will be rendered only in export code
-    private: false,
-
-    // If true, can't be removed from the attacched element
-    protected: false
-  },
-
-  initialize: function initialize() {
-    var name = this.get('name');
-    var label = this.get('label');
-
-    if (!name) {
-      this.set('name', label);
-    } else if (!label) {
-      this.set('label', name);
-    }
-
-    this.set('name', Selector.escapeName(this.get('name')));
-  },
-
-
-  /**
-   * Get full selector name
-   * @return {string}
-   */
-  getFullName: function getFullName() {
-    var init = '';
-
-    switch (this.get('type')) {
-      case TYPE_CLASS:
-        init = '.';
-        break;
-      case TYPE_ID:
-        init = '#';
-        break;
-    }
-
-    return init + this.get('name');
-  }
-}, {
-  // All type selectors: https://developer.mozilla.org/it/docs/Web/CSS/CSS_Selectors
-  // Here I define only what I need
-  TYPE_CLASS: TYPE_CLASS,
-
-  TYPE_ID: TYPE_ID,
-
-  /**
-   * Escape string
-   * @param {string} name
-   * @return {string}
-   * @private
-   */
-  escapeName: function escapeName(name) {
-    return ('' + name).trim().replace(/([^a-z0-9\w-]+)/gi, '-');
-  }
-});
-
-module.exports = Selector;
-
-/***/ }),
 /* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(_) {
 
-var Backbone = __webpack_require__(0);
-var Selector = __webpack_require__(9);
 
-module.exports = Backbone.Collection.extend({
+var _underscore = __webpack_require__(1);
+
+var Selector = __webpack_require__(7);
+
+module.exports = __webpack_require__(0).Collection.extend({
   model: Selector,
 
   getStyleable: function getStyleable() {
-    return _.filter(this.models, function (item) {
+    return (0, _underscore.filter)(this.models, function (item) {
       return item.get('active') && !item.get('private');
     });
   },
   getValid: function getValid() {
-    return _.filter(this.models, function (item) {
+    return (0, _underscore.filter)(this.models, function (item) {
       return !item.get('private');
     });
   },
-  getFullString: function getFullString() {
+  getFullString: function getFullString(collection) {
     var result = [];
-    this.each(function (selector) {
+    var coll = collection || this;
+    coll.forEach(function (selector) {
       return result.push(selector.getFullName());
     });
     return result.join('').trim();
   }
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
 /* 11 */
@@ -16154,7 +16263,7 @@ module.exports = Backbone.Collection.extend({
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _TypeableCollection = __webpack_require__(31);
+var _TypeableCollection = __webpack_require__(32);
 
 var _TypeableCollection2 = _interopRequireDefault(_TypeableCollection);
 
@@ -16165,8 +16274,8 @@ var Property = __webpack_require__(12);
 module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.default).extend({
   types: [{
     id: 'stack',
-    model: __webpack_require__(116),
-    view: __webpack_require__(33),
+    model: __webpack_require__(121),
+    view: __webpack_require__(34),
     isType: function isType(value) {
       if (value && value.type == 'stack') {
         return value;
@@ -16174,8 +16283,8 @@ module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.d
     }
   }, {
     id: 'composite',
-    model: __webpack_require__(32),
-    view: __webpack_require__(18),
+    model: __webpack_require__(33),
+    view: __webpack_require__(17),
     isType: function isType(value) {
       if (value && value.type == 'composite') {
         return value;
@@ -16184,7 +16293,7 @@ module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.d
   }, {
     id: 'file',
     model: Property,
-    view: __webpack_require__(39),
+    view: __webpack_require__(40),
     isType: function isType(value) {
       if (value && value.type == 'file') {
         return value;
@@ -16193,7 +16302,7 @@ module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.d
   }, {
     id: 'color',
     model: Property,
-    view: __webpack_require__(37),
+    view: __webpack_require__(38),
     isType: function isType(value) {
       if (value && value.type == 'color') {
         return value;
@@ -16201,8 +16310,8 @@ module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.d
     }
   }, {
     id: 'select',
-    model: __webpack_require__(40),
-    view: __webpack_require__(36),
+    model: __webpack_require__(41),
+    view: __webpack_require__(37),
     isType: function isType(value) {
       if (value && value.type == 'select') {
         return value;
@@ -16210,8 +16319,8 @@ module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.d
     }
   }, {
     id: 'radio',
-    model: __webpack_require__(40),
-    view: __webpack_require__(35),
+    model: __webpack_require__(41),
+    view: __webpack_require__(36),
     isType: function isType(value) {
       if (value && value.type == 'radio') {
         return value;
@@ -16219,8 +16328,8 @@ module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.d
     }
   }, {
     id: 'slider',
-    model: __webpack_require__(122),
-    view: __webpack_require__(123),
+    model: __webpack_require__(127),
+    view: __webpack_require__(128),
     isType: function isType(value) {
       if (value && value.type == 'slider') {
         return value;
@@ -16228,7 +16337,7 @@ module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.d
     }
   }, {
     id: 'integer',
-    model: __webpack_require__(41),
+    model: __webpack_require__(42),
     view: __webpack_require__(14),
     isType: function isType(value) {
       if (value && value.type == 'integer') {
@@ -16437,12 +16546,12 @@ module.exports = __webpack_require__(0).Model.extend({
 
 var PropertyView = __webpack_require__(5);
 var PropertyIntegerView = __webpack_require__(14);
-var PropertyRadioView = __webpack_require__(35);
-var PropertySelectView = __webpack_require__(36);
-var PropertyColorView = __webpack_require__(37);
-var PropertyFileView = __webpack_require__(39);
-var PropertyCompositeView = __webpack_require__(18);
-var PropertyStackView = __webpack_require__(33);
+var PropertyRadioView = __webpack_require__(36);
+var PropertySelectView = __webpack_require__(37);
+var PropertyColorView = __webpack_require__(38);
+var PropertyFileView = __webpack_require__(40);
+var PropertyCompositeView = __webpack_require__(17);
+var PropertyStackView = __webpack_require__(34);
 
 module.exports = Backbone.View.extend({
   initialize: function initialize(o) {
@@ -16506,7 +16615,7 @@ module.exports = Backbone.View.extend({
 "use strict";
 /* WEBPACK VAR INJECTION */(function(Backbone) {
 
-var InputNumber = __webpack_require__(19);
+var InputNumber = __webpack_require__(18);
 var $ = Backbone.$;
 
 module.exports = __webpack_require__(5).extend({
@@ -16548,7 +16657,7 @@ module.exports = __webpack_require__(5).extend({
 
 
 var Backbone = __webpack_require__(0);
-var ComponentView = __webpack_require__(4);
+var ComponentView = __webpack_require__(3);
 
 module.exports = ComponentView.extend({
 
@@ -16644,6 +16753,1456 @@ module.exports = g;
 
 /***/ }),
 /* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(Backbone) {
+
+var PropertyView = __webpack_require__(5);
+var $ = Backbone.$;
+
+module.exports = PropertyView.extend({
+  templateInput: function templateInput() {
+    var pfx = this.pfx;
+    return '\n      <div class="' + pfx + 'field ' + pfx + 'composite">\n        <span id="' + pfx + 'input-holder"></span>\n      </div>\n    ';
+  },
+  inputValueChanged: function inputValueChanged() {
+    // If it's not detached (eg. 'padding: 1px 2px 3px 4px;') it will follow
+    // the same flow of PropertyView
+    if (!this.model.get('detached')) {
+      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      PropertyView.prototype.inputValueChanged.apply(this, args);
+    }
+  },
+
+
+  /**
+   * Renders input
+   * */
+  onRender: function onRender() {
+    var model = this.model;
+    var props = model.get('properties') || [];
+    var self = this;
+
+    if (props.length) {
+      if (!this.$input) {
+        this.$input = $('<input type="hidden" value="0">');
+        this.input = this.$input.get(0);
+      }
+
+      if (!this.props) {
+        this.props = model.get('properties');
+      }
+
+      if (!this.$props) {
+        //Not yet supported nested composite
+        this.props.each(function (prop, index) {
+          if (prop && prop.get('type') == 'composite') {
+            this.props.remove(prop);
+            console.warn('Nested composite types not yet allowed.');
+          }
+          prop.parent = model;
+        }, this);
+
+        var PropertiesView = __webpack_require__(13);
+        var propsView = new PropertiesView(this.getPropsConfig());
+        this.$props = propsView.render().$el;
+        this.$el.find('#' + this.pfx + 'input-holder').append(this.$props);
+      }
+    }
+  },
+
+
+  /**
+   * Returns configurations that should be past to properties
+   * @param {Object} opts
+   * @return {Object}
+   */
+  getPropsConfig: function getPropsConfig(opts) {
+    var that = this;
+    var model = this.model;
+
+    var result = {
+      config: this.config,
+      collection: this.props,
+      target: this.target,
+      propTarget: this.propTarget,
+      // On any change made to children I need to update composite value
+      onChange: function onChange(el, view, opts) {
+        model.set('value', model.getFullValue(), opts);
+      },
+
+      // Each child property will receive a full composite string, eg. '0px 0px 10px 0px'
+      // I need to extract from that string the corresponding one to that property.
+      customValue: function customValue(property, mIndex) {
+        return that.valueOnIndex(mIndex, property);
+      }
+    };
+
+    // If detached let follow its standard flow
+    if (model.get('detached')) {
+      delete result.onChange;
+    }
+
+    return result;
+  },
+
+
+  /**
+   * Extract string from composite value
+   * @param {number} index Index
+   * @param {Object} view Property view
+   * @return {string}
+   * */
+  valueOnIndex: function valueOnIndex(index, view) {
+    var value = void 0;
+    var targetValue = this.getTargetValue({ ignoreDefault: 1 });
+
+    // If the target value of the composite is not empty I'll fetch
+    // the corresponding value from the requested index, otherwise try
+    // to get the value of the sub-property
+    if (targetValue) {
+      var values = targetValue.split(' ');
+      value = values[index];
+    } else {
+      value = view && view.getTargetValue({ ignoreCustomValue: 1, ignoreDefault: 1 });
+    }
+
+    if (view) {
+      value = view.model.parseValue(value).value;
+    }
+
+    return value;
+  }
+});
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(_) {
+
+var _underscore = __webpack_require__(1);
+
+var _mixins = __webpack_require__(2);
+
+var Input = __webpack_require__(35);
+var Backbone = __webpack_require__(0);
+var $ = Backbone.$;
+
+module.exports = Input.extend({
+
+  events: {
+    'change input': 'handleChange',
+    'change select': 'handleUnitChange',
+    'click [data-arrow-up]': 'upArrowClick',
+    'click [data-arrow-down]': 'downArrowClick',
+    'mousedown [data-arrows]': 'downIncrement'
+  },
+
+  template: function template() {
+    var ppfx = this.ppfx;
+    return '\n      <span class="' + ppfx + 'input-holder"></span>\n      <span class="' + ppfx + 'field-units"></span>\n      <div class="' + ppfx + 'field-arrows" data-arrows>\n        <div class="' + ppfx + 'field-arrow-u" data-arrow-up></div>\n        <div class="' + ppfx + 'field-arrow-d" data-arrow-down></div>\n      </div>\n    ';
+  },
+  inputClass: function inputClass() {
+    var ppfx = this.ppfx;
+    return this.opts.contClass || ppfx + 'field ' + ppfx + 'field-integer';
+  },
+  initialize: function initialize() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    Input.prototype.initialize.apply(this, arguments);
+    (0, _underscore.bindAll)(this, 'moveIncrement', 'upIncrement');
+    this.doc = document;
+    this.listenTo(this.model, 'change:unit', this.handleModelChange);
+  },
+
+
+  /**
+   * Set value to the model
+   * @param {string} value
+   * @param {Object} opts
+   */
+  setValue: function setValue(value, opts) {
+    var opt = opts || {};
+    var valid = this.validateInputValue(value, { deepCheck: 1 });
+    var validObj = { value: valid.value };
+
+    // If found some unit value
+    if (valid.unit || valid.force) {
+      validObj.unit = valid.unit;
+    }
+
+    this.model.set(validObj, opt);
+
+    // Generally I get silent when I need to reflect data to view without
+    // reupdating the target
+    if (opt.silent) {
+      this.handleModelChange();
+    }
+  },
+
+
+  /**
+   * Handled when the view is changed
+   */
+  handleChange: function handleChange(e) {
+    e.stopPropagation();
+    this.setValue(this.getInputEl().value);
+    this.elementUpdated();
+  },
+
+
+  /**
+   * Handled when the view is changed
+   */
+  handleUnitChange: function handleUnitChange(e) {
+    e.stopPropagation();
+    var value = this.getUnitEl().value;
+    this.model.set('unit', value);
+    this.elementUpdated();
+  },
+
+
+  /**
+   * Fired when the element of the property is updated
+   */
+  elementUpdated: function elementUpdated() {
+    this.model.trigger('el:change');
+  },
+
+
+  /**
+   * Updates the view when the model is changed
+   * */
+  handleModelChange: function handleModelChange() {
+    var model = this.model;
+    this.getInputEl().value = model.get('value');
+    var unitEl = this.getUnitEl();
+    unitEl && (unitEl.value = model.get('unit'));
+  },
+
+
+  /**
+   * Get the unit element
+   * @return {HTMLElement}
+   */
+  getUnitEl: function getUnitEl() {
+    if (!this.unitEl) {
+      var model = this.model;
+      var units = model.get('units') || [];
+
+      if (units.length) {
+        var options = [];
+
+        units.forEach(function (unit) {
+          var selected = unit == model.get('unit') ? 'selected' : '';
+          options.push('<option ' + selected + '>' + unit + '</option>');
+        });
+
+        var temp = document.createElement('div');
+        temp.innerHTML = '<select class="' + this.ppfx + 'input-unit">' + options.join('') + '</select>';
+        this.unitEl = temp.firstChild;
+      }
+    }
+
+    return this.unitEl;
+  },
+
+
+  /**
+   * Invoked when the up arrow is clicked
+   * */
+  upArrowClick: function upArrowClick() {
+    var model = this.model;
+    var step = model.get('step');
+    var value = model.get('value');
+    value = this.normalizeValue(value + step);
+    var valid = this.validateInputValue(value);
+    model.set('value', valid.value);
+    this.elementUpdated();
+  },
+
+
+  /**
+   * Invoked when the down arrow is clicked
+   * */
+  downArrowClick: function downArrowClick() {
+    var model = this.model;
+    var step = model.get('step');
+    var value = model.get('value');
+    var val = this.normalizeValue(value - step);
+    var valid = this.validateInputValue(val);
+    model.set('value', valid.value);
+    this.elementUpdated();
+  },
+
+
+  /**
+   * Change easily integer input value with click&drag method
+   * @param Event
+   *
+   * @return void
+   * */
+  downIncrement: function downIncrement(e) {
+    e.preventDefault();
+    this.moved = 0;
+    var value = this.model.get('value');
+    value = this.normalizeValue(value);
+    this.current = { y: e.pageY, val: value };
+    (0, _mixins.on)(this.doc, 'mousemove', this.moveIncrement);
+    (0, _mixins.on)(this.doc, 'mouseup', this.upIncrement);
+  },
+
+
+  /** While the increment is clicked, moving the mouse will update input value
+   * @param Object
+   *
+   * @return bool
+   * */
+  moveIncrement: function moveIncrement(ev) {
+    this.moved = 1;
+    var model = this.model;
+    var step = model.get('step');
+    var data = this.current;
+    var pos = this.normalizeValue(data.val + (data.y - ev.pageY) * step);
+    this.prValue = this.validateInputValue(pos).value;
+    model.set('value', this.prValue, { avoidStore: 1 });
+    return false;
+  },
+
+
+  /**
+   * Stop moveIncrement method
+   * */
+  upIncrement: function upIncrement() {
+    var model = this.model;
+    var step = model.get('step');
+    (0, _mixins.off)(this.doc, 'mouseup', this.upIncrement);
+    (0, _mixins.off)(this.doc, 'mousemove', this.moveIncrement);
+
+    if (this.prValue && this.moved) {
+      var value = this.prValue - step;
+      model.set('value', value, { avoidStore: 1 }).set('value', value + step);
+      this.elementUpdated();
+    }
+  },
+  normalizeValue: function normalizeValue(value) {
+    var defValue = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+
+    var model = this.model;
+    var step = model.get('step');
+    var stepDecimals = 0;
+
+    if (isNaN(value)) {
+      return defValue;
+    }
+
+    value = parseFloat(value);
+
+    if (Math.floor(value) !== value) {
+      var side = step.toString().split('.')[1];
+      stepDecimals = side ? side.length : 0;
+    }
+
+    return stepDecimals ? parseFloat(value.toFixed(stepDecimals)) : value;
+  },
+
+
+  /**
+   * Validate input value
+   * @param {String} value Raw value
+   * @param {Object} opts Options
+   * @return {Object} Validated string
+   */
+  validateInputValue: function validateInputValue(value, opts) {
+    var force = 0;
+    var opt = opts || {};
+    var model = this.model;
+    var val = value !== '' ? value : model.get('defaults');
+    var units = model.get('units') || [];
+    var unit = model.get('unit') || units.length && units[0] || '';
+    var max = model.get('max');
+    var min = model.get('min');
+
+    if (opt.deepCheck) {
+      var fixed = model.get('fixedValues') || [];
+
+      if (val) {
+        // If the value is one of the fixed values I leave it as it is
+        var regFixed = new RegExp('^' + fixed.join('|'), 'g');
+        if (fixed.length && regFixed.test(val)) {
+          val = val.match(regFixed)[0];
+          unit = '';
+          force = 1;
+        } else {
+          var valCopy = val + '';
+          val += ''; // Make it suitable for replace
+          val = parseFloat(val.replace(',', '.'));
+          val = !isNaN(val) ? val : model.get('defaults');
+          var uN = valCopy.replace(val, '');
+          // Check if exists as unit
+          if (_.indexOf(units, uN) >= 0) unit = uN;
+        }
+      }
+    }
+
+    if (typeof max !== 'undefined' && max !== '') val = val > max ? max : val;
+
+    if (typeof min !== 'undefined' && min !== '') val = val < min ? min : val;
+
+    return {
+      force: force,
+      value: val,
+      unit: unit
+    };
+  },
+  render: function render() {
+    Input.prototype.render.call(this);
+    var unit = this.getUnitEl();
+    unit && this.$el.find('.' + this.ppfx + 'field-units').get(0).appendChild(unit);
+    return this;
+  }
+});
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var Component = __webpack_require__(4);
+
+module.exports = Component.extend({
+
+  defaults: _extends({}, Component.prototype.defaults, {
+    type: 'tbody',
+    tagName: 'tbody',
+    draggable: ['table'],
+    droppable: ['tr'],
+    columns: 1,
+    rows: 1
+  }),
+
+  initialize: function initialize(o, opt) {
+    Component.prototype.initialize.apply(this, arguments);
+    var components = this.get('components');
+    var columns = this.get('columns');
+    var rows = this.get('rows');
+
+    // Init components if empty
+    if (!components.length) {
+      var rowsToAdd = [];
+
+      while (rows--) {
+        var columnsToAdd = [];
+        var clm = columns;
+
+        while (clm--) {
+          columnsToAdd.push({
+            type: 'cell',
+            classes: ['cell']
+          });
+        }
+
+        rowsToAdd.push({
+          type: 'row',
+          classes: ['row'],
+          components: columnsToAdd
+        });
+      }
+
+      components.add(rowsToAdd);
+    }
+  }
+}, {
+  isComponent: function isComponent(el) {
+    var result = '';
+
+    if (el.tagName == 'TBODY') {
+      result = { type: 'tbody' };
+    }
+
+    return result;
+  }
+});
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var Component = __webpack_require__(4);
+
+module.exports = Component.extend({
+
+  defaults: _extends({}, Component.prototype.defaults, {
+    type: 'image',
+    tagName: 'img',
+    src: '',
+    void: 1,
+    droppable: 0,
+    editable: 1,
+    highlightable: 0,
+    resizable: 1,
+    traits: ['alt']
+  }),
+
+  initialize: function initialize(o, opt) {
+    Component.prototype.initialize.apply(this, arguments);
+    var attr = this.get('attributes');
+    if (attr.src) this.set('src', attr.src);
+  },
+  initToolbar: function initToolbar() {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    Component.prototype.initToolbar.apply(this, args);
+
+    if (this.sm && this.sm.get) {
+      var cmd = this.sm.get('Commands');
+      var cmdName = 'image-editor';
+
+      // Add Image Editor button only if the default command exists
+      if (cmd.has(cmdName)) {
+        var tb = this.get('toolbar');
+        tb.push({
+          attributes: { class: 'fa fa-pencil' },
+          command: cmdName
+        });
+        this.set('toolbar', tb);
+      }
+    }
+  },
+
+
+  /**
+   * Returns object of attributes for HTML
+   * @return {Object}
+   * @private
+   */
+  getAttrToHTML: function getAttrToHTML() {
+    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      args[_key2] = arguments[_key2];
+    }
+
+    var attr = Component.prototype.getAttrToHTML.apply(this, args);
+    delete attr.onmousedown;
+    var src = this.get('src');
+    if (src) attr.src = src;
+    return attr;
+  },
+
+
+  /**
+   * Parse uri
+   * @param  {string} uri
+   * @return {object}
+   * @private
+   */
+  parseUri: function parseUri(uri) {
+    var el = document.createElement('a');
+    el.href = uri;
+    var query = {};
+    var qrs = el.search.substring(1).split('&');
+    for (var i = 0; i < qrs.length; i++) {
+      var pair = qrs[i].split('=');
+      var name = decodeURIComponent(pair[0]);
+      if (name) query[name] = decodeURIComponent(pair[1]);
+    }
+    return {
+      hostname: el.hostname,
+      pathname: el.pathname,
+      protocol: el.protocol,
+      search: el.search,
+      hash: el.hash,
+      port: el.port,
+      query: query
+    };
+  }
+}, {
+
+  /**
+   * Detect if the passed element is a valid component.
+   * In case the element is valid an object abstracted
+   * from the element will be returned
+   * @param {HTMLElement}
+   * @return {Object}
+   * @private
+   */
+  isComponent: function isComponent(el) {
+    var result = '';
+    if (el.tagName == 'IMG') {
+      result = { type: 'image' };
+    }
+    return result;
+  }
+});
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _underscore = __webpack_require__(1);
+
+var _mixins = __webpack_require__(2);
+
+var ToolbarView = __webpack_require__(188);
+var Toolbar = __webpack_require__(190);
+var key = __webpack_require__(23);
+var $ = __webpack_require__(0).$;
+var showOffsets = void 0;
+
+module.exports = {
+  init: function init(o) {
+    (0, _underscore.bindAll)(this, 'onHover', 'onOut', 'onClick', 'onKeyPress', 'onFrameScroll');
+  },
+  enable: function enable() {
+    this.frameOff = this.canvasOff = this.adjScroll = null;
+    var config = this.config.em.get('Config');
+    this.startSelectComponent();
+    var em = this.config.em;
+    showOffsets = 1;
+
+    em.on('component:update', this.updateAttached, this);
+    em.on('change:canvasOffset', this.updateAttached, this);
+  },
+
+
+  /**
+   * Start select component event
+   * @private
+   * */
+  startSelectComponent: function startSelectComponent() {
+    this.toggleSelectComponent(1);
+  },
+
+
+  /**
+   * Stop select component event
+   * @private
+   * */
+  stopSelectComponent: function stopSelectComponent() {
+    this.toggleSelectComponent();
+  },
+
+
+  /**
+   * Toggle select component event
+   * @private
+   * */
+  toggleSelectComponent: function toggleSelectComponent(enable) {
+    var em = this.em;
+    var method = enable ? 'on' : 'off';
+    var methods = { on: _mixins.on, off: _mixins.off };
+    var body = this.getCanvasBody();
+    var win = this.getContentWindow();
+    methods[method](body, 'mouseover', this.onHover);
+    methods[method](body, 'mouseout', this.onOut);
+    methods[method](body, 'click', this.onClick);
+    methods[method](win, 'scroll', this.onFrameScroll);
+    methods[method](win, 'keydown', this.onKeyPress);
+    em[method]('change:selectedComponent', this.onSelect, this);
+  },
+
+
+  /**
+   * On key press event
+   * @private
+   * */
+  onKeyPress: function onKeyPress(e) {
+    var key = e.which || e.keyCode;
+    var comp = this.editorModel.get('selectedComponent');
+    var focused = this.frameEl.contentDocument.activeElement.tagName !== 'BODY';
+
+    // On CANC (46) or Backspace (8)
+    if (key == 8 || key == 46) {
+      if (!focused) e.preventDefault();
+      if (comp && !focused) {
+        if (!comp.get('removable')) return;
+        comp.set('status', '');
+        comp.destroy();
+        this.hideBadge();
+        this.clean();
+        this.hideHighlighter();
+        this.editorModel.set('selectedComponent', null);
+      }
+    }
+  },
+
+
+  /**
+   * Hover command
+   * @param {Object}  e
+   * @private
+   */
+  onHover: function onHover(e) {
+    e.stopPropagation();
+    var trg = e.target;
+    var model = $(trg).data('model');
+
+    // Adjust tools scroll top
+    if (!this.adjScroll) {
+      this.adjScroll = 1;
+      this.onFrameScroll(e);
+      this.updateAttached();
+    }
+
+    if (model && !model.get('hoverable')) {
+      var comp = model && model.parent();
+      while (comp && !comp.get('hoverable')) {
+        comp = comp.parent();
+      }comp && (trg = comp.view.el);
+    }
+
+    var pos = this.getElementPos(trg);
+    this.updateBadge(trg, pos);
+    this.updateHighlighter(trg, pos);
+    this.showElementOffset(trg, pos);
+  },
+
+
+  /**
+   * Out command
+   * @param {Object}  e
+   * @private
+   */
+  onOut: function onOut(e) {
+    e.stopPropagation();
+    this.hideBadge();
+    this.hideHighlighter();
+    this.hideElementOffset();
+  },
+
+
+  /**
+   * Show element offset viewer
+   * @param {HTMLElement}  el
+   * @param {Object} pos
+   */
+  showElementOffset: function showElementOffset(el, pos) {
+    var $el = $(el);
+    var model = $el.data('model');
+
+    if (model && model.get('status') == 'selected' || !showOffsets) {
+      return;
+    }
+
+    this.editor.runCommand('show-offset', {
+      el: el,
+      elPos: pos
+    });
+  },
+
+
+  /**
+   * Hide element offset viewer
+   * @param {HTMLElement}  el
+   * @param {Object} pos
+   */
+  hideElementOffset: function hideElementOffset(el, pos) {
+    this.editor.stopCommand('show-offset');
+  },
+
+
+  /**
+   * Show fixed element offset viewer
+   * @param {HTMLElement}  el
+   * @param {Object} pos
+   */
+  showFixedElementOffset: function showFixedElementOffset(el, pos) {
+    this.editor.runCommand('show-offset', {
+      el: el,
+      elPos: pos,
+      state: 'Fixed'
+    });
+  },
+
+
+  /**
+   * Hide fixed element offset viewer
+   * @param {HTMLElement}  el
+   * @param {Object} pos
+   */
+  hideFixedElementOffset: function hideFixedElementOffset(el, pos) {
+    if (this.editor) this.editor.stopCommand('show-offset', { state: 'Fixed' });
+  },
+
+
+  /**
+   * Hide Highlighter element
+   */
+  hideHighlighter: function hideHighlighter() {
+    this.canvas.getHighlighter().style.display = 'none';
+  },
+
+
+  /**
+   * On element click
+   * @param {Event}  e
+   * @private
+   */
+  onClick: function onClick(e) {
+    e.stopPropagation();
+    var model = $(e.target).data('model');
+    var editor = this.editor;
+
+    if (model) {
+      if (model.get('selectable')) {
+        editor.select(model);
+      } else {
+        var parent = model.parent();
+        while (parent && !parent.get('selectable')) {
+          parent = parent.parent();
+        }parent && editor.select(parent);
+      }
+    }
+  },
+
+
+  /**
+   * Update badge for the component
+   * @param {Object} Component
+   * @param {Object} pos Position object
+   * @private
+   * */
+  updateBadge: function updateBadge(el, pos) {
+    var $el = $(el);
+    var canvas = this.canvas;
+    var config = canvas.getConfig();
+    var customeLabel = config.customBadgeLabel;
+    this.cacheEl = el;
+    var model = $el.data("model");
+    if (!model || !model.get('badgable')) return;
+    var badge = this.getBadge();
+    var badgeLabel = model.getIcon() + model.getName();
+    badgeLabel = customeLabel ? customeLabel(model) : badgeLabel;
+    badge.innerHTML = badgeLabel;
+    var bStyle = badge.style;
+    var u = 'px';
+    bStyle.display = 'block';
+    var canvasPos = canvas.getCanvasView().getPosition();
+    var badgeH = badge ? badge.offsetHeight : 0;
+    var badgeW = badge ? badge.offsetWidth : 0;
+    var top = pos.top - badgeH < canvasPos.top ? canvasPos.top : pos.top - badgeH;
+    var left = pos.left + badgeW < canvasPos.left ? canvasPos.left : pos.left;
+    bStyle.top = top + u;
+    bStyle.left = left + u;
+  },
+
+
+  /**
+   * Update highlighter element
+   * @param {HTMLElement} el
+   * @param {Object} pos Position object
+   * @private
+   */
+  updateHighlighter: function updateHighlighter(el, pos) {
+    var $el = $(el);
+    var model = $el.data('model');
+
+    if (!model || !model.get("hoverable") || model.get('status') == 'selected') {
+      return;
+    }
+
+    var hlEl = this.canvas.getHighlighter();
+    var hlStyle = hlEl.style;
+    var unit = 'px';
+    hlStyle.left = pos.left + unit;
+    hlStyle.top = pos.top + unit;
+    hlStyle.height = pos.height + unit;
+    hlStyle.width = pos.width + unit;
+    hlStyle.display = 'block';
+  },
+
+
+  /**
+   * Say what to do after the component was selected
+   * @param {Object}  e
+   * @param {Object}  el
+   * @private
+   * */
+  onSelect: function onSelect() {
+    var editor = this.editor;
+    var model = this.em.getSelected();
+    this.updateToolbar(model);
+
+    if (model) {
+      var el = model.view.el;
+      this.showFixedElementOffset(el);
+      this.hideElementOffset();
+      this.hideHighlighter();
+      this.initResize(el);
+    } else {
+      editor.stopCommand('resize');
+    }
+  },
+
+
+  /**
+   * Init resizer on the element if possible
+   * @param  {HTMLElement} el
+   * @private
+   */
+  initResize: function initResize(el) {
+    var em = this.em;
+    var editor = em ? em.get('Editor') : '';
+    var config = em ? em.get('Config') : '';
+    var pfx = config.stylePrefix || '';
+    var attrName = 'data-' + pfx + 'handler';
+    var resizeClass = pfx + 'resizing';
+    var model = em.get('selectedComponent');
+    var resizable = model.get('resizable');
+    var options = {};
+    var modelToStyle;
+
+    var toggleBodyClass = function toggleBodyClass(method, e, opts) {
+      var docs = opts.docs;
+      docs && docs.forEach(function (doc) {
+        var body = doc.body;
+        var cls = body.className || '';
+        body.className = (method == 'add' ? cls + ' ' + resizeClass : cls.replace(resizeClass, '')).trim();
+      });
+    };
+
+    if (editor && resizable) {
+      options = {
+        // Here the resizer is updated with the current element height and width
+        onStart: function onStart(e) {
+          var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+          var el = opts.el,
+              config = opts.config,
+              resizer = opts.resizer;
+          var keyHeight = config.keyHeight,
+              keyWidth = config.keyWidth,
+              currentUnit = config.currentUnit;
+
+          toggleBodyClass('add', e, opts);
+          modelToStyle = em.get('StyleManager').getModelToStyle(model);
+          var computedStyle = getComputedStyle(el);
+          var modelStyle = modelToStyle.getStyle();
+          var currentWidth = modelStyle[keyWidth] || computedStyle[keyWidth];
+          var currentHeight = modelStyle[keyHeight] || computedStyle[keyHeight];
+          resizer.startDim.w = parseFloat(currentWidth);
+          resizer.startDim.h = parseFloat(currentHeight);
+          showOffsets = 0;
+
+          if (currentUnit) {
+            config.unitHeight = (0, _mixins.getUnitFromValue)(currentHeight);
+            config.unitWidth = (0, _mixins.getUnitFromValue)(currentWidth);
+          }
+        },
+
+
+        // Update all positioned elements (eg. component toolbar)
+        onMove: function onMove() {
+          editor.trigger('change:canvasOffset');
+        },
+        onEnd: function onEnd(e, opts) {
+          toggleBodyClass('remove', e, opts);
+          editor.trigger('change:canvasOffset');
+          showOffsets = 1;
+        },
+        updateTarget: function updateTarget(el, rect) {
+          var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+          if (!modelToStyle) {
+            return;
+          }
+
+          var store = options.store,
+              selectedHandler = options.selectedHandler,
+              config = options.config;
+          var keyHeight = config.keyHeight,
+              keyWidth = config.keyWidth;
+
+          var onlyHeight = ['tc', 'bc'].indexOf(selectedHandler) >= 0;
+          var onlyWidth = ['cl', 'cr'].indexOf(selectedHandler) >= 0;
+          var style = modelToStyle.getStyle();
+
+          if (!onlyHeight) {
+            style[keyWidth] = rect.w + config.unitWidth;
+          }
+
+          if (!onlyWidth) {
+            style[keyHeight] = rect.h + config.unitHeight;
+          }
+
+          modelToStyle.setStyle(style, { avoidStore: 1 });
+          var updateEvent = 'update:component:style';
+          em && em.trigger(updateEvent + ':' + keyHeight + ' ' + updateEvent + ':' + keyWidth);
+
+          if (store) {
+            modelToStyle.trigger('change:style', modelToStyle, style, {});
+          }
+        }
+      };
+
+      if ((typeof resizable === 'undefined' ? 'undefined' : _typeof(resizable)) == 'object') {
+        options = _extends({}, options, resizable);
+      }
+
+      editor.runCommand('resize', { el: el, options: options });
+
+      // On undo/redo the resizer rect is not updating, need somehow to call
+      // this.updateRect on undo/redo action
+    }
+  },
+
+
+  /**
+   * Update toolbar if the component has one
+   * @param {Object} mod
+   */
+  updateToolbar: function updateToolbar(mod) {
+    var em = this.config.em;
+    var model = mod == em ? em.get('selectedComponent') : mod;
+    var toolbarEl = this.canvas.getToolbarEl();
+    var toolbarStyle = toolbarEl.style;
+
+    if (!model) {
+      // By putting `toolbarStyle.display = 'none'` will cause kind
+      // of freezed effect with component selection (probably by iframe
+      // switching)
+      toolbarStyle.opacity = 0;
+      return;
+    }
+
+    var toolbar = model.get('toolbar');
+    var ppfx = this.ppfx;
+    var showToolbar = em.get('Config').showToolbar;
+
+    if (showToolbar && toolbar && toolbar.length) {
+      toolbarStyle.opacity = '';
+      toolbarStyle.display = '';
+      if (!this.toolbar) {
+        toolbarEl.innerHTML = '';
+        this.toolbar = new Toolbar(toolbar);
+        var toolbarView = new ToolbarView({
+          collection: this.toolbar,
+          editor: this.editor
+        });
+        toolbarEl.appendChild(toolbarView.render().el);
+      }
+
+      this.toolbar.reset(toolbar);
+      var view = model.view;
+      view && this.updateToolbarPos(view.el);
+    } else {
+      toolbarStyle.display = 'none';
+    }
+  },
+
+
+  /**
+   * Update toolbar positions
+   * @param {HTMLElement} el
+   * @param {Object} pos
+   */
+  updateToolbarPos: function updateToolbarPos(el, elPos) {
+    var unit = 'px';
+    var toolbarEl = this.canvas.getToolbarEl();
+    var toolbarStyle = toolbarEl.style;
+    var origDisp = toolbarStyle.display;
+    toolbarStyle.display = 'block';
+    var pos = this.canvas.getTargetToElementDim(toolbarEl, el, {
+      elPos: elPos,
+      event: 'toolbarPosUpdate'
+    });
+    var leftPos = pos.left + pos.elementWidth - pos.targetWidth;
+    toolbarStyle.top = pos.top + unit;
+    toolbarStyle.left = leftPos + unit;
+    toolbarStyle.display = origDisp;
+  },
+
+
+  /**
+   * Return canvas dimensions and positions
+   * @return {Object}
+   */
+  getCanvasPosition: function getCanvasPosition() {
+    return this.canvas.getCanvasView().getPosition();
+  },
+
+
+  /**
+   * Removes all highlighting effects on components
+   * @private
+   * */
+  clean: function clean() {
+    if (this.selEl) this.selEl.removeClass(this.hoverClass);
+  },
+
+
+  /**
+   * Returns badge element
+   * @return {HTMLElement}
+   * @private
+   */
+  getBadge: function getBadge() {
+    return this.canvas.getBadgeEl();
+  },
+
+
+  /**
+   * On frame scroll callback
+   * @private
+   */
+  onFrameScroll: function onFrameScroll(e) {
+    var el = this.cacheEl;
+    if (el) {
+      var elPos = this.getElementPos(el);
+      this.updateBadge(el, elPos);
+      var model = this.em.get('selectedComponent');
+
+      if (model) {
+        this.updateToolbarPos(model.view.el);
+      }
+    }
+  },
+
+
+  /**
+   * Update attached elements, eg. component toolbar
+   * @return {[type]} [description]
+   */
+  updateAttached: function updateAttached(updated) {
+    var model = this.em.getSelected();
+
+    if (model) {
+      var view = model.view;
+      this.updateToolbarPos(view.el);
+      this.showFixedElementOffset(view.el);
+    }
+  },
+
+
+  /**
+   * Returns element's data info
+   * @param {HTMLElement} el
+   * @return {Object}
+   * @private
+   */
+  getElementPos: function getElementPos(el, badge) {
+    return this.canvas.getCanvasView().getElementPos(el);
+  },
+
+
+  /**
+   * Hide badge
+   * @private
+   * */
+  hideBadge: function hideBadge() {
+    this.getBadge().style.display = 'none';
+  },
+
+
+  /**
+   * Clean previous model from different states
+   * @param {Component} model
+   * @private
+   */
+  cleanPrevious: function cleanPrevious(model) {
+    model && model.set({
+      status: '',
+      state: ''
+    });
+  },
+
+
+  /**
+   * Returns content window
+   * @private
+   */
+  getContentWindow: function getContentWindow() {
+    return this.frameEl.contentWindow;
+  },
+  run: function run(editor) {
+    this.editor = editor && editor.get('Editor');
+    this.enable();
+    this.onSelect();
+  },
+  stop: function stop(editor, sender) {
+    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+    var em = this.em;
+    this.stopSelectComponent();
+    !opts.preserveSelected && em.setSelected(null);
+    this.clean();
+    this.hideBadge();
+    this.hideFixedElementOffset();
+    this.canvas.getToolbarEl().style.display = 'none';
+
+    em.off('component:update', this.updateAttached, this);
+    em.off('change:canvasOffset', this.updateAttached, this);
+    em.off('change:selectedComponent', this.updateToolbar, this);
+  }
+};
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(Backbone, _) {
+
+var SelectPosition = __webpack_require__(53);
+var $ = Backbone.$;
+
+module.exports = _.extend({}, SelectPosition, {
+  init: function init(opt) {
+    _.bindAll(this, 'startDraw', 'draw', 'endDraw', 'rollback');
+    this.config = opt || {};
+    this.hType = this.config.newFixedH ? 'height' : 'min-height';
+    this.allowDraw = 1;
+  },
+
+
+  /**
+   * Start with enabling to select position and listening to start drawning
+   * @private
+   * */
+  enable: function enable() {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    SelectPosition.enable.apply(this, args);
+    this.$wr.css('cursor', 'crosshair');
+    if (this.allowDraw) this.$wr.on('mousedown', this.startDraw);
+    this.ghost = this.canvas.getGhostEl();
+  },
+
+
+  /**
+   * Start drawing component
+   * @param   {Object} e  Event
+   * @private
+   * */
+  startDraw: function startDraw(e) {
+    e.preventDefault();
+    this.stopSelectPosition();
+    this.ghost.style.display = 'block';
+    this.frameOff = this.getOffsetDim();
+    this.startPos = {
+      top: e.pageY + this.frameOff.top,
+      left: e.pageX + this.frameOff.left
+    };
+    this.isDragged = false;
+    this.tempComponent = { style: {} };
+    this.beforeDraw(this.tempComponent);
+    this.updateSize(this.startPos.top, this.startPos.left, 0, 0);
+    this.toggleEvents(1);
+  },
+
+
+  /**
+   * Enable/Disable events
+   * @param {Boolean} enable
+   */
+  toggleEvents: function toggleEvents(enable) {
+    var method = enable ? 'on' : 'off';
+    this.$wr[method]('mousemove', this.draw);
+    this.$wr[method]('mouseup', this.endDraw);
+    this.$canvas[method]('mousemove', this.draw);
+    $(document)[method]('mouseup', this.endDraw);
+    $(document)[method]('keypress', this.rollback);
+  },
+
+
+  /**
+   * While drawing the component
+   * @param   {Object}  e  Event
+   * @private
+   * */
+  draw: function draw(e) {
+    this.isDragged = true;
+    this.updateComponentSize(e);
+  },
+
+
+  /**
+   * End drawing component
+   * @param   {Object}  e Event
+   * @private
+   * */
+  endDraw: function endDraw(e) {
+    this.toggleEvents();
+    var model = {};
+    // Only if the mouse was moved
+    if (this.isDragged) {
+      this.updateComponentSize(e);
+      this.setRequirements(this.tempComponent);
+      var lp = this.sorter.lastPos;
+      model = this.create(this.sorter.target, this.tempComponent, lp.index, lp.method);
+      this.sorter.prevTarget = null;
+    }
+    this.ghost.style.display = 'none';
+    this.startSelectPosition();
+    this.afterDraw(model);
+  },
+
+
+  /**
+   * Create new component inside the target
+   * @param  {Object} target Tha target collection
+   * @param {Object} component New component to create
+   * @param {number} index Index inside the collection, 0 if no children inside
+   * @param {string} method Before or after of the children
+   * @param {Object} opts Options
+   */
+  create: function create(target, component, index, method, opts) {
+    index = method === 'after' ? index + 1 : index;
+    var opt = opts || {};
+    var $trg = $(target);
+    var trgModel = $trg.data('model');
+    var trgCollection = $trg.data('collection');
+    var droppable = trgModel ? trgModel.get('droppable') : 1;
+    opt.at = index;
+    if (trgCollection && droppable) return trgCollection.add(component, opt);else console.warn("Invalid target position");
+  },
+
+
+  /**
+   * Check and set basic requirements for the component
+   * @param   {Object}  component  New component to be created
+   * @return   {Object}   Component updated
+   * @private
+   * */
+  setRequirements: function setRequirements(component) {
+    var c = this.config;
+    var compStl = component.style;
+    // Check min width
+    if (compStl.width.replace(/\D/g, '') < c.minComponentW) compStl.width = c.minComponentW + 'px';
+    // Check min height
+    if (compStl[this.hType].replace(/\D/g, '') < c.minComponentH) compStl[this.hType] = c.minComponentH + 'px';
+    // Set overflow in case of fixed height
+    if (c.newFixedH) compStl.overflow = 'auto';
+    if (!this.absoluteMode) {
+      delete compStl.left;
+      delete compStl.top;
+    } else compStl.position = 'absolute';
+    var lp = this.sorter.lastPos;
+
+    if (this.nearFloat(lp.index, lp.method, this.sorter.lastDims)) compStl.float = 'left';
+
+    if (this.config.firstCentered && this.getCanvasWrapper() == this.sorter.target) {
+      compStl.margin = '0 auto';
+    }
+
+    return component;
+  },
+
+
+  /**
+   * Update new component size while drawing
+   * @param   {Object}   e  Event
+   * @private
+   * */
+  updateComponentSize: function updateComponentSize(e) {
+    var y = e.pageY + this.frameOff.top;
+    var x = e.pageX + this.frameOff.left;
+    var start = this.startPos;
+    var top = start.top;
+    var left = start.left;
+    var height = y - top;
+    var width = x - left;
+    if (x < left) {
+      left = x;
+      width = start.left - x;
+    }
+    if (y < top) {
+      top = y;
+      height = start.top - y;
+    }
+    this.updateSize(top, left, width, height);
+  },
+
+
+  /**
+   * Update size
+   * @private
+   */
+  updateSize: function updateSize(top, left, width, height) {
+    var u = 'px';
+    var ghStl = this.ghost.style;
+    var compStl = this.tempComponent.style;
+    ghStl.top = compStl.top = top + u;
+    ghStl.left = compStl.left = left + u;
+    ghStl.width = compStl.width = width + u;
+    ghStl[this.hType] = compStl[this.hType] = height + u;
+  },
+
+
+  /**
+   * Used to bring the previous situation before event started
+   * @param   {Object}  e    Event
+   * @param   {Boolean}   forse  Indicates if rollback in anycase
+   * @private
+   * */
+  rollback: function rollback(e, force) {
+    var key = e.which || e.keyCode;
+    if (key == this.config.ESCAPE_KEY || force) {
+      this.isDragged = false;
+      this.endDraw();
+    }
+    return;
+  },
+
+
+  /**
+   * This event is triggered at the beginning of a draw operation
+   * @param   {Object}  component  Object component before creation
+   * @private
+   * */
+  beforeDraw: function beforeDraw(component) {
+    component.editable = false; //set this component editable
+  },
+
+
+  /**
+   * This event is triggered at the end of a draw operation
+   * @param   {Object}  model  Component model created
+   * @private
+   * */
+  afterDraw: function afterDraw(model) {},
+  run: function run(editor, sender, opts) {
+    this.editor = editor;
+    this.sender = sender;
+    this.$wr = this.$wrapper;
+    this.enable();
+  },
+  stop: function stop() {
+    this.stopSelectPosition();
+    this.$wrapper.css('cursor', '');
+    this.$wrapper.unbind();
+  }
+});
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
+
+/***/ }),
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //     keymaster.js
@@ -16945,1418 +18504,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(Backbone) {
-
-var PropertyView = __webpack_require__(5);
-var $ = Backbone.$;
-
-module.exports = PropertyView.extend({
-  templateInput: function templateInput() {
-    var pfx = this.pfx;
-    return '\n      <div class="' + pfx + 'field ' + pfx + 'composite">\n        <span id="' + pfx + 'input-holder"></span>\n      </div>\n    ';
-  },
-  inputValueChanged: function inputValueChanged() {
-    // If it's not detached (eg. 'padding: 1px 2px 3px 4px;') it will follow
-    // the same flow of PropertyView
-    if (!this.model.get('detached')) {
-      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
-
-      PropertyView.prototype.inputValueChanged.apply(this, args);
-    }
-  },
-
-
-  /**
-   * Renders input
-   * */
-  onRender: function onRender() {
-    var model = this.model;
-    var props = model.get('properties') || [];
-    var self = this;
-
-    if (props.length) {
-      if (!this.$input) {
-        this.$input = $('<input type="hidden" value="0">');
-        this.input = this.$input.get(0);
-      }
-
-      if (!this.props) {
-        this.props = model.get('properties');
-      }
-
-      if (!this.$props) {
-        //Not yet supported nested composite
-        this.props.each(function (prop, index) {
-          if (prop && prop.get('type') == 'composite') {
-            this.props.remove(prop);
-            console.warn('Nested composite types not yet allowed.');
-          }
-          prop.parent = model;
-        }, this);
-
-        var PropertiesView = __webpack_require__(13);
-        var propsView = new PropertiesView(this.getPropsConfig());
-        this.$props = propsView.render().$el;
-        this.$el.find('#' + this.pfx + 'input-holder').append(this.$props);
-      }
-    }
-  },
-
-
-  /**
-   * Returns configurations that should be past to properties
-   * @param {Object} opts
-   * @return {Object}
-   */
-  getPropsConfig: function getPropsConfig(opts) {
-    var that = this;
-    var model = this.model;
-
-    var result = {
-      config: this.config,
-      collection: this.props,
-      target: this.target,
-      propTarget: this.propTarget,
-      // On any change made to children I need to update composite value
-      onChange: function onChange(el, view, opts) {
-        model.set('value', model.getFullValue(), opts);
-      },
-
-      // Each child property will receive a full composite string, eg. '0px 0px 10px 0px'
-      // I need to extract from that string the corresponding one to that property.
-      customValue: function customValue(property, mIndex) {
-        return that.valueOnIndex(mIndex, property);
-      }
-    };
-
-    // If detached let follow its standard flow
-    if (model.get('detached')) {
-      delete result.onChange;
-    }
-
-    return result;
-  },
-
-
-  /**
-   * Extract string from composite value
-   * @param {number} index Index
-   * @param {Object} view Property view
-   * @return {string}
-   * */
-  valueOnIndex: function valueOnIndex(index, view) {
-    var value = void 0;
-    var targetValue = this.getTargetValue({ ignoreDefault: 1 });
-
-    // If the target value of the composite is not empty I'll fetch
-    // the corresponding value from the requested index, otherwise try
-    // to get the value of the sub-property
-    if (targetValue) {
-      var values = targetValue.split(' ');
-      value = values[index];
-    } else {
-      value = view && view.getTargetValue({ ignoreCustomValue: 1, ignoreDefault: 1 });
-    }
-
-    if (view) {
-      value = view.model.parseValue(value).value;
-    }
-
-    return value;
-  }
-});
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(_) {
-
-var _underscore = __webpack_require__(1);
-
-var _mixins = __webpack_require__(2);
-
-var Input = __webpack_require__(34);
-var Backbone = __webpack_require__(0);
-var $ = Backbone.$;
-
-module.exports = Input.extend({
-
-  events: {
-    'change input': 'handleChange',
-    'change select': 'handleUnitChange',
-    'click [data-arrow-up]': 'upArrowClick',
-    'click [data-arrow-down]': 'downArrowClick',
-    'mousedown [data-arrows]': 'downIncrement'
-  },
-
-  template: function template() {
-    var ppfx = this.ppfx;
-    return '\n      <span class="' + ppfx + 'input-holder"></span>\n      <span class="' + ppfx + 'field-units"></span>\n      <div class="' + ppfx + 'field-arrows" data-arrows>\n        <div class="' + ppfx + 'field-arrow-u" data-arrow-up></div>\n        <div class="' + ppfx + 'field-arrow-d" data-arrow-down></div>\n      </div>\n    ';
-  },
-  inputClass: function inputClass() {
-    var ppfx = this.ppfx;
-    return this.opts.contClass || ppfx + 'field ' + ppfx + 'field-integer';
-  },
-  initialize: function initialize() {
-    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-    Input.prototype.initialize.apply(this, arguments);
-    (0, _underscore.bindAll)(this, 'moveIncrement', 'upIncrement');
-    this.doc = document;
-    this.listenTo(this.model, 'change:unit', this.handleModelChange);
-  },
-
-
-  /**
-   * Set value to the model
-   * @param {string} value
-   * @param {Object} opts
-   */
-  setValue: function setValue(value, opts) {
-    var opt = opts || {};
-    var valid = this.validateInputValue(value, { deepCheck: 1 });
-    var validObj = { value: valid.value };
-
-    // If found some unit value
-    if (valid.unit || valid.force) {
-      validObj.unit = valid.unit;
-    }
-
-    this.model.set(validObj, opt);
-
-    // Generally I get silent when I need to reflect data to view without
-    // reupdating the target
-    if (opt.silent) {
-      this.handleModelChange();
-    }
-  },
-
-
-  /**
-   * Handled when the view is changed
-   */
-  handleChange: function handleChange(e) {
-    e.stopPropagation();
-    this.setValue(this.getInputEl().value);
-    this.elementUpdated();
-  },
-
-
-  /**
-   * Handled when the view is changed
-   */
-  handleUnitChange: function handleUnitChange(e) {
-    e.stopPropagation();
-    var value = this.getUnitEl().value;
-    this.model.set('unit', value);
-    this.elementUpdated();
-  },
-
-
-  /**
-   * Fired when the element of the property is updated
-   */
-  elementUpdated: function elementUpdated() {
-    this.model.trigger('el:change');
-  },
-
-
-  /**
-   * Updates the view when the model is changed
-   * */
-  handleModelChange: function handleModelChange() {
-    var model = this.model;
-    this.getInputEl().value = model.get('value');
-    var unitEl = this.getUnitEl();
-    unitEl && (unitEl.value = model.get('unit'));
-  },
-
-
-  /**
-   * Get the unit element
-   * @return {HTMLElement}
-   */
-  getUnitEl: function getUnitEl() {
-    if (!this.unitEl) {
-      var model = this.model;
-      var units = model.get('units') || [];
-
-      if (units.length) {
-        var options = [];
-
-        units.forEach(function (unit) {
-          var selected = unit == model.get('unit') ? 'selected' : '';
-          options.push('<option ' + selected + '>' + unit + '</option>');
-        });
-
-        var temp = document.createElement('div');
-        temp.innerHTML = '<select class="' + this.ppfx + 'input-unit">' + options.join('') + '</select>';
-        this.unitEl = temp.firstChild;
-      }
-    }
-
-    return this.unitEl;
-  },
-
-
-  /**
-   * Invoked when the up arrow is clicked
-   * */
-  upArrowClick: function upArrowClick() {
-    var model = this.model;
-    var step = model.get('step');
-    var value = model.get('value');
-    value = this.normalizeValue(value + step);
-    var valid = this.validateInputValue(value);
-    model.set('value', valid.value);
-    this.elementUpdated();
-  },
-
-
-  /**
-   * Invoked when the down arrow is clicked
-   * */
-  downArrowClick: function downArrowClick() {
-    var model = this.model;
-    var step = model.get('step');
-    var value = model.get('value');
-    var val = this.normalizeValue(value - step);
-    var valid = this.validateInputValue(val);
-    model.set('value', valid.value);
-    this.elementUpdated();
-  },
-
-
-  /**
-   * Change easily integer input value with click&drag method
-   * @param Event
-   *
-   * @return void
-   * */
-  downIncrement: function downIncrement(e) {
-    e.preventDefault();
-    this.moved = 0;
-    var value = this.model.get('value');
-    value = this.normalizeValue(value);
-    this.current = { y: e.pageY, val: value };
-    (0, _mixins.on)(this.doc, 'mousemove', this.moveIncrement);
-    (0, _mixins.on)(this.doc, 'mouseup', this.upIncrement);
-  },
-
-
-  /** While the increment is clicked, moving the mouse will update input value
-   * @param Object
-   *
-   * @return bool
-   * */
-  moveIncrement: function moveIncrement(ev) {
-    this.moved = 1;
-    var model = this.model;
-    var step = model.get('step');
-    var data = this.current;
-    var pos = this.normalizeValue(data.val + (data.y - ev.pageY) * step);
-    this.prValue = this.validateInputValue(pos).value;
-    model.set('value', this.prValue, { avoidStore: 1 });
-    return false;
-  },
-
-
-  /**
-   * Stop moveIncrement method
-   * */
-  upIncrement: function upIncrement() {
-    var model = this.model;
-    var step = model.get('step');
-    (0, _mixins.off)(this.doc, 'mouseup', this.upIncrement);
-    (0, _mixins.off)(this.doc, 'mousemove', this.moveIncrement);
-
-    if (this.prValue && this.moved) {
-      var value = this.prValue - step;
-      model.set('value', value, { avoidStore: 1 }).set('value', value + step);
-      this.elementUpdated();
-    }
-  },
-  normalizeValue: function normalizeValue(value) {
-    var defValue = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-
-    var model = this.model;
-    var step = model.get('step');
-    var stepDecimals = 0;
-
-    if (isNaN(value)) {
-      return defValue;
-    }
-
-    value = parseFloat(value);
-
-    if (Math.floor(value) !== value) {
-      var side = step.toString().split('.')[1];
-      stepDecimals = side ? side.length : 0;
-    }
-
-    return stepDecimals ? parseFloat(value.toFixed(stepDecimals)) : value;
-  },
-
-
-  /**
-   * Validate input value
-   * @param {String} value Raw value
-   * @param {Object} opts Options
-   * @return {Object} Validated string
-   */
-  validateInputValue: function validateInputValue(value, opts) {
-    var force = 0;
-    var opt = opts || {};
-    var model = this.model;
-    var val = value !== '' ? value : model.get('defaults');
-    var units = model.get('units') || [];
-    var unit = model.get('unit') || units.length && units[0] || '';
-    var max = model.get('max');
-    var min = model.get('min');
-
-    if (opt.deepCheck) {
-      var fixed = model.get('fixedValues') || [];
-
-      if (val) {
-        // If the value is one of the fixed values I leave it as it is
-        var regFixed = new RegExp('^' + fixed.join('|'), 'g');
-        if (fixed.length && regFixed.test(val)) {
-          val = val.match(regFixed)[0];
-          unit = '';
-          force = 1;
-        } else {
-          var valCopy = val + '';
-          val += ''; // Make it suitable for replace
-          val = parseFloat(val.replace(',', '.'));
-          val = !isNaN(val) ? val : model.get('defaults');
-          var uN = valCopy.replace(val, '');
-          // Check if exists as unit
-          if (_.indexOf(units, uN) >= 0) unit = uN;
-        }
-      }
-    }
-
-    if (typeof max !== 'undefined' && max !== '') val = val > max ? max : val;
-
-    if (typeof min !== 'undefined' && min !== '') val = val < min ? min : val;
-
-    return {
-      force: force,
-      value: val,
-      unit: unit
-    };
-  },
-  render: function render() {
-    Input.prototype.render.call(this);
-    var unit = this.getUnitEl();
-    unit && this.$el.find('.' + this.ppfx + 'field-units').get(0).appendChild(unit);
-    return this;
-  }
-});
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var Component = __webpack_require__(3);
-
-module.exports = Component.extend({
-
-  defaults: _extends({}, Component.prototype.defaults, {
-    type: 'image',
-    tagName: 'img',
-    src: '',
-    void: 1,
-    droppable: 0,
-    editable: 1,
-    highlightable: 0,
-    resizable: 1,
-    traits: ['alt']
-  }),
-
-  initialize: function initialize(o, opt) {
-    Component.prototype.initialize.apply(this, arguments);
-    var attr = this.get('attributes');
-    if (attr.src) this.set('src', attr.src);
-  },
-  initToolbar: function initToolbar() {
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    Component.prototype.initToolbar.apply(this, args);
-
-    if (this.sm && this.sm.get) {
-      var cmd = this.sm.get('Commands');
-      var cmdName = 'image-editor';
-
-      // Add Image Editor button only if the default command exists
-      if (cmd.has(cmdName)) {
-        var tb = this.get('toolbar');
-        tb.push({
-          attributes: { class: 'fa fa-pencil' },
-          command: cmdName
-        });
-        this.set('toolbar', tb);
-      }
-    }
-  },
-
-
-  /**
-   * Returns object of attributes for HTML
-   * @return {Object}
-   * @private
-   */
-  getAttrToHTML: function getAttrToHTML() {
-    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-      args[_key2] = arguments[_key2];
-    }
-
-    var attr = Component.prototype.getAttrToHTML.apply(this, args);
-    delete attr.onmousedown;
-    var src = this.get('src');
-    if (src) attr.src = src;
-    return attr;
-  },
-
-
-  /**
-   * Parse uri
-   * @param  {string} uri
-   * @return {object}
-   * @private
-   */
-  parseUri: function parseUri(uri) {
-    var el = document.createElement('a');
-    el.href = uri;
-    var query = {};
-    var qrs = el.search.substring(1).split('&');
-    for (var i = 0; i < qrs.length; i++) {
-      var pair = qrs[i].split('=');
-      var name = decodeURIComponent(pair[0]);
-      if (name) query[name] = decodeURIComponent(pair[1]);
-    }
-    return {
-      hostname: el.hostname,
-      pathname: el.pathname,
-      protocol: el.protocol,
-      search: el.search,
-      hash: el.hash,
-      port: el.port,
-      query: query
-    };
-  }
-}, {
-
-  /**
-   * Detect if the passed element is a valid component.
-   * In case the element is valid an object abstracted
-   * from the element will be returned
-   * @param {HTMLElement}
-   * @return {Object}
-   * @private
-   */
-  isComponent: function isComponent(el) {
-    var result = '';
-    if (el.tagName == 'IMG') {
-      result = { type: 'image' };
-    }
-    return result;
-  }
-});
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var _underscore = __webpack_require__(1);
-
-var _mixins = __webpack_require__(2);
-
-var ToolbarView = __webpack_require__(178);
-var Toolbar = __webpack_require__(180);
-var key = __webpack_require__(17);
-var Backbone = __webpack_require__(0);
-var showOffsets = void 0;
-var $ = Backbone.$;
-
-module.exports = {
-  init: function init(o) {
-    (0, _underscore.bindAll)(this, 'onHover', 'onOut', 'onClick', 'onKeyPress', 'copyComp', 'pasteComp', 'onFrameScroll');
-  },
-  enable: function enable() {
-    this.frameOff = this.canvasOff = this.adjScroll = null;
-    var config = this.config.em.get('Config');
-    this.startSelectComponent();
-    this.toggleClipboard(config.copyPaste);
-    var em = this.config.em;
-    showOffsets = 1;
-
-    em.on('component:update', this.updateAttached, this);
-    em.on('change:canvasOffset', this.updateAttached, this);
-  },
-
-
-  /**
-   * Toggle clipboard function
-   * @param  {Boolean} active
-   * @return {this}
-   * @private
-   */
-  toggleClipboard: function toggleClipboard(active) {
-    var en = active || 0;
-    if (en) {
-      key('⌘+c, ctrl+c', this.copyComp);
-      key('⌘+v, ctrl+v', this.pasteComp);
-    } else {
-      key.unbind('⌘+c, ctrl+c');
-      key.unbind('⌘+v, ctrl+v');
-    }
-  },
-
-
-  /**
-   * Copy component to the clipboard
-   * @private
-   */
-  copyComp: function copyComp() {
-    var el = this.editorModel.get('selectedComponent');
-    if (el && el.get('copyable')) this.editorModel.set('clipboard', el);
-  },
-
-
-  /**
-   * Paste component from clipboard
-   * @private
-   */
-  pasteComp: function pasteComp() {
-    var clp = this.editorModel.get('clipboard'),
-        sel = this.editorModel.get('selectedComponent');
-    if (clp && sel && sel.collection) {
-      var index = sel.collection.indexOf(sel),
-          clone = clp.clone();
-      sel.collection.add(clone, { at: index + 1 });
-    }
-  },
-
-
-  /**
-   * Start select component event
-   * @private
-   * */
-  startSelectComponent: function startSelectComponent() {
-    this.toggleSelectComponent(1);
-  },
-
-
-  /**
-   * Stop select component event
-   * @private
-   * */
-  stopSelectComponent: function stopSelectComponent() {
-    this.toggleSelectComponent();
-  },
-
-
-  /**
-   * Toggle select component event
-   * @private
-   * */
-  toggleSelectComponent: function toggleSelectComponent(enable) {
-    var em = this.em;
-    var method = enable ? 'on' : 'off';
-    var methods = { on: _mixins.on, off: _mixins.off };
-    var body = this.getCanvasBody();
-    var win = this.getContentWindow();
-    methods[method](body, 'mouseover', this.onHover);
-    methods[method](body, 'mouseout', this.onOut);
-    methods[method](body, 'click', this.onClick);
-    methods[method](win, 'scroll', this.onFrameScroll);
-    methods[method](win, 'keydown', this.onKeyPress);
-    em[method]('change:selectedComponent', this.onSelect, this);
-  },
-
-
-  /**
-   * On key press event
-   * @private
-   * */
-  onKeyPress: function onKeyPress(e) {
-    var key = e.which || e.keyCode;
-    var comp = this.editorModel.get('selectedComponent');
-    var focused = this.frameEl.contentDocument.activeElement.tagName !== 'BODY';
-
-    // On CANC (46) or Backspace (8)
-    if (key == 8 || key == 46) {
-      if (!focused) e.preventDefault();
-      if (comp && !focused) {
-        if (!comp.get('removable')) return;
-        comp.set('status', '');
-        comp.destroy();
-        this.hideBadge();
-        this.clean();
-        this.hideHighlighter();
-        this.editorModel.set('selectedComponent', null);
-      }
-    }
-  },
-
-
-  /**
-   * Hover command
-   * @param {Object}  e
-   * @private
-   */
-  onHover: function onHover(e) {
-    e.stopPropagation();
-    var trg = e.target;
-
-    // Adjust tools scroll top
-    if (!this.adjScroll) {
-      this.adjScroll = 1;
-      this.onFrameScroll(e);
-      this.updateAttached();
-    }
-
-    var pos = this.getElementPos(trg);
-    this.updateBadge(trg, pos);
-    this.updateHighlighter(trg, pos);
-    this.showElementOffset(trg, pos);
-  },
-
-
-  /**
-   * Out command
-   * @param {Object}  e
-   * @private
-   */
-  onOut: function onOut(e) {
-    e.stopPropagation();
-    this.hideBadge();
-    this.hideHighlighter();
-    this.hideElementOffset();
-  },
-
-
-  /**
-   * Show element offset viewer
-   * @param {HTMLElement}  el
-   * @param {Object} pos
-   */
-  showElementOffset: function showElementOffset(el, pos) {
-    var $el = $(el);
-    var model = $el.data('model');
-
-    if (model && model.get('status') == 'selected' || !showOffsets) {
-      return;
-    }
-
-    this.editor.runCommand('show-offset', {
-      el: el,
-      elPos: pos
-    });
-  },
-
-
-  /**
-   * Hide element offset viewer
-   * @param {HTMLElement}  el
-   * @param {Object} pos
-   */
-  hideElementOffset: function hideElementOffset(el, pos) {
-    this.editor.stopCommand('show-offset');
-  },
-
-
-  /**
-   * Show fixed element offset viewer
-   * @param {HTMLElement}  el
-   * @param {Object} pos
-   */
-  showFixedElementOffset: function showFixedElementOffset(el, pos) {
-    this.editor.runCommand('show-offset', {
-      el: el,
-      elPos: pos,
-      state: 'Fixed'
-    });
-  },
-
-
-  /**
-   * Hide fixed element offset viewer
-   * @param {HTMLElement}  el
-   * @param {Object} pos
-   */
-  hideFixedElementOffset: function hideFixedElementOffset(el, pos) {
-    if (this.editor) this.editor.stopCommand('show-offset', { state: 'Fixed' });
-  },
-
-
-  /**
-   * Hide Highlighter element
-   */
-  hideHighlighter: function hideHighlighter() {
-    this.canvas.getHighlighter().style.display = 'none';
-  },
-
-
-  /**
-   * On element click
-   * @param {Event}  e
-   * @private
-   */
-  onClick: function onClick(e) {
-    e.stopPropagation();
-    var model = $(e.target).data('model');
-    model && this.editor.select(model);
-  },
-
-
-  /**
-   * Update badge for the component
-   * @param {Object} Component
-   * @param {Object} pos Position object
-   * @private
-   * */
-  updateBadge: function updateBadge(el, pos) {
-    var $el = $(el);
-    var canvas = this.canvas;
-    var config = canvas.getConfig();
-    var customeLabel = config.customBadgeLabel;
-    this.cacheEl = el;
-    var model = $el.data("model");
-    if (!model || !model.get('badgable')) return;
-    var badge = this.getBadge();
-    var badgeLabel = model.getIcon() + model.getName();
-    badgeLabel = customeLabel ? customeLabel(model) : badgeLabel;
-    badge.innerHTML = badgeLabel;
-    var bStyle = badge.style;
-    var u = 'px';
-    bStyle.display = 'block';
-    var canvasPos = canvas.getCanvasView().getPosition();
-    var badgeH = badge ? badge.offsetHeight : 0;
-    var badgeW = badge ? badge.offsetWidth : 0;
-    var top = pos.top - badgeH < canvasPos.top ? canvasPos.top : pos.top - badgeH;
-    var left = pos.left + badgeW < canvasPos.left ? canvasPos.left : pos.left;
-    bStyle.top = top + u;
-    bStyle.left = left + u;
-  },
-
-
-  /**
-   * Update highlighter element
-   * @param {HTMLElement} el
-   * @param {Object} pos Position object
-   * @private
-   */
-  updateHighlighter: function updateHighlighter(el, pos) {
-    var $el = $(el);
-    var model = $el.data('model');
-
-    if (!model || !model.get("hoverable") || model.get('status') == 'selected') {
-      return;
-    }
-
-    var hlEl = this.canvas.getHighlighter();
-    var hlStyle = hlEl.style;
-    var unit = 'px';
-    hlStyle.left = pos.left + unit;
-    hlStyle.top = pos.top + unit;
-    hlStyle.height = pos.height + unit;
-    hlStyle.width = pos.width + unit;
-    hlStyle.display = 'block';
-  },
-
-
-  /**
-   * Say what to do after the component was selected
-   * @param {Object}  e
-   * @param {Object}  el
-   * @private
-   * */
-  onSelect: function onSelect() {
-    var editor = this.editor;
-    var model = this.em.getSelected();
-    this.updateToolbar(model);
-
-    if (model) {
-      var el = model.view.el;
-      this.showFixedElementOffset(el);
-      this.hideElementOffset();
-      this.hideHighlighter();
-      this.initResize(el);
-    } else {
-      editor.stopCommand('resize');
-    }
-  },
-
-
-  /**
-   * Init resizer on the element if possible
-   * @param  {HTMLElement} el
-   * @private
-   */
-  initResize: function initResize(el) {
-    var em = this.em;
-    var editor = em ? em.get('Editor') : '';
-    var config = em ? em.get('Config') : '';
-    var pfx = config.stylePrefix || '';
-    var attrName = 'data-' + pfx + 'handler';
-    var resizeClass = pfx + 'resizing';
-    var model = em.get('selectedComponent');
-    var resizable = model.get('resizable');
-    var options = {};
-    var modelToStyle;
-
-    var toggleBodyClass = function toggleBodyClass(method, e, opts) {
-      var docs = opts.docs;
-      docs && docs.forEach(function (doc) {
-        var body = doc.body;
-        var cls = body.className || '';
-        body.className = (method == 'add' ? cls + ' ' + resizeClass : cls.replace(resizeClass, '')).trim();
-      });
-    };
-
-    if (editor && resizable) {
-      options = {
-        // Here the resizer is updated with the current element height and width
-        onStart: function onStart(e) {
-          var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-          var el = opts.el,
-              config = opts.config,
-              resizer = opts.resizer;
-          var keyHeight = config.keyHeight,
-              keyWidth = config.keyWidth,
-              currentUnit = config.currentUnit;
-
-          toggleBodyClass('add', e, opts);
-          modelToStyle = em.get('StyleManager').getModelToStyle(model);
-          var computedStyle = getComputedStyle(el);
-          var modelStyle = modelToStyle.getStyle();
-          var currentWidth = modelStyle[keyWidth] || computedStyle[keyWidth];
-          var currentHeight = modelStyle[keyHeight] || computedStyle[keyHeight];
-          resizer.startDim.w = parseFloat(currentWidth);
-          resizer.startDim.h = parseFloat(currentHeight);
-          showOffsets = 0;
-
-          if (currentUnit) {
-            config.unitHeight = (0, _mixins.getUnitFromValue)(currentHeight);
-            config.unitWidth = (0, _mixins.getUnitFromValue)(currentWidth);
-          }
-        },
-
-
-        // Update all positioned elements (eg. component toolbar)
-        onMove: function onMove() {
-          editor.trigger('change:canvasOffset');
-        },
-        onEnd: function onEnd(e, opts) {
-          toggleBodyClass('remove', e, opts);
-          editor.trigger('change:canvasOffset');
-          showOffsets = 1;
-        },
-        updateTarget: function updateTarget(el, rect) {
-          var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-          if (!modelToStyle) {
-            return;
-          }
-
-          var store = options.store,
-              selectedHandler = options.selectedHandler,
-              config = options.config;
-          var keyHeight = config.keyHeight,
-              keyWidth = config.keyWidth;
-
-          var onlyHeight = ['tc', 'bc'].indexOf(selectedHandler) >= 0;
-          var onlyWidth = ['cl', 'cr'].indexOf(selectedHandler) >= 0;
-          var style = modelToStyle.getStyle();
-
-          if (!onlyHeight) {
-            style[keyWidth] = rect.w + config.unitWidth;
-          }
-
-          if (!onlyWidth) {
-            style[keyHeight] = rect.h + config.unitHeight;
-          }
-
-          modelToStyle.setStyle(style, { avoidStore: 1 });
-          var updateEvent = 'update:component:style';
-          em && em.trigger(updateEvent + ':' + keyHeight + ' ' + updateEvent + ':' + keyWidth);
-
-          if (store) {
-            modelToStyle.trigger('change:style', modelToStyle, style, {});
-          }
-        }
-      };
-
-      if ((typeof resizable === 'undefined' ? 'undefined' : _typeof(resizable)) == 'object') {
-        options = _extends({}, options, resizable);
-      }
-
-      editor.runCommand('resize', { el: el, options: options });
-
-      // On undo/redo the resizer rect is not updating, need somehow to call
-      // this.updateRect on undo/redo action
-    }
-  },
-
-
-  /**
-   * Update toolbar if the component has one
-   * @param {Object} mod
-   */
-  updateToolbar: function updateToolbar(mod) {
-    var em = this.config.em;
-    var model = mod == em ? em.get('selectedComponent') : mod;
-    var toolbarEl = this.canvas.getToolbarEl();
-    var toolbarStyle = toolbarEl.style;
-
-    if (!model) {
-      // By putting `toolbarStyle.display = 'none'` will cause kind
-      // of freezed effect with component selection (probably by iframe
-      // switching)
-      toolbarStyle.opacity = 0;
-      return;
-    }
-
-    var toolbar = model.get('toolbar');
-    var ppfx = this.ppfx;
-    var showToolbar = em.get('Config').showToolbar;
-
-    if (showToolbar && toolbar && toolbar.length) {
-      toolbarStyle.opacity = '';
-      toolbarStyle.display = '';
-      if (!this.toolbar) {
-        toolbarEl.innerHTML = '';
-        this.toolbar = new Toolbar(toolbar);
-        var toolbarView = new ToolbarView({
-          collection: this.toolbar,
-          editor: this.editor
-        });
-        toolbarEl.appendChild(toolbarView.render().el);
-      }
-
-      this.toolbar.reset(toolbar);
-      var view = model.view;
-      view && this.updateToolbarPos(view.el);
-    } else {
-      toolbarStyle.display = 'none';
-    }
-  },
-
-
-  /**
-   * Update toolbar positions
-   * @param {HTMLElement} el
-   * @param {Object} pos
-   */
-  updateToolbarPos: function updateToolbarPos(el, elPos) {
-    var unit = 'px';
-    var toolbarEl = this.canvas.getToolbarEl();
-    var toolbarStyle = toolbarEl.style;
-    toolbarStyle.display = 'block';
-    var pos = this.canvas.getTargetToElementDim(toolbarEl, el, {
-      elPos: elPos,
-      event: 'toolbarPosUpdate'
-    });
-    var leftPos = pos.left + pos.elementWidth - pos.targetWidth;
-    toolbarStyle.top = pos.top + unit;
-    toolbarStyle.left = leftPos + unit;
-    toolbarStyle.display = '';
-  },
-
-
-  /**
-   * Return canvas dimensions and positions
-   * @return {Object}
-   */
-  getCanvasPosition: function getCanvasPosition() {
-    return this.canvas.getCanvasView().getPosition();
-  },
-
-
-  /**
-   * Removes all highlighting effects on components
-   * @private
-   * */
-  clean: function clean() {
-    if (this.selEl) this.selEl.removeClass(this.hoverClass);
-  },
-
-
-  /**
-   * Returns badge element
-   * @return {HTMLElement}
-   * @private
-   */
-  getBadge: function getBadge() {
-    return this.canvas.getBadgeEl();
-  },
-
-
-  /**
-   * On frame scroll callback
-   * @private
-   */
-  onFrameScroll: function onFrameScroll(e) {
-    var el = this.cacheEl;
-    if (el) {
-      var elPos = this.getElementPos(el);
-      this.updateBadge(el, elPos);
-      var model = this.em.get('selectedComponent');
-
-      if (model) {
-        this.updateToolbarPos(model.view.el);
-      }
-    }
-  },
-
-
-  /**
-   * Update attached elements, eg. component toolbar
-   * @return {[type]} [description]
-   */
-  updateAttached: function updateAttached(updated) {
-    var model = this.em.getSelected();
-
-    if (model) {
-      var view = model.view;
-      this.updateToolbarPos(view.el);
-      this.showFixedElementOffset(view.el);
-    }
-  },
-
-
-  /**
-   * Returns element's data info
-   * @param {HTMLElement} el
-   * @return {Object}
-   * @private
-   */
-  getElementPos: function getElementPos(el, badge) {
-    return this.canvas.getCanvasView().getElementPos(el);
-  },
-
-
-  /**
-   * Hide badge
-   * @private
-   * */
-  hideBadge: function hideBadge() {
-    this.getBadge().style.display = 'none';
-  },
-
-
-  /**
-   * Clean previous model from different states
-   * @param {Component} model
-   * @private
-   */
-  cleanPrevious: function cleanPrevious(model) {
-    model && model.set({
-      status: '',
-      state: ''
-    });
-  },
-
-
-  /**
-   * Returns content window
-   * @private
-   */
-  getContentWindow: function getContentWindow() {
-    return this.frameEl.contentWindow;
-  },
-  run: function run(editor) {
-    this.editor = editor && editor.get('Editor');
-    this.enable();
-    this.onSelect();
-  },
-  stop: function stop(editor, sender) {
-    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-    var em = this.em;
-    this.stopSelectComponent();
-    !opts.preserveSelected && em.setSelected(null);
-    this.clean();
-    this.toggleClipboard();
-    this.hideBadge();
-    this.hideFixedElementOffset();
-    this.canvas.getToolbarEl().style.display = 'none';
-
-    em.off('component:update', this.updateAttached, this);
-    em.off('change:canvasOffset', this.updateAttached, this);
-    em.off('change:selectedComponent', this.updateToolbar, this);
-  }
-};
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(Backbone, _) {
-
-var SelectPosition = __webpack_require__(52);
-var $ = Backbone.$;
-
-module.exports = _.extend({}, SelectPosition, {
-  init: function init(opt) {
-    _.bindAll(this, 'startDraw', 'draw', 'endDraw', 'rollback');
-    this.config = opt || {};
-    this.hType = this.config.newFixedH ? 'height' : 'min-height';
-    this.allowDraw = 1;
-  },
-
-
-  /**
-   * Start with enabling to select position and listening to start drawning
-   * @private
-   * */
-  enable: function enable() {
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    SelectPosition.enable.apply(this, args);
-    this.$wr.css('cursor', 'crosshair');
-    if (this.allowDraw) this.$wr.on('mousedown', this.startDraw);
-    this.ghost = this.canvas.getGhostEl();
-  },
-
-
-  /**
-   * Start drawing component
-   * @param   {Object} e  Event
-   * @private
-   * */
-  startDraw: function startDraw(e) {
-    e.preventDefault();
-    this.stopSelectPosition();
-    this.ghost.style.display = 'block';
-    this.frameOff = this.getOffsetDim();
-    this.startPos = {
-      top: e.pageY + this.frameOff.top,
-      left: e.pageX + this.frameOff.left
-    };
-    this.isDragged = false;
-    this.tempComponent = { style: {} };
-    this.beforeDraw(this.tempComponent);
-    this.updateSize(this.startPos.top, this.startPos.left, 0, 0);
-    this.toggleEvents(1);
-  },
-
-
-  /**
-   * Enable/Disable events
-   * @param {Boolean} enable
-   */
-  toggleEvents: function toggleEvents(enable) {
-    var method = enable ? 'on' : 'off';
-    this.$wr[method]('mousemove', this.draw);
-    this.$wr[method]('mouseup', this.endDraw);
-    this.$canvas[method]('mousemove', this.draw);
-    $(document)[method]('mouseup', this.endDraw);
-    $(document)[method]('keypress', this.rollback);
-  },
-
-
-  /**
-   * While drawing the component
-   * @param   {Object}  e  Event
-   * @private
-   * */
-  draw: function draw(e) {
-    this.isDragged = true;
-    this.updateComponentSize(e);
-  },
-
-
-  /**
-   * End drawing component
-   * @param   {Object}  e Event
-   * @private
-   * */
-  endDraw: function endDraw(e) {
-    this.toggleEvents();
-    var model = {};
-    // Only if the mouse was moved
-    if (this.isDragged) {
-      this.updateComponentSize(e);
-      this.setRequirements(this.tempComponent);
-      var lp = this.sorter.lastPos;
-      model = this.create(this.sorter.target, this.tempComponent, lp.index, lp.method);
-      this.sorter.prevTarget = null;
-    }
-    this.ghost.style.display = 'none';
-    this.startSelectPosition();
-    this.afterDraw(model);
-  },
-
-
-  /**
-   * Create new component inside the target
-   * @param  {Object} target Tha target collection
-   * @param {Object} component New component to create
-   * @param {number} index Index inside the collection, 0 if no children inside
-   * @param {string} method Before or after of the children
-   * @param {Object} opts Options
-   */
-  create: function create(target, component, index, method, opts) {
-    index = method === 'after' ? index + 1 : index;
-    var opt = opts || {};
-    var $trg = $(target);
-    var trgModel = $trg.data('model');
-    var trgCollection = $trg.data('collection');
-    var droppable = trgModel ? trgModel.get('droppable') : 1;
-    opt.at = index;
-    if (trgCollection && droppable) return trgCollection.add(component, opt);else console.warn("Invalid target position");
-  },
-
-
-  /**
-   * Check and set basic requirements for the component
-   * @param   {Object}  component  New component to be created
-   * @return   {Object}   Component updated
-   * @private
-   * */
-  setRequirements: function setRequirements(component) {
-    var c = this.config;
-    var compStl = component.style;
-    // Check min width
-    if (compStl.width.replace(/\D/g, '') < c.minComponentW) compStl.width = c.minComponentW + 'px';
-    // Check min height
-    if (compStl[this.hType].replace(/\D/g, '') < c.minComponentH) compStl[this.hType] = c.minComponentH + 'px';
-    // Set overflow in case of fixed height
-    if (c.newFixedH) compStl.overflow = 'auto';
-    if (!this.absoluteMode) {
-      delete compStl.left;
-      delete compStl.top;
-    } else compStl.position = 'absolute';
-    var lp = this.sorter.lastPos;
-
-    if (this.nearFloat(lp.index, lp.method, this.sorter.lastDims)) compStl.float = 'left';
-
-    if (this.config.firstCentered && this.getCanvasWrapper() == this.sorter.target) {
-      compStl.margin = '0 auto';
-    }
-
-    return component;
-  },
-
-
-  /**
-   * Update new component size while drawing
-   * @param   {Object}   e  Event
-   * @private
-   * */
-  updateComponentSize: function updateComponentSize(e) {
-    var y = e.pageY + this.frameOff.top;
-    var x = e.pageX + this.frameOff.left;
-    var start = this.startPos;
-    var top = start.top;
-    var left = start.left;
-    var height = y - top;
-    var width = x - left;
-    if (x < left) {
-      left = x;
-      width = start.left - x;
-    }
-    if (y < top) {
-      top = y;
-      height = start.top - y;
-    }
-    this.updateSize(top, left, width, height);
-  },
-
-
-  /**
-   * Update size
-   * @private
-   */
-  updateSize: function updateSize(top, left, width, height) {
-    var u = 'px';
-    var ghStl = this.ghost.style;
-    var compStl = this.tempComponent.style;
-    ghStl.top = compStl.top = top + u;
-    ghStl.left = compStl.left = left + u;
-    ghStl.width = compStl.width = width + u;
-    ghStl[this.hType] = compStl[this.hType] = height + u;
-  },
-
-
-  /**
-   * Used to bring the previous situation before event started
-   * @param   {Object}  e    Event
-   * @param   {Boolean}   forse  Indicates if rollback in anycase
-   * @private
-   * */
-  rollback: function rollback(e, force) {
-    var key = e.which || e.keyCode;
-    if (key == this.config.ESCAPE_KEY || force) {
-      this.isDragged = false;
-      this.endDraw();
-    }
-    return;
-  },
-
-
-  /**
-   * This event is triggered at the beginning of a draw operation
-   * @param   {Object}  component  Object component before creation
-   * @private
-   * */
-  beforeDraw: function beforeDraw(component) {
-    component.editable = false; //set this component editable
-  },
-
-
-  /**
-   * This event is triggered at the end of a draw operation
-   * @param   {Object}  model  Component model created
-   * @private
-   * */
-  afterDraw: function afterDraw(model) {},
-  run: function run(editor, sender, opts) {
-    this.editor = editor;
-    this.sender = sender;
-    this.$wr = this.$wrapper;
-    this.enable();
-  },
-  stop: function stop() {
-    this.stopSelectPosition();
-    this.$wrapper.css('cursor', '');
-    this.$wrapper.unbind();
-  }
-});
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
-
-/***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18366,7 +18514,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _promisePolyfill = __webpack_require__(72);
+var _promisePolyfill = __webpack_require__(77);
 
 var _promisePolyfill2 = _interopRequireDefault(_promisePolyfill);
 
@@ -18406,7 +18554,7 @@ exports.default = typeof fetch == 'function' ? fetch.bind() : function (url, opt
 };
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18654,7 +18802,7 @@ module.exports = function (config) {
 };
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -19492,14 +19640,14 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
 
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var Buttons = __webpack_require__(27);
+var Buttons = __webpack_require__(28);
 
 module.exports = Backbone.Model.extend({
 
@@ -19518,14 +19666,14 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var Button = __webpack_require__(106);
+var Button = __webpack_require__(111);
 
 module.exports = Backbone.Collection.extend({
 
@@ -19600,14 +19748,14 @@ module.exports = Backbone.Collection.extend({
 });
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var ButtonsView = __webpack_require__(29);
+var ButtonsView = __webpack_require__(30);
 
 module.exports = Backbone.View.extend({
   initialize: function initialize(o) {
@@ -19707,14 +19855,14 @@ module.exports = Backbone.View.extend({
 });
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(_) {
 
 var Backbone = __webpack_require__(0);
-var ButtonView = __webpack_require__(108);
+var ButtonView = __webpack_require__(113);
 
 module.exports = Backbone.View.extend({
   initialize: function initialize(o) {
@@ -19781,7 +19929,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19790,20 +19938,6 @@ module.exports = Backbone.View.extend({
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 /**
- *
- * * [addSector](#addsector)
- * * [getSector](#getsector)
- * * [getSectors](#getsectors)
- * * [addProperty](#addproperty)
- * * [getProperty](#getproperty)
- * * [getProperties](#getproperties)
- * * [getModelToStyle](#getmodeltostyle)
- * * [addType](#addtype)
- * * [getType](#gettype)
- * * [getTypes](#gettypes)
- * * [createType](#createtype)
- * * [render](#render)
- *
  * With Style Manager you basically build categories (called sectors) of CSS properties which could
  * be used to custom components and classes.
  * You can init the editor with all sectors and properties via configuration
@@ -19845,10 +19979,10 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
  */
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(113),
-      Sectors = __webpack_require__(114),
+      defaults = __webpack_require__(118),
+      Sectors = __webpack_require__(119),
       Properties = __webpack_require__(11),
-      SectorsView = __webpack_require__(125);
+      SectorsView = __webpack_require__(130);
   var properties = void 0;
   var sectors, SectView;
 
@@ -19935,6 +20069,18 @@ module.exports = function () {
 
 
     /**
+     * Remove a sector by id
+     * @param  {string} id Sector id
+     * @return {Sector} Removed sector
+     * @example
+     * const removed = styleManager.removeSector('mySector');
+     */
+    removeSector: function removeSector(id) {
+      return this.getSectors().remove(this.getSector(id));
+    },
+
+
+    /**
      * Get all sectors
      * @return {Sectors} Collection of sectors
      * */
@@ -20010,6 +20156,20 @@ module.exports = function () {
 
 
     /**
+     * Remove a property from the sector
+     * @param  {string} sectorId Sector id
+     * @param  {string} name CSS property name, eg. 'min-height'
+     * @return {Property} Removed property
+     * @example
+     * const property = styleManager.removeProperty('mySector', 'min-height');
+     */
+    removeProperty: function removeProperty(sectorId, name) {
+      var props = this.getProperties(sectorId);
+      return props && props.remove(this.getProperty(sectorId, name));
+    },
+
+
+    /**
      * Get properties of the sector
      * @param  {string} sectorId Sector id
      * @return {Properties} Collection of properties
@@ -20035,19 +20195,25 @@ module.exports = function () {
      * @return {Model}
      */
     getModelToStyle: function getModelToStyle(model) {
-      var classes = model.get('classes');
       var em = c.em;
+      var classes = model.get('classes');
+      var id = model.getId();
 
-      if (em && classes && classes.length) {
-        var conf = em.get('Config');
-        var state = !conf.devicePreviewMode ? model.get('state') : '';
-        var deviceW = em.getCurrentMedia();
+      if (em) {
+        var config = em.getConfig();
         var cssC = em.get('CssComposer');
+        var state = !config.devicePreviewMode ? model.get('state') : '';
         var valid = classes.getStyleable();
-        var CssRule = cssC.get(valid, state, deviceW);
+        var hasClasses = valid.length;
+        var opts = { state: state };
 
-        if (CssRule && valid.length) {
-          return CssRule;
+        if (hasClasses) {
+          var deviceW = em.getCurrentMedia();
+          var CssRule = cssC.get(valid, state, deviceW);
+          if (CssRule) return CssRule;
+        } else if (config.avoidInlineStyle) {
+          var rule = cssC.getIdRule(id, opts);
+          return rule ? rule : cssC.setIdRule(id, {}, opts);
         }
       }
 
@@ -20140,7 +20306,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20298,7 +20464,7 @@ exports.default = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20383,14 +20549,14 @@ module.exports = Property.extend({
 });
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var PropertyCompositeView = __webpack_require__(18);
-var LayersView = __webpack_require__(120);
+var PropertyCompositeView = __webpack_require__(17);
+var LayersView = __webpack_require__(125);
 
 module.exports = PropertyCompositeView.extend({
   templateInput: function templateInput() {
@@ -20570,7 +20736,7 @@ module.exports = PropertyCompositeView.extend({
 });
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20599,7 +20765,7 @@ module.exports = Backbone.View.extend({
     var ppfx = opts.ppfx || '';
     this.opts = opts;
     this.ppfx = ppfx;
-    this.target = opts.target || {};
+    this.em = opts.target || {};
     this.listenTo(this.model, 'change:value', this.handleModelChange);
   },
 
@@ -20665,7 +20831,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20727,7 +20893,7 @@ module.exports = __webpack_require__(5).extend({
 });
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20766,7 +20932,7 @@ module.exports = __webpack_require__(5).extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20774,7 +20940,7 @@ module.exports = __webpack_require__(5).extend({
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var InputColor = __webpack_require__(38);
+var InputColor = __webpack_require__(39);
 
 module.exports = __webpack_require__(14).extend({
   setValue: function setValue(value) {
@@ -20802,14 +20968,16 @@ module.exports = __webpack_require__(14).extend({
 });
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(Backbone) {
 
-__webpack_require__(119);
-var Input = __webpack_require__(34);
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+__webpack_require__(124);
+var Input = __webpack_require__(35);
 var $ = Backbone.$;
 
 module.exports = Input.extend({
@@ -20862,7 +21030,8 @@ module.exports = Input.extend({
 
       var colorEl = $('<div class="' + this.ppfx + 'field-color-picker"></div>');
       var cpStyle = colorEl.get(0).style;
-      var elToAppend = this.target && this.target.config ? this.target.config.el : '';
+      var elToAppend = this.em && this.em.config ? this.em.config.el : '';
+      var colorPickerConfig = this.em && this.em.getConfig && this.em.getConfig("colorPicker") || {};
       var getColor = function getColor(color) {
         var cl = color.getAlpha() == 1 ? color.toHexString() : color.toRgbString();
         return cl.replace(/ /g, '');
@@ -20871,7 +21040,7 @@ module.exports = Input.extend({
       var changed = 0;
       var previousColor = void 0;
       this.$el.find('[data-colorp-c]').append(colorEl);
-      colorEl.spectrum({
+      colorEl.spectrum(_extends({
         containerClassName: ppfx + 'one-bg ' + ppfx + 'two-color',
         appendTo: elToAppend || 'body',
         maxSelectionSize: 8,
@@ -20879,7 +21048,9 @@ module.exports = Input.extend({
         showAlpha: true,
         chooseText: 'Ok',
         cancelText: '⨯',
-        palette: [],
+        palette: []
+
+      }, colorPickerConfig, {
         move: function move(color) {
           var cl = getColor(color);
           cpStyle.backgroundColor = cl;
@@ -20906,7 +21077,7 @@ module.exports = Input.extend({
             model.setValueFromInput(previousColor, 0);
           }
         }
-      });
+      }));
 
       this.colorEl = colorEl;
     }
@@ -20922,7 +21093,7 @@ module.exports = Input.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21056,7 +21227,7 @@ module.exports = PropertyView.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21076,7 +21247,7 @@ module.exports = Property.extend({
 });
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21085,7 +21256,7 @@ module.exports = Property.extend({
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var Property = __webpack_require__(12);
-var InputNumber = __webpack_require__(19);
+var InputNumber = __webpack_require__(18);
 
 module.exports = Property.extend({
 
@@ -21133,13 +21304,13 @@ module.exports = Property.extend({
 });
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-module.exports = __webpack_require__(43).extend({
+module.exports = __webpack_require__(44).extend({
 
   events: {
     'click [data-toggle=asset-remove]': 'onRemove',
@@ -21221,7 +21392,7 @@ module.exports = __webpack_require__(43).extend({
 });
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21277,13 +21448,13 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(Backbone, _) {
 
-var _fetch = __webpack_require__(23);
+var _fetch = __webpack_require__(24);
 
 var _fetch2 = _interopRequireDefault(_fetch);
 
@@ -21636,13 +21807,13 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(_) {
 
-var _Styleable = __webpack_require__(46);
+var _Styleable = __webpack_require__(47);
 
 var _Styleable2 = _interopRequireDefault(_Styleable);
 
@@ -21790,7 +21961,7 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21806,7 +21977,7 @@ var _underscore = __webpack_require__(1);
 
 var _mixins = __webpack_require__(2);
 
-var _ParserHtml = __webpack_require__(24);
+var _ParserHtml = __webpack_require__(25);
 
 var _ParserHtml2 = _interopRequireDefault(_ParserHtml);
 
@@ -21924,7 +22095,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21992,7 +22163,7 @@ module.exports = Backbone.View.extend({
 });
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22079,7 +22250,7 @@ module.exports = Backbone.Collection.extend({
 });
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22126,7 +22297,7 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   addToCollection: function addToCollection(model, fragmentEl, index) {
-    if (!this.compView) this.compView = __webpack_require__(4);
+    if (!this.compView) this.compView = __webpack_require__(3);
     var fragment = fragmentEl || null,
         viewObject = this.compView;
 
@@ -22204,7 +22375,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22212,7 +22383,7 @@ module.exports = Backbone.View.extend({
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var Component = __webpack_require__(3);
+var Component = __webpack_require__(4);
 
 module.exports = Component.extend({
 
@@ -22225,7 +22396,7 @@ module.exports = Component.extend({
 });
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22233,7 +22404,7 @@ module.exports = Component.extend({
 
 var _mixins = __webpack_require__(2);
 
-var ComponentView = __webpack_require__(4);
+var ComponentView = __webpack_require__(3);
 
 module.exports = ComponentView.extend({
 
@@ -22295,13 +22466,14 @@ module.exports = ComponentView.extend({
       var content = this.getChildrenContainer().innerHTML;
       var comps = model.get('components');
       comps.length && comps.reset();
+      model.set('content', '');
 
       // If there is a custom RTE the content is just baked staticly
       // inside 'content'
       if (rte.customRte) {
         // Avoid double content by removing its children components
         // and force to trigger change
-        model.set('content', '').set('content', content);
+        model.set('content', content);
       } else {
         var clean = function clean(model) {
           model.set({
@@ -22318,7 +22490,7 @@ module.exports = ComponentView.extend({
         };
 
         // Avoid re-render on reset with silent option
-        model.set('content', '').trigger('change:content', model);
+        model.trigger('change:content', model);
         comps.add(content);
         comps.each(function (model) {
           return clean(model);
@@ -22362,7 +22534,7 @@ module.exports = ComponentView.extend({
 });
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22468,7 +22640,7 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22527,8 +22699,6 @@ module.exports = _.extend({}, CreateComponent, {
 
     if (!model) return;
 
-    if (this.em) this.em.editor.initChildrenComp(model);
-
     this.afterInsert(model, this);
   },
 
@@ -22562,17 +22732,18 @@ module.exports = _.extend({}, CreateComponent, {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(_) {
 
-var Backbone = __webpack_require__(0);
-var ComponentView = __webpack_require__(4);
-var ItemsView;
 
-module.exports = Backbone.View.extend({
+var _underscore = __webpack_require__(1);
+
+var ComponentView = __webpack_require__(3);
+var ItemsView = void 0;
+
+module.exports = __webpack_require__(0).View.extend({
 
   events: {
     'mousedown [data-toggle-move]': 'startSort',
@@ -22583,8 +22754,15 @@ module.exports = Backbone.View.extend({
     'focusout input': 'handleEditEnd'
   },
 
-  template: _.template('\n  <% if (hidable) { %>\n    <i id="<%= prefix %>btn-eye" class="btn fa fa-eye <%= (visible ? \'\' : \'fa-eye-slash\') %>" data-toggle-visible></i>\n  <% } %>\n\n  <div class="<%= prefix %>title-c <%= ppfx %>one-bg">\n    <div class="<%= prefix %>title <%= addClass %>" style="padding-left: <%= 30 + level * 10 %>px" data-toggle-select>\n      <div class="<%= prefix %>title-inn">\n        <i id="<%= prefix %>caret" class="fa fa-chevron-right <%= caretCls %>" data-toggle-open></i>\n        <%= icon %>\n        <input class="<%= ppfx %>no-app <%= inputNameCls %>" value="<%= title %>" readonly>\n      </div>\n    </div>\n  </div>\n\n  <div id="<%= prefix %>counter"><%= (count ? count : \'\') %></div>\n\n  <div id="<%= prefix %>move" data-toggle-move>\n    <i class="fa fa-arrows"></i>\n  </div>\n\n  <div class="<%= prefix %>children"></div>'),
-
+  template: function template(model) {
+    var pfx = this.pfx;
+    var ppfx = this.ppfx;
+    var hidable = this.config.hidable;
+    var count = this.countChildren(model);
+    var addClass = !count ? pfx + 'no-chld' : '';
+    var level = this.level + 1;
+    return '\n      ' + (hidable ? '<i id="' + pfx + 'btn-eye" class="' + pfx + 'btn fa fa-eye ' + (this.isVisible() ? '' : 'fa-eye-slash') + '" data-toggle-visible></i>' : '') + '\n\n      <div class="' + pfx + 'title-c ' + ppfx + 'one-bg">\n        <div class="' + pfx + 'title ' + addClass + '" style="padding-left: ' + (30 + level * 10) + 'px" data-toggle-select>\n          <div class="' + pfx + 'title-inn">\n            <i id="' + pfx + 'caret" class="fa fa-chevron-right ' + this.caretCls + '" data-toggle-open></i>\n            ' + model.getIcon() + '\n            <input class="' + ppfx + 'no-app ' + this.inputNameCls + '" value="' + model.getName() + '" readonly>\n          </div>\n        </div>\n      </div>\n      <div id="' + pfx + 'counter">' + (count ? count : '') + '</div>\n      <div id="' + pfx + 'move" data-toggle-move>\n        <i class="fa fa-arrows"></i>\n      </div>\n      <div class="' + pfx + 'children"></div>\n    ';
+  },
   initialize: function initialize() {
     var o = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
@@ -22846,27 +23024,12 @@ module.exports = Backbone.View.extend({
     var model = this.model;
     var pfx = this.pfx;
     var vis = this.isVisible();
-    var count = this.countChildren(model);
     var el = this.$el;
     var level = this.level + 1;
+    el.html(this.template(model));
 
-    el.html(this.template({
-      title: model.getName(),
-      icon: model.getIcon(),
-      addClass: count ? '' : pfx + 'no-chld',
-      editBtnCls: this.editBtnCls,
-      inputNameCls: this.inputNameCls,
-      caretCls: this.caretCls,
-      count: count,
-      visible: vis,
-      hidable: this.config.hidable,
-      prefix: pfx,
-      ppfx: this.ppfx,
-      level: level
-    }));
-
-    if (typeof ItemsView == 'undefined') {
-      ItemsView = __webpack_require__(55);
+    if ((0, _underscore.isUndefined)(ItemsView)) {
+      ItemsView = __webpack_require__(56);
     }
 
     var children = new ItemsView({
@@ -22883,25 +23046,24 @@ module.exports = Backbone.View.extend({
       el.children('#' + pfx + 'move').remove();
     }
 
-    if (!vis) this.className += ' ' + pfx + 'hide';
-    el.attr('class', _.result(this, 'className'));
+    !vis && (this.className += ' ' + pfx + 'hide');
+    el.attr('class', this.className);
     this.updateOpening();
     this.updateStatus();
     this.updateVisibility();
     return this;
   }
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var ItemView = __webpack_require__(54);
+var ItemView = __webpack_require__(55);
 
 module.exports = Backbone.View.extend({
   initialize: function initialize() {
@@ -23035,7 +23197,7 @@ module.exports = Backbone.View.extend({
 });
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23055,33 +23217,39 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 57 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = __webpack_require__(58);
-
-/***/ }),
 /* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _cashDom = __webpack_require__(8);
+module.exports = __webpack_require__(59);
+
+/***/ }),
+/* 59 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _cashDom = __webpack_require__(9);
 
 var _cashDom2 = _interopRequireDefault(_cashDom);
 
 var _underscore = __webpack_require__(1);
 
+var _polyfills = __webpack_require__(60);
+
+var _polyfills2 = _interopRequireDefault(_polyfills);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+(0, _polyfills2.default)();
+
 module.exports = function () {
-  var defaultConfig = __webpack_require__(59);
-  var Editor = __webpack_require__(60);
-  var PluginManager = __webpack_require__(212);
+  var defaultConfig = __webpack_require__(61);
+  var Editor = __webpack_require__(62);
+  var PluginManager = __webpack_require__(220);
   var plugins = new PluginManager();
   var editors = [];
 
@@ -23094,7 +23262,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.12.50',
+    version: '0.12.58',
 
     /**
      * Initializes an editor based on passed options
@@ -23103,7 +23271,6 @@ module.exports = function () {
      * @param {Object|string} config.components='' HTML string or Component model in JSON format
      * @param {Object|string} config.style='' CSS string or CSS model in JSON format
      * @param {Boolean} [config.fromElement=false] If true, will fetch HTML and CSS from selected container
-     * @param {Boolean} [config.copyPaste=true] Enable/Disable the possibility to copy(ctrl+c) & paste(ctrl+v) components
      * @param {Boolean} [config.undoManager=true] Enable/Disable undo manager
      * @param {Array} [config.plugins=[]] Array of plugins to execute on start
      * @return {grapesjs.Editor} GrapesJS editor instance
@@ -23152,7 +23319,52 @@ module.exports = function () {
 }();
 
 /***/ }),
-/* 59 */
+/* 60 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+/**
+ * File made for IE/Edge support
+ * https://github.com/artf/grapesjs/issues/214
+ */
+
+exports.default = function () {
+
+  /**
+   * Check if IE/Edge
+   * @return {Boolean}
+   */
+  var isIE = function isIE() {
+    var match = void 0;
+    var agent = window.navigator.userAgent;
+    var rules = [['edge', /Edge\/([0-9\._]+)/], ['ie', /MSIE\s(7\.0)/], ['ie', /MSIE\s([0-9\.]+);.*Trident\/[4-7].0/], ['ie', /Trident\/7\.0.*rv\:([0-9\.]+).*\).*Gecko$/]];
+
+    for (var i = 0; i < rules.length; i++) {
+      var rule = rules[i];
+      match = rule[1].exec(agent);
+      if (match) break;
+    }
+
+    return !!match;
+  };
+
+  if (isIE()) {
+    var originalCreateHTMLDocument = DOMImplementation.prototype.createHTMLDocument;
+    DOMImplementation.prototype.createHTMLDocument = function (title) {
+      if (!title) title = '';
+      return originalCreateHTMLDocument.apply(document.implementation, [title]);
+    };
+  }
+};
+
+/***/ }),
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23175,11 +23387,6 @@ module.exports = {
   fromElement: 0,
 
   // ---
-  // Enable/Disable the possibility to copy(ctrl + c) & paste(ctrl + v) components
-  copyPaste: true,
-
-  // Enable/Disable undo manager
-  undoManager: true,
 
   // Storage Manager
   storageManager: {},
@@ -23192,13 +23399,13 @@ module.exports = {
 };
 
 /***/ }),
-/* 60 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _cashDom = __webpack_require__(8);
+var _cashDom = __webpack_require__(9);
 
 var _cashDom2 = _interopRequireDefault(_cashDom);
 
@@ -23206,9 +23413,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 module.exports = function (config) {
   var c = config || {},
-      defaults = __webpack_require__(61),
-      EditorModel = __webpack_require__(62),
-      EditorView = __webpack_require__(211);
+      defaults = __webpack_require__(63),
+      EditorModel = __webpack_require__(64),
+      EditorView = __webpack_require__(219);
 
   for (var name in defaults) {
     if (!(name in c)) c[name] = defaults[name];
@@ -23716,9 +23923,12 @@ module.exports = function (config) {
      * @return {HTMLElement}
      */
     render: function render() {
+      var _this = this;
+
       // Do post render stuff after the iframe is loaded otherwise it'll
       // be empty during tests
       em.on('loaded', function () {
+        _this.UndoManager.clear();
         em.get('modules').forEach(function (module) {
           module.postRender && module.postRender(editorView);
         });
@@ -23781,6 +23991,8 @@ module.exports = function (config) {
     * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
     * ## General
     * * `canvasScroll` - Triggered when the canvas is scrolle
+    * * `undo` - Undo executed
+    * * `redo` - Redo executed
     * * `load` - When the editor is loaded
     *
     * @param {Object} config Configurations
@@ -23788,7 +24000,6 @@ module.exports = function (config) {
     * @param {string|Array<Object>} [config.components=''] HTML string or object of components
     * @param {string|Array<Object>} [config.style=''] CSS string or object of rules
     * @param {Boolean} [config.fromElement=false] If true, will fetch HTML and CSS from selected container
-    * @param {Boolean} [config.copyPaste=true] Enable/Disable the possibility to copy(ctrl + c) & paste(ctrl + v) components
     * @param {Boolean} [config.undoManager=true] Enable/Disable undo manager
     * @param {Boolean} [config.autorender=true] If true renders editor on init
     * @param {Boolean} [config.noticeOnUnload=true] Enable/Disable alert message before unload the page
@@ -23812,7 +24023,7 @@ module.exports = function (config) {
     */
 
 /***/ }),
-/* 61 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23825,14 +24036,8 @@ module.exports = {
   //TEMP
   components: '',
 
-  // Enable/Disable possibility to copy(ctrl + c) & paste(ctrl + v) components
-  copyPaste: true,
-
   // Show an alert before unload the page with unsaved changes
   noticeOnUnload: true,
-
-  // Enable/Disable undo manager
-  undoManager: true,
 
   // Show paddings and margins
   showOffsets: false,
@@ -23899,6 +24104,9 @@ module.exports = {
 
   // Dom element
   el: '',
+
+  // Configurations for Undo Manager
+  undoManager: {},
 
   //Configurations for Asset Manager
   assetManager: {},
@@ -23996,7 +24204,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 62 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24006,14 +24214,12 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _underscore = __webpack_require__(1);
 
-var deps = [__webpack_require__(63), __webpack_require__(67), __webpack_require__(68), __webpack_require__(76), __webpack_require__(81), __webpack_require__(84), __webpack_require__(88), __webpack_require__(92), __webpack_require__(104), __webpack_require__(110), __webpack_require__(30), __webpack_require__(127), __webpack_require__(133), __webpack_require__(138), __webpack_require__(145), __webpack_require__(168), __webpack_require__(174), __webpack_require__(200)];
+var deps = [__webpack_require__(65), __webpack_require__(69), __webpack_require__(70), __webpack_require__(73), __webpack_require__(81), __webpack_require__(86), __webpack_require__(89), __webpack_require__(93), __webpack_require__(97), __webpack_require__(109), __webpack_require__(115), __webpack_require__(31), __webpack_require__(132), __webpack_require__(138), __webpack_require__(143), __webpack_require__(150), __webpack_require__(178), __webpack_require__(184), __webpack_require__(210)];
 
 var Backbone = __webpack_require__(0);
-var UndoManager = __webpack_require__(208);
-var key = __webpack_require__(17);
 var timedInterval = void 0;
 
-__webpack_require__(210)({
+__webpack_require__(218)({
   Backbone: Backbone,
   $: Backbone.$
 });
@@ -24036,6 +24242,8 @@ module.exports = Backbone.Model.extend({
   },
 
   initialize: function initialize() {
+    var _this = this;
+
     var c = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
     this.config = c;
@@ -24046,11 +24254,8 @@ module.exports = Backbone.Model.extend({
 
     // Load modules
     deps.forEach(function (name) {
-      this.loadModule(name);
-    }, this);
-
-    this.initUndoManager();
-
+      return _this.loadModule(name);
+    });
     this.on('change:selectedComponent', this.componentSelected, this);
     this.on('change:changesCount', this.updateChanges, this);
   },
@@ -24074,7 +24279,7 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   loadOnStart: function loadOnStart() {
-    var _this = this;
+    var _this2 = this;
 
     var clb = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
@@ -24086,15 +24291,11 @@ module.exports = Backbone.Model.extend({
       module.onLoad();
     });
 
-    // Stuff to do post load (eg. init undo manager for loaded components)
+    // Stuff to do post load
     var postLoad = function postLoad() {
-      // I've initialized undo manager in initialize() because otherwise the
-      // editor will unable to fetch the instance via 'editor.UndoManager' but
-      // I need to cleare the stack now as it was dirtied by 'onLoad' method
-      _this.um.clear();
-      _this.initUndoManager();
-      _this.get('modules').forEach(function (module) {
-        return module.postLoad && module.postLoad(_this);
+      var modules = _this2.get('modules');
+      modules.forEach(function (module) {
+        return module.postLoad && module.postLoad(_this2);
       });
       clb && clb();
     };
@@ -24145,20 +24346,20 @@ module.exports = Backbone.Model.extend({
 
     // Check if module is storable
     var sm = this.get('StorageManager');
+
     if (Mod.storageKey && Mod.store && Mod.load && sm) {
       cfg.stm = sm;
       var storables = this.get('storables');
       storables.push(Mod);
       this.set('storables', storables);
     }
+
     cfg.em = this;
     Mod.init(_extends({}, cfg));
 
     // Bind the module to the editor model if public
-    if (!Mod.private) this.set(Mod.name, Mod);
-
-    if (Mod.onLoad) this.get('toLoad').push(Mod);
-
+    !Mod.private && this.set(Mod.name, Mod);
+    Mod.onLoad && this.get('toLoad').push(Mod);
     this.get('modules').push(Mod);
     return this;
   },
@@ -24179,31 +24380,6 @@ module.exports = Backbone.Model.extend({
 
 
   /**
-   * Listen for new rules
-   * @param {Object} collection
-   * @private
-   */
-  listenRules: function listenRules(collection) {
-    this.stopListening(collection, 'add remove', this.listenRule);
-    this.listenTo(collection, 'add remove', this.listenRule);
-    collection.each(function (model) {
-      this.listenRule(model);
-    }, this);
-  },
-
-
-  /**
-   * Listen for rule changes
-   * @param {Object} model
-   * @private
-   */
-  listenRule: function listenRule(model) {
-    this.stopListening(model, 'change:style', this.handleUpdates);
-    this.listenTo(model, 'change:style', this.handleUpdates);
-  },
-
-
-  /**
    * This method handles updates on the editor and tries to store them
    * if requested and if the changesCount is exceeded
    * @param  {Object} model
@@ -24212,7 +24388,7 @@ module.exports = Backbone.Model.extend({
    * @private
    * */
   handleUpdates: function handleUpdates(model, val) {
-    var _this2 = this;
+    var _this3 = this;
 
     var opt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
@@ -24224,87 +24400,9 @@ module.exports = Backbone.Model.extend({
     timedInterval && clearInterval(timedInterval);
     timedInterval = setTimeout(function () {
       if (!opt.avoidStore) {
-        _this2.set('changesCount', _this2.get('changesCount') + 1, opt);
+        _this3.set('changesCount', _this3.get('changesCount') + 1, opt);
       }
     }, 0);
-  },
-
-
-  /**
-   * Initialize Undo manager
-   * @private
-   * */
-  initUndoManager: function initUndoManager() {
-    var canvas = this.get('Canvas');
-
-    if (this.um) {
-      return;
-    }
-
-    var cmp = this.get('DomComponents');
-    if (cmp && this.config.undoManager) {
-      var that = this;
-      this.um = new UndoManager({
-        register: [cmp.getComponents(), this.get('CssComposer').getAll()],
-        track: true
-      });
-      this.UndoManager = this.um;
-      this.set('UndoManager', this.um);
-
-      key('⌘+z, ctrl+z', function () {
-        if (canvas.isInputFocused()) {
-          return;
-        }
-
-        that.um.undo(true);
-        that.trigger('component:update');
-      });
-
-      key('⌘+shift+z, ctrl+shift+z', function () {
-        if (canvas.isInputFocused()) {
-          return;
-        }
-        that.um.redo(true);
-        that.trigger('component:update');
-      });
-
-      var beforeCache;
-      var customUndoType = {
-        on: function on(model, value, opts) {
-          var opt = opts || {};
-          if (!beforeCache) {
-            beforeCache = model.previousAttributes();
-          }
-          if (opt && opt.avoidStore) {
-            return;
-          } else {
-            var obj = {
-              object: model,
-              before: beforeCache,
-              after: model.toJSON()
-            };
-            beforeCache = null;
-            return obj;
-          }
-        },
-        undo: function undo(model, bf, af, opt) {
-          model.set(bf);
-          // Update also inputs inside Style Manager
-          that.trigger('change:selectedComponent');
-        },
-        redo: function redo(model, bf, af, opt) {
-          model.set(af);
-          // Update also inputs inside Style Manager
-          that.trigger('change:selectedComponent');
-        }
-      };
-
-      UndoManager.removeUndoType("change");
-      UndoManager.addUndoType("change:style", customUndoType);
-      UndoManager.addUndoType("change:attributes", customUndoType);
-      UndoManager.addUndoType("change:content", customUndoType);
-      UndoManager.addUndoType("change:src", customUndoType);
-    }
   },
 
 
@@ -24322,67 +24420,6 @@ module.exports = Backbone.Model.extend({
       this.trigger('select-comp', [model, val, options]);
       this.trigger('component:selected', arguments);
     }
-  },
-
-
-  /**
-   * Triggered when components are updated
-   * @param  {Object}  model
-   * @param  {Mixed}    val  Value
-   * @param  {Object}  opt  Options
-   * @private
-   * */
-  updateComponents: function updateComponents(model, val, opt) {
-    var comps = model.get('components'),
-        classes = model.get('classes'),
-        avSt = opt ? opt.avoidStore : 0;
-
-    // Observe component with Undo Manager
-    if (this.um) this.um.register(comps);
-
-    // Call stopListening for not creating nested listeners
-    this.stopListening(comps, 'add', this.updateComponents);
-    this.stopListening(comps, 'remove', this.rmComponents);
-    this.listenTo(comps, 'add', this.updateComponents);
-    this.listenTo(comps, 'remove', this.rmComponents);
-
-    this.stopListening(classes, 'add remove', this.handleUpdates);
-    this.listenTo(classes, 'add remove', this.handleUpdates);
-
-    var evn = 'change:style change:content change:attributes change:src';
-    this.stopListening(model, evn, this.handleUpdates);
-    this.listenTo(model, evn, this.handleUpdates);
-
-    if (!avSt) this.handleUpdates(model, val, opt);
-  },
-
-
-  /**
-   * Init stuff like storage for already existing elements
-   * @param {Object}  model
-   * @private
-   */
-  initChildrenComp: function initChildrenComp(model) {
-    var comps = model.get('components');
-    this.updateComponents(model, null, { avoidStore: 1 });
-    comps.each(function (md) {
-      this.initChildrenComp(md);
-      if (this.um) this.um.register(md);
-    }, this);
-  },
-
-
-  /**
-   * Triggered when some component is removed updated
-   * @param  {Object}  model
-   * @param  {Mixed}    val  Value
-   * @param  {Object}  opt  Options
-   * @private
-   * */
-  rmComponents: function rmComponents(model, val, opt) {
-    var avSt = opt ? opt.avoidStore : 0;
-
-    if (!avSt) this.handleUpdates(model, val, opt);
   },
 
 
@@ -24530,7 +24567,7 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   store: function store(clb) {
-    var _this3 = this;
+    var _this4 = this;
 
     var sm = this.get('StorageManager');
     var store = {};
@@ -24546,8 +24583,8 @@ module.exports = Backbone.Model.extend({
 
     sm.store(store, function () {
       clb && clb();
-      _this3.set('changesCount', 0);
-      _this3.trigger('storage:store', store);
+      _this4.set('changesCount', 0);
+      _this4.trigger('storage:store', store);
     });
 
     return store;
@@ -24560,12 +24597,12 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   load: function load() {
-    var _this4 = this;
+    var _this5 = this;
 
     var clb = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
     this.getCacheLoad(1, function (res) {
-      _this4.get('storables').forEach(function (module) {
+      _this5.get('storables').forEach(function (module) {
         return module.load(res);
       });
       clb && clb(res);
@@ -24581,7 +24618,7 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   getCacheLoad: function getCacheLoad(force, clb) {
-    var _this5 = this;
+    var _this6 = this;
 
     var f = force ? 1 : 0;
     if (this.cacheLoad && !f) return this.cacheLoad;
@@ -24600,9 +24637,9 @@ module.exports = Backbone.Model.extend({
     });
 
     sm.load(load, function (res) {
-      _this5.cacheLoad = res;
+      _this6.cacheLoad = res;
       clb && clb(res);
-      _this5.trigger('storage:load', res);
+      _this6.trigger('storage:load', res);
     });
   },
 
@@ -24708,7 +24745,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 63 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24716,9 +24753,9 @@ module.exports = Backbone.Model.extend({
 
 module.exports = function () {
 
-  var Sorter = __webpack_require__(64);
-  var Resizer = __webpack_require__(65);
-  var Dragger = __webpack_require__(66);
+  var Sorter = __webpack_require__(66);
+  var Resizer = __webpack_require__(67);
+  var Dragger = __webpack_require__(68);
 
   return {
     /**
@@ -24743,7 +24780,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 64 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24846,18 +24883,17 @@ module.exports = Backbone.View.extend({
     var pfx = this.ppfx || this.pfx;
     var sortCls = pfx + 'grabbing';
     var emBody = em ? em.get('Canvas').getBody() : '';
+
+    // Avoid updating body className as it causes a huge repaint
+    // Noticeable with "fast" drag of blocks
     if (active) {
       em && em.get('Canvas').startAutoscroll();
-      body.className += ' ' + sortCls;
-      if (em) {
-        emBody.className += ' ' + sortCls;
-      }
+      //body.className += ' ' + sortCls;
+      //if (em) emBody.className += ' ' + sortCls;
     } else {
       em && em.get('Canvas').stopAutoscroll();
-      body.className = body.className.replace(sortCls, '').trim();
-      if (em) {
-        emBody.className = emBody.className.replace(sortCls, '').trim();
-      }
+      //body.className = body.className.replace(sortCls, '').trim();
+      //if(em) emBody.className = emBody.className.replace(sortCls, '').trim();
     }
   },
 
@@ -25676,7 +25712,7 @@ module.exports = Backbone.View.extend({
     var dragHelper = this.dragHelper;
 
     if (dragHelper) {
-      dragHelper.remove();
+      dragHelper.parentNode.removeChild(dragHelper);
       this.dragHelper = null;
     }
 
@@ -25774,7 +25810,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-/* 65 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26315,7 +26351,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 66 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26662,7 +26698,7 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 67 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26683,12 +26719,32 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _underscore = __webpack_require__(1);
 
-var keymaster = __webpack_require__(17);
+var keymaster = __webpack_require__(23);
 
 module.exports = function () {
+  var em = void 0;
   var config = void 0;
-  var configDef = {};
   var keymaps = {};
+  var configDef = {
+    defaults: {
+      'core:undo': {
+        keys: '⌘+z, ctrl+z',
+        handler: 'core:undo'
+      },
+      'core:redo': {
+        keys: '⌘+shift+z, ctrl+shift+z',
+        handler: 'core:redo'
+      },
+      'core:copy': {
+        keys: '⌘+c, ctrl+c',
+        handler: 'core:copy'
+      },
+      'core:paste': {
+        keys: '⌘+v, ctrl+v',
+        handler: 'core:paste'
+      }
+    }
+  };
 
   return {
 
@@ -26713,9 +26769,18 @@ module.exports = function () {
     init: function init() {
       var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-      config = _extends({}, opts, configDef);
-      this.em = config.em;
+      config = _extends({}, configDef, opts);
+      em = config.em;
+      this.em = em;
       return this;
+    },
+    onLoad: function onLoad() {
+      var defKeys = config.defaults;
+
+      for (var id in defKeys) {
+        var value = defKeys[id];
+        this.add(id, value.keys, value.handler);
+      }
     },
 
 
@@ -26808,7 +26873,2994 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 68 */
+/* 70 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /**
+                                                                                                                                                                                                                                                                   * This module allows to manage the stack of changes applied in canvas
+                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                   * You can access the module in this way
+                                                                                                                                                                                                                                                                   * ```js
+                                                                                                                                                                                                                                                                   * const um = editor.UndoManager;
+                                                                                                                                                                                                                                                                   * ```
+                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                   */
+
+
+var _backboneUndo = __webpack_require__(71);
+
+var _backboneUndo2 = _interopRequireDefault(_backboneUndo);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = function () {
+  var em = void 0;
+  var um = void 0;
+  var config = void 0;
+  var beforeCache = void 0;
+  var configDef = {};
+
+  return {
+
+    name: 'UndoManager',
+
+    /**
+     * Initialize module
+     * @param {Object} config Configurations
+     * @private
+     */
+    init: function init() {
+      var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+      config = _extends({}, opts, configDef);
+      em = config.em;
+      this.em = em;
+      um = new _backboneUndo2.default({ track: true, register: [] });
+      um.changeUndoType('change', { condition: false });
+      var customUndoType = {
+        on: function on(object, value) {
+          var opt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+          !beforeCache && (beforeCache = object.previousAttributes());
+
+          if (opt.avoidStore) {
+            return;
+          } else {
+            var result = {
+              object: object,
+              before: beforeCache,
+              after: object.toJSON()
+            };
+            beforeCache = null;
+            return result;
+          }
+        },
+        undo: function undo(model, bf, af, opt) {
+          model.set(bf);
+        },
+        redo: function redo(model, bf, af, opt) {
+          model.set(af);
+        }
+      };
+
+      var events = ['style', 'attributes', 'content', 'src'];
+      events.forEach(function (ev) {
+        return um.addUndoType('change:' + ev, customUndoType);
+      });
+      um.on('undo redo', function () {
+        return em.trigger('change:selectedComponent change:canvasOffset');
+      });
+      ['undo', 'redo'].forEach(function (ev) {
+        return um.on(ev, function () {
+          return em.trigger(ev);
+        });
+      });
+
+      return this;
+    },
+
+
+    /**
+     * Get module configurations
+     * @return {Object} Configuration object
+     * @example
+     * const config = um.getConfig();
+     * // { ... }
+     */
+    getConfig: function getConfig() {
+      return config;
+    },
+
+
+    /**
+     * Add an entity (Model/Collection) to track
+     * Note: New Components and CSSRules will be added automatically
+     * @param {Model|Collection} entity Entity to track
+     * @return {this}
+     * @example
+     * um.add(someModelOrCollection);
+     */
+    add: function add(entity) {
+      um.register(entity);
+      return this;
+    },
+
+
+    /**
+     * Remove and stop tracking the entity (Model/Collection)
+     * @param {Model|Collection} entity Entity to remove
+     * @return {this}
+     * @example
+     * um.remove(someModelOrCollection);
+     */
+    remove: function remove(entity) {
+      um.unregister(entity);
+      return this;
+    },
+
+
+    /**
+     * Remove all entities
+     * @return {this}
+     * @example
+     * um.removeAll();
+     */
+    removeAll: function removeAll() {
+      um.unregisterAll();
+      return this;
+    },
+
+
+    /**
+     * Start/resume tracking changes
+     * @return {this}
+     * @example
+     * um.start();
+     */
+    start: function start() {
+      um.startTracking();
+      return this;
+    },
+
+
+    /**
+     * Stop tracking changes
+     * @return {this}
+     * @example
+     * um.stop();
+     */
+    stop: function stop() {
+      um.stopTracking();
+      return this;
+    },
+
+
+    /**
+     * Undo last change
+     * @return {this}
+     * @example
+     * um.undo();
+     */
+    undo: function undo() {
+      if (!em.get('Canvas').isInputFocused()) um.undo(1);
+      return this;
+    },
+
+
+    /**
+     * Undo all changes
+     * @return {this}
+     * @example
+     * um.undoAll();
+     */
+    undoAll: function undoAll() {
+      um.undoAll();
+      return this;
+    },
+
+
+    /**
+     * Redo last change
+     * @return {this}
+     * @example
+     * um.redo();
+     */
+    redo: function redo() {
+      if (!em.get('Canvas').isInputFocused()) um.redo(1);
+      return this;
+    },
+
+
+    /**
+     * Redo all changes
+     * @return {this}
+     * @example
+     * um.redoAll();
+     */
+    redoAll: function redoAll() {
+      um.redoAll();
+      return this;
+    },
+
+
+    /**
+     * Checks if exists an available undo
+     * @return {Boolean}
+     * @example
+     * um.hasUndo();
+     */
+    hasUndo: function hasUndo() {
+      return um.isAvailable('undo');
+    },
+
+
+    /**
+     * Checks if exists an available redo
+     * @return {Boolean}
+     * @example
+     * um.hasRedo();
+     */
+    hasRedo: function hasRedo() {
+      return um.isAvailable('redo');
+    },
+
+
+    /**
+     * Get stack of changes
+     * @return {Collection}
+     * @example
+     * const stack = um.getStack();
+     * stack.each(item => ...);
+     */
+    getStack: function getStack() {
+      return um.stack;
+    },
+
+
+    /**
+     * Clear the stack
+     * @return {this}
+     * @example
+     * um.clear();
+     */
+    clear: function clear() {
+      um.clear();
+      return this;
+    },
+    getInstance: function getInstance() {
+      return um;
+    }
+  };
+};
+
+/***/ }),
+/* 71 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+ * Backbone.Undo.js v0.2
+ * 
+ * Copyright (c)2013 Oliver Sartun
+ * Released under the MIT License
+ *
+ * Documentation and full license available at
+ * https://github.com/osartun/Backbone.Undo.js
+ */
+
+
+(function (factory) {
+	if (true) {
+		// AMD support
+		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1), __webpack_require__(72)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	} else if (typeof exports !== 'undefined') {
+		// CommonJS support
+		module.exports = factory(
+			require("underscore"),
+			require("backbone")
+		);
+	} else {
+		// Non-modular execution
+		factory(_, Backbone);
+        }
+})(function (_, Backbone) {
+
+	var core_slice = Array.prototype.slice;
+
+	/**
+	 * As call is faster than apply, this is a faster version of apply as it uses call.
+	 * 
+	 * @param  {Function} fn 	The function to execute 
+	 * @param  {Object}   ctx 	The context the function should be called in
+	 * @param  {Array}    args 	The array of arguments that should be applied to the function
+	 * @return Forwards whatever the called function returns
+	 */
+	function apply (fn, ctx, args) {
+		return args.length <= 4 ?
+			fn.call(ctx, args[0], args[1], args[2], args[3]) :
+			fn.apply(ctx, args);
+	}
+
+	/**
+	 * Uses slice on an array or an array-like object.
+	 * 
+	 * @param  {Array|Object} 	arr 	The array or array-like object.
+	 * @param  {Number} 		[index]	The index from where the array should be sliced. Default is 0.
+	 * @return {Array} The sliced array
+	 */
+	function slice (arr, index) {
+		return core_slice.call(arr, index);
+	}
+
+	/**
+	 * Checks if an object has one or more specific keys. The keys 
+	 * don't have to be an owned property.
+	 * You can call this function either this way:
+	 * hasKeys(obj, ["a", "b", "c"])
+	 * or this way:
+	 * hasKeys(obj, "a", "b", "c")
+	 * 
+	 * @param  {Object}  	obj 	The object to check on
+	 * @param  {Array}  	keys 	The keys to check for
+	 * @return {Boolean} True, if the object has all those keys
+	 */
+	function hasKeys (obj, keys) {
+		if (obj == null) return false;
+		if (!_.isArray(keys)) {
+			keys = slice(arguments, 1);
+		}
+		return _.all(keys, function (key) {
+			return key in obj;
+		});
+	}
+
+	/**
+	 * Returns a number that is unique per call stack. The number gets 
+	 * changed after the call stack has been completely processed.
+	 * 
+	 * @return {number} MagicFusionIndex
+	 */
+	var getMagicFusionIndex = (function () {
+		// If you add several models to a collection or set several
+		// attributes on a model all in sequence and yet all for
+		// example in one function, then several Undo-Actions are
+		// generated.
+		// If you want to undo your last action only the last model
+		// would be removed from the collection or the last set
+		// attribute would be changed back to its previous value.
+		// To prevent that we have to figure out a way to combine
+		// all those actions that happened "at the same time". 
+		// Timestamps aren't exact enough. A complex routine could 
+		// run several milliseconds and in that time produce a lot 
+		// of actions with different timestamps.
+		// Instead we take advantage of the single-threadedness of
+		// JavaScript:
+
+		var callstackWasIndexed = false, magicFusionIndex = -1;
+		function indexCycle() {
+			magicFusionIndex++;
+			callstackWasIndexed = true;
+			_.defer(function () {
+				// Here comes the magic. With a Timeout of 0 
+				// milliseconds this function gets called whenever
+				// the current callstack is completed
+				callstackWasIndexed = false;
+			})
+		}
+		return function () {
+			if (!callstackWasIndexed) {
+				indexCycle();
+			}
+			return magicFusionIndex;
+		}
+	})();
+
+	/**
+	 * To prevent binding a listener several times to one 
+	 * object, we register the objects in an ObjectRegistry
+	 *
+	 * @constructor
+	 */
+	function ObjectRegistry () {
+		// This uses two different ways of storing
+		// objects: In case the object has a cid
+		// (which Backbone objects typically have)
+		// it uses this cid as an index. That way
+		// the Array's length attribute doesn't 
+		// change and the object isn't an item 
+		// in the array, but an object-property.
+		// Otherwise it's added to the Array as an
+		// item.
+		// That way we can use the fast property-
+		// lookup and only have to fall back to 
+		// iterating over the array in case 
+		// non-Backbone-objects are registered.
+		this.registeredObjects = [];
+		// To return a list of all registered 
+		// objects in the 'get' method we have to
+		// store the objects that have a cid in
+		// an additional array. 
+		this.cidIndexes = [];
+	}
+	ObjectRegistry.prototype = {
+		/**
+		 * Returns whether the object is already registered in this ObjectRegistry or not.
+		 * 
+		 * @this 	{ObjectRegistry}
+		 * @param  	{Object} 		 obj 	The object to check
+		 * @return 	{Boolean} True if the object is already registered
+		 */
+		isRegistered: function (obj) {
+			// This is where we get a performance boost 
+			// by using the two different ways of storing 
+			// objects.
+			return obj && obj.cid ? this.registeredObjects[obj.cid] : _.contains(this.registeredObjects, obj);
+		},
+		/**
+		 * Registers an object in this ObjectRegistry.
+		 * 
+		 * @this 	{ObjectRegistry}
+		 * @param  	{Object} 		 obj 	The object to register
+		 * @return 	{undefined}
+		 */
+		register: function (obj) {
+			if (!this.isRegistered(obj)) {
+				if (obj && obj.cid) {
+					this.registeredObjects[obj.cid] = obj;
+					this.cidIndexes.push(obj.cid);
+				} else {
+					this.registeredObjects.push(obj);
+				}
+				return true;
+			}
+			return false;
+		},
+		/**
+		 * Unregisters an object from this ObjectRegistry.
+		 * 
+		 * @this {ObjectRegistry}
+		 * @param  {Object} obj The object to unregister
+		 * @return {undefined}
+		 */
+		unregister: function (obj) {
+			if (this.isRegistered(obj)) {
+				if (obj && obj.cid) {
+					delete this.registeredObjects[obj.cid];
+					this.cidIndexes.splice(_.indexOf(this.cidIndexes, obj.cid), 1);
+				} else {
+					var i = _.indexOf(this.registeredObjects, obj);
+					this.registeredObjects.splice(i, 1);
+				}
+				return true;
+			}
+			return false;
+		},
+		/**
+		 * Returns an array of all objects that are currently in this ObjectRegistry.
+		 * 
+		 * @return {Array} An array of all the objects which are currently in the ObjectRegistry
+		 */
+		get: function () {
+			return (_.map(this.cidIndexes, function (cid) {return this.registeredObjects[cid];}, this)).concat(this.registeredObjects);
+		}
+	}
+
+	/**
+	 * Binds or unbinds the "all"-listener for one or more objects.
+	 * 
+	 * @param  {String}   which 	Either "on" or "off"
+	 * @param  {Object[]} objects 	Array of the objects on which the "all"-listener should be bound / unbound to
+	 * @param  {Function} [fn] 		The function that should be bound / unbound. Optional in case of "off"
+	 * @param  {Object}   [ctx] 	The context the function should be called in
+	 * @return {undefined}
+	 */
+	function onoff(which, objects, fn, ctx) {
+		for (var i = 0, l = objects.length, obj; i < l; i++) {
+			obj = objects[i];
+			if (!obj) continue;
+			if (which === "on") {
+				if (!ctx.objectRegistry.register(obj)) {
+					// register returned false, so obj was already registered
+					continue;
+				}
+			} else {
+				if (!ctx.objectRegistry.unregister(obj)) {
+					// unregister returned false, so obj wasn't registered
+					continue;
+				}
+			}
+			if (_.isFunction(obj[which])) {
+				obj[which]("all", fn, ctx);
+			}
+		}
+	}
+
+	/**
+	 * Calls the undo/redo-function for a specific action.
+	 * 
+	 * @param  {String} which 	Either "undo" or "redo"
+	 * @param  {Object} action 	The Action's attributes
+	 * @return {undefined}
+	 */
+	function actionUndoRedo (which, action) {
+		var type = action.type, undoTypes = action.undoTypes, fn = !undoTypes[type] || undoTypes[type][which];
+		if (_.isFunction(fn)) {
+			fn(action.object, action.before, action.after, action.options);
+		}
+	}
+
+	/**
+	 * The main undo/redo function.
+	 *
+	 * @param  {String} 		which 	    Either "undo" or "redo"
+	 * @param  {UndoManager} 	manager	    The UndoManager-instance on which an "undo"/"redo"-Event is triggered afterwards
+	 * @param  {UndoStack} 		stack 	    The UndoStack on which we perform
+	 * @param  {Boolean} 		magic 	    If true, undoes / redoes all actions with the same magicFusionIndex
+	 * @param  {Boolean} 		everything  If true, undoes / redoes every action that had been tracked
+	 * @return {undefined}
+	 */
+	function managerUndoRedo (which, manager, stack, magic, everything) {
+		if (stack.isCurrentlyUndoRedoing || 
+			(which === "undo" && stack.pointer === -1) ||
+			(which === "redo" && stack.pointer === stack.length - 1)) {
+			// We're either currently in an undo- / redo-process or 
+			// we reached the end of the stack
+			return;
+		}
+		stack.isCurrentlyUndoRedoing = true;
+		var action, actions, isUndo = which === "undo";
+		if (everything) {
+			// Undo / Redo all steps until you reach the stack's beginning / end
+			actions = isUndo && stack.pointer === stack.length - 1 || // If at the stack's end calling undo
+					  !isUndo && stack.pointer === -1 ? // or at the stack's beginning calling redo
+					  _.clone(stack.models) : // => Take all the models. Otherwise:
+					  core_slice.apply(stack.models, isUndo ? [0, stack.pointer] : [stack.pointer, stack.length - 1]);
+		} else {
+			// Undo / Redo only one step
+			action = stack.at(isUndo ? stack.pointer : stack.pointer + 1);
+			actions = magic ? stack.where({"magicFusionIndex": action.get("magicFusionIndex")}) : [action];
+		}
+		
+		stack.pointer += (isUndo ? -1 : 1) * actions.length;
+		while (action = isUndo ? actions.pop() : actions.shift()) {
+			// Here we're calling the Action's undo / redo method
+			action[which]();
+		}
+		stack.isCurrentlyUndoRedoing = false;
+
+		manager.trigger(which, manager);
+	}
+
+	/**
+	 * Checks whether an UndoAction should be created or not. Therefore it checks
+	 * whether a "condition" property is set in the undoTypes-object of the specific
+	 * event type. If not, it returns true. If it's set and a boolean, it returns it.
+	 * If it's a function, it returns its result, converting it into a boolean. 
+	 * Otherwise it returns true.
+	 * 
+	 * @param  {Object} 	undoTypesType 	The object within the UndoTypes that holds the function for this event type (i.e. "change")
+	 * @param  {Arguments} 	args       		The arguments the "condition" function is called with
+	 * @return {Boolean} 	True, if an UndoAction should be created
+	 */
+	function validateUndoActionCreation (undoTypesType, args) {
+		var condition = undoTypesType.condition, type = typeof condition;
+		return type === "function" ? !!apply(condition, undoTypesType, args) :
+			type === "boolean" ? condition : true;
+	}
+
+	/**
+	 * Adds an Undo-Action to the stack.
+	 * 
+	 * @param {UndoStack} 		stack 		The undostack the action should be added to.
+	 * @param {String} 			type 		The event type (i.e. "change")
+	 * @param {Arguments} 		args 		The arguments passed to the undoTypes' "on"-handler
+	 * @param {OwnedUndoTypes} 	undoTypes 	The undoTypes-object which has the "on"-handler
+	 * @return {undefined}
+	 */
+	function addToStack(stack, type, args, undoTypes) {
+		if (stack.track && !stack.isCurrentlyUndoRedoing && type in undoTypes &&
+			validateUndoActionCreation(undoTypes[type], args)) {
+			// An UndoAction should be created
+			var res = apply(undoTypes[type]["on"], undoTypes[type], args), diff;
+			if (hasKeys(res, "object", "before", "after")) {
+				res.type = type;
+				res.magicFusionIndex = getMagicFusionIndex();
+				res.undoTypes = undoTypes;
+				if (stack.pointer < stack.length - 1) {
+					// New Actions must always be added to the end of the stack.
+					// If the pointer is not pointed to the last action in the
+					// stack, presumably because actions were undone before, then
+					// all following actions must be discarded
+					var diff = stack.length - stack.pointer - 1;
+					while (diff--) {
+						stack.pop();
+					}
+				}
+				stack.pointer = stack.length;
+				stack.add(res);
+				if (stack.length > stack.maximumStackLength) {
+					stack.shift();
+					stack.pointer--;
+				}
+			}
+		}
+	}
+
+
+	/**
+	 * Predefined UndoTypes object with default handlers for the most common events.
+	 * @type {Object}
+	 */
+	var UndoTypes = {
+		"add": {
+			"undo": function (collection, ignore, model, options) {
+				// Undo add = remove
+				collection.remove(model, options);
+			},
+			"redo": function (collection, ignore, model, options) {
+				// Redo add = add
+				if (options.index) {
+					options.at = options.index;
+				}
+				collection.add(model, options);
+			},
+			"on": function (model, collection, options) {
+				return {
+					object: collection,
+					before: undefined,
+					after: model,
+					options: _.clone(options)
+				};
+			}
+		},
+		"remove": {
+			"undo": function (collection, model, ignore, options) {
+				if ("index" in options) {
+					options.at = options.index;
+				}
+				collection.add(model, options);
+			},
+			"redo": function (collection, model, ignore, options) {
+				collection.remove(model, options);
+			},
+			"on": function (model, collection, options) {
+				return {
+					object: collection,
+					before: model,
+					after: undefined,
+					options: _.clone(options)
+				};
+			}
+		},
+		"change": {
+			"undo": function (model, before, after, options) {
+				if (_.isEmpty(before)) {
+					_.each(_.keys(after), model.unset, model);
+				} else {
+					model.set(before);
+					if (options && options.unsetData && options.unsetData.before && options.unsetData.before.length) {
+						_.each(options.unsetData.before, model.unset, model);
+					}
+				}
+			},
+			"redo": function (model, before, after, options) {
+				if (_.isEmpty(after)) {
+					_.each(_.keys(before), model.unset, model);
+				} else {
+					model.set(after);
+					if (options && options.unsetData && options.unsetData.after && options.unsetData.after.length) {
+						_.each(options.unsetData.after, model.unset, model);
+					}
+				}
+			},
+			"on": function (model, options) {
+				var
+				afterAttributes = model.changedAttributes(),
+				keysAfter = _.keys(afterAttributes),
+				previousAttributes = _.pick(model.previousAttributes(), keysAfter),
+				keysPrevious = _.keys(previousAttributes),
+				unsetData = (options || (options = {})).unsetData = {
+					after: [],
+					before: []
+				};
+
+				if (keysAfter.length != keysPrevious.length) {
+					// There are new attributes or old attributes have been unset
+					if (keysAfter.length > keysPrevious.length) {
+						// New attributes have been added
+						_.each(keysAfter, function (val) {
+							if (!(val in previousAttributes)) {
+								unsetData.before.push(val);
+							}
+						}, this);
+					} else {
+						// Old attributes have been unset
+						_.each(keysPrevious, function (val) {
+							if (!(val in afterAttributes)) {
+								unsetData.after.push(val);
+							}
+						})
+					}
+				}
+				return {
+					object: model,
+					before: previousAttributes,
+					after: afterAttributes,
+					options: _.clone(options)
+				};
+			}
+		},
+		"reset": {
+			"undo": function (collection, before, after) {
+				collection.reset(before);
+			},
+			"redo": function (collection, before, after) {
+				collection.reset(after);
+			},
+			"on": function (collection, options) {
+				return {
+					object: collection,
+					before: options.previousModels,
+					after: _.clone(collection.models)
+				};
+			}
+		}
+	};
+
+	/**
+	 * Every UndoManager instance has an own undoTypes object
+	 * which is an instance of OwnedUndoTypes. OwnedUndoTypes' 
+	 * prototype is the global UndoTypes object. Changes to the 
+	 * global UndoTypes object take effect on every instance of
+	 * UndoManager as the object is its prototype. And yet every 
+	 * local UndoTypes object can be changed individually.
+	 *
+	 * @constructor
+	 */
+	function OwnedUndoTypes () {}
+	OwnedUndoTypes.prototype = UndoTypes;
+
+	/**
+	 * Adds, changes or removes an undo-type from an UndoTypes-object.
+	 * You can call it this way:
+	 * manipulateUndoType (1, "reset", {"on": function () {}}, undoTypes)
+	 * or this way to perform bulk actions:
+	 * manipulateUndoType (1, {"reset": {"on": function () {}}}, undoTypes)
+	 * In case of removing undo-types you can pass an Array for performing
+	 * bulk actions:
+	 * manipulateUndoType(2, ["reset", "change"], undoTypes)
+	 * 
+	 * @param  {Number} 				  manipType 		Indicates the kind of action to execute: 0 for add, 1 for change, 2 for remove
+	 * @param  {String|Object|Array} 	  undoType 			The type of undoType that should be added/changed/removed. Can be an object / array to perform bulk actions
+	 * @param  {Object} 				  [fns] 			Object with the functions to add / change. Is optional in case you passed an object as undoType that contains these functions
+	 * @param  {OwnedUndoTypes|UndoTypes} undoTypesInstance The undoTypes object to act on
+	 * @return {undefined}
+	 */
+	function manipulateUndoType (manipType, undoType, fns, undoTypesInstance) {
+		// manipType, passed by the calling function
+		// 0: add
+		// 1: change
+		// 2: remove
+		if (typeof undoType === "object") {
+			// bulk action. Iterate over this data.
+			return _.each(undoType, function (val, key) {
+					if (manipType === 2) { // remove
+						// undoType is an array
+						manipulateUndoType (manipType, val, fns, undoTypesInstance);
+					} else {
+						// undoType is an object
+						manipulateUndoType (manipType, key, val, fns);
+					}
+				})
+		}
+
+		switch (manipType) {
+			case 0: // add
+				if (hasKeys(fns, "undo", "redo", "on") && _.all(_.pick(fns, "undo", "redo", "on"), _.isFunction)) {
+					undoTypesInstance[undoType] = fns;
+				} 
+			break;
+			case 1: // change
+				if (undoTypesInstance[undoType] && _.isObject(fns)) {
+					// undoTypeInstance[undoType] may be a prototype's property
+					// So, if we did this _.extend(undoTypeInstance[undoType], fns)
+					// we would extend the object on the prototype which means
+					// that this change would have a global effect
+					// Instead we just want to manipulate this instance. That's why
+					// we're doing this:
+					undoTypesInstance[undoType] = _.extend({}, undoTypesInstance[undoType], fns);
+				} 
+			break;
+			case 2: // remove
+				delete undoTypesInstance[undoType]; 
+			break;
+		}
+		return this;
+	}
+
+	/**
+	 * Instantiating "Action" creates the UndoActions that 
+	 * are collected in an UndoStack. It holds all relevant 
+	 * data to undo / redo an action and has an undo / redo 
+	 * method.
+	 */
+	var Action = Backbone.Model.extend({
+		defaults: {
+			type: null, // "add", "change", "reset", etc.
+			object: null, // The object on which the action occurred
+			before: null, // The previous values which were changed with this action
+			after: null, // The values after this action
+			magicFusionIndex: null // The magicFusionIndex helps to combine 
+			// all actions that occurred "at the same time" to undo/redo them altogether
+		},
+		/**
+		 * Undoes this action.
+		 * @param  {OwnedUndoTypes|UndoTypes} undoTypes The undoTypes object which contains the "undo"-handler that should be used
+		 * @return {undefined}
+		 */
+		undo: function (undoTypes) {
+			actionUndoRedo("undo", this.attributes);
+		},
+		/**
+		 * Redoes this action.
+		 * @param  {OwnedUndoTypes|UndoTypes} undoTypes The undoTypes object which contains the "redo"-handler that should be used
+		 * @return {undefined}
+		 */
+		redo: function (undoTypes) {
+			actionUndoRedo("redo", this.attributes);
+		}
+	}),
+	/**
+	 * An UndoStack is a collection of UndoActions in 
+	 * chronological order.
+	 */
+	UndoStack = Backbone.Collection.extend({
+		model: Action,
+		pointer: -1, // The pointer indicates the index where we are located within the stack. We start at -1
+		track: false,
+		isCurrentlyUndoRedoing: false,
+		maximumStackLength: Infinity,
+		setMaxLength: function (val) {
+			this.maximumStackLength = val;
+		}
+	}),
+	/**
+	 * An instance of UndoManager can keep track of 
+	 * changes to objects and helps to undo them.
+	 */
+	UndoManager = Backbone.Model.extend({
+		defaults: {
+			maximumStackLength: Infinity,
+			track: false
+		},
+		/**
+		 * The constructor function.
+		 * @param  {attr} 		[attr] Object with parameters. The available parameters are:
+		 *                         	   - maximumStackLength {number} 	Set the undo-stack's maximum size
+		 *                             - track 				{boolean}	Start tracking changes right away
+		 * @return {undefined}
+		 */
+		initialize: function (attr) {
+			this.stack = new UndoStack;
+			this.objectRegistry = new ObjectRegistry();
+			this.undoTypes = new OwnedUndoTypes();
+
+			// sync the maximumStackLength attribute with our stack
+			this.stack.setMaxLength(this.get("maximumStackLength"));
+			this.on("change:maximumStackLength", function (model, value) {
+				this.stack.setMaxLength(value);
+			}, this);
+
+			// Start tracking, if attr.track == true
+			if (attr && attr.track) {
+				this.startTracking();
+			}
+
+			// Register objects passed in the "register" attribute
+			if (attr && attr.register) {
+				if (_.isArray(attr.register) || _.isArguments(attr.register)) {
+					apply(this.register, this, attr.register);
+				} else {
+					this.register(attr.register);
+				}
+			}
+		},
+		/**
+		 * Starts tracking. Changes of registered objects won't be processed until you've called this function
+		 * @return {undefined}
+		 */
+		startTracking: function () {
+			this.set("track", true);
+			this.stack.track = true;
+		},
+		/**
+		 * Stops tracking. Afterwards changes of registered objects won't be processed.
+		 * @return {undefined}
+		 */
+		stopTracking: function () {
+			this.set("track", false);
+			this.stack.track = false;
+		},
+		/**
+		 * Return the state of the tracking
+		 * @return {boolean}
+		 */
+		isTracking: function () {
+			return this.get("track");
+		},
+		/**
+		 * This is the "all"-handler which is bound to registered 
+		 * objects. It creates an UndoAction from the event and adds 
+		 * it to the stack.
+		 * 
+		 * @param  {String} 	type 	The event type
+		 * @return {undefined}
+		 */
+		_addToStack: function (type) {
+			addToStack(this.stack, type, slice(arguments, 1), this.undoTypes);
+		},
+		/**
+		 * Registers one or more objects to track their changes.
+		 * @param {...Object} 	obj 	The object or objects of which changes should be tracked
+		 * @return {undefined}
+		 */
+		register: function () {
+			onoff("on", arguments, this._addToStack, this);
+		},
+		/**
+		 * Unregisters one or more objects.
+		 * @param {...Object} 	obj 	The object or objects of which changes shouldn't be tracked any longer
+		 * @return {undefined}
+		 */
+		unregister: function () {
+			onoff("off", arguments, this._addToStack, this);
+		},
+		/**
+		 * Unregisters all previously registered objects.
+		 * @return {undefined}
+		 */
+		unregisterAll: function () {
+			apply(this.unregister, this, this.objectRegistry.get());
+		},
+		/**
+		 * Undoes the last action or the last set of actions in case 'magic' is true.
+		 * @param {Boolean} 	[magic] 	If true, all actions that happened basically at the same time are undone together
+		 * @return {undefined}
+		 */
+		undo: function (magic) {
+			managerUndoRedo("undo", this, this.stack, magic);
+		},
+
+		/**
+		 * Undoes all actions ever tracked by the undo manager
+		 * @return {undefined}
+		 */
+		undoAll: function () {
+			managerUndoRedo("undo", this, this.stack, false, true);
+		},
+
+		/**
+		 * Redoes a previously undone action or a set of actions.
+		 * @param {Boolean} 	[magic] 	If true, all actions that happened basically at the same time are redone together
+		 * @return {undefined}
+		 */
+		redo: function (magic) {
+			managerUndoRedo("redo", this, this.stack, magic);
+		},
+
+		/**
+		 * Redoes all actions ever tracked by the undo manager
+		 * @return {undefined}
+		 */
+		redoAll: function () {
+			managerUndoRedo("redo", this, this.stack, false, true);
+		},
+		/**
+		 * Checks if there's an action in the stack that can be undone / redone
+		 * @param  {String} 	type 	Either "undo" or "redo"
+		 * @return {Boolean} True if there is a set of actions which can be undone / redone
+		 */
+		isAvailable: function (type) {
+			var s = this.stack, l = s.length;
+
+			switch (type) {
+				case "undo": return l > 0 && s.pointer > -1;
+				case "redo": return l > 0 && s.pointer < l - 1;
+				default: return false;
+			}
+		},
+		/**
+		 * Sets the stack-reference to the stack of another undoManager.
+		 * @param  {UndoManager} 	undoManager 	The undoManager whose stack-reference is set to this stack
+		 * @return {undefined}
+		 */
+		merge: function (undoManager) {
+			// This sets the stack-reference to the stack of another 
+			// undoManager so that the stack of this other undoManager 
+			// is used by two different managers.
+			// This enables to set up a main-undoManager and besides it
+			// several others for special, exceptional cases (by using
+			// instance-based custom UndoTypes). Models / collections 
+			// which need this special treatment are only registered at 
+			// those special undoManagers. Those special ones are then 
+			// merged into the main-undoManager to write on its stack. 
+			// That way it's easier to manage exceptional cases.
+			var args = _.isArray(undoManager) ? undoManager : slice(arguments), manager;
+			while (manager = args.pop()) {
+				if (manager instanceof UndoManager &&
+					manager.stack instanceof UndoStack) {
+					// set the stack reference to our stack
+					manager.stack = this.stack;
+				}
+			}
+		},
+		/**
+		 * Add an UndoType to this specific UndoManager-instance.
+		 * @param {String} type The event this UndoType is made for
+		 * @param {Object} fns  An object of functions that are called to generate the data for an UndoAction or to process it. Must have the properties "undo", "redo" and "on". Can have the property "condition".
+		 * @return {undefined}
+		 */
+		addUndoType: function (type, fns) {
+			manipulateUndoType(0, type, fns, this.undoTypes);
+		},
+		/**
+		 * Overwrite properties of an existing UndoType for this specific UndoManager-instance.
+		 * @param  {String} type The event the UndoType is made for
+		 * @param  {Object} fns  An object of functions that are called to generate the data for an UndoAction or to process it. It extends the existing object.
+		 * @return {undefined}
+		 */
+		changeUndoType: function (type, fns) {
+			manipulateUndoType(1, type, fns, this.undoTypes);
+		},
+		/**
+		 * Remove one or more UndoTypes of this specific UndoManager-instance to fall back to the global UndoTypes.
+		 * @param  {String|Array} type The event the UndoType that should be removed is made for. You can also pass an array of events.
+		 * @return {undefined}
+		 */
+		removeUndoType: function (type) {
+			manipulateUndoType(2, type, undefined, this.undoTypes);
+		},
+
+		/**
+		 * Removes all actions from the stack.
+		 * @return {undefined}
+		 */
+		clear: function() {
+			this.stack.reset();
+			this.stack.pointer = -1;
+		}
+	});
+
+	_.extend(UndoManager, {
+		/**
+		 * Change the UndoManager's default attributes
+		 * @param  {Object} defaultAttributes An object with the new default values.
+		 * @return {undefined}
+		 */
+		defaults: function (defaultAttributes) {
+			_.extend(UndoManager.prototype.defaults, defaultAttributes);
+		},
+		/**
+		 * Add an UndoType to the global UndoTypes-object.
+		 * @param  {String} type The event this UndoType is made for
+		 * @param  {Object} fns  An object of functions that are called to generate the data for an UndoAction or to process it. Must have the properties "undo", "redo" and "on". Can have the property "condition".
+		 * @return {undefined}
+		 */
+		"addUndoType": function (type, fns) {
+			manipulateUndoType(0, type, fns, UndoTypes);
+		},
+		/**
+		 * Overwrite properties of an existing UndoType in the global UndoTypes-object.
+		 * @param  {String} type The event the UndoType is made for
+		 * @param  {Object} fns  An object of functions that are called to generate the data for an UndoAction or to process it. It extends the existing object.
+		 * @return {undefined}
+		 */
+		"changeUndoType": function (type, fns) {
+			manipulateUndoType(1, type, fns, UndoTypes)
+		},
+		/**
+		 * Remove one or more UndoTypes of this specific UndoManager-instance to fall back to the global UndoTypes.
+		 * @param  {String|Array} type The event the UndoType that should be removed is made for. You can also pass an array of events.
+		 * @return {undefined}
+		 */
+		"removeUndoType": function (type) {
+			manipulateUndoType(2, type, undefined, UndoTypes);
+		}
+	})
+
+	return Backbone.UndoManager = UndoManager;
+
+});
+
+
+/***/ }),
+/* 72 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Backbone.js 1.2.1
+
+//     (c) 2010-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+//     Backbone may be freely distributed under the MIT license.
+//     For all details and documentation:
+//     http://backbonejs.org
+
+(function(factory) {
+
+  // Establish the root object, `window` (`self`) in the browser, or `global` on the server.
+  // We use `self` instead of `window` for `WebWorker` support.
+  var root = (typeof self == 'object' && self.self == self && self) ||
+            (typeof global == 'object' && global.global == global && global);
+
+  // Set up Backbone appropriately for the environment. Start with AMD.
+  if (true) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1), __webpack_require__(9), exports], __WEBPACK_AMD_DEFINE_RESULT__ = function(_, $, exports) {
+      // Export global even in AMD case in case this script is loaded with
+      // others that may still expect a global Backbone.
+      root.Backbone = factory(root, exports, _, $);
+    }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+  // Next for Node.js or CommonJS. jQuery may not be needed as a module.
+  } else if (typeof exports !== 'undefined') {
+    var _ = require('underscore'), $;
+    try { $ = require('jquery'); } catch(e) {}
+    factory(root, exports, _, $);
+
+  // Finally, as a browser global.
+  } else {
+    root.Backbone = factory(root, {}, root._, (root.jQuery || root.Zepto || root.ender || root.$));
+  }
+
+}(function(root, Backbone, _, $) {
+
+  // Initial Setup
+  // -------------
+
+  // Save the previous value of the `Backbone` variable, so that it can be
+  // restored later on, if `noConflict` is used.
+  var previousBackbone = root.Backbone;
+
+  // Create a local reference to a common array method we'll want to use later.
+  var slice = [].slice;
+
+  // Current version of the library. Keep in sync with `package.json`.
+  Backbone.VERSION = '1.2.1';
+
+  // For Backbone's purposes, jQuery, Zepto, Ender, or My Library (kidding) owns
+  // the `$` variable.
+  Backbone.$ = $;
+
+  // Runs Backbone.js in *noConflict* mode, returning the `Backbone` variable
+  // to its previous owner. Returns a reference to this Backbone object.
+  Backbone.noConflict = function() {
+    root.Backbone = previousBackbone;
+    return this;
+  };
+
+  // Turn on `emulateHTTP` to support legacy HTTP servers. Setting this option
+  // will fake `"PATCH"`, `"PUT"` and `"DELETE"` requests via the `_method` parameter and
+  // set a `X-Http-Method-Override` header.
+  Backbone.emulateHTTP = false;
+
+  // Turn on `emulateJSON` to support legacy servers that can't deal with direct
+  // `application/json` requests ... this will encode the body as
+  // `application/x-www-form-urlencoded` instead and will send the model in a
+  // form param named `model`.
+  Backbone.emulateJSON = false;
+
+  // Proxy Underscore methods to a Backbone class' prototype using a
+  // particular attribute as the data argument
+  var addMethod = function(length, method, attribute) {
+    switch (length) {
+      case 1: return function() {
+        return _[method](this[attribute]);
+      };
+      case 2: return function(value) {
+        return _[method](this[attribute], value);
+      };
+      case 3: return function(iteratee, context) {
+        return _[method](this[attribute], iteratee, context);
+      };
+      case 4: return function(iteratee, defaultVal, context) {
+        return _[method](this[attribute], iteratee, defaultVal, context);
+      };
+      default: return function() {
+        var args = slice.call(arguments);
+        args.unshift(this[attribute]);
+        return _[method].apply(_, args);
+      };
+    }
+  };
+  var addUnderscoreMethods = function(Class, methods, attribute) {
+    _.each(methods, function(length, method) {
+      if (_[method]) Class.prototype[method] = addMethod(length, method, attribute);
+    });
+  };
+
+  // Backbone.Events
+  // ---------------
+
+  // A module that can be mixed in to *any object* in order to provide it with
+  // custom events. You may bind with `on` or remove with `off` callback
+  // functions to an event; `trigger`-ing an event fires all callbacks in
+  // succession.
+  //
+  //     var object = {};
+  //     _.extend(object, Backbone.Events);
+  //     object.on('expand', function(){ alert('expanded'); });
+  //     object.trigger('expand');
+  //
+  var Events = Backbone.Events = {};
+
+  // Regular expression used to split event strings.
+  var eventSplitter = /\s+/;
+
+  // Iterates over the standard `event, callback` (as well as the fancy multiple
+  // space-separated events `"change blur", callback` and jQuery-style event
+  // maps `{event: callback}`), reducing them by manipulating `memo`.
+  // Passes a normalized single event name and callback, as well as any
+  // optional `opts`.
+  var eventsApi = function(iteratee, memo, name, callback, opts) {
+    var i = 0, names;
+    if (name && typeof name === 'object') {
+      // Handle event maps.
+      if (callback !== void 0 && 'context' in opts && opts.context === void 0) opts.context = callback;
+      for (names = _.keys(name); i < names.length ; i++) {
+        memo = iteratee(memo, names[i], name[names[i]], opts);
+      }
+    } else if (name && eventSplitter.test(name)) {
+      // Handle space separated event names.
+      for (names = name.split(eventSplitter); i < names.length; i++) {
+        memo = iteratee(memo, names[i], callback, opts);
+      }
+    } else {
+      memo = iteratee(memo, name, callback, opts);
+    }
+    return memo;
+  };
+
+  // Bind an event to a `callback` function. Passing `"all"` will bind
+  // the callback to all events fired.
+  Events.on = function(name, callback, context) {
+    return internalOn(this, name, callback, context);
+  };
+
+  // An internal use `on` function, used to guard the `listening` argument from
+  // the public API.
+  var internalOn = function(obj, name, callback, context, listening) {
+    obj._events = eventsApi(onApi, obj._events || {}, name, callback, {
+        context: context,
+        ctx: obj,
+        listening: listening
+    });
+
+    if (listening) {
+      var listeners = obj._listeners || (obj._listeners = {});
+      listeners[listening.id] = listening;
+    }
+
+    return obj;
+  };
+
+  // Inversion-of-control versions of `on`. Tell *this* object to listen to
+  // an event in another object... keeping track of what it's listening to.
+  Events.listenTo =  function(obj, name, callback) {
+    if (!obj) return this;
+    var id = obj._listenId || (obj._listenId = _.uniqueId('l'));
+    var listeningTo = this._listeningTo || (this._listeningTo = {});
+    var listening = listeningTo[id];
+
+    // This object is not listening to any other events on `obj` yet.
+    // Setup the necessary references to track the listening callbacks.
+    if (!listening) {
+      var thisId = this._listenId || (this._listenId = _.uniqueId('l'));
+      listening = listeningTo[id] = {obj: obj, objId: id, id: thisId, listeningTo: listeningTo, count: 0};
+    }
+
+    // Bind callbacks on obj, and keep track of them on listening.
+    internalOn(obj, name, callback, this, listening);
+    return this;
+  };
+
+  // The reducing API that adds a callback to the `events` object.
+  var onApi = function(events, name, callback, options) {
+    if (callback) {
+      var handlers = events[name] || (events[name] = []);
+      var context = options.context, ctx = options.ctx, listening = options.listening;
+      if (listening) listening.count++;
+
+      handlers.push({ callback: callback, context: context, ctx: context || ctx, listening: listening });
+    }
+    return events;
+  };
+
+  // Remove one or many callbacks. If `context` is null, removes all
+  // callbacks with that function. If `callback` is null, removes all
+  // callbacks for the event. If `name` is null, removes all bound
+  // callbacks for all events.
+  Events.off =  function(name, callback, context) {
+    if (!this._events) return this;
+    this._events = eventsApi(offApi, this._events, name, callback, {
+        context: context,
+        listeners: this._listeners
+    });
+    return this;
+  };
+
+  // Tell this object to stop listening to either specific events ... or
+  // to every object it's currently listening to.
+  Events.stopListening =  function(obj, name, callback) {
+    var listeningTo = this._listeningTo;
+    if (!listeningTo) return this;
+
+    var ids = obj ? [obj._listenId] : _.keys(listeningTo);
+
+    for (var i = 0; i < ids.length; i++) {
+      var listening = listeningTo[ids[i]];
+
+      // If listening doesn't exist, this object is not currently
+      // listening to obj. Break out early.
+      if (!listening) break;
+
+      listening.obj.off(name, callback, this);
+    }
+    if (_.isEmpty(listeningTo)) this._listeningTo = void 0;
+
+    return this;
+  };
+
+  // The reducing API that removes a callback from the `events` object.
+  var offApi = function(events, name, callback, options) {
+    // No events to consider.
+    if (!events) return;
+
+    var i = 0, listening;
+    var context = options.context, listeners = options.listeners;
+
+    // Delete all events listeners and "drop" events.
+    if (!name && !callback && !context) {
+      var ids = _.keys(listeners);
+      for (; i < ids.length; i++) {
+        listening = listeners[ids[i]];
+        delete listeners[listening.id];
+        delete listening.listeningTo[listening.objId];
+      }
+      return;
+    }
+
+    var names = name ? [name] : _.keys(events);
+    for (; i < names.length; i++) {
+      name = names[i];
+      var handlers = events[name];
+
+      // Bail out if there are no events stored.
+      if (!handlers) break;
+
+      // Replace events if there are any remaining.  Otherwise, clean up.
+      var remaining = [];
+      for (var j = 0; j < handlers.length; j++) {
+        var handler = handlers[j];
+        if (
+          callback && callback !== handler.callback &&
+            callback !== handler.callback._callback ||
+              context && context !== handler.context
+        ) {
+          remaining.push(handler);
+        } else {
+          listening = handler.listening;
+          if (listening && --listening.count === 0) {
+            delete listeners[listening.id];
+            delete listening.listeningTo[listening.objId];
+          }
+        }
+      }
+
+      // Update tail event if the list has any events.  Otherwise, clean up.
+      if (remaining.length) {
+        events[name] = remaining;
+      } else {
+        delete events[name];
+      }
+    }
+    if (_.size(events)) return events;
+  };
+
+  // Bind an event to only be triggered a single time. After the first time
+  // the callback is invoked, it will be removed. When multiple events are
+  // passed in using the space-separated syntax, the event will fire once for every
+  // event you passed in, not once for a combination of all events
+  Events.once =  function(name, callback, context) {
+    // Map the event into a `{event: once}` object.
+    var events = eventsApi(onceMap, {}, name, callback, _.bind(this.off, this));
+    return this.on(events, void 0, context);
+  };
+
+  // Inversion-of-control versions of `once`.
+  Events.listenToOnce =  function(obj, name, callback) {
+    // Map the event into a `{event: once}` object.
+    var events = eventsApi(onceMap, {}, name, callback, _.bind(this.stopListening, this, obj));
+    return this.listenTo(obj, events);
+  };
+
+  // Reduces the event callbacks into a map of `{event: onceWrapper}`.
+  // `offer` unbinds the `onceWrapper` after it has been called.
+  var onceMap = function(map, name, callback, offer) {
+    if (callback) {
+      var once = map[name] = _.once(function() {
+        offer(name, once);
+        callback.apply(this, arguments);
+      });
+      once._callback = callback;
+    }
+    return map;
+  };
+
+  // Trigger one or many events, firing all bound callbacks. Callbacks are
+  // passed the same arguments as `trigger` is, apart from the event name
+  // (unless you're listening on `"all"`, which will cause your callback to
+  // receive the true name of the event as the first argument).
+  Events.trigger =  function(name) {
+    if (!this._events) return this;
+
+    var length = Math.max(0, arguments.length - 1);
+    var args = Array(length);
+    for (var i = 0; i < length; i++) args[i] = arguments[i + 1];
+
+    eventsApi(triggerApi, this._events, name, void 0, args);
+    return this;
+  };
+
+  // Handles triggering the appropriate event callbacks.
+  var triggerApi = function(objEvents, name, cb, args) {
+    if (objEvents) {
+      var events = objEvents[name];
+      var allEvents = objEvents.all;
+      if (events && allEvents) allEvents = allEvents.slice();
+      if (events) triggerEvents(events, args);
+      if (allEvents) triggerEvents(allEvents, [name].concat(args));
+    }
+    return objEvents;
+  };
+
+  // A difficult-to-believe, but optimized internal dispatch function for
+  // triggering events. Tries to keep the usual cases speedy (most internal
+  // Backbone events have 3 arguments).
+  var triggerEvents = function(events, args) {
+    var ev, i = -1, l = events.length, a1 = args[0], a2 = args[1], a3 = args[2];
+    switch (args.length) {
+      case 0: while (++i < l) (ev = events[i]).callback.call(ev.ctx); return;
+      case 1: while (++i < l) (ev = events[i]).callback.call(ev.ctx, a1); return;
+      case 2: while (++i < l) (ev = events[i]).callback.call(ev.ctx, a1, a2); return;
+      case 3: while (++i < l) (ev = events[i]).callback.call(ev.ctx, a1, a2, a3); return;
+      default: while (++i < l) (ev = events[i]).callback.apply(ev.ctx, args); return;
+    }
+  };
+
+  // Aliases for backwards compatibility.
+  Events.bind   = Events.on;
+  Events.unbind = Events.off;
+
+  // Allow the `Backbone` object to serve as a global event bus, for folks who
+  // want global "pubsub" in a convenient place.
+  _.extend(Backbone, Events);
+
+  // Backbone.Model
+  // --------------
+
+  // Backbone **Models** are the basic data object in the framework --
+  // frequently representing a row in a table in a database on your server.
+  // A discrete chunk of data and a bunch of useful, related methods for
+  // performing computations and transformations on that data.
+
+  // Create a new model with the specified attributes. A client id (`cid`)
+  // is automatically generated and assigned for you.
+  var Model = Backbone.Model = function(attributes, options) {
+    var attrs = attributes || {};
+    options || (options = {});
+    this.cid = _.uniqueId(this.cidPrefix);
+    this.attributes = {};
+    if (options.collection) this.collection = options.collection;
+    if (options.parse) attrs = this.parse(attrs, options) || {};
+    attrs = _.defaults({}, attrs, _.result(this, 'defaults'));
+    this.set(attrs, options);
+    this.changed = {};
+    this.initialize.apply(this, arguments);
+  };
+
+  // Attach all inheritable methods to the Model prototype.
+  _.extend(Model.prototype, Events, {
+
+    // A hash of attributes whose current and previous value differ.
+    changed: null,
+
+    // The value returned during the last failed validation.
+    validationError: null,
+
+    // The default name for the JSON `id` attribute is `"id"`. MongoDB and
+    // CouchDB users may want to set this to `"_id"`.
+    idAttribute: 'id',
+
+    // The prefix is used to create the client id which is used to identify models locally.
+    // You may want to override this if you're experiencing name clashes with model ids.
+    cidPrefix: 'c',
+
+    // Initialize is an empty function by default. Override it with your own
+    // initialization logic.
+    initialize: function(){},
+
+    // Return a copy of the model's `attributes` object.
+    toJSON: function(options) {
+      return _.clone(this.attributes);
+    },
+
+    // Proxy `Backbone.sync` by default -- but override this if you need
+    // custom syncing semantics for *this* particular model.
+    sync: function() {
+      return Backbone.sync.apply(this, arguments);
+    },
+
+    // Get the value of an attribute.
+    get: function(attr) {
+      return this.attributes[attr];
+    },
+
+    // Get the HTML-escaped value of an attribute.
+    escape: function(attr) {
+      return _.escape(this.get(attr));
+    },
+
+    // Returns `true` if the attribute contains a value that is not null
+    // or undefined.
+    has: function(attr) {
+      return this.get(attr) != null;
+    },
+
+    // Special-cased proxy to underscore's `_.matches` method.
+    matches: function(attrs) {
+      return !!_.iteratee(attrs, this)(this.attributes);
+    },
+
+    // Set a hash of model attributes on the object, firing `"change"`. This is
+    // the core primitive operation of a model, updating the data and notifying
+    // anyone who needs to know about the change in state. The heart of the beast.
+    set: function(key, val, options) {
+      if (key == null) return this;
+
+      // Handle both `"key", value` and `{key: value}` -style arguments.
+      var attrs;
+      if (typeof key === 'object') {
+        attrs = key;
+        options = val;
+      } else {
+        (attrs = {})[key] = val;
+      }
+
+      options || (options = {});
+
+      // Run validation.
+      if (!this._validate(attrs, options)) return false;
+
+      // Extract attributes and options.
+      var unset      = options.unset;
+      var silent     = options.silent;
+      var changes    = [];
+      var changing   = this._changing;
+      this._changing = true;
+
+      if (!changing) {
+        this._previousAttributes = _.clone(this.attributes);
+        this.changed = {};
+      }
+
+      var current = this.attributes;
+      var changed = this.changed;
+      var prev    = this._previousAttributes;
+
+      // Check for changes of `id`.
+      if (this.idAttribute in attrs) this.id = attrs[this.idAttribute];
+
+      // For each `set` attribute, update or delete the current value.
+      for (var attr in attrs) {
+        val = attrs[attr];
+        if (!_.isEqual(current[attr], val)) changes.push(attr);
+        if (!_.isEqual(prev[attr], val)) {
+          changed[attr] = val;
+        } else {
+          delete changed[attr];
+        }
+        unset ? delete current[attr] : current[attr] = val;
+      }
+
+      // Trigger all relevant attribute changes.
+      if (!silent) {
+        if (changes.length) this._pending = options;
+        for (var i = 0; i < changes.length; i++) {
+          this.trigger('change:' + changes[i], this, current[changes[i]], options);
+        }
+      }
+
+      // You might be wondering why there's a `while` loop here. Changes can
+      // be recursively nested within `"change"` events.
+      if (changing) return this;
+      if (!silent) {
+        while (this._pending) {
+          options = this._pending;
+          this._pending = false;
+          this.trigger('change', this, options);
+        }
+      }
+      this._pending = false;
+      this._changing = false;
+      return this;
+    },
+
+    // Remove an attribute from the model, firing `"change"`. `unset` is a noop
+    // if the attribute doesn't exist.
+    unset: function(attr, options) {
+      return this.set(attr, void 0, _.extend({}, options, {unset: true}));
+    },
+
+    // Clear all attributes on the model, firing `"change"`.
+    clear: function(options) {
+      var attrs = {};
+      for (var key in this.attributes) attrs[key] = void 0;
+      return this.set(attrs, _.extend({}, options, {unset: true}));
+    },
+
+    // Determine if the model has changed since the last `"change"` event.
+    // If you specify an attribute name, determine if that attribute has changed.
+    hasChanged: function(attr) {
+      if (attr == null) return !_.isEmpty(this.changed);
+      return _.has(this.changed, attr);
+    },
+
+    // Return an object containing all the attributes that have changed, or
+    // false if there are no changed attributes. Useful for determining what
+    // parts of a view need to be updated and/or what attributes need to be
+    // persisted to the server. Unset attributes will be set to undefined.
+    // You can also pass an attributes object to diff against the model,
+    // determining if there *would be* a change.
+    changedAttributes: function(diff) {
+      if (!diff) return this.hasChanged() ? _.clone(this.changed) : false;
+      var old = this._changing ? this._previousAttributes : this.attributes;
+      var changed = {};
+      for (var attr in diff) {
+        var val = diff[attr];
+        if (_.isEqual(old[attr], val)) continue;
+        changed[attr] = val;
+      }
+      return _.size(changed) ? changed : false;
+    },
+
+    // Get the previous value of an attribute, recorded at the time the last
+    // `"change"` event was fired.
+    previous: function(attr) {
+      if (attr == null || !this._previousAttributes) return null;
+      return this._previousAttributes[attr];
+    },
+
+    // Get all of the attributes of the model at the time of the previous
+    // `"change"` event.
+    previousAttributes: function() {
+      return _.clone(this._previousAttributes);
+    },
+
+    // Fetch the model from the server, merging the response with the model's
+    // local attributes. Any changed attributes will trigger a "change" event.
+    fetch: function(options) {
+      options = _.extend({parse: true}, options);
+      var model = this;
+      var success = options.success;
+      options.success = function(resp) {
+        var serverAttrs = options.parse ? model.parse(resp, options) : resp;
+        if (!model.set(serverAttrs, options)) return false;
+        if (success) success.call(options.context, model, resp, options);
+        model.trigger('sync', model, resp, options);
+      };
+      wrapError(this, options);
+      return this.sync('read', this, options);
+    },
+
+    // Set a hash of model attributes, and sync the model to the server.
+    // If the server returns an attributes hash that differs, the model's
+    // state will be `set` again.
+    save: function(key, val, options) {
+      // Handle both `"key", value` and `{key: value}` -style arguments.
+      var attrs;
+      if (key == null || typeof key === 'object') {
+        attrs = key;
+        options = val;
+      } else {
+        (attrs = {})[key] = val;
+      }
+
+      options = _.extend({validate: true, parse: true}, options);
+      var wait = options.wait;
+
+      // If we're not waiting and attributes exist, save acts as
+      // `set(attr).save(null, opts)` with validation. Otherwise, check if
+      // the model will be valid when the attributes, if any, are set.
+      if (attrs && !wait) {
+        if (!this.set(attrs, options)) return false;
+      } else {
+        if (!this._validate(attrs, options)) return false;
+      }
+
+      // After a successful server-side save, the client is (optionally)
+      // updated with the server-side state.
+      var model = this;
+      var success = options.success;
+      var attributes = this.attributes;
+      options.success = function(resp) {
+        // Ensure attributes are restored during synchronous saves.
+        model.attributes = attributes;
+        var serverAttrs = options.parse ? model.parse(resp, options) : resp;
+        if (wait) serverAttrs = _.extend({}, attrs, serverAttrs);
+        if (serverAttrs && !model.set(serverAttrs, options)) return false;
+        if (success) success.call(options.context, model, resp, options);
+        model.trigger('sync', model, resp, options);
+      };
+      wrapError(this, options);
+
+      // Set temporary attributes if `{wait: true}` to properly find new ids.
+      if (attrs && wait) this.attributes = _.extend({}, attributes, attrs);
+
+      var method = this.isNew() ? 'create' : (options.patch ? 'patch' : 'update');
+      if (method === 'patch' && !options.attrs) options.attrs = attrs;
+      var xhr = this.sync(method, this, options);
+
+      // Restore attributes.
+      this.attributes = attributes;
+
+      return xhr;
+    },
+
+    // Destroy this model on the server if it was already persisted.
+    // Optimistically removes the model from its collection, if it has one.
+    // If `wait: true` is passed, waits for the server to respond before removal.
+    destroy: function(options) {
+      options = options ? _.clone(options) : {};
+      var model = this;
+      var success = options.success;
+      var wait = options.wait;
+
+      var destroy = function() {
+        model.stopListening();
+        model.trigger('destroy', model, model.collection, options);
+      };
+
+      options.success = function(resp) {
+        if (wait) destroy();
+        if (success) success.call(options.context, model, resp, options);
+        if (!model.isNew()) model.trigger('sync', model, resp, options);
+      };
+
+      var xhr = false;
+      if (this.isNew()) {
+        _.defer(options.success);
+      } else {
+        wrapError(this, options);
+        xhr = this.sync('delete', this, options);
+      }
+      if (!wait) destroy();
+      return xhr;
+    },
+
+    // Default URL for the model's representation on the server -- if you're
+    // using Backbone's restful methods, override this to change the endpoint
+    // that will be called.
+    url: function() {
+      var base =
+        _.result(this, 'urlRoot') ||
+        _.result(this.collection, 'url') ||
+        urlError();
+      if (this.isNew()) return base;
+      var id = this.get(this.idAttribute);
+      return base.replace(/[^\/]$/, '$&/') + encodeURIComponent(id);
+    },
+
+    // **parse** converts a response into the hash of attributes to be `set` on
+    // the model. The default implementation is just to pass the response along.
+    parse: function(resp, options) {
+      return resp;
+    },
+
+    // Create a new model with identical attributes to this one.
+    clone: function() {
+      return new this.constructor(this.attributes);
+    },
+
+    // A model is new if it has never been saved to the server, and lacks an id.
+    isNew: function() {
+      return !this.has(this.idAttribute);
+    },
+
+    // Check if the model is currently in a valid state.
+    isValid: function(options) {
+      return this._validate({}, _.defaults({validate: true}, options));
+    },
+
+    // Run validation against the next complete set of model attributes,
+    // returning `true` if all is well. Otherwise, fire an `"invalid"` event.
+    _validate: function(attrs, options) {
+      if (!options.validate || !this.validate) return true;
+      attrs = _.extend({}, this.attributes, attrs);
+      var error = this.validationError = this.validate(attrs, options) || null;
+      if (!error) return true;
+      this.trigger('invalid', this, error, _.extend(options, {validationError: error}));
+      return false;
+    }
+
+  });
+
+  // Underscore methods that we want to implement on the Model.
+  var modelMethods = { keys: 1, values: 1, pairs: 1, invert: 1, pick: 0,
+      omit: 0, chain: 1, isEmpty: 1 };
+
+  // Mix in each Underscore method as a proxy to `Model#attributes`.
+  addUnderscoreMethods(Model, modelMethods, 'attributes');
+
+  // Backbone.Collection
+  // -------------------
+
+  // If models tend to represent a single row of data, a Backbone Collection is
+  // more analogous to a table full of data ... or a small slice or page of that
+  // table, or a collection of rows that belong together for a particular reason
+  // -- all of the messages in this particular folder, all of the documents
+  // belonging to this particular author, and so on. Collections maintain
+  // indexes of their models, both in order, and for lookup by `id`.
+
+  // Create a new **Collection**, perhaps to contain a specific type of `model`.
+  // If a `comparator` is specified, the Collection will maintain
+  // its models in sort order, as they're added and removed.
+  var Collection = Backbone.Collection = function(models, options) {
+    options || (options = {});
+    if (options.model) this.model = options.model;
+    if (options.comparator !== void 0) this.comparator = options.comparator;
+    this._reset();
+    this.initialize.apply(this, arguments);
+    if (models) this.reset(models, _.extend({silent: true}, options));
+  };
+
+  // Default options for `Collection#set`.
+  var setOptions = {add: true, remove: true, merge: true};
+  var addOptions = {add: true, remove: false};
+
+  // Define the Collection's inheritable methods.
+  _.extend(Collection.prototype, Events, {
+
+    // The default model for a collection is just a **Backbone.Model**.
+    // This should be overridden in most cases.
+    model: Model,
+
+    // Initialize is an empty function by default. Override it with your own
+    // initialization logic.
+    initialize: function(){},
+
+    // The JSON representation of a Collection is an array of the
+    // models' attributes.
+    toJSON: function(options) {
+      return this.map(function(model) { return model.toJSON(options); });
+    },
+
+    // Proxy `Backbone.sync` by default.
+    sync: function() {
+      return Backbone.sync.apply(this, arguments);
+    },
+
+    // Add a model, or list of models to the set.
+    add: function(models, options) {
+      return this.set(models, _.extend({merge: false}, options, addOptions));
+    },
+
+    // Remove a model, or a list of models from the set.
+    remove: function(models, options) {
+      options = _.extend({}, options);
+      var singular = !_.isArray(models);
+      models = singular ? [models] : _.clone(models);
+      var removed = this._removeModels(models, options);
+      if (!options.silent && removed) this.trigger('update', this, options);
+      return singular ? removed[0] : removed;
+    },
+
+    // Update a collection by `set`-ing a new list of models, adding new ones,
+    // removing models that are no longer present, and merging models that
+    // already exist in the collection, as necessary. Similar to **Model#set**,
+    // the core operation for updating the data contained by the collection.
+    set: function(models, options) {
+      options = _.defaults({}, options, setOptions);
+      if (options.parse && !this._isModel(models)) models = this.parse(models, options);
+      var singular = !_.isArray(models);
+      models = singular ? (models ? [models] : []) : models.slice();
+      var id, model, attrs, existing, sort;
+      var at = options.at;
+      if (at != null) at = +at;
+      if (at < 0) at += this.length + 1;
+      var sortable = this.comparator && (at == null) && options.sort !== false;
+      var sortAttr = _.isString(this.comparator) ? this.comparator : null;
+      var toAdd = [], toRemove = [], modelMap = {};
+      var add = options.add, merge = options.merge, remove = options.remove;
+      var order = !sortable && add && remove ? [] : false;
+      var orderChanged = false;
+
+      // Turn bare objects into model references, and prevent invalid models
+      // from being added.
+      for (var i = 0; i < models.length; i++) {
+        attrs = models[i];
+
+        // If a duplicate is found, prevent it from being added and
+        // optionally merge it into the existing model.
+        if (existing = this.get(attrs)) {
+          if (remove) modelMap[existing.cid] = true;
+          if (merge && attrs !== existing) {
+            attrs = this._isModel(attrs) ? attrs.attributes : attrs;
+            if (options.parse) attrs = existing.parse(attrs, options);
+            existing.set(attrs, options);
+            if (sortable && !sort && existing.hasChanged(sortAttr)) sort = true;
+          }
+          models[i] = existing;
+
+        // If this is a new, valid model, push it to the `toAdd` list.
+        } else if (add) {
+          model = models[i] = this._prepareModel(attrs, options);
+          if (!model) continue;
+          toAdd.push(model);
+          this._addReference(model, options);
+        }
+
+        // Do not add multiple models with the same `id`.
+        model = existing || model;
+        if (!model) continue;
+        id = this.modelId(model.attributes);
+        if (order && (model.isNew() || !modelMap[id])) {
+          order.push(model);
+
+          // Check to see if this is actually a new model at this index.
+          orderChanged = orderChanged || !this.models[i] || model.cid !== this.models[i].cid;
+        }
+
+        modelMap[id] = true;
+      }
+
+      // Remove nonexistent models if appropriate.
+      if (remove) {
+        for (var i = 0; i < this.length; i++) {
+          if (!modelMap[(model = this.models[i]).cid]) toRemove.push(model);
+        }
+        if (toRemove.length) this._removeModels(toRemove, options);
+      }
+
+      // See if sorting is needed, update `length` and splice in new models.
+      if (toAdd.length || orderChanged) {
+        if (sortable) sort = true;
+        this.length += toAdd.length;
+        if (at != null) {
+          for (var i = 0; i < toAdd.length; i++) {
+            this.models.splice(at + i, 0, toAdd[i]);
+          }
+        } else {
+          if (order) this.models.length = 0;
+          var orderedModels = order || toAdd;
+          for (var i = 0; i < orderedModels.length; i++) {
+            this.models.push(orderedModels[i]);
+          }
+        }
+      }
+
+      // Silently sort the collection if appropriate.
+      if (sort) this.sort({silent: true});
+
+      // Unless silenced, it's time to fire all appropriate add/sort events.
+      if (!options.silent) {
+        var addOpts = at != null ? _.clone(options) : options;
+        for (var i = 0; i < toAdd.length; i++) {
+          if (at != null) addOpts.index = at + i;
+          (model = toAdd[i]).trigger('add', model, this, addOpts);
+        }
+        if (sort || orderChanged) this.trigger('sort', this, options);
+        if (toAdd.length || toRemove.length) this.trigger('update', this, options);
+      }
+
+      // Return the added (or merged) model (or models).
+      return singular ? models[0] : models;
+    },
+
+    // When you have more items than you want to add or remove individually,
+    // you can reset the entire set with a new list of models, without firing
+    // any granular `add` or `remove` events. Fires `reset` when finished.
+    // Useful for bulk operations and optimizations.
+    reset: function(models, options) {
+      options = options ? _.clone(options) : {};
+      for (var i = 0; i < this.models.length; i++) {
+        this._removeReference(this.models[i], options);
+      }
+      options.previousModels = this.models;
+      this._reset();
+      models = this.add(models, _.extend({silent: true}, options));
+      if (!options.silent) this.trigger('reset', this, options);
+      return models;
+    },
+
+    // Add a model to the end of the collection.
+    push: function(model, options) {
+      return this.add(model, _.extend({at: this.length}, options));
+    },
+
+    // Remove a model from the end of the collection.
+    pop: function(options) {
+      var model = this.at(this.length - 1);
+      return this.remove(model, options);
+    },
+
+    // Add a model to the beginning of the collection.
+    unshift: function(model, options) {
+      return this.add(model, _.extend({at: 0}, options));
+    },
+
+    // Remove a model from the beginning of the collection.
+    shift: function(options) {
+      var model = this.at(0);
+      return this.remove(model, options);
+    },
+
+    // Slice out a sub-array of models from the collection.
+    slice: function() {
+      return slice.apply(this.models, arguments);
+    },
+
+    // Get a model from the set by id.
+    get: function(obj) {
+      if (obj == null) return void 0;
+      var id = this.modelId(this._isModel(obj) ? obj.attributes : obj);
+      return this._byId[obj] || this._byId[id] || this._byId[obj.cid];
+    },
+
+    // Get the model at the given index.
+    at: function(index) {
+      if (index < 0) index += this.length;
+      return this.models[index];
+    },
+
+    // Return models with matching attributes. Useful for simple cases of
+    // `filter`.
+    where: function(attrs, first) {
+      var matches = _.matches(attrs);
+      return this[first ? 'find' : 'filter'](function(model) {
+        return matches(model.attributes);
+      });
+    },
+
+    // Return the first model with matching attributes. Useful for simple cases
+    // of `find`.
+    findWhere: function(attrs) {
+      return this.where(attrs, true);
+    },
+
+    // Force the collection to re-sort itself. You don't need to call this under
+    // normal circumstances, as the set will maintain sort order as each item
+    // is added.
+    sort: function(options) {
+      if (!this.comparator) throw new Error('Cannot sort a set without a comparator');
+      options || (options = {});
+
+      // Run sort based on type of `comparator`.
+      if (_.isString(this.comparator) || this.comparator.length === 1) {
+        this.models = this.sortBy(this.comparator, this);
+      } else {
+        this.models.sort(_.bind(this.comparator, this));
+      }
+
+      if (!options.silent) this.trigger('sort', this, options);
+      return this;
+    },
+
+    // Pluck an attribute from each model in the collection.
+    pluck: function(attr) {
+      return _.invoke(this.models, 'get', attr);
+    },
+
+    // Fetch the default set of models for this collection, resetting the
+    // collection when they arrive. If `reset: true` is passed, the response
+    // data will be passed through the `reset` method instead of `set`.
+    fetch: function(options) {
+      options = _.extend({parse: true}, options);
+      var success = options.success;
+      var collection = this;
+      options.success = function(resp) {
+        var method = options.reset ? 'reset' : 'set';
+        collection[method](resp, options);
+        if (success) success.call(options.context, collection, resp, options);
+        collection.trigger('sync', collection, resp, options);
+      };
+      wrapError(this, options);
+      return this.sync('read', this, options);
+    },
+
+    // Create a new instance of a model in this collection. Add the model to the
+    // collection immediately, unless `wait: true` is passed, in which case we
+    // wait for the server to agree.
+    create: function(model, options) {
+      options = options ? _.clone(options) : {};
+      var wait = options.wait;
+      model = this._prepareModel(model, options);
+      if (!model) return false;
+      if (!wait) this.add(model, options);
+      var collection = this;
+      var success = options.success;
+      options.success = function(model, resp, callbackOpts) {
+        if (wait) collection.add(model, callbackOpts);
+        if (success) success.call(callbackOpts.context, model, resp, callbackOpts);
+      };
+      model.save(null, options);
+      return model;
+    },
+
+    // **parse** converts a response into a list of models to be added to the
+    // collection. The default implementation is just to pass it through.
+    parse: function(resp, options) {
+      return resp;
+    },
+
+    // Create a new collection with an identical list of models as this one.
+    clone: function() {
+      return new this.constructor(this.models, {
+        model: this.model,
+        comparator: this.comparator
+      });
+    },
+
+    // Define how to uniquely identify models in the collection.
+    modelId: function (attrs) {
+      return attrs[this.model.prototype.idAttribute || 'id'];
+    },
+
+    // Private method to reset all internal state. Called when the collection
+    // is first initialized or reset.
+    _reset: function() {
+      this.length = 0;
+      this.models = [];
+      this._byId  = {};
+    },
+
+    // Prepare a hash of attributes (or other model) to be added to this
+    // collection.
+    _prepareModel: function(attrs, options) {
+      if (this._isModel(attrs)) {
+        if (!attrs.collection) attrs.collection = this;
+        return attrs;
+      }
+      options = options ? _.clone(options) : {};
+      options.collection = this;
+      var model = new this.model(attrs, options);
+      if (!model.validationError) return model;
+      this.trigger('invalid', this, model.validationError, options);
+      return false;
+    },
+
+    // Internal method called by both remove and set.
+    // Returns removed models, or false if nothing is removed.
+    _removeModels: function(models, options) {
+      var removed = [];
+      for (var i = 0; i < models.length; i++) {
+        var model = this.get(models[i]);
+        if (!model) continue;
+
+        var index = this.indexOf(model);
+        this.models.splice(index, 1);
+        this.length--;
+
+        if (!options.silent) {
+          options.index = index;
+          model.trigger('remove', model, this, options);
+        }
+
+        removed.push(model);
+        this._removeReference(model, options);
+      }
+      return removed.length ? removed : false;
+    },
+
+    // Method for checking whether an object should be considered a model for
+    // the purposes of adding to the collection.
+    _isModel: function (model) {
+      return model instanceof Model;
+    },
+
+    // Internal method to create a model's ties to a collection.
+    _addReference: function(model, options) {
+      this._byId[model.cid] = model;
+      var id = this.modelId(model.attributes);
+      if (id != null) this._byId[id] = model;
+      model.on('all', this._onModelEvent, this);
+    },
+
+    // Internal method to sever a model's ties to a collection.
+    _removeReference: function(model, options) {
+      delete this._byId[model.cid];
+      var id = this.modelId(model.attributes);
+      if (id != null) delete this._byId[id];
+      if (this === model.collection) delete model.collection;
+      model.off('all', this._onModelEvent, this);
+    },
+
+    // Internal method called every time a model in the set fires an event.
+    // Sets need to update their indexes when models change ids. All other
+    // events simply proxy through. "add" and "remove" events that originate
+    // in other collections are ignored.
+    _onModelEvent: function(event, model, collection, options) {
+      if ((event === 'add' || event === 'remove') && collection !== this) return;
+      if (event === 'destroy') this.remove(model, options);
+      if (event === 'change') {
+        var prevId = this.modelId(model.previousAttributes());
+        var id = this.modelId(model.attributes);
+        if (prevId !== id) {
+          if (prevId != null) delete this._byId[prevId];
+          if (id != null) this._byId[id] = model;
+        }
+      }
+      this.trigger.apply(this, arguments);
+    }
+
+  });
+
+  // Underscore methods that we want to implement on the Collection.
+  // 90% of the core usefulness of Backbone Collections is actually implemented
+  // right here:
+  var collectionMethods = { forEach: 3, each: 3, map: 3, collect: 3, reduce: 4,
+      foldl: 4, inject: 4, reduceRight: 4, foldr: 4, find: 3, detect: 3, filter: 3,
+      select: 3, reject: 3, every: 3, all: 3, some: 3, any: 3, include: 2,
+      contains: 2, invoke: 0, max: 3, min: 3, toArray: 1, size: 1, first: 3,
+      head: 3, take: 3, initial: 3, rest: 3, tail: 3, drop: 3, last: 3,
+      without: 0, difference: 0, indexOf: 3, shuffle: 1, lastIndexOf: 3,
+      isEmpty: 1, chain: 1, sample: 3, partition: 3 };
+
+  // Mix in each Underscore method as a proxy to `Collection#models`.
+  addUnderscoreMethods(Collection, collectionMethods, 'models');
+
+  // Underscore methods that take a property name as an argument.
+  var attributeMethods = ['groupBy', 'countBy', 'sortBy', 'indexBy'];
+
+  // Use attributes instead of properties.
+  _.each(attributeMethods, function(method) {
+    if (!_[method]) return;
+    Collection.prototype[method] = function(value, context) {
+      var iterator = _.isFunction(value) ? value : function(model) {
+        return model.get(value);
+      };
+      return _[method](this.models, iterator, context);
+    };
+  });
+
+  // Backbone.View
+  // -------------
+
+  // Backbone Views are almost more convention than they are actual code. A View
+  // is simply a JavaScript object that represents a logical chunk of UI in the
+  // DOM. This might be a single item, an entire list, a sidebar or panel, or
+  // even the surrounding frame which wraps your whole app. Defining a chunk of
+  // UI as a **View** allows you to define your DOM events declaratively, without
+  // having to worry about render order ... and makes it easy for the view to
+  // react to specific changes in the state of your models.
+
+  // Creating a Backbone.View creates its initial element outside of the DOM,
+  // if an existing element is not provided...
+  var View = Backbone.View = function(options) {
+    this.cid = _.uniqueId('view');
+    _.extend(this, _.pick(options, viewOptions));
+    this._ensureElement();
+    this.initialize.apply(this, arguments);
+  };
+
+  // Cached regex to split keys for `delegate`.
+  var delegateEventSplitter = /^(\S+)\s*(.*)$/;
+
+  // List of view options to be merged as properties.
+  var viewOptions = ['model', 'collection', 'el', 'id', 'attributes', 'className', 'tagName', 'events'];
+
+  // Set up all inheritable **Backbone.View** properties and methods.
+  _.extend(View.prototype, Events, {
+
+    // The default `tagName` of a View's element is `"div"`.
+    tagName: 'div',
+
+    // jQuery delegate for element lookup, scoped to DOM elements within the
+    // current view. This should be preferred to global lookups where possible.
+    $: function(selector) {
+      return this.$el.find(selector);
+    },
+
+    // Initialize is an empty function by default. Override it with your own
+    // initialization logic.
+    initialize: function(){},
+
+    // **render** is the core function that your view should override, in order
+    // to populate its element (`this.el`), with the appropriate HTML. The
+    // convention is for **render** to always return `this`.
+    render: function() {
+      return this;
+    },
+
+    // Remove this view by taking the element out of the DOM, and removing any
+    // applicable Backbone.Events listeners.
+    remove: function() {
+      this._removeElement();
+      this.stopListening();
+      return this;
+    },
+
+    // Remove this view's element from the document and all event listeners
+    // attached to it. Exposed for subclasses using an alternative DOM
+    // manipulation API.
+    _removeElement: function() {
+      this.$el.remove();
+    },
+
+    // Change the view's element (`this.el` property) and re-delegate the
+    // view's events on the new element.
+    setElement: function(element) {
+      this.undelegateEvents();
+      this._setElement(element);
+      this.delegateEvents();
+      return this;
+    },
+
+    // Creates the `this.el` and `this.$el` references for this view using the
+    // given `el`. `el` can be a CSS selector or an HTML string, a jQuery
+    // context or an element. Subclasses can override this to utilize an
+    // alternative DOM manipulation API and are only required to set the
+    // `this.el` property.
+    _setElement: function(el) {
+      this.$el = el instanceof Backbone.$ ? el : Backbone.$(el);
+      this.el = this.$el[0];
+    },
+
+    // Set callbacks, where `this.events` is a hash of
+    //
+    // *{"event selector": "callback"}*
+    //
+    //     {
+    //       'mousedown .title':  'edit',
+    //       'click .button':     'save',
+    //       'click .open':       function(e) { ... }
+    //     }
+    //
+    // pairs. Callbacks will be bound to the view, with `this` set properly.
+    // Uses event delegation for efficiency.
+    // Omitting the selector binds the event to `this.el`.
+    delegateEvents: function(events) {
+      events || (events = _.result(this, 'events'));
+      if (!events) return this;
+      this.undelegateEvents();
+      for (var key in events) {
+        var method = events[key];
+        if (!_.isFunction(method)) method = this[method];
+        if (!method) continue;
+        var match = key.match(delegateEventSplitter);
+        this.delegate(match[1], match[2], _.bind(method, this));
+      }
+      return this;
+    },
+
+    // Add a single event listener to the view's element (or a child element
+    // using `selector`). This only works for delegate-able events: not `focus`,
+    // `blur`, and not `change`, `submit`, and `reset` in Internet Explorer.
+    delegate: function(eventName, selector, listener) {
+      this.$el.on(eventName + '.delegateEvents' + this.cid, selector, listener);
+      return this;
+    },
+
+    // Clears all callbacks previously bound to the view by `delegateEvents`.
+    // You usually don't need to use this, but may wish to if you have multiple
+    // Backbone views attached to the same DOM element.
+    undelegateEvents: function() {
+      if (this.$el) this.$el.off('.delegateEvents' + this.cid);
+      return this;
+    },
+
+    // A finer-grained `undelegateEvents` for removing a single delegated event.
+    // `selector` and `listener` are both optional.
+    undelegate: function(eventName, selector, listener) {
+      this.$el.off(eventName + '.delegateEvents' + this.cid, selector, listener);
+      return this;
+    },
+
+    // Produces a DOM element to be assigned to your view. Exposed for
+    // subclasses using an alternative DOM manipulation API.
+    _createElement: function(tagName) {
+      return document.createElement(tagName);
+    },
+
+    // Ensure that the View has a DOM element to render into.
+    // If `this.el` is a string, pass it through `$()`, take the first
+    // matching element, and re-assign it to `el`. Otherwise, create
+    // an element from the `id`, `className` and `tagName` properties.
+    _ensureElement: function() {
+      if (!this.el) {
+        var attrs = _.extend({}, _.result(this, 'attributes'));
+        if (this.id) attrs.id = _.result(this, 'id');
+        if (this.className) attrs['class'] = _.result(this, 'className');
+        this.setElement(this._createElement(_.result(this, 'tagName')));
+        this._setAttributes(attrs);
+      } else {
+        this.setElement(_.result(this, 'el'));
+      }
+    },
+
+    // Set attributes from a hash on this view's element.  Exposed for
+    // subclasses using an alternative DOM manipulation API.
+    _setAttributes: function(attributes) {
+      this.$el.attr(attributes);
+    }
+
+  });
+
+  // Backbone.sync
+  // -------------
+
+  // Override this function to change the manner in which Backbone persists
+  // models to the server. You will be passed the type of request, and the
+  // model in question. By default, makes a RESTful Ajax request
+  // to the model's `url()`. Some possible customizations could be:
+  //
+  // * Use `setTimeout` to batch rapid-fire updates into a single request.
+  // * Send up the models as XML instead of JSON.
+  // * Persist models via WebSockets instead of Ajax.
+  //
+  // Turn on `Backbone.emulateHTTP` in order to send `PUT` and `DELETE` requests
+  // as `POST`, with a `_method` parameter containing the true HTTP method,
+  // as well as all requests with the body as `application/x-www-form-urlencoded`
+  // instead of `application/json` with the model in a param named `model`.
+  // Useful when interfacing with server-side languages like **PHP** that make
+  // it difficult to read the body of `PUT` requests.
+  Backbone.sync = function(method, model, options) {
+    var type = methodMap[method];
+
+    // Default options, unless specified.
+    _.defaults(options || (options = {}), {
+      emulateHTTP: Backbone.emulateHTTP,
+      emulateJSON: Backbone.emulateJSON
+    });
+
+    // Default JSON-request options.
+    var params = {type: type, dataType: 'json'};
+
+    // Ensure that we have a URL.
+    if (!options.url) {
+      params.url = _.result(model, 'url') || urlError();
+    }
+
+    // Ensure that we have the appropriate request data.
+    if (options.data == null && model && (method === 'create' || method === 'update' || method === 'patch')) {
+      params.contentType = 'application/json';
+      params.data = JSON.stringify(options.attrs || model.toJSON(options));
+    }
+
+    // For older servers, emulate JSON by encoding the request into an HTML-form.
+    if (options.emulateJSON) {
+      params.contentType = 'application/x-www-form-urlencoded';
+      params.data = params.data ? {model: params.data} : {};
+    }
+
+    // For older servers, emulate HTTP by mimicking the HTTP method with `_method`
+    // And an `X-HTTP-Method-Override` header.
+    if (options.emulateHTTP && (type === 'PUT' || type === 'DELETE' || type === 'PATCH')) {
+      params.type = 'POST';
+      if (options.emulateJSON) params.data._method = type;
+      var beforeSend = options.beforeSend;
+      options.beforeSend = function(xhr) {
+        xhr.setRequestHeader('X-HTTP-Method-Override', type);
+        if (beforeSend) return beforeSend.apply(this, arguments);
+      };
+    }
+
+    // Don't process data on a non-GET request.
+    if (params.type !== 'GET' && !options.emulateJSON) {
+      params.processData = false;
+    }
+
+    // Pass along `textStatus` and `errorThrown` from jQuery.
+    var error = options.error;
+    options.error = function(xhr, textStatus, errorThrown) {
+      options.textStatus = textStatus;
+      options.errorThrown = errorThrown;
+      if (error) error.call(options.context, xhr, textStatus, errorThrown);
+    };
+
+    // Make the request, allowing the user to override any Ajax options.
+    var xhr = options.xhr = Backbone.ajax(_.extend(params, options));
+    model.trigger('request', model, xhr, options);
+    return xhr;
+  };
+
+  // Map from CRUD to HTTP for our default `Backbone.sync` implementation.
+  var methodMap = {
+    'create': 'POST',
+    'update': 'PUT',
+    'patch':  'PATCH',
+    'delete': 'DELETE',
+    'read':   'GET'
+  };
+
+  // Set the default implementation of `Backbone.ajax` to proxy through to `$`.
+  // Override this if you'd like to use a different library.
+  Backbone.ajax = function() {
+    return Backbone.$.ajax.apply(Backbone.$, arguments);
+  };
+
+  // Backbone.Router
+  // ---------------
+
+  // Routers map faux-URLs to actions, and fire events when routes are
+  // matched. Creating a new one sets its `routes` hash, if not set statically.
+  var Router = Backbone.Router = function(options) {
+    options || (options = {});
+    if (options.routes) this.routes = options.routes;
+    this._bindRoutes();
+    this.initialize.apply(this, arguments);
+  };
+
+  // Cached regular expressions for matching named param parts and splatted
+  // parts of route strings.
+  var optionalParam = /\((.*?)\)/g;
+  var namedParam    = /(\(\?)?:\w+/g;
+  var splatParam    = /\*\w+/g;
+  var escapeRegExp  = /[\-{}\[\]+?.,\\\^$|#\s]/g;
+
+  // Set up all inheritable **Backbone.Router** properties and methods.
+  _.extend(Router.prototype, Events, {
+
+    // Initialize is an empty function by default. Override it with your own
+    // initialization logic.
+    initialize: function(){},
+
+    // Manually bind a single named route to a callback. For example:
+    //
+    //     this.route('search/:query/p:num', 'search', function(query, num) {
+    //       ...
+    //     });
+    //
+    route: function(route, name, callback) {
+      if (!_.isRegExp(route)) route = this._routeToRegExp(route);
+      if (_.isFunction(name)) {
+        callback = name;
+        name = '';
+      }
+      if (!callback) callback = this[name];
+      var router = this;
+      Backbone.history.route(route, function(fragment) {
+        var args = router._extractParameters(route, fragment);
+        if (router.execute(callback, args, name) !== false) {
+          router.trigger.apply(router, ['route:' + name].concat(args));
+          router.trigger('route', name, args);
+          Backbone.history.trigger('route', router, name, args);
+        }
+      });
+      return this;
+    },
+
+    // Execute a route handler with the provided parameters.  This is an
+    // excellent place to do pre-route setup or post-route cleanup.
+    execute: function(callback, args, name) {
+      if (callback) callback.apply(this, args);
+    },
+
+    // Simple proxy to `Backbone.history` to save a fragment into the history.
+    navigate: function(fragment, options) {
+      Backbone.history.navigate(fragment, options);
+      return this;
+    },
+
+    // Bind all defined routes to `Backbone.history`. We have to reverse the
+    // order of the routes here to support behavior where the most general
+    // routes can be defined at the bottom of the route map.
+    _bindRoutes: function() {
+      if (!this.routes) return;
+      this.routes = _.result(this, 'routes');
+      var route, routes = _.keys(this.routes);
+      while ((route = routes.pop()) != null) {
+        this.route(route, this.routes[route]);
+      }
+    },
+
+    // Convert a route string into a regular expression, suitable for matching
+    // against the current location hash.
+    _routeToRegExp: function(route) {
+      route = route.replace(escapeRegExp, '\\$&')
+                   .replace(optionalParam, '(?:$1)?')
+                   .replace(namedParam, function(match, optional) {
+                     return optional ? match : '([^/?]+)';
+                   })
+                   .replace(splatParam, '([^?]*?)');
+      return new RegExp('^' + route + '(?:\\?([\\s\\S]*))?$');
+    },
+
+    // Given a route, and a URL fragment that it matches, return the array of
+    // extracted decoded parameters. Empty or unmatched parameters will be
+    // treated as `null` to normalize cross-browser behavior.
+    _extractParameters: function(route, fragment) {
+      var params = route.exec(fragment).slice(1);
+      return _.map(params, function(param, i) {
+        // Don't decode the search params.
+        if (i === params.length - 1) return param || null;
+        return param ? decodeURIComponent(param) : null;
+      });
+    }
+
+  });
+
+  // Backbone.History
+  // ----------------
+
+  // Handles cross-browser history management, based on either
+  // [pushState](http://diveintohtml5.info/history.html) and real URLs, or
+  // [onhashchange](https://developer.mozilla.org/en-US/docs/DOM/window.onhashchange)
+  // and URL fragments. If the browser supports neither (old IE, natch),
+  // falls back to polling.
+  var History = Backbone.History = function() {
+    this.handlers = [];
+    _.bindAll(this, 'checkUrl');
+
+    // Ensure that `History` can be used outside of the browser.
+    if (typeof window !== 'undefined') {
+      this.location = window.location;
+      this.history = window.history;
+    }
+  };
+
+  // Cached regex for stripping a leading hash/slash and trailing space.
+  var routeStripper = /^[#\/]|\s+$/g;
+
+  // Cached regex for stripping leading and trailing slashes.
+  var rootStripper = /^\/+|\/+$/g;
+
+  // Cached regex for stripping urls of hash.
+  var pathStripper = /#.*$/;
+
+  // Has the history handling already been started?
+  History.started = false;
+
+  // Set up all inheritable **Backbone.History** properties and methods.
+  _.extend(History.prototype, Events, {
+
+    // The default interval to poll for hash changes, if necessary, is
+    // twenty times a second.
+    interval: 50,
+
+    // Are we at the app root?
+    atRoot: function() {
+      var path = this.location.pathname.replace(/[^\/]$/, '$&/');
+      return path === this.root && !this.getSearch();
+    },
+
+    // Does the pathname match the root?
+    matchRoot: function() {
+      var path = this.decodeFragment(this.location.pathname);
+      var root = path.slice(0, this.root.length - 1) + '/';
+      return root === this.root;
+    },
+
+    // Unicode characters in `location.pathname` are percent encoded so they're
+    // decoded for comparison. `%25` should not be decoded since it may be part
+    // of an encoded parameter.
+    decodeFragment: function(fragment) {
+      return decodeURI(fragment.replace(/%25/g, '%2525'));
+    },
+
+    // In IE6, the hash fragment and search params are incorrect if the
+    // fragment contains `?`.
+    getSearch: function() {
+      var match = this.location.href.replace(/#.*/, '').match(/\?.+/);
+      return match ? match[0] : '';
+    },
+
+    // Gets the true hash value. Cannot use location.hash directly due to bug
+    // in Firefox where location.hash will always be decoded.
+    getHash: function(window) {
+      var match = (window || this).location.href.match(/#(.*)$/);
+      return match ? match[1] : '';
+    },
+
+    // Get the pathname and search params, without the root.
+    getPath: function() {
+      var path = this.decodeFragment(
+        this.location.pathname + this.getSearch()
+      ).slice(this.root.length - 1);
+      return path.charAt(0) === '/' ? path.slice(1) : path;
+    },
+
+    // Get the cross-browser normalized URL fragment from the path or hash.
+    getFragment: function(fragment) {
+      if (fragment == null) {
+        if (this._usePushState || !this._wantsHashChange) {
+          fragment = this.getPath();
+        } else {
+          fragment = this.getHash();
+        }
+      }
+      return fragment.replace(routeStripper, '');
+    },
+
+    // Start the hash change handling, returning `true` if the current URL matches
+    // an existing route, and `false` otherwise.
+    start: function(options) {
+      if (History.started) throw new Error('Backbone.history has already been started');
+      History.started = true;
+
+      // Figure out the initial configuration. Do we need an iframe?
+      // Is pushState desired ... is it available?
+      this.options          = _.extend({root: '/'}, this.options, options);
+      this.root             = this.options.root;
+      this._wantsHashChange = this.options.hashChange !== false;
+      this._hasHashChange   = 'onhashchange' in window;
+      this._useHashChange   = this._wantsHashChange && this._hasHashChange;
+      this._wantsPushState  = !!this.options.pushState;
+      this._hasPushState    = !!(this.history && this.history.pushState);
+      this._usePushState    = this._wantsPushState && this._hasPushState;
+      this.fragment         = this.getFragment();
+
+      // Normalize root to always include a leading and trailing slash.
+      this.root = ('/' + this.root + '/').replace(rootStripper, '/');
+
+      // Transition from hashChange to pushState or vice versa if both are
+      // requested.
+      if (this._wantsHashChange && this._wantsPushState) {
+
+        // If we've started off with a route from a `pushState`-enabled
+        // browser, but we're currently in a browser that doesn't support it...
+        if (!this._hasPushState && !this.atRoot()) {
+          var root = this.root.slice(0, -1) || '/';
+          this.location.replace(root + '#' + this.getPath());
+          // Return immediately as browser will do redirect to new url
+          return true;
+
+        // Or if we've started out with a hash-based route, but we're currently
+        // in a browser where it could be `pushState`-based instead...
+        } else if (this._hasPushState && this.atRoot()) {
+          this.navigate(this.getHash(), {replace: true});
+        }
+
+      }
+
+      // Proxy an iframe to handle location events if the browser doesn't
+      // support the `hashchange` event, HTML5 history, or the user wants
+      // `hashChange` but not `pushState`.
+      if (!this._hasHashChange && this._wantsHashChange && !this._usePushState) {
+        this.iframe = document.createElement('iframe');
+        this.iframe.src = 'javascript:0';
+        this.iframe.style.display = 'none';
+        this.iframe.tabIndex = -1;
+        var body = document.body;
+        // Using `appendChild` will throw on IE < 9 if the document is not ready.
+        var iWindow = body.insertBefore(this.iframe, body.firstChild).contentWindow;
+        iWindow.document.open();
+        iWindow.document.close();
+        iWindow.location.hash = '#' + this.fragment;
+      }
+
+      // Add a cross-platform `addEventListener` shim for older browsers.
+      var addEventListener = window.addEventListener || function (eventName, listener) {
+        return attachEvent('on' + eventName, listener);
+      };
+
+      // Depending on whether we're using pushState or hashes, and whether
+      // 'onhashchange' is supported, determine how we check the URL state.
+      if (this._usePushState) {
+        addEventListener('popstate', this.checkUrl, false);
+      } else if (this._useHashChange && !this.iframe) {
+        addEventListener('hashchange', this.checkUrl, false);
+      } else if (this._wantsHashChange) {
+        this._checkUrlInterval = setInterval(this.checkUrl, this.interval);
+      }
+
+      if (!this.options.silent) return this.loadUrl();
+    },
+
+    // Disable Backbone.history, perhaps temporarily. Not useful in a real app,
+    // but possibly useful for unit testing Routers.
+    stop: function() {
+      // Add a cross-platform `removeEventListener` shim for older browsers.
+      var removeEventListener = window.removeEventListener || function (eventName, listener) {
+        return detachEvent('on' + eventName, listener);
+      };
+
+      // Remove window listeners.
+      if (this._usePushState) {
+        removeEventListener('popstate', this.checkUrl, false);
+      } else if (this._useHashChange && !this.iframe) {
+        removeEventListener('hashchange', this.checkUrl, false);
+      }
+
+      // Clean up the iframe if necessary.
+      if (this.iframe) {
+        document.body.removeChild(this.iframe);
+        this.iframe = null;
+      }
+
+      // Some environments will throw when clearing an undefined interval.
+      if (this._checkUrlInterval) clearInterval(this._checkUrlInterval);
+      History.started = false;
+    },
+
+    // Add a route to be tested when the fragment changes. Routes added later
+    // may override previous routes.
+    route: function(route, callback) {
+      this.handlers.unshift({route: route, callback: callback});
+    },
+
+    // Checks the current URL to see if it has changed, and if it has,
+    // calls `loadUrl`, normalizing across the hidden iframe.
+    checkUrl: function(e) {
+      var current = this.getFragment();
+
+      // If the user pressed the back button, the iframe's hash will have
+      // changed and we should use that for comparison.
+      if (current === this.fragment && this.iframe) {
+        current = this.getHash(this.iframe.contentWindow);
+      }
+
+      if (current === this.fragment) return false;
+      if (this.iframe) this.navigate(current);
+      this.loadUrl();
+    },
+
+    // Attempt to load the current URL fragment. If a route succeeds with a
+    // match, returns `true`. If no defined routes matches the fragment,
+    // returns `false`.
+    loadUrl: function(fragment) {
+      // If the root doesn't match, no routes can match either.
+      if (!this.matchRoot()) return false;
+      fragment = this.fragment = this.getFragment(fragment);
+      return _.any(this.handlers, function(handler) {
+        if (handler.route.test(fragment)) {
+          handler.callback(fragment);
+          return true;
+        }
+      });
+    },
+
+    // Save a fragment into the hash history, or replace the URL state if the
+    // 'replace' option is passed. You are responsible for properly URL-encoding
+    // the fragment in advance.
+    //
+    // The options object can contain `trigger: true` if you wish to have the
+    // route callback be fired (not usually desirable), or `replace: true`, if
+    // you wish to modify the current URL without adding an entry to the history.
+    navigate: function(fragment, options) {
+      if (!History.started) return false;
+      if (!options || options === true) options = {trigger: !!options};
+
+      // Normalize the fragment.
+      fragment = this.getFragment(fragment || '');
+
+      // Don't include a trailing slash on the root.
+      var root = this.root;
+      if (fragment === '' || fragment.charAt(0) === '?') {
+        root = root.slice(0, -1) || '/';
+      }
+      var url = root + fragment;
+
+      // Strip the hash and decode for matching.
+      fragment = this.decodeFragment(fragment.replace(pathStripper, ''));
+
+      if (this.fragment === fragment) return;
+      this.fragment = fragment;
+
+      // If pushState is available, we use it to set the fragment as a real URL.
+      if (this._usePushState) {
+        this.history[options.replace ? 'replaceState' : 'pushState']({}, document.title, url);
+
+      // If hash changes haven't been explicitly disabled, update the hash
+      // fragment to store history.
+      } else if (this._wantsHashChange) {
+        this._updateHash(this.location, fragment, options.replace);
+        if (this.iframe && (fragment !== this.getHash(this.iframe.contentWindow))) {
+          var iWindow = this.iframe.contentWindow;
+
+          // Opening and closing the iframe tricks IE7 and earlier to push a
+          // history entry on hash-tag change.  When replace is true, we don't
+          // want this.
+          if (!options.replace) {
+            iWindow.document.open();
+            iWindow.document.close();
+          }
+
+          this._updateHash(iWindow.location, fragment, options.replace);
+        }
+
+      // If you've told us that you explicitly don't want fallback hashchange-
+      // based history, then `navigate` becomes a page refresh.
+      } else {
+        return this.location.assign(url);
+      }
+      if (options.trigger) return this.loadUrl(fragment);
+    },
+
+    // Update the hash location, either replacing the current entry, or adding
+    // a new one to the browser history.
+    _updateHash: function(location, fragment, replace) {
+      if (replace) {
+        var href = location.href.replace(/(javascript:|#).*$/, '');
+        location.replace(href + '#' + fragment);
+      } else {
+        // Some browsers require that `hash` contains a leading #.
+        location.hash = '#' + fragment;
+      }
+    }
+
+  });
+
+  // Create the default Backbone.history.
+  Backbone.history = new History;
+
+  // Helpers
+  // -------
+
+  // Helper function to correctly set up the prototype chain for subclasses.
+  // Similar to `goog.inherits`, but uses a hash of prototype properties and
+  // class properties to be extended.
+  var extend = function(protoProps, staticProps) {
+    var parent = this;
+    var child;
+
+    // The constructor function for the new subclass is either defined by you
+    // (the "constructor" property in your `extend` definition), or defaulted
+    // by us to simply call the parent constructor.
+    if (protoProps && _.has(protoProps, 'constructor')) {
+      child = protoProps.constructor;
+    } else {
+      child = function(){ return parent.apply(this, arguments); };
+    }
+
+    // Add static properties to the constructor function, if supplied.
+    _.extend(child, parent, staticProps);
+
+    // Set the prototype chain to inherit from `parent`, without calling
+    // `parent` constructor function.
+    var Surrogate = function(){ this.constructor = child; };
+    Surrogate.prototype = parent.prototype;
+    child.prototype = new Surrogate;
+
+    // Add prototype properties (instance properties) to the subclass,
+    // if supplied.
+    if (protoProps) _.extend(child.prototype, protoProps);
+
+    // Set a convenience property in case the parent's prototype is needed
+    // later.
+    child.__super__ = parent.prototype;
+
+    return child;
+  };
+
+  // Set up inheritance for the model, collection, router, view and history.
+  Model.extend = Collection.extend = Router.extend = View.extend = History.extend = extend;
+
+  // Throw an error when a URL is needed, and none is supplied.
+  var urlError = function() {
+    throw new Error('A "url" property or function must be specified');
+  };
+
+  // Wrap an optional error callback with a fallback error event.
+  var wrapError = function(model, options) {
+    var error = options.error;
+    options.error = function(resp) {
+      if (error) error.call(options.context, model, resp, options);
+      model.trigger('error', model, resp, options);
+    };
+  };
+
+  return Backbone;
+
+}));
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)))
+
+/***/ }),
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26823,9 +29875,9 @@ module.exports = function () {
  */
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(69),
-      LocalStorage = __webpack_require__(70),
-      RemoteStorage = __webpack_require__(71);
+      defaults = __webpack_require__(74),
+      LocalStorage = __webpack_require__(75),
+      RemoteStorage = __webpack_require__(76);
 
   var storages = {};
   var defaultStorages = {};
@@ -27022,8 +30074,8 @@ module.exports = function () {
         keysF.push(c.id + keys[i]);
       }st && st.load(keysF, function (res) {
         // Restore keys name
+        var reg = new RegExp('^' + c.id + '');
         for (var itemKey in res) {
-          var reg = new RegExp('^' + c.id + '');
           var itemKeyR = itemKey.replace(reg, '');
           result[itemKeyR] = res[itemKey];
         }
@@ -27057,7 +30109,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 69 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -27125,7 +30177,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 70 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -27195,13 +30247,13 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 71 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _fetch = __webpack_require__(23);
+var _fetch = __webpack_require__(24);
 
 var _fetch2 = _interopRequireDefault(_fetch);
 
@@ -27359,7 +30411,7 @@ module.exports = __webpack_require__(0).Model.extend({
 });
 
 /***/ }),
-/* 72 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(setImmediate) {(function (root) {
@@ -27596,10 +30648,10 @@ module.exports = __webpack_require__(0).Model.extend({
 
 })(this);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(73).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(78).setImmediate))
 
 /***/ }),
-/* 73 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var apply = Function.prototype.apply;
@@ -27652,13 +30704,13 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(74);
+__webpack_require__(79);
 exports.setImmediate = setImmediate;
 exports.clearImmediate = clearImmediate;
 
 
 /***/ }),
-/* 74 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -27848,10 +30900,10 @@ exports.clearImmediate = clearImmediate;
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16), __webpack_require__(75)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16), __webpack_require__(80)))
 
 /***/ }),
-/* 75 */
+/* 80 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -28041,17 +31093,13 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 76 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 /**
- * * [add](#add)
- * * [get](#get)
- * * [getAll](#getall)
- *
  * Before using methods you should get first the module from the editor instance, in this way:
  *
  * ```js
@@ -28062,9 +31110,9 @@ process.umask = function() { return 0; };
  */
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(77),
-      Devices = __webpack_require__(78),
-      DevicesView = __webpack_require__(80);
+      defaults = __webpack_require__(82),
+      Devices = __webpack_require__(83),
+      DevicesView = __webpack_require__(85);
   var devices, view;
 
   return {
@@ -28090,6 +31138,7 @@ module.exports = function () {
      * }
      * ...
      * @return {this}
+     * @private
      */
     init: function init(config) {
       c = config || {};
@@ -28114,6 +31163,10 @@ module.exports = function () {
      * @return {Device} Added device
      * @example
      * deviceManager.add('Tablet', '900px');
+     * deviceManager.add('Tablet2', '900px', {
+     *  height: '300px',
+     *  widthMedia: '810px', // the width that will be used for the CSS media
+     * });
      */
     add: function add(name, width, opts) {
       var obj = opts || {};
@@ -28161,7 +31214,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 77 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28176,21 +31229,21 @@ module.exports = {
 };
 
 /***/ }),
-/* 78 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var Device = __webpack_require__(79);
+var Device = __webpack_require__(84);
 
 module.exports = Backbone.Collection.extend({
   model: Device
 });
 
 /***/ }),
-/* 79 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28208,6 +31261,9 @@ module.exports = Backbone.Model.extend({
     // Width to set for the editor iframe
     width: '',
 
+    // Height to set for the editor iframe
+    height: '',
+
     // The width which will be used in media queries,
     // If empty the width will be used
     widthMedia: null
@@ -28221,7 +31277,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 80 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28312,7 +31368,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 81 */
+/* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28320,9 +31376,9 @@ module.exports = Backbone.View.extend({
 
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(82),
-      parserCss = __webpack_require__(83),
-      parserHtml = __webpack_require__(24);
+      defaults = __webpack_require__(87),
+      parserCss = __webpack_require__(88),
+      parserHtml = __webpack_require__(25);
   var pHtml, pCss;
 
   return {
@@ -28378,7 +31434,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 82 */
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28391,7 +31447,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 83 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28548,7 +31604,7 @@ module.exports = function (config) {
 };
 
 /***/ }),
-/* 84 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28609,10 +31665,10 @@ var _underscore = __webpack_require__(1);
 
 module.exports = function (config) {
   var c = config || {},
-      defaults = __webpack_require__(85),
-      Selector = __webpack_require__(9),
+      defaults = __webpack_require__(90),
+      Selector = __webpack_require__(7),
       Selectors = __webpack_require__(10),
-      ClassTagsView = __webpack_require__(86);
+      ClassTagsView = __webpack_require__(91);
   var selectors, selectorTags;
 
   return {
@@ -28769,7 +31825,7 @@ module.exports = function (config) {
 };
 
 /***/ }),
-/* 85 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28796,14 +31852,14 @@ module.exports = {
 };
 
 /***/ }),
-/* 86 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(_) {
 
 var Backbone = __webpack_require__(0);
-var ClassTagView = __webpack_require__(87);
+var ClassTagView = __webpack_require__(92);
 
 module.exports = Backbone.View.extend({
   template: _.template('\n  <div id="<%= pfx %>up">\n    <div id="<%= pfx %>label"><%= label %></div>\n    <div id="<%= pfx %>status-c">\n      <span id="<%= pfx %>input-c">\n        <div class="<%= ppfx %>field <%= ppfx %>select">\n          <span id="<%= ppfx %>input-holder">\n            <select id="<%= pfx %>states">\n              <option value=""><%= statesLabel %></option>\n            </select>\n          </span>\n          <div class="<%= ppfx %>sel-arrow">\n            <div class="<%= ppfx %>d-s-arrow"></div>\n          </div>\n        </div>\n      </span>\n    </div>\n  </div>\n  <div id="<%= pfx %>tags-field" class="<%= ppfx %>field">\n    <div id="<%= pfx %>tags-c"></div>\n    <input id="<%= pfx %>new" />\n    <span id="<%= pfx %>add-tag" class="fa fa-plus"></span>\n  </div>\n  <div id="<%= pfx %>sel-help">\n    <div id="<%= pfx %>label"><%= selectedLabel %></div>\n    <div id="<%= pfx %>sel"></div>\n    <div style="clear:both"></div>\n  </div>'),
@@ -28831,7 +31887,7 @@ module.exports = Backbone.View.extend({
     this.em = this.target;
 
     this.listenTo(this.target, 'change:selectedComponent', this.componentChanged);
-    this.listenTo(this.target, 'targetClassUpdated', this.updateSelector);
+    this.listenTo(this.target, 'component:update:classes', this.updateSelector);
 
     this.listenTo(this.collection, 'add', this.addNew);
     this.listenTo(this.collection, 'reset', this.renderClasses);
@@ -28955,7 +32011,8 @@ module.exports = Backbone.View.extend({
     }
 
     var state = selected.get('state');
-    var result = this.collection.getFullString();
+    var coll = this.collection;
+    var result = coll.getFullString(coll.getStyleable());
     result = result || '#' + selected.getId();
     result += state ? ':' + state : '';
     var el = this.el.querySelector('#' + this.pfx + 'sel');
@@ -28971,7 +32028,6 @@ module.exports = Backbone.View.extend({
   stateChanged: function stateChanged(e) {
     if (this.compTarget) {
       this.compTarget.set('state', this.$states.val());
-      if (this.target) this.target.trigger('targetStateUpdated');
       this.updateSelector();
     }
   },
@@ -29000,11 +32056,6 @@ module.exports = Backbone.View.extend({
         compCls.add(model);
         var lenA = compCls.length;
         this.collection.add(model);
-
-        if (lenA > lenB) {
-          target.trigger('targetClassAdded');
-        }
-
         this.updateStateVis();
       }
     }
@@ -29107,37 +32158,51 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 87 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(_) {
 
-var Backbone = __webpack_require__(0);
-var Selector = __webpack_require__(9);
 
-module.exports = Backbone.View.extend({
-  template: _.template('\n  <span id="<%= pfx %>checkbox" class="fa"></span>\n  <span id="<%= pfx %>tag-label">\n      <input class="<%= ppfx %>no-app" value="<%= label %>" <%= inputProp %>/>\n  </span>\n  <span id="<%= pfx %>close">&Cross;</span>'),
+var Selector = __webpack_require__(7);
+var inputProp = 'contentEditable';
+
+module.exports = __webpack_require__(0).View.extend({
+  template: function template() {
+    var pfx = this.pfx;
+    var ppfx = this.ppfx;
+    var label = this.model.get('label') || '';
+    return '\n      <span id="' + pfx + 'checkbox" class="fa" data-tag-status></span>\n      <span id="' + pfx + 'tag-label" data-tag-name>' + label + '</span>\n      <span id="' + pfx + 'close" data-tag-remove>\n        &Cross;\n      </span>\n    ';
+  },
+
+
+  events: {
+    'click [data-tag-remove]': 'removeTag',
+    'click [data-tag-status]': 'changeStatus',
+    'dblclick [data-tag-name]': 'startEditTag',
+    'focusout [data-tag-name]': 'endEditTag'
+  },
 
   initialize: function initialize(o) {
     this.config = o.config || {};
     this.coll = o.coll || null;
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
-    this.inputProp = 'readonly';
     this.target = this.config.em;
-    this.closeId = this.pfx + 'close';
-    this.chkId = this.pfx + 'checkbox';
-    this.labelId = this.pfx + 'tag-label';
-    this.events = {};
-    this.events['click #' + this.closeId] = 'removeTag';
-    this.events['click #' + this.chkId] = 'changeStatus';
-    this.events['dblclick #' + this.labelId] = 'startEditTag';
-    this.events['keypress #' + this.labelId + ' input'] = 'updateInputLabel';
-    this.events['blur #' + this.labelId + ' input'] = 'endEditTag';
-
     this.listenTo(this.model, 'change:active', this.updateStatus);
-    this.delegateEvents();
+  },
+
+
+  /**
+   * Returns the element which containes the anme of the tag
+   * @return {HTMLElement}
+   */
+  getInputEl: function getInputEl() {
+    if (!this.inputEl) {
+      this.inputEl = this.el.querySelector('[data-tag-name]');
+    }
+
+    return this.inputEl;
   },
 
 
@@ -29146,7 +32211,9 @@ module.exports = Backbone.View.extend({
    * @private
    */
   startEditTag: function startEditTag() {
-    this.$labelInput.prop(this.inputProp, false);
+    var inputEl = this.getInputEl();
+    inputEl[inputProp] = true;
+    inputEl.focus();
   },
 
 
@@ -29156,17 +32223,21 @@ module.exports = Backbone.View.extend({
    * @private
    */
   endEditTag: function endEditTag() {
-    var value = this.$labelInput.val();
-    var next = Selector.escapeName(value);
+    var model = this.model;
+    var inputEl = this.getInputEl();
+    var label = inputEl.textContent;
+    var name = Selector.escapeName(label);
+    var em = this.target;
+    var sm = em && em.get('SelectorManager');
+    inputEl[inputProp] = false;
 
-    if (this.target) {
-      var clsm = this.target.get('SelectorManager');
-
-      if (clsm) {
-        if (clsm.get(next)) this.$labelInput.val(this.model.get('label'));else this.model.set({ name: next, label: value });
+    if (sm) {
+      if (sm.get(name)) {
+        inputEl.innerText = model.get('label');
+      } else {
+        model.set({ name: name, label: label });
       }
     }
-    this.$labelInput.prop(this.inputProp, true);
   },
 
 
@@ -29176,7 +32247,6 @@ module.exports = Backbone.View.extend({
    */
   changeStatus: function changeStatus() {
     this.model.set('active', !this.model.get('active'));
-    this.target.trigger('targetClassUpdated');
   },
 
 
@@ -29198,7 +32268,6 @@ module.exports = Backbone.View.extend({
     setTimeout(function () {
       return _this.remove();
     }, 0);
-    em && em.trigger('targetClassRemoved');
   },
 
 
@@ -29220,41 +32289,18 @@ module.exports = Backbone.View.extend({
       this.$el.addClass('opac50');
     }
   },
-
-
-  /**
-   * Update label's input
-   * @private
-   */
-  updateInputLabel: function updateInputLabel() {
-    if (!this.$labelInput) {
-      this.$labelInput = this.$el.find('input');
-    }
-
-    this.$labelInput.prop(this.inputProp, true);
-    var size = this.$labelInput.val().length - 1;
-    size = size < 1 ? 1 : size;
-    this.$labelInput.attr('size', size);
-  },
   render: function render() {
     var pfx = this.pfx;
     var ppfx = this.ppfx;
-    this.$el.html(this.template({
-      label: this.model.get('label'),
-      pfx: pfx,
-      ppfx: ppfx,
-      inputProp: this.inputProp
-    }));
+    this.$el.html(this.template());
     this.$el.attr('class', pfx + 'tag ' + ppfx + 'three-bg');
     this.updateStatus();
-    this.updateInputLabel();
     return this;
   }
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 88 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29278,9 +32324,9 @@ module.exports = Backbone.View.extend({
  */
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(89),
-      ModalM = __webpack_require__(90),
-      ModalView = __webpack_require__(91);
+      defaults = __webpack_require__(94),
+      ModalM = __webpack_require__(95),
+      ModalView = __webpack_require__(96);
   var model, modal;
 
   return {
@@ -29426,7 +32472,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 89 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29445,7 +32491,7 @@ module.exports = {
 };;
 
 /***/ }),
-/* 90 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29462,7 +32508,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 91 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29600,7 +32646,7 @@ module.exports = __webpack_require__(0).View.extend({
 });
 
 /***/ }),
-/* 92 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29628,13 +32674,13 @@ module.exports = __webpack_require__(0).View.extend({
 module.exports = function () {
 
   var c = {},
-      defaults = __webpack_require__(93),
-      gHtml = __webpack_require__(94),
-      gCss = __webpack_require__(95),
-      gJson = __webpack_require__(96),
-      gJs = __webpack_require__(97),
-      eCM = __webpack_require__(98),
-      editorView = __webpack_require__(103);
+      defaults = __webpack_require__(98),
+      gHtml = __webpack_require__(99),
+      gCss = __webpack_require__(100),
+      gJson = __webpack_require__(101),
+      gJs = __webpack_require__(102),
+      eCM = __webpack_require__(103),
+      editorView = __webpack_require__(108);
 
   var generators = {},
       defGenerators = {},
@@ -29830,7 +32876,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 93 */
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29844,7 +32890,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 94 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29874,7 +32920,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 95 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30007,7 +33053,7 @@ module.exports = __webpack_require__(0).Model.extend({
 });
 
 /***/ }),
-/* 96 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30052,7 +33098,7 @@ module.exports = Backbone.Model.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 97 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30113,7 +33159,7 @@ module.exports = Backbone.Model.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 98 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30123,9 +33169,9 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var Backbone = __webpack_require__(0);
 var CodeMirror = __webpack_require__(6);
-var htmlMode = __webpack_require__(99);
-var cssMode = __webpack_require__(25);
-var formatting = __webpack_require__(102);
+var htmlMode = __webpack_require__(104);
+var cssMode = __webpack_require__(26);
+var formatting = __webpack_require__(107);
 
 module.exports = Backbone.Model.extend({
 
@@ -30163,7 +33209,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 99 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -30171,7 +33217,7 @@ module.exports = Backbone.Model.extend({
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(6), __webpack_require__(100), __webpack_require__(101), __webpack_require__(25));
+    mod(__webpack_require__(6), __webpack_require__(105), __webpack_require__(106), __webpack_require__(26));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror", "../xml/xml", "../javascript/javascript", "../css/css"], mod);
   else // Plain browser env
@@ -30321,7 +33367,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 100 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -30721,7 +33767,7 @@ if (!CodeMirror.mimeModes.hasOwnProperty("text/html"))
 
 
 /***/ }),
-/* 101 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -31582,7 +34628,7 @@ CodeMirror.defineMIME("application/typescript", { name: "javascript", typescript
 
 
 /***/ }),
-/* 102 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function(mod) {
@@ -31709,7 +34755,7 @@ CodeMirror.defineMIME("application/typescript", { name: "javascript", typescript
 
 
 /***/ }),
-/* 103 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31737,7 +34783,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 104 */
+/* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31792,11 +34838,11 @@ module.exports = Backbone.View.extend({
  */
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(105),
-      Panel = __webpack_require__(26),
-      Panels = __webpack_require__(107),
-      PanelView = __webpack_require__(28),
-      PanelsView = __webpack_require__(109);
+      defaults = __webpack_require__(110),
+      Panel = __webpack_require__(27),
+      Panels = __webpack_require__(112),
+      PanelView = __webpack_require__(29),
+      PanelsView = __webpack_require__(114);
   var panels, PanelsViewObj;
 
   return {
@@ -32015,7 +35061,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 105 */
+/* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32100,7 +35146,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 106 */
+/* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32127,28 +35173,28 @@ module.exports = Backbone.Model.extend({
 
   initialize: function initialize(options) {
     if (this.get('buttons').length) {
-      var Buttons = __webpack_require__(27);
+      var Buttons = __webpack_require__(28);
       this.set('buttons', new Buttons(this.get('buttons')));
     }
   }
 });
 
 /***/ }),
-/* 107 */
+/* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var Panel = __webpack_require__(26);
+var Panel = __webpack_require__(27);
 
 module.exports = Backbone.Collection.extend({
   model: Panel
 });
 
 /***/ }),
-/* 108 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32366,12 +35412,12 @@ module.exports = Backbone.View.extend({
     var model = this.model;
     var context = model.get('context');
     var parent = this.parentM;
-    var command = null;
+    var command = {};
     var editor = this.em && this.em.get ? this.em.get('Editor') : null;
     var commandName = model.get('command');
 
     if (this.commands && (0, _underscore.isString)(commandName)) {
-      command = this.commands.get(commandName);
+      command = this.commands.get(commandName) || {};
     } else if ((0, _underscore.isFunction)(commandName)) {
       command = { run: commandName };
     } else if (commandName !== null && (0, _underscore.isObject)(commandName)) {
@@ -32383,7 +35429,7 @@ module.exports = Backbone.View.extend({
       model.set('active', true, { silent: true }).trigger('checkActive');
       parent && parent.set('active', true, { silent: true }).trigger('checkActive');
 
-      if (command && command.run) {
+      if (command.run) {
         command.run(editor, model, model.get('options'));
         editor.trigger('run:' + commandName);
       }
@@ -32395,7 +35441,7 @@ module.exports = Backbone.View.extend({
       model.collection.deactivateAll(context);
       parent && parent.set('active', false, { silent: true }).trigger('checkActive');
 
-      if (command && command.stop) {
+      if (command.stop) {
         command.stop(editor, model, model.get('options'));
         editor.trigger('stop:' + commandName);
       }
@@ -32469,7 +35515,7 @@ module.exports = Backbone.View.extend({
     this.$el.attr('class', this.className);
 
     if (this.model.get('buttons').length) {
-      var btnsView = __webpack_require__(29); //Avoid Circular Dependencies
+      var btnsView = __webpack_require__(30); //Avoid Circular Dependencies
       var view = new btnsView({
         collection: this.model.get('buttons'),
         config: this.config,
@@ -32486,14 +35532,14 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-/* 109 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var PanelView = __webpack_require__(28);
+var PanelView = __webpack_require__(29);
 
 module.exports = Backbone.View.extend({
   initialize: function initialize(o) {
@@ -32565,13 +35611,13 @@ module.exports = Backbone.View.extend({
 });
 
 /***/ }),
-/* 110 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _RichTextEditor = __webpack_require__(111);
+var _RichTextEditor = __webpack_require__(116);
 
 var _RichTextEditor2 = _interopRequireDefault(_RichTextEditor);
 
@@ -32596,7 +35642,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 module.exports = function () {
   var config = {};
-  var defaults = __webpack_require__(112);
+  var defaults = __webpack_require__(117);
   var toolbar = void 0,
       actions = void 0,
       lastEl = void 0,
@@ -32875,7 +35921,7 @@ module.exports = function () {
       if (customRte) {
         customRte.disable(el, rte);
       } else {
-        rte.disable();
+        rte && rte.disable();
       }
 
       hideToolbar();
@@ -32885,7 +35931,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 111 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33203,7 +36249,7 @@ var RichTextEditor = function () {
 exports.default = RichTextEditor;
 
 /***/ }),
-/* 112 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33222,7 +36268,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 113 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33251,27 +36297,27 @@ module.exports = {
   showComputed: true,
 
   // Adds the possibility to clear property value from the target style
-  clearProperties: false,
+  clearProperties: 0,
 
   // Properties not to take in account for computed styles
   avoidComputed: ['width', 'height']
 };
 
 /***/ }),
-/* 114 */
+/* 119 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var Sector = __webpack_require__(115);
+var Sector = __webpack_require__(120);
 
 module.exports = __webpack_require__(0).Collection.extend({
 	model: Sector
 });
 
 /***/ }),
-/* 115 */
+/* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33281,7 +36327,7 @@ var _underscore = __webpack_require__(1);
 
 var Backbone = __webpack_require__(0);
 var Properties = __webpack_require__(11);
-var PropertyFactory = __webpack_require__(124);
+var PropertyFactory = __webpack_require__(129);
 
 module.exports = Backbone.Model.extend({
 
@@ -33372,7 +36418,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 116 */
+/* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33380,8 +36426,8 @@ module.exports = Backbone.Model.extend({
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var Property = __webpack_require__(32);
-var Layers = __webpack_require__(117);
+var Property = __webpack_require__(33);
+var Layers = __webpack_require__(122);
 
 module.exports = Property.extend({
 
@@ -33406,7 +36452,7 @@ module.exports = Property.extend({
 });
 
 /***/ }),
-/* 117 */
+/* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33414,7 +36460,7 @@ module.exports = Property.extend({
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var Layer = __webpack_require__(118);
+var Layer = __webpack_require__(123);
 
 module.exports = Backbone.Collection.extend({
 
@@ -33537,7 +36583,7 @@ module.exports = Backbone.Collection.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 118 */
+/* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33593,7 +36639,7 @@ module.exports = Backbone.Model.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 119 */
+/* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35828,14 +38874,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 120 */
+/* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var LayerView = __webpack_require__(121);
+var LayerView = __webpack_require__(126);
 
 module.exports = Backbone.View.extend({
   initialize: function initialize(o) {
@@ -35959,7 +39005,7 @@ module.exports = Backbone.View.extend({
 });
 
 /***/ }),
-/* 121 */
+/* 126 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36119,7 +39165,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 122 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36127,7 +39173,7 @@ module.exports = Backbone.View.extend({
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var Property = __webpack_require__(41);
+var Property = __webpack_require__(42);
 
 module.exports = Property.extend({
 
@@ -36138,7 +39184,7 @@ module.exports = Property.extend({
 });
 
 /***/ }),
-/* 123 */
+/* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36191,7 +39237,7 @@ module.exports = Property.extend({
 });
 
 /***/ }),
-/* 124 */
+/* 129 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36562,7 +39608,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 125 */
+/* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36572,7 +39618,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _underscore = __webpack_require__(1);
 
-var SectorView = __webpack_require__(126);
+var SectorView = __webpack_require__(131);
 
 module.exports = Backbone.View.extend({
   initialize: function initialize(o) {
@@ -36590,9 +39636,10 @@ module.exports = Backbone.View.extend({
     body.removeChild(dummy);
     this.propTarget = target;
     var coll = this.collection;
+    var events = 'change:selectedComponent component:update:classes change:device';
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.render);
-    this.listenTo(this.target, 'change:selectedComponent targetClassAdded targetClassRemoved targetClassUpdated ' + 'targetStateUpdated targetStyleUpdated change:device', this.targetUpdated);
+    this.listenTo(this.target, events, this.targetUpdated);
   },
 
 
@@ -36678,11 +39725,11 @@ module.exports = Backbone.View.extend({
         // selecting the component) and calling undo() it will remove the rule from
         // the collection, therefore updating it in style manager will not affect it
         // #268
-        um.stopTracking();
+        um.stop();
         iContainer = cc.add(valid, state, media);
         iContainer.setStyle(model.getStyle());
         model.setStyle({});
-        um.startTracking();
+        um.start();
       }
 
       if (!iContainer) {
@@ -36755,7 +39802,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 126 */
+/* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36782,6 +39829,7 @@ module.exports = Backbone.View.extend({
     var model = this.model;
     this.listenTo(model, 'change:open', this.updateOpen);
     this.listenTo(model, 'updateVisibility', this.updateVisibility);
+    this.listenTo(model, 'destroy remove', this.remove);
   },
 
 
@@ -36865,7 +39913,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 127 */
+/* 132 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36913,10 +39961,10 @@ module.exports = Backbone.View.extend({
 
 module.exports = function () {
   var c = {};
-  var defaults = __webpack_require__(128);
-  var Assets = __webpack_require__(129);
-  var AssetsView = __webpack_require__(132);
-  var FileUpload = __webpack_require__(44);
+  var defaults = __webpack_require__(133);
+  var Assets = __webpack_require__(134);
+  var AssetsView = __webpack_require__(137);
+  var FileUpload = __webpack_require__(45);
   var assets = void 0,
       am = void 0,
       fu = void 0;
@@ -37257,7 +40305,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 128 */
+/* 133 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37349,13 +40397,13 @@ module.exports = {
 };
 
 /***/ }),
-/* 129 */
+/* 134 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _TypeableCollection = __webpack_require__(31);
+var _TypeableCollection = __webpack_require__(32);
 
 var _TypeableCollection2 = _interopRequireDefault(_TypeableCollection);
 
@@ -37364,8 +40412,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.default).extend({
   types: [{
     id: 'image',
-    model: __webpack_require__(130),
-    view: __webpack_require__(42),
+    model: __webpack_require__(135),
+    view: __webpack_require__(43),
     isType: function isType(value) {
       if (typeof value == 'string') {
         return {
@@ -37379,7 +40427,7 @@ module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.d
 });
 
 /***/ }),
-/* 130 */
+/* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37387,7 +40435,7 @@ module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.d
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var Asset = __webpack_require__(131);
+var Asset = __webpack_require__(136);
 
 module.exports = Asset.extend({
 
@@ -37401,7 +40449,7 @@ module.exports = Asset.extend({
 });
 
 /***/ }),
-/* 131 */
+/* 136 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37437,15 +40485,15 @@ module.exports = __webpack_require__(0).Model.extend({
 });
 
 /***/ }),
-/* 132 */
+/* 137 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(Backbone) {
 
-var AssetView = __webpack_require__(43);
-var AssetImageView = __webpack_require__(42);
-var FileUploader = __webpack_require__(44);
+var AssetView = __webpack_require__(44);
+var AssetImageView = __webpack_require__(43);
+var FileUploader = __webpack_require__(45);
 
 module.exports = Backbone.View.extend({
 
@@ -37626,7 +40674,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 133 */
+/* 138 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37635,18 +40683,6 @@ module.exports = Backbone.View.extend({
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 /**
- * * [add](#add)
- * * [get](#get)
- * * [set](#set)
- * * [getAll](#getall)
- * * [clear](#clear)
- * * [load](#load)
- * * [store](#store)
- * * [setIdRule](#setidrule)
- * * [getIdRule](#getidrule)
- * * [setClassRule](#setclassrule)
- * * [getClassRule](#getclassrule)
- *
  * This module contains and manage CSS rules for the template inside the canvas
  * Before using the methods you should get first the module from the editor instance, in this way:
  *
@@ -37667,12 +40703,12 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 module.exports = function () {
   var em = void 0;
   var c = {},
-      defaults = __webpack_require__(134),
-      CssRule = __webpack_require__(45),
-      CssRules = __webpack_require__(135),
-      CssRulesView = __webpack_require__(136);
+      defaults = __webpack_require__(139),
+      CssRule = __webpack_require__(46),
+      CssRules = __webpack_require__(140),
+      CssRulesView = __webpack_require__(141);
   var Selectors = __webpack_require__(10);
-  var Selector = __webpack_require__(9);
+  var Selector = __webpack_require__(7);
 
   var rules, rulesView;
 
@@ -37744,7 +40780,29 @@ module.exports = function () {
      * @private
      */
     postLoad: function postLoad(em) {
-      em.listenRules(this.getAll());
+      var _this = this;
+
+      var ev = 'add remove';
+      var rules = this.getAll();
+      em.stopListening(rules, ev, this.handleChange);
+      em.listenTo(rules, ev, this.handleChange);
+      rules.each(function (rule) {
+        return _this.handleChange(rule);
+      });
+    },
+
+
+    /**
+     * Handle rule changes
+     * @private
+     */
+    handleChange: function handleChange(model) {
+      var ev = 'change:style';
+      var um = em.get('UndoManager');
+      um && um.add(model);
+      var handleUpdates = em.handleUpdates.bind(em);
+      em.stopListening(model, ev, handleUpdates);
+      em.listenTo(model, ev, handleUpdates);
     },
 
 
@@ -38026,7 +41084,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 134 */
+/* 139 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38046,14 +41104,14 @@ module.exports = {
 };
 
 /***/ }),
-/* 135 */
+/* 140 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var CssRule = __webpack_require__(45);
+var CssRule = __webpack_require__(46);
 
 module.exports = Backbone.Collection.extend({
   initialize: function initialize(models, opt) {
@@ -38086,14 +41144,14 @@ module.exports = Backbone.Collection.extend({
 });
 
 /***/ }),
-/* 136 */
+/* 141 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var CssRuleView = __webpack_require__(137);
+var CssRuleView = __webpack_require__(142);
 
 module.exports = Backbone.View.extend({
   initialize: function initialize(o) {
@@ -38155,7 +41213,7 @@ module.exports = Backbone.View.extend({
 });
 
 /***/ }),
-/* 137 */
+/* 142 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38183,7 +41241,7 @@ module.exports = __webpack_require__(0).View.extend({
 });
 
 /***/ }),
-/* 138 */
+/* 143 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38193,8 +41251,8 @@ var _underscore = __webpack_require__(1);
 
 module.exports = function () {
   var c = {};
-  var defaultOpts = __webpack_require__(139);
-  var TraitsView = __webpack_require__(140);
+  var defaultOpts = __webpack_require__(144);
+  var TraitsView = __webpack_require__(145);
   var TraitsViewer = void 0;
 
   return {
@@ -38271,7 +41329,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 139 */
+/* 144 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38295,18 +41353,18 @@ module.exports = {
 };
 
 /***/ }),
-/* 140 */
+/* 145 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var DomainViews = __webpack_require__(47);
-var TraitView = __webpack_require__(7);
-var TraitSelectView = __webpack_require__(141);
-var TraitCheckboxView = __webpack_require__(142);
-var TraitNumberView = __webpack_require__(143);
-var TraitColorView = __webpack_require__(144);
+var DomainViews = __webpack_require__(48);
+var TraitView = __webpack_require__(8);
+var TraitSelectView = __webpack_require__(146);
+var TraitCheckboxView = __webpack_require__(147);
+var TraitNumberView = __webpack_require__(148);
+var TraitColorView = __webpack_require__(149);
 
 module.exports = DomainViews.extend({
 
@@ -38345,13 +41403,13 @@ module.exports = DomainViews.extend({
 });
 
 /***/ }),
-/* 141 */
+/* 146 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(Backbone, _) {
 
-var TraitView = __webpack_require__(7);
+var TraitView = __webpack_require__(8);
 var $ = Backbone.$;
 
 module.exports = TraitView.extend({
@@ -38414,13 +41472,13 @@ module.exports = TraitView.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-/* 142 */
+/* 147 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var TraitView = __webpack_require__(7);
+var TraitView = __webpack_require__(8);
 
 module.exports = TraitView.extend({
   initialize: function initialize(o) {
@@ -38469,14 +41527,14 @@ module.exports = TraitView.extend({
 });
 
 /***/ }),
-/* 143 */
+/* 148 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var TraitView = __webpack_require__(7);
-var InputNumber = __webpack_require__(19);
+var TraitView = __webpack_require__(8);
+var InputNumber = __webpack_require__(18);
 
 module.exports = TraitView.extend({
   getValueForTarget: function getValueForTarget() {
@@ -38524,14 +41582,14 @@ module.exports = TraitView.extend({
 });
 
 /***/ }),
-/* 144 */
+/* 149 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var TraitView = __webpack_require__(7);
-var InputColor = __webpack_require__(38);
+var TraitView = __webpack_require__(8);
+var InputColor = __webpack_require__(39);
 
 module.exports = TraitView.extend({
   /**
@@ -38543,6 +41601,7 @@ module.exports = TraitView.extend({
     if (!this.$input) {
       var value = this.getModelValue();
       var inputNumber = new InputColor({
+        target: this.config.em,
         contClass: this.ppfx + 'field-color',
         model: this.model,
         ppfx: this.ppfx
@@ -38569,7 +41628,7 @@ module.exports = TraitView.extend({
 });
 
 /***/ }),
-/* 145 */
+/* 150 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38613,57 +41672,70 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
  */
 module.exports = function () {
   var c = {};
-  var defaults = __webpack_require__(146);
-  var Component = __webpack_require__(3);
-  var ComponentView = __webpack_require__(4);
-  var Components = __webpack_require__(48);
-  var ComponentsView = __webpack_require__(49);
+  var em = void 0;
+  var defaults = __webpack_require__(151);
+  var Component = __webpack_require__(4);
+  var ComponentView = __webpack_require__(3);
+  var Components = __webpack_require__(49);
+  var ComponentsView = __webpack_require__(50);
 
   var component, componentView;
   var componentTypes = [{
     id: 'cell',
-    model: __webpack_require__(150),
-    view: __webpack_require__(151)
+    model: __webpack_require__(155),
+    view: __webpack_require__(156)
   }, {
     id: 'row',
-    model: __webpack_require__(152),
-    view: __webpack_require__(153)
+    model: __webpack_require__(157),
+    view: __webpack_require__(158)
   }, {
     id: 'table',
-    model: __webpack_require__(154),
-    view: __webpack_require__(155)
+    model: __webpack_require__(159),
+    view: __webpack_require__(160)
+  }, {
+    id: 'thead',
+    model: __webpack_require__(161),
+    view: __webpack_require__(162)
+  }, {
+    id: 'tbody',
+    model: __webpack_require__(19),
+    view: __webpack_require__(163)
+  }, {
+    id: 'tfoot',
+    model: __webpack_require__(164),
+    view: __webpack_require__(165)
   }, {
     id: 'map',
-    model: __webpack_require__(156),
-    view: __webpack_require__(157)
+    model: __webpack_require__(166),
+    view: __webpack_require__(167)
   }, {
     id: 'link',
-    model: __webpack_require__(158),
-    view: __webpack_require__(159)
+    model: __webpack_require__(168),
+    view: __webpack_require__(169)
   }, {
     id: 'video',
-    model: __webpack_require__(160),
-    view: __webpack_require__(161)
+    model: __webpack_require__(170),
+    view: __webpack_require__(171)
   }, {
     id: 'image',
     model: __webpack_require__(20),
     view: __webpack_require__(15)
   }, {
     id: 'script',
-    model: __webpack_require__(162),
-    view: __webpack_require__(163)
+    model: __webpack_require__(172),
+    view: __webpack_require__(173)
   }, {
     id: 'svg',
-    model: __webpack_require__(164),
-    view: __webpack_require__(165)
+    model: __webpack_require__(174),
+    view: __webpack_require__(175)
   }, {
     id: 'textnode',
-    model: __webpack_require__(166),
-    view: __webpack_require__(167)
+    model: __webpack_require__(176),
+    view: __webpack_require__(177)
   }, {
     id: 'text',
-    model: __webpack_require__(50),
-    view: __webpack_require__(51)
+    model: __webpack_require__(51),
+    view: __webpack_require__(52)
   }, {
     id: 'default',
     model: Component,
@@ -38717,7 +41789,7 @@ module.exports = function () {
      */
     init: function init(config) {
       c = config || {};
-      var em = c.em;
+      em = c.em;
 
       if (em) {
         c.components = em.config.components || c.components;
@@ -38788,7 +41860,48 @@ module.exports = function () {
      * @private
      */
     postLoad: function postLoad(em) {
-      em.initChildrenComp(this.getWrapper());
+      this.handleChanges(this.getWrapper(), null, { avoidStore: 1 });
+    },
+
+
+    /**
+     * Handle component changes
+     * @private
+     */
+    handleChanges: function handleChanges(model, value) {
+      var _this = this;
+
+      var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+      var comps = model.components();
+      var um = em.get('UndoManager');
+      var handleUpdates = em.handleUpdates.bind(em);
+      var handleChanges = this.handleChanges.bind(this);
+      var handleRemoves = this.handleRemoves.bind(this);
+      um && um.add(model);
+      um && comps && um.add(comps);
+      var evn = 'change:style change:content change:attributes change:src';
+
+      [[model, evn, handleUpdates], [comps, 'add', handleChanges], [comps, 'remove', handleRemoves], [model.get('classes'), 'add remove', handleUpdates]].forEach(function (els) {
+        em.stopListening(els[0], els[1], els[2]);
+        em.listenTo(els[0], els[1], els[2]);
+      });
+
+      !opts.avoidStore && handleUpdates('', '', opts);
+      comps.each(function (model) {
+        return _this.handleChanges(model, value, opts);
+      });
+    },
+
+
+    /**
+     * Triggered when some component is removed
+     * @private
+     * */
+    handleRemoves: function handleRemoves(model, value) {
+      var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+      !opts.avoidStore && em.handleUpdates(model, value, opts);
     },
 
 
@@ -39048,7 +42161,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 146 */
+/* 151 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -39090,7 +42203,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 147 */
+/* 152 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -39099,8 +42212,8 @@ module.exports = {
 var _underscore = __webpack_require__(1);
 
 var Backbone = __webpack_require__(0);
-var Trait = __webpack_require__(148);
-var TraitFactory = __webpack_require__(149);
+var Trait = __webpack_require__(153);
+var TraitFactory = __webpack_require__(154);
 
 module.exports = Backbone.Collection.extend({
 
@@ -39140,15 +42253,17 @@ module.exports = Backbone.Collection.extend({
 });
 
 /***/ }),
-/* 148 */
+/* 153 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var Backbone = __webpack_require__(0);
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-module.exports = Backbone.Model.extend({
+var _underscore = __webpack_require__(1);
+
+module.exports = __webpack_require__(0).Model.extend({
 
   defaults: {
     type: 'text', // text, number, range, select
@@ -39165,9 +42280,38 @@ module.exports = Backbone.Model.extend({
   },
 
   initialize: function initialize() {
-    if (this.get('target')) {
-      this.target = this.get('target');
+    var target = this.get('target');
+    var name = this.get('name');
+    var changeProp = this.get('changeProp');
+
+    if (target) {
+      this.target = target;
       this.unset('target');
+      var targetEvent = changeProp ? 'change:' + name : 'change:attributes:' + name;
+      this.listenTo(target, targetEvent, this.targetUpdated);
+    }
+  },
+  targetUpdated: function targetUpdated() {
+    var value = this.getTargetValue();
+    !(0, _underscore.isUndefined)(value) && this.set({ value: value }, { fromTarget: 1 });
+  },
+  getTargetValue: function getTargetValue() {
+    var name = this.get('name');
+    var target = this.target;
+    var prop = this.get('changeProp');
+    if (target) return prop ? target.get(name) : target.getAttributes()[name];
+  },
+  setTargetValue: function setTargetValue(value) {
+    var target = this.target;
+    var name = this.get('name');
+    if ((0, _underscore.isUndefined)(value)) return;
+
+    if (this.get('changeProp')) {
+      target.set(name, value);
+    } else {
+      var attrs = _extends({}, target.get('attributes'));
+      attrs[name] = value;
+      target.set('attributes', attrs);
     }
   },
 
@@ -39191,7 +42335,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 149 */
+/* 154 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -39248,73 +42392,69 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 150 */
+/* 155 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(_) {
 
-var Component = __webpack_require__(3);
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var Component = __webpack_require__(4);
 
 module.exports = Component.extend({
 
-  defaults: _.extend({}, Component.prototype.defaults, {
+  defaults: _extends({}, Component.prototype.defaults, {
     type: 'cell',
     tagName: 'td',
     draggable: ['tr']
   })
 
 }, {
-
-  /**
-   * Detect if the passed element is a valid component.
-   * In case the element is valid an object abstracted
-   * from the element will be returned
-   * @param {HTMLElement}
-   * @return {Object}
-   * @private
-   */
   isComponent: function isComponent(el) {
     var result = '';
     var tag = el.tagName;
+
     if (tag == 'TD' || tag == 'TH') {
       result = {
         type: 'cell',
         tagName: tag.toLowerCase()
       };
     }
+
     return result;
   }
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 151 */
+/* 156 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var ComponentView = __webpack_require__(4);
+var ComponentView = __webpack_require__(3);
 
 module.exports = ComponentView.extend({});
 
 /***/ }),
-/* 152 */
+/* 157 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(_) {
 
-var Component = __webpack_require__(3);
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var Component = __webpack_require__(4);
 
 module.exports = Component.extend({
 
-  defaults: _.extend({}, Component.prototype.defaults, {
+  defaults: _extends({}, Component.prototype.defaults, {
     type: 'row',
     tagName: 'tr',
-    draggable: ['table', 'tbody', 'thead'],
+    draggable: ['thead', 'tbody', 'tfoot'],
     droppable: ['th', 'td']
   }),
 
@@ -39325,163 +42465,189 @@ module.exports = Component.extend({
     var cells = [];
     var components = this.get('components');
     components.each(function (model) {
-      if (model.get('type') == 'cell') {
-        cells.push(model);
-      }
+      return model.is('cell') && cells.push(model);
     });
     components.reset(cells);
   }
 }, {
-
-  /**
-   * Detect if the passed element is a valid component.
-   * In case the element is valid an object abstracted
-   * from the element will be returned
-   * @param {HTMLElement}
-   * @return {Object}
-   * @private
-   */
   isComponent: function isComponent(el) {
     var result = '';
+
     if (el.tagName == 'TR') {
       result = { type: 'row' };
     }
+
     return result;
   }
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 153 */
+/* 158 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var ComponentView = __webpack_require__(4);
+var ComponentView = __webpack_require__(3);
 
 module.exports = ComponentView.extend({});
 
 /***/ }),
-/* 154 */
+/* 159 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(_) {
 
-var Component = __webpack_require__(3);
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var Component = __webpack_require__(4);
 
 module.exports = Component.extend({
 
-  defaults: _.extend({}, Component.prototype.defaults, {
+  defaults: _extends({}, Component.prototype.defaults, {
     type: 'table',
     tagName: 'table',
-    droppable: ['tr', 'tbody', 'thead', 'tfoot'],
-    columns: 3,
-    rows: 2
-    /*
-    traits: [{
-      label: 'Columns',
-      name: 'columns',
-      changeProp: 1,
-    },{
-      label: 'Rows',
-      name: 'rows',
-      changeProp: 1,
-    }]
-    */
+    droppable: ['tbody', 'thead', 'tfoot']
   }),
 
   initialize: function initialize(o, opt) {
     Component.prototype.initialize.apply(this, arguments);
     var components = this.get('components');
-    var rows = this.get('rows');
-    var columns = this.get('columns');
-
-    // Init components if empty
-    if (!components.length) {
-      var rowsToAdd = [];
-
-      while (rows--) {
-        var columnsToAdd = [];
-        var clm = columns;
-
-        while (clm--) {
-          columnsToAdd.push({
-            type: 'cell',
-            classes: ['cell']
-          });
-        }
-
-        rowsToAdd.push({
-          type: 'row',
-          classes: ['row'],
-          components: columnsToAdd
-        });
-      }
-      components.add(rowsToAdd);
-    }
-
-    // Clean table from non rows
-    var rowsColl = [];
-    components.each(function (model) {
-      if (model.get('type') != 'row') {
-        model.get('components').each(function (row) {
-          if (row.get('type') == 'row') {
-            row.collection = components;
-            rowsColl.push(row);
-          }
-        });
-      } else {
-        rowsColl.push(model);
-      }
-    });
-    components.reset(rowsColl);
+    !components.length && components.add({ type: 'tbody' });
   }
 }, {
-
-  /**
-   * Detect if the passed element is a valid component.
-   * In case the element is valid an object abstracted
-   * from the element will be returned
-   * @param {HTMLElement}
-   * @return {Object}
-   * @private
-   */
   isComponent: function isComponent(el) {
     var result = '';
+
     if (el.tagName == 'TABLE') {
       result = { type: 'table' };
     }
+
     return result;
   }
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 155 */
+/* 160 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var ComponentView = __webpack_require__(4);
+var ComponentView = __webpack_require__(3);
 
 module.exports = ComponentView.extend({
   events: {}
 });
 
 /***/ }),
-/* 156 */
+/* 161 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var ComponentTableBody = __webpack_require__(19);
+
+module.exports = ComponentTableBody.extend({
+
+  defaults: _extends({}, ComponentTableBody.prototype.defaults, {
+    type: 'thead',
+    tagName: 'thead'
+  })
+
+}, {
+  isComponent: function isComponent(el) {
+    var result = '';
+
+    if (el.tagName == 'THEAD') {
+      result = { type: 'thead' };
+    }
+
+    return result;
+  }
+});
+
+/***/ }),
+/* 162 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var Backbone = __webpack_require__(0);
+var ComponentView = __webpack_require__(3);
+
+module.exports = ComponentView.extend({});
+
+/***/ }),
+/* 163 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var Backbone = __webpack_require__(0);
+var ComponentView = __webpack_require__(3);
+
+module.exports = ComponentView.extend({});
+
+/***/ }),
+/* 164 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var ComponentTableBody = __webpack_require__(19);
+
+module.exports = ComponentTableBody.extend({
+
+  defaults: _extends({}, ComponentTableBody.prototype.defaults, {
+    type: 'tfoot',
+    tagName: 'tfoot'
+  })
+
+}, {
+  isComponent: function isComponent(el) {
+    var result = '';
+
+    if (el.tagName == 'TFOOT') {
+      result = { type: 'tfoot' };
+    }
+
+    return result;
+  }
+});
+
+/***/ }),
+/* 165 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var Backbone = __webpack_require__(0);
+var ComponentView = __webpack_require__(3);
+
+module.exports = ComponentView.extend({});
+
+/***/ }),
+/* 166 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(_) {
 
 var Component = __webpack_require__(20);
-var OComponent = __webpack_require__(3);
+var OComponent = __webpack_require__(4);
 
 module.exports = Component.extend({
 
@@ -39578,7 +42744,7 @@ module.exports = Component.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 157 */
+/* 167 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -39631,7 +42797,7 @@ module.exports = ComponentView.extend({
 });
 
 /***/ }),
-/* 158 */
+/* 168 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -39639,7 +42805,7 @@ module.exports = ComponentView.extend({
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var Component = __webpack_require__(50);
+var Component = __webpack_require__(51);
 
 module.exports = Component.extend({
 
@@ -39695,21 +42861,16 @@ module.exports = Component.extend({
 });
 
 /***/ }),
-/* 159 */
+/* 169 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var ComponentView = __webpack_require__(51);
+var ComponentView = __webpack_require__(52);
 
 module.exports = ComponentView.extend({
-
-  events: {
-    'dblclick': 'enableEditing'
-  },
-
   render: function render() {
     for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
@@ -39726,14 +42887,14 @@ module.exports = ComponentView.extend({
 });
 
 /***/ }),
-/* 160 */
+/* 170 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(_) {
 
 var Component = __webpack_require__(20);
-var OComponent = __webpack_require__(3);
+var OComponent = __webpack_require__(4);
 
 var yt = 'yt';
 var vi = 'vi';
@@ -40035,7 +43196,7 @@ module.exports = Component.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 161 */
+/* 171 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40043,6 +43204,7 @@ module.exports = Component.extend({
 
 var Backbone = __webpack_require__(0);
 var ComponentView = __webpack_require__(15);
+var OComponentView = __webpack_require__(3);
 
 module.exports = ComponentView.extend({
 
@@ -40051,7 +43213,8 @@ module.exports = ComponentView.extend({
   events: {},
 
   initialize: function initialize(o) {
-    ComponentView.prototype.initialize.apply(this, arguments);
+    OComponentView.prototype.initialize.apply(this, arguments);
+    this.listenTo(this.model, 'change:src', this.updateSrc);
     this.listenTo(this.model, 'change:loop change:autoplay change:controls change:color', this.updateVideo);
     this.listenTo(this.model, 'change:provider', this.updateProvider);
   },
@@ -40161,13 +43324,13 @@ module.exports = ComponentView.extend({
 });
 
 /***/ }),
-/* 162 */
+/* 172 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(_) {
 
-var Component = __webpack_require__(3);
+var Component = __webpack_require__(4);
 
 module.exports = Component.extend({
 
@@ -40195,7 +43358,7 @@ module.exports = Component.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 163 */
+/* 173 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40236,7 +43399,7 @@ module.exports = ComponentView.extend({
 });
 
 /***/ }),
-/* 164 */
+/* 174 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40244,7 +43407,7 @@ module.exports = ComponentView.extend({
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var Component = __webpack_require__(3);
+var Component = __webpack_require__(4);
 
 module.exports = Component.extend({
 
@@ -40276,13 +43439,13 @@ module.exports = Component.extend({
 });
 
 /***/ }),
-/* 165 */
+/* 175 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var ComponentView = __webpack_require__(4);
+var ComponentView = __webpack_require__(3);
 
 module.exports = ComponentView.extend({
 
@@ -40293,13 +43456,13 @@ module.exports = ComponentView.extend({
 });
 
 /***/ }),
-/* 166 */
+/* 176 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(_) {
 
-var Component = __webpack_require__(3);
+var Component = __webpack_require__(4);
 
 module.exports = Component.extend({
 
@@ -40326,7 +43489,7 @@ module.exports = Component.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 167 */
+/* 177 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40337,7 +43500,7 @@ var Backbone = __webpack_require__(0);
 module.exports = Backbone.View.extend({});
 
 /***/ }),
-/* 168 */
+/* 178 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40347,9 +43510,9 @@ var _mixins = __webpack_require__(2);
 
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(169),
-      Canvas = __webpack_require__(170),
-      CanvasView = __webpack_require__(172);
+      defaults = __webpack_require__(179),
+      Canvas = __webpack_require__(180),
+      CanvasView = __webpack_require__(182);
   var canvas;
   var frameRect;
 
@@ -40716,11 +43879,18 @@ module.exports = function () {
      * Start autoscroll
      */
     startAutoscroll: function startAutoscroll() {
+      var _this = this;
+
       this.dragging = 1;
       var toListen = this.getScrollListeners();
       frameRect = CanvasView.getFrameOffset(1);
-      (0, _mixins.on)(toListen, 'mousemove', this.autoscroll);
-      (0, _mixins.on)(toListen, 'mouseup', this.stopAutoscroll);
+
+      // By detaching those from the stack avoid browsers lags
+      // Noticeable with "fast" drag of blocks
+      setTimeout(function () {
+        (0, _mixins.on)(toListen, 'mousemove', _this.autoscroll);
+        (0, _mixins.on)(toListen, 'mouseup', _this.stopAutoscroll);
+      }, 0);
     },
     autoscroll: function autoscroll(e) {
       e.preventDefault();
@@ -40772,7 +43942,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 169 */
+/* 179 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40816,14 +43986,14 @@ module.exports = {
 };
 
 /***/ }),
-/* 170 */
+/* 180 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var Frame = __webpack_require__(171);
+var Frame = __webpack_require__(181);
 
 module.exports = Backbone.Model.extend({
 
@@ -40840,7 +44010,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 171 */
+/* 181 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40860,13 +44030,13 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 172 */
+/* 182 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(Backbone, _) {
 
-var FrameView = __webpack_require__(173);
+var FrameView = __webpack_require__(183);
 var $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
@@ -41176,7 +44346,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-/* 173 */
+/* 183 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41200,18 +44370,20 @@ module.exports = __webpack_require__(0).View.extend({
     this.config = o.config || {};
     this.ppfx = this.config.pStylePrefix || '';
     this.em = this.config.em;
-    this.listenTo(this.em, 'change:device', this.updateWidth);
+    this.listenTo(this.em, 'change:device', this.updateDim);
   },
 
 
   /**
-   * Update width of the frame
+   * Update dimensions of the frame
    * @private
    */
-  updateWidth: function updateWidth(model) {
+  updateDim: function updateDim(model) {
     var em = this.em;
     var device = em.getDeviceModel();
-    this.el.style.width = device ? device.get('width') : '';
+    var style = this.el.style;
+    style.width = device ? device.get('width') : '';
+    style.height = device ? device.get('height') : '';
     this.udpateOffset();
     em.stopDefault({ preserveSelected: 1 });
     this.$el.on(motionsEv, this.udpateOffset);
@@ -41236,7 +44408,7 @@ module.exports = __webpack_require__(0).View.extend({
 });
 
 /***/ }),
-/* 174 */
+/* 184 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41245,11 +44417,12 @@ module.exports = __webpack_require__(0).View.extend({
 var _underscore = __webpack_require__(1);
 
 module.exports = function () {
+  var em = void 0;
   var c = {},
       commands = {},
       defaultCommands = {},
-      defaults = __webpack_require__(175),
-      AbsCommands = __webpack_require__(176);
+      defaults = __webpack_require__(185),
+      AbsCommands = __webpack_require__(186);
 
   // Need it here as it would be used below
   var add = function add(id, obj) {
@@ -41281,7 +44454,7 @@ module.exports = function () {
       for (var name in defaults) {
         if (!(name in c)) c[name] = defaults[name];
       }
-
+      em = c.em;
       var ppfx = c.pStylePrefix;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
 
@@ -41291,27 +44464,27 @@ module.exports = function () {
         if (obj.id) this.add(obj.id, obj);
       }
 
-      var ViewCode = __webpack_require__(177);
+      var ViewCode = __webpack_require__(187);
       defaultCommands['select-comp'] = __webpack_require__(21);
       defaultCommands['create-comp'] = __webpack_require__(22);
-      defaultCommands['delete-comp'] = __webpack_require__(182);
-      defaultCommands['image-comp'] = __webpack_require__(183);
-      defaultCommands['move-comp'] = __webpack_require__(184);
-      defaultCommands['text-comp'] = __webpack_require__(185);
-      defaultCommands['insert-custom'] = __webpack_require__(53);
+      defaultCommands['delete-comp'] = __webpack_require__(192);
+      defaultCommands['image-comp'] = __webpack_require__(193);
+      defaultCommands['move-comp'] = __webpack_require__(194);
+      defaultCommands['text-comp'] = __webpack_require__(195);
+      defaultCommands['insert-custom'] = __webpack_require__(54);
       defaultCommands['export-template'] = ViewCode;
-      defaultCommands['sw-visibility'] = __webpack_require__(186);
-      defaultCommands['open-layers'] = __webpack_require__(187);
-      defaultCommands['open-sm'] = __webpack_require__(190);
-      defaultCommands['open-tm'] = __webpack_require__(191);
-      defaultCommands['open-blocks'] = __webpack_require__(192);
-      defaultCommands['open-assets'] = __webpack_require__(193);
-      defaultCommands['show-offset'] = __webpack_require__(194);
-      defaultCommands['select-parent'] = __webpack_require__(195);
-      defaultCommands.fullscreen = __webpack_require__(196);
-      defaultCommands.preview = __webpack_require__(197);
-      defaultCommands.resize = __webpack_require__(198);
-      defaultCommands.drag = __webpack_require__(199);
+      defaultCommands['sw-visibility'] = __webpack_require__(196);
+      defaultCommands['open-layers'] = __webpack_require__(197);
+      defaultCommands['open-sm'] = __webpack_require__(200);
+      defaultCommands['open-tm'] = __webpack_require__(201);
+      defaultCommands['open-blocks'] = __webpack_require__(202);
+      defaultCommands['open-assets'] = __webpack_require__(203);
+      defaultCommands['show-offset'] = __webpack_require__(204);
+      defaultCommands['select-parent'] = __webpack_require__(205);
+      defaultCommands.fullscreen = __webpack_require__(206);
+      defaultCommands.preview = __webpack_require__(207);
+      defaultCommands.resize = __webpack_require__(208);
+      defaultCommands.drag = __webpack_require__(209);
 
       defaultCommands['tlb-delete'] = {
         run: function run(ed) {
@@ -41339,7 +44512,7 @@ module.exports = function () {
           var collection = sel.collection;
           var index = collection.indexOf(sel);
           collection.add(sel.clone(), { at: index + 1 });
-          ed.trigger('component:update', sel);
+          sel.emitUpdate();
         }
       };
 
@@ -41364,7 +44537,7 @@ module.exports = function () {
           var onEnd = function onEnd(e, opts) {
             em.runDefault();
             em.set('selectedComponent', sel);
-            ed.trigger('component:update', sel);
+            sel.emitUpdate();
             dragger && dragger.blur();
           };
 
@@ -41401,14 +44574,33 @@ module.exports = function () {
 
       // Core commands
       defaultCommands['core:undo'] = function (e) {
-        return e.UndoManager.undo(1);
+        return e.UndoManager.undo();
       };
       defaultCommands['core:redo'] = function (e) {
-        return e.UndoManager.redo(1);
+        return e.UndoManager.redo();
       };
       defaultCommands['core:canvas-clear'] = function (e) {
         e.DomComponents.clear();
         e.CssComposer.clear();
+      };
+      defaultCommands['core:copy'] = function (ed) {
+        var em = ed.getModel();
+        var model = ed.getSelected();
+
+        if (model && model.get('copyable') && !ed.Canvas.isInputFocused()) {
+          em.set('clipboard', model);
+        }
+      };
+      defaultCommands['core:paste'] = function (ed) {
+        var em = ed.getModel();
+        var clp = em.get('clipboard');
+        var model = ed.getSelected();
+        var coll = model && model.collection;
+
+        if (coll && clp && !ed.Canvas.isInputFocused()) {
+          var at = coll.indexOf(model) + 1;
+          coll.add(clp.clone(), { at: at });
+        }
       };
 
       if (c.em) c.model = c.em.get('Canvas');
@@ -41524,7 +44716,7 @@ module.exports = function () {
     */
 
 /***/ }),
-/* 175 */
+/* 185 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41555,7 +44747,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 176 */
+/* 186 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41682,7 +44874,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 177 */
+/* 187 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41744,15 +44936,15 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 178 */
+/* 188 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var DomainViews = __webpack_require__(47);
-var ToolbarButtonView = __webpack_require__(179);
+var DomainViews = __webpack_require__(48);
+var ToolbarButtonView = __webpack_require__(189);
 
 module.exports = DomainViews.extend({
 
@@ -41765,7 +44957,7 @@ module.exports = DomainViews.extend({
 });
 
 /***/ }),
-/* 179 */
+/* 189 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41807,19 +44999,19 @@ module.exports = Backbone.View.extend({
 });
 
 /***/ }),
-/* 180 */
+/* 190 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var ToolbarButton = __webpack_require__(181);
+var ToolbarButton = __webpack_require__(191);
 
 module.exports = Backbone.Collection.extend({ model: ToolbarButton });
 
 /***/ }),
-/* 181 */
+/* 191 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41837,7 +45029,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 182 */
+/* 192 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41920,14 +45112,14 @@ module.exports = _.extend({}, SelectComponent, {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-/* 183 */
+/* 193 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(_) {
 
 var Backbone = __webpack_require__(0);
-var InsertCustom = __webpack_require__(53);
+var InsertCustom = __webpack_require__(54);
 
 module.exports = _.extend({}, InsertCustom, {
 
@@ -41961,7 +45153,7 @@ module.exports = _.extend({}, InsertCustom, {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 184 */
+/* 194 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41970,7 +45162,7 @@ module.exports = _.extend({}, InsertCustom, {
 var _mixins = __webpack_require__(2);
 
 var SelectComponent = __webpack_require__(21);
-var SelectPosition = __webpack_require__(52);
+var SelectPosition = __webpack_require__(53);
 var $ = Backbone.$;
 
 module.exports = _.extend({}, SelectPosition, SelectComponent, {
@@ -42128,7 +45320,7 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-/* 185 */
+/* 195 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42165,7 +45357,7 @@ module.exports = _.extend({}, CreateComponent, {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 186 */
+/* 196 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42181,13 +45373,13 @@ module.exports = {
 };
 
 /***/ }),
-/* 187 */
+/* 197 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(Backbone) {
 
-var Layers = __webpack_require__(188);
+var Layers = __webpack_require__(198);
 var $ = Backbone.$;
 
 module.exports = {
@@ -42224,7 +45416,7 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 188 */
+/* 198 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42233,9 +45425,9 @@ module.exports = {
 module.exports = function () {
   var itemsView = void 0;
   var config = {};
-  var defaults = __webpack_require__(189);
-  var ItemView = __webpack_require__(54);
-  var ItemsView = __webpack_require__(55);
+  var defaults = __webpack_require__(199);
+  var ItemView = __webpack_require__(55);
+  var ItemsView = __webpack_require__(56);
 
   return {
     init: function init(collection, opts) {
@@ -42304,7 +45496,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 189 */
+/* 199 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42327,13 +45519,13 @@ module.exports = {
 };
 
 /***/ }),
-/* 190 */
+/* 200 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var StyleManager = __webpack_require__(30);
+var StyleManager = __webpack_require__(31);
 var Backbone = __webpack_require__(0);
 var $ = Backbone.$;
 
@@ -42404,7 +45596,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 191 */
+/* 201 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42437,7 +45629,7 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 192 */
+/* 202 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42467,7 +45659,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 193 */
+/* 203 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42501,7 +45693,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 194 */
+/* 204 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42656,7 +45848,7 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 195 */
+/* 205 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42664,14 +45856,20 @@ module.exports = {
 
 module.exports = {
   run: function run(editor) {
-    var comp = editor.getSelected();
-    var coll = comp && comp.collection;
-    coll && coll.parent && editor.select(coll.parent);
+    var sel = editor.getSelected();
+    var comp = sel && sel.parent();
+
+    // Recurse through the parent() chain until a selectable parent is found
+    while (comp && !comp.get("selectable")) {
+      comp = comp.parent();
+    }
+
+    comp && editor.select(comp);
   }
 };
 
 /***/ }),
-/* 196 */
+/* 206 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42744,7 +45942,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 197 */
+/* 207 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42813,7 +46011,7 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 198 */
+/* 208 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42850,7 +46048,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 199 */
+/* 209 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42888,7 +46086,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 200 */
+/* 210 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42926,10 +46124,10 @@ module.exports = {
  */
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(201),
-      Blocks = __webpack_require__(202),
-      BlockCategories = __webpack_require__(204),
-      BlocksView = __webpack_require__(205);
+      defaults = __webpack_require__(211),
+      Blocks = __webpack_require__(212),
+      BlockCategories = __webpack_require__(214),
+      BlocksView = __webpack_require__(215);
   var blocks, blocksVisible, blocksView;
   var categories = [];
 
@@ -43133,7 +46331,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 201 */
+/* 211 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43148,28 +46346,28 @@ module.exports = {
 };
 
 /***/ }),
-/* 202 */
+/* 212 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var Block = __webpack_require__(203);
+var Block = __webpack_require__(213);
 
 module.exports = Backbone.Collection.extend({
   model: Block
 });
 
 /***/ }),
-/* 203 */
+/* 213 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var Category = __webpack_require__(56);
+var Category = __webpack_require__(57);
 
 module.exports = Backbone.Model.extend({
 
@@ -43197,7 +46395,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 204 */
+/* 214 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43206,19 +46404,19 @@ module.exports = Backbone.Model.extend({
 var Backbone = __webpack_require__(0);
 
 module.exports = Backbone.Collection.extend({
-  model: __webpack_require__(56)
+  model: __webpack_require__(57)
 });
 
 /***/ }),
-/* 205 */
+/* 215 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(_) {
 
 var Backbone = __webpack_require__(0);
-var BlockView = __webpack_require__(206);
-var CategoryView = __webpack_require__(207);
+var BlockView = __webpack_require__(216);
+var CategoryView = __webpack_require__(217);
 
 module.exports = Backbone.View.extend({
   initialize: function initialize(opts, config) {
@@ -43302,8 +46500,6 @@ module.exports = Backbone.View.extend({
         model.set('activeOnRender', 0);
       }
 
-      // Register all its components (eg. for the Undo Manager)
-      em.initChildrenComp(model);
       em.trigger('block:drag:stop', model);
     }
   },
@@ -43401,7 +46597,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 206 */
+/* 216 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43475,7 +46671,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 207 */
+/* 217 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43552,2730 +46748,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 208 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
- * Backbone.Undo.js v0.2
- * 
- * Copyright (c)2013 Oliver Sartun
- * Released under the MIT License
- *
- * Documentation and full license available at
- * https://github.com/osartun/Backbone.Undo.js
- */
-
-
-(function (factory) {
-	if (true) {
-		// AMD support
-		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1), __webpack_require__(209)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	} else if (typeof exports !== 'undefined') {
-		// CommonJS support
-		module.exports = factory(
-			require("underscore"),
-			require("backbone")
-		);
-	} else {
-		// Non-modular execution
-		factory(_, Backbone);
-        }
-})(function (_, Backbone) {
-
-	var core_slice = Array.prototype.slice;
-
-	/**
-	 * As call is faster than apply, this is a faster version of apply as it uses call.
-	 * 
-	 * @param  {Function} fn 	The function to execute 
-	 * @param  {Object}   ctx 	The context the function should be called in
-	 * @param  {Array}    args 	The array of arguments that should be applied to the function
-	 * @return Forwards whatever the called function returns
-	 */
-	function apply (fn, ctx, args) {
-		return args.length <= 4 ?
-			fn.call(ctx, args[0], args[1], args[2], args[3]) :
-			fn.apply(ctx, args);
-	}
-
-	/**
-	 * Uses slice on an array or an array-like object.
-	 * 
-	 * @param  {Array|Object} 	arr 	The array or array-like object.
-	 * @param  {Number} 		[index]	The index from where the array should be sliced. Default is 0.
-	 * @return {Array} The sliced array
-	 */
-	function slice (arr, index) {
-		return core_slice.call(arr, index);
-	}
-
-	/**
-	 * Checks if an object has one or more specific keys. The keys 
-	 * don't have to be an owned property.
-	 * You can call this function either this way:
-	 * hasKeys(obj, ["a", "b", "c"])
-	 * or this way:
-	 * hasKeys(obj, "a", "b", "c")
-	 * 
-	 * @param  {Object}  	obj 	The object to check on
-	 * @param  {Array}  	keys 	The keys to check for
-	 * @return {Boolean} True, if the object has all those keys
-	 */
-	function hasKeys (obj, keys) {
-		if (obj == null) return false;
-		if (!_.isArray(keys)) {
-			keys = slice(arguments, 1);
-		}
-		return _.all(keys, function (key) {
-			return key in obj;
-		});
-	}
-
-	/**
-	 * Returns a number that is unique per call stack. The number gets 
-	 * changed after the call stack has been completely processed.
-	 * 
-	 * @return {number} MagicFusionIndex
-	 */
-	var getMagicFusionIndex = (function () {
-		// If you add several models to a collection or set several
-		// attributes on a model all in sequence and yet all for
-		// example in one function, then several Undo-Actions are
-		// generated.
-		// If you want to undo your last action only the last model
-		// would be removed from the collection or the last set
-		// attribute would be changed back to its previous value.
-		// To prevent that we have to figure out a way to combine
-		// all those actions that happened "at the same time". 
-		// Timestamps aren't exact enough. A complex routine could 
-		// run several milliseconds and in that time produce a lot 
-		// of actions with different timestamps.
-		// Instead we take advantage of the single-threadedness of
-		// JavaScript:
-
-		var callstackWasIndexed = false, magicFusionIndex = -1;
-		function indexCycle() {
-			magicFusionIndex++;
-			callstackWasIndexed = true;
-			_.defer(function () {
-				// Here comes the magic. With a Timeout of 0 
-				// milliseconds this function gets called whenever
-				// the current callstack is completed
-				callstackWasIndexed = false;
-			})
-		}
-		return function () {
-			if (!callstackWasIndexed) {
-				indexCycle();
-			}
-			return magicFusionIndex;
-		}
-	})();
-
-	/**
-	 * To prevent binding a listener several times to one 
-	 * object, we register the objects in an ObjectRegistry
-	 *
-	 * @constructor
-	 */
-	function ObjectRegistry () {
-		// This uses two different ways of storing
-		// objects: In case the object has a cid
-		// (which Backbone objects typically have)
-		// it uses this cid as an index. That way
-		// the Array's length attribute doesn't 
-		// change and the object isn't an item 
-		// in the array, but an object-property.
-		// Otherwise it's added to the Array as an
-		// item.
-		// That way we can use the fast property-
-		// lookup and only have to fall back to 
-		// iterating over the array in case 
-		// non-Backbone-objects are registered.
-		this.registeredObjects = [];
-		// To return a list of all registered 
-		// objects in the 'get' method we have to
-		// store the objects that have a cid in
-		// an additional array. 
-		this.cidIndexes = [];
-	}
-	ObjectRegistry.prototype = {
-		/**
-		 * Returns whether the object is already registered in this ObjectRegistry or not.
-		 * 
-		 * @this 	{ObjectRegistry}
-		 * @param  	{Object} 		 obj 	The object to check
-		 * @return 	{Boolean} True if the object is already registered
-		 */
-		isRegistered: function (obj) {
-			// This is where we get a performance boost 
-			// by using the two different ways of storing 
-			// objects.
-			return obj && obj.cid ? this.registeredObjects[obj.cid] : _.contains(this.registeredObjects, obj);
-		},
-		/**
-		 * Registers an object in this ObjectRegistry.
-		 * 
-		 * @this 	{ObjectRegistry}
-		 * @param  	{Object} 		 obj 	The object to register
-		 * @return 	{undefined}
-		 */
-		register: function (obj) {
-			if (!this.isRegistered(obj)) {
-				if (obj && obj.cid) {
-					this.registeredObjects[obj.cid] = obj;
-					this.cidIndexes.push(obj.cid);
-				} else {
-					this.registeredObjects.push(obj);
-				}
-				return true;
-			}
-			return false;
-		},
-		/**
-		 * Unregisters an object from this ObjectRegistry.
-		 * 
-		 * @this {ObjectRegistry}
-		 * @param  {Object} obj The object to unregister
-		 * @return {undefined}
-		 */
-		unregister: function (obj) {
-			if (this.isRegistered(obj)) {
-				if (obj && obj.cid) {
-					delete this.registeredObjects[obj.cid];
-					this.cidIndexes.splice(_.indexOf(this.cidIndexes, obj.cid), 1);
-				} else {
-					var i = _.indexOf(this.registeredObjects, obj);
-					this.registeredObjects.splice(i, 1);
-				}
-				return true;
-			}
-			return false;
-		},
-		/**
-		 * Returns an array of all objects that are currently in this ObjectRegistry.
-		 * 
-		 * @return {Array} An array of all the objects which are currently in the ObjectRegistry
-		 */
-		get: function () {
-			return (_.map(this.cidIndexes, function (cid) {return this.registeredObjects[cid];}, this)).concat(this.registeredObjects);
-		}
-	}
-
-	/**
-	 * Binds or unbinds the "all"-listener for one or more objects.
-	 * 
-	 * @param  {String}   which 	Either "on" or "off"
-	 * @param  {Object[]} objects 	Array of the objects on which the "all"-listener should be bound / unbound to
-	 * @param  {Function} [fn] 		The function that should be bound / unbound. Optional in case of "off"
-	 * @param  {Object}   [ctx] 	The context the function should be called in
-	 * @return {undefined}
-	 */
-	function onoff(which, objects, fn, ctx) {
-		for (var i = 0, l = objects.length, obj; i < l; i++) {
-			obj = objects[i];
-			if (!obj) continue;
-			if (which === "on") {
-				if (!ctx.objectRegistry.register(obj)) {
-					// register returned false, so obj was already registered
-					continue;
-				}
-			} else {
-				if (!ctx.objectRegistry.unregister(obj)) {
-					// unregister returned false, so obj wasn't registered
-					continue;
-				}
-			}
-			if (_.isFunction(obj[which])) {
-				obj[which]("all", fn, ctx);
-			}
-		}
-	}
-
-	/**
-	 * Calls the undo/redo-function for a specific action.
-	 * 
-	 * @param  {String} which 	Either "undo" or "redo"
-	 * @param  {Object} action 	The Action's attributes
-	 * @return {undefined}
-	 */
-	function actionUndoRedo (which, action) {
-		var type = action.type, undoTypes = action.undoTypes, fn = !undoTypes[type] || undoTypes[type][which];
-		if (_.isFunction(fn)) {
-			fn(action.object, action.before, action.after, action.options);
-		}
-	}
-
-	/**
-	 * The main undo/redo function.
-	 *
-	 * @param  {String} 		which 	    Either "undo" or "redo"
-	 * @param  {UndoManager} 	manager	    The UndoManager-instance on which an "undo"/"redo"-Event is triggered afterwards
-	 * @param  {UndoStack} 		stack 	    The UndoStack on which we perform
-	 * @param  {Boolean} 		magic 	    If true, undoes / redoes all actions with the same magicFusionIndex
-	 * @param  {Boolean} 		everything  If true, undoes / redoes every action that had been tracked
-	 * @return {undefined}
-	 */
-	function managerUndoRedo (which, manager, stack, magic, everything) {
-		if (stack.isCurrentlyUndoRedoing || 
-			(which === "undo" && stack.pointer === -1) ||
-			(which === "redo" && stack.pointer === stack.length - 1)) {
-			// We're either currently in an undo- / redo-process or 
-			// we reached the end of the stack
-			return;
-		}
-		stack.isCurrentlyUndoRedoing = true;
-		var action, actions, isUndo = which === "undo";
-		if (everything) {
-			// Undo / Redo all steps until you reach the stack's beginning / end
-			actions = isUndo && stack.pointer === stack.length - 1 || // If at the stack's end calling undo
-					  !isUndo && stack.pointer === -1 ? // or at the stack's beginning calling redo
-					  _.clone(stack.models) : // => Take all the models. Otherwise:
-					  core_slice.apply(stack.models, isUndo ? [0, stack.pointer] : [stack.pointer, stack.length - 1]);
-		} else {
-			// Undo / Redo only one step
-			action = stack.at(isUndo ? stack.pointer : stack.pointer + 1);
-			actions = magic ? stack.where({"magicFusionIndex": action.get("magicFusionIndex")}) : [action];
-		}
-		
-		stack.pointer += (isUndo ? -1 : 1) * actions.length;
-		while (action = isUndo ? actions.pop() : actions.shift()) {
-			// Here we're calling the Action's undo / redo method
-			action[which]();
-		}
-		stack.isCurrentlyUndoRedoing = false;
-
-		manager.trigger(which, manager);
-	}
-
-	/**
-	 * Checks whether an UndoAction should be created or not. Therefore it checks
-	 * whether a "condition" property is set in the undoTypes-object of the specific
-	 * event type. If not, it returns true. If it's set and a boolean, it returns it.
-	 * If it's a function, it returns its result, converting it into a boolean. 
-	 * Otherwise it returns true.
-	 * 
-	 * @param  {Object} 	undoTypesType 	The object within the UndoTypes that holds the function for this event type (i.e. "change")
-	 * @param  {Arguments} 	args       		The arguments the "condition" function is called with
-	 * @return {Boolean} 	True, if an UndoAction should be created
-	 */
-	function validateUndoActionCreation (undoTypesType, args) {
-		var condition = undoTypesType.condition, type = typeof condition;
-		return type === "function" ? !!apply(condition, undoTypesType, args) :
-			type === "boolean" ? condition : true;
-	}
-
-	/**
-	 * Adds an Undo-Action to the stack.
-	 * 
-	 * @param {UndoStack} 		stack 		The undostack the action should be added to.
-	 * @param {String} 			type 		The event type (i.e. "change")
-	 * @param {Arguments} 		args 		The arguments passed to the undoTypes' "on"-handler
-	 * @param {OwnedUndoTypes} 	undoTypes 	The undoTypes-object which has the "on"-handler
-	 * @return {undefined}
-	 */
-	function addToStack(stack, type, args, undoTypes) {
-		if (stack.track && !stack.isCurrentlyUndoRedoing && type in undoTypes &&
-			validateUndoActionCreation(undoTypes[type], args)) {
-			// An UndoAction should be created
-			var res = apply(undoTypes[type]["on"], undoTypes[type], args), diff;
-			if (hasKeys(res, "object", "before", "after")) {
-				res.type = type;
-				res.magicFusionIndex = getMagicFusionIndex();
-				res.undoTypes = undoTypes;
-				if (stack.pointer < stack.length - 1) {
-					// New Actions must always be added to the end of the stack.
-					// If the pointer is not pointed to the last action in the
-					// stack, presumably because actions were undone before, then
-					// all following actions must be discarded
-					var diff = stack.length - stack.pointer - 1;
-					while (diff--) {
-						stack.pop();
-					}
-				}
-				stack.pointer = stack.length;
-				stack.add(res);
-				if (stack.length > stack.maximumStackLength) {
-					stack.shift();
-					stack.pointer--;
-				}
-			}
-		}
-	}
-
-
-	/**
-	 * Predefined UndoTypes object with default handlers for the most common events.
-	 * @type {Object}
-	 */
-	var UndoTypes = {
-		"add": {
-			"undo": function (collection, ignore, model, options) {
-				// Undo add = remove
-				collection.remove(model, options);
-			},
-			"redo": function (collection, ignore, model, options) {
-				// Redo add = add
-				if (options.index) {
-					options.at = options.index;
-				}
-				collection.add(model, options);
-			},
-			"on": function (model, collection, options) {
-				return {
-					object: collection,
-					before: undefined,
-					after: model,
-					options: _.clone(options)
-				};
-			}
-		},
-		"remove": {
-			"undo": function (collection, model, ignore, options) {
-				if ("index" in options) {
-					options.at = options.index;
-				}
-				collection.add(model, options);
-			},
-			"redo": function (collection, model, ignore, options) {
-				collection.remove(model, options);
-			},
-			"on": function (model, collection, options) {
-				return {
-					object: collection,
-					before: model,
-					after: undefined,
-					options: _.clone(options)
-				};
-			}
-		},
-		"change": {
-			"undo": function (model, before, after, options) {
-				if (_.isEmpty(before)) {
-					_.each(_.keys(after), model.unset, model);
-				} else {
-					model.set(before);
-					if (options && options.unsetData && options.unsetData.before && options.unsetData.before.length) {
-						_.each(options.unsetData.before, model.unset, model);
-					}
-				}
-			},
-			"redo": function (model, before, after, options) {
-				if (_.isEmpty(after)) {
-					_.each(_.keys(before), model.unset, model);
-				} else {
-					model.set(after);
-					if (options && options.unsetData && options.unsetData.after && options.unsetData.after.length) {
-						_.each(options.unsetData.after, model.unset, model);
-					}
-				}
-			},
-			"on": function (model, options) {
-				var
-				afterAttributes = model.changedAttributes(),
-				keysAfter = _.keys(afterAttributes),
-				previousAttributes = _.pick(model.previousAttributes(), keysAfter),
-				keysPrevious = _.keys(previousAttributes),
-				unsetData = (options || (options = {})).unsetData = {
-					after: [],
-					before: []
-				};
-
-				if (keysAfter.length != keysPrevious.length) {
-					// There are new attributes or old attributes have been unset
-					if (keysAfter.length > keysPrevious.length) {
-						// New attributes have been added
-						_.each(keysAfter, function (val) {
-							if (!(val in previousAttributes)) {
-								unsetData.before.push(val);
-							}
-						}, this);
-					} else {
-						// Old attributes have been unset
-						_.each(keysPrevious, function (val) {
-							if (!(val in afterAttributes)) {
-								unsetData.after.push(val);
-							}
-						})
-					}
-				}
-				return {
-					object: model,
-					before: previousAttributes,
-					after: afterAttributes,
-					options: _.clone(options)
-				};
-			}
-		},
-		"reset": {
-			"undo": function (collection, before, after) {
-				collection.reset(before);
-			},
-			"redo": function (collection, before, after) {
-				collection.reset(after);
-			},
-			"on": function (collection, options) {
-				return {
-					object: collection,
-					before: options.previousModels,
-					after: _.clone(collection.models)
-				};
-			}
-		}
-	};
-
-	/**
-	 * Every UndoManager instance has an own undoTypes object
-	 * which is an instance of OwnedUndoTypes. OwnedUndoTypes' 
-	 * prototype is the global UndoTypes object. Changes to the 
-	 * global UndoTypes object take effect on every instance of
-	 * UndoManager as the object is its prototype. And yet every 
-	 * local UndoTypes object can be changed individually.
-	 *
-	 * @constructor
-	 */
-	function OwnedUndoTypes () {}
-	OwnedUndoTypes.prototype = UndoTypes;
-
-	/**
-	 * Adds, changes or removes an undo-type from an UndoTypes-object.
-	 * You can call it this way:
-	 * manipulateUndoType (1, "reset", {"on": function () {}}, undoTypes)
-	 * or this way to perform bulk actions:
-	 * manipulateUndoType (1, {"reset": {"on": function () {}}}, undoTypes)
-	 * In case of removing undo-types you can pass an Array for performing
-	 * bulk actions:
-	 * manipulateUndoType(2, ["reset", "change"], undoTypes)
-	 * 
-	 * @param  {Number} 				  manipType 		Indicates the kind of action to execute: 0 for add, 1 for change, 2 for remove
-	 * @param  {String|Object|Array} 	  undoType 			The type of undoType that should be added/changed/removed. Can be an object / array to perform bulk actions
-	 * @param  {Object} 				  [fns] 			Object with the functions to add / change. Is optional in case you passed an object as undoType that contains these functions
-	 * @param  {OwnedUndoTypes|UndoTypes} undoTypesInstance The undoTypes object to act on
-	 * @return {undefined}
-	 */
-	function manipulateUndoType (manipType, undoType, fns, undoTypesInstance) {
-		// manipType, passed by the calling function
-		// 0: add
-		// 1: change
-		// 2: remove
-		if (typeof undoType === "object") {
-			// bulk action. Iterate over this data.
-			return _.each(undoType, function (val, key) {
-					if (manipType === 2) { // remove
-						// undoType is an array
-						manipulateUndoType (manipType, val, fns, undoTypesInstance);
-					} else {
-						// undoType is an object
-						manipulateUndoType (manipType, key, val, fns);
-					}
-				})
-		}
-
-		switch (manipType) {
-			case 0: // add
-				if (hasKeys(fns, "undo", "redo", "on") && _.all(_.pick(fns, "undo", "redo", "on"), _.isFunction)) {
-					undoTypesInstance[undoType] = fns;
-				} 
-			break;
-			case 1: // change
-				if (undoTypesInstance[undoType] && _.isObject(fns)) {
-					// undoTypeInstance[undoType] may be a prototype's property
-					// So, if we did this _.extend(undoTypeInstance[undoType], fns)
-					// we would extend the object on the prototype which means
-					// that this change would have a global effect
-					// Instead we just want to manipulate this instance. That's why
-					// we're doing this:
-					undoTypesInstance[undoType] = _.extend({}, undoTypesInstance[undoType], fns);
-				} 
-			break;
-			case 2: // remove
-				delete undoTypesInstance[undoType]; 
-			break;
-		}
-		return this;
-	}
-
-	/**
-	 * Instantiating "Action" creates the UndoActions that 
-	 * are collected in an UndoStack. It holds all relevant 
-	 * data to undo / redo an action and has an undo / redo 
-	 * method.
-	 */
-	var Action = Backbone.Model.extend({
-		defaults: {
-			type: null, // "add", "change", "reset", etc.
-			object: null, // The object on which the action occurred
-			before: null, // The previous values which were changed with this action
-			after: null, // The values after this action
-			magicFusionIndex: null // The magicFusionIndex helps to combine 
-			// all actions that occurred "at the same time" to undo/redo them altogether
-		},
-		/**
-		 * Undoes this action.
-		 * @param  {OwnedUndoTypes|UndoTypes} undoTypes The undoTypes object which contains the "undo"-handler that should be used
-		 * @return {undefined}
-		 */
-		undo: function (undoTypes) {
-			actionUndoRedo("undo", this.attributes);
-		},
-		/**
-		 * Redoes this action.
-		 * @param  {OwnedUndoTypes|UndoTypes} undoTypes The undoTypes object which contains the "redo"-handler that should be used
-		 * @return {undefined}
-		 */
-		redo: function (undoTypes) {
-			actionUndoRedo("redo", this.attributes);
-		}
-	}),
-	/**
-	 * An UndoStack is a collection of UndoActions in 
-	 * chronological order.
-	 */
-	UndoStack = Backbone.Collection.extend({
-		model: Action,
-		pointer: -1, // The pointer indicates the index where we are located within the stack. We start at -1
-		track: false,
-		isCurrentlyUndoRedoing: false,
-		maximumStackLength: Infinity,
-		setMaxLength: function (val) {
-			this.maximumStackLength = val;
-		}
-	}),
-	/**
-	 * An instance of UndoManager can keep track of 
-	 * changes to objects and helps to undo them.
-	 */
-	UndoManager = Backbone.Model.extend({
-		defaults: {
-			maximumStackLength: Infinity,
-			track: false
-		},
-		/**
-		 * The constructor function.
-		 * @param  {attr} 		[attr] Object with parameters. The available parameters are:
-		 *                         	   - maximumStackLength {number} 	Set the undo-stack's maximum size
-		 *                             - track 				{boolean}	Start tracking changes right away
-		 * @return {undefined}
-		 */
-		initialize: function (attr) {
-			this.stack = new UndoStack;
-			this.objectRegistry = new ObjectRegistry();
-			this.undoTypes = new OwnedUndoTypes();
-
-			// sync the maximumStackLength attribute with our stack
-			this.stack.setMaxLength(this.get("maximumStackLength"));
-			this.on("change:maximumStackLength", function (model, value) {
-				this.stack.setMaxLength(value);
-			}, this);
-
-			// Start tracking, if attr.track == true
-			if (attr && attr.track) {
-				this.startTracking();
-			}
-
-			// Register objects passed in the "register" attribute
-			if (attr && attr.register) {
-				if (_.isArray(attr.register) || _.isArguments(attr.register)) {
-					apply(this.register, this, attr.register);
-				} else {
-					this.register(attr.register);
-				}
-			}
-		},
-		/**
-		 * Starts tracking. Changes of registered objects won't be processed until you've called this function
-		 * @return {undefined}
-		 */
-		startTracking: function () {
-			this.set("track", true);
-			this.stack.track = true;
-		},
-		/**
-		 * Stops tracking. Afterwards changes of registered objects won't be processed.
-		 * @return {undefined}
-		 */
-		stopTracking: function () {
-			this.set("track", false);
-			this.stack.track = false;
-		},
-		/**
-		 * Return the state of the tracking
-		 * @return {boolean}
-		 */
-		isTracking: function () {
-			return this.get("track");
-		},
-		/**
-		 * This is the "all"-handler which is bound to registered 
-		 * objects. It creates an UndoAction from the event and adds 
-		 * it to the stack.
-		 * 
-		 * @param  {String} 	type 	The event type
-		 * @return {undefined}
-		 */
-		_addToStack: function (type) {
-			addToStack(this.stack, type, slice(arguments, 1), this.undoTypes);
-		},
-		/**
-		 * Registers one or more objects to track their changes.
-		 * @param {...Object} 	obj 	The object or objects of which changes should be tracked
-		 * @return {undefined}
-		 */
-		register: function () {
-			onoff("on", arguments, this._addToStack, this);
-		},
-		/**
-		 * Unregisters one or more objects.
-		 * @param {...Object} 	obj 	The object or objects of which changes shouldn't be tracked any longer
-		 * @return {undefined}
-		 */
-		unregister: function () {
-			onoff("off", arguments, this._addToStack, this);
-		},
-		/**
-		 * Unregisters all previously registered objects.
-		 * @return {undefined}
-		 */
-		unregisterAll: function () {
-			apply(this.unregister, this, this.objectRegistry.get());
-		},
-		/**
-		 * Undoes the last action or the last set of actions in case 'magic' is true.
-		 * @param {Boolean} 	[magic] 	If true, all actions that happened basically at the same time are undone together
-		 * @return {undefined}
-		 */
-		undo: function (magic) {
-			managerUndoRedo("undo", this, this.stack, magic);
-		},
-
-		/**
-		 * Undoes all actions ever tracked by the undo manager
-		 * @return {undefined}
-		 */
-		undoAll: function () {
-			managerUndoRedo("undo", this, this.stack, false, true);
-		},
-
-		/**
-		 * Redoes a previously undone action or a set of actions.
-		 * @param {Boolean} 	[magic] 	If true, all actions that happened basically at the same time are redone together
-		 * @return {undefined}
-		 */
-		redo: function (magic) {
-			managerUndoRedo("redo", this, this.stack, magic);
-		},
-
-		/**
-		 * Redoes all actions ever tracked by the undo manager
-		 * @return {undefined}
-		 */
-		redoAll: function () {
-			managerUndoRedo("redo", this, this.stack, false, true);
-		},
-		/**
-		 * Checks if there's an action in the stack that can be undone / redone
-		 * @param  {String} 	type 	Either "undo" or "redo"
-		 * @return {Boolean} True if there is a set of actions which can be undone / redone
-		 */
-		isAvailable: function (type) {
-			var s = this.stack, l = s.length;
-
-			switch (type) {
-				case "undo": return l > 0 && s.pointer > -1;
-				case "redo": return l > 0 && s.pointer < l - 1;
-				default: return false;
-			}
-		},
-		/**
-		 * Sets the stack-reference to the stack of another undoManager.
-		 * @param  {UndoManager} 	undoManager 	The undoManager whose stack-reference is set to this stack
-		 * @return {undefined}
-		 */
-		merge: function (undoManager) {
-			// This sets the stack-reference to the stack of another 
-			// undoManager so that the stack of this other undoManager 
-			// is used by two different managers.
-			// This enables to set up a main-undoManager and besides it
-			// several others for special, exceptional cases (by using
-			// instance-based custom UndoTypes). Models / collections 
-			// which need this special treatment are only registered at 
-			// those special undoManagers. Those special ones are then 
-			// merged into the main-undoManager to write on its stack. 
-			// That way it's easier to manage exceptional cases.
-			var args = _.isArray(undoManager) ? undoManager : slice(arguments), manager;
-			while (manager = args.pop()) {
-				if (manager instanceof UndoManager &&
-					manager.stack instanceof UndoStack) {
-					// set the stack reference to our stack
-					manager.stack = this.stack;
-				}
-			}
-		},
-		/**
-		 * Add an UndoType to this specific UndoManager-instance.
-		 * @param {String} type The event this UndoType is made for
-		 * @param {Object} fns  An object of functions that are called to generate the data for an UndoAction or to process it. Must have the properties "undo", "redo" and "on". Can have the property "condition".
-		 * @return {undefined}
-		 */
-		addUndoType: function (type, fns) {
-			manipulateUndoType(0, type, fns, this.undoTypes);
-		},
-		/**
-		 * Overwrite properties of an existing UndoType for this specific UndoManager-instance.
-		 * @param  {String} type The event the UndoType is made for
-		 * @param  {Object} fns  An object of functions that are called to generate the data for an UndoAction or to process it. It extends the existing object.
-		 * @return {undefined}
-		 */
-		changeUndoType: function (type, fns) {
-			manipulateUndoType(1, type, fns, this.undoTypes);
-		},
-		/**
-		 * Remove one or more UndoTypes of this specific UndoManager-instance to fall back to the global UndoTypes.
-		 * @param  {String|Array} type The event the UndoType that should be removed is made for. You can also pass an array of events.
-		 * @return {undefined}
-		 */
-		removeUndoType: function (type) {
-			manipulateUndoType(2, type, undefined, this.undoTypes);
-		},
-
-		/**
-		 * Removes all actions from the stack.
-		 * @return {undefined}
-		 */
-		clear: function() {
-			this.stack.reset();
-			this.stack.pointer = -1;
-		}
-	});
-
-	_.extend(UndoManager, {
-		/**
-		 * Change the UndoManager's default attributes
-		 * @param  {Object} defaultAttributes An object with the new default values.
-		 * @return {undefined}
-		 */
-		defaults: function (defaultAttributes) {
-			_.extend(UndoManager.prototype.defaults, defaultAttributes);
-		},
-		/**
-		 * Add an UndoType to the global UndoTypes-object.
-		 * @param  {String} type The event this UndoType is made for
-		 * @param  {Object} fns  An object of functions that are called to generate the data for an UndoAction or to process it. Must have the properties "undo", "redo" and "on". Can have the property "condition".
-		 * @return {undefined}
-		 */
-		"addUndoType": function (type, fns) {
-			manipulateUndoType(0, type, fns, UndoTypes);
-		},
-		/**
-		 * Overwrite properties of an existing UndoType in the global UndoTypes-object.
-		 * @param  {String} type The event the UndoType is made for
-		 * @param  {Object} fns  An object of functions that are called to generate the data for an UndoAction or to process it. It extends the existing object.
-		 * @return {undefined}
-		 */
-		"changeUndoType": function (type, fns) {
-			manipulateUndoType(1, type, fns, UndoTypes)
-		},
-		/**
-		 * Remove one or more UndoTypes of this specific UndoManager-instance to fall back to the global UndoTypes.
-		 * @param  {String|Array} type The event the UndoType that should be removed is made for. You can also pass an array of events.
-		 * @return {undefined}
-		 */
-		"removeUndoType": function (type) {
-			manipulateUndoType(2, type, undefined, UndoTypes);
-		}
-	})
-
-	return Backbone.UndoManager = UndoManager;
-
-});
-
-
-/***/ }),
-/* 209 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Backbone.js 1.2.1
-
-//     (c) 2010-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
-//     Backbone may be freely distributed under the MIT license.
-//     For all details and documentation:
-//     http://backbonejs.org
-
-(function(factory) {
-
-  // Establish the root object, `window` (`self`) in the browser, or `global` on the server.
-  // We use `self` instead of `window` for `WebWorker` support.
-  var root = (typeof self == 'object' && self.self == self && self) ||
-            (typeof global == 'object' && global.global == global && global);
-
-  // Set up Backbone appropriately for the environment. Start with AMD.
-  if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1), __webpack_require__(8), exports], __WEBPACK_AMD_DEFINE_RESULT__ = function(_, $, exports) {
-      // Export global even in AMD case in case this script is loaded with
-      // others that may still expect a global Backbone.
-      root.Backbone = factory(root, exports, _, $);
-    }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-  // Next for Node.js or CommonJS. jQuery may not be needed as a module.
-  } else if (typeof exports !== 'undefined') {
-    var _ = require('underscore'), $;
-    try { $ = require('jquery'); } catch(e) {}
-    factory(root, exports, _, $);
-
-  // Finally, as a browser global.
-  } else {
-    root.Backbone = factory(root, {}, root._, (root.jQuery || root.Zepto || root.ender || root.$));
-  }
-
-}(function(root, Backbone, _, $) {
-
-  // Initial Setup
-  // -------------
-
-  // Save the previous value of the `Backbone` variable, so that it can be
-  // restored later on, if `noConflict` is used.
-  var previousBackbone = root.Backbone;
-
-  // Create a local reference to a common array method we'll want to use later.
-  var slice = [].slice;
-
-  // Current version of the library. Keep in sync with `package.json`.
-  Backbone.VERSION = '1.2.1';
-
-  // For Backbone's purposes, jQuery, Zepto, Ender, or My Library (kidding) owns
-  // the `$` variable.
-  Backbone.$ = $;
-
-  // Runs Backbone.js in *noConflict* mode, returning the `Backbone` variable
-  // to its previous owner. Returns a reference to this Backbone object.
-  Backbone.noConflict = function() {
-    root.Backbone = previousBackbone;
-    return this;
-  };
-
-  // Turn on `emulateHTTP` to support legacy HTTP servers. Setting this option
-  // will fake `"PATCH"`, `"PUT"` and `"DELETE"` requests via the `_method` parameter and
-  // set a `X-Http-Method-Override` header.
-  Backbone.emulateHTTP = false;
-
-  // Turn on `emulateJSON` to support legacy servers that can't deal with direct
-  // `application/json` requests ... this will encode the body as
-  // `application/x-www-form-urlencoded` instead and will send the model in a
-  // form param named `model`.
-  Backbone.emulateJSON = false;
-
-  // Proxy Underscore methods to a Backbone class' prototype using a
-  // particular attribute as the data argument
-  var addMethod = function(length, method, attribute) {
-    switch (length) {
-      case 1: return function() {
-        return _[method](this[attribute]);
-      };
-      case 2: return function(value) {
-        return _[method](this[attribute], value);
-      };
-      case 3: return function(iteratee, context) {
-        return _[method](this[attribute], iteratee, context);
-      };
-      case 4: return function(iteratee, defaultVal, context) {
-        return _[method](this[attribute], iteratee, defaultVal, context);
-      };
-      default: return function() {
-        var args = slice.call(arguments);
-        args.unshift(this[attribute]);
-        return _[method].apply(_, args);
-      };
-    }
-  };
-  var addUnderscoreMethods = function(Class, methods, attribute) {
-    _.each(methods, function(length, method) {
-      if (_[method]) Class.prototype[method] = addMethod(length, method, attribute);
-    });
-  };
-
-  // Backbone.Events
-  // ---------------
-
-  // A module that can be mixed in to *any object* in order to provide it with
-  // custom events. You may bind with `on` or remove with `off` callback
-  // functions to an event; `trigger`-ing an event fires all callbacks in
-  // succession.
-  //
-  //     var object = {};
-  //     _.extend(object, Backbone.Events);
-  //     object.on('expand', function(){ alert('expanded'); });
-  //     object.trigger('expand');
-  //
-  var Events = Backbone.Events = {};
-
-  // Regular expression used to split event strings.
-  var eventSplitter = /\s+/;
-
-  // Iterates over the standard `event, callback` (as well as the fancy multiple
-  // space-separated events `"change blur", callback` and jQuery-style event
-  // maps `{event: callback}`), reducing them by manipulating `memo`.
-  // Passes a normalized single event name and callback, as well as any
-  // optional `opts`.
-  var eventsApi = function(iteratee, memo, name, callback, opts) {
-    var i = 0, names;
-    if (name && typeof name === 'object') {
-      // Handle event maps.
-      if (callback !== void 0 && 'context' in opts && opts.context === void 0) opts.context = callback;
-      for (names = _.keys(name); i < names.length ; i++) {
-        memo = iteratee(memo, names[i], name[names[i]], opts);
-      }
-    } else if (name && eventSplitter.test(name)) {
-      // Handle space separated event names.
-      for (names = name.split(eventSplitter); i < names.length; i++) {
-        memo = iteratee(memo, names[i], callback, opts);
-      }
-    } else {
-      memo = iteratee(memo, name, callback, opts);
-    }
-    return memo;
-  };
-
-  // Bind an event to a `callback` function. Passing `"all"` will bind
-  // the callback to all events fired.
-  Events.on = function(name, callback, context) {
-    return internalOn(this, name, callback, context);
-  };
-
-  // An internal use `on` function, used to guard the `listening` argument from
-  // the public API.
-  var internalOn = function(obj, name, callback, context, listening) {
-    obj._events = eventsApi(onApi, obj._events || {}, name, callback, {
-        context: context,
-        ctx: obj,
-        listening: listening
-    });
-
-    if (listening) {
-      var listeners = obj._listeners || (obj._listeners = {});
-      listeners[listening.id] = listening;
-    }
-
-    return obj;
-  };
-
-  // Inversion-of-control versions of `on`. Tell *this* object to listen to
-  // an event in another object... keeping track of what it's listening to.
-  Events.listenTo =  function(obj, name, callback) {
-    if (!obj) return this;
-    var id = obj._listenId || (obj._listenId = _.uniqueId('l'));
-    var listeningTo = this._listeningTo || (this._listeningTo = {});
-    var listening = listeningTo[id];
-
-    // This object is not listening to any other events on `obj` yet.
-    // Setup the necessary references to track the listening callbacks.
-    if (!listening) {
-      var thisId = this._listenId || (this._listenId = _.uniqueId('l'));
-      listening = listeningTo[id] = {obj: obj, objId: id, id: thisId, listeningTo: listeningTo, count: 0};
-    }
-
-    // Bind callbacks on obj, and keep track of them on listening.
-    internalOn(obj, name, callback, this, listening);
-    return this;
-  };
-
-  // The reducing API that adds a callback to the `events` object.
-  var onApi = function(events, name, callback, options) {
-    if (callback) {
-      var handlers = events[name] || (events[name] = []);
-      var context = options.context, ctx = options.ctx, listening = options.listening;
-      if (listening) listening.count++;
-
-      handlers.push({ callback: callback, context: context, ctx: context || ctx, listening: listening });
-    }
-    return events;
-  };
-
-  // Remove one or many callbacks. If `context` is null, removes all
-  // callbacks with that function. If `callback` is null, removes all
-  // callbacks for the event. If `name` is null, removes all bound
-  // callbacks for all events.
-  Events.off =  function(name, callback, context) {
-    if (!this._events) return this;
-    this._events = eventsApi(offApi, this._events, name, callback, {
-        context: context,
-        listeners: this._listeners
-    });
-    return this;
-  };
-
-  // Tell this object to stop listening to either specific events ... or
-  // to every object it's currently listening to.
-  Events.stopListening =  function(obj, name, callback) {
-    var listeningTo = this._listeningTo;
-    if (!listeningTo) return this;
-
-    var ids = obj ? [obj._listenId] : _.keys(listeningTo);
-
-    for (var i = 0; i < ids.length; i++) {
-      var listening = listeningTo[ids[i]];
-
-      // If listening doesn't exist, this object is not currently
-      // listening to obj. Break out early.
-      if (!listening) break;
-
-      listening.obj.off(name, callback, this);
-    }
-    if (_.isEmpty(listeningTo)) this._listeningTo = void 0;
-
-    return this;
-  };
-
-  // The reducing API that removes a callback from the `events` object.
-  var offApi = function(events, name, callback, options) {
-    // No events to consider.
-    if (!events) return;
-
-    var i = 0, listening;
-    var context = options.context, listeners = options.listeners;
-
-    // Delete all events listeners and "drop" events.
-    if (!name && !callback && !context) {
-      var ids = _.keys(listeners);
-      for (; i < ids.length; i++) {
-        listening = listeners[ids[i]];
-        delete listeners[listening.id];
-        delete listening.listeningTo[listening.objId];
-      }
-      return;
-    }
-
-    var names = name ? [name] : _.keys(events);
-    for (; i < names.length; i++) {
-      name = names[i];
-      var handlers = events[name];
-
-      // Bail out if there are no events stored.
-      if (!handlers) break;
-
-      // Replace events if there are any remaining.  Otherwise, clean up.
-      var remaining = [];
-      for (var j = 0; j < handlers.length; j++) {
-        var handler = handlers[j];
-        if (
-          callback && callback !== handler.callback &&
-            callback !== handler.callback._callback ||
-              context && context !== handler.context
-        ) {
-          remaining.push(handler);
-        } else {
-          listening = handler.listening;
-          if (listening && --listening.count === 0) {
-            delete listeners[listening.id];
-            delete listening.listeningTo[listening.objId];
-          }
-        }
-      }
-
-      // Update tail event if the list has any events.  Otherwise, clean up.
-      if (remaining.length) {
-        events[name] = remaining;
-      } else {
-        delete events[name];
-      }
-    }
-    if (_.size(events)) return events;
-  };
-
-  // Bind an event to only be triggered a single time. After the first time
-  // the callback is invoked, it will be removed. When multiple events are
-  // passed in using the space-separated syntax, the event will fire once for every
-  // event you passed in, not once for a combination of all events
-  Events.once =  function(name, callback, context) {
-    // Map the event into a `{event: once}` object.
-    var events = eventsApi(onceMap, {}, name, callback, _.bind(this.off, this));
-    return this.on(events, void 0, context);
-  };
-
-  // Inversion-of-control versions of `once`.
-  Events.listenToOnce =  function(obj, name, callback) {
-    // Map the event into a `{event: once}` object.
-    var events = eventsApi(onceMap, {}, name, callback, _.bind(this.stopListening, this, obj));
-    return this.listenTo(obj, events);
-  };
-
-  // Reduces the event callbacks into a map of `{event: onceWrapper}`.
-  // `offer` unbinds the `onceWrapper` after it has been called.
-  var onceMap = function(map, name, callback, offer) {
-    if (callback) {
-      var once = map[name] = _.once(function() {
-        offer(name, once);
-        callback.apply(this, arguments);
-      });
-      once._callback = callback;
-    }
-    return map;
-  };
-
-  // Trigger one or many events, firing all bound callbacks. Callbacks are
-  // passed the same arguments as `trigger` is, apart from the event name
-  // (unless you're listening on `"all"`, which will cause your callback to
-  // receive the true name of the event as the first argument).
-  Events.trigger =  function(name) {
-    if (!this._events) return this;
-
-    var length = Math.max(0, arguments.length - 1);
-    var args = Array(length);
-    for (var i = 0; i < length; i++) args[i] = arguments[i + 1];
-
-    eventsApi(triggerApi, this._events, name, void 0, args);
-    return this;
-  };
-
-  // Handles triggering the appropriate event callbacks.
-  var triggerApi = function(objEvents, name, cb, args) {
-    if (objEvents) {
-      var events = objEvents[name];
-      var allEvents = objEvents.all;
-      if (events && allEvents) allEvents = allEvents.slice();
-      if (events) triggerEvents(events, args);
-      if (allEvents) triggerEvents(allEvents, [name].concat(args));
-    }
-    return objEvents;
-  };
-
-  // A difficult-to-believe, but optimized internal dispatch function for
-  // triggering events. Tries to keep the usual cases speedy (most internal
-  // Backbone events have 3 arguments).
-  var triggerEvents = function(events, args) {
-    var ev, i = -1, l = events.length, a1 = args[0], a2 = args[1], a3 = args[2];
-    switch (args.length) {
-      case 0: while (++i < l) (ev = events[i]).callback.call(ev.ctx); return;
-      case 1: while (++i < l) (ev = events[i]).callback.call(ev.ctx, a1); return;
-      case 2: while (++i < l) (ev = events[i]).callback.call(ev.ctx, a1, a2); return;
-      case 3: while (++i < l) (ev = events[i]).callback.call(ev.ctx, a1, a2, a3); return;
-      default: while (++i < l) (ev = events[i]).callback.apply(ev.ctx, args); return;
-    }
-  };
-
-  // Aliases for backwards compatibility.
-  Events.bind   = Events.on;
-  Events.unbind = Events.off;
-
-  // Allow the `Backbone` object to serve as a global event bus, for folks who
-  // want global "pubsub" in a convenient place.
-  _.extend(Backbone, Events);
-
-  // Backbone.Model
-  // --------------
-
-  // Backbone **Models** are the basic data object in the framework --
-  // frequently representing a row in a table in a database on your server.
-  // A discrete chunk of data and a bunch of useful, related methods for
-  // performing computations and transformations on that data.
-
-  // Create a new model with the specified attributes. A client id (`cid`)
-  // is automatically generated and assigned for you.
-  var Model = Backbone.Model = function(attributes, options) {
-    var attrs = attributes || {};
-    options || (options = {});
-    this.cid = _.uniqueId(this.cidPrefix);
-    this.attributes = {};
-    if (options.collection) this.collection = options.collection;
-    if (options.parse) attrs = this.parse(attrs, options) || {};
-    attrs = _.defaults({}, attrs, _.result(this, 'defaults'));
-    this.set(attrs, options);
-    this.changed = {};
-    this.initialize.apply(this, arguments);
-  };
-
-  // Attach all inheritable methods to the Model prototype.
-  _.extend(Model.prototype, Events, {
-
-    // A hash of attributes whose current and previous value differ.
-    changed: null,
-
-    // The value returned during the last failed validation.
-    validationError: null,
-
-    // The default name for the JSON `id` attribute is `"id"`. MongoDB and
-    // CouchDB users may want to set this to `"_id"`.
-    idAttribute: 'id',
-
-    // The prefix is used to create the client id which is used to identify models locally.
-    // You may want to override this if you're experiencing name clashes with model ids.
-    cidPrefix: 'c',
-
-    // Initialize is an empty function by default. Override it with your own
-    // initialization logic.
-    initialize: function(){},
-
-    // Return a copy of the model's `attributes` object.
-    toJSON: function(options) {
-      return _.clone(this.attributes);
-    },
-
-    // Proxy `Backbone.sync` by default -- but override this if you need
-    // custom syncing semantics for *this* particular model.
-    sync: function() {
-      return Backbone.sync.apply(this, arguments);
-    },
-
-    // Get the value of an attribute.
-    get: function(attr) {
-      return this.attributes[attr];
-    },
-
-    // Get the HTML-escaped value of an attribute.
-    escape: function(attr) {
-      return _.escape(this.get(attr));
-    },
-
-    // Returns `true` if the attribute contains a value that is not null
-    // or undefined.
-    has: function(attr) {
-      return this.get(attr) != null;
-    },
-
-    // Special-cased proxy to underscore's `_.matches` method.
-    matches: function(attrs) {
-      return !!_.iteratee(attrs, this)(this.attributes);
-    },
-
-    // Set a hash of model attributes on the object, firing `"change"`. This is
-    // the core primitive operation of a model, updating the data and notifying
-    // anyone who needs to know about the change in state. The heart of the beast.
-    set: function(key, val, options) {
-      if (key == null) return this;
-
-      // Handle both `"key", value` and `{key: value}` -style arguments.
-      var attrs;
-      if (typeof key === 'object') {
-        attrs = key;
-        options = val;
-      } else {
-        (attrs = {})[key] = val;
-      }
-
-      options || (options = {});
-
-      // Run validation.
-      if (!this._validate(attrs, options)) return false;
-
-      // Extract attributes and options.
-      var unset      = options.unset;
-      var silent     = options.silent;
-      var changes    = [];
-      var changing   = this._changing;
-      this._changing = true;
-
-      if (!changing) {
-        this._previousAttributes = _.clone(this.attributes);
-        this.changed = {};
-      }
-
-      var current = this.attributes;
-      var changed = this.changed;
-      var prev    = this._previousAttributes;
-
-      // Check for changes of `id`.
-      if (this.idAttribute in attrs) this.id = attrs[this.idAttribute];
-
-      // For each `set` attribute, update or delete the current value.
-      for (var attr in attrs) {
-        val = attrs[attr];
-        if (!_.isEqual(current[attr], val)) changes.push(attr);
-        if (!_.isEqual(prev[attr], val)) {
-          changed[attr] = val;
-        } else {
-          delete changed[attr];
-        }
-        unset ? delete current[attr] : current[attr] = val;
-      }
-
-      // Trigger all relevant attribute changes.
-      if (!silent) {
-        if (changes.length) this._pending = options;
-        for (var i = 0; i < changes.length; i++) {
-          this.trigger('change:' + changes[i], this, current[changes[i]], options);
-        }
-      }
-
-      // You might be wondering why there's a `while` loop here. Changes can
-      // be recursively nested within `"change"` events.
-      if (changing) return this;
-      if (!silent) {
-        while (this._pending) {
-          options = this._pending;
-          this._pending = false;
-          this.trigger('change', this, options);
-        }
-      }
-      this._pending = false;
-      this._changing = false;
-      return this;
-    },
-
-    // Remove an attribute from the model, firing `"change"`. `unset` is a noop
-    // if the attribute doesn't exist.
-    unset: function(attr, options) {
-      return this.set(attr, void 0, _.extend({}, options, {unset: true}));
-    },
-
-    // Clear all attributes on the model, firing `"change"`.
-    clear: function(options) {
-      var attrs = {};
-      for (var key in this.attributes) attrs[key] = void 0;
-      return this.set(attrs, _.extend({}, options, {unset: true}));
-    },
-
-    // Determine if the model has changed since the last `"change"` event.
-    // If you specify an attribute name, determine if that attribute has changed.
-    hasChanged: function(attr) {
-      if (attr == null) return !_.isEmpty(this.changed);
-      return _.has(this.changed, attr);
-    },
-
-    // Return an object containing all the attributes that have changed, or
-    // false if there are no changed attributes. Useful for determining what
-    // parts of a view need to be updated and/or what attributes need to be
-    // persisted to the server. Unset attributes will be set to undefined.
-    // You can also pass an attributes object to diff against the model,
-    // determining if there *would be* a change.
-    changedAttributes: function(diff) {
-      if (!diff) return this.hasChanged() ? _.clone(this.changed) : false;
-      var old = this._changing ? this._previousAttributes : this.attributes;
-      var changed = {};
-      for (var attr in diff) {
-        var val = diff[attr];
-        if (_.isEqual(old[attr], val)) continue;
-        changed[attr] = val;
-      }
-      return _.size(changed) ? changed : false;
-    },
-
-    // Get the previous value of an attribute, recorded at the time the last
-    // `"change"` event was fired.
-    previous: function(attr) {
-      if (attr == null || !this._previousAttributes) return null;
-      return this._previousAttributes[attr];
-    },
-
-    // Get all of the attributes of the model at the time of the previous
-    // `"change"` event.
-    previousAttributes: function() {
-      return _.clone(this._previousAttributes);
-    },
-
-    // Fetch the model from the server, merging the response with the model's
-    // local attributes. Any changed attributes will trigger a "change" event.
-    fetch: function(options) {
-      options = _.extend({parse: true}, options);
-      var model = this;
-      var success = options.success;
-      options.success = function(resp) {
-        var serverAttrs = options.parse ? model.parse(resp, options) : resp;
-        if (!model.set(serverAttrs, options)) return false;
-        if (success) success.call(options.context, model, resp, options);
-        model.trigger('sync', model, resp, options);
-      };
-      wrapError(this, options);
-      return this.sync('read', this, options);
-    },
-
-    // Set a hash of model attributes, and sync the model to the server.
-    // If the server returns an attributes hash that differs, the model's
-    // state will be `set` again.
-    save: function(key, val, options) {
-      // Handle both `"key", value` and `{key: value}` -style arguments.
-      var attrs;
-      if (key == null || typeof key === 'object') {
-        attrs = key;
-        options = val;
-      } else {
-        (attrs = {})[key] = val;
-      }
-
-      options = _.extend({validate: true, parse: true}, options);
-      var wait = options.wait;
-
-      // If we're not waiting and attributes exist, save acts as
-      // `set(attr).save(null, opts)` with validation. Otherwise, check if
-      // the model will be valid when the attributes, if any, are set.
-      if (attrs && !wait) {
-        if (!this.set(attrs, options)) return false;
-      } else {
-        if (!this._validate(attrs, options)) return false;
-      }
-
-      // After a successful server-side save, the client is (optionally)
-      // updated with the server-side state.
-      var model = this;
-      var success = options.success;
-      var attributes = this.attributes;
-      options.success = function(resp) {
-        // Ensure attributes are restored during synchronous saves.
-        model.attributes = attributes;
-        var serverAttrs = options.parse ? model.parse(resp, options) : resp;
-        if (wait) serverAttrs = _.extend({}, attrs, serverAttrs);
-        if (serverAttrs && !model.set(serverAttrs, options)) return false;
-        if (success) success.call(options.context, model, resp, options);
-        model.trigger('sync', model, resp, options);
-      };
-      wrapError(this, options);
-
-      // Set temporary attributes if `{wait: true}` to properly find new ids.
-      if (attrs && wait) this.attributes = _.extend({}, attributes, attrs);
-
-      var method = this.isNew() ? 'create' : (options.patch ? 'patch' : 'update');
-      if (method === 'patch' && !options.attrs) options.attrs = attrs;
-      var xhr = this.sync(method, this, options);
-
-      // Restore attributes.
-      this.attributes = attributes;
-
-      return xhr;
-    },
-
-    // Destroy this model on the server if it was already persisted.
-    // Optimistically removes the model from its collection, if it has one.
-    // If `wait: true` is passed, waits for the server to respond before removal.
-    destroy: function(options) {
-      options = options ? _.clone(options) : {};
-      var model = this;
-      var success = options.success;
-      var wait = options.wait;
-
-      var destroy = function() {
-        model.stopListening();
-        model.trigger('destroy', model, model.collection, options);
-      };
-
-      options.success = function(resp) {
-        if (wait) destroy();
-        if (success) success.call(options.context, model, resp, options);
-        if (!model.isNew()) model.trigger('sync', model, resp, options);
-      };
-
-      var xhr = false;
-      if (this.isNew()) {
-        _.defer(options.success);
-      } else {
-        wrapError(this, options);
-        xhr = this.sync('delete', this, options);
-      }
-      if (!wait) destroy();
-      return xhr;
-    },
-
-    // Default URL for the model's representation on the server -- if you're
-    // using Backbone's restful methods, override this to change the endpoint
-    // that will be called.
-    url: function() {
-      var base =
-        _.result(this, 'urlRoot') ||
-        _.result(this.collection, 'url') ||
-        urlError();
-      if (this.isNew()) return base;
-      var id = this.get(this.idAttribute);
-      return base.replace(/[^\/]$/, '$&/') + encodeURIComponent(id);
-    },
-
-    // **parse** converts a response into the hash of attributes to be `set` on
-    // the model. The default implementation is just to pass the response along.
-    parse: function(resp, options) {
-      return resp;
-    },
-
-    // Create a new model with identical attributes to this one.
-    clone: function() {
-      return new this.constructor(this.attributes);
-    },
-
-    // A model is new if it has never been saved to the server, and lacks an id.
-    isNew: function() {
-      return !this.has(this.idAttribute);
-    },
-
-    // Check if the model is currently in a valid state.
-    isValid: function(options) {
-      return this._validate({}, _.defaults({validate: true}, options));
-    },
-
-    // Run validation against the next complete set of model attributes,
-    // returning `true` if all is well. Otherwise, fire an `"invalid"` event.
-    _validate: function(attrs, options) {
-      if (!options.validate || !this.validate) return true;
-      attrs = _.extend({}, this.attributes, attrs);
-      var error = this.validationError = this.validate(attrs, options) || null;
-      if (!error) return true;
-      this.trigger('invalid', this, error, _.extend(options, {validationError: error}));
-      return false;
-    }
-
-  });
-
-  // Underscore methods that we want to implement on the Model.
-  var modelMethods = { keys: 1, values: 1, pairs: 1, invert: 1, pick: 0,
-      omit: 0, chain: 1, isEmpty: 1 };
-
-  // Mix in each Underscore method as a proxy to `Model#attributes`.
-  addUnderscoreMethods(Model, modelMethods, 'attributes');
-
-  // Backbone.Collection
-  // -------------------
-
-  // If models tend to represent a single row of data, a Backbone Collection is
-  // more analogous to a table full of data ... or a small slice or page of that
-  // table, or a collection of rows that belong together for a particular reason
-  // -- all of the messages in this particular folder, all of the documents
-  // belonging to this particular author, and so on. Collections maintain
-  // indexes of their models, both in order, and for lookup by `id`.
-
-  // Create a new **Collection**, perhaps to contain a specific type of `model`.
-  // If a `comparator` is specified, the Collection will maintain
-  // its models in sort order, as they're added and removed.
-  var Collection = Backbone.Collection = function(models, options) {
-    options || (options = {});
-    if (options.model) this.model = options.model;
-    if (options.comparator !== void 0) this.comparator = options.comparator;
-    this._reset();
-    this.initialize.apply(this, arguments);
-    if (models) this.reset(models, _.extend({silent: true}, options));
-  };
-
-  // Default options for `Collection#set`.
-  var setOptions = {add: true, remove: true, merge: true};
-  var addOptions = {add: true, remove: false};
-
-  // Define the Collection's inheritable methods.
-  _.extend(Collection.prototype, Events, {
-
-    // The default model for a collection is just a **Backbone.Model**.
-    // This should be overridden in most cases.
-    model: Model,
-
-    // Initialize is an empty function by default. Override it with your own
-    // initialization logic.
-    initialize: function(){},
-
-    // The JSON representation of a Collection is an array of the
-    // models' attributes.
-    toJSON: function(options) {
-      return this.map(function(model) { return model.toJSON(options); });
-    },
-
-    // Proxy `Backbone.sync` by default.
-    sync: function() {
-      return Backbone.sync.apply(this, arguments);
-    },
-
-    // Add a model, or list of models to the set.
-    add: function(models, options) {
-      return this.set(models, _.extend({merge: false}, options, addOptions));
-    },
-
-    // Remove a model, or a list of models from the set.
-    remove: function(models, options) {
-      options = _.extend({}, options);
-      var singular = !_.isArray(models);
-      models = singular ? [models] : _.clone(models);
-      var removed = this._removeModels(models, options);
-      if (!options.silent && removed) this.trigger('update', this, options);
-      return singular ? removed[0] : removed;
-    },
-
-    // Update a collection by `set`-ing a new list of models, adding new ones,
-    // removing models that are no longer present, and merging models that
-    // already exist in the collection, as necessary. Similar to **Model#set**,
-    // the core operation for updating the data contained by the collection.
-    set: function(models, options) {
-      options = _.defaults({}, options, setOptions);
-      if (options.parse && !this._isModel(models)) models = this.parse(models, options);
-      var singular = !_.isArray(models);
-      models = singular ? (models ? [models] : []) : models.slice();
-      var id, model, attrs, existing, sort;
-      var at = options.at;
-      if (at != null) at = +at;
-      if (at < 0) at += this.length + 1;
-      var sortable = this.comparator && (at == null) && options.sort !== false;
-      var sortAttr = _.isString(this.comparator) ? this.comparator : null;
-      var toAdd = [], toRemove = [], modelMap = {};
-      var add = options.add, merge = options.merge, remove = options.remove;
-      var order = !sortable && add && remove ? [] : false;
-      var orderChanged = false;
-
-      // Turn bare objects into model references, and prevent invalid models
-      // from being added.
-      for (var i = 0; i < models.length; i++) {
-        attrs = models[i];
-
-        // If a duplicate is found, prevent it from being added and
-        // optionally merge it into the existing model.
-        if (existing = this.get(attrs)) {
-          if (remove) modelMap[existing.cid] = true;
-          if (merge && attrs !== existing) {
-            attrs = this._isModel(attrs) ? attrs.attributes : attrs;
-            if (options.parse) attrs = existing.parse(attrs, options);
-            existing.set(attrs, options);
-            if (sortable && !sort && existing.hasChanged(sortAttr)) sort = true;
-          }
-          models[i] = existing;
-
-        // If this is a new, valid model, push it to the `toAdd` list.
-        } else if (add) {
-          model = models[i] = this._prepareModel(attrs, options);
-          if (!model) continue;
-          toAdd.push(model);
-          this._addReference(model, options);
-        }
-
-        // Do not add multiple models with the same `id`.
-        model = existing || model;
-        if (!model) continue;
-        id = this.modelId(model.attributes);
-        if (order && (model.isNew() || !modelMap[id])) {
-          order.push(model);
-
-          // Check to see if this is actually a new model at this index.
-          orderChanged = orderChanged || !this.models[i] || model.cid !== this.models[i].cid;
-        }
-
-        modelMap[id] = true;
-      }
-
-      // Remove nonexistent models if appropriate.
-      if (remove) {
-        for (var i = 0; i < this.length; i++) {
-          if (!modelMap[(model = this.models[i]).cid]) toRemove.push(model);
-        }
-        if (toRemove.length) this._removeModels(toRemove, options);
-      }
-
-      // See if sorting is needed, update `length` and splice in new models.
-      if (toAdd.length || orderChanged) {
-        if (sortable) sort = true;
-        this.length += toAdd.length;
-        if (at != null) {
-          for (var i = 0; i < toAdd.length; i++) {
-            this.models.splice(at + i, 0, toAdd[i]);
-          }
-        } else {
-          if (order) this.models.length = 0;
-          var orderedModels = order || toAdd;
-          for (var i = 0; i < orderedModels.length; i++) {
-            this.models.push(orderedModels[i]);
-          }
-        }
-      }
-
-      // Silently sort the collection if appropriate.
-      if (sort) this.sort({silent: true});
-
-      // Unless silenced, it's time to fire all appropriate add/sort events.
-      if (!options.silent) {
-        var addOpts = at != null ? _.clone(options) : options;
-        for (var i = 0; i < toAdd.length; i++) {
-          if (at != null) addOpts.index = at + i;
-          (model = toAdd[i]).trigger('add', model, this, addOpts);
-        }
-        if (sort || orderChanged) this.trigger('sort', this, options);
-        if (toAdd.length || toRemove.length) this.trigger('update', this, options);
-      }
-
-      // Return the added (or merged) model (or models).
-      return singular ? models[0] : models;
-    },
-
-    // When you have more items than you want to add or remove individually,
-    // you can reset the entire set with a new list of models, without firing
-    // any granular `add` or `remove` events. Fires `reset` when finished.
-    // Useful for bulk operations and optimizations.
-    reset: function(models, options) {
-      options = options ? _.clone(options) : {};
-      for (var i = 0; i < this.models.length; i++) {
-        this._removeReference(this.models[i], options);
-      }
-      options.previousModels = this.models;
-      this._reset();
-      models = this.add(models, _.extend({silent: true}, options));
-      if (!options.silent) this.trigger('reset', this, options);
-      return models;
-    },
-
-    // Add a model to the end of the collection.
-    push: function(model, options) {
-      return this.add(model, _.extend({at: this.length}, options));
-    },
-
-    // Remove a model from the end of the collection.
-    pop: function(options) {
-      var model = this.at(this.length - 1);
-      return this.remove(model, options);
-    },
-
-    // Add a model to the beginning of the collection.
-    unshift: function(model, options) {
-      return this.add(model, _.extend({at: 0}, options));
-    },
-
-    // Remove a model from the beginning of the collection.
-    shift: function(options) {
-      var model = this.at(0);
-      return this.remove(model, options);
-    },
-
-    // Slice out a sub-array of models from the collection.
-    slice: function() {
-      return slice.apply(this.models, arguments);
-    },
-
-    // Get a model from the set by id.
-    get: function(obj) {
-      if (obj == null) return void 0;
-      var id = this.modelId(this._isModel(obj) ? obj.attributes : obj);
-      return this._byId[obj] || this._byId[id] || this._byId[obj.cid];
-    },
-
-    // Get the model at the given index.
-    at: function(index) {
-      if (index < 0) index += this.length;
-      return this.models[index];
-    },
-
-    // Return models with matching attributes. Useful for simple cases of
-    // `filter`.
-    where: function(attrs, first) {
-      var matches = _.matches(attrs);
-      return this[first ? 'find' : 'filter'](function(model) {
-        return matches(model.attributes);
-      });
-    },
-
-    // Return the first model with matching attributes. Useful for simple cases
-    // of `find`.
-    findWhere: function(attrs) {
-      return this.where(attrs, true);
-    },
-
-    // Force the collection to re-sort itself. You don't need to call this under
-    // normal circumstances, as the set will maintain sort order as each item
-    // is added.
-    sort: function(options) {
-      if (!this.comparator) throw new Error('Cannot sort a set without a comparator');
-      options || (options = {});
-
-      // Run sort based on type of `comparator`.
-      if (_.isString(this.comparator) || this.comparator.length === 1) {
-        this.models = this.sortBy(this.comparator, this);
-      } else {
-        this.models.sort(_.bind(this.comparator, this));
-      }
-
-      if (!options.silent) this.trigger('sort', this, options);
-      return this;
-    },
-
-    // Pluck an attribute from each model in the collection.
-    pluck: function(attr) {
-      return _.invoke(this.models, 'get', attr);
-    },
-
-    // Fetch the default set of models for this collection, resetting the
-    // collection when they arrive. If `reset: true` is passed, the response
-    // data will be passed through the `reset` method instead of `set`.
-    fetch: function(options) {
-      options = _.extend({parse: true}, options);
-      var success = options.success;
-      var collection = this;
-      options.success = function(resp) {
-        var method = options.reset ? 'reset' : 'set';
-        collection[method](resp, options);
-        if (success) success.call(options.context, collection, resp, options);
-        collection.trigger('sync', collection, resp, options);
-      };
-      wrapError(this, options);
-      return this.sync('read', this, options);
-    },
-
-    // Create a new instance of a model in this collection. Add the model to the
-    // collection immediately, unless `wait: true` is passed, in which case we
-    // wait for the server to agree.
-    create: function(model, options) {
-      options = options ? _.clone(options) : {};
-      var wait = options.wait;
-      model = this._prepareModel(model, options);
-      if (!model) return false;
-      if (!wait) this.add(model, options);
-      var collection = this;
-      var success = options.success;
-      options.success = function(model, resp, callbackOpts) {
-        if (wait) collection.add(model, callbackOpts);
-        if (success) success.call(callbackOpts.context, model, resp, callbackOpts);
-      };
-      model.save(null, options);
-      return model;
-    },
-
-    // **parse** converts a response into a list of models to be added to the
-    // collection. The default implementation is just to pass it through.
-    parse: function(resp, options) {
-      return resp;
-    },
-
-    // Create a new collection with an identical list of models as this one.
-    clone: function() {
-      return new this.constructor(this.models, {
-        model: this.model,
-        comparator: this.comparator
-      });
-    },
-
-    // Define how to uniquely identify models in the collection.
-    modelId: function (attrs) {
-      return attrs[this.model.prototype.idAttribute || 'id'];
-    },
-
-    // Private method to reset all internal state. Called when the collection
-    // is first initialized or reset.
-    _reset: function() {
-      this.length = 0;
-      this.models = [];
-      this._byId  = {};
-    },
-
-    // Prepare a hash of attributes (or other model) to be added to this
-    // collection.
-    _prepareModel: function(attrs, options) {
-      if (this._isModel(attrs)) {
-        if (!attrs.collection) attrs.collection = this;
-        return attrs;
-      }
-      options = options ? _.clone(options) : {};
-      options.collection = this;
-      var model = new this.model(attrs, options);
-      if (!model.validationError) return model;
-      this.trigger('invalid', this, model.validationError, options);
-      return false;
-    },
-
-    // Internal method called by both remove and set.
-    // Returns removed models, or false if nothing is removed.
-    _removeModels: function(models, options) {
-      var removed = [];
-      for (var i = 0; i < models.length; i++) {
-        var model = this.get(models[i]);
-        if (!model) continue;
-
-        var index = this.indexOf(model);
-        this.models.splice(index, 1);
-        this.length--;
-
-        if (!options.silent) {
-          options.index = index;
-          model.trigger('remove', model, this, options);
-        }
-
-        removed.push(model);
-        this._removeReference(model, options);
-      }
-      return removed.length ? removed : false;
-    },
-
-    // Method for checking whether an object should be considered a model for
-    // the purposes of adding to the collection.
-    _isModel: function (model) {
-      return model instanceof Model;
-    },
-
-    // Internal method to create a model's ties to a collection.
-    _addReference: function(model, options) {
-      this._byId[model.cid] = model;
-      var id = this.modelId(model.attributes);
-      if (id != null) this._byId[id] = model;
-      model.on('all', this._onModelEvent, this);
-    },
-
-    // Internal method to sever a model's ties to a collection.
-    _removeReference: function(model, options) {
-      delete this._byId[model.cid];
-      var id = this.modelId(model.attributes);
-      if (id != null) delete this._byId[id];
-      if (this === model.collection) delete model.collection;
-      model.off('all', this._onModelEvent, this);
-    },
-
-    // Internal method called every time a model in the set fires an event.
-    // Sets need to update their indexes when models change ids. All other
-    // events simply proxy through. "add" and "remove" events that originate
-    // in other collections are ignored.
-    _onModelEvent: function(event, model, collection, options) {
-      if ((event === 'add' || event === 'remove') && collection !== this) return;
-      if (event === 'destroy') this.remove(model, options);
-      if (event === 'change') {
-        var prevId = this.modelId(model.previousAttributes());
-        var id = this.modelId(model.attributes);
-        if (prevId !== id) {
-          if (prevId != null) delete this._byId[prevId];
-          if (id != null) this._byId[id] = model;
-        }
-      }
-      this.trigger.apply(this, arguments);
-    }
-
-  });
-
-  // Underscore methods that we want to implement on the Collection.
-  // 90% of the core usefulness of Backbone Collections is actually implemented
-  // right here:
-  var collectionMethods = { forEach: 3, each: 3, map: 3, collect: 3, reduce: 4,
-      foldl: 4, inject: 4, reduceRight: 4, foldr: 4, find: 3, detect: 3, filter: 3,
-      select: 3, reject: 3, every: 3, all: 3, some: 3, any: 3, include: 2,
-      contains: 2, invoke: 0, max: 3, min: 3, toArray: 1, size: 1, first: 3,
-      head: 3, take: 3, initial: 3, rest: 3, tail: 3, drop: 3, last: 3,
-      without: 0, difference: 0, indexOf: 3, shuffle: 1, lastIndexOf: 3,
-      isEmpty: 1, chain: 1, sample: 3, partition: 3 };
-
-  // Mix in each Underscore method as a proxy to `Collection#models`.
-  addUnderscoreMethods(Collection, collectionMethods, 'models');
-
-  // Underscore methods that take a property name as an argument.
-  var attributeMethods = ['groupBy', 'countBy', 'sortBy', 'indexBy'];
-
-  // Use attributes instead of properties.
-  _.each(attributeMethods, function(method) {
-    if (!_[method]) return;
-    Collection.prototype[method] = function(value, context) {
-      var iterator = _.isFunction(value) ? value : function(model) {
-        return model.get(value);
-      };
-      return _[method](this.models, iterator, context);
-    };
-  });
-
-  // Backbone.View
-  // -------------
-
-  // Backbone Views are almost more convention than they are actual code. A View
-  // is simply a JavaScript object that represents a logical chunk of UI in the
-  // DOM. This might be a single item, an entire list, a sidebar or panel, or
-  // even the surrounding frame which wraps your whole app. Defining a chunk of
-  // UI as a **View** allows you to define your DOM events declaratively, without
-  // having to worry about render order ... and makes it easy for the view to
-  // react to specific changes in the state of your models.
-
-  // Creating a Backbone.View creates its initial element outside of the DOM,
-  // if an existing element is not provided...
-  var View = Backbone.View = function(options) {
-    this.cid = _.uniqueId('view');
-    _.extend(this, _.pick(options, viewOptions));
-    this._ensureElement();
-    this.initialize.apply(this, arguments);
-  };
-
-  // Cached regex to split keys for `delegate`.
-  var delegateEventSplitter = /^(\S+)\s*(.*)$/;
-
-  // List of view options to be merged as properties.
-  var viewOptions = ['model', 'collection', 'el', 'id', 'attributes', 'className', 'tagName', 'events'];
-
-  // Set up all inheritable **Backbone.View** properties and methods.
-  _.extend(View.prototype, Events, {
-
-    // The default `tagName` of a View's element is `"div"`.
-    tagName: 'div',
-
-    // jQuery delegate for element lookup, scoped to DOM elements within the
-    // current view. This should be preferred to global lookups where possible.
-    $: function(selector) {
-      return this.$el.find(selector);
-    },
-
-    // Initialize is an empty function by default. Override it with your own
-    // initialization logic.
-    initialize: function(){},
-
-    // **render** is the core function that your view should override, in order
-    // to populate its element (`this.el`), with the appropriate HTML. The
-    // convention is for **render** to always return `this`.
-    render: function() {
-      return this;
-    },
-
-    // Remove this view by taking the element out of the DOM, and removing any
-    // applicable Backbone.Events listeners.
-    remove: function() {
-      this._removeElement();
-      this.stopListening();
-      return this;
-    },
-
-    // Remove this view's element from the document and all event listeners
-    // attached to it. Exposed for subclasses using an alternative DOM
-    // manipulation API.
-    _removeElement: function() {
-      this.$el.remove();
-    },
-
-    // Change the view's element (`this.el` property) and re-delegate the
-    // view's events on the new element.
-    setElement: function(element) {
-      this.undelegateEvents();
-      this._setElement(element);
-      this.delegateEvents();
-      return this;
-    },
-
-    // Creates the `this.el` and `this.$el` references for this view using the
-    // given `el`. `el` can be a CSS selector or an HTML string, a jQuery
-    // context or an element. Subclasses can override this to utilize an
-    // alternative DOM manipulation API and are only required to set the
-    // `this.el` property.
-    _setElement: function(el) {
-      this.$el = el instanceof Backbone.$ ? el : Backbone.$(el);
-      this.el = this.$el[0];
-    },
-
-    // Set callbacks, where `this.events` is a hash of
-    //
-    // *{"event selector": "callback"}*
-    //
-    //     {
-    //       'mousedown .title':  'edit',
-    //       'click .button':     'save',
-    //       'click .open':       function(e) { ... }
-    //     }
-    //
-    // pairs. Callbacks will be bound to the view, with `this` set properly.
-    // Uses event delegation for efficiency.
-    // Omitting the selector binds the event to `this.el`.
-    delegateEvents: function(events) {
-      events || (events = _.result(this, 'events'));
-      if (!events) return this;
-      this.undelegateEvents();
-      for (var key in events) {
-        var method = events[key];
-        if (!_.isFunction(method)) method = this[method];
-        if (!method) continue;
-        var match = key.match(delegateEventSplitter);
-        this.delegate(match[1], match[2], _.bind(method, this));
-      }
-      return this;
-    },
-
-    // Add a single event listener to the view's element (or a child element
-    // using `selector`). This only works for delegate-able events: not `focus`,
-    // `blur`, and not `change`, `submit`, and `reset` in Internet Explorer.
-    delegate: function(eventName, selector, listener) {
-      this.$el.on(eventName + '.delegateEvents' + this.cid, selector, listener);
-      return this;
-    },
-
-    // Clears all callbacks previously bound to the view by `delegateEvents`.
-    // You usually don't need to use this, but may wish to if you have multiple
-    // Backbone views attached to the same DOM element.
-    undelegateEvents: function() {
-      if (this.$el) this.$el.off('.delegateEvents' + this.cid);
-      return this;
-    },
-
-    // A finer-grained `undelegateEvents` for removing a single delegated event.
-    // `selector` and `listener` are both optional.
-    undelegate: function(eventName, selector, listener) {
-      this.$el.off(eventName + '.delegateEvents' + this.cid, selector, listener);
-      return this;
-    },
-
-    // Produces a DOM element to be assigned to your view. Exposed for
-    // subclasses using an alternative DOM manipulation API.
-    _createElement: function(tagName) {
-      return document.createElement(tagName);
-    },
-
-    // Ensure that the View has a DOM element to render into.
-    // If `this.el` is a string, pass it through `$()`, take the first
-    // matching element, and re-assign it to `el`. Otherwise, create
-    // an element from the `id`, `className` and `tagName` properties.
-    _ensureElement: function() {
-      if (!this.el) {
-        var attrs = _.extend({}, _.result(this, 'attributes'));
-        if (this.id) attrs.id = _.result(this, 'id');
-        if (this.className) attrs['class'] = _.result(this, 'className');
-        this.setElement(this._createElement(_.result(this, 'tagName')));
-        this._setAttributes(attrs);
-      } else {
-        this.setElement(_.result(this, 'el'));
-      }
-    },
-
-    // Set attributes from a hash on this view's element.  Exposed for
-    // subclasses using an alternative DOM manipulation API.
-    _setAttributes: function(attributes) {
-      this.$el.attr(attributes);
-    }
-
-  });
-
-  // Backbone.sync
-  // -------------
-
-  // Override this function to change the manner in which Backbone persists
-  // models to the server. You will be passed the type of request, and the
-  // model in question. By default, makes a RESTful Ajax request
-  // to the model's `url()`. Some possible customizations could be:
-  //
-  // * Use `setTimeout` to batch rapid-fire updates into a single request.
-  // * Send up the models as XML instead of JSON.
-  // * Persist models via WebSockets instead of Ajax.
-  //
-  // Turn on `Backbone.emulateHTTP` in order to send `PUT` and `DELETE` requests
-  // as `POST`, with a `_method` parameter containing the true HTTP method,
-  // as well as all requests with the body as `application/x-www-form-urlencoded`
-  // instead of `application/json` with the model in a param named `model`.
-  // Useful when interfacing with server-side languages like **PHP** that make
-  // it difficult to read the body of `PUT` requests.
-  Backbone.sync = function(method, model, options) {
-    var type = methodMap[method];
-
-    // Default options, unless specified.
-    _.defaults(options || (options = {}), {
-      emulateHTTP: Backbone.emulateHTTP,
-      emulateJSON: Backbone.emulateJSON
-    });
-
-    // Default JSON-request options.
-    var params = {type: type, dataType: 'json'};
-
-    // Ensure that we have a URL.
-    if (!options.url) {
-      params.url = _.result(model, 'url') || urlError();
-    }
-
-    // Ensure that we have the appropriate request data.
-    if (options.data == null && model && (method === 'create' || method === 'update' || method === 'patch')) {
-      params.contentType = 'application/json';
-      params.data = JSON.stringify(options.attrs || model.toJSON(options));
-    }
-
-    // For older servers, emulate JSON by encoding the request into an HTML-form.
-    if (options.emulateJSON) {
-      params.contentType = 'application/x-www-form-urlencoded';
-      params.data = params.data ? {model: params.data} : {};
-    }
-
-    // For older servers, emulate HTTP by mimicking the HTTP method with `_method`
-    // And an `X-HTTP-Method-Override` header.
-    if (options.emulateHTTP && (type === 'PUT' || type === 'DELETE' || type === 'PATCH')) {
-      params.type = 'POST';
-      if (options.emulateJSON) params.data._method = type;
-      var beforeSend = options.beforeSend;
-      options.beforeSend = function(xhr) {
-        xhr.setRequestHeader('X-HTTP-Method-Override', type);
-        if (beforeSend) return beforeSend.apply(this, arguments);
-      };
-    }
-
-    // Don't process data on a non-GET request.
-    if (params.type !== 'GET' && !options.emulateJSON) {
-      params.processData = false;
-    }
-
-    // Pass along `textStatus` and `errorThrown` from jQuery.
-    var error = options.error;
-    options.error = function(xhr, textStatus, errorThrown) {
-      options.textStatus = textStatus;
-      options.errorThrown = errorThrown;
-      if (error) error.call(options.context, xhr, textStatus, errorThrown);
-    };
-
-    // Make the request, allowing the user to override any Ajax options.
-    var xhr = options.xhr = Backbone.ajax(_.extend(params, options));
-    model.trigger('request', model, xhr, options);
-    return xhr;
-  };
-
-  // Map from CRUD to HTTP for our default `Backbone.sync` implementation.
-  var methodMap = {
-    'create': 'POST',
-    'update': 'PUT',
-    'patch':  'PATCH',
-    'delete': 'DELETE',
-    'read':   'GET'
-  };
-
-  // Set the default implementation of `Backbone.ajax` to proxy through to `$`.
-  // Override this if you'd like to use a different library.
-  Backbone.ajax = function() {
-    return Backbone.$.ajax.apply(Backbone.$, arguments);
-  };
-
-  // Backbone.Router
-  // ---------------
-
-  // Routers map faux-URLs to actions, and fire events when routes are
-  // matched. Creating a new one sets its `routes` hash, if not set statically.
-  var Router = Backbone.Router = function(options) {
-    options || (options = {});
-    if (options.routes) this.routes = options.routes;
-    this._bindRoutes();
-    this.initialize.apply(this, arguments);
-  };
-
-  // Cached regular expressions for matching named param parts and splatted
-  // parts of route strings.
-  var optionalParam = /\((.*?)\)/g;
-  var namedParam    = /(\(\?)?:\w+/g;
-  var splatParam    = /\*\w+/g;
-  var escapeRegExp  = /[\-{}\[\]+?.,\\\^$|#\s]/g;
-
-  // Set up all inheritable **Backbone.Router** properties and methods.
-  _.extend(Router.prototype, Events, {
-
-    // Initialize is an empty function by default. Override it with your own
-    // initialization logic.
-    initialize: function(){},
-
-    // Manually bind a single named route to a callback. For example:
-    //
-    //     this.route('search/:query/p:num', 'search', function(query, num) {
-    //       ...
-    //     });
-    //
-    route: function(route, name, callback) {
-      if (!_.isRegExp(route)) route = this._routeToRegExp(route);
-      if (_.isFunction(name)) {
-        callback = name;
-        name = '';
-      }
-      if (!callback) callback = this[name];
-      var router = this;
-      Backbone.history.route(route, function(fragment) {
-        var args = router._extractParameters(route, fragment);
-        if (router.execute(callback, args, name) !== false) {
-          router.trigger.apply(router, ['route:' + name].concat(args));
-          router.trigger('route', name, args);
-          Backbone.history.trigger('route', router, name, args);
-        }
-      });
-      return this;
-    },
-
-    // Execute a route handler with the provided parameters.  This is an
-    // excellent place to do pre-route setup or post-route cleanup.
-    execute: function(callback, args, name) {
-      if (callback) callback.apply(this, args);
-    },
-
-    // Simple proxy to `Backbone.history` to save a fragment into the history.
-    navigate: function(fragment, options) {
-      Backbone.history.navigate(fragment, options);
-      return this;
-    },
-
-    // Bind all defined routes to `Backbone.history`. We have to reverse the
-    // order of the routes here to support behavior where the most general
-    // routes can be defined at the bottom of the route map.
-    _bindRoutes: function() {
-      if (!this.routes) return;
-      this.routes = _.result(this, 'routes');
-      var route, routes = _.keys(this.routes);
-      while ((route = routes.pop()) != null) {
-        this.route(route, this.routes[route]);
-      }
-    },
-
-    // Convert a route string into a regular expression, suitable for matching
-    // against the current location hash.
-    _routeToRegExp: function(route) {
-      route = route.replace(escapeRegExp, '\\$&')
-                   .replace(optionalParam, '(?:$1)?')
-                   .replace(namedParam, function(match, optional) {
-                     return optional ? match : '([^/?]+)';
-                   })
-                   .replace(splatParam, '([^?]*?)');
-      return new RegExp('^' + route + '(?:\\?([\\s\\S]*))?$');
-    },
-
-    // Given a route, and a URL fragment that it matches, return the array of
-    // extracted decoded parameters. Empty or unmatched parameters will be
-    // treated as `null` to normalize cross-browser behavior.
-    _extractParameters: function(route, fragment) {
-      var params = route.exec(fragment).slice(1);
-      return _.map(params, function(param, i) {
-        // Don't decode the search params.
-        if (i === params.length - 1) return param || null;
-        return param ? decodeURIComponent(param) : null;
-      });
-    }
-
-  });
-
-  // Backbone.History
-  // ----------------
-
-  // Handles cross-browser history management, based on either
-  // [pushState](http://diveintohtml5.info/history.html) and real URLs, or
-  // [onhashchange](https://developer.mozilla.org/en-US/docs/DOM/window.onhashchange)
-  // and URL fragments. If the browser supports neither (old IE, natch),
-  // falls back to polling.
-  var History = Backbone.History = function() {
-    this.handlers = [];
-    _.bindAll(this, 'checkUrl');
-
-    // Ensure that `History` can be used outside of the browser.
-    if (typeof window !== 'undefined') {
-      this.location = window.location;
-      this.history = window.history;
-    }
-  };
-
-  // Cached regex for stripping a leading hash/slash and trailing space.
-  var routeStripper = /^[#\/]|\s+$/g;
-
-  // Cached regex for stripping leading and trailing slashes.
-  var rootStripper = /^\/+|\/+$/g;
-
-  // Cached regex for stripping urls of hash.
-  var pathStripper = /#.*$/;
-
-  // Has the history handling already been started?
-  History.started = false;
-
-  // Set up all inheritable **Backbone.History** properties and methods.
-  _.extend(History.prototype, Events, {
-
-    // The default interval to poll for hash changes, if necessary, is
-    // twenty times a second.
-    interval: 50,
-
-    // Are we at the app root?
-    atRoot: function() {
-      var path = this.location.pathname.replace(/[^\/]$/, '$&/');
-      return path === this.root && !this.getSearch();
-    },
-
-    // Does the pathname match the root?
-    matchRoot: function() {
-      var path = this.decodeFragment(this.location.pathname);
-      var root = path.slice(0, this.root.length - 1) + '/';
-      return root === this.root;
-    },
-
-    // Unicode characters in `location.pathname` are percent encoded so they're
-    // decoded for comparison. `%25` should not be decoded since it may be part
-    // of an encoded parameter.
-    decodeFragment: function(fragment) {
-      return decodeURI(fragment.replace(/%25/g, '%2525'));
-    },
-
-    // In IE6, the hash fragment and search params are incorrect if the
-    // fragment contains `?`.
-    getSearch: function() {
-      var match = this.location.href.replace(/#.*/, '').match(/\?.+/);
-      return match ? match[0] : '';
-    },
-
-    // Gets the true hash value. Cannot use location.hash directly due to bug
-    // in Firefox where location.hash will always be decoded.
-    getHash: function(window) {
-      var match = (window || this).location.href.match(/#(.*)$/);
-      return match ? match[1] : '';
-    },
-
-    // Get the pathname and search params, without the root.
-    getPath: function() {
-      var path = this.decodeFragment(
-        this.location.pathname + this.getSearch()
-      ).slice(this.root.length - 1);
-      return path.charAt(0) === '/' ? path.slice(1) : path;
-    },
-
-    // Get the cross-browser normalized URL fragment from the path or hash.
-    getFragment: function(fragment) {
-      if (fragment == null) {
-        if (this._usePushState || !this._wantsHashChange) {
-          fragment = this.getPath();
-        } else {
-          fragment = this.getHash();
-        }
-      }
-      return fragment.replace(routeStripper, '');
-    },
-
-    // Start the hash change handling, returning `true` if the current URL matches
-    // an existing route, and `false` otherwise.
-    start: function(options) {
-      if (History.started) throw new Error('Backbone.history has already been started');
-      History.started = true;
-
-      // Figure out the initial configuration. Do we need an iframe?
-      // Is pushState desired ... is it available?
-      this.options          = _.extend({root: '/'}, this.options, options);
-      this.root             = this.options.root;
-      this._wantsHashChange = this.options.hashChange !== false;
-      this._hasHashChange   = 'onhashchange' in window;
-      this._useHashChange   = this._wantsHashChange && this._hasHashChange;
-      this._wantsPushState  = !!this.options.pushState;
-      this._hasPushState    = !!(this.history && this.history.pushState);
-      this._usePushState    = this._wantsPushState && this._hasPushState;
-      this.fragment         = this.getFragment();
-
-      // Normalize root to always include a leading and trailing slash.
-      this.root = ('/' + this.root + '/').replace(rootStripper, '/');
-
-      // Transition from hashChange to pushState or vice versa if both are
-      // requested.
-      if (this._wantsHashChange && this._wantsPushState) {
-
-        // If we've started off with a route from a `pushState`-enabled
-        // browser, but we're currently in a browser that doesn't support it...
-        if (!this._hasPushState && !this.atRoot()) {
-          var root = this.root.slice(0, -1) || '/';
-          this.location.replace(root + '#' + this.getPath());
-          // Return immediately as browser will do redirect to new url
-          return true;
-
-        // Or if we've started out with a hash-based route, but we're currently
-        // in a browser where it could be `pushState`-based instead...
-        } else if (this._hasPushState && this.atRoot()) {
-          this.navigate(this.getHash(), {replace: true});
-        }
-
-      }
-
-      // Proxy an iframe to handle location events if the browser doesn't
-      // support the `hashchange` event, HTML5 history, or the user wants
-      // `hashChange` but not `pushState`.
-      if (!this._hasHashChange && this._wantsHashChange && !this._usePushState) {
-        this.iframe = document.createElement('iframe');
-        this.iframe.src = 'javascript:0';
-        this.iframe.style.display = 'none';
-        this.iframe.tabIndex = -1;
-        var body = document.body;
-        // Using `appendChild` will throw on IE < 9 if the document is not ready.
-        var iWindow = body.insertBefore(this.iframe, body.firstChild).contentWindow;
-        iWindow.document.open();
-        iWindow.document.close();
-        iWindow.location.hash = '#' + this.fragment;
-      }
-
-      // Add a cross-platform `addEventListener` shim for older browsers.
-      var addEventListener = window.addEventListener || function (eventName, listener) {
-        return attachEvent('on' + eventName, listener);
-      };
-
-      // Depending on whether we're using pushState or hashes, and whether
-      // 'onhashchange' is supported, determine how we check the URL state.
-      if (this._usePushState) {
-        addEventListener('popstate', this.checkUrl, false);
-      } else if (this._useHashChange && !this.iframe) {
-        addEventListener('hashchange', this.checkUrl, false);
-      } else if (this._wantsHashChange) {
-        this._checkUrlInterval = setInterval(this.checkUrl, this.interval);
-      }
-
-      if (!this.options.silent) return this.loadUrl();
-    },
-
-    // Disable Backbone.history, perhaps temporarily. Not useful in a real app,
-    // but possibly useful for unit testing Routers.
-    stop: function() {
-      // Add a cross-platform `removeEventListener` shim for older browsers.
-      var removeEventListener = window.removeEventListener || function (eventName, listener) {
-        return detachEvent('on' + eventName, listener);
-      };
-
-      // Remove window listeners.
-      if (this._usePushState) {
-        removeEventListener('popstate', this.checkUrl, false);
-      } else if (this._useHashChange && !this.iframe) {
-        removeEventListener('hashchange', this.checkUrl, false);
-      }
-
-      // Clean up the iframe if necessary.
-      if (this.iframe) {
-        document.body.removeChild(this.iframe);
-        this.iframe = null;
-      }
-
-      // Some environments will throw when clearing an undefined interval.
-      if (this._checkUrlInterval) clearInterval(this._checkUrlInterval);
-      History.started = false;
-    },
-
-    // Add a route to be tested when the fragment changes. Routes added later
-    // may override previous routes.
-    route: function(route, callback) {
-      this.handlers.unshift({route: route, callback: callback});
-    },
-
-    // Checks the current URL to see if it has changed, and if it has,
-    // calls `loadUrl`, normalizing across the hidden iframe.
-    checkUrl: function(e) {
-      var current = this.getFragment();
-
-      // If the user pressed the back button, the iframe's hash will have
-      // changed and we should use that for comparison.
-      if (current === this.fragment && this.iframe) {
-        current = this.getHash(this.iframe.contentWindow);
-      }
-
-      if (current === this.fragment) return false;
-      if (this.iframe) this.navigate(current);
-      this.loadUrl();
-    },
-
-    // Attempt to load the current URL fragment. If a route succeeds with a
-    // match, returns `true`. If no defined routes matches the fragment,
-    // returns `false`.
-    loadUrl: function(fragment) {
-      // If the root doesn't match, no routes can match either.
-      if (!this.matchRoot()) return false;
-      fragment = this.fragment = this.getFragment(fragment);
-      return _.any(this.handlers, function(handler) {
-        if (handler.route.test(fragment)) {
-          handler.callback(fragment);
-          return true;
-        }
-      });
-    },
-
-    // Save a fragment into the hash history, or replace the URL state if the
-    // 'replace' option is passed. You are responsible for properly URL-encoding
-    // the fragment in advance.
-    //
-    // The options object can contain `trigger: true` if you wish to have the
-    // route callback be fired (not usually desirable), or `replace: true`, if
-    // you wish to modify the current URL without adding an entry to the history.
-    navigate: function(fragment, options) {
-      if (!History.started) return false;
-      if (!options || options === true) options = {trigger: !!options};
-
-      // Normalize the fragment.
-      fragment = this.getFragment(fragment || '');
-
-      // Don't include a trailing slash on the root.
-      var root = this.root;
-      if (fragment === '' || fragment.charAt(0) === '?') {
-        root = root.slice(0, -1) || '/';
-      }
-      var url = root + fragment;
-
-      // Strip the hash and decode for matching.
-      fragment = this.decodeFragment(fragment.replace(pathStripper, ''));
-
-      if (this.fragment === fragment) return;
-      this.fragment = fragment;
-
-      // If pushState is available, we use it to set the fragment as a real URL.
-      if (this._usePushState) {
-        this.history[options.replace ? 'replaceState' : 'pushState']({}, document.title, url);
-
-      // If hash changes haven't been explicitly disabled, update the hash
-      // fragment to store history.
-      } else if (this._wantsHashChange) {
-        this._updateHash(this.location, fragment, options.replace);
-        if (this.iframe && (fragment !== this.getHash(this.iframe.contentWindow))) {
-          var iWindow = this.iframe.contentWindow;
-
-          // Opening and closing the iframe tricks IE7 and earlier to push a
-          // history entry on hash-tag change.  When replace is true, we don't
-          // want this.
-          if (!options.replace) {
-            iWindow.document.open();
-            iWindow.document.close();
-          }
-
-          this._updateHash(iWindow.location, fragment, options.replace);
-        }
-
-      // If you've told us that you explicitly don't want fallback hashchange-
-      // based history, then `navigate` becomes a page refresh.
-      } else {
-        return this.location.assign(url);
-      }
-      if (options.trigger) return this.loadUrl(fragment);
-    },
-
-    // Update the hash location, either replacing the current entry, or adding
-    // a new one to the browser history.
-    _updateHash: function(location, fragment, replace) {
-      if (replace) {
-        var href = location.href.replace(/(javascript:|#).*$/, '');
-        location.replace(href + '#' + fragment);
-      } else {
-        // Some browsers require that `hash` contains a leading #.
-        location.hash = '#' + fragment;
-      }
-    }
-
-  });
-
-  // Create the default Backbone.history.
-  Backbone.history = new History;
-
-  // Helpers
-  // -------
-
-  // Helper function to correctly set up the prototype chain for subclasses.
-  // Similar to `goog.inherits`, but uses a hash of prototype properties and
-  // class properties to be extended.
-  var extend = function(protoProps, staticProps) {
-    var parent = this;
-    var child;
-
-    // The constructor function for the new subclass is either defined by you
-    // (the "constructor" property in your `extend` definition), or defaulted
-    // by us to simply call the parent constructor.
-    if (protoProps && _.has(protoProps, 'constructor')) {
-      child = protoProps.constructor;
-    } else {
-      child = function(){ return parent.apply(this, arguments); };
-    }
-
-    // Add static properties to the constructor function, if supplied.
-    _.extend(child, parent, staticProps);
-
-    // Set the prototype chain to inherit from `parent`, without calling
-    // `parent` constructor function.
-    var Surrogate = function(){ this.constructor = child; };
-    Surrogate.prototype = parent.prototype;
-    child.prototype = new Surrogate;
-
-    // Add prototype properties (instance properties) to the subclass,
-    // if supplied.
-    if (protoProps) _.extend(child.prototype, protoProps);
-
-    // Set a convenience property in case the parent's prototype is needed
-    // later.
-    child.__super__ = parent.prototype;
-
-    return child;
-  };
-
-  // Set up inheritance for the model, collection, router, view and history.
-  Model.extend = Collection.extend = Router.extend = View.extend = History.extend = extend;
-
-  // Throw an error when a URL is needed, and none is supplied.
-  var urlError = function() {
-    throw new Error('A "url" property or function must be specified');
-  };
-
-  // Wrap an optional error callback with a fallback error event.
-  var wrapError = function(model, options) {
-    var error = options.error;
-    options.error = function(resp) {
-      if (error) error.call(options.context, model, resp, options);
-      model.trigger('error', model, resp, options);
-    };
-  };
-
-  return Backbone;
-
-}));
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)))
-
-/***/ }),
-/* 210 */
+/* 218 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46618,7 +47091,7 @@ module.exports = function (_ref) {
 };
 
 /***/ }),
-/* 211 */
+/* 219 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46666,7 +47139,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 212 */
+/* 220 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46675,7 +47148,7 @@ module.exports = Backbone.View.extend({
 module.exports = function (config) {
 
   var c = config || {},
-      defaults = __webpack_require__(213);
+      defaults = __webpack_require__(221);
 
   // Set default options
   for (var name in defaults) {
@@ -46734,7 +47207,7 @@ module.exports = function (config) {
 };
 
 /***/ }),
-/* 213 */
+/* 221 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

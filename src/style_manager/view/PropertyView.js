@@ -1,6 +1,8 @@
 import { bindAll, isArray } from 'underscore';
 import { camelCase } from 'utils/mixins';
 
+const clearProp = 'data-clear-style';
+
 module.exports = Backbone.View.extend({
 
   template(model) {
@@ -23,7 +25,7 @@ module.exports = Backbone.View.extend({
       <span class="${pfx}icon ${icon}" title="${info}">
         ${model.get('name')}
       </span>
-      <b class="${pfx}clear">&Cross;</b>
+      <b class="${pfx}clear" ${clearProp}>&Cross;</b>
     `;
   },
 
@@ -36,7 +38,8 @@ module.exports = Backbone.View.extend({
   },
 
   events: {
-    'change': 'inputValueChanged'
+    'change': 'inputValueChanged',
+    [`click [${clearProp}]`]: 'clear',
   },
 
   initialize(o = {}) {
@@ -70,8 +73,6 @@ module.exports = Backbone.View.extend({
     this.listenTo(model, 'targetUpdated', this.targetUpdated);
     this.listenTo(model, 'change:visible', this.updateVisibility);
     this.listenTo(model, 'change:status', this.updateStatus);
-    this.events[`click .${pfx}clear`] = 'clear';
-    this.delegateEvents();
 
     const init = this.init && this.init.bind(this);
     init && init();
@@ -122,7 +123,7 @@ module.exports = Backbone.View.extend({
    * @return {HTMLElement}
    */
   getClearEl() {
-    return this.el.querySelector(`.${this.pfx}clear`);
+    return this.el.querySelector(`[${clearProp}]`);
   },
 
   /**
@@ -159,14 +160,12 @@ module.exports = Backbone.View.extend({
     this.elementUpdated();
   },
 
+
   /**
    * Fired when the element of the property is updated
    */
   elementUpdated() {
-    this.model.set('status', 'updated');
-    const parent = this.model.parent;
-    const parentView = parent && parent.view;
-    parentView && parentView.elementUpdated();
+    this.setStatus('updated');
   },
 
 

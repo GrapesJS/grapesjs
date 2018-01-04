@@ -4,6 +4,7 @@ import Styleable from 'domain_abstract/model/Styleable';
 
 const Backbone = require('backbone');
 const Components = require('./Components');
+const Selector = require('selector_manager/model/Selector');
 const Selectors = require('selector_manager/model/Selectors');
 const Traits = require('trait_manager/model/Traits');
 
@@ -161,12 +162,71 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     this.set('attributes', this.get('attributes') || {});
     this.listenTo(this, 'change:script', this.scriptUpdated);
     this.listenTo(this, 'change:traits', this.traitsUpdated);
+    this.listenTo(this, 'change:tagName', this.tagUpdated);
+    this.listenTo(this, 'change:attributes', this.attrUpdated);
     this.loadTraits();
     this.initClasses();
     this.initComponents();
     this.initToolbar();
     this.set('status', '');
+    this.listenTo(this.get('classes'), 'add remove change',
+      () => this.emitUpdate('classes'));
     this.init();
+  },
+
+  /**
+   * Check component's type
+   * @param  {string}  type Component type
+   * @return {Boolean}
+   * @example
+   * model.is('image')
+   * // -> false
+   */
+  is(type) {
+    return !!(this.get('type') == type);
+  },
+
+
+  /**
+   * Find inner models by query string
+   * ATTENTION: this method works only with alredy rendered component
+   * @param  {string}  query Query string
+   * @return {Array} Array of models
+   * @example
+   * model.find('div > .class');
+   * // -> [Component, Component, ...]
+   */
+  find(query) {
+    const result = [];
+
+    this.view.$el.find(query).each((el, i, $el) => {
+      const model = $el.data('model');
+      model && result.push(model);
+    });
+
+    return result;
+  },
+
+
+  /**
+   * Once the tag is updated I have to remove the node and replace it
+   */
+  tagUpdated() {
+    const coll = this.collection;
+    const at = coll.indexOf(this);
+    coll.remove(this);
+    coll.add(this, { at });
+  },
+
+
+  /**
+   * Emit changes for each updated attribute
+   */
+  attrUpdated() {
+    const attrPrev = { ...this.previous('attributes') };
+    const attrCurrent = { ...this.get('attributes') };
+    const diff = shallowDiff(attrPrev, attrCurrent);
+    keys(diff).forEach(pr => this.trigger(`change:attributes:${pr}`));
   },
 
 
@@ -236,7 +296,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
    */
   getAttributes() {
     const classes = [];
-    const attributes = this.get('attributes') || {};
+    const attributes = { ...this.get('attributes') };
 
     // Add classes
     this.get('classes').each(cls => classes.push(cls.get('name')));
@@ -280,6 +340,34 @@ module.exports = Backbone.Model.extend(Styleable).extend({
   setClass(classes) {
     this.get('classes').reset();
     return this.addClass(classes);
+  },
+
+
+  /**
+   * Remove classes
+   * @param {Array|string} classes Array or string of classes
+   * @return {Array} Array of removed selectors
+   * @example
+   * model.removeClass('class1');
+   * model.removeClass('class1 class2');
+   * model.removeClass(['class1', 'class2']);
+   * // -> [SelectorObject, ...]
+   */
+  removeClass(classes) {
+    const removed = [];
+    classes = isArray(classes) ? classes : [classes];
+    const selectors = this.get('classes');
+    const type = Selector.TYPE_CLASS;
+
+    classes.forEach(classe => {
+      const classes = classe.split(' ');
+      classes.forEach(name => {
+        const selector = selectors.where({ name, type })[0];
+        selector && removed.push(selectors.remove(selector));
+      })
+    });
+
+    return removed;
   },
 
 
@@ -488,7 +576,8 @@ module.exports = Backbone.Model.extend(Styleable).extend({
   clone(reset) {
     const em = this.em;
     const style = this.getStyle();
-    const attr = clone(this.attributes);
+    const attr = { ...this.attributes };
+    attr.attributes = { ...attr.attributes };
     delete attr.attributes.id;
     attr.components = [];
     attr.classes = [];
@@ -648,7 +737,14 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     })
 
     return scr;
-  }
+  },
+
+
+  emitUpdate(property) {
+    const em = this.em;
+    const event = 'component:update' + (property ? `:${property}` : '');
+    em && em.trigger(event, this.model);
+  },
 
 },{
 
