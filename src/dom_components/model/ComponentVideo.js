@@ -1,12 +1,11 @@
-var Component = require('./ComponentImage');
-var OComponent = require('./Component');
-
-var yt = 'yt';
-var vi = 'vi';
+const Component = require('./ComponentImage');
+const OComponent = require('./Component');
+const yt = 'yt';
+const vi = 'vi';
 
 module.exports = Component.extend({
 
-  defaults: _.extend({}, Component.prototype.defaults, {
+  defaults: { ...Component.prototype.defaults,
       type: 'video',
       tagName: 'video',
       videoId: '',
@@ -22,7 +21,7 @@ module.exports = Component.extend({
       sources: [],
       attributes:{allowfullscreen:'allowfullscreen'},
       toolbar: OComponent.prototype.defaults.toolbar,
-  }),
+  },
 
   initialize(o, opt) {
     var traits = [];
@@ -43,6 +42,11 @@ module.exports = Component.extend({
     Component.prototype.initialize.apply(this, arguments);
     this.listenTo(this, 'change:provider', this.updateTraits);
     this.listenTo(this, 'change:videoId', this.updateSrc);
+  },
+
+
+  initToolbar(...args) {
+    OComponent.prototype.initToolbar.apply(this, args);
   },
 
   /**
