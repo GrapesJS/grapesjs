@@ -54,12 +54,13 @@ module.exports = {
    * @private
    */
   toggleSm() {
-      if(!this.sender.get('active'))
-        return;
-      if(this.target.get('selectedComponent')){
+      const sender = this.sender;
+      if (sender && sender.get && !sender.get('active')) return;
+
+      if (this.target.get('selectedComponent')) {
           this.$cn2.show();
           this.$header.hide();
-      }else{
+      } else {
           this.$cn2.hide();
           this.$header.show();
       }
