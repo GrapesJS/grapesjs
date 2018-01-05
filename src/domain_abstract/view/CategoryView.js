@@ -1,4 +1,5 @@
 var Backbone = require('backbone');
+var pluralize = require('pluralize');
 
 module.exports = Backbone.View.extend({
 
@@ -7,7 +8,7 @@ module.exports = Backbone.View.extend({
     <i class="<%= pfx %>caret-icon"></i>
     <%= label %>
   </div>
-  <div class="<%= pfx %>blocks-c"></div>
+  <div class="<%= pfx %><%= typePlural %>-c"></div>
   `),
 
   events: {},
@@ -16,11 +17,12 @@ module.exports = Backbone.View.extend({
     this.config = config;
     const pfx = this.config.pStylePrefix || '';
     this.pfx = pfx;
+    this.type = this.model.get('type') || '';
     this.caretR = 'fa fa-caret-right';
     this.caretD = 'fa fa-caret-down';
     this.iconClass = `${pfx}caret-icon`;
     this.activeClass = `${pfx}open`;
-    this.className = `${pfx}block-category`;
+    this.className = `${pfx}${this.type}-category`;
     this.events[`click .${pfx}title`]  = 'toggle';
     this.listenTo(this.model, 'change:open', this.updateVisibility);
     this.delegateEvents();
@@ -36,13 +38,13 @@ module.exports = Backbone.View.extend({
   open() {
     this.el.className = `${this.className} ${this.activeClass}`;
     this.getIconEl().className = `${this.iconClass} ${this.caretD}`;
-    this.getBlocksEl().style.display = '';
+    this.getContentEl().style.display = '';
   },
 
   close() {
     this.el.className = this.className;
     this.getIconEl().className = `${this.iconClass} ${this.caretR}`;
-    this.getBlocksEl().style.display = 'none';
+    this.getContentEl().style.display = 'none';
   },
 
   toggle() {
@@ -58,21 +60,23 @@ module.exports = Backbone.View.extend({
     return this.iconEl;
   },
 
-  getBlocksEl() {
-    if (!this.blocksEl) {
-      this.blocksEl = this.el.querySelector('.' + this.pfx + 'blocks-c');
+  getContentEl() {
+    if (!this.contentEl) {
+      this.contentEl = this.el.querySelector('.' + this.pfx + pluralize(this.type) + '-c');
     }
 
-    return this.blocksEl;
+    return this.contentEl;
   },
 
   append(el) {
-    this.getBlocksEl().appendChild(el);
+    this.getContentEl().appendChild(el);
   },
 
   render() {
     this.el.innerHTML = this.template({
       pfx: this.pfx,
+      type: this.type,
+      typePlural: pluralize(this.type),
       label: this.model.get('label'),
     });
     this.el.className = this.className;

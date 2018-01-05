@@ -7,6 +7,12 @@ module.exports = Backbone.Model.extend({
     label: '',
     open: true,
     attributes: {},
+    // block, trait, etc.
+    contentType: '', 
   },
+
+  initialize(opts = {}) {
+
+  }
 
 });

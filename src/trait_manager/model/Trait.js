@@ -1,4 +1,6 @@
 import { isUndefined } from 'underscore';
+var Backbone = require('backbone');
+var Category = require('domain_abstract/model/Category');
 
 module.exports = require('backbone').Model.extend({
 
@@ -6,6 +8,7 @@ module.exports = require('backbone').Model.extend({
     type: 'text', // text, number, range, select
     label: '',
     name: '',
+    category: '',
     min: '',
     max: '',
     value: '',
@@ -56,6 +59,17 @@ module.exports = require('backbone').Model.extend({
       const attrs = { ...target.get('attributes') };
       attrs[name] = value;
       target.set('attributes', attrs);
+    }
+
+    let category = this.get('category');
+    if (category) {
+      if (typeof category == 'string') {
+        var catObj = new Category({
+          id: category,
+          label: category,
+          type: 'trait',
+        });
+      }
     }
   },
 

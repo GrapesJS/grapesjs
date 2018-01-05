@@ -4,6 +4,7 @@ var TraitSelectView = require('./TraitSelectView');
 var TraitCheckboxView = require('./TraitCheckboxView');
 var TraitNumberView = require('./TraitNumberView');
 var TraitColorView = require('./TraitColorView');
+var CategoryView = require('domain_abstract/view/CategoryView');
 
 module.exports = DomainViews.extend({
 

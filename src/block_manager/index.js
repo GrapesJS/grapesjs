@@ -32,7 +32,7 @@ module.exports = () => {
   var c = {},
   defaults = require('./config/config'),
   Blocks = require('./model/Blocks'),
-  BlockCategories = require('./model/Categories'),
+  Categories = require('domain_abstract/model/Categories'),
   BlocksView = require('./view/BlocksView');
   var blocks, blocksVisible, blocksView;
   var categories = [];
@@ -65,7 +65,7 @@ module.exports = () => {
         // Global blocks collection
         blocks = new Blocks([]);
         blocksVisible = new Blocks([]);
-        categories = new BlockCategories(),
+        categories = new Categories('block'),
         blocksView = new BlocksView({
           // Visible collection
           collection: blocksVisible,

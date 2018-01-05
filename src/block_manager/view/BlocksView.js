@@ -1,6 +1,6 @@
 var Backbone = require('backbone');
 var BlockView = require('./BlockView');
-var CategoryView = require('./CategoryView');
+var CategoryView = require('domain_abstract/view/CategoryView');
 
 module.exports = Backbone.View.extend({
 
@@ -117,7 +117,8 @@ module.exports = Backbone.View.extend({
       if (typeof category == 'string') {
         category = {
           id: category,
-          label: category
+          label: category,
+          type: 'block'
         };
       }
 
@@ -129,7 +130,8 @@ module.exports = Backbone.View.extend({
 
       if (!catView && categories) {
         catView = new CategoryView({
-          model: catModel
+          model: catModel,
+          contentType: 'block'
         }, this.config).render();
         this.renderedCategories[catId] = catView;
         categories.appendChild(catView.el);

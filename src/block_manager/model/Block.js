@@ -1,5 +1,5 @@
 var Backbone = require('backbone');
-var Category = require('./Category');
+var Category = require('domain_abstract/model/Category');
 
 module.exports = Backbone.Model.extend({
 
@@ -18,6 +18,7 @@ module.exports = Backbone.Model.extend({
         var catObj = new Category({
           id: category,
           label: category,
+          type: 'block',
         });
       }
     }
