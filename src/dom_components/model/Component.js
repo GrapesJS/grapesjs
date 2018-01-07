@@ -21,6 +21,9 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     // Component type, eg. 'text', 'image', 'video', etc.
     type: '',
 
+    // Name of the component. Will be used, for example, in layers and badges
+    name: '',
+
     // True if the component is removable from the canvas
     removable: true,
 
@@ -614,7 +617,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
    * @return {string}
    * */
   getName() {
-    let customName = this.get('custom-name');
+    let customName = this.get('name') || this.get('custom-name');
     let tag = this.get('tagName');
     tag = tag == 'div' ? 'box' : tag;
     let name = this.get('type') || tag;
