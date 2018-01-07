@@ -102,7 +102,7 @@ module.exports = Input.extend({
     const model = this.model;
     this.getInputEl().value = model.get('value');
     const unitEl = this.getUnitEl();
-    unitEl && (unitEl.value = model.get('unit'));
+    unitEl && (unitEl.value = model.get('unit') || '');
   },
 
 
@@ -139,7 +139,7 @@ module.exports = Input.extend({
   upArrowClick() {
     const model = this.model;
     const step = model.get('step');
-    let value  = model.get('value');
+    let value  = parseInt(model.get('value'), 10);
     value = this.normalizeValue(value + step);
     var valid = this.validateInputValue(value);
     model.set('value', valid.value);
@@ -153,7 +153,7 @@ module.exports = Input.extend({
   downArrowClick() {
     const model = this.model;
     const step = model.get('step');
-    const value  = model.get('value');
+    const value  = parseInt(model.get('value'), 10);
     const val = this.normalizeValue(value - step);
     var valid = this.validateInputValue(val);
     model.set('value', valid.value);

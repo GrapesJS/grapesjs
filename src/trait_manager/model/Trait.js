@@ -8,6 +8,8 @@ module.exports = require('backbone').Model.extend({
     name: '',
     min: '',
     max: '',
+    unit: '',
+    step: 1,
     value: '',
     target: '',
     default: '',
