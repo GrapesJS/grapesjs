@@ -32,10 +32,9 @@ module.exports = () => {
   var c = {},
   defaults = require('./config/config'),
   Blocks = require('./model/Blocks'),
-  Categories = require('domain_abstract/model/Categories'),
+  //Categories = require('domain_abstract/model/Categories'),
   BlocksView = require('./view/BlocksView');
   var blocks, blocksVisible, blocksView;
-  var categories = [];
 
   return {
 
@@ -65,11 +64,11 @@ module.exports = () => {
         // Global blocks collection
         blocks = new Blocks([]);
         blocksVisible = new Blocks([]);
-        categories = new Categories('block'),
+        //categories = new Categories('block'),
         blocksView = new BlocksView({
           // Visible collection
           collection: blocksVisible,
-          categories,
+          //categories,
         }, c);
 
         // Setup the sync between the global and public collections
@@ -182,7 +181,7 @@ module.exports = () => {
        * @return {Array|Collection}
        */
       getCategories() {
-        return categories;
+        return blocksView.categories;
       },
 
       /**

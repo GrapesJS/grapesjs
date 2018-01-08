@@ -8,7 +8,7 @@ module.exports = Backbone.Model.extend({
     open: true,
     attributes: {},
     // block, trait, etc.
-    contentType: '', 
+    type: '', 
   },
 
   initialize(opts = {}) {

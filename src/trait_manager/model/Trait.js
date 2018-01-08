@@ -1,14 +1,13 @@
 import { isUndefined } from 'underscore';
-var Backbone = require('backbone');
-var Category = require('domain_abstract/model/Category');
+var Categorizable = require('domain_abstract/model/Categorizable');
 
-module.exports = require('backbone').Model.extend({
+module.exports = Categorizable.extend({
 
-  defaults: {
+  defaults: { ...Categorizable.prototype.defaults, 
+    //categorizableType: 'trait'
     type: 'text', // text, number, range, select
     label: '',
     name: '',
-    category: '',
     min: '',
     max: '',
     value: '',
@@ -21,6 +20,8 @@ module.exports = require('backbone').Model.extend({
 
 
   initialize() {
+    Categorizable.prototype.initialize.apply(this, arguments);
+
     const target = this.get('target');
     const name = this.get('name');
     const changeProp = this.get('changeProp');
@@ -59,17 +60,6 @@ module.exports = require('backbone').Model.extend({
       const attrs = { ...target.get('attributes') };
       attrs[name] = value;
       target.set('attributes', attrs);
-    }
-
-    let category = this.get('category');
-    if (category) {
-      if (typeof category == 'string') {
-        var catObj = new Category({
-          id: category,
-          label: category,
-          type: 'trait',
-        });
-      }
     }
   },
 

@@ -1,27 +1,13 @@
-var Backbone = require('backbone');
-var Category = require('domain_abstract/model/Category');
+var Categorizable = require('domain_abstract/model/Categorizable');
 
-module.exports = Backbone.Model.extend({
+module.exports = Categorizable.extend({
 
-  defaults: {
-    label: '',
-    content: '',
-    category: '',
-    attributes: {},
+  defaults: { ...Categorizable.prototype.defaults, 
+    //categorizableType: 'block'
   },
 
   initialize(opts = {}) {
-    let category = this.get('category');
-
-    if (category) {
-      if (typeof category == 'string') {
-        var catObj = new Category({
-          id: category,
-          label: category,
-          type: 'block',
-        });
-      }
-    }
+    Categorizable.prototype.initialize.apply(this, arguments);
   },
 
 });
