@@ -167,8 +167,8 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     this.listenTo(this, 'change:traits', this.traitsUpdated);
     this.listenTo(this, 'change:tagName', this.tagUpdated);
     this.listenTo(this, 'change:attributes', this.attrUpdated);
-    this.loadTraits();
     this.initClasses();
+    this.loadTraits();
     this.initComponents();
     this.initToolbar();
     this.set('status', '');
