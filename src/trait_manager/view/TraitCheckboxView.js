@@ -2,7 +2,8 @@ var TraitView = require('./TraitView');
 
 module.exports = TraitView.extend({
 
-  initialize(o) {
+  //initialize(o) {
+  initialize(opts, config = {}) {
     TraitView.prototype.initialize.apply(this, arguments);
     var iconCls = this.ppfx + 'chk-icon';
     this.tmpl = '<div class="' + this.fieldClass +'"><label class="' + this.inputhClass +'"><i class="' + iconCls +'"></i></label></div>';

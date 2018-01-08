@@ -13,11 +13,14 @@ module.exports = Backbone.View.extend({
     return this.model.get('attributes');
   },
 
-  initialize(o) {
+  //initialize(o) {
+  initialize(opts, config = {}) {
     const model = this.model;
     const name = model.get('name');
     const target = model.target;
-    this.config = o.config || {};
+    var md = this.model;
+    //this.config = o.config || {};
+    this.config = config || {};
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
     this.target = target;

@@ -239,6 +239,7 @@ $prefix: $app-prefix;
 .#{$trt-prefix}trait {
   display: flex;
   justify-content: start;
+  flex-grow: 1;
   padding: 5px 10px;
   font-weight: lighter;
 
@@ -249,6 +250,27 @@ $prefix: $app-prefix;
 
   .#{$app-prefix}field {
     width: 70%;
+  }
+}
+.#{$app-prefix}traits-c {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.#{$app-prefix}trait-category {
+  width: 100%;
+
+  &.#{$app-prefix}open {
+    @extend .#{$app-prefix}category-open;
+  }
+
+  .#{$app-prefix}title {
+    @extend .#{$app-prefix}category-title;
+  }
+
+  .#{$app-prefix}caret-icon {
+    margin-right: 5px;
   }
 }
 

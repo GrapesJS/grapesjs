@@ -3,7 +3,8 @@ const $ = Backbone.$;
 
 module.exports = TraitView.extend({
 
-  initialize(o) {
+  //initialize(o) {
+  initialize(opts, config = {}) {
     TraitView.prototype.initialize.apply(this, arguments);
     var ppfx = this.ppfx;
     this.tmpl = '<div class="' + this.fieldClass +'"><div class="' + this.inputhClass +'"></div>'+

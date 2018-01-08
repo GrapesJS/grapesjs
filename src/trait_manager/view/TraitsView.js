@@ -1,4 +1,5 @@
-var DomainViews = require('domain_abstract/view/DomainViews');
+//var DomainViews = require('domain_abstract/view/DomainViews');
+var CategorizableView = require('domain_abstract/view/CategorizableView');
 var TraitView = require('./TraitView');
 var TraitSelectView = require('./TraitSelectView');
 var TraitCheckboxView = require('./TraitCheckboxView');
@@ -6,7 +7,7 @@ var TraitNumberView = require('./TraitNumberView');
 var TraitColorView = require('./TraitColorView');
 var CategoryView = require('domain_abstract/view/CategoryView');
 
-module.exports = DomainViews.extend({
+module.exports = CategorizableView.extend({
 
   itemView: TraitView,
 
@@ -18,9 +19,12 @@ module.exports = DomainViews.extend({
     'color': TraitColorView,
   },
 
+  categorizableType: 'block',
+
   initialize(o) {
-    this.config = o.config || {};
+    CategorizableView.prototype.initialize.apply(this, arguments);
     this.em = o.editor;
+    this.config = o.config;
     this.pfx = this.config.stylePrefix || '';
     this.className = this.pfx + 'traits';
     this.listenTo(this.em, 'change:selectedComponent', this.updatedCollection);

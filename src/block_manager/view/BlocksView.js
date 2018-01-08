@@ -3,7 +3,7 @@ var CategorizableView = require('domain_abstract/view/CategorizableView');
 
 module.exports = CategorizableView.extend({
 
-  categorizableView: BlockView,
+  itemView: BlockView,
   categorizableType: 'block',
 
   initialize(opts, config) {

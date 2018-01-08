@@ -4,7 +4,6 @@ var Categorizable = require('domain_abstract/model/Categorizable');
 module.exports = Categorizable.extend({
 
   defaults: { ...Categorizable.prototype.defaults, 
-    //categorizableType: 'trait'
     type: 'text', // text, number, range, select
     label: '',
     name: '',
@@ -16,6 +15,9 @@ module.exports = Categorizable.extend({
     placeholder: '',
     changeProp: 0,
     options: [],
+    // category open by defaut?
+    categoryOpen: false,
+    categoryType: 'block'
   },
 
 

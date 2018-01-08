@@ -1,10 +1,9 @@
-var Backbone = require('backbone');
+//var Backbone = require('backbone');
 var CategoryView = require('./CategoryView');
 var Categories = require('../model/Categories');
+var DomainViews = require('./DomainViews');
 
-module.exports = Backbone.View.extend({
-
-  categorizableView: '',
+module.exports = DomainViews.extend({
 
   categorizableType: '',
 
@@ -24,15 +23,6 @@ module.exports = Backbone.View.extend({
   },
 
   /**
-   * Add new model to the collection
-   * @param {Model} model
-   * @private
-   * */
-  addTo(model) {
-    this.add(model);
-  },
-
-  /**
    * Render new model inside the view
    * @param {Model} model
    * @param {Object} fragment Fragment collection
@@ -40,8 +30,8 @@ module.exports = Backbone.View.extend({
    * */
   add(model, fragment) {
     var frag = fragment || null;
-    var categorizableView = this.categorizableView;
-    var view = new categorizableView({
+    var itemView = this.getItemView(model);
+    var view = new itemView({
       model,
       attributes: model.get('attributes'),
     }, this.config);
@@ -115,7 +105,9 @@ module.exports = Backbone.View.extend({
       </div>
     `;
 
-    this.collection.each(model => this.add(model, frag));
+    if(this.collection.length)
+      this.collection.each(model => this.add(model, frag));
+
     this.append(frag);
     this.$el.addClass(this.contClass + 's')
     return this;

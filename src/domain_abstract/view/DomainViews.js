@@ -14,6 +14,18 @@ module.exports = Backbone.View.extend({
     this.config = config || {};
   },
 
+  /**
+   * Returns the view that should be used for rendering
+   *
+   * */
+  getItemView(model) {
+    var itemView = this.itemView;
+    var typeField = model.get(this.itemType);
+    if(this.itemsView && this.itemsView[typeField]){
+      itemView = this.itemsView[typeField];
+    }
+    return itemView;
+  },
 
   /**
    * Add new model to the collection
@@ -32,11 +44,7 @@ module.exports = Backbone.View.extend({
    * */
   add(model, fragment) {
     var frag = fragment || null;
-    var itemView = this.itemView;
-    var typeField = model.get(this.itemType);
-    if(this.itemsView && this.itemsView[typeField]){
-      itemView = this.itemsView[typeField];
-    }
+    var itemView = this.getItemView(model);
     var view = new itemView({
       model,
       config: this.config

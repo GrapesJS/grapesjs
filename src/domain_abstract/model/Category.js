@@ -5,14 +5,13 @@ module.exports = Backbone.Model.extend({
   defaults: {
     id: '',
     label: '',
-    open: true,
+    open: '',
     attributes: {},
     // block, trait, etc.
     type: '', 
   },
 
   initialize(opts = {}) {
-
   }
 
 });
