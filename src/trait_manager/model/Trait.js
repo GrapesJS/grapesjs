@@ -1,4 +1,5 @@
 import { isUndefined } from 'underscore';
+
 var Categorizable = require('domain_abstract/model/Categorizable');
 
 module.exports = Categorizable.extend({
