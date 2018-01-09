@@ -4809,12 +4809,12 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
     var config = this.sm.config || {};
     var tagVarStart = escapeRegExp(config.tagVarStart || '{[ ');
     var tagVarEnd = escapeRegExp(config.tagVarEnd || ' ]}');
-    var reg = new RegExp(tagVarStart + '(.*)' + tagVarEnd, 'g');
+    var reg = new RegExp(tagVarStart + '([\\w\\d-]*)' + tagVarEnd, 'g');
     scr = scr.replace(reg, function (match, v) {
       // If at least one match is found I have to track this change for a
       // better optimization inside JS generator
       _this4.scriptUpdated();
-      return _this4.attributes[v];
+      return _this4.attributes[v] || '';
     });
 
     return scr;
@@ -23266,7 +23266,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.12.59',
+    version: '0.12.60',
 
     /**
      * Initializes an editor based on passed options
@@ -44311,7 +44311,7 @@ module.exports = Backbone.View.extend({
     // In editor, I make use of setTimeout as during the append process of elements
     // those will not be available immediatly, therefore 'item' variable
     var script = document.createElement('script');
-    script.innerText = '\n        setTimeout(function() {\n          var item = document.getElementById(\'' + id + '\');\n          if (!item) return;\n          (function(){' + model.getScriptString() + '}.bind(item))()\n        }, 1);';
+    script.innerText = '\n        setTimeout(function() {\n          var item = document.getElementById(\'' + id + '\');\n          if (!item) return;\n          (function(){\n            ' + model.getScriptString() + ';\n          }.bind(item))()\n        }, 1);';
     view.scriptContainer.get(0).appendChild(script);
   },
 
