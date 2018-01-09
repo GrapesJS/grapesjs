@@ -5,7 +5,7 @@
     <title>GrapesJS Demo - Free Open Source Website Page Builder</title>
     <meta content="Best Free Open Source Responsive Websites Builder" name="description">
     <link rel="stylesheet" href="stylesheets/toastr.min.css">
-    <link rel="stylesheet" href="stylesheets/grapes.min.css?v0.12.59">
+    <link rel="stylesheet" href="stylesheets/grapes.min.css?v0.12.60">
     <link rel="stylesheet" href="stylesheets/grapesjs-preset-webpage.min.css">
     <link rel="stylesheet" href="stylesheets/tooltip.css">
     <link rel="stylesheet" href="stylesheets/grapesjs-plugin-filestack.css">
@@ -15,8 +15,9 @@
     <script src="//feather.aviary.com/imaging/v3/editor.js"></script>
     <script src="js/toastr.min.js"></script>
 
-    <script src="js/grapes.min.js?v0.12.59"></script>
+    <script src="js/grapes.min.js?v0.12.60"></script>
     <script src="js/grapesjs-preset-webpage.min.js"></script>
+    <script src="js/grapesjs-lory-slider.min.js?0.1.5"></script>
 
     <style type="text/css">
         .icon-add-comp::before, .icon-comp100::before,.icon-comp50::before,.icon-comp30::before,.icon-rm::before{ content: '';}
@@ -970,8 +971,13 @@
         fromElement: 1,
         showOffsets: 1,
         assetManager: { assets: images },
-        plugins: ['gjs-preset-webpage'],
+        plugins: ['gjs-preset-webpage', 'grapesjs-lory-slider'],
         pluginsOpts: {
+          'grapesjs-lory-slider': {
+            sliderBlock: {
+              category: 'Extra'
+            }
+          },
           'gjs-preset-webpage': {
             modalImportTitle: 'Import Template',
             modalImportLabel: '<div style="margin-bottom: 10px; font-size: 13px;">Paste here your HTML/CSS and click Import</div>',
