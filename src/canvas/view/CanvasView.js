@@ -107,7 +107,8 @@ module.exports = Backbone.View.extend({
           background-color: #fff
         }
         #wrapper {
-          overflow: auto
+          overflow: auto;
+          overflow-x: hidden;
         }
       `;
       // Remove `html { height: 100%;}` from the baseCss as it gives jumpings
