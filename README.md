@@ -188,6 +188,7 @@ $ npm test
 * [grapesjs-component-countdown](https://github.com/artf/grapesjs-component-countdown) - Simple countdown component
 * [grapesjs-style-gradient](https://github.com/artf/grapesjs-style-gradient) - Add a gradient type input
 * [grapesjs-blocks-flexbox](https://github.com/artf/grapesjs-blocks-flexbox) - Add the flexbox block
+* [grapesjs-lory-slider](https://github.com/artf/grapesjs-lory-slider) - Slider component by using [lory](https://github.com/meandmax/lory)
 
 ### Presets
 * [grapesjs-preset-webpage](https://github.com/artf/grapesjs-preset-webpage) - Webpage Builder
