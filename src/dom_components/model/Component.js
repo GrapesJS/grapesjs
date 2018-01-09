@@ -732,13 +732,13 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     var config = this.sm.config || {};
     var tagVarStart = escapeRegExp(config.tagVarStart || '{[ ');
     var tagVarEnd = escapeRegExp(config.tagVarEnd || ' ]}');
-    var reg = new RegExp(`${tagVarStart}(.*)${tagVarEnd}`, 'g');
+    var reg = new RegExp(`${tagVarStart}([\\w\\d-]*)${tagVarEnd}`, 'g');
     scr = scr.replace(reg, (match, v) => {
       // If at least one match is found I have to track this change for a
       // better optimization inside JS generator
       this.scriptUpdated();
-      return this.attributes[v];
-    })
+      return this.attributes[v] || '';
+    });
 
     return scr;
   },

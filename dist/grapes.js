@@ -4080,6 +4080,9 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
     // Component type, eg. 'text', 'image', 'video', etc.
     type: '',
 
+    // Name of the component. Will be used, for example, in layers and badges
+    name: '',
+
     // True if the component is removable from the canvas
     removable: true,
 
@@ -4227,8 +4230,8 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
     this.listenTo(this, 'change:traits', this.traitsUpdated);
     this.listenTo(this, 'change:tagName', this.tagUpdated);
     this.listenTo(this, 'change:attributes', this.attrUpdated);
-    this.loadTraits();
     this.initClasses();
+    this.loadTraits();
     this.initComponents();
     this.initToolbar();
     this.set('status', '');
@@ -4264,7 +4267,8 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
   find: function find(query) {
     var result = [];
 
-    this.view.$el.find(query).each(function (el, i, $el) {
+    this.view.$el.find(query).each(function (el, i, $els) {
+      var $el = $els.eq(i);
       var model = $el.data('model');
       model && result.push(model);
     });
@@ -4682,7 +4686,7 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
    * @return {string}
    * */
   getName: function getName() {
-    var customName = this.get('custom-name');
+    var customName = this.get('name') || this.get('custom-name');
     var tag = this.get('tagName');
     tag = tag == 'div' ? 'box' : tag;
     var name = this.get('type') || tag;
@@ -4805,7 +4809,7 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
     var config = this.sm.config || {};
     var tagVarStart = escapeRegExp(config.tagVarStart || '{[ ');
     var tagVarEnd = escapeRegExp(config.tagVarEnd || ' ]}');
-    var reg = new RegExp(tagVarStart + '(\\w+)' + tagVarEnd, 'g');
+    var reg = new RegExp(tagVarStart + '(.*)' + tagVarEnd, 'g');
     scr = scr.replace(reg, function (match, v) {
       // If at least one match is found I have to track this change for a
       // better optimization inside JS generator
@@ -16984,7 +16988,7 @@ module.exports = Input.extend({
     var model = this.model;
     this.getInputEl().value = model.get('value');
     var unitEl = this.getUnitEl();
-    unitEl && (unitEl.value = model.get('unit'));
+    unitEl && (unitEl.value = model.get('unit') || '');
   },
 
 
@@ -17021,7 +17025,7 @@ module.exports = Input.extend({
   upArrowClick: function upArrowClick() {
     var model = this.model;
     var step = model.get('step');
-    var value = model.get('value');
+    var value = parseInt(model.get('value'), 10);
     value = this.normalizeValue(value + step);
     var valid = this.validateInputValue(value);
     model.set('value', valid.value);
@@ -17035,7 +17039,7 @@ module.exports = Input.extend({
   downArrowClick: function downArrowClick() {
     var model = this.model;
     var step = model.get('step');
-    var value = model.get('value');
+    var value = parseInt(model.get('value'), 10);
     var val = this.normalizeValue(value - step);
     var valid = this.validateInputValue(val);
     model.set('value', valid.value);
@@ -23262,7 +23266,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.12.58',
+    version: '0.12.59',
 
     /**
      * Initializes an editor based on passed options
@@ -42271,6 +42275,8 @@ module.exports = __webpack_require__(0).Model.extend({
     name: '',
     min: '',
     max: '',
+    unit: '',
+    step: 1,
     value: '',
     target: '',
     default: '',
@@ -42891,17 +42897,18 @@ module.exports = ComponentView.extend({
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(_) {
+
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var Component = __webpack_require__(20);
 var OComponent = __webpack_require__(4);
-
 var yt = 'yt';
 var vi = 'vi';
 
 module.exports = Component.extend({
 
-  defaults: _.extend({}, Component.prototype.defaults, {
+  defaults: _extends({}, Component.prototype.defaults, {
     type: 'video',
     tagName: 'video',
     videoId: '',
@@ -42937,6 +42944,13 @@ module.exports = Component.extend({
     Component.prototype.initialize.apply(this, arguments);
     this.listenTo(this, 'change:provider', this.updateTraits);
     this.listenTo(this, 'change:videoId', this.updateSrc);
+  },
+  initToolbar: function initToolbar() {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    OComponent.prototype.initToolbar.apply(this, args);
   },
 
 
@@ -42984,8 +42998,8 @@ module.exports = Component.extend({
    * @private
    */
   getAttrToHTML: function getAttrToHTML() {
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
+    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      args[_key2] = arguments[_key2];
     }
 
     var attr = Component.prototype.getAttrToHTML.apply(this, args);
@@ -43193,7 +43207,6 @@ module.exports = Component.extend({
     return result;
   }
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
 /* 171 */
@@ -45577,7 +45590,9 @@ module.exports = {
    * @private
    */
   toggleSm: function toggleSm() {
-    if (!this.sender.get('active')) return;
+    var sender = this.sender;
+    if (sender && sender.get && !sender.get('active')) return;
+
     if (this.target.get('selectedComponent')) {
       this.$cn2.show();
       this.$header.hide();

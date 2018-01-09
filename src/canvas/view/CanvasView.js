@@ -327,11 +327,14 @@ module.exports = Backbone.View.extend({
     // In editor, I make use of setTimeout as during the append process of elements
     // those will not be available immediatly, therefore 'item' variable
     const script = document.createElement('script');
+    console.log(model.getScriptString());
     script.innerText = `
         setTimeout(function() {
           var item = document.getElementById('${id}');
           if (!item) return;
-          (function(){${model.getScriptString()}}.bind(item))()
+          (function(){
+            ${model.getScriptString()};
+          }.bind(item))()
         }, 1);`;
     view.scriptContainer.get(0).appendChild(script);
   },
