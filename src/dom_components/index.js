@@ -122,6 +122,8 @@ module.exports = () => {
 
   return {
 
+    Component,
+
     Components,
 
     ComponentsView,

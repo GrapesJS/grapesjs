@@ -7,12 +7,14 @@ const Components = require('./Components');
 const Selector = require('selector_manager/model/Selector');
 const Selectors = require('selector_manager/model/Selectors');
 const Traits = require('trait_manager/model/Traits');
+const componentList = {};
+let componentIndex = 0;
 
 const escapeRegExp = (str) => {
   return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
 }
 
-module.exports = Backbone.Model.extend(Styleable).extend({
+const Component = Backbone.Model.extend(Styleable).extend({
 
   defaults: {
     // HTML tag of the component
@@ -162,6 +164,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     this.sm = em;
     this.em = em;
     this.config = opt.config || {};
+    this.ccid = Component.createId(this);
     this.set('attributes', this.get('attributes') || {});
     this.listenTo(this, 'change:script', this.scriptUpdated);
     this.listenTo(this, 'change:traits', this.traitsUpdated);
@@ -703,7 +706,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
    */
   getId() {
     let attrs = this.get('attributes') || {};
-    return attrs.id || this.cid;
+    return attrs.id || this.ccid || this.cid;
   },
 
 
@@ -763,4 +766,18 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     return {tagName: el.tagName ? el.tagName.toLowerCase() : ''};
   },
 
+
+  createId(model) {
+    componentIndex++;
+    const nextId = 'i' + componentIndex;
+    componentList[nextId] = model;
+    return nextId;
+  },
+
+
+  getList() {
+    return componentList;
+  }
 });
+
+module.exports = Component;
