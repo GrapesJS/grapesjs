@@ -138,8 +138,9 @@ module.exports = () => {
 
           var collection = sel.collection;
           var index = collection.indexOf(sel);
-          collection.add(sel.clone(), {at: index + 1});
-          sel.emitUpdate()
+          const added = collection.add(sel.clone(), {at: index + 1});
+          sel.emitUpdate();
+          ed.trigger('component:clone', added);
         },
       };
 
