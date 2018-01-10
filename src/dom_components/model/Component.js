@@ -686,13 +686,12 @@ module.exports = Backbone.Model.extend(Styleable).extend({
    * @private
    */
   toJSON(...args) {
-    var obj = Backbone.Model.prototype.toJSON.apply(this, args);
-    var scriptStr = this.getScriptString();
+    const obj = Backbone.Model.prototype.toJSON.apply(this, args);
+    const scriptStr = this.getScriptString();
+    obj.attributes = this.getAttributes();
+    delete obj.attributes.class;
     delete obj.toolbar;
-
-    if (scriptStr) {
-      obj.script = scriptStr;
-    }
+    scriptStr && (obj.script = scriptStr);
 
     return obj;
   },
