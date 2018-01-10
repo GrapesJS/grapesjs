@@ -62,6 +62,18 @@ module.exports = require('backbone').Model.extend({
   },
 
 
+  setValueFromInput(value, final = 1, opts = {}) {
+    const toSet = { value };
+    this.set(toSet, { ...opts, avoidStore: 1});
+
+    // Have to trigger the change
+    if (final) {
+      this.set('value', '', opts);
+      this.set(toSet, opts);
+    }
+  },
+
+
   /**
    * Get the initial value of the trait
    * @return {string}
