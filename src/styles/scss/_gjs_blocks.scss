@@ -4,6 +4,11 @@
   justify-content: flex-start;
 }
 
+.#{$app-prefix}block-categories {
+  display: flex;
+  flex-direction: column;
+}
+
 .#{$app-prefix}block-category {
   width: 100%;
 
