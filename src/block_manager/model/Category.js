@@ -5,8 +5,7 @@ module.exports = Backbone.Model.extend({
   defaults: {
     id: '',
     label: '',
-    open: false,
-    order: '',
+    open: true,
     attributes: {},
   },
 

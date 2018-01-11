@@ -114,15 +114,15 @@ module.exports = Backbone.View.extend({
 
     // Check for categories
     if (category && this.categories) {
-      if (typeof category.label == 'string') {
+      if (typeof category == 'string') {
         category = {
-          id: category.label,
-          label: category.label,
-          order: category.order,
-          open: category.open,
+          id: category,
+          label: category
         };
+      } else if (typeof category == 'object') {
+        category.id = category.label;
       }
-
+      
       var catModel = this.categories.add(category);
       var catId = catModel.get('id');
       var catView = this.renderedCategories[catId];

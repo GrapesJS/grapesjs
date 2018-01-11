@@ -117,8 +117,8 @@
       label: 'Block',
       category: {
         label: 'General',
-        order: 1,
-        open: true,
+        order: 2,
+        open: false,
       },
       attributes: { class: 'gjs-fonts gjs-f-b1' },
       content: `<div style="padding-top:50px; padding-bottom:50px; text-align:center">Test block</div>`
@@ -126,23 +126,11 @@
 
     editor.BlockManager.add('testBlock2', {
       label: 'Block2',
-      category: {
-        label: 'Otro',
-        order: 5,
-        open: true,
-      },
+      category: 'Test category',
       attributes: { class: 'gjs-fonts gjs-f-2' },
-      content: `<div style="padding-top:50px; padding-bottom:50px; text-align:center">Test block</div>`
+      content: `<div style="padding-top:50px; padding-bottom:50px; text-align:center">Test block 2</div>`
     })
 
-    editor.BlockManager.add('testBlock3', {
-      label: 'Block3',
-      category: {
-        label: 'Otro',
-      },
-      attributes: { class: 'gjs-fonts gjs-f-2' },
-      content: `<div style="padding-top:50px; padding-bottom:50px; text-align:center">Test block</div>`
-    })
 
   </script>
 </body>

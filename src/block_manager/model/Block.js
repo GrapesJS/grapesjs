@@ -6,26 +6,21 @@ module.exports = Backbone.Model.extend({
   defaults: {
     label: '',
     content: '',
-    category: {
-      label: '',
-      order: '',
-    },
+    category: '',
     attributes: {},
   },
 
-  // initialize(opts = {}) {
-  //   let category = this.get('category');
-  //   let catLabel = category.label;
+  initialize(opts = {}) {
+    let category = this.get('category');
 
-  //   // if (catLable) {
-  //   //   if (typeof catLabel == 'string') {
-  //   //     var catObj = new Category({
-  //   //       id: catLabel,
-  //   //       label: catLabel,
-  //   //       order: category.order,
-  //   //     });
-  //   //   }
-  //   // }
-  // },
+    if (category) {
+      if (typeof category == 'string') {
+        var catObj = new Category({
+          id: category,
+          label: category,
+        });
+      }
+    }
+  },
 
 });
