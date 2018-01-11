@@ -2,12 +2,11 @@ var Backbone = require('backbone');
 var ComponentView = require('./ComponentView');
 
 module.exports = ComponentView.extend({
-
   tagName: 'img',
 
   events: {
-    'dblclick': 'openModal',
-    'click': 'initResize',
+    dblclick: 'openModal',
+    click: 'initResize'
   },
 
   initialize(o) {
@@ -21,18 +20,16 @@ module.exports = ComponentView.extend({
     config.am && (this.am = config.am);
   },
 
-
   /**
    * Update src attribute
    * @private
    * */
   updateSrc() {
-    const src = this.model.get("src");
+    const src = this.model.get('src');
     const el = this.$el;
     el.attr('src', src);
     el[src ? 'removeClass' : 'addClass'](this.classEmpty);
   },
-
 
   /**
    * Open dialog for image changing
@@ -43,7 +40,7 @@ module.exports = ComponentView.extend({
     var em = this.opts.config.em;
     var editor = em ? em.get('Editor') : '';
 
-    if(editor && this.model.get('editable')) {
+    if (editor && this.model.get('editable')) {
       editor.runCommand('open-assets', {
         target: this.model,
         onSelect() {
@@ -54,17 +51,16 @@ module.exports = ComponentView.extend({
     }
   },
 
-
   render() {
     this.updateAttributes();
     this.updateClasses();
 
     var actCls = this.$el.attr('class') || '';
-    if(!this.model.get('src'))
+    if (!this.model.get('src'))
       this.$el.attr('class', (actCls + ' ' + this.classEmpty).trim());
 
     // Avoid strange behaviours while try to drag
     this.$el.attr('onmousedown', 'return false');
     return this;
-  },
+  }
 });

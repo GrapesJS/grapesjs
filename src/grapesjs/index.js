@@ -12,7 +12,6 @@ module.exports = (() => {
   const editors = [];
 
   return {
-
     $,
 
     editors,
@@ -47,7 +46,8 @@ module.exports = (() => {
       }
 
       defaults(config, defaultConfig);
-      config.el = els instanceof window.HTMLElement ? els : document.querySelector(els);
+      config.el =
+        els instanceof window.HTMLElement ? els : document.querySelector(els);
       const editor = new Editor(config).init();
 
       // Load plugins
@@ -70,8 +70,6 @@ module.exports = (() => {
 
       editors.push(editor);
       return editor;
-    },
-
+    }
   };
-
 })();

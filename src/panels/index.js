@@ -47,15 +47,14 @@
  */
 module.exports = () => {
   var c = {},
-  defaults = require('./config/config'),
-  Panel = require('./model/Panel'),
-  Panels = require('./model/Panels'),
-  PanelView = require('./view/PanelView'),
-  PanelsView = require('./view/PanelsView');
+    defaults = require('./config/config'),
+    Panel = require('./model/Panel'),
+    Panels = require('./model/Panels'),
+    PanelView = require('./view/PanelView'),
+    PanelsView = require('./view/PanelsView');
   var panels, PanelsViewObj;
 
   return {
-
     /**
      * Name of the module
      * @type {String}
@@ -70,18 +69,16 @@ module.exports = () => {
     init(config) {
       c = config || {};
       for (var name in defaults) {
-        if (!(name in c))
-          c[name] = defaults[name];
+        if (!(name in c)) c[name] = defaults[name];
       }
 
       var ppfx = c.pStylePrefix;
-      if(ppfx)
-        c.stylePrefix = ppfx + c.stylePrefix;
+      if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
 
       panels = new Panels(c.defaults);
       PanelsViewObj = new PanelsView({
-        collection : panels,
-        config : c,
+        collection: panels,
+        config: c
       });
       return this;
     },
@@ -116,7 +113,7 @@ module.exports = () => {
     addPanel(panel) {
       return panels.add(panel);
     },
-    
+
     /**
      * Remove a panel from the collection
      * @param {Object|Panel|String} panel Object with right properties or an instance of Panel or Painel id
@@ -127,9 +124,9 @@ module.exports = () => {
      *  visible  : true,
      *  buttons  : [...],
      * });
-     * 
+     *
      * const newPanel = panelManager.removePanel('myNewPanel');
-     * 
+     *
      */
     removePanel(panel) {
       return panels.remove(panel);
@@ -143,7 +140,7 @@ module.exports = () => {
      * var myPanel = panelManager.getPanel('myNewPanel');
      */
     getPanel(id) {
-      var res  = panels.where({id});
+      var res = panels.where({ id });
       return res.length ? res[0] : null;
     },
 
@@ -178,15 +175,15 @@ module.exports = () => {
      * }
      */
     addButton(panelId, button) {
-      var pn  = this.getPanel(panelId);
+      var pn = this.getPanel(panelId);
       return pn ? pn.get('buttons').add(button) : null;
     },
-    
+
     /**
      * Remove button from the panel
      * @param {string} panelId Panel's ID
      * @param {Object|Button|String} button Button object or instance of Button or button id
-     * @return {Button|null} Removed button. 
+     * @return {Button|null} Removed button.
      * @example
      * const removedButton = panelManager.removeButton('myNewPanel',{
      *   id: 'myNewButton',
@@ -195,13 +192,13 @@ module.exports = () => {
      *   attributes: { title: 'Some title'},
      *   active: false,
      * });
-     * 
+     *
      * // It's also possible to use the button id
      * const removedButton = panelManager.removeButton('myNewPanel','myNewButton');
-     * 
+     *
      */
     removeButton(panelId, button) {
-      var pn  = this.getPanel(panelId);
+      var pn = this.getPanel(panelId);
       return pn && pn.get('buttons').remove(button);
     },
 
@@ -214,9 +211,9 @@ module.exports = () => {
      * var button = panelManager.getButton('myPanel','myButton');
      */
     getButton(panelId, id) {
-      var pn  = this.getPanel(panelId);
-      if(pn){
-        var res  = pn.get('buttons').where({id});
+      var pn = this.getPanel(panelId);
+      if (pn) {
+        var res = pn.get('buttons').where({ id });
         return res.length ? res[0] : null;
       }
       return null;
@@ -236,27 +233,24 @@ module.exports = () => {
      */
     active() {
       this.getPanels().each(p => {
-          p.get('buttons').each(btn => {
-            if(btn.get('active'))
-              btn.trigger('updateActive');
-          });
+        p.get('buttons').each(btn => {
+          if (btn.get('active')) btn.trigger('updateActive');
         });
+      });
     },
-    
+
     /**
      * Disable buttons flagged as disabled
      * @private
      */
     disableButtons() {
       this.getPanels().each(p => {
-          p.get('buttons').each(btn => {
-            if(btn.get('disable'))
-              btn.trigger('change:disable');
-          });
+        p.get('buttons').each(btn => {
+          if (btn.get('disable')) btn.trigger('change:disable');
         });
+      });
     },
 
-    Panel,
-
+    Panel
   };
 };

@@ -2,9 +2,8 @@ const SelectPosition = require('./SelectPosition');
 const $ = Backbone.$;
 
 module.exports = _.extend({}, SelectPosition, {
-
   init(opt) {
-    _.bindAll(this,'startDraw','draw','endDraw','rollback');
+    _.bindAll(this, 'startDraw', 'draw', 'endDraw', 'rollback');
     this.config = opt || {};
     this.hType = this.config.newFixedH ? 'height' : 'min-height';
     this.allowDraw = 1;
@@ -16,9 +15,8 @@ module.exports = _.extend({}, SelectPosition, {
    * */
   enable(...args) {
     SelectPosition.enable.apply(this, args);
-    this.$wr.css('cursor','crosshair');
-    if(this.allowDraw)
-      this.$wr.on('mousedown', this.startDraw);
+    this.$wr.css('cursor', 'crosshair');
+    if (this.allowDraw) this.$wr.on('mousedown', this.startDraw);
     this.ghost = this.canvas.getGhostEl();
   },
 
@@ -33,11 +31,11 @@ module.exports = _.extend({}, SelectPosition, {
     this.ghost.style.display = 'block';
     this.frameOff = this.getOffsetDim();
     this.startPos = {
-      top : e.pageY + this.frameOff.top,
+      top: e.pageY + this.frameOff.top,
       left: e.pageX + this.frameOff.left
     };
     this.isDragged = false;
-    this.tempComponent = {style: {}};
+    this.tempComponent = { style: {} };
     this.beforeDraw(this.tempComponent);
     this.updateSize(this.startPos.top, this.startPos.left, 0, 0);
     this.toggleEvents(1);
@@ -75,11 +73,16 @@ module.exports = _.extend({}, SelectPosition, {
     this.toggleEvents();
     var model = {};
     // Only if the mouse was moved
-    if(this.isDragged){
+    if (this.isDragged) {
       this.updateComponentSize(e);
       this.setRequirements(this.tempComponent);
       var lp = this.sorter.lastPos;
-      model = this.create(this.sorter.target, this.tempComponent, lp.index, lp.method);
+      model = this.create(
+        this.sorter.target,
+        this.tempComponent,
+        lp.index,
+        lp.method
+      );
       this.sorter.prevTarget = null;
     }
     this.ghost.style.display = 'none';
@@ -103,10 +106,8 @@ module.exports = _.extend({}, SelectPosition, {
     var trgCollection = $trg.data('collection');
     var droppable = trgModel ? trgModel.get('droppable') : 1;
     opt.at = index;
-    if(trgCollection && droppable)
-      return trgCollection.add(component, opt);
-    else
-      console.warn("Invalid target position");
+    if (trgCollection && droppable) return trgCollection.add(component, opt);
+    else console.warn('Invalid target position');
   },
 
   /**
@@ -116,29 +117,29 @@ module.exports = _.extend({}, SelectPosition, {
    * @private
    * */
   setRequirements(component) {
-    var c  = this.config;
+    var c = this.config;
     var compStl = component.style;
     // Check min width
-    if(compStl.width.replace(/\D/g,'') < c.minComponentW)
-      compStl.width = c.minComponentW +'px';
+    if (compStl.width.replace(/\D/g, '') < c.minComponentW)
+      compStl.width = c.minComponentW + 'px';
     // Check min height
-    if(compStl[this.hType].replace(/\D/g,'') < c.minComponentH)
-      compStl[this.hType] = c.minComponentH +'px';
+    if (compStl[this.hType].replace(/\D/g, '') < c.minComponentH)
+      compStl[this.hType] = c.minComponentH + 'px';
     // Set overflow in case of fixed height
-    if(c.newFixedH)
-      compStl.overflow = 'auto';
-    if(!this.absoluteMode){
+    if (c.newFixedH) compStl.overflow = 'auto';
+    if (!this.absoluteMode) {
       delete compStl.left;
       delete compStl.top;
-    }else
-      compStl.position = 'absolute';
+    } else compStl.position = 'absolute';
     var lp = this.sorter.lastPos;
 
-    if(this.nearFloat(lp.index, lp.method, this.sorter.lastDims))
+    if (this.nearFloat(lp.index, lp.method, this.sorter.lastDims))
       compStl.float = 'left';
 
-    if(this.config.firstCentered &&
-      this.getCanvasWrapper() == this.sorter.target){
+    if (
+      this.config.firstCentered &&
+      this.getCanvasWrapper() == this.sorter.target
+    ) {
       compStl.margin = '0 auto';
     }
 
@@ -152,12 +153,12 @@ module.exports = _.extend({}, SelectPosition, {
    * */
   updateComponentSize(e) {
     var y = e.pageY + this.frameOff.top;
-     var x = e.pageX + this.frameOff.left;
+    var x = e.pageX + this.frameOff.left;
     var start = this.startPos;
     var top = start.top;
     var left = start.left;
     var height = y - top;
-     var width = x - left;
+    var width = x - left;
     if (x < left) {
       left = x;
       width = start.left - x;
@@ -180,7 +181,7 @@ module.exports = _.extend({}, SelectPosition, {
     ghStl.top = compStl.top = top + u;
     ghStl.left = compStl.left = left + u;
     ghStl.width = compStl.width = width + u;
-    ghStl[this.hType] = compStl[this.hType] = height +  u;
+    ghStl[this.hType] = compStl[this.hType] = height + u;
   },
 
   /**
@@ -191,7 +192,7 @@ module.exports = _.extend({}, SelectPosition, {
    * */
   rollback(e, force) {
     var key = e.which || e.keyCode;
-    if(key == this.config.ESCAPE_KEY || force){
+    if (key == this.config.ESCAPE_KEY || force) {
       this.isDragged = false;
       this.endDraw();
     }
@@ -204,7 +205,7 @@ module.exports = _.extend({}, SelectPosition, {
    * @private
    * */
   beforeDraw(component) {
-    component.editable = false;//set this component editable
+    component.editable = false; //set this component editable
   },
 
   /**
@@ -214,17 +215,16 @@ module.exports = _.extend({}, SelectPosition, {
    * */
   afterDraw(model) {},
 
-
   run(editor, sender, opts) {
     this.editor = editor;
-    this.sender  = sender;
+    this.sender = sender;
     this.$wr = this.$wrapper;
     this.enable();
   },
 
   stop() {
     this.stopSelectPosition();
-    this.$wrapper.css('cursor','');
+    this.$wrapper.css('cursor', '');
     this.$wrapper.unbind();
   }
 });

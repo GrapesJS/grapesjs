@@ -1,18 +1,15 @@
 module.exports = config => {
-
   var c = config || {},
-  defaults = require('./config/config');
+    defaults = require('./config/config');
 
   // Set default options
   for (var name in defaults) {
-    if (!(name in c))
-      c[name] = defaults[name];
+    if (!(name in c)) c[name] = defaults[name];
   }
 
   var plugins = {};
 
   return {
-
     /**
      * Add new plugin. Plugins could not be overwritten
      * @param {string} id Plugin ID
@@ -55,6 +52,5 @@ module.exports = config => {
     getAll() {
       return plugins;
     }
-
   };
 };

@@ -29,10 +29,9 @@ module.exports = TraitView.extend({
    * @private
    * */
   renderField() {
-    if(!this.$input){
+    if (!this.$input) {
       this.getInputEl();
       this.$el.append(this.input.el);
     }
-  },
-
+  }
 });

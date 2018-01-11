@@ -1,16 +1,13 @@
 const $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
-
   events: {
-    'change': 'handleChange',
+    change: 'handleChange'
   },
-
 
   template() {
     return `<span class="${this.holderClass()}"></span>`;
   },
-
 
   inputClass() {
     return `${this.ppfx}field`;
@@ -20,7 +17,6 @@ module.exports = Backbone.View.extend({
     return `${this.ppfx}input-holder`;
   },
 
-
   initialize(opts = {}) {
     const ppfx = opts.ppfx || '';
     this.opts = opts;
@@ -29,14 +25,12 @@ module.exports = Backbone.View.extend({
     this.listenTo(this.model, 'change:value', this.handleModelChange);
   },
 
-
   /**
    * Fired when the element of the property is updated
    */
   elementUpdated() {
     this.model.trigger('el:change');
   },
-
 
   /**
    * Set value to the input element
@@ -49,14 +43,12 @@ module.exports = Backbone.View.extend({
     input && (input.value = val);
   },
 
-
   /**
    * Updates the view when the model is changed
    * */
   handleModelChange(model, value, opts) {
     this.setValue(value, opts);
   },
-
 
   /**
    * Handled when the view is changed
@@ -66,7 +58,6 @@ module.exports = Backbone.View.extend({
     this.model.set('value', this.getInputEl().value);
     this.elementUpdated();
   },
-
 
   /**
    * Get the input element
@@ -81,7 +72,6 @@ module.exports = Backbone.View.extend({
     return this.inputEl.get(0);
   },
 
-
   render() {
     const el = this.$el;
     el.addClass(this.inputClass());
@@ -89,5 +79,4 @@ module.exports = Backbone.View.extend({
     el.find(`.${this.holderClass()}`).append(this.getInputEl());
     return this;
   }
-
 });

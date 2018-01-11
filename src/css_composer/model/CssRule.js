@@ -4,8 +4,7 @@ var Backbone = require('backbone');
 var Selectors = require('selector_manager/model/Selectors');
 
 module.exports = Backbone.Model.extend(Styleable).extend({
-
-	defaults: {
+  defaults: {
     // Css selectors
     selectors: {},
 
@@ -27,9 +26,8 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     // If true, sets '!important' on all properties
     // You can use an array to specify properties to set important
     // Used in view
-    important: 0,
-	},
-
+    important: 0
+  },
 
   initialize(c, opt = {}) {
     this.config = c || {};
@@ -40,7 +38,7 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     if (em) {
       const sm = em.get('SelectorManager');
       const slct = [];
-      selectors.forEach((selector) => {
+      selectors.forEach(selector => {
         slct.push(sm.add(selector));
       });
       selectors = slct;
@@ -48,7 +46,6 @@ module.exports = Backbone.Model.extend(Styleable).extend({
 
     this.set('selectors', new Selectors(selectors));
   },
-
 
   /**
    * Return selectors fo the rule as a string
@@ -64,7 +61,6 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     addSelector && !opts.skipAdd && result.push(addSelector);
     return result.join(', ');
   },
-
 
   /**
    * Returns CSS string of the rule
@@ -88,7 +84,6 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     return result;
   },
 
-
   /**
    * Compare the actual model with parameters
    * @param   {Object} selectors Collection of selectors
@@ -99,42 +94,35 @@ module.exports = Backbone.Model.extend(Styleable).extend({
    * @private
    */
   compare(selectors, state, width, ruleProps) {
-      var otherRule = ruleProps || {};
-      var st = state || '';
-      var wd = width || '';
-      var selectorsAdd = otherRule.selectorsAdd || '';
-      var cId = 'cid';
-      //var a1 = _.pluck(selectors.models || selectors, cId);
-      //var a2 = _.pluck(this.get('selectors').models, cId);
-      if(!(selectors instanceof Array) && !selectors.models)
-        selectors = [selectors];
-      var a1 = _.map((selectors.models || selectors), model => model.get('name'));
-      var a2 = _.map(this.get('selectors').models, model => model.get('name'));
-      var f = false;
+    var otherRule = ruleProps || {};
+    var st = state || '';
+    var wd = width || '';
+    var selectorsAdd = otherRule.selectorsAdd || '';
+    var cId = 'cid';
+    //var a1 = _.pluck(selectors.models || selectors, cId);
+    //var a2 = _.pluck(this.get('selectors').models, cId);
+    if (!(selectors instanceof Array) && !selectors.models)
+      selectors = [selectors];
+    var a1 = _.map(selectors.models || selectors, model => model.get('name'));
+    var a2 = _.map(this.get('selectors').models, model => model.get('name'));
+    var f = false;
 
-      if(a1.length !== a2.length)
-          return f;
+    if (a1.length !== a2.length) return f;
 
-      for (var i = 0; i < a1.length; i++) {
-          var re = 0;
-          for (var j = 0; j < a2.length; j++) {
-              if (a1[i] === a2[j])
-                  re = 1;
-          }
-          if(re === 0)
-            return f;
+    for (var i = 0; i < a1.length; i++) {
+      var re = 0;
+      for (var j = 0; j < a2.length; j++) {
+        if (a1[i] === a2[j]) re = 1;
       }
+      if (re === 0) return f;
+    }
 
-      if(this.get('state') !== st)
-          return f;
+    if (this.get('state') !== st) return f;
 
-      if(this.get('mediaText') !== wd)
-          return f;
+    if (this.get('mediaText') !== wd) return f;
 
-      if(this.get('selectorsAdd') !== selectorsAdd)
-          return f;
+    if (this.get('selectorsAdd') !== selectorsAdd) return f;
 
-      return true;
-  },
-
+    return true;
+  }
 });

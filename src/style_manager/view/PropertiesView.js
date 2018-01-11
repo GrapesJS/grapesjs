@@ -8,7 +8,6 @@ const PropertyCompositeView = require('./PropertyCompositeView');
 const PropertyStackView = require('./PropertyStackView');
 
 module.exports = Backbone.View.extend({
-
   initialize(o) {
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
@@ -22,11 +21,9 @@ module.exports = Backbone.View.extend({
     this.listenTo(coll, 'reset', this.render);
   },
 
-
   addTo(model) {
     this.add(model);
   },
-
 
   add(model, frag) {
     var view = new model.typeView({
@@ -37,7 +34,7 @@ module.exports = Backbone.View.extend({
       propTarget: this.propTarget,
       onChange: this.onChange,
       onInputRender: this.onInputRender,
-      config: this.config,
+      config: this.config
     });
 
     if (model.get('type') != 'composite') {
@@ -53,7 +50,6 @@ module.exports = Backbone.View.extend({
       this.el.appendChild(el);
     }
   },
-
 
   render() {
     const fragment = document.createDocumentFragment();

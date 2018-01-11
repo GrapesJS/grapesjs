@@ -43,10 +43,10 @@ import { isFunction } from 'underscore';
 module.exports = () => {
   let em;
   var c = {},
-  commands = {},
-  defaultCommands = {},
-  defaults = require('./config/config'),
-  AbsCommands = require('./view/CommandAbstract');
+    commands = {},
+    defaultCommands = {},
+    defaults = require('./config/config'),
+    AbsCommands = require('./view/CommandAbstract');
 
   // Need it here as it would be used below
   var add = function(id, obj) {
@@ -60,7 +60,6 @@ module.exports = () => {
   };
 
   return {
-
     /**
      * Name of the module
      * @type {String}
@@ -76,19 +75,16 @@ module.exports = () => {
     init(config) {
       c = config || {};
       for (var name in defaults) {
-        if (!(name in c))
-          c[name] = defaults[name];
+        if (!(name in c)) c[name] = defaults[name];
       }
       em = c.em;
       var ppfx = c.pStylePrefix;
-      if(ppfx)
-        c.stylePrefix = ppfx + c.stylePrefix;
+      if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
 
       // Load commands passed via configuration
-      for( var k in c.defaults) {
+      for (var k in c.defaults) {
         var obj = c.defaults[k];
-        if(obj.id)
-          this.add(obj.id, obj);
+        if (obj.id) this.add(obj.id, obj);
       }
 
       const ViewCode = require('./view/ExportTemplate');
@@ -117,31 +113,31 @@ module.exports = () => {
         run(ed) {
           var sel = ed.getSelected();
 
-          if(!sel || !sel.get('removable')) {
+          if (!sel || !sel.get('removable')) {
             console.warn('The element is not removable');
             return;
           }
 
           ed.select(null);
           sel.destroy();
-        },
+        }
       };
 
       defaultCommands['tlb-clone'] = {
         run(ed) {
           var sel = ed.getSelected();
 
-          if(!sel || !sel.get('copyable')) {
+          if (!sel || !sel.get('copyable')) {
             console.warn('The element is not clonable');
             return;
           }
 
           var collection = sel.collection;
           var index = collection.indexOf(sel);
-          const added = collection.add(sel.clone(), {at: index + 1});
+          const added = collection.add(sel.clone(), { at: index + 1 });
           sel.emitUpdate();
           ed.trigger('component:clone', added);
-        },
+        }
       };
 
       defaultCommands['tlb-move'] = {
@@ -149,7 +145,7 @@ module.exports = () => {
           var sel = ed.getSelected();
           var dragger;
 
-          if(!sel || !sel.get('draggable')) {
+          if (!sel || !sel.get('draggable')) {
             console.warn('The element is not draggable');
             return;
           }
@@ -165,7 +161,7 @@ module.exports = () => {
           const onEnd = (e, opts) => {
             em.runDefault();
             em.set('selectedComponent', sel);
-            sel.emitUpdate()
+            sel.emitUpdate();
             dragger && dragger.blur();
           };
 
@@ -196,9 +192,8 @@ module.exports = () => {
             cmdMove.initSorterFromModel(sel);
           }
 
-
           sel.set('status', 'selected');
-        },
+        }
       };
 
       // Core commands
@@ -228,10 +223,9 @@ module.exports = () => {
         }
       };
 
-      if(c.em)
-        c.model = c.em.get('Canvas');
+      if (c.em) c.model = c.em.get('Canvas');
 
-      this.loadDefaultCommands()
+      this.loadDefaultCommands();
 
       return this;
     },
@@ -267,9 +261,9 @@ module.exports = () => {
     get(id) {
       var el = commands[id];
 
-      if(typeof el == 'function'){
+      if (typeof el == 'function') {
         el = new el(c);
-        commands[id]	= el;
+        commands[id] = el;
       }
 
       return el;
@@ -291,11 +285,10 @@ module.exports = () => {
      * */
     loadDefaultCommands() {
       for (var id in defaultCommands) {
-          this.add(id, defaultCommands[id]);
+        this.add(id, defaultCommands[id]);
       }
 
       return this;
-    },
+    }
   };
-
 };

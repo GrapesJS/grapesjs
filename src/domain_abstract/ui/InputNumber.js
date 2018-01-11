@@ -1,19 +1,17 @@
 import { bindAll } from 'underscore';
-import {on, off} from 'utils/mixins';
+import { on, off } from 'utils/mixins';
 const Input = require('./Input');
 const Backbone = require('backbone');
 const $ = Backbone.$;
 
 module.exports = Input.extend({
-
   events: {
     'change input': 'handleChange',
     'change select': 'handleUnitChange',
     'click [data-arrow-up]': 'upArrowClick',
     'click [data-arrow-down]': 'downArrowClick',
-    'mousedown [data-arrows]': 'downIncrement',
+    'mousedown [data-arrows]': 'downIncrement'
   },
-
 
   template() {
     const ppfx = this.ppfx;
@@ -32,14 +30,12 @@ module.exports = Input.extend({
     return this.opts.contClass || `${ppfx}field ${ppfx}field-integer`;
   },
 
-
   initialize(opts = {}) {
     Input.prototype.initialize.apply(this, arguments);
     bindAll(this, 'moveIncrement', 'upIncrement');
     this.doc = document;
     this.listenTo(this.model, 'change:unit', this.handleModelChange);
   },
-
 
   /**
    * Set value to the model
@@ -48,11 +44,11 @@ module.exports = Input.extend({
    */
   setValue(value, opts) {
     var opt = opts || {};
-    var valid = this.validateInputValue(value, {deepCheck: 1});
-    var validObj = {value: valid.value};
+    var valid = this.validateInputValue(value, { deepCheck: 1 });
+    var validObj = { value: valid.value };
 
     // If found some unit value
-    if(valid.unit || valid.force) {
+    if (valid.unit || valid.force) {
       validObj.unit = valid.unit;
     }
 
@@ -60,11 +56,10 @@ module.exports = Input.extend({
 
     // Generally I get silent when I need to reflect data to view without
     // reupdating the target
-    if(opt.silent) {
+    if (opt.silent) {
       this.handleModelChange();
     }
   },
-
 
   /**
    * Handled when the view is changed
@@ -74,7 +69,6 @@ module.exports = Input.extend({
     this.setValue(this.getInputEl().value);
     this.elementUpdated();
   },
-
 
   /**
    * Handled when the view is changed
@@ -86,14 +80,12 @@ module.exports = Input.extend({
     this.elementUpdated();
   },
 
-
   /**
    * Fired when the element of the property is updated
    */
   elementUpdated() {
     this.model.trigger('el:change');
   },
-
 
   /**
    * Updates the view when the model is changed
@@ -104,7 +96,6 @@ module.exports = Input.extend({
     const unitEl = this.getUnitEl();
     unitEl && (unitEl.value = model.get('unit') || '');
   },
-
 
   /**
    * Get the unit element
@@ -124,7 +115,9 @@ module.exports = Input.extend({
         });
 
         const temp = document.createElement('div');
-        temp.innerHTML = `<select class="${this.ppfx}input-unit">${options.join('')}</select>`;
+        temp.innerHTML = `<select class="${this.ppfx}input-unit">${options.join(
+          ''
+        )}</select>`;
         this.unitEl = temp.firstChild;
       }
     }
@@ -132,20 +125,18 @@ module.exports = Input.extend({
     return this.unitEl;
   },
 
-
   /**
    * Invoked when the up arrow is clicked
    * */
   upArrowClick() {
     const model = this.model;
     const step = model.get('step');
-    let value  = parseInt(model.get('value'), 10);
+    let value = parseInt(model.get('value'), 10);
     value = this.normalizeValue(value + step);
     var valid = this.validateInputValue(value);
     model.set('value', valid.value);
     this.elementUpdated();
   },
-
 
   /**
    * Invoked when the down arrow is clicked
@@ -153,13 +144,12 @@ module.exports = Input.extend({
   downArrowClick() {
     const model = this.model;
     const step = model.get('step');
-    const value  = parseInt(model.get('value'), 10);
+    const value = parseInt(model.get('value'), 10);
     const val = this.normalizeValue(value - step);
     var valid = this.validateInputValue(val);
     model.set('value', valid.value);
     this.elementUpdated();
   },
-
 
   /**
    * Change easily integer input value with click&drag method
@@ -172,11 +162,10 @@ module.exports = Input.extend({
     this.moved = 0;
     var value = this.model.get('value');
     value = this.normalizeValue(value);
-    this.current = {y: e.pageY, val: value};
+    this.current = { y: e.pageY, val: value };
     on(this.doc, 'mousemove', this.moveIncrement);
     on(this.doc, 'mouseup', this.upIncrement);
   },
-
 
   /** While the increment is clicked, moving the mouse will update input value
    * @param Object
@@ -190,10 +179,9 @@ module.exports = Input.extend({
     const data = this.current;
     var pos = this.normalizeValue(data.val + (data.y - ev.pageY) * step);
     this.prValue = this.validateInputValue(pos).value;
-    model.set('value', this.prValue, {avoidStore: 1});
+    model.set('value', this.prValue, { avoidStore: 1 });
     return false;
   },
-
 
   /**
    * Stop moveIncrement method
@@ -204,14 +192,12 @@ module.exports = Input.extend({
     off(this.doc, 'mouseup', this.upIncrement);
     off(this.doc, 'mousemove', this.moveIncrement);
 
-    if(this.prValue && this.moved) {
+    if (this.prValue && this.moved) {
       var value = this.prValue - step;
-      model.set('value', value, {avoidStore: 1})
-        .set('value', value + step);
+      model.set('value', value, { avoidStore: 1 }).set('value', value + step);
       this.elementUpdated();
     }
   },
-
 
   normalizeValue(value, defValue = 0) {
     const model = this.model;
@@ -232,7 +218,6 @@ module.exports = Input.extend({
     return stepDecimals ? parseFloat(value.toFixed(stepDecimals)) : value;
   },
 
-
   /**
    * Validate input value
    * @param {String} value Raw value
@@ -249,7 +234,7 @@ module.exports = Input.extend({
     var max = model.get('max');
     var min = model.get('min');
 
-    if(opt.deepCheck) {
+    if (opt.deepCheck) {
       var fixed = model.get('fixedValues') || [];
 
       if (val) {
@@ -266,17 +251,14 @@ module.exports = Input.extend({
           val = !isNaN(val) ? val : model.get('defaults');
           var uN = valCopy.replace(val, '');
           // Check if exists as unit
-          if(_.indexOf(units, uN) >= 0)
-            unit = uN;
+          if (_.indexOf(units, uN) >= 0) unit = uN;
         }
       }
     }
 
-    if(typeof max !== 'undefined' && max !== '')
-      val = val > max ? max : val;
+    if (typeof max !== 'undefined' && max !== '') val = val > max ? max : val;
 
-    if(typeof min !== 'undefined' && min !== '')
-      val = val < min ? min : val;
+    if (typeof min !== 'undefined' && min !== '') val = val < min ? min : val;
 
     return {
       force,
@@ -285,12 +267,14 @@ module.exports = Input.extend({
     };
   },
 
-
   render() {
     Input.prototype.render.call(this);
     const unit = this.getUnitEl();
-    unit && this.$el.find(`.${this.ppfx}field-units`).get(0).appendChild(unit);
+    unit &&
+      this.$el
+        .find(`.${this.ppfx}field-units`)
+        .get(0)
+        .appendChild(unit);
     return this;
   }
-
 });

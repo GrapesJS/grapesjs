@@ -3,7 +3,6 @@ import { extend } from 'underscore';
 const SectorView = require('./SectorView');
 
 module.exports = Backbone.View.extend({
-
   initialize(o) {
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
@@ -19,11 +18,11 @@ module.exports = Backbone.View.extend({
     body.removeChild(dummy);
     this.propTarget = target;
     const coll = this.collection;
-    const events = 'change:selectedComponent component:update:classes change:device';
+    const events =
+      'change:selectedComponent component:update:classes change:device';
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.render);
     this.listenTo(this.target, events, this.targetUpdated);
-
   },
 
   /**
@@ -63,7 +62,10 @@ module.exports = Backbone.View.extend({
     pt.helper = null;
 
     if (view) {
-      pt.computed = window.getComputedStyle(view.el, state ? `:${state}` : null);
+      pt.computed = window.getComputedStyle(
+        view.el,
+        state ? `:${state}` : null
+      );
     }
 
     const appendStateRule = (style = {}) => {
@@ -137,7 +139,6 @@ module.exports = Backbone.View.extend({
     pt.trigger('update');
   },
 
-
   /**
    * Add new object to collection
    * @param {Object} model Model
@@ -149,18 +150,23 @@ module.exports = Backbone.View.extend({
     var fragment = fragmentEl || null;
     var view = new SectorView({
       model,
-      id: this.pfx + model.get('name').replace(' ','_').toLowerCase(),
+      id:
+        this.pfx +
+        model
+          .get('name')
+          .replace(' ', '_')
+          .toLowerCase(),
       name: model.get('name'),
       properties: model.get('properties'),
       target: this.target,
       propTarget: this.propTarget,
-      config: this.config,
+      config: this.config
     });
     var rendered = view.render().el;
 
-    if(fragment){
+    if (fragment) {
       fragment.appendChild(rendered);
-    }else{
+    } else {
       this.$el.append(rendered);
     }
 
@@ -171,7 +177,7 @@ module.exports = Backbone.View.extend({
     var fragment = document.createDocumentFragment();
     this.$el.empty();
 
-    this.collection.each(function(model){
+    this.collection.each(function(model) {
       this.addToCollection(model, fragment);
     }, this);
 

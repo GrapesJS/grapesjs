@@ -47,7 +47,6 @@ module.exports = () => {
   let assets, am, fu;
 
   return {
-
     /**
      * Name of the module
      * @type {String}
@@ -75,8 +74,7 @@ module.exports = () => {
       c = config || {};
 
       for (let name in defaults) {
-        if (!(name in c))
-          c[name] = defaults[name];
+        if (!(name in c)) c[name] = defaults[name];
       }
 
       const ppfx = c.pStylePrefix;
@@ -92,19 +90,19 @@ module.exports = () => {
         // Collection visible in asset manager
         collection: new Assets([]),
         globalCollection: assets,
-        config: c,
+        config: c
       };
       fu = new FileUpload(obj);
       obj.fu = fu;
       am = new AssetsView(obj);
 
       // Setup the sync between the global and public collections
-      assets.listenTo(assets, 'add', (model) => {
+      assets.listenTo(assets, 'add', model => {
         this.getAllVisible().add(model);
         em && em.trigger('asset:add', model);
       });
 
-      assets.listenTo(assets, 'remove', (model) => {
+      assets.listenTo(assets, 'remove', model => {
         this.getAllVisible().remove(model);
         em && em.trigger('asset:remove', model);
       });
@@ -136,7 +134,6 @@ module.exports = () => {
      * }]);
      */
     add(asset, opts = {}) {
-
       // Put the model at the beginning
       if (typeof opts.at == 'undefined') {
         opts.at = 0;
@@ -153,7 +150,7 @@ module.exports = () => {
      * var asset = assetManager.get('http://img.jpg');
      */
     get(src) {
-      return assets.where({src})[0];
+      return assets.where({ src })[0];
     },
 
     /**
@@ -196,8 +193,7 @@ module.exports = () => {
       var obj = {};
       var assets = JSON.stringify(this.getAll().toJSON());
       obj[this.storageKey] = assets;
-      if(!noStore && c.stm)
-        c.stm.store(obj);
+      if (!noStore && c.stm) c.stm.store(obj);
       return obj;
     },
 
@@ -219,7 +215,7 @@ module.exports = () => {
       if (typeof assets == 'string') {
         try {
           assets = JSON.parse(data[name]);
-        } catch(err) {}
+        } catch (err) {}
       }
 
       if (assets && assets.length) {
@@ -357,7 +353,6 @@ module.exports = () => {
      */
     onDblClick(func) {
       c.onDblClick = func;
-    },
-
+    }
   };
 };

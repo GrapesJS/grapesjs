@@ -2,7 +2,6 @@ var Backbone = require('backbone');
 var CssRuleView = require('./CssRuleView');
 
 module.exports = Backbone.View.extend({
-
   initialize(o) {
     const config = o.config || {};
     this.config = config;
@@ -10,8 +9,8 @@ module.exports = Backbone.View.extend({
     this.pfx = config.stylePrefix || '';
     this.className = this.pfx + 'rules';
     const coll = this.collection;
-    this.listenTo(coll, 'add', this.addTo );
-    this.listenTo(coll, 'reset', this.render );
+    this.listenTo(coll, 'add', this.addTo);
+    this.listenTo(coll, 'reset', this.render);
   },
 
   /**
@@ -31,19 +30,17 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   addToCollection(model, fragmentEl) {
-    var fragment  = fragmentEl || null;
-    var viewObject  = CssRuleView;
+    var fragment = fragmentEl || null;
+    var viewObject = CssRuleView;
 
     var view = new viewObject({
-        model,
-        config: this.config,
+      model,
+      config: this.config
     });
-    var rendered  = view.render().el;
+    var rendered = view.render().el;
 
-    if(fragment)
-      fragment.appendChild( rendered );
-    else
-      this.$el.append(rendered);
+    if (fragment) fragment.appendChild(rendered);
+    else this.$el.append(rendered);
 
     return rendered;
   },

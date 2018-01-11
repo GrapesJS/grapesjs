@@ -17,7 +17,6 @@ module.exports = {
       it('Has id property', () => {
         expect(obj.has('id')).toEqual(true);
       });
-
     });
 
     describe('Commands', () => {
@@ -34,8 +33,6 @@ module.exports = {
       it('Object is ok', () => {
         expect(obj).toExist();
       });
-
     });
-
   }
 };

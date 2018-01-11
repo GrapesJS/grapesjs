@@ -1,7 +1,6 @@
-import { isUndefined } from 'underscore'
+import { isUndefined } from 'underscore';
 
 module.exports = Backbone.View.extend({
-
   initialize(o) {
     this.opts = o || {};
     this.config = o.config || {};
@@ -38,10 +37,9 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   addToCollection(model, fragmentEl, index) {
-    if(!this.compView)
-      this.compView  =  require('./ComponentView');
-    var fragment  = fragmentEl || null,
-    viewObject  = this.compView;
+    if (!this.compView) this.compView = require('./ComponentView');
+    var fragment = fragmentEl || null,
+      viewObject = this.compView;
 
     var dt = this.opts.componentTypes;
 
@@ -49,7 +47,7 @@ module.exports = Backbone.View.extend({
 
     for (var it = 0; it < dt.length; it++) {
       var dtId = dt[it].id;
-      if(dtId == type) {
+      if (dtId == type) {
         viewObject = dt[it].view;
         break;
       }
@@ -59,16 +57,16 @@ module.exports = Backbone.View.extend({
     var view = new viewObject({
       model,
       config: this.config,
-      componentTypes: dt,
+      componentTypes: dt
     });
-    var rendered  = view.render().el;
-    if(view.model.get('type') == 'textnode')
-      rendered =  document.createTextNode(view.model.get('content'));
+    var rendered = view.render().el;
+    if (view.model.get('type') == 'textnode')
+      rendered = document.createTextNode(view.model.get('content'));
 
     if (fragment) {
       fragment.appendChild(rendered);
     } else {
-      const parent  = this.parentEl;
+      const parent = this.parentEl;
       const children = parent.childNodes;
 
       if (!isUndefined(index)) {
@@ -102,11 +100,10 @@ module.exports = Backbone.View.extend({
   render(parent) {
     const el = this.el;
     const frag = document.createDocumentFragment();
-    this.parentEl  = parent || this.el;
+    this.parentEl = parent || this.el;
     this.collection.each(model => this.addToCollection(model, frag));
     el.innerHTML = '';
     el.appendChild(frag);
     return this;
   }
-
 });

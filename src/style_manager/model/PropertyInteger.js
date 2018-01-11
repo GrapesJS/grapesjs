@@ -2,8 +2,8 @@ const Property = require('./Property');
 const InputNumber = require('domain_abstract/ui/InputNumber');
 
 module.exports = Property.extend({
-
-  defaults: { ...Property.prototype.defaults,
+  defaults: {
+    ...Property.prototype.defaults,
     // Array of units, eg. ['px', '%']
     units: [],
 
@@ -17,9 +17,8 @@ module.exports = Property.extend({
     min: '',
 
     // Maximum value
-    max: '',
+    max: ''
   },
-
 
   init() {
     const unit = this.get('unit');
@@ -31,19 +30,18 @@ module.exports = Property.extend({
     }
   },
 
-
   parseValue(val) {
     const parsed = Property.prototype.parseValue.apply(this, arguments);
-    const { value, unit } = this.input.validateInputValue(parsed.value, {deepCheck: 1});
+    const { value, unit } = this.input.validateInputValue(parsed.value, {
+      deepCheck: 1
+    });
     parsed.value = value;
     parsed.unit = unit;
     return parsed;
   },
 
-
   getFullValue() {
     let value = this.get('value') + this.get('unit');
     return Property.prototype.getFullValue.apply(this, [value]);
-  },
-
+  }
 });

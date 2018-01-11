@@ -1,5 +1,4 @@
 module.exports = {
-
   stylePrefix: 'trt-',
 
   labelContainer: 'Component settings',
@@ -15,5 +14,4 @@ module.exports = {
     { value: '', name: 'This window' },
     { value: '_blank', name: 'New window' }
   ]
-
 };

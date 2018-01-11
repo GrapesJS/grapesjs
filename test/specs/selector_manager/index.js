@@ -7,15 +7,13 @@ var e2e = require('./e2e/ClassManager');
 var Editor = require('editor/model/Editor');
 
 describe('SelectorManager', () => {
-
   describe('Main', () => {
-
     var obj;
     let em;
 
     beforeEach(() => {
       em = new Editor({});
-      obj = new SelectorManager().init({em});
+      obj = new SelectorManager().init({ em });
     });
 
     afterEach(() => {
@@ -32,7 +30,7 @@ describe('SelectorManager', () => {
 
     it('Able to add default selectors', () => {
       var cm = new SelectorManager().init({
-        selectors: ['test1', 'test2', 'test3'],
+        selectors: ['test1', 'test2', 'test3']
       });
       expect(cm.getAll().length).toEqual(3);
     });
@@ -105,7 +103,6 @@ describe('SelectorManager', () => {
       expect(obj.getAll().length).toEqual(1);
       expect(result.length).toEqual(1);
     });
-
   });
 
   Models.run();
@@ -115,5 +112,4 @@ describe('SelectorManager', () => {
     ClassTagsView.run();
     e2e.run();
   });
-
 });

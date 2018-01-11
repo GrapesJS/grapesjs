@@ -12,8 +12,7 @@ module.exports = () => {
 
       // Set default options
       for (var name in defaults) {
-        if (!(name in config))
-          config[name] = defaults[name];
+        if (!(name in config)) config[name] = defaults[name];
       }
 
       let View = ItemsView;
@@ -23,14 +22,14 @@ module.exports = () => {
         level,
         config,
         opened
-      }
+      };
 
       // Show wrapper if requested
       if (config.showWrapper && collection.parent) {
         View = ItemView;
         options.model = collection.parent;
       } else {
-        options.collection = collection
+        options.collection = collection;
       }
 
       itemsView = new View(options);
@@ -67,6 +66,6 @@ module.exports = () => {
 
     render() {
       return itemsView.render().$el;
-    },
-  }
+    }
+  };
 };

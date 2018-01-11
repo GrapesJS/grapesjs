@@ -1,5 +1,4 @@
 module.exports = Backbone.View.extend({
-
   initialize(o = {}) {
     this.options = o;
     this.collection = o.collection;
@@ -55,5 +54,5 @@ module.exports = Backbone.View.extend({
     el.innerHTML = this.template(this, this.model);
     el.className = this.className;
     return this;
-  },
+  }
 });

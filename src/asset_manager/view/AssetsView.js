@@ -3,9 +3,8 @@ var AssetImageView = require('./AssetImageView');
 var FileUploader = require('./FileUploader');
 
 module.exports = Backbone.View.extend({
-
   events: {
-    submit: 'handleSubmit',
+    submit: 'handleSubmit'
   },
 
   template(view) {
@@ -66,7 +65,7 @@ module.exports = Backbone.View.extend({
     if (handleAdd) {
       handleAdd(url);
     } else {
-      this.options.globalCollection.add(url, {at: 0});
+      this.options.globalCollection.add(url, { at: 0 });
     }
   },
 
@@ -86,7 +85,7 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getAddInput() {
-    if(!this.inputUrl || !this.inputUrl.value)
+    if (!this.inputUrl || !this.inputUrl.value)
       this.inputUrl = this.el.querySelector(`.${this.pfx}add-asset input`);
     return this.inputUrl;
   },
@@ -127,11 +126,11 @@ module.exports = Backbone.View.extend({
     const rendered = new model.typeView({
       model,
       collection,
-      config,
+      config
     }).render().el;
 
     if (fragment) {
-      fragment.appendChild( rendered );
+      fragment.appendChild(rendered);
     } else {
       const assetsEl = this.getAssetsEl();
       if (assetsEl) {
@@ -172,7 +171,7 @@ module.exports = Backbone.View.extend({
     const assets = this.$el.find(`.${this.pfx}assets`);
     assets.empty();
     this.toggleNoAssets(this.collection.length);
-    this.collection.each((model) => this.addAsset(model, fragment));
+    this.collection.each(model => this.addAsset(model, fragment));
     assets.append(fragment);
   },
 

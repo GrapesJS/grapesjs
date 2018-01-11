@@ -5,14 +5,13 @@ const Properties = require('./Properties');
 const PropertyFactory = require('./PropertyFactory');
 
 module.exports = Backbone.Model.extend({
-
   defaults: {
     id: '',
     name: '',
     open: true,
     buildProps: '',
     extendBuilded: 1,
-    properties : [],
+    properties: []
   },
 
   initialize(opts) {
@@ -21,10 +20,8 @@ module.exports = Backbone.Model.extend({
     var builded = this.buildProperties(o.buildProps);
     !this.get('id') && this.set('id', this.get('name'));
 
-    if(!builded)
-      props = this.get('properties');
-    else
-      props = this.extendProperties(builded);
+    if (!builded) props = this.get('properties');
+    else props = this.extendProperties(builded);
 
     var propsModel = new Properties(props);
     propsModel.sector = this;
@@ -51,12 +48,15 @@ module.exports = Backbone.Model.extend({
 
       for (var j = 0; j < pLen; j++) {
         var prop = props[j];
-        if (mProp.property == prop.property ||
-            mProp.id == prop.property) {
+        if (mProp.property == prop.property || mProp.id == prop.property) {
           // Check for nested properties
           var mPProps = mProp.properties;
           if (mPProps && mPProps.length) {
-            mProp.properties = this.extendProperties(prop.properties, mPProps, 1);
+            mProp.properties = this.extendProperties(
+              prop.properties,
+              mPProps,
+              1
+            );
           }
           props[j] = ext ? extend(prop, mProp) : mProp;
           isolated[j] = props[j];
@@ -65,7 +65,7 @@ module.exports = Backbone.Model.extend({
         }
       }
 
-      if(!found){
+      if (!found) {
         props.push(mProp);
         isolated.push(mProp);
       }
@@ -84,15 +84,12 @@ module.exports = Backbone.Model.extend({
     var r;
     var buildP = props || [];
 
-    if(!buildP.length)
-      return;
+    if (!buildP.length) return;
 
-    if(!this.propFactory)
-     this.propFactory = new PropertyFactory();
+    if (!this.propFactory) this.propFactory = new PropertyFactory();
 
     r = this.propFactory.build(buildP);
 
     return r;
-  },
-
+  }
 });
