@@ -1,19 +1,17 @@
 var Backbone = require('backbone');
 
 module.exports = Backbone.Model.extend({
-
   defaults: {
-    checkLocal: true,
+    checkLocal: true
   },
 
   /**
-  * @private
-  */
+   * @private
+   */
   store(data, clb) {
     this.checkStorageEnvironment();
 
-    for(var key in data)
-      localStorage.setItem(key, data[key]);
+    for (var key in data) localStorage.setItem(key, data[key]);
 
     if (typeof clb == 'function') {
       clb();
@@ -27,10 +25,9 @@ module.exports = Backbone.Model.extend({
     this.checkStorageEnvironment();
     var result = {};
 
-    for (var i = 0, len = keys.length; i < len; i++){
+    for (var i = 0, len = keys.length; i < len; i++) {
       var value = localStorage.getItem(keys[i]);
-      if(value)
-        result[keys[i]] = value;
+      if (value) result[keys[i]] = value;
     }
 
     if (typeof clb == 'function') {
@@ -55,8 +52,7 @@ module.exports = Backbone.Model.extend({
    * @private
    * */
   checkStorageEnvironment() {
-    if(this.get('checkLocal') && !localStorage)
+    if (this.get('checkLocal') && !localStorage)
       console.warn("Your browser doesn't support localStorage");
-  },
-
+  }
 });

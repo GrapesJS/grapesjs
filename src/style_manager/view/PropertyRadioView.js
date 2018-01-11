@@ -1,5 +1,4 @@
 module.exports = require('./PropertyView').extend({
-
   templateInput() {
     const pfx = this.pfx;
     const ppfx = this.ppfx;
@@ -18,18 +17,22 @@ module.exports = require('./PropertyView').extend({
     const options = model.get('list') || model.get('options') || [];
 
     if (!this.input) {
-      if(options && options.length) {
+      if (options && options.length) {
         let inputStr = '';
 
         options.forEach(el => {
-          let cl = el.className ?  `${el.className} ${pfx}icon ${itemCls}` : '';
+          let cl = el.className ? `${el.className} ${pfx}icon ${itemCls}` : '';
           let id = `${prop}-${el.value}`;
           let labelTxt = el.name || el.value;
           let titleAttr = el.title ? `title="${el.title}"` : '';
           inputStr += `
             <div class="${ppfx}radio-item">
-              <input type="radio" class="${pfx}radio" id="${id}" name="${prop}" value="${el.value}"/>
-              <label class="${cl || itemCls}" ${titleAttr} for="${id}">${cl ? '' : labelTxt}</label>
+              <input type="radio" class="${pfx}radio" id="${id}" name="${prop}" value="${
+            el.value
+          }"/>
+              <label class="${cl || itemCls}" ${titleAttr} for="${id}">${
+            cl ? '' : labelTxt
+          }</label>
             </div>
           `;
         });
@@ -63,6 +66,5 @@ module.exports = require('./PropertyView').extend({
       const inputChk = this.getCheckedEl();
       inputChk && (inputChk.checked = false);
     }
-  },
-
+  }
 });

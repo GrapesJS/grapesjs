@@ -2,12 +2,11 @@ var Backbone = require('backbone');
 var Category = require('./Category');
 
 module.exports = Backbone.Model.extend({
-
   defaults: {
     label: '',
     content: '',
     category: '',
-    attributes: {},
+    attributes: {}
   },
 
   initialize(opts = {}) {
@@ -17,10 +16,9 @@ module.exports = Backbone.Model.extend({
       if (typeof category == 'string') {
         var catObj = new Category({
           id: category,
-          label: category,
+          label: category
         });
       }
     }
-  },
-
+  }
 });

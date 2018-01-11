@@ -4,9 +4,8 @@ const Backbone = require('backbone');
 const $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
-
-  events:{
-    'change': 'onChange'
+  events: {
+    change: 'onChange'
   },
 
   attributes() {
@@ -23,13 +22,18 @@ module.exports = Backbone.View.extend({
     this.target = target;
     this.className = this.pfx + 'trait';
     this.labelClass = this.ppfx + 'label';
-    this.fieldClass = this.ppfx + 'field ' + this.ppfx + 'field-' + model.get('type');
+    this.fieldClass =
+      this.ppfx + 'field ' + this.ppfx + 'field-' + model.get('type');
     this.inputhClass = this.ppfx + 'input-holder';
     model.off('change:value', this.onValueChange);
     this.listenTo(model, 'change:value', this.onValueChange);
-    this.tmpl = '<div class="' + this.fieldClass +'"><div class="' + this.inputhClass +'"></div></div>';
+    this.tmpl =
+      '<div class="' +
+      this.fieldClass +
+      '"><div class="' +
+      this.inputhClass +
+      '"></div></div>';
   },
-
 
   /**
    * Fires when the input is changed
@@ -43,11 +47,9 @@ module.exports = Backbone.View.extend({
     return this.model.get('value');
   },
 
-
   setInputValue(value) {
     this.getInputEl().value = value;
   },
-
 
   /**
    * On change callback
@@ -71,7 +73,9 @@ module.exports = Backbone.View.extend({
    * @private
    */
   renderLabel() {
-    this.$el.html('<div class="' + this.labelClass + '">' + this.getLabel() + '</div>');
+    this.$el.html(
+      '<div class="' + this.labelClass + '">' + this.getLabel() + '</div>'
+    );
   },
 
   /**
@@ -82,7 +86,7 @@ module.exports = Backbone.View.extend({
   getLabel() {
     var model = this.model;
     var label = model.get('label') || model.get('name');
-    return label.charAt(0).toUpperCase() + label.slice(1).replace(/-/g,' ');
+    return label.charAt(0).toUpperCase() + label.slice(1).replace(/-/g, ' ');
   },
 
   /**
@@ -91,7 +95,7 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getInputEl() {
-    if(!this.$input) {
+    if (!this.$input) {
       var md = this.model;
       var trg = this.target;
       var name = md.get('name');
@@ -100,8 +104,9 @@ module.exports = Backbone.View.extend({
       const attrs = trg.get('attributes');
       const min = md.get('min');
       const max = md.get('max');
-      const value = md.get('changeProp') ?
-        trg.get(name) : md.get('value') || attrs[name];
+      const value = md.get('changeProp')
+        ? trg.get(name)
+        : md.get('value') || attrs[name];
       const input = $(`<input type="${type}" placeholder="${plh}">`);
 
       if (value) {
@@ -142,7 +147,7 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   renderField() {
-    if(!this.$input){
+    if (!this.$input) {
       this.$el.append(this.tmpl);
       const el = this.getInputEl();
       // I use prepand expecially for checkbox traits
@@ -156,6 +161,5 @@ module.exports = Backbone.View.extend({
     this.renderField();
     this.el.className = this.className;
     return this;
-  },
-
+  }
 });

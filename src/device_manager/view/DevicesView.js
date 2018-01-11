@@ -1,7 +1,6 @@
 var Backbone = require('backbone');
 
 module.exports = Backbone.View.extend({
-
   template: _.template(`
     <div class="<%= ppfx %>device-label"><%= deviceLabel %></div>
     <div class="<%= ppfx %>field <%= ppfx %>select">
@@ -15,7 +14,7 @@ module.exports = Backbone.View.extend({
     <button style="display:none" class="<%= ppfx %>add-trasp">+</button>`),
 
   events: {
-    'change': 'updateDevice'
+    change: 'updateDevice'
   },
 
   initialize(o) {
@@ -40,7 +39,7 @@ module.exports = Backbone.View.extend({
    */
   updateDevice() {
     var em = this.em;
-    if(em){
+    if (em) {
       var devEl = this.devicesEl;
       var val = devEl ? devEl.val() : '';
       em.set('device', val);
@@ -54,7 +53,7 @@ module.exports = Backbone.View.extend({
   updateSelect() {
     var em = this.em;
     var devEl = this.devicesEl;
-    if(em && em.getDeviceModel && devEl){
+    if (em && em.getDeviceModel && devEl) {
       var device = em.getDeviceModel();
       var name = device ? device.get('name') : '';
       devEl.val(name);
@@ -70,21 +69,22 @@ module.exports = Backbone.View.extend({
     var result = '';
     this.collection.each(device => {
       var name = device.get('name');
-      result += '<option value="' + name+ '">' + name + '</option>';
+      result += '<option value="' + name + '">' + name + '</option>';
     });
     return result;
   },
 
   render() {
     var pfx = this.ppfx;
-    this.$el.html(this.template({
-      ppfx: pfx,
-      deviceLabel: this.config.deviceLabel
-    }));
+    this.$el.html(
+      this.template({
+        ppfx: pfx,
+        deviceLabel: this.config.deviceLabel
+      })
+    );
     this.devicesEl = this.$el.find('.' + pfx + 'devices');
     this.devicesEl.append(this.getOptions());
     this.el.className = pfx + 'devices-c';
     return this;
-  },
-
+  }
 });

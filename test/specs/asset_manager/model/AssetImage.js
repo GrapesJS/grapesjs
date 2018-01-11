@@ -2,7 +2,6 @@ var AssetImage = require('asset_manager/model/AssetImage');
 
 module.exports = {
   run() {
-
     describe('AssetImage', () => {
       it('Object exists', () => {
         expect(AssetImage).toExist();
@@ -18,8 +17,6 @@ module.exports = {
         expect(obj.getExtension()).toNotExist();
         expect(obj.getFilename()).toNotExist();
       });
-
     });
-
   }
 };

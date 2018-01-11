@@ -1,9 +1,7 @@
 const PluginManager = require('plugin_manager');
 
 describe('GrapesJS', () => {
-
   describe('Main', () => {
-
     var obj;
     var fixtures;
     var fixture;
@@ -22,7 +20,7 @@ describe('GrapesJS', () => {
       },
       load(keys, clb) {
         return clb(storage);
-      },
+      }
     };
 
     before(() => {
@@ -30,8 +28,8 @@ describe('GrapesJS', () => {
     });
 
     beforeEach(() => {
-      htmlString =  '<div class="test1"></div><div class="test2"></div>';
-      cssString =  '.test2{color:red}.test3{color:blue}';
+      htmlString = '<div class="test1"></div><div class="test2"></div>';
+      cssString = '.test2{color:red}.test3{color:blue}';
       documentEl = '<style>' + cssString + '</style>' + htmlString;
       config = {
         container: '#' + editorName,
@@ -39,8 +37,8 @@ describe('GrapesJS', () => {
           autoload: 0,
           autosave: 0,
           type: ''
-        },
-      }
+        }
+      };
       obj = grapesjs;
       //fixture = $('<div id="' + editorName + '"></div>');
       //fixture.empty().appendTo(fixtures);
@@ -63,9 +61,9 @@ describe('GrapesJS', () => {
         container: document.createElement('div'),
         storageManager: {
           autoload: 0,
-          type:'none'
-        },
-      }
+          type: 'none'
+        }
+      };
       var editor = obj.init(configAlt);
       expect(editor).toExist();
     });
@@ -75,7 +73,7 @@ describe('GrapesJS', () => {
       var html = editor.getHtml();
       //var css = editor.getCss();
       var protCss = editor.getConfig().protectedCss;
-      expect((html ? html : '')).toNotExist();
+      expect(html ? html : '').toNotExist();
       //expect((css ? css : '')).toEqual(protCss);
       expect(editor.getComponents().length).toEqual(0);
       expect(editor.getStyle().length).toEqual(0);
@@ -86,7 +84,13 @@ describe('GrapesJS', () => {
       var editor = obj.init(config);
       var comps = editor.DomComponents.getComponents();
       expect(comps.length).toEqual(2);
-      expect(comps.at(0).get('classes').at(0).get('name')).toEqual('test1');
+      expect(
+        comps
+          .at(0)
+          .get('classes')
+          .at(0)
+          .get('name')
+      ).toEqual('test1');
     });
 
     it('Init editor with css', () => {
@@ -94,7 +98,13 @@ describe('GrapesJS', () => {
       var editor = obj.init(config);
       var rules = editor.CssComposer.getAll();
       expect(rules.length).toEqual(2);
-      expect(rules.at(0).get('selectors').at(0).get('name')).toEqual('test2');
+      expect(
+        rules
+          .at(0)
+          .get('selectors')
+          .at(0)
+          .get('name')
+      ).toEqual('test2');
     });
 
     it.skip('Init editor from element', () => {
@@ -111,10 +121,10 @@ describe('GrapesJS', () => {
       editor.getStyle().length.should.equal(2);
       */
 
-      expect((html ? html : '')).toEqual(htmlString);
+      expect(html ? html : '').toEqual(htmlString);
       expect(editor.getComponents().length).toEqual(2);
       // .test3 is discarded in css
-      expect((css ? css : '')).toEqual(protCss + '.test2{color:red;}');
+      expect(css ? css : '').toEqual(protCss + '.test2{color:red;}');
       // bust is still here
       expect(editor.getStyle().length).toEqual(2);
     });
@@ -137,18 +147,27 @@ describe('GrapesJS', () => {
       editor.setStyle(cssString);
       var styles = editor.getStyle();
       expect(styles.length).toEqual(2);
-      expect(styles.at(1).get('selectors').at(0).get('name')).toEqual('test3');
+      expect(
+        styles
+          .at(1)
+          .get('selectors')
+          .at(0)
+          .get('name')
+      ).toEqual('test3');
     });
 
     it('Set style as as array of objects', () => {
       var editor = obj.init(config);
-      editor.setStyle([
-        {selectors: ['test4']},
-        {selectors: ['test5']}
-      ]);
+      editor.setStyle([{ selectors: ['test4'] }, { selectors: ['test5'] }]);
       var styles = editor.getStyle();
       expect(styles.length).toEqual(2);
-      expect(styles.at(1).get('selectors').at(0).get('name')).toEqual('test5');
+      expect(
+        styles
+          .at(1)
+          .get('selectors')
+          .at(0)
+          .get('name')
+      ).toEqual('test5');
     });
 
     it.skip('Adds new storage as plugin and store data there', done => {
@@ -161,7 +180,7 @@ describe('GrapesJS', () => {
       var editor = obj.init(config);
       editor.setComponents(htmlString);
       editor.store(() => {
-        editor.load((data) => {
+        editor.load(data => {
           expect(data.html).toEqual(htmlString);
           done();
         });
@@ -176,7 +195,7 @@ describe('GrapesJS', () => {
       });
       config.plugins = [pluginName];
       config.pluginsOpts = {};
-      config.pluginsOpts[pluginName] = {cVal: 'TEST'};
+      config.pluginsOpts[pluginName] = { cVal: 'TEST' };
       var editor = obj.init(config);
       expect(editor.customValue).toEqual('TEST');
     });
@@ -188,9 +207,9 @@ describe('GrapesJS', () => {
       editor.Commands.add('test-command', {
         run(ed, caller, opts) {
           ed.testVal = ed.getHtml() + opts.val;
-        },
+        }
       });
-      editor.runCommand('test-command', {val: 5});
+      editor.runCommand('test-command', { val: 5 });
       expect(editor.testVal).toEqual(htmlString + '5');
     });
 
@@ -201,17 +220,17 @@ describe('GrapesJS', () => {
       editor.Commands.add('test-command', {
         stop(ed, caller, opts) {
           ed.testVal = ed.getHtml() + opts.val;
-        },
+        }
       });
-      editor.stopCommand('test-command', {val: 5});
+      editor.stopCommand('test-command', { val: 5 });
       expect(editor.testVal).toEqual(htmlString + '5');
     });
 
     it('Set default devices', () => {
       config.deviceManager = {};
       config.deviceManager.devices = [
-        {name:'1', width: '2'},
-        {name:'3', width: '4'},
+        { name: '1', width: '2' },
+        { name: '3', width: '4' }
       ];
       var editor = obj.init(config);
       expect(editor.DeviceManager.getAll().length).toEqual(2);
@@ -231,19 +250,17 @@ describe('GrapesJS', () => {
     // Problems with iframe loading
     it('Init new editor with custom plugin overrides default commands', () => {
       var editor,
-          pluginName = 'test-plugin-opts';
+        pluginName = 'test-plugin-opts';
 
       obj.plugins.add(pluginName, (edt, opts) => {
         let cmdm = edt.Commands;
         // Overwrite export template
-        cmdm.add('export-template', {test: 1});
+        cmdm.add('export-template', { test: 1 });
       });
       config.plugins = [pluginName];
 
       editor = obj.init(config);
       expect(editor.Commands.get('export-template').test).toEqual(1);
     });
-
   });
-
 });

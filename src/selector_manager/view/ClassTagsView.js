@@ -51,7 +51,11 @@ module.exports = Backbone.View.extend({
     this.target = this.config.em;
     this.em = this.target;
 
-    this.listenTo(this.target ,'change:selectedComponent',this.componentChanged);
+    this.listenTo(
+      this.target,
+      'change:selectedComponent',
+      this.componentChanged
+    );
     this.listenTo(this.target, 'component:update:classes', this.updateSelector);
 
     this.listenTo(this.collection, 'add', this.addNew);
@@ -77,8 +81,13 @@ module.exports = Backbone.View.extend({
    */
   getStateOptions() {
     var strInput = '';
-    for(var i = 0; i < this.states.length; i++){
-      strInput += '<option value="' + this.states[i].name + '">' + this.states[i].label + '</option>';
+    for (var i = 0; i < this.states.length; i++) {
+      strInput +=
+        '<option value="' +
+        this.states[i].name +
+        '">' +
+        this.states[i].label +
+        '</option>';
     }
     return strInput;
   },
@@ -118,10 +127,8 @@ module.exports = Backbone.View.extend({
    * @private
    */
   onInputKeyUp(e) {
-    if (e.keyCode === 13)
-      this.addNewTag(this.$input.val());
-    else if(e.keyCode === 27)
-      this.endNewTag();
+    if (e.keyCode === 13) this.addNewTag(this.$input.val());
+    else if (e.keyCode === 27) this.endNewTag();
   },
 
   /**
@@ -152,13 +159,11 @@ module.exports = Backbone.View.extend({
     const em = this.em;
     const avoidInline = em && em.getConfig('avoidInlineStyle');
 
-    if(this.collection.length || avoidInline)
-      this.getStatesC().css('display','block');
-    else
-      this.getStatesC().css('display','none');
+    if (this.collection.length || avoidInline)
+      this.getStatesC().css('display', 'block');
+    else this.getStatesC().css('display', 'none');
     this.updateSelector();
   },
-
 
   /**
    * Udpate selector helper
@@ -182,14 +187,13 @@ module.exports = Backbone.View.extend({
     el && (el.innerHTML = result);
   },
 
-
   /**
    * Triggered when the select with states is changed
    * @param  {Object} e
    * @private
    */
   stateChanged(e) {
-    if(this.compTarget){
+    if (this.compTarget) {
       this.compTarget.set('state', this.$states.val());
       this.updateSelector();
     }
@@ -210,7 +214,7 @@ module.exports = Backbone.View.extend({
 
     if (target) {
       const sm = target.get('SelectorManager');
-      var model = sm.add({label});
+      var model = sm.add({ label });
 
       if (component) {
         var compCls = component.get('classes');
@@ -232,19 +236,17 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   addToClasses(model, fragmentEl) {
-    var fragment  = fragmentEl || null;
+    var fragment = fragmentEl || null;
 
     var view = new ClassTagView({
-        model,
-        config: this.config,
-        coll: this.collection,
+      model,
+      config: this.config,
+      coll: this.collection
     });
-    var rendered  = view.render().el;
+    var rendered = view.render().el;
 
-    if(fragment)
-      fragment.appendChild(rendered);
-    else
-      this.getClasses().append(rendered);
+    if (fragment) fragment.appendChild(rendered);
+    else this.getClasses().append(rendered);
 
     return rendered;
   },
@@ -257,12 +259,14 @@ module.exports = Backbone.View.extend({
   renderClasses() {
     var fragment = document.createDocumentFragment();
 
-    this.collection.each(function(model){
+    this.collection.each(function(model) {
       this.addToClasses(model, fragment);
-    },this);
+    }, this);
 
-    if(this.getClasses())
-      this.getClasses().empty().append(fragment);
+    if (this.getClasses())
+      this.getClasses()
+        .empty()
+        .append(fragment);
 
     return this;
   },
@@ -273,7 +277,7 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getClasses() {
-    if(!this.$classes)
+    if (!this.$classes)
       this.$classes = this.$el.find('#' + this.pfx + 'tags-c');
     return this.$classes;
   },
@@ -284,8 +288,7 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getStates() {
-    if(!this.$states)
-      this.$states = this.$el.find('#' + this.stateInputId);
+    if (!this.$states) this.$states = this.$el.find('#' + this.stateInputId);
     return this.$states;
   },
 
@@ -295,20 +298,21 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getStatesC() {
-    if(!this.$statesC)
-      this.$statesC = this.$el.find('#' + this.stateInputC);
+    if (!this.$statesC) this.$statesC = this.$el.find('#' + this.stateInputC);
     return this.$statesC;
   },
 
   render() {
     const config = this.config;
-    this.$el.html(this.template({
-      selectedLabel: config.selectedLabel,
-      statesLabel: config.statesLabel,
-      label: config.label,
-      pfx: this.pfx,
-      ppfx: this.ppfx,
-    }));
+    this.$el.html(
+      this.template({
+        selectedLabel: config.selectedLabel,
+        statesLabel: config.statesLabel,
+        label: config.label,
+        pfx: this.pfx,
+        ppfx: this.ppfx
+      })
+    );
     this.$input = this.$el.find('input#' + this.newInputId);
     this.$addBtn = this.$el.find('#' + this.addBtnId);
     this.$classes = this.$el.find('#' + this.pfx + 'tags-c');
@@ -318,6 +322,5 @@ module.exports = Backbone.View.extend({
     this.renderClasses();
     this.$el.attr('class', this.className);
     return this;
-  },
-
+  }
 });

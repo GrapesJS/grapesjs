@@ -2,7 +2,6 @@ const InputNumber = require('domain_abstract/ui/InputNumber');
 const $ = Backbone.$;
 
 module.exports = require('./PropertyView').extend({
-
   templateInput() {
     return '';
   },
@@ -14,7 +13,7 @@ module.exports = require('./PropertyView').extend({
   },
 
   setValue(value) {
-    this.inputInst.setValue(value, {silent: 1});
+    this.inputInst.setValue(value, { silent: 1 });
   },
 
   onRender() {
@@ -32,6 +31,5 @@ module.exports = require('./PropertyView').extend({
       this.input = this.$input.get(0);
       this.inputInst = input;
     }
-  },
-
+  }
 });

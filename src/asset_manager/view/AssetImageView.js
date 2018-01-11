@@ -1,9 +1,8 @@
 module.exports = require('./AssetView').extend({
-
   events: {
     'click [data-toggle=asset-remove]': 'onRemove',
     click: 'onClick',
-    dblclick: 'onDblClick',
+    dblclick: 'onDblClick'
   },
 
   getPreview() {
@@ -32,7 +31,7 @@ module.exports = require('./AssetView').extend({
 
   init(o) {
     const pfx = this.pfx;
-    this.className  += ` ${pfx}asset-image`;
+    this.className += ` ${pfx}asset-image`;
   },
 
   /**

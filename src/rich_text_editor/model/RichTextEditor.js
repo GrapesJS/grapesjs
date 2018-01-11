@@ -1,7 +1,7 @@
 // The initial version of this RTE was borrowed from https://github.com/jaredreich/pell
 // and adapted to the GrapesJS's need
 
-import {on, off} from 'utils/mixins'
+import { on, off } from 'utils/mixins';
 
 const RTE_KEY = '_rte';
 
@@ -9,40 +9,40 @@ const defActions = {
   bold: {
     name: 'bold',
     icon: '<b>B</b>',
-    attributes: {title: 'Bold'},
-    result: (rte) => rte.exec('bold')
+    attributes: { title: 'Bold' },
+    result: rte => rte.exec('bold')
   },
   italic: {
     name: 'italic',
     icon: '<i>I</i>',
-    attributes: {title: 'Italic'},
-    result: (rte) => rte.exec('italic')
+    attributes: { title: 'Italic' },
+    result: rte => rte.exec('italic')
   },
   underline: {
     name: 'underline',
     icon: '<u>U</u>',
-    attributes: {title: 'Underline'},
-    result: (rte) => rte.exec('underline')
+    attributes: { title: 'Underline' },
+    result: rte => rte.exec('underline')
   },
   strikethrough: {
     name: 'strikethrough',
     icon: '<strike>S</strike>',
-    attributes: {title: 'Strike-through'},
-    result: (rte) => rte.exec('strikeThrough')
+    attributes: { title: 'Strike-through' },
+    result: rte => rte.exec('strikeThrough')
   },
   link: {
     icon: `<span style="transform:rotate(45deg)">&supdsub;</span>`,
     name: 'link',
     attributes: {
       style: 'font-size:1.4rem;padding:0 4px 2px;',
-      title: 'Link',
+      title: 'Link'
     },
-    result: (rte) => rte.insertHTML(`<a class="link" href="">${rte.selection()}</a>`)
+    result: rte =>
+      rte.insertHTML(`<a class="link" href="">${rte.selection()}</a>`)
   }
-}
+};
 
 export default class RichTextEditor {
-
   constructor(settings = {}) {
     const el = settings.el;
 
@@ -56,21 +56,25 @@ export default class RichTextEditor {
 
     const settAct = settings.actions || [];
     settAct.forEach((action, i) => {
-        if (typeof action === 'string') {
-          action = defActions[action];
-        } else if (defActions[action.name]) {
-          action = {...defActions[action.name], ...action};
-        }
-        settAct[i] = action;
+      if (typeof action === 'string') {
+        action = defActions[action];
+      } else if (defActions[action.name]) {
+        action = { ...defActions[action.name], ...action };
+      }
+      settAct[i] = action;
     });
-    const actions = settAct.length ? settAct :
-      Object.keys(defActions).map(action => defActions[action])
+    const actions = settAct.length
+      ? settAct
+      : Object.keys(defActions).map(action => defActions[action]);
 
-    settings.classes = { ...{
-      actionbar: 'actionbar',
-      button: 'action',
-      active: 'active',
-    }, ...settings.classes};
+    settings.classes = {
+      ...{
+        actionbar: 'actionbar',
+        button: 'action',
+        active: 'active'
+      },
+      ...settings.classes
+    };
 
     const classes = settings.classes;
     let actionbar = settings.actionbar;
@@ -85,7 +89,7 @@ export default class RichTextEditor {
       actionbar.className = classes.actionbar;
       actionbarCont.appendChild(actionbar);
       this.actionbar = actionbar;
-      actions.forEach(action => this.addAction(action))
+      actions.forEach(action => this.addAction(action));
     }
 
     settings.styleWithCSS && this.exec('styleWithCSS');
@@ -114,7 +118,7 @@ export default class RichTextEditor {
       }
 
       update && update(this, action);
-    })
+    });
   }
 
   enable() {
@@ -124,7 +128,7 @@ export default class RichTextEditor {
 
     this.actionbarEl().style.display = '';
     this.el.contentEditable = true;
-    on(this.el, 'mouseup keyup', this.updateActiveActions)
+    on(this.el, 'mouseup keyup', this.updateActiveActions);
     this.syncActions();
     this.updateActiveActions();
     this.el.focus();
@@ -150,7 +154,7 @@ export default class RichTextEditor {
         action.result(this, action);
         this.updateActiveActions();
       };
-    })
+    });
   }
 
   /**
@@ -197,7 +201,7 @@ export default class RichTextEditor {
    * @return {Selection}
    */
   selection() {
-    return this.doc.getSelection()
+    return this.doc.getSelection();
   }
 
   /**
@@ -235,7 +239,7 @@ export default class RichTextEditor {
       Array.prototype.slice.call(node.childNodes).forEach(nd => {
         range.insertNode(nd);
         lastNode = nd;
-      })
+      });
 
       sel.removeAllRanges();
       sel.addRange(range);

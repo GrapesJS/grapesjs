@@ -7,14 +7,13 @@ module.exports = () => {
   let TraitsViewer;
 
   return {
-
     TraitsView,
 
     /**
      * Name of the module
      * @type {String}
      * @private
-    */
+     */
     name: 'TraitManager',
 
     /**
@@ -38,7 +37,7 @@ module.exports = () => {
       TraitsViewer = new TraitsView({
         collection: [],
         editor: c.em,
-        config: c,
+        config: c
       });
       return this;
     },
@@ -69,7 +68,6 @@ module.exports = () => {
      */
     getType(name) {
       return TraitsViewer.itemsView[name];
-    },
-
+    }
   };
 };

@@ -1,15 +1,14 @@
-import {on, off} from 'utils/mixins'
+import { on, off } from 'utils/mixins';
 
 module.exports = () => {
   var c = {},
-  defaults = require('./config/config'),
-  Canvas = require('./model/Canvas'),
-  CanvasView = require('./view/CanvasView');
+    defaults = require('./config/config'),
+    Canvas = require('./model/Canvas'),
+    CanvasView = require('./view/CanvasView');
   var canvas;
   var frameRect;
 
   return {
-
     /**
      * Used inside RTE
      * @private
@@ -32,23 +31,20 @@ module.exports = () => {
     init(config) {
       c = config || {};
       for (var name in defaults) {
-        if (!(name in c))
-          c[name] = defaults[name];
+        if (!(name in c)) c[name] = defaults[name];
       }
 
       var ppfx = c.pStylePrefix;
-      if(ppfx)
-        c.stylePrefix = ppfx + c.stylePrefix;
+      if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
 
       canvas = new Canvas(config);
-      CanvasView	= new CanvasView({
+      CanvasView = new CanvasView({
         model: canvas,
-        config: c,
+        config: c
       });
 
       var cm = c.em.get('DomComponents');
-      if(cm)
-        this.setWrapper(cm);
+      if (cm) this.setWrapper(cm);
 
       this.startAutoscroll = this.startAutoscroll.bind(this);
       this.stopAutoscroll = this.stopAutoscroll.bind(this);
@@ -200,11 +196,11 @@ module.exports = () => {
     },
 
     /**
-    * Get the offset of the element
-    * @param  {HTMLElement} el
-    * @return {Object}
-    * @private
-    */
+     * Get the offset of the element
+     * @param  {HTMLElement} el
+     * @return {Object}
+     * @private
+     */
     offset(el) {
       return CanvasView.offset(el);
     },
@@ -257,11 +253,11 @@ module.exports = () => {
       var elTop = pos.top - targetHeight;
       var elLeft = pos.left;
       elLeft += toRight ? pos.width : 0;
-      elLeft = toRight ? (elLeft - targetWidth) : elLeft;
+      elLeft = toRight ? elLeft - targetWidth : elLeft;
 
       var leftPos = elLeft < canvasPos.left ? canvasPos.left : elLeft;
       var topPos = elTop < canvasPos.top ? canvasPos.top : elTop;
-      topPos = topPos > (pos.top + pos.height) ? (pos.top + pos.height) : topPos;
+      topPos = topPos > pos.top + pos.height ? pos.top + pos.height : topPos;
 
       var result = {
         top: topPos,
@@ -273,11 +269,11 @@ module.exports = () => {
         targetWidth: target.offsetWidth,
         targetHeight: target.offsetHeight,
         canvasTop: canvasPos.top,
-        canvasLeft: canvasPos.left,
+        canvasLeft: canvasPos.left
       };
 
       // In this way I can catch data and also change the position strategy
-      if(eventToTrigger && c.em) {
+      if (eventToTrigger && c.em) {
         c.em.trigger(eventToTrigger, result);
       }
 
@@ -311,7 +307,7 @@ module.exports = () => {
 
       return {
         y: e.clientY + addTop - yOffset,
-        x: e.clientX + addLeft - xOffset,
+        x: e.clientX + addLeft - xOffset
       };
     },
 
@@ -331,7 +327,7 @@ module.exports = () => {
 
       return {
         y: e.clientY + addTop + yOffset,
-        x: e.clientX + addLeft + xOffset,
+        x: e.clientX + addLeft + xOffset
       };
     },
 
@@ -371,11 +367,11 @@ module.exports = () => {
         let limitBottom = frameRect.height - limitTop;
 
         if (clientY < limitTop) {
-          nextTop -= (limitTop - clientY);
+          nextTop -= limitTop - clientY;
         }
 
         if (clientY > limitBottom) {
-          nextTop += (clientY - limitBottom);
+          nextTop += clientY - limitBottom;
         }
 
         //console.log(`actualTop: ${actualTop} clientY: ${clientY} nextTop: ${nextTop} frameHeigh: ${frameRect.height}`);
@@ -404,6 +400,6 @@ module.exports = () => {
      */
     getFrameWrapperEl() {
       return CanvasView.frame.getWrapper();
-    },
+    }
   };
 };

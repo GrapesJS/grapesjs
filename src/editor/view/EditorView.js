@@ -1,7 +1,6 @@
 const $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
-
   initialize() {
     const model = this.model;
     model.view = this;
@@ -23,16 +22,17 @@ module.exports = Backbone.View.extend({
     const pfx = conf.stylePrefix;
     el.empty();
 
-    if (conf.width)
-      contEl.css('width', conf.width);
+    if (conf.width) contEl.css('width', conf.width);
 
-    if (conf.height)
-      contEl.css('height', conf.height);
+    if (conf.height) contEl.css('height', conf.height);
 
     el.append(model.get('Canvas').render());
     el.append(this.pn.render());
     el.attr('class', `${pfx}editor ${pfx}one-bg ${pfx}two-color`);
-    contEl.addClass(`${pfx}editor-cont`).empty().append(el);
+    contEl
+      .addClass(`${pfx}editor-cont`)
+      .empty()
+      .append(el);
 
     return this;
   }

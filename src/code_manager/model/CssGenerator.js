@@ -1,5 +1,4 @@
 module.exports = require('backbone').Model.extend({
-
   initialize() {
     this.compCls = [];
     this.ids = [];
@@ -30,10 +29,9 @@ module.exports = require('backbone').Model.extend({
     }
 
     const components = model.components();
-    components.each(model => code += this.buildFromModel(model, opts));
+    components.each(model => (code += this.buildFromModel(model, opts)));
     return code;
   },
-
 
   build(model, opts = {}) {
     const cssc = opts.cssc;
@@ -67,13 +65,12 @@ module.exports = require('backbone').Model.extend({
       for (let media in mediaRules) {
         let rulesStr = '';
         const mRules = mediaRules[media];
-        mRules.forEach(rule => rulesStr += this.buildFromRule(rule));
+        mRules.forEach(rule => (rulesStr += this.buildFromRule(rule)));
 
         if (rulesStr) {
           code += `@media ${media}{${rulesStr}}`;
         }
       }
-
     }
 
     return code;
@@ -87,7 +84,7 @@ module.exports = require('backbone').Model.extend({
   buildFromRule(rule) {
     let result = '';
     const selectorStr = rule.selectorsToString();
-    const selectorStrNoAdd = rule.selectorsToString({skipAdd: 1});
+    const selectorStrNoAdd = rule.selectorsToString({ skipAdd: 1 });
     let found;
 
     // This will not render a rule if there is no its component
@@ -107,6 +104,5 @@ module.exports = require('backbone').Model.extend({
     }
 
     return result;
-  },
-
+  }
 });

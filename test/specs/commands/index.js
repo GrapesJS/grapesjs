@@ -2,9 +2,7 @@ var Commands = require('commands');
 var Models = require('./model/CommandModels');
 
 describe('Commands', () => {
-
   describe('Main', () => {
-
     let obj;
 
     beforeEach(() => {
@@ -20,7 +18,7 @@ describe('Commands', () => {
     });
 
     it('Push new command', () => {
-      var comm = { test: 'test'};
+      var comm = { test: 'test' };
       obj.add('test', comm);
       expect(obj.get('test').test).toEqual('test');
     });
@@ -59,9 +57,7 @@ describe('Commands', () => {
     it('Commands module should not have toLoad property', () => {
       expect(obj.toLoad).toEqual(null);
     });
-
   });
-
 });
 
 Models.run();

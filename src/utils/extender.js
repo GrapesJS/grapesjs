@@ -1,4 +1,4 @@
-module.exports = ({$, Backbone}) => {
+module.exports = ({ $, Backbone }) => {
   if (Backbone) {
     const ViewProt = Backbone.View.prototype;
     const eventNsMap = {};
@@ -15,7 +15,7 @@ module.exports = ({$, Backbone}) => {
         eventNsMap[vid] = eventMap;
       }
 
-      eventMap.push({eventName, selector, listener});
+      eventMap.push({ eventName, selector, listener });
       return this;
     };
 
@@ -26,7 +26,7 @@ module.exports = ({$, Backbone}) => {
         let eventMap = eventNsMap[vid];
 
         if (eventMap) {
-          eventMap.forEach(({eventName, selector, listener}) => {
+          eventMap.forEach(({ eventName, selector, listener }) => {
             this.$el.off(eventName);
           });
         }
@@ -40,7 +40,7 @@ module.exports = ({$, Backbone}) => {
       let eventMap = eventNsMap[vid];
 
       if (eventMap) {
-        eventMap.forEach(({eventName, selector, listener}) => {
+        eventMap.forEach(({ eventName, selector, listener }) => {
           if (eventName == ev && selector == sel) {
             this.$el.off(eventName);
           }
@@ -55,9 +55,11 @@ module.exports = ({$, Backbone}) => {
     const fn = $.fn;
 
     const splitNamespace = function(name) {
-      const namespaceArray = name.split('.')
-      return ( name.indexOf('.') !== 0 ? [namespaceArray[0], namespaceArray.slice(1)] : [null, namespaceArray] );
-    }
+      const namespaceArray = name.split('.');
+      return name.indexOf('.') !== 0
+        ? [namespaceArray[0], namespaceArray.slice(1)]
+        : [null, namespaceArray];
+    };
     /*
     const CashEvent = function(node, eventName, namespaces, delegate, originalCallback, runOnce) {
 
@@ -103,11 +105,10 @@ module.exports = ({$, Backbone}) => {
     const off = $.prototype.off;
     const trigger = $.prototype.trigger;
     const offset = $.prototype.offset;
-    const getEvents = (eventName) => eventName.split(/[,\s]+/g);
-    const getNamespaces = (eventName) => eventName.split('.');
+    const getEvents = eventName => eventName.split(/[,\s]+/g);
+    const getNamespaces = eventName => eventName.split('.');
 
     fn.on = function(eventName, delegate, callback, runOnce) {
-
       if (typeof eventName == 'string') {
         const events = getEvents(eventName);
 
@@ -130,14 +131,15 @@ module.exports = ({$, Backbone}) => {
 
           return on.call(this, eventName, delegate, callback, runOnce);
         } else {
-          events.forEach((eventName) =>
-            this.on(eventName, delegate, callback, runOnce));
+          events.forEach(eventName =>
+            this.on(eventName, delegate, callback, runOnce)
+          );
           return this;
         }
       } else {
-        return on.call(this, eventName, delegate, callback, runOnce)
+        return on.call(this, eventName, delegate, callback, runOnce);
       }
-    }
+    };
 
     fn.off = function(eventName, callback) {
       if (typeof eventName == 'string') {
@@ -159,13 +161,13 @@ module.exports = ({$, Backbone}) => {
 
           return off.call(this, eventName, callback);
         } else {
-          events.forEach((eventName) => this.off(eventName, callback));
+          events.forEach(eventName => this.off(eventName, callback));
           return this;
         }
       } else {
         return off.call(this, eventName, callback);
       }
-    }
+    };
 
     fn.trigger = function(eventName, data) {
       if (eventName instanceof $.Event) {
@@ -191,54 +193,53 @@ module.exports = ({$, Backbone}) => {
 
           return trigger.call(this, eventName, data);
         } else {
-          events.forEach((eventName) => this.trigger(eventName, data));
+          events.forEach(eventName => this.trigger(eventName, data));
           return this;
         }
       } else {
         return trigger.call(this, eventName, data);
       }
-    }
+    };
 
     fn.hide = function() {
       return this.css('display', 'none');
-    }
+    };
 
     fn.show = function() {
       return this.css('display', 'block');
-    }
+    };
 
     fn.focus = function() {
       const el = this.get(0);
       el && el.focus();
       return this;
-    }
+    };
 
-    fn.remove = function () {
+    (fn.remove = function() {
       return this.each(node => {
         return node.parentNode && node.parentNode.removeChild(node);
       });
-    },
-
-    // For spectrum compatibility
-    fn.bind = function(ev, h) {
-      return this.on(ev, h);
-    }
+    }),
+      // For spectrum compatibility
+      (fn.bind = function(ev, h) {
+        return this.on(ev, h);
+      });
 
     fn.unbind = function(ev, h) {
       return this.off(ev, h);
-    }
+    };
 
     fn.click = function(h) {
       return h ? this.on('click', h) : this.trigger('click');
-    }
+    };
 
     fn.change = function(h) {
       return h ? this.on('change', h) : this.trigger('change');
-    }
+    };
 
     fn.keydown = function(h) {
       return h ? this.on('keydown', h) : this.trigger('keydown');
-    }
+    };
 
     fn.delegate = function(selector, events, data, handler) {
       if (!handler) {
@@ -249,21 +250,21 @@ module.exports = ({$, Backbone}) => {
         e.data = data;
         handler(e);
       });
-    }
+    };
 
     fn.scrollLeft = function() {
       let el = this.get(0);
       el = el.nodeType == 9 ? el.defaultView : el;
       let win = el instanceof Window ? el : null;
       return win ? win.pageXOffset : el.scrollLeft || 0;
-    }
+    };
 
     fn.scrollTop = function() {
       let el = this.get(0);
       el = el.nodeType == 9 ? el.defaultView : el;
       let win = el instanceof Window ? el : null;
       return win ? win.pageYOffset : el.scrollTop || 0;
-    }
+    };
 
     fn.offset = function(coords) {
       let top, left;
@@ -291,21 +292,21 @@ module.exports = ({$, Backbone}) => {
       }
 
       return ar;
-    }
+    };
 
     const indexOf = Array.prototype.indexOf;
 
     $.inArray = function(val, arr, i) {
-      return arr == null ? -1 : indexOf.call( arr, val, i );
-    }
+      return arr == null ? -1 : indexOf.call(arr, val, i);
+    };
 
     $.Event = function(src, props) {
-      if (!(this instanceof $.Event) ) {
+      if (!(this instanceof $.Event)) {
         return new $.Event(src, props);
       }
 
       this.type = src;
       this.isDefaultPrevented = () => false;
-    }
+    };
   }
-}
+};

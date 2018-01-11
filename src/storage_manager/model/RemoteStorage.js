@@ -2,7 +2,6 @@ import fetch from 'utils/fetch';
 import { isUndefined } from 'underscore';
 
 module.exports = require('backbone').Model.extend({
-
   fetch,
 
   defaults: {
@@ -56,7 +55,7 @@ module.exports = require('backbone').Model.extend({
     const em = this.get('em');
     const complete = this.get('onComplete');
     const typeJson = this.get('contentTypeJson');
-    const res = typeJson && typeof text === 'string' ? JSON.parse(text): text;
+    const res = typeJson && typeof text === 'string' ? JSON.parse(text) : text;
     complete && complete(res);
     clb && clb(res);
     em && em.trigger('storage:response', res);
@@ -70,11 +69,11 @@ module.exports = require('backbone').Model.extend({
       body[key] = data[key];
     }
 
-    this.request(this.get('urlStore'), {body}, clb);
+    this.request(this.get('urlStore'), { body }, clb);
   },
 
   load(keys, clb) {
-    this.request(this.get('urlLoad'), {method: 'get'}, clb);
+    this.request(this.get('urlLoad'), { method: 'get' }, clb);
   },
 
   /**
@@ -121,7 +120,7 @@ module.exports = require('backbone').Model.extend({
     fetchOptions = {
       method: opts.method || 'post',
       credentials: 'include',
-      headers,
+      headers
     };
 
     // Body should only be included on POST method
@@ -131,11 +130,13 @@ module.exports = require('backbone').Model.extend({
 
     this.onStart();
     this.fetch(url, fetchOptions)
-      .then(res => (res.status/200|0) == 1
-        ? res.text()
-        : res.text().then((text) => Promise.reject(text)))
-      .then((text) => this.onResponse(text, clb))
+      .then(
+        res =>
+          ((res.status / 200) | 0) == 1
+            ? res.text()
+            : res.text().then(text => Promise.reject(text))
+      )
+      .then(text => this.onResponse(text, clb))
       .catch(err => this.onError(err));
-  },
-
+  }
 });

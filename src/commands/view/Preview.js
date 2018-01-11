@@ -1,21 +1,20 @@
 module.exports = {
-
   getPanels(editor) {
-    if(!this.panels)
-      this.panels = editor.Panels.getPanelsEl();
+    if (!this.panels) this.panels = editor.Panels.getPanelsEl();
     return this.panels;
   },
 
   tglPointers(editor, v) {
-    var elP = editor.Canvas.getBody().querySelectorAll('.' + this.ppfx + 'no-pointer');
+    var elP = editor.Canvas.getBody().querySelectorAll(
+      '.' + this.ppfx + 'no-pointer'
+    );
     _.each(elP, item => {
       item.style.pointerEvents = v ? '' : 'all';
     });
   },
 
   run(editor, sender) {
-    if(sender && sender.set)
-      sender.set('active', false);
+    if (sender && sender.set) sender.set('active', false);
     editor.stopCommand('sw-visibility');
     editor.getModel().stopDefault();
     var that = this;
@@ -23,7 +22,7 @@ module.exports = {
     var canvas = editor.Canvas.getElement();
     var editorEl = editor.getEl();
     var pfx = editor.Config.stylePrefix;
-    if(!this.helper) {
+    if (!this.helper) {
       this.helper = document.createElement('span');
       this.helper.className = pfx + 'off-prv fa fa-eye-slash';
       editorEl.appendChild(this.helper);
@@ -57,7 +56,7 @@ module.exports = {
     panels.style.display = 'block';
     var canvas = editor.Canvas.getElement();
     canvas.setAttribute('style', '');
-    if(this.helper) {
+    if (this.helper) {
       this.helper.style.display = 'none';
     }
     editor.trigger('change:canvasOffset');

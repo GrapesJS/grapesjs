@@ -1,14 +1,12 @@
 const $ = Backbone.$;
 
 module.exports = {
-
   run(editor, sender, opts = {}) {
     sender && sender.set && sender.set('active', 0);
     const config = editor.getConfig();
     const modal = editor.Modal;
     const pfx = config.stylePrefix;
     this.cm = editor.CodeManager || null;
-
 
     if (!this.$editors) {
       const oHtmlEd = this.buildEditor('htmlmixed', 'hopscotch', 'HTML');
@@ -40,7 +38,7 @@ module.exports = {
       label,
       codeName,
       theme,
-      input,
+      input
     });
 
     const $el = new this.cm.EditorView({
@@ -51,5 +49,5 @@ module.exports = {
     el.init(input);
 
     return { el, $el };
-  },
+  }
 };

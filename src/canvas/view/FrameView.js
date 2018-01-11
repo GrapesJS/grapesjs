@@ -1,9 +1,9 @@
-import { bindAll } from 'underscore'
+import { bindAll } from 'underscore';
 
-const motionsEv = 'transitionend oTransitionEnd transitionend webkitTransitionEnd';
+const motionsEv =
+  'transitionend oTransitionEnd transitionend webkitTransitionEnd';
 
 module.exports = require('backbone').View.extend({
-
   tagName: 'iframe',
 
   attributes: {
@@ -58,8 +58,7 @@ module.exports = require('backbone').View.extend({
   },
 
   render() {
-    this.$el.attr({class: this.ppfx + 'frame'});
+    this.$el.attr({ class: this.ppfx + 'frame' });
     return this;
-  },
-
+  }
 });

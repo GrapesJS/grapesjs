@@ -1,7 +1,6 @@
-import {on, off} from 'utils/mixins';
+import { on, off } from 'utils/mixins';
 
 module.exports = Backbone.View.extend({
-
   events: {
     mousedown: 'startDrag'
   },
@@ -23,7 +22,7 @@ module.exports = Backbone.View.extend({
       return;
     }
 
-    if(!this.config.getSorter) {
+    if (!this.config.getSorter) {
       return;
     }
 
@@ -56,8 +55,9 @@ module.exports = Backbone.View.extend({
     const pfx = this.ppfx;
     const className = `${pfx}block`;
     el.className += ` ${className} ${pfx}one-bg ${pfx}four-color-h`;
-    el.innerHTML = `<div class="${className}-label">${this.model.get('label')}</div>`;
+    el.innerHTML = `<div class="${className}-label">${this.model.get(
+      'label'
+    )}</div>`;
     return this;
-  },
-
+  }
 });

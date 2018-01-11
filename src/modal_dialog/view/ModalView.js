@@ -1,6 +1,5 @@
 module.exports = require('backbone').View.extend({
-
-  template({pfx, ppfx, content, title}) {
+  template({ pfx, ppfx, content, title }) {
     return `<div class="${pfx}dialog ${ppfx}one-bg">
       <div class="${pfx}header">
         <div class="${pfx}title">${title}</div>
@@ -28,7 +27,7 @@ module.exports = require('backbone').View.extend({
     this.listenTo(model, 'change:open', this.updateOpen);
     this.listenTo(model, 'change:title', this.updateTitle);
     this.listenTo(model, 'change:content', this.updateContent);
-    this.events[`click .${pfx}btn-close`]  = 'hide';
+    this.events[`click .${pfx}btn-close`] = 'hide';
     bkd && (this.events[`click .${pfx}backlayer`] = 'hide');
     this.delegateEvents();
   },
@@ -39,8 +38,8 @@ module.exports = require('backbone').View.extend({
    * @private
    */
   getCollector() {
-    if(!this.$collector)
-      this.$collector = this.$el.find('.'+this.pfx+'collector');
+    if (!this.$collector)
+      this.$collector = this.$el.find('.' + this.pfx + 'collector');
     return this.$collector;
   },
 
@@ -65,8 +64,7 @@ module.exports = require('backbone').View.extend({
    * @private
    */
   getTitle() {
-    if(!this.$title)
-      this.$title  = this.$el.find('.'+this.pfx+'title');
+    if (!this.$title) this.$title = this.$el.find('.' + this.pfx + 'title');
     return this.$title.get(0);
   },
 
@@ -89,8 +87,7 @@ module.exports = require('backbone').View.extend({
    * */
   updateTitle() {
     var title = this.getTitle();
-    if(title)
-      title.innerHTML = this.model.get('title');
+    if (title) title.innerHTML = this.model.get('title');
   },
 
   /**
@@ -113,7 +110,7 @@ module.exports = require('backbone').View.extend({
    * Show modal
    * @private
    * */
-   show() {
+  show() {
     this.model.set('open', 1);
   },
 
@@ -128,6 +125,5 @@ module.exports = require('backbone').View.extend({
     el.attr('class', `${pfx}container`);
     this.updateOpen();
     return this;
-  },
-
+  }
 });

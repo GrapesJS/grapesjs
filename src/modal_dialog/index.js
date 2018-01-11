@@ -16,14 +16,13 @@
  */
 module.exports = () => {
   var c = {},
-  defaults = require('./config/config'),
-  ModalM = require('./model/Modal'),
-  ModalView	= require('./view/ModalView');
+    defaults = require('./config/config'),
+    ModalM = require('./model/Modal'),
+    ModalView = require('./view/ModalView');
   var model, modal;
 
   return {
-
-  	/**
+    /**
      * Name of the module
      * @type {String}
      * @private
@@ -38,18 +37,16 @@ module.exports = () => {
     init(config) {
       c = config || {};
       for (var name in defaults) {
-        if (!(name in c))
-          c[name] = defaults[name];
+        if (!(name in c)) c[name] = defaults[name];
       }
 
       var ppfx = c.pStylePrefix;
-      if(ppfx)
-        c.stylePrefix = ppfx + c.stylePrefix;
+      if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
 
       model = new ModalM(c);
       modal = new ModalView({
         model,
-        config: c,
+        config: c
       });
 
       return this;

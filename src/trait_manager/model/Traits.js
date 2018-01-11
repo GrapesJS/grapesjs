@@ -4,7 +4,6 @@ const Trait = require('./Trait');
 const TraitFactory = require('./TraitFactory');
 
 module.exports = Backbone.Collection.extend({
-
   model: Trait,
 
   initialize(coll, options = {}) {
@@ -25,7 +24,7 @@ module.exports = Backbone.Collection.extend({
       const tf = TraitFactory(tmOpts);
 
       if (isString(models)) {
-          models = [models];
+        models = [models];
       }
 
       for (var i = 0, len = models.length; i < len; i++) {

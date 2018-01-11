@@ -4,7 +4,6 @@
  */
 
 export default () => {
-
   /**
    * Check if IE/Edge
    * @return {Boolean}
@@ -13,10 +12,10 @@ export default () => {
     let match;
     const agent = window.navigator.userAgent;
     const rules = [
-      [ 'edge', /Edge\/([0-9\._]+)/ ],
-      [ 'ie', /MSIE\s(7\.0)/ ],
-      [ 'ie', /MSIE\s([0-9\.]+);.*Trident\/[4-7].0/ ],
-      [ 'ie', /Trident\/7\.0.*rv\:([0-9\.]+).*\).*Gecko$/ ],
+      ['edge', /Edge\/([0-9\._]+)/],
+      ['ie', /MSIE\s(7\.0)/],
+      ['ie', /MSIE\s([0-9\.]+);.*Trident\/[4-7].0/],
+      ['ie', /Trident\/7\.0.*rv\:([0-9\.]+).*\).*Gecko$/]
     ];
 
     for (let i = 0; i < rules.length; i++) {
@@ -26,13 +25,14 @@ export default () => {
     }
 
     return !!match;
-  }
+  };
 
   if (isIE()) {
-    const originalCreateHTMLDocument = DOMImplementation.prototype.createHTMLDocument
-    DOMImplementation.prototype.createHTMLDocument = (title) => {
+    const originalCreateHTMLDocument =
+      DOMImplementation.prototype.createHTMLDocument;
+    DOMImplementation.prototype.createHTMLDocument = title => {
       if (!title) title = '';
       return originalCreateHTMLDocument.apply(document.implementation, [title]);
-    }
+    };
   }
-}
+};

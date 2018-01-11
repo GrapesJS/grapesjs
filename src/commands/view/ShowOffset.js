@@ -1,7 +1,6 @@
 const $ = Backbone.$;
 
 module.exports = {
-
   getOffsetMethod(state) {
     var method = state || '';
     return 'get' + method + 'OffsetViewerEl';
@@ -12,8 +11,10 @@ module.exports = {
     var state = opt.state || '';
     var config = editor.getConfig();
 
-    if (!config.showOffsets ||
-        (!config.showOffsetsSelected && state == 'Fixed') ) {
+    if (
+      !config.showOffsets ||
+      (!config.showOffsetsSelected && state == 'Fixed')
+    ) {
       return;
     }
 
@@ -36,7 +37,7 @@ module.exports = {
     var padL = this['padL' + state];
     var padR = this['padR' + state];
 
-    if(!this[stateVar]) {
+    if (!this[stateVar]) {
       var stateLow = state.toLowerCase();
       var marginName = stateLow + 'margin-v';
       var paddingName = stateLow + 'padding-v';
@@ -125,7 +126,7 @@ module.exports = {
     pbStyle.top = pos.top + pos.height - padBot + unit;
     pbStyle.left = posLeft + unit;
 
-    var padSideH = (pos.height - padBot - padTop) + unit;
+    var padSideH = pos.height - padBot - padTop + unit;
     var padSideT = pos.top + padTop + unit;
     plStyle.height = padSideH;
     plStyle.width = style.paddingLeft;
@@ -146,6 +147,5 @@ module.exports = {
     var canvas = editor.Canvas;
     var offsetViewer = canvas[method]();
     offsetViewer.style.display = 'none';
-  },
-
+  }
 };

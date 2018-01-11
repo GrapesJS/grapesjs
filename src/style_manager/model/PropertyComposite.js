@@ -1,8 +1,8 @@
 const Property = require('./Property');
 
 module.exports = Property.extend({
-
-  defaults: { ...Property.prototype.defaults,
+  defaults: {
+    ...Property.prototype.defaults,
     // 'background' is a good example where to make a difference
     // between detached and not
     //
@@ -18,17 +18,15 @@ module.exports = Property.extend({
     properties: [],
 
     // Separator between properties
-    separator: ' ',
+    separator: ' '
   },
-
 
   init() {
     const properties = this.get('properties') || [];
     const Properties = require('./Properties');
     this.set('properties', new Properties(properties));
-    this.listenTo(this, 'change:value', this.updateValues)
+    this.listenTo(this, 'change:value', this.updateValues);
   },
-
 
   /**
    * Update property values
@@ -40,12 +38,12 @@ module.exports = Property.extend({
       // Try to get value from a shorthand:
       // 11px -> 11px 11px 11px 11xp
       // 11px 22px -> 11px 22px 11px 22xp
-      const value = values[i] || values[(i % len) + (len != 1 && len % 2 ? 1 : 0)];
+      const value =
+        values[i] || values[i % len + (len != 1 && len % 2 ? 1 : 0)];
       // There some issue with UndoManager
       //property.setValue(value, 0, {fromParent: 1});
     });
   },
-
 
   /**
    * Returns default value
@@ -61,10 +59,9 @@ module.exports = Property.extend({
 
     value = '';
     const properties = this.get('properties');
-    properties.each((prop, index) => value += `${prop.getDefaultValue()} `);
+    properties.each((prop, index) => (value += `${prop.getDefaultValue()} `));
     return value.trim();
   },
-
 
   getFullValue() {
     if (this.get('detached')) {
@@ -72,6 +69,5 @@ module.exports = Property.extend({
     }
 
     return this.get('properties').getFullValue();
-  },
-
+  }
 });

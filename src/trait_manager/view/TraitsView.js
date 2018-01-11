@@ -6,15 +6,14 @@ var TraitNumberView = require('./TraitNumberView');
 var TraitColorView = require('./TraitColorView');
 
 module.exports = DomainViews.extend({
-
   itemView: TraitView,
 
   itemsView: {
-    'text': TraitView,
-    'number': TraitNumberView,
-    'select': TraitSelectView,
-    'checkbox': TraitCheckboxView,
-    'color': TraitColorView,
+    text: TraitView,
+    number: TraitNumberView,
+    select: TraitSelectView,
+    checkbox: TraitCheckboxView,
+    color: TraitColorView
   },
 
   initialize(o) {
@@ -33,10 +32,9 @@ module.exports = DomainViews.extend({
   updatedCollection() {
     this.el.className = this.className;
     var comp = this.em.get('selectedComponent');
-    if(comp){
+    if (comp) {
       this.collection = comp.get('traits');
       this.render();
     }
-  },
-
+  }
 });

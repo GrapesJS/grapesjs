@@ -2,9 +2,7 @@ const StorageManager = require('storage_manager');
 const Models = require('./model/Models');
 
 describe('Storage Manager', () => {
-
   describe('Main', () => {
-
     var obj;
 
     beforeEach(() => {
@@ -52,7 +50,7 @@ describe('Storage Manager', () => {
     });
 
     it('Store do not execute if empty', () => {
-      expect(obj.store({item:'test'})).toEqual(null);
+      expect(obj.store({ item: 'test' })).toEqual(null);
     });
 
     it('Load default storages ', () => {
@@ -63,7 +61,6 @@ describe('Storage Manager', () => {
     });
 
     describe('With custom storage', () => {
-
       var storeValue;
       var storageId = 'testStorage';
       var storage = {
@@ -72,13 +69,13 @@ describe('Storage Manager', () => {
         },
         load(keys) {
           return storeValue;
-        },
+        }
       };
 
       beforeEach(() => {
         storeValue = [];
         obj = new StorageManager().init({
-          type: storageId,
+          type: storageId
         });
         obj.add(storageId, storage);
       });
@@ -90,7 +87,7 @@ describe('Storage Manager', () => {
       it('Store and load data', () => {
         var data = {
           item: 'testData',
-          item2: 'testData2',
+          item2: 'testData2'
         };
         var data2 = {};
         var id = obj.getConfig().id;
@@ -98,16 +95,13 @@ describe('Storage Manager', () => {
         data2[id + 'item2'] = 'testData2';
 
         obj.store(data);
-        obj.load(['item', 'item2'], (res) => {
+        obj.load(['item', 'item2'], res => {
           expect(storeValue).toEqual(data2);
           expect(res).toEqual(data);
         });
       });
-
     });
-
   });
 
   Models.run();
-
 });

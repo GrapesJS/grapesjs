@@ -86,24 +86,22 @@ import $ from 'cash-dom';
 
 module.exports = config => {
   var c = config || {},
-  defaults = require('./config/config'),
-  EditorModel = require('./model/Editor'),
-  EditorView = require('./view/EditorView');
+    defaults = require('./config/config'),
+    EditorModel = require('./model/Editor'),
+    EditorView = require('./view/EditorView');
 
   for (var name in defaults) {
-    if (!(name in c))
-      c[name] = defaults[name];
+    if (!(name in c)) c[name] = defaults[name];
   }
 
   c.pStylePrefix = c.stylePrefix;
   var em = new EditorModel(c);
   var editorView = new EditorView({
-      model: em,
-      config: c,
+    model: em,
+    config: c
   });
 
   return {
-
     $,
 
     /**
@@ -418,7 +416,7 @@ module.exports = config => {
       var result;
       var command = em.get('Commands').get(id);
 
-      if(command){
+      if (command) {
         result = command.run(this, this, options);
         this.trigger('run:' + id);
       }
@@ -437,7 +435,7 @@ module.exports = config => {
       var result;
       var command = em.get('Commands').get(id);
 
-      if(command){
+      if (command) {
         result = command.stop(this, this, options);
         this.trigger('stop:' + id);
       }
@@ -581,8 +579,6 @@ module.exports = config => {
 
       editorView.render();
       return editorView.el;
-    },
-
+    }
   };
-
 };

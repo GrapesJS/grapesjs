@@ -7,8 +7,7 @@ module.exports = (config = {}) => ({
   build(props) {
     var objs = [];
 
-    if(typeof props === 'string')
-      props = [props];
+    if (typeof props === 'string') props = [props];
 
     for (var i = 0; i < props.length; i++) {
       var obj = {};
@@ -24,14 +23,15 @@ module.exports = (config = {}) => ({
 
       // Define placeholder
       switch (prop) {
-        case 'title': case 'alt': case 'id':
+        case 'title':
+        case 'alt':
+        case 'id':
           obj.placeholder = config.labelPlhText;
           break;
         case 'href':
           obj.placeholder = config.labelPlhHref;
           break;
       }
-
 
       // Define options
       switch (prop) {

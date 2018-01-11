@@ -1,7 +1,6 @@
 var Backbone = require('backbone');
 
 module.exports = Backbone.View.extend({
-
   // Default view
   itemView: '',
 
@@ -13,7 +12,6 @@ module.exports = Backbone.View.extend({
   initialize(opts, config) {
     this.config = config || {};
   },
-
 
   /**
    * Add new model to the collection
@@ -34,34 +32,32 @@ module.exports = Backbone.View.extend({
     var frag = fragment || null;
     var itemView = this.itemView;
     var typeField = model.get(this.itemType);
-    if(this.itemsView && this.itemsView[typeField]){
+    if (this.itemsView && this.itemsView[typeField]) {
       itemView = this.itemsView[typeField];
     }
-    var view = new itemView({
-      model,
-      config: this.config
-    }, this.config);
+    var view = new itemView(
+      {
+        model,
+        config: this.config
+      },
+      this.config
+    );
     var rendered = view.render().el;
 
-    if(frag)
-      frag.appendChild(rendered);
-    else
-      this.$el.append(rendered);
+    if (frag) frag.appendChild(rendered);
+    else this.$el.append(rendered);
   },
-
-
 
   render() {
     var frag = document.createDocumentFragment();
     this.$el.empty();
 
-    if(this.collection.length)
-      this.collection.each(function(model){
+    if (this.collection.length)
+      this.collection.each(function(model) {
         this.add(model, frag);
       }, this);
 
     this.$el.append(frag);
     return this;
-  },
-
+  }
 });

@@ -1,10 +1,9 @@
 var Backbone = require('backbone');
 
 module.exports = Backbone.Model.extend({
-
   idAttribute: 'name',
 
-  defaults :{
+  defaults: {
     name: '',
 
     // Width to set for the editor iframe
@@ -15,7 +14,7 @@ module.exports = Backbone.Model.extend({
 
     // The width which will be used in media queries,
     // If empty the width will be used
-    widthMedia: null,
+    widthMedia: null
   },
 
   initialize() {
@@ -23,5 +22,4 @@ module.exports = Backbone.Model.extend({
       this.set('widthMedia', this.get('width'));
     }
   }
-
 });

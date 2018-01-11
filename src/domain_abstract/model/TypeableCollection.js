@@ -40,13 +40,15 @@ export default {
     for (let i = 0; i < types.length; i++) {
       const type = types[i];
       let typeFound = type.isType(value);
-      typeFound = typeof typeFound == 'boolean' && typeFound ?
-        {type: type.id} : typeFound;
+      typeFound =
+        typeof typeFound == 'boolean' && typeFound
+          ? { type: type.id }
+          : typeFound;
 
       if (typeFound) {
         return {
           type,
-          attributes: typeFound,
+          attributes: typeFound
         };
       }
     }
@@ -54,8 +56,8 @@ export default {
     // If, for any reason, the type is not found it'll return the base one
     return {
       type: this.getBaseType(),
-      attributes: value,
-    }
+      attributes: value
+    };
   },
 
   /**
@@ -109,7 +111,7 @@ export default {
     const baseType = this.getBaseType();
     const ModelInst = type ? type.model : baseType.model;
     const ViewInst = type ? type.view : baseType.view;
-    let {model, view, isType} = definition;
+    let { model, view, isType } = definition;
     model = model instanceof Model ? model : ModelInst.extend(model || {});
     view = view instanceof View ? view : ViewInst.extend(view || {});
 
@@ -121,12 +123,14 @@ export default {
       definition.id = id;
       definition.model = model;
       definition.view = view;
-      definition.isType = isType || function(value) {
-        if (value && value.type == id) {
-          return true;
-        }
-      };
+      definition.isType =
+        isType ||
+        function(value) {
+          if (value && value.type == id) {
+            return true;
+          }
+        };
       this.getTypes().unshift(definition);
     }
   }
-}
+};

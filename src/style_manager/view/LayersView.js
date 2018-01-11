@@ -2,10 +2,9 @@ var Backbone = require('backbone');
 var LayerView = require('./LayerView');
 
 module.exports = Backbone.View.extend({
-
   initialize(o) {
     this.config = o.config || {};
-    this.stackModel  = o.stackModel;
+    this.stackModel = o.stackModel;
     this.preview = o.preview;
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
@@ -15,19 +14,21 @@ module.exports = Backbone.View.extend({
     let collection = this.collection;
     this.className = `${pfx}layers ${ppfx}field`;
     this.listenTo(collection, 'add', this.addTo);
-    this.listenTo(collection, 'deselectAll', this.deselectAll );
+    this.listenTo(collection, 'deselectAll', this.deselectAll);
     this.listenTo(collection, 'reset', this.render);
 
     var em = this.config.em || '';
     var utils = em ? em.get('Utils') : '';
 
-    this.sorter = utils ? new utils.Sorter({
-      container: this.el,
-      ignoreViewChildren: 1,
-      containerSel: `.${pfx}layers`,
-      itemSel: `.${pfx}layer`,
-      pfx: this.config.pStylePrefix,
-    }) : '';
+    this.sorter = utils
+      ? new utils.Sorter({
+          container: this.el,
+          ignoreViewChildren: 1,
+          containerSel: `.${pfx}layers`,
+          itemSel: `.${pfx}layer`,
+          pfx: this.config.pStylePrefix
+        })
+      : '';
 
     // For the Sorter
     collection.view = this;
@@ -42,7 +43,7 @@ module.exports = Backbone.View.extend({
    * @return Object
    * */
   addTo(model) {
-    var i  = this.collection.indexOf(model);
+    var i = this.collection.indexOf(model);
     this.addToCollection(model, null, i);
   },
 
@@ -61,37 +62,39 @@ module.exports = Backbone.View.extend({
     const sorter = this.sorter;
     const propsConfig = this.propsConfig;
 
-    if(typeof this.preview !== 'undefined'){
+    if (typeof this.preview !== 'undefined') {
       model.set('preview', this.preview);
     }
 
     var view = new LayerView({
-        model,
-        config,
-        sorter,
-        stackModel,
-        propsConfig
+      model,
+      config,
+      sorter,
+      stackModel,
+      propsConfig
     });
     var rendered = view.render().el;
 
     if (fragment) {
       fragment.appendChild(rendered);
     } else {
-      if(typeof index != 'undefined'){
-        var method  = 'before';
+      if (typeof index != 'undefined') {
+        var method = 'before';
         // If the added model is the last of collection
         // need to change the logic of append
-        if(this.$el.children().length == index){
+        if (this.$el.children().length == index) {
           index--;
           method = 'after';
         }
         // In case the added is new in the collection index will be -1
-        if(index < 0){
+        if (index < 0) {
           this.$el.append(rendered);
-        }else
-          this.$el.children().eq(index)[method](rendered);
-      }else
-        this.$el.append(rendered);
+        } else
+          this.$el
+            .children()
+            .eq(index)
+            [method](rendered);
+      } else this.$el.append(rendered);
     }
 
     return rendered;
@@ -103,22 +106,21 @@ module.exports = Backbone.View.extend({
    * @return void
    * */
   deselectAll() {
-    this.$el.find('.'+ this.pfx  +'layer').removeClass(this.pfx + 'active');
+    this.$el.find('.' + this.pfx + 'layer').removeClass(this.pfx + 'active');
   },
 
   render() {
     var fragment = document.createDocumentFragment();
     this.$el.empty();
 
-    this.collection.each(function(model){
+    this.collection.each(function(model) {
       this.addToCollection(model, fragment);
-    },this);
+    }, this);
 
     this.$el.append(fragment);
     this.$el.attr('class', this.className);
 
-    if(this.sorter)
-      this.sorter.plh = null;
+    if (this.sorter) this.sorter.plh = null;
 
     return this;
   }

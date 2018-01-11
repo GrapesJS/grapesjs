@@ -1,5 +1,4 @@
 module.exports = {
-
   run(editor, sender, opts) {
     var el = (opts && opts.el) || '';
     var canvas = editor.Canvas;
@@ -11,7 +10,7 @@ module.exports = {
     options.posFetcher = canvasView.getElementPos.bind(canvasView);
 
     // Create the resizer for the canvas if not yet created
-    if(!dragger) {
+    if (!dragger) {
       dragger = editor.Utils.Dragger.init(options);
       this.dragger = dragger;
     }
@@ -27,8 +26,6 @@ module.exports = {
   },
 
   stop() {
-    if(this.canvasResizer)
-      this.canvasResizer.blur();
-  },
-
+    if (this.canvasResizer) this.canvasResizer.blur();
+  }
 };

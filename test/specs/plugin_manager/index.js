@@ -1,9 +1,7 @@
 const PluginManager = require('plugin_manager');
 
 describe('PluginManager', () => {
-
   describe('Main', () => {
-
     var obj;
     var val;
     var testPlugin = e => {
@@ -37,7 +35,5 @@ describe('PluginManager', () => {
       plugin('tval');
       expect(val).toEqual('tval');
     });
-
   });
-
 });

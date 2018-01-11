@@ -1,5 +1,4 @@
 module.exports = {
-
   stylePrefix: 'cv-',
 
   // Coming soon
@@ -31,6 +30,5 @@ module.exports = {
    *  return ComponentModel.getName();
    * }
    */
-  customBadgeLabel: '',
-
+  customBadgeLabel: ''
 };

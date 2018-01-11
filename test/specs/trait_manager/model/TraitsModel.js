@@ -3,9 +3,7 @@ const Component = require('dom_components/model/Component');
 
 module.exports = {
   run() {
-
     describe('TraitModels', () => {
-
       var obj;
       var target;
       var modelName = 'title';
@@ -14,7 +12,7 @@ module.exports = {
         target = new Component();
         obj = new Trait({
           name: modelName,
-          target,
+          target
         });
       });
 
@@ -25,7 +23,6 @@ module.exports = {
       it('Object exists', () => {
         expect(Trait).toExist();
       });
-
     });
   }
-}
+};
