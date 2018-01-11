@@ -1,4 +1,8 @@
-import { on, off } from 'utils/mixins';
+/*
+  This class makes the canvas droppable
+ */
+
+import { on } from 'utils/mixins';
 import { bindAll } from 'underscore';
 
 export default class Droppable {
@@ -25,35 +29,33 @@ export default class Droppable {
     return this;
   }
 
-  endDrop(cancel) {
+  endDrop(cancel, ev) {
+    const em = this.em;
     this.counter = 0;
     this.over = 0;
-    console.log('DROP END');
     // force out like in BlockView
     const sorter = this.sorter;
     cancel && (sorter.moved = 0);
-    this.em.set('dragContent', '');
+    em.set('dragContent', '');
     sorter.endMove();
+    em.trigger('canvas:dragend', ev);
   }
 
   handleDragLeave(ev) {
-    this.updateCounter(-1);
+    this.updateCounter(-1, ev);
   }
 
-  updateCounter(value) {
+  updateCounter(value, ev) {
     this.counter += value;
-    if (this.counter === 0) {
-      this.endDrop(1);
-    }
+    this.counter === 0 && this.endDrop(1, ev);
   }
 
   handleDragEnter(ev) {
     const em = this.em;
-    this.updateCounter(1);
+    const dt = ev.dataTransfer;
+    this.updateCounter(1, ev);
     if (this.over) return;
     this.over = 1;
-    console.log('IM IN');
-
     const utils = em.get('Utils');
     const canvas = em.get('Canvas');
     this.sorter = new utils.Sorter({
@@ -72,9 +74,10 @@ export default class Droppable {
       onEndMove: () => em.runDefault(),
       document: canvas.getFrameEl().contentDocument
     });
-    const content = this.getContentByData(ev.dataTransfer) || '<br>';
+    const content = this.getContentByData(dt).content || '<br>';
     this.sorter.setDropContent(content); // should not be empty
     this.sorter.startSort(this.el);
+    em.trigger('canvas:dragenter', dt, content);
   }
 
   /**
@@ -83,58 +86,62 @@ export default class Droppable {
    */
   handleDragOver(ev) {
     ev.preventDefault();
+    this.em.trigger('canvas:dragover', ev);
   }
 
   handleDrop(ev) {
     ev.preventDefault();
-    var content = this.getContentByData(ev.dataTransfer);
+    const dt = ev.dataTransfer;
+    const content = this.getContentByData(dt).content;
     ev.target.style.border = '';
+
     if (content) {
       this.sorter.setDropContent(content);
     } else {
       this.sorter.moved = 0;
     }
-    this.endDrop();
+
+    this.endDrop(0, ev);
+    this.em.trigger('canvas:drop', dt, content);
   }
 
   getContentByData(dataTransfer) {
-    let result = dataTransfer.getData('text');
-    let dragContent = this.em.get('dragContent');
+    const em = this.em;
     const types = dataTransfer.types;
     const files = dataTransfer.files;
-    console.log('Files', files);
-
-    const items = dataTransfer.items;
-    for (var i = 0; i < items.length; i++) console.log('DataType', items[i]);
+    const dragContent = em.get('dragContent'); // Used by blocks
+    let content = dataTransfer.getData('text');
 
     if (files.length) {
-      result = [];
+      content = [];
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        result.push({
+        content.push({
           type: 'image',
           attributes: { alt: file.name }
         });
       }
-      const fu = this.em.get('AssetManager').FileUploader();
+      const fu = em.get('AssetManager').FileUploader();
       fu.uploadFile({ dataTransfer }, res => console.log('RES upload', res));
     } else if (types.indexOf('text/html') >= 0) {
-      result = dataTransfer.getData('text/html').replace(/<\/?meta[^>]*>/g, '');
+      content = dataTransfer
+        .getData('text/html')
+        .replace(/<\/?meta[^>]*>/g, '');
     } else if (types.indexOf('text/uri-list') >= 0) {
-      result = {
+      content = {
         type: 'link',
-        attributes: { href: result },
-        content: result
+        attributes: { href: content },
+        content: content
       };
     } else if (dragContent) {
-      result = dragContent;
+      content = dragContent;
     } else {
-      result = result && `<div>${result}</div>`;
+      content = content && `<div>${content}</div>`;
     }
 
-    //this.uploadFile(e);
-    console.log('CONTENT', result);
-    // TODO result = clbContent(result);
+    const result = { content, dragContent };
+    em.trigger('canvas:dragdata', dataTransfer, result);
+
     return result;
   }
 }
