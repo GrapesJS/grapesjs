@@ -691,6 +691,15 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     /**
+     * Get the DOM element of the model. This works only of the
+     * model is alredy rendered
+     * @return {HTMLElement}
+     */
+    getEl() {
+      return this.view && this.view.el;
+    },
+
+    /**
      * Return script in string format, cleans 'function() {..' from scripts
      * if it's a function
      * @param {string|Function} script

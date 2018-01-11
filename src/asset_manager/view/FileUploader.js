@@ -290,7 +290,8 @@ module.exports = Backbone.View.extend(
            */
 
             /*
-            // Show local video files
+            // Show local video files, http://jsfiddle.net/dsbonev/cCCZ2/embedded/result,js,html,css/
+            var URL = window.URL || window.webkitURL
             var file = this.files[0]
              var type = file.type
              var videoNode = document.createElement('video');

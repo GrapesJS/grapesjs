@@ -1,13 +1,14 @@
 import { on, off } from 'utils/mixins';
 import { bindAll } from 'underscore';
 
-export class Droppable {
+export default class Droppable {
   constructor(em) {
     this.em = em;
-    this.el = this.em
+    const el = em
       .get('DomComponents')
       .getWrapper()
       .getEl();
+    this.el = el;
     this.counter = 0;
     bindAll(
       this,
@@ -47,32 +48,29 @@ export class Droppable {
   }
 
   handleDragEnter(ev) {
+    const em = this.em;
     this.updateCounter(1);
     if (this.over) return;
     this.over = 1;
     console.log('IM IN');
 
-    var utils = this.em.get('Utils');
-    var canvas = this.em.get('Canvas');
+    const utils = em.get('Utils');
+    const canvas = em.get('Canvas');
     this.sorter = new utils.Sorter({
+      em,
+      wmargin: 1,
+      nested: 1,
+      canvasRelative: 1,
+      direction: 'a',
       container: canvas.getBody(),
       placer: canvas.getPlacerEl(),
       eventMoving: 'mousemove dragover',
       containerSel: '*',
       itemSel: '*',
       pfx: 'gjs-',
-      onStart: () => {
-        this.em.stopDefault();
-      },
-      onEndMove: () => {
-        this.em.runDefault();
-      },
-      document: canvas.getFrameEl().contentDocument,
-      direction: 'a',
-      wmargin: 1,
-      nested: 1,
-      em,
-      canvasRelative: 1
+      onStart: () => em.stopDefault(),
+      onEndMove: () => em.runDefault(),
+      document: canvas.getFrameEl().contentDocument
     });
     const content = this.getContentByData(ev.dataTransfer) || '<br>';
     this.sorter.setDropContent(content); // should not be empty

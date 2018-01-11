@@ -1,4 +1,5 @@
 import { on, off } from 'utils/mixins';
+import Droppable from 'utils/Droppable';
 
 module.exports = () => {
   var c = {},
@@ -391,6 +392,10 @@ module.exports = () => {
 
     getScrollListeners() {
       return [this.getFrameEl().contentWindow, this.getElement()];
+    },
+
+    postRender() {
+      this.droppable = new Droppable(c.em);
     },
 
     /**
