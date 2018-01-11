@@ -77,7 +77,7 @@
   "scripts": {
     "lint": "eslint src",
     "check": "npm run lint && npm run test",
-    "precommit": "npm run format && git add",
+    "precommit": "npm run format && git add .",
     "build": "npm run check && npm run v:patch && npm run build-dev && webpack --env=prod",
     "build-n": "npm run check && npm run build:css && webpack --env=prod",
     "build-dev": "webpack --env=dev && npm run build:css",

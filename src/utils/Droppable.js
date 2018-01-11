@@ -2,12 +2,20 @@ import { on, off } from 'utils/mixins';
 import { bindAll } from 'underscore';
 
 export class Droppable {
-
   constructor(em) {
     this.em = em;
-    this.el = this.em.get('DomComponents').getWrapper().getEl();
+    this.el = this.em
+      .get('DomComponents')
+      .getWrapper()
+      .getEl();
     this.counter = 0;
-    bindAll(this, 'handleDragEnter', 'handleDragOver', 'handleDrop', 'handleDragLeave');
+    bindAll(
+      this,
+      'handleDragEnter',
+      'handleDragOver',
+      'handleDrop',
+      'handleDragLeave'
+    );
     on(el, 'dragenter', this.handleDragEnter);
     on(el, 'dragover', this.handleDragOver);
     on(el, 'drop', this.handleDrop);
@@ -38,13 +46,11 @@ export class Droppable {
     }
   }
 
-
   handleDragEnter(ev) {
     this.updateCounter(1);
     if (this.over) return;
     this.over = 1;
     console.log('IM IN');
-
 
     var utils = this.em.get('Utils');
     var canvas = this.em.get('Canvas');
@@ -55,17 +61,21 @@ export class Droppable {
       containerSel: '*',
       itemSel: '*',
       pfx: 'gjs-',
-      onStart: () => { this.em.stopDefault() },
-      onEndMove: () => { this.em.runDefault() },
+      onStart: () => {
+        this.em.stopDefault();
+      },
+      onEndMove: () => {
+        this.em.runDefault();
+      },
       document: canvas.getFrameEl().contentDocument,
       direction: 'a',
       wmargin: 1,
       nested: 1,
       em,
-      canvasRelative: 1,
+      canvasRelative: 1
     });
     const content = this.getContentByData(ev.dataTransfer) || '<br>';
-    this.sorter.setDropContent(content);// should not be empty
+    this.sorter.setDropContent(content); // should not be empty
     this.sorter.startSort(this.el);
   }
 
@@ -76,7 +86,6 @@ export class Droppable {
   handleDragOver(ev) {
     ev.preventDefault();
   }
-
 
   handleDrop(ev) {
     ev.preventDefault();
@@ -112,13 +121,13 @@ export class Droppable {
       const fu = this.em.get('AssetManager').FileUploader();
       fu.uploadFile({ dataTransfer }, res => console.log('RES upload', res));
     } else if (types.indexOf('text/html') >= 0) {
-      result = dataTransfer.getData('text/html').replace(/<\/?meta[^>]*>/g,'');
+      result = dataTransfer.getData('text/html').replace(/<\/?meta[^>]*>/g, '');
     } else if (types.indexOf('text/uri-list') >= 0) {
       result = {
         type: 'link',
         attributes: { href: result },
-        content: result,
-      }
+        content: result
+      };
     } else if (dragContent) {
       result = dragContent;
     } else {
