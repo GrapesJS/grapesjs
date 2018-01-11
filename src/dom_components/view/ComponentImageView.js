@@ -18,6 +18,27 @@ module.exports = ComponentView.extend({
     const config = this.config;
     config.modal && (this.modal = config.modal);
     config.am && (this.am = config.am);
+    this.uploadFile();
+  },
+
+  uploadFile() {
+    const model = this.model;
+    const file = model.get('file');
+
+    if (file) {
+      const fu = this.em.get('AssetManager').FileUploader();
+      fu.uploadFile(
+        {
+          dataTransfer: { files: [file] }
+        },
+        res => {
+          const obj = res && res.data && res.data[0];
+          const src = obj && obj.src;
+          src && model.set({ src });
+        }
+      );
+      model.set('file', '');
+    }
   },
 
   /**

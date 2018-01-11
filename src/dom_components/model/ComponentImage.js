@@ -12,7 +12,10 @@ module.exports = Component.extend(
       editable: 1,
       highlightable: 0,
       resizable: 1,
-      traits: ['alt']
+      traits: ['alt'],
+
+      // File to load asynchronously once the model is rendered
+      file: ''
     },
 
     initialize(o, opt) {
