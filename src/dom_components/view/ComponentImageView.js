@@ -18,10 +18,13 @@ module.exports = ComponentView.extend({
     const config = this.config;
     config.modal && (this.modal = config.modal);
     config.am && (this.am = config.am);
-    this.uploadFile();
+    this.fetchFile();
   },
 
-  uploadFile() {
+  /**
+   * Fetch file if exists
+   */
+  fetchFile() {
     const model = this.model;
     const file = model.get('file');
 
