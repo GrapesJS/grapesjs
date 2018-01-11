@@ -71,3 +71,18 @@
   width: auto;
   padding: 0;
 }
+
+.#{$app-prefix}blocks-search {
+  width: calc(100% - 10px);
+  margin: 0 5px 5px 5px;
+  background-color: transparent;
+  color: $fontColor;
+  border: none;
+  height: 30px;
+  font-size: 1rem;
+  border-bottom: 3px solid #333333;
+
+  &::placeholder {
+    color: $fontColor;
+  }
+}
