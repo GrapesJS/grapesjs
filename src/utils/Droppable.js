@@ -4,7 +4,10 @@ import { bindAll } from 'underscore';
 export class Droppable {
   constructor(em) {
     this.em = em;
-    this.el = this.em.get('DomComponents').getWrapper().getEl();
+    this.el = this.em
+      .get('DomComponents')
+      .getWrapper()
+      .getEl();
     this.counter = 0;
     bindAll(
       this,
