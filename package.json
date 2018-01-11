@@ -35,6 +35,7 @@
     "husky": "^0.14.3",
     "istanbul": "^0.4.2",
     "jsdom": "^11.2.0",
+    "lint-staged": "^6.0.0",
     "mocha": "^3.1.2",
     "node-sass": "^4.5.3",
     "prettier": "1.10.1",
@@ -74,10 +75,13 @@
       "transform-object-rest-spread"
     ]
   },
+  "lint-staged": {
+    "./{src,test}/**/*.js": ["prettier --single-quote --write", "git add"]
+  },
   "scripts": {
     "lint": "eslint src",
     "check": "npm run lint && npm run test",
-    "precommit": "npm run format && git add .",
+    "precommit": "lint-staged",
     "build": "npm run check && npm run v:patch && npm run build-dev && webpack --env=prod",
     "build-n": "npm run check && npm run build:css && webpack --env=prod",
     "build-dev": "webpack --env=dev && npm run build:css",
