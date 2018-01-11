@@ -119,7 +119,7 @@ module.exports = Backbone.View.extend({
           id: category,
           label: category
         };
-      } else if (typeof category == 'object') {
+      } else if (typeof category === 'object') {
         category.id = category.label;
       }
 
