@@ -116,13 +116,16 @@ export default class Droppable {
       content = [];
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        content.push({
-          type: 'image',
-          attributes: { alt: file.name }
-        });
+        const type = file.type.split('/')[0];
+
+        if (type == 'image') {
+          content.push({
+            type,
+            file,
+            attributes: { alt: file.name }
+          });
+        }
       }
-      const fu = em.get('AssetManager').FileUploader();
-      fu.uploadFile({ dataTransfer }, res => console.log('RES upload', res));
     } else if (types.indexOf('text/html') >= 0) {
       content = dataTransfer
         .getData('text/html')
