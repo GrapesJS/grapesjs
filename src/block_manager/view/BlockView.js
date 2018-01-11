@@ -2,7 +2,8 @@ import { on, off } from 'utils/mixins';
 
 module.exports = Backbone.View.extend({
   events: {
-    mousedown: 'startDrag'
+    mousedown: 'startDrag',
+    dragstart: 'handleDragStart'
   },
 
   initialize(o, config = {}) {
@@ -17,21 +18,22 @@ module.exports = Backbone.View.extend({
    * @private
    */
   startDrag(e) {
+    const config = this.config;
     //Right or middel click
-    if (e.button !== 0) {
-      return;
-    }
-
-    if (!this.config.getSorter) {
-      return;
-    }
-
-    this.config.em.refreshCanvas();
-    var sorter = this.config.getSorter();
+    if (e.button !== 0 || !config.getSorter || this.el.draggable) return;
+    config.em.refreshCanvas();
+    const sorter = config.getSorter();
     sorter.setDragHelper(this.el, e);
     sorter.setDropContent(this.model.get('content'));
     sorter.startSort(this.el);
     on(document, 'mouseup', this.endDrag);
+  },
+
+  handleDragStart(ev) {
+    const content = this.model.get('content');
+    // Can't put the content in dataTransfer as it will not be available
+    // on `dragenter` event for security reason
+    this.config.em.set('dragContent', content);
   },
 
   /**
@@ -58,6 +60,7 @@ module.exports = Backbone.View.extend({
     el.innerHTML = `<div class="${className}-label">${this.model.get(
       'label'
     )}</div>`;
+    el.setAttribute('draggable', true);
     return this;
   }
 });
