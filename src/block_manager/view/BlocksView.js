@@ -122,7 +122,7 @@ module.exports = Backbone.View.extend({
       } else if (typeof category == 'object') {
         category.id = category.label;
       }
-      
+
       var catModel = this.categories.add(category);
       var catId = catModel.get('id');
       var catView = this.renderedCategories[catId];
