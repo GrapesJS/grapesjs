@@ -32,6 +32,8 @@ module.exports = Backbone.View.extend({
 
   handleDragStart(ev) {
     const content = this.model.get('content');
+    // Firefox requires setData
+    ev.dataTransfer.setData('text', null);
     // Can't put the content in dataTransfer as it will not be available
     // on `dragenter` event for security reason
     this.config.em.set('dragContent', content);

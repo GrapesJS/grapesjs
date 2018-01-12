@@ -60,7 +60,7 @@ module.exports = {
   jsInHtml: true,
 
   // Enable native HTML5 drag and drop
-  nativeDnD: 0,
+  nativeDnD: 1,
 
   // Show the wrapper component in the final code, eg. in editor.getHtml()
   exportWrapper: 0,
