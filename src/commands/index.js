@@ -147,16 +147,20 @@ module.exports = () => {
           const event = opts && opts.event;
           const sel = ed.getSelected();
           const toolbarStyle = ed.Canvas.getToolbarEl().style;
+          const nativeDrag = event.type == 'dragstart';
 
-          setTimeout(() => {
+          const hideTlb = () => {
             toolbarStyle.display = 'none';
             em.stopDefault();
-          }, 0);
+          };
 
           if (!sel || !sel.get('draggable')) {
             console.warn('The element is not draggable');
             return;
           }
+
+          // Without setTimeout the ghost image disappears
+          nativeDrag ? setTimeout(() => hideTlb, 0) : hideTlb();
 
           const onStart = (e, opts) => {
             console.log('start mouse pos ', opts.start);
@@ -190,7 +194,7 @@ module.exports = () => {
               }
             });
           } else {
-            if (event.type == 'dragstart') {
+            if (nativeDrag) {
               event.dataTransfer.setDragImage(sel.view.el, 0, 0);
               //sel.set('status', 'freezed');
             }
