@@ -1,4 +1,4 @@
-import { on, off } from 'utils/mixins';
+import { on, off, hasDnd } from 'utils/mixins';
 
 module.exports = Backbone.View.extend({
   events: {
@@ -7,6 +7,7 @@ module.exports = Backbone.View.extend({
   },
 
   initialize(o, config = {}) {
+    this.em = config.em;
     this.config = config;
     this.endDrag = this.endDrag.bind(this);
     this.ppfx = config.pStylePrefix || '';
@@ -59,7 +60,7 @@ module.exports = Backbone.View.extend({
     const label = this.model.get('label');
     el.className += ` ${className} ${pfx}one-bg ${pfx}four-color-h`;
     el.innerHTML = `<div class="${className}-label">${label}</div>`;
-    el.setAttribute('draggable', true);
+    hasDnd(this.em) && el.setAttribute('draggable', true);
     return this;
   }
 });

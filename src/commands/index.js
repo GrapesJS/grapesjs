@@ -190,6 +190,7 @@ module.exports = () => {
               }
             });
           } else {
+            console.log(em.get('Config'));
             if (event.type == 'dragstart') {
               event.dataTransfer.setDragImage(sel.view.el, 0, 0);
               //sel.set('status', 'freezed');
