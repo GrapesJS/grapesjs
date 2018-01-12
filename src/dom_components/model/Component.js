@@ -7,7 +7,7 @@ import {
   isString,
   keys
 } from 'underscore';
-import { shallowDiff } from 'utils/mixins';
+import { shallowDiff, hasDnd } from 'utils/mixins';
 import Styleable from 'domain_abstract/model/Styleable';
 
 const Backbone = require('backbone');
@@ -498,7 +498,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
         if (model.get('draggable')) {
           tb.push({
             attributes: { class: 'fa fa-arrows', draggable: true },
-            events: { dragstart: 'execCommand' },
+            events: hasDnd(this.em) ? { dragstart: 'execCommand' } : '',
             command: 'tlb-move'
           });
         }

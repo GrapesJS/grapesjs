@@ -1,4 +1,4 @@
-import { on, off } from 'utils/mixins';
+import { on, off, hasDnd } from 'utils/mixins';
 import Droppable from 'utils/Droppable';
 
 module.exports = () => {
@@ -395,7 +395,7 @@ module.exports = () => {
     },
 
     postRender() {
-      this.droppable = new Droppable(c.em);
+      if (hasDnd(c.em)) this.droppable = new Droppable(c.em);
     },
 
     /**
