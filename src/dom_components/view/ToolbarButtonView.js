@@ -1,8 +1,12 @@
 var Backbone = require('backbone');
 
 module.exports = Backbone.View.extend({
-  events: {
-    mousedown: 'handleClick'
+  events() {
+    return (
+      this.model.get('events') || {
+        mousedown: 'handleClick'
+      }
+    );
   },
 
   attributes() {
@@ -16,6 +20,10 @@ module.exports = Backbone.View.extend({
   handleClick(event) {
     event.preventDefault();
     event.stopPropagation();
+    this.execCommand(event);
+  },
+
+  execCommand(event) {
     const opts = { event };
     const command = this.model.get('command');
     const editor = this.editor;

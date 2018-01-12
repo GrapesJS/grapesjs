@@ -278,7 +278,7 @@ module.exports = Backbone.View.extend({
     }
 
     on(container, 'mousemove dragover', this.onMove);
-    on(docs, 'mouseup', this.endMove);
+    on(docs, 'mouseup dragend', this.endMove);
     on(docs, 'keydown', this.rollback);
     onStart && onStart();
 

@@ -497,7 +497,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
         }
         if (model.get('draggable')) {
           tb.push({
-            attributes: { class: 'fa fa-arrows' },
+            attributes: { class: 'fa fa-arrows', draggable: true },
+            events: { dragstart: 'execCommand' },
             command: 'tlb-move'
           });
         }
