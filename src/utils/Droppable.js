@@ -82,8 +82,11 @@ export default class Droppable {
       },
       document: canvas.getFrameEl().contentDocument
     });
-    const content = this.getContentByData(dt).content || '<br>';
-    this.sorter.setDropContent(content); // should not be empty
+    // For security reason I can't read the drag data on dragenter, but
+    // as I need it for the Sorter context I will use `dragContent` or just
+    // any not empty element
+    const content = em.get('dragContent') || '<br>';
+    this.sorter.setDropContent(content);
     this.sorter.startSort(this.el);
     em.trigger('canvas:dragenter', dt, content);
   }

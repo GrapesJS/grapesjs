@@ -4,7 +4,8 @@ import { on, off, hasDnd } from 'utils/mixins';
 module.exports = Backbone.View.extend({
   events: {
     mousedown: 'startDrag',
-    dragstart: 'handleDragStart'
+    dragstart: 'handleDragStart',
+    dragend: 'handleDragEnd'
   },
 
   initialize(o, config = {}) {
@@ -36,8 +37,15 @@ module.exports = Backbone.View.extend({
     const isObj = isObject(content);
     const type = isObj ? 'text/json' : 'text';
     const data = isObj ? JSON.stringify(content) : content;
-    // Note: data are not available on dragenter for security reason
+
+    // Note: data are not available on dragenter for security reason,
+    // but will use dragContent as I need it for the Sorter context
     ev.dataTransfer.setData(type, data);
+    this.em.set('dragContent', content);
+  },
+
+  handleDragEnd() {
+    this.em.set('dragContent', '');
   },
 
   /**
