@@ -142,13 +142,25 @@ module.exports = () => {
 
       defaultCommands['tlb-move'] = {
         run(ed, sender, opts) {
-          var sel = ed.getSelected();
-          var dragger;
+          let dragger;
+          const em = ed.getModel();
+          const event = opts && opts.event;
+          const sel = ed.getSelected();
+          const toolbarStyle = ed.Canvas.getToolbarEl().style;
+          const nativeDrag = event.type == 'dragstart';
+
+          const hideTlb = () => {
+            toolbarStyle.display = 'none';
+            em.stopDefault();
+          };
 
           if (!sel || !sel.get('draggable')) {
             console.warn('The element is not draggable');
             return;
           }
+
+          // Without setTimeout the ghost image disappears
+          nativeDrag ? setTimeout(() => hideTlb, 0) : hideTlb();
 
           const onStart = (e, opts) => {
             console.log('start mouse pos ', opts.start);
@@ -160,7 +172,7 @@ module.exports = () => {
 
           const onEnd = (e, opts) => {
             em.runDefault();
-            em.set('selectedComponent', sel);
+            em.setSelected(sel);
             sel.emitUpdate();
             dragger && dragger.blur();
           };
@@ -170,24 +182,24 @@ module.exports = () => {
             console.log('Current ', opts.current);
           };
 
-          var toolbarEl = ed.Canvas.getToolbarEl();
-          toolbarEl.style.display = 'none';
-          var em = ed.getModel();
-          em.stopDefault();
-
           if (em.get('designerMode')) {
             // TODO move grabbing func in editor/canvas from the Sorter
             dragger = editor.runCommand('drag', {
               el: sel.view.el,
               options: {
-                event: opts && opts.event,
+                event,
                 onStart,
                 onDrag,
                 onEnd
               }
             });
           } else {
-            var cmdMove = ed.Commands.get('move-comp');
+            if (nativeDrag) {
+              event.dataTransfer.setDragImage(sel.view.el, 0, 0);
+              //sel.set('status', 'freezed');
+            }
+
+            const cmdMove = ed.Commands.get('move-comp');
             cmdMove.onEndMoveFromModel = onEnd;
             cmdMove.initSorterFromModel(sel);
           }

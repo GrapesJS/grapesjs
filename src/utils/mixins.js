@@ -90,9 +90,17 @@ const normalizeFloat = (value, step = 1, valueDef = 0) => {
   return stepDecimals ? parseFloat(value.toFixed(stepDecimals)) : value;
 };
 
+const hasDnd = em => {
+  return (
+    'draggable' in document.createElement('i') &&
+    (em ? em.get('Config').nativeDnD : 1)
+  );
+};
+
 export {
   on,
   off,
+  hasDnd,
   upFirst,
   matches,
   camelCase,

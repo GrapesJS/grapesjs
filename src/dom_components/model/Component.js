@@ -7,7 +7,7 @@ import {
   isString,
   keys
 } from 'underscore';
-import { shallowDiff } from 'utils/mixins';
+import { shallowDiff, hasDnd } from 'utils/mixins';
 import Styleable from 'domain_abstract/model/Styleable';
 
 const Backbone = require('backbone');
@@ -497,7 +497,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
         }
         if (model.get('draggable')) {
           tb.push({
-            attributes: { class: 'fa fa-arrows' },
+            attributes: { class: 'fa fa-arrows', draggable: true },
+            //events: hasDnd(this.em) ? { dragstart: 'execCommand' } : '',
             command: 'tlb-move'
           });
         }
@@ -688,6 +689,15 @@ const Component = Backbone.Model.extend(Styleable).extend(
     getId() {
       let attrs = this.get('attributes') || {};
       return attrs.id || this.ccid || this.cid;
+    },
+
+    /**
+     * Get the DOM element of the model. This works only of the
+     * model is alredy rendered
+     * @return {HTMLElement}
+     */
+    getEl() {
+      return this.view && this.view.el;
     },
 
     /**

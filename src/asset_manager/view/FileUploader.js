@@ -72,7 +72,7 @@ module.exports = Backbone.View.extend(
      * @param  {string} text Response text
      * @private
      */
-    onUploadResponse(text) {
+    onUploadResponse(text, clb) {
       const em = this.config.em;
       const config = this.config;
       const target = this.target;
@@ -84,6 +84,7 @@ module.exports = Backbone.View.extend(
       }
 
       this.onUploadEnd(text);
+      clb && clb(json);
     },
 
     /**
@@ -92,7 +93,7 @@ module.exports = Backbone.View.extend(
      * @return {Promise}
      * @private
      * */
-    uploadFile(e) {
+    uploadFile(e, clb) {
       const files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
       const body = new FormData();
       const config = this.config;
@@ -129,7 +130,7 @@ module.exports = Backbone.View.extend(
                 ? res.text()
                 : res.text().then(text => Promise.reject(text))
           )
-          .then(text => this.onUploadResponse(text))
+          .then(text => this.onUploadResponse(text, clb))
           .catch(err => this.onUploadError(err));
       }
     },
@@ -235,7 +236,7 @@ module.exports = Backbone.View.extend(
     }
   },
   {
-    embedAsBase64: function(e) {
+    embedAsBase64: function(e, clb) {
       // List files dropped
       const files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
       const response = { data: [] };
@@ -267,6 +268,46 @@ module.exports = Backbone.View.extend(
             } else {
               type = file.type;
             }
+
+            /*
+          // Show local video files, http://jsfiddle.net/dsbonev/cCCZ2/embedded/result,js,html,css/
+          var URL = window.URL || window.webkitURL
+          var file = this.files[0]
+          var type = file.type
+          var videoNode = document.createElement('video');
+          var canPlay = videoNode.canPlayType(type) // can use also for 'audio' types
+          if (canPlay === '') canPlay = 'no'
+          var message = 'Can play type "' + type + '": ' + canPlay
+          var isError = canPlay === 'no'
+          displayMessage(message, isError)
+
+          if (isError) {
+            return
+          }
+
+          var fileURL = URL.createObjectURL(file)
+          videoNode.src = fileURL
+           */
+
+            /*
+            // Show local video files, http://jsfiddle.net/dsbonev/cCCZ2/embedded/result,js,html,css/
+            var URL = window.URL || window.webkitURL
+            var file = this.files[0]
+             var type = file.type
+             var videoNode = document.createElement('video');
+             var canPlay = videoNode.canPlayType(type) // can use also for 'audio' types
+             if (canPlay === '') canPlay = 'no'
+             var message = 'Can play type "' + type + '": ' + canPlay
+             var isError = canPlay === 'no'
+             displayMessage(message, isError)
+
+             if (isError) {
+               return
+             }
+
+             var fileURL = URL.createObjectURL(file)
+             videoNode.src = fileURL
+            */
 
             // If it's an image, try to find its size
             if (type === 'image') {
@@ -316,7 +357,7 @@ module.exports = Backbone.View.extend(
       Promise.all(promises).then(
         data => {
           response.data = data;
-          this.onUploadResponse(response);
+          this.onUploadResponse(response, clb);
         },
         error => {
           this.onUploadError(error);

@@ -1,11 +1,14 @@
-import { on, off } from 'utils/mixins';
+import { isObject } from 'underscore';
+import { on, off, hasDnd } from 'utils/mixins';
 
 module.exports = Backbone.View.extend({
   events: {
-    mousedown: 'startDrag'
+    mousedown: 'startDrag',
+    dragstart: 'handleDragStart'
   },
 
   initialize(o, config = {}) {
+    this.em = config.em;
     this.config = config;
     this.endDrag = this.endDrag.bind(this);
     this.ppfx = config.pStylePrefix || '';
@@ -17,21 +20,24 @@ module.exports = Backbone.View.extend({
    * @private
    */
   startDrag(e) {
+    const config = this.config;
     //Right or middel click
-    if (e.button !== 0) {
-      return;
-    }
-
-    if (!this.config.getSorter) {
-      return;
-    }
-
-    this.config.em.refreshCanvas();
-    var sorter = this.config.getSorter();
+    if (e.button !== 0 || !config.getSorter || this.el.draggable) return;
+    config.em.refreshCanvas();
+    const sorter = config.getSorter();
     sorter.setDragHelper(this.el, e);
     sorter.setDropContent(this.model.get('content'));
     sorter.startSort(this.el);
     on(document, 'mouseup', this.endDrag);
+  },
+
+  handleDragStart(ev) {
+    const content = this.model.get('content');
+    const isObj = isObject(content);
+    const type = isObj ? 'text/json' : 'text';
+    const data = isObj ? JSON.stringify(content) : content;
+    // Note: data are not available on dragenter for security reason
+    ev.dataTransfer.setData(type, data);
   },
 
   /**
@@ -54,10 +60,10 @@ module.exports = Backbone.View.extend({
     const el = this.el;
     const pfx = this.ppfx;
     const className = `${pfx}block`;
+    const label = this.model.get('label');
     el.className += ` ${className} ${pfx}one-bg ${pfx}four-color-h`;
-    el.innerHTML = `<div class="${className}-label">${this.model.get(
-      'label'
-    )}</div>`;
+    el.innerHTML = `<div class="${className}-label">${label}</div>`;
+    hasDnd(this.em) && el.setAttribute('draggable', true);
     return this;
   }
 });

@@ -277,8 +277,8 @@ module.exports = Backbone.View.extend({
       srcModel && srcModel.set && srcModel.set('status', 'freezed');
     }
 
-    on(container, 'mousemove', this.onMove);
-    on(docs, 'mouseup', this.endMove);
+    on(container, 'mousemove dragover', this.onMove);
+    on(docs, 'mouseup dragend', this.endMove);
     on(docs, 'keydown', this.rollback);
     onStart && onStart();
 
@@ -906,8 +906,8 @@ module.exports = Backbone.View.extend({
     var created;
     const docs = this.getDocuments();
     const container = this.getContainerEl();
-    off(container, 'mousemove', this.onMove);
-    off(docs, 'mouseup', this.endMove);
+    off(container, 'mousemove dragover', this.onMove);
+    off(docs, 'mouseup dragend', this.endMove);
     off(docs, 'keydown', this.rollback);
     //this.$document.off('mouseup', this.endMove);
     //this.$document.off('keydown', this.rollback);

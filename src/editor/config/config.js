@@ -59,6 +59,9 @@ module.exports = {
   // Return JS of components inside HTML from 'editor.getHtml()'
   jsInHtml: true,
 
+  // Enable native HTML5 drag and drop
+  nativeDnD: 1,
+
   // Show the wrapper component in the final code, eg. in editor.getHtml()
   exportWrapper: 0,
 
