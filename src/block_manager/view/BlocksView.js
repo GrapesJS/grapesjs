@@ -21,7 +21,7 @@ module.exports = Backbone.View.extend({
     this.tac = 'test-tac';
     this.grabbingCls = this.ppfx + 'grabbing';
 
-    if(this.em){
+    if (this.em) {
       this.config.getSorter = this.getSorter;
       this.canvas = this.em.get('Canvas');
     }
@@ -32,9 +32,9 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getSorter() {
-    if(!this.em)
+    if (!this.em)
       return;
-    if(!this.sorter){
+    if (!this.sorter) {
       var utils = this.em.get('Utils');
       var canvas = this.canvas;
       this.sorter = new utils.Sorter({
@@ -79,7 +79,7 @@ module.exports = Backbone.View.extend({
     em.runDefault();
 
     if (model && model.get) {
-      if(model.get('activeOnRender')) {
+      if (model.get('activeOnRender')) {
         model.trigger('active');
         model.set('activeOnRender', 0);
       }
@@ -119,6 +119,8 @@ module.exports = Backbone.View.extend({
           id: category,
           label: category
         };
+      } else if (typeof category === 'object') {
+        category.id = category.label;
       }
 
       var catModel = this.categories.add(category);
@@ -139,7 +141,7 @@ module.exports = Backbone.View.extend({
       return;
     }
 
-    if(frag)
+    if (frag)
       frag.appendChild(rendered);
     else
       this.append(rendered);

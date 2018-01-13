@@ -21,13 +21,13 @@ module.exports = Backbone.View.extend({
     this.iconClass = `${pfx}caret-icon`;
     this.activeClass = `${pfx}open`;
     this.className = `${pfx}block-category`;
-    this.events[`click .${pfx}title`]  = 'toggle';
+    this.events[`click .${pfx}title`] = 'toggle';
     this.listenTo(this.model, 'change:open', this.updateVisibility);
     this.delegateEvents();
   },
 
   updateVisibility() {
-    if(this.model.get('open'))
+    if (this.model.get('open'))
       this.open();
     else
       this.close();
@@ -76,6 +76,7 @@ module.exports = Backbone.View.extend({
       label: this.model.get('label'),
     });
     this.el.className = this.className;
+    this.$el.css({ 'order': this.model.get('order') });
     this.updateVisibility();
     return this;
   },
