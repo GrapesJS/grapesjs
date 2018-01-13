@@ -448,7 +448,7 @@ module.exports = {
     });
     var leftPos = pos.left + pos.elementWidth - pos.targetWidth;
     toolbarStyle.top = pos.top + unit;
-    toolbarStyle.left = leftPos + unit;
+    toolbarStyle.left = (leftPos < 0 ? 0 : leftPos) + unit;
     toolbarStyle.display = origDisp;
   },
 
