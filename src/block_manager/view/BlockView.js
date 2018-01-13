@@ -4,12 +4,7 @@ import { on, off, hasDnd } from 'utils/mixins';
 module.exports = Backbone.View.extend({
   events: {
     mousedown: 'startDrag',
-    dragstart: 'handleDragStart',
-    dragend: 'handleDragEnd'
-  },
-
-  handleDragEnd(ev) {
-    console.log('handleDragEnd');
+    dragstart: 'handleDragStart'
   },
 
   initialize(o, config = {}) {
