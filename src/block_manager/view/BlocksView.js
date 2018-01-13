@@ -1,8 +1,9 @@
-var Backbone = require('backbone');
-var BlockView = require('./BlockView');
-var CategoryView = require('./CategoryView');
+import { isString, isObject } from 'underscore';
 
-module.exports = Backbone.View.extend({
+const BlockView = require('./BlockView');
+const CategoryView = require('./CategoryView');
+
+module.exports = require('backbone').View.extend({
   initialize(opts, config) {
     _.bindAll(this, 'getSorter', 'onDrag', 'onDrop');
     this.config = config || {};
@@ -115,12 +116,12 @@ module.exports = Backbone.View.extend({
 
     // Check for categories
     if (category && this.categories) {
-      if (typeof category == 'string') {
+      if (isString(category)) {
         category = {
           id: category,
           label: category
         };
-      } else if (typeof category === 'object') {
+      } else if (isObject(category) && !category.id) {
         category.id = category.label;
       }
 
