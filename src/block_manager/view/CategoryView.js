@@ -73,6 +73,7 @@ module.exports = Backbone.View.extend({
       label: this.model.get('label')
     });
     this.el.className = this.className;
+    this.$el.css({ order: this.model.get('order') });
     this.updateVisibility();
     return this;
   }
