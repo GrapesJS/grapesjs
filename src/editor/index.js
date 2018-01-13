@@ -10,6 +10,7 @@
  *
  * ## Components
  * * `component:add` - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
+ * * `component:remove` - Triggered when a component is removed, the model is passed as an argument to the callback
  * * `component:clone` - Triggered when a new component is added by a clone command, the model is passed as an argument to the callback
  * * `component:update` - Triggered when a component is updated (moved, styled, etc.), the model is passed as an argument to the callback
  * * `component:update:{propertyName}` - Listen any property change, the model is passed as an argument to the callback
