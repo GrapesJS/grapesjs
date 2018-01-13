@@ -77,6 +77,8 @@ export default class Droppable {
           model.trigger('active');
           model.set('activeOnRender', 0);
         }
+
+        model && em.trigger('canvas:drop', dt, model);
       },
       document: canvas.getFrameEl().contentDocument
     });
@@ -108,7 +110,6 @@ export default class Droppable {
     }
 
     this.endDrop(0, ev);
-    this.em.trigger('canvas:drop', dt, content);
   }
 
   getContentByData(dataTransfer) {

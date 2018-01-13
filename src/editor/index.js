@@ -43,6 +43,10 @@
  * * `storage:store` - Triggered when something is stored to the storage, stored object passed as an argumnet
  * * `storage:end` - After the storage request is ended
  * * `storage:error` - On any error on storage request, passes the error as an argument
+ * ## Canvas
+ * * `canvas:dragenter` - When something is dragged inside the canvas, `DataTransfer` instance passed as an argument
+ * * `canvas:dragover` - When something is dragging on canvas, `DataTransfer` instance passed as an argument
+ * * `canvas:drop` - Something is dropped in canvas, `DataTransfer` instance and the dropped model are passed as arguments
  * ## Selectors
  * * `selector:add` - Triggers when a new selector/class is created
  * ## RTE
