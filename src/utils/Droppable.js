@@ -36,7 +36,6 @@ export default class Droppable {
     // force out like in BlockView
     const sorter = this.sorter;
     cancel && (sorter.moved = 0);
-    //em.set('dragContent', '');
     sorter.endMove();
     em.trigger('canvas:dragend', ev);
   }
@@ -71,7 +70,14 @@ export default class Droppable {
       itemSel: '*',
       pfx: 'gjs-',
       onStart: () => em.stopDefault(),
-      onEndMove: () => em.runDefault(),
+      onEndMove: model => {
+        em.runDefault();
+
+        if (model && model.get && model.get('activeOnRender')) {
+          model.trigger('active');
+          model.set('activeOnRender', 0);
+        }
+      },
       document: canvas.getFrameEl().contentDocument
     });
     const content = this.getContentByData(dt).content || '<br>';
