@@ -8,6 +8,7 @@ module.exports = Backbone.Model.extend({
     content: '',
     visible: true,
     buttons: [],
+    attributes: {}
   },
 
   initialize(options) {
