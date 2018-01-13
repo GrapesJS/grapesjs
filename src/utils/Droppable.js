@@ -36,7 +36,7 @@ export default class Droppable {
     // force out like in BlockView
     const sorter = this.sorter;
     cancel && (sorter.moved = 0);
-    em.set('dragContent', '');
+    //em.set('dragContent', '');
     sorter.endMove();
     em.trigger('canvas:dragend', ev);
   }
@@ -109,7 +109,6 @@ export default class Droppable {
     const em = this.em;
     const types = dataTransfer.types;
     const files = dataTransfer.files;
-    const dragContent = em.get('dragContent'); // Used by blocks
     let content = dataTransfer.getData('text');
 
     if (files.length) {
@@ -136,13 +135,14 @@ export default class Droppable {
         attributes: { href: content },
         content: content
       };
-    } else if (dragContent) {
-      content = dragContent;
+    } else if (types.indexOf('text/json') >= 0) {
+      const json = dataTransfer.getData('text/json');
+      json && (content = JSON.parse(json));
     } else {
       content = content && `<div>${content}</div>`;
     }
 
-    const result = { content, dragContent };
+    const result = { content };
     em.trigger('canvas:dragdata', dataTransfer, result);
 
     return result;

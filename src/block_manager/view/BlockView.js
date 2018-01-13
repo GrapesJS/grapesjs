@@ -1,3 +1,4 @@
+import { isObject } from 'underscore';
 import { on, off, hasDnd } from 'utils/mixins';
 
 module.exports = Backbone.View.extend({
@@ -32,11 +33,12 @@ module.exports = Backbone.View.extend({
 
   handleDragStart(ev) {
     const content = this.model.get('content');
-    // Firefox requires setData
-    ev.dataTransfer.setData('text', null);
-    // Can't put the content in dataTransfer as it will not be available
-    // on `dragenter` event for security reason
-    this.config.em.set('dragContent', content);
+    const isObj = isObject(content);
+    const type = isObj ? 'text/json' : 'text';
+    const data = isObj ? JSON.stringify(content) : content;
+    console.log('handleDragStart', data);
+    // Note: data are not available on dragenter for security reason
+    ev.dataTransfer.setData(type, data);
   },
 
   /**
