@@ -7,7 +7,6 @@ module.exports = require('backbone').View.extend({
   tagName: 'iframe',
 
   attributes: {
-    src: 'about:blank',
     allowfullscreen: 'allowfullscreen'
   },
 
