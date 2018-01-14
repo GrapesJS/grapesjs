@@ -148,8 +148,6 @@ export default class Droppable {
     } else if (types.indexOf('text/json') >= 0) {
       const json = dataTransfer.getData('text/json');
       json && (content = JSON.parse(json));
-    } else {
-      content = content && `<div>${content}</div>`;
     }
 
     const result = { content };
