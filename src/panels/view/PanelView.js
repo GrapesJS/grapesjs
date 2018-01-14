@@ -29,6 +29,10 @@ module.exports = Backbone.View.extend({
     this.$el.html(this.model.get('content'));
   },
 
+  attributes() {
+    return this.model.get('attributes');
+  },
+
   initResize() {
     const em = this.config.em;
     const editor = em ? em.get('Editor') : '';
