@@ -108,7 +108,7 @@ module.exports = {
           }
         });
         expect(obj.build(comp)).toEqual(
-          '#' + m1.cid + '{prop1:value1;prop2:value2;}'
+          '#' + m1.getId() + '{prop1:value1;prop2:value2;}'
         );
       });
 
