@@ -767,9 +767,18 @@ const Component = Backbone.Model.extend(Styleable).extend(
       return { tagName: el.tagName ? el.tagName.toLowerCase() : '' };
     },
 
+    /**
+     * Relying simply on the number of components becomes a problem when you
+     * store and load them back, you might hit collisions with new components
+     * @param  {Model} model
+     * @return {string}
+     */
     createId(model) {
       componentIndex++;
-      const nextId = 'i' + componentIndex;
+      // Testing 1000000 components with `+ 2` returns 0 collisions
+      const ilen = componentIndex.toString().length + 2;
+      const uid = (Math.random() + 1.1).toString(36).slice(-ilen);
+      const nextId = 'i' + uid;
       componentList[nextId] = model;
       return nextId;
     },
