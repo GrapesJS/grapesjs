@@ -87,7 +87,7 @@ export default class Droppable {
     // any not empty element
     const content = em.get('dragContent') || '<br>';
     this.sorter.setDropContent(content);
-    this.sorter.startSort(this.el);
+    this.sorter.startSort();
     em.trigger('canvas:dragenter', dt, content);
   }
 

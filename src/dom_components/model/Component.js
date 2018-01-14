@@ -400,7 +400,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       // is not visible
       const comps = new Components(null, this.opt);
       comps.parent = this;
-      comps.reset(this.get('components'));
+      !this.opt.avoidChildren && comps.reset(this.get('components'));
       this.set('components', comps);
       return this;
     },

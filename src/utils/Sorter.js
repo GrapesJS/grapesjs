@@ -312,6 +312,7 @@ module.exports = Backbone.View.extend({
       if (!dropModel) {
         let comps = em.get('DomComponents').getComponents();
         let tempModel = comps.add(dropContent, {
+          avoidChildren: 1,
           avoidUpdateStyle: 1,
           temporary: 1
         });
