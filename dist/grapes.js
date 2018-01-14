@@ -3566,7 +3566,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscor
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getUnitFromValue = exports.normalizeFloat = exports.shallowDiff = exports.camelCase = exports.matches = exports.upFirst = exports.off = exports.on = undefined;
+exports.getUnitFromValue = exports.normalizeFloat = exports.shallowDiff = exports.camelCase = exports.matches = exports.upFirst = exports.hasDnd = exports.off = exports.on = undefined;
 
 var _underscore = __webpack_require__(1);
 
@@ -3673,8 +3673,13 @@ var normalizeFloat = function normalizeFloat(value) {
   return stepDecimals ? parseFloat(value.toFixed(stepDecimals)) : value;
 };
 
+var hasDnd = function hasDnd(em) {
+  return 'draggable' in document.createElement('i') && (em ? em.get('Config').nativeDnD : 1);
+};
+
 exports.on = on;
 exports.off = off;
+exports.hasDnd = hasDnd;
 exports.upFirst = upFirst;
 exports.matches = matches;
 exports.camelCase = camelCase;
@@ -3885,7 +3890,7 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   getClasses: function getClasses() {
-    var attr = this.model.get("attributes"),
+    var attr = this.model.get('attributes'),
         classes = attr['class'] || [];
     classes = (0, _underscore.isArray)(classes) ? classes : [classes];
 
@@ -4065,14 +4070,15 @@ var Backbone = __webpack_require__(0);
 var Components = __webpack_require__(49);
 var Selector = __webpack_require__(7);
 var Selectors = __webpack_require__(10);
-var Traits = __webpack_require__(152);
+var Traits = __webpack_require__(150);
+var componentList = {};
+var componentIndex = 0;
 
 var escapeRegExp = function escapeRegExp(str) {
   return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
 };
 
-module.exports = Backbone.Model.extend(_Styleable2.default).extend({
-
+var Component = Backbone.Model.extend(_Styleable2.default).extend({
   defaults: {
     // HTML tag of the component
     tagName: 'div',
@@ -4176,16 +4182,16 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
     propagate: '',
 
     /**
-      * Set an array of items to show up inside the toolbar (eg. move, clone, delete)
-      * when the component is selected
-      * toolbar: [{
-      *     attributes: {class: 'fa fa-arrows'},
-      *     command: 'tlb-move',
-      *   },{
-      *     attributes: {class: 'fa fa-clone'},
-      *     command: 'tlb-clone',
-      * }]
-    */
+     * Set an array of items to show up inside the toolbar (eg. move, clone, delete)
+     * when the component is selected
+     * toolbar: [{
+     *     attributes: {class: 'fa fa-arrows'},
+     *     command: 'tlb-move',
+     *   },{
+     *     attributes: {class: 'fa fa-clone'},
+     *     command: 'tlb-clone',
+     * }]
+     */
     toolbar: null
   },
 
@@ -4225,7 +4231,9 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
     this.sm = em;
     this.em = em;
     this.config = opt.config || {};
+    this.ccid = Component.createId(this);
     this.set('attributes', this.get('attributes') || {});
+    this.on('destroy', this.handleRemove);
     this.listenTo(this, 'change:script', this.scriptUpdated);
     this.listenTo(this, 'change:traits', this.traitsUpdated);
     this.listenTo(this, 'change:tagName', this.tagUpdated);
@@ -4239,6 +4247,17 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
       return _this.emitUpdate('classes');
     });
     this.init();
+  },
+
+
+  /**
+   * Triggered on model remove
+   * @param {Model} removed Removed model
+   * @private
+   */
+  handleRemove: function handleRemove(removed) {
+    var em = this.em;
+    em && em.trigger('component:remove', removed);
   },
 
 
@@ -4457,7 +4476,7 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
     // is not visible
     var comps = new Components(null, this.opt);
     comps.parent = this;
-    comps.reset(this.get('components'));
+    !this.opt.avoidChildren && comps.reset(this.get('components'));
     this.set('components', comps);
     return this;
   },
@@ -4574,7 +4593,8 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
       }
       if (model.get('draggable')) {
         tb.push({
-          attributes: { class: 'fa fa-arrows' },
+          attributes: { class: 'fa fa-arrows', draggable: true },
+          //events: hasDnd(this.em) ? { dragstart: 'execCommand' } : '',
           command: 'tlb-move'
         });
       }
@@ -4763,11 +4783,10 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
 
     var obj = Backbone.Model.prototype.toJSON.apply(this, args);
     var scriptStr = this.getScriptString();
+    obj.attributes = this.getAttributes();
+    delete obj.attributes.class;
     delete obj.toolbar;
-
-    if (scriptStr) {
-      obj.script = scriptStr;
-    }
+    scriptStr && (obj.script = scriptStr);
 
     return obj;
   },
@@ -4779,7 +4798,17 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
    */
   getId: function getId() {
     var attrs = this.get('attributes') || {};
-    return attrs.id || this.cid;
+    return attrs.id || this.ccid || this.cid;
+  },
+
+
+  /**
+   * Get the DOM element of the model. This works only of the
+   * model is alredy rendered
+   * @return {HTMLElement}
+   */
+  getEl: function getEl() {
+    return this.view && this.view.el;
   },
 
 
@@ -4825,7 +4854,6 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
     em && em.trigger(event, this.model);
   }
 }, {
-
   /**
    * Detect if the passed element is a valid component.
    * In case the element is valid an object abstracted
@@ -4836,8 +4864,30 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
    */
   isComponent: function isComponent(el) {
     return { tagName: el.tagName ? el.tagName.toLowerCase() : '' };
+  },
+
+
+  /**
+   * Relying simply on the number of components becomes a problem when you
+   * store and load them back, you might hit collisions with new components
+   * @param  {Model} model
+   * @return {string}
+   */
+  createId: function createId(model) {
+    componentIndex++;
+    // Testing 1000000 components with `+ 2` returns 0 collisions
+    var ilen = componentIndex.toString().length + 2;
+    var uid = (Math.random() + 1.1).toString(36).slice(-ilen);
+    var nextId = 'i' + uid;
+    componentList[nextId] = model;
+    return nextId;
+  },
+  getList: function getList() {
+    return componentList;
   }
 });
+
+module.exports = Component;
 
 /***/ }),
 /* 5 */
@@ -4871,7 +4921,7 @@ module.exports = Backbone.View.extend({
 
 
   events: _defineProperty({
-    'change': 'inputValueChanged'
+    change: 'inputValueChanged'
   }, 'click [' + clearProp + ']', 'clear'),
 
   initialize: function initialize() {
@@ -15013,7 +15063,6 @@ var TYPE_CLASS = 1;
 var TYPE_ID = 2;
 
 var Selector = Backbone.Model.extend({
-
   idAttribute: 'name',
 
   defaults: {
@@ -15100,9 +15149,8 @@ var Backbone = __webpack_require__(0);
 var $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
-
   events: {
-    'change': 'onChange'
+    change: 'onChange'
   },
 
   attributes: function attributes() {
@@ -16278,7 +16326,7 @@ var Property = __webpack_require__(12);
 module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.default).extend({
   types: [{
     id: 'stack',
-    model: __webpack_require__(121),
+    model: __webpack_require__(119),
     view: __webpack_require__(34),
     isType: function isType(value) {
       if (value && value.type == 'stack') {
@@ -16332,8 +16380,8 @@ module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.d
     }
   }, {
     id: 'slider',
-    model: __webpack_require__(127),
-    view: __webpack_require__(128),
+    model: __webpack_require__(125),
+    view: __webpack_require__(126),
     isType: function isType(value) {
       if (value && value.type == 'slider') {
         return value;
@@ -16405,7 +16453,6 @@ module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.d
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 module.exports = __webpack_require__(0).Model.extend({
-
   defaults: {
     name: '',
     property: '',
@@ -16664,12 +16711,11 @@ var Backbone = __webpack_require__(0);
 var ComponentView = __webpack_require__(3);
 
 module.exports = ComponentView.extend({
-
   tagName: 'img',
 
   events: {
-    'dblclick': 'openModal',
-    'click': 'initResize'
+    dblclick: 'openModal',
+    click: 'initResize'
   },
 
   initialize: function initialize(o) {
@@ -16681,6 +16727,28 @@ module.exports = ComponentView.extend({
     var config = this.config;
     config.modal && (this.modal = config.modal);
     config.am && (this.am = config.am);
+    this.fetchFile();
+  },
+
+
+  /**
+   * Fetch file if exists
+   */
+  fetchFile: function fetchFile() {
+    var model = this.model;
+    var file = model.get('file');
+
+    if (file) {
+      var fu = this.em.get('AssetManager').FileUploader();
+      fu.uploadFile({
+        dataTransfer: { files: [file] }
+      }, function (res) {
+        var obj = res && res.data && res.data[0];
+        var src = obj && obj.src;
+        src && model.set({ src: src });
+      });
+      model.set('file', '');
+    }
   },
 
 
@@ -16689,7 +16757,7 @@ module.exports = ComponentView.extend({
    * @private
    * */
   updateSrc: function updateSrc() {
-    var src = this.model.get("src");
+    var src = this.model.get('src');
     var el = this.$el;
     el.attr('src', src);
     el[src ? 'removeClass' : 'addClass'](this.classEmpty);
@@ -16900,7 +16968,6 @@ var Backbone = __webpack_require__(0);
 var $ = Backbone.$;
 
 module.exports = Input.extend({
-
   events: {
     'change input': 'handleChange',
     'change select': 'handleUnitChange',
@@ -17187,7 +17254,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 var Component = __webpack_require__(4);
 
 module.exports = Component.extend({
-
   defaults: _extends({}, Component.prototype.defaults, {
     type: 'tbody',
     tagName: 'tbody',
@@ -17252,7 +17318,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 var Component = __webpack_require__(4);
 
 module.exports = Component.extend({
-
   defaults: _extends({}, Component.prototype.defaults, {
     type: 'image',
     tagName: 'img',
@@ -17262,7 +17327,10 @@ module.exports = Component.extend({
     editable: 1,
     highlightable: 0,
     resizable: 1,
-    traits: ['alt']
+    traits: ['alt'],
+
+    // File to load asynchronously once the model is rendered
+    file: ''
   }),
 
   initialize: function initialize(o, opt) {
@@ -17339,7 +17407,6 @@ module.exports = Component.extend({
     };
   }
 }, {
-
   /**
    * Detect if the passed element is a valid component.
    * In case the element is valid an object abstracted
@@ -17372,8 +17439,8 @@ var _underscore = __webpack_require__(1);
 
 var _mixins = __webpack_require__(2);
 
-var ToolbarView = __webpack_require__(188);
-var Toolbar = __webpack_require__(190);
+var ToolbarView = __webpack_require__(187);
+var Toolbar = __webpack_require__(189);
 var key = __webpack_require__(23);
 var $ = __webpack_require__(0).$;
 var showOffsets = void 0;
@@ -17597,7 +17664,7 @@ module.exports = {
     var config = canvas.getConfig();
     var customeLabel = config.customBadgeLabel;
     this.cacheEl = el;
-    var model = $el.data("model");
+    var model = $el.data('model');
     if (!model || !model.get('badgable')) return;
     var badge = this.getBadge();
     var badgeLabel = model.getIcon() + model.getName();
@@ -17626,7 +17693,7 @@ module.exports = {
     var $el = $(el);
     var model = $el.data('model');
 
-    if (!model || !model.get("hoverable") || model.get('status') == 'selected') {
+    if (!model || !model.get('hoverable') || model.get('status') == 'selected') {
       return;
     }
 
@@ -17836,7 +17903,7 @@ module.exports = {
     });
     var leftPos = pos.left + pos.elementWidth - pos.targetWidth;
     toolbarStyle.top = pos.top + unit;
-    toolbarStyle.left = leftPos + unit;
+    toolbarStyle.left = (leftPos < 0 ? 0 : leftPos) + unit;
     toolbarStyle.display = origDisp;
   },
 
@@ -18084,7 +18151,7 @@ module.exports = _.extend({}, SelectPosition, {
     var trgCollection = $trg.data('collection');
     var droppable = trgModel ? trgModel.get('droppable') : 1;
     opt.at = index;
-    if (trgCollection && droppable) return trgCollection.add(component, opt);else console.warn("Invalid target position");
+    if (trgCollection && droppable) return trgCollection.add(component, opt);else console.warn('Invalid target position');
   },
 
 
@@ -18518,7 +18585,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _promisePolyfill = __webpack_require__(77);
+var _promisePolyfill = __webpack_require__(75);
 
 var _promisePolyfill2 = _interopRequireDefault(_promisePolyfill);
 
@@ -18565,13 +18632,11 @@ exports.default = typeof fetch == 'function' ? fetch.bind() : function (url, opt
 
 
 module.exports = function (config) {
-
   var TEXT_NODE = 'span';
   var c = config;
   var modelAttrStart = 'data-gjs-';
 
   return {
-
     compTypes: '',
 
     /**
@@ -19654,12 +19719,12 @@ var Backbone = __webpack_require__(0);
 var Buttons = __webpack_require__(28);
 
 module.exports = Backbone.Model.extend({
-
   defaults: {
     id: '',
     content: '',
     visible: true,
-    buttons: []
+    buttons: [],
+    attributes: {}
   },
 
   initialize: function initialize(options) {
@@ -19677,10 +19742,9 @@ module.exports = Backbone.Model.extend({
 
 
 var Backbone = __webpack_require__(0);
-var Button = __webpack_require__(111);
+var Button = __webpack_require__(109);
 
 module.exports = Backbone.Collection.extend({
-
   model: Button,
 
   /**
@@ -19789,6 +19853,9 @@ module.exports = Backbone.View.extend({
   updateContent: function updateContent() {
     this.$el.html(this.model.get('content'));
   },
+  attributes: function attributes() {
+    return this.model.get('attributes');
+  },
   initResize: function initResize() {
     var em = this.config.em;
     var editor = em ? em.get('Editor') : '';
@@ -19829,7 +19896,8 @@ module.exports = Backbone.View.extend({
         posFetcher: function posFetcher(el) {
           var rect = el.getBoundingClientRect();
           return {
-            left: 0, top: 0,
+            left: 0,
+            top: 0,
             width: rect.width,
             height: rect.height
           };
@@ -19866,7 +19934,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */(function(_) {
 
 var Backbone = __webpack_require__(0);
-var ButtonView = __webpack_require__(113);
+var ButtonView = __webpack_require__(111);
 
 module.exports = Backbone.View.extend({
   initialize: function initialize(o) {
@@ -19983,15 +20051,14 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
  */
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(118),
-      Sectors = __webpack_require__(119),
+      defaults = __webpack_require__(116),
+      Sectors = __webpack_require__(117),
       Properties = __webpack_require__(11),
-      SectorsView = __webpack_require__(130);
+      SectorsView = __webpack_require__(128);
   var properties = void 0;
   var sectors, SectView;
 
   return {
-
     /**
      * Name of the module
      * @type {String}
@@ -20479,7 +20546,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 var Property = __webpack_require__(12);
 
 module.exports = Property.extend({
-
   defaults: _extends({}, Property.prototype.defaults, {
     // 'background' is a good example where to make a difference
     // between detached and not
@@ -20560,7 +20626,7 @@ module.exports = Property.extend({
 
 
 var PropertyCompositeView = __webpack_require__(17);
-var LayersView = __webpack_require__(125);
+var LayersView = __webpack_require__(123);
 
 module.exports = PropertyCompositeView.extend({
   templateInput: function templateInput() {
@@ -20749,9 +20815,8 @@ module.exports = PropertyCompositeView.extend({
 var $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
-
   events: {
-    'change': 'handleChange'
+    change: 'handleChange'
   },
 
   template: function template() {
@@ -20980,7 +21045,7 @@ module.exports = __webpack_require__(14).extend({
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-__webpack_require__(124);
+__webpack_require__(122);
 var Input = __webpack_require__(35);
 var $ = Backbone.$;
 
@@ -21035,7 +21100,7 @@ module.exports = Input.extend({
       var colorEl = $('<div class="' + this.ppfx + 'field-color-picker"></div>');
       var cpStyle = colorEl.get(0).style;
       var elToAppend = this.em && this.em.config ? this.em.config.el : '';
-      var colorPickerConfig = this.em && this.em.getConfig && this.em.getConfig("colorPicker") || {};
+      var colorPickerConfig = this.em && this.em.getConfig && this.em.getConfig('colorPicker') || {};
       var getColor = function getColor(color) {
         var cl = color.getAlpha() == 1 ? color.toHexString() : color.toRgbString();
         return cl.replace(/ /g, '');
@@ -21242,12 +21307,10 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 var Property = __webpack_require__(12);
 
 module.exports = Property.extend({
-
   defaults: _extends({}, Property.prototype.defaults, {
     // Array of options, eg. [{name: 'Label ', value: '100'}]
     options: []
   })
-
 });
 
 /***/ }),
@@ -21263,7 +21326,6 @@ var Property = __webpack_require__(12);
 var InputNumber = __webpack_require__(18);
 
 module.exports = Property.extend({
-
   defaults: _extends({}, Property.prototype.defaults, {
     // Array of units, eg. ['px', '%']
     units: [],
@@ -21293,7 +21355,9 @@ module.exports = Property.extend({
   parseValue: function parseValue(val) {
     var parsed = Property.prototype.parseValue.apply(this, arguments);
 
-    var _input$validateInputV = this.input.validateInputValue(parsed.value, { deepCheck: 1 }),
+    var _input$validateInputV = this.input.validateInputValue(parsed.value, {
+      deepCheck: 1
+    }),
         value = _input$validateInputV.value,
         unit = _input$validateInputV.unit;
 
@@ -21315,7 +21379,6 @@ module.exports = Property.extend({
 
 
 module.exports = __webpack_require__(44).extend({
-
   events: {
     'click [data-toggle=asset-remove]': 'onRemove',
     click: 'onClick',
@@ -21465,7 +21528,6 @@ var _fetch2 = _interopRequireDefault(_fetch);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports = Backbone.View.extend({
-
   template: _.template('\n  <form>\n    <div id="<%= pfx %>title"><%= title %></div>\n    <input type="file" id="<%= uploadId %>" name="file" accept="image/*" <%= disabled ? \'disabled\' : \'\' %> multiple/>\n    <div style="clear:both;"></div>\n  </form>\n  '),
 
   events: {},
@@ -21533,7 +21595,7 @@ module.exports = Backbone.View.extend({
    * @param  {string} text Response text
    * @private
    */
-  onUploadResponse: function onUploadResponse(text) {
+  onUploadResponse: function onUploadResponse(text, clb) {
     var em = this.config.em;
     var config = this.config;
     var target = this.target;
@@ -21545,6 +21607,7 @@ module.exports = Backbone.View.extend({
     }
 
     this.onUploadEnd(text);
+    clb && clb(json);
   },
 
 
@@ -21554,7 +21617,7 @@ module.exports = Backbone.View.extend({
    * @return {Promise}
    * @private
    * */
-  uploadFile: function uploadFile(e) {
+  uploadFile: function uploadFile(e, clb) {
     var _this = this;
 
     var files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
@@ -21591,7 +21654,7 @@ module.exports = Backbone.View.extend({
           return Promise.reject(text);
         });
       }).then(function (text) {
-        return _this.onUploadResponse(text);
+        return _this.onUploadResponse(text, clb);
       }).catch(function (err) {
         return _this.onUploadError(err);
       });
@@ -21697,7 +21760,7 @@ module.exports = Backbone.View.extend({
     return this;
   }
 }, {
-  embedAsBase64: function embedAsBase64(e) {
+  embedAsBase64: function embedAsBase64(e, clb) {
     var _this3 = this;
 
     // List files dropped
@@ -21729,6 +21792,42 @@ module.exports = Backbone.View.extend({
           } else {
             type = file.type;
           }
+
+          /*
+          // Show local video files, http://jsfiddle.net/dsbonev/cCCZ2/embedded/result,js,html,css/
+          var URL = window.URL || window.webkitURL
+          var file = this.files[0]
+          var type = file.type
+          var videoNode = document.createElement('video');
+          var canPlay = videoNode.canPlayType(type) // can use also for 'audio' types
+          if (canPlay === '') canPlay = 'no'
+          var message = 'Can play type "' + type + '": ' + canPlay
+          var isError = canPlay === 'no'
+          displayMessage(message, isError)
+          if (isError) {
+          return
+          }
+          var fileURL = URL.createObjectURL(file)
+          videoNode.src = fileURL
+          */
+
+          /*
+          // Show local video files, http://jsfiddle.net/dsbonev/cCCZ2/embedded/result,js,html,css/
+          var URL = window.URL || window.webkitURL
+          var file = this.files[0]
+           var type = file.type
+           var videoNode = document.createElement('video');
+           var canPlay = videoNode.canPlayType(type) // can use also for 'audio' types
+           if (canPlay === '') canPlay = 'no'
+           var message = 'Can play type "' + type + '": ' + canPlay
+           var isError = canPlay === 'no'
+           displayMessage(message, isError)
+            if (isError) {
+             return
+           }
+            var fileURL = URL.createObjectURL(file)
+           videoNode.src = fileURL
+          */
 
           // If it's an image, try to find its size
           if (type === 'image') {
@@ -21802,7 +21901,7 @@ module.exports = Backbone.View.extend({
 
     Promise.all(promises).then(function (data) {
       response.data = data;
-      _this3.onUploadResponse(response);
+      _this3.onUploadResponse(response, clb);
     }, function (error) {
       _this3.onUploadError(error);
     });
@@ -21827,7 +21926,6 @@ var Backbone = __webpack_require__(0);
 var Selectors = __webpack_require__(10);
 
 module.exports = Backbone.Model.extend(_Styleable2.default).extend({
-
   defaults: {
     // Css selectors
     selectors: {},
@@ -21989,7 +22087,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var parseStyle = (0, _ParserHtml2.default)().parseStyle;
 exports.default = {
-
   parseStyle: parseStyle,
 
   /**
@@ -22108,7 +22205,6 @@ exports.default = {
 var Backbone = __webpack_require__(0);
 
 module.exports = Backbone.View.extend({
-
   // Default view
   itemView: '',
 
@@ -22179,7 +22275,6 @@ var Backbone = __webpack_require__(0);
 
 module.exports = Backbone.Collection.extend({
   initialize: function initialize(models, opt) {
-
     this.on('add', this.onAdd);
 
     this.config = opt && opt.config ? opt.config : null;
@@ -22390,13 +22485,11 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 var Component = __webpack_require__(4);
 
 module.exports = Component.extend({
-
   defaults: _extends({}, Component.prototype.defaults, {
     type: 'text',
     droppable: false,
     editable: true
   })
-
 });
 
 /***/ }),
@@ -22411,9 +22504,8 @@ var _mixins = __webpack_require__(2);
 var ComponentView = __webpack_require__(3);
 
 module.exports = ComponentView.extend({
-
   events: {
-    'dblclick': 'enableEditing'
+    dblclick: 'enableEditing'
   },
 
   initialize: function initialize(o) {
@@ -22547,7 +22639,6 @@ module.exports = ComponentView.extend({
 var $ = Backbone.$;
 
 module.exports = {
-
   /**
    * Start select position event
    * @param {HTMLElement} trg
@@ -22601,8 +22692,8 @@ module.exports = {
     if (this.cDim) {
       this.posIsLastEl = this.cDim.length !== 0 && this.posMethod == 'after' && this.posIndex == this.cDim.length;
       this.posTargetEl = this.cDim.length === 0 ? $(this.outsideElem) : !this.posIsLastEl && this.cDim[this.posIndex] ? $(this.cDim[this.posIndex][5]).parent() : $(this.outsideElem);
-      this.posTargetModel = this.posTargetEl.data("model");
-      this.posTargetCollection = this.posTargetEl.data("model-comp");
+      this.posTargetModel = this.posTargetEl.data('model');
+      this.posTargetCollection = this.posTargetEl.data('model-comp');
     }
   },
 
@@ -22697,7 +22788,9 @@ module.exports = _.extend({}, CreateComponent, {
     this.beforeInsert(object);
     var index = this.sorter.lastPos.index;
     // By default, collections do not trigger add event, so silent is used
-    var model = this.create(this.sorter.target, object, index, null, { silent: false });
+    var model = this.create(this.sorter.target, object, index, null, {
+      silent: false
+    });
 
     if (this.opt.terminateAfterInsert && this.sender) this.sender.set('active', false);else this.enable();
 
@@ -22748,7 +22841,6 @@ var ComponentView = __webpack_require__(3);
 var ItemsView = void 0;
 
 module.exports = __webpack_require__(0).View.extend({
-
   events: {
     'mousedown [data-toggle-move]': 'startSort',
     'click [data-toggle-visible]': 'toggleVisibility',
@@ -22885,7 +22977,7 @@ module.exports = __webpack_require__(0).View.extend({
       this.getCaret().addClass(chvDown);
       opened[model.cid] = model;
     } else {
-      this.$el.removeClass("open");
+      this.$el.removeClass('open');
       this.getCaret().removeClass(chvDown);
       delete opened[model.cid];
     }
@@ -23210,27 +23302,16 @@ module.exports = Backbone.View.extend({
 var Backbone = __webpack_require__(0);
 
 module.exports = Backbone.Model.extend({
-
   defaults: {
     id: '',
     label: '',
     open: true,
     attributes: {}
   }
-
 });
 
 /***/ }),
 /* 58 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = __webpack_require__(59);
-
-/***/ }),
-/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23242,7 +23323,7 @@ var _cashDom2 = _interopRequireDefault(_cashDom);
 
 var _underscore = __webpack_require__(1);
 
-var _polyfills = __webpack_require__(60);
+var _polyfills = __webpack_require__(59);
 
 var _polyfills2 = _interopRequireDefault(_polyfills);
 
@@ -23251,14 +23332,37 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 (0, _polyfills2.default)();
 
 module.exports = function () {
-  var defaultConfig = __webpack_require__(61);
-  var Editor = __webpack_require__(62);
-  var PluginManager = __webpack_require__(220);
+  var Editor = __webpack_require__(60);
+  var PluginManager = __webpack_require__(219);
   var plugins = new PluginManager();
   var editors = [];
+  var defaultConfig = {
+    // If true renders editor on init
+    autorender: 1,
+
+    // Where init the editor
+    container: '',
+
+    // HTML string or object of components
+    components: '',
+
+    // CSS string or object of rules
+    style: '',
+
+    // If true, will fetch HTML and CSS from selected container
+    fromElement: 0,
+
+    // Storage Manager
+    storageManager: {},
+
+    // Array of plugins to init
+    plugins: [],
+
+    // Custom options for plugins
+    pluginsOpts: {}
+  };
 
   return {
-
     $: _cashDom2.default,
 
     editors: editors,
@@ -23266,7 +23370,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.12.60',
+    version: '0.13.5',
 
     /**
      * Initializes an editor based on passed options
@@ -23323,7 +23427,7 @@ module.exports = function () {
 }();
 
 /***/ }),
-/* 60 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23339,7 +23443,6 @@ Object.defineProperty(exports, "__esModule", {
  */
 
 exports.default = function () {
-
   /**
    * Check if IE/Edge
    * @return {Boolean}
@@ -23368,42 +23471,7 @@ exports.default = function () {
 };
 
 /***/ }),
-/* 61 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = {
-  // If true renders editor on init
-  autorender: 1,
-
-  // Where init the editor
-  container: '',
-
-  // HTML string or object of components
-  components: '',
-
-  // CSS string or object of rules
-  style: '',
-
-  // If true, will fetch HTML and CSS from selected container
-  fromElement: 0,
-
-  // ---
-
-  // Storage Manager
-  storageManager: {},
-
-  // Array of plugins to init
-  plugins: [],
-
-  // Custom options for plugins
-  pluginsOpts: {}
-};
-
-/***/ }),
-/* 62 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23417,9 +23485,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 module.exports = function (config) {
   var c = config || {},
-      defaults = __webpack_require__(63),
-      EditorModel = __webpack_require__(64),
-      EditorView = __webpack_require__(219);
+      defaults = __webpack_require__(61),
+      EditorModel = __webpack_require__(62),
+      EditorView = __webpack_require__(218);
 
   for (var name in defaults) {
     if (!(name in c)) c[name] = defaults[name];
@@ -23433,7 +23501,6 @@ module.exports = function (config) {
   });
 
   return {
-
     $: _cashDom2.default,
 
     /**
@@ -23954,6 +24021,8 @@ module.exports = function (config) {
     *
     * ## Components
     * * `component:add` - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
+    * * `component:remove` - Triggered when a component is removed, the model is passed as an argument to the callback
+    * * `component:clone` - Triggered when a new component is added by a clone command, the model is passed as an argument to the callback
     * * `component:update` - Triggered when a component is updated (moved, styled, etc.), the model is passed as an argument to the callback
     * * `component:update:{propertyName}` - Listen any property change, the model is passed as an argument to the callback
     * * `component:styleUpdate` - Triggered when the style of the component is updated, the model is passed as an argument to the callback
@@ -23985,6 +24054,13 @@ module.exports = function (config) {
     * * `storage:store` - Triggered when something is stored to the storage, stored object passed as an argumnet
     * * `storage:end` - After the storage request is ended
     * * `storage:error` - On any error on storage request, passes the error as an argument
+    * ## Canvas
+    * * `canvas:dragenter` - When something is dragged inside the canvas, `DataTransfer` instance passed as an argument
+    * * `canvas:dragover` - When something is dragging on canvas, `DataTransfer` instance passed as an argument
+    * * `canvas:drop` - Something is dropped in canvas, `DataTransfer` instance and the dropped model are passed as arguments
+    * * `canvas:dragend` - When a drag operation is ended, `DataTransfer` instance passed as an argument
+    * * `canvas:dragdata` - On any dataTransfer parse, `DataTransfer` instance and the `result` are passed as arguments.
+    *  By changing `result.content` you're able to customize what is dropped
     * ## Selectors
     * * `selector:add` - Triggers when a new selector/class is created
     * ## RTE
@@ -24027,7 +24103,7 @@ module.exports = function (config) {
     */
 
 /***/ }),
-/* 63 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24093,6 +24169,9 @@ module.exports = {
 
   // Return JS of components inside HTML from 'editor.getHtml()'
   jsInHtml: true,
+
+  // Enable native HTML5 drag and drop
+  nativeDnD: 1,
 
   // Show the wrapper component in the final code, eg. in editor.getHtml()
   exportWrapper: 0,
@@ -24170,7 +24249,6 @@ module.exports = {
 
   //Configurations for Style Manager
   styleManager: {
-
     sectors: [{
       name: 'General',
       open: false,
@@ -24196,7 +24274,6 @@ module.exports = {
       open: false,
       buildProps: ['transition', 'perspective', 'transform']
     }]
-
   },
 
   //Configurations for Block Manager
@@ -24208,7 +24285,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 64 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24218,12 +24295,12 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _underscore = __webpack_require__(1);
 
-var deps = [__webpack_require__(65), __webpack_require__(69), __webpack_require__(70), __webpack_require__(73), __webpack_require__(81), __webpack_require__(86), __webpack_require__(89), __webpack_require__(93), __webpack_require__(97), __webpack_require__(109), __webpack_require__(115), __webpack_require__(31), __webpack_require__(132), __webpack_require__(138), __webpack_require__(143), __webpack_require__(150), __webpack_require__(178), __webpack_require__(184), __webpack_require__(210)];
+var deps = [__webpack_require__(63), __webpack_require__(67), __webpack_require__(68), __webpack_require__(71), __webpack_require__(79), __webpack_require__(84), __webpack_require__(87), __webpack_require__(91), __webpack_require__(95), __webpack_require__(107), __webpack_require__(113), __webpack_require__(31), __webpack_require__(130), __webpack_require__(136), __webpack_require__(141), __webpack_require__(148), __webpack_require__(176), __webpack_require__(183), __webpack_require__(209)];
 
 var Backbone = __webpack_require__(0);
 var timedInterval = void 0;
 
-__webpack_require__(218)({
+__webpack_require__(217)({
   Backbone: Backbone,
   $: Backbone.$
 });
@@ -24231,7 +24308,6 @@ __webpack_require__(218)({
 var $ = Backbone.$;
 
 module.exports = Backbone.Model.extend({
-
   defaults: {
     clipboard: null,
     designerMode: false,
@@ -24452,7 +24528,7 @@ module.exports = Backbone.Model.extend({
       model = $(el).data('model');
     }
 
-    if (model && !model.get("selectable")) {
+    if (model && !model.get('selectable')) {
       return;
     }
 
@@ -24524,7 +24600,8 @@ module.exports = Backbone.Model.extend({
     var js = config.jsInHtml ? this.getJs() : '';
     var wrp = this.get('DomComponents').getComponent();
     var html = this.get('CodeManager').getCode(wrp, 'html', {
-      exportWrapper: exportWrapper, wrappesIsBody: wrappesIsBody
+      exportWrapper: exportWrapper,
+      wrappesIsBody: wrappesIsBody
     });
     html += js ? '<script>' + js + '</script>' : '';
     return html;
@@ -24548,7 +24625,8 @@ module.exports = Backbone.Model.extend({
     var protCss = !avoidProt ? config.protectedCss : '';
 
     return protCss + this.get('CodeManager').getCode(wrp, 'css', {
-      cssc: cssc, wrappesIsBody: wrappesIsBody
+      cssc: cssc,
+      wrappesIsBody: wrappesIsBody
     });
   },
 
@@ -24749,17 +24827,16 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 65 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = function () {
-
-  var Sorter = __webpack_require__(66);
-  var Resizer = __webpack_require__(67);
-  var Dragger = __webpack_require__(68);
+  var Sorter = __webpack_require__(64);
+  var Resizer = __webpack_require__(65);
+  var Dragger = __webpack_require__(66);
 
   return {
     /**
@@ -24784,7 +24861,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 66 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -25025,7 +25102,7 @@ module.exports = Backbone.View.extend({
     el.className = pfx + 'placeholder';
     el.style.display = 'none';
     el.style['pointer-events'] = 'none';
-    ins.className = pfx + "placeholder-int";
+    ins.className = pfx + 'placeholder-int';
     el.appendChild(ins);
     return el;
   },
@@ -25067,8 +25144,8 @@ module.exports = Backbone.View.extend({
       srcModel && srcModel.set && srcModel.set('status', 'freezed');
     }
 
-    (0, _mixins.on)(container, 'mousemove', this.onMove);
-    (0, _mixins.on)(docs, 'mouseup', this.endMove);
+    (0, _mixins.on)(container, 'mousemove dragover', this.onMove);
+    (0, _mixins.on)(docs, 'mouseup dragend', this.endMove);
     (0, _mixins.on)(docs, 'keydown', this.rollback);
     onStart && onStart();
 
@@ -25103,7 +25180,11 @@ module.exports = Backbone.View.extend({
     if (dropContent && em) {
       if (!dropModel) {
         var comps = em.get('DomComponents').getComponents();
-        var tempModel = comps.add(dropContent, { avoidUpdateStyle: 1, temporary: 1 });
+        var tempModel = comps.add(dropContent, {
+          avoidChildren: 1,
+          avoidUpdateStyle: 1,
+          temporary: 1
+        });
         dropModel = comps.remove(tempModel, { temporary: 1 });
         this.dropModel = dropModel instanceof Array ? dropModel[0] : dropModel;
       }
@@ -25237,13 +25318,18 @@ module.exports = Backbone.View.extend({
     if ($el.css('float') !== 'none') return;
     if (parent && $(parent).css('display') == 'flex') return;
     switch (style.position) {
-      case 'static':case 'relative':case '':
+      case 'static':
+      case 'relative':
+      case '':
         break;
       default:
         return;
     }
     switch (el.tagName) {
-      case 'TR':case 'TBODY':case 'THEAD':case 'TFOOT':
+      case 'TR':
+      case 'TBODY':
+      case 'THEAD':
+      case 'TFOOT':
         return true;
     }
     switch ($el.css('display')) {
@@ -25603,17 +25689,17 @@ module.exports = Backbone.View.extend({
         //If x lefter than center
         if (posX < xCenter) {
           xLimit = xCenter;
-          result.method = "before";
+          result.method = 'before';
         } else {
           leftLimit = xCenter;
-          result.method = "after";
+          result.method = 'after';
         }
       } else {
         // If y upper than center
         if (posY < yCenter) {
-          result.method = "before";
+          result.method = 'before';
           break;
-        } else result.method = "after"; // After last element
+        } else result.method = 'after'; // After last element
       }
     }
     return result;
@@ -25687,8 +25773,8 @@ module.exports = Backbone.View.extend({
     var created;
     var docs = this.getDocuments();
     var container = this.getContainerEl();
-    (0, _mixins.off)(container, 'mousemove', this.onMove);
-    (0, _mixins.off)(docs, 'mouseup', this.endMove);
+    (0, _mixins.off)(container, 'mousemove dragover', this.onMove);
+    (0, _mixins.off)(docs, 'mouseup dragend', this.endMove);
     (0, _mixins.off)(docs, 'keydown', this.rollback);
     //this.$document.off('mouseup', this.endMove);
     //this.$document.off('keydown', this.rollback);
@@ -25814,7 +25900,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-/* 67 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -25896,7 +25982,6 @@ var getBoundingRect = function getBoundingRect(el, win) {
 };
 
 var Resizer = function () {
-
   /**
    * Init the Resizer with options
    * @param  {Object} options
@@ -26355,7 +26440,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 68 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26375,7 +26460,6 @@ var getBoundingRect = function getBoundingRect(el, win) {
 };
 
 module.exports = {
-
   // TODO move to opts
   setKey: function setKey(keys, command) {
     //key(keys, command);
@@ -26702,7 +26786,7 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 69 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26751,7 +26835,6 @@ module.exports = function () {
   };
 
   return {
-
     keymaster: keymaster,
 
     name: 'Keymaps',
@@ -26877,7 +26960,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 70 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26894,7 +26977,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
                                                                                                                                                                                                                                                                    */
 
 
-var _backboneUndo = __webpack_require__(71);
+var _backboneUndo = __webpack_require__(69);
 
 var _backboneUndo2 = _interopRequireDefault(_backboneUndo);
 
@@ -26908,7 +26991,6 @@ module.exports = function () {
   var configDef = {};
 
   return {
-
     name: 'UndoManager',
 
     /**
@@ -27141,7 +27223,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 71 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -27158,7 +27240,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 (function (factory) {
 	if (true) {
 		// AMD support
-		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1), __webpack_require__(72)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1), __webpack_require__(70)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -27983,7 +28065,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
-/* 72 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Backbone.js 1.2.1
@@ -29864,7 +29946,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)))
 
 /***/ }),
-/* 73 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29879,15 +29961,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
  */
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(74),
-      LocalStorage = __webpack_require__(75),
-      RemoteStorage = __webpack_require__(76);
+      defaults = __webpack_require__(72),
+      LocalStorage = __webpack_require__(73),
+      RemoteStorage = __webpack_require__(74);
 
   var storages = {};
   var defaultStorages = {};
 
   return {
-
     /**
      * Name of the module
      * @type {String}
@@ -30113,7 +30194,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 74 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30177,11 +30258,10 @@ module.exports = {
   // true: application/json; charset=utf-8'
   // false: 'x-www-form-urlencoded'
   contentTypeJson: false
-
 };
 
 /***/ }),
-/* 75 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30190,14 +30270,13 @@ module.exports = {
 var Backbone = __webpack_require__(0);
 
 module.exports = Backbone.Model.extend({
-
   defaults: {
     checkLocal: true
   },
 
   /**
-  * @private
-  */
+   * @private
+   */
   store: function store(data, clb) {
     this.checkStorageEnvironment();
 
@@ -30251,7 +30330,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 76 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30266,7 +30345,6 @@ var _underscore = __webpack_require__(1);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports = __webpack_require__(0).Model.extend({
-
   fetch: _fetch2.default,
 
   defaults: {
@@ -30415,7 +30493,7 @@ module.exports = __webpack_require__(0).Model.extend({
 });
 
 /***/ }),
-/* 77 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(setImmediate) {(function (root) {
@@ -30652,10 +30730,10 @@ module.exports = __webpack_require__(0).Model.extend({
 
 })(this);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(78).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(76).setImmediate))
 
 /***/ }),
-/* 78 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var apply = Function.prototype.apply;
@@ -30708,13 +30786,13 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(79);
+__webpack_require__(77);
 exports.setImmediate = setImmediate;
 exports.clearImmediate = clearImmediate;
 
 
 /***/ }),
-/* 79 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -30904,10 +30982,10 @@ exports.clearImmediate = clearImmediate;
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16), __webpack_require__(80)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16), __webpack_require__(78)))
 
 /***/ }),
-/* 80 */
+/* 78 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -31097,7 +31175,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 81 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31114,13 +31192,12 @@ process.umask = function() { return 0; };
  */
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(82),
-      Devices = __webpack_require__(83),
-      DevicesView = __webpack_require__(85);
+      defaults = __webpack_require__(80),
+      Devices = __webpack_require__(81),
+      DevicesView = __webpack_require__(83);
   var devices, view;
 
   return {
-
     /**
      * Name of the module
      * @type {String}
@@ -31218,36 +31295,34 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 82 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = {
-
   devices: [],
 
   deviceLabel: 'Device'
-
 };
 
 /***/ }),
-/* 83 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var Device = __webpack_require__(84);
+var Device = __webpack_require__(82);
 
 module.exports = Backbone.Collection.extend({
   model: Device
 });
 
 /***/ }),
-/* 84 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31256,7 +31331,6 @@ module.exports = Backbone.Collection.extend({
 var Backbone = __webpack_require__(0);
 
 module.exports = Backbone.Model.extend({
-
   idAttribute: 'name',
 
   defaults: {
@@ -31281,7 +31355,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 85 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31290,11 +31364,10 @@ module.exports = Backbone.Model.extend({
 var Backbone = __webpack_require__(0);
 
 module.exports = Backbone.View.extend({
-
   template: _.template('\n    <div class="<%= ppfx %>device-label"><%= deviceLabel %></div>\n    <div class="<%= ppfx %>field <%= ppfx %>select">\n      <span id="<%= ppfx %>input-holder">\n        <select class="<%= ppfx %>devices"></select>\n      </span>\n      <div class="<%= ppfx %>sel-arrow">\n        <div class="<%= ppfx %>d-s-arrow"></div>\n      </div>\n    </div>\n    <button style="display:none" class="<%= ppfx %>add-trasp">+</button>'),
 
   events: {
-    'change': 'updateDevice'
+    change: 'updateDevice'
   },
 
   initialize: function initialize(o) {
@@ -31372,7 +31445,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 86 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31380,13 +31453,12 @@ module.exports = Backbone.View.extend({
 
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(87),
-      parserCss = __webpack_require__(88),
+      defaults = __webpack_require__(85),
+      parserCss = __webpack_require__(86),
       parserHtml = __webpack_require__(25);
   var pHtml, pCss;
 
   return {
-
     compTypes: '',
 
     /**
@@ -31438,20 +31510,18 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 87 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = {
-
   textTags: ['br', 'b', 'i', 'u', 'a', 'ul', 'ol']
-
 };
 
 /***/ }),
-/* 88 */
+/* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31482,7 +31552,7 @@ module.exports = function (config) {
         var sel = sels[i].trim();
         // Will accept only concatenated classes and last
         // class might be with state (eg. :hover), nothing else.
-        if (/^(\.{1}[\w\-]+)+(:{1,2}[\w\-()]+)?$/ig.test(sel)) {
+        if (/^(\.{1}[\w\-]+)+(:{1,2}[\w\-()]+)?$/gi.test(sel)) {
           var cls = sel.split('.').filter(Boolean);
           result.push(cls);
         } else {
@@ -31608,7 +31678,7 @@ module.exports = function (config) {
 };
 
 /***/ }),
-/* 89 */
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31669,14 +31739,13 @@ var _underscore = __webpack_require__(1);
 
 module.exports = function (config) {
   var c = config || {},
-      defaults = __webpack_require__(90),
+      defaults = __webpack_require__(88),
       Selector = __webpack_require__(7),
       Selectors = __webpack_require__(10),
-      ClassTagsView = __webpack_require__(91);
+      ClassTagsView = __webpack_require__(89);
   var selectors, selectorTags;
 
   return {
-
     Selector: Selector,
 
     Selectors: Selectors,
@@ -31829,14 +31898,13 @@ module.exports = function (config) {
 };
 
 /***/ }),
-/* 90 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = {
-
   // Style prefix
   stylePrefix: 'clm-',
 
@@ -31856,14 +31924,14 @@ module.exports = {
 };
 
 /***/ }),
-/* 91 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(_) {
 
 var Backbone = __webpack_require__(0);
-var ClassTagView = __webpack_require__(92);
+var ClassTagView = __webpack_require__(90);
 
 module.exports = Backbone.View.extend({
   template: _.template('\n  <div id="<%= pfx %>up">\n    <div id="<%= pfx %>label"><%= label %></div>\n    <div id="<%= pfx %>status-c">\n      <span id="<%= pfx %>input-c">\n        <div class="<%= ppfx %>field <%= ppfx %>select">\n          <span id="<%= ppfx %>input-holder">\n            <select id="<%= pfx %>states">\n              <option value=""><%= statesLabel %></option>\n            </select>\n          </span>\n          <div class="<%= ppfx %>sel-arrow">\n            <div class="<%= ppfx %>d-s-arrow"></div>\n          </div>\n        </div>\n      </span>\n    </div>\n  </div>\n  <div id="<%= pfx %>tags-field" class="<%= ppfx %>field">\n    <div id="<%= pfx %>tags-c"></div>\n    <input id="<%= pfx %>new" />\n    <span id="<%= pfx %>add-tag" class="fa fa-plus"></span>\n  </div>\n  <div id="<%= pfx %>sel-help">\n    <div id="<%= pfx %>label"><%= selectedLabel %></div>\n    <div id="<%= pfx %>sel"></div>\n    <div style="clear:both"></div>\n  </div>'),
@@ -32162,7 +32230,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 92 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32304,7 +32372,7 @@ module.exports = __webpack_require__(0).View.extend({
 });
 
 /***/ }),
-/* 93 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32328,18 +32396,17 @@ module.exports = __webpack_require__(0).View.extend({
  */
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(94),
-      ModalM = __webpack_require__(95),
-      ModalView = __webpack_require__(96);
+      defaults = __webpack_require__(92),
+      ModalM = __webpack_require__(93),
+      ModalView = __webpack_require__(94);
   var model, modal;
 
   return {
-
     /**
-      * Name of the module
-      * @type {String}
-      * @private
-      */
+     * Name of the module
+     * @type {String}
+     * @private
+     */
     name: 'Modal',
 
     /**
@@ -32476,14 +32543,13 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 94 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = {
-
   stylePrefix: 'mdl-',
 
   title: '',
@@ -32491,11 +32557,10 @@ module.exports = {
   content: '',
 
   backdrop: true
-
-};;
+};
 
 /***/ }),
-/* 95 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32512,7 +32577,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 96 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32650,7 +32715,7 @@ module.exports = __webpack_require__(0).View.extend({
 });
 
 /***/ }),
-/* 97 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32676,15 +32741,14 @@ module.exports = __webpack_require__(0).View.extend({
  * @module CodeManager
  */
 module.exports = function () {
-
   var c = {},
-      defaults = __webpack_require__(98),
-      gHtml = __webpack_require__(99),
-      gCss = __webpack_require__(100),
-      gJson = __webpack_require__(101),
-      gJs = __webpack_require__(102),
-      eCM = __webpack_require__(103),
-      editorView = __webpack_require__(108);
+      defaults = __webpack_require__(96),
+      gHtml = __webpack_require__(97),
+      gCss = __webpack_require__(98),
+      gJson = __webpack_require__(99),
+      gJs = __webpack_require__(100),
+      eCM = __webpack_require__(101),
+      editorView = __webpack_require__(106);
 
   var generators = {},
       defGenerators = {},
@@ -32880,7 +32944,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 98 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32894,7 +32958,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 99 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32924,7 +32988,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 100 */
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33057,7 +33121,7 @@ module.exports = __webpack_require__(0).Model.extend({
 });
 
 /***/ }),
-/* 101 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33066,7 +33130,6 @@ module.exports = __webpack_require__(0).Model.extend({
 var Backbone = __webpack_require__(0);
 
 module.exports = Backbone.Model.extend({
-
   /** @inheritdoc */
   build: function build(model) {
     var json = model.toJSON();
@@ -33102,7 +33165,7 @@ module.exports = Backbone.Model.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 102 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33163,7 +33226,7 @@ module.exports = Backbone.Model.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 103 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33173,12 +33236,11 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var Backbone = __webpack_require__(0);
 var CodeMirror = __webpack_require__(6);
-var htmlMode = __webpack_require__(104);
+var htmlMode = __webpack_require__(102);
 var cssMode = __webpack_require__(26);
-var formatting = __webpack_require__(107);
+var formatting = __webpack_require__(105);
 
 module.exports = Backbone.Model.extend({
-
   defaults: {
     input: '',
     label: '',
@@ -33213,7 +33275,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 104 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -33221,7 +33283,7 @@ module.exports = Backbone.Model.extend({
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(6), __webpack_require__(105), __webpack_require__(106), __webpack_require__(26));
+    mod(__webpack_require__(6), __webpack_require__(103), __webpack_require__(104), __webpack_require__(26));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror", "../xml/xml", "../javascript/javascript", "../css/css"], mod);
   else // Plain browser env
@@ -33371,7 +33433,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 105 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -33771,7 +33833,7 @@ if (!CodeMirror.mimeModes.hasOwnProperty("text/html"))
 
 
 /***/ }),
-/* 106 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -34632,7 +34694,7 @@ CodeMirror.defineMIME("application/typescript", { name: "javascript", typescript
 
 
 /***/ }),
-/* 107 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function(mod) {
@@ -34759,7 +34821,7 @@ CodeMirror.defineMIME("application/typescript", { name: "javascript", typescript
 
 
 /***/ }),
-/* 108 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34768,7 +34830,6 @@ CodeMirror.defineMIME("application/typescript", { name: "javascript", typescript
 var Backbone = __webpack_require__(0);
 
 module.exports = Backbone.View.extend({
-
   template: _.template('\n  <div class="<%= pfx %>editor" id="<%= pfx %><%= codeName %>">\n  \t<div id="<%= pfx %>title"><%= label %></div>\n  \t<div id="<%= pfx %>code"></div>\n  </div>'),
 
   initialize: function initialize(o) {
@@ -34787,7 +34848,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 109 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34842,15 +34903,14 @@ module.exports = Backbone.View.extend({
  */
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(110),
+      defaults = __webpack_require__(108),
       Panel = __webpack_require__(27),
-      Panels = __webpack_require__(112),
+      Panels = __webpack_require__(110),
       PanelView = __webpack_require__(29),
-      PanelsView = __webpack_require__(114);
+      PanelsView = __webpack_require__(112);
   var panels, PanelsViewObj;
 
   return {
-
     /**
      * Name of the module
      * @type {String}
@@ -34924,9 +34984,9 @@ module.exports = function () {
      *  visible  : true,
      *  buttons  : [...],
      * });
-     * 
+     *
      * const newPanel = panelManager.removePanel('myNewPanel');
-     * 
+     *
      */
     removePanel: function removePanel(panel) {
       return panels.remove(panel);
@@ -34986,7 +35046,7 @@ module.exports = function () {
      * Remove button from the panel
      * @param {string} panelId Panel's ID
      * @param {Object|Button|String} button Button object or instance of Button or button id
-     * @return {Button|null} Removed button. 
+     * @return {Button|null} Removed button.
      * @example
      * const removedButton = panelManager.removeButton('myNewPanel',{
      *   id: 'myNewButton',
@@ -34995,10 +35055,10 @@ module.exports = function () {
      *   attributes: { title: 'Some title'},
      *   active: false,
      * });
-     * 
+     *
      * // It's also possible to use the button id
      * const removedButton = panelManager.removeButton('myNewPanel','myNewButton');
-     * 
+     *
      */
     removeButton: function removeButton(panelId, button) {
       var pn = this.getPanel(panelId);
@@ -35060,12 +35120,11 @@ module.exports = function () {
 
 
     Panel: Panel
-
   };
 };
 
 /***/ }),
-/* 110 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35150,7 +35209,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 111 */
+/* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35159,7 +35218,6 @@ module.exports = {
 var Backbone = __webpack_require__(0);
 
 module.exports = Backbone.Model.extend({
-
   defaults: {
     id: '',
     className: '',
@@ -35184,7 +35242,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 112 */
+/* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35198,7 +35256,7 @@ module.exports = Backbone.Collection.extend({
 });
 
 /***/ }),
-/* 113 */
+/* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35209,7 +35267,6 @@ var _underscore = __webpack_require__(1);
 var $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
-
   tagName: 'span',
 
   initialize: function initialize(o) {
@@ -35329,7 +35386,7 @@ module.exports = Backbone.View.extend({
    * @return   void
    * */
   updateAttributes: function updateAttributes() {
-    this.$el.attr(this.model.get("attributes"));
+    this.$el.attr(this.model.get('attributes'));
   },
 
 
@@ -35484,7 +35541,6 @@ module.exports = Backbone.View.extend({
     this.toogleActive();
   },
   toogleActive: function toogleActive() {
-
     if (this.parentM) this.swapParent();
 
     var active = this.model.get('active');
@@ -35536,7 +35592,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-/* 114 */
+/* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35615,13 +35671,13 @@ module.exports = Backbone.View.extend({
 });
 
 /***/ }),
-/* 115 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _RichTextEditor = __webpack_require__(116);
+var _RichTextEditor = __webpack_require__(114);
 
 var _RichTextEditor2 = _interopRequireDefault(_RichTextEditor);
 
@@ -35646,7 +35702,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 module.exports = function () {
   var config = {};
-  var defaults = __webpack_require__(117);
+  var defaults = __webpack_require__(115);
   var toolbar = void 0,
       actions = void 0,
       lastEl = void 0,
@@ -35661,7 +35717,6 @@ module.exports = function () {
   };
 
   return {
-
     customRte: null,
 
     /**
@@ -35935,7 +35990,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 116 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36253,14 +36308,13 @@ var RichTextEditor = function () {
 exports.default = RichTextEditor;
 
 /***/ }),
-/* 117 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = {
-
   stylePrefix: 'rte-',
 
   // If true, moves the toolbar below the element when the top canvas
@@ -36272,7 +36326,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 118 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36308,20 +36362,20 @@ module.exports = {
 };
 
 /***/ }),
-/* 119 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var Sector = __webpack_require__(120);
+var Sector = __webpack_require__(118);
 
 module.exports = __webpack_require__(0).Collection.extend({
-	model: Sector
+  model: Sector
 });
 
 /***/ }),
-/* 120 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36331,10 +36385,9 @@ var _underscore = __webpack_require__(1);
 
 var Backbone = __webpack_require__(0);
 var Properties = __webpack_require__(11);
-var PropertyFactory = __webpack_require__(129);
+var PropertyFactory = __webpack_require__(127);
 
 module.exports = Backbone.Model.extend({
-
   defaults: {
     id: '',
     name: '',
@@ -36422,7 +36475,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 121 */
+/* 119 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36431,10 +36484,9 @@ module.exports = Backbone.Model.extend({
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var Property = __webpack_require__(33);
-var Layers = __webpack_require__(122);
+var Layers = __webpack_require__(120);
 
 module.exports = Property.extend({
-
   defaults: _extends({}, Property.prototype.defaults, {
     // Array of layers (which contain properties)
     layers: [],
@@ -36456,7 +36508,7 @@ module.exports = Property.extend({
 });
 
 /***/ }),
-/* 122 */
+/* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36464,10 +36516,9 @@ module.exports = Property.extend({
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var Layer = __webpack_require__(123);
+var Layer = __webpack_require__(121);
 
 module.exports = Backbone.Collection.extend({
-
   model: Layer,
 
   initialize: function initialize() {
@@ -36587,14 +36638,13 @@ module.exports = Backbone.Collection.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 123 */
+/* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(Backbone) {
 
 module.exports = Backbone.Model.extend({
-
   defaults: {
     index: '',
     value: '',
@@ -36643,7 +36693,7 @@ module.exports = Backbone.Model.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 124 */
+/* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36659,2233 +36709,2224 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 // License: MIT
 
 (function (factory) {
-    factory(Backbone.$);
+  factory(Backbone.$);
 })(function ($, undefined) {
-    "use strict";
+  'use strict';
 
-    var defaultOpts = {
+  var defaultOpts = {
+    // Callbacks
+    beforeShow: noop,
+    move: noop,
+    change: noop,
+    show: noop,
+    hide: noop,
 
-        // Callbacks
-        beforeShow: noop,
-        move: noop,
-        change: noop,
-        show: noop,
-        hide: noop,
-
-        // Options
-        color: false,
-        flat: false,
-        showInput: false,
-        allowEmpty: false,
-        showButtons: true,
-        clickoutFiresChange: true,
-        showInitial: false,
-        showPalette: false,
-        showPaletteOnly: false,
-        hideAfterPaletteSelect: false,
-        togglePaletteOnly: false,
-        showSelectionPalette: true,
-        localStorageKey: false,
-        appendTo: "body",
-        maxSelectionSize: 7,
-        cancelText: "cancel",
-        chooseText: "choose",
-        togglePaletteMoreText: "more",
-        togglePaletteLessText: "less",
-        clearText: "Clear Color Selection",
-        noColorSelectedText: "No Color Selected",
-        preferredFormat: false,
-        className: "", // Deprecated - use containerClassName and replacerClassName instead.
-        containerClassName: "",
-        replacerClassName: "",
-        showAlpha: false,
-        theme: "sp-light",
-        palette: [["#ffffff", "#000000", "#ff0000", "#ff8000", "#ffff00", "#008000", "#0000ff", "#4b0082", "#9400d3"]],
-        selectionPalette: [],
-        disabled: false,
-        offset: null
-    },
-        spectrums = [],
-        IE = !!/msie/i.exec(window.navigator.userAgent),
-        rgbaSupport = function () {
-        function contains(str, substr) {
-            return !!~('' + str).indexOf(substr);
-        }
-
-        var elem = document.createElement('div');
-        var style = elem.style;
-        style.cssText = 'background-color:rgba(0,0,0,.5)';
-        return contains(style.backgroundColor, 'rgba') || contains(style.backgroundColor, 'hsla');
-    }(),
-        replaceInput = ["<div class='sp-replacer'>", "<div class='sp-preview'><div class='sp-preview-inner'></div></div>", "<div class='sp-dd'>&#9660;</div>", "</div>"].join(''),
-        markup = function () {
-
-        // IE does not support gradients with multiple stops, so we need to simulate
-        //  that for the rainbow slider with 8 divs that each have a single gradient
-        var gradientFix = "";
-        if (IE) {
-            for (var i = 1; i <= 6; i++) {
-                gradientFix += "<div class='sp-" + i + "'></div>";
-            }
-        }
-
-        return ["<div class='sp-container sp-hidden'>", "<div class='sp-palette-container'>", "<div class='sp-palette sp-thumb sp-cf'></div>", "<div class='sp-palette-button-container sp-cf'>", "<button type='button' class='sp-palette-toggle'></button>", "</div>", "</div>", "<div class='sp-picker-container'>", "<div class='sp-top sp-cf'>", "<div class='sp-fill'></div>", "<div class='sp-top-inner'>", "<div class='sp-color'>", "<div class='sp-sat'>", "<div class='sp-val'>", "<div class='sp-dragger'></div>", "</div>", "</div>", "</div>", "<div class='sp-clear sp-clear-display'>", "</div>", "<div class='sp-hue'>", "<div class='sp-slider'></div>", gradientFix, "</div>", "</div>", "<div class='sp-alpha'><div class='sp-alpha-inner'><div class='sp-alpha-handle'></div></div></div>", "</div>", "<div class='sp-input-container sp-cf'>", "<input class='sp-input' type='text' spellcheck='false'  />", "</div>", "<div class='sp-initial sp-thumb sp-cf'></div>", "<div class='sp-button-container sp-cf'>", "<a class='sp-cancel' href='#'></a>", "<button type='button' class='sp-choose'></button>", "</div>", "</div>", "</div>"].join("");
-    }();
-
-    function paletteTemplate(p, color, className, opts) {
-        var html = [];
-        for (var i = 0; i < p.length; i++) {
-            var current = p[i];
-            if (current) {
-                var tiny = tinycolor(current);
-                var c = tiny.toHsl().l < 0.5 ? "sp-thumb-el sp-thumb-dark" : "sp-thumb-el sp-thumb-light";
-                c += tinycolor.equals(color, current) ? " sp-thumb-active" : "";
-                var formattedString = tiny.toString(opts.preferredFormat || "rgb");
-                var swatchStyle = rgbaSupport ? "background-color:" + tiny.toRgbString() : "filter:" + tiny.toFilter();
-                html.push('<span title="' + formattedString + '" data-color="' + tiny.toRgbString() + '" class="' + c + '"><span class="sp-thumb-inner" style="' + swatchStyle + ';"></span></span>');
-            } else {
-                var cls = 'sp-clear-display';
-                html.push($('<div />').append($('<span data-color="" style="background-color:transparent;" class="' + cls + '"></span>').attr('title', opts.noColorSelectedText)).html());
-            }
-        }
-        return "<div class='sp-cf " + className + "'>" + html.join('') + "</div>";
+    // Options
+    color: false,
+    flat: false,
+    showInput: false,
+    allowEmpty: false,
+    showButtons: true,
+    clickoutFiresChange: true,
+    showInitial: false,
+    showPalette: false,
+    showPaletteOnly: false,
+    hideAfterPaletteSelect: false,
+    togglePaletteOnly: false,
+    showSelectionPalette: true,
+    localStorageKey: false,
+    appendTo: 'body',
+    maxSelectionSize: 7,
+    cancelText: 'cancel',
+    chooseText: 'choose',
+    togglePaletteMoreText: 'more',
+    togglePaletteLessText: 'less',
+    clearText: 'Clear Color Selection',
+    noColorSelectedText: 'No Color Selected',
+    preferredFormat: false,
+    className: '', // Deprecated - use containerClassName and replacerClassName instead.
+    containerClassName: '',
+    replacerClassName: '',
+    showAlpha: false,
+    theme: 'sp-light',
+    palette: [['#ffffff', '#000000', '#ff0000', '#ff8000', '#ffff00', '#008000', '#0000ff', '#4b0082', '#9400d3']],
+    selectionPalette: [],
+    disabled: false,
+    offset: null
+  },
+      spectrums = [],
+      IE = !!/msie/i.exec(window.navigator.userAgent),
+      rgbaSupport = function () {
+    function contains(str, substr) {
+      return !!~('' + str).indexOf(substr);
     }
 
-    function hideAll() {
-        for (var i = 0; i < spectrums.length; i++) {
-            if (spectrums[i]) {
-                spectrums[i].hide();
-            }
-        }
+    var elem = document.createElement('div');
+    var style = elem.style;
+    style.cssText = 'background-color:rgba(0,0,0,.5)';
+    return contains(style.backgroundColor, 'rgba') || contains(style.backgroundColor, 'hsla');
+  }(),
+      replaceInput = ["<div class='sp-replacer'>", "<div class='sp-preview'><div class='sp-preview-inner'></div></div>", "<div class='sp-dd'>&#9660;</div>", '</div>'].join(''),
+      markup = function () {
+    // IE does not support gradients with multiple stops, so we need to simulate
+    //  that for the rainbow slider with 8 divs that each have a single gradient
+    var gradientFix = '';
+    if (IE) {
+      for (var i = 1; i <= 6; i++) {
+        gradientFix += "<div class='sp-" + i + "'></div>";
+      }
     }
 
-    function instanceOptions(o, callbackContext) {
-        var opts = $.extend({}, defaultOpts, o);
-        opts.callbacks = {
-            'move': bind(opts.move, callbackContext),
-            'change': bind(opts.change, callbackContext),
-            'show': bind(opts.show, callbackContext),
-            'hide': bind(opts.hide, callbackContext),
-            'beforeShow': bind(opts.beforeShow, callbackContext)
-        };
-        return opts;
+    return ["<div class='sp-container sp-hidden'>", "<div class='sp-palette-container'>", "<div class='sp-palette sp-thumb sp-cf'></div>", "<div class='sp-palette-button-container sp-cf'>", "<button type='button' class='sp-palette-toggle'></button>", '</div>', '</div>', "<div class='sp-picker-container'>", "<div class='sp-top sp-cf'>", "<div class='sp-fill'></div>", "<div class='sp-top-inner'>", "<div class='sp-color'>", "<div class='sp-sat'>", "<div class='sp-val'>", "<div class='sp-dragger'></div>", '</div>', '</div>', '</div>', "<div class='sp-clear sp-clear-display'>", '</div>', "<div class='sp-hue'>", "<div class='sp-slider'></div>", gradientFix, '</div>', '</div>', "<div class='sp-alpha'><div class='sp-alpha-inner'><div class='sp-alpha-handle'></div></div></div>", '</div>', "<div class='sp-input-container sp-cf'>", "<input class='sp-input' type='text' spellcheck='false'  />", '</div>', "<div class='sp-initial sp-thumb sp-cf'></div>", "<div class='sp-button-container sp-cf'>", "<a class='sp-cancel' href='#'></a>", "<button type='button' class='sp-choose'></button>", '</div>', '</div>', '</div>'].join('');
+  }();
+
+  function paletteTemplate(p, color, className, opts) {
+    var html = [];
+    for (var i = 0; i < p.length; i++) {
+      var current = p[i];
+      if (current) {
+        var tiny = tinycolor(current);
+        var c = tiny.toHsl().l < 0.5 ? 'sp-thumb-el sp-thumb-dark' : 'sp-thumb-el sp-thumb-light';
+        c += tinycolor.equals(color, current) ? ' sp-thumb-active' : '';
+        var formattedString = tiny.toString(opts.preferredFormat || 'rgb');
+        var swatchStyle = rgbaSupport ? 'background-color:' + tiny.toRgbString() : 'filter:' + tiny.toFilter();
+        html.push('<span title="' + formattedString + '" data-color="' + tiny.toRgbString() + '" class="' + c + '"><span class="sp-thumb-inner" style="' + swatchStyle + ';"></span></span>');
+      } else {
+        var cls = 'sp-clear-display';
+        html.push($('<div />').append($('<span data-color="" style="background-color:transparent;" class="' + cls + '"></span>').attr('title', opts.noColorSelectedText)).html());
+      }
+    }
+    return "<div class='sp-cf " + className + "'>" + html.join('') + '</div>';
+  }
+
+  function hideAll() {
+    for (var i = 0; i < spectrums.length; i++) {
+      if (spectrums[i]) {
+        spectrums[i].hide();
+      }
+    }
+  }
+
+  function instanceOptions(o, callbackContext) {
+    var opts = $.extend({}, defaultOpts, o);
+    opts.callbacks = {
+      move: bind(opts.move, callbackContext),
+      change: bind(opts.change, callbackContext),
+      show: bind(opts.show, callbackContext),
+      hide: bind(opts.hide, callbackContext),
+      beforeShow: bind(opts.beforeShow, callbackContext)
+    };
+    return opts;
+  }
+
+  function spectrum(element, o) {
+    var opts = instanceOptions(o, element),
+        flat = opts.flat,
+        showSelectionPalette = opts.showSelectionPalette,
+        localStorageKey = opts.localStorageKey,
+        theme = opts.theme,
+        callbacks = opts.callbacks,
+        resize = throttle(reflow, 10),
+        visible = false,
+        isDragging = false,
+        dragWidth = 0,
+        dragHeight = 0,
+        dragHelperHeight = 0,
+        slideHeight = 0,
+        slideWidth = 0,
+        alphaWidth = 0,
+        alphaSlideHelperWidth = 0,
+        slideHelperHeight = 0,
+        currentHue = 0,
+        currentSaturation = 0,
+        currentValue = 0,
+        currentAlpha = 1,
+        palette = [],
+        paletteArray = [],
+        paletteLookup = {},
+        selectionPalette = opts.selectionPalette.slice(0),
+        maxSelectionSize = opts.maxSelectionSize,
+        draggingClass = 'sp-dragging',
+        shiftMovementDirection = null;
+
+    var doc = element.ownerDocument,
+        body = doc.body,
+        boundElement = $(element),
+        disabled = false,
+        container = $(markup, doc).addClass(theme),
+        pickerContainer = container.find('.sp-picker-container'),
+        dragger = container.find('.sp-color'),
+        dragHelper = container.find('.sp-dragger'),
+        slider = container.find('.sp-hue'),
+        slideHelper = container.find('.sp-slider'),
+        alphaSliderInner = container.find('.sp-alpha-inner'),
+        alphaSlider = container.find('.sp-alpha'),
+        alphaSlideHelper = container.find('.sp-alpha-handle'),
+        textInput = container.find('.sp-input'),
+        paletteContainer = container.find('.sp-palette'),
+        initialColorContainer = container.find('.sp-initial'),
+        cancelButton = container.find('.sp-cancel'),
+        clearButton = container.find('.sp-clear'),
+        chooseButton = container.find('.sp-choose'),
+        toggleButton = container.find('.sp-palette-toggle'),
+        isInput = boundElement.is('input'),
+        isInputTypeColor = isInput && boundElement.attr('type') === 'color' && inputTypeColorSupport(),
+        shouldReplace = isInput && !flat,
+        replacer = shouldReplace ? $(replaceInput).addClass(theme).addClass(opts.className).addClass(opts.replacerClassName) : $([]),
+        offsetElement = shouldReplace ? replacer : boundElement,
+        previewElement = replacer.find('.sp-preview-inner'),
+        initialColor = opts.color || isInput && boundElement.val(),
+        colorOnShow = false,
+        currentPreferredFormat = opts.preferredFormat,
+        clickoutFiresChange = !opts.showButtons || opts.clickoutFiresChange,
+        isEmpty = !initialColor,
+        allowEmpty = opts.allowEmpty && !isInputTypeColor;
+
+    function applyOptions() {
+      if (opts.showPaletteOnly) {
+        opts.showPalette = true;
+      }
+
+      toggleButton.text(opts.showPaletteOnly ? opts.togglePaletteMoreText : opts.togglePaletteLessText);
+
+      if (opts.palette) {
+        palette = opts.palette.slice(0);
+        paletteArray = $.isArray(palette[0]) ? palette : [palette];
+        paletteLookup = {};
+        for (var i = 0; i < paletteArray.length; i++) {
+          for (var j = 0; j < paletteArray[i].length; j++) {
+            var rgb = tinycolor(paletteArray[i][j]).toRgbString();
+            paletteLookup[rgb] = true;
+          }
+        }
+      }
+
+      container.toggleClass('sp-flat', flat);
+      container.toggleClass('sp-input-disabled', !opts.showInput);
+      container.toggleClass('sp-alpha-enabled', opts.showAlpha);
+      container.toggleClass('sp-clear-enabled', allowEmpty);
+      container.toggleClass('sp-buttons-disabled', !opts.showButtons);
+      container.toggleClass('sp-palette-buttons-disabled', !opts.togglePaletteOnly);
+      container.toggleClass('sp-palette-disabled', !opts.showPalette);
+      container.toggleClass('sp-palette-only', opts.showPaletteOnly);
+      container.toggleClass('sp-initial-disabled', !opts.showInitial);
+      container.addClass(opts.className).addClass(opts.containerClassName);
+
+      reflow();
     }
 
-    function spectrum(element, o) {
+    function initialize() {
+      if (IE) {
+        container.find('*:not(input)').attr('unselectable', 'on');
+      }
 
-        var opts = instanceOptions(o, element),
-            flat = opts.flat,
-            showSelectionPalette = opts.showSelectionPalette,
-            localStorageKey = opts.localStorageKey,
-            theme = opts.theme,
-            callbacks = opts.callbacks,
-            resize = throttle(reflow, 10),
-            visible = false,
-            isDragging = false,
-            dragWidth = 0,
-            dragHeight = 0,
-            dragHelperHeight = 0,
-            slideHeight = 0,
-            slideWidth = 0,
-            alphaWidth = 0,
-            alphaSlideHelperWidth = 0,
-            slideHelperHeight = 0,
-            currentHue = 0,
-            currentSaturation = 0,
-            currentValue = 0,
-            currentAlpha = 1,
-            palette = [],
-            paletteArray = [],
-            paletteLookup = {},
-            selectionPalette = opts.selectionPalette.slice(0),
-            maxSelectionSize = opts.maxSelectionSize,
-            draggingClass = "sp-dragging",
-            shiftMovementDirection = null;
+      applyOptions();
 
-        var doc = element.ownerDocument,
-            body = doc.body,
-            boundElement = $(element),
-            disabled = false,
-            container = $(markup, doc).addClass(theme),
-            pickerContainer = container.find(".sp-picker-container"),
-            dragger = container.find(".sp-color"),
-            dragHelper = container.find(".sp-dragger"),
-            slider = container.find(".sp-hue"),
-            slideHelper = container.find(".sp-slider"),
-            alphaSliderInner = container.find(".sp-alpha-inner"),
-            alphaSlider = container.find(".sp-alpha"),
-            alphaSlideHelper = container.find(".sp-alpha-handle"),
-            textInput = container.find(".sp-input"),
-            paletteContainer = container.find(".sp-palette"),
-            initialColorContainer = container.find(".sp-initial"),
-            cancelButton = container.find(".sp-cancel"),
-            clearButton = container.find(".sp-clear"),
-            chooseButton = container.find(".sp-choose"),
-            toggleButton = container.find(".sp-palette-toggle"),
-            isInput = boundElement.is("input"),
-            isInputTypeColor = isInput && boundElement.attr("type") === "color" && inputTypeColorSupport(),
-            shouldReplace = isInput && !flat,
-            replacer = shouldReplace ? $(replaceInput).addClass(theme).addClass(opts.className).addClass(opts.replacerClassName) : $([]),
-            offsetElement = shouldReplace ? replacer : boundElement,
-            previewElement = replacer.find(".sp-preview-inner"),
-            initialColor = opts.color || isInput && boundElement.val(),
-            colorOnShow = false,
-            currentPreferredFormat = opts.preferredFormat,
-            clickoutFiresChange = !opts.showButtons || opts.clickoutFiresChange,
-            isEmpty = !initialColor,
-            allowEmpty = opts.allowEmpty && !isInputTypeColor;
+      if (shouldReplace) {
+        boundElement.after(replacer).hide();
+      }
 
-        function applyOptions() {
+      if (!allowEmpty) {
+        clearButton.hide();
+      }
 
-            if (opts.showPaletteOnly) {
-                opts.showPalette = true;
-            }
-
-            toggleButton.text(opts.showPaletteOnly ? opts.togglePaletteMoreText : opts.togglePaletteLessText);
-
-            if (opts.palette) {
-                palette = opts.palette.slice(0);
-                paletteArray = $.isArray(palette[0]) ? palette : [palette];
-                paletteLookup = {};
-                for (var i = 0; i < paletteArray.length; i++) {
-                    for (var j = 0; j < paletteArray[i].length; j++) {
-                        var rgb = tinycolor(paletteArray[i][j]).toRgbString();
-                        paletteLookup[rgb] = true;
-                    }
-                }
-            }
-
-            container.toggleClass("sp-flat", flat);
-            container.toggleClass("sp-input-disabled", !opts.showInput);
-            container.toggleClass("sp-alpha-enabled", opts.showAlpha);
-            container.toggleClass("sp-clear-enabled", allowEmpty);
-            container.toggleClass("sp-buttons-disabled", !opts.showButtons);
-            container.toggleClass("sp-palette-buttons-disabled", !opts.togglePaletteOnly);
-            container.toggleClass("sp-palette-disabled", !opts.showPalette);
-            container.toggleClass("sp-palette-only", opts.showPaletteOnly);
-            container.toggleClass("sp-initial-disabled", !opts.showInitial);
-            container.addClass(opts.className).addClass(opts.containerClassName);
-
-            reflow();
+      if (flat) {
+        boundElement.after(container).hide();
+      } else {
+        var appendTo = opts.appendTo === 'parent' ? boundElement.parent() : $(opts.appendTo);
+        if (appendTo.length !== 1) {
+          appendTo = $('body');
         }
 
-        function initialize() {
+        appendTo.append(container);
+      }
 
-            if (IE) {
-                container.find("*:not(input)").attr("unselectable", "on");
-            }
+      updateSelectionPaletteFromStorage();
 
-            applyOptions();
-
-            if (shouldReplace) {
-                boundElement.after(replacer).hide();
-            }
-
-            if (!allowEmpty) {
-                clearButton.hide();
-            }
-
-            if (flat) {
-                boundElement.after(container).hide();
-            } else {
-
-                var appendTo = opts.appendTo === "parent" ? boundElement.parent() : $(opts.appendTo);
-                if (appendTo.length !== 1) {
-                    appendTo = $("body");
-                }
-
-                appendTo.append(container);
-            }
-
-            updateSelectionPaletteFromStorage();
-
-            offsetElement.bind("click.spectrum touchstart.spectrum", function (e) {
-
-                if (!disabled) {
-                    toggle();
-                }
-
-                e.stopPropagation();
-
-                if (!$(e.target).is("input")) {
-                    e.preventDefault();
-                }
-            });
-
-            if (boundElement.is(":disabled") || opts.disabled === true) {
-                disable();
-            }
-
-            // Prevent clicks from bubbling up to document.  This would cause it to be hidden.
-            container.click(stopPropagation);
-
-            // Handle user typed input
-            textInput.change(setFromTextInput);
-            textInput.bind("paste", function () {
-                setTimeout(setFromTextInput, 1);
-            });
-            textInput.keydown(function (e) {
-                if (e.keyCode == 13) {
-                    setFromTextInput();
-                }
-            });
-
-            cancelButton.text(opts.cancelText);
-            cancelButton.bind("click.spectrum", function (e) {
-                e.stopPropagation();
-                e.preventDefault();
-                revert();
-                hide();
-            });
-
-            clearButton.attr("title", opts.clearText);
-            clearButton.bind("click.spectrum", function (e) {
-                e.stopPropagation();
-                e.preventDefault();
-                isEmpty = true;
-                move();
-
-                if (flat) {
-                    //for the flat style, this is a change event
-                    updateOriginalInput(true);
-                }
-            });
-
-            chooseButton.text(opts.chooseText);
-            chooseButton.bind("click.spectrum", function (e) {
-                e.stopPropagation();
-                e.preventDefault();
-
-                if (IE && textInput.is(":focus")) {
-                    textInput.trigger('change');
-                }
-
-                if (isValid()) {
-                    updateOriginalInput(true);
-                    hide();
-                }
-            });
-
-            toggleButton.text(opts.showPaletteOnly ? opts.togglePaletteMoreText : opts.togglePaletteLessText);
-            toggleButton.bind("click.spectrum", function (e) {
-                e.stopPropagation();
-                e.preventDefault();
-
-                opts.showPaletteOnly = !opts.showPaletteOnly;
-
-                // To make sure the Picker area is drawn on the right, next to the
-                // Palette area (and not below the palette), first move the Palette
-                // to the left to make space for the picker, plus 5px extra.
-                // The 'applyOptions' function puts the whole container back into place
-                // and takes care of the button-text and the sp-palette-only CSS class.
-                if (!opts.showPaletteOnly && !flat) {
-                    container.css('left', '-=' + (pickerContainer.outerWidth(true) + 5));
-                }
-                applyOptions();
-            });
-
-            draggable(alphaSlider, function (dragX, dragY, e) {
-                currentAlpha = dragX / alphaWidth;
-                isEmpty = false;
-                if (e.shiftKey) {
-                    currentAlpha = Math.round(currentAlpha * 10) / 10;
-                }
-
-                move();
-            }, dragStart, dragStop);
-
-            draggable(slider, function (dragX, dragY) {
-                currentHue = parseFloat(dragY / slideHeight);
-                isEmpty = false;
-                if (!opts.showAlpha) {
-                    currentAlpha = 1;
-                }
-                move();
-            }, dragStart, dragStop);
-
-            draggable(dragger, function (dragX, dragY, e) {
-
-                // shift+drag should snap the movement to either the x or y axis.
-                if (!e.shiftKey) {
-                    shiftMovementDirection = null;
-                } else if (!shiftMovementDirection) {
-                    var oldDragX = currentSaturation * dragWidth;
-                    var oldDragY = dragHeight - currentValue * dragHeight;
-                    var furtherFromX = Math.abs(dragX - oldDragX) > Math.abs(dragY - oldDragY);
-
-                    shiftMovementDirection = furtherFromX ? "x" : "y";
-                }
-
-                var setSaturation = !shiftMovementDirection || shiftMovementDirection === "x";
-                var setValue = !shiftMovementDirection || shiftMovementDirection === "y";
-
-                if (setSaturation) {
-                    currentSaturation = parseFloat(dragX / dragWidth);
-                }
-                if (setValue) {
-                    currentValue = parseFloat((dragHeight - dragY) / dragHeight);
-                }
-
-                isEmpty = false;
-                if (!opts.showAlpha) {
-                    currentAlpha = 1;
-                }
-
-                move();
-            }, dragStart, dragStop);
-
-            if (!!initialColor) {
-                _set(initialColor);
-
-                // In case color was black - update the preview UI and set the format
-                // since the set function will not run (default color is black).
-                updateUI();
-                currentPreferredFormat = opts.preferredFormat || tinycolor(initialColor).format;
-
-                addColorToSelectionPalette(initialColor);
-            } else {
-                updateUI();
-            }
-
-            if (flat) {
-                show();
-            }
-
-            function paletteElementClick(e) {
-                if (e.data && e.data.ignore) {
-                    _set($(e.target).closest(".sp-thumb-el").data("color"));
-                    move();
-                } else {
-                    _set($(e.target).closest(".sp-thumb-el").data("color"));
-                    move();
-                    updateOriginalInput(true);
-                    if (opts.hideAfterPaletteSelect) {
-                        hide();
-                    }
-                }
-
-                return false;
-            }
-
-            var paletteEvent = IE ? "mousedown.spectrum" : "click.spectrum touchstart.spectrum";
-            paletteContainer.delegate(".sp-thumb-el", paletteEvent, paletteElementClick);
-            initialColorContainer.delegate(".sp-thumb-el:nth-child(1)", paletteEvent, { ignore: true }, paletteElementClick);
+      offsetElement.bind('click.spectrum touchstart.spectrum', function (e) {
+        if (!disabled) {
+          toggle();
         }
 
-        function updateSelectionPaletteFromStorage() {
-
-            if (localStorageKey && window.localStorage) {
-
-                // Migrate old palettes over to new format.  May want to remove this eventually.
-                try {
-                    var oldPalette = window.localStorage[localStorageKey].split(",#");
-                    if (oldPalette.length > 1) {
-                        delete window.localStorage[localStorageKey];
-                        $.each(oldPalette, function (i, c) {
-                            addColorToSelectionPalette(c);
-                        });
-                    }
-                } catch (e) {}
-
-                try {
-                    selectionPalette = window.localStorage[localStorageKey].split(";");
-                } catch (e) {}
-            }
-        }
-
-        function addColorToSelectionPalette(color) {
-            if (showSelectionPalette) {
-                var rgb = tinycolor(color).toRgbString();
-                if (!paletteLookup[rgb] && $.inArray(rgb, selectionPalette) === -1) {
-                    selectionPalette.push(rgb);
-                    while (selectionPalette.length > maxSelectionSize) {
-                        selectionPalette.shift();
-                    }
-                }
-
-                if (localStorageKey && window.localStorage) {
-                    try {
-                        window.localStorage[localStorageKey] = selectionPalette.join(";");
-                    } catch (e) {}
-                }
-            }
-        }
-
-        function getUniqueSelectionPalette() {
-            var unique = [];
-            if (opts.showPalette) {
-                for (var i = 0; i < selectionPalette.length; i++) {
-                    var rgb = tinycolor(selectionPalette[i]).toRgbString();
-
-                    if (!paletteLookup[rgb]) {
-                        unique.push(selectionPalette[i]);
-                    }
-                }
-            }
-
-            return unique.reverse().slice(0, opts.maxSelectionSize);
-        }
-
-        function drawPalette() {
-
-            var currentColor = get();
-
-            var html = $.map(paletteArray, function (palette, i) {
-                return paletteTemplate(palette, currentColor, "sp-palette-row sp-palette-row-" + i, opts);
-            });
-
-            updateSelectionPaletteFromStorage();
-
-            if (selectionPalette) {
-                html.push(paletteTemplate(getUniqueSelectionPalette(), currentColor, "sp-palette-row sp-palette-row-selection", opts));
-            }
-
-            paletteContainer.html(html.join(""));
-        }
-
-        function drawInitial() {
-            if (opts.showInitial) {
-                var initial = colorOnShow;
-                var current = get();
-                initialColorContainer.html(paletteTemplate([initial, current], current, "sp-palette-row-initial", opts));
-            }
-        }
-
-        function dragStart() {
-            if (dragHeight <= 0 || dragWidth <= 0 || slideHeight <= 0) {
-                reflow();
-            }
-            isDragging = true;
-            container.addClass(draggingClass);
-            shiftMovementDirection = null;
-            boundElement.trigger('dragstart.spectrum', [get()]);
-        }
-
-        function dragStop() {
-            isDragging = false;
-            container.removeClass(draggingClass);
-            boundElement.trigger('dragstop.spectrum', [get()]);
-        }
-
-        function setFromTextInput() {
-
-            var value = textInput.val();
-
-            if ((value === null || value === "") && allowEmpty) {
-                _set(null);
-                updateOriginalInput(true);
-            } else {
-                var tiny = tinycolor(value);
-                if (tiny.isValid()) {
-                    _set(tiny);
-                    updateOriginalInput(true);
-                } else {
-                    textInput.addClass("sp-validation-error");
-                }
-            }
-        }
-
-        function toggle() {
-            if (visible) {
-                hide();
-            } else {
-                show();
-            }
-        }
-
-        function show() {
-            var event = $.Event('beforeShow.spectrum');
-
-            if (visible) {
-                reflow();
-                return;
-            }
-
-            boundElement.trigger(event, [get()]);
-
-            if (callbacks.beforeShow(get()) === false || event.isDefaultPrevented()) {
-                return;
-            }
-
-            hideAll();
-            visible = true;
-
-            var $doc = $(doc);
-            $doc.bind("keydown.spectrum", onkeydown);
-            $doc.bind("click.spectrum", clickout);
-            $(window).bind("resize.spectrum", resize);
-            replacer.addClass("sp-active");
-            container.removeClass("sp-hidden");
-
-            reflow();
-            updateUI();
-
-            colorOnShow = get();
-
-            drawInitial();
-            callbacks.show(colorOnShow);
-            boundElement.trigger('show.spectrum', [colorOnShow]);
-        }
-
-        function onkeydown(e) {
-            // Close on ESC
-            if (e.keyCode === 27) {
-                hide();
-            }
-        }
-
-        function clickout(e) {
-            // Return on right click.
-            if (e.button == 2) {
-                return;
-            }
-
-            // If a drag event was happening during the mouseup, don't hide
-            // on click.
-            if (isDragging) {
-                return;
-            }
-
-            if (clickoutFiresChange) {
-                updateOriginalInput(true);
-            } else {
-                revert();
-            }
-            hide();
-        }
-
-        function hide() {
-            // Return if hiding is unnecessary
-            if (!visible || flat) {
-                return;
-            }
-            visible = false;
-
-            $(doc).unbind("keydown.spectrum", onkeydown);
-            $(doc).unbind("click.spectrum", clickout);
-            $(window).unbind("resize.spectrum", resize);
-
-            replacer.removeClass("sp-active");
-            container.addClass("sp-hidden");
-
-            callbacks.hide(get());
-            boundElement.trigger('hide.spectrum', [get()]);
-        }
-
-        function revert() {
-            _set(colorOnShow, true);
-        }
-
-        function _set(color, ignoreFormatChange) {
-            if (tinycolor.equals(color, get())) {
-                // Update UI just in case a validation error needs
-                // to be cleared.
-                updateUI();
-                return;
-            }
-
-            var newColor, newHsv;
-            if (!color && allowEmpty) {
-                isEmpty = true;
-            } else {
-                isEmpty = false;
-                newColor = tinycolor(color);
-                newHsv = newColor.toHsv();
-
-                currentHue = newHsv.h % 360 / 360;
-                currentSaturation = newHsv.s;
-                currentValue = newHsv.v;
-                currentAlpha = newHsv.a;
-            }
-            updateUI();
-
-            if (newColor && newColor.isValid() && !ignoreFormatChange) {
-                currentPreferredFormat = opts.preferredFormat || newColor.getFormat();
-            }
-        }
-
-        function get(opts) {
-            opts = opts || {};
-
-            if (allowEmpty && isEmpty) {
-                return null;
-            }
-
-            return tinycolor.fromRatio({
-                h: currentHue,
-                s: currentSaturation,
-                v: currentValue,
-                a: Math.round(currentAlpha * 100) / 100
-            }, { format: opts.format || currentPreferredFormat });
-        }
-
-        function isValid() {
-            return !textInput.hasClass("sp-validation-error");
-        }
-
-        function move() {
-            updateUI();
-
-            callbacks.move(get());
-            boundElement.trigger('move.spectrum', [get()]);
-        }
-
-        function updateUI() {
-
-            textInput.removeClass("sp-validation-error");
-
-            updateHelperLocations();
-
-            // Update dragger background color (gradients take care of saturation and value).
-            var flatColor = tinycolor.fromRatio({ h: currentHue, s: 1, v: 1 });
-            dragger.css("background-color", flatColor.toHexString());
-
-            // Get a format that alpha will be included in (hex and names ignore alpha)
-            var format = currentPreferredFormat;
-            if (currentAlpha < 1 && !(currentAlpha === 0 && format === "name")) {
-                if (format === "hex" || format === "hex3" || format === "hex6" || format === "name") {
-                    format = "rgb";
-                }
-            }
-
-            var realColor = get({ format: format }),
-                displayColor = '';
-
-            //reset background info for preview element
-            previewElement.removeClass("sp-clear-display");
-            previewElement.css('background-color', 'transparent');
-
-            if (!realColor && allowEmpty) {
-                // Update the replaced elements background with icon indicating no color selection
-                previewElement.addClass("sp-clear-display");
-            } else {
-                var realHex = realColor.toHexString(),
-                    realRgb = realColor.toRgbString();
-
-                // Update the replaced elements background color (with actual selected color)
-                if (rgbaSupport || realColor.alpha === 1) {
-                    previewElement.css("background-color", realRgb);
-                } else {
-                    previewElement.css("background-color", "transparent");
-                    previewElement.css("filter", realColor.toFilter());
-                }
-
-                if (opts.showAlpha) {
-                    var rgb = realColor.toRgb();
-                    rgb.a = 0;
-                    var realAlpha = tinycolor(rgb).toRgbString();
-                    var gradient = "linear-gradient(left, " + realAlpha + ", " + realHex + ")";
-
-                    if (IE) {
-                        alphaSliderInner.css("filter", tinycolor(realAlpha).toFilter({ gradientType: 1 }, realHex));
-                    } else {
-                        alphaSliderInner.css("background", "-webkit-" + gradient);
-                        alphaSliderInner.css("background", "-moz-" + gradient);
-                        alphaSliderInner.css("background", "-ms-" + gradient);
-                        // Use current syntax gradient on unprefixed property.
-                        alphaSliderInner.css("background", "linear-gradient(to right, " + realAlpha + ", " + realHex + ")");
-                    }
-                }
-
-                displayColor = realColor.toString(format);
-            }
-
-            // Update the text entry input as it changes happen
-            if (opts.showInput) {
-                textInput.val(displayColor);
-            }
-
-            if (opts.showPalette) {
-                drawPalette();
-            }
-
-            drawInitial();
-        }
-
-        function updateHelperLocations() {
-            var s = currentSaturation;
-            var v = currentValue;
-
-            if (allowEmpty && isEmpty) {
-                //if selected color is empty, hide the helpers
-                alphaSlideHelper.hide();
-                slideHelper.hide();
-                dragHelper.hide();
-            } else {
-                //make sure helpers are visible
-                alphaSlideHelper.show();
-                slideHelper.show();
-                dragHelper.show();
-
-                // Where to show the little circle in that displays your current selected color
-                var dragX = s * dragWidth;
-                var dragY = dragHeight - v * dragHeight;
-                dragX = Math.max(-dragHelperHeight, Math.min(dragWidth - dragHelperHeight, dragX - dragHelperHeight));
-                dragY = Math.max(-dragHelperHeight, Math.min(dragHeight - dragHelperHeight, dragY - dragHelperHeight));
-                dragHelper.css({
-                    "top": dragY + "px",
-                    "left": dragX + "px"
-                });
-
-                var alphaX = currentAlpha * alphaWidth;
-                alphaSlideHelper.css({
-                    "left": alphaX - alphaSlideHelperWidth / 2 + "px"
-                });
-
-                // Where to show the bar that displays your current selected hue
-                var slideY = currentHue * slideHeight;
-                slideHelper.css({
-                    "top": slideY - slideHelperHeight + "px"
-                });
-            }
-        }
-
-        function updateOriginalInput(fireCallback) {
-            var color = get(),
-                displayColor = '',
-                hasChanged = !tinycolor.equals(color, colorOnShow);
-
-            if (color) {
-                displayColor = color.toString(currentPreferredFormat);
-                // Update the selection palette with the current color
-                addColorToSelectionPalette(color);
-            }
-
-            if (isInput) {
-                boundElement.val(displayColor);
-            }
-
-            if (fireCallback && hasChanged) {
-                callbacks.change(color);
-                boundElement.trigger('change', [color]);
-            }
-        }
-
-        function reflow() {
-            if (!visible) {
-                return; // Calculations would be useless and wouldn't be reliable anyways
-            }
-            dragWidth = dragger.width();
-            dragHeight = dragger.height();
-            dragHelperHeight = dragHelper.height();
-            slideWidth = slider.width();
-            slideHeight = slider.height();
-            slideHelperHeight = slideHelper.height();
-            alphaWidth = alphaSlider.width();
-            alphaSlideHelperWidth = alphaSlideHelper.width();
-
-            if (!flat) {
-                container.css("position", "absolute");
-                if (opts.offset) {
-                    container.offset(opts.offset);
-                } else {
-                    container.offset(getOffset(container, offsetElement));
-                }
-            }
-
-            updateHelperLocations();
-
-            if (opts.showPalette) {
-                drawPalette();
-            }
-
-            boundElement.trigger('reflow.spectrum');
-        }
-
-        function destroy() {
-            boundElement.show();
-            offsetElement.unbind("click.spectrum touchstart.spectrum");
-            container.remove();
-            replacer.remove();
-            spectrums[spect.id] = null;
-        }
-
-        function option(optionName, optionValue) {
-            if (optionName === undefined) {
-                return $.extend({}, opts);
-            }
-            if (optionValue === undefined) {
-                return opts[optionName];
-            }
-
-            opts[optionName] = optionValue;
-
-            if (optionName === "preferredFormat") {
-                currentPreferredFormat = opts.preferredFormat;
-            }
-            applyOptions();
-        }
-
-        function enable() {
-            disabled = false;
-            boundElement.attr("disabled", false);
-            offsetElement.removeClass("sp-disabled");
-        }
-
-        function disable() {
-            hide();
-            disabled = true;
-            boundElement.attr("disabled", true);
-            offsetElement.addClass("sp-disabled");
-        }
-
-        function setOffset(coord) {
-            opts.offset = coord;
-            reflow();
-        }
-
-        initialize();
-
-        var spect = {
-            show: show,
-            hide: hide,
-            toggle: toggle,
-            reflow: reflow,
-            option: option,
-            enable: enable,
-            disable: disable,
-            offset: setOffset,
-            set: function set(c) {
-                _set(c);
-                updateOriginalInput();
-            },
-            get: get,
-            destroy: destroy,
-            container: container
-        };
-
-        spect.id = spectrums.push(spect) - 1;
-
-        return spect;
-    }
-
-    /**
-    * checkOffset - get the offset below/above and left/right element depending on screen position
-    * Thanks https://github.com/jquery/jquery-ui/blob/master/ui/jquery.ui.datepicker.js
-    */
-    function getOffset(picker, input) {
-        var extraY = 0;
-        var dpWidth = picker.outerWidth();
-        var dpHeight = picker.outerHeight();
-        var inputHeight = input.outerHeight();
-        var doc = picker[0].ownerDocument;
-        var docElem = doc.documentElement;
-        var cW = docElem.clientWidth;
-        var cH = docElem.clientHeight;
-        var scL = $(doc).scrollLeft();
-        var scT = $(doc).scrollTop();
-        var viewWidth = cW + scL;
-        var viewHeight = cH + scT;
-        var offset = input.offset();
-
-        offset.top += inputHeight;
-
-        offset.left -= Math.min(offset.left, offset.left + dpWidth > viewWidth && viewWidth > dpWidth ? Math.abs(offset.left + dpWidth - viewWidth) : 0);
-
-        offset.top -= Math.min(offset.top, offset.top + dpHeight > viewHeight && viewHeight > dpHeight ? Math.abs(dpHeight + inputHeight - extraY) : extraY);
-
-        return offset;
-    }
-
-    /**
-    * noop - do nothing
-    */
-    function noop() {}
-
-    /**
-    * stopPropagation - makes the code only doing this a little easier to read in line
-    */
-    function stopPropagation(e) {
         e.stopPropagation();
-    }
 
-    /**
-    * Create a function bound to a given object
-    * Thanks to underscore.js
-    */
-    function bind(func, obj) {
-        var slice = Array.prototype.slice;
-        var args = slice.call(arguments, 2);
-        return function () {
-            return func.apply(obj, args.concat(slice.call(arguments)));
-        };
-    }
+        if (!$(e.target).is('input')) {
+          e.preventDefault();
+        }
+      });
 
-    /**
-    * Lightweight drag helper.  Handles containment within the element, so that
-    * when dragging, the x is within [0,element.width] and y is within [0,element.height]
-    */
-    function draggable(element, onmove, onstart, onstop) {
-        onmove = onmove || function () {};
-        onstart = onstart || function () {};
-        onstop = onstop || function () {};
-        var doc = document;
-        var dragging = false;
-        var offset = {};
-        var maxHeight = 0;
-        var maxWidth = 0;
-        var hasTouch = 'ontouchstart' in window;
+      if (boundElement.is(':disabled') || opts.disabled === true) {
+        disable();
+      }
 
-        var duringDragEvents = {};
-        duringDragEvents["selectstart"] = prevent;
-        duringDragEvents["dragstart"] = prevent;
-        duringDragEvents["touchmove mousemove"] = move;
-        duringDragEvents["touchend mouseup"] = stop;
+      // Prevent clicks from bubbling up to document.  This would cause it to be hidden.
+      container.click(stopPropagation);
 
-        function prevent(e) {
-            if (e.stopPropagation) {
-                e.stopPropagation();
-            }
-            if (e.preventDefault) {
-                e.preventDefault();
-            }
-            e.returnValue = false;
+      // Handle user typed input
+      textInput.change(setFromTextInput);
+      textInput.bind('paste', function () {
+        setTimeout(setFromTextInput, 1);
+      });
+      textInput.keydown(function (e) {
+        if (e.keyCode == 13) {
+          setFromTextInput();
+        }
+      });
+
+      cancelButton.text(opts.cancelText);
+      cancelButton.bind('click.spectrum', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        revert();
+        hide();
+      });
+
+      clearButton.attr('title', opts.clearText);
+      clearButton.bind('click.spectrum', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        isEmpty = true;
+        move();
+
+        if (flat) {
+          //for the flat style, this is a change event
+          updateOriginalInput(true);
+        }
+      });
+
+      chooseButton.text(opts.chooseText);
+      chooseButton.bind('click.spectrum', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+
+        if (IE && textInput.is(':focus')) {
+          textInput.trigger('change');
         }
 
-        function move(e) {
-            if (dragging) {
-                // Mouseup happened outside of window
-                if (IE && doc.documentMode < 9 && !e.button) {
-                    return stop();
-                }
+        if (isValid()) {
+          updateOriginalInput(true);
+          hide();
+        }
+      });
 
-                var t0 = e.originalEvent && e.originalEvent.touches && e.originalEvent.touches[0];
-                var pageX = t0 && t0.pageX || e.pageX;
-                var pageY = t0 && t0.pageY || e.pageY;
+      toggleButton.text(opts.showPaletteOnly ? opts.togglePaletteMoreText : opts.togglePaletteLessText);
+      toggleButton.bind('click.spectrum', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
 
-                var dragX = Math.max(0, Math.min(pageX - offset.left, maxWidth));
-                var dragY = Math.max(0, Math.min(pageY - offset.top, maxHeight));
+        opts.showPaletteOnly = !opts.showPaletteOnly;
 
-                if (hasTouch) {
-                    // Stop scrolling in iOS
-                    prevent(e);
-                }
+        // To make sure the Picker area is drawn on the right, next to the
+        // Palette area (and not below the palette), first move the Palette
+        // to the left to make space for the picker, plus 5px extra.
+        // The 'applyOptions' function puts the whole container back into place
+        // and takes care of the button-text and the sp-palette-only CSS class.
+        if (!opts.showPaletteOnly && !flat) {
+          container.css('left', '-=' + (pickerContainer.outerWidth(true) + 5));
+        }
+        applyOptions();
+      });
 
-                onmove.apply(element, [dragX, dragY, e]);
-            }
+      draggable(alphaSlider, function (dragX, dragY, e) {
+        currentAlpha = dragX / alphaWidth;
+        isEmpty = false;
+        if (e.shiftKey) {
+          currentAlpha = Math.round(currentAlpha * 10) / 10;
         }
 
-        function start(e) {
-            var rightclick = e.which ? e.which == 3 : e.button == 2;
+        move();
+      }, dragStart, dragStop);
 
-            if (!rightclick && !dragging) {
-                if (onstart.apply(element, arguments) !== false) {
-                    dragging = true;
-                    maxHeight = $(element).height();
-                    maxWidth = $(element).width();
-                    offset = $(element).offset();
+      draggable(slider, function (dragX, dragY) {
+        currentHue = parseFloat(dragY / slideHeight);
+        isEmpty = false;
+        if (!opts.showAlpha) {
+          currentAlpha = 1;
+        }
+        move();
+      }, dragStart, dragStop);
 
-                    $(doc).bind(duringDragEvents);
-                    $(doc.body).addClass("sp-dragging");
+      draggable(dragger, function (dragX, dragY, e) {
+        // shift+drag should snap the movement to either the x or y axis.
+        if (!e.shiftKey) {
+          shiftMovementDirection = null;
+        } else if (!shiftMovementDirection) {
+          var oldDragX = currentSaturation * dragWidth;
+          var oldDragY = dragHeight - currentValue * dragHeight;
+          var furtherFromX = Math.abs(dragX - oldDragX) > Math.abs(dragY - oldDragY);
 
-                    move(e);
-
-                    prevent(e);
-                }
-            }
+          shiftMovementDirection = furtherFromX ? 'x' : 'y';
         }
 
-        function stop() {
-            if (dragging) {
-                $(doc).unbind(duringDragEvents);
-                $(doc.body).removeClass("sp-dragging");
+        var setSaturation = !shiftMovementDirection || shiftMovementDirection === 'x';
+        var setValue = !shiftMovementDirection || shiftMovementDirection === 'y';
 
-                // Wait a tick before notifying observers to allow the click event
-                // to fire in Chrome.
-                setTimeout(function () {
-                    onstop.apply(element, arguments);
-                }, 0);
-            }
-            dragging = false;
+        if (setSaturation) {
+          currentSaturation = parseFloat(dragX / dragWidth);
+        }
+        if (setValue) {
+          currentValue = parseFloat((dragHeight - dragY) / dragHeight);
         }
 
-        $(element).bind("touchstart mousedown", start);
-    }
-
-    function throttle(func, wait, debounce) {
-        var timeout;
-        return function () {
-            var context = this,
-                args = arguments;
-            var throttler = function throttler() {
-                timeout = null;
-                func.apply(context, args);
-            };
-            if (debounce) clearTimeout(timeout);
-            if (debounce || !timeout) timeout = setTimeout(throttler, wait);
-        };
-    }
-
-    function inputTypeColorSupport() {
-        return $.fn.spectrum.inputTypeColorSupport();
-    }
-
-    /**
-    * Define a jQuery plugin
-    */
-    var dataID = "spectrum.id";
-    $.fn.spectrum = function (opts, extra) {
-
-        if (typeof opts == "string") {
-
-            var returnValue = this;
-            var args = Array.prototype.slice.call(arguments, 1);
-
-            this.each(function () {
-                var spect = spectrums[$(this).data(dataID)];
-                if (spect) {
-                    var method = spect[opts];
-                    if (!method) {
-                        throw new Error("Spectrum: no such method: '" + opts + "'");
-                    }
-
-                    if (opts == "get") {
-                        returnValue = spect.get();
-                    } else if (opts == "container") {
-                        returnValue = spect.container;
-                    } else if (opts == "option") {
-                        returnValue = spect.option.apply(spect, args);
-                    } else if (opts == "destroy") {
-                        spect.destroy();
-                        $(this).removeData(dataID);
-                    } else {
-                        method.apply(spect, args);
-                    }
-                }
-            });
-
-            return returnValue;
+        isEmpty = false;
+        if (!opts.showAlpha) {
+          currentAlpha = 1;
         }
 
-        // Initializing a new instance of spectrum
-        return this.spectrum("destroy").each(function () {
-            var options = $.extend({}, opts, $(this).data());
-            var spect = spectrum(this, options);
-            $(this).data(dataID, spect.id);
-        });
-    };
+        move();
+      }, dragStart, dragStop);
 
-    $.fn.spectrum.load = true;
-    $.fn.spectrum.loadOpts = {};
-    $.fn.spectrum.draggable = draggable;
-    $.fn.spectrum.defaults = defaultOpts;
-    $.fn.spectrum.inputTypeColorSupport = function inputTypeColorSupport() {
-        if (typeof inputTypeColorSupport._cachedResult === "undefined") {
-            var colorInput = $("<input type='color'/>")[0]; // if color element is supported, value will default to not null
-            inputTypeColorSupport._cachedResult = colorInput.type === "color" && colorInput.value !== "";
-        }
-        return inputTypeColorSupport._cachedResult;
-    };
+      if (!!initialColor) {
+        _set(initialColor);
 
-    $.spectrum = {};
-    $.spectrum.localization = {};
-    $.spectrum.palettes = {};
+        // In case color was black - update the preview UI and set the format
+        // since the set function will not run (default color is black).
+        updateUI();
+        currentPreferredFormat = opts.preferredFormat || tinycolor(initialColor).format;
 
-    $.fn.spectrum.processNativeColorInputs = function () {
-        var colorInputs = $("input[type=color]");
-        if (colorInputs.length && !inputTypeColorSupport()) {
-            colorInputs.spectrum({
-                preferredFormat: "hex6"
-            });
-        }
-    };
+        addColorToSelectionPalette(initialColor);
+      } else {
+        updateUI();
+      }
 
-    // TinyColor v1.1.2
-    // https://github.com/bgrins/TinyColor
-    // Brian Grinstead, MIT License
+      if (flat) {
+        show();
+      }
 
-    //(function() {
-
-    var trimLeft = /^[\s,#]+/,
-        trimRight = /\s+$/,
-        tinyCounter = 0,
-        math = Math,
-        mathRound = math.round,
-        mathMin = math.min,
-        mathMax = math.max,
-        mathRandom = math.random;
-
-    var tinycolor = function tinycolor(color, opts) {
-
-        color = color ? color : '';
-        opts = opts || {};
-
-        // If input is already a tinycolor, return itself
-        if (color instanceof tinycolor) {
-            return color;
-        }
-        // If we are called as a function, call using new instead
-        if (!(this instanceof tinycolor)) {
-            return new tinycolor(color, opts);
-        }
-
-        var rgb = inputToRGB(color);
-        this._originalInput = color, this._r = rgb.r, this._g = rgb.g, this._b = rgb.b, this._a = rgb.a, this._roundA = mathRound(100 * this._a) / 100, this._format = opts.format || rgb.format;
-        this._gradientType = opts.gradientType;
-
-        // Don't let the range of [0,255] come back in [0,1].
-        // Potentially lose a little bit of precision here, but will fix issues where
-        // .5 gets interpreted as half of the total, instead of half of 1
-        // If it was supposed to be 128, this was already taken care of by `inputToRgb`
-        if (this._r < 1) {
-            this._r = mathRound(this._r);
-        }
-        if (this._g < 1) {
-            this._g = mathRound(this._g);
-        }
-        if (this._b < 1) {
-            this._b = mathRound(this._b);
-        }
-
-        this._ok = rgb.ok;
-        this._tc_id = tinyCounter++;
-    };
-
-    tinycolor.prototype = {
-        isDark: function isDark() {
-            return this.getBrightness() < 128;
-        },
-        isLight: function isLight() {
-            return !this.isDark();
-        },
-        isValid: function isValid() {
-            return this._ok;
-        },
-        getOriginalInput: function getOriginalInput() {
-            return this._originalInput;
-        },
-        getFormat: function getFormat() {
-            return this._format;
-        },
-        getAlpha: function getAlpha() {
-            return this._a;
-        },
-        getBrightness: function getBrightness() {
-            var rgb = this.toRgb();
-            return (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
-        },
-        setAlpha: function setAlpha(value) {
-            this._a = boundAlpha(value);
-            this._roundA = mathRound(100 * this._a) / 100;
-            return this;
-        },
-        toHsv: function toHsv() {
-            var hsv = rgbToHsv(this._r, this._g, this._b);
-            return { h: hsv.h * 360, s: hsv.s, v: hsv.v, a: this._a };
-        },
-        toHsvString: function toHsvString() {
-            var hsv = rgbToHsv(this._r, this._g, this._b);
-            var h = mathRound(hsv.h * 360),
-                s = mathRound(hsv.s * 100),
-                v = mathRound(hsv.v * 100);
-            return this._a == 1 ? "hsv(" + h + ", " + s + "%, " + v + "%)" : "hsva(" + h + ", " + s + "%, " + v + "%, " + this._roundA + ")";
-        },
-        toHsl: function toHsl() {
-            var hsl = rgbToHsl(this._r, this._g, this._b);
-            return { h: hsl.h * 360, s: hsl.s, l: hsl.l, a: this._a };
-        },
-        toHslString: function toHslString() {
-            var hsl = rgbToHsl(this._r, this._g, this._b);
-            var h = mathRound(hsl.h * 360),
-                s = mathRound(hsl.s * 100),
-                l = mathRound(hsl.l * 100);
-            return this._a == 1 ? "hsl(" + h + ", " + s + "%, " + l + "%)" : "hsla(" + h + ", " + s + "%, " + l + "%, " + this._roundA + ")";
-        },
-        toHex: function toHex(allow3Char) {
-            return rgbToHex(this._r, this._g, this._b, allow3Char);
-        },
-        toHexString: function toHexString(allow3Char) {
-            return '#' + this.toHex(allow3Char);
-        },
-        toHex8: function toHex8() {
-            return rgbaToHex(this._r, this._g, this._b, this._a);
-        },
-        toHex8String: function toHex8String() {
-            return '#' + this.toHex8();
-        },
-        toRgb: function toRgb() {
-            return { r: mathRound(this._r), g: mathRound(this._g), b: mathRound(this._b), a: this._a };
-        },
-        toRgbString: function toRgbString() {
-            return this._a == 1 ? "rgb(" + mathRound(this._r) + ", " + mathRound(this._g) + ", " + mathRound(this._b) + ")" : "rgba(" + mathRound(this._r) + ", " + mathRound(this._g) + ", " + mathRound(this._b) + ", " + this._roundA + ")";
-        },
-        toPercentageRgb: function toPercentageRgb() {
-            return { r: mathRound(bound01(this._r, 255) * 100) + "%", g: mathRound(bound01(this._g, 255) * 100) + "%", b: mathRound(bound01(this._b, 255) * 100) + "%", a: this._a };
-        },
-        toPercentageRgbString: function toPercentageRgbString() {
-            return this._a == 1 ? "rgb(" + mathRound(bound01(this._r, 255) * 100) + "%, " + mathRound(bound01(this._g, 255) * 100) + "%, " + mathRound(bound01(this._b, 255) * 100) + "%)" : "rgba(" + mathRound(bound01(this._r, 255) * 100) + "%, " + mathRound(bound01(this._g, 255) * 100) + "%, " + mathRound(bound01(this._b, 255) * 100) + "%, " + this._roundA + ")";
-        },
-        toName: function toName() {
-            if (this._a === 0) {
-                return "transparent";
-            }
-
-            if (this._a < 1) {
-                return false;
-            }
-
-            return hexNames[rgbToHex(this._r, this._g, this._b, true)] || false;
-        },
-        toFilter: function toFilter(secondColor) {
-            var hex8String = '#' + rgbaToHex(this._r, this._g, this._b, this._a);
-            var secondHex8String = hex8String;
-            var gradientType = this._gradientType ? "GradientType = 1, " : "";
-
-            if (secondColor) {
-                var s = tinycolor(secondColor);
-                secondHex8String = s.toHex8String();
-            }
-
-            return "progid:DXImageTransform.Microsoft.gradient(" + gradientType + "startColorstr=" + hex8String + ",endColorstr=" + secondHex8String + ")";
-        },
-        toString: function toString(format) {
-            var formatSet = !!format;
-            format = format || this._format;
-
-            var formattedString = false;
-            var hasAlpha = this._a < 1 && this._a >= 0;
-            var needsAlphaFormat = !formatSet && hasAlpha && (format === "hex" || format === "hex6" || format === "hex3" || format === "name");
-
-            if (needsAlphaFormat) {
-                // Special case for "transparent", all other non-alpha formats
-                // will return rgba when there is transparency.
-                if (format === "name" && this._a === 0) {
-                    return this.toName();
-                }
-                return this.toRgbString();
-            }
-            if (format === "rgb") {
-                formattedString = this.toRgbString();
-            }
-            if (format === "prgb") {
-                formattedString = this.toPercentageRgbString();
-            }
-            if (format === "hex" || format === "hex6") {
-                formattedString = this.toHexString();
-            }
-            if (format === "hex3") {
-                formattedString = this.toHexString(true);
-            }
-            if (format === "hex8") {
-                formattedString = this.toHex8String();
-            }
-            if (format === "name") {
-                formattedString = this.toName();
-            }
-            if (format === "hsl") {
-                formattedString = this.toHslString();
-            }
-            if (format === "hsv") {
-                formattedString = this.toHsvString();
-            }
-
-            return formattedString || this.toHexString();
-        },
-
-        _applyModification: function _applyModification(fn, args) {
-            var color = fn.apply(null, [this].concat([].slice.call(args)));
-            this._r = color._r;
-            this._g = color._g;
-            this._b = color._b;
-            this.setAlpha(color._a);
-            return this;
-        },
-        lighten: function lighten() {
-            return this._applyModification(_lighten, arguments);
-        },
-        brighten: function brighten() {
-            return this._applyModification(_brighten, arguments);
-        },
-        darken: function darken() {
-            return this._applyModification(_darken, arguments);
-        },
-        desaturate: function desaturate() {
-            return this._applyModification(_desaturate, arguments);
-        },
-        saturate: function saturate() {
-            return this._applyModification(_saturate, arguments);
-        },
-        greyscale: function greyscale() {
-            return this._applyModification(_greyscale, arguments);
-        },
-        spin: function spin() {
-            return this._applyModification(_spin, arguments);
-        },
-
-        _applyCombination: function _applyCombination(fn, args) {
-            return fn.apply(null, [this].concat([].slice.call(args)));
-        },
-        analogous: function analogous() {
-            return this._applyCombination(_analogous, arguments);
-        },
-        complement: function complement() {
-            return this._applyCombination(_complement, arguments);
-        },
-        monochromatic: function monochromatic() {
-            return this._applyCombination(_monochromatic, arguments);
-        },
-        splitcomplement: function splitcomplement() {
-            return this._applyCombination(_splitcomplement, arguments);
-        },
-        triad: function triad() {
-            return this._applyCombination(_triad, arguments);
-        },
-        tetrad: function tetrad() {
-            return this._applyCombination(_tetrad, arguments);
-        }
-    };
-
-    // If input is an object, force 1 into "1.0" to handle ratios properly
-    // String input requires "1.0" as input, so 1 will be treated as 1
-    tinycolor.fromRatio = function (color, opts) {
-        if ((typeof color === "undefined" ? "undefined" : _typeof(color)) == "object") {
-            var newColor = {};
-            for (var i in color) {
-                if (color.hasOwnProperty(i)) {
-                    if (i === "a") {
-                        newColor[i] = color[i];
-                    } else {
-                        newColor[i] = convertToPercentage(color[i]);
-                    }
-                }
-            }
-            color = newColor;
-        }
-
-        return tinycolor(color, opts);
-    };
-
-    // Given a string or object, convert that input to RGB
-    // Possible string inputs:
-    //
-    //     "red"
-    //     "#f00" or "f00"
-    //     "#ff0000" or "ff0000"
-    //     "#ff000000" or "ff000000"
-    //     "rgb 255 0 0" or "rgb (255, 0, 0)"
-    //     "rgb 1.0 0 0" or "rgb (1, 0, 0)"
-    //     "rgba (255, 0, 0, 1)" or "rgba 255, 0, 0, 1"
-    //     "rgba (1.0, 0, 0, 1)" or "rgba 1.0, 0, 0, 1"
-    //     "hsl(0, 100%, 50%)" or "hsl 0 100% 50%"
-    //     "hsla(0, 100%, 50%, 1)" or "hsla 0 100% 50%, 1"
-    //     "hsv(0, 100%, 100%)" or "hsv 0 100% 100%"
-    //
-    function inputToRGB(color) {
-
-        var rgb = { r: 0, g: 0, b: 0 };
-        var a = 1;
-        var ok = false;
-        var format = false;
-
-        if (typeof color == "string") {
-            color = stringInputToObject(color);
-        }
-
-        if ((typeof color === "undefined" ? "undefined" : _typeof(color)) == "object") {
-            if (color.hasOwnProperty("r") && color.hasOwnProperty("g") && color.hasOwnProperty("b")) {
-                rgb = rgbToRgb(color.r, color.g, color.b);
-                ok = true;
-                format = String(color.r).substr(-1) === "%" ? "prgb" : "rgb";
-            } else if (color.hasOwnProperty("h") && color.hasOwnProperty("s") && color.hasOwnProperty("v")) {
-                color.s = convertToPercentage(color.s);
-                color.v = convertToPercentage(color.v);
-                rgb = hsvToRgb(color.h, color.s, color.v);
-                ok = true;
-                format = "hsv";
-            } else if (color.hasOwnProperty("h") && color.hasOwnProperty("s") && color.hasOwnProperty("l")) {
-                color.s = convertToPercentage(color.s);
-                color.l = convertToPercentage(color.l);
-                rgb = hslToRgb(color.h, color.s, color.l);
-                ok = true;
-                format = "hsl";
-            }
-
-            if (color.hasOwnProperty("a")) {
-                a = color.a;
-            }
-        }
-
-        a = boundAlpha(a);
-
-        return {
-            ok: ok,
-            format: color.format || format,
-            r: mathMin(255, mathMax(rgb.r, 0)),
-            g: mathMin(255, mathMax(rgb.g, 0)),
-            b: mathMin(255, mathMax(rgb.b, 0)),
-            a: a
-        };
-    }
-
-    // Conversion Functions
-    // --------------------
-
-    // `rgbToHsl`, `rgbToHsv`, `hslToRgb`, `hsvToRgb` modified from:
-    // <http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript>
-
-    // `rgbToRgb`
-    // Handle bounds / percentage checking to conform to CSS color spec
-    // <http://www.w3.org/TR/css3-color/>
-    // *Assumes:* r, g, b in [0, 255] or [0, 1]
-    // *Returns:* { r, g, b } in [0, 255]
-    function rgbToRgb(r, g, b) {
-        return {
-            r: bound01(r, 255) * 255,
-            g: bound01(g, 255) * 255,
-            b: bound01(b, 255) * 255
-        };
-    }
-
-    // `rgbToHsl`
-    // Converts an RGB color value to HSL.
-    // *Assumes:* r, g, and b are contained in [0, 255] or [0, 1]
-    // *Returns:* { h, s, l } in [0,1]
-    function rgbToHsl(r, g, b) {
-
-        r = bound01(r, 255);
-        g = bound01(g, 255);
-        b = bound01(b, 255);
-
-        var max = mathMax(r, g, b),
-            min = mathMin(r, g, b);
-        var h,
-            s,
-            l = (max + min) / 2;
-
-        if (max == min) {
-            h = s = 0; // achromatic
+      function paletteElementClick(e) {
+        if (e.data && e.data.ignore) {
+          _set($(e.target).closest('.sp-thumb-el').data('color'));
+          move();
         } else {
-            var d = max - min;
-            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-            switch (max) {
-                case r:
-                    h = (g - b) / d + (g < b ? 6 : 0);break;
-                case g:
-                    h = (b - r) / d + 2;break;
-                case b:
-                    h = (r - g) / d + 4;break;
-            }
-
-            h /= 6;
-        }
-
-        return { h: h, s: s, l: l };
-    }
-
-    // `hslToRgb`
-    // Converts an HSL color value to RGB.
-    // *Assumes:* h is contained in [0, 1] or [0, 360] and s and l are contained [0, 1] or [0, 100]
-    // *Returns:* { r, g, b } in the set [0, 255]
-    function hslToRgb(h, s, l) {
-        var r, g, b;
-
-        h = bound01(h, 360);
-        s = bound01(s, 100);
-        l = bound01(l, 100);
-
-        function hue2rgb(p, q, t) {
-            if (t < 0) t += 1;
-            if (t > 1) t -= 1;
-            if (t < 1 / 6) return p + (q - p) * 6 * t;
-            if (t < 1 / 2) return q;
-            if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-            return p;
-        }
-
-        if (s === 0) {
-            r = g = b = l; // achromatic
-        } else {
-            var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-            var p = 2 * l - q;
-            r = hue2rgb(p, q, h + 1 / 3);
-            g = hue2rgb(p, q, h);
-            b = hue2rgb(p, q, h - 1 / 3);
-        }
-
-        return { r: r * 255, g: g * 255, b: b * 255 };
-    }
-
-    // `rgbToHsv`
-    // Converts an RGB color value to HSV
-    // *Assumes:* r, g, and b are contained in the set [0, 255] or [0, 1]
-    // *Returns:* { h, s, v } in [0,1]
-    function rgbToHsv(r, g, b) {
-
-        r = bound01(r, 255);
-        g = bound01(g, 255);
-        b = bound01(b, 255);
-
-        var max = mathMax(r, g, b),
-            min = mathMin(r, g, b);
-        var h,
-            s,
-            v = max;
-
-        var d = max - min;
-        s = max === 0 ? 0 : d / max;
-
-        if (max == min) {
-            h = 0; // achromatic
-        } else {
-            switch (max) {
-                case r:
-                    h = (g - b) / d + (g < b ? 6 : 0);break;
-                case g:
-                    h = (b - r) / d + 2;break;
-                case b:
-                    h = (r - g) / d + 4;break;
-            }
-            h /= 6;
-        }
-        return { h: h, s: s, v: v };
-    }
-
-    // `hsvToRgb`
-    // Converts an HSV color value to RGB.
-    // *Assumes:* h is contained in [0, 1] or [0, 360] and s and v are contained in [0, 1] or [0, 100]
-    // *Returns:* { r, g, b } in the set [0, 255]
-    function hsvToRgb(h, s, v) {
-
-        h = bound01(h, 360) * 6;
-        s = bound01(s, 100);
-        v = bound01(v, 100);
-
-        var i = math.floor(h),
-            f = h - i,
-            p = v * (1 - s),
-            q = v * (1 - f * s),
-            t = v * (1 - (1 - f) * s),
-            mod = i % 6,
-            r = [v, q, p, p, t, v][mod],
-            g = [t, v, v, q, p, p][mod],
-            b = [p, p, t, v, v, q][mod];
-
-        return { r: r * 255, g: g * 255, b: b * 255 };
-    }
-
-    // `rgbToHex`
-    // Converts an RGB color to hex
-    // Assumes r, g, and b are contained in the set [0, 255]
-    // Returns a 3 or 6 character hex
-    function rgbToHex(r, g, b, allow3Char) {
-
-        var hex = [pad2(mathRound(r).toString(16)), pad2(mathRound(g).toString(16)), pad2(mathRound(b).toString(16))];
-
-        // Return a 3 character hex if possible
-        if (allow3Char && hex[0].charAt(0) == hex[0].charAt(1) && hex[1].charAt(0) == hex[1].charAt(1) && hex[2].charAt(0) == hex[2].charAt(1)) {
-            return hex[0].charAt(0) + hex[1].charAt(0) + hex[2].charAt(0);
-        }
-
-        return hex.join("");
-    }
-    // `rgbaToHex`
-    // Converts an RGBA color plus alpha transparency to hex
-    // Assumes r, g, b and a are contained in the set [0, 255]
-    // Returns an 8 character hex
-    function rgbaToHex(r, g, b, a) {
-
-        var hex = [pad2(convertDecimalToHex(a)), pad2(mathRound(r).toString(16)), pad2(mathRound(g).toString(16)), pad2(mathRound(b).toString(16))];
-
-        return hex.join("");
-    }
-
-    // `equals`
-    // Can be called with any tinycolor input
-    tinycolor.equals = function (color1, color2) {
-        if (!color1 || !color2) {
-            return false;
-        }
-        return tinycolor(color1).toRgbString() == tinycolor(color2).toRgbString();
-    };
-    tinycolor.random = function () {
-        return tinycolor.fromRatio({
-            r: mathRandom(),
-            g: mathRandom(),
-            b: mathRandom()
-        });
-    };
-
-    // Modification Functions
-    // ----------------------
-    // Thanks to less.js for some of the basics here
-    // <https://github.com/cloudhead/less.js/blob/master/lib/less/functions.js>
-
-    function _desaturate(color, amount) {
-        amount = amount === 0 ? 0 : amount || 10;
-        var hsl = tinycolor(color).toHsl();
-        hsl.s -= amount / 100;
-        hsl.s = clamp01(hsl.s);
-        return tinycolor(hsl);
-    }
-
-    function _saturate(color, amount) {
-        amount = amount === 0 ? 0 : amount || 10;
-        var hsl = tinycolor(color).toHsl();
-        hsl.s += amount / 100;
-        hsl.s = clamp01(hsl.s);
-        return tinycolor(hsl);
-    }
-
-    function _greyscale(color) {
-        return tinycolor(color).desaturate(100);
-    }
-
-    function _lighten(color, amount) {
-        amount = amount === 0 ? 0 : amount || 10;
-        var hsl = tinycolor(color).toHsl();
-        hsl.l += amount / 100;
-        hsl.l = clamp01(hsl.l);
-        return tinycolor(hsl);
-    }
-
-    function _brighten(color, amount) {
-        amount = amount === 0 ? 0 : amount || 10;
-        var rgb = tinycolor(color).toRgb();
-        rgb.r = mathMax(0, mathMin(255, rgb.r - mathRound(255 * -(amount / 100))));
-        rgb.g = mathMax(0, mathMin(255, rgb.g - mathRound(255 * -(amount / 100))));
-        rgb.b = mathMax(0, mathMin(255, rgb.b - mathRound(255 * -(amount / 100))));
-        return tinycolor(rgb);
-    }
-
-    function _darken(color, amount) {
-        amount = amount === 0 ? 0 : amount || 10;
-        var hsl = tinycolor(color).toHsl();
-        hsl.l -= amount / 100;
-        hsl.l = clamp01(hsl.l);
-        return tinycolor(hsl);
-    }
-
-    // Spin takes a positive or negative amount within [-360, 360] indicating the change of hue.
-    // Values outside of this range will be wrapped into this range.
-    function _spin(color, amount) {
-        var hsl = tinycolor(color).toHsl();
-        var hue = (mathRound(hsl.h) + amount) % 360;
-        hsl.h = hue < 0 ? 360 + hue : hue;
-        return tinycolor(hsl);
-    }
-
-    // Combination Functions
-    // ---------------------
-    // Thanks to jQuery xColor for some of the ideas behind these
-    // <https://github.com/infusion/jQuery-xcolor/blob/master/jquery.xcolor.js>
-
-    function _complement(color) {
-        var hsl = tinycolor(color).toHsl();
-        hsl.h = (hsl.h + 180) % 360;
-        return tinycolor(hsl);
-    }
-
-    function _triad(color) {
-        var hsl = tinycolor(color).toHsl();
-        var h = hsl.h;
-        return [tinycolor(color), tinycolor({ h: (h + 120) % 360, s: hsl.s, l: hsl.l }), tinycolor({ h: (h + 240) % 360, s: hsl.s, l: hsl.l })];
-    }
-
-    function _tetrad(color) {
-        var hsl = tinycolor(color).toHsl();
-        var h = hsl.h;
-        return [tinycolor(color), tinycolor({ h: (h + 90) % 360, s: hsl.s, l: hsl.l }), tinycolor({ h: (h + 180) % 360, s: hsl.s, l: hsl.l }), tinycolor({ h: (h + 270) % 360, s: hsl.s, l: hsl.l })];
-    }
-
-    function _splitcomplement(color) {
-        var hsl = tinycolor(color).toHsl();
-        var h = hsl.h;
-        return [tinycolor(color), tinycolor({ h: (h + 72) % 360, s: hsl.s, l: hsl.l }), tinycolor({ h: (h + 216) % 360, s: hsl.s, l: hsl.l })];
-    }
-
-    function _analogous(color, results, slices) {
-        results = results || 6;
-        slices = slices || 30;
-
-        var hsl = tinycolor(color).toHsl();
-        var part = 360 / slices;
-        var ret = [tinycolor(color)];
-
-        for (hsl.h = (hsl.h - (part * results >> 1) + 720) % 360; --results;) {
-            hsl.h = (hsl.h + part) % 360;
-            ret.push(tinycolor(hsl));
-        }
-        return ret;
-    }
-
-    function _monochromatic(color, results) {
-        results = results || 6;
-        var hsv = tinycolor(color).toHsv();
-        var h = hsv.h,
-            s = hsv.s,
-            v = hsv.v;
-        var ret = [];
-        var modification = 1 / results;
-
-        while (results--) {
-            ret.push(tinycolor({ h: h, s: s, v: v }));
-            v = (v + modification) % 1;
-        }
-
-        return ret;
-    }
-
-    // Utility Functions
-    // ---------------------
-
-    tinycolor.mix = function (color1, color2, amount) {
-        amount = amount === 0 ? 0 : amount || 50;
-
-        var rgb1 = tinycolor(color1).toRgb();
-        var rgb2 = tinycolor(color2).toRgb();
-
-        var p = amount / 100;
-        var w = p * 2 - 1;
-        var a = rgb2.a - rgb1.a;
-
-        var w1;
-
-        if (w * a == -1) {
-            w1 = w;
-        } else {
-            w1 = (w + a) / (1 + w * a);
-        }
-
-        w1 = (w1 + 1) / 2;
-
-        var w2 = 1 - w1;
-
-        var rgba = {
-            r: rgb2.r * w1 + rgb1.r * w2,
-            g: rgb2.g * w1 + rgb1.g * w2,
-            b: rgb2.b * w1 + rgb1.b * w2,
-            a: rgb2.a * p + rgb1.a * (1 - p)
-        };
-
-        return tinycolor(rgba);
-    };
-
-    // Readability Functions
-    // ---------------------
-    // <http://www.w3.org/TR/AERT#color-contrast>
-
-    // `readability`
-    // Analyze the 2 colors and returns an object with the following properties:
-    //    `brightness`: difference in brightness between the two colors
-    //    `color`: difference in color/hue between the two colors
-    tinycolor.readability = function (color1, color2) {
-        var c1 = tinycolor(color1);
-        var c2 = tinycolor(color2);
-        var rgb1 = c1.toRgb();
-        var rgb2 = c2.toRgb();
-        var brightnessA = c1.getBrightness();
-        var brightnessB = c2.getBrightness();
-        var colorDiff = Math.max(rgb1.r, rgb2.r) - Math.min(rgb1.r, rgb2.r) + Math.max(rgb1.g, rgb2.g) - Math.min(rgb1.g, rgb2.g) + Math.max(rgb1.b, rgb2.b) - Math.min(rgb1.b, rgb2.b);
-
-        return {
-            brightness: Math.abs(brightnessA - brightnessB),
-            color: colorDiff
-        };
-    };
-
-    // `readable`
-    // http://www.w3.org/TR/AERT#color-contrast
-    // Ensure that foreground and background color combinations provide sufficient contrast.
-    // *Example*
-    //    tinycolor.isReadable("#000", "#111") => false
-    tinycolor.isReadable = function (color1, color2) {
-        var readability = tinycolor.readability(color1, color2);
-        return readability.brightness > 125 && readability.color > 500;
-    };
-
-    // `mostReadable`
-    // Given a base color and a list of possible foreground or background
-    // colors for that base, returns the most readable color.
-    // *Example*
-    //    tinycolor.mostReadable("#123", ["#fff", "#000"]) => "#000"
-    tinycolor.mostReadable = function (baseColor, colorList) {
-        var bestColor = null;
-        var bestScore = 0;
-        var bestIsReadable = false;
-        for (var i = 0; i < colorList.length; i++) {
-
-            // We normalize both around the "acceptable" breaking point,
-            // but rank brightness constrast higher than hue.
-
-            var readability = tinycolor.readability(baseColor, colorList[i]);
-            var readable = readability.brightness > 125 && readability.color > 500;
-            var score = 3 * (readability.brightness / 125) + readability.color / 500;
-
-            if (readable && !bestIsReadable || readable && bestIsReadable && score > bestScore || !readable && !bestIsReadable && score > bestScore) {
-                bestIsReadable = readable;
-                bestScore = score;
-                bestColor = tinycolor(colorList[i]);
-            }
-        }
-        return bestColor;
-    };
-
-    // Big List of Colors
-    // ------------------
-    // <http://www.w3.org/TR/css3-color/#svg-color>
-    var names = tinycolor.names = {
-        aliceblue: "f0f8ff",
-        antiquewhite: "faebd7",
-        aqua: "0ff",
-        aquamarine: "7fffd4",
-        azure: "f0ffff",
-        beige: "f5f5dc",
-        bisque: "ffe4c4",
-        black: "000",
-        blanchedalmond: "ffebcd",
-        blue: "00f",
-        blueviolet: "8a2be2",
-        brown: "a52a2a",
-        burlywood: "deb887",
-        burntsienna: "ea7e5d",
-        cadetblue: "5f9ea0",
-        chartreuse: "7fff00",
-        chocolate: "d2691e",
-        coral: "ff7f50",
-        cornflowerblue: "6495ed",
-        cornsilk: "fff8dc",
-        crimson: "dc143c",
-        cyan: "0ff",
-        darkblue: "00008b",
-        darkcyan: "008b8b",
-        darkgoldenrod: "b8860b",
-        darkgray: "a9a9a9",
-        darkgreen: "006400",
-        darkgrey: "a9a9a9",
-        darkkhaki: "bdb76b",
-        darkmagenta: "8b008b",
-        darkolivegreen: "556b2f",
-        darkorange: "ff8c00",
-        darkorchid: "9932cc",
-        darkred: "8b0000",
-        darksalmon: "e9967a",
-        darkseagreen: "8fbc8f",
-        darkslateblue: "483d8b",
-        darkslategray: "2f4f4f",
-        darkslategrey: "2f4f4f",
-        darkturquoise: "00ced1",
-        darkviolet: "9400d3",
-        deeppink: "ff1493",
-        deepskyblue: "00bfff",
-        dimgray: "696969",
-        dimgrey: "696969",
-        dodgerblue: "1e90ff",
-        firebrick: "b22222",
-        floralwhite: "fffaf0",
-        forestgreen: "228b22",
-        fuchsia: "f0f",
-        gainsboro: "dcdcdc",
-        ghostwhite: "f8f8ff",
-        gold: "ffd700",
-        goldenrod: "daa520",
-        gray: "808080",
-        green: "008000",
-        greenyellow: "adff2f",
-        grey: "808080",
-        honeydew: "f0fff0",
-        hotpink: "ff69b4",
-        indianred: "cd5c5c",
-        indigo: "4b0082",
-        ivory: "fffff0",
-        khaki: "f0e68c",
-        lavender: "e6e6fa",
-        lavenderblush: "fff0f5",
-        lawngreen: "7cfc00",
-        lemonchiffon: "fffacd",
-        lightblue: "add8e6",
-        lightcoral: "f08080",
-        lightcyan: "e0ffff",
-        lightgoldenrodyellow: "fafad2",
-        lightgray: "d3d3d3",
-        lightgreen: "90ee90",
-        lightgrey: "d3d3d3",
-        lightpink: "ffb6c1",
-        lightsalmon: "ffa07a",
-        lightseagreen: "20b2aa",
-        lightskyblue: "87cefa",
-        lightslategray: "789",
-        lightslategrey: "789",
-        lightsteelblue: "b0c4de",
-        lightyellow: "ffffe0",
-        lime: "0f0",
-        limegreen: "32cd32",
-        linen: "faf0e6",
-        magenta: "f0f",
-        maroon: "800000",
-        mediumaquamarine: "66cdaa",
-        mediumblue: "0000cd",
-        mediumorchid: "ba55d3",
-        mediumpurple: "9370db",
-        mediumseagreen: "3cb371",
-        mediumslateblue: "7b68ee",
-        mediumspringgreen: "00fa9a",
-        mediumturquoise: "48d1cc",
-        mediumvioletred: "c71585",
-        midnightblue: "191970",
-        mintcream: "f5fffa",
-        mistyrose: "ffe4e1",
-        moccasin: "ffe4b5",
-        navajowhite: "ffdead",
-        navy: "000080",
-        oldlace: "fdf5e6",
-        olive: "808000",
-        olivedrab: "6b8e23",
-        orange: "ffa500",
-        orangered: "ff4500",
-        orchid: "da70d6",
-        palegoldenrod: "eee8aa",
-        palegreen: "98fb98",
-        paleturquoise: "afeeee",
-        palevioletred: "db7093",
-        papayawhip: "ffefd5",
-        peachpuff: "ffdab9",
-        peru: "cd853f",
-        pink: "ffc0cb",
-        plum: "dda0dd",
-        powderblue: "b0e0e6",
-        purple: "800080",
-        rebeccapurple: "663399",
-        red: "f00",
-        rosybrown: "bc8f8f",
-        royalblue: "4169e1",
-        saddlebrown: "8b4513",
-        salmon: "fa8072",
-        sandybrown: "f4a460",
-        seagreen: "2e8b57",
-        seashell: "fff5ee",
-        sienna: "a0522d",
-        silver: "c0c0c0",
-        skyblue: "87ceeb",
-        slateblue: "6a5acd",
-        slategray: "708090",
-        slategrey: "708090",
-        snow: "fffafa",
-        springgreen: "00ff7f",
-        steelblue: "4682b4",
-        tan: "d2b48c",
-        teal: "008080",
-        thistle: "d8bfd8",
-        tomato: "ff6347",
-        turquoise: "40e0d0",
-        violet: "ee82ee",
-        wheat: "f5deb3",
-        white: "fff",
-        whitesmoke: "f5f5f5",
-        yellow: "ff0",
-        yellowgreen: "9acd32"
-    };
-
-    // Make it easy to access colors via `hexNames[hex]`
-    var hexNames = tinycolor.hexNames = flip(names);
-
-    // Utilities
-    // ---------
-
-    // `{ 'name1': 'val1' }` becomes `{ 'val1': 'name1' }`
-    function flip(o) {
-        var flipped = {};
-        for (var i in o) {
-            if (o.hasOwnProperty(i)) {
-                flipped[o[i]] = i;
-            }
-        }
-        return flipped;
-    }
-
-    // Return a valid alpha value [0,1] with all invalid values being set to 1
-    function boundAlpha(a) {
-        a = parseFloat(a);
-
-        if (isNaN(a) || a < 0 || a > 1) {
-            a = 1;
-        }
-
-        return a;
-    }
-
-    // Take input from [0, n] and return it as [0, 1]
-    function bound01(n, max) {
-        if (isOnePointZero(n)) {
-            n = "100%";
-        }
-
-        var processPercent = isPercentage(n);
-        n = mathMin(max, mathMax(0, parseFloat(n)));
-
-        // Automatically convert percentage into number
-        if (processPercent) {
-            n = parseInt(n * max, 10) / 100;
-        }
-
-        // Handle floating point rounding errors
-        if (math.abs(n - max) < 0.000001) {
-            return 1;
-        }
-
-        // Convert into [0, 1] range if it isn't already
-        return n % max / parseFloat(max);
-    }
-
-    // Force a number between 0 and 1
-    function clamp01(val) {
-        return mathMin(1, mathMax(0, val));
-    }
-
-    // Parse a base-16 hex value into a base-10 integer
-    function parseIntFromHex(val) {
-        return parseInt(val, 16);
-    }
-
-    // Need to handle 1.0 as 100%, since once it is a number, there is no difference between it and 1
-    // <http://stackoverflow.com/questions/7422072/javascript-how-to-detect-number-as-a-decimal-including-1-0>
-    function isOnePointZero(n) {
-        return typeof n == "string" && n.indexOf('.') != -1 && parseFloat(n) === 1;
-    }
-
-    // Check to see if string passed in is a percentage
-    function isPercentage(n) {
-        return typeof n === "string" && n.indexOf('%') != -1;
-    }
-
-    // Force a hex value to have 2 characters
-    function pad2(c) {
-        return c.length == 1 ? '0' + c : '' + c;
-    }
-
-    // Replace a decimal with it's percentage value
-    function convertToPercentage(n) {
-        if (n <= 1) {
-            n = n * 100 + "%";
-        }
-
-        return n;
-    }
-
-    // Converts a decimal to a hex value
-    function convertDecimalToHex(d) {
-        return Math.round(parseFloat(d) * 255).toString(16);
-    }
-    // Converts a hex value to a decimal
-    function convertHexToDecimal(h) {
-        return parseIntFromHex(h) / 255;
-    }
-
-    var matchers = function () {
-
-        // <http://www.w3.org/TR/css3-values/#integers>
-        var CSS_INTEGER = "[-\\+]?\\d+%?";
-
-        // <http://www.w3.org/TR/css3-values/#number-value>
-        var CSS_NUMBER = "[-\\+]?\\d*\\.\\d+%?";
-
-        // Allow positive/negative integer/number.  Don't capture the either/or, just the entire outcome.
-        var CSS_UNIT = "(?:" + CSS_NUMBER + ")|(?:" + CSS_INTEGER + ")";
-
-        // Actual matching.
-        // Parentheses and commas are optional, but not required.
-        // Whitespace can take the place of commas or opening paren
-        var PERMISSIVE_MATCH3 = "[\\s|\\(]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")\\s*\\)?";
-        var PERMISSIVE_MATCH4 = "[\\s|\\(]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")[,|\\s]+(" + CSS_UNIT + ")\\s*\\)?";
-
-        return {
-            rgb: new RegExp("rgb" + PERMISSIVE_MATCH3),
-            rgba: new RegExp("rgba" + PERMISSIVE_MATCH4),
-            hsl: new RegExp("hsl" + PERMISSIVE_MATCH3),
-            hsla: new RegExp("hsla" + PERMISSIVE_MATCH4),
-            hsv: new RegExp("hsv" + PERMISSIVE_MATCH3),
-            hsva: new RegExp("hsva" + PERMISSIVE_MATCH4),
-            hex3: /^([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
-            hex6: /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/,
-            hex8: /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/
-        };
-    }();
-
-    // `stringInputToObject`
-    // Permissive string parsing.  Take in a number of formats, and output an object
-    // based on detected format.  Returns `{ r, g, b }` or `{ h, s, l }` or `{ h, s, v}`
-    function stringInputToObject(color) {
-
-        color = color.replace(trimLeft, '').replace(trimRight, '').toLowerCase();
-        var named = false;
-        if (names[color]) {
-            color = names[color];
-            named = true;
-        } else if (color == 'transparent') {
-            return { r: 0, g: 0, b: 0, a: 0, format: "name" };
-        }
-
-        // Try to match string input using regular expressions.
-        // Keep most of the number bounding out of this function - don't worry about [0,1] or [0,100] or [0,360]
-        // Just return an object and let the conversion functions handle that.
-        // This way the result will be the same whether the tinycolor is initialized with string or object.
-        var match;
-        if (match = matchers.rgb.exec(color)) {
-            return { r: match[1], g: match[2], b: match[3] };
-        }
-        if (match = matchers.rgba.exec(color)) {
-            return { r: match[1], g: match[2], b: match[3], a: match[4] };
-        }
-        if (match = matchers.hsl.exec(color)) {
-            return { h: match[1], s: match[2], l: match[3] };
-        }
-        if (match = matchers.hsla.exec(color)) {
-            return { h: match[1], s: match[2], l: match[3], a: match[4] };
-        }
-        if (match = matchers.hsv.exec(color)) {
-            return { h: match[1], s: match[2], v: match[3] };
-        }
-        if (match = matchers.hsva.exec(color)) {
-            return { h: match[1], s: match[2], v: match[3], a: match[4] };
-        }
-        if (match = matchers.hex8.exec(color)) {
-            return {
-                a: convertHexToDecimal(match[1]),
-                r: parseIntFromHex(match[2]),
-                g: parseIntFromHex(match[3]),
-                b: parseIntFromHex(match[4]),
-                format: named ? "name" : "hex8"
-            };
-        }
-        if (match = matchers.hex6.exec(color)) {
-            return {
-                r: parseIntFromHex(match[1]),
-                g: parseIntFromHex(match[2]),
-                b: parseIntFromHex(match[3]),
-                format: named ? "name" : "hex"
-            };
-        }
-        if (match = matchers.hex3.exec(color)) {
-            return {
-                r: parseIntFromHex(match[1] + '' + match[1]),
-                g: parseIntFromHex(match[2] + '' + match[2]),
-                b: parseIntFromHex(match[3] + '' + match[3]),
-                format: named ? "name" : "hex"
-            };
+          _set($(e.target).closest('.sp-thumb-el').data('color'));
+          move();
+          updateOriginalInput(true);
+          if (opts.hideAfterPaletteSelect) {
+            hide();
+          }
         }
 
         return false;
+      }
+
+      var paletteEvent = IE ? 'mousedown.spectrum' : 'click.spectrum touchstart.spectrum';
+      paletteContainer.delegate('.sp-thumb-el', paletteEvent, paletteElementClick);
+      initialColorContainer.delegate('.sp-thumb-el:nth-child(1)', paletteEvent, { ignore: true }, paletteElementClick);
     }
 
-    window.tinycolor = tinycolor;
-    //})();
+    function updateSelectionPaletteFromStorage() {
+      if (localStorageKey && window.localStorage) {
+        // Migrate old palettes over to new format.  May want to remove this eventually.
+        try {
+          var oldPalette = window.localStorage[localStorageKey].split(',#');
+          if (oldPalette.length > 1) {
+            delete window.localStorage[localStorageKey];
+            $.each(oldPalette, function (i, c) {
+              addColorToSelectionPalette(c);
+            });
+          }
+        } catch (e) {}
 
-    $(function () {
-        if ($.fn.spectrum.load) {
-            $.fn.spectrum.processNativeColorInputs();
+        try {
+          selectionPalette = window.localStorage[localStorageKey].split(';');
+        } catch (e) {}
+      }
+    }
+
+    function addColorToSelectionPalette(color) {
+      if (showSelectionPalette) {
+        var rgb = tinycolor(color).toRgbString();
+        if (!paletteLookup[rgb] && $.inArray(rgb, selectionPalette) === -1) {
+          selectionPalette.push(rgb);
+          while (selectionPalette.length > maxSelectionSize) {
+            selectionPalette.shift();
+          }
         }
+
+        if (localStorageKey && window.localStorage) {
+          try {
+            window.localStorage[localStorageKey] = selectionPalette.join(';');
+          } catch (e) {}
+        }
+      }
+    }
+
+    function getUniqueSelectionPalette() {
+      var unique = [];
+      if (opts.showPalette) {
+        for (var i = 0; i < selectionPalette.length; i++) {
+          var rgb = tinycolor(selectionPalette[i]).toRgbString();
+
+          if (!paletteLookup[rgb]) {
+            unique.push(selectionPalette[i]);
+          }
+        }
+      }
+
+      return unique.reverse().slice(0, opts.maxSelectionSize);
+    }
+
+    function drawPalette() {
+      var currentColor = get();
+
+      var html = $.map(paletteArray, function (palette, i) {
+        return paletteTemplate(palette, currentColor, 'sp-palette-row sp-palette-row-' + i, opts);
+      });
+
+      updateSelectionPaletteFromStorage();
+
+      if (selectionPalette) {
+        html.push(paletteTemplate(getUniqueSelectionPalette(), currentColor, 'sp-palette-row sp-palette-row-selection', opts));
+      }
+
+      paletteContainer.html(html.join(''));
+    }
+
+    function drawInitial() {
+      if (opts.showInitial) {
+        var initial = colorOnShow;
+        var current = get();
+        initialColorContainer.html(paletteTemplate([initial, current], current, 'sp-palette-row-initial', opts));
+      }
+    }
+
+    function dragStart() {
+      if (dragHeight <= 0 || dragWidth <= 0 || slideHeight <= 0) {
+        reflow();
+      }
+      isDragging = true;
+      container.addClass(draggingClass);
+      shiftMovementDirection = null;
+      boundElement.trigger('dragstart.spectrum', [get()]);
+    }
+
+    function dragStop() {
+      isDragging = false;
+      container.removeClass(draggingClass);
+      boundElement.trigger('dragstop.spectrum', [get()]);
+    }
+
+    function setFromTextInput() {
+      var value = textInput.val();
+
+      if ((value === null || value === '') && allowEmpty) {
+        _set(null);
+        updateOriginalInput(true);
+      } else {
+        var tiny = tinycolor(value);
+        if (tiny.isValid()) {
+          _set(tiny);
+          updateOriginalInput(true);
+        } else {
+          textInput.addClass('sp-validation-error');
+        }
+      }
+    }
+
+    function toggle() {
+      if (visible) {
+        hide();
+      } else {
+        show();
+      }
+    }
+
+    function show() {
+      var event = $.Event('beforeShow.spectrum');
+
+      if (visible) {
+        reflow();
+        return;
+      }
+
+      boundElement.trigger(event, [get()]);
+
+      if (callbacks.beforeShow(get()) === false || event.isDefaultPrevented()) {
+        return;
+      }
+
+      hideAll();
+      visible = true;
+
+      var $doc = $(doc);
+      $doc.bind('keydown.spectrum', onkeydown);
+      $doc.bind('click.spectrum', clickout);
+      $(window).bind('resize.spectrum', resize);
+      replacer.addClass('sp-active');
+      container.removeClass('sp-hidden');
+
+      reflow();
+      updateUI();
+
+      colorOnShow = get();
+
+      drawInitial();
+      callbacks.show(colorOnShow);
+      boundElement.trigger('show.spectrum', [colorOnShow]);
+    }
+
+    function onkeydown(e) {
+      // Close on ESC
+      if (e.keyCode === 27) {
+        hide();
+      }
+    }
+
+    function clickout(e) {
+      // Return on right click.
+      if (e.button == 2) {
+        return;
+      }
+
+      // If a drag event was happening during the mouseup, don't hide
+      // on click.
+      if (isDragging) {
+        return;
+      }
+
+      if (clickoutFiresChange) {
+        updateOriginalInput(true);
+      } else {
+        revert();
+      }
+      hide();
+    }
+
+    function hide() {
+      // Return if hiding is unnecessary
+      if (!visible || flat) {
+        return;
+      }
+      visible = false;
+
+      $(doc).unbind('keydown.spectrum', onkeydown);
+      $(doc).unbind('click.spectrum', clickout);
+      $(window).unbind('resize.spectrum', resize);
+
+      replacer.removeClass('sp-active');
+      container.addClass('sp-hidden');
+
+      callbacks.hide(get());
+      boundElement.trigger('hide.spectrum', [get()]);
+    }
+
+    function revert() {
+      _set(colorOnShow, true);
+    }
+
+    function _set(color, ignoreFormatChange) {
+      if (tinycolor.equals(color, get())) {
+        // Update UI just in case a validation error needs
+        // to be cleared.
+        updateUI();
+        return;
+      }
+
+      var newColor, newHsv;
+      if (!color && allowEmpty) {
+        isEmpty = true;
+      } else {
+        isEmpty = false;
+        newColor = tinycolor(color);
+        newHsv = newColor.toHsv();
+
+        currentHue = newHsv.h % 360 / 360;
+        currentSaturation = newHsv.s;
+        currentValue = newHsv.v;
+        currentAlpha = newHsv.a;
+      }
+      updateUI();
+
+      if (newColor && newColor.isValid() && !ignoreFormatChange) {
+        currentPreferredFormat = opts.preferredFormat || newColor.getFormat();
+      }
+    }
+
+    function get(opts) {
+      opts = opts || {};
+
+      if (allowEmpty && isEmpty) {
+        return null;
+      }
+
+      return tinycolor.fromRatio({
+        h: currentHue,
+        s: currentSaturation,
+        v: currentValue,
+        a: Math.round(currentAlpha * 100) / 100
+      }, { format: opts.format || currentPreferredFormat });
+    }
+
+    function isValid() {
+      return !textInput.hasClass('sp-validation-error');
+    }
+
+    function move() {
+      updateUI();
+
+      callbacks.move(get());
+      boundElement.trigger('move.spectrum', [get()]);
+    }
+
+    function updateUI() {
+      textInput.removeClass('sp-validation-error');
+
+      updateHelperLocations();
+
+      // Update dragger background color (gradients take care of saturation and value).
+      var flatColor = tinycolor.fromRatio({ h: currentHue, s: 1, v: 1 });
+      dragger.css('background-color', flatColor.toHexString());
+
+      // Get a format that alpha will be included in (hex and names ignore alpha)
+      var format = currentPreferredFormat;
+      if (currentAlpha < 1 && !(currentAlpha === 0 && format === 'name')) {
+        if (format === 'hex' || format === 'hex3' || format === 'hex6' || format === 'name') {
+          format = 'rgb';
+        }
+      }
+
+      var realColor = get({ format: format }),
+          displayColor = '';
+
+      //reset background info for preview element
+      previewElement.removeClass('sp-clear-display');
+      previewElement.css('background-color', 'transparent');
+
+      if (!realColor && allowEmpty) {
+        // Update the replaced elements background with icon indicating no color selection
+        previewElement.addClass('sp-clear-display');
+      } else {
+        var realHex = realColor.toHexString(),
+            realRgb = realColor.toRgbString();
+
+        // Update the replaced elements background color (with actual selected color)
+        if (rgbaSupport || realColor.alpha === 1) {
+          previewElement.css('background-color', realRgb);
+        } else {
+          previewElement.css('background-color', 'transparent');
+          previewElement.css('filter', realColor.toFilter());
+        }
+
+        if (opts.showAlpha) {
+          var rgb = realColor.toRgb();
+          rgb.a = 0;
+          var realAlpha = tinycolor(rgb).toRgbString();
+          var gradient = 'linear-gradient(left, ' + realAlpha + ', ' + realHex + ')';
+
+          if (IE) {
+            alphaSliderInner.css('filter', tinycolor(realAlpha).toFilter({ gradientType: 1 }, realHex));
+          } else {
+            alphaSliderInner.css('background', '-webkit-' + gradient);
+            alphaSliderInner.css('background', '-moz-' + gradient);
+            alphaSliderInner.css('background', '-ms-' + gradient);
+            // Use current syntax gradient on unprefixed property.
+            alphaSliderInner.css('background', 'linear-gradient(to right, ' + realAlpha + ', ' + realHex + ')');
+          }
+        }
+
+        displayColor = realColor.toString(format);
+      }
+
+      // Update the text entry input as it changes happen
+      if (opts.showInput) {
+        textInput.val(displayColor);
+      }
+
+      if (opts.showPalette) {
+        drawPalette();
+      }
+
+      drawInitial();
+    }
+
+    function updateHelperLocations() {
+      var s = currentSaturation;
+      var v = currentValue;
+
+      if (allowEmpty && isEmpty) {
+        //if selected color is empty, hide the helpers
+        alphaSlideHelper.hide();
+        slideHelper.hide();
+        dragHelper.hide();
+      } else {
+        //make sure helpers are visible
+        alphaSlideHelper.show();
+        slideHelper.show();
+        dragHelper.show();
+
+        // Where to show the little circle in that displays your current selected color
+        var dragX = s * dragWidth;
+        var dragY = dragHeight - v * dragHeight;
+        dragX = Math.max(-dragHelperHeight, Math.min(dragWidth - dragHelperHeight, dragX - dragHelperHeight));
+        dragY = Math.max(-dragHelperHeight, Math.min(dragHeight - dragHelperHeight, dragY - dragHelperHeight));
+        dragHelper.css({
+          top: dragY + 'px',
+          left: dragX + 'px'
+        });
+
+        var alphaX = currentAlpha * alphaWidth;
+        alphaSlideHelper.css({
+          left: alphaX - alphaSlideHelperWidth / 2 + 'px'
+        });
+
+        // Where to show the bar that displays your current selected hue
+        var slideY = currentHue * slideHeight;
+        slideHelper.css({
+          top: slideY - slideHelperHeight + 'px'
+        });
+      }
+    }
+
+    function updateOriginalInput(fireCallback) {
+      var color = get(),
+          displayColor = '',
+          hasChanged = !tinycolor.equals(color, colorOnShow);
+
+      if (color) {
+        displayColor = color.toString(currentPreferredFormat);
+        // Update the selection palette with the current color
+        addColorToSelectionPalette(color);
+      }
+
+      if (isInput) {
+        boundElement.val(displayColor);
+      }
+
+      if (fireCallback && hasChanged) {
+        callbacks.change(color);
+        boundElement.trigger('change', [color]);
+      }
+    }
+
+    function reflow() {
+      if (!visible) {
+        return; // Calculations would be useless and wouldn't be reliable anyways
+      }
+      dragWidth = dragger.width();
+      dragHeight = dragger.height();
+      dragHelperHeight = dragHelper.height();
+      slideWidth = slider.width();
+      slideHeight = slider.height();
+      slideHelperHeight = slideHelper.height();
+      alphaWidth = alphaSlider.width();
+      alphaSlideHelperWidth = alphaSlideHelper.width();
+
+      if (!flat) {
+        container.css('position', 'absolute');
+        if (opts.offset) {
+          container.offset(opts.offset);
+        } else {
+          container.offset(getOffset(container, offsetElement));
+        }
+      }
+
+      updateHelperLocations();
+
+      if (opts.showPalette) {
+        drawPalette();
+      }
+
+      boundElement.trigger('reflow.spectrum');
+    }
+
+    function destroy() {
+      boundElement.show();
+      offsetElement.unbind('click.spectrum touchstart.spectrum');
+      container.remove();
+      replacer.remove();
+      spectrums[spect.id] = null;
+    }
+
+    function option(optionName, optionValue) {
+      if (optionName === undefined) {
+        return $.extend({}, opts);
+      }
+      if (optionValue === undefined) {
+        return opts[optionName];
+      }
+
+      opts[optionName] = optionValue;
+
+      if (optionName === 'preferredFormat') {
+        currentPreferredFormat = opts.preferredFormat;
+      }
+      applyOptions();
+    }
+
+    function enable() {
+      disabled = false;
+      boundElement.attr('disabled', false);
+      offsetElement.removeClass('sp-disabled');
+    }
+
+    function disable() {
+      hide();
+      disabled = true;
+      boundElement.attr('disabled', true);
+      offsetElement.addClass('sp-disabled');
+    }
+
+    function setOffset(coord) {
+      opts.offset = coord;
+      reflow();
+    }
+
+    initialize();
+
+    var spect = {
+      show: show,
+      hide: hide,
+      toggle: toggle,
+      reflow: reflow,
+      option: option,
+      enable: enable,
+      disable: disable,
+      offset: setOffset,
+      set: function set(c) {
+        _set(c);
+        updateOriginalInput();
+      },
+      get: get,
+      destroy: destroy,
+      container: container
+    };
+
+    spect.id = spectrums.push(spect) - 1;
+
+    return spect;
+  }
+
+  /**
+   * checkOffset - get the offset below/above and left/right element depending on screen position
+   * Thanks https://github.com/jquery/jquery-ui/blob/master/ui/jquery.ui.datepicker.js
+   */
+  function getOffset(picker, input) {
+    var extraY = 0;
+    var dpWidth = picker.outerWidth();
+    var dpHeight = picker.outerHeight();
+    var inputHeight = input.outerHeight();
+    var doc = picker[0].ownerDocument;
+    var docElem = doc.documentElement;
+    var cW = docElem.clientWidth;
+    var cH = docElem.clientHeight;
+    var scL = $(doc).scrollLeft();
+    var scT = $(doc).scrollTop();
+    var viewWidth = cW + scL;
+    var viewHeight = cH + scT;
+    var offset = input.offset();
+
+    offset.top += inputHeight;
+
+    offset.left -= Math.min(offset.left, offset.left + dpWidth > viewWidth && viewWidth > dpWidth ? Math.abs(offset.left + dpWidth - viewWidth) : 0);
+
+    offset.top -= Math.min(offset.top, offset.top + dpHeight > viewHeight && viewHeight > dpHeight ? Math.abs(dpHeight + inputHeight - extraY) : extraY);
+
+    return offset;
+  }
+
+  /**
+   * noop - do nothing
+   */
+  function noop() {}
+
+  /**
+   * stopPropagation - makes the code only doing this a little easier to read in line
+   */
+  function stopPropagation(e) {
+    e.stopPropagation();
+  }
+
+  /**
+   * Create a function bound to a given object
+   * Thanks to underscore.js
+   */
+  function bind(func, obj) {
+    var slice = Array.prototype.slice;
+    var args = slice.call(arguments, 2);
+    return function () {
+      return func.apply(obj, args.concat(slice.call(arguments)));
+    };
+  }
+
+  /**
+   * Lightweight drag helper.  Handles containment within the element, so that
+   * when dragging, the x is within [0,element.width] and y is within [0,element.height]
+   */
+  function draggable(element, onmove, onstart, onstop) {
+    onmove = onmove || function () {};
+    onstart = onstart || function () {};
+    onstop = onstop || function () {};
+    var doc = document;
+    var dragging = false;
+    var offset = {};
+    var maxHeight = 0;
+    var maxWidth = 0;
+    var hasTouch = 'ontouchstart' in window;
+
+    var duringDragEvents = {};
+    duringDragEvents['selectstart'] = prevent;
+    duringDragEvents['dragstart'] = prevent;
+    duringDragEvents['touchmove mousemove'] = move;
+    duringDragEvents['touchend mouseup'] = stop;
+
+    function prevent(e) {
+      if (e.stopPropagation) {
+        e.stopPropagation();
+      }
+      if (e.preventDefault) {
+        e.preventDefault();
+      }
+      e.returnValue = false;
+    }
+
+    function move(e) {
+      if (dragging) {
+        // Mouseup happened outside of window
+        if (IE && doc.documentMode < 9 && !e.button) {
+          return stop();
+        }
+
+        var t0 = e.originalEvent && e.originalEvent.touches && e.originalEvent.touches[0];
+        var pageX = t0 && t0.pageX || e.pageX;
+        var pageY = t0 && t0.pageY || e.pageY;
+
+        var dragX = Math.max(0, Math.min(pageX - offset.left, maxWidth));
+        var dragY = Math.max(0, Math.min(pageY - offset.top, maxHeight));
+
+        if (hasTouch) {
+          // Stop scrolling in iOS
+          prevent(e);
+        }
+
+        onmove.apply(element, [dragX, dragY, e]);
+      }
+    }
+
+    function start(e) {
+      var rightclick = e.which ? e.which == 3 : e.button == 2;
+
+      if (!rightclick && !dragging) {
+        if (onstart.apply(element, arguments) !== false) {
+          dragging = true;
+          maxHeight = $(element).height();
+          maxWidth = $(element).width();
+          offset = $(element).offset();
+
+          $(doc).bind(duringDragEvents);
+          $(doc.body).addClass('sp-dragging');
+
+          move(e);
+
+          prevent(e);
+        }
+      }
+    }
+
+    function stop() {
+      if (dragging) {
+        $(doc).unbind(duringDragEvents);
+        $(doc.body).removeClass('sp-dragging');
+
+        // Wait a tick before notifying observers to allow the click event
+        // to fire in Chrome.
+        setTimeout(function () {
+          onstop.apply(element, arguments);
+        }, 0);
+      }
+      dragging = false;
+    }
+
+    $(element).bind('touchstart mousedown', start);
+  }
+
+  function throttle(func, wait, debounce) {
+    var timeout;
+    return function () {
+      var context = this,
+          args = arguments;
+      var throttler = function throttler() {
+        timeout = null;
+        func.apply(context, args);
+      };
+      if (debounce) clearTimeout(timeout);
+      if (debounce || !timeout) timeout = setTimeout(throttler, wait);
+    };
+  }
+
+  function inputTypeColorSupport() {
+    return $.fn.spectrum.inputTypeColorSupport();
+  }
+
+  /**
+   * Define a jQuery plugin
+   */
+  var dataID = 'spectrum.id';
+  $.fn.spectrum = function (opts, extra) {
+    if (typeof opts == 'string') {
+      var returnValue = this;
+      var args = Array.prototype.slice.call(arguments, 1);
+
+      this.each(function () {
+        var spect = spectrums[$(this).data(dataID)];
+        if (spect) {
+          var method = spect[opts];
+          if (!method) {
+            throw new Error("Spectrum: no such method: '" + opts + "'");
+          }
+
+          if (opts == 'get') {
+            returnValue = spect.get();
+          } else if (opts == 'container') {
+            returnValue = spect.container;
+          } else if (opts == 'option') {
+            returnValue = spect.option.apply(spect, args);
+          } else if (opts == 'destroy') {
+            spect.destroy();
+            $(this).removeData(dataID);
+          } else {
+            method.apply(spect, args);
+          }
+        }
+      });
+
+      return returnValue;
+    }
+
+    // Initializing a new instance of spectrum
+    return this.spectrum('destroy').each(function () {
+      var options = $.extend({}, opts, $(this).data());
+      var spect = spectrum(this, options);
+      $(this).data(dataID, spect.id);
     });
+  };
+
+  $.fn.spectrum.load = true;
+  $.fn.spectrum.loadOpts = {};
+  $.fn.spectrum.draggable = draggable;
+  $.fn.spectrum.defaults = defaultOpts;
+  $.fn.spectrum.inputTypeColorSupport = function inputTypeColorSupport() {
+    if (typeof inputTypeColorSupport._cachedResult === 'undefined') {
+      var colorInput = $("<input type='color'/>")[0]; // if color element is supported, value will default to not null
+      inputTypeColorSupport._cachedResult = colorInput.type === 'color' && colorInput.value !== '';
+    }
+    return inputTypeColorSupport._cachedResult;
+  };
+
+  $.spectrum = {};
+  $.spectrum.localization = {};
+  $.spectrum.palettes = {};
+
+  $.fn.spectrum.processNativeColorInputs = function () {
+    var colorInputs = $('input[type=color]');
+    if (colorInputs.length && !inputTypeColorSupport()) {
+      colorInputs.spectrum({
+        preferredFormat: 'hex6'
+      });
+    }
+  };
+
+  // TinyColor v1.1.2
+  // https://github.com/bgrins/TinyColor
+  // Brian Grinstead, MIT License
+
+  //(function() {
+
+  var trimLeft = /^[\s,#]+/,
+      trimRight = /\s+$/,
+      tinyCounter = 0,
+      math = Math,
+      mathRound = math.round,
+      mathMin = math.min,
+      mathMax = math.max,
+      mathRandom = math.random;
+
+  var tinycolor = function tinycolor(color, opts) {
+    color = color ? color : '';
+    opts = opts || {};
+
+    // If input is already a tinycolor, return itself
+    if (color instanceof tinycolor) {
+      return color;
+    }
+    // If we are called as a function, call using new instead
+    if (!(this instanceof tinycolor)) {
+      return new tinycolor(color, opts);
+    }
+
+    var rgb = inputToRGB(color);
+    this._originalInput = color, this._r = rgb.r, this._g = rgb.g, this._b = rgb.b, this._a = rgb.a, this._roundA = mathRound(100 * this._a) / 100, this._format = opts.format || rgb.format;
+    this._gradientType = opts.gradientType;
+
+    // Don't let the range of [0,255] come back in [0,1].
+    // Potentially lose a little bit of precision here, but will fix issues where
+    // .5 gets interpreted as half of the total, instead of half of 1
+    // If it was supposed to be 128, this was already taken care of by `inputToRgb`
+    if (this._r < 1) {
+      this._r = mathRound(this._r);
+    }
+    if (this._g < 1) {
+      this._g = mathRound(this._g);
+    }
+    if (this._b < 1) {
+      this._b = mathRound(this._b);
+    }
+
+    this._ok = rgb.ok;
+    this._tc_id = tinyCounter++;
+  };
+
+  tinycolor.prototype = {
+    isDark: function isDark() {
+      return this.getBrightness() < 128;
+    },
+    isLight: function isLight() {
+      return !this.isDark();
+    },
+    isValid: function isValid() {
+      return this._ok;
+    },
+    getOriginalInput: function getOriginalInput() {
+      return this._originalInput;
+    },
+    getFormat: function getFormat() {
+      return this._format;
+    },
+    getAlpha: function getAlpha() {
+      return this._a;
+    },
+    getBrightness: function getBrightness() {
+      var rgb = this.toRgb();
+      return (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
+    },
+    setAlpha: function setAlpha(value) {
+      this._a = boundAlpha(value);
+      this._roundA = mathRound(100 * this._a) / 100;
+      return this;
+    },
+    toHsv: function toHsv() {
+      var hsv = rgbToHsv(this._r, this._g, this._b);
+      return { h: hsv.h * 360, s: hsv.s, v: hsv.v, a: this._a };
+    },
+    toHsvString: function toHsvString() {
+      var hsv = rgbToHsv(this._r, this._g, this._b);
+      var h = mathRound(hsv.h * 360),
+          s = mathRound(hsv.s * 100),
+          v = mathRound(hsv.v * 100);
+      return this._a == 1 ? 'hsv(' + h + ', ' + s + '%, ' + v + '%)' : 'hsva(' + h + ', ' + s + '%, ' + v + '%, ' + this._roundA + ')';
+    },
+    toHsl: function toHsl() {
+      var hsl = rgbToHsl(this._r, this._g, this._b);
+      return { h: hsl.h * 360, s: hsl.s, l: hsl.l, a: this._a };
+    },
+    toHslString: function toHslString() {
+      var hsl = rgbToHsl(this._r, this._g, this._b);
+      var h = mathRound(hsl.h * 360),
+          s = mathRound(hsl.s * 100),
+          l = mathRound(hsl.l * 100);
+      return this._a == 1 ? 'hsl(' + h + ', ' + s + '%, ' + l + '%)' : 'hsla(' + h + ', ' + s + '%, ' + l + '%, ' + this._roundA + ')';
+    },
+    toHex: function toHex(allow3Char) {
+      return rgbToHex(this._r, this._g, this._b, allow3Char);
+    },
+    toHexString: function toHexString(allow3Char) {
+      return '#' + this.toHex(allow3Char);
+    },
+    toHex8: function toHex8() {
+      return rgbaToHex(this._r, this._g, this._b, this._a);
+    },
+    toHex8String: function toHex8String() {
+      return '#' + this.toHex8();
+    },
+    toRgb: function toRgb() {
+      return {
+        r: mathRound(this._r),
+        g: mathRound(this._g),
+        b: mathRound(this._b),
+        a: this._a
+      };
+    },
+    toRgbString: function toRgbString() {
+      return this._a == 1 ? 'rgb(' + mathRound(this._r) + ', ' + mathRound(this._g) + ', ' + mathRound(this._b) + ')' : 'rgba(' + mathRound(this._r) + ', ' + mathRound(this._g) + ', ' + mathRound(this._b) + ', ' + this._roundA + ')';
+    },
+    toPercentageRgb: function toPercentageRgb() {
+      return {
+        r: mathRound(bound01(this._r, 255) * 100) + '%',
+        g: mathRound(bound01(this._g, 255) * 100) + '%',
+        b: mathRound(bound01(this._b, 255) * 100) + '%',
+        a: this._a
+      };
+    },
+    toPercentageRgbString: function toPercentageRgbString() {
+      return this._a == 1 ? 'rgb(' + mathRound(bound01(this._r, 255) * 100) + '%, ' + mathRound(bound01(this._g, 255) * 100) + '%, ' + mathRound(bound01(this._b, 255) * 100) + '%)' : 'rgba(' + mathRound(bound01(this._r, 255) * 100) + '%, ' + mathRound(bound01(this._g, 255) * 100) + '%, ' + mathRound(bound01(this._b, 255) * 100) + '%, ' + this._roundA + ')';
+    },
+    toName: function toName() {
+      if (this._a === 0) {
+        return 'transparent';
+      }
+
+      if (this._a < 1) {
+        return false;
+      }
+
+      return hexNames[rgbToHex(this._r, this._g, this._b, true)] || false;
+    },
+    toFilter: function toFilter(secondColor) {
+      var hex8String = '#' + rgbaToHex(this._r, this._g, this._b, this._a);
+      var secondHex8String = hex8String;
+      var gradientType = this._gradientType ? 'GradientType = 1, ' : '';
+
+      if (secondColor) {
+        var s = tinycolor(secondColor);
+        secondHex8String = s.toHex8String();
+      }
+
+      return 'progid:DXImageTransform.Microsoft.gradient(' + gradientType + 'startColorstr=' + hex8String + ',endColorstr=' + secondHex8String + ')';
+    },
+    toString: function toString(format) {
+      var formatSet = !!format;
+      format = format || this._format;
+
+      var formattedString = false;
+      var hasAlpha = this._a < 1 && this._a >= 0;
+      var needsAlphaFormat = !formatSet && hasAlpha && (format === 'hex' || format === 'hex6' || format === 'hex3' || format === 'name');
+
+      if (needsAlphaFormat) {
+        // Special case for "transparent", all other non-alpha formats
+        // will return rgba when there is transparency.
+        if (format === 'name' && this._a === 0) {
+          return this.toName();
+        }
+        return this.toRgbString();
+      }
+      if (format === 'rgb') {
+        formattedString = this.toRgbString();
+      }
+      if (format === 'prgb') {
+        formattedString = this.toPercentageRgbString();
+      }
+      if (format === 'hex' || format === 'hex6') {
+        formattedString = this.toHexString();
+      }
+      if (format === 'hex3') {
+        formattedString = this.toHexString(true);
+      }
+      if (format === 'hex8') {
+        formattedString = this.toHex8String();
+      }
+      if (format === 'name') {
+        formattedString = this.toName();
+      }
+      if (format === 'hsl') {
+        formattedString = this.toHslString();
+      }
+      if (format === 'hsv') {
+        formattedString = this.toHsvString();
+      }
+
+      return formattedString || this.toHexString();
+    },
+
+    _applyModification: function _applyModification(fn, args) {
+      var color = fn.apply(null, [this].concat([].slice.call(args)));
+      this._r = color._r;
+      this._g = color._g;
+      this._b = color._b;
+      this.setAlpha(color._a);
+      return this;
+    },
+    lighten: function lighten() {
+      return this._applyModification(_lighten, arguments);
+    },
+    brighten: function brighten() {
+      return this._applyModification(_brighten, arguments);
+    },
+    darken: function darken() {
+      return this._applyModification(_darken, arguments);
+    },
+    desaturate: function desaturate() {
+      return this._applyModification(_desaturate, arguments);
+    },
+    saturate: function saturate() {
+      return this._applyModification(_saturate, arguments);
+    },
+    greyscale: function greyscale() {
+      return this._applyModification(_greyscale, arguments);
+    },
+    spin: function spin() {
+      return this._applyModification(_spin, arguments);
+    },
+
+    _applyCombination: function _applyCombination(fn, args) {
+      return fn.apply(null, [this].concat([].slice.call(args)));
+    },
+    analogous: function analogous() {
+      return this._applyCombination(_analogous, arguments);
+    },
+    complement: function complement() {
+      return this._applyCombination(_complement, arguments);
+    },
+    monochromatic: function monochromatic() {
+      return this._applyCombination(_monochromatic, arguments);
+    },
+    splitcomplement: function splitcomplement() {
+      return this._applyCombination(_splitcomplement, arguments);
+    },
+    triad: function triad() {
+      return this._applyCombination(_triad, arguments);
+    },
+    tetrad: function tetrad() {
+      return this._applyCombination(_tetrad, arguments);
+    }
+  };
+
+  // If input is an object, force 1 into "1.0" to handle ratios properly
+  // String input requires "1.0" as input, so 1 will be treated as 1
+  tinycolor.fromRatio = function (color, opts) {
+    if ((typeof color === 'undefined' ? 'undefined' : _typeof(color)) == 'object') {
+      var newColor = {};
+      for (var i in color) {
+        if (color.hasOwnProperty(i)) {
+          if (i === 'a') {
+            newColor[i] = color[i];
+          } else {
+            newColor[i] = convertToPercentage(color[i]);
+          }
+        }
+      }
+      color = newColor;
+    }
+
+    return tinycolor(color, opts);
+  };
+
+  // Given a string or object, convert that input to RGB
+  // Possible string inputs:
+  //
+  //     "red"
+  //     "#f00" or "f00"
+  //     "#ff0000" or "ff0000"
+  //     "#ff000000" or "ff000000"
+  //     "rgb 255 0 0" or "rgb (255, 0, 0)"
+  //     "rgb 1.0 0 0" or "rgb (1, 0, 0)"
+  //     "rgba (255, 0, 0, 1)" or "rgba 255, 0, 0, 1"
+  //     "rgba (1.0, 0, 0, 1)" or "rgba 1.0, 0, 0, 1"
+  //     "hsl(0, 100%, 50%)" or "hsl 0 100% 50%"
+  //     "hsla(0, 100%, 50%, 1)" or "hsla 0 100% 50%, 1"
+  //     "hsv(0, 100%, 100%)" or "hsv 0 100% 100%"
+  //
+  function inputToRGB(color) {
+    var rgb = { r: 0, g: 0, b: 0 };
+    var a = 1;
+    var ok = false;
+    var format = false;
+
+    if (typeof color == 'string') {
+      color = stringInputToObject(color);
+    }
+
+    if ((typeof color === 'undefined' ? 'undefined' : _typeof(color)) == 'object') {
+      if (color.hasOwnProperty('r') && color.hasOwnProperty('g') && color.hasOwnProperty('b')) {
+        rgb = rgbToRgb(color.r, color.g, color.b);
+        ok = true;
+        format = String(color.r).substr(-1) === '%' ? 'prgb' : 'rgb';
+      } else if (color.hasOwnProperty('h') && color.hasOwnProperty('s') && color.hasOwnProperty('v')) {
+        color.s = convertToPercentage(color.s);
+        color.v = convertToPercentage(color.v);
+        rgb = hsvToRgb(color.h, color.s, color.v);
+        ok = true;
+        format = 'hsv';
+      } else if (color.hasOwnProperty('h') && color.hasOwnProperty('s') && color.hasOwnProperty('l')) {
+        color.s = convertToPercentage(color.s);
+        color.l = convertToPercentage(color.l);
+        rgb = hslToRgb(color.h, color.s, color.l);
+        ok = true;
+        format = 'hsl';
+      }
+
+      if (color.hasOwnProperty('a')) {
+        a = color.a;
+      }
+    }
+
+    a = boundAlpha(a);
+
+    return {
+      ok: ok,
+      format: color.format || format,
+      r: mathMin(255, mathMax(rgb.r, 0)),
+      g: mathMin(255, mathMax(rgb.g, 0)),
+      b: mathMin(255, mathMax(rgb.b, 0)),
+      a: a
+    };
+  }
+
+  // Conversion Functions
+  // --------------------
+
+  // `rgbToHsl`, `rgbToHsv`, `hslToRgb`, `hsvToRgb` modified from:
+  // <http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript>
+
+  // `rgbToRgb`
+  // Handle bounds / percentage checking to conform to CSS color spec
+  // <http://www.w3.org/TR/css3-color/>
+  // *Assumes:* r, g, b in [0, 255] or [0, 1]
+  // *Returns:* { r, g, b } in [0, 255]
+  function rgbToRgb(r, g, b) {
+    return {
+      r: bound01(r, 255) * 255,
+      g: bound01(g, 255) * 255,
+      b: bound01(b, 255) * 255
+    };
+  }
+
+  // `rgbToHsl`
+  // Converts an RGB color value to HSL.
+  // *Assumes:* r, g, and b are contained in [0, 255] or [0, 1]
+  // *Returns:* { h, s, l } in [0,1]
+  function rgbToHsl(r, g, b) {
+    r = bound01(r, 255);
+    g = bound01(g, 255);
+    b = bound01(b, 255);
+
+    var max = mathMax(r, g, b),
+        min = mathMin(r, g, b);
+    var h,
+        s,
+        l = (max + min) / 2;
+
+    if (max == min) {
+      h = s = 0; // achromatic
+    } else {
+      var d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r:
+          h = (g - b) / d + (g < b ? 6 : 0);
+          break;
+        case g:
+          h = (b - r) / d + 2;
+          break;
+        case b:
+          h = (r - g) / d + 4;
+          break;
+      }
+
+      h /= 6;
+    }
+
+    return { h: h, s: s, l: l };
+  }
+
+  // `hslToRgb`
+  // Converts an HSL color value to RGB.
+  // *Assumes:* h is contained in [0, 1] or [0, 360] and s and l are contained [0, 1] or [0, 100]
+  // *Returns:* { r, g, b } in the set [0, 255]
+  function hslToRgb(h, s, l) {
+    var r, g, b;
+
+    h = bound01(h, 360);
+    s = bound01(s, 100);
+    l = bound01(l, 100);
+
+    function hue2rgb(p, q, t) {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1 / 6) return p + (q - p) * 6 * t;
+      if (t < 1 / 2) return q;
+      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+      return p;
+    }
+
+    if (s === 0) {
+      r = g = b = l; // achromatic
+    } else {
+      var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      var p = 2 * l - q;
+      r = hue2rgb(p, q, h + 1 / 3);
+      g = hue2rgb(p, q, h);
+      b = hue2rgb(p, q, h - 1 / 3);
+    }
+
+    return { r: r * 255, g: g * 255, b: b * 255 };
+  }
+
+  // `rgbToHsv`
+  // Converts an RGB color value to HSV
+  // *Assumes:* r, g, and b are contained in the set [0, 255] or [0, 1]
+  // *Returns:* { h, s, v } in [0,1]
+  function rgbToHsv(r, g, b) {
+    r = bound01(r, 255);
+    g = bound01(g, 255);
+    b = bound01(b, 255);
+
+    var max = mathMax(r, g, b),
+        min = mathMin(r, g, b);
+    var h,
+        s,
+        v = max;
+
+    var d = max - min;
+    s = max === 0 ? 0 : d / max;
+
+    if (max == min) {
+      h = 0; // achromatic
+    } else {
+      switch (max) {
+        case r:
+          h = (g - b) / d + (g < b ? 6 : 0);
+          break;
+        case g:
+          h = (b - r) / d + 2;
+          break;
+        case b:
+          h = (r - g) / d + 4;
+          break;
+      }
+      h /= 6;
+    }
+    return { h: h, s: s, v: v };
+  }
+
+  // `hsvToRgb`
+  // Converts an HSV color value to RGB.
+  // *Assumes:* h is contained in [0, 1] or [0, 360] and s and v are contained in [0, 1] or [0, 100]
+  // *Returns:* { r, g, b } in the set [0, 255]
+  function hsvToRgb(h, s, v) {
+    h = bound01(h, 360) * 6;
+    s = bound01(s, 100);
+    v = bound01(v, 100);
+
+    var i = math.floor(h),
+        f = h - i,
+        p = v * (1 - s),
+        q = v * (1 - f * s),
+        t = v * (1 - (1 - f) * s),
+        mod = i % 6,
+        r = [v, q, p, p, t, v][mod],
+        g = [t, v, v, q, p, p][mod],
+        b = [p, p, t, v, v, q][mod];
+
+    return { r: r * 255, g: g * 255, b: b * 255 };
+  }
+
+  // `rgbToHex`
+  // Converts an RGB color to hex
+  // Assumes r, g, and b are contained in the set [0, 255]
+  // Returns a 3 or 6 character hex
+  function rgbToHex(r, g, b, allow3Char) {
+    var hex = [pad2(mathRound(r).toString(16)), pad2(mathRound(g).toString(16)), pad2(mathRound(b).toString(16))];
+
+    // Return a 3 character hex if possible
+    if (allow3Char && hex[0].charAt(0) == hex[0].charAt(1) && hex[1].charAt(0) == hex[1].charAt(1) && hex[2].charAt(0) == hex[2].charAt(1)) {
+      return hex[0].charAt(0) + hex[1].charAt(0) + hex[2].charAt(0);
+    }
+
+    return hex.join('');
+  }
+  // `rgbaToHex`
+  // Converts an RGBA color plus alpha transparency to hex
+  // Assumes r, g, b and a are contained in the set [0, 255]
+  // Returns an 8 character hex
+  function rgbaToHex(r, g, b, a) {
+    var hex = [pad2(convertDecimalToHex(a)), pad2(mathRound(r).toString(16)), pad2(mathRound(g).toString(16)), pad2(mathRound(b).toString(16))];
+
+    return hex.join('');
+  }
+
+  // `equals`
+  // Can be called with any tinycolor input
+  tinycolor.equals = function (color1, color2) {
+    if (!color1 || !color2) {
+      return false;
+    }
+    return tinycolor(color1).toRgbString() == tinycolor(color2).toRgbString();
+  };
+  tinycolor.random = function () {
+    return tinycolor.fromRatio({
+      r: mathRandom(),
+      g: mathRandom(),
+      b: mathRandom()
+    });
+  };
+
+  // Modification Functions
+  // ----------------------
+  // Thanks to less.js for some of the basics here
+  // <https://github.com/cloudhead/less.js/blob/master/lib/less/functions.js>
+
+  function _desaturate(color, amount) {
+    amount = amount === 0 ? 0 : amount || 10;
+    var hsl = tinycolor(color).toHsl();
+    hsl.s -= amount / 100;
+    hsl.s = clamp01(hsl.s);
+    return tinycolor(hsl);
+  }
+
+  function _saturate(color, amount) {
+    amount = amount === 0 ? 0 : amount || 10;
+    var hsl = tinycolor(color).toHsl();
+    hsl.s += amount / 100;
+    hsl.s = clamp01(hsl.s);
+    return tinycolor(hsl);
+  }
+
+  function _greyscale(color) {
+    return tinycolor(color).desaturate(100);
+  }
+
+  function _lighten(color, amount) {
+    amount = amount === 0 ? 0 : amount || 10;
+    var hsl = tinycolor(color).toHsl();
+    hsl.l += amount / 100;
+    hsl.l = clamp01(hsl.l);
+    return tinycolor(hsl);
+  }
+
+  function _brighten(color, amount) {
+    amount = amount === 0 ? 0 : amount || 10;
+    var rgb = tinycolor(color).toRgb();
+    rgb.r = mathMax(0, mathMin(255, rgb.r - mathRound(255 * -(amount / 100))));
+    rgb.g = mathMax(0, mathMin(255, rgb.g - mathRound(255 * -(amount / 100))));
+    rgb.b = mathMax(0, mathMin(255, rgb.b - mathRound(255 * -(amount / 100))));
+    return tinycolor(rgb);
+  }
+
+  function _darken(color, amount) {
+    amount = amount === 0 ? 0 : amount || 10;
+    var hsl = tinycolor(color).toHsl();
+    hsl.l -= amount / 100;
+    hsl.l = clamp01(hsl.l);
+    return tinycolor(hsl);
+  }
+
+  // Spin takes a positive or negative amount within [-360, 360] indicating the change of hue.
+  // Values outside of this range will be wrapped into this range.
+  function _spin(color, amount) {
+    var hsl = tinycolor(color).toHsl();
+    var hue = (mathRound(hsl.h) + amount) % 360;
+    hsl.h = hue < 0 ? 360 + hue : hue;
+    return tinycolor(hsl);
+  }
+
+  // Combination Functions
+  // ---------------------
+  // Thanks to jQuery xColor for some of the ideas behind these
+  // <https://github.com/infusion/jQuery-xcolor/blob/master/jquery.xcolor.js>
+
+  function _complement(color) {
+    var hsl = tinycolor(color).toHsl();
+    hsl.h = (hsl.h + 180) % 360;
+    return tinycolor(hsl);
+  }
+
+  function _triad(color) {
+    var hsl = tinycolor(color).toHsl();
+    var h = hsl.h;
+    return [tinycolor(color), tinycolor({ h: (h + 120) % 360, s: hsl.s, l: hsl.l }), tinycolor({ h: (h + 240) % 360, s: hsl.s, l: hsl.l })];
+  }
+
+  function _tetrad(color) {
+    var hsl = tinycolor(color).toHsl();
+    var h = hsl.h;
+    return [tinycolor(color), tinycolor({ h: (h + 90) % 360, s: hsl.s, l: hsl.l }), tinycolor({ h: (h + 180) % 360, s: hsl.s, l: hsl.l }), tinycolor({ h: (h + 270) % 360, s: hsl.s, l: hsl.l })];
+  }
+
+  function _splitcomplement(color) {
+    var hsl = tinycolor(color).toHsl();
+    var h = hsl.h;
+    return [tinycolor(color), tinycolor({ h: (h + 72) % 360, s: hsl.s, l: hsl.l }), tinycolor({ h: (h + 216) % 360, s: hsl.s, l: hsl.l })];
+  }
+
+  function _analogous(color, results, slices) {
+    results = results || 6;
+    slices = slices || 30;
+
+    var hsl = tinycolor(color).toHsl();
+    var part = 360 / slices;
+    var ret = [tinycolor(color)];
+
+    for (hsl.h = (hsl.h - (part * results >> 1) + 720) % 360; --results;) {
+      hsl.h = (hsl.h + part) % 360;
+      ret.push(tinycolor(hsl));
+    }
+    return ret;
+  }
+
+  function _monochromatic(color, results) {
+    results = results || 6;
+    var hsv = tinycolor(color).toHsv();
+    var h = hsv.h,
+        s = hsv.s,
+        v = hsv.v;
+    var ret = [];
+    var modification = 1 / results;
+
+    while (results--) {
+      ret.push(tinycolor({ h: h, s: s, v: v }));
+      v = (v + modification) % 1;
+    }
+
+    return ret;
+  }
+
+  // Utility Functions
+  // ---------------------
+
+  tinycolor.mix = function (color1, color2, amount) {
+    amount = amount === 0 ? 0 : amount || 50;
+
+    var rgb1 = tinycolor(color1).toRgb();
+    var rgb2 = tinycolor(color2).toRgb();
+
+    var p = amount / 100;
+    var w = p * 2 - 1;
+    var a = rgb2.a - rgb1.a;
+
+    var w1;
+
+    if (w * a == -1) {
+      w1 = w;
+    } else {
+      w1 = (w + a) / (1 + w * a);
+    }
+
+    w1 = (w1 + 1) / 2;
+
+    var w2 = 1 - w1;
+
+    var rgba = {
+      r: rgb2.r * w1 + rgb1.r * w2,
+      g: rgb2.g * w1 + rgb1.g * w2,
+      b: rgb2.b * w1 + rgb1.b * w2,
+      a: rgb2.a * p + rgb1.a * (1 - p)
+    };
+
+    return tinycolor(rgba);
+  };
+
+  // Readability Functions
+  // ---------------------
+  // <http://www.w3.org/TR/AERT#color-contrast>
+
+  // `readability`
+  // Analyze the 2 colors and returns an object with the following properties:
+  //    `brightness`: difference in brightness between the two colors
+  //    `color`: difference in color/hue between the two colors
+  tinycolor.readability = function (color1, color2) {
+    var c1 = tinycolor(color1);
+    var c2 = tinycolor(color2);
+    var rgb1 = c1.toRgb();
+    var rgb2 = c2.toRgb();
+    var brightnessA = c1.getBrightness();
+    var brightnessB = c2.getBrightness();
+    var colorDiff = Math.max(rgb1.r, rgb2.r) - Math.min(rgb1.r, rgb2.r) + Math.max(rgb1.g, rgb2.g) - Math.min(rgb1.g, rgb2.g) + Math.max(rgb1.b, rgb2.b) - Math.min(rgb1.b, rgb2.b);
+
+    return {
+      brightness: Math.abs(brightnessA - brightnessB),
+      color: colorDiff
+    };
+  };
+
+  // `readable`
+  // http://www.w3.org/TR/AERT#color-contrast
+  // Ensure that foreground and background color combinations provide sufficient contrast.
+  // *Example*
+  //    tinycolor.isReadable("#000", "#111") => false
+  tinycolor.isReadable = function (color1, color2) {
+    var readability = tinycolor.readability(color1, color2);
+    return readability.brightness > 125 && readability.color > 500;
+  };
+
+  // `mostReadable`
+  // Given a base color and a list of possible foreground or background
+  // colors for that base, returns the most readable color.
+  // *Example*
+  //    tinycolor.mostReadable("#123", ["#fff", "#000"]) => "#000"
+  tinycolor.mostReadable = function (baseColor, colorList) {
+    var bestColor = null;
+    var bestScore = 0;
+    var bestIsReadable = false;
+    for (var i = 0; i < colorList.length; i++) {
+      // We normalize both around the "acceptable" breaking point,
+      // but rank brightness constrast higher than hue.
+
+      var readability = tinycolor.readability(baseColor, colorList[i]);
+      var readable = readability.brightness > 125 && readability.color > 500;
+      var score = 3 * (readability.brightness / 125) + readability.color / 500;
+
+      if (readable && !bestIsReadable || readable && bestIsReadable && score > bestScore || !readable && !bestIsReadable && score > bestScore) {
+        bestIsReadable = readable;
+        bestScore = score;
+        bestColor = tinycolor(colorList[i]);
+      }
+    }
+    return bestColor;
+  };
+
+  // Big List of Colors
+  // ------------------
+  // <http://www.w3.org/TR/css3-color/#svg-color>
+  var names = tinycolor.names = {
+    aliceblue: 'f0f8ff',
+    antiquewhite: 'faebd7',
+    aqua: '0ff',
+    aquamarine: '7fffd4',
+    azure: 'f0ffff',
+    beige: 'f5f5dc',
+    bisque: 'ffe4c4',
+    black: '000',
+    blanchedalmond: 'ffebcd',
+    blue: '00f',
+    blueviolet: '8a2be2',
+    brown: 'a52a2a',
+    burlywood: 'deb887',
+    burntsienna: 'ea7e5d',
+    cadetblue: '5f9ea0',
+    chartreuse: '7fff00',
+    chocolate: 'd2691e',
+    coral: 'ff7f50',
+    cornflowerblue: '6495ed',
+    cornsilk: 'fff8dc',
+    crimson: 'dc143c',
+    cyan: '0ff',
+    darkblue: '00008b',
+    darkcyan: '008b8b',
+    darkgoldenrod: 'b8860b',
+    darkgray: 'a9a9a9',
+    darkgreen: '006400',
+    darkgrey: 'a9a9a9',
+    darkkhaki: 'bdb76b',
+    darkmagenta: '8b008b',
+    darkolivegreen: '556b2f',
+    darkorange: 'ff8c00',
+    darkorchid: '9932cc',
+    darkred: '8b0000',
+    darksalmon: 'e9967a',
+    darkseagreen: '8fbc8f',
+    darkslateblue: '483d8b',
+    darkslategray: '2f4f4f',
+    darkslategrey: '2f4f4f',
+    darkturquoise: '00ced1',
+    darkviolet: '9400d3',
+    deeppink: 'ff1493',
+    deepskyblue: '00bfff',
+    dimgray: '696969',
+    dimgrey: '696969',
+    dodgerblue: '1e90ff',
+    firebrick: 'b22222',
+    floralwhite: 'fffaf0',
+    forestgreen: '228b22',
+    fuchsia: 'f0f',
+    gainsboro: 'dcdcdc',
+    ghostwhite: 'f8f8ff',
+    gold: 'ffd700',
+    goldenrod: 'daa520',
+    gray: '808080',
+    green: '008000',
+    greenyellow: 'adff2f',
+    grey: '808080',
+    honeydew: 'f0fff0',
+    hotpink: 'ff69b4',
+    indianred: 'cd5c5c',
+    indigo: '4b0082',
+    ivory: 'fffff0',
+    khaki: 'f0e68c',
+    lavender: 'e6e6fa',
+    lavenderblush: 'fff0f5',
+    lawngreen: '7cfc00',
+    lemonchiffon: 'fffacd',
+    lightblue: 'add8e6',
+    lightcoral: 'f08080',
+    lightcyan: 'e0ffff',
+    lightgoldenrodyellow: 'fafad2',
+    lightgray: 'd3d3d3',
+    lightgreen: '90ee90',
+    lightgrey: 'd3d3d3',
+    lightpink: 'ffb6c1',
+    lightsalmon: 'ffa07a',
+    lightseagreen: '20b2aa',
+    lightskyblue: '87cefa',
+    lightslategray: '789',
+    lightslategrey: '789',
+    lightsteelblue: 'b0c4de',
+    lightyellow: 'ffffe0',
+    lime: '0f0',
+    limegreen: '32cd32',
+    linen: 'faf0e6',
+    magenta: 'f0f',
+    maroon: '800000',
+    mediumaquamarine: '66cdaa',
+    mediumblue: '0000cd',
+    mediumorchid: 'ba55d3',
+    mediumpurple: '9370db',
+    mediumseagreen: '3cb371',
+    mediumslateblue: '7b68ee',
+    mediumspringgreen: '00fa9a',
+    mediumturquoise: '48d1cc',
+    mediumvioletred: 'c71585',
+    midnightblue: '191970',
+    mintcream: 'f5fffa',
+    mistyrose: 'ffe4e1',
+    moccasin: 'ffe4b5',
+    navajowhite: 'ffdead',
+    navy: '000080',
+    oldlace: 'fdf5e6',
+    olive: '808000',
+    olivedrab: '6b8e23',
+    orange: 'ffa500',
+    orangered: 'ff4500',
+    orchid: 'da70d6',
+    palegoldenrod: 'eee8aa',
+    palegreen: '98fb98',
+    paleturquoise: 'afeeee',
+    palevioletred: 'db7093',
+    papayawhip: 'ffefd5',
+    peachpuff: 'ffdab9',
+    peru: 'cd853f',
+    pink: 'ffc0cb',
+    plum: 'dda0dd',
+    powderblue: 'b0e0e6',
+    purple: '800080',
+    rebeccapurple: '663399',
+    red: 'f00',
+    rosybrown: 'bc8f8f',
+    royalblue: '4169e1',
+    saddlebrown: '8b4513',
+    salmon: 'fa8072',
+    sandybrown: 'f4a460',
+    seagreen: '2e8b57',
+    seashell: 'fff5ee',
+    sienna: 'a0522d',
+    silver: 'c0c0c0',
+    skyblue: '87ceeb',
+    slateblue: '6a5acd',
+    slategray: '708090',
+    slategrey: '708090',
+    snow: 'fffafa',
+    springgreen: '00ff7f',
+    steelblue: '4682b4',
+    tan: 'd2b48c',
+    teal: '008080',
+    thistle: 'd8bfd8',
+    tomato: 'ff6347',
+    turquoise: '40e0d0',
+    violet: 'ee82ee',
+    wheat: 'f5deb3',
+    white: 'fff',
+    whitesmoke: 'f5f5f5',
+    yellow: 'ff0',
+    yellowgreen: '9acd32'
+  };
+
+  // Make it easy to access colors via `hexNames[hex]`
+  var hexNames = tinycolor.hexNames = flip(names);
+
+  // Utilities
+  // ---------
+
+  // `{ 'name1': 'val1' }` becomes `{ 'val1': 'name1' }`
+  function flip(o) {
+    var flipped = {};
+    for (var i in o) {
+      if (o.hasOwnProperty(i)) {
+        flipped[o[i]] = i;
+      }
+    }
+    return flipped;
+  }
+
+  // Return a valid alpha value [0,1] with all invalid values being set to 1
+  function boundAlpha(a) {
+    a = parseFloat(a);
+
+    if (isNaN(a) || a < 0 || a > 1) {
+      a = 1;
+    }
+
+    return a;
+  }
+
+  // Take input from [0, n] and return it as [0, 1]
+  function bound01(n, max) {
+    if (isOnePointZero(n)) {
+      n = '100%';
+    }
+
+    var processPercent = isPercentage(n);
+    n = mathMin(max, mathMax(0, parseFloat(n)));
+
+    // Automatically convert percentage into number
+    if (processPercent) {
+      n = parseInt(n * max, 10) / 100;
+    }
+
+    // Handle floating point rounding errors
+    if (math.abs(n - max) < 0.000001) {
+      return 1;
+    }
+
+    // Convert into [0, 1] range if it isn't already
+    return n % max / parseFloat(max);
+  }
+
+  // Force a number between 0 and 1
+  function clamp01(val) {
+    return mathMin(1, mathMax(0, val));
+  }
+
+  // Parse a base-16 hex value into a base-10 integer
+  function parseIntFromHex(val) {
+    return parseInt(val, 16);
+  }
+
+  // Need to handle 1.0 as 100%, since once it is a number, there is no difference between it and 1
+  // <http://stackoverflow.com/questions/7422072/javascript-how-to-detect-number-as-a-decimal-including-1-0>
+  function isOnePointZero(n) {
+    return typeof n == 'string' && n.indexOf('.') != -1 && parseFloat(n) === 1;
+  }
+
+  // Check to see if string passed in is a percentage
+  function isPercentage(n) {
+    return typeof n === 'string' && n.indexOf('%') != -1;
+  }
+
+  // Force a hex value to have 2 characters
+  function pad2(c) {
+    return c.length == 1 ? '0' + c : '' + c;
+  }
+
+  // Replace a decimal with it's percentage value
+  function convertToPercentage(n) {
+    if (n <= 1) {
+      n = n * 100 + '%';
+    }
+
+    return n;
+  }
+
+  // Converts a decimal to a hex value
+  function convertDecimalToHex(d) {
+    return Math.round(parseFloat(d) * 255).toString(16);
+  }
+  // Converts a hex value to a decimal
+  function convertHexToDecimal(h) {
+    return parseIntFromHex(h) / 255;
+  }
+
+  var matchers = function () {
+    // <http://www.w3.org/TR/css3-values/#integers>
+    var CSS_INTEGER = '[-\\+]?\\d+%?';
+
+    // <http://www.w3.org/TR/css3-values/#number-value>
+    var CSS_NUMBER = '[-\\+]?\\d*\\.\\d+%?';
+
+    // Allow positive/negative integer/number.  Don't capture the either/or, just the entire outcome.
+    var CSS_UNIT = '(?:' + CSS_NUMBER + ')|(?:' + CSS_INTEGER + ')';
+
+    // Actual matching.
+    // Parentheses and commas are optional, but not required.
+    // Whitespace can take the place of commas or opening paren
+    var PERMISSIVE_MATCH3 = '[\\s|\\(]+(' + CSS_UNIT + ')[,|\\s]+(' + CSS_UNIT + ')[,|\\s]+(' + CSS_UNIT + ')\\s*\\)?';
+    var PERMISSIVE_MATCH4 = '[\\s|\\(]+(' + CSS_UNIT + ')[,|\\s]+(' + CSS_UNIT + ')[,|\\s]+(' + CSS_UNIT + ')[,|\\s]+(' + CSS_UNIT + ')\\s*\\)?';
+
+    return {
+      rgb: new RegExp('rgb' + PERMISSIVE_MATCH3),
+      rgba: new RegExp('rgba' + PERMISSIVE_MATCH4),
+      hsl: new RegExp('hsl' + PERMISSIVE_MATCH3),
+      hsla: new RegExp('hsla' + PERMISSIVE_MATCH4),
+      hsv: new RegExp('hsv' + PERMISSIVE_MATCH3),
+      hsva: new RegExp('hsva' + PERMISSIVE_MATCH4),
+      hex3: /^([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
+      hex6: /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/,
+      hex8: /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/
+    };
+  }();
+
+  // `stringInputToObject`
+  // Permissive string parsing.  Take in a number of formats, and output an object
+  // based on detected format.  Returns `{ r, g, b }` or `{ h, s, l }` or `{ h, s, v}`
+  function stringInputToObject(color) {
+    color = color.replace(trimLeft, '').replace(trimRight, '').toLowerCase();
+    var named = false;
+    if (names[color]) {
+      color = names[color];
+      named = true;
+    } else if (color == 'transparent') {
+      return { r: 0, g: 0, b: 0, a: 0, format: 'name' };
+    }
+
+    // Try to match string input using regular expressions.
+    // Keep most of the number bounding out of this function - don't worry about [0,1] or [0,100] or [0,360]
+    // Just return an object and let the conversion functions handle that.
+    // This way the result will be the same whether the tinycolor is initialized with string or object.
+    var match;
+    if (match = matchers.rgb.exec(color)) {
+      return { r: match[1], g: match[2], b: match[3] };
+    }
+    if (match = matchers.rgba.exec(color)) {
+      return { r: match[1], g: match[2], b: match[3], a: match[4] };
+    }
+    if (match = matchers.hsl.exec(color)) {
+      return { h: match[1], s: match[2], l: match[3] };
+    }
+    if (match = matchers.hsla.exec(color)) {
+      return { h: match[1], s: match[2], l: match[3], a: match[4] };
+    }
+    if (match = matchers.hsv.exec(color)) {
+      return { h: match[1], s: match[2], v: match[3] };
+    }
+    if (match = matchers.hsva.exec(color)) {
+      return { h: match[1], s: match[2], v: match[3], a: match[4] };
+    }
+    if (match = matchers.hex8.exec(color)) {
+      return {
+        a: convertHexToDecimal(match[1]),
+        r: parseIntFromHex(match[2]),
+        g: parseIntFromHex(match[3]),
+        b: parseIntFromHex(match[4]),
+        format: named ? 'name' : 'hex8'
+      };
+    }
+    if (match = matchers.hex6.exec(color)) {
+      return {
+        r: parseIntFromHex(match[1]),
+        g: parseIntFromHex(match[2]),
+        b: parseIntFromHex(match[3]),
+        format: named ? 'name' : 'hex'
+      };
+    }
+    if (match = matchers.hex3.exec(color)) {
+      return {
+        r: parseIntFromHex(match[1] + '' + match[1]),
+        g: parseIntFromHex(match[2] + '' + match[2]),
+        b: parseIntFromHex(match[3] + '' + match[3]),
+        format: named ? 'name' : 'hex'
+      };
+    }
+
+    return false;
+  }
+
+  window.tinycolor = tinycolor;
+  //})();
+
+  $(function () {
+    if ($.fn.spectrum.load) {
+      $.fn.spectrum.processNativeColorInputs();
+    }
+  });
 });
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 125 */
+/* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var LayerView = __webpack_require__(126);
+var LayerView = __webpack_require__(124);
 
 module.exports = Backbone.View.extend({
   initialize: function initialize(o) {
@@ -39009,14 +39050,13 @@ module.exports = Backbone.View.extend({
 });
 
 /***/ }),
-/* 126 */
+/* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(Backbone) {
 
 module.exports = Backbone.View.extend({
-
   events: {
     click: 'active',
     'click [data-close-layer]': 'remove',
@@ -39169,7 +39209,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 127 */
+/* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -39180,15 +39220,13 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 var Property = __webpack_require__(42);
 
 module.exports = Property.extend({
-
   defaults: _extends({}, Property.prototype.defaults, {
     showInput: 1
   })
-
 });
 
 /***/ }),
-/* 128 */
+/* 126 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -39197,7 +39235,6 @@ module.exports = Property.extend({
 var Property = __webpack_require__(14);
 
 module.exports = Property.extend({
-
   events: {
     'change [type=range]': 'inputValueChanged',
     'input [type=range]': 'inputValueChangedSoft'
@@ -39241,7 +39278,7 @@ module.exports = Property.extend({
 });
 
 /***/ }),
-/* 129 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -39276,64 +39313,114 @@ module.exports = function () {
 
         // Fixed values
         switch (prop) {
-          case 'margin-top':case 'margin-right':case 'margin-bottom':case 'margin-left':
-          case 'padding-top':case 'padding-right':case 'padding-bottom':case 'padding-left':
-          case 'width':case 'max-width':case 'min-width':
-          case 'height':case 'max-height':case 'min-height':
+          case 'margin-top':
+          case 'margin-right':
+          case 'margin-bottom':
+          case 'margin-left':
+          case 'padding-top':
+          case 'padding-right':
+          case 'padding-bottom':
+          case 'padding-left':
+          case 'width':
+          case 'max-width':
+          case 'min-width':
+          case 'height':
+          case 'max-height':
+          case 'min-height':
             obj.fixedValues = ['initial', 'inherit', 'auto'];
             break;
           case 'font-size':
             obj.fixedValues = ['medium', 'xx-small', 'x-small', 'small', 'large', 'x-large', 'xx-large', 'smaller', 'larger', 'length', 'initial', 'inherit'];
             break;
-          case 'letter-spacing':case 'line-height':
+          case 'letter-spacing':
+          case 'line-height':
             obj.fixedValues = ['normal', 'initial', 'inherit'];
             break;
         }
 
         // Type
         switch (prop) {
-          case 'float':case 'position':
+          case 'float':
+          case 'position':
           case 'text-align':
             obj.type = 'radio';
             break;
-          case 'display':case 'font-family':
+          case 'display':
+          case 'font-family':
           case 'font-weight':
           case 'border-style':
           case 'box-shadow-type':
-          case 'background-repeat':case 'background-position':case 'background-attachment':case 'background-size':
-          case 'transition-property':case 'transition-timing-function':
+          case 'background-repeat':
+          case 'background-position':
+          case 'background-attachment':
+          case 'background-size':
+          case 'transition-property':
+          case 'transition-timing-function':
           case 'cursor':
           case 'overflow':
             obj.type = 'select';
             break;
-          case 'top':case 'right':case 'bottom':case 'left':
-          case 'margin-top':case 'margin-right':case 'margin-bottom':case 'margin-left':
-          case 'padding-top':case 'padding-right':case 'padding-bottom':case 'padding-left':
-          case 'min-height':case 'min-width':case 'max-height':case 'max-width':
-          case 'width':case 'height':
-          case 'font-size':case 'letter-spacing':case 'line-height':
-          case 'text-shadow-h':case 'text-shadow-v':case 'text-shadow-blur':
+          case 'top':
+          case 'right':
+          case 'bottom':
+          case 'left':
+          case 'margin-top':
+          case 'margin-right':
+          case 'margin-bottom':
+          case 'margin-left':
+          case 'padding-top':
+          case 'padding-right':
+          case 'padding-bottom':
+          case 'padding-left':
+          case 'min-height':
+          case 'min-width':
+          case 'max-height':
+          case 'max-width':
+          case 'width':
+          case 'height':
+          case 'font-size':
+          case 'letter-spacing':
+          case 'line-height':
+          case 'text-shadow-h':
+          case 'text-shadow-v':
+          case 'text-shadow-blur':
           case 'border-radius-c':
-          case 'border-top-left-radius':case 'border-top-right-radius':case 'border-bottom-left-radius':case 'border-bottom-right-radius':
+          case 'border-top-left-radius':
+          case 'border-top-right-radius':
+          case 'border-bottom-left-radius':
+          case 'border-bottom-right-radius':
           case 'border-width':
-          case 'box-shadow-h':case 'box-shadow-v':case 'box-shadow-blur':case 'box-shadow-spread':
+          case 'box-shadow-h':
+          case 'box-shadow-v':
+          case 'box-shadow-blur':
+          case 'box-shadow-spread':
           case 'transition-duration':
           case 'perspective':
-          case 'transform-rotate-x':case 'transform-rotate-y':case 'transform-rotate-z':
-          case 'transform-scale-x':case 'transform-scale-y':case 'transform-scale-z':
+          case 'transform-rotate-x':
+          case 'transform-rotate-y':
+          case 'transform-rotate-z':
+          case 'transform-scale-x':
+          case 'transform-scale-y':
+          case 'transform-scale-z':
             obj.type = 'integer';
             break;
-          case 'margin':case 'padding':
+          case 'margin':
+          case 'padding':
           case 'border-radius':
           case 'border':
           case 'transform':
             obj.type = 'composite';
             break;
-          case 'color':case 'text-shadow-color':
-          case 'background-color':case 'border-color':case 'box-shadow-color':
+          case 'color':
+          case 'text-shadow-color':
+          case 'background-color':
+          case 'border-color':
+          case 'box-shadow-color':
             obj.type = 'color';
             break;
-          case 'text-shadow':case 'box-shadow':case 'background':
+          case 'text-shadow':
+          case 'box-shadow':
+          case 'background':
           case 'transition':
             obj.type = 'stack';
             break;
@@ -39344,8 +39431,10 @@ module.exports = function () {
 
         // Defaults
         switch (prop) {
-          case 'float':case 'background-color':
-          case 'background-image':case 'text-shadow':
+          case 'float':
+          case 'background-color':
+          case 'background-image':
+          case 'text-shadow':
             obj.defaults = 'none';
             break;
           case 'display':
@@ -39354,25 +39443,49 @@ module.exports = function () {
           case 'position':
             obj.defaults = 'static';
             break;
-          case 'top':case 'right':case 'bottom':case 'left':
-          case 'margin-top':case 'margin-right':case 'margin-bottom':case 'margin-left':
-          case 'padding-top':case 'padding-right':case 'padding-bottom':case 'padding-left':
-          case 'text-shadow-h':case 'text-shadow-v':case 'text-shadow-blur':
+          case 'top':
+          case 'right':
+          case 'bottom':
+          case 'left':
+          case 'margin-top':
+          case 'margin-right':
+          case 'margin-bottom':
+          case 'margin-left':
+          case 'padding-top':
+          case 'padding-right':
+          case 'padding-bottom':
+          case 'padding-left':
+          case 'text-shadow-h':
+          case 'text-shadow-v':
+          case 'text-shadow-blur':
           case 'border-radius-c':
-          case 'border-top-left-radius':case 'border-top-right-radius':case 'border-bottom-left-radius':case 'border-bottom-right-radius':
-          case 'box-shadow-h':case 'box-shadow-v':case 'box-shadow-spread':
+          case 'border-top-left-radius':
+          case 'border-top-right-radius':
+          case 'border-bottom-left-radius':
+          case 'border-bottom-right-radius':
+          case 'box-shadow-h':
+          case 'box-shadow-v':
+          case 'box-shadow-spread':
           case 'perspective':
-          case 'transform-rotate-x':case 'transform-rotate-y':case 'transform-rotate-z':
+          case 'transform-rotate-x':
+          case 'transform-rotate-y':
+          case 'transform-rotate-z':
             obj.defaults = 0;
             break;
-          case 'transform-scale-x':case 'transform-scale-y':case 'transform-scale-z':
+          case 'transform-scale-x':
+          case 'transform-scale-y':
+          case 'transform-scale-z':
             obj.defaults = 1;
             break;
           case 'box-shadow-blur':
             obj.defaults = '5px';
             break;
-          case 'min-height':case 'min-width':case 'max-height':case 'max-width':
-          case 'width':case 'height':
+          case 'min-height':
+          case 'min-width':
+          case 'max-height':
+          case 'max-width':
+          case 'width':
+          case 'height':
           case 'background-size':
           case 'cursor':
             obj.defaults = 'auto';
@@ -39380,17 +39493,21 @@ module.exports = function () {
           case 'font-family':
             obj.defaults = 'Arial, Helvetica, sans-serif';
             break;
-          case 'font-size':case 'border-width':
+          case 'font-size':
+          case 'border-width':
             obj.defaults = 'medium';
             break;
           case 'font-weight':
             obj.defaults = '400';
             break;
-          case 'letter-spacing':case 'line-height':
+          case 'letter-spacing':
+          case 'line-height':
             obj.defaults = 'normal';
             break;
-          case 'color':case 'text-shadow-color':
-          case 'border-color':case 'box-shadow-color':
+          case 'color':
+          case 'text-shadow-color':
+          case 'border-color':
+          case 'box-shadow-color':
             obj.defaults = 'black';
             break;
           case 'text-align':
@@ -39427,44 +39544,78 @@ module.exports = function () {
 
         // Units
         switch (prop) {
-          case 'top':case 'right':case 'bottom':case 'left':
-          case 'margin-top':case 'margin-right':case 'margin-bottom':case 'margin-left':
-          case 'padding-top':case 'padding-right':case 'padding-bottom':case 'padding-left':
-          case 'min-height':case 'min-width':case 'max-height':case 'max-width':
-          case 'width':case 'height':
-          case 'text-shadow-h':case 'text-shadow-v':case 'text-shadow-blur':
+          case 'top':
+          case 'right':
+          case 'bottom':
+          case 'left':
+          case 'margin-top':
+          case 'margin-right':
+          case 'margin-bottom':
+          case 'margin-left':
+          case 'padding-top':
+          case 'padding-right':
+          case 'padding-bottom':
+          case 'padding-left':
+          case 'min-height':
+          case 'min-width':
+          case 'max-height':
+          case 'max-width':
+          case 'width':
+          case 'height':
+          case 'text-shadow-h':
+          case 'text-shadow-v':
+          case 'text-shadow-blur':
           case 'border-radius-c':
-          case 'border-top-left-radius':case 'border-top-right-radius':case 'border-bottom-left-radius':case 'border-bottom-right-radius':
-          case 'box-shadow-h':case 'box-shadow-v':
+          case 'border-top-left-radius':
+          case 'border-top-right-radius':
+          case 'border-bottom-left-radius':
+          case 'border-bottom-right-radius':
+          case 'box-shadow-h':
+          case 'box-shadow-v':
             obj.units = ['px', '%'];
             break;
-          case 'font-size':case 'letter-spacing':case 'line-height':
+          case 'font-size':
+          case 'letter-spacing':
+          case 'line-height':
             obj.units = ['px', 'em', 'rem', '%'];
             break;
           case 'border-width':
             obj.units = ['px', 'em'];
             break;
-          case 'box-shadow-blur':case 'box-shadow-spread':
+          case 'box-shadow-blur':
+          case 'box-shadow-spread':
           case 'perspective':
             obj.units = ['px'];
             break;
           case 'transition-duration':
             obj.units = ['s'];
             break;
-          case 'transform-rotate-x':case 'transform-rotate-y':case 'transform-rotate-z':
+          case 'transform-rotate-x':
+          case 'transform-rotate-y':
+          case 'transform-rotate-z':
             obj.units = ['deg'];
             break;
         }
 
         // Min/Max
         switch (prop) {
-          case 'padding-top':case 'padding-right':case 'padding-bottom':case 'padding-left':
-          case 'min-height':case 'min-width':case 'max-height':case 'max-width':
-          case 'width':case 'height':
+          case 'padding-top':
+          case 'padding-right':
+          case 'padding-bottom':
+          case 'padding-left':
+          case 'min-height':
+          case 'min-width':
+          case 'max-height':
+          case 'max-width':
+          case 'width':
+          case 'height':
           case 'font-size':
           case 'text-shadow-blur':
           case 'border-radius-c':
-          case 'border-top-left-radius':case 'border-top-right-radius':case 'border-bottom-left-radius':case 'border-bottom-right-radius':
+          case 'border-top-left-radius':
+          case 'border-top-right-radius':
+          case 'border-bottom-left-radius':
+          case 'border-bottom-right-radius':
           case 'border-width':
           case 'box-shadow-blur':
           case 'transition-duration':
@@ -39475,7 +39626,9 @@ module.exports = function () {
 
         // Preview
         switch (prop) {
-          case 'text-shadow':case 'box-shadow':case 'background':
+          case 'text-shadow':
+          case 'box-shadow':
+          case 'background':
             obj.preview = true;
             break;
         }
@@ -39612,7 +39765,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 130 */
+/* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -39622,7 +39775,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _underscore = __webpack_require__(1);
 
-var SectorView = __webpack_require__(131);
+var SectorView = __webpack_require__(129);
 
 module.exports = Backbone.View.extend({
   initialize: function initialize(o) {
@@ -39806,7 +39959,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 131 */
+/* 129 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -39816,7 +39969,6 @@ var Backbone = __webpack_require__(0);
 var PropertiesView = __webpack_require__(13);
 
 module.exports = Backbone.View.extend({
-
   template: _.template('\n  <div class="<%= pfx %>title" data-sector-title>\n    <i id="<%= pfx %>caret" class="fa"></i>\n    <%= label %>\n  </div>'),
 
   events: {
@@ -39863,7 +40015,7 @@ module.exports = Backbone.View.extend({
    * Show the content of the sector
    * */
   show: function show() {
-    this.$el.addClass(this.pfx + "open");
+    this.$el.addClass(this.pfx + 'open');
     this.getPropertiesEl().style.display = '';
     this.$caret.removeClass(this.caretR).addClass(this.caretD);
   },
@@ -39873,7 +40025,7 @@ module.exports = Backbone.View.extend({
    * Hide the content of the sector
    * */
   hide: function hide() {
-    this.$el.removeClass(this.pfx + "open");
+    this.$el.removeClass(this.pfx + 'open');
     this.getPropertiesEl().style.display = 'none';
     this.$caret.removeClass(this.caretD).addClass(this.caretR);
   },
@@ -39917,7 +40069,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 132 */
+/* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -39965,16 +40117,15 @@ module.exports = Backbone.View.extend({
 
 module.exports = function () {
   var c = {};
-  var defaults = __webpack_require__(133);
-  var Assets = __webpack_require__(134);
-  var AssetsView = __webpack_require__(137);
+  var defaults = __webpack_require__(131);
+  var Assets = __webpack_require__(132);
+  var AssetsView = __webpack_require__(135);
   var FileUpload = __webpack_require__(45);
   var assets = void 0,
       am = void 0,
       fu = void 0;
 
   return {
-
     /**
      * Name of the module
      * @type {String}
@@ -40067,7 +40218,6 @@ module.exports = function () {
      */
     add: function add(asset) {
       var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
 
       // Put the model at the beginning
       if (typeof opts.at == 'undefined') {
@@ -40309,7 +40459,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 133 */
+/* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40401,7 +40551,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 134 */
+/* 132 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40416,7 +40566,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.default).extend({
   types: [{
     id: 'image',
-    model: __webpack_require__(135),
+    model: __webpack_require__(133),
     view: __webpack_require__(43),
     isType: function isType(value) {
       if (typeof value == 'string') {
@@ -40431,7 +40581,7 @@ module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.d
 });
 
 /***/ }),
-/* 135 */
+/* 133 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40439,28 +40589,25 @@ module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.d
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var Asset = __webpack_require__(136);
+var Asset = __webpack_require__(134);
 
 module.exports = Asset.extend({
-
   defaults: _extends({}, Asset.prototype.defaults, {
     type: 'image',
     unitDim: 'px',
     height: 0,
     width: 0
   })
-
 });
 
 /***/ }),
-/* 136 */
+/* 134 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = __webpack_require__(0).Model.extend({
-
   idAttribute: 'src',
 
   defaults: {
@@ -40489,7 +40636,7 @@ module.exports = __webpack_require__(0).Model.extend({
 });
 
 /***/ }),
-/* 137 */
+/* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40500,7 +40647,6 @@ var AssetImageView = __webpack_require__(43);
 var FileUploader = __webpack_require__(45);
 
 module.exports = Backbone.View.extend({
-
   events: {
     submit: 'handleSubmit'
   },
@@ -40678,7 +40824,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 138 */
+/* 136 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40707,17 +40853,16 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 module.exports = function () {
   var em = void 0;
   var c = {},
-      defaults = __webpack_require__(139),
+      defaults = __webpack_require__(137),
       CssRule = __webpack_require__(46),
-      CssRules = __webpack_require__(140),
-      CssRulesView = __webpack_require__(141);
+      CssRules = __webpack_require__(138),
+      CssRulesView = __webpack_require__(139);
   var Selectors = __webpack_require__(10);
   var Selector = __webpack_require__(7);
 
   var rules, rulesView;
 
   return {
-
     Selectors: Selectors,
 
     /**
@@ -41088,27 +41233,25 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 139 */
+/* 137 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = {
-
   // Style prefix
   stylePrefix: 'css-',
 
   // Custom CSS string to render on top
-  'staticRules': '',
+  staticRules: '',
 
   // Default CSS style
   rules: []
-
 };
 
 /***/ }),
-/* 140 */
+/* 138 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41148,14 +41291,14 @@ module.exports = Backbone.Collection.extend({
 });
 
 /***/ }),
-/* 141 */
+/* 139 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var CssRuleView = __webpack_require__(142);
+var CssRuleView = __webpack_require__(140);
 
 module.exports = Backbone.View.extend({
   initialize: function initialize(o) {
@@ -41217,7 +41360,7 @@ module.exports = Backbone.View.extend({
 });
 
 /***/ }),
-/* 142 */
+/* 140 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41245,7 +41388,7 @@ module.exports = __webpack_require__(0).View.extend({
 });
 
 /***/ }),
-/* 143 */
+/* 141 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41255,19 +41398,18 @@ var _underscore = __webpack_require__(1);
 
 module.exports = function () {
   var c = {};
-  var defaultOpts = __webpack_require__(144);
-  var TraitsView = __webpack_require__(145);
+  var defaultOpts = __webpack_require__(142);
+  var TraitsView = __webpack_require__(143);
   var TraitsViewer = void 0;
 
   return {
-
     TraitsView: TraitsView,
 
     /**
      * Name of the module
      * @type {String}
      * @private
-    */
+     */
     name: 'TraitManager',
 
     /**
@@ -41333,14 +41475,13 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 144 */
+/* 142 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = {
-
   stylePrefix: 'trt-',
 
   labelContainer: 'Component settings',
@@ -41353,11 +41494,10 @@ module.exports = {
 
   // Default options for the target input
   optionsTarget: [{ value: '', name: 'This window' }, { value: '_blank', name: 'New window' }]
-
 };
 
 /***/ }),
-/* 145 */
+/* 143 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41365,21 +41505,20 @@ module.exports = {
 
 var DomainViews = __webpack_require__(48);
 var TraitView = __webpack_require__(8);
-var TraitSelectView = __webpack_require__(146);
-var TraitCheckboxView = __webpack_require__(147);
-var TraitNumberView = __webpack_require__(148);
-var TraitColorView = __webpack_require__(149);
+var TraitSelectView = __webpack_require__(144);
+var TraitCheckboxView = __webpack_require__(145);
+var TraitNumberView = __webpack_require__(146);
+var TraitColorView = __webpack_require__(147);
 
 module.exports = DomainViews.extend({
-
   itemView: TraitView,
 
   itemsView: {
-    'text': TraitView,
-    'number': TraitNumberView,
-    'select': TraitSelectView,
-    'checkbox': TraitCheckboxView,
-    'color': TraitColorView
+    text: TraitView,
+    number: TraitNumberView,
+    select: TraitSelectView,
+    checkbox: TraitCheckboxView,
+    color: TraitColorView
   },
 
   initialize: function initialize(o) {
@@ -41407,7 +41546,7 @@ module.exports = DomainViews.extend({
 });
 
 /***/ }),
-/* 146 */
+/* 144 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41476,7 +41615,7 @@ module.exports = TraitView.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-/* 147 */
+/* 145 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41531,7 +41670,7 @@ module.exports = TraitView.extend({
 });
 
 /***/ }),
-/* 148 */
+/* 146 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41586,7 +41725,7 @@ module.exports = TraitView.extend({
 });
 
 /***/ }),
-/* 149 */
+/* 147 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41604,16 +41743,17 @@ module.exports = TraitView.extend({
   getInputEl: function getInputEl() {
     if (!this.$input) {
       var value = this.getModelValue();
-      var inputNumber = new InputColor({
+      var inputColor = new InputColor({
         target: this.config.em,
         contClass: this.ppfx + 'field-color',
         model: this.model,
         ppfx: this.ppfx
       });
-      this.input = inputNumber.render();
+      this.input = inputColor.render();
       this.$input = this.input.colorEl;
       value = value || '';
       this.model.set('value', value).trigger('change:value');
+      this.input.setValue(value);
     }
     return this.$input.get(0);
   },
@@ -41632,7 +41772,7 @@ module.exports = TraitView.extend({
 });
 
 /***/ }),
-/* 150 */
+/* 148 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41677,7 +41817,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 module.exports = function () {
   var c = {};
   var em = void 0;
-  var defaults = __webpack_require__(151);
+  var defaults = __webpack_require__(149);
   var Component = __webpack_require__(4);
   var ComponentView = __webpack_require__(3);
   var Components = __webpack_require__(49);
@@ -41686,56 +41826,56 @@ module.exports = function () {
   var component, componentView;
   var componentTypes = [{
     id: 'cell',
+    model: __webpack_require__(153),
+    view: __webpack_require__(154)
+  }, {
+    id: 'row',
     model: __webpack_require__(155),
     view: __webpack_require__(156)
   }, {
-    id: 'row',
+    id: 'table',
     model: __webpack_require__(157),
     view: __webpack_require__(158)
   }, {
-    id: 'table',
+    id: 'thead',
     model: __webpack_require__(159),
     view: __webpack_require__(160)
   }, {
-    id: 'thead',
-    model: __webpack_require__(161),
-    view: __webpack_require__(162)
-  }, {
     id: 'tbody',
     model: __webpack_require__(19),
-    view: __webpack_require__(163)
+    view: __webpack_require__(161)
   }, {
     id: 'tfoot',
+    model: __webpack_require__(162),
+    view: __webpack_require__(163)
+  }, {
+    id: 'map',
     model: __webpack_require__(164),
     view: __webpack_require__(165)
   }, {
-    id: 'map',
+    id: 'link',
     model: __webpack_require__(166),
     view: __webpack_require__(167)
   }, {
-    id: 'link',
+    id: 'video',
     model: __webpack_require__(168),
     view: __webpack_require__(169)
-  }, {
-    id: 'video',
-    model: __webpack_require__(170),
-    view: __webpack_require__(171)
   }, {
     id: 'image',
     model: __webpack_require__(20),
     view: __webpack_require__(15)
   }, {
     id: 'script',
+    model: __webpack_require__(170),
+    view: __webpack_require__(171)
+  }, {
+    id: 'svg',
     model: __webpack_require__(172),
     view: __webpack_require__(173)
   }, {
-    id: 'svg',
+    id: 'textnode',
     model: __webpack_require__(174),
     view: __webpack_require__(175)
-  }, {
-    id: 'textnode',
-    model: __webpack_require__(176),
-    view: __webpack_require__(177)
   }, {
     id: 'text',
     model: __webpack_require__(51),
@@ -41747,6 +41887,7 @@ module.exports = function () {
   }];
 
   return {
+    Component: Component,
 
     Components: Components,
 
@@ -42165,7 +42306,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 151 */
+/* 149 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42207,7 +42348,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 152 */
+/* 150 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42216,11 +42357,10 @@ module.exports = {
 var _underscore = __webpack_require__(1);
 
 var Backbone = __webpack_require__(0);
-var Trait = __webpack_require__(153);
-var TraitFactory = __webpack_require__(154);
+var Trait = __webpack_require__(151);
+var TraitFactory = __webpack_require__(152);
 
 module.exports = Backbone.Collection.extend({
-
   model: Trait,
 
   initialize: function initialize(coll) {
@@ -42257,7 +42397,7 @@ module.exports = Backbone.Collection.extend({
 });
 
 /***/ }),
-/* 153 */
+/* 151 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42268,7 +42408,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 var _underscore = __webpack_require__(1);
 
 module.exports = __webpack_require__(0).Model.extend({
-
   defaults: {
     type: 'text', // text, number, range, select
     label: '',
@@ -42320,6 +42459,19 @@ module.exports = __webpack_require__(0).Model.extend({
       target.set('attributes', attrs);
     }
   },
+  setValueFromInput: function setValueFromInput(value) {
+    var final = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+    var toSet = { value: value };
+    this.set(toSet, _extends({}, opts, { avoidStore: 1 }));
+
+    // Have to trigger the change
+    if (final) {
+      this.set('value', '', opts);
+      this.set(toSet, opts);
+    }
+  },
 
 
   /**
@@ -42341,7 +42493,7 @@ module.exports = __webpack_require__(0).Model.extend({
 });
 
 /***/ }),
-/* 154 */
+/* 152 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42374,7 +42526,9 @@ module.exports = function () {
 
         // Define placeholder
         switch (prop) {
-          case 'title':case 'alt':case 'id':
+          case 'title':
+          case 'alt':
+          case 'id':
             obj.placeholder = config.labelPlhText;
             break;
           case 'href':
@@ -42398,7 +42552,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 155 */
+/* 153 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42409,13 +42563,11 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 var Component = __webpack_require__(4);
 
 module.exports = Component.extend({
-
   defaults: _extends({}, Component.prototype.defaults, {
     type: 'cell',
     tagName: 'td',
     draggable: ['tr']
   })
-
 }, {
   isComponent: function isComponent(el) {
     var result = '';
@@ -42433,7 +42585,7 @@ module.exports = Component.extend({
 });
 
 /***/ }),
-/* 156 */
+/* 154 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42445,7 +42597,7 @@ var ComponentView = __webpack_require__(3);
 module.exports = ComponentView.extend({});
 
 /***/ }),
-/* 157 */
+/* 155 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42456,7 +42608,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 var Component = __webpack_require__(4);
 
 module.exports = Component.extend({
-
   defaults: _extends({}, Component.prototype.defaults, {
     type: 'row',
     tagName: 'tr',
@@ -42488,7 +42639,7 @@ module.exports = Component.extend({
 });
 
 /***/ }),
-/* 158 */
+/* 156 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42500,7 +42651,7 @@ var ComponentView = __webpack_require__(3);
 module.exports = ComponentView.extend({});
 
 /***/ }),
-/* 159 */
+/* 157 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42511,7 +42662,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 var Component = __webpack_require__(4);
 
 module.exports = Component.extend({
-
   defaults: _extends({}, Component.prototype.defaults, {
     type: 'table',
     tagName: 'table',
@@ -42536,7 +42686,7 @@ module.exports = Component.extend({
 });
 
 /***/ }),
-/* 160 */
+/* 158 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42550,7 +42700,7 @@ module.exports = ComponentView.extend({
 });
 
 /***/ }),
-/* 161 */
+/* 159 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42561,12 +42711,10 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 var ComponentTableBody = __webpack_require__(19);
 
 module.exports = ComponentTableBody.extend({
-
   defaults: _extends({}, ComponentTableBody.prototype.defaults, {
     type: 'thead',
     tagName: 'thead'
   })
-
 }, {
   isComponent: function isComponent(el) {
     var result = '';
@@ -42580,7 +42728,7 @@ module.exports = ComponentTableBody.extend({
 });
 
 /***/ }),
-/* 162 */
+/* 160 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42590,6 +42738,46 @@ var Backbone = __webpack_require__(0);
 var ComponentView = __webpack_require__(3);
 
 module.exports = ComponentView.extend({});
+
+/***/ }),
+/* 161 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var Backbone = __webpack_require__(0);
+var ComponentView = __webpack_require__(3);
+
+module.exports = ComponentView.extend({});
+
+/***/ }),
+/* 162 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var ComponentTableBody = __webpack_require__(19);
+
+module.exports = ComponentTableBody.extend({
+  defaults: _extends({}, ComponentTableBody.prototype.defaults, {
+    type: 'tfoot',
+    tagName: 'tfoot'
+  })
+}, {
+  isComponent: function isComponent(el) {
+    var result = '';
+
+    if (el.tagName == 'TFOOT') {
+      result = { type: 'tfoot' };
+    }
+
+    return result;
+  }
+});
 
 /***/ }),
 /* 163 */
@@ -42608,55 +42796,12 @@ module.exports = ComponentView.extend({});
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var ComponentTableBody = __webpack_require__(19);
-
-module.exports = ComponentTableBody.extend({
-
-  defaults: _extends({}, ComponentTableBody.prototype.defaults, {
-    type: 'tfoot',
-    tagName: 'tfoot'
-  })
-
-}, {
-  isComponent: function isComponent(el) {
-    var result = '';
-
-    if (el.tagName == 'TFOOT') {
-      result = { type: 'tfoot' };
-    }
-
-    return result;
-  }
-});
-
-/***/ }),
-/* 165 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var Backbone = __webpack_require__(0);
-var ComponentView = __webpack_require__(3);
-
-module.exports = ComponentView.extend({});
-
-/***/ }),
-/* 166 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
 /* WEBPACK VAR INJECTION */(function(_) {
 
 var Component = __webpack_require__(20);
 var OComponent = __webpack_require__(4);
 
 module.exports = Component.extend({
-
   defaults: _.extend({}, Component.prototype.defaults, {
     type: 'map',
     void: 0,
@@ -42730,7 +42875,6 @@ module.exports = Component.extend({
     if (qr.t) this.set('mapType', qr.t);
   }
 }, {
-
   /**
    * Detect if the passed element is a valid component.
    * In case the element is valid an object abstracted
@@ -42750,7 +42894,7 @@ module.exports = Component.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 167 */
+/* 165 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42760,7 +42904,6 @@ var Backbone = __webpack_require__(0);
 var ComponentView = __webpack_require__(15);
 
 module.exports = ComponentView.extend({
-
   tagName: 'div',
 
   events: {},
@@ -42780,7 +42923,7 @@ module.exports = ComponentView.extend({
   },
   getIframe: function getIframe() {
     if (!this.iframe) {
-      var ifrm = document.createElement("iframe");
+      var ifrm = document.createElement('iframe');
       ifrm.src = this.model.get('src');
       ifrm.frameBorder = 0;
       ifrm.style.height = '100%';
@@ -42803,7 +42946,7 @@ module.exports = ComponentView.extend({
 });
 
 /***/ }),
-/* 168 */
+/* 166 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42814,7 +42957,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 var Component = __webpack_require__(51);
 
 module.exports = Component.extend({
-
   defaults: _extends({}, Component.prototype.defaults, {
     type: 'link',
     tagName: 'a',
@@ -42867,7 +43009,7 @@ module.exports = Component.extend({
 });
 
 /***/ }),
-/* 169 */
+/* 167 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42893,7 +43035,7 @@ module.exports = ComponentView.extend({
 });
 
 /***/ }),
-/* 170 */
+/* 168 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42907,7 +43049,6 @@ var yt = 'yt';
 var vi = 'vi';
 
 module.exports = Component.extend({
-
   defaults: _extends({}, Component.prototype.defaults, {
     type: 'video',
     tagName: 'video',
@@ -42962,7 +43103,8 @@ module.exports = Component.extend({
     var uri = this.parseUri(this.get('src'));
     var qr = uri.query;
     switch (prov) {
-      case yt:case vi:
+      case yt:
+      case vi:
         var videoId = uri.pathname.split('/').pop();
         this.set('videoId', videoId);
         if (qr.autoplay) this.set('autoplay', 1);
@@ -43005,7 +43147,8 @@ module.exports = Component.extend({
     var attr = Component.prototype.getAttrToHTML.apply(this, args);
     var prov = this.get('provider');
     switch (prov) {
-      case yt:case vi:
+      case yt:
+      case vi:
         break;
       default:
         if (this.get('loop')) attr.loop = 'loop';
@@ -43183,7 +43326,6 @@ module.exports = Component.extend({
     return url;
   }
 }, {
-
   /**
    * Detect if the passed element is a valid component.
    * In case the element is valid an object abstracted
@@ -43209,7 +43351,7 @@ module.exports = Component.extend({
 });
 
 /***/ }),
-/* 171 */
+/* 169 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43220,7 +43362,6 @@ var ComponentView = __webpack_require__(15);
 var OComponentView = __webpack_require__(3);
 
 module.exports = ComponentView.extend({
-
   tagName: 'div',
 
   events: {},
@@ -43272,7 +43413,8 @@ module.exports = ComponentView.extend({
     var videoEl = this.videoEl;
     var md = this.model;
     switch (prov) {
-      case 'yt':case 'vi':
+      case 'yt':
+      case 'vi':
         this.model.trigger('change:videoId');
         break;
       default:
@@ -43337,7 +43479,7 @@ module.exports = ComponentView.extend({
 });
 
 /***/ }),
-/* 172 */
+/* 170 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43346,14 +43488,12 @@ module.exports = ComponentView.extend({
 var Component = __webpack_require__(4);
 
 module.exports = Component.extend({
-
   defaults: _.extend({}, Component.prototype.defaults, {
     type: 'script',
     droppable: false,
     draggable: false,
     layerable: false
   })
-
 }, {
   isComponent: function isComponent(el) {
     if (el.tagName == 'SCRIPT') {
@@ -43371,7 +43511,7 @@ module.exports = Component.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 173 */
+/* 171 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43381,7 +43521,6 @@ var Backbone = __webpack_require__(0);
 var ComponentView = __webpack_require__(15);
 
 module.exports = ComponentView.extend({
-
   tagName: 'script',
 
   events: {},
@@ -43398,7 +43537,7 @@ module.exports = ComponentView.extend({
       var onload = model.get('onload');
       var svar = 'script' + scriptCount;
       var svarNext = 'script' + (scriptCount + 1);
-      content = "var " + svar + " = document.createElement('script');\n" + svar + ".onload = function(){\n" + (onload ? onload + "();\n" : '') + "typeof " + svarNext + "Start == 'function' && " + svarNext + "Start();\n" + "};\n" + svar + ".src = '" + src + "';\n" + "function " + svar + "Start() { document.body.appendChild(" + svar + "); };\n" + (!scriptCount ? svar + "Start();" : '');
+      content = 'var ' + svar + " = document.createElement('script');\n" + svar + '.onload = function(){\n' + (onload ? onload + '();\n' : '') + 'typeof ' + svarNext + "Start == 'function' && " + svarNext + 'Start();\n' + '};\n' + svar + ".src = '" + src + "';\n" + 'function ' + svar + 'Start() { document.body.appendChild(' + svar + '); };\n' + (!scriptCount ? svar + 'Start();' : '');
       if (em) {
         em.set('scriptCount', scriptCount + 1);
       }
@@ -43412,7 +43551,7 @@ module.exports = ComponentView.extend({
 });
 
 /***/ }),
-/* 174 */
+/* 172 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43423,7 +43562,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 var Component = __webpack_require__(4);
 
 module.exports = Component.extend({
-
   defaults: _extends({}, Component.prototype.defaults, {
     highlightable: 0
   }),
@@ -43452,7 +43590,7 @@ module.exports = Component.extend({
 });
 
 /***/ }),
-/* 175 */
+/* 173 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43461,15 +43599,13 @@ module.exports = Component.extend({
 var ComponentView = __webpack_require__(3);
 
 module.exports = ComponentView.extend({
-
   _createElement: function _createElement(tagName) {
     return document.createElementNS('http://www.w3.org/2000/svg', tagName);
   }
-
 });
 
 /***/ }),
-/* 176 */
+/* 174 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43478,7 +43614,6 @@ module.exports = ComponentView.extend({
 var Component = __webpack_require__(4);
 
 module.exports = Component.extend({
-
   defaults: _.extend({}, Component.prototype.defaults, {
     droppable: false,
     editable: true
@@ -43502,7 +43637,7 @@ module.exports = Component.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 177 */
+/* 175 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43513,7 +43648,7 @@ var Backbone = __webpack_require__(0);
 module.exports = Backbone.View.extend({});
 
 /***/ }),
-/* 178 */
+/* 176 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43521,16 +43656,21 @@ module.exports = Backbone.View.extend({});
 
 var _mixins = __webpack_require__(2);
 
+var _Droppable = __webpack_require__(177);
+
+var _Droppable2 = _interopRequireDefault(_Droppable);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(179),
-      Canvas = __webpack_require__(180),
-      CanvasView = __webpack_require__(182);
+      defaults = __webpack_require__(178),
+      Canvas = __webpack_require__(179),
+      CanvasView = __webpack_require__(181);
   var canvas;
   var frameRect;
 
   return {
-
     /**
      * Used inside RTE
      * @private
@@ -43737,11 +43877,11 @@ module.exports = function () {
 
 
     /**
-    * Get the offset of the element
-    * @param  {HTMLElement} el
-    * @return {Object}
-    * @private
-    */
+     * Get the offset of the element
+     * @param  {HTMLElement} el
+     * @return {Object}
+     * @private
+     */
     offset: function offset(el) {
       return CanvasView.offset(el);
     },
@@ -43941,6 +44081,9 @@ module.exports = function () {
     getScrollListeners: function getScrollListeners() {
       return [this.getFrameEl().contentWindow, this.getElement()];
     },
+    postRender: function postRender() {
+      if ((0, _mixins.hasDnd)(c.em)) this.droppable = new _Droppable2.default(c.em);
+    },
 
 
     /**
@@ -43955,14 +44098,194 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 179 */
+/* 177 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /*
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       This class makes the canvas droppable
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      */
+
+var _mixins = __webpack_require__(2);
+
+var _underscore = __webpack_require__(1);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Droppable = function () {
+  function Droppable(em) {
+    _classCallCheck(this, Droppable);
+
+    this.em = em;
+    var el = em.get('DomComponents').getWrapper().getEl();
+    this.el = el;
+    this.counter = 0;
+    (0, _underscore.bindAll)(this, 'handleDragEnter', 'handleDragOver', 'handleDrop', 'handleDragLeave');
+    (0, _mixins.on)(el, 'dragenter', this.handleDragEnter);
+    (0, _mixins.on)(el, 'dragover', this.handleDragOver);
+    (0, _mixins.on)(el, 'drop', this.handleDrop);
+    (0, _mixins.on)(el, 'dragleave', this.handleDragLeave);
+
+    return this;
+  }
+
+  _createClass(Droppable, [{
+    key: 'endDrop',
+    value: function endDrop(cancel, ev) {
+      var em = this.em;
+      this.counter = 0;
+      this.over = 0;
+      // force out like in BlockView
+      var sorter = this.sorter;
+      cancel && (sorter.moved = 0);
+      sorter.endMove();
+      em.trigger('canvas:dragend', ev);
+    }
+  }, {
+    key: 'handleDragLeave',
+    value: function handleDragLeave(ev) {
+      this.updateCounter(-1, ev);
+    }
+  }, {
+    key: 'updateCounter',
+    value: function updateCounter(value, ev) {
+      this.counter += value;
+      this.counter === 0 && this.endDrop(1, ev);
+    }
+  }, {
+    key: 'handleDragEnter',
+    value: function handleDragEnter(ev) {
+      var em = this.em;
+      var dt = ev.dataTransfer;
+      this.updateCounter(1, ev);
+      if (this.over) return;
+      this.over = 1;
+      var utils = em.get('Utils');
+      var canvas = em.get('Canvas');
+      this.sorter = new utils.Sorter({
+        em: em,
+        wmargin: 1,
+        nested: 1,
+        canvasRelative: 1,
+        direction: 'a',
+        container: canvas.getBody(),
+        placer: canvas.getPlacerEl(),
+        eventMoving: 'mousemove dragover',
+        containerSel: '*',
+        itemSel: '*',
+        pfx: 'gjs-',
+        onStart: function onStart() {
+          return em.stopDefault();
+        },
+        onEndMove: function onEndMove(model) {
+          em.runDefault();
+
+          if (model && model.get && model.get('activeOnRender')) {
+            model.trigger('active');
+            model.set('activeOnRender', 0);
+          }
+
+          model && em.trigger('canvas:drop', dt, model);
+        },
+        document: canvas.getFrameEl().contentDocument
+      });
+      // For security reason I can't read the drag data on dragenter, but
+      // as I need it for the Sorter context I will use `dragContent` or just
+      // any not empty element
+      var content = em.get('dragContent') || '<br>';
+      this.sorter.setDropContent(content);
+      this.sorter.startSort();
+      em.trigger('canvas:dragenter', dt, content);
+    }
+
+    /**
+     * Always need to have this handler active for enabling the drop
+     * @param {Event} ev
+     */
+
+  }, {
+    key: 'handleDragOver',
+    value: function handleDragOver(ev) {
+      ev.preventDefault();
+      this.em.trigger('canvas:dragover', ev);
+    }
+  }, {
+    key: 'handleDrop',
+    value: function handleDrop(ev) {
+      ev.preventDefault();
+      var dt = ev.dataTransfer;
+      var content = this.getContentByData(dt).content;
+      ev.target.style.border = '';
+
+      if (content) {
+        this.sorter.setDropContent(content);
+      } else {
+        this.sorter.moved = 0;
+      }
+
+      this.endDrop(0, ev);
+    }
+  }, {
+    key: 'getContentByData',
+    value: function getContentByData(dataTransfer) {
+      var em = this.em;
+      var types = dataTransfer.types;
+      var files = dataTransfer.files;
+      var content = dataTransfer.getData('text');
+
+      if (files.length) {
+        content = [];
+        for (var i = 0; i < files.length; i++) {
+          var file = files[i];
+          var type = file.type.split('/')[0];
+
+          if (type == 'image') {
+            content.push({
+              type: type,
+              file: file,
+              attributes: { alt: file.name }
+            });
+          }
+        }
+      } else if (types.indexOf('text/html') >= 0) {
+        content = dataTransfer.getData('text/html').replace(/<\/?meta[^>]*>/g, '');
+      } else if (types.indexOf('text/uri-list') >= 0) {
+        content = {
+          type: 'link',
+          attributes: { href: content },
+          content: content
+        };
+      } else if (types.indexOf('text/json') >= 0) {
+        var json = dataTransfer.getData('text/json');
+        json && (content = JSON.parse(json));
+      }
+
+      var result = { content: content };
+      em.trigger('canvas:dragdata', dataTransfer, result);
+
+      return result;
+    }
+  }]);
+
+  return Droppable;
+}();
+
+exports.default = Droppable;
+
+/***/ }),
+/* 178 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = {
-
   stylePrefix: 'cv-',
 
   // Coming soon
@@ -43995,21 +44318,19 @@ module.exports = {
    * }
    */
   customBadgeLabel: ''
-
 };
 
 /***/ }),
-/* 180 */
+/* 179 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var Frame = __webpack_require__(181);
+var Frame = __webpack_require__(180);
 
 module.exports = Backbone.Model.extend({
-
   defaults: {
     frame: '',
     wrapper: '',
@@ -44023,7 +44344,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 181 */
+/* 180 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44032,24 +44353,22 @@ module.exports = Backbone.Model.extend({
 var Backbone = __webpack_require__(0);
 
 module.exports = Backbone.Model.extend({
-
   defaults: {
     wrapper: '',
     width: '',
     height: '',
     attributes: {}
   }
-
 });
 
 /***/ }),
-/* 182 */
+/* 181 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(Backbone, _) {
 
-var FrameView = __webpack_require__(183);
+var FrameView = __webpack_require__(182);
 var $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
@@ -44147,7 +44466,7 @@ module.exports = Backbone.View.extend({
 
       var colorWarn = '#ffca6f';
 
-      var baseCss = '\n        * {\n          box-sizing: border-box;\n        }\n        html, body, #wrapper {\n          min-height: 100%;\n        }\n        body {\n          margin: 0;\n          height: 100%;\n          background-color: #fff\n        }\n        #wrapper {\n          overflow: auto\n        }\n      ';
+      var baseCss = '\n        * {\n          box-sizing: border-box;\n        }\n        html, body, #wrapper {\n          min-height: 100%;\n        }\n        body {\n          margin: 0;\n          height: 100%;\n          background-color: #fff\n        }\n        #wrapper {\n          overflow: auto;\n          overflow-x: hidden;\n        }\n      ';
       // Remove `html { height: 100%;}` from the baseCss as it gives jumpings
       // effects (on ENTER) with RTE like CKEditor (maybe some bug there?!?)
       // With `body {height: auto;}` jumps in CKEditor are removed but in
@@ -44359,7 +44678,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-/* 183 */
+/* 182 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44370,11 +44689,9 @@ var _underscore = __webpack_require__(1);
 var motionsEv = 'transitionend oTransitionEnd transitionend webkitTransitionEnd';
 
 module.exports = __webpack_require__(0).View.extend({
-
   tagName: 'iframe',
 
   attributes: {
-    src: 'about:blank',
     allowfullscreen: 'allowfullscreen'
   },
 
@@ -44395,11 +44712,18 @@ module.exports = __webpack_require__(0).View.extend({
     var em = this.em;
     var device = em.getDeviceModel();
     var style = this.el.style;
-    style.width = device ? device.get('width') : '';
-    style.height = device ? device.get('height') : '';
+    var currW = style.width || '';
+    var currH = style.height || '';
+    var newW = device ? device.get('width') : '';
+    var newH = device ? device.get('height') : '';
+    var noChanges = currW == newW && currH == newH;
+    style.width = newW;
+    style.height = newH;
     this.udpateOffset();
+    // Prevent fixed highlighting box which appears when on
+    // component hover during the animation
     em.stopDefault({ preserveSelected: 1 });
-    this.$el.on(motionsEv, this.udpateOffset);
+    noChanges ? this.udpateOffset() : this.$el.on(motionsEv, this.udpateOffset);
   },
   udpateOffset: function udpateOffset() {
     var em = this.em;
@@ -44421,7 +44745,7 @@ module.exports = __webpack_require__(0).View.extend({
 });
 
 /***/ }),
-/* 184 */
+/* 183 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44434,8 +44758,8 @@ module.exports = function () {
   var c = {},
       commands = {},
       defaultCommands = {},
-      defaults = __webpack_require__(185),
-      AbsCommands = __webpack_require__(186);
+      defaults = __webpack_require__(184),
+      AbsCommands = __webpack_require__(185);
 
   // Need it here as it would be used below
   var add = function add(id, obj) {
@@ -44449,7 +44773,6 @@ module.exports = function () {
   };
 
   return {
-
     /**
      * Name of the module
      * @type {String}
@@ -44477,27 +44800,27 @@ module.exports = function () {
         if (obj.id) this.add(obj.id, obj);
       }
 
-      var ViewCode = __webpack_require__(187);
+      var ViewCode = __webpack_require__(186);
       defaultCommands['select-comp'] = __webpack_require__(21);
       defaultCommands['create-comp'] = __webpack_require__(22);
-      defaultCommands['delete-comp'] = __webpack_require__(192);
-      defaultCommands['image-comp'] = __webpack_require__(193);
-      defaultCommands['move-comp'] = __webpack_require__(194);
-      defaultCommands['text-comp'] = __webpack_require__(195);
+      defaultCommands['delete-comp'] = __webpack_require__(191);
+      defaultCommands['image-comp'] = __webpack_require__(192);
+      defaultCommands['move-comp'] = __webpack_require__(193);
+      defaultCommands['text-comp'] = __webpack_require__(194);
       defaultCommands['insert-custom'] = __webpack_require__(54);
       defaultCommands['export-template'] = ViewCode;
-      defaultCommands['sw-visibility'] = __webpack_require__(196);
-      defaultCommands['open-layers'] = __webpack_require__(197);
-      defaultCommands['open-sm'] = __webpack_require__(200);
-      defaultCommands['open-tm'] = __webpack_require__(201);
-      defaultCommands['open-blocks'] = __webpack_require__(202);
-      defaultCommands['open-assets'] = __webpack_require__(203);
-      defaultCommands['show-offset'] = __webpack_require__(204);
-      defaultCommands['select-parent'] = __webpack_require__(205);
-      defaultCommands.fullscreen = __webpack_require__(206);
-      defaultCommands.preview = __webpack_require__(207);
-      defaultCommands.resize = __webpack_require__(208);
-      defaultCommands.drag = __webpack_require__(209);
+      defaultCommands['sw-visibility'] = __webpack_require__(195);
+      defaultCommands['open-layers'] = __webpack_require__(196);
+      defaultCommands['open-sm'] = __webpack_require__(199);
+      defaultCommands['open-tm'] = __webpack_require__(200);
+      defaultCommands['open-blocks'] = __webpack_require__(201);
+      defaultCommands['open-assets'] = __webpack_require__(202);
+      defaultCommands['show-offset'] = __webpack_require__(203);
+      defaultCommands['select-parent'] = __webpack_require__(204);
+      defaultCommands.fullscreen = __webpack_require__(205);
+      defaultCommands.preview = __webpack_require__(206);
+      defaultCommands.resize = __webpack_require__(207);
+      defaultCommands.drag = __webpack_require__(208);
 
       defaultCommands['tlb-delete'] = {
         run: function run(ed) {
@@ -44524,20 +44847,35 @@ module.exports = function () {
 
           var collection = sel.collection;
           var index = collection.indexOf(sel);
-          collection.add(sel.clone(), { at: index + 1 });
+          var added = collection.add(sel.clone(), { at: index + 1 });
           sel.emitUpdate();
+          ed.trigger('component:clone', added);
         }
       };
 
       defaultCommands['tlb-move'] = {
         run: function run(ed, sender, opts) {
+          var dragger = void 0;
+          var em = ed.getModel();
+          var event = opts && opts.event;
           var sel = ed.getSelected();
-          var dragger;
+          var toolbarStyle = ed.Canvas.getToolbarEl().style;
+          var nativeDrag = event.type == 'dragstart';
+
+          var hideTlb = function hideTlb() {
+            toolbarStyle.display = 'none';
+            em.stopDefault();
+          };
 
           if (!sel || !sel.get('draggable')) {
             console.warn('The element is not draggable');
             return;
           }
+
+          // Without setTimeout the ghost image disappears
+          nativeDrag ? setTimeout(function () {
+            return hideTlb;
+          }, 0) : hideTlb();
 
           var onStart = function onStart(e, opts) {
             console.log('start mouse pos ', opts.start);
@@ -44549,7 +44887,7 @@ module.exports = function () {
 
           var onEnd = function onEnd(e, opts) {
             em.runDefault();
-            em.set('selectedComponent', sel);
+            em.setSelected(sel);
             sel.emitUpdate();
             dragger && dragger.blur();
           };
@@ -44559,23 +44897,23 @@ module.exports = function () {
             console.log('Current ', opts.current);
           };
 
-          var toolbarEl = ed.Canvas.getToolbarEl();
-          toolbarEl.style.display = 'none';
-          var em = ed.getModel();
-          em.stopDefault();
-
           if (em.get('designerMode')) {
             // TODO move grabbing func in editor/canvas from the Sorter
             dragger = editor.runCommand('drag', {
               el: sel.view.el,
               options: {
-                event: opts && opts.event,
+                event: event,
                 onStart: onStart,
                 onDrag: onDrag,
                 onEnd: onEnd
               }
             });
           } else {
+            if (nativeDrag) {
+              event.dataTransfer.setDragImage(sel.view.el, 0, 0);
+              //sel.set('status', 'freezed');
+            }
+
             var cmdMove = ed.Commands.get('move-comp');
             cmdMove.onEndMoveFromModel = onEnd;
             cmdMove.initSorterFromModel(sel);
@@ -44729,14 +45067,13 @@ module.exports = function () {
     */
 
 /***/ }),
-/* 185 */
+/* 184 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = {
-
   ESCAPE_KEY: 27,
 
   stylePrefix: 'com-',
@@ -44760,7 +45097,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 186 */
+/* 185 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44769,7 +45106,6 @@ module.exports = {
 var $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
-
   /**
    * Initialize method that can't be removed
    * @param  {Object}  o Options
@@ -44887,7 +45223,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 187 */
+/* 186 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44949,7 +45285,7 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 188 */
+/* 187 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44957,10 +45293,9 @@ module.exports = {
 
 var Backbone = __webpack_require__(0);
 var DomainViews = __webpack_require__(48);
-var ToolbarButtonView = __webpack_require__(189);
+var ToolbarButtonView = __webpack_require__(188);
 
 module.exports = DomainViews.extend({
-
   itemView: ToolbarButtonView,
 
   initialize: function initialize(opts) {
@@ -44970,7 +45305,7 @@ module.exports = DomainViews.extend({
 });
 
 /***/ }),
-/* 189 */
+/* 188 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44979,10 +45314,11 @@ module.exports = DomainViews.extend({
 var Backbone = __webpack_require__(0);
 
 module.exports = Backbone.View.extend({
-  events: {
-    'mousedown': 'handleClick'
+  events: function events() {
+    return this.model.get('events') || {
+      mousedown: 'handleClick'
+    };
   },
-
   attributes: function attributes() {
     return this.model.get('attributes');
   },
@@ -44992,6 +45328,9 @@ module.exports = Backbone.View.extend({
   handleClick: function handleClick(event) {
     event.preventDefault();
     event.stopPropagation();
+    this.execCommand(event);
+  },
+  execCommand: function execCommand(event) {
     var opts = { event: event };
     var command = this.model.get('command');
     var editor = this.editor;
@@ -45012,19 +45351,19 @@ module.exports = Backbone.View.extend({
 });
 
 /***/ }),
-/* 190 */
+/* 189 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var ToolbarButton = __webpack_require__(191);
+var ToolbarButton = __webpack_require__(190);
 
 module.exports = Backbone.Collection.extend({ model: ToolbarButton });
 
 /***/ }),
-/* 191 */
+/* 190 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45033,16 +45372,14 @@ module.exports = Backbone.Collection.extend({ model: ToolbarButton });
 var Backbone = __webpack_require__(0);
 
 module.exports = Backbone.Model.extend({
-
-   defaults: {
-      command: '',
-      attributes: {}
-   }
-
+  defaults: {
+    command: '',
+    attributes: {}
+  }
 });
 
 /***/ }),
-/* 192 */
+/* 191 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45125,7 +45462,7 @@ module.exports = _.extend({}, SelectComponent, {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-/* 193 */
+/* 192 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45135,7 +45472,6 @@ var Backbone = __webpack_require__(0);
 var InsertCustom = __webpack_require__(54);
 
 module.exports = _.extend({}, InsertCustom, {
-
   /**
    * Trigger before insert
    * @param   {Object}  object
@@ -45166,7 +45502,7 @@ module.exports = _.extend({}, InsertCustom, {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 194 */
+/* 193 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45333,7 +45669,7 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-/* 195 */
+/* 194 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45343,7 +45679,6 @@ var Backbone = __webpack_require__(0);
 var CreateComponent = __webpack_require__(22);
 
 module.exports = _.extend({}, CreateComponent, {
-
   /**
    * This event is triggered at the beginning of a draw operation
    * @param   {Object}   component  Object component before creation
@@ -45370,7 +45705,7 @@ module.exports = _.extend({}, CreateComponent, {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 196 */
+/* 195 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45381,18 +45716,18 @@ module.exports = {
     ed.Canvas.getBody().className = this.ppfx + 'dashed';
   },
   stop: function stop(ed) {
-    ed.Canvas.getBody().className = "";
+    ed.Canvas.getBody().className = '';
   }
 };
 
 /***/ }),
-/* 197 */
+/* 196 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(Backbone) {
 
-var Layers = __webpack_require__(198);
+var Layers = __webpack_require__(197);
 var $ = Backbone.$;
 
 module.exports = {
@@ -45429,7 +45764,7 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 198 */
+/* 197 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45438,7 +45773,7 @@ module.exports = {
 module.exports = function () {
   var itemsView = void 0;
   var config = {};
-  var defaults = __webpack_require__(199);
+  var defaults = __webpack_require__(198);
   var ItemView = __webpack_require__(55);
   var ItemsView = __webpack_require__(56);
 
@@ -45459,9 +45794,10 @@ module.exports = function () {
         level: level,
         config: config,
         opened: opened
+      };
 
-        // Show wrapper if requested
-      };if (config.showWrapper && collection.parent) {
+      // Show wrapper if requested
+      if (config.showWrapper && collection.parent) {
         View = ItemView;
         options.model = collection.parent;
       } else {
@@ -45509,7 +45845,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 199 */
+/* 198 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45532,7 +45868,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 200 */
+/* 199 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45611,7 +45947,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 201 */
+/* 200 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45644,7 +45980,7 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 202 */
+/* 201 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45674,7 +46010,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 203 */
+/* 202 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45708,7 +46044,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 204 */
+/* 203 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45863,7 +46199,7 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 205 */
+/* 204 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45875,7 +46211,7 @@ module.exports = {
     var comp = sel && sel.parent();
 
     // Recurse through the parent() chain until a selectable parent is found
-    while (comp && !comp.get("selectable")) {
+    while (comp && !comp.get('selectable')) {
       comp = comp.parent();
     }
 
@@ -45884,7 +46220,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 206 */
+/* 205 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45933,7 +46269,7 @@ module.exports = {
    * it's enabled
    * @param  {strinf} pfx Browser prefix
    * @param  {Event} e
-  */
+   */
   fsChanged: function fsChanged(pfx, e) {
     var d = document;
     var ev = (pfx || '') + 'fullscreenchange';
@@ -45957,7 +46293,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 207 */
+/* 206 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46026,7 +46362,7 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 208 */
+/* 207 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46063,7 +46399,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 209 */
+/* 208 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46101,7 +46437,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 210 */
+/* 209 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46139,15 +46475,14 @@ module.exports = {
  */
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(211),
-      Blocks = __webpack_require__(212),
-      BlockCategories = __webpack_require__(214),
-      BlocksView = __webpack_require__(215);
+      defaults = __webpack_require__(210),
+      Blocks = __webpack_require__(211),
+      BlockCategories = __webpack_require__(213),
+      BlocksView = __webpack_require__(214);
   var blocks, blocksVisible, blocksView;
   var categories = [];
 
   return {
-
     /**
      * Name of the module
      * @type {String}
@@ -46346,19 +46681,31 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 211 */
+/* 210 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = {
-
   blocks: [],
 
   appendTo: ''
-
 };
+
+/***/ }),
+/* 211 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var Backbone = __webpack_require__(0);
+var Block = __webpack_require__(212);
+
+module.exports = Backbone.Collection.extend({
+  model: Block
+});
 
 /***/ }),
 /* 212 */
@@ -46368,24 +46715,9 @@ module.exports = {
 
 
 var Backbone = __webpack_require__(0);
-var Block = __webpack_require__(213);
-
-module.exports = Backbone.Collection.extend({
-  model: Block
-});
-
-/***/ }),
-/* 213 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var Backbone = __webpack_require__(0);
 var Category = __webpack_require__(57);
 
 module.exports = Backbone.Model.extend({
-
   defaults: {
     label: '',
     content: '',
@@ -46410,7 +46742,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 214 */
+/* 213 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46423,17 +46755,18 @@ module.exports = Backbone.Collection.extend({
 });
 
 /***/ }),
-/* 215 */
+/* 214 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(_) {
 
-var Backbone = __webpack_require__(0);
-var BlockView = __webpack_require__(216);
-var CategoryView = __webpack_require__(217);
+var _underscore = __webpack_require__(1);
 
-module.exports = Backbone.View.extend({
+var BlockView = __webpack_require__(215);
+var CategoryView = __webpack_require__(216);
+
+module.exports = __webpack_require__(0).View.extend({
   initialize: function initialize(opts, config) {
     _.bindAll(this, 'getSorter', 'onDrag', 'onDrop');
     this.config = config || {};
@@ -46547,11 +46880,13 @@ module.exports = Backbone.View.extend({
 
     // Check for categories
     if (category && this.categories) {
-      if (typeof category == 'string') {
+      if ((0, _underscore.isString)(category)) {
         category = {
           id: category,
           label: category
         };
+      } else if ((0, _underscore.isObject)(category) && !category.id) {
+        category.id = category.label;
       }
 
       var catModel = this.categories.add(category);
@@ -46612,23 +46947,27 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 216 */
+/* 215 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(Backbone) {
 
+var _underscore = __webpack_require__(1);
+
 var _mixins = __webpack_require__(2);
 
 module.exports = Backbone.View.extend({
-
   events: {
-    mousedown: 'startDrag'
+    mousedown: 'startDrag',
+    dragstart: 'handleDragStart',
+    dragend: 'handleDragEnd'
   },
 
   initialize: function initialize(o) {
     var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
+    this.em = config.em;
     this.config = config;
     this.endDrag = this.endDrag.bind(this);
     this.ppfx = config.pStylePrefix || '';
@@ -46641,21 +46980,29 @@ module.exports = Backbone.View.extend({
    * @private
    */
   startDrag: function startDrag(e) {
+    var config = this.config;
     //Right or middel click
-    if (e.button !== 0) {
-      return;
-    }
-
-    if (!this.config.getSorter) {
-      return;
-    }
-
-    this.config.em.refreshCanvas();
-    var sorter = this.config.getSorter();
+    if (e.button !== 0 || !config.getSorter || this.el.draggable) return;
+    config.em.refreshCanvas();
+    var sorter = config.getSorter();
     sorter.setDragHelper(this.el, e);
     sorter.setDropContent(this.model.get('content'));
     sorter.startSort(this.el);
     (0, _mixins.on)(document, 'mouseup', this.endDrag);
+  },
+  handleDragStart: function handleDragStart(ev) {
+    var content = this.model.get('content');
+    var isObj = (0, _underscore.isObject)(content);
+    var type = isObj ? 'text/json' : 'text';
+    var data = isObj ? JSON.stringify(content) : content;
+
+    // Note: data are not available on dragenter for security reason,
+    // but will use dragContent as I need it for the Sorter context
+    ev.dataTransfer.setData(type, data);
+    this.em.set('dragContent', content);
+  },
+  handleDragEnd: function handleDragEnd() {
+    this.em.set('dragContent', '');
   },
 
 
@@ -46678,15 +47025,17 @@ module.exports = Backbone.View.extend({
     var el = this.el;
     var pfx = this.ppfx;
     var className = pfx + 'block';
+    var label = this.model.get('label');
     el.className += ' ' + className + ' ' + pfx + 'one-bg ' + pfx + 'four-color-h';
-    el.innerHTML = '<div class="' + className + '-label">' + this.model.get('label') + '</div>';
+    el.innerHTML = '<div class="' + className + '-label">' + label + '</div>';
+    (0, _mixins.hasDnd)(this.em) && el.setAttribute('draggable', true);
     return this;
   }
 });
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 217 */
+/* 216 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46695,7 +47044,6 @@ module.exports = Backbone.View.extend({
 var Backbone = __webpack_require__(0);
 
 module.exports = Backbone.View.extend({
-
   template: _.template('\n  <div class="<%= pfx %>title">\n    <i class="<%= pfx %>caret-icon"></i>\n    <%= label %>\n  </div>\n  <div class="<%= pfx %>blocks-c"></div>\n  '),
 
   events: {},
@@ -46756,6 +47104,7 @@ module.exports = Backbone.View.extend({
       label: this.model.get('label')
     });
     this.el.className = this.className;
+    this.$el.css({ order: this.model.get('order') });
     this.updateVisibility();
     return this;
   }
@@ -46763,7 +47112,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 218 */
+/* 217 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47010,7 +47359,6 @@ module.exports = function (_ref) {
         return node.parentNode && node.parentNode.removeChild(node);
       });
     },
-
     // For spectrum compatibility
     fn.bind = function (ev, h) {
       return this.on(ev, h);
@@ -47106,7 +47454,7 @@ module.exports = function (_ref) {
 };
 
 /***/ }),
-/* 219 */
+/* 218 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47154,16 +47502,15 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 220 */
+/* 219 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = function (config) {
-
   var c = config || {},
-      defaults = __webpack_require__(221);
+      defaults = __webpack_require__(220);
 
   // Set default options
   for (var name in defaults) {
@@ -47173,7 +47520,6 @@ module.exports = function (config) {
   var plugins = {};
 
   return {
-
     /**
      * Add new plugin. Plugins could not be overwritten
      * @param {string} id Plugin ID
@@ -47222,7 +47568,7 @@ module.exports = function (config) {
 };
 
 /***/ }),
-/* 221 */
+/* 220 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

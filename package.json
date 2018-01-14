@@ -1,7 +1,7 @@
 {
   "name": "grapesjs",
   "description": "Free and Open Source Web Builder Framework",
-  "version": "0.12.60",
+  "version": "0.13.5",
   "author": "Artur Arseniev",
   "license": "BSD-3-Clause",
   "homepage": "http://grapesjs.com",
@@ -76,7 +76,10 @@
     ]
   },
   "lint-staged": {
-    "{src,test}/**/*.js": ["prettier --single-quote --write", "git add"]
+    "{src,test}/**/*.js": [
+      "prettier --single-quote --write",
+      "git add"
+    ]
   },
   "scripts": {
     "lint": "eslint src",
