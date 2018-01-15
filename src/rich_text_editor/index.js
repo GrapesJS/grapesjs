@@ -14,7 +14,7 @@
  * @module RichTextEditor
  */
 import RichTextEditor from './model/RichTextEditor';
-import {on, off} from 'utils/mixins'
+import { on, off } from 'utils/mixins';
 
 module.exports = () => {
   let config = {};
@@ -30,7 +30,6 @@ module.exports = () => {
   };
 
   return {
-
     customRte: null,
 
     /**
@@ -71,7 +70,6 @@ module.exports = () => {
       return this;
     },
 
-
     /**
      * Post render callback
      * @param  {View} ev
@@ -83,7 +81,6 @@ module.exports = () => {
       hideToolbar();
       canvas.getToolsEl().appendChild(toolbar);
     },
-
 
     /**
      * Init the built-in RTE
@@ -99,14 +96,14 @@ module.exports = () => {
       const classes = {
         actionbar: `${pfx}actionbar`,
         button: `${pfx}action`,
-        active: `${pfx}active`,
+        active: `${pfx}active`
       };
       const rte = new RichTextEditor({
         el,
         classes,
         actions,
         actionbar,
-        actionbarContainer,
+        actionbarContainer
       });
       globalRte && globalRte.setEl(el);
 
@@ -158,7 +155,7 @@ module.exports = () => {
      */
     add(name, action = {}) {
       action.name = name;
-      globalRte.addAction(action, {sync: 1});
+      globalRte.addAction(action, { sync: 1 });
     },
 
     /**
@@ -225,7 +222,7 @@ module.exports = () => {
       const un = 'px';
       const canvas = config.em.get('Canvas');
       const pos = canvas.getTargetToElementDim(toolbar, lastEl, {
-        event: 'rteToolbarPosUpdate',
+        event: 'rteToolbarPosUpdate'
       });
 
       if (config.adjustToolbar) {
@@ -285,6 +282,6 @@ module.exports = () => {
 
       hideToolbar();
       em && em.trigger('rte:disable', view, rte);
-    },
+    }
   };
 };

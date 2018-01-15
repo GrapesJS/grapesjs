@@ -2,12 +2,20 @@ const TraitView = require('./TraitView');
 const $ = Backbone.$;
 
 module.exports = TraitView.extend({
-
   initialize(o) {
     TraitView.prototype.initialize.apply(this, arguments);
     var ppfx = this.ppfx;
-    this.tmpl = '<div class="' + this.fieldClass +'"><div class="' + this.inputhClass +'"></div>'+
-    '<div class="' + ppfx + 'sel-arrow"><div class="' + ppfx + 'd-s-arrow"></div></div> </div>';
+    this.tmpl =
+      '<div class="' +
+      this.fieldClass +
+      '"><div class="' +
+      this.inputhClass +
+      '"></div>' +
+      '<div class="' +
+      ppfx +
+      'sel-arrow"><div class="' +
+      ppfx +
+      'd-s-arrow"></div></div> </div>';
   },
 
   /**
@@ -16,7 +24,7 @@ module.exports = TraitView.extend({
    * @private
    */
   getInputEl() {
-    if(!this.$input) {
+    if (!this.$input) {
       var md = this.model;
       var opts = md.get('options') || [];
       var input = '<select>';
@@ -25,16 +33,17 @@ module.exports = TraitView.extend({
         _.each(opts, el => {
           var name, value, style;
           var attrs = '';
-          if(typeof el === 'string'){
+          if (typeof el === 'string') {
             name = el;
             value = el;
-          }else{
+          } else {
             name = el.name ? el.name : el.value;
-            value = el.value.replace(/"/g,'&quot;');
-            style = el.style ? el.style.replace(/"/g,'&quot;') : '';
+            value = el.value.replace(/"/g, '&quot;');
+            style = el.style ? el.style.replace(/"/g, '&quot;') : '';
             attrs += style ? 'style="' + style + '"' : '';
           }
-          input += '<option value="' + value + '" ' + attrs + '>' + name + '</option>';
+          input +=
+            '<option value="' + value + '" ' + attrs + '>' + name + '</option>';
         });
       }
 
@@ -53,11 +62,9 @@ module.exports = TraitView.extend({
         val = attrs[name];
       }
 
-      if(val)
-        this.$input.val(val);
+      if (val) this.$input.val(val);
     }
 
     return this.$input.get(0);
-  },
-
+  }
 });

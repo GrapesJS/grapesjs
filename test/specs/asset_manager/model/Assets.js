@@ -3,7 +3,6 @@ var Assets = require('asset_manager/model/Assets');
 module.exports = {
   run() {
     describe('Assets', () => {
-
       var obj;
 
       beforeEach(() => {

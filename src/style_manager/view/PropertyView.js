@@ -4,7 +4,6 @@ import { camelCase } from 'utils/mixins';
 const clearProp = 'data-clear-style';
 
 module.exports = Backbone.View.extend({
-
   template(model) {
     const pfx = this.pfx;
     return `
@@ -38,8 +37,8 @@ module.exports = Backbone.View.extend({
   },
 
   events: {
-    'change': 'inputValueChanged',
-    [`click [${clearProp}]`]: 'clear',
+    change: 'inputValueChanged',
+    [`click [${clearProp}]`]: 'clear'
   },
 
   initialize(o = {}) {
@@ -52,8 +51,8 @@ module.exports = Backbone.View.extend({
     this.target = o.target || {};
     this.propTarget = o.propTarget || {};
     this.onChange = o.onChange;
-    this.onInputRender = o.onInputRender  || {};
-    this.customValue  = o.customValue  || {};
+    this.onInputRender = o.onInputRender || {};
+    this.customValue = o.customValue || {};
     const model = this.model;
     this.property = model.get('property');
     this.input = null;
@@ -160,7 +159,6 @@ module.exports = Backbone.View.extend({
     this.elementUpdated();
   },
 
-
   /**
    * Fired when the element of the property is updated
    */
@@ -168,13 +166,11 @@ module.exports = Backbone.View.extend({
     this.setStatus('updated');
   },
 
-
   setStatus(value) {
     this.model.set('status', value);
     const parent = this.model.parent;
     parent && parent.set('status', value);
   },
-
 
   /**
    * Fired when the target is changed
@@ -189,7 +185,7 @@ module.exports = Backbone.View.extend({
     const model = this.model;
     let value = '';
     let status = '';
-    let targetValue = this.getTargetValue({ignoreDefault: 1});
+    let targetValue = this.getTargetValue({ ignoreDefault: 1 });
     let defaultValue = model.getDefaultValue();
     let computedValue = this.getComputedValue();
 
@@ -199,8 +195,11 @@ module.exports = Backbone.View.extend({
       if (config.highlightChanged) {
         status = 'updated';
       }
-    } else if (computedValue && config.showComputed &&
-        computedValue != defaultValue) {
+    } else if (
+      computedValue &&
+      config.showComputed &&
+      computedValue != defaultValue
+    ) {
       value = computedValue;
 
       if (config.highlightComputed) {
@@ -432,7 +431,6 @@ module.exports = Backbone.View.extend({
     this.setValue(this.model.parseValue(value));
   },
 
-
   /**
    * Update the element input.
    * Usually the value is a result of `model.getFullValue()`
@@ -445,7 +443,6 @@ module.exports = Backbone.View.extend({
     input && (input.value = val);
   },
 
-
   getInputEl() {
     if (!this.input) {
       this.input = this.el.querySelector('input');
@@ -455,8 +452,7 @@ module.exports = Backbone.View.extend({
   },
 
   updateVisibility() {
-    this.el.style.display = this.model.get('visible') ?
-      'block' : 'none';
+    this.el.style.display = this.model.get('visible') ? 'block' : 'none';
   },
 
   show() {
@@ -484,7 +480,6 @@ module.exports = Backbone.View.extend({
 
     const onRender = this.onRender && this.onRender.bind(this);
     onRender && onRender();
-    this.setValue(model.get('value'), {targetUpdate: 1});
-  },
-
+    this.setValue(model.get('value'), { targetUpdate: 1 });
+  }
 });

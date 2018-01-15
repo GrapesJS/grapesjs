@@ -1,7 +1,5 @@
 module.exports = {
-
   devices: [],
 
-  deviceLabel: 'Device',
-
+  deviceLabel: 'Device'
 };

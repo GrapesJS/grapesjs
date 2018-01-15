@@ -39,9 +39,9 @@ global.Backbone = require('backbone');
 global.localStorage = localStorage;
 global.SVGElement = global.Element;
 window.$ = Backbone.$;
-global.navigator = {userAgent: 'node.js'};
+global.navigator = { userAgent: 'node.js' };
 
-Object.keys(window).forEach((key) => {
+Object.keys(window).forEach(key => {
   if (!(key in global)) {
     global[key] = window[key];
   }

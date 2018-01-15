@@ -22,7 +22,7 @@ module.exports = config => ({
       var sel = sels[i].trim();
       // Will accept only concatenated classes and last
       // class might be with state (eg. :hover), nothing else.
-      if (/^(\.{1}[\w\-]+)+(:{1,2}[\w\-()]+)?$/ig.test(sel)) {
+      if (/^(\.{1}[\w\-]+)+(:{1,2}[\w\-()]+)?$/gi.test(sel)) {
         var cls = sel.split('.').filter(Boolean);
         result.push(cls);
       } else {
@@ -31,7 +31,7 @@ module.exports = config => ({
     }
     return {
       result,
-      add,
+      add
     };
   },
 
@@ -50,11 +50,11 @@ module.exports = config => ({
       var selsAdd = [];
 
       // It's a CSSMediaRule
-      if(node.cssRules) {
+      if (node.cssRules) {
         var subRules = this.parseNode(node);
         var mediaText = node.media.mediaText;
 
-        for( var s = 0, lens = subRules.length; s < lens; s++) {
+        for (var s = 0, lens = subRules.length; s < lens; s++) {
           var subRule = subRules[s];
           subRule.mediaText = mediaText ? mediaText.trim() : '';
         }
@@ -62,8 +62,7 @@ module.exports = config => ({
         result = result.concat(subRules);
       }
 
-      if(!sels)
-        continue;
+      if (!sels) continue;
 
       var selsParsed = this.parseSelector(sels);
       sels = selsParsed.result;
@@ -77,7 +76,7 @@ module.exports = config => ({
         const propName = stl[j];
         const propValue = stl.getPropertyValue(propName);
         const important = stl.getPropertyPriority(propName);
-        style[propName] = `${propValue}${important ? ` !${important}` : ''}`
+        style[propName] = `${propValue}${important ? ` !${important}` : ''}`;
       }
 
       var lastRule = '';
@@ -88,7 +87,7 @@ module.exports = config => ({
 
         //Isolate state from selector
         var stateArr = selArr[selArr.length - 1].split(/:(.+)/);
-        if(stateArr[1]){
+        if (stateArr[1]) {
           selArr[selArr.length - 1] = stateArr[0];
           model.state = stateArr[1];
           stateArr.splice(stateArr.length - 1, 1);
@@ -110,11 +109,10 @@ module.exports = config => ({
           result.push({
             selectors: [],
             selectorsAdd: selsAddStr,
-            style,
+            style
           });
         }
       }
-
     }
 
     return result;
@@ -140,8 +138,7 @@ module.exports = config => ({
     document.head.removeChild(el);
     var result = this.parseNode(sheet);
 
-    if(result.length == 1)
-      result = result[0];
+    if (result.length == 1) result = result[0];
 
     return result;
   }

@@ -11,5 +11,5 @@ module.exports = {
   hideTextnode: 1,
 
   // Indicates if the wrapper is visible in layers
-  showWrapper: 1,
+  showWrapper: 1
 };

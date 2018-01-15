@@ -4,6 +4,11 @@
   justify-content: flex-start;
 }
 
+.#{$app-prefix}block-categories {
+  display: flex;
+  flex-direction: column;
+}
+
 .#{$app-prefix}block-category {
   width: 100%;
 
@@ -47,6 +52,7 @@
 
 .#{$app-prefix}block-svg {
   width: 61%;
+  fill: currentColor;
 }
 
 .#{$app-prefix}block-svg-path {

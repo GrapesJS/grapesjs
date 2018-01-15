@@ -1,12 +1,10 @@
 module.exports = {
-
   // Style prefix
   stylePrefix: 'css-',
 
   // Custom CSS string to render on top
-  'staticRules': '',
+  staticRules: '',
 
   // Default CSS style
-  rules: [],
-
+  rules: []
 };

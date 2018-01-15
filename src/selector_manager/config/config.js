@@ -1,5 +1,4 @@
 module.exports = {
-
   // Style prefix
   stylePrefix: 'clm-',
 
@@ -16,8 +15,8 @@ module.exports = {
 
   // States
   states: [
-      { name: 'hover', label: 'Hover' },
-      { name: 'active', label: 'Click' },
-      { name: 'nth-of-type(2n)', label: 'Even/Odd' }
-  ],
+    { name: 'hover', label: 'Hover' },
+    { name: 'active', label: 'Click' },
+    { name: 'nth-of-type(2n)', label: 'Even/Odd' }
+  ]
 };

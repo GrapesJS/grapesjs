@@ -12,7 +12,6 @@ const PropertyStackView = require('./view/PropertyStackView');
 const LayerView = require('./view/LayerView');
 
 describe('StyleManager', () => {
-
   describe('Main', () => {
     var obj;
 
@@ -44,11 +43,11 @@ describe('StyleManager', () => {
       expect(sector.get('name')).toEqual('Test name');
     });
 
-     it('Add sectors', () => {
+    it('Add sectors', () => {
       obj.addSector('test', {});
       obj.addSector('test2', {});
       expect(obj.getSectors().length).toEqual(2);
-     });
+    });
 
     it("Can't create more than one sector with the same id", () => {
       var sect1 = obj.addSector('test', {});
@@ -80,7 +79,7 @@ describe('StyleManager', () => {
     it('Check added property', () => {
       obj.addSector('test', {});
       var prop = obj.addProperty('test', {
-        'name': 'test',
+        name: 'test'
       });
       expect(prop.get('name')).toEqual('test');
     });
@@ -101,18 +100,18 @@ describe('StyleManager', () => {
       expect(obj.getProperty('test', 'test-prop')).toEqual([]);
     });
 
-    it("Get property with proper name", () => {
+    it('Get property with proper name', () => {
       obj.addSector('test', {});
-      var prop1 = obj.addProperty('test', {property: 'test-prop'});
+      var prop1 = obj.addProperty('test', { property: 'test-prop' });
       var prop2 = obj.getProperty('test', 'test-prop');
       expect(prop1).toEqual(prop2);
     });
 
-    it("Get properties with proper name", () => {
+    it('Get properties with proper name', () => {
       obj.addSector('test', {});
-      var prop1 = obj.addProperty('test',[
-        {property: 'test-prop'},
-        {property: 'test-prop'}
+      var prop1 = obj.addProperty('test', [
+        { property: 'test-prop' },
+        { property: 'test-prop' }
       ]);
       expect(obj.getProperty('test', 'test-prop').length).toEqual(2);
     });
@@ -127,27 +126,34 @@ describe('StyleManager', () => {
     });
 
     describe('Init with configuration', () => {
-
       beforeEach(() => {
         obj = new StyleManager().init({
-          sectors: [{
-            id: 'dim',
-            name: 'Dimension',
-            properties: [{
-              name: 'Width',
-              property: 'width',
-            },{
-              name: 'Height',
-              property: 'height',
-            }],
-          },{
-            id: 'pos',
-            name: 'position',
-            properties: [{
-              name: 'Width',
-              property: 'width',
-            }],
-          }],
+          sectors: [
+            {
+              id: 'dim',
+              name: 'Dimension',
+              properties: [
+                {
+                  name: 'Width',
+                  property: 'width'
+                },
+                {
+                  name: 'Height',
+                  property: 'height'
+                }
+              ]
+            },
+            {
+              id: 'pos',
+              name: 'position',
+              properties: [
+                {
+                  name: 'Width',
+                  property: 'width'
+                }
+              ]
+            }
+          ]
         });
       });
 
@@ -172,7 +178,6 @@ describe('StyleManager', () => {
         var prop1 = obj.getProperty('dim', 'width');
         expect(prop1.get('name')).toEqual('Width');
       });
-
     });
 
     Models.run();
@@ -190,5 +195,4 @@ describe('StyleManager', () => {
       LayerView.run();
     });
   });
-
 });

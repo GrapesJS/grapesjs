@@ -33,7 +33,6 @@ require('utils/extender')({
 const $ = Backbone.$;
 
 module.exports = Backbone.Model.extend({
-
   defaults: {
     clipboard: null,
     designerMode: false,
@@ -44,7 +43,7 @@ module.exports = Backbone.Model.extend({
     modules: [],
     toLoad: [],
     opened: {},
-    device: '',
+    device: ''
   },
 
   initialize(c = {}) {
@@ -52,15 +51,13 @@ module.exports = Backbone.Model.extend({
     this.set('Config', c);
     this.set('modules', []);
 
-    if(c.el && c.fromElement)
-      this.config.components = c.el.innerHTML;
+    if (c.el && c.fromElement) this.config.components = c.el.innerHTML;
 
     // Load modules
     deps.forEach(name => this.loadModule(name));
     this.on('change:selectedComponent', this.componentSelected, this);
     this.on('change:changesCount', this.updateChanges, this);
   },
-
 
   /**
    * Get configurations
@@ -72,7 +69,6 @@ module.exports = Backbone.Model.extend({
     const config = this.config;
     return isUndefined(prop) ? config : config[prop];
   },
-
 
   /**
    * Should be called after all modules and plugins are loaded
@@ -102,7 +98,6 @@ module.exports = Backbone.Model.extend({
     }
   },
 
-
   /**
    * Set the alert before unload in case it's requested
    * and there are unsaved changes
@@ -122,7 +117,6 @@ module.exports = Backbone.Model.extend({
       this.store();
     }
   },
-
 
   /**
    * Load generic module
@@ -167,11 +161,9 @@ module.exports = Backbone.Model.extend({
     this.set('Editor', editor);
   },
 
-
   getEditor() {
     return this.get('Editor');
   },
-
 
   /**
    * This method handles updates on the editor and tries to store them
@@ -190,11 +182,10 @@ module.exports = Backbone.Model.extend({
     timedInterval && clearInterval(timedInterval);
     timedInterval = setTimeout(() => {
       if (!opt.avoidStore) {
-        this.set('changesCount', this.get('changesCount') + 1, opt)
+        this.set('changesCount', this.get('changesCount') + 1, opt);
       }
     }, 0);
   },
-
 
   /**
    * Callback on component selection
@@ -207,11 +198,10 @@ module.exports = Backbone.Model.extend({
     if (!this.get('selectedComponent')) {
       this.trigger('deselect-comp');
     } else {
-      this.trigger('select-comp',[model,val,options]);
+      this.trigger('select-comp', [model, val, options]);
       this.trigger('component:selected', arguments);
     }
   },
-
 
   /**
    * Returns model of the selected component
@@ -235,7 +225,7 @@ module.exports = Backbone.Model.extend({
       model = $(el).data('model');
     }
 
-    if (model && !model.get("selectable")) {
+    if (model && !model.get('selectable')) {
       return;
     }
 
@@ -261,10 +251,9 @@ module.exports = Backbone.Model.extend({
     var cmp = this.get('DomComponents');
     var cm = this.get('CodeManager');
 
-    if(!cmp || !cm)
-      return;
+    if (!cmp || !cm) return;
 
-    var wrp  = cmp.getComponents();
+    var wrp = cmp.getComponents();
     return cm.getCode(wrp, 'json');
   },
 
@@ -276,8 +265,7 @@ module.exports = Backbone.Model.extend({
    */
   setStyle(style) {
     var rules = this.get('CssComposer').getAll();
-    for(var i = 0, len = rules.length; i < len; i++)
-      rules.pop();
+    for (var i = 0, len = rules.length; i < len; i++) rules.pop();
     rules.add(style);
     return this;
   },
@@ -301,9 +289,10 @@ module.exports = Backbone.Model.extend({
     const exportWrapper = config.exportWrapper;
     const wrappesIsBody = config.wrappesIsBody;
     const js = config.jsInHtml ? this.getJs() : '';
-    var wrp  = this.get('DomComponents').getComponent();
+    var wrp = this.get('DomComponents').getComponent();
     var html = this.get('CodeManager').getCode(wrp, 'html', {
-      exportWrapper, wrappesIsBody
+      exportWrapper,
+      wrappesIsBody
     });
     html += js ? `<script>${js}</script>` : '';
     return html;
@@ -323,9 +312,13 @@ module.exports = Backbone.Model.extend({
     const wrp = this.get('DomComponents').getComponent();
     const protCss = !avoidProt ? config.protectedCss : '';
 
-    return protCss + this.get('CodeManager').getCode(wrp, 'css', {
-      cssc, wrappesIsBody
-    });
+    return (
+      protCss +
+      this.get('CodeManager').getCode(wrp, 'css', {
+        cssc,
+        wrappesIsBody
+      })
+    );
   },
 
   /**
@@ -335,7 +328,9 @@ module.exports = Backbone.Model.extend({
    */
   getJs() {
     var wrp = this.get('DomComponents').getWrapper();
-    return this.get('CodeManager').getCode(wrp, 'js').trim();
+    return this.get('CodeManager')
+      .getCode(wrp, 'js')
+      .trim();
   },
 
   /**
@@ -347,14 +342,12 @@ module.exports = Backbone.Model.extend({
   store(clb) {
     var sm = this.get('StorageManager');
     var store = {};
-    if(!sm)
-      return;
+    if (!sm) return;
 
     // Fetch what to store
     this.get('storables').forEach(m => {
       var obj = m.store(1);
-      for(var el in obj)
-        store[el] = obj[el];
+      for (var el in obj) store[el] = obj[el];
     });
 
     sm.store(store, () => {
@@ -372,7 +365,7 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   load(clb = null) {
-    this.getCacheLoad(1, (res) => {
+    this.getCacheLoad(1, res => {
       this.get('storables').forEach(module => module.load(res));
       clb && clb(res);
     });
@@ -387,13 +380,11 @@ module.exports = Backbone.Model.extend({
    */
   getCacheLoad(force, clb) {
     var f = force ? 1 : 0;
-    if(this.cacheLoad && !f)
-      return this.cacheLoad;
+    if (this.cacheLoad && !f) return this.cacheLoad;
     var sm = this.get('StorageManager');
     var load = [];
 
-    if(!sm)
-      return {};
+    if (!sm) return {};
 
     this.get('storables').forEach(m => {
       var key = m.storageKey;
@@ -428,8 +419,7 @@ module.exports = Backbone.Model.extend({
    */
   runDefault(opts = {}) {
     var command = this.get('Commands').get(this.config.defaultCommand);
-    if(!command || this.defaultRunning)
-      return;
+    if (!command || this.defaultRunning) return;
     command.stop(this, this, opts);
     command.run(this, this, opts);
     this.defaultRunning = 1;
@@ -442,8 +432,7 @@ module.exports = Backbone.Model.extend({
    */
   stopDefault(opts = {}) {
     var command = this.get('Commands').get(this.config.defaultCommand);
-    if(!command)
-      return;
+    if (!command) return;
     command.stop(this, this, opts);
     this.defaultRunning = 0;
   },
@@ -467,7 +456,6 @@ module.exports = Backbone.Model.extend({
     w.getSelection().removeAllRanges();
   },
 
-
   /**
    * Get the current media text
    * @return {string}
@@ -480,7 +468,6 @@ module.exports = Backbone.Model.extend({
     const width = device && device.get('widthMedia');
     return device && width && !preview ? `(${condition}: ${width})` : '';
   },
-
 
   /**
    * Set/get data from the HTMLElement
@@ -503,5 +490,4 @@ module.exports = Backbone.Model.extend({
       el[varName][name] = value;
     }
   }
-
 });

@@ -1,26 +1,27 @@
 const Component = require('./Component');
 
-module.exports = Component.extend({
-
-  defaults: { ...Component.prototype.defaults,
+module.exports = Component.extend(
+  {
+    defaults: {
+      ...Component.prototype.defaults,
       type: 'cell',
       tagName: 'td',
-      draggable: ['tr'],
-  },
-
-}, {
-  isComponent(el) {
-    let result = '';
-    const tag = el.tagName;
-
-    if (tag == 'TD' || tag == 'TH') {
-      result = {
-        type: 'cell',
-        tagName: tag.toLowerCase()
-      };
+      draggable: ['tr']
     }
-
-    return result;
   },
+  {
+    isComponent(el) {
+      let result = '';
+      const tag = el.tagName;
 
-});
+      if (tag == 'TD' || tag == 'TH') {
+        result = {
+          type: 'cell',
+          tagName: tag.toLowerCase()
+        };
+      }
+
+      return result;
+    }
+  }
+);

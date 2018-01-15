@@ -5,8 +5,10 @@ module.exports = require('backbone').Collection.extend({
   model: Selector,
 
   getStyleable() {
-    return filter(this.models, item =>
-      item.get('active') && !item.get('private'));
+    return filter(
+      this.models,
+      item => item.get('active') && !item.get('private')
+    );
   },
 
   getValid() {

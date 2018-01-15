@@ -2,7 +2,6 @@ var Backbone = require('backbone');
 var Button = require('./Button');
 
 module.exports = Backbone.Collection.extend({
-
   model: Button,
 
   /**
@@ -14,10 +13,10 @@ module.exports = Backbone.Collection.extend({
    * */
   deactivateAllExceptOne(except, r) {
     this.forEach((model, index) => {
-      if(model !== except){
+      if (model !== except) {
         model.set('active', false);
-        if(r && model.get('buttons').length)
-          model.get('buttons').deactivateAllExceptOne(except,r);
+        if (r && model.get('buttons').length)
+          model.get('buttons').deactivateAllExceptOne(except, r);
       }
     });
   },
@@ -31,14 +30,14 @@ module.exports = Backbone.Collection.extend({
   deactivateAll(ctx) {
     var context = ctx || '';
     this.forEach((model, index) => {
-      if( model.get('context') == context ){
+      if (model.get('context') == context) {
         model.set('active', false);
-        if(model.get('buttons').length)
+        if (model.get('buttons').length)
           model.get('buttons').deactivateAll(context);
       }
     });
   },
-  
+
   /**
    * Disables all buttons
    * @param  {String}  ctx Context string
@@ -48,9 +47,9 @@ module.exports = Backbone.Collection.extend({
   disableAllButtons(ctx) {
     var context = ctx || '';
     this.forEach((model, index) => {
-      if( model.get('context') == context ){
+      if (model.get('context') == context) {
         model.set('disable', true);
-        if(model.get('buttons').length)
+        if (model.get('buttons').length)
           model.get('buttons').disableAllButtons(context);
       }
     });
@@ -65,12 +64,11 @@ module.exports = Backbone.Collection.extend({
    * */
   disableAllButtonsExceptOne(except, r) {
     this.forEach((model, index) => {
-      if(model !== except){
+      if (model !== except) {
         model.set('disable', true);
-        if(r && model.get('buttons').length)
-          model.get('buttons').disableAllButtonsExceptOne(except,r);
+        if (r && model.get('buttons').length)
+          model.get('buttons').disableAllButtonsExceptOne(except, r);
       }
     });
-  },
-
+  }
 });

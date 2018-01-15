@@ -3,9 +3,7 @@ define((require, exports, module) => {
   var Utils = require('Utils');
   var Sorter = require('undefined');
 
-    describe('Utils', () => {
-
-      Sorter.run();
-
-    });
+  describe('Utils', () => {
+    Sorter.run();
+  });
 });

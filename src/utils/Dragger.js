@@ -12,7 +12,6 @@ var getBoundingRect = (el, win) => {
 };
 
 module.exports = {
-
   // TODO move to opts
   setKey(keys, command) {
     //key(keys, command);
@@ -25,9 +24,11 @@ module.exports = {
    */
   getElementRect(el) {
     var posFetcher = this.opts.posFetcher || '';
-    return posFetcher ? posFetcher(el, {
-      avoidFrameOffset: 1,
-    }) : getBoundingRect(el);
+    return posFetcher
+      ? posFetcher(el, {
+          avoidFrameOffset: 1
+        })
+      : getBoundingRect(el);
   },
 
   /**
@@ -67,7 +68,6 @@ module.exports = {
     this.el = el;
     this.handlers = this.opts.dragHandlers || [el];
 
-
     var elRect = this.getElementRect(el); //<-- TODO have wrong top:left
     this.elRect = elRect;
     this.startTop = elRect.top;
@@ -75,7 +75,7 @@ module.exports = {
 
     // TODO init snapper
 
-		this.getDocumentEl().on('mousedown', this.handleMouseDown);
+    this.getDocumentEl().on('mousedown', this.handleMouseDown);
   },
 
   /**
@@ -98,12 +98,12 @@ module.exports = {
 
     // Start callback
     var onStart = this.opts.onStart;
-    if(typeof onStart === 'function') {
+    if (typeof onStart === 'function') {
       onStart(e, {
         docs,
         el: this.el,
         start: this.startPos,
-        elRect: this.elRect,
+        elRect: this.elRect
       });
     }
 
@@ -121,13 +121,13 @@ module.exports = {
 
     // Stop callback
     var onEnd = this.opts.onEnd;
-    if(typeof onEnd === 'function') {
+    if (typeof onEnd === 'function') {
       onEnd(e, {
         docs,
         delta: this.delta,
         end: {
           x: this.startLeft + this.delta.x,
-          y: this.startTop + this.delta.y,
+          y: this.startTop + this.delta.y
         }
       });
     }
@@ -203,10 +203,12 @@ module.exports = {
    */
   getMousePos(e) {
     var mouseFetch = this.opts.mousePosFetcher;
-    return mouseFetch ? mouseFetch(e) : {
-      x: e.clientX,
-      y: e.clientY
-    };
+    return mouseFetch
+      ? mouseFetch(e)
+      : {
+          x: e.clientX,
+          y: e.clientY
+        };
   },
 
   /**
@@ -253,7 +255,7 @@ module.exports = {
 
     // Drag callback
     const onDrag = this.opts.onDrag;
-    if(typeof onDrag === 'function') {
+    if (typeof onDrag === 'function') {
       onDrag(e, {
         delta,
         current: {
@@ -294,10 +296,10 @@ module.exports = {
       setX(xPos, {
         el,
         start: this.startLeft,
-        delta: x,
+        delta: x
       });
     } else {
-      el.style.left =  xPos + 'px';
+      el.style.left = xPos + 'px';
     }
   },
 
@@ -315,11 +317,10 @@ module.exports = {
       setY(yPos, {
         el,
         start: this.startTop,
-        delta: y,
+        delta: y
       });
     } else {
-      el.style.top =  yPos + 'px';
+      el.style.top = yPos + 'px';
     }
-  },
-
+  }
 };

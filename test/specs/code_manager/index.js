@@ -2,9 +2,7 @@ var CodeManager = require('code_manager');
 var Models = require('./model/CodeModels');
 
 describe('Code Manager', () => {
-
   describe('Main', () => {
-
     let obj;
 
     beforeEach(() => {
@@ -36,7 +34,6 @@ describe('Code Manager', () => {
       obj.addViewer('test', 'view');
       expect(obj.getViewer('test')).toEqual('view');
     });
-
   });
 
   Models.run();

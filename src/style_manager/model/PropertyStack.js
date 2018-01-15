@@ -2,13 +2,13 @@ const Property = require('./PropertyComposite');
 const Layers = require('./Layers');
 
 module.exports = Property.extend({
-
-  defaults: { ...Property.prototype.defaults,
+  defaults: {
+    ...Property.prototype.defaults,
     // Array of layers (which contain properties)
     layers: [],
 
     // Layer preview
-    preview: 0,
+    preview: 0
   },
 
   init() {
@@ -21,6 +21,5 @@ module.exports = Property.extend({
 
   getFullValue() {
     return this.get('detached') ? '' : this.get('layers').getFullValue();
-  },
-
+  }
 });

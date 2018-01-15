@@ -1,8 +1,12 @@
 var Backbone = require('backbone');
 
 module.exports = Backbone.View.extend({
-  events: {
-    'mousedown': 'handleClick',
+  events() {
+    return (
+      this.model.get('events') || {
+        mousedown: 'handleClick'
+      }
+    );
   },
 
   attributes() {
@@ -11,12 +15,16 @@ module.exports = Backbone.View.extend({
 
   initialize(opts) {
     this.editor = opts.config.editor;
-	},
+  },
 
   handleClick(event) {
     event.preventDefault();
     event.stopPropagation();
-    const opts = {event};
+    this.execCommand(event);
+  },
+
+  execCommand(event) {
+    const opts = { event };
     const command = this.model.get('command');
     const editor = this.editor;
 
@@ -33,6 +41,5 @@ module.exports = Backbone.View.extend({
     var config = this.editor.getConfig();
     this.el.className += ' ' + config.stylePrefix + 'toolbar-item';
     return this;
-  },
-
+  }
 });

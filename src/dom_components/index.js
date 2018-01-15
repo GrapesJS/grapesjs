@@ -46,81 +46,82 @@ module.exports = () => {
     {
       id: 'cell',
       model: require('./model/ComponentTableCell'),
-      view: require('./view/ComponentTableCellView'),
+      view: require('./view/ComponentTableCellView')
     },
     {
       id: 'row',
       model: require('./model/ComponentTableRow'),
-      view: require('./view/ComponentTableRowView'),
+      view: require('./view/ComponentTableRowView')
     },
     {
       id: 'table',
       model: require('./model/ComponentTable'),
-      view: require('./view/ComponentTableView'),
+      view: require('./view/ComponentTableView')
     },
     {
       id: 'thead',
       model: require('./model/ComponentTableHead'),
-      view: require('./view/ComponentTableHeadView'),
+      view: require('./view/ComponentTableHeadView')
     },
     {
       id: 'tbody',
       model: require('./model/ComponentTableBody'),
-      view: require('./view/ComponentTableBodyView'),
+      view: require('./view/ComponentTableBodyView')
     },
     {
       id: 'tfoot',
       model: require('./model/ComponentTableFoot'),
-      view: require('./view/ComponentTableFootView'),
+      view: require('./view/ComponentTableFootView')
     },
     {
       id: 'map',
       model: require('./model/ComponentMap'),
-      view: require('./view/ComponentMapView'),
+      view: require('./view/ComponentMapView')
     },
     {
       id: 'link',
       model: require('./model/ComponentLink'),
-      view: require('./view/ComponentLinkView'),
+      view: require('./view/ComponentLinkView')
     },
     {
       id: 'video',
       model: require('./model/ComponentVideo'),
-      view: require('./view/ComponentVideoView'),
+      view: require('./view/ComponentVideoView')
     },
     {
       id: 'image',
       model: require('./model/ComponentImage'),
-      view: require('./view/ComponentImageView'),
+      view: require('./view/ComponentImageView')
     },
     {
       id: 'script',
       model: require('./model/ComponentScript'),
-      view: require('./view/ComponentScriptView'),
+      view: require('./view/ComponentScriptView')
     },
     {
       id: 'svg',
       model: require('./model/ComponentSvg'),
-      view: require('./view/ComponentSvgView'),
+      view: require('./view/ComponentSvgView')
     },
     {
       id: 'textnode',
       model: require('./model/ComponentTextNode'),
-      view: require('./view/ComponentTextNodeView'),
+      view: require('./view/ComponentTextNodeView')
     },
     {
       id: 'text',
       model: require('./model/ComponentText'),
-      view: require('./view/ComponentTextView'),
+      view: require('./view/ComponentTextView')
     },
     {
       id: 'default',
       model: Component,
-      view: ComponentView,
-    },
+      view: ComponentView
+    }
   ];
 
   return {
+    Component,
 
     Components,
 
@@ -141,7 +142,7 @@ module.exports = () => {
      * @private
      */
     getConfig() {
-        return c;
+      return c;
     },
 
     /**
@@ -152,10 +153,8 @@ module.exports = () => {
     storageKey() {
       var keys = [];
       var smc = (c.stm && c.stm.getConfig()) || {};
-      if(smc.storeHtml)
-        keys.push('html');
-      if(smc.storeComponents)
-        keys.push('components');
+      if (smc.storeHtml) keys.push('html');
+      if (smc.storeComponents) keys.push('components');
       return keys;
     },
 
@@ -174,13 +173,11 @@ module.exports = () => {
       }
 
       for (var name in defaults) {
-        if (!(name in c))
-          c[name] = defaults[name];
+        if (!(name in c)) c[name] = defaults[name];
       }
 
       var ppfx = c.pStylePrefix;
-      if(ppfx)
-        c.stylePrefix = ppfx + c.stylePrefix;
+      if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
 
       // Load dependencies
       if (em) {
@@ -197,7 +194,11 @@ module.exports = () => {
       wrapper.wrapper = 1;
 
       // Components might be a wrapper
-      if (components && components.constructor === Object && components.wrapper) {
+      if (
+        components &&
+        components.constructor === Object &&
+        components.wrapper
+      ) {
         wrapper = { ...components };
         components = components.components || [];
         wrapper.components = [];
@@ -212,14 +213,14 @@ module.exports = () => {
       component = new Component(wrapper, {
         sm: em,
         config: c,
-        componentTypes,
+        componentTypes
       });
-      component.set({ attributes: {id: 'wrapper'}});
+      component.set({ attributes: { id: 'wrapper' } });
 
       componentView = new ComponentView({
         model: component,
         config: c,
-        componentTypes,
+        componentTypes
       });
       return this;
     },
@@ -241,7 +242,6 @@ module.exports = () => {
       this.handleChanges(this.getWrapper(), null, { avoidStore: 1 });
     },
 
-
     /**
      * Handle component changes
      * @private
@@ -256,10 +256,11 @@ module.exports = () => {
       um && comps && um.add(comps);
       const evn = 'change:style change:content change:attributes change:src';
 
-      [ [model, evn, handleUpdates],
+      [
+        [model, evn, handleUpdates],
         [comps, 'add', handleChanges],
         [comps, 'remove', handleRemoves],
-        [model.get('classes'), 'add remove', handleUpdates],
+        [model.get('classes'), 'add remove', handleUpdates]
       ].forEach(els => {
         em.stopListening(els[0], els[1], els[2]);
         em.listenTo(els[0], els[1], els[2]);
@@ -269,7 +270,6 @@ module.exports = () => {
       comps.each(model => this.handleChanges(model, value, opts));
     },
 
-
     /**
      * Triggered when some component is removed
      * @private
@@ -277,7 +277,6 @@ module.exports = () => {
     handleRemoves(model, value, opts = {}) {
       !opts.avoidStore && em.handleUpdates(model, value, opts);
     },
-
 
     /**
      * Load components from the passed object, if the object is empty will try to fetch them
@@ -309,8 +308,11 @@ module.exports = () => {
 
         // If the result is an object I consider it the wrapper
         if (isObj) {
-          this.getWrapper().set(result)
-          .initComponents().initClasses().loadTraits();
+          this.getWrapper()
+            .set(result)
+            .initComponents()
+            .initClasses()
+            .loadTraits();
         } else {
           this.getComponents().add(result);
         }
@@ -325,7 +327,7 @@ module.exports = () => {
      * @return {Object} Data to store
      */
     store(noStore) {
-      if(!c.stm) {
+      if (!c.stm) {
         return;
       }
 
@@ -337,8 +339,9 @@ module.exports = () => {
       }
 
       if (keys.indexOf('components') >= 0) {
-        const toStore = c.storeWrapper ?
-          this.getWrapper() : this.getComponents();
+        const toStore = c.storeWrapper
+          ? this.getWrapper()
+          : this.getComponents();
         obj.components = JSON.stringify(toStore);
       }
 
@@ -452,8 +455,7 @@ module.exports = () => {
      */
     clear() {
       var c = this.getComponents();
-      for(var i = 0, len = c.length; i < len; i++)
-        c.pop();
+      for (var i = 0, len = c.length; i < len; i++) c.pop();
       return this;
     },
 
@@ -475,7 +477,7 @@ module.exports = () => {
      */
     addType(type, methods) {
       var compType = this.getType(type);
-      if(compType) {
+      if (compType) {
         compType.model = methods.model;
         compType.view = methods.view;
       } else {
@@ -494,7 +496,7 @@ module.exports = () => {
 
       for (var it = 0; it < df.length; it++) {
         var dfId = df[it].id;
-        if(dfId == type) {
+        if (dfId == type) {
           return df[it];
         }
       }
@@ -514,12 +516,11 @@ module.exports = () => {
       if (previousModel) {
         previousModel.set({
           status: '',
-          state: '',
+          state: ''
         });
       }
 
-      model && model.set('status','selected');
+      model && model.set('status', 'selected');
     }
-
   };
 };

@@ -2,13 +2,12 @@ var Backbone = require('backbone');
 var PanelView = require('./PanelView');
 
 module.exports = Backbone.View.extend({
-
   initialize(o) {
     this.opt = o || {};
     this.config = this.opt.config || {};
     this.pfx = this.config.stylePrefix || '';
-    this.listenTo(this.collection, 'add', this.addTo );
-    this.listenTo(this.collection, 'reset', this.render );
+    this.listenTo(this.collection, 'add', this.addTo);
+    this.listenTo(this.collection, 'reset', this.render);
     this.className = this.pfx + 'panels';
   },
 
@@ -36,7 +35,7 @@ module.exports = Backbone.View.extend({
     var fragment = fragmentEl || null;
     var view = new PanelView({
       model,
-      config: this.config,
+      config: this.config
     });
     var rendered = view.render().el;
     var appendTo = model.get('appendTo');
@@ -60,7 +59,7 @@ module.exports = Backbone.View.extend({
     var fragment = document.createDocumentFragment();
     this.$el.empty();
 
-    this.collection.each(function(model){
+    this.collection.each(function(model) {
       this.addToCollection(model, fragment);
     }, this);
 

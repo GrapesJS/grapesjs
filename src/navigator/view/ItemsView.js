@@ -2,7 +2,6 @@ var Backbone = require('backbone');
 var ItemView = require('./ItemView');
 
 module.exports = Backbone.View.extend({
-
   initialize(o = {}) {
     this.opt = o;
     const config = o.config || {};
@@ -48,7 +47,7 @@ module.exports = Backbone.View.extend({
    * @return Object
    * */
   addTo(model) {
-    var i  = this.collection.indexOf(model);
+    var i = this.collection.indexOf(model);
     this.addToCollection(model, null, i);
   },
 
@@ -62,10 +61,10 @@ module.exports = Backbone.View.extend({
    * */
   addToCollection(model, fragmentEl, index) {
     const level = this.level;
-    var fragment  = fragmentEl || null;
-    var viewObject  = ItemView;
+    var fragment = fragmentEl || null;
+    var viewObject = ItemView;
 
-    if(!this.isCountable(model, this.config.hideTextnode)) {
+    if (!this.isCountable(model, this.config.hideTextnode)) {
       return;
     }
 
@@ -75,28 +74,30 @@ module.exports = Backbone.View.extend({
       config: this.config,
       sorter: this.sorter,
       isCountable: this.isCountable,
-      opened: this.opt.opened,
+      opened: this.opt.opened
     });
-    var rendered  = view.render().el;
+    var rendered = view.render().el;
 
-    if(fragment){
+    if (fragment) {
       fragment.appendChild(rendered);
-    }else{
-      if(typeof index != 'undefined'){
-        var method  = 'before';
+    } else {
+      if (typeof index != 'undefined') {
+        var method = 'before';
         // If the added model is the last of collection
         // need to change the logic of append
-        if(this.$el.children().length == index){
+        if (this.$el.children().length == index) {
           index--;
-          method  = 'after';
+          method = 'after';
         }
         // In case the added is new in the collection index will be -1
-        if(index < 0){
+        if (index < 0) {
           this.$el.append(rendered);
-        }else
-          this.$el.children().eq(index)[method](rendered);
-      }else
-        this.$el.append(rendered);
+        } else
+          this.$el
+            .children()
+            .eq(index)
+            [method](rendered);
+      } else this.$el.append(rendered);
     }
 
     return rendered;
@@ -111,8 +112,10 @@ module.exports = Backbone.View.extend({
   isCountable(model, hide) {
     var type = model.get('type');
     var tag = model.get('tagName');
-    if( ((type == 'textnode' || tag == 'br') && hide) ||
-        !model.get('layerable')) {
+    if (
+      ((type == 'textnode' || tag == 'br') && hide) ||
+      !model.get('layerable')
+    ) {
       return false;
     }
     return true;

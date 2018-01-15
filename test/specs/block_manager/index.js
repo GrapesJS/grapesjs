@@ -2,9 +2,7 @@ var BlockManager = require('block_manager');
 var BlocksView = require('./view/BlocksView');
 
 describe('BlockManager', () => {
-
   describe('Main', () => {
-
     var obj;
     var idTest;
     var optsTest;
@@ -47,14 +45,14 @@ describe('BlockManager', () => {
     });
 
     it('Add block with attributes', () => {
-      optsTest.attributes = {'class':'test'};
+      optsTest.attributes = { class: 'test' };
       var model = obj.add(idTest, optsTest);
       expect(model.get('attributes').class).toEqual('test');
     });
 
     it('The id of the block is unique', () => {
       var model = obj.add(idTest, optsTest);
-      var model2 = obj.add(idTest, {other: 'test'});
+      var model2 = obj.add(idTest, { other: 'test' });
       expect(model).toEqual(model2);
     });
 
@@ -68,9 +66,7 @@ describe('BlockManager', () => {
       obj.render();
       expect(obj.getContainer()).toExist();
     });
-
   });
 
   BlocksView.run();
-
 });

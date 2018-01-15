@@ -1,7 +1,6 @@
 var Backbone = require('backbone');
 
 module.exports = Backbone.View.extend({
-
   template: _.template(`
   <div class="<%= pfx %>editor" id="<%= pfx %><%= codeName %>">
   	<div id="<%= pfx %>title"><%= label %></div>
@@ -16,10 +15,9 @@ module.exports = Backbone.View.extend({
   render() {
     var obj = this.model.toJSON();
     obj.pfx = this.pfx;
-    this.$el.html( this.template(obj) );
+    this.$el.html(this.template(obj));
     this.$el.attr('class', this.pfx + 'editor-c');
-    this.$el.find('#'+this.pfx+'code').append(this.model.get('input'));
+    this.$el.find('#' + this.pfx + 'code').append(this.model.get('input'));
     return this;
-  },
-
+  }
 });

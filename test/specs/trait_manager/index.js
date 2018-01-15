@@ -3,9 +3,7 @@ const TraitsModel = require('./model/TraitsModel');
 const TraitsView = require('./view/TraitsView');
 
 describe('TraitManager', () => {
-
   describe('Main', () => {
-
     var obj;
 
     beforeEach(() => {
@@ -15,7 +13,6 @@ describe('TraitManager', () => {
     afterEach(() => {
       obj = null;
     });
-
   });
 
   TraitsModel.run();

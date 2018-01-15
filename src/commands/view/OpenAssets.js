@@ -1,5 +1,4 @@
 module.exports = {
-
   run(editor, sender, opts = {}) {
     const modal = editor.Modal;
     const am = editor.AssetManager;
@@ -12,15 +11,12 @@ module.exports = {
     am.onSelect(opts.onSelect);
 
     if (!this.rendered) {
-      am.render(am.getAll().filter(
-        asset => asset.get('type') == 'image'
-      ));
+      am.render(am.getAll().filter(asset => asset.get('type') == 'image'));
       this.rendered = 1;
     }
 
     modal.setTitle(title);
     modal.setContent(am.getContainer());
     modal.open();
-  },
-
+  }
 };

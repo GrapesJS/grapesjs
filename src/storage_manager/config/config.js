@@ -54,5 +54,4 @@ module.exports = {
   // true: application/json; charset=utf-8'
   // false: 'x-www-form-urlencoded'
   contentTypeJson: false
-
 };

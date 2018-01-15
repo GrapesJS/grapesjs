@@ -1,12 +1,10 @@
 var Backbone = require('backbone');
 
 module.exports = Backbone.Model.extend({
-
-  defaults :{
+  defaults: {
     wrapper: '',
     width: '',
     height: '',
-    attributes: {},
-  },
-
+    attributes: {}
+  }
 });

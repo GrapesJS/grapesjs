@@ -1,5 +1,5 @@
 import { bindAll } from 'underscore';
-import { on, off, getUnitFromValue} from 'utils/mixins';
+import { on, off, getUnitFromValue } from 'utils/mixins';
 
 const ToolbarView = require('dom_components/view/ToolbarView');
 const Toolbar = require('dom_components/model/Toolbar');
@@ -8,15 +8,13 @@ const $ = require('backbone').$;
 let showOffsets;
 
 module.exports = {
-
   init(o) {
     bindAll(this, 'onHover', 'onOut', 'onClick', 'onKeyPress', 'onFrameScroll');
   },
 
-
   enable() {
     this.frameOff = this.canvasOff = this.adjScroll = null;
-    var config  = this.config.em.get('Config');
+    var config = this.config.em.get('Config');
     this.startSelectComponent();
     var em = this.config.em;
     showOffsets = 1;
@@ -30,7 +28,7 @@ module.exports = {
    * @private
    * */
   startSelectComponent() {
-   this.toggleSelectComponent(1);
+    this.toggleSelectComponent(1);
   },
 
   /**
@@ -38,7 +36,7 @@ module.exports = {
    * @private
    * */
   stopSelectComponent() {
-   this.toggleSelectComponent();
+    this.toggleSelectComponent();
   },
 
   /**
@@ -48,7 +46,7 @@ module.exports = {
   toggleSelectComponent(enable) {
     const em = this.em;
     const method = enable ? 'on' : 'off';
-    const methods = {on, off};
+    const methods = { on, off };
     const body = this.getCanvasBody();
     const win = this.getContentWindow();
     methods[method](body, 'mouseover', this.onHover);
@@ -69,13 +67,11 @@ module.exports = {
     var focused = this.frameEl.contentDocument.activeElement.tagName !== 'BODY';
 
     // On CANC (46) or Backspace (8)
-    if(key == 8 || key == 46) {
-      if(!focused)
-        e.preventDefault();
-      if(comp && !focused) {
-        if(!comp.get('removable'))
-          return;
-        comp.set('status','');
+    if (key == 8 || key == 46) {
+      if (!focused) e.preventDefault();
+      if (comp && !focused) {
+        if (!comp.get('removable')) return;
+        comp.set('status', '');
         comp.destroy();
         this.hideBadge();
         this.clean();
@@ -135,14 +131,13 @@ module.exports = {
     var $el = $(el);
     var model = $el.data('model');
 
-    if ( (model && model.get('status') == 'selected') ||
-        !showOffsets){
+    if ((model && model.get('status') == 'selected') || !showOffsets) {
       return;
     }
 
     this.editor.runCommand('show-offset', {
       el,
-      elPos: pos,
+      elPos: pos
     });
   },
 
@@ -164,7 +159,7 @@ module.exports = {
     this.editor.runCommand('show-offset', {
       el,
       elPos: pos,
-      state: 'Fixed',
+      state: 'Fixed'
     });
   },
 
@@ -174,8 +169,7 @@ module.exports = {
    * @param {Object} pos
    */
   hideFixedElementOffset(el, pos) {
-    if(this.editor)
-      this.editor.stopCommand('show-offset', {state: 'Fixed'});
+    if (this.editor) this.editor.stopCommand('show-offset', { state: 'Fixed' });
   },
 
   /**
@@ -199,7 +193,7 @@ module.exports = {
       if (model.get('selectable')) {
         editor.select(model);
       } else {
-        let parent =  model.parent();
+        let parent = model.parent();
         while (parent && !parent.get('selectable')) parent = parent.parent();
         parent && editor.select(parent);
       }
@@ -218,9 +212,8 @@ module.exports = {
     var config = canvas.getConfig();
     var customeLabel = config.customBadgeLabel;
     this.cacheEl = el;
-    var model = $el.data("model");
-    if(!model || !model.get('badgable'))
-      return;
+    var model = $el.data('model');
+    if (!model || !model.get('badgable')) return;
     var badge = this.getBadge();
     var badgeLabel = model.getIcon() + model.getName();
     badgeLabel = customeLabel ? customeLabel(model) : badgeLabel;
@@ -231,7 +224,8 @@ module.exports = {
     var canvasPos = canvas.getCanvasView().getPosition();
     var badgeH = badge ? badge.offsetHeight : 0;
     var badgeW = badge ? badge.offsetWidth : 0;
-    var top = pos.top - badgeH < canvasPos.top ? canvasPos.top : pos.top - badgeH;
+    var top =
+      pos.top - badgeH < canvasPos.top ? canvasPos.top : pos.top - badgeH;
     var left = pos.left + badgeW < canvasPos.left ? canvasPos.left : pos.left;
     bStyle.top = top + u;
     bStyle.left = left + u;
@@ -247,7 +241,11 @@ module.exports = {
     var $el = $(el);
     var model = $el.data('model');
 
-    if(!model || !model.get("hoverable") || model.get('status') == 'selected') {
+    if (
+      !model ||
+      !model.get('hoverable') ||
+      model.get('status') == 'selected'
+    ) {
       return;
     }
 
@@ -302,14 +300,16 @@ module.exports = {
 
     var toggleBodyClass = (method, e, opts) => {
       const docs = opts.docs;
-      docs && docs.forEach(doc => {
-        const body = doc.body;
-        const cls = body.className || '';
-        body.className = (method == 'add' ?
-          `${cls} ${resizeClass}` : cls.replace(resizeClass, '')).trim();
-      });
+      docs &&
+        docs.forEach(doc => {
+          const body = doc.body;
+          const cls = body.className || '';
+          body.className = (method == 'add'
+            ? `${cls} ${resizeClass}`
+            : cls.replace(resizeClass, '')
+          ).trim();
+        });
     };
-
 
     if (editor && resizable) {
       options = {
@@ -322,7 +322,8 @@ module.exports = {
           const computedStyle = getComputedStyle(el);
           const modelStyle = modelToStyle.getStyle();
           const currentWidth = modelStyle[keyWidth] || computedStyle[keyWidth];
-          const currentHeight = modelStyle[keyHeight] || computedStyle[keyHeight];
+          const currentHeight =
+            modelStyle[keyHeight] || computedStyle[keyHeight];
           resizer.startDim.w = parseFloat(currentWidth);
           resizer.startDim.h = parseFloat(currentHeight);
           showOffsets = 0;
@@ -349,7 +350,7 @@ module.exports = {
             return;
           }
 
-          const { store, selectedHandler, config} = options;
+          const { store, selectedHandler, config } = options;
           const { keyHeight, keyWidth } = config;
           const onlyHeight = ['tc', 'bc'].indexOf(selectedHandler) >= 0;
           const onlyWidth = ['cl', 'cr'].indexOf(selectedHandler) >= 0;
@@ -363,9 +364,12 @@ module.exports = {
             style[keyHeight] = rect.h + config.unitHeight;
           }
 
-          modelToStyle.setStyle(style, {avoidStore: 1});
+          modelToStyle.setStyle(style, { avoidStore: 1 });
           const updateEvent = `update:component:style`;
-          em && em.trigger(`${updateEvent}:${keyHeight} ${updateEvent}:${keyWidth}`);
+          em &&
+            em.trigger(
+              `${updateEvent}:${keyHeight} ${updateEvent}:${keyWidth}`
+            );
 
           if (store) {
             modelToStyle.trigger('change:style', modelToStyle, style, {});
@@ -377,7 +381,7 @@ module.exports = {
         options = { ...options, ...resizable };
       }
 
-      editor.runCommand('resize', {el, options});
+      editor.runCommand('resize', { el, options });
 
       // On undo/redo the resizer rect is not updating, need somehow to call
       // this.updateRect on undo/redo action
@@ -409,7 +413,7 @@ module.exports = {
     if (showToolbar && toolbar && toolbar.length) {
       toolbarStyle.opacity = '';
       toolbarStyle.display = '';
-      if(!this.toolbar) {
+      if (!this.toolbar) {
         toolbarEl.innerHTML = '';
         this.toolbar = new Toolbar(toolbar);
         var toolbarView = new ToolbarView({
@@ -440,11 +444,11 @@ module.exports = {
     toolbarStyle.display = 'block';
     var pos = this.canvas.getTargetToElementDim(toolbarEl, el, {
       elPos,
-      event: 'toolbarPosUpdate',
+      event: 'toolbarPosUpdate'
     });
     var leftPos = pos.left + pos.elementWidth - pos.targetWidth;
     toolbarStyle.top = pos.top + unit;
-    toolbarStyle.left = leftPos + unit;
+    toolbarStyle.left = (leftPos < 0 ? 0 : leftPos) + unit;
     toolbarStyle.display = origDisp;
   },
 
@@ -461,8 +465,7 @@ module.exports = {
    * @private
    * */
   clean() {
-    if(this.selEl)
-      this.selEl.removeClass(this.hoverClass);
+    if (this.selEl) this.selEl.removeClass(this.hoverClass);
   },
 
   /**
@@ -529,10 +532,11 @@ module.exports = {
    * @private
    */
   cleanPrevious(model) {
-    model && model.set({
-      status: '',
-      state: '',
-    });
+    model &&
+      model.set({
+        status: '',
+        state: ''
+      });
   },
 
   /**

@@ -10,6 +10,8 @@
  *
  * ## Components
  * * `component:add` - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
+ * * `component:remove` - Triggered when a component is removed, the model is passed as an argument to the callback
+ * * `component:clone` - Triggered when a new component is added by a clone command, the model is passed as an argument to the callback
  * * `component:update` - Triggered when a component is updated (moved, styled, etc.), the model is passed as an argument to the callback
  * * `component:update:{propertyName}` - Listen any property change, the model is passed as an argument to the callback
  * * `component:styleUpdate` - Triggered when the style of the component is updated, the model is passed as an argument to the callback
@@ -41,6 +43,13 @@
  * * `storage:store` - Triggered when something is stored to the storage, stored object passed as an argumnet
  * * `storage:end` - After the storage request is ended
  * * `storage:error` - On any error on storage request, passes the error as an argument
+ * ## Canvas
+ * * `canvas:dragenter` - When something is dragged inside the canvas, `DataTransfer` instance passed as an argument
+ * * `canvas:dragover` - When something is dragging on canvas, `DataTransfer` instance passed as an argument
+ * * `canvas:drop` - Something is dropped in canvas, `DataTransfer` instance and the dropped model are passed as arguments
+ * * `canvas:dragend` - When a drag operation is ended, `DataTransfer` instance passed as an argument
+ * * `canvas:dragdata` - On any dataTransfer parse, `DataTransfer` instance and the `result` are passed as arguments.
+ *  By changing `result.content` you're able to customize what is dropped
  * ## Selectors
  * * `selector:add` - Triggers when a new selector/class is created
  * ## RTE
@@ -85,24 +94,22 @@ import $ from 'cash-dom';
 
 module.exports = config => {
   var c = config || {},
-  defaults = require('./config/config'),
-  EditorModel = require('./model/Editor'),
-  EditorView = require('./view/EditorView');
+    defaults = require('./config/config'),
+    EditorModel = require('./model/Editor'),
+    EditorView = require('./view/EditorView');
 
   for (var name in defaults) {
-    if (!(name in c))
-      c[name] = defaults[name];
+    if (!(name in c)) c[name] = defaults[name];
   }
 
   c.pStylePrefix = c.stylePrefix;
   var em = new EditorModel(c);
   var editorView = new EditorView({
-      model: em,
-      config: c,
+    model: em,
+    config: c
   });
 
   return {
-
     $,
 
     /**
@@ -417,7 +424,7 @@ module.exports = config => {
       var result;
       var command = em.get('Commands').get(id);
 
-      if(command){
+      if (command) {
         result = command.run(this, this, options);
         this.trigger('run:' + id);
       }
@@ -436,7 +443,7 @@ module.exports = config => {
       var result;
       var command = em.get('Commands').get(id);
 
-      if(command){
+      if (command) {
         result = command.stop(this, this, options);
         this.trigger('stop:' + id);
       }
@@ -580,8 +587,6 @@ module.exports = config => {
 
       editorView.render();
       return editorView.el;
-    },
-
+    }
   };
-
 };

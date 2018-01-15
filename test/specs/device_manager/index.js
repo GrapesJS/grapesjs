@@ -2,9 +2,7 @@ const DeviceManager = require('device_manager');
 const DevicesView = require('./view/DevicesView');
 
 describe('DeviceManager', () => {
-
   describe('Main', () => {
-
     var obj;
     var testNameDevice;
     var testWidthDevice;
@@ -40,7 +38,7 @@ describe('DeviceManager', () => {
     });
 
     it('Add device width options', () => {
-      var model = obj.add(testNameDevice, testWidthDevice, {opt: 'value'});
+      var model = obj.add(testNameDevice, testWidthDevice, { opt: 'value' });
       expect(model.get('opt')).toEqual('value');
     });
 
@@ -59,9 +57,7 @@ describe('DeviceManager', () => {
     it('Render devices', () => {
       expect(obj.render()).toExist();
     });
-
   });
 
   DevicesView.run();
-
 });

@@ -3,7 +3,6 @@ import { isArray } from 'underscore';
 const ComponentsView = require('./ComponentsView');
 
 module.exports = Backbone.View.extend({
-
   className() {
     return this.getClasses();
   },
@@ -64,7 +63,6 @@ module.exports = Backbone.View.extend({
     }
   },
 
-
   /**
    * Import, if possible, classes inside main container
    * @private
@@ -72,13 +70,12 @@ module.exports = Backbone.View.extend({
   importClasses() {
     var clm = this.config.em.get('SelectorManager');
 
-    if(clm){
+    if (clm) {
       this.model.get('classes').each(m => {
-          clm.add(m.get('name'));
+        clm.add(m.get('name'));
       });
     }
   },
-
 
   /**
    * Fires on state update. If the state is not empty will add a helper class
@@ -89,13 +86,12 @@ module.exports = Backbone.View.extend({
     var cl = 'hc-state';
     var state = this.model.get('state');
 
-    if(state){
+    if (state) {
       this.$el.addClass(cl);
-    }else{
+    } else {
       this.$el.removeClass(cl);
     }
   },
-
 
   /**
    * Update item on status change
@@ -114,17 +110,19 @@ module.exports = Backbone.View.extend({
     var cls = '';
 
     switch (status) {
-        case 'selected':
-          cls = `${actualCls} ${selectedCls}`;
-          break;
-        case 'selected-parent':
-          cls = `${actualCls} ${selectedParentCls}`;
-          break;
-        case 'freezed':
-          cls = `${actualCls} ${freezedCls}`;
-          break;
-        default:
-          this.$el.removeClass(`${selectedCls} ${selectedParentCls} ${freezedCls}`);
+      case 'selected':
+        cls = `${actualCls} ${selectedCls}`;
+        break;
+      case 'selected-parent':
+        cls = `${actualCls} ${selectedParentCls}`;
+        break;
+      case 'freezed':
+        cls = `${actualCls} ${freezedCls}`;
+        break;
+      default:
+        this.$el.removeClass(
+          `${selectedCls} ${selectedParentCls} ${freezedCls}`
+        );
     }
 
     cls = cls.trim();
@@ -134,7 +132,6 @@ module.exports = Backbone.View.extend({
     }
   },
 
-
   /**
    * Update highlight attribute
    * @private
@@ -143,7 +140,6 @@ module.exports = Backbone.View.extend({
     const hl = this.model.get('highlightable');
     this.setAttribute('data-highlightable', hl ? 1 : '');
   },
-
 
   /**
    * Update style attribute
@@ -161,13 +157,15 @@ module.exports = Backbone.View.extend({
     }
   },
 
-
   /**
    * Update classe attribute
    * @private
    * */
   updateClasses() {
-    const str = this.model.get('classes').pluck('name').join(' ');
+    const str = this.model
+      .get('classes')
+      .pluck('name')
+      .join(' ');
     this.setAttribute('class', str);
 
     // Regenerate status class
@@ -192,8 +190,8 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   getClasses() {
-    var attr = this.model.get("attributes"),
-      classes  = attr['class'] || [];
+    var attr = this.model.get('attributes'),
+      classes = attr['class'] || [];
     classes = isArray(classes) ? classes : [classes];
 
     if (classes.length) {
@@ -209,7 +207,7 @@ module.exports = Backbone.View.extend({
    * */
   updateAttributes() {
     const model = this.model;
-    const attrs = {}
+    const attrs = {};
     const attr = model.get('attributes');
     const src = model.get('src');
 
@@ -250,7 +248,7 @@ module.exports = Backbone.View.extend({
     }
 
     var em = this.em;
-    if(em) {
+    if (em) {
       var canvas = em.get('Canvas');
       canvas.getCanvasView().updateScript(this);
     }
@@ -301,14 +299,14 @@ module.exports = Backbone.View.extend({
     const view = new ComponentsView({
       collection: this.model.get('components'),
       config: this.config,
-      componentTypes: this.opts.componentTypes,
+      componentTypes: this.opts.componentTypes
     });
 
     view.render(container);
     this.childrenView = view;
     const childNodes = Array.prototype.slice.call(view.el.childNodes);
 
-    for (var i = 0, len = childNodes.length ; i < len; i++) {
+    for (var i = 0, len = childNodes.length; i < len; i++) {
       container.appendChild(childNodes.shift());
     }
 
@@ -341,6 +339,5 @@ module.exports = Backbone.View.extend({
     this.renderChildren();
     this.updateScript();
     return this;
-  },
-
+  }
 });

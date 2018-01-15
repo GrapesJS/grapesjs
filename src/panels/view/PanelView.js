@@ -2,7 +2,6 @@ var Backbone = require('backbone');
 var ButtonsView = require('./ButtonsView');
 
 module.exports = Backbone.View.extend({
-
   initialize(o) {
     const config = o.config || {};
     this.config = config;
@@ -29,6 +28,10 @@ module.exports = Backbone.View.extend({
     this.$el.html(this.model.get('content'));
   },
 
+  attributes() {
+    return this.model.get('attributes');
+  },
+
   initResize() {
     const em = this.config.em;
     const editor = em ? em.get('Editor') : '';
@@ -37,7 +40,10 @@ module.exports = Backbone.View.extend({
     if (editor && resizable) {
       var resz = resizable === true ? [1, 1, 1, 1] : resizable;
       var resLen = resz.length;
-      var tc, cr, bc, cl = 0;
+      var tc,
+        cr,
+        bc,
+        cl = 0;
 
       // Choose which sides of the panel are resizable
       if (resLen == 2) {
@@ -63,10 +69,11 @@ module.exports = Backbone.View.extend({
         br: 0,
         appendTo: this.el,
         prefix: editor.getConfig().stylePrefix,
-        posFetcher: (el) => {
+        posFetcher: el => {
           var rect = el.getBoundingClientRect();
           return {
-            left: 0, top: 0,
+            left: 0,
+            top: 0,
             width: rect.width,
             height: rect.height
           };
@@ -84,15 +91,14 @@ module.exports = Backbone.View.extend({
     this.id && el.attr('id', this.id);
 
     if (this.buttons.length) {
-      var buttons  = new ButtonsView({
+      var buttons = new ButtonsView({
         collection: this.buttons,
-        config: this.config,
+        config: this.config
       });
       el.append(buttons.render().el);
     }
 
     el.append(this.model.get('content'));
     return this;
-  },
-
+  }
 });

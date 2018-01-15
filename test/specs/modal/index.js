@@ -2,9 +2,7 @@ const Modal = require('modal_dialog');
 const ModalView = require('./view/ModalView');
 
 describe('Modal dialog', () => {
-
   describe('Main', () => {
-
     var obj;
 
     beforeEach(() => {
@@ -34,7 +32,6 @@ describe('Modal dialog', () => {
     it('Set title', () => {
       obj.setTitle('Test');
       expect(obj.getTitle()).toEqual('Test');
-
     });
 
     it('Set content', () => {
@@ -57,9 +54,7 @@ describe('Modal dialog', () => {
       obj.close();
       expect(obj.isOpen()).toEqual(false);
     });
-
   });
 
   ModalView.run();
-
 });

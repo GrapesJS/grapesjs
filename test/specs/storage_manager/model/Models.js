@@ -5,14 +5,12 @@ const RemoteStorage = require('storage_manager/model/RemoteStorage');
 
 module.exports = {
   run() {
-
     describe('LocalStorage', () => {
-
       var obj;
       var itemName = 'testItem';
       var data = {
-        'item1': 'value1',
-        'item2': 'value2',
+        item1: 'value1',
+        item2: 'value2'
       };
 
       beforeEach(() => {
@@ -31,13 +29,13 @@ module.exports = {
 
       it('Store, update and load items', () => {
         obj.store(data);
-        obj.store({item3: 'value3'});
-        obj.store({item2: 'value22'});
+        obj.store({ item3: 'value3' });
+        obj.store({ item2: 'value22' });
         var result = obj.load(['item1', 'item2', 'item3']);
         expect(result).toEqual({
-          'item1': 'value1',
-          'item2': 'value22',
-          'item3': 'value3',
+          item1: 'value1',
+          item2: 'value22',
+          item3: 'value3'
         });
       });
 
@@ -47,11 +45,9 @@ module.exports = {
         obj.remove(items);
         expect(obj.load(items)).toEqual({});
       });
-
     });
 
     describe('RemoteStorage', () => {
-
       var obj;
       var itemName = 'testItem';
       var endpointStore = 'testStoreEndpoint';
@@ -60,26 +56,26 @@ module.exports = {
       var storageOptions;
       var data;
       var mockResponse = (body = {}) => {
-          return new window.Response(JSON.stringify(body), {
-             status: 200,
-             headers: { 'Content-type': 'application/json' }
-          });
-      }
+        return new window.Response(JSON.stringify(body), {
+          status: 200,
+          headers: { 'Content-type': 'application/json' }
+        });
+      };
 
       beforeEach(() => {
         data = {
-          'item1': 'value1',
-          'item2': 'value2',
+          item1: 'value1',
+          item2: 'value2'
         };
         storageOptions = {
-            urlStore: endpointStore,
-            urlLoad: endpointLoad,
-            params,
+          urlStore: endpointStore,
+          urlLoad: endpointLoad,
+          params
         };
         obj = new RemoteStorage(storageOptions);
-        sinon.stub(obj, 'fetch').returns(
-          Promise.resolve(mockResponse({data: 1}))
-        );
+        sinon
+          .stub(obj, 'fetch')
+          .returns(Promise.resolve(mockResponse({ data: 1 })));
       });
 
       afterEach(() => {
@@ -100,9 +96,6 @@ module.exports = {
         expect(callResult.called).toEqual(true);
         expect(callResult.firstCall.args[0]).toEqual(endpointLoad);
       });
-
     });
-
   }
-
 };

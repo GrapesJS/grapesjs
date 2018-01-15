@@ -38,7 +38,7 @@ module.exports = env => {
     plugins: plugins,
     module: {
       loaders: [{
-        test: /grapesjs\/index\.js$/,
+        test: /\/index\.js$/,
         loader: 'string-replace-loader',
         query: {
           search: '<# VERSION #>',

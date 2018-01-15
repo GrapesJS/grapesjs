@@ -1,13 +1,12 @@
-import { bindAll } from 'underscore'
+import { bindAll } from 'underscore';
 
-const motionsEv = 'transitionend oTransitionEnd transitionend webkitTransitionEnd';
+const motionsEv =
+  'transitionend oTransitionEnd transitionend webkitTransitionEnd';
 
 module.exports = require('backbone').View.extend({
-
   tagName: 'iframe',
 
   attributes: {
-    src: 'about:blank',
     allowfullscreen: 'allowfullscreen'
   },
 
@@ -27,11 +26,18 @@ module.exports = require('backbone').View.extend({
     const em = this.em;
     const device = em.getDeviceModel();
     const style = this.el.style;
-    style.width = device ? device.get('width') : '';
-    style.height = device ? device.get('height') : '';
+    const currW = style.width || '';
+    const currH = style.height || '';
+    const newW = device ? device.get('width') : '';
+    const newH = device ? device.get('height') : '';
+    const noChanges = currW == newW && currH == newH;
+    style.width = newW;
+    style.height = newH;
     this.udpateOffset();
+    // Prevent fixed highlighting box which appears when on
+    // component hover during the animation
     em.stopDefault({ preserveSelected: 1 });
-    this.$el.on(motionsEv, this.udpateOffset);
+    noChanges ? this.udpateOffset() : this.$el.on(motionsEv, this.udpateOffset);
   },
 
   udpateOffset() {
@@ -51,8 +57,7 @@ module.exports = require('backbone').View.extend({
   },
 
   render() {
-    this.$el.attr({class: this.ppfx + 'frame'});
+    this.$el.attr({ class: this.ppfx + 'frame' });
     return this;
-  },
-
+  }
 });

@@ -59,6 +59,9 @@ module.exports = {
   // Return JS of components inside HTML from 'editor.getHtml()'
   jsInHtml: true,
 
+  // Enable native HTML5 drag and drop
+  nativeDnD: 1,
+
   // Show the wrapper component in the final code, eg. in editor.getHtml()
   exportWrapper: 0,
 
@@ -115,65 +118,106 @@ module.exports = {
 
   //Configurations for Device Manager
   deviceManager: {
-    devices: [{
+    devices: [
+      {
         name: 'Desktop',
-        width: '',
-      },{
+        width: ''
+      },
+      {
         name: 'Tablet',
         width: '768px',
-        widthMedia: '992px',
-      },{
+        widthMedia: '992px'
+      },
+      {
         name: 'Mobile landscape',
         width: '568px',
-        widthMedia: '768px',
-      },{
+        widthMedia: '768px'
+      },
+      {
         name: 'Mobile portrait',
         width: '320px',
-        widthMedia: '480px',
-    }],
+        widthMedia: '480px'
+      }
+    ]
   },
 
   //Configurations for Style Manager
   styleManager: {
-
-    sectors: [{
+    sectors: [
+      {
         name: 'General',
         open: false,
-        buildProps: ['float', 'display', 'position', 'top', 'right', 'left', 'bottom'],
-      },{
+        buildProps: [
+          'float',
+          'display',
+          'position',
+          'top',
+          'right',
+          'left',
+          'bottom'
+        ]
+      },
+      {
         name: 'Dimension',
         open: false,
-        buildProps: ['width', 'height', 'max-width', 'min-height', 'margin', 'padding'],
-      },{
+        buildProps: [
+          'width',
+          'height',
+          'max-width',
+          'min-height',
+          'margin',
+          'padding'
+        ]
+      },
+      {
         name: 'Typography',
         open: false,
-        buildProps: ['font-family', 'font-size', 'font-weight', 'letter-spacing', 'color', 'line-height', 'text-align', 'text-shadow'],
-        properties: [{
+        buildProps: [
+          'font-family',
+          'font-size',
+          'font-weight',
+          'letter-spacing',
+          'color',
+          'line-height',
+          'text-align',
+          'text-shadow'
+        ],
+        properties: [
+          {
             property: 'text-align',
-            list        : [
-                {value: 'left', className: 'fa fa-align-left'},
-                {value: 'center', className: 'fa fa-align-center' },
-                {value: 'right', className: 'fa fa-align-right'},
-                {value: 'justify', className: 'fa fa-align-justify'}
-            ],
-        }]
-      },{
+            list: [
+              { value: 'left', className: 'fa fa-align-left' },
+              { value: 'center', className: 'fa fa-align-center' },
+              { value: 'right', className: 'fa fa-align-right' },
+              { value: 'justify', className: 'fa fa-align-justify' }
+            ]
+          }
+        ]
+      },
+      {
         name: 'Decorations',
         open: false,
-        buildProps: ['border-radius-c', 'background-color', 'border-radius', 'border', 'box-shadow', 'background'],
-      },{
+        buildProps: [
+          'border-radius-c',
+          'background-color',
+          'border-radius',
+          'border',
+          'box-shadow',
+          'background'
+        ]
+      },
+      {
         name: 'Extra',
         open: false,
-        buildProps: ['transition', 'perspective', 'transform'],
-      }],
-
+        buildProps: ['transition', 'perspective', 'transform']
+      }
+    ]
   },
 
   //Configurations for Block Manager
   blockManager: {},
 
-
   // Texts
 
-  textViewCode: 'Code',
+  textViewCode: 'Code'
 };

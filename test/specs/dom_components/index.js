@@ -9,20 +9,24 @@ const Editor = require('editor/model/Editor');
 const utils = require('./../test_utils.js');
 
 describe('DOM Components', () => {
-
   describe('Main', () => {
-
     var em;
     var obj;
     var config;
     var storagMock = utils.storageMock();
     var editorModel = {
       config: {
-        loadCompsOnRender: 0,
+        loadCompsOnRender: 0
       },
-      get() {return;},
-      getHtml() {return 'testHtml';},
-      getComponents() {return {test: 1};},
+      get() {
+        return;
+      },
+      getHtml() {
+        return 'testHtml';
+      },
+      getComponents() {
+        return { test: 1 };
+      },
       getCacheLoad() {
         return storagMock.load();
       }
@@ -30,21 +34,20 @@ describe('DOM Components', () => {
     // Methods
     var setSmConfig = () => {
       config.stm = storagMock;
-      config.stm.getConfig =  () => ({
+      config.stm.getConfig = () => ({
         storeHtml: 1,
         storeComponents: 1
       });
     };
     var setEm = () => {
       config.em = editorModel;
-    }
-
+    };
 
     beforeEach(() => {
       em = new Editor();
       config = {
         em,
-        storeWrapper: 1,
+        storeWrapper: 1
       };
       obj = new DomComponents().init(config);
     });
@@ -66,8 +69,8 @@ describe('DOM Components', () => {
         getConfig() {
           return {
             storeHtml: 1,
-            storeComponents: 1,
-          }
+            storeComponents: 1
+          };
         }
       };
       expect(obj.storageKey()).toEqual(['html', 'components']);
@@ -79,7 +82,7 @@ describe('DOM Components', () => {
       //obj.getWrapper().get('components').add({});
       var expected = {
         html: 'testHtml',
-        components: JSON.stringify(obj.getWrapper()),
+        components: JSON.stringify(obj.getWrapper())
       };
       expect(obj.store(1)).toEqual(expected);
     });
@@ -90,7 +93,7 @@ describe('DOM Components', () => {
       const comps = new Components({}, {});
       obj.getWrapper().set('components', comps);
       obj.store();
-      expect(obj.load()).toEqual([{test: 1}]);
+      expect(obj.load()).toEqual([{ test: 1 }]);
     });
 
     it('Wrapper exists', () => {
@@ -107,7 +110,7 @@ describe('DOM Components', () => {
     });
 
     it('Add more components at once', () => {
-      var comp = obj.addComponent([{},{}]);
+      var comp = obj.addComponent([{}, {}]);
       expect(obj.getComponents().length).toEqual(2);
     });
 
@@ -124,5 +127,4 @@ describe('DOM Components', () => {
     ComponentTextView.run();
     ComponentImageView.run();
   });
-
 });

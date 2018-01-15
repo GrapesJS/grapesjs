@@ -7,20 +7,19 @@ module.exports = {
     let obj;
 
     describe('AssetImageView', () => {
-
-      beforeEach(function () {
-        var coll   = new Assets();
-        var model = coll.add({ type:'image', src: '/test' });
+      beforeEach(function() {
+        var coll = new Assets();
+        var model = coll.add({ type: 'image', src: '/test' });
         obj = new AssetImageView({
           collection: new Assets(),
-          config : {},
+          config: {},
           model
         });
         document.body.innerHTML = '<div id="fixtures"></div>';
         document.body.querySelector('#fixtures').appendChild(obj.render().el);
       });
 
-      afterEach(function () {
+      afterEach(function() {
         obj = null;
         document.body.innerHTML = '';
       });
@@ -30,22 +29,20 @@ module.exports = {
       });
 
       describe('Asset should be rendered correctly', () => {
+        it('Has preview box', function() {
+          var $asset = obj.$el;
+          expect($asset.find('.preview').length).toEqual(1);
+        });
 
-          it('Has preview box', function() {
-            var $asset = obj.$el;
-            expect($asset.find('.preview').length).toEqual(1);
-          });
+        it('Has meta box', function() {
+          var $asset = obj.$el;
+          expect($asset.find('.meta').length).toEqual(1);
+        });
 
-          it('Has meta box', function() {
-            var $asset = obj.$el;
-            expect($asset.find('.meta').length).toEqual(1);
-          });
-
-          it('Has close button', function() {
-            var $asset = obj.$el;
-            expect($asset.find('[data-toggle=asset-remove]').length).toEqual(1);
-          });
-
+        it('Has close button', function() {
+          var $asset = obj.$el;
+          expect($asset.find('[data-toggle=asset-remove]').length).toEqual(1);
+        });
       });
 
       it('Could be selected', function() {
@@ -65,12 +62,10 @@ module.exports = {
 
       it('Could be removed', function() {
         var spy = sinon.spy();
-        obj.model.on("remove", spy);
-        obj.onRemove({stopImmediatePropagation() {}});
+        obj.model.on('remove', spy);
+        obj.onRemove({ stopImmediatePropagation() {} });
         expect(spy.called).toEqual(true);
       });
-
     });
-
   }
 };

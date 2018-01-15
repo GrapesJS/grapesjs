@@ -2,7 +2,6 @@ const PropertyView = require('./PropertyView');
 const $ = Backbone.$;
 
 module.exports = PropertyView.extend({
-
   templateInput() {
     const pfx = this.pfx;
     return `
@@ -41,7 +40,7 @@ module.exports = PropertyView.extend({
       if (!this.$props) {
         //Not yet supported nested composite
         this.props.each(function(prop, index) {
-          if(prop && prop.get('type') == 'composite') {
+          if (prop && prop.get('type') == 'composite') {
             this.props.remove(prop);
             console.warn('Nested composite types not yet allowed.');
           }
@@ -78,7 +77,7 @@ module.exports = PropertyView.extend({
       // I need to extract from that string the corresponding one to that property.
       customValue(property, mIndex) {
         return that.valueOnIndex(mIndex, property);
-      },
+      }
     };
 
     // If detached let follow its standard flow
@@ -97,7 +96,7 @@ module.exports = PropertyView.extend({
    * */
   valueOnIndex(index, view) {
     let value;
-    const targetValue = this.getTargetValue({ignoreDefault: 1});
+    const targetValue = this.getTargetValue({ ignoreDefault: 1 });
 
     // If the target value of the composite is not empty I'll fetch
     // the corresponding value from the requested index, otherwise try
@@ -106,7 +105,8 @@ module.exports = PropertyView.extend({
       const values = targetValue.split(' ');
       value = values[index];
     } else {
-      value = view && view.getTargetValue({ignoreCustomValue: 1, ignoreDefault: 1});
+      value =
+        view && view.getTargetValue({ ignoreCustomValue: 1, ignoreDefault: 1 });
     }
 
     if (view) {
@@ -114,6 +114,5 @@ module.exports = PropertyView.extend({
     }
 
     return value;
-  },
-
+  }
 });

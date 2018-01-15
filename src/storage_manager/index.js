@@ -7,15 +7,14 @@
  */
 module.exports = () => {
   var c = {},
-  defaults = require('./config/config'),
-  LocalStorage = require('./model/LocalStorage'),
-  RemoteStorage = require('./model/RemoteStorage');
+    defaults = require('./config/config'),
+    LocalStorage = require('./model/LocalStorage'),
+    RemoteStorage = require('./model/RemoteStorage');
 
   var storages = {};
   var defaultStorages = {};
 
   return {
-
     /**
      * Name of the module
      * @type {String}
@@ -45,11 +44,10 @@ module.exports = () => {
       c = config || {};
 
       for (var name in defaults) {
-        if (!(name in c))
-          c[name] = defaults[name];
+        if (!(name in c)) c[name] = defaults[name];
       }
 
-      defaultStorages.remote  = new RemoteStorage(c);
+      defaultStorages.remote = new RemoteStorage(c);
       defaultStorages.local = new LocalStorage(c);
       c.currentStorage = c.type;
       this.loadDefaultProviders().setCurrent(c.type);
@@ -88,7 +86,7 @@ module.exports = () => {
      * @return {this}
      * */
     setStepsBeforeSave(v) {
-      c.stepsBeforeSave  = v;
+      c.stepsBeforeSave = v;
       return this;
     },
 
@@ -168,8 +166,7 @@ module.exports = () => {
       var st = this.get(this.getCurrent());
       var dataF = {};
 
-      for(var key in data)
-        dataF[c.id + key] = data[key];
+      for (var key in data) dataF[c.id + key] = data[key];
 
       return st ? st.store(dataF, clb) : null;
     },
@@ -191,22 +188,22 @@ module.exports = () => {
       var keysF = [];
       var result = {};
 
-      if(typeof keys === 'string')
-        keys = [keys];
+      if (typeof keys === 'string') keys = [keys];
 
       for (var i = 0, len = keys.length; i < len; i++)
         keysF.push(c.id + keys[i]);
 
-      st && st.load(keysF, res => {
-        // Restore keys name
-        var reg = new RegExp('^' + c.id + '');
-        for (var itemKey in res) {
-          var itemKeyR = itemKey.replace(reg, '');
-          result[itemKeyR] = res[itemKey];
-        }
+      st &&
+        st.load(keysF, res => {
+          // Restore keys name
+          var reg = new RegExp('^' + c.id + '');
+          for (var itemKey in res) {
+            var itemKeyR = itemKey.replace(reg, '');
+            result[itemKeyR] = res[itemKey];
+          }
 
-        clb && clb(result);
-      });
+          clb && clb(result);
+        });
     },
 
     /**
@@ -215,8 +212,7 @@ module.exports = () => {
      * @private
      * */
     loadDefaultProviders() {
-      for (var id in defaultStorages)
-        this.add(id, defaultStorages[id]);
+      for (var id in defaultStorages) this.add(id, defaultStorages[id]);
       return this;
     },
 
@@ -227,8 +223,6 @@ module.exports = () => {
      * */
     getConfig() {
       return c;
-    },
-
+    }
   };
-
 };

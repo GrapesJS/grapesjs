@@ -46,7 +46,7 @@ var defaultOpts = {
   cr: 1, // Center right
   bl: 1, // Bottom left
   bc: 1, // Bottom center
-  br: 1, // Bottom right
+  br: 1 // Bottom right
 };
 
 var createHandler = (name, opts) => {
@@ -69,17 +69,15 @@ var getBoundingRect = (el, win) => {
 };
 
 class Resizer {
-
   /**
    * Init the Resizer with options
    * @param  {Object} options
    */
   constructor(opts = {}) {
     this.setOptions(opts);
-    bindAll(this, 'handleKeyDown', 'handleMouseDown', 'move', 'stop')
+    bindAll(this, 'handleKeyDown', 'handleMouseDown', 'move', 'stop');
     return this;
   }
-
 
   /**
    * Get current connfiguration options
@@ -88,7 +86,6 @@ class Resizer {
   getConfig() {
     return this.opts;
   }
-
 
   /**
    * Setup options
@@ -122,8 +119,9 @@ class Resizer {
 
     // Create handlers
     const handlers = {};
-    ['tl', 'tc', 'tr', 'cl', 'cr', 'bl', 'bc', 'br'].forEach(hdl =>
-      handlers[hdl] = opts[hdl] ? createHandler(hdl, opts) : '');
+    ['tl', 'tc', 'tr', 'cl', 'cr', 'bl', 'bc', 'br'].forEach(
+      hdl => (handlers[hdl] = opts[hdl] ? createHandler(hdl, opts) : '')
+    );
 
     for (let n in handlers) {
       const handler = handlers[n];
@@ -238,13 +236,13 @@ class Resizer {
       t: rect.top,
       l: rect.left,
       w: rect.width,
-      h: rect.height,
+      h: rect.height
     };
     this.rectDim = {
       t: rect.top,
       l: rect.left,
       w: rect.width,
-      h: rect.height,
+      h: rect.height
     };
     this.startPos = {
       x: e.clientX,
@@ -256,7 +254,8 @@ class Resizer {
     on(doc, 'mousemove', this.move);
     on(doc, 'keydown', this.handleKeyDown);
     on(doc, 'mouseup', this.stop);
-    isFunction(this.onStart) && this.onStart(e, {docs: doc, config, el, resizer});
+    isFunction(this.onStart) &&
+      this.onStart(e, { docs: doc, config, el, resizer });
     this.move(e);
   }
 
@@ -267,15 +266,17 @@ class Resizer {
   move(e) {
     const onMove = this.onMove;
     var mouseFetch = this.mousePosFetcher;
-    var currentPos = mouseFetch ? mouseFetch(e) : {
-      x: e.clientX,
-      y: e.clientY
-    };
+    var currentPos = mouseFetch
+      ? mouseFetch(e)
+      : {
+          x: e.clientX,
+          y: e.clientY
+        };
 
     this.currentPos = currentPos;
     this.delta = {
       x: currentPos.x - this.startPos.x,
-      y: currentPos.y - this.startPos.y,
+      y: currentPos.y - this.startPos.y
     };
     this.keys = {
       shift: e.shiftKey,
@@ -306,7 +307,7 @@ class Resizer {
     off(doc, 'keydown', this.handleKeyDown);
     off(doc, 'mouseup', this.stop);
     this.updateRect(1);
-    isFunction(this.onEnd) && this.onEnd(e, {docs: doc, config});
+    isFunction(this.onEnd) && this.onEnd(e, { docs: doc, config });
   }
 
   /**
@@ -381,7 +382,7 @@ class Resizer {
     if (this.isHandler(el)) {
       this.selectedHandler = el;
       this.start(e);
-    }else if(el !== this.el){
+    } else if (el !== this.el) {
       this.selectedHandler = '';
       this.blur();
     }
@@ -409,8 +410,7 @@ class Resizer {
       h: startH
     };
 
-    if (!data)
-      return;
+    if (!data) return;
 
     var attr = data.handlerAttr;
     if (~attr.indexOf('r')) {
