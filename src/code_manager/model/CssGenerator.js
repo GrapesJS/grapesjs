@@ -35,7 +35,8 @@ module.exports = require('backbone').Model.extend({
 
   build(model, opts = {}) {
     const cssc = opts.cssc;
-    this.em = opts.em || '';
+    const em = opts.em || '';
+    this.em = em;
     this.compCls = [];
     this.ids = [];
     var code = this.buildFromModel(model, opts);
@@ -43,6 +44,7 @@ module.exports = require('backbone').Model.extend({
     if (cssc) {
       const rules = cssc.getAll();
       const mediaRules = {};
+      const dump = [];
 
       rules.each(rule => {
         const media = rule.get('mediaText');
@@ -58,19 +60,21 @@ module.exports = require('backbone').Model.extend({
           return;
         }
 
-        code += this.buildFromRule(rule);
+        code += this.buildFromRule(rule, dump);
       });
 
       // Get media rules
       for (let media in mediaRules) {
         let rulesStr = '';
         const mRules = mediaRules[media];
-        mRules.forEach(rule => (rulesStr += this.buildFromRule(rule)));
+        mRules.forEach(rule => (rulesStr += this.buildFromRule(rule, dump)));
 
         if (rulesStr) {
           code += `@media ${media}{${rulesStr}}`;
         }
       }
+
+      em && em.getConfig('clearStyles') && rules.remove(dump);
     }
 
     return code;
@@ -81,7 +85,7 @@ module.exports = require('backbone').Model.extend({
    * @param {Model} rule
    * @return {string} CSS string
    */
-  buildFromRule(rule) {
+  buildFromRule(rule, dump) {
     let result = '';
     const selectorStr = rule.selectorsToString();
     const selectorStrNoAdd = rule.selectorsToString({ skipAdd: 1 });
@@ -101,6 +105,8 @@ module.exports = require('backbone').Model.extend({
       if (style) {
         result += `${selectorStr}{${style}}`;
       }
+    } else {
+      dump.push(rule);
     }
 
     return result;

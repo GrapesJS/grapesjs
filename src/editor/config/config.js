@@ -74,6 +74,16 @@ module.exports = {
   // When `avoidInlineStyle` is true all styles are inserted inside the css rule
   avoidInlineStyle: 0,
 
+  // (experimental)
+  // The structure of components is always on the screen but it's not the same
+  // for style rules. When you delete a component you might leave a lot of styles
+  // which will never be used again, therefore they might be removed.
+  // With this option set to true, styles not used from the CSS generator (so in
+  // any case where `CssGenerator.build` is used) will be removed automatically.
+  // But be careful, not always leaving the style not used mean you wouldn't
+  // use it later, but this option comes really handy when deal with big templates.
+  clearStyles: 0,
+
   // Dom element
   el: '',
 
