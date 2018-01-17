@@ -751,7 +751,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
     emitUpdate(property) {
       const em = this.em;
       const event = 'component:update' + (property ? `:${property}` : '');
-      em && em.trigger(event, this.model);
+      em && em.trigger(event, this);
     }
   },
   {
