@@ -19,7 +19,7 @@ module.exports = Backbone.View.extend({
     this.propTarget = target;
     const coll = this.collection;
     const events =
-      'change:selectedComponent component:update:classes change:device';
+      'change:selectedComponent component:update:classes component:update:state change:device';
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.render);
     this.listenTo(this.target, events, this.targetUpdated);
@@ -40,6 +40,7 @@ module.exports = Backbone.View.extend({
    * @private
    */
   targetUpdated() {
+    console.log('Target update');
     var em = this.target;
     let model = em.getSelected();
     const um = em.get('UndoManager');
