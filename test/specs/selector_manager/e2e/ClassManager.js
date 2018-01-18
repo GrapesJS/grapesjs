@@ -43,7 +43,7 @@ module.exports = {
         });
       });
 
-      describe.only('Interaction with Components', () => {
+      describe('Interaction with Components', () => {
         beforeEach(function() {
           components = gjs.getComponents();
           tagEl = instClassTagViewer(gjs, fixtures);
@@ -52,10 +52,8 @@ module.exports = {
         it('Assign correctly new class to component', function() {
           var model = components.add({});
           expect(model.get('classes').length).toEqual(0);
-          console.log('Assign correctly...');
           gjs.select(model);
-          //tagEl.addNewTag('test');
-          /*
+          tagEl.addNewTag('test');
           expect(model.get('classes').length).toEqual(1);
           expect(
             model
@@ -63,7 +61,6 @@ module.exports = {
               .at(0)
               .get('name')
           ).toEqual('test');
-          */
         });
 
         it('Classes from components are correctly imported inside main container', function() {
