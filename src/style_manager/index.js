@@ -248,8 +248,9 @@ module.exports = () => {
       const em = c.em;
       const classes = model.get('classes');
       const id = model.getId();
-
+      console.log('rule a');
       if (em) {
+        console.log('rule b');
         const config = em.getConfig();
         const um = em.get('UndoManager');
         const cssC = em.get('CssComposer');
@@ -258,8 +259,9 @@ module.exports = () => {
         const hasClasses = valid.length;
         const opts = { state };
         let rule;
-
+        console.log('rule b2');
         if (hasClasses) {
+          console.log('rule c');
           const deviceW = em.getCurrentMedia();
           rule = cssC.get(valid, state, deviceW);
 
@@ -275,11 +277,12 @@ module.exports = () => {
             um.start();
           }
         } else if (config.avoidInlineStyle) {
+          console.log('rule d');
           rule = cssC.getIdRule(id, opts);
           !rule && (rule = cssC.setIdRule(id, {}, opts));
         }
 
-        model = rule;
+        rule && (model = rule);
       }
 
       return model;

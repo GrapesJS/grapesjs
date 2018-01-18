@@ -77,6 +77,7 @@ module.exports = Backbone.View.extend({
     };
 
     model = em.get('StyleManager').getModelToStyle(model);
+    console.log('AFTER getModelToStyle');
     state && appendStateRule(model.getStyle());
     pt.model = model;
     pt.trigger('update');
