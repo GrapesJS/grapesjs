@@ -35,7 +35,7 @@ module.exports = {
         fixtures = document.body.firstChild;
         gjs = grapesjs.init({
           stylePrefix: '',
-          storageManager: { autoload: 0, type: 'none' },
+          storageManager: { autoload: 0, type: 0 },
           assetManager: {
             storageType: 'none'
           },
@@ -43,7 +43,7 @@ module.exports = {
         });
       });
 
-      describe('Interaction with Components', () => {
+      describe.only('Interaction with Components', () => {
         beforeEach(function() {
           components = gjs.editor
             .get('DomComponents')

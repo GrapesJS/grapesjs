@@ -373,9 +373,6 @@ module.exports = Backbone.View.extend({
    * @return {Boolean}
    */
   isTargetStylable(target) {
-    if (this.model.get('id') == 'flex-width') {
-      //debugger;
-    }
     const trg = target || this.getTarget();
     const model = this.model;
     const property = model.get('property');
