@@ -36,6 +36,7 @@ Newsletter Demo - http://grapesjs.com/demo-newsletter-editor.html
 * [Plugins](#plugins)
 * [Support](#support)
 * [Changelog](https://github.com/artf/grapesjs/releases)
+* [Contributing](https://github.com/artf/grapesjs/blob/master/CONTRIBUTING.md)
 * [License](#license)
 
 
