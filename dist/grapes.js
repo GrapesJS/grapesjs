@@ -4233,7 +4233,7 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
     this.config = opt.config || {};
     this.ccid = Component.createId(this);
     this.set('attributes', this.get('attributes') || {});
-    this.on('destroy', this.handleRemove);
+    this.on('remove', this.handleRemove);
     this.listenTo(this, 'change:script', this.scriptUpdated);
     this.listenTo(this, 'change:traits', this.traitsUpdated);
     this.listenTo(this, 'change:tagName', this.tagUpdated);
@@ -4851,7 +4851,7 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
   emitUpdate: function emitUpdate(property) {
     var em = this.em;
     var event = 'component:update' + (property ? ':' + property : '');
-    em && em.trigger(event, this.model);
+    em && em.trigger(event, this);
   }
 }, {
   /**
@@ -5274,9 +5274,6 @@ module.exports = Backbone.View.extend({
    * @return {Boolean}
    */
   isTargetStylable: function isTargetStylable(target) {
-    if (this.model.get('id') == 'flex-width') {
-      //debugger;
-    }
     var trg = target || this.getTarget();
     var model = this.model;
     var property = model.get('property');
@@ -20272,20 +20269,35 @@ module.exports = function () {
 
       if (em) {
         var config = em.getConfig();
+        var um = em.get('UndoManager');
         var cssC = em.get('CssComposer');
         var state = !config.devicePreviewMode ? model.get('state') : '';
         var valid = classes.getStyleable();
         var hasClasses = valid.length;
         var opts = { state: state };
+        var rule = void 0;
 
         if (hasClasses) {
           var deviceW = em.getCurrentMedia();
-          var CssRule = cssC.get(valid, state, deviceW);
-          if (CssRule) return CssRule;
+          rule = cssC.get(valid, state, deviceW);
+
+          if (!rule) {
+            // I stop undo manager here as after adding the CSSRule (generally after
+            // selecting the component) and calling undo() it will remove the rule from
+            // the collection, therefore updating it in style manager will not affect it
+            // #268
+            um.stop();
+            rule = cssC.add(valid, state, deviceW);
+            rule.setStyle(model.getStyle());
+            model.setStyle({});
+            um.start();
+          }
         } else if (config.avoidInlineStyle) {
-          var rule = cssC.getIdRule(id, opts);
-          return rule ? rule : cssC.setIdRule(id, {}, opts);
+          rule = cssC.getIdRule(id, opts);
+          !rule && (rule = cssC.setIdRule(id, {}, opts));
         }
+
+        rule && (model = rule);
       }
 
       return model;
@@ -21388,7 +21400,7 @@ module.exports = __webpack_require__(44).extend({
   getPreview: function getPreview() {
     var pfx = this.pfx;
     var src = this.model.get('src');
-    return '\n      <div class="' + pfx + 'preview" style="background-image: url(' + src + ');"></div>\n      <div class="' + pfx + 'preview-bg ' + this.ppfx + 'checker-bg"></div>\n    ';
+    return '\n      <div class="' + pfx + 'preview" style="background-image: url(\'' + src + '\');"></div>\n      <div class="' + pfx + 'preview-bg ' + this.ppfx + 'checker-bg"></div>\n    ';
   },
   getInfo: function getInfo() {
     var pfx = this.pfx;
@@ -23370,7 +23382,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.13.5',
+    version: '0.13.6',
 
     /**
      * Initializes an editor based on passed options
@@ -24185,6 +24197,16 @@ module.exports = {
   // When `avoidInlineStyle` is true all styles are inserted inside the css rule
   avoidInlineStyle: 0,
 
+  // (experimental)
+  // The structure of components is always on the screen but it's not the same
+  // for style rules. When you delete a component you might leave a lot of styles
+  // which will never be used again, therefore they might be removed.
+  // With this option set to true, styles not used from the CSS generator (so in
+  // any case where `CssGenerator.build` is used) will be removed automatically.
+  // But be careful, not always leaving the style not used mean you wouldn't
+  // use it later, but this option comes really handy when deal with big templates.
+  clearStyles: 0,
+
   // Dom element
   el: '',
 
@@ -24329,6 +24351,7 @@ module.exports = Backbone.Model.extend({
     this.config = c;
     this.set('Config', c);
     this.set('modules', []);
+    this.set('toLoad', []);
 
     if (c.el && c.fromElement) this.config.components = c.el.innerHTML;
 
@@ -30402,7 +30425,8 @@ module.exports = __webpack_require__(0).Model.extend({
     var em = this.get('em');
     var complete = this.get('onComplete');
     var typeJson = this.get('contentTypeJson');
-    var res = typeJson && typeof text === 'string' ? JSON.parse(text) : text;
+    var parsable = text && typeof text === 'string';
+    var res = typeJson && parsable ? JSON.parse(text) : text;
     complete && complete(res);
     clb && clb(res);
     em && em.trigger('storage:response', res);
@@ -33043,44 +33067,50 @@ module.exports = __webpack_require__(0).Model.extend({
     var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
     var cssc = opts.cssc;
-    this.em = opts.em || '';
+    var em = opts.em || '';
+    this.em = em;
     this.compCls = [];
     this.ids = [];
     var code = this.buildFromModel(model, opts);
 
     if (cssc) {
-      var rules = cssc.getAll();
-      var mediaRules = {};
+      (function () {
+        var rules = cssc.getAll();
+        var mediaRules = {};
+        var dump = [];
 
-      rules.each(function (rule) {
-        var media = rule.get('mediaText');
+        rules.each(function (rule) {
+          var media = rule.get('mediaText');
 
-        // If media is setted, I'll render it later
-        if (media) {
-          var mRules = mediaRules[media];
-          if (mRules) {
-            mRules.push(rule);
-          } else {
-            mediaRules[media] = [rule];
+          // If media is setted, I'll render it later
+          if (media) {
+            var mRules = mediaRules[media];
+            if (mRules) {
+              mRules.push(rule);
+            } else {
+              mediaRules[media] = [rule];
+            }
+            return;
           }
-          return;
-        }
 
-        code += _this2.buildFromRule(rule);
-      });
-
-      // Get media rules
-      for (var media in mediaRules) {
-        var rulesStr = '';
-        var mRules = mediaRules[media];
-        mRules.forEach(function (rule) {
-          return rulesStr += _this2.buildFromRule(rule);
+          code += _this2.buildFromRule(rule, dump);
         });
 
-        if (rulesStr) {
-          code += '@media ' + media + '{' + rulesStr + '}';
+        // Get media rules
+        for (var media in mediaRules) {
+          var rulesStr = '';
+          var mRules = mediaRules[media];
+          mRules.forEach(function (rule) {
+            return rulesStr += _this2.buildFromRule(rule, dump);
+          });
+
+          if (rulesStr) {
+            code += '@media ' + media + '{' + rulesStr + '}';
+          }
         }
-      }
+
+        em && em.getConfig('clearStyles') && rules.remove(dump);
+      })();
     }
 
     return code;
@@ -33092,7 +33122,7 @@ module.exports = __webpack_require__(0).Model.extend({
    * @param {Model} rule
    * @return {string} CSS string
    */
-  buildFromRule: function buildFromRule(rule) {
+  buildFromRule: function buildFromRule(rule, dump) {
     var _this3 = this;
 
     var result = '';
@@ -33114,6 +33144,8 @@ module.exports = __webpack_require__(0).Model.extend({
       if (style) {
         result += selectorStr + '{' + style + '}';
       }
+    } else {
+      dump.push(rule);
     }
 
     return result;
@@ -39793,7 +39825,7 @@ module.exports = Backbone.View.extend({
     body.removeChild(dummy);
     this.propTarget = target;
     var coll = this.collection;
-    var events = 'change:selectedComponent component:update:classes change:device';
+    var events = 'change:selectedComponent component:update:classes component:update:state change:device';
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.render);
     this.listenTo(this.target, events, this.targetUpdated);
@@ -39817,42 +39849,34 @@ module.exports = Backbone.View.extend({
    */
   targetUpdated: function targetUpdated() {
     var em = this.target;
-    var model = em.getSelected();
-    var um = em.get('UndoManager');
-    var cc = em.get('CssComposer');
-    var avoidInline = em.getConfig('avoidInlineStyle');
-
-    if (!model) {
-      return;
-    }
-
-    var id = model.getId();
-    var config = em.get('Config');
-    var classes = model.get('classes');
     var pt = this.propTarget;
+    var model = em.getSelected();
+    if (!model) return;
+
+    var config = em.get('Config');
     var state = !config.devicePreviewMode ? model.get('state') : '';
-    var opts = { state: state };
-    var stateStr = state ? ':' + state : null;
-    var view = model.view;
-    var media = em.getCurrentMedia();
+    var el = model.getEl();
     pt.helper = null;
 
-    if (view) {
-      pt.computed = window.getComputedStyle(view.el, state ? ':' + state : null);
+    // Create computed style container
+    if (el) {
+      var stateStr = state ? ':' + state : null;
+      pt.computed = window.getComputedStyle(el, stateStr);
     }
 
+    // Create a new rule for the state as a helper
     var appendStateRule = function appendStateRule() {
       var style = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-      var sm = em.get('SelectorManager');
-      var helperClass = sm.add('hc-state');
-      var helperRule = cc.get([helperClass]);
+      var cc = em.get('CssComposer');
+      var helperCls = 'hc-state';
+      var rules = cc.getAll();
+      var helperRule = cc.getClassRule(helperCls);
 
       if (!helperRule) {
-        helperRule = cc.add([helperClass]);
+        helperRule = cc.setClassRule(helperCls);
       } else {
         // I will make it last again, otherwise it could be overridden
-        var rules = cc.getAll();
         rules.remove(helperRule);
         rules.add(helperRule);
       }
@@ -39862,54 +39886,8 @@ module.exports = Backbone.View.extend({
       pt.helper = helperRule;
     };
 
-    // If true the model will be always a rule
-    if (avoidInline) {
-      var ruleId = cc.getIdRule(id, opts);
-
-      if (!ruleId) {
-        model = cc.setIdRule(id, {}, opts);
-      } else {
-        model = ruleId;
-      }
-    }
-
-    if (classes.length) {
-      var valid = classes.getStyleable();
-      var iContainer = cc.get(valid, state, media);
-
-      if (!iContainer && valid.length) {
-        // I stop undo manager here as after adding the CSSRule (generally after
-        // selecting the component) and calling undo() it will remove the rule from
-        // the collection, therefore updating it in style manager will not affect it
-        // #268
-        um.stop();
-        iContainer = cc.add(valid, state, media);
-        iContainer.setStyle(model.getStyle());
-        model.setStyle({});
-        um.start();
-      }
-
-      if (!iContainer) {
-        // In this case it's just a Component without any valid selector
-        pt.model = model;
-        pt.trigger('update');
-        return;
-      }
-
-      // If the state is not empty, there should be a helper rule in play
-      // The helper rule will get the same style of the iContainer
-      state && appendStateRule(iContainer.getStyle());
-
-      pt.model = iContainer;
-      pt.trigger('update');
-      return;
-    }
-
-    if (state) {
-      var ruleState = cc.getIdRule(id, opts);
-      state && appendStateRule(ruleState && ruleState.getStyle());
-    }
-
+    model = em.get('StyleManager').getModelToStyle(model);
+    state && appendStateRule(model.getStyle());
     pt.model = model;
     pt.trigger('update');
   },
