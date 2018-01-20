@@ -1,3 +1,5 @@
+import { isObject } from 'underscore';
+
 module.exports = ({ $, Backbone }) => {
   if (Backbone) {
     const ViewProt = Backbone.View.prototype;
@@ -60,46 +62,6 @@ module.exports = ({ $, Backbone }) => {
         ? [namespaceArray[0], namespaceArray.slice(1)]
         : [null, namespaceArray];
     };
-    /*
-    const CashEvent = function(node, eventName, namespaces, delegate, originalCallback, runOnce) {
-
-      const eventCache = getData(node,'_cashEvents') || setData(node, '_cashEvents', {});
-      const remove = function(c, namespace){
-        if ( c && originalCallback !== c ) { return; }
-        if ( namespace && this.namespaces.indexOf(namespace) < 0 ) { return; }
-        node.removeEventListener(eventName, callback);
-      };
-      const callback = function(e) {
-        var t = this;
-        if (delegate) {
-          t = e.target;
-
-          while (t && !matches(t, delegate)) {
-            if (t === this) {
-              return (t = false);
-            }
-            t = t.parentNode;
-          }
-        }
-
-        if (t) {
-          originalCallback.call(t, e, e.data);
-          if ( runOnce ) { remove(); }
-        }
-
-      };
-
-      this.remove = remove;
-      this.namespaces = namespaces;
-
-      node.addEventListener(eventName, callback);
-
-      eventCache[eventName] = eventCache[eventName] || [];
-      eventCache[eventName].push(this);
-
-      return this;
-    }
-    */
 
     const on = $.prototype.on;
     const off = $.prototype.off;
@@ -226,7 +188,15 @@ module.exports = ({ $, Backbone }) => {
       });
 
     fn.unbind = function(ev, h) {
-      return this.off(ev, h);
+      if (isObject(ev)) {
+        for (let name in ev) {
+          ev.hasOwnProperty(name) && this.off(name, ev[name]);
+        }
+
+        return this;
+      } else {
+        return this.off(ev, h);
+      }
     };
 
     fn.click = function(h) {
