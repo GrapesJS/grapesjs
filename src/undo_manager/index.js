@@ -30,6 +30,28 @@ module.exports = () => {
       this.em = em;
       um = new UndoManager({ track: true, register: [] });
       um.changeUndoType('change', { condition: false });
+      um.changeUndoType('add', {
+        on(model, collection, options = {}) {
+          if (options.avoidStore) return;
+          return {
+            object: collection,
+            before: undefined,
+            after: model,
+            options: { ...options }
+          };
+        }
+      });
+      um.changeUndoType('remove', {
+        on(model, collection, options = {}) {
+          if (options.avoidStore) return;
+          return {
+            object: collection,
+            before: model,
+            after: undefined,
+            options: { ...options }
+          };
+        }
+      });
       const customUndoType = {
         on(object, value, opt = {}) {
           !beforeCache && (beforeCache = object.previousAttributes());

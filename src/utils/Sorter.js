@@ -311,12 +311,14 @@ module.exports = Backbone.View.extend({
     if (dropContent && em) {
       if (!dropModel) {
         let comps = em.get('DomComponents').getComponents();
-        let tempModel = comps.add(dropContent, {
+        const opts = {
+          avoidStore: 1,
           avoidChildren: 1,
           avoidUpdateStyle: 1,
           temporary: 1
-        });
-        dropModel = comps.remove(tempModel, { temporary: 1 });
+        };
+        let tempModel = comps.add(dropContent, opts);
+        dropModel = comps.remove(tempModel, opts);
         this.dropModel = dropModel instanceof Array ? dropModel[0] : dropModel;
       }
       return dropModel;
@@ -972,7 +974,7 @@ module.exports = Backbone.View.extend({
       var opts = { at: index, noIncrement: 1 };
 
       if (!dropContent) {
-        modelTemp = targetCollection.add({}, opts);
+        modelTemp = targetCollection.add({}, { ...opts, avoidStore: 1 });
 
         if (model) {
           modelToDrop = model.collection.remove(model);
@@ -986,7 +988,7 @@ module.exports = Backbone.View.extend({
       created = targetCollection.add(modelToDrop, opts);
 
       if (!dropContent) {
-        targetCollection.remove(modelTemp);
+        targetCollection.remove(modelTemp, { avoidStore: 1 });
       } else {
         this.dropContent = null;
       }
