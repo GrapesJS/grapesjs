@@ -26,9 +26,10 @@ module.exports = Component.extend(
 
     initToolbar(...args) {
       Component.prototype.initToolbar.apply(this, args);
+      const em = this.em;
 
-      if (this.sm && this.sm.get) {
-        var cmd = this.sm.get('Commands');
+      if (em) {
+        var cmd = em.get('Commands');
         var cmdName = 'image-editor';
 
         // Add Image Editor button only if the default command exists

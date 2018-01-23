@@ -8,6 +8,9 @@ module.exports = {
   // CSS string or object of rules
   style: '',
 
+  // If true, will fetch HTML and CSS from selected container
+  fromElement: 0,
+
   // Show an alert before unload the page with unsaved changes
   noticeOnUnload: true,
 

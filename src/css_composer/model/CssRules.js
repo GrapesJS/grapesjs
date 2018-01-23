@@ -4,13 +4,13 @@ var CssRule = require('./CssRule');
 module.exports = Backbone.Collection.extend({
   initialize(models, opt) {
     // Inject editor
-    if (opt && opt.sm) this.editor = opt.sm;
+    if (opt && opt.em) this.editor = opt.em;
 
     // Not used
     this.model = (attrs, options) => {
       var model;
 
-      if (!options.sm && opt && opt.sm) options.sm = opt.sm;
+      if (!options.em && opt && opt.em) options.em = opt.em;
 
       switch (1) {
         default:

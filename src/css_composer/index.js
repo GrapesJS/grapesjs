@@ -68,7 +68,6 @@ module.exports = () => {
       var elStyle = (c.em && c.em.config.style) || '';
       c.rules = elStyle || c.rules;
 
-      c.sm = c.em;
       em = c.em;
       rules = new CssRules([], c);
       rulesView = new CssRulesView({

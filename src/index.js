@@ -12,9 +12,6 @@ module.exports = (() => {
     // If true renders editor on init
     autorender: 1,
 
-    // If true, will fetch HTML and CSS from selected container
-    fromElement: 0,
-
     // Array of plugins to init
     plugins: [],
 
@@ -36,12 +33,10 @@ module.exports = (() => {
      * Initializes an editor based on passed options
      * @param {Object} config Configuration object
      * @param {string|HTMLElement} config.container Selector which indicates where render the editor
-     * @param {Object|string} config.components='' HTML string or Component model in JSON format
-     * @param {Object|string} config.style='' CSS string or CSS model in JSON format
-     * @param {Boolean} [config.fromElement=false] If true, will fetch HTML and CSS from the selected container
+     * @param {Boolean} [config.autorender=true] If true, auto-render the content
      * @param {Array} [config.plugins=[]] Array of plugins to execute on start
      * @param {Object} [config.pluginsOpts={}] Custom options for plugins
-     * @return {grapesjs.Editor} GrapesJS editor instance
+     * @return {Editor} Editor instance
      * @example
      * var editor = grapesjs.init({
      *   container: '#myeditor',
@@ -52,7 +47,7 @@ module.exports = (() => {
     init(config = {}) {
       const els = config.container;
       if (!els) throw new Error("'container' is required");
-      config = { ...config, ...defaultConfig };
+      config = { ...defaultConfig, ...config };
       const ilEl = els instanceof window.HTMLElement;
       config.el = ilEl ? els : document.querySelector(els);
       const editor = new Editor(config).init();

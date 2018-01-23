@@ -141,7 +141,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     initialize(props = {}, opt = {}) {
-      const em = opt.sm || opt.em || '';
+      const em = opt.em;
 
       // Propagate properties from parent if indicated
       const parent = this.parent();
@@ -171,7 +171,6 @@ const Component = Backbone.Model.extend(Styleable).extend(
 
       opt.em = em;
       this.opt = opt;
-      this.sm = em;
       this.em = em;
       this.config = opt.config || {};
       this.ccid = Component.createId(this);
@@ -555,10 +554,11 @@ const Component = Backbone.Model.extend(Styleable).extend(
      */
     normalizeClasses(arr) {
       var res = [];
+      const em = this.em;
 
-      if (!this.sm.get) return;
+      if (!em) return;
 
-      var clm = this.sm.get('SelectorManager');
+      var clm = em.get('SelectorManager');
       if (!clm) return;
 
       arr.forEach(val => {
@@ -734,7 +734,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
         scr = scrStr.trim();
       }
 
-      var config = this.sm.config || {};
+      var config = this.em.getConfig();
       var tagVarStart = escapeRegExp(config.tagVarStart || '{[ ');
       var tagVarEnd = escapeRegExp(config.tagVarEnd || ' ]}');
       var reg = new RegExp(`${tagVarStart}([\\w\\d-]*)${tagVarEnd}`, 'g');
