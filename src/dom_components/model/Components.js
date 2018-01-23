@@ -63,7 +63,7 @@ module.exports = Backbone.Collection.extend({
 
   onAdd(model, c, opts) {
     const em = this.editor;
-    const style = model.get('style');
+    const style = model.getStyle();
     const avoidInline = em && em.getConfig('avoidInlineStyle');
 
     if (
@@ -71,14 +71,12 @@ module.exports = Backbone.Collection.extend({
       !avoidInline &&
       em &&
       em.get &&
-      em.get('Config').forceClass
+      em.getConfig('forceClass')
     ) {
-      var cssC = this.editor.get('CssComposer');
-      var newClass = this.editor.get('SelectorManager').add(model.cid);
-      model.set({ style: {} });
-      model.get('classes').add(newClass);
-      var rule = cssC.add(newClass);
-      rule.set('style', style);
+      const name = model.cid;
+      const rule = em.get('CssComposer').setClassRule(name, style);
+      model.setStyle({});
+      model.addClass(name);
     }
   }
 });
