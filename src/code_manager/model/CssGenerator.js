@@ -86,8 +86,9 @@ module.exports = require('backbone').Model.extend({
    */
   buildFromRule(rule, dump) {
     let result = '';
-    const selectorStr = rule.selectorsToString();
     const selectorStrNoAdd = rule.selectorsToString({ skipAdd: 1 });
+    const selectorsAdd = rule.get('selectorsAdd');
+    const singleAtRule = rule.get('singleAtRule');
     let found;
 
     // This will not render a rule if there is no its component
@@ -98,12 +99,9 @@ module.exports = require('backbone').Model.extend({
       }
     });
 
-    if ((selectorStrNoAdd && found) || rule.get('selectorsAdd')) {
-      const style = rule.styleToString();
-
-      if (style) {
-        result += `${selectorStr}{${style}}`;
-      }
+    if ((selectorStrNoAdd && found) || selectorsAdd || singleAtRule) {
+      const block = rule.getDeclaration();
+      block && (result += block);
     } else {
       dump.push(rule);
     }

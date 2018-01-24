@@ -83,6 +83,24 @@ module.exports = Backbone.Model.extend(Styleable).extend({
   },
 
   /**
+   * Get declaration block
+   * @param {Object} [opts={}] Options
+   * @return {string}
+   */
+  getDeclaration(opts = {}) {
+    let result = '';
+    const selectors = this.selectorsToString();
+    const style = this.styleToString(opts);
+    const singleAtRule = this.get('singleAtRule');
+
+    if ((selectors || singleAtRule) && style) {
+      result = singleAtRule ? style : `${selectors}{${style}}`;
+    }
+
+    return result;
+  },
+
+  /**
    * Returns CSS string of the rule
    * @param {Object} [opts={}] Options
    * @return {string}
@@ -90,13 +108,8 @@ module.exports = Backbone.Model.extend(Styleable).extend({
   toCSS(opts = {}) {
     let result = '';
     const atRule = this.getAtRule();
-    const style = this.styleToString(opts);
-    const selectors = this.selectorsToString();
-    const singleAtRule = this.get('singleAtRule');
-
-    if (selectors && style) {
-      result = singleAtRule ? style : `${selectors}{${style}}`;
-    }
+    const block = this.getDeclaration(opts);
+    block && (result = block);
 
     if (atRule && result) {
       result = `${atRule}{${result}}`;

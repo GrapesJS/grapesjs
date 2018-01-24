@@ -102,7 +102,7 @@ module.exports = config => ({
       let singleAtRule = 0;
       let atRuleType = '';
       let condition = '';
-      // keyText if for CSSKeyframeRule
+      // keyText is for CSSKeyframeRule
       let sels = node.selectorText || node.keyText;
       const isSingleAtRule = singleAtRules.indexOf(type) >= 0;
 
@@ -169,6 +169,7 @@ module.exports = config => ({
           result.push(model);
         }
       }
+      // console.log('LAST PUSH', result[result.length - 1]);
     }
 
     return result;
