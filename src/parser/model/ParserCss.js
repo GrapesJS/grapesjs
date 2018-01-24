@@ -1,3 +1,20 @@
+import { keys } from 'underscore';
+
+// At-rules
+// https://developer.mozilla.org/it/docs/Web/API/CSSRule#Type_constants
+const atRules = {
+  4: 'media',
+  5: 'font-face',
+  6: 'page',
+  7: 'keyframes',
+  11: 'counter-style',
+  12: 'supports',
+  13: 'document',
+  14: 'font-feature-values',
+  15: 'viewport'
+};
+const atRuleKeys = keys(atRules);
+
 module.exports = config => ({
   /**
    * Parse selector string to array.
@@ -37,28 +54,35 @@ module.exports = config => ({
 
   /**
    * Fetch data from node
-   * @param  {StyleSheet|CSSMediaRule} el
+   * @param  {StyleSheet|CSSRule} el
    * @return {Array<Object>}
    */
   parseNode(el) {
     var result = [];
-    var nodes = el.cssRules;
+    var nodes = el.cssRules || [];
 
     for (var i = 0, len = nodes.length; i < len; i++) {
       var node = nodes[i];
       var sels = node.selectorText;
       var selsAdd = [];
+      const type = node.type.toString();
 
-      // It's a CSSMediaRule
-      if (node.cssRules) {
+      if (atRuleKeys.indexOf(type) >= 0) {
+        console.log(node);
         var subRules = this.parseNode(node);
-        var mediaText = node.media.mediaText;
+        const condition =
+          node.conditionText ||
+          (node.media && node.media.mediaText) ||
+          node.selectorText ||
+          node.name ||
+          '';
 
         for (var s = 0, lens = subRules.length; s < lens; s++) {
           var subRule = subRules[s];
-          subRule.mediaText = mediaText ? mediaText.trim() : '';
+          subRule.mediaText = condition.trim();
+          subRule.atRuleType = atRules[type];
         }
-
+        console.log(subRules);
         result = result.concat(subRules);
       }
 
