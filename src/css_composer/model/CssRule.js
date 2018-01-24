@@ -26,6 +26,10 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     // Type of at-rule, eg. 'media', 'font-face', etc.
     atRuleType: '',
 
+    // This particolar property is used only on at-rules, like 'page' or
+    // 'font-face', where the block containes only style declarations
+    noSelectors: 0,
+
     // If true, sets '!important' on all properties
     // You can use an array to specify properties to set important
     // Used in view
@@ -87,9 +91,10 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     const atRule = this.getAtRule();
     const style = this.styleToString(opts);
     const selectors = this.selectorsToString();
+    const noSelectors = this.get('noSelectors');
 
     if (selectors && style) {
-      result = `${selectors}{${style}}`;
+      result = noSelectors ? style : `${selectors}{${style}}`;
     }
 
     if (atRule && result) {

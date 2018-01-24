@@ -53,6 +53,25 @@ module.exports = config => ({
   },
 
   /**
+   * Parse style declarations of the node
+   * @param {CSSRule} node
+   * @return {Object}
+   */
+  parseStyle(node) {
+    const stl = node.style;
+    const style = {};
+
+    for (var i = 0, len = stl.length; i < len; i++) {
+      const propName = stl[i];
+      const propValue = stl.getPropertyValue(propName);
+      const important = stl.getPropertyPriority(propName);
+      style[propName] = `${propValue}${important ? ` !${important}` : ''}`;
+    }
+
+    return style;
+  },
+
+  /**
    * Fetch data from node
    * @param  {StyleSheet|CSSRule} el
    * @return {Array<Object>}
@@ -73,8 +92,8 @@ module.exports = config => ({
         const condition =
           node.conditionText ||
           (node.media && node.media.mediaText) ||
-          node.selectorText ||
           node.name ||
+          sels ||
           '';
 
         for (var s = 0, lens = subRules.length; s < lens; s++) {
@@ -92,16 +111,8 @@ module.exports = config => ({
       sels = selsParsed.result;
       selsAdd = selsParsed.add;
 
-      // Create style object from the big one
-      var stl = node.style;
-      var style = {};
-
-      for (var j = 0, len2 = stl.length; j < len2; j++) {
-        const propName = stl[j];
-        const propValue = stl.getPropertyValue(propName);
-        const important = stl.getPropertyPriority(propName);
-        style[propName] = `${propValue}${important ? ` !${important}` : ''}`;
-      }
+      // Create the style object from the big one
+      const style = this.parseStyle(node);
 
       var lastRule = '';
       // For each group of selectors
