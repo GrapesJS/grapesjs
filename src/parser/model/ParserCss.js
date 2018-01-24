@@ -102,7 +102,8 @@ module.exports = config => ({
       let singleAtRule = 0;
       let atRuleType = '';
       let condition = '';
-      let sels = node.selectorText;
+      // keyText if for CSSKeyframeRule
+      let sels = node.selectorText || node.keyText;
       const isSingleAtRule = singleAtRules.indexOf(type) >= 0;
 
       // Check if the node is an at-rule
@@ -110,7 +111,6 @@ module.exports = config => ({
         singleAtRule = 1;
         atRuleType = atRules[type];
         condition = this.parseCondition(node);
-        console.log(node);
       } else if (atRuleKeys.indexOf(type) >= 0) {
         var subRules = this.parseNode(node);
         condition = this.parseCondition(node);
@@ -120,7 +120,6 @@ module.exports = config => ({
           subRule.mediaText = condition;
           subRule.atRuleType = atRules[type];
         }
-
         result = result.concat(subRules);
       }
 
@@ -167,8 +166,6 @@ module.exports = config => ({
           });
         }
       }
-
-      console.log('Last PUSH', result[result.length - 1]);
     }
 
     return result;
