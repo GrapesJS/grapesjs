@@ -82,12 +82,19 @@ module.exports = {
       });
 
       it('toCSS with a generic at-rule', () => {
-        obj.set('atRuleType', 'font-face');
+        obj.set('atRuleType', 'supports');
         obj.get('selectors').add({ name: 'test1' });
         obj.setStyle({ 'font-family': 'Open Sans' });
         expect(obj.toCSS()).toEqual(
-          `@font-face{.test1{font-family:Open Sans;}}`
+          `@supports{.test1{font-family:Open Sans;}}`
         );
+      });
+
+      it('toCSS with a generic single at-rule', () => {
+        obj.set('atRuleType', 'font-face');
+        obj.set('singleAtRule', 1);
+        obj.setStyle({ 'font-family': 'Sans' });
+        expect(obj.toCSS()).toEqual(`@font-face{font-family:Sans;}`);
       });
 
       it('toCSS with a generic at-rule and condition', () => {
