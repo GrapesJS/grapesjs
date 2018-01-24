@@ -5,7 +5,7 @@ var Selector = require('selector_manager/model/Selector');
 
 module.exports = {
   run() {
-    describe.only('CssRule', () => {
+    describe('CssRule', () => {
       let obj;
 
       beforeEach(() => {
@@ -87,6 +87,16 @@ module.exports = {
         obj.setStyle({ 'font-family': 'Open Sans' });
         expect(obj.toCSS()).toEqual(
           `@font-face{.test1{font-family:Open Sans;}}`
+        );
+      });
+
+      it('toCSS with a generic at-rule and condition', () => {
+        obj.set('atRuleType', 'font-face');
+        obj.set('mediaText', 'some-condition');
+        obj.get('selectors').add({ name: 'test1' });
+        obj.setStyle({ 'font-family': 'Open Sans' });
+        expect(obj.toCSS()).toEqual(
+          `@font-face some-condition{.test1{font-family:Open Sans;}}`
         );
       });
     });

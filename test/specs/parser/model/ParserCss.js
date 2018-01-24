@@ -2,7 +2,7 @@ const ParserCss = require('parser/model/ParserCss');
 
 module.exports = {
   run() {
-    describe('ParserCss', () => {
+    describe.only('ParserCss', () => {
       var obj;
 
       beforeEach(() => {

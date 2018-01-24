@@ -133,7 +133,9 @@ module.exports = config => ({
       // For each group of selectors
       for (var k = 0, len3 = sels.length; k < len3; k++) {
         var selArr = sels[k];
-        var model = { singleAtRule, atRuleType };
+        var model = {};
+        singleAtRule && (model.singleAtRule = singleAtRule);
+        atRuleType && (model.atRuleType = atRuleType);
 
         //Isolate state from selector
         var stateArr = selArr[selArr.length - 1].split(/:(.+)/);
@@ -156,14 +158,15 @@ module.exports = config => ({
         if (lastRule) {
           lastRule.selectorsAdd = selsAddStr;
         } else {
-          result.push({
-            singleAtRule,
-            atRuleType,
+          const model = {
             selectors: [],
             selectorsAdd: selsAddStr,
-            mediaText: condition,
             style
-          });
+          };
+          singleAtRule && (model.singleAtRule = singleAtRule);
+          atRuleType && (model.atRuleType = atRuleType);
+          condition && (model.mediaText = condition);
+          result.push(model);
         }
       }
     }
