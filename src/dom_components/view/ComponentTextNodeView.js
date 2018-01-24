@@ -1,3 +1,1 @@
-var Backbone = require('backbone');
-
-module.exports = Backbone.View.extend({});
+module.exports = require('backbone').View.extend({});

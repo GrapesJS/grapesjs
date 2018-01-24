@@ -1,9 +1,10 @@
-var Backbone = require('backbone');
-var CssRuleView = require('./CssRuleView');
+const CssRuleView = require('./CssRuleView');
+const CssGroupRuleView = require('./CssGroupRuleView');
 
-module.exports = Backbone.View.extend({
+module.exports = require('backbone').View.extend({
   initialize(o) {
     const config = o.config || {};
+    this.atRules = {};
     this.config = config;
     this.em = config.em;
     this.pfx = config.stylePrefix || '';
@@ -32,20 +33,44 @@ module.exports = Backbone.View.extend({
   addToCollection(model, fragmentEl) {
     var fragment = fragmentEl || null;
     var viewObject = CssRuleView;
+    var config = this.config;
+    let rendered, view;
+    const opts = { model, config };
 
-    var view = new viewObject({
-      model,
-      config: this.config
-    });
-    var rendered = view.render().el;
+    // I have to render keyframes of the same name together
+    // Unfortunately at the moment I didn't find the way of appending them
+    // if not staticly, via appendData
+    if (model.get('atRuleType') == 'keyframes') {
+      const atRule = model.getAtRule();
+      let atRuleEl = this.atRules[atRule];
 
-    if (fragment) fragment.appendChild(rendered);
-    else this.$el.append(rendered);
+      if (!atRuleEl) {
+        const styleEl = document.createElement('style');
+        atRuleEl = document.createTextNode('');
+        styleEl.appendChild(document.createTextNode(`${atRule}{`));
+        styleEl.appendChild(atRuleEl);
+        styleEl.appendChild(document.createTextNode(`}`));
+        this.atRules[atRule] = atRuleEl;
+        rendered = styleEl;
+      }
+
+      view = new CssGroupRuleView(opts);
+      atRuleEl.appendData(view.render().el.textContent);
+    } else {
+      view = new CssRuleView(opts);
+      rendered = view.render().el;
+    }
+
+    if (rendered) {
+      if (fragment) fragment.appendChild(rendered);
+      else this.$el.append(rendered);
+    }
 
     return rendered;
   },
 
   render() {
+    this.atRules = {};
     const $el = this.$el;
     const frag = document.createDocumentFragment();
     $el.empty();
