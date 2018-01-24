@@ -1,10 +1,11 @@
+import { on, off } from 'utils/mixins';
 const FrameView = require('./FrameView');
 const $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
   initialize(o) {
     _.bindAll(this, 'renderBody', 'onFrameScroll', 'clearOff');
-    window.onscroll = this.clearOff;
+    on(window, 'scroll resize', this.clearOff);
     this.config = o.config || {};
     this.em = this.config.em || {};
     this.ppfx = this.config.pStylePrefix || '';

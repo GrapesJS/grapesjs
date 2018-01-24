@@ -2,7 +2,7 @@ const ParserCss = require('parser/model/ParserCss');
 
 module.exports = {
   run() {
-    describe.only('ParserCss', () => {
+    describe('ParserCss', () => {
       var obj;
 
       beforeEach(() => {
@@ -133,6 +133,7 @@ module.exports = {
         var str =
           '@media only screen and (max-width: 992px){ .test1.test2:hover{ color:red }}';
         var result = {
+          atRuleType: 'media',
           selectors: ['test1', 'test2'],
           style: { color: 'red' },
           state: 'hover',
@@ -145,6 +146,7 @@ module.exports = {
       it('Parse rule inside media query', () => {
         var str = '@media (max-width: 992px){ .test1.test2:hover{ color:red }}';
         var result = {
+          atRuleType: 'media',
           selectors: ['test1', 'test2'],
           style: { color: 'red' },
           state: 'hover',
@@ -167,11 +169,13 @@ module.exports = {
             selectors: ['test1', 'test2'],
             style: { color: 'red' },
             state: 'hover',
+            atRuleType: 'media',
             mediaText: '(max-width: 992px)'
           },
           {
             selectors: ['test2'],
             style: { color: 'blue' },
+            atRuleType: 'media',
             mediaText: '(max-width: 992px)'
           }
         ];
