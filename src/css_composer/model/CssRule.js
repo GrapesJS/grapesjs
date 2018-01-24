@@ -61,9 +61,10 @@ module.exports = Backbone.Model.extend(Styleable).extend({
   getAtRule() {
     const type = this.get('atRuleType');
     const condition = this.get('mediaText');
-    return (
-      (type ? `@${type}` : '') + (condition && type ? ` ${condition}` : '')
-    );
+    // Avoid breaks with the last condition
+    const typeStr = type ? `@${type}` : condition ? '@media' : '';
+
+    return typeStr + (condition && typeStr ? ` ${condition}` : '');
   },
 
   /**
