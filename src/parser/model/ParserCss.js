@@ -117,7 +117,7 @@ module.exports = config => ({
 
         for (var s = 0, lens = subRules.length; s < lens; s++) {
           var subRule = subRules[s];
-          subRule.mediaText = condition;
+          condition && (subRule.mediaText = condition);
           subRule.atRuleType = atRules[type];
         }
         result = result.concat(subRules);
@@ -180,22 +180,15 @@ module.exports = config => ({
    * @return {Object|Array<Object>}
    */
   parse(str) {
-    var el = document.createElement('style');
-    /*
-    el.innerHTML = ".cssClass {border: 2px solid black; background-color: blue;} " +
-    ".red, .red2 {color:red; padding:5px} .test1.red {color:black} .red:hover{color: blue} " +
-    "@media screen and (min-width: 480px){ .red{color:white} }";
-    */
+    const el = document.createElement('style');
     el.innerHTML = str;
 
-    // There is no .sheet without adding it to the <head>
+    // There is no .sheet before adding it to the <head>
     document.head.appendChild(el);
-    var sheet = el.sheet;
+    const sheet = el.sheet;
     document.head.removeChild(el);
-    var result = this.parseNode(sheet);
+    const result = this.parseNode(sheet);
 
-    if (result.length == 1) result = result[0];
-
-    return result;
+    return result.length == 1 ? result[0] : result;
   }
 });

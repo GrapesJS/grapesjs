@@ -238,6 +238,43 @@ module.exports = {
         };
         expect(obj.parse(str)).toEqual(result);
       });
+
+      // Can't test keyframes https://github.com/NV/CSSOM/issues/95
+      it.skip('Parse rule with a keyframes at-rule', () => {
+        var str = `@keyframes {
+          from {opacity: 0;}
+          to {opacity: 1;}
+        }`;
+        var result = [
+          {
+            selectors: [],
+            atRuleType: 'keyframes',
+            selectorsAdd: 'from',
+            style: { opacity: '0' }
+          },
+          {
+            selectors: [],
+            atRuleType: 'keyframes',
+            selectorsAdd: 'to',
+            style: { opacity: '1' }
+          }
+        ];
+        expect(obj.parse(str)).toEqual(result);
+      });
+
+      it('Parse rule with font-face at-rule', () => {
+        var str = `@font-face {
+         font-family: "Open Sans";
+        }`;
+        var result = {
+          selectors: [],
+          selectorsAdd: '',
+          atRuleType: 'font-face',
+          singleAtRule: 1,
+          style: { 'font-family': '"Open Sans"' }
+        };
+        expect(obj.parse(str)).toEqual(result);
+      });
     });
   }
 };
