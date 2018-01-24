@@ -133,6 +133,7 @@ module.exports = {
         var str =
           '@media only screen and (max-width: 992px){ .test1.test2:hover{ color:red }}';
         var result = {
+          atRuleType: 'media',
           selectors: ['test1', 'test2'],
           style: { color: 'red' },
           state: 'hover',
@@ -145,6 +146,7 @@ module.exports = {
       it('Parse rule inside media query', () => {
         var str = '@media (max-width: 992px){ .test1.test2:hover{ color:red }}';
         var result = {
+          atRuleType: 'media',
           selectors: ['test1', 'test2'],
           style: { color: 'red' },
           state: 'hover',
@@ -167,11 +169,13 @@ module.exports = {
             selectors: ['test1', 'test2'],
             style: { color: 'red' },
             state: 'hover',
+            atRuleType: 'media',
             mediaText: '(max-width: 992px)'
           },
           {
             selectors: ['test2'],
             style: { color: 'blue' },
+            atRuleType: 'media',
             mediaText: '(max-width: 992px)'
           }
         ];
@@ -231,6 +235,43 @@ module.exports = {
             '--some-color': 'red',
             '--some-width': '55px'
           }
+        };
+        expect(obj.parse(str)).toEqual(result);
+      });
+
+      // Can't test keyframes https://github.com/NV/CSSOM/issues/95
+      it.skip('Parse rule with a keyframes at-rule', () => {
+        var str = `@keyframes {
+          from {opacity: 0;}
+          to {opacity: 1;}
+        }`;
+        var result = [
+          {
+            selectors: [],
+            atRuleType: 'keyframes',
+            selectorsAdd: 'from',
+            style: { opacity: '0' }
+          },
+          {
+            selectors: [],
+            atRuleType: 'keyframes',
+            selectorsAdd: 'to',
+            style: { opacity: '1' }
+          }
+        ];
+        expect(obj.parse(str)).toEqual(result);
+      });
+
+      it('Parse rule with font-face at-rule', () => {
+        var str = `@font-face {
+         font-family: "Open Sans";
+        }`;
+        var result = {
+          selectors: [],
+          selectorsAdd: '',
+          atRuleType: 'font-face',
+          singleAtRule: 1,
+          style: { 'font-family': '"Open Sans"' }
         };
         expect(obj.parse(str)).toEqual(result);
       });

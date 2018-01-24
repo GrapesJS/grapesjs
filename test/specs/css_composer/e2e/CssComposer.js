@@ -140,6 +140,8 @@ module.exports = {
               protected: false
             }
           ],
+          atRuleType: '',
+          singleAtRule: 0,
           important: 0,
           selectorsAdd: '',
           state: '',
@@ -178,6 +180,8 @@ module.exports = {
         rule1Out = JSON.parse(JSON.stringify(rule1Out));
         rule2Out = JSON.parse(JSON.stringify(rule2Out));
         var rule1Result = {
+          atRuleType: '',
+          singleAtRule: 0,
           important: 0,
           mediaText: '',
           selectors: [],
@@ -190,6 +194,8 @@ module.exports = {
           }
         };
         var rule2Result = {
+          atRuleType: '',
+          singleAtRule: 0,
           important: 0,
           mediaText: '',
           selectors: [],

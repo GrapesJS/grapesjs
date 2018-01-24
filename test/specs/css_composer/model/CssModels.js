@@ -74,10 +74,37 @@ module.exports = {
 
       it('toCSS wraps correctly inside media rule', () => {
         const media = '(max-width: 768px)';
+        obj.set('atRuleType', 'media');
         obj.set('mediaText', media);
         obj.get('selectors').add({ name: 'test1' });
         obj.setStyle({ color: 'red' });
         expect(obj.toCSS()).toEqual(`@media ${media}{.test1{color:red;}}`);
+      });
+
+      it('toCSS with a generic at-rule', () => {
+        obj.set('atRuleType', 'supports');
+        obj.get('selectors').add({ name: 'test1' });
+        obj.setStyle({ 'font-family': 'Open Sans' });
+        expect(obj.toCSS()).toEqual(
+          `@supports{.test1{font-family:Open Sans;}}`
+        );
+      });
+
+      it('toCSS with a generic single at-rule', () => {
+        obj.set('atRuleType', 'font-face');
+        obj.set('singleAtRule', 1);
+        obj.setStyle({ 'font-family': 'Sans' });
+        expect(obj.toCSS()).toEqual(`@font-face{font-family:Sans;}`);
+      });
+
+      it('toCSS with a generic at-rule and condition', () => {
+        obj.set('atRuleType', 'font-face');
+        obj.set('mediaText', 'some-condition');
+        obj.get('selectors').add({ name: 'test1' });
+        obj.setStyle({ 'font-family': 'Open Sans' });
+        expect(obj.toCSS()).toEqual(
+          `@font-face some-condition{.test1{font-family:Open Sans;}}`
+        );
       });
     });
 

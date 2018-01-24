@@ -1,3 +1,21 @@
+import { keys } from 'underscore';
+
+// At-rules
+// https://developer.mozilla.org/it/docs/Web/API/CSSRule#Type_constants
+const atRules = {
+  4: 'media',
+  5: 'font-face',
+  6: 'page',
+  7: 'keyframes',
+  11: 'counter-style',
+  12: 'supports',
+  13: 'document',
+  14: 'font-feature-values',
+  15: 'viewport'
+};
+const atRuleKeys = keys(atRules);
+const singleAtRules = ['5', '6', '11', '15'];
+
 module.exports = config => ({
   /**
    * Parse selector string to array.
@@ -14,7 +32,7 @@ module.exports = config => ({
    * //add: ['.test2 .test3']
    * //}
    */
-  parseSelector(str) {
+  parseSelector(str = '') {
     var add = [];
     var result = [];
     var sels = str.split(',');
@@ -36,54 +54,88 @@ module.exports = config => ({
   },
 
   /**
+   * Parse style declarations of the node
+   * @param {CSSRule} node
+   * @return {Object}
+   */
+  parseStyle(node) {
+    const stl = node.style;
+    const style = {};
+
+    for (var i = 0, len = stl.length; i < len; i++) {
+      const propName = stl[i];
+      const propValue = stl.getPropertyValue(propName);
+      const important = stl.getPropertyPriority(propName);
+      style[propName] = `${propValue}${important ? ` !${important}` : ''}`;
+    }
+
+    return style;
+  },
+
+  /**
+   * Get the condition when possible
+   * @param  {CSSRule} node
+   * @return {string}
+   */
+  parseCondition(node) {
+    const condition =
+      node.conditionText ||
+      (node.media && node.media.mediaText) ||
+      node.name ||
+      node.selectorText ||
+      '';
+    return condition.trim();
+  },
+
+  /**
    * Fetch data from node
-   * @param  {StyleSheet|CSSMediaRule} el
+   * @param  {StyleSheet|CSSRule} el
    * @return {Array<Object>}
    */
   parseNode(el) {
     var result = [];
-    var nodes = el.cssRules;
+    var nodes = el.cssRules || [];
 
     for (var i = 0, len = nodes.length; i < len; i++) {
-      var node = nodes[i];
-      var sels = node.selectorText;
-      var selsAdd = [];
+      const node = nodes[i];
+      const type = node.type.toString();
+      let singleAtRule = 0;
+      let atRuleType = '';
+      let condition = '';
+      // keyText is for CSSKeyframeRule
+      let sels = node.selectorText || node.keyText;
+      const isSingleAtRule = singleAtRules.indexOf(type) >= 0;
 
-      // It's a CSSMediaRule
-      if (node.cssRules) {
+      // Check if the node is an at-rule
+      if (isSingleAtRule) {
+        singleAtRule = 1;
+        atRuleType = atRules[type];
+        condition = this.parseCondition(node);
+      } else if (atRuleKeys.indexOf(type) >= 0) {
         var subRules = this.parseNode(node);
-        var mediaText = node.media.mediaText;
+        condition = this.parseCondition(node);
 
         for (var s = 0, lens = subRules.length; s < lens; s++) {
           var subRule = subRules[s];
-          subRule.mediaText = mediaText ? mediaText.trim() : '';
+          condition && (subRule.mediaText = condition);
+          subRule.atRuleType = atRules[type];
         }
-
         result = result.concat(subRules);
       }
 
-      if (!sels) continue;
-
-      var selsParsed = this.parseSelector(sels);
+      if (!sels && !isSingleAtRule) continue;
+      const style = this.parseStyle(node);
+      const selsParsed = this.parseSelector(sels);
+      const selsAdd = selsParsed.add;
       sels = selsParsed.result;
-      selsAdd = selsParsed.add;
 
-      // Create style object from the big one
-      var stl = node.style;
-      var style = {};
-
-      for (var j = 0, len2 = stl.length; j < len2; j++) {
-        const propName = stl[j];
-        const propValue = stl.getPropertyValue(propName);
-        const important = stl.getPropertyPriority(propName);
-        style[propName] = `${propValue}${important ? ` !${important}` : ''}`;
-      }
-
-      var lastRule = '';
+      let lastRule;
       // For each group of selectors
       for (var k = 0, len3 = sels.length; k < len3; k++) {
         var selArr = sels[k];
         var model = {};
+        singleAtRule && (model.singleAtRule = singleAtRule);
+        atRuleType && (model.atRuleType = atRuleType);
 
         //Isolate state from selector
         var stateArr = selArr[selArr.length - 1].split(/:(.+)/);
@@ -106,13 +158,18 @@ module.exports = config => ({
         if (lastRule) {
           lastRule.selectorsAdd = selsAddStr;
         } else {
-          result.push({
+          const model = {
             selectors: [],
             selectorsAdd: selsAddStr,
             style
-          });
+          };
+          singleAtRule && (model.singleAtRule = singleAtRule);
+          atRuleType && (model.atRuleType = atRuleType);
+          condition && (model.mediaText = condition);
+          result.push(model);
         }
       }
+      // console.log('LAST PUSH', result[result.length - 1]);
     }
 
     return result;
@@ -124,22 +181,15 @@ module.exports = config => ({
    * @return {Object|Array<Object>}
    */
   parse(str) {
-    var el = document.createElement('style');
-    /*
-    el.innerHTML = ".cssClass {border: 2px solid black; background-color: blue;} " +
-    ".red, .red2 {color:red; padding:5px} .test1.red {color:black} .red:hover{color: blue} " +
-    "@media screen and (min-width: 480px){ .red{color:white} }";
-    */
+    const el = document.createElement('style');
     el.innerHTML = str;
 
-    // There is no .sheet without adding it to the <head>
+    // There is no .sheet before adding it to the <head>
     document.head.appendChild(el);
-    var sheet = el.sheet;
+    const sheet = el.sheet;
     document.head.removeChild(el);
-    var result = this.parseNode(sheet);
+    const result = this.parseNode(sheet);
 
-    if (result.length == 1) result = result[0];
-
-    return result;
+    return result.length == 1 ? result[0] : result;
   }
 });
