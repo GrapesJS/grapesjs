@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var Frame = require('./Frame');
+let Backbone = require('backbone');
+let Frame = require('./Frame');
 
 module.exports = Backbone.Model.extend({
   defaults: {
@@ -9,7 +9,7 @@ module.exports = Backbone.Model.extend({
   },
 
   initialize(config) {
-    var conf = this.conf || {};
+    let conf = this.conf || {};
     this.set('frame', new Frame(conf.frame));
   }
 });

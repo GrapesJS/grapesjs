@@ -2,12 +2,12 @@ import { on, off, hasDnd } from 'utils/mixins';
 import Droppable from 'utils/Droppable';
 
 module.exports = () => {
-  var c = {},
+  let c = {},
     defaults = require('./config/config'),
     Canvas = require('./model/Canvas'),
     CanvasView = require('./view/CanvasView');
-  var canvas;
-  var frameRect;
+  let canvas;
+  let frameRect;
 
   return {
     /**
@@ -31,11 +31,11 @@ module.exports = () => {
      */
     init(config) {
       c = config || {};
-      for (var name in defaults) {
+      for (let name in defaults) {
         if (!(name in c)) c[name] = defaults[name];
       }
 
-      var ppfx = c.pStylePrefix;
+      let ppfx = c.pStylePrefix;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
 
       canvas = new Canvas(config);
@@ -44,7 +44,7 @@ module.exports = () => {
         config: c
       });
 
-      var cm = c.em.get('DomComponents');
+      let cm = c.em.get('DomComponents');
       if (cm) this.setWrapper(cm);
 
       this.startAutoscroll = this.startAutoscroll.bind(this);
@@ -188,8 +188,8 @@ module.exports = () => {
      * @private
      */
     getOffset() {
-      var frameOff = this.offset(this.getFrameEl());
-      var canvasOff = this.offset(this.getElement());
+      let frameOff = this.offset(this.getFrameEl());
+      let canvasOff = this.offset(this.getElement());
       return {
         top: frameOff.top - canvasOff.top,
         left: frameOff.left - canvasOff.left
@@ -243,24 +243,24 @@ module.exports = () => {
      * @return {Object}
      */
     getTargetToElementDim(target, element, options) {
-      var opts = options || {};
-      var canvasPos = CanvasView.getPosition();
-      var pos = opts.elPos || CanvasView.getElementPos(element);
-      var toRight = options.toRight || 0;
-      var targetHeight = opts.targetHeight || target.offsetHeight;
-      var targetWidth = opts.targetWidth || target.offsetWidth;
-      var eventToTrigger = opts.event || null;
+      let opts = options || {};
+      let canvasPos = CanvasView.getPosition();
+      let pos = opts.elPos || CanvasView.getElementPos(element);
+      let toRight = options.toRight || 0;
+      let targetHeight = opts.targetHeight || target.offsetHeight;
+      let targetWidth = opts.targetWidth || target.offsetWidth;
+      let eventToTrigger = opts.event || null;
 
-      var elTop = pos.top - targetHeight;
-      var elLeft = pos.left;
+      let elTop = pos.top - targetHeight;
+      let elLeft = pos.left;
       elLeft += toRight ? pos.width : 0;
       elLeft = toRight ? elLeft - targetWidth : elLeft;
 
-      var leftPos = elLeft < canvasPos.left ? canvasPos.left : elLeft;
-      var topPos = elTop < canvasPos.top ? canvasPos.top : elTop;
+      let leftPos = elLeft < canvasPos.left ? canvasPos.left : elLeft;
+      let topPos = elTop < canvasPos.top ? canvasPos.top : elTop;
       topPos = topPos > pos.top + pos.height ? pos.top + pos.height : topPos;
 
-      var result = {
+      let result = {
         top: topPos,
         left: leftPos,
         elementTop: pos.top,
@@ -290,18 +290,18 @@ module.exports = () => {
      * @return {Object}
      */
     getMouseRelativePos(e, options) {
-      var opts = options || {};
-      var addTop = 0;
-      var addLeft = 0;
-      var subWinOffset = opts.subWinOffset;
-      var doc = e.target.ownerDocument;
-      var win = doc.defaultView || doc.parentWindow;
-      var frame = win.frameElement;
-      var yOffset = subWinOffset ? win.pageYOffset : 0;
-      var xOffset = subWinOffset ? win.pageXOffset : 0;
+      let opts = options || {};
+      let addTop = 0;
+      let addLeft = 0;
+      let subWinOffset = opts.subWinOffset;
+      let doc = e.target.ownerDocument;
+      let win = doc.defaultView || doc.parentWindow;
+      let frame = win.frameElement;
+      let yOffset = subWinOffset ? win.pageYOffset : 0;
+      let xOffset = subWinOffset ? win.pageXOffset : 0;
 
       if (frame) {
-        var frameRect = frame.getBoundingClientRect();
+        let frameRect = frame.getBoundingClientRect();
         addTop = frameRect.top || 0;
         addLeft = frameRect.left || 0;
       }
@@ -318,13 +318,13 @@ module.exports = () => {
      * @return {Object}
      */
     getMouseRelativeCanvas(e, options) {
-      var opts = options || {};
-      var frame = this.getFrameEl();
-      var body = this.getBody();
-      var addTop = frame.offsetTop || 0;
-      var addLeft = frame.offsetLeft || 0;
-      var yOffset = body.scrollTop || 0;
-      var xOffset = body.scrollLeft || 0;
+      let opts = options || {};
+      let frame = this.getFrameEl();
+      let body = this.getBody();
+      let addTop = frame.offsetTop || 0;
+      let addLeft = frame.offsetLeft || 0;
+      let yOffset = body.scrollTop || 0;
+      let xOffset = body.scrollLeft || 0;
 
       return {
         y: e.clientY + addTop + yOffset,

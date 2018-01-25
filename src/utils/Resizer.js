@@ -1,7 +1,7 @@
 import { bindAll, defaults, isFunction } from 'underscore';
 import { on, off, normalizeFloat } from 'utils/mixins';
 
-var defaultOpts = {
+let defaultOpts = {
   // Function which returns custom X and Y coordinates of the mouse
   mousePosFetcher: null,
   // Indicates custom target updating strategy
@@ -49,17 +49,17 @@ var defaultOpts = {
   br: 1 // Bottom right
 };
 
-var createHandler = (name, opts) => {
-  var pfx = opts.prefix || '';
-  var el = document.createElement('i');
+let createHandler = (name, opts) => {
+  let pfx = opts.prefix || '';
+  let el = document.createElement('i');
   el.className = pfx + 'resizer-h ' + pfx + 'resizer-h-' + name;
   el.setAttribute('data-' + pfx + 'handler', name);
   return el;
 };
 
-var getBoundingRect = (el, win) => {
-  var w = win || window;
-  var rect = el.getBoundingClientRect();
+let getBoundingRect = (el, win) => {
+  let w = win || window;
+  let rect = el.getBoundingClientRect();
   return {
     left: rect.left + w.pageXOffset,
     top: rect.top + w.pageYOffset,
@@ -143,9 +143,9 @@ class Resizer {
    * @return {Boolean}
    */
   isHandler(el) {
-    var handlers = this.handlers;
+    let handlers = this.handlers;
 
-    for (var n in handlers) {
+    for (let n in handlers) {
       if (handlers[n] === el) return true;
     }
 
@@ -173,7 +173,7 @@ class Resizer {
    * @return {Object}
    */
   getElementPos(el) {
-    var posFetcher = this.posFetcher || '';
+    let posFetcher = this.posFetcher || '';
     return posFetcher ? posFetcher(el) : getBoundingRect(el);
   }
 
@@ -189,10 +189,10 @@ class Resizer {
 
     // Show the handlers
     this.el = el;
-    var unit = 'px';
-    var rect = this.getElementPos(el);
-    var container = this.container;
-    var contStyle = container.style;
+    let unit = 'px';
+    let rect = this.getElementPos(el);
+    let container = this.container;
+    let contStyle = container.style;
     contStyle.left = rect.left + unit;
     contStyle.top = rect.top + unit;
     contStyle.width = rect.width + unit;
@@ -228,8 +228,8 @@ class Resizer {
     const el = this.el;
     const resizer = this;
     const config = this.opts || {};
-    var attrName = 'data-' + config.prefix + 'handler';
-    var rect = this.getElementPos(el);
+    let attrName = 'data-' + config.prefix + 'handler';
+    let rect = this.getElementPos(el);
     this.handlerAttr = e.target.getAttribute(attrName);
     this.clickedHandler = e.target;
     this.startDim = {
@@ -250,7 +250,7 @@ class Resizer {
     };
 
     // Listen events
-    var doc = this.getDocumentEl();
+    let doc = this.getDocumentEl();
     on(doc, 'mousemove', this.move);
     on(doc, 'keydown', this.handleKeyDown);
     on(doc, 'mouseup', this.stop);
@@ -265,8 +265,8 @@ class Resizer {
    */
   move(e) {
     const onMove = this.onMove;
-    var mouseFetch = this.mousePosFetcher;
-    var currentPos = mouseFetch
+    let mouseFetch = this.mousePosFetcher;
+    let currentPos = mouseFetch
       ? mouseFetch(e)
       : {
           x: e.clientX,
@@ -302,7 +302,7 @@ class Resizer {
    */
   stop(e) {
     const config = this.opts;
-    var doc = this.getDocumentEl();
+    let doc = this.getDocumentEl();
     off(doc, 'mousemove', this.move);
     off(doc, 'keydown', this.handleKeyDown);
     off(doc, 'mouseup', this.stop);
@@ -350,7 +350,7 @@ class Resizer {
    * @return {string}
    */
   getSelectedHandler() {
-    var handlers = this.handlers;
+    let handlers = this.handlers;
 
     if (!this.selectedHandler) {
       return;
@@ -378,7 +378,7 @@ class Resizer {
    * @param  {Event} e
    */
   handleMouseDown(e) {
-    var el = e.target;
+    let el = e.target;
     if (this.isHandler(el)) {
       this.selectedHandler = el;
       this.start(e);
@@ -403,7 +403,7 @@ class Resizer {
     const deltaY = data.delta.y;
     const startW = startDim.w;
     const startH = startDim.h;
-    var box = {
+    let box = {
       t: 0,
       l: 0,
       w: startW,
@@ -412,7 +412,7 @@ class Resizer {
 
     if (!data) return;
 
-    var attr = data.handlerAttr;
+    let attr = data.handlerAttr;
     if (~attr.indexOf('r')) {
       value = normalizeFloat(startW + deltaX * step, step);
       value = Math.max(minDim, value);
@@ -439,9 +439,9 @@ class Resizer {
     }
 
     // Enforce aspect ratio (unless shift key is being held)
-    var ratioActive = opts.ratioDefault ? !data.keys.shift : data.keys.shift;
+    let ratioActive = opts.ratioDefault ? !data.keys.shift : data.keys.shift;
     if (attr.indexOf('c') < 0 && ratioActive) {
-      var ratio = startDim.w / startDim.h;
+      let ratio = startDim.w / startDim.h;
       if (box.w / box.h > ratio) {
         box.h = Math.round(box.w / ratio);
       } else {

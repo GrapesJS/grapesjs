@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var CreateComponent = require('./CreateComponent');
+let Backbone = require('backbone');
+let CreateComponent = require('./CreateComponent');
 
 module.exports = _.extend({}, CreateComponent, {
   init(...args) {
@@ -32,11 +32,11 @@ module.exports = _.extend({}, CreateComponent, {
   insertComponent() {
     this.$wr.off('click', this.insertComponent);
     this.stopSelectPosition();
-    var object = this.buildContent();
+    let object = this.buildContent();
     this.beforeInsert(object);
-    var index = this.sorter.lastPos.index;
+    let index = this.sorter.lastPos.index;
     // By default, collections do not trigger add event, so silent is used
-    var model = this.create(this.sorter.target, object, index, null, {
+    let model = this.create(this.sorter.target, object, index, null, {
       silent: false
     });
 

@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var ComponentView = require('./ComponentImageView');
+let Backbone = require('backbone');
+let ComponentView = require('./ComponentImageView');
 
 module.exports = ComponentView.extend({
   tagName: 'div',
@@ -21,7 +21,7 @@ module.exports = ComponentView.extend({
 
   getIframe() {
     if (!this.iframe) {
-      var ifrm = document.createElement('iframe');
+      let ifrm = document.createElement('iframe');
       ifrm.src = this.model.get('src');
       ifrm.frameBorder = 0;
       ifrm.style.height = '100%';

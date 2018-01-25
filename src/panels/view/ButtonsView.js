@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var ButtonView = require('./ButtonView');
+let Backbone = require('backbone');
+let ButtonView = require('./ButtonView');
 
 module.exports = Backbone.View.extend({
   initialize(o) {
@@ -30,15 +30,15 @@ module.exports = Backbone.View.extend({
    * @return Object Object created
    * */
   addToCollection(model, fragmentEl) {
-    var fragment = fragmentEl || null;
-    var viewObject = ButtonView;
+    let fragment = fragmentEl || null;
+    let viewObject = ButtonView;
 
-    var view = new viewObject({
+    let view = new viewObject({
       model,
       config: this.config,
       parentM: this.parentM
     });
-    var rendered = view.render().el;
+    let rendered = view.render().el;
 
     if (fragment) {
       fragment.appendChild(rendered);
@@ -50,7 +50,7 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    var fragment = document.createDocumentFragment();
+    let fragment = document.createDocumentFragment();
     this.$el.empty();
 
     this.collection.each(function(model) {

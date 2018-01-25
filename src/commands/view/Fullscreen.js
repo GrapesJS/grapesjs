@@ -4,7 +4,7 @@ module.exports = {
    * @return {Boolean}
    */
   isEnabled() {
-    var d = document;
+    let d = document;
     if (
       d.fullscreenElement ||
       d.webkitFullscreenElement ||
@@ -20,7 +20,7 @@ module.exports = {
    * @return {string}
    */
   enable(el) {
-    var pfx = '';
+    let pfx = '';
     if (el.requestFullscreen) el.requestFullscreen();
     else if (el.webkitRequestFullscreen) {
       pfx = 'webkit';
@@ -37,7 +37,7 @@ module.exports = {
    * Disable fullscreen mode
    */
   disable() {
-    var d = document;
+    let d = document;
     if (d.exitFullscreen) d.exitFullscreen();
     else if (d.webkitExitFullscreen) d.webkitExitFullscreen();
     else if (d.mozCancelFullScreen) d.mozCancelFullScreen();
@@ -51,8 +51,8 @@ module.exports = {
    * @param  {Event} e
    */
   fsChanged(pfx, e) {
-    var d = document;
-    var ev = (pfx || '') + 'fullscreenchange';
+    let d = document;
+    let ev = (pfx || '') + 'fullscreenchange';
     if (!this.isEnabled()) {
       this.stop(null, this.sender);
       document.removeEventListener(ev, this.fsChanged);
@@ -61,7 +61,7 @@ module.exports = {
 
   run(editor, sender) {
     this.sender = sender;
-    var pfx = this.enable(editor.getContainer());
+    let pfx = this.enable(editor.getContainer());
     this.fsChanged = this.fsChanged.bind(this, pfx);
     document.addEventListener(pfx + 'fullscreenchange', this.fsChanged);
     if (editor) editor.trigger('change:canvasOffset');

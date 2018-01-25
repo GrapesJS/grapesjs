@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var CssRuleView = require('./CssRuleView');
+let Backbone = require('backbone');
+let CssRuleView = require('./CssRuleView');
 
 module.exports = Backbone.View.extend({
   initialize(o) {
@@ -30,14 +30,14 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   addToCollection(model, fragmentEl) {
-    var fragment = fragmentEl || null;
-    var viewObject = CssRuleView;
+    let fragment = fragmentEl || null;
+    let viewObject = CssRuleView;
 
-    var view = new viewObject({
+    let view = new viewObject({
       model,
       config: this.config
     });
-    var rendered = view.render().el;
+    let rendered = view.render().el;
 
     if (fragment) fragment.appendChild(rendered);
     else this.$el.append(rendered);

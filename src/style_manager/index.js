@@ -39,13 +39,13 @@
  * ...
  */
 module.exports = () => {
-  var c = {},
+  let c = {},
     defaults = require('./config/config'),
     Sectors = require('./model/Sectors'),
     Properties = require('./model/Properties'),
     SectorsView = require('./view/SectorsView');
   let properties;
-  var sectors, SectView;
+  let sectors, SectView;
 
   return {
     /**
@@ -70,11 +70,11 @@ module.exports = () => {
      */
     init(config) {
       c = config || {};
-      for (var name in defaults) {
+      for (let name in defaults) {
         if (!(name in c)) c[name] = defaults[name];
       }
 
-      var ppfx = c.pStylePrefix;
+      let ppfx = c.pStylePrefix;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
 
       properties = new Properties();
@@ -104,7 +104,7 @@ module.exports = () => {
      * });
      * */
     addSector(id, sector) {
-      var result = this.getSector(id);
+      let result = this.getSector(id);
       if (!result) {
         sector.id = id;
         result = sectors.add(sector);
@@ -120,7 +120,7 @@ module.exports = () => {
      * var sector = styleManager.getSector('mySector');
      * */
     getSector(id) {
-      var res = sectors.where({ id });
+      let res = sectors.where({ id });
       return res.length ? res[0] : null;
     },
 
@@ -179,8 +179,8 @@ module.exports = () => {
      * });
      */
     addProperty(sectorId, property) {
-      var prop = null;
-      var sector = this.getSector(sectorId);
+      let prop = null;
+      let sector = this.getSector(sectorId);
 
       if (sector) prop = sector.get('properties').add(property);
 
@@ -196,8 +196,8 @@ module.exports = () => {
      * var property = styleManager.getProperty('mySector','min-height');
      */
     getProperty(sectorId, name) {
-      var prop = null;
-      var sector = this.getSector(sectorId);
+      let prop = null;
+      let sector = this.getSector(sectorId);
 
       if (sector) {
         prop = sector.get('properties').where({ property: name });
@@ -228,8 +228,8 @@ module.exports = () => {
      * var properties = styleManager.getProperties('mySector');
      */
     getProperties(sectorId) {
-      var props = null;
-      var sector = this.getSector(sectorId);
+      let props = null;
+      let sector = this.getSector(sectorId);
 
       if (sector) props = sector.get('properties');
 

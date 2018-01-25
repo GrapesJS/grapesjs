@@ -1,4 +1,4 @@
-var Backbone = require('backbone');
+let Backbone = require('backbone');
 
 module.exports = Backbone.View.extend({
   events() {
@@ -38,7 +38,7 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    var config = this.editor.getConfig();
+    let config = this.editor.getConfig();
     this.el.className += ' ' + config.stylePrefix + 'toolbar-item';
     return this;
   }

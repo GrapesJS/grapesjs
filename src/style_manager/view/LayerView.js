@@ -84,7 +84,7 @@ module.exports = Backbone.View.extend({
     const lim = 3;
     const result = [];
     this.model.get('properties').each((prop, index) => {
-      var value = values[index] || '';
+      let value = values[index] || '';
 
       if (value) {
         if (prop.get('type') == 'integer') {

@@ -106,11 +106,11 @@ module.exports = ComponentView.extend({
    * @param {Boolean} enable
    */
   toggleEvents(enable) {
-    var method = enable ? 'on' : 'off';
+    let method = enable ? 'on' : 'off';
     const mixins = { on, off };
 
     // The ownerDocument is from the frame
-    var elDocs = [this.el.ownerDocument, document];
+    let elDocs = [this.el.ownerDocument, document];
     mixins.off(elDocs, 'mousedown', this.disableEditing);
     mixins[method](elDocs, 'mousedown', this.disableEditing);
 

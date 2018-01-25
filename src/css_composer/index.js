@@ -18,7 +18,7 @@
 
 module.exports = () => {
   let em;
-  var c = {},
+  let c = {},
     defaults = require('./config/config'),
     CssRule = require('./model/CssRule'),
     CssRules = require('./model/CssRules'),
@@ -26,7 +26,7 @@ module.exports = () => {
   const Selectors = require('selector_manager/model/Selectors');
   const Selector = require('selector_manager/model/Selector');
 
-  var rules, rulesView;
+  let rules, rulesView;
 
   return {
     Selectors,
@@ -44,8 +44,8 @@ module.exports = () => {
      * @private
      */
     storageKey() {
-      var keys = [];
-      var smc = (c.stm && c.stm.getConfig()) || {};
+      let keys = [];
+      let smc = (c.stm && c.stm.getConfig()) || {};
       if (smc.storeCss) keys.push('css');
       if (smc.storeStyles) keys.push('styles');
       return keys;
@@ -58,14 +58,14 @@ module.exports = () => {
      */
     init(config) {
       c = config || {};
-      for (var name in defaults) {
+      for (let name in defaults) {
         if (!(name in c)) c[name] = defaults[name];
       }
 
-      var ppfx = c.pStylePrefix;
+      let ppfx = c.pStylePrefix;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
 
-      var elStyle = (c.em && c.em.config.style) || '';
+      let elStyle = (c.em && c.em.config.style) || '';
       c.rules = elStyle || c.rules;
 
       c.sm = c.em;
@@ -120,13 +120,13 @@ module.exports = () => {
      * @return {Object} Loaded rules
      */
     load(data) {
-      var d = data || '';
+      let d = data || '';
 
       if (!d && c.stm) {
         d = c.em.getCacheLoad();
       }
 
-      var obj = d.styles || '';
+      let obj = d.styles || '';
 
       if (d.styles) {
         try {
@@ -150,8 +150,8 @@ module.exports = () => {
      */
     store(noStore) {
       if (!c.stm) return;
-      var obj = {};
-      var keys = this.storageKey();
+      let obj = {};
+      let keys = this.storageKey();
       if (keys.indexOf('css') >= 0) obj.css = c.em.getCss();
       if (keys.indexOf('styles') >= 0) obj.styles = JSON.stringify(rules);
       if (!noStore) c.stm.store(obj);
@@ -176,10 +176,10 @@ module.exports = () => {
      * });
      * */
     add(selectors, state, width, opts) {
-      var s = state || '';
-      var w = width || '';
-      var opt = opts || {};
-      var rule = this.get(selectors, s, w, opt);
+      let s = state || '';
+      let w = width || '';
+      let opt = opts || {};
+      let rule = this.get(selectors, s, w, opt);
       if (rule) return rule;
       else {
         opt.state = s;
@@ -211,7 +211,7 @@ module.exports = () => {
      * });
      * */
     get(selectors, state, width, ruleProps) {
-      var rule = null;
+      let rule = null;
       rules.each(m => {
         if (rule) return;
         if (m.compare(selectors, state, width, ruleProps)) rule = m;
@@ -245,26 +245,26 @@ module.exports = () => {
      * @private
      */
     addCollection(data, opts = {}) {
-      var result = [];
-      var d = data instanceof Array ? data : [data];
+      let result = [];
+      let d = data instanceof Array ? data : [data];
 
-      for (var i = 0, l = d.length; i < l; i++) {
-        var rule = d[i] || {};
+      for (let i = 0, l = d.length; i < l; i++) {
+        let rule = d[i] || {};
         if (!rule.selectors) continue;
-        var sm = c.em && c.em.get('SelectorManager');
+        let sm = c.em && c.em.get('SelectorManager');
         if (!sm) console.warn('Selector Manager not found');
-        var sl = rule.selectors;
-        var sels = sl instanceof Array ? sl : [sl];
-        var newSels = [];
+        let sl = rule.selectors;
+        let sels = sl instanceof Array ? sl : [sl];
+        let newSels = [];
 
-        for (var j = 0, le = sels.length; j < le; j++) {
-          var selec = sm.add(sels[j]);
+        for (let j = 0, le = sels.length; j < le; j++) {
+          let selec = sm.add(sels[j]);
           newSels.push(selec);
         }
 
-        var modelExists = this.get(newSels, rule.state, rule.mediaText, rule);
-        var model = this.add(newSels, rule.state, rule.mediaText, rule);
-        var updateStyle = !modelExists || !opts.avoidUpdateStyle;
+        let modelExists = this.get(newSels, rule.state, rule.mediaText, rule);
+        let model = this.add(newSels, rule.state, rule.mediaText, rule);
+        let updateStyle = !modelExists || !opts.avoidUpdateStyle;
         const style = rule.style || {};
 
         if (updateStyle) {

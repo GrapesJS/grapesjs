@@ -84,8 +84,8 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getLabel() {
-    var model = this.model;
-    var label = model.get('label') || model.get('name');
+    let model = this.model;
+    let label = model.get('label') || model.get('name');
     return label.charAt(0).toUpperCase() + label.slice(1).replace(/-/g, ' ');
   },
 
@@ -96,9 +96,9 @@ module.exports = Backbone.View.extend({
    */
   getInputEl() {
     if (!this.$input) {
-      var md = this.model;
-      var trg = this.target;
-      var name = md.get('name');
+      let md = this.model;
+      let trg = this.target;
+      let name = md.get('name');
       const plh = md.get('placeholder') || md.get('default') || '';
       const type = md.get('type') || 'text';
       const attrs = trg.get('attributes');
@@ -127,15 +127,15 @@ module.exports = Backbone.View.extend({
   },
 
   getModelValue() {
-    var value;
-    var model = this.model;
-    var target = this.target;
-    var name = model.get('name');
+    let value;
+    let model = this.model;
+    let target = this.target;
+    let name = model.get('name');
 
     if (model.get('changeProp')) {
       value = target.get(name);
     } else {
-      var attrs = target.get('attributes');
+      let attrs = target.get('attributes');
       value = model.get('value') || attrs[name];
     }
 

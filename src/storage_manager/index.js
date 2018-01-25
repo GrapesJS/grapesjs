@@ -6,13 +6,13 @@
  * ```
  */
 module.exports = () => {
-  var c = {},
+  let c = {},
     defaults = require('./config/config'),
     LocalStorage = require('./model/LocalStorage'),
     RemoteStorage = require('./model/RemoteStorage');
 
-  var storages = {};
-  var defaultStorages = {};
+  let storages = {};
+  let defaultStorages = {};
 
   return {
     /**
@@ -43,7 +43,7 @@ module.exports = () => {
     init(config) {
       c = config || {};
 
-      for (var name in defaults) {
+      for (let name in defaults) {
         if (!(name in c)) c[name] = defaults[name];
       }
 
@@ -163,10 +163,10 @@ module.exports = () => {
      * storageManager.store({item1: value1, item2: value2});
      * */
     store(data, clb) {
-      var st = this.get(this.getCurrent());
-      var dataF = {};
+      let st = this.get(this.getCurrent());
+      let dataF = {};
 
-      for (var key in data) dataF[c.id + key] = data[key];
+      for (let key in data) dataF[c.id + key] = data[key];
 
       return st ? st.store(dataF, clb) : null;
     },
@@ -184,21 +184,21 @@ module.exports = () => {
      * });
      * */
     load(keys, clb) {
-      var st = this.get(this.getCurrent());
-      var keysF = [];
-      var result = {};
+      let st = this.get(this.getCurrent());
+      let keysF = [];
+      let result = {};
 
       if (typeof keys === 'string') keys = [keys];
 
-      for (var i = 0, len = keys.length; i < len; i++)
+      for (let i = 0, len = keys.length; i < len; i++)
         keysF.push(c.id + keys[i]);
 
       st &&
         st.load(keysF, res => {
           // Restore keys name
-          var reg = new RegExp('^' + c.id + '');
-          for (var itemKey in res) {
-            var itemKeyR = itemKey.replace(reg, '');
+          let reg = new RegExp('^' + c.id + '');
+          for (let itemKey in res) {
+            let itemKeyR = itemKey.replace(reg, '');
             result[itemKeyR] = res[itemKey];
           }
 
@@ -212,7 +212,7 @@ module.exports = () => {
      * @private
      * */
     loadDefaultProviders() {
-      for (var id in defaultStorages) this.add(id, defaultStorages[id]);
+      for (let id in defaultStorages) this.add(id, defaultStorages[id]);
       return this;
     },
 

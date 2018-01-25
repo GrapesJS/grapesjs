@@ -14,12 +14,12 @@ module.exports = Backbone.View.extend({
       'udpateOffset',
       'moveDragHelper'
     );
-    var o = opt || {};
+    let o = opt || {};
     this.elT = 0;
     this.elL = 0;
     this.borderOffset = o.borderOffset || 10;
 
-    var el = o.container;
+    let el = o.container;
     this.el = typeof el === 'string' ? document.querySelector(el) : el;
     this.$el = $(this.el);
 
@@ -58,7 +58,7 @@ module.exports = Backbone.View.extend({
 
   getContainerEl() {
     if (!this.el) {
-      var el = this.opt.container;
+      let el = this.opt.container;
       this.el = typeof el === 'string' ? document.querySelector(el) : el;
       this.$el = $(this.el);
     }
@@ -77,7 +77,7 @@ module.exports = Backbone.View.extend({
    * Triggered when the offset of the editro is changed
    */
   udpateOffset() {
-    var offset = this.em.get('canvasOffset');
+    let offset = this.em.get('canvasOffset');
     this.offTop = offset.top;
     this.offLeft = offset.left;
   },
@@ -95,11 +95,11 @@ module.exports = Backbone.View.extend({
    * @param {Boolean} active
    */
   toggleSortCursor(active) {
-    var em = this.em;
-    var body = document.body;
-    var pfx = this.ppfx || this.pfx;
-    var sortCls = pfx + 'grabbing';
-    var emBody = em ? em.get('Canvas').getBody() : '';
+    let em = this.em;
+    let body = document.body;
+    let pfx = this.ppfx || this.pfx;
+    let sortCls = pfx + 'grabbing';
+    let emBody = em ? em.get('Canvas').getBody() : '';
 
     // Avoid updating body className as it causes a huge repaint
     // Noticeable with "fast" drag of blocks
@@ -126,7 +126,7 @@ module.exports = Backbone.View.extend({
     const computed = getComputedStyle(el);
     let style = '';
 
-    for (var i = 0; i < computed.length; i++) {
+    for (let i = 0; i < computed.length; i++) {
       const prop = computed[i];
       style += `${prop}:${computed.getPropertyValue(prop)};`;
     }
@@ -204,7 +204,7 @@ module.exports = Backbone.View.extend({
    */
   closest(el, selector) {
     if (!el) return;
-    var elem = el.parentNode;
+    let elem = el.parentNode;
     while (elem && elem.nodeType === 1) {
       if (this.matches(elem, selector)) return elem;
       elem = elem.parentNode;
@@ -218,7 +218,7 @@ module.exports = Backbone.View.extend({
    * @return {Object}
    */
   offset(el) {
-    var rect = el.getBoundingClientRect();
+    let rect = el.getBoundingClientRect();
     return {
       top: rect.top + document.body.scrollTop,
       left: rect.left + document.body.scrollLeft
@@ -230,9 +230,9 @@ module.exports = Backbone.View.extend({
    * @return {HTMLElement}
    */
   createPlaceholder() {
-    var pfx = this.pfx;
-    var el = document.createElement('div');
-    var ins = document.createElement('div');
+    let pfx = this.pfx;
+    let el = document.createElement('div');
+    let ins = document.createElement('div');
     el.className = pfx + 'placeholder';
     el.style.display = 'none';
     el.style['pointer-events'] = 'none';
@@ -303,7 +303,7 @@ module.exports = Backbone.View.extend({
    * @return {Model}
    */
   getSourceModel(source) {
-    var src = source || this.eV;
+    let src = source || this.eV;
     let dropContent = this.dropContent;
     let dropModel = this.dropModel;
     const em = this.em;
@@ -336,7 +336,7 @@ module.exports = Backbone.View.extend({
       return;
     }
 
-    var prevModel = this.targetModel;
+    let prevModel = this.targetModel;
     if (prevModel) {
       prevModel.set('status', '');
     }
@@ -356,19 +356,19 @@ module.exports = Backbone.View.extend({
     this.moved = 1;
 
     // Turn placeholder visibile
-    var plh = this.plh;
-    var dsp = plh.style.display;
+    let plh = this.plh;
+    let dsp = plh.style.display;
     if (!dsp || dsp === 'none') plh.style.display = 'block';
 
     // Cache all necessary positions
-    var eO = this.offset(this.el);
+    let eO = this.offset(this.el);
     this.elT = this.wmargin ? Math.abs(eO.top) : eO.top;
     this.elL = this.wmargin ? Math.abs(eO.left) : eO.left;
-    var rY = e.pageY - this.elT + this.el.scrollTop;
-    var rX = e.pageX - this.elL + this.el.scrollLeft;
+    let rY = e.pageY - this.elT + this.el.scrollTop;
+    let rX = e.pageX - this.elL + this.el.scrollLeft;
 
     if (this.canvasRelative && em) {
-      var mousePos = em.get('Canvas').getMouseRelativeCanvas(e);
+      let mousePos = em.get('Canvas').getMouseRelativeCanvas(e);
       rX = mousePos.x;
       rY = mousePos.y;
     }
@@ -384,7 +384,7 @@ module.exports = Backbone.View.extend({
     this.selectTargetModel(targetModel);
 
     this.lastDims = dims;
-    var pos = this.findPosition(dims, rX, rY);
+    let pos = this.findPosition(dims, rX, rY);
     // If there is a significant changes with the pointer
     if (
       !this.lastPos ||
@@ -428,9 +428,9 @@ module.exports = Backbone.View.extend({
     if (!el) return false;
 
     parent = parent || document.body;
-    var ch = -1,
+    let ch = -1,
       h;
-    var elem = el;
+    let elem = el;
     h = elem.offsetHeight;
     if (/*h < ch || */ !this.styleInFlow(elem, parent)) return false;
     else return true;
@@ -444,8 +444,8 @@ module.exports = Backbone.View.extend({
    * @private
    */
   styleInFlow(el, parent) {
-    var style = el.style;
-    var $el = $(el);
+    let style = el.style;
+    let $el = $(el);
     if (style.overflow && style.overflow !== 'visible') return;
     if ($el.css('float') !== 'none') return;
     if (parent && $(parent).css('display') == 'flex') return;
@@ -528,7 +528,7 @@ module.exports = Backbone.View.extend({
    */
   dimsFromTarget(target, rX, rY) {
     const em = this.em;
-    var dims = [];
+    let dims = [];
 
     if (!target) {
       return dims;
@@ -692,21 +692,21 @@ module.exports = Backbone.View.extend({
    * @return {Array<number>}
    */
   getDim(el) {
-    var top, left, height, width;
+    let top, left, height, width;
 
     if (this.canvasRelative && this.em) {
-      var pos = this.em.get('Canvas').getElementPos(el);
-      var styles = window.getComputedStyle(el);
-      var marginTop = parseFloat(styles['marginTop']);
-      var marginBottom = parseFloat(styles['marginBottom']);
-      var marginRight = parseFloat(styles['marginRight']);
-      var marginLeft = parseFloat(styles['marginLeft']);
+      let pos = this.em.get('Canvas').getElementPos(el);
+      let styles = window.getComputedStyle(el);
+      let marginTop = parseFloat(styles['marginTop']);
+      let marginBottom = parseFloat(styles['marginBottom']);
+      let marginRight = parseFloat(styles['marginRight']);
+      let marginLeft = parseFloat(styles['marginLeft']);
       top = pos.top - marginTop;
       left = pos.left - marginLeft;
       height = pos.height + marginTop + marginBottom;
       width = pos.width + marginLeft + marginRight;
     } else {
-      var o = this.offset(el);
+      let o = this.offset(el);
       top = this.relative
         ? el.offsetTop
         : o.top - (this.wmargin ? -1 : 1) * this.elT;
@@ -728,26 +728,26 @@ module.exports = Backbone.View.extend({
    * @retun {Array}
    * */
   getChildrenDim(trg) {
-    var dims = [];
+    let dims = [];
     if (!trg) return dims;
 
     // Get children based on getChildrenContainer
-    var trgModel = this.getTargetModel(trg);
+    let trgModel = this.getTargetModel(trg);
     if (trgModel && trgModel.view && !this.ignoreViewChildren) {
       trg = trgModel.view.getChildrenContainer();
     }
 
-    var ch = trg.children;
+    let ch = trg.children;
 
-    for (var i = 0, len = ch.length; i < len; i++) {
-      var el = ch[i];
+    for (let i = 0, len = ch.length; i < len; i++) {
+      let el = ch[i];
 
       if (!this.matches(el, this.itemSel)) {
         continue;
       }
 
-      var dim = this.getDim(el);
-      var dir = this.direction;
+      let dim = this.getDim(el);
+      let dir = this.direction;
 
       if (dir == 'v') dir = true;
       else if (dir == 'h') dir = false;
@@ -769,14 +769,14 @@ module.exports = Backbone.View.extend({
    * @return {Boolean}
    * */
   nearBorders(dim, rX, rY) {
-    var result = 0;
-    var off = this.borderOffset;
-    var x = rX || 0;
-    var y = rY || 0;
-    var t = dim[0];
-    var l = dim[1];
-    var h = dim[2];
-    var w = dim[3];
+    let result = 0;
+    let off = this.borderOffset;
+    let x = rX || 0;
+    let y = rY || 0;
+    let t = dim[0];
+    let l = dim[1];
+    let h = dim[2];
+    let w = dim[3];
     if (t + off > y || y > t + h - off || l + off > x || x > l + w - off)
       result = 1;
 
@@ -791,8 +791,8 @@ module.exports = Backbone.View.extend({
    * @retun {Object}
    * */
   findPosition(dims, posX, posY) {
-    var result = { index: 0, method: 'before' };
-    var leftLimit = 0,
+    let result = { index: 0, method: 'before' };
+    let leftLimit = 0,
       xLimit = 0,
       dimRight = 0,
       yLimit = 0,
@@ -801,7 +801,7 @@ module.exports = Backbone.View.extend({
       dimDown = 0,
       dim = 0;
     // Each dim is: Top, Left, Height, Width
-    for (var i = 0, len = dims.length; i < len; i++) {
+    for (let i = 0, len = dims.length; i < len; i++) {
       dim = dims[i];
       // Right position of the element. Left + Width
       dimRight = dim[1] + dim[3];
@@ -849,7 +849,7 @@ module.exports = Backbone.View.extend({
    * @param {Array<number>} trgDim target dimensions
    * */
   movePlaceholder(plh, dims, pos, trgDim) {
-    var marg = 0,
+    let marg = 0,
       t = 0,
       l = 0,
       w = 0,
@@ -859,7 +859,7 @@ module.exports = Backbone.View.extend({
       brdCol = '#62c462',
       brd = 3,
       method = pos.method;
-    var elDim = dims[pos.index];
+    let elDim = dims[pos.index];
     plh.style.borderColor = 'transparent ' + brdCol;
     plh.style.borderWidth = brd + un + ' ' + (brd + 2) + un;
     plh.style.margin = '-' + brd + 'px 0 0';
@@ -904,7 +904,7 @@ module.exports = Backbone.View.extend({
    * @return void
    * */
   endMove(e) {
-    var created;
+    let created;
     const docs = this.getDocuments();
     const container = this.getContainerEl();
     off(container, 'mousemove dragover', this.onMove);
@@ -913,11 +913,11 @@ module.exports = Backbone.View.extend({
     //this.$document.off('mouseup', this.endMove);
     //this.$document.off('keydown', this.rollback);
     this.plh.style.display = 'none';
-    var clsReg = new RegExp('(?:^|\\s)' + this.freezeClass + '(?!\\S)', 'gi');
+    let clsReg = new RegExp('(?:^|\\s)' + this.freezeClass + '(?!\\S)', 'gi');
     let src = this.eV;
 
     if (src) {
-      var srcModel = this.getSourceModel();
+      let srcModel = this.getSourceModel();
       if (srcModel && srcModel.set) {
         srcModel.set('status', '');
         srcModel.set('status', 'selected');
@@ -933,7 +933,7 @@ module.exports = Backbone.View.extend({
 
     if (typeof this.onEndMove === 'function') this.onEndMove(created);
 
-    var dragHelper = this.dragHelper;
+    let dragHelper = this.dragHelper;
 
     if (dragHelper) {
       dragHelper.parentNode.removeChild(dragHelper);
@@ -951,25 +951,25 @@ module.exports = Backbone.View.extend({
    * @param {Object} pos Object with position coordinates
    * */
   move(dst, src, pos) {
-    var em = this.em;
+    let em = this.em;
     em && em.trigger('component:dragEnd:before', dst, src, pos); // @depricated
-    var warns = [];
-    var index = pos.index;
-    var modelToDrop, modelTemp, created;
-    var validResult = this.validTarget(dst);
-    var targetCollection = $(dst).data('collection');
-    var model = validResult.srcModel;
-    var droppable = validResult.droppable;
-    var draggable = validResult.draggable;
-    var dropInfo = validResult.dropInfo;
-    var dragInfo = validResult.dragInfo;
-    var dropContent = this.dropContent;
+    let warns = [];
+    let index = pos.index;
+    let modelToDrop, modelTemp, created;
+    let validResult = this.validTarget(dst);
+    let targetCollection = $(dst).data('collection');
+    let model = validResult.srcModel;
+    let droppable = validResult.droppable;
+    let draggable = validResult.draggable;
+    let dropInfo = validResult.dropInfo;
+    let dragInfo = validResult.dragInfo;
+    let dropContent = this.dropContent;
     droppable =
       validResult.trgModel instanceof Backbone.Collection ? 1 : droppable;
 
     if (targetCollection && droppable && draggable) {
       index = pos.method === 'after' ? index + 1 : index;
-      var opts = { at: index, noIncrement: 1 };
+      let opts = { at: index, noIncrement: 1 };
 
       if (!dropContent) {
         modelTemp = targetCollection.add({}, opts);

@@ -12,7 +12,7 @@ module.exports = Backbone.Collection.extend({
     if (opt && (opt.sm || opt.em)) this.editor = opt.sm || opt.em;
 
     this.model = (attrs, options) => {
-      var model;
+      let model;
 
       if (!options.sm && opt && opt.sm) options.sm = opt.sm;
 
@@ -23,10 +23,10 @@ module.exports = Backbone.Collection.extend({
       if (opt && opt.componentTypes)
         options.componentTypes = opt.componentTypes;
 
-      var df = opt.componentTypes;
+      let df = opt.componentTypes;
 
-      for (var it = 0; it < df.length; it++) {
-        var dfId = df[it].id;
+      for (let it = 0; it < df.length; it++) {
+        let dfId = df[it].id;
         if (dfId == attrs.type) {
           model = df[it].model;
           break;
@@ -44,14 +44,14 @@ module.exports = Backbone.Collection.extend({
 
   add(models, opt = {}) {
     if (typeof models === 'string') {
-      var parsed = this.editor.get('Parser').parseHtml(models);
+      let parsed = this.editor.get('Parser').parseHtml(models);
       models = parsed.html;
 
-      var cssc = this.editor.get('CssComposer');
+      let cssc = this.editor.get('CssComposer');
 
       if (parsed.css && cssc) {
-        var { avoidUpdateStyle } = opt;
-        var added = cssc.addCollection(parsed.css, {
+        let { avoidUpdateStyle } = opt;
+        let added = cssc.addCollection(parsed.css, {
           extend: 1,
           avoidUpdateStyle
         });
@@ -73,11 +73,11 @@ module.exports = Backbone.Collection.extend({
       em.get &&
       em.get('Config').forceClass
     ) {
-      var cssC = this.editor.get('CssComposer');
-      var newClass = this.editor.get('SelectorManager').add(model.cid);
+      let cssC = this.editor.get('CssComposer');
+      let newClass = this.editor.get('SelectorManager').add(model.cid);
       model.set({ style: {} });
       model.get('classes').add(newClass);
-      var rule = cssC.add(newClass);
+      let rule = cssC.add(newClass);
       rule.set('style', style);
     }
   }

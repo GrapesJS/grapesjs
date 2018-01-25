@@ -105,8 +105,8 @@ module.exports = require('backbone').View.extend({
    * @private
    */
   updateStatus() {
-    var chkOn = 'fa-check-square-o';
-    var chkOff = 'fa-square-o';
+    let chkOn = 'fa-check-square-o';
+    let chkOff = 'fa-square-o';
 
     if (!this.$chk) this.$chk = this.$el.find('#' + this.pfx + 'checkbox');
 

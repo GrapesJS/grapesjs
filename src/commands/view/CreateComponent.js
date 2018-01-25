@@ -46,7 +46,7 @@ module.exports = _.extend({}, SelectPosition, {
    * @param {Boolean} enable
    */
   toggleEvents(enable) {
-    var method = enable ? 'on' : 'off';
+    let method = enable ? 'on' : 'off';
     this.$wr[method]('mousemove', this.draw);
     this.$wr[method]('mouseup', this.endDraw);
     this.$canvas[method]('mousemove', this.draw);
@@ -71,12 +71,12 @@ module.exports = _.extend({}, SelectPosition, {
    * */
   endDraw(e) {
     this.toggleEvents();
-    var model = {};
+    let model = {};
     // Only if the mouse was moved
     if (this.isDragged) {
       this.updateComponentSize(e);
       this.setRequirements(this.tempComponent);
-      var lp = this.sorter.lastPos;
+      let lp = this.sorter.lastPos;
       model = this.create(
         this.sorter.target,
         this.tempComponent,
@@ -100,11 +100,11 @@ module.exports = _.extend({}, SelectPosition, {
    */
   create(target, component, index, method, opts) {
     index = method === 'after' ? index + 1 : index;
-    var opt = opts || {};
-    var $trg = $(target);
-    var trgModel = $trg.data('model');
-    var trgCollection = $trg.data('collection');
-    var droppable = trgModel ? trgModel.get('droppable') : 1;
+    let opt = opts || {};
+    let $trg = $(target);
+    let trgModel = $trg.data('model');
+    let trgCollection = $trg.data('collection');
+    let droppable = trgModel ? trgModel.get('droppable') : 1;
     opt.at = index;
     if (trgCollection && droppable) return trgCollection.add(component, opt);
     else console.warn('Invalid target position');
@@ -117,8 +117,8 @@ module.exports = _.extend({}, SelectPosition, {
    * @private
    * */
   setRequirements(component) {
-    var c = this.config;
-    var compStl = component.style;
+    let c = this.config;
+    let compStl = component.style;
     // Check min width
     if (compStl.width.replace(/\D/g, '') < c.minComponentW)
       compStl.width = c.minComponentW + 'px';
@@ -131,7 +131,7 @@ module.exports = _.extend({}, SelectPosition, {
       delete compStl.left;
       delete compStl.top;
     } else compStl.position = 'absolute';
-    var lp = this.sorter.lastPos;
+    let lp = this.sorter.lastPos;
 
     if (this.nearFloat(lp.index, lp.method, this.sorter.lastDims))
       compStl.float = 'left';
@@ -152,13 +152,13 @@ module.exports = _.extend({}, SelectPosition, {
    * @private
    * */
   updateComponentSize(e) {
-    var y = e.pageY + this.frameOff.top;
-    var x = e.pageX + this.frameOff.left;
-    var start = this.startPos;
-    var top = start.top;
-    var left = start.left;
-    var height = y - top;
-    var width = x - left;
+    let y = e.pageY + this.frameOff.top;
+    let x = e.pageX + this.frameOff.left;
+    let start = this.startPos;
+    let top = start.top;
+    let left = start.left;
+    let height = y - top;
+    let width = x - left;
     if (x < left) {
       left = x;
       width = start.left - x;
@@ -175,9 +175,9 @@ module.exports = _.extend({}, SelectPosition, {
    * @private
    */
   updateSize(top, left, width, height) {
-    var u = 'px';
-    var ghStl = this.ghost.style;
-    var compStl = this.tempComponent.style;
+    let u = 'px';
+    let ghStl = this.ghost.style;
+    let compStl = this.tempComponent.style;
     ghStl.top = compStl.top = top + u;
     ghStl.left = compStl.left = left + u;
     ghStl.width = compStl.width = width + u;
@@ -191,7 +191,7 @@ module.exports = _.extend({}, SelectPosition, {
    * @private
    * */
   rollback(e, force) {
-    var key = e.which || e.keyCode;
+    let key = e.which || e.keyCode;
     if (key == this.config.ESCAPE_KEY || force) {
       this.isDragged = false;
       this.endDraw();

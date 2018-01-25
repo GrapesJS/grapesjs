@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var LayerView = require('./LayerView');
+let Backbone = require('backbone');
+let LayerView = require('./LayerView');
 
 module.exports = Backbone.View.extend({
   initialize(o) {
@@ -17,8 +17,8 @@ module.exports = Backbone.View.extend({
     this.listenTo(collection, 'deselectAll', this.deselectAll);
     this.listenTo(collection, 'reset', this.render);
 
-    var em = this.config.em || '';
-    var utils = em ? em.get('Utils') : '';
+    let em = this.config.em || '';
+    let utils = em ? em.get('Utils') : '';
 
     this.sorter = utils
       ? new utils.Sorter({
@@ -43,7 +43,7 @@ module.exports = Backbone.View.extend({
    * @return Object
    * */
   addTo(model) {
-    var i = this.collection.indexOf(model);
+    let i = this.collection.indexOf(model);
     this.addToCollection(model, null, i);
   },
 
@@ -56,7 +56,7 @@ module.exports = Backbone.View.extend({
    * @return Object Object created
    * */
   addToCollection(model, fragmentEl, index) {
-    var fragment = fragmentEl || null;
+    let fragment = fragmentEl || null;
     const stackModel = this.stackModel;
     const config = this.config;
     const sorter = this.sorter;
@@ -66,20 +66,20 @@ module.exports = Backbone.View.extend({
       model.set('preview', this.preview);
     }
 
-    var view = new LayerView({
+    let view = new LayerView({
       model,
       config,
       sorter,
       stackModel,
       propsConfig
     });
-    var rendered = view.render().el;
+    let rendered = view.render().el;
 
     if (fragment) {
       fragment.appendChild(rendered);
     } else {
       if (typeof index != 'undefined') {
-        var method = 'before';
+        let method = 'before';
         // If the added model is the last of collection
         // need to change the logic of append
         if (this.$el.children().length == index) {
@@ -110,7 +110,7 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    var fragment = document.createDocumentFragment();
+    let fragment = document.createDocumentFragment();
     this.$el.empty();
 
     this.collection.each(function(model) {

@@ -43,9 +43,9 @@ module.exports = Input.extend({
    * @param {Object} opts
    */
   setValue(value, opts) {
-    var opt = opts || {};
-    var valid = this.validateInputValue(value, { deepCheck: 1 });
-    var validObj = { value: valid.value };
+    let opt = opts || {};
+    let valid = this.validateInputValue(value, { deepCheck: 1 });
+    let validObj = { value: valid.value };
 
     // If found some unit value
     if (valid.unit || valid.force) {
@@ -75,7 +75,7 @@ module.exports = Input.extend({
    */
   handleUnitChange(e) {
     e.stopPropagation();
-    var value = this.getUnitEl().value;
+    let value = this.getUnitEl().value;
     this.model.set('unit', value);
     this.elementUpdated();
   },
@@ -133,7 +133,7 @@ module.exports = Input.extend({
     const step = model.get('step');
     let value = parseInt(model.get('value'), 10);
     value = this.normalizeValue(value + step);
-    var valid = this.validateInputValue(value);
+    let valid = this.validateInputValue(value);
     model.set('value', valid.value);
     this.elementUpdated();
   },
@@ -146,7 +146,7 @@ module.exports = Input.extend({
     const step = model.get('step');
     const value = parseInt(model.get('value'), 10);
     const val = this.normalizeValue(value - step);
-    var valid = this.validateInputValue(val);
+    let valid = this.validateInputValue(val);
     model.set('value', valid.value);
     this.elementUpdated();
   },
@@ -160,7 +160,7 @@ module.exports = Input.extend({
   downIncrement(e) {
     e.preventDefault();
     this.moved = 0;
-    var value = this.model.get('value');
+    let value = this.model.get('value');
     value = this.normalizeValue(value);
     this.current = { y: e.pageY, val: value };
     on(this.doc, 'mousemove', this.moveIncrement);
@@ -177,7 +177,7 @@ module.exports = Input.extend({
     const model = this.model;
     const step = model.get('step');
     const data = this.current;
-    var pos = this.normalizeValue(data.val + (data.y - ev.pageY) * step);
+    let pos = this.normalizeValue(data.val + (data.y - ev.pageY) * step);
     this.prValue = this.validateInputValue(pos).value;
     model.set('value', this.prValue, { avoidStore: 1 });
     return false;
@@ -193,7 +193,7 @@ module.exports = Input.extend({
     off(this.doc, 'mousemove', this.moveIncrement);
 
     if (this.prValue && this.moved) {
-      var value = this.prValue - step;
+      let value = this.prValue - step;
       model.set('value', value, { avoidStore: 1 }).set('value', value + step);
       this.elementUpdated();
     }
@@ -225,31 +225,31 @@ module.exports = Input.extend({
    * @return {Object} Validated string
    */
   validateInputValue(value, opts) {
-    var force = 0;
-    var opt = opts || {};
-    var model = this.model;
-    var val = value !== '' ? value : model.get('defaults');
-    var units = model.get('units') || [];
-    var unit = model.get('unit') || (units.length && units[0]) || '';
-    var max = model.get('max');
-    var min = model.get('min');
+    let force = 0;
+    let opt = opts || {};
+    let model = this.model;
+    let val = value !== '' ? value : model.get('defaults');
+    let units = model.get('units') || [];
+    let unit = model.get('unit') || (units.length && units[0]) || '';
+    let max = model.get('max');
+    let min = model.get('min');
 
     if (opt.deepCheck) {
-      var fixed = model.get('fixedValues') || [];
+      let fixed = model.get('fixedValues') || [];
 
       if (val) {
         // If the value is one of the fixed values I leave it as it is
-        var regFixed = new RegExp('^' + fixed.join('|'), 'g');
+        let regFixed = new RegExp('^' + fixed.join('|'), 'g');
         if (fixed.length && regFixed.test(val)) {
           val = val.match(regFixed)[0];
           unit = '';
           force = 1;
         } else {
-          var valCopy = val + '';
+          let valCopy = val + '';
           val += ''; // Make it suitable for replace
           val = parseFloat(val.replace(',', '.'));
           val = !isNaN(val) ? val : model.get('defaults');
-          var uN = valCopy.replace(val, '');
+          let uN = valCopy.replace(val, '');
           // Check if exists as unit
           if (_.indexOf(units, uN) >= 0) unit = uN;
         }

@@ -497,9 +497,9 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * Init toolbar
      */
     initToolbar() {
-      var model = this;
+      let model = this;
       if (!model.get('toolbar')) {
-        var tb = [];
+        let tb = [];
         if (model.collection) {
           tb.push({
             attributes: { class: 'fa fa-arrow-up' },
@@ -535,7 +535,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @private
      */
     loadTraits(traits, opts = {}) {
-      var trt = new Traits([], this.opt);
+      let trt = new Traits([], this.opt);
       trt.setTarget(this);
       traits = traits || this.get('traits');
 
@@ -554,20 +554,20 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @private
      */
     normalizeClasses(arr) {
-      var res = [];
+      let res = [];
 
       if (!this.sm.get) return;
 
-      var clm = this.sm.get('SelectorManager');
+      let clm = this.sm.get('SelectorManager');
       if (!clm) return;
 
       arr.forEach(val => {
-        var name = '';
+        let name = '';
 
         if (typeof val === 'string') name = val;
         else name = val.name;
 
-        var model = clm.add(name);
+        let model = clm.add(name);
         res.push(model);
       });
       return res;
@@ -671,7 +671,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @private
      */
     getAttrToHTML() {
-      var attr = this.getAttributes();
+      let attr = this.getAttributes();
       delete attr.style;
       return attr;
     },
@@ -719,7 +719,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @private
      */
     getScriptString(script) {
-      var scr = script || this.get('script');
+      let scr = script || this.get('script');
 
       if (!scr) {
         return scr;
@@ -727,17 +727,17 @@ const Component = Backbone.Model.extend(Styleable).extend(
 
       // Need to convert script functions to strings
       if (typeof scr == 'function') {
-        var scrStr = scr.toString().trim();
+        let scrStr = scr.toString().trim();
         scrStr = scrStr
           .replace(/^function[\s\w]*\(\)\s?\{/, '')
           .replace(/\}$/, '');
         scr = scrStr.trim();
       }
 
-      var config = this.sm.config || {};
-      var tagVarStart = escapeRegExp(config.tagVarStart || '{[ ');
-      var tagVarEnd = escapeRegExp(config.tagVarEnd || ' ]}');
-      var reg = new RegExp(`${tagVarStart}([\\w\\d-]*)${tagVarEnd}`, 'g');
+      let config = this.sm.config || {};
+      let tagVarStart = escapeRegExp(config.tagVarStart || '{[ ');
+      let tagVarEnd = escapeRegExp(config.tagVarEnd || ' ]}');
+      let reg = new RegExp(`${tagVarStart}([\\w\\d-]*)${tagVarEnd}`, 'g');
       scr = scr.replace(reg, (match, v) => {
         // If at least one match is found I have to track this change for a
         // better optimization inside JS generator

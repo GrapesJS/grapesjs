@@ -4,7 +4,7 @@ const $ = Backbone.$;
 module.exports = TraitView.extend({
   initialize(o) {
     TraitView.prototype.initialize.apply(this, arguments);
-    var ppfx = this.ppfx;
+    let ppfx = this.ppfx;
     this.tmpl =
       '<div class="' +
       this.fieldClass +
@@ -25,14 +25,14 @@ module.exports = TraitView.extend({
    */
   getInputEl() {
     if (!this.$input) {
-      var md = this.model;
-      var opts = md.get('options') || [];
-      var input = '<select>';
+      let md = this.model;
+      let opts = md.get('options') || [];
+      let input = '<select>';
 
       if (opts.length) {
         _.each(opts, el => {
-          var name, value, style;
-          var attrs = '';
+          let name, value, style;
+          let attrs = '';
           if (typeof el === 'string') {
             name = el;
             value = el;
@@ -51,14 +51,14 @@ module.exports = TraitView.extend({
       this.input = input;
       this.$input = $(this.input);
 
-      var target = this.target;
-      var name = md.get('name');
-      var val = md.get('value');
+      let target = this.target;
+      let name = md.get('name');
+      let val = md.get('value');
 
       if (md.get('changeProp')) {
         val = val || target.get(name);
       } else {
-        var attrs = target.get('attributes');
+        let attrs = target.get('attributes');
         val = attrs[name];
       }
 

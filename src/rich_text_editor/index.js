@@ -272,7 +272,7 @@ module.exports = () => {
     disable(view, rte) {
       const em = config.em;
       const customRte = this.customRte;
-      var el = view.getChildrenContainer();
+      let el = view.getChildrenContainer();
 
       if (customRte) {
         customRte.disable(el, rte);

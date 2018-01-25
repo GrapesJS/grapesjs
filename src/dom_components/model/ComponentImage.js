@@ -1,4 +1,4 @@
-var Component = require('./Component');
+let Component = require('./Component');
 
 module.exports = Component.extend(
   {
@@ -20,7 +20,7 @@ module.exports = Component.extend(
 
     initialize(o, opt) {
       Component.prototype.initialize.apply(this, arguments);
-      var attr = this.get('attributes');
+      let attr = this.get('attributes');
       if (attr.src) this.set('src', attr.src);
     },
 
@@ -28,12 +28,12 @@ module.exports = Component.extend(
       Component.prototype.initToolbar.apply(this, args);
 
       if (this.sm && this.sm.get) {
-        var cmd = this.sm.get('Commands');
-        var cmdName = 'image-editor';
+        let cmd = this.sm.get('Commands');
+        let cmdName = 'image-editor';
 
         // Add Image Editor button only if the default command exists
         if (cmd.has(cmdName)) {
-          var tb = this.get('toolbar');
+          let tb = this.get('toolbar');
           tb.push({
             attributes: { class: 'fa fa-pencil' },
             command: cmdName
@@ -49,9 +49,9 @@ module.exports = Component.extend(
      * @private
      */
     getAttrToHTML(...args) {
-      var attr = Component.prototype.getAttrToHTML.apply(this, args);
+      let attr = Component.prototype.getAttrToHTML.apply(this, args);
       delete attr.onmousedown;
-      var src = this.get('src');
+      let src = this.get('src');
       if (src) attr.src = src;
       return attr;
     },
@@ -63,13 +63,13 @@ module.exports = Component.extend(
      * @private
      */
     parseUri(uri) {
-      var el = document.createElement('a');
+      let el = document.createElement('a');
       el.href = uri;
-      var query = {};
-      var qrs = el.search.substring(1).split('&');
-      for (var i = 0; i < qrs.length; i++) {
-        var pair = qrs[i].split('=');
-        var name = decodeURIComponent(pair[0]);
+      let query = {};
+      let qrs = el.search.substring(1).split('&');
+      for (let i = 0; i < qrs.length; i++) {
+        let pair = qrs[i].split('=');
+        let name = decodeURIComponent(pair[0]);
         if (name) query[name] = decodeURIComponent(pair[1]);
       }
       return {
@@ -93,7 +93,7 @@ module.exports = Component.extend(
      * @private
      */
     isComponent(el) {
-      var result = '';
+      let result = '';
       if (el.tagName == 'IMG') {
         result = { type: 'image' };
       }

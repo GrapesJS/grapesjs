@@ -29,13 +29,13 @@
  * ...
  */
 module.exports = () => {
-  var c = {},
+  let c = {},
     defaults = require('./config/config'),
     Blocks = require('./model/Blocks'),
     BlockCategories = require('./model/Categories'),
     BlocksView = require('./view/BlocksView');
-  var blocks, blocksVisible, blocksView;
-  var categories = [];
+  let blocks, blocksVisible, blocksView;
+  let categories = [];
 
   return {
     /**
@@ -132,7 +132,7 @@ module.exports = () => {
      * });
      */
     add(id, opts) {
-      var obj = opts || {};
+      let obj = opts || {};
       obj.id = id;
       return blocks.add(obj);
     },

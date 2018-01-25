@@ -112,9 +112,9 @@ module.exports = PropertyView.extend({
    * @return void
    * */
   openAssetManager(e) {
-    var that = this;
-    var em = this.em;
-    var editor = em ? em.get('Editor') : '';
+    let that = this;
+    let em = this.em;
+    let editor = em ? em.get('Editor') : '';
 
     if (editor) {
       this.modal.setTitle('Select image');

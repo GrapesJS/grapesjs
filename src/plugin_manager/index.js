@@ -1,13 +1,13 @@
 module.exports = config => {
-  var c = config || {},
+  let c = config || {},
     defaults = require('./config/config');
 
   // Set default options
-  for (var name in defaults) {
+  for (let name in defaults) {
     if (!(name in c)) c[name] = defaults[name];
   }
 
-  var plugins = {};
+  let plugins = {};
 
   return {
     /**

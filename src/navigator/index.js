@@ -11,7 +11,7 @@ module.exports = () => {
       const em = config.em;
 
       // Set default options
-      for (var name in defaults) {
+      for (let name in defaults) {
         if (!(name in config)) config[name] = defaults[name];
       }
 

@@ -26,7 +26,7 @@ module.exports = Backbone.View.extend({
   },
 
   add(model, frag) {
-    var view = new model.typeView({
+    let view = new model.typeView({
       model,
       name: model.get('name'),
       id: this.pfx + model.get('property'),

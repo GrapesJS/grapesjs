@@ -1,8 +1,8 @@
-var Backbone = require('backbone');
-var CodeMirror = require('codemirror/lib/codemirror');
-var htmlMode = require('codemirror/mode/htmlmixed/htmlmixed');
-var cssMode = require('codemirror/mode/css/css');
-var formatting = require('codemirror-formatting');
+let Backbone = require('backbone');
+let CodeMirror = require('codemirror/lib/codemirror');
+let htmlMode = require('codemirror/mode/htmlmixed/htmlmixed');
+let cssMode = require('codemirror/mode/css/css');
+let formatting = require('codemirror-formatting');
 
 module.exports = Backbone.Model.extend({
   defaults: {

@@ -18,7 +18,7 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
     SelectComponent.enable.apply(this, args);
     this.getBadgeEl().addClass(this.badgeClass);
     this.getHighlighterEl().addClass(this.hoverClass);
-    var wp = this.$wrapper;
+    let wp = this.$wrapper;
     wp.css('cursor', 'move');
     wp.on('mousedown', this.initSorter);
 
@@ -38,8 +38,8 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
    * @private
    * */
   initSorter(e) {
-    var el = $(e.target).data('model');
-    var drag = el.get('draggable');
+    let el = $(e.target).data('model');
+    let drag = el.get('draggable');
     if (!drag) return;
 
     // Avoid badge showing on move
@@ -58,11 +58,11 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
    * @private
    */
   initSorterFromModel(model) {
-    var drag = model.get('draggable');
+    let drag = model.get('draggable');
     if (!drag) return;
     // Avoid badge showing on move
     this.cacheEl = null;
-    var el = model.view.el;
+    let el = model.view.el;
     this.startSelectPosition(el, this.frameEl.contentDocument);
     this.sorter.draggable = drag;
     this.sorter.onEndMove = this.onEndMoveFromModel.bind(this);
@@ -107,7 +107,7 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
    * @private
    * */
   rollback(e, force) {
-    var key = e.which || e.keyCode;
+    let key = e.which || e.keyCode;
     if (key == this.opt.ESCAPE_KEY || force) {
       this.sorter.moved = false;
       this.sorter.endMove();
@@ -139,7 +139,7 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
     SelectComponent.stop.apply(this, args);
     this.getBadgeEl().removeClass(this.badgeClass);
     this.getHighlighterEl().removeClass(this.hoverClass);
-    var wp = this.$wrapper;
+    let wp = this.$wrapper;
     wp
       .css('cursor', '')
       .unbind()

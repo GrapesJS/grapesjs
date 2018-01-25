@@ -39,7 +39,7 @@ module.exports = require('backbone').Model.extend({
     this.em = em;
     this.compCls = [];
     this.ids = [];
-    var code = this.buildFromModel(model, opts);
+    let code = this.buildFromModel(model, opts);
 
     if (cssc) {
       const rules = cssc.getAll();

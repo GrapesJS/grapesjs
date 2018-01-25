@@ -8,7 +8,7 @@ module.exports = {
    * */
   startSelectPosition(trg, doc) {
     this.isPointed = false;
-    var utils = this.editorModel.get('Utils');
+    let utils = this.editorModel.get('Utils');
     if (utils && !this.sorter)
       this.sorter = new utils.Sorter({
         container: this.getCanvasBody(),
@@ -32,10 +32,10 @@ module.exports = {
    * @private
    */
   getOffsetDim() {
-    var frameOff = this.offset(this.canvas.getFrameEl());
-    var canvasOff = this.offset(this.canvas.getElement());
-    var top = frameOff.top - canvasOff.top;
-    var left = frameOff.left - canvasOff.left;
+    let frameOff = this.offset(this.canvas.getFrameEl());
+    let canvasOff = this.offset(this.canvas.getElement());
+    let top = frameOff.top - canvasOff.top;
+    let left = frameOff.left - canvasOff.left;
     return { top, left };
   },
 
@@ -86,10 +86,10 @@ module.exports = {
    * @private
    * */
   nearFloat(index, method, dims) {
-    var i = index || 0;
-    var m = method || 'before';
-    var len = dims.length;
-    var isLast = len !== 0 && m == 'after' && i == len;
+    let i = index || 0;
+    let m = method || 'before';
+    let len = dims.length;
+    let isLast = len !== 0 && m == 'after' && i == len;
     if (
       len !== 0 &&
       ((!isLast && !dims[i][4]) ||

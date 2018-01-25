@@ -1,11 +1,11 @@
 module.exports = {
   run(editor, sender, opts) {
-    var opt = opts || {};
-    var el = opt.el || '';
-    var canvas = editor.Canvas;
-    var canvasResizer = this.canvasResizer;
-    var options = opt.options || {};
-    var canvasView = canvas.getCanvasView();
+    let opt = opts || {};
+    let el = opt.el || '';
+    let canvas = editor.Canvas;
+    let canvasResizer = this.canvasResizer;
+    let options = opt.options || {};
+    let canvasView = canvas.getCanvasView();
     options.ratioDefault = 1;
     options.appendTo = canvas.getResizerEl();
     options.prefix = editor.getConfig().stylePrefix;

@@ -82,6 +82,7 @@
     ]
   },
   "scripts": {
+    "fix": "eslint --fix src",
     "lint": "eslint src",
     "check": "npm run lint && npm run test",
     "precommit": "lint-staged",

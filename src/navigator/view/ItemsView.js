@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var ItemView = require('./ItemView');
+let Backbone = require('backbone');
+let ItemView = require('./ItemView');
 
 module.exports = Backbone.View.extend({
   initialize(o = {}) {
@@ -16,8 +16,8 @@ module.exports = Backbone.View.extend({
     this.className = this.pfx + 'items';
 
     if (config.sortable && !this.opt.sorter) {
-      var pfx = this.pfx;
-      var utils = config.em.get('Utils');
+      let pfx = this.pfx;
+      let utils = config.em.get('Utils');
       this.opt.sorter = new utils.Sorter({
         container: config.sortContainer || this.el,
         containerSel: '.' + pfx + 'items',
@@ -47,7 +47,7 @@ module.exports = Backbone.View.extend({
    * @return Object
    * */
   addTo(model) {
-    var i = this.collection.indexOf(model);
+    let i = this.collection.indexOf(model);
     this.addToCollection(model, null, i);
   },
 
@@ -61,14 +61,14 @@ module.exports = Backbone.View.extend({
    * */
   addToCollection(model, fragmentEl, index) {
     const level = this.level;
-    var fragment = fragmentEl || null;
-    var viewObject = ItemView;
+    let fragment = fragmentEl || null;
+    let viewObject = ItemView;
 
     if (!this.isCountable(model, this.config.hideTextnode)) {
       return;
     }
 
-    var view = new viewObject({
+    let view = new viewObject({
       level,
       model,
       config: this.config,
@@ -76,13 +76,13 @@ module.exports = Backbone.View.extend({
       isCountable: this.isCountable,
       opened: this.opt.opened
     });
-    var rendered = view.render().el;
+    let rendered = view.render().el;
 
     if (fragment) {
       fragment.appendChild(rendered);
     } else {
       if (typeof index != 'undefined') {
-        var method = 'before';
+        let method = 'before';
         // If the added model is the last of collection
         // need to change the logic of append
         if (this.$el.children().length == index) {
@@ -110,8 +110,8 @@ module.exports = Backbone.View.extend({
    * @private
    */
   isCountable(model, hide) {
-    var type = model.get('type');
-    var tag = model.get('tagName');
+    let type = model.get('type');
+    let tag = model.get('tagName');
     if (
       ((type == 'textnode' || tag == 'br') && hide) ||
       !model.get('layerable')

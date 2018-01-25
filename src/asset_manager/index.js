@@ -177,7 +177,7 @@ module.exports = () => {
      * assetManager.remove('http://img.jpg');
      */
     remove(src) {
-      var asset = this.get(src);
+      let asset = this.get(src);
       this.getAll().remove(asset);
       return this;
     },
@@ -190,8 +190,8 @@ module.exports = () => {
      * var assets = assetManager.store();
      */
     store(noStore) {
-      var obj = {};
-      var assets = JSON.stringify(this.getAll().toJSON());
+      let obj = {};
+      let assets = JSON.stringify(this.getAll().toJSON());
       obj[this.storageKey] = assets;
       if (!noStore && c.stm) c.stm.store(obj);
       return obj;

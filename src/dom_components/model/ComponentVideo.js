@@ -25,8 +25,8 @@ module.exports = Component.extend(
     },
 
     initialize(o, opt) {
-      var traits = [];
-      var prov = this.get('provider');
+      let traits = [];
+      let prov = this.get('provider');
       switch (prov) {
         case yt:
           traits = this.getYoutubeTraits();
@@ -52,13 +52,13 @@ module.exports = Component.extend(
      * Set attributes by src string
      */
     parseFromSrc() {
-      var prov = this.get('provider');
-      var uri = this.parseUri(this.get('src'));
-      var qr = uri.query;
+      const prov = this.get('provider');
+      const uri = this.parseUri(this.get('src'));
+      const qr = uri.query;
       switch (prov) {
         case yt:
         case vi:
-          var videoId = uri.pathname.split('/').pop();
+          const videoId = uri.pathname.split('/').pop();
           this.set('videoId', videoId);
           if (qr.autoplay) this.set('autoplay', 1);
           if (qr.loop) this.set('loop', 1);
@@ -74,7 +74,7 @@ module.exports = Component.extend(
      * @private
      */
     updateSrc() {
-      var prov = this.get('provider');
+      let prov = this.get('provider');
       switch (prov) {
         case yt:
           this.set('src', this.getYoutubeSrc());
@@ -91,8 +91,8 @@ module.exports = Component.extend(
      * @private
      */
     getAttrToHTML(...args) {
-      var attr = Component.prototype.getAttrToHTML.apply(this, args);
-      var prov = this.get('provider');
+      let attr = Component.prototype.getAttrToHTML.apply(this, args);
+      let prov = this.get('provider');
       switch (prov) {
         case yt:
         case vi:
@@ -110,8 +110,8 @@ module.exports = Component.extend(
      * @private
      */
     updateTraits() {
-      var prov = this.get('provider');
-      var traits = this.getSourceTraits();
+      let prov = this.get('provider');
+      let traits = this.getSourceTraits();
       switch (prov) {
         case yt:
           this.set('tagName', 'iframe');
@@ -263,7 +263,7 @@ module.exports = Component.extend(
      * @private
      */
     getYoutubeSrc() {
-      var url = this.get('ytUrl');
+      let url = this.get('ytUrl');
       url += this.get('videoId') + '?';
       url += this.get('autoplay') ? '&autoplay=1' : '';
       url += !this.get('controls') ? '&controls=0' : '';
@@ -277,7 +277,7 @@ module.exports = Component.extend(
      * @private
      */
     getVimeoSrc() {
-      var url = this.get('viUrl');
+      let url = this.get('viUrl');
       url += this.get('videoId') + '?';
       url += this.get('autoplay') ? '&autoplay=1' : '';
       url += this.get('loop') ? '&loop=1' : '';
@@ -296,10 +296,10 @@ module.exports = Component.extend(
      * @private
      */
     isComponent(el) {
-      var result = '';
-      var isYtProv = /youtube\.com\/embed/.test(el.src);
-      var isViProv = /player\.vimeo\.com\/video/.test(el.src);
-      var isExtProv = isYtProv || isViProv;
+      let result = '';
+      let isYtProv = /youtube\.com\/embed/.test(el.src);
+      let isViProv = /player\.vimeo\.com\/video/.test(el.src);
+      let isExtProv = isYtProv || isViProv;
       if (el.tagName == 'VIDEO' || (el.tagName == 'IFRAME' && isExtProv)) {
         result = { type: 'video' };
         if (el.src) result.src = el.src;

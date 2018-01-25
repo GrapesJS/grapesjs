@@ -42,14 +42,14 @@ import { isFunction } from 'underscore';
 
 module.exports = () => {
   let em;
-  var c = {},
+  let c = {},
     commands = {},
     defaultCommands = {},
     defaults = require('./config/config'),
     AbsCommands = require('./view/CommandAbstract');
 
   // Need it here as it would be used below
-  var add = function(id, obj) {
+  let add = function(id, obj) {
     if (isFunction(obj)) {
       obj = { run: obj };
     }
@@ -74,16 +74,16 @@ module.exports = () => {
      */
     init(config) {
       c = config || {};
-      for (var name in defaults) {
+      for (let name in defaults) {
         if (!(name in c)) c[name] = defaults[name];
       }
       em = c.em;
-      var ppfx = c.pStylePrefix;
+      let ppfx = c.pStylePrefix;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
 
       // Load commands passed via configuration
-      for (var k in c.defaults) {
-        var obj = c.defaults[k];
+      for (let k in c.defaults) {
+        let obj = c.defaults[k];
         if (obj.id) this.add(obj.id, obj);
       }
 
@@ -111,7 +111,7 @@ module.exports = () => {
 
       defaultCommands['tlb-delete'] = {
         run(ed) {
-          var sel = ed.getSelected();
+          let sel = ed.getSelected();
 
           if (!sel || !sel.get('removable')) {
             console.warn('The element is not removable');
@@ -125,15 +125,15 @@ module.exports = () => {
 
       defaultCommands['tlb-clone'] = {
         run(ed) {
-          var sel = ed.getSelected();
+          let sel = ed.getSelected();
 
           if (!sel || !sel.get('copyable')) {
             console.warn('The element is not clonable');
             return;
           }
 
-          var collection = sel.collection;
-          var index = collection.indexOf(sel);
+          let collection = sel.collection;
+          let index = collection.indexOf(sel);
           const added = collection.add(sel.clone(), { at: index + 1 });
           sel.emitUpdate();
           ed.trigger('component:clone', added);
@@ -165,7 +165,7 @@ module.exports = () => {
           const onStart = (e, opts) => {
             console.log('start mouse pos ', opts.start);
             console.log('el rect ', opts.elRect);
-            var el = opts.el;
+            let el = opts.el;
             el.style.position = 'absolute';
             el.style.margin = 0;
           };
@@ -271,7 +271,7 @@ module.exports = () => {
      * myCommand.run();
      * */
     get(id) {
-      var el = commands[id];
+      let el = commands[id];
 
       if (typeof el == 'function') {
         el = new el(c);
@@ -296,7 +296,7 @@ module.exports = () => {
      * @private
      * */
     loadDefaultCommands() {
-      for (var id in defaultCommands) {
+      for (let id in defaultCommands) {
         this.add(id, defaultCommands[id]);
       }
 

@@ -15,7 +15,7 @@ module.exports = require('./PropertyView').extend({
   },
 
   onRender() {
-    var pfx = this.pfx;
+    let pfx = this.pfx;
     const model = this.model;
     const options = model.get('list') || model.get('options') || [];
 

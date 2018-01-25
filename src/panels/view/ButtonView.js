@@ -16,7 +16,7 @@ module.exports = Backbone.View.extend({
       'initSorter',
       'stopDrag'
     );
-    var cls = this.model.get('className');
+    let cls = this.model.get('className');
     this.config = o.config || {};
     this.em = this.config.em || {};
     const pfx = this.config.stylePrefix || '';
@@ -54,7 +54,7 @@ module.exports = Backbone.View.extend({
 
   initSorter() {
     if (this.em.Canvas) {
-      var canvas = this.em.Canvas;
+      let canvas = this.em.Canvas;
       this.canvasEl = canvas.getBody();
       this.sorter = new this.em.Utils.Sorter({
         container: this.canvasEl,
@@ -69,7 +69,7 @@ module.exports = Backbone.View.extend({
         wmargin: 1,
         nested: 1
       });
-      var offDim = canvas.getOffset();
+      let offDim = canvas.getOffset();
       this.sorter.offTop = offDim.top;
       this.sorter.offLeft = offDim.left;
     }
@@ -116,7 +116,7 @@ module.exports = Backbone.View.extend({
    * @return   void
    * */
   updateClassName() {
-    var cls = this.model.get('className');
+    let cls = this.model.get('className');
     this.$el.attr('class', this.pfx + 'btn' + (cls ? ' ' + cls : ''));
   },
 
@@ -194,7 +194,7 @@ module.exports = Backbone.View.extend({
    * @return   void
    * */
   closeOnKeyPress(e) {
-    var key = e.which || e.keyCode;
+    let key = e.which || e.keyCode;
     if (key == 27) this.hideButtons();
   },
 
@@ -208,8 +208,8 @@ module.exports = Backbone.View.extend({
     const context = model.get('context');
     const parent = this.parentM;
     let command = {};
-    var editor = this.em && this.em.get ? this.em.get('Editor') : null;
-    var commandName = model.get('command');
+    let editor = this.em && this.em.get ? this.em.get('Editor') : null;
+    let commandName = model.get('command');
 
     if (this.commands && isString(commandName)) {
       command = this.commands.get(commandName) || {};
@@ -280,11 +280,11 @@ module.exports = Backbone.View.extend({
   toogleActive() {
     if (this.parentM) this.swapParent();
 
-    var active = this.model.get('active');
+    let active = this.model.get('active');
     this.model.set('active', !active);
 
     // If the stop is requested
-    var command = this.em.get('Commands').get('select-comp');
+    let command = this.em.get('Commands').get('select-comp');
 
     if (active) {
       if (this.model.get('runDefaultCommand')) this.em.runDefault();
@@ -312,8 +312,8 @@ module.exports = Backbone.View.extend({
     this.$el.attr('class', this.className);
 
     if (this.model.get('buttons').length) {
-      var btnsView = require('./ButtonsView'); //Avoid Circular Dependencies
-      var view = new btnsView({
+      let btnsView = require('./ButtonsView'); //Avoid Circular Dependencies
+      let view = new btnsView({
         collection: this.model.get('buttons'),
         config: this.config,
         parentM: this.model

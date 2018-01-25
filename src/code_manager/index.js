@@ -18,7 +18,7 @@
  * @module CodeManager
  */
 module.exports = () => {
-  var c = {},
+  let c = {},
     defaults = require('./config/config'),
     gHtml = require('./model/HtmlGenerator'),
     gCss = require('./model/CssGenerator'),
@@ -27,7 +27,7 @@ module.exports = () => {
     eCM = require('./model/CodeMirrorEditor'),
     editorView = require('./view/EditorView');
 
-  var generators = {},
+  let generators = {},
     defGenerators = {},
     viewers = {},
     defViewers = {};
@@ -54,11 +54,11 @@ module.exports = () => {
      */
     init(config) {
       c = config || {};
-      for (var name in defaults) {
+      for (let name in defaults) {
         if (!(name in c)) c[name] = defaults[name];
       }
 
-      var ppfx = c.pStylePrefix;
+      let ppfx = c.pStylePrefix;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
 
       defGenerators.html = new gHtml();
@@ -179,7 +179,7 @@ module.exports = () => {
      * */
     getCode(model, genId, opt = {}) {
       opt.em = c.em;
-      var generator = this.getGenerator(genId);
+      let generator = this.getGenerator(genId);
       return generator ? generator.build(model, opt) : '';
     },
 
@@ -189,7 +189,7 @@ module.exports = () => {
      * @private
      * */
     loadDefaultGenerators() {
-      for (var id in defGenerators) this.addGenerator(id, defGenerators[id]);
+      for (let id in defGenerators) this.addGenerator(id, defGenerators[id]);
 
       return this;
     },
@@ -200,7 +200,7 @@ module.exports = () => {
      * @private
      * */
     loadDefaultViewers() {
-      for (var id in defViewers) this.addViewer(id, defViewers[id]);
+      for (let id in defViewers) this.addViewer(id, defViewers[id]);
 
       return this;
     }

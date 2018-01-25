@@ -1,4 +1,4 @@
-var Backbone = require('backbone');
+let Backbone = require('backbone');
 
 module.exports = Backbone.Model.extend({
   defaults: {
@@ -11,7 +11,7 @@ module.exports = Backbone.Model.extend({
   store(data, clb) {
     this.checkStorageEnvironment();
 
-    for (var key in data) localStorage.setItem(key, data[key]);
+    for (let key in data) localStorage.setItem(key, data[key]);
 
     if (typeof clb == 'function') {
       clb();
@@ -23,10 +23,10 @@ module.exports = Backbone.Model.extend({
    */
   load(keys, clb) {
     this.checkStorageEnvironment();
-    var result = {};
+    let result = {};
 
-    for (var i = 0, len = keys.length; i < len; i++) {
-      var value = localStorage.getItem(keys[i]);
+    for (let i = 0, len = keys.length; i < len; i++) {
+      let value = localStorage.getItem(keys[i]);
       if (value) result[keys[i]] = value;
     }
 
@@ -43,7 +43,7 @@ module.exports = Backbone.Model.extend({
   remove(keys) {
     this.checkStorageEnvironment();
 
-    for (var i = 0, len = keys.length; i < len; i++)
+    for (let i = 0, len = keys.length; i < len; i++)
       localStorage.removeItem(keys[i]);
   },
 

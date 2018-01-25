@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var CssRule = require('./CssRule');
+let Backbone = require('backbone');
+let CssRule = require('./CssRule');
 
 module.exports = Backbone.Collection.extend({
   initialize(models, opt) {
@@ -8,7 +8,7 @@ module.exports = Backbone.Collection.extend({
 
     // Not used
     this.model = (attrs, options) => {
-      var model;
+      let model;
 
       if (!options.sm && opt && opt.sm) options.sm = opt.sm;
 

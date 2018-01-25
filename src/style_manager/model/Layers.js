@@ -31,7 +31,7 @@ module.exports = Backbone.Collection.extend({
     // From: 1px 1px rgba(2px, 2px, 2px), 2px 2px rgba(3px, 3px, 3px)
     // To: 1px 1px rgba(2px,2px,2px), 2px 2px rgba(3px,3px,3px)
     value.replace(/\(([\w\s,.]*)\)/g, match => {
-      var cleaned = match.replace(/,\s*/g, ',');
+      let cleaned = match.replace(/,\s*/g, ',');
       value = value.replace(match, cleaned);
     });
     const layerValues = value ? value.split(', ') : [];

@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var InsertCustom = require('./InsertCustom');
+let Backbone = require('backbone');
+let InsertCustom = require('./InsertCustom');
 
 module.exports = _.extend({}, InsertCustom, {
   /**

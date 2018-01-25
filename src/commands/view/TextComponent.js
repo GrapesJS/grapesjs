@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var CreateComponent = require('./CreateComponent');
+let Backbone = require('backbone');
+let CreateComponent = require('./CreateComponent');
 
 module.exports = _.extend({}, CreateComponent, {
   /**

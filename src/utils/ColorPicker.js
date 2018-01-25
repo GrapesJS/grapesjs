@@ -10,7 +10,7 @@
 })(function($, undefined) {
   'use strict';
 
-  var defaultOpts = {
+  const defaultOpts = {
       // Callbacks
       beforeShow: noop,
       move: noop,
@@ -70,8 +70,8 @@
         return !!~('' + str).indexOf(substr);
       }
 
-      var elem = document.createElement('div');
-      var style = elem.style;
+      let elem = document.createElement('div');
+      let style = elem.style;
       style.cssText = 'background-color:rgba(0,0,0,.5)';
       return (
         contains(style.backgroundColor, 'rgba') ||
@@ -87,9 +87,9 @@
     markup = (function() {
       // IE does not support gradients with multiple stops, so we need to simulate
       //  that for the rainbow slider with 8 divs that each have a single gradient
-      var gradientFix = '';
+      let gradientFix = '';
       if (IE) {
-        for (var i = 1; i <= 6; i++) {
+        for (let i = 1; i <= 6; i++) {
           gradientFix += "<div class='sp-" + i + "'></div>";
         }
       }
@@ -136,18 +136,18 @@
     })();
 
   function paletteTemplate(p, color, className, opts) {
-    var html = [];
-    for (var i = 0; i < p.length; i++) {
-      var current = p[i];
+    let html = [];
+    for (let i = 0; i < p.length; i++) {
+      let current = p[i];
       if (current) {
-        var tiny = tinycolor(current);
-        var c =
+        let tiny = tinycolor(current);
+        let c =
           tiny.toHsl().l < 0.5
             ? 'sp-thumb-el sp-thumb-dark'
             : 'sp-thumb-el sp-thumb-light';
         c += tinycolor.equals(color, current) ? ' sp-thumb-active' : '';
-        var formattedString = tiny.toString(opts.preferredFormat || 'rgb');
-        var swatchStyle = rgbaSupport
+        let formattedString = tiny.toString(opts.preferredFormat || 'rgb');
+        let swatchStyle = rgbaSupport
           ? 'background-color:' + tiny.toRgbString()
           : 'filter:' + tiny.toFilter();
         html.push(
@@ -162,7 +162,7 @@
             ';"></span></span>'
         );
       } else {
-        var cls = 'sp-clear-display';
+        let cls = 'sp-clear-display';
         html.push(
           $('<div />')
             .append(
@@ -180,7 +180,7 @@
   }
 
   function hideAll() {
-    for (var i = 0; i < spectrums.length; i++) {
+    for (let i = 0; i < spectrums.length; i++) {
       if (spectrums[i]) {
         spectrums[i].hide();
       }
@@ -188,7 +188,7 @@
   }
 
   function instanceOptions(o, callbackContext) {
-    var opts = $.extend({}, defaultOpts, o);
+    let opts = $.extend({}, defaultOpts, o);
     opts.callbacks = {
       move: bind(opts.move, callbackContext),
       change: bind(opts.change, callbackContext),
@@ -200,7 +200,7 @@
   }
 
   function spectrum(element, o) {
-    var opts = instanceOptions(o, element),
+    let opts = instanceOptions(o, element),
       flat = opts.flat,
       showSelectionPalette = opts.showSelectionPalette,
       localStorageKey = opts.localStorageKey,
@@ -229,7 +229,7 @@
       draggingClass = 'sp-dragging',
       shiftMovementDirection = null;
 
-    var doc = element.ownerDocument,
+    let doc = element.ownerDocument,
       body = doc.body,
       boundElement = $(element),
       disabled = false,
@@ -285,9 +285,9 @@
         palette = opts.palette.slice(0);
         paletteArray = $.isArray(palette[0]) ? palette : [palette];
         paletteLookup = {};
-        for (var i = 0; i < paletteArray.length; i++) {
-          for (var j = 0; j < paletteArray[i].length; j++) {
-            var rgb = tinycolor(paletteArray[i][j]).toRgbString();
+        for (let i = 0; i < paletteArray.length; i++) {
+          for (let j = 0; j < paletteArray[i].length; j++) {
+            let rgb = tinycolor(paletteArray[i][j]).toRgbString();
             paletteLookup[rgb] = true;
           }
         }
@@ -328,7 +328,7 @@
       if (flat) {
         boundElement.after(container).hide();
       } else {
-        var appendTo =
+        let appendTo =
           opts.appendTo === 'parent' ? boundElement.parent() : $(opts.appendTo);
         if (appendTo.length !== 1) {
           appendTo = $('body');
@@ -463,17 +463,17 @@
           if (!e.shiftKey) {
             shiftMovementDirection = null;
           } else if (!shiftMovementDirection) {
-            var oldDragX = currentSaturation * dragWidth;
-            var oldDragY = dragHeight - currentValue * dragHeight;
-            var furtherFromX =
+            let oldDragX = currentSaturation * dragWidth;
+            let oldDragY = dragHeight - currentValue * dragHeight;
+            let furtherFromX =
               Math.abs(dragX - oldDragX) > Math.abs(dragY - oldDragY);
 
             shiftMovementDirection = furtherFromX ? 'x' : 'y';
           }
 
-          var setSaturation =
+          let setSaturation =
             !shiftMovementDirection || shiftMovementDirection === 'x';
-          var setValue =
+          let setValue =
             !shiftMovementDirection || shiftMovementDirection === 'y';
 
           if (setSaturation) {
@@ -536,7 +536,7 @@
         return false;
       }
 
-      var paletteEvent = IE
+      let paletteEvent = IE
         ? 'mousedown.spectrum'
         : 'click.spectrum touchstart.spectrum';
       paletteContainer.delegate(
@@ -556,7 +556,7 @@
       if (localStorageKey && window.localStorage) {
         // Migrate old palettes over to new format.  May want to remove this eventually.
         try {
-          var oldPalette = window.localStorage[localStorageKey].split(',#');
+          let oldPalette = window.localStorage[localStorageKey].split(',#');
           if (oldPalette.length > 1) {
             delete window.localStorage[localStorageKey];
             $.each(oldPalette, function(i, c) {
@@ -573,7 +573,7 @@
 
     function addColorToSelectionPalette(color) {
       if (showSelectionPalette) {
-        var rgb = tinycolor(color).toRgbString();
+        let rgb = tinycolor(color).toRgbString();
         if (!paletteLookup[rgb] && $.inArray(rgb, selectionPalette) === -1) {
           selectionPalette.push(rgb);
           while (selectionPalette.length > maxSelectionSize) {
@@ -590,10 +590,10 @@
     }
 
     function getUniqueSelectionPalette() {
-      var unique = [];
+      let unique = [];
       if (opts.showPalette) {
-        for (var i = 0; i < selectionPalette.length; i++) {
-          var rgb = tinycolor(selectionPalette[i]).toRgbString();
+        for (let i = 0; i < selectionPalette.length; i++) {
+          let rgb = tinycolor(selectionPalette[i]).toRgbString();
 
           if (!paletteLookup[rgb]) {
             unique.push(selectionPalette[i]);
@@ -605,9 +605,9 @@
     }
 
     function drawPalette() {
-      var currentColor = get();
+      let currentColor = get();
 
-      var html = $.map(paletteArray, function(palette, i) {
+      let html = $.map(paletteArray, function(palette, i) {
         return paletteTemplate(
           palette,
           currentColor,
@@ -634,8 +634,8 @@
 
     function drawInitial() {
       if (opts.showInitial) {
-        var initial = colorOnShow;
-        var current = get();
+        let initial = colorOnShow;
+        let current = get();
         initialColorContainer.html(
           paletteTemplate(
             [initial, current],
@@ -664,13 +664,13 @@
     }
 
     function setFromTextInput() {
-      var value = textInput.val();
+      let value = textInput.val();
 
       if ((value === null || value === '') && allowEmpty) {
         set(null);
         updateOriginalInput(true);
       } else {
-        var tiny = tinycolor(value);
+        let tiny = tinycolor(value);
         if (tiny.isValid()) {
           set(tiny);
           updateOriginalInput(true);
@@ -689,7 +689,7 @@
     }
 
     function show() {
-      var event = $.Event('beforeShow.spectrum');
+      let event = $.Event('beforeShow.spectrum');
 
       if (visible) {
         reflow();
@@ -705,7 +705,7 @@
       hideAll();
       visible = true;
 
-      var $doc = $(doc);
+      let $doc = $(doc);
       $doc.bind('keydown.spectrum', onkeydown);
       $doc.bind('click.spectrum', clickout);
       $(window).bind('resize.spectrum', resize);
@@ -779,7 +779,7 @@
         return;
       }
 
-      var newColor, newHsv;
+      let newColor, newHsv;
       if (!color && allowEmpty) {
         isEmpty = true;
       } else {
@@ -834,11 +834,11 @@
       updateHelperLocations();
 
       // Update dragger background color (gradients take care of saturation and value).
-      var flatColor = tinycolor.fromRatio({ h: currentHue, s: 1, v: 1 });
+      let flatColor = tinycolor.fromRatio({ h: currentHue, s: 1, v: 1 });
       dragger.css('background-color', flatColor.toHexString());
 
       // Get a format that alpha will be included in (hex and names ignore alpha)
-      var format = currentPreferredFormat;
+      let format = currentPreferredFormat;
       if (currentAlpha < 1 && !(currentAlpha === 0 && format === 'name')) {
         if (
           format === 'hex' ||
@@ -850,7 +850,7 @@
         }
       }
 
-      var realColor = get({ format: format }),
+      let realColor = get({ format: format }),
         displayColor = '';
 
       //reset background info for preview element
@@ -861,7 +861,7 @@
         // Update the replaced elements background with icon indicating no color selection
         previewElement.addClass('sp-clear-display');
       } else {
-        var realHex = realColor.toHexString(),
+        let realHex = realColor.toHexString(),
           realRgb = realColor.toRgbString();
 
         // Update the replaced elements background color (with actual selected color)
@@ -873,10 +873,10 @@
         }
 
         if (opts.showAlpha) {
-          var rgb = realColor.toRgb();
+          let rgb = realColor.toRgb();
           rgb.a = 0;
-          var realAlpha = tinycolor(rgb).toRgbString();
-          var gradient =
+          let realAlpha = tinycolor(rgb).toRgbString();
+          let gradient =
             'linear-gradient(left, ' + realAlpha + ', ' + realHex + ')';
 
           if (IE) {
@@ -912,8 +912,8 @@
     }
 
     function updateHelperLocations() {
-      var s = currentSaturation;
-      var v = currentValue;
+      let s = currentSaturation;
+      let v = currentValue;
 
       if (allowEmpty && isEmpty) {
         //if selected color is empty, hide the helpers
@@ -927,8 +927,8 @@
         dragHelper.show();
 
         // Where to show the little circle in that displays your current selected color
-        var dragX = s * dragWidth;
-        var dragY = dragHeight - v * dragHeight;
+        let dragX = s * dragWidth;
+        let dragY = dragHeight - v * dragHeight;
         dragX = Math.max(
           -dragHelperHeight,
           Math.min(dragWidth - dragHelperHeight, dragX - dragHelperHeight)
@@ -942,13 +942,13 @@
           left: dragX + 'px'
         });
 
-        var alphaX = currentAlpha * alphaWidth;
+        let alphaX = currentAlpha * alphaWidth;
         alphaSlideHelper.css({
           left: alphaX - alphaSlideHelperWidth / 2 + 'px'
         });
 
         // Where to show the bar that displays your current selected hue
-        var slideY = currentHue * slideHeight;
+        let slideY = currentHue * slideHeight;
         slideHelper.css({
           top: slideY - slideHelperHeight + 'px'
         });
@@ -956,7 +956,7 @@
     }
 
     function updateOriginalInput(fireCallback) {
-      var color = get(),
+      let color = get(),
         displayColor = '',
         hasChanged = !tinycolor.equals(color, colorOnShow);
 
@@ -1051,7 +1051,7 @@
 
     initialize();
 
-    var spect = {
+    const spect = {
       show: show,
       hide: hide,
       toggle: toggle,
@@ -1079,19 +1079,19 @@
    * Thanks https://github.com/jquery/jquery-ui/blob/master/ui/jquery.ui.datepicker.js
    */
   function getOffset(picker, input) {
-    var extraY = 0;
-    var dpWidth = picker.outerWidth();
-    var dpHeight = picker.outerHeight();
-    var inputHeight = input.outerHeight();
-    var doc = picker[0].ownerDocument;
-    var docElem = doc.documentElement;
-    var cW = docElem.clientWidth;
-    var cH = docElem.clientHeight;
-    var scL = $(doc).scrollLeft();
-    var scT = $(doc).scrollTop();
-    var viewWidth = cW + scL;
-    var viewHeight = cH + scT;
-    var offset = input.offset();
+    let extraY = 0;
+    let dpWidth = picker.outerWidth();
+    let dpHeight = picker.outerHeight();
+    let inputHeight = input.outerHeight();
+    let doc = picker[0].ownerDocument;
+    let docElem = doc.documentElement;
+    let cW = docElem.clientWidth;
+    let cH = docElem.clientHeight;
+    let scL = $(doc).scrollLeft();
+    let scT = $(doc).scrollTop();
+    let viewWidth = cW + scL;
+    let viewHeight = cH + scT;
+    let offset = input.offset();
 
     offset.top += inputHeight;
 
@@ -1129,8 +1129,8 @@
    * Thanks to underscore.js
    */
   function bind(func, obj) {
-    var slice = Array.prototype.slice;
-    var args = slice.call(arguments, 2);
+    let slice = Array.prototype.slice;
+    let args = slice.call(arguments, 2);
     return function() {
       return func.apply(obj, args.concat(slice.call(arguments)));
     };
@@ -1144,14 +1144,14 @@
     onmove = onmove || function() {};
     onstart = onstart || function() {};
     onstop = onstop || function() {};
-    var doc = document;
-    var dragging = false;
-    var offset = {};
-    var maxHeight = 0;
-    var maxWidth = 0;
-    var hasTouch = 'ontouchstart' in window;
+    let doc = document;
+    let dragging = false;
+    let offset = {};
+    let maxHeight = 0;
+    let maxWidth = 0;
+    let hasTouch = 'ontouchstart' in window;
 
-    var duringDragEvents = {};
+    let duringDragEvents = {};
     duringDragEvents['selectstart'] = prevent;
     duringDragEvents['dragstart'] = prevent;
     duringDragEvents['touchmove mousemove'] = move;
@@ -1174,15 +1174,15 @@
           return stop();
         }
 
-        var t0 =
+        let t0 =
           e.originalEvent &&
           e.originalEvent.touches &&
           e.originalEvent.touches[0];
-        var pageX = (t0 && t0.pageX) || e.pageX;
-        var pageY = (t0 && t0.pageY) || e.pageY;
+        let pageX = (t0 && t0.pageX) || e.pageX;
+        let pageY = (t0 && t0.pageY) || e.pageY;
 
-        var dragX = Math.max(0, Math.min(pageX - offset.left, maxWidth));
-        var dragY = Math.max(0, Math.min(pageY - offset.top, maxHeight));
+        let dragX = Math.max(0, Math.min(pageX - offset.left, maxWidth));
+        let dragY = Math.max(0, Math.min(pageY - offset.top, maxHeight));
 
         if (hasTouch) {
           // Stop scrolling in iOS
@@ -1194,7 +1194,7 @@
     }
 
     function start(e) {
-      var rightclick = e.which ? e.which == 3 : e.button == 2;
+      let rightclick = e.which ? e.which == 3 : e.button == 2;
 
       if (!rightclick && !dragging) {
         if (onstart.apply(element, arguments) !== false) {
@@ -1231,11 +1231,11 @@
   }
 
   function throttle(func, wait, debounce) {
-    var timeout;
+    let timeout;
     return function() {
-      var context = this,
+      let context = this,
         args = arguments;
-      var throttler = function() {
+      let throttler = function() {
         timeout = null;
         func.apply(context, args);
       };
@@ -1251,16 +1251,16 @@
   /**
    * Define a jQuery plugin
    */
-  var dataID = 'spectrum.id';
+  let dataID = 'spectrum.id';
   $.fn.spectrum = function(opts, extra) {
     if (typeof opts == 'string') {
-      var returnValue = this;
-      var args = Array.prototype.slice.call(arguments, 1);
+      let returnValue = this;
+      let args = Array.prototype.slice.call(arguments, 1);
 
       this.each(function() {
-        var spect = spectrums[$(this).data(dataID)];
+        let spect = spectrums[$(this).data(dataID)];
         if (spect) {
-          var method = spect[opts];
+          let method = spect[opts];
           if (!method) {
             throw new Error("Spectrum: no such method: '" + opts + "'");
           }
@@ -1285,8 +1285,8 @@
 
     // Initializing a new instance of spectrum
     return this.spectrum('destroy').each(function() {
-      var options = $.extend({}, opts, $(this).data());
-      var spect = spectrum(this, options);
+      let options = $.extend({}, opts, $(this).data());
+      let spect = spectrum(this, options);
       $(this).data(dataID, spect.id);
     });
   };
@@ -1297,7 +1297,7 @@
   $.fn.spectrum.defaults = defaultOpts;
   $.fn.spectrum.inputTypeColorSupport = function inputTypeColorSupport() {
     if (typeof inputTypeColorSupport._cachedResult === 'undefined') {
-      var colorInput = $("<input type='color'/>")[0]; // if color element is supported, value will default to not null
+      let colorInput = $("<input type='color'/>")[0]; // if color element is supported, value will default to not null
       inputTypeColorSupport._cachedResult =
         colorInput.type === 'color' && colorInput.value !== '';
     }
@@ -1309,7 +1309,7 @@
   $.spectrum.palettes = {};
 
   $.fn.spectrum.processNativeColorInputs = function() {
-    var colorInputs = $('input[type=color]');
+    let colorInputs = $('input[type=color]');
     if (colorInputs.length && !inputTypeColorSupport()) {
       colorInputs.spectrum({
         preferredFormat: 'hex6'
@@ -1323,7 +1323,7 @@
 
   //(function() {
 
-  var trimLeft = /^[\s,#]+/,
+  let trimLeft = /^[\s,#]+/,
     trimRight = /\s+$/,
     tinyCounter = 0,
     math = Math,
@@ -1332,7 +1332,7 @@
     mathMax = math.max,
     mathRandom = math.random;
 
-  var tinycolor = function(color, opts) {
+  const tinycolor = function(color, opts) {
     color = color ? color : '';
     opts = opts || {};
 
@@ -1345,7 +1345,7 @@
       return new tinycolor(color, opts);
     }
 
-    var rgb = inputToRGB(color);
+    let rgb = inputToRGB(color);
     (this._originalInput = color),
       (this._r = rgb.r),
       (this._g = rgb.g),
@@ -1370,7 +1370,7 @@
     }
 
     this._ok = rgb.ok;
-    this._tc_id = tinyCounter++;
+    this._tcId = tinyCounter++;
   };
 
   tinycolor.prototype = {
@@ -1393,7 +1393,7 @@
       return this._a;
     },
     getBrightness: function() {
-      var rgb = this.toRgb();
+      let rgb = this.toRgb();
       return (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
     },
     setAlpha: function(value) {
@@ -1402,12 +1402,12 @@
       return this;
     },
     toHsv: function() {
-      var hsv = rgbToHsv(this._r, this._g, this._b);
+      let hsv = rgbToHsv(this._r, this._g, this._b);
       return { h: hsv.h * 360, s: hsv.s, v: hsv.v, a: this._a };
     },
     toHsvString: function() {
-      var hsv = rgbToHsv(this._r, this._g, this._b);
-      var h = mathRound(hsv.h * 360),
+      let hsv = rgbToHsv(this._r, this._g, this._b);
+      let h = mathRound(hsv.h * 360),
         s = mathRound(hsv.s * 100),
         v = mathRound(hsv.v * 100);
       return this._a == 1
@@ -1415,12 +1415,12 @@
         : 'hsva(' + h + ', ' + s + '%, ' + v + '%, ' + this._roundA + ')';
     },
     toHsl: function() {
-      var hsl = rgbToHsl(this._r, this._g, this._b);
+      let hsl = rgbToHsl(this._r, this._g, this._b);
       return { h: hsl.h * 360, s: hsl.s, l: hsl.l, a: this._a };
     },
     toHslString: function() {
-      var hsl = rgbToHsl(this._r, this._g, this._b);
-      var h = mathRound(hsl.h * 360),
+      let hsl = rgbToHsl(this._r, this._g, this._b);
+      let h = mathRound(hsl.h * 360),
         s = mathRound(hsl.s * 100),
         l = mathRound(hsl.l * 100);
       return this._a == 1
@@ -1505,12 +1505,12 @@
       return hexNames[rgbToHex(this._r, this._g, this._b, true)] || false;
     },
     toFilter: function(secondColor) {
-      var hex8String = '#' + rgbaToHex(this._r, this._g, this._b, this._a);
-      var secondHex8String = hex8String;
-      var gradientType = this._gradientType ? 'GradientType = 1, ' : '';
+      let hex8String = '#' + rgbaToHex(this._r, this._g, this._b, this._a);
+      let secondHex8String = hex8String;
+      let gradientType = this._gradientType ? 'GradientType = 1, ' : '';
 
       if (secondColor) {
-        var s = tinycolor(secondColor);
+        let s = tinycolor(secondColor);
         secondHex8String = s.toHex8String();
       }
 
@@ -1525,12 +1525,12 @@
       );
     },
     toString: function(format) {
-      var formatSet = !!format;
+      let formatSet = !!format;
       format = format || this._format;
 
-      var formattedString = false;
-      var hasAlpha = this._a < 1 && this._a >= 0;
-      var needsAlphaFormat =
+      let formattedString = false;
+      let hasAlpha = this._a < 1 && this._a >= 0;
+      let needsAlphaFormat =
         !formatSet &&
         hasAlpha &&
         (format === 'hex' ||
@@ -1575,7 +1575,7 @@
     },
 
     _applyModification: function(fn, args) {
-      var color = fn.apply(null, [this].concat([].slice.call(args)));
+      let color = fn.apply(null, [this].concat([].slice.call(args)));
       this._r = color._r;
       this._g = color._g;
       this._b = color._b;
@@ -1631,8 +1631,8 @@
   // String input requires "1.0" as input, so 1 will be treated as 1
   tinycolor.fromRatio = function(color, opts) {
     if (typeof color == 'object') {
-      var newColor = {};
-      for (var i in color) {
+      let newColor = {};
+      for (let i in color) {
         if (color.hasOwnProperty(i)) {
           if (i === 'a') {
             newColor[i] = color[i];
@@ -1663,10 +1663,10 @@
   //     "hsv(0, 100%, 100%)" or "hsv 0 100% 100%"
   //
   function inputToRGB(color) {
-    var rgb = { r: 0, g: 0, b: 0 };
-    var a = 1;
-    var ok = false;
-    var format = false;
+    let rgb = { r: 0, g: 0, b: 0 };
+    let a = 1;
+    let ok = false;
+    let format = false;
 
     if (typeof color == 'string') {
       color = stringInputToObject(color);
@@ -1748,16 +1748,16 @@
     g = bound01(g, 255);
     b = bound01(b, 255);
 
-    var max = mathMax(r, g, b),
+    let max = mathMax(r, g, b),
       min = mathMin(r, g, b);
-    var h,
+    let h,
       s,
       l = (max + min) / 2;
 
     if (max == min) {
       h = s = 0; // achromatic
     } else {
-      var d = max - min;
+      let d = max - min;
       s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
       switch (max) {
         case r:
@@ -1782,7 +1782,7 @@
   // *Assumes:* h is contained in [0, 1] or [0, 360] and s and l are contained [0, 1] or [0, 100]
   // *Returns:* { r, g, b } in the set [0, 255]
   function hslToRgb(h, s, l) {
-    var r, g, b;
+    let r, g, b;
 
     h = bound01(h, 360);
     s = bound01(s, 100);
@@ -1800,8 +1800,8 @@
     if (s === 0) {
       r = g = b = l; // achromatic
     } else {
-      var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-      var p = 2 * l - q;
+      let q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      let p = 2 * l - q;
       r = hue2rgb(p, q, h + 1 / 3);
       g = hue2rgb(p, q, h);
       b = hue2rgb(p, q, h - 1 / 3);
@@ -1819,13 +1819,13 @@
     g = bound01(g, 255);
     b = bound01(b, 255);
 
-    var max = mathMax(r, g, b),
+    let max = mathMax(r, g, b),
       min = mathMin(r, g, b);
-    var h,
+    let h,
       s,
       v = max;
 
-    var d = max - min;
+    let d = max - min;
     s = max === 0 ? 0 : d / max;
 
     if (max == min) {
@@ -1856,7 +1856,7 @@
     s = bound01(s, 100);
     v = bound01(v, 100);
 
-    var i = math.floor(h),
+    let i = math.floor(h),
       f = h - i,
       p = v * (1 - s),
       q = v * (1 - f * s),
@@ -1874,7 +1874,7 @@
   // Assumes r, g, and b are contained in the set [0, 255]
   // Returns a 3 or 6 character hex
   function rgbToHex(r, g, b, allow3Char) {
-    var hex = [
+    let hex = [
       pad2(mathRound(r).toString(16)),
       pad2(mathRound(g).toString(16)),
       pad2(mathRound(b).toString(16))
@@ -1897,7 +1897,7 @@
   // Assumes r, g, b and a are contained in the set [0, 255]
   // Returns an 8 character hex
   function rgbaToHex(r, g, b, a) {
-    var hex = [
+    let hex = [
       pad2(convertDecimalToHex(a)),
       pad2(mathRound(r).toString(16)),
       pad2(mathRound(g).toString(16)),
@@ -1930,7 +1930,7 @@
 
   function desaturate(color, amount) {
     amount = amount === 0 ? 0 : amount || 10;
-    var hsl = tinycolor(color).toHsl();
+    let hsl = tinycolor(color).toHsl();
     hsl.s -= amount / 100;
     hsl.s = clamp01(hsl.s);
     return tinycolor(hsl);
@@ -1938,7 +1938,7 @@
 
   function saturate(color, amount) {
     amount = amount === 0 ? 0 : amount || 10;
-    var hsl = tinycolor(color).toHsl();
+    let hsl = tinycolor(color).toHsl();
     hsl.s += amount / 100;
     hsl.s = clamp01(hsl.s);
     return tinycolor(hsl);
@@ -1950,7 +1950,7 @@
 
   function lighten(color, amount) {
     amount = amount === 0 ? 0 : amount || 10;
-    var hsl = tinycolor(color).toHsl();
+    let hsl = tinycolor(color).toHsl();
     hsl.l += amount / 100;
     hsl.l = clamp01(hsl.l);
     return tinycolor(hsl);
@@ -1958,7 +1958,7 @@
 
   function brighten(color, amount) {
     amount = amount === 0 ? 0 : amount || 10;
-    var rgb = tinycolor(color).toRgb();
+    let rgb = tinycolor(color).toRgb();
     rgb.r = mathMax(0, mathMin(255, rgb.r - mathRound(255 * -(amount / 100))));
     rgb.g = mathMax(0, mathMin(255, rgb.g - mathRound(255 * -(amount / 100))));
     rgb.b = mathMax(0, mathMin(255, rgb.b - mathRound(255 * -(amount / 100))));
@@ -1967,7 +1967,7 @@
 
   function darken(color, amount) {
     amount = amount === 0 ? 0 : amount || 10;
-    var hsl = tinycolor(color).toHsl();
+    let hsl = tinycolor(color).toHsl();
     hsl.l -= amount / 100;
     hsl.l = clamp01(hsl.l);
     return tinycolor(hsl);
@@ -1976,8 +1976,8 @@
   // Spin takes a positive or negative amount within [-360, 360] indicating the change of hue.
   // Values outside of this range will be wrapped into this range.
   function spin(color, amount) {
-    var hsl = tinycolor(color).toHsl();
-    var hue = (mathRound(hsl.h) + amount) % 360;
+    let hsl = tinycolor(color).toHsl();
+    let hue = (mathRound(hsl.h) + amount) % 360;
     hsl.h = hue < 0 ? 360 + hue : hue;
     return tinycolor(hsl);
   }
@@ -1988,14 +1988,14 @@
   // <https://github.com/infusion/jQuery-xcolor/blob/master/jquery.xcolor.js>
 
   function complement(color) {
-    var hsl = tinycolor(color).toHsl();
+    let hsl = tinycolor(color).toHsl();
     hsl.h = (hsl.h + 180) % 360;
     return tinycolor(hsl);
   }
 
   function triad(color) {
-    var hsl = tinycolor(color).toHsl();
-    var h = hsl.h;
+    let hsl = tinycolor(color).toHsl();
+    let h = hsl.h;
     return [
       tinycolor(color),
       tinycolor({ h: (h + 120) % 360, s: hsl.s, l: hsl.l }),
@@ -2004,8 +2004,8 @@
   }
 
   function tetrad(color) {
-    var hsl = tinycolor(color).toHsl();
-    var h = hsl.h;
+    let hsl = tinycolor(color).toHsl();
+    let h = hsl.h;
     return [
       tinycolor(color),
       tinycolor({ h: (h + 90) % 360, s: hsl.s, l: hsl.l }),
@@ -2015,8 +2015,8 @@
   }
 
   function splitcomplement(color) {
-    var hsl = tinycolor(color).toHsl();
-    var h = hsl.h;
+    let hsl = tinycolor(color).toHsl();
+    let h = hsl.h;
     return [
       tinycolor(color),
       tinycolor({ h: (h + 72) % 360, s: hsl.s, l: hsl.l }),
@@ -2028,9 +2028,9 @@
     results = results || 6;
     slices = slices || 30;
 
-    var hsl = tinycolor(color).toHsl();
-    var part = 360 / slices;
-    var ret = [tinycolor(color)];
+    let hsl = tinycolor(color).toHsl();
+    let part = 360 / slices;
+    let ret = [tinycolor(color)];
 
     for (hsl.h = (hsl.h - ((part * results) >> 1) + 720) % 360; --results; ) {
       hsl.h = (hsl.h + part) % 360;
@@ -2041,12 +2041,12 @@
 
   function monochromatic(color, results) {
     results = results || 6;
-    var hsv = tinycolor(color).toHsv();
-    var h = hsv.h,
+    let hsv = tinycolor(color).toHsv();
+    let h = hsv.h,
       s = hsv.s,
       v = hsv.v;
-    var ret = [];
-    var modification = 1 / results;
+    let ret = [];
+    let modification = 1 / results;
 
     while (results--) {
       ret.push(tinycolor({ h: h, s: s, v: v }));
@@ -2062,14 +2062,14 @@
   tinycolor.mix = function(color1, color2, amount) {
     amount = amount === 0 ? 0 : amount || 50;
 
-    var rgb1 = tinycolor(color1).toRgb();
-    var rgb2 = tinycolor(color2).toRgb();
+    let rgb1 = tinycolor(color1).toRgb();
+    let rgb2 = tinycolor(color2).toRgb();
 
-    var p = amount / 100;
-    var w = p * 2 - 1;
-    var a = rgb2.a - rgb1.a;
+    let p = amount / 100;
+    let w = p * 2 - 1;
+    let a = rgb2.a - rgb1.a;
 
-    var w1;
+    let w1;
 
     if (w * a == -1) {
       w1 = w;
@@ -2079,9 +2079,9 @@
 
     w1 = (w1 + 1) / 2;
 
-    var w2 = 1 - w1;
+    let w2 = 1 - w1;
 
-    var rgba = {
+    let rgba = {
       r: rgb2.r * w1 + rgb1.r * w2,
       g: rgb2.g * w1 + rgb1.g * w2,
       b: rgb2.b * w1 + rgb1.b * w2,
@@ -2100,13 +2100,13 @@
   //    `brightness`: difference in brightness between the two colors
   //    `color`: difference in color/hue between the two colors
   tinycolor.readability = function(color1, color2) {
-    var c1 = tinycolor(color1);
-    var c2 = tinycolor(color2);
-    var rgb1 = c1.toRgb();
-    var rgb2 = c2.toRgb();
-    var brightnessA = c1.getBrightness();
-    var brightnessB = c2.getBrightness();
-    var colorDiff =
+    let c1 = tinycolor(color1);
+    let c2 = tinycolor(color2);
+    let rgb1 = c1.toRgb();
+    let rgb2 = c2.toRgb();
+    let brightnessA = c1.getBrightness();
+    let brightnessB = c2.getBrightness();
+    let colorDiff =
       Math.max(rgb1.r, rgb2.r) -
       Math.min(rgb1.r, rgb2.r) +
       Math.max(rgb1.g, rgb2.g) -
@@ -2126,7 +2126,7 @@
   // *Example*
   //    tinycolor.isReadable("#000", "#111") => false
   tinycolor.isReadable = function(color1, color2) {
-    var readability = tinycolor.readability(color1, color2);
+    let readability = tinycolor.readability(color1, color2);
     return readability.brightness > 125 && readability.color > 500;
   };
 
@@ -2136,16 +2136,16 @@
   // *Example*
   //    tinycolor.mostReadable("#123", ["#fff", "#000"]) => "#000"
   tinycolor.mostReadable = function(baseColor, colorList) {
-    var bestColor = null;
-    var bestScore = 0;
-    var bestIsReadable = false;
-    for (var i = 0; i < colorList.length; i++) {
+    let bestColor = null;
+    let bestScore = 0;
+    let bestIsReadable = false;
+    for (let i = 0; i < colorList.length; i++) {
       // We normalize both around the "acceptable" breaking point,
       // but rank brightness constrast higher than hue.
 
-      var readability = tinycolor.readability(baseColor, colorList[i]);
-      var readable = readability.brightness > 125 && readability.color > 500;
-      var score = 3 * (readability.brightness / 125) + readability.color / 500;
+      let readability = tinycolor.readability(baseColor, colorList[i]);
+      let readable = readability.brightness > 125 && readability.color > 500;
+      let score = 3 * (readability.brightness / 125) + readability.color / 500;
 
       if (
         (readable && !bestIsReadable) ||
@@ -2163,7 +2163,7 @@
   // Big List of Colors
   // ------------------
   // <http://www.w3.org/TR/css3-color/#svg-color>
-  var names = (tinycolor.names = {
+  let names = (tinycolor.names = {
     aliceblue: 'f0f8ff',
     antiquewhite: 'faebd7',
     aqua: '0ff',
@@ -2316,15 +2316,15 @@
   });
 
   // Make it easy to access colors via `hexNames[hex]`
-  var hexNames = (tinycolor.hexNames = flip(names));
+  const hexNames = (tinycolor.hexNames = flip(names));
 
   // Utilities
   // ---------
 
   // `{ 'name1': 'val1' }` becomes `{ 'val1': 'name1' }`
   function flip(o) {
-    var flipped = {};
-    for (var i in o) {
+    let flipped = {};
+    for (let i in o) {
       if (o.hasOwnProperty(i)) {
         flipped[o[i]] = i;
       }
@@ -2349,7 +2349,7 @@
       n = '100%';
     }
 
-    var processPercent = isPercentage(n);
+    let processPercent = isPercentage(n);
     n = mathMin(max, mathMax(0, parseFloat(n)));
 
     // Automatically convert percentage into number
@@ -2410,20 +2410,20 @@
     return parseIntFromHex(h) / 255;
   }
 
-  var matchers = (function() {
+  let matchers = (function() {
     // <http://www.w3.org/TR/css3-values/#integers>
-    var CSS_INTEGER = '[-\\+]?\\d+%?';
+    let CSS_INTEGER = '[-\\+]?\\d+%?';
 
     // <http://www.w3.org/TR/css3-values/#number-value>
-    var CSS_NUMBER = '[-\\+]?\\d*\\.\\d+%?';
+    let CSS_NUMBER = '[-\\+]?\\d*\\.\\d+%?';
 
     // Allow positive/negative integer/number.  Don't capture the either/or, just the entire outcome.
-    var CSS_UNIT = '(?:' + CSS_NUMBER + ')|(?:' + CSS_INTEGER + ')';
+    let CSS_UNIT = '(?:' + CSS_NUMBER + ')|(?:' + CSS_INTEGER + ')';
 
     // Actual matching.
     // Parentheses and commas are optional, but not required.
     // Whitespace can take the place of commas or opening paren
-    var PERMISSIVE_MATCH3 =
+    let PERMISSIVE_MATCH3 =
       '[\\s|\\(]+(' +
       CSS_UNIT +
       ')[,|\\s]+(' +
@@ -2431,7 +2431,7 @@
       ')[,|\\s]+(' +
       CSS_UNIT +
       ')\\s*\\)?';
-    var PERMISSIVE_MATCH4 =
+    let PERMISSIVE_MATCH4 =
       '[\\s|\\(]+(' +
       CSS_UNIT +
       ')[,|\\s]+(' +
@@ -2463,7 +2463,7 @@
       .replace(trimLeft, '')
       .replace(trimRight, '')
       .toLowerCase();
-    var named = false;
+    let named = false;
     if (names[color]) {
       color = names[color];
       named = true;
@@ -2475,7 +2475,7 @@
     // Keep most of the number bounding out of this function - don't worry about [0,1] or [0,100] or [0,360]
     // Just return an object and let the conversion functions handle that.
     // This way the result will be the same whether the tinycolor is initialized with string or object.
-    var match;
+    let match;
     if ((match = matchers.rgb.exec(color))) {
       return { r: match[1], g: match[2], b: match[3] };
     }

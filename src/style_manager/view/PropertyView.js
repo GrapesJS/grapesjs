@@ -220,7 +220,7 @@ module.exports = Backbone.View.extend({
   },
 
   checkVisibility() {
-    var result = 1;
+    let result = 1;
 
     // Check if need to hide the property
     if (this.config.hideNotStylable) {
@@ -248,10 +248,10 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getTargetValue(opts = {}) {
-    var result;
-    var model = this.model;
-    var target = this.getTargetModel();
-    var customFetchValue = this.customValue;
+    let result;
+    let model = this.model;
+    let target = this.getTargetModel();
+    let customFetchValue = this.customValue;
 
     if (!target) {
       return result;

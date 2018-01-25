@@ -1,9 +1,9 @@
-var TraitView = require('./TraitView');
+let TraitView = require('./TraitView');
 
 module.exports = TraitView.extend({
   initialize(o) {
     TraitView.prototype.initialize.apply(this, arguments);
-    var iconCls = this.ppfx + 'chk-icon';
+    let iconCls = this.ppfx + 'chk-icon';
     this.tmpl =
       '<div class="' +
       this.fieldClass +
@@ -28,17 +28,17 @@ module.exports = TraitView.extend({
    * @private
    */
   getInputEl(...args) {
-    var first;
+    let first;
     if (!this.$input) first = 1;
-    var el = TraitView.prototype.getInputEl.apply(this, args);
+    let el = TraitView.prototype.getInputEl.apply(this, args);
     if (first) {
-      var md = this.model;
-      var name = md.get('name');
-      var target = this.target;
+      let md = this.model;
+      let name = md.get('name');
+      let target = this.target;
       if (md.get('changeProp')) {
         el.checked = target.get(name);
       } else {
-        var attrs = target.get('attributes');
+        let attrs = target.get('attributes');
         el.checked = !!attrs[name];
       }
     }

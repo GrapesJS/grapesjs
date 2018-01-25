@@ -1,6 +1,6 @@
-var AssetView = require('./AssetView');
-var AssetImageView = require('./AssetImageView');
-var FileUploader = require('./FileUploader');
+let AssetView = require('./AssetView');
+let AssetImageView = require('./AssetImageView');
+let FileUploader = require('./FileUploader');
 
 module.exports = Backbone.View.extend({
   events: {

@@ -57,7 +57,7 @@ module.exports = () => {
      * @param {Object} methods Object representing the trait
      */
     addType(name, trait) {
-      var itemView = TraitsViewer.itemView;
+      let itemView = TraitsViewer.itemView;
       TraitsViewer.itemsView[name] = itemView.extend(trait);
     },
 

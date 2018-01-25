@@ -93,18 +93,18 @@
 import $ from 'cash-dom';
 
 module.exports = config => {
-  var c = config || {},
+  let c = config || {},
     defaults = require('./config/config'),
     EditorModel = require('./model/Editor'),
     EditorView = require('./view/EditorView');
 
-  for (var name in defaults) {
+  for (let name in defaults) {
     if (!(name in c)) c[name] = defaults[name];
   }
 
   c.pStylePrefix = c.stylePrefix;
-  var em = new EditorModel(c);
-  var editorView = new EditorView({
+  let em = new EditorModel(c);
+  let editorView = new EditorView({
     model: em,
     config: c
   });
@@ -421,8 +421,8 @@ module.exports = config => {
      * editor.runCommand('myCommand', {someValue: 1});
      */
     runCommand(id, options) {
-      var result;
-      var command = em.get('Commands').get(id);
+      let result;
+      let command = em.get('Commands').get(id);
 
       if (command) {
         result = command.run(this, this, options);
@@ -440,8 +440,8 @@ module.exports = config => {
      * editor.stopCommand('myCommand', {someValue: 1});
      */
     stopCommand(id, options) {
-      var result;
-      var command = em.get('Commands').get(id);
+      let result;
+      let command = em.get('Commands').get(id);
 
       if (command) {
         result = command.stop(this, this, options);

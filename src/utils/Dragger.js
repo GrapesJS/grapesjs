@@ -1,8 +1,8 @@
 const $ = Backbone.$;
 
-var getBoundingRect = (el, win) => {
-  var w = win || window;
-  var rect = el.getBoundingClientRect();
+let getBoundingRect = (el, win) => {
+  let w = win || window;
+  let rect = el.getBoundingClientRect();
   return {
     left: rect.left + w.pageXOffset,
     top: rect.top + w.pageYOffset,
@@ -23,7 +23,7 @@ module.exports = {
    * @return {Object}
    */
   getElementRect(el) {
-    var posFetcher = this.opts.posFetcher || '';
+    let posFetcher = this.opts.posFetcher || '';
     return posFetcher
       ? posFetcher(el, {
           avoidFrameOffset: 1
@@ -68,7 +68,7 @@ module.exports = {
     this.el = el;
     this.handlers = this.opts.dragHandlers || [el];
 
-    var elRect = this.getElementRect(el); //<-- TODO have wrong top:left
+    let elRect = this.getElementRect(el); //<-- TODO have wrong top:left
     this.elRect = elRect;
     this.startTop = elRect.top;
     this.startLeft = elRect.left;
@@ -92,12 +92,12 @@ module.exports = {
    */
   start(e) {
     this.startPos = this.getMousePos(e);
-    var docs = this.getDocumentEl();
+    let docs = this.getDocumentEl();
     docs.on('mousemove', this.drag);
     docs.on('mouseup', this.stop);
 
     // Start callback
-    var onStart = this.opts.onStart;
+    let onStart = this.opts.onStart;
     if (typeof onStart === 'function') {
       onStart(e, {
         docs,
@@ -114,13 +114,13 @@ module.exports = {
    * Stop dragging
    */
   stop(e) {
-    var docs = this.getDocumentEl();
+    let docs = this.getDocumentEl();
     docs.off('mousemove', this.drag);
     docs.off('mouseup', this.stop);
     this.lockedAxis = null;
 
     // Stop callback
-    var onEnd = this.opts.onEnd;
+    let onEnd = this.opts.onEnd;
     if (typeof onEnd === 'function') {
       onEnd(e, {
         docs,
@@ -138,7 +138,7 @@ module.exports = {
    * @param  {Event} e
    */
   handleMouseDown(e) {
-    var el = e.target;
+    let el = e.target;
     if (this.isHandler(el)) {
       this.start(e);
     }
@@ -150,9 +150,9 @@ module.exports = {
    * @return {Boolean}
    */
   isHandler(el) {
-    var handlers = this.handlers;
+    let handlers = this.handlers;
 
-    for (var n in handlers) {
+    for (let n in handlers) {
       if (handlers[n] === el) return true;
     }
 
@@ -185,9 +185,9 @@ module.exports = {
    * Returns documents
    */
   getDocumentEl(el) {
-    var el = el || this.el;
+    el = el || this.el;
     if (!this.$doc) {
-      var docs = [document];
+      let docs = [document];
       if (el) {
         docs.push(el.ownerDocument);
       }
@@ -202,7 +202,7 @@ module.exports = {
    * @return {Object}
    */
   getMousePos(e) {
-    var mouseFetch = this.opts.mousePosFetcher;
+    let mouseFetch = this.opts.mousePosFetcher;
     return mouseFetch
       ? mouseFetch(e)
       : {
@@ -216,19 +216,19 @@ module.exports = {
    * @param  {Event} event
    */
   drag(e) {
-    var lockedAxis = this.lockedAxis;
-    var currentPos = this.getMousePos(e);
-    var delta = {
+    let lockedAxis = this.lockedAxis;
+    let currentPos = this.getMousePos(e);
+    let delta = {
       x: currentPos.x - this.startPos.x,
       y: currentPos.y - this.startPos.y
     };
     // Lock one axis
     if (e.shiftKey) {
       if (!lockedAxis) {
-        var relX = delta.x;
-        var relY = delta.y;
-        var absX = Math.abs(relX);
-        var absY = Math.abs(relY);
+        let relX = delta.x;
+        let relY = delta.y;
+        let absX = Math.abs(relX);
+        let absY = Math.abs(relY);
 
         // Vertical or Horizontal lock
         if (relY >= absX || relY <= -absX) {
@@ -287,9 +287,9 @@ module.exports = {
    * @param  {integer} x
    */
   moveX(x) {
-    var el = this.el;
-    var opts = this.opts;
-    var xPos = this.startLeft + x;
+    let el = this.el;
+    let opts = this.opts;
+    let xPos = this.startLeft + x;
     const setX = this.opts.setX;
 
     if (typeof setX === 'function') {
@@ -308,9 +308,9 @@ module.exports = {
    * @param  {integer} y
    */
   moveY(y) {
-    var el = this.el;
-    var opts = this.opts;
-    var yPos = this.startTop + y;
+    let el = this.el;
+    let opts = this.opts;
+    let yPos = this.startTop + y;
     const setY = this.opts.setY;
 
     if (typeof setY === 'function') {

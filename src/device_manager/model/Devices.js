@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var Device = require('./Device');
+let Backbone = require('backbone');
+let Device = require('./Device');
 
 module.exports = Backbone.Collection.extend({
   model: Device

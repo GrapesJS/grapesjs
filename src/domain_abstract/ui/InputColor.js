@@ -53,12 +53,12 @@ module.exports = Input.extend({
     if (!this.colorEl) {
       const self = this;
       const ppfx = this.ppfx;
-      var model = this.model;
+      let model = this.model;
 
-      var colorEl = $(`<div class="${this.ppfx}field-color-picker"></div>`);
-      var cpStyle = colorEl.get(0).style;
-      var elToAppend = this.em && this.em.config ? this.em.config.el : '';
-      var colorPickerConfig =
+      let colorEl = $(`<div class="${this.ppfx}field-color-picker"></div>`);
+      let cpStyle = colorEl.get(0).style;
+      let elToAppend = this.em && this.em.config ? this.em.config.el : '';
+      let colorPickerConfig =
         (this.em && this.em.getConfig && this.em.getConfig('colorPicker')) ||
         {};
       const getColor = color => {

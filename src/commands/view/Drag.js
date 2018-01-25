@@ -1,10 +1,10 @@
 module.exports = {
   run(editor, sender, opts) {
-    var el = (opts && opts.el) || '';
-    var canvas = editor.Canvas;
-    var dragger = this.dragger;
-    var options = opts.options || {};
-    var canvasView = canvas.getCanvasView();
+    let el = (opts && opts.el) || '';
+    let canvas = editor.Canvas;
+    let dragger = this.dragger;
+    let options = opts.options || {};
+    let canvasView = canvas.getCanvasView();
     options.prefix = editor.getConfig().stylePrefix;
     options.mousePosFetcher = canvas.getMouseRelativePos;
     options.posFetcher = canvasView.getElementPos.bind(canvasView);

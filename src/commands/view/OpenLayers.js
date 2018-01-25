@@ -4,11 +4,11 @@ const $ = Backbone.$;
 module.exports = {
   run(em, sender) {
     if (!this.toAppend) {
-      var collection = em.DomComponents.getComponent().get('components');
-      var config = em.getConfig();
-      var pfx = config.stylePrefix;
-      var panels = em.Panels;
-      var lyStylePfx = config.layers.stylePrefix || 'nv-';
+      let collection = em.DomComponents.getComponent().get('components');
+      let config = em.getConfig();
+      let pfx = config.stylePrefix;
+      let panels = em.Panels;
+      let lyStylePfx = config.layers.stylePrefix || 'nv-';
 
       config.layers.stylePrefix = config.stylePrefix + lyStylePfx;
       config.layers.pStylePrefix = config.stylePrefix;

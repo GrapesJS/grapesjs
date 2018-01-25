@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var Button = require('./Button');
+let Backbone = require('backbone');
+let Button = require('./Button');
 
 module.exports = Backbone.Collection.extend({
   model: Button,
@@ -28,7 +28,7 @@ module.exports = Backbone.Collection.extend({
    * @return  void
    * */
   deactivateAll(ctx) {
-    var context = ctx || '';
+    let context = ctx || '';
     this.forEach((model, index) => {
       if (model.get('context') == context) {
         model.set('active', false);
@@ -45,7 +45,7 @@ module.exports = Backbone.Collection.extend({
    * @return  void
    * */
   disableAllButtons(ctx) {
-    var context = ctx || '';
+    let context = ctx || '';
     this.forEach((model, index) => {
       if (model.get('context') == context) {
         model.set('disable', true);

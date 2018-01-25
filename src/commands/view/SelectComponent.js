@@ -14,9 +14,9 @@ module.exports = {
 
   enable() {
     this.frameOff = this.canvasOff = this.adjScroll = null;
-    var config = this.config.em.get('Config');
+    let config = this.config.em.get('Config');
     this.startSelectComponent();
-    var em = this.config.em;
+    let em = this.config.em;
     showOffsets = 1;
 
     em.on('component:update', this.updateAttached, this);
@@ -62,9 +62,9 @@ module.exports = {
    * @private
    * */
   onKeyPress(e) {
-    var key = e.which || e.keyCode;
-    var comp = this.editorModel.get('selectedComponent');
-    var focused = this.frameEl.contentDocument.activeElement.tagName !== 'BODY';
+    let key = e.which || e.keyCode;
+    let comp = this.editorModel.get('selectedComponent');
+    let focused = this.frameEl.contentDocument.activeElement.tagName !== 'BODY';
 
     // On CANC (46) or Backspace (8)
     if (key == 8 || key == 46) {
@@ -128,8 +128,8 @@ module.exports = {
    * @param {Object} pos
    */
   showElementOffset(el, pos) {
-    var $el = $(el);
-    var model = $el.data('model');
+    let $el = $(el);
+    let model = $el.data('model');
 
     if ((model && model.get('status') == 'selected') || !showOffsets) {
       return;
@@ -207,26 +207,26 @@ module.exports = {
    * @private
    * */
   updateBadge(el, pos) {
-    var $el = $(el);
-    var canvas = this.canvas;
-    var config = canvas.getConfig();
-    var customeLabel = config.customBadgeLabel;
+    let $el = $(el);
+    let canvas = this.canvas;
+    let config = canvas.getConfig();
+    let customeLabel = config.customBadgeLabel;
     this.cacheEl = el;
-    var model = $el.data('model');
+    let model = $el.data('model');
     if (!model || !model.get('badgable')) return;
-    var badge = this.getBadge();
-    var badgeLabel = model.getIcon() + model.getName();
+    let badge = this.getBadge();
+    let badgeLabel = model.getIcon() + model.getName();
     badgeLabel = customeLabel ? customeLabel(model) : badgeLabel;
     badge.innerHTML = badgeLabel;
-    var bStyle = badge.style;
-    var u = 'px';
+    let bStyle = badge.style;
+    let u = 'px';
     bStyle.display = 'block';
-    var canvasPos = canvas.getCanvasView().getPosition();
-    var badgeH = badge ? badge.offsetHeight : 0;
-    var badgeW = badge ? badge.offsetWidth : 0;
-    var top =
+    let canvasPos = canvas.getCanvasView().getPosition();
+    let badgeH = badge ? badge.offsetHeight : 0;
+    let badgeW = badge ? badge.offsetWidth : 0;
+    let top =
       pos.top - badgeH < canvasPos.top ? canvasPos.top : pos.top - badgeH;
-    var left = pos.left + badgeW < canvasPos.left ? canvasPos.left : pos.left;
+    let left = pos.left + badgeW < canvasPos.left ? canvasPos.left : pos.left;
     bStyle.top = top + u;
     bStyle.left = left + u;
   },
@@ -238,8 +238,8 @@ module.exports = {
    * @private
    */
   updateHighlighter(el, pos) {
-    var $el = $(el);
-    var model = $el.data('model');
+    let $el = $(el);
+    let model = $el.data('model');
 
     if (
       !model ||
@@ -249,9 +249,9 @@ module.exports = {
       return;
     }
 
-    var hlEl = this.canvas.getHighlighter();
-    var hlStyle = hlEl.style;
-    var unit = 'px';
+    let hlEl = this.canvas.getHighlighter();
+    let hlStyle = hlEl.style;
+    let unit = 'px';
     hlStyle.left = pos.left + unit;
     hlStyle.top = pos.top + unit;
     hlStyle.height = pos.height + unit;
@@ -287,18 +287,18 @@ module.exports = {
    * @private
    */
   initResize(el) {
-    var em = this.em;
-    var editor = em ? em.get('Editor') : '';
-    var config = em ? em.get('Config') : '';
-    var pfx = config.stylePrefix || '';
-    var attrName = `data-${pfx}handler`;
-    var resizeClass = `${pfx}resizing`;
-    var model = em.get('selectedComponent');
-    var resizable = model.get('resizable');
-    var options = {};
-    var modelToStyle;
+    let em = this.em;
+    let editor = em ? em.get('Editor') : '';
+    let config = em ? em.get('Config') : '';
+    let pfx = config.stylePrefix || '';
+    let attrName = `data-${pfx}handler`;
+    let resizeClass = `${pfx}resizing`;
+    let model = em.get('selectedComponent');
+    let resizable = model.get('resizable');
+    let options = {};
+    let modelToStyle;
 
-    var toggleBodyClass = (method, e, opts) => {
+    let toggleBodyClass = (method, e, opts) => {
       const docs = opts.docs;
       docs &&
         docs.forEach(doc => {
@@ -393,10 +393,10 @@ module.exports = {
    * @param {Object} mod
    */
   updateToolbar(mod) {
-    var em = this.config.em;
-    var model = mod == em ? em.get('selectedComponent') : mod;
-    var toolbarEl = this.canvas.getToolbarEl();
-    var toolbarStyle = toolbarEl.style;
+    let em = this.config.em;
+    let model = mod == em ? em.get('selectedComponent') : mod;
+    let toolbarEl = this.canvas.getToolbarEl();
+    let toolbarStyle = toolbarEl.style;
 
     if (!model) {
       // By putting `toolbarStyle.display = 'none'` will cause kind
@@ -406,9 +406,9 @@ module.exports = {
       return;
     }
 
-    var toolbar = model.get('toolbar');
-    var ppfx = this.ppfx;
-    var showToolbar = em.get('Config').showToolbar;
+    let toolbar = model.get('toolbar');
+    let ppfx = this.ppfx;
+    let showToolbar = em.get('Config').showToolbar;
 
     if (showToolbar && toolbar && toolbar.length) {
       toolbarStyle.opacity = '';
@@ -416,7 +416,7 @@ module.exports = {
       if (!this.toolbar) {
         toolbarEl.innerHTML = '';
         this.toolbar = new Toolbar(toolbar);
-        var toolbarView = new ToolbarView({
+        let toolbarView = new ToolbarView({
           collection: this.toolbar,
           editor: this.editor
         });
@@ -437,16 +437,16 @@ module.exports = {
    * @param {Object} pos
    */
   updateToolbarPos(el, elPos) {
-    var unit = 'px';
-    var toolbarEl = this.canvas.getToolbarEl();
-    var toolbarStyle = toolbarEl.style;
+    let unit = 'px';
+    let toolbarEl = this.canvas.getToolbarEl();
+    let toolbarStyle = toolbarEl.style;
     const origDisp = toolbarStyle.display;
     toolbarStyle.display = 'block';
-    var pos = this.canvas.getTargetToElementDim(toolbarEl, el, {
+    let pos = this.canvas.getTargetToElementDim(toolbarEl, el, {
       elPos,
       event: 'toolbarPosUpdate'
     });
-    var leftPos = pos.left + pos.elementWidth - pos.targetWidth;
+    let leftPos = pos.left + pos.elementWidth - pos.targetWidth;
     toolbarStyle.top = pos.top + unit;
     toolbarStyle.left = (leftPos < 0 ? 0 : leftPos) + unit;
     toolbarStyle.display = origDisp;
@@ -482,11 +482,11 @@ module.exports = {
    * @private
    */
   onFrameScroll(e) {
-    var el = this.cacheEl;
+    let el = this.cacheEl;
     if (el) {
-      var elPos = this.getElementPos(el);
+      let elPos = this.getElementPos(el);
       this.updateBadge(el, elPos);
-      var model = this.em.get('selectedComponent');
+      let model = this.em.get('selectedComponent');
 
       if (model) {
         this.updateToolbarPos(model.view.el);
@@ -502,7 +502,7 @@ module.exports = {
     const model = this.em.getSelected();
 
     if (model) {
-      var view = model.view;
+      let view = model.view;
       this.updateToolbarPos(view.el);
       this.showFixedElementOffset(view.el);
     }

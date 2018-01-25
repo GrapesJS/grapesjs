@@ -126,18 +126,18 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   loadModule(moduleName) {
-    var c = this.config;
-    var Mod = new moduleName();
-    var name = Mod.name.charAt(0).toLowerCase() + Mod.name.slice(1);
-    var cfg = c[name] || c[Mod.name] || {};
+    let c = this.config;
+    let Mod = new moduleName();
+    let name = Mod.name.charAt(0).toLowerCase() + Mod.name.slice(1);
+    let cfg = c[name] || c[Mod.name] || {};
     cfg.pStylePrefix = c.pStylePrefix || '';
 
     // Check if module is storable
-    var sm = this.get('StorageManager');
+    let sm = this.get('StorageManager');
 
     if (Mod.storageKey && Mod.store && Mod.load && sm) {
       cfg.stm = sm;
-      var storables = this.get('storables');
+      let storables = this.get('storables');
       storables.push(Mod);
       this.set('storables', storables);
     }
@@ -249,12 +249,12 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   getComponents() {
-    var cmp = this.get('DomComponents');
-    var cm = this.get('CodeManager');
+    let cmp = this.get('DomComponents');
+    let cm = this.get('CodeManager');
 
     if (!cmp || !cm) return;
 
-    var wrp = cmp.getComponents();
+    let wrp = cmp.getComponents();
     return cm.getCode(wrp, 'json');
   },
 
@@ -265,8 +265,8 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   setStyle(style) {
-    var rules = this.get('CssComposer').getAll();
-    for (var i = 0, len = rules.length; i < len; i++) rules.pop();
+    let rules = this.get('CssComposer').getAll();
+    for (let i = 0, len = rules.length; i < len; i++) rules.pop();
     rules.add(style);
     return this;
   },
@@ -290,8 +290,8 @@ module.exports = Backbone.Model.extend({
     const exportWrapper = config.exportWrapper;
     const wrappesIsBody = config.wrappesIsBody;
     const js = config.jsInHtml ? this.getJs() : '';
-    var wrp = this.get('DomComponents').getComponent();
-    var html = this.get('CodeManager').getCode(wrp, 'html', {
+    let wrp = this.get('DomComponents').getComponent();
+    let html = this.get('CodeManager').getCode(wrp, 'html', {
       exportWrapper,
       wrappesIsBody
     });
@@ -328,7 +328,7 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   getJs() {
-    var wrp = this.get('DomComponents').getWrapper();
+    let wrp = this.get('DomComponents').getWrapper();
     return this.get('CodeManager')
       .getCode(wrp, 'js')
       .trim();
@@ -341,14 +341,14 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   store(clb) {
-    var sm = this.get('StorageManager');
-    var store = {};
+    let sm = this.get('StorageManager');
+    let store = {};
     if (!sm) return;
 
     // Fetch what to store
     this.get('storables').forEach(m => {
-      var obj = m.store(1);
-      for (var el in obj) store[el] = obj[el];
+      let obj = m.store(1);
+      for (let el in obj) store[el] = obj[el];
     });
 
     sm.store(store, () => {
@@ -380,17 +380,17 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   getCacheLoad(force, clb) {
-    var f = force ? 1 : 0;
+    let f = force ? 1 : 0;
     if (this.cacheLoad && !f) return this.cacheLoad;
-    var sm = this.get('StorageManager');
-    var load = [];
+    let sm = this.get('StorageManager');
+    let load = [];
 
     if (!sm) return {};
 
     this.get('storables').forEach(m => {
-      var key = m.storageKey;
+      let key = m.storageKey;
       key = typeof key === 'function' ? key() : key;
-      var keys = key instanceof Array ? key : [key];
+      let keys = key instanceof Array ? key : [key];
       keys.forEach(k => {
         load.push(k);
       });
@@ -409,7 +409,7 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   getDeviceModel() {
-    var name = this.get('device');
+    let name = this.get('device');
     return this.get('DeviceManager').get(name);
   },
 
@@ -419,7 +419,7 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   runDefault(opts = {}) {
-    var command = this.get('Commands').get(this.config.defaultCommand);
+    let command = this.get('Commands').get(this.config.defaultCommand);
     if (!command || this.defaultRunning) return;
     command.stop(this, this, opts);
     command.run(this, this, opts);
@@ -432,7 +432,7 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   stopDefault(opts = {}) {
-    var command = this.get('Commands').get(this.config.defaultCommand);
+    let command = this.get('Commands').get(this.config.defaultCommand);
     if (!command) return;
     command.stop(this, this, opts);
     this.defaultRunning = 0;
@@ -453,7 +453,7 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   clearSelection(win) {
-    var w = win || window;
+    let w = win || window;
     w.getSelection().removeAllRanges();
   },
 

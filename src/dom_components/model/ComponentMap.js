@@ -1,5 +1,5 @@
-var Component = require('./ComponentImage');
-var OComponent = require('./Component');
+let Component = require('./ComponentImage');
+let OComponent = require('./Component');
 
 module.exports = Component.extend(
   {
@@ -62,15 +62,15 @@ module.exports = Component.extend(
      * @private
      */
     getMapUrl() {
-      var md = this;
-      var addr = md.get('address');
-      var zoom = md.get('zoom');
-      var type = md.get('mapType');
-      var size = '';
+      let md = this;
+      let addr = md.get('address');
+      let zoom = md.get('zoom');
+      let type = md.get('mapType');
+      let size = '';
       addr = addr ? '&q=' + addr : '';
       zoom = zoom ? '&z=' + zoom : '';
       type = type ? '&t=' + type : '';
-      var result = md.get('mapUrl') + '?' + addr + zoom + type;
+      let result = md.get('mapUrl') + '?' + addr + zoom + type;
       result += '&output=embed';
       return result;
     },
@@ -80,8 +80,8 @@ module.exports = Component.extend(
      * @private
      */
     parseFromSrc() {
-      var uri = this.parseUri(this.get('src'));
-      var qr = uri.query;
+      let uri = this.parseUri(this.get('src'));
+      let qr = uri.query;
       if (qr.q) this.set('address', qr.q);
       if (qr.z) this.set('zoom', qr.z);
       if (qr.t) this.set('mapType', qr.t);
@@ -97,7 +97,7 @@ module.exports = Component.extend(
      * @private
      */
     isComponent(el) {
-      var result = '';
+      let result = '';
       if (el.tagName == 'IFRAME' && /maps\.google\.com/.test(el.src)) {
         result = { type: 'map', src: el.src };
       }

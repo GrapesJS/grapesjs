@@ -76,7 +76,7 @@ module.exports = Backbone.View.extend({
    * @return {Object}
    */
   offset(el) {
-    var rect = el.getBoundingClientRect();
+    let rect = el.getBoundingClientRect();
     return {
       top: rect.top + el.ownerDocument.body.scrollTop,
       left: rect.left + el.ownerDocument.body.scrollLeft

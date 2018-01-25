@@ -33,7 +33,7 @@
  * ...
  */
 module.exports = () => {
-  var c = {};
+  let c = {};
   let em;
   const defaults = require('./config/config');
   const Component = require('./model/Component');
@@ -41,8 +41,8 @@ module.exports = () => {
   const Components = require('./model/Components');
   const ComponentsView = require('./view/ComponentsView');
 
-  var component, componentView;
-  var componentTypes = [
+  let component, componentView;
+  let componentTypes = [
     {
       id: 'cell',
       model: require('./model/ComponentTableCell'),
@@ -151,8 +151,8 @@ module.exports = () => {
      * @private
      */
     storageKey() {
-      var keys = [];
-      var smc = (c.stm && c.stm.getConfig()) || {};
+      let keys = [];
+      let smc = (c.stm && c.stm.getConfig()) || {};
       if (smc.storeHtml) keys.push('html');
       if (smc.storeComponents) keys.push('components');
       return keys;
@@ -172,11 +172,11 @@ module.exports = () => {
         c.components = em.config.components || c.components;
       }
 
-      for (var name in defaults) {
+      for (let name in defaults) {
         if (!(name in c)) c[name] = defaults[name];
       }
 
-      var ppfx = c.pStylePrefix;
+      let ppfx = c.pStylePrefix;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
 
       // Load dependencies
@@ -331,8 +331,8 @@ module.exports = () => {
         return;
       }
 
-      var obj = {};
-      var keys = this.storageKey();
+      let obj = {};
+      let keys = this.storageKey();
 
       if (keys.indexOf('html') >= 0) {
         obj.html = c.em.getHtml();
@@ -454,8 +454,8 @@ module.exports = () => {
      * @return {this}
      */
     clear() {
-      var c = this.getComponents();
-      for (var i = 0, len = c.length; i < len; i++) c.pop();
+      let c = this.getComponents();
+      for (let i = 0, len = c.length; i < len; i++) c.pop();
       return this;
     },
 
@@ -476,7 +476,7 @@ module.exports = () => {
      * @private
      */
     addType(type, methods) {
-      var compType = this.getType(type);
+      let compType = this.getType(type);
       if (compType) {
         compType.model = methods.model;
         compType.view = methods.view;
@@ -492,10 +492,10 @@ module.exports = () => {
      * @private
      */
     getType(type) {
-      var df = componentTypes;
+      let df = componentTypes;
 
-      for (var it = 0; it < df.length; it++) {
-        var dfId = df[it].id;
+      for (let it = 0; it < df.length; it++) {
+        let dfId = df[it].id;
         if (dfId == type) {
           return df[it];
         }

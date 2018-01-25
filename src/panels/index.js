@@ -46,13 +46,13 @@
  * ...
  */
 module.exports = () => {
-  var c = {},
+  let c = {},
     defaults = require('./config/config'),
     Panel = require('./model/Panel'),
     Panels = require('./model/Panels'),
     PanelView = require('./view/PanelView'),
     PanelsView = require('./view/PanelsView');
-  var panels, PanelsViewObj;
+  let panels, PanelsViewObj;
 
   return {
     /**
@@ -68,11 +68,11 @@ module.exports = () => {
      */
     init(config) {
       c = config || {};
-      for (var name in defaults) {
+      for (let name in defaults) {
         if (!(name in c)) c[name] = defaults[name];
       }
 
-      var ppfx = c.pStylePrefix;
+      let ppfx = c.pStylePrefix;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
 
       panels = new Panels(c.defaults);
@@ -140,7 +140,7 @@ module.exports = () => {
      * var myPanel = panelManager.getPanel('myNewPanel');
      */
     getPanel(id) {
-      var res = panels.where({ id });
+      let res = panels.where({ id });
       return res.length ? res[0] : null;
     },
 
@@ -175,7 +175,7 @@ module.exports = () => {
      * }
      */
     addButton(panelId, button) {
-      var pn = this.getPanel(panelId);
+      let pn = this.getPanel(panelId);
       return pn ? pn.get('buttons').add(button) : null;
     },
 
@@ -198,7 +198,7 @@ module.exports = () => {
      *
      */
     removeButton(panelId, button) {
-      var pn = this.getPanel(panelId);
+      let pn = this.getPanel(panelId);
       return pn && pn.get('buttons').remove(button);
     },
 
@@ -211,9 +211,9 @@ module.exports = () => {
      * var button = panelManager.getButton('myPanel','myButton');
      */
     getButton(panelId, id) {
-      var pn = this.getPanel(panelId);
+      let pn = this.getPanel(panelId);
       if (pn) {
-        var res = pn.get('buttons').where({ id });
+        let res = pn.get('buttons').where({ id });
         return res.length ? res[0] : null;
       }
       return null;

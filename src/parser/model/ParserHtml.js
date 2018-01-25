@@ -1,7 +1,7 @@
 module.exports = config => {
-  var TEXT_NODE = 'span';
-  var c = config;
-  var modelAttrStart = 'data-gjs-';
+  let TEXT_NODE = 'span';
+  let c = config;
+  let modelAttrStart = 'data-gjs-';
 
   return {
     compTypes: '',
@@ -16,12 +16,12 @@ module.exports = config => {
      * // {color: 'black', width: '100px', test: 'value'}
      */
     parseStyle(str) {
-      var result = {};
-      var decls = str.split(';');
-      for (var i = 0, len = decls.length; i < len; i++) {
-        var decl = decls[i].trim();
+      let result = {};
+      let decls = str.split(';');
+      for (let i = 0, len = decls.length; i < len; i++) {
+        let decl = decls[i].trim();
         if (!decl) continue;
-        var prop = decl.split(':');
+        let prop = decl.split(':');
         result[prop[0].trim()] = prop
           .slice(1)
           .join(':')
@@ -40,11 +40,11 @@ module.exports = config => {
      * // ['test1', 'test2', 'test3']
      */
     parseClass(str) {
-      var result = [];
-      var cls = str.split(' ');
-      for (var i = 0, len = cls.length; i < len; i++) {
-        var cl = cls[i].trim();
-        var reg = new RegExp('^' + c.pStylePrefix);
+      let result = [];
+      let cls = str.split(' ');
+      for (let i = 0, len = cls.length; i < len; i++) {
+        let cl = cls[i].trim();
+        let reg = new RegExp('^' + c.pStylePrefix);
         if (!cl || reg.test(cl)) continue;
         result.push(cl);
       }
@@ -60,7 +60,7 @@ module.exports = config => {
       const result = [];
       const nodes = el.childNodes;
 
-      for (var i = 0, len = nodes.length; i < len; i++) {
+      for (let i = 0, len = nodes.length; i < len; i++) {
         const node = nodes[i];
         const attrs = node.attributes || [];
         const attrsLen = attrs.length;
@@ -205,12 +205,12 @@ module.exports = config => {
      * @return {Object}
      */
     parse(str, parserCss) {
-      var config = (c.em && c.em.get('Config')) || {};
-      var res = { html: '', css: '' };
-      var el = document.createElement('div');
+      let config = (c.em && c.em.get('Config')) || {};
+      let res = { html: '', css: '' };
+      let el = document.createElement('div');
       el.innerHTML = str;
-      var scripts = el.querySelectorAll('script');
-      var i = scripts.length;
+      let scripts = el.querySelectorAll('script');
+      let i = scripts.length;
 
       // Remove all scripts
       if (!config.allowScripts) {
@@ -219,9 +219,9 @@ module.exports = config => {
 
       // Detach style tags and parse them
       if (parserCss) {
-        var styleStr = '';
-        var styles = el.querySelectorAll('style');
-        var j = styles.length;
+        let styleStr = '';
+        let styles = el.querySelectorAll('style');
+        let j = styles.length;
 
         while (j--) {
           styleStr = styles[j].innerHTML + styleStr;
@@ -231,7 +231,7 @@ module.exports = config => {
         if (styleStr) res.css = parserCss.parse(styleStr);
       }
 
-      var result = this.parseNode(el);
+      let result = this.parseNode(el);
 
       if (result.length == 1) result = result[0];
 

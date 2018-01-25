@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var ClassTagView = require('./ClassTagView');
+let Backbone = require('backbone');
+let ClassTagView = require('./ClassTagView');
 
 module.exports = Backbone.View.extend({
   template: _.template(`
@@ -80,8 +80,8 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getStateOptions() {
-    var strInput = '';
-    for (var i = 0; i < this.states.length; i++) {
+    let strInput = '';
+    for (let i = 0; i < this.states.length; i++) {
       strInput +=
         '<option value="' +
         this.states[i].name +
@@ -214,13 +214,13 @@ module.exports = Backbone.View.extend({
 
     if (target) {
       const sm = target.get('SelectorManager');
-      var model = sm.add({ label });
+      let model = sm.add({ label });
 
       if (component) {
-        var compCls = component.get('classes');
-        var lenB = compCls.length;
+        let compCls = component.get('classes');
+        let lenB = compCls.length;
         compCls.add(model);
-        var lenA = compCls.length;
+        let lenA = compCls.length;
         this.collection.add(model);
         this.updateStateVis();
       }
@@ -236,14 +236,14 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   addToClasses(model, fragmentEl) {
-    var fragment = fragmentEl || null;
+    let fragment = fragmentEl || null;
 
-    var view = new ClassTagView({
+    let view = new ClassTagView({
       model,
       config: this.config,
       coll: this.collection
     });
-    var rendered = view.render().el;
+    let rendered = view.render().el;
 
     if (fragment) fragment.appendChild(rendered);
     else this.getClasses().append(rendered);
@@ -257,7 +257,7 @@ module.exports = Backbone.View.extend({
    * @private
    */
   renderClasses() {
-    var fragment = document.createDocumentFragment();
+    let fragment = document.createDocumentFragment();
 
     this.collection.each(function(model) {
       this.addToClasses(model, fragment);

@@ -9,7 +9,7 @@ module.exports = _.extend({}, SelectComponent, {
   },
 
   enable() {
-    var that = this;
+    let that = this;
     this.$el
       .find('*')
       .mouseover(this.startDelete)
@@ -24,7 +24,7 @@ module.exports = _.extend({}, SelectComponent, {
    */
   startDelete(e) {
     e.stopPropagation();
-    var $this = $(e.target);
+    let $this = $(e.target);
 
     // Show badge if possible
     if ($this.data('model').get('removable')) {
@@ -40,7 +40,7 @@ module.exports = _.extend({}, SelectComponent, {
    */
   stopDelete(e) {
     e.stopPropagation();
-    var $this = $(e.target);
+    let $this = $(e.target);
     $this.removeClass(this.hoverClass);
 
     // Hide badge if possible
@@ -54,7 +54,7 @@ module.exports = _.extend({}, SelectComponent, {
    */
   onDelete(e) {
     e.stopPropagation();
-    var $this = $(e.target);
+    let $this = $(e.target);
 
     // Do nothing in case can't remove
     if (!$this.data('model').get('removable')) return;

@@ -8,11 +8,11 @@
  * @module DeviceManager
  */
 module.exports = () => {
-  var c = {},
+  let c = {},
     defaults = require('./config/config'),
     Devices = require('./model/Devices'),
     DevicesView = require('./view/DevicesView');
-  var devices, view;
+  let devices, view;
 
   return {
     /**
@@ -40,7 +40,7 @@ module.exports = () => {
      */
     init(config) {
       c = config || {};
-      for (var name in defaults) {
+      for (let name in defaults) {
         if (!(name in c)) c[name] = defaults[name];
       }
 
@@ -66,7 +66,7 @@ module.exports = () => {
      * });
      */
     add(name, width, opts) {
-      var obj = opts || {};
+      let obj = opts || {};
       obj.name = name;
       obj.width = width;
       return devices.add(obj);

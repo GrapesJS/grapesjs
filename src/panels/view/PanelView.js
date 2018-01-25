@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var ButtonsView = require('./ButtonsView');
+let Backbone = require('backbone');
+let ButtonsView = require('./ButtonsView');
 
 module.exports = Backbone.View.extend({
   initialize(o) {
@@ -38,9 +38,9 @@ module.exports = Backbone.View.extend({
     const resizable = this.model.get('resizable');
 
     if (editor && resizable) {
-      var resz = resizable === true ? [1, 1, 1, 1] : resizable;
-      var resLen = resz.length;
-      var tc,
+      let resz = resizable === true ? [1, 1, 1, 1] : resizable;
+      let resLen = resz.length;
+      let tc,
         cr,
         bc,
         cl = 0;
@@ -58,7 +58,7 @@ module.exports = Backbone.View.extend({
         cl = resz[3];
       }
 
-      var resizer = editor.Utils.Resizer.init({
+      let resizer = editor.Utils.Resizer.init({
         tc,
         cr,
         bc,
@@ -70,7 +70,7 @@ module.exports = Backbone.View.extend({
         appendTo: this.el,
         prefix: editor.getConfig().stylePrefix,
         posFetcher: el => {
-          var rect = el.getBoundingClientRect();
+          let rect = el.getBoundingClientRect();
           return {
             left: 0,
             top: 0,
@@ -91,7 +91,7 @@ module.exports = Backbone.View.extend({
     this.id && el.attr('id', this.id);
 
     if (this.buttons.length) {
-      var buttons = new ButtonsView({
+      let buttons = new ButtonsView({
         collection: this.buttons,
         config: this.config
       });

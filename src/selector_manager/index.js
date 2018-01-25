@@ -52,12 +52,12 @@
 import { isString } from 'underscore';
 
 module.exports = config => {
-  var c = config || {},
+  let c = config || {},
     defaults = require('./config/config'),
     Selector = require('./model/Selector'),
     Selectors = require('./model/Selectors'),
     ClassTagsView = require('./view/ClassTagsView');
-  var selectors, selectorTags;
+  let selectors, selectorTags;
 
   return {
     Selector,
@@ -80,7 +80,7 @@ module.exports = config => {
     init(conf) {
       c = conf || {};
 
-      for (var name in defaults) {
+      for (let name in defaults) {
         if (!(name in c)) c[name] = defaults[name];
       }
 
@@ -190,7 +190,7 @@ module.exports = config => {
      */
     render(selectors) {
       if (selectors) {
-        var view = new ClassTagsView({
+        let view = new ClassTagsView({
           collection: new Selectors(selectors),
           config: c
         });

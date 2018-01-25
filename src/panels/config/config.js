@@ -1,13 +1,13 @@
-var crc = 'create-comp';
-var mvc = 'move-comp';
-var swv = 'sw-visibility';
-var expt = 'export-template';
-var osm = 'open-sm';
-var otm = 'open-tm';
-var ola = 'open-layers';
-var obl = 'open-blocks';
-var ful = 'fullscreen';
-var prv = 'preview';
+let crc = 'create-comp';
+let mvc = 'move-comp';
+let swv = 'sw-visibility';
+let expt = 'export-template';
+let osm = 'open-sm';
+let otm = 'open-tm';
+let ola = 'open-layers';
+let obl = 'open-blocks';
+let ful = 'fullscreen';
+let prv = 'preview';
 
 module.exports = {
   stylePrefix: 'pn-',

@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var ComponentView = require('./ComponentView');
+let Backbone = require('backbone');
+let ComponentView = require('./ComponentView');
 
 module.exports = ComponentView.extend({
   tagName: 'img',
@@ -61,8 +61,8 @@ module.exports = ComponentView.extend({
    * @private
    * */
   openModal(e) {
-    var em = this.opts.config.em;
-    var editor = em ? em.get('Editor') : '';
+    let em = this.opts.config.em;
+    let editor = em ? em.get('Editor') : '';
 
     if (editor && this.model.get('editable')) {
       editor.runCommand('open-assets', {
@@ -79,7 +79,7 @@ module.exports = ComponentView.extend({
     this.updateAttributes();
     this.updateClasses();
 
-    var actCls = this.$el.attr('class') || '';
+    let actCls = this.$el.attr('class') || '';
     if (!this.model.get('src'))
       this.$el.attr('class', (actCls + ' ' + this.classEmpty).trim());
 

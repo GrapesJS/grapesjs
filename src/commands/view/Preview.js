@@ -5,7 +5,7 @@ module.exports = {
   },
 
   tglPointers(editor, v) {
-    var elP = editor.Canvas.getBody().querySelectorAll(
+    let elP = editor.Canvas.getBody().querySelectorAll(
       '.' + this.ppfx + 'no-pointer'
     );
     _.each(elP, item => {
@@ -17,11 +17,11 @@ module.exports = {
     if (sender && sender.set) sender.set('active', false);
     editor.stopCommand('sw-visibility');
     editor.getModel().stopDefault();
-    var that = this;
-    var panels = this.getPanels(editor);
-    var canvas = editor.Canvas.getElement();
-    var editorEl = editor.getEl();
-    var pfx = editor.Config.stylePrefix;
+    let that = this;
+    let panels = this.getPanels(editor);
+    let canvas = editor.Canvas.getElement();
+    let editorEl = editor.getEl();
+    let pfx = editor.Config.stylePrefix;
     if (!this.helper) {
       this.helper = document.createElement('span');
       this.helper.className = pfx + 'off-prv fa fa-eye-slash';
@@ -39,7 +39,7 @@ module.exports = {
     });*/
 
     panels.style.display = 'none';
-    var canvasS = canvas.style;
+    let canvasS = canvas.style;
     canvasS.width = '100%';
     canvasS.height = '100%';
     canvasS.top = '0';
@@ -50,11 +50,11 @@ module.exports = {
   },
 
   stop(editor, sender) {
-    var panels = this.getPanels(editor);
+    let panels = this.getPanels(editor);
     editor.runCommand('sw-visibility');
     editor.getModel().runDefault();
     panels.style.display = 'block';
-    var canvas = editor.Canvas.getElement();
+    let canvas = editor.Canvas.getElement();
     canvas.setAttribute('style', '');
     if (this.helper) {
       this.helper.style.display = 'none';

@@ -1,4 +1,4 @@
-var Backbone = require('backbone');
+let Backbone = require('backbone');
 
 module.exports = Backbone.View.extend({
   template: _.template(`
@@ -43,7 +43,7 @@ module.exports = Backbone.View.extend({
   },
 
   toggle() {
-    var model = this.model;
+    let model = this.model;
     model.set('open', !model.get('open'));
   },
 

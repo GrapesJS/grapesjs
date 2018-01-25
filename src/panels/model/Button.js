@@ -1,4 +1,4 @@
-var Backbone = require('backbone');
+let Backbone = require('backbone');
 
 module.exports = Backbone.Model.extend({
   defaults: {
@@ -18,7 +18,7 @@ module.exports = Backbone.Model.extend({
 
   initialize(options) {
     if (this.get('buttons').length) {
-      var Buttons = require('./Buttons');
+      let Buttons = require('./Buttons');
       this.set('buttons', new Buttons(this.get('buttons')));
     }
   }

@@ -6,7 +6,7 @@ module.exports = {
   run(em, sender) {
     this.sender = sender;
     if (!this.$cn) {
-      var config = em.getConfig(),
+      let config = em.getConfig(),
         panels = em.Panels;
       // Main container
       this.$cn = $('<div></div>');
@@ -15,20 +15,20 @@ module.exports = {
       this.$cn.append(this.$cn2);
 
       // Device Manager
-      var dvm = em.DeviceManager;
+      let dvm = em.DeviceManager;
       if (dvm && config.showDevices) {
-        var devicePanel = panels.addPanel({ id: 'devices-c' });
+        let devicePanel = panels.addPanel({ id: 'devices-c' });
         devicePanel
           .set('appendContent', dvm.render())
           .trigger('change:appendContent');
       }
 
       // Class Manager container
-      var clm = em.SelectorManager;
+      let clm = em.SelectorManager;
       if (clm) this.$cn2.append(clm.render([]));
 
       this.$cn2.append(em.StyleManager.render());
-      var smConfig = em.StyleManager.getConfig();
+      let smConfig = em.StyleManager.getConfig();
       const pfx = smConfig.stylePrefix;
       // Create header
       this.$header = $(

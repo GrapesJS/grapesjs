@@ -1,4 +1,4 @@
-var Component = require('./Component');
+let Component = require('./Component');
 
 module.exports = Component.extend(
   {
@@ -13,7 +13,7 @@ module.exports = Component.extend(
   },
   {
     isComponent(el) {
-      var result = '';
+      let result = '';
       if (el.nodeType === 3) {
         result = {
           type: 'textnode',

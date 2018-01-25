@@ -15,11 +15,11 @@
  * @module Modal
  */
 module.exports = () => {
-  var c = {},
+  let c = {},
     defaults = require('./config/config'),
     ModalM = require('./model/Modal'),
     ModalView = require('./view/ModalView');
-  var model, modal;
+  let model, modal;
 
   return {
     /**
@@ -36,11 +36,11 @@ module.exports = () => {
      */
     init(config) {
       c = config || {};
-      for (var name in defaults) {
+      for (let name in defaults) {
         if (!(name in c)) c[name] = defaults[name];
       }
 
-      var ppfx = c.pStylePrefix;
+      let ppfx = c.pStylePrefix;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
 
       model = new ModalM(c);

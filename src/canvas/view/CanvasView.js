@@ -39,8 +39,8 @@ module.exports = Backbone.View.extend({
    * @private
    */
   onFrameScroll() {
-    var u = 'px';
-    var body = this.frame.el.contentDocument.body;
+    let u = 'px';
+    let body = this.frame.el.contentDocument.body;
     this.toolsEl.style.top = '-' + body.scrollTop + u;
     this.toolsEl.style.left = '-' + body.scrollLeft + u;
     this.em.trigger('canvasScroll');
@@ -51,16 +51,16 @@ module.exports = Backbone.View.extend({
    * @private
    */
   renderScripts() {
-    var frame = this.frame;
-    var that = this;
+    let frame = this.frame;
+    let that = this;
 
     frame.el.onload = () => {
-      var scripts = that.config.scripts.slice(0), // clone
+      let scripts = that.config.scripts.slice(0), // clone
         counter = 0;
 
       function appendScript(scripts) {
         if (scripts.length > 0) {
-          var script = document.createElement('script');
+          let script = document.createElement('script');
           script.type = 'text/javascript';
           script.src = scripts.shift();
           script.onerror = script.onload = appendScript.bind(null, scripts);
@@ -78,17 +78,17 @@ module.exports = Backbone.View.extend({
    * @private
    */
   renderBody() {
-    var wrap = this.model.get('frame').get('wrapper');
-    var em = this.config.em;
+    let wrap = this.model.get('frame').get('wrapper');
+    let em = this.config.em;
     if (wrap) {
-      var ppfx = this.ppfx;
+      let ppfx = this.ppfx;
       //var body = this.frame.$el.contents().find('body');
-      var body = $(this.frame.el.contentWindow.document.body);
-      var cssc = em.get('CssComposer');
-      var conf = em.get('Config');
-      var confCanvas = this.config;
-      var protCss = conf.protectedCss;
-      var externalStyles = '';
+      let body = $(this.frame.el.contentWindow.document.body);
+      let cssc = em.get('CssComposer');
+      let conf = em.get('Config');
+      let confCanvas = this.config;
+      let protCss = conf.protectedCss;
+      let externalStyles = '';
 
       confCanvas.styles.forEach(style => {
         externalStyles += `<link rel="stylesheet" href="${style}"/>`;
@@ -122,7 +122,7 @@ module.exports = Backbone.View.extend({
       // CKEditor's issue
 
       // I need all this styles to make the editor work properly
-      var frameCss = `
+      let frameCss = `
         ${baseCss}
 
         .${ppfx}dashed *[data-highlightable] {
@@ -206,7 +206,7 @@ module.exports = Backbone.View.extend({
       // property keymaster (and many others) still use it... using `defineProperty`
       // hack seems the only way
       const createCustomEvent = e => {
-        var oEvent = new KeyboardEvent(e.type, e);
+        let oEvent = new KeyboardEvent(e.type, e);
         oEvent.keyCodeVal = e.keyCode;
         ['keyCode', 'which'].forEach(prop => {
           Object.defineProperty(oEvent, prop, {
@@ -232,8 +232,8 @@ module.exports = Backbone.View.extend({
    * @return {Object}
    */
   offset(el) {
-    var rect = el.getBoundingClientRect();
-    var docBody = el.ownerDocument.body;
+    let rect = el.getBoundingClientRect();
+    let docBody = el.ownerDocument.body;
     return {
       top: rect.top + docBody.scrollTop,
       left: rect.left + docBody.scrollLeft,
@@ -278,13 +278,13 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getElementPos(el, opts) {
-    var opt = opts || {};
-    var frmOff = this.getFrameOffset();
-    var cvsOff = this.getCanvasOffset();
-    var eo = this.offset(el);
+    let opt = opts || {};
+    let frmOff = this.getFrameOffset();
+    let cvsOff = this.getCanvasOffset();
+    let eo = this.offset(el);
 
-    var frmTop = opt.avoidFrameOffset ? 0 : frmOff.top;
-    var frmLeft = opt.avoidFrameOffset ? 0 : frmOff.left;
+    let frmTop = opt.avoidFrameOffset ? 0 : frmOff.top;
+    let frmLeft = opt.avoidFrameOffset ? 0 : frmOff.left;
 
     const top = eo.top + frmTop - cvsOff.top;
     const left = eo.left + frmLeft - cvsOff.left;
@@ -301,9 +301,9 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getPosition() {
-    var bEl = this.frame.el.contentDocument.body;
-    var fo = this.getFrameOffset();
-    var co = this.getCanvasOffset();
+    let bEl = this.frame.el.contentDocument.body;
+    let fo = this.getFrameOffset();
+    let co = this.getCanvasOffset();
     return {
       top: fo.top + bEl.scrollTop - co.top,
       left: fo.left + bEl.scrollLeft - co.left
@@ -321,8 +321,8 @@ module.exports = Backbone.View.extend({
       this.getJsContainer().append(view.scriptContainer.get(0));
     }
 
-    var model = view.model;
-    var id = model.getId();
+    let model = view.model;
+    let id = model.getId();
     view.el.id = id;
     view.scriptContainer.html('');
     // In editor, I make use of setTimeout as during the append process of elements
@@ -356,14 +356,14 @@ module.exports = Backbone.View.extend({
     if (this.wrapper && typeof this.wrapper.render == 'function') {
       this.model.get('frame').set('wrapper', this.wrapper);
       this.$el.append(this.frame.render().el);
-      var frame = this.frame;
+      let frame = this.frame;
       if (this.config.scripts.length === 0) {
         frame.el.onload = this.renderBody;
       } else {
         this.renderScripts(); // will call renderBody later
       }
     }
-    var ppfx = this.ppfx;
+    let ppfx = this.ppfx;
     this.$el.append(`
       <div id="${ppfx}tools" style="pointer-events:none">
         <div class="${ppfx}highlighter"></div>

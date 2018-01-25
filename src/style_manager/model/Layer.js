@@ -11,7 +11,7 @@ module.exports = Backbone.Model.extend({
   initialize() {
     const Properties = require('./Properties');
     const properties = this.get('properties');
-    var value = this.get('value');
+    let value = this.get('value');
     this.set(
       'properties',
       properties instanceof Properties ? properties : new Properties(properties)
@@ -20,10 +20,10 @@ module.exports = Backbone.Model.extend({
     // If there is no value I'll try to get it from values
     // I need value setted to make preview working
     if (!value) {
-      var val = '';
-      var values = this.get('values');
+      let val = '';
+      let values = this.get('values');
 
-      for (var prop in values) {
+      for (let prop in values) {
         val += ' ' + values[prop];
       }
 

@@ -107,7 +107,7 @@ module.exports = Backbone.View.extend(
         body.append(param, params[param]);
       }
 
-      var target = this.target;
+      let target = this.target;
       const url = config.upload;
       const headers = config.headers;
       const reqHead = 'X-Requested-With';
@@ -140,11 +140,11 @@ module.exports = Backbone.View.extend(
      * @private
      * */
     initDrop() {
-      var that = this;
+      let that = this;
       if (!this.uploadForm) {
         this.uploadForm = this.$el.find('form').get(0);
         if ('draggable' in this.uploadForm) {
-          var uploadFile = this.uploadFile;
+          let uploadFile = this.uploadFile;
           this.uploadForm.ondragover = function() {
             this.className = that.pfx + 'hover';
             return false;

@@ -9,7 +9,7 @@ module.exports = require('backbone').View.extend({
     this.config = config || {};
     this.categories = opts.categories || '';
     this.renderedCategories = [];
-    var ppfx = this.config.pStylePrefix || '';
+    let ppfx = this.config.pStylePrefix || '';
     this.ppfx = ppfx;
     this.noCatClass = `${ppfx}blocks-no-cat`;
     this.blockContClass = `${ppfx}blocks-c`;
@@ -34,8 +34,8 @@ module.exports = require('backbone').View.extend({
   getSorter() {
     if (!this.em) return;
     if (!this.sorter) {
-      var utils = this.em.get('Utils');
-      var canvas = this.canvas;
+      let utils = this.em.get('Utils');
+      let canvas = this.canvas;
       this.sorter = new utils.Sorter({
         container: canvas.getBody(),
         placer: canvas.getPlacerEl(),
@@ -103,16 +103,16 @@ module.exports = require('backbone').View.extend({
    * @private
    * */
   add(model, fragment) {
-    var frag = fragment || null;
-    var view = new BlockView(
+    let frag = fragment || null;
+    let view = new BlockView(
       {
         model,
         attributes: model.get('attributes')
       },
       this.config
     );
-    var rendered = view.render().el;
-    var category = model.get('category');
+    let rendered = view.render().el;
+    let category = model.get('category');
 
     // Check for categories
     if (category && this.categories) {
@@ -125,10 +125,10 @@ module.exports = require('backbone').View.extend({
         category.id = category.label;
       }
 
-      var catModel = this.categories.add(category);
-      var catId = catModel.get('id');
-      var catView = this.renderedCategories[catId];
-      var categories = this.getCategoriesEl();
+      let catModel = this.categories.add(category);
+      let catId = catModel.get('id');
+      let catView = this.renderedCategories[catId];
+      let categories = this.getCategoriesEl();
       model.set('category', catModel);
 
       if (!catView && categories) {

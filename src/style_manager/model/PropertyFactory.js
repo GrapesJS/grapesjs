@@ -1,4 +1,4 @@
-var Backbone = require('backbone');
+let Backbone = require('backbone');
 
 module.exports = () => ({
   /**
@@ -7,14 +7,14 @@ module.exports = () => ({
    * @return {Array<Object>}
    */
   build(props) {
-    var objs = [];
-    var dftFixedValues = ['initial', 'inherit'];
+    let objs = [];
+    let dftFixedValues = ['initial', 'inherit'];
 
     if (typeof props === 'string') props = [props];
 
-    for (var i = 0, len = props.length; i < len; i++) {
-      var obj = {};
-      var prop = props[i];
+    for (let i = 0, len = props.length; i < len; i++) {
+      let obj = {};
+      let prop = props[i];
       obj.property = prop;
 
       // Property
@@ -413,8 +413,8 @@ module.exports = () => ({
           ];
           break;
         case 'font-family':
-          var ss = ', sans-serif';
-          var fonts = [
+          const ss = ', sans-serif';
+          const fonts = [
             'Arial, Helvetica' + ss,
             'Arial Black, Gadget' + ss,
             'Brush Script MT' + ss,
@@ -430,8 +430,8 @@ module.exports = () => ({
             'Verdana, Geneva' + ss
           ];
           obj.list = [];
-          for (var j = 0, l = fonts.length; j < l; j++) {
-            var font = {};
+          for (const j = 0, l = fonts.length; j < l; j++) {
+            const font = {};
             font.value = fonts[j];
             font.name = fonts[j].split(',')[0];
             obj.list.push(font);

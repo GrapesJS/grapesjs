@@ -23,9 +23,9 @@ module.exports = PropertyView.extend({
    * Renders input
    * */
   onRender() {
-    var model = this.model;
-    var props = model.get('properties') || [];
-    var self = this;
+    let model = this.model;
+    let props = model.get('properties') || [];
+    let self = this;
 
     if (props.length) {
       if (!this.$input) {
@@ -47,8 +47,8 @@ module.exports = PropertyView.extend({
           prop.parent = model;
         }, this);
 
-        var PropertiesView = require('./PropertiesView');
-        var propsView = new PropertiesView(this.getPropsConfig());
+        let PropertiesView = require('./PropertiesView');
+        let propsView = new PropertiesView(this.getPropsConfig());
         this.$props = propsView.render().$el;
         this.$el.find(`#${this.pfx}input-holder`).append(this.$props);
       }
@@ -61,10 +61,10 @@ module.exports = PropertyView.extend({
    * @return {Object}
    */
   getPropsConfig(opts) {
-    var that = this;
+    let that = this;
     const model = this.model;
 
-    var result = {
+    let result = {
       config: this.config,
       collection: this.props,
       target: this.target,

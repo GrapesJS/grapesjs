@@ -1,7 +1,7 @@
 import Styleable from 'domain_abstract/model/Styleable';
 
-var Backbone = require('backbone');
-var Selectors = require('selector_manager/model/Selectors');
+let Backbone = require('backbone');
+let Selectors = require('selector_manager/model/Selectors');
 
 module.exports = Backbone.Model.extend(Styleable).extend({
   defaults: {
@@ -94,24 +94,24 @@ module.exports = Backbone.Model.extend(Styleable).extend({
    * @private
    */
   compare(selectors, state, width, ruleProps) {
-    var otherRule = ruleProps || {};
-    var st = state || '';
-    var wd = width || '';
-    var selectorsAdd = otherRule.selectorsAdd || '';
-    var cId = 'cid';
+    let otherRule = ruleProps || {};
+    let st = state || '';
+    let wd = width || '';
+    let selectorsAdd = otherRule.selectorsAdd || '';
+    let cId = 'cid';
     //var a1 = _.pluck(selectors.models || selectors, cId);
     //var a2 = _.pluck(this.get('selectors').models, cId);
     if (!(selectors instanceof Array) && !selectors.models)
       selectors = [selectors];
-    var a1 = _.map(selectors.models || selectors, model => model.get('name'));
-    var a2 = _.map(this.get('selectors').models, model => model.get('name'));
-    var f = false;
+    let a1 = _.map(selectors.models || selectors, model => model.get('name'));
+    let a2 = _.map(this.get('selectors').models, model => model.get('name'));
+    let f = false;
 
     if (a1.length !== a2.length) return f;
 
-    for (var i = 0; i < a1.length; i++) {
-      var re = 0;
-      for (var j = 0; j < a2.length; j++) {
+    for (let i = 0; i < a1.length; i++) {
+      let re = 0;
+      for (let j = 0; j < a2.length; j++) {
         if (a1[i] === a2[j]) re = 1;
       }
       if (re === 0) return f;

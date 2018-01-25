@@ -1,5 +1,5 @@
-var TraitView = require('./TraitView');
-var InputColor = require('domain_abstract/ui/InputColor');
+let TraitView = require('./TraitView');
+let InputColor = require('domain_abstract/ui/InputColor');
 
 module.exports = TraitView.extend({
   /**
@@ -9,8 +9,8 @@ module.exports = TraitView.extend({
    */
   getInputEl() {
     if (!this.$input) {
-      var value = this.getModelValue();
-      var inputColor = new InputColor({
+      let value = this.getModelValue();
+      let inputColor = new InputColor({
         target: this.config.em,
         contClass: this.ppfx + 'field-color',
         model: this.model,

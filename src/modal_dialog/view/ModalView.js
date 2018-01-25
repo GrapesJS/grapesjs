@@ -73,7 +73,7 @@ module.exports = require('backbone').View.extend({
    * @private
    * */
   updateContent() {
-    var content = this.getContent();
+    let content = this.getContent();
     const children = content.children();
     const coll = this.getCollector();
     const body = this.model.get('content');
@@ -86,7 +86,7 @@ module.exports = require('backbone').View.extend({
    * @private
    * */
   updateTitle() {
-    var title = this.getTitle();
+    let title = this.getTitle();
     if (title) title.innerHTML = this.model.get('title');
   },
 

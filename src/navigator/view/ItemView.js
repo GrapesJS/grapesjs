@@ -122,7 +122,7 @@ module.exports = require('backbone').View.extend({
    */
   handleEdit(e) {
     e.stopPropagation();
-    var inputName = this.getInputName();
+    let inputName = this.getInputName();
     inputName.readOnly = false;
     inputName.focus();
   },
@@ -132,7 +132,7 @@ module.exports = require('backbone').View.extend({
    */
   handleEditEnd(e) {
     e.stopPropagation();
-    var inputName = this.getInputName();
+    let inputName = this.getInputName();
     inputName.readOnly = true;
     this.model.set('custom-name', inputName.value);
   },
@@ -154,8 +154,8 @@ module.exports = require('backbone').View.extend({
    * @return void
    * */
   updateOpening() {
-    var opened = this.opt.opened || {};
-    var model = this.model;
+    let opened = this.opt.opened || {};
+    let model = this.model;
     const chvDown = 'fa-chevron-down';
 
     if (model.get('open')) {
@@ -237,7 +237,7 @@ module.exports = require('backbone').View.extend({
    * @return bool
    * */
   isVisible() {
-    var css = this.model.get('style'),
+    let css = this.model.get('style'),
       pr = css.display;
     if (pr && pr == 'none') return;
     return 1;
@@ -276,10 +276,10 @@ module.exports = require('backbone').View.extend({
    * @private
    */
   countChildren(model) {
-    var count = 0;
+    let count = 0;
     model.get('components').each(function(m) {
-      var isCountable = this.opt.isCountable;
-      var hide = this.config.hideTextnode;
+      let isCountable = this.opt.isCountable;
+      let hide = this.config.hideTextnode;
       if (isCountable && !isCountable(m, hide)) return;
       count++;
     }, this);
@@ -297,8 +297,8 @@ module.exports = require('backbone').View.extend({
 
   render() {
     const model = this.model;
-    var pfx = this.pfx;
-    var vis = this.isVisible();
+    let pfx = this.pfx;
+    let vis = this.isVisible();
     const el = this.$el;
     const level = this.level + 1;
     el.html(this.template(model));

@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var Buttons = require('./Buttons');
+let Backbone = require('backbone');
+let Buttons = require('./Buttons');
 
 module.exports = Backbone.Model.extend({
   defaults: {

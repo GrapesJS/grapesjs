@@ -27,7 +27,7 @@ module.exports = Backbone.Collection.extend({
         models = [models];
       }
 
-      for (var i = 0, len = models.length; i < len; i++) {
+      for (let i = 0, len = models.length; i < len; i++) {
         const str = models[i];
         const model = isString(str) ? tf.build(str)[0] : str;
         model.target = this.target;

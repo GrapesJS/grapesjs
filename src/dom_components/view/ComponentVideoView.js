@@ -1,6 +1,6 @@
-var Backbone = require('backbone');
-var ComponentView = require('./ComponentImageView');
-var OComponentView = require('./ComponentView');
+let Backbone = require('backbone');
+let ComponentView = require('./ComponentImageView');
+let OComponentView = require('./ComponentView');
 
 module.exports = ComponentView.extend({
   tagName: 'div',
@@ -23,7 +23,7 @@ module.exports = ComponentView.extend({
    * @private
    */
   updateProvider() {
-    var prov = this.model.get('provider');
+    let prov = this.model.get('provider');
     this.el.innerHTML = '';
     this.el.appendChild(this.renderByProvider(prov));
   },
@@ -33,8 +33,8 @@ module.exports = ComponentView.extend({
    * @private
    */
   updateSrc() {
-    var prov = this.model.get('provider');
-    var src = this.model.get('src');
+    let prov = this.model.get('provider');
+    let src = this.model.get('src');
     switch (prov) {
       case 'yt':
         src = this.model.getYoutubeSrc();
@@ -51,9 +51,9 @@ module.exports = ComponentView.extend({
    * @private
    */
   updateVideo() {
-    var prov = this.model.get('provider');
-    var videoEl = this.videoEl;
-    var md = this.model;
+    let prov = this.model.get('provider');
+    let videoEl = this.videoEl;
+    let md = this.model;
     switch (prov) {
       case 'yt':
       case 'vi':
@@ -67,7 +67,7 @@ module.exports = ComponentView.extend({
   },
 
   renderByProvider(prov) {
-    var videoEl;
+    let videoEl;
     switch (prov) {
       case 'yt':
         videoEl = this.renderYoutube();
@@ -83,14 +83,14 @@ module.exports = ComponentView.extend({
   },
 
   renderSource() {
-    var el = document.createElement('video');
+    let el = document.createElement('video');
     el.src = this.model.get('src');
     this.initVideoEl(el);
     return el;
   },
 
   renderYoutube() {
-    var el = document.createElement('iframe');
+    let el = document.createElement('iframe');
     el.src = this.model.getYoutubeSrc();
     el.frameBorder = 0;
     el.setAttribute('allowfullscreen', true);
@@ -99,7 +99,7 @@ module.exports = ComponentView.extend({
   },
 
   renderVimeo() {
-    var el = document.createElement('iframe');
+    let el = document.createElement('iframe');
     el.src = this.model.getVimeoSrc();
     el.frameBorder = 0;
     el.setAttribute('allowfullscreen', true);
@@ -116,7 +116,7 @@ module.exports = ComponentView.extend({
   render(...args) {
     ComponentView.prototype.render.apply(this, args);
     this.updateClasses();
-    var prov = this.model.get('provider');
+    let prov = this.model.get('provider');
     this.el.appendChild(this.renderByProvider(prov));
     return this;
   }

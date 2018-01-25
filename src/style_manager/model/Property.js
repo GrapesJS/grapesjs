@@ -21,9 +21,9 @@ module.exports = require('backbone').Model.extend({
   },
 
   initialize(opt) {
-    var o = opt || {};
-    var name = this.get('name');
-    var prop = this.get('property');
+    let o = opt || {};
+    let name = this.get('name');
+    let prop = this.get('property');
 
     if (!name) {
       this.set(

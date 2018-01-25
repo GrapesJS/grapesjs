@@ -68,7 +68,7 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   importClasses() {
-    var clm = this.config.em.get('SelectorManager');
+    let clm = this.config.em.get('SelectorManager');
 
     if (clm) {
       this.model.get('classes').each(m => {
@@ -83,8 +83,8 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   updateState(e) {
-    var cl = 'hc-state';
-    var state = this.model.get('state');
+    let cl = 'hc-state';
+    let state = this.model.get('state');
 
     if (state) {
       this.$el.addClass(cl);
@@ -99,15 +99,15 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   updateStatus(e) {
-    var el = this.el;
-    var status = this.model.get('status');
-    var pfx = this.pfx;
-    var ppfx = this.ppfx;
-    var selectedCls = pfx + 'selected';
-    var selectedParentCls = selectedCls + '-parent';
-    var freezedCls = `${ppfx}freezed`;
-    var actualCls = el.getAttribute('class') || '';
-    var cls = '';
+    let el = this.el;
+    let status = this.model.get('status');
+    let pfx = this.pfx;
+    let ppfx = this.ppfx;
+    let selectedCls = pfx + 'selected';
+    let selectedParentCls = selectedCls + '-parent';
+    let freezedCls = `${ppfx}freezed`;
+    let actualCls = el.getAttribute('class') || '';
+    let cls = '';
 
     switch (status) {
       case 'selected':
@@ -190,7 +190,7 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   getClasses() {
-    var attr = this.model.get('attributes'),
+    let attr = this.model.get('attributes'),
       classes = attr['class'] || [];
     classes = isArray(classes) ? classes : [classes];
 
@@ -247,9 +247,9 @@ module.exports = Backbone.View.extend({
       return;
     }
 
-    var em = this.em;
+    let em = this.em;
     if (em) {
-      var canvas = em.get('Canvas');
+      let canvas = em.get('Canvas');
       canvas.getCanvasView().updateScript(this);
     }
   },
@@ -279,7 +279,7 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getChildrenContainer() {
-    var container = this.el;
+    let container = this.el;
 
     if (typeof this.getChildrenSelector == 'function') {
       container = this.el.querySelector(this.getChildrenSelector());
@@ -306,7 +306,7 @@ module.exports = Backbone.View.extend({
     this.childrenView = view;
     const childNodes = Array.prototype.slice.call(view.el.childNodes);
 
-    for (var i = 0, len = childNodes.length; i < len; i++) {
+    for (let i = 0, len = childNodes.length; i < len; i++) {
       container.appendChild(childNodes.shift());
     }
 
@@ -315,8 +315,8 @@ module.exports = Backbone.View.extend({
     // to disable pointer-events for all nested components as they
     // might prevent the component to be selected
     if (container !== this.el) {
-      var disableNode = el => {
-        var children = Array.prototype.slice.call(el.children);
+      const disableNode = el => {
+        const children = Array.prototype.slice.call(el.children);
         children.forEach(el => {
           el.style['pointer-events'] = 'none';
           if (container !== el) {

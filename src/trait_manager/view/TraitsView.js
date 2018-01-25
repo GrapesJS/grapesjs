@@ -1,9 +1,9 @@
-var DomainViews = require('domain_abstract/view/DomainViews');
-var TraitView = require('./TraitView');
-var TraitSelectView = require('./TraitSelectView');
-var TraitCheckboxView = require('./TraitCheckboxView');
-var TraitNumberView = require('./TraitNumberView');
-var TraitColorView = require('./TraitColorView');
+let DomainViews = require('domain_abstract/view/DomainViews');
+let TraitView = require('./TraitView');
+let TraitSelectView = require('./TraitSelectView');
+let TraitCheckboxView = require('./TraitCheckboxView');
+let TraitNumberView = require('./TraitNumberView');
+let TraitColorView = require('./TraitColorView');
 
 module.exports = DomainViews.extend({
   itemView: TraitView,
@@ -31,7 +31,7 @@ module.exports = DomainViews.extend({
    */
   updatedCollection() {
     this.el.className = this.className;
-    var comp = this.em.get('selectedComponent');
+    let comp = this.em.get('selectedComponent');
     if (comp) {
       this.collection = comp.get('traits');
       this.render();

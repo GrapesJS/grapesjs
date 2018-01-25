@@ -2,13 +2,13 @@ const $ = Backbone.$;
 
 module.exports = {
   run(editor, sender) {
-    var config = editor.Config;
-    var pfx = config.stylePrefix;
-    var tm = editor.TraitManager;
-    var panelC;
+    let config = editor.Config;
+    let pfx = config.stylePrefix;
+    let tm = editor.TraitManager;
+    let panelC;
     if (!this.obj) {
-      var tmView = tm.getTraitsViewer();
-      var confTm = tm.getConfig();
+      let tmView = tm.getTraitsViewer();
+      let confTm = tm.getConfig();
       this.obj = $('<div></div>')
         .append(
           '<div class="' +
@@ -19,7 +19,7 @@ module.exports = {
         )
         .get(0);
       this.obj.appendChild(tmView.render().el);
-      var panels = editor.Panels;
+      let panels = editor.Panels;
       if (!panels.getPanel('views-container'))
         panelC = panels.addPanel({ id: 'views-container' });
       else panelC = panels.getPanel('views-container');

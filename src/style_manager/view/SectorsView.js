@@ -90,8 +90,8 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   addToCollection(model, fragmentEl) {
-    var fragment = fragmentEl || null;
-    var view = new SectorView({
+    let fragment = fragmentEl || null;
+    let view = new SectorView({
       model,
       id:
         this.pfx +
@@ -105,7 +105,7 @@ module.exports = Backbone.View.extend({
       propTarget: this.propTarget,
       config: this.config
     });
-    var rendered = view.render().el;
+    let rendered = view.render().el;
 
     if (fragment) {
       fragment.appendChild(rendered);
@@ -117,7 +117,7 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    var fragment = document.createDocumentFragment();
+    let fragment = document.createDocumentFragment();
     this.$el.empty();
 
     this.collection.each(function(model) {

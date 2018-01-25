@@ -1,4 +1,4 @@
-var Backbone = require('backbone');
+let Backbone = require('backbone');
 
 module.exports = Backbone.View.extend({
   template: _.template(`
@@ -13,7 +13,7 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    var obj = this.model.toJSON();
+    let obj = this.model.toJSON();
     obj.pfx = this.pfx;
     this.$el.html(this.template(obj));
     this.$el.attr('class', this.pfx + 'editor-c');

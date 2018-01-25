@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var PropertiesView = require('./PropertiesView');
+let Backbone = require('backbone');
+let PropertiesView = require('./PropertiesView');
 
 module.exports = Backbone.View.extend({
   template: _.template(`
@@ -29,7 +29,7 @@ module.exports = Backbone.View.extend({
    * If all properties are hidden this will hide the sector
    */
   updateVisibility() {
-    var show;
+    let show;
     this.model.get('properties').each(prop => {
       if (prop.get('visible')) {
         show = 1;
@@ -72,7 +72,7 @@ module.exports = Backbone.View.extend({
    * Toggle visibility
    * */
   toggle(e) {
-    var v = this.model.get('open') ? 0 : 1;
+    let v = this.model.get('open') ? 0 : 1;
     this.model.set('open', v);
   },
 
@@ -91,10 +91,10 @@ module.exports = Backbone.View.extend({
   },
 
   renderProperties() {
-    var objs = this.model.get('properties');
+    let objs = this.model.get('properties');
 
     if (objs) {
-      var view = new PropertiesView({
+      let view = new PropertiesView({
         collection: objs,
         target: this.target,
         propTarget: this.propTarget,

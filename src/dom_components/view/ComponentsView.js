@@ -38,15 +38,15 @@ module.exports = Backbone.View.extend({
    * */
   addToCollection(model, fragmentEl, index) {
     if (!this.compView) this.compView = require('./ComponentView');
-    var fragment = fragmentEl || null,
+    let fragment = fragmentEl || null,
       viewObject = this.compView;
 
-    var dt = this.opts.componentTypes;
+    let dt = this.opts.componentTypes;
 
-    var type = model.get('type');
+    let type = model.get('type');
 
-    for (var it = 0; it < dt.length; it++) {
-      var dtId = dt[it].id;
+    for (let it = 0; it < dt.length; it++) {
+      let dtId = dt[it].id;
       if (dtId == type) {
         viewObject = dt[it].view;
         break;
@@ -54,12 +54,12 @@ module.exports = Backbone.View.extend({
     }
     //viewObject = dt[type] ? dt[type].view : dt.default.view;
 
-    var view = new viewObject({
+    let view = new viewObject({
       model,
       config: this.config,
       componentTypes: dt
     });
-    var rendered = view.render().el;
+    let rendered = view.render().el;
     if (view.model.get('type') == 'textnode')
       rendered = document.createTextNode(view.model.get('content'));
 

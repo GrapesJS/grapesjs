@@ -5,13 +5,13 @@ module.exports = (config = {}) => ({
    * @return {Array<Object>}
    */
   build(props) {
-    var objs = [];
+    let objs = [];
 
     if (typeof props === 'string') props = [props];
 
-    for (var i = 0; i < props.length; i++) {
-      var obj = {};
-      var prop = props[i];
+    for (let i = 0; i < props.length; i++) {
+      let obj = {};
+      let prop = props[i];
       obj.name = prop;
 
       // Define type

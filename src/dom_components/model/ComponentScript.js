@@ -1,4 +1,4 @@
-var Component = require('./Component');
+let Component = require('./Component');
 
 module.exports = Component.extend(
   {
@@ -12,7 +12,7 @@ module.exports = Component.extend(
   {
     isComponent(el) {
       if (el.tagName == 'SCRIPT') {
-        var result = { type: 'script' };
+        let result = { type: 'script' };
 
         if (el.src) {
           result.src = el.src;

@@ -39,8 +39,8 @@ module.exports = require('./AssetView').extend({
    * @private
    * */
   onClick() {
-    var onClick = this.config.onClick;
-    var model = this.model;
+    let onClick = this.config.onClick;
+    let model = this.model;
     this.collection.trigger('deselectAll');
     this.$el.addClass(this.pfx + 'highlight');
 
@@ -57,8 +57,8 @@ module.exports = require('./AssetView').extend({
    * */
   onDblClick() {
     const em = this.em;
-    var onDblClick = this.config.onDblClick;
-    var model = this.model;
+    let onDblClick = this.config.onDblClick;
+    let model = this.model;
 
     if (typeof onDblClick === 'function') {
       onDblClick(model);
@@ -67,7 +67,7 @@ module.exports = require('./AssetView').extend({
       em && em.get('Modal').close();
     }
 
-    var onSelect = this.collection.onSelect;
+    let onSelect = this.collection.onSelect;
     if (typeof onSelect == 'function') {
       onSelect(this.model);
     }

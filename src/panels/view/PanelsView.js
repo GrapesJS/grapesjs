@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var PanelView = require('./PanelView');
+let Backbone = require('backbone');
+let PanelView = require('./PanelView');
 
 module.exports = Backbone.View.extend({
   initialize(o) {
@@ -32,16 +32,16 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   addToCollection(model, fragmentEl) {
-    var fragment = fragmentEl || null;
-    var view = new PanelView({
+    let fragment = fragmentEl || null;
+    let view = new PanelView({
       model,
       config: this.config
     });
-    var rendered = view.render().el;
-    var appendTo = model.get('appendTo');
+    let rendered = view.render().el;
+    let appendTo = model.get('appendTo');
 
     if (appendTo) {
-      var appendEl = document.querySelector(appendTo);
+      let appendEl = document.querySelector(appendTo);
       appendEl.appendChild(rendered);
     } else {
       if (fragment) {
@@ -56,7 +56,7 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    var fragment = document.createDocumentFragment();
+    let fragment = document.createDocumentFragment();
     this.$el.empty();
 
     this.collection.each(function(model) {

@@ -257,7 +257,7 @@ module.exports = ({ $, Backbone }) => {
     $.map = function(items, clb) {
       const ar = [];
 
-      for (var i = 0; i < items.length; i++) {
+      for (let i = 0; i < items.length; i++) {
         ar.push(clb(items[i], i));
       }
 
