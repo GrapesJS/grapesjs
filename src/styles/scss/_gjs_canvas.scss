@@ -5,7 +5,7 @@ $canvasTop: 40px;
   background-color: rgba(0, 0, 0, 0.15);
   box-sizing: border-box;
   width: (100% - $leftWidth);
-  height: calc(100% - $canvasTop);
+  height: calc(100% - #{$canvasTop});
   bottom: 0;
   overflow: hidden;
   z-index: 1;

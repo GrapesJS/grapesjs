@@ -211,7 +211,7 @@ module.exports = () => {
       }
 
       component = new Component(wrapper, {
-        sm: em,
+        em,
         config: c,
         componentTypes
       });
@@ -230,7 +230,7 @@ module.exports = () => {
      * @private
      */
     onLoad() {
-      this.getComponents().reset(c.components);
+      this.setComponents(c.components);
     },
 
     /**

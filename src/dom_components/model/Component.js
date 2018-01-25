@@ -141,7 +141,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     initialize(props = {}, opt = {}) {
-      const em = opt.sm || opt.em || '';
+      const em = opt.em;
 
       // Propagate properties from parent if indicated
       const parent = this.parent();
@@ -171,12 +171,11 @@ const Component = Backbone.Model.extend(Styleable).extend(
 
       opt.em = em;
       this.opt = opt;
-      this.sm = em;
       this.em = em;
       this.config = opt.config || {};
       this.ccid = Component.createId(this);
       this.set('attributes', this.get('attributes') || {});
-      this.on('destroy', this.handleRemove);
+      this.on('remove', this.handleRemove);
       this.listenTo(this, 'change:script', this.scriptUpdated);
       this.listenTo(this, 'change:traits', this.traitsUpdated);
       this.listenTo(this, 'change:tagName', this.tagUpdated);
@@ -236,6 +235,19 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     /**
+     * Find closest model by query string
+     * ATTENTION: this method works only with alredy rendered component
+     * @param  {string}  query Query string
+     * @return {Component}
+     * @example
+     * model.closest('div');
+     */
+    closest(query) {
+      const result = this.view.$el.closest(query);
+      return result.length && result.data('model');
+    },
+
+    /**
      * Once the tag is updated I have to remove the node and replace it
      */
     tagUpdated() {
@@ -275,6 +287,17 @@ const Component = Backbone.Model.extend(Styleable).extend(
       delete attrs.style;
 
       this.set('attributes', attrs);
+    },
+
+    /**
+     * Add attributes to the model
+     * @param {Object} attrs Key value attributes
+     * @example
+     * model.addAttributes({id: 'test'});
+     */
+    addAttributes(attrs) {
+      const newAttrs = { ...this.getAttributes(), ...attrs };
+      this.setAttributes(newAttrs);
     },
 
     getStyle() {
@@ -555,10 +578,11 @@ const Component = Backbone.Model.extend(Styleable).extend(
      */
     normalizeClasses(arr) {
       var res = [];
+      const em = this.em;
 
-      if (!this.sm.get) return;
+      if (!em) return;
 
-      var clm = this.sm.get('SelectorManager');
+      var clm = em.get('SelectorManager');
       if (!clm) return;
 
       arr.forEach(val => {
@@ -577,10 +601,11 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * Override original clone method
      * @private
      */
-    clone(reset) {
+    clone() {
       const em = this.em;
       const style = this.getStyle();
       const attr = { ...this.attributes };
+      const opts = { ...this.opt };
       attr.attributes = { ...attr.attributes };
       delete attr.attributes.id;
       attr.components = [];
@@ -588,7 +613,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       attr.traits = [];
 
       this.get('components').each((md, i) => {
-        attr.components[i] = md.clone(1);
+        attr.components[i] = md.clone();
       });
       this.get('traits').each((md, i) => {
         attr.traits[i] = md.clone();
@@ -599,16 +624,13 @@ const Component = Backbone.Model.extend(Styleable).extend(
 
       attr.status = '';
       attr.view = '';
-
-      if (reset) {
-        this.opt.collection = null;
-      }
+      opts.collection = null;
 
       if (em && em.getConfig('avoidInlineStyle') && !isEmpty(style)) {
         attr.style = style;
       }
 
-      return new this.constructor(attr, this.opt);
+      return new this.constructor(attr, opts);
     },
 
     /**
@@ -734,7 +756,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
         scr = scrStr.trim();
       }
 
-      var config = this.sm.config || {};
+      var config = this.em.getConfig();
       var tagVarStart = escapeRegExp(config.tagVarStart || '{[ ');
       var tagVarEnd = escapeRegExp(config.tagVarEnd || ' ]}');
       var reg = new RegExp(`${tagVarStart}([\\w\\d-]*)${tagVarEnd}`, 'g');
@@ -751,7 +773,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
     emitUpdate(property) {
       const em = this.em;
       const event = 'component:update' + (property ? `:${property}` : '');
-      em && em.trigger(event, this.model);
+      em && em.trigger(event, this);
     }
   },
   {

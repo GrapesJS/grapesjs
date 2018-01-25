@@ -55,7 +55,8 @@ module.exports = require('backbone').Model.extend({
     const em = this.get('em');
     const complete = this.get('onComplete');
     const typeJson = this.get('contentTypeJson');
-    const res = typeJson && typeof text === 'string' ? JSON.parse(text) : text;
+    const parsable = text && typeof text === 'string';
+    const res = typeJson && parsable ? JSON.parse(text) : text;
     complete && complete(res);
     clb && clb(res);
     em && em.trigger('storage:response', res);

@@ -251,20 +251,35 @@ module.exports = () => {
 
       if (em) {
         const config = em.getConfig();
+        const um = em.get('UndoManager');
         const cssC = em.get('CssComposer');
         const state = !config.devicePreviewMode ? model.get('state') : '';
         const valid = classes.getStyleable();
         const hasClasses = valid.length;
         const opts = { state };
+        let rule;
 
         if (hasClasses) {
           const deviceW = em.getCurrentMedia();
-          const CssRule = cssC.get(valid, state, deviceW);
-          if (CssRule) return CssRule;
+          rule = cssC.get(valid, state, deviceW);
+
+          if (!rule) {
+            // I stop undo manager here as after adding the CSSRule (generally after
+            // selecting the component) and calling undo() it will remove the rule from
+            // the collection, therefore updating it in style manager will not affect it
+            // #268
+            um.stop();
+            rule = cssC.add(valid, state, deviceW);
+            rule.setStyle(model.getStyle());
+            model.setStyle({});
+            um.start();
+          }
         } else if (config.avoidInlineStyle) {
-          const rule = cssC.getIdRule(id, opts);
-          return rule ? rule : cssC.setIdRule(id, {}, opts);
+          rule = cssC.getIdRule(id, opts);
+          !rule && (rule = cssC.setIdRule(id, {}, opts));
         }
+
+        rule && (model = rule);
       }
 
       return model;

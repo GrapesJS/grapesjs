@@ -3,27 +3,17 @@ import { isEmpty } from 'underscore';
 const Backbone = require('backbone');
 
 module.exports = Backbone.Collection.extend({
-  initialize(models, opt) {
-    this.on('add', this.onAdd);
-
-    this.config = opt && opt.config ? opt.config : null;
-
-    // Inject editor
-    if (opt && (opt.sm || opt.em)) this.editor = opt.sm || opt.em;
+  initialize(models, opt = {}) {
+    this.listenTo(this, 'add', this.onAdd);
+    this.config = opt.config;
+    this.em = opt.em;
 
     this.model = (attrs, options) => {
       var model;
-
-      if (!options.sm && opt && opt.sm) options.sm = opt.sm;
-
-      if (!options.em && opt && opt.em) options.em = opt.em;
-
-      if (opt && opt.config) options.config = opt.config;
-
-      if (opt && opt.componentTypes)
-        options.componentTypes = opt.componentTypes;
-
       var df = opt.componentTypes;
+      options.em = opt.em;
+      options.config = opt.config;
+      options.componentTypes = df;
 
       for (var it = 0; it < df.length; it++) {
         var dfId = df[it].id;
@@ -44,10 +34,10 @@ module.exports = Backbone.Collection.extend({
 
   add(models, opt = {}) {
     if (typeof models === 'string') {
-      var parsed = this.editor.get('Parser').parseHtml(models);
+      var parsed = this.em.get('Parser').parseHtml(models);
       models = parsed.html;
 
-      var cssc = this.editor.get('CssComposer');
+      var cssc = this.em.get('CssComposer');
 
       if (parsed.css && cssc) {
         var { avoidUpdateStyle } = opt;
@@ -62,8 +52,8 @@ module.exports = Backbone.Collection.extend({
   },
 
   onAdd(model, c, opts) {
-    const em = this.editor;
-    const style = model.get('style');
+    const em = this.em;
+    const style = model.getStyle();
     const avoidInline = em && em.getConfig('avoidInlineStyle');
 
     if (
@@ -71,14 +61,12 @@ module.exports = Backbone.Collection.extend({
       !avoidInline &&
       em &&
       em.get &&
-      em.get('Config').forceClass
+      em.getConfig('forceClass')
     ) {
-      var cssC = this.editor.get('CssComposer');
-      var newClass = this.editor.get('SelectorManager').add(model.cid);
-      model.set({ style: {} });
-      model.get('classes').add(newClass);
-      var rule = cssC.add(newClass);
-      rule.set('style', style);
+      const name = model.cid;
+      const rule = em.get('CssComposer').setClassRule(name, style);
+      model.setStyle({});
+      model.addClass(name);
     }
   }
 });

@@ -9,7 +9,7 @@ module.exports = require('./AssetView').extend({
     const pfx = this.pfx;
     const src = this.model.get('src');
     return `
-      <div class="${pfx}preview" style="background-image: url(${src});"></div>
+      <div class="${pfx}preview" style="background-image: url('${src}');"></div>
       <div class="${pfx}preview-bg ${this.ppfx}checker-bg"></div>
     `;
   },

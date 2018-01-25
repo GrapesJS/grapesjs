@@ -35,7 +35,7 @@ module.exports = {
         fixtures = document.body.firstChild;
         gjs = grapesjs.init({
           stylePrefix: '',
-          storageManager: { autoload: 0, type: 'none' },
+          storageManager: { autoload: 0, type: 0 },
           assetManager: {
             storageType: 'none'
           },
@@ -45,17 +45,14 @@ module.exports = {
 
       describe('Interaction with Components', () => {
         beforeEach(function() {
-          components = gjs.editor
-            .get('DomComponents')
-            .getWrapper()
-            .get('components');
+          components = gjs.getComponents();
           tagEl = instClassTagViewer(gjs, fixtures);
         });
 
         it('Assign correctly new class to component', function() {
           var model = components.add({});
           expect(model.get('classes').length).toEqual(0);
-          gjs.editor.set('selectedComponent', model);
+          gjs.select(model);
           tagEl.addNewTag('test');
           expect(model.get('classes').length).toEqual(1);
           expect(

@@ -119,6 +119,7 @@ export default class Droppable {
     const em = this.em;
     const types = dataTransfer.types;
     const files = dataTransfer.files;
+    const dragContent = em.get('dragContent');
     let content = dataTransfer.getData('text');
 
     if (files.length) {
@@ -135,6 +136,8 @@ export default class Droppable {
           });
         }
       }
+    } else if (dragContent) {
+      content = dragContent;
     } else if (types.indexOf('text/html') >= 0) {
       content = dataTransfer
         .getData('text/html')

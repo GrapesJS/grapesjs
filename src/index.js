@@ -1,32 +1,16 @@
 import $ from 'cash-dom';
-import { defaults } from 'underscore';
+import Editor from './editor';
+import PluginManager from './plugin_manager';
 import polyfills from 'utils/polyfills';
 
 polyfills();
 
 module.exports = (() => {
-  const Editor = require('editor');
-  const PluginManager = require('plugin_manager');
   const plugins = new PluginManager();
   const editors = [];
   const defaultConfig = {
     // If true renders editor on init
     autorender: 1,
-
-    // Where init the editor
-    container: '',
-
-    // HTML string or object of components
-    components: '',
-
-    // CSS string or object of rules
-    style: '',
-
-    // If true, will fetch HTML and CSS from selected container
-    fromElement: 0,
-
-    // Storage Manager
-    storageManager: {},
 
     // Array of plugins to init
     plugins: [],
@@ -49,12 +33,10 @@ module.exports = (() => {
      * Initializes an editor based on passed options
      * @param {Object} config Configuration object
      * @param {string|HTMLElement} config.container Selector which indicates where render the editor
-     * @param {Object|string} config.components='' HTML string or Component model in JSON format
-     * @param {Object|string} config.style='' CSS string or CSS model in JSON format
-     * @param {Boolean} [config.fromElement=false] If true, will fetch HTML and CSS from selected container
-     * @param {Boolean} [config.undoManager=true] Enable/Disable undo manager
+     * @param {Boolean} [config.autorender=true] If true, auto-render the content
      * @param {Array} [config.plugins=[]] Array of plugins to execute on start
-     * @return {grapesjs.Editor} GrapesJS editor instance
+     * @param {Object} [config.pluginsOpts={}] Custom options for plugins
+     * @return {Editor} Editor instance
      * @example
      * var editor = grapesjs.init({
      *   container: '#myeditor',
@@ -64,14 +46,10 @@ module.exports = (() => {
      */
     init(config = {}) {
       const els = config.container;
-
-      if (!els) {
-        throw new Error("'container' is required");
-      }
-
-      defaults(config, defaultConfig);
-      config.el =
-        els instanceof window.HTMLElement ? els : document.querySelector(els);
+      if (!els) throw new Error("'container' is required");
+      config = { ...defaultConfig, ...config };
+      const ilEl = els instanceof window.HTMLElement;
+      config.el = ilEl ? els : document.querySelector(els);
       const editor = new Editor(config).init();
 
       // Load plugins
@@ -89,10 +67,9 @@ module.exports = (() => {
       // A plugin might have extended/added some custom type so this
       // is a good point to load stuff like components, css rules, etc.
       editor.getModel().loadOnStart();
-
       config.autorender && editor.render();
-
       editors.push(editor);
+
       return editor;
     }
   };

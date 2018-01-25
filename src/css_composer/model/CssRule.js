@@ -23,6 +23,13 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     // Indicates if the rule is stylable
     stylable: true,
 
+    // Type of at-rule, eg. 'media', 'font-face', etc.
+    atRuleType: '',
+
+    // This particolar property is used only on at-rules, like 'page' or
+    // 'font-face', where the block containes only style declarations
+    singleAtRule: 0,
+
     // If true, sets '!important' on all properties
     // You can use an array to specify properties to set important
     // Used in view
@@ -48,6 +55,19 @@ module.exports = Backbone.Model.extend(Styleable).extend({
   },
 
   /**
+   * Returns an at-rule statement if possible, eg. '@media (...)', '@keyframes'
+   * @return {string}
+   */
+  getAtRule() {
+    const type = this.get('atRuleType');
+    const condition = this.get('mediaText');
+    // Avoid breaks with the last condition
+    const typeStr = type ? `@${type}` : condition ? '@media' : '';
+
+    return typeStr + (condition && typeStr ? ` ${condition}` : '');
+  },
+
+  /**
    * Return selectors fo the rule as a string
    * @return {string}
    */
@@ -63,22 +83,36 @@ module.exports = Backbone.Model.extend(Styleable).extend({
   },
 
   /**
+   * Get declaration block
+   * @param {Object} [opts={}] Options
+   * @return {string}
+   */
+  getDeclaration(opts = {}) {
+    let result = '';
+    const selectors = this.selectorsToString();
+    const style = this.styleToString(opts);
+    const singleAtRule = this.get('singleAtRule');
+
+    if ((selectors || singleAtRule) && style) {
+      result = singleAtRule ? style : `${selectors}{${style}}`;
+    }
+
+    return result;
+  },
+
+  /**
    * Returns CSS string of the rule
    * @param {Object} [opts={}] Options
    * @return {string}
    */
   toCSS(opts = {}) {
     let result = '';
-    const media = this.get('mediaText');
-    const style = this.styleToString(opts);
-    const selectors = this.selectorsToString();
+    const atRule = this.getAtRule();
+    const block = this.getDeclaration(opts);
+    block && (result = block);
 
-    if (selectors && style) {
-      result = `${selectors}{${style}}`;
-    }
-
-    if (media && result) {
-      result = `@media ${media}{${result}}`;
+    if (atRule && result) {
+      result = `${atRule}{${result}}`;
     }
 
     return result;
@@ -93,11 +127,11 @@ module.exports = Backbone.Model.extend(Styleable).extend({
    * @return  {Boolean}
    * @private
    */
-  compare(selectors, state, width, ruleProps) {
-    var otherRule = ruleProps || {};
+  compare(selectors, state, width, ruleProps = {}) {
     var st = state || '';
     var wd = width || '';
-    var selectorsAdd = otherRule.selectorsAdd || '';
+    var selectorsAdd = ruleProps.selectorsAdd || '';
+    var atRuleType = ruleProps.atRuleType || '';
     var cId = 'cid';
     //var a1 = _.pluck(selectors.models || selectors, cId);
     //var a2 = _.pluck(this.get('selectors').models, cId);
@@ -117,11 +151,14 @@ module.exports = Backbone.Model.extend(Styleable).extend({
       if (re === 0) return f;
     }
 
-    if (this.get('state') !== st) return f;
-
-    if (this.get('mediaText') !== wd) return f;
-
-    if (this.get('selectorsAdd') !== selectorsAdd) return f;
+    if (
+      this.get('state') !== st ||
+      this.get('mediaText') !== wd ||
+      this.get('selectorsAdd') !== selectorsAdd ||
+      this.get('atRuleType') !== atRuleType
+    ) {
+      return f;
+    }
 
     return true;
   }
