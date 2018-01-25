@@ -1,23 +1,23 @@
-var Backbone = require('backbone');
-var ItemView = require('./ItemView');
+let Backbone = require('backbone')
+let ItemView = require('./ItemView')
 
 module.exports = Backbone.View.extend({
   initialize(o = {}) {
-    this.opt = o;
-    const config = o.config || {};
-    this.level = o.level;
-    this.config = config;
-    this.preview = o.preview;
-    this.ppfx = config.pStylePrefix || '';
-    this.pfx = config.stylePrefix || '';
-    this.parent = o.parent;
-    this.listenTo(this.collection, 'add', this.addTo);
-    this.listenTo(this.collection, 'reset resetNavigator', this.render);
-    this.className = this.pfx + 'items';
+    this.opt = o
+    const config = o.config || {}
+    this.level = o.level
+    this.config = config
+    this.preview = o.preview
+    this.ppfx = config.pStylePrefix || ''
+    this.pfx = config.stylePrefix || ''
+    this.parent = o.parent
+    this.listenTo(this.collection, 'add', this.addTo)
+    this.listenTo(this.collection, 'reset resetNavigator', this.render)
+    this.className = this.pfx + 'items'
 
     if (config.sortable && !this.opt.sorter) {
-      var pfx = this.pfx;
-      var utils = config.em.get('Utils');
+      let pfx = this.pfx
+      let utils = config.em.get('Utils')
       this.opt.sorter = new utils.Sorter({
         container: config.sortContainer || this.el,
         containerSel: '.' + pfx + 'items',
@@ -26,17 +26,17 @@ module.exports = Backbone.View.extend({
         ignoreViewChildren: 1,
         avoidSelectOnEnd: 1,
         pfx,
-        nested: 1
-      });
+        nested: 1,
+      })
     }
 
-    this.sorter = this.opt.sorter || '';
+    this.sorter = this.opt.sorter || ''
 
     // For the sorter
-    this.$el.data('collection', this.collection);
+    this.$el.data('collection', this.collection)
 
     if (this.parent) {
-      this.$el.data('model', this.parent);
+      this.$el.data('model', this.parent)
     }
   },
 
@@ -47,8 +47,8 @@ module.exports = Backbone.View.extend({
    * @return Object
    * */
   addTo(model) {
-    var i = this.collection.indexOf(model);
-    this.addToCollection(model, null, i);
+    let i = this.collection.indexOf(model)
+    this.addToCollection(model, null, i)
   },
 
   /**
@@ -60,47 +60,47 @@ module.exports = Backbone.View.extend({
    * @return Object Object created
    * */
   addToCollection(model, fragmentEl, index) {
-    const level = this.level;
-    var fragment = fragmentEl || null;
-    var viewObject = ItemView;
+    const level = this.level
+    let fragment = fragmentEl || null
+    let viewObject = ItemView
 
     if (!this.isCountable(model, this.config.hideTextnode)) {
-      return;
+      return
     }
 
-    var view = new viewObject({
+    let view = new viewObject({
       level,
       model,
       config: this.config,
       sorter: this.sorter,
       isCountable: this.isCountable,
-      opened: this.opt.opened
-    });
-    var rendered = view.render().el;
+      opened: this.opt.opened,
+    })
+    let rendered = view.render().el
 
     if (fragment) {
-      fragment.appendChild(rendered);
+      fragment.appendChild(rendered)
     } else {
       if (typeof index != 'undefined') {
-        var method = 'before';
+        let method = 'before'
         // If the added model is the last of collection
         // need to change the logic of append
         if (this.$el.children().length == index) {
-          index--;
-          method = 'after';
+          index--
+          method = 'after'
         }
         // In case the added is new in the collection index will be -1
         if (index < 0) {
-          this.$el.append(rendered);
+          this.$el.append(rendered)
         } else
           this.$el
             .children()
             .eq(index)
-            [method](rendered);
-      } else this.$el.append(rendered);
+            [method](rendered)
+      } else this.$el.append(rendered)
     }
 
-    return rendered;
+    return rendered
   },
 
   /**
@@ -110,23 +110,23 @@ module.exports = Backbone.View.extend({
    * @private
    */
   isCountable(model, hide) {
-    var type = model.get('type');
-    var tag = model.get('tagName');
+    let type = model.get('type')
+    let tag = model.get('tagName')
     if (
       ((type == 'textnode' || tag == 'br') && hide) ||
       !model.get('layerable')
     ) {
-      return false;
+      return false
     }
-    return true;
+    return true
   },
 
   render() {
-    const frag = document.createDocumentFragment();
-    this.el.innerHTML = '';
-    this.collection.each(model => this.addToCollection(model, frag));
-    this.el.appendChild(frag);
-    this.$el.attr('class', this.className);
-    return this;
-  }
-});
+    const frag = document.createDocumentFragment()
+    this.el.innerHTML = ''
+    this.collection.each(model => this.addToCollection(model, frag))
+    this.el.appendChild(frag)
+    this.$el.attr('class', this.className)
+    return this
+  },
+})

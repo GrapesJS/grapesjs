@@ -38,26 +38,26 @@
  * },
  * ...
  */
-import { isFunction } from 'underscore';
+import { isFunction } from 'underscore'
 
 module.exports = () => {
-  let em;
-  var c = {},
+  let em
+  let c = {},
     commands = {},
     defaultCommands = {},
     defaults = require('./config/config'),
-    AbsCommands = require('./view/CommandAbstract');
+    AbsCommands = require('./view/CommandAbstract')
 
   // Need it here as it would be used below
-  var add = function(id, obj) {
+  let add = function(id, obj) {
     if (isFunction(obj)) {
-      obj = { run: obj };
+      obj = { run: obj }
     }
 
-    delete obj.initialize;
-    commands[id] = AbsCommands.extend(obj);
-    return this;
-  };
+    delete obj.initialize
+    commands[id] = AbsCommands.extend(obj)
+    return this
+  }
 
   return {
     /**
@@ -73,114 +73,114 @@ module.exports = () => {
      * @private
      */
     init(config) {
-      c = config || {};
-      for (var name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
+      c = config || {}
+      for (let name in defaults) {
+        if (!(name in c)) c[name] = defaults[name]
       }
-      em = c.em;
-      var ppfx = c.pStylePrefix;
-      if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
+      em = c.em
+      let ppfx = c.pStylePrefix
+      if (ppfx) c.stylePrefix = ppfx + c.stylePrefix
 
       // Load commands passed via configuration
-      for (var k in c.defaults) {
-        var obj = c.defaults[k];
-        if (obj.id) this.add(obj.id, obj);
+      for (let k in c.defaults) {
+        let obj = c.defaults[k]
+        if (obj.id) this.add(obj.id, obj)
       }
 
-      const ViewCode = require('./view/ExportTemplate');
-      defaultCommands['select-comp'] = require('./view/SelectComponent');
-      defaultCommands['create-comp'] = require('./view/CreateComponent');
-      defaultCommands['delete-comp'] = require('./view/DeleteComponent');
-      defaultCommands['image-comp'] = require('./view/ImageComponent');
-      defaultCommands['move-comp'] = require('./view/MoveComponent');
-      defaultCommands['text-comp'] = require('./view/TextComponent');
-      defaultCommands['insert-custom'] = require('./view/InsertCustom');
-      defaultCommands['export-template'] = ViewCode;
-      defaultCommands['sw-visibility'] = require('./view/SwitchVisibility');
-      defaultCommands['open-layers'] = require('./view/OpenLayers');
-      defaultCommands['open-sm'] = require('./view/OpenStyleManager');
-      defaultCommands['open-tm'] = require('./view/OpenTraitManager');
-      defaultCommands['open-blocks'] = require('./view/OpenBlocks');
-      defaultCommands['open-assets'] = require('./view/OpenAssets');
-      defaultCommands['show-offset'] = require('./view/ShowOffset');
-      defaultCommands['select-parent'] = require('./view/SelectParent');
-      defaultCommands.fullscreen = require('./view/Fullscreen');
-      defaultCommands.preview = require('./view/Preview');
-      defaultCommands.resize = require('./view/Resize');
-      defaultCommands.drag = require('./view/Drag');
+      const ViewCode = require('./view/ExportTemplate')
+      defaultCommands['select-comp'] = require('./view/SelectComponent')
+      defaultCommands['create-comp'] = require('./view/CreateComponent')
+      defaultCommands['delete-comp'] = require('./view/DeleteComponent')
+      defaultCommands['image-comp'] = require('./view/ImageComponent')
+      defaultCommands['move-comp'] = require('./view/MoveComponent')
+      defaultCommands['text-comp'] = require('./view/TextComponent')
+      defaultCommands['insert-custom'] = require('./view/InsertCustom')
+      defaultCommands['export-template'] = ViewCode
+      defaultCommands['sw-visibility'] = require('./view/SwitchVisibility')
+      defaultCommands['open-layers'] = require('./view/OpenLayers')
+      defaultCommands['open-sm'] = require('./view/OpenStyleManager')
+      defaultCommands['open-tm'] = require('./view/OpenTraitManager')
+      defaultCommands['open-blocks'] = require('./view/OpenBlocks')
+      defaultCommands['open-assets'] = require('./view/OpenAssets')
+      defaultCommands['show-offset'] = require('./view/ShowOffset')
+      defaultCommands['select-parent'] = require('./view/SelectParent')
+      defaultCommands.fullscreen = require('./view/Fullscreen')
+      defaultCommands.preview = require('./view/Preview')
+      defaultCommands.resize = require('./view/Resize')
+      defaultCommands.drag = require('./view/Drag')
 
       defaultCommands['tlb-delete'] = {
         run(ed) {
-          var sel = ed.getSelected();
+          let sel = ed.getSelected()
 
           if (!sel || !sel.get('removable')) {
-            console.warn('The element is not removable');
-            return;
+            console.warn('The element is not removable')
+            return
           }
 
-          ed.select(null);
-          sel.destroy();
-        }
-      };
+          ed.select(null)
+          sel.destroy()
+        },
+      }
 
       defaultCommands['tlb-clone'] = {
         run(ed) {
-          var sel = ed.getSelected();
+          let sel = ed.getSelected()
 
           if (!sel || !sel.get('copyable')) {
-            console.warn('The element is not clonable');
-            return;
+            console.warn('The element is not clonable')
+            return
           }
 
-          var collection = sel.collection;
-          var index = collection.indexOf(sel);
-          const added = collection.add(sel.clone(), { at: index + 1 });
-          sel.emitUpdate();
-          ed.trigger('component:clone', added);
-        }
-      };
+          let collection = sel.collection
+          let index = collection.indexOf(sel)
+          const added = collection.add(sel.clone(), { at: index + 1 })
+          sel.emitUpdate()
+          ed.trigger('component:clone', added)
+        },
+      }
 
       defaultCommands['tlb-move'] = {
         run(ed, sender, opts) {
-          let dragger;
-          const em = ed.getModel();
-          const event = opts && opts.event;
-          const sel = ed.getSelected();
-          const toolbarStyle = ed.Canvas.getToolbarEl().style;
-          const nativeDrag = event.type == 'dragstart';
+          let dragger
+          const em = ed.getModel()
+          const event = opts && opts.event
+          const sel = ed.getSelected()
+          const toolbarStyle = ed.Canvas.getToolbarEl().style
+          const nativeDrag = event.type == 'dragstart'
 
           const hideTlb = () => {
-            toolbarStyle.display = 'none';
-            em.stopDefault();
-          };
+            toolbarStyle.display = 'none'
+            em.stopDefault()
+          }
 
           if (!sel || !sel.get('draggable')) {
-            console.warn('The element is not draggable');
-            return;
+            console.warn('The element is not draggable')
+            return
           }
 
           // Without setTimeout the ghost image disappears
-          nativeDrag ? setTimeout(() => hideTlb, 0) : hideTlb();
+          nativeDrag ? setTimeout(() => hideTlb, 0) : hideTlb()
 
           const onStart = (e, opts) => {
-            console.log('start mouse pos ', opts.start);
-            console.log('el rect ', opts.elRect);
-            var el = opts.el;
-            el.style.position = 'absolute';
-            el.style.margin = 0;
-          };
+            console.log('start mouse pos ', opts.start)
+            console.log('el rect ', opts.elRect)
+            let el = opts.el
+            el.style.position = 'absolute'
+            el.style.margin = 0
+          }
 
           const onEnd = (e, opts) => {
-            em.runDefault();
-            em.setSelected(sel);
-            sel.emitUpdate();
-            dragger && dragger.blur();
-          };
+            em.runDefault()
+            em.setSelected(sel)
+            sel.emitUpdate()
+            dragger && dragger.blur()
+          }
 
           const onDrag = (e, opts) => {
-            console.log('Delta ', opts.delta);
-            console.log('Current ', opts.current);
-          };
+            console.log('Delta ', opts.delta)
+            console.log('Current ', opts.current)
+          }
 
           if (em.get('designerMode')) {
             // TODO move grabbing func in editor/canvas from the Sorter
@@ -190,56 +190,56 @@ module.exports = () => {
                 event,
                 onStart,
                 onDrag,
-                onEnd
-              }
-            });
+                onEnd,
+              },
+            })
           } else {
             if (nativeDrag) {
-              event.dataTransfer.setDragImage(sel.view.el, 0, 0);
+              event.dataTransfer.setDragImage(sel.view.el, 0, 0)
               //sel.set('status', 'freezed');
             }
 
-            const cmdMove = ed.Commands.get('move-comp');
-            cmdMove.onEndMoveFromModel = onEnd;
-            cmdMove.initSorterFromModel(sel);
+            const cmdMove = ed.Commands.get('move-comp')
+            cmdMove.onEndMoveFromModel = onEnd
+            cmdMove.initSorterFromModel(sel)
           }
 
-          sel.set('status', 'selected');
-        }
-      };
+          sel.set('status', 'selected')
+        },
+      }
 
       // Core commands
-      defaultCommands['core:undo'] = e => e.UndoManager.undo();
-      defaultCommands['core:redo'] = e => e.UndoManager.redo();
+      defaultCommands['core:undo'] = e => e.UndoManager.undo()
+      defaultCommands['core:redo'] = e => e.UndoManager.redo()
       defaultCommands['core:canvas-clear'] = e => {
-        e.DomComponents.clear();
-        e.CssComposer.clear();
-      };
+        e.DomComponents.clear()
+        e.CssComposer.clear()
+      }
       defaultCommands['core:copy'] = ed => {
-        const em = ed.getModel();
-        const model = ed.getSelected();
+        const em = ed.getModel()
+        const model = ed.getSelected()
 
         if (model && model.get('copyable') && !ed.Canvas.isInputFocused()) {
-          em.set('clipboard', model);
+          em.set('clipboard', model)
         }
-      };
+      }
       defaultCommands['core:paste'] = ed => {
-        const em = ed.getModel();
-        const clp = em.get('clipboard');
-        const model = ed.getSelected();
-        const coll = model && model.collection;
+        const em = ed.getModel()
+        const clp = em.get('clipboard')
+        const model = ed.getSelected()
+        const coll = model && model.collection
 
         if (coll && clp && !ed.Canvas.isInputFocused()) {
-          const at = coll.indexOf(model) + 1;
-          coll.add(clp.clone(), { at });
+          const at = coll.indexOf(model) + 1
+          coll.add(clp.clone(), { at })
         }
-      };
+      }
 
-      if (c.em) c.model = c.em.get('Canvas');
+      if (c.em) c.model = c.em.get('Canvas')
 
-      this.loadDefaultCommands();
+      this.loadDefaultCommands()
 
-      return this;
+      return this
     },
 
     /**
@@ -271,14 +271,14 @@ module.exports = () => {
      * myCommand.run();
      * */
     get(id) {
-      var el = commands[id];
+      let el = commands[id]
 
       if (typeof el == 'function') {
-        el = new el(c);
-        commands[id] = el;
+        el = new el(c)
+        commands[id] = el
       }
 
-      return el;
+      return el
     },
 
     /**
@@ -287,7 +287,7 @@ module.exports = () => {
      * @return {Boolean}
      * */
     has(id) {
-      return !!commands[id];
+      return !!commands[id]
     },
 
     /**
@@ -296,11 +296,11 @@ module.exports = () => {
      * @private
      * */
     loadDefaultCommands() {
-      for (var id in defaultCommands) {
-        this.add(id, defaultCommands[id]);
+      for (let id in defaultCommands) {
+        this.add(id, defaultCommands[id])
       }
 
-      return this;
-    }
-  };
-};
+      return this
+    },
+  }
+}

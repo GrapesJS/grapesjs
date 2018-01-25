@@ -1,4 +1,4 @@
-var Backbone = require('backbone');
+let Backbone = require('backbone')
 
 module.exports = Backbone.View.extend({
   template: _.template(`
@@ -14,16 +14,16 @@ module.exports = Backbone.View.extend({
     <button style="display:none" class="<%= ppfx %>add-trasp">+</button>`),
 
   events: {
-    change: 'updateDevice'
+    change: 'updateDevice',
   },
 
   initialize(o) {
-    this.config = o.config || {};
-    this.em = this.config.em;
-    this.ppfx = this.config.pStylePrefix || '';
-    this.events['click .' + this.ppfx + 'add-trasp'] = this.startAdd;
-    this.listenTo(this.em, 'change:device', this.updateSelect);
-    this.delegateEvents();
+    this.config = o.config || {}
+    this.em = this.config.em
+    this.ppfx = this.config.pStylePrefix || ''
+    this.events['click .' + this.ppfx + 'add-trasp'] = this.startAdd
+    this.listenTo(this.em, 'change:device', this.updateSelect)
+    this.delegateEvents()
   },
 
   /**
@@ -38,11 +38,11 @@ module.exports = Backbone.View.extend({
    * @private
    */
   updateDevice() {
-    var em = this.em;
+    let em = this.em
     if (em) {
-      var devEl = this.devicesEl;
-      var val = devEl ? devEl.val() : '';
-      em.set('device', val);
+      let devEl = this.devicesEl
+      let val = devEl ? devEl.val() : ''
+      em.set('device', val)
     }
   },
 
@@ -51,12 +51,12 @@ module.exports = Backbone.View.extend({
    * @private
    */
   updateSelect() {
-    var em = this.em;
-    var devEl = this.devicesEl;
+    let em = this.em
+    let devEl = this.devicesEl
     if (em && em.getDeviceModel && devEl) {
-      var device = em.getDeviceModel();
-      var name = device ? device.get('name') : '';
-      devEl.val(name);
+      let device = em.getDeviceModel()
+      let name = device ? device.get('name') : ''
+      devEl.val(name)
     }
   },
 
@@ -66,25 +66,25 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getOptions() {
-    var result = '';
+    let result = ''
     this.collection.each(device => {
-      var name = device.get('name');
-      result += '<option value="' + name + '">' + name + '</option>';
-    });
-    return result;
+      let name = device.get('name')
+      result += '<option value="' + name + '">' + name + '</option>'
+    })
+    return result
   },
 
   render() {
-    var pfx = this.ppfx;
+    let pfx = this.ppfx
     this.$el.html(
       this.template({
         ppfx: pfx,
-        deviceLabel: this.config.deviceLabel
+        deviceLabel: this.config.deviceLabel,
       })
-    );
-    this.devicesEl = this.$el.find('.' + pfx + 'devices');
-    this.devicesEl.append(this.getOptions());
-    this.el.className = pfx + 'devices-c';
-    return this;
-  }
-});
+    )
+    this.devicesEl = this.$el.find('.' + pfx + 'devices')
+    this.devicesEl.append(this.getOptions())
+    this.el.className = pfx + 'devices-c'
+    return this
+  },
+})

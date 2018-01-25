@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var ComponentView = require('./ComponentImageView');
+let Backbone = require('backbone')
+let ComponentView = require('./ComponentImageView')
 
 module.exports = ComponentView.extend({
   tagName: 'script',
@@ -7,17 +7,17 @@ module.exports = ComponentView.extend({
   events: {},
 
   render() {
-    var model = this.model;
-    var src = model.get('src');
-    var em = this.em;
-    var scriptCount = em && em.get('scriptCount') ? em.get('scriptCount') : 0;
-    var content = '';
+    let model = this.model
+    let src = model.get('src')
+    let em = this.em
+    let scriptCount = em && em.get('scriptCount') ? em.get('scriptCount') : 0
+    let content = ''
 
     // If it's an external script
     if (src) {
-      var onload = model.get('onload');
-      var svar = 'script' + scriptCount;
-      var svarNext = 'script' + (scriptCount + 1);
+      let onload = model.get('onload')
+      let svar = 'script' + scriptCount
+      let svarNext = 'script' + (scriptCount + 1)
       content =
         'var ' +
         svar +
@@ -40,15 +40,15 @@ module.exports = ComponentView.extend({
         'Start() { document.body.appendChild(' +
         svar +
         '); };\n' +
-        (!scriptCount ? svar + 'Start();' : '');
+        (!scriptCount ? svar + 'Start();' : '')
       if (em) {
-        em.set('scriptCount', scriptCount + 1);
+        em.set('scriptCount', scriptCount + 1)
       }
     } else {
-      content = model.get('content');
+      content = model.get('content')
     }
 
-    this.el.innerHTML = content;
-    return this;
-  }
-});
+    this.el.innerHTML = content
+    return this
+  },
+})

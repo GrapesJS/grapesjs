@@ -1,31 +1,31 @@
-var Backbone = require('backbone');
-var CssRule = require('./CssRule');
+let Backbone = require('backbone')
+let CssRule = require('./CssRule')
 
 module.exports = Backbone.Collection.extend({
   initialize(models, opt) {
     // Inject editor
-    if (opt && opt.sm) this.editor = opt.sm;
+    if (opt && opt.sm) this.editor = opt.sm
 
     // Not used
     this.model = (attrs, options) => {
-      var model;
+      let model
 
-      if (!options.sm && opt && opt.sm) options.sm = opt.sm;
+      if (!options.sm && opt && opt.sm) options.sm = opt.sm
 
       switch (1) {
         default:
-          model = new CssRule(attrs, options);
+          model = new CssRule(attrs, options)
       }
 
-      return model;
-    };
+      return model
+    }
   },
 
   add(models, opt = {}) {
     if (typeof models === 'string') {
-      models = this.editor.get('Parser').parseCss(models);
+      models = this.editor.get('Parser').parseCss(models)
     }
-    opt.em = this.editor;
-    return Backbone.Collection.prototype.add.apply(this, [models, opt]);
-  }
-});
+    opt.em = this.editor
+    return Backbone.Collection.prototype.add.apply(this, [models, opt])
+  },
+})

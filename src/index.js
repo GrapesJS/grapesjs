@@ -1,14 +1,14 @@
-import $ from 'cash-dom';
-import { defaults } from 'underscore';
-import polyfills from 'utils/polyfills';
+import $ from 'cash-dom'
+import { defaults } from 'underscore'
+import polyfills from 'utils/polyfills'
 
-polyfills();
+polyfills()
 
 module.exports = (() => {
-  const Editor = require('editor');
-  const PluginManager = require('plugin_manager');
-  const plugins = new PluginManager();
-  const editors = [];
+  const Editor = require('editor')
+  const PluginManager = require('plugin_manager')
+  const plugins = new PluginManager()
+  const editors = []
   const defaultConfig = {
     // If true renders editor on init
     autorender: 1,
@@ -32,8 +32,8 @@ module.exports = (() => {
     plugins: [],
 
     // Custom options for plugins
-    pluginsOpts: {}
-  };
+    pluginsOpts: {},
+  }
 
   return {
     $,
@@ -63,37 +63,37 @@ module.exports = (() => {
      * })
      */
     init(config = {}) {
-      const els = config.container;
+      const els = config.container
 
       if (!els) {
-        throw new Error("'container' is required");
+        throw new Error("'container' is required")
       }
 
-      defaults(config, defaultConfig);
+      defaults(config, defaultConfig)
       config.el =
-        els instanceof window.HTMLElement ? els : document.querySelector(els);
-      const editor = new Editor(config).init();
+        els instanceof window.HTMLElement ? els : document.querySelector(els)
+      const editor = new Editor(config).init()
 
       // Load plugins
       config.plugins.forEach(pluginId => {
-        const plugin = plugins.get(pluginId);
+        const plugin = plugins.get(pluginId)
 
         if (plugin) {
-          plugin(editor, config.pluginsOpts[pluginId] || {});
+          plugin(editor, config.pluginsOpts[pluginId] || {})
         } else {
-          console.warn(`Plugin ${pluginId} not found`);
+          console.warn(`Plugin ${pluginId} not found`)
         }
-      });
+      })
 
       // Execute `onLoad` on modules once all plugins are initialized.
       // A plugin might have extended/added some custom type so this
       // is a good point to load stuff like components, css rules, etc.
-      editor.getModel().loadOnStart();
+      editor.getModel().loadOnStart()
 
-      config.autorender && editor.render();
+      config.autorender && editor.render()
 
-      editors.push(editor);
-      return editor;
-    }
-  };
-})();
+      editors.push(editor)
+      return editor
+    },
+  }
+})()

@@ -1,20 +1,20 @@
-const SelectComponent = require('./SelectComponent');
-const $ = Backbone.$;
+const SelectComponent = require('./SelectComponent')
+const $ = Backbone.$
 
 module.exports = _.extend({}, SelectComponent, {
   init(o) {
-    _.bindAll(this, 'startDelete', 'stopDelete', 'onDelete');
-    this.hoverClass = this.pfx + 'hover-delete';
-    this.badgeClass = this.pfx + 'badge-red';
+    _.bindAll(this, 'startDelete', 'stopDelete', 'onDelete')
+    this.hoverClass = this.pfx + 'hover-delete'
+    this.badgeClass = this.pfx + 'badge-red'
   },
 
   enable() {
-    var that = this;
+    let that = this
     this.$el
       .find('*')
       .mouseover(this.startDelete)
       .mouseout(this.stopDelete)
-      .click(this.onDelete);
+      .click(this.onDelete)
   },
 
   /**
@@ -23,13 +23,13 @@ module.exports = _.extend({}, SelectComponent, {
    * @private
    */
   startDelete(e) {
-    e.stopPropagation();
-    var $this = $(e.target);
+    e.stopPropagation()
+    let $this = $(e.target)
 
     // Show badge if possible
     if ($this.data('model').get('removable')) {
-      $this.addClass(this.hoverClass);
-      this.attachBadge($this.get(0));
+      $this.addClass(this.hoverClass)
+      this.attachBadge($this.get(0))
     }
   },
 
@@ -39,12 +39,12 @@ module.exports = _.extend({}, SelectComponent, {
    * @private
    */
   stopDelete(e) {
-    e.stopPropagation();
-    var $this = $(e.target);
-    $this.removeClass(this.hoverClass);
+    e.stopPropagation()
+    let $this = $(e.target)
+    $this.removeClass(this.hoverClass)
 
     // Hide badge if possible
-    if (this.badge) this.badge.css({ left: -1000, top: -1000 });
+    if (this.badge) this.badge.css({ left: -1000, top: -1000 })
   },
 
   /**
@@ -53,15 +53,15 @@ module.exports = _.extend({}, SelectComponent, {
    * @private
    */
   onDelete(e) {
-    e.stopPropagation();
-    var $this = $(e.target);
+    e.stopPropagation()
+    let $this = $(e.target)
 
     // Do nothing in case can't remove
-    if (!$this.data('model').get('removable')) return;
+    if (!$this.data('model').get('removable')) return
 
-    $this.data('model').destroy();
-    this.removeBadge();
-    this.clean();
+    $this.data('model').destroy()
+    this.removeBadge()
+    this.clean()
   },
 
   /**
@@ -70,6 +70,6 @@ module.exports = _.extend({}, SelectComponent, {
    * @private
    * */
   updateBadgeLabel(model) {
-    this.badge.html('Remove ' + model.getName());
-  }
-});
+    this.badge.html('Remove ' + model.getName())
+  },
+})

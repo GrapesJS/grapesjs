@@ -1,4 +1,4 @@
-var Backbone = require('backbone');
+let Backbone = require('backbone')
 
 module.exports = Backbone.View.extend({
   // Default view
@@ -10,7 +10,7 @@ module.exports = Backbone.View.extend({
   itemType: 'type',
 
   initialize(opts, config) {
-    this.config = config || {};
+    this.config = config || {}
   },
 
   /**
@@ -19,7 +19,7 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   addTo(model) {
-    this.add(model);
+    this.add(model)
   },
 
   /**
@@ -29,35 +29,35 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   add(model, fragment) {
-    var frag = fragment || null;
-    var itemView = this.itemView;
-    var typeField = model.get(this.itemType);
+    let frag = fragment || null
+    let itemView = this.itemView
+    let typeField = model.get(this.itemType)
     if (this.itemsView && this.itemsView[typeField]) {
-      itemView = this.itemsView[typeField];
+      itemView = this.itemsView[typeField]
     }
-    var view = new itemView(
+    let view = new itemView(
       {
         model,
-        config: this.config
+        config: this.config,
       },
       this.config
-    );
-    var rendered = view.render().el;
+    )
+    let rendered = view.render().el
 
-    if (frag) frag.appendChild(rendered);
-    else this.$el.append(rendered);
+    if (frag) frag.appendChild(rendered)
+    else this.$el.append(rendered)
   },
 
   render() {
-    var frag = document.createDocumentFragment();
-    this.$el.empty();
+    let frag = document.createDocumentFragment()
+    this.$el.empty()
 
     if (this.collection.length)
       this.collection.each(function(model) {
-        this.add(model, frag);
-      }, this);
+        this.add(model, frag)
+      }, this)
 
-    this.$el.append(frag);
-    return this;
-  }
-});
+    this.$el.append(frag)
+    return this
+  },
+})

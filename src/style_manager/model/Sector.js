@@ -1,8 +1,8 @@
-import { extend } from 'underscore';
+import { extend } from 'underscore'
 
-const Backbone = require('backbone');
-const Properties = require('./Properties');
-const PropertyFactory = require('./PropertyFactory');
+const Backbone = require('backbone')
+const Properties = require('./Properties')
+const PropertyFactory = require('./PropertyFactory')
 
 module.exports = Backbone.Model.extend({
   defaults: {
@@ -11,21 +11,21 @@ module.exports = Backbone.Model.extend({
     open: true,
     buildProps: '',
     extendBuilded: 1,
-    properties: []
+    properties: [],
   },
 
   initialize(opts) {
-    var o = opts || {};
-    var props = [];
-    var builded = this.buildProperties(o.buildProps);
-    !this.get('id') && this.set('id', this.get('name'));
+    let o = opts || {}
+    let props = []
+    let builded = this.buildProperties(o.buildProps)
+    !this.get('id') && this.set('id', this.get('name'))
 
-    if (!builded) props = this.get('properties');
-    else props = this.extendProperties(builded);
+    if (!builded) props = this.get('properties')
+    else props = this.extendProperties(builded)
 
-    var propsModel = new Properties(props);
-    propsModel.sector = this;
-    this.set('properties', propsModel);
+    let propsModel = new Properties(props)
+    propsModel.sector = this
+    this.set('properties', propsModel)
   },
 
   /**
@@ -37,41 +37,41 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   extendProperties(props, moProps, ex) {
-    var pLen = props.length;
-    var mProps = moProps || this.get('properties');
-    var ext = this.get('extendBuilded');
-    var isolated = [];
+    let pLen = props.length
+    let mProps = moProps || this.get('properties')
+    let ext = this.get('extendBuilded')
+    let isolated = []
 
-    for (var i = 0, len = mProps.length; i < len; i++) {
-      var mProp = mProps[i];
-      var found = 0;
+    for (let i = 0, len = mProps.length; i < len; i++) {
+      let mProp = mProps[i]
+      let found = 0
 
-      for (var j = 0; j < pLen; j++) {
-        var prop = props[j];
+      for (let j = 0; j < pLen; j++) {
+        let prop = props[j]
         if (mProp.property == prop.property || mProp.id == prop.property) {
           // Check for nested properties
-          var mPProps = mProp.properties;
+          let mPProps = mProp.properties
           if (mPProps && mPProps.length) {
             mProp.properties = this.extendProperties(
               prop.properties,
               mPProps,
               1
-            );
+            )
           }
-          props[j] = ext ? extend(prop, mProp) : mProp;
-          isolated[j] = props[j];
-          found = 1;
-          continue;
+          props[j] = ext ? extend(prop, mProp) : mProp
+          isolated[j] = props[j]
+          found = 1
+          continue
         }
       }
 
       if (!found) {
-        props.push(mProp);
-        isolated.push(mProp);
+        props.push(mProp)
+        isolated.push(mProp)
       }
     }
 
-    return ex ? isolated : props;
+    return ex ? isolated : props
   },
 
   /**
@@ -81,15 +81,15 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   buildProperties(props) {
-    var r;
-    var buildP = props || [];
+    let r
+    let buildP = props || []
 
-    if (!buildP.length) return;
+    if (!buildP.length) return
 
-    if (!this.propFactory) this.propFactory = new PropertyFactory();
+    if (!this.propFactory) this.propFactory = new PropertyFactory()
 
-    r = this.propFactory.build(buildP);
+    r = this.propFactory.build(buildP)
 
-    return r;
-  }
-});
+    return r
+  },
+})

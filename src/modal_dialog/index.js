@@ -15,11 +15,11 @@
  * @module Modal
  */
 module.exports = () => {
-  var c = {},
+  let c = {},
     defaults = require('./config/config'),
     ModalM = require('./model/Modal'),
-    ModalView = require('./view/ModalView');
-  var model, modal;
+    ModalView = require('./view/ModalView')
+  let model, modal
 
   return {
     /**
@@ -35,26 +35,26 @@ module.exports = () => {
      * @private
      */
     init(config) {
-      c = config || {};
-      for (var name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
+      c = config || {}
+      for (let name in defaults) {
+        if (!(name in c)) c[name] = defaults[name]
       }
 
-      var ppfx = c.pStylePrefix;
-      if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
+      let ppfx = c.pStylePrefix
+      if (ppfx) c.stylePrefix = ppfx + c.stylePrefix
 
-      model = new ModalM(c);
+      model = new ModalM(c)
       modal = new ModalView({
         model,
-        config: c
-      });
+        config: c,
+      })
 
-      return this;
+      return this
     },
 
     postRender(editorView) {
       // c.em.config.el || 'body'
-      this.render().appendTo(editorView.el);
+      this.render().appendTo(editorView.el)
     },
 
     /**
@@ -62,8 +62,8 @@ module.exports = () => {
      * @return {this}
      */
     open() {
-      modal.show();
-      return this;
+      modal.show()
+      return this
     },
 
     /**
@@ -71,8 +71,8 @@ module.exports = () => {
      * @return {this}
      */
     close() {
-      modal.hide();
-      return this;
+      modal.hide()
+      return this
     },
 
     /**
@@ -80,7 +80,7 @@ module.exports = () => {
      * @return {Boolean}
      */
     isOpen() {
-      return !!model.get('open');
+      return !!model.get('open')
     },
 
     /**
@@ -91,8 +91,8 @@ module.exports = () => {
      * modal.setTitle('New title');
      */
     setTitle(title) {
-      model.set('title', title);
-      return this;
+      model.set('title', title)
+      return this
     },
 
     /**
@@ -100,7 +100,7 @@ module.exports = () => {
      * @return {string}
      */
     getTitle() {
-      return model.get('title');
+      return model.get('title')
     },
 
     /**
@@ -111,9 +111,9 @@ module.exports = () => {
      * modal.setContent('<div>Some HTML content</div>');
      */
     setContent(content) {
-      model.set('content', ' ');
-      model.set('content', content);
-      return this;
+      model.set('content', ' ')
+      model.set('content', content)
+      return this
     },
 
     /**
@@ -121,7 +121,7 @@ module.exports = () => {
      * @return {string}
      */
     getContent() {
-      return model.get('content');
+      return model.get('content')
     },
 
     /**
@@ -130,7 +130,7 @@ module.exports = () => {
      * @private
      */
     getContentEl() {
-      return modal.getContent().get(0);
+      return modal.getContent().get(0)
     },
 
     /**
@@ -139,7 +139,7 @@ module.exports = () => {
      * @private
      */
     getModel() {
-      return model;
+      return model
     },
 
     /**
@@ -148,7 +148,7 @@ module.exports = () => {
      * @private
      */
     render() {
-      return modal.render().$el;
-    }
-  };
-};
+      return modal.render().$el
+    },
+  }
+}

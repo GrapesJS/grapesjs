@@ -1,9 +1,9 @@
 module.exports = () => {
-  var c = {},
+  let c = {},
     defaults = require('./config/config'),
     parserCss = require('./model/ParserCss'),
-    parserHtml = require('./model/ParserHtml');
-  var pHtml, pCss;
+    parserHtml = require('./model/ParserHtml')
+  let pHtml, pCss
 
   return {
     compTypes: '',
@@ -31,13 +31,13 @@ module.exports = () => {
      * ...
      */
     init(config) {
-      c = config || {};
-      for (var name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
+      c = config || {}
+      for (let name in defaults) {
+        if (!(name in c)) c[name] = defaults[name]
       }
-      pHtml = new parserHtml(c);
-      pCss = new parserCss(c);
-      return this;
+      pHtml = new parserHtml(c)
+      pCss = new parserCss(c)
+      return this
     },
 
     /**
@@ -46,12 +46,12 @@ module.exports = () => {
      * @return {Object}
      */
     parseHtml(str) {
-      pHtml.compTypes = this.compTypes;
-      return pHtml.parse(str, pCss);
+      pHtml.compTypes = this.compTypes
+      return pHtml.parse(str, pCss)
     },
 
     parseCss(str) {
-      return pCss.parse(str);
-    }
-  };
-};
+      return pCss.parse(str)
+    },
+  }
+}

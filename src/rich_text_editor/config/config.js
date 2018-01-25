@@ -6,5 +6,5 @@ module.exports = {
   adjustToolbar: 1,
 
   // Default RTE actions
-  actions: ['bold', 'italic', 'underline', 'strikethrough', 'link']
-};
+  actions: ['bold', 'italic', 'underline', 'strikethrough', 'link'],
+}

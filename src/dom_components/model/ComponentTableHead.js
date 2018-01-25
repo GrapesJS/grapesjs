@@ -1,22 +1,22 @@
-const ComponentTableBody = require('./ComponentTableBody');
+const ComponentTableBody = require('./ComponentTableBody')
 
 module.exports = ComponentTableBody.extend(
   {
     defaults: {
       ...ComponentTableBody.prototype.defaults,
       type: 'thead',
-      tagName: 'thead'
-    }
+      tagName: 'thead',
+    },
   },
   {
     isComponent(el) {
-      let result = '';
+      let result = ''
 
       if (el.tagName == 'THEAD') {
-        result = { type: 'thead' };
+        result = { type: 'thead' }
       }
 
-      return result;
-    }
+      return result
+    },
   }
-);
+)

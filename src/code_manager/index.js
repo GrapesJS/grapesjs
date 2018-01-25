@@ -18,23 +18,23 @@
  * @module CodeManager
  */
 module.exports = () => {
-  var c = {},
+  let c = {},
     defaults = require('./config/config'),
     gHtml = require('./model/HtmlGenerator'),
     gCss = require('./model/CssGenerator'),
     gJson = require('./model/JsonGenerator'),
     gJs = require('./model/JsGenerator'),
     eCM = require('./model/CodeMirrorEditor'),
-    editorView = require('./view/EditorView');
+    editorView = require('./view/EditorView')
 
-  var generators = {},
+  let generators = {},
     defGenerators = {},
     viewers = {},
-    defViewers = {};
+    defViewers = {}
 
   return {
     getConfig() {
-      return c;
+      return c
     },
 
     config: c,
@@ -53,22 +53,22 @@ module.exports = () => {
      * @param {Object} config Configurations
      */
     init(config) {
-      c = config || {};
-      for (var name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
+      c = config || {}
+      for (let name in defaults) {
+        if (!(name in c)) c[name] = defaults[name]
       }
 
-      var ppfx = c.pStylePrefix;
-      if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
+      let ppfx = c.pStylePrefix
+      if (ppfx) c.stylePrefix = ppfx + c.stylePrefix
 
-      defGenerators.html = new gHtml();
-      defGenerators.css = new gCss();
-      defGenerators.json = new gJson();
-      defGenerators.js = new gJs();
-      defViewers.CodeMirror = new eCM();
-      this.loadDefaultGenerators().loadDefaultViewers();
+      defGenerators.html = new gHtml()
+      defGenerators.css = new gCss()
+      defGenerators.json = new gJson()
+      defGenerators.js = new gJs()
+      defViewers.CodeMirror = new eCM()
+      this.loadDefaultGenerators().loadDefaultViewers()
 
-      return this;
+      return this
     },
 
     /**
@@ -85,8 +85,8 @@ module.exports = () => {
      * });
      * */
     addGenerator(id, generator) {
-      generators[id] = generator;
-      return this;
+      generators[id] = generator
+      return this
     },
 
     /**
@@ -100,7 +100,7 @@ module.exports = () => {
      * };
      * */
     getGenerator(id) {
-      return generators[id] || null;
+      return generators[id] || null
     },
 
     /**
@@ -108,7 +108,7 @@ module.exports = () => {
      * @return {Array<Object>}
      * */
     getGenerators() {
-      return generators;
+      return generators
     },
 
     /**
@@ -130,8 +130,8 @@ module.exports = () => {
      * });
      * */
     addViewer(id, viewer) {
-      viewers[id] = viewer;
-      return this;
+      viewers[id] = viewer
+      return this
     },
 
     /**
@@ -142,7 +142,7 @@ module.exports = () => {
      * var viewer = codeManager.getViewer('ace');
      * */
     getViewer(id) {
-      return viewers[id] || null;
+      return viewers[id] || null
     },
 
     /**
@@ -150,7 +150,7 @@ module.exports = () => {
      * @return {Array<Object>}
      * */
     getViewers() {
-      return viewers;
+      return viewers
     },
 
     /**
@@ -165,7 +165,7 @@ module.exports = () => {
      * codeManager.updateViewer(AceViewer, 'code');
      * */
     updateViewer(viewer, code) {
-      viewer.setContent(code);
+      viewer.setContent(code)
     },
 
     /**
@@ -178,9 +178,9 @@ module.exports = () => {
      * var codeStr = codeManager.getCode(model, 'html');
      * */
     getCode(model, genId, opt = {}) {
-      opt.em = c.em;
-      var generator = this.getGenerator(genId);
-      return generator ? generator.build(model, opt) : '';
+      opt.em = c.em
+      let generator = this.getGenerator(genId)
+      return generator ? generator.build(model, opt) : ''
     },
 
     /**
@@ -189,9 +189,9 @@ module.exports = () => {
      * @private
      * */
     loadDefaultGenerators() {
-      for (var id in defGenerators) this.addGenerator(id, defGenerators[id]);
+      for (let id in defGenerators) this.addGenerator(id, defGenerators[id])
 
-      return this;
+      return this
     },
 
     /**
@@ -200,9 +200,9 @@ module.exports = () => {
      * @private
      * */
     loadDefaultViewers() {
-      for (var id in defViewers) this.addViewer(id, defViewers[id]);
+      for (let id in defViewers) this.addViewer(id, defViewers[id])
 
-      return this;
-    }
-  };
-};
+      return this
+    },
+  }
+}

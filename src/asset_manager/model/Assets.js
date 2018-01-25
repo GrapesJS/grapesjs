@@ -1,4 +1,4 @@
-import TypeableCollection from 'domain_abstract/model/TypeableCollection';
+import TypeableCollection from 'domain_abstract/model/TypeableCollection'
 
 module.exports = require('backbone')
   .Collection.extend(TypeableCollection)
@@ -12,11 +12,11 @@ module.exports = require('backbone')
           if (typeof value == 'string') {
             return {
               type: 'image',
-              src: value
-            };
+              src: value,
+            }
           }
-          return value;
-        }
-      }
-    ]
-  });
+          return value
+        },
+      },
+    ],
+  })

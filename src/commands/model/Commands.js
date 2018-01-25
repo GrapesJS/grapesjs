@@ -1,6 +1,6 @@
-var Backbone = require('backbone');
-var Command = require('./Command');
+let Backbone = require('backbone')
+let Command = require('./Command')
 
 module.exports = Backbone.Collection.extend({
-  model: Command
-});
+  model: Command,
+})

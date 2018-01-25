@@ -10,9 +10,13 @@
     }
   },
   "rules": {
+    "semi": [2, "never"],
+    "no-var": 2,
     "strict": 0,
     "quotes": [0, "single"],
     "eol-last": [0],
+    "camelcase": 2,
+    "comma-dangle": [2, "always-multiline"],
     "no-mixed-requires": [0],
     "no-underscore-dangle": [0]
   }

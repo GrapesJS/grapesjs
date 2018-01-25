@@ -1,7 +1,7 @@
 module.exports = () => {
-  const Sorter = require('./Sorter');
-  const Resizer = require('./Resizer');
-  const Dragger = require('./Dragger');
+  const Sorter = require('./Sorter')
+  const Resizer = require('./Resizer')
+  const Dragger = require('./Dragger')
 
   return {
     /**
@@ -15,11 +15,11 @@ module.exports = () => {
      * Initialize module
      */
     init() {
-      return this;
+      return this
     },
 
     Sorter,
     Resizer,
-    Dragger
-  };
-};
+    Dragger,
+  }
+}

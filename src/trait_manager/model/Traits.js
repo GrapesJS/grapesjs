@@ -1,40 +1,40 @@
-import { isString, isArray } from 'underscore';
-const Backbone = require('backbone');
-const Trait = require('./Trait');
-const TraitFactory = require('./TraitFactory');
+import { isString, isArray } from 'underscore'
+const Backbone = require('backbone')
+const Trait = require('./Trait')
+const TraitFactory = require('./TraitFactory')
 
 module.exports = Backbone.Collection.extend({
   model: Trait,
 
   initialize(coll, options = {}) {
-    this.em = options.em || '';
+    this.em = options.em || ''
   },
 
   setTarget(target) {
-    this.target = target;
+    this.target = target
   },
 
   add(models, opt) {
-    const em = this.em;
+    const em = this.em
 
     // Use TraitFactory if necessary
     if (isString(models) || isArray(models)) {
-      const tm = em && em.get && em.get('TraitManager');
-      const tmOpts = tm && tm.getConfig();
-      const tf = TraitFactory(tmOpts);
+      const tm = em && em.get && em.get('TraitManager')
+      const tmOpts = tm && tm.getConfig()
+      const tf = TraitFactory(tmOpts)
 
       if (isString(models)) {
-        models = [models];
+        models = [models]
       }
 
-      for (var i = 0, len = models.length; i < len; i++) {
-        const str = models[i];
-        const model = isString(str) ? tf.build(str)[0] : str;
-        model.target = this.target;
-        models[i] = model;
+      for (let i = 0, len = models.length; i < len; i++) {
+        const str = models[i]
+        const model = isString(str) ? tf.build(str)[0] : str
+        model.target = this.target
+        models[i] = model
       }
     }
 
-    return Backbone.Collection.prototype.add.apply(this, [models, opt]);
-  }
-});
+    return Backbone.Collection.prototype.add.apply(this, [models, opt])
+  },
+})

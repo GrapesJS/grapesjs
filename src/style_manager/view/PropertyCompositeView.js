@@ -1,21 +1,21 @@
-const PropertyView = require('./PropertyView');
-const $ = Backbone.$;
+const PropertyView = require('./PropertyView')
+const $ = Backbone.$
 
 module.exports = PropertyView.extend({
   templateInput() {
-    const pfx = this.pfx;
+    const pfx = this.pfx
     return `
       <div class="${pfx}field ${pfx}composite">
         <span id="${pfx}input-holder"></span>
       </div>
-    `;
+    `
   },
 
   inputValueChanged(...args) {
     // If it's not detached (eg. 'padding: 1px 2px 3px 4px;') it will follow
     // the same flow of PropertyView
     if (!this.model.get('detached')) {
-      PropertyView.prototype.inputValueChanged.apply(this, args);
+      PropertyView.prototype.inputValueChanged.apply(this, args)
     }
   },
 
@@ -23,34 +23,34 @@ module.exports = PropertyView.extend({
    * Renders input
    * */
   onRender() {
-    var model = this.model;
-    var props = model.get('properties') || [];
-    var self = this;
+    let model = this.model
+    let props = model.get('properties') || []
+    let self = this
 
     if (props.length) {
       if (!this.$input) {
-        this.$input = $('<input type="hidden" value="0">');
-        this.input = this.$input.get(0);
+        this.$input = $('<input type="hidden" value="0">')
+        this.input = this.$input.get(0)
       }
 
       if (!this.props) {
-        this.props = model.get('properties');
+        this.props = model.get('properties')
       }
 
       if (!this.$props) {
         //Not yet supported nested composite
         this.props.each(function(prop, index) {
           if (prop && prop.get('type') == 'composite') {
-            this.props.remove(prop);
-            console.warn('Nested composite types not yet allowed.');
+            this.props.remove(prop)
+            console.warn('Nested composite types not yet allowed.')
           }
-          prop.parent = model;
-        }, this);
+          prop.parent = model
+        }, this)
 
-        var PropertiesView = require('./PropertiesView');
-        var propsView = new PropertiesView(this.getPropsConfig());
-        this.$props = propsView.render().$el;
-        this.$el.find(`#${this.pfx}input-holder`).append(this.$props);
+        let PropertiesView = require('./PropertiesView')
+        let propsView = new PropertiesView(this.getPropsConfig())
+        this.$props = propsView.render().$el
+        this.$el.find(`#${this.pfx}input-holder`).append(this.$props)
       }
     }
   },
@@ -61,31 +61,31 @@ module.exports = PropertyView.extend({
    * @return {Object}
    */
   getPropsConfig(opts) {
-    var that = this;
-    const model = this.model;
+    let that = this
+    const model = this.model
 
-    var result = {
+    let result = {
       config: this.config,
       collection: this.props,
       target: this.target,
       propTarget: this.propTarget,
       // On any change made to children I need to update composite value
       onChange(el, view, opts) {
-        model.set('value', model.getFullValue(), opts);
+        model.set('value', model.getFullValue(), opts)
       },
       // Each child property will receive a full composite string, eg. '0px 0px 10px 0px'
       // I need to extract from that string the corresponding one to that property.
       customValue(property, mIndex) {
-        return that.valueOnIndex(mIndex, property);
-      }
-    };
+        return that.valueOnIndex(mIndex, property)
+      },
+    }
 
     // If detached let follow its standard flow
     if (model.get('detached')) {
-      delete result.onChange;
+      delete result.onChange
     }
 
-    return result;
+    return result
   },
 
   /**
@@ -95,24 +95,24 @@ module.exports = PropertyView.extend({
    * @return {string}
    * */
   valueOnIndex(index, view) {
-    let value;
-    const targetValue = this.getTargetValue({ ignoreDefault: 1 });
+    let value
+    const targetValue = this.getTargetValue({ ignoreDefault: 1 })
 
     // If the target value of the composite is not empty I'll fetch
     // the corresponding value from the requested index, otherwise try
     // to get the value of the sub-property
     if (targetValue) {
-      const values = targetValue.split(' ');
-      value = values[index];
+      const values = targetValue.split(' ')
+      value = values[index]
     } else {
       value =
-        view && view.getTargetValue({ ignoreCustomValue: 1, ignoreDefault: 1 });
+        view && view.getTargetValue({ ignoreCustomValue: 1, ignoreDefault: 1 })
     }
 
     if (view) {
-      value = view.model.parseValue(value).value;
+      value = view.model.parseValue(value).value
     }
 
-    return value;
-  }
-});
+    return value
+  },
+})

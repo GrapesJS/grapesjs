@@ -11,25 +11,25 @@ module.exports = require('backbone').View.extend({
       </div>
     </div>
     <div class="${pfx}backlayer"></div>
-    <div class="${pfx}collector" style="display: none"></div>`;
+    <div class="${pfx}collector" style="display: none"></div>`
   },
 
   events: {},
 
   initialize(o) {
-    const model = this.model;
-    const config = o.config || {};
-    const pfx = config.stylePrefix || '';
-    const bkd = config.backdrop;
-    this.config = config;
-    this.pfx = pfx;
-    this.ppfx = config.pStylePrefix || '';
-    this.listenTo(model, 'change:open', this.updateOpen);
-    this.listenTo(model, 'change:title', this.updateTitle);
-    this.listenTo(model, 'change:content', this.updateContent);
-    this.events[`click .${pfx}btn-close`] = 'hide';
-    bkd && (this.events[`click .${pfx}backlayer`] = 'hide');
-    this.delegateEvents();
+    const model = this.model
+    const config = o.config || {}
+    const pfx = config.stylePrefix || ''
+    const bkd = config.backdrop
+    this.config = config
+    this.pfx = pfx
+    this.ppfx = config.pStylePrefix || ''
+    this.listenTo(model, 'change:open', this.updateOpen)
+    this.listenTo(model, 'change:title', this.updateTitle)
+    this.listenTo(model, 'change:content', this.updateContent)
+    this.events[`click .${pfx}btn-close`] = 'hide'
+    bkd && (this.events[`click .${pfx}backlayer`] = 'hide')
+    this.delegateEvents()
   },
 
   /**
@@ -39,8 +39,8 @@ module.exports = require('backbone').View.extend({
    */
   getCollector() {
     if (!this.$collector)
-      this.$collector = this.$el.find('.' + this.pfx + 'collector');
-    return this.$collector;
+      this.$collector = this.$el.find('.' + this.pfx + 'collector')
+    return this.$collector
   },
 
   /**
@@ -49,13 +49,13 @@ module.exports = require('backbone').View.extend({
    * @private
    */
   getContent() {
-    const pfx = this.pfx;
+    const pfx = this.pfx
 
     if (!this.$content) {
-      this.$content = this.$el.find(`.${pfx}content #${pfx}c`);
+      this.$content = this.$el.find(`.${pfx}content #${pfx}c`)
     }
 
-    return this.$content;
+    return this.$content
   },
 
   /**
@@ -64,8 +64,8 @@ module.exports = require('backbone').View.extend({
    * @private
    */
   getTitle() {
-    if (!this.$title) this.$title = this.$el.find('.' + this.pfx + 'title');
-    return this.$title.get(0);
+    if (!this.$title) this.$title = this.$el.find('.' + this.pfx + 'title')
+    return this.$title.get(0)
   },
 
   /**
@@ -73,12 +73,12 @@ module.exports = require('backbone').View.extend({
    * @private
    * */
   updateContent() {
-    var content = this.getContent();
-    const children = content.children();
-    const coll = this.getCollector();
-    const body = this.model.get('content');
-    children.length && coll.append(children);
-    content.empty().append(body);
+    let content = this.getContent()
+    const children = content.children()
+    const coll = this.getCollector()
+    const body = this.model.get('content')
+    children.length && coll.append(children)
+    content.empty().append(body)
   },
 
   /**
@@ -86,8 +86,8 @@ module.exports = require('backbone').View.extend({
    * @private
    * */
   updateTitle() {
-    var title = this.getTitle();
-    if (title) title.innerHTML = this.model.get('title');
+    let title = this.getTitle()
+    if (title) title.innerHTML = this.model.get('title')
   },
 
   /**
@@ -95,7 +95,7 @@ module.exports = require('backbone').View.extend({
    * @private
    * */
   updateOpen() {
-    this.el.style.display = this.model.get('open') ? '' : 'none';
+    this.el.style.display = this.model.get('open') ? '' : 'none'
   },
 
   /**
@@ -103,7 +103,7 @@ module.exports = require('backbone').View.extend({
    * @private
    * */
   hide() {
-    this.model.set('open', 0);
+    this.model.set('open', 0)
   },
 
   /**
@@ -111,19 +111,19 @@ module.exports = require('backbone').View.extend({
    * @private
    * */
   show() {
-    this.model.set('open', 1);
+    this.model.set('open', 1)
   },
 
   render() {
-    const el = this.$el;
-    const pfx = this.pfx;
-    const ppfx = this.ppfx;
-    const obj = this.model.toJSON();
-    obj.pfx = this.pfx;
-    obj.ppfx = this.ppfx;
-    el.html(this.template(obj));
-    el.attr('class', `${pfx}container`);
-    this.updateOpen();
-    return this;
-  }
-});
+    const el = this.$el
+    const pfx = this.pfx
+    const ppfx = this.ppfx
+    const obj = this.model.toJSON()
+    obj.pfx = this.pfx
+    obj.ppfx = this.ppfx
+    el.html(this.template(obj))
+    el.attr('class', `${pfx}container`)
+    this.updateOpen()
+    return this
+  },
+})

@@ -1,7 +1,7 @@
-var Backbone = require('backbone');
+let Backbone = require('backbone')
 
-const TYPE_CLASS = 1;
-const TYPE_ID = 2;
+const TYPE_CLASS = 1
+const TYPE_ID = 2
 
 const Selector = Backbone.Model.extend(
   {
@@ -23,20 +23,20 @@ const Selector = Backbone.Model.extend(
       private: false,
 
       // If true, can't be removed from the attacched element
-      protected: false
+      protected: false,
     },
 
     initialize() {
-      const name = this.get('name');
-      const label = this.get('label');
+      const name = this.get('name')
+      const label = this.get('label')
 
       if (!name) {
-        this.set('name', label);
+        this.set('name', label)
       } else if (!label) {
-        this.set('label', name);
+        this.set('label', name)
       }
 
-      this.set('name', Selector.escapeName(this.get('name')));
+      this.set('name', Selector.escapeName(this.get('name')))
     },
 
     /**
@@ -44,19 +44,19 @@ const Selector = Backbone.Model.extend(
      * @return {string}
      */
     getFullName() {
-      let init = '';
+      let init = ''
 
       switch (this.get('type')) {
         case TYPE_CLASS:
-          init = '.';
-          break;
+          init = '.'
+          break
         case TYPE_ID:
-          init = '#';
-          break;
+          init = '#'
+          break
       }
 
-      return init + this.get('name');
-    }
+      return init + this.get('name')
+    },
   },
   {
     // All type selectors: https://developer.mozilla.org/it/docs/Web/CSS/CSS_Selectors
@@ -72,9 +72,9 @@ const Selector = Backbone.Model.extend(
      * @private
      */
     escapeName(name) {
-      return `${name}`.trim().replace(/([^a-z0-9\w-]+)/gi, '-');
-    }
+      return `${name}`.trim().replace(/([^a-z0-9\w-]+)/gi, '-')
+    },
   }
-);
+)
 
-module.exports = Selector;
+module.exports = Selector

@@ -1,15 +1,15 @@
-var Backbone = require('backbone');
-var ButtonView = require('./ButtonView');
+let Backbone = require('backbone')
+let ButtonView = require('./ButtonView')
 
 module.exports = Backbone.View.extend({
   initialize(o) {
-    this.opt = o || {};
-    this.config = this.opt.config || {};
-    this.pfx = this.config.stylePrefix || '';
-    this.parentM = this.opt.parentM || null;
-    this.listenTo(this.collection, 'add', this.addTo);
-    this.listenTo(this.collection, 'reset', this.render);
-    this.className = this.pfx + 'buttons';
+    this.opt = o || {}
+    this.config = this.opt.config || {}
+    this.pfx = this.config.stylePrefix || ''
+    this.parentM = this.opt.parentM || null
+    this.listenTo(this.collection, 'add', this.addTo)
+    this.listenTo(this.collection, 'reset', this.render)
+    this.className = this.pfx + 'buttons'
   },
 
   /**
@@ -19,7 +19,7 @@ module.exports = Backbone.View.extend({
    * @return Object
    * */
   addTo(model) {
-    this.addToCollection(model);
+    this.addToCollection(model)
   },
 
   /**
@@ -30,35 +30,35 @@ module.exports = Backbone.View.extend({
    * @return Object Object created
    * */
   addToCollection(model, fragmentEl) {
-    var fragment = fragmentEl || null;
-    var viewObject = ButtonView;
+    let fragment = fragmentEl || null
+    let viewObject = ButtonView
 
-    var view = new viewObject({
+    let view = new viewObject({
       model,
       config: this.config,
-      parentM: this.parentM
-    });
-    var rendered = view.render().el;
+      parentM: this.parentM,
+    })
+    let rendered = view.render().el
 
     if (fragment) {
-      fragment.appendChild(rendered);
+      fragment.appendChild(rendered)
     } else {
-      this.$el.append(rendered);
+      this.$el.append(rendered)
     }
 
-    return rendered;
+    return rendered
   },
 
   render() {
-    var fragment = document.createDocumentFragment();
-    this.$el.empty();
+    let fragment = document.createDocumentFragment()
+    this.$el.empty()
 
     this.collection.each(function(model) {
-      this.addToCollection(model, fragment);
-    }, this);
+      this.addToCollection(model, fragment)
+    }, this)
 
-    this.$el.append(fragment);
-    this.$el.attr('class', _.result(this, 'className'));
-    return this;
-  }
-});
+    this.$el.append(fragment)
+    this.$el.attr('class', _.result(this, 'className'))
+    return this
+  },
+})

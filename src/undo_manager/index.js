@@ -7,14 +7,14 @@
  * ```
  *
  */
-import UndoManager from 'backbone-undo';
+import UndoManager from 'backbone-undo'
 
 module.exports = () => {
-  let em;
-  let um;
-  let config;
-  let beforeCache;
-  const configDef = {};
+  let em
+  let um
+  let config
+  let beforeCache
+  const configDef = {}
 
   return {
     name: 'UndoManager',
@@ -25,45 +25,45 @@ module.exports = () => {
      * @private
      */
     init(opts = {}) {
-      config = { ...opts, ...configDef };
-      em = config.em;
-      this.em = em;
-      um = new UndoManager({ track: true, register: [] });
-      um.changeUndoType('change', { condition: false });
+      config = { ...opts, ...configDef }
+      em = config.em
+      this.em = em
+      um = new UndoManager({ track: true, register: [] })
+      um.changeUndoType('change', { condition: false })
       const customUndoType = {
         on(object, value, opt = {}) {
-          !beforeCache && (beforeCache = object.previousAttributes());
+          !beforeCache && (beforeCache = object.previousAttributes())
 
           if (opt.avoidStore) {
-            return;
+            return
           } else {
             const result = {
               object,
               before: beforeCache,
-              after: object.toJSON()
-            };
-            beforeCache = null;
-            return result;
+              after: object.toJSON(),
+            }
+            beforeCache = null
+            return result
           }
         },
 
         undo(model, bf, af, opt) {
-          model.set(bf);
+          model.set(bf)
         },
 
         redo(model, bf, af, opt) {
-          model.set(af);
-        }
-      };
+          model.set(af)
+        },
+      }
 
-      const events = ['style', 'attributes', 'content', 'src'];
-      events.forEach(ev => um.addUndoType(`change:${ev}`, customUndoType));
+      const events = ['style', 'attributes', 'content', 'src']
+      events.forEach(ev => um.addUndoType(`change:${ev}`, customUndoType))
       um.on('undo redo', () =>
         em.trigger('change:selectedComponent change:canvasOffset')
       );
-      ['undo', 'redo'].forEach(ev => um.on(ev, () => em.trigger(ev)));
+      ['undo', 'redo'].forEach(ev => um.on(ev, () => em.trigger(ev)))
 
-      return this;
+      return this
     },
 
     /**
@@ -74,7 +74,7 @@ module.exports = () => {
      * // { ... }
      */
     getConfig() {
-      return config;
+      return config
     },
 
     /**
@@ -86,8 +86,8 @@ module.exports = () => {
      * um.add(someModelOrCollection);
      */
     add(entity) {
-      um.register(entity);
-      return this;
+      um.register(entity)
+      return this
     },
 
     /**
@@ -98,8 +98,8 @@ module.exports = () => {
      * um.remove(someModelOrCollection);
      */
     remove(entity) {
-      um.unregister(entity);
-      return this;
+      um.unregister(entity)
+      return this
     },
 
     /**
@@ -109,8 +109,8 @@ module.exports = () => {
      * um.removeAll();
      */
     removeAll() {
-      um.unregisterAll();
-      return this;
+      um.unregisterAll()
+      return this
     },
 
     /**
@@ -120,8 +120,8 @@ module.exports = () => {
      * um.start();
      */
     start() {
-      um.startTracking();
-      return this;
+      um.startTracking()
+      return this
     },
 
     /**
@@ -131,8 +131,8 @@ module.exports = () => {
      * um.stop();
      */
     stop() {
-      um.stopTracking();
-      return this;
+      um.stopTracking()
+      return this
     },
 
     /**
@@ -142,8 +142,8 @@ module.exports = () => {
      * um.undo();
      */
     undo() {
-      if (!em.get('Canvas').isInputFocused()) um.undo(1);
-      return this;
+      if (!em.get('Canvas').isInputFocused()) um.undo(1)
+      return this
     },
 
     /**
@@ -153,8 +153,8 @@ module.exports = () => {
      * um.undoAll();
      */
     undoAll() {
-      um.undoAll();
-      return this;
+      um.undoAll()
+      return this
     },
 
     /**
@@ -164,8 +164,8 @@ module.exports = () => {
      * um.redo();
      */
     redo() {
-      if (!em.get('Canvas').isInputFocused()) um.redo(1);
-      return this;
+      if (!em.get('Canvas').isInputFocused()) um.redo(1)
+      return this
     },
 
     /**
@@ -175,8 +175,8 @@ module.exports = () => {
      * um.redoAll();
      */
     redoAll() {
-      um.redoAll();
-      return this;
+      um.redoAll()
+      return this
     },
 
     /**
@@ -186,7 +186,7 @@ module.exports = () => {
      * um.hasUndo();
      */
     hasUndo() {
-      return um.isAvailable('undo');
+      return um.isAvailable('undo')
     },
 
     /**
@@ -196,7 +196,7 @@ module.exports = () => {
      * um.hasRedo();
      */
     hasRedo() {
-      return um.isAvailable('redo');
+      return um.isAvailable('redo')
     },
 
     /**
@@ -207,7 +207,7 @@ module.exports = () => {
      * stack.each(item => ...);
      */
     getStack() {
-      return um.stack;
+      return um.stack
     },
 
     /**
@@ -217,12 +217,12 @@ module.exports = () => {
      * um.clear();
      */
     clear() {
-      um.clear();
-      return this;
+      um.clear()
+      return this
     },
 
     getInstance() {
-      return um;
-    }
-  };
-};
+      return um
+    },
+  }
+}

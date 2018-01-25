@@ -90,24 +90,24 @@
  *   style: '.txt-red{color: red}',
  * });
  */
-import $ from 'cash-dom';
+import $ from 'cash-dom'
 
 module.exports = config => {
-  var c = config || {},
+  let c = config || {},
     defaults = require('./config/config'),
     EditorModel = require('./model/Editor'),
-    EditorView = require('./view/EditorView');
+    EditorView = require('./view/EditorView')
 
-  for (var name in defaults) {
-    if (!(name in c)) c[name] = defaults[name];
+  for (let name in defaults) {
+    if (!(name in c)) c[name] = defaults[name]
   }
 
-  c.pStylePrefix = c.stylePrefix;
-  var em = new EditorModel(c);
-  var editorView = new EditorView({
+  c.pStylePrefix = c.stylePrefix
+  let em = new EditorModel(c)
+  let editorView = new EditorView({
     model: em,
-    config: c
-  });
+    config: c,
+  })
 
   return {
     $,
@@ -237,8 +237,8 @@ module.exports = config => {
      * @private
      */
     init() {
-      em.init(this);
-      return this;
+      em.init(this)
+      return this
     },
 
     /**
@@ -248,7 +248,7 @@ module.exports = config => {
      *  the value of the specified property
      */
     getConfig(prop) {
-      return em.getConfig(prop);
+      return em.getConfig(prop)
     },
 
     /**
@@ -256,7 +256,7 @@ module.exports = config => {
      * @return {string} HTML string
      */
     getHtml(opts) {
-      return em.getHtml(opts);
+      return em.getHtml(opts)
     },
 
     /**
@@ -265,7 +265,7 @@ module.exports = config => {
      * @return {string} CSS string
      */
     getCss(opts) {
-      return em.getCss(opts);
+      return em.getCss(opts)
     },
 
     /**
@@ -273,7 +273,7 @@ module.exports = config => {
      * @return {string} JS string
      */
     getJs() {
-      return em.getJs();
+      return em.getJs()
     },
 
     /**
@@ -281,7 +281,7 @@ module.exports = config => {
      * @return {Object}
      */
     getComponents() {
-      return em.get('DomComponents').getComponents();
+      return em.get('DomComponents').getComponents()
     },
 
     /**
@@ -298,8 +298,8 @@ module.exports = config => {
      * });
      */
     setComponents(components) {
-      em.setComponents(components);
-      return this;
+      em.setComponents(components)
+      return this
     },
 
     /**
@@ -320,7 +320,7 @@ module.exports = config => {
      * });
      */
     addComponents(components, opts) {
-      return this.getComponents().add(components, opts);
+      return this.getComponents().add(components, opts)
     },
 
     /**
@@ -328,7 +328,7 @@ module.exports = config => {
      * @return {Object}
      */
     getStyle() {
-      return em.get('CssComposer').getAll();
+      return em.get('CssComposer').getAll()
     },
 
     /**
@@ -344,8 +344,8 @@ module.exports = config => {
      * });
      */
     setStyle(style) {
-      em.setStyle(style);
-      return this;
+      em.setStyle(style)
+      return this
     },
 
     /**
@@ -353,7 +353,7 @@ module.exports = config => {
      * @return {Model}
      */
     getSelected() {
-      return em.getSelected();
+      return em.getSelected()
     },
 
     /**
@@ -365,10 +365,10 @@ module.exports = config => {
      * @return {Model}
      */
     getSelectedToStyle() {
-      let selected = em.getSelected();
+      let selected = em.getSelected()
 
       if (selected) {
-        return this.StyleManager.getModelToStyle(selected);
+        return this.StyleManager.getModelToStyle(selected)
       }
     },
 
@@ -383,8 +383,8 @@ module.exports = config => {
      * });
      */
     select(el) {
-      em.setSelected(el);
-      return this;
+      em.setSelected(el)
+      return this
     },
 
     /**
@@ -396,8 +396,8 @@ module.exports = config => {
      * editor.setDevice('Tablet');
      */
     setDevice(name) {
-      em.set('device', name);
-      return this;
+      em.set('device', name)
+      return this
     },
 
     /**
@@ -409,7 +409,7 @@ module.exports = config => {
      * // 'Tablet'
      */
     getDevice() {
-      return em.get('device');
+      return em.get('device')
     },
 
     /**
@@ -421,14 +421,14 @@ module.exports = config => {
      * editor.runCommand('myCommand', {someValue: 1});
      */
     runCommand(id, options) {
-      var result;
-      var command = em.get('Commands').get(id);
+      let result
+      let command = em.get('Commands').get(id)
 
       if (command) {
-        result = command.run(this, this, options);
-        this.trigger('run:' + id);
+        result = command.run(this, this, options)
+        this.trigger('run:' + id)
       }
-      return result;
+      return result
     },
 
     /**
@@ -440,14 +440,14 @@ module.exports = config => {
      * editor.stopCommand('myCommand', {someValue: 1});
      */
     stopCommand(id, options) {
-      var result;
-      var command = em.get('Commands').get(id);
+      let result
+      let command = em.get('Commands').get(id)
 
       if (command) {
-        result = command.stop(this, this, options);
-        this.trigger('stop:' + id);
+        result = command.stop(this, this, options)
+        this.trigger('stop:' + id)
       }
-      return result;
+      return result
     },
 
     /**
@@ -456,7 +456,7 @@ module.exports = config => {
      * @return {Object} Stored data
      */
     store(clb) {
-      return em.store(clb);
+      return em.store(clb)
     },
 
     /**
@@ -465,7 +465,7 @@ module.exports = config => {
      * @return {Object} Stored data
      */
     load(clb) {
-      return em.load(clb);
+      return em.load(clb)
     },
 
     /**
@@ -474,7 +474,7 @@ module.exports = config => {
      * @return {HTMLElement}
      */
     getContainer() {
-      return c.el;
+      return c.el
     },
 
     /**
@@ -488,7 +488,7 @@ module.exports = config => {
      * @private
      */
     refresh() {
-      em.refreshCanvas();
+      em.refreshCanvas()
     },
 
     /**
@@ -521,7 +521,7 @@ module.exports = config => {
      * });
      */
     setCustomRte(obj) {
-      this.RichTextEditor.customRte = obj;
+      this.RichTextEditor.customRte = obj
     },
 
     /**
@@ -531,7 +531,7 @@ module.exports = config => {
      * @return {this}
      */
     on(event, callback) {
-      return em.on(event, callback);
+      return em.on(event, callback)
     },
 
     /**
@@ -541,7 +541,7 @@ module.exports = config => {
      * @return {this}
      */
     off(event, callback) {
-      return em.off(event, callback);
+      return em.off(event, callback)
     },
 
     /**
@@ -550,7 +550,7 @@ module.exports = config => {
      * @return {this}
      */
     trigger(event) {
-      return em.trigger.apply(em, arguments);
+      return em.trigger.apply(em, arguments)
     },
 
     /**
@@ -559,7 +559,7 @@ module.exports = config => {
      * @private
      */
     getEl() {
-      return editorView.el;
+      return editorView.el
     },
 
     /**
@@ -568,7 +568,7 @@ module.exports = config => {
      * @private
      */
     getModel() {
-      return em;
+      return em
     },
 
     /**
@@ -579,14 +579,14 @@ module.exports = config => {
       // Do post render stuff after the iframe is loaded otherwise it'll
       // be empty during tests
       em.on('loaded', () => {
-        this.UndoManager.clear();
+        this.UndoManager.clear()
         em.get('modules').forEach(module => {
-          module.postRender && module.postRender(editorView);
-        });
-      });
+          module.postRender && module.postRender(editorView)
+        })
+      })
 
-      editorView.render();
-      return editorView.el;
-    }
-  };
-};
+      editorView.render()
+      return editorView.el
+    },
+  }
+}

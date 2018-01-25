@@ -18,5 +18,5 @@ module.exports = {
   minComponentH: 50,
 
   // Minimum width (in px) of component on creation
-  minComponentW: 50
-};
+  minComponentW: 50,
+}

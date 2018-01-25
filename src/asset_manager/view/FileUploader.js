@@ -1,4 +1,4 @@
-import fetch from 'utils/fetch';
+import fetch from 'utils/fetch'
 
 module.exports = Backbone.View.extend(
   {
@@ -13,27 +13,27 @@ module.exports = Backbone.View.extend(
     events: {},
 
     initialize(opts = {}) {
-      this.options = opts;
-      const c = opts.config || {};
-      this.config = c;
-      this.pfx = c.stylePrefix || '';
-      this.ppfx = c.pStylePrefix || '';
-      this.target = this.options.globalCollection || {};
-      this.uploadId = this.pfx + 'uploadFile';
+      this.options = opts
+      const c = opts.config || {}
+      this.config = c
+      this.pfx = c.stylePrefix || ''
+      this.ppfx = c.pStylePrefix || ''
+      this.target = this.options.globalCollection || {}
+      this.uploadId = this.pfx + 'uploadFile'
       this.disabled =
         c.disableUpload !== undefined
           ? c.disableUpload
-          : !c.upload && !c.embedAsBase64;
-      this.events['change #' + this.uploadId] = 'uploadFile';
-      let uploadFile = c.uploadFile;
+          : !c.upload && !c.embedAsBase64
+      this.events['change #' + this.uploadId] = 'uploadFile'
+      let uploadFile = c.uploadFile
 
       if (uploadFile) {
-        this.uploadFile = uploadFile.bind(this);
+        this.uploadFile = uploadFile.bind(this)
       } else if (c.embedAsBase64) {
-        this.uploadFile = this.constructor.embedAsBase64;
+        this.uploadFile = this.constructor.embedAsBase64
       }
 
-      this.delegateEvents();
+      this.delegateEvents()
     },
 
     /**
@@ -41,8 +41,8 @@ module.exports = Backbone.View.extend(
      * @private
      */
     onUploadStart() {
-      const em = this.config.em;
-      em && em.trigger('asset:upload:start');
+      const em = this.config.em
+      em && em.trigger('asset:upload:start')
     },
 
     /**
@@ -51,8 +51,8 @@ module.exports = Backbone.View.extend(
      * @private
      */
     onUploadEnd(res) {
-      const em = this.config.em;
-      em && em.trigger('asset:upload:end', res);
+      const em = this.config.em
+      em && em.trigger('asset:upload:end', res)
     },
 
     /**
@@ -61,10 +61,10 @@ module.exports = Backbone.View.extend(
      * @private
      */
     onUploadError(err) {
-      const em = this.config.em;
-      console.error(err);
-      this.onUploadEnd(err);
-      em && em.trigger('asset:upload:error', err);
+      const em = this.config.em
+      console.error(err)
+      this.onUploadEnd(err)
+      em && em.trigger('asset:upload:error', err)
     },
 
     /**
@@ -73,18 +73,18 @@ module.exports = Backbone.View.extend(
      * @private
      */
     onUploadResponse(text, clb) {
-      const em = this.config.em;
-      const config = this.config;
-      const target = this.target;
-      const json = typeof text === 'string' ? JSON.parse(text) : text;
-      em && em.trigger('asset:upload:response', json);
+      const em = this.config.em
+      const config = this.config
+      const target = this.target
+      const json = typeof text === 'string' ? JSON.parse(text) : text
+      em && em.trigger('asset:upload:response', json)
 
       if (config.autoAdd && target) {
-        target.add(json.data, { at: 0 });
+        target.add(json.data, { at: 0 })
       }
 
-      this.onUploadEnd(text);
-      clb && clb(json);
+      this.onUploadEnd(text)
+      clb && clb(json)
     },
 
     /**
@@ -94,35 +94,35 @@ module.exports = Backbone.View.extend(
      * @private
      * */
     uploadFile(e, clb) {
-      const files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
-      const body = new FormData();
-      const config = this.config;
-      const params = config.params;
+      const files = e.dataTransfer ? e.dataTransfer.files : e.target.files
+      const body = new FormData()
+      const config = this.config
+      const params = config.params
 
       for (let i = 0; i < files.length; i++) {
-        body.append(`${config.uploadName}[]`, files[i]);
+        body.append(`${config.uploadName}[]`, files[i])
       }
 
       for (let param in params) {
-        body.append(param, params[param]);
+        body.append(param, params[param])
       }
 
-      var target = this.target;
-      const url = config.upload;
-      const headers = config.headers;
-      const reqHead = 'X-Requested-With';
+      let target = this.target
+      const url = config.upload
+      const headers = config.headers
+      const reqHead = 'X-Requested-With'
 
       if (typeof headers[reqHead] == 'undefined') {
-        headers[reqHead] = 'XMLHttpRequest';
+        headers[reqHead] = 'XMLHttpRequest'
       }
 
       if (url) {
-        this.onUploadStart();
+        this.onUploadStart()
         return fetch(url, {
           method: 'post',
           credentials: 'include',
           headers,
-          body
+          body,
         })
           .then(
             res =>
@@ -131,7 +131,7 @@ module.exports = Backbone.View.extend(
                 : res.text().then(text => Promise.reject(text))
           )
           .then(text => this.onUploadResponse(text, clb))
-          .catch(err => this.onUploadError(err));
+          .catch(err => this.onUploadError(err))
       }
     },
 
@@ -140,84 +140,84 @@ module.exports = Backbone.View.extend(
      * @private
      * */
     initDrop() {
-      var that = this;
+      let that = this
       if (!this.uploadForm) {
-        this.uploadForm = this.$el.find('form').get(0);
+        this.uploadForm = this.$el.find('form').get(0)
         if ('draggable' in this.uploadForm) {
-          var uploadFile = this.uploadFile;
+          let uploadFile = this.uploadFile
           this.uploadForm.ondragover = function() {
-            this.className = that.pfx + 'hover';
-            return false;
-          };
+            this.className = that.pfx + 'hover'
+            return false
+          }
           this.uploadForm.ondragleave = function() {
-            this.className = '';
-            return false;
-          };
+            this.className = ''
+            return false
+          }
           this.uploadForm.ondrop = function(e) {
-            this.className = '';
-            e.preventDefault();
-            that.uploadFile(e);
-            return;
-          };
+            this.className = ''
+            e.preventDefault()
+            that.uploadFile(e)
+            return
+          }
         }
       }
     },
 
     initDropzone(ev) {
-      let addedCls = 0;
-      const c = this.config;
-      const em = ev.model;
-      const edEl = ev.el;
-      const editor = em.get('Editor');
-      const container = em.get('Config').el;
-      const frameEl = em.get('Canvas').getBody();
-      const ppfx = this.ppfx;
-      const updatedCls = `${ppfx}dropzone-active`;
-      const dropzoneCls = `${ppfx}dropzone`;
+      let addedCls = 0
+      const c = this.config
+      const em = ev.model
+      const edEl = ev.el
+      const editor = em.get('Editor')
+      const container = em.get('Config').el
+      const frameEl = em.get('Canvas').getBody()
+      const ppfx = this.ppfx
+      const updatedCls = `${ppfx}dropzone-active`
+      const dropzoneCls = `${ppfx}dropzone`
       const cleanEditorElCls = () => {
-        edEl.className = edEl.className.replace(updatedCls, '').trim();
-        addedCls = 0;
-      };
+        edEl.className = edEl.className.replace(updatedCls, '').trim()
+        addedCls = 0
+      }
       const onDragOver = () => {
         if (!addedCls) {
-          edEl.className += ` ${updatedCls}`;
-          addedCls = 1;
+          edEl.className += ` ${updatedCls}`
+          addedCls = 1
         }
-        return false;
-      };
+        return false
+      }
       const onDragLeave = () => {
-        cleanEditorElCls();
-        return false;
-      };
+        cleanEditorElCls()
+        return false
+      }
       const onDrop = e => {
-        cleanEditorElCls();
-        e.preventDefault();
-        e.stopPropagation();
-        this.uploadFile(e);
+        cleanEditorElCls()
+        e.preventDefault()
+        e.stopPropagation()
+        this.uploadFile(e)
 
         if (c.openAssetsOnDrop && editor) {
-          const target = editor.getSelected();
+          const target = editor.getSelected()
           editor.runCommand('open-assets', {
             target,
             onSelect() {
-              editor.Modal.close();
-              editor.AssetManager.setTarget(null);
-            }
-          });
+              editor.Modal.close()
+              editor.AssetManager.setTarget(null)
+            },
+          })
         }
 
-        return false;
-      };
+        return false
+      }
 
-      ev.$el.append(`<div class="${dropzoneCls}">${c.dropzoneContent}</div>`);
-      cleanEditorElCls();
+      ev.$el.append(`<div class="${dropzoneCls}">${c.dropzoneContent}</div>`)
+      cleanEditorElCls()
 
       if ('draggable' in edEl) {
         [edEl, frameEl].forEach(item => {
-          item.ondragover = onDragOver;
-          item.ondragleave = onDragLeave;
-          item.ondrop = onDrop;
-        });
+          item.ondragover = onDragOver
+          item.ondragleave = onDragLeave
+          item.ondrop = onDrop
+        })
       }
     },
 
@@ -227,46 +227,46 @@ module.exports = Backbone.View.extend(
           title: this.config.uploadText,
           uploadId: this.uploadId,
           disabled: this.disabled,
-          pfx: this.pfx
+          pfx: this.pfx,
         })
-      );
-      this.initDrop();
-      this.$el.attr('class', this.pfx + 'file-uploader');
-      return this;
-    }
+      )
+      this.initDrop()
+      this.$el.attr('class', this.pfx + 'file-uploader')
+      return this
+    },
   },
   {
     embedAsBase64: function(e, clb) {
       // List files dropped
-      const files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
-      const response = { data: [] };
+      const files = e.dataTransfer ? e.dataTransfer.files : e.target.files
+      const response = { data: [] }
 
       // Unlikely, widely supported now
       if (!FileReader) {
         this.onUploadError(
           new Error('Unsupported platform, FileReader is not defined')
-        );
-        return;
+        )
+        return
       }
 
-      const promises = [];
-      const mimeTypeMatcher = /^(.+)\/(.+)$/;
+      const promises = []
+      const mimeTypeMatcher = /^(.+)\/(.+)$/
 
       for (const file of files) {
         // For each file a reader (to read the base64 URL)
         // and a promise (to track and merge results and errors)
         const promise = new Promise((resolve, reject) => {
-          const reader = new FileReader();
+          const reader = new FileReader()
           reader.addEventListener('load', event => {
-            let type;
-            const name = file.name;
+            let type
+            const name = file.name
 
             // Try to find the MIME type of the file.
-            const match = mimeTypeMatcher.exec(file.type);
+            const match = mimeTypeMatcher.exec(file.type)
             if (match) {
-              type = match[1]; // The first part in the MIME, "image" in image/png
+              type = match[1] // The first part in the MIME, "image" in image/png
             } else {
-              type = file.type;
+              type = file.type
             }
 
             /*
@@ -316,53 +316,53 @@ module.exports = Backbone.View.extend(
                 name,
                 type,
                 height: 0,
-                width: 0
-              };
+                width: 0,
+              }
 
-              const image = new Image();
+              const image = new Image()
               image.addEventListener('error', error => {
-                reject(error);
-              });
+                reject(error)
+              })
               image.addEventListener('load', () => {
-                data.height = image.height;
-                data.width = image.width;
-                resolve(data);
-              });
-              image.src = data.src;
+                data.height = image.height
+                data.width = image.width
+                resolve(data)
+              })
+              image.src = data.src
             } else if (type) {
               // Not an image, but has a type
               resolve({
                 src: reader.result,
                 name,
-                type
-              });
+                type,
+              })
             } else {
               // No type found, resolve with the URL only
-              resolve(reader.result);
+              resolve(reader.result)
             }
-          });
+          })
           reader.addEventListener('error', error => {
-            reject(error);
-          });
+            reject(error)
+          })
           reader.addEventListener('abort', error => {
-            reject('Aborted');
-          });
+            reject('Aborted')
+          })
 
-          reader.readAsDataURL(file);
-        });
+          reader.readAsDataURL(file)
+        })
 
-        promises.push(promise);
+        promises.push(promise)
       }
 
       Promise.all(promises).then(
         data => {
-          response.data = data;
-          this.onUploadResponse(response, clb);
+          response.data = data
+          this.onUploadResponse(response, clb)
         },
         error => {
-          this.onUploadError(error);
+          this.onUploadError(error)
         }
-      );
-    }
+      )
+    },
   }
-);
+)

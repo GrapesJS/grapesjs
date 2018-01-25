@@ -1,29 +1,29 @@
-import { on, off } from 'utils/mixins';
+import { on, off } from 'utils/mixins'
 
-const SelectComponent = require('./SelectComponent');
-const SelectPosition = require('./SelectPosition');
-const $ = Backbone.$;
+const SelectComponent = require('./SelectComponent')
+const SelectPosition = require('./SelectPosition')
+const $ = Backbone.$
 
 module.exports = _.extend({}, SelectPosition, SelectComponent, {
   init(o) {
-    SelectComponent.init.apply(this, arguments);
-    _.bindAll(this, 'initSorter', 'rollback', 'onEndMove');
-    this.opt = o;
-    this.hoverClass = this.ppfx + 'highlighter-warning';
-    this.badgeClass = this.ppfx + 'badge-warning';
-    this.noSelClass = this.ppfx + 'no-select';
+    SelectComponent.init.apply(this, arguments)
+    _.bindAll(this, 'initSorter', 'rollback', 'onEndMove')
+    this.opt = o
+    this.hoverClass = this.ppfx + 'highlighter-warning'
+    this.badgeClass = this.ppfx + 'badge-warning'
+    this.noSelClass = this.ppfx + 'no-select'
   },
 
   enable(...args) {
-    SelectComponent.enable.apply(this, args);
-    this.getBadgeEl().addClass(this.badgeClass);
-    this.getHighlighterEl().addClass(this.hoverClass);
-    var wp = this.$wrapper;
-    wp.css('cursor', 'move');
-    wp.on('mousedown', this.initSorter);
+    SelectComponent.enable.apply(this, args)
+    this.getBadgeEl().addClass(this.badgeClass)
+    this.getHighlighterEl().addClass(this.hoverClass)
+    let wp = this.$wrapper
+    wp.css('cursor', 'move')
+    wp.on('mousedown', this.initSorter)
 
     // Avoid strange moving behavior
-    wp.addClass(this.noSelClass);
+    wp.addClass(this.noSelClass)
   },
 
   /**
@@ -38,18 +38,18 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
    * @private
    * */
   initSorter(e) {
-    var el = $(e.target).data('model');
-    var drag = el.get('draggable');
-    if (!drag) return;
+    let el = $(e.target).data('model')
+    let drag = el.get('draggable')
+    if (!drag) return
 
     // Avoid badge showing on move
-    this.cacheEl = null;
-    this.startSelectPosition(e.target, this.frameEl.contentDocument);
-    this.sorter.draggable = drag;
-    this.sorter.onEndMove = this.onEndMove.bind(this);
-    this.stopSelectComponent();
-    this.$wrapper.off('mousedown', this.initSorter);
-    on(this.getContentWindow(), 'keydown', this.rollback);
+    this.cacheEl = null
+    this.startSelectPosition(e.target, this.frameEl.contentDocument)
+    this.sorter.draggable = drag
+    this.sorter.onEndMove = this.onEndMove.bind(this)
+    this.stopSelectComponent()
+    this.$wrapper.off('mousedown', this.initSorter)
+    on(this.getContentWindow(), 'keydown', this.rollback)
   },
 
   /**
@@ -58,14 +58,14 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
    * @private
    */
   initSorterFromModel(model) {
-    var drag = model.get('draggable');
-    if (!drag) return;
+    let drag = model.get('draggable')
+    if (!drag) return
     // Avoid badge showing on move
-    this.cacheEl = null;
-    var el = model.view.el;
-    this.startSelectPosition(el, this.frameEl.contentDocument);
-    this.sorter.draggable = drag;
-    this.sorter.onEndMove = this.onEndMoveFromModel.bind(this);
+    this.cacheEl = null
+    let el = model.view.el
+    this.startSelectPosition(el, this.frameEl.contentDocument)
+    this.sorter.draggable = drag
+    this.sorter.onEndMove = this.onEndMoveFromModel.bind(this)
 
     /*
     this.sorter.setDragHelper(el);
@@ -75,12 +75,12 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
     dragHelper.backgroundColor = 'white';
     */
 
-    this.stopSelectComponent();
-    on(this.getContentWindow(), 'keydown', this.rollback);
+    this.stopSelectComponent()
+    on(this.getContentWindow(), 'keydown', this.rollback)
   },
 
   onEndMoveFromModel() {
-    off(this.getContentWindow(), 'keydown', this.rollback);
+    off(this.getContentWindow(), 'keydown', this.rollback)
   },
 
   /**
@@ -88,8 +88,8 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
    * @private
    */
   onEndMove() {
-    this.enable();
-    off(this.getContentWindow(), 'keydown', this.rollback);
+    this.enable()
+    off(this.getContentWindow(), 'keydown', this.rollback)
   },
 
   /**
@@ -107,12 +107,12 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
    * @private
    * */
   rollback(e, force) {
-    var key = e.which || e.keyCode;
+    let key = e.which || e.keyCode
     if (key == this.opt.ESCAPE_KEY || force) {
-      this.sorter.moved = false;
-      this.sorter.endMove();
+      this.sorter.moved = false
+      this.sorter.endMove()
     }
-    return;
+    return
   },
 
   /**
@@ -121,8 +121,8 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
    * @private
    */
   getBadgeEl() {
-    if (!this.$badge) this.$badge = $(this.getBadge());
-    return this.$badge;
+    if (!this.$badge) this.$badge = $(this.getBadge())
+    return this.$badge
   },
 
   /**
@@ -131,18 +131,18 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
    * @private
    */
   getHighlighterEl() {
-    if (!this.$hl) this.$hl = $(this.canvas.getHighlighter());
-    return this.$hl;
+    if (!this.$hl) this.$hl = $(this.canvas.getHighlighter())
+    return this.$hl
   },
 
   stop(...args) {
-    SelectComponent.stop.apply(this, args);
-    this.getBadgeEl().removeClass(this.badgeClass);
-    this.getHighlighterEl().removeClass(this.hoverClass);
-    var wp = this.$wrapper;
+    SelectComponent.stop.apply(this, args)
+    this.getBadgeEl().removeClass(this.badgeClass)
+    this.getHighlighterEl().removeClass(this.hoverClass)
+    let wp = this.$wrapper
     wp
       .css('cursor', '')
       .unbind()
-      .removeClass(this.noSelClass);
-  }
-});
+      .removeClass(this.noSelClass)
+  },
+})

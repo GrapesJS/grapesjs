@@ -1,20 +1,20 @@
-var Backbone = require('backbone');
+let Backbone = require('backbone')
 
 module.exports = Backbone.Model.extend({
   defaults: {
-    checkLocal: true
+    checkLocal: true,
   },
 
   /**
    * @private
    */
   store(data, clb) {
-    this.checkStorageEnvironment();
+    this.checkStorageEnvironment()
 
-    for (var key in data) localStorage.setItem(key, data[key]);
+    for (let key in data) localStorage.setItem(key, data[key])
 
     if (typeof clb == 'function') {
-      clb();
+      clb()
     }
   },
 
@@ -22,29 +22,29 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   load(keys, clb) {
-    this.checkStorageEnvironment();
-    var result = {};
+    this.checkStorageEnvironment()
+    let result = {}
 
-    for (var i = 0, len = keys.length; i < len; i++) {
-      var value = localStorage.getItem(keys[i]);
-      if (value) result[keys[i]] = value;
+    for (let i = 0, len = keys.length; i < len; i++) {
+      let value = localStorage.getItem(keys[i])
+      if (value) result[keys[i]] = value
     }
 
     if (typeof clb == 'function') {
-      clb(result);
+      clb(result)
     }
 
-    return result;
+    return result
   },
 
   /**
    * @private
    */
   remove(keys) {
-    this.checkStorageEnvironment();
+    this.checkStorageEnvironment()
 
-    for (var i = 0, len = keys.length; i < len; i++)
-      localStorage.removeItem(keys[i]);
+    for (let i = 0, len = keys.length; i < len; i++)
+      localStorage.removeItem(keys[i])
   },
 
   /**
@@ -53,6 +53,6 @@ module.exports = Backbone.Model.extend({
    * */
   checkStorageEnvironment() {
     if (this.get('checkLocal') && !localStorage)
-      console.warn("Your browser doesn't support localStorage");
-  }
-});
+      console.warn("Your browser doesn't support localStorage")
+  },
+})

@@ -1,19 +1,19 @@
-const FrameView = require('./FrameView');
-const $ = Backbone.$;
+const FrameView = require('./FrameView')
+const $ = Backbone.$
 
 module.exports = Backbone.View.extend({
   initialize(o) {
-    _.bindAll(this, 'renderBody', 'onFrameScroll', 'clearOff');
-    window.onscroll = this.clearOff;
-    this.config = o.config || {};
-    this.em = this.config.em || {};
-    this.ppfx = this.config.pStylePrefix || '';
-    this.className = this.config.stylePrefix + 'canvas';
-    this.listenTo(this.em, 'change:canvasOffset', this.clearOff);
+    _.bindAll(this, 'renderBody', 'onFrameScroll', 'clearOff')
+    window.onscroll = this.clearOff
+    this.config = o.config || {}
+    this.em = this.config.em || {}
+    this.ppfx = this.config.pStylePrefix || ''
+    this.className = this.config.stylePrefix + 'canvas'
+    this.listenTo(this.em, 'change:canvasOffset', this.clearOff)
     this.frame = new FrameView({
       model: this.model.get('frame'),
-      config: this.config
-    });
+      config: this.config,
+    })
   },
 
   /**
@@ -22,16 +22,16 @@ module.exports = Backbone.View.extend({
    * @return {Boolean}
    */
   isElInViewport(el) {
-    const rect = el.getBoundingClientRect();
-    const frameRect = this.getFrameOffset(1);
-    const rTop = rect.top;
-    const rLeft = rect.left;
+    const rect = el.getBoundingClientRect()
+    const frameRect = this.getFrameOffset(1)
+    const rTop = rect.top
+    const rLeft = rect.left
     return (
       rTop >= 0 &&
       rLeft >= 0 &&
       rTop <= frameRect.height &&
       rLeft <= frameRect.width
-    );
+    )
   },
 
   /**
@@ -39,11 +39,11 @@ module.exports = Backbone.View.extend({
    * @private
    */
   onFrameScroll() {
-    var u = 'px';
-    var body = this.frame.el.contentDocument.body;
-    this.toolsEl.style.top = '-' + body.scrollTop + u;
-    this.toolsEl.style.left = '-' + body.scrollLeft + u;
-    this.em.trigger('canvasScroll');
+    let u = 'px'
+    let body = this.frame.el.contentDocument.body
+    this.toolsEl.style.top = '-' + body.scrollTop + u
+    this.toolsEl.style.left = '-' + body.scrollLeft + u
+    this.em.trigger('canvasScroll')
   },
 
   /**
@@ -51,26 +51,26 @@ module.exports = Backbone.View.extend({
    * @private
    */
   renderScripts() {
-    var frame = this.frame;
-    var that = this;
+    let frame = this.frame
+    let that = this
 
     frame.el.onload = () => {
-      var scripts = that.config.scripts.slice(0), // clone
-        counter = 0;
+      let scripts = that.config.scripts.slice(0), // clone
+        counter = 0
 
       function appendScript(scripts) {
         if (scripts.length > 0) {
-          var script = document.createElement('script');
-          script.type = 'text/javascript';
-          script.src = scripts.shift();
-          script.onerror = script.onload = appendScript.bind(null, scripts);
-          frame.el.contentDocument.head.appendChild(script);
+          let script = document.createElement('script')
+          script.type = 'text/javascript'
+          script.src = scripts.shift()
+          script.onerror = script.onload = appendScript.bind(null, scripts)
+          frame.el.contentDocument.head.appendChild(script)
         } else {
-          that.renderBody();
+          that.renderBody()
         }
       }
-      appendScript(scripts);
-    };
+      appendScript(scripts)
+    }
   },
 
   /**
@@ -78,23 +78,23 @@ module.exports = Backbone.View.extend({
    * @private
    */
   renderBody() {
-    var wrap = this.model.get('frame').get('wrapper');
-    var em = this.config.em;
+    let wrap = this.model.get('frame').get('wrapper')
+    let em = this.config.em
     if (wrap) {
-      var ppfx = this.ppfx;
+      let ppfx = this.ppfx
       //var body = this.frame.$el.contents().find('body');
-      var body = $(this.frame.el.contentWindow.document.body);
-      var cssc = em.get('CssComposer');
-      var conf = em.get('Config');
-      var confCanvas = this.config;
-      var protCss = conf.protectedCss;
-      var externalStyles = '';
+      let body = $(this.frame.el.contentWindow.document.body)
+      let cssc = em.get('CssComposer')
+      let conf = em.get('Config')
+      let confCanvas = this.config
+      let protCss = conf.protectedCss
+      let externalStyles = ''
 
       confCanvas.styles.forEach(style => {
-        externalStyles += `<link rel="stylesheet" href="${style}"/>`;
-      });
+        externalStyles += `<link rel="stylesheet" href="${style}"/>`
+      })
 
-      const colorWarn = '#ffca6f';
+      const colorWarn = '#ffca6f'
 
       let baseCss = `
         * {
@@ -112,7 +112,7 @@ module.exports = Backbone.View.extend({
           overflow: auto;
           overflow-x: hidden;
         }
-      `;
+      `
       // Remove `html { height: 100%;}` from the baseCss as it gives jumpings
       // effects (on ENTER) with RTE like CKEditor (maybe some bug there?!?)
       // With `body {height: auto;}` jumps in CKEditor are removed but in
@@ -122,7 +122,7 @@ module.exports = Backbone.View.extend({
       // CKEditor's issue
 
       // I need all this styles to make the editor work properly
-      var frameCss = `
+      let frameCss = `
         ${baseCss}
 
         .${ppfx}dashed *[data-highlightable] {
@@ -183,46 +183,46 @@ module.exports = Backbone.View.extend({
 
         ${conf.canvasCss || ''}
         ${protCss || ''}
-      `;
+      `
 
       if (externalStyles) {
-        body.append(externalStyles);
+        body.append(externalStyles)
       }
 
-      body.append('<style>' + frameCss + '</style>');
-      body.append(wrap.render()).append(cssc.render());
-      body.append(this.getJsContainer());
-      em.trigger('loaded');
-      this.frame.el.contentWindow.onscroll = this.onFrameScroll;
-      this.frame.udpateOffset();
+      body.append('<style>' + frameCss + '</style>')
+      body.append(wrap.render()).append(cssc.render())
+      body.append(this.getJsContainer())
+      em.trigger('loaded')
+      this.frame.el.contentWindow.onscroll = this.onFrameScroll
+      this.frame.udpateOffset()
 
       // When the iframe is focused the event dispatcher is not the same so
       // I need to delegate all events to the parent document
-      const doc = document;
-      const fdoc = this.frame.el.contentDocument;
+      const doc = document
+      const fdoc = this.frame.el.contentDocument
 
       // Unfortunately just creating `KeyboardEvent(e.type, e)` is not enough,
       // the keyCode/which will be always `0`. Even if it's an old/deprecated
       // property keymaster (and many others) still use it... using `defineProperty`
       // hack seems the only way
       const createCustomEvent = e => {
-        var oEvent = new KeyboardEvent(e.type, e);
+        let oEvent = new KeyboardEvent(e.type, e)
         oEvent.keyCodeVal = e.keyCode;
         ['keyCode', 'which'].forEach(prop => {
           Object.defineProperty(oEvent, prop, {
             get() {
-              return this.keyCodeVal;
-            }
-          });
-        });
-        return oEvent;
-      };
+              return this.keyCodeVal
+            },
+          })
+        })
+        return oEvent
+      }
       fdoc.addEventListener('keydown', e => {
-        doc.dispatchEvent(createCustomEvent(e));
-      });
+        doc.dispatchEvent(createCustomEvent(e))
+      })
       fdoc.addEventListener('keyup', e => {
-        doc.dispatchEvent(createCustomEvent(e));
-      });
+        doc.dispatchEvent(createCustomEvent(e))
+      })
     }
   },
 
@@ -232,14 +232,14 @@ module.exports = Backbone.View.extend({
    * @return {Object}
    */
   offset(el) {
-    var rect = el.getBoundingClientRect();
-    var docBody = el.ownerDocument.body;
+    let rect = el.getBoundingClientRect()
+    let docBody = el.ownerDocument.body
     return {
       top: rect.top + docBody.scrollTop,
       left: rect.left + docBody.scrollLeft,
       width: rect.width,
-      height: rect.height
-    };
+      height: rect.height,
+    }
   },
 
   /**
@@ -247,8 +247,8 @@ module.exports = Backbone.View.extend({
    * @private
    */
   clearOff() {
-    this.frmOff = null;
-    this.cvsOff = null;
+    this.frmOff = null
+    this.cvsOff = null
   },
 
   /**
@@ -257,8 +257,8 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getFrameOffset(force = 0) {
-    if (!this.frmOff || force) this.frmOff = this.offset(this.frame.el);
-    return this.frmOff;
+    if (!this.frmOff || force) this.frmOff = this.offset(this.frame.el)
+    return this.frmOff
   },
 
   /**
@@ -267,8 +267,8 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getCanvasOffset() {
-    if (!this.cvsOff) this.cvsOff = this.offset(this.el);
-    return this.cvsOff;
+    if (!this.cvsOff) this.cvsOff = this.offset(this.el)
+    return this.cvsOff
   },
 
   /**
@@ -278,21 +278,21 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getElementPos(el, opts) {
-    var opt = opts || {};
-    var frmOff = this.getFrameOffset();
-    var cvsOff = this.getCanvasOffset();
-    var eo = this.offset(el);
+    let opt = opts || {}
+    let frmOff = this.getFrameOffset()
+    let cvsOff = this.getCanvasOffset()
+    let eo = this.offset(el)
 
-    var frmTop = opt.avoidFrameOffset ? 0 : frmOff.top;
-    var frmLeft = opt.avoidFrameOffset ? 0 : frmOff.left;
+    let frmTop = opt.avoidFrameOffset ? 0 : frmOff.top
+    let frmLeft = opt.avoidFrameOffset ? 0 : frmOff.left
 
-    const top = eo.top + frmTop - cvsOff.top;
-    const left = eo.left + frmLeft - cvsOff.left;
+    const top = eo.top + frmTop - cvsOff.top
+    const left = eo.left + frmLeft - cvsOff.left
     // clientHeight/clientWidth are for SVGs
-    const height = el.offsetHeight || el.clientHeight;
-    const width = el.offsetWidth || el.clientWidth;
+    const height = el.offsetHeight || el.clientHeight
+    const width = el.offsetWidth || el.clientWidth
 
-    return { top, left, height, width };
+    return { top, left, height, width }
   },
 
   /**
@@ -301,13 +301,13 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getPosition() {
-    var bEl = this.frame.el.contentDocument.body;
-    var fo = this.getFrameOffset();
-    var co = this.getCanvasOffset();
+    let bEl = this.frame.el.contentDocument.body
+    let fo = this.getFrameOffset()
+    let co = this.getCanvasOffset()
     return {
       top: fo.top + bEl.scrollTop - co.top,
-      left: fo.left + bEl.scrollLeft - co.left
-    };
+      left: fo.left + bEl.scrollLeft - co.left,
+    }
   },
 
   /**
@@ -317,17 +317,17 @@ module.exports = Backbone.View.extend({
    */
   updateScript(view) {
     if (!view.scriptContainer) {
-      view.scriptContainer = $('<div>');
-      this.getJsContainer().append(view.scriptContainer.get(0));
+      view.scriptContainer = $('<div>')
+      this.getJsContainer().append(view.scriptContainer.get(0))
     }
 
-    var model = view.model;
-    var id = model.getId();
-    view.el.id = id;
-    view.scriptContainer.html('');
+    let model = view.model
+    let id = model.getId()
+    view.el.id = id
+    view.scriptContainer.html('')
     // In editor, I make use of setTimeout as during the append process of elements
     // those will not be available immediatly, therefore 'item' variable
-    const script = document.createElement('script');
+    const script = document.createElement('script')
     script.innerText = `
         setTimeout(function() {
           var item = document.getElementById('${id}');
@@ -335,8 +335,8 @@ module.exports = Backbone.View.extend({
           (function(){
             ${model.getScriptString()};
           }.bind(item))()
-        }, 1);`;
-    view.scriptContainer.get(0).appendChild(script);
+        }, 1);`
+    view.scriptContainer.get(0).appendChild(script)
   },
 
   /**
@@ -345,25 +345,25 @@ module.exports = Backbone.View.extend({
    */
   getJsContainer() {
     if (!this.jsContainer) {
-      this.jsContainer = $(`<div class="${this.ppfx}js-cont">`).get(0);
+      this.jsContainer = $(`<div class="${this.ppfx}js-cont">`).get(0)
     }
-    return this.jsContainer;
+    return this.jsContainer
   },
 
   render() {
-    this.wrapper = this.model.get('wrapper');
+    this.wrapper = this.model.get('wrapper')
 
     if (this.wrapper && typeof this.wrapper.render == 'function') {
-      this.model.get('frame').set('wrapper', this.wrapper);
-      this.$el.append(this.frame.render().el);
-      var frame = this.frame;
+      this.model.get('frame').set('wrapper', this.wrapper)
+      this.$el.append(this.frame.render().el)
+      let frame = this.frame
       if (this.config.scripts.length === 0) {
-        frame.el.onload = this.renderBody;
+        frame.el.onload = this.renderBody
       } else {
-        this.renderScripts(); // will call renderBody later
+        this.renderScripts() // will call renderBody later
       }
     }
-    var ppfx = this.ppfx;
+    let ppfx = this.ppfx
     this.$el.append(`
       <div id="${ppfx}tools" style="pointer-events:none">
         <div class="${ppfx}highlighter"></div>
@@ -377,19 +377,19 @@ module.exports = Backbone.View.extend({
         <div class="${ppfx}offset-v"></div>
         <div class="${ppfx}offset-fixed-v"></div>
       </div>
-    `);
-    const el = this.el;
-    const toolsEl = el.querySelector(`#${ppfx}tools`);
-    this.hlEl = el.querySelector(`.${ppfx}highlighter`);
-    this.badgeEl = el.querySelector(`.${ppfx}badge`);
-    this.placerEl = el.querySelector(`.${ppfx}placeholder`);
-    this.ghostEl = el.querySelector(`.${ppfx}ghost`);
-    this.toolbarEl = el.querySelector(`.${ppfx}toolbar`);
-    this.resizerEl = el.querySelector(`.${ppfx}resizer`);
-    this.offsetEl = el.querySelector(`.${ppfx}offset-v`);
-    this.fixedOffsetEl = el.querySelector(`.${ppfx}offset-fixed-v`);
-    this.toolsEl = toolsEl;
-    this.el.className = this.className;
-    return this;
-  }
-});
+    `)
+    const el = this.el
+    const toolsEl = el.querySelector(`#${ppfx}tools`)
+    this.hlEl = el.querySelector(`.${ppfx}highlighter`)
+    this.badgeEl = el.querySelector(`.${ppfx}badge`)
+    this.placerEl = el.querySelector(`.${ppfx}placeholder`)
+    this.ghostEl = el.querySelector(`.${ppfx}ghost`)
+    this.toolbarEl = el.querySelector(`.${ppfx}toolbar`)
+    this.resizerEl = el.querySelector(`.${ppfx}resizer`)
+    this.offsetEl = el.querySelector(`.${ppfx}offset-v`)
+    this.fixedOffsetEl = el.querySelector(`.${ppfx}offset-fixed-v`)
+    this.toolsEl = toolsEl
+    this.el.className = this.className
+    return this
+  },
+})

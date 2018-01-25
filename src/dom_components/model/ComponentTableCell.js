@@ -1,4 +1,4 @@
-const Component = require('./Component');
+const Component = require('./Component')
 
 module.exports = Component.extend(
   {
@@ -6,22 +6,22 @@ module.exports = Component.extend(
       ...Component.prototype.defaults,
       type: 'cell',
       tagName: 'td',
-      draggable: ['tr']
-    }
+      draggable: ['tr'],
+    },
   },
   {
     isComponent(el) {
-      let result = '';
-      const tag = el.tagName;
+      let result = ''
+      const tag = el.tagName
 
       if (tag == 'TD' || tag == 'TH') {
         result = {
           type: 'cell',
-          tagName: tag.toLowerCase()
-        };
+          tagName: tag.toLowerCase(),
+        }
       }
 
-      return result;
-    }
+      return result
+    },
   }
-);
+)

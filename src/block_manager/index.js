@@ -29,13 +29,13 @@
  * ...
  */
 module.exports = () => {
-  var c = {},
+  let c = {},
     defaults = require('./config/config'),
     Blocks = require('./model/Blocks'),
     BlockCategories = require('./model/Categories'),
-    BlocksView = require('./view/BlocksView');
-  var blocks, blocksVisible, blocksView;
-  var categories = [];
+    BlocksView = require('./view/BlocksView')
+  let blocks, blocksVisible, blocksView
+  let categories = []
 
   return {
     /**
@@ -52,44 +52,44 @@ module.exports = () => {
      * @private
      */
     init(config) {
-      c = config || {};
-      const em = c.em;
+      c = config || {}
+      const em = c.em
 
       for (let name in defaults) {
         if (!(name in c)) {
-          c[name] = defaults[name];
+          c[name] = defaults[name]
         }
       }
 
       // Global blocks collection
-      blocks = new Blocks([]);
+      blocks = new Blocks([])
       blocksVisible = new Blocks([]);
       (categories = new BlockCategories()),
         (blocksView = new BlocksView(
           {
             // Visible collection
             collection: blocksVisible,
-            categories
+            categories,
           },
           c
-        ));
+        ))
 
       // Setup the sync between the global and public collections
       blocks.listenTo(blocks, 'add', model => {
-        blocksVisible.add(model);
-        em && em.trigger('block:add', model);
-      });
+        blocksVisible.add(model)
+        em && em.trigger('block:add', model)
+      })
 
       blocks.listenTo(blocks, 'remove', model => {
-        blocksVisible.remove(model);
-        em && em.trigger('block:remove', model);
-      });
+        blocksVisible.remove(model)
+        em && em.trigger('block:remove', model)
+      })
 
       blocks.listenTo(blocks, 'reset', coll => {
-        blocksVisible.reset(coll.models);
-      });
+        blocksVisible.reset(coll.models)
+      })
 
-      return this;
+      return this
     },
 
     /**
@@ -97,15 +97,15 @@ module.exports = () => {
      * @return {Object}
      */
     getConfig() {
-      return c;
+      return c
     },
 
     /**
      * Load default blocks if the collection is empty
      */
     onLoad() {
-      const blocks = this.getAll();
-      !blocks.length && blocks.reset(c.blocks);
+      const blocks = this.getAll()
+      !blocks.length && blocks.reset(c.blocks)
     },
 
     /**
@@ -132,9 +132,9 @@ module.exports = () => {
      * });
      */
     add(id, opts) {
-      var obj = opts || {};
-      obj.id = id;
-      return blocks.add(obj);
+      let obj = opts || {}
+      obj.id = id
+      return blocks.add(obj)
     },
 
     /**
@@ -146,7 +146,7 @@ module.exports = () => {
      * // {label: 'Heading', content: '<h1>Put your ...', ...}
      */
     get(id) {
-      return blocks.get(id);
+      return blocks.get(id)
     },
 
     /**
@@ -158,7 +158,7 @@ module.exports = () => {
      * // [{label: 'Heading', content: '<h1>Put your ...'}, ...]
      */
     getAll() {
-      return blocks;
+      return blocks
     },
 
     /**
@@ -166,7 +166,7 @@ module.exports = () => {
      * @return {Collection}
      */
     getAllVisible() {
-      return blocksVisible;
+      return blocksVisible
     },
 
     /**
@@ -175,7 +175,7 @@ module.exports = () => {
      * @return {Block} Removed block
      */
     remove(id) {
-      return blocks.remove(id);
+      return blocks.remove(id)
     },
 
     /**
@@ -184,7 +184,7 @@ module.exports = () => {
      * @return {Array|Collection}
      */
     getCategories() {
-      return categories;
+      return categories
     },
 
     /**
@@ -192,7 +192,7 @@ module.exports = () => {
      * @return {HTMLElement}
      */
     getContainer() {
-      return blocksView.el;
+      return blocksView.el
     },
 
     /**
@@ -217,14 +217,14 @@ module.exports = () => {
      * blockManager.render();
      */
     render(blocks) {
-      const toRender = blocks || this.getAll().models;
+      const toRender = blocks || this.getAll().models
 
       if (!blocksView.rendered) {
-        blocksView.render();
-        blocksView.rendered = 1;
+        blocksView.render()
+        blocksView.rendered = 1
       }
 
-      blocksView.collection.reset(toRender);
-    }
-  };
-};
+      blocksView.collection.reset(toRender)
+    },
+  }
+}

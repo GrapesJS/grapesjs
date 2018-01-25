@@ -1,4 +1,4 @@
-const $ = Backbone.$;
+const $ = Backbone.$
 
 module.exports = Backbone.View.extend({
   /**
@@ -7,28 +7,28 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   initialize(o) {
-    this.config = o || {};
-    this.editorModel = this.em = this.config.em || {};
-    this.pfx = this.config.stylePrefix;
-    this.ppfx = this.config.pStylePrefix;
-    this.hoverClass = this.pfx + 'hover';
-    this.badgeClass = this.pfx + 'badge';
-    this.plhClass = this.pfx + 'placeholder';
-    this.freezClass = this.ppfx + 'freezed';
+    this.config = o || {}
+    this.editorModel = this.em = this.config.em || {}
+    this.pfx = this.config.stylePrefix
+    this.ppfx = this.config.pStylePrefix
+    this.hoverClass = this.pfx + 'hover'
+    this.badgeClass = this.pfx + 'badge'
+    this.plhClass = this.pfx + 'placeholder'
+    this.freezClass = this.ppfx + 'freezed'
 
-    this.canvas = this.em.get && this.em.get('Canvas');
+    this.canvas = this.em.get && this.em.get('Canvas')
 
-    if (this.em.get) this.setElement(this.getCanvas());
+    if (this.em.get) this.setElement(this.getCanvas())
 
     if (this.canvas) {
-      this.$canvas = this.$el;
-      this.$wrapper = $(this.getCanvasWrapper());
-      this.frameEl = this.canvas.getFrameEl();
-      this.canvasTool = this.getCanvasTools();
-      this.bodyEl = this.getCanvasBody();
+      this.$canvas = this.$el
+      this.$wrapper = $(this.getCanvasWrapper())
+      this.frameEl = this.canvas.getFrameEl()
+      this.canvasTool = this.getCanvasTools()
+      this.bodyEl = this.getCanvasBody()
     }
 
-    this.init(this.config);
+    this.init(this.config)
   },
 
   /**
@@ -43,7 +43,7 @@ module.exports = Backbone.View.extend({
    * @return {HTMLElement}
    */
   getCanvas() {
-    return this.canvas.getElement();
+    return this.canvas.getElement()
   },
 
   /**
@@ -51,7 +51,7 @@ module.exports = Backbone.View.extend({
    * @return {HTMLElement}
    */
   getCanvasBody() {
-    return this.canvas.getBody();
+    return this.canvas.getBody()
   },
 
   /**
@@ -59,7 +59,7 @@ module.exports = Backbone.View.extend({
    * @return {HTMLElement}
    */
   getCanvasWrapper() {
-    return this.canvas.getWrapperEl();
+    return this.canvas.getWrapperEl()
   },
 
   /**
@@ -67,7 +67,7 @@ module.exports = Backbone.View.extend({
    * @return {HTMLElement}
    */
   getCanvasTools() {
-    return this.canvas.getToolsEl();
+    return this.canvas.getToolsEl()
   },
 
   /**
@@ -76,11 +76,11 @@ module.exports = Backbone.View.extend({
    * @return {Object}
    */
   offset(el) {
-    var rect = el.getBoundingClientRect();
+    let rect = el.getBoundingClientRect()
     return {
       top: rect.top + el.ownerDocument.body.scrollTop,
-      left: rect.left + el.ownerDocument.body.scrollLeft
-    };
+      left: rect.left + el.ownerDocument.body.scrollLeft,
+    }
   },
 
   /**
@@ -104,5 +104,5 @@ module.exports = Backbone.View.extend({
    * @param  {Object}  sender  Button sender
    * @private
    * */
-  stop(em, sender) {}
-});
+  stop(em, sender) {},
+})

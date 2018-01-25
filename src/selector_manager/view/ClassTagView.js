@@ -1,34 +1,34 @@
-const Selector = require('./../model/Selector');
-const inputProp = 'contentEditable';
+const Selector = require('./../model/Selector')
+const inputProp = 'contentEditable'
 
 module.exports = require('backbone').View.extend({
   template() {
-    const pfx = this.pfx;
-    const ppfx = this.ppfx;
-    const label = this.model.get('label') || '';
+    const pfx = this.pfx
+    const ppfx = this.ppfx
+    const label = this.model.get('label') || ''
     return `
       <span id="${pfx}checkbox" class="fa" data-tag-status></span>
       <span id="${pfx}tag-label" data-tag-name>${label}</span>
       <span id="${pfx}close" data-tag-remove>
         &Cross;
       </span>
-    `;
+    `
   },
 
   events: {
     'click [data-tag-remove]': 'removeTag',
     'click [data-tag-status]': 'changeStatus',
     'dblclick [data-tag-name]': 'startEditTag',
-    'focusout [data-tag-name]': 'endEditTag'
+    'focusout [data-tag-name]': 'endEditTag',
   },
 
   initialize(o) {
-    this.config = o.config || {};
-    this.coll = o.coll || null;
-    this.pfx = this.config.stylePrefix || '';
-    this.ppfx = this.config.pStylePrefix || '';
-    this.target = this.config.em;
-    this.listenTo(this.model, 'change:active', this.updateStatus);
+    this.config = o.config || {}
+    this.coll = o.coll || null
+    this.pfx = this.config.stylePrefix || ''
+    this.ppfx = this.config.pStylePrefix || ''
+    this.target = this.config.em
+    this.listenTo(this.model, 'change:active', this.updateStatus)
   },
 
   /**
@@ -37,10 +37,10 @@ module.exports = require('backbone').View.extend({
    */
   getInputEl() {
     if (!this.inputEl) {
-      this.inputEl = this.el.querySelector('[data-tag-name]');
+      this.inputEl = this.el.querySelector('[data-tag-name]')
     }
 
-    return this.inputEl;
+    return this.inputEl
   },
 
   /**
@@ -48,9 +48,9 @@ module.exports = require('backbone').View.extend({
    * @private
    */
   startEditTag() {
-    const inputEl = this.getInputEl();
-    inputEl[inputProp] = true;
-    inputEl.focus();
+    const inputEl = this.getInputEl()
+    inputEl[inputProp] = true
+    inputEl.focus()
   },
 
   /**
@@ -59,19 +59,19 @@ module.exports = require('backbone').View.extend({
    * @private
    */
   endEditTag() {
-    const model = this.model;
-    const inputEl = this.getInputEl();
-    const label = inputEl.textContent;
-    const name = Selector.escapeName(label);
-    const em = this.target;
-    const sm = em && em.get('SelectorManager');
-    inputEl[inputProp] = false;
+    const model = this.model
+    const inputEl = this.getInputEl()
+    const label = inputEl.textContent
+    const name = Selector.escapeName(label)
+    const em = this.target
+    const sm = em && em.get('SelectorManager')
+    inputEl[inputProp] = false
 
     if (sm) {
       if (sm.get(name)) {
-        inputEl.innerText = model.get('label');
+        inputEl.innerText = model.get('label')
       } else {
-        model.set({ name, label });
+        model.set({ name, label })
       }
     }
   },
@@ -81,7 +81,7 @@ module.exports = require('backbone').View.extend({
    * @private
    */
   changeStatus() {
-    this.model.set('active', !this.model.get('active'));
+    this.model.set('active', !this.model.get('active'))
   },
 
   /**
@@ -90,14 +90,14 @@ module.exports = require('backbone').View.extend({
    * @private
    */
   removeTag(e) {
-    const em = this.target;
-    const model = this.model;
-    const coll = this.coll;
-    const el = this.el;
-    const sel = em && em.get('selectedComponent');
-    sel && sel.get & sel.get('classes').remove(model);
-    coll && coll.remove(model);
-    setTimeout(() => this.remove(), 0);
+    const em = this.target
+    const model = this.model
+    const coll = this.coll
+    const el = this.el
+    const sel = em && em.get('selectedComponent')
+    sel && sel.get & sel.get('classes').remove(model)
+    coll && coll.remove(model)
+    setTimeout(() => this.remove(), 0)
   },
 
   /**
@@ -105,26 +105,26 @@ module.exports = require('backbone').View.extend({
    * @private
    */
   updateStatus() {
-    var chkOn = 'fa-check-square-o';
-    var chkOff = 'fa-square-o';
+    let chkOn = 'fa-check-square-o'
+    let chkOff = 'fa-square-o'
 
-    if (!this.$chk) this.$chk = this.$el.find('#' + this.pfx + 'checkbox');
+    if (!this.$chk) this.$chk = this.$el.find('#' + this.pfx + 'checkbox')
 
     if (this.model.get('active')) {
-      this.$chk.removeClass(chkOff).addClass(chkOn);
-      this.$el.removeClass('opac50');
+      this.$chk.removeClass(chkOff).addClass(chkOn)
+      this.$el.removeClass('opac50')
     } else {
-      this.$chk.removeClass(chkOn).addClass(chkOff);
-      this.$el.addClass('opac50');
+      this.$chk.removeClass(chkOn).addClass(chkOff)
+      this.$el.addClass('opac50')
     }
   },
 
   render() {
-    const pfx = this.pfx;
-    const ppfx = this.ppfx;
-    this.$el.html(this.template());
-    this.$el.attr('class', `${pfx}tag ${ppfx}three-bg`);
-    this.updateStatus();
-    return this;
-  }
-});
+    const pfx = this.pfx
+    const ppfx = this.ppfx
+    this.$el.html(this.template())
+    this.$el.attr('class', `${pfx}tag ${ppfx}three-bg`)
+    this.updateStatus()
+    return this
+  },
+})

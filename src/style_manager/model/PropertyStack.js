@@ -1,5 +1,5 @@
-const Property = require('./PropertyComposite');
-const Layers = require('./Layers');
+const Property = require('./PropertyComposite')
+const Layers = require('./Layers')
 
 module.exports = Property.extend({
   defaults: {
@@ -8,18 +8,18 @@ module.exports = Property.extend({
     layers: [],
 
     // Layer preview
-    preview: 0
+    preview: 0,
   },
 
   init() {
-    Property.prototype.init.apply(this, arguments);
-    const layers = this.get('layers');
-    const layersColl = new Layers(layers);
-    layersColl.properties = this.get('properties');
-    this.set('layers', layersColl);
+    Property.prototype.init.apply(this, arguments)
+    const layers = this.get('layers')
+    const layersColl = new Layers(layers)
+    layersColl.properties = this.get('properties')
+    this.set('layers', layersColl)
   },
 
   getFullValue() {
-    return this.get('detached') ? '' : this.get('layers').getFullValue();
-  }
-});
+    return this.get('detached') ? '' : this.get('layers').getFullValue()
+  },
+})

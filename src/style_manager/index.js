@@ -39,13 +39,13 @@
  * ...
  */
 module.exports = () => {
-  var c = {},
+  let c = {},
     defaults = require('./config/config'),
     Sectors = require('./model/Sectors'),
     Properties = require('./model/Properties'),
-    SectorsView = require('./view/SectorsView');
-  let properties;
-  var sectors, SectView;
+    SectorsView = require('./view/SectorsView')
+  let properties
+  let sectors, SectView
 
   return {
     /**
@@ -61,7 +61,7 @@ module.exports = () => {
      * @private
      */
     getConfig() {
-      return c;
+      return c
     },
 
     /**
@@ -69,22 +69,22 @@ module.exports = () => {
      * @param {Object} config Configurations
      */
     init(config) {
-      c = config || {};
-      for (var name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
+      c = config || {}
+      for (let name in defaults) {
+        if (!(name in c)) c[name] = defaults[name]
       }
 
-      var ppfx = c.pStylePrefix;
-      if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
+      let ppfx = c.pStylePrefix
+      if (ppfx) c.stylePrefix = ppfx + c.stylePrefix
 
-      properties = new Properties();
-      sectors = new Sectors(c.sectors, c);
+      properties = new Properties()
+      sectors = new Sectors(c.sectors, c)
       SectView = new SectorsView({
         collection: sectors,
         target: c.em,
-        config: c
-      });
-      return this;
+        config: c,
+      })
+      return this
     },
 
     /**
@@ -104,12 +104,12 @@ module.exports = () => {
      * });
      * */
     addSector(id, sector) {
-      var result = this.getSector(id);
+      let result = this.getSector(id)
       if (!result) {
-        sector.id = id;
-        result = sectors.add(sector);
+        sector.id = id
+        result = sectors.add(sector)
       }
-      return result;
+      return result
     },
 
     /**
@@ -120,8 +120,8 @@ module.exports = () => {
      * var sector = styleManager.getSector('mySector');
      * */
     getSector(id) {
-      var res = sectors.where({ id });
-      return res.length ? res[0] : null;
+      let res = sectors.where({ id })
+      return res.length ? res[0] : null
     },
 
     /**
@@ -132,7 +132,7 @@ module.exports = () => {
      * const removed = styleManager.removeSector('mySector');
      */
     removeSector(id) {
-      return this.getSectors().remove(this.getSector(id));
+      return this.getSectors().remove(this.getSector(id))
     },
 
     /**
@@ -140,7 +140,7 @@ module.exports = () => {
      * @return {Sectors} Collection of sectors
      * */
     getSectors() {
-      return sectors;
+      return sectors
     },
 
     /**
@@ -179,12 +179,12 @@ module.exports = () => {
      * });
      */
     addProperty(sectorId, property) {
-      var prop = null;
-      var sector = this.getSector(sectorId);
+      let prop = null
+      let sector = this.getSector(sectorId)
 
-      if (sector) prop = sector.get('properties').add(property);
+      if (sector) prop = sector.get('properties').add(property)
 
-      return prop;
+      return prop
     },
 
     /**
@@ -196,15 +196,15 @@ module.exports = () => {
      * var property = styleManager.getProperty('mySector','min-height');
      */
     getProperty(sectorId, name) {
-      var prop = null;
-      var sector = this.getSector(sectorId);
+      let prop = null
+      let sector = this.getSector(sectorId)
 
       if (sector) {
-        prop = sector.get('properties').where({ property: name });
-        prop = prop.length == 1 ? prop[0] : prop;
+        prop = sector.get('properties').where({ property: name })
+        prop = prop.length == 1 ? prop[0] : prop
       }
 
-      return prop;
+      return prop
     },
 
     /**
@@ -216,8 +216,8 @@ module.exports = () => {
      * const property = styleManager.removeProperty('mySector', 'min-height');
      */
     removeProperty(sectorId, name) {
-      const props = this.getProperties(sectorId);
-      return props && props.remove(this.getProperty(sectorId, name));
+      const props = this.getProperties(sectorId)
+      return props && props.remove(this.getProperty(sectorId, name))
     },
 
     /**
@@ -228,12 +228,12 @@ module.exports = () => {
      * var properties = styleManager.getProperties('mySector');
      */
     getProperties(sectorId) {
-      var props = null;
-      var sector = this.getSector(sectorId);
+      let props = null
+      let sector = this.getSector(sectorId)
 
-      if (sector) props = sector.get('properties');
+      if (sector) props = sector.get('properties')
 
-      return props;
+      return props
     },
 
     /**
@@ -245,44 +245,44 @@ module.exports = () => {
      * @return {Model}
      */
     getModelToStyle(model) {
-      const em = c.em;
-      const classes = model.get('classes');
-      const id = model.getId();
+      const em = c.em
+      const classes = model.get('classes')
+      const id = model.getId()
 
       if (em) {
-        const config = em.getConfig();
-        const um = em.get('UndoManager');
-        const cssC = em.get('CssComposer');
-        const state = !config.devicePreviewMode ? model.get('state') : '';
-        const valid = classes.getStyleable();
-        const hasClasses = valid.length;
-        const opts = { state };
-        let rule;
+        const config = em.getConfig()
+        const um = em.get('UndoManager')
+        const cssC = em.get('CssComposer')
+        const state = !config.devicePreviewMode ? model.get('state') : ''
+        const valid = classes.getStyleable()
+        const hasClasses = valid.length
+        const opts = { state }
+        let rule
 
         if (hasClasses) {
-          const deviceW = em.getCurrentMedia();
-          rule = cssC.get(valid, state, deviceW);
+          const deviceW = em.getCurrentMedia()
+          rule = cssC.get(valid, state, deviceW)
 
           if (!rule) {
             // I stop undo manager here as after adding the CSSRule (generally after
             // selecting the component) and calling undo() it will remove the rule from
             // the collection, therefore updating it in style manager will not affect it
             // #268
-            um.stop();
-            rule = cssC.add(valid, state, deviceW);
-            rule.setStyle(model.getStyle());
-            model.setStyle({});
-            um.start();
+            um.stop()
+            rule = cssC.add(valid, state, deviceW)
+            rule.setStyle(model.getStyle())
+            model.setStyle({})
+            um.start()
           }
         } else if (config.avoidInlineStyle) {
-          rule = cssC.getIdRule(id, opts);
-          !rule && (rule = cssC.setIdRule(id, {}, opts));
+          rule = cssC.getIdRule(id, opts)
+          !rule && (rule = cssC.setIdRule(id, {}, opts))
         }
 
-        rule && (model = rule);
+        rule && (model = rule)
       }
 
-      return model;
+      return model
     },
 
     /**
@@ -303,7 +303,7 @@ module.exports = () => {
      * })
      */
     addType(id, definition) {
-      properties.addType(id, definition);
+      properties.addType(id, definition)
     },
 
     /**
@@ -312,7 +312,7 @@ module.exports = () => {
      * @return {Object} Type definition
      */
     getType(id) {
-      return properties.getType(id);
+      return properties.getType(id)
     },
 
     /**
@@ -320,7 +320,7 @@ module.exports = () => {
      * @return {Array}
      */
     getTypes() {
-      return properties.getTypes();
+      return properties.getTypes()
     },
 
     /**
@@ -339,14 +339,14 @@ module.exports = () => {
      * someContainer.appendChild(propView.el);
      */
     createType(id, { model = {}, view = {} } = {}) {
-      const type = this.getType(id);
+      const type = this.getType(id)
 
       if (type) {
         return new type.view({
           model: new type.model(model),
           config: c,
-          ...view
-        });
+          ...view,
+        })
       }
     },
 
@@ -355,7 +355,7 @@ module.exports = () => {
      * @return  {HTMLElement}
      * */
     render() {
-      return SectView.render().el;
-    }
-  };
-};
+      return SectView.render().el
+    },
+  }
+}

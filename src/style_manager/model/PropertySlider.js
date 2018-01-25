@@ -1,8 +1,8 @@
-const Property = require('./PropertyInteger');
+const Property = require('./PropertyInteger')
 
 module.exports = Property.extend({
   defaults: {
     ...Property.prototype.defaults,
-    showInput: 1
-  }
-});
+    showInput: 1,
+  },
+})

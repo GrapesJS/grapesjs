@@ -1,4 +1,4 @@
-const Component = require('./Component');
+const Component = require('./Component')
 
 module.exports = Component.extend(
   {
@@ -7,28 +7,28 @@ module.exports = Component.extend(
       type: 'row',
       tagName: 'tr',
       draggable: ['thead', 'tbody', 'tfoot'],
-      droppable: ['th', 'td']
+      droppable: ['th', 'td'],
     },
 
     initialize(o, opt) {
-      Component.prototype.initialize.apply(this, arguments);
+      Component.prototype.initialize.apply(this, arguments)
 
       // Clean the row from non cell components
-      const cells = [];
-      const components = this.get('components');
-      components.each(model => model.is('cell') && cells.push(model));
-      components.reset(cells);
-    }
+      const cells = []
+      const components = this.get('components')
+      components.each(model => model.is('cell') && cells.push(model))
+      components.reset(cells)
+    },
   },
   {
     isComponent(el) {
-      let result = '';
+      let result = ''
 
       if (el.tagName == 'TR') {
-        result = { type: 'row' };
+        result = { type: 'row' }
       }
 
-      return result;
-    }
+      return result
+    },
   }
-);
+)

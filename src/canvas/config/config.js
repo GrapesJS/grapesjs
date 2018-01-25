@@ -30,5 +30,5 @@ module.exports = {
    *  return ComponentModel.getName();
    * }
    */
-  customBadgeLabel: ''
-};
+  customBadgeLabel: '',
+}

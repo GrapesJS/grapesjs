@@ -1,8 +1,8 @@
-var Backbone = require('backbone');
+let Backbone = require('backbone')
 
 module.exports = Backbone.Model.extend({
   defaults: {
     command: '',
-    attributes: {}
-  }
-});
+    attributes: {},
+  },
+})

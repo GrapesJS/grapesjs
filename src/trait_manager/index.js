@@ -1,10 +1,10 @@
-import { defaults } from 'underscore';
+import { defaults } from 'underscore'
 
 module.exports = () => {
-  let c = {};
-  const defaultOpts = require('./config/config');
-  const TraitsView = require('./view/TraitsView');
-  let TraitsViewer;
+  let c = {}
+  const defaultOpts = require('./config/config')
+  const TraitsView = require('./view/TraitsView')
+  let TraitsViewer
 
   return {
     TraitsView,
@@ -22,7 +22,7 @@ module.exports = () => {
      * @private
      */
     getConfig() {
-      return c;
+      return c
     },
 
     /**
@@ -30,16 +30,16 @@ module.exports = () => {
      * @param {Object} config Configurations
      */
     init(config = {}) {
-      c = config;
-      defaults(c, defaultOpts);
-      const ppfx = c.pStylePrefix;
-      ppfx && (c.stylePrefix = `${ppfx}${c.stylePrefix}`);
+      c = config
+      defaults(c, defaultOpts)
+      const ppfx = c.pStylePrefix
+      ppfx && (c.stylePrefix = `${ppfx}${c.stylePrefix}`)
       TraitsViewer = new TraitsView({
         collection: [],
         editor: c.em,
-        config: c
-      });
-      return this;
+        config: c,
+      })
+      return this
     },
 
     /**
@@ -48,7 +48,7 @@ module.exports = () => {
      * @private
      */
     getTraitsViewer() {
-      return TraitsViewer;
+      return TraitsViewer
     },
 
     /**
@@ -57,8 +57,8 @@ module.exports = () => {
      * @param {Object} methods Object representing the trait
      */
     addType(name, trait) {
-      var itemView = TraitsViewer.itemView;
-      TraitsViewer.itemsView[name] = itemView.extend(trait);
+      let itemView = TraitsViewer.itemView
+      TraitsViewer.itemsView[name] = itemView.extend(trait)
     },
 
     /**
@@ -67,7 +67,7 @@ module.exports = () => {
      * @return {Object}
      */
     getType(name) {
-      return TraitsViewer.itemsView[name];
-    }
-  };
-};
+      return TraitsViewer.itemsView[name]
+    },
+  }
+}

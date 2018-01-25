@@ -1,53 +1,53 @@
-const StyleManager = require('style_manager');
-const Backbone = require('backbone');
-const $ = Backbone.$;
+const StyleManager = require('style_manager')
+const Backbone = require('backbone')
+const $ = Backbone.$
 
 module.exports = {
   run(em, sender) {
-    this.sender = sender;
+    this.sender = sender
     if (!this.$cn) {
-      var config = em.getConfig(),
-        panels = em.Panels;
+      let config = em.getConfig(),
+        panels = em.Panels
       // Main container
-      this.$cn = $('<div></div>');
+      this.$cn = $('<div></div>')
       // Secondary container
-      this.$cn2 = $('<div></div>');
-      this.$cn.append(this.$cn2);
+      this.$cn2 = $('<div></div>')
+      this.$cn.append(this.$cn2)
 
       // Device Manager
-      var dvm = em.DeviceManager;
+      let dvm = em.DeviceManager
       if (dvm && config.showDevices) {
-        var devicePanel = panels.addPanel({ id: 'devices-c' });
+        let devicePanel = panels.addPanel({ id: 'devices-c' })
         devicePanel
           .set('appendContent', dvm.render())
-          .trigger('change:appendContent');
+          .trigger('change:appendContent')
       }
 
       // Class Manager container
-      var clm = em.SelectorManager;
-      if (clm) this.$cn2.append(clm.render([]));
+      let clm = em.SelectorManager
+      if (clm) this.$cn2.append(clm.render([]))
 
-      this.$cn2.append(em.StyleManager.render());
-      var smConfig = em.StyleManager.getConfig();
-      const pfx = smConfig.stylePrefix;
+      this.$cn2.append(em.StyleManager.render())
+      let smConfig = em.StyleManager.getConfig()
+      const pfx = smConfig.stylePrefix
       // Create header
       this.$header = $(
         `<div class="${pfx}header">${smConfig.textNoElement}</div>`
-      );
-      this.$cn.append(this.$header);
+      )
+      this.$cn.append(this.$header)
 
       // Create panel if not exists
       if (!panels.getPanel('views-container'))
-        this.panel = panels.addPanel({ id: 'views-container' });
-      else this.panel = panels.getPanel('views-container');
+        this.panel = panels.addPanel({ id: 'views-container' })
+      else this.panel = panels.getPanel('views-container')
 
       // Add all containers to the panel
-      this.panel.set('appendContent', this.$cn).trigger('change:appendContent');
+      this.panel.set('appendContent', this.$cn).trigger('change:appendContent')
 
-      this.target = em.editor;
-      this.listenTo(this.target, 'change:selectedComponent', this.toggleSm);
+      this.target = em.editor
+      this.listenTo(this.target, 'change:selectedComponent', this.toggleSm)
     }
-    this.toggleSm();
+    this.toggleSm()
   },
 
   /**
@@ -55,23 +55,23 @@ module.exports = {
    * @private
    */
   toggleSm() {
-    const sender = this.sender;
-    if (sender && sender.get && !sender.get('active')) return;
+    const sender = this.sender
+    if (sender && sender.get && !sender.get('active')) return
 
     if (this.target.get('selectedComponent')) {
-      this.$cn2.show();
-      this.$header.hide();
+      this.$cn2.show()
+      this.$header.hide()
     } else {
-      this.$cn2.hide();
-      this.$header.show();
+      this.$cn2.hide()
+      this.$header.show()
     }
   },
 
   stop() {
     // Hide secondary container if exists
-    if (this.$cn2) this.$cn2.hide();
+    if (this.$cn2) this.$cn2.hide()
 
     // Hide header container if exists
-    if (this.$header) this.$header.hide();
-  }
-};
+    if (this.$header) this.$header.hide()
+  },
+}

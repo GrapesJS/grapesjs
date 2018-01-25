@@ -5139,7 +5139,7 @@ module.exports = Backbone.View.extend({
   getTargetValue: function getTargetValue() {
     var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-    var result;
+    var result = void 0;
     var model = this.model;
     var target = this.getTargetModel();
     var customFetchValue = this.customValue;
@@ -15262,7 +15262,7 @@ module.exports = Backbone.View.extend({
     return this.$input.get(0);
   },
   getModelValue: function getModelValue() {
-    var value;
+    var value = void 0;
     var model = this.model;
     var target = this.target;
     var name = model.get('name');
@@ -16999,10 +16999,10 @@ module.exports = Input.extend({
   setValue: function setValue(value, opts) {
     var opt = opts || {};
     var valid = this.validateInputValue(value, { deepCheck: 1 });
-    var validObj = { value: valid.value };
+    var validObj = { value: valid.value
 
-    // If found some unit value
-    if (valid.unit || valid.force) {
+      // If found some unit value
+    };if (valid.unit || valid.force) {
       validObj.unit = valid.unit;
     }
 
@@ -17743,7 +17743,7 @@ module.exports = {
     var model = em.get('selectedComponent');
     var resizable = model.get('resizable');
     var options = {};
-    var modelToStyle;
+    var modelToStyle = void 0;
 
     var toggleBodyClass = function toggleBodyClass(method, e, opts) {
       var docs = opts.docs;
@@ -19861,9 +19861,9 @@ module.exports = Backbone.View.extend({
     if (editor && resizable) {
       var resz = resizable === true ? [1, 1, 1, 1] : resizable;
       var resLen = resz.length;
-      var tc,
-          cr,
-          bc,
+      var tc = void 0,
+          cr = void 0,
+          bc = void 0,
           cl = 0;
 
       // Choose which sides of the panel are resizable
@@ -20053,7 +20053,8 @@ module.exports = function () {
       Properties = __webpack_require__(11),
       SectorsView = __webpack_require__(128);
   var properties = void 0;
-  var sectors, SectView;
+  var sectors = void 0,
+      SectView = void 0;
 
   return {
     /**
@@ -21777,10 +21778,10 @@ module.exports = Backbone.View.extend({
 
     // List files dropped
     var files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
-    var response = { data: [] };
+    var response = { data: []
 
-    // Unlikely, widely supported now
-    if (!FileReader) {
+      // Unlikely, widely supported now
+    };if (!FileReader) {
       this.onUploadError(new Error('Unsupported platform, FileReader is not defined'));
       return;
     }
@@ -22295,7 +22296,7 @@ module.exports = Backbone.Collection.extend({
     if (opt && (opt.sm || opt.em)) this.editor = opt.sm || opt.em;
 
     this.model = function (attrs, options) {
-      var model;
+      var model = void 0;
 
       if (!options.sm && opt && opt.sm) options.sm = opt.sm;
 
@@ -22628,10 +22629,10 @@ module.exports = ComponentView.extend({
    */
   toggleEvents: function toggleEvents(enable) {
     var method = enable ? 'on' : 'off';
-    var mixins = { on: _mixins.on, off: _mixins.off };
+    var mixins = { on: _mixins.on, off: _mixins.off
 
-    // The ownerDocument is from the frame
-    var elDocs = [this.el.ownerDocument, document];
+      // The ownerDocument is from the frame
+    };var elDocs = [this.el.ownerDocument, document];
     mixins.off(elDocs, 'mousedown', this.disableEditing);
     mixins[method](elDocs, 'mousedown', this.disableEditing);
 
@@ -23382,7 +23383,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.13.7',
+    version: '0.13.8',
 
     /**
      * Initializes an editor based on passed options
@@ -23839,7 +23840,7 @@ module.exports = function (config) {
      * editor.runCommand('myCommand', {someValue: 1});
      */
     runCommand: function runCommand(id, options) {
-      var result;
+      var result = void 0;
       var command = em.get('Commands').get(id);
 
       if (command) {
@@ -23859,7 +23860,7 @@ module.exports = function (config) {
      * editor.stopCommand('myCommand', {someValue: 1});
      */
     stopCommand: function stopCommand(id, options) {
-      var result;
+      var result = void 0;
       var command = em.get('Commands').get(id);
 
       if (command) {
@@ -25320,7 +25321,7 @@ module.exports = Backbone.View.extend({
 
     parent = parent || document.body;
     var ch = -1,
-        h;
+        h = void 0;
     var elem = el;
     h = elem.offsetHeight;
     if ( /*h < ch || */!this.styleInFlow(elem, parent)) return false;else return true;
@@ -25587,7 +25588,10 @@ module.exports = Backbone.View.extend({
    * @return {Array<number>}
    */
   getDim: function getDim(el) {
-    var top, left, height, width;
+    var top = void 0,
+        left = void 0,
+        height = void 0,
+        width = void 0;
 
     if (this.canvasRelative && this.em) {
       var pos = this.em.get('Canvas').getElementPos(el);
@@ -25793,7 +25797,7 @@ module.exports = Backbone.View.extend({
    * @return void
    * */
   endMove: function endMove(e) {
-    var created;
+    var created = void 0;
     var docs = this.getDocuments();
     var container = this.getContainerEl();
     (0, _mixins.off)(container, 'mousemove dragover', this.onMove);
@@ -25845,7 +25849,9 @@ module.exports = Backbone.View.extend({
     em && em.trigger('component:dragEnd:before', dst, src, pos); // @depricated
     var warns = [];
     var index = pos.index;
-    var modelToDrop, modelTemp, created;
+    var modelToDrop = void 0,
+        modelTemp = void 0,
+        created = void 0;
     var validResult = this.validTarget(dst);
     var targetCollection = $(dst).data('collection');
     var model = validResult.srcModel;
@@ -26220,10 +26226,9 @@ var Resizer = function () {
       this.startPos = {
         x: e.clientX,
         y: e.clientY
-      };
 
-      // Listen events
-      var doc = this.getDocumentEl();
+        // Listen events
+      };var doc = this.getDocumentEl();
       (0, _mixins.on)(doc, 'mousemove', this.move);
       (0, _mixins.on)(doc, 'keydown', this.handleKeyDown);
       (0, _mixins.on)(doc, 'mouseup', this.stop);
@@ -26665,7 +26670,7 @@ module.exports = {
    * Returns documents
    */
   getDocumentEl: function getDocumentEl(el) {
-    var el = el || this.el;
+    el = el || this.el;
     if (!this.$doc) {
       var docs = [document];
       if (el) {
@@ -26701,9 +26706,8 @@ module.exports = {
     var delta = {
       x: currentPos.x - this.startPos.x,
       y: currentPos.y - this.startPos.y
-    };
-    // Lock one axis
-    if (e.shiftKey) {
+      // Lock one axis
+    };if (e.shiftKey) {
       if (!lockedAxis) {
         var relX = delta.x;
         var relY = delta.y;
@@ -30496,10 +30500,9 @@ module.exports = __webpack_require__(0).Model.extend({
       method: opts.method || 'post',
       credentials: 'include',
       headers: headers
-    };
 
-    // Body should only be included on POST method
-    if (fetchOptions.method === 'post') {
+      // Body should only be included on POST method
+    };if (fetchOptions.method === 'post') {
       fetchOptions.body = body;
     }
 
@@ -31219,7 +31222,8 @@ module.exports = function () {
       defaults = __webpack_require__(80),
       Devices = __webpack_require__(81),
       DevicesView = __webpack_require__(83);
-  var devices, view;
+  var devices = void 0,
+      view = void 0;
 
   return {
     /**
@@ -31480,7 +31484,8 @@ module.exports = function () {
       defaults = __webpack_require__(85),
       parserCss = __webpack_require__(86),
       parserHtml = __webpack_require__(25);
-  var pHtml, pCss;
+  var pHtml = void 0,
+      pCss = void 0;
 
   return {
     compTypes: '',
@@ -31767,7 +31772,8 @@ module.exports = function (config) {
       Selector = __webpack_require__(7),
       Selectors = __webpack_require__(10),
       ClassTagsView = __webpack_require__(89);
-  var selectors, selectorTags;
+  var selectors = void 0,
+      selectorTags = void 0;
 
   return {
     Selector: Selector,
@@ -32423,7 +32429,8 @@ module.exports = function () {
       defaults = __webpack_require__(92),
       ModalM = __webpack_require__(93),
       ModalView = __webpack_require__(94);
-  var model, modal;
+  var model = void 0,
+      modal = void 0;
 
   return {
     /**
@@ -34940,7 +34947,8 @@ module.exports = function () {
       Panels = __webpack_require__(110),
       PanelView = __webpack_require__(29),
       PanelsView = __webpack_require__(112);
-  var panels, PanelsViewObj;
+  var panels = void 0,
+      PanelsViewObj = void 0;
 
   return {
     /**
@@ -36493,7 +36501,7 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   buildProperties: function buildProperties(props) {
-    var r;
+    var r = void 0;
     var buildP = props || [];
 
     if (!buildP.length) return;
@@ -37354,7 +37362,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return;
       }
 
-      var newColor, newHsv;
+      var newColor = void 0,
+          newHsv = void 0;
       if (!color && allowEmpty) {
         isEmpty = true;
       } else {
@@ -37772,7 +37781,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   }
 
   function throttle(func, wait, debounce) {
-    var timeout;
+    var timeout = void 0;
     return function () {
       var context = this,
           args = arguments;
@@ -37904,7 +37913,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     }
 
     this._ok = rgb.ok;
-    this._tc_id = tinyCounter++;
+    this._tcId = tinyCounter++;
   };
 
   tinycolor.prototype = {
@@ -38109,11 +38118,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     tetrad: function tetrad() {
       return this._applyCombination(_tetrad, arguments);
     }
-  };
 
-  // If input is an object, force 1 into "1.0" to handle ratios properly
-  // String input requires "1.0" as input, so 1 will be treated as 1
-  tinycolor.fromRatio = function (color, opts) {
+    // If input is an object, force 1 into "1.0" to handle ratios properly
+    // String input requires "1.0" as input, so 1 will be treated as 1
+  };tinycolor.fromRatio = function (color, opts) {
     if ((typeof color === 'undefined' ? 'undefined' : _typeof(color)) == 'object') {
       var newColor = {};
       for (var i in color) {
@@ -38222,8 +38230,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     var max = mathMax(r, g, b),
         min = mathMin(r, g, b);
-    var h,
-        s,
+    var h = void 0,
+        s = void 0,
         l = (max + min) / 2;
 
     if (max == min) {
@@ -38254,7 +38262,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   // *Assumes:* h is contained in [0, 1] or [0, 360] and s and l are contained [0, 1] or [0, 100]
   // *Returns:* { r, g, b } in the set [0, 255]
   function hslToRgb(h, s, l) {
-    var r, g, b;
+    var r = void 0,
+        g = void 0,
+        b = void 0;
 
     h = bound01(h, 360);
     s = bound01(s, 100);
@@ -38293,8 +38303,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     var max = mathMax(r, g, b),
         min = mathMin(r, g, b);
-    var h,
-        s,
+    var h = void 0,
+        s = void 0,
         v = max;
 
     var d = max - min;
@@ -38514,7 +38524,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var w = p * 2 - 1;
     var a = rgb2.a - rgb1.a;
 
-    var w1;
+    var w1 = void 0;
 
     if (w * a == -1) {
       w1 = w;
@@ -38891,7 +38901,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     // Keep most of the number bounding out of this function - don't worry about [0,1] or [0,100] or [0,360]
     // Just return an object and let the conversion functions handle that.
     // This way the result will be the same whether the tinycolor is initialized with string or object.
-    var match;
+    var match = void 0;
     if (match = matchers.rgb.exec(color)) {
       return { r: match[1], g: match[2], b: match[3] };
     }
@@ -39971,7 +39981,7 @@ module.exports = Backbone.View.extend({
    * If all properties are hidden this will hide the sector
    */
   updateVisibility: function updateVisibility() {
-    var show;
+    var show = void 0;
     this.model.get('properties').each(function (prop) {
       if (prop.get('visible')) {
         show = 1;
@@ -40838,7 +40848,8 @@ module.exports = function () {
   var Selectors = __webpack_require__(10);
   var Selector = __webpack_require__(7);
 
-  var rules, rulesView;
+  var rules = void 0,
+      rulesView = void 0;
 
   return {
     Selectors: Selectors,
@@ -41245,7 +41256,7 @@ module.exports = Backbone.Collection.extend({
 
     // Not used
     this.model = function (attrs, options) {
-      var model;
+      var model = void 0;
 
       if (!options.sm && opt && opt.sm) options.sm = opt.sm;
 
@@ -41554,7 +41565,9 @@ module.exports = TraitView.extend({
 
       if (opts.length) {
         _.each(opts, function (el) {
-          var name, value, style;
+          var name = void 0,
+              value = void 0,
+              style = void 0;
           var attrs = '';
           if (typeof el === 'string') {
             name = el;
@@ -41624,7 +41637,7 @@ module.exports = TraitView.extend({
    * @private
    */
   getInputEl: function getInputEl() {
-    var first;
+    var first = void 0;
     if (!this.$input) first = 1;
 
     for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
@@ -41801,7 +41814,8 @@ module.exports = function () {
   var Components = __webpack_require__(49);
   var ComponentsView = __webpack_require__(50);
 
-  var component, componentView;
+  var component = void 0,
+      componentView = void 0;
   var componentTypes = [{
     id: 'cell',
     model: __webpack_require__(153),
@@ -42964,11 +42978,10 @@ module.exports = Component.extend({
       result = {
         type: 'link',
         editable: 0
-      };
 
-      // The link is editable only if, at least, one of its
-      // children is a text node (not empty one)
-      var children = el.childNodes;
+        // The link is editable only if, at least, one of its
+        // children is a text node (not empty one)
+      };var children = el.childNodes;
       var len = children.length;
       if (!len) delete result.editable;
 
@@ -43402,7 +43415,7 @@ module.exports = ComponentView.extend({
     }
   },
   renderByProvider: function renderByProvider(prov) {
-    var videoEl;
+    var videoEl = void 0;
     switch (prov) {
       case 'yt':
         videoEl = this.renderYoutube();
@@ -43645,8 +43658,8 @@ module.exports = function () {
       defaults = __webpack_require__(178),
       Canvas = __webpack_require__(179),
       CanvasView = __webpack_require__(181);
-  var canvas;
-  var frameRect;
+  var canvas = void 0;
+  var frameRect = void 0;
 
   return {
     /**
@@ -43932,10 +43945,9 @@ module.exports = function () {
         targetHeight: target.offsetHeight,
         canvasTop: canvasPos.top,
         canvasLeft: canvasPos.left
-      };
 
-      // In this way I can catch data and also change the position strategy
-      if (eventToTrigger && c.em) {
+        // In this way I can catch data and also change the position strategy
+      };if (eventToTrigger && c.em) {
         c.em.trigger(eventToTrigger, result);
       }
 
@@ -43963,9 +43975,9 @@ module.exports = function () {
       var xOffset = subWinOffset ? win.pageXOffset : 0;
 
       if (frame) {
-        var frameRect = frame.getBoundingClientRect();
-        addTop = frameRect.top || 0;
-        addLeft = frameRect.left || 0;
+        var _frameRect = frame.getBoundingClientRect();
+        addTop = _frameRect.top || 0;
+        addLeft = _frameRect.left || 0;
       }
 
       return {
@@ -45772,10 +45784,9 @@ module.exports = function () {
         level: level,
         config: config,
         opened: opened
-      };
 
-      // Show wrapper if requested
-      if (config.showWrapper && collection.parent) {
+        // Show wrapper if requested
+      };if (config.showWrapper && collection.parent) {
         View = ItemView;
         options.model = collection.parent;
       } else {
@@ -45938,7 +45949,7 @@ module.exports = {
     var config = editor.Config;
     var pfx = config.stylePrefix;
     var tm = editor.TraitManager;
-    var panelC;
+    var panelC = void 0;
     if (!this.obj) {
       var tmView = tm.getTraitsViewer();
       var confTm = tm.getConfig();
@@ -46457,7 +46468,9 @@ module.exports = function () {
       Blocks = __webpack_require__(211),
       BlockCategories = __webpack_require__(213),
       BlocksView = __webpack_require__(214);
-  var blocks, blocksVisible, blocksView;
+  var blocks = void 0,
+      blocksVisible = void 0,
+      blocksView = void 0;
   var categories = [];
 
   return {

@@ -8,11 +8,11 @@
  * @module DeviceManager
  */
 module.exports = () => {
-  var c = {},
+  let c = {},
     defaults = require('./config/config'),
     Devices = require('./model/Devices'),
-    DevicesView = require('./view/DevicesView');
-  var devices, view;
+    DevicesView = require('./view/DevicesView')
+  let devices, view
 
   return {
     /**
@@ -39,17 +39,17 @@ module.exports = () => {
      * @private
      */
     init(config) {
-      c = config || {};
-      for (var name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
+      c = config || {}
+      for (let name in defaults) {
+        if (!(name in c)) c[name] = defaults[name]
       }
 
-      devices = new Devices(c.devices);
+      devices = new Devices(c.devices)
       view = new DevicesView({
         collection: devices,
-        config: c
-      });
-      return this;
+        config: c,
+      })
+      return this
     },
 
     /**
@@ -66,10 +66,10 @@ module.exports = () => {
      * });
      */
     add(name, width, opts) {
-      var obj = opts || {};
-      obj.name = name;
-      obj.width = width;
-      return devices.add(obj);
+      let obj = opts || {}
+      obj.name = name
+      obj.width = width
+      return devices.add(obj)
     },
 
     /**
@@ -81,7 +81,7 @@ module.exports = () => {
      * // {name: 'Tablet', width: '900px'}
      */
     get(name) {
-      return devices.get(name);
+      return devices.get(name)
     },
 
     /**
@@ -93,7 +93,7 @@ module.exports = () => {
      * // [{name: 'Desktop', width: ''}, ...]
      */
     getAll() {
-      return devices;
+      return devices
     },
 
     /**
@@ -102,7 +102,7 @@ module.exports = () => {
      * @private
      */
     render() {
-      return view.render().el;
-    }
-  };
-};
+      return view.render().el
+    },
+  }
+}

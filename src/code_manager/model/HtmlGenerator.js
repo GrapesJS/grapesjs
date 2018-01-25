@@ -1,23 +1,23 @@
-var Backbone = require('backbone');
+let Backbone = require('backbone')
 
 module.exports = Backbone.Model.extend({
   build(model, opts = {}) {
-    const models = model.get('components');
+    const models = model.get('components')
 
     if (opts.exportWrapper) {
       return opts.wrappesIsBody
         ? `<body>${this.buildModels(models)}</body>`
-        : model.toHTML();
+        : model.toHTML()
     }
 
-    return this.buildModels(models);
+    return this.buildModels(models)
   },
 
   buildModels(models) {
-    let code = '';
+    let code = ''
     models.each(model => {
-      code += model.toHTML();
-    });
-    return code;
-  }
-});
+      code += model.toHTML()
+    })
+    return code
+  },
+})

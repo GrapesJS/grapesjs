@@ -1,8 +1,8 @@
-import { isString, isArray, keys } from 'underscore';
-import { shallowDiff } from 'utils/mixins';
-import ParserHtml from 'parser/model/ParserHtml';
+import { isString, isArray, keys } from 'underscore'
+import { shallowDiff } from 'utils/mixins'
+import ParserHtml from 'parser/model/ParserHtml'
 
-const parseStyle = ParserHtml().parseStyle;
+const parseStyle = ParserHtml().parseStyle
 export default {
   parseStyle,
 
@@ -13,7 +13,7 @@ export default {
    * @return {Object}
    */
   extendStyle(prop) {
-    return { ...this.getStyle(), ...prop };
+    return { ...this.getStyle(), ...prop }
   },
 
   /**
@@ -21,7 +21,7 @@ export default {
    * @return {Object}
    */
   getStyle() {
-    return { ...this.get('style') };
+    return { ...this.get('style') }
   },
 
   /**
@@ -32,16 +32,16 @@ export default {
    */
   setStyle(prop = {}, opts = {}) {
     if (isString(prop)) {
-      prop = parseStyle(prop);
+      prop = parseStyle(prop)
     }
 
-    const propOrig = this.getStyle();
-    const propNew = { ...prop };
-    this.set('style', propNew, opts);
-    const diff = shallowDiff(propOrig, propNew);
-    keys(diff).forEach(pr => this.trigger(`change:style:${pr}`));
+    const propOrig = this.getStyle()
+    const propNew = { ...prop }
+    this.set('style', propNew, opts)
+    const diff = shallowDiff(propOrig, propNew)
+    keys(diff).forEach(pr => this.trigger(`change:style:${pr}`))
 
-    return propNew;
+    return propNew
   },
 
   /**
@@ -55,14 +55,14 @@ export default {
   addStyle(prop, value = '', opts = {}) {
     if (typeof prop == 'string') {
       prop = {
-        prop: value
-      };
+        prop: value,
+      }
     } else {
-      opts = value || {};
+      opts = value || {}
     }
 
-    prop = this.extendStyle(prop);
-    this.setStyle(prop, opts);
+    prop = this.extendStyle(prop)
+    this.setStyle(prop, opts)
   },
 
   /**
@@ -70,9 +70,9 @@ export default {
    * @param {string} prop
    */
   removeStyle(prop) {
-    let style = this.getStyle();
-    delete style[prop];
-    this.setStyle(style);
+    let style = this.getStyle()
+    delete style[prop]
+    this.setStyle(style)
   },
 
   /**
@@ -81,16 +81,16 @@ export default {
    * @return {String}
    */
   styleToString(opts = {}) {
-    const result = [];
-    const style = this.getStyle();
+    const result = []
+    const style = this.getStyle()
 
     for (let prop in style) {
-      const imp = opts.important;
-      const important = isArray(imp) ? imp.indexOf(prop) >= 0 : imp;
-      const value = `${style[prop]}${important ? ' !important' : ''}`;
-      result.push(`${prop}:${value};`);
+      const imp = opts.important
+      const important = isArray(imp) ? imp.indexOf(prop) >= 0 : imp
+      const value = `${style[prop]}${important ? ' !important' : ''}`
+      result.push(`${prop}:${value};`)
     }
 
-    return result.join('');
-  }
-};
+    return result.join('')
+  },
+}

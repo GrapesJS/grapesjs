@@ -1,7 +1,7 @@
-import { bindAll, defaults, isFunction } from 'underscore';
-import { on, off, normalizeFloat } from 'utils/mixins';
+import { bindAll, defaults, isFunction } from 'underscore'
+import { on, off, normalizeFloat } from 'utils/mixins'
 
-var defaultOpts = {
+let defaultOpts = {
   // Function which returns custom X and Y coordinates of the mouse
   mousePosFetcher: null,
   // Indicates custom target updating strategy
@@ -46,27 +46,27 @@ var defaultOpts = {
   cr: 1, // Center right
   bl: 1, // Bottom left
   bc: 1, // Bottom center
-  br: 1 // Bottom right
-};
+  br: 1, // Bottom right
+}
 
-var createHandler = (name, opts) => {
-  var pfx = opts.prefix || '';
-  var el = document.createElement('i');
-  el.className = pfx + 'resizer-h ' + pfx + 'resizer-h-' + name;
-  el.setAttribute('data-' + pfx + 'handler', name);
-  return el;
-};
+let createHandler = (name, opts) => {
+  let pfx = opts.prefix || ''
+  let el = document.createElement('i')
+  el.className = pfx + 'resizer-h ' + pfx + 'resizer-h-' + name
+  el.setAttribute('data-' + pfx + 'handler', name)
+  return el
+}
 
-var getBoundingRect = (el, win) => {
-  var w = win || window;
-  var rect = el.getBoundingClientRect();
+let getBoundingRect = (el, win) => {
+  let w = win || window
+  let rect = el.getBoundingClientRect()
   return {
     left: rect.left + w.pageXOffset,
     top: rect.top + w.pageYOffset,
     width: rect.width,
-    height: rect.height
-  };
-};
+    height: rect.height,
+  }
+}
 
 class Resizer {
   /**
@@ -74,9 +74,9 @@ class Resizer {
    * @param  {Object} options
    */
   constructor(opts = {}) {
-    this.setOptions(opts);
-    bindAll(this, 'handleKeyDown', 'handleMouseDown', 'move', 'stop');
-    return this;
+    this.setOptions(opts)
+    bindAll(this, 'handleKeyDown', 'handleMouseDown', 'move', 'stop')
+    return this
   }
 
   /**
@@ -84,7 +84,7 @@ class Resizer {
    * @return {Object}
    */
   getConfig() {
-    return this.opts;
+    return this.opts
   }
 
   /**
@@ -92,49 +92,49 @@ class Resizer {
    * @param {Object} options
    */
   setOptions(options = {}) {
-    this.opts = defaults(options, defaultOpts);
-    this.setup();
+    this.opts = defaults(options, defaultOpts)
+    this.setup()
   }
 
   /**
    * Setup resizer
    */
   setup() {
-    const opts = this.opts;
-    const pfx = opts.prefix || '';
-    const appendTo = opts.appendTo || document.body;
-    let container = this.container;
+    const opts = this.opts
+    const pfx = opts.prefix || ''
+    const appendTo = opts.appendTo || document.body
+    let container = this.container
 
     // Create container if not yet exist
     if (!container) {
-      container = document.createElement('div');
-      container.className = `${pfx}resizer-c`;
-      appendTo.appendChild(container);
-      this.container = container;
+      container = document.createElement('div')
+      container.className = `${pfx}resizer-c`
+      appendTo.appendChild(container)
+      this.container = container
     }
 
     while (container.firstChild) {
-      container.removeChild(container.firstChild);
+      container.removeChild(container.firstChild)
     }
 
     // Create handlers
     const handlers = {};
     ['tl', 'tc', 'tr', 'cl', 'cr', 'bl', 'bc', 'br'].forEach(
       hdl => (handlers[hdl] = opts[hdl] ? createHandler(hdl, opts) : '')
-    );
+    )
 
     for (let n in handlers) {
-      const handler = handlers[n];
-      handler && container.appendChild(handler);
+      const handler = handlers[n]
+      handler && container.appendChild(handler)
     }
 
-    this.handlers = handlers;
-    this.mousePosFetcher = opts.mousePosFetcher;
-    this.updateTarget = opts.updateTarget;
-    this.posFetcher = opts.posFetcher;
-    this.onStart = opts.onStart;
-    this.onMove = opts.onMove;
-    this.onEnd = opts.onEnd;
+    this.handlers = handlers
+    this.mousePosFetcher = opts.mousePosFetcher
+    this.updateTarget = opts.updateTarget
+    this.posFetcher = opts.posFetcher
+    this.onStart = opts.onStart
+    this.onMove = opts.onMove
+    this.onEnd = opts.onEnd
   }
 
   /**
@@ -143,13 +143,13 @@ class Resizer {
    * @return {Boolean}
    */
   isHandler(el) {
-    var handlers = this.handlers;
+    let handlers = this.handlers
 
-    for (var n in handlers) {
-      if (handlers[n] === el) return true;
+    for (let n in handlers) {
+      if (handlers[n] === el) return true
     }
 
-    return false;
+    return false
   }
 
   /**
@@ -157,14 +157,14 @@ class Resizer {
    * @return {HTMLElement}
    */
   getFocusedEl() {
-    return this.el;
+    return this.el
   }
 
   /**
    * Returns documents
    */
   getDocumentEl() {
-    return [this.el.ownerDocument, document];
+    return [this.el.ownerDocument, document]
   }
 
   /**
@@ -173,8 +173,8 @@ class Resizer {
    * @return {Object}
    */
   getElementPos(el) {
-    var posFetcher = this.posFetcher || '';
-    return posFetcher ? posFetcher(el) : getBoundingRect(el);
+    let posFetcher = this.posFetcher || ''
+    return posFetcher ? posFetcher(el) : getBoundingRect(el)
   }
 
   /**
@@ -184,33 +184,33 @@ class Resizer {
   focus(el) {
     // Avoid focusing on already focused element
     if (el && el === this.el) {
-      return;
+      return
     }
 
     // Show the handlers
-    this.el = el;
-    var unit = 'px';
-    var rect = this.getElementPos(el);
-    var container = this.container;
-    var contStyle = container.style;
-    contStyle.left = rect.left + unit;
-    contStyle.top = rect.top + unit;
-    contStyle.width = rect.width + unit;
-    contStyle.height = rect.height + unit;
-    container.style.display = 'block';
+    this.el = el
+    let unit = 'px'
+    let rect = this.getElementPos(el)
+    let container = this.container
+    let contStyle = container.style
+    contStyle.left = rect.left + unit
+    contStyle.top = rect.top + unit
+    contStyle.width = rect.width + unit
+    contStyle.height = rect.height + unit
+    container.style.display = 'block'
 
-    on(this.getDocumentEl(), 'mousedown', this.handleMouseDown);
+    on(this.getDocumentEl(), 'mousedown', this.handleMouseDown)
   }
 
   /**
    * Blur from element
    */
   blur() {
-    this.container.style.display = 'none';
+    this.container.style.display = 'none'
 
     if (this.el) {
-      off(this.getDocumentEl(), 'mousedown', this.handleMouseDown);
-      this.el = null;
+      off(this.getDocumentEl(), 'mousedown', this.handleMouseDown)
+      this.el = null
     }
   }
 
@@ -221,42 +221,42 @@ class Resizer {
   start(e) {
     //Right or middel click
     if (e.button !== 0) {
-      return;
+      return
     }
-    e.preventDefault();
-    e.stopPropagation();
-    const el = this.el;
-    const resizer = this;
-    const config = this.opts || {};
-    var attrName = 'data-' + config.prefix + 'handler';
-    var rect = this.getElementPos(el);
-    this.handlerAttr = e.target.getAttribute(attrName);
-    this.clickedHandler = e.target;
+    e.preventDefault()
+    e.stopPropagation()
+    const el = this.el
+    const resizer = this
+    const config = this.opts || {}
+    let attrName = 'data-' + config.prefix + 'handler'
+    let rect = this.getElementPos(el)
+    this.handlerAttr = e.target.getAttribute(attrName)
+    this.clickedHandler = e.target
     this.startDim = {
       t: rect.top,
       l: rect.left,
       w: rect.width,
-      h: rect.height
-    };
+      h: rect.height,
+    }
     this.rectDim = {
       t: rect.top,
       l: rect.left,
       w: rect.width,
-      h: rect.height
-    };
+      h: rect.height,
+    }
     this.startPos = {
       x: e.clientX,
-      y: e.clientY
-    };
+      y: e.clientY,
+    }
 
     // Listen events
-    var doc = this.getDocumentEl();
-    on(doc, 'mousemove', this.move);
-    on(doc, 'keydown', this.handleKeyDown);
-    on(doc, 'mouseup', this.stop);
+    let doc = this.getDocumentEl()
+    on(doc, 'mousemove', this.move)
+    on(doc, 'keydown', this.handleKeyDown)
+    on(doc, 'mouseup', this.stop)
     isFunction(this.onStart) &&
-      this.onStart(e, { docs: doc, config, el, resizer });
-    this.move(e);
+      this.onStart(e, { docs: doc, config, el, resizer })
+    this.move(e)
   }
 
   /**
@@ -264,35 +264,35 @@ class Resizer {
    * @param  {Event} e
    */
   move(e) {
-    const onMove = this.onMove;
-    var mouseFetch = this.mousePosFetcher;
-    var currentPos = mouseFetch
+    const onMove = this.onMove
+    let mouseFetch = this.mousePosFetcher
+    let currentPos = mouseFetch
       ? mouseFetch(e)
       : {
           x: e.clientX,
-          y: e.clientY
-        };
+          y: e.clientY,
+        }
 
-    this.currentPos = currentPos;
+    this.currentPos = currentPos
     this.delta = {
       x: currentPos.x - this.startPos.x,
-      y: currentPos.y - this.startPos.y
-    };
+      y: currentPos.y - this.startPos.y,
+    }
     this.keys = {
       shift: e.shiftKey,
       ctrl: e.ctrlKey,
-      alt: e.altKey
-    };
+      alt: e.altKey,
+    }
 
-    this.rectDim = this.calc(this);
-    this.updateRect(0);
+    this.rectDim = this.calc(this)
+    this.updateRect(0)
 
     // Move callback
-    onMove && onMove(e);
+    onMove && onMove(e)
 
     // In case the mouse button was released outside of the window
     if (e.which === 0) {
-      this.stop(e);
+      this.stop(e)
     }
   }
 
@@ -301,27 +301,27 @@ class Resizer {
    * @param  {Event} e
    */
   stop(e) {
-    const config = this.opts;
-    var doc = this.getDocumentEl();
-    off(doc, 'mousemove', this.move);
-    off(doc, 'keydown', this.handleKeyDown);
-    off(doc, 'mouseup', this.stop);
-    this.updateRect(1);
-    isFunction(this.onEnd) && this.onEnd(e, { docs: doc, config });
+    const config = this.opts
+    let doc = this.getDocumentEl()
+    off(doc, 'mousemove', this.move)
+    off(doc, 'keydown', this.handleKeyDown)
+    off(doc, 'mouseup', this.stop)
+    this.updateRect(1)
+    isFunction(this.onEnd) && this.onEnd(e, { docs: doc, config })
   }
 
   /**
    * Update rect
    */
   updateRect(store) {
-    const el = this.el;
-    const resizer = this;
-    const config = this.opts;
-    const rect = this.rectDim;
-    const conStyle = this.container.style;
-    const updateTarget = this.updateTarget;
-    const selectedHandler = this.getSelectedHandler();
-    const { unitHeight, unitWidth } = config;
+    const el = this.el
+    const resizer = this
+    const config = this.opts
+    const rect = this.rectDim
+    const conStyle = this.container.style
+    const updateTarget = this.updateTarget
+    const selectedHandler = this.getSelectedHandler()
+    const { unitHeight, unitWidth } = config
 
     // Use custom updating strategy if requested
     if (isFunction(updateTarget)) {
@@ -329,20 +329,20 @@ class Resizer {
         store,
         selectedHandler,
         resizer,
-        config
-      });
+        config,
+      })
     } else {
-      const elStyle = el.style;
-      elStyle.width = rect.w + unitWidth;
-      elStyle.height = rect.h + unitHeight;
+      const elStyle = el.style
+      elStyle.width = rect.w + unitWidth
+      elStyle.height = rect.h + unitHeight
     }
 
-    const unitRect = 'px';
-    const rectEl = this.getElementPos(el);
-    conStyle.left = rectEl.left + unitRect;
-    conStyle.top = rectEl.top + unitRect;
-    conStyle.width = rectEl.width + unitRect;
-    conStyle.height = rectEl.height + unitRect;
+    const unitRect = 'px'
+    const rectEl = this.getElementPos(el)
+    conStyle.left = rectEl.left + unitRect
+    conStyle.top = rectEl.top + unitRect
+    conStyle.width = rectEl.width + unitRect
+    conStyle.height = rectEl.height + unitRect
   }
 
   /**
@@ -350,14 +350,14 @@ class Resizer {
    * @return {string}
    */
   getSelectedHandler() {
-    var handlers = this.handlers;
+    let handlers = this.handlers
 
     if (!this.selectedHandler) {
-      return;
+      return
     }
 
     for (let n in handlers) {
-      if (handlers[n] === this.selectedHandler) return n;
+      if (handlers[n] === this.selectedHandler) return n
     }
   }
 
@@ -368,8 +368,8 @@ class Resizer {
   handleKeyDown(e) {
     if (e.keyCode === 27) {
       // Rollback to initial dimensions
-      this.rectDim = this.startDim;
-      this.stop(e);
+      this.rectDim = this.startDim
+      this.stop(e)
     }
   }
 
@@ -378,13 +378,13 @@ class Resizer {
    * @param  {Event} e
    */
   handleMouseDown(e) {
-    var el = e.target;
+    let el = e.target
     if (this.isHandler(el)) {
-      this.selectedHandler = el;
-      this.start(e);
+      this.selectedHandler = el
+      this.start(e)
     } else if (el !== this.el) {
-      this.selectedHandler = '';
-      this.blur();
+      this.selectedHandler = ''
+      this.blur()
     }
   }
 
@@ -393,75 +393,75 @@ class Resizer {
    * @return {Object}
    */
   calc(data) {
-    let value;
-    const opts = this.opts || {};
-    const step = opts.step;
-    const startDim = this.startDim;
-    const minDim = opts.minDim;
-    const maxDim = opts.maxDim;
-    const deltaX = data.delta.x;
-    const deltaY = data.delta.y;
-    const startW = startDim.w;
-    const startH = startDim.h;
-    var box = {
+    let value
+    const opts = this.opts || {}
+    const step = opts.step
+    const startDim = this.startDim
+    const minDim = opts.minDim
+    const maxDim = opts.maxDim
+    const deltaX = data.delta.x
+    const deltaY = data.delta.y
+    const startW = startDim.w
+    const startH = startDim.h
+    let box = {
       t: 0,
       l: 0,
       w: startW,
-      h: startH
-    };
+      h: startH,
+    }
 
-    if (!data) return;
+    if (!data) return
 
-    var attr = data.handlerAttr;
+    let attr = data.handlerAttr
     if (~attr.indexOf('r')) {
-      value = normalizeFloat(startW + deltaX * step, step);
-      value = Math.max(minDim, value);
-      maxDim && (value = Math.min(maxDim, value));
-      box.w = value;
+      value = normalizeFloat(startW + deltaX * step, step)
+      value = Math.max(minDim, value)
+      maxDim && (value = Math.min(maxDim, value))
+      box.w = value
     }
     if (~attr.indexOf('b')) {
-      value = normalizeFloat(startH + deltaY * step, step);
-      value = Math.max(minDim, value);
-      maxDim && (value = Math.min(maxDim, value));
-      box.h = value;
+      value = normalizeFloat(startH + deltaY * step, step)
+      value = Math.max(minDim, value)
+      maxDim && (value = Math.min(maxDim, value))
+      box.h = value
     }
     if (~attr.indexOf('l')) {
-      value = normalizeFloat(startW - deltaX * step, step);
-      value = Math.max(minDim, value);
-      maxDim && (value = Math.min(maxDim, value));
-      box.w = value;
+      value = normalizeFloat(startW - deltaX * step, step)
+      value = Math.max(minDim, value)
+      maxDim && (value = Math.min(maxDim, value))
+      box.w = value
     }
     if (~attr.indexOf('t')) {
-      value = normalizeFloat(startH - deltaY * step, step);
-      value = Math.max(minDim, value);
-      maxDim && (value = Math.min(maxDim, value));
-      box.h = value;
+      value = normalizeFloat(startH - deltaY * step, step)
+      value = Math.max(minDim, value)
+      maxDim && (value = Math.min(maxDim, value))
+      box.h = value
     }
 
     // Enforce aspect ratio (unless shift key is being held)
-    var ratioActive = opts.ratioDefault ? !data.keys.shift : data.keys.shift;
+    let ratioActive = opts.ratioDefault ? !data.keys.shift : data.keys.shift
     if (attr.indexOf('c') < 0 && ratioActive) {
-      var ratio = startDim.w / startDim.h;
+      let ratio = startDim.w / startDim.h
       if (box.w / box.h > ratio) {
-        box.h = Math.round(box.w / ratio);
+        box.h = Math.round(box.w / ratio)
       } else {
-        box.w = Math.round(box.h * ratio);
+        box.w = Math.round(box.h * ratio)
       }
     }
 
     if (~attr.indexOf('l')) {
-      box.l = startDim.w - box.w;
+      box.l = startDim.w - box.w
     }
     if (~attr.indexOf('t')) {
-      box.t = startDim.h - box.h;
+      box.t = startDim.h - box.h
     }
 
-    return box;
+    return box
   }
 }
 
 module.exports = {
   init(opts) {
-    return new Resizer(opts);
-  }
-};
+    return new Resizer(opts)
+  },
+}
