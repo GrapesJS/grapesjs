@@ -235,6 +235,19 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     /**
+     * Find closest model by query string
+     * ATTENTION: this method works only with alredy rendered component
+     * @param  {string}  query Query string
+     * @return {Component}
+     * @example
+     * model.closest('div');
+     */
+    closest(query) {
+      const result = this.view.$el.closest(query);
+      return result.length && result.data('model');
+    },
+
+    /**
      * Once the tag is updated I have to remove the node and replace it
      */
     tagUpdated() {
