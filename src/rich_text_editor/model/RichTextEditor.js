@@ -1,147 +1,147 @@
 // The initial version of this RTE was borrowed from https://github.com/jaredreich/pell
 // and adapted to the GrapesJS's need
 
-import { on, off } from 'utils/mixins';
+import { on, off } from 'utils/mixins'
 
-const RTE_KEY = '_rte';
+const RTE_KEY = '_rte'
 
 const defActions = {
   bold: {
     name: 'bold',
     icon: '<b>B</b>',
     attributes: { title: 'Bold' },
-    result: rte => rte.exec('bold')
+    result: rte => rte.exec('bold'),
   },
   italic: {
     name: 'italic',
     icon: '<i>I</i>',
     attributes: { title: 'Italic' },
-    result: rte => rte.exec('italic')
+    result: rte => rte.exec('italic'),
   },
   underline: {
     name: 'underline',
     icon: '<u>U</u>',
     attributes: { title: 'Underline' },
-    result: rte => rte.exec('underline')
+    result: rte => rte.exec('underline'),
   },
   strikethrough: {
     name: 'strikethrough',
     icon: '<strike>S</strike>',
     attributes: { title: 'Strike-through' },
-    result: rte => rte.exec('strikeThrough')
+    result: rte => rte.exec('strikeThrough'),
   },
   link: {
     icon: `<span style="transform:rotate(45deg)">&supdsub;</span>`,
     name: 'link',
     attributes: {
       style: 'font-size:1.4rem;padding:0 4px 2px;',
-      title: 'Link'
+      title: 'Link',
     },
     result: rte =>
-      rte.insertHTML(`<a class="link" href="">${rte.selection()}</a>`)
-  }
-};
+      rte.insertHTML(`<a class="link" href="">${rte.selection()}</a>`),
+  },
+}
 
 export default class RichTextEditor {
   constructor(settings = {}) {
-    const el = settings.el;
+    const el = settings.el
 
     if (el[RTE_KEY]) {
-      return el[RTE_KEY];
+      return el[RTE_KEY]
     }
 
-    el[RTE_KEY] = this;
-    this.setEl(el);
-    this.updateActiveActions = this.updateActiveActions.bind(this);
+    el[RTE_KEY] = this
+    this.setEl(el)
+    this.updateActiveActions = this.updateActiveActions.bind(this)
 
-    const settAct = settings.actions || [];
+    const settAct = settings.actions || []
     settAct.forEach((action, i) => {
       if (typeof action === 'string') {
-        action = defActions[action];
+        action = defActions[action]
       } else if (defActions[action.name]) {
-        action = { ...defActions[action.name], ...action };
+        action = { ...defActions[action.name], ...action }
       }
-      settAct[i] = action;
-    });
+      settAct[i] = action
+    })
     const actions = settAct.length
       ? settAct
-      : Object.keys(defActions).map(action => defActions[action]);
+      : Object.keys(defActions).map(action => defActions[action])
 
     settings.classes = {
       ...{
         actionbar: 'actionbar',
         button: 'action',
-        active: 'active'
+        active: 'active',
       },
-      ...settings.classes
-    };
-
-    const classes = settings.classes;
-    let actionbar = settings.actionbar;
-    this.actionbar = actionbar;
-    this.settings = settings;
-    this.classes = classes;
-    this.actions = actions;
-
-    if (!actionbar) {
-      const actionbarCont = settings.actionbarContainer;
-      actionbar = document.createElement('div');
-      actionbar.className = classes.actionbar;
-      actionbarCont.appendChild(actionbar);
-      this.actionbar = actionbar;
-      actions.forEach(action => this.addAction(action));
+      ...settings.classes,
     }
 
-    settings.styleWithCSS && this.exec('styleWithCSS');
-    this.syncActions();
+    const classes = settings.classes
+    let actionbar = settings.actionbar
+    this.actionbar = actionbar
+    this.settings = settings
+    this.classes = classes
+    this.actions = actions
 
-    return this;
+    if (!actionbar) {
+      const actionbarCont = settings.actionbarContainer
+      actionbar = document.createElement('div')
+      actionbar.className = classes.actionbar
+      actionbarCont.appendChild(actionbar)
+      this.actionbar = actionbar
+      actions.forEach(action => this.addAction(action))
+    }
+
+    settings.styleWithCSS && this.exec('styleWithCSS')
+    this.syncActions()
+
+    return this
   }
 
   setEl(el) {
-    this.el = el;
-    this.doc = el.ownerDocument;
+    this.el = el
+    this.doc = el.ownerDocument
   }
 
   updateActiveActions() {
     this.getActions().forEach(action => {
-      const btn = action.btn;
-      const update = action.update;
-      const active = this.classes.active;
-      const name = action.name;
-      const doc = this.doc;
-      btn.className = btn.className.replace(active, '').trim();
+      const btn = action.btn
+      const update = action.update
+      const active = this.classes.active
+      const name = action.name
+      const doc = this.doc
+      btn.className = btn.className.replace(active, '').trim()
 
       // doc.queryCommandValue(name) != 'false'
       if (doc.queryCommandState(name)) {
-        btn.className += ` ${active}`;
+        btn.className += ` ${active}`
       }
 
-      update && update(this, action);
-    });
+      update && update(this, action)
+    })
   }
 
   enable() {
     if (this.enabled) {
-      return this;
+      return this
     }
 
-    this.actionbarEl().style.display = '';
-    this.el.contentEditable = true;
-    on(this.el, 'mouseup keyup', this.updateActiveActions);
-    this.syncActions();
-    this.updateActiveActions();
-    this.el.focus();
-    this.enabled = 1;
-    return this;
+    this.actionbarEl().style.display = ''
+    this.el.contentEditable = true
+    on(this.el, 'mouseup keyup', this.updateActiveActions)
+    this.syncActions()
+    this.updateActiveActions()
+    this.el.focus()
+    this.enabled = 1
+    return this
   }
 
   disable() {
-    this.actionbarEl().style.display = 'none';
-    this.el.contentEditable = false;
-    off(this.el, 'mouseup keyup', this.updateActiveActions);
-    this.enabled = 0;
-    return this;
+    this.actionbarEl().style.display = 'none'
+    this.el.contentEditable = false
+    off(this.el, 'mouseup keyup', this.updateActiveActions)
+    this.enabled = 0
+    return this
   }
 
   /**
@@ -149,12 +149,12 @@ export default class RichTextEditor {
    */
   syncActions() {
     this.getActions().forEach(action => {
-      const event = action.event || 'click';
+      const event = action.event || 'click'
       action.btn[`on${event}`] = e => {
-        action.result(this, action);
-        this.updateActiveActions();
-      };
-    });
+        action.result(this, action)
+        this.updateActiveActions()
+      }
+    })
   }
 
   /**
@@ -163,28 +163,28 @@ export default class RichTextEditor {
    * @param {Object} [opts={}]
    */
   addAction(action, opts = {}) {
-    const sync = opts.sync;
-    const btn = document.createElement('span');
-    const icon = action.icon;
-    const attr = action.attributes || {};
-    btn.className = this.classes.button;
-    action.btn = btn;
+    const sync = opts.sync
+    const btn = document.createElement('span')
+    const icon = action.icon
+    const attr = action.attributes || {}
+    btn.className = this.classes.button
+    action.btn = btn
 
     for (let key in attr) {
-      btn.setAttribute(key, attr[key]);
+      btn.setAttribute(key, attr[key])
     }
 
     if (typeof icon == 'string') {
-      btn.innerHTML = icon;
+      btn.innerHTML = icon
     } else {
-      btn.appendChild(icon);
+      btn.appendChild(icon)
     }
 
-    this.actionbarEl().appendChild(btn);
+    this.actionbarEl().appendChild(btn)
 
     if (sync) {
-      this.actions.push(action);
-      this.syncActions();
+      this.actions.push(action)
+      this.syncActions()
     }
   }
 
@@ -193,7 +193,7 @@ export default class RichTextEditor {
    * @return {Array}
    */
   getActions() {
-    return this.actions;
+    return this.actions
   }
 
   /**
@@ -201,7 +201,7 @@ export default class RichTextEditor {
    * @return {Selection}
    */
   selection() {
-    return this.doc.getSelection();
+    return this.doc.getSelection()
   }
 
   /**
@@ -210,7 +210,7 @@ export default class RichTextEditor {
    * @param  {any} [value=null Command's arguments
    */
   exec(command, value = null) {
-    this.doc.execCommand(command, false, value);
+    this.doc.execCommand(command, false, value)
   }
 
   /**
@@ -218,7 +218,7 @@ export default class RichTextEditor {
    * @return {HTMLElement}
    */
   actionbarEl() {
-    return this.actionbar;
+    return this.actionbar
   }
 
   /**
@@ -227,23 +227,23 @@ export default class RichTextEditor {
    * @param  {string} value HTML string
    */
   insertHTML(value) {
-    let lastNode;
-    const doc = this.doc;
-    const sel = doc.getSelection();
+    let lastNode
+    const doc = this.doc
+    const sel = doc.getSelection()
 
     if (sel && sel.rangeCount) {
-      const node = doc.createElement('div');
-      const range = sel.getRangeAt(0);
-      range.deleteContents();
-      node.innerHTML = value;
+      const node = doc.createElement('div')
+      const range = sel.getRangeAt(0)
+      range.deleteContents()
+      node.innerHTML = value
       Array.prototype.slice.call(node.childNodes).forEach(nd => {
-        range.insertNode(nd);
-        lastNode = nd;
-      });
+        range.insertNode(nd)
+        lastNode = nd
+      })
 
-      sel.removeAllRanges();
-      sel.addRange(range);
-      this.el.focus();
+      sel.removeAllRanges()
+      sel.addRange(range)
+      this.el.focus()
     }
   }
 }

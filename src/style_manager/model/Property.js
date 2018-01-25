@@ -17,23 +17,23 @@ module.exports = require('backbone').Model.extend({
     // Use case:
     // you can add all SVG CSS properties with toRequire as true
     // and then require them on SVG Components
-    toRequire: 0
+    toRequire: 0,
   },
 
   initialize(opt) {
-    let o = opt || {};
-    let name = this.get('name');
-    let prop = this.get('property');
+    let o = opt || {}
+    let name = this.get('name')
+    let prop = this.get('property')
 
     if (!name) {
       this.set(
         'name',
         prop.charAt(0).toUpperCase() + prop.slice(1).replace(/-/g, ' ')
-      );
+      )
     }
 
-    const init = this.init && this.init.bind(this);
-    init && init();
+    const init = this.init && this.init.bind(this)
+    init && init()
   },
 
   /**
@@ -43,14 +43,14 @@ module.exports = require('backbone').Model.extend({
    * @param {Object} [opts={}] Options
    */
   setValue(value, complete = 1, opts = {}) {
-    const parsed = this.parseValue(value);
-    this.set(parsed, { ...opts, avoidStore: 1 });
+    const parsed = this.parseValue(value)
+    this.set(parsed, { ...opts, avoidStore: 1 })
 
     // It's important to set an empty value, otherwise the
     // UndoManager won't see the change
     if (complete) {
-      this.set('value', '', opts);
-      this.set(parsed, opts);
+      this.set('value', '', opts)
+      this.set(parsed, opts)
     }
   },
 
@@ -63,7 +63,7 @@ module.exports = require('backbone').Model.extend({
    * @param {Object} [opts={}] Options
    */
   setValueFromInput(value, complete, opts = {}) {
-    this.setValue(value, complete, { ...opts, fromInput: 1 });
+    this.setValue(value, complete, { ...opts, fromInput: 1 })
   },
 
   /**
@@ -77,25 +77,25 @@ module.exports = require('backbone').Model.extend({
    *
    */
   parseValue(value) {
-    const result = { value };
+    const result = { value }
 
     if (!this.get('functionName')) {
-      return result;
+      return result
     }
 
-    const args = [];
-    let valueStr = `${value}`;
-    let start = valueStr.indexOf('(') + 1;
-    let end = valueStr.lastIndexOf(')');
-    args.push(start);
+    const args = []
+    let valueStr = `${value}`
+    let start = valueStr.indexOf('(') + 1
+    let end = valueStr.lastIndexOf(')')
+    args.push(start)
 
     // Will try even if the last closing parentheses is not found
     if (end >= 0) {
-      args.push(end);
+      args.push(end)
     }
 
-    result.value = String.prototype.substring.apply(valueStr, args);
-    return result;
+    result.value = String.prototype.substring.apply(valueStr, args)
+    return result
   },
 
   /**
@@ -104,7 +104,7 @@ module.exports = require('backbone').Model.extend({
    * @private
    */
   getDefaultValue() {
-    return this.get('defaults');
+    return this.get('defaults')
   },
 
   /**
@@ -116,13 +116,13 @@ module.exports = require('backbone').Model.extend({
    * @private
    */
   getFullValue(val) {
-    const fn = this.get('functionName');
-    let value = val || this.get('value');
+    const fn = this.get('functionName')
+    let value = val || this.get('value')
 
     if (fn) {
-      value = `${fn}(${value})`;
+      value = `${fn}(${value})`
     }
 
-    return value;
-  }
-});
+    return value
+  },
+})

@@ -1,20 +1,20 @@
-const Layer = require('./Layer');
+const Layer = require('./Layer')
 
 module.exports = Backbone.Collection.extend({
   model: Layer,
 
   initialize() {
-    this.idx = 1;
-    this.on('add', this.onAdd);
-    this.on('reset', this.onReset);
+    this.idx = 1
+    this.on('add', this.onAdd)
+    this.on('reset', this.onReset)
   },
 
   onAdd(model, c, opts) {
-    if (!opts.noIncrement) model.set('index', this.idx++);
+    if (!opts.noIncrement) model.set('index', this.idx++)
   },
 
   onReset() {
-    this.idx = 1;
+    this.idx = 1
   },
 
   /**
@@ -26,19 +26,19 @@ module.exports = Backbone.Collection.extend({
    * @private
    */
   getLayersFromValue(value) {
-    const layers = [];
+    const layers = []
     // Remove spaces inside functions, eg:
     // From: 1px 1px rgba(2px, 2px, 2px), 2px 2px rgba(3px, 3px, 3px)
     // To: 1px 1px rgba(2px,2px,2px), 2px 2px rgba(3px,3px,3px)
     value.replace(/\(([\w\s,.]*)\)/g, match => {
-      let cleaned = match.replace(/,\s*/g, ',');
-      value = value.replace(match, cleaned);
-    });
-    const layerValues = value ? value.split(', ') : [];
+      let cleaned = match.replace(/,\s*/g, ',')
+      value = value.replace(match, cleaned)
+    })
+    const layerValues = value ? value.split(', ') : []
     layerValues.forEach(layerValue => {
-      layers.push({ properties: this.properties.parseValue(layerValue) });
-    });
-    return layers;
+      layers.push({ properties: this.properties.parseValue(layerValue) })
+    })
+    return layers
   },
 
   /**
@@ -54,61 +54,61 @@ module.exports = Backbone.Collection.extend({
    * @private
    */
   getLayersFromStyle(styleObj) {
-    const layers = [];
-    const properties = this.properties;
-    const propNames = properties.pluck('property');
+    const layers = []
+    const properties = this.properties
+    const propNames = properties.pluck('property')
 
     properties.each(propModel => {
-      const style = styleObj[propModel.get('property')];
-      const values = style ? style.split(', ') : [];
+      const style = styleObj[propModel.get('property')]
+      const values = style ? style.split(', ') : []
       values.forEach((value, i) => {
-        value = propModel.parseValue(value.trim()).value;
-        const layer = layers[i];
-        const propertyObj = { ...propModel.attributes, ...{ value } };
+        value = propModel.parseValue(value.trim()).value
+        const layer = layers[i]
+        const propertyObj = { ...propModel.attributes, ...{ value } }
 
         if (layer) {
-          layer.properties.push(propertyObj);
+          layer.properties.push(propertyObj)
         } else {
           layers[i] = {
-            properties: [propertyObj]
-          };
+            properties: [propertyObj],
+          }
         }
-      });
-    });
+      })
+    })
 
     // Now whit all layers in, will check missing properties
     layers.forEach(layer => {
-      const layerProprs = layer.properties.map(prop => prop.property);
+      const layerProprs = layer.properties.map(prop => prop.property)
       properties.each(propModel => {
-        const propertyName = propModel.get('property');
+        const propertyName = propModel.get('property')
 
         if (layerProprs.indexOf(propertyName) < 0) {
-          layer.properties.push({ ...propModel.attributes });
+          layer.properties.push({ ...propModel.attributes })
         }
-      });
-    });
+      })
+    })
 
-    return layers;
+    return layers
   },
 
   active(index) {
-    this.each(layer => layer.set('active', 0));
-    const layer = this.at(index);
-    layer && layer.set('active', 1);
+    this.each(layer => layer.set('active', 0))
+    const layer = this.at(index)
+    layer && layer.set('active', 1)
   },
 
   getFullValue() {
-    let result = [];
-    this.each(layer => result.push(layer.getFullValue()));
-    return result.join(', ');
+    let result = []
+    this.each(layer => result.push(layer.getFullValue()))
+    return result.join(', ')
   },
 
   getPropertyValues(property) {
-    const result = [];
+    const result = []
     this.each(layer => {
-      const value = layer.getPropertyValue(property);
-      value && result.push(value);
-    });
-    return result.join(', ');
-  }
-});
+      const value = layer.getPropertyValue(property)
+      value && result.push(value)
+    })
+    return result.join(', ')
+  },
+})

@@ -17,16 +17,16 @@
  */
 
 module.exports = () => {
-  let em;
+  let em
   let c = {},
     defaults = require('./config/config'),
     CssRule = require('./model/CssRule'),
     CssRules = require('./model/CssRules'),
-    CssRulesView = require('./view/CssRulesView');
-  const Selectors = require('selector_manager/model/Selectors');
-  const Selector = require('selector_manager/model/Selector');
+    CssRulesView = require('./view/CssRulesView')
+  const Selectors = require('selector_manager/model/Selectors')
+  const Selector = require('selector_manager/model/Selector')
 
-  let rules, rulesView;
+  let rules, rulesView
 
   return {
     Selectors,
@@ -44,11 +44,11 @@ module.exports = () => {
      * @private
      */
     storageKey() {
-      let keys = [];
-      let smc = (c.stm && c.stm.getConfig()) || {};
-      if (smc.storeCss) keys.push('css');
-      if (smc.storeStyles) keys.push('styles');
-      return keys;
+      let keys = []
+      let smc = (c.stm && c.stm.getConfig()) || {}
+      if (smc.storeCss) keys.push('css')
+      if (smc.storeStyles) keys.push('styles')
+      return keys
     },
 
     /**
@@ -57,25 +57,25 @@ module.exports = () => {
      * @private
      */
     init(config) {
-      c = config || {};
+      c = config || {}
       for (let name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
+        if (!(name in c)) c[name] = defaults[name]
       }
 
-      let ppfx = c.pStylePrefix;
-      if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
+      let ppfx = c.pStylePrefix
+      if (ppfx) c.stylePrefix = ppfx + c.stylePrefix
 
-      let elStyle = (c.em && c.em.config.style) || '';
-      c.rules = elStyle || c.rules;
+      let elStyle = (c.em && c.em.config.style) || ''
+      c.rules = elStyle || c.rules
 
-      c.sm = c.em;
-      em = c.em;
-      rules = new CssRules([], c);
+      c.sm = c.em
+      em = c.em
+      rules = new CssRules([], c)
       rulesView = new CssRulesView({
         collection: rules,
-        config: c
-      });
-      return this;
+        config: c,
+      })
+      return this
     },
 
     /**
@@ -83,7 +83,7 @@ module.exports = () => {
      * @private
      */
     onLoad() {
-      rules.add(c.rules);
+      rules.add(c.rules)
     },
 
     /**
@@ -92,11 +92,11 @@ module.exports = () => {
      * @private
      */
     postLoad(em) {
-      const ev = 'add remove';
-      const rules = this.getAll();
-      em.stopListening(rules, ev, this.handleChange);
-      em.listenTo(rules, ev, this.handleChange);
-      rules.each(rule => this.handleChange(rule));
+      const ev = 'add remove'
+      const rules = this.getAll()
+      em.stopListening(rules, ev, this.handleChange)
+      em.listenTo(rules, ev, this.handleChange)
+      rules.each(rule => this.handleChange(rule))
     },
 
     /**
@@ -104,12 +104,12 @@ module.exports = () => {
      * @private
      */
     handleChange(model) {
-      const ev = 'change:style';
-      const um = em.get('UndoManager');
-      um && um.add(model);
-      const handleUpdates = em.handleUpdates.bind(em);
-      em.stopListening(model, ev, handleUpdates);
-      em.listenTo(model, ev, handleUpdates);
+      const ev = 'change:style'
+      const um = em.get('UndoManager')
+      um && um.add(model)
+      const handleUpdates = em.handleUpdates.bind(em)
+      em.stopListening(model, ev, handleUpdates)
+      em.listenTo(model, ev, handleUpdates)
     },
 
     /**
@@ -120,27 +120,27 @@ module.exports = () => {
      * @return {Object} Loaded rules
      */
     load(data) {
-      let d = data || '';
+      let d = data || ''
 
       if (!d && c.stm) {
-        d = c.em.getCacheLoad();
+        d = c.em.getCacheLoad()
       }
 
-      let obj = d.styles || '';
+      let obj = d.styles || ''
 
       if (d.styles) {
         try {
-          obj = JSON.parse(d.styles);
+          obj = JSON.parse(d.styles)
         } catch (err) {}
       } else if (d.css) {
-        obj = c.em.get('Parser').parseCss(d.css);
+        obj = c.em.get('Parser').parseCss(d.css)
       }
 
       if (obj) {
-        rules.reset(obj);
+        rules.reset(obj)
       }
 
-      return obj;
+      return obj
     },
 
     /**
@@ -149,13 +149,13 @@ module.exports = () => {
      * @return {Object} Data to store
      */
     store(noStore) {
-      if (!c.stm) return;
-      let obj = {};
-      let keys = this.storageKey();
-      if (keys.indexOf('css') >= 0) obj.css = c.em.getCss();
-      if (keys.indexOf('styles') >= 0) obj.styles = JSON.stringify(rules);
-      if (!noStore) c.stm.store(obj);
-      return obj;
+      if (!c.stm) return
+      let obj = {}
+      let keys = this.storageKey()
+      if (keys.indexOf('css') >= 0) obj.css = c.em.getCss()
+      if (keys.indexOf('styles') >= 0) obj.styles = JSON.stringify(rules)
+      if (!noStore) c.stm.store(obj)
+      return obj
     },
 
     /**
@@ -176,19 +176,19 @@ module.exports = () => {
      * });
      * */
     add(selectors, state, width, opts) {
-      let s = state || '';
-      let w = width || '';
-      let opt = opts || {};
-      let rule = this.get(selectors, s, w, opt);
-      if (rule) return rule;
+      let s = state || ''
+      let w = width || ''
+      let opt = opts || {}
+      let rule = this.get(selectors, s, w, opt)
+      if (rule) return rule
       else {
-        opt.state = s;
-        opt.mediaText = w;
-        opt.selectors = '';
-        rule = new CssRule(opt, c);
-        rule.get('selectors').add(selectors);
-        rules.add(rule);
-        return rule;
+        opt.state = s
+        opt.mediaText = w
+        opt.selectors = ''
+        rule = new CssRule(opt, c)
+        rule.get('selectors').add(selectors)
+        rules.add(rule)
+        return rule
       }
     },
 
@@ -211,12 +211,12 @@ module.exports = () => {
      * });
      * */
     get(selectors, state, width, ruleProps) {
-      let rule = null;
+      let rule = null
       rules.each(m => {
-        if (rule) return;
-        if (m.compare(selectors, state, width, ruleProps)) rule = m;
-      });
-      return rule;
+        if (rule) return
+        if (m.compare(selectors, state, width, ruleProps)) rule = m
+      })
+      return rule
     },
 
     /**
@@ -224,7 +224,7 @@ module.exports = () => {
      * @return {Collection}
      * */
     getAll() {
-      return rules;
+      return rules
     },
 
     /**
@@ -232,8 +232,8 @@ module.exports = () => {
      * @return {this}
      */
     clear() {
-      this.getAll().reset();
-      return this;
+      this.getAll().reset()
+      return this
     },
 
     /**
@@ -245,39 +245,39 @@ module.exports = () => {
      * @private
      */
     addCollection(data, opts = {}) {
-      let result = [];
-      let d = data instanceof Array ? data : [data];
+      let result = []
+      let d = data instanceof Array ? data : [data]
 
       for (let i = 0, l = d.length; i < l; i++) {
-        let rule = d[i] || {};
-        if (!rule.selectors) continue;
-        let sm = c.em && c.em.get('SelectorManager');
-        if (!sm) console.warn('Selector Manager not found');
-        let sl = rule.selectors;
-        let sels = sl instanceof Array ? sl : [sl];
-        let newSels = [];
+        let rule = d[i] || {}
+        if (!rule.selectors) continue
+        let sm = c.em && c.em.get('SelectorManager')
+        if (!sm) console.warn('Selector Manager not found')
+        let sl = rule.selectors
+        let sels = sl instanceof Array ? sl : [sl]
+        let newSels = []
 
         for (let j = 0, le = sels.length; j < le; j++) {
-          let selec = sm.add(sels[j]);
-          newSels.push(selec);
+          let selec = sm.add(sels[j])
+          newSels.push(selec)
         }
 
-        let modelExists = this.get(newSels, rule.state, rule.mediaText, rule);
-        let model = this.add(newSels, rule.state, rule.mediaText, rule);
-        let updateStyle = !modelExists || !opts.avoidUpdateStyle;
-        const style = rule.style || {};
+        let modelExists = this.get(newSels, rule.state, rule.mediaText, rule)
+        let model = this.add(newSels, rule.state, rule.mediaText, rule)
+        let updateStyle = !modelExists || !opts.avoidUpdateStyle
+        const style = rule.style || {}
 
         if (updateStyle) {
           let styleUpdate = opts.extend
             ? { ...model.get('style'), ...style }
-            : style;
-          model.set('style', styleUpdate);
+            : style
+          model.set('style', styleUpdate)
         }
 
-        result.push(model);
+        result.push(model)
       }
 
-      return result;
+      return result
     },
 
     /**
@@ -294,13 +294,13 @@ module.exports = () => {
      * // #myid:hover { color: blue }
      */
     setIdRule(name, style = {}, opts = {}) {
-      const state = opts.state || '';
-      const media = opts.mediaText || em.getCurrentMedia();
-      const sm = em.get('SelectorManager');
-      const selector = sm.add({ name, type: Selector.TYPE_ID });
-      const rule = this.add(selector, state, media);
-      rule.setStyle(style, opts);
-      return rule;
+      const state = opts.state || ''
+      const media = opts.mediaText || em.getCurrentMedia()
+      const sm = em.get('SelectorManager')
+      const selector = sm.add({ name, type: Selector.TYPE_ID })
+      const rule = this.add(selector, state, media)
+      rule.setStyle(style, opts)
+      return rule
     },
 
     /**
@@ -313,10 +313,10 @@ module.exports = () => {
      * const ruleHover = cc.setIdRule('myid', { state: 'hover' });
      */
     getIdRule(name, opts = {}) {
-      const state = opts.state || '';
-      const media = opts.mediaText || em.getCurrentMedia();
-      const selector = em.get('SelectorManager').get(name, Selector.TYPE_ID);
-      return selector && this.get(selector, state, media);
+      const state = opts.state || ''
+      const media = opts.mediaText || em.getCurrentMedia()
+      const selector = em.get('SelectorManager').get(name, Selector.TYPE_ID)
+      return selector && this.get(selector, state, media)
     },
 
     /**
@@ -333,13 +333,13 @@ module.exports = () => {
      * // .myclass:hover { color: blue }
      */
     setClassRule(name, style = {}, opts = {}) {
-      const state = opts.state || '';
-      const media = opts.mediaText || em.getCurrentMedia();
-      const sm = em.get('SelectorManager');
-      const selector = sm.add({ name, type: Selector.TYPE_CLASS });
-      const rule = this.add(selector, state, media);
-      rule.setStyle(style, opts);
-      return rule;
+      const state = opts.state || ''
+      const media = opts.mediaText || em.getCurrentMedia()
+      const sm = em.get('SelectorManager')
+      const selector = sm.add({ name, type: Selector.TYPE_CLASS })
+      const rule = this.add(selector, state, media)
+      rule.setStyle(style, opts)
+      return rule
     },
 
     /**
@@ -352,10 +352,10 @@ module.exports = () => {
      * const ruleHover = cc.getClassRule('myclass', { state: 'hover' });
      */
     getClassRule(name, opts = {}) {
-      const state = opts.state || '';
-      const media = opts.mediaText || em.getCurrentMedia();
-      const selector = em.get('SelectorManager').get(name, Selector.TYPE_CLASS);
-      return selector && this.get(selector, state, media);
+      const state = opts.state || ''
+      const media = opts.mediaText || em.getCurrentMedia()
+      const selector = em.get('SelectorManager').get(name, Selector.TYPE_CLASS)
+      return selector && this.get(selector, state, media)
     },
 
     /**
@@ -364,7 +364,7 @@ module.exports = () => {
      * @private
      */
     render() {
-      return rulesView.render().el;
-    }
-  };
-};
+      return rulesView.render().el
+    },
+  }
+}

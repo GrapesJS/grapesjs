@@ -49,15 +49,15 @@
  * }
  */
 
-import { isString } from 'underscore';
+import { isString } from 'underscore'
 
 module.exports = config => {
   let c = config || {},
     defaults = require('./config/config'),
     Selector = require('./model/Selector'),
     Selectors = require('./model/Selectors'),
-    ClassTagsView = require('./view/ClassTagsView');
-  let selectors, selectorTags;
+    ClassTagsView = require('./view/ClassTagsView')
+  let selectors, selectorTags
 
   return {
     Selector,
@@ -78,29 +78,29 @@ module.exports = config => {
      * @private
      */
     init(conf) {
-      c = conf || {};
+      c = conf || {}
 
       for (let name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
+        if (!(name in c)) c[name] = defaults[name]
       }
 
-      const em = c.em;
-      const ppfx = c.pStylePrefix;
+      const em = c.em
+      const ppfx = c.pStylePrefix
 
       if (ppfx) {
-        c.stylePrefix = ppfx + c.stylePrefix;
+        c.stylePrefix = ppfx + c.stylePrefix
       }
 
       selectorTags = new ClassTagsView({
         collection: new Selectors([], { em, config: c }),
-        config: c
-      });
+        config: c,
+      })
 
       // Global selectors container
-      selectors = new Selectors(c.selectors);
-      selectors.on('add', model => em.trigger('selector:add', model));
+      selectors = new Selectors(c.selectors)
+      selectors.on('add', model => em.trigger('selector:add', model))
 
-      return this;
+      return this
     },
 
     /**
@@ -120,25 +120,25 @@ module.exports = config => {
      * */
     add(name, opts = {}) {
       if (typeof name == 'object') {
-        opts = name;
+        opts = name
       } else {
-        opts.name = name;
+        opts.name = name
       }
 
       if (opts.label && !opts.name) {
-        opts.name = Selector.escapeName(opts.label);
+        opts.name = Selector.escapeName(opts.label)
       }
 
-      const cname = opts.name;
+      const cname = opts.name
       const selector = cname
         ? this.get(cname, opts.type)
-        : selectors.where(opts)[0];
+        : selectors.where(opts)[0]
 
       if (!selector) {
-        return selectors.add(opts);
+        return selectors.add(opts)
       }
 
-      return selector;
+      return selector
     },
 
     /**
@@ -152,14 +152,14 @@ module.exports = config => {
      * // -> [SelectorObject, ...]
      */
     addClass(classes) {
-      const added = [];
+      const added = []
 
       if (isString(classes)) {
-        classes = classes.trim().split(' ');
+        classes = classes.trim().split(' ')
       }
 
-      classes.forEach(name => added.push(selectors.add({ name })));
-      return added;
+      classes.forEach(name => added.push(selectors.add({ name })))
+      return added
     },
 
     /**
@@ -171,7 +171,7 @@ module.exports = config => {
      * var selector = selectorManager.get('selectorName');
      * */
     get(name, type = Selector.TYPE_CLASS) {
-      return selectors.where({ name, type })[0];
+      return selectors.where({ name, type })[0]
     },
 
     /**
@@ -179,7 +179,7 @@ module.exports = config => {
      * @return {Collection}
      * */
     getAll() {
-      return selectors;
+      return selectors
     },
 
     /**
@@ -192,10 +192,10 @@ module.exports = config => {
       if (selectors) {
         let view = new ClassTagsView({
           collection: new Selectors(selectors),
-          config: c
-        });
-        return view.render().el;
-      } else return selectorTags.render().el;
-    }
-  };
-};
+          config: c,
+        })
+        return view.render().el
+      } else return selectorTags.render().el
+    },
+  }
+}

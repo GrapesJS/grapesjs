@@ -6,5 +6,5 @@ module.exports = {
   staticRules: '',
 
   // Default CSS style
-  rules: []
-};
+  rules: [],
+}

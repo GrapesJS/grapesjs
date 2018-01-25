@@ -1,29 +1,29 @@
-import { isString, isObject } from 'underscore';
+import { isString, isObject } from 'underscore'
 
-const BlockView = require('./BlockView');
-const CategoryView = require('./CategoryView');
+const BlockView = require('./BlockView')
+const CategoryView = require('./CategoryView')
 
 module.exports = require('backbone').View.extend({
   initialize(opts, config) {
-    _.bindAll(this, 'getSorter', 'onDrag', 'onDrop');
-    this.config = config || {};
-    this.categories = opts.categories || '';
-    this.renderedCategories = [];
-    let ppfx = this.config.pStylePrefix || '';
-    this.ppfx = ppfx;
-    this.noCatClass = `${ppfx}blocks-no-cat`;
-    this.blockContClass = `${ppfx}blocks-c`;
-    this.catsClass = `${ppfx}block-categories`;
-    const coll = this.collection;
-    this.listenTo(coll, 'add', this.addTo);
-    this.listenTo(coll, 'reset', this.render);
-    this.em = this.config.em;
-    this.tac = 'test-tac';
-    this.grabbingCls = this.ppfx + 'grabbing';
+    _.bindAll(this, 'getSorter', 'onDrag', 'onDrop')
+    this.config = config || {}
+    this.categories = opts.categories || ''
+    this.renderedCategories = []
+    let ppfx = this.config.pStylePrefix || ''
+    this.ppfx = ppfx
+    this.noCatClass = `${ppfx}blocks-no-cat`
+    this.blockContClass = `${ppfx}blocks-c`
+    this.catsClass = `${ppfx}block-categories`
+    const coll = this.collection
+    this.listenTo(coll, 'add', this.addTo)
+    this.listenTo(coll, 'reset', this.render)
+    this.em = this.config.em
+    this.tac = 'test-tac'
+    this.grabbingCls = this.ppfx + 'grabbing'
 
     if (this.em) {
-      this.config.getSorter = this.getSorter;
-      this.canvas = this.em.get('Canvas');
+      this.config.getSorter = this.getSorter
+      this.canvas = this.em.get('Canvas')
     }
   },
 
@@ -32,10 +32,10 @@ module.exports = require('backbone').View.extend({
    * @private
    */
   getSorter() {
-    if (!this.em) return;
+    if (!this.em) return
     if (!this.sorter) {
-      let utils = this.em.get('Utils');
-      let canvas = this.canvas;
+      let utils = this.em.get('Utils')
+      let canvas = this.canvas
       this.sorter = new utils.Sorter({
         container: canvas.getBody(),
         placer: canvas.getPlacerEl(),
@@ -50,10 +50,10 @@ module.exports = require('backbone').View.extend({
         wmargin: 1,
         nested: 1,
         em: this.em,
-        canvasRelative: 1
-      });
+        canvasRelative: 1,
+      })
     }
-    return this.sorter;
+    return this.sorter
   },
 
   /**
@@ -61,12 +61,12 @@ module.exports = require('backbone').View.extend({
    * @private
    */
   onDrag(e) {
-    this.em.stopDefault();
-    this.em.trigger('block:drag:start', e);
+    this.em.stopDefault()
+    this.em.trigger('block:drag:start', e)
   },
 
   onMove(e) {
-    this.em.trigger('block:drag:move', e);
+    this.em.trigger('block:drag:move', e)
   },
 
   /**
@@ -74,16 +74,16 @@ module.exports = require('backbone').View.extend({
    * @private
    */
   onDrop(model) {
-    const em = this.em;
-    em.runDefault();
+    const em = this.em
+    em.runDefault()
 
     if (model && model.get) {
       if (model.get('activeOnRender')) {
-        model.trigger('active');
-        model.set('activeOnRender', 0);
+        model.trigger('active')
+        model.set('activeOnRender', 0)
       }
 
-      em.trigger('block:drag:stop', model);
+      em.trigger('block:drag:stop', model)
     }
   },
 
@@ -93,7 +93,7 @@ module.exports = require('backbone').View.extend({
    * @private
    * */
   addTo(model) {
-    this.add(model);
+    this.add(model)
   },
 
   /**
@@ -103,91 +103,91 @@ module.exports = require('backbone').View.extend({
    * @private
    * */
   add(model, fragment) {
-    let frag = fragment || null;
+    let frag = fragment || null
     let view = new BlockView(
       {
         model,
-        attributes: model.get('attributes')
+        attributes: model.get('attributes'),
       },
       this.config
-    );
-    let rendered = view.render().el;
-    let category = model.get('category');
+    )
+    let rendered = view.render().el
+    let category = model.get('category')
 
     // Check for categories
     if (category && this.categories) {
       if (isString(category)) {
         category = {
           id: category,
-          label: category
-        };
+          label: category,
+        }
       } else if (isObject(category) && !category.id) {
-        category.id = category.label;
+        category.id = category.label
       }
 
-      let catModel = this.categories.add(category);
-      let catId = catModel.get('id');
-      let catView = this.renderedCategories[catId];
-      let categories = this.getCategoriesEl();
-      model.set('category', catModel);
+      let catModel = this.categories.add(category)
+      let catId = catModel.get('id')
+      let catView = this.renderedCategories[catId]
+      let categories = this.getCategoriesEl()
+      model.set('category', catModel)
 
       if (!catView && categories) {
         catView = new CategoryView(
           {
-            model: catModel
+            model: catModel,
           },
           this.config
-        ).render();
-        this.renderedCategories[catId] = catView;
-        categories.appendChild(catView.el);
+        ).render()
+        this.renderedCategories[catId] = catView
+        categories.appendChild(catView.el)
       }
 
-      catView && catView.append(rendered);
-      return;
+      catView && catView.append(rendered)
+      return
     }
 
-    if (frag) frag.appendChild(rendered);
-    else this.append(rendered);
+    if (frag) frag.appendChild(rendered)
+    else this.append(rendered)
   },
 
   getCategoriesEl() {
     if (!this.catsEl) {
-      this.catsEl = this.el.querySelector(`.${this.catsClass}`);
+      this.catsEl = this.el.querySelector(`.${this.catsClass}`)
     }
 
-    return this.catsEl;
+    return this.catsEl
   },
 
   getBlocksEl() {
     if (!this.blocksEl) {
       this.blocksEl = this.el.querySelector(
         `.${this.noCatClass} .${this.blockContClass}`
-      );
+      )
     }
 
-    return this.blocksEl;
+    return this.blocksEl
   },
 
   append(el) {
-    let blocks = this.getBlocksEl();
-    blocks && blocks.appendChild(el);
+    let blocks = this.getBlocksEl()
+    blocks && blocks.appendChild(el)
   },
 
   render() {
-    const frag = document.createDocumentFragment();
-    this.catsEl = null;
-    this.blocksEl = null;
-    this.renderedCategories = [];
+    const frag = document.createDocumentFragment()
+    this.catsEl = null
+    this.blocksEl = null
+    this.renderedCategories = []
     this.el.innerHTML = `
       <div class="${this.catsClass}"></div>
       <div class="${this.noCatClass}">
         <div class="${this.blockContClass}"></div>
       </div>
-    `;
+    `
 
-    this.collection.each(model => this.add(model, frag));
-    this.append(frag);
-    this.$el.addClass(this.blockContClass + 's');
-    return this;
-  }
-});
+    this.collection.each(model => this.add(model, frag))
+    this.append(frag)
+    this.$el.addClass(this.blockContClass + 's')
+    return this
+  },
+})

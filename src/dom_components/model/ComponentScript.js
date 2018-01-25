@@ -1,4 +1,4 @@
-let Component = require('./Component');
+let Component = require('./Component')
 
 module.exports = Component.extend(
   {
@@ -6,21 +6,21 @@ module.exports = Component.extend(
       type: 'script',
       droppable: false,
       draggable: false,
-      layerable: false
-    })
+      layerable: false,
+    }),
   },
   {
     isComponent(el) {
       if (el.tagName == 'SCRIPT') {
-        let result = { type: 'script' };
+        let result = { type: 'script' }
 
         if (el.src) {
-          result.src = el.src;
-          result.onload = el.onload;
+          result.src = el.src
+          result.onload = el.onload
         }
 
-        return result;
+        return result
       }
-    }
+    },
   }
-);
+)

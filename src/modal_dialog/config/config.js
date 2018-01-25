@@ -5,5 +5,5 @@ module.exports = {
 
   content: '',
 
-  backdrop: true
-};
+  backdrop: true,
+}

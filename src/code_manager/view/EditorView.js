@@ -1,4 +1,4 @@
-let Backbone = require('backbone');
+let Backbone = require('backbone')
 
 module.exports = Backbone.View.extend({
   template: _.template(`
@@ -8,16 +8,16 @@ module.exports = Backbone.View.extend({
   </div>`),
 
   initialize(o) {
-    this.config = o.config || {};
-    this.pfx = this.config.stylePrefix;
+    this.config = o.config || {}
+    this.pfx = this.config.stylePrefix
   },
 
   render() {
-    let obj = this.model.toJSON();
-    obj.pfx = this.pfx;
-    this.$el.html(this.template(obj));
-    this.$el.attr('class', this.pfx + 'editor-c');
-    this.$el.find('#' + this.pfx + 'code').append(this.model.get('input'));
-    return this;
-  }
-});
+    let obj = this.model.toJSON()
+    obj.pfx = this.pfx
+    this.$el.html(this.template(obj))
+    this.$el.attr('class', this.pfx + 'editor-c')
+    this.$el.find('#' + this.pfx + 'code').append(this.model.get('input'))
+    return this
+  },
+})

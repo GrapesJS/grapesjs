@@ -1,4 +1,4 @@
-const Component = require('./Component');
+const Component = require('./Component')
 
 module.exports = Component.extend(
   {
@@ -9,50 +9,50 @@ module.exports = Component.extend(
       draggable: ['table'],
       droppable: ['tr'],
       columns: 1,
-      rows: 1
+      rows: 1,
     },
 
     initialize(o, opt) {
-      Component.prototype.initialize.apply(this, arguments);
-      const components = this.get('components');
-      let columns = this.get('columns');
-      let rows = this.get('rows');
+      Component.prototype.initialize.apply(this, arguments)
+      const components = this.get('components')
+      let columns = this.get('columns')
+      let rows = this.get('rows')
 
       // Init components if empty
       if (!components.length) {
-        const rowsToAdd = [];
+        const rowsToAdd = []
 
         while (rows--) {
-          const columnsToAdd = [];
-          let clm = columns;
+          const columnsToAdd = []
+          let clm = columns
 
           while (clm--) {
             columnsToAdd.push({
               type: 'cell',
-              classes: ['cell']
-            });
+              classes: ['cell'],
+            })
           }
 
           rowsToAdd.push({
             type: 'row',
             classes: ['row'],
-            components: columnsToAdd
-          });
+            components: columnsToAdd,
+          })
         }
 
-        components.add(rowsToAdd);
+        components.add(rowsToAdd)
       }
-    }
+    },
   },
   {
     isComponent(el) {
-      let result = '';
+      let result = ''
 
       if (el.tagName == 'TBODY') {
-        result = { type: 'tbody' };
+        result = { type: 'tbody' }
       }
 
-      return result;
-    }
+      return result
+    },
   }
-);
+)

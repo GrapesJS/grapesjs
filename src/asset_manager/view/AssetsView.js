@@ -1,15 +1,15 @@
-let AssetView = require('./AssetView');
-let AssetImageView = require('./AssetImageView');
-let FileUploader = require('./FileUploader');
+let AssetView = require('./AssetView')
+let AssetImageView = require('./AssetImageView')
+let FileUploader = require('./FileUploader')
 
 module.exports = Backbone.View.extend({
   events: {
-    submit: 'handleSubmit'
+    submit: 'handleSubmit',
   },
 
   template(view) {
-    const pfx = view.pfx;
-    const ppfx = view.ppfx;
+    const pfx = view.pfx
+    const ppfx = view.ppfx
     return `
     <div class="${pfx}assets-cont">
       <div class="${pfx}assets-header">
@@ -28,19 +28,19 @@ module.exports = Backbone.View.extend({
       <div class="${pfx}assets" data-el="assets"></div>
       <div style="clear:both"></div>
     </div>
-    `;
+    `
   },
 
   initialize(o) {
-    this.options = o;
-    this.config = o.config;
-    this.pfx = this.config.stylePrefix || '';
-    this.ppfx = this.config.pStylePrefix || '';
-    const coll = this.collection;
-    this.listenTo(coll, 'reset', this.renderAssets);
-    this.listenTo(coll, 'add', this.addToAsset);
-    this.listenTo(coll, 'remove', this.removedAsset);
-    this.listenTo(coll, 'deselectAll', this.deselectAll);
+    this.options = o
+    this.config = o.config
+    this.pfx = this.config.stylePrefix || ''
+    this.ppfx = this.config.pStylePrefix || ''
+    const coll = this.collection
+    this.listenTo(coll, 'reset', this.renderAssets)
+    this.listenTo(coll, 'add', this.addToAsset)
+    this.listenTo(coll, 'remove', this.removedAsset)
+    this.listenTo(coll, 'deselectAll', this.deselectAll)
   },
 
   /**
@@ -50,22 +50,22 @@ module.exports = Backbone.View.extend({
    * @private
    */
   handleSubmit(e) {
-    e.preventDefault();
-    const input = this.getAddInput();
-    const url = input.value.trim();
-    const handleAdd = this.config.handleAdd;
+    e.preventDefault()
+    const input = this.getAddInput()
+    const url = input.value.trim()
+    const handleAdd = this.config.handleAdd
 
     if (!url) {
-      return;
+      return
     }
 
-    input.value = '';
-    this.getAssetsEl().scrollTop = 0;
+    input.value = ''
+    this.getAssetsEl().scrollTop = 0
 
     if (handleAdd) {
-      handleAdd(url);
+      handleAdd(url)
     } else {
-      this.options.globalCollection.add(url, { at: 0 });
+      this.options.globalCollection.add(url, { at: 0 })
     }
   },
 
@@ -76,7 +76,7 @@ module.exports = Backbone.View.extend({
    */
   getAssetsEl() {
     //if(!this.assets) // Not able to cache as after the rerender it losses the ref
-    return this.el.querySelector(`.${this.pfx}assets`);
+    return this.el.querySelector(`.${this.pfx}assets`)
   },
 
   /**
@@ -86,8 +86,8 @@ module.exports = Backbone.View.extend({
    */
   getAddInput() {
     if (!this.inputUrl || !this.inputUrl.value)
-      this.inputUrl = this.el.querySelector(`.${this.pfx}add-asset input`);
-    return this.inputUrl;
+      this.inputUrl = this.el.querySelector(`.${this.pfx}add-asset input`)
+    return this.inputUrl
   },
 
   /**
@@ -97,7 +97,7 @@ module.exports = Backbone.View.extend({
    */
   removedAsset(model) {
     if (!this.collection.length) {
-      this.toggleNoAssets();
+      this.toggleNoAssets()
     }
   },
 
@@ -107,9 +107,9 @@ module.exports = Backbone.View.extend({
    * */
   addToAsset(model) {
     if (this.collection.length == 1) {
-      this.toggleNoAssets(1);
+      this.toggleNoAssets(1)
     }
-    this.addAsset(model);
+    this.addAsset(model)
   },
 
   /**
@@ -120,25 +120,25 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   addAsset(model, fragmentEl = null) {
-    const fragment = fragmentEl;
-    const collection = this.collection;
-    const config = this.config;
+    const fragment = fragmentEl
+    const collection = this.collection
+    const config = this.config
     const rendered = new model.typeView({
       model,
       collection,
-      config
-    }).render().el;
+      config,
+    }).render().el
 
     if (fragment) {
-      fragment.appendChild(rendered);
+      fragment.appendChild(rendered)
     } else {
-      const assetsEl = this.getAssetsEl();
+      const assetsEl = this.getAssetsEl()
       if (assetsEl) {
-        assetsEl.insertBefore(rendered, assetsEl.firstChild);
+        assetsEl.insertBefore(rendered, assetsEl.firstChild)
       }
     }
 
-    return rendered;
+    return rendered
   },
 
   /**
@@ -147,13 +147,13 @@ module.exports = Backbone.View.extend({
    * @private
    */
   toggleNoAssets(hide) {
-    const assetsEl = this.$el.find(`.${this.pfx}assets`);
+    const assetsEl = this.$el.find(`.${this.pfx}assets`)
 
     if (hide) {
-      assetsEl.empty();
+      assetsEl.empty()
     } else {
-      const noAssets = this.config.noAssets;
-      noAssets && assetsEl.append(noAssets);
+      const noAssets = this.config.noAssets
+      noAssets && assetsEl.append(noAssets)
     }
   },
 
@@ -162,26 +162,26 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   deselectAll() {
-    const pfx = this.pfx;
-    this.$el.find(`.${pfx}highlight`).removeClass(`${pfx}highlight`);
+    const pfx = this.pfx
+    this.$el.find(`.${pfx}highlight`).removeClass(`${pfx}highlight`)
   },
 
   renderAssets() {
-    const fragment = document.createDocumentFragment();
-    const assets = this.$el.find(`.${this.pfx}assets`);
-    assets.empty();
-    this.toggleNoAssets(this.collection.length);
-    this.collection.each(model => this.addAsset(model, fragment));
-    assets.append(fragment);
+    const fragment = document.createDocumentFragment()
+    const assets = this.$el.find(`.${this.pfx}assets`)
+    assets.empty()
+    this.toggleNoAssets(this.collection.length)
+    this.collection.each(model => this.addAsset(model, fragment))
+    assets.append(fragment)
   },
 
   render() {
-    const fuRendered = this.options.fu.render().el;
-    this.$el.empty();
-    this.$el.append(fuRendered).append(this.template(this));
-    this.el.className = `${this.ppfx}asset-manager`;
-    this.renderAssets();
-    this.rendered = 1;
-    return this;
-  }
-});
+    const fuRendered = this.options.fu.render().el
+    this.$el.empty()
+    this.$el.append(fuRendered).append(this.template(this))
+    this.el.className = `${this.ppfx}asset-manager`
+    this.renderAssets()
+    this.rendered = 1
+    return this
+  },
+})

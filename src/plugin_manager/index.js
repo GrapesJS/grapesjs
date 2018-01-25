@@ -1,13 +1,13 @@
 module.exports = config => {
   let c = config || {},
-    defaults = require('./config/config');
+    defaults = require('./config/config')
 
   // Set default options
   for (let name in defaults) {
-    if (!(name in c)) c[name] = defaults[name];
+    if (!(name in c)) c[name] = defaults[name]
   }
 
-  let plugins = {};
+  let plugins = {}
 
   return {
     /**
@@ -26,11 +26,11 @@ module.exports = config => {
      */
     add(id, plugin) {
       if (plugins[id]) {
-        return plugins[id];
+        return plugins[id]
       }
 
-      plugins[id] = plugin;
-      return plugin;
+      plugins[id] = plugin
+      return plugin
     },
 
     /**
@@ -42,7 +42,7 @@ module.exports = config => {
      * plugin(editor);
      */
     get(id) {
-      return plugins[id];
+      return plugins[id]
     },
 
     /**
@@ -50,7 +50,7 @@ module.exports = config => {
      * @return {Object}
      */
     getAll() {
-      return plugins;
-    }
-  };
-};
+      return plugins
+    },
+  }
+}

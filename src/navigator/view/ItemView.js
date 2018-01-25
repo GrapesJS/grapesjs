@@ -1,6 +1,6 @@
-import { isUndefined } from 'underscore';
-const ComponentView = require('dom_components/view/ComponentView');
-let ItemsView;
+import { isUndefined } from 'underscore'
+const ComponentView = require('dom_components/view/ComponentView')
+let ItemsView
 
 module.exports = require('backbone').View.extend({
   events: {
@@ -9,16 +9,16 @@ module.exports = require('backbone').View.extend({
     'click [data-toggle-select]': 'handleSelect',
     'click [data-toggle-open]': 'toggleOpening',
     'dblclick input': 'handleEdit',
-    'focusout input': 'handleEditEnd'
+    'focusout input': 'handleEditEnd',
   },
 
   template(model) {
-    const pfx = this.pfx;
-    const ppfx = this.ppfx;
-    const hidable = this.config.hidable;
-    const count = this.countChildren(model);
-    const addClass = !count ? `${pfx}no-chld` : '';
-    const level = this.level + 1;
+    const pfx = this.pfx
+    const ppfx = this.ppfx
+    const hidable = this.config.hidable
+    const count = this.countChildren(model)
+    const addClass = !count ? `${pfx}no-chld` : ''
+    const level = this.level + 1
     return `
       ${
         hidable
@@ -47,53 +47,53 @@ module.exports = require('backbone').View.extend({
         <i class="fa fa-arrows"></i>
       </div>
       <div class="${pfx}children"></div>
-    `;
+    `
   },
 
   initialize(o = {}) {
-    this.opt = o;
-    this.level = o.level;
-    this.config = o.config;
-    this.em = o.config.em;
-    this.ppfx = this.em.get('Config').stylePrefix;
-    this.sorter = o.sorter || '';
-    this.pfx = this.config.stylePrefix;
-    const pfx = this.pfx;
-    const ppfx = this.ppfx;
-    const model = this.model;
-    const components = model.get('components');
-    model.set('open', false);
-    this.listenTo(components, 'remove add change reset', this.checkChildren);
-    this.listenTo(model, 'destroy remove', this.remove);
-    this.listenTo(model, 'change:status', this.updateStatus);
-    this.listenTo(model, 'change:open', this.updateOpening);
-    this.listenTo(model, 'change:style:display', this.updateVisibility);
-    this.className = `${pfx}item no-select`;
-    this.editBtnCls = `${pfx}nav-item-edit`;
-    this.inputNameCls = `${ppfx}nav-comp-name`;
-    this.caretCls = `${ppfx}nav-item-caret`;
-    this.titleCls = `${pfx}title`;
-    this.$el.data('model', model);
-    this.$el.data('collection', components);
+    this.opt = o
+    this.level = o.level
+    this.config = o.config
+    this.em = o.config.em
+    this.ppfx = this.em.get('Config').stylePrefix
+    this.sorter = o.sorter || ''
+    this.pfx = this.config.stylePrefix
+    const pfx = this.pfx
+    const ppfx = this.ppfx
+    const model = this.model
+    const components = model.get('components')
+    model.set('open', false)
+    this.listenTo(components, 'remove add change reset', this.checkChildren)
+    this.listenTo(model, 'destroy remove', this.remove)
+    this.listenTo(model, 'change:status', this.updateStatus)
+    this.listenTo(model, 'change:open', this.updateOpening)
+    this.listenTo(model, 'change:style:display', this.updateVisibility)
+    this.className = `${pfx}item no-select`
+    this.editBtnCls = `${pfx}nav-item-edit`
+    this.inputNameCls = `${ppfx}nav-comp-name`
+    this.caretCls = `${ppfx}nav-item-caret`
+    this.titleCls = `${pfx}title`
+    this.$el.data('model', model)
+    this.$el.data('collection', components)
   },
 
   getVisibilityEl() {
     if (!this.eyeEl) {
-      this.eyeEl = this.$el.children(`#${this.pfx}btn-eye`);
+      this.eyeEl = this.$el.children(`#${this.pfx}btn-eye`)
     }
 
-    return this.eyeEl;
+    return this.eyeEl
   },
 
   updateVisibility() {
-    const pfx = this.pfx;
-    const model = this.model;
-    const hClass = `${pfx}hide`;
-    const hideIcon = 'fa-eye-slash';
-    const hidden = model.getStyle().display == 'none';
-    const method = hidden ? 'addClass' : 'removeClass';
-    this.$el[method](hClass);
-    this.getVisibilityEl()[method](hideIcon);
+    const pfx = this.pfx
+    const model = this.model
+    const hClass = `${pfx}hide`
+    const hideIcon = 'fa-eye-slash'
+    const hidden = model.getStyle().display == 'none'
+    const method = hidden ? 'addClass' : 'removeClass'
+    this.$el[method](hClass)
+    this.getVisibilityEl()[method](hideIcon)
   },
 
   /**
@@ -103,38 +103,38 @@ module.exports = require('backbone').View.extend({
    * @return 	void
    * */
   toggleVisibility(e) {
-    e && e.stopPropagation();
-    const model = this.model;
-    const style = model.getStyle();
-    const hidden = style.display == 'none';
+    e && e.stopPropagation()
+    const model = this.model
+    const style = model.getStyle()
+    const hidden = style.display == 'none'
 
     if (hidden) {
-      delete style.display;
+      delete style.display
     } else {
-      style.display = 'none';
+      style.display = 'none'
     }
 
-    model.setStyle(style);
+    model.setStyle(style)
   },
 
   /**
    * Handle the edit of the component name
    */
   handleEdit(e) {
-    e.stopPropagation();
-    let inputName = this.getInputName();
-    inputName.readOnly = false;
-    inputName.focus();
+    e.stopPropagation()
+    let inputName = this.getInputName()
+    inputName.readOnly = false
+    inputName.focus()
   },
 
   /**
    * Handle with the end of editing of the component name
    */
   handleEditEnd(e) {
-    e.stopPropagation();
-    let inputName = this.getInputName();
-    inputName.readOnly = true;
-    this.model.set('custom-name', inputName.value);
+    e.stopPropagation()
+    let inputName = this.getInputName()
+    inputName.readOnly = true
+    this.model.set('custom-name', inputName.value)
   },
 
   /**
@@ -143,9 +143,9 @@ module.exports = require('backbone').View.extend({
    */
   getInputName() {
     if (!this.inputName) {
-      this.inputName = this.el.querySelector('.' + this.inputNameCls);
+      this.inputName = this.el.querySelector('.' + this.inputNameCls)
     }
-    return this.inputName;
+    return this.inputName
   },
 
   /**
@@ -154,18 +154,18 @@ module.exports = require('backbone').View.extend({
    * @return void
    * */
   updateOpening() {
-    let opened = this.opt.opened || {};
-    let model = this.model;
-    const chvDown = 'fa-chevron-down';
+    let opened = this.opt.opened || {}
+    let model = this.model
+    const chvDown = 'fa-chevron-down'
 
     if (model.get('open')) {
-      this.$el.addClass('open');
-      this.getCaret().addClass(chvDown);
-      opened[model.cid] = model;
+      this.$el.addClass('open')
+      this.getCaret().addClass(chvDown)
+      opened[model.cid] = model
     } else {
-      this.$el.removeClass('open');
-      this.getCaret().removeClass(chvDown);
-      delete opened[model.cid];
+      this.$el.removeClass('open')
+      this.getCaret().removeClass(chvDown)
+      delete opened[model.cid]
     }
   },
 
@@ -176,19 +176,19 @@ module.exports = require('backbone').View.extend({
    * @return void
    * */
   toggleOpening(e) {
-    e.stopPropagation();
+    e.stopPropagation()
 
-    if (!this.model.get('components').length) return;
+    if (!this.model.get('components').length) return
 
-    this.model.set('open', !this.model.get('open'));
+    this.model.set('open', !this.model.get('open'))
   },
 
   /**
    * Handle component selection
    */
   handleSelect(e) {
-    e.stopPropagation();
-    this.em && this.em.setSelected(this.model, { fromLayers: 1 });
+    e.stopPropagation()
+    this.em && this.em.setSelected(this.model, { fromLayers: 1 })
   },
 
   /**
@@ -196,14 +196,14 @@ module.exports = require('backbone').View.extend({
    * @param	Event
    * */
   startSort(e) {
-    e.stopPropagation();
+    e.stopPropagation()
 
     //Right or middel click
     if (e.button !== 0) {
-      return;
+      return
     }
 
-    this.sorter && this.sorter.startSort(e.target);
+    this.sorter && this.sorter.startSort(e.target)
   },
 
   /**
@@ -211,8 +211,8 @@ module.exports = require('backbone').View.extend({
    * @return	void
    * */
   freeze() {
-    this.$el.addClass(this.pfx + 'opac50');
-    this.model.set('open', 0);
+    this.$el.addClass(this.pfx + 'opac50')
+    this.model.set('open', 0)
   },
 
   /**
@@ -220,7 +220,7 @@ module.exports = require('backbone').View.extend({
    * @return	void
    * */
   unfreeze() {
-    this.$el.removeClass(this.pfx + 'opac50');
+    this.$el.removeClass(this.pfx + 'opac50')
   },
 
   /**
@@ -228,7 +228,7 @@ module.exports = require('backbone').View.extend({
    * @param	Event
    * */
   updateStatus(e) {
-    ComponentView.prototype.updateStatus.apply(this, arguments);
+    ComponentView.prototype.updateStatus.apply(this, arguments)
   },
 
   /**
@@ -238,9 +238,9 @@ module.exports = require('backbone').View.extend({
    * */
   isVisible() {
     let css = this.model.get('style'),
-      pr = css.display;
-    if (pr && pr == 'none') return;
-    return 1;
+      pr = css.display
+    if (pr && pr == 'none') return
+    return 1
   },
 
   /**
@@ -249,23 +249,23 @@ module.exports = require('backbone').View.extend({
    * @return void
    * */
   checkChildren() {
-    const model = this.model;
-    const c = this.countChildren(model);
-    const pfx = this.pfx;
-    const noChildCls = `${pfx}no-chld`;
-    const title = this.$el.children(`.${pfx}title-c`).children(`.${pfx}title`);
+    const model = this.model
+    const c = this.countChildren(model)
+    const pfx = this.pfx
+    const noChildCls = `${pfx}no-chld`
+    const title = this.$el.children(`.${pfx}title-c`).children(`.${pfx}title`)
     //tC = `> .${pfx}title-c > .${pfx}title`;
     if (!this.$counter) {
-      this.$counter = this.$el.children(`#${pfx}counter`);
+      this.$counter = this.$el.children(`#${pfx}counter`)
     }
 
     if (c) {
-      title.removeClass(noChildCls);
-      this.$counter.html(c);
+      title.removeClass(noChildCls)
+      this.$counter.html(c)
     } else {
-      title.addClass(noChildCls);
-      this.$counter.empty();
-      model.set('open', 0);
+      title.addClass(noChildCls)
+      this.$counter.empty()
+      model.set('open', 0)
     }
   },
 
@@ -276,35 +276,35 @@ module.exports = require('backbone').View.extend({
    * @private
    */
   countChildren(model) {
-    let count = 0;
+    let count = 0
     model.get('components').each(function(m) {
-      let isCountable = this.opt.isCountable;
-      let hide = this.config.hideTextnode;
-      if (isCountable && !isCountable(m, hide)) return;
-      count++;
-    }, this);
-    return count;
+      let isCountable = this.opt.isCountable
+      let hide = this.config.hideTextnode
+      if (isCountable && !isCountable(m, hide)) return
+      count++
+    }, this)
+    return count
   },
 
   getCaret() {
     if (!this.caret) {
-      const pfx = this.pfx;
-      this.caret = this.$el.children(`.${pfx}title-c`).find(`#${pfx}caret`);
+      const pfx = this.pfx
+      this.caret = this.$el.children(`.${pfx}title-c`).find(`#${pfx}caret`)
     }
 
-    return this.caret;
+    return this.caret
   },
 
   render() {
-    const model = this.model;
-    let pfx = this.pfx;
-    let vis = this.isVisible();
-    const el = this.$el;
-    const level = this.level + 1;
-    el.html(this.template(model));
+    const model = this.model
+    let pfx = this.pfx
+    let vis = this.isVisible()
+    const el = this.$el
+    const level = this.level + 1
+    el.html(this.template(model))
 
     if (isUndefined(ItemsView)) {
-      ItemsView = require('./ItemsView');
+      ItemsView = require('./ItemsView')
     }
 
     const children = new ItemsView({
@@ -313,19 +313,19 @@ module.exports = require('backbone').View.extend({
       sorter: this.sorter,
       opened: this.opt.opened,
       parent: model,
-      level
-    }).render().$el;
-    el.find(`.${pfx}children`).append(children);
+      level,
+    }).render().$el
+    el.find(`.${pfx}children`).append(children)
 
     if (!model.get('draggable') || !this.config.sortable) {
-      el.children(`#${pfx}move`).remove();
+      el.children(`#${pfx}move`).remove()
     }
 
-    !vis && (this.className += ` ${pfx}hide`);
-    el.attr('class', this.className);
-    this.updateOpening();
-    this.updateStatus();
-    this.updateVisibility();
-    return this;
-  }
-});
+    !vis && (this.className += ` ${pfx}hide`)
+    el.attr('class', this.className)
+    this.updateOpening()
+    this.updateStatus()
+    this.updateVisibility()
+    return this
+  },
+})

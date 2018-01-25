@@ -3,7 +3,7 @@ module.exports = require('backbone').Model.extend({
 
   defaults: {
     type: '',
-    src: ''
+    src: '',
   },
 
   /**
@@ -14,7 +14,7 @@ module.exports = require('backbone').Model.extend({
   getFilename() {
     return this.get('src')
       .split('/')
-      .pop();
+      .pop()
   },
 
   /**
@@ -25,6 +25,6 @@ module.exports = require('backbone').Model.extend({
   getExtension() {
     return this.getFilename()
       .split('.')
-      .pop();
-  }
-});
+      .pop()
+  },
+})

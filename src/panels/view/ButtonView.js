@@ -1,5 +1,5 @@
-import { isString, isObject, isFunction } from 'underscore';
-const $ = Backbone.$;
+import { isString, isObject, isFunction } from 'underscore'
+const $ = Backbone.$
 
 module.exports = Backbone.View.extend({
   tagName: 'span',
@@ -15,47 +15,47 @@ module.exports = Backbone.View.extend({
       'onDrop',
       'initSorter',
       'stopDrag'
-    );
-    let cls = this.model.get('className');
-    this.config = o.config || {};
-    this.em = this.config.em || {};
-    const pfx = this.config.stylePrefix || '';
-    const ppfx = this.config.pStylePrefix || '';
-    this.pfx = pfx;
-    this.ppfx = this.config.pStylePrefix || '';
-    this.id = pfx + this.model.get('id');
-    this.activeCls = `${pfx}active ${ppfx}four-color`;
-    this.disableCls = pfx + 'active';
-    this.btnsVisCls = pfx + 'visible';
-    this.parentM = o.parentM || null;
-    this.className = pfx + 'btn' + (cls ? ' ' + cls : '');
-    this.listenTo(this.model, 'change:active updateActive', this.updateActive);
-    this.listenTo(this.model, 'checkActive', this.checkActive);
-    this.listenTo(this.model, 'change:bntsVis', this.updateBtnsVis);
-    this.listenTo(this.model, 'change:attributes', this.updateAttributes);
-    this.listenTo(this.model, 'change:className', this.updateClassName);
-    this.listenTo(this.model, 'change:disable', this.updateDisable);
+    )
+    let cls = this.model.get('className')
+    this.config = o.config || {}
+    this.em = this.config.em || {}
+    const pfx = this.config.stylePrefix || ''
+    const ppfx = this.config.pStylePrefix || ''
+    this.pfx = pfx
+    this.ppfx = this.config.pStylePrefix || ''
+    this.id = pfx + this.model.get('id')
+    this.activeCls = `${pfx}active ${ppfx}four-color`
+    this.disableCls = pfx + 'active'
+    this.btnsVisCls = pfx + 'visible'
+    this.parentM = o.parentM || null
+    this.className = pfx + 'btn' + (cls ? ' ' + cls : '')
+    this.listenTo(this.model, 'change:active updateActive', this.updateActive)
+    this.listenTo(this.model, 'checkActive', this.checkActive)
+    this.listenTo(this.model, 'change:bntsVis', this.updateBtnsVis)
+    this.listenTo(this.model, 'change:attributes', this.updateAttributes)
+    this.listenTo(this.model, 'change:className', this.updateClassName)
+    this.listenTo(this.model, 'change:disable', this.updateDisable)
 
     if (this.model.get('buttons').length) {
-      this.$el.on('mousedown', this.startTimer);
-      this.$el.append($('<div>', { class: pfx + 'arrow-rd' }));
+      this.$el.on('mousedown', this.startTimer)
+      this.$el.append($('<div>', { class: pfx + 'arrow-rd' }))
     }
 
-    if (this.em && this.em.get) this.commands = this.em.get('Commands');
+    if (this.em && this.em.get) this.commands = this.em.get('Commands')
 
-    this.events = {};
+    this.events = {}
 
     if (this.model.get('dragDrop')) {
-      this.events.mousedown = 'initDrag';
-      this.em.on('loaded', this.initSorter);
-    } else this.events.click = 'clicked';
-    this.delegateEvents();
+      this.events.mousedown = 'initDrag'
+      this.em.on('loaded', this.initSorter)
+    } else this.events.click = 'clicked'
+    this.delegateEvents()
   },
 
   initSorter() {
     if (this.em.Canvas) {
-      let canvas = this.em.Canvas;
-      this.canvasEl = canvas.getBody();
+      let canvas = this.em.Canvas
+      this.canvasEl = canvas.getBody()
       this.sorter = new this.em.Utils.Sorter({
         container: this.canvasEl,
         placer: canvas.getPlacerEl(),
@@ -67,11 +67,11 @@ module.exports = Backbone.View.extend({
         document: canvas.getFrameEl().contentDocument,
         direction: 'a',
         wmargin: 1,
-        nested: 1
-      });
-      let offDim = canvas.getOffset();
-      this.sorter.offTop = offDim.top;
-      this.sorter.offLeft = offDim.left;
+        nested: 1,
+      })
+      let offDim = canvas.getOffset()
+      this.sorter.offTop = offDim.top
+      this.sorter.offLeft = offDim.left
     }
   },
 
@@ -80,11 +80,11 @@ module.exports = Backbone.View.extend({
    * @private
    */
   initDrag() {
-    this.model.collection.deactivateAll(this.model.get('context'));
-    this.sorter.startSort(this.el);
-    this.sorter.setDropContent(this.model.get('options').content);
-    this.canvasEl.style.cursor = 'grabbing';
-    $(document).on('mouseup', this.stopDrag);
+    this.model.collection.deactivateAll(this.model.get('context'))
+    this.sorter.startSort(this.el)
+    this.sorter.setDropContent(this.model.get('options').content)
+    this.canvasEl.style.cursor = 'grabbing'
+    $(document).on('mouseup', this.stopDrag)
   },
 
   /**
@@ -92,8 +92,8 @@ module.exports = Backbone.View.extend({
    * @private
    */
   stopDrag() {
-    $(document).off('mouseup', this.stopDrag);
-    this.sorter.endMove();
+    $(document).off('mouseup', this.stopDrag)
+    this.sorter.endMove()
   },
 
   /**
@@ -107,7 +107,7 @@ module.exports = Backbone.View.extend({
    * @private
    */
   onDrop(e) {
-    this.canvasEl.style.cursor = 'default';
+    this.canvasEl.style.cursor = 'default'
   },
 
   /**
@@ -116,8 +116,8 @@ module.exports = Backbone.View.extend({
    * @return   void
    * */
   updateClassName() {
-    let cls = this.model.get('className');
-    this.$el.attr('class', this.pfx + 'btn' + (cls ? ' ' + cls : ''));
+    let cls = this.model.get('className')
+    this.$el.attr('class', this.pfx + 'btn' + (cls ? ' ' + cls : ''))
   },
 
   /**
@@ -126,7 +126,7 @@ module.exports = Backbone.View.extend({
    * @return   void
    * */
   updateAttributes() {
-    this.$el.attr(this.model.get('attributes'));
+    this.$el.attr(this.model.get('attributes'))
   },
 
   /**
@@ -135,10 +135,10 @@ module.exports = Backbone.View.extend({
    * @return  void
    * */
   updateBtnsVis() {
-    if (!this.$buttons) return;
+    if (!this.$buttons) return
 
-    if (this.model.get('bntsVis')) this.$buttons.addClass(this.btnsVisCls);
-    else this.$buttons.removeClass(this.btnsVisCls);
+    if (this.model.get('bntsVis')) this.$buttons.addClass(this.btnsVisCls)
+    else this.$buttons.removeClass(this.btnsVisCls)
   },
 
   /**
@@ -147,8 +147,8 @@ module.exports = Backbone.View.extend({
    * @return  void
    * */
   startTimer() {
-    this.timeout = setTimeout(this.showButtons, this.config.delayBtnsShow);
-    $(document).on('mouseup', this.stopTimer);
+    this.timeout = setTimeout(this.showButtons, this.config.delayBtnsShow)
+    $(document).on('mouseup', this.stopTimer)
   },
 
   /**
@@ -157,8 +157,8 @@ module.exports = Backbone.View.extend({
    * @return  void
    * */
   stopTimer() {
-    $(document).off('mouseup', this.stopTimer);
-    if (this.timeout) clearTimeout(this.timeout);
+    $(document).off('mouseup', this.stopTimer)
+    if (this.timeout) clearTimeout(this.timeout)
   },
 
   /**
@@ -167,10 +167,10 @@ module.exports = Backbone.View.extend({
    * @return   void
    * */
   showButtons() {
-    clearTimeout(this.timeout);
-    this.model.set('bntsVis', true);
-    $(document).on('mousedown', this.hideButtons);
-    $(document).on('keypress', this.closeOnKeyPress);
+    clearTimeout(this.timeout)
+    this.model.set('bntsVis', true)
+    $(document).on('mousedown', this.hideButtons)
+    $(document).on('keypress', this.closeOnKeyPress)
   },
 
   /**
@@ -180,11 +180,11 @@ module.exports = Backbone.View.extend({
    * */
   hideButtons(e) {
     if (e) {
-      $(e.target).trigger('click');
+      $(e.target).trigger('click')
     }
-    this.model.set('bntsVis', false);
-    $(document).off('mousedown', this.hideButtons);
-    $(document).off('keypress', this.closeOnKeyPress);
+    this.model.set('bntsVis', false)
+    $(document).off('mousedown', this.hideButtons)
+    $(document).off('keypress', this.closeOnKeyPress)
   },
 
   /**
@@ -194,8 +194,8 @@ module.exports = Backbone.View.extend({
    * @return   void
    * */
   closeOnKeyPress(e) {
-    let key = e.which || e.keyCode;
-    if (key == 27) this.hideButtons();
+    let key = e.which || e.keyCode
+    if (key == 27) this.hideButtons()
   },
 
   /**
@@ -204,52 +204,52 @@ module.exports = Backbone.View.extend({
    * @return   void
    * */
   updateActive() {
-    const model = this.model;
-    const context = model.get('context');
-    const parent = this.parentM;
-    let command = {};
-    let editor = this.em && this.em.get ? this.em.get('Editor') : null;
-    let commandName = model.get('command');
+    const model = this.model
+    const context = model.get('context')
+    const parent = this.parentM
+    let command = {}
+    let editor = this.em && this.em.get ? this.em.get('Editor') : null
+    let commandName = model.get('command')
 
     if (this.commands && isString(commandName)) {
-      command = this.commands.get(commandName) || {};
+      command = this.commands.get(commandName) || {}
     } else if (isFunction(commandName)) {
-      command = { run: commandName };
+      command = { run: commandName }
     } else if (commandName !== null && isObject(commandName)) {
-      command = commandName;
+      command = commandName
     }
 
     if (model.get('active')) {
-      model.collection.deactivateAll(context);
-      model.set('active', true, { silent: true }).trigger('checkActive');
+      model.collection.deactivateAll(context)
+      model.set('active', true, { silent: true }).trigger('checkActive')
       parent &&
-        parent.set('active', true, { silent: true }).trigger('checkActive');
+        parent.set('active', true, { silent: true }).trigger('checkActive')
 
       if (command.run) {
-        command.run(editor, model, model.get('options'));
-        editor.trigger('run:' + commandName);
+        command.run(editor, model, model.get('options'))
+        editor.trigger('run:' + commandName)
       }
 
       // Disable button if there is no stop method
-      !command.stop && model.set('active', false);
+      !command.stop && model.set('active', false)
     } else {
-      this.$el.removeClass(this.activeCls);
-      model.collection.deactivateAll(context);
+      this.$el.removeClass(this.activeCls)
+      model.collection.deactivateAll(context)
       parent &&
-        parent.set('active', false, { silent: true }).trigger('checkActive');
+        parent.set('active', false, { silent: true }).trigger('checkActive')
 
       if (command.stop) {
-        command.stop(editor, model, model.get('options'));
-        editor.trigger('stop:' + commandName);
+        command.stop(editor, model, model.get('options'))
+        editor.trigger('stop:' + commandName)
       }
     }
   },
 
   updateDisable() {
     if (this.model.get('disable')) {
-      this.$el.addClass(this.disableCls);
+      this.$el.addClass(this.disableCls)
     } else {
-      this.$el.removeClass(this.disableCls);
+      this.$el.removeClass(this.disableCls)
     }
   },
 
@@ -259,8 +259,8 @@ module.exports = Backbone.View.extend({
    * @return   void
    * */
   checkActive() {
-    if (this.model.get('active')) this.$el.addClass(this.activeCls);
-    else this.$el.removeClass(this.activeCls);
+    if (this.model.get('active')) this.$el.addClass(this.activeCls)
+    else this.$el.removeClass(this.activeCls)
   },
 
   /**
@@ -270,26 +270,26 @@ module.exports = Backbone.View.extend({
    * @return   void
    * */
   clicked(e) {
-    if (this.model.get('bntsVis')) return;
+    if (this.model.get('bntsVis')) return
 
-    if (this.model.get('disable')) return;
+    if (this.model.get('disable')) return
 
-    this.toogleActive();
+    this.toogleActive()
   },
 
   toogleActive() {
-    if (this.parentM) this.swapParent();
+    if (this.parentM) this.swapParent()
 
-    let active = this.model.get('active');
-    this.model.set('active', !active);
+    let active = this.model.get('active')
+    this.model.set('active', !active)
 
     // If the stop is requested
-    let command = this.em.get('Commands').get('select-comp');
+    let command = this.em.get('Commands').get('select-comp')
 
     if (active) {
-      if (this.model.get('runDefaultCommand')) this.em.runDefault();
+      if (this.model.get('runDefaultCommand')) this.em.runDefault()
     } else {
-      if (this.model.get('stopDefaultCommand')) this.em.stopDefault();
+      if (this.model.get('stopDefaultCommand')) this.em.stopDefault()
     }
   },
 
@@ -299,30 +299,30 @@ module.exports = Backbone.View.extend({
    * @return  void
    * */
   swapParent() {
-    this.parentM.collection.deactivateAll(this.model.get('context'));
-    this.parentM.set('attributes', this.model.get('attributes'));
-    this.parentM.set('options', this.model.get('options'));
-    this.parentM.set('command', this.model.get('command'));
-    this.parentM.set('className', this.model.get('className'));
-    this.parentM.set('active', true, { silent: true }).trigger('checkActive');
+    this.parentM.collection.deactivateAll(this.model.get('context'))
+    this.parentM.set('attributes', this.model.get('attributes'))
+    this.parentM.set('options', this.model.get('options'))
+    this.parentM.set('command', this.model.get('command'))
+    this.parentM.set('className', this.model.get('className'))
+    this.parentM.set('active', true, { silent: true }).trigger('checkActive')
   },
 
   render() {
-    this.updateAttributes();
-    this.$el.attr('class', this.className);
+    this.updateAttributes()
+    this.$el.attr('class', this.className)
 
     if (this.model.get('buttons').length) {
-      let btnsView = require('./ButtonsView'); //Avoid Circular Dependencies
+      let btnsView = require('./ButtonsView') //Avoid Circular Dependencies
       let view = new btnsView({
         collection: this.model.get('buttons'),
         config: this.config,
-        parentM: this.model
-      });
-      this.$buttons = view.render().$el;
-      this.$buttons.append($('<div>', { class: this.pfx + 'arrow-l' }));
-      this.$el.append(this.$buttons); //childNodes avoids wrapping 'div'
+        parentM: this.model,
+      })
+      this.$buttons = view.render().$el
+      this.$buttons.append($('<div>', { class: this.pfx + 'arrow-l' }))
+      this.$el.append(this.$buttons) //childNodes avoids wrapping 'div'
     }
 
-    return this;
-  }
-});
+    return this
+  },
+})

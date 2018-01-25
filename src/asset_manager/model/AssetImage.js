@@ -1,4 +1,4 @@
-const Asset = require('./Asset');
+const Asset = require('./Asset')
 
 module.exports = Asset.extend({
   defaults: {
@@ -6,6 +6,6 @@ module.exports = Asset.extend({
     type: 'image',
     unitDim: 'px',
     height: 0,
-    width: 0
-  }
-});
+    width: 0,
+  },
+})

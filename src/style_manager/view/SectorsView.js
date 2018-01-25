@@ -1,28 +1,28 @@
-import { extend } from 'underscore';
+import { extend } from 'underscore'
 
-const SectorView = require('./SectorView');
+const SectorView = require('./SectorView')
 
 module.exports = Backbone.View.extend({
   initialize(o) {
-    this.config = o.config || {};
-    this.pfx = this.config.stylePrefix || '';
-    this.target = o.target || {};
+    this.config = o.config || {}
+    this.pfx = this.config.stylePrefix || ''
+    this.target = o.target || {}
 
     // The target that will emit events for properties
-    const target = {};
-    extend(target, Backbone.Events);
-    const body = document.body;
-    const dummy = document.createElement(`el-${new Date().getTime()}`);
-    body.appendChild(dummy);
-    target.computedDefault = { ...window.getComputedStyle(dummy) };
-    body.removeChild(dummy);
-    this.propTarget = target;
-    const coll = this.collection;
+    const target = {}
+    extend(target, Backbone.Events)
+    const body = document.body
+    const dummy = document.createElement(`el-${new Date().getTime()}`)
+    body.appendChild(dummy)
+    target.computedDefault = { ...window.getComputedStyle(dummy) }
+    body.removeChild(dummy)
+    this.propTarget = target
+    const coll = this.collection
     const events =
-      'change:selectedComponent component:update:classes component:update:state change:device';
-    this.listenTo(coll, 'add', this.addTo);
-    this.listenTo(coll, 'reset', this.render);
-    this.listenTo(this.target, events, this.targetUpdated);
+      'change:selectedComponent component:update:classes component:update:state change:device'
+    this.listenTo(coll, 'add', this.addTo)
+    this.listenTo(coll, 'reset', this.render)
+    this.listenTo(this.target, events, this.targetUpdated)
   },
 
   /**
@@ -32,7 +32,7 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   addTo(model) {
-    this.addToCollection(model);
+    this.addToCollection(model)
   },
 
   /**
@@ -40,46 +40,46 @@ module.exports = Backbone.View.extend({
    * @private
    */
   targetUpdated() {
-    const em = this.target;
-    const pt = this.propTarget;
-    let model = em.getSelected();
-    if (!model) return;
+    const em = this.target
+    const pt = this.propTarget
+    let model = em.getSelected()
+    if (!model) return
 
-    const config = em.get('Config');
-    const state = !config.devicePreviewMode ? model.get('state') : '';
-    const el = model.getEl();
-    pt.helper = null;
+    const config = em.get('Config')
+    const state = !config.devicePreviewMode ? model.get('state') : ''
+    const el = model.getEl()
+    pt.helper = null
 
     // Create computed style container
     if (el) {
-      const stateStr = state ? `:${state}` : null;
-      pt.computed = window.getComputedStyle(el, stateStr);
+      const stateStr = state ? `:${state}` : null
+      pt.computed = window.getComputedStyle(el, stateStr)
     }
 
     // Create a new rule for the state as a helper
     const appendStateRule = (style = {}) => {
-      const cc = em.get('CssComposer');
-      const helperCls = 'hc-state';
-      const rules = cc.getAll();
-      let helperRule = cc.getClassRule(helperCls);
+      const cc = em.get('CssComposer')
+      const helperCls = 'hc-state'
+      const rules = cc.getAll()
+      let helperRule = cc.getClassRule(helperCls)
 
       if (!helperRule) {
-        helperRule = cc.setClassRule(helperCls);
+        helperRule = cc.setClassRule(helperCls)
       } else {
         // I will make it last again, otherwise it could be overridden
-        rules.remove(helperRule);
-        rules.add(helperRule);
+        rules.remove(helperRule)
+        rules.add(helperRule)
       }
 
-      helperRule.set('important', 1);
-      helperRule.setStyle(style);
-      pt.helper = helperRule;
-    };
+      helperRule.set('important', 1)
+      helperRule.setStyle(style)
+      pt.helper = helperRule
+    }
 
-    model = em.get('StyleManager').getModelToStyle(model);
-    state && appendStateRule(model.getStyle());
-    pt.model = model;
-    pt.trigger('update');
+    model = em.get('StyleManager').getModelToStyle(model)
+    state && appendStateRule(model.getStyle())
+    pt.model = model
+    pt.trigger('update')
   },
 
   /**
@@ -90,7 +90,7 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   addToCollection(model, fragmentEl) {
-    let fragment = fragmentEl || null;
+    let fragment = fragmentEl || null
     let view = new SectorView({
       model,
       id:
@@ -103,29 +103,29 @@ module.exports = Backbone.View.extend({
       properties: model.get('properties'),
       target: this.target,
       propTarget: this.propTarget,
-      config: this.config
-    });
-    let rendered = view.render().el;
+      config: this.config,
+    })
+    let rendered = view.render().el
 
     if (fragment) {
-      fragment.appendChild(rendered);
+      fragment.appendChild(rendered)
     } else {
-      this.$el.append(rendered);
+      this.$el.append(rendered)
     }
 
-    return rendered;
+    return rendered
   },
 
   render() {
-    let fragment = document.createDocumentFragment();
-    this.$el.empty();
+    let fragment = document.createDocumentFragment()
+    this.$el.empty()
 
     this.collection.each(function(model) {
-      this.addToCollection(model, fragment);
-    }, this);
+      this.addToCollection(model, fragment)
+    }, this)
 
-    this.$el.attr('id', this.pfx + 'sectors');
-    this.$el.append(fragment);
-    return this;
-  }
-});
+    this.$el.attr('id', this.pfx + 'sectors')
+    this.$el.append(fragment)
+    return this
+  },
+})

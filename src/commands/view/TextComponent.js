@@ -1,5 +1,5 @@
-let Backbone = require('backbone');
-let CreateComponent = require('./CreateComponent');
+let Backbone = require('backbone')
+let CreateComponent = require('./CreateComponent')
 
 module.exports = _.extend({}, CreateComponent, {
   /**
@@ -8,9 +8,9 @@ module.exports = _.extend({}, CreateComponent, {
    * @private
    * */
   beforeDraw(component) {
-    component.type = 'text';
-    if (!component.style) component.style = {};
-    component.style.padding = '10px';
+    component.type = 'text'
+    if (!component.style) component.style = {}
+    component.style.padding = '10px'
   },
 
   /**
@@ -19,8 +19,8 @@ module.exports = _.extend({}, CreateComponent, {
    * @private
    * */
   afterDraw(model) {
-    if (!model || !model.set) return;
-    model.trigger('focus');
-    if (this.sender) this.sender.set('active', false);
-  }
-});
+    if (!model || !model.set) return
+    model.trigger('focus')
+    if (this.sender) this.sender.set('active', false)
+  },
+})

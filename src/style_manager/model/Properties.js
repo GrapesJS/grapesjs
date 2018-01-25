@@ -1,5 +1,5 @@
-import TypeableCollection from 'domain_abstract/model/TypeableCollection';
-const Property = require('./Property');
+import TypeableCollection from 'domain_abstract/model/TypeableCollection'
+const Property = require('./Property')
 
 module.exports = require('backbone')
   .Collection.extend(TypeableCollection)
@@ -11,9 +11,9 @@ module.exports = require('backbone')
         view: require('./../view/PropertyStackView'),
         isType(value) {
           if (value && value.type == 'stack') {
-            return value;
+            return value
           }
-        }
+        },
       },
       {
         id: 'composite',
@@ -21,9 +21,9 @@ module.exports = require('backbone')
         view: require('./../view/PropertyCompositeView'),
         isType(value) {
           if (value && value.type == 'composite') {
-            return value;
+            return value
           }
-        }
+        },
       },
       {
         id: 'file',
@@ -31,9 +31,9 @@ module.exports = require('backbone')
         view: require('./../view/PropertyFileView'),
         isType(value) {
           if (value && value.type == 'file') {
-            return value;
+            return value
           }
-        }
+        },
       },
       {
         id: 'color',
@@ -41,9 +41,9 @@ module.exports = require('backbone')
         view: require('./../view/PropertyColorView'),
         isType(value) {
           if (value && value.type == 'color') {
-            return value;
+            return value
           }
-        }
+        },
       },
       {
         id: 'select',
@@ -51,9 +51,9 @@ module.exports = require('backbone')
         view: require('./../view/PropertySelectView'),
         isType(value) {
           if (value && value.type == 'select') {
-            return value;
+            return value
           }
-        }
+        },
       },
       {
         id: 'radio',
@@ -61,9 +61,9 @@ module.exports = require('backbone')
         view: require('./../view/PropertyRadioView'),
         isType(value) {
           if (value && value.type == 'radio') {
-            return value;
+            return value
           }
-        }
+        },
       },
       {
         id: 'slider',
@@ -71,9 +71,9 @@ module.exports = require('backbone')
         view: require('./../view/PropertySliderView'),
         isType(value) {
           if (value && value.type == 'slider') {
-            return value;
+            return value
           }
-        }
+        },
       },
       {
         id: 'integer',
@@ -81,31 +81,31 @@ module.exports = require('backbone')
         view: require('./../view/PropertyIntegerView'),
         isType(value) {
           if (value && value.type == 'integer') {
-            return value;
+            return value
           }
-        }
+        },
       },
       {
         id: 'base',
         model: Property,
         view: require('./../view/PropertyView'),
         isType(value) {
-          value.type = 'base';
-          return value;
-        }
-      }
+          value.type = 'base'
+          return value
+        },
+      },
     ],
 
     deepClone() {
-      const collection = this.clone();
+      const collection = this.clone()
       collection.reset(
         collection.map(model => {
-          const cloned = model.clone();
-          cloned.typeView = model.typeView;
-          return cloned;
+          const cloned = model.clone()
+          cloned.typeView = model.typeView
+          return cloned
         })
-      );
-      return collection;
+      )
+      return collection
     },
 
     /**
@@ -115,18 +115,18 @@ module.exports = require('backbone')
      * @return
      */
     parseValue(value) {
-      const properties = [];
-      const values = value.split(' ');
+      const properties = []
+      const values = value.split(' ')
       values.forEach((value, i) => {
-        const property = this.at(i);
-        properties.push({ ...property.attributes, ...{ value } });
-      });
-      return properties;
+        const property = this.at(i)
+        properties.push({ ...property.attributes, ...{ value } })
+      })
+      return properties
     },
 
     getFullValue() {
-      let result = '';
-      this.each(model => (result += `${model.getFullValue()} `));
-      return result.trim();
-    }
-  });
+      let result = ''
+      this.each(model => (result += `${model.getFullValue()} `))
+      return result.trim()
+    },
+  })

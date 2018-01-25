@@ -33,92 +33,92 @@
  * ...
  */
 module.exports = () => {
-  let c = {};
-  let em;
-  const defaults = require('./config/config');
-  const Component = require('./model/Component');
-  const ComponentView = require('./view/ComponentView');
-  const Components = require('./model/Components');
-  const ComponentsView = require('./view/ComponentsView');
+  let c = {}
+  let em
+  const defaults = require('./config/config')
+  const Component = require('./model/Component')
+  const ComponentView = require('./view/ComponentView')
+  const Components = require('./model/Components')
+  const ComponentsView = require('./view/ComponentsView')
 
-  let component, componentView;
+  let component, componentView
   let componentTypes = [
     {
       id: 'cell',
       model: require('./model/ComponentTableCell'),
-      view: require('./view/ComponentTableCellView')
+      view: require('./view/ComponentTableCellView'),
     },
     {
       id: 'row',
       model: require('./model/ComponentTableRow'),
-      view: require('./view/ComponentTableRowView')
+      view: require('./view/ComponentTableRowView'),
     },
     {
       id: 'table',
       model: require('./model/ComponentTable'),
-      view: require('./view/ComponentTableView')
+      view: require('./view/ComponentTableView'),
     },
     {
       id: 'thead',
       model: require('./model/ComponentTableHead'),
-      view: require('./view/ComponentTableHeadView')
+      view: require('./view/ComponentTableHeadView'),
     },
     {
       id: 'tbody',
       model: require('./model/ComponentTableBody'),
-      view: require('./view/ComponentTableBodyView')
+      view: require('./view/ComponentTableBodyView'),
     },
     {
       id: 'tfoot',
       model: require('./model/ComponentTableFoot'),
-      view: require('./view/ComponentTableFootView')
+      view: require('./view/ComponentTableFootView'),
     },
     {
       id: 'map',
       model: require('./model/ComponentMap'),
-      view: require('./view/ComponentMapView')
+      view: require('./view/ComponentMapView'),
     },
     {
       id: 'link',
       model: require('./model/ComponentLink'),
-      view: require('./view/ComponentLinkView')
+      view: require('./view/ComponentLinkView'),
     },
     {
       id: 'video',
       model: require('./model/ComponentVideo'),
-      view: require('./view/ComponentVideoView')
+      view: require('./view/ComponentVideoView'),
     },
     {
       id: 'image',
       model: require('./model/ComponentImage'),
-      view: require('./view/ComponentImageView')
+      view: require('./view/ComponentImageView'),
     },
     {
       id: 'script',
       model: require('./model/ComponentScript'),
-      view: require('./view/ComponentScriptView')
+      view: require('./view/ComponentScriptView'),
     },
     {
       id: 'svg',
       model: require('./model/ComponentSvg'),
-      view: require('./view/ComponentSvgView')
+      view: require('./view/ComponentSvgView'),
     },
     {
       id: 'textnode',
       model: require('./model/ComponentTextNode'),
-      view: require('./view/ComponentTextNodeView')
+      view: require('./view/ComponentTextNodeView'),
     },
     {
       id: 'text',
       model: require('./model/ComponentText'),
-      view: require('./view/ComponentTextView')
+      view: require('./view/ComponentTextView'),
     },
     {
       id: 'default',
       model: Component,
-      view: ComponentView
-    }
-  ];
+      view: ComponentView,
+    },
+  ]
 
   return {
     Component,
@@ -142,7 +142,7 @@ module.exports = () => {
      * @private
      */
     getConfig() {
-      return c;
+      return c
     },
 
     /**
@@ -151,11 +151,11 @@ module.exports = () => {
      * @private
      */
     storageKey() {
-      let keys = [];
-      let smc = (c.stm && c.stm.getConfig()) || {};
-      if (smc.storeHtml) keys.push('html');
-      if (smc.storeComponents) keys.push('components');
-      return keys;
+      let keys = []
+      let smc = (c.stm && c.stm.getConfig()) || {}
+      if (smc.storeHtml) keys.push('html')
+      if (smc.storeComponents) keys.push('components')
+      return keys
     },
 
     /**
@@ -165,33 +165,33 @@ module.exports = () => {
      * @private
      */
     init(config) {
-      c = config || {};
-      em = c.em;
+      c = config || {}
+      em = c.em
 
       if (em) {
-        c.components = em.config.components || c.components;
+        c.components = em.config.components || c.components
       }
 
       for (let name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
+        if (!(name in c)) c[name] = defaults[name]
       }
 
-      let ppfx = c.pStylePrefix;
-      if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
+      let ppfx = c.pStylePrefix
+      if (ppfx) c.stylePrefix = ppfx + c.stylePrefix
 
       // Load dependencies
       if (em) {
-        c.modal = em.get('Modal') || '';
-        c.am = em.get('AssetManager') || '';
-        em.get('Parser').compTypes = componentTypes;
-        em.on('change:selectedComponent', this.componentChanged, this);
+        c.modal = em.get('Modal') || ''
+        c.am = em.get('AssetManager') || ''
+        em.get('Parser').compTypes = componentTypes
+        em.on('change:selectedComponent', this.componentChanged, this)
       }
 
       // Build wrapper
-      let components = c.components;
-      let wrapper = { ...c.wrapper };
-      wrapper['custom-name'] = c.wrapperName;
-      wrapper.wrapper = 1;
+      let components = c.components
+      let wrapper = { ...c.wrapper }
+      wrapper['custom-name'] = c.wrapperName
+      wrapper.wrapper = 1
 
       // Components might be a wrapper
       if (
@@ -199,30 +199,30 @@ module.exports = () => {
         components.constructor === Object &&
         components.wrapper
       ) {
-        wrapper = { ...components };
-        components = components.components || [];
-        wrapper.components = [];
+        wrapper = { ...components }
+        components = components.components || []
+        wrapper.components = []
 
         // Have to put back the real object of components
         if (em) {
-          em.config.components = components;
-          c.components = components;
+          em.config.components = components
+          c.components = components
         }
       }
 
       component = new Component(wrapper, {
         sm: em,
         config: c,
-        componentTypes
-      });
-      component.set({ attributes: { id: 'wrapper' } });
+        componentTypes,
+      })
+      component.set({ attributes: { id: 'wrapper' } })
 
       componentView = new ComponentView({
         model: component,
         config: c,
-        componentTypes
-      });
-      return this;
+        componentTypes,
+      })
+      return this
     },
 
     /**
@@ -230,7 +230,7 @@ module.exports = () => {
      * @private
      */
     onLoad() {
-      this.getComponents().reset(c.components);
+      this.getComponents().reset(c.components)
     },
 
     /**
@@ -239,7 +239,7 @@ module.exports = () => {
      * @private
      */
     postLoad(em) {
-      this.handleChanges(this.getWrapper(), null, { avoidStore: 1 });
+      this.handleChanges(this.getWrapper(), null, { avoidStore: 1 })
     },
 
     /**
@@ -247,27 +247,27 @@ module.exports = () => {
      * @private
      */
     handleChanges(model, value, opts = {}) {
-      const comps = model.components();
-      const um = em.get('UndoManager');
-      const handleUpdates = em.handleUpdates.bind(em);
-      const handleChanges = this.handleChanges.bind(this);
-      const handleRemoves = this.handleRemoves.bind(this);
-      um && um.add(model);
-      um && comps && um.add(comps);
+      const comps = model.components()
+      const um = em.get('UndoManager')
+      const handleUpdates = em.handleUpdates.bind(em)
+      const handleChanges = this.handleChanges.bind(this)
+      const handleRemoves = this.handleRemoves.bind(this)
+      um && um.add(model)
+      um && comps && um.add(comps)
       const evn = 'change:style change:content change:attributes change:src';
 
       [
         [model, evn, handleUpdates],
         [comps, 'add', handleChanges],
         [comps, 'remove', handleRemoves],
-        [model.get('classes'), 'add remove', handleUpdates]
+        [model.get('classes'), 'add remove', handleUpdates],
       ].forEach(els => {
-        em.stopListening(els[0], els[1], els[2]);
-        em.listenTo(els[0], els[1], els[2]);
-      });
+        em.stopListening(els[0], els[1], els[2])
+        em.listenTo(els[0], els[1], els[2])
+      })
 
-      !opts.avoidStore && handleUpdates('', '', opts);
-      comps.each(model => this.handleChanges(model, value, opts));
+      !opts.avoidStore && handleUpdates('', '', opts)
+      comps.each(model => this.handleChanges(model, value, opts))
     },
 
     /**
@@ -275,7 +275,7 @@ module.exports = () => {
      * @private
      * */
     handleRemoves(model, value, opts = {}) {
-      !opts.avoidStore && em.handleUpdates(model, value, opts);
+      !opts.avoidStore && em.handleUpdates(model, value, opts)
     },
 
     /**
@@ -286,25 +286,25 @@ module.exports = () => {
      * @return {Object} Loaded data
      */
     load(data = '') {
-      let result = '';
+      let result = ''
 
       if (!data && c.stm) {
-        data = c.em.getCacheLoad();
+        data = c.em.getCacheLoad()
       }
 
       if (data.components) {
         try {
-          result = JSON.parse(data.components);
+          result = JSON.parse(data.components)
         } catch (err) {}
       } else if (data.html) {
-        result = data.html;
+        result = data.html
       }
 
-      const isObj = result && result.constructor === Object;
+      const isObj = result && result.constructor === Object
 
       if ((result && result.length) || isObj) {
-        this.clear();
-        this.getComponents().reset();
+        this.clear()
+        this.getComponents().reset()
 
         // If the result is an object I consider it the wrapper
         if (isObj) {
@@ -312,13 +312,13 @@ module.exports = () => {
             .set(result)
             .initComponents()
             .initClasses()
-            .loadTraits();
+            .loadTraits()
         } else {
-          this.getComponents().add(result);
+          this.getComponents().add(result)
         }
       }
 
-      return result;
+      return result
     },
 
     /**
@@ -328,28 +328,28 @@ module.exports = () => {
      */
     store(noStore) {
       if (!c.stm) {
-        return;
+        return
       }
 
-      let obj = {};
-      let keys = this.storageKey();
+      let obj = {}
+      let keys = this.storageKey()
 
       if (keys.indexOf('html') >= 0) {
-        obj.html = c.em.getHtml();
+        obj.html = c.em.getHtml()
       }
 
       if (keys.indexOf('components') >= 0) {
         const toStore = c.storeWrapper
           ? this.getWrapper()
-          : this.getComponents();
-        obj.components = JSON.stringify(toStore);
+          : this.getComponents()
+        obj.components = JSON.stringify(toStore)
       }
 
       if (!noStore) {
-        c.stm.store(obj);
+        c.stm.store(obj)
       }
 
-      return obj;
+      return obj
     },
 
     /**
@@ -358,7 +358,7 @@ module.exports = () => {
      * @private
      */
     getComponent() {
-      return component;
+      return component
     },
 
     /**
@@ -372,7 +372,7 @@ module.exports = () => {
      * wrapper.set('attributes', {'title': 'Hello!'});
      */
     getWrapper() {
-      return this.getComponent();
+      return this.getComponent()
     },
 
     /**
@@ -403,7 +403,7 @@ module.exports = () => {
      * wrapperChildren.remove(comp2);
      */
     getComponents() {
-      return this.getWrapper().get('components');
+      return this.getWrapper().get('components')
     },
 
     /**
@@ -435,7 +435,7 @@ module.exports = () => {
      * });
      */
     addComponent(component) {
-      return this.getComponents().add(component);
+      return this.getComponents().add(component)
     },
 
     /**
@@ -446,7 +446,7 @@ module.exports = () => {
      * @return {HTMLElement}
      */
     render() {
-      return componentView.render().el;
+      return componentView.render().el
     },
 
     /**
@@ -454,9 +454,9 @@ module.exports = () => {
      * @return {this}
      */
     clear() {
-      let c = this.getComponents();
-      for (let i = 0, len = c.length; i < len; i++) c.pop();
-      return this;
+      let c = this.getComponents()
+      for (let i = 0, len = c.length; i < len; i++) c.pop()
+      return this
     },
 
     /**
@@ -466,7 +466,7 @@ module.exports = () => {
      * @private
      */
     setComponents(components) {
-      this.clear().addComponent(components);
+      this.clear().addComponent(components)
     },
 
     /**
@@ -476,13 +476,13 @@ module.exports = () => {
      * @private
      */
     addType(type, methods) {
-      let compType = this.getType(type);
+      let compType = this.getType(type)
       if (compType) {
-        compType.model = methods.model;
-        compType.view = methods.view;
+        compType.model = methods.model
+        compType.view = methods.view
       } else {
-        methods.id = type;
-        componentTypes.unshift(methods);
+        methods.id = type
+        componentTypes.unshift(methods)
       }
     },
 
@@ -492,15 +492,15 @@ module.exports = () => {
      * @private
      */
     getType(type) {
-      let df = componentTypes;
+      let df = componentTypes
 
       for (let it = 0; it < df.length; it++) {
-        let dfId = df[it].id;
+        let dfId = df[it].id
         if (dfId == type) {
-          return df[it];
+          return df[it]
         }
       }
-      return;
+      return
     },
 
     /**
@@ -508,19 +508,19 @@ module.exports = () => {
      * @private
      */
     componentChanged() {
-      const em = c.em;
-      const model = em.get('selectedComponent');
-      const previousModel = em.previous('selectedComponent');
+      const em = c.em
+      const model = em.get('selectedComponent')
+      const previousModel = em.previous('selectedComponent')
 
       // Deselect the previous component
       if (previousModel) {
         previousModel.set({
           status: '',
-          state: ''
-        });
+          state: '',
+        })
       }
 
-      model && model.set('status', 'selected');
-    }
-  };
-};
+      model && model.set('status', 'selected')
+    },
+  }
+}

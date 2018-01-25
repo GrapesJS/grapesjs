@@ -39,12 +39,12 @@
  */
 
 module.exports = () => {
-  let c = {};
-  const defaults = require('./config/config');
-  const Assets = require('./model/Assets');
-  const AssetsView = require('./view/AssetsView');
-  const FileUpload = require('./view/FileUploader');
-  let assets, am, fu;
+  let c = {}
+  const defaults = require('./config/config')
+  const Assets = require('./model/Assets')
+  const AssetsView = require('./view/AssetsView')
+  const FileUpload = require('./view/FileUploader')
+  let assets, am, fu
 
   return {
     /**
@@ -62,7 +62,7 @@ module.exports = () => {
     storageKey: 'assets',
 
     getConfig() {
-      return c;
+      return c
     },
 
     /**
@@ -71,43 +71,43 @@ module.exports = () => {
      * @private
      */
     init(config) {
-      c = config || {};
+      c = config || {}
 
       for (let name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
+        if (!(name in c)) c[name] = defaults[name]
       }
 
-      const ppfx = c.pStylePrefix;
-      const em = c.em;
+      const ppfx = c.pStylePrefix
+      const em = c.em
 
       if (ppfx) {
-        c.stylePrefix = ppfx + c.stylePrefix;
+        c.stylePrefix = ppfx + c.stylePrefix
       }
 
       // Global assets collection
-      assets = new Assets([]);
+      assets = new Assets([])
       const obj = {
         // Collection visible in asset manager
         collection: new Assets([]),
         globalCollection: assets,
-        config: c
-      };
-      fu = new FileUpload(obj);
-      obj.fu = fu;
-      am = new AssetsView(obj);
+        config: c,
+      }
+      fu = new FileUpload(obj)
+      obj.fu = fu
+      am = new AssetsView(obj)
 
       // Setup the sync between the global and public collections
       assets.listenTo(assets, 'add', model => {
-        this.getAllVisible().add(model);
-        em && em.trigger('asset:add', model);
-      });
+        this.getAllVisible().add(model)
+        em && em.trigger('asset:add', model)
+      })
 
       assets.listenTo(assets, 'remove', model => {
-        this.getAllVisible().remove(model);
-        em && em.trigger('asset:remove', model);
-      });
+        this.getAllVisible().remove(model)
+        em && em.trigger('asset:remove', model)
+      })
 
-      return this;
+      return this
     },
 
     /**
@@ -136,10 +136,10 @@ module.exports = () => {
     add(asset, opts = {}) {
       // Put the model at the beginning
       if (typeof opts.at == 'undefined') {
-        opts.at = 0;
+        opts.at = 0
       }
 
-      return assets.add(asset, opts);
+      return assets.add(asset, opts)
     },
 
     /**
@@ -150,7 +150,7 @@ module.exports = () => {
      * var asset = assetManager.get('http://img.jpg');
      */
     get(src) {
-      return assets.where({ src })[0];
+      return assets.where({ src })[0]
     },
 
     /**
@@ -158,7 +158,7 @@ module.exports = () => {
      * @return {Collection}
      */
     getAll() {
-      return assets;
+      return assets
     },
 
     /**
@@ -166,7 +166,7 @@ module.exports = () => {
      * @return {Collection}
      */
     getAllVisible() {
-      return am.collection;
+      return am.collection
     },
 
     /**
@@ -177,9 +177,9 @@ module.exports = () => {
      * assetManager.remove('http://img.jpg');
      */
     remove(src) {
-      let asset = this.get(src);
-      this.getAll().remove(asset);
-      return this;
+      let asset = this.get(src)
+      this.getAll().remove(asset)
+      return this
     },
 
     /**
@@ -190,11 +190,11 @@ module.exports = () => {
      * var assets = assetManager.store();
      */
     store(noStore) {
-      let obj = {};
-      let assets = JSON.stringify(this.getAll().toJSON());
-      obj[this.storageKey] = assets;
-      if (!noStore && c.stm) c.stm.store(obj);
-      return obj;
+      let obj = {}
+      let assets = JSON.stringify(this.getAll().toJSON())
+      obj[this.storageKey] = assets
+      if (!noStore && c.stm) c.stm.store(obj)
+      return obj
     },
 
     /**
@@ -209,20 +209,20 @@ module.exports = () => {
      *
      */
     load(data = {}) {
-      const name = this.storageKey;
-      let assets = data[name] || [];
+      const name = this.storageKey
+      let assets = data[name] || []
 
       if (typeof assets == 'string') {
         try {
-          assets = JSON.parse(data[name]);
+          assets = JSON.parse(data[name])
         } catch (err) {}
       }
 
       if (assets && assets.length) {
-        this.getAll().reset(assets);
+        this.getAll().reset(assets)
       }
 
-      return assets;
+      return assets
     },
 
     /**
@@ -230,7 +230,7 @@ module.exports = () => {
      * @return {HTMLElement}
      */
     getContainer() {
-      return am.el;
+      return am.el
     },
 
     /**
@@ -238,7 +238,7 @@ module.exports = () => {
      * @return {HTMLElement}
      */
     getAssetsEl() {
-      return am.el.querySelector('[data-el=assets]');
+      return am.el.querySelector('[data-el=assets]')
     },
 
     /**
@@ -257,14 +257,14 @@ module.exports = () => {
      * ));
      */
     render(assets) {
-      const toRender = assets || this.getAll().models;
+      const toRender = assets || this.getAll().models
 
       if (!am.rendered) {
-        am.render();
+        am.render()
       }
 
-      am.collection.reset(toRender);
-      return this.getContainer();
+      am.collection.reset(toRender)
+      return this.getContainer()
     },
 
     /**
@@ -281,7 +281,7 @@ module.exports = () => {
      * })
      */
     addType(id, definition) {
-      this.getAll().addType(id, definition);
+      this.getAll().addType(id, definition)
     },
 
     /**
@@ -290,7 +290,7 @@ module.exports = () => {
      * @return {Object} Type definition
      */
     getType(id) {
-      return this.getAll().getType(id);
+      return this.getAll().getType(id)
     },
 
     /**
@@ -298,25 +298,25 @@ module.exports = () => {
      * @return {Array}
      */
     getTypes() {
-      return this.getAll().getTypes();
+      return this.getAll().getTypes()
     },
 
     //-------
 
     AssetsView() {
-      return am;
+      return am
     },
 
     FileUploader() {
-      return fu;
+      return fu
     },
 
     onLoad() {
-      this.getAll().reset(c.assets);
+      this.getAll().reset(c.assets)
     },
 
     postRender(editorView) {
-      c.dropzone && fu.initDropzone(editorView);
+      c.dropzone && fu.initDropzone(editorView)
     },
 
     /**
@@ -325,7 +325,7 @@ module.exports = () => {
      * @private
      * */
     setTarget(m) {
-      am.collection.target = m;
+      am.collection.target = m
     },
 
     /**
@@ -334,7 +334,7 @@ module.exports = () => {
      * @private
      * */
     onSelect(f) {
-      am.collection.onSelect = f;
+      am.collection.onSelect = f
     },
 
     /**
@@ -343,7 +343,7 @@ module.exports = () => {
      * @private
      */
     onClick(func) {
-      c.onClick = func;
+      c.onClick = func
     },
 
     /**
@@ -352,7 +352,7 @@ module.exports = () => {
      * @private
      */
     onDblClick(func) {
-      c.onDblClick = func;
-    }
-  };
-};
+      c.onDblClick = func
+    },
+  }
+}

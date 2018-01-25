@@ -1,30 +1,30 @@
 module.exports = require('./PropertyView').extend({
   templateInput() {
-    const pfx = this.pfx;
-    const ppfx = this.ppfx;
+    const pfx = this.pfx
+    const ppfx = this.ppfx
     return `
       <div class="${ppfx}field ${ppfx}field-radio">
       </div>
-    `;
+    `
   },
 
   onRender() {
-    const pfx = this.pfx;
-    const ppfx = this.ppfx;
-    const itemCls = `${ppfx}radio-item-label`;
-    const model = this.model;
-    const prop = model.get('property');
-    const options = model.get('list') || model.get('options') || [];
+    const pfx = this.pfx
+    const ppfx = this.ppfx
+    const itemCls = `${ppfx}radio-item-label`
+    const model = this.model
+    const prop = model.get('property')
+    const options = model.get('list') || model.get('options') || []
 
     if (!this.input) {
       if (options && options.length) {
-        let inputStr = '';
+        let inputStr = ''
 
         options.forEach(el => {
-          let cl = el.className ? `${el.className} ${pfx}icon ${itemCls}` : '';
-          let id = `${prop}-${el.value}`;
-          let labelTxt = el.name || el.value;
-          let titleAttr = el.title ? `title="${el.title}"` : '';
+          let cl = el.className ? `${el.className} ${pfx}icon ${itemCls}` : ''
+          let id = `${prop}-${el.value}`
+          let labelTxt = el.name || el.value
+          let titleAttr = el.title ? `title="${el.title}"` : ''
           inputStr += `
             <div class="${ppfx}radio-item">
               <input type="radio" class="${pfx}radio" id="${id}" name="${prop}" value="${
@@ -34,37 +34,37 @@ module.exports = require('./PropertyView').extend({
             cl ? '' : labelTxt
           }</label>
             </div>
-          `;
-        });
+          `
+        })
 
-        const inputHld = this.el.querySelector(`.${ppfx}field`);
-        inputHld.innerHTML = `<div class="${ppfx}radio-items">${inputStr}</div>`;
-        this.input = inputHld.firstChild;
+        const inputHld = this.el.querySelector(`.${ppfx}field`)
+        inputHld.innerHTML = `<div class="${ppfx}radio-items">${inputStr}</div>`
+        this.input = inputHld.firstChild
       }
     }
   },
 
   getInputValue() {
-    const inputChk = this.getCheckedEl();
-    return inputChk ? inputChk.value : '';
+    const inputChk = this.getCheckedEl()
+    return inputChk ? inputChk.value : ''
   },
 
   getCheckedEl() {
-    const input = this.getInputEl();
-    return input ? input.querySelector('input:checked') : '';
+    const input = this.getInputEl()
+    return input ? input.querySelector('input:checked') : ''
   },
 
   setValue(value) {
-    const model = this.model;
-    let val = value || model.get('value') || model.getDefaultValue();
-    const input = this.getInputEl();
-    const inputIn = input ? input.querySelector(`[value="${val}"]`) : '';
+    const model = this.model
+    let val = value || model.get('value') || model.getDefaultValue()
+    const input = this.getInputEl()
+    const inputIn = input ? input.querySelector(`[value="${val}"]`) : ''
 
     if (inputIn) {
-      inputIn.checked = true;
+      inputIn.checked = true
     } else {
-      const inputChk = this.getCheckedEl();
-      inputChk && (inputChk.checked = false);
+      const inputChk = this.getCheckedEl()
+      inputChk && (inputChk.checked = false)
     }
-  }
-});
+  },
+})

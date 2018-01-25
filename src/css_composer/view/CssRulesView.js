@@ -1,16 +1,16 @@
-let Backbone = require('backbone');
-let CssRuleView = require('./CssRuleView');
+let Backbone = require('backbone')
+let CssRuleView = require('./CssRuleView')
 
 module.exports = Backbone.View.extend({
   initialize(o) {
-    const config = o.config || {};
-    this.config = config;
-    this.em = config.em;
-    this.pfx = config.stylePrefix || '';
-    this.className = this.pfx + 'rules';
-    const coll = this.collection;
-    this.listenTo(coll, 'add', this.addTo);
-    this.listenTo(coll, 'reset', this.render);
+    const config = o.config || {}
+    this.config = config
+    this.em = config.em
+    this.pfx = config.stylePrefix || ''
+    this.className = this.pfx + 'rules'
+    const coll = this.collection
+    this.listenTo(coll, 'add', this.addTo)
+    this.listenTo(coll, 'reset', this.render)
   },
 
   /**
@@ -19,7 +19,7 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   addTo(model) {
-    this.addToCollection(model);
+    this.addToCollection(model)
   },
 
   /**
@@ -30,28 +30,28 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   addToCollection(model, fragmentEl) {
-    let fragment = fragmentEl || null;
-    let viewObject = CssRuleView;
+    let fragment = fragmentEl || null
+    let viewObject = CssRuleView
 
     let view = new viewObject({
       model,
-      config: this.config
-    });
-    let rendered = view.render().el;
+      config: this.config,
+    })
+    let rendered = view.render().el
 
-    if (fragment) fragment.appendChild(rendered);
-    else this.$el.append(rendered);
+    if (fragment) fragment.appendChild(rendered)
+    else this.$el.append(rendered)
 
-    return rendered;
+    return rendered
   },
 
   render() {
-    const $el = this.$el;
-    const frag = document.createDocumentFragment();
-    $el.empty();
-    this.collection.each(model => this.addToCollection(model, frag));
-    $el.append(frag);
-    $el.attr('class', this.className);
-    return this;
-  }
-});
+    const $el = this.$el
+    const frag = document.createDocumentFragment()
+    $el.empty()
+    this.collection.each(model => this.addToCollection(model, frag))
+    $el.append(frag)
+    $el.attr('class', this.className)
+    return this
+  },
+})

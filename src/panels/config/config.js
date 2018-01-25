@@ -1,13 +1,13 @@
-let crc = 'create-comp';
-let mvc = 'move-comp';
-let swv = 'sw-visibility';
-let expt = 'export-template';
-let osm = 'open-sm';
-let otm = 'open-tm';
-let ola = 'open-layers';
-let obl = 'open-blocks';
-let ful = 'fullscreen';
-let prv = 'preview';
+let crc = 'create-comp'
+let mvc = 'move-comp'
+let swv = 'sw-visibility'
+let expt = 'export-template'
+let osm = 'open-sm'
+let otm = 'open-tm'
+let ola = 'open-layers'
+let obl = 'open-blocks'
+let ful = 'fullscreen'
+let prv = 'preview'
 
 module.exports = {
   stylePrefix: 'pn-',
@@ -16,7 +16,7 @@ module.exports = {
   defaults: [
     {
       id: 'commands',
-      buttons: [{}]
+      buttons: [{}],
     },
     {
       id: 'options',
@@ -27,29 +27,29 @@ module.exports = {
           className: 'fa fa-square-o',
           command: swv,
           context: swv,
-          attributes: { title: 'View components' }
+          attributes: { title: 'View components' },
         },
         {
           id: prv,
           className: 'fa fa-eye',
           command: prv,
           context: prv,
-          attributes: { title: 'Preview' }
+          attributes: { title: 'Preview' },
         },
         {
           id: ful,
           className: 'fa fa-arrows-alt',
           command: ful,
           context: ful,
-          attributes: { title: 'Fullscreen' }
+          attributes: { title: 'Fullscreen' },
         },
         {
           id: expt,
           className: 'fa fa-code',
           command: expt,
-          attributes: { title: 'View code' }
-        }
-      ]
+          attributes: { title: 'View code' },
+        },
+      ],
     },
     {
       id: 'views',
@@ -59,33 +59,33 @@ module.exports = {
           className: 'fa fa-paint-brush',
           command: osm,
           active: true,
-          attributes: { title: 'Open Style Manager' }
+          attributes: { title: 'Open Style Manager' },
         },
         {
           id: otm,
           className: 'fa fa-cog',
           command: otm,
-          attributes: { title: 'Settings' }
+          attributes: { title: 'Settings' },
         },
         {
           id: ola,
           className: 'fa fa-bars',
           command: ola,
-          attributes: { title: 'Open Layer Manager' }
+          attributes: { title: 'Open Layer Manager' },
         },
         {
           id: obl,
           className: 'fa fa-th-large',
           command: obl,
-          attributes: { title: 'Open Blocks' }
-        }
-      ]
-    }
+          attributes: { title: 'Open Blocks' },
+        },
+      ],
+    },
   ],
 
   // Editor model
   em: null,
 
   // Delay before show children buttons (in milliseconds)
-  delayBtnsShow: 300
-};
+  delayBtnsShow: 300,
+}

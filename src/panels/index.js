@@ -51,8 +51,8 @@ module.exports = () => {
     Panel = require('./model/Panel'),
     Panels = require('./model/Panels'),
     PanelView = require('./view/PanelView'),
-    PanelsView = require('./view/PanelsView');
-  let panels, PanelsViewObj;
+    PanelsView = require('./view/PanelsView')
+  let panels, PanelsViewObj
 
   return {
     /**
@@ -67,20 +67,20 @@ module.exports = () => {
      * @param {Object} config Configurations
      */
     init(config) {
-      c = config || {};
+      c = config || {}
       for (let name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
+        if (!(name in c)) c[name] = defaults[name]
       }
 
-      let ppfx = c.pStylePrefix;
-      if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
+      let ppfx = c.pStylePrefix
+      if (ppfx) c.stylePrefix = ppfx + c.stylePrefix
 
-      panels = new Panels(c.defaults);
+      panels = new Panels(c.defaults)
       PanelsViewObj = new PanelsView({
         collection: panels,
-        config: c
-      });
-      return this;
+        config: c,
+      })
+      return this
     },
 
     /**
@@ -88,7 +88,7 @@ module.exports = () => {
      * @return {Collection} Collection of panel
      */
     getPanels() {
-      return panels;
+      return panels
     },
 
     /**
@@ -96,7 +96,7 @@ module.exports = () => {
      * @return {HTMLElement}
      */
     getPanelsEl() {
-      return PanelsViewObj.el;
+      return PanelsViewObj.el
     },
 
     /**
@@ -111,7 +111,7 @@ module.exports = () => {
      * });
      */
     addPanel(panel) {
-      return panels.add(panel);
+      return panels.add(panel)
     },
 
     /**
@@ -129,7 +129,7 @@ module.exports = () => {
      *
      */
     removePanel(panel) {
-      return panels.remove(panel);
+      return panels.remove(panel)
     },
 
     /**
@@ -140,8 +140,8 @@ module.exports = () => {
      * var myPanel = panelManager.getPanel('myNewPanel');
      */
     getPanel(id) {
-      let res = panels.where({ id });
-      return res.length ? res[0] : null;
+      let res = panels.where({ id })
+      return res.length ? res[0] : null
     },
 
     /**
@@ -175,8 +175,8 @@ module.exports = () => {
      * }
      */
     addButton(panelId, button) {
-      let pn = this.getPanel(panelId);
-      return pn ? pn.get('buttons').add(button) : null;
+      let pn = this.getPanel(panelId)
+      return pn ? pn.get('buttons').add(button) : null
     },
 
     /**
@@ -198,8 +198,8 @@ module.exports = () => {
      *
      */
     removeButton(panelId, button) {
-      let pn = this.getPanel(panelId);
-      return pn && pn.get('buttons').remove(button);
+      let pn = this.getPanel(panelId)
+      return pn && pn.get('buttons').remove(button)
     },
 
     /**
@@ -211,12 +211,12 @@ module.exports = () => {
      * var button = panelManager.getButton('myPanel','myButton');
      */
     getButton(panelId, id) {
-      let pn = this.getPanel(panelId);
+      let pn = this.getPanel(panelId)
       if (pn) {
-        let res = pn.get('buttons').where({ id });
-        return res.length ? res[0] : null;
+        let res = pn.get('buttons').where({ id })
+        return res.length ? res[0] : null
       }
-      return null;
+      return null
     },
 
     /**
@@ -224,7 +224,7 @@ module.exports = () => {
      * @return {HTMLElement}
      */
     render() {
-      return PanelsViewObj.render().el;
+      return PanelsViewObj.render().el
     },
 
     /**
@@ -234,9 +234,9 @@ module.exports = () => {
     active() {
       this.getPanels().each(p => {
         p.get('buttons').each(btn => {
-          if (btn.get('active')) btn.trigger('updateActive');
-        });
-      });
+          if (btn.get('active')) btn.trigger('updateActive')
+        })
+      })
     },
 
     /**
@@ -246,11 +246,11 @@ module.exports = () => {
     disableButtons() {
       this.getPanels().each(p => {
         p.get('buttons').each(btn => {
-          if (btn.get('disable')) btn.trigger('change:disable');
-        });
-      });
+          if (btn.get('disable')) btn.trigger('change:disable')
+        })
+      })
     },
 
-    Panel
-  };
-};
+    Panel,
+  }
+}

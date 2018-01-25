@@ -1,11 +1,11 @@
-const PropertyView = require('./PropertyView');
-const $ = Backbone.$;
+const PropertyView = require('./PropertyView')
+const $ = Backbone.$
 
 module.exports = PropertyView.extend({
   templateInput() {
-    const pfx = this.pfx;
-    const ppfx = this.ppfx;
-    const assetsLabel = this.config.assetsLabel || 'Images';
+    const pfx = this.pfx
+    const ppfx = this.ppfx
+    const assetsLabel = this.config.assetsLabel || 'Images'
     return `
     <div class="${pfx}field ${pfx}file">
       <div id='${pfx}input-holder'>
@@ -21,39 +21,39 @@ module.exports = PropertyView.extend({
         <div id="${pfx}close">&Cross;</div>
       </div>
     </div>
-    `;
+    `
   },
 
   init() {
-    const em = this.em;
-    this.modal = em.get('Modal');
-    this.am = em.get('AssetManager');
-    this.events['click #' + this.pfx + 'close'] = 'removeFile';
-    this.events['click #' + this.pfx + 'images'] = 'openAssetManager';
-    this.delegateEvents();
+    const em = this.em
+    this.modal = em.get('Modal')
+    this.am = em.get('AssetManager')
+    this.events['click #' + this.pfx + 'close'] = 'removeFile'
+    this.events['click #' + this.pfx + 'images'] = 'openAssetManager'
+    this.delegateEvents()
   },
 
   onRender() {
     if (!this.$input) {
-      const plh = this.model.getDefaultValue();
-      this.$input = $(`<input placeholder="${plh}">`);
+      const plh = this.model.getDefaultValue()
+      this.$input = $(`<input placeholder="${plh}">`)
     }
 
     if (!this.$preview) {
-      this.$preview = this.$el.find('#' + this.pfx + 'preview-file');
+      this.$preview = this.$el.find('#' + this.pfx + 'preview-file')
     }
 
     if (!this.$previewBox) {
-      this.$previewBox = this.$el.find('#' + this.pfx + 'preview-box');
+      this.$previewBox = this.$el.find('#' + this.pfx + 'preview-box')
     }
 
-    this.setValue(this.componentValue, 0);
+    this.setValue(this.componentValue, 0)
   },
 
   setValue(value, f) {
-    PropertyView.prototype.setValue.apply(this, arguments);
-    this.setPreviewView(value && value != this.model.getDefaultValue());
-    this.setPreview(value);
+    PropertyView.prototype.setValue.apply(this, arguments)
+    this.setPreviewView(value && value != this.model.getDefaultValue())
+    this.setPreview(value)
   },
 
   /**
@@ -63,8 +63,8 @@ module.exports = PropertyView.extend({
    * @return void
    * */
   setPreviewView(v) {
-    const pv = this.$previewBox;
-    pv && pv[v ? 'addClass' : 'removeClass'](`${this.pfx}show`);
+    const pv = this.$previewBox
+    pv && pv[v ? 'addClass' : 'removeClass'](`${this.pfx}show`)
   },
 
   /**
@@ -74,8 +74,8 @@ module.exports = PropertyView.extend({
    * @return void
    * */
   spreadUrl(url) {
-    this.model.set('value', url);
-    this.setPreviewView(1);
+    this.model.set('value', url)
+    this.setPreviewView(1)
   },
 
   /**
@@ -83,15 +83,15 @@ module.exports = PropertyView.extend({
    * @param string Value
    * */
   setPreview(value) {
-    const preview = this.$preview;
-    value = value && value.indexOf('url(') < 0 ? `url(${value})` : value;
-    preview && preview.css('background-image', value);
+    const preview = this.$preview
+    value = value && value.indexOf('url(') < 0 ? `url(${value})` : value
+    preview && preview.css('background-image', value)
   },
 
   /** @inheritdoc */
   cleanValue() {
-    this.setPreviewView(0);
-    this.model.set({ value: '' }, { silent: true });
+    this.setPreviewView(0)
+    this.model.set({ value: '' }, { silent: true })
   },
 
   /**
@@ -100,9 +100,9 @@ module.exports = PropertyView.extend({
    * @return void
    * */
   removeFile(...args) {
-    this.model.set('value', this.model.getDefaultValue());
-    PropertyView.prototype.cleanValue.apply(this, args);
-    this.setPreviewView(0);
+    this.model.set('value', this.model.getDefaultValue())
+    PropertyView.prototype.cleanValue.apply(this, args)
+    this.setPreviewView(0)
   },
 
   /**
@@ -112,21 +112,21 @@ module.exports = PropertyView.extend({
    * @return void
    * */
   openAssetManager(e) {
-    let that = this;
-    let em = this.em;
-    let editor = em ? em.get('Editor') : '';
+    let that = this
+    let em = this.em
+    let editor = em ? em.get('Editor') : ''
 
     if (editor) {
-      this.modal.setTitle('Select image');
-      this.modal.setContent(this.am.getContainer());
-      this.am.setTarget(null);
+      this.modal.setTitle('Select image')
+      this.modal.setContent(this.am.getContainer())
+      this.am.setTarget(null)
       editor.runCommand('open-assets', {
         target: this.model,
         onSelect(target) {
-          that.modal.close();
-          that.spreadUrl(target.get('src'));
-        }
-      });
+          that.modal.close()
+          that.spreadUrl(target.get('src'))
+        },
+      })
     }
-  }
-});
+  },
+})

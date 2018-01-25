@@ -1,4 +1,4 @@
-let Backbone = require('backbone');
+let Backbone = require('backbone')
 
 module.exports = Backbone.Model.extend({
   defaults: {
@@ -13,13 +13,13 @@ module.exports = Backbone.Model.extend({
     dragDrop: false,
     runDefaultCommand: true,
     stopDefaultCommand: false,
-    disable: false
+    disable: false,
   },
 
   initialize(options) {
     if (this.get('buttons').length) {
-      let Buttons = require('./Buttons');
-      this.set('buttons', new Buttons(this.get('buttons')));
+      let Buttons = require('./Buttons')
+      this.set('buttons', new Buttons(this.get('buttons')))
     }
-  }
-});
+  },
+})

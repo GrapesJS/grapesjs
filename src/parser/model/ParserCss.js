@@ -15,24 +15,24 @@ module.exports = config => ({
    * //}
    */
   parseSelector(str) {
-    let add = [];
-    let result = [];
-    let sels = str.split(',');
+    let add = []
+    let result = []
+    let sels = str.split(',')
     for (let i = 0, len = sels.length; i < len; i++) {
-      let sel = sels[i].trim();
+      let sel = sels[i].trim()
       // Will accept only concatenated classes and last
       // class might be with state (eg. :hover), nothing else.
       if (/^(\.{1}[\w\-]+)+(:{1,2}[\w\-()]+)?$/gi.test(sel)) {
-        let cls = sel.split('.').filter(Boolean);
-        result.push(cls);
+        let cls = sel.split('.').filter(Boolean)
+        result.push(cls)
       } else {
-        add.push(sel);
+        add.push(sel)
       }
     }
     return {
       result,
-      add
-    };
+      add,
+    }
   },
 
   /**
@@ -41,81 +41,81 @@ module.exports = config => ({
    * @return {Array<Object>}
    */
   parseNode(el) {
-    let result = [];
-    let nodes = el.cssRules;
+    let result = []
+    let nodes = el.cssRules
 
     for (let i = 0, len = nodes.length; i < len; i++) {
-      let node = nodes[i];
-      let sels = node.selectorText;
-      let selsAdd = [];
+      let node = nodes[i]
+      let sels = node.selectorText
+      let selsAdd = []
 
       // It's a CSSMediaRule
       if (node.cssRules) {
-        let subRules = this.parseNode(node);
-        let mediaText = node.media.mediaText;
+        let subRules = this.parseNode(node)
+        let mediaText = node.media.mediaText
 
         for (let s = 0, lens = subRules.length; s < lens; s++) {
-          let subRule = subRules[s];
-          subRule.mediaText = mediaText ? mediaText.trim() : '';
+          let subRule = subRules[s]
+          subRule.mediaText = mediaText ? mediaText.trim() : ''
         }
 
-        result = result.concat(subRules);
+        result = result.concat(subRules)
       }
 
-      if (!sels) continue;
+      if (!sels) continue
 
-      let selsParsed = this.parseSelector(sels);
-      sels = selsParsed.result;
-      selsAdd = selsParsed.add;
+      let selsParsed = this.parseSelector(sels)
+      sels = selsParsed.result
+      selsAdd = selsParsed.add
 
       // Create style object from the big one
-      let stl = node.style;
-      let style = {};
+      let stl = node.style
+      let style = {}
 
       for (let j = 0, len2 = stl.length; j < len2; j++) {
-        const propName = stl[j];
-        const propValue = stl.getPropertyValue(propName);
-        const important = stl.getPropertyPriority(propName);
-        style[propName] = `${propValue}${important ? ` !${important}` : ''}`;
+        const propName = stl[j]
+        const propValue = stl.getPropertyValue(propName)
+        const important = stl.getPropertyPriority(propName)
+        style[propName] = `${propValue}${important ? ` !${important}` : ''}`
       }
 
-      let lastRule = '';
+      let lastRule = ''
       // For each group of selectors
       for (let k = 0, len3 = sels.length; k < len3; k++) {
-        let selArr = sels[k];
-        let model = {};
+        let selArr = sels[k]
+        let model = {}
 
         //Isolate state from selector
-        let stateArr = selArr[selArr.length - 1].split(/:(.+)/);
+        let stateArr = selArr[selArr.length - 1].split(/:(.+)/)
         if (stateArr[1]) {
-          selArr[selArr.length - 1] = stateArr[0];
-          model.state = stateArr[1];
-          stateArr.splice(stateArr.length - 1, 1);
+          selArr[selArr.length - 1] = stateArr[0]
+          model.state = stateArr[1]
+          stateArr.splice(stateArr.length - 1, 1)
         }
 
-        model.selectors = selArr;
-        model.style = style;
-        lastRule = model;
-        result.push(model);
+        model.selectors = selArr
+        model.style = style
+        lastRule = model
+        result.push(model)
       }
 
       // Need to push somewhere not class-based selectors, if some rule was
       // created will push them there, otherwise will create a new rule
       if (selsAdd.length) {
-        let selsAddStr = selsAdd.join(', ');
+        let selsAddStr = selsAdd.join(', ')
         if (lastRule) {
-          lastRule.selectorsAdd = selsAddStr;
+          lastRule.selectorsAdd = selsAddStr
         } else {
           result.push({
             selectors: [],
             selectorsAdd: selsAddStr,
-            style
-          });
+            style,
+          })
         }
       }
     }
 
-    return result;
+    return result
   },
 
   /**
@@ -124,22 +124,22 @@ module.exports = config => ({
    * @return {Object|Array<Object>}
    */
   parse(str) {
-    let el = document.createElement('style');
+    let el = document.createElement('style')
     /*
     el.innerHTML = ".cssClass {border: 2px solid black; background-color: blue;} " +
     ".red, .red2 {color:red; padding:5px} .test1.red {color:black} .red:hover{color: blue} " +
     "@media screen and (min-width: 480px){ .red{color:white} }";
     */
-    el.innerHTML = str;
+    el.innerHTML = str
 
     // There is no .sheet without adding it to the <head>
-    document.head.appendChild(el);
-    let sheet = el.sheet;
-    document.head.removeChild(el);
-    let result = this.parseNode(sheet);
+    document.head.appendChild(el)
+    let sheet = el.sheet
+    document.head.removeChild(el)
+    let result = this.parseNode(sheet)
 
-    if (result.length == 1) result = result[0];
+    if (result.length == 1) result = result[0]
 
-    return result;
-  }
-});
+    return result
+  },
+})

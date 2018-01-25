@@ -1,70 +1,70 @@
-import { isEmpty } from 'underscore';
+import { isEmpty } from 'underscore'
 
-const Backbone = require('backbone');
+const Backbone = require('backbone')
 
 module.exports = Backbone.Collection.extend({
   initialize(models, opt) {
-    this.on('add', this.onAdd);
+    this.on('add', this.onAdd)
 
-    this.config = opt && opt.config ? opt.config : null;
+    this.config = opt && opt.config ? opt.config : null
 
     // Inject editor
-    if (opt && (opt.sm || opt.em)) this.editor = opt.sm || opt.em;
+    if (opt && (opt.sm || opt.em)) this.editor = opt.sm || opt.em
 
     this.model = (attrs, options) => {
-      let model;
+      let model
 
-      if (!options.sm && opt && opt.sm) options.sm = opt.sm;
+      if (!options.sm && opt && opt.sm) options.sm = opt.sm
 
-      if (!options.em && opt && opt.em) options.em = opt.em;
+      if (!options.em && opt && opt.em) options.em = opt.em
 
-      if (opt && opt.config) options.config = opt.config;
+      if (opt && opt.config) options.config = opt.config
 
       if (opt && opt.componentTypes)
-        options.componentTypes = opt.componentTypes;
+        options.componentTypes = opt.componentTypes
 
-      let df = opt.componentTypes;
+      let df = opt.componentTypes
 
       for (let it = 0; it < df.length; it++) {
-        let dfId = df[it].id;
+        let dfId = df[it].id
         if (dfId == attrs.type) {
-          model = df[it].model;
-          break;
+          model = df[it].model
+          break
         }
       }
 
       if (!model) {
         // get the last one
-        model = df[df.length - 1].model;
+        model = df[df.length - 1].model
       }
 
-      return new model(attrs, options);
-    };
+      return new model(attrs, options)
+    }
   },
 
   add(models, opt = {}) {
     if (typeof models === 'string') {
-      let parsed = this.editor.get('Parser').parseHtml(models);
-      models = parsed.html;
+      let parsed = this.editor.get('Parser').parseHtml(models)
+      models = parsed.html
 
-      let cssc = this.editor.get('CssComposer');
+      let cssc = this.editor.get('CssComposer')
 
       if (parsed.css && cssc) {
-        let { avoidUpdateStyle } = opt;
+        let { avoidUpdateStyle } = opt
         let added = cssc.addCollection(parsed.css, {
           extend: 1,
-          avoidUpdateStyle
-        });
+          avoidUpdateStyle,
+        })
       }
     }
 
-    return Backbone.Collection.prototype.add.apply(this, [models, opt]);
+    return Backbone.Collection.prototype.add.apply(this, [models, opt])
   },
 
   onAdd(model, c, opts) {
-    const em = this.editor;
-    const style = model.get('style');
-    const avoidInline = em && em.getConfig('avoidInlineStyle');
+    const em = this.editor
+    const style = model.get('style')
+    const avoidInline = em && em.getConfig('avoidInlineStyle')
 
     if (
       !isEmpty(style) &&
@@ -73,12 +73,12 @@ module.exports = Backbone.Collection.extend({
       em.get &&
       em.get('Config').forceClass
     ) {
-      let cssC = this.editor.get('CssComposer');
-      let newClass = this.editor.get('SelectorManager').add(model.cid);
-      model.set({ style: {} });
-      model.get('classes').add(newClass);
-      let rule = cssC.add(newClass);
-      rule.set('style', style);
+      let cssC = this.editor.get('CssComposer')
+      let newClass = this.editor.get('SelectorManager').add(model.cid)
+      model.set({ style: {} })
+      model.get('classes').add(newClass)
+      let rule = cssC.add(newClass)
+      rule.set('style', style)
     }
-  }
-});
+  },
+})

@@ -1,4 +1,4 @@
-let Backbone = require('backbone');
+let Backbone = require('backbone')
 
 module.exports = Backbone.View.extend({
   template: _.template(`
@@ -12,69 +12,69 @@ module.exports = Backbone.View.extend({
   events: {},
 
   initialize(o = {}, config = {}) {
-    this.config = config;
-    const pfx = this.config.pStylePrefix || '';
-    this.pfx = pfx;
-    this.caretR = 'fa fa-caret-right';
-    this.caretD = 'fa fa-caret-down';
-    this.iconClass = `${pfx}caret-icon`;
-    this.activeClass = `${pfx}open`;
-    this.className = `${pfx}block-category`;
-    this.events[`click .${pfx}title`] = 'toggle';
-    this.listenTo(this.model, 'change:open', this.updateVisibility);
-    this.delegateEvents();
+    this.config = config
+    const pfx = this.config.pStylePrefix || ''
+    this.pfx = pfx
+    this.caretR = 'fa fa-caret-right'
+    this.caretD = 'fa fa-caret-down'
+    this.iconClass = `${pfx}caret-icon`
+    this.activeClass = `${pfx}open`
+    this.className = `${pfx}block-category`
+    this.events[`click .${pfx}title`] = 'toggle'
+    this.listenTo(this.model, 'change:open', this.updateVisibility)
+    this.delegateEvents()
   },
 
   updateVisibility() {
-    if (this.model.get('open')) this.open();
-    else this.close();
+    if (this.model.get('open')) this.open()
+    else this.close()
   },
 
   open() {
-    this.el.className = `${this.className} ${this.activeClass}`;
-    this.getIconEl().className = `${this.iconClass} ${this.caretD}`;
-    this.getBlocksEl().style.display = '';
+    this.el.className = `${this.className} ${this.activeClass}`
+    this.getIconEl().className = `${this.iconClass} ${this.caretD}`
+    this.getBlocksEl().style.display = ''
   },
 
   close() {
-    this.el.className = this.className;
-    this.getIconEl().className = `${this.iconClass} ${this.caretR}`;
-    this.getBlocksEl().style.display = 'none';
+    this.el.className = this.className
+    this.getIconEl().className = `${this.iconClass} ${this.caretR}`
+    this.getBlocksEl().style.display = 'none'
   },
 
   toggle() {
-    let model = this.model;
-    model.set('open', !model.get('open'));
+    let model = this.model
+    model.set('open', !model.get('open'))
   },
 
   getIconEl() {
     if (!this.iconEl) {
-      this.iconEl = this.el.querySelector('.' + this.iconClass);
+      this.iconEl = this.el.querySelector('.' + this.iconClass)
     }
 
-    return this.iconEl;
+    return this.iconEl
   },
 
   getBlocksEl() {
     if (!this.blocksEl) {
-      this.blocksEl = this.el.querySelector('.' + this.pfx + 'blocks-c');
+      this.blocksEl = this.el.querySelector('.' + this.pfx + 'blocks-c')
     }
 
-    return this.blocksEl;
+    return this.blocksEl
   },
 
   append(el) {
-    this.getBlocksEl().appendChild(el);
+    this.getBlocksEl().appendChild(el)
   },
 
   render() {
     this.el.innerHTML = this.template({
       pfx: this.pfx,
-      label: this.model.get('label')
-    });
-    this.el.className = this.className;
-    this.$el.css({ order: this.model.get('order') });
-    this.updateVisibility();
-    return this;
-  }
-});
+      label: this.model.get('label'),
+    })
+    this.el.className = this.className
+    this.$el.css({ order: this.model.get('order') })
+    this.updateVisibility()
+    return this
+  },
+})

@@ -1,7 +1,7 @@
 module.exports = config => {
-  let TEXT_NODE = 'span';
-  let c = config;
-  let modelAttrStart = 'data-gjs-';
+  let TEXT_NODE = 'span'
+  let c = config
+  let modelAttrStart = 'data-gjs-'
 
   return {
     compTypes: '',
@@ -16,18 +16,18 @@ module.exports = config => {
      * // {color: 'black', width: '100px', test: 'value'}
      */
     parseStyle(str) {
-      let result = {};
-      let decls = str.split(';');
+      let result = {}
+      let decls = str.split(';')
       for (let i = 0, len = decls.length; i < len; i++) {
-        let decl = decls[i].trim();
-        if (!decl) continue;
-        let prop = decl.split(':');
+        let decl = decls[i].trim()
+        if (!decl) continue
+        let prop = decl.split(':')
         result[prop[0].trim()] = prop
           .slice(1)
           .join(':')
-          .trim();
+          .trim()
       }
-      return result;
+      return result
     },
 
     /**
@@ -40,15 +40,15 @@ module.exports = config => {
      * // ['test1', 'test2', 'test3']
      */
     parseClass(str) {
-      let result = [];
-      let cls = str.split(' ');
+      let result = []
+      let cls = str.split(' ')
       for (let i = 0, len = cls.length; i < len; i++) {
-        let cl = cls[i].trim();
-        let reg = new RegExp('^' + c.pStylePrefix);
-        if (!cl || reg.test(cl)) continue;
-        result.push(cl);
+        let cl = cls[i].trim()
+        let reg = new RegExp('^' + c.pStylePrefix)
+        if (!cl || reg.test(cl)) continue
+        result.push(cl)
       }
-      return result;
+      return result
     },
 
     /**
@@ -57,60 +57,60 @@ module.exports = config => {
      * @return {Array<Object>}
      */
     parseNode(el) {
-      const result = [];
-      const nodes = el.childNodes;
+      const result = []
+      const nodes = el.childNodes
 
       for (let i = 0, len = nodes.length; i < len; i++) {
-        const node = nodes[i];
-        const attrs = node.attributes || [];
-        const attrsLen = attrs.length;
-        const nodePrev = result[result.length - 1];
-        const nodeChild = node.childNodes.length;
-        const ct = this.compTypes;
-        let model = {};
+        const node = nodes[i]
+        const attrs = node.attributes || []
+        const attrsLen = attrs.length
+        const nodePrev = result[result.length - 1]
+        const nodeChild = node.childNodes.length
+        const ct = this.compTypes
+        let model = {}
 
         // Start with understanding what kind of component it is
         if (ct) {
-          let obj = '';
+          let obj = ''
 
           // Iterate over all available Component Types and
           // the first with a valid result will be that component
           for (let it = 0; it < ct.length; it++) {
-            obj = ct[it].model.isComponent(node);
-            if (obj) break;
+            obj = ct[it].model.isComponent(node)
+            if (obj) break
           }
 
-          model = obj;
+          model = obj
         }
 
         // Set tag name if not yet done
         if (!model.tagName) {
-          model.tagName = node.tagName ? node.tagName.toLowerCase() : '';
+          model.tagName = node.tagName ? node.tagName.toLowerCase() : ''
         }
 
         if (attrsLen) {
-          model.attributes = {};
+          model.attributes = {}
         }
 
         // Parse attributes
         for (let j = 0; j < attrsLen; j++) {
-          const nodeName = attrs[j].nodeName;
-          let nodeValue = attrs[j].nodeValue;
+          const nodeName = attrs[j].nodeName
+          let nodeValue = attrs[j].nodeValue
 
           // Isolate attributes
           if (nodeName == 'style') {
-            model.style = this.parseStyle(nodeValue);
+            model.style = this.parseStyle(nodeValue)
           } else if (nodeName == 'class') {
-            model.classes = this.parseClass(nodeValue);
+            model.classes = this.parseClass(nodeValue)
           } else if (nodeName == 'contenteditable') {
-            continue;
+            continue
           } else if (nodeName.indexOf(modelAttrStart) === 0) {
-            const modelAttr = nodeName.replace(modelAttrStart, '');
-            const valueLen = nodeValue.length;
-            const firstChar = nodeValue && nodeValue.substr(0, 1);
-            const lastChar = nodeValue && nodeValue.substr(valueLen - 1);
-            nodeValue = nodeValue === 'true' ? true : nodeValue;
-            nodeValue = nodeValue === 'false' ? false : nodeValue;
+            const modelAttr = nodeName.replace(modelAttrStart, '')
+            const valueLen = nodeValue.length
+            const firstChar = nodeValue && nodeValue.substr(0, 1)
+            const lastChar = nodeValue && nodeValue.substr(valueLen - 1)
+            nodeValue = nodeValue === 'true' ? true : nodeValue
+            nodeValue = nodeValue === 'false' ? false : nodeValue
 
             // Try to parse JSON where it's possible
             // I can get false positive here (eg. a selector '[data-attr]')
@@ -120,82 +120,82 @@ module.exports = config => {
                 (firstChar == '{' && lastChar == '}') ||
                 (firstChar == '[' && lastChar == ']')
                   ? JSON.parse(nodeValue)
-                  : nodeValue;
+                  : nodeValue
             } catch (e) {}
 
-            model[modelAttr] = nodeValue;
+            model[modelAttr] = nodeValue
           } else {
-            model.attributes[nodeName] = nodeValue;
+            model.attributes[nodeName] = nodeValue
           }
         }
 
         // Check for nested elements but avoid it if already provided
         if (nodeChild && !model.components) {
           // Avoid infinite nested text nodes
-          const firstChild = node.childNodes[0];
+          const firstChild = node.childNodes[0]
 
           // If there is only one child and it's a TEXTNODE
           // just make it content of the current node
           if (nodeChild === 1 && firstChild.nodeType === 3) {
-            !model.type && (model.type = 'text');
-            model.content = firstChild.nodeValue;
+            !model.type && (model.type = 'text')
+            model.content = firstChild.nodeValue
           } else {
-            model.components = this.parseNode(node);
+            model.components = this.parseNode(node)
           }
         }
 
         // Check if it's a text node and if could be moved to the prevous model
         if (model.type == 'textnode') {
           if (nodePrev && nodePrev.type == 'textnode') {
-            nodePrev.content += model.content;
-            continue;
+            nodePrev.content += model.content
+            continue
           }
 
           // Throw away empty nodes (keep spaces)
-          const content = node.nodeValue;
+          const content = node.nodeValue
           if (content != ' ' && !content.trim()) {
-            continue;
+            continue
           }
         }
 
         // If all children are texts and there is some textnode the parent should
         // be text too otherwise I'm unable to edit texnodes
-        const comps = model.components;
+        const comps = model.components
         if (!model.type && comps) {
-          let allTxt = 1;
-          let foundTextNode = 0;
+          let allTxt = 1
+          let foundTextNode = 0
 
           for (let ci = 0; ci < comps.length; ci++) {
-            const comp = comps[ci];
-            const cType = comp.type;
+            const comp = comps[ci]
+            const cType = comp.type
 
             if (
               ['text', 'textnode'].indexOf(cType) < 0 &&
               c.textTags.indexOf(comp.tagName) < 0
             ) {
-              allTxt = 0;
-              break;
+              allTxt = 0
+              break
             }
 
             if (cType == 'textnode') {
-              foundTextNode = 1;
+              foundTextNode = 1
             }
           }
 
           if (allTxt && foundTextNode) {
-            model.type = 'text';
+            model.type = 'text'
           }
         }
 
         // If tagName is still empty and is not a textnode, do not push it
         if (!model.tagName && model.type != 'textnode') {
-          continue;
+          continue
         }
 
-        result.push(model);
+        result.push(model)
       }
 
-      return result;
+      return result
     },
 
     /**
@@ -205,39 +205,39 @@ module.exports = config => {
      * @return {Object}
      */
     parse(str, parserCss) {
-      let config = (c.em && c.em.get('Config')) || {};
-      let res = { html: '', css: '' };
-      let el = document.createElement('div');
-      el.innerHTML = str;
-      let scripts = el.querySelectorAll('script');
-      let i = scripts.length;
+      let config = (c.em && c.em.get('Config')) || {}
+      let res = { html: '', css: '' }
+      let el = document.createElement('div')
+      el.innerHTML = str
+      let scripts = el.querySelectorAll('script')
+      let i = scripts.length
 
       // Remove all scripts
       if (!config.allowScripts) {
-        while (i--) scripts[i].parentNode.removeChild(scripts[i]);
+        while (i--) scripts[i].parentNode.removeChild(scripts[i])
       }
 
       // Detach style tags and parse them
       if (parserCss) {
-        let styleStr = '';
-        let styles = el.querySelectorAll('style');
-        let j = styles.length;
+        let styleStr = ''
+        let styles = el.querySelectorAll('style')
+        let j = styles.length
 
         while (j--) {
-          styleStr = styles[j].innerHTML + styleStr;
-          styles[j].parentNode.removeChild(styles[j]);
+          styleStr = styles[j].innerHTML + styleStr
+          styles[j].parentNode.removeChild(styles[j])
         }
 
-        if (styleStr) res.css = parserCss.parse(styleStr);
+        if (styleStr) res.css = parserCss.parse(styleStr)
       }
 
-      let result = this.parseNode(el);
+      let result = this.parseNode(el)
 
-      if (result.length == 1) result = result[0];
+      if (result.length == 1) result = result[0]
 
-      res.html = result;
+      res.html = result
 
-      return res;
-    }
-  };
-};
+      return res
+    },
+  }
+}

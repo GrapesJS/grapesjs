@@ -17,6 +17,6 @@ module.exports = {
   states: [
     { name: 'hover', label: 'Hover' },
     { name: 'active', label: 'Click' },
-    { name: 'nth-of-type(2n)', label: 'Even/Odd' }
-  ]
-};
+    { name: 'nth-of-type(2n)', label: 'Even/Odd' },
+  ],
+}

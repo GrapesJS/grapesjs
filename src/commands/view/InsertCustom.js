@@ -1,11 +1,11 @@
-let Backbone = require('backbone');
-let CreateComponent = require('./CreateComponent');
+let Backbone = require('backbone')
+let CreateComponent = require('./CreateComponent')
 
 module.exports = _.extend({}, CreateComponent, {
   init(...args) {
-    CreateComponent.init.apply(this, args);
-    _.bindAll(this, 'insertComponent');
-    this.allowDraw = 0;
+    CreateComponent.init.apply(this, args)
+    _.bindAll(this, 'insertComponent')
+    this.allowDraw = 0
   },
 
   /**
@@ -13,16 +13,16 @@ module.exports = _.extend({}, CreateComponent, {
    * @private
    * */
   run(em, sender, options) {
-    this.em = em;
-    this.sender = sender;
-    this.opt = options || {};
-    this.$wr = this.$wrapper;
-    this.enable();
+    this.em = em
+    this.sender = sender
+    this.opt = options || {}
+    this.$wr = this.$wrapper
+    this.enable()
   },
 
   enable(...args) {
-    CreateComponent.enable.apply(this, args);
-    this.$wr.on('click', this.insertComponent);
+    CreateComponent.enable.apply(this, args)
+    this.$wr.on('click', this.insertComponent)
   },
 
   /**
@@ -30,23 +30,23 @@ module.exports = _.extend({}, CreateComponent, {
    * @private
    * */
   insertComponent() {
-    this.$wr.off('click', this.insertComponent);
-    this.stopSelectPosition();
-    let object = this.buildContent();
-    this.beforeInsert(object);
-    let index = this.sorter.lastPos.index;
+    this.$wr.off('click', this.insertComponent)
+    this.stopSelectPosition()
+    let object = this.buildContent()
+    this.beforeInsert(object)
+    let index = this.sorter.lastPos.index
     // By default, collections do not trigger add event, so silent is used
     let model = this.create(this.sorter.target, object, index, null, {
-      silent: false
-    });
+      silent: false,
+    })
 
     if (this.opt.terminateAfterInsert && this.sender)
-      this.sender.set('active', false);
-    else this.enable();
+      this.sender.set('active', false)
+    else this.enable()
 
-    if (!model) return;
+    if (!model) return
 
-    this.afterInsert(model, this);
+    this.afterInsert(model, this)
   },
 
   /**
@@ -70,6 +70,6 @@ module.exports = _.extend({}, CreateComponent, {
    * @private
    * */
   buildContent() {
-    return this.opt.content || {};
-  }
-});
+    return this.opt.content || {}
+  },
+})

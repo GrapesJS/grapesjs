@@ -1,5 +1,5 @@
-let Backbone = require('backbone');
-let InsertCustom = require('./InsertCustom');
+let Backbone = require('backbone')
+let InsertCustom = require('./InsertCustom')
 
 module.exports = _.extend({}, InsertCustom, {
   /**
@@ -9,15 +9,15 @@ module.exports = _.extend({}, InsertCustom, {
    *
    * */
   beforeInsert(object) {
-    object.type = 'image';
-    object.style = {};
-    object.attributes = {};
-    object.attributes.onmousedown = 'return false';
+    object.type = 'image'
+    object.style = {}
+    object.attributes = {}
+    object.attributes.onmousedown = 'return false'
     if (
       this.config.firstCentered &&
       this.getCanvasWrapper() == this.sorter.target
     ) {
-      object.style.margin = '0 auto';
+      object.style.margin = '0 auto'
     }
   },
 
@@ -27,7 +27,7 @@ module.exports = _.extend({}, InsertCustom, {
    * @private
    * */
   afterInsert(model) {
-    model.trigger('dblclick');
-    if (this.sender) this.sender.set('active', false);
-  }
-});
+    model.trigger('dblclick')
+    if (this.sender) this.sender.set('active', false)
+  },
+})

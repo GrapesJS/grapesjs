@@ -1,5 +1,5 @@
-let Component = require('./ComponentImage');
-let OComponent = require('./Component');
+let Component = require('./ComponentImage')
+let OComponent = require('./Component')
 
 module.exports = Component.extend(
   {
@@ -18,7 +18,7 @@ module.exports = Component.extend(
           label: 'Address',
           name: 'address',
           placeholder: 'eg. London, UK',
-          changeProp: 1
+          changeProp: 1,
         },
         {
           type: 'select',
@@ -27,8 +27,8 @@ module.exports = Component.extend(
           changeProp: 1,
           options: [
             { value: 'q', name: 'Roadmap' },
-            { value: 'w', name: 'Satellite' }
-          ]
+            { value: 'w', name: 'Satellite' },
+          ],
         },
         {
           label: 'Zoom',
@@ -36,24 +36,24 @@ module.exports = Component.extend(
           type: 'range',
           min: '1',
           max: '20',
-          changeProp: 1
-        }
-      ]
+          changeProp: 1,
+        },
+      ],
     }),
 
     initialize(o, opt) {
-      if (this.get('src')) this.parseFromSrc();
-      else this.updateSrc();
-      Component.prototype.initialize.apply(this, arguments);
+      if (this.get('src')) this.parseFromSrc()
+      else this.updateSrc()
+      Component.prototype.initialize.apply(this, arguments)
       this.listenTo(
         this,
         'change:address change:zoom change:mapType',
         this.updateSrc
-      );
+      )
     },
 
     updateSrc() {
-      this.set('src', this.getMapUrl());
+      this.set('src', this.getMapUrl())
     },
 
     /**
@@ -62,17 +62,17 @@ module.exports = Component.extend(
      * @private
      */
     getMapUrl() {
-      let md = this;
-      let addr = md.get('address');
-      let zoom = md.get('zoom');
-      let type = md.get('mapType');
-      let size = '';
-      addr = addr ? '&q=' + addr : '';
-      zoom = zoom ? '&z=' + zoom : '';
-      type = type ? '&t=' + type : '';
-      let result = md.get('mapUrl') + '?' + addr + zoom + type;
-      result += '&output=embed';
-      return result;
+      let md = this
+      let addr = md.get('address')
+      let zoom = md.get('zoom')
+      let type = md.get('mapType')
+      let size = ''
+      addr = addr ? '&q=' + addr : ''
+      zoom = zoom ? '&z=' + zoom : ''
+      type = type ? '&t=' + type : ''
+      let result = md.get('mapUrl') + '?' + addr + zoom + type
+      result += '&output=embed'
+      return result
     },
 
     /**
@@ -80,12 +80,12 @@ module.exports = Component.extend(
      * @private
      */
     parseFromSrc() {
-      let uri = this.parseUri(this.get('src'));
-      let qr = uri.query;
-      if (qr.q) this.set('address', qr.q);
-      if (qr.z) this.set('zoom', qr.z);
-      if (qr.t) this.set('mapType', qr.t);
-    }
+      let uri = this.parseUri(this.get('src'))
+      let qr = uri.query
+      if (qr.q) this.set('address', qr.q)
+      if (qr.z) this.set('zoom', qr.z)
+      if (qr.t) this.set('mapType', qr.t)
+    },
   },
   {
     /**
@@ -97,11 +97,11 @@ module.exports = Component.extend(
      * @private
      */
     isComponent(el) {
-      let result = '';
+      let result = ''
       if (el.tagName == 'IFRAME' && /maps\.google\.com/.test(el.src)) {
-        result = { type: 'map', src: el.src };
+        result = { type: 'map', src: el.src }
       }
-      return result;
-    }
+      return result
+    },
   }
-);
+)

@@ -80,5 +80,5 @@ module.exports = {
   modalTitle: 'Select Image',
 
   //Default placeholder for input
-  inputPlaceholder: 'http://path/to/the/image.jpg'
-};
+  inputPlaceholder: 'http://path/to/the/image.jpg',
+}

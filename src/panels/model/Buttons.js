@@ -1,5 +1,5 @@
-let Backbone = require('backbone');
-let Button = require('./Button');
+let Backbone = require('backbone')
+let Button = require('./Button')
 
 module.exports = Backbone.Collection.extend({
   model: Button,
@@ -14,11 +14,11 @@ module.exports = Backbone.Collection.extend({
   deactivateAllExceptOne(except, r) {
     this.forEach((model, index) => {
       if (model !== except) {
-        model.set('active', false);
+        model.set('active', false)
         if (r && model.get('buttons').length)
-          model.get('buttons').deactivateAllExceptOne(except, r);
+          model.get('buttons').deactivateAllExceptOne(except, r)
       }
-    });
+    })
   },
 
   /**
@@ -28,14 +28,14 @@ module.exports = Backbone.Collection.extend({
    * @return  void
    * */
   deactivateAll(ctx) {
-    let context = ctx || '';
+    let context = ctx || ''
     this.forEach((model, index) => {
       if (model.get('context') == context) {
-        model.set('active', false);
+        model.set('active', false)
         if (model.get('buttons').length)
-          model.get('buttons').deactivateAll(context);
+          model.get('buttons').deactivateAll(context)
       }
-    });
+    })
   },
 
   /**
@@ -45,14 +45,14 @@ module.exports = Backbone.Collection.extend({
    * @return  void
    * */
   disableAllButtons(ctx) {
-    let context = ctx || '';
+    let context = ctx || ''
     this.forEach((model, index) => {
       if (model.get('context') == context) {
-        model.set('disable', true);
+        model.set('disable', true)
         if (model.get('buttons').length)
-          model.get('buttons').disableAllButtons(context);
+          model.get('buttons').disableAllButtons(context)
       }
-    });
+    })
   },
 
   /**
@@ -65,10 +65,10 @@ module.exports = Backbone.Collection.extend({
   disableAllButtonsExceptOne(except, r) {
     this.forEach((model, index) => {
       if (model !== except) {
-        model.set('disable', true);
+        model.set('disable', true)
         if (r && model.get('buttons').length)
-          model.get('buttons').disableAllButtonsExceptOne(except, r);
+          model.get('buttons').disableAllButtonsExceptOne(except, r)
       }
-    });
-  }
-});
+    })
+  },
+})

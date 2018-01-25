@@ -7,34 +7,34 @@
  * ```
  *
  */
-import { isString } from 'underscore';
+import { isString } from 'underscore'
 
-const keymaster = require('keymaster');
+const keymaster = require('keymaster')
 
 module.exports = () => {
-  let em;
-  let config;
-  const keymaps = {};
+  let em
+  let config
+  const keymaps = {}
   const configDef = {
     defaults: {
       'core:undo': {
         keys: '⌘+z, ctrl+z',
-        handler: 'core:undo'
+        handler: 'core:undo',
       },
       'core:redo': {
         keys: '⌘+shift+z, ctrl+shift+z',
-        handler: 'core:redo'
+        handler: 'core:redo',
       },
       'core:copy': {
         keys: '⌘+c, ctrl+c',
-        handler: 'core:copy'
+        handler: 'core:copy',
       },
       'core:paste': {
         keys: '⌘+v, ctrl+v',
-        handler: 'core:paste'
-      }
-    }
-  };
+        handler: 'core:paste',
+      },
+    },
+  }
 
   return {
     keymaster,
@@ -46,7 +46,7 @@ module.exports = () => {
      * @return {Object} Configuration object
      */
     getConfig() {
-      return config;
+      return config
     },
 
     /**
@@ -55,18 +55,18 @@ module.exports = () => {
      * @private
      */
     init(opts = {}) {
-      config = { ...configDef, ...opts };
-      em = config.em;
-      this.em = em;
-      return this;
+      config = { ...configDef, ...opts }
+      em = config.em
+      this.em = em
+      return this
     },
 
     onLoad() {
-      const defKeys = config.defaults;
+      const defKeys = config.defaults
 
       for (let id in defKeys) {
-        const value = defKeys[id];
-        this.add(id, value.keys, value.handler);
+        const value = defKeys[id]
+        this.add(id, value.keys, value.handler)
       }
     },
 
@@ -91,23 +91,23 @@ module.exports = () => {
      * })
      */
     add(id, keys, handler) {
-      const em = this.em;
-      const cmd = em.get('Commands');
-      const editor = em.getEditor();
-      const keymap = { id, keys, handler };
-      const pk = keymaps[id];
-      pk && this.remove(id);
-      keymaps[id] = keymap;
+      const em = this.em
+      const cmd = em.get('Commands')
+      const editor = em.getEditor()
+      const keymap = { id, keys, handler }
+      const pk = keymaps[id]
+      pk && this.remove(id)
+      keymaps[id] = keymap
       keymaster(keys, (e, h) => {
         // It's safer putting handlers resolution inside the callback
-        handler = isString(handler) ? cmd.get(handler) : handler;
-        typeof handler == 'object' ? handler.run(editor) : handler(editor);
-        const args = [id, h.shortcut, e];
-        em.trigger('keymap:emit', ...args);
-        em.trigger(`keymap:emit:${id}`, ...args);
-      });
-      em.trigger('keymap:add', keymap);
-      return keymap;
+        handler = isString(handler) ? cmd.get(handler) : handler
+        typeof handler == 'object' ? handler.run(editor) : handler(editor)
+        const args = [id, h.shortcut, e]
+        em.trigger('keymap:emit', ...args)
+        em.trigger(`keymap:emit:${id}`, ...args)
+      })
+      em.trigger('keymap:add', keymap)
+      return keymap
     },
 
     /**
@@ -119,7 +119,7 @@ module.exports = () => {
      * // -> {keys, handler};
      */
     get(id) {
-      return keymaps[id];
+      return keymaps[id]
     },
 
     /**
@@ -130,7 +130,7 @@ module.exports = () => {
      * // -> {id1: {}, id2: {}};
      */
     getAll() {
-      return keymaps;
+      return keymaps
     },
 
     /**
@@ -142,15 +142,15 @@ module.exports = () => {
      * // -> {keys, handler};
      */
     remove(id) {
-      const em = this.em;
-      const keymap = this.get(id);
+      const em = this.em
+      const keymap = this.get(id)
 
       if (keymap) {
-        delete keymaps[id];
-        keymaster.unbind(keymap.keys);
-        em && em.trigger('keymap:remove', keymap);
-        return keymap;
+        delete keymaps[id]
+        keymaster.unbind(keymap.keys)
+        em && em.trigger('keymap:remove', keymap)
+        return keymap
       }
-    }
-  };
-};
+    },
+  }
+}

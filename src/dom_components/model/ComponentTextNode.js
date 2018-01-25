@@ -1,26 +1,26 @@
-let Component = require('./Component');
+let Component = require('./Component')
 
 module.exports = Component.extend(
   {
     defaults: _.extend({}, Component.prototype.defaults, {
       droppable: false,
-      editable: true
+      editable: true,
     }),
 
     toHTML() {
-      return this.get('content');
-    }
+      return this.get('content')
+    },
   },
   {
     isComponent(el) {
-      let result = '';
+      let result = ''
       if (el.nodeType === 3) {
         result = {
           type: 'textnode',
-          content: el.textContent
-        };
+          content: el.textContent,
+        }
       }
-      return result;
-    }
+      return result
+    },
   }
-);
+)

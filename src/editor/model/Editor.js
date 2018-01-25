@@ -1,4 +1,4 @@
-import { isUndefined, defaults } from 'underscore';
+import { isUndefined, defaults } from 'underscore'
 
 const deps = [
   require('utils'),
@@ -19,18 +19,18 @@ const deps = [
   require('dom_components'),
   require('canvas'),
   require('commands'),
-  require('block_manager')
-];
+  require('block_manager'),
+]
 
-const Backbone = require('backbone');
-let timedInterval;
+const Backbone = require('backbone')
+let timedInterval
 
 require('utils/extender')({
   Backbone: Backbone,
-  $: Backbone.$
-});
+  $: Backbone.$,
+})
 
-const $ = Backbone.$;
+const $ = Backbone.$
 
 module.exports = Backbone.Model.extend({
   defaults: {
@@ -43,21 +43,21 @@ module.exports = Backbone.Model.extend({
     modules: [],
     toLoad: [],
     opened: {},
-    device: ''
+    device: '',
   },
 
   initialize(c = {}) {
-    this.config = c;
-    this.set('Config', c);
-    this.set('modules', []);
-    this.set('toLoad', []);
+    this.config = c
+    this.set('Config', c)
+    this.set('modules', [])
+    this.set('toLoad', [])
 
-    if (c.el && c.fromElement) this.config.components = c.el.innerHTML;
+    if (c.el && c.fromElement) this.config.components = c.el.innerHTML
 
     // Load modules
-    deps.forEach(name => this.loadModule(name));
-    this.on('change:selectedComponent', this.componentSelected, this);
-    this.on('change:changesCount', this.updateChanges, this);
+    deps.forEach(name => this.loadModule(name))
+    this.on('change:selectedComponent', this.componentSelected, this)
+    this.on('change:changesCount', this.updateChanges, this)
   },
 
   /**
@@ -67,8 +67,8 @@ module.exports = Backbone.Model.extend({
    *  the value of the specified property
    */
   getConfig(prop) {
-    const config = this.config;
-    return isUndefined(prop) ? config : config[prop];
+    const config = this.config
+    return isUndefined(prop) ? config : config[prop]
   },
 
   /**
@@ -77,25 +77,25 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   loadOnStart(clb = null) {
-    const sm = this.get('StorageManager');
+    const sm = this.get('StorageManager')
 
     // Generally, with `onLoad`, the module will try to load the data from
     // its configurations
     this.get('toLoad').forEach(module => {
-      module.onLoad();
-    });
+      module.onLoad()
+    })
 
     // Stuff to do post load
     const postLoad = () => {
-      const modules = this.get('modules');
-      modules.forEach(module => module.postLoad && module.postLoad(this));
-      clb && clb();
-    };
+      const modules = this.get('modules')
+      modules.forEach(module => module.postLoad && module.postLoad(this))
+      clb && clb()
+    }
 
     if (sm && sm.getConfig().autoload) {
-      this.load(postLoad);
+      this.load(postLoad)
     } else {
-      postLoad();
+      postLoad()
     }
   },
 
@@ -105,17 +105,17 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   updateChanges() {
-    const stm = this.get('StorageManager');
-    const changes = this.get('changesCount');
+    const stm = this.get('StorageManager')
+    const changes = this.get('changesCount')
 
     if (this.config.noticeOnUnload && changes) {
-      window.onbeforeunload = e => 1;
+      window.onbeforeunload = e => 1
     } else {
-      window.onbeforeunload = null;
+      window.onbeforeunload = null
     }
 
     if (stm.isAutosave() && changes >= stm.getStepsBeforeSave()) {
-      this.store();
+      this.store()
     }
   },
 
@@ -126,30 +126,30 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   loadModule(moduleName) {
-    let c = this.config;
-    let Mod = new moduleName();
-    let name = Mod.name.charAt(0).toLowerCase() + Mod.name.slice(1);
-    let cfg = c[name] || c[Mod.name] || {};
-    cfg.pStylePrefix = c.pStylePrefix || '';
+    let c = this.config
+    let Mod = new moduleName()
+    let name = Mod.name.charAt(0).toLowerCase() + Mod.name.slice(1)
+    let cfg = c[name] || c[Mod.name] || {}
+    cfg.pStylePrefix = c.pStylePrefix || ''
 
     // Check if module is storable
-    let sm = this.get('StorageManager');
+    let sm = this.get('StorageManager')
 
     if (Mod.storageKey && Mod.store && Mod.load && sm) {
-      cfg.stm = sm;
-      let storables = this.get('storables');
-      storables.push(Mod);
-      this.set('storables', storables);
+      cfg.stm = sm
+      let storables = this.get('storables')
+      storables.push(Mod)
+      this.set('storables', storables)
     }
 
-    cfg.em = this;
-    Mod.init({ ...cfg });
+    cfg.em = this
+    Mod.init({ ...cfg })
 
     // Bind the module to the editor model if public
-    !Mod.private && this.set(Mod.name, Mod);
-    Mod.onLoad && this.get('toLoad').push(Mod);
-    this.get('modules').push(Mod);
-    return this;
+    !Mod.private && this.set(Mod.name, Mod)
+    Mod.onLoad && this.get('toLoad').push(Mod)
+    this.get('modules').push(Mod)
+    return this
   },
 
   /**
@@ -159,11 +159,11 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   init(editor) {
-    this.set('Editor', editor);
+    this.set('Editor', editor)
   },
 
   getEditor() {
-    return this.get('Editor');
+    return this.get('Editor')
   },
 
   /**
@@ -177,15 +177,15 @@ module.exports = Backbone.Model.extend({
   handleUpdates(model, val, opt = {}) {
     // Component has been added temporarily - do not update storage or record changes
     if (opt.temporary) {
-      return;
+      return
     }
 
-    timedInterval && clearInterval(timedInterval);
+    timedInterval && clearInterval(timedInterval)
     timedInterval = setTimeout(() => {
       if (!opt.avoidStore) {
-        this.set('changesCount', this.get('changesCount') + 1, opt);
+        this.set('changesCount', this.get('changesCount') + 1, opt)
       }
-    }, 0);
+    }, 0)
   },
 
   /**
@@ -197,10 +197,10 @@ module.exports = Backbone.Model.extend({
    * */
   componentSelected(model, val, options) {
     if (!this.get('selectedComponent')) {
-      this.trigger('deselect-comp');
+      this.trigger('deselect-comp')
     } else {
-      this.trigger('select-comp', [model, val, options]);
-      this.trigger('component:selected', arguments);
+      this.trigger('select-comp', [model, val, options])
+      this.trigger('component:selected', arguments)
     }
   },
 
@@ -210,7 +210,7 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   getSelected() {
-    return this.get('selectedComponent');
+    return this.get('selectedComponent')
   },
 
   /**
@@ -220,17 +220,17 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   setSelected(el, opts = {}) {
-    let model = el;
+    let model = el
 
     if (el instanceof window.HTMLElement) {
-      model = $(el).data('model');
+      model = $(el).data('model')
     }
 
     if (model && !model.get('selectable')) {
-      return;
+      return
     }
 
-    this.set('selectedComponent', model, opts);
+    this.set('selectedComponent', model, opts)
   },
 
   /**
@@ -240,7 +240,7 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   setComponents(components) {
-    return this.get('DomComponents').setComponents(components);
+    return this.get('DomComponents').setComponents(components)
   },
 
   /**
@@ -249,13 +249,13 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   getComponents() {
-    let cmp = this.get('DomComponents');
-    let cm = this.get('CodeManager');
+    let cmp = this.get('DomComponents')
+    let cm = this.get('CodeManager')
 
-    if (!cmp || !cm) return;
+    if (!cmp || !cm) return
 
-    let wrp = cmp.getComponents();
-    return cm.getCode(wrp, 'json');
+    let wrp = cmp.getComponents()
+    return cm.getCode(wrp, 'json')
   },
 
   /**
@@ -265,10 +265,10 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   setStyle(style) {
-    let rules = this.get('CssComposer').getAll();
-    for (let i = 0, len = rules.length; i < len; i++) rules.pop();
-    rules.add(style);
-    return this;
+    let rules = this.get('CssComposer').getAll()
+    for (let i = 0, len = rules.length; i < len; i++) rules.pop()
+    rules.add(style)
+    return this
   },
 
   /**
@@ -277,7 +277,7 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   getStyle() {
-    return this.get('CssComposer').getAll();
+    return this.get('CssComposer').getAll()
   },
 
   /**
@@ -286,17 +286,17 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   getHtml() {
-    const config = this.config;
-    const exportWrapper = config.exportWrapper;
-    const wrappesIsBody = config.wrappesIsBody;
-    const js = config.jsInHtml ? this.getJs() : '';
-    let wrp = this.get('DomComponents').getComponent();
+    const config = this.config
+    const exportWrapper = config.exportWrapper
+    const wrappesIsBody = config.wrappesIsBody
+    const js = config.jsInHtml ? this.getJs() : ''
+    let wrp = this.get('DomComponents').getComponent()
     let html = this.get('CodeManager').getCode(wrp, 'html', {
       exportWrapper,
-      wrappesIsBody
-    });
-    html += js ? `<script>${js}</script>` : '';
-    return html;
+      wrappesIsBody,
+    })
+    html += js ? `<script>${js}</script>` : ''
+    return html
   },
 
   /**
@@ -306,20 +306,20 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   getCss(opts = {}) {
-    const config = this.config;
-    const wrappesIsBody = config.wrappesIsBody;
-    const avoidProt = opts.avoidProtected;
-    const cssc = this.get('CssComposer');
-    const wrp = this.get('DomComponents').getComponent();
-    const protCss = !avoidProt ? config.protectedCss : '';
+    const config = this.config
+    const wrappesIsBody = config.wrappesIsBody
+    const avoidProt = opts.avoidProtected
+    const cssc = this.get('CssComposer')
+    const wrp = this.get('DomComponents').getComponent()
+    const protCss = !avoidProt ? config.protectedCss : ''
 
     return (
       protCss +
       this.get('CodeManager').getCode(wrp, 'css', {
         cssc,
-        wrappesIsBody
+        wrappesIsBody,
       })
-    );
+    )
   },
 
   /**
@@ -328,10 +328,10 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   getJs() {
-    let wrp = this.get('DomComponents').getWrapper();
+    let wrp = this.get('DomComponents').getWrapper()
     return this.get('CodeManager')
       .getCode(wrp, 'js')
-      .trim();
+      .trim()
   },
 
   /**
@@ -341,23 +341,23 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   store(clb) {
-    let sm = this.get('StorageManager');
-    let store = {};
-    if (!sm) return;
+    let sm = this.get('StorageManager')
+    let store = {}
+    if (!sm) return
 
     // Fetch what to store
     this.get('storables').forEach(m => {
-      let obj = m.store(1);
-      for (let el in obj) store[el] = obj[el];
-    });
+      let obj = m.store(1)
+      for (let el in obj) store[el] = obj[el]
+    })
 
     sm.store(store, () => {
-      clb && clb();
-      this.set('changesCount', 0);
-      this.trigger('storage:store', store);
-    });
+      clb && clb()
+      this.set('changesCount', 0)
+      this.trigger('storage:store', store)
+    })
 
-    return store;
+    return store
   },
 
   /**
@@ -367,9 +367,9 @@ module.exports = Backbone.Model.extend({
    */
   load(clb = null) {
     this.getCacheLoad(1, res => {
-      this.get('storables').forEach(module => module.load(res));
-      clb && clb(res);
-    });
+      this.get('storables').forEach(module => module.load(res))
+      clb && clb(res)
+    })
   },
 
   /**
@@ -380,27 +380,27 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   getCacheLoad(force, clb) {
-    let f = force ? 1 : 0;
-    if (this.cacheLoad && !f) return this.cacheLoad;
-    let sm = this.get('StorageManager');
-    let load = [];
+    let f = force ? 1 : 0
+    if (this.cacheLoad && !f) return this.cacheLoad
+    let sm = this.get('StorageManager')
+    let load = []
 
-    if (!sm) return {};
+    if (!sm) return {}
 
     this.get('storables').forEach(m => {
-      let key = m.storageKey;
-      key = typeof key === 'function' ? key() : key;
-      let keys = key instanceof Array ? key : [key];
+      let key = m.storageKey
+      key = typeof key === 'function' ? key() : key
+      let keys = key instanceof Array ? key : [key]
       keys.forEach(k => {
-        load.push(k);
-      });
-    });
+        load.push(k)
+      })
+    })
 
     sm.load(load, res => {
-      this.cacheLoad = res;
-      clb && clb(res);
-      this.trigger('storage:load', res);
-    });
+      this.cacheLoad = res
+      clb && clb(res)
+      this.trigger('storage:load', res)
+    })
   },
 
   /**
@@ -409,8 +409,8 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   getDeviceModel() {
-    let name = this.get('device');
-    return this.get('DeviceManager').get(name);
+    let name = this.get('device')
+    return this.get('DeviceManager').get(name)
   },
 
   /**
@@ -419,11 +419,11 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   runDefault(opts = {}) {
-    let command = this.get('Commands').get(this.config.defaultCommand);
-    if (!command || this.defaultRunning) return;
-    command.stop(this, this, opts);
-    command.run(this, this, opts);
-    this.defaultRunning = 1;
+    let command = this.get('Commands').get(this.config.defaultCommand)
+    if (!command || this.defaultRunning) return
+    command.stop(this, this, opts)
+    command.run(this, this, opts)
+    this.defaultRunning = 1
   },
 
   /**
@@ -432,10 +432,10 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   stopDefault(opts = {}) {
-    let command = this.get('Commands').get(this.config.defaultCommand);
-    if (!command) return;
-    command.stop(this, this, opts);
-    this.defaultRunning = 0;
+    let command = this.get('Commands').get(this.config.defaultCommand)
+    if (!command) return
+    command.stop(this, this, opts)
+    this.defaultRunning = 0
   },
 
   /**
@@ -443,7 +443,7 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   refreshCanvas() {
-    this.set('canvasOffset', this.get('Canvas').getOffset());
+    this.set('canvasOffset', this.get('Canvas').getOffset())
   },
 
   /**
@@ -453,8 +453,8 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   clearSelection(win) {
-    let w = win || window;
-    w.getSelection().removeAllRanges();
+    let w = win || window
+    w.getSelection().removeAllRanges()
   },
 
   /**
@@ -462,12 +462,12 @@ module.exports = Backbone.Model.extend({
    * @return {string}
    */
   getCurrentMedia() {
-    const config = this.config;
-    const device = this.getDeviceModel();
-    const condition = config.mediaCondition;
-    const preview = config.devicePreviewMode;
-    const width = device && device.get('widthMedia');
-    return device && width && !preview ? `(${condition}: ${width})` : '';
+    const config = this.config
+    const device = this.getDeviceModel()
+    const condition = config.mediaCondition
+    const preview = config.devicePreviewMode
+    const width = device && device.get('widthMedia')
+    return device && width && !preview ? `(${condition}: ${width})` : ''
   },
 
   /**
@@ -479,16 +479,16 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   data(el, name, value) {
-    const varName = '_gjs-data';
+    const varName = '_gjs-data'
 
     if (!el[varName]) {
-      el[varName] = {};
+      el[varName] = {}
     }
 
     if (isUndefined(value)) {
-      return el[varName][name];
+      return el[varName][name]
     } else {
-      el[varName][name] = value;
+      el[varName][name] = value
     }
-  }
-});
+  },
+})

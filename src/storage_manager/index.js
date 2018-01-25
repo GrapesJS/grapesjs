@@ -9,10 +9,10 @@ module.exports = () => {
   let c = {},
     defaults = require('./config/config'),
     LocalStorage = require('./model/LocalStorage'),
-    RemoteStorage = require('./model/RemoteStorage');
+    RemoteStorage = require('./model/RemoteStorage')
 
-  let storages = {};
-  let defaultStorages = {};
+  let storages = {}
+  let defaultStorages = {}
 
   return {
     /**
@@ -41,17 +41,17 @@ module.exports = () => {
      * ...
      */
     init(config) {
-      c = config || {};
+      c = config || {}
 
       for (let name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
+        if (!(name in c)) c[name] = defaults[name]
       }
 
-      defaultStorages.remote = new RemoteStorage(c);
-      defaultStorages.local = new LocalStorage(c);
-      c.currentStorage = c.type;
-      this.loadDefaultProviders().setCurrent(c.type);
-      return this;
+      defaultStorages.remote = new RemoteStorage(c)
+      defaultStorages.local = new LocalStorage(c)
+      c.currentStorage = c.type
+      this.loadDefaultProviders().setCurrent(c.type)
+      return this
     },
 
     /**
@@ -59,7 +59,7 @@ module.exports = () => {
      * @return {Boolean}
      * */
     isAutosave() {
-      return !!c.autosave;
+      return !!c.autosave
     },
 
     /**
@@ -68,8 +68,8 @@ module.exports = () => {
      * @return {this}
      * */
     setAutosave(v) {
-      c.autosave = !!v;
-      return this;
+      c.autosave = !!v
+      return this
     },
 
     /**
@@ -77,7 +77,7 @@ module.exports = () => {
      * @return {number}
      * */
     getStepsBeforeSave() {
-      return c.stepsBeforeSave;
+      return c.stepsBeforeSave
     },
 
     /**
@@ -86,8 +86,8 @@ module.exports = () => {
      * @return {this}
      * */
     setStepsBeforeSave(v) {
-      c.stepsBeforeSave = v;
-      return this;
+      c.stepsBeforeSave = v
+      return this
     },
 
     /**
@@ -115,8 +115,8 @@ module.exports = () => {
      * });
      * */
     add(id, storage) {
-      storages[id] = storage;
-      return this;
+      storages[id] = storage
+      return this
     },
 
     /**
@@ -125,7 +125,7 @@ module.exports = () => {
      * @return {Object|null}
      * */
     get(id) {
-      return storages[id] || null;
+      return storages[id] || null
     },
 
     /**
@@ -133,7 +133,7 @@ module.exports = () => {
      * @return   {Array}
      * */
     getStorages() {
-      return storages;
+      return storages
     },
 
     /**
@@ -141,7 +141,7 @@ module.exports = () => {
      * @return {string}
      * */
     getCurrent() {
-      return c.currentStorage;
+      return c.currentStorage
     },
 
     /**
@@ -150,8 +150,8 @@ module.exports = () => {
      * @return {this}
      * */
     setCurrent(id) {
-      c.currentStorage = id;
-      return this;
+      c.currentStorage = id
+      return this
     },
 
     /**
@@ -163,12 +163,12 @@ module.exports = () => {
      * storageManager.store({item1: value1, item2: value2});
      * */
     store(data, clb) {
-      let st = this.get(this.getCurrent());
-      let dataF = {};
+      let st = this.get(this.getCurrent())
+      let dataF = {}
 
-      for (let key in data) dataF[c.id + key] = data[key];
+      for (let key in data) dataF[c.id + key] = data[key]
 
-      return st ? st.store(dataF, clb) : null;
+      return st ? st.store(dataF, clb) : null
     },
 
     /**
@@ -184,26 +184,26 @@ module.exports = () => {
      * });
      * */
     load(keys, clb) {
-      let st = this.get(this.getCurrent());
-      let keysF = [];
-      let result = {};
+      let st = this.get(this.getCurrent())
+      let keysF = []
+      let result = {}
 
-      if (typeof keys === 'string') keys = [keys];
+      if (typeof keys === 'string') keys = [keys]
 
       for (let i = 0, len = keys.length; i < len; i++)
-        keysF.push(c.id + keys[i]);
+        keysF.push(c.id + keys[i])
 
       st &&
         st.load(keysF, res => {
           // Restore keys name
-          let reg = new RegExp('^' + c.id + '');
+          let reg = new RegExp('^' + c.id + '')
           for (let itemKey in res) {
-            let itemKeyR = itemKey.replace(reg, '');
-            result[itemKeyR] = res[itemKey];
+            let itemKeyR = itemKey.replace(reg, '')
+            result[itemKeyR] = res[itemKey]
           }
 
-          clb && clb(result);
-        });
+          clb && clb(result)
+        })
     },
 
     /**
@@ -212,8 +212,8 @@ module.exports = () => {
      * @private
      * */
     loadDefaultProviders() {
-      for (let id in defaultStorages) this.add(id, defaultStorages[id]);
-      return this;
+      for (let id in defaultStorages) this.add(id, defaultStorages[id])
+      return this
     },
 
     /**
@@ -222,7 +222,7 @@ module.exports = () => {
      * @private
      * */
     getConfig() {
-      return c;
-    }
-  };
-};
+      return c
+    },
+  }
+}

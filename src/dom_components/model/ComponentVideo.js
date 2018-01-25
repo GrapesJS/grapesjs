@@ -1,7 +1,7 @@
-const Component = require('./ComponentImage');
-const OComponent = require('./Component');
-const yt = 'yt';
-const vi = 'vi';
+const Component = require('./ComponentImage')
+const OComponent = require('./Component')
+const yt = 'yt'
+const vi = 'vi'
 
 module.exports = Component.extend(
   {
@@ -21,50 +21,50 @@ module.exports = Component.extend(
       color: '',
       sources: [],
       attributes: { allowfullscreen: 'allowfullscreen' },
-      toolbar: OComponent.prototype.defaults.toolbar
+      toolbar: OComponent.prototype.defaults.toolbar,
     },
 
     initialize(o, opt) {
-      let traits = [];
-      let prov = this.get('provider');
+      let traits = []
+      let prov = this.get('provider')
       switch (prov) {
         case yt:
-          traits = this.getYoutubeTraits();
-          break;
+          traits = this.getYoutubeTraits()
+          break
         case vi:
-          traits = this.getVimeoTraits();
-          break;
+          traits = this.getVimeoTraits()
+          break
         default:
-          traits = this.getSourceTraits();
+          traits = this.getSourceTraits()
       }
-      if (this.get('src')) this.parseFromSrc();
-      this.set('traits', traits);
-      Component.prototype.initialize.apply(this, arguments);
-      this.listenTo(this, 'change:provider', this.updateTraits);
-      this.listenTo(this, 'change:videoId', this.updateSrc);
+      if (this.get('src')) this.parseFromSrc()
+      this.set('traits', traits)
+      Component.prototype.initialize.apply(this, arguments)
+      this.listenTo(this, 'change:provider', this.updateTraits)
+      this.listenTo(this, 'change:videoId', this.updateSrc)
     },
 
     initToolbar(...args) {
-      OComponent.prototype.initToolbar.apply(this, args);
+      OComponent.prototype.initToolbar.apply(this, args)
     },
 
     /**
      * Set attributes by src string
      */
     parseFromSrc() {
-      const prov = this.get('provider');
-      const uri = this.parseUri(this.get('src'));
-      const qr = uri.query;
+      const prov = this.get('provider')
+      const uri = this.parseUri(this.get('src'))
+      const qr = uri.query
       switch (prov) {
         case yt:
         case vi:
-          const videoId = uri.pathname.split('/').pop();
-          this.set('videoId', videoId);
-          if (qr.autoplay) this.set('autoplay', 1);
-          if (qr.loop) this.set('loop', 1);
-          if (parseInt(qr.controls) === 0) this.set('controls', 0);
-          if (qr.color) this.set('color', qr.color);
-          break;
+          const videoId = uri.pathname.split('/').pop()
+          this.set('videoId', videoId)
+          if (qr.autoplay) this.set('autoplay', 1)
+          if (qr.loop) this.set('loop', 1)
+          if (parseInt(qr.controls) === 0) this.set('controls', 0)
+          if (qr.color) this.set('color', qr.color)
+          break
         default:
       }
     },
@@ -74,14 +74,14 @@ module.exports = Component.extend(
      * @private
      */
     updateSrc() {
-      let prov = this.get('provider');
+      let prov = this.get('provider')
       switch (prov) {
         case yt:
-          this.set('src', this.getYoutubeSrc());
-          break;
+          this.set('src', this.getYoutubeSrc())
+          break
         case vi:
-          this.set('src', this.getVimeoSrc());
-          break;
+          this.set('src', this.getVimeoSrc())
+          break
       }
     },
 
@@ -91,18 +91,18 @@ module.exports = Component.extend(
      * @private
      */
     getAttrToHTML(...args) {
-      let attr = Component.prototype.getAttrToHTML.apply(this, args);
-      let prov = this.get('provider');
+      let attr = Component.prototype.getAttrToHTML.apply(this, args)
+      let prov = this.get('provider')
       switch (prov) {
         case yt:
         case vi:
-          break;
+          break
         default:
-          if (this.get('loop')) attr.loop = 'loop';
-          if (this.get('autoplay')) attr.autoplay = 'autoplay';
-          if (this.get('controls')) attr.controls = 'controls';
+          if (this.get('loop')) attr.loop = 'loop'
+          if (this.get('autoplay')) attr.autoplay = 'autoplay'
+          if (this.get('controls')) attr.controls = 'controls'
       }
-      return attr;
+      return attr
     },
 
     /**
@@ -110,22 +110,22 @@ module.exports = Component.extend(
      * @private
      */
     updateTraits() {
-      let prov = this.get('provider');
-      let traits = this.getSourceTraits();
+      let prov = this.get('provider')
+      let traits = this.getSourceTraits()
       switch (prov) {
         case yt:
-          this.set('tagName', 'iframe');
-          traits = this.getYoutubeTraits();
-          break;
+          this.set('tagName', 'iframe')
+          traits = this.getYoutubeTraits()
+          break
         case vi:
-          this.set('tagName', 'iframe');
-          traits = this.getVimeoTraits();
-          break;
+          this.set('tagName', 'iframe')
+          traits = this.getVimeoTraits()
+          break
         default:
-          this.set('tagName', 'video');
+          this.set('tagName', 'video')
       }
-      this.loadTraits(traits);
-      this.sm.trigger('change:selectedComponent');
+      this.loadTraits(traits)
+      this.sm.trigger('change:selectedComponent')
     },
 
     // Listen provider change and switch traits, in TraitView listen traits change
@@ -145,9 +145,9 @@ module.exports = Component.extend(
         options: [
           { value: 'so', name: 'HTML5 Source' },
           { value: yt, name: 'Youtube' },
-          { value: vi, name: 'Vimeo' }
-        ]
-      };
+          { value: vi, name: 'Vimeo' },
+        ],
+      }
     },
 
     /**
@@ -162,12 +162,12 @@ module.exports = Component.extend(
           label: 'Source',
           name: 'src',
           placeholder: 'eg. ./media/video.mp4',
-          changeProp: 1
+          changeProp: 1,
         },
         this.getAutoplayTrait(),
         this.getLoopTrait(),
-        this.getControlsTrait()
-      ];
+        this.getControlsTrait(),
+      ]
     },
     /**
      * Return traits for the source provider
@@ -181,12 +181,12 @@ module.exports = Component.extend(
           label: 'Video ID',
           name: 'videoId',
           placeholder: 'eg. jNQXAC9IVRw',
-          changeProp: 1
+          changeProp: 1,
         },
         this.getAutoplayTrait(),
         this.getLoopTrait(),
-        this.getControlsTrait()
-      ];
+        this.getControlsTrait(),
+      ]
     },
 
     /**
@@ -201,18 +201,18 @@ module.exports = Component.extend(
           label: 'Video ID',
           name: 'videoId',
           placeholder: 'eg. 123456789',
-          changeProp: 1
+          changeProp: 1,
         },
         {
           label: 'Color',
           name: 'color',
           placeholder: 'eg. FF0000',
-          changeProp: 1
+          changeProp: 1,
         },
         this.getAutoplayTrait(),
         this.getLoopTrait(),
-        this.getControlsTrait()
-      ];
+        this.getControlsTrait(),
+      ]
     },
 
     /**
@@ -225,8 +225,8 @@ module.exports = Component.extend(
         type: 'checkbox',
         label: 'Autoplay',
         name: 'autoplay',
-        changeProp: 1
-      };
+        changeProp: 1,
+      }
     },
 
     /**
@@ -239,8 +239,8 @@ module.exports = Component.extend(
         type: 'checkbox',
         label: 'Loop',
         name: 'loop',
-        changeProp: 1
-      };
+        changeProp: 1,
+      }
     },
 
     /**
@@ -253,8 +253,8 @@ module.exports = Component.extend(
         type: 'checkbox',
         label: 'Controls',
         name: 'controls',
-        changeProp: 1
-      };
+        changeProp: 1,
+      }
     },
 
     /**
@@ -263,12 +263,12 @@ module.exports = Component.extend(
      * @private
      */
     getYoutubeSrc() {
-      let url = this.get('ytUrl');
-      url += this.get('videoId') + '?';
-      url += this.get('autoplay') ? '&autoplay=1' : '';
-      url += !this.get('controls') ? '&controls=0' : '';
-      url += this.get('loop') ? '&loop=1' : '';
-      return url;
+      let url = this.get('ytUrl')
+      url += this.get('videoId') + '?'
+      url += this.get('autoplay') ? '&autoplay=1' : ''
+      url += !this.get('controls') ? '&controls=0' : ''
+      url += this.get('loop') ? '&loop=1' : ''
+      return url
     },
 
     /**
@@ -277,14 +277,14 @@ module.exports = Component.extend(
      * @private
      */
     getVimeoSrc() {
-      let url = this.get('viUrl');
-      url += this.get('videoId') + '?';
-      url += this.get('autoplay') ? '&autoplay=1' : '';
-      url += this.get('loop') ? '&loop=1' : '';
-      url += !this.get('controls') ? '&title=0&portrait=0&badge=0' : '';
-      url += this.get('color') ? '&color=' + this.get('color') : '';
-      return url;
-    }
+      let url = this.get('viUrl')
+      url += this.get('videoId') + '?'
+      url += this.get('autoplay') ? '&autoplay=1' : ''
+      url += this.get('loop') ? '&loop=1' : ''
+      url += !this.get('controls') ? '&title=0&portrait=0&badge=0' : ''
+      url += this.get('color') ? '&color=' + this.get('color') : ''
+      return url
+    },
   },
   {
     /**
@@ -296,19 +296,19 @@ module.exports = Component.extend(
      * @private
      */
     isComponent(el) {
-      let result = '';
-      let isYtProv = /youtube\.com\/embed/.test(el.src);
-      let isViProv = /player\.vimeo\.com\/video/.test(el.src);
-      let isExtProv = isYtProv || isViProv;
+      let result = ''
+      let isYtProv = /youtube\.com\/embed/.test(el.src)
+      let isViProv = /player\.vimeo\.com\/video/.test(el.src)
+      let isExtProv = isYtProv || isViProv
       if (el.tagName == 'VIDEO' || (el.tagName == 'IFRAME' && isExtProv)) {
-        result = { type: 'video' };
-        if (el.src) result.src = el.src;
+        result = { type: 'video' }
+        if (el.src) result.src = el.src
         if (isExtProv) {
-          if (isYtProv) result.provider = yt;
-          else if (isViProv) result.provider = vi;
+          if (isYtProv) result.provider = yt
+          else if (isViProv) result.provider = vi
         }
       }
-      return result;
-    }
+      return result
+    },
   }
-);
+)

@@ -1,15 +1,15 @@
-const $ = Backbone.$;
+const $ = Backbone.$
 
 let getBoundingRect = (el, win) => {
-  let w = win || window;
-  let rect = el.getBoundingClientRect();
+  let w = win || window
+  let rect = el.getBoundingClientRect()
   return {
     left: rect.left + w.pageXOffset,
     top: rect.top + w.pageYOffset,
     width: rect.width,
-    height: rect.height
-  };
-};
+    height: rect.height,
+  }
+}
 
 module.exports = {
   // TODO move to opts
@@ -23,12 +23,12 @@ module.exports = {
    * @return {Object}
    */
   getElementRect(el) {
-    let posFetcher = this.opts.posFetcher || '';
+    let posFetcher = this.opts.posFetcher || ''
     return posFetcher
       ? posFetcher(el, {
-          avoidFrameOffset: 1
+          avoidFrameOffset: 1,
         })
-      : getBoundingRect(el);
+      : getBoundingRect(el)
   },
 
   /**
@@ -36,13 +36,13 @@ module.exports = {
    * @param  {Object} opts
    */
   init(opts) {
-    this.setOptions(opts);
-    this.handleMouseDown = this.handleMouseDown.bind(this);
-    this.drag = this.drag.bind(this);
-    this.move = this.move.bind(this);
-    this.stop = this.stop.bind(this);
-    this.setKey('up, right, down, left', this.handleKey);
-    return this;
+    this.setOptions(opts)
+    this.handleMouseDown = this.handleMouseDown.bind(this)
+    this.drag = this.drag.bind(this)
+    this.move = this.move.bind(this)
+    this.stop = this.stop.bind(this)
+    this.setKey('up, right, down, left', this.handleKey)
+    return this
   },
 
   /**
@@ -50,7 +50,7 @@ module.exports = {
    * @param {Object} options
    */
   setOptions(opts) {
-    this.opts = opts || {};
+    this.opts = opts || {}
   },
 
   /**
@@ -60,30 +60,30 @@ module.exports = {
   focus(el) {
     // Avoid focusing on already focused element
     if (el && el === this.el) {
-      return;
+      return
     }
 
-    this.getDocumentEl(el);
-    this.blur();
-    this.el = el;
-    this.handlers = this.opts.dragHandlers || [el];
+    this.getDocumentEl(el)
+    this.blur()
+    this.el = el
+    this.handlers = this.opts.dragHandlers || [el]
 
-    let elRect = this.getElementRect(el); //<-- TODO have wrong top:left
-    this.elRect = elRect;
-    this.startTop = elRect.top;
-    this.startLeft = elRect.left;
+    let elRect = this.getElementRect(el) //<-- TODO have wrong top:left
+    this.elRect = elRect
+    this.startTop = elRect.top
+    this.startLeft = elRect.left
 
     // TODO init snapper
 
-    this.getDocumentEl().on('mousedown', this.handleMouseDown);
+    this.getDocumentEl().on('mousedown', this.handleMouseDown)
   },
 
   /**
    * Blur from the focused element
    */
   blur() {
-    this.getDocumentEl().off('mousedown', this.handleMouseDown);
-    this.el = null;
+    this.getDocumentEl().off('mousedown', this.handleMouseDown)
+    this.el = null
   },
 
   /**
@@ -91,45 +91,45 @@ module.exports = {
    * @param  {Event} e
    */
   start(e) {
-    this.startPos = this.getMousePos(e);
-    let docs = this.getDocumentEl();
-    docs.on('mousemove', this.drag);
-    docs.on('mouseup', this.stop);
+    this.startPos = this.getMousePos(e)
+    let docs = this.getDocumentEl()
+    docs.on('mousemove', this.drag)
+    docs.on('mouseup', this.stop)
 
     // Start callback
-    let onStart = this.opts.onStart;
+    let onStart = this.opts.onStart
     if (typeof onStart === 'function') {
       onStart(e, {
         docs,
         el: this.el,
         start: this.startPos,
-        elRect: this.elRect
-      });
+        elRect: this.elRect,
+      })
     }
 
-    this.drag(e);
+    this.drag(e)
   },
 
   /**
    * Stop dragging
    */
   stop(e) {
-    let docs = this.getDocumentEl();
-    docs.off('mousemove', this.drag);
-    docs.off('mouseup', this.stop);
-    this.lockedAxis = null;
+    let docs = this.getDocumentEl()
+    docs.off('mousemove', this.drag)
+    docs.off('mouseup', this.stop)
+    this.lockedAxis = null
 
     // Stop callback
-    let onEnd = this.opts.onEnd;
+    let onEnd = this.opts.onEnd
     if (typeof onEnd === 'function') {
       onEnd(e, {
         docs,
         delta: this.delta,
         end: {
           x: this.startLeft + this.delta.x,
-          y: this.startTop + this.delta.y
-        }
-      });
+          y: this.startTop + this.delta.y,
+        },
+      })
     }
   },
 
@@ -138,9 +138,9 @@ module.exports = {
    * @param  {Event} e
    */
   handleMouseDown(e) {
-    let el = e.target;
+    let el = e.target
     if (this.isHandler(el)) {
-      this.start(e);
+      this.start(e)
     }
   },
 
@@ -150,13 +150,13 @@ module.exports = {
    * @return {Boolean}
    */
   isHandler(el) {
-    let handlers = this.handlers;
+    let handlers = this.handlers
 
     for (let n in handlers) {
-      if (handlers[n] === el) return true;
+      if (handlers[n] === el) return true
     }
 
-    return false;
+    return false
   },
 
   /**
@@ -167,17 +167,17 @@ module.exports = {
   handleKey(e, handler) {
     switch (handler.shortcut) {
       case 'up':
-        this.move(0, -1);
-        break;
+        this.move(0, -1)
+        break
       case 'right':
-        this.move(1, 0);
-        break;
+        this.move(1, 0)
+        break
       case 'down':
-        this.move(0, 1);
-        break;
+        this.move(0, 1)
+        break
       case 'left':
-        this.move(-1, 0);
-        break;
+        this.move(-1, 0)
+        break
     }
   },
 
@@ -185,15 +185,15 @@ module.exports = {
    * Returns documents
    */
   getDocumentEl(el) {
-    el = el || this.el;
+    el = el || this.el
     if (!this.$doc) {
-      let docs = [document];
+      let docs = [document]
       if (el) {
-        docs.push(el.ownerDocument);
+        docs.push(el.ownerDocument)
       }
-      this.$doc = $(docs);
+      this.$doc = $(docs)
     }
-    return this.$doc;
+    return this.$doc
   },
 
   /**
@@ -202,13 +202,13 @@ module.exports = {
    * @return {Object}
    */
   getMousePos(e) {
-    let mouseFetch = this.opts.mousePosFetcher;
+    let mouseFetch = this.opts.mousePosFetcher
     return mouseFetch
       ? mouseFetch(e)
       : {
           x: e.clientX,
-          y: e.clientY
-        };
+          y: e.clientY,
+        }
   },
 
   /**
@@ -216,59 +216,59 @@ module.exports = {
    * @param  {Event} event
    */
   drag(e) {
-    let lockedAxis = this.lockedAxis;
-    let currentPos = this.getMousePos(e);
+    let lockedAxis = this.lockedAxis
+    let currentPos = this.getMousePos(e)
     let delta = {
       x: currentPos.x - this.startPos.x,
-      y: currentPos.y - this.startPos.y
-    };
+      y: currentPos.y - this.startPos.y,
+    }
     // Lock one axis
     if (e.shiftKey) {
       if (!lockedAxis) {
-        let relX = delta.x;
-        let relY = delta.y;
-        let absX = Math.abs(relX);
-        let absY = Math.abs(relY);
+        let relX = delta.x
+        let relY = delta.y
+        let absX = Math.abs(relX)
+        let absY = Math.abs(relY)
 
         // Vertical or Horizontal lock
         if (relY >= absX || relY <= -absX) {
-          lockedAxis = 'x';
+          lockedAxis = 'x'
         } else if (relX > absY || relX < -absY) {
-          lockedAxis = 'y';
+          lockedAxis = 'y'
         }
       }
     } else {
-      lockedAxis = null;
+      lockedAxis = null
     }
 
     if (lockedAxis === 'x') {
-      delta.x = this.startPos.x;
+      delta.x = this.startPos.x
     }
 
     if (lockedAxis === 'y') {
-      delta.y = this.startPos.y;
+      delta.y = this.startPos.y
     }
 
-    this.lockedAxis = lockedAxis;
-    this.delta = delta;
-    this.move(delta.x, delta.y);
+    this.lockedAxis = lockedAxis
+    this.delta = delta
+    this.move(delta.x, delta.y)
 
     // Drag callback
-    const onDrag = this.opts.onDrag;
+    const onDrag = this.opts.onDrag
     if (typeof onDrag === 'function') {
       onDrag(e, {
         delta,
         current: {
           x: this.startLeft + delta.x,
-          y: this.startTop + delta.y
+          y: this.startTop + delta.y,
         },
-        lockedAxis
-      });
+        lockedAxis,
+      })
     }
 
     // In case the mouse button was released outside of the window
     if (e.which === 0) {
-      this.stop(e);
+      this.stop(e)
     }
   },
 
@@ -278,8 +278,8 @@ module.exports = {
    * @param  {integer} y
    */
   move: function(x, y) {
-    this.moveX(x);
-    this.moveY(y);
+    this.moveX(x)
+    this.moveY(y)
   },
 
   /**
@@ -287,19 +287,19 @@ module.exports = {
    * @param  {integer} x
    */
   moveX(x) {
-    let el = this.el;
-    let opts = this.opts;
-    let xPos = this.startLeft + x;
-    const setX = this.opts.setX;
+    let el = this.el
+    let opts = this.opts
+    let xPos = this.startLeft + x
+    const setX = this.opts.setX
 
     if (typeof setX === 'function') {
       setX(xPos, {
         el,
         start: this.startLeft,
-        delta: x
-      });
+        delta: x,
+      })
     } else {
-      el.style.left = xPos + 'px';
+      el.style.left = xPos + 'px'
     }
   },
 
@@ -308,19 +308,19 @@ module.exports = {
    * @param  {integer} y
    */
   moveY(y) {
-    let el = this.el;
-    let opts = this.opts;
-    let yPos = this.startTop + y;
-    const setY = this.opts.setY;
+    let el = this.el
+    let opts = this.opts
+    let yPos = this.startTop + y
+    const setY = this.opts.setY
 
     if (typeof setY === 'function') {
       setY(yPos, {
         el,
         start: this.startTop,
-        delta: y
-      });
+        delta: y,
+      })
     } else {
-      el.style.top = yPos + 'px';
+      el.style.top = yPos + 'px'
     }
-  }
-};
+  },
+}

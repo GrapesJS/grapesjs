@@ -131,24 +131,24 @@ module.exports = {
     devices: [
       {
         name: 'Desktop',
-        width: ''
+        width: '',
       },
       {
         name: 'Tablet',
         width: '768px',
-        widthMedia: '992px'
+        widthMedia: '992px',
       },
       {
         name: 'Mobile landscape',
         width: '568px',
-        widthMedia: '768px'
+        widthMedia: '768px',
       },
       {
         name: 'Mobile portrait',
         width: '320px',
-        widthMedia: '480px'
-      }
-    ]
+        widthMedia: '480px',
+      },
+    ],
   },
 
   //Configurations for Style Manager
@@ -164,8 +164,8 @@ module.exports = {
           'top',
           'right',
           'left',
-          'bottom'
-        ]
+          'bottom',
+        ],
       },
       {
         name: 'Dimension',
@@ -176,8 +176,8 @@ module.exports = {
           'max-width',
           'min-height',
           'margin',
-          'padding'
-        ]
+          'padding',
+        ],
       },
       {
         name: 'Typography',
@@ -190,7 +190,7 @@ module.exports = {
           'color',
           'line-height',
           'text-align',
-          'text-shadow'
+          'text-shadow',
         ],
         properties: [
           {
@@ -199,10 +199,10 @@ module.exports = {
               { value: 'left', className: 'fa fa-align-left' },
               { value: 'center', className: 'fa fa-align-center' },
               { value: 'right', className: 'fa fa-align-right' },
-              { value: 'justify', className: 'fa fa-align-justify' }
-            ]
-          }
-        ]
+              { value: 'justify', className: 'fa fa-align-justify' },
+            ],
+          },
+        ],
       },
       {
         name: 'Decorations',
@@ -213,15 +213,15 @@ module.exports = {
           'border-radius',
           'border',
           'box-shadow',
-          'background'
-        ]
+          'background',
+        ],
       },
       {
         name: 'Extra',
         open: false,
-        buildProps: ['transition', 'perspective', 'transform']
-      }
-    ]
+        buildProps: ['transition', 'perspective', 'transform'],
+      },
+    ],
   },
 
   //Configurations for Block Manager
@@ -229,5 +229,5 @@ module.exports = {
 
   // Texts
 
-  textViewCode: 'Code'
-};
+  textViewCode: 'Code',
+}

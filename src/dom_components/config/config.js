@@ -19,8 +19,8 @@ module.exports = {
       'background-repeat',
       'background-attachment',
       'background-position',
-      'background-size'
-    ]
+      'background-size',
+    ],
   },
 
   // Could be used for default components
@@ -54,6 +54,6 @@ module.exports = {
     'param',
     'source',
     'track',
-    'wbr'
-  ]
-};
+    'wbr',
+  ],
+}

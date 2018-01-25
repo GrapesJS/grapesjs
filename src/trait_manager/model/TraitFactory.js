@@ -5,20 +5,20 @@ module.exports = (config = {}) => ({
    * @return {Array<Object>}
    */
   build(props) {
-    let objs = [];
+    let objs = []
 
-    if (typeof props === 'string') props = [props];
+    if (typeof props === 'string') props = [props]
 
     for (let i = 0; i < props.length; i++) {
-      let obj = {};
-      let prop = props[i];
-      obj.name = prop;
+      let obj = {}
+      let prop = props[i]
+      obj.name = prop
 
       // Define type
       switch (prop) {
         case 'target':
-          obj.type = 'select';
-          break;
+          obj.type = 'select'
+          break
       }
 
       // Define placeholder
@@ -26,23 +26,23 @@ module.exports = (config = {}) => ({
         case 'title':
         case 'alt':
         case 'id':
-          obj.placeholder = config.labelPlhText;
-          break;
+          obj.placeholder = config.labelPlhText
+          break
         case 'href':
-          obj.placeholder = config.labelPlhHref;
-          break;
+          obj.placeholder = config.labelPlhHref
+          break
       }
 
       // Define options
       switch (prop) {
         case 'target':
-          obj.options = config.optionsTarget;
-          break;
+          obj.options = config.optionsTarget
+          break
       }
 
-      objs.push(obj);
+      objs.push(obj)
     }
 
-    return objs;
-  }
-});
+    return objs
+  },
+})
