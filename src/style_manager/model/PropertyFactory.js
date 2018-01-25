@@ -430,7 +430,7 @@ module.exports = () => ({
             'Verdana, Geneva' + ss
           ];
           obj.list = [];
-          for (const j = 0, l = fonts.length; j < l; j++) {
+          for (let j = 0, l = fonts.length; j < l; j++) {
             const font = {};
             font.value = fonts[j];
             font.name = fonts[j].split(',')[0];
