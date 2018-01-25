@@ -338,6 +338,9 @@ module.exports = Backbone.View.extend({
     this.updateContent();
     this.renderChildren();
     this.updateScript();
+    this.onRender();
     return this;
-  }
+  },
+
+  onRender() {}
 });
