@@ -289,6 +289,17 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.set('attributes', attrs);
     },
 
+    /**
+     * Add attributes to the model
+     * @param {Object} attrs Key value attributes
+     * @example
+     * model.addAttributes({id: 'test'});
+     */
+    addAttributes(attrs) {
+      const newAttrs = { ...this.getAttributes(), ...attrs };
+      this.setAttributes(newAttrs);
+    },
+
     getStyle() {
       const em = this.em;
 
