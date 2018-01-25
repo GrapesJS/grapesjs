@@ -601,10 +601,11 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * Override original clone method
      * @private
      */
-    clone(reset) {
+    clone() {
       const em = this.em;
       const style = this.getStyle();
       const attr = { ...this.attributes };
+      const opts = { ...this.opt };
       attr.attributes = { ...attr.attributes };
       delete attr.attributes.id;
       attr.components = [];
@@ -612,7 +613,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       attr.traits = [];
 
       this.get('components').each((md, i) => {
-        attr.components[i] = md.clone(1);
+        attr.components[i] = md.clone();
       });
       this.get('traits').each((md, i) => {
         attr.traits[i] = md.clone();
@@ -623,16 +624,13 @@ const Component = Backbone.Model.extend(Styleable).extend(
 
       attr.status = '';
       attr.view = '';
-
-      if (reset) {
-        this.opt.collection = null;
-      }
+      opts.collection = null;
 
       if (em && em.getConfig('avoidInlineStyle') && !isEmpty(style)) {
         attr.style = style;
       }
 
-      return new this.constructor(attr, this.opt);
+      return new this.constructor(attr, opts);
     },
 
     /**
