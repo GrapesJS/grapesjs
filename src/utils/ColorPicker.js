@@ -1203,7 +1203,7 @@
           maxWidth = $(element).width();
           offset = $(element).offset();
 
-          $(doc).bind(duringDragEvents);
+          $(element).bind(duringDragEvents);
           $(doc.body).addClass('sp-dragging');
 
           move(e);
@@ -1215,7 +1215,7 @@
 
     function stop() {
       if (dragging) {
-        $(doc).unbind(duringDragEvents);
+        $(element).unbind(duringDragEvents);
         $(doc.body).removeClass('sp-dragging');
 
         // Wait a tick before notifying observers to allow the click event
