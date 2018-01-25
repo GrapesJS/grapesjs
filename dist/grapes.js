@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 58);
+/******/ 	return __webpack_require__(__webpack_require__.s = 59);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -3696,7 +3696,7 @@ exports.getUnitFromValue = getUnitFromValue;
 
 var _underscore = __webpack_require__(1);
 
-var ComponentsView = __webpack_require__(50);
+var ComponentsView = __webpack_require__(51);
 
 module.exports = Backbone.View.extend({
   className: function className() {
@@ -4042,8 +4042,10 @@ module.exports = Backbone.View.extend({
     this.updateContent();
     this.renderChildren();
     this.updateScript();
+    this.onRender();
     return this;
-  }
+  },
+  onRender: function onRender() {}
 });
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
@@ -4067,7 +4069,7 @@ var _Styleable2 = _interopRequireDefault(_Styleable);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Backbone = __webpack_require__(0);
-var Components = __webpack_require__(49);
+var Components = __webpack_require__(50);
 var Selector = __webpack_require__(7);
 var Selectors = __webpack_require__(10);
 var Traits = __webpack_require__(150);
@@ -4201,7 +4203,7 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
     var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-    var em = opt.sm || opt.em || '';
+    var em = opt.em;
 
     // Propagate properties from parent if indicated
     var parent = this.parent();
@@ -4228,7 +4230,6 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
 
     opt.em = em;
     this.opt = opt;
-    this.sm = em;
     this.em = em;
     this.config = opt.config || {};
     this.ccid = Component.createId(this);
@@ -4297,6 +4298,20 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
 
 
   /**
+   * Find closest model by query string
+   * ATTENTION: this method works only with alredy rendered component
+   * @param  {string}  query Query string
+   * @return {Component}
+   * @example
+   * model.closest('div');
+   */
+  closest: function closest(query) {
+    var result = this.view.$el.closest(query);
+    return result.length && result.data('model');
+  },
+
+
+  /**
    * Once the tag is updated I have to remove the node and replace it
    */
   tagUpdated: function tagUpdated() {
@@ -4342,6 +4357,18 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
     delete attrs.style;
 
     this.set('attributes', attrs);
+  },
+
+
+  /**
+   * Add attributes to the model
+   * @param {Object} attrs Key value attributes
+   * @example
+   * model.addAttributes({id: 'test'});
+   */
+  addAttributes: function addAttributes(attrs) {
+    var newAttrs = _extends({}, this.getAttributes(), attrs);
+    this.setAttributes(newAttrs);
   },
   getStyle: function getStyle() {
     var em = this.em;
@@ -4644,10 +4671,11 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
    */
   normalizeClasses: function normalizeClasses(arr) {
     var res = [];
+    var em = this.em;
 
-    if (!this.sm.get) return;
+    if (!em) return;
 
-    var clm = this.sm.get('SelectorManager');
+    var clm = em.get('SelectorManager');
     if (!clm) return;
 
     arr.forEach(function (val) {
@@ -4666,10 +4694,11 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
    * Override original clone method
    * @private
    */
-  clone: function clone(reset) {
+  clone: function clone() {
     var em = this.em;
     var style = this.getStyle();
     var attr = _extends({}, this.attributes);
+    var opts = _extends({}, this.opt);
     attr.attributes = _extends({}, attr.attributes);
     delete attr.attributes.id;
     attr.components = [];
@@ -4677,7 +4706,7 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
     attr.traits = [];
 
     this.get('components').each(function (md, i) {
-      attr.components[i] = md.clone(1);
+      attr.components[i] = md.clone();
     });
     this.get('traits').each(function (md, i) {
       attr.traits[i] = md.clone();
@@ -4688,16 +4717,13 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
 
     attr.status = '';
     attr.view = '';
-
-    if (reset) {
-      this.opt.collection = null;
-    }
+    opts.collection = null;
 
     if (em && em.getConfig('avoidInlineStyle') && !(0, _underscore.isEmpty)(style)) {
       attr.style = style;
     }
 
-    return new this.constructor(attr, this.opt);
+    return new this.constructor(attr, opts);
   },
 
 
@@ -4835,7 +4861,7 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
       scr = scrStr.trim();
     }
 
-    var config = this.sm.config || {};
+    var config = this.em.getConfig();
     var tagVarStart = escapeRegExp(config.tagVarStart || '{[ ');
     var tagVarEnd = escapeRegExp(config.tagVarEnd || ' ]}');
     var reg = new RegExp(tagVarStart + '([\\w\\d-]*)' + tagVarEnd, 'g');
@@ -17341,9 +17367,10 @@ module.exports = Component.extend({
     }
 
     Component.prototype.initToolbar.apply(this, args);
+    var em = this.em;
 
-    if (this.sm && this.sm.get) {
-      var cmd = this.sm.get('Commands');
+    if (em) {
+      var cmd = em.get('Commands');
       var cmdName = 'image-editor';
 
       // Add Image Editor button only if the default command exists
@@ -18035,7 +18062,7 @@ module.exports = {
 "use strict";
 /* WEBPACK VAR INJECTION */(function(Backbone, _) {
 
-var SelectPosition = __webpack_require__(53);
+var SelectPosition = __webpack_require__(54);
 var $ = Backbone.$;
 
 module.exports = _.extend({}, SelectPosition, {
@@ -21957,6 +21984,13 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
     // Indicates if the rule is stylable
     stylable: true,
 
+    // Type of at-rule, eg. 'media', 'font-face', etc.
+    atRuleType: '',
+
+    // This particolar property is used only on at-rules, like 'page' or
+    // 'font-face', where the block containes only style declarations
+    singleAtRule: 0,
+
     // If true, sets '!important' on all properties
     // You can use an array to specify properties to set important
     // Used in view
@@ -21985,6 +22019,20 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
 
 
   /**
+   * Returns an at-rule statement if possible, eg. '@media (...)', '@keyframes'
+   * @return {string}
+   */
+  getAtRule: function getAtRule() {
+    var type = this.get('atRuleType');
+    var condition = this.get('mediaText');
+    // Avoid breaks with the last condition
+    var typeStr = type ? '@' + type : condition ? '@media' : '';
+
+    return typeStr + (condition && typeStr ? ' ' + condition : '');
+  },
+
+
+  /**
    * Return selectors fo the rule as a string
    * @return {string}
    */
@@ -22003,6 +22051,27 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
 
 
   /**
+   * Get declaration block
+   * @param {Object} [opts={}] Options
+   * @return {string}
+   */
+  getDeclaration: function getDeclaration() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    var result = '';
+    var selectors = this.selectorsToString();
+    var style = this.styleToString(opts);
+    var singleAtRule = this.get('singleAtRule');
+
+    if ((selectors || singleAtRule) && style) {
+      result = singleAtRule ? style : selectors + '{' + style + '}';
+    }
+
+    return result;
+  },
+
+
+  /**
    * Returns CSS string of the rule
    * @param {Object} [opts={}] Options
    * @return {string}
@@ -22011,16 +22080,12 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
     var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
     var result = '';
-    var media = this.get('mediaText');
-    var style = this.styleToString(opts);
-    var selectors = this.selectorsToString();
+    var atRule = this.getAtRule();
+    var block = this.getDeclaration(opts);
+    block && (result = block);
 
-    if (selectors && style) {
-      result = selectors + '{' + style + '}';
-    }
-
-    if (media && result) {
-      result = '@media ' + media + '{' + result + '}';
+    if (atRule && result) {
+      result = atRule + '{' + result + '}';
     }
 
     return result;
@@ -22036,11 +22101,13 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
    * @return  {Boolean}
    * @private
    */
-  compare: function compare(selectors, state, width, ruleProps) {
-    var otherRule = ruleProps || {};
+  compare: function compare(selectors, state, width) {
+    var ruleProps = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
     var st = state || '';
     var wd = width || '';
-    var selectorsAdd = otherRule.selectorsAdd || '';
+    var selectorsAdd = ruleProps.selectorsAdd || '';
+    var atRuleType = ruleProps.atRuleType || '';
     var cId = 'cid';
     //var a1 = _.pluck(selectors.models || selectors, cId);
     //var a2 = _.pluck(this.get('selectors').models, cId);
@@ -22063,11 +22130,9 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
       if (re === 0) return f;
     }
 
-    if (this.get('state') !== st) return f;
-
-    if (this.get('mediaText') !== wd) return f;
-
-    if (this.get('selectorsAdd') !== selectorsAdd) return f;
+    if (this.get('state') !== st || this.get('mediaText') !== wd || this.get('selectorsAdd') !== selectorsAdd || this.get('atRuleType') !== atRuleType) {
+      return f;
+    }
 
     return true;
   }
@@ -22214,6 +22279,34 @@ exports.default = {
 "use strict";
 
 
+module.exports = __webpack_require__(0).View.extend({
+  tagName: 'style',
+
+  initialize: function initialize() {
+    var o = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    this.config = o.config || {};
+    var model = this.model;
+    var toTrack = 'change:style change:state change:mediaText';
+    this.listenTo(model, toTrack, this.render);
+    this.listenTo(model, 'destroy remove', this.remove);
+    this.listenTo(model.get('selectors'), 'change', this.render);
+  },
+  render: function render() {
+    var model = this.model;
+    var important = model.get('important');
+    this.el.innerHTML = this.model.toCSS({ important: important });
+    return this;
+  }
+});
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var Backbone = __webpack_require__(0);
 
 module.exports = Backbone.View.extend({
@@ -22275,7 +22368,7 @@ module.exports = Backbone.View.extend({
 });
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22286,26 +22379,19 @@ var _underscore = __webpack_require__(1);
 var Backbone = __webpack_require__(0);
 
 module.exports = Backbone.Collection.extend({
-  initialize: function initialize(models, opt) {
-    this.on('add', this.onAdd);
+  initialize: function initialize(models) {
+    var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-    this.config = opt && opt.config ? opt.config : null;
-
-    // Inject editor
-    if (opt && (opt.sm || opt.em)) this.editor = opt.sm || opt.em;
+    this.listenTo(this, 'add', this.onAdd);
+    this.config = opt.config;
+    this.em = opt.em;
 
     this.model = function (attrs, options) {
       var model;
-
-      if (!options.sm && opt && opt.sm) options.sm = opt.sm;
-
-      if (!options.em && opt && opt.em) options.em = opt.em;
-
-      if (opt && opt.config) options.config = opt.config;
-
-      if (opt && opt.componentTypes) options.componentTypes = opt.componentTypes;
-
       var df = opt.componentTypes;
+      options.em = opt.em;
+      options.config = opt.config;
+      options.componentTypes = df;
 
       for (var it = 0; it < df.length; it++) {
         var dfId = df[it].id;
@@ -22327,10 +22413,10 @@ module.exports = Backbone.Collection.extend({
     var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
     if (typeof models === 'string') {
-      var parsed = this.editor.get('Parser').parseHtml(models);
+      var parsed = this.em.get('Parser').parseHtml(models);
       models = parsed.html;
 
-      var cssc = this.editor.get('CssComposer');
+      var cssc = this.em.get('CssComposer');
 
       if (parsed.css && cssc) {
         var avoidUpdateStyle = opt.avoidUpdateStyle;
@@ -22345,23 +22431,21 @@ module.exports = Backbone.Collection.extend({
     return Backbone.Collection.prototype.add.apply(this, [models, opt]);
   },
   onAdd: function onAdd(model, c, opts) {
-    var em = this.editor;
-    var style = model.get('style');
+    var em = this.em;
+    var style = model.getStyle();
     var avoidInline = em && em.getConfig('avoidInlineStyle');
 
-    if (!(0, _underscore.isEmpty)(style) && !avoidInline && em && em.get && em.get('Config').forceClass) {
-      var cssC = this.editor.get('CssComposer');
-      var newClass = this.editor.get('SelectorManager').add(model.cid);
-      model.set({ style: {} });
-      model.get('classes').add(newClass);
-      var rule = cssC.add(newClass);
-      rule.set('style', style);
+    if (!(0, _underscore.isEmpty)(style) && !avoidInline && em && em.get && em.getConfig('forceClass')) {
+      var name = model.cid;
+      var rule = em.get('CssComposer').setClassRule(name, style);
+      model.setStyle({});
+      model.addClass(name);
     }
   }
 });
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22486,7 +22570,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22505,7 +22589,7 @@ module.exports = Component.extend({
 });
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22642,7 +22726,7 @@ module.exports = ComponentView.extend({
 });
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22747,7 +22831,7 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22841,7 +22925,7 @@ module.exports = _.extend({}, CreateComponent, {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23137,7 +23221,7 @@ module.exports = __webpack_require__(0).View.extend({
     el.html(this.template(model));
 
     if ((0, _underscore.isUndefined)(ItemsView)) {
-      ItemsView = __webpack_require__(56);
+      ItemsView = __webpack_require__(57);
     }
 
     var children = new ItemsView({
@@ -23164,14 +23248,14 @@ module.exports = __webpack_require__(0).View.extend({
 });
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var ItemView = __webpack_require__(55);
+var ItemView = __webpack_require__(56);
 
 module.exports = Backbone.View.extend({
   initialize: function initialize() {
@@ -23305,7 +23389,7 @@ module.exports = Backbone.View.extend({
 });
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23323,19 +23407,27 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _cashDom = __webpack_require__(9);
 
 var _cashDom2 = _interopRequireDefault(_cashDom);
 
-var _underscore = __webpack_require__(1);
+var _editor = __webpack_require__(60);
 
-var _polyfills = __webpack_require__(59);
+var _editor2 = _interopRequireDefault(_editor);
+
+var _plugin_manager = __webpack_require__(219);
+
+var _plugin_manager2 = _interopRequireDefault(_plugin_manager);
+
+var _polyfills = __webpack_require__(221);
 
 var _polyfills2 = _interopRequireDefault(_polyfills);
 
@@ -23344,28 +23436,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 (0, _polyfills2.default)();
 
 module.exports = function () {
-  var Editor = __webpack_require__(60);
-  var PluginManager = __webpack_require__(219);
-  var plugins = new PluginManager();
+  var plugins = new _plugin_manager2.default();
   var editors = [];
   var defaultConfig = {
     // If true renders editor on init
     autorender: 1,
-
-    // Where init the editor
-    container: '',
-
-    // HTML string or object of components
-    components: '',
-
-    // CSS string or object of rules
-    style: '',
-
-    // If true, will fetch HTML and CSS from selected container
-    fromElement: 0,
-
-    // Storage Manager
-    storageManager: {},
 
     // Array of plugins to init
     plugins: [],
@@ -23382,18 +23457,16 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.13.7',
+    version: '0.13.8',
 
     /**
      * Initializes an editor based on passed options
      * @param {Object} config Configuration object
      * @param {string|HTMLElement} config.container Selector which indicates where render the editor
-     * @param {Object|string} config.components='' HTML string or Component model in JSON format
-     * @param {Object|string} config.style='' CSS string or CSS model in JSON format
-     * @param {Boolean} [config.fromElement=false] If true, will fetch HTML and CSS from selected container
-     * @param {Boolean} [config.undoManager=true] Enable/Disable undo manager
+     * @param {Boolean} [config.autorender=true] If true, auto-render the content
      * @param {Array} [config.plugins=[]] Array of plugins to execute on start
-     * @return {grapesjs.Editor} GrapesJS editor instance
+     * @param {Object} [config.pluginsOpts={}] Custom options for plugins
+     * @return {Editor} Editor instance
      * @example
      * var editor = grapesjs.init({
      *   container: '#myeditor',
@@ -23405,14 +23478,11 @@ module.exports = function () {
       var config = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
       var els = config.container;
-
-      if (!els) {
-        throw new Error("'container' is required");
-      }
-
-      (0, _underscore.defaults)(config, defaultConfig);
-      config.el = els instanceof window.HTMLElement ? els : document.querySelector(els);
-      var editor = new Editor(config).init();
+      if (!els) throw new Error("'container' is required");
+      config = _extends({}, defaultConfig, config);
+      var ilEl = els instanceof window.HTMLElement;
+      config.el = ilEl ? els : document.querySelector(els);
+      var editor = new _editor2.default(config).init();
 
       // Load plugins
       config.plugins.forEach(function (pluginId) {
@@ -23429,58 +23499,13 @@ module.exports = function () {
       // A plugin might have extended/added some custom type so this
       // is a good point to load stuff like components, css rules, etc.
       editor.getModel().loadOnStart();
-
       config.autorender && editor.render();
-
       editors.push(editor);
+
       return editor;
     }
   };
 }();
-
-/***/ }),
-/* 59 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-/**
- * File made for IE/Edge support
- * https://github.com/artf/grapesjs/issues/214
- */
-
-exports.default = function () {
-  /**
-   * Check if IE/Edge
-   * @return {Boolean}
-   */
-  var isIE = function isIE() {
-    var match = void 0;
-    var agent = window.navigator.userAgent;
-    var rules = [['edge', /Edge\/([0-9\._]+)/], ['ie', /MSIE\s(7\.0)/], ['ie', /MSIE\s([0-9\.]+);.*Trident\/[4-7].0/], ['ie', /Trident\/7\.0.*rv\:([0-9\.]+).*\).*Gecko$/]];
-
-    for (var i = 0; i < rules.length; i++) {
-      var rule = rules[i];
-      match = rule[1].exec(agent);
-      if (match) break;
-    }
-
-    return !!match;
-  };
-
-  if (isIE()) {
-    var originalCreateHTMLDocument = DOMImplementation.prototype.createHTMLDocument;
-    DOMImplementation.prototype.createHTMLDocument = function (title) {
-      if (!title) title = '';
-      return originalCreateHTMLDocument.apply(document.implementation, [title]);
-    };
-  }
-};
 
 /***/ }),
 /* 60 */
@@ -24125,8 +24150,14 @@ module.exports = {
   // Style prefix
   stylePrefix: 'gjs-',
 
-  //TEMP
+  // HTML string or object of components
   components: '',
+
+  // CSS string or object of rules
+  style: '',
+
+  // If true, will fetch HTML and CSS from selected container
+  fromElement: 0,
 
   // Show an alert before unload the page with unsaved changes
   noticeOnUnload: true,
@@ -24890,6 +24921,8 @@ module.exports = function () {
 "use strict";
 /* WEBPACK VAR INJECTION */(function(Backbone, _) {
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _underscore = __webpack_require__(1);
 
 var _mixins = __webpack_require__(2);
@@ -25203,12 +25236,14 @@ module.exports = Backbone.View.extend({
     if (dropContent && em) {
       if (!dropModel) {
         var comps = em.get('DomComponents').getComponents();
-        var tempModel = comps.add(dropContent, {
+        var opts = {
+          avoidStore: 1,
           avoidChildren: 1,
           avoidUpdateStyle: 1,
           temporary: 1
-        });
-        dropModel = comps.remove(tempModel, { temporary: 1 });
+        };
+        var tempModel = comps.add(dropContent, opts);
+        dropModel = comps.remove(tempModel, opts);
         this.dropModel = dropModel instanceof Array ? dropModel[0] : dropModel;
       }
       return dropModel;
@@ -25861,7 +25896,7 @@ module.exports = Backbone.View.extend({
       var opts = { at: index, noIncrement: 1 };
 
       if (!dropContent) {
-        modelTemp = targetCollection.add({}, opts);
+        modelTemp = targetCollection.add({}, _extends({}, opts, { avoidStore: 1 }));
 
         if (model) {
           modelToDrop = model.collection.remove(model);
@@ -25875,7 +25910,7 @@ module.exports = Backbone.View.extend({
       created = targetCollection.add(modelToDrop, opts);
 
       if (!dropContent) {
-        targetCollection.remove(modelTemp);
+        targetCollection.remove(modelTemp, { avoidStore: 1 });
       } else {
         this.dropContent = null;
       }
@@ -27029,6 +27064,32 @@ module.exports = function () {
       this.em = em;
       um = new _backboneUndo2.default({ track: true, register: [] });
       um.changeUndoType('change', { condition: false });
+      um.changeUndoType('add', {
+        on: function on(model, collection) {
+          var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+          if (options.avoidStore) return;
+          return {
+            object: collection,
+            before: undefined,
+            after: model,
+            options: _extends({}, options)
+          };
+        }
+      });
+      um.changeUndoType('remove', {
+        on: function on(model, collection) {
+          var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+          if (options.avoidStore) return;
+          return {
+            object: collection,
+            before: model,
+            after: undefined,
+            options: _extends({}, options)
+          };
+        }
+      });
       var customUndoType = {
         on: function on(object, value) {
           var opt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
@@ -31551,6 +31612,24 @@ module.exports = {
 "use strict";
 
 
+var _underscore = __webpack_require__(1);
+
+// At-rules
+// https://developer.mozilla.org/it/docs/Web/API/CSSRule#Type_constants
+var atRules = {
+  4: 'media',
+  5: 'font-face',
+  6: 'page',
+  7: 'keyframes',
+  11: 'counter-style',
+  12: 'supports',
+  13: 'document',
+  14: 'font-feature-values',
+  15: 'viewport'
+};
+var atRuleKeys = (0, _underscore.keys)(atRules);
+var singleAtRules = ['5', '6', '11', '15'];
+
 module.exports = function (config) {
   return {
     /**
@@ -31568,7 +31647,9 @@ module.exports = function (config) {
      * //add: ['.test2 .test3']
      * //}
      */
-    parseSelector: function parseSelector(str) {
+    parseSelector: function parseSelector() {
+      var str = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
       var add = [];
       var result = [];
       var sels = str.split(',');
@@ -31591,54 +31672,85 @@ module.exports = function (config) {
 
 
     /**
+     * Parse style declarations of the node
+     * @param {CSSRule} node
+     * @return {Object}
+     */
+    parseStyle: function parseStyle(node) {
+      var stl = node.style;
+      var style = {};
+
+      for (var i = 0, len = stl.length; i < len; i++) {
+        var propName = stl[i];
+        var propValue = stl.getPropertyValue(propName);
+        var important = stl.getPropertyPriority(propName);
+        style[propName] = '' + propValue + (important ? ' !' + important : '');
+      }
+
+      return style;
+    },
+
+
+    /**
+     * Get the condition when possible
+     * @param  {CSSRule} node
+     * @return {string}
+     */
+    parseCondition: function parseCondition(node) {
+      var condition = node.conditionText || node.media && node.media.mediaText || node.name || node.selectorText || '';
+      return condition.trim();
+    },
+
+
+    /**
      * Fetch data from node
-     * @param  {StyleSheet|CSSMediaRule} el
+     * @param  {StyleSheet|CSSRule} el
      * @return {Array<Object>}
      */
     parseNode: function parseNode(el) {
       var result = [];
-      var nodes = el.cssRules;
+      var nodes = el.cssRules || [];
 
       for (var i = 0, len = nodes.length; i < len; i++) {
         var node = nodes[i];
-        var sels = node.selectorText;
-        var selsAdd = [];
+        var type = node.type.toString();
+        var singleAtRule = 0;
+        var atRuleType = '';
+        var condition = '';
+        // keyText is for CSSKeyframeRule
+        var sels = node.selectorText || node.keyText;
+        var isSingleAtRule = singleAtRules.indexOf(type) >= 0;
 
-        // It's a CSSMediaRule
-        if (node.cssRules) {
+        // Check if the node is an at-rule
+        if (isSingleAtRule) {
+          singleAtRule = 1;
+          atRuleType = atRules[type];
+          condition = this.parseCondition(node);
+        } else if (atRuleKeys.indexOf(type) >= 0) {
           var subRules = this.parseNode(node);
-          var mediaText = node.media.mediaText;
+          condition = this.parseCondition(node);
 
           for (var s = 0, lens = subRules.length; s < lens; s++) {
             var subRule = subRules[s];
-            subRule.mediaText = mediaText ? mediaText.trim() : '';
+            condition && (subRule.mediaText = condition);
+            subRule.atRuleType = atRules[type];
           }
-
           result = result.concat(subRules);
         }
 
-        if (!sels) continue;
-
+        if (!sels && !isSingleAtRule) continue;
+        var style = this.parseStyle(node);
         var selsParsed = this.parseSelector(sels);
+        var selsAdd = selsParsed.add;
         sels = selsParsed.result;
-        selsAdd = selsParsed.add;
 
-        // Create style object from the big one
-        var stl = node.style;
-        var style = {};
-
-        for (var j = 0, len2 = stl.length; j < len2; j++) {
-          var propName = stl[j];
-          var propValue = stl.getPropertyValue(propName);
-          var important = stl.getPropertyPriority(propName);
-          style[propName] = '' + propValue + (important ? ' !' + important : '');
-        }
-
-        var lastRule = '';
+        var lastRule = void 0;
         // For each group of selectors
         for (var k = 0, len3 = sels.length; k < len3; k++) {
           var selArr = sels[k];
           var model = {};
+          singleAtRule && (model.singleAtRule = singleAtRule);
+          atRuleType && (model.atRuleType = atRuleType);
 
           //Isolate state from selector
           var stateArr = selArr[selArr.length - 1].split(/:(.+)/);
@@ -31661,13 +31773,18 @@ module.exports = function (config) {
           if (lastRule) {
             lastRule.selectorsAdd = selsAddStr;
           } else {
-            result.push({
+            var _model = {
               selectors: [],
               selectorsAdd: selsAddStr,
               style: style
-            });
+            };
+            singleAtRule && (_model.singleAtRule = singleAtRule);
+            atRuleType && (_model.atRuleType = atRuleType);
+            condition && (_model.mediaText = condition);
+            result.push(_model);
           }
         }
+        // console.log('LAST PUSH', result[result.length - 1]);
       }
 
       return result;
@@ -31681,22 +31798,15 @@ module.exports = function (config) {
      */
     parse: function parse(str) {
       var el = document.createElement('style');
-      /*
-      el.innerHTML = ".cssClass {border: 2px solid black; background-color: blue;} " +
-      ".red, .red2 {color:red; padding:5px} .test1.red {color:black} .red:hover{color: blue} " +
-      "@media screen and (min-width: 480px){ .red{color:white} }";
-      */
       el.innerHTML = str;
 
-      // There is no .sheet without adding it to the <head>
+      // There is no .sheet before adding it to the <head>
       document.head.appendChild(el);
       var sheet = el.sheet;
       document.head.removeChild(el);
       var result = this.parseNode(sheet);
 
-      if (result.length == 1) result = result[0];
-
-      return result;
+      return result.length == 1 ? result[0] : result;
     }
   };
 };
@@ -33076,19 +33186,18 @@ module.exports = __webpack_require__(0).Model.extend({
     if (cssc) {
       (function () {
         var rules = cssc.getAll();
-        var mediaRules = {};
+        var atRules = {};
         var dump = [];
 
         rules.each(function (rule) {
-          var media = rule.get('mediaText');
+          var atRule = rule.getAtRule();
 
-          // If media is setted, I'll render it later
-          if (media) {
-            var mRules = mediaRules[media];
+          if (atRule) {
+            var mRules = atRules[atRule];
             if (mRules) {
               mRules.push(rule);
             } else {
-              mediaRules[media] = [rule];
+              atRules[atRule] = [rule];
             }
             return;
           }
@@ -33096,16 +33205,16 @@ module.exports = __webpack_require__(0).Model.extend({
           code += _this2.buildFromRule(rule, dump);
         });
 
-        // Get media rules
-        for (var media in mediaRules) {
+        // Get at-rules
+        for (var atRule in atRules) {
           var rulesStr = '';
-          var mRules = mediaRules[media];
+          var mRules = atRules[atRule];
           mRules.forEach(function (rule) {
             return rulesStr += _this2.buildFromRule(rule, dump);
           });
 
           if (rulesStr) {
-            code += '@media ' + media + '{' + rulesStr + '}';
+            code += atRule + '{' + rulesStr + '}';
           }
         }
 
@@ -33126,8 +33235,9 @@ module.exports = __webpack_require__(0).Model.extend({
     var _this3 = this;
 
     var result = '';
-    var selectorStr = rule.selectorsToString();
     var selectorStrNoAdd = rule.selectorsToString({ skipAdd: 1 });
+    var selectorsAdd = rule.get('selectorsAdd');
+    var singleAtRule = rule.get('singleAtRule');
     var found = void 0;
 
     // This will not render a rule if there is no its component
@@ -33138,12 +33248,9 @@ module.exports = __webpack_require__(0).Model.extend({
       }
     });
 
-    if (selectorStrNoAdd && found || rule.get('selectorsAdd')) {
-      var style = rule.styleToString();
-
-      if (style) {
-        result += selectorStr + '{' + style + '}';
-      }
+    if (selectorStrNoAdd && found || selectorsAdd || singleAtRule) {
+      var block = rule.getDeclaration();
+      block && (result += block);
     } else {
       dump.push(rule);
     }
@@ -40881,7 +40988,6 @@ module.exports = function () {
       var elStyle = c.em && c.em.config.style || '';
       c.rules = elStyle || c.rules;
 
-      c.sm = c.em;
       em = c.em;
       rules = new CssRules([], c);
       rulesView = new CssRulesView({
@@ -41241,13 +41347,13 @@ var CssRule = __webpack_require__(46);
 module.exports = Backbone.Collection.extend({
   initialize: function initialize(models, opt) {
     // Inject editor
-    if (opt && opt.sm) this.editor = opt.sm;
+    if (opt && opt.em) this.editor = opt.em;
 
     // Not used
     this.model = function (attrs, options) {
       var model;
 
-      if (!options.sm && opt && opt.sm) options.sm = opt.sm;
+      if (!options.em && opt && opt.em) options.em = opt.em;
 
       switch (1) {
         default:
@@ -41275,12 +41381,13 @@ module.exports = Backbone.Collection.extend({
 "use strict";
 
 
-var Backbone = __webpack_require__(0);
-var CssRuleView = __webpack_require__(140);
+var CssRuleView = __webpack_require__(48);
+var CssGroupRuleView = __webpack_require__(140);
 
-module.exports = Backbone.View.extend({
+module.exports = __webpack_require__(0).View.extend({
   initialize: function initialize(o) {
     var config = o.config || {};
+    this.atRules = {};
     this.config = config;
     this.em = config.em;
     this.pfx = config.stylePrefix || '';
@@ -41311,20 +41418,45 @@ module.exports = Backbone.View.extend({
   addToCollection: function addToCollection(model, fragmentEl) {
     var fragment = fragmentEl || null;
     var viewObject = CssRuleView;
+    var config = this.config;
+    var rendered = void 0,
+        view = void 0;
+    var opts = { model: model, config: config };
 
-    var view = new viewObject({
-      model: model,
-      config: this.config
-    });
-    var rendered = view.render().el;
+    // I have to render keyframes of the same name together
+    // Unfortunately at the moment I didn't find the way of appending them
+    // if not staticly, via appendData
+    if (model.get('atRuleType') == 'keyframes') {
+      var atRule = model.getAtRule();
+      var atRuleEl = this.atRules[atRule];
 
-    if (fragment) fragment.appendChild(rendered);else this.$el.append(rendered);
+      if (!atRuleEl) {
+        var styleEl = document.createElement('style');
+        atRuleEl = document.createTextNode('');
+        styleEl.appendChild(document.createTextNode(atRule + '{'));
+        styleEl.appendChild(atRuleEl);
+        styleEl.appendChild(document.createTextNode('}'));
+        this.atRules[atRule] = atRuleEl;
+        rendered = styleEl;
+      }
+
+      view = new CssGroupRuleView(opts);
+      atRuleEl.appendData(view.render().el.textContent);
+    } else {
+      view = new CssRuleView(opts);
+      rendered = view.render().el;
+    }
+
+    if (rendered) {
+      if (fragment) fragment.appendChild(rendered);else this.$el.append(rendered);
+    }
 
     return rendered;
   },
   render: function render() {
     var _this = this;
 
+    this.atRules = {};
     var $el = this.$el;
     var frag = document.createDocumentFragment();
     $el.empty();
@@ -41344,23 +41476,15 @@ module.exports = Backbone.View.extend({
 "use strict";
 
 
-module.exports = __webpack_require__(0).View.extend({
-  tagName: 'style',
-
-  initialize: function initialize() {
-    var o = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-    this.config = o.config || {};
-    var model = this.model;
-    var toTrack = 'change:style change:state change:mediaText';
-    this.listenTo(model, toTrack, this.render);
-    this.listenTo(model, 'destroy remove', this.remove);
-    this.listenTo(model.get('selectors'), 'change', this.render);
+module.exports = __webpack_require__(48).extend({
+  _createElement: function _createElement(tagName) {
+    return document.createTextNode('');
   },
+
   render: function render() {
     var model = this.model;
     var important = model.get('important');
-    this.el.innerHTML = this.model.toCSS({ important: important });
+    this.el.textContent = model.getDeclaration({ important: important });
     return this;
   }
 });
@@ -41481,7 +41605,7 @@ module.exports = {
 "use strict";
 
 
-var DomainViews = __webpack_require__(48);
+var DomainViews = __webpack_require__(49);
 var TraitView = __webpack_require__(8);
 var TraitSelectView = __webpack_require__(144);
 var TraitCheckboxView = __webpack_require__(145);
@@ -41798,8 +41922,8 @@ module.exports = function () {
   var defaults = __webpack_require__(149);
   var Component = __webpack_require__(4);
   var ComponentView = __webpack_require__(3);
-  var Components = __webpack_require__(49);
-  var ComponentsView = __webpack_require__(50);
+  var Components = __webpack_require__(50);
+  var ComponentsView = __webpack_require__(51);
 
   var component, componentView;
   var componentTypes = [{
@@ -41856,8 +41980,8 @@ module.exports = function () {
     view: __webpack_require__(175)
   }, {
     id: 'text',
-    model: __webpack_require__(51),
-    view: __webpack_require__(52)
+    model: __webpack_require__(52),
+    view: __webpack_require__(53)
   }, {
     id: 'default',
     model: Component,
@@ -41953,7 +42077,7 @@ module.exports = function () {
       }
 
       component = new Component(wrapper, {
-        sm: em,
+        em: em,
         config: c,
         componentTypes: componentTypes
       });
@@ -41973,7 +42097,7 @@ module.exports = function () {
      * @private
      */
     onLoad: function onLoad() {
-      this.getComponents().reset(c.components);
+      this.setComponents(c.components);
     },
 
 
@@ -42932,7 +43056,7 @@ module.exports = ComponentView.extend({
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var Component = __webpack_require__(51);
+var Component = __webpack_require__(52);
 
 module.exports = Component.extend({
   defaults: _extends({}, Component.prototype.defaults, {
@@ -42994,7 +43118,7 @@ module.exports = Component.extend({
 
 
 var Backbone = __webpack_require__(0);
-var ComponentView = __webpack_require__(52);
+var ComponentView = __webpack_require__(53);
 
 module.exports = ComponentView.extend({
   render: function render() {
@@ -43157,7 +43281,7 @@ module.exports = Component.extend({
         this.set('tagName', 'video');
     }
     this.loadTraits(traits);
-    this.sm.trigger('change:selectedComponent');
+    this.em.trigger('change:selectedComponent');
   },
 
 
@@ -43621,9 +43745,7 @@ module.exports = Component.extend({
 "use strict";
 
 
-var Backbone = __webpack_require__(0);
-
-module.exports = Backbone.View.extend({});
+module.exports = __webpack_require__(0).View.extend({});
 
 /***/ }),
 /* 176 */
@@ -44215,6 +44337,7 @@ var Droppable = function () {
       var em = this.em;
       var types = dataTransfer.types;
       var files = dataTransfer.files;
+      var dragContent = em.get('dragContent');
       var content = dataTransfer.getData('text');
 
       if (files.length) {
@@ -44231,6 +44354,8 @@ var Droppable = function () {
             });
           }
         }
+      } else if (dragContent) {
+        content = dragContent;
       } else if (types.indexOf('text/html') >= 0) {
         content = dataTransfer.getData('text/html').replace(/<\/?meta[^>]*>/g, '');
       } else if (types.indexOf('text/uri-list') >= 0) {
@@ -44346,13 +44471,15 @@ module.exports = Backbone.Model.extend({
 "use strict";
 /* WEBPACK VAR INJECTION */(function(Backbone, _) {
 
+var _mixins = __webpack_require__(2);
+
 var FrameView = __webpack_require__(182);
 var $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
   initialize: function initialize(o) {
     _.bindAll(this, 'renderBody', 'onFrameScroll', 'clearOff');
-    window.onscroll = this.clearOff;
+    (0, _mixins.on)(window, 'scroll resize', this.clearOff);
     this.config = o.config || {};
     this.em = this.config.em || {};
     this.ppfx = this.config.pStylePrefix || '';
@@ -44785,7 +44912,7 @@ module.exports = function () {
       defaultCommands['image-comp'] = __webpack_require__(192);
       defaultCommands['move-comp'] = __webpack_require__(193);
       defaultCommands['text-comp'] = __webpack_require__(194);
-      defaultCommands['insert-custom'] = __webpack_require__(54);
+      defaultCommands['insert-custom'] = __webpack_require__(55);
       defaultCommands['export-template'] = ViewCode;
       defaultCommands['sw-visibility'] = __webpack_require__(195);
       defaultCommands['open-layers'] = __webpack_require__(196);
@@ -45270,7 +45397,7 @@ module.exports = {
 
 
 var Backbone = __webpack_require__(0);
-var DomainViews = __webpack_require__(48);
+var DomainViews = __webpack_require__(49);
 var ToolbarButtonView = __webpack_require__(188);
 
 module.exports = DomainViews.extend({
@@ -45447,7 +45574,7 @@ module.exports = _.extend({}, SelectComponent, {
 /* WEBPACK VAR INJECTION */(function(_) {
 
 var Backbone = __webpack_require__(0);
-var InsertCustom = __webpack_require__(54);
+var InsertCustom = __webpack_require__(55);
 
 module.exports = _.extend({}, InsertCustom, {
   /**
@@ -45489,7 +45616,7 @@ module.exports = _.extend({}, InsertCustom, {
 var _mixins = __webpack_require__(2);
 
 var SelectComponent = __webpack_require__(21);
-var SelectPosition = __webpack_require__(53);
+var SelectPosition = __webpack_require__(54);
 var $ = Backbone.$;
 
 module.exports = _.extend({}, SelectPosition, SelectComponent, {
@@ -45752,8 +45879,8 @@ module.exports = function () {
   var itemsView = void 0;
   var config = {};
   var defaults = __webpack_require__(198);
-  var ItemView = __webpack_require__(55);
-  var ItemsView = __webpack_require__(56);
+  var ItemView = __webpack_require__(56);
+  var ItemsView = __webpack_require__(57);
 
   return {
     init: function init(collection, opts) {
@@ -46693,7 +46820,7 @@ module.exports = Backbone.Collection.extend({
 
 
 var Backbone = __webpack_require__(0);
-var Category = __webpack_require__(57);
+var Category = __webpack_require__(58);
 
 module.exports = Backbone.Model.extend({
   defaults: {
@@ -46729,7 +46856,7 @@ module.exports = Backbone.Model.extend({
 var Backbone = __webpack_require__(0);
 
 module.exports = Backbone.Collection.extend({
-  model: __webpack_require__(57)
+  model: __webpack_require__(58)
 });
 
 /***/ }),
@@ -47532,6 +47659,50 @@ module.exports = function (config) {
 
 module.exports = {
   plugins: []
+};
+
+/***/ }),
+/* 221 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+/**
+ * File made for IE/Edge support
+ * https://github.com/artf/grapesjs/issues/214
+ */
+
+exports.default = function () {
+  /**
+   * Check if IE/Edge
+   * @return {Boolean}
+   */
+  var isIE = function isIE() {
+    var match = void 0;
+    var agent = window.navigator.userAgent;
+    var rules = [['edge', /Edge\/([0-9\._]+)/], ['ie', /MSIE\s(7\.0)/], ['ie', /MSIE\s([0-9\.]+);.*Trident\/[4-7].0/], ['ie', /Trident\/7\.0.*rv\:([0-9\.]+).*\).*Gecko$/]];
+
+    for (var i = 0; i < rules.length; i++) {
+      var rule = rules[i];
+      match = rule[1].exec(agent);
+      if (match) break;
+    }
+
+    return !!match;
+  };
+
+  if (isIE()) {
+    var originalCreateHTMLDocument = DOMImplementation.prototype.createHTMLDocument;
+    DOMImplementation.prototype.createHTMLDocument = function (title) {
+      if (!title) title = '';
+      return originalCreateHTMLDocument.apply(document.implementation, [title]);
+    };
+  }
 };
 
 /***/ })
