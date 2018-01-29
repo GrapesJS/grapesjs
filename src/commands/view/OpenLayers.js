@@ -8,12 +8,13 @@ module.exports = {
       var config = em.getConfig();
       var pfx = config.stylePrefix;
       var panels = em.Panels;
-      var lyStylePfx = config.layers.stylePrefix || 'nv-';
+      const cLayers = { ...config.layers };
+      var lyStylePfx = cLayers.stylePrefix || 'nv-';
 
-      config.layers.stylePrefix = config.stylePrefix + lyStylePfx;
-      config.layers.pStylePrefix = config.stylePrefix;
-      config.layers.em = em.editor;
-      config.layers.opened = em.editor.get('opened');
+      cLayers.stylePrefix = config.stylePrefix + lyStylePfx;
+      cLayers.pStylePrefix = config.stylePrefix;
+      cLayers.em = em.editor;
+      cLayers.opened = em.editor.get('opened');
 
       // Check if panel exists otherwise crate it
       if (!panels.getPanel('views-container'))
@@ -22,8 +23,8 @@ module.exports = {
 
       const toAppend = $(`<div class="${pfx}layers"></div>`);
       this.panel.set('appendContent', toAppend).trigger('change:appendContent');
-      config.layers.sortContainer = toAppend.get(0);
-      const layers = new Layers().init(collection, config.layers);
+      cLayers.sortContainer = toAppend.get(0);
+      const layers = new Layers().init(collection, cLayers);
       this.$layers = layers.render();
       toAppend.append(this.$layers);
       this.toAppend = toAppend;
