@@ -1,4 +1,4 @@
-import { bindAll } from 'underscore';
+import { bindAll, isUndefined } from 'underscore';
 import { on, off } from 'utils/mixins';
 const Input = require('./Input');
 const Backbone = require('backbone');
@@ -256,9 +256,8 @@ module.exports = Input.extend({
       }
     }
 
-    if (typeof max !== 'undefined' && max !== '') val = val > max ? max : val;
-
-    if (typeof min !== 'undefined' && min !== '') val = val < min ? min : val;
+    if (!isUndefined(max) && max !== '') val = val > max ? max : val;
+    if (!isUndefined(min) && min !== '') val = val < min ? min : val;
 
     return {
       force,
