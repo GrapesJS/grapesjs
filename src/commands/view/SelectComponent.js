@@ -52,9 +52,8 @@ module.exports = {
     methods[method](body, 'mouseover', this.onHover);
     methods[method](body, 'mouseout', this.onOut);
     methods[method](body, 'click', this.onClick);
-    methods[method](win, 'scroll', this.onFrameScroll);
+    methods[method](win, 'scroll resize', this.onFrameScroll);
     methods[method](win, 'keydown', this.onKeyPress);
-    methods[method](win, 'resize', this.onFrameScroll);
     em[method]('change:selectedComponent', this.onSelect, this);
   },
 
