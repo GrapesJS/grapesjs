@@ -1,9 +1,13 @@
 const Property = require('./PropertyIntegerView');
 
 module.exports = Property.extend({
-  events: {
-    'change [type=range]': 'inputValueChanged',
-    'input [type=range]': 'inputValueChangedSoft'
+  events() {
+    return {
+      ...Property.prototype.events,
+      'change [type=range]': 'inputValueChanged',
+      'input [type=range]': 'inputValueChangedSoft',
+      change: ''
+    };
   },
 
   templateInput(model) {

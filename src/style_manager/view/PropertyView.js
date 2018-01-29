@@ -115,6 +115,7 @@ module.exports = Backbone.View.extend({
   clear(e) {
     e && e.stopPropagation();
     const target = this.getTargetModel();
+    console.log(target.getStyle(), this.model.get('property'));
     target.removeStyle(this.model.get('property'));
     this.targetUpdated();
   },
