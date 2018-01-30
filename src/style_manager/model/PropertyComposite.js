@@ -29,10 +29,19 @@ module.exports = Property.extend({
   },
 
   /**
+   * Clear the value
+   * @return {this}
+   */
+  clearValue(opts = {}) {
+    this.get('properties').each(property => property.clearValue());
+    return Property.prototype.clearValue.apply(this, arguments);
+  },
+
+  /**
    * Update property values
    */
   updateValues() {
-    const values = this.get('value').split(this.get('separator'));
+    const values = this.getFullValue().split(this.get('separator'));
     this.get('properties').each((property, i) => {
       const len = values.length;
       // Try to get value from a shorthand:

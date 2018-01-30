@@ -16,6 +16,7 @@ module.exports = Backbone.View.extend({
     this.onChange = o.onChange;
     this.onInputRender = o.onInputRender || {};
     this.customValue = o.customValue || {};
+    this.properties = [];
     const coll = this.collection;
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.render);
@@ -43,6 +44,7 @@ module.exports = Backbone.View.extend({
 
     view.render();
     const el = view.el;
+    this.properties.push(view);
 
     if (frag) {
       frag.appendChild(el);
@@ -52,6 +54,7 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
+    this.properties = [];
     const fragment = document.createDocumentFragment();
     this.collection.each(model => this.add(model, fragment));
     this.$el.append(fragment);

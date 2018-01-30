@@ -23,6 +23,13 @@ module.exports = PropertyCompositeView.extend({
     this.delegateEvents();
   },
 
+  clear(e) {
+    e && e.stopPropagation();
+    this.model.get('layers').reset();
+    this.model.clearValue();
+    this.targetUpdated();
+  },
+
   /**
    * Fired when the target is updated.
    * With detached mode the component will be always empty as its value

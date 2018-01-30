@@ -1,4 +1,4 @@
-import { bindAll } from 'underscore';
+import { bindAll, isUndefined } from 'underscore';
 import { on, off } from 'utils/mixins';
 const Input = require('./Input');
 const Backbone = require('backbone');
@@ -228,7 +228,8 @@ module.exports = Input.extend({
     var force = 0;
     var opt = opts || {};
     var model = this.model;
-    var val = value !== '' ? value : model.get('defaults');
+    const defValue = ''; //model.get('defaults');
+    var val = !isUndefined(value) ? value : defValue;
     var units = model.get('units') || [];
     var unit = model.get('unit') || (units.length && units[0]) || '';
     var max = model.get('max');
@@ -248,7 +249,7 @@ module.exports = Input.extend({
           var valCopy = val + '';
           val += ''; // Make it suitable for replace
           val = parseFloat(val.replace(',', '.'));
-          val = !isNaN(val) ? val : model.get('defaults');
+          val = !isNaN(val) ? val : defValue;
           var uN = valCopy.replace(val, '');
           // Check if exists as unit
           if (_.indexOf(units, uN) >= 0) unit = uN;
@@ -256,9 +257,8 @@ module.exports = Input.extend({
       }
     }
 
-    if (typeof max !== 'undefined' && max !== '') val = val > max ? max : val;
-
-    if (typeof min !== 'undefined' && min !== '') val = val < min ? min : val;
+    if (!isUndefined(max) && max !== '') val = val > max ? max : val;
+    if (!isUndefined(min) && min !== '') val = val < min ? min : val;
 
     return {
       force,
