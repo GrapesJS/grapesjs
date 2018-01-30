@@ -1,3 +1,5 @@
+import { isUndefined } from 'underscore';
+
 const Property = require('./Property');
 const InputNumber = require('domain_abstract/ui/InputNumber');
 
@@ -30,6 +32,11 @@ module.exports = Property.extend({
     }
   },
 
+  clearValue(opts = {}) {
+    this.set({ value: undefined, unit: undefined }, opts);
+    return this;
+  },
+
   parseValue(val) {
     const parsed = Property.prototype.parseValue.apply(this, arguments);
     const { value, unit } = this.input.validateInputValue(parsed.value, {
@@ -41,7 +48,11 @@ module.exports = Property.extend({
   },
 
   getFullValue() {
-    let value = this.get('value') + this.get('unit');
+    let value = this.get('value');
+    let unit = this.get('unit');
+    value = !isUndefined(value) ? value : '';
+    unit = !isUndefined(unit) && value ? unit : '';
+    value = `${value}${unit}`;
     return Property.prototype.getFullValue.apply(this, [value]);
   }
 });

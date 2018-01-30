@@ -1,4 +1,4 @@
-import { bindAll, isArray } from 'underscore';
+import { bindAll, isArray, isUndefined } from 'underscore';
 import { camelCase } from 'utils/mixins';
 
 const clearProp = 'data-clear-style';
@@ -114,10 +114,13 @@ module.exports = Backbone.View.extend({
    */
   clear(e) {
     e && e.stopPropagation();
+    this.model.clearValue();
+    this.targetUpdated();
+    /*
     const target = this.getTargetModel();
-    console.log(target.getStyle(), this.model.get('property'));
     target.removeStyle(this.model.get('property'));
     this.targetUpdated();
+    */
   },
 
   /**
@@ -438,7 +441,7 @@ module.exports = Backbone.View.extend({
    * */
   setValue(value) {
     const model = this.model;
-    let val = value || model.getDefaultValue();
+    let val = isUndefined(value) ? model.getDefaultValue() : value;
     const input = this.getInputEl();
     input && (input.value = val);
   },

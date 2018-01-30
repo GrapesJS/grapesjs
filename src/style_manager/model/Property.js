@@ -1,3 +1,5 @@
+import { isUndefined } from 'underscore';
+
 module.exports = require('backbone').Model.extend({
   defaults: {
     name: '',
@@ -34,6 +36,15 @@ module.exports = require('backbone').Model.extend({
 
     const init = this.init && this.init.bind(this);
     init && init();
+  },
+
+  /**
+   * Clear the value
+   * @return {this}
+   */
+  clearValue(opts = {}) {
+    this.set({ value: undefined }, opts);
+    return this;
   },
 
   /**
@@ -117,12 +128,12 @@ module.exports = require('backbone').Model.extend({
    */
   getFullValue(val) {
     const fn = this.get('functionName');
-    let value = val || this.get('value');
+    let value = isUndefined(val) ? this.get('value') : val;
 
-    if (fn) {
+    if (fn && !isUndefined(value)) {
       value = `${fn}(${value})`;
     }
 
-    return value;
+    return value || '';
   }
 });

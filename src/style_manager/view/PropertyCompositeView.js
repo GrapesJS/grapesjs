@@ -18,6 +18,16 @@ module.exports = PropertyView.extend({
       PropertyView.prototype.inputValueChanged.apply(this, args);
     }
   },
+  /*
+  clear(e) {
+    e && e.stopPropagation();
+    const target = this.getTargetModel();
+    target.removeStyle(this.model.get('property'));
+    if (!this.model.get('detached')) {
+
+    }
+    this.targetUpdated();
+  },*/
 
   /**
    * Renders input
