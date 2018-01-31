@@ -1,7 +1,8 @@
 import $ from 'cash-dom';
 import Editor from './editor';
-import PluginManager from './plugin_manager';
+import { isElement } from 'underscore';
 import polyfills from 'utils/polyfills';
+import PluginManager from './plugin_manager';
 
 polyfills();
 
@@ -48,8 +49,7 @@ module.exports = (() => {
       const els = config.container;
       if (!els) throw new Error("'container' is required");
       config = { ...defaultConfig, ...config };
-      const ilEl = els instanceof window.HTMLElement;
-      config.el = ilEl ? els : document.querySelector(els);
+      config.el = isElement(els) ? els : document.querySelector(els);
       const editor = new Editor(config).init();
 
       // Load plugins
