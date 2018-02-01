@@ -17,6 +17,7 @@ const deps = [
   require('css_composer'),
   require('trait_manager'),
   require('dom_components'),
+  require('navigator'),
   require('canvas'),
   require('commands'),
   require('block_manager')

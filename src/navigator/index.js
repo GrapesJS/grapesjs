@@ -1,42 +1,51 @@
+import defaults from './config/config';
+import ItemView from './view/ItemView';
+import ItemsView from './view/ItemsView';
+
 module.exports = () => {
-  let itemsView;
+  let em;
+  let layers;
   let config = {};
-  const defaults = require('./config/config');
-  const ItemView = require('./view/ItemView');
-  const ItemsView = require('./view/ItemsView');
+  let View = ItemsView;
 
   return {
-    init(collection, opts) {
-      config = opts || config;
-      const em = config.em;
+    name: 'LayerManager',
 
-      // Set default options
-      for (var name in defaults) {
-        if (!(name in config)) config[name] = defaults[name];
-      }
+    init(opts = {}) {
+      config = { ...defaults, ...opts };
+      em = config.em;
 
-      let View = ItemsView;
-      const level = 0;
-      const opened = opts.opened || {};
+      return this;
+    },
+
+    onLoad() {
+      const collection = em.get('DomComponents').getComponents();
+      const parent = collection.parent;
       const options = {
-        level,
+        level: 0,
         config,
-        opened
+        opened: config.opened || {}
       };
 
       // Show wrapper if requested
-      if (config.showWrapper && collection.parent) {
+      if (config.showWrapper && parent) {
         View = ItemView;
-        options.model = collection.parent;
+        options.model = parent;
       } else {
         options.collection = collection;
       }
 
-      itemsView = new View(options);
-      em && em.on('change:selectedComponent', this.componentChanged);
+      layers = new View(options);
+      em && em.on('component:selected', this.componentChanged);
       this.componentChanged();
+    },
 
-      return this;
+    /**
+     * Return the view of layers
+     * @return {View}
+     */
+    getAll() {
+      return layers;
     },
 
     /**
@@ -50,7 +59,7 @@ module.exports = () => {
 
       const em = config.em;
       const opened = em.get('opened');
-      const model = em.get('selectedComponent');
+      const model = em.getSelected();
       let parent = model && model.collection ? model.collection.parent : null;
 
       for (let cid in opened) {
@@ -65,7 +74,7 @@ module.exports = () => {
     },
 
     render() {
-      return itemsView.render().$el;
+      return layers.render().$el;
     }
   };
 };
