@@ -67,6 +67,7 @@
 
     &-name {
       padding: 5px;
+      display: inline-block;
       box-sizing: content-box;
       @extend .#{$app-prefix}no-user-select;
     }

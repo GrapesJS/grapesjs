@@ -1,5 +1,6 @@
 import { isUndefined } from 'underscore';
 const ComponentView = require('dom_components/view/ComponentView');
+const inputProp = 'contentEditable';
 let ItemsView;
 
 module.exports = require('backbone').View.extend({
@@ -8,8 +9,8 @@ module.exports = require('backbone').View.extend({
     'click [data-toggle-visible]': 'toggleVisibility',
     'click [data-toggle-select]': 'handleSelect',
     'click [data-toggle-open]': 'toggleOpening',
-    'dblclick input': 'handleEdit',
-    'focusout input': 'handleEditEnd'
+    'dblclick [data-name]': 'handleEdit',
+    'focusout [data-name]': 'handleEditEnd'
   },
 
   template(model) {
@@ -24,6 +25,7 @@ module.exports = require('backbone').View.extend({
     const clsInput = `${this.inputNameCls} ${ppfx}no-app`;
     const level = this.level + 1;
     const gut = `${30 + level * 10}px`;
+    const name = model.getName();
     return `
       ${
         hidable
@@ -38,7 +40,7 @@ module.exports = require('backbone').View.extend({
           <div class="${pfx}layer-title-inn">
             <i class="${clsCaret}" data-toggle-open></i>
             ${model.getIcon()}
-            <input class="${clsInput}" value="${model.getName()}" readonly>
+            <span class="${clsInput}" data-name>${name}</span>
           </div>
         </div>
       </div>
@@ -125,20 +127,21 @@ module.exports = require('backbone').View.extend({
    * Handle the edit of the component name
    */
   handleEdit(e) {
-    e.stopPropagation();
-    var inputName = this.getInputName();
-    inputName.readOnly = false;
-    inputName.focus();
+    e && e.stopPropagation();
+    const inputEl = this.getInputName();
+    inputEl[inputProp] = true;
+    inputEl.focus();
   },
 
   /**
    * Handle with the end of editing of the component name
    */
   handleEditEnd(e) {
-    e.stopPropagation();
-    var inputName = this.getInputName();
-    inputName.readOnly = true;
-    this.model.set('custom-name', inputName.value);
+    e && e.stopPropagation();
+    const inputEl = this.getInputName();
+    const name = inputEl.textContent;
+    inputEl[inputProp] = false;
+    this.model.set({ name });
   },
 
   /**
