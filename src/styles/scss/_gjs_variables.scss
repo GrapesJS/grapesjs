@@ -1,7 +1,7 @@
 /* Class names prefixes */
 
 $app-prefix:        'gjs-' !default;
-$nv-prefix:         $app-prefix + 'nv-' !default;
+$nv-prefix:         $app-prefix !default;
 $rte-prefix:        $app-prefix + 'rte-' !default;
 $comp-prefix:       $app-prefix + 'comp-' !default;
 $mdl-prefix:        $app-prefix + 'mdl-' !default;
