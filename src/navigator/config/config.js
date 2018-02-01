@@ -1,9 +1,9 @@
 module.exports = {
-  stylePrefix: 'nv-',
+  stylePrefix: '',
 
-  // Specify where to render layers on init, string (query) or HTMLElement
-  // With the empty value, layers won't be visible
-  el: '',
+  // Specify the element to use as layers container, string (query) or HTMLElement
+  // With the empty value, layers won't be rendered automatically
+  appendTo: '',
 
   // Enable/Disable globally the possibility to sort layers
   sortable: 1,

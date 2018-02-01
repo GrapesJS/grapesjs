@@ -1,6 +1,7 @@
 import defaults from './config/config';
 import ItemView from './view/ItemView';
 import ItemsView from './view/ItemsView';
+import { isElement } from 'underscore';
 
 module.exports = () => {
   let em;
@@ -13,6 +14,7 @@ module.exports = () => {
 
     init(opts = {}) {
       config = { ...defaults, ...opts };
+      config.stylePrefix = opts.pStylePrefix;
       em = config.em;
 
       return this;
@@ -24,7 +26,6 @@ module.exports = () => {
       const options = {
         level: 0,
         config,
-        el: config.el,
         opened: config.opened || {}
       };
 
@@ -39,6 +40,15 @@ module.exports = () => {
       layers = new View(options);
       em && em.on('component:selected', this.componentChanged);
       this.componentChanged();
+    },
+
+    postRender() {
+      const elTo = config.appendTo;
+
+      if (elTo) {
+        const el = isElement(elTo) ? elTo : document.querySelector(elTo);
+        el.appendChild(this.render());
+      }
     },
 
     /**
@@ -67,12 +77,8 @@ module.exports = () => {
       }
     },
 
-    postRender() {
-      console.log('post render navigator', config);
-    },
-
     render() {
-      return layers.render().$el;
+      return layers.render().el;
     }
   };
 };
