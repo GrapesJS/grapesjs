@@ -4977,6 +4977,7 @@ module.exports = Backbone.View.extend({
     }
 
     em && em.on('update:component:style:' + this.property, this.targetUpdated);
+    //em && em.on(`styleable:change:${this.property}`, this.targetUpdated);
     this.listenTo(this.propTarget, 'update', this.targetUpdated);
     this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model, 'change:value', this.modelValueChanged);
@@ -5024,9 +5025,9 @@ module.exports = Backbone.View.extend({
   /**
    * Clear the property from the target
    */
-  clear: function clear() {
-    var target = this.getTargetModel();
-    target.removeStyle(this.model.get('property'));
+  clear: function clear(e) {
+    e && e.stopPropagation();
+    this.model.clearValue();
     this.targetUpdated();
   },
 
@@ -5365,7 +5366,7 @@ module.exports = Backbone.View.extend({
    * */
   setValue: function setValue(value) {
     var model = this.model;
-    var val = value || model.getDefaultValue();
+    var val = (0, _underscore.isUndefined)(value) ? model.getDefaultValue() : value;
     var input = this.getInputEl();
     input && (input.value = val);
   },
@@ -16475,6 +16476,8 @@ module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.d
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+var _underscore = __webpack_require__(1);
+
 module.exports = __webpack_require__(0).Model.extend({
   defaults: {
     name: '',
@@ -16508,6 +16511,18 @@ module.exports = __webpack_require__(0).Model.extend({
 
     var init = this.init && this.init.bind(this);
     init && init();
+  },
+
+
+  /**
+   * Clear the value
+   * @return {this}
+   */
+  clearValue: function clearValue() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    this.set({ value: undefined }, opts);
+    return this;
   },
 
 
@@ -16601,13 +16616,13 @@ module.exports = __webpack_require__(0).Model.extend({
    */
   getFullValue: function getFullValue(val) {
     var fn = this.get('functionName');
-    var value = val || this.get('value');
+    var value = (0, _underscore.isUndefined)(val) ? this.get('value') : val;
 
-    if (fn) {
+    if (fn && !(0, _underscore.isUndefined)(value)) {
       value = fn + '(' + value + ')';
     }
 
-    return value;
+    return value || '';
   }
 });
 
@@ -16636,6 +16651,7 @@ module.exports = Backbone.View.extend({
     this.onChange = o.onChange;
     this.onInputRender = o.onInputRender || {};
     this.customValue = o.customValue || {};
+    this.properties = [];
     var coll = this.collection;
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.render);
@@ -16661,6 +16677,7 @@ module.exports = Backbone.View.extend({
 
     view.render();
     var el = view.el;
+    this.properties.push(view);
 
     if (frag) {
       frag.appendChild(el);
@@ -16671,6 +16688,7 @@ module.exports = Backbone.View.extend({
   render: function render() {
     var _this = this;
 
+    this.properties = [];
     var fragment = document.createDocumentFragment();
     this.collection.each(function (model) {
       return _this.add(model, fragment);
@@ -16690,9 +16708,11 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */(function(Backbone) {
 
 var InputNumber = __webpack_require__(18);
+var PropertyView = __webpack_require__(5);
 var $ = Backbone.$;
+var timeout = void 0;
 
-module.exports = __webpack_require__(5).extend({
+module.exports = PropertyView.extend({
   templateInput: function templateInput() {
     return '';
   },
@@ -16702,6 +16722,8 @@ module.exports = __webpack_require__(5).extend({
     this.listenTo(model, 'el:change', this.elementUpdated);
   },
   setValue: function setValue(value) {
+    var parsed = this.model.parseValue(value);
+    value = '' + parsed.value + parsed.unit;
     this.inputInst.setValue(value, { silent: 1 });
   },
   onRender: function onRender() {
@@ -16872,6 +16894,13 @@ module.exports = PropertyView.extend({
       PropertyView.prototype.inputValueChanged.apply(this, args);
     }
   },
+  clear: function clear(e) {
+    var props = this.properties;
+    props && props.forEach(function (propView) {
+      return propView.clear();
+    });
+    PropertyView.prototype.clear.apply(this, arguments);
+  },
 
 
   /**
@@ -16881,6 +16910,7 @@ module.exports = PropertyView.extend({
     var model = this.model;
     var props = model.get('properties') || [];
     var self = this;
+    this.properties = [];
 
     if (props.length) {
       if (!this.$input) {
@@ -16905,6 +16935,7 @@ module.exports = PropertyView.extend({
         var PropertiesView = __webpack_require__(13);
         var propsView = new PropertiesView(this.getPropsConfig());
         this.$props = propsView.render().$el;
+        this.properties = propsView.properties;
         this.$el.find('#' + this.pfx + 'input-holder').append(this.$props);
       }
     }
@@ -17218,7 +17249,8 @@ module.exports = Input.extend({
     var force = 0;
     var opt = opts || {};
     var model = this.model;
-    var val = value !== '' ? value : model.get('defaults');
+    var defValue = ''; //model.get('defaults');
+    var val = !(0, _underscore.isUndefined)(value) ? value : defValue;
     var units = model.get('units') || [];
     var unit = model.get('unit') || units.length && units[0] || '';
     var max = model.get('max');
@@ -17238,7 +17270,7 @@ module.exports = Input.extend({
           var valCopy = val + '';
           val += ''; // Make it suitable for replace
           val = parseFloat(val.replace(',', '.'));
-          val = !isNaN(val) ? val : model.get('defaults');
+          val = !isNaN(val) ? val : defValue;
           var uN = valCopy.replace(val, '');
           // Check if exists as unit
           if (_.indexOf(units, uN) >= 0) unit = uN;
@@ -17246,9 +17278,8 @@ module.exports = Input.extend({
       }
     }
 
-    if (typeof max !== 'undefined' && max !== '') val = val > max ? max : val;
-
-    if (typeof min !== 'undefined' && min !== '') val = val < min ? min : val;
+    if (!(0, _underscore.isUndefined)(max) && max !== '') val = val > max ? max : val;
+    if (!(0, _underscore.isUndefined)(min) && min !== '') val = val < min ? min : val;
 
     return {
       force: force,
@@ -17516,7 +17547,7 @@ module.exports = {
     methods[method](body, 'mouseover', this.onHover);
     methods[method](body, 'mouseout', this.onOut);
     methods[method](body, 'click', this.onClick);
-    methods[method](win, 'scroll', this.onFrameScroll);
+    methods[method](win, 'scroll resize', this.onFrameScroll);
     methods[method](win, 'keydown', this.onKeyPress);
     em[method]('change:selectedComponent', this.onSelect, this);
   },
@@ -20613,10 +20644,24 @@ module.exports = Property.extend({
 
 
   /**
+   * Clear the value
+   * @return {this}
+   */
+  clearValue: function clearValue() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    this.get('properties').each(function (property) {
+      return property.clearValue();
+    });
+    return Property.prototype.clearValue.apply(this, arguments);
+  },
+
+
+  /**
    * Update property values
    */
   updateValues: function updateValues() {
-    var values = this.get('value').split(this.get('separator'));
+    var values = this.getFullValue().split(this.get('separator'));
     this.get('properties').each(function (property, i) {
       var len = values.length;
       // Try to get value from a shorthand:
@@ -20681,6 +20726,12 @@ module.exports = PropertyCompositeView.extend({
     this.listenTo(model, 'change:stackIndex', this.indexChanged);
     this.listenTo(model, 'updateValue', this.inputValueChanged);
     this.delegateEvents();
+  },
+  clear: function clear(e) {
+    e && e.stopPropagation();
+    this.model.get('layers').reset();
+    this.model.clearValue();
+    this.targetUpdated();
   },
 
 
@@ -21361,6 +21412,8 @@ module.exports = Property.extend({
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+var _underscore = __webpack_require__(1);
+
 var Property = __webpack_require__(12);
 var InputNumber = __webpack_require__(18);
 
@@ -21391,6 +21444,12 @@ module.exports = Property.extend({
       this.set('unit', units[0]);
     }
   },
+  clearValue: function clearValue() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    this.set({ value: undefined, unit: undefined }, opts);
+    return this;
+  },
   parseValue: function parseValue(val) {
     var parsed = Property.prototype.parseValue.apply(this, arguments);
 
@@ -21405,7 +21464,11 @@ module.exports = Property.extend({
     return parsed;
   },
   getFullValue: function getFullValue() {
-    var value = this.get('value') + this.get('unit');
+    var value = this.get('value');
+    var unit = this.get('unit');
+    value = !(0, _underscore.isUndefined)(value) ? value : '';
+    unit = !(0, _underscore.isUndefined)(unit) && value ? unit : '';
+    value = '' + value + unit;
     return Property.prototype.getFullValue.apply(this, [value]);
   }
 });
@@ -22207,7 +22270,12 @@ exports.default = {
     this.set('style', propNew, opts);
     var diff = (0, _mixins.shallowDiff)(propOrig, propNew);
     (0, _underscore.keys)(diff).forEach(function (pr) {
-      return _this.trigger('change:style:' + pr);
+      var em = _this.em;
+      _this.trigger('change:style:' + pr);
+      if (em) {
+        em.trigger('styleable:change');
+        em.trigger('styleable:change:' + pr);
+      }
     });
 
     return propNew;
@@ -23457,7 +23525,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.13.8',
+    version: '0.13.9',
 
     /**
      * Initializes an editor based on passed options
@@ -39371,14 +39439,18 @@ module.exports = Property.extend({
 "use strict";
 
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var Property = __webpack_require__(14);
 
 module.exports = Property.extend({
-  events: {
-    'change [type=range]': 'inputValueChanged',
-    'input [type=range]': 'inputValueChangedSoft'
+  events: function events() {
+    return _extends({}, Property.prototype.events, {
+      'change [type=range]': 'inputValueChanged',
+      'input [type=range]': 'inputValueChangedSoft',
+      change: ''
+    });
   },
-
   templateInput: function templateInput(model) {
     var ppfx = this.ppfx;
     return '\n      <div class="' + ppfx + 'field ' + ppfx + 'field-range">\n        <input type="range"\n          min="' + model.get('min') + '"\n          max="' + model.get('max') + '"\n          step="' + model.get('step') + '"/>\n      </div>\n    ';
@@ -45832,6 +45904,8 @@ module.exports = {
 "use strict";
 /* WEBPACK VAR INJECTION */(function(Backbone) {
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var Layers = __webpack_require__(197);
 var $ = Backbone.$;
 
@@ -45842,20 +45916,21 @@ module.exports = {
       var config = em.getConfig();
       var pfx = config.stylePrefix;
       var panels = em.Panels;
-      var lyStylePfx = config.layers.stylePrefix || 'nv-';
+      var cLayers = _extends({}, config.layers);
+      var lyStylePfx = cLayers.stylePrefix || 'nv-';
 
-      config.layers.stylePrefix = config.stylePrefix + lyStylePfx;
-      config.layers.pStylePrefix = config.stylePrefix;
-      config.layers.em = em.editor;
-      config.layers.opened = em.editor.get('opened');
+      cLayers.stylePrefix = config.stylePrefix + lyStylePfx;
+      cLayers.pStylePrefix = config.stylePrefix;
+      cLayers.em = em.editor;
+      cLayers.opened = em.editor.get('opened');
 
       // Check if panel exists otherwise crate it
       if (!panels.getPanel('views-container')) this.panel = panels.addPanel({ id: 'views-container' });else this.panel = panels.getPanel('views-container');
 
       var toAppend = $('<div class="' + pfx + 'layers"></div>');
       this.panel.set('appendContent', toAppend).trigger('change:appendContent');
-      config.layers.sortContainer = toAppend.get(0);
-      var layers = new Layers().init(collection, config.layers);
+      cLayers.sortContainer = toAppend.get(0);
+      var layers = new Layers().init(collection, cLayers);
       this.$layers = layers.render();
       toAppend.append(this.$layers);
       this.toAppend = toAppend;
