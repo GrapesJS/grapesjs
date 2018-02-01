@@ -24,6 +24,7 @@ module.exports = () => {
       const options = {
         level: 0,
         config,
+        el: config.el,
         opened: config.opened || {}
       };
 
@@ -53,24 +54,21 @@ module.exports = () => {
      * @private
      */
     componentChanged(e, md, opts = {}) {
-      if (opts.fromLayers) {
-        return;
-      }
-
-      const em = config.em;
+      if (opts.fromLayers) return;
       const opened = em.get('opened');
       const model = em.getSelected();
       let parent = model && model.collection ? model.collection.parent : null;
-
-      for (let cid in opened) {
-        opened[cid].set('open', 0);
-      }
+      for (let cid in opened) opened[cid].set('open', 0);
 
       while (parent) {
         parent.set('open', 1);
         opened[parent.cid] = parent;
         parent = parent.collection ? parent.collection.parent : null;
       }
+    },
+
+    postRender() {
+      console.log('post render navigator', config);
     },
 
     render() {
