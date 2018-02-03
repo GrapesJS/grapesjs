@@ -513,12 +513,11 @@ module.exports = () => {
       const previousModel = em.previous('selectedComponent');
 
       // Deselect the previous component
-      if (previousModel) {
+      previousModel &&
         previousModel.set({
           status: '',
           state: ''
         });
-      }
 
       model && model.set('status', 'selected');
     }
