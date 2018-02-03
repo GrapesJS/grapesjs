@@ -81,18 +81,6 @@
       display: block;
     }
 
-    /*
-    .#{$nv-prefix}item .#{$nv-prefix}children .#{$nv-prefix}title {
-      border-left: 1px solid lighten($mainDkColor, 2%);
-    }
-    */
-
-    /*
-    .#{$nv-prefix}item > .#{$nv-prefix}no-chld > ##{$nv-prefix}caret::before {
-      content: '';
-    }
-    */
-
     &-no-chld > .#{$nv-prefix}layer-title-inn > .#{$nv-prefix}layer-caret {
       display: none;
     }

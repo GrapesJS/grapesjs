@@ -1,8 +1,8 @@
 module.exports = {
   stylePrefix: '',
 
-  // Specify the element to use as layers container, string (query) or HTMLElement
-  // With the empty value, layers won't be rendered automatically
+  // Specify the element to use as a container, string (query) or HTMLElement
+  // With the empty value, nothing will be rendered
   appendTo: '',
 
   // Enable/Disable globally the possibility to sort layers
