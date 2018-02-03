@@ -106,6 +106,7 @@ module.exports = Backbone.View.extend({
     var selectedCls = pfx + 'selected';
     var selectedParentCls = selectedCls + '-parent';
     var freezedCls = `${ppfx}freezed`;
+    this.$el.removeClass(`${selectedCls} ${selectedParentCls} ${freezedCls}`);
     var actualCls = el.getAttribute('class') || '';
     var cls = '';
 
@@ -119,10 +120,6 @@ module.exports = Backbone.View.extend({
       case 'freezed':
         cls = `${actualCls} ${freezedCls}`;
         break;
-      default:
-        this.$el.removeClass(
-          `${selectedCls} ${selectedParentCls} ${freezedCls}`
-        );
     }
 
     cls = cls.trim();

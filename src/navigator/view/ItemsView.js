@@ -17,14 +17,19 @@ module.exports = require('backbone').View.extend({
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset resetNavigator', this.render);
     this.className = `${pfx}layers`;
+    const em = config.em;
 
     if (config.sortable && !this.opt.sorter) {
-      const utils = config.em.get('Utils');
+      const utils = em.get('Utils');
       this.opt.sorter = new utils.Sorter({
         container: config.sortContainer || this.el,
         containerSel: `.${this.className}`,
         itemSel: `.${pfx}layer`,
         ignoreViewChildren: 1,
+        onEndMove(created, sorter) {
+          const srcModel = sorter.getSourceModel();
+          em.setSelected(srcModel, { forceChange: 1 });
+        },
         avoidSelectOnEnd: 1,
         nested: 1,
         ppfx,

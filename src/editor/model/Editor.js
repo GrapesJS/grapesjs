@@ -197,9 +197,6 @@ module.exports = Backbone.Model.extend({
    * @private
    * */
   componentSelected(model, val, options) {
-    const previous = this.previous('selectedComponent');
-    console.log('previous', previous, previous && previous.get('status'));
-
     if (!this.get('selectedComponent')) {
       this.trigger('deselect-comp');
     } else {
@@ -227,6 +224,7 @@ module.exports = Backbone.Model.extend({
     let model = el;
     isElement(el) && (model = $(el).data('model'));
     if (model && !model.get('selectable')) return;
+    opts.forceChange && this.set('selectedComponent', '');
     this.set('selectedComponent', model, opts);
   },
 
