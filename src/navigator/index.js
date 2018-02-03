@@ -37,7 +37,6 @@ module.exports = () => {
         options.collection = collection;
       }
 
-      console.log('options', options);
       layers = new View(options);
       em && em.on('component:selected', this.componentChanged);
       this.componentChanged();
@@ -79,7 +78,6 @@ module.exports = () => {
     },
 
     render() {
-      console.log('render layers');
       return layers.render().el;
     }
   };

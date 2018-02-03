@@ -204,13 +204,10 @@ module.exports = require('backbone').View.extend({
    * */
   startSort(e) {
     e.stopPropagation();
-
-    //Right or middel click
-    if (e.button !== 0) {
-      return;
-    }
-
-    this.sorter && this.sorter.startSort(e.target);
+    const sorter = this.sorter;
+    // Right or middel click
+    if (e.button !== 0) return;
+    sorter && sorter.startSort(e.target);
   },
 
   /**
