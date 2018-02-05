@@ -8,7 +8,7 @@ module.exports = Backbone.View.extend({
     this.pfx = this.config.stylePrefix || '';
     this.parentM = this.opt.parentM || null;
     this.listenTo(this.collection, 'add', this.addTo);
-    this.listenTo(this.collection, 'reset', this.render);
+    this.listenTo(this.collection, 'reset remove', this.render);
     this.className = this.pfx + 'buttons';
   },
 
