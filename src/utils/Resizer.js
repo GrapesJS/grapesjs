@@ -170,11 +170,12 @@ class Resizer {
   /**
    * Return element position
    * @param  {HTMLElement} el
+   * @param  {Object} opts Custom options
    * @return {Object}
    */
-  getElementPos(el) {
+  getElementPos(el, opts = {}) {
     var posFetcher = this.posFetcher || '';
-    return posFetcher ? posFetcher(el) : getBoundingRect(el);
+    return posFetcher ? posFetcher(el, opts) : getBoundingRect(el);
   }
 
   /**
@@ -190,7 +191,7 @@ class Resizer {
     // Show the handlers
     this.el = el;
     var unit = 'px';
-    var rect = this.getElementPos(el);
+    var rect = this.getElementPos(el, { target: 'container' });
     var container = this.container;
     var contStyle = container.style;
     contStyle.left = rect.left + unit;
@@ -229,9 +230,10 @@ class Resizer {
     const resizer = this;
     const config = this.opts || {};
     var attrName = 'data-' + config.prefix + 'handler';
-    var rect = this.getElementPos(el);
+    var rect = this.getElementPos(el, { target: 'el' });
     this.handlerAttr = e.target.getAttribute(attrName);
     this.clickedHandler = e.target;
+    console.log('rect', rect);
     this.startDim = {
       t: rect.top,
       l: rect.left,
@@ -338,7 +340,7 @@ class Resizer {
     }
 
     const unitRect = 'px';
-    const rectEl = this.getElementPos(el);
+    const rectEl = this.getElementPos(el, { target: 'container' });
     conStyle.left = rectEl.left + unitRect;
     conStyle.top = rectEl.top + unitRect;
     conStyle.width = rectEl.width + unitRect;

@@ -69,13 +69,26 @@ module.exports = Backbone.View.extend({
         br: 0,
         appendTo: this.el,
         prefix: editor.getConfig().stylePrefix,
-        posFetcher: el => {
-          var rect = el.getBoundingClientRect();
+        posFetcher: (el, { target }) => {
+          const style = el.style;
+          const config = resizer.getConfig();
+          const keyWidth = config.keyWidth;
+          const keyHeight = config.keyHeight;
+          const rect = el.getBoundingClientRect();
+          const forContainer = target == 'container';
+          const styleWidth = style[keyWidth];
+          const styleHeight = style[keyHeight];
+          const width =
+            styleWidth && !forContainer ? parseFloat(styleWidth) : rect.width;
+          const height =
+            styleHeight && !forContainer
+              ? parseFloat(styleHeight)
+              : rect.height;
           return {
             left: 0,
             top: 0,
-            width: rect.width,
-            height: rect.height
+            width,
+            height
           };
         },
         ...resizable
