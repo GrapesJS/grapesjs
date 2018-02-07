@@ -85,20 +85,20 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    const el = this.$el;
-    const pfx = this.ppfx;
-    el.attr('class', `${this.className} ${pfx}one-bg`);
-    this.id && el.attr('id', this.id);
+    const $el = this.$el;
+    const ppfx = this.ppfx;
+    const cls = `${this.className} ${this.id} ${ppfx}one-bg`;
+    $el.addClass(cls);
 
     if (this.buttons.length) {
       var buttons = new ButtonsView({
         collection: this.buttons,
         config: this.config
       });
-      el.append(buttons.render().el);
+      $el.append(buttons.render().el);
     }
 
-    el.append(this.model.get('content'));
+    $el.append(this.model.get('content'));
     return this;
   }
 });
