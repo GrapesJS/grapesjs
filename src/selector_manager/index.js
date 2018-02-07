@@ -49,7 +49,7 @@
  * }
  */
 
-import { isString } from 'underscore';
+import { isString, isElement } from 'underscore';
 
 module.exports = config => {
   var c = config || {},
@@ -70,6 +70,10 @@ module.exports = config => {
      * @private
      */
     name: 'SelectorManager',
+
+    getConfig() {
+      return c;
+    },
 
     /**
      * Initialize module. Automatically called with a new instance of the editor
@@ -101,6 +105,15 @@ module.exports = config => {
       selectors.on('add', model => em.trigger('selector:add', model));
 
       return this;
+    },
+
+    postRender() {
+      const elTo = this.getConfig().appendTo;
+
+      if (elTo) {
+        const el = isElement(elTo) ? elTo : document.querySelector(elTo);
+        el.appendChild(this.render([]));
+      }
     },
 
     /**
