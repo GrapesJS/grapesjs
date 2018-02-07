@@ -321,7 +321,7 @@ class Resizer {
     const conStyle = this.container.style;
     const updateTarget = this.updateTarget;
     const selectedHandler = this.getSelectedHandler();
-    const { unitHeight, unitWidth } = config;
+    const { unitHeight, unitWidth, keyWidth, keyHeight } = config;
 
     // Use custom updating strategy if requested
     if (isFunction(updateTarget)) {
@@ -333,8 +333,8 @@ class Resizer {
       });
     } else {
       const elStyle = el.style;
-      elStyle.width = rect.w + unitWidth;
-      elStyle.height = rect.h + unitHeight;
+      elStyle[keyWidth] = rect.w + unitWidth;
+      elStyle[keyHeight] = rect.h + unitHeight;
     }
 
     const unitRect = 'px';

@@ -77,7 +77,8 @@ module.exports = Backbone.View.extend({
             width: rect.width,
             height: rect.height
           };
-        }
+        },
+        ...resizable
       });
       resizer.blur = () => {};
       resizer.focus(this.el);
