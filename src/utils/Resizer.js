@@ -42,6 +42,9 @@ var defaultOpts = {
   // the pointer comes over iframes
   silentFrames: 0,
 
+  // If true the container of handlers won't be updated
+  avoidContainerUpdate: 0,
+
   // Handlers
   tl: 1, // Top left
   tc: 1, // Top center
@@ -205,15 +208,19 @@ class Resizer {
 
     // Show the handlers
     this.el = el;
-    var unit = 'px';
-    var rect = this.getElementPos(el, { target: 'container' });
-    var container = this.container;
-    var contStyle = container.style;
-    contStyle.left = rect.left + unit;
-    contStyle.top = rect.top + unit;
-    contStyle.width = rect.width + unit;
-    contStyle.height = rect.height + unit;
-    container.style.display = 'block';
+    const config = this.opts;
+    const unit = 'px';
+    const rect = this.getElementPos(el, { target: 'container' });
+    const container = this.container;
+    const contStyle = container.style;
+
+    if (!config.avoidContainerUpdate) {
+      contStyle.left = rect.left + unit;
+      contStyle.top = rect.top + unit;
+      contStyle.width = rect.width + unit;
+      contStyle.height = rect.height + unit;
+      contStyle.display = 'block';
+    }
 
     on(this.getDocumentEl(), 'mousedown', this.handleMouseDown);
   }
@@ -355,10 +362,12 @@ class Resizer {
 
     const unitRect = 'px';
     const rectEl = this.getElementPos(el, { target: 'container' });
-    conStyle.left = rectEl.left + unitRect;
-    conStyle.top = rectEl.top + unitRect;
-    conStyle.width = rectEl.width + unitRect;
-    conStyle.height = rectEl.height + unitRect;
+    if (!config.avoidContainerUpdate) {
+      conStyle.left = rectEl.left + unitRect;
+      conStyle.top = rectEl.top + unitRect;
+      conStyle.width = rectEl.width + unitRect;
+      conStyle.height = rectEl.height + unitRect;
+    }
   }
 
   /**
