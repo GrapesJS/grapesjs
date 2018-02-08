@@ -120,6 +120,9 @@ module.exports = Backbone.View.extend({
       case 'freezed':
         cls = `${actualCls} ${freezedCls}`;
         break;
+      case 'freezed-selected':
+        cls = `${actualCls} ${freezedCls} ${selectedCls}`;
+        break;
     }
 
     cls = cls.trim();
