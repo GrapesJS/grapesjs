@@ -1,4 +1,4 @@
-import { bindAll, defaults, isFunction } from 'underscore';
+import { bindAll, defaults, isFunction, each } from 'underscore';
 import { on, off, normalizeFloat } from 'utils/mixins';
 
 var defaultOpts = {
@@ -37,6 +37,10 @@ var defaultOpts = {
   // If true, will override unitHeight and unitWidth, on start, with units
   // from the current focused element (currently used only in SelectComponent)
   currentUnit: 1,
+
+  // With this option active the mousemove event won't be altered when
+  // the pointer comes over iframes
+  silentFrames: 0,
 
   // Handlers
   tl: 1, // Top left
@@ -138,6 +142,17 @@ class Resizer {
   }
 
   /**
+   * Toggle iframes pointer event
+   * @param {Boolean} silent If true, iframes will be silented
+   */
+  toggleFrames(silent) {
+    if (this.opts.silentFrames) {
+      const frames = document.querySelectorAll('iframe');
+      each(frames, frame => (frame.style.pointerEvents = silent ? 'none' : ''));
+    }
+  }
+
+  /**
    * Detects if the passed element is a resize handler
    * @param  {HTMLElement} el
    * @return {Boolean}
@@ -221,9 +236,7 @@ class Resizer {
    */
   start(e) {
     //Right or middel click
-    if (e.button !== 0) {
-      return;
-    }
+    if (e.button !== 0) return;
     e.preventDefault();
     e.stopPropagation();
     const el = this.el;
@@ -257,6 +270,7 @@ class Resizer {
     on(doc, 'mouseup', this.stop);
     isFunction(this.onStart) &&
       this.onStart(e, { docs: doc, config, el, resizer });
+    this.toggleFrames(1);
     this.move(e);
   }
 
@@ -308,6 +322,7 @@ class Resizer {
     off(doc, 'keydown', this.handleKeyDown);
     off(doc, 'mouseup', this.stop);
     this.updateRect(1);
+    this.toggleFrames();
     isFunction(this.onEnd) && this.onEnd(e, { docs: doc, config });
   }
 

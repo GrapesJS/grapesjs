@@ -68,6 +68,7 @@ module.exports = Backbone.View.extend({
         bl: 0,
         br: 0,
         appendTo: this.el,
+        silentFrames: 1,
         prefix: editor.getConfig().stylePrefix,
         posFetcher: (el, { target }) => {
           const style = el.style;
