@@ -20,10 +20,6 @@ module.exports = Backbone.View.extend({
           <button class="${ppfx}btn-prim">${view.config.addBtnText}</button>
           <div style="clear:both"></div>
         </form>
-        <div class="${pfx}dips" style="display:none">
-          <button class="fa fa-th <%${ppfx}btnt"></button>
-          <button class="fa fa-th-list <%${ppfx}btnt"></button>
-        </div>
       </div>
       <div class="${pfx}assets" data-el="assets"></div>
       <div style="clear:both"></div>
