@@ -1,4 +1,4 @@
-import { defaults } from 'underscore';
+import { defaults, isElement } from 'underscore';
 
 module.exports = () => {
   let c = {};
@@ -42,6 +42,15 @@ module.exports = () => {
       return this;
     },
 
+    postRender() {
+      const elTo = this.getConfig().appendTo;
+
+      if (elTo) {
+        const el = isElement(elTo) ? elTo : document.querySelector(elTo);
+        el.appendChild(this.render());
+      }
+    },
+
     /**
      *
      * Get Traits viewer
@@ -68,6 +77,10 @@ module.exports = () => {
      */
     getType(name) {
       return TraitsViewer.itemsView[name];
+    },
+
+    render() {
+      return TraitsViewer.render().el;
     }
   };
 };
