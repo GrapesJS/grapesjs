@@ -103,7 +103,7 @@ module.exports = Backbone.View.extend({
   render() {
     const $el = this.$el;
     const ppfx = this.ppfx;
-    const cls = `${this.className} ${this.id} ${ppfx}one-bg`;
+    const cls = `${this.className} ${this.id} ${ppfx}one-bg ${ppfx}two-color`;
     $el.addClass(cls);
 
     if (this.buttons.length) {
