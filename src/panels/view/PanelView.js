@@ -71,6 +71,9 @@ module.exports = Backbone.View.extend({
         silentFrames: 1,
         avoidContainerUpdate: 1,
         prefix: editor.getConfig().stylePrefix,
+        onEnd() {
+          em && em.trigger('change:canvasOffset');
+        },
         posFetcher: (el, { target }) => {
           const style = el.style;
           const config = resizer.getConfig();
