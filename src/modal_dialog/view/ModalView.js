@@ -1,6 +1,6 @@
 module.exports = require('backbone').View.extend({
   template({ pfx, ppfx, content, title }) {
-    return `<div class="${pfx}dialog ${ppfx}one-bg">
+    return `<div class="${pfx}dialog ${ppfx}one-bg ${ppfx}two-color">
       <div class="${pfx}header">
         <div class="${pfx}title">${title}</div>
         <div class="${pfx}btn-close">&Cross;</div>
