@@ -12,6 +12,7 @@
     text-align: left;
     position: relative;
     background-color: rgba(0, 0, 0, 0.1);
+    font-size: $fontSizeS;
 
     &-hidden {
       @include opacity(0.55);
@@ -19,7 +20,6 @@
 
     &-count {
       position: absolute;
-      font-size: 10px;
       right: 27px;
       top: 9px;
     }
@@ -27,7 +27,6 @@
     &-vis {
       height: auto !important;
       width: auto !important;
-      font-size: 13px;
       left: 0;
       top: 0;
       padding: 7px 5px 7px 10px;
@@ -37,7 +36,7 @@
     }
 
     &-caret {
-      font-size: 7px;
+      font-size: 0.5rem;
       width: 8px;
       padding: 2px;
       cursor: pointer;
@@ -65,7 +64,6 @@
 
     &-name {
       padding: 5px;
-      font-size: 11px;
       display: inline-block;
       box-sizing: content-box;
       @extend .#{$app-prefix}no-user-select;

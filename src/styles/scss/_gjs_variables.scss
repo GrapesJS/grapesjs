@@ -29,12 +29,6 @@ $mainColor:         #444 !default; /* Light: #573454 Dark: #3b2639 -moz-linear-g
 $fontColor:         #ddd !default; /* l: #d8d7db */
 $fontColorActive:   #f8f8f8 !default;
 
-/* Light theme
-$mainColor:         #fff;
-$fontColor:         #9299a3;
-$fontColorActive:   #4f8ef7;
-*/
-
 $mainDkColor:       rgba(0, 0, 0, 0.2) !default;/* darken($mainColor, 4%) - #383838 */
 $mainDklColor:      rgba(0, 0, 0, 0.1) !default;
 $mainLhColor:       rgba(255, 255, 255, 0.1) !default; /* #515151 */
@@ -80,4 +74,5 @@ $mainFont:          Helvetica, sans-serif !default;
 $fontPath:          '../fonts' !default;
 $fontName:          'main-fonts' !default;
 $fontSize:           0.7rem;
-$fontV:             20 !default;//random(1000)
+$fontSizeS:          0.75rem;
+$fontV:              20 !default;//random(1000)

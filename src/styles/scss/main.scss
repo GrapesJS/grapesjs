@@ -227,33 +227,7 @@ $prefix: $app-prefix;
   pointer-events: none;
 }
 
-/*************  TRAITS  ****************/
-.#{$app-prefix}traits-label {
-  border-bottom: 1px solid $mainDkColor;
-  font-size: 13px;
-  font-weight: lighter;
-  margin-bottom: 5px;
-  padding: 10px;
-  text-align: left;
-}
-.#{$trt-prefix}trait {
-  display: flex;
-  justify-content: start;
-  padding: 5px 10px;
-  font-weight: lighter;
-
-  .#{$app-prefix}label {
-    width: 30%;
-    text-align: left;
-  }
-
-  .#{$app-prefix}field {
-    width: 70%;
-  }
-}
-
-/*************  CANVAS  ****************/
-
+@import "gjs_traits";
 @import "gjs_canvas";
 
 /********* COMMANDS **********/
@@ -369,7 +343,6 @@ $prefix: $app-prefix;
 
   font-weight: lighter;
   background-color: $mainDklColor;
-  font-size: 13px;
   letter-spacing: 1px;
   padding: 9px 10px 9px 20px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.25);
@@ -399,9 +372,8 @@ $prefix: $app-prefix;
 		@extend .#{$sm-prefix}field.#{$sm-prefix}select;
 }
 
-.#{$clm-prefix}tags{
+.#{$clm-prefix}tags {
 	@extend .#{$sm-prefix}sector;
-	font-size: 11px;
 	padding: 10px 5px;
 
 	##{$clm-prefix}label, ##{$clm-prefix}sel{
@@ -474,12 +446,7 @@ $prefix: $app-prefix;
 }
 /********* END Class manager **********/
 
-/********* Modal dialog **********/
-
 @import "gjs_modal";
-
-/********* Assets Manager **********/
-
 @import "gjs_assets";
 
 /********* File uploader **********/
