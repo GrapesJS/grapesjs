@@ -233,7 +233,6 @@ class Resizer {
     var rect = this.getElementPos(el, { target: 'el' });
     this.handlerAttr = e.target.getAttribute(attrName);
     this.clickedHandler = e.target;
-    console.log('rect', rect);
     this.startDim = {
       t: rect.top,
       l: rect.left,
