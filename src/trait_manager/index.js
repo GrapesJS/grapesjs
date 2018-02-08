@@ -1,9 +1,10 @@
 import { defaults, isElement } from 'underscore';
 
+const defaultOpts = require('./config/config');
+const TraitsView = require('./view/TraitsView');
+
 module.exports = () => {
   let c = {};
-  const defaultOpts = require('./config/config');
-  const TraitsView = require('./view/TraitsView');
   let TraitsViewer;
 
   return {
