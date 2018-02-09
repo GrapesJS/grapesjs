@@ -968,7 +968,8 @@ module.exports = Backbone.View.extend({
       var opts = { at: index, noIncrement: 1 };
 
       if (!dropContent) {
-        modelTemp = targetCollection.add({}, { ...opts, avoidStore: 1 });
+        // Putting `avoidStore` here will make the UndoManager behave wrong
+        modelTemp = targetCollection.add({}, { ...opts });
 
         if (model) {
           modelToDrop = model.collection.remove(model);
@@ -982,7 +983,7 @@ module.exports = Backbone.View.extend({
       created = targetCollection.add(modelToDrop, opts);
 
       if (!dropContent) {
-        targetCollection.remove(modelTemp, { avoidStore: 1 });
+        targetCollection.remove(modelTemp);
       } else {
         this.dropContent = null;
       }
