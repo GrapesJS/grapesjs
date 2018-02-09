@@ -20019,7 +20019,7 @@ module.exports = Backbone.View.extend({
     this.pfx = this.config.stylePrefix || '';
     this.parentM = this.opt.parentM || null;
     this.listenTo(this.collection, 'add', this.addTo);
-    this.listenTo(this.collection, 'reset', this.render);
+    this.listenTo(this.collection, 'reset remove', this.render);
     this.className = this.pfx + 'buttons';
   },
 
@@ -23681,7 +23681,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.13.9',
+    version: '0.13.10',
 
     /**
      * Initializes an editor based on passed options
@@ -27566,7 +27566,7 @@ module.exports = function () {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
  * Backbone.Undo.js v0.2
- *
+ * 
  * Copyright (c)2013 Oliver Sartun
  * Released under the MIT License
  *
@@ -27598,8 +27598,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 	/**
 	 * As call is faster than apply, this is a faster version of apply as it uses call.
-	 *
-	 * @param  {Function} fn 	The function to execute
+	 * 
+	 * @param  {Function} fn 	The function to execute 
 	 * @param  {Object}   ctx 	The context the function should be called in
 	 * @param  {Array}    args 	The array of arguments that should be applied to the function
 	 * @return Forwards whatever the called function returns
@@ -27612,7 +27612,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 	/**
 	 * Uses slice on an array or an array-like object.
-	 *
+	 * 
 	 * @param  {Array|Object} 	arr 	The array or array-like object.
 	 * @param  {Number} 		[index]	The index from where the array should be sliced. Default is 0.
 	 * @return {Array} The sliced array
@@ -27622,13 +27622,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 	}
 
 	/**
-	 * Checks if an object has one or more specific keys. The keys
+	 * Checks if an object has one or more specific keys. The keys 
 	 * don't have to be an owned property.
 	 * You can call this function either this way:
 	 * hasKeys(obj, ["a", "b", "c"])
 	 * or this way:
 	 * hasKeys(obj, "a", "b", "c")
-	 *
+	 * 
 	 * @param  {Object}  	obj 	The object to check on
 	 * @param  {Array}  	keys 	The keys to check for
 	 * @return {Boolean} True, if the object has all those keys
@@ -27644,9 +27644,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 	}
 
 	/**
-	 * Returns a number that is unique per call stack. The number gets
+	 * Returns a number that is unique per call stack. The number gets 
 	 * changed after the call stack has been completely processed.
-	 *
+	 * 
 	 * @return {number} MagicFusionIndex
 	 */
 	var getMagicFusionIndex = (function () {
@@ -27658,9 +27658,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 		// would be removed from the collection or the last set
 		// attribute would be changed back to its previous value.
 		// To prevent that we have to figure out a way to combine
-		// all those actions that happened "at the same time".
-		// Timestamps aren't exact enough. A complex routine could
-		// run several milliseconds and in that time produce a lot
+		// all those actions that happened "at the same time". 
+		// Timestamps aren't exact enough. A complex routine could 
+		// run several milliseconds and in that time produce a lot 
 		// of actions with different timestamps.
 		// Instead we take advantage of the single-threadedness of
 		// JavaScript:
@@ -27670,7 +27670,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 			magicFusionIndex++;
 			callstackWasIndexed = true;
 			_.defer(function () {
-				// Here comes the magic. With a Timeout of 0
+				// Here comes the magic. With a Timeout of 0 
 				// milliseconds this function gets called whenever
 				// the current callstack is completed
 				callstackWasIndexed = false;
@@ -27685,7 +27685,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 	})();
 
 	/**
-	 * To prevent binding a listener several times to one
+	 * To prevent binding a listener several times to one 
 	 * object, we register the objects in an ObjectRegistry
 	 *
 	 * @constructor
@@ -27695,39 +27695,39 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 		// objects: In case the object has a cid
 		// (which Backbone objects typically have)
 		// it uses this cid as an index. That way
-		// the Array's length attribute doesn't
-		// change and the object isn't an item
+		// the Array's length attribute doesn't 
+		// change and the object isn't an item 
 		// in the array, but an object-property.
 		// Otherwise it's added to the Array as an
 		// item.
 		// That way we can use the fast property-
-		// lookup and only have to fall back to
-		// iterating over the array in case
+		// lookup and only have to fall back to 
+		// iterating over the array in case 
 		// non-Backbone-objects are registered.
 		this.registeredObjects = [];
-		// To return a list of all registered
+		// To return a list of all registered 
 		// objects in the 'get' method we have to
 		// store the objects that have a cid in
-		// an additional array.
+		// an additional array. 
 		this.cidIndexes = [];
 	}
 	ObjectRegistry.prototype = {
 		/**
 		 * Returns whether the object is already registered in this ObjectRegistry or not.
-		 *
+		 * 
 		 * @this 	{ObjectRegistry}
 		 * @param  	{Object} 		 obj 	The object to check
 		 * @return 	{Boolean} True if the object is already registered
 		 */
 		isRegistered: function (obj) {
-			// This is where we get a performance boost
-			// by using the two different ways of storing
+			// This is where we get a performance boost 
+			// by using the two different ways of storing 
 			// objects.
 			return obj && obj.cid ? this.registeredObjects[obj.cid] : _.contains(this.registeredObjects, obj);
 		},
 		/**
 		 * Registers an object in this ObjectRegistry.
-		 *
+		 * 
 		 * @this 	{ObjectRegistry}
 		 * @param  	{Object} 		 obj 	The object to register
 		 * @return 	{undefined}
@@ -27746,7 +27746,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 		},
 		/**
 		 * Unregisters an object from this ObjectRegistry.
-		 *
+		 * 
 		 * @this {ObjectRegistry}
 		 * @param  {Object} obj The object to unregister
 		 * @return {undefined}
@@ -27766,7 +27766,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 		},
 		/**
 		 * Returns an array of all objects that are currently in this ObjectRegistry.
-		 *
+		 * 
 		 * @return {Array} An array of all the objects which are currently in the ObjectRegistry
 		 */
 		get: function () {
@@ -27776,7 +27776,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 	/**
 	 * Binds or unbinds the "all"-listener for one or more objects.
-	 *
+	 * 
 	 * @param  {String}   which 	Either "on" or "off"
 	 * @param  {Object[]} objects 	Array of the objects on which the "all"-listener should be bound / unbound to
 	 * @param  {Function} [fn] 		The function that should be bound / unbound. Optional in case of "off"
@@ -27806,7 +27806,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 	/**
 	 * Calls the undo/redo-function for a specific action.
-	 *
+	 * 
 	 * @param  {String} which 	Either "undo" or "redo"
 	 * @param  {Object} action 	The Action's attributes
 	 * @return {undefined}
@@ -27829,10 +27829,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 	 * @return {undefined}
 	 */
 	function managerUndoRedo (which, manager, stack, magic, everything) {
-		if (stack.isCurrentlyUndoRedoing ||
+		if (stack.isCurrentlyUndoRedoing || 
 			(which === "undo" && stack.pointer === -1) ||
 			(which === "redo" && stack.pointer === stack.length - 1)) {
-			// We're either currently in an undo- / redo-process or
+			// We're either currently in an undo- / redo-process or 
 			// we reached the end of the stack
 			return;
 		}
@@ -27849,7 +27849,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 			action = stack.at(isUndo ? stack.pointer : stack.pointer + 1);
 			actions = magic ? stack.where({"magicFusionIndex": action.get("magicFusionIndex")}) : [action];
 		}
-
+		
 		stack.pointer += (isUndo ? -1 : 1) * actions.length;
 		while (action = isUndo ? actions.pop() : actions.shift()) {
 			// Here we're calling the Action's undo / redo method
@@ -27864,9 +27864,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 	 * Checks whether an UndoAction should be created or not. Therefore it checks
 	 * whether a "condition" property is set in the undoTypes-object of the specific
 	 * event type. If not, it returns true. If it's set and a boolean, it returns it.
-	 * If it's a function, it returns its result, converting it into a boolean.
+	 * If it's a function, it returns its result, converting it into a boolean. 
 	 * Otherwise it returns true.
-	 *
+	 * 
 	 * @param  {Object} 	undoTypesType 	The object within the UndoTypes that holds the function for this event type (i.e. "change")
 	 * @param  {Arguments} 	args       		The arguments the "condition" function is called with
 	 * @return {Boolean} 	True, if an UndoAction should be created
@@ -27879,7 +27879,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 	/**
 	 * Adds an Undo-Action to the stack.
-	 *
+	 * 
 	 * @param {UndoStack} 		stack 		The undostack the action should be added to.
 	 * @param {String} 			type 		The event type (i.e. "change")
 	 * @param {Arguments} 		args 		The arguments passed to the undoTypes' "on"-handler
@@ -28038,10 +28038,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 	/**
 	 * Every UndoManager instance has an own undoTypes object
-	 * which is an instance of OwnedUndoTypes. OwnedUndoTypes'
-	 * prototype is the global UndoTypes object. Changes to the
+	 * which is an instance of OwnedUndoTypes. OwnedUndoTypes' 
+	 * prototype is the global UndoTypes object. Changes to the 
 	 * global UndoTypes object take effect on every instance of
-	 * UndoManager as the object is its prototype. And yet every
+	 * UndoManager as the object is its prototype. And yet every 
 	 * local UndoTypes object can be changed individually.
 	 *
 	 * @constructor
@@ -28058,7 +28058,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 	 * In case of removing undo-types you can pass an Array for performing
 	 * bulk actions:
 	 * manipulateUndoType(2, ["reset", "change"], undoTypes)
-	 *
+	 * 
 	 * @param  {Number} 				  manipType 		Indicates the kind of action to execute: 0 for add, 1 for change, 2 for remove
 	 * @param  {String|Object|Array} 	  undoType 			The type of undoType that should be added/changed/removed. Can be an object / array to perform bulk actions
 	 * @param  {Object} 				  [fns] 			Object with the functions to add / change. Is optional in case you passed an object as undoType that contains these functions
@@ -28087,7 +28087,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 			case 0: // add
 				if (hasKeys(fns, "undo", "redo", "on") && _.all(_.pick(fns, "undo", "redo", "on"), _.isFunction)) {
 					undoTypesInstance[undoType] = fns;
-				}
+				} 
 			break;
 			case 1: // change
 				if (undoTypesInstance[undoType] && _.isObject(fns)) {
@@ -28098,19 +28098,19 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 					// Instead we just want to manipulate this instance. That's why
 					// we're doing this:
 					undoTypesInstance[undoType] = _.extend({}, undoTypesInstance[undoType], fns);
-				}
+				} 
 			break;
 			case 2: // remove
-				delete undoTypesInstance[undoType];
+				delete undoTypesInstance[undoType]; 
 			break;
 		}
 		return this;
 	}
 
 	/**
-	 * Instantiating "Action" creates the UndoActions that
-	 * are collected in an UndoStack. It holds all relevant
-	 * data to undo / redo an action and has an undo / redo
+	 * Instantiating "Action" creates the UndoActions that 
+	 * are collected in an UndoStack. It holds all relevant 
+	 * data to undo / redo an action and has an undo / redo 
 	 * method.
 	 */
 	var Action = Backbone.Model.extend({
@@ -28119,7 +28119,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 			object: null, // The object on which the action occurred
 			before: null, // The previous values which were changed with this action
 			after: null, // The values after this action
-			magicFusionIndex: null // The magicFusionIndex helps to combine
+			magicFusionIndex: null // The magicFusionIndex helps to combine 
 			// all actions that occurred "at the same time" to undo/redo them altogether
 		},
 		/**
@@ -28140,7 +28140,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 		}
 	}),
 	/**
-	 * An UndoStack is a collection of UndoActions in
+	 * An UndoStack is a collection of UndoActions in 
 	 * chronological order.
 	 */
 	UndoStack = Backbone.Collection.extend({
@@ -28154,7 +28154,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 		}
 	}),
 	/**
-	 * An instance of UndoManager can keep track of
+	 * An instance of UndoManager can keep track of 
 	 * changes to objects and helps to undo them.
 	 */
 	UndoManager = Backbone.Model.extend({
@@ -28218,10 +28218,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 			return this.get("track");
 		},
 		/**
-		 * This is the "all"-handler which is bound to registered
-		 * objects. It creates an UndoAction from the event and adds
+		 * This is the "all"-handler which is bound to registered 
+		 * objects. It creates an UndoAction from the event and adds 
 		 * it to the stack.
-		 *
+		 * 
 		 * @param  {String} 	type 	The event type
 		 * @return {undefined}
 		 */
@@ -28304,15 +28304,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 		 * @return {undefined}
 		 */
 		merge: function (undoManager) {
-			// This sets the stack-reference to the stack of another
-			// undoManager so that the stack of this other undoManager
+			// This sets the stack-reference to the stack of another 
+			// undoManager so that the stack of this other undoManager 
 			// is used by two different managers.
 			// This enables to set up a main-undoManager and besides it
 			// several others for special, exceptional cases (by using
-			// instance-based custom UndoTypes). Models / collections
-			// which need this special treatment are only registered at
-			// those special undoManagers. Those special ones are then
-			// merged into the main-undoManager to write on its stack.
+			// instance-based custom UndoTypes). Models / collections 
+			// which need this special treatment are only registered at 
+			// those special undoManagers. Those special ones are then 
+			// merged into the main-undoManager to write on its stack. 
 			// That way it's easier to manage exceptional cases.
 			var args = _.isArray(undoManager) ? undoManager : slice(arguments), manager;
 			while (manager = args.pop()) {
@@ -30846,7 +30846,7 @@ module.exports = __webpack_require__(0).Model.extend({
   var setTimeoutFunc = setTimeout;
 
   function noop() {}
-
+  
   // Polyfill for Function.prototype.bind
   function bind(fn, thisArg) {
     return function () {
@@ -31064,7 +31064,7 @@ module.exports = __webpack_require__(0).Model.extend({
   Promise._setUnhandledRejectionFn = function _setUnhandledRejectionFn(fn) {
     Promise._unhandledRejectionFn = fn;
   };
-
+  
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = Promise;
   } else if (!root.Promise) {
