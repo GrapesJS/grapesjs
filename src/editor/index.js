@@ -125,6 +125,12 @@ module.exports = config => {
     DomComponents: em.get('DomComponents'),
 
     /**
+     * @property {LayerManager}
+     * @private
+     */
+    LayerManager: em.get('LayerManager'),
+
+    /**
      * @property {CssComposer}
      * @private
      */

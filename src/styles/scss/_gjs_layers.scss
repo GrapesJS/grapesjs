@@ -1,140 +1,117 @@
-
-.#{$nv-prefix}selected-parent {
-  border: 1px solid $colorYell;
-}
-
-.#{$nv-prefix}opac50{
-  @include opacity(0.50);
-}
-.#{$app-prefix}layers {
-  position:relative;
-  height: 100%;
-  ##{$nv-prefix}placeholder{
-    width: 100%;
-    position: absolute;
-    ##{$nv-prefix}plh-int{
-        height: 100%;
-        padding: 1px;
-        &.#{$nv-prefix}insert{
-          background-color: $colorGreen;
-        }
-    }
+.#{$nv-prefix} {
+  &selected-parent {
+    border: 1px solid $colorYell;
   }
-  .#{$nv-prefix}item {
+
+  &opac50 {
+    @include opacity(0.5);
+  }
+
+  &layer {
     font-weight: lighter;
     text-align: left;
     position: relative;
     background-color: rgba(0, 0, 0, 0.1);
-  }
-  .#{$nv-prefix}item.#{$nv-prefix}hide {
-    @include opacity(0.55);
-  }
-  .#{$nv-prefix}item ##{$nv-prefix}counter {
-    font-size: 10px;
-    position: absolute;
-    right: 27px;
-    top: 9px;
-  }
-  .#{$nv-prefix}item ##{$nv-prefix}btn-eye{
-    @extend .btn;
-    height: auto !important; width: auto !important;
-    font-size: 13px;
-    left: 0; top: 0;
-    padding: 7px 5px 7px 10px;
-    position: absolute;
-    cursor:pointer;
-    z-index: 1;
+    font-size: $fontSizeS;
+
+    &-hidden {
+      @include opacity(0.55);
+    }
+
+    &-count {
+      position: absolute;
+      right: 27px;
+      top: 9px;
+    }
+
+    &-vis {
+      height: auto !important;
+      width: auto !important;
+      left: 0;
+      top: 0;
+      padding: 7px 5px 7px 10px;
+      position: absolute;
+      cursor: pointer;
+      z-index: 1;
+    }
+
+    &-caret {
+      font-size: 0.5rem;
+      width: 8px;
+      padding: 2px;
+      cursor: pointer;
+      position: absolute;
+      left: -9px;
+      top: 6px;
+      @include opacity(0.7);
+
+      &:hover {
+        @include opacity(1);
+      }
+    }
+
+    &-title {
+      @extend .#{$app-prefix}category-title;
+
+      padding: 3px 10px 5px 30px;
+      display: flex;
+      align-items: center;
+
+      &-inn {
+        position: relative;
+      }
+    }
+
+    &-name {
+      padding: 5px;
+      display: inline-block;
+      box-sizing: content-box;
+      @extend .#{$app-prefix}no-user-select;
+    }
+
+    > .#{$nv-prefix}layer-children {
+      display: none;
+    }
+
+    &.open > .#{$nv-prefix}layer-children {
+      display: block;
+    }
+
+    &-no-chld > .#{$nv-prefix}layer-title-inn > .#{$nv-prefix}layer-caret {
+      display: none;
+    }
+
+    &-move {
+      padding: 7px 10px 7px 5px;
+      position: absolute;
+      font-size: 12px;
+      cursor: move;
+      right: 0;
+      top: 0;
+    }
+
+    &.#{$nv-prefix}selected .#{$nv-prefix}layer-title {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
   }
 }
 
-.#{$nv-prefix}item ##{$nv-prefix}caret {
-  font-size: 7px;
-  width: 8px;
-  padding: 2px;
-  cursor: pointer;
-  position: absolute;
-  left: -9px;
-  top: 6px;
-  @include opacity(0.7);
 
-  &:hover {
-    @include opacity(1);
-  }
-}
-
-.#{$nv-prefix}title {
-  @extend .#{$app-prefix}category-title;
-
-  padding: 3px 10px 5px 30px;
-  display: flex;
-  align-items: center;
-}
-
-.#{$nv-prefix}title-inn {
+.#{$app-prefix}layers {
   position: relative;
-}
+  height: 100%;
 
-.#{$nv-prefix}item .#{$nv-prefix}children .#{$nv-prefix}title{
-  border-left: 1px solid lighten($mainDkColor,2%);
-}
-.#{$nv-prefix}item > .#{$nv-prefix}children {
-  display: none;
-}
-.#{$nv-prefix}item.open > .#{$nv-prefix}children {
-  display: block;
-}
+  ##{$nv-prefix}placeholder {
+    width: 100%;
+    position: absolute;
 
-.#{$nv-prefix}item > .#{$nv-prefix}no-chld > ##{$nv-prefix}caret::before{
-  content:'';
-}
+    ##{$nv-prefix}plh-int {
+      height: 100%;
+      padding: 1px;
 
-.#{$nv-prefix}no-chld > .#{$nv-prefix}title-inn > ##{$nv-prefix}caret {
-  display:none;
-}
-
-.#{$nv-prefix}item > ##{$nv-prefix}move {
-  position: absolute;
-  cursor: move;
-  font-size: 12px;
-  right: 0; top: 0;
-  padding: 7px 10px 7px 5px;
-}
-/*
-.#{$nv-prefix}item{
-  &.#{$nv-prefix}selected{
-    border: 2px solid $colorBlue;
+      &.#{$nv-prefix}insert {
+        background-color: $colorGreen;
+      }
+    }
   }
-}
-*/
-.#{$nv-prefix}selected .#{$nv-prefix}title {
-    background-color: rgba(255,255,255,0.1);
-}
-
-.#{$nv-prefix}nav-item-edit {
-  visibility: hidden;
-  padding: 5px;
-  font-size: 9px;
-  position: absolute;
-  left: -27px;
-  top: 1px;
-
-  @include opacity(0.7);
-
-  &:hover {
-    @include opacity(1);
-  }
-}
-
-.#{$nv-prefix}title-c:hover {
-
-  .#{$nv-prefix}nav-item-edit {
-    visibility: visible;
-    cursor: pointer;
-  }
-}
-
-.#{$app-prefix}nav-comp-name {
-  padding: 5px;
-  box-sizing: content-box;
-  @extend .#{$app-prefix}no-user-select;
 }

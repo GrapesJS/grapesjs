@@ -1,7 +1,6 @@
-var Backbone = require('backbone');
-var ItemView = require('./ItemView');
+const ItemView = require('./ItemView');
 
-module.exports = Backbone.View.extend({
+module.exports = require('backbone').View.extend({
   initialize(o = {}) {
     this.opt = o;
     const config = o.config || {};
@@ -11,33 +10,38 @@ module.exports = Backbone.View.extend({
     this.ppfx = config.pStylePrefix || '';
     this.pfx = config.stylePrefix || '';
     this.parent = o.parent;
-    this.listenTo(this.collection, 'add', this.addTo);
-    this.listenTo(this.collection, 'reset resetNavigator', this.render);
-    this.className = this.pfx + 'items';
+    const pfx = this.pfx;
+    const ppfx = this.ppfx;
+    const parent = this.parent;
+    const coll = this.collection;
+    this.listenTo(coll, 'add', this.addTo);
+    this.listenTo(coll, 'reset resetNavigator', this.render);
+    this.className = `${pfx}layers`;
+    const em = config.em;
 
     if (config.sortable && !this.opt.sorter) {
-      var pfx = this.pfx;
-      var utils = config.em.get('Utils');
+      const utils = em.get('Utils');
       this.opt.sorter = new utils.Sorter({
         container: config.sortContainer || this.el,
-        containerSel: '.' + pfx + 'items',
-        itemSel: '.' + pfx + 'item',
-        ppfx: this.ppfx,
+        containerSel: `.${this.className}`,
+        itemSel: `.${pfx}layer`,
         ignoreViewChildren: 1,
+        onEndMove(created, sorter) {
+          const srcModel = sorter.getSourceModel();
+          em.setSelected(srcModel, { forceChange: 1 });
+        },
         avoidSelectOnEnd: 1,
-        pfx,
-        nested: 1
+        nested: 1,
+        ppfx,
+        pfx
       });
     }
 
     this.sorter = this.opt.sorter || '';
 
     // For the sorter
-    this.$el.data('collection', this.collection);
-
-    if (this.parent) {
-      this.$el.data('model', this.parent);
-    }
+    this.$el.data('collection', coll);
+    parent && this.$el.data('model', parent);
   },
 
   /**
@@ -123,10 +127,11 @@ module.exports = Backbone.View.extend({
 
   render() {
     const frag = document.createDocumentFragment();
-    this.el.innerHTML = '';
+    const el = this.el;
+    el.innerHTML = '';
     this.collection.each(model => this.addToCollection(model, frag));
-    this.el.appendChild(frag);
-    this.$el.attr('class', this.className);
+    el.appendChild(frag);
+    el.className = this.className;
     return this;
   }
 });

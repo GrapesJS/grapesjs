@@ -23,7 +23,7 @@ module.exports = {
         em: this.editorModel,
         canvasRelative: 1
       });
-    this.sorter.startSort(trg);
+    trg && this.sorter.startSort(trg);
   },
 
   /**

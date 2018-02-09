@@ -174,6 +174,7 @@ module.exports = require('backbone').View.extend({
   },
 
   render() {
+    const ppfx = this.ppfx;
     const frag = document.createDocumentFragment();
     this.catsEl = null;
     this.blocksEl = null;
@@ -187,7 +188,8 @@ module.exports = require('backbone').View.extend({
 
     this.collection.each(model => this.add(model, frag));
     this.append(frag);
-    this.$el.addClass(this.blockContClass + 's');
+    const cls = `${this.blockContClass}s ${ppfx}one-bg ${ppfx}two-color`;
+    this.$el.addClass(cls);
     return this;
   }
 });

@@ -38,6 +38,8 @@
  * }
  * ...
  */
+import { isElement } from 'underscore';
+
 module.exports = () => {
   var c = {},
     defaults = require('./config/config'),
@@ -85,6 +87,15 @@ module.exports = () => {
         config: c
       });
       return this;
+    },
+
+    postRender() {
+      const elTo = this.getConfig().appendTo;
+
+      if (elTo) {
+        const el = isElement(elTo) ? elTo : document.querySelector(elTo);
+        el.appendChild(this.render());
+      }
     },
 
     /**

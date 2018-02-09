@@ -1,4 +1,4 @@
-import { isUndefined, defaults } from 'underscore';
+import { isUndefined, isElement, defaults } from 'underscore';
 
 const deps = [
   require('utils'),
@@ -17,6 +17,7 @@ const deps = [
   require('css_composer'),
   require('trait_manager'),
   require('dom_components'),
+  require('navigator'),
   require('canvas'),
   require('commands'),
   require('block_manager')
@@ -216,20 +217,14 @@ module.exports = Backbone.Model.extend({
   /**
    * Select a component
    * @param  {Component|HTMLElement} el Component to select
-   * @param  {Object} opts Options, optional
+   * @param  {Object} [opts={}] Options, optional
    * @private
    */
   setSelected(el, opts = {}) {
     let model = el;
-
-    if (el instanceof window.HTMLElement) {
-      model = $(el).data('model');
-    }
-
-    if (model && !model.get('selectable')) {
-      return;
-    }
-
+    isElement(el) && (model = $(el).data('model'));
+    if (model && !model.get('selectable')) return;
+    opts.forceChange && this.set('selectedComponent', '');
     this.set('selectedComponent', model, opts);
   },
 

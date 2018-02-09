@@ -1,7 +1,7 @@
 /* Class names prefixes */
 
 $app-prefix:        'gjs-' !default;
-$nv-prefix:         $app-prefix + 'nv-' !default;
+$nv-prefix:         $app-prefix !default;
 $rte-prefix:        $app-prefix + 'rte-' !default;
 $comp-prefix:       $app-prefix + 'comp-' !default;
 $mdl-prefix:        $app-prefix + 'mdl-' !default;
@@ -28,12 +28,6 @@ $quaternaryColor:   #d278c9 !default;
 $mainColor:         #444 !default; /* Light: #573454 Dark: #3b2639 -moz-linear-gradient(top, #fca99b 0%, #6e2842 100%) */
 $fontColor:         #ddd !default; /* l: #d8d7db */
 $fontColorActive:   #f8f8f8 !default;
-
-/* Light theme
-$mainColor:         #fff;
-$fontColor:         #9299a3;
-$fontColorActive:   #4f8ef7;
-*/
 
 $mainDkColor:       rgba(0, 0, 0, 0.2) !default;/* darken($mainColor, 4%) - #383838 */
 $mainDklColor:      rgba(0, 0, 0, 0.1) !default;
@@ -80,4 +74,5 @@ $mainFont:          Helvetica, sans-serif !default;
 $fontPath:          '../fonts' !default;
 $fontName:          'main-fonts' !default;
 $fontSize:           0.7rem;
-$fontV:             20 !default;//random(1000)
+$fontSizeS:          0.75rem;
+$fontV:              20 !default;//random(1000)
