@@ -204,7 +204,7 @@ module.exports = () => {
             cmdMove.initSorterFromModel(sel);
           }
 
-          sel.set('status', 'selected');
+          sel.set('status', 'freezed-selected');
         }
       };
 

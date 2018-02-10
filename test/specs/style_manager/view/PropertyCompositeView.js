@@ -89,13 +89,13 @@ module.exports = {
       });
 
       it('Input value is empty', () => {
-        expect(model.getFullValue()).toEqual('0% val2');
+        expect(model.getFullValue()).toEqual('0 val2');
       });
 
       it('Update input on value change', () => {
         view.model.set('value', propValue);
         // Fetch always values from properties
-        expect(view.getInputValue()).toEqual('0% val2');
+        expect(view.getInputValue()).toEqual('0 val2');
       });
 
       describe('With target setted', () => {
@@ -123,7 +123,7 @@ module.exports = {
           prop2Val = properties[1].defaults;
           prop2Unit = properties[1].units[0];
           prop3Val = properties[2].list[2].value;
-          finalResult = propValue + ' ' + prop2Val + prop2Unit + ' ' + prop3Val;
+          finalResult = propValue + ' ' + prop2Val + ' ' + prop3Val;
           $prop1 = view.$props.find('#' + properties[0].property + ' input');
           $prop2 = view.$props.find('#' + properties[1].property + ' input');
           $prop3 = view.$props.find('#' + properties[2].property + ' select');
@@ -151,7 +151,7 @@ module.exports = {
           $prop1.val(propValue).trigger('change');
           var compStyle = view.getTarget().get('style');
           var assertStyle = {};
-          assertStyle[propName] = propValue + ' 0% val2';
+          assertStyle[propName] = propValue + ' 0 val2';
           expect(compStyle).toEqual(assertStyle);
         });
 

@@ -68,16 +68,35 @@ module.exports = Backbone.View.extend({
         bl: 0,
         br: 0,
         appendTo: this.el,
+        silentFrames: 1,
+        avoidContainerUpdate: 1,
         prefix: editor.getConfig().stylePrefix,
-        posFetcher: el => {
-          var rect = el.getBoundingClientRect();
+        onEnd() {
+          em && em.trigger('change:canvasOffset');
+        },
+        posFetcher: (el, { target }) => {
+          const style = el.style;
+          const config = resizer.getConfig();
+          const keyWidth = config.keyWidth;
+          const keyHeight = config.keyHeight;
+          const rect = el.getBoundingClientRect();
+          const forContainer = target == 'container';
+          const styleWidth = style[keyWidth];
+          const styleHeight = style[keyHeight];
+          const width =
+            styleWidth && !forContainer ? parseFloat(styleWidth) : rect.width;
+          const height =
+            styleHeight && !forContainer
+              ? parseFloat(styleHeight)
+              : rect.height;
           return {
             left: 0,
             top: 0,
-            width: rect.width,
-            height: rect.height
+            width,
+            height
           };
-        }
+        },
+        ...resizable
       });
       resizer.blur = () => {};
       resizer.focus(this.el);
@@ -85,20 +104,20 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    const el = this.$el;
-    const pfx = this.ppfx;
-    el.attr('class', `${this.className} ${pfx}one-bg`);
-    this.id && el.attr('id', this.id);
+    const $el = this.$el;
+    const ppfx = this.ppfx;
+    const cls = `${this.className} ${this.id} ${ppfx}one-bg ${ppfx}two-color`;
+    $el.addClass(cls);
 
     if (this.buttons.length) {
       var buttons = new ButtonsView({
         collection: this.buttons,
         config: this.config
       });
-      el.append(buttons.render().el);
+      $el.append(buttons.render().el);
     }
 
-    el.append(this.model.get('content'));
+    $el.append(this.model.get('content'));
     return this;
   }
 });

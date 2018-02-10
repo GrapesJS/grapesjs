@@ -230,8 +230,11 @@ module.exports = {
     ]
   },
 
-  //Configurations for Block Manager
+  // Configurations for Block Manager
   blockManager: {},
+
+  // Configurations for Trait Manager
+  traitManager: {},
 
   // Texts
 

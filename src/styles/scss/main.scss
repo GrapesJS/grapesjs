@@ -215,7 +215,7 @@ $prefix: $app-prefix;
 
 .#{$app-prefix}editor {
   font-family: $mainFont;
-  font-size: $fontSize;
+  font-size: $fontSizeS;
   position: relative;
   box-sizing: border-box;
   height: 100%;
@@ -227,33 +227,7 @@ $prefix: $app-prefix;
   pointer-events: none;
 }
 
-/*************  TRAITS  ****************/
-.#{$app-prefix}traits-label {
-  border-bottom: 1px solid $mainDkColor;
-  font-size: 13px;
-  font-weight: lighter;
-  margin-bottom: 5px;
-  padding: 10px;
-  text-align: left;
-}
-.#{$trt-prefix}trait {
-  display: flex;
-  justify-content: start;
-  padding: 5px 10px;
-  font-weight: lighter;
-
-  .#{$app-prefix}label {
-    width: 30%;
-    text-align: left;
-  }
-
-  .#{$app-prefix}field {
-    width: 70%;
-  }
-}
-
-/*************  CANVAS  ****************/
-
+@import "gjs_traits";
 @import "gjs_canvas";
 
 /********* COMMANDS **********/
@@ -330,112 +304,7 @@ $prefix: $app-prefix;
   outline: none;
 }
 
-/********* PANELS **********/
-
-.#{$pn-prefix}panel {
-  //@extend .#{$app-prefix}bg-main;
-  //@extend .#{$app-prefix}color-main;
-  display: inline-block;
-  padding: 5px;
-  position: absolute;
-  box-sizing: border-box;
-  text-align: center;
-  z-index:3;
-
-  &##{$pn-prefix}commands{
-    width: (100% - $leftWidth);
-    left:0; top: 0;
-    box-shadow: 0 0 5px $mainDkColor;
-  }
-
-  &##{$pn-prefix}options{
-  	right: $leftWidth;
-    top: 0;
-  }
-
-  &##{$pn-prefix}options2{
-  	@extend ##{$pn-prefix}commands;
-  	bottom: 150px;
-  	height: auto;
-  }
-
-  .icon-undo, .icon-redo{
-  	font-size: 20px;
-    height: 30px;
-    width: 25px;
-  }
-
-  &##{$pn-prefix}views{
-  	border-bottom: 2px solid $mainDkColor;
-  	right: 0;
-  	width: $leftWidth;
-  	z-index: 4;
-  }
-
-  &##{$pn-prefix}views-container{
-  	height: 100%;
-    padding: 42px 0 0;
-    right: 0;
-    width: $leftWidth;
-    overflow: auto;
-    box-shadow: 0 0 5px $mainDkColor;
-  }
-}
-
-.#{$pn-prefix}buttons {
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
-}
-
-.#{$pn-prefix}btn, .#{$app-prefix}btnt {
-	box-sizing: border-box;
-	height: 30px; width: 30px;
-	line-height: 21px;
-	background-color: transparent;
-	border:none;
-	font-size: 18px;
-	margin-right: 5px;
-	border-radius: 2px;
-	cursor: pointer;
-	padding: 5px;
-	position: relative;
-
-	&.#{$pn-prefix}active {
-		background-color: rgba(0, 0, 0, 0.15);
-    box-shadow: 0 0 3px rgba(0, 0, 0, 0.25) inset;
-	}
-
-	> .#{$pn-prefix}arrow-rd {
-	  	border-bottom: 5px solid $mainLhlColor;
-	  	border-left: 5px solid transparent;
-	  	bottom: 2px; right: 2px;
-	  	position: absolute;
-	}
-
-	> .#{$pn-prefix}buttons{
-		background-color: $mainColor;
-		border-radius: 2px;
-		position: absolute;
-		display: none;
-		left: 50px;
-		top: 0;
-		padding: 5px;
-
-		&.#{$pn-prefix}visible{ display: block; }
-
-		> .#{$pn-prefix}arrow-l {
-			border-bottom: 5px solid transparent;
-		    border-right: 5px solid $mainColor;
-		    border-top: 5px solid transparent;
-		    left: -5px; top: 15px;
-		    position: absolute;
-		}
-	}
-}
-
-/* pa-refresh pa-rocket pa-trash pa-columns pa-rotate-left/right */
-.btn.expand{ background-image: none;}
+@import 'gjs_panels';
 
 /***********  Components *************/
 
@@ -474,7 +343,6 @@ $prefix: $app-prefix;
 
   font-weight: lighter;
   background-color: $mainDklColor;
-  font-size: 13px;
   letter-spacing: 1px;
   padding: 9px 10px 9px 20px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.25);
@@ -483,108 +351,11 @@ $prefix: $app-prefix;
   cursor: pointer;
 }
 
-/********* Style Manager **********/
-
 @import "gjs_style_manager";
-
-/********* Blocks **********/
-
 @import "gjs_blocks";
-
-/************* Navigator *************/
-
 @import "gjs_layers";
-
-/********* Class manager **********/
-
-.#{$clm-prefix}field{
-		@extend .#{$sm-prefix}field
-}
-.#{$clm-prefix}select{
-		@extend .#{$sm-prefix}field.#{$sm-prefix}select;
-}
-
-.#{$clm-prefix}tags{
-	@extend .#{$sm-prefix}sector;
-	font-size: 11px;
-	padding: 10px 5px;
-
-	##{$clm-prefix}label, ##{$clm-prefix}sel{
-		padding: 7px 0;
-		float:left;
-	}
-  ##{$clm-prefix}sel{
-    font-style: italic;
-    margin-left: 5px;
-  }
-	##{$clm-prefix}status-c{
-		float:right;
-	}
-
-	##{$clm-prefix}tags-field{
-		clear:both;
-		padding: 5px;
-		margin-bottom: 5px;
-	}
-	##{$clm-prefix}tags-c{
-		display: inline-block;
-		vertical-align: top;
-	}
-
-	##{$clm-prefix}add-tag{
-		background-color: rgba(255, 255, 255, 0.15);
-		border-radius: 2px;
-    padding: $paddElClm;
-    box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.2) inset;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    cursor: pointer;
-	}
-
-	##{$clm-prefix}new {
-		@extend  .#{$app-prefix}invis-invis;
-		color: $fontColor;
-		padding: $paddElClm;
-		display:none;
-	}
-
-	.#{$clm-prefix}tag {
-		display: inline-block;
-		border-radius:3px;
-		margin: 0 3px 3px 0;
-    padding: 5px;
-    cursor: default;
-	}
-	##{$clm-prefix}close {
-		@extend  .opac50;
-		font-size: 20px;
-    line-height: 0;
-    cursor:pointer;
-    color: rgba(255, 255, 255, 0.9);
-    @extend  .no-select;
-    &:hover{
-    	@include opacity(0.7);
-    }
-	}
-	##{$clm-prefix}checkbox {
-    color: rgba(255, 255, 255, 0.9);
-		vertical-align: middle;
-		cursor: pointer;
-		font-size: 9px;
-	}
-
-	##{$clm-prefix}tag-label {
-    padding: 0 3px;
-    cursor: text;
-	}
-}
-/********* END Class manager **********/
-
-/********* Modal dialog **********/
-
+@import "gjs_selectors";
 @import "gjs_modal";
-
-/********* Assets Manager **********/
-
 @import "gjs_assets";
 
 /********* File uploader **********/
@@ -751,4 +522,8 @@ $prefix: $app-prefix;
     transform: translate(0, -3rem);
     opacity: 0;
   }
+}
+
+.cm-s-hopscotch span.cm-error {
+    color: #ffffff;
 }

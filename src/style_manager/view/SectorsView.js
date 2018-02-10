@@ -3,10 +3,12 @@ import { extend } from 'underscore';
 const SectorView = require('./SectorView');
 
 module.exports = Backbone.View.extend({
-  initialize(o) {
-    this.config = o.config || {};
-    this.pfx = this.config.stylePrefix || '';
+  initialize(o = {}) {
+    const config = o.config || {};
+    this.pfx = config.stylePrefix || '';
+    this.ppfx = config.pStylePrefix || '';
     this.target = o.target || {};
+    this.config = config;
 
     // The target that will emit events for properties
     const target = {};
@@ -117,15 +119,14 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    var fragment = document.createDocumentFragment();
-    this.$el.empty();
-
-    this.collection.each(function(model) {
-      this.addToCollection(model, fragment);
-    }, this);
-
-    this.$el.attr('id', this.pfx + 'sectors');
-    this.$el.append(fragment);
+    const frag = document.createDocumentFragment();
+    const $el = this.$el;
+    const pfx = this.pfx;
+    const ppfx = this.ppfx;
+    $el.empty();
+    this.collection.each(model => this.addToCollection(model, frag));
+    $el.append(frag);
+    $el.addClass(`${pfx}sectors ${ppfx}one-bg ${ppfx}two-color`);
     return this;
   }
 });

@@ -35,6 +35,7 @@
   cursor: all-scroll;
   font-size: 11px;
   font-weight: lighter;
+  text-align: center;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -51,7 +52,7 @@
 }
 
 .#{$app-prefix}block-svg {
-  width: 61%;
+  width: 54px;
   fill: currentColor;
 }
 

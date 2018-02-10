@@ -193,7 +193,7 @@ module.exports = () => {
       for (var i = 0, len = keys.length; i < len; i++)
         keysF.push(c.id + keys[i]);
 
-      st &&
+      if (st) {
         st.load(keysF, res => {
           // Restore keys name
           var reg = new RegExp('^' + c.id + '');
@@ -204,6 +204,9 @@ module.exports = () => {
 
           clb && clb(result);
         });
+      } else {
+        clb && clb(result);
+      }
     },
 
     /**

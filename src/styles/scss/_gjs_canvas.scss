@@ -94,6 +94,10 @@ $canvasTop: 40px;
   @extend .#{$app-prefix}no-pointer-events;
 
   position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
   z-index: 9;
 }
 

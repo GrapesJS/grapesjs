@@ -49,7 +49,7 @@
  * }
  */
 
-import { isString } from 'underscore';
+import { isString, isElement } from 'underscore';
 
 module.exports = config => {
   var c = config || {},
@@ -76,6 +76,10 @@ module.exports = config => {
      * @return {Object}
      * @private
      */
+    getConfig() {
+      return c;
+    },
+
     getConfig() {
       return c;
     },
@@ -110,6 +114,15 @@ module.exports = config => {
       selectors.on('add', model => em.trigger('selector:add', model));
 
       return this;
+    },
+
+    postRender() {
+      const elTo = this.getConfig().appendTo;
+
+      if (elTo) {
+        const el = isElement(elTo) ? elTo : document.querySelector(elTo);
+        el.appendChild(this.render([]));
+      }
     },
 
     /**

@@ -128,11 +128,12 @@ module.exports = Backbone.View.extend({
 
         .${ppfx}dashed *[data-highlightable] {
           outline: 1px dashed rgba(170,170,170,0.7);
-          outline-offset: -3px
+          outline-offset: -2px;
         }
 
         .${ppfx}comp-selected {
           outline: 3px solid #3b97e3 !important;
+          outline-offset: -3px;
         }
 
         .${ppfx}comp-selected-parent {
@@ -206,8 +207,8 @@ module.exports = Backbone.View.extend({
       // the keyCode/which will be always `0`. Even if it's an old/deprecated
       // property keymaster (and many others) still use it... using `defineProperty`
       // hack seems the only way
-      const createCustomEvent = e => {
-        var oEvent = new KeyboardEvent(e.type, e);
+      const createCustomEvent = (e, cls) => {
+        var oEvent = new window[cls](e.type, e);
         oEvent.keyCodeVal = e.keyCode;
         ['keyCode', 'which'].forEach(prop => {
           Object.defineProperty(oEvent, prop, {
@@ -218,12 +219,17 @@ module.exports = Backbone.View.extend({
         });
         return oEvent;
       };
-      fdoc.addEventListener('keydown', e => {
-        doc.dispatchEvent(createCustomEvent(e));
-      });
-      fdoc.addEventListener('keyup', e => {
-        doc.dispatchEvent(createCustomEvent(e));
-      });
+
+      [
+        { event: 'keydown keyup', class: 'KeyboardEvent' }
+        //{ event: 'mousedown mousemove mouseup', class: 'MouseEvent' },
+      ].forEach(obj =>
+        obj.event.split(' ').forEach(event => {
+          fdoc.addEventListener(event, e =>
+            doc.dispatchEvent(createCustomEvent(e, obj.class))
+          );
+        })
+      );
     }
   },
 

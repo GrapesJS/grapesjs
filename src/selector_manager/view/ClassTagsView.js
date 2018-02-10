@@ -303,8 +303,10 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
+    const ppfx = this.ppfx;
     const config = this.config;
-    this.$el.html(
+    const $el = this.$el;
+    $el.html(
       this.template({
         selectedLabel: config.selectedLabel,
         statesLabel: config.statesLabel,
@@ -313,14 +315,14 @@ module.exports = Backbone.View.extend({
         ppfx: this.ppfx
       })
     );
-    this.$input = this.$el.find('input#' + this.newInputId);
-    this.$addBtn = this.$el.find('#' + this.addBtnId);
-    this.$classes = this.$el.find('#' + this.pfx + 'tags-c');
-    this.$states = this.$el.find('#' + this.stateInputId);
-    this.$statesC = this.$el.find('#' + this.stateInputC);
+    this.$input = $el.find('input#' + this.newInputId);
+    this.$addBtn = $el.find('#' + this.addBtnId);
+    this.$classes = $el.find('#' + this.pfx + 'tags-c');
+    this.$states = $el.find('#' + this.stateInputId);
+    this.$statesC = $el.find('#' + this.stateInputC);
     this.$states.append(this.getStateOptions());
     this.renderClasses();
-    this.$el.attr('class', this.className);
+    $el.attr('class', `${this.className} ${ppfx}one-bg ${ppfx}two-color`);
     return this;
   }
 });

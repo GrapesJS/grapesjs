@@ -19,6 +19,12 @@ module.exports = PropertyView.extend({
     }
   },
 
+  clear(e) {
+    const props = this.properties;
+    props && props.forEach(propView => propView.clear());
+    PropertyView.prototype.clear.apply(this, arguments);
+  },
+
   /**
    * Renders input
    * */
@@ -26,6 +32,7 @@ module.exports = PropertyView.extend({
     var model = this.model;
     var props = model.get('properties') || [];
     var self = this;
+    this.properties = [];
 
     if (props.length) {
       if (!this.$input) {
@@ -50,6 +57,7 @@ module.exports = PropertyView.extend({
         var PropertiesView = require('./PropertiesView');
         var propsView = new PropertiesView(this.getPropsConfig());
         this.$props = propsView.render().$el;
+        this.properties = propsView.properties;
         this.$el.find(`#${this.pfx}input-holder`).append(this.$props);
       }
     }

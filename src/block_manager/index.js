@@ -28,6 +28,8 @@
  * }
  * ...
  */
+import { isElement } from 'underscore';
+
 module.exports = () => {
   var c = {},
     defaults = require('./config/config'),
@@ -106,6 +108,15 @@ module.exports = () => {
     onLoad() {
       const blocks = this.getAll();
       !blocks.length && blocks.reset(c.blocks);
+    },
+
+    postRender() {
+      const elTo = this.getConfig().appendTo;
+
+      if (elTo) {
+        const el = isElement(elTo) ? elTo : document.querySelector(elTo);
+        el.appendChild(this.render());
+      }
     },
 
     /**
@@ -199,6 +210,7 @@ module.exports = () => {
      * Render blocks
      * @param  {Array} blocks Blocks to render, without the argument will render
      *                        all global blocks
+     * @return {HTMLElement} Rendered element
      * @example
      * // Render all blocks (inside the global collection)
      * blockManager.render();
@@ -225,6 +237,7 @@ module.exports = () => {
       }
 
       blocksView.collection.reset(toRender);
+      return this.getContainer();
     }
   };
 };

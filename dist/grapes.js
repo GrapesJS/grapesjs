@@ -7,7 +7,7 @@
 		exports["grapesjs"] = factory();
 	else
 		root["grapesjs"] = factory();
-})(this, function() {
+})(typeof self !== 'undefined' ? self : this, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 59);
+/******/ 	return __webpack_require__(__webpack_require__.s = 60);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -93,11 +93,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
   // Set up Backbone appropriately for the environment. Start with AMD.
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1), __webpack_require__(9), exports], __WEBPACK_AMD_DEFINE_RESULT__ = function(_, $, exports) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1), __webpack_require__(9), exports], __WEBPACK_AMD_DEFINE_RESULT__ = (function(_, $, exports) {
       // Export global even in AMD case in case this script is loaded with
       // others that may still expect a global Backbone.
       root.Backbone = factory(root, exports, _, $);
-    }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+    }).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
   // Next for Node.js or CommonJS. jQuery may not be needed as a module.
@@ -1999,7 +1999,7 @@ return /******/ (function(modules) { // webpackBootstrap
   return Backbone;
 });
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
 /* 1 */
@@ -3548,9 +3548,9 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscor
   // an AMD load request. Those cases could generate an error when an
   // anonymous define() is called outside of a loader request.
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function() {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = (function() {
       return _;
-    }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+    }).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   }
 }.call(this));
@@ -3806,6 +3806,7 @@ module.exports = Backbone.View.extend({
     var selectedCls = pfx + 'selected';
     var selectedParentCls = selectedCls + '-parent';
     var freezedCls = ppfx + 'freezed';
+    this.$el.removeClass(selectedCls + ' ' + selectedParentCls + ' ' + freezedCls);
     var actualCls = el.getAttribute('class') || '';
     var cls = '';
 
@@ -3819,8 +3820,9 @@ module.exports = Backbone.View.extend({
       case 'freezed':
         cls = actualCls + ' ' + freezedCls;
         break;
-      default:
-        this.$el.removeClass(selectedCls + ' ' + selectedParentCls + ' ' + freezedCls);
+      case 'freezed-selected':
+        cls = actualCls + ' ' + freezedCls + ' ' + selectedCls;
+        break;
     }
 
     cls = cls.trim();
@@ -4071,8 +4073,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var Backbone = __webpack_require__(0);
 var Components = __webpack_require__(50);
 var Selector = __webpack_require__(7);
-var Selectors = __webpack_require__(10);
-var Traits = __webpack_require__(150);
+var Selectors = __webpack_require__(11);
+var Traits = __webpack_require__(151);
 var componentList = {};
 var componentIndex = 0;
 
@@ -4977,6 +4979,7 @@ module.exports = Backbone.View.extend({
     }
 
     em && em.on('update:component:style:' + this.property, this.targetUpdated);
+    //em && em.on(`styleable:change:${this.property}`, this.targetUpdated);
     this.listenTo(this.propTarget, 'update', this.targetUpdated);
     this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model, 'change:value', this.modelValueChanged);
@@ -5024,9 +5027,9 @@ module.exports = Backbone.View.extend({
   /**
    * Clear the property from the target
    */
-  clear: function clear() {
-    var target = this.getTargetModel();
-    target.removeStyle(this.model.get('property'));
+  clear: function clear(e) {
+    e && e.stopPropagation();
+    this.model.clearValue();
     this.targetUpdated();
   },
 
@@ -5365,7 +5368,7 @@ module.exports = Backbone.View.extend({
    * */
   setValue: function setValue(value) {
     var model = this.model;
-    var val = value || model.getDefaultValue();
+    var val = (0, _underscore.isUndefined)(value) ? model.getDefaultValue() : value;
     var input = this.getInputEl();
     input && (input.value = val);
   },
@@ -8690,8 +8693,10 @@ function updateHeightsInViewport(cm) {
 // Read and store the height of line widgets associated with the
 // given line.
 function updateWidgetHeight(line) {
-  if (line.widgets) { for (var i = 0; i < line.widgets.length; ++i)
-    { line.widgets[i].height = line.widgets[i].node.parentNode.offsetHeight; } }
+  if (line.widgets) { for (var i = 0; i < line.widgets.length; ++i) {
+    var w = line.widgets[i], parent = w.node.parentNode;
+    if (parent) { w.height = parent.offsetHeight; }
+  } }
 }
 
 // Compute the lines that are visible in a given viewport (defaults
@@ -11997,11 +12002,11 @@ function onResize(cm) {
 }
 
 var keyNames = {
-  3: "Enter", 8: "Backspace", 9: "Tab", 13: "Enter", 16: "Shift", 17: "Ctrl", 18: "Alt",
+  3: "Pause", 8: "Backspace", 9: "Tab", 13: "Enter", 16: "Shift", 17: "Ctrl", 18: "Alt",
   19: "Pause", 20: "CapsLock", 27: "Esc", 32: "Space", 33: "PageUp", 34: "PageDown", 35: "End",
   36: "Home", 37: "Left", 38: "Up", 39: "Right", 40: "Down", 44: "PrintScrn", 45: "Insert",
   46: "Delete", 59: ";", 61: "=", 91: "Mod", 92: "Mod", 93: "Mod",
-  106: "*", 107: "=", 109: "-", 110: ".", 111: "/", 127: "Delete",
+  106: "*", 107: "=", 109: "-", 110: ".", 111: "/", 127: "Delete", 145: "ScrollLock",
   173: "-", 186: ";", 187: "=", 188: ",", 189: "-", 190: ".", 191: "/", 192: "`", 219: "[", 220: "\\",
   221: "]", 222: "'", 63232: "Up", 63233: "Down", 63234: "Left", 63235: "Right", 63272: "Delete",
   63273: "Home", 63275: "End", 63276: "PageUp", 63277: "PageDown", 63302: "Insert"
@@ -12148,6 +12153,9 @@ function keyName(event, noShift) {
   if (presto && event.keyCode == 34 && event["char"]) { return false }
   var name = keyNames[event.keyCode];
   if (name == null || event.altGraphKey) { return false }
+  // Ctrl-ScrollLock has keyCode 3, same as Ctrl-Pause,
+  // so we'll use event.code when available (Chrome 48+, FF 38+, Safari 10.1+)
+  if (event.keyCode == 3 && event.code) { name = event.code; }
   return addModifierNames(name, event, noShift)
 }
 
@@ -12487,18 +12495,26 @@ function lookupKeyForEditor(cm, name, handle) {
 // for bound mouse clicks.
 
 var stopSeq = new Delayed;
+
 function dispatchKey(cm, name, e, handle) {
   var seq = cm.state.keySeq;
   if (seq) {
     if (isModifierKey(name)) { return "handled" }
-    stopSeq.set(50, function () {
-      if (cm.state.keySeq == seq) {
-        cm.state.keySeq = null;
-        cm.display.input.reset();
-      }
-    });
-    name = seq + " " + name;
+    if (/\'$/.test(name))
+      { cm.state.keySeq = null; }
+    else
+      { stopSeq.set(50, function () {
+        if (cm.state.keySeq == seq) {
+          cm.state.keySeq = null;
+          cm.display.input.reset();
+        }
+      }); }
+    if (dispatchKeyInner(cm, seq + " " + name, e, handle)) { return true }
   }
+  return dispatchKeyInner(cm, name, e, handle)
+}
+
+function dispatchKeyInner(cm, name, e, handle) {
   var result = lookupKeyForEditor(cm, name, handle);
 
   if (result == "multi")
@@ -12511,10 +12527,6 @@ function dispatchKey(cm, name, e, handle) {
     restartBlink(cm);
   }
 
-  if (seq && !result && /\'$/.test(name)) {
-    e_preventDefault(e);
-    return true
-  }
   return !!result
 }
 
@@ -13026,6 +13038,7 @@ function defineOptions(CodeMirror) {
     clearCaches(cm);
     regChange(cm);
   }, true);
+
   option("lineSeparator", null, function (cm, val) {
     cm.doc.lineSep = val;
     if (!val) { return }
@@ -13432,7 +13445,7 @@ function applyTextInput(cm, inserted, deleted, sel, origin) {
 
   var paste = cm.state.pasteIncoming || origin == "paste";
   var textLines = splitLinesAuto(inserted), multiPaste = null;
-  // When pasing N lines into N selections, insert one line per selection
+  // When pasting N lines into N selections, insert one line per selection
   if (paste && sel.ranges.length > 1) {
     if (lastCopied && lastCopied.text.join("\n") == inserted) {
       if (sel.ranges.length % lastCopied.text.length == 0) {
@@ -15066,7 +15079,7 @@ CodeMirror$1.fromTextArea = fromTextArea;
 
 addLegacyProps(CodeMirror$1);
 
-CodeMirror$1.version = "5.31.0";
+CodeMirror$1.version = "5.34.0";
 
 return CodeMirror$1;
 
@@ -15332,7 +15345,7 @@ module.exports = Backbone.View.extend({
 "use strict";
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
 
-/*! cash-dom 1.3.5, https://github.com/kenwheeler/cash @license MIT */
+/*! cash-dom 1.3.7, https://github.com/kenwheeler/cash @license MIT */
 ;(function (root, factory) {
   if (true) {
     !(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
@@ -15366,7 +15379,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
   var frag;
   function parseHTML(str) {
     if (!frag) {
-      frag = doc.implementation.createHTMLDocument();
+      frag = doc.implementation.createHTMLDocument(null);
       var base = frag.createElement("base");
       base.href = doc.location.href;
       frag.head.appendChild(base);
@@ -15379,7 +15392,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
 
   function onReady(fn) {
     if (doc.readyState !== "loading") {
-      fn();
+      setTimeout(fn);
     } else {
       doc.addEventListener("DOMContentLoaded", fn);
     }
@@ -15593,10 +15606,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     return (v.classList ? v.classList.contains(c) : new RegExp("(^| )" + c + "( |$)", "gi").test(v.className));
   }
 
-  function addClass(v, c, spacedName) {
+  function addClass(v, c) {
     if (v.classList) {
       v.classList.add(c);
-    } else if (spacedName.indexOf(" " + c + " ")) {
+    } else if (!hasClass(v, c)) {
       v.className += " " + c;
     }
   }
@@ -15614,9 +15627,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
       var classes = getClasses(c);
 
       return (classes ? this.each(function (v) {
-        var spacedName = " " + v.className + " ";
         each(classes, function (c) {
-          addClass(v, c, spacedName);
+          addClass(v, c);
         });
       }) : this);
     },
@@ -15706,12 +15718,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
       }
       var classes = getClasses(c);
       return (classes ? this.each(function (v) {
-        var spacedName = " " + v.className + " ";
         each(classes, function (c) {
           if (hasClass(v, c)) {
             removeClass(v, c);
           } else {
-            addClass(v, c, spacedName);
+            addClass(v, c);
           }
         });
       }) : this);
@@ -16297,6 +16308,33 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
 
 /***/ }),
 /* 10 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16330,7 +16368,7 @@ module.exports = __webpack_require__(0).Collection.extend({
 });
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16344,12 +16382,12 @@ var _TypeableCollection2 = _interopRequireDefault(_TypeableCollection);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var Property = __webpack_require__(12);
+var Property = __webpack_require__(13);
 
 module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.default).extend({
   types: [{
     id: 'stack',
-    model: __webpack_require__(119),
+    model: __webpack_require__(120),
     view: __webpack_require__(34),
     isType: function isType(value) {
       if (value && value.type == 'stack') {
@@ -16403,8 +16441,8 @@ module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.d
     }
   }, {
     id: 'slider',
-    model: __webpack_require__(125),
-    view: __webpack_require__(126),
+    model: __webpack_require__(126),
+    view: __webpack_require__(127),
     isType: function isType(value) {
       if (value && value.type == 'slider') {
         return value;
@@ -16413,7 +16451,7 @@ module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.d
   }, {
     id: 'integer',
     model: __webpack_require__(42),
-    view: __webpack_require__(14),
+    view: __webpack_require__(15),
     isType: function isType(value) {
       if (value && value.type == 'integer') {
         return value;
@@ -16467,13 +16505,15 @@ module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.d
 });
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _underscore = __webpack_require__(1);
 
 module.exports = __webpack_require__(0).Model.extend({
   defaults: {
@@ -16508,6 +16548,18 @@ module.exports = __webpack_require__(0).Model.extend({
 
     var init = this.init && this.init.bind(this);
     init && init();
+  },
+
+
+  /**
+   * Clear the value
+   * @return {this}
+   */
+  clearValue: function clearValue() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    this.set({ value: undefined }, opts);
+    return this;
   },
 
 
@@ -16601,25 +16653,25 @@ module.exports = __webpack_require__(0).Model.extend({
    */
   getFullValue: function getFullValue(val) {
     var fn = this.get('functionName');
-    var value = val || this.get('value');
+    var value = (0, _underscore.isUndefined)(val) ? this.get('value') : val;
 
-    if (fn) {
+    if (fn && !(0, _underscore.isUndefined)(value)) {
       value = fn + '(' + value + ')';
     }
 
-    return value;
+    return value || '';
   }
 });
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(Backbone) {
 
 var PropertyView = __webpack_require__(5);
-var PropertyIntegerView = __webpack_require__(14);
+var PropertyIntegerView = __webpack_require__(15);
 var PropertyRadioView = __webpack_require__(36);
 var PropertySelectView = __webpack_require__(37);
 var PropertyColorView = __webpack_require__(38);
@@ -16636,6 +16688,7 @@ module.exports = Backbone.View.extend({
     this.onChange = o.onChange;
     this.onInputRender = o.onInputRender || {};
     this.customValue = o.customValue || {};
+    this.properties = [];
     var coll = this.collection;
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.render);
@@ -16661,6 +16714,7 @@ module.exports = Backbone.View.extend({
 
     view.render();
     var el = view.el;
+    this.properties.push(view);
 
     if (frag) {
       frag.appendChild(el);
@@ -16671,6 +16725,7 @@ module.exports = Backbone.View.extend({
   render: function render() {
     var _this = this;
 
+    this.properties = [];
     var fragment = document.createDocumentFragment();
     this.collection.each(function (model) {
       return _this.add(model, fragment);
@@ -16683,16 +16738,18 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(Backbone) {
 
 var InputNumber = __webpack_require__(18);
+var PropertyView = __webpack_require__(5);
 var $ = Backbone.$;
+var timeout = void 0;
 
-module.exports = __webpack_require__(5).extend({
+module.exports = PropertyView.extend({
   templateInput: function templateInput() {
     return '';
   },
@@ -16702,6 +16759,8 @@ module.exports = __webpack_require__(5).extend({
     this.listenTo(model, 'el:change', this.elementUpdated);
   },
   setValue: function setValue(value) {
+    var parsed = this.model.parseValue(value);
+    value = '' + parsed.value + parsed.unit;
     this.inputInst.setValue(value, { silent: 1 });
   },
   onRender: function onRender() {
@@ -16724,7 +16783,7 @@ module.exports = __webpack_require__(5).extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16820,33 +16879,6 @@ module.exports = ComponentView.extend({
 });
 
 /***/ }),
-/* 16 */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
 /* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16872,6 +16904,13 @@ module.exports = PropertyView.extend({
       PropertyView.prototype.inputValueChanged.apply(this, args);
     }
   },
+  clear: function clear(e) {
+    var props = this.properties;
+    props && props.forEach(function (propView) {
+      return propView.clear();
+    });
+    PropertyView.prototype.clear.apply(this, arguments);
+  },
 
 
   /**
@@ -16881,6 +16920,7 @@ module.exports = PropertyView.extend({
     var model = this.model;
     var props = model.get('properties') || [];
     var self = this;
+    this.properties = [];
 
     if (props.length) {
       if (!this.$input) {
@@ -16902,9 +16942,10 @@ module.exports = PropertyView.extend({
           prop.parent = model;
         }, this);
 
-        var PropertiesView = __webpack_require__(13);
+        var PropertiesView = __webpack_require__(14);
         var propsView = new PropertiesView(this.getPropsConfig());
         this.$props = propsView.render().$el;
+        this.properties = propsView.properties;
         this.$el.find('#' + this.pfx + 'input-holder').append(this.$props);
       }
     }
@@ -17218,7 +17259,8 @@ module.exports = Input.extend({
     var force = 0;
     var opt = opts || {};
     var model = this.model;
-    var val = value !== '' ? value : model.get('defaults');
+    var defValue = ''; //model.get('defaults');
+    var val = !(0, _underscore.isUndefined)(value) ? value : defValue;
     var units = model.get('units') || [];
     var unit = model.get('unit') || units.length && units[0] || '';
     var max = model.get('max');
@@ -17238,7 +17280,7 @@ module.exports = Input.extend({
           var valCopy = val + '';
           val += ''; // Make it suitable for replace
           val = parseFloat(val.replace(',', '.'));
-          val = !isNaN(val) ? val : model.get('defaults');
+          val = !isNaN(val) ? val : defValue;
           var uN = valCopy.replace(val, '');
           // Check if exists as unit
           if (_.indexOf(units, uN) >= 0) unit = uN;
@@ -17246,9 +17288,8 @@ module.exports = Input.extend({
       }
     }
 
-    if (typeof max !== 'undefined' && max !== '') val = val > max ? max : val;
-
-    if (typeof min !== 'undefined' && min !== '') val = val < min ? min : val;
+    if (!(0, _underscore.isUndefined)(max) && max !== '') val = val > max ? max : val;
+    if (!(0, _underscore.isUndefined)(min) && min !== '') val = val < min ? min : val;
 
     return {
       force: force,
@@ -17463,8 +17504,8 @@ var _underscore = __webpack_require__(1);
 
 var _mixins = __webpack_require__(2);
 
-var ToolbarView = __webpack_require__(187);
-var Toolbar = __webpack_require__(189);
+var ToolbarView = __webpack_require__(189);
+var Toolbar = __webpack_require__(191);
 var key = __webpack_require__(23);
 var $ = __webpack_require__(0).$;
 var showOffsets = void 0;
@@ -17516,7 +17557,7 @@ module.exports = {
     methods[method](body, 'mouseover', this.onHover);
     methods[method](body, 'mouseout', this.onOut);
     methods[method](body, 'click', this.onClick);
-    methods[method](win, 'scroll', this.onFrameScroll);
+    methods[method](win, 'scroll resize', this.onFrameScroll);
     methods[method](win, 'keydown', this.onKeyPress);
     em[method]('change:selectedComponent', this.onSelect, this);
   },
@@ -18062,7 +18103,7 @@ module.exports = {
 "use strict";
 /* WEBPACK VAR INJECTION */(function(Backbone, _) {
 
-var SelectPosition = __webpack_require__(54);
+var SelectPosition = __webpack_require__(57);
 var $ = Backbone.$;
 
 module.exports = _.extend({}, SelectPosition, {
@@ -18609,7 +18650,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _promisePolyfill = __webpack_require__(75);
+var _promisePolyfill = __webpack_require__(76);
 
 var _promisePolyfill2 = _interopRequireDefault(_promisePolyfill);
 
@@ -18977,9 +19018,9 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
       return ret("qualifier", "qualifier");
     } else if (/[:;{}\[\]\(\)]/.test(ch)) {
       return ret(null, ch);
-    } else if ((ch == "u" && stream.match(/rl(-prefix)?\(/)) ||
-               (ch == "d" && stream.match("omain(")) ||
-               (ch == "r" && stream.match("egexp("))) {
+    } else if (((ch == "u" || ch == "U") && stream.match(/rl(-prefix)?\(/i)) ||
+               ((ch == "d" || ch == "D") && stream.match("omain(", true, true)) ||
+               ((ch == "r" || ch == "R") && stream.match("egexp(", true, true))) {
       stream.backUp(1);
       state.tokenize = tokenParenthesized;
       return ret("property", "word");
@@ -19062,16 +19103,16 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
       return pushContext(state, stream, "block");
     } else if (type == "}" && state.context.prev) {
       return popContext(state);
-    } else if (supportsAtComponent && /@component/.test(type)) {
+    } else if (supportsAtComponent && /@component/i.test(type)) {
       return pushContext(state, stream, "atComponentBlock");
-    } else if (/^@(-moz-)?document$/.test(type)) {
+    } else if (/^@(-moz-)?document$/i.test(type)) {
       return pushContext(state, stream, "documentTypes");
-    } else if (/^@(media|supports|(-moz-)?document|import)$/.test(type)) {
+    } else if (/^@(media|supports|(-moz-)?document|import)$/i.test(type)) {
       return pushContext(state, stream, "atBlock");
-    } else if (/^@(font-face|counter-style)/.test(type)) {
+    } else if (/^@(font-face|counter-style)/i.test(type)) {
       state.stateArg = type;
       return "restricted_atBlock_before";
-    } else if (/^@(-(moz|ms|o|webkit)-)?keyframes$/.test(type)) {
+    } else if (/^@(-(moz|ms|o|webkit)-)?keyframes$/i.test(type)) {
       return "keyframes";
     } else if (type && type.charAt(0) == "@") {
       return pushContext(state, stream, "at");
@@ -19693,7 +19734,7 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
       },
       "@": function(stream) {
         if (stream.eat("{")) return [null, "interpolation"];
-        if (stream.match(/^(charset|document|font-face|import|(-(moz|ms|o|webkit)-)?keyframes|media|namespace|page|supports)\b/, false)) return false;
+        if (stream.match(/^(charset|document|font-face|import|(-(moz|ms|o|webkit)-)?keyframes|media|namespace|page|supports)\b/i, false)) return false;
         stream.eatWhile(/[\w\\\-]/);
         if (stream.match(/^\s*:/, false))
           return ["variable-2", "variable-definition"];
@@ -19766,7 +19807,7 @@ module.exports = Backbone.Model.extend({
 
 
 var Backbone = __webpack_require__(0);
-var Button = __webpack_require__(109);
+var Button = __webpack_require__(110);
 
 module.exports = Backbone.Collection.extend({
   model: Button,
@@ -19846,6 +19887,8 @@ module.exports = Backbone.Collection.extend({
 "use strict";
 
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var Backbone = __webpack_require__(0);
 var ButtonsView = __webpack_require__(30);
 
@@ -19906,7 +19949,7 @@ module.exports = Backbone.View.extend({
         cl = resz[3];
       }
 
-      var resizer = editor.Utils.Resizer.init({
+      var resizer = editor.Utils.Resizer.init(_extends({
         tc: tc,
         cr: cr,
         bc: bc,
@@ -19916,36 +19959,53 @@ module.exports = Backbone.View.extend({
         bl: 0,
         br: 0,
         appendTo: this.el,
+        silentFrames: 1,
+        avoidContainerUpdate: 1,
         prefix: editor.getConfig().stylePrefix,
-        posFetcher: function posFetcher(el) {
+        onEnd: function onEnd() {
+          em && em.trigger('change:canvasOffset');
+        },
+
+        posFetcher: function posFetcher(el, _ref) {
+          var target = _ref.target;
+
+          var style = el.style;
+          var config = resizer.getConfig();
+          var keyWidth = config.keyWidth;
+          var keyHeight = config.keyHeight;
           var rect = el.getBoundingClientRect();
+          var forContainer = target == 'container';
+          var styleWidth = style[keyWidth];
+          var styleHeight = style[keyHeight];
+          var width = styleWidth && !forContainer ? parseFloat(styleWidth) : rect.width;
+          var height = styleHeight && !forContainer ? parseFloat(styleHeight) : rect.height;
           return {
             left: 0,
             top: 0,
-            width: rect.width,
-            height: rect.height
+            width: width,
+            height: height
           };
         }
-      });
+      }, resizable));
       resizer.blur = function () {};
       resizer.focus(this.el);
     }
   },
   render: function render() {
-    var el = this.$el;
-    var pfx = this.ppfx;
-    el.attr('class', this.className + ' ' + pfx + 'one-bg');
-    this.id && el.attr('id', this.id);
+    var $el = this.$el;
+    var ppfx = this.ppfx;
+    var cls = this.className + ' ' + this.id + ' ' + ppfx + 'one-bg ' + ppfx + 'two-color';
+    $el.addClass(cls);
 
     if (this.buttons.length) {
       var buttons = new ButtonsView({
         collection: this.buttons,
         config: this.config
       });
-      el.append(buttons.render().el);
+      $el.append(buttons.render().el);
     }
 
-    el.append(this.model.get('content'));
+    $el.append(this.model.get('content'));
     return this;
   }
 });
@@ -19958,7 +20018,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */(function(_) {
 
 var Backbone = __webpack_require__(0);
-var ButtonView = __webpack_require__(111);
+var ButtonView = __webpack_require__(112);
 
 module.exports = Backbone.View.extend({
   initialize: function initialize(o) {
@@ -19967,7 +20027,7 @@ module.exports = Backbone.View.extend({
     this.pfx = this.config.stylePrefix || '';
     this.parentM = this.opt.parentM || null;
     this.listenTo(this.collection, 'add', this.addTo);
-    this.listenTo(this.collection, 'reset', this.render);
+    this.listenTo(this.collection, 'reset remove', this.render);
     this.className = this.pfx + 'buttons';
   },
 
@@ -20031,54 +20091,56 @@ module.exports = Backbone.View.extend({
 "use strict";
 
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /**
+                                                                                                                                                                                                                                                                   * With Style Manager you basically build categories (called sectors) of CSS properties which could
+                                                                                                                                                                                                                                                                   * be used to custom components and classes.
+                                                                                                                                                                                                                                                                   * You can init the editor with all sectors and properties via configuration
+                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                   * ```js
+                                                                                                                                                                                                                                                                   * var editor = grapesjs.init({
+                                                                                                                                                                                                                                                                   *   ...
+                                                                                                                                                                                                                                                                   *  styleManager: {...} // Check below for the possible properties
+                                                                                                                                                                                                                                                                   *   ...
+                                                                                                                                                                                                                                                                   * });
+                                                                                                                                                                                                                                                                   * ```
+                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                   * Before using methods you should get first the module from the editor instance, in this way:
+                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                   * ```js
+                                                                                                                                                                                                                                                                   * var styleManager = editor.StyleManager;
+                                                                                                                                                                                                                                                                   * ```
+                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                   * @module StyleManager
+                                                                                                                                                                                                                                                                   * @param {Object} config Configurations
+                                                                                                                                                                                                                                                                   * @param {Array<Object>} [config.sectors=[]] Array of possible sectors
+                                                                                                                                                                                                                                                                   * @example
+                                                                                                                                                                                                                                                                   * ...
+                                                                                                                                                                                                                                                                   * styleManager: {
+                                                                                                                                                                                                                                                                   *    sectors: [{
+                                                                                                                                                                                                                                                                   *      id: 'dim',
+                                                                                                                                                                                                                                                                   *      name: 'Dimension',
+                                                                                                                                                                                                                                                                   *      properties: [{
+                                                                                                                                                                                                                                                                   *        name: 'Width',
+                                                                                                                                                                                                                                                                   *        property: 'width',
+                                                                                                                                                                                                                                                                   *        type: 'integer',
+                                                                                                                                                                                                                                                                   *        units: ['px', '%'],
+                                                                                                                                                                                                                                                                   *        defaults: 'auto',
+                                                                                                                                                                                                                                                                   *        min: 0,
+                                                                                                                                                                                                                                                                            }],
+                                                                                                                                                                                                                                                                   *     }],
+                                                                                                                                                                                                                                                                   * }
+                                                                                                                                                                                                                                                                   * ...
+                                                                                                                                                                                                                                                                   */
 
-/**
- * With Style Manager you basically build categories (called sectors) of CSS properties which could
- * be used to custom components and classes.
- * You can init the editor with all sectors and properties via configuration
- *
- * ```js
- * var editor = grapesjs.init({
- *   ...
- *  styleManager: {...} // Check below for the possible properties
- *   ...
- * });
- * ```
- *
- * Before using methods you should get first the module from the editor instance, in this way:
- *
- * ```js
- * var styleManager = editor.StyleManager;
- * ```
- *
- * @module StyleManager
- * @param {Object} config Configurations
- * @param {Array<Object>} [config.sectors=[]] Array of possible sectors
- * @example
- * ...
- * styleManager: {
- *    sectors: [{
- *      id: 'dim',
- *      name: 'Dimension',
- *      properties: [{
- *        name: 'Width',
- *        property: 'width',
- *        type: 'integer',
- *        units: ['px', '%'],
- *        defaults: 'auto',
- *        min: 0,
-          }],
- *     }],
- * }
- * ...
- */
+
+var _underscore = __webpack_require__(1);
+
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(116),
-      Sectors = __webpack_require__(117),
-      Properties = __webpack_require__(11),
-      SectorsView = __webpack_require__(128);
+      defaults = __webpack_require__(117),
+      Sectors = __webpack_require__(118),
+      Properties = __webpack_require__(12),
+      SectorsView = __webpack_require__(129);
   var properties = void 0;
   var sectors, SectView;
 
@@ -20121,6 +20183,14 @@ module.exports = function () {
         config: c
       });
       return this;
+    },
+    postRender: function postRender() {
+      var elTo = this.getConfig().appendTo;
+
+      if (elTo) {
+        var el = (0, _underscore.isElement)(elTo) ? elTo : document.querySelector(elTo);
+        el.appendChild(this.render());
+      }
     },
 
 
@@ -20582,7 +20652,7 @@ exports.default = {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var Property = __webpack_require__(12);
+var Property = __webpack_require__(13);
 
 module.exports = Property.extend({
   defaults: _extends({}, Property.prototype.defaults, {
@@ -20606,9 +20676,23 @@ module.exports = Property.extend({
 
   init: function init() {
     var properties = this.get('properties') || [];
-    var Properties = __webpack_require__(11);
+    var Properties = __webpack_require__(12);
     this.set('properties', new Properties(properties));
     this.listenTo(this, 'change:value', this.updateValues);
+  },
+
+
+  /**
+   * Clear the value
+   * @return {this}
+   */
+  clearValue: function clearValue() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    this.get('properties').each(function (property) {
+      return property.clearValue();
+    });
+    return Property.prototype.clearValue.apply(this, arguments);
   },
 
 
@@ -20616,7 +20700,7 @@ module.exports = Property.extend({
    * Update property values
    */
   updateValues: function updateValues() {
-    var values = this.get('value').split(this.get('separator'));
+    var values = this.getFullValue().split(this.get('separator'));
     this.get('properties').each(function (property, i) {
       var len = values.length;
       // Try to get value from a shorthand:
@@ -20665,7 +20749,7 @@ module.exports = Property.extend({
 
 
 var PropertyCompositeView = __webpack_require__(17);
-var LayersView = __webpack_require__(123);
+var LayersView = __webpack_require__(124);
 
 module.exports = PropertyCompositeView.extend({
   templateInput: function templateInput() {
@@ -20681,6 +20765,12 @@ module.exports = PropertyCompositeView.extend({
     this.listenTo(model, 'change:stackIndex', this.indexChanged);
     this.listenTo(model, 'updateValue', this.inputValueChanged);
     this.delegateEvents();
+  },
+  clear: function clear(e) {
+    e && e.stopPropagation();
+    this.model.get('layers').reset();
+    this.model.clearValue();
+    this.targetUpdated();
   },
 
 
@@ -20802,7 +20892,7 @@ module.exports = PropertyCompositeView.extend({
     var self = this;
     var model = this.model;
     var fieldEl = this.el.querySelector('[data-layers-wrapper]');
-    var PropertiesView = __webpack_require__(13);
+    var PropertiesView = __webpack_require__(14);
     var propsConfig = {
       target: this.target,
       propTarget: this.propTarget,
@@ -21050,7 +21140,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var InputColor = __webpack_require__(39);
 
-module.exports = __webpack_require__(14).extend({
+module.exports = __webpack_require__(15).extend({
   setValue: function setValue(value) {
     var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -21084,7 +21174,7 @@ module.exports = __webpack_require__(14).extend({
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-__webpack_require__(122);
+__webpack_require__(123);
 var Input = __webpack_require__(35);
 var $ = Backbone.$;
 
@@ -21343,7 +21433,7 @@ module.exports = PropertyView.extend({
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var Property = __webpack_require__(12);
+var Property = __webpack_require__(13);
 
 module.exports = Property.extend({
   defaults: _extends({}, Property.prototype.defaults, {
@@ -21361,7 +21451,9 @@ module.exports = Property.extend({
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var Property = __webpack_require__(12);
+var _underscore = __webpack_require__(1);
+
+var Property = __webpack_require__(13);
 var InputNumber = __webpack_require__(18);
 
 module.exports = Property.extend({
@@ -21391,6 +21483,12 @@ module.exports = Property.extend({
       this.set('unit', units[0]);
     }
   },
+  clearValue: function clearValue() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    this.set({ value: undefined, unit: undefined }, opts);
+    return this;
+  },
   parseValue: function parseValue(val) {
     var parsed = Property.prototype.parseValue.apply(this, arguments);
 
@@ -21405,7 +21503,11 @@ module.exports = Property.extend({
     return parsed;
   },
   getFullValue: function getFullValue() {
-    var value = this.get('value') + this.get('unit');
+    var value = this.get('value');
+    var unit = this.get('unit');
+    value = !(0, _underscore.isUndefined)(value) ? value : '';
+    unit = !(0, _underscore.isUndefined)(unit) && value ? unit : '';
+    value = '' + value + unit;
     return Property.prototype.getFullValue.apply(this, [value]);
   }
 });
@@ -21962,7 +22064,7 @@ var _Styleable2 = _interopRequireDefault(_Styleable);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Backbone = __webpack_require__(0);
-var Selectors = __webpack_require__(10);
+var Selectors = __webpack_require__(11);
 
 module.exports = Backbone.Model.extend(_Styleable2.default).extend({
   defaults: {
@@ -22207,7 +22309,12 @@ exports.default = {
     this.set('style', propNew, opts);
     var diff = (0, _mixins.shallowDiff)(propOrig, propNew);
     (0, _underscore.keys)(diff).forEach(function (pr) {
-      return _this.trigger('change:style:' + pr);
+      var em = _this.em;
+      _this.trigger('change:style:' + pr);
+      if (em) {
+        em.trigger('styleable:change');
+        em.trigger('styleable:change:' + pr);
+      }
     });
 
     return propNew;
@@ -22730,6 +22837,593 @@ module.exports = ComponentView.extend({
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _config = __webpack_require__(177);
+
+var _config2 = _interopRequireDefault(_config);
+
+var _ItemView = __webpack_require__(55);
+
+var _ItemView2 = _interopRequireDefault(_ItemView);
+
+var _ItemsView = __webpack_require__(56);
+
+var _ItemsView2 = _interopRequireDefault(_ItemsView);
+
+var _underscore = __webpack_require__(1);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = function () {
+  var em = void 0;
+  var layers = void 0;
+  var config = {};
+  var View = _ItemsView2.default;
+
+  return {
+    name: 'LayerManager',
+
+    init: function init() {
+      var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+      config = _extends({}, _config2.default, opts);
+      config.stylePrefix = opts.pStylePrefix;
+      em = config.em;
+
+      return this;
+    },
+    onLoad: function onLoad() {
+      var collection = em.get('DomComponents').getComponents();
+      var parent = collection.parent;
+      var options = {
+        level: 0,
+        config: config,
+        opened: config.opened || {}
+      };
+
+      // Show wrapper if requested
+      if (config.showWrapper && parent) {
+        View = _ItemView2.default;
+        options.model = parent;
+      } else {
+        options.collection = collection;
+      }
+
+      layers = new View(options);
+      em && em.on('component:selected', this.componentChanged);
+      this.componentChanged();
+    },
+    postRender: function postRender() {
+      var elTo = config.appendTo;
+
+      if (elTo) {
+        var el = (0, _underscore.isElement)(elTo) ? elTo : document.querySelector(elTo);
+        el.appendChild(this.render());
+      }
+    },
+
+
+    /**
+     * Return the view of layers
+     * @return {View}
+     */
+    getAll: function getAll() {
+      return layers;
+    },
+
+
+    /**
+     * Triggered when the selected component is changed
+     * @private
+     */
+    componentChanged: function componentChanged(e, md) {
+      var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+      if (opts.fromLayers) return;
+      var opened = em.get('opened');
+      var model = em.getSelected();
+      var parent = model && model.collection ? model.collection.parent : null;
+      for (var cid in opened) {
+        opened[cid].set('open', 0);
+      }while (parent) {
+        parent.set('open', 1);
+        opened[parent.cid] = parent;
+        parent = parent.collection ? parent.collection.parent : null;
+      }
+    },
+    render: function render() {
+      return layers.render().el;
+    }
+  };
+};
+
+/***/ }),
+/* 55 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _underscore = __webpack_require__(1);
+
+var ComponentView = __webpack_require__(3);
+var inputProp = 'contentEditable';
+var ItemsView = void 0;
+
+module.exports = __webpack_require__(0).View.extend({
+  events: {
+    'mousedown [data-toggle-move]': 'startSort',
+    'click [data-toggle-visible]': 'toggleVisibility',
+    'click [data-toggle-select]': 'handleSelect',
+    'click [data-toggle-open]': 'toggleOpening',
+    'dblclick [data-name]': 'handleEdit',
+    'focusout [data-name]': 'handleEditEnd'
+  },
+
+  template: function template(model) {
+    var pfx = this.pfx;
+    var ppfx = this.ppfx;
+    var hidable = this.config.hidable;
+    var count = this.countChildren(model);
+    var addClass = !count ? this.clsNoChild : '';
+    var clsTitle = this.clsTitle + ' ' + addClass;
+    var clsTitleC = this.clsTitleC + ' ' + ppfx + 'one-bg';
+    var clsCaret = this.clsCaret + ' fa fa-chevron-right';
+    var clsInput = this.inputNameCls + ' ' + ppfx + 'no-app';
+    var level = this.level + 1;
+    var gut = 30 + level * 10 + 'px';
+    var name = model.getName();
+    return '\n      ' + (hidable ? '<i class="' + pfx + 'layer-vis fa fa-eye ' + (this.isVisible() ? '' : 'fa-eye-slash') + '" data-toggle-visible></i>' : '') + '\n\n      <div class="' + clsTitleC + '">\n        <div class="' + clsTitle + '" style="padding-left: ' + gut + '" data-toggle-select>\n          <div class="' + pfx + 'layer-title-inn">\n            <i class="' + clsCaret + '" data-toggle-open></i>\n            ' + model.getIcon() + '\n            <span class="' + clsInput + '" data-name>' + name + '</span>\n          </div>\n        </div>\n      </div>\n      <div class="' + this.clsCount + '">' + (count || '') + '</div>\n      <div class="' + this.clsMove + '" data-toggle-move>\n        <i class="fa fa-arrows"></i>\n      </div>\n      <div class="' + this.clsChildren + '"></div>\n    ';
+  },
+  initialize: function initialize() {
+    var o = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    this.opt = o;
+    this.level = o.level;
+    this.config = o.config;
+    this.em = o.config.em;
+    this.ppfx = this.em.get('Config').stylePrefix;
+    this.sorter = o.sorter || '';
+    this.pfx = this.config.stylePrefix;
+    var pfx = this.pfx;
+    var ppfx = this.ppfx;
+    var model = this.model;
+    var components = model.get('components');
+    model.set('open', false);
+    this.listenTo(components, 'remove add change reset', this.checkChildren);
+    this.listenTo(model, 'destroy remove', this.remove);
+    this.listenTo(model, 'change:status', this.updateStatus);
+    this.listenTo(model, 'change:open', this.updateOpening);
+    this.listenTo(model, 'change:style:display', this.updateVisibility);
+    this.className = pfx + 'layer no-select ' + ppfx + 'two-color';
+    this.inputNameCls = ppfx + 'layer-name';
+    this.clsTitleC = pfx + 'layer-title-c';
+    this.clsTitle = pfx + 'layer-title';
+    this.clsCaret = pfx + 'layer-caret';
+    this.clsCount = pfx + 'layer-count';
+    this.clsMove = pfx + 'layer-move';
+    this.clsChildren = pfx + 'layer-children';
+    this.clsNoChild = pfx + 'layer-no-chld';
+    this.$el.data('model', model);
+    this.$el.data('collection', components);
+  },
+  getVisibilityEl: function getVisibilityEl() {
+    if (!this.eyeEl) {
+      this.eyeEl = this.$el.children('.' + this.pfx + 'layer-vis');
+    }
+
+    return this.eyeEl;
+  },
+  updateVisibility: function updateVisibility() {
+    var pfx = this.pfx;
+    var model = this.model;
+    var hClass = pfx + 'layer-hidden';
+    var hideIcon = 'fa-eye-slash';
+    var hidden = model.getStyle().display == 'none';
+    var method = hidden ? 'addClass' : 'removeClass';
+    this.$el[method](hClass);
+    this.getVisibilityEl()[method](hideIcon);
+  },
+
+
+  /**
+   * Toggle visibility
+   * @param	Event
+   *
+   * @return 	void
+   * */
+  toggleVisibility: function toggleVisibility(e) {
+    e && e.stopPropagation();
+    var model = this.model;
+    var style = model.getStyle();
+    var hidden = style.display == 'none';
+
+    if (hidden) {
+      delete style.display;
+    } else {
+      style.display = 'none';
+    }
+
+    model.setStyle(style);
+  },
+
+
+  /**
+   * Handle the edit of the component name
+   */
+  handleEdit: function handleEdit(e) {
+    e && e.stopPropagation();
+    var inputEl = this.getInputName();
+    inputEl[inputProp] = true;
+    inputEl.focus();
+  },
+
+
+  /**
+   * Handle with the end of editing of the component name
+   */
+  handleEditEnd: function handleEditEnd(e) {
+    e && e.stopPropagation();
+    var inputEl = this.getInputName();
+    var name = inputEl.textContent;
+    inputEl[inputProp] = false;
+    this.model.set({ name: name });
+  },
+
+
+  /**
+   * Get the input containing the name of the component
+   * @return {HTMLElement}
+   */
+  getInputName: function getInputName() {
+    if (!this.inputName) {
+      this.inputName = this.el.querySelector('.' + this.inputNameCls);
+    }
+    return this.inputName;
+  },
+
+
+  /**
+   * Update item opening
+   *
+   * @return void
+   * */
+  updateOpening: function updateOpening() {
+    var opened = this.opt.opened || {};
+    var model = this.model;
+    var chvDown = 'fa-chevron-down';
+
+    if (model.get('open')) {
+      this.$el.addClass('open');
+      this.getCaret().addClass(chvDown);
+      opened[model.cid] = model;
+    } else {
+      this.$el.removeClass('open');
+      this.getCaret().removeClass(chvDown);
+      delete opened[model.cid];
+    }
+  },
+
+
+  /**
+   * Toggle item opening
+   * @param {Object}	e
+   *
+   * @return void
+   * */
+  toggleOpening: function toggleOpening(e) {
+    e.stopPropagation();
+
+    if (!this.model.get('components').length) return;
+
+    this.model.set('open', !this.model.get('open'));
+  },
+
+
+  /**
+   * Handle component selection
+   */
+  handleSelect: function handleSelect(e) {
+    e.stopPropagation();
+    this.em && this.em.setSelected(this.model, { fromLayers: 1 });
+  },
+
+
+  /**
+   * Delegate to sorter
+   * @param	Event
+   * */
+  startSort: function startSort(e) {
+    e.stopPropagation();
+    var sorter = this.sorter;
+    // Right or middel click
+    if (e.button !== 0) return;
+    sorter && sorter.startSort(e.target);
+  },
+
+
+  /**
+   * Freeze item
+   * @return	void
+   * */
+  freeze: function freeze() {
+    this.$el.addClass(this.pfx + 'opac50');
+    this.model.set('open', 0);
+  },
+
+
+  /**
+   * Unfreeze item
+   * @return	void
+   * */
+  unfreeze: function unfreeze() {
+    this.$el.removeClass(this.pfx + 'opac50');
+  },
+
+
+  /**
+   * Update item on status change
+   * @param	Event
+   * */
+  updateStatus: function updateStatus(e) {
+    ComponentView.prototype.updateStatus.apply(this, arguments);
+  },
+
+
+  /**
+   * Check if component is visible
+   *
+   * @return bool
+   * */
+  isVisible: function isVisible() {
+    var css = this.model.get('style'),
+        pr = css.display;
+    if (pr && pr == 'none') return;
+    return 1;
+  },
+
+
+  /**
+   * Update item aspect after children changes
+   *
+   * @return void
+   * */
+  checkChildren: function checkChildren() {
+    var model = this.model;
+    var c = this.countChildren(model);
+    var pfx = this.pfx;
+    var noChildCls = this.clsNoChild;
+    var title = this.$el.children('.' + this.clsTitleC).children('.' + this.clsTitle);
+
+    if (!this.cnt) {
+      this.cnt = this.$el.children('.' + this.clsCount);
+    }
+
+    if (c) {
+      title.removeClass(noChildCls);
+      this.cnt.html(c);
+    } else {
+      title.addClass(noChildCls);
+      this.cnt.empty();
+      model.set('open', 0);
+    }
+  },
+
+
+  /**
+   * Count children inside model
+   * @param  {Object} model
+   * @return {number}
+   * @private
+   */
+  countChildren: function countChildren(model) {
+    var count = 0;
+    model.get('components').each(function (m) {
+      var isCountable = this.opt.isCountable;
+      var hide = this.config.hideTextnode;
+      if (isCountable && !isCountable(m, hide)) return;
+      count++;
+    }, this);
+    return count;
+  },
+  getCaret: function getCaret() {
+    if (!this.caret) {
+      var pfx = this.pfx;
+      this.caret = this.$el.children('.' + this.clsTitleC).find('.' + this.clsCaret);
+    }
+
+    return this.caret;
+  },
+  render: function render() {
+    var model = this.model;
+    var pfx = this.pfx;
+    var vis = this.isVisible();
+    var el = this.$el;
+    var level = this.level + 1;
+    el.html(this.template(model));
+
+    if ((0, _underscore.isUndefined)(ItemsView)) {
+      ItemsView = __webpack_require__(56);
+    }
+
+    var children = new ItemsView({
+      collection: model.get('components'),
+      config: this.config,
+      sorter: this.sorter,
+      opened: this.opt.opened,
+      parent: model,
+      level: level
+    }).render().$el;
+    el.find('.' + this.clsChildren).append(children);
+
+    if (!model.get('draggable') || !this.config.sortable) {
+      el.children('.' + this.clsMove).remove();
+    }
+
+    !vis && (this.className += ' ' + pfx + 'hide');
+    el.attr('class', this.className);
+    this.updateOpening();
+    this.updateStatus();
+    this.updateVisibility();
+    return this;
+  }
+});
+
+/***/ }),
+/* 56 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var ItemView = __webpack_require__(55);
+
+module.exports = __webpack_require__(0).View.extend({
+  initialize: function initialize() {
+    var o = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    this.opt = o;
+    var config = o.config || {};
+    this.level = o.level;
+    this.config = config;
+    this.preview = o.preview;
+    this.ppfx = config.pStylePrefix || '';
+    this.pfx = config.stylePrefix || '';
+    this.parent = o.parent;
+    var pfx = this.pfx;
+    var ppfx = this.ppfx;
+    var parent = this.parent;
+    var coll = this.collection;
+    this.listenTo(coll, 'add', this.addTo);
+    this.listenTo(coll, 'reset resetNavigator', this.render);
+    this.className = pfx + 'layers';
+    var em = config.em;
+
+    if (config.sortable && !this.opt.sorter) {
+      var utils = em.get('Utils');
+      this.opt.sorter = new utils.Sorter({
+        container: config.sortContainer || this.el,
+        containerSel: '.' + this.className,
+        itemSel: '.' + pfx + 'layer',
+        ignoreViewChildren: 1,
+        onEndMove: function onEndMove(created, sorter) {
+          var srcModel = sorter.getSourceModel();
+          em.setSelected(srcModel, { forceChange: 1 });
+        },
+
+        avoidSelectOnEnd: 1,
+        nested: 1,
+        ppfx: ppfx,
+        pfx: pfx
+      });
+    }
+
+    this.sorter = this.opt.sorter || '';
+
+    // For the sorter
+    this.$el.data('collection', coll);
+    parent && this.$el.data('model', parent);
+  },
+
+
+  /**
+   * Add to collection
+   * @param Object Model
+   *
+   * @return Object
+   * */
+  addTo: function addTo(model) {
+    var i = this.collection.indexOf(model);
+    this.addToCollection(model, null, i);
+  },
+
+
+  /**
+   * Add new object to collection
+   * @param  Object  Model
+   * @param  Object   Fragment collection
+   * @param  integer  Index of append
+   *
+   * @return Object Object created
+   * */
+  addToCollection: function addToCollection(model, fragmentEl, index) {
+    var level = this.level;
+    var fragment = fragmentEl || null;
+    var viewObject = ItemView;
+
+    if (!this.isCountable(model, this.config.hideTextnode)) {
+      return;
+    }
+
+    var view = new viewObject({
+      level: level,
+      model: model,
+      config: this.config,
+      sorter: this.sorter,
+      isCountable: this.isCountable,
+      opened: this.opt.opened
+    });
+    var rendered = view.render().el;
+
+    if (fragment) {
+      fragment.appendChild(rendered);
+    } else {
+      if (typeof index != 'undefined') {
+        var method = 'before';
+        // If the added model is the last of collection
+        // need to change the logic of append
+        if (this.$el.children().length == index) {
+          index--;
+          method = 'after';
+        }
+        // In case the added is new in the collection index will be -1
+        if (index < 0) {
+          this.$el.append(rendered);
+        } else this.$el.children().eq(index)[method](rendered);
+      } else this.$el.append(rendered);
+    }
+
+    return rendered;
+  },
+
+
+  /**
+   * Check if the model could be count by the navigator
+   * @param  {Object}  model
+   * @return {Boolean}
+   * @private
+   */
+  isCountable: function isCountable(model, hide) {
+    var type = model.get('type');
+    var tag = model.get('tagName');
+    if ((type == 'textnode' || tag == 'br') && hide || !model.get('layerable')) {
+      return false;
+    }
+    return true;
+  },
+  render: function render() {
+    var _this = this;
+
+    var frag = document.createDocumentFragment();
+    var el = this.el;
+    el.innerHTML = '';
+    this.collection.each(function (model) {
+      return _this.addToCollection(model, frag);
+    });
+    el.appendChild(frag);
+    el.className = this.className;
+    return this;
+  }
+});
+
+/***/ }),
+/* 57 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 /* WEBPACK VAR INJECTION */(function(Backbone) {
 
 var $ = Backbone.$;
@@ -22756,7 +23450,7 @@ module.exports = {
       em: this.editorModel,
       canvasRelative: 1
     });
-    this.sorter.startSort(trg);
+    trg && this.sorter.startSort(trg);
   },
 
 
@@ -22831,7 +23525,7 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 55 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22925,471 +23619,7 @@ module.exports = _.extend({}, CreateComponent, {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 56 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _underscore = __webpack_require__(1);
-
-var ComponentView = __webpack_require__(3);
-var ItemsView = void 0;
-
-module.exports = __webpack_require__(0).View.extend({
-  events: {
-    'mousedown [data-toggle-move]': 'startSort',
-    'click [data-toggle-visible]': 'toggleVisibility',
-    'click [data-toggle-select]': 'handleSelect',
-    'click [data-toggle-open]': 'toggleOpening',
-    'dblclick input': 'handleEdit',
-    'focusout input': 'handleEditEnd'
-  },
-
-  template: function template(model) {
-    var pfx = this.pfx;
-    var ppfx = this.ppfx;
-    var hidable = this.config.hidable;
-    var count = this.countChildren(model);
-    var addClass = !count ? pfx + 'no-chld' : '';
-    var level = this.level + 1;
-    return '\n      ' + (hidable ? '<i id="' + pfx + 'btn-eye" class="' + pfx + 'btn fa fa-eye ' + (this.isVisible() ? '' : 'fa-eye-slash') + '" data-toggle-visible></i>' : '') + '\n\n      <div class="' + pfx + 'title-c ' + ppfx + 'one-bg">\n        <div class="' + pfx + 'title ' + addClass + '" style="padding-left: ' + (30 + level * 10) + 'px" data-toggle-select>\n          <div class="' + pfx + 'title-inn">\n            <i id="' + pfx + 'caret" class="fa fa-chevron-right ' + this.caretCls + '" data-toggle-open></i>\n            ' + model.getIcon() + '\n            <input class="' + ppfx + 'no-app ' + this.inputNameCls + '" value="' + model.getName() + '" readonly>\n          </div>\n        </div>\n      </div>\n      <div id="' + pfx + 'counter">' + (count ? count : '') + '</div>\n      <div id="' + pfx + 'move" data-toggle-move>\n        <i class="fa fa-arrows"></i>\n      </div>\n      <div class="' + pfx + 'children"></div>\n    ';
-  },
-  initialize: function initialize() {
-    var o = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-    this.opt = o;
-    this.level = o.level;
-    this.config = o.config;
-    this.em = o.config.em;
-    this.ppfx = this.em.get('Config').stylePrefix;
-    this.sorter = o.sorter || '';
-    this.pfx = this.config.stylePrefix;
-    var pfx = this.pfx;
-    var ppfx = this.ppfx;
-    var model = this.model;
-    var components = model.get('components');
-    model.set('open', false);
-    this.listenTo(components, 'remove add change reset', this.checkChildren);
-    this.listenTo(model, 'destroy remove', this.remove);
-    this.listenTo(model, 'change:status', this.updateStatus);
-    this.listenTo(model, 'change:open', this.updateOpening);
-    this.listenTo(model, 'change:style:display', this.updateVisibility);
-    this.className = pfx + 'item no-select';
-    this.editBtnCls = pfx + 'nav-item-edit';
-    this.inputNameCls = ppfx + 'nav-comp-name';
-    this.caretCls = ppfx + 'nav-item-caret';
-    this.titleCls = pfx + 'title';
-    this.$el.data('model', model);
-    this.$el.data('collection', components);
-  },
-  getVisibilityEl: function getVisibilityEl() {
-    if (!this.eyeEl) {
-      this.eyeEl = this.$el.children('#' + this.pfx + 'btn-eye');
-    }
-
-    return this.eyeEl;
-  },
-  updateVisibility: function updateVisibility() {
-    var pfx = this.pfx;
-    var model = this.model;
-    var hClass = pfx + 'hide';
-    var hideIcon = 'fa-eye-slash';
-    var hidden = model.getStyle().display == 'none';
-    var method = hidden ? 'addClass' : 'removeClass';
-    this.$el[method](hClass);
-    this.getVisibilityEl()[method](hideIcon);
-  },
-
-
-  /**
-   * Toggle visibility
-   * @param	Event
-   *
-   * @return 	void
-   * */
-  toggleVisibility: function toggleVisibility(e) {
-    e && e.stopPropagation();
-    var model = this.model;
-    var style = model.getStyle();
-    var hidden = style.display == 'none';
-
-    if (hidden) {
-      delete style.display;
-    } else {
-      style.display = 'none';
-    }
-
-    model.setStyle(style);
-  },
-
-
-  /**
-   * Handle the edit of the component name
-   */
-  handleEdit: function handleEdit(e) {
-    e.stopPropagation();
-    var inputName = this.getInputName();
-    inputName.readOnly = false;
-    inputName.focus();
-  },
-
-
-  /**
-   * Handle with the end of editing of the component name
-   */
-  handleEditEnd: function handleEditEnd(e) {
-    e.stopPropagation();
-    var inputName = this.getInputName();
-    inputName.readOnly = true;
-    this.model.set('custom-name', inputName.value);
-  },
-
-
-  /**
-   * Get the input containing the name of the component
-   * @return {HTMLElement}
-   */
-  getInputName: function getInputName() {
-    if (!this.inputName) {
-      this.inputName = this.el.querySelector('.' + this.inputNameCls);
-    }
-    return this.inputName;
-  },
-
-
-  /**
-   * Update item opening
-   *
-   * @return void
-   * */
-  updateOpening: function updateOpening() {
-    var opened = this.opt.opened || {};
-    var model = this.model;
-    var chvDown = 'fa-chevron-down';
-
-    if (model.get('open')) {
-      this.$el.addClass('open');
-      this.getCaret().addClass(chvDown);
-      opened[model.cid] = model;
-    } else {
-      this.$el.removeClass('open');
-      this.getCaret().removeClass(chvDown);
-      delete opened[model.cid];
-    }
-  },
-
-
-  /**
-   * Toggle item opening
-   * @param {Object}	e
-   *
-   * @return void
-   * */
-  toggleOpening: function toggleOpening(e) {
-    e.stopPropagation();
-
-    if (!this.model.get('components').length) return;
-
-    this.model.set('open', !this.model.get('open'));
-  },
-
-
-  /**
-   * Handle component selection
-   */
-  handleSelect: function handleSelect(e) {
-    e.stopPropagation();
-    this.em && this.em.setSelected(this.model, { fromLayers: 1 });
-  },
-
-
-  /**
-   * Delegate to sorter
-   * @param	Event
-   * */
-  startSort: function startSort(e) {
-    e.stopPropagation();
-
-    //Right or middel click
-    if (e.button !== 0) {
-      return;
-    }
-
-    this.sorter && this.sorter.startSort(e.target);
-  },
-
-
-  /**
-   * Freeze item
-   * @return	void
-   * */
-  freeze: function freeze() {
-    this.$el.addClass(this.pfx + 'opac50');
-    this.model.set('open', 0);
-  },
-
-
-  /**
-   * Unfreeze item
-   * @return	void
-   * */
-  unfreeze: function unfreeze() {
-    this.$el.removeClass(this.pfx + 'opac50');
-  },
-
-
-  /**
-   * Update item on status change
-   * @param	Event
-   * */
-  updateStatus: function updateStatus(e) {
-    ComponentView.prototype.updateStatus.apply(this, arguments);
-  },
-
-
-  /**
-   * Check if component is visible
-   *
-   * @return bool
-   * */
-  isVisible: function isVisible() {
-    var css = this.model.get('style'),
-        pr = css.display;
-    if (pr && pr == 'none') return;
-    return 1;
-  },
-
-
-  /**
-   * Update item aspect after children changes
-   *
-   * @return void
-   * */
-  checkChildren: function checkChildren() {
-    var model = this.model;
-    var c = this.countChildren(model);
-    var pfx = this.pfx;
-    var noChildCls = pfx + 'no-chld';
-    var title = this.$el.children('.' + pfx + 'title-c').children('.' + pfx + 'title');
-    //tC = `> .${pfx}title-c > .${pfx}title`;
-    if (!this.$counter) {
-      this.$counter = this.$el.children('#' + pfx + 'counter');
-    }
-
-    if (c) {
-      title.removeClass(noChildCls);
-      this.$counter.html(c);
-    } else {
-      title.addClass(noChildCls);
-      this.$counter.empty();
-      model.set('open', 0);
-    }
-  },
-
-
-  /**
-   * Count children inside model
-   * @param  {Object} model
-   * @return {number}
-   * @private
-   */
-  countChildren: function countChildren(model) {
-    var count = 0;
-    model.get('components').each(function (m) {
-      var isCountable = this.opt.isCountable;
-      var hide = this.config.hideTextnode;
-      if (isCountable && !isCountable(m, hide)) return;
-      count++;
-    }, this);
-    return count;
-  },
-  getCaret: function getCaret() {
-    if (!this.caret) {
-      var pfx = this.pfx;
-      this.caret = this.$el.children('.' + pfx + 'title-c').find('#' + pfx + 'caret');
-    }
-
-    return this.caret;
-  },
-  render: function render() {
-    var model = this.model;
-    var pfx = this.pfx;
-    var vis = this.isVisible();
-    var el = this.$el;
-    var level = this.level + 1;
-    el.html(this.template(model));
-
-    if ((0, _underscore.isUndefined)(ItemsView)) {
-      ItemsView = __webpack_require__(57);
-    }
-
-    var children = new ItemsView({
-      collection: model.get('components'),
-      config: this.config,
-      sorter: this.sorter,
-      opened: this.opt.opened,
-      parent: model,
-      level: level
-    }).render().$el;
-    el.find('.' + pfx + 'children').append(children);
-
-    if (!model.get('draggable') || !this.config.sortable) {
-      el.children('#' + pfx + 'move').remove();
-    }
-
-    !vis && (this.className += ' ' + pfx + 'hide');
-    el.attr('class', this.className);
-    this.updateOpening();
-    this.updateStatus();
-    this.updateVisibility();
-    return this;
-  }
-});
-
-/***/ }),
-/* 57 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var Backbone = __webpack_require__(0);
-var ItemView = __webpack_require__(56);
-
-module.exports = Backbone.View.extend({
-  initialize: function initialize() {
-    var o = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-    this.opt = o;
-    var config = o.config || {};
-    this.level = o.level;
-    this.config = config;
-    this.preview = o.preview;
-    this.ppfx = config.pStylePrefix || '';
-    this.pfx = config.stylePrefix || '';
-    this.parent = o.parent;
-    this.listenTo(this.collection, 'add', this.addTo);
-    this.listenTo(this.collection, 'reset resetNavigator', this.render);
-    this.className = this.pfx + 'items';
-
-    if (config.sortable && !this.opt.sorter) {
-      var pfx = this.pfx;
-      var utils = config.em.get('Utils');
-      this.opt.sorter = new utils.Sorter({
-        container: config.sortContainer || this.el,
-        containerSel: '.' + pfx + 'items',
-        itemSel: '.' + pfx + 'item',
-        ppfx: this.ppfx,
-        ignoreViewChildren: 1,
-        avoidSelectOnEnd: 1,
-        pfx: pfx,
-        nested: 1
-      });
-    }
-
-    this.sorter = this.opt.sorter || '';
-
-    // For the sorter
-    this.$el.data('collection', this.collection);
-
-    if (this.parent) {
-      this.$el.data('model', this.parent);
-    }
-  },
-
-
-  /**
-   * Add to collection
-   * @param Object Model
-   *
-   * @return Object
-   * */
-  addTo: function addTo(model) {
-    var i = this.collection.indexOf(model);
-    this.addToCollection(model, null, i);
-  },
-
-
-  /**
-   * Add new object to collection
-   * @param  Object  Model
-   * @param  Object   Fragment collection
-   * @param  integer  Index of append
-   *
-   * @return Object Object created
-   * */
-  addToCollection: function addToCollection(model, fragmentEl, index) {
-    var level = this.level;
-    var fragment = fragmentEl || null;
-    var viewObject = ItemView;
-
-    if (!this.isCountable(model, this.config.hideTextnode)) {
-      return;
-    }
-
-    var view = new viewObject({
-      level: level,
-      model: model,
-      config: this.config,
-      sorter: this.sorter,
-      isCountable: this.isCountable,
-      opened: this.opt.opened
-    });
-    var rendered = view.render().el;
-
-    if (fragment) {
-      fragment.appendChild(rendered);
-    } else {
-      if (typeof index != 'undefined') {
-        var method = 'before';
-        // If the added model is the last of collection
-        // need to change the logic of append
-        if (this.$el.children().length == index) {
-          index--;
-          method = 'after';
-        }
-        // In case the added is new in the collection index will be -1
-        if (index < 0) {
-          this.$el.append(rendered);
-        } else this.$el.children().eq(index)[method](rendered);
-      } else this.$el.append(rendered);
-    }
-
-    return rendered;
-  },
-
-
-  /**
-   * Check if the model could be count by the navigator
-   * @param  {Object}  model
-   * @return {Boolean}
-   * @private
-   */
-  isCountable: function isCountable(model, hide) {
-    var type = model.get('type');
-    var tag = model.get('tagName');
-    if ((type == 'textnode' || tag == 'br') && hide || !model.get('layerable')) {
-      return false;
-    }
-    return true;
-  },
-  render: function render() {
-    var _this = this;
-
-    var frag = document.createDocumentFragment();
-    this.el.innerHTML = '';
-    this.collection.each(function (model) {
-      return _this.addToCollection(model, frag);
-    });
-    this.el.appendChild(frag);
-    this.$el.attr('class', this.className);
-    return this;
-  }
-});
-
-/***/ }),
-/* 58 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23407,7 +23637,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 59 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23419,17 +23649,19 @@ var _cashDom = __webpack_require__(9);
 
 var _cashDom2 = _interopRequireDefault(_cashDom);
 
-var _editor = __webpack_require__(60);
+var _editor = __webpack_require__(61);
 
 var _editor2 = _interopRequireDefault(_editor);
 
-var _plugin_manager = __webpack_require__(219);
+var _underscore = __webpack_require__(1);
 
-var _plugin_manager2 = _interopRequireDefault(_plugin_manager);
-
-var _polyfills = __webpack_require__(221);
+var _polyfills = __webpack_require__(219);
 
 var _polyfills2 = _interopRequireDefault(_polyfills);
+
+var _plugin_manager = __webpack_require__(220);
+
+var _plugin_manager2 = _interopRequireDefault(_plugin_manager);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -23457,7 +23689,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.13.8',
+    version: '0.14.5',
 
     /**
      * Initializes an editor based on passed options
@@ -23480,8 +23712,7 @@ module.exports = function () {
       var els = config.container;
       if (!els) throw new Error("'container' is required");
       config = _extends({}, defaultConfig, config);
-      var ilEl = els instanceof window.HTMLElement;
-      config.el = ilEl ? els : document.querySelector(els);
+      config.el = (0, _underscore.isElement)(els) ? els : document.querySelector(els);
       var editor = new _editor2.default(config).init();
 
       // Load plugins
@@ -23508,7 +23739,7 @@ module.exports = function () {
 }();
 
 /***/ }),
-/* 60 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23522,8 +23753,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 module.exports = function (config) {
   var c = config || {},
-      defaults = __webpack_require__(61),
-      EditorModel = __webpack_require__(62),
+      defaults = __webpack_require__(62),
+      EditorModel = __webpack_require__(63),
       EditorView = __webpack_require__(218);
 
   for (var name in defaults) {
@@ -23551,6 +23782,12 @@ module.exports = function (config) {
      * @private
      */
     DomComponents: em.get('DomComponents'),
+
+    /**
+     * @property {LayerManager}
+     * @private
+     */
+    LayerManager: em.get('LayerManager'),
 
     /**
      * @property {CssComposer}
@@ -24140,7 +24377,7 @@ module.exports = function (config) {
     */
 
 /***/ }),
-/* 61 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24329,8 +24566,11 @@ module.exports = {
     }]
   },
 
-  //Configurations for Block Manager
+  // Configurations for Block Manager
   blockManager: {},
+
+  // Configurations for Trait Manager
+  traitManager: {},
 
   // Texts
 
@@ -24338,7 +24578,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 62 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24348,7 +24588,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _underscore = __webpack_require__(1);
 
-var deps = [__webpack_require__(63), __webpack_require__(67), __webpack_require__(68), __webpack_require__(71), __webpack_require__(79), __webpack_require__(84), __webpack_require__(87), __webpack_require__(91), __webpack_require__(95), __webpack_require__(107), __webpack_require__(113), __webpack_require__(31), __webpack_require__(130), __webpack_require__(136), __webpack_require__(141), __webpack_require__(148), __webpack_require__(176), __webpack_require__(183), __webpack_require__(209)];
+var deps = [__webpack_require__(64), __webpack_require__(68), __webpack_require__(69), __webpack_require__(72), __webpack_require__(80), __webpack_require__(85), __webpack_require__(88), __webpack_require__(92), __webpack_require__(96), __webpack_require__(108), __webpack_require__(114), __webpack_require__(31), __webpack_require__(131), __webpack_require__(137), __webpack_require__(142), __webpack_require__(149), __webpack_require__(54), __webpack_require__(178), __webpack_require__(185), __webpack_require__(209)];
 
 var Backbone = __webpack_require__(0);
 var timedInterval = void 0;
@@ -24570,22 +24810,16 @@ module.exports = Backbone.Model.extend({
   /**
    * Select a component
    * @param  {Component|HTMLElement} el Component to select
-   * @param  {Object} opts Options, optional
+   * @param  {Object} [opts={}] Options, optional
    * @private
    */
   setSelected: function setSelected(el) {
     var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
     var model = el;
-
-    if (el instanceof window.HTMLElement) {
-      model = $(el).data('model');
-    }
-
-    if (model && !model.get('selectable')) {
-      return;
-    }
-
+    (0, _underscore.isElement)(el) && (model = $(el).data('model'));
+    if (model && !model.get('selectable')) return;
+    opts.forceChange && this.set('selectedComponent', '');
     this.set('selectedComponent', model, opts);
   },
 
@@ -24881,16 +25115,16 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 63 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = function () {
-  var Sorter = __webpack_require__(64);
-  var Resizer = __webpack_require__(65);
-  var Dragger = __webpack_require__(66);
+  var Sorter = __webpack_require__(65);
+  var Resizer = __webpack_require__(66);
+  var Dragger = __webpack_require__(67);
 
   return {
     /**
@@ -24915,7 +25149,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 64 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -25599,7 +25833,6 @@ module.exports = Backbone.View.extend({
     var width = rect.width;
     var height = rect.height;
 
-    //console.log(pos, {top, left});
     if (y < top + off || // near top edge
     y > top + height - off || // near bottom edge
     x < left + off || // near left edge
@@ -25642,8 +25875,6 @@ module.exports = Backbone.View.extend({
       height = el.offsetHeight;
       width = el.offsetWidth;
     }
-
-    //console.log('get dim', top, left, this.canvasRelative);
 
     return [top, left, height, width];
   },
@@ -25840,12 +26071,11 @@ module.exports = Backbone.View.extend({
     var clsReg = new RegExp('(?:^|\\s)' + this.freezeClass + '(?!\\S)', 'gi');
     var src = this.eV;
 
-    if (src) {
+    if (src && this.selectOnEnd) {
       var srcModel = this.getSourceModel();
       if (srcModel && srcModel.set) {
         srcModel.set('status', '');
         srcModel.set('status', 'selected');
-        //this.selectOnEnd && srcModel.set('status', 'selected');
       }
     }
 
@@ -25854,9 +26084,7 @@ module.exports = Backbone.View.extend({
     }
 
     if (this.plh) this.plh.style.display = 'none';
-
-    if (typeof this.onEndMove === 'function') this.onEndMove(created);
-
+    if ((0, _underscore.isFunction)(this.onEndMove)) this.onEndMove(created, this);
     var dragHelper = this.dragHelper;
 
     if (dragHelper) {
@@ -25896,7 +26124,8 @@ module.exports = Backbone.View.extend({
       var opts = { at: index, noIncrement: 1 };
 
       if (!dropContent) {
-        modelTemp = targetCollection.add({}, _extends({}, opts, { avoidStore: 1 }));
+        // Putting `avoidStore` here will make the UndoManager behave wrong
+        modelTemp = targetCollection.add({}, _extends({}, opts));
 
         if (model) {
           modelToDrop = model.collection.remove(model);
@@ -25910,7 +26139,7 @@ module.exports = Backbone.View.extend({
       created = targetCollection.add(modelToDrop, opts);
 
       if (!dropContent) {
-        targetCollection.remove(modelTemp, { avoidStore: 1 });
+        targetCollection.remove(modelTemp);
       } else {
         this.dropContent = null;
       }
@@ -25958,7 +26187,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-/* 65 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26008,6 +26237,13 @@ var defaultOpts = {
   // If true, will override unitHeight and unitWidth, on start, with units
   // from the current focused element (currently used only in SelectComponent)
   currentUnit: 1,
+
+  // With this option active the mousemove event won't be altered when
+  // the pointer comes over iframes
+  silentFrames: 0,
+
+  // If true the container of handlers won't be updated
+  avoidContainerUpdate: 0,
 
   // Handlers
   tl: 1, // Top left
@@ -26125,6 +26361,22 @@ var Resizer = function () {
     }
 
     /**
+     * Toggle iframes pointer event
+     * @param {Boolean} silent If true, iframes will be silented
+     */
+
+  }, {
+    key: 'toggleFrames',
+    value: function toggleFrames(silent) {
+      if (this.opts.silentFrames) {
+        var frames = document.querySelectorAll('iframe');
+        (0, _underscore.each)(frames, function (frame) {
+          return frame.style.pointerEvents = silent ? 'none' : '';
+        });
+      }
+    }
+
+    /**
      * Detects if the passed element is a resize handler
      * @param  {HTMLElement} el
      * @return {Boolean}
@@ -26166,14 +26418,17 @@ var Resizer = function () {
     /**
      * Return element position
      * @param  {HTMLElement} el
+     * @param  {Object} opts Custom options
      * @return {Object}
      */
 
   }, {
     key: 'getElementPos',
     value: function getElementPos(el) {
+      var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
       var posFetcher = this.posFetcher || '';
-      return posFetcher ? posFetcher(el) : getBoundingRect(el);
+      return posFetcher ? posFetcher(el, opts) : getBoundingRect(el);
     }
 
     /**
@@ -26191,15 +26446,19 @@ var Resizer = function () {
 
       // Show the handlers
       this.el = el;
+      var config = this.opts;
       var unit = 'px';
-      var rect = this.getElementPos(el);
+      var rect = this.getElementPos(el, { target: 'container' });
       var container = this.container;
       var contStyle = container.style;
-      contStyle.left = rect.left + unit;
-      contStyle.top = rect.top + unit;
-      contStyle.width = rect.width + unit;
-      contStyle.height = rect.height + unit;
-      container.style.display = 'block';
+
+      if (!config.avoidContainerUpdate) {
+        contStyle.left = rect.left + unit;
+        contStyle.top = rect.top + unit;
+        contStyle.width = rect.width + unit;
+        contStyle.height = rect.height + unit;
+        contStyle.display = 'block';
+      }
 
       (0, _mixins.on)(this.getDocumentEl(), 'mousedown', this.handleMouseDown);
     }
@@ -26228,16 +26487,14 @@ var Resizer = function () {
     key: 'start',
     value: function start(e) {
       //Right or middel click
-      if (e.button !== 0) {
-        return;
-      }
+      if (e.button !== 0) return;
       e.preventDefault();
       e.stopPropagation();
       var el = this.el;
       var resizer = this;
       var config = this.opts || {};
       var attrName = 'data-' + config.prefix + 'handler';
-      var rect = this.getElementPos(el);
+      var rect = this.getElementPos(el, { target: 'el' });
       this.handlerAttr = e.target.getAttribute(attrName);
       this.clickedHandler = e.target;
       this.startDim = {
@@ -26263,6 +26520,7 @@ var Resizer = function () {
       (0, _mixins.on)(doc, 'keydown', this.handleKeyDown);
       (0, _mixins.on)(doc, 'mouseup', this.stop);
       (0, _underscore.isFunction)(this.onStart) && this.onStart(e, { docs: doc, config: config, el: el, resizer: resizer });
+      this.toggleFrames(1);
       this.move(e);
     }
 
@@ -26318,6 +26576,7 @@ var Resizer = function () {
       (0, _mixins.off)(doc, 'keydown', this.handleKeyDown);
       (0, _mixins.off)(doc, 'mouseup', this.stop);
       this.updateRect(1);
+      this.toggleFrames();
       (0, _underscore.isFunction)(this.onEnd) && this.onEnd(e, { docs: doc, config: config });
     }
 
@@ -26336,7 +26595,9 @@ var Resizer = function () {
       var updateTarget = this.updateTarget;
       var selectedHandler = this.getSelectedHandler();
       var unitHeight = config.unitHeight,
-          unitWidth = config.unitWidth;
+          unitWidth = config.unitWidth,
+          keyWidth = config.keyWidth,
+          keyHeight = config.keyHeight;
 
       // Use custom updating strategy if requested
 
@@ -26349,16 +26610,18 @@ var Resizer = function () {
         });
       } else {
         var elStyle = el.style;
-        elStyle.width = rect.w + unitWidth;
-        elStyle.height = rect.h + unitHeight;
+        elStyle[keyWidth] = rect.w + unitWidth;
+        elStyle[keyHeight] = rect.h + unitHeight;
       }
 
       var unitRect = 'px';
-      var rectEl = this.getElementPos(el);
-      conStyle.left = rectEl.left + unitRect;
-      conStyle.top = rectEl.top + unitRect;
-      conStyle.width = rectEl.width + unitRect;
-      conStyle.height = rectEl.height + unitRect;
+      var rectEl = this.getElementPos(el, { target: 'container' });
+      if (!config.avoidContainerUpdate) {
+        conStyle.left = rectEl.left + unitRect;
+        conStyle.top = rectEl.top + unitRect;
+        conStyle.width = rectEl.width + unitRect;
+        conStyle.height = rectEl.height + unitRect;
+      }
     }
 
     /**
@@ -26498,7 +26761,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 66 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26844,7 +27107,7 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 67 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -27018,7 +27281,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 68 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -27035,7 +27298,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
                                                                                                                                                                                                                                                                    */
 
 
-var _backboneUndo = __webpack_require__(69);
+var _backboneUndo = __webpack_require__(70);
 
 var _backboneUndo2 = _interopRequireDefault(_backboneUndo);
 
@@ -27307,7 +27570,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 69 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -27324,7 +27587,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 (function (factory) {
 	if (true) {
 		// AMD support
-		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1), __webpack_require__(70)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1), __webpack_require__(71)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -28149,7 +28412,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
-/* 70 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Backbone.js 1.2.1
@@ -28168,11 +28431,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
   // Set up Backbone appropriately for the environment. Start with AMD.
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1), __webpack_require__(9), exports], __WEBPACK_AMD_DEFINE_RESULT__ = function(_, $, exports) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1), __webpack_require__(9), exports], __WEBPACK_AMD_DEFINE_RESULT__ = (function(_, $, exports) {
       // Export global even in AMD case in case this script is loaded with
       // others that may still expect a global Backbone.
       root.Backbone = factory(root, exports, _, $);
-    }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+    }).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
   // Next for Node.js or CommonJS. jQuery may not be needed as a module.
@@ -30027,10 +30290,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 }));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 71 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30045,9 +30308,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
  */
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(72),
-      LocalStorage = __webpack_require__(73),
-      RemoteStorage = __webpack_require__(74);
+      defaults = __webpack_require__(73),
+      LocalStorage = __webpack_require__(74),
+      RemoteStorage = __webpack_require__(75);
 
   var storages = {};
   var defaultStorages = {};
@@ -30241,16 +30504,20 @@ module.exports = function () {
 
       for (var i = 0, len = keys.length; i < len; i++) {
         keysF.push(c.id + keys[i]);
-      }st && st.load(keysF, function (res) {
-        // Restore keys name
-        var reg = new RegExp('^' + c.id + '');
-        for (var itemKey in res) {
-          var itemKeyR = itemKey.replace(reg, '');
-          result[itemKeyR] = res[itemKey];
-        }
+      }if (st) {
+        st.load(keysF, function (res) {
+          // Restore keys name
+          var reg = new RegExp('^' + c.id + '');
+          for (var itemKey in res) {
+            var itemKeyR = itemKey.replace(reg, '');
+            result[itemKeyR] = res[itemKey];
+          }
 
+          clb && clb(result);
+        });
+      } else {
         clb && clb(result);
-      });
+      }
     },
 
 
@@ -30278,7 +30545,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 72 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30345,7 +30612,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 73 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30414,7 +30681,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 74 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30578,7 +30845,7 @@ module.exports = __webpack_require__(0).Model.extend({
 });
 
 /***/ }),
-/* 75 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(setImmediate) {(function (root) {
@@ -30597,7 +30864,7 @@ module.exports = __webpack_require__(0).Model.extend({
   }
 
   function Promise(fn) {
-    if (typeof this !== 'object') throw new TypeError('Promises must be constructed via new');
+    if (!(this instanceof Promise)) throw new TypeError('Promises must be constructed via new');
     if (typeof fn !== 'function') throw new TypeError('not a function');
     this._state = 0;
     this._handled = false;
@@ -30721,9 +30988,9 @@ module.exports = __webpack_require__(0).Model.extend({
   };
 
   Promise.all = function (arr) {
-    var args = Array.prototype.slice.call(arr);
-
     return new Promise(function (resolve, reject) {
+      if (!arr || typeof arr.length === 'undefined') throw new TypeError('Promise.all accepts an array');
+      var args = Array.prototype.slice.call(arr);
       if (args.length === 0) return resolve([]);
       var remaining = args.length;
 
@@ -30815,13 +31082,13 @@ module.exports = __webpack_require__(0).Model.extend({
 
 })(this);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(76).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(77).setImmediate))
 
 /***/ }),
-/* 76 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var apply = Function.prototype.apply;
+/* WEBPACK VAR INJECTION */(function(global) {var apply = Function.prototype.apply;
 
 // DOM APIs, for completeness
 
@@ -30871,13 +31138,21 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(77);
-exports.setImmediate = setImmediate;
-exports.clearImmediate = clearImmediate;
+__webpack_require__(78);
+// On some exotic environments, it's not clear which object `setimmeidate` was
+// able to install onto.  Search each possibility in the same order as the
+// `setimmediate` library.
+exports.setImmediate = (typeof self !== "undefined" && self.setImmediate) ||
+                       (typeof global !== "undefined" && global.setImmediate) ||
+                       (this && this.setImmediate);
+exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
+                         (typeof global !== "undefined" && global.clearImmediate) ||
+                         (this && this.clearImmediate);
 
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 77 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -31067,10 +31342,10 @@ exports.clearImmediate = clearImmediate;
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16), __webpack_require__(78)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10), __webpack_require__(79)))
 
 /***/ }),
-/* 78 */
+/* 79 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -31260,7 +31535,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 79 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31277,9 +31552,9 @@ process.umask = function() { return 0; };
  */
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(80),
-      Devices = __webpack_require__(81),
-      DevicesView = __webpack_require__(83);
+      defaults = __webpack_require__(81),
+      Devices = __webpack_require__(82),
+      DevicesView = __webpack_require__(84);
   var devices, view;
 
   return {
@@ -31380,7 +31655,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 80 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31393,21 +31668,21 @@ module.exports = {
 };
 
 /***/ }),
-/* 81 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var Device = __webpack_require__(82);
+var Device = __webpack_require__(83);
 
 module.exports = Backbone.Collection.extend({
   model: Device
 });
 
 /***/ }),
-/* 82 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31440,7 +31715,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 83 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31530,7 +31805,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 84 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31538,8 +31813,8 @@ module.exports = Backbone.View.extend({
 
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(85),
-      parserCss = __webpack_require__(86),
+      defaults = __webpack_require__(86),
+      parserCss = __webpack_require__(87),
       parserHtml = __webpack_require__(25);
   var pHtml, pCss;
 
@@ -31595,7 +31870,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 85 */
+/* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31606,7 +31881,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 86 */
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31812,7 +32087,7 @@ module.exports = function (config) {
 };
 
 /***/ }),
-/* 87 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31873,10 +32148,10 @@ var _underscore = __webpack_require__(1);
 
 module.exports = function (config) {
   var c = config || {},
-      defaults = __webpack_require__(88),
+      defaults = __webpack_require__(89),
       Selector = __webpack_require__(7),
-      Selectors = __webpack_require__(10),
-      ClassTagsView = __webpack_require__(89);
+      Selectors = __webpack_require__(11),
+      ClassTagsView = __webpack_require__(90);
   var selectors, selectorTags;
 
   return {
@@ -31890,6 +32165,11 @@ module.exports = function (config) {
      * @private
      */
     name: 'SelectorManager',
+
+    getConfig: function getConfig() {
+      return c;
+    },
+
 
     /**
      * Initialize module. Automatically called with a new instance of the editor
@@ -31923,6 +32203,14 @@ module.exports = function (config) {
       });
 
       return this;
+    },
+    postRender: function postRender() {
+      var elTo = this.getConfig().appendTo;
+
+      if (elTo) {
+        var el = (0, _underscore.isElement)(elTo) ? elTo : document.querySelector(elTo);
+        el.appendChild(this.render([]));
+      }
     },
 
 
@@ -32032,7 +32320,7 @@ module.exports = function (config) {
 };
 
 /***/ }),
-/* 88 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32041,6 +32329,10 @@ module.exports = function (config) {
 module.exports = {
   // Style prefix
   stylePrefix: 'clm-',
+
+  // Specify the element to use as a container, string (query) or HTMLElement
+  // With the empty value, nothing will be rendered
+  appendTo: '',
 
   // Default selectors
   selectors: [],
@@ -32058,14 +32350,14 @@ module.exports = {
 };
 
 /***/ }),
-/* 89 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(_) {
 
 var Backbone = __webpack_require__(0);
-var ClassTagView = __webpack_require__(90);
+var ClassTagView = __webpack_require__(91);
 
 module.exports = Backbone.View.extend({
   template: _.template('\n  <div id="<%= pfx %>up">\n    <div id="<%= pfx %>label"><%= label %></div>\n    <div id="<%= pfx %>status-c">\n      <span id="<%= pfx %>input-c">\n        <div class="<%= ppfx %>field <%= ppfx %>select">\n          <span id="<%= ppfx %>input-holder">\n            <select id="<%= pfx %>states">\n              <option value=""><%= statesLabel %></option>\n            </select>\n          </span>\n          <div class="<%= ppfx %>sel-arrow">\n            <div class="<%= ppfx %>d-s-arrow"></div>\n          </div>\n        </div>\n      </span>\n    </div>\n  </div>\n  <div id="<%= pfx %>tags-field" class="<%= ppfx %>field">\n    <div id="<%= pfx %>tags-c"></div>\n    <input id="<%= pfx %>new" />\n    <span id="<%= pfx %>add-tag" class="fa fa-plus"></span>\n  </div>\n  <div id="<%= pfx %>sel-help">\n    <div id="<%= pfx %>label"><%= selectedLabel %></div>\n    <div id="<%= pfx %>sel"></div>\n    <div style="clear:both"></div>\n  </div>'),
@@ -32342,29 +32634,31 @@ module.exports = Backbone.View.extend({
     return this.$statesC;
   },
   render: function render() {
+    var ppfx = this.ppfx;
     var config = this.config;
-    this.$el.html(this.template({
+    var $el = this.$el;
+    $el.html(this.template({
       selectedLabel: config.selectedLabel,
       statesLabel: config.statesLabel,
       label: config.label,
       pfx: this.pfx,
       ppfx: this.ppfx
     }));
-    this.$input = this.$el.find('input#' + this.newInputId);
-    this.$addBtn = this.$el.find('#' + this.addBtnId);
-    this.$classes = this.$el.find('#' + this.pfx + 'tags-c');
-    this.$states = this.$el.find('#' + this.stateInputId);
-    this.$statesC = this.$el.find('#' + this.stateInputC);
+    this.$input = $el.find('input#' + this.newInputId);
+    this.$addBtn = $el.find('#' + this.addBtnId);
+    this.$classes = $el.find('#' + this.pfx + 'tags-c');
+    this.$states = $el.find('#' + this.stateInputId);
+    this.$statesC = $el.find('#' + this.stateInputC);
     this.$states.append(this.getStateOptions());
     this.renderClasses();
-    this.$el.attr('class', this.className);
+    $el.attr('class', this.className + ' ' + ppfx + 'one-bg ' + ppfx + 'two-color');
     return this;
   }
 });
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 90 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32506,7 +32800,7 @@ module.exports = __webpack_require__(0).View.extend({
 });
 
 /***/ }),
-/* 91 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32530,9 +32824,9 @@ module.exports = __webpack_require__(0).View.extend({
  */
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(92),
-      ModalM = __webpack_require__(93),
-      ModalView = __webpack_require__(94);
+      defaults = __webpack_require__(93),
+      ModalM = __webpack_require__(94),
+      ModalView = __webpack_require__(95);
   var model, modal;
 
   return {
@@ -32565,9 +32859,9 @@ module.exports = function () {
 
       return this;
     },
-    postRender: function postRender(editorView) {
-      // c.em.config.el || 'body'
-      this.render().appendTo(editorView.el);
+    postRender: function postRender(view) {
+      var el = view.model.getConfig().el || view.el;
+      this.render().appendTo(el);
     },
 
 
@@ -32677,7 +32971,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 92 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32694,7 +32988,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 93 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32711,7 +33005,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 94 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32724,7 +33018,7 @@ module.exports = __webpack_require__(0).View.extend({
         content = _ref.content,
         title = _ref.title;
 
-    return '<div class="' + pfx + 'dialog ' + ppfx + 'one-bg">\n      <div class="' + pfx + 'header">\n        <div class="' + pfx + 'title">' + title + '</div>\n        <div class="' + pfx + 'btn-close">&Cross;</div>\n      </div>\n      <div class="' + pfx + 'content">\n        <div id="' + pfx + 'c">' + content + '</div>\n        <div style="clear:both"></div>\n      </div>\n    </div>\n    <div class="' + pfx + 'backlayer"></div>\n    <div class="' + pfx + 'collector" style="display: none"></div>';
+    return '<div class="' + pfx + 'dialog ' + ppfx + 'one-bg ' + ppfx + 'two-color">\n      <div class="' + pfx + 'header">\n        <div class="' + pfx + 'title">' + title + '</div>\n        <div class="' + pfx + 'btn-close">&Cross;</div>\n      </div>\n      <div class="' + pfx + 'content">\n        <div id="' + pfx + 'c">' + content + '</div>\n        <div style="clear:both"></div>\n      </div>\n    </div>\n    <div class="' + pfx + 'backlayer"></div>\n    <div class="' + pfx + 'collector" style="display: none"></div>';
   },
 
 
@@ -32849,7 +33143,7 @@ module.exports = __webpack_require__(0).View.extend({
 });
 
 /***/ }),
-/* 95 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32876,13 +33170,13 @@ module.exports = __webpack_require__(0).View.extend({
  */
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(96),
-      gHtml = __webpack_require__(97),
-      gCss = __webpack_require__(98),
-      gJson = __webpack_require__(99),
-      gJs = __webpack_require__(100),
-      eCM = __webpack_require__(101),
-      editorView = __webpack_require__(106);
+      defaults = __webpack_require__(97),
+      gHtml = __webpack_require__(98),
+      gCss = __webpack_require__(99),
+      gJson = __webpack_require__(100),
+      gJs = __webpack_require__(101),
+      eCM = __webpack_require__(102),
+      editorView = __webpack_require__(107);
 
   var generators = {},
       defGenerators = {},
@@ -33078,7 +33372,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 96 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33092,7 +33386,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 97 */
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33122,7 +33416,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 98 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33260,7 +33554,7 @@ module.exports = __webpack_require__(0).Model.extend({
 });
 
 /***/ }),
-/* 99 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33304,7 +33598,7 @@ module.exports = Backbone.Model.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 100 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33365,7 +33659,7 @@ module.exports = Backbone.Model.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 101 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33375,9 +33669,9 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var Backbone = __webpack_require__(0);
 var CodeMirror = __webpack_require__(6);
-var htmlMode = __webpack_require__(102);
+var htmlMode = __webpack_require__(103);
 var cssMode = __webpack_require__(26);
-var formatting = __webpack_require__(105);
+var formatting = __webpack_require__(106);
 
 module.exports = Backbone.Model.extend({
   defaults: {
@@ -33414,7 +33708,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 102 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -33422,7 +33716,7 @@ module.exports = Backbone.Model.extend({
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(6), __webpack_require__(103), __webpack_require__(104), __webpack_require__(26));
+    mod(__webpack_require__(6), __webpack_require__(104), __webpack_require__(105), __webpack_require__(26));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror", "../xml/xml", "../javascript/javascript", "../css/css"], mod);
   else // Plain browser env
@@ -33572,7 +33866,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 103 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -33629,6 +33923,7 @@ var xmlConfig = {
   doNotIndent: {},
   allowUnquoted: false,
   allowMissing: false,
+  allowMissingTagName: false,
   caseFold: false
 }
 
@@ -33803,6 +34098,9 @@ CodeMirror.defineMode("xml", function(editorConf, config_) {
       state.tagName = stream.current();
       setStyle = "tag";
       return attrState;
+    } else if (config.allowMissingTagName && type == "endTag") {
+      setStyle = "tag bracket";
+      return attrState(type, stream, state);
     } else {
       setStyle = "error";
       return tagNameState;
@@ -33821,6 +34119,9 @@ CodeMirror.defineMode("xml", function(editorConf, config_) {
         setStyle = "tag error";
         return closeStateErr;
       }
+    } else if (config.allowMissingTagName && type == "endTag") {
+      setStyle = "tag bracket";
+      return closeState(type, stream, state);
     } else {
       setStyle = "error";
       return closeStateErr;
@@ -33972,7 +34273,7 @@ if (!CodeMirror.mimeModes.hasOwnProperty("text/html"))
 
 
 /***/ }),
-/* 104 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -34003,7 +34304,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
     var A = kw("keyword a"), B = kw("keyword b"), C = kw("keyword c"), D = kw("keyword d");
     var operator = kw("operator"), atom = {type: "atom", style: "atom"};
 
-    var jsKeywords = {
+    return {
       "if": kw("if"), "while": A, "with": A, "else": B, "do": B, "try": B, "finally": B,
       "return": D, "break": D, "continue": D, "new": kw("new"), "delete": C, "void": C, "throw": C,
       "debugger": kw("debugger"), "var": kw("var"), "const": kw("var"), "let": kw("var"),
@@ -34015,35 +34316,6 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
       "yield": C, "export": kw("export"), "import": kw("import"), "extends": C,
       "await": C
     };
-
-    // Extend the 'normal' keywords with the TypeScript language extensions
-    if (isTS) {
-      var type = {type: "variable", style: "type"};
-      var tsKeywords = {
-        // object-like things
-        "interface": kw("class"),
-        "implements": C,
-        "namespace": C,
-        "module": kw("module"),
-        "enum": kw("module"),
-
-        // scope modifiers
-        "public": kw("modifier"),
-        "private": kw("modifier"),
-        "protected": kw("modifier"),
-        "abstract": kw("modifier"),
-        "readonly": kw("modifier"),
-
-        // types
-        "string": type, "number": type, "boolean": type, "any": type
-      };
-
-      for (var attr in tsKeywords) {
-        jsKeywords[attr] = tsKeywords[attr];
-      }
-    }
-
-    return jsKeywords;
   }();
 
   var isOperatorChar = /[+\-*&%=<>!?|~^@]/;
@@ -34132,7 +34404,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
           var kw = keywords[word]
           return ret(kw.type, kw.style, word)
         }
-        if (word == "async" && stream.match(/^\s*[\(\w]/, false))
+        if (word == "async" && stream.match(/^(\s|\/\*.*?\*\/)*[\(\w]/, false))
           return ret("async", "keyword", word)
       }
       return ret("variable", "variable", word)
@@ -34289,6 +34561,10 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
     }
   }
 
+  function isModifier(name) {
+    return name == "public" || name == "private" || name == "protected" || name == "abstract" || name == "readonly"
+  }
+
   // Combinators
 
   var defaultVars = {name: "this", next: {name: "arguments"}};
@@ -34345,13 +34621,19 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
     }
     if (type == "function") return cont(functiondef);
     if (type == "for") return cont(pushlex("form"), forspec, statement, poplex);
+    if (type == "class" || (isTS && value == "interface")) { cx.marked = "keyword"; return cont(pushlex("form"), className, poplex); }
     if (type == "variable") {
-      if (isTS && value == "type") {
-        cx.marked = "keyword"
-        return cont(typeexpr, expect("operator"), typeexpr, expect(";"));
-      } if (isTS && value == "declare") {
+      if (isTS && value == "declare") {
         cx.marked = "keyword"
         return cont(statement)
+      } else if (isTS && (value == "module" || value == "enum" || value == "type") && cx.stream.match(/^\s*\w/, false)) {
+        cx.marked = "keyword"
+        if (value == "enum") return cont(enumdef);
+        else if (value == "type") return cont(typeexpr, expect("operator"), typeexpr, expect(";"));
+        else return cont(pushlex("form"), pattern, expect("{"), pushlex("}"), block, poplex, poplex)
+      } else if (isTS && value == "namespace") {
+        cx.marked = "keyword"
+        return cont(pushlex("form"), expression, block, poplex)
       } else {
         return cont(pushlex("stat"), maybelabel);
       }
@@ -34362,25 +34644,23 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
     if (type == "default") return cont(expect(":"));
     if (type == "catch") return cont(pushlex("form"), pushcontext, expect("("), funarg, expect(")"),
                                      statement, poplex, popcontext);
-    if (type == "class") return cont(pushlex("form"), className, poplex);
     if (type == "export") return cont(pushlex("stat"), afterExport, poplex);
     if (type == "import") return cont(pushlex("stat"), afterImport, poplex);
-    if (type == "module") return cont(pushlex("form"), pattern, expect("{"), pushlex("}"), block, poplex, poplex)
     if (type == "async") return cont(statement)
     if (value == "@") return cont(expression, statement)
     return pass(pushlex("stat"), expression, expect(";"), poplex);
   }
-  function expression(type) {
-    return expressionInner(type, false);
+  function expression(type, value) {
+    return expressionInner(type, value, false);
   }
-  function expressionNoComma(type) {
-    return expressionInner(type, true);
+  function expressionNoComma(type, value) {
+    return expressionInner(type, value, true);
   }
   function parenExpr(type) {
     if (type != "(") return pass()
     return cont(pushlex(")"), expression, expect(")"), poplex)
   }
-  function expressionInner(type, noComma) {
+  function expressionInner(type, value, noComma) {
     if (cx.state.fatArrowAt == cx.stream.start) {
       var body = noComma ? arrowBodyNoComma : arrowBody;
       if (type == "(") return cont(pushcontext, pushlex(")"), commasep(funarg, ")"), poplex, expect("=>"), body, popcontext);
@@ -34390,7 +34670,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
     var maybeop = noComma ? maybeoperatorNoComma : maybeoperatorComma;
     if (atomicTypes.hasOwnProperty(type)) return cont(maybeop);
     if (type == "function") return cont(functiondef, maybeop);
-    if (type == "class") return cont(pushlex("form"), classExpression, poplex);
+    if (type == "class" || (isTS && value == "interface")) { cx.marked = "keyword"; return cont(pushlex("form"), classExpression, poplex); }
     if (type == "keyword c" || type == "async") return cont(noComma ? expressionNoComma : expression);
     if (type == "(") return cont(pushlex(")"), maybeexpression, expect(")"), poplex, maybeop);
     if (type == "operator" || type == "spread") return cont(noComma ? expressionNoComma : expression);
@@ -34415,6 +34695,8 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
     if (type == "=>") return cont(pushcontext, noComma ? arrowBodyNoComma : arrowBody, popcontext);
     if (type == "operator") {
       if (/\+\+|--/.test(value) || isTS && value == "!") return cont(me);
+      if (isTS && value == "<" && cx.stream.match(/^([^>]|<.*?>)*>\s*\(/, false))
+        return cont(pushlex(">"), commasep(typeexpr, ">"), poplex, me);
       if (value == "?") return cont(expression, expect(":"), expr);
       return cont(expr);
     }
@@ -34486,10 +34768,11 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
       return cont(afterprop);
     } else if (type == "jsonld-keyword") {
       return cont(afterprop);
-    } else if (type == "modifier") {
+    } else if (isTS && isModifier(value)) {
+      cx.marked = "keyword"
       return cont(objprop)
     } else if (type == "[") {
-      return cont(expression, expect("]"), afterprop);
+      return cont(expression, maybetype, expect("]"), afterprop);
     } else if (type == "spread") {
       return cont(expressionNoComma, afterprop);
     } else if (value == "*") {
@@ -34541,6 +34824,18 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
       if (value == "?") return cont(maybetype);
     }
   }
+  function mayberettype(type) {
+    if (isTS && type == ":") {
+      if (cx.stream.match(/^\s*\w+\s+is\b/, false)) return cont(expression, isKW, typeexpr)
+      else return cont(typeexpr)
+    }
+  }
+  function isKW(_, value) {
+    if (value == "is") {
+      cx.marked = "keyword"
+      return cont()
+    }
+  }
   function typeexpr(type, value) {
     if (type == "variable" || value == "void") {
       if (value == "keyof") {
@@ -34579,16 +34874,23 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
     if (value == "<") return cont(pushlex(">"), commasep(typeexpr, ">"), poplex, afterType)
     if (value == "|" || type == ".") return cont(typeexpr)
     if (type == "[") return cont(expect("]"), afterType)
-    if (value == "extends") return cont(typeexpr)
+    if (value == "extends" || value == "implements") { cx.marked = "keyword"; return cont(typeexpr) }
   }
   function maybeTypeArgs(_, value) {
     if (value == "<") return cont(pushlex(">"), commasep(typeexpr, ">"), poplex, afterType)
   }
-  function vardef() {
+  function typeparam() {
+    return pass(typeexpr, maybeTypeDefault)
+  }
+  function maybeTypeDefault(_, value) {
+    if (value == "=") return cont(typeexpr)
+  }
+  function vardef(_, value) {
+    if (value == "enum") {cx.marked = "keyword"; return cont(enumdef)}
     return pass(pattern, maybetype, maybeAssign, vardefCont);
   }
   function pattern(type, value) {
-    if (type == "modifier") return cont(pattern)
+    if (isTS && isModifier(value)) { cx.marked = "keyword"; return cont(pattern) }
     if (type == "variable") { register(value); return cont(); }
     if (type == "spread") return cont(pattern);
     if (type == "[") return contCommasep(pattern, "]");
@@ -34637,12 +34939,13 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
   function functiondef(type, value) {
     if (value == "*") {cx.marked = "keyword"; return cont(functiondef);}
     if (type == "variable") {register(value); return cont(functiondef);}
-    if (type == "(") return cont(pushcontext, pushlex(")"), commasep(funarg, ")"), poplex, maybetype, statement, popcontext);
-    if (isTS && value == "<") return cont(pushlex(">"), commasep(typeexpr, ">"), poplex, functiondef)
+    if (type == "(") return cont(pushcontext, pushlex(")"), commasep(funarg, ")"), poplex, mayberettype, statement, popcontext);
+    if (isTS && value == "<") return cont(pushlex(">"), commasep(typeparam, ">"), poplex, functiondef)
   }
   function funarg(type, value) {
     if (value == "@") cont(expression, funarg)
-    if (type == "spread" || type == "modifier") return cont(funarg);
+    if (type == "spread") return cont(funarg);
+    if (isTS && isModifier(value)) { cx.marked = "keyword"; return cont(funarg); }
     return pass(pattern, maybetype, maybeAssign);
   }
   function classExpression(type, value) {
@@ -34654,15 +34957,17 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
     if (type == "variable") {register(value); return cont(classNameAfter);}
   }
   function classNameAfter(type, value) {
-    if (value == "<") return cont(pushlex(">"), commasep(typeexpr, ">"), poplex, classNameAfter)
-    if (value == "extends" || value == "implements" || (isTS && type == ","))
+    if (value == "<") return cont(pushlex(">"), commasep(typeparam, ">"), poplex, classNameAfter)
+    if (value == "extends" || value == "implements" || (isTS && type == ",")) {
+      if (value == "implements") cx.marked = "keyword";
       return cont(isTS ? typeexpr : expression, classNameAfter);
+    }
     if (type == "{") return cont(pushlex("}"), classBody, poplex);
   }
   function classBody(type, value) {
-    if (type == "modifier" || type == "async" ||
+    if (type == "async" ||
         (type == "variable" &&
-         (value == "static" || value == "get" || value == "set") &&
+         (value == "static" || value == "get" || value == "set" || (isTS && isModifier(value))) &&
          cx.stream.match(/^\s+[\w$\xa1-\uffff]/, false))) {
       cx.marked = "keyword";
       return cont(classBody);
@@ -34672,7 +34977,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
       return cont(isTS ? classfield : functiondef, classBody);
     }
     if (type == "[")
-      return cont(expression, expect("]"), isTS ? classfield : functiondef, classBody)
+      return cont(expression, maybetype, expect("]"), isTS ? classfield : functiondef, classBody)
     if (value == "*") {
       cx.marked = "keyword";
       return cont(classBody);
@@ -34719,6 +35024,12 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
   function arrayLiteral(type) {
     if (type == "]") return cont();
     return pass(commasep(expressionNoComma, "]"));
+  }
+  function enumdef() {
+    return pass(pushlex("form"), pattern, expect("{"), pushlex("}"), commasep(enummember, "}"), poplex, poplex)
+  }
+  function enummember() {
+    return pass(pattern, maybeAssign);
   }
 
   function isContinuedStatement(state, textAfter) {
@@ -34833,7 +35144,7 @@ CodeMirror.defineMIME("application/typescript", { name: "javascript", typescript
 
 
 /***/ }),
-/* 105 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function(mod) {
@@ -34960,7 +35271,7 @@ CodeMirror.defineMIME("application/typescript", { name: "javascript", typescript
 
 
 /***/ }),
-/* 106 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34987,7 +35298,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 107 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35042,11 +35353,11 @@ module.exports = Backbone.View.extend({
  */
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(108),
+      defaults = __webpack_require__(109),
       Panel = __webpack_require__(27),
-      Panels = __webpack_require__(110),
+      Panels = __webpack_require__(111),
       PanelView = __webpack_require__(29),
-      PanelsView = __webpack_require__(112);
+      PanelsView = __webpack_require__(113);
   var panels, PanelsViewObj;
 
   return {
@@ -35263,7 +35574,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 108 */
+/* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35348,7 +35659,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 109 */
+/* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35381,7 +35692,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 110 */
+/* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35395,7 +35706,7 @@ module.exports = Backbone.Collection.extend({
 });
 
 /***/ }),
-/* 111 */
+/* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35731,7 +36042,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-/* 112 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35774,14 +36085,18 @@ module.exports = Backbone.View.extend({
    * */
   addToCollection: function addToCollection(model, fragmentEl) {
     var fragment = fragmentEl || null;
+    var config = this.config;
+    var el = model.get('el');
     var view = new PanelView({
+      el: el,
       model: model,
-      config: this.config
+      config: config
     });
     var rendered = view.render().el;
     var appendTo = model.get('appendTo');
 
-    if (appendTo) {
+    // Do nothing if the panel was requested to be another element
+    if (el) {} else if (appendTo) {
       var appendEl = document.querySelector(appendTo);
       appendEl.appendChild(rendered);
     } else {
@@ -35796,27 +36111,28 @@ module.exports = Backbone.View.extend({
     return rendered;
   },
   render: function render() {
-    var fragment = document.createDocumentFragment();
-    this.$el.empty();
+    var _this = this;
 
+    var $el = this.$el;
+    var frag = document.createDocumentFragment();
+    $el.empty();
     this.collection.each(function (model) {
-      this.addToCollection(model, fragment);
-    }, this);
-
-    this.$el.append(fragment);
-    this.$el.attr('class', this.className);
+      return _this.addToCollection(model, frag);
+    });
+    $el.append(frag);
+    $el.attr('class', this.className);
     return this;
   }
 });
 
 /***/ }),
-/* 113 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _RichTextEditor = __webpack_require__(114);
+var _RichTextEditor = __webpack_require__(115);
 
 var _RichTextEditor2 = _interopRequireDefault(_RichTextEditor);
 
@@ -35841,7 +36157,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 module.exports = function () {
   var config = {};
-  var defaults = __webpack_require__(115);
+  var defaults = __webpack_require__(116);
   var toolbar = void 0,
       actions = void 0,
       lastEl = void 0,
@@ -36129,7 +36445,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 114 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36447,7 +36763,7 @@ var RichTextEditor = function () {
 exports.default = RichTextEditor;
 
 /***/ }),
-/* 115 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36465,7 +36781,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 116 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36475,6 +36791,10 @@ module.exports = {
   stylePrefix: 'sm-',
 
   sectors: [],
+
+  // Specify the element to use as a container, string (query) or HTMLElement
+  // With the empty value, nothing will be rendered
+  appendTo: '',
 
   // Text to show in case no element selected
   textNoElement: 'Select an element before using Style Manager',
@@ -36501,20 +36821,20 @@ module.exports = {
 };
 
 /***/ }),
-/* 117 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var Sector = __webpack_require__(118);
+var Sector = __webpack_require__(119);
 
 module.exports = __webpack_require__(0).Collection.extend({
   model: Sector
 });
 
 /***/ }),
-/* 118 */
+/* 119 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36523,8 +36843,8 @@ module.exports = __webpack_require__(0).Collection.extend({
 var _underscore = __webpack_require__(1);
 
 var Backbone = __webpack_require__(0);
-var Properties = __webpack_require__(11);
-var PropertyFactory = __webpack_require__(127);
+var Properties = __webpack_require__(12);
+var PropertyFactory = __webpack_require__(128);
 
 module.exports = Backbone.Model.extend({
   defaults: {
@@ -36614,7 +36934,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 119 */
+/* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36623,7 +36943,7 @@ module.exports = Backbone.Model.extend({
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var Property = __webpack_require__(33);
-var Layers = __webpack_require__(120);
+var Layers = __webpack_require__(121);
 
 module.exports = Property.extend({
   defaults: _extends({}, Property.prototype.defaults, {
@@ -36647,7 +36967,7 @@ module.exports = Property.extend({
 });
 
 /***/ }),
-/* 120 */
+/* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36655,7 +36975,7 @@ module.exports = Property.extend({
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var Layer = __webpack_require__(121);
+var Layer = __webpack_require__(122);
 
 module.exports = Backbone.Collection.extend({
   model: Layer,
@@ -36777,7 +37097,7 @@ module.exports = Backbone.Collection.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 121 */
+/* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36794,7 +37114,7 @@ module.exports = Backbone.Model.extend({
   },
 
   initialize: function initialize() {
-    var Properties = __webpack_require__(11);
+    var Properties = __webpack_require__(12);
     var properties = this.get('properties');
     var value = this.get('value');
     this.set('properties', properties instanceof Properties ? properties : new Properties(properties));
@@ -36832,7 +37152,7 @@ module.exports = Backbone.Model.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 122 */
+/* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -39058,14 +39378,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 123 */
+/* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var LayerView = __webpack_require__(124);
+var LayerView = __webpack_require__(125);
 
 module.exports = Backbone.View.extend({
   initialize: function initialize(o) {
@@ -39189,7 +39509,7 @@ module.exports = Backbone.View.extend({
 });
 
 /***/ }),
-/* 124 */
+/* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -39324,7 +39644,7 @@ module.exports = Backbone.View.extend({
     this.$el[active ? 'addClass' : 'removeClass'](pfx + 'active');
   },
   render: function render() {
-    var PropertiesView = __webpack_require__(13);
+    var PropertiesView = __webpack_require__(14);
     var propsConfig = this.propsConfig;
     var className = this.pfx + 'layer';
     var model = this.model;
@@ -39348,7 +39668,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 125 */
+/* 126 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -39365,20 +39685,24 @@ module.exports = Property.extend({
 });
 
 /***/ }),
-/* 126 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var Property = __webpack_require__(14);
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var Property = __webpack_require__(15);
 
 module.exports = Property.extend({
-  events: {
-    'change [type=range]': 'inputValueChanged',
-    'input [type=range]': 'inputValueChangedSoft'
+  events: function events() {
+    return _extends({}, Property.prototype.events, {
+      'change [type=range]': 'inputValueChanged',
+      'input [type=range]': 'inputValueChangedSoft',
+      change: ''
+    });
   },
-
   templateInput: function templateInput(model) {
     var ppfx = this.ppfx;
     return '\n      <div class="' + ppfx + 'field ' + ppfx + 'field-range">\n        <input type="range"\n          min="' + model.get('min') + '"\n          max="' + model.get('max') + '"\n          step="' + model.get('step') + '"/>\n      </div>\n    ';
@@ -39417,7 +39741,7 @@ module.exports = Property.extend({
 });
 
 /***/ }),
-/* 127 */
+/* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -39904,7 +40228,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 128 */
+/* 129 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -39914,13 +40238,17 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _underscore = __webpack_require__(1);
 
-var SectorView = __webpack_require__(129);
+var SectorView = __webpack_require__(130);
 
 module.exports = Backbone.View.extend({
-  initialize: function initialize(o) {
-    this.config = o.config || {};
-    this.pfx = this.config.stylePrefix || '';
+  initialize: function initialize() {
+    var o = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    var config = o.config || {};
+    this.pfx = config.stylePrefix || '';
+    this.ppfx = config.pStylePrefix || '';
     this.target = o.target || {};
+    this.config = config;
 
     // The target that will emit events for properties
     var target = {};
@@ -40029,29 +40357,32 @@ module.exports = Backbone.View.extend({
     return rendered;
   },
   render: function render() {
-    var fragment = document.createDocumentFragment();
-    this.$el.empty();
+    var _this = this;
 
+    var frag = document.createDocumentFragment();
+    var $el = this.$el;
+    var pfx = this.pfx;
+    var ppfx = this.ppfx;
+    $el.empty();
     this.collection.each(function (model) {
-      this.addToCollection(model, fragment);
-    }, this);
-
-    this.$el.attr('id', this.pfx + 'sectors');
-    this.$el.append(fragment);
+      return _this.addToCollection(model, frag);
+    });
+    $el.append(frag);
+    $el.addClass(pfx + 'sectors ' + ppfx + 'one-bg ' + ppfx + 'two-color');
     return this;
   }
 });
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 129 */
+/* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(_) {
 
 var Backbone = __webpack_require__(0);
-var PropertiesView = __webpack_require__(13);
+var PropertiesView = __webpack_require__(14);
 
 module.exports = Backbone.View.extend({
   template: _.template('\n  <div class="<%= pfx %>title" data-sector-title>\n    <i id="<%= pfx %>caret" class="fa"></i>\n    <%= label %>\n  </div>'),
@@ -40154,7 +40485,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 130 */
+/* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40202,9 +40533,9 @@ module.exports = Backbone.View.extend({
 
 module.exports = function () {
   var c = {};
-  var defaults = __webpack_require__(131);
-  var Assets = __webpack_require__(132);
-  var AssetsView = __webpack_require__(135);
+  var defaults = __webpack_require__(132);
+  var Assets = __webpack_require__(133);
+  var AssetsView = __webpack_require__(136);
   var FileUpload = __webpack_require__(45);
   var assets = void 0,
       am = void 0,
@@ -40544,7 +40875,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 131 */
+/* 132 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40636,7 +40967,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 132 */
+/* 133 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40651,7 +40982,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.default).extend({
   types: [{
     id: 'image',
-    model: __webpack_require__(133),
+    model: __webpack_require__(134),
     view: __webpack_require__(43),
     isType: function isType(value) {
       if (typeof value == 'string') {
@@ -40666,7 +40997,7 @@ module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.d
 });
 
 /***/ }),
-/* 133 */
+/* 134 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40674,7 +41005,7 @@ module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.d
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var Asset = __webpack_require__(134);
+var Asset = __webpack_require__(135);
 
 module.exports = Asset.extend({
   defaults: _extends({}, Asset.prototype.defaults, {
@@ -40686,7 +41017,7 @@ module.exports = Asset.extend({
 });
 
 /***/ }),
-/* 134 */
+/* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40721,7 +41052,7 @@ module.exports = __webpack_require__(0).Model.extend({
 });
 
 /***/ }),
-/* 135 */
+/* 136 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40739,7 +41070,7 @@ module.exports = Backbone.View.extend({
   template: function template(view) {
     var pfx = view.pfx;
     var ppfx = view.ppfx;
-    return '\n    <div class="' + pfx + 'assets-cont">\n      <div class="' + pfx + 'assets-header">\n        <form class="' + pfx + 'add-asset">\n          <div class="' + ppfx + 'field ' + pfx + 'add-field">\n            <input placeholder="' + view.config.inputPlaceholder + '"/>\n          </div>\n          <button class="' + ppfx + 'btn-prim">' + view.config.addBtnText + '</button>\n          <div style="clear:both"></div>\n        </form>\n        <div class="' + pfx + 'dips" style="display:none">\n          <button class="fa fa-th <%' + ppfx + 'btnt"></button>\n          <button class="fa fa-th-list <%' + ppfx + 'btnt"></button>\n        </div>\n      </div>\n      <div class="' + pfx + 'assets" data-el="assets"></div>\n      <div style="clear:both"></div>\n    </div>\n    ';
+    return '\n    <div class="' + pfx + 'assets-cont">\n      <div class="' + pfx + 'assets-header">\n        <form class="' + pfx + 'add-asset">\n          <div class="' + ppfx + 'field ' + pfx + 'add-field">\n            <input placeholder="' + view.config.inputPlaceholder + '"/>\n          </div>\n          <button class="' + ppfx + 'btn-prim">' + view.config.addBtnText + '</button>\n          <div style="clear:both"></div>\n        </form>\n      </div>\n      <div class="' + pfx + 'assets" data-el="assets"></div>\n      <div style="clear:both"></div>\n    </div>\n    ';
   },
   initialize: function initialize(o) {
     this.options = o;
@@ -40909,7 +41240,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 136 */
+/* 137 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40938,11 +41269,11 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 module.exports = function () {
   var em = void 0;
   var c = {},
-      defaults = __webpack_require__(137),
+      defaults = __webpack_require__(138),
       CssRule = __webpack_require__(46),
-      CssRules = __webpack_require__(138),
-      CssRulesView = __webpack_require__(139);
-  var Selectors = __webpack_require__(10);
+      CssRules = __webpack_require__(139),
+      CssRulesView = __webpack_require__(140);
+  var Selectors = __webpack_require__(11);
   var Selector = __webpack_require__(7);
 
   var rules, rulesView;
@@ -41317,7 +41648,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 137 */
+/* 138 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41335,7 +41666,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 138 */
+/* 139 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41375,14 +41706,14 @@ module.exports = Backbone.Collection.extend({
 });
 
 /***/ }),
-/* 139 */
+/* 140 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var CssRuleView = __webpack_require__(48);
-var CssGroupRuleView = __webpack_require__(140);
+var CssGroupRuleView = __webpack_require__(141);
 
 module.exports = __webpack_require__(0).View.extend({
   initialize: function initialize(o) {
@@ -41470,7 +41801,7 @@ module.exports = __webpack_require__(0).View.extend({
 });
 
 /***/ }),
-/* 140 */
+/* 141 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41490,7 +41821,7 @@ module.exports = __webpack_require__(48).extend({
 });
 
 /***/ }),
-/* 141 */
+/* 142 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41498,10 +41829,11 @@ module.exports = __webpack_require__(48).extend({
 
 var _underscore = __webpack_require__(1);
 
+var defaultOpts = __webpack_require__(143);
+var TraitsView = __webpack_require__(144);
+
 module.exports = function () {
   var c = {};
-  var defaultOpts = __webpack_require__(142);
-  var TraitsView = __webpack_require__(143);
   var TraitsViewer = void 0;
 
   return {
@@ -41542,6 +41874,14 @@ module.exports = function () {
       });
       return this;
     },
+    postRender: function postRender() {
+      var elTo = this.getConfig().appendTo;
+
+      if (elTo) {
+        var el = (0, _underscore.isElement)(elTo) ? elTo : document.querySelector(elTo);
+        el.appendChild(this.render());
+      }
+    },
 
 
     /**
@@ -41572,12 +41912,15 @@ module.exports = function () {
      */
     getType: function getType(name) {
       return TraitsViewer.itemsView[name];
+    },
+    render: function render() {
+      return TraitsViewer.render().el;
     }
   };
 };
 
 /***/ }),
-/* 142 */
+/* 143 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41585,6 +41928,10 @@ module.exports = function () {
 
 module.exports = {
   stylePrefix: 'trt-',
+
+  // Specify the element to use as a container, string (query) or HTMLElement
+  // With the empty value, nothing will be rendered
+  appendTo: '',
 
   labelContainer: 'Component settings',
 
@@ -41599,7 +41946,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 143 */
+/* 144 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41607,10 +41954,10 @@ module.exports = {
 
 var DomainViews = __webpack_require__(49);
 var TraitView = __webpack_require__(8);
-var TraitSelectView = __webpack_require__(144);
-var TraitCheckboxView = __webpack_require__(145);
-var TraitNumberView = __webpack_require__(146);
-var TraitColorView = __webpack_require__(147);
+var TraitSelectView = __webpack_require__(145);
+var TraitCheckboxView = __webpack_require__(146);
+var TraitNumberView = __webpack_require__(147);
+var TraitColorView = __webpack_require__(148);
 
 module.exports = DomainViews.extend({
   itemView: TraitView,
@@ -41623,10 +41970,14 @@ module.exports = DomainViews.extend({
     color: TraitColorView
   },
 
-  initialize: function initialize(o) {
-    this.config = o.config || {};
+  initialize: function initialize() {
+    var o = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    var config = o.config || {};
+    this.config = config;
     this.em = o.editor;
-    this.pfx = this.config.stylePrefix || '';
+    this.pfx = config.stylePrefix || '';
+    this.ppfx = config.pStylePrefix || '';
     this.className = this.pfx + 'traits';
     this.listenTo(this.em, 'change:selectedComponent', this.updatedCollection);
     this.updatedCollection();
@@ -41638,7 +41989,8 @@ module.exports = DomainViews.extend({
    * @private
    */
   updatedCollection: function updatedCollection() {
-    this.el.className = this.className;
+    var ppfx = this.ppfx;
+    this.el.className = this.className + ' ' + ppfx + 'one-bg ' + ppfx + 'two-color';
     var comp = this.em.get('selectedComponent');
     if (comp) {
       this.collection = comp.get('traits');
@@ -41648,7 +42000,7 @@ module.exports = DomainViews.extend({
 });
 
 /***/ }),
-/* 144 */
+/* 145 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41717,7 +42069,7 @@ module.exports = TraitView.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-/* 145 */
+/* 146 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41772,7 +42124,7 @@ module.exports = TraitView.extend({
 });
 
 /***/ }),
-/* 146 */
+/* 147 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41827,7 +42179,7 @@ module.exports = TraitView.extend({
 });
 
 /***/ }),
-/* 147 */
+/* 148 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41874,7 +42226,7 @@ module.exports = TraitView.extend({
 });
 
 /***/ }),
-/* 148 */
+/* 149 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41919,7 +42271,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 module.exports = function () {
   var c = {};
   var em = void 0;
-  var defaults = __webpack_require__(149);
+  var defaults = __webpack_require__(150);
   var Component = __webpack_require__(4);
   var ComponentView = __webpack_require__(3);
   var Components = __webpack_require__(50);
@@ -41928,56 +42280,56 @@ module.exports = function () {
   var component, componentView;
   var componentTypes = [{
     id: 'cell',
-    model: __webpack_require__(153),
-    view: __webpack_require__(154)
+    model: __webpack_require__(154),
+    view: __webpack_require__(155)
   }, {
     id: 'row',
-    model: __webpack_require__(155),
-    view: __webpack_require__(156)
+    model: __webpack_require__(156),
+    view: __webpack_require__(157)
   }, {
     id: 'table',
-    model: __webpack_require__(157),
-    view: __webpack_require__(158)
+    model: __webpack_require__(158),
+    view: __webpack_require__(159)
   }, {
     id: 'thead',
-    model: __webpack_require__(159),
-    view: __webpack_require__(160)
+    model: __webpack_require__(160),
+    view: __webpack_require__(161)
   }, {
     id: 'tbody',
     model: __webpack_require__(19),
-    view: __webpack_require__(161)
+    view: __webpack_require__(162)
   }, {
     id: 'tfoot',
-    model: __webpack_require__(162),
-    view: __webpack_require__(163)
+    model: __webpack_require__(163),
+    view: __webpack_require__(164)
   }, {
     id: 'map',
-    model: __webpack_require__(164),
-    view: __webpack_require__(165)
+    model: __webpack_require__(165),
+    view: __webpack_require__(166)
   }, {
     id: 'link',
-    model: __webpack_require__(166),
-    view: __webpack_require__(167)
+    model: __webpack_require__(167),
+    view: __webpack_require__(168)
   }, {
     id: 'video',
-    model: __webpack_require__(168),
-    view: __webpack_require__(169)
+    model: __webpack_require__(169),
+    view: __webpack_require__(170)
   }, {
     id: 'image',
     model: __webpack_require__(20),
-    view: __webpack_require__(15)
+    view: __webpack_require__(16)
   }, {
     id: 'script',
-    model: __webpack_require__(170),
-    view: __webpack_require__(171)
+    model: __webpack_require__(171),
+    view: __webpack_require__(172)
   }, {
     id: 'svg',
-    model: __webpack_require__(172),
-    view: __webpack_require__(173)
+    model: __webpack_require__(173),
+    view: __webpack_require__(174)
   }, {
     id: 'textnode',
-    model: __webpack_require__(174),
-    view: __webpack_require__(175)
+    model: __webpack_require__(175),
+    view: __webpack_require__(176)
   }, {
     id: 'text',
     model: __webpack_require__(52),
@@ -42395,12 +42747,10 @@ module.exports = function () {
       var previousModel = em.previous('selectedComponent');
 
       // Deselect the previous component
-      if (previousModel) {
-        previousModel.set({
-          status: '',
-          state: ''
-        });
-      }
+      previousModel && previousModel.set({
+        status: '',
+        state: ''
+      });
 
       model && model.set('status', 'selected');
     }
@@ -42408,7 +42758,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 149 */
+/* 150 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42450,7 +42800,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 150 */
+/* 151 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42459,8 +42809,8 @@ module.exports = {
 var _underscore = __webpack_require__(1);
 
 var Backbone = __webpack_require__(0);
-var Trait = __webpack_require__(151);
-var TraitFactory = __webpack_require__(152);
+var Trait = __webpack_require__(152);
+var TraitFactory = __webpack_require__(153);
 
 module.exports = Backbone.Collection.extend({
   model: Trait,
@@ -42499,7 +42849,7 @@ module.exports = Backbone.Collection.extend({
 });
 
 /***/ }),
-/* 151 */
+/* 152 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42595,7 +42945,7 @@ module.exports = __webpack_require__(0).Model.extend({
 });
 
 /***/ }),
-/* 152 */
+/* 153 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42654,7 +43004,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 153 */
+/* 154 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42687,7 +43037,7 @@ module.exports = Component.extend({
 });
 
 /***/ }),
-/* 154 */
+/* 155 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42699,7 +43049,7 @@ var ComponentView = __webpack_require__(3);
 module.exports = ComponentView.extend({});
 
 /***/ }),
-/* 155 */
+/* 156 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42741,7 +43091,7 @@ module.exports = Component.extend({
 });
 
 /***/ }),
-/* 156 */
+/* 157 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42753,7 +43103,7 @@ var ComponentView = __webpack_require__(3);
 module.exports = ComponentView.extend({});
 
 /***/ }),
-/* 157 */
+/* 158 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42788,7 +43138,7 @@ module.exports = Component.extend({
 });
 
 /***/ }),
-/* 158 */
+/* 159 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42802,7 +43152,7 @@ module.exports = ComponentView.extend({
 });
 
 /***/ }),
-/* 159 */
+/* 160 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42830,18 +43180,6 @@ module.exports = ComponentTableBody.extend({
 });
 
 /***/ }),
-/* 160 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var Backbone = __webpack_require__(0);
-var ComponentView = __webpack_require__(3);
-
-module.exports = ComponentView.extend({});
-
-/***/ }),
 /* 161 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -42855,6 +43193,18 @@ module.exports = ComponentView.extend({});
 
 /***/ }),
 /* 162 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var Backbone = __webpack_require__(0);
+var ComponentView = __webpack_require__(3);
+
+module.exports = ComponentView.extend({});
+
+/***/ }),
+/* 163 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42882,7 +43232,7 @@ module.exports = ComponentTableBody.extend({
 });
 
 /***/ }),
-/* 163 */
+/* 164 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42894,7 +43244,7 @@ var ComponentView = __webpack_require__(3);
 module.exports = ComponentView.extend({});
 
 /***/ }),
-/* 164 */
+/* 165 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42996,14 +43346,14 @@ module.exports = Component.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 165 */
+/* 166 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var ComponentView = __webpack_require__(15);
+var ComponentView = __webpack_require__(16);
 
 module.exports = ComponentView.extend({
   tagName: 'div',
@@ -43048,7 +43398,7 @@ module.exports = ComponentView.extend({
 });
 
 /***/ }),
-/* 166 */
+/* 167 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43111,7 +43461,7 @@ module.exports = Component.extend({
 });
 
 /***/ }),
-/* 167 */
+/* 168 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43137,7 +43487,7 @@ module.exports = ComponentView.extend({
 });
 
 /***/ }),
-/* 168 */
+/* 169 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43453,14 +43803,14 @@ module.exports = Component.extend({
 });
 
 /***/ }),
-/* 169 */
+/* 170 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var ComponentView = __webpack_require__(15);
+var ComponentView = __webpack_require__(16);
 var OComponentView = __webpack_require__(3);
 
 module.exports = ComponentView.extend({
@@ -43581,7 +43931,7 @@ module.exports = ComponentView.extend({
 });
 
 /***/ }),
-/* 170 */
+/* 171 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43613,14 +43963,14 @@ module.exports = Component.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 171 */
+/* 172 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var ComponentView = __webpack_require__(15);
+var ComponentView = __webpack_require__(16);
 
 module.exports = ComponentView.extend({
   tagName: 'script',
@@ -43653,7 +44003,7 @@ module.exports = ComponentView.extend({
 });
 
 /***/ }),
-/* 172 */
+/* 173 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43692,7 +44042,7 @@ module.exports = Component.extend({
 });
 
 /***/ }),
-/* 173 */
+/* 174 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43707,7 +44057,7 @@ module.exports = ComponentView.extend({
 });
 
 /***/ }),
-/* 174 */
+/* 175 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43739,7 +44089,7 @@ module.exports = Component.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 175 */
+/* 176 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43748,7 +44098,34 @@ module.exports = Component.extend({
 module.exports = __webpack_require__(0).View.extend({});
 
 /***/ }),
-/* 176 */
+/* 177 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = {
+  stylePrefix: '',
+
+  // Specify the element to use as a container, string (query) or HTMLElement
+  // With the empty value, nothing will be rendered
+  appendTo: '',
+
+  // Enable/Disable globally the possibility to sort layers
+  sortable: 1,
+
+  // Enable/Disable globally the possibility to hide layers
+  hidable: 1,
+
+  // Hide textnodes
+  hideTextnode: 1,
+
+  // Indicates if the wrapper is visible in layers
+  showWrapper: 1
+};
+
+/***/ }),
+/* 178 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43756,7 +44133,7 @@ module.exports = __webpack_require__(0).View.extend({});
 
 var _mixins = __webpack_require__(2);
 
-var _Droppable = __webpack_require__(177);
+var _Droppable = __webpack_require__(179);
 
 var _Droppable2 = _interopRequireDefault(_Droppable);
 
@@ -43764,9 +44141,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(178),
-      Canvas = __webpack_require__(179),
-      CanvasView = __webpack_require__(181);
+      defaults = __webpack_require__(180),
+      Canvas = __webpack_require__(181),
+      CanvasView = __webpack_require__(183);
   var canvas;
   var frameRect;
 
@@ -44198,7 +44575,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 177 */
+/* 179 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44382,7 +44759,7 @@ var Droppable = function () {
 exports.default = Droppable;
 
 /***/ }),
-/* 178 */
+/* 180 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44424,14 +44801,14 @@ module.exports = {
 };
 
 /***/ }),
-/* 179 */
+/* 181 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var Frame = __webpack_require__(180);
+var Frame = __webpack_require__(182);
 
 module.exports = Backbone.Model.extend({
   defaults: {
@@ -44447,7 +44824,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 180 */
+/* 182 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44465,7 +44842,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 181 */
+/* 183 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44473,7 +44850,7 @@ module.exports = Backbone.Model.extend({
 
 var _mixins = __webpack_require__(2);
 
-var FrameView = __webpack_require__(182);
+var FrameView = __webpack_require__(184);
 var $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
@@ -44581,7 +44958,7 @@ module.exports = Backbone.View.extend({
       // CKEditor's issue
 
       // I need all this styles to make the editor work properly
-      var frameCss = '\n        ' + baseCss + '\n\n        .' + ppfx + 'dashed *[data-highlightable] {\n          outline: 1px dashed rgba(170,170,170,0.7);\n          outline-offset: -3px\n        }\n\n        .' + ppfx + 'comp-selected {\n          outline: 3px solid #3b97e3 !important;\n        }\n\n        .' + ppfx + 'comp-selected-parent {\n          outline: 2px solid ' + colorWarn + ' !important\n        }\n\n        .' + ppfx + 'no-select {\n          user-select: none;\n          -webkit-user-select:none;\n          -moz-user-select: none;\n        }\n\n        .' + ppfx + 'freezed {\n          opacity: 0.5;\n          pointer-events: none;\n        }\n\n        .' + ppfx + 'no-pointer {\n          pointer-events: none;\n        }\n\n        .' + ppfx + 'plh-image {\n          background: #f5f5f5;\n          border: none;\n          height: 50px;\n          width: 50px;\n          display: block;\n          outline: 3px solid #ffca6f;\n          cursor: pointer;\n          outline-offset: -2px\n        }\n\n        .' + ppfx + 'grabbing {\n          cursor: grabbing;\n          cursor: -webkit-grabbing;\n        }\n\n        * ::-webkit-scrollbar-track {\n          background: rgba(0, 0, 0, 0.1)\n        }\n\n        * ::-webkit-scrollbar-thumb {\n          background: rgba(255, 255, 255, 0.2)\n        }\n\n        * ::-webkit-scrollbar {\n          width: 10px\n        }\n\n        ' + (conf.canvasCss || '') + '\n        ' + (protCss || '') + '\n      ';
+      var frameCss = '\n        ' + baseCss + '\n\n        .' + ppfx + 'dashed *[data-highlightable] {\n          outline: 1px dashed rgba(170,170,170,0.7);\n          outline-offset: -2px;\n        }\n\n        .' + ppfx + 'comp-selected {\n          outline: 3px solid #3b97e3 !important;\n          outline-offset: -3px;\n        }\n\n        .' + ppfx + 'comp-selected-parent {\n          outline: 2px solid ' + colorWarn + ' !important\n        }\n\n        .' + ppfx + 'no-select {\n          user-select: none;\n          -webkit-user-select:none;\n          -moz-user-select: none;\n        }\n\n        .' + ppfx + 'freezed {\n          opacity: 0.5;\n          pointer-events: none;\n        }\n\n        .' + ppfx + 'no-pointer {\n          pointer-events: none;\n        }\n\n        .' + ppfx + 'plh-image {\n          background: #f5f5f5;\n          border: none;\n          height: 50px;\n          width: 50px;\n          display: block;\n          outline: 3px solid #ffca6f;\n          cursor: pointer;\n          outline-offset: -2px\n        }\n\n        .' + ppfx + 'grabbing {\n          cursor: grabbing;\n          cursor: -webkit-grabbing;\n        }\n\n        * ::-webkit-scrollbar-track {\n          background: rgba(0, 0, 0, 0.1)\n        }\n\n        * ::-webkit-scrollbar-thumb {\n          background: rgba(255, 255, 255, 0.2)\n        }\n\n        * ::-webkit-scrollbar {\n          width: 10px\n        }\n\n        ' + (conf.canvasCss || '') + '\n        ' + (protCss || '') + '\n      ';
 
       if (externalStyles) {
         body.append(externalStyles);
@@ -44603,8 +44980,8 @@ module.exports = Backbone.View.extend({
       // the keyCode/which will be always `0`. Even if it's an old/deprecated
       // property keymaster (and many others) still use it... using `defineProperty`
       // hack seems the only way
-      var createCustomEvent = function createCustomEvent(e) {
-        var oEvent = new KeyboardEvent(e.type, e);
+      var createCustomEvent = function createCustomEvent(e, cls) {
+        var oEvent = new window[cls](e.type, e);
         oEvent.keyCodeVal = e.keyCode;
         ['keyCode', 'which'].forEach(function (prop) {
           Object.defineProperty(oEvent, prop, {
@@ -44615,11 +44992,15 @@ module.exports = Backbone.View.extend({
         });
         return oEvent;
       };
-      fdoc.addEventListener('keydown', function (e) {
-        doc.dispatchEvent(createCustomEvent(e));
-      });
-      fdoc.addEventListener('keyup', function (e) {
-        doc.dispatchEvent(createCustomEvent(e));
+
+      [{ event: 'keydown keyup', class: 'KeyboardEvent'
+        //{ event: 'mousedown mousemove mouseup', class: 'MouseEvent' },
+      }].forEach(function (obj) {
+        return obj.event.split(' ').forEach(function (event) {
+          fdoc.addEventListener(event, function (e) {
+            return doc.dispatchEvent(createCustomEvent(e, obj.class));
+          });
+        });
       });
     }
   },
@@ -44783,7 +45164,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-/* 182 */
+/* 184 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44850,7 +45231,7 @@ module.exports = __webpack_require__(0).View.extend({
 });
 
 /***/ }),
-/* 183 */
+/* 185 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -44863,8 +45244,8 @@ module.exports = function () {
   var c = {},
       commands = {},
       defaultCommands = {},
-      defaults = __webpack_require__(184),
-      AbsCommands = __webpack_require__(185);
+      defaults = __webpack_require__(186),
+      AbsCommands = __webpack_require__(187);
 
   // Need it here as it would be used below
   var add = function add(id, obj) {
@@ -44905,17 +45286,17 @@ module.exports = function () {
         if (obj.id) this.add(obj.id, obj);
       }
 
-      var ViewCode = __webpack_require__(186);
+      var ViewCode = __webpack_require__(188);
       defaultCommands['select-comp'] = __webpack_require__(21);
       defaultCommands['create-comp'] = __webpack_require__(22);
-      defaultCommands['delete-comp'] = __webpack_require__(191);
-      defaultCommands['image-comp'] = __webpack_require__(192);
-      defaultCommands['move-comp'] = __webpack_require__(193);
-      defaultCommands['text-comp'] = __webpack_require__(194);
-      defaultCommands['insert-custom'] = __webpack_require__(55);
+      defaultCommands['delete-comp'] = __webpack_require__(193);
+      defaultCommands['image-comp'] = __webpack_require__(194);
+      defaultCommands['move-comp'] = __webpack_require__(195);
+      defaultCommands['text-comp'] = __webpack_require__(196);
+      defaultCommands['insert-custom'] = __webpack_require__(58);
       defaultCommands['export-template'] = ViewCode;
-      defaultCommands['sw-visibility'] = __webpack_require__(195);
-      defaultCommands['open-layers'] = __webpack_require__(196);
+      defaultCommands['sw-visibility'] = __webpack_require__(197);
+      defaultCommands['open-layers'] = __webpack_require__(198);
       defaultCommands['open-sm'] = __webpack_require__(199);
       defaultCommands['open-tm'] = __webpack_require__(200);
       defaultCommands['open-blocks'] = __webpack_require__(201);
@@ -45024,7 +45405,7 @@ module.exports = function () {
             cmdMove.initSorterFromModel(sel);
           }
 
-          sel.set('status', 'selected');
+          sel.set('status', 'freezed-selected');
         }
       };
 
@@ -45172,7 +45553,7 @@ module.exports = function () {
     */
 
 /***/ }),
-/* 184 */
+/* 186 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45202,7 +45583,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 185 */
+/* 187 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45328,7 +45709,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 186 */
+/* 188 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45390,7 +45771,7 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 187 */
+/* 189 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45398,7 +45779,7 @@ module.exports = {
 
 var Backbone = __webpack_require__(0);
 var DomainViews = __webpack_require__(49);
-var ToolbarButtonView = __webpack_require__(188);
+var ToolbarButtonView = __webpack_require__(190);
 
 module.exports = DomainViews.extend({
   itemView: ToolbarButtonView,
@@ -45410,7 +45791,7 @@ module.exports = DomainViews.extend({
 });
 
 /***/ }),
-/* 188 */
+/* 190 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45456,19 +45837,19 @@ module.exports = Backbone.View.extend({
 });
 
 /***/ }),
-/* 189 */
+/* 191 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var ToolbarButton = __webpack_require__(190);
+var ToolbarButton = __webpack_require__(192);
 
 module.exports = Backbone.Collection.extend({ model: ToolbarButton });
 
 /***/ }),
-/* 190 */
+/* 192 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45484,7 +45865,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 191 */
+/* 193 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45567,14 +45948,14 @@ module.exports = _.extend({}, SelectComponent, {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-/* 192 */
+/* 194 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(_) {
 
 var Backbone = __webpack_require__(0);
-var InsertCustom = __webpack_require__(55);
+var InsertCustom = __webpack_require__(58);
 
 module.exports = _.extend({}, InsertCustom, {
   /**
@@ -45607,7 +45988,7 @@ module.exports = _.extend({}, InsertCustom, {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 193 */
+/* 195 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45616,7 +45997,7 @@ module.exports = _.extend({}, InsertCustom, {
 var _mixins = __webpack_require__(2);
 
 var SelectComponent = __webpack_require__(21);
-var SelectPosition = __webpack_require__(54);
+var SelectPosition = __webpack_require__(57);
 var $ = Backbone.$;
 
 module.exports = _.extend({}, SelectPosition, SelectComponent, {
@@ -45774,7 +46155,7 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-/* 194 */
+/* 196 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45810,7 +46191,7 @@ module.exports = _.extend({}, CreateComponent, {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 195 */
+/* 197 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45826,151 +46207,37 @@ module.exports = {
 };
 
 /***/ }),
-/* 196 */
+/* 198 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(Backbone) {
 
-var Layers = __webpack_require__(197);
+var Layers = __webpack_require__(54);
 var $ = Backbone.$;
 
 module.exports = {
-  run: function run(em, sender) {
-    if (!this.toAppend) {
-      var collection = em.DomComponents.getComponent().get('components');
-      var config = em.getConfig();
-      var pfx = config.stylePrefix;
-      var panels = em.Panels;
-      var lyStylePfx = config.layers.stylePrefix || 'nv-';
+  run: function run(editor) {
+    var lm = editor.LayerManager;
+    var pn = editor.Panels;
 
-      config.layers.stylePrefix = config.stylePrefix + lyStylePfx;
-      config.layers.pStylePrefix = config.stylePrefix;
-      config.layers.em = em.editor;
-      config.layers.opened = em.editor.get('opened');
-
-      // Check if panel exists otherwise crate it
-      if (!panels.getPanel('views-container')) this.panel = panels.addPanel({ id: 'views-container' });else this.panel = panels.getPanel('views-container');
-
-      var toAppend = $('<div class="' + pfx + 'layers"></div>');
-      this.panel.set('appendContent', toAppend).trigger('change:appendContent');
-      config.layers.sortContainer = toAppend.get(0);
-      var layers = new Layers().init(collection, config.layers);
-      this.$layers = layers.render();
-      toAppend.append(this.$layers);
-      this.toAppend = toAppend;
+    if (!this.layers) {
+      var id = 'views-container';
+      var layers = document.createElement('div');
+      var panels = pn.getPanel(id) || pn.addPanel({ id: id });
+      layers.appendChild(lm.render());
+      panels.set('appendContent', layers).trigger('change:appendContent');
+      this.layers = layers;
     }
-    this.toAppend.show();
+
+    this.layers.style.display = 'block';
   },
   stop: function stop() {
-    this.toAppend && this.toAppend.hide();
+    var layers = this.layers;
+    layers && (layers.style.display = 'none');
   }
 };
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
-
-/***/ }),
-/* 197 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = function () {
-  var itemsView = void 0;
-  var config = {};
-  var defaults = __webpack_require__(198);
-  var ItemView = __webpack_require__(56);
-  var ItemsView = __webpack_require__(57);
-
-  return {
-    init: function init(collection, opts) {
-      config = opts || config;
-      var em = config.em;
-
-      // Set default options
-      for (var name in defaults) {
-        if (!(name in config)) config[name] = defaults[name];
-      }
-
-      var View = ItemsView;
-      var level = 0;
-      var opened = opts.opened || {};
-      var options = {
-        level: level,
-        config: config,
-        opened: opened
-      };
-
-      // Show wrapper if requested
-      if (config.showWrapper && collection.parent) {
-        View = ItemView;
-        options.model = collection.parent;
-      } else {
-        options.collection = collection;
-      }
-
-      itemsView = new View(options);
-      em && em.on('change:selectedComponent', this.componentChanged);
-      this.componentChanged();
-
-      return this;
-    },
-
-
-    /**
-     * Triggered when the selected component is changed
-     * @private
-     */
-    componentChanged: function componentChanged(e, md) {
-      var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-      if (opts.fromLayers) {
-        return;
-      }
-
-      var em = config.em;
-      var opened = em.get('opened');
-      var model = em.get('selectedComponent');
-      var parent = model && model.collection ? model.collection.parent : null;
-
-      for (var cid in opened) {
-        opened[cid].set('open', 0);
-      }
-
-      while (parent) {
-        parent.set('open', 1);
-        opened[parent.cid] = parent;
-        parent = parent.collection ? parent.collection.parent : null;
-      }
-    },
-    render: function render() {
-      return itemsView.render().$el;
-    }
-  };
-};
-
-/***/ }),
-/* 198 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = {
-  stylePrefix: 'nv-',
-
-  // Enable/Disable globally the possibility to sort layers
-  sortable: 1,
-
-  // Enable/Disable globally the possibility to hide layers
-  hidable: 1,
-
-  // Hide textnodes
-  hideTextnode: 1,
-
-  // Indicates if the wrapper is visible in layers
-  showWrapper: 1
-};
 
 /***/ }),
 /* 199 */
@@ -46548,36 +46815,8 @@ module.exports = {
 "use strict";
 
 
-/**
- * * [add](#add)
- * * [get](#get)
- * * [getAll](#getall)
- * * [getAllVisible](#getallvisible)
- * * [getCategories](#getcategories)
- * * [getContainer](#getcontainer)
- * * [render](#render)
- *
- * Block manager helps managing various, draggable, piece of contents that could be easily reused inside templates.
- *
- * Before using methods you should get first the module from the editor instance, in this way:
- *
- * ```js
- * var blockManager = editor.BlockManager;
- * ```
- *
- * @module BlockManager
- * @param {Object} config Configurations
- * @param {Array<Object>} [config.blocks=[]] Default blocks
- * @example
- * ...
- * {
- *     blocks: [
- *      {id:'h1-block' label: 'Heading', content:'<h1>...</h1>'},
- *      ...
- *    ],
- * }
- * ...
- */
+var _underscore = __webpack_require__(1);
+
 module.exports = function () {
   var c = {},
       defaults = __webpack_require__(210),
@@ -46654,6 +46893,14 @@ module.exports = function () {
     onLoad: function onLoad() {
       var blocks = this.getAll();
       !blocks.length && blocks.reset(c.blocks);
+    },
+    postRender: function postRender() {
+      var elTo = this.getConfig().appendTo;
+
+      if (elTo) {
+        var el = (0, _underscore.isElement)(elTo) ? elTo : document.querySelector(elTo);
+        el.appendChild(this.render());
+      }
     },
 
 
@@ -46755,6 +47002,7 @@ module.exports = function () {
      * Render blocks
      * @param  {Array} blocks Blocks to render, without the argument will render
      *                        all global blocks
+     * @return {HTMLElement} Rendered element
      * @example
      * // Render all blocks (inside the global collection)
      * blockManager.render();
@@ -46781,9 +47029,39 @@ module.exports = function () {
       }
 
       blocksView.collection.reset(toRender);
+      return this.getContainer();
     }
   };
-};
+}; /**
+    * * [add](#add)
+    * * [get](#get)
+    * * [getAll](#getall)
+    * * [getAllVisible](#getallvisible)
+    * * [getCategories](#getcategories)
+    * * [getContainer](#getcontainer)
+    * * [render](#render)
+    *
+    * Block manager helps managing various, draggable, piece of contents that could be easily reused inside templates.
+    *
+    * Before using methods you should get first the module from the editor instance, in this way:
+    *
+    * ```js
+    * var blockManager = editor.BlockManager;
+    * ```
+    *
+    * @module BlockManager
+    * @param {Object} config Configurations
+    * @param {Array<Object>} [config.blocks=[]] Default blocks
+    * @example
+    * ...
+    * {
+    *     blocks: [
+    *      {id:'h1-block' label: 'Heading', content:'<h1>...</h1>'},
+    *      ...
+    *    ],
+    * }
+    * ...
+    */
 
 /***/ }),
 /* 210 */
@@ -46792,11 +47070,16 @@ module.exports = function () {
 "use strict";
 
 
-module.exports = {
-  blocks: [],
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-  appendTo: ''
-};
+module.exports = _defineProperty({
+  // Specify the element to use as a container, string (query) or HTMLElement
+  // With the empty value, nothing will be rendered
+  appendTo: '',
+
+  blocks: []
+
+}, 'appendTo', '');
 
 /***/ }),
 /* 211 */
@@ -46820,7 +47103,7 @@ module.exports = Backbone.Collection.extend({
 
 
 var Backbone = __webpack_require__(0);
-var Category = __webpack_require__(58);
+var Category = __webpack_require__(59);
 
 module.exports = Backbone.Model.extend({
   defaults: {
@@ -46856,7 +47139,7 @@ module.exports = Backbone.Model.extend({
 var Backbone = __webpack_require__(0);
 
 module.exports = Backbone.Collection.extend({
-  model: __webpack_require__(58)
+  model: __webpack_require__(59)
 });
 
 /***/ }),
@@ -47035,6 +47318,7 @@ module.exports = __webpack_require__(0).View.extend({
   render: function render() {
     var _this = this;
 
+    var ppfx = this.ppfx;
     var frag = document.createDocumentFragment();
     this.catsEl = null;
     this.blocksEl = null;
@@ -47045,7 +47329,8 @@ module.exports = __webpack_require__(0).View.extend({
       return _this.add(model, frag);
     });
     this.append(frag);
-    this.$el.addClass(this.blockContClass + 's');
+    var cls = this.blockContClass + 's ' + ppfx + 'one-bg ' + ppfx + 'two-color';
+    this.$el.addClass(cls);
     return this;
   }
 });
@@ -47591,9 +47876,53 @@ module.exports = Backbone.View.extend({
 "use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+/**
+ * File made for IE/Edge support
+ * https://github.com/artf/grapesjs/issues/214
+ */
+
+exports.default = function () {
+  /**
+   * Check if IE/Edge
+   * @return {Boolean}
+   */
+  var isIE = function isIE() {
+    var match = void 0;
+    var agent = window.navigator.userAgent;
+    var rules = [['edge', /Edge\/([0-9\._]+)/], ['ie', /MSIE\s(7\.0)/], ['ie', /MSIE\s([0-9\.]+);.*Trident\/[4-7].0/], ['ie', /Trident\/7\.0.*rv\:([0-9\.]+).*\).*Gecko$/]];
+
+    for (var i = 0; i < rules.length; i++) {
+      var rule = rules[i];
+      match = rule[1].exec(agent);
+      if (match) break;
+    }
+
+    return !!match;
+  };
+
+  if (isIE()) {
+    var originalCreateHTMLDocument = DOMImplementation.prototype.createHTMLDocument;
+    DOMImplementation.prototype.createHTMLDocument = function (title) {
+      if (!title) title = '';
+      return originalCreateHTMLDocument.apply(document.implementation, [title]);
+    };
+  }
+};
+
+/***/ }),
+/* 220 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 module.exports = function (config) {
   var c = config || {},
-      defaults = __webpack_require__(220);
+      defaults = __webpack_require__(221);
 
   // Set default options
   for (var name in defaults) {
@@ -47651,7 +47980,7 @@ module.exports = function (config) {
 };
 
 /***/ }),
-/* 220 */
+/* 221 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47659,50 +47988,6 @@ module.exports = function (config) {
 
 module.exports = {
   plugins: []
-};
-
-/***/ }),
-/* 221 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-/**
- * File made for IE/Edge support
- * https://github.com/artf/grapesjs/issues/214
- */
-
-exports.default = function () {
-  /**
-   * Check if IE/Edge
-   * @return {Boolean}
-   */
-  var isIE = function isIE() {
-    var match = void 0;
-    var agent = window.navigator.userAgent;
-    var rules = [['edge', /Edge\/([0-9\._]+)/], ['ie', /MSIE\s(7\.0)/], ['ie', /MSIE\s([0-9\.]+);.*Trident\/[4-7].0/], ['ie', /Trident\/7\.0.*rv\:([0-9\.]+).*\).*Gecko$/]];
-
-    for (var i = 0; i < rules.length; i++) {
-      var rule = rules[i];
-      match = rule[1].exec(agent);
-      if (match) break;
-    }
-
-    return !!match;
-  };
-
-  if (isIE()) {
-    var originalCreateHTMLDocument = DOMImplementation.prototype.createHTMLDocument;
-    DOMImplementation.prototype.createHTMLDocument = function (title) {
-      if (!title) title = '';
-      return originalCreateHTMLDocument.apply(document.implementation, [title]);
-    };
-  }
 };
 
 /***/ })
