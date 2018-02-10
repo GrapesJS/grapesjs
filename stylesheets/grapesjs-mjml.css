@@ -46,7 +46,8 @@
 .gjs-pn-panel,
 .gjs-sm-sector .gjs-sm-composite.gjs-clm-field,
 .gjs-sm-sector .gjs-sm-field.gjs-sm-composite,
-.gjs-sm-sector .gjs-sm-stack #gjs-sm-add {
+.gjs-sm-sector .gjs-sm-stack #gjs-sm-add,
+.gjs-two-color {
   color: #888686;
 }
 
@@ -64,7 +65,8 @@
 .gjs-sm-select option,
 .gjs-sm-unit option,
 .sp-container,
-.gjs-block {
+.gjs-block,
+.gjs-one-bg {
   background-color: #2c2e35;
 }
 

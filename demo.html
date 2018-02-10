@@ -5,7 +5,7 @@
     <title>GrapesJS Demo - Free Open Source Website Page Builder</title>
     <meta content="Best Free Open Source Responsive Websites Builder" name="description">
     <link rel="stylesheet" href="stylesheets/toastr.min.css">
-    <link rel="stylesheet" href="stylesheets/grapes.min.css?v0.13.8">
+    <link rel="stylesheet" href="stylesheets/grapes.min.css?v0.14.5">
     <link rel="stylesheet" href="stylesheets/grapesjs-preset-webpage.min.css">
     <link rel="stylesheet" href="stylesheets/tooltip.css">
     <link rel="stylesheet" href="stylesheets/grapesjs-plugin-filestack.css">
@@ -15,7 +15,7 @@
     <script src="//feather.aviary.com/imaging/v3/editor.js"></script>
     <script src="js/toastr.min.js"></script>
 
-    <script src="js/grapes.min.js?v0.13.8"></script>
+    <script src="js/grapes.min.js?v0.14.5"></script>
     <script src="js/grapesjs-preset-webpage.min.js"></script>
     <script src="js/grapesjs-lory-slider.min.js?0.1.5"></script>
     <script src="js/grapesjs-tabs.min.js?0.1.1"></script>
@@ -88,12 +88,12 @@
            background: rgba(51, 51, 51, 0.9);
          }
 
-         #gjs-pn-commands {
+         .gjs-pn-commands {
            min-height: 40px;
          }
 
          #gjs-sm-float,
-         #gjs-pn-views .fa-cog {
+         .gjs-pn-views .fa-cog {
             display: none;
          }
 
@@ -106,7 +106,7 @@
            background-color: #756467;
          }
 
-        .gjs-pn-panel#gjs-pn-views {
+        .gjs-pn-panel.gjs-pn-views {
           padding: 0;
           border-bottom: none;
         }
@@ -115,7 +115,7 @@
           box-shadow: none;
         }
 
-        #gjs-pn-views .gjs-pn-btn {
+        .gjs-pn-views .gjs-pn-btn {
             margin: 0;
             height: 40px;
             padding: 10px;
@@ -996,6 +996,7 @@
             },
             filestackOpts: { key: 'AYmqZc2e8RLGLE7TGkX3Hz' },
             aviaryOpts: { key: '1' },
+            blocksBasicOpts: { flexGrid: 1 },
             customStyleManager: [{
               name: 'General',
               buildProps: ['float', 'display', 'position', 'top', 'right', 'left', 'bottom'],
@@ -1015,8 +1016,15 @@
             },{
                 name: 'Dimension',
                 open: false,
-                buildProps: ['width', 'height', 'max-width', 'min-height', 'margin', 'padding'],
-                properties:[{
+                buildProps: ['width', 'flex-width', 'height', 'max-width', 'min-height', 'margin', 'padding'],
+                properties: [{
+                  id: 'flex-width',
+                  type: 'integer',
+                  name: 'Width',
+                  units: ['px', '%'],
+                  property: 'flex-basis',
+                  toRequire: 1,
+                },{
                   property: 'margin',
                   properties:[
                     { name: 'Top', property: 'margin-top'},
@@ -1379,7 +1387,7 @@
         // Show logo with the version
         var logoCont = document.querySelector('.gjs-logo-cont');
         document.querySelector('.gjs-logo-version').innerHTML = 'v' + grapesjs.version;
-        var logoPanel = document.querySelector('#gjs-pn-commands');
+        var logoPanel = document.querySelector('.gjs-pn-commands');
         logoPanel.appendChild(logoCont);
 
 
@@ -1395,7 +1403,7 @@
           '<div class="gjs-sm-properties" style="display: none;"></div></div>');
         var traitsProps = traitsSector.find('.gjs-sm-properties');
         traitsProps.append($('.gjs-trt-traits'));
-        $('#gjs-sm-sectors').before(traitsSector);
+        $('.gjs-sm-sectors').before(traitsSector);
         traitsSector.find('.gjs-sm-title').on('click', function(){
           var traitStyle = traitsProps.get(0).style;
           var hidden = traitStyle.display == 'none';

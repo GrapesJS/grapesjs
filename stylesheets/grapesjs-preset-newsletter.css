@@ -42,7 +42,8 @@
 .gjs-pn-panel,
 .gjs-sm-sector .gjs-sm-composite.gjs-clm-field,
 .gjs-sm-sector .gjs-sm-field.gjs-sm-composite,
-.gjs-sm-sector .gjs-sm-stack #gjs-sm-add {
+.gjs-sm-sector .gjs-sm-stack #gjs-sm-add,
+.gjs-two-color {
   color: #a0aabf; }
 
 #gjs-rte-toolbar,
@@ -59,7 +60,8 @@
 .gjs-sm-sector .gjs-sm-colorp-c,
 .gjs-sm-select option,
 .gjs-sm-unit option,
-.sp-container {
+.sp-container,
+.gjs-one-bg {
   background-color: #373d49; }
 
 .gjs-import-label,

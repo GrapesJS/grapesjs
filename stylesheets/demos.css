@@ -10,18 +10,19 @@ html {
   font-weight: lighter;
 }
 
+#toast-container > div {
+  opacity: 0.95;
+}
+
 #toast-container > div,
 #toast-container > div:hover {
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
   font-family: Helvetica, sans-serif;
 }
 
-#toast-container > div {
-  opacity: 0.95;
-}
-
 /* LOGO VERSION */
 
+.gjs-pn-commands .gjs-pn-buttons,
 #gjs-pn-commands .gjs-pn-buttons {
   display: none;
 }
@@ -78,7 +79,8 @@ html {
 
 /* ADS */
 
-.gjs-pn-panel#gjs-pn-views-container {
+.gjs-pn-panel#gjs-pn-views-container,
+.gjs-pn-panel.gjs-pn-views-container {
   height: calc(100% - 150px);
 }
 
