@@ -31,7 +31,7 @@
   width: 45%;
   padding: 1em;
   box-sizing: border-box;
-  height: 90px;
+  height: 103px;
   cursor: all-scroll;
   font-size: 11px;
   font-weight: lighter;
@@ -71,6 +71,8 @@
   font-size: 0.65rem;
   font-weight: normal;
   font-family: Helvetica, sans-serif;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .#{$app-prefix}block.#{$app-prefix}bdrag {
