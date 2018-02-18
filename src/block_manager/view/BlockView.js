@@ -70,7 +70,7 @@ module.exports = Backbone.View.extend({
     const className = `${pfx}block`;
     const label = this.model.get('label');
     el.className += ` ${className} ${pfx}one-bg ${pfx}four-color-h`;
-    el.innerHTML = `<div class="${className}-label">${label}</div>`;
+    el.innerHTML = `<div title="${label}" class="${className}-label">${label}</div>`;
     hasDnd(this.em) && el.setAttribute('draggable', true);
     return this;
   }
