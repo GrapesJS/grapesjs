@@ -969,6 +969,7 @@ module.exports = Backbone.View.extend({
 
       if (!dropContent) {
         // Putting `avoidStore` here will make the UndoManager behave wrong
+        opts.temporary = 1;
         modelTemp = targetCollection.add({}, { ...opts });
 
         if (model) {

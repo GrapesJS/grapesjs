@@ -289,26 +289,6 @@ module.exports = Backbone.View.extend(
           videoNode.src = fileURL
            */
 
-            /*
-            // Show local video files, http://jsfiddle.net/dsbonev/cCCZ2/embedded/result,js,html,css/
-            var URL = window.URL || window.webkitURL
-            var file = this.files[0]
-             var type = file.type
-             var videoNode = document.createElement('video');
-             var canPlay = videoNode.canPlayType(type) // can use also for 'audio' types
-             if (canPlay === '') canPlay = 'no'
-             var message = 'Can play type "' + type + '": ' + canPlay
-             var isError = canPlay === 'no'
-             displayMessage(message, isError)
-
-             if (isError) {
-               return
-             }
-
-             var fileURL = URL.createObjectURL(file)
-             videoNode.src = fileURL
-            */
-
             // If it's an image, try to find its size
             if (type === 'image') {
               const data = {
