@@ -17,5 +17,8 @@ module.exports = {
   optionsTarget: [
     { value: '', name: 'This window' },
     { value: '_blank', name: 'New window' }
-  ]
+  ],
+
+  // Text to show in case no element selected
+  textNoElement: 'Select an element before using Trait Manager'
 };
