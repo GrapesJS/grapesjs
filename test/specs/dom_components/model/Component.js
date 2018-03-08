@@ -135,6 +135,14 @@ module.exports = {
         expect(obj.toHTML()).toEqual('<div/>');
       });
 
+      it('Component toHTML with quotes in attribute', () => {
+        obj = new Component();
+        let attr = obj.get('attributes');
+        attr['data-foo'] = '"bar"';
+        obj.set('attributes', attr);
+        expect(obj.toHTML()).toEqual('<div data-foo="&quot;foo&quot;"></div>');
+      });
+
       it('Component parse empty div', () => {
         var el = document.createElement('div');
         obj = Component.isComponent(el);
