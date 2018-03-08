@@ -245,44 +245,41 @@ module.exports = () => {
     getTargetToElementDim(target, element, options) {
       var opts = options || {};
       var canvasPos = CanvasView.getPosition();
-      if (canvasPos) {
-        var pos = opts.elPos || CanvasView.getElementPos(element);
-        var toRight = options.toRight || 0;
-        var targetHeight = opts.targetHeight || target.offsetHeight;
-        var targetWidth = opts.targetWidth || target.offsetWidth;
-        var eventToTrigger = opts.event || null;
+      if (!canvasPos) return;
+      var pos = opts.elPos || CanvasView.getElementPos(element);
+      var toRight = options.toRight || 0;
+      var targetHeight = opts.targetHeight || target.offsetHeight;
+      var targetWidth = opts.targetWidth || target.offsetWidth;
+      var eventToTrigger = opts.event || null;
 
-        var elTop = pos.top - targetHeight;
-        var elLeft = pos.left;
-        elLeft += toRight ? pos.width : 0;
-        elLeft = toRight ? elLeft - targetWidth : elLeft;
+      var elTop = pos.top - targetHeight;
+      var elLeft = pos.left;
+      elLeft += toRight ? pos.width : 0;
+      elLeft = toRight ? elLeft - targetWidth : elLeft;
 
-        var leftPos = elLeft < canvasPos.left ? canvasPos.left : elLeft;
-        var topPos = elTop < canvasPos.top ? canvasPos.top : elTop;
-        topPos = topPos > pos.top + pos.height ? pos.top + pos.height : topPos;
+      var leftPos = elLeft < canvasPos.left ? canvasPos.left : elLeft;
+      var topPos = elTop < canvasPos.top ? canvasPos.top : elTop;
+      topPos = topPos > pos.top + pos.height ? pos.top + pos.height : topPos;
 
-        var result = {
-          top: topPos,
-          left: leftPos,
-          elementTop: pos.top,
-          elementLeft: pos.left,
-          elementWidth: pos.width,
-          elementHeight: pos.height,
-          targetWidth: target.offsetWidth,
-          targetHeight: target.offsetHeight,
-          canvasTop: canvasPos.top,
-          canvasLeft: canvasPos.left
-        };
+      var result = {
+        top: topPos,
+        left: leftPos,
+        elementTop: pos.top,
+        elementLeft: pos.left,
+        elementWidth: pos.width,
+        elementHeight: pos.height,
+        targetWidth: target.offsetWidth,
+        targetHeight: target.offsetHeight,
+        canvasTop: canvasPos.top,
+        canvasLeft: canvasPos.left
+      };
 
-        // In this way I can catch data and also change the position strategy
-        if (eventToTrigger && c.em) {
-          c.em.trigger(eventToTrigger, result);
-        }
-
-        return result;
+      // In this way I can catch data and also change the position strategy
+      if (eventToTrigger && c.em) {
+        c.em.trigger(eventToTrigger, result);
       }
 
-      return null;
+      return result;
     },
 
     /**
