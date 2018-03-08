@@ -308,13 +308,17 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getPosition() {
-    var bEl = this.frame.el.contentDocument.body;
-    var fo = this.getFrameOffset();
-    var co = this.getCanvasOffset();
-    return {
-      top: fo.top + bEl.scrollTop - co.top,
-      left: fo.left + bEl.scrollLeft - co.left
-    };
+    if (this.frame.el.contentDocument) {
+      var bEl = this.frame.el.contentDocument.body;
+      var fo = this.getFrameOffset();
+      var co = this.getCanvasOffset();
+      return {
+        top: fo.top + bEl.scrollTop - co.top,
+        left: fo.left + bEl.scrollLeft - co.left
+      };
+    }
+
+    return null;
   },
 
   /**

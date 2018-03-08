@@ -225,16 +225,18 @@ module.exports = () => {
         event: 'rteToolbarPosUpdate'
       });
 
-      if (config.adjustToolbar) {
-        // Move the toolbar down when the top canvas edge is reached
-        if (pos.top <= pos.canvasTop) {
-          pos.top = pos.elementTop + pos.elementHeight;
+      if (pos) {
+        if (config.adjustToolbar) {
+          // Move the toolbar down when the top canvas edge is reached
+          if (pos.top <= pos.canvasTop) {
+            pos.top = pos.elementTop + pos.elementHeight;
+          }
         }
-      }
 
-      const toolbarStyle = toolbar.style;
-      toolbarStyle.top = pos.top + un;
-      toolbarStyle.left = pos.left + un;
+        const toolbarStyle = toolbar.style;
+        toolbarStyle.top = pos.top + un;
+        toolbarStyle.left = pos.left + un;
+      }
     },
 
     /**
