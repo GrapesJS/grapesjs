@@ -1,4 +1,4 @@
-const $ = Backbone.$;
+const $ = require('backbone').$;
 
 module.exports = {
   run(editor, sender) {
@@ -12,28 +12,17 @@ module.exports = {
     if (!this.$cn) {
       var tmView = tm.getTraitsViewer();
       var confTm = tm.getConfig();
-
-      // Main container
       this.$cn = $('<div></div>');
-      // Secondary container
       this.$cn2 = $('<div></div>');
       this.$cn.append(this.$cn2);
-
       this.$header = $('<div>').append(
         `<div class="${confTm.stylePrefix}header">${confTm.textNoElement}</div>`
       );
-
       this.$cn.append(this.$header);
-
       this.$cn2.append(
-        '<div class="' +
-          pfx +
-          'traits-label">' +
-          confTm.labelContainer +
-          '</div>'
+        `<div class="${pfx}traits-label">${confTm.labelContainer}</div>`
       );
       this.$cn2.append(tmView.render().el);
-
       var panels = editor.Panels;
 
       if (!panels.getPanel('views-container'))
