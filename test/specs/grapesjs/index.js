@@ -69,10 +69,7 @@ describe('GrapesJS', () => {
     });
 
     it('New editor is empty', () => {
-      var editor = obj.init({
-        ...config,
-        baseCss: '#wrapper { background-color: #fff; }'
-      });
+      var editor = obj.init(config);
       var html = editor.getHtml();
       //var css = editor.getCss();
       var protCss = editor.getConfig().protectedCss;
