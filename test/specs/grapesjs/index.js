@@ -69,7 +69,10 @@ describe('GrapesJS', () => {
     });
 
     it('New editor is empty', () => {
-      var editor = obj.init(config);
+      var editor = obj.init({
+        ...config,
+        baseCss: '#wrapper { background-color: #fff; }'
+      });
       var html = editor.getHtml();
       //var css = editor.getCss();
       var protCss = editor.getConfig().protectedCss;
@@ -77,6 +80,21 @@ describe('GrapesJS', () => {
       //expect((css ? css : '')).toEqual(protCss);
       expect(editor.getComponents().length).toEqual(0);
       expect(editor.getStyle().length).toEqual(0);
+    });
+
+    // FIXME: remove .only
+    it.only('Editor canvas baseCSS can be overwritten', done => {
+      config.components = htmlString;
+      config.baseCss = '#wrapper { background-color: #fff; }';
+      var editor = obj.init(config);
+
+      const frame = editor.Canvas.getFrameEl();
+      console.log(frame);
+      frame.onload = () => {
+        // FIXME: this never fires
+        console.log(frame.contentDocument.outerHTML);
+        done();
+      };
     });
 
     it('Init editor with html', () => {
