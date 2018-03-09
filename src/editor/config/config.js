@@ -30,6 +30,40 @@ module.exports = {
   // Width for the editor container
   width: '100%',
 
+  // By default Grapes injects base CSS into the canvas. For example, it sets body margin to 0
+  // and sets a default background color of white. This CSS is desired in most cases.
+  // use this property if you wish to overwrite the base CSS to your own CSS. This is most
+  // useful if for example your template is not based off a document with 0 as body margin.
+  baseCss: `
+    * {
+      box-sizing: border-box;
+    }
+    html, body, #wrapper {
+      min-height: 100%;
+    }
+    body {
+      margin: 0;
+      height: 100%;
+      background-color: #fff
+    }
+    #wrapper {
+      overflow: auto;
+      overflow-x: hidden;
+    }
+    
+    * ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.1)
+    }
+
+    * ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2)
+    }
+
+    * ::-webkit-scrollbar {
+      width: 10px
+    }
+  `,
+
   // CSS that could only be seen (for instance, inside the code viewer)
   protectedCss: '* { box-sizing: border-box; } body {margin: 0;}',
 
