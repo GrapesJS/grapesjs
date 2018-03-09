@@ -123,8 +123,15 @@ You could also grab the content directly from the element with `fromElement` pro
 
 For more practical example I suggest to look up the code inside this demo: http://grapesjs.com/demo.html
 
+By default Grapes injects base CSS into the canvas. For example, it sets body margin to 0 and sets a default background color of white. This CSS is desired in most cases. However, if you wish to disable or define your own base CSS, you can do so with the `baseCss` config parameter. This is useful if for example your template is not based off a document with 0 as body margin:
 
-
+```javascript
+var editor = grapesjs.init({
+    container : '#gjs',
+    fromElement: true,
+    baseCss: 'html, body { background-color: #ffffff; }'
+});
+```
 
 
 ## Development
