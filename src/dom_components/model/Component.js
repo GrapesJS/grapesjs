@@ -669,33 +669,20 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const sTag = model.get('void');
       const attributes = this.getAttrToHTML();
 
-      let el = document.createElement(tag);
-
       for (let attr in attributes) {
-        const value = attributes[attr];
+        const value = attributes[attr].replace(/"/g, '&quot;');
 
         if (!isUndefined(value)) {
-          el.setAttribute(attr, value);
+          attrs.push(`${attr}="${value}"`);
         }
       }
 
-      if (!sTag) {
-        let innerHTML = model.get('content');
-        model.get('components').each(comp => (innerHTML += comp.toHTML()));
-        el.innerHTML = innerHTML;
-      }
-
-      let code = el.outerHTML;
-
-      if (sTag) {
-        // remove the closing tag in case this is a custom void element
-        code = code.replace('</' + tag + '>', '');
-
-        // void elements created through document.createElement may not have the ending slash
-        if (code.substr(-2) != '/>') {
-          code = code.substr(0, code.length - 1) + '/>';
-        }
-      }
+      let attrString = attrs.length ? ` ${attrs.join(' ')}` : '';
+      let code = `<${tag}${attrString}${sTag ? '/' : ''}>${model.get(
+        'content'
+      )}`;
+      model.get('components').each(comp => (code += comp.toHTML()));
+      !sTag && (code += `</${tag}>`);
 
       return code;
     },
