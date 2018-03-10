@@ -670,7 +670,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const attributes = this.getAttrToHTML();
 
       for (let attr in attributes) {
-        const value = attributes[attr];
+        const value = attributes[attr].replace(/"/g, '&quot;');
 
         if (!isUndefined(value)) {
           attrs.push(`${attr}="${value}"`);
