@@ -145,6 +145,19 @@ module.exports = {
         );
       });
 
+      it('Manage correctly boolean attributes', () => {
+        obj = new Component();
+        obj.set('attributes', {
+          'data-test': 'value',
+          checked: false,
+          required: true,
+          avoid: true
+        });
+        expect(obj.toHTML()).toEqual(
+          '<div data-test="value" required avoid></div>'
+        );
+      });
+
       it('Component parse empty div', () => {
         var el = document.createElement('div');
         obj = Component.isComponent(el);

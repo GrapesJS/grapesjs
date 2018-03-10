@@ -2,6 +2,7 @@ import {
   isUndefined,
   isArray,
   isEmpty,
+  isBoolean,
   has,
   clone,
   isString,
@@ -674,7 +675,11 @@ const Component = Backbone.Model.extend(Styleable).extend(
         const value = isString(val) ? val.replace(/"/g, '&quot;') : val;
 
         if (!isUndefined(value)) {
-          attrs.push(`${attr}="${value}"`);
+          if (isBoolean(value)) {
+            value && attrs.push(attr);
+          } else {
+            attrs.push(`${attr}="${value}"`);
+          }
         }
       }
 
