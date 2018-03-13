@@ -328,6 +328,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
         const propOrig = this.getStyle();
         this.rule = cc.setIdRule(this.getId(), prop, { ...opts, state });
         const diff = shallowDiff(propOrig, prop);
+        this.set('style', {});
         keys(diff).forEach(pr => this.trigger(`change:style:${pr}`));
       } else {
         prop = Styleable.setStyle.apply(this, arguments);
