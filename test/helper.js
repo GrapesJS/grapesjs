@@ -4,8 +4,7 @@ import sinon from 'sinon';
 import { JSDOM } from 'jsdom';
 
 const dom = new JSDOM('<!doctype html><html><body></body></html>', {
-  resources: 'usable',
-  pretendToBeVisual: true
+  resources: 'usable'
 });
 const window = dom.window;
 
@@ -31,7 +30,6 @@ var localStorage = {
   }
 };
 
-global.dom = dom;
 global.window = window;
 global.document = window.document;
 global.FormData = window.FormData;
