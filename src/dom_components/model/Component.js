@@ -323,12 +323,13 @@ const Component = Backbone.Model.extend(Styleable).extend(
 
       if (em && em.getConfig('avoidInlineStyle')) {
         prop = isString(prop) ? this.parseStyle(prop) : prop;
+        prop = { ...prop, ...this.get('style') };
         const state = this.get('state');
         const cc = em.get('CssComposer');
         const propOrig = this.getStyle();
         this.rule = cc.setIdRule(this.getId(), prop, { ...opts, state });
         const diff = shallowDiff(propOrig, prop);
-        this.set('style', {});
+        this.set('style', {}, { silent: 1 });
         keys(diff).forEach(pr => this.trigger(`change:style:${pr}`));
       } else {
         prop = Styleable.setStyle.apply(this, arguments);

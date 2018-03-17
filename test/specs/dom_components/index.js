@@ -44,7 +44,9 @@ describe('DOM Components', () => {
     };
 
     beforeEach(() => {
-      em = new Editor();
+      em = new Editor({
+        avoidInlineStyle: 1
+      });
       config = {
         em,
         storeWrapper: 1
@@ -116,6 +118,30 @@ describe('DOM Components', () => {
 
     it('Render wrapper', () => {
       expect(obj.render()).toExist();
+    });
+
+    it('Import propertly components and styles with the same ids', () => {
+      obj = em.get('DomComponents');
+      const cc = em.get('CssComposer');
+      const id = 'idtest';
+      const comp = obj.addComponent(`
+      <div id="${id}" style="color:red; padding: 50px 100px">Text</div>
+      <style>
+        #${id} { background-color: red }
+      </style>`);
+      expect(em.getHtml()).toEqual(`<div id="${id}">Text</div>`);
+      expect(obj.getComponents().length).toEqual(1);
+      obj
+        .getComponents()
+        .first()
+        .addStyle({ margin: '10px' });
+      expect(cc.getAll().length).toEqual(1);
+      expect(cc.getIdRule(id).getStyle()).toEqual({
+        color: 'red',
+        'background-color': 'red',
+        padding: '50px 100px',
+        margin: '10px'
+      });
     });
   });
 

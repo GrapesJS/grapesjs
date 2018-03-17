@@ -33,20 +33,28 @@ module.exports = config => ({
    * //}
    */
   parseSelector(str = '') {
-    var add = [];
-    var result = [];
-    var sels = str.split(',');
+    const add = [];
+    const result = [];
+    const sels = str.split(',');
+
     for (var i = 0, len = sels.length; i < len; i++) {
       var sel = sels[i].trim();
+
       // Will accept only concatenated classes and last
       // class might be with state (eg. :hover), nothing else.
-      if (/^(\.{1}[\w\-]+)+(:{1,2}[\w\-()]+)?$/gi.test(sel)) {
+      // Can also accept SINGLE ID selectors, eg. `#myid`, `#myid:hover`
+      // Composed are not valid: `#myid.some-class`, `#myid.some-class:hover`
+      if (
+        /^(\.{1}[\w\-]+)+(:{1,2}[\w\-()]+)?$/gi.test(sel) ||
+        /^(#{1}[\w\-]+){1}(:{1,2}[\w\-()]+)?$/gi.test(sel)
+      ) {
         var cls = sel.split('.').filter(Boolean);
         result.push(cls);
       } else {
         add.push(sel);
       }
     }
+
     return {
       result,
       add

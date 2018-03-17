@@ -1,4 +1,5 @@
 const ParserCss = require('parser/model/ParserCss');
+const Selector = require('selector_manager/model/Selector');
 
 module.exports = {
   run() {
@@ -272,6 +273,35 @@ module.exports = {
           atRuleType: 'font-face',
           singleAtRule: 1,
           style: { 'font-family': '"Open Sans"' }
+        };
+        expect(obj.parse(str)).toEqual(result);
+      });
+
+      it('Parse ID rule', () => {
+        var str = `#test { color: red }`;
+        var result = {
+          selectors: ['#test'],
+          style: { color: 'red' }
+        };
+        expect(obj.parse(str)).toEqual(result);
+      });
+
+      it('Parse ID rule with state', () => {
+        var str = `#test:hover { color: red }`;
+        var result = {
+          selectors: ['#test'],
+          state: 'hover',
+          style: { color: 'red' }
+        };
+        expect(obj.parse(str)).toEqual(result);
+      });
+
+      it('Avoid composed selectors with ID', () => {
+        var str = `#test.class, #test.class:hover, .class  { color: red }`;
+        var result = {
+          selectors: ['class'],
+          selectorsAdd: '#test.class, #test.class:hover',
+          style: { color: 'red' }
         };
         expect(obj.parse(str)).toEqual(result);
       });
