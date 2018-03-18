@@ -4398,11 +4398,13 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
 
     if (em && em.getConfig('avoidInlineStyle')) {
       prop = (0, _underscore.isString)(prop) ? this.parseStyle(prop) : prop;
+      prop = _extends({}, prop, this.get('style'));
       var state = this.get('state');
       var cc = em.get('CssComposer');
       var propOrig = this.getStyle();
       this.rule = cc.setIdRule(this.getId(), prop, _extends({}, opts, { state: state }));
       var diff = (0, _mixins.shallowDiff)(propOrig, prop);
+      this.set('style', {}, { silent: 1 });
       (0, _underscore.keys)(diff).forEach(function (pr) {
         return _this3.trigger('change:style:' + pr);
       });
@@ -4768,10 +4770,15 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
     var attributes = this.getAttrToHTML();
 
     for (var attr in attributes) {
-      var value = attributes[attr];
+      var val = attributes[attr];
+      var value = (0, _underscore.isString)(val) ? val.replace(/"/g, '&quot;') : val;
 
       if (!(0, _underscore.isUndefined)(value)) {
-        attrs.push(attr + '="' + value + '"');
+        if ((0, _underscore.isBoolean)(value)) {
+          value && attrs.push(attr);
+        } else {
+          attrs.push(attr + '="' + value + '"');
+        }
       }
     }
 
@@ -17739,12 +17746,14 @@ module.exports = {
     var u = 'px';
     bStyle.display = 'block';
     var canvasPos = canvas.getCanvasView().getPosition();
-    var badgeH = badge ? badge.offsetHeight : 0;
-    var badgeW = badge ? badge.offsetWidth : 0;
-    var top = pos.top - badgeH < canvasPos.top ? canvasPos.top : pos.top - badgeH;
-    var left = pos.left + badgeW < canvasPos.left ? canvasPos.left : pos.left;
-    bStyle.top = top + u;
-    bStyle.left = left + u;
+    if (canvasPos) {
+      var badgeH = badge ? badge.offsetHeight : 0;
+      var badgeW = badge ? badge.offsetWidth : 0;
+      var top = pos.top - badgeH < canvasPos.top ? canvasPos.top : pos.top - badgeH;
+      var left = pos.left + badgeW < canvasPos.left ? canvasPos.left : pos.left;
+      bStyle.top = top + u;
+      bStyle.left = left + u;
+    }
   },
 
 
@@ -17966,10 +17975,12 @@ module.exports = {
       elPos: elPos,
       event: 'toolbarPosUpdate'
     });
-    var leftPos = pos.left + pos.elementWidth - pos.targetWidth;
-    toolbarStyle.top = pos.top + unit;
-    toolbarStyle.left = (leftPos < 0 ? 0 : leftPos) + unit;
-    toolbarStyle.display = origDisp;
+    if (pos) {
+      var leftPos = pos.left + pos.elementWidth - pos.targetWidth;
+      toolbarStyle.top = pos.top + unit;
+      toolbarStyle.left = (leftPos < 0 ? 0 : leftPos) + unit;
+      toolbarStyle.display = origDisp;
+    }
   },
 
 
@@ -21952,24 +21963,6 @@ module.exports = Backbone.View.extend({
           videoNode.src = fileURL
           */
 
-          /*
-          // Show local video files, http://jsfiddle.net/dsbonev/cCCZ2/embedded/result,js,html,css/
-          var URL = window.URL || window.webkitURL
-          var file = this.files[0]
-           var type = file.type
-           var videoNode = document.createElement('video');
-           var canPlay = videoNode.canPlayType(type) // can use also for 'audio' types
-           if (canPlay === '') canPlay = 'no'
-           var message = 'Can play type "' + type + '": ' + canPlay
-           var isError = canPlay === 'no'
-           displayMessage(message, isError)
-            if (isError) {
-             return
-           }
-            var fileURL = URL.createObjectURL(file)
-           videoNode.src = fileURL
-          */
-
           // If it's an image, try to find its size
           if (type === 'image') {
             var data = {
@@ -22520,10 +22513,9 @@ module.exports = Backbone.Collection.extend({
     var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
     if (typeof models === 'string') {
+      var cssc = this.em.get('CssComposer');
       var parsed = this.em.get('Parser').parseHtml(models);
       models = parsed.html;
-
-      var cssc = this.em.get('CssComposer');
 
       if (parsed.css && cssc) {
         var avoidUpdateStyle = opt.avoidUpdateStyle;
@@ -22572,18 +22564,20 @@ module.exports = Backbone.View.extend({
 
   /**
    * Add to collection
-   * @param  {Object} Model
-   *
-   * @return  void
+   * @param {Model} model
+   * @param {Collection} coll
+   * @param {Object} opts
    * @private
    * */
   addTo: function addTo(model) {
+    var coll = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
     var em = this.config.em;
     var i = this.collection.indexOf(model);
     this.addToCollection(model, null, i);
 
-    if (em && !model.opt.temporary) {
-      em.trigger('add:component', model); // @deprecated
+    if (em && !opts.temporary) {
       em.trigger('component:add', model);
     }
   },
@@ -23689,7 +23683,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.14.5',
+    version: '0.14.6',
 
     /**
      * Initializes an editor based on passed options
@@ -24951,8 +24945,8 @@ module.exports = Backbone.Model.extend({
       }
     });
 
-    sm.store(store, function () {
-      clb && clb();
+    sm.store(store, function (res) {
+      clb && clb(res);
       _this4.set('changesCount', 0);
       _this4.trigger('storage:store', store);
     });
@@ -26125,6 +26119,7 @@ module.exports = Backbone.View.extend({
 
       if (!dropContent) {
         // Putting `avoidStore` here will make the UndoManager behave wrong
+        opts.temporary = 1;
         modelTemp = targetCollection.add({}, _extends({}, opts));
 
         if (model) {
@@ -31928,17 +31923,22 @@ module.exports = function (config) {
       var add = [];
       var result = [];
       var sels = str.split(',');
+
       for (var i = 0, len = sels.length; i < len; i++) {
         var sel = sels[i].trim();
+
         // Will accept only concatenated classes and last
         // class might be with state (eg. :hover), nothing else.
-        if (/^(\.{1}[\w\-]+)+(:{1,2}[\w\-()]+)?$/gi.test(sel)) {
+        // Can also accept SINGLE ID selectors, eg. `#myid`, `#myid:hover`
+        // Composed are not valid: `#myid.some-class`, `#myid.some-class:hover`
+        if (/^(\.{1}[\w\-]+)+(:{1,2}[\w\-()]+)?$/gi.test(sel) || /^(#{1}[\w\-]+){1}(:{1,2}[\w\-()]+)?$/gi.test(sel)) {
           var cls = sel.split('.').filter(Boolean);
           result.push(cls);
         } else {
           add.push(sel);
         }
       }
+
       return {
         result: result,
         add: add
@@ -32093,58 +32093,64 @@ module.exports = function (config) {
 "use strict";
 
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; /**
-                                                                                                                                                                                                                                                                               * Selectors in GrapesJS are used in CSS Composer inside Rules and in Components as classes. To get better this concept let's take
-                                                                                                                                                                                                                                                                               * a look at this code:
-                                                                                                                                                                                                                                                                               *
-                                                                                                                                                                                                                                                                               * ```css
-                                                                                                                                                                                                                                                                               * span > #send-btn.btn{
-                                                                                                                                                                                                                                                                               *  ...
-                                                                                                                                                                                                                                                                               * }
-                                                                                                                                                                                                                                                                               * ```
-                                                                                                                                                                                                                                                                               * ```html
-                                                                                                                                                                                                                                                                               * <span>
-                                                                                                                                                                                                                                                                               *   <button id="send-btn" class="btn"></button>
-                                                                                                                                                                                                                                                                               * </span>
-                                                                                                                                                                                                                                                                               * ```
-                                                                                                                                                                                                                                                                               *
-                                                                                                                                                                                                                                                                               * In this scenario we get:
-                                                                                                                                                                                                                                                                               * span     -> selector of type `tag`
-                                                                                                                                                                                                                                                                               * send-btn -> selector of type `id`
-                                                                                                                                                                                                                                                                               * btn      -> selector of type `class`
-                                                                                                                                                                                                                                                                               *
-                                                                                                                                                                                                                                                                               * So, for example, being `btn` the same class entity it'll be easier to refactor and track things.
-                                                                                                                                                                                                                                                                               *
-                                                                                                                                                                                                                                                                               * Before using methods you should get first the module from the editor instance, in this way:
-                                                                                                                                                                                                                                                                               *
-                                                                                                                                                                                                                                                                               * ```js
-                                                                                                                                                                                                                                                                               * var selectorManager = editor.SelectorManager;
-                                                                                                                                                                                                                                                                               * ```
-                                                                                                                                                                                                                                                                               *
-                                                                                                                                                                                                                                                                               * @module SelectorManager
-                                                                                                                                                                                                                                                                               * @param {Object} config Configurations
-                                                                                                                                                                                                                                                                               * @param {Array<Object>} [config.selectors=[]] Default selectors
-                                                                                                                                                                                                                                                                               * @param {Array<Object>} [config.states=[]] Default states
-                                                                                                                                                                                                                                                                               * @param {String} [config.label='Classes'] Classes label
-                                                                                                                                                                                                                                                                               * @param {String} [config.statesLabel='- State -'] The empty state label
-                                                                                                                                                                                                                                                                               * @return {this}
-                                                                                                                                                                                                                                                                               * @example
-                                                                                                                                                                                                                                                                               * ...
-                                                                                                                                                                                                                                                                               * {
-                                                                                                                                                                                                                                                                               *  selectors: [
-                                                                                                                                                                                                                                                                               *    {name:'myselector1'},
-                                                                                                                                                                                                                                                                               *     ...
-                                                                                                                                                                                                                                                                               *  ],
-                                                                                                                                                                                                                                                                               *  states: [{
-                                                                                                                                                                                                                                                                               *    name: 'hover', label: 'Hover'
-                                                                                                                                                                                                                                                                               *  },{
-                                                                                                                                                                                                                                                                               *    name: 'active', label: 'Click'
-                                                                                                                                                                                                                                                                               *  }],
-                                                                                                                                                                                                                                                                               *  statesLabel: '- Selecte State -',
-                                                                                                                                                                                                                                                                               * }
-                                                                                                                                                                                                                                                                               */
-
 var _underscore = __webpack_require__(1);
+
+var isId = function isId(str) {
+  return (0, _underscore.isString)(str) && str[0] == '#';
+}; /**
+    * Selectors in GrapesJS are used in CSS Composer inside Rules and in Components as classes. To get better this concept let's take
+    * a look at this code:
+    *
+    * ```css
+    * span > #send-btn.btn{
+    *  ...
+    * }
+    * ```
+    * ```html
+    * <span>
+    *   <button id="send-btn" class="btn"></button>
+    * </span>
+    * ```
+    *
+    * In this scenario we get:
+    * span     -> selector of type `tag`
+    * send-btn -> selector of type `id`
+    * btn      -> selector of type `class`
+    *
+    * So, for example, being `btn` the same class entity it'll be easier to refactor and track things.
+    *
+    * Before using methods you should get first the module from the editor instance, in this way:
+    *
+    * ```js
+    * var selectorManager = editor.SelectorManager;
+    * ```
+    *
+    * @module SelectorManager
+    * @param {Object} config Configurations
+    * @param {Array<Object>} [config.selectors=[]] Default selectors
+    * @param {Array<Object>} [config.states=[]] Default states
+    * @param {String} [config.label='Classes'] Classes label
+    * @param {String} [config.statesLabel='- State -'] The empty state label
+    * @return {this}
+    * @example
+    * ...
+    * {
+    *  selectors: [
+    *    {name:'myselector1'},
+    *     ...
+    *  ],
+    *  states: [{
+    *    name: 'hover', label: 'Hover'
+    *  },{
+    *    name: 'active', label: 'Click'
+    *  }],
+    *  statesLabel: '- Selecte State -',
+    * }
+    */
+
+var isClass = function isClass(str) {
+  return (0, _underscore.isString)(str) && str[0] == '.';
+};
 
 module.exports = function (config) {
   var c = config || {},
@@ -32219,23 +32225,28 @@ module.exports = function (config) {
      * @param {String} name Selector name
      * @param {Object} opts Selector options
      * @param {String} [opts.label=''] Label for the selector, if it's not provided the label will be the same as the name
-     * @param {String} [opts.type='class'] Type of the selector. At the moment, only 'class' is available
+     * @param {String} [opts.type=1] Type of the selector. At the moment, only 'class' (1) is available
      * @return {Model}
      * @example
      * var selector = selectorManager.add('selectorName');
      * // Same as
      * var selector = selectorManager.add('selectorName', {
-     *   type: 'class',
+     *   type: 1,
      *   label: 'selectorName'
      * });
      * */
     add: function add(name) {
       var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-      if ((typeof name === 'undefined' ? 'undefined' : _typeof(name)) == 'object') {
+      if ((0, _underscore.isObject)(name)) {
         opts = name;
       } else {
         opts.name = name;
+      }
+
+      if (isId(opts.name)) {
+        opts.name = opts.name.substr(1);
+        opts.type = Selector.TYPE_ID;
       }
 
       if (opts.label && !opts.name) {
@@ -32288,6 +32299,10 @@ module.exports = function (config) {
     get: function get(name) {
       var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : Selector.TYPE_CLASS;
 
+      if (isId(name)) {
+        name = name.substr(1);
+        type = Selector.TYPE_ID;
+      }
       return selectors.where({ name: name, type: type })[0];
     },
 
@@ -36381,16 +36396,18 @@ module.exports = function () {
         event: 'rteToolbarPosUpdate'
       });
 
-      if (config.adjustToolbar) {
-        // Move the toolbar down when the top canvas edge is reached
-        if (pos.top <= pos.canvasTop) {
-          pos.top = pos.elementTop + pos.elementHeight;
+      if (pos) {
+        if (config.adjustToolbar) {
+          // Move the toolbar down when the top canvas edge is reached
+          if (pos.top <= pos.canvasTop) {
+            pos.top = pos.elementTop + pos.elementHeight;
+          }
         }
-      }
 
-      var toolbarStyle = toolbar.style;
-      toolbarStyle.top = pos.top + un;
-      toolbarStyle.left = pos.left + un;
+        var toolbarStyle = toolbar.style;
+        toolbarStyle.top = pos.top + un;
+        toolbarStyle.left = pos.left + un;
+      }
     },
 
 
@@ -41942,7 +41959,10 @@ module.exports = {
   labelPlhHref: 'eg. https://google.com',
 
   // Default options for the target input
-  optionsTarget: [{ value: '', name: 'This window' }, { value: '_blank', name: 'New window' }]
+  optionsTarget: [{ value: '', name: 'This window' }, { value: '_blank', name: 'New window' }],
+
+  // Text to show in case no element selected
+  textNoElement: 'Select an element before using Trait Manager'
 };
 
 /***/ }),
@@ -44405,6 +44425,7 @@ module.exports = function () {
     getTargetToElementDim: function getTargetToElementDim(target, element, options) {
       var opts = options || {};
       var canvasPos = CanvasView.getPosition();
+      if (!canvasPos) return;
       var pos = opts.elPos || CanvasView.getElementPos(element);
       var toRight = options.toRight || 0;
       var targetHeight = opts.targetHeight || target.offsetHeight;
@@ -45088,7 +45109,9 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getPosition: function getPosition() {
-    var bEl = this.frame.el.contentDocument.body;
+    var doc = this.frame.el.contentDocument;
+    if (!doc) return;
+    var bEl = doc.body;
     var fo = this.getFrameOffset();
     var co = this.getCanvasOffset();
     return {
@@ -45116,8 +45139,12 @@ module.exports = Backbone.View.extend({
     // In editor, I make use of setTimeout as during the append process of elements
     // those will not be available immediatly, therefore 'item' variable
     var script = document.createElement('script');
-    script.innerText = '\n        setTimeout(function() {\n          var item = document.getElementById(\'' + id + '\');\n          if (!item) return;\n          (function(){\n            ' + model.getScriptString() + ';\n          }.bind(item))()\n        }, 1);';
-    view.scriptContainer.get(0).appendChild(script);
+    script.innerHTML = '\n        setTimeout(function() {\n          var item = document.getElementById(\'' + id + '\');\n          if (!item) return;\n          (function(){\n            ' + model.getScriptString() + ';\n          }.bind(item))()\n        }, 1);';
+    // #873
+    // Adding setTimeout will make js components work on init of the editor
+    setTimeout(function () {
+      return view.scriptContainer.get(0).appendChild(script);
+    }, 0);
   },
 
 
@@ -46323,33 +46350,64 @@ module.exports = {
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(Backbone) {
 
-var $ = Backbone.$;
+
+var $ = __webpack_require__(0).$;
 
 module.exports = {
   run: function run(editor, sender) {
+    this.sender = sender;
+
     var config = editor.Config;
     var pfx = config.stylePrefix;
     var tm = editor.TraitManager;
     var panelC;
-    if (!this.obj) {
+
+    if (!this.$cn) {
       var tmView = tm.getTraitsViewer();
       var confTm = tm.getConfig();
-      this.obj = $('<div></div>').append('<div class="' + pfx + 'traits-label">' + confTm.labelContainer + '</div>').get(0);
-      this.obj.appendChild(tmView.render().el);
+      this.$cn = $('<div></div>');
+      this.$cn2 = $('<div></div>');
+      this.$cn.append(this.$cn2);
+      this.$header = $('<div>').append('<div class="' + confTm.stylePrefix + 'header">' + confTm.textNoElement + '</div>');
+      this.$cn.append(this.$header);
+      this.$cn2.append('<div class="' + pfx + 'traits-label">' + confTm.labelContainer + '</div>');
+      this.$cn2.append(tmView.render().el);
       var panels = editor.Panels;
+
       if (!panels.getPanel('views-container')) panelC = panels.addPanel({ id: 'views-container' });else panelC = panels.getPanel('views-container');
-      panelC.set('appendContent', this.obj).trigger('change:appendContent');
+
+      panelC.set('appendContent', this.$cn.get(0)).trigger('change:appendContent');
+
+      this.target = editor.getModel();
+      this.listenTo(this.target, 'change:selectedComponent', this.toggleTm);
     }
 
-    this.obj.style.display = 'block';
+    this.toggleTm();
+  },
+
+
+  /**
+   * Toggle Trait Manager visibility
+   * @private
+   */
+  toggleTm: function toggleTm() {
+    var sender = this.sender;
+    if (sender && sender.get && !sender.get('active')) return;
+
+    if (this.target.get('selectedComponent')) {
+      this.$cn2.show();
+      this.$header.hide();
+    } else {
+      this.$cn2.hide();
+      this.$header.show();
+    }
   },
   stop: function stop() {
-    if (this.obj) this.obj.style.display = 'none';
+    this.$cn2 && this.$cn2.hide();
+    this.$header && this.$header.hide();
   }
 };
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
 /* 201 */
@@ -47418,6 +47476,7 @@ module.exports = Backbone.View.extend({
     var label = this.model.get('label');
     el.className += ' ' + className + ' ' + pfx + 'one-bg ' + pfx + 'four-color-h';
     el.innerHTML = '<div class="' + className + '-label">' + label + '</div>';
+    el.title = el.textContent.trim();
     (0, _mixins.hasDnd)(this.em) && el.setAttribute('draggable', true);
     return this;
   }
