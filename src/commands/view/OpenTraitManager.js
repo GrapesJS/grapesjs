@@ -1,35 +1,64 @@
-const $ = Backbone.$;
+const $ = require('backbone').$;
 
 module.exports = {
   run(editor, sender) {
+    this.sender = sender;
+
     var config = editor.Config;
     var pfx = config.stylePrefix;
     var tm = editor.TraitManager;
     var panelC;
-    if (!this.obj) {
+
+    if (!this.$cn) {
       var tmView = tm.getTraitsViewer();
       var confTm = tm.getConfig();
-      this.obj = $('<div></div>')
-        .append(
-          '<div class="' +
-            pfx +
-            'traits-label">' +
-            confTm.labelContainer +
-            '</div>'
-        )
-        .get(0);
-      this.obj.appendChild(tmView.render().el);
+      this.$cn = $('<div></div>');
+      this.$cn2 = $('<div></div>');
+      this.$cn.append(this.$cn2);
+      this.$header = $('<div>').append(
+        `<div class="${confTm.stylePrefix}header">${confTm.textNoElement}</div>`
+      );
+      this.$cn.append(this.$header);
+      this.$cn2.append(
+        `<div class="${pfx}traits-label">${confTm.labelContainer}</div>`
+      );
+      this.$cn2.append(tmView.render().el);
       var panels = editor.Panels;
+
       if (!panels.getPanel('views-container'))
         panelC = panels.addPanel({ id: 'views-container' });
       else panelC = panels.getPanel('views-container');
-      panelC.set('appendContent', this.obj).trigger('change:appendContent');
+
+      panelC
+        .set('appendContent', this.$cn.get(0))
+        .trigger('change:appendContent');
+
+      this.target = editor.getModel();
+      this.listenTo(this.target, 'change:selectedComponent', this.toggleTm);
     }
 
-    this.obj.style.display = 'block';
+    this.toggleTm();
+  },
+
+  /**
+   * Toggle Trait Manager visibility
+   * @private
+   */
+  toggleTm() {
+    const sender = this.sender;
+    if (sender && sender.get && !sender.get('active')) return;
+
+    if (this.target.get('selectedComponent')) {
+      this.$cn2.show();
+      this.$header.hide();
+    } else {
+      this.$cn2.hide();
+      this.$header.show();
+    }
   },
 
   stop() {
-    if (this.obj) this.obj.style.display = 'none';
+    this.$cn2 && this.$cn2.hide();
+    this.$header && this.$header.hide();
   }
 };

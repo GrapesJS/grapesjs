@@ -11,18 +11,17 @@ module.exports = Backbone.View.extend({
 
   /**
    * Add to collection
-   * @param  {Object} Model
-   *
-   * @return  void
+   * @param {Model} model
+   * @param {Collection} coll
+   * @param {Object} opts
    * @private
    * */
-  addTo(model) {
+  addTo(model, coll = {}, opts = {}) {
     const em = this.config.em;
     const i = this.collection.indexOf(model);
     this.addToCollection(model, null, i);
 
-    if (em && !model.opt.temporary) {
-      em.trigger('add:component', model); // @deprecated
+    if (em && !opts.temporary) {
       em.trigger('component:add', model);
     }
   },

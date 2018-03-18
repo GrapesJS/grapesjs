@@ -346,8 +346,8 @@ module.exports = Backbone.Model.extend({
       for (var el in obj) store[el] = obj[el];
     });
 
-    sm.store(store, () => {
-      clb && clb();
+    sm.store(store, (res) => {
+      clb && clb(res);
       this.set('changesCount', 0);
       this.trigger('storage:store', store);
     });

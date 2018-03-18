@@ -245,6 +245,7 @@ module.exports = () => {
     getTargetToElementDim(target, element, options) {
       var opts = options || {};
       var canvasPos = CanvasView.getPosition();
+      if (!canvasPos) return;
       var pos = opts.elPos || CanvasView.getElementPos(element);
       var toRight = options.toRight || 0;
       var targetHeight = opts.targetHeight || target.offsetHeight;

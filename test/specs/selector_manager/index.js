@@ -45,6 +45,14 @@ describe('SelectorManager', () => {
       expect(obj.get('test').get('type')).toEqual(obj.Selector.TYPE_CLASS);
     });
 
+    it('Add a selector as an id', () => {
+      const name = 'test';
+      var sel = obj.add(`#${name}`);
+      expect(sel.get('name')).toEqual(name);
+      expect(sel.get('label')).toEqual(name);
+      expect(obj.get(`#${name}`).get('type')).toEqual(obj.Selector.TYPE_ID);
+    });
+
     it('Check name property', () => {
       var name = 'test';
       var sel = obj.add(name);

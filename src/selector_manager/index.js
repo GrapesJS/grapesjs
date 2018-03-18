@@ -49,7 +49,10 @@
  * }
  */
 
-import { isString, isElement } from 'underscore';
+import { isString, isElement, isObject } from 'underscore';
+
+const isId = str => isString(str) && str[0] == '#';
+const isClass = str => isString(str) && str[0] == '.';
 
 module.exports = config => {
   var c = config || {},
@@ -130,21 +133,26 @@ module.exports = config => {
      * @param {String} name Selector name
      * @param {Object} opts Selector options
      * @param {String} [opts.label=''] Label for the selector, if it's not provided the label will be the same as the name
-     * @param {String} [opts.type='class'] Type of the selector. At the moment, only 'class' is available
+     * @param {String} [opts.type=1] Type of the selector. At the moment, only 'class' (1) is available
      * @return {Model}
      * @example
      * var selector = selectorManager.add('selectorName');
      * // Same as
      * var selector = selectorManager.add('selectorName', {
-     *   type: 'class',
+     *   type: 1,
      *   label: 'selectorName'
      * });
      * */
     add(name, opts = {}) {
-      if (typeof name == 'object') {
+      if (isObject(name)) {
         opts = name;
       } else {
         opts.name = name;
+      }
+
+      if (isId(opts.name)) {
+        opts.name = opts.name.substr(1);
+        opts.type = Selector.TYPE_ID;
       }
 
       if (opts.label && !opts.name) {
@@ -193,6 +201,10 @@ module.exports = config => {
      * var selector = selectorManager.get('selectorName');
      * */
     get(name, type = Selector.TYPE_CLASS) {
+      if (isId(name)) {
+        name = name.substr(1);
+        type = Selector.TYPE_ID;
+      }
       return selectors.where({ name, type })[0];
     },
 

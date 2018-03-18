@@ -135,6 +135,29 @@ module.exports = {
         expect(obj.toHTML()).toEqual('<div/>');
       });
 
+      it('Component toHTML with quotes in attribute', () => {
+        obj = new Component();
+        let attrs = obj.get('attributes');
+        attrs['data-test'] = '"value"';
+        obj.set('attributes', attrs);
+        expect(obj.toHTML()).toEqual(
+          '<div data-test="&quot;value&quot;"></div>'
+        );
+      });
+
+      it('Manage correctly boolean attributes', () => {
+        obj = new Component();
+        obj.set('attributes', {
+          'data-test': 'value',
+          checked: false,
+          required: true,
+          avoid: true
+        });
+        expect(obj.toHTML()).toEqual(
+          '<div data-test="value" required avoid></div>'
+        );
+      });
+
       it('Component parse empty div', () => {
         var el = document.createElement('div');
         obj = Component.isComponent(el);

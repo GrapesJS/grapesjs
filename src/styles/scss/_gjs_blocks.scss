@@ -31,14 +31,14 @@
   width: 45%;
   padding: 1em;
   box-sizing: border-box;
-  height: 90px;
+  min-height: 90px;
   cursor: all-scroll;
   font-size: 11px;
   font-weight: lighter;
   text-align: center;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: space-between;
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 3px;
   margin: 10px 2.5% 5px;
@@ -71,6 +71,8 @@
   font-size: 0.65rem;
   font-weight: normal;
   font-family: Helvetica, sans-serif;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .#{$app-prefix}block.#{$app-prefix}bdrag {
