@@ -208,7 +208,13 @@ module.exports = Backbone.View.extend({
       // property keymaster (and many others) still use it... using `defineProperty`
       // hack seems the only way
       const createCustomEvent = (e, cls) => {
-        var oEvent = new window[cls](e.type, e);
+        let oEvent;
+        try {
+          oEvent = new window[cls](e.type, e);
+        } catch (e) {
+          oEvent = document.createEvent(cls);
+          oEvent.initEvent(e.type, true, true);
+        }
         oEvent.keyCodeVal = e.keyCode;
         ['keyCode', 'which'].forEach(prop => {
           Object.defineProperty(oEvent, prop, {

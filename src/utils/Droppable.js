@@ -3,7 +3,7 @@
  */
 
 import { on } from 'utils/mixins';
-import { bindAll } from 'underscore';
+import { bindAll, indexOf } from 'underscore';
 
 export default class Droppable {
   constructor(em) {
@@ -138,17 +138,17 @@ export default class Droppable {
       }
     } else if (dragContent) {
       content = dragContent;
-    } else if (types.indexOf('text/html') >= 0) {
+    } else if (indexOf(types, 'text/html') >= 0) {
       content = dataTransfer
         .getData('text/html')
         .replace(/<\/?meta[^>]*>/g, '');
-    } else if (types.indexOf('text/uri-list') >= 0) {
+    } else if (indexOf(types, 'text/uri-list') >= 0) {
       content = {
         type: 'link',
         attributes: { href: content },
         content: content
       };
-    } else if (types.indexOf('text/json') >= 0) {
+    } else if (indexOf(types, 'text/json') >= 0) {
       const json = dataTransfer.getData('text/json');
       json && (content = JSON.parse(json));
     }
