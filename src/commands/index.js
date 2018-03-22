@@ -147,7 +147,7 @@ module.exports = () => {
           const event = opts && opts.event;
           const sel = ed.getSelected();
           const toolbarStyle = ed.Canvas.getToolbarEl().style;
-          const nativeDrag = event.type == 'dragstart';
+          const nativeDrag = event && event.type == 'dragstart';
 
           const hideTlb = () => {
             toolbarStyle.display = 'none';
