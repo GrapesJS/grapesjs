@@ -97,6 +97,10 @@ const hasDnd = em => {
   );
 };
 
+const isTouchDevice = () => {
+  return 'ontouchstart' in window || navigator.maxTouchPoints;
+};
+
 export {
   on,
   off,
@@ -105,6 +109,7 @@ export {
   matches,
   camelCase,
   shallowDiff,
+  isTouchDevice,
   normalizeFloat,
   getUnitFromValue
 };
