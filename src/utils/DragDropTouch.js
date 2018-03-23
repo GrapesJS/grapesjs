@@ -232,6 +232,18 @@ var DragDropTouch;
 		};
 		DragDropTouch.prototype._touchend = function (e) {
 			if (this._shouldHandle(e)) {
+				// finish dragging
+				this._destroyImage();
+				if (this._dragSource) {
+					if (e.type.indexOf('cancel') < 0) {
+						this._dispatchEvent(this._lastTouch, 'drop', this._lastTarget);
+					}
+					this._dispatchEvent(this._lastTouch, 'dragend', this._dragSource);
+					this._reset();
+					// prevent mouse up on drag
+					e.preventDefault();
+					return;
+				}
 				// see if target wants to handle up
 				if (this._dispatchEvent(this._lastTouch, 'mouseup', e.target)) {
 					e.preventDefault();
@@ -242,15 +254,6 @@ var DragDropTouch;
 					this._dragSource = null;
 					this._dispatchEvent(this._lastTouch, 'click', e.target);
 					this._lastClick = Date.now();
-				}
-				// finish dragging
-				this._destroyImage();
-				if (this._dragSource) {
-					if (e.type.indexOf('cancel') < 0) {
-						this._dispatchEvent(this._lastTouch, 'drop', this._lastTarget);
-					}
-					this._dispatchEvent(this._lastTouch, 'dragend', this._dragSource);
-					this._reset();
 				}
 			}
 		};
@@ -285,6 +288,25 @@ var DragDropTouch;
 		// get the element at a given touch event
 		DragDropTouch.prototype._getTarget = function (e) {
 			var pt = this._getPoint(e), el = document.elementFromPoint(pt.x, pt.y);
+			// if target element is an iframe, try propagating event to child element
+			if(el && el.nodeName === 'IFRAME'){
+				try {
+					var iframeDocument = el.contentWindow.document;
+					// get iframe absolute offset
+					var iframeAbsoluteOffset = {x: 0, y: 0};
+					do {
+						iframeAbsoluteOffset.x += el.offsetLeft || 0;
+						iframeAbsoluteOffset.y += el.offsetTop || 0;
+						el = el.offsetParent;
+					} while (el);
+					// remove iframe absolute offset from touch position
+					var x = pt.x - iframeAbsoluteOffset.x, y = pt.y - iframeAbsoluteOffset.y;
+					// get element on that position from iframe document
+					el = iframeDocument.elementFromPoint(x, y);
+				}catch(e){
+					// iframe origin don't allow access
+				}
+			}
 			while (el && getComputedStyle(el).pointerEvents == 'none') {
 				el = el.parentElement;
 			}
