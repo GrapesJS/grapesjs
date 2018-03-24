@@ -210,8 +210,7 @@ module.exports = Component.extend(
           changeProp: 1
         },
         this.getAutoplayTrait(),
-        this.getLoopTrait(),
-        this.getControlsTrait()
+        this.getLoopTrait()
       ];
     },
 
