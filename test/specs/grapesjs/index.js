@@ -79,6 +79,32 @@ describe('GrapesJS', () => {
       expect(editor.getStyle().length).toEqual(0);
     });
 
+    it('Editor canvas baseCSS can be overwritten', () => {
+      config.components = htmlString;
+      config.baseCss = '#wrapper { background-color: #eee; }';
+      config.protectedCss = '';
+
+      var editor = obj.init(config);
+
+      expect(window.frames[0].document.documentElement.outerHTML).toInclude(
+        config.baseCss
+      );
+      expect(window.frames[0].document.documentElement.outerHTML)
+        .toNotInclude(`body {
+      margin: 0;`);
+    });
+
+    it('Editor canvas baseCSS defaults to sensible values if not defined', () => {
+      config.components = htmlString;
+      config.protectedCss = '';
+
+      var editor = obj.init(config);
+
+      expect(window.frames[0].document.documentElement.outerHTML)
+        .toInclude(`body {
+      margin: 0;`);
+    });
+
     it('Init editor with html', () => {
       config.components = htmlString;
       var editor = obj.init(config);
