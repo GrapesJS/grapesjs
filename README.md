@@ -124,9 +124,6 @@ You could also grab the content directly from the element with `fromElement` pro
 For more practical example I suggest to look up the code inside this demo: http://grapesjs.com/demo.html
 
 
-
-
-
 ## Development
 
 GrapesJS uses [Webpack](https://github.com/webpack/webpack) as a module bundler and [Babel](https://github.com/babel/babel) as a compiler.
