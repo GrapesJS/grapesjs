@@ -252,6 +252,32 @@ describe('GrapesJS', () => {
       expect(editor.testVal).toEqual(htmlString + '5');
     });
 
+    it('Trigger custom command events', () => {
+      const id = 'test-command';
+      const editor = obj.init(config);
+      const result = {};
+      editor.on(`run:${id}`, () => (result.run = 1));
+      editor.on(`run:${id}:before`, () => (result.runBefore = 1));
+      editor.on(`stop:${id}`, () => (result.stop = 1));
+      editor.on(`stop:${id}:before`, () => (result.stopBefore = 1));
+      editor.on(`abort:${id}`, () => (result.abort = 1));
+      editor.Commands.add(id, {
+        run() {},
+        stop() {}
+      });
+      editor.runCommand(id);
+      editor.stopCommand(id);
+      editor.on(`run:${id}:before`, opts => (opts.abort = 1));
+      editor.runCommand(id);
+      expect(result).toEqual({
+        run: 1,
+        runBefore: 1,
+        stop: 1,
+        stopBefore: 1,
+        abort: 1
+      });
+    });
+
     it('Set default devices', () => {
       config.deviceManager = {};
       config.deviceManager.devices = [

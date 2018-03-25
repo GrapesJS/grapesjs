@@ -55,6 +55,7 @@ module.exports = () => {
     }
 
     delete obj.initialize;
+    obj.id = id;
     commands[id] = AbsCommands.extend(obj);
     return this;
   };
