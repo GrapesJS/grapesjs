@@ -1,8 +1,15 @@
+import { isTouchDevice } from 'utils/mixins';
+
 module.exports = Backbone.View.extend({
-  events: {
-    click: 'active',
-    'click [data-close-layer]': 'remove',
-    'mousedown [data-move-layer]': 'initSorter'
+  events: function() {
+    var eventsList = {
+      click: 'active',
+      'click [data-close-layer]': 'remove'
+    };
+
+    eventsList[(isTouchDevice() ? 'touchstart' : 'mousedown') + ' [data-toggle-move]'] = 'initSorter';
+
+    return eventsList;
   },
 
   template(model) {
@@ -10,7 +17,7 @@ module.exports = Backbone.View.extend({
     const label = `Layer ${model.get('index')}`;
 
     return `
-      <div id="${pfx}move" data-move-layer>
+      <div id="${pfx}move" data-move-layer class="touch-disabled">
         <i class="fa fa-arrows"></i>
       </div>
       <div id="${pfx}label">${label}</div>
