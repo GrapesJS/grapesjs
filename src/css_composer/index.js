@@ -174,10 +174,10 @@ module.exports = () => {
      *   color: '#fff',
      * });
      * */
-    add(selectors, state, width, opts) {
+    add(selectors, state, width, opts = {}) {
       var s = state || '';
       var w = width || '';
-      var opt = opts || {};
+      var opt = { ...opts };
       var rule = this.get(selectors, s, w, opt);
       if (rule) return rule;
       else {
