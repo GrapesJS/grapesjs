@@ -1,5 +1,6 @@
 const CssRuleView = require('./CssRuleView');
 const CssGroupRuleView = require('./CssGroupRuleView');
+const $ = Backbone.$;
 
 module.exports = require('backbone').View.extend({
   initialize(o) {
@@ -40,7 +41,7 @@ module.exports = require('backbone').View.extend({
     // I have to render keyframes of the same name together
     // Unfortunately at the moment I didn't find the way of appending them
     // if not staticly, via appendData
-    if (model.get('atRuleType') == 'keyframes') {
+    if (model.get('atRuleType') === 'keyframes') {
       const atRule = model.getAtRule();
       let atRuleEl = this.atRules[atRule];
 
@@ -61,12 +62,23 @@ module.exports = require('backbone').View.extend({
       rendered = view.render().el;
     }
 
+    const mediaWidth = this.getMediaWidth(model.get('mediaText'));
+    const styleBlockId = `${this.pfx}rules-${mediaWidth}`;
+
     if (rendered) {
-      if (fragment) fragment.appendChild(rendered);
-      else this.$el.append(rendered);
+      if (fragment) {
+        fragment.getElementById(styleBlockId).appendChild(rendered);
+      } else {
+        let $stylesContainer = this.$el.find(`#${styleBlockId}`);
+        $stylesContainer.append(rendered);
+      }
     }
 
     return rendered;
+  },
+
+  getMediaWidth(mediaText) {
+    return mediaText && mediaText.replace('(max-width: ', '').replace(')', '');
   },
 
   render() {
@@ -74,6 +86,17 @@ module.exports = require('backbone').View.extend({
     const $el = this.$el;
     const frag = document.createDocumentFragment();
     $el.empty();
+
+    // Create devices related DOM structure
+    const pfx = this.pfx;
+    this.em
+      .get('DeviceManager')
+      .getAll()
+      .forEach(function(model) {
+        const blockId = pfx + 'rules-' + model.get('widthMedia');
+        $(`<div id="${blockId}"></div>`).appendTo(frag);
+      });
+
     this.collection.each(model => this.addToCollection(model, frag));
     $el.append(frag);
     $el.attr('class', this.className);
