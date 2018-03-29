@@ -15,6 +15,7 @@
  *    rules: '.myClass{ color: red}',
  * }
  */
+import { isArray } from 'underscore';
 
 module.exports = () => {
   let em;
@@ -135,7 +136,9 @@ module.exports = () => {
         obj = c.em.get('Parser').parseCss(d.css);
       }
 
-      if (obj) {
+      if (isArray(obj)) {
+        obj.length && rules.reset(obj);
+      } else {
         rules.reset(obj);
       }
 
