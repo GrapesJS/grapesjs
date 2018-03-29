@@ -28,6 +28,7 @@ describe('GrapesJS', () => {
     });
 
     beforeEach(() => {
+      storage = {};
       htmlString = '<div class="test1"></div><div class="test2"></div>';
       cssString = '.test2{color:red}.test3{color:blue}';
       documentEl = '<style>' + cssString + '</style>' + htmlString;
@@ -40,11 +41,18 @@ describe('GrapesJS', () => {
         }
       };
       obj = grapesjs;
-      //fixture = $('<div id="' + editorName + '"></div>');
-      //fixture.empty().appendTo(fixtures);
-
       document.body.innerHTML = `<div id="fixtures"><div id="${editorName}"></div></div>`;
       fixtures = document.body.querySelector('#fixtures');
+      fixture = document.body.querySelector(`#${editorName}`);
+    });
+
+    afterEach(() => {
+      var plugins = obj.plugins.getAll();
+      for (let id in plugins) {
+        if (plugins.hasOwnProperty(id)) {
+          delete plugins[id];
+        }
+      }
     });
 
     it('Main object should be loaded', () => {
@@ -197,19 +205,58 @@ describe('GrapesJS', () => {
     });
 
     it.skip('Adds new storage as plugin and store data there', done => {
-      var pluginName = storageId + '-plugin';
-      obj.plugins.add(pluginName, edt => {
-        edt.StorageManager.add(storageId, storageMock);
-      });
+      const pluginName = storageId + '-p2';
+      obj.plugins.add(pluginName, e =>
+        e.StorageManager.add(storageId, storageMock)
+      );
       config.storageManager.type = storageId;
       config.plugins = [pluginName];
-      var editor = obj.init(config);
+      const editor = obj.init(config);
       editor.setComponents(htmlString);
       editor.store(() => {
         editor.load(data => {
           expect(data.html).toEqual(htmlString);
           done();
         });
+      });
+    });
+
+    it('Adds a new storage and fetch correctly data from it', done => {
+      fixture.innerHTML = documentEl;
+      const styleResult = { color: 'white', display: 'block' };
+      const style = [
+        {
+          selectors: [{ name: 'sclass1' }],
+          style: { color: 'green' }
+        },
+        {
+          selectors: [{ name: 'test2' }],
+          style: styleResult
+        },
+        {
+          selectors: [{ name: 'test3' }],
+          style: { color: 'black', display: 'block' }
+        }
+      ];
+      storage = {
+        css: '* { box-sizing: border-box; } body {margin: 0;}',
+        styles: JSON.stringify(style)
+      };
+
+      const pluginName = storageId + '-p';
+      obj.plugins.add(pluginName, e =>
+        e.StorageManager.add(storageId, storageMock)
+      );
+      config.fromElement = 1;
+      config.storageManager.type = storageId;
+      config.plugins = [pluginName];
+      config.storageManager.autoload = 1;
+      const editor = obj.init(config);
+      editor.on('load', () => {
+        const cc = editor.CssComposer;
+        expect(cc.getAll().length).toEqual(style.length);
+        // expect(cc.setClassRule('test2').getStyle()).toEqual(styleResult);
+        done();
       });
     });
 
