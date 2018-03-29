@@ -714,11 +714,9 @@ const Component = Backbone.Model.extend(Styleable).extend(
      */
     toJSON(...args) {
       const obj = Backbone.Model.prototype.toJSON.apply(this, args);
-      const scriptStr = this.getScriptString();
       obj.attributes = this.getAttributes();
       delete obj.attributes.class;
       delete obj.toolbar;
-      scriptStr && (obj.script = scriptStr);
 
       return obj;
     },
