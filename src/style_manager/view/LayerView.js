@@ -7,7 +7,10 @@ module.exports = Backbone.View.extend({
       'click [data-close-layer]': 'remove'
     };
 
-    eventsList[(isTouchDevice() ? 'touchstart' : 'mousedown') + ' [data-toggle-move]'] = 'initSorter';
+    eventsList[
+      (isTouchDevice() ? 'touchstart' : 'mousedown') + ' [data-move-layer]'
+    ] =
+      'initSorter';
 
     return eventsList;
   },
