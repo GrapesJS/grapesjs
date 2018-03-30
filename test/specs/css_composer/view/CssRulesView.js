@@ -1,15 +1,37 @@
-var CssRulesView = require('css_composer/view/CssRulesView');
-var CssRules = require('css_composer/model/CssRules');
+const CssRulesView = require('css_composer/view/CssRulesView');
+const CssRules = require('css_composer/model/CssRules');
+const CssRule = require('css_composer/model/CssRule');
+const Editor = require('editor/model/Editor');
 
 module.exports = {
   run() {
     describe('CssRulesView', () => {
       let obj;
+      const prefix = 'rules-';
+      const devices = [
+        {
+          name: 'Desktop',
+          width: '',
+          widthMedia: ''
+        },
+        {
+          name: 'Tablet',
+          width: '768px',
+          widthMedia: '992px'
+        }
+      ];
 
       beforeEach(function() {
-        var col = new CssRules([]);
+        const col = new CssRules([]);
         obj = new CssRulesView({
-          collection: col
+          collection: col,
+          config: {
+            em: new Editor({
+              deviceManager: {
+                devices
+              }
+            })
+          }
         });
         document.body.innerHTML = '<div id="fixtures"></div>';
         document.body.querySelector('#fixtures').appendChild(obj.render().el);
@@ -23,8 +45,13 @@ module.exports = {
         expect(CssRulesView).toExist();
       });
 
-      it('Collection is empty', () => {
-        expect(obj.$el.html()).toNotExist();
+      it('Collection is empty. Styles structure bootstraped', () => {
+        expect(obj.$el.html()).toExist();
+        const foundStylesContainers = obj.$el.find('div');
+        expect(foundStylesContainers.length).toEqual(devices.length);
+        foundStylesContainers.each(function($styleC, idx) {
+          expect($styleC.id).toEqual(prefix + devices[idx].widthMedia);
+        });
       });
 
       it('Add new rule', () => {
@@ -35,7 +62,9 @@ module.exports = {
 
       it('Render new rule', () => {
         obj.collection.add({});
-        expect(obj.$el.html()).toExist();
+        expect(
+          obj.$el.find(`#${prefix}${devices[0].widthMedia}`).html()
+        ).toExist();
       });
     });
   }
