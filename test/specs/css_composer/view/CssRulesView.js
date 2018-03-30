@@ -1,6 +1,5 @@
 const CssRulesView = require('css_composer/view/CssRulesView');
 const CssRules = require('css_composer/model/CssRules');
-const CssRule = require('css_composer/model/CssRule');
 const Editor = require('editor/model/Editor');
 
 module.exports = {
