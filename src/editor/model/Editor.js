@@ -93,7 +93,7 @@ module.exports = Backbone.Model.extend({
       clb && clb();
     };
 
-    if (sm && sm.getConfig().autoload) {
+    if (sm && sm.canAutoload()) {
       this.load(postLoad);
     } else {
       postLoad();

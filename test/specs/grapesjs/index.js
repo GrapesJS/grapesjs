@@ -37,7 +37,7 @@ describe('GrapesJS', () => {
         storageManager: {
           autoload: 0,
           autosave: 0,
-          type: ''
+          type: 0
         }
       };
       obj = grapesjs;
@@ -141,25 +141,19 @@ describe('GrapesJS', () => {
       ).toEqual('test2');
     });
 
-    it.skip('Init editor from element', () => {
+    it('Init editor from element', () => {
       config.fromElement = 1;
-      fixtures.innerHTML = documentEl;
-      var editor = obj.init(config);
-      var html = editor.getHtml();
-      var css = editor.getCss();
-      var protCss = editor.getConfig().protectedCss;
-      /*
-      (html ? html : '').should.equal(htmlString);
-      (css ? css : '').should.equal(protCss + '.test2{color:red;}');// .test3 is discarded in css
-      editor.getComponents().length.should.equal(2);
-      editor.getStyle().length.should.equal(2);
-      */
-
-      expect(html ? html : '').toEqual(htmlString);
+      config.storageManager = { type: 0 };
+      fixture.innerHTML = documentEl;
+      const editor = obj.init(config);
+      const html = editor.getHtml();
+      const css = editor.getCss();
+      const protCss = editor.getConfig().protectedCss;
+      expect(html).toEqual(htmlString);
       expect(editor.getComponents().length).toEqual(2);
-      // .test3 is discarded in css
-      expect(css ? css : '').toEqual(protCss + '.test2{color:red;}');
-      // bust is still here
+      // .test3 is discarded in CSS
+      expect(css).toEqual(`${protCss}.test2{color:red;}`);
+      // but it's still there
       expect(editor.getStyle().length).toEqual(2);
     });
 

@@ -138,7 +138,7 @@ module.exports = () => {
 
       if (isArray(obj)) {
         obj.length && rules.reset(obj);
-      } else {
+      } else if (obj) {
         rules.reset(obj);
       }
 
