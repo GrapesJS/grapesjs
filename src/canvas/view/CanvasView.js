@@ -303,7 +303,7 @@ module.exports = Backbone.View.extend({
   updateScript(view) {
     if (!view.scriptContainer) {
       view.scriptContainer = $('<div>');
-      this.getJsContainer().append(view.scriptContainer.get(0));
+      this.getJsContainer().appendChild(view.scriptContainer.get(0));
     }
 
     const model = view.model;

@@ -3853,7 +3853,8 @@ module.exports = Backbone.View.extend({
 
     if (em && em.get('avoidInlineStyle')) {
       this.el.id = model.getId();
-      model.setStyle(model.getStyle());
+      var style = model.getStyle();
+      !(0, _underscore.isEmpty)(style) && model.setStyle(style);
     } else {
       this.setAttribute('style', model.styleToString());
     }
@@ -4817,11 +4818,9 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
     }
 
     var obj = Backbone.Model.prototype.toJSON.apply(this, args);
-    var scriptStr = this.getScriptString();
     obj.attributes = this.getAttributes();
     delete obj.attributes.class;
     delete obj.toolbar;
-    scriptStr && (obj.script = scriptStr);
 
     return obj;
   },
@@ -17583,13 +17582,7 @@ module.exports = {
     if (key == 8 || key == 46) {
       if (!focused) e.preventDefault();
       if (comp && !focused) {
-        if (!comp.get('removable')) return;
-        comp.set('status', '');
-        comp.destroy();
-        this.hideBadge();
-        this.clean();
-        this.hideHighlighter();
-        this.editorModel.set('selectedComponent', null);
+        this.editor.runCommand('core:component-delete');
       }
     }
   },
@@ -23683,7 +23676,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.14.6',
+    version: '0.14.7',
 
     /**
      * Initializes an editor based on passed options
@@ -24094,14 +24087,13 @@ module.exports = function (config) {
      * @example
      * editor.runCommand('myCommand', {someValue: 1});
      */
-    runCommand: function runCommand(id, options) {
-      var result;
-      var command = em.get('Commands').get(id);
+    runCommand: function runCommand(id) {
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-      if (command) {
-        result = command.run(this, this, options);
-        this.trigger('run:' + id);
-      }
+      var result = void 0;
+      var command = em.get('Commands').get(id);
+      if (command) result = command.callRun(this, options);
+
       return result;
     },
 
@@ -24114,14 +24106,13 @@ module.exports = function (config) {
      * @example
      * editor.stopCommand('myCommand', {someValue: 1});
      */
-    stopCommand: function stopCommand(id, options) {
-      var result;
-      var command = em.get('Commands').get(id);
+    stopCommand: function stopCommand(id) {
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-      if (command) {
-        result = command.stop(this, this, options);
-        this.trigger('stop:' + id);
-      }
+      var result = void 0;
+      var command = em.get('Commands').get(id);
+      if (command) result = command.callStop(this, options);
+
       return result;
     },
 
@@ -24337,6 +24328,9 @@ module.exports = function (config) {
     * ## Commands
     * * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
     * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
+    * * `run:{commandName}:before` - Triggered before the command is called
+    * * `stop:{commandName}:before` - Triggered before the command is called to stop
+    * * `abort:{commandName}` - Triggered when the command execution is aborted (`editor.on(`run:preview:before`, opts => opts.abort = 1);`)
     * ## General
     * * `canvasScroll` - Triggered when the canvas is scrolle
     * * `undo` - Undo executed
@@ -24408,6 +24402,12 @@ module.exports = {
 
   // Width for the editor container
   width: '100%',
+
+  // By default Grapes injects base CSS into the canvas. For example, it sets body margin to 0
+  // and sets a default background color of white. This CSS is desired in most cases.
+  // use this property if you wish to overwrite the base CSS to your own CSS. This is most
+  // useful if for example your template is not based off a document with 0 as body margin.
+  baseCss: '\n    * {\n      box-sizing: border-box;\n    }\n    html, body, #wrapper {\n      min-height: 100%;\n    }\n    body {\n      margin: 0;\n      height: 100%;\n      background-color: #fff\n    }\n    #wrapper {\n      overflow: auto;\n      overflow-x: hidden;\n    }\n    \n    * ::-webkit-scrollbar-track {\n      background: rgba(0, 0, 0, 0.1)\n    }\n\n    * ::-webkit-scrollbar-thumb {\n      background: rgba(255, 255, 255, 0.2)\n    }\n\n    * ::-webkit-scrollbar {\n      width: 10px\n    }\n  ',
 
   // CSS that could only be seen (for instance, inside the code viewer)
   protectedCss: '* { box-sizing: border-box; } body {margin: 0;}',
@@ -24668,7 +24668,7 @@ module.exports = Backbone.Model.extend({
       clb && clb();
     };
 
-    if (sm && sm.getConfig().autoload) {
+    if (sm && sm.canAutoload()) {
       this.load(postLoad);
     } else {
       postLoad();
@@ -25003,7 +25003,9 @@ module.exports = Backbone.Model.extend({
     sm.load(load, function (res) {
       _this6.cacheLoad = res;
       clb && clb(res);
-      _this6.trigger('storage:load', res);
+      setTimeout(function () {
+        return _this6.trigger('storage:load', res);
+      }, 0);
     });
   },
 
@@ -30352,6 +30354,15 @@ module.exports = function () {
 
 
     /**
+     * Get configuration object
+     * @return {Object}
+     * */
+    getConfig: function getConfig() {
+      return c;
+    },
+
+
+    /**
      * Checks if autosave is enabled
      * @return {Boolean}
      * */
@@ -30529,12 +30540,22 @@ module.exports = function () {
 
 
     /**
-     * Get configuration object
-     * @return {Object}
+     * Get current storage
+     * @return {Storage}
+     * */
+    getCurrentStorage: function getCurrentStorage() {
+      return this.get(this.getCurrent());
+    },
+
+
+    /**
+     * Check if autoload is possible
+     * @return {Boolean}
      * @private
      * */
-    getConfig: function getConfig() {
-      return c;
+    canAutoload: function canAutoload() {
+      var storage = this.getCurrentStorage();
+      return storage && this.getConfig().autoload;
     }
   };
 };
@@ -36610,7 +36631,7 @@ var RichTextEditor = function () {
         btn.className = btn.className.replace(active, '').trim();
 
         // doc.queryCommandValue(name) != 'false'
-        if (doc.queryCommandState(name)) {
+        if (doc.queryCommandSupported(name) && doc.queryCommandState(name)) {
           btn.className += ' ' + active;
         }
 
@@ -41263,25 +41284,26 @@ module.exports = Backbone.View.extend({
 "use strict";
 
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /**
+                                                                                                                                                                                                                                                                   * This module contains and manage CSS rules for the template inside the canvas
+                                                                                                                                                                                                                                                                   * Before using the methods you should get first the module from the editor instance, in this way:
+                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                   * ```js
+                                                                                                                                                                                                                                                                   * var cssComposer = editor.CssComposer;
+                                                                                                                                                                                                                                                                   * ```
+                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                   * @module CssComposer
+                                                                                                                                                                                                                                                                   * @param {Object} config Configurations
+                                                                                                                                                                                                                                                                   * @param {string|Array<Object>} [config.rules=[]] CSS string or an array of rule objects
+                                                                                                                                                                                                                                                                   * @example
+                                                                                                                                                                                                                                                                   * ...
+                                                                                                                                                                                                                                                                   * CssComposer: {
+                                                                                                                                                                                                                                                                   *    rules: '.myClass{ color: red}',
+                                                                                                                                                                                                                                                                   * }
+                                                                                                                                                                                                                                                                   */
 
-/**
- * This module contains and manage CSS rules for the template inside the canvas
- * Before using the methods you should get first the module from the editor instance, in this way:
- *
- * ```js
- * var cssComposer = editor.CssComposer;
- * ```
- *
- * @module CssComposer
- * @param {Object} config Configurations
- * @param {string|Array<Object>} [config.rules=[]] CSS string or an array of rule objects
- * @example
- * ...
- * CssComposer: {
- *    rules: '.myClass{ color: red}',
- * }
- */
+
+var _underscore = __webpack_require__(1);
 
 module.exports = function () {
   var em = void 0;
@@ -41411,7 +41433,9 @@ module.exports = function () {
         obj = c.em.get('Parser').parseCss(d.css);
       }
 
-      if (obj) {
+      if ((0, _underscore.isArray)(obj)) {
+        obj.length && rules.reset(obj);
+      } else if (obj) {
         rules.reset(obj);
       }
 
@@ -41452,10 +41476,12 @@ module.exports = function () {
      *   color: '#fff',
      * });
      * */
-    add: function add(selectors, state, width, opts) {
+    add: function add(selectors, state, width) {
+      var opts = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
       var s = state || '';
       var w = width || '';
-      var opt = opts || {};
+      var opt = _extends({}, opts);
       var rule = this.get(selectors, s, w, opt);
       if (rule) return rule;else {
         opt.state = s;
@@ -43719,7 +43745,7 @@ module.exports = Component.extend({
       name: 'color',
       placeholder: 'eg. FF0000',
       changeProp: 1
-    }, this.getAutoplayTrait(), this.getLoopTrait(), this.getControlsTrait()];
+    }, this.getAutoplayTrait(), this.getLoopTrait()];
   },
 
 
@@ -43774,11 +43800,14 @@ module.exports = Component.extend({
    * @private
    */
   getYoutubeSrc: function getYoutubeSrc() {
+    var id = this.get('videoId');
     var url = this.get('ytUrl');
-    url += this.get('videoId') + '?';
+    url += id + '?';
     url += this.get('autoplay') ? '&autoplay=1' : '';
-    url += !this.get('controls') ? '&controls=0' : '';
-    url += this.get('loop') ? '&loop=1' : '';
+    url += !this.get('controls') ? '&controls=0&showinfo=0' : '';
+    // Loop works only with playlist enabled
+    // https://stackoverflow.com/questions/25779966/youtube-iframe-loop-doesnt-work
+    url += this.get('loop') ? '&loop=1&playlist=' + id : '';
     return url;
   },
 
@@ -44754,15 +44783,15 @@ var Droppable = function () {
         }
       } else if (dragContent) {
         content = dragContent;
-      } else if (types.indexOf('text/html') >= 0) {
+      } else if ((0, _underscore.indexOf)(types, 'text/html') >= 0) {
         content = dataTransfer.getData('text/html').replace(/<\/?meta[^>]*>/g, '');
-      } else if (types.indexOf('text/uri-list') >= 0) {
+      } else if ((0, _underscore.indexOf)(types, 'text/uri-list') >= 0) {
         content = {
           type: 'link',
           attributes: { href: content },
           content: content
         };
-      } else if (types.indexOf('text/json') >= 0) {
+      } else if ((0, _underscore.indexOf)(types, 'text/json') >= 0) {
         var json = dataTransfer.getData('text/json');
         json && (content = JSON.parse(json));
       }
@@ -44969,7 +44998,7 @@ module.exports = Backbone.View.extend({
 
       var colorWarn = '#ffca6f';
 
-      var baseCss = '\n        * {\n          box-sizing: border-box;\n        }\n        html, body, #wrapper {\n          min-height: 100%;\n        }\n        body {\n          margin: 0;\n          height: 100%;\n          background-color: #fff\n        }\n        #wrapper {\n          overflow: auto;\n          overflow-x: hidden;\n        }\n      ';
+      // I need all this styles to make the editor work properly
       // Remove `html { height: 100%;}` from the baseCss as it gives jumpings
       // effects (on ENTER) with RTE like CKEditor (maybe some bug there?!?)
       // With `body {height: auto;}` jumps in CKEditor are removed but in
@@ -44977,9 +45006,7 @@ module.exports = Backbone.View.extend({
       // `body {height: 100%;}`.
       // For the moment I give the priority to Firefox as it might be
       // CKEditor's issue
-
-      // I need all this styles to make the editor work properly
-      var frameCss = '\n        ' + baseCss + '\n\n        .' + ppfx + 'dashed *[data-highlightable] {\n          outline: 1px dashed rgba(170,170,170,0.7);\n          outline-offset: -2px;\n        }\n\n        .' + ppfx + 'comp-selected {\n          outline: 3px solid #3b97e3 !important;\n          outline-offset: -3px;\n        }\n\n        .' + ppfx + 'comp-selected-parent {\n          outline: 2px solid ' + colorWarn + ' !important\n        }\n\n        .' + ppfx + 'no-select {\n          user-select: none;\n          -webkit-user-select:none;\n          -moz-user-select: none;\n        }\n\n        .' + ppfx + 'freezed {\n          opacity: 0.5;\n          pointer-events: none;\n        }\n\n        .' + ppfx + 'no-pointer {\n          pointer-events: none;\n        }\n\n        .' + ppfx + 'plh-image {\n          background: #f5f5f5;\n          border: none;\n          height: 50px;\n          width: 50px;\n          display: block;\n          outline: 3px solid #ffca6f;\n          cursor: pointer;\n          outline-offset: -2px\n        }\n\n        .' + ppfx + 'grabbing {\n          cursor: grabbing;\n          cursor: -webkit-grabbing;\n        }\n\n        * ::-webkit-scrollbar-track {\n          background: rgba(0, 0, 0, 0.1)\n        }\n\n        * ::-webkit-scrollbar-thumb {\n          background: rgba(255, 255, 255, 0.2)\n        }\n\n        * ::-webkit-scrollbar {\n          width: 10px\n        }\n\n        ' + (conf.canvasCss || '') + '\n        ' + (protCss || '') + '\n      ';
+      var frameCss = '\n        ' + (em.config.baseCss || '') + '\n\n        .' + ppfx + 'dashed *[data-highlightable] {\n          outline: 1px dashed rgba(170,170,170,0.7);\n          outline-offset: -2px;\n        }\n\n        .' + ppfx + 'comp-selected {\n          outline: 3px solid #3b97e3 !important;\n          outline-offset: -3px;\n        }\n\n        .' + ppfx + 'comp-selected-parent {\n          outline: 2px solid ' + colorWarn + ' !important\n        }\n\n        .' + ppfx + 'no-select {\n          user-select: none;\n          -webkit-user-select:none;\n          -moz-user-select: none;\n        }\n\n        .' + ppfx + 'freezed {\n          opacity: 0.5;\n          pointer-events: none;\n        }\n\n        .' + ppfx + 'no-pointer {\n          pointer-events: none;\n        }\n\n        .' + ppfx + 'plh-image {\n          background: #f5f5f5;\n          border: none;\n          height: 50px;\n          width: 50px;\n          display: block;\n          outline: 3px solid #ffca6f;\n          cursor: pointer;\n          outline-offset: -2px\n        }\n\n        .' + ppfx + 'grabbing {\n          cursor: grabbing;\n          cursor: -webkit-grabbing;\n        }\n\n        ' + (conf.canvasCss || '') + '\n        ' + (protCss || '') + '\n      ';
 
       if (externalStyles) {
         body.append(externalStyles);
@@ -45002,7 +45029,13 @@ module.exports = Backbone.View.extend({
       // property keymaster (and many others) still use it... using `defineProperty`
       // hack seems the only way
       var createCustomEvent = function createCustomEvent(e, cls) {
-        var oEvent = new window[cls](e.type, e);
+        var oEvent = void 0;
+        try {
+          oEvent = new window[cls](e.type, e);
+        } catch (e) {
+          oEvent = document.createEvent(cls);
+          oEvent.initEvent(e.type, true, true);
+        }
         oEvent.keyCodeVal = e.keyCode;
         ['keyCode', 'which'].forEach(function (prop) {
           Object.defineProperty(oEvent, prop, {
@@ -45281,6 +45314,7 @@ module.exports = function () {
     }
 
     delete obj.initialize;
+    obj.id = id;
     commands[id] = AbsCommands.extend(obj);
     return this;
   };
@@ -45337,15 +45371,7 @@ module.exports = function () {
 
       defaultCommands['tlb-delete'] = {
         run: function run(ed) {
-          var sel = ed.getSelected();
-
-          if (!sel || !sel.get('removable')) {
-            console.warn('The element is not removable');
-            return;
-          }
-
-          ed.select(null);
-          sel.destroy();
+          return ed.runCommand('core:component-delete');
         }
       };
 
@@ -45373,7 +45399,7 @@ module.exports = function () {
           var event = opts && opts.event;
           var sel = ed.getSelected();
           var toolbarStyle = ed.Canvas.getToolbarEl().style;
-          var nativeDrag = event.type == 'dragstart';
+          var nativeDrag = event && event.type == 'dragstart';
 
           var hideTlb = function hideTlb() {
             toolbarStyle.display = 'none';
@@ -45465,6 +45491,20 @@ module.exports = function () {
           var at = coll.indexOf(model) + 1;
           coll.add(clp.clone(), { at: at });
         }
+      };
+      defaultCommands['core:component-delete'] = function (ed, sender) {
+        var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+        var component = opts.component || ed.getSelected();
+
+        if (!component || !component.get('removable')) {
+          console.warn('The element is not removable');
+          return;
+        }
+
+        ed.select(null);
+        component.destroy();
+        return component;
       };
 
       if (c.em) c.model = c.em.get('Canvas');
@@ -45714,6 +45754,44 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   init: function init(o) {},
+
+
+  /**
+   * Method that run command
+   * @param  {Object}  editor Editor instance
+   * @param  {Object}  [options={}] Options
+   * @private
+   * */
+  callRun: function callRun(editor) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    var id = this.id;
+    editor.trigger('run:' + id + ':before', options);
+
+    if (options && options.abort) {
+      editor.trigger('abort:' + id, options);
+      return;
+    }
+
+    var result = this.run(editor, editor, options);
+    editor.trigger('run:' + id, result, options);
+  },
+
+
+  /**
+   * Method that run command
+   * @param  {Object}  editor Editor instance
+   * @param  {Object}  [options={}] Options
+   * @private
+   * */
+  callStop: function callStop(editor) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    var id = this.id;
+    editor.trigger('stop:' + id + ':before', options);
+    var result = this.stop(editor, editor, options);
+    editor.trigger('stop:' + id, result, options);
+  },
 
 
   /**
@@ -47128,16 +47206,13 @@ module.exports = function () {
 "use strict";
 
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-module.exports = _defineProperty({
+module.exports = {
   // Specify the element to use as a container, string (query) or HTMLElement
   // With the empty value, nothing will be rendered
   appendTo: '',
 
   blocks: []
-
-}, 'appendTo', '');
+};
 
 /***/ }),
 /* 211 */
@@ -47446,7 +47521,8 @@ module.exports = Backbone.View.extend({
 
     // Note: data are not available on dragenter for security reason,
     // but will use dragContent as I need it for the Sorter context
-    ev.dataTransfer.setData(type, data);
+    // IE11 supports only 'text' data type
+    ev.dataTransfer.setData('text', data);
     this.em.set('dragContent', content);
   },
   handleDragEnd: function handleDragEnd() {
