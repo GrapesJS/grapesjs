@@ -23676,7 +23676,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.14.7',
+    version: '0.14.8',
 
     /**
      * Initializes an editor based on passed options
@@ -45162,7 +45162,7 @@ module.exports = Backbone.View.extend({
   updateScript: function updateScript(view) {
     if (!view.scriptContainer) {
       view.scriptContainer = $('<div>');
-      this.getJsContainer().append(view.scriptContainer.get(0));
+      this.getJsContainer().appendChild(view.scriptContainer.get(0));
     }
 
     var model = view.model;
