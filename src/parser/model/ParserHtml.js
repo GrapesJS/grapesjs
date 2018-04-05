@@ -57,6 +57,7 @@ module.exports = config => {
      * @return {Array<Object>}
      */
     parseNode(el) {
+      const config = (c.em && c.em.get('Config')) || {};
       const result = [];
       const nodes = el.childNodes;
 
@@ -152,9 +153,11 @@ module.exports = config => {
           }
 
           // Throw away empty nodes (keep spaces)
-          const content = node.nodeValue;
-          if (content != ' ' && !content.trim()) {
-            continue;
+          if (config.removeEmptyTextNodes) {
+            const content = node.nodeValue;
+            if (content != ' ' && !content.trim()) {
+              continue;
+            }
           }
         }
 
