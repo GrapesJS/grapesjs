@@ -92,6 +92,38 @@ module.exports = Backbone.View.extend({
 
   /**
    * Method that run command
+   * @param  {Object}  editor Editor instance
+   * @param  {Object}  [options={}] Options
+   * @private
+   * */
+  callRun(editor, options = {}) {
+    const id = this.id;
+    editor.trigger(`run:${id}:before`, options);
+
+    if (options && options.abort) {
+      editor.trigger(`abort:${id}`, options);
+      return;
+    }
+
+    const result = this.run(editor, editor, options);
+    editor.trigger(`run:${id}`, result, options);
+  },
+
+  /**
+   * Method that run command
+   * @param  {Object}  editor Editor instance
+   * @param  {Object}  [options={}] Options
+   * @private
+   * */
+  callStop(editor, options = {}) {
+    const id = this.id;
+    editor.trigger(`stop:${id}:before`, options);
+    const result = this.stop(editor, editor, options);
+    editor.trigger(`stop:${id}`, result, options);
+  },
+
+  /**
+   * Method that run command
    * @param  {Object}  em     Editor model
    * @param  {Object}  sender  Button sender
    * @private
