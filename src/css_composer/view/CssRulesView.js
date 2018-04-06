@@ -78,7 +78,10 @@ module.exports = require('backbone').View.extend({
   },
 
   getMediaWidth(mediaText) {
-    return mediaText && mediaText.replace('(max-width: ', '').replace(')', '');
+    return (
+      mediaText &&
+      mediaText.replace(`(${this.config.mediaCondition}: `, '').replace(')', '')
+    );
   },
 
   render() {
@@ -92,8 +95,14 @@ module.exports = require('backbone').View.extend({
     this.em
       .get('DeviceManager')
       .getAll()
-      .forEach(function(model) {
-        const blockId = pfx + 'rules-' + model.get('widthMedia');
+      .map(model => model.get('widthMedia'))
+      .sort(
+        (left, right) =>
+          ((right && right.replace('px', '')) || Number.MAX_VALUE) -
+          ((left && left.replace('px', '')) || Number.MAX_VALUE)
+      )
+      .forEach(widthMedia => {
+        const blockId = pfx + 'rules-' + widthMedia;
         $(`<div id="${blockId}"></div>`).appendTo(frag);
       });
 
