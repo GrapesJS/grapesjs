@@ -63,13 +63,13 @@ module.exports = require('backbone').View.extend({
     }
 
     const mediaWidth = this.getMediaWidth(model.get('mediaText'));
-    const styleBlockId = `${this.pfx}rules-${mediaWidth}`;
+    const styleBlockId = `#${this.pfx}rules-${mediaWidth}`;
 
     if (rendered) {
       if (fragment) {
-        fragment.getElementById(styleBlockId).appendChild(rendered);
+        fragment.querySelector(styleBlockId).appendChild(rendered);
       } else {
-        let $stylesContainer = this.$el.find(`#${styleBlockId}`);
+        let $stylesContainer = this.$el.find(styleBlockId);
         $stylesContainer.append(rendered);
       }
     }
