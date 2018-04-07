@@ -11,6 +11,7 @@ module.exports = () => {
     LocalStorage = require('./model/LocalStorage'),
     RemoteStorage = require('./model/RemoteStorage');
 
+  let em;
   var storages = {};
   var defaultStorages = {};
 
@@ -42,6 +43,7 @@ module.exports = () => {
      */
     init(config) {
       c = config || {};
+      em = c.em;
 
       for (var name in defaults) {
         if (!(name in c)) c[name] = defaults[name];
@@ -171,12 +173,15 @@ module.exports = () => {
      * storageManager.store({item1: value1, item2: value2});
      * */
     store(data, clb) {
-      var st = this.get(this.getCurrent());
-      var dataF = {};
+      const st = this.get(this.getCurrent());
+      const toStore = {};
+      em && em.trigger('storage:store:before', data);
 
-      for (var key in data) dataF[c.id + key] = data[key];
+      for (let key in data) {
+        toStore[c.id + key] = data[key];
+      }
 
-      return st ? st.store(dataF, clb) : null;
+      return st ? st.store(toStore, clb) : null;
     },
 
     /**

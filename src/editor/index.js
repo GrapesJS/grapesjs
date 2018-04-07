@@ -41,6 +41,7 @@
  * * `storage:start` - Before the storage request is started
  * * `storage:load` - Triggered when something was loaded from the storage, loaded object passed as an argumnet
  * * `storage:store` - Triggered when something is stored to the storage, stored object passed as an argumnet
+ * * `storage:store:before` - Before the store. The object to store is passed as an argumnet (which you can edit)
  * * `storage:end` - After the storage request is ended
  * * `storage:error` - On any error on storage request, passes the error as an argument
  * ## Canvas
