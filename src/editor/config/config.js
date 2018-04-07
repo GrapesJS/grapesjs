@@ -50,7 +50,7 @@ module.exports = {
       overflow: auto;
       overflow-x: hidden;
     }
-    
+
     * ::-webkit-scrollbar-track {
       background: rgba(0, 0, 0, 0.1)
     }
@@ -113,6 +113,11 @@ module.exports = {
   // use of media queries (@media) or even pseudo selectors (eg. :hover).
   // When `avoidInlineStyle` is true all styles are inserted inside the css rule
   avoidInlineStyle: 0,
+
+  // Avoid default properties from storable JSON data, like `components` and `styles`.
+  // With this option enabled your data will be smaller (usefull if need to
+  // save some storage space)
+  avoidDefaults: 0,
 
   // (experimental)
   // The structure of components is always on the screen but it's not the same
