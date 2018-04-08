@@ -80,7 +80,9 @@ module.exports = require('backbone').View.extend({
   getMediaWidth(mediaText) {
     return (
       mediaText &&
-      mediaText.replace(`(${this.config.mediaCondition}: `, '').replace(')', '')
+      mediaText
+        .replace(`(${this.em.getConfig('mediaCondition')}: `, '')
+        .replace(')', '')
     );
   },
 
