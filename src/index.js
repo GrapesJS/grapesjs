@@ -3,6 +3,7 @@ import Editor from './editor';
 import { isElement } from 'underscore';
 import polyfills from 'utils/polyfills';
 import PluginManager from './plugin_manager';
+import 'utils/touchpolyfill.js';
 import 'utils/DragDropTouch.js';
 
 polyfills();
