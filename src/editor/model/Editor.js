@@ -52,6 +52,7 @@ module.exports = Backbone.Model.extend({
     this.set('Config', c);
     this.set('modules', []);
     this.set('toLoad', []);
+    this.set('storables', []);
 
     if (c.el && c.fromElement) this.config.components = c.el.innerHTML;
 
