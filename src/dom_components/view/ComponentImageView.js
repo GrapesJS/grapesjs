@@ -67,6 +67,7 @@ module.exports = ComponentView.extend({
     if (editor && this.model.get('editable')) {
       editor.runCommand('open-assets', {
         target: this.model,
+        types: ['image'],
         onSelect() {
           editor.Modal.close();
           editor.AssetManager.setTarget(null);
