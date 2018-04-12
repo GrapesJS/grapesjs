@@ -96,8 +96,8 @@ module.exports = {
   // Ending tag for variable inside scripts in Components
   tagVarEnd: ' ]}',
 
-  // Remove empty text nodes when parsed, unless they contain a space
-  removeEmptyTextNodes: true,
+  // When false, removes empty text nodes when parsed, unless they contain a space
+  keepEmptyTextNodes: 0,
 
   // Return JS of components inside HTML from 'editor.getHtml()'
   jsInHtml: true,
