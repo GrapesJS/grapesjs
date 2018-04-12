@@ -14,6 +14,8 @@ module.exports = () => {
   let em;
   var storages = {};
   var defaultStorages = {};
+  const eventStart = 'storage:start';
+  const eventEnd = 'storage:end';
 
   return {
     /**
@@ -175,13 +177,18 @@ module.exports = () => {
     store(data, clb) {
       const st = this.get(this.getCurrent());
       const toStore = {};
-      em && em.trigger('storage:store:before', data);
+      this.onStart('store', data);
 
       for (let key in data) {
         toStore[c.id + key] = data[key];
       }
 
-      return st ? st.store(toStore, clb) : null;
+      return st
+        ? st.store(toStore, res => {
+            clb && clb(res);
+            this.onEnd('store', res);
+          })
+        : null;
     },
 
     /**
@@ -202,9 +209,11 @@ module.exports = () => {
       var result = {};
 
       if (typeof keys === 'string') keys = [keys];
+      this.onStart('load', keys);
 
-      for (var i = 0, len = keys.length; i < len; i++)
+      for (var i = 0, len = keys.length; i < len; i++) {
         keysF.push(c.id + keys[i]);
+      }
 
       if (st) {
         st.load(keysF, res => {
@@ -216,6 +225,7 @@ module.exports = () => {
           }
 
           clb && clb(result);
+          this.onEnd('load', result);
         });
       } else {
         clb && clb(result);
@@ -238,6 +248,28 @@ module.exports = () => {
      * */
     getCurrentStorage() {
       return this.get(this.getCurrent());
+    },
+
+    /**
+     * On start callback
+     * @private
+     */
+    onStart(ctx, data) {
+      if (em) {
+        em.trigger(eventStart);
+        ctx && em.trigger(`${eventStart}:${ctx}`, data);
+      }
+    },
+
+    /**
+     * On end callback
+     * @private
+     */
+    onEnd(ctx, data) {
+      if (em) {
+        em.trigger(eventEnd);
+        ctx && em.trigger(`${eventEnd}:${ctx}`, data);
+      }
     },
 
     /**

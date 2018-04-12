@@ -39,10 +39,13 @@
  * * `styleManager:change:{propertyName}` - As above but for a specific style property
  * ## Storages
  * * `storage:start` - Before the storage request is started
+ * * `storage:start:store` - Before the store request. The object to store is passed as an argumnet (which you can edit)
+ * * `storage:start:load` - Before the load request. Items to load are passed as an argumnet (which you can edit)
  * * `storage:load` - Triggered when something was loaded from the storage, loaded object passed as an argumnet
  * * `storage:store` - Triggered when something is stored to the storage, stored object passed as an argumnet
- * * `storage:store:before` - Before the store. The object to store is passed as an argumnet (which you can edit)
  * * `storage:end` - After the storage request is ended
+ * * `storage:end:store` - After the store request
+ * * `storage:end:load` - After the load request
  * * `storage:error` - On any error on storage request, passes the error as an argument
  * ## Canvas
  * * `canvas:dragenter` - When something is dragged inside the canvas, `DataTransfer` instance passed as an argument
