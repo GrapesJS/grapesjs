@@ -372,7 +372,7 @@ module.exports = {
         expect(res.css).toEqual(resCss);
       });
 
-      it.only('Respect multiple font-faces contained in styles in html', () => {
+      it('Respect multiple font-faces contained in styles in html', () => {
         const str = `
           <style>
           @font-face {
