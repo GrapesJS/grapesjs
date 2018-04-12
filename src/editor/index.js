@@ -83,6 +83,7 @@
  * @param {Object} [config.domComponents={}] Components configuration, see the relative documentation
  * @param {Object} [config.panels={}] Panels configuration, see the relative documentation
  * @param {Object} [config.showDevices=true] If true render a select of available devices inside style manager panel
+ * @param {Boolean} [config.removeEmptyTextNodes=true] If true, removes empty text nodes when parsed, unless they contain a space
  * @param {string} [config.defaultCommand='select-comp'] Command to execute when no other command is running
  * @param {Array} [config.plugins=[]] Array of plugins to execute on start
  * @param {Object} [config.pluginsOpts={}] Custom options for plugins
