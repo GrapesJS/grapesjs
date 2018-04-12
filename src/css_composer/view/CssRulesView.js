@@ -2,6 +2,10 @@ const CssRuleView = require('./CssRuleView');
 const CssGroupRuleView = require('./CssGroupRuleView');
 const $ = Backbone.$;
 
+// % is not a valid character for classes
+const getBlockId = (pfx, widthMedia) =>
+  `${pfx}rules-${widthMedia.replace('%', 'pc')}`;
+
 module.exports = require('backbone').View.extend({
   initialize(o) {
     const config = o.config || {};
@@ -63,13 +67,13 @@ module.exports = require('backbone').View.extend({
     }
 
     const mediaWidth = this.getMediaWidth(model.get('mediaText'));
-    const styleBlockId = `#${this.pfx}rules-${mediaWidth}`;
+    const styleBlockId = getBlockId(this.pfx, mediaWidth);
 
     if (rendered) {
       if (fragment) {
-        fragment.querySelector(styleBlockId).appendChild(rendered);
+        fragment.querySelector(`#${styleBlockId}`).appendChild(rendered);
       } else {
-        let $stylesContainer = this.$el.find(styleBlockId);
+        let $stylesContainer = this.$el.find(`#${styleBlockId}`);
         $stylesContainer.append(rendered);
       }
     }
@@ -104,8 +108,7 @@ module.exports = require('backbone').View.extend({
           ((left && left.replace('px', '')) || Number.MAX_VALUE)
       )
       .forEach(widthMedia => {
-        const blockId = pfx + 'rules-' + widthMedia;
-        $(`<div id="${blockId}"></div>`).appendTo(frag);
+        $(`<div id="${getBlockId(pfx, widthMedia)}"></div>`).appendTo(frag);
       });
 
     this.collection.each(model => this.addToCollection(model, frag));
