@@ -153,7 +153,7 @@ module.exports = config => {
           }
 
           // Throw away empty nodes (keep spaces)
-          if (config.removeEmptyTextNodes !== false) {
+          if (config.removeEmptyTextNodes) {
             const content = node.nodeValue;
             if (content != ' ' && !content.trim()) {
               continue;
