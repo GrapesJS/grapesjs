@@ -23670,6 +23670,8 @@ var _plugin_manager2 = _interopRequireDefault(_plugin_manager);
 
 __webpack_require__(222);
 
+__webpack_require__(223);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 (0, _polyfills2.default)();
@@ -38135,7 +38137,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var duringDragEvents = {};
     duringDragEvents['selectstart'] = prevent;
     duringDragEvents['dragstart'] = prevent;
-    duringDragEvents['touchmove mousemove'] = move;
+    duringDragEvents['mousemove'] = move;
     duringDragEvents['touchend mouseup'] = stop;
 
     function prevent(e) {
@@ -48056,441 +48058,1171 @@ module.exports = {
 "use strict";
 
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+// polyfill touch functionality on browsers that have pointer functionality (that piece of trash internet explorer)
+// this thing is mostly just a hack on handjs, but does the reverse
+// cameron henlin, cam.henlin@gmail.com
+
+// jslint directive
+/*jslint browser: true, unparam: true, nomen: true*/
+/*global HTMLBodyElement, HTMLDivElement, HTMLImageElement, HTMLUListElement, HTMLAnchorElement, HTMLLIElement, HTMLTableElement, HTMLSpanElement, HTMLCanvasElement, SVGElement*/
+
+(function () {
+  // We should start using 'use strict' as soon as we can get rid of the implied globals.
+  // 'use strict';
+
+  // the timestamp of the last touch event processed.
+  // It is used to determine what touches should be in the changedTouches TouchList array.
+  var lastHwTimestamp = 0,
+
+  // whether or not to log events to console
+  logToConsole = false,
+      userAgent = navigator.userAgent,
+      supportedEventsNames = ['touchstart', 'touchmove', 'touchend', 'touchcancel', 'touchleave'],
+
+  // commented out because not used
+  // upperCaseEventsNames = ["TouchStart", "TouchMove", "TouchEnd", "TouchCancel", "TouchLeave"],
+  previousTargets = {},
+
+  // wraps a W3C compliant implementation of the "touches" TouchList
+  touchesWrapper,
+
+  // wraps a W3C compliant implementation of the "changedTouches" TouchList
+  changedTouchesWrapper,
+
+  // wraps a W3C compliant implementation of the "targetTouches" TouchList
+  targetTouchesWrapper;
+
+  // a constructor for an object that wraps a W3C compliant TouchList.
+  function TouchListWrapper() {
+    var touchList = []; // an array of W3C compliant Touch objects.
+
+    // constructor for W3C compliant touch object
+    // http://www.w3.org/TR/touch-events/
+    function Touch(identifier, target, screenX, screenY, clientX, clientY, pageX, pageY) {
+      this.identifier = identifier;
+      this.target = target;
+      this.screenX = screenX;
+      this.screenY = screenY;
+      this.clientX = clientX;
+      this.clientY = clientY;
+      this.pageX = pageX;
+      this.pageY = pageY;
+    }
+
+    // Search the TouchList for a Touch with the given identifier.
+    // If it is found, return it.  Otherwise, return null;
+    function getTouch(identifier) {
+      var i;
+      for (i = 0; i < touchList.length; i += 1) {
+        if (touchList[i].identifier === identifier) {
+          return touchList[i];
+        }
+      }
+    }
+
+    // If this is a new touch, add it to the TouchList.
+    // If this is an existing touch, update it in the TouchList.
+    function addUpdateTouch(touch) {
+      var i;
+      for (i = 0; i < touchList.length; i += 1) {
+        if (touchList[i].identifier === touch.identifier) {
+          touchList[i] = touch;
+          return;
+        }
+      }
+      // If we finished the loop, then this is a new touch.
+      touchList.push(touch);
+    }
+
+    function removeTouch(identifier) {
+      var i;
+      for (i = 0; i < touchList.length; i += 1) {
+        if (touchList[i].identifier === identifier) {
+          touchList.splice(i, 1);
+        }
+      }
+    }
+
+    function clearTouches() {
+      // According to http://stackoverflow.com/questions/1232040/how-to-empty-an-array-in-javascript
+      // this is the fastest way to clear the array.
+      while (touchList.length > 0) {
+        touchList.pop();
+      }
+    }
+
+    // Return true if the current TouchList object contains a touch at the specified screenX, clientY.
+    // Returns false otherwise.
+    // This is used to differentiate touches that have moved from those that haven't.
+    function containsTouchAt(screenX, screenY) {
+      var i;
+
+      for (i = 0; i < touchList.length; i += 1) {
+        if (touchList[i].screenX === screenX && touchList[i].screenY === screenY) {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    // touchList is the actual W3C compliant TouchList object being emulated.
+    this.touchList = touchList;
+
+    this.Touch = Touch;
+    this.getTouch = getTouch;
+    this.addUpdateTouch = addUpdateTouch;
+    this.removeTouch = removeTouch;
+    this.clearTouches = clearTouches;
+    this.containsTouchAt = containsTouchAt;
+  }
+
+  function touchesAreAtSameSpot(touch0, touch1) {
+    return touch0.screenX === touch1.screenX && touch0.screenY === touch1.screenY;
+  }
+
+  // polyfill custom event
+  function CustomEvent(event, params) {
+    var evt;
+    params = params || {
+      bubbles: false,
+      cancelable: false,
+      detail: undefined
+    };
+    evt = document.createEvent('CustomEvent');
+    evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+    return evt;
+  }
+
+  function checkPreventDefault(node) {
+    while (node && !node.handJobjs_forcePreventDefault) {
+      node = node.parentNode;
+    }
+    return !!node || window.handJobjs_forcePreventDefault;
+  }
+
+  // Touch events
+  function generateTouchClonedEvent(sourceEvent, newName, canBubble, target, relatedTarget) {
+    var evObj, oldTouch, oldTarget;
+
+    // Updates the targetTouches so that it contains the touches from the "touches" TouchList
+    // that have the same target as the touch that triggered this event.
+    function updateTargetTouches(thisTouchTarget, touchesTouchList) {
+      var i, touch;
+
+      targetTouchesWrapper.clearTouches();
+
+      for (i = 0; i < touchesTouchList.length; i++) {
+        touch = touchesTouchList[i];
+        if (touch.target.isSameNode(thisTouchTarget)) {
+          targetTouchesWrapper.addUpdateTouch(touch);
+        }
+      }
+    }
+
+    function touchHandler(event) {
+      var eventType, oldTouch, touch, touchEvent, isTouchChanged;
+
+      log('touch!');
+
+      if (event.type === 'pointerdown') {
+        eventType = 'touchstart';
+      } else if (event.type === 'pointermove') {
+        eventType = 'touchmove';
+      } else {
+        throw new Error('touchHandler received invalid event type: ' + eventType + '. Valid event types are pointerdown and pointermove');
+      }
+      log(eventType);
+
+      touch = new touchesWrapper.Touch(event.pointerId, event.type === 'pointerdown' ? event.target : oldTarget, event.screenX, event.screenY, event.clientX, event.clientY, event.pageX, event.pageY);
+
+      // Remove, from changedTouches, any Touch that is no longer being touched, or is being touched
+      // in exactly the same place.
+      // In order to make sure that simultaneous touches don't kick each other off of the changedTouches array
+      // (because they are processed as different pointer events), skip this if the lastHwTimestamp hasn't increased.
+      if (event.hwTimestamp > lastHwTimestamp) {
+        (function () {
+          var i, changedTouchList, changedTouch, matchingTouch, identifier;
+          changedTouchList = changedTouchesWrapper.touchList;
+          for (i = 0; i < changedTouchList.length; i += 1) {
+            changedTouch = changedTouchList[i];
+            identifier = changedTouch.identifier;
+            matchingTouch = touchesWrapper.getTouch(identifier);
+
+            if (!matchingTouch || touchesAreAtSameSpot(matchingTouch, changedTouch)) {
+              changedTouchesWrapper.removeTouch(identifier);
+            }
+          }
+        })();
+      }
+
+      log('generating touch cloned');
+
+      touchesWrapper.addUpdateTouch(touch);
+      changedTouchesWrapper.addUpdateTouch(touch);
+      updateTargetTouches(touch.target, touchesWrapper.touchList);
+
+      event.type = eventType;
+      touchEvent = new CustomEvent(eventType, {
+        bubbles: true,
+        cancelable: true
+      });
+
+      touchEvent.touches = touchesWrapper.touchList;
+      touchEvent.changedTouches = changedTouchesWrapper.touchList;
+      touchEvent.targetTouches = targetTouchesWrapper.touchList;
+      touchEvent.type = eventType;
+
+      // Awesomely, I figured out how to keep track of the touches in the "Touches" TouchList using an array.
+      // TODO: Do the same thing for the changedTouches and targetTouches properties of the TouchEvent.
+      // TODONE! changedTouches is implemented.
+      // TODONE! targetTouches is implemented.
+
+      // The other members of the TouchEvent are altKey, metaKey, ctrlKey, and shiftKey
+
+      return touchEvent;
+    }
+
+    function touchChangedHandler(event) {
+      var eventType, touch, touchEvent;
+
+      log('touchchanged!');
+      event.changedTouches = [];
+      event.changedTouches.length = 1;
+      event.changedTouches[0] = event;
+      event.changedTouches[0].identifier = event.pointerId;
+
+      if (event.type === 'pointerup') {
+        eventType = 'touchend';
+      } else if (event.type === 'pointercancel') {
+        eventType = 'touchcancel';
+      } else if (event.type === 'pointerleave') {
+        eventType = 'touchleave';
+      }
+
+      touch = new touchesWrapper.Touch(event.pointerId, oldTarget, event.screenX, event.screenY, event.clientX, event.clientY, event.pageX, event.pageY);
+
+      // This is a new touch event if it happened at a greater time than the last touch event.
+      // If it is a new touch event, clear out the changedTouches TouchList.
+      if (event.hwTimestamp > lastHwTimestamp) {
+        changedTouchesWrapper.clearTouches();
+      }
+
+      touchesWrapper.removeTouch(touch.identifier);
+      changedTouchesWrapper.addUpdateTouch(touch);
+      updateTargetTouches(touch.target, touchesWrapper.touchList);
+
+      event.type = eventType;
+      touchEvent = new CustomEvent(eventType, {
+        bubbles: true,
+        cancelable: true
+      });
+      touchEvent.touches = touchesWrapper.touchList;
+      touchEvent.changedTouches = changedTouchesWrapper.touchList;
+      touchEvent.targetTouches = targetTouchesWrapper.touchList;
+      touchEvent.type = eventType;
+
+      return touchEvent;
+    }
+
+    // An important difference between the MS pointer events and the W3C touch events
+    // is that for pointer events except for pointerdown, all target the element that the touch
+    // is over when the event is fired.
+    // The W3C touch events target the element where the touch originally started.
+    // Therefore, when these events are fired, we must make this change manually.
+    if (sourceEvent.type !== 'pointerdown') {
+      oldTouch = touchesWrapper.getTouch(sourceEvent.pointerId);
+      oldTarget = oldTouch.target;
+      sourceEvent.target = oldTarget;
+    }
+
+    if (sourceEvent.type === 'pointerdown' || sourceEvent.type === 'pointermove') {
+      evObj = touchHandler(sourceEvent);
+    } else {
+      evObj = touchChangedHandler(sourceEvent);
+    }
+
+    // PreventDefault
+    evObj.preventDefault = function () {
+      if (sourceEvent.preventDefault !== undefined) {
+        sourceEvent.preventDefault();
+      }
+    };
+
+    // Fire event
+    log('dispatching!');
+    sourceEvent.target.dispatchEvent(evObj);
+
+    lastHwTimestamp = event.hwTimestamp;
+  }
+
+  function generateTouchEventProxy(name, touchPoint, target, eventObject, canBubble, relatedTarget) {
+    generateTouchClonedEvent(touchPoint, name, canBubble, target, relatedTarget);
+  }
+
+  function registerOrUnregisterEvent(item, name, func, enable) {
+    log('registerOrUnregisterEvent');
+    if (item.__handJobjsRegisteredEvents === undefined) {
+      item.__handJobjsRegisteredEvents = [];
+    }
+
+    if (enable) {
+      if (item.__handJobjsRegisteredEvents[name] !== undefined) {
+        item.__handJobjsRegisteredEvents[name] += 1;
+        return;
+      }
+
+      item.__handJobjsRegisteredEvents[name] = 1;
+      log('adding event ' + name);
+      item.addEventListener(name, func, false);
+    } else {
+      if (item.__handJobjsRegisteredEvents.indexOf(name) !== -1) {
+        item.__handJobjsRegisteredEvents[name] -= 1;
+
+        if (item.__handJobjsRegisteredEvents[name] !== 0) {
+          return;
+        }
+      }
+      log('removing event');
+      item.removeEventListener(name, func);
+      item.__handJobjsRegisteredEvents[name] = 0;
+    }
+  }
+
+  function setTouchAware(item, eventName, enable) {
+    var eventGenerator, targetEvent;
+
+    function nameGenerator(name) {
+      return name;
+    } // easier than doing this right and replacing all the references
+
+    log('setTouchAware ' + enable + ' ' + eventName);
+    // Leaving tokens
+    if (!item.__handJobjsGlobalRegisteredEvents) {
+      item.__handJobjsGlobalRegisteredEvents = [];
+    }
+    if (enable) {
+      if (item.__handJobjsGlobalRegisteredEvents[eventName] !== undefined) {
+        item.__handJobjsGlobalRegisteredEvents[eventName] += 1;
+        return;
+      }
+      item.__handJobjsGlobalRegisteredEvents[eventName] = 1;
+
+      log(item.__handJobjsGlobalRegisteredEvents[eventName]);
+    } else {
+      if (item.__handJobjsGlobalRegisteredEvents[eventName] !== undefined) {
+        item.__handJobjsGlobalRegisteredEvents[eventName] -= 1;
+        if (item.__handJobjsGlobalRegisteredEvents[eventName] < 0) {
+          item.__handJobjsGlobalRegisteredEvents[eventName] = 0;
+        }
+      }
+    }
+
+    eventGenerator = generateTouchClonedEvent;
+
+    //switch (eventName) {
+    //    case "touchenter":
+    //      log("touchenter");
+    //      break;
+    //    case "touchleave":
+    //      log("touchleave");
+    targetEvent = nameGenerator(eventName);
+
+    if (item['on' + targetEvent.toLowerCase()] !== undefined) {
+      registerOrUnregisterEvent(item, targetEvent, function (evt) {
+        eventGenerator(evt, eventName);
+      }, enable);
+    }
+    //        break;
+    //}
+  }
+
+  // Intercept addEventListener calls by changing the prototype
+  function interceptAddEventListener(root) {
+    var current = root.prototype ? root.prototype.addEventListener : root.addEventListener;
+
+    function customAddEventListener(name, func, capture) {
+      log('customAddEventListener');
+      log(name);
+
+      if (supportedEventsNames.indexOf(name) !== -1) {
+        log('setting touch aware...');
+        setTouchAware(this, name, true);
+      }
+      current.call(this, name, func, capture);
+    }
+
+    log('intercepting add event listener!');
+    log(root);
+
+    if (root.prototype) {
+      root.prototype.addEventListener = customAddEventListener;
+    } else {
+      root.addEventListener = customAddEventListener;
+    }
+  }
+
+  function handleOtherEvent(eventObject, name) {
+    log('handle other event');
+    if (eventObject.preventManipulation) {
+      eventObject.preventManipulation();
+    }
+
+    // TODO: JSLint found that touchPoint here is an implied global!
+    generateTouchClonedEvent(touchPoint, name);
+  }
+
+  function removeTouchAware(item, eventName) {
+    // If item is already touch aware, do nothing
+    if (item.ontouchdown !== undefined) {
+      return;
+    }
+
+    // Chrome, Firefox
+    if (item.ontouchstart !== undefined) {
+      switch (eventName.toLowerCase()) {
+        case 'touchstart':
+          item.removeEventListener('pointerdown', function (evt) {
+            handleOtherEvent(evt, eventName);
+          });
+          break;
+        case 'touchmove':
+          item.removeEventListener('pointermove', function (evt) {
+            handleOtherEvent(evt, eventName);
+          });
+          break;
+        case 'touchend':
+          item.removeEventListener('pointerup', function (evt) {
+            handleOtherEvent(evt, eventName);
+          });
+          break;
+        case 'touchcancel':
+          item.removeEventListener('pointercancel', function (evt) {
+            handleOtherEvent(evt, eventName);
+          });
+          break;
+      }
+    }
+  }
+
+  // Intercept removeEventListener calls by changing the prototype
+  function interceptRemoveEventListener(root) {
+    var current = root.prototype ? root.prototype.removeEventListener : root.removeEventListener;
+
+    function customRemoveEventListener(name, func, capture) {
+      // Branch when a PointerXXX is used
+      if (supportedEventsNames.indexOf(name) !== -1) {
+        removeTouchAware(this, name);
+      }
+
+      current.call(this, name, func, capture);
+    }
+
+    if (root.prototype) {
+      root.prototype.removeEventListener = customRemoveEventListener;
+    } else {
+      root.removeEventListener = customRemoveEventListener;
+    }
+  }
+
+  function checkEventRegistration(node, eventName) {
+    log('checkEventRegistration');
+    return node.__handJobjsGlobalRegisteredEvents && node.__handJobjsGlobalRegisteredEvents[eventName];
+  }
+
+  function findEventRegisteredNode(node, eventName) {
+    log('findEventRegisteredNode');
+    while (node && !checkEventRegistration(node, eventName)) {
+      node = node.parentNode;
+    }
+    if (node) {
+      return node;
+    }
+    if (checkEventRegistration(window, eventName)) {
+      return window;
+    }
+  }
+
+  function generateTouchEventProxyIfRegistered(eventName, touchPoint, target, eventObject, canBubble, relatedTarget) {
+    // Check if user registered this event
+    log('generateTouchEventProxyIfRegistered');
+    if (findEventRegisteredNode(target, eventName)) {
+      generateTouchEventProxy(eventName, touchPoint, target, eventObject, canBubble, relatedTarget);
+    }
+  }
+
+  function getDomUpperHierarchy(node) {
+    var nodes = [];
+    if (node) {
+      nodes.unshift(node);
+      while (node.parentNode) {
+        nodes.unshift(node.parentNode);
+        node = node.parentNode;
+      }
+    }
+    return nodes;
+  }
+
+  function getFirstCommonNode(node1, node2) {
+    var parents1 = getDomUpperHierarchy(node1),
+        parents2 = getDomUpperHierarchy(node2),
+        lastmatch = null;
+
+    while (parents1.length > 0 && parents1[0] === parents2.shift()) {
+      lastmatch = parents1.shift();
+    }
+    return lastmatch;
+  }
+
+  // generateProxy receives a node to dispatch the event
+  function dispatchPointerEnter(currentTarget, relatedTarget, generateProxy) {
+    log('dispatchPointerEnter');
+    var commonParent = getFirstCommonNode(currentTarget, relatedTarget),
+        node = currentTarget,
+        nodelist = [];
+
+    while (node && node !== commonParent) {
+      // target range: this to the direct child of parent relatedTarget
+      if (checkEventRegistration(node, 'touchenter')) {
+        // check if any parent node has pointerenter
+        nodelist.push(node);
+      }
+      node = node.parentNode;
+    }
+    while (nodelist.length > 0) {
+      generateProxy(nodelist.pop());
+    }
+  }
+
+  // generateProxy receives a node to dispatch the event
+  function dispatchPointerLeave(currentTarget, relatedTarget, generateProxy) {
+    log('dispatchPointerLeave');
+    var commonParent = getFirstCommonNode(currentTarget, relatedTarget),
+        node = currentTarget;
+    while (node && node !== commonParent) {
+      //target range: this to the direct child of parent relatedTarget
+      if (checkEventRegistration(node, 'touchleave')) {
+        // check if any parent node has pointerleave
+        generateProxy(node);
+      }
+      node = node.parentNode;
+    }
+  }
+
+  function log(s) {
+    if (logToConsole) {
+      console.log(s.toString());
+    }
+  }
+
+  CustomEvent.prototype = window.Event.prototype;
+
+  if (_typeof(window.ontouchstart) === 'object') {
+    return;
+  }
+
+  if (userAgent.match(/iPad/i) || userAgent.match(/iPhone/i) || userAgent.match(/iPod/i) || userAgent.match(/Android/i) || userAgent.match(/MSIE/i) && !userAgent.match(/Touch/i)) {
+    return;
+  }
+
+  // Add CSS to disable MS IE default scrolling functionality.
+  (function () {
+    var css = 'html { -ms-touch-action: none; }',
+        head = document.head || document.getElementsByTagName('head')[0],
+        style = document.createElement('style');
+
+    style.type = 'text/css';
+    if (style.styleSheet) {
+      style.styleSheet.cssText = css;
+    } else {
+      style.appendChild(document.createTextNode(css));
+    }
+
+    head.appendChild(style);
+  })();
+
+  touchesWrapper = new TouchListWrapper();
+  changedTouchesWrapper = new TouchListWrapper();
+  targetTouchesWrapper = new TouchListWrapper();
+
+  window.CustomEvent = CustomEvent;
+
+  // Hooks
+  interceptAddEventListener(window);
+  interceptAddEventListener(window.HTMLElement || window.Element);
+  interceptAddEventListener(document);
+  interceptAddEventListener(HTMLBodyElement);
+  interceptAddEventListener(HTMLDivElement);
+  interceptAddEventListener(HTMLImageElement);
+  interceptAddEventListener(HTMLUListElement);
+  interceptAddEventListener(HTMLAnchorElement);
+  interceptAddEventListener(HTMLLIElement);
+  interceptAddEventListener(HTMLTableElement);
+  if (window.HTMLSpanElement) {
+    interceptAddEventListener(HTMLSpanElement);
+  }
+  if (window.HTMLCanvasElement) {
+    interceptAddEventListener(HTMLCanvasElement);
+  }
+  if (window.SVGElement) {
+    interceptAddEventListener(SVGElement);
+  }
+
+  interceptRemoveEventListener(window);
+  interceptRemoveEventListener(window.HTMLElement || window.Element);
+  interceptRemoveEventListener(document);
+  interceptRemoveEventListener(HTMLBodyElement);
+  interceptRemoveEventListener(HTMLDivElement);
+  interceptRemoveEventListener(HTMLImageElement);
+  interceptRemoveEventListener(HTMLUListElement);
+  interceptRemoveEventListener(HTMLAnchorElement);
+  interceptRemoveEventListener(HTMLLIElement);
+  interceptRemoveEventListener(HTMLTableElement);
+  if (window.HTMLSpanElement) {
+    interceptRemoveEventListener(HTMLSpanElement);
+  }
+  if (window.HTMLCanvasElement) {
+    interceptRemoveEventListener(HTMLCanvasElement);
+  }
+  if (window.SVGElement) {
+    interceptRemoveEventListener(SVGElement);
+  }
+
+  (function () {
+    // Returns true if and only if the event should be ignored.
+    function ignorePointerEvent(event) {
+      // Don't interpret mouse pointers as touches
+      if (event.pointerType === 'mouse') {
+        return true;
+      }
+      // Don't interpret pointerdown events on the scrollbars as touch events.
+      // It appears to be the case that when the event is on the scrollbar in IE,
+      // event.x === 0 and event.y === 0
+      if (event.type === 'pointerdown' && event.x === 0 && event.y === 0) {
+        return true;
+      }
+      // A user reported that when the input type is 'pen', the pointermove event fires with a pressure of 0
+      // before the pen touches the screen.  We want to ignore this.
+      if (event.pointerType === 'pen' && event.pressure === 0 && event.type === 'pointermove') {
+        return true;
+      }
+      return false;
+    }
+
+    // Handling move on window to detect pointerleave/out/over
+    window.addEventListener('pointerdown', function (eventObject) {
+      log('pointerdownfired');
+      var touchPoint = eventObject;
+
+      if (ignorePointerEvent(eventObject)) {
+        return;
+      }
+
+      previousTargets[touchPoint.identifier] = touchPoint.target;
+      generateTouchEventProxyIfRegistered('touchenter', touchPoint, touchPoint.target, eventObject, true);
+
+      // pointerenter should not be bubbled
+      dispatchPointerEnter(touchPoint.target, null, function (targetNode) {
+        generateTouchEventProxy('touchenter', touchPoint, targetNode, eventObject, false);
+      });
+
+      generateTouchEventProxyIfRegistered('touchstart', touchPoint, touchPoint.target, eventObject, true);
+    });
+
+    window.addEventListener('pointerup', function (eventObject) {
+      var touchPoint = eventObject,
+          currentTarget = previousTargets[touchPoint.identifier];
+
+      log('pointer up fired');
+
+      if (ignorePointerEvent(eventObject)) {
+        return;
+      }
+
+      generateTouchEventProxyIfRegistered('touchend', touchPoint, currentTarget, eventObject, true);
+      generateTouchEventProxyIfRegistered('touchleave', touchPoint, currentTarget, eventObject, true);
+
+      //pointerleave should not be bubbled
+      dispatchPointerLeave(currentTarget, null, function (targetNode) {
+        generateTouchEventProxy('touchleave', touchPoint, targetNode, eventObject, false);
+      });
+    });
+
+    window.addEventListener('pointermove', function (eventObject) {
+      var touchPoint = eventObject,
+          currentTarget = previousTargets[touchPoint.identifier];
+
+      log('pointer move fired');
+
+      if (ignorePointerEvent(eventObject)) {
+        return;
+      }
+
+      log('x: ' + eventObject.screenX + ', y: ' + eventObject.screenY);
+
+      // pointermove fires over and over when a touch-point stays stationary.
+      // This is at odds with the other browsers that implement the W3C standard touch events
+      // which fire touchmove only when the touch-point actually moves.
+      // Therefore, return without doing anything if the pointermove event fired for a touch
+      // that hasn't moved.
+      if (touchesWrapper.containsTouchAt(eventObject.screenX, eventObject.screenY)) {
+        return;
+      }
+
+      // If force preventDefault
+      if (currentTarget && checkPreventDefault(currentTarget) === true) {
+        eventObject.preventDefault();
+      }
+
+      generateTouchEventProxyIfRegistered('touchmove', touchPoint, currentTarget, eventObject, true);
+    });
+  })();
+})();
+
+/***/ }),
+/* 223 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var DragDropTouch;
 (function (DragDropTouch_1) {
-	'use strict';
-	/**
-  * Object used to hold the data that is being dragged during drag and drop operations.
-  *
-  * It may hold one or more data items of different types. For more information about
-  * drag and drop operations and data transfer objects, see
-  * <a href="https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer">HTML Drag and Drop API</a>.
-  *
-  * This object is created automatically by the @see:DragDropTouch singleton and is
-  * accessible through the @see:dataTransfer property of all drag events.
-  */
+  'use strict';
+  /**
+   * Object used to hold the data that is being dragged during drag and drop operations.
+   *
+   * It may hold one or more data items of different types. For more information about
+   * drag and drop operations and data transfer objects, see
+   * <a href="https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer">HTML Drag and Drop API</a>.
+   *
+   * This object is created automatically by the @see:DragDropTouch singleton and is
+   * accessible through the @see:dataTransfer property of all drag events.
+   */
 
-	var DataTransfer = function () {
-		function DataTransfer() {
-			this._dropEffect = 'move';
-			this._effectAllowed = 'all';
-			this._data = {};
-		}
-		Object.defineProperty(DataTransfer.prototype, "dropEffect", {
-			/**
-    * Gets or sets the type of drag-and-drop operation currently selected.
-    * The value must be 'none',  'copy',  'link', or 'move'.
-    */
-			get: function get() {
-				return this._dropEffect;
-			},
-			set: function set(value) {
-				this._dropEffect = value;
-			},
-			enumerable: true,
-			configurable: true
-		});
-		Object.defineProperty(DataTransfer.prototype, "effectAllowed", {
-			/**
-    * Gets or sets the types of operations that are possible.
-    * Must be one of 'none', 'copy', 'copyLink', 'copyMove', 'link',
-    * 'linkMove', 'move', 'all' or 'uninitialized'.
-    */
-			get: function get() {
-				return this._effectAllowed;
-			},
-			set: function set(value) {
-				this._effectAllowed = value;
-			},
-			enumerable: true,
-			configurable: true
-		});
-		Object.defineProperty(DataTransfer.prototype, "types", {
-			/**
-    * Gets an array of strings giving the formats that were set in the @see:dragstart event.
-    */
-			get: function get() {
-				return Object.keys(this._data);
-			},
-			enumerable: true,
-			configurable: true
-		});
-		/**
-   * Removes the data associated with a given type.
+  var DataTransfer = function () {
+    function DataTransfer() {
+      this._dropEffect = 'move';
+      this._effectAllowed = 'all';
+      this._data = {};
+    }
+    Object.defineProperty(DataTransfer.prototype, 'dropEffect', {
+      /**
+       * Gets or sets the type of drag-and-drop operation currently selected.
+       * The value must be 'none',  'copy',  'link', or 'move'.
+       */
+      get: function get() {
+        return this._dropEffect;
+      },
+      set: function set(value) {
+        this._dropEffect = value;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(DataTransfer.prototype, 'effectAllowed', {
+      /**
+       * Gets or sets the types of operations that are possible.
+       * Must be one of 'none', 'copy', 'copyLink', 'copyMove', 'link',
+       * 'linkMove', 'move', 'all' or 'uninitialized'.
+       */
+      get: function get() {
+        return this._effectAllowed;
+      },
+      set: function set(value) {
+        this._effectAllowed = value;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(DataTransfer.prototype, 'types', {
+      /**
+       * Gets an array of strings giving the formats that were set in the @see:dragstart event.
+       */
+      get: function get() {
+        return Object.keys(this._data);
+      },
+      enumerable: true,
+      configurable: true
+    });
+    /**
+     * Removes the data associated with a given type.
+     *
+     * The type argument is optional. If the type is empty or not specified, the data
+     * associated with all types is removed. If data for the specified type does not exist,
+     * or the data transfer contains no data, this method will have no effect.
+     *
+     * @param type Type of data to remove.
+     */
+    DataTransfer.prototype.clearData = function (type) {
+      if (type != null) {
+        delete this._data[type];
+      } else {
+        this._data = null;
+      }
+    };
+    /**
+     * Retrieves the data for a given type, or an empty string if data for that type does
+     * not exist or the data transfer contains no data.
+     *
+     * @param type Type of data to retrieve.
+     */
+    DataTransfer.prototype.getData = function (type) {
+      return this._data[type] || '';
+    };
+    /**
+     * Set the data for a given type.
+     *
+     * For a list of recommended drag types, please see
+     * https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Recommended_Drag_Types.
+     *
+     * @param type Type of data to add.
+     * @param value Data to add.
+     */
+    DataTransfer.prototype.setData = function (type, value) {
+      this._data[type] = value;
+    };
+    /**
+     * Set the image to be used for dragging if a custom one is desired.
+     *
+     * @param img An image element to use as the drag feedback image.
+     * @param offsetX The horizontal offset within the image.
+     * @param offsetY The vertical offset within the image.
+     */
+    DataTransfer.prototype.setDragImage = function (img, offsetX, offsetY) {
+      var ddt = DragDropTouch._instance;
+      ddt._imgCustom = img;
+      ddt._imgOffset = { x: offsetX, y: offsetY };
+    };
+    return DataTransfer;
+  }();
+  DragDropTouch_1.DataTransfer = DataTransfer;
+  /**
+   * Defines a class that adds support for touch-based HTML5 drag/drop operations.
    *
-   * The type argument is optional. If the type is empty or not specified, the data
-   * associated with all types is removed. If data for the specified type does not exist,
-   * or the data transfer contains no data, this method will have no effect.
+   * The @see:DragDropTouch class listens to touch events and raises the
+   * appropriate HTML5 drag/drop events as if the events had been caused
+   * by mouse actions.
    *
-   * @param type Type of data to remove.
-   */
-		DataTransfer.prototype.clearData = function (type) {
-			if (type != null) {
-				delete this._data[type];
-			} else {
-				this._data = null;
-			}
-		};
-		/**
-   * Retrieves the data for a given type, or an empty string if data for that type does
-   * not exist or the data transfer contains no data.
+   * The purpose of this class is to enable using existing, standard HTML5
+   * drag/drop code on mobile devices running IOS or Android.
    *
-   * @param type Type of data to retrieve.
-   */
-		DataTransfer.prototype.getData = function (type) {
-			return this._data[type] || '';
-		};
-		/**
-   * Set the data for a given type.
+   * To use, include the DragDropTouch.js file on the page. The class will
+   * automatically start monitoring touch events and will raise the HTML5
+   * drag drop events (dragstart, dragenter, dragleave, drop, dragend) which
+   * should be handled by the application.
    *
-   * For a list of recommended drag types, please see
-   * https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Recommended_Drag_Types.
-   *
-   * @param type Type of data to add.
-   * @param value Data to add.
+   * For details and examples on HTML drag and drop, see
+   * https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Drag_operations.
    */
-		DataTransfer.prototype.setData = function (type, value) {
-			this._data[type] = value;
-		};
-		/**
-   * Set the image to be used for dragging if a custom one is desired.
-   *
-   * @param img An image element to use as the drag feedback image.
-   * @param offsetX The horizontal offset within the image.
-   * @param offsetY The vertical offset within the image.
-   */
-		DataTransfer.prototype.setDragImage = function (img, offsetX, offsetY) {
-			var ddt = DragDropTouch._instance;
-			ddt._imgCustom = img;
-			ddt._imgOffset = { x: offsetX, y: offsetY };
-		};
-		return DataTransfer;
-	}();
-	DragDropTouch_1.DataTransfer = DataTransfer;
-	/**
-  * Defines a class that adds support for touch-based HTML5 drag/drop operations.
-  *
-  * The @see:DragDropTouch class listens to touch events and raises the
-  * appropriate HTML5 drag/drop events as if the events had been caused
-  * by mouse actions.
-  *
-  * The purpose of this class is to enable using existing, standard HTML5
-  * drag/drop code on mobile devices running IOS or Android.
-  *
-  * To use, include the DragDropTouch.js file on the page. The class will
-  * automatically start monitoring touch events and will raise the HTML5
-  * drag drop events (dragstart, dragenter, dragleave, drop, dragend) which
-  * should be handled by the application.
-  *
-  * For details and examples on HTML drag and drop, see
-  * https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Drag_operations.
-  */
-	var DragDropTouch = function () {
-		/**
-   * Initializes the single instance of the @see:DragDropTouch class.
-   */
-		function DragDropTouch() {
-			this._lastClick = 0;
-			// enforce singleton pattern
-			if (DragDropTouch._instance) {
-				throw 'DragDropTouch instance already created.';
-			}
-			// detect passive event support
-			// https://github.com/Modernizr/Modernizr/issues/1894
-			var supportsPassive = false;
-			document.addEventListener('test', function () {}, {
-				get passive() {
-					supportsPassive = true;
-					return true;
-				}
-			});
-			// listen to touch events
-			if ('ontouchstart' in document) {
-				var d = document,
-				    ts = this._touchstart.bind(this),
-				    tm = this._touchmove.bind(this),
-				    te = this._touchend.bind(this),
-				    opt = supportsPassive ? { passive: false, capture: false } : false;
-				d.addEventListener('touchstart', ts, opt);
-				d.addEventListener('touchmove', tm, opt);
-				d.addEventListener('touchend', te);
-				d.addEventListener('touchcancel', te);
-			}
-		}
-		/**
-   * Gets a reference to the @see:DragDropTouch singleton.
-   */
-		DragDropTouch.getInstance = function () {
-			return DragDropTouch._instance;
-		};
-		// ** event handlers
-		DragDropTouch.prototype._touchstart = function (e) {
-			var _this = this;
-			if (this._shouldHandle(e)) {
-				// raise double-click and prevent zooming
-				if (Date.now() - this._lastClick < DragDropTouch._DBLCLICK) {
-					if (this._dispatchEvent(e, 'dblclick', e.target)) {
-						e.preventDefault();
-						this._reset();
-						return;
-					}
-				}
-				// clear all variables
-				this._reset();
-				// get nearest draggable element
-				var src = this._closestDraggable(e.target);
-				if (src) {
-					// give caller a chance to handle the hover/move events
-					if (!this._dispatchEvent(e, 'mousemove', e.target) && !this._dispatchEvent(e, 'mousedown', e.target)) {
-						// get ready to start dragging
-						this._dragSource = src;
-						this._ptDown = this._getPoint(e);
-						this._lastTouch = e;
-						e.preventDefault();
-						// show context menu if the user hasn't started dragging after a while
-						setTimeout(function () {
-							if (_this._dragSource == src && _this._img == null) {
-								if (_this._dispatchEvent(e, 'contextmenu', src)) {
-									_this._reset();
-								}
-							}
-						}, DragDropTouch._CTXMENU);
-					}
-				}
-			}
-		};
-		DragDropTouch.prototype._touchmove = function (e) {
-			if (this._shouldHandle(e)) {
-				// see if target wants to handle move
-				var target = this._getTarget(e);
-				if (this._dispatchEvent(e, 'mousemove', target)) {
-					this._lastTouch = e;
-					e.preventDefault();
-					return;
-				}
-				// start dragging
-				if (this._dragSource && !this._img) {
-					var delta = this._getDelta(e);
-					if (delta > DragDropTouch._THRESHOLD) {
-						this._dispatchEvent(e, 'dragstart', this._dragSource);
-						this._createImage(e);
-						this._dispatchEvent(e, 'dragenter', target);
-					}
-				}
-				// continue dragging
-				if (this._img) {
-					this._lastTouch = e;
-					e.preventDefault(); // prevent scrolling
-					if (target != this._lastTarget) {
-						this._dispatchEvent(this._lastTouch, 'dragleave', this._lastTarget);
-						this._dispatchEvent(e, 'dragenter', target);
-						this._lastTarget = target;
-					}
-					this._moveImage(e);
-					this._dispatchEvent(e, 'dragover', target);
-				}
-			}
-		};
-		DragDropTouch.prototype._touchend = function (e) {
-			if (this._shouldHandle(e)) {
-				// finish dragging
-				this._destroyImage();
-				if (this._dragSource) {
-					if (e.type.indexOf('cancel') < 0) {
-						this._dispatchEvent(this._lastTouch, 'drop', this._lastTarget);
-					}
-					this._dispatchEvent(this._lastTouch, 'dragend', this._dragSource);
-					this._reset();
-					// prevent mouse up on drag
-					e.preventDefault();
-					return;
-				}
-				// see if target wants to handle up
-				if (this._dispatchEvent(this._lastTouch, 'mouseup', e.target)) {
-					e.preventDefault();
-					return;
-				}
-				// user clicked the element but didn't drag, so clear the source and simulate a click
-				if (!this._img) {
-					this._dragSource = null;
-					this._dispatchEvent(this._lastTouch, 'click', e.target);
-					this._lastClick = Date.now();
-				}
-			}
-		};
-		// ** utilities
-		// ignore events that have been handled or that involve more than one touch
-		DragDropTouch.prototype._shouldHandle = function (e) {
-			return e && !e.defaultPrevented && e.touches && e.touches.length < 2;
-		};
-		// clear all members
-		DragDropTouch.prototype._reset = function () {
-			this._destroyImage();
-			this._dragSource = null;
-			this._lastTouch = null;
-			this._lastTarget = null;
-			this._ptDown = null;
-			this._dataTransfer = new DataTransfer();
-		};
-		// get point for a touch event
-		DragDropTouch.prototype._getPoint = function (e, page) {
-			if (e && e.touches) {
-				e = e.touches[0];
-			}
-			return { x: page ? e.pageX : e.clientX, y: page ? e.pageY : e.clientY };
-		};
-		// get distance between the current touch event and the first one
-		DragDropTouch.prototype._getDelta = function (e) {
-			var p = this._getPoint(e);
-			return Math.abs(p.x - this._ptDown.x) + Math.abs(p.y - this._ptDown.y);
-		};
-		// get the element at a given touch event
-		DragDropTouch.prototype._getTarget = function (e) {
-			var pt = this._getPoint(e),
-			    el = document.elementFromPoint(pt.x, pt.y);
-			// if target element is an iframe, try propagating event to child element
-			if (el && el.nodeName === 'IFRAME') {
-				try {
-					var iframeDocument = el.contentWindow.document;
-					// get iframe absolute offset
-					var iframeAbsoluteOffset = { x: 0, y: 0 };
-					do {
-						iframeAbsoluteOffset.x += el.offsetLeft || 0;
-						iframeAbsoluteOffset.y += el.offsetTop || 0;
-						el = el.offsetParent;
-					} while (el);
-					// remove iframe absolute offset from touch position
-					var x = pt.x - iframeAbsoluteOffset.x,
-					    y = pt.y - iframeAbsoluteOffset.y;
-					// get element on that position from iframe document
-					el = iframeDocument.elementFromPoint(x, y);
-				} catch (e) {
-					// iframe origin don't allow access
-				}
-			}
-			while (el && getComputedStyle(el).pointerEvents == 'none') {
-				el = el.parentElement;
-			}
-			return el;
-		};
-		// create drag image from source element
-		DragDropTouch.prototype._createImage = function (e) {
-			// just in case...
-			if (this._img) {
-				this._destroyImage();
-			}
-			// create drag image from custom element or drag source
-			var src = this._imgCustom || this._dragSource;
-			this._img = src.cloneNode(true);
-			this._copyStyle(src, this._img);
-			this._img.style.top = this._img.style.left = '-9999px';
-			// if creating from drag source, apply offset and opacity
-			if (!this._imgCustom) {
-				var rc = src.getBoundingClientRect(),
-				    pt = this._getPoint(e);
-				this._imgOffset = { x: pt.x - rc.left, y: pt.y - rc.top };
-				this._img.style.opacity = DragDropTouch._OPACITY.toString();
-			}
-			// add image to document
-			this._moveImage(e);
-			document.body.appendChild(this._img);
-		};
-		// dispose of drag image element
-		DragDropTouch.prototype._destroyImage = function () {
-			if (this._img && this._img.parentElement) {
-				this._img.parentElement.removeChild(this._img);
-			}
-			this._img = null;
-			this._imgCustom = null;
-		};
-		// move the drag image element
-		DragDropTouch.prototype._moveImage = function (e) {
-			var _this = this;
-			requestAnimationFrame(function () {
-				if (_this._img) {
-					var pt = _this._getPoint(e, true),
-					    s = _this._img.style;
-					s.position = 'absolute';
-					s.pointerEvents = 'none';
-					s.zIndex = '999999';
-					s.left = Math.round(pt.x - _this._imgOffset.x) + 'px';
-					s.top = Math.round(pt.y - _this._imgOffset.y) + 'px';
-				}
-			});
-		};
-		// copy properties from an object to another
-		DragDropTouch.prototype._copyProps = function (dst, src, props) {
-			for (var i = 0; i < props.length; i++) {
-				var p = props[i];
-				dst[p] = src[p];
-			}
-		};
-		DragDropTouch.prototype._copyStyle = function (src, dst) {
-			// remove potentially troublesome attributes
-			DragDropTouch._rmvAtts.forEach(function (att) {
-				dst.removeAttribute(att);
-			});
-			// copy canvas content
-			if (src instanceof HTMLCanvasElement) {
-				var cSrc = src,
-				    cDst = dst;
-				cDst.width = cSrc.width;
-				cDst.height = cSrc.height;
-				cDst.getContext('2d').drawImage(cSrc, 0, 0);
-			}
-			// copy style (without transitions)
-			var cs = getComputedStyle(src);
-			for (var i = 0; i < cs.length; i++) {
-				var key = cs[i];
-				if (key.indexOf('transition') < 0) {
-					dst.style[key] = cs[key];
-				}
-			}
-			dst.style.pointerEvents = 'none';
-			// and repeat for all children
-			for (var i = 0; i < src.children.length; i++) {
-				this._copyStyle(src.children[i], dst.children[i]);
-			}
-		};
-		DragDropTouch.prototype._dispatchEvent = function (e, type, target) {
-			if (e && target) {
-				var evt = document.createEvent('Event'),
-				    t = e.touches ? e.touches[0] : e;
-				evt.initEvent(type, true, true);
-				evt.button = 0;
-				evt.which = evt.buttons = 1;
-				this._copyProps(evt, e, DragDropTouch._kbdProps);
-				this._copyProps(evt, t, DragDropTouch._ptProps);
-				evt.dataTransfer = this._dataTransfer;
-				target.dispatchEvent(evt);
-				return evt.defaultPrevented;
-			}
-			return false;
-		};
-		// gets an element's closest draggable ancestor
-		DragDropTouch.prototype._closestDraggable = function (e) {
-			for (; e; e = e.parentElement) {
-				if (e.hasAttribute('draggable') && e.draggable) {
-					return e;
-				}
-			}
-			return null;
-		};
-		return DragDropTouch;
-	}();
-	/*private*/DragDropTouch._instance = new DragDropTouch(); // singleton
-	// constants
-	DragDropTouch._THRESHOLD = 5; // pixels to move before drag starts
-	DragDropTouch._OPACITY = 0.5; // drag image opacity
-	DragDropTouch._DBLCLICK = 500; // max ms between clicks in a double click
-	DragDropTouch._CTXMENU = 900; // ms to hold before raising 'contextmenu' event
-	// copy styles/attributes from drag source to drag image element
-	DragDropTouch._rmvAtts = 'id,class,style,draggable'.split(',');
-	// synthesize and dispatch an event
-	// returns true if the event has been handled (e.preventDefault == true)
-	DragDropTouch._kbdProps = 'altKey,ctrlKey,metaKey,shiftKey'.split(',');
-	DragDropTouch._ptProps = 'pageX,pageY,clientX,clientY,screenX,screenY'.split(',');
-	DragDropTouch_1.DragDropTouch = DragDropTouch;
+  var DragDropTouch = function () {
+    /**
+     * Initializes the single instance of the @see:DragDropTouch class.
+     */
+    function DragDropTouch() {
+      this._lastClick = 0;
+      // enforce singleton pattern
+      if (DragDropTouch._instance) {
+        throw 'DragDropTouch instance already created.';
+      }
+      // detect passive event support
+      // https://github.com/Modernizr/Modernizr/issues/1894
+      var supportsPassive = false;
+      document.addEventListener('test', function () {}, {
+        get passive() {
+          supportsPassive = true;
+          return true;
+        }
+      });
+      // listen to touch events
+      if ('ontouchstart' in document) {
+        var d = document,
+            ts = this._touchstart.bind(this),
+            tm = this._touchmove.bind(this),
+            te = this._touchend.bind(this),
+            opt = supportsPassive ? { passive: false, capture: false } : false;
+        d.addEventListener('touchstart', ts, opt);
+        d.addEventListener('touchmove', tm, opt);
+        d.addEventListener('touchend', te);
+        d.addEventListener('touchcancel', te);
+      }
+    }
+    /**
+     * Gets a reference to the @see:DragDropTouch singleton.
+     */
+    DragDropTouch.getInstance = function () {
+      return DragDropTouch._instance;
+    };
+    // ** event handlers
+    DragDropTouch.prototype._touchstart = function (e) {
+      var _this = this;
+      if (this._shouldHandle(e)) {
+        // raise double-click and prevent zooming
+        if (Date.now() - this._lastClick < DragDropTouch._DBLCLICK) {
+          if (this._dispatchEvent(e, 'dblclick', e.target)) {
+            e.preventDefault();
+            this._reset();
+            return;
+          }
+        }
+        // clear all variables
+        this._reset();
+        // get nearest draggable element
+        var src = this._closestDraggable(e.target);
+        if (src) {
+          // give caller a chance to handle the hover/move events
+          if (!this._dispatchEvent(e, 'mousemove', e.target) && !this._dispatchEvent(e, 'mousedown', e.target)) {
+            // get ready to start dragging
+            this._dragSource = src;
+            this._ptDown = this._getPoint(e);
+            this._lastTouch = e;
+            e.preventDefault();
+            // show context menu if the user hasn't started dragging after a while
+            setTimeout(function () {
+              if (_this._dragSource == src && _this._img == null) {
+                if (_this._dispatchEvent(e, 'contextmenu', src)) {
+                  _this._reset();
+                }
+              }
+            }, DragDropTouch._CTXMENU);
+          }
+        }
+      }
+    };
+    DragDropTouch.prototype._touchmove = function (e) {
+      if (this._shouldHandle(e)) {
+        var target = this._getTarget(e);
+        // start dragging
+        if (this._dragSource && !this._img) {
+          var delta = this._getDelta(e);
+          if (delta > DragDropTouch._THRESHOLD) {
+            this._dispatchEvent(e, 'dragstart', this._dragSource);
+            this._createImage(e);
+            this._dispatchEvent(e, 'dragenter', target);
+          }
+        }
+        // continue dragging
+        if (this._img) {
+          this._lastTouch = e;
+          e.preventDefault(); // prevent scrolling
+          if (target != this._lastTarget) {
+            this._dispatchEvent(this._lastTouch, 'dragleave', this._lastTarget);
+            this._dispatchEvent(e, 'dragenter', target);
+            this._lastTarget = target;
+          }
+          this._moveImage(e);
+          this._dispatchEvent(e, 'dragover', target);
+        }
+        // see if target wants to handle move
+        if (this._dispatchEvent(e, 'mousemove', target)) {
+          this._lastTouch = e;
+          e.preventDefault();
+          return;
+        }
+      }
+    };
+    DragDropTouch.prototype._touchend = function (e) {
+      if (this._shouldHandle(e)) {
+        // finish dragging
+        this._destroyImage();
+        if (this._dragSource) {
+          if (e.type.indexOf('cancel') < 0) {
+            this._dispatchEvent(this._lastTouch, 'drop', this._lastTarget);
+          }
+          this._dispatchEvent(this._lastTouch, 'dragend', this._dragSource);
+          this._reset();
+          // prevent mouse up on drag
+          e.preventDefault();
+          return;
+        }
+        // see if target wants to handle up
+        if (this._dispatchEvent(this._lastTouch, 'mouseup', e.target)) {
+          e.preventDefault();
+          return;
+        }
+        // user clicked the element but didn't drag, so clear the source and simulate a click
+        if (!this._img) {
+          this._dragSource = null;
+          this._dispatchEvent(this._lastTouch, 'click', e.target);
+          this._lastClick = Date.now();
+        }
+      }
+    };
+    // ** utilities
+    // ignore events that have been handled or that involve more than one touch
+    DragDropTouch.prototype._shouldHandle = function (e) {
+      return e && !e.defaultPrevented && e.touches && e.touches.length < 2;
+    };
+    // clear all members
+    DragDropTouch.prototype._reset = function () {
+      this._destroyImage();
+      this._dragSource = null;
+      this._lastTouch = null;
+      this._lastTarget = null;
+      this._ptDown = null;
+      this._dataTransfer = new DataTransfer();
+    };
+    // get point for a touch event
+    DragDropTouch.prototype._getPoint = function (e, page) {
+      if (e && e.touches) {
+        e = e.touches[0];
+      }
+      return { x: page ? e.pageX : e.clientX, y: page ? e.pageY : e.clientY };
+    };
+    // get distance between the current touch event and the first one
+    DragDropTouch.prototype._getDelta = function (e) {
+      var p = this._getPoint(e);
+      return Math.abs(p.x - this._ptDown.x) + Math.abs(p.y - this._ptDown.y);
+    };
+    // get the element at a given touch event
+    DragDropTouch.prototype._getTarget = function (e) {
+      var pt = this._getPoint(e),
+          el = document.elementFromPoint(pt.x, pt.y);
+      // if target element is an iframe, try propagating event to child element
+      if (el && el.nodeName === 'IFRAME') {
+        try {
+          var iframeDocument = el.contentWindow.document;
+          // get iframe absolute offset
+          var iframeAbsoluteOffset = { x: 0, y: 0 };
+          do {
+            iframeAbsoluteOffset.x += el.offsetLeft || 0;
+            iframeAbsoluteOffset.y += el.offsetTop || 0;
+            el = el.offsetParent;
+          } while (el);
+          // remove iframe absolute offset from touch position
+          var x = pt.x - iframeAbsoluteOffset.x,
+              y = pt.y - iframeAbsoluteOffset.y;
+          // get element on that position from iframe document
+          el = iframeDocument.elementFromPoint(x, y);
+        } catch (e) {
+          // iframe origin don't allow access
+        }
+      }
+      while (el && getComputedStyle(el).pointerEvents == 'none') {
+        el = el.parentElement;
+      }
+      return el;
+    };
+    // create drag image from source element
+    DragDropTouch.prototype._createImage = function (e) {
+      // just in case...
+      if (this._img) {
+        this._destroyImage();
+      }
+      // create drag image from custom element or drag source
+      var src = this._imgCustom || this._dragSource;
+      this._img = src.cloneNode(true);
+      this._copyStyle(src, this._img);
+      this._img.style.top = this._img.style.left = '-9999px';
+      // if creating from drag source, apply offset and opacity
+      if (!this._imgCustom) {
+        var rc = src.getBoundingClientRect(),
+            pt = this._getPoint(e);
+        this._imgOffset = { x: pt.x - rc.left, y: pt.y - rc.top };
+        this._img.style.opacity = DragDropTouch._OPACITY.toString();
+      }
+      // add image to document
+      this._moveImage(e);
+      document.body.appendChild(this._img);
+    };
+    // dispose of drag image element
+    DragDropTouch.prototype._destroyImage = function () {
+      if (this._img && this._img.parentElement) {
+        this._img.parentElement.removeChild(this._img);
+      }
+      this._img = null;
+      this._imgCustom = null;
+    };
+    // move the drag image element
+    DragDropTouch.prototype._moveImage = function (e) {
+      var _this = this;
+      requestAnimationFrame(function () {
+        if (_this._img) {
+          var pt = _this._getPoint(e, true),
+              s = _this._img.style;
+          s.position = 'absolute';
+          s.pointerEvents = 'none';
+          s.zIndex = '999999';
+          s.left = Math.round(pt.x - _this._imgOffset.x) + 'px';
+          s.top = Math.round(pt.y - _this._imgOffset.y) + 'px';
+        }
+      });
+    };
+    // copy properties from an object to another
+    DragDropTouch.prototype._copyProps = function (dst, src, props) {
+      for (var i = 0; i < props.length; i++) {
+        var p = props[i];
+        dst[p] = src[p];
+      }
+    };
+    DragDropTouch.prototype._copyStyle = function (src, dst) {
+      // remove potentially troublesome attributes
+      DragDropTouch._rmvAtts.forEach(function (att) {
+        dst.removeAttribute(att);
+      });
+      // copy canvas content
+      if (src instanceof HTMLCanvasElement) {
+        var cSrc = src,
+            cDst = dst;
+        cDst.width = cSrc.width;
+        cDst.height = cSrc.height;
+        cDst.getContext('2d').drawImage(cSrc, 0, 0);
+      }
+      // copy style (without transitions)
+      var cs = getComputedStyle(src);
+      for (var i = 0; i < cs.length; i++) {
+        var key = cs[i];
+        if (key.indexOf('transition') < 0) {
+          dst.style[key] = cs[key];
+        }
+      }
+      dst.style.pointerEvents = 'none';
+      // and repeat for all children
+      for (var i = 0; i < src.children.length; i++) {
+        this._copyStyle(src.children[i], dst.children[i]);
+      }
+    };
+    DragDropTouch.prototype._dispatchEvent = function (e, type, target) {
+      if (e && target) {
+        var evt = document.createEvent('Event'),
+            t = e.touches ? e.touches[0] : e;
+        evt.initEvent(type, true, true);
+        evt.button = 0;
+        evt.which = evt.buttons = 1;
+        this._copyProps(evt, e, DragDropTouch._kbdProps);
+        this._copyProps(evt, t, DragDropTouch._ptProps);
+        evt.dataTransfer = this._dataTransfer;
+        target.dispatchEvent(evt);
+        return evt.defaultPrevented;
+      }
+      return false;
+    };
+    // gets an element's closest draggable ancestor
+    DragDropTouch.prototype._closestDraggable = function (e) {
+      for (; e; e = e.parentElement) {
+        if (e.hasAttribute('draggable') && e.draggable) {
+          return e;
+        }
+      }
+      return null;
+    };
+    return DragDropTouch;
+  }();
+  /*private*/DragDropTouch._instance = new DragDropTouch(); // singleton
+  // constants
+  DragDropTouch._THRESHOLD = 5; // pixels to move before drag starts
+  DragDropTouch._OPACITY = 0.5; // drag image opacity
+  DragDropTouch._DBLCLICK = 500; // max ms between clicks in a double click
+  DragDropTouch._CTXMENU = 900; // ms to hold before raising 'contextmenu' event
+  // copy styles/attributes from drag source to drag image element
+  DragDropTouch._rmvAtts = 'id,class,style,draggable'.split(',');
+  // synthesize and dispatch an event
+  // returns true if the event has been handled (e.preventDefault == true)
+  DragDropTouch._kbdProps = 'altKey,ctrlKey,metaKey,shiftKey'.split(',');
+  DragDropTouch._ptProps = 'pageX,pageY,clientX,clientY,screenX,screenY'.split(',');
+  DragDropTouch_1.DragDropTouch = DragDropTouch;
 })(DragDropTouch || (DragDropTouch = {}));
 
 /***/ })
