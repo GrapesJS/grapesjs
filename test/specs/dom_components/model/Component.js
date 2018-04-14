@@ -67,6 +67,21 @@ module.exports = {
         expect(obj.get('stylable')).toEqual(true);
       });
 
+      it('Sets attributes correctly from traits', () => {
+        obj.set('traits', [
+          {
+            label: 'Title',
+            name: 'title',
+            value: 'The title'
+          },
+          {
+            label: 'Context',
+            value: 'primary'
+          }
+        ]);
+        expect(obj.get('attributes')).toEqual({ title: 'The title' });
+      });
+
       it('Has expected name', () => {
         expect(obj.getName()).toEqual('Box');
       });
