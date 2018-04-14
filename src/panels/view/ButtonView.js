@@ -151,8 +151,12 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
+    const label = this.model.get('label');
+    const $el = this.$el;
     this.updateAttributes();
-    this.$el.attr('class', this.className);
+    $el.attr('class', this.className);
+    label && $el.append(label);
+
     return this;
   }
 });
