@@ -57,7 +57,6 @@ module.exports = config => {
      * @return {Array<Object>}
      */
     parseNode(el) {
-      const config = (c.em && c.em.get('Config')) || {};
       const result = [];
       const nodes = el.childNodes;
 
