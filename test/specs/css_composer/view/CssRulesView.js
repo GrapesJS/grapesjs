@@ -85,7 +85,11 @@ module.exports = {
             mediaText: '(max-width: 1000px)'
           },
           {
-            selectorsAdd: '#testid2',
+            selectorsAdd: '#testid3',
+            mediaText: '(min-width: 900px)'
+          },
+          {
+            selectorsAdd: '#testid4',
             mediaText: 'screen and (max-width: 900px) and (min-width: 600px)'
           }
         ];

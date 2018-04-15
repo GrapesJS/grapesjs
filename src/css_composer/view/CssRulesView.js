@@ -86,11 +86,13 @@ module.exports = require('backbone').View.extend({
       const container = fragment || this.el;
       let contRules;
 
-      // Try to find a specific container for the rule, if it
-      // containes a media query
+      // Try to find a specific container for the rule (if it
+      // containes a media query), otherwise get the default one
       try {
         contRules = container.querySelector(`#${blockId}`);
-      } catch (e) {
+      } catch (e) {}
+
+      if (!contRules) {
         contRules = container.querySelector(`#${defaultBlockId}`);
       }
 
