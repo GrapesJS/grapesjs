@@ -3566,7 +3566,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscor
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getUnitFromValue = exports.normalizeFloat = exports.isTouchDevice = exports.shallowDiff = exports.camelCase = exports.matches = exports.upFirst = exports.hasDnd = exports.off = exports.on = undefined;
+exports.getUnitFromValue = exports.normalizeFloat = exports.shallowDiff = exports.camelCase = exports.matches = exports.upFirst = exports.hasDnd = exports.off = exports.on = undefined;
 
 var _underscore = __webpack_require__(1);
 
@@ -3677,10 +3677,6 @@ var hasDnd = function hasDnd(em) {
   return 'draggable' in document.createElement('i') && (em ? em.get('Config').nativeDnD : 1);
 };
 
-var isTouchDevice = function isTouchDevice() {
-  return 'ontouchstart' in window || navigator.maxTouchPoints;
-};
-
 exports.on = on;
 exports.off = off;
 exports.hasDnd = hasDnd;
@@ -3688,7 +3684,6 @@ exports.upFirst = upFirst;
 exports.matches = matches;
 exports.camelCase = camelCase;
 exports.shallowDiff = shallowDiff;
-exports.isTouchDevice = isTouchDevice;
 exports.normalizeFloat = normalizeFloat;
 exports.getUnitFromValue = getUnitFromValue;
 
@@ -4627,7 +4622,7 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
       }
       if (model.get('draggable')) {
         tb.push({
-          attributes: { class: 'fa fa-arrows touch-disabled', draggable: true },
+          attributes: { class: 'fa fa-arrows', draggable: true },
           //events: hasDnd(this.em) ? { dragstart: 'execCommand' } : '',
           command: 'tlb-move'
         });
@@ -4773,15 +4768,10 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
     var attributes = this.getAttrToHTML();
 
     for (var attr in attributes) {
-      var val = attributes[attr];
-      var value = (0, _underscore.isString)(val) ? val.replace(/"/g, '&quot;') : val;
+      var value = attributes[attr];
 
       if (!(0, _underscore.isUndefined)(value)) {
-        if ((0, _underscore.isBoolean)(value)) {
-          value && attrs.push(attr);
-        } else {
-          attrs.push(attr + '="' + value + '"');
-        }
+        attrs.push(attr + '="' + value + '"');
       }
     }
 
@@ -17749,14 +17739,12 @@ module.exports = {
     var u = 'px';
     bStyle.display = 'block';
     var canvasPos = canvas.getCanvasView().getPosition();
-    if (canvasPos) {
-      var badgeH = badge ? badge.offsetHeight : 0;
-      var badgeW = badge ? badge.offsetWidth : 0;
-      var top = pos.top - badgeH < canvasPos.top ? canvasPos.top : pos.top - badgeH;
-      var left = pos.left + badgeW < canvasPos.left ? canvasPos.left : pos.left;
-      bStyle.top = top + u;
-      bStyle.left = left + u;
-    }
+    var badgeH = badge ? badge.offsetHeight : 0;
+    var badgeW = badge ? badge.offsetWidth : 0;
+    var top = pos.top - badgeH < canvasPos.top ? canvasPos.top : pos.top - badgeH;
+    var left = pos.left + badgeW < canvasPos.left ? canvasPos.left : pos.left;
+    bStyle.top = top + u;
+    bStyle.left = left + u;
   },
 
 
@@ -17978,12 +17966,10 @@ module.exports = {
       elPos: elPos,
       event: 'toolbarPosUpdate'
     });
-    if (pos) {
-      var leftPos = pos.left + pos.elementWidth - pos.targetWidth;
-      toolbarStyle.top = pos.top + unit;
-      toolbarStyle.left = (leftPos < 0 ? 0 : leftPos) + unit;
-      toolbarStyle.display = origDisp;
-    }
+    var leftPos = pos.left + pos.elementWidth - pos.targetWidth;
+    toolbarStyle.top = pos.top + unit;
+    toolbarStyle.left = (leftPos < 0 ? 0 : leftPos) + unit;
+    toolbarStyle.display = origDisp;
   },
 
 
@@ -21966,6 +21952,24 @@ module.exports = Backbone.View.extend({
           videoNode.src = fileURL
           */
 
+          /*
+          // Show local video files, http://jsfiddle.net/dsbonev/cCCZ2/embedded/result,js,html,css/
+          var URL = window.URL || window.webkitURL
+          var file = this.files[0]
+           var type = file.type
+           var videoNode = document.createElement('video');
+           var canPlay = videoNode.canPlayType(type) // can use also for 'audio' types
+           if (canPlay === '') canPlay = 'no'
+           var message = 'Can play type "' + type + '": ' + canPlay
+           var isError = canPlay === 'no'
+           displayMessage(message, isError)
+            if (isError) {
+             return
+           }
+            var fileURL = URL.createObjectURL(file)
+           videoNode.src = fileURL
+          */
+
           // If it's an image, try to find its size
           if (type === 'image') {
             var data = {
@@ -22568,20 +22572,18 @@ module.exports = Backbone.View.extend({
 
   /**
    * Add to collection
-   * @param {Model} model
-   * @param {Collection} coll
-   * @param {Object} opts
+   * @param  {Object} Model
+   *
+   * @return  void
    * @private
    * */
   addTo: function addTo(model) {
-    var coll = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
     var em = this.config.em;
     var i = this.collection.indexOf(model);
     this.addToCollection(model, null, i);
 
-    if (em && !opts.temporary) {
+    if (em && !model.opt.temporary) {
+      em.trigger('add:component', model); // @deprecated
       em.trigger('component:add', model);
     }
   },
@@ -22947,25 +22949,18 @@ module.exports = function () {
 
 var _underscore = __webpack_require__(1);
 
-var _mixins = __webpack_require__(2);
-
 var ComponentView = __webpack_require__(3);
 var inputProp = 'contentEditable';
 var ItemsView = void 0;
 
 module.exports = __webpack_require__(0).View.extend({
-  events: function events() {
-    var eventsList = {
-      'click [data-toggle-visible]': 'toggleVisibility',
-      'click [data-toggle-select]': 'handleSelect',
-      'click [data-toggle-open]': 'toggleOpening',
-      'dblclick [data-name]': 'handleEdit',
-      'focusout [data-name]': 'handleEditEnd'
-    };
-
-    eventsList[((0, _mixins.isTouchDevice)() ? 'touchstart' : 'mousedown') + ' [data-toggle-move]'] = 'startSort';
-
-    return eventsList;
+  events: {
+    'mousedown [data-toggle-move]': 'startSort',
+    'click [data-toggle-visible]': 'toggleVisibility',
+    'click [data-toggle-select]': 'handleSelect',
+    'click [data-toggle-open]': 'toggleOpening',
+    'dblclick [data-name]': 'handleEdit',
+    'focusout [data-name]': 'handleEditEnd'
   },
 
   template: function template(model) {
@@ -23145,7 +23140,7 @@ module.exports = __webpack_require__(0).View.extend({
     e.stopPropagation();
     var sorter = this.sorter;
     // Right or middel click
-    if (e.button && e.button !== 0) return;
+    if (e.button !== 0) return;
     sorter && sorter.startSort(e.target);
   },
 
@@ -23668,10 +23663,6 @@ var _plugin_manager = __webpack_require__(220);
 
 var _plugin_manager2 = _interopRequireDefault(_plugin_manager);
 
-__webpack_require__(222);
-
-__webpack_require__(223);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 (0, _polyfills2.default)();
@@ -23698,7 +23689,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '<# VERSION #>',
+    version: '0.14.5',
 
     /**
      * Initializes an editor based on passed options
@@ -24960,8 +24951,8 @@ module.exports = Backbone.Model.extend({
       }
     });
 
-    sm.store(store, function (res) {
-      clb && clb(res);
+    sm.store(store, function () {
+      clb && clb();
       _this4.set('changesCount', 0);
       _this4.trigger('storage:store', store);
     });
@@ -25444,7 +25435,7 @@ module.exports = Backbone.View.extend({
     }
 
     (0, _mixins.on)(container, 'mousemove dragover', this.onMove);
-    (0, _mixins.on)(docs, ((0, _mixins.isTouchDevice)() ? 'touchend' : 'mouseup') + ' dragend', this.endMove);
+    (0, _mixins.on)(docs, 'mouseup dragend', this.endMove);
     (0, _mixins.on)(docs, 'keydown', this.rollback);
     onStart && onStart();
 
@@ -26072,7 +26063,7 @@ module.exports = Backbone.View.extend({
     var docs = this.getDocuments();
     var container = this.getContainerEl();
     (0, _mixins.off)(container, 'mousemove dragover', this.onMove);
-    (0, _mixins.off)(docs, ((0, _mixins.isTouchDevice)() ? 'touchend' : 'mouseup') + ' dragend', this.endMove);
+    (0, _mixins.off)(docs, 'mouseup dragend', this.endMove);
     (0, _mixins.off)(docs, 'keydown', this.rollback);
     //this.$document.off('mouseup', this.endMove);
     //this.$document.off('keydown', this.rollback);
@@ -26134,7 +26125,6 @@ module.exports = Backbone.View.extend({
 
       if (!dropContent) {
         // Putting `avoidStore` here will make the UndoManager behave wrong
-        opts.temporary = 1;
         modelTemp = targetCollection.add({}, _extends({}, opts));
 
         if (model) {
@@ -36391,18 +36381,16 @@ module.exports = function () {
         event: 'rteToolbarPosUpdate'
       });
 
-      if (pos) {
-        if (config.adjustToolbar) {
-          // Move the toolbar down when the top canvas edge is reached
-          if (pos.top <= pos.canvasTop) {
-            pos.top = pos.elementTop + pos.elementHeight;
-          }
+      if (config.adjustToolbar) {
+        // Move the toolbar down when the top canvas edge is reached
+        if (pos.top <= pos.canvasTop) {
+          pos.top = pos.elementTop + pos.elementHeight;
         }
-
-        var toolbarStyle = toolbar.style;
-        toolbarStyle.top = pos.top + un;
-        toolbarStyle.left = pos.left + un;
       }
+
+      var toolbarStyle = toolbar.style;
+      toolbarStyle.top = pos.top + un;
+      toolbarStyle.left = pos.left + un;
     },
 
 
@@ -38137,7 +38125,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var duringDragEvents = {};
     duringDragEvents['selectstart'] = prevent;
     duringDragEvents['dragstart'] = prevent;
-    duringDragEvents['mousemove'] = move;
+    duringDragEvents['touchmove mousemove'] = move;
     duringDragEvents['touchend mouseup'] = stop;
 
     function prevent(e) {
@@ -39527,25 +39515,18 @@ module.exports = Backbone.View.extend({
 "use strict";
 /* WEBPACK VAR INJECTION */(function(Backbone) {
 
-var _mixins = __webpack_require__(2);
-
 module.exports = Backbone.View.extend({
-  events: function events() {
-    var eventsList = {
-      click: 'active',
-      'click [data-close-layer]': 'remove'
-    };
-
-    eventsList[((0, _mixins.isTouchDevice)() ? 'touchstart' : 'mousedown') + ' [data-move-layer]'] = 'initSorter';
-
-    return eventsList;
+  events: {
+    click: 'active',
+    'click [data-close-layer]': 'remove',
+    'mousedown [data-move-layer]': 'initSorter'
   },
 
   template: function template(model) {
     var pfx = this.pfx;
     var label = 'Layer ' + model.get('index');
 
-    return '\n      <div id="' + pfx + 'move" data-move-layer class="touch-disabled">\n        <i class="fa fa-arrows"></i>\n      </div>\n      <div id="' + pfx + 'label">' + label + '</div>\n      <div id="' + pfx + 'preview-box">\n      \t<div id="' + pfx + 'preview" data-preview></div>\n      </div>\n      <div id="' + pfx + 'close-layer" class="' + pfx + 'btn-close" data-close-layer>\n        &Cross;\n      </div>\n      <div id="' + pfx + 'inputs" data-properties></div>\n      <div style="clear:both"></div>\n    ';
+    return '\n      <div id="' + pfx + 'move" data-move-layer>\n        <i class="fa fa-arrows"></i>\n      </div>\n      <div id="' + pfx + 'label">' + label + '</div>\n      <div id="' + pfx + 'preview-box">\n      \t<div id="' + pfx + 'preview" data-preview></div>\n      </div>\n      <div id="' + pfx + 'close-layer" class="' + pfx + 'btn-close" data-close-layer>\n        &Cross;\n      </div>\n      <div id="' + pfx + 'inputs" data-properties></div>\n      <div style="clear:both"></div>\n    ';
   },
   initialize: function initialize() {
     var o = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -41961,10 +41942,7 @@ module.exports = {
   labelPlhHref: 'eg. https://google.com',
 
   // Default options for the target input
-  optionsTarget: [{ value: '', name: 'This window' }, { value: '_blank', name: 'New window' }],
-
-  // Text to show in case no element selected
-  textNoElement: 'Select an element before using Trait Manager'
+  optionsTarget: [{ value: '', name: 'This window' }, { value: '_blank', name: 'New window' }]
 };
 
 /***/ }),
@@ -44427,7 +44405,6 @@ module.exports = function () {
     getTargetToElementDim: function getTargetToElementDim(target, element, options) {
       var opts = options || {};
       var canvasPos = CanvasView.getPosition();
-      if (!canvasPos) return;
       var pos = opts.elPos || CanvasView.getElementPos(element);
       var toRight = options.toRight || 0;
       var targetHeight = opts.targetHeight || target.offsetHeight;
@@ -44740,7 +44717,7 @@ var Droppable = function () {
       var dragContent = em.get('dragContent');
       var content = dataTransfer.getData('text');
 
-      if (files && files.length) {
+      if (files.length) {
         content = [];
         for (var i = 0; i < files.length; i++) {
           var file = files[i];
@@ -45111,9 +45088,7 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getPosition: function getPosition() {
-    var doc = this.frame.el.contentDocument;
-    if (!doc) return;
-    var bEl = doc.body;
+    var bEl = this.frame.el.contentDocument.body;
     var fo = this.getFrameOffset();
     var co = this.getCanvasOffset();
     return {
@@ -45141,12 +45116,8 @@ module.exports = Backbone.View.extend({
     // In editor, I make use of setTimeout as during the append process of elements
     // those will not be available immediatly, therefore 'item' variable
     var script = document.createElement('script');
-    script.innerHTML = '\n        setTimeout(function() {\n          var item = document.getElementById(\'' + id + '\');\n          if (!item) return;\n          (function(){\n            ' + model.getScriptString() + ';\n          }.bind(item))()\n        }, 1);';
-    // #873
-    // Adding setTimeout will make js components work on init of the editor
-    setTimeout(function () {
-      return view.scriptContainer.get(0).appendChild(script);
-    }, 0);
+    script.innerText = '\n        setTimeout(function() {\n          var item = document.getElementById(\'' + id + '\');\n          if (!item) return;\n          (function(){\n            ' + model.getScriptString() + ';\n          }.bind(item))()\n        }, 1);';
+    view.scriptContainer.get(0).appendChild(script);
   },
 
 
@@ -46352,64 +46323,33 @@ module.exports = {
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+/* WEBPACK VAR INJECTION */(function(Backbone) {
 
-
-var $ = __webpack_require__(0).$;
+var $ = Backbone.$;
 
 module.exports = {
   run: function run(editor, sender) {
-    this.sender = sender;
-
     var config = editor.Config;
     var pfx = config.stylePrefix;
     var tm = editor.TraitManager;
     var panelC;
-
-    if (!this.$cn) {
+    if (!this.obj) {
       var tmView = tm.getTraitsViewer();
       var confTm = tm.getConfig();
-      this.$cn = $('<div></div>');
-      this.$cn2 = $('<div></div>');
-      this.$cn.append(this.$cn2);
-      this.$header = $('<div>').append('<div class="' + confTm.stylePrefix + 'header">' + confTm.textNoElement + '</div>');
-      this.$cn.append(this.$header);
-      this.$cn2.append('<div class="' + pfx + 'traits-label">' + confTm.labelContainer + '</div>');
-      this.$cn2.append(tmView.render().el);
+      this.obj = $('<div></div>').append('<div class="' + pfx + 'traits-label">' + confTm.labelContainer + '</div>').get(0);
+      this.obj.appendChild(tmView.render().el);
       var panels = editor.Panels;
-
       if (!panels.getPanel('views-container')) panelC = panels.addPanel({ id: 'views-container' });else panelC = panels.getPanel('views-container');
-
-      panelC.set('appendContent', this.$cn.get(0)).trigger('change:appendContent');
-
-      this.target = editor.getModel();
-      this.listenTo(this.target, 'change:selectedComponent', this.toggleTm);
+      panelC.set('appendContent', this.obj).trigger('change:appendContent');
     }
 
-    this.toggleTm();
-  },
-
-
-  /**
-   * Toggle Trait Manager visibility
-   * @private
-   */
-  toggleTm: function toggleTm() {
-    var sender = this.sender;
-    if (sender && sender.get && !sender.get('active')) return;
-
-    if (this.target.get('selectedComponent')) {
-      this.$cn2.show();
-      this.$header.hide();
-    } else {
-      this.$cn2.hide();
-      this.$header.show();
-    }
+    this.obj.style.display = 'block';
   },
   stop: function stop() {
-    this.$cn2 && this.$cn2.hide();
-    this.$header && this.$header.hide();
+    if (this.obj) this.obj.style.display = 'none';
   }
 };
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
 /* 201 */
@@ -46485,148 +46425,148 @@ module.exports = {
 var $ = Backbone.$;
 
 module.exports = {
-    getOffsetMethod: function getOffsetMethod(state) {
-        var method = state || '';
-        return 'get' + method + 'OffsetViewerEl';
-    },
-    run: function run(editor, sender, opts) {
-        var opt = opts || {};
-        var state = opt.state || '';
-        var config = editor.getConfig();
+  getOffsetMethod: function getOffsetMethod(state) {
+    var method = state || '';
+    return 'get' + method + 'OffsetViewerEl';
+  },
+  run: function run(editor, sender, opts) {
+    var opt = opts || {};
+    var state = opt.state || '';
+    var config = editor.getConfig();
 
-        if (!config.showOffsets || !config.showOffsetsSelected && state == 'Fixed') {
-            return;
-        }
-
-        var canvas = editor.Canvas;
-        var el = opt.el || '';
-        var pos = opt.elPos || canvas.getElementPos(el);
-        var style = window.getComputedStyle(el);
-        var ppfx = this.ppfx;
-        var stateVar = state + 'State';
-        var method = this.getOffsetMethod(state);
-        var offsetViewer = canvas[method]();
-        offsetViewer.style.display = 'block';
-
-        var marginT = this['marginT' + state];
-        var marginB = this['marginB' + state];
-        var marginL = this['marginL' + state];
-        var marginR = this['marginR' + state];
-        var padT = this['padT' + state];
-        var padB = this['padB' + state];
-        var padL = this['padL' + state];
-        var padR = this['padR' + state];
-
-        if (!this[stateVar]) {
-            var stateLow = state.toLowerCase();
-            var marginName = stateLow + 'margin-v';
-            var paddingName = stateLow + 'padding-v';
-            var marginV = $('<div class="' + ppfx + 'marginName">').get(0);
-            var paddingV = $('<div class="' + ppfx + 'paddingName">').get(0);
-            var marginEls = ppfx + marginName + '-el';
-            var paddingEls = ppfx + paddingName + '-el';
-            var fullMargName = marginEls + ' ' + (ppfx + marginName);
-            var fullPadName = paddingEls + ' ' + (ppfx + paddingName);
-            marginT = $('<div class="' + fullMargName + '-top"></div>').get(0);
-            marginB = $('<div class="' + fullMargName + '-bottom"></div>').get(0);
-            marginL = $('<div class="' + fullMargName + '-left"></div>').get(0);
-            marginR = $('<div class="' + fullMargName + '-right"></div>').get(0);
-            padT = $('<div class="' + fullPadName + '-top"></div>').get(0);
-            padB = $('<div class="' + fullPadName + '-bottom"></div>').get(0);
-            padL = $('<div class="' + fullPadName + '-left"></div>').get(0);
-            padR = $('<div class="' + fullPadName + '-right"></div>').get(0);
-            this['marginT' + state] = marginT;
-            this['marginB' + state] = marginB;
-            this['marginL' + state] = marginL;
-            this['marginR' + state] = marginR;
-            this['padT' + state] = padT;
-            this['padB' + state] = padB;
-            this['padL' + state] = padL;
-            this['padR' + state] = padR;
-            marginV.appendChild(marginT);
-            marginV.appendChild(marginB);
-            marginV.appendChild(marginL);
-            marginV.appendChild(marginR);
-            paddingV.appendChild(padT);
-            paddingV.appendChild(padB);
-            paddingV.appendChild(padL);
-            paddingV.appendChild(padR);
-            offsetViewer.appendChild(marginV);
-            offsetViewer.appendChild(paddingV);
-            this[stateVar] = '1';
-        }
-
-        var unit = 'px';
-        var marginLeftSt = style.marginLeft.replace(unit, '');
-        var marginTopSt = parseInt(style.marginTop.replace(unit, ''));
-        var marginBottomSt = parseInt(style.marginBottom.replace(unit, ''));
-        var mtStyle = marginT.style;
-        var mbStyle = marginB.style;
-        var mlStyle = marginL.style;
-        var mrStyle = marginR.style;
-        var ptStyle = padT.style;
-        var pbStyle = padB.style;
-        var plStyle = padL.style;
-        var prStyle = padR.style;
-        var posLeft = parseInt(pos.left);
-
-        // Margin style
-        mtStyle.height = style.marginTop;
-        mtStyle.width = style.width;
-        mtStyle.top = pos.top - style.marginTop.replace(unit, '') + unit;
-        mtStyle.left = posLeft + unit;
-
-        mbStyle.height = style.marginBottom;
-        mbStyle.width = style.width;
-        mbStyle.top = pos.top + pos.height + unit;
-        mbStyle.left = posLeft + unit;
-
-        var marginSideH = pos.height + marginTopSt + marginBottomSt + unit;
-        var marginSideT = pos.top - marginTopSt + unit;
-        mlStyle.height = marginSideH;
-        mlStyle.width = style.marginLeft;
-        mlStyle.top = marginSideT;
-        mlStyle.left = posLeft - marginLeftSt + unit;
-
-        mrStyle.height = marginSideH;
-        mrStyle.width = style.marginRight;
-        mrStyle.top = marginSideT;
-        mrStyle.left = posLeft + pos.width + unit;
-
-        // Padding style
-        var padTop = parseInt(style.paddingTop.replace(unit, ''));
-        ptStyle.height = style.paddingTop;
-        ptStyle.width = style.width;
-        ptStyle.top = pos.top + unit;
-        ptStyle.left = posLeft + unit;
-
-        var padBot = parseInt(style.paddingBottom.replace(unit, ''));
-        pbStyle.height = style.paddingBottom;
-        pbStyle.width = style.width;
-        pbStyle.top = pos.top + pos.height - padBot + unit;
-        pbStyle.left = posLeft + unit;
-
-        var padSideH = pos.height - padBot - padTop + unit;
-        var padSideT = pos.top + padTop + unit;
-        plStyle.height = padSideH;
-        plStyle.width = style.paddingLeft;
-        plStyle.top = padSideT;
-        plStyle.left = pos.left + unit;
-
-        var padRight = parseInt(style.paddingRight.replace(unit, ''));
-        prStyle.height = padSideH;
-        prStyle.width = style.paddingRight;
-        prStyle.top = padSideT;
-        prStyle.left = pos.left + pos.width - padRight + unit;
-    },
-    stop: function stop(editor, sender, opts) {
-        var opt = opts || {};
-        var state = opt.state || '';
-        var method = this.getOffsetMethod(state);
-        var canvas = editor.Canvas;
-        var offsetViewer = canvas[method]();
-        offsetViewer.style.display = 'none';
+    if (!config.showOffsets || !config.showOffsetsSelected && state == 'Fixed') {
+      return;
     }
+
+    var canvas = editor.Canvas;
+    var el = opt.el || '';
+    var pos = opt.elPos || canvas.getElementPos(el);
+    var style = window.getComputedStyle(el);
+    var ppfx = this.ppfx;
+    var stateVar = state + 'State';
+    var method = this.getOffsetMethod(state);
+    var offsetViewer = canvas[method]();
+    offsetViewer.style.display = 'block';
+
+    var marginT = this['marginT' + state];
+    var marginB = this['marginB' + state];
+    var marginL = this['marginL' + state];
+    var marginR = this['marginR' + state];
+    var padT = this['padT' + state];
+    var padB = this['padB' + state];
+    var padL = this['padL' + state];
+    var padR = this['padR' + state];
+
+    if (!this[stateVar]) {
+      var stateLow = state.toLowerCase();
+      var marginName = stateLow + 'margin-v';
+      var paddingName = stateLow + 'padding-v';
+      var marginV = $('<div class="' + ppfx + 'marginName">').get(0);
+      var paddingV = $('<div class="' + ppfx + 'paddingName">').get(0);
+      var marginEls = ppfx + marginName + '-el';
+      var paddingEls = ppfx + paddingName + '-el';
+      var fullMargName = marginEls + ' ' + (ppfx + marginName);
+      var fullPadName = paddingEls + ' ' + (ppfx + paddingName);
+      marginT = $('<div class="' + fullMargName + '-top"></div>').get(0);
+      marginB = $('<div class="' + fullMargName + '-bottom"></div>').get(0);
+      marginL = $('<div class="' + fullMargName + '-left"></div>').get(0);
+      marginR = $('<div class="' + fullMargName + '-right"></div>').get(0);
+      padT = $('<div class="' + fullPadName + '-top"></div>').get(0);
+      padB = $('<div class="' + fullPadName + '-bottom"></div>').get(0);
+      padL = $('<div class="' + fullPadName + '-left"></div>').get(0);
+      padR = $('<div class="' + fullPadName + '-right"></div>').get(0);
+      this['marginT' + state] = marginT;
+      this['marginB' + state] = marginB;
+      this['marginL' + state] = marginL;
+      this['marginR' + state] = marginR;
+      this['padT' + state] = padT;
+      this['padB' + state] = padB;
+      this['padL' + state] = padL;
+      this['padR' + state] = padR;
+      marginV.appendChild(marginT);
+      marginV.appendChild(marginB);
+      marginV.appendChild(marginL);
+      marginV.appendChild(marginR);
+      paddingV.appendChild(padT);
+      paddingV.appendChild(padB);
+      paddingV.appendChild(padL);
+      paddingV.appendChild(padR);
+      offsetViewer.appendChild(marginV);
+      offsetViewer.appendChild(paddingV);
+      this[stateVar] = '1';
+    }
+
+    var unit = 'px';
+    var marginLeftSt = style.marginLeft.replace(unit, '');
+    var marginTopSt = parseInt(style.marginTop.replace(unit, ''));
+    var marginBottomSt = parseInt(style.marginBottom.replace(unit, ''));
+    var mtStyle = marginT.style;
+    var mbStyle = marginB.style;
+    var mlStyle = marginL.style;
+    var mrStyle = marginR.style;
+    var ptStyle = padT.style;
+    var pbStyle = padB.style;
+    var plStyle = padL.style;
+    var prStyle = padR.style;
+    var posLeft = parseInt(pos.left);
+
+    // Margin style
+    mtStyle.height = style.marginTop;
+    mtStyle.width = style.width;
+    mtStyle.top = pos.top - style.marginTop.replace(unit, '') + unit;
+    mtStyle.left = posLeft + unit;
+
+    mbStyle.height = style.marginBottom;
+    mbStyle.width = style.width;
+    mbStyle.top = pos.top + pos.height + unit;
+    mbStyle.left = posLeft + unit;
+
+    var marginSideH = pos.height + marginTopSt + marginBottomSt + unit;
+    var marginSideT = pos.top - marginTopSt + unit;
+    mlStyle.height = marginSideH;
+    mlStyle.width = style.marginLeft;
+    mlStyle.top = marginSideT;
+    mlStyle.left = posLeft - marginLeftSt + unit;
+
+    mrStyle.height = marginSideH;
+    mrStyle.width = style.marginRight;
+    mrStyle.top = marginSideT;
+    mrStyle.left = posLeft + pos.width + unit;
+
+    // Padding style
+    var padTop = parseInt(style.paddingTop.replace(unit, ''));
+    ptStyle.height = style.paddingTop;
+    ptStyle.width = style.width;
+    ptStyle.top = pos.top + unit;
+    ptStyle.left = posLeft + unit;
+
+    var padBot = parseInt(style.paddingBottom.replace(unit, ''));
+    pbStyle.height = style.paddingBottom;
+    pbStyle.width = style.width;
+    pbStyle.top = pos.top + pos.height - padBot + unit;
+    pbStyle.left = posLeft + unit;
+
+    var padSideH = pos.height - padBot - padTop + unit;
+    var padSideT = pos.top + padTop + unit;
+    plStyle.height = padSideH;
+    plStyle.width = style.paddingLeft;
+    plStyle.top = padSideT;
+    plStyle.left = pos.left + unit;
+
+    var padRight = parseInt(style.paddingRight.replace(unit, ''));
+    prStyle.height = padSideH;
+    prStyle.width = style.paddingRight;
+    prStyle.top = padSideT;
+    prStyle.left = pos.left + pos.width - padRight + unit;
+  },
+  stop: function stop(editor, sender, opts) {
+    var opt = opts || {};
+    var state = opt.state || '';
+    var method = this.getOffsetMethod(state);
+    var canvas = editor.Canvas;
+    var offsetViewer = canvas[method]();
+    offsetViewer.style.display = 'none';
+  }
 };
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
@@ -47478,7 +47418,6 @@ module.exports = Backbone.View.extend({
     var label = this.model.get('label');
     el.className += ' ' + className + ' ' + pfx + 'one-bg ' + pfx + 'four-color-h';
     el.innerHTML = '<div class="' + className + '-label">' + label + '</div>';
-    el.title = el.textContent.trim();
     (0, _mixins.hasDnd)(this.em) && el.setAttribute('draggable', true);
     return this;
   }
@@ -48050,1180 +47989,6 @@ module.exports = function (config) {
 module.exports = {
   plugins: []
 };
-
-/***/ }),
-/* 222 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-// polyfill touch functionality on browsers that have pointer functionality (that piece of trash internet explorer)
-// this thing is mostly just a hack on handjs, but does the reverse
-// cameron henlin, cam.henlin@gmail.com
-
-// jslint directive
-/*jslint browser: true, unparam: true, nomen: true*/
-/*global HTMLBodyElement, HTMLDivElement, HTMLImageElement, HTMLUListElement, HTMLAnchorElement, HTMLLIElement, HTMLTableElement, HTMLSpanElement, HTMLCanvasElement, SVGElement*/
-
-(function () {
-  // We should start using 'use strict' as soon as we can get rid of the implied globals.
-  // 'use strict';
-
-  // the timestamp of the last touch event processed.
-  // It is used to determine what touches should be in the changedTouches TouchList array.
-  var lastHwTimestamp = 0,
-
-  // whether or not to log events to console
-  logToConsole = false,
-      userAgent = navigator.userAgent,
-      supportedEventsNames = ['touchstart', 'touchmove', 'touchend', 'touchcancel', 'touchleave'],
-
-  // commented out because not used
-  // upperCaseEventsNames = ["TouchStart", "TouchMove", "TouchEnd", "TouchCancel", "TouchLeave"],
-  previousTargets = {},
-
-  // wraps a W3C compliant implementation of the "touches" TouchList
-  touchesWrapper,
-
-  // wraps a W3C compliant implementation of the "changedTouches" TouchList
-  changedTouchesWrapper,
-
-  // wraps a W3C compliant implementation of the "targetTouches" TouchList
-  targetTouchesWrapper;
-
-  // a constructor for an object that wraps a W3C compliant TouchList.
-  function TouchListWrapper() {
-    var touchList = []; // an array of W3C compliant Touch objects.
-
-    // constructor for W3C compliant touch object
-    // http://www.w3.org/TR/touch-events/
-    function Touch(identifier, target, screenX, screenY, clientX, clientY, pageX, pageY) {
-      this.identifier = identifier;
-      this.target = target;
-      this.screenX = screenX;
-      this.screenY = screenY;
-      this.clientX = clientX;
-      this.clientY = clientY;
-      this.pageX = pageX;
-      this.pageY = pageY;
-    }
-
-    // Search the TouchList for a Touch with the given identifier.
-    // If it is found, return it.  Otherwise, return null;
-    function getTouch(identifier) {
-      var i;
-      for (i = 0; i < touchList.length; i += 1) {
-        if (touchList[i].identifier === identifier) {
-          return touchList[i];
-        }
-      }
-    }
-
-    // If this is a new touch, add it to the TouchList.
-    // If this is an existing touch, update it in the TouchList.
-    function addUpdateTouch(touch) {
-      var i;
-      for (i = 0; i < touchList.length; i += 1) {
-        if (touchList[i].identifier === touch.identifier) {
-          touchList[i] = touch;
-          return;
-        }
-      }
-      // If we finished the loop, then this is a new touch.
-      touchList.push(touch);
-    }
-
-    function removeTouch(identifier) {
-      var i;
-      for (i = 0; i < touchList.length; i += 1) {
-        if (touchList[i].identifier === identifier) {
-          touchList.splice(i, 1);
-        }
-      }
-    }
-
-    function clearTouches() {
-      // According to http://stackoverflow.com/questions/1232040/how-to-empty-an-array-in-javascript
-      // this is the fastest way to clear the array.
-      while (touchList.length > 0) {
-        touchList.pop();
-      }
-    }
-
-    // Return true if the current TouchList object contains a touch at the specified screenX, clientY.
-    // Returns false otherwise.
-    // This is used to differentiate touches that have moved from those that haven't.
-    function containsTouchAt(screenX, screenY) {
-      var i;
-
-      for (i = 0; i < touchList.length; i += 1) {
-        if (touchList[i].screenX === screenX && touchList[i].screenY === screenY) {
-          return true;
-        }
-      }
-
-      return false;
-    }
-
-    // touchList is the actual W3C compliant TouchList object being emulated.
-    this.touchList = touchList;
-
-    this.Touch = Touch;
-    this.getTouch = getTouch;
-    this.addUpdateTouch = addUpdateTouch;
-    this.removeTouch = removeTouch;
-    this.clearTouches = clearTouches;
-    this.containsTouchAt = containsTouchAt;
-  }
-
-  function touchesAreAtSameSpot(touch0, touch1) {
-    return touch0.screenX === touch1.screenX && touch0.screenY === touch1.screenY;
-  }
-
-  // polyfill custom event
-  function CustomEvent(event, params) {
-    var evt;
-    params = params || {
-      bubbles: false,
-      cancelable: false,
-      detail: undefined
-    };
-    evt = document.createEvent('CustomEvent');
-    evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
-    return evt;
-  }
-
-  function checkPreventDefault(node) {
-    while (node && !node.handJobjs_forcePreventDefault) {
-      node = node.parentNode;
-    }
-    return !!node || window.handJobjs_forcePreventDefault;
-  }
-
-  // Touch events
-  function generateTouchClonedEvent(sourceEvent, newName, canBubble, target, relatedTarget) {
-    var evObj, oldTouch, oldTarget;
-
-    // Updates the targetTouches so that it contains the touches from the "touches" TouchList
-    // that have the same target as the touch that triggered this event.
-    function updateTargetTouches(thisTouchTarget, touchesTouchList) {
-      var i, touch;
-
-      targetTouchesWrapper.clearTouches();
-
-      for (i = 0; i < touchesTouchList.length; i++) {
-        touch = touchesTouchList[i];
-        if (touch.target.isSameNode(thisTouchTarget)) {
-          targetTouchesWrapper.addUpdateTouch(touch);
-        }
-      }
-    }
-
-    function touchHandler(event) {
-      var eventType, oldTouch, touch, touchEvent, isTouchChanged;
-
-      log('touch!');
-
-      if (event.type === 'pointerdown') {
-        eventType = 'touchstart';
-      } else if (event.type === 'pointermove') {
-        eventType = 'touchmove';
-      } else {
-        throw new Error('touchHandler received invalid event type: ' + eventType + '. Valid event types are pointerdown and pointermove');
-      }
-      log(eventType);
-
-      touch = new touchesWrapper.Touch(event.pointerId, event.type === 'pointerdown' ? event.target : oldTarget, event.screenX, event.screenY, event.clientX, event.clientY, event.pageX, event.pageY);
-
-      // Remove, from changedTouches, any Touch that is no longer being touched, or is being touched
-      // in exactly the same place.
-      // In order to make sure that simultaneous touches don't kick each other off of the changedTouches array
-      // (because they are processed as different pointer events), skip this if the lastHwTimestamp hasn't increased.
-      if (event.hwTimestamp > lastHwTimestamp) {
-        (function () {
-          var i, changedTouchList, changedTouch, matchingTouch, identifier;
-          changedTouchList = changedTouchesWrapper.touchList;
-          for (i = 0; i < changedTouchList.length; i += 1) {
-            changedTouch = changedTouchList[i];
-            identifier = changedTouch.identifier;
-            matchingTouch = touchesWrapper.getTouch(identifier);
-
-            if (!matchingTouch || touchesAreAtSameSpot(matchingTouch, changedTouch)) {
-              changedTouchesWrapper.removeTouch(identifier);
-            }
-          }
-        })();
-      }
-
-      log('generating touch cloned');
-
-      touchesWrapper.addUpdateTouch(touch);
-      changedTouchesWrapper.addUpdateTouch(touch);
-      updateTargetTouches(touch.target, touchesWrapper.touchList);
-
-      event.type = eventType;
-      touchEvent = new CustomEvent(eventType, {
-        bubbles: true,
-        cancelable: true
-      });
-
-      touchEvent.touches = touchesWrapper.touchList;
-      touchEvent.changedTouches = changedTouchesWrapper.touchList;
-      touchEvent.targetTouches = targetTouchesWrapper.touchList;
-      touchEvent.type = eventType;
-
-      // Awesomely, I figured out how to keep track of the touches in the "Touches" TouchList using an array.
-      // TODO: Do the same thing for the changedTouches and targetTouches properties of the TouchEvent.
-      // TODONE! changedTouches is implemented.
-      // TODONE! targetTouches is implemented.
-
-      // The other members of the TouchEvent are altKey, metaKey, ctrlKey, and shiftKey
-
-      return touchEvent;
-    }
-
-    function touchChangedHandler(event) {
-      var eventType, touch, touchEvent;
-
-      log('touchchanged!');
-      event.changedTouches = [];
-      event.changedTouches.length = 1;
-      event.changedTouches[0] = event;
-      event.changedTouches[0].identifier = event.pointerId;
-
-      if (event.type === 'pointerup') {
-        eventType = 'touchend';
-      } else if (event.type === 'pointercancel') {
-        eventType = 'touchcancel';
-      } else if (event.type === 'pointerleave') {
-        eventType = 'touchleave';
-      }
-
-      touch = new touchesWrapper.Touch(event.pointerId, oldTarget, event.screenX, event.screenY, event.clientX, event.clientY, event.pageX, event.pageY);
-
-      // This is a new touch event if it happened at a greater time than the last touch event.
-      // If it is a new touch event, clear out the changedTouches TouchList.
-      if (event.hwTimestamp > lastHwTimestamp) {
-        changedTouchesWrapper.clearTouches();
-      }
-
-      touchesWrapper.removeTouch(touch.identifier);
-      changedTouchesWrapper.addUpdateTouch(touch);
-      updateTargetTouches(touch.target, touchesWrapper.touchList);
-
-      event.type = eventType;
-      touchEvent = new CustomEvent(eventType, {
-        bubbles: true,
-        cancelable: true
-      });
-      touchEvent.touches = touchesWrapper.touchList;
-      touchEvent.changedTouches = changedTouchesWrapper.touchList;
-      touchEvent.targetTouches = targetTouchesWrapper.touchList;
-      touchEvent.type = eventType;
-
-      return touchEvent;
-    }
-
-    // An important difference between the MS pointer events and the W3C touch events
-    // is that for pointer events except for pointerdown, all target the element that the touch
-    // is over when the event is fired.
-    // The W3C touch events target the element where the touch originally started.
-    // Therefore, when these events are fired, we must make this change manually.
-    if (sourceEvent.type !== 'pointerdown') {
-      oldTouch = touchesWrapper.getTouch(sourceEvent.pointerId);
-      oldTarget = oldTouch.target;
-      sourceEvent.target = oldTarget;
-    }
-
-    if (sourceEvent.type === 'pointerdown' || sourceEvent.type === 'pointermove') {
-      evObj = touchHandler(sourceEvent);
-    } else {
-      evObj = touchChangedHandler(sourceEvent);
-    }
-
-    // PreventDefault
-    evObj.preventDefault = function () {
-      if (sourceEvent.preventDefault !== undefined) {
-        sourceEvent.preventDefault();
-      }
-    };
-
-    // Fire event
-    log('dispatching!');
-    sourceEvent.target.dispatchEvent(evObj);
-
-    lastHwTimestamp = event.hwTimestamp;
-  }
-
-  function generateTouchEventProxy(name, touchPoint, target, eventObject, canBubble, relatedTarget) {
-    generateTouchClonedEvent(touchPoint, name, canBubble, target, relatedTarget);
-  }
-
-  function registerOrUnregisterEvent(item, name, func, enable) {
-    log('registerOrUnregisterEvent');
-    if (item.__handJobjsRegisteredEvents === undefined) {
-      item.__handJobjsRegisteredEvents = [];
-    }
-
-    if (enable) {
-      if (item.__handJobjsRegisteredEvents[name] !== undefined) {
-        item.__handJobjsRegisteredEvents[name] += 1;
-        return;
-      }
-
-      item.__handJobjsRegisteredEvents[name] = 1;
-      log('adding event ' + name);
-      item.addEventListener(name, func, false);
-    } else {
-      if (item.__handJobjsRegisteredEvents.indexOf(name) !== -1) {
-        item.__handJobjsRegisteredEvents[name] -= 1;
-
-        if (item.__handJobjsRegisteredEvents[name] !== 0) {
-          return;
-        }
-      }
-      log('removing event');
-      item.removeEventListener(name, func);
-      item.__handJobjsRegisteredEvents[name] = 0;
-    }
-  }
-
-  function setTouchAware(item, eventName, enable) {
-    var eventGenerator, targetEvent;
-
-    function nameGenerator(name) {
-      return name;
-    } // easier than doing this right and replacing all the references
-
-    log('setTouchAware ' + enable + ' ' + eventName);
-    // Leaving tokens
-    if (!item.__handJobjsGlobalRegisteredEvents) {
-      item.__handJobjsGlobalRegisteredEvents = [];
-    }
-    if (enable) {
-      if (item.__handJobjsGlobalRegisteredEvents[eventName] !== undefined) {
-        item.__handJobjsGlobalRegisteredEvents[eventName] += 1;
-        return;
-      }
-      item.__handJobjsGlobalRegisteredEvents[eventName] = 1;
-
-      log(item.__handJobjsGlobalRegisteredEvents[eventName]);
-    } else {
-      if (item.__handJobjsGlobalRegisteredEvents[eventName] !== undefined) {
-        item.__handJobjsGlobalRegisteredEvents[eventName] -= 1;
-        if (item.__handJobjsGlobalRegisteredEvents[eventName] < 0) {
-          item.__handJobjsGlobalRegisteredEvents[eventName] = 0;
-        }
-      }
-    }
-
-    eventGenerator = generateTouchClonedEvent;
-
-    //switch (eventName) {
-    //    case "touchenter":
-    //      log("touchenter");
-    //      break;
-    //    case "touchleave":
-    //      log("touchleave");
-    targetEvent = nameGenerator(eventName);
-
-    if (item['on' + targetEvent.toLowerCase()] !== undefined) {
-      registerOrUnregisterEvent(item, targetEvent, function (evt) {
-        eventGenerator(evt, eventName);
-      }, enable);
-    }
-    //        break;
-    //}
-  }
-
-  // Intercept addEventListener calls by changing the prototype
-  function interceptAddEventListener(root) {
-    var current = root.prototype ? root.prototype.addEventListener : root.addEventListener;
-
-    function customAddEventListener(name, func, capture) {
-      log('customAddEventListener');
-      log(name);
-
-      if (supportedEventsNames.indexOf(name) !== -1) {
-        log('setting touch aware...');
-        setTouchAware(this, name, true);
-      }
-      current.call(this, name, func, capture);
-    }
-
-    log('intercepting add event listener!');
-    log(root);
-
-    if (root.prototype) {
-      root.prototype.addEventListener = customAddEventListener;
-    } else {
-      root.addEventListener = customAddEventListener;
-    }
-  }
-
-  function handleOtherEvent(eventObject, name) {
-    log('handle other event');
-    if (eventObject.preventManipulation) {
-      eventObject.preventManipulation();
-    }
-
-    // TODO: JSLint found that touchPoint here is an implied global!
-    generateTouchClonedEvent(touchPoint, name);
-  }
-
-  function removeTouchAware(item, eventName) {
-    // If item is already touch aware, do nothing
-    if (item.ontouchdown !== undefined) {
-      return;
-    }
-
-    // Chrome, Firefox
-    if (item.ontouchstart !== undefined) {
-      switch (eventName.toLowerCase()) {
-        case 'touchstart':
-          item.removeEventListener('pointerdown', function (evt) {
-            handleOtherEvent(evt, eventName);
-          });
-          break;
-        case 'touchmove':
-          item.removeEventListener('pointermove', function (evt) {
-            handleOtherEvent(evt, eventName);
-          });
-          break;
-        case 'touchend':
-          item.removeEventListener('pointerup', function (evt) {
-            handleOtherEvent(evt, eventName);
-          });
-          break;
-        case 'touchcancel':
-          item.removeEventListener('pointercancel', function (evt) {
-            handleOtherEvent(evt, eventName);
-          });
-          break;
-      }
-    }
-  }
-
-  // Intercept removeEventListener calls by changing the prototype
-  function interceptRemoveEventListener(root) {
-    var current = root.prototype ? root.prototype.removeEventListener : root.removeEventListener;
-
-    function customRemoveEventListener(name, func, capture) {
-      // Branch when a PointerXXX is used
-      if (supportedEventsNames.indexOf(name) !== -1) {
-        removeTouchAware(this, name);
-      }
-
-      current.call(this, name, func, capture);
-    }
-
-    if (root.prototype) {
-      root.prototype.removeEventListener = customRemoveEventListener;
-    } else {
-      root.removeEventListener = customRemoveEventListener;
-    }
-  }
-
-  function checkEventRegistration(node, eventName) {
-    log('checkEventRegistration');
-    return node.__handJobjsGlobalRegisteredEvents && node.__handJobjsGlobalRegisteredEvents[eventName];
-  }
-
-  function findEventRegisteredNode(node, eventName) {
-    log('findEventRegisteredNode');
-    while (node && !checkEventRegistration(node, eventName)) {
-      node = node.parentNode;
-    }
-    if (node) {
-      return node;
-    }
-    if (checkEventRegistration(window, eventName)) {
-      return window;
-    }
-  }
-
-  function generateTouchEventProxyIfRegistered(eventName, touchPoint, target, eventObject, canBubble, relatedTarget) {
-    // Check if user registered this event
-    log('generateTouchEventProxyIfRegistered');
-    if (findEventRegisteredNode(target, eventName)) {
-      generateTouchEventProxy(eventName, touchPoint, target, eventObject, canBubble, relatedTarget);
-    }
-  }
-
-  function getDomUpperHierarchy(node) {
-    var nodes = [];
-    if (node) {
-      nodes.unshift(node);
-      while (node.parentNode) {
-        nodes.unshift(node.parentNode);
-        node = node.parentNode;
-      }
-    }
-    return nodes;
-  }
-
-  function getFirstCommonNode(node1, node2) {
-    var parents1 = getDomUpperHierarchy(node1),
-        parents2 = getDomUpperHierarchy(node2),
-        lastmatch = null;
-
-    while (parents1.length > 0 && parents1[0] === parents2.shift()) {
-      lastmatch = parents1.shift();
-    }
-    return lastmatch;
-  }
-
-  // generateProxy receives a node to dispatch the event
-  function dispatchPointerEnter(currentTarget, relatedTarget, generateProxy) {
-    log('dispatchPointerEnter');
-    var commonParent = getFirstCommonNode(currentTarget, relatedTarget),
-        node = currentTarget,
-        nodelist = [];
-
-    while (node && node !== commonParent) {
-      // target range: this to the direct child of parent relatedTarget
-      if (checkEventRegistration(node, 'touchenter')) {
-        // check if any parent node has pointerenter
-        nodelist.push(node);
-      }
-      node = node.parentNode;
-    }
-    while (nodelist.length > 0) {
-      generateProxy(nodelist.pop());
-    }
-  }
-
-  // generateProxy receives a node to dispatch the event
-  function dispatchPointerLeave(currentTarget, relatedTarget, generateProxy) {
-    log('dispatchPointerLeave');
-    var commonParent = getFirstCommonNode(currentTarget, relatedTarget),
-        node = currentTarget;
-    while (node && node !== commonParent) {
-      //target range: this to the direct child of parent relatedTarget
-      if (checkEventRegistration(node, 'touchleave')) {
-        // check if any parent node has pointerleave
-        generateProxy(node);
-      }
-      node = node.parentNode;
-    }
-  }
-
-  function log(s) {
-    if (logToConsole) {
-      console.log(s.toString());
-    }
-  }
-
-  CustomEvent.prototype = window.Event.prototype;
-
-  if (_typeof(window.ontouchstart) === 'object') {
-    return;
-  }
-
-  if (userAgent.match(/iPad/i) || userAgent.match(/iPhone/i) || userAgent.match(/iPod/i) || userAgent.match(/Android/i) || userAgent.match(/MSIE/i) && !userAgent.match(/Touch/i)) {
-    return;
-  }
-
-  // Add CSS to disable MS IE default scrolling functionality.
-  (function () {
-    var css = 'html { -ms-touch-action: none; }',
-        head = document.head || document.getElementsByTagName('head')[0],
-        style = document.createElement('style');
-
-    style.type = 'text/css';
-    if (style.styleSheet) {
-      style.styleSheet.cssText = css;
-    } else {
-      style.appendChild(document.createTextNode(css));
-    }
-
-    head.appendChild(style);
-  })();
-
-  touchesWrapper = new TouchListWrapper();
-  changedTouchesWrapper = new TouchListWrapper();
-  targetTouchesWrapper = new TouchListWrapper();
-
-  window.CustomEvent = CustomEvent;
-
-  // Hooks
-  interceptAddEventListener(window);
-  interceptAddEventListener(window.HTMLElement || window.Element);
-  interceptAddEventListener(document);
-  interceptAddEventListener(HTMLBodyElement);
-  interceptAddEventListener(HTMLDivElement);
-  interceptAddEventListener(HTMLImageElement);
-  interceptAddEventListener(HTMLUListElement);
-  interceptAddEventListener(HTMLAnchorElement);
-  interceptAddEventListener(HTMLLIElement);
-  interceptAddEventListener(HTMLTableElement);
-  if (window.HTMLSpanElement) {
-    interceptAddEventListener(HTMLSpanElement);
-  }
-  if (window.HTMLCanvasElement) {
-    interceptAddEventListener(HTMLCanvasElement);
-  }
-  if (window.SVGElement) {
-    interceptAddEventListener(SVGElement);
-  }
-
-  interceptRemoveEventListener(window);
-  interceptRemoveEventListener(window.HTMLElement || window.Element);
-  interceptRemoveEventListener(document);
-  interceptRemoveEventListener(HTMLBodyElement);
-  interceptRemoveEventListener(HTMLDivElement);
-  interceptRemoveEventListener(HTMLImageElement);
-  interceptRemoveEventListener(HTMLUListElement);
-  interceptRemoveEventListener(HTMLAnchorElement);
-  interceptRemoveEventListener(HTMLLIElement);
-  interceptRemoveEventListener(HTMLTableElement);
-  if (window.HTMLSpanElement) {
-    interceptRemoveEventListener(HTMLSpanElement);
-  }
-  if (window.HTMLCanvasElement) {
-    interceptRemoveEventListener(HTMLCanvasElement);
-  }
-  if (window.SVGElement) {
-    interceptRemoveEventListener(SVGElement);
-  }
-
-  (function () {
-    // Returns true if and only if the event should be ignored.
-    function ignorePointerEvent(event) {
-      // Don't interpret mouse pointers as touches
-      if (event.pointerType === 'mouse') {
-        return true;
-      }
-      // Don't interpret pointerdown events on the scrollbars as touch events.
-      // It appears to be the case that when the event is on the scrollbar in IE,
-      // event.x === 0 and event.y === 0
-      if (event.type === 'pointerdown' && event.x === 0 && event.y === 0) {
-        return true;
-      }
-      // A user reported that when the input type is 'pen', the pointermove event fires with a pressure of 0
-      // before the pen touches the screen.  We want to ignore this.
-      if (event.pointerType === 'pen' && event.pressure === 0 && event.type === 'pointermove') {
-        return true;
-      }
-      return false;
-    }
-
-    // Handling move on window to detect pointerleave/out/over
-    window.addEventListener('pointerdown', function (eventObject) {
-      log('pointerdownfired');
-      var touchPoint = eventObject;
-
-      if (ignorePointerEvent(eventObject)) {
-        return;
-      }
-
-      previousTargets[touchPoint.identifier] = touchPoint.target;
-      generateTouchEventProxyIfRegistered('touchenter', touchPoint, touchPoint.target, eventObject, true);
-
-      // pointerenter should not be bubbled
-      dispatchPointerEnter(touchPoint.target, null, function (targetNode) {
-        generateTouchEventProxy('touchenter', touchPoint, targetNode, eventObject, false);
-      });
-
-      generateTouchEventProxyIfRegistered('touchstart', touchPoint, touchPoint.target, eventObject, true);
-    });
-
-    window.addEventListener('pointerup', function (eventObject) {
-      var touchPoint = eventObject,
-          currentTarget = previousTargets[touchPoint.identifier];
-
-      log('pointer up fired');
-
-      if (ignorePointerEvent(eventObject)) {
-        return;
-      }
-
-      generateTouchEventProxyIfRegistered('touchend', touchPoint, currentTarget, eventObject, true);
-      generateTouchEventProxyIfRegistered('touchleave', touchPoint, currentTarget, eventObject, true);
-
-      //pointerleave should not be bubbled
-      dispatchPointerLeave(currentTarget, null, function (targetNode) {
-        generateTouchEventProxy('touchleave', touchPoint, targetNode, eventObject, false);
-      });
-    });
-
-    window.addEventListener('pointermove', function (eventObject) {
-      var touchPoint = eventObject,
-          currentTarget = previousTargets[touchPoint.identifier];
-
-      log('pointer move fired');
-
-      if (ignorePointerEvent(eventObject)) {
-        return;
-      }
-
-      log('x: ' + eventObject.screenX + ', y: ' + eventObject.screenY);
-
-      // pointermove fires over and over when a touch-point stays stationary.
-      // This is at odds with the other browsers that implement the W3C standard touch events
-      // which fire touchmove only when the touch-point actually moves.
-      // Therefore, return without doing anything if the pointermove event fired for a touch
-      // that hasn't moved.
-      if (touchesWrapper.containsTouchAt(eventObject.screenX, eventObject.screenY)) {
-        return;
-      }
-
-      // If force preventDefault
-      if (currentTarget && checkPreventDefault(currentTarget) === true) {
-        eventObject.preventDefault();
-      }
-
-      generateTouchEventProxyIfRegistered('touchmove', touchPoint, currentTarget, eventObject, true);
-    });
-  })();
-})();
-
-/***/ }),
-/* 223 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var DragDropTouch;
-(function (DragDropTouch_1) {
-  'use strict';
-  /**
-   * Object used to hold the data that is being dragged during drag and drop operations.
-   *
-   * It may hold one or more data items of different types. For more information about
-   * drag and drop operations and data transfer objects, see
-   * <a href="https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer">HTML Drag and Drop API</a>.
-   *
-   * This object is created automatically by the @see:DragDropTouch singleton and is
-   * accessible through the @see:dataTransfer property of all drag events.
-   */
-
-  var DataTransfer = function () {
-    function DataTransfer() {
-      this._dropEffect = 'move';
-      this._effectAllowed = 'all';
-      this._data = {};
-    }
-    Object.defineProperty(DataTransfer.prototype, 'dropEffect', {
-      /**
-       * Gets or sets the type of drag-and-drop operation currently selected.
-       * The value must be 'none',  'copy',  'link', or 'move'.
-       */
-      get: function get() {
-        return this._dropEffect;
-      },
-      set: function set(value) {
-        this._dropEffect = value;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    Object.defineProperty(DataTransfer.prototype, 'effectAllowed', {
-      /**
-       * Gets or sets the types of operations that are possible.
-       * Must be one of 'none', 'copy', 'copyLink', 'copyMove', 'link',
-       * 'linkMove', 'move', 'all' or 'uninitialized'.
-       */
-      get: function get() {
-        return this._effectAllowed;
-      },
-      set: function set(value) {
-        this._effectAllowed = value;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    Object.defineProperty(DataTransfer.prototype, 'types', {
-      /**
-       * Gets an array of strings giving the formats that were set in the @see:dragstart event.
-       */
-      get: function get() {
-        return Object.keys(this._data);
-      },
-      enumerable: true,
-      configurable: true
-    });
-    /**
-     * Removes the data associated with a given type.
-     *
-     * The type argument is optional. If the type is empty or not specified, the data
-     * associated with all types is removed. If data for the specified type does not exist,
-     * or the data transfer contains no data, this method will have no effect.
-     *
-     * @param type Type of data to remove.
-     */
-    DataTransfer.prototype.clearData = function (type) {
-      if (type != null) {
-        delete this._data[type];
-      } else {
-        this._data = null;
-      }
-    };
-    /**
-     * Retrieves the data for a given type, or an empty string if data for that type does
-     * not exist or the data transfer contains no data.
-     *
-     * @param type Type of data to retrieve.
-     */
-    DataTransfer.prototype.getData = function (type) {
-      return this._data[type] || '';
-    };
-    /**
-     * Set the data for a given type.
-     *
-     * For a list of recommended drag types, please see
-     * https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Recommended_Drag_Types.
-     *
-     * @param type Type of data to add.
-     * @param value Data to add.
-     */
-    DataTransfer.prototype.setData = function (type, value) {
-      this._data[type] = value;
-    };
-    /**
-     * Set the image to be used for dragging if a custom one is desired.
-     *
-     * @param img An image element to use as the drag feedback image.
-     * @param offsetX The horizontal offset within the image.
-     * @param offsetY The vertical offset within the image.
-     */
-    DataTransfer.prototype.setDragImage = function (img, offsetX, offsetY) {
-      var ddt = DragDropTouch._instance;
-      ddt._imgCustom = img;
-      ddt._imgOffset = { x: offsetX, y: offsetY };
-    };
-    return DataTransfer;
-  }();
-  DragDropTouch_1.DataTransfer = DataTransfer;
-  /**
-   * Defines a class that adds support for touch-based HTML5 drag/drop operations.
-   *
-   * The @see:DragDropTouch class listens to touch events and raises the
-   * appropriate HTML5 drag/drop events as if the events had been caused
-   * by mouse actions.
-   *
-   * The purpose of this class is to enable using existing, standard HTML5
-   * drag/drop code on mobile devices running IOS or Android.
-   *
-   * To use, include the DragDropTouch.js file on the page. The class will
-   * automatically start monitoring touch events and will raise the HTML5
-   * drag drop events (dragstart, dragenter, dragleave, drop, dragend) which
-   * should be handled by the application.
-   *
-   * For details and examples on HTML drag and drop, see
-   * https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Drag_operations.
-   */
-  var DragDropTouch = function () {
-    /**
-     * Initializes the single instance of the @see:DragDropTouch class.
-     */
-    function DragDropTouch() {
-      this._lastClick = 0;
-      // enforce singleton pattern
-      if (DragDropTouch._instance) {
-        throw 'DragDropTouch instance already created.';
-      }
-      // detect passive event support
-      // https://github.com/Modernizr/Modernizr/issues/1894
-      var supportsPassive = false;
-      document.addEventListener('test', function () {}, {
-        get passive() {
-          supportsPassive = true;
-          return true;
-        }
-      });
-      // listen to touch events
-      if ('ontouchstart' in document) {
-        var d = document,
-            ts = this._touchstart.bind(this),
-            tm = this._touchmove.bind(this),
-            te = this._touchend.bind(this),
-            opt = supportsPassive ? { passive: false, capture: false } : false;
-        d.addEventListener('touchstart', ts, opt);
-        d.addEventListener('touchmove', tm, opt);
-        d.addEventListener('touchend', te);
-        d.addEventListener('touchcancel', te);
-      }
-    }
-    /**
-     * Gets a reference to the @see:DragDropTouch singleton.
-     */
-    DragDropTouch.getInstance = function () {
-      return DragDropTouch._instance;
-    };
-    // ** event handlers
-    DragDropTouch.prototype._touchstart = function (e) {
-      var _this = this;
-      if (this._shouldHandle(e)) {
-        // raise double-click and prevent zooming
-        if (Date.now() - this._lastClick < DragDropTouch._DBLCLICK) {
-          if (this._dispatchEvent(e, 'dblclick', e.target)) {
-            e.preventDefault();
-            this._reset();
-            return;
-          }
-        }
-        // clear all variables
-        this._reset();
-        // get nearest draggable element
-        var src = this._closestDraggable(e.target);
-        if (src) {
-          // give caller a chance to handle the hover/move events
-          if (!this._dispatchEvent(e, 'mousemove', e.target) && !this._dispatchEvent(e, 'mousedown', e.target)) {
-            // get ready to start dragging
-            this._dragSource = src;
-            this._ptDown = this._getPoint(e);
-            this._lastTouch = e;
-            e.preventDefault();
-            // show context menu if the user hasn't started dragging after a while
-            setTimeout(function () {
-              if (_this._dragSource == src && _this._img == null) {
-                if (_this._dispatchEvent(e, 'contextmenu', src)) {
-                  _this._reset();
-                }
-              }
-            }, DragDropTouch._CTXMENU);
-          }
-        }
-      }
-    };
-    DragDropTouch.prototype._touchmove = function (e) {
-      if (this._shouldHandle(e)) {
-        var target = this._getTarget(e);
-        // start dragging
-        if (this._dragSource && !this._img) {
-          var delta = this._getDelta(e);
-          if (delta > DragDropTouch._THRESHOLD) {
-            this._dispatchEvent(e, 'dragstart', this._dragSource);
-            this._createImage(e);
-            this._dispatchEvent(e, 'dragenter', target);
-          }
-        }
-        // continue dragging
-        if (this._img) {
-          this._lastTouch = e;
-          e.preventDefault(); // prevent scrolling
-          if (target != this._lastTarget) {
-            this._dispatchEvent(this._lastTouch, 'dragleave', this._lastTarget);
-            this._dispatchEvent(e, 'dragenter', target);
-            this._lastTarget = target;
-          }
-          this._moveImage(e);
-          this._dispatchEvent(e, 'dragover', target);
-        }
-        // see if target wants to handle move
-        if (this._dispatchEvent(e, 'mousemove', target)) {
-          this._lastTouch = e;
-          e.preventDefault();
-          return;
-        }
-      }
-    };
-    DragDropTouch.prototype._touchend = function (e) {
-      if (this._shouldHandle(e)) {
-        // finish dragging
-        this._destroyImage();
-        if (this._dragSource) {
-          if (e.type.indexOf('cancel') < 0) {
-            this._dispatchEvent(this._lastTouch, 'drop', this._lastTarget);
-          }
-          this._dispatchEvent(this._lastTouch, 'dragend', this._dragSource);
-          this._reset();
-          // prevent mouse up on drag
-          e.preventDefault();
-          return;
-        }
-        // see if target wants to handle up
-        if (this._dispatchEvent(this._lastTouch, 'mouseup', e.target)) {
-          e.preventDefault();
-          return;
-        }
-        // user clicked the element but didn't drag, so clear the source and simulate a click
-        if (!this._img) {
-          this._dragSource = null;
-          this._dispatchEvent(this._lastTouch, 'click', e.target);
-          this._lastClick = Date.now();
-        }
-      }
-    };
-    // ** utilities
-    // ignore events that have been handled or that involve more than one touch
-    DragDropTouch.prototype._shouldHandle = function (e) {
-      return e && !e.defaultPrevented && e.touches && e.touches.length < 2;
-    };
-    // clear all members
-    DragDropTouch.prototype._reset = function () {
-      this._destroyImage();
-      this._dragSource = null;
-      this._lastTouch = null;
-      this._lastTarget = null;
-      this._ptDown = null;
-      this._dataTransfer = new DataTransfer();
-    };
-    // get point for a touch event
-    DragDropTouch.prototype._getPoint = function (e, page) {
-      if (e && e.touches) {
-        e = e.touches[0];
-      }
-      return { x: page ? e.pageX : e.clientX, y: page ? e.pageY : e.clientY };
-    };
-    // get distance between the current touch event and the first one
-    DragDropTouch.prototype._getDelta = function (e) {
-      var p = this._getPoint(e);
-      return Math.abs(p.x - this._ptDown.x) + Math.abs(p.y - this._ptDown.y);
-    };
-    // get the element at a given touch event
-    DragDropTouch.prototype._getTarget = function (e) {
-      var pt = this._getPoint(e),
-          el = document.elementFromPoint(pt.x, pt.y);
-      // if target element is an iframe, try propagating event to child element
-      if (el && el.nodeName === 'IFRAME') {
-        try {
-          var iframeDocument = el.contentWindow.document;
-          // get iframe absolute offset
-          var iframeAbsoluteOffset = { x: 0, y: 0 };
-          do {
-            iframeAbsoluteOffset.x += el.offsetLeft || 0;
-            iframeAbsoluteOffset.y += el.offsetTop || 0;
-            el = el.offsetParent;
-          } while (el);
-          // remove iframe absolute offset from touch position
-          var x = pt.x - iframeAbsoluteOffset.x,
-              y = pt.y - iframeAbsoluteOffset.y;
-          // get element on that position from iframe document
-          el = iframeDocument.elementFromPoint(x, y);
-        } catch (e) {
-          // iframe origin don't allow access
-        }
-      }
-      while (el && getComputedStyle(el).pointerEvents == 'none') {
-        el = el.parentElement;
-      }
-      return el;
-    };
-    // create drag image from source element
-    DragDropTouch.prototype._createImage = function (e) {
-      // just in case...
-      if (this._img) {
-        this._destroyImage();
-      }
-      // create drag image from custom element or drag source
-      var src = this._imgCustom || this._dragSource;
-      this._img = src.cloneNode(true);
-      this._copyStyle(src, this._img);
-      this._img.style.top = this._img.style.left = '-9999px';
-      // if creating from drag source, apply offset and opacity
-      if (!this._imgCustom) {
-        var rc = src.getBoundingClientRect(),
-            pt = this._getPoint(e);
-        this._imgOffset = { x: pt.x - rc.left, y: pt.y - rc.top };
-        this._img.style.opacity = DragDropTouch._OPACITY.toString();
-      }
-      // add image to document
-      this._moveImage(e);
-      document.body.appendChild(this._img);
-    };
-    // dispose of drag image element
-    DragDropTouch.prototype._destroyImage = function () {
-      if (this._img && this._img.parentElement) {
-        this._img.parentElement.removeChild(this._img);
-      }
-      this._img = null;
-      this._imgCustom = null;
-    };
-    // move the drag image element
-    DragDropTouch.prototype._moveImage = function (e) {
-      var _this = this;
-      requestAnimationFrame(function () {
-        if (_this._img) {
-          var pt = _this._getPoint(e, true),
-              s = _this._img.style;
-          s.position = 'absolute';
-          s.pointerEvents = 'none';
-          s.zIndex = '999999';
-          s.left = Math.round(pt.x - _this._imgOffset.x) + 'px';
-          s.top = Math.round(pt.y - _this._imgOffset.y) + 'px';
-        }
-      });
-    };
-    // copy properties from an object to another
-    DragDropTouch.prototype._copyProps = function (dst, src, props) {
-      for (var i = 0; i < props.length; i++) {
-        var p = props[i];
-        dst[p] = src[p];
-      }
-    };
-    DragDropTouch.prototype._copyStyle = function (src, dst) {
-      // remove potentially troublesome attributes
-      DragDropTouch._rmvAtts.forEach(function (att) {
-        dst.removeAttribute(att);
-      });
-      // copy canvas content
-      if (src instanceof HTMLCanvasElement) {
-        var cSrc = src,
-            cDst = dst;
-        cDst.width = cSrc.width;
-        cDst.height = cSrc.height;
-        cDst.getContext('2d').drawImage(cSrc, 0, 0);
-      }
-      // copy style (without transitions)
-      var cs = getComputedStyle(src);
-      for (var i = 0; i < cs.length; i++) {
-        var key = cs[i];
-        if (key.indexOf('transition') < 0) {
-          dst.style[key] = cs[key];
-        }
-      }
-      dst.style.pointerEvents = 'none';
-      // and repeat for all children
-      for (var i = 0; i < src.children.length; i++) {
-        this._copyStyle(src.children[i], dst.children[i]);
-      }
-    };
-    DragDropTouch.prototype._dispatchEvent = function (e, type, target) {
-      if (e && target) {
-        var evt = document.createEvent('Event'),
-            t = e.touches ? e.touches[0] : e;
-        evt.initEvent(type, true, true);
-        evt.button = 0;
-        evt.which = evt.buttons = 1;
-        this._copyProps(evt, e, DragDropTouch._kbdProps);
-        this._copyProps(evt, t, DragDropTouch._ptProps);
-        evt.dataTransfer = this._dataTransfer;
-        target.dispatchEvent(evt);
-        return evt.defaultPrevented;
-      }
-      return false;
-    };
-    // gets an element's closest draggable ancestor
-    DragDropTouch.prototype._closestDraggable = function (e) {
-      for (; e; e = e.parentElement) {
-        if (e.hasAttribute('draggable') && e.draggable) {
-          return e;
-        }
-      }
-      return null;
-    };
-    return DragDropTouch;
-  }();
-  /*private*/DragDropTouch._instance = new DragDropTouch(); // singleton
-  // constants
-  DragDropTouch._THRESHOLD = 5; // pixels to move before drag starts
-  DragDropTouch._OPACITY = 0.5; // drag image opacity
-  DragDropTouch._DBLCLICK = 500; // max ms between clicks in a double click
-  DragDropTouch._CTXMENU = 900; // ms to hold before raising 'contextmenu' event
-  // copy styles/attributes from drag source to drag image element
-  DragDropTouch._rmvAtts = 'id,class,style,draggable'.split(',');
-  // synthesize and dispatch an event
-  // returns true if the event has been handled (e.preventDefault == true)
-  DragDropTouch._kbdProps = 'altKey,ctrlKey,metaKey,shiftKey'.split(',');
-  DragDropTouch._ptProps = 'pageX,pageY,clientX,clientY,screenX,screenY'.split(',');
-  DragDropTouch_1.DragDropTouch = DragDropTouch;
-})(DragDropTouch || (DragDropTouch = {}));
 
 /***/ })
 /******/ ]);
