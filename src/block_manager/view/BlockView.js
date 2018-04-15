@@ -40,7 +40,8 @@ module.exports = Backbone.View.extend({
 
     // Note: data are not available on dragenter for security reason,
     // but will use dragContent as I need it for the Sorter context
-    ev.dataTransfer.setData(type, data);
+    // IE11 supports only 'text' data type
+    ev.dataTransfer.setData('text', data);
     this.em.set('dragContent', content);
   },
 

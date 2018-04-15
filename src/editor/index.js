@@ -39,9 +39,13 @@
  * * `styleManager:change:{propertyName}` - As above but for a specific style property
  * ## Storages
  * * `storage:start` - Before the storage request is started
+ * * `storage:start:store` - Before the store request. The object to store is passed as an argumnet (which you can edit)
+ * * `storage:start:load` - Before the load request. Items to load are passed as an argumnet (which you can edit)
  * * `storage:load` - Triggered when something was loaded from the storage, loaded object passed as an argumnet
  * * `storage:store` - Triggered when something is stored to the storage, stored object passed as an argumnet
  * * `storage:end` - After the storage request is ended
+ * * `storage:end:store` - After the store request
+ * * `storage:end:load` - After the load request
  * * `storage:error` - On any error on storage request, passes the error as an argument
  * ## Canvas
  * * `canvas:dragenter` - When something is dragged inside the canvas, `DataTransfer` instance passed as an argument
@@ -58,6 +62,9 @@
  * ## Commands
  * * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
  * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
+ * * `run:{commandName}:before` - Triggered before the command is called
+ * * `stop:{commandName}:before` - Triggered before the command is called to stop
+ * * `abort:{commandName}` - Triggered when the command execution is aborted (`editor.on(`run:preview:before`, opts => opts.abort = 1);`)
  * ## General
  * * `canvasScroll` - Triggered when the canvas is scrolle
  * * `undo` - Undo executed
@@ -80,6 +87,7 @@
  * @param {Object} [config.domComponents={}] Components configuration, see the relative documentation
  * @param {Object} [config.panels={}] Panels configuration, see the relative documentation
  * @param {Object} [config.showDevices=true] If true render a select of available devices inside style manager panel
+ * @param {Boolean} [config.keepEmptyTextNodes=false] If false, removes empty text nodes when parsed (unless they contain a space)
  * @param {string} [config.defaultCommand='select-comp'] Command to execute when no other command is running
  * @param {Array} [config.plugins=[]] Array of plugins to execute on start
  * @param {Object} [config.pluginsOpts={}] Custom options for plugins
@@ -426,14 +434,11 @@ module.exports = config => {
      * @example
      * editor.runCommand('myCommand', {someValue: 1});
      */
-    runCommand(id, options) {
-      var result;
-      var command = em.get('Commands').get(id);
+    runCommand(id, options = {}) {
+      let result;
+      const command = em.get('Commands').get(id);
+      if (command) result = command.callRun(this, options);
 
-      if (command) {
-        result = command.run(this, this, options);
-        this.trigger('run:' + id);
-      }
       return result;
     },
 
@@ -445,14 +450,11 @@ module.exports = config => {
      * @example
      * editor.stopCommand('myCommand', {someValue: 1});
      */
-    stopCommand(id, options) {
-      var result;
-      var command = em.get('Commands').get(id);
+    stopCommand(id, options = {}) {
+      let result;
+      const command = em.get('Commands').get(id);
+      if (command) result = command.callStop(this, options);
 
-      if (command) {
-        result = command.stop(this, this, options);
-        this.trigger('stop:' + id);
-      }
       return result;
     },
 

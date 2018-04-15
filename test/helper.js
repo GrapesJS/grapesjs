@@ -3,7 +3,9 @@ import expect from 'expect';
 import sinon from 'sinon';
 import { JSDOM } from 'jsdom';
 
-const dom = new JSDOM('<!doctype html><html><body></body></html>');
+const dom = new JSDOM('<!doctype html><html><body></body></html>', {
+  resources: 'usable'
+});
 const window = dom.window;
 
 // Fix for the require of jquery

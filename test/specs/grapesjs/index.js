@@ -28,6 +28,7 @@ describe('GrapesJS', () => {
     });
 
     beforeEach(() => {
+      storage = {};
       htmlString = '<div class="test1"></div><div class="test2"></div>';
       cssString = '.test2{color:red}.test3{color:blue}';
       documentEl = '<style>' + cssString + '</style>' + htmlString;
@@ -36,15 +37,22 @@ describe('GrapesJS', () => {
         storageManager: {
           autoload: 0,
           autosave: 0,
-          type: ''
+          type: 0
         }
       };
       obj = grapesjs;
-      //fixture = $('<div id="' + editorName + '"></div>');
-      //fixture.empty().appendTo(fixtures);
-
       document.body.innerHTML = `<div id="fixtures"><div id="${editorName}"></div></div>`;
       fixtures = document.body.querySelector('#fixtures');
+      fixture = document.body.querySelector(`#${editorName}`);
+    });
+
+    afterEach(() => {
+      var plugins = obj.plugins.getAll();
+      for (let id in plugins) {
+        if (plugins.hasOwnProperty(id)) {
+          delete plugins[id];
+        }
+      }
     });
 
     it('Main object should be loaded', () => {
@@ -79,6 +87,32 @@ describe('GrapesJS', () => {
       expect(editor.getStyle().length).toEqual(0);
     });
 
+    it('Editor canvas baseCSS can be overwritten', () => {
+      config.components = htmlString;
+      config.baseCss = '#wrapper { background-color: #eee; }';
+      config.protectedCss = '';
+
+      var editor = obj.init(config);
+
+      expect(window.frames[0].document.documentElement.outerHTML).toInclude(
+        config.baseCss
+      );
+      expect(window.frames[0].document.documentElement.outerHTML)
+        .toNotInclude(`body {
+      margin: 0;`);
+    });
+
+    it('Editor canvas baseCSS defaults to sensible values if not defined', () => {
+      config.components = htmlString;
+      config.protectedCss = '';
+
+      var editor = obj.init(config);
+
+      expect(window.frames[0].document.documentElement.outerHTML)
+        .toInclude(`body {
+      margin: 0;`);
+    });
+
     it('Init editor with html', () => {
       config.components = htmlString;
       var editor = obj.init(config);
@@ -107,26 +141,41 @@ describe('GrapesJS', () => {
       ).toEqual('test2');
     });
 
-    it.skip('Init editor from element', () => {
+    it('Init editor from element', () => {
       config.fromElement = 1;
-      fixtures.innerHTML = documentEl;
-      var editor = obj.init(config);
-      var html = editor.getHtml();
-      var css = editor.getCss();
-      var protCss = editor.getConfig().protectedCss;
-      /*
-      (html ? html : '').should.equal(htmlString);
-      (css ? css : '').should.equal(protCss + '.test2{color:red;}');// .test3 is discarded in css
-      editor.getComponents().length.should.equal(2);
-      editor.getStyle().length.should.equal(2);
-      */
-
-      expect(html ? html : '').toEqual(htmlString);
+      config.storageManager = { type: 0 };
+      fixture.innerHTML = documentEl;
+      const editor = obj.init(config);
+      const html = editor.getHtml();
+      const css = editor.getCss();
+      const protCss = editor.getConfig().protectedCss;
+      expect(html).toEqual(htmlString);
       expect(editor.getComponents().length).toEqual(2);
-      // .test3 is discarded in css
-      expect(css ? css : '').toEqual(protCss + '.test2{color:red;}');
-      // bust is still here
+      // .test3 is discarded in CSS
+      expect(css).toEqual(`${protCss}.test2{color:red;}`);
+      // but it's still there
       expect(editor.getStyle().length).toEqual(2);
+    });
+
+    it('Init editor from element with multiple font-face at-rules', () => {
+      config.fromElement = 1;
+      config.storageManager = { type: 0 };
+      fixture.innerHTML =
+        `
+      <style>
+        @font-face {
+          font-family: 'Glyphicons Halflings';
+          src: url(https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff2) format('woff2');
+        }
+        @font-face {
+          font-family: 'Droid Sans';
+          src: url(https://fonts.gstatic.com/s/droidsans/v8/SlGVmQWMvZQIdix7AFxXkHNSbRYXags.woff2) format('woff2');
+        }
+      </style>` + htmlString;
+      const editor = obj.init(config);
+      const css = editor.getCss();
+      const styles = editor.getStyle();
+      expect(styles.length).toEqual(2);
     });
 
     it('Set components as HTML', () => {
@@ -171,19 +220,58 @@ describe('GrapesJS', () => {
     });
 
     it.skip('Adds new storage as plugin and store data there', done => {
-      var pluginName = storageId + '-plugin';
-      obj.plugins.add(pluginName, edt => {
-        edt.StorageManager.add(storageId, storageMock);
-      });
+      const pluginName = storageId + '-p2';
+      obj.plugins.add(pluginName, e =>
+        e.StorageManager.add(storageId, storageMock)
+      );
       config.storageManager.type = storageId;
       config.plugins = [pluginName];
-      var editor = obj.init(config);
+      const editor = obj.init(config);
       editor.setComponents(htmlString);
       editor.store(() => {
         editor.load(data => {
           expect(data.html).toEqual(htmlString);
           done();
         });
+      });
+    });
+
+    it('Adds a new storage and fetch correctly data from it', done => {
+      fixture.innerHTML = documentEl;
+      const styleResult = { color: 'white', display: 'block' };
+      const style = [
+        {
+          selectors: [{ name: 'sclass1' }],
+          style: { color: 'green' }
+        },
+        {
+          selectors: [{ name: 'test2' }],
+          style: styleResult
+        },
+        {
+          selectors: [{ name: 'test3' }],
+          style: { color: 'black', display: 'block' }
+        }
+      ];
+      storage = {
+        css: '* { box-sizing: border-box; } body {margin: 0;}',
+        styles: JSON.stringify(style)
+      };
+
+      const pluginName = storageId + '-p';
+      obj.plugins.add(pluginName, e =>
+        e.StorageManager.add(storageId, storageMock)
+      );
+      config.fromElement = 1;
+      config.storageManager.type = storageId;
+      config.plugins = [pluginName];
+      config.storageManager.autoload = 1;
+      const editor = obj.init(config);
+      editor.on('load', () => {
+        const cc = editor.CssComposer;
+        expect(cc.getAll().length).toEqual(style.length);
+        // expect(cc.setClassRule('test2').getStyle()).toEqual(styleResult);
+        done();
       });
     });
 
@@ -224,6 +312,32 @@ describe('GrapesJS', () => {
       });
       editor.stopCommand('test-command', { val: 5 });
       expect(editor.testVal).toEqual(htmlString + '5');
+    });
+
+    it('Trigger custom command events', () => {
+      const id = 'test-command';
+      const editor = obj.init(config);
+      const result = {};
+      editor.on(`run:${id}`, () => (result.run = 1));
+      editor.on(`run:${id}:before`, () => (result.runBefore = 1));
+      editor.on(`stop:${id}`, () => (result.stop = 1));
+      editor.on(`stop:${id}:before`, () => (result.stopBefore = 1));
+      editor.on(`abort:${id}`, () => (result.abort = 1));
+      editor.Commands.add(id, {
+        run() {},
+        stop() {}
+      });
+      editor.runCommand(id);
+      editor.stopCommand(id);
+      editor.on(`run:${id}:before`, opts => (opts.abort = 1));
+      editor.runCommand(id);
+      expect(result).toEqual({
+        run: 1,
+        runBefore: 1,
+        stop: 1,
+        stopBefore: 1,
+        abort: 1
+      });
     });
 
     it('Set default devices', () => {

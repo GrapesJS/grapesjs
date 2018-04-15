@@ -3,7 +3,5 @@ module.exports = {
   // With the empty value, nothing will be rendered
   appendTo: '',
 
-  blocks: [],
-
-  appendTo: ''
+  blocks: []
 };

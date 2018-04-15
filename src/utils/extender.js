@@ -1,4 +1,4 @@
-import { isObject } from 'underscore';
+import { isObject, isString, each, isUndefined } from 'underscore';
 
 module.exports = ({ $, Backbone }) => {
   if (Backbone) {
@@ -177,11 +177,36 @@ module.exports = ({ $, Backbone }) => {
       return this;
     };
 
-    (fn.remove = function() {
-      return this.each(node => {
-        return node.parentNode && node.parentNode.removeChild(node);
-      });
+    // For SVGs in IE
+    (fn.removeClass = function(c) {
+      if (!arguments.length) {
+        return this.attr('class', '');
+      }
+      const classes = isString(c) && c.match(/\S+/g);
+      return classes
+        ? this.each(function(el) {
+            each(classes, function(c) {
+              if (el.classList) {
+                el.classList.remove(c);
+              } else {
+                const val = el.className;
+                const bval = el.className.baseVal;
+
+                if (!isUndefined(bval)) {
+                  val.baseVal = bval.replace(c, '');
+                } else {
+                  el.className = val.replace(c, '');
+                }
+              }
+            });
+          })
+        : this;
     }),
+      (fn.remove = function() {
+        return this.each(node => {
+          return node.parentNode && node.parentNode.removeChild(node);
+        });
+      }),
       // For spectrum compatibility
       (fn.bind = function(ev, h) {
         return this.on(ev, h);

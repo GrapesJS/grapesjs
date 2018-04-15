@@ -52,6 +52,7 @@ module.exports = Backbone.Model.extend({
     this.set('Config', c);
     this.set('modules', []);
     this.set('toLoad', []);
+    this.set('storables', []);
 
     if (c.el && c.fromElement) this.config.components = c.el.innerHTML;
 
@@ -93,7 +94,7 @@ module.exports = Backbone.Model.extend({
       clb && clb();
     };
 
-    if (sm && sm.getConfig().autoload) {
+    if (sm && sm.canAutoload()) {
       this.load(postLoad);
     } else {
       postLoad();
@@ -346,7 +347,7 @@ module.exports = Backbone.Model.extend({
       for (var el in obj) store[el] = obj[el];
     });
 
-    sm.store(store, (res) => {
+    sm.store(store, res => {
       clb && clb(res);
       this.set('changesCount', 0);
       this.trigger('storage:store', store);
@@ -394,7 +395,7 @@ module.exports = Backbone.Model.extend({
     sm.load(load, res => {
       this.cacheLoad = res;
       clb && clb(res);
-      this.trigger('storage:load', res);
+      setTimeout(() => this.trigger('storage:load', res), 0);
     });
   },
 

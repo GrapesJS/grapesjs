@@ -97,23 +97,7 @@ module.exports = Backbone.View.extend({
 
       const colorWarn = '#ffca6f';
 
-      let baseCss = `
-        * {
-          box-sizing: border-box;
-        }
-        html, body, #wrapper {
-          min-height: 100%;
-        }
-        body {
-          margin: 0;
-          height: 100%;
-          background-color: #fff
-        }
-        #wrapper {
-          overflow: auto;
-          overflow-x: hidden;
-        }
-      `;
+      // I need all this styles to make the editor work properly
       // Remove `html { height: 100%;}` from the baseCss as it gives jumpings
       // effects (on ENTER) with RTE like CKEditor (maybe some bug there?!?)
       // With `body {height: auto;}` jumps in CKEditor are removed but in
@@ -121,10 +105,8 @@ module.exports = Backbone.View.extend({
       // `body {height: 100%;}`.
       // For the moment I give the priority to Firefox as it might be
       // CKEditor's issue
-
-      // I need all this styles to make the editor work properly
       var frameCss = `
-        ${baseCss}
+        ${em.config.baseCss || ''}
 
         .${ppfx}dashed *[data-highlightable] {
           outline: 1px dashed rgba(170,170,170,0.7);
@@ -171,18 +153,6 @@ module.exports = Backbone.View.extend({
           cursor: -webkit-grabbing;
         }
 
-        * ::-webkit-scrollbar-track {
-          background: rgba(0, 0, 0, 0.1)
-        }
-
-        * ::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.2)
-        }
-
-        * ::-webkit-scrollbar {
-          width: 10px
-        }
-
         ${conf.canvasCss || ''}
         ${protCss || ''}
       `;
@@ -208,7 +178,13 @@ module.exports = Backbone.View.extend({
       // property keymaster (and many others) still use it... using `defineProperty`
       // hack seems the only way
       const createCustomEvent = (e, cls) => {
-        var oEvent = new window[cls](e.type, e);
+        let oEvent;
+        try {
+          oEvent = new window[cls](e.type, e);
+        } catch (e) {
+          oEvent = document.createEvent(cls);
+          oEvent.initEvent(e.type, true, true);
+        }
         oEvent.keyCodeVal = e.keyCode;
         ['keyCode', 'which'].forEach(prop => {
           Object.defineProperty(oEvent, prop, {
@@ -327,7 +303,7 @@ module.exports = Backbone.View.extend({
   updateScript(view) {
     if (!view.scriptContainer) {
       view.scriptContainer = $('<div>');
-      this.getJsContainer().append(view.scriptContainer.get(0));
+      this.getJsContainer().appendChild(view.scriptContainer.get(0));
     }
 
     const model = view.model;

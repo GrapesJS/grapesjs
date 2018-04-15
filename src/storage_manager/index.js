@@ -11,8 +11,11 @@ module.exports = () => {
     LocalStorage = require('./model/LocalStorage'),
     RemoteStorage = require('./model/RemoteStorage');
 
+  let em;
   var storages = {};
   var defaultStorages = {};
+  const eventStart = 'storage:start';
+  const eventEnd = 'storage:end';
 
   return {
     /**
@@ -42,6 +45,7 @@ module.exports = () => {
      */
     init(config) {
       c = config || {};
+      em = c.em;
 
       for (var name in defaults) {
         if (!(name in c)) c[name] = defaults[name];
@@ -52,6 +56,14 @@ module.exports = () => {
       c.currentStorage = c.type;
       this.loadDefaultProviders().setCurrent(c.type);
       return this;
+    },
+
+    /**
+     * Get configuration object
+     * @return {Object}
+     * */
+    getConfig() {
+      return c;
     },
 
     /**
@@ -163,12 +175,20 @@ module.exports = () => {
      * storageManager.store({item1: value1, item2: value2});
      * */
     store(data, clb) {
-      var st = this.get(this.getCurrent());
-      var dataF = {};
+      const st = this.get(this.getCurrent());
+      const toStore = {};
+      this.onStart('store', data);
 
-      for (var key in data) dataF[c.id + key] = data[key];
+      for (let key in data) {
+        toStore[c.id + key] = data[key];
+      }
 
-      return st ? st.store(dataF, clb) : null;
+      return st
+        ? st.store(toStore, res => {
+            clb && clb(res);
+            this.onEnd('store', res);
+          })
+        : null;
     },
 
     /**
@@ -189,9 +209,11 @@ module.exports = () => {
       var result = {};
 
       if (typeof keys === 'string') keys = [keys];
+      this.onStart('load', keys);
 
-      for (var i = 0, len = keys.length; i < len; i++)
+      for (var i = 0, len = keys.length; i < len; i++) {
         keysF.push(c.id + keys[i]);
+      }
 
       if (st) {
         st.load(keysF, res => {
@@ -203,6 +225,7 @@ module.exports = () => {
           }
 
           clb && clb(result);
+          this.onEnd('load', result);
         });
       } else {
         clb && clb(result);
@@ -220,12 +243,43 @@ module.exports = () => {
     },
 
     /**
-     * Get configuration object
-     * @return {Object}
+     * Get current storage
+     * @return {Storage}
+     * */
+    getCurrentStorage() {
+      return this.get(this.getCurrent());
+    },
+
+    /**
+     * On start callback
+     * @private
+     */
+    onStart(ctx, data) {
+      if (em) {
+        em.trigger(eventStart);
+        ctx && em.trigger(`${eventStart}:${ctx}`, data);
+      }
+    },
+
+    /**
+     * On end callback
+     * @private
+     */
+    onEnd(ctx, data) {
+      if (em) {
+        em.trigger(eventEnd);
+        ctx && em.trigger(`${eventEnd}:${ctx}`, data);
+      }
+    },
+
+    /**
+     * Check if autoload is possible
+     * @return {Boolean}
      * @private
      * */
-    getConfig() {
-      return c;
+    canAutoload() {
+      const storage = this.getCurrentStorage();
+      return storage && this.getConfig().autoload;
     }
   };
 };

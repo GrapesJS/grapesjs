@@ -210,8 +210,7 @@ module.exports = Component.extend(
           changeProp: 1
         },
         this.getAutoplayTrait(),
-        this.getLoopTrait(),
-        this.getControlsTrait()
+        this.getLoopTrait()
       ];
     },
 
@@ -263,11 +262,14 @@ module.exports = Component.extend(
      * @private
      */
     getYoutubeSrc() {
-      var url = this.get('ytUrl');
-      url += this.get('videoId') + '?';
+      const id = this.get('videoId');
+      let url = this.get('ytUrl');
+      url += id + '?';
       url += this.get('autoplay') ? '&autoplay=1' : '';
-      url += !this.get('controls') ? '&controls=0' : '';
-      url += this.get('loop') ? '&loop=1' : '';
+      url += !this.get('controls') ? '&controls=0&showinfo=0' : '';
+      // Loop works only with playlist enabled
+      // https://stackoverflow.com/questions/25779966/youtube-iframe-loop-doesnt-work
+      url += this.get('loop') ? `&loop=1&playlist=${id}` : '';
       return url;
     },
 

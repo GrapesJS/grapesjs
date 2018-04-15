@@ -113,7 +113,7 @@ export default class RichTextEditor {
       btn.className = btn.className.replace(active, '').trim();
 
       // doc.queryCommandValue(name) != 'false'
-      if (doc.queryCommandState(name)) {
+      if (doc.queryCommandSupported(name) && doc.queryCommandState(name)) {
         btn.className += ` ${active}`;
       }
 
