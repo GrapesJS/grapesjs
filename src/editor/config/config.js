@@ -98,7 +98,7 @@ module.exports = {
 
   // When false, removes empty text nodes when parsed, unless they contain a space
   keepEmptyTextNodes: 0,
-  
+
   // Return JS of components inside HTML from 'editor.getHtml()'
   jsInHtml: true,
 
