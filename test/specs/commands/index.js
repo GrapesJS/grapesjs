@@ -1,5 +1,6 @@
 var Commands = require('commands');
 var Models = require('./model/CommandModels');
+var CommandAbstract = require('./view/CommandAbstract');
 
 describe('Commands', () => {
   describe('Main', () => {
@@ -61,3 +62,4 @@ describe('Commands', () => {
 });
 
 Models.run();
+CommandAbstract.run();
