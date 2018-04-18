@@ -305,15 +305,16 @@ module.exports = Backbone.Model.extend({
     const config = this.config;
     const wrappesIsBody = config.wrappesIsBody;
     const avoidProt = opts.avoidProtected;
+    const dumpUnusedSelectors = opts.dumpUnusedSelectors || false;
     const cssc = this.get('CssComposer');
     const wrp = this.get('DomComponents').getComponent();
     const protCss = !avoidProt ? config.protectedCss : '';
-
     return (
       protCss +
       this.get('CodeManager').getCode(wrp, 'css', {
         cssc,
-        wrappesIsBody
+        wrappesIsBody,
+        dumpUnusedSelectors
       })
     );
   },
