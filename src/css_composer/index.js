@@ -109,10 +109,10 @@ module.exports = () => {
       const ev = 'change:style';
       const um = em.get('UndoManager');
       um && um.add(model);
-      !opts.avoidStore && em.handleUpdates('', '', opts);
       const handleUpdates = em.handleUpdates.bind(em);
       em.stopListening(model, ev, handleUpdates);
       em.listenTo(model, ev, handleUpdates);
+      !opts.avoidStore && handleUpdates('', '', opts);
     },
 
     /**
