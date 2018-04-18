@@ -94,6 +94,8 @@ module.exports = () => {
     postLoad(em) {
       const ev = 'add remove';
       const rules = this.getAll();
+      const um = em.get('UndoManager');
+      um && um.add(rules);
       em.stopListening(rules, ev, this.handleChange);
       em.listenTo(rules, ev, this.handleChange);
       rules.each(rule => this.handleChange(rule, { avoidStore: 1 }));
