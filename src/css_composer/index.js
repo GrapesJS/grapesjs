@@ -96,17 +96,18 @@ module.exports = () => {
       const rules = this.getAll();
       em.stopListening(rules, ev, this.handleChange);
       em.listenTo(rules, ev, this.handleChange);
-      rules.each(rule => this.handleChange(rule));
+      rules.each(rule => this.handleChange(rule, { avoidStore: 1 }));
     },
 
     /**
      * Handle rule changes
      * @private
      */
-    handleChange(model) {
+    handleChange(model, opts = {}) {
       const ev = 'change:style';
       const um = em.get('UndoManager');
       um && um.add(model);
+      !opts.avoidStore && em.handleUpdates('', '', opts);
       const handleUpdates = em.handleUpdates.bind(em);
       em.stopListening(model, ev, handleUpdates);
       em.listenTo(model, ev, handleUpdates);
