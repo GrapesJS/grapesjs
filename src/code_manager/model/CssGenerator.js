@@ -97,7 +97,7 @@ module.exports = require('backbone').Model.extend({
       if (
         this.compCls.indexOf(name) >= 0 ||
         this.ids.indexOf(name) >= 0 ||
-        opts.dumpUnusedSelectors
+        opts.dumpUnusedStyles
       ) {
         found = 1;
       }
