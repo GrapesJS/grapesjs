@@ -382,7 +382,18 @@ describe('GrapesJS', () => {
       config.storageManager = { type: 0 };
       fixture.innerHTML = documentEl;
       const editor = obj.init(config);
-      const css = editor.getCss({ dumpUnusedSelectors: 1 });
+      const css = editor.getCss({ dumpUnusedStyles: 1 });
+      const protCss = editor.getConfig().protectedCss;
+      expect(editor.getStyle().length).toEqual(2);
+      expect(css).toEqual(`${protCss}.test2{color:red;}.test3{color:blue;}`);
+    });
+
+    it('Dump unused css classes/selectors using the init option', () => {
+      config.fromElement = 1;
+      config.storageManager = { type: 0 };
+      fixture.innerHTML = documentEl;
+      const editor = obj.init({ ...config, dumpUnusedStyles: 1 });
+      const css = editor.getCss();
       const protCss = editor.getConfig().protectedCss;
       expect(editor.getStyle().length).toEqual(2);
       expect(css).toEqual(`${protCss}.test2{color:red;}.test3{color:blue;}`);
