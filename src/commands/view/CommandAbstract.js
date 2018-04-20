@@ -107,6 +107,7 @@ module.exports = Backbone.View.extend({
 
     const result = this.run(editor, editor, options);
     editor.trigger(`run:${id}`, result, options);
+    return result;
   },
 
   /**
@@ -120,6 +121,7 @@ module.exports = Backbone.View.extend({
     editor.trigger(`stop:${id}:before`, options);
     const result = this.stop(editor, editor, options);
     editor.trigger(`stop:${id}`, result, options);
+    return result;
   },
 
   /**

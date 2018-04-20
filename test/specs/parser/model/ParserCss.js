@@ -277,6 +277,39 @@ module.exports = {
         expect(obj.parse(str)).toEqual(result);
       });
 
+      it('Parses multiple font-face at-rules', () => {
+        const str = `
+          @font-face {
+            font-family: "Open Sans";
+          }
+          @font-face {
+            font-family: 'Glyphicons Halflings';
+            src:url(https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot)
+          }`;
+        const result = [
+          {
+            selectors: [],
+            selectorsAdd: '',
+            style: { 'font-family': '"Open Sans"' },
+            singleAtRule: 1,
+            atRuleType: 'font-face'
+          },
+          {
+            selectors: [],
+            selectorsAdd: '',
+            style: {
+              'font-family': "'Glyphicons Halflings'",
+              src:
+                'url(https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot)'
+            },
+            singleAtRule: 1,
+            atRuleType: 'font-face'
+          }
+        ];
+        const parsed = obj.parse(str);
+        expect(parsed).toEqual(result);
+      });
+
       it('Parse ID rule', () => {
         var str = `#test { color: red }`;
         var result = {

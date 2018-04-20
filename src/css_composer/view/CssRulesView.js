@@ -2,6 +2,10 @@ const CssRuleView = require('./CssRuleView');
 const CssGroupRuleView = require('./CssGroupRuleView');
 const $ = Backbone.$;
 
+// % is not a valid character for classes
+const getBlockId = (pfx, widthMedia) =>
+  `${pfx}${widthMedia ? `-${widthMedia.replace('%', 'pc')}` : ''}`;
+
 module.exports = require('backbone').View.extend({
   initialize(o) {
     const config = o.config || {};
@@ -32,6 +36,11 @@ module.exports = require('backbone').View.extend({
    * @private
    * */
   addToCollection(model, fragmentEl) {
+    // If the render is not yet started
+    if (!this.renderStarted) {
+      return;
+    }
+
     var fragment = fragmentEl || null;
     var viewObject = CssRuleView;
     var config = this.config;
@@ -62,16 +71,32 @@ module.exports = require('backbone').View.extend({
       rendered = view.render().el;
     }
 
-    const mediaWidth = this.getMediaWidth(model.get('mediaText'));
-    const styleBlockId = `#${this.pfx}rules-${mediaWidth}`;
+    const clsName = this.className;
+    const mediaText = model.get('mediaText');
+    const defaultBlockId = getBlockId(clsName);
+    let blockId = defaultBlockId;
+
+    // If the rule contains a media query it might have a different container
+    // for it (eg. rules created with Device Manager)
+    if (mediaText) {
+      blockId = getBlockId(clsName, this.getMediaWidth(mediaText));
+    }
 
     if (rendered) {
-      if (fragment) {
-        fragment.querySelector(styleBlockId).appendChild(rendered);
-      } else {
-        let $stylesContainer = this.$el.find(styleBlockId);
-        $stylesContainer.append(rendered);
+      const container = fragment || this.el;
+      let contRules;
+
+      // Try to find a specific container for the rule (if it
+      // containes a media query), otherwise get the default one
+      try {
+        contRules = container.querySelector(`#${blockId}`);
+      } catch (e) {}
+
+      if (!contRules) {
+        contRules = container.querySelector(`#${defaultBlockId}`);
       }
+
+      contRules.appendChild(rendered);
     }
 
     return rendered;
@@ -87,13 +112,14 @@ module.exports = require('backbone').View.extend({
   },
 
   render() {
+    this.renderStarted = 1;
     this.atRules = {};
     const $el = this.$el;
     const frag = document.createDocumentFragment();
+    const className = this.className;
     $el.empty();
 
     // Create devices related DOM structure
-    const pfx = this.pfx;
     this.em
       .get('DeviceManager')
       .getAll()
@@ -104,13 +130,14 @@ module.exports = require('backbone').View.extend({
           ((left && left.replace('px', '')) || Number.MAX_VALUE)
       )
       .forEach(widthMedia => {
-        const blockId = pfx + 'rules-' + widthMedia;
-        $(`<div id="${blockId}"></div>`).appendTo(frag);
+        $(`<div id="${getBlockId(className, widthMedia)}"></div>`).appendTo(
+          frag
+        );
       });
 
     this.collection.each(model => this.addToCollection(model, frag));
     $el.append(frag);
-    $el.attr('class', this.className);
+    $el.attr('class', className);
     return this;
   }
 });

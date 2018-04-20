@@ -94,22 +94,25 @@ module.exports = () => {
     postLoad(em) {
       const ev = 'add remove';
       const rules = this.getAll();
+      const um = em.get('UndoManager');
+      um && um.add(rules);
       em.stopListening(rules, ev, this.handleChange);
       em.listenTo(rules, ev, this.handleChange);
-      rules.each(rule => this.handleChange(rule));
+      rules.each(rule => this.handleChange(rule, { avoidStore: 1 }));
     },
 
     /**
      * Handle rule changes
      * @private
      */
-    handleChange(model) {
+    handleChange(model, opts = {}) {
       const ev = 'change:style';
       const um = em.get('UndoManager');
       um && um.add(model);
       const handleUpdates = em.handleUpdates.bind(em);
       em.stopListening(model, ev, handleUpdates);
       em.listenTo(model, ev, handleUpdates);
+      !opts.avoidStore && handleUpdates('', '', opts);
     },
 
     /**
@@ -182,8 +185,13 @@ module.exports = () => {
       var w = width || '';
       var opt = { ...opts };
       var rule = this.get(selectors, s, w, opt);
-      if (rule) return rule;
-      else {
+
+      // do not create rules that were found before
+      // unless this is an at-rule, for which multiple declarations
+      // make sense (e.g. multiple `@font-type`s)
+      if (rule && rule.config && !rule.config.atRuleType) {
+        return rule;
+      } else {
         opt.state = s;
         opt.mediaText = w;
         opt.selectors = '';

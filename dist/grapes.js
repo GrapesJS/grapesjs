@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 60);
+/******/ 	return __webpack_require__(__webpack_require__.s = 59);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -3696,7 +3696,7 @@ exports.getUnitFromValue = getUnitFromValue;
 
 var _underscore = __webpack_require__(1);
 
-var ComponentsView = __webpack_require__(51);
+var ComponentsView = __webpack_require__(50);
 
 module.exports = Backbone.View.extend({
   className: function className() {
@@ -4065,14 +4065,14 @@ var _underscore = __webpack_require__(1);
 
 var _mixins = __webpack_require__(2);
 
-var _Styleable = __webpack_require__(47);
+var _Styleable = __webpack_require__(46);
 
 var _Styleable2 = _interopRequireDefault(_Styleable);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Backbone = __webpack_require__(0);
-var Components = __webpack_require__(50);
+var Components = __webpack_require__(49);
 var Selector = __webpack_require__(7);
 var Selectors = __webpack_require__(11);
 var Traits = __webpack_require__(151);
@@ -4247,8 +4247,12 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
     this.initComponents();
     this.initToolbar();
     this.set('status', '');
-    this.listenTo(this.get('classes'), 'add remove change', function () {
-      return _this.emitUpdate('classes');
+
+    // Register global updates for collection properties
+    ['classes', 'traits'].forEach(function (name) {
+      return _this.listenTo(_this.get(name), 'add remove change', function () {
+        return _this.emitUpdate(name);
+      });
     });
     this.init();
   },
@@ -4599,9 +4603,10 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
     traits.each(function (trait) {
       found = 1;
       if (!trait.get('changeProp')) {
+        var name = trait.get('name');
         var value = trait.getInitValue();
-        if (value) {
-          attrs[trait.get('name')] = value;
+        if (name && value) {
+          attrs[name] = value;
         }
       }
     });
@@ -4821,6 +4826,32 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
     obj.attributes = this.getAttributes();
     delete obj.attributes.class;
     delete obj.toolbar;
+
+    if (this.em.getConfig('avoidDefaults')) {
+      var defaults = this.defaults;
+
+      (0, _underscore.forEach)(defaults, function (value, key) {
+        if (key !== 'type' && obj[key] === value) {
+          delete obj[key];
+        }
+      });
+
+      if ((0, _underscore.isEmpty)(obj.type)) {
+        delete obj.type;
+      }
+
+      (0, _underscore.forEach)(['attributes', 'style'], function (prop) {
+        if ((0, _underscore.isEmpty)(defaults[prop]) && (0, _underscore.isEmpty)(obj[prop])) {
+          delete obj[prop];
+        }
+      });
+
+      (0, _underscore.forEach)(['classes', 'components'], function (prop) {
+        if ((0, _underscore.isEmpty)(defaults[prop]) && !obj[prop].length) {
+          delete obj[prop];
+        }
+      });
+    }
 
     return obj;
   },
@@ -5045,7 +5076,11 @@ module.exports = Backbone.View.extend({
    * @return {HTMLElement}
    */
   getClearEl: function getClearEl() {
-    return this.el.querySelector('[' + clearProp + ']');
+    if (!this.clearEl) {
+      this.clearEl = this.el.querySelector('[' + clearProp + ']');
+    }
+
+    return this.clearEl;
   },
 
 
@@ -16382,7 +16417,7 @@ module.exports = __webpack_require__(0).Collection.extend({
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _TypeableCollection = __webpack_require__(32);
+var _TypeableCollection = __webpack_require__(31);
 
 var _TypeableCollection2 = _interopRequireDefault(_TypeableCollection);
 
@@ -16394,7 +16429,7 @@ module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.d
   types: [{
     id: 'stack',
     model: __webpack_require__(120),
-    view: __webpack_require__(34),
+    view: __webpack_require__(33),
     isType: function isType(value) {
       if (value && value.type == 'stack') {
         return value;
@@ -16402,7 +16437,7 @@ module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.d
     }
   }, {
     id: 'composite',
-    model: __webpack_require__(33),
+    model: __webpack_require__(32),
     view: __webpack_require__(17),
     isType: function isType(value) {
       if (value && value.type == 'composite') {
@@ -16412,7 +16447,7 @@ module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.d
   }, {
     id: 'file',
     model: Property,
-    view: __webpack_require__(40),
+    view: __webpack_require__(39),
     isType: function isType(value) {
       if (value && value.type == 'file') {
         return value;
@@ -16421,7 +16456,7 @@ module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.d
   }, {
     id: 'color',
     model: Property,
-    view: __webpack_require__(38),
+    view: __webpack_require__(37),
     isType: function isType(value) {
       if (value && value.type == 'color') {
         return value;
@@ -16429,8 +16464,8 @@ module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.d
     }
   }, {
     id: 'select',
-    model: __webpack_require__(41),
-    view: __webpack_require__(37),
+    model: __webpack_require__(40),
+    view: __webpack_require__(36),
     isType: function isType(value) {
       if (value && value.type == 'select') {
         return value;
@@ -16438,8 +16473,8 @@ module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.d
     }
   }, {
     id: 'radio',
-    model: __webpack_require__(41),
-    view: __webpack_require__(36),
+    model: __webpack_require__(40),
+    view: __webpack_require__(35),
     isType: function isType(value) {
       if (value && value.type == 'radio') {
         return value;
@@ -16456,7 +16491,7 @@ module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.d
     }
   }, {
     id: 'integer',
-    model: __webpack_require__(42),
+    model: __webpack_require__(41),
     view: __webpack_require__(15),
     isType: function isType(value) {
       if (value && value.type == 'integer') {
@@ -16678,12 +16713,12 @@ module.exports = __webpack_require__(0).Model.extend({
 
 var PropertyView = __webpack_require__(5);
 var PropertyIntegerView = __webpack_require__(15);
-var PropertyRadioView = __webpack_require__(36);
-var PropertySelectView = __webpack_require__(37);
-var PropertyColorView = __webpack_require__(38);
-var PropertyFileView = __webpack_require__(40);
+var PropertyRadioView = __webpack_require__(35);
+var PropertySelectView = __webpack_require__(36);
+var PropertyColorView = __webpack_require__(37);
+var PropertyFileView = __webpack_require__(39);
 var PropertyCompositeView = __webpack_require__(17);
-var PropertyStackView = __webpack_require__(34);
+var PropertyStackView = __webpack_require__(33);
 
 module.exports = Backbone.View.extend({
   initialize: function initialize(o) {
@@ -17033,7 +17068,7 @@ var _underscore = __webpack_require__(1);
 
 var _mixins = __webpack_require__(2);
 
-var Input = __webpack_require__(35);
+var Input = __webpack_require__(34);
 var Backbone = __webpack_require__(0);
 var $ = Backbone.$;
 
@@ -18107,7 +18142,7 @@ module.exports = {
 "use strict";
 /* WEBPACK VAR INJECTION */(function(Backbone, _) {
 
-var SelectPosition = __webpack_require__(57);
+var SelectPosition = __webpack_require__(56);
 var $ = Backbone.$;
 
 module.exports = _.extend({}, SelectPosition, {
@@ -18654,7 +18689,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _promisePolyfill = __webpack_require__(76);
+var _promisePolyfill = __webpack_require__(75);
 
 var _promisePolyfill2 = _interopRequireDefault(_promisePolyfill);
 
@@ -18758,6 +18793,7 @@ module.exports = function (config) {
      * @return {Array<Object>}
      */
     parseNode: function parseNode(el) {
+      var config = c.em && c.em.get('Config') || {};
       var result = [];
       var nodes = el.childNodes;
 
@@ -18849,9 +18885,11 @@ module.exports = function (config) {
           }
 
           // Throw away empty nodes (keep spaces)
-          var content = node.nodeValue;
-          if (content != ' ' && !content.trim()) {
-            continue;
+          if (!config.keepEmptyTextNodes) {
+            var content = node.nodeValue;
+            if (content != ' ' && !content.trim()) {
+              continue;
+            }
           }
         }
 
@@ -19811,7 +19849,7 @@ module.exports = Backbone.Model.extend({
 
 
 var Backbone = __webpack_require__(0);
-var Button = __webpack_require__(110);
+var Button = __webpack_require__(109);
 
 module.exports = Backbone.Collection.extend({
   model: Button,
@@ -19894,7 +19932,7 @@ module.exports = Backbone.Collection.extend({
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var Backbone = __webpack_require__(0);
-var ButtonsView = __webpack_require__(30);
+var ButtonsView = __webpack_require__(111);
 
 module.exports = Backbone.View.extend({
   initialize: function initialize(o) {
@@ -20016,80 +20054,6 @@ module.exports = Backbone.View.extend({
 
 /***/ }),
 /* 30 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(_) {
-
-var Backbone = __webpack_require__(0);
-var ButtonView = __webpack_require__(112);
-
-module.exports = Backbone.View.extend({
-  initialize: function initialize(o) {
-    this.opt = o || {};
-    this.config = this.opt.config || {};
-    this.pfx = this.config.stylePrefix || '';
-    this.parentM = this.opt.parentM || null;
-    this.listenTo(this.collection, 'add', this.addTo);
-    this.listenTo(this.collection, 'reset remove', this.render);
-    this.className = this.pfx + 'buttons';
-  },
-
-
-  /**
-   * Add to collection
-   * @param Object Model
-   *
-   * @return Object
-   * */
-  addTo: function addTo(model) {
-    this.addToCollection(model);
-  },
-
-
-  /**
-   * Add new object to collection
-   * @param  Object  Model
-   * @param  Object   Fragment collection
-   *
-   * @return Object Object created
-   * */
-  addToCollection: function addToCollection(model, fragmentEl) {
-    var fragment = fragmentEl || null;
-    var viewObject = ButtonView;
-
-    var view = new viewObject({
-      model: model,
-      config: this.config,
-      parentM: this.parentM
-    });
-    var rendered = view.render().el;
-
-    if (fragment) {
-      fragment.appendChild(rendered);
-    } else {
-      this.$el.append(rendered);
-    }
-
-    return rendered;
-  },
-  render: function render() {
-    var fragment = document.createDocumentFragment();
-    this.$el.empty();
-
-    this.collection.each(function (model) {
-      this.addToCollection(model, fragment);
-    }, this);
-
-    this.$el.append(fragment);
-    this.$el.attr('class', _.result(this, 'className'));
-    return this;
-  }
-});
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
-
-/***/ }),
-/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20490,7 +20454,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 32 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20648,7 +20612,7 @@ exports.default = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 33 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20746,7 +20710,7 @@ module.exports = Property.extend({
 });
 
 /***/ }),
-/* 34 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20939,7 +20903,7 @@ module.exports = PropertyCompositeView.extend({
 });
 
 /***/ }),
-/* 35 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21033,7 +20997,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 36 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21095,7 +21059,7 @@ module.exports = __webpack_require__(5).extend({
 });
 
 /***/ }),
-/* 37 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21134,7 +21098,7 @@ module.exports = __webpack_require__(5).extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 38 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21142,7 +21106,7 @@ module.exports = __webpack_require__(5).extend({
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var InputColor = __webpack_require__(39);
+var InputColor = __webpack_require__(38);
 
 module.exports = __webpack_require__(15).extend({
   setValue: function setValue(value) {
@@ -21170,7 +21134,7 @@ module.exports = __webpack_require__(15).extend({
 });
 
 /***/ }),
-/* 39 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21179,7 +21143,7 @@ module.exports = __webpack_require__(15).extend({
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 __webpack_require__(123);
-var Input = __webpack_require__(35);
+var Input = __webpack_require__(34);
 var $ = Backbone.$;
 
 module.exports = Input.extend({
@@ -21295,7 +21259,7 @@ module.exports = Input.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 40 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21429,7 +21393,7 @@ module.exports = PropertyView.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 41 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21447,7 +21411,7 @@ module.exports = Property.extend({
 });
 
 /***/ }),
-/* 42 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21517,13 +21481,13 @@ module.exports = Property.extend({
 });
 
 /***/ }),
-/* 43 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-module.exports = __webpack_require__(44).extend({
+module.exports = __webpack_require__(43).extend({
   events: {
     'click [data-toggle=asset-remove]': 'onRemove',
     click: 'onClick',
@@ -21604,7 +21568,7 @@ module.exports = __webpack_require__(44).extend({
 });
 
 /***/ }),
-/* 44 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21660,7 +21624,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-/* 45 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22037,13 +22001,13 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-/* 46 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(_) {
 
-var _Styleable = __webpack_require__(47);
+var _Styleable = __webpack_require__(46);
 
 var _Styleable2 = _interopRequireDefault(_Styleable);
 
@@ -22228,7 +22192,7 @@ module.exports = Backbone.Model.extend(_Styleable2.default).extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 47 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22366,7 +22330,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 48 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22394,7 +22358,7 @@ module.exports = __webpack_require__(0).View.extend({
 });
 
 /***/ }),
-/* 49 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22461,7 +22425,7 @@ module.exports = Backbone.View.extend({
 });
 
 /***/ }),
-/* 50 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22537,7 +22501,7 @@ module.exports = Backbone.Collection.extend({
 });
 
 /***/ }),
-/* 51 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22664,7 +22628,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 52 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22683,7 +22647,7 @@ module.exports = Component.extend({
 });
 
 /***/ }),
-/* 53 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22820,7 +22784,7 @@ module.exports = ComponentView.extend({
 });
 
 /***/ }),
-/* 54 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22832,11 +22796,11 @@ var _config = __webpack_require__(177);
 
 var _config2 = _interopRequireDefault(_config);
 
-var _ItemView = __webpack_require__(55);
+var _ItemView = __webpack_require__(54);
 
 var _ItemView2 = _interopRequireDefault(_ItemView);
 
-var _ItemsView = __webpack_require__(56);
+var _ItemsView = __webpack_require__(55);
 
 var _ItemsView2 = _interopRequireDefault(_ItemsView);
 
@@ -22928,7 +22892,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 55 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23233,7 +23197,7 @@ module.exports = __webpack_require__(0).View.extend({
     el.html(this.template(model));
 
     if ((0, _underscore.isUndefined)(ItemsView)) {
-      ItemsView = __webpack_require__(56);
+      ItemsView = __webpack_require__(55);
     }
 
     var children = new ItemsView({
@@ -23260,13 +23224,13 @@ module.exports = __webpack_require__(0).View.extend({
 });
 
 /***/ }),
-/* 56 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var ItemView = __webpack_require__(55);
+var ItemView = __webpack_require__(54);
 
 module.exports = __webpack_require__(0).View.extend({
   initialize: function initialize() {
@@ -23407,7 +23371,7 @@ module.exports = __webpack_require__(0).View.extend({
 });
 
 /***/ }),
-/* 57 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23512,7 +23476,7 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 58 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23606,7 +23570,7 @@ module.exports = _.extend({}, CreateComponent, {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 59 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23624,7 +23588,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 60 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23636,7 +23600,7 @@ var _cashDom = __webpack_require__(9);
 
 var _cashDom2 = _interopRequireDefault(_cashDom);
 
-var _editor = __webpack_require__(61);
+var _editor = __webpack_require__(60);
 
 var _editor2 = _interopRequireDefault(_editor);
 
@@ -23676,7 +23640,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.14.8',
+    version: '0.14.9',
 
     /**
      * Initializes an editor based on passed options
@@ -23726,7 +23690,7 @@ module.exports = function () {
 }();
 
 /***/ }),
-/* 61 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23740,8 +23704,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 module.exports = function (config) {
   var c = config || {},
-      defaults = __webpack_require__(62),
-      EditorModel = __webpack_require__(63),
+      defaults = __webpack_require__(61),
+      EditorModel = __webpack_require__(62),
       EditorView = __webpack_require__(218);
 
   for (var name in defaults) {
@@ -24309,9 +24273,13 @@ module.exports = function (config) {
     * * `styleManager:change:{propertyName}` - As above but for a specific style property
     * ## Storages
     * * `storage:start` - Before the storage request is started
+    * * `storage:start:store` - Before the store request. The object to store is passed as an argumnet (which you can edit)
+    * * `storage:start:load` - Before the load request. Items to load are passed as an argumnet (which you can edit)
     * * `storage:load` - Triggered when something was loaded from the storage, loaded object passed as an argumnet
     * * `storage:store` - Triggered when something is stored to the storage, stored object passed as an argumnet
     * * `storage:end` - After the storage request is ended
+    * * `storage:end:store` - After the store request
+    * * `storage:end:load` - After the load request
     * * `storage:error` - On any error on storage request, passes the error as an argument
     * ## Canvas
     * * `canvas:dragenter` - When something is dragged inside the canvas, `DataTransfer` instance passed as an argument
@@ -24353,6 +24321,7 @@ module.exports = function (config) {
     * @param {Object} [config.domComponents={}] Components configuration, see the relative documentation
     * @param {Object} [config.panels={}] Panels configuration, see the relative documentation
     * @param {Object} [config.showDevices=true] If true render a select of available devices inside style manager panel
+    * @param {Boolean} [config.keepEmptyTextNodes=false] If false, removes empty text nodes when parsed (unless they contain a space)
     * @param {string} [config.defaultCommand='select-comp'] Command to execute when no other command is running
     * @param {Array} [config.plugins=[]] Array of plugins to execute on start
     * @param {Object} [config.pluginsOpts={}] Custom options for plugins
@@ -24365,7 +24334,7 @@ module.exports = function (config) {
     */
 
 /***/ }),
-/* 62 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24407,7 +24376,7 @@ module.exports = {
   // and sets a default background color of white. This CSS is desired in most cases.
   // use this property if you wish to overwrite the base CSS to your own CSS. This is most
   // useful if for example your template is not based off a document with 0 as body margin.
-  baseCss: '\n    * {\n      box-sizing: border-box;\n    }\n    html, body, #wrapper {\n      min-height: 100%;\n    }\n    body {\n      margin: 0;\n      height: 100%;\n      background-color: #fff\n    }\n    #wrapper {\n      overflow: auto;\n      overflow-x: hidden;\n    }\n    \n    * ::-webkit-scrollbar-track {\n      background: rgba(0, 0, 0, 0.1)\n    }\n\n    * ::-webkit-scrollbar-thumb {\n      background: rgba(255, 255, 255, 0.2)\n    }\n\n    * ::-webkit-scrollbar {\n      width: 10px\n    }\n  ',
+  baseCss: '\n    * {\n      box-sizing: border-box;\n    }\n    html, body, #wrapper {\n      min-height: 100%;\n    }\n    body {\n      margin: 0;\n      height: 100%;\n      background-color: #fff\n    }\n    #wrapper {\n      overflow: auto;\n      overflow-x: hidden;\n    }\n\n    * ::-webkit-scrollbar-track {\n      background: rgba(0, 0, 0, 0.1)\n    }\n\n    * ::-webkit-scrollbar-thumb {\n      background: rgba(255, 255, 255, 0.2)\n    }\n\n    * ::-webkit-scrollbar {\n      width: 10px\n    }\n  ',
 
   // CSS that could only be seen (for instance, inside the code viewer)
   protectedCss: '* { box-sizing: border-box; } body {margin: 0;}',
@@ -24441,6 +24410,9 @@ module.exports = {
   // Ending tag for variable inside scripts in Components
   tagVarEnd: ' ]}',
 
+  // When false, removes empty text nodes when parsed, unless they contain a space
+  keepEmptyTextNodes: 0,
+
   // Return JS of components inside HTML from 'editor.getHtml()'
   jsInHtml: true,
 
@@ -24458,6 +24430,11 @@ module.exports = {
   // use of media queries (@media) or even pseudo selectors (eg. :hover).
   // When `avoidInlineStyle` is true all styles are inserted inside the css rule
   avoidInlineStyle: 0,
+
+  // Avoid default properties from storable JSON data, like `components` and `styles`.
+  // With this option enabled your data will be smaller (usefull if need to
+  // save some storage space)
+  avoidDefaults: 0,
 
   // (experimental)
   // The structure of components is always on the screen but it's not the same
@@ -24572,7 +24549,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 63 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24582,7 +24559,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _underscore = __webpack_require__(1);
 
-var deps = [__webpack_require__(64), __webpack_require__(68), __webpack_require__(69), __webpack_require__(72), __webpack_require__(80), __webpack_require__(85), __webpack_require__(88), __webpack_require__(92), __webpack_require__(96), __webpack_require__(108), __webpack_require__(114), __webpack_require__(31), __webpack_require__(131), __webpack_require__(137), __webpack_require__(142), __webpack_require__(149), __webpack_require__(54), __webpack_require__(178), __webpack_require__(185), __webpack_require__(209)];
+var deps = [__webpack_require__(63), __webpack_require__(67), __webpack_require__(68), __webpack_require__(71), __webpack_require__(79), __webpack_require__(84), __webpack_require__(87), __webpack_require__(91), __webpack_require__(95), __webpack_require__(107), __webpack_require__(114), __webpack_require__(30), __webpack_require__(131), __webpack_require__(137), __webpack_require__(142), __webpack_require__(149), __webpack_require__(53), __webpack_require__(178), __webpack_require__(185), __webpack_require__(209)];
 
 var Backbone = __webpack_require__(0);
 var timedInterval = void 0;
@@ -24617,6 +24594,7 @@ module.exports = Backbone.Model.extend({
     this.set('Config', c);
     this.set('modules', []);
     this.set('toLoad', []);
+    this.set('storables', []);
 
     if (c.el && c.fromElement) this.config.components = c.el.innerHTML;
 
@@ -25111,16 +25089,16 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 64 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = function () {
-  var Sorter = __webpack_require__(65);
-  var Resizer = __webpack_require__(66);
-  var Dragger = __webpack_require__(67);
+  var Sorter = __webpack_require__(64);
+  var Resizer = __webpack_require__(65);
+  var Dragger = __webpack_require__(66);
 
   return {
     /**
@@ -25145,7 +25123,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 65 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26184,7 +26162,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
 
 /***/ }),
-/* 66 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26758,7 +26736,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 67 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -27104,7 +27082,7 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 68 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -27278,7 +27256,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 69 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -27295,7 +27273,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
                                                                                                                                                                                                                                                                    */
 
 
-var _backboneUndo = __webpack_require__(70);
+var _backboneUndo = __webpack_require__(69);
 
 var _backboneUndo2 = _interopRequireDefault(_backboneUndo);
 
@@ -27567,7 +27545,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 70 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -27584,7 +27562,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 (function (factory) {
 	if (true) {
 		// AMD support
-		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1), __webpack_require__(71)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1), __webpack_require__(70)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -28409,7 +28387,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
-/* 71 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Backbone.js 1.2.1
@@ -30290,7 +30268,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 72 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30305,12 +30283,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
  */
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(73),
-      LocalStorage = __webpack_require__(74),
-      RemoteStorage = __webpack_require__(75);
+      defaults = __webpack_require__(72),
+      LocalStorage = __webpack_require__(73),
+      RemoteStorage = __webpack_require__(74);
 
+  var em = void 0;
   var storages = {};
   var defaultStorages = {};
+  var eventStart = 'storage:start';
+  var eventEnd = 'storage:end';
 
   return {
     /**
@@ -30340,6 +30321,7 @@ module.exports = function () {
      */
     init: function init(config) {
       c = config || {};
+      em = c.em;
 
       for (var name in defaults) {
         if (!(name in c)) c[name] = defaults[name];
@@ -30480,12 +30462,20 @@ module.exports = function () {
      * storageManager.store({item1: value1, item2: value2});
      * */
     store: function store(data, clb) {
+      var _this = this;
+
       var st = this.get(this.getCurrent());
-      var dataF = {};
+      var toStore = {};
+      this.onStart('store', data);
 
       for (var key in data) {
-        dataF[c.id + key] = data[key];
-      }return st ? st.store(dataF, clb) : null;
+        toStore[c.id + key] = data[key];
+      }
+
+      return st ? st.store(toStore, function (res) {
+        clb && clb(res);
+        _this.onEnd('store', res);
+      }) : null;
     },
 
 
@@ -30502,15 +30492,20 @@ module.exports = function () {
      * });
      * */
     load: function load(keys, clb) {
+      var _this2 = this;
+
       var st = this.get(this.getCurrent());
       var keysF = [];
       var result = {};
 
       if (typeof keys === 'string') keys = [keys];
+      this.onStart('load', keys);
 
       for (var i = 0, len = keys.length; i < len; i++) {
         keysF.push(c.id + keys[i]);
-      }if (st) {
+      }
+
+      if (st) {
         st.load(keysF, function (res) {
           // Restore keys name
           var reg = new RegExp('^' + c.id + '');
@@ -30520,6 +30515,7 @@ module.exports = function () {
           }
 
           clb && clb(result);
+          _this2.onEnd('load', result);
         });
       } else {
         clb && clb(result);
@@ -30549,6 +30545,30 @@ module.exports = function () {
 
 
     /**
+     * On start callback
+     * @private
+     */
+    onStart: function onStart(ctx, data) {
+      if (em) {
+        em.trigger(eventStart);
+        ctx && em.trigger(eventStart + ':' + ctx, data);
+      }
+    },
+
+
+    /**
+     * On end callback
+     * @private
+     */
+    onEnd: function onEnd(ctx, data) {
+      if (em) {
+        em.trigger(eventEnd);
+        ctx && em.trigger(eventEnd + ':' + ctx, data);
+      }
+    },
+
+
+    /**
      * Check if autoload is possible
      * @return {Boolean}
      * @private
@@ -30561,7 +30581,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 73 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30628,7 +30648,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 74 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30697,7 +30717,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 75 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30732,7 +30752,6 @@ module.exports = __webpack_require__(0).Model.extend({
     var em = this.get('em');
     var before = this.get('beforeSend');
     before && before();
-    em && em.trigger('storage:start');
   },
 
 
@@ -30745,18 +30764,6 @@ module.exports = __webpack_require__(0).Model.extend({
     var em = this.get('em');
     console.error(err);
     em && em.trigger('storage:error', err);
-    this.onEnd(err);
-  },
-
-
-  /**
-   * Triggered after the request is ended
-   * @param  {Object|string} res End result
-   * @private
-   */
-  onEnd: function onEnd(res) {
-    var em = this.get('em');
-    em && em.trigger('storage:end', res);
   },
 
 
@@ -30774,7 +30781,6 @@ module.exports = __webpack_require__(0).Model.extend({
     complete && complete(res);
     clb && clb(res);
     em && em.trigger('storage:response', res);
-    this.onEnd(text);
   },
   store: function store(data, clb) {
     var body = {};
@@ -30861,7 +30867,7 @@ module.exports = __webpack_require__(0).Model.extend({
 });
 
 /***/ }),
-/* 76 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(setImmediate) {(function (root) {
@@ -31098,10 +31104,10 @@ module.exports = __webpack_require__(0).Model.extend({
 
 })(this);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(77).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(76).setImmediate))
 
 /***/ }),
-/* 77 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var apply = Function.prototype.apply;
@@ -31154,7 +31160,7 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(78);
+__webpack_require__(77);
 // On some exotic environments, it's not clear which object `setimmeidate` was
 // able to install onto.  Search each possibility in the same order as the
 // `setimmediate` library.
@@ -31168,7 +31174,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
 
 /***/ }),
-/* 78 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -31358,10 +31364,10 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10), __webpack_require__(79)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10), __webpack_require__(78)))
 
 /***/ }),
-/* 79 */
+/* 78 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -31551,7 +31557,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 80 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31568,9 +31574,9 @@ process.umask = function() { return 0; };
  */
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(81),
-      Devices = __webpack_require__(82),
-      DevicesView = __webpack_require__(84);
+      defaults = __webpack_require__(80),
+      Devices = __webpack_require__(81),
+      DevicesView = __webpack_require__(83);
   var devices, view;
 
   return {
@@ -31671,7 +31677,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 81 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31684,21 +31690,21 @@ module.exports = {
 };
 
 /***/ }),
-/* 82 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var Backbone = __webpack_require__(0);
-var Device = __webpack_require__(83);
+var Device = __webpack_require__(82);
 
 module.exports = Backbone.Collection.extend({
   model: Device
 });
 
 /***/ }),
-/* 83 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31731,7 +31737,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 84 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31821,7 +31827,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 85 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31829,8 +31835,8 @@ module.exports = Backbone.View.extend({
 
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(86),
-      parserCss = __webpack_require__(87),
+      defaults = __webpack_require__(85),
+      parserCss = __webpack_require__(86),
       parserHtml = __webpack_require__(25);
   var pHtml, pCss;
 
@@ -31886,7 +31892,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 86 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31897,7 +31903,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 87 */
+/* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32108,7 +32114,7 @@ module.exports = function (config) {
 };
 
 /***/ }),
-/* 88 */
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32116,72 +32122,75 @@ module.exports = function (config) {
 
 var _underscore = __webpack_require__(1);
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } /**
+                                                                                                                                                                                                                   * Selectors in GrapesJS are used in CSS Composer inside Rules and in Components as classes. To get better this concept let's take
+                                                                                                                                                                                                                   * a look at this code:
+                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                   * ```css
+                                                                                                                                                                                                                   * span > #send-btn.btn{
+                                                                                                                                                                                                                   *  ...
+                                                                                                                                                                                                                   * }
+                                                                                                                                                                                                                   * ```
+                                                                                                                                                                                                                   * ```html
+                                                                                                                                                                                                                   * <span>
+                                                                                                                                                                                                                   *   <button id="send-btn" class="btn"></button>
+                                                                                                                                                                                                                   * </span>
+                                                                                                                                                                                                                   * ```
+                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                   * In this scenario we get:
+                                                                                                                                                                                                                   * span     -> selector of type `tag`
+                                                                                                                                                                                                                   * send-btn -> selector of type `id`
+                                                                                                                                                                                                                   * btn      -> selector of type `class`
+                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                   * So, for example, being `btn` the same class entity it'll be easier to refactor and track things.
+                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                   * Before using methods you should get first the module from the editor instance, in this way:
+                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                   * ```js
+                                                                                                                                                                                                                   * var selectorManager = editor.SelectorManager;
+                                                                                                                                                                                                                   * ```
+                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                   * @module SelectorManager
+                                                                                                                                                                                                                   * @param {Object} config Configurations
+                                                                                                                                                                                                                   * @param {Array<Object>} [config.selectors=[]] Default selectors
+                                                                                                                                                                                                                   * @param {Array<Object>} [config.states=[]] Default states
+                                                                                                                                                                                                                   * @param {String} [config.label='Classes'] Classes label
+                                                                                                                                                                                                                   * @param {String} [config.statesLabel='- State -'] The empty state label
+                                                                                                                                                                                                                   * @return {this}
+                                                                                                                                                                                                                   * @example
+                                                                                                                                                                                                                   * ...
+                                                                                                                                                                                                                   * {
+                                                                                                                                                                                                                   *  selectors: [
+                                                                                                                                                                                                                   *    {name:'myselector1'},
+                                                                                                                                                                                                                   *     ...
+                                                                                                                                                                                                                   *  ],
+                                                                                                                                                                                                                   *  states: [{
+                                                                                                                                                                                                                   *    name: 'hover', label: 'Hover'
+                                                                                                                                                                                                                   *  },{
+                                                                                                                                                                                                                   *    name: 'active', label: 'Click'
+                                                                                                                                                                                                                   *  }],
+                                                                                                                                                                                                                   *  statesLabel: '- Selecte State -',
+                                                                                                                                                                                                                   * }
+                                                                                                                                                                                                                   */
+
 var isId = function isId(str) {
   return (0, _underscore.isString)(str) && str[0] == '#';
-}; /**
-    * Selectors in GrapesJS are used in CSS Composer inside Rules and in Components as classes. To get better this concept let's take
-    * a look at this code:
-    *
-    * ```css
-    * span > #send-btn.btn{
-    *  ...
-    * }
-    * ```
-    * ```html
-    * <span>
-    *   <button id="send-btn" class="btn"></button>
-    * </span>
-    * ```
-    *
-    * In this scenario we get:
-    * span     -> selector of type `tag`
-    * send-btn -> selector of type `id`
-    * btn      -> selector of type `class`
-    *
-    * So, for example, being `btn` the same class entity it'll be easier to refactor and track things.
-    *
-    * Before using methods you should get first the module from the editor instance, in this way:
-    *
-    * ```js
-    * var selectorManager = editor.SelectorManager;
-    * ```
-    *
-    * @module SelectorManager
-    * @param {Object} config Configurations
-    * @param {Array<Object>} [config.selectors=[]] Default selectors
-    * @param {Array<Object>} [config.states=[]] Default states
-    * @param {String} [config.label='Classes'] Classes label
-    * @param {String} [config.statesLabel='- State -'] The empty state label
-    * @return {this}
-    * @example
-    * ...
-    * {
-    *  selectors: [
-    *    {name:'myselector1'},
-    *     ...
-    *  ],
-    *  states: [{
-    *    name: 'hover', label: 'Hover'
-    *  },{
-    *    name: 'active', label: 'Click'
-    *  }],
-    *  statesLabel: '- Selecte State -',
-    * }
-    */
-
+};
 var isClass = function isClass(str) {
   return (0, _underscore.isString)(str) && str[0] == '.';
 };
 
 module.exports = function (config) {
+  var _ref;
+
   var c = config || {},
-      defaults = __webpack_require__(89),
+      defaults = __webpack_require__(88),
       Selector = __webpack_require__(7),
       Selectors = __webpack_require__(11),
-      ClassTagsView = __webpack_require__(90);
+      ClassTagsView = __webpack_require__(89);
   var selectors, selectorTags;
 
-  return {
+  return _ref = {
     Selector: Selector,
 
     Selectors: Selectors,
@@ -32193,170 +32202,109 @@ module.exports = function (config) {
      */
     name: 'SelectorManager',
 
+    /**
+     * Get configuration object
+     * @return {Object}
+     * @private
+     */
     getConfig: function getConfig() {
       return c;
-    },
+    }
+  }, _defineProperty(_ref, 'getConfig', function getConfig() {
+    return c;
+  }), _defineProperty(_ref, 'init', function init(conf) {
+    c = conf || {};
 
+    for (var name in defaults) {
+      if (!(name in c)) c[name] = defaults[name];
+    }
 
-    /**
-     * Initialize module. Automatically called with a new instance of the editor
-     * @param {Object} config Configurations
-     * @return {this}
-     * @private
-     */
-    init: function init(conf) {
-      c = conf || {};
+    var em = c.em;
+    var ppfx = c.pStylePrefix;
 
-      for (var name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
-      }
+    if (ppfx) {
+      c.stylePrefix = ppfx + c.stylePrefix;
+    }
 
-      var em = c.em;
-      var ppfx = c.pStylePrefix;
+    selectorTags = new ClassTagsView({
+      collection: new Selectors([], { em: em, config: c }),
+      config: c
+    });
 
-      if (ppfx) {
-        c.stylePrefix = ppfx + c.stylePrefix;
-      }
+    // Global selectors container
+    selectors = new Selectors(c.selectors);
+    selectors.on('add', function (model) {
+      return em.trigger('selector:add', model);
+    });
 
-      selectorTags = new ClassTagsView({
-        collection: new Selectors([], { em: em, config: c }),
+    return this;
+  }), _defineProperty(_ref, 'postRender', function postRender() {
+    var elTo = this.getConfig().appendTo;
+
+    if (elTo) {
+      var el = (0, _underscore.isElement)(elTo) ? elTo : document.querySelector(elTo);
+      el.appendChild(this.render([]));
+    }
+  }), _defineProperty(_ref, 'add', function add(name) {
+    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    if ((0, _underscore.isObject)(name)) {
+      opts = name;
+    } else {
+      opts.name = name;
+    }
+
+    if (isId(opts.name)) {
+      opts.name = opts.name.substr(1);
+      opts.type = Selector.TYPE_ID;
+    }
+
+    if (opts.label && !opts.name) {
+      opts.name = Selector.escapeName(opts.label);
+    }
+
+    var cname = opts.name;
+    var selector = cname ? this.get(cname, opts.type) : selectors.where(opts)[0];
+
+    if (!selector) {
+      return selectors.add(opts);
+    }
+
+    return selector;
+  }), _defineProperty(_ref, 'addClass', function addClass(classes) {
+    var added = [];
+
+    if ((0, _underscore.isString)(classes)) {
+      classes = classes.trim().split(' ');
+    }
+
+    classes.forEach(function (name) {
+      return added.push(selectors.add({ name: name }));
+    });
+    return added;
+  }), _defineProperty(_ref, 'get', function get(name) {
+    var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : Selector.TYPE_CLASS;
+
+    if (isId(name)) {
+      name = name.substr(1);
+      type = Selector.TYPE_ID;
+    }
+    return selectors.where({ name: name, type: type })[0];
+  }), _defineProperty(_ref, 'getAll', function getAll() {
+    return selectors;
+  }), _defineProperty(_ref, 'render', function render(selectors) {
+    if (selectors) {
+      var view = new ClassTagsView({
+        collection: new Selectors(selectors),
         config: c
       });
-
-      // Global selectors container
-      selectors = new Selectors(c.selectors);
-      selectors.on('add', function (model) {
-        return em.trigger('selector:add', model);
-      });
-
-      return this;
-    },
-    postRender: function postRender() {
-      var elTo = this.getConfig().appendTo;
-
-      if (elTo) {
-        var el = (0, _underscore.isElement)(elTo) ? elTo : document.querySelector(elTo);
-        el.appendChild(this.render([]));
-      }
-    },
-
-
-    /**
-     * Add a new selector to collection if it's not already exists. Class type is a default one
-     * @param {String} name Selector name
-     * @param {Object} opts Selector options
-     * @param {String} [opts.label=''] Label for the selector, if it's not provided the label will be the same as the name
-     * @param {String} [opts.type=1] Type of the selector. At the moment, only 'class' (1) is available
-     * @return {Model}
-     * @example
-     * var selector = selectorManager.add('selectorName');
-     * // Same as
-     * var selector = selectorManager.add('selectorName', {
-     *   type: 1,
-     *   label: 'selectorName'
-     * });
-     * */
-    add: function add(name) {
-      var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-      if ((0, _underscore.isObject)(name)) {
-        opts = name;
-      } else {
-        opts.name = name;
-      }
-
-      if (isId(opts.name)) {
-        opts.name = opts.name.substr(1);
-        opts.type = Selector.TYPE_ID;
-      }
-
-      if (opts.label && !opts.name) {
-        opts.name = Selector.escapeName(opts.label);
-      }
-
-      var cname = opts.name;
-      var selector = cname ? this.get(cname, opts.type) : selectors.where(opts)[0];
-
-      if (!selector) {
-        return selectors.add(opts);
-      }
-
-      return selector;
-    },
-
-
-    /**
-     * Add class selectors
-     * @param {Array|string} classes Array or string of classes
-     * @return {Array} Array of added selectors
-     * @example
-     * sm.addClass('class1');
-     * sm.addClass('class1 class2');
-     * sm.addClass(['class1', 'class2']);
-     * // -> [SelectorObject, ...]
-     */
-    addClass: function addClass(classes) {
-      var added = [];
-
-      if ((0, _underscore.isString)(classes)) {
-        classes = classes.trim().split(' ');
-      }
-
-      classes.forEach(function (name) {
-        return added.push(selectors.add({ name: name }));
-      });
-      return added;
-    },
-
-
-    /**
-     * Get the selector by its name
-     * @param {String} name Selector name
-     * @param {String} tyoe Selector type
-     * @return {Model|null}
-     * @example
-     * var selector = selectorManager.get('selectorName');
-     * */
-    get: function get(name) {
-      var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : Selector.TYPE_CLASS;
-
-      if (isId(name)) {
-        name = name.substr(1);
-        type = Selector.TYPE_ID;
-      }
-      return selectors.where({ name: name, type: type })[0];
-    },
-
-
-    /**
-     * Get all selectors
-     * @return {Collection}
-     * */
-    getAll: function getAll() {
-      return selectors;
-    },
-
-
-    /**
-     * Render class selectors. If an array of selectors is provided a new instance of the collection will be rendered
-     * @param {Array<Object>} selectors
-     * @return {HTMLElement}
-     * @private
-     */
-    render: function render(selectors) {
-      if (selectors) {
-        var view = new ClassTagsView({
-          collection: new Selectors(selectors),
-          config: c
-        });
-        return view.render().el;
-      } else return selectorTags.render().el;
-    }
-  };
+      return view.render().el;
+    } else return selectorTags.render().el;
+  }), _ref;
 };
 
 /***/ }),
-/* 89 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32386,14 +32334,14 @@ module.exports = {
 };
 
 /***/ }),
-/* 90 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(_) {
 
 var Backbone = __webpack_require__(0);
-var ClassTagView = __webpack_require__(91);
+var ClassTagView = __webpack_require__(90);
 
 module.exports = Backbone.View.extend({
   template: _.template('\n  <div id="<%= pfx %>up">\n    <div id="<%= pfx %>label"><%= label %></div>\n    <div id="<%= pfx %>status-c">\n      <span id="<%= pfx %>input-c">\n        <div class="<%= ppfx %>field <%= ppfx %>select">\n          <span id="<%= ppfx %>input-holder">\n            <select id="<%= pfx %>states">\n              <option value=""><%= statesLabel %></option>\n            </select>\n          </span>\n          <div class="<%= ppfx %>sel-arrow">\n            <div class="<%= ppfx %>d-s-arrow"></div>\n          </div>\n        </div>\n      </span>\n    </div>\n  </div>\n  <div id="<%= pfx %>tags-field" class="<%= ppfx %>field">\n    <div id="<%= pfx %>tags-c"></div>\n    <input id="<%= pfx %>new" />\n    <span id="<%= pfx %>add-tag" class="fa fa-plus"></span>\n  </div>\n  <div id="<%= pfx %>sel-help">\n    <div id="<%= pfx %>label"><%= selectedLabel %></div>\n    <div id="<%= pfx %>sel"></div>\n    <div style="clear:both"></div>\n  </div>'),
@@ -32694,7 +32642,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 91 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32836,7 +32784,7 @@ module.exports = __webpack_require__(0).View.extend({
 });
 
 /***/ }),
-/* 92 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32860,9 +32808,9 @@ module.exports = __webpack_require__(0).View.extend({
  */
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(93),
-      ModalM = __webpack_require__(94),
-      ModalView = __webpack_require__(95);
+      defaults = __webpack_require__(92),
+      ModalM = __webpack_require__(93),
+      ModalView = __webpack_require__(94);
   var model, modal;
 
   return {
@@ -33007,7 +32955,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 93 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33024,7 +32972,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 94 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33041,7 +32989,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 95 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33179,7 +33127,7 @@ module.exports = __webpack_require__(0).View.extend({
 });
 
 /***/ }),
-/* 96 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33206,13 +33154,13 @@ module.exports = __webpack_require__(0).View.extend({
  */
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(97),
-      gHtml = __webpack_require__(98),
-      gCss = __webpack_require__(99),
-      gJson = __webpack_require__(100),
-      gJs = __webpack_require__(101),
-      eCM = __webpack_require__(102),
-      editorView = __webpack_require__(107);
+      defaults = __webpack_require__(96),
+      gHtml = __webpack_require__(97),
+      gCss = __webpack_require__(98),
+      gJson = __webpack_require__(99),
+      gJs = __webpack_require__(100),
+      eCM = __webpack_require__(101),
+      editorView = __webpack_require__(106);
 
   var generators = {},
       defGenerators = {},
@@ -33408,7 +33356,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 97 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33422,7 +33370,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 98 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33452,7 +33400,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 99 */
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33590,7 +33538,7 @@ module.exports = __webpack_require__(0).Model.extend({
 });
 
 /***/ }),
-/* 100 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33634,7 +33582,7 @@ module.exports = Backbone.Model.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 101 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33695,7 +33643,7 @@ module.exports = Backbone.Model.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 102 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33705,9 +33653,9 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var Backbone = __webpack_require__(0);
 var CodeMirror = __webpack_require__(6);
-var htmlMode = __webpack_require__(103);
+var htmlMode = __webpack_require__(102);
 var cssMode = __webpack_require__(26);
-var formatting = __webpack_require__(106);
+var formatting = __webpack_require__(105);
 
 module.exports = Backbone.Model.extend({
   defaults: {
@@ -33744,7 +33692,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 103 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -33752,7 +33700,7 @@ module.exports = Backbone.Model.extend({
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(6), __webpack_require__(104), __webpack_require__(105), __webpack_require__(26));
+    mod(__webpack_require__(6), __webpack_require__(103), __webpack_require__(104), __webpack_require__(26));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror", "../xml/xml", "../javascript/javascript", "../css/css"], mod);
   else // Plain browser env
@@ -33902,7 +33850,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 104 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -34309,7 +34257,7 @@ if (!CodeMirror.mimeModes.hasOwnProperty("text/html"))
 
 
 /***/ }),
-/* 105 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -35180,7 +35128,7 @@ CodeMirror.defineMIME("application/typescript", { name: "javascript", typescript
 
 
 /***/ }),
-/* 106 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function(mod) {
@@ -35307,7 +35255,7 @@ CodeMirror.defineMIME("application/typescript", { name: "javascript", typescript
 
 
 /***/ }),
-/* 107 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35334,7 +35282,7 @@ module.exports = Backbone.View.extend({
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 108 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35389,9 +35337,9 @@ module.exports = Backbone.View.extend({
  */
 module.exports = function () {
   var c = {},
-      defaults = __webpack_require__(109),
+      defaults = __webpack_require__(108),
       Panel = __webpack_require__(27),
-      Panels = __webpack_require__(111),
+      Panels = __webpack_require__(110),
       PanelView = __webpack_require__(29),
       PanelsView = __webpack_require__(113);
   var panels, PanelsViewObj;
@@ -35610,7 +35558,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 109 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35695,7 +35643,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 110 */
+/* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35706,6 +35654,7 @@ var Backbone = __webpack_require__(0);
 module.exports = Backbone.Model.extend({
   defaults: {
     id: '',
+    label: '',
     className: '',
     command: '',
     context: '',
@@ -35728,7 +35677,7 @@ module.exports = Backbone.Model.extend({
 });
 
 /***/ }),
-/* 111 */
+/* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35742,11 +35691,85 @@ module.exports = Backbone.Collection.extend({
 });
 
 /***/ }),
+/* 111 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(_) {
+
+var Backbone = __webpack_require__(0);
+var ButtonView = __webpack_require__(112);
+
+module.exports = Backbone.View.extend({
+  initialize: function initialize(o) {
+    this.opt = o || {};
+    this.config = this.opt.config || {};
+    this.pfx = this.config.stylePrefix || '';
+    this.parentM = this.opt.parentM || null;
+    this.listenTo(this.collection, 'add', this.addTo);
+    this.listenTo(this.collection, 'reset remove', this.render);
+    this.className = this.pfx + 'buttons';
+  },
+
+
+  /**
+   * Add to collection
+   * @param Object Model
+   *
+   * @return Object
+   * */
+  addTo: function addTo(model) {
+    this.addToCollection(model);
+  },
+
+
+  /**
+   * Add new object to collection
+   * @param  Object  Model
+   * @param  Object   Fragment collection
+   *
+   * @return Object Object created
+   * */
+  addToCollection: function addToCollection(model, fragmentEl) {
+    var fragment = fragmentEl || null;
+    var viewObject = ButtonView;
+
+    var view = new viewObject({
+      model: model,
+      config: this.config,
+      parentM: this.parentM
+    });
+    var rendered = view.render().el;
+
+    if (fragment) {
+      fragment.appendChild(rendered);
+    } else {
+      this.$el.append(rendered);
+    }
+
+    return rendered;
+  },
+  render: function render() {
+    var fragment = document.createDocumentFragment();
+    this.$el.empty();
+
+    this.collection.each(function (model) {
+      this.addToCollection(model, fragment);
+    }, this);
+
+    this.$el.append(fragment);
+    this.$el.attr('class', _.result(this, 'className'));
+    return this;
+  }
+});
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ }),
 /* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(Backbone, _) {
+/* WEBPACK VAR INJECTION */(function(Backbone) {
 
 var _underscore = __webpack_require__(1);
 
@@ -35755,8 +35778,11 @@ var $ = Backbone.$;
 module.exports = Backbone.View.extend({
   tagName: 'span',
 
+  events: {
+    click: 'clicked'
+  },
+
   initialize: function initialize(o) {
-    _.bindAll(this, 'startTimer', 'stopTimer', 'showButtons', 'hideButtons', 'closeOnKeyPress', 'onDrop', 'initSorter', 'stopDrag');
     var cls = this.model.get('className');
     this.config = o.config || {};
     this.em = this.config.em || {};
@@ -35768,7 +35794,6 @@ module.exports = Backbone.View.extend({
     this.activeCls = pfx + 'active ' + ppfx + 'four-color';
     this.disableCls = pfx + 'active';
     this.btnsVisCls = pfx + 'visible';
-    this.parentM = o.parentM || null;
     this.className = pfx + 'btn' + (cls ? ' ' + cls : '');
     this.listenTo(this.model, 'change:active updateActive', this.updateActive);
     this.listenTo(this.model, 'checkActive', this.checkActive);
@@ -35777,81 +35802,7 @@ module.exports = Backbone.View.extend({
     this.listenTo(this.model, 'change:className', this.updateClassName);
     this.listenTo(this.model, 'change:disable', this.updateDisable);
 
-    if (this.model.get('buttons').length) {
-      this.$el.on('mousedown', this.startTimer);
-      this.$el.append($('<div>', { class: pfx + 'arrow-rd' }));
-    }
-
     if (this.em && this.em.get) this.commands = this.em.get('Commands');
-
-    this.events = {};
-
-    if (this.model.get('dragDrop')) {
-      this.events.mousedown = 'initDrag';
-      this.em.on('loaded', this.initSorter);
-    } else this.events.click = 'clicked';
-    this.delegateEvents();
-  },
-  initSorter: function initSorter() {
-    if (this.em.Canvas) {
-      var canvas = this.em.Canvas;
-      this.canvasEl = canvas.getBody();
-      this.sorter = new this.em.Utils.Sorter({
-        container: this.canvasEl,
-        placer: canvas.getPlacerEl(),
-        containerSel: '*',
-        itemSel: '*',
-        pfx: this.ppfx,
-        onMove: this.onDrag,
-        onEndMove: this.onDrop,
-        document: canvas.getFrameEl().contentDocument,
-        direction: 'a',
-        wmargin: 1,
-        nested: 1
-      });
-      var offDim = canvas.getOffset();
-      this.sorter.offTop = offDim.top;
-      this.sorter.offLeft = offDim.left;
-    }
-  },
-
-
-  /**
-   * Init dragging element
-   * @private
-   */
-  initDrag: function initDrag() {
-    this.model.collection.deactivateAll(this.model.get('context'));
-    this.sorter.startSort(this.el);
-    this.sorter.setDropContent(this.model.get('options').content);
-    this.canvasEl.style.cursor = 'grabbing';
-    $(document).on('mouseup', this.stopDrag);
-  },
-
-
-  /**
-   * Stop dragging
-   * @private
-   */
-  stopDrag: function stopDrag() {
-    $(document).off('mouseup', this.stopDrag);
-    this.sorter.endMove();
-  },
-
-
-  /**
-   * During drag method
-   * @private
-   */
-  onDrag: function onDrag(e) {},
-
-
-  /**
-   * During drag method
-   * @private
-   */
-  onDrop: function onDrop(e) {
-    this.canvasEl.style.cursor = 'default';
   },
 
 
@@ -35889,68 +35840,6 @@ module.exports = Backbone.View.extend({
 
 
   /**
-   * Start timer for showing children buttons
-   *
-   * @return  void
-   * */
-  startTimer: function startTimer() {
-    this.timeout = setTimeout(this.showButtons, this.config.delayBtnsShow);
-    $(document).on('mouseup', this.stopTimer);
-  },
-
-
-  /**
-   * Stop timer for showing children buttons
-   *
-   * @return  void
-   * */
-  stopTimer: function stopTimer() {
-    $(document).off('mouseup', this.stopTimer);
-    if (this.timeout) clearTimeout(this.timeout);
-  },
-
-
-  /**
-   * Show children buttons
-   *
-   * @return   void
-   * */
-  showButtons: function showButtons() {
-    clearTimeout(this.timeout);
-    this.model.set('bntsVis', true);
-    $(document).on('mousedown', this.hideButtons);
-    $(document).on('keypress', this.closeOnKeyPress);
-  },
-
-
-  /**
-   * Hide children buttons
-   *
-   * @return   void
-   * */
-  hideButtons: function hideButtons(e) {
-    if (e) {
-      $(e.target).trigger('click');
-    }
-    this.model.set('bntsVis', false);
-    $(document).off('mousedown', this.hideButtons);
-    $(document).off('keypress', this.closeOnKeyPress);
-  },
-
-
-  /**
-   * Close buttons on ESC key press
-   * @param   {Object}  e  Event
-   *
-   * @return   void
-   * */
-  closeOnKeyPress: function closeOnKeyPress(e) {
-    var key = e.which || e.keyCode;
-    if (key == 27) this.hideButtons();
-  },
-
-
-  /**
    * Update active status of the button
    *
    * @return   void
@@ -35958,7 +35847,6 @@ module.exports = Backbone.View.extend({
   updateActive: function updateActive() {
     var model = this.model;
     var context = model.get('context');
-    var parent = this.parentM;
     var command = {};
     var editor = this.em && this.em.get ? this.em.get('Editor') : null;
     var commandName = model.get('command');
@@ -35974,7 +35862,6 @@ module.exports = Backbone.View.extend({
     if (model.get('active')) {
       model.collection.deactivateAll(context);
       model.set('active', true, { silent: true }).trigger('checkActive');
-      parent && parent.set('active', true, { silent: true }).trigger('checkActive');
 
       if (command.run) {
         command.run(editor, model, model.get('options'));
@@ -35986,7 +35873,6 @@ module.exports = Backbone.View.extend({
     } else {
       this.$el.removeClass(this.activeCls);
       model.collection.deactivateAll(context);
-      parent && parent.set('active', false, { silent: true }).trigger('checkActive');
 
       if (command.stop) {
         command.stop(editor, model, model.get('options'));
@@ -36027,8 +35913,6 @@ module.exports = Backbone.View.extend({
     this.toogleActive();
   },
   toogleActive: function toogleActive() {
-    if (this.parentM) this.swapParent();
-
     var active = this.model.get('active');
     this.model.set('active', !active);
 
@@ -36041,41 +35925,17 @@ module.exports = Backbone.View.extend({
       if (this.model.get('stopDefaultCommand')) this.em.stopDefault();
     }
   },
-
-
-  /**
-   * Updates parent model swapping properties
-   *
-   * @return  void
-   * */
-  swapParent: function swapParent() {
-    this.parentM.collection.deactivateAll(this.model.get('context'));
-    this.parentM.set('attributes', this.model.get('attributes'));
-    this.parentM.set('options', this.model.get('options'));
-    this.parentM.set('command', this.model.get('command'));
-    this.parentM.set('className', this.model.get('className'));
-    this.parentM.set('active', true, { silent: true }).trigger('checkActive');
-  },
   render: function render() {
+    var label = this.model.get('label');
+    var $el = this.$el;
     this.updateAttributes();
-    this.$el.attr('class', this.className);
-
-    if (this.model.get('buttons').length) {
-      var btnsView = __webpack_require__(30); //Avoid Circular Dependencies
-      var view = new btnsView({
-        collection: this.model.get('buttons'),
-        config: this.config,
-        parentM: this.model
-      });
-      this.$buttons = view.render().$el;
-      this.$buttons.append($('<div>', { class: this.pfx + 'arrow-l' }));
-      this.$el.append(this.$buttons); //childNodes avoids wrapping 'div'
-    }
+    $el.attr('class', this.className);
+    label && $el.append(label);
 
     return this;
   }
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(1)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
 /* 113 */
@@ -36980,7 +36840,7 @@ module.exports = Backbone.Model.extend({
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var Property = __webpack_require__(33);
+var Property = __webpack_require__(32);
 var Layers = __webpack_require__(121);
 
 module.exports = Property.extend({
@@ -39714,7 +39574,7 @@ module.exports = Backbone.View.extend({
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var Property = __webpack_require__(42);
+var Property = __webpack_require__(41);
 
 module.exports = Property.extend({
   defaults: _extends({}, Property.prototype.defaults, {
@@ -40574,7 +40434,7 @@ module.exports = function () {
   var defaults = __webpack_require__(132);
   var Assets = __webpack_require__(133);
   var AssetsView = __webpack_require__(136);
-  var FileUpload = __webpack_require__(45);
+  var FileUpload = __webpack_require__(44);
   var assets = void 0,
       am = void 0,
       fu = void 0;
@@ -41011,7 +40871,7 @@ module.exports = {
 "use strict";
 
 
-var _TypeableCollection = __webpack_require__(32);
+var _TypeableCollection = __webpack_require__(31);
 
 var _TypeableCollection2 = _interopRequireDefault(_TypeableCollection);
 
@@ -41021,7 +40881,7 @@ module.exports = __webpack_require__(0).Collection.extend(_TypeableCollection2.d
   types: [{
     id: 'image',
     model: __webpack_require__(134),
-    view: __webpack_require__(43),
+    view: __webpack_require__(42),
     isType: function isType(value) {
       if (typeof value == 'string') {
         return {
@@ -41096,9 +40956,9 @@ module.exports = __webpack_require__(0).Model.extend({
 "use strict";
 /* WEBPACK VAR INJECTION */(function(Backbone) {
 
-var AssetView = __webpack_require__(44);
-var AssetImageView = __webpack_require__(43);
-var FileUploader = __webpack_require__(45);
+var AssetView = __webpack_require__(43);
+var AssetImageView = __webpack_require__(42);
+var FileUploader = __webpack_require__(44);
 
 module.exports = Backbone.View.extend({
   events: {
@@ -41309,7 +41169,7 @@ module.exports = function () {
   var em = void 0;
   var c = {},
       defaults = __webpack_require__(138),
-      CssRule = __webpack_require__(46),
+      CssRule = __webpack_require__(45),
       CssRules = __webpack_require__(139),
       CssRulesView = __webpack_require__(140);
   var Selectors = __webpack_require__(11);
@@ -41483,7 +41343,13 @@ module.exports = function () {
       var w = width || '';
       var opt = _extends({}, opts);
       var rule = this.get(selectors, s, w, opt);
-      if (rule) return rule;else {
+
+      // do not create rules that were found before
+      // unless this is an at-rule, for which multiple declarations
+      // make sense (e.g. multiple `@font-type`s)
+      if (rule && rule.config && !rule.config.atRuleType) {
+        return rule;
+      } else {
         opt.state = s;
         opt.mediaText = w;
         opt.selectors = '';
@@ -41716,7 +41582,7 @@ module.exports = {
 
 
 var Backbone = __webpack_require__(0);
-var CssRule = __webpack_require__(46);
+var CssRule = __webpack_require__(45);
 
 module.exports = Backbone.Collection.extend({
   initialize: function initialize(models, opt) {
@@ -41753,10 +41619,16 @@ module.exports = Backbone.Collection.extend({
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+/* WEBPACK VAR INJECTION */(function(Backbone) {
 
-
-var CssRuleView = __webpack_require__(48);
+var CssRuleView = __webpack_require__(47);
 var CssGroupRuleView = __webpack_require__(141);
+var $ = Backbone.$;
+
+// % is not a valid character for classes
+var getBlockId = function getBlockId(pfx, widthMedia) {
+  return '' + pfx + (widthMedia ? '-' + widthMedia.replace('%', 'pc') : '');
+};
 
 module.exports = __webpack_require__(0).View.extend({
   initialize: function initialize(o) {
@@ -41790,6 +41662,11 @@ module.exports = __webpack_require__(0).View.extend({
    * @private
    * */
   addToCollection: function addToCollection(model, fragmentEl) {
+    // If the render is not yet started
+    if (!this.renderStarted) {
+      return;
+    }
+
     var fragment = fragmentEl || null;
     var viewObject = CssRuleView;
     var config = this.config;
@@ -41800,7 +41677,7 @@ module.exports = __webpack_require__(0).View.extend({
     // I have to render keyframes of the same name together
     // Unfortunately at the moment I didn't find the way of appending them
     // if not staticly, via appendData
-    if (model.get('atRuleType') == 'keyframes') {
+    if (model.get('atRuleType') === 'keyframes') {
       var atRule = model.getAtRule();
       var atRuleEl = this.atRules[atRule];
 
@@ -41821,27 +41698,67 @@ module.exports = __webpack_require__(0).View.extend({
       rendered = view.render().el;
     }
 
+    var clsName = this.className;
+    var mediaText = model.get('mediaText');
+    var defaultBlockId = getBlockId(clsName);
+    var blockId = defaultBlockId;
+
+    // If the rule contains a media query it might have a different container
+    // for it (eg. rules created with Device Manager)
+    if (mediaText) {
+      blockId = getBlockId(clsName, this.getMediaWidth(mediaText));
+    }
+
     if (rendered) {
-      if (fragment) fragment.appendChild(rendered);else this.$el.append(rendered);
+      var container = fragment || this.el;
+      var contRules = void 0;
+
+      // Try to find a specific container for the rule (if it
+      // containes a media query), otherwise get the default one
+      try {
+        contRules = container.querySelector('#' + blockId);
+      } catch (e) {}
+
+      if (!contRules) {
+        contRules = container.querySelector('#' + defaultBlockId);
+      }
+
+      contRules.appendChild(rendered);
     }
 
     return rendered;
   },
+  getMediaWidth: function getMediaWidth(mediaText) {
+    return mediaText && mediaText.replace('(' + this.em.getConfig('mediaCondition') + ': ', '').replace(')', '');
+  },
   render: function render() {
     var _this = this;
 
+    this.renderStarted = 1;
     this.atRules = {};
     var $el = this.$el;
     var frag = document.createDocumentFragment();
+    var className = this.className;
     $el.empty();
+
+    // Create devices related DOM structure
+    this.em.get('DeviceManager').getAll().map(function (model) {
+      return model.get('widthMedia');
+    }).sort(function (left, right) {
+      return (right && right.replace('px', '') || Number.MAX_VALUE) - (left && left.replace('px', '') || Number.MAX_VALUE);
+    }).forEach(function (widthMedia) {
+      $('<div id="' + getBlockId(className, widthMedia) + '"></div>').appendTo(frag);
+    });
+
     this.collection.each(function (model) {
       return _this.addToCollection(model, frag);
     });
     $el.append(frag);
-    $el.attr('class', this.className);
+    $el.attr('class', className);
     return this;
   }
 });
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
 /* 141 */
@@ -41850,7 +41767,7 @@ module.exports = __webpack_require__(0).View.extend({
 "use strict";
 
 
-module.exports = __webpack_require__(48).extend({
+module.exports = __webpack_require__(47).extend({
   _createElement: function _createElement(tagName) {
     return document.createTextNode('');
   },
@@ -41998,7 +41915,7 @@ module.exports = {
 "use strict";
 
 
-var DomainViews = __webpack_require__(49);
+var DomainViews = __webpack_require__(48);
 var TraitView = __webpack_require__(8);
 var TraitSelectView = __webpack_require__(145);
 var TraitCheckboxView = __webpack_require__(146);
@@ -42025,7 +41942,8 @@ module.exports = DomainViews.extend({
     this.pfx = config.stylePrefix || '';
     this.ppfx = config.pStylePrefix || '';
     this.className = this.pfx + 'traits';
-    this.listenTo(this.em, 'change:selectedComponent', this.updatedCollection);
+    var toListen = 'component:selected component:update:traits';
+    this.listenTo(this.em, toListen, this.updatedCollection);
     this.updatedCollection();
   },
 
@@ -42036,8 +41954,9 @@ module.exports = DomainViews.extend({
    */
   updatedCollection: function updatedCollection() {
     var ppfx = this.ppfx;
+    var comp = this.em.getSelected();
     this.el.className = this.className + ' ' + ppfx + 'one-bg ' + ppfx + 'two-color';
-    var comp = this.em.get('selectedComponent');
+
     if (comp) {
       this.collection = comp.get('traits');
       this.render();
@@ -42232,7 +42151,7 @@ module.exports = TraitView.extend({
 
 
 var TraitView = __webpack_require__(8);
-var InputColor = __webpack_require__(39);
+var InputColor = __webpack_require__(38);
 
 module.exports = TraitView.extend({
   /**
@@ -42320,8 +42239,8 @@ module.exports = function () {
   var defaults = __webpack_require__(150);
   var Component = __webpack_require__(4);
   var ComponentView = __webpack_require__(3);
-  var Components = __webpack_require__(50);
-  var ComponentsView = __webpack_require__(51);
+  var Components = __webpack_require__(49);
+  var ComponentsView = __webpack_require__(50);
 
   var component, componentView;
   var componentTypes = [{
@@ -42378,8 +42297,8 @@ module.exports = function () {
     view: __webpack_require__(176)
   }, {
     id: 'text',
-    model: __webpack_require__(52),
-    view: __webpack_require__(53)
+    model: __webpack_require__(51),
+    view: __webpack_require__(52)
   }, {
     id: 'default',
     model: Component,
@@ -42865,6 +42784,14 @@ module.exports = Backbone.Collection.extend({
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
     this.em = options.em || '';
+    this.listenTo(this, 'add', this.handleAdd);
+  },
+  handleAdd: function handleAdd(model) {
+    var target = this.target;
+
+    if (target) {
+      model.target = target;
+    }
   },
   setTarget: function setTarget(target) {
     this.target = target;
@@ -43452,7 +43379,7 @@ module.exports = ComponentView.extend({
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var Component = __webpack_require__(52);
+var Component = __webpack_require__(51);
 
 module.exports = Component.extend({
   defaults: _extends({}, Component.prototype.defaults, {
@@ -43514,7 +43441,7 @@ module.exports = Component.extend({
 
 
 var Backbone = __webpack_require__(0);
-var ComponentView = __webpack_require__(53);
+var ComponentView = __webpack_require__(52);
 
 module.exports = ComponentView.extend({
   render: function render() {
@@ -45354,7 +45281,7 @@ module.exports = function () {
       defaultCommands['image-comp'] = __webpack_require__(194);
       defaultCommands['move-comp'] = __webpack_require__(195);
       defaultCommands['text-comp'] = __webpack_require__(196);
-      defaultCommands['insert-custom'] = __webpack_require__(58);
+      defaultCommands['insert-custom'] = __webpack_require__(57);
       defaultCommands['export-template'] = ViewCode;
       defaultCommands['sw-visibility'] = __webpack_require__(197);
       defaultCommands['open-layers'] = __webpack_require__(198);
@@ -45883,7 +45810,7 @@ module.exports = {
 
 
 var Backbone = __webpack_require__(0);
-var DomainViews = __webpack_require__(49);
+var DomainViews = __webpack_require__(48);
 var ToolbarButtonView = __webpack_require__(190);
 
 module.exports = DomainViews.extend({
@@ -46060,7 +45987,7 @@ module.exports = _.extend({}, SelectComponent, {
 /* WEBPACK VAR INJECTION */(function(_) {
 
 var Backbone = __webpack_require__(0);
-var InsertCustom = __webpack_require__(58);
+var InsertCustom = __webpack_require__(57);
 
 module.exports = _.extend({}, InsertCustom, {
   /**
@@ -46102,7 +46029,7 @@ module.exports = _.extend({}, InsertCustom, {
 var _mixins = __webpack_require__(2);
 
 var SelectComponent = __webpack_require__(21);
-var SelectPosition = __webpack_require__(57);
+var SelectPosition = __webpack_require__(56);
 var $ = Backbone.$;
 
 module.exports = _.extend({}, SelectPosition, SelectComponent, {
@@ -46318,7 +46245,7 @@ module.exports = {
 "use strict";
 /* WEBPACK VAR INJECTION */(function(Backbone) {
 
-var Layers = __webpack_require__(54);
+var Layers = __webpack_require__(53);
 var $ = Backbone.$;
 
 module.exports = {
@@ -46351,7 +46278,7 @@ module.exports = {
 "use strict";
 
 
-var StyleManager = __webpack_require__(31);
+var StyleManager = __webpack_require__(30);
 var Backbone = __webpack_require__(0);
 var $ = Backbone.$;
 
@@ -47236,7 +47163,7 @@ module.exports = Backbone.Collection.extend({
 
 
 var Backbone = __webpack_require__(0);
-var Category = __webpack_require__(59);
+var Category = __webpack_require__(58);
 
 module.exports = Backbone.Model.extend({
   defaults: {
@@ -47272,7 +47199,7 @@ module.exports = Backbone.Model.extend({
 var Backbone = __webpack_require__(0);
 
 module.exports = Backbone.Collection.extend({
-  model: __webpack_require__(59)
+  model: __webpack_require__(58)
 });
 
 /***/ }),
@@ -47849,7 +47776,29 @@ module.exports = function (_ref) {
       return this;
     };
 
-    fn.remove = function () {
+    // For SVGs in IE
+    fn.removeClass = function (c) {
+      if (!arguments.length) {
+        return this.attr('class', '');
+      }
+      var classes = (0, _underscore.isString)(c) && c.match(/\S+/g);
+      return classes ? this.each(function (el) {
+        (0, _underscore.each)(classes, function (c) {
+          if (el.classList) {
+            el.classList.remove(c);
+          } else {
+            var val = el.className;
+            var bval = el.className.baseVal;
+
+            if (!(0, _underscore.isUndefined)(bval)) {
+              val.baseVal = bval.replace(c, '');
+            } else {
+              el.className = val.replace(c, '');
+            }
+          }
+        });
+      }) : this;
+    }, fn.remove = function () {
       return this.each(function (node) {
         return node.parentNode && node.parentNode.removeChild(node);
       });
