@@ -54,7 +54,7 @@ module.exports = {
     methods[method](body, 'click', this.onClick);
     methods[method](win, 'scroll resize', this.onFrameScroll);
     methods[method](win, 'keydown', this.onKeyPress);
-    em[method]('component:selected', this.onSelect, this);
+    em[method]('change:selectedComponent', this.onSelect, this);
   },
 
   /**
@@ -262,7 +262,7 @@ module.exports = {
    * @param {Object}  el
    * @private
    * */
-  onSelect(model) {
+  onSelect(em, model) {
     const editor = this.editor;
     this.updateToolbar(model);
 
@@ -377,7 +377,6 @@ module.exports = {
       if (typeof resizable == 'object') {
         options = { ...options, ...resizable };
       }
-      console.log('init resize');
       editor.runCommand('resize', { el, options });
 
       // On undo/redo the resizer rect is not updating, need somehow to call
