@@ -262,8 +262,10 @@ module.exports = {
    * @param {Object}  el
    * @private
    * */
-  onSelect(em, model) {
-    const editor = this.editor;
+  onSelect() {
+    // Get the selected model directly from the Editor as the event might
+    // be triggered manually without the model
+    const model = this.em.getSelected();
     this.updateToolbar(model);
 
     if (model) {
@@ -273,7 +275,7 @@ module.exports = {
       this.hideHighlighter();
       this.initResize(el);
     } else {
-      editor.stopCommand('resize');
+      this.editor.stopCommand('resize');
     }
   },
 
