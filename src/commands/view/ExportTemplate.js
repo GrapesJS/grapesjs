@@ -22,7 +22,7 @@ module.exports = {
     modal.setContent(this.$editors);
     modal.open();
     this.htmlEditor.setContent(editor.getHtml());
-    this.cssEditor.setContent(editor.getCss({ dumpUnusedSelectors: 1 }));
+    this.cssEditor.setContent(editor.getCss());
   },
 
   stop(editor) {
