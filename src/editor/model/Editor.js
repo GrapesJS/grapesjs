@@ -197,13 +197,10 @@ module.exports = Backbone.Model.extend({
    * @param   {Object}   Options
    * @private
    * */
-  componentSelected(model, val, options) {
-    if (!this.get('selectedComponent')) {
-      this.trigger('deselect-comp');
-    } else {
-      this.trigger('select-comp', [model, val, options]);
-      this.trigger('component:selected', arguments);
-    }
+  componentSelected(editor, selected, options) {
+    const prev = this.previous('selectedComponent');
+    prev && this.trigger('component:deselected', prev, options);
+    selected && this.trigger('component:selected', selected, options);
   },
 
   /**

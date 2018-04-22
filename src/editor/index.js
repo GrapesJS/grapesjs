@@ -17,6 +17,7 @@
  * * `component:styleUpdate` - Triggered when the style of the component is updated, the model is passed as an argument to the callback
  * * `component:styleUpdate:{propertyName}` - Listen for a specific style property change, the model is passed as an argument to the callback
  * * `component:selected` - New component selected, the selected model is passed as an argument to the callback
+ * * `component:deselected` - Component deselected, the deselected model is passed as an argument to the callback
  * ## Blocks
  * * `block:add` - New block added
  * * `block:remove` - Block removed
