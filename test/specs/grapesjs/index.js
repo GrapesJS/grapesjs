@@ -388,6 +388,22 @@ describe('GrapesJS', () => {
       expect(css).toEqual(`${protCss}.test2{color:red;}.test3{color:blue;}`);
     });
 
+    it('Keep unused css classes/selectors option for media rules', () => {
+      cssString =
+        '.test2{color:red}.test3{color:blue} @media only screen and (max-width: 620px) { .notused { color: red; } } ';
+      documentEl = '<style>' + cssString + '</style>' + htmlString;
+      config.fromElement = 1;
+      config.storageManager = { type: 0 };
+      fixture.innerHTML = documentEl;
+      const editor = obj.init(config);
+      const css = editor.getCss({ keepUnusedStyles: 1 });
+      const protCss = editor.getConfig().protectedCss;
+      expect(editor.getStyle().length).toEqual(3);
+      expect(css).toEqual(
+        `${protCss}.test2{color:red;}.test3{color:blue;}@media only screen and (max-width: 620px){.notused{color:red;}}`
+      );
+    });
+
     it('Keep unused css classes/selectors option for init method', () => {
       config.fromElement = 1;
       config.storageManager = { type: 0 };

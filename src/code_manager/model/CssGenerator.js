@@ -66,7 +66,9 @@ module.exports = require('backbone').Model.extend({
       for (let atRule in atRules) {
         let rulesStr = '';
         const mRules = atRules[atRule];
-        mRules.forEach(rule => (rulesStr += this.buildFromRule(rule, dump)));
+        mRules.forEach(
+          rule => (rulesStr += this.buildFromRule(rule, dump, opts))
+        );
 
         if (rulesStr) {
           code += `${atRule}{${rulesStr}}`;
