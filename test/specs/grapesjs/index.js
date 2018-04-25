@@ -377,22 +377,22 @@ describe('GrapesJS', () => {
       expect(editor.Commands.get('export-template').test).toEqual(1);
     });
 
-    it('Dump unused css classes/selectors', () => {
+    it('Keep unused css classes/selectors option for getCSS method', () => {
       config.fromElement = 1;
       config.storageManager = { type: 0 };
       fixture.innerHTML = documentEl;
       const editor = obj.init(config);
-      const css = editor.getCss({ dumpUnusedStyles: 1 });
+      const css = editor.getCss({ keepUnusedStyles: 1 });
       const protCss = editor.getConfig().protectedCss;
       expect(editor.getStyle().length).toEqual(2);
       expect(css).toEqual(`${protCss}.test2{color:red;}.test3{color:blue;}`);
     });
 
-    it('Dump unused css classes/selectors using the init option', () => {
+    it('Keep unused css classes/selectors option for init method', () => {
       config.fromElement = 1;
       config.storageManager = { type: 0 };
       fixture.innerHTML = documentEl;
-      const editor = obj.init({ ...config, dumpUnusedStyles: 1 });
+      const editor = obj.init({ ...config, keepUnusedStyles: 1 });
       const css = editor.getCss();
       const protCss = editor.getConfig().protectedCss;
       expect(editor.getStyle().length).toEqual(2);
