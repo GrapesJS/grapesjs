@@ -1,4 +1,4 @@
-import { bindAll } from 'underscore';
+import { bindAll, isElement } from 'underscore';
 import { on, off, getUnitFromValue } from 'utils/mixins';
 
 const ToolbarView = require('dom_components/view/ToolbarView');
@@ -186,6 +186,7 @@ module.exports = {
     if (model) {
       if (model.get('selectable')) {
         editor.select(model);
+        this.initResize(model);
       } else {
         let parent = model.parent();
         while (parent && !parent.get('selectable')) parent = parent.parent();
@@ -262,7 +263,8 @@ module.exports = {
    * @private
    * */
   onSelect() {
-    const editor = this.editor;
+    // Get the selected model directly from the Editor as the event might
+    // be triggered manually without the model
     const model = this.em.getSelected();
     this.updateToolbar(model);
 
@@ -273,26 +275,27 @@ module.exports = {
       this.hideHighlighter();
       this.initResize(el);
     } else {
-      editor.stopCommand('resize');
+      this.editor.stopCommand('resize');
     }
   },
 
   /**
    * Init resizer on the element if possible
-   * @param  {HTMLElement} el
+   * @param  {HTMLElement|Component} elem
    * @private
    */
-  initResize(el) {
-    var em = this.em;
-    var editor = em ? em.get('Editor') : '';
-    var config = em ? em.get('Config') : '';
-    var pfx = config.stylePrefix || '';
-    var attrName = `data-${pfx}handler`;
-    var resizeClass = `${pfx}resizing`;
-    var model = em.get('selectedComponent');
-    var resizable = model.get('resizable');
-    var options = {};
-    var modelToStyle;
+  initResize(elem) {
+    const em = this.em;
+    const editor = em ? em.get('Editor') : '';
+    const config = em ? em.get('Config') : '';
+    const pfx = config.stylePrefix || '';
+    const attrName = `data-${pfx}handler`;
+    const resizeClass = `${pfx}resizing`;
+    const model = !isElement(elem) ? elem : em.getSelected();
+    const resizable = model.get('resizable');
+    const el = isElement(elem) ? elem : model.getEl();
+    let options = {};
+    let modelToStyle;
 
     var toggleBodyClass = (method, e, opts) => {
       const docs = opts.docs;
@@ -376,11 +379,12 @@ module.exports = {
       if (typeof resizable == 'object') {
         options = { ...options, ...resizable };
       }
-
       editor.runCommand('resize', { el, options });
 
       // On undo/redo the resizer rect is not updating, need somehow to call
       // this.updateRect on undo/redo action
+    } else {
+      editor.stopCommand('resize');
     }
   },
 
