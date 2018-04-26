@@ -372,6 +372,50 @@ module.exports = {
         expect(res.css).toEqual(resCss);
       });
 
+      it('Respect multiple font-faces contained in styles in html', () => {
+        const str = `
+          <style>
+          @font-face {
+            font-family: "Open Sans";
+            src:url(https://fonts.gstatic.com/s/droidsans/v8/SlGVmQWMvZQIdix7AFxXkHNSbRYXags.woff2)
+          }
+          @font-face {
+            font-family: 'Glyphicons Halflings';
+            src:url(https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot)
+          }
+          </style>
+          <div>a div</div>
+        `;
+
+        const expected = [
+          {
+            selectors: [],
+            selectorsAdd: '',
+            style: {
+              'font-family': '"Open Sans"',
+              src:
+                'url(https://fonts.gstatic.com/s/droidsans/v8/SlGVmQWMvZQIdix7AFxXkHNSbRYXags.woff2)'
+            },
+            singleAtRule: 1,
+            atRuleType: 'font-face'
+          },
+          {
+            selectors: [],
+            selectorsAdd: '',
+            style: {
+              'font-family': "'Glyphicons Halflings'",
+              src:
+                'url(https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot)'
+            },
+            singleAtRule: 1,
+            atRuleType: 'font-face'
+          }
+        ];
+
+        const res = obj.parse(str, new ParserCss());
+        expect(res.css).toEqual(expected);
+      });
+
       it('Parse nested div with text and spaces', () => {
         var str = '<div> <p>TestText</p> </div>';
         var result = {

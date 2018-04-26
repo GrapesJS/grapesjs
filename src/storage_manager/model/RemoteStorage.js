@@ -21,7 +21,6 @@ module.exports = require('backbone').Model.extend({
     const em = this.get('em');
     const before = this.get('beforeSend');
     before && before();
-    em && em.trigger('storage:start');
   },
 
   /**
@@ -33,17 +32,6 @@ module.exports = require('backbone').Model.extend({
     const em = this.get('em');
     console.error(err);
     em && em.trigger('storage:error', err);
-    this.onEnd(err);
-  },
-
-  /**
-   * Triggered after the request is ended
-   * @param  {Object|string} res End result
-   * @private
-   */
-  onEnd(res) {
-    const em = this.get('em');
-    em && em.trigger('storage:end', res);
   },
 
   /**
@@ -60,7 +48,6 @@ module.exports = require('backbone').Model.extend({
     complete && complete(res);
     clb && clb(res);
     em && em.trigger('storage:response', res);
-    this.onEnd(text);
   },
 
   store(data, clb) {
