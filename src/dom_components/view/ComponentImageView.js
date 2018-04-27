@@ -68,6 +68,7 @@ module.exports = ComponentView.extend({
       editor.runCommand('open-assets', {
         target: this.model,
         types: ['image'],
+        accept: 'image/*',
         onSelect() {
           editor.Modal.close();
           editor.AssetManager.setTarget(null);

@@ -7,32 +7,29 @@ module.exports = {
     const config = am.getConfig();
     const title = opts.modalTitle || config.modalTitle || '';
     var types = opts.types;
+    var accept = opts.accept;
 
     am.setTarget(opts.target);
     am.onClick(opts.onClick);
     am.onDblClick(opts.onDblClick);
     am.onSelect(opts.onSelect);
 
-    if (!this.rendered || types) {
+    if (!this.rendered || types || accept) {
       var $html;
       var assets;
-      var fileTypes = [];
 
       if (types) {
         assets = am.getAll().filter(asset => {
           return types.indexOf(asset.get('type')) != -1
         });
-
-        types.forEach((type, i) => {
-          fileTypes = fileTypes.concat((am.getType(type).model.prototype.fileTypes || ['*/*']));
-        })
       } else {
         assets = am.getAll();
-        fileTypes = '*/*';
       }
 
       $html = $(am.render(assets));
-      $html.find(`input#${config.stylePrefix}uploadFile`).attr('accept', $.unique(fileTypes).map((ext, i) => { return ext }).join(','));
+
+      if (accept) $html.find(`input#${config.stylePrefix}uploadFile`).attr('accept', accept);
+
       this.rendered = 1;
     }
 

@@ -8,5 +8,4 @@ module.exports = Asset.extend({
     height: 0,
     width: 0
   },
-  fileTypes: ['image/*']
 });
