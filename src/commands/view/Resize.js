@@ -19,6 +19,7 @@ module.exports = {
     }
 
     canvasResizer.setOptions(options);
+    canvasResizer.blur();
     canvasResizer.focus(el);
     return canvasResizer;
   },

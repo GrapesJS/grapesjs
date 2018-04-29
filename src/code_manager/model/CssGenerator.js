@@ -59,14 +59,16 @@ module.exports = require('backbone').Model.extend({
           return;
         }
 
-        code += this.buildFromRule(rule, dump);
+        code += this.buildFromRule(rule, dump, opts);
       });
 
       // Get at-rules
       for (let atRule in atRules) {
         let rulesStr = '';
         const mRules = atRules[atRule];
-        mRules.forEach(rule => (rulesStr += this.buildFromRule(rule, dump)));
+        mRules.forEach(
+          rule => (rulesStr += this.buildFromRule(rule, dump, opts))
+        );
 
         if (rulesStr) {
           code += `${atRule}{${rulesStr}}`;
@@ -84,7 +86,7 @@ module.exports = require('backbone').Model.extend({
    * @param {Model} rule
    * @return {string} CSS string
    */
-  buildFromRule(rule, dump) {
+  buildFromRule(rule, dump, opts = {}) {
     let result = '';
     const selectorStrNoAdd = rule.selectorsToString({ skipAdd: 1 });
     const selectorsAdd = rule.get('selectorsAdd');
@@ -94,7 +96,11 @@ module.exports = require('backbone').Model.extend({
     // This will not render a rule if there is no its component
     rule.get('selectors').each(selector => {
       const name = selector.getFullName();
-      if (this.compCls.indexOf(name) >= 0 || this.ids.indexOf(name) >= 0) {
+      if (
+        this.compCls.indexOf(name) >= 0 ||
+        this.ids.indexOf(name) >= 0 ||
+        opts.keepUnusedStyles
+      ) {
         found = 1;
       }
     });
