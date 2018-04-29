@@ -236,6 +236,9 @@ If you like the project support it with a donation of your choice or become a ba
 <a href="https://opencollective.com/grapesjs/backers/12/website"><img src="https://opencollective.com/grapesjs/backers/12/avatar"></a>
 
 
+[![BrowserStack](https://user-images.githubusercontent.com/11614725/39406324-4ef89c40-4bb5-11e8-809a-113d9432e5a5.png)](https://www.browserstack.com)
+Thanks to [BrowserStack](https://www.browserstack.com) for providing us browser testing services
+
 
 ## License
 
