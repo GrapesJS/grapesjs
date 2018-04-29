@@ -302,9 +302,9 @@ module.exports = Backbone.Model.extend({
     const config = this.config;
     const wrappesIsBody = config.wrappesIsBody;
     const avoidProt = opts.avoidProtected;
-    const dumpUnusedStyles = !isUndefined(opts.dumpUnusedStyles)
-      ? opts.dumpUnusedStyles
-      : config.dumpUnusedStyles;
+    const keepUnusedStyles = !isUndefined(opts.keepUnusedStyles)
+      ? opts.keepUnusedStyles
+      : config.keepUnusedStyles;
     const cssc = this.get('CssComposer');
     const wrp = this.get('DomComponents').getComponent();
     const protCss = !avoidProt ? config.protectedCss : '';
@@ -314,7 +314,7 @@ module.exports = Backbone.Model.extend({
       this.get('CodeManager').getCode(wrp, 'css', {
         cssc,
         wrappesIsBody,
-        dumpUnusedStyles
+        keepUnusedStyles
       })
     );
   },
