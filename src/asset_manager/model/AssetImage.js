@@ -7,5 +7,5 @@ module.exports = Asset.extend({
     unitDim: 'px',
     height: 0,
     width: 0
-  }
+  },
 });
