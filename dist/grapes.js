@@ -16899,6 +16899,8 @@ module.exports = ComponentView.extend({
     if (editor && this.model.get('editable')) {
       editor.runCommand('open-assets', {
         target: this.model,
+        types: ['image'],
+        accept: 'image/*',
         onSelect: function onSelect() {
           editor.Modal.close();
           editor.AssetManager.setTarget(null);
@@ -17742,6 +17744,7 @@ module.exports = {
     if (model) {
       if (model.get('selectable')) {
         editor.select(model);
+        this.initResize(model);
       } else {
         var parent = model.parent();
         while (parent && !parent.get('selectable')) {
@@ -17817,7 +17820,8 @@ module.exports = {
    * @private
    * */
   onSelect: function onSelect() {
-    var editor = this.editor;
+    // Get the selected model directly from the Editor as the event might
+    // be triggered manually without the model
     var model = this.em.getSelected();
     this.updateToolbar(model);
 
@@ -17828,27 +17832,28 @@ module.exports = {
       this.hideHighlighter();
       this.initResize(el);
     } else {
-      editor.stopCommand('resize');
+      this.editor.stopCommand('resize');
     }
   },
 
 
   /**
    * Init resizer on the element if possible
-   * @param  {HTMLElement} el
+   * @param  {HTMLElement|Component} elem
    * @private
    */
-  initResize: function initResize(el) {
+  initResize: function initResize(elem) {
     var em = this.em;
     var editor = em ? em.get('Editor') : '';
     var config = em ? em.get('Config') : '';
     var pfx = config.stylePrefix || '';
     var attrName = 'data-' + pfx + 'handler';
     var resizeClass = pfx + 'resizing';
-    var model = em.get('selectedComponent');
+    var model = !(0, _underscore.isElement)(elem) ? elem : em.getSelected();
     var resizable = model.get('resizable');
+    var el = (0, _underscore.isElement)(elem) ? elem : model.getEl();
     var options = {};
-    var modelToStyle;
+    var modelToStyle = void 0;
 
     var toggleBodyClass = function toggleBodyClass(method, e, opts) {
       var docs = opts.docs;
@@ -17935,11 +17940,12 @@ module.exports = {
       if ((typeof resizable === 'undefined' ? 'undefined' : _typeof(resizable)) == 'object') {
         options = _extends({}, options, resizable);
       }
-
       editor.runCommand('resize', { el: el, options: options });
 
       // On undo/redo the resizer rect is not updating, need somehow to call
       // this.updateRect on undo/redo action
+    } else {
+      editor.stopCommand('resize');
     }
   },
 
@@ -18793,7 +18799,6 @@ module.exports = function (config) {
      * @return {Array<Object>}
      */
     parseNode: function parseNode(el) {
-      var config = c.em && c.em.get('Config') || {};
       var result = [];
       var nodes = el.childNodes;
 
@@ -21637,7 +21642,7 @@ var _fetch2 = _interopRequireDefault(_fetch);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports = Backbone.View.extend({
-  template: _.template('\n  <form>\n    <div id="<%= pfx %>title"><%= title %></div>\n    <input type="file" id="<%= uploadId %>" name="file" accept="image/*" <%= disabled ? \'disabled\' : \'\' %> multiple/>\n    <div style="clear:both;"></div>\n  </form>\n  '),
+  template: _.template('\n  <form>\n    <div id="<%= pfx %>title"><%= title %></div>\n    <input type="file" id="<%= uploadId %>" name="file" accept="*/*" <%= disabled ? \'disabled\' : \'\' %> multiple/>\n    <div style="clear:both;"></div>\n  </form>\n  '),
 
   events: {},
 
@@ -22262,8 +22267,8 @@ exports.default = {
       var em = _this.em;
       _this.trigger('change:style:' + pr);
       if (em) {
-        em.trigger('styleable:change');
-        em.trigger('styleable:change:' + pr);
+        em.trigger('styleable:change', _this, pr);
+        em.trigger('styleable:change:' + pr, _this, pr);
       }
     });
 
@@ -23640,7 +23645,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.14.9',
+    version: '0.14.10',
 
     /**
      * Initializes an editor based on passed options
@@ -24251,6 +24256,7 @@ module.exports = function (config) {
     * * `component:styleUpdate` - Triggered when the style of the component is updated, the model is passed as an argument to the callback
     * * `component:styleUpdate:{propertyName}` - Listen for a specific style property change, the model is passed as an argument to the callback
     * * `component:selected` - New component selected, the selected model is passed as an argument to the callback
+    * * `component:deselected` - Component deselected, the deselected model is passed as an argument to the callback
     * ## Blocks
     * * `block:add` - New block added
     * * `block:remove` - Block removed
@@ -24544,8 +24550,10 @@ module.exports = {
   traitManager: {},
 
   // Texts
+  textViewCode: 'Code',
 
-  textViewCode: 'Code'
+  // Keep unused styles within the editor
+  keepUnusedStyles: 0
 };
 
 /***/ }),
@@ -24759,13 +24767,10 @@ module.exports = Backbone.Model.extend({
    * @param   {Object}   Options
    * @private
    * */
-  componentSelected: function componentSelected(model, val, options) {
-    if (!this.get('selectedComponent')) {
-      this.trigger('deselect-comp');
-    } else {
-      this.trigger('select-comp', [model, val, options]);
-      this.trigger('component:selected', arguments);
-    }
+  componentSelected: function componentSelected(editor, selected, options) {
+    var prev = this.previous('selectedComponent');
+    prev && this.trigger('component:deselected', prev, options);
+    selected && this.trigger('component:selected', selected, options);
   },
 
 
@@ -24880,13 +24885,15 @@ module.exports = Backbone.Model.extend({
     var config = this.config;
     var wrappesIsBody = config.wrappesIsBody;
     var avoidProt = opts.avoidProtected;
+    var keepUnusedStyles = !(0, _underscore.isUndefined)(opts.keepUnusedStyles) ? opts.keepUnusedStyles : config.keepUnusedStyles;
     var cssc = this.get('CssComposer');
     var wrp = this.get('DomComponents').getComponent();
     var protCss = !avoidProt ? config.protectedCss : '';
 
     return protCss + this.get('CodeManager').getCode(wrp, 'css', {
       cssc: cssc,
-      wrappesIsBody: wrappesIsBody
+      wrappesIsBody: wrappesIsBody,
+      keepUnusedStyles: keepUnusedStyles
     });
   },
 
@@ -33480,7 +33487,7 @@ module.exports = __webpack_require__(0).Model.extend({
             return;
           }
 
-          code += _this2.buildFromRule(rule, dump);
+          code += _this2.buildFromRule(rule, dump, opts);
         });
 
         // Get at-rules
@@ -33488,7 +33495,7 @@ module.exports = __webpack_require__(0).Model.extend({
           var rulesStr = '';
           var mRules = atRules[atRule];
           mRules.forEach(function (rule) {
-            return rulesStr += _this2.buildFromRule(rule, dump);
+            return rulesStr += _this2.buildFromRule(rule, dump, opts);
           });
 
           if (rulesStr) {
@@ -33512,6 +33519,8 @@ module.exports = __webpack_require__(0).Model.extend({
   buildFromRule: function buildFromRule(rule, dump) {
     var _this3 = this;
 
+    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
     var result = '';
     var selectorStrNoAdd = rule.selectorsToString({ skipAdd: 1 });
     var selectorsAdd = rule.get('selectorsAdd');
@@ -33521,7 +33530,7 @@ module.exports = __webpack_require__(0).Model.extend({
     // This will not render a rule if there is no its component
     rule.get('selectors').each(function (selector) {
       var name = selector.getFullName();
-      if (_this3.compCls.indexOf(name) >= 0 || _this3.ids.indexOf(name) >= 0) {
+      if (_this3.compCls.indexOf(name) >= 0 || _this3.ids.indexOf(name) >= 0 || opts.keepUnusedStyles) {
         found = 1;
       }
     });
@@ -41247,10 +41256,12 @@ module.exports = function () {
 
       var ev = 'add remove';
       var rules = this.getAll();
+      var um = em.get('UndoManager');
+      um && um.add(rules);
       em.stopListening(rules, ev, this.handleChange);
       em.listenTo(rules, ev, this.handleChange);
       rules.each(function (rule) {
-        return _this.handleChange(rule);
+        return _this.handleChange(rule, { avoidStore: 1 });
       });
     },
 
@@ -41260,12 +41271,15 @@ module.exports = function () {
      * @private
      */
     handleChange: function handleChange(model) {
+      var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
       var ev = 'change:style';
       var um = em.get('UndoManager');
       um && um.add(model);
       var handleUpdates = em.handleUpdates.bind(em);
       em.stopListening(model, ev, handleUpdates);
       em.listenTo(model, ev, handleUpdates);
+      !opts.avoidStore && handleUpdates('', '', opts);
     },
 
 
@@ -45702,6 +45716,7 @@ module.exports = Backbone.View.extend({
 
     var result = this.run(editor, editor, options);
     editor.trigger('run:' + id, result, options);
+    return result;
   },
 
 
@@ -45718,6 +45733,7 @@ module.exports = Backbone.View.extend({
     editor.trigger('stop:' + id + ':before', options);
     var result = this.stop(editor, editor, options);
     editor.trigger('stop:' + id, result, options);
+    return result;
   },
 
 
@@ -46458,22 +46474,36 @@ module.exports = {
     var modal = editor.Modal;
     var am = editor.AssetManager;
     var config = am.getConfig();
+    var amContainer = am.getContainer();
     var title = opts.modalTitle || config.modalTitle || '';
+    var types = opts.types;
+    var accept = opts.accept;
 
     am.setTarget(opts.target);
     am.onClick(opts.onClick);
     am.onDblClick(opts.onDblClick);
     am.onSelect(opts.onSelect);
 
-    if (!this.rendered) {
-      am.render(am.getAll().filter(function (asset) {
-        return asset.get('type') == 'image';
-      }));
+    if (!this.rendered || types) {
+      var assets = am.getAll();
+
+      if (types) {
+        assets = assets.filter(function (a) {
+          return types.indexOf(a.get('type')) !== -1;
+        });
+      }
+
+      am.render(assets);
       this.rendered = 1;
     }
 
+    if (accept) {
+      var uploadEl = amContainer.querySelector('input#' + config.stylePrefix + 'uploadFile');
+      uploadEl && uploadEl.setAttribute('accept', accept);
+    }
+
     modal.setTitle(title);
-    modal.setContent(am.getContainer());
+    modal.setContent(amContainer);
     modal.open();
   }
 };
@@ -46824,6 +46854,7 @@ module.exports = {
     }
 
     canvasResizer.setOptions(options);
+    canvasResizer.blur();
     canvasResizer.focus(el);
     return canvasResizer;
   },
