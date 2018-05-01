@@ -487,6 +487,15 @@ module.exports = config => {
     },
 
     /**
+     * Return the count of changes made to the content and not yet stored.
+     * This count resets at any `store()`
+     * @return {number}
+     */
+    getDirtyCount() {
+      return em.getDirtyCount();
+    },
+
+    /**
      * Update editor dimensions and refresh data useful for positioning of tools
      *
      * This method could be useful when you update, for example, some position

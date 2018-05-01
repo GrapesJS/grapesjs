@@ -468,6 +468,15 @@ module.exports = Backbone.Model.extend({
   },
 
   /**
+   * Return the count of changes made to the content and not yet stored.
+   * This count resets at any `store()`
+   * @return {number}
+   */
+  getDirtyCount() {
+    return this.get('changesCount');
+  },
+
+  /**
    * Set/get data from the HTMLElement
    * @param  {HTMLElement} el
    * @param  {string} name Data name
