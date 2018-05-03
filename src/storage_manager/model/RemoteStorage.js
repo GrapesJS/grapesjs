@@ -26,12 +26,17 @@ module.exports = require('backbone').Model.extend({
   /**
    * Triggered on request error
    * @param  {Object} err Error
+   * @param  {Function} [clbErr] Error callback
    * @private
    */
-  onError(err) {
-    const em = this.get('em');
-    console.error(err);
-    em && em.trigger('storage:error', err);
+  onError(err, clbErr) {
+    if (clbErr) {
+      clbErr(err);
+    } else {
+      const em = this.get('em');
+      console.error(err);
+      em && em.trigger('storage:error', err);
+    }
   },
 
   /**
@@ -50,28 +55,29 @@ module.exports = require('backbone').Model.extend({
     em && em.trigger('storage:response', res);
   },
 
-  store(data, clb) {
+  store(data, clb, clbErr) {
     const body = {};
 
     for (let key in data) {
       body[key] = data[key];
     }
 
-    this.request(this.get('urlStore'), { body }, clb);
+    this.request(this.get('urlStore'), { body }, clb, clbErr);
   },
 
-  load(keys, clb) {
-    this.request(this.get('urlLoad'), { method: 'get' }, clb);
+  load(keys, clb, clbErr) {
+    this.request(this.get('urlLoad'), { method: 'get' }, clb, clbErr);
   },
 
   /**
    * Execute remote request
    * @param  {string} url Url
    * @param  {Object} [opts={}] Options
-   * @param  {[type]} [clb=null] Callback
+   * @param  {Function} [clb=null] Callback
+   * @param  {Function} [clbErr=null] Error callback
    * @private
    */
-  request(url, opts = {}, clb = null) {
+  request(url, opts = {}, clb = null, clbErr = null) {
     const typeJson = this.get('contentTypeJson');
     const headers = this.get('headers') || {};
     const params = this.get('params');
@@ -125,6 +131,6 @@ module.exports = require('backbone').Model.extend({
             : res.text().then(text => Promise.reject(text))
       )
       .then(text => this.onResponse(text, clb))
-      .catch(err => this.onError(err));
+      .catch(err => this.onError(err, clbErr));
   }
 });
