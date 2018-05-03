@@ -264,6 +264,19 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     /**
+     * Replace a component with another one
+     * @param {String|Component} el Component or HTML string
+     * @return {Array|Component} New added component/s
+     * @private
+     */
+    replaceWith(el) {
+      const coll = this.collection;
+      const at = coll.indexOf(this);
+      coll.remove(this);
+      return coll.add(el, { at });
+    },
+
+    /**
      * Emit changes for each updated attribute
      */
     attrUpdated() {
