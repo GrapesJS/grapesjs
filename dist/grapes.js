@@ -4330,6 +4330,20 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
 
 
   /**
+   * Replace a component with another one
+   * @param {String|Component} el Component or HTML string
+   * @return {Array|Component} New added component/s
+   * @private
+   */
+  replaceWith: function replaceWith(el) {
+    var coll = this.collection;
+    var at = coll.indexOf(this);
+    coll.remove(this);
+    return coll.add(el, { at: at });
+  },
+
+
+  /**
    * Emit changes for each updated attribute
    */
   attrUpdated: function attrUpdated() {
@@ -23645,7 +23659,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.14.10',
+    version: '0.14.15',
 
     /**
      * Initializes an editor based on passed options
@@ -24117,6 +24131,16 @@ module.exports = function (config) {
 
 
     /**
+     * Return the count of changes made to the content and not yet stored.
+     * This count resets at any `store()`
+     * @return {number}
+     */
+    getDirtyCount: function getDirtyCount() {
+      return em.getDirtyCount();
+    },
+
+
+    /**
      * Update editor dimensions and refresh data useful for positioning of tools
      *
      * This method could be useful when you update, for example, some position
@@ -24287,6 +24311,8 @@ module.exports = function (config) {
     * * `storage:end:store` - After the store request
     * * `storage:end:load` - After the load request
     * * `storage:error` - On any error on storage request, passes the error as an argument
+    * * `storage:error:store` - Error on store request, passes the error as an argument
+    * * `storage:error:load` - Error on load request, passes the error as an argument
     * ## Canvas
     * * `canvas:dragenter` - When something is dragged inside the canvas, `DataTransfer` instance passed as an argument
     * * `canvas:dragover` - When something is dragging on canvas, `DataTransfer` instance passed as an argument
@@ -25069,6 +25095,16 @@ module.exports = Backbone.Model.extend({
     var preview = config.devicePreviewMode;
     var width = device && device.get('widthMedia');
     return device && width && !preview ? '(' + condition + ': ' + width + ')' : '';
+  },
+
+
+  /**
+   * Return the count of changes made to the content and not yet stored.
+   * This count resets at any `store()`
+   * @return {number}
+   */
+  getDirtyCount: function getDirtyCount() {
+    return this.get('changesCount');
   },
 
 
@@ -30299,6 +30335,7 @@ module.exports = function () {
   var defaultStorages = {};
   var eventStart = 'storage:start';
   var eventEnd = 'storage:end';
+  var eventError = 'storage:error';
 
   return {
     /**
@@ -30400,15 +30437,17 @@ module.exports = function () {
      * @return {this}
      * @example
      * storageManager.add('local2', {
-     *   load: function(keys, clb) {
+     *   load: function(keys, clb, clbErr) {
      *     var res = {};
      *     for (var i = 0, len = keys.length; i < len; i++){
      *       var v = localStorage.getItem(keys[i]);
      *       if(v) res[keys[i]] = v;
      *     }
      *     clb(res); // might be called inside some async method
+     *     // In case of errors...
+     *     // clbErr('Went something wrong');
      *   },
-     *   store: function(data, clb) {
+     *   store: function(data, clb, clbErr) {
      *     for(var key in data)
      *       localStorage.setItem(key, data[key]);
      *     clb(); // might be called inside some async method
@@ -30482,6 +30521,8 @@ module.exports = function () {
       return st ? st.store(toStore, function (res) {
         clb && clb(res);
         _this.onEnd('store', res);
+      }, function (err) {
+        _this.onError('store', err);
       }) : null;
     },
 
@@ -30523,6 +30564,8 @@ module.exports = function () {
 
           clb && clb(result);
           _this2.onEnd('load', result);
+        }, function (err) {
+          _this2.onError('load', err);
         });
       } else {
         clb && clb(result);
@@ -30571,6 +30614,19 @@ module.exports = function () {
       if (em) {
         em.trigger(eventEnd);
         ctx && em.trigger(eventEnd + ':' + ctx, data);
+      }
+    },
+
+
+    /**
+     * On error callback
+     * @private
+     */
+    onError: function onError(ctx, data) {
+      if (em) {
+        em.trigger(eventError, data);
+        ctx && em.trigger(eventError + ':' + ctx, data);
+        this.onEnd(ctx, data);
       }
     },
 
@@ -30765,12 +30821,17 @@ module.exports = __webpack_require__(0).Model.extend({
   /**
    * Triggered on request error
    * @param  {Object} err Error
+   * @param  {Function} [clbErr] Error callback
    * @private
    */
-  onError: function onError(err) {
-    var em = this.get('em');
-    console.error(err);
-    em && em.trigger('storage:error', err);
+  onError: function onError(err, clbErr) {
+    if (clbErr) {
+      clbErr(err);
+    } else {
+      var em = this.get('em');
+      console.error(err);
+      em && em.trigger('storage:error', err);
+    }
   },
 
 
@@ -30789,17 +30850,17 @@ module.exports = __webpack_require__(0).Model.extend({
     clb && clb(res);
     em && em.trigger('storage:response', res);
   },
-  store: function store(data, clb) {
+  store: function store(data, clb, clbErr) {
     var body = {};
 
     for (var key in data) {
       body[key] = data[key];
     }
 
-    this.request(this.get('urlStore'), { body: body }, clb);
+    this.request(this.get('urlStore'), { body: body }, clb, clbErr);
   },
-  load: function load(keys, clb) {
-    this.request(this.get('urlLoad'), { method: 'get' }, clb);
+  load: function load(keys, clb, clbErr) {
+    this.request(this.get('urlLoad'), { method: 'get' }, clb, clbErr);
   },
 
 
@@ -30807,14 +30868,17 @@ module.exports = __webpack_require__(0).Model.extend({
    * Execute remote request
    * @param  {string} url Url
    * @param  {Object} [opts={}] Options
-   * @param  {[type]} [clb=null] Callback
+   * @param  {Function} [clb=null] Callback
+   * @param  {Function} [clbErr=null] Error callback
    * @private
    */
   request: function request(url) {
+    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
     var _this = this;
 
-    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var clb = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+    var clbErr = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 
     var typeJson = this.get('contentTypeJson');
     var headers = this.get('headers') || {};
@@ -30868,7 +30932,7 @@ module.exports = __webpack_require__(0).Model.extend({
     }).then(function (text) {
       return _this.onResponse(text, clb);
     }).catch(function (err) {
-      return _this.onError(err);
+      return _this.onError(err, clbErr);
     });
   }
 });
@@ -41012,7 +41076,7 @@ module.exports = Backbone.View.extend({
     this.getAssetsEl().scrollTop = 0;
 
     if (handleAdd) {
-      handleAdd(url);
+      handleAdd.bind(this)(url);
     } else {
       this.options.globalCollection.add(url, { at: 0 });
     }
