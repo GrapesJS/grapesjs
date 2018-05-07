@@ -1,16 +1,25 @@
 import { isUndefined } from 'underscore';
+import { isTouchDevice } from 'utils/mixins';
 const ComponentView = require('dom_components/view/ComponentView');
 const inputProp = 'contentEditable';
 let ItemsView;
 
 module.exports = require('backbone').View.extend({
-  events: {
-    'mousedown [data-toggle-move]': 'startSort',
-    'click [data-toggle-visible]': 'toggleVisibility',
-    'click [data-toggle-select]': 'handleSelect',
-    'click [data-toggle-open]': 'toggleOpening',
-    'dblclick [data-name]': 'handleEdit',
-    'focusout [data-name]': 'handleEditEnd'
+  events: function() {
+    var eventsList = {
+      'click [data-toggle-visible]': 'toggleVisibility',
+      'click [data-toggle-select]': 'handleSelect',
+      'click [data-toggle-open]': 'toggleOpening',
+      'dblclick [data-name]': 'handleEdit',
+      'focusout [data-name]': 'handleEditEnd'
+    };
+
+    eventsList[
+      (isTouchDevice() ? 'touchstart' : 'mousedown') + ' [data-toggle-move]'
+    ] =
+      'startSort';
+
+    return eventsList;
   },
 
   template(model) {
@@ -206,7 +215,7 @@ module.exports = require('backbone').View.extend({
     e.stopPropagation();
     const sorter = this.sorter;
     // Right or middel click
-    if (e.button !== 0) return;
+    if (e.button && e.button !== 0) return;
     sorter && sorter.startSort(e.target);
   },
 

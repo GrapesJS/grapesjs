@@ -1154,7 +1154,7 @@
     var duringDragEvents = {};
     duringDragEvents['selectstart'] = prevent;
     duringDragEvents['dragstart'] = prevent;
-    duringDragEvents['touchmove mousemove'] = move;
+    duringDragEvents['mousemove'] = move;
     duringDragEvents['touchend mouseup'] = stop;
 
     function prevent(e) {

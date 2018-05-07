@@ -122,7 +122,7 @@ export default class Droppable {
     const dragContent = em.get('dragContent');
     let content = dataTransfer.getData('text');
 
-    if (files.length) {
+    if (files && files.length) {
       content = [];
       for (let i = 0; i < files.length; i++) {
         const file = files[i];

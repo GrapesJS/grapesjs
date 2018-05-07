@@ -527,3 +527,7 @@ $prefix: $app-prefix;
 .cm-s-hopscotch span.cm-error {
     color: #ffffff;
 }
+
+.touch-disabled {
+  touch-action: none;
+}

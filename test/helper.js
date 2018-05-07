@@ -36,15 +36,29 @@ global.FormData = window.FormData;
 global._ = _;
 global.expect = expect;
 global.sinon = sinon;
-global.grapesjs = require('./../src');
-global.Backbone = require('backbone');
 global.localStorage = localStorage;
-global.SVGElement = global.Element;
-window.$ = Backbone.$;
 global.navigator = { userAgent: 'node.js' };
+
+// polyfill required elements from JSDOM
+global.HTMLBodyElement = window.HTMLBodyElement;
+global.HTMLDivElement = window.HTMLDivElement;
+global.HTMLImageElement = window.HTMLImageElement;
+global.HTMLUListElement = window.HTMLUListElement;
+global.HTMLAnchorElement = window.HTMLAnchorElement;
+global.HTMLLIElement = window.HTMLLIElement;
+global.HTMLTableElement = window.HTMLTableElement;
+global.HTMLSpanElement = window.HTMLSpanElement;
+global.HTMLCanvasElement = window.HTMLCanvasElement;
+global.SVGElement = window.SVGElement;
 
 Object.keys(window).forEach(key => {
   if (!(key in global)) {
     global[key] = window[key];
   }
 });
+
+global.Backbone = require('backbone');
+global.$ = Backbone.$;
+window.$ = Backbone.$;
+
+global.grapesjs = require('./../src');
