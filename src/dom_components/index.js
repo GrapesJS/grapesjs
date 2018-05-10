@@ -84,6 +84,11 @@ module.exports = () => {
       view: require('./view/ComponentLinkView')
     },
     {
+      id: 'label',
+      model: require('./model/ComponentLabel'),
+      view: require('./view/ComponentLabelView')
+    },
+    {
       id: 'video',
       model: require('./model/ComponentVideo'),
       view: require('./view/ComponentVideoView')
