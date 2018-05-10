@@ -34,7 +34,7 @@ module.exports = require('backbone').Model.extend({
 
   targetUpdated() {
     const value = this.getTargetValue();
-    !isUndefined(value) && this.set({ value }, { fromTarget: 1 });
+    this.set({ value }, { fromTarget: 1 });
   },
 
   getTargetValue() {
