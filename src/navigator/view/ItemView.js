@@ -8,6 +8,7 @@ module.exports = require('backbone').View.extend({
     'mousedown [data-toggle-move]': 'startSort',
     'click [data-toggle-visible]': 'toggleVisibility',
     'click [data-toggle-select]': 'handleSelect',
+    'mouseover [data-toggle-select]': 'handleHover',
     'click [data-toggle-open]': 'toggleOpening',
     'dblclick [data-name]': 'handleEdit',
     'focusout [data-name]': 'handleEditEnd'
@@ -196,6 +197,15 @@ module.exports = require('backbone').View.extend({
   handleSelect(e) {
     e.stopPropagation();
     this.em && this.em.setSelected(this.model, { fromLayers: 1 });
+  },
+
+  /**
+   * Handle component selection
+   */
+  handleHover(e) {
+    e.stopPropagation();
+    const { em, config, model } = this;
+    em && config.showHover && em.setHovered(model, { fromLayers: 1 });
   },
 
   /**
