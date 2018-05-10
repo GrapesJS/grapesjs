@@ -38,6 +38,7 @@ module.exports = Backbone.Model.extend({
     clipboard: null,
     designerMode: false,
     selectedComponent: null,
+    componentHovered: null,
     previousModel: null,
     changesCount: 0,
     storables: [],
@@ -59,6 +60,7 @@ module.exports = Backbone.Model.extend({
     // Load modules
     deps.forEach(name => this.loadModule(name));
     this.on('change:selectedComponent', this.componentSelected, this);
+    this.on('change:componentHovered', this.componentHovered, this);
     this.on('change:changesCount', this.updateChanges, this);
   },
 
@@ -204,6 +206,19 @@ module.exports = Backbone.Model.extend({
   },
 
   /**
+   * Callback on component hover
+   * @param   {Object}   Model
+   * @param   {Mixed}   New value
+   * @param   {Object}   Options
+   * @private
+   * */
+  componentHovered(editor, component, options) {
+    const prev = this.previous('componentHovered');
+    prev && this.trigger('component:unhovered', prev, options);
+    component && this.trigger('component:hovered', component, options);
+  },
+
+  /**
    * Returns model of the selected component
    * @return {Component|null}
    * @private
@@ -224,6 +239,20 @@ module.exports = Backbone.Model.extend({
     if (model && !model.get('selectable')) return;
     opts.forceChange && this.set('selectedComponent', '');
     this.set('selectedComponent', model, opts);
+  },
+
+  /**
+   * Hover a component
+   * @param  {Component|HTMLElement} el Component to select
+   * @param  {Object} [opts={}] Options, optional
+   * @private
+   */
+  setHovered(el, opts = {}) {
+    let model = el;
+    isElement(el) && (model = $(el).data('model'));
+    if (model && !model.get('hoverable')) return;
+    opts.forceChange && this.set('componentHovered', '');
+    this.set('componentHovered', model, opts);
   },
 
   /**
