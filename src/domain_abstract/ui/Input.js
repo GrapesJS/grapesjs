@@ -55,7 +55,8 @@ module.exports = Backbone.View.extend({
    */
   handleChange(e) {
     e.stopPropagation();
-    this.model.set('value', this.getInputEl().value);
+    const value = this.getInputEl().value;
+    this.model.set({ value }, { fromInput: 1 });
     this.elementUpdated();
   },
 
@@ -65,7 +66,7 @@ module.exports = Backbone.View.extend({
    */
   getInputEl() {
     if (!this.inputEl) {
-      const plh = this.model.get('defaults');
+      const plh = this.model.get('defaults') || '';
       this.inputEl = $(`<input type="text" placeholder="${plh}">`);
     }
 

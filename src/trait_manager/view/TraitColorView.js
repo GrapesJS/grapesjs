@@ -9,19 +9,20 @@ module.exports = TraitView.extend({
    */
   getInputEl() {
     if (!this.$input) {
-      var value = this.getModelValue();
-      var inputColor = new InputColor({
+      const model = this.model;
+      const value = this.getModelValue();
+      const inputColor = new InputColor({
+        model,
         target: this.config.em,
         contClass: this.ppfx + 'field-color',
-        model: this.model,
         ppfx: this.ppfx
       });
-      this.input = inputColor.render();
-      this.$input = this.input.colorEl;
-      value = value || '';
-      this.model.set('value', value).trigger('change:value');
-      this.input.setValue(value);
+      const input = inputColor.render();
+      this.$input = input.colorEl;
+      input.setValue(value, { fromTarget: 1 });
+      this.input = input;
     }
+
     return this.$input.get(0);
   },
 
