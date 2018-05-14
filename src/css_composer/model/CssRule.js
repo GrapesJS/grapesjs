@@ -1,4 +1,5 @@
 import Styleable from 'domain_abstract/model/Styleable';
+import { isEmpty, forEach } from 'underscore';
 
 var Backbone = require('backbone');
 var Selectors = require('selector_manager/model/Selectors');
@@ -116,6 +117,25 @@ module.exports = Backbone.Model.extend(Styleable).extend({
     }
 
     return result;
+  },
+
+  toJSON(...args) {
+    const obj = Backbone.Model.prototype.toJSON.apply(this, args);
+
+    if (this.em.getConfig('avoidDefaults')) {
+      const defaults = this.defaults;
+
+      forEach(defaults, (value, key) => {
+        if (obj[key] === value) {
+          delete obj[key];
+        }
+      });
+
+      if (isEmpty(obj.selectors)) delete obj.selectors;
+      if (isEmpty(obj.style)) delete obj.style;
+    }
+
+    return obj;
   },
 
   /**
