@@ -1,5 +1,7 @@
-import { omit, keys, isUndefined } from 'underscore';
+import Backbone from 'backbone';
+import { omit, keys, isUndefined, isElement } from 'underscore';
 
+const $ = Backbone.$;
 const elProt = window.Element.prototype;
 const matches =
   elProt.matches ||
@@ -97,6 +99,19 @@ const hasDnd = em => {
   );
 };
 
+/**
+ * Ensure to fetch the element from the input argument
+ * @param  {HTMLElement|Component} el Component or HTML element
+ * @return {HTMLElement}
+ */
+const getElement = el => {
+  if (isElement(el)) {
+    return el;
+  } else if (el.getEl) {
+    return el.getEl();
+  }
+};
+
 export {
   on,
   off,
@@ -104,6 +119,7 @@ export {
   upFirst,
   matches,
   camelCase,
+  getElement,
   shallowDiff,
   normalizeFloat,
   getUnitFromValue
