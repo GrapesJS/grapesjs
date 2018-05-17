@@ -1,7 +1,5 @@
-import Backbone from 'backbone';
 import { omit, keys, isUndefined, isElement } from 'underscore';
 
-const $ = Backbone.$;
 const elProt = window.Element.prototype;
 const matches =
   elProt.matches ||
