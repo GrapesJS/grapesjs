@@ -26,5 +26,8 @@ module.exports = {
 
   // Scroll to selected component in Layers when it's selected in Canvas
   // true, false or `scrollIntoView`-like options
-  scrollLayers: 1
+  scrollLayers: 1,
+
+  // Highlight when a layer component is hovered
+  highlightHover: 1
 };

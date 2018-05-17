@@ -250,7 +250,11 @@ module.exports = require('backbone').View.extend({
    * @param	Event
    * */
   updateStatus(e) {
-    ComponentView.prototype.updateStatus.apply(this, arguments);
+    ComponentView.prototype.updateStatus.apply(this, [
+      {
+        avoidHover: !this.config.highlightHover
+      }
+    ]);
   },
 
   /**

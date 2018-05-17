@@ -98,7 +98,7 @@ module.exports = Backbone.View.extend({
    * @param  {Event} e
    * @private
    * */
-  updateStatus(e) {
+  updateStatus(opts = {}) {
     const em = this.em;
     const el = this.el;
     const status = this.model.get('status');
@@ -127,15 +127,12 @@ module.exports = Backbone.View.extend({
         cls = `${actualCls} ${freezedCls} ${selectedCls}`;
         break;
       case 'hovered':
-        cls = `${actualCls} ${hoveredCls}`;
+        cls = !opts.avoidHover ? `${actualCls} ${hoveredCls}` : '';
         break;
     }
 
     cls = cls.trim();
-
-    if (cls) {
-      el.setAttribute('class', cls);
-    }
+    cls && el.setAttribute('class', cls);
   },
 
   /**
