@@ -63,7 +63,7 @@ module.exports = () => {
      * Triggered when the selected component is changed
      * @private
      */
-    componentChanged(e, md, opts = {}) {
+    componentChanged(selected, opts = {}) {
       if (opts.fromLayers) return;
       const opened = em.get('opened');
       const model = em.getSelected();
