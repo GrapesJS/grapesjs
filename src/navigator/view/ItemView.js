@@ -82,6 +82,7 @@ module.exports = require('backbone').View.extend({
     this.clsNoChild = `${pfx}layer-no-chld`;
     this.$el.data('model', model);
     this.$el.data('collection', components);
+    model.viewLayer = this;
   },
 
   getVisibilityEl() {
@@ -201,9 +202,8 @@ module.exports = require('backbone').View.extend({
     if (em) {
       const model = this.model;
       em.setSelected(model, { fromLayers: 1 });
-      if (config.scrollCanvas) {
-        em.get('Canvas').scrollTo(model, { behavior: 'smooth' });
-      }
+      const scroll = config.scrollCanvas;
+      scroll && em.get('Canvas').scrollTo(model, scroll);
     }
   },
 

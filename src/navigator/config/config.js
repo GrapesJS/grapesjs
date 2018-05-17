@@ -20,6 +20,11 @@ module.exports = {
   // Show hovered components in canvas
   showHover: 1,
 
-  // Scroll selected component in canvas
-  scrollCanvas: 1
+  // Scroll to selected component in Canvas when it's selected in Layers
+  // true, false or `scrollIntoView`-like options
+  scrollCanvas: { behavior: 'smooth' },
+
+  // Scroll to selected component in Layers when it's selected in Canvas
+  // true, false or `scrollIntoView`-like options
+  scrollLayers: 1
 };
