@@ -98,15 +98,18 @@ module.exports = Backbone.View.extend({
    * @param  {Event} e
    * @private
    * */
-  updateStatus(e) {
-    var el = this.el;
-    var status = this.model.get('status');
-    var pfx = this.pfx;
-    var ppfx = this.ppfx;
-    var selectedCls = pfx + 'selected';
-    var selectedParentCls = selectedCls + '-parent';
-    var freezedCls = `${ppfx}freezed`;
-    this.$el.removeClass(`${selectedCls} ${selectedParentCls} ${freezedCls}`);
+  updateStatus(opts = {}) {
+    const em = this.em;
+    const el = this.el;
+    const status = this.model.get('status');
+    const pfx = this.pfx;
+    const ppfx = this.ppfx;
+    const selectedCls = `${pfx}selected`;
+    const selectedParentCls = `${selectedCls}-parent`;
+    const freezedCls = `${ppfx}freezed`;
+    const hoveredCls = `${ppfx}hovered`;
+    const toRemove = [selectedCls, selectedParentCls, freezedCls, hoveredCls];
+    this.$el.removeClass(toRemove.join(' '));
     var actualCls = el.getAttribute('class') || '';
     var cls = '';
 
@@ -123,13 +126,13 @@ module.exports = Backbone.View.extend({
       case 'freezed-selected':
         cls = `${actualCls} ${freezedCls} ${selectedCls}`;
         break;
+      case 'hovered':
+        cls = !opts.avoidHover ? `${actualCls} ${hoveredCls}` : '';
+        break;
     }
 
     cls = cls.trim();
-
-    if (cls) {
-      el.setAttribute('class', cls);
-    }
+    cls && el.setAttribute('class', cls);
   },
 
   /**

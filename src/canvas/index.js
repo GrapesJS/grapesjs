@@ -1,4 +1,4 @@
-import { on, off, hasDnd } from 'utils/mixins';
+import { on, off, hasDnd, getElement } from 'utils/mixins';
 import Droppable from 'utils/Droppable';
 
 module.exports = () => {
@@ -84,6 +84,14 @@ module.exports = () => {
      */
     getFrameEl() {
       return CanvasView.frame.el;
+    },
+
+    /**
+     * Returns the frame document
+     * @return {HTMLElement}
+     */
+    getDocument() {
+      return this.getFrameEl().contentDocument;
     },
 
     /**
@@ -340,6 +348,29 @@ module.exports = () => {
      */
     isInputFocused() {
       return this.getFrameEl().contentDocument.activeElement.tagName !== 'BODY';
+    },
+
+    /**
+     * Scroll canvas to the element if it's not visible. The scrolling is
+     * executed via `scrollIntoView` API and options of this method are
+     * passed to it. For instance, you can scroll smoothly  with
+     * `{ behavior: 'smooth' }`. You can also force the scroll
+     * @param  {HTMLElement|Component} el
+     * @param  {Object} [opts={}] Options, same as options for `scrollIntoView`
+     * @example
+     * const selected = editor.getSelected();
+     * // Scroll smoothly (this behavior can be polyfilled)
+     * cv.scrollTo(selected, { behavior: 'smooth' });
+     * // Force the scroll, even if the element is alredy visible
+     * cv.scrollTo(selected, { force: true });
+     */
+    scrollTo(el, opts = {}) {
+      const elem = getElement(el);
+      const cv = this.getCanvasView();
+
+      if (!cv.isElInViewport(elem) || opts.force) {
+        elem.scrollIntoView(opts);
+      }
     },
 
     /**
