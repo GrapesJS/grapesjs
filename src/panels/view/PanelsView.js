@@ -6,9 +6,16 @@ module.exports = Backbone.View.extend({
     this.opt = o || {};
     this.config = this.opt.config || {};
     this.pfx = this.config.stylePrefix || '';
-    this.listenTo(this.collection, 'add', this.addTo);
-    this.listenTo(this.collection, 'reset', this.render);
+    const items = this.collection;
+    this.listenTo(items, 'add', this.addTo);
+    this.listenTo(items, 'reset', this.render);
+    this.listenTo(items, 'remove', this.onRemove);
     this.className = this.pfx + 'panels';
+  },
+
+  onRemove(model) {
+    const view = model.view;
+    view && view.remove();
   },
 
   /**

@@ -4,14 +4,16 @@ var ButtonsView = require('./ButtonsView');
 module.exports = Backbone.View.extend({
   initialize(o) {
     const config = o.config || {};
+    const model = this.model;
     this.config = config;
     this.pfx = config.stylePrefix || '';
     this.ppfx = config.pStylePrefix || '';
-    this.buttons = this.model.get('buttons');
+    this.buttons = model.get('buttons');
     this.className = this.pfx + 'panel';
-    this.id = this.pfx + this.model.get('id');
-    this.listenTo(this.model, 'change:appendContent', this.appendContent);
-    this.listenTo(this.model, 'change:content', this.updateContent);
+    this.id = this.pfx + model.get('id');
+    this.listenTo(model, 'change:appendContent', this.appendContent);
+    this.listenTo(model, 'change:content', this.updateContent);
+    model.view = this;
   },
 
   /**
