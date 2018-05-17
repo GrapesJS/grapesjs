@@ -18,5 +18,8 @@ module.exports = {
   showWrapper: 1,
 
   // Show hovered components in canvas
-  showHover: 1
+  showHover: 1,
+
+  // Scroll selected component in canvas
+  scrollCanvas: 1
 };

@@ -196,7 +196,15 @@ module.exports = require('backbone').View.extend({
    */
   handleSelect(e) {
     e.stopPropagation();
-    this.em && this.em.setSelected(this.model, { fromLayers: 1 });
+    const { em, config } = this;
+
+    if (em) {
+      const model = this.model;
+      em.setSelected(model, { fromLayers: 1 });
+      if (config.scrollCanvas) {
+        em.get('Canvas').scrollTo(model, { behavior: 'smooth' });
+      }
+    }
   },
 
   /**
