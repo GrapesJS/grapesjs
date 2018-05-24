@@ -34,12 +34,24 @@ module.exports = Component.extend(
 
         // Add Image Editor button only if the default command exists
         if (cmd.has(cmdName)) {
+          let hasButtonBool = false;
           var tb = this.get('toolbar');
-          tb.push({
-            attributes: { class: 'fa fa-pencil' },
-            command: cmdName
-          });
-          this.set('toolbar', tb);
+
+          if (
+            tb.forEach(button => {
+              if (button.command === 'image-editor') {
+                hasButtonBool = true;
+              }
+            })
+          );
+
+          if (!hasButtonBool) {
+            tb.push({
+              attributes: { class: 'fa fa-pencil' },
+              command: cmdName
+            });
+            this.set('toolbar', tb);
+          }
         }
       }
     },
