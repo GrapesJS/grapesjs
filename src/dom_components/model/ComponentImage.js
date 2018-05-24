@@ -37,13 +37,12 @@ module.exports = Component.extend(
           let hasButtonBool = false;
           var tb = this.get('toolbar');
 
-          if (
-            tb.forEach(button => {
-              if (button.command === 'image-editor') {
-                hasButtonBool = true;
-              }
-            })
-          );
+          for (let i = 0; i < tb.length; i++) {
+            if (tb[i].command === 'image-editor') {
+              hasButtonBool = true;
+              break;
+            }
+          }
 
           if (!hasButtonBool) {
             tb.push({
