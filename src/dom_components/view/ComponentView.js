@@ -211,7 +211,7 @@ module.exports = Backbone.View.extend({
    * */
   updateAttributes() {
     const model = this.model;
-    const attrs = { 'data-type': model.get('type') || 'default' };
+    const attrs = { 'data-gjs-type': model.get('type') || 'default' };
     const attr = model.get('attributes');
     const src = model.get('src');
 
