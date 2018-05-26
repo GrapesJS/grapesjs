@@ -1,4 +1,4 @@
-var Component = require('./Component');
+const Component = require('./Component');
 
 module.exports = Component.extend(
   {

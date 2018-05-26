@@ -1,11 +1,12 @@
-var Component = require('./Component');
+const Component = require('./Component');
 
 module.exports = Component.extend(
   {
-    defaults: _.extend({}, Component.prototype.defaults, {
+    defaults: {
+      ...Component.prototype.defaults,
       droppable: false,
       editable: true
-    }),
+    },
 
     toHTML() {
       return this.get('content');

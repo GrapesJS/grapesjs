@@ -1,4 +1,4 @@
-var Backbone = require('backbone');
-var ToolbarButton = require('./ToolbarButton');
+const Backbone = require('backbone');
+const ToolbarButton = require('./ToolbarButton');
 
 module.exports = Backbone.Collection.extend({ model: ToolbarButton });
