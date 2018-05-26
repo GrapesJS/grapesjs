@@ -24,7 +24,7 @@ module.exports = {
 
       it('Component empty', () => {
         expect(fixtures.innerHTML).toEqual(
-          '<div data-highlightable="1"></div>'
+          '<div data-gjs-type="default" data-highlightable="1"></div>'
         );
       });
 

@@ -36,14 +36,16 @@ module.exports = {
 
       it('Component empty', () => {
         expect(fixtures.innerHTML).toEqual(
-          '<div data-highlightable="1"></div>'
+          '<div data-gjs-type="default" data-highlightable="1"></div>'
         );
       });
 
       it('Add helper class on update of state', () => {
         model.set('state', 'test');
         expect(fixtures.innerHTML).toEqual(
-          '<div data-highlightable="1" class="' + hClass + '"></div>'
+          '<div data-gjs-type="default" data-highlightable="1" class="' +
+            hClass +
+            '"></div>'
         );
       });
 
@@ -51,14 +53,14 @@ module.exports = {
         model.set('state', 'test');
         model.set('state', '');
         expect(fixtures.innerHTML).toEqual(
-          '<div data-highlightable="1" class=""></div>'
+          '<div data-gjs-type="default" data-highlightable="1" class=""></div>'
         );
       });
 
       it('Add helper class on status update', () => {
         model.set('status', 'selected');
         expect(fixtures.innerHTML).toEqual(
-          '<div data-highlightable="1" class="selected"></div>'
+          '<div data-gjs-type="default" data-highlightable="1" class="selected"></div>'
         );
       });
 
@@ -129,7 +131,7 @@ module.exports = {
         fixtures.innerHTML = '';
         fixtures.appendChild(view.render().el);
         expect(view.$el.html()).toEqual(
-          '<span data-highlightable="1"></span><div title="test" data-highlightable="1"></div>'
+          '<span data-gjs-type="default" data-highlightable="1"></span><div data-gjs-type="default" title="test" data-highlightable="1"></div>'
         );
       });
 
