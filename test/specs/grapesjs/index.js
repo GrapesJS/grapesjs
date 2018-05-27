@@ -56,12 +56,12 @@ describe('GrapesJS', () => {
     });
 
     test('Main object should be loaded', () => {
-      expect(obj).toExist();
+      expect(obj).toBeTruthy();
     });
 
     test('Init new editor', () => {
       var editor = obj.init(config);
-      expect(editor).toExist();
+      expect(editor).toBeTruthy();
     });
 
     test('Init new editor with node for container', () => {
@@ -73,7 +73,7 @@ describe('GrapesJS', () => {
         }
       };
       var editor = obj.init(configAlt);
-      expect(editor).toExist();
+      expect(editor).toBeTruthy();
     });
 
     test('New editor is empty', () => {
@@ -81,7 +81,7 @@ describe('GrapesJS', () => {
       var html = editor.getHtml();
       //var css = editor.getCss();
       var protCss = editor.getConfig().protectedCss;
-      expect(html ? html : '').toNotExist();
+      expect(html ? html : '').toBeFalsy();
       //expect((css ? css : '')).toEqual(protCss);
       expect(editor.getComponents().length).toEqual(0);
       expect(editor.getStyle().length).toEqual(0);
@@ -94,12 +94,12 @@ describe('GrapesJS', () => {
 
       var editor = obj.init(config);
 
-      expect(window.frames[0].document.documentElement.outerHTML).toInclude(
+      expect(window.frames[0].document.documentElement.outerHTML).toContain(
         config.baseCss
       );
-      expect(window.frames[0].document.documentElement.outerHTML)
-        .toNotInclude(`body {
-      margin: 0;`);
+      expect(
+        window.frames[0].document.documentElement.outerHTML.replace(/\s+/g, ` `)
+      ).not.toContain(`body { margin: 0;`);
     });
 
     test('Editor canvas baseCSS defaults to sensible values if not defined', () => {
@@ -108,9 +108,9 @@ describe('GrapesJS', () => {
 
       var editor = obj.init(config);
 
-      expect(window.frames[0].document.documentElement.outerHTML)
-        .toInclude(`body {
-        margin: 0;`);
+      expect(
+        window.frames[0].document.documentElement.outerHTML.replace(/\s+/g, ` `)
+      ).toContain(`body { margin: 0;`);
     });
 
     test('Init editor with html', () => {
@@ -352,7 +352,7 @@ describe('GrapesJS', () => {
 
     test('There is no active device', () => {
       var editor = obj.init(config);
-      expect(editor.getDevice()).toNotExist();
+      expect(editor.getDevice()).toBeFalsy();
     });
 
     test('Active another device', () => {

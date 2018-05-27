@@ -22,7 +22,7 @@ module.exports = {
       });
 
       test('Object exists', () => {
-        expect(CssRuleView).toExist();
+        expect(CssRuleView).toBeTruthy();
       });
 
       test('Empty style inside', () => {

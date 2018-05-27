@@ -1,3 +1,5 @@
+import Backbone from 'backbone';
+
 module.exports = Backbone.View.extend({
   initialize(o = {}) {
     this.options = o;

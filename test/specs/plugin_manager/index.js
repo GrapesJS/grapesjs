@@ -17,7 +17,7 @@ describe('PluginManager', () => {
     });
 
     test('Object exists', () => {
-      expect(obj).toExist();
+      expect(obj).toBeTruthy();
     });
 
     test('No plugins inside', () => {
@@ -26,7 +26,7 @@ describe('PluginManager', () => {
 
     test('Add new plugin', () => {
       obj.add('test', testPlugin);
-      expect(obj.get('test')).toExist();
+      expect(obj.get('test')).toBeTruthy();
     });
 
     test('Added plugin is working', () => {

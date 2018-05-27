@@ -68,18 +68,18 @@ module.exports = {
 
       test('Rendered correctly', () => {
         var prop = view.el;
-        expect(fixtures.querySelector('.property')).toExist();
-        expect(prop.querySelector('.label')).toExist();
-        expect(prop.querySelector('.field')).toExist();
-        expect(prop.querySelector('#add')).toExist();
+        expect(fixtures.querySelector('.property')).toBeTruthy();
+        expect(prop.querySelector('.label')).toBeTruthy();
+        expect(prop.querySelector('.field')).toBeTruthy();
+        expect(prop.querySelector('#add')).toBeTruthy();
       });
 
       test('Layers rendered', () => {
-        expect(view.el.querySelector('.layers')).toExist();
+        expect(view.el.querySelector('.layers')).toBeTruthy();
       });
 
       test('Layers wrapper should exist', () => {
-        expect(view.el.querySelector('[data-layers-wrapper]')).toExist();
+        expect(view.el.querySelector('[data-layers-wrapper]')).toBeTruthy();
       });
 
       test('Layers rendered correctly', () => {
@@ -93,7 +93,7 @@ module.exports = {
 
       test('Layers container is empty', () => {
         var layers = view.el.querySelector('.layers');
-        expect(layers.innerHTML).toNotExist();
+        expect(layers.innerHTML).toBeFalsy();
       });
 
       describe('With layers', () => {

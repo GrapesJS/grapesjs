@@ -24,7 +24,7 @@ module.exports = {
       });
 
       test('The container is not empty', () => {
-        expect(view.el.outerHTML).toExist();
+        expect(view.el.outerHTML).toBeTruthy();
       });
 
       test('No children inside', () => {

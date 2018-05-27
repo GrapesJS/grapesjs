@@ -1,7 +1,8 @@
-var Backbone = require('backbone');
+import { template } from 'underscore';
+import Backbone from 'backbone';
 
 module.exports = Backbone.View.extend({
-  template: _.template(`
+  template: template(`
   <div class="<%= pfx %>editor" id="<%= pfx %><%= codeName %>">
   	<div id="<%= pfx %>title"><%= label %></div>
   	<div id="<%= pfx %>code"></div>

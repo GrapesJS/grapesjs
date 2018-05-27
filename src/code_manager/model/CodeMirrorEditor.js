@@ -1,4 +1,4 @@
-var Backbone = require('backbone');
+import Backbone from 'backbone';
 var CodeMirror = require('codemirror/lib/codemirror');
 var htmlMode = require('codemirror/mode/htmlmixed/htmlmixed');
 var cssMode = require('codemirror/mode/css/css');

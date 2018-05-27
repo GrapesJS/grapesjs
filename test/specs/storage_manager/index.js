@@ -14,7 +14,7 @@ describe('Storage Manager', () => {
     });
 
     test('Object exists', () => {
-      expect(StorageManager).toExist();
+      expect(StorageManager).toBeTruthy();
     });
 
     test('Autosave is active by default', () => {
@@ -50,14 +50,14 @@ describe('Storage Manager', () => {
     });
 
     test('Store do not execute if empty', () => {
-      expect(obj.store({ item: 'test' })).toEqual(null);
+      expect(obj.store({ item: 'test' })).toBeUndefined();
     });
 
     test('Load default storages ', () => {
       obj.loadDefaultProviders();
-      expect(obj.get('local')).toExist();
-      expect(obj.get('remote')).toExist();
-      expect(obj.get('test')).toNotExist();
+      expect(obj.get('local')).toBeTruthy();
+      expect(obj.get('remote')).toBeTruthy();
+      expect(obj.get('test')).toBeFalsy();
     });
 
     describe('With custom storage', () => {

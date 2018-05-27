@@ -21,7 +21,7 @@ describe('SelectorManager', () => {
     });
 
     test('Object exists', () => {
-      expect(obj).toExist();
+      expect(obj).toBeTruthy();
     });
 
     test('No selectors inside', () => {

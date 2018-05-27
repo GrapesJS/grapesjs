@@ -124,7 +124,7 @@ module.exports = {
       });
 
       test('Object exists', () => {
-        expect(obj).toExist();
+        expect(obj).toBeTruthy();
       });
     });
 
@@ -213,7 +213,7 @@ module.exports = {
       });
 
       test('Object exists', () => {
-        expect(obj).toExist();
+        expect(obj).toBeTruthy();
       });
     });
 
@@ -277,7 +277,7 @@ module.exports = {
       });
 
       test('Object exists', () => {
-        expect(obj).toExist();
+        expect(obj).toBeTruthy();
       });
 
       test('Init index on add', () => {
@@ -333,7 +333,7 @@ module.exports = {
       });
 
       test('Object exists', () => {
-        expect(obj).toExist();
+        expect(obj).toBeTruthy();
       });
 
       test('Build single prop', () => {

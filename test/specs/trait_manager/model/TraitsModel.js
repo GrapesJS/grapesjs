@@ -21,7 +21,7 @@ module.exports = {
       });
 
       test('Object exists', () => {
-        expect(Trait).toExist();
+        expect(Trait).toBeTruthy();
       });
     });
   }

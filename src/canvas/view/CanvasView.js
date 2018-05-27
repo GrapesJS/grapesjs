@@ -1,3 +1,4 @@
+import Backbone from 'backbone';
 import { on, off, getElement } from 'utils/mixins';
 const FrameView = require('./FrameView');
 const $ = Backbone.$;

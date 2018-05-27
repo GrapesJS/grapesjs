@@ -25,7 +25,7 @@ module.exports = {
       });
 
       test('Object exists', () => {
-        expect(AssetImageView).toExist();
+        expect(AssetImageView).toBeTruthy();
       });
 
       describe('Asset should be rendered correctly', () => {
@@ -46,15 +46,15 @@ module.exports = {
       });
 
       test('Could be selected', () => {
-        var spy = expect.spyOn(obj, 'updateTarget');
+        var spy = jest.spyOn(obj, 'updateTarget');
         obj.$el.trigger('click');
-        expect(obj.$el.attr('class')).toInclude('highlight');
+        expect(obj.$el.attr('class')).toContain('highlight');
         expect(spy).toHaveBeenCalled();
       });
 
       test('Could be chosen', () => {
         sinon.stub(obj, 'updateTarget');
-        var spy = expect.spyOn(obj, 'updateTarget');
+        var spy = jest.spyOn(obj, 'updateTarget');
         obj.$el.trigger('dblclick');
         expect(spy).toHaveBeenCalled();
         //obj.updateTarget.calledOnce.should.equal(true);

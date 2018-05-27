@@ -35,7 +35,7 @@ module.exports = {
       });
 
       test('Renders correctly', () => {
-        expect(view.render()).toExist();
+        expect(view.render()).toBeTruthy();
       });
     });
   }

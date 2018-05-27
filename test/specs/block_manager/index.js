@@ -22,7 +22,7 @@ describe('BlockManager', () => {
     });
 
     test('Object exists', () => {
-      expect(obj).toExist();
+      expect(obj).toBeTruthy();
     });
 
     test('No blocks inside', () => {
@@ -64,7 +64,7 @@ describe('BlockManager', () => {
 
     test('Render blocks', () => {
       obj.render();
-      expect(obj.getContainer()).toExist();
+      expect(obj.getContainer()).toBeTruthy();
     });
   });
 

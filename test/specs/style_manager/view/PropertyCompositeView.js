@@ -66,14 +66,14 @@ module.exports = {
 
       test('Rendered correctly', () => {
         var prop = view.el;
-        expect(fixtures.querySelector('.property')).toExist();
-        expect(prop.querySelector('.label')).toExist();
-        expect(prop.querySelector('.field')).toExist();
+        expect(fixtures.querySelector('.property')).toBeTruthy();
+        expect(prop.querySelector('.label')).toBeTruthy();
+        expect(prop.querySelector('.field')).toBeTruthy();
       });
 
       test('Properties rendered', () => {
         var prop = view.el;
-        expect(prop.querySelector('.properties')).toExist();
+        expect(prop.querySelector('.properties')).toBeTruthy();
       });
 
       test('Properties rendered correctly', () => {
@@ -85,7 +85,7 @@ module.exports = {
       });
 
       test('Props should exist', () => {
-        expect(view.$props).toExist();
+        expect(view.$props).toBeTruthy();
       });
 
       test('Input value is empty', () => {
@@ -206,7 +206,7 @@ module.exports = {
           component.set('style', style);
           expect(view.valueOnIndex(2)).toEqual('value3');
           expect(view.valueOnIndex(0)).toEqual('value1');
-          expect(view.valueOnIndex(4)).toEqual(null);
+          expect(view.valueOnIndex(4)).toEqual(undefined);
         });
 
         test('Build value from properties', () => {

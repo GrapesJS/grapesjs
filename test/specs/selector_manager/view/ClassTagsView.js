@@ -64,7 +64,7 @@ module.exports = {
       });
 
       test('Object exists', () => {
-        expect(ClassTagsView).toExist();
+        expect(ClassTagsView).toBeTruthy();
       });
 
       test('Not tags inside', () => {
@@ -80,14 +80,14 @@ module.exports = {
       test('Start new tag creation', () => {
         testContext.btnAdd.trigger('click');
         expect(testContext.btnAdd.css('display')).toEqual('none');
-        expect(testContext.input.css('display')).toNotEqual('none');
+        expect(testContext.input.css('display')).not.toEqual('none');
       });
 
       test('Stop tag creation', () => {
         testContext.btnAdd.trigger('click');
         testContext.input.val('test');
         testContext.input.trigger('blur');
-        expect(testContext.btnAdd.css('display')).toNotEqual('none');
+        expect(testContext.btnAdd.css('display')).not.toEqual('none');
         expect(testContext.input.css('display')).toEqual('none');
         expect(testContext.input.val()).toEqual(null);
       });
@@ -193,16 +193,16 @@ module.exports = {
 
       describe('Should be rendered correctly', () => {
         test('Has label', () => {
-          expect(view.$el.find('#label')[0]).toExist();
+          expect(view.$el.find('#label')[0]).toBeTruthy();
         });
         test('Has tags container', () => {
-          expect(view.$el.find('#tags-c')[0]).toExist();
+          expect(view.$el.find('#tags-c')[0]).toBeTruthy();
         });
         test('Has add button', () => {
-          expect(view.$el.find('#add-tag')[0]).toExist();
+          expect(view.$el.find('#add-tag')[0]).toBeTruthy();
         });
         test('Has states input', () => {
-          expect(view.$el.find('#states')[0]).toExist();
+          expect(view.$el.find('#states')[0]).toBeTruthy();
         });
       });
     });

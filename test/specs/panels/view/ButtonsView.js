@@ -34,7 +34,7 @@ module.exports = {
 
       test('Render new button', () => {
         view.collection.add({});
-        expect(view.$el.html()).toExist();
+        expect(view.$el.html()).toBeTruthy();
       });
     });
   }

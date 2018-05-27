@@ -31,7 +31,7 @@ module.exports = {
       });
 
       test('Object is ok', () => {
-        expect(obj).toExist();
+        expect(obj).toBeTruthy();
       });
     });
   }

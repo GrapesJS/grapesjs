@@ -60,24 +60,24 @@ module.exports = {
 
       test('Rendered correctly', () => {
         var prop = view.el;
-        expect(fixtures.querySelector('.property')).toExist();
-        expect(prop.querySelector('.label')).toExist();
-        expect(prop.querySelector('.field')).toExist();
+        expect(fixtures.querySelector('.property')).toBeTruthy();
+        expect(prop.querySelector('.label')).toBeTruthy();
+        expect(prop.querySelector('.field')).toBeTruthy();
       });
 
       test('Inputs rendered', () => {
         var prop = view.el;
-        expect(prop.querySelector('input[type=text]')).toExist();
+        expect(prop.querySelector('input[type=text]')).toBeTruthy();
       });
 
       test('Inputs should exist', () => {
-        expect(view.$input).toExist();
-        expect(view.$color).toExist();
+        expect(view.$input).toBeTruthy();
+        expect(view.$color).toBeTruthy();
       });
 
       test('Input value is empty', () => {
-        expect(view.model.get('value')).toNotExist();
-        expect(view.getInputValue()).toNotExist();
+        expect(view.model.get('value')).toBeFalsy();
+        expect(view.getInputValue()).toBeFalsy();
       });
 
       test('Update model on setValue', () => {

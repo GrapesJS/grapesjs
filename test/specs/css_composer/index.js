@@ -43,7 +43,7 @@ describe('Css Composer', () => {
     });
 
     test('Object exists', () => {
-      expect(CssComposer).toExist();
+      expect(CssComposer).toBeTruthy();
     });
 
     test('storageKey returns array', () => {
@@ -163,7 +163,7 @@ describe('Css Composer', () => {
     });
 
     test('Renders correctly', () => {
-      expect(obj.render()).toExist();
+      expect(obj.render()).toBeTruthy();
     });
 
     test('Create a rule with id selector by using setIdRule()', () => {

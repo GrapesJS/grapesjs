@@ -1,3 +1,4 @@
+import Backbone from 'backbone';
 const Layers = require('navigator');
 const $ = Backbone.$;
 

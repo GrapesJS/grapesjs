@@ -12,7 +12,7 @@ describe('Keymaps', () => {
     });
 
     test('Object exists', () => {
-      expect(obj).toExist();
+      expect(obj).toBeTruthy();
     });
 
     test('No keymaps inside', () => {

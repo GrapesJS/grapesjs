@@ -18,7 +18,7 @@ describe('DeviceManager', () => {
     });
 
     test('Object exists', () => {
-      expect(obj).toExist();
+      expect(obj).toBeTruthy();
     });
 
     test('No device inside', () => {
@@ -55,7 +55,7 @@ describe('DeviceManager', () => {
     });
 
     test('Render devices', () => {
-      expect(obj.render()).toExist();
+      expect(obj.render()).toBeTruthy();
     });
   });
 

@@ -46,11 +46,11 @@ module.exports = {
       });
 
       test('Object exists', () => {
-        expect(CssRulesView).toExist();
+        expect(CssRulesView).toBeTruthy();
       });
 
       test('Collection is empty. Styles structure bootstraped', () => {
-        expect(obj.$el.html()).toExist();
+        expect(obj.$el.html()).toBeTruthy();
         const foundStylesContainers = obj.$el.find('div');
         expect(foundStylesContainers.length).toEqual(devices.length);
 
@@ -71,7 +71,7 @@ module.exports = {
       test('Add new rule', () => {
         sinon.stub(obj, 'addToCollection');
         obj.collection.add({});
-        expect(obj.addToCollection.calledOnce).toExist(true);
+        expect(obj.addToCollection.calledOnce).toBeTruthy();
       });
 
       test('Add correctly rules with different media queries', () => {
@@ -100,7 +100,7 @@ module.exports = {
 
       test('Render new rule', () => {
         obj.collection.add({});
-        expect(obj.$el.find(`#${prefix}`).html()).toExist();
+        expect(obj.$el.find(`#${prefix}`).html()).toBeTruthy();
       });
     });
   }

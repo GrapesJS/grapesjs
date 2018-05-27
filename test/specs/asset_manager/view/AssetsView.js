@@ -27,11 +27,11 @@ module.exports = {
       });
 
       test('Object exists', () => {
-        expect(AssetsView).toExist();
+        expect(AssetsView).toBeTruthy();
       });
 
       test('Collection is empty', () => {
-        expect(obj.getAssetsEl().innerHTML).toNotExist();
+        expect(obj.getAssetsEl().innerHTML).toBeFalsy();
       });
 
       test('Add new asset', () => {
@@ -42,20 +42,20 @@ module.exports = {
 
       test('Render new asset', () => {
         coll.add({ src: 'test' });
-        expect(obj.getAssetsEl().innerHTML).toExist();
+        expect(obj.getAssetsEl().innerHTML).toBeTruthy();
       });
 
       test('Render correctly new image asset', () => {
         coll.add({ type: 'image', src: 'test' });
         var asset = obj.getAssetsEl().firstChild;
         expect(asset.tagName).toEqual('DIV');
-        expect(asset.innerHTML).toExist();
+        expect(asset.innerHTML).toBeTruthy();
       });
 
       test('Clean collection from asset', () => {
         var model = coll.add({ src: 'test' });
         coll.remove(model);
-        expect(obj.getAssetsEl().innerHTML).toNotExist();
+        expect(obj.getAssetsEl().innerHTML).toBeFalsy();
       });
 
       test('Deselect works', () => {
@@ -63,15 +63,15 @@ module.exports = {
         var $asset = obj.$el.children().first();
         $asset.attr('class', obj.pfx + 'highlight');
         coll.trigger('deselectAll');
-        expect($asset.attr('class')).toNotExist();
+        expect($asset.attr('class')).toBeFalsy();
       });
 
       test('Returns not empty assets element', () => {
-        expect(obj.getAssetsEl()).toExist();
+        expect(obj.getAssetsEl()).toBeTruthy();
       });
 
       test('Returns not empty url input', () => {
-        expect(obj.getAddInput()).toExist();
+        expect(obj.getAddInput()).toBeTruthy();
       });
 
       test('Add image asset from input string', () => {

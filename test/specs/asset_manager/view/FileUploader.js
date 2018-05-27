@@ -16,11 +16,11 @@ module.exports = {
       });
 
       test('Object exists', () => {
-        expect(FileUploader).toExist();
+        expect(FileUploader).toBeTruthy();
       });
 
       test('Has correct prefix', () => {
-        expect(obj.pfx).toNotExist();
+        expect(obj.pfx).toBeFalsy();
       });
 
       describe('Should be rendered correctly', () => {

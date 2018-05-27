@@ -4,15 +4,15 @@ module.exports = {
   run() {
     describe('Asset', () => {
       test('Object exists', () => {
-        expect(Asset).toExist();
+        expect(Asset).toBeTruthy();
       });
 
       test('Has default values', () => {
         var obj = new Asset({});
-        expect(obj.get('type')).toNotExist();
-        expect(obj.get('src')).toNotExist();
-        expect(obj.getExtension()).toNotExist();
-        expect(obj.getFilename()).toNotExist();
+        expect(obj.get('type')).toBeFalsy();
+        expect(obj.get('src')).toBeFalsy();
+        expect(obj.getExtension()).toBeFalsy();
+        expect(obj.getFilename()).toBeFalsy();
       });
 
       test('Test getFilename', () => {

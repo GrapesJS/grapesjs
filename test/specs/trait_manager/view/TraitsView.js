@@ -28,7 +28,7 @@ module.exports = {
       });
 
       test('Object exists', () => {
-        expect(Trait).toExist();
+        expect(Trait).toBeTruthy();
       });
 
       test('Target has no attributes on init', () => {

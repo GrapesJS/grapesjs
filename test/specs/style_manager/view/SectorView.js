@@ -24,9 +24,9 @@ module.exports = {
 
       test('Rendered correctly', () => {
         var sector = view.el;
-        expect(sector.querySelector('.title')).toExist();
+        expect(sector.querySelector('.title')).toBeTruthy();
         var props = sector.querySelector('.properties');
-        expect(props).toExist();
+        expect(props).toBeTruthy();
         expect(sector.classList.contains('open')).toEqual(true);
       });
 
@@ -76,7 +76,7 @@ module.exports = {
           expect(sector.querySelector('.title').innerHTML).toContain(
             'TestName'
           );
-          expect(props).toExist();
+          expect(props).toBeTruthy();
           expect(sector.classList.contains('open')).toEqual(false);
           expect(props.style.display).toEqual('none');
         });

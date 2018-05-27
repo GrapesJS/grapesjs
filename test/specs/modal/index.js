@@ -14,7 +14,7 @@ describe('Modal dialog', () => {
     });
 
     test('Object exists', () => {
-      expect(obj).toExist();
+      expect(obj).toBeTruthy();
     });
 
     test('Is close by default', () => {

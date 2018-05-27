@@ -23,11 +23,11 @@ module.exports = {
       });
 
       test('The content is not empty', () => {
-        expect(view.el.innerHTML).toExist();
+        expect(view.el.innerHTML).toBeTruthy();
       });
 
       test('Get content', () => {
-        expect(view.getContent()).toExist();
+        expect(view.getContent()).toBeTruthy();
       });
 
       test('Update content', () => {
@@ -36,7 +36,7 @@ module.exports = {
       });
 
       test('Get title', () => {
-        expect(view.getTitle()).toExist();
+        expect(view.getTitle()).toBeTruthy();
       });
 
       test('Update title', () => {

@@ -14,7 +14,7 @@ describe('Code Manager', () => {
     });
 
     test('Object exists', () => {
-      expect(CodeManager).toExist();
+      expect(CodeManager).toBeTruthy();
     });
 
     test('No code generators inside', () => {

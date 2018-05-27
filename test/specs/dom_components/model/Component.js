@@ -350,7 +350,7 @@ module.exports = {
           </div>
           <div id="comp02">TEST</div>`);
         const notInhereted = model => {
-          expect(model.get('stop')).toEqual(1);
+          expect(model.get('stop')).toEqual('1');
           expect(model.get('removable')).toEqual(true);
           expect(model.get('draggable')).toEqual(true);
           expect(model.get('propagate')).toEqual(['stop']);
@@ -384,7 +384,7 @@ module.exports = {
       });
 
       test('Not droppable', () => {
-        expect(obj.get('droppable')).toEqual(false);
+        expect(obj.get('droppable')).toEqual(0);
       });
 
       test('ComponentImage toHTML', () => {

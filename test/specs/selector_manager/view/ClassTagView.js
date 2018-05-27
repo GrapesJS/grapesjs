@@ -33,12 +33,12 @@ module.exports = {
       });
 
       test('Object exists', () => {
-        expect(ClassTagView).toExist();
+        expect(ClassTagView).toBeTruthy();
       });
 
       test('Not empty', () => {
         var $el = obj.$el;
-        expect($el.html()).toExist();
+        expect($el.html()).toBeTruthy();
       });
 
       test('Not empty', () => {
@@ -49,21 +49,21 @@ module.exports = {
       describe('Should be rendered correctly', () => {
         test('Has close button', () => {
           var $el = obj.$el;
-          expect($el.find('#close')[0]).toExist();
+          expect($el.find('#close')[0]).toBeTruthy();
         });
         test('Has checkbox', () => {
           var $el = obj.$el;
-          expect($el.find('#checkbox')[0]).toExist();
+          expect($el.find('#checkbox')[0]).toBeTruthy();
         });
         test('Has label', () => {
           var $el = obj.$el;
-          expect($el.find('#tag-label')[0]).toExist();
+          expect($el.find('#tag-label')[0]).toBeTruthy();
         });
       });
 
       test('Could be removed', () => {
         obj.$el.find('#close').trigger('click');
-        setTimeout(() => expect(fixtures.innerHTML).toNotExist(), 0);
+        setTimeout(() => expect(fixtures.innerHTML).toBeFalsy(), 5);
       });
 
       test('Checkbox toggles status', () => {
@@ -76,7 +76,7 @@ module.exports = {
       });
 
       test('Label input is disabled', () => {
-        expect(obj.getInputEl().contentEditable).toNotEqual(true);
+        expect(obj.getInputEl().contentEditable).toBeFalsy();
       });
 
       test('On double click label input is enable', () => {

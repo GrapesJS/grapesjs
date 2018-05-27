@@ -14,7 +14,7 @@ module.exports = {
       });
 
       test('Object exists', () => {
-        expect(obj).toExist();
+        expect(obj).toBeTruthy();
       });
 
       test('Collection is empty', () => {

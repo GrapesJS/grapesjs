@@ -26,7 +26,7 @@ describe('StyleManager', () => {
     });
 
     test('Object exists', () => {
-      expect(obj).toExist();
+      expect(obj).toBeTruthy();
     });
 
     test('No sectors', () => {
@@ -72,7 +72,7 @@ describe('StyleManager', () => {
 
     test('Add property', () => {
       obj.addSector('test', {});
-      expect(obj.addProperty('test', {})).toExist();
+      expect(obj.addProperty('test', {})).toBeTruthy();
       expect(obj.getProperties('test').length).toEqual(1);
     });
 
@@ -122,7 +122,7 @@ describe('StyleManager', () => {
     });
 
     test('Renders correctly', () => {
-      expect(obj.render()).toExist();
+      expect(obj.render()).toBeTruthy();
     });
 
     describe('Init with configuration', () => {

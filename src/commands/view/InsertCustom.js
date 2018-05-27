@@ -1,4 +1,5 @@
-var Backbone = require('backbone');
+import _ from 'underscore';
+import Backbone from 'backbone';
 var CreateComponent = require('./CreateComponent');
 
 module.exports = _.extend({}, CreateComponent, {

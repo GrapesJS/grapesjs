@@ -51,23 +51,23 @@ module.exports = {
 
       test('Rendered correctly', () => {
         var prop = view.el;
-        expect(fixtures.querySelector('.property')).toExist();
-        expect(prop.querySelector('.label')).toExist();
-        expect(prop.querySelector('.field')).toExist();
+        expect(fixtures.querySelector('.property')).toBeTruthy();
+        expect(prop.querySelector('.label')).toBeTruthy();
+        expect(prop.querySelector('.field')).toBeTruthy();
       });
 
       test('Input should exist', () => {
-        expect(view.getInputEl()).toExist();
+        expect(view.getInputEl()).toBeTruthy();
       });
 
       test('Input value is empty', () => {
-        expect(view.model.get('value')).toNotExist();
-        expect(view.getInputValue()).toNotExist();
+        expect(view.model.get('value')).toBeFalsy();
+        expect(view.getInputValue()).toBeFalsy();
       });
 
       test('Model not change without update trigger', () => {
         view.getInputEl().value = propValue;
-        expect(view.model.get('value')).toNotExist();
+        expect(view.model.get('value')).toBeFalsy();
       });
 
       // Tests inputValueChanged()
@@ -120,7 +120,7 @@ module.exports = {
       });
 
       test('Target style is empty without values', () => {
-        expect(view.getTargetValue()).toNotExist();
+        expect(view.getTargetValue()).toBeFalsy();
       });
 
       test('Target style is correct', () => {
@@ -134,7 +134,7 @@ module.exports = {
         var style = {};
         style[propName + '2'] = propValue;
         component.set('style', style);
-        expect(view.getTargetValue()).toNotExist();
+        expect(view.getTargetValue()).toBeFalsy();
       });
 
       test('Fetch value from function', () => {

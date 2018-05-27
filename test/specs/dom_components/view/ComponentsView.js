@@ -31,7 +31,7 @@ module.exports = {
       });
 
       test('Collection is empty', () => {
-        expect(view.$el.html()).toNotExist();
+        expect(view.$el.html()).toBeFalsy();
       });
 
       test('Add new component', () => {
@@ -42,7 +42,7 @@ module.exports = {
 
       test('Render new component', () => {
         view.collection.add({});
-        expect(view.$el.html()).toExist();
+        expect(view.$el.html()).toBeTruthy();
       });
     });
   }

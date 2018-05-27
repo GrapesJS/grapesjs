@@ -29,11 +29,11 @@ module.exports = {
 
       test('Rendered correctly', () => {
         var layer = view.el;
-        expect(fixtures.querySelector('.layer')).toExist();
-        expect(layer.querySelector('#label')).toExist();
-        expect(layer.querySelector('#close-layer')).toExist();
-        expect(view.getPropertiesWrapper()).toExist();
-        expect(view.getPreviewEl()).toExist();
+        expect(fixtures.querySelector('.layer')).toBeTruthy();
+        expect(layer.querySelector('#label')).toBeTruthy();
+        expect(layer.querySelector('#close-layer')).toBeTruthy();
+        expect(view.getPropertiesWrapper()).toBeTruthy();
+        expect(view.getPreviewEl()).toBeTruthy();
       });
 
       test('Is not active by default', () => {
@@ -52,7 +52,7 @@ module.exports = {
 
       test('No preview', () => {
         var style = view.el.querySelector('#preview').style;
-        expect(style.cssText).toNotExist();
+        expect(style.cssText).toBeFalsy();
       });
     });
   }

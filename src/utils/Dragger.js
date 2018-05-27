@@ -1,3 +1,4 @@
+import Backbone from 'backbone';
 const $ = Backbone.$;
 
 var getBoundingRect = (el, win) => {

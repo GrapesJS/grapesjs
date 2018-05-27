@@ -59,7 +59,7 @@ describe('DOM Components', () => {
     });
 
     test('Object exists', () => {
-      expect(DomComponents).toExist();
+      expect(DomComponents).toBeTruthy();
     });
 
     test('storageKey returns array', () => {
@@ -99,7 +99,7 @@ describe('DOM Components', () => {
     });
 
     test('Wrapper exists', () => {
-      expect(obj.getWrapper()).toExist();
+      expect(obj.getWrapper()).toBeTruthy();
     });
 
     test('No components inside', () => {
@@ -117,7 +117,7 @@ describe('DOM Components', () => {
     });
 
     test('Render wrapper', () => {
-      expect(obj.render()).toExist();
+      expect(obj.render()).toBeTruthy();
     });
 
     test('Import propertly components and styles with the same ids', () => {

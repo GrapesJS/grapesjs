@@ -19,7 +19,7 @@ describe('Panels', () => {
     });
 
     test('Object exists', () => {
-      expect(obj).toExist();
+      expect(obj).toBeTruthy();
     });
 
     test('No panels inside', () => {
@@ -84,7 +84,7 @@ describe('Panels', () => {
     });
 
     test('Renders correctly', () => {
-      expect(obj.render()).toExist();
+      expect(obj.render()).toBeTruthy();
     });
 
     test('Active correctly activable buttons', () => {

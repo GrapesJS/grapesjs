@@ -29,7 +29,7 @@ module.exports = {
       });
 
       test('Object exists', () => {
-        expect(AssetView).toExist();
+        expect(AssetView).toBeTruthy();
       });
 
       test('Has correct prefix', () => {

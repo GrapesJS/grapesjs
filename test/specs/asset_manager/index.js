@@ -36,7 +36,7 @@ describe('Asset Manager', () => {
     });
 
     test('Object exists', () => {
-      expect(obj).toExist();
+      expect(obj).toBeTruthy();
     });
 
     test('No assets inside', () => {
@@ -80,7 +80,7 @@ describe('Asset Manager', () => {
 
     test('Render assets', () => {
       obj.add(imgObj);
-      expect(obj.render()).toExist();
+      expect(obj.render()).toBeTruthy();
     });
 
     describe('With storage', () => {
