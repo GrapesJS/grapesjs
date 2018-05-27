@@ -20,7 +20,7 @@ module.exports = {
         editor = null;
       });
 
-      it('callRun returns result when no "abort" option specified', () => {
+      test('callRun returns result when no "abort" option specified', () => {
         const runStub = sinon.stub(command, 'run').returns('result');
 
         const result = command.callRun(editor);
@@ -40,7 +40,7 @@ module.exports = {
         expect(runStub.calledOnce).toEqual(true);
       });
 
-      it('callRun returns undefined when "abort" option is specified', () => {
+      test('callRun returns undefined when "abort" option is specified', () => {
         const runStub = sinon.stub(command, 'run').returns('result');
 
         const result = command.callRun(editor, { abort: true });
@@ -59,7 +59,7 @@ module.exports = {
         expect(runStub.notCalled).toEqual(true);
       });
 
-      it('callStop returns result', () => {
+      test('callStop returns result', () => {
         const stopStub = sinon.stub(command, 'stop').returns('stopped');
 
         const result = command.callStop(editor);

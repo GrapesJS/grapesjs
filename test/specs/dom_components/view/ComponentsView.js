@@ -30,17 +30,17 @@ module.exports = {
         view.collection.reset();
       });
 
-      it('Collection is empty', () => {
+      test('Collection is empty', () => {
         expect(view.$el.html()).toNotExist();
       });
 
-      it('Add new component', () => {
+      test('Add new component', () => {
         sinon.stub(view, 'addToCollection');
         view.collection.add({});
         expect(view.addToCollection.calledOnce).toEqual(true);
       });
 
-      it('Render new component', () => {
+      test('Render new component', () => {
         view.collection.add({});
         expect(view.$el.html()).toExist();
       });

@@ -25,7 +25,7 @@ module.exports = {
         }
       ];
 
-      beforeEach(function() {
+      beforeEach(() => {
         const col = new CssRules([]);
         obj = new CssRulesView({
           collection: col,
@@ -45,11 +45,11 @@ module.exports = {
         obj.collection.reset();
       });
 
-      it('Object exists', () => {
+      test('Object exists', () => {
         expect(CssRulesView).toExist();
       });
 
-      it('Collection is empty. Styles structure bootstraped', () => {
+      test('Collection is empty. Styles structure bootstraped', () => {
         expect(obj.$el.html()).toExist();
         const foundStylesContainers = obj.$el.find('div');
         expect(foundStylesContainers.length).toEqual(devices.length);
@@ -68,13 +68,13 @@ module.exports = {
         });
       });
 
-      it('Add new rule', () => {
+      test('Add new rule', () => {
         sinon.stub(obj, 'addToCollection');
         obj.collection.add({});
         expect(obj.addToCollection.calledOnce).toExist(true);
       });
 
-      it('Add correctly rules with different media queries', () => {
+      test('Add correctly rules with different media queries', () => {
         const foundStylesContainers = obj.$el.find('div');
         const rules = [
           {
@@ -98,7 +98,7 @@ module.exports = {
         expect(stylesCont.children.length).toEqual(rules.length);
       });
 
-      it('Render new rule', () => {
+      test('Render new rule', () => {
         obj.collection.add({});
         expect(obj.$el.find(`#${prefix}`).html()).toExist();
       });

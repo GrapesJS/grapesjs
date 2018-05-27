@@ -14,7 +14,7 @@ module.exports = {
         obj = null;
       });
 
-      it('Has id property', () => {
+      test('Has id property', () => {
         expect(obj.has('id')).toEqual(true);
       });
     });
@@ -30,7 +30,7 @@ module.exports = {
         obj = null;
       });
 
-      it('Object is ok', () => {
+      test('Object is ok', () => {
         expect(obj).toExist();
       });
     });

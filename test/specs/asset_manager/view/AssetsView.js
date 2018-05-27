@@ -8,7 +8,7 @@ module.exports = {
       var obj;
       var coll;
 
-      beforeEach(function() {
+      beforeEach(() => {
         coll = new Assets([]);
         obj = new AssetsView({
           config: {},
@@ -22,43 +22,43 @@ module.exports = {
         document.body.querySelector('#fixtures').appendChild(obj.el);
       });
 
-      afterEach(function() {
+      afterEach(() => {
         obj.collection.reset();
       });
 
-      it('Object exists', () => {
+      test('Object exists', () => {
         expect(AssetsView).toExist();
       });
 
-      it('Collection is empty', function() {
+      test('Collection is empty', () => {
         expect(obj.getAssetsEl().innerHTML).toNotExist();
       });
 
-      it('Add new asset', function() {
+      test('Add new asset', () => {
         sinon.stub(obj, 'addAsset');
         coll.add({ src: 'test' });
         expect(obj.addAsset.calledOnce).toEqual(true);
       });
 
-      it('Render new asset', function() {
+      test('Render new asset', () => {
         coll.add({ src: 'test' });
         expect(obj.getAssetsEl().innerHTML).toExist();
       });
 
-      it('Render correctly new image asset', function() {
+      test('Render correctly new image asset', () => {
         coll.add({ type: 'image', src: 'test' });
         var asset = obj.getAssetsEl().firstChild;
         expect(asset.tagName).toEqual('DIV');
         expect(asset.innerHTML).toExist();
       });
 
-      it('Clean collection from asset', function() {
+      test('Clean collection from asset', () => {
         var model = coll.add({ src: 'test' });
         coll.remove(model);
         expect(obj.getAssetsEl().innerHTML).toNotExist();
       });
 
-      it('Deselect works', function() {
+      test('Deselect works', () => {
         coll.add([{}, {}]);
         var $asset = obj.$el.children().first();
         $asset.attr('class', obj.pfx + 'highlight');
@@ -66,15 +66,15 @@ module.exports = {
         expect($asset.attr('class')).toNotExist();
       });
 
-      it('Returns not empty assets element', () => {
+      test('Returns not empty assets element', () => {
         expect(obj.getAssetsEl()).toExist();
       });
 
-      it('Returns not empty url input', () => {
+      test('Returns not empty url input', () => {
         expect(obj.getAddInput()).toExist();
       });
 
-      it('Add image asset from input string', () => {
+      test('Add image asset from input string', () => {
         obj.getAddInput().value = 'test';
         obj.handleSubmit({
           preventDefault() {}

@@ -3,11 +3,11 @@ var Asset = require('asset_manager/model/Asset');
 module.exports = {
   run() {
     describe('Asset', () => {
-      it('Object exists', () => {
+      test('Object exists', () => {
         expect(Asset).toExist();
       });
 
-      it('Has default values', () => {
+      test('Has default values', () => {
         var obj = new Asset({});
         expect(obj.get('type')).toNotExist();
         expect(obj.get('src')).toNotExist();
@@ -15,14 +15,14 @@ module.exports = {
         expect(obj.getFilename()).toNotExist();
       });
 
-      it('Test getFilename', () => {
+      test('Test getFilename', () => {
         var obj = new Asset({ type: 'image', src: 'ch/eck/t.e.s.t' });
         expect(obj.getFilename()).toEqual('t.e.s.t');
         var obj = new Asset({ type: 'image', src: 'ch/eck/1234abc' });
         expect(obj.getFilename()).toEqual('1234abc');
       });
 
-      it('Test getExtension', () => {
+      test('Test getExtension', () => {
         var obj = new Asset({ type: 'image', src: 'ch/eck/t.e.s.t' });
         expect(obj.getExtension()).toEqual('t');
         var obj = new Asset({ type: 'image', src: 'ch/eck/1234abc.' });

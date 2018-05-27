@@ -14,17 +14,17 @@ describe('Commands', () => {
       obj = null;
     });
 
-    it('No commands inside', () => {
+    test('No commands inside', () => {
       expect(obj.get('test')).toEqual(null);
     });
 
-    it('Push new command', () => {
+    test('Push new command', () => {
       var comm = { test: 'test' };
       obj.add('test', comm);
       expect(obj.get('test').test).toEqual('test');
     });
 
-    it('Load default commands at init', () => {
+    test('Load default commands at init', () => {
       expect(obj.get('select-comp')).toNotEqual(null);
       expect(obj.get('create-comp')).toNotEqual(null);
       expect(obj.get('delete-comp')).toNotEqual(null);
@@ -50,12 +50,12 @@ describe('Commands', () => {
       expect(obj.get('drag')).toNotEqual(null);
     });
 
-    it('Default commands after loadDefaultCommands', () => {
+    test('Default commands after loadDefaultCommands', () => {
       obj.loadDefaultCommands();
       expect(obj.get('select-comp')).toNotEqual(null);
     });
 
-    it('Commands module should not have toLoad property', () => {
+    test('Commands module should not have toLoad property', () => {
       expect(obj.toLoad).toEqual(null);
     });
   });

@@ -20,7 +20,7 @@ module.exports = {
         obj = null;
       });
 
-      it('Object exists', () => {
+      test('Object exists', () => {
         expect(Trait).toExist();
       });
     });

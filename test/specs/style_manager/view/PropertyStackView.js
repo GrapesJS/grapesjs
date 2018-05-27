@@ -60,13 +60,13 @@ module.exports = {
         fixtures.appendChild(view.el);
       });
 
-      after(() => {
+      afterAll(() => {
         component = null;
         view = null;
         model = null;
       });
 
-      it('Rendered correctly', () => {
+      test('Rendered correctly', () => {
         var prop = view.el;
         expect(fixtures.querySelector('.property')).toExist();
         expect(prop.querySelector('.label')).toExist();
@@ -74,24 +74,24 @@ module.exports = {
         expect(prop.querySelector('#add')).toExist();
       });
 
-      it('Layers rendered', () => {
+      test('Layers rendered', () => {
         expect(view.el.querySelector('.layers')).toExist();
       });
 
-      it('Layers wrapper should exist', () => {
+      test('Layers wrapper should exist', () => {
         expect(view.el.querySelector('[data-layers-wrapper]')).toExist();
       });
 
-      it('Layers rendered correctly', () => {
+      test('Layers rendered correctly', () => {
         var children = view.el.querySelector('[data-layers-wrapper]').children;
         expect(children.length).toEqual(1);
       });
 
-      it('Input value is on default', () => {
+      test('Input value is on default', () => {
         expect(view.model.get('value')).toEqual('0 val2');
       });
 
-      it('Layers container is empty', () => {
+      test('Layers container is empty', () => {
         var layers = view.el.querySelector('.layers');
         expect(layers.innerHTML).toNotExist();
       });
@@ -113,11 +113,11 @@ module.exports = {
           model.get('layers').add(layers);
         });
 
-        it('Layers inserted', () => {
+        test('Layers inserted', () => {
           expect(view.getLayers().length).toEqual(layers.length);
         });
 
-        it('Add layer', () => {
+        test('Add layer', () => {
           view.addLayer();
           expect(view.getLayers().length).toEqual(layers.length + 1);
         });
