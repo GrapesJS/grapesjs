@@ -27,22 +27,22 @@ module.exports = {
         target = null;
       });
 
-      it('Object exists', () => {
-        expect(Trait).toExist();
+      test('Object exists', () => {
+        expect(Trait).toBeTruthy();
       });
 
-      it('Target has no attributes on init', () => {
+      test('Target has no attributes on init', () => {
         expect(target.get('attributes')).toEqual({});
       });
 
-      it('On update of the value updates the target attributes', () => {
+      test('On update of the value updates the target attributes', () => {
         model.set('value', 'test');
         var eq = {};
         eq[modelName] = 'test';
         expect(target.get('attributes')).toEqual(eq);
       });
 
-      it('Updates on different models do not alter other targets', () => {
+      test('Updates on different models do not alter other targets', () => {
         var target1 = new Component();
         var target2 = new Component();
         var model1 = new Trait({

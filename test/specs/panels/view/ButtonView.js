@@ -23,31 +23,31 @@ module.exports = {
         view.remove();
       });
 
-      it('Button empty', () => {
+      test('Button empty', () => {
         expect(fixtures.innerHTML).toEqual(
           '<span class="' + btnClass + '"></span>'
         );
       });
 
-      it('Update class', () => {
+      test('Update class', () => {
         model.set('className', 'test');
         expect(view.el.getAttribute('class')).toEqual(btnClass + ' test');
       });
 
-      it('Update attributes', () => {
+      test('Update attributes', () => {
         model.set('attributes', {
           'data-test': 'test-value'
         });
         expect(view.el.getAttribute('data-test')).toEqual('test-value');
       });
 
-      it('Check enable active', () => {
+      test('Check enable active', () => {
         model.set('active', true, { silent: true });
         view.checkActive();
         expect(view.el.getAttribute('class')).toContain(btnClass + ' active');
       });
 
-      it('Check disable active', () => {
+      test('Check disable active', () => {
         model.set('active', true, { silent: true });
         view.checkActive();
         model.set('active', false, { silent: true });
@@ -55,13 +55,13 @@ module.exports = {
         expect(view.el.getAttribute('class')).toEqual(btnClass);
       });
 
-      it('Disable the button', () => {
+      test('Disable the button', () => {
         model.set('disable', true, { silent: true });
         view.updateDisable();
         expect(view.el.getAttribute('class')).toEqual(btnClass + ' active');
       });
 
-      it('Enable the disabled button', () => {
+      test('Enable the disabled button', () => {
         model.set('disable', true, { silent: true });
         view.updateDisable();
         expect(view.el.getAttribute('class')).toEqual(btnClass + ' active');
@@ -70,22 +70,22 @@ module.exports = {
         expect(view.el.getAttribute('class')).toEqual(btnClass);
       });
 
-      it('Cancels the click action when button is disabled', () => {
+      test('Cancels the click action when button is disabled', () => {
         const stub = sinon.stub(view, 'toogleActive');
         model.set('disable', true, { silent: true });
         view.clicked();
         expect(stub.called).toEqual(false);
       });
 
-      it('Enable the click action when button is enable', () => {
+      test('Enable the click action when button is enable', () => {
         const stub = sinon.stub(view, 'toogleActive');
         model.set('disable', false, { silent: true });
         view.clicked();
         expect(stub.called).toEqual(true);
       });
 
-      it('Renders correctly', () => {
-        expect(view.render()).toExist();
+      test('Renders correctly', () => {
+        expect(view.render()).toBeTruthy();
       });
     });
   }

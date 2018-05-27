@@ -21,38 +21,38 @@ module.exports = {
         fixtures.appendChild(view.render().el);
       });
 
-      after(() => {
+      afterAll(() => {
         component = null;
         view = null;
         model = null;
       });
 
-      it('Rendered correctly', () => {
+      test('Rendered correctly', () => {
         var layer = view.el;
-        expect(fixtures.querySelector('.layer')).toExist();
-        expect(layer.querySelector('#label')).toExist();
-        expect(layer.querySelector('#close-layer')).toExist();
-        expect(view.getPropertiesWrapper()).toExist();
-        expect(view.getPreviewEl()).toExist();
+        expect(fixtures.querySelector('.layer')).toBeTruthy();
+        expect(layer.querySelector('#label')).toBeTruthy();
+        expect(layer.querySelector('#close-layer')).toBeTruthy();
+        expect(view.getPropertiesWrapper()).toBeTruthy();
+        expect(view.getPreviewEl()).toBeTruthy();
       });
 
-      it('Is not active by default', () => {
+      test('Is not active by default', () => {
         expect(view.$el.hasClass('active')).toEqual(false);
       });
 
-      it('Is possible to activate it', () => {
+      test('Is possible to activate it', () => {
         view.model.set('active', 1);
         expect(view.$el.hasClass('active')).toEqual(true);
       });
 
-      it('Is possible to activate it with active()', () => {
+      test('Is possible to activate it with active()', () => {
         view.active();
         expect(view.$el.hasClass('active')).toEqual(true);
       });
 
-      it('No preview', () => {
+      test('No preview', () => {
         var style = view.el.querySelector('#preview').style;
-        expect(style.cssText).toNotExist();
+        expect(style.cssText).toBeFalsy();
       });
     });
   }

@@ -23,17 +23,17 @@ module.exports = {
         view.collection.reset();
       });
 
-      it('The content is not empty', () => {
-        expect(view.el.innerHTML).toExist();
+      test('The content is not empty', () => {
+        expect(view.el.innerHTML).toBeTruthy();
       });
 
-      it('No options without devices', () => {
+      test('No options without devices', () => {
         expect(view.getOptions()).toEqual('');
       });
 
-      it('Render new button', () => {
+      test('Render new button', () => {
         view.collection.add({});
-        expect(view.$el.html()).toExist();
+        expect(view.$el.html()).toBeTruthy();
       });
 
       describe('With configs', () => {
@@ -50,13 +50,13 @@ module.exports = {
             .appendChild(view.render().el);
         });
 
-        it('Update device on select change', () => {
+        test('Update device on select change', () => {
           view.$el.find('select').val('test2');
           view.updateDevice();
           expect(view.config.em.get('device')).toEqual('test2');
         });
 
-        it('Render options', () => {
+        test('Render options', () => {
           expect(view.getOptions()).toEqual(
             '<option value="test1">test1</option><option value="test2">test2</option>'
           );

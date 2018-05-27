@@ -58,25 +58,25 @@ module.exports = {
         fixtures.appendChild(view.el);
       });
 
-      after(() => {
+      afterAll(() => {
         component = null;
         view = null;
         model = null;
       });
 
-      it('Rendered correctly', () => {
+      test('Rendered correctly', () => {
         var prop = view.el;
-        expect(fixtures.querySelector('.property')).toExist();
-        expect(prop.querySelector('.label')).toExist();
-        expect(prop.querySelector('.field')).toExist();
+        expect(fixtures.querySelector('.property')).toBeTruthy();
+        expect(prop.querySelector('.label')).toBeTruthy();
+        expect(prop.querySelector('.field')).toBeTruthy();
       });
 
-      it('Properties rendered', () => {
+      test('Properties rendered', () => {
         var prop = view.el;
-        expect(prop.querySelector('.properties')).toExist();
+        expect(prop.querySelector('.properties')).toBeTruthy();
       });
 
-      it('Properties rendered correctly', () => {
+      test('Properties rendered correctly', () => {
         var children = view.el.querySelector('.properties').children;
         expect(children.length).toEqual(properties.length);
         expect(children[0].id).toEqual(properties[0].property);
@@ -84,15 +84,15 @@ module.exports = {
         expect(children[2].id).toEqual(properties[2].property);
       });
 
-      it('Props should exist', () => {
-        expect(view.$props).toExist();
+      test('Props should exist', () => {
+        expect(view.$props).toBeTruthy();
       });
 
-      it('Input value is empty', () => {
+      test('Input value is empty', () => {
         expect(model.getFullValue()).toEqual('0 val2');
       });
 
-      it('Update input on value change', () => {
+      test('Update input on value change', () => {
         view.model.set('value', propValue);
         // Fetch always values from properties
         expect(view.getInputValue()).toEqual('0 val2');
@@ -129,13 +129,13 @@ module.exports = {
           $prop3 = view.$props.find('#' + properties[2].property + ' select');
         });
 
-        it('Update model on input change', () => {
+        test('Update model on input change', () => {
           $prop1.val(propValue).trigger('change');
           $prop3.val(prop3Val).trigger('change');
           expect(model.getFullValue()).toEqual(finalResult);
         });
 
-        it('Update value on models change', () => {
+        test('Update value on models change', () => {
           view.model
             .get('properties')
             .at(0)
@@ -147,7 +147,7 @@ module.exports = {
           expect(view.model.get('value')).toEqual(finalResult);
         });
 
-        it('Update target on value change', () => {
+        test('Update target on value change', () => {
           $prop1.val(propValue).trigger('change');
           var compStyle = view.getTarget().get('style');
           var assertStyle = {};
@@ -155,7 +155,7 @@ module.exports = {
           expect(compStyle).toEqual(assertStyle);
         });
 
-        it('Update target on detached value change', () => {
+        test('Update target on detached value change', () => {
           model = new PropertyComposite({
             type: 'composite',
             property: propName,
@@ -177,7 +177,7 @@ module.exports = {
           expect(compStyle).toEqual(assertStyle);
         });
 
-        it('Update value and input on target swap', () => {
+        test('Update value and input on target swap', () => {
           var style = {};
           style[propName] = finalResult;
           component.set('style', style);
@@ -186,7 +186,7 @@ module.exports = {
           expect($prop3.val()).toEqual(prop3Val);
         });
 
-        it('Update value after multiple swaps', () => {
+        test('Update value after multiple swaps', () => {
           var style = {};
           style[propName] = finalResult;
           component.set('style', style);
@@ -200,16 +200,16 @@ module.exports = {
           expect($prop3.val()).toEqual('val1');
         });
 
-        it('The value is correctly extracted from the composite string', () => {
+        test('The value is correctly extracted from the composite string', () => {
           var style = {};
           style[propName] = 'value1 value2 value3 value4';
           component.set('style', style);
           expect(view.valueOnIndex(2)).toEqual('value3');
           expect(view.valueOnIndex(0)).toEqual('value1');
-          expect(view.valueOnIndex(4)).toEqual(null);
+          expect(view.valueOnIndex(4)).toEqual(undefined);
         });
 
-        it('Build value from properties', () => {
+        test('Build value from properties', () => {
           view.model
             .get('properties')
             .at(0)
@@ -238,7 +238,7 @@ module.exports = {
           fixtures.appendChild(view.el);
         });
 
-        it('Value as default', () => {
+        test('Value as default', () => {
           expect(view.model.get('value')).toEqual(defValue);
         });
       });

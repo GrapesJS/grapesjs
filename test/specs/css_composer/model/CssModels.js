@@ -16,29 +16,29 @@ module.exports = {
         obj = null;
       });
 
-      it('Has selectors property', () => {
+      test('Has selectors property', () => {
         expect(obj.has('selectors')).toEqual(true);
       });
 
-      it('Has style property', () => {
+      test('Has style property', () => {
         expect(obj.has('style')).toEqual(true);
       });
 
-      it('Has state property', () => {
+      test('Has state property', () => {
         expect(obj.has('state')).toEqual(true);
       });
 
-      it('No default selectors', () => {
+      test('No default selectors', () => {
         expect(obj.get('selectors').length).toEqual(0);
       });
 
-      it('Compare returns true with the same selectors', () => {
+      test('Compare returns true with the same selectors', () => {
         var s1 = obj.get('selectors').add({ name: 'test1' });
         var s2 = obj.get('selectors').add({ name: 'test2' });
         expect(obj.compare([s1, s2])).toEqual(true);
       });
 
-      it('Compare with different state', () => {
+      test('Compare with different state', () => {
         var s1 = obj.get('selectors').add({ name: 'test1' });
         var s2 = obj.get('selectors').add({ name: 'test2' });
         obj.set('state', 'hover');
@@ -46,7 +46,7 @@ module.exports = {
         expect(obj.compare([s1, s2], 'hover')).toEqual(true);
       });
 
-      it('Compare with different mediaText', () => {
+      test('Compare with different mediaText', () => {
         var s1 = obj.get('selectors').add({ name: 'test1' });
         var s2 = obj.get('selectors').add({ name: 'test2' });
         obj.set('state', 'hover');
@@ -56,23 +56,23 @@ module.exports = {
         expect(obj.compare([s2, s1], 'hover', '1000')).toEqual(true);
       });
 
-      it('toCSS returns empty if there is no style', () => {
+      test('toCSS returns empty if there is no style', () => {
         var s1 = obj.get('selectors').add({ name: 'test1' });
         expect(obj.toCSS()).toEqual('');
       });
 
-      it('toCSS returns empty if there is no selectors', () => {
+      test('toCSS returns empty if there is no selectors', () => {
         obj.setStyle({ color: 'red' });
         expect(obj.toCSS()).toEqual('');
       });
 
-      it('toCSS returns simple CSS', () => {
+      test('toCSS returns simple CSS', () => {
         obj.get('selectors').add({ name: 'test1' });
         obj.setStyle({ color: 'red' });
         expect(obj.toCSS()).toEqual(`.test1{color:red;}`);
       });
 
-      it('toCSS wraps correctly inside media rule', () => {
+      test('toCSS wraps correctly inside media rule', () => {
         const media = '(max-width: 768px)';
         obj.set('atRuleType', 'media');
         obj.set('mediaText', media);
@@ -81,7 +81,7 @@ module.exports = {
         expect(obj.toCSS()).toEqual(`@media ${media}{.test1{color:red;}}`);
       });
 
-      it('toCSS with a generic at-rule', () => {
+      test('toCSS with a generic at-rule', () => {
         obj.set('atRuleType', 'supports');
         obj.get('selectors').add({ name: 'test1' });
         obj.setStyle({ 'font-family': 'Open Sans' });
@@ -90,14 +90,14 @@ module.exports = {
         );
       });
 
-      it('toCSS with a generic single at-rule', () => {
+      test('toCSS with a generic single at-rule', () => {
         obj.set('atRuleType', 'font-face');
         obj.set('singleAtRule', 1);
         obj.setStyle({ 'font-family': 'Sans' });
         expect(obj.toCSS()).toEqual(`@font-face{font-family:Sans;}`);
       });
 
-      it('toCSS with a generic at-rule and condition', () => {
+      test('toCSS with a generic at-rule and condition', () => {
         obj.set('atRuleType', 'font-face');
         obj.set('mediaText', 'some-condition');
         obj.get('selectors').add({ name: 'test1' });
@@ -109,7 +109,7 @@ module.exports = {
     });
 
     describe('CssRules', () => {
-      it('Creates collection item correctly', () => {
+      test('Creates collection item correctly', () => {
         var c = new CssRules();
         var m = c.add({});
         expect(m instanceof CssRule).toEqual(true);
@@ -117,7 +117,7 @@ module.exports = {
     });
 
     describe('Selectors', () => {
-      it('Creates collection item correctly', () => {
+      test('Creates collection item correctly', () => {
         var c = new Selectors();
         var m = c.add({});
         expect(m instanceof Selector).toEqual(true);

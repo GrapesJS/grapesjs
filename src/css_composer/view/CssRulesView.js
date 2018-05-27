@@ -1,3 +1,4 @@
+import Backbone from 'backbone';
 const CssRuleView = require('./CssRuleView');
 const CssGroupRuleView = require('./CssGroupRuleView');
 const $ = Backbone.$;
@@ -6,7 +7,7 @@ const $ = Backbone.$;
 const getBlockId = (pfx, widthMedia) =>
   `${pfx}${widthMedia ? `-${widthMedia.replace('%', 'pc')}` : ''}`;
 
-module.exports = require('backbone').View.extend({
+module.exports = Backbone.View.extend({
   initialize(o) {
     const config = o.config || {};
     this.atRules = {};

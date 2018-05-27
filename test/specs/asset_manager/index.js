@@ -35,20 +35,20 @@ describe('Asset Manager', () => {
       obj = null;
     });
 
-    it('Object exists', () => {
-      expect(obj).toExist();
+    test('Object exists', () => {
+      expect(obj).toBeTruthy();
     });
 
-    it('No assets inside', () => {
+    test('No assets inside', () => {
       expect(obj.getAll().length).toEqual(0);
     });
 
-    it('Add new asset', () => {
+    test('Add new asset', () => {
       obj.add(imgObj);
       expect(obj.getAll().length).toEqual(1);
     });
 
-    it('Added asset has correct data', () => {
+    test('Added asset has correct data', () => {
       obj.add(imgObj);
       var asset = obj.get(imgObj.src);
       expect(asset.get('width')).toEqual(imgObj.width);
@@ -56,14 +56,14 @@ describe('Asset Manager', () => {
       expect(asset.get('type')).toEqual(imgObj.type);
     });
 
-    it('Add asset with src', () => {
+    test('Add asset with src', () => {
       obj.add(imgObj.src);
       var asset = obj.get(imgObj.src);
       expect(asset.get('type')).toEqual('image');
       expect(asset.get('src')).toEqual(imgObj.src);
     });
 
-    it('Add asset with more src', () => {
+    test('Add asset with more src', () => {
       obj.add([imgObj.src, imgObj.src + '2']);
       expect(obj.getAll().length).toEqual(2);
       var asset1 = obj.getAll().at(0);
@@ -72,15 +72,15 @@ describe('Asset Manager', () => {
       expect(asset2.get('src')).toEqual(imgObj.src + '2');
     });
 
-    it('Remove asset', () => {
+    test('Remove asset', () => {
       obj.add(imgObj);
       obj.remove(imgObj.src);
       expect(obj.getAll().length).toEqual(0);
     });
 
-    it('Render assets', () => {
+    test('Render assets', () => {
       obj.add(imgObj);
-      expect(obj.render()).toExist();
+      expect(obj.render()).toBeTruthy();
     });
 
     describe('With storage', () => {
@@ -103,7 +103,7 @@ describe('Asset Manager', () => {
         storageManager = null;
       });
 
-      it('Store and load data', () => {
+      test('Store and load data', () => {
         obj.add(imgObj);
         obj.store();
         obj.remove(imgObj.src);

@@ -53,47 +53,47 @@ module.exports = {
         //view.remove(); // strange errors ???
       });
 
-      after(() => {
+      afterAll(() => {
         component = null;
         view = null;
         model = null;
       });
 
-      it('Rendered correctly', () => {
+      test('Rendered correctly', () => {
         var prop = view.el;
-        expect(fixtures.querySelector('.property')).toExist();
-        expect(prop.querySelector('.label')).toExist();
-        expect(prop.querySelector('.field')).toExist();
+        expect(fixtures.querySelector('.property')).toBeTruthy();
+        expect(prop.querySelector('.label')).toBeTruthy();
+        expect(prop.querySelector('.field')).toBeTruthy();
       });
 
-      it('Inputs rendered', () => {
+      test('Inputs rendered', () => {
         var prop = view.el;
-        expect(prop.querySelector('input[type=text]')).toExist();
-        expect(prop.querySelector(unitsElSel)).toExist();
+        expect(prop.querySelector('input[type=text]')).toBeTruthy();
+        expect(prop.querySelector(unitsElSel)).toBeTruthy();
       });
 
-      it('Units rendered', () => {
+      test('Units rendered', () => {
         var select = view.el.querySelector(unitsElSel);
         expect(select.children.length).toEqual(units.length);
       });
 
-      it('Units rendered correctly', () => {
+      test('Units rendered correctly', () => {
         var children = view.el.querySelector(unitsElSel).children;
         expect(children[0].textContent).toEqual(units[0]);
         expect(children[1].textContent).toEqual(units[1]);
         expect(children[2].textContent).toEqual(units[2]);
       });
 
-      it('Inputs should exist', () => {
-        expect(view.input).toExist();
-        expect(view.unit).toExist();
+      test('Inputs should exist', () => {
+        expect(view.input).toBeTruthy();
+        expect(view.unit).toBeTruthy();
       });
 
-      it('Input value is empty', () => {
-        expect(view.model.get('value')).toNotExist();
+      test('Input value is empty', () => {
+        expect(view.model.get('value')).toBeFalsy();
       });
 
-      it('Update model on setValue', () => {
+      test('Update model on setValue', () => {
         view.setValue(intValue + unitValue);
         expect(view.model.get('value')).toEqual(parseFloat(intValue));
         expect(view.model.get('unit')).toEqual(unitValue);
@@ -101,22 +101,22 @@ module.exports = {
         expect(view.unit.value).toEqual(unitValue);
       });
 
-      it('Update model on input change', () => {
+      test('Update model on input change', () => {
         view.$input.val(123).trigger('change');
         expect(view.model.get('value')).toEqual(123);
       });
 
-      it('Update model on unit change', () => {
+      test('Update model on unit change', () => {
         view.$unit.val(units[1]).trigger('change');
         expect(view.model.get('unit')).toEqual(units[1]);
       });
 
-      it('Update input on value change', () => {
+      test('Update input on value change', () => {
         view.model.set('value', intValue);
         expect(view.getInputValue()).toEqual(intValue);
       });
 
-      it('Update target on value change', () => {
+      test('Update target on value change', () => {
         const val = `${intValue}%`;
         view.model.setValue(val);
         expect(view.getTargetValue()).toEqual(val);
@@ -134,7 +134,7 @@ module.exports = {
           fixtures.appendChild(view.el);
         });
 
-        it('Update value and input on target swap', () => {
+        test('Update value and input on target swap', () => {
           var style = {};
           style[propName] = propValue;
           component.set('style', style);
@@ -143,7 +143,7 @@ module.exports = {
           expect(view.getInputValue()).toEqual(intValue);
         });
 
-        it('Update value after multiple swaps', () => {
+        test('Update value after multiple swaps', () => {
           var style = {};
           style[propName] = propValue;
           component.set('style', style);
@@ -177,23 +177,23 @@ module.exports = {
           fixtures.appendChild(view.el);
         });
 
-        it('Value as default', () => {
+        test('Value as default', () => {
           expect(view.model.get('value')).toEqual(parseInt(intValue));
           expect(view.model.get('unit')).toEqual(units[1]);
         });
 
-        it('Input value is as default', () => {
+        test('Input value is as default', () => {
           expect(view.getInputValue()).toEqual(intValue);
           expect(view.$unit.val()).toEqual(units[1]);
         });
 
-        it('Input follows min', () => {
+        test('Input follows min', () => {
           view.$input.val(minValue - 50).trigger('change');
           expect(view.model.get('value')).toEqual(minValue);
           expect(view.getInputValue()).toEqual(minValue + '');
         });
 
-        it('Input follows max', () => {
+        test('Input follows max', () => {
           view.$input.val(maxValue + 50).trigger('change');
           expect(view.model.get('value')).toEqual(maxValue);
           expect(view.getInputValue()).toEqual(maxValue + '');

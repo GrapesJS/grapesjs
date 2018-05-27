@@ -23,19 +23,19 @@ module.exports = {
         view.collection.reset();
       });
 
-      it('Collection is empty', () => {
+      test('Collection is empty', () => {
         expect(view.$el.html()).toEqual('');
       });
 
-      it('Add new panel', () => {
+      test('Add new panel', () => {
         sinon.stub(view, 'addToCollection');
         view.collection.add({});
         expect(view.addToCollection.calledOnce).toEqual(true);
       });
 
-      it('Render new panel', () => {
+      test('Render new panel', () => {
         view.collection.add({});
-        expect(view.$el.html()).toExist();
+        expect(view.$el.html()).toBeTruthy();
       });
     });
   }

@@ -1,4 +1,5 @@
-var Backbone = require('backbone');
+import { each } from 'underscore';
+import Backbone from 'backbone';
 
 module.exports = Backbone.Model.extend({
   /** @inheritdoc */
@@ -6,7 +7,7 @@ module.exports = Backbone.Model.extend({
     var json = model.toJSON();
     this.beforeEach(json);
 
-    _.each(
+    each(
       json,
       function(v, attr) {
         var obj = json[attr];

@@ -7,7 +7,7 @@ module.exports = {
       let obj;
       let fixtures;
 
-      beforeEach(function() {
+      beforeEach(() => {
         var m = new CssRule();
         obj = new CssRuleView({
           model: m
@@ -21,15 +21,15 @@ module.exports = {
         obj.model.destroy();
       });
 
-      it('Object exists', () => {
-        expect(CssRuleView).toExist();
+      test('Object exists', () => {
+        expect(CssRuleView).toBeTruthy();
       });
 
-      it('Empty style inside', function() {
+      test('Empty style inside', () => {
         expect(fixtures.innerHTML).toEqual('<style></style>');
       });
 
-      it('On update of style always empty as there is no selectors', function() {
+      test('On update of style always empty as there is no selectors', () => {
         obj.model.set('style', { prop: 'value' });
         expect(fixtures.innerHTML).toEqual('<style></style>');
       });
@@ -54,29 +54,29 @@ module.exports = {
           objReg.model.destroy();
         });
 
-        it('Empty with no style', () => {
+        test('Empty with no style', () => {
           expect(objReg.$el.html()).toEqual('');
         });
 
-        it('Not empty on update of style', () => {
+        test('Not empty on update of style', () => {
           objReg.model.set('style', { prop: 'value' });
           expect(objReg.$el.html()).toEqual('.test1.test2{prop:value;}');
         });
 
-        it('State correctly rendered', () => {
+        test('State correctly rendered', () => {
           objReg.model.set('style', { prop: 'value' });
           objReg.model.set('state', 'hover');
           expect(objReg.$el.html()).toEqual('.test1.test2:hover{prop:value;}');
         });
 
-        it('State render changes on update', () => {
+        test('State render changes on update', () => {
           objReg.model.set('style', { prop: 'value' });
           objReg.model.set('state', 'hover');
           objReg.model.set('state', '');
           expect(objReg.$el.html()).toEqual('.test1.test2{prop:value;}');
         });
 
-        it('Render media queries', () => {
+        test('Render media queries', () => {
           objReg.model.set('style', { prop: 'value' });
           objReg.model.set('mediaText', '(max-width: 999px)');
           expect(objReg.$el.html()).toEqual(
@@ -84,7 +84,7 @@ module.exports = {
           );
         });
 
-        it('Empty on clear', () => {
+        test('Empty on clear', () => {
           objReg.model.set('style', { prop: 'value' });
           objReg.model.set('style', {});
           expect(objReg.$el.html()).toEqual('');

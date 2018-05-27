@@ -22,20 +22,20 @@ module.exports = {
         view.remove();
       });
 
-      it('Rendered correctly', () => {
+      test('Rendered correctly', () => {
         var sector = view.el;
-        expect(sector.querySelector('.title')).toExist();
+        expect(sector.querySelector('.title')).toBeTruthy();
         var props = sector.querySelector('.properties');
-        expect(props).toExist();
+        expect(props).toBeTruthy();
         expect(sector.classList.contains('open')).toEqual(true);
       });
 
-      it('No properties', () => {
+      test('No properties', () => {
         var props = view.el.querySelector('.properties');
         expect(props.innerHTML).toEqual('');
       });
 
-      it('Update on open', () => {
+      test('Update on open', () => {
         var sector = view.el;
         var props = sector.querySelector('.properties');
         model.set('open', false);
@@ -43,7 +43,7 @@ module.exports = {
         expect(props.style.display).toEqual('none');
       });
 
-      it('Toggle on click', () => {
+      test('Toggle on click', () => {
         var sector = view.el;
         view.$el.find('.title').click();
         expect(sector.classList.contains('open')).toEqual(false);
@@ -70,18 +70,18 @@ module.exports = {
           fixtures.appendChild(view.render().el);
         });
 
-        it('Rendered correctly', () => {
+        test('Rendered correctly', () => {
           var sector = view.el;
           var props = sector.querySelector('.properties');
           expect(sector.querySelector('.title').innerHTML).toContain(
             'TestName'
           );
-          expect(props).toExist();
+          expect(props).toBeTruthy();
           expect(sector.classList.contains('open')).toEqual(false);
           expect(props.style.display).toEqual('none');
         });
 
-        it('Has properties', () => {
+        test('Has properties', () => {
           var props = view.el.querySelector('.properties');
           expect(props.children.length).toEqual(3);
         });

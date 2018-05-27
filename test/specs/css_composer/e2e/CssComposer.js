@@ -1,3 +1,4 @@
+import Backbone from 'backbone';
 const $ = Backbone.$;
 
 module.exports = {
@@ -12,7 +13,7 @@ module.exports = {
       var rulesSet;
       var rulesSet2;
 
-      before(() => {
+      beforeAll(() => {
         fixtures = $('#fixtures');
         fixture = $('<div class="csscomposer-fixture"></div>');
       });
@@ -52,11 +53,11 @@ module.exports = {
         clsm = null;
       });
 
-      after(() => {
+      afterAll(() => {
         fixture.remove();
       });
 
-      it('Rules are correctly imported from default property', () => {
+      test('Rules are correctly imported from default property', () => {
         var gj = grapesjs.init({
           stylePrefix: '',
           storageManager: { autoload: 0, type: 'none' },
@@ -69,7 +70,7 @@ module.exports = {
         expect(cls.length).toEqual(3);
       });
 
-      it('New rule adds correctly the class inside selector manager', () => {
+      test('New rule adds correctly the class inside selector manager', () => {
         var rules = cssc.getAll();
         rules.add({ selectors: [{ name: 'test1', private: true }] });
         var rule = clsm.getAll().at(0);
@@ -77,7 +78,7 @@ module.exports = {
         expect(rule.get('private')).toEqual(true);
       });
 
-      it('New rules are correctly imported inside selector manager', () => {
+      test('New rules are correctly imported inside selector manager', () => {
         var rules = cssc.getAll();
         rulesSet.forEach(item => {
           rules.add(item);
@@ -89,7 +90,7 @@ module.exports = {
         expect(cls.at(2).get('name')).toEqual('test3');
       });
 
-      it('Add rules from the new component added as a string with style tag', () => {
+      test('Add rules from the new component added as a string with style tag', () => {
         var comps = domc.getComponents();
         var rules = cssc.getAll();
         comps.add(
@@ -99,13 +100,13 @@ module.exports = {
         expect(rules.length).toEqual(2);
       });
 
-      it('Add raw rule objects with addCollection', () => {
+      test('Add raw rule objects with addCollection', () => {
         cssc.addCollection(rulesSet);
         expect(cssc.getAll().length).toEqual(3);
         expect(clsm.getAll().length).toEqual(3);
       });
 
-      it('Add raw rule objects twice with addCollection do not duplucate rules', () => {
+      test('Add raw rule objects twice with addCollection do not duplucate rules', () => {
         var rulesSet2Copy = JSON.parse(JSON.stringify(rulesSet2));
         var coll1 = cssc.addCollection(rulesSet2);
         var coll2 = cssc.addCollection(rulesSet2Copy);
@@ -114,7 +115,7 @@ module.exports = {
         expect(coll1).toEqual(coll2);
       });
 
-      it('Extend css rule style, if requested', () => {
+      test('Extend css rule style, if requested', () => {
         var style1 = { color: 'red', width: '10px' };
         var style2 = { height: '20px', width: '20px' };
         var rule1 = {
@@ -162,7 +163,7 @@ module.exports = {
         expect(ruleOut).toEqual(ruleResult);
       });
 
-      it('Do not extend with different selectorsAdd', () => {
+      test('Do not extend with different selectorsAdd', () => {
         var style1 = { color: 'red', width: '10px' };
         var style2 = { height: '20px', width: '20px' };
         var rule1 = {
@@ -211,7 +212,7 @@ module.exports = {
         expect(rule2Out).toEqual(rule2Result);
       });
 
-      it('Add raw rule objects with width via addCollection', () => {
+      test('Add raw rule objects with width via addCollection', () => {
         var coll1 = cssc.addCollection(rulesSet2);
         expect(coll1[2].get('mediaText')).toEqual(rulesSet2[2].mediaText);
       });

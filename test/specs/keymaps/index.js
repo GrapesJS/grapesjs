@@ -11,16 +11,16 @@ describe('Keymaps', () => {
       obj = new Keymaps().init({ em });
     });
 
-    it('Object exists', () => {
-      expect(obj).toExist();
+    test('Object exists', () => {
+      expect(obj).toBeTruthy();
     });
 
-    it('No keymaps inside', () => {
+    test('No keymaps inside', () => {
       var coll = obj.getAll();
       expect(coll).toEqual({});
     });
 
-    it('Add new keymap', () => {
+    test('Add new keymap', () => {
       const id = 'test';
       const keys = 'ctrl+a';
       const handler = () => {};
@@ -28,14 +28,14 @@ describe('Keymaps', () => {
       expect(obj.get(id)).toEqual({ id, keys, handler });
     });
 
-    it('Add keymap event triggers', () => {
+    test('Add keymap event triggers', () => {
       let called = 0;
       em.on('keymap:add', () => (called = 1));
       const model = obj.add('tes', 'ctrl+a');
       expect(called).toEqual(1);
     });
 
-    it('Remove keymap', () => {
+    test('Remove keymap', () => {
       const id = 'test';
       const keys = 'ctrl+a';
       const handler = () => {};
@@ -46,7 +46,7 @@ describe('Keymaps', () => {
       expect(removed).toEqual({ id, keys, handler });
     });
 
-    it('Remove keymap event triggers', () => {
+    test('Remove keymap event triggers', () => {
       let called = 0;
       em.on('keymap:remove', () => (called = 1));
       const model = obj.add('tes', 'ctrl+a');

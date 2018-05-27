@@ -58,15 +58,15 @@ describe('DOM Components', () => {
       obj = null;
     });
 
-    it('Object exists', () => {
-      expect(DomComponents).toExist();
+    test('Object exists', () => {
+      expect(DomComponents).toBeTruthy();
     });
 
-    it('storageKey returns array', () => {
+    test('storageKey returns array', () => {
       expect(obj.storageKey() instanceof Array).toEqual(true);
     });
 
-    it('storageKey returns correct composition', () => {
+    test('storageKey returns correct composition', () => {
       config.stm = {
         getConfig() {
           return {
@@ -78,7 +78,7 @@ describe('DOM Components', () => {
       expect(obj.storageKey()).toEqual(['html', 'components']);
     });
 
-    it('Store data', () => {
+    test('Store data', () => {
       setSmConfig();
       setEm();
       //obj.getWrapper().get('components').add({});
@@ -89,7 +89,7 @@ describe('DOM Components', () => {
       expect(obj.store(1)).toEqual(expected);
     });
 
-    it.skip('Store and load data', () => {
+    test.skip('Store and load data', () => {
       setSmConfig();
       setEm();
       const comps = new Components({}, {});
@@ -98,29 +98,29 @@ describe('DOM Components', () => {
       expect(obj.load()).toEqual([{ test: 1 }]);
     });
 
-    it('Wrapper exists', () => {
-      expect(obj.getWrapper()).toExist();
+    test('Wrapper exists', () => {
+      expect(obj.getWrapper()).toBeTruthy();
     });
 
-    it('No components inside', () => {
+    test('No components inside', () => {
       expect(obj.getComponents().length).toEqual(0);
     });
 
-    it('Add new component', () => {
+    test('Add new component', () => {
       var comp = obj.addComponent({});
       expect(obj.getComponents().length).toEqual(1);
     });
 
-    it('Add more components at once', () => {
+    test('Add more components at once', () => {
       var comp = obj.addComponent([{}, {}]);
       expect(obj.getComponents().length).toEqual(2);
     });
 
-    it('Render wrapper', () => {
-      expect(obj.render()).toExist();
+    test('Render wrapper', () => {
+      expect(obj.render()).toBeTruthy();
     });
 
-    it('Import propertly components and styles with the same ids', () => {
+    test('Import propertly components and styles with the same ids', () => {
       obj = em.get('DomComponents');
       const cc = em.get('CssComposer');
       const id = 'idtest';

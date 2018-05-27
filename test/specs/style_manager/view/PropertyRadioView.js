@@ -57,28 +57,28 @@ module.exports = {
         //view.remove(); // strange errors ???
       });
 
-      after(() => {
+      afterAll(() => {
         component = null;
       });
 
-      it('Rendered correctly', () => {
+      test('Rendered correctly', () => {
         var prop = view.el;
-        expect(fixtures.querySelector('.property')).toExist();
-        expect(prop.querySelector('.label')).toExist();
-        expect(prop.querySelector('.field')).toExist();
+        expect(fixtures.querySelector('.property')).toBeTruthy();
+        expect(prop.querySelector('.label')).toBeTruthy();
+        expect(prop.querySelector('.field')).toBeTruthy();
       });
 
-      it('Radio rendered', () => {
+      test('Radio rendered', () => {
         var prop = view.el;
-        expect(prop.querySelector('input[type=radio]')).toExist();
+        expect(prop.querySelector('input[type=radio]')).toBeTruthy();
       });
 
-      it('Options rendered', () => {
+      test('Options rendered', () => {
         var input = view.el.querySelector('.field').firstChild;
         expect(input.children.length).toEqual(options.length);
       });
 
-      it('Options rendered correctly', () => {
+      test('Options rendered correctly', () => {
         var children = view.el.querySelector('.field').firstChild.children;
         expect(children[0].querySelector('label').textContent).toEqual(
           'test1value'
@@ -98,25 +98,25 @@ module.exports = {
         ).toEqual(null);
       });
 
-      it('Input should exist', () => {
-        expect(view.input).toExist();
+      test('Input should exist', () => {
+        expect(view.input).toBeTruthy();
       });
 
-      it('Input value is empty', () => {
-        expect(view.model.get('value')).toNotExist();
+      test('Input value is empty', () => {
+        expect(view.model.get('value')).toBeFalsy();
       });
 
-      it('Update model on input change', () => {
+      test('Update model on input change', () => {
         view.setValue(propValue);
         expect(getCheckedEl(view).value).toEqual(propValue);
       });
 
-      it('Update input on value change', () => {
+      test('Update input on value change', () => {
         view.model.set('value', propValue);
         expect(getCheckedEl(view).value).toEqual(propValue);
       });
 
-      it('Update target on value change', () => {
+      test('Update target on value change', () => {
         view.selectedComponent = component;
         view.model.set('value', propValue);
         var compStyle = view.selectedComponent.get('style');
@@ -137,7 +137,7 @@ module.exports = {
           fixtures.appendChild(view.el);
         });
 
-        it('Update value and input on target swap', () => {
+        test('Update value and input on target swap', () => {
           var style = {};
           style[propName] = propValue;
           component.set('style', style);
@@ -146,7 +146,7 @@ module.exports = {
           expect(getCheckedEl(view).value).toEqual(propValue);
         });
 
-        it('Update value after multiple swaps', () => {
+        test('Update value after multiple swaps', () => {
           var style = {};
           style[propName] = propValue;
           component.set('style', style);
@@ -176,11 +176,11 @@ module.exports = {
           fixtures.appendChild(view.el);
         });
 
-        it('Value as default', () => {
+        test('Value as default', () => {
           expect(view.model.get('value')).toEqual(defValue);
         });
 
-        it('Input value is as default', () => {
+        test('Input value is as default', () => {
           expect(view.model.getDefaultValue()).toEqual(defValue);
         });
       });

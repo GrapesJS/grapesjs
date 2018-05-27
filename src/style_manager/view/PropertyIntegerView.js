@@ -1,3 +1,4 @@
+import Backbone from 'backbone';
 const InputNumber = require('domain_abstract/ui/InputNumber');
 const PropertyView = require('./PropertyView');
 const $ = Backbone.$;

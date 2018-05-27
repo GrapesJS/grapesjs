@@ -1,3 +1,4 @@
+import Backbone from 'backbone';
 const Layer = require('./Layer');
 
 module.exports = Backbone.Collection.extend({

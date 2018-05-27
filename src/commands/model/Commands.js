@@ -1,4 +1,4 @@
-var Backbone = require('backbone');
+import Backbone from 'backbone';
 var Command = require('./Command');
 
 module.exports = Backbone.Collection.extend({

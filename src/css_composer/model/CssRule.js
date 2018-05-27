@@ -1,7 +1,8 @@
+import _ from 'underscore';
+import Backbone from 'backbone';
 import Styleable from 'domain_abstract/model/Styleable';
 import { isEmpty, forEach } from 'underscore';
 
-var Backbone = require('backbone');
 var Selectors = require('selector_manager/model/Selectors');
 
 module.exports = Backbone.Model.extend(Styleable).extend({

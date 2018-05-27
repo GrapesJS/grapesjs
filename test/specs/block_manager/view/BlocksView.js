@@ -23,22 +23,22 @@ module.exports = {
         view.collection.reset();
       });
 
-      it('The container is not empty', () => {
-        expect(view.el.outerHTML).toExist();
+      test('The container is not empty', () => {
+        expect(view.el.outerHTML).toBeTruthy();
       });
 
-      it('No children inside', () => {
+      test('No children inside', () => {
         expect(view.getBlocksEl().children.length).toEqual(0);
       });
 
-      it('Render children on add', () => {
+      test('Render children on add', () => {
         model.add({});
         expect(view.getBlocksEl().children.length).toEqual(1);
         model.add([{}, {}]);
         expect(view.getBlocksEl().children.length).toEqual(3);
       });
 
-      it('Destroy children on remove', () => {
+      test('Destroy children on remove', () => {
         model.add([{}, {}]);
         expect(view.getBlocksEl().children.length).toEqual(2);
         model.at(0).destroy();
@@ -64,11 +64,11 @@ module.exports = {
             .appendChild(view.render().el);
         });
 
-        it('Render children', () => {
+        test('Render children', () => {
           expect(view.getBlocksEl().children.length).toEqual(2);
         });
 
-        it('Render container', () => {
+        test('Render container', () => {
           expect(view.getBlocksEl().getAttribute('class')).toEqual(
             ppfx + 'blocks-c'
           );

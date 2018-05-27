@@ -1,3 +1,5 @@
+import _ from 'underscore';
+import Backbone from 'backbone';
 const SelectComponent = require('./SelectComponent');
 const $ = Backbone.$;
 

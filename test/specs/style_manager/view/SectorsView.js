@@ -22,11 +22,11 @@ module.exports = {
         view.collection.reset();
       });
 
-      it('Collection is empty', () => {
+      test('Collection is empty', () => {
         expect(view.el.innerHTML).toEqual('');
       });
 
-      it('Add new sectors', () => {
+      test('Add new sectors', () => {
         view.collection.add([{}, {}]);
         expect(view.el.children.length).toEqual(2);
       });

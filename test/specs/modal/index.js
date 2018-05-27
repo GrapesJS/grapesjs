@@ -13,43 +13,43 @@ describe('Modal dialog', () => {
       obj = null;
     });
 
-    it('Object exists', () => {
-      expect(obj).toExist();
+    test('Object exists', () => {
+      expect(obj).toBeTruthy();
     });
 
-    it('Is close by default', () => {
+    test('Is close by default', () => {
       expect(obj.isOpen()).toEqual(false);
     });
 
-    it('Title is empty', () => {
+    test('Title is empty', () => {
       expect(obj.getTitle()).toEqual('');
     });
 
-    it('Content is empty', () => {
+    test('Content is empty', () => {
       expect(obj.getContent()).toEqual('');
     });
 
-    it('Set title', () => {
+    test('Set title', () => {
       obj.setTitle('Test');
       expect(obj.getTitle()).toEqual('Test');
     });
 
-    it('Set content', () => {
+    test('Set content', () => {
       obj.setContent('Test');
       expect(obj.getContent()).toEqual('Test');
     });
 
-    it('Set HTML content', () => {
+    test('Set HTML content', () => {
       obj.setContent('<h1>Test</h1>');
       expect(obj.getContent()).toEqual('<h1>Test</h1>');
     });
 
-    it('Open modal', () => {
+    test('Open modal', () => {
       obj.open();
       expect(obj.isOpen()).toEqual(true);
     });
 
-    it('Close modal', () => {
+    test('Close modal', () => {
       obj.open();
       obj.close();
       expect(obj.isOpen()).toEqual(false);

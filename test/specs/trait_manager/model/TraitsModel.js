@@ -20,8 +20,8 @@ module.exports = {
         obj = null;
       });
 
-      it('Object exists', () => {
-        expect(Trait).toExist();
+      test('Object exists', () => {
+        expect(Trait).toBeTruthy();
       });
     });
   }

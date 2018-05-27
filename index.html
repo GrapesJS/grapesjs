@@ -5,118 +5,1558 @@
     <title>GrapesJS</title>
     <link rel="stylesheet" href="dist/css/grapes.min.css">
     <script src="dist/grapes.min.js"></script>
-    <style>
-      body,
-      html {
-        height: 100%;
-        margin: 0;
-      }
-    </style>
+
+    <script src="https://unpkg.com/grapesjs-blocks-basic"></script>
+    <script src="private/grapesjs-blocks-basic.min.js"></script>
+    <script src="https://unpkg.com/grapesjs-plugin-forms"></script>
+    <script src="https://unpkg.com/grapesjs-component-countdown"></script>
+    <script src="private/grapesjs-lory-slider.min.js"></script>
+
   </head>
+  <style>
+    body,
+    html {
+      height: 100%;
+      margin: 0;
+    }
 
+    .gjs-row {
+      display: flex;
+      justify-content: flex-start;
+      align-items: stretch;
+      flex-wrap: nowrap;
+      padding: 10px;
+    }
+
+    .gjs-column {
+      min-height: 75px;
+      flex-grow: 1;
+      flex-basis: 100%;
+    }
+    /*
+    .gjs-pn-panel {
+      position: relative;
+    }*/
+  </style>
   <body>
-    <div id="gjs" style="height:0px; overflow:hidden;">
-      <div class="panel">
-        <h1 class="welcome">Welcome to</h1>
-        <div class="big-title">
-          <svg class="logo" viewBox="0 0 100 100">
-            <path d="M40 5l-12.9 7.4 -12.9 7.4c-1.4 0.8-2.7 2.3-3.7 3.9 -0.9 1.6-1.5 3.5-1.5 5.1v14.9 14.9c0 1.7 0.6 3.5 1.5 5.1 0.9 1.6 2.2 3.1 3.7 3.9l12.9 7.4 12.9 7.4c1.4 0.8 3.3 1.2 5.2 1.2 1.9 0 3.8-0.4 5.2-1.2l12.9-7.4 12.9-7.4c1.4-0.8 2.7-2.2 3.7-3.9 0.9-1.6 1.5-3.5 1.5-5.1v-14.9 -12.7c0-4.6-3.8-6-6.8-4.2l-28 16.2"/>
-          </svg>
-          <span>GrapesJS</span>
-        </div>
-        <div class="description">
-          This is a demo content from index.html. For the development, you shouldn't edit this file, instead you can
-          copy and rename it to _index.html, on next server start the new file will be served, and it will be ignored by git.
-        </div>
+    <div class="gjs-row" style="display: none;">
+      <div id="layers" class="gjs-column" style="flex-basis: 800px;">
+        Layers header
+        <div id="layers-container"></div>
+        Layers footer
       </div>
+
+      <div class="gjs-column">
+        <div id="panel-tools">
+
+        </div>
+        <div id="gjs2" style="overflow:hidden; margin: 0 auto;">
+          <div style="color:red; padding: 50px 100px" data-gjs-name="Text1">
+            Text
+          </div>
+          <div style="color:red; padding: 50px 100px" data-gjs-name="Text2">
+            Text2
+          </div>
+        </div>
+
+        <div id="blocks"></div>
+      </div>
+
+      <div id="style-manager" class="gjs-column" style="flex-basis: 800px;">
+        Here Style Manager
+        <br>
+        <div id="selectors-container"></div>
+        <div id="traits-container"></div>
+        <div id="style-manager-container"></div>
+      </div>
+    </div>
+
+    <div id="gjs" style="height:0px; overflow:hidden; displayZ: none">
+      <div style="color:red; padding: 50px 100px" data-gjs-stylable='["width"]' data-gjs-traits='[{"type":"colours","name":"llll"}]'>
+        Text
+      </div>
+      <div>
+        <div class="glyphicon glyphicon-asterisk"></div> Try to edit me
+      </div>
+      <div data-gjs-type="void-component">
+        <div>Text 1</div>
+        <div>Text 2</div>
+      </div>
+      <header class="header-banner">
+        <div class="container-width">
+          <div class="logo-container">
+            <div class="logo">GrapesJS</div>
+          </div>
+          <nav class="navbar">
+            <div class="menu-item">BUILDER</div>
+            <div class="menu-item">TEMPLATE</div>
+            <div class="menu-item">WEB</div>
+          </nav>
+          <div class="clearfix"></div>
+          <div class="lead-title" data-gjs-selectable="false">Build your templates without coding</div>
+          <div class="sub-lead-title">All text blocks could be edited easily with double clicking on it. You can create new text blocks with the command from the left panel</div>
+          <div class="lead-btn">Hover me</div>
+        </div>
+      </header>
+
+      <section class="flex-sect">
+        <div class="container-width">
+          <div class="flex-title">Flex is the new black</div>
+          <div class="flex-desc">With flexbox system you're able to build complex layouts easily and with free responsivity</div>
+          <div class="cards">
+            <div class="card">
+              <div class="card-header"></div>
+              <div class="card-body">
+                <div class="card-title">Title one</div>
+                <div class="card-sub-title">Subtitle one</div>
+                <div class="card-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header ch2"></div>
+              <div class="card-body">
+                <div class="card-title">Title two</div>
+                <div class="card-sub-title">Subtitle two</div>
+                <div class="card-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header ch3"></div>
+              <div class="card-body">
+                <div class="card-title">Title three</div>
+                <div class="card-sub-title">Subtitle three</div>
+                <div class="card-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header ch4"></div>
+              <div class="card-body">
+                <div class="card-title">Title four</div>
+                <div class="card-sub-title">Subtitle four</div>
+                <div class="card-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header ch5"></div>
+              <div class="card-body">
+                <div class="card-title">Title five</div>
+                <div class="card-sub-title">Subtitle five</div>
+                <div class="card-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header ch6"></div>
+              <div class="card-body">
+                <div class="card-title">Title six</div>
+                <div class="card-sub-title">Subtitle six</div>
+                <div class="card-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="am-sect">
+        <div class="container-width">
+          <div class="am-container">
+            <img class="img-phone" onmousedown="return false" src="./img/phone-app.png"/>
+            <div class="am-content">
+              <div class="am-pre">ASSET MANAGER</div>
+              <div class="am-title">Manage your images with Asset Manager</div>
+              <div class="am-desc">You can create image blocks with the command from the left panel and edit them with double click</div>
+              <div class="am-post">Image uploading is not allowed in this demo</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="blk-sect">
+        <div class="container-width">
+          <div class="blk-title">Blocks</div>
+          <div class="blk-desc">Each element in HTML page could be seen as a block. On the left panel you could find different kind of blocks that you can create, move and style</div>
+
+          <div class="price-cards">
+            <div class="price-card-cont">
+              <div class="price-card">
+                <div class="pc-title">Starter</div>
+                <div class="pc-desc">Some random list</div>
+                <div class="pc-feature odd-feat">+ Starter feature 1</div>
+                <div class="pc-feature">+ Starter feature 2</div>
+                <div class="pc-feature odd-feat">+ Starter feature 3</div>
+                <div class="pc-feature">+ Starter feature 4</div>
+                <div class="pc-amount odd-feat">$ 9,90/mo</div>
+              </div>
+            </div>
+            <div class="price-card-cont">
+              <div class="price-card pc-regular">
+                <div class="pc-title">Regular</div>
+                <div class="pc-desc">Some random list</div>
+                <div class="pc-feature odd-feat">+ Regular feature 1</div>
+                <div class="pc-feature">+ Regular feature 2</div>
+                <div class="pc-feature odd-feat">+ Regular feature 3</div>
+                <div class="pc-feature">+ Regular feature 4</div>
+                <div class="pc-amount odd-feat">$ 19,90/mo</div>
+              </div>
+            </div>
+            <div class="price-card-cont">
+              <div class="price-card pc-enterprise">
+                <div class="pc-title">Enterprise</div>
+                <div class="pc-desc">Some random list</div>
+                <div class="pc-feature odd-feat">+ Enterprise feature 1</div>
+                <div class="pc-feature">+ Enterprise feature 2</div>
+                <div class="pc-feature odd-feat">+ Enterprise feature 3</div>
+                <div class="pc-feature">+ Enterprise feature 4</div>
+                <div class="pc-amount odd-feat">$ 29,90/mo</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <section class="bdg-sect">
+        <div class="container-width">
+          <h1 class="bdg-title">The team</h1>
+          <div class="badges">
+            <div class="badge">
+              <div class="badge-header"></div>
+              <img class="badge-avatar" src="img/team1.jpg">
+              <div class="badge-body">
+                <div class="badge-name">Adam Smith</div>
+                <div class="badge-role">CEO</div>
+                <div class="badge-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore ipsum dolor sit</div>
+              </div>
+              <div class="badge-foot">
+                <span class="badge-link">f</span>
+                <span class="badge-link">t</span>
+                <span class="badge-link">ln</span>
+              </div>
+            </div>
+            <div class="badge">
+              <div class="badge-header"></div>
+              <img class="badge-avatar" src="img/team2.jpg">
+              <div class="badge-body">
+                <div class="badge-name">John Black</div>
+                <div class="badge-role">Software Engineer</div>
+                <div class="badge-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore ipsum dolor sit</div>
+              </div>
+              <div class="badge-foot">
+                <span class="badge-link">f</span>
+                <span class="badge-link">t</span>
+                <span class="badge-link">ln</span>
+              </div>
+            </div>
+            <div class="badge">
+              <div class="badge-header"></div>
+              <img class="badge-avatar" src="img/team3.jpg">
+              <div class="badge-body">
+                <div class="badge-name">Jessica White</div>
+                <div class="badge-role">Web Designer</div>
+                <div class="badge-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore ipsum dolor sit</div>
+              </div>
+              <div class="badge-foot">
+                <span class="badge-link">f</span>
+                <span class="badge-link">t</span>
+                <span class="badge-link">ln</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer-under">
+        <div class="container-width">
+          <div class="footer-container">
+            <div class="foot-lists">
+              <div class="foot-list">
+                <div class="foot-list-title">About us</div>
+                <div class="foot-list-item">Contact</div>
+                <div class="foot-list-item">Events</div>
+                <div class="foot-list-item">Company</div>
+                <div class="foot-list-item">Jobs</div>
+                <div class="foot-list-item">Blog</div>
+              </div>
+              <div class="foot-list">
+                <div class="foot-list-title">Services</div>
+                <div class="foot-list-item">Education</div>
+                <div class="foot-list-item">Partner</div>
+                <div class="foot-list-item">Community</div>
+                <div class="foot-list-item">Forum</div>
+                <div class="foot-list-item">Download</div>
+                <div class="foot-list-item">Upgrade</div>
+              </div>
+              <div class="clearfix"></div>
+            </div>
+            <div class="form-sub">
+              <div class="foot-form-cont">
+                <div class="foot-form-title">Subscribe</div>
+                <div class="foot-form-desc">Subscribe to our newsletter to receive exclusive offers and the latest news</div>
+                <input name="name" class="sub-input" placeholder="Name" />
+                <input name="email" class="sub-input" placeholder="Email"/>
+                <button class="sub-btn" type="button">Submit</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="copyright">
+          <div class="container-width">
+            <div class="made-with">
+              made with GrapesJS
+            </div>
+            <div class="foot-social-btns">facebook twitter linkedin mail</div>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </footer>
+
       <style>
-        .panel {
+        .clearfix{ clear:both}
+        .header-banner{
+          padding-top: 35px;
+          padding-bottom: 100px;
+          color: #ffffff;
+          font-family: Helvetica, serif;
+          font-weight: 100;
+          background-image:url("http://grapesjs.com/img/bg-gr-v.png"), url("http://grapesjs.com/img/work-desk.jpg");
+          background-attachment: fixed, scroll;
+          background-position:left top, center center;
+          background-repeat:repeat-y, no-repeat;
+          background-size: contain, cover;
+        }
+        .container-width{
           width: 90%;
-          max-width: 700px;
+          max-width: 1150px;
+          margin: 0 auto;
+        }
+        .logo-container{
+          float: left;
+          width: 50%;
+        }
+        .logo{
+          background-color: #fff;
+          border-radius: 5px;
+          width: 130px;
+          padding: 10px;
+          min-height: 30px;
+          text-align: center;
+          line-height: 30px;
+          color: #4d114f;
+          font-size: 23px;
+        }
+        .navbar{
+          float: right;
+          width: 50%;
+        }
+        .menu-item{
+          float:right;
+          font-size: 15px;
+          color:#eee;
+          width: 130px;
+          padding: 10px;
+          min-height: 50px;
+          text-align: center;
+          line-height: 30px;
+          font-weight: 400;
+        }
+        .lead-title{
+          padding: 25px;
+          margin: 150px 50px 30px 30px;
+          font-size: 40px;
+        }
+        .sub-lead-title{
+          max-width: 650px;
+          line-height:30px;
+          margin-bottom:30px;
+          color: #c6c6c6;
+        }
+        .lead-btn{
+          margin-top: 15px;
+          padding:10px;
+          width:190px;
+          min-height:30px;
+          font-size:20px;
+          text-align:center;
+          letter-spacing:3px;
+          line-height:30px;
+          background-color:#d983a6;
+          border-radius:5px;
+          transition: all 0.5s ease;
+          cursor: pointer;
+        }
+        .lead-btn:hover{
+          background-color:#ffffff;
+          color:#4c114e;
+        }
+        .lead-btn:active{
+          background-color:#4d114f;
+          color:#fff;
+        }
+        .flex-sect{
+          background-color: #fafafa;
+          padding: 100px 0;
+          font-family: Helvetica, serif;
+        }
+        .flex-title{
+          margin-bottom: 15px;
+          font-size: 2em;
+          text-align: center;
+          font-weight: 700;
+          color:#555;
+          padding: 5px;
+        }
+        .flex-desc{
+          margin-bottom: 55px;
+          font-size: 1em;
+          color: rgba(0, 0, 0, 0.5);
+          text-align: center;
+          padding: 5px;
+        }
+        .cards{
+          padding: 20px 0;
+          display: flex;
+          justify-content: space-around;
+          flex-flow: wrap;
+        }
+        .card{
+          background-color: white;
+          height: 300px;
+          width:300px;
+          margin-bottom:30px;
+          box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+          border-radius: 2px;
+          transition: all 0.5s ease;
+          font-weight: 100;
+          overflow: hidden;
+        }
+        .card:hover{
+          margin-top: -5px;
+          box-shadow: 0 20px 30px 0 rgba(0, 0, 0, 0.2);
+        }
+        .card-header{
+          height: 155px;
+          background-image:url("http://placehold.it/350x250/78c5d6/fff/image1.jpg");
+          background-size:cover;
+          background-position:center center;
+        }
+        .card-header.ch2{
+          background-image:url("http://placehold.it/350x250/459ba8/fff/image2.jpg");
+        }
+        .card-header.ch3{
+          background-image:url("http://placehold.it/350x250/79c267/fff/image3.jpg");
+        }
+        .card-header.ch4{
+          background-image:url("http://placehold.it/350x250/c5d647/fff/image4.jpg");
+        }
+        .card-header.ch5{
+          background-image:url("http://placehold.it/350x250/f28c33/fff/image5.jpg");
+        }
+        .card-header.ch6{
+          background-image:url("http://placehold.it/350x250/e868a2/fff/image6.jpg");
+        }
+        .card-body{
+          padding: 15px 15px 5px 15px;
+          color: #555;
+        }
+        .card-title{
+          font-size: 1.4em;
+          margin-bottom: 5px;
+        }
+        .card-sub-title{
+          color: #b3b3b3;
+          font-size: 1em;
+          margin-bottom: 15px;
+        }
+        .card-desc{
+          font-size: 0.85rem;
+          line-height: 17px;
+        }
+        .am-sect{
+          padding-top: 100px;
+          padding-bottom: 100px;
+          font-family: Helvetica, serif;
+        }
+        .img-phone{
+          float: left;
+        }
+        .am-container{
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: space-around;
+        }
+        /*
+        .am-container{
+          perspective: 1000px;
+        }*/
+        .am-content{
+          float:left;
+          padding:7px;
+          width: 490px;
+          color: #444;
+          font-weight: 100;
+          margin-top: 50px;
+          /*transform: rotateX(0deg) rotateY(-20deg) rotateZ(0deg) scaleX(1) scaleY(1) scaleZ(1);*/
+        }
+        .am-pre{
+          padding:7px;
+          color:#b1b1b1;
+          font-size:15px;
+        }
+        .am-title{
+          padding:7px;
+          font-size:25px;
+          font-weight: 400;
+        }
+        .am-desc{
+          padding:7px;
+          font-size:17px;
+          line-height:25px;
+        }
+        .am-post{
+          padding:7px;
+          line-height:25px;
+          font-size:13px;
+        }
+        .blk-sect{
+          padding-top: 100px;
+          padding-bottom: 100px;
+          background-color: #222222;
+          font-family: Helvetica, serif;
+        }
+        .blk-title{
+          color:#fff;
+          font-size:25px;
+          text-align:center;
+          margin-bottom: 15px;
+        }
+        .blk-desc{
+          color:#b1b1b1;
+          font-size:15px;
+          text-align:center;
+          max-width:700px;
+          margin:0 auto;
+          font-weight:100;
+        }
+        .price-cards{
+          margin-top: 70px;
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: space-around;
+        }
+        .price-card-cont{
+          width: 300px;
+          padding: 7px;
+          float:left;
+        }
+        .price-card{
+          margin:0 auto;
+          min-height:350px;
+          background-color:#d983a6;
+          border-radius:5px;
+          font-weight: 100;
+          color: #fff;
+          width: 90%;
+        }
+        .pc-title{
+          font-weight:100;
+          letter-spacing:3px;
+          text-align:center;
+          font-size:25px;
+          background-color:rgba(0, 0, 0, 0.1);
+          padding:20px;
+        }
+        .pc-desc{
+          padding: 75px 0;
+          text-align: center;
+        }
+        .pc-feature{
+          color:rgba(255,255,255,0.5);
+          background-color:rgba(0, 0, 0, 0.1);
+          letter-spacing:2px;
+          font-size:15px;
+          padding:10px 20px;
+        }
+        .pc-feature:nth-of-type(2n){
+          background-color:transparent;
+        }
+        .pc-amount{
+          background-color:rgba(0, 0, 0, 0.1);
+          font-size: 35px;
+          text-align: center;
+          padding: 35px 0;
+        }
+        .pc-regular{
+          background-color: #da78a0;
+        }
+        .pc-enterprise{
+          background-color: #d66a96;
+        }
+        .footer-under{
+          background-color: #312833;
+          padding-bottom: 100px;
+          padding-top: 100px;
+          min-height: 500px;
+          color:#eee;
+          position: relative;
+          font-weight: 100;
+          font-family: Helvetica,serif;
+        }
+        .led{
+          border-radius: 100%;
+          width: 10px;
+          height: 10px;
+          background-color: rgba(0, 0, 0, 0.15);
+          float: left;
+          margin: 2px;
+          transition: all 5s ease;
+        }
+        .led:hover{
+          background-color: #c29fca;/* #eac229 */
+          box-shadow: 0 0 5px #9d7aa5, 0 0 10px #e6c3ee;/* 0 0 10px 0 #efc111 */
+          transition: all 0s ease;
+        }
+        .copyright {
+          background-color: rgba(0, 0, 0, 0.15);
+          color: rgba(238, 238, 238, 0.5);
+          bottom: 0;
+          padding: 1em 0;
+          position: absolute;
+          width: 100%;
+          font-size: 0.75em;
+        }
+        .made-with{
+          float: left;
+          width: 50%;
+          padding: 5px 0;
+        }
+        .foot-social-btns{
+          display: none;
+          float: right;
+          width: 50%;
+          text-align: right;
+          padding: 5px 0;
+        }
+        .footer-container{
+          display: flex;
+          flex-wrap: wrap;
+          align-items: stretch;
+          justify-content: space-around;
+        }
+        .foot-list {
+          float: left;
+          width: 200px;
+        }
+        .foot-list-title {
+          font-weight: 400;
+          margin-bottom: 10px;
+          padding: 0.5em 0;
+        }
+        .foot-list-item {
+          color: rgba(238, 238, 238, 0.8);
+          font-size: 0.8em;
+          padding: 0.5em 0;
+        }
+        .foot-list-item:hover {
+          color: rgba(238, 238, 238, 1);
+        }
+        .foot-form-cont{
+          width: 300px;
+          float: right;
+        }
+        .foot-form-title{
+          color: rgba(255,255,255,0.75);
+          font-weight: 400;
+          margin-bottom: 10px;
+          padding: 0.5em 0;
+          text-align: right;
+          font-size: 2em;
+        }
+        .foot-form-desc{
+          font-size: 0.8em;
+          color: rgba(255,255,255,0.55);
+          line-height: 20px;
+          text-align: right;
+          margin-bottom: 15px;
+        }
+        .sub-input{
+          width: 100%;
+          margin-bottom: 15px;
+          padding: 7px 10px;
+          border-radius: 2px;
+          color:#fff;
+          background-color: #554c57;
+          border: none;
+        }
+        .sub-btn{
+          width: 100%;
+          margin-bottom: 15px;
+          background-color: #785580;
+          border: none;
+          color:#fff;
+          border-radius: 2px;
+          padding: 7px 10px;
+          font-size: 1em;
+          cursor: pointer;
+        }
+        .sub-btn:hover{
+          background-color: #91699a;
+        }
+        .sub-btn:active{
+          background-color: #573f5c;
+        }
+        .blk-row::after{
+          content: "";
+          clear: both;
+          display: block;
+        }
+        .blk-row{
+          padding: 10px;
+        }
+        .blk1{
+          width: 100%;
+          padding: 10px;
+          min-height: 75px;
+        }
+        .blk2{
+          float: left;
+          width: 50%;
+          padding: 10px;
+          min-height: 75px;
+        }
+        .blk3{
+          float: left;
+          width: 33.3333%;
+          padding: 10px;
+          min-height: 75px;
+        }
+        .blk37l{
+          float: left;
+          width: 30%;
+          padding: 10px;
+          min-height: 75px;
+        }
+        .blk37r{
+          float: left;
+          width: 70%;
+          padding: 10px;
+          min-height: 75px;
+        }
+        .heading{padding: 10px;}
+        .paragraph{padding: 10px;}
+
+        .bdg-sect{
+          padding-top:100px;
+          padding-bottom:100px;
+          font-family: Helvetica, serif;
+          background-color: #fafafa;
+        }
+        .bdg-title{
+          text-align: center;
+          font-size: 2em;
+          margin-bottom: 55px;
+          color: #555555;
+        }
+        .badges{
+          padding:20px;
+          display: flex;
+          justify-content: space-around;
+          align-items: flex-start;
+          flex-wrap: wrap;
+        }
+        .badge{
+          width: 290px;
+          font-family: Helvetica, serif;
+          background-color: white;
+          margin-bottom:30px;
+          box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2);
           border-radius: 3px;
-          padding: 30px 20px;
-          margin: 150px auto 0px;
-          background-color: #d983a6;
-          box-shadow: 0px 3px 10px 0px rgba(0,0,0,0.25);
-          color:rgba(255,255,255,0.75);
-          font: caption;
           font-weight: 100;
-        }
-
-        .welcome {
+          overflow: hidden;
           text-align: center;
-          font-weight: 100;
-          margin: 0px;
+        }
+        .badge-header{
+          height: 115px;
+          background-image:url("http://grapesjs.com/img/bg-gr-v.png"), url("http://grapesjs.com/img/work-desk.jpg");
+          background-position:left top, center center;
+          background-attachment:scroll, fixed;
+          overflow: hidden;
+        }
+        .blurer{
+          filter: blur(5px);
+        }
+        .badge-name{
+          font-size: 1.4em;
+          margin-bottom: 5px;
+        }
+        .badge-role{
+          color: #777;
+          font-size: 1em;
+          margin-bottom: 25px;
+        }
+        .badge-desc{
+          font-size: 0.85rem;
+          line-height: 20px;
+        }
+        .badge-avatar{
+          width:100px;
+          height:100px;
+          border-radius: 100%;
+          border: 5px solid #fff;
+          box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2);
+          margin-top: -75px;
+          position: relative;
+        }
+        .badge-body{
+          margin: 35px 10px;
+        }
+        .badge-foot{
+          color:#fff;
+          background-color:#a290a5;
+          padding-top:13px;
+          padding-bottom:13px;
+          display: flex;
+          justify-content: center;
+        }
+        .badge-link{
+          height: 35px;
+          width: 35px;
+          line-height: 35px;
+          font-weight: 700;
+          background-color: #fff;
+          color: #a290a5;
+          display: block;
+          border-radius: 100%;
+          margin: 0 10px;
+        }
+        .quote{
+          color:#777;
+          font-weight: 300;
+          padding: 10px;
+          box-shadow: -5px 0 0 0 #ccc;
+          font-style: italic;
+          margin: 20px 30px;
         }
 
-        .logo {
-          width: 70px;
-          height: 70px;
-          vertical-align: middle;
+        .iframe {
+          height: 300px;
+          width: 500px;
         }
 
-        .logo path {
-          pointer-events: none;
-          fill: none;
-          stroke-linecap: round;
-          stroke-width: 7;
-          stroke: #fff
+        .row {
+          display: table;
+          padding: 10px;
+          width: 100%;
         }
 
-        .big-title {
-          text-align: center;
-          font-size: 3.5rem;
-          margin: 15px 0;
+        .cell {
+          width: 8%;
+          display: table-cell;
+          height: 75px;
         }
 
-        .description {
-          text-align: justify;
-          font-size: 1rem;
-          line-height: 1.5rem;
+        .cell30 {
+          width: 30%;
         }
 
+        .cell70 {
+          width: 70%;
+        }
+
+        @media (max-width: 768px){
+          .foot-form-cont{
+            width:400px;
+          }
+          .foot-form-title{
+            width: auto;
+          }
+
+          .cell, .cell30, .cell70 {
+            width: 100%;
+            display: block;
+          }
+        }
+
+        @media (max-width: 480px){
+          .foot-lists{
+            display:none;
+          }
+        }
       </style>
     </div>
 
     <script type="text/javascript">
-      var editor = grapesjs.init({
-        showOffsets: 1,
-        noticeOnUnload: 0,
-        container: '#gjs',
-        height: '100%',
-        fromElement: true,
-        storageManager: { autoload: 0 },
-        styleManager : {
-          sectors: [{
-              name: 'General',
-              open: false,
-              buildProps: ['float', 'display', 'position', 'top', 'right', 'left', 'bottom']
-            },{
-              name: 'Dimension',
-              open: false,
-              buildProps: ['width', 'height', 'max-width', 'min-height', 'margin', 'padding'],
-            },{
-              name: 'Typography',
-              open: false,
-              buildProps: ['font-family', 'font-size', 'font-weight', 'letter-spacing', 'color', 'line-height', 'text-shadow'],
-            },{
-              name: 'Decorations',
-              open: false,
-              buildProps: ['border-radius-c', 'background-color', 'border-radius', 'border', 'box-shadow', 'background'],
-            },{
-              name: 'Extra',
-              open: false,
-              buildProps: ['transition', 'perspective', 'transform'],
-            }
-          ],
-        },
-      });
+    //grapesjs.plugins.add('testplug', (editor, config) => {});
+    var blkStyle = '.blk-row::after{ content: ""; clear: both; display: block;} .blk-row{padding: 10px;}';
+    var sectors = [{
+      name: 'General',
+      open: false,
+      buildProps: ['float', 'display', 'position', 'top', 'right', 'left', 'bottom']
+    },{
+      name: 'Dimension',
+      open: false,
+      buildProps: [ 'width', 'flex-width', 'height', 'max-width', 'min-height', 'margin', 'padding'],
+      properties: [{
+        id: 'flex-width',
+        type: 'integer',
+        name: 'Width',
+        units: ['px', '%'],
+        property: 'flex-basis',
+        toRequire: 1,
+      }]
+    },{
+      name: 'Typography',
+      open: false,
+      buildProps: ['font-family', 'font-size', 'font-weight', 'letter-spacing', 'color', 'line-height', 'text-align', 'text-shadow'],
+      properties: [{
+        property: 'text-align',
+        list    : [
+          {value: 'left', className: 'fa fa-align-left'},
+          {value: 'center', className: 'fa fa-align-center' },
+          {value: 'right', className: 'fa fa-align-right'},
+          {value: 'justify', className: 'fa fa-align-justify'}
+        ],
+      }]
+    },{
+      name: 'Decorations',
+      open: false,
+      buildProps: ['border-radius-c', 'background-color', 'border-radius', 'border', 'box-shadow', 'background'],
+    },{
+      name: 'Extra',
+      open: false,
+      buildProps: ['opacity', 'transition', 'perspective', 'transform'],
+      properties: [{
+        type: 'slider',
+        property: 'opacity',
+        defaults: 1,
+        step: 0.01,
+        max: 1,
+        min:0,
+      }]
+    },{
+        name: 'Flex',
+        open: false,
+        properties: [{
+          name    : 'Flex Container',
+          property  : 'display',
+          type    : 'select',
+          defaults  : 'block',
+          list    : [{
+                    value     : 'block',
+                    name   : 'Disable',
+                  },{
+                    value   : 'flex',
+                    name   : 'Enable',
+                  }],
+        },{
+          name: 'Flex Parent',
+          property: 'label-parent-flex',
+        },{
+          name      : 'Direction',
+          property  : 'flex-direction',
+          type    : 'radio',
+          defaults  : 'row',
+          list    : [{
+                    value   : 'row',
+                    name    : 'Row',
+                    className : 'icons-flex icon-dir-row',
+                    title   : 'Row',
+                  },{
+                    value   : 'row-reverse',
+                    name    : 'Row reverse',
+                    className : 'icons-flex icon-dir-row-rev',
+                    title   : 'Row reverse',
+                  },{
+                    value   : 'column',
+                    name    : 'Column',
+                    title   : 'Column',
+                    className : 'icons-flex icon-dir-col',
+                  },{
+                    value   : 'column-reverse',
+                    name    : 'Column reverse',
+                    title   : 'Column reverse',
+                    className : 'icons-flex icon-dir-col-rev',
+                  }],
+        },{
+          name      : 'Wrap',
+          property  : 'flex-wrap',
+          type    : 'radio',
+          defaults  : 'nowrap',
+          list    : [{
+                    value   : 'nowrap',
+                    title   : 'Single line',
+                  },{
+                    value   : 'wrap',
+                    title   : 'Multiple lines',
+                  },{
+                    value   : 'wrap-reverse',
+                    title   : 'Multiple lines reverse',
+                  }],
+        },{
+          name      : 'Justify',
+          property  : 'justify-content',
+          type    : 'radio',
+          defaults  : 'flex-start',
+          list    : [{
+                    value   : 'flex-start',
+                    className : 'icons-flex icon-just-start',
+                    title   : 'Start',
+                  },{
+                    value   : 'flex-end',
+                    title    : 'End',
+                    className : 'icons-flex icon-just-end',
+                  },{
+                    value   : 'space-between',
+                    title    : 'Space between',
+                    className : 'icons-flex icon-just-sp-bet',
+                  },{
+                    value   : 'space-around',
+                    title    : 'Space around',
+                    className : 'icons-flex icon-just-sp-ar',
+                  },{
+                    value   : 'center',
+                    title    : 'Center',
+                    className : 'icons-flex icon-just-sp-cent',
+                  }],
+        },{
+          name      : 'Align',
+          property  : 'align-items',
+          type    : 'radio',
+          defaults  : 'center',
+          list    : [{
+                    value   : 'flex-start',
+                    title    : 'Start',
+                    className : 'icons-flex icon-al-start',
+                  },{
+                    value   : 'flex-end',
+                    title    : 'End',
+                    className : 'icons-flex icon-al-end',
+                  },{
+                    value   : 'stretch',
+                    title    : 'Stretch',
+                    className : 'icons-flex icon-al-str',
+                  },{
+                    value   : 'center',
+                    title    : 'Center',
+                    className : 'icons-flex icon-al-center',
+                  }],
+        },{
+          name: 'Flex Children',
+          property: 'label-parent-flex',
+        },{
+          name:     'Order',
+          property:   'order',
+          type:     'integer',
+          defaults :  0,
+          min: 0
+        },{
+          name    : 'Flex',
+          property  : 'flex',
+          type    : 'composite',
+          properties  : [{
+                  name:     'Grow',
+                  property:   'flex-grow',
+                  type:     'integer',
+                  defaults :  0,
+                  min: 0
+                },{
+                  name:     'Shrink',
+                  property:   'flex-shrink',
+                  type:     'integer',
+                  defaults :  0,
+                  min: 0
+                },{
+                  name:     'Basis',
+                  property:   'flex-basis',
+                  type:     'integer',
+                  units:    ['px','%',''],
+                  unit: '',
+                  defaults :  'auto',
+                }],
+        },{
+          name      : 'Align',
+          property  : 'align-self',
+          type      : 'radio',
+          defaults  : 'auto',
+          list    : [{
+                    value   : 'auto',
+                    name    : 'Auto',
+                  },{
+                    value   : 'flex-start',
+                    title    : 'Start',
+                    className : 'icons-flex icon-al-start',
+                  },{
+                    value   : 'flex-end',
+                    title    : 'End',
+                    className : 'icons-flex icon-al-end',
+                  },{
+                    value   : 'stretch',
+                    title    : 'Stretch',
+                    className : 'icons-flex icon-al-str',
+                  },{
+                    value   : 'center',
+                    title    : 'Center',
+                    className : 'icons-flex icon-al-center',
+                  }],
+        }]
+      }
 
-      editor.BlockManager.add('testBlock', {
-        label: 'Block',
-        attributes: { class:'gjs-fonts gjs-f-b1' },
-        content: `<div style="padding-top:50px; padding-bottom:50px; text-align:center">Test block</div>`
+    ];
+    /*
+    var editor2  = grapesjs.init({
+      container  : '#gjs2',
+      height: '450px',
+      fromElement: true,
+      storageManager: { type: 0 },
+      plugins: ['testplug', 'gjs-blocks-basic', 'gjs-plugin-forms', 'grapesjs-lory-slider'],
+
+      width: '500px',
+      layerManager: {
+        appendTo: '#layers-container'
+      },
+      blockManager: {
+        appendTo: '#blocks'//blocks
+      },
+      styleManager: {
+        appendTo: '#style-manager-container',
+        sectors: sectors,
+      },
+      selectorManager: {
+        appendTo: '#selectors-container',
+      },
+      traitManager: {
+        appendTo: '#traits-container',
+      },
+      panels: {
+        defaults: [{
+          id: 'layers',
+          el: '#layers',
+          resizable: {
+            tc: 0,
+            cr: 1,
+            bc: 0,
+            keyWidth: 'flex-basis',
+          },
+        },{
+          id: 'styles',
+          el: '#style-manager',
+          resizable: {
+            tc: 0,
+            cr: 0,
+            cl: 1,
+            bc: 0,
+            keyWidth: 'flex-basis',
+          },
+        }]
+      }
+    });
+    */
+
+    var editor  = grapesjs.init(
+
+
+    {
+      container  : '#gjs',
+      height: '100%',
+      fromElement: true,
+      plugins: ['testplug', 'gjs-blocks-basic', /*'gjs-plugin-forms'*/, 'grapesjs-lory-slider', 'gjs-component-countdown'],
+      autorender: 0,
+      allowScripts: 1,
+      showOffsets: 1,
+      noticeOnUnload: 0,
+      avoidInlineStyle: 1,
+      avoidDefaults: 1,
+      // forceClass: 0,
+      storageManager: { autoload: 0 },
+      // storageManager: { type: 'firebase-firestore' },
+
+      layerManager: {
+        showWrapper: 0,
+      },
+      assetManager: {
+        embedAsBase64: 1,
+        upload: 'https://test.page',
+        params: {
+          _token: 'pCYrSwjuiV0t5NVtZpQDY41Gn5lNUwo3it1FIkAj',
+        },
+        assets: [
+           { type: 'image', src : 'http://placehold.it/350x250/78c5d6/fff/image1.jpg', height:350, width:250},
+           { type: 'image', src : 'http://placehold.it/350x250/459ba8/fff/image2.jpg', height:350, width:250},
+           { type: 'image', src : 'http://placehold.it/350x250/79c267/fff/image3.jpg', height:350, width:250},
+           { type: 'image', src : 'http://placehold.it/350x250/c5d647/fff/image4.jpg', height:350, width:250},
+           { type: 'image', src : 'http://placehold.it/350x250/f28c33/fff/image5.jpg', height:350, width:250},
+           { type: 'image', src : 'http://placehold.it/350x250/e868a2/fff/image6.jpg', height:350, width:250},
+           { type: 'image', src : 'http://placehold.it/350x250/cc4360/fff/image7.jpg', height:350, width:250},
+           { type: 'image', src : './img/work desk.jpg', date: '2015-02-01',height:1080, width:1728},
+           { type: 'image', src : './img/phone-app.png', date: '2015-02-01',height:650, width:320},
+           { type: 'image', src : './img/bg-gr-v.png', date: '2015-02-01',height:1, width:1728},
+         ]
+      },
+
+      blockManager: {
+        blocks: [/*{
+            id: 'b1',
+            label: '1 Block',
+            category: 'Basic',
+            attributes: {class:'gjs-fonts gjs-f-b1'},
+            content: `<div class="row" data-gjs-droppable=".cell" data-gjs-custom-name="Row">
+                <div class="cell" data-gjs-draggable=".row" data-gjs-custom-name="Cell"></div>
+              </div>`
+          },{
+            id: 'b2',
+            label: '2 Blocks',
+            category: 'Basic',
+            attributes: {class:'gjs-fonts gjs-f-b2'},
+            content: `<div class="row" data-gjs-droppable=".cell" data-gjs-custom-name="Row">
+                <div class="cell" data-gjs-draggable=".row" data-gjs-custom-name="Cell"></div>
+                <div class="cell" data-gjs-draggable=".row" data-gjs-custom-name="Cell"></div>
+              </div>`
+          },{
+            id: 'b3',
+            label: '3 Blocks',
+            category: 'Basic',
+            attributes: {class:'gjs-fonts gjs-f-b3'},
+            content: `<div class="row" data-gjs-droppable=".cell" data-gjs-custom-name="Row">
+                <div class="cell" data-gjs-draggable=".row" data-gjs-custom-name="Cell"></div>
+                <div class="cell" data-gjs-draggable=".row" data-gjs-custom-name="Cell"></div>
+                <div class="cell" data-gjs-draggable=".row" data-gjs-custom-name="Cell"></div>
+              </div>`
+          },{
+            id: 'b4',
+            label: '3/7 Block',
+            category: 'Basic',
+            attributes: {class:'gjs-fonts gjs-f-b37'},
+            content: `<div class="row" data-gjs-droppable=".cell" data-gjs-custom-name="Row">
+                <div class="cell cell30" data-gjs-draggable=".row" data-gjs-custom-name="Cell"></div>
+                <div class="cell cell70" data-gjs-draggable=".row" data-gjs-custom-name="Cell"></div>
+              </div>`,
+          },{
+            id: 'hero',
+            label: 'Hero section',
+            category: 'Section',
+            content: '<header class="header-banner"> <div class="container-width">'+
+                '<div class="logo-container"><div class="logo">GrapesJS</div></div>'+
+                '<nav class="navbar">'+
+                  '<div class="menu-item">BUILDER</div><div class="menu-item">TEMPLATE</div><div class="menu-item">WEB</div>'+
+                '</nav><div class="clearfix"></div>'+
+                '<div class="lead-title">Build your templates without coding</div>'+
+                '<div class="lead-btn">Try it now</div></div></header>',
+            attributes: {class:'gjs-fonts gjs-f-hero'}
+          },{
+            id: 'h1p',
+            label: 'Text section',
+            category: 'Typography',
+            content: `<div>
+              <h1 class="heading">Insert title here</h1>
+              <p class="paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
+              </div>`,
+            attributes: {class:'gjs-fonts gjs-f-h1p'}
+          },*/{
+            id: '3ba',
+            label: 'Badges',
+            category: 'Section',
+            content: '<div class="badges">'+
+              '<div class="badge">'+
+                '<div class="badge-header"></div>'+
+                '<img class="badge-avatar" src="img/team1.jpg">'+
+                '<div class="badge-body">'+
+                  '<div class="badge-name">Adam Smith</div><div class="badge-role">CEO</div><div class="badge-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore ipsum dolor sit</div>'+
+                '</div>'+
+                '<div class="badge-foot"><span class="badge-link">f</span><span class="badge-link">t</span><span class="badge-link">ln</span></div>'+
+              '</div>'+
+              '<div class="badge">'+
+                '<div class="badge-header"></div>'+
+                '<img class="badge-avatar" src="img/team2.jpg">'+
+                '<div class="badge-body">'+
+                  '<div class="badge-name">John Black</div><div class="badge-role">Software Engineer</div><div class="badge-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore ipsum dolor sit</div>'+
+                '</div>'+
+                '<div class="badge-foot"><span class="badge-link">f</span><span class="badge-link">t</span><span class="badge-link">ln</span></div>'+
+              '</div>'+
+              '<div class="badge">'+
+                '<div class="badge-header"></div>'+
+                '<img class="badge-avatar" src="img/team3.jpg">'+
+                '<div class="badge-body">'+
+                  '<div class="badge-name">Jessica White</div><div class="badge-role">Web Designer</div><div class="badge-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore ipsum dolor sit</div>'+
+                '</div>'+
+                '<div class="badge-foot"><span class="badge-link">f</span><span class="badge-link">t</span><span class="badge-link">ln</span>'+
+                '</div>'+
+              '</div></div>',
+            attributes: {class:'gjs-fonts gjs-f-3ba'}
+          },{
+            id: 'text',
+            label: 'Text',
+            attributes: {class:'gjs-fonts gjs-f-text'},
+            category: 'Basic',
+            content: {
+              type:'text',
+              content:'Insert your text here',
+              style: {padding: '10px' },
+              activeOnRender: 1
+            },
+          },{
+            id: 'image',
+            label: 'Image',
+            category: 'Basic',
+            attributes: {class:'gjs-fonts gjs-f-image'},
+            content: {
+              style: {color: 'black'},
+              type:'image',
+              activeOnRender: 1
+            },
+          },{
+            id: 'quo',
+            label: 'Quote',
+            category: 'Typography',
+            content: '<blockquote class="quote">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore ipsum dolor sit</blockquote>',
+            attributes: {class:'fa fa-quote-right'}
+          },{
+            id: 'link',
+            label: 'Link',
+            category: 'Basic',
+            attributes: {class:'fa fa-link'},
+            content: {
+              type:'link',
+              content:'Link',
+              style:{color: '#d983a6'}
+            },
+          },{
+            id: 'map',
+            label: 'Map',
+            category: 'Extra',
+            attributes: {class:'fa fa-map-o'},
+            content: {
+              type: 'map',
+              style: {height: '350px'}
+            },
+          },{
+            id: 'video',
+            label: 'Video',
+            category: 'Basic',
+            attributes: {class:'fa fa-youtube-play'},
+            content: {
+              type: 'video',
+              src: 'img/video2.webm',
+              style: {
+                height: '350px',
+                width: '615px',
+              }
+            },
+          }],
+      },
+      /*
+      ztyleManager : {
+        clearProperties: 1,
+        sectors: [{
+          name: 'General',
+          open: false,
+          buildProps: ['gigi', 'width'],
+          properties: [{
+            id: 'gigi',
+            name: 'My prop',
+            property: 'custom-prop',
+          }]
+        }]
+      },*/
+
+      styleManager : {
+        clearProperties: 1,
+        sectors: sectors,
+      },
+
+
+    });
+
+
+    window.editor = editor;
+
+    var pnm = editor.Panels;
+    pnm.addButton('options', [{
+      id: 'undo',
+      className: 'fa fa-undo icon-undo',
+      command: function(e) { return e.runCommand('core:undo') },
+    },{
+      id: 'redo',
+      className: 'fa fa-repeat icon-redo',
+      command: function(e) { return e.runCommand('core:redo') },
+    },{
+      id: 'clear-all',
+      className: 'fa fa-trash icon-blank',
+      command: function(e) { return e.runCommand('core:canvas-clear') },
+    }]);
+
+    var bm = editor.BlockManager;
+
+    bm.add('link-block', {
+      label: 'Link Block',
+      attributes: {class:'fa fa-link'},
+      category: 'Basic',
+      content: {
+        type:'link',
+        editable: false,
+        draggable: '#wrapper',
+        style:{
+          display: 'inline-block',
+          padding: '5px',
+          'min-height': '50px',
+          'min-width': '50px'
+        }
+      },
+    });
+
+    editor.on('selector:add', function(selector) {
+      if (['.row-flex', '.cell-flex', '.cell-gut'].indexOf(selector.getFullName()) >= 0 ) {
+        selector.set({private: 1});
+      }
+    });
+    /*
+    bm.add('b1-2', {
+      label: 'Flex Block',
+      category: 'Basic',
+      attributes: { class:'gjs-fonts gjs-f-b1' },
+      content: `
+        <div class="row-flex" data-columns="1" style="text-align: center" data-gjs-droppable="[data-column]" data-gjs-highlightable="false" data-gjs-resizable='{"tl":0,"tc":0,"tr":0,"cl":0,"cr":0,"bl":0,"br":0}' data-gjs-custom-name="Row">
+          <div class="cell-flex" data-column="1" style="letter-spacing: normal; flex-basis: 100%" data-gjs-draggable="[data-columns]" data-gjs-resizable='{"tl":0,"tc":0,"tr":0,"cl":0,"bl":0,"br":0,"bc": 0, "keyWidth": "flex-basis", "currentUnit": 1, "minDim": 1, "maxDim": 100, "step": 0.2}' data-gjs-unstylable='["width"]' data-gjs-stylable-require='["flex-basis"]'></div>
+          <div class="cell-flex" data-column="1" style="letter-spacing: normal; flex-basis: 100%" data-gjs-draggable="[data-columns]" data-gjs-resizable='{"tl":0,"tc":0,"tr":0,"cl":0,"bl":0,"br":0,"bc": 0, "keyWidth": "flex-basis", "currentUnit": 1, "minDim": 1, "maxDim": 100, "step": 0.2}' data-gjs-unstylable='["width"]' data-gjs-stylable-require='["flex-basis"]'></div>
+        </div>
+        <style>
+          .row-flex {
+              display: flex;
+              justify-content: flex-start;
+              align-items: stretch;
+              flex-wrap: nowrap;
+              padding: 10px;
+          }
+
+          .cell-flex {
+            min-height: 75px;
+            flex-grow: 1;
+            flex-basis: 100%;
+          }
+        </style>
+        `
+    });
+    */
+
+    bm.add('TEST', {
+      label: 'TEST JS LOAD',
+      category: 'Basic',
+      attributes: { class:'gjs-fonts gjs-f-b1' },
+      content: {
+        script: function() {
+          console.log(this);
+          this.addEventListener('click', function(e) {
+            console.log('clicked');
+          })
+        },
+        style: {padding: '25px'},
+        components: '<div style="padding: 10px"></div>'
+      }
+    });
+
+    var domc = editor.DomComponents;
+    var defaultType = domc.getType('default');
+    var defaultModel = defaultType.model;
+    var defaultView = defaultType.view;
+    var textType = domc.getType('text');
+
+    /*
+    domc.addType('void-component', {
+      model: defaultModel.extend({
+        defaults: { ...defaultModel.prototype.defaults,
+          style: { 'pointer-events': 'none' }
+        },
+        toHTML() {
+          return '';
+        }
+      }, {
+        isComponent: function(el) {},
+      }),
+      view: defaultView,
+    });
+*/
+    /*
+    domc.addType('raw-text', {
+      model: textType.model.extend({
+        },{
+          isComponent: function(el) {
+            if (el.hasAttribute && el.hasAttribute('data-raw-text')) {
+              return {
+                type: 'raw-text',
+                content: el.innerHTML,
+                components: []
+              };
+            }
+          }
+        }
+      ),
+      view: textType.view.extend({
+        disableEditing() {
+          const model = this.model;
+          const rte = this.rte;
+
+          if (rte && model.get('editable')) {
+            rte.disable(this, this.activeRte);
+            model.set('content', this.getChildrenContainer().innerHTML)
+            .trigger('change:content', model);
+          }
+
+          this.rteEnabled = 0;
+          this.toggleEvents();
+        },
       })
+    });
+    */
+
+    /*
+    domc.addType('default', {
+      model: defaultModel.extend({
+        defaults: Object.assign({}, defaultModel.prototype.defaults, {
+          'custom-name': 'testiiing',
+          traits: [{
+            name: 'title',
+            label: 'Título',
+            placeholder: 'Insira um texto aqui'
+          }]
+        }),
+      }),
+    });
+    */
+
+
+
+
+    // Store and load events
+    editor.on('storage:load', function(e) {
+      console.log('LOAD ', e);
+    });
+    editor.on('storage:store', function(e) {
+      console.log('STORE ', e);
+    });
+
+    // Canvas DND
+    /*
+    editor.on('canvas:dragenter', (dt, content) => console.log('DRAG-ENTER', content));
+    editor.on('canvas:dragover', dt => console.log('DRAG-OVER')); // As orignal dragover
+    editor.on('canvas:drop', (dt, model) => console.log('DRAG-DROP', model)); // When something is dropped on canvas
+    editor.on('canvas:dragend', dt => console.log('DRAG-END')); // Fired when a drag operation is being ended
+    editor.on('canvas:dragdata', (dt, result) => {
+      console.group('DRAG-DATA');
+      console.log('Files', dt.files);
+      console.log('Types', dt.types);
+      console.log('Content', result.content);
+      console.groupEnd();
+    });
+    */
+
+    //editor.on('component:remove', m => console.log('Removed', m, m.getEl()));
+    //editor.on('component:add', m => console.log('Added', m, m.getEl()));
+
+    editor.on('traverse:html', function (node, resultNode) {
+
+    });
+    editor.on('load', () => {
+    });
+    editor.render();
     </script>
   </body>
 </html>

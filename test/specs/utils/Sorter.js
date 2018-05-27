@@ -4,7 +4,7 @@ define(function(require, exports, module) {
 
   module.exports = {
     run: function() {
-      describe('Sorter', function() {
+      describe('Sorter', () => {
         var fixtures;
         var fixture;
         var obj;
@@ -12,11 +12,11 @@ define(function(require, exports, module) {
         var plh;
         var html;
 
-        before(function() {
+        beforeAll(function() {
           fixture = $('<div class="sorter-fixture"></div>').get(0);
         });
 
-        beforeEach(function() {
+        beforeEach(() => {
           parent = document.createElement('div');
           parent.setAttribute('class', 'parent1');
           plh = document.createElement('div');
@@ -52,14 +52,14 @@ define(function(require, exports, module) {
             '</div>';
         });
 
-        afterEach(function() {
+        afterEach(() => {
           document.body.removeChild(fixture);
           obj = null;
           parent = null;
           html = null;
         });
 
-        it('matches class', function() {
+        test('matches class', () => {
           var el = document.createElement('div');
           el.setAttribute('class', 'test test2');
           parent.appendChild(el);
@@ -68,7 +68,7 @@ define(function(require, exports, module) {
           obj.matches(el, '.test3').should.equal(false);
         });
 
-        it('matches id', function() {
+        test('matches id', () => {
           var el = document.createElement('div');
           el.setAttribute('id', 'test2');
           parent.appendChild(el);
@@ -77,7 +77,7 @@ define(function(require, exports, module) {
           obj.matches(el, '#test').should.equal(false);
         });
 
-        it('matches tag', function() {
+        test('matches tag', () => {
           var el = document.createElement('span');
           parent.appendChild(el);
           obj.matches(el, 'span').should.equal(true);
@@ -85,17 +85,17 @@ define(function(require, exports, module) {
           obj.matches(el, '*').should.equal(true);
         });
 
-        it('Creates placeholder', function() {
+        test('Creates placeholder', () => {
           obj.createPlaceholder().className.should.equal('placeholder');
         });
 
-        it('isInFlow to overflow hidden', function() {
+        test('isInFlow to overflow hidden', () => {
           parent.innerHTML = html;
           var el = parent.querySelector('#el1');
           obj.isInFlow(el).should.equal(false);
         });
 
-        it('isInFlow inner to overflow', function() {
+        test('isInFlow inner to overflow', () => {
           parent.innerHTML = html;
           var el = parent.querySelector('#el2');
           if (!el) {
@@ -105,13 +105,13 @@ define(function(require, exports, module) {
           obj.isInFlow(el).should.equal(true);
         });
 
-        it('isInFlow for span', function() {
+        test('isInFlow for span', () => {
           parent.innerHTML = html;
           var el = parent.querySelector('#elspan');
           obj.isInFlow(el).should.equal(false);
         });
 
-        it('isInFlow for div #a', function() {
+        test('isInFlow for div #a', () => {
           parent.innerHTML = html;
           var el = parent.querySelector('#a');
           if (!el) {
@@ -121,7 +121,7 @@ define(function(require, exports, module) {
           obj.isInFlow(el).should.equal(true);
         });
 
-        it('isInFlow for div #aa', function() {
+        test('isInFlow for div #aa', () => {
           parent.innerHTML = html;
           var el = parent.querySelector('#aa');
           if (!el) {
@@ -131,7 +131,7 @@ define(function(require, exports, module) {
           obj.isInFlow(el).should.equal(true);
         });
 
-        it('isInFlow for p #aaa', function() {
+        test('isInFlow for p #aaa', () => {
           parent.innerHTML = html;
           var el = parent.querySelector('#aaa');
           if (!el) {
@@ -141,13 +141,13 @@ define(function(require, exports, module) {
           obj.isInFlow(el).should.equal(true);
         });
 
-        it('isInFlow for span #aab', function() {
+        test('isInFlow for span #aab', () => {
           parent.innerHTML = html;
           var el = parent.querySelector('#aab');
           obj.isInFlow(el).should.equal(false);
         });
 
-        it('isInFlow for span #aac with display block', function() {
+        test('isInFlow for span #aac with display block', () => {
           parent.innerHTML = html;
           var el = parent.querySelector('#aac');
           if (!el)
@@ -156,19 +156,19 @@ define(function(require, exports, module) {
           obj.isInFlow(el).should.equal(true);
         });
 
-        it('isInFlow for div #ab with float left', function() {
+        test('isInFlow for div #ab with float left', () => {
           parent.innerHTML = html;
           var el = parent.querySelector('#ab');
           obj.isInFlow(el).should.equal(false);
         });
 
-        it('isInFlow for div #ac in absolute', function() {
+        test('isInFlow for div #ac in absolute', () => {
           parent.innerHTML = html;
           var el = parent.querySelector('#ac');
           obj.isInFlow(el).should.equal(false);
         });
 
-        it('isInFlow for div #acb inside absolute', function() {
+        test('isInFlow for div #acb inside absolute', () => {
           parent.innerHTML = html;
           var el = parent.querySelector('#acb');
           if (!el) {
@@ -178,17 +178,17 @@ define(function(require, exports, module) {
           obj.isInFlow(el).should.equal(true);
         });
 
-        it('isInFlow for div #ad overflow hidden', function() {
+        test('isInFlow for div #ad overflow hidden', () => {
           parent.innerHTML = html;
           var el = parent.querySelector('#ad');
           obj.isInFlow(el).should.equal(false);
         });
 
-        describe('Closest method', function() {
+        describe('Closest method', () => {
           var parent2;
           var parent3;
 
-          beforeEach(function() {
+          beforeEach(() => {
             parent2 = document.createElement('span');
             parent2.setAttribute('class', 'parent2');
             parent3 = document.createElement('div');
@@ -197,7 +197,7 @@ define(function(require, exports, module) {
             parent2.appendChild(parent3);
           });
 
-          it('Closest by class', function() {
+          test('Closest by class', () => {
             var el = document.createElement('div');
             parent3.appendChild(el);
             obj.closest(el, '.parent2').should.deep.equal(parent2);
@@ -205,7 +205,7 @@ define(function(require, exports, module) {
             obj.closest(el, '.parent1').should.deep.equal(parent);
           });
 
-          it('Closest by tag', function() {
+          test('Closest by tag', () => {
             var el = document.createElement('div');
             el.setAttribute('class', 'el');
             parent3.appendChild(el);
@@ -215,7 +215,7 @@ define(function(require, exports, module) {
           });
         });
 
-        describe('With elements', function() {
+        describe('With elements', () => {
           var vertDims;
           var parent2;
           var parent3;
@@ -225,7 +225,7 @@ define(function(require, exports, module) {
           var sib4;
           var el;
 
-          beforeEach(function() {
+          beforeEach(() => {
             parent2 = document.createElement('span');
             parent2.setAttribute('class', 'parent2');
             parent3 = document.createElement('div');
@@ -263,13 +263,13 @@ define(function(require, exports, module) {
             ];
           });
 
-          it('startSort inits correctly inits', function() {
+          test('startSort inits correctly inits', () => {
             obj.startSort(el);
             obj.moved.should.equal(0);
             obj.plh.style.display.should.equal('none');
           });
 
-          it('onMove', function() {
+          test('onMove', () => {
             var target = document.createElement('div');
             obj.startSort(el);
             obj.onMove({
@@ -280,7 +280,7 @@ define(function(require, exports, module) {
             obj.moved.should.equal(1);
           });
 
-          it('getDim from element', function() {
+          test('getDim from element', () => {
             var subPos = obj.offset(sib1);
             var top = subPos.top;
             var left = subPos.left;
@@ -288,7 +288,7 @@ define(function(require, exports, module) {
             obj.getDim(sib1).should.deep.equal(result);
           });
 
-          it('getChildrenDim from element', function() {
+          test('getChildrenDim from element', () => {
             el.style.position = 'absolute';
             el.style.top = '0';
             var ch = obj.getChildrenDim(el);
@@ -307,7 +307,7 @@ define(function(require, exports, module) {
             ch.should.deep.equal(result);
           });
 
-          it('nearBorders', function() {
+          test('nearBorders', () => {
             obj.borderOffset = 10;
             var dim = [0, 0, 100, 200];
             obj.nearBorders(dim, 20, 15).should.equal(false);
@@ -315,7 +315,7 @@ define(function(require, exports, module) {
             obj.nearBorders(dim, 500, 500).should.equal(true);
           });
 
-          it('dimsFromTarget', function() {
+          test('dimsFromTarget', () => {
             var child1 = document.createElement('div');
             var child2 = document.createElement('div');
             child1.style.width = '30px';
@@ -378,10 +378,10 @@ define(function(require, exports, module) {
             dims.should.deep.equal(resultParent);
           });
 
-          describe('findPosition', function() {
-            beforeEach(function() {});
+          describe('findPosition', () => {
+            beforeEach(() => {});
 
-            it('Vertical dimensions', function() {
+            test('Vertical dimensions', () => {
               var result = { index: 0, method: 'before' };
               obj.findPosition(vertDims, -10, -10).should.deep.equal(result);
               obj.findPosition(vertDims, 0, 0).should.deep.equal(result);
@@ -403,8 +403,8 @@ define(function(require, exports, module) {
             });
           });
 
-          describe('movePlaceholder', function() {
-            beforeEach(function() {
+          describe('movePlaceholder', () => {
+            beforeEach(() => {
               vertDims = [
                 [0, 10, 50, 100, true],
                 [50, 20, 50, 70, true],
@@ -413,7 +413,7 @@ define(function(require, exports, module) {
               ];
             });
 
-            it('Vertical dimensions with before position', function() {
+            test('Vertical dimensions with before position', () => {
               var pos = { index: 2, method: 'before' };
               obj.movePlaceholder(plh, vertDims, pos);
               var style = plh.style;
@@ -422,7 +422,7 @@ define(function(require, exports, module) {
               style.width.should.equal('100px');
             });
 
-            it('Vertical dimensions with after position', function() {
+            test('Vertical dimensions with after position', () => {
               var pos = { index: 1, method: 'after' };
               obj.movePlaceholder(plh, vertDims, pos);
               var style = plh.style;
