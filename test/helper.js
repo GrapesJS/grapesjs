@@ -1,5 +1,4 @@
 import _ from 'underscore';
-import expect from 'expect';
 import sinon from 'sinon';
 import { JSDOM } from 'jsdom';
 

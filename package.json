@@ -83,7 +83,10 @@
     ]
   },
   "jest": {
-    "modulePaths": ["./src"]
+    "modulePaths": ["./src"],
+    "moduleNameMapper": {
+      "^jquery$": "cash-dom"
+    }
   },
   "scripts": {
     "lint": "eslint src",

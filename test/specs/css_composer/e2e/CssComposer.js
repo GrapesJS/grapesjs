@@ -1,3 +1,4 @@
+import Backbone from 'backbone';
 const $ = Backbone.$;
 
 module.exports = {

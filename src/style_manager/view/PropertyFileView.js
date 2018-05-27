@@ -1,3 +1,4 @@
+import Backbone from 'backbone';
 const PropertyView = require('./PropertyView');
 const $ = Backbone.$;
 

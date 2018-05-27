@@ -1,3 +1,4 @@
+import Backbone from 'backbone';
 const DomComponents = require('dom_components');
 const Component = require('dom_components/model/Component');
 const ComponentImage = require('dom_components/model/ComponentImage');

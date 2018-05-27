@@ -1,3 +1,4 @@
+import Backbone from 'backbone';
 import { isArray, isEmpty } from 'underscore';
 
 const ComponentsView = require('./ComponentsView');

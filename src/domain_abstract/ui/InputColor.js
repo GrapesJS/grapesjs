@@ -1,8 +1,10 @@
+import Backbone from 'backbone';
 import { isUndefined } from 'underscore';
+import ColorPicker from 'utils/ColorPicker';
 
-require('utils/ColorPicker');
 const Input = require('./Input');
 const $ = Backbone.$;
+ColorPicker($);
 
 module.exports = Input.extend({
   template() {

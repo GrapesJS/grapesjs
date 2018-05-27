@@ -5,9 +5,7 @@
 // Author: Brian Grinstead
 // License: MIT
 
-(function(factory) {
-  factory(Backbone.$);
-})(function($, undefined) {
+export default function($, undefined) {
   'use strict';
 
   var defaultOpts = {
@@ -2531,4 +2529,4 @@
       $.fn.spectrum.processNativeColorInputs();
     }
   });
-});
+}

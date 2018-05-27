@@ -1,3 +1,4 @@
+import Backbone from 'backbone';
 import { isObject } from 'underscore';
 import { on, off, hasDnd } from 'utils/mixins';
 
