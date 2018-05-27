@@ -1,4 +1,4 @@
-//import grapesjs from './../src';
+import grapesjs from './../src';
 
 describe('Main', () => {
   describe('Startup', () => {

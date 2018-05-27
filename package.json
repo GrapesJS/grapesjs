@@ -40,6 +40,7 @@
     "expect": "^1.20.2",
     "husky": "^0.14.3",
     "istanbul": "^0.4.2",
+    "jest": "^23.0.0",
     "jsdom": "^11.11.0",
     "node-sass": "^4.9.0",
     "webpack": "^3.10.0",
@@ -81,6 +82,9 @@
       "git add"
     ]
   },
+  "jest": {
+    "modulePaths": ["./src"]
+  },
   "scripts": {
     "lint": "eslint src",
     "check": "npm run lint && npm run test",
@@ -93,6 +97,7 @@
     "start": "npm run build:css -- -w & webpack-dev-server --open --progress --colors",
     "format": "prettier --single-quote --write './{src,test}/**/*.js'",
     "test": "cross-env NODE_PATH=./src mocha --compilers js:babel-core/register --require test/helper.js --timeout 10000 --recursive test/main.js",
-    "test:dev": "npm test -- -R min -w"
+    "test:dev": "npm test -- -R min -w",
+    "testj": "jest"
   }
 }
