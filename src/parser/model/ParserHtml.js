@@ -40,12 +40,11 @@ module.exports = config => {
      * // ['test1', 'test2', 'test3']
      */
     parseClass(str) {
-      var result = [];
-      var cls = str.split(' ');
-      for (var i = 0, len = cls.length; i < len; i++) {
-        var cl = cls[i].trim();
-        var reg = new RegExp('^' + c.pStylePrefix);
-        if (!cl || reg.test(cl)) continue;
+      const result = [];
+      const cls = str.split(' ');
+      for (let i = 0, len = cls.length; i < len; i++) {
+        const cl = cls[i].trim();
+        if (!cl) continue;
         result.push(cl);
       }
       return result;
