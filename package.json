@@ -18,6 +18,7 @@
     "codemirror-formatting": "^1.0.0",
     "font-awesome": "^4.7.0",
     "keymaster": "^1.6.2",
+    "promise-polyfill": "^8.0.0",
     "spectrum-colorpicker": "^1.8.0",
     "underscore": "^1.9.0"
   },
@@ -34,7 +35,6 @@
     "lint-staged": "^7.1.2",
     "node-sass": "^4.9.0",
     "prettier": "^1.13.0",
-    "promise-polyfill": "^7.1.2",
     "sinon": "^5.0.10",
     "string-replace-loader": "^2.1.1",
     "webpack": "^3.10.0",

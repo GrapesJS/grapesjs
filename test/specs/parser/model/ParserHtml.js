@@ -75,7 +75,7 @@ module.exports = {
 
       test('Parse class string to array with special classes', () => {
         var str = 'test1 test2    test3 test-4 gjs-test';
-        var result = ['test1', 'test2', 'test3', 'test-4'];
+        var result = ['test1', 'test2', 'test3', 'test-4', 'gjs-test'];
         expect(obj.parseClass(str)).toEqual(result);
       });
 
