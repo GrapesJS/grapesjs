@@ -188,8 +188,17 @@ module.exports = {
    */
   onClick(e) {
     e.stopPropagation();
-    const model = $(e.target).data('model');
+    const $el = $(e.target);
     const editor = this.editor;
+    let model = $el.data('model');
+
+    if (!model) {
+      let parent = $el.parent();
+      while (!model && parent) {
+        model = parent.data('model');
+        parent = parent.parent();
+      }
+    }
 
     if (model) {
       if (model.get('selectable')) {
