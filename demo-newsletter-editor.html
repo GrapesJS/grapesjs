@@ -654,7 +654,7 @@
       // Add info command
       var infoContainer = document.getElementById("info-panel");
       cmdm.add('open-info', {
-        run(editor, sender) {
+        run: function(editor, sender) {
           sender.set('active', 0);
           var mdlDialog = document.querySelector('.gjs-mdl-dialog');
           mdlDialog.className += ' ' + mdlClass;
