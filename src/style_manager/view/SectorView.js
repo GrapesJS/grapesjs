@@ -1,4 +1,5 @@
-var Backbone = require('backbone');
+import _ from 'underscore';
+import Backbone from 'backbone';
 var PropertiesView = require('./PropertiesView');
 
 module.exports = Backbone.View.extend({

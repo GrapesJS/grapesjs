@@ -22,19 +22,19 @@ module.exports = {
         view.collection.reset();
       });
 
-      it('Collection is empty', () => {
+      test('Collection is empty', () => {
         expect(view.$el.html()).toEqual('');
       });
 
-      it('Add new button', () => {
+      test('Add new button', () => {
         sinon.stub(view, 'addToCollection');
         view.collection.add({});
         expect(view.addToCollection.calledOnce).toEqual(true);
       });
 
-      it('Render new button', () => {
+      test('Render new button', () => {
         view.collection.add({});
-        expect(view.$el.html()).toExist();
+        expect(view.$el.html()).toBeTruthy();
       });
     });
   }

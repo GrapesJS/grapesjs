@@ -1,3 +1,4 @@
+import Backbone from 'backbone';
 const PropertyView = require('./PropertyView');
 const PropertyIntegerView = require('./PropertyIntegerView');
 const PropertyRadioView = require('./PropertyRadioView');

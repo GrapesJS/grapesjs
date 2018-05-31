@@ -48,6 +48,8 @@
  * * `storage:end:store` - After the store request
  * * `storage:end:load` - After the load request
  * * `storage:error` - On any error on storage request, passes the error as an argument
+ * * `storage:error:store` - Error on store request, passes the error as an argument
+ * * `storage:error:load` - Error on load request, passes the error as an argument
  * ## Canvas
  * * `canvas:dragenter` - When something is dragged inside the canvas, `DataTransfer` instance passed as an argument
  * * `canvas:dragover` - When something is dragging on canvas, `DataTransfer` instance passed as an argument
@@ -484,6 +486,15 @@ module.exports = config => {
      */
     getContainer() {
       return c.el;
+    },
+
+    /**
+     * Return the count of changes made to the content and not yet stored.
+     * This count resets at any `store()`
+     * @return {number}
+     */
+    getDirtyCount() {
+      return em.getDirtyCount();
     },
 
     /**

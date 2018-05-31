@@ -5,38 +5,38 @@ module.exports = {
     describe('File Uploader', () => {
       let obj;
 
-      beforeEach(function() {
+      beforeEach(() => {
         obj = new FileUploader({ config: {} });
         document.body.innerHTML = '<div id="fixtures"></div>';
         document.body.querySelector('#fixtures').appendChild(obj.render().el);
       });
 
-      afterEach(function() {
+      afterEach(() => {
         obj.remove();
       });
 
-      it('Object exists', () => {
-        expect(FileUploader).toExist();
+      test('Object exists', () => {
+        expect(FileUploader).toBeTruthy();
       });
 
-      it('Has correct prefix', function() {
-        expect(obj.pfx).toNotExist();
+      test('Has correct prefix', () => {
+        expect(obj.pfx).toBeFalsy();
       });
 
       describe('Should be rendered correctly', () => {
-        it('Has title', function() {
+        test('Has title', () => {
           expect(obj.$el.find('#title').length).toEqual(1);
         });
 
-        it('Title is empty', function() {
+        test('Title is empty', () => {
           expect(obj.$el.find('#title').html()).toEqual('');
         });
 
-        it('Has file input', function() {
+        test('Has file input', () => {
           expect(obj.$el.find('input[type=file]').length).toEqual(1);
         });
 
-        it('File input is enabled', function() {
+        test('File input is enabled', () => {
           expect(obj.$el.find('input[type=file]').prop('disabled')).toEqual(
             true
           );
@@ -44,7 +44,7 @@ module.exports = {
       });
 
       describe('Interprets configurations correctly', () => {
-        it('Has correct title', () => {
+        test('Has correct title', () => {
           var view = new FileUploader({
             config: {
               uploadText: 'Test'
@@ -54,7 +54,7 @@ module.exports = {
           expect(view.$el.find('#title').html()).toEqual('Test');
         });
 
-        it('Could be disabled', () => {
+        test('Could be disabled', () => {
           var view = new FileUploader({
             config: {
               disableUpload: true,
@@ -67,7 +67,7 @@ module.exports = {
           );
         });
 
-        it('Handles embedAsBase64 parameter', () => {
+        test('Handles embedAsBase64 parameter', () => {
           var view = new FileUploader({
             config: {
               embedAsBase64: true

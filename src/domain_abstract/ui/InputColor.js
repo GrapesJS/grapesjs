@@ -1,6 +1,10 @@
-require('utils/ColorPicker');
+import Backbone from 'backbone';
+import { isUndefined } from 'underscore';
+import ColorPicker from 'utils/ColorPicker';
+
 const Input = require('./Input');
 const $ = Backbone.$;
+ColorPicker($);
 
 module.exports = Input.extend({
   template() {
@@ -31,7 +35,8 @@ module.exports = Input.extend({
    */
   setValue(val, opts = {}) {
     const model = this.model;
-    const value = val || model.get('defaults');
+    const def = model.get('defaults');
+    const value = !isUndefined(val) ? val : !isUndefined(def) ? def : '';
     const inputEl = this.getInputEl();
     const colorEl = this.getColorEl();
     const valueClr = value != 'none' ? value : '';

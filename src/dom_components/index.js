@@ -32,6 +32,8 @@
  * }
  * ...
  */
+import { isEmpty } from 'underscore';
+
 module.exports = () => {
   var c = {};
   let em;
@@ -82,6 +84,11 @@ module.exports = () => {
       id: 'link',
       model: require('./model/ComponentLink'),
       view: require('./view/ComponentLinkView')
+    },
+    {
+      id: 'label',
+      model: require('./model/ComponentLabel'),
+      view: require('./view/ComponentLabelView')
     },
     {
       id: 'video',
@@ -185,6 +192,7 @@ module.exports = () => {
         c.am = em.get('AssetManager') || '';
         em.get('Parser').compTypes = componentTypes;
         em.on('change:selectedComponent', this.componentChanged, this);
+        em.on('change:componentHovered', this.componentHovered, this);
       }
 
       // Build wrapper
@@ -520,6 +528,27 @@ module.exports = () => {
         });
 
       model && model.set('status', 'selected');
+    },
+
+    /**
+     * Triggered when the component is hovered
+     * @private
+     */
+    componentHovered() {
+      const em = c.em;
+      const model = em.get('componentHovered');
+      const previous = em.previous('componentHovered');
+      const state = 'hovered';
+
+      // Deselect the previous component
+      previous &&
+        previous.get('status') == state &&
+        previous.set({
+          status: '',
+          state: ''
+        });
+
+      model && isEmpty(model.get('status')) && model.set('status', state);
     }
   };
 };

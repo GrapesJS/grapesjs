@@ -1,4 +1,5 @@
-var Backbone = require('backbone');
+import { extend } from 'underscore';
+import Backbone from 'backbone';
 
 module.exports = Backbone.Model.extend({
   mapModel(model) {
@@ -11,7 +12,7 @@ module.exports = Backbone.Model.extend({
     if (script) {
       // If the component has scripts we need to expose his ID
       var attr = model.get('attributes');
-      attr = _.extend({}, attr, { id });
+      attr = extend({}, attr, { id });
       model.set('attributes', attr);
       var scrStr = model.getScriptString();
 

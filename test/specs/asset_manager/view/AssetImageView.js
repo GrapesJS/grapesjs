@@ -7,7 +7,7 @@ module.exports = {
     let obj;
 
     describe('AssetImageView', () => {
-      beforeEach(function() {
+      beforeEach(() => {
         var coll = new Assets();
         var model = coll.add({ type: 'image', src: '/test' });
         obj = new AssetImageView({
@@ -19,48 +19,48 @@ module.exports = {
         document.body.querySelector('#fixtures').appendChild(obj.render().el);
       });
 
-      afterEach(function() {
+      afterEach(() => {
         obj = null;
         document.body.innerHTML = '';
       });
 
-      it('Object exists', () => {
-        expect(AssetImageView).toExist();
+      test('Object exists', () => {
+        expect(AssetImageView).toBeTruthy();
       });
 
       describe('Asset should be rendered correctly', () => {
-        it('Has preview box', function() {
+        test('Has preview box', () => {
           var $asset = obj.$el;
           expect($asset.find('.preview').length).toEqual(1);
         });
 
-        it('Has meta box', function() {
+        test('Has meta box', () => {
           var $asset = obj.$el;
           expect($asset.find('.meta').length).toEqual(1);
         });
 
-        it('Has close button', function() {
+        test('Has close button', () => {
           var $asset = obj.$el;
           expect($asset.find('[data-toggle=asset-remove]').length).toEqual(1);
         });
       });
 
-      it('Could be selected', function() {
-        var spy = expect.spyOn(obj, 'updateTarget');
+      test('Could be selected', () => {
+        var spy = jest.spyOn(obj, 'updateTarget');
         obj.$el.trigger('click');
-        expect(obj.$el.attr('class')).toInclude('highlight');
+        expect(obj.$el.attr('class')).toContain('highlight');
         expect(spy).toHaveBeenCalled();
       });
 
-      it('Could be chosen', function() {
+      test('Could be chosen', () => {
         sinon.stub(obj, 'updateTarget');
-        var spy = expect.spyOn(obj, 'updateTarget');
+        var spy = jest.spyOn(obj, 'updateTarget');
         obj.$el.trigger('dblclick');
         expect(spy).toHaveBeenCalled();
         //obj.updateTarget.calledOnce.should.equal(true);
       });
 
-      it('Could be removed', function() {
+      test('Could be removed', () => {
         var spy = sinon.spy();
         obj.model.on('remove', spy);
         obj.onRemove({ stopImmediatePropagation() {} });

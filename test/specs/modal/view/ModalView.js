@@ -22,34 +22,34 @@ module.exports = {
         model = null;
       });
 
-      it('The content is not empty', () => {
-        expect(view.el.innerHTML).toExist();
+      test('The content is not empty', () => {
+        expect(view.el.innerHTML).toBeTruthy();
       });
 
-      it('Get content', () => {
-        expect(view.getContent()).toExist();
+      test('Get content', () => {
+        expect(view.getContent()).toBeTruthy();
       });
 
-      it('Update content', () => {
+      test('Update content', () => {
         model.set('content', 'test');
         expect(view.getContent().get(0).innerHTML).toEqual('test');
       });
 
-      it('Get title', () => {
-        expect(view.getTitle()).toExist();
+      test('Get title', () => {
+        expect(view.getTitle()).toBeTruthy();
       });
 
-      it('Update title', () => {
+      test('Update title', () => {
         model.set('title', 'test');
         expect(view.getTitle().innerHTML).toEqual('test');
       });
 
-      it('Close by default', () => {
+      test('Close by default', () => {
         view.updateOpen();
         expect(view.el.style.display).toEqual('none');
       });
 
-      it('Open dialog', () => {
+      test('Open dialog', () => {
         model.set('open', 1);
         expect(view.el.style.display).toEqual('');
       });

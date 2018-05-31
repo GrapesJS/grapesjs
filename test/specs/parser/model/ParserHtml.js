@@ -20,19 +20,19 @@ module.exports = {
         obj = null;
       });
 
-      it('Simple div node', () => {
+      test('Simple div node', () => {
         var str = '<div></div>';
         var result = { tagName: 'div' };
         expect(obj.parse(str).html).toEqual(result);
       });
 
-      it('Simple article node', () => {
+      test('Simple article node', () => {
         var str = '<article></article>';
         var result = { tagName: 'article' };
         expect(obj.parse(str).html).toEqual(result);
       });
 
-      it('Node with attributes', () => {
+      test('Node with attributes', () => {
         var str =
           '<div id="test1" class="test2 test3" data-one="test4" strange="test5"></div>';
         var result = {
@@ -47,7 +47,7 @@ module.exports = {
         expect(obj.parse(str).html).toEqual(result);
       });
 
-      it('Parse style string to object', () => {
+      test('Parse style string to object', () => {
         var str = 'color:black; width:100px; test:value;';
         var result = {
           color: 'black',
@@ -57,7 +57,7 @@ module.exports = {
         expect(obj.parseStyle(str)).toEqual(result);
       });
 
-      it('Parse style string with values containing colon to object', () => {
+      test('Parse style string with values containing colon to object', () => {
         var str =
           'background-image:url("https://some-website.ex"); test:value;';
         var result = {
@@ -67,19 +67,19 @@ module.exports = {
         expect(obj.parseStyle(str)).toEqual(result);
       });
 
-      it('Parse class string to array', () => {
+      test('Parse class string to array', () => {
         var str = 'test1 test2    test3 test-4';
         var result = ['test1', 'test2', 'test3', 'test-4'];
         expect(obj.parseClass(str)).toEqual(result);
       });
 
-      it('Parse class string to array with special classes', () => {
+      test('Parse class string to array with special classes', () => {
         var str = 'test1 test2    test3 test-4 gjs-test';
-        var result = ['test1', 'test2', 'test3', 'test-4'];
+        var result = ['test1', 'test2', 'test3', 'test-4', 'gjs-test'];
         expect(obj.parseClass(str)).toEqual(result);
       });
 
-      it('Style attribute is isolated', () => {
+      test('Style attribute is isolated', () => {
         var str =
           '<div id="test1" style="color:black; width:100px; test:value;"></div>';
         var result = {
@@ -94,7 +94,7 @@ module.exports = {
         expect(obj.parse(str).html).toEqual(result);
       });
 
-      it('Class attribute is isolated', () => {
+      test('Class attribute is isolated', () => {
         var str = '<div id="test1" class="test2 test3 test4"></div>';
         var result = {
           tagName: 'div',
@@ -104,7 +104,7 @@ module.exports = {
         expect(obj.parse(str).html).toEqual(result);
       });
 
-      it('Parse images nodes', () => {
+      test('Parse images nodes', () => {
         var str = '<img id="test1" src="./index.html"/>';
         var result = {
           tagName: 'img',
@@ -117,7 +117,7 @@ module.exports = {
         expect(obj.parse(str).html).toEqual(result);
       });
 
-      it('Parse text nodes', () => {
+      test('Parse text nodes', () => {
         var str = '<div id="test1">test2 </div>';
         var result = {
           tagName: 'div',
@@ -128,7 +128,7 @@ module.exports = {
         expect(obj.parse(str).html).toEqual(result);
       });
 
-      it('Parse text with few text tags', () => {
+      test('Parse text with few text tags', () => {
         var str =
           '<div id="test1"><br/> test2 <br/> a b <b>b</b> <i>i</i> <u>u</u> test </div>';
         var result = {
@@ -183,7 +183,7 @@ module.exports = {
         expect(obj.parse(str).html).toEqual(result);
       });
 
-      it('Parse text with few text tags and nested node', () => {
+      test('Parse text with few text tags and nested node', () => {
         var str =
           '<div id="test1">a b <b>b</b> <i>i</i>c <div>ABC</div> <i>i</i> <u>u</u> test </div>';
         var result = {
@@ -251,7 +251,7 @@ module.exports = {
         expect(obj.parse(str).html).toEqual(result);
       });
 
-      it('Parse nested nodes', () => {
+      test('Parse nested nodes', () => {
         var str =
           '<article id="test1">   <div></div> <footer id="test2"></footer>  Text mid <div id="last"></div></article>';
         var result = {
@@ -284,7 +284,7 @@ module.exports = {
         expect(obj.parse(str).html).toEqual(result);
       });
 
-      it('Parse nested text nodes', () => {
+      test('Parse nested text nodes', () => {
         var str = '<div>content1 <div>nested</div> content2</div>';
         var result = {
           tagName: 'div',
@@ -310,7 +310,7 @@ module.exports = {
         expect(obj.parse(str).html).toEqual(result);
       });
 
-      it('Parse nested span text nodes', () => {
+      test('Parse nested span text nodes', () => {
         var str = '<div>content1 <div><span>nested</span></div> content2</div>';
         var result = {
           tagName: 'div',
@@ -340,20 +340,20 @@ module.exports = {
         expect(obj.parse(str).html).toEqual(result);
       });
 
-      it('Parse multiple nodes', () => {
+      test('Parse multiple nodes', () => {
         var str = '<div></div><div></div>';
         var result = [{ tagName: 'div' }, { tagName: 'div' }];
         expect(obj.parse(str).html).toEqual(result);
       });
 
-      it('Remove script tags', () => {
+      test('Remove script tags', () => {
         var str =
           '<div><script>var test;</script></div><div></div><script>var test2;</script>';
         var result = [{ tagName: 'div' }, { tagName: 'div' }];
         expect(obj.parse(str).html).toEqual(result);
       });
 
-      it('Isolate styles', () => {
+      test('Isolate styles', () => {
         var str =
           '<div><style>.a{color: red}</style></div><div></div><style>.b{color: blue}</style>';
         var resHtml = [{ tagName: 'div' }, { tagName: 'div' }];
@@ -372,7 +372,7 @@ module.exports = {
         expect(res.css).toEqual(resCss);
       });
 
-      it('Respect multiple font-faces contained in styles in html', () => {
+      test('Respect multiple font-faces contained in styles in html', () => {
         const str = `
           <style>
           @font-face {
@@ -416,7 +416,7 @@ module.exports = {
         expect(res.css).toEqual(expected);
       });
 
-      it('Parse nested div with text and spaces', () => {
+      test('Parse nested div with text and spaces', () => {
         var str = '<div> <p>TestText</p> </div>';
         var result = {
           tagName: 'div',
@@ -442,7 +442,7 @@ module.exports = {
         expect(obj.parse(str).html).toEqual(result);
       });
 
-      it('Parse node with model attributes to fetch', () => {
+      test('Parse node with model attributes to fetch', () => {
         var str =
           '<div id="test1" data-test="test-value" data-gjs-draggable=".myselector" data-gjs-stuff="test">test2 </div>';
         var result = {
@@ -459,7 +459,7 @@ module.exports = {
         expect(obj.parse(str).html).toEqual(result);
       });
 
-      it('Parse model attributes with true and false', () => {
+      test('Parse model attributes with true and false', () => {
         var str =
           '<div id="test1" data-test="test-value" data-gjs-draggable="true" data-gjs-stuff="false">test2 </div>';
         var result = {
@@ -476,7 +476,7 @@ module.exports = {
         expect(obj.parse(str).html).toEqual(result);
       });
 
-      it('Parse attributes with object inside', () => {
+      test('Parse attributes with object inside', () => {
         var str = `<div data-gjs-test='{ "prop1": "value1", "prop2": 10, "prop3": true}'>test2 </div>`;
         var result = {
           tagName: 'div',
@@ -492,7 +492,7 @@ module.exports = {
         expect(obj.parse(str).html).toEqual(result);
       });
 
-      it('Parse attributes with arrays inside', () => {
+      test('Parse attributes with arrays inside', () => {
         var str = `<div data-gjs-test='["value1", "value2"]'>test2 </div>`;
         var result = {
           tagName: 'div',

@@ -1,3 +1,4 @@
+import Backbone from 'backbone';
 import { extend } from 'underscore';
 
 const SectorView = require('./SectorView');

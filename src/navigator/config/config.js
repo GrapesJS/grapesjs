@@ -15,5 +15,19 @@ module.exports = {
   hideTextnode: 1,
 
   // Indicates if the wrapper is visible in layers
-  showWrapper: 1
+  showWrapper: 1,
+
+  // Show hovered components in canvas
+  showHover: 1,
+
+  // Scroll to selected component in Canvas when it's selected in Layers
+  // true, false or `scrollIntoView`-like options
+  scrollCanvas: { behavior: 'smooth' },
+
+  // Scroll to selected component in Layers when it's selected in Canvas
+  // true, false or `scrollIntoView`-like options
+  scrollLayers: 1,
+
+  // Highlight when a layer component is hovered
+  highlightHover: 1
 };

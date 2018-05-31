@@ -63,10 +63,11 @@ module.exports = () => {
      * Triggered when the selected component is changed
      * @private
      */
-    componentChanged(e, md, opts = {}) {
+    componentChanged(selected, opts = {}) {
       if (opts.fromLayers) return;
       const opened = em.get('opened');
       const model = em.getSelected();
+      const scroll = config.scrollLayers;
       let parent = model && model.collection ? model.collection.parent : null;
       for (let cid in opened) opened[cid].set('open', 0);
 
@@ -74,6 +75,11 @@ module.exports = () => {
         parent.set('open', 1);
         opened[parent.cid] = parent;
         parent = parent.collection ? parent.collection.parent : null;
+      }
+
+      if (model && scroll) {
+        const el = model.viewLayer && model.viewLayer.el;
+        el && el.scrollIntoView(scroll);
       }
     },
 

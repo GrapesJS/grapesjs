@@ -1,5 +1,5 @@
+import Backbone from 'backbone';
 const StyleManager = require('style_manager');
-const Backbone = require('backbone');
 const $ = Backbone.$;
 
 module.exports = {

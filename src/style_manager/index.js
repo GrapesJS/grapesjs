@@ -270,20 +270,20 @@ module.exports = () => {
         const opts = { state };
         let rule;
 
+        // I stop undo manager here as after adding the CSSRule (generally after
+        // selecting the component) and calling undo() it will remove the rule from
+        // the collection, therefore updating it in style manager will not affect it
+        // #268
+        um.stop();
+
         if (hasClasses) {
           const deviceW = em.getCurrentMedia();
           rule = cssC.get(valid, state, deviceW);
 
           if (!rule) {
-            // I stop undo manager here as after adding the CSSRule (generally after
-            // selecting the component) and calling undo() it will remove the rule from
-            // the collection, therefore updating it in style manager will not affect it
-            // #268
-            um.stop();
             rule = cssC.add(valid, state, deviceW);
             rule.setStyle(model.getStyle());
             model.setStyle({});
-            um.start();
           }
         } else if (config.avoidInlineStyle) {
           rule = cssC.getIdRule(id, opts);
@@ -291,6 +291,7 @@ module.exports = () => {
         }
 
         rule && (model = rule);
+        um.start();
       }
 
       return model;

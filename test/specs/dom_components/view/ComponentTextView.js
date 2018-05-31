@@ -22,20 +22,20 @@ module.exports = {
         view.remove();
       });
 
-      it('Component empty', () => {
+      test('Component empty', () => {
         expect(fixtures.innerHTML).toEqual(
-          '<div data-highlightable="1"></div>'
+          '<div data-gjs-type="default" data-highlightable="1"></div>'
         );
       });
 
-      it('Input content is stored in model', () => {
+      test('Input content is stored in model', () => {
         //view.enableEditing();
         view.el.innerHTML = 'test';
         //view.disableEditing();
         //model.get('content').should.equal('test');
       });
 
-      it('Init with content', () => {
+      test('Init with content', () => {
         model = new Component({ content: 'test' });
         view = new ComponentTextView({ model });
         fixtures.appendChild(view.render().el);

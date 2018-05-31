@@ -20,22 +20,22 @@ module.exports = {
         view.remove();
       });
 
-      it('Component empty', () => {
+      test('Component empty', () => {
         expect(view.el.getAttribute('onmousedown')).toEqual('return false');
         expect(view.el.getAttribute('class')).toEqual(view.classEmpty);
       });
 
-      it('TagName is <img>', () => {
+      test('TagName is <img>', () => {
         expect(view.el.tagName).toEqual('IMG');
       });
 
-      it('Update src attribute', () => {
+      test('Update src attribute', () => {
         model.set('src', './');
         expect(view.el.getAttribute('src')).toEqual('./');
       });
 
-      it('Renders correctly', () => {
-        expect(view.render()).toExist();
+      test('Renders correctly', () => {
+        expect(view.render()).toBeTruthy();
       });
     });
   }

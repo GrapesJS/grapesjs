@@ -1,9 +1,10 @@
-var Component = require('./ComponentImage');
-var OComponent = require('./Component');
+const Component = require('./ComponentImage');
+const OComponent = require('./Component');
 
 module.exports = Component.extend(
   {
-    defaults: _.extend({}, Component.prototype.defaults, {
+    defaults: {
+      ...Component.prototype.defaults,
       type: 'map',
       void: 0,
       mapUrl: 'https://maps.google.com/maps',
@@ -39,7 +40,7 @@ module.exports = Component.extend(
           changeProp: 1
         }
       ]
-    }),
+    },
 
     initialize(o, opt) {
       if (this.get('src')) this.parseFromSrc();

@@ -23,7 +23,7 @@ module.exports = DomainViews.extend({
     this.pfx = config.stylePrefix || '';
     this.ppfx = config.pStylePrefix || '';
     this.className = this.pfx + 'traits';
-    const toListen = 'component:selected component:update:traits';
+    const toListen = 'component:selected';
     this.listenTo(this.em, toListen, this.updatedCollection);
     this.updatedCollection();
   },

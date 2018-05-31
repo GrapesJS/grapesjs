@@ -1,4 +1,4 @@
-var Backbone = require('backbone');
+import Backbone from 'backbone';
 var CssRule = require('./CssRule');
 
 module.exports = Backbone.Collection.extend({

@@ -1,3 +1,5 @@
+import _ from 'underscore';
+import Backbone from 'backbone';
 import { on, off } from 'utils/mixins';
 
 const SelectComponent = require('./SelectComponent');

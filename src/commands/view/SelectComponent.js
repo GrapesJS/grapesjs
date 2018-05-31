@@ -55,6 +55,7 @@ module.exports = {
     methods[method](win, 'scroll resize', this.onFrameScroll);
     methods[method](win, 'keydown', this.onKeyPress);
     em[method]('change:selectedComponent', this.onSelect, this);
+    em[method]('change:componentHovered', this.onHovered, this);
   },
 
   /**
@@ -83,7 +84,7 @@ module.exports = {
   onHover(e) {
     e.stopPropagation();
     let trg = e.target;
-    const model = $(trg).data('model');
+    let model = $(trg).data('model');
 
     // Adjust tools scroll top
     if (!this.adjScroll) {
@@ -93,15 +94,22 @@ module.exports = {
     }
 
     if (model && !model.get('hoverable')) {
-      let comp = model && model.parent();
-      while (comp && !comp.get('hoverable')) comp = comp.parent();
-      comp && (trg = comp.view.el);
+      let parent = model && model.parent();
+      while (parent && !parent.get('hoverable')) parent = comp.parent();
+      model = parent;
     }
 
-    const pos = this.getElementPos(trg);
-    this.updateBadge(trg, pos);
-    this.updateHighlighter(trg, pos);
-    this.showElementOffset(trg, pos);
+    this.em.setHovered(model, { forceChange: 1 });
+  },
+
+  onHovered(em, component) {
+    const trg = component && component.getEl();
+    if (trg) {
+      const pos = this.getElementPos(trg);
+      this.updateBadge(trg, pos);
+      this.updateHighlighter(trg, pos);
+      this.showElementOffset(trg, pos);
+    }
   },
 
   /**
@@ -180,8 +188,17 @@ module.exports = {
    */
   onClick(e) {
     e.stopPropagation();
-    const model = $(e.target).data('model');
+    const $el = $(e.target);
     const editor = this.editor;
+    let model = $el.data('model');
+
+    if (!model) {
+      let parent = $el.parent();
+      while (!model && parent) {
+        model = parent.data('model');
+        parent = parent.parent();
+      }
+    }
 
     if (model) {
       if (model.get('selectable')) {

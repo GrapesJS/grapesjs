@@ -1,4 +1,5 @@
-var Backbone = require('backbone');
+import _ from 'underscore';
+import Backbone from 'backbone';
 var InsertCustom = require('./InsertCustom');
 
 module.exports = _.extend({}, InsertCustom, {

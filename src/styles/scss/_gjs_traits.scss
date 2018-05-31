@@ -26,6 +26,8 @@
   .#{$app-prefix}label {
     width: 30%;
     text-align: left;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 
   .#{$app-prefix}field {

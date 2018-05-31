@@ -1,3 +1,4 @@
+import Backbone from 'backbone';
 import { bindAll, isArray, isUndefined } from 'underscore';
 import { camelCase } from 'utils/mixins';
 

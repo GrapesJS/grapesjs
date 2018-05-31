@@ -34,27 +34,34 @@ module.exports = require('backbone').Model.extend({
 
   targetUpdated() {
     const value = this.getTargetValue();
-    !isUndefined(value) && this.set({ value }, { fromTarget: 1 });
+    this.set({ value }, { fromTarget: 1 });
   },
 
   getTargetValue() {
     const name = this.get('name');
     const target = this.target;
-    const prop = this.get('changeProp');
-    if (target) return prop ? target.get(name) : target.getAttributes()[name];
+    let value;
+
+    if (this.get('changeProp')) {
+      value = target.get(name);
+    } else {
+      value = target.getAttributes()[name];
+    }
+
+    return !isUndefined(value) ? value : '';
   },
 
-  setTargetValue(value) {
+  setTargetValue(value, opts = {}) {
     const target = this.target;
     const name = this.get('name');
     if (isUndefined(value)) return;
 
     if (this.get('changeProp')) {
-      target.set(name, value);
+      target.set(name, value, opts);
     } else {
       const attrs = { ...target.get('attributes') };
       attrs[name] = value;
-      target.set('attributes', attrs);
+      target.set('attributes', attrs, opts);
     }
   },
 

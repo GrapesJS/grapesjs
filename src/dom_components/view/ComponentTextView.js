@@ -4,7 +4,8 @@ const ComponentView = require('./ComponentView');
 
 module.exports = ComponentView.extend({
   events: {
-    dblclick: 'enableEditing'
+    dblclick: 'enableEditing',
+    input: 'onInput'
   },
 
   initialize(o) {
@@ -90,6 +91,17 @@ module.exports = ComponentView.extend({
 
     this.rteEnabled = 0;
     this.toggleEvents();
+  },
+
+  /**
+   * Callback on input event
+   * @param  {Event} e
+   */
+  onInput(e) {
+    const { em } = this;
+
+    // Update toolbars
+    em && em.trigger('change:canvasOffset');
   },
 
   /**

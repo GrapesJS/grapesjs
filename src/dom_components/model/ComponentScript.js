@@ -1,13 +1,14 @@
-var Component = require('./Component');
+const Component = require('./Component');
 
 module.exports = Component.extend(
   {
-    defaults: _.extend({}, Component.prototype.defaults, {
+    defaults: {
+      ...Component.prototype.defaults,
       type: 'script',
       droppable: false,
       draggable: false,
       layerable: false
-    })
+    }
   },
   {
     isComponent(el) {

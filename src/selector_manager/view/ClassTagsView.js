@@ -1,4 +1,5 @@
-var Backbone = require('backbone');
+import _ from 'underscore';
+import Backbone from 'backbone';
 var ClassTagView = require('./ClassTagView');
 
 module.exports = Backbone.View.extend({

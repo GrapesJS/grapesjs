@@ -42,38 +42,38 @@ describe('Css Composer', () => {
       obj = null;
     });
 
-    it('Object exists', () => {
-      expect(CssComposer).toExist();
+    test('Object exists', () => {
+      expect(CssComposer).toBeTruthy();
     });
 
-    it('storageKey returns array', () => {
+    test('storageKey returns array', () => {
       expect(obj.storageKey() instanceof Array).toEqual(true);
     });
 
-    it('storageKey returns correct composition', () => {
+    test('storageKey returns correct composition', () => {
       setSmConfig();
       expect(obj.storageKey()).toEqual(['css', 'styles']);
     });
 
-    it('Store data', () => {
+    test('Store data', () => {
       setSmConfig();
       setEm();
       var expected = { css: 'testCss', styles: '[]' };
       expect(obj.store(1)).toEqual(expected);
     });
 
-    it('Rules are empty', () => {
+    test('Rules are empty', () => {
       expect(obj.getAll().length).toEqual(0);
     });
 
-    it('Create new rule with correct selectors', () => {
+    test('Create new rule with correct selectors', () => {
       var sel = new obj.Selectors();
       var s1 = sel.add({ name: 'test1' });
       var rule = obj.add(sel.models);
       expect(rule.get('selectors').at(0)).toEqual(s1);
     });
 
-    it('Create new rule correctly', () => {
+    test('Create new rule correctly', () => {
       var sel = new obj.Selectors();
       var s1 = sel.add({ name: 'test1' });
       var rule = obj.add(sel.models, 'state1', 'width1');
@@ -81,7 +81,7 @@ describe('Css Composer', () => {
       expect(rule.get('mediaText')).toEqual('width1');
     });
 
-    it('Add rule to collection', () => {
+    test('Add rule to collection', () => {
       var sel = new obj.Selectors([{ name: 'test1' }]);
       var rule = obj.add(sel.models);
       expect(obj.getAll().length).toEqual(1);
@@ -95,14 +95,14 @@ describe('Css Composer', () => {
       ).toEqual('test1');
     });
 
-    it('Returns correct rule with the same selector', () => {
+    test('Returns correct rule with the same selector', () => {
       var sel = new obj.Selectors([{ name: 'test1' }]);
       var rule1 = obj.add(sel.models);
       var rule2 = obj.get(sel.models);
       expect(rule1).toEqual(rule2);
     });
 
-    it('Returns correct rule with the same selectors', () => {
+    test('Returns correct rule with the same selectors', () => {
       var sel1 = new obj.Selectors([{ name: 'test1' }]);
       var rule1 = obj.add(sel1.models);
 
@@ -113,7 +113,7 @@ describe('Css Composer', () => {
       expect(rule3).toEqual(rule2);
     });
 
-    it('Do not create multiple rules with the same name selectors', () => {
+    test('Do not create multiple rules with the same name selectors', () => {
       var sel1 = new obj.Selectors([{ name: 'test21' }, { name: 'test22' }]);
       var rule1 = obj.add(sel1.models);
 
@@ -122,7 +122,7 @@ describe('Css Composer', () => {
       expect(rule2).toEqual(rule1);
     });
 
-    it("Don't duplicate rules", () => {
+    test("Don't duplicate rules", () => {
       var sel = new obj.Selectors([]);
       var s1 = sel.add({ name: 'test1' });
       var s2 = sel.add({ name: 'test2' });
@@ -134,7 +134,7 @@ describe('Css Composer', () => {
       expect(rule2).toEqual(rule1);
     });
 
-    it('Returns correct rule with the same mixed selectors', () => {
+    test('Returns correct rule with the same mixed selectors', () => {
       var sel = new obj.Selectors([]);
       var s1 = sel.add({ name: 'test1' });
       var s2 = sel.add({ name: 'test2' });
@@ -144,7 +144,7 @@ describe('Css Composer', () => {
       expect(rule2).toEqual(rule1);
     });
 
-    it('Returns correct rule with the same selectors and state', () => {
+    test('Returns correct rule with the same selectors and state', () => {
       var sel = new obj.Selectors([]);
       var s1 = sel.add({ name: 'test1' });
       var s2 = sel.add({ name: 'test2' });
@@ -154,7 +154,7 @@ describe('Css Composer', () => {
       expect(rule2).toEqual(rule1);
     });
 
-    it('Returns correct rule with the same selectors, state and width', () => {
+    test('Returns correct rule with the same selectors, state and width', () => {
       var sel = new obj.Selectors([]);
       var s1 = sel.add({ name: 'test1' });
       var rule1 = obj.add([s1], 'hover', '1');
@@ -162,11 +162,11 @@ describe('Css Composer', () => {
       expect(rule2).toEqual(rule1);
     });
 
-    it('Renders correctly', () => {
-      expect(obj.render()).toExist();
+    test('Renders correctly', () => {
+      expect(obj.render()).toBeTruthy();
     });
 
-    it('Create a rule with id selector by using setIdRule()', () => {
+    test('Create a rule with id selector by using setIdRule()', () => {
       const name = 'test';
       obj.setIdRule(name, { color: 'red' });
       expect(obj.getAll().length).toEqual(1);
@@ -181,7 +181,7 @@ describe('Css Composer', () => {
       );
     });
 
-    it('Create a rule with id selector and state by using setIdRule()', () => {
+    test('Create a rule with id selector and state by using setIdRule()', () => {
       const name = 'test';
       const state = 'hover';
       obj.setIdRule(name, { color: 'red' }, { state });
@@ -190,7 +190,7 @@ describe('Css Composer', () => {
       expect(rule.selectorsToString()).toEqual(`#${name}:${state}`);
     });
 
-    it('Create a rule with class selector by using setClassRule()', () => {
+    test('Create a rule with class selector by using setClassRule()', () => {
       const name = 'test';
       obj.setClassRule(name, { color: 'red' });
       expect(obj.getAll().length).toEqual(1);
@@ -199,7 +199,7 @@ describe('Css Composer', () => {
       expect(rule.styleToString()).toEqual(`color:red;`);
     });
 
-    it('Create a rule with class selector and state by using setClassRule()', () => {
+    test('Create a rule with class selector and state by using setClassRule()', () => {
       const name = 'test';
       const state = 'hover';
       obj.setClassRule(name, { color: 'red' }, { state });

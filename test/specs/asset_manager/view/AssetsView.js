@@ -8,7 +8,7 @@ module.exports = {
       var obj;
       var coll;
 
-      beforeEach(function() {
+      beforeEach(() => {
         coll = new Assets([]);
         obj = new AssetsView({
           config: {},
@@ -22,59 +22,59 @@ module.exports = {
         document.body.querySelector('#fixtures').appendChild(obj.el);
       });
 
-      afterEach(function() {
+      afterEach(() => {
         obj.collection.reset();
       });
 
-      it('Object exists', () => {
-        expect(AssetsView).toExist();
+      test('Object exists', () => {
+        expect(AssetsView).toBeTruthy();
       });
 
-      it('Collection is empty', function() {
-        expect(obj.getAssetsEl().innerHTML).toNotExist();
+      test('Collection is empty', () => {
+        expect(obj.getAssetsEl().innerHTML).toBeFalsy();
       });
 
-      it('Add new asset', function() {
+      test('Add new asset', () => {
         sinon.stub(obj, 'addAsset');
         coll.add({ src: 'test' });
         expect(obj.addAsset.calledOnce).toEqual(true);
       });
 
-      it('Render new asset', function() {
+      test('Render new asset', () => {
         coll.add({ src: 'test' });
-        expect(obj.getAssetsEl().innerHTML).toExist();
+        expect(obj.getAssetsEl().innerHTML).toBeTruthy();
       });
 
-      it('Render correctly new image asset', function() {
+      test('Render correctly new image asset', () => {
         coll.add({ type: 'image', src: 'test' });
         var asset = obj.getAssetsEl().firstChild;
         expect(asset.tagName).toEqual('DIV');
-        expect(asset.innerHTML).toExist();
+        expect(asset.innerHTML).toBeTruthy();
       });
 
-      it('Clean collection from asset', function() {
+      test('Clean collection from asset', () => {
         var model = coll.add({ src: 'test' });
         coll.remove(model);
-        expect(obj.getAssetsEl().innerHTML).toNotExist();
+        expect(obj.getAssetsEl().innerHTML).toBeFalsy();
       });
 
-      it('Deselect works', function() {
+      test('Deselect works', () => {
         coll.add([{}, {}]);
         var $asset = obj.$el.children().first();
         $asset.attr('class', obj.pfx + 'highlight');
         coll.trigger('deselectAll');
-        expect($asset.attr('class')).toNotExist();
+        expect($asset.attr('class')).toBeFalsy();
       });
 
-      it('Returns not empty assets element', () => {
-        expect(obj.getAssetsEl()).toExist();
+      test('Returns not empty assets element', () => {
+        expect(obj.getAssetsEl()).toBeTruthy();
       });
 
-      it('Returns not empty url input', () => {
-        expect(obj.getAddInput()).toExist();
+      test('Returns not empty url input', () => {
+        expect(obj.getAddInput()).toBeTruthy();
       });
 
-      it('Add image asset from input string', () => {
+      test('Add image asset from input string', () => {
         obj.getAddInput().value = 'test';
         obj.handleSubmit({
           preventDefault() {}

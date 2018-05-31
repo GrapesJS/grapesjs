@@ -1,3 +1,4 @@
+import Backbone from 'backbone';
 import { isString, isFunction } from 'underscore';
 import { on, off, matches } from 'utils/mixins';
 const $ = Backbone.$;

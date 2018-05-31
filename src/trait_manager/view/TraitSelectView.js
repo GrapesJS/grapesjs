@@ -1,5 +1,5 @@
 const TraitView = require('./TraitView');
-const $ = Backbone.$;
+const $ = require('backbone').$;
 
 module.exports = TraitView.extend({
   initialize(o) {

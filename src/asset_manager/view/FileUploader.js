@@ -1,3 +1,5 @@
+import _ from 'underscore';
+import Backbone from 'backbone';
 import fetch from 'utils/fetch';
 
 module.exports = Backbone.View.extend(

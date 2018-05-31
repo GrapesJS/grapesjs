@@ -1,3 +1,4 @@
+import Backbone from 'backbone';
 import { isUndefined } from 'underscore';
 
 module.exports = Backbone.View.extend({

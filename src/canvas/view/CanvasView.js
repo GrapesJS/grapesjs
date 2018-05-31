@@ -1,4 +1,5 @@
-import { on, off } from 'utils/mixins';
+import Backbone from 'backbone';
+import { on, off, getElement } from 'utils/mixins';
 const FrameView = require('./FrameView');
 const $ = Backbone.$;
 
@@ -23,7 +24,7 @@ module.exports = Backbone.View.extend({
    * @return {Boolean}
    */
   isElInViewport(el) {
-    const rect = el.getBoundingClientRect();
+    const rect = getElement(el).getBoundingClientRect();
     const frameRect = this.getFrameOffset(1);
     const rTop = rect.top;
     const rLeft = rect.left;

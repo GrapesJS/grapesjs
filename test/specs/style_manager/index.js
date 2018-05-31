@@ -25,15 +25,15 @@ describe('StyleManager', () => {
       obj = null;
     });
 
-    it('Object exists', () => {
-      expect(obj).toExist();
+    test('Object exists', () => {
+      expect(obj).toBeTruthy();
     });
 
-    it('No sectors', () => {
+    test('No sectors', () => {
       expect(obj.getSectors().length).toEqual(0);
     });
 
-    it('Add sector', () => {
+    test('Add sector', () => {
       obj.addSector('test', {
         name: 'Test name'
       });
@@ -43,40 +43,40 @@ describe('StyleManager', () => {
       expect(sector.get('name')).toEqual('Test name');
     });
 
-    it('Add sectors', () => {
+    test('Add sectors', () => {
       obj.addSector('test', {});
       obj.addSector('test2', {});
       expect(obj.getSectors().length).toEqual(2);
     });
 
-    it("Can't create more than one sector with the same id", () => {
+    test("Can't create more than one sector with the same id", () => {
       var sect1 = obj.addSector('test', {});
       var sect2 = obj.addSector('test', {});
       expect(obj.getSectors().length).toEqual(1);
       expect(sect1).toEqual(sect2);
     });
 
-    it('Get inexistent sector', () => {
+    test('Get inexistent sector', () => {
       expect(obj.getSector('test')).toEqual(null);
     });
 
-    it('Get sector', () => {
+    test('Get sector', () => {
       var sect1 = obj.addSector('test', { name: 'Test' });
       var sect2 = obj.getSector('test');
       expect(sect1).toEqual(sect2);
     });
 
-    it('Add property to inexistent sector', () => {
+    test('Add property to inexistent sector', () => {
       expect(obj.addProperty('test', {})).toEqual(null);
     });
 
-    it('Add property', () => {
+    test('Add property', () => {
       obj.addSector('test', {});
-      expect(obj.addProperty('test', {})).toExist();
+      expect(obj.addProperty('test', {})).toBeTruthy();
       expect(obj.getProperties('test').length).toEqual(1);
     });
 
-    it('Check added property', () => {
+    test('Check added property', () => {
       obj.addSector('test', {});
       var prop = obj.addProperty('test', {
         name: 'test'
@@ -84,30 +84,30 @@ describe('StyleManager', () => {
       expect(prop.get('name')).toEqual('test');
     });
 
-    it('Add properties', () => {
+    test('Add properties', () => {
       obj.addSector('test', {});
       obj.addProperty('test', [{}, {}]);
       expect(obj.getProperties('test').length).toEqual(2);
     });
 
-    it('Get property from inexistent sector', () => {
+    test('Get property from inexistent sector', () => {
       expect(obj.getProperty('test', 'test-prop')).toEqual(null);
     });
 
-    it("Can't get properties without proper name", () => {
+    test("Can't get properties without proper name", () => {
       obj.addSector('test', {});
       obj.addProperty('test', [{}, {}]);
       expect(obj.getProperty('test', 'test-prop')).toEqual([]);
     });
 
-    it('Get property with proper name', () => {
+    test('Get property with proper name', () => {
       obj.addSector('test', {});
       var prop1 = obj.addProperty('test', { property: 'test-prop' });
       var prop2 = obj.getProperty('test', 'test-prop');
       expect(prop1).toEqual(prop2);
     });
 
-    it('Get properties with proper name', () => {
+    test('Get properties with proper name', () => {
       obj.addSector('test', {});
       var prop1 = obj.addProperty('test', [
         { property: 'test-prop' },
@@ -116,13 +116,13 @@ describe('StyleManager', () => {
       expect(obj.getProperty('test', 'test-prop').length).toEqual(2);
     });
 
-    it('Get inexistent properties', () => {
+    test('Get inexistent properties', () => {
       expect(obj.getProperties('test')).toEqual(null);
       expect(obj.getProperties()).toEqual(null);
     });
 
-    it('Renders correctly', () => {
-      expect(obj.render()).toExist();
+    test('Renders correctly', () => {
+      expect(obj.render()).toBeTruthy();
     });
 
     describe('Init with configuration', () => {
@@ -161,20 +161,20 @@ describe('StyleManager', () => {
         obj = null;
       });
 
-      it('Sectors added', () => {
+      test('Sectors added', () => {
         expect(obj.getSectors().length).toEqual(2);
         var sect1 = obj.getSector('dim');
         expect(sect1.get('name')).toEqual('Dimension');
       });
 
-      it('Properties added', () => {
+      test('Properties added', () => {
         var sect1 = obj.getSector('dim');
         var sect2 = obj.getSector('pos');
         expect(sect1.get('properties').length).toEqual(2);
         expect(sect2.get('properties').length).toEqual(1);
       });
 
-      it('Property is correct', () => {
+      test('Property is correct', () => {
         var prop1 = obj.getProperty('dim', 'width');
         expect(prop1.get('name')).toEqual('Width');
       });
