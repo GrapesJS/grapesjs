@@ -202,14 +202,34 @@ module.exports = {
 
     if (model) {
       if (model.get('selectable')) {
-        editor.select(model);
-        this.initResize(model);
+        this.select(model, e);
       } else {
         let parent = model.parent();
         while (parent && !parent.get('selectable')) parent = parent.parent();
-        parent && editor.select(parent);
+        this.select(parent, e);
       }
     }
+  },
+
+  /**
+   * Select component
+   * @param  {Component} model
+   * @param  {Event} event
+   */
+  select(model, event = {}) {
+    if (!model) return;
+    const ctrlKey = event.ctrlKey || event.metaKey;
+    const { editor } = this;
+    console.log('shiftKey', event.shiftKey, 'ctrlKey', ctrlKey);
+
+    if (ctrlKey) {
+      editor.selectToggle(model);
+      // else if (shiftKey) // multiple selection
+    } else {
+      editor.select(model);
+    }
+
+    this.initResize(model);
   },
 
   /**

@@ -193,6 +193,10 @@ module.exports = () => {
         em.get('Parser').compTypes = componentTypes;
         em.on('change:selectedComponent', this.componentChanged, this);
         em.on('change:componentHovered', this.componentHovered, this);
+
+        const selected = em.get('selected');
+        em.listenTo(selected, 'add', this.selectAdded);
+        em.listenTo(selected, 'remove', this.selectRemoved);
       }
 
       // Build wrapper
@@ -509,6 +513,20 @@ module.exports = () => {
         }
       }
       return;
+    },
+
+    selectAdded(component) {
+      console.log('ADDED', component);
+      const status = 'selected';
+      component.set({ status });
+    },
+
+    selectRemoved(component) {
+      console.log('Removed', component);
+      component.set({
+        status: '',
+        state: ''
+      });
     },
 
     /**

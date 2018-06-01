@@ -24,6 +24,7 @@ const deps = [
 ];
 
 const Backbone = require('backbone');
+const { Collection } = Backbone;
 let timedInterval;
 
 require('utils/extender')({
@@ -34,18 +35,21 @@ require('utils/extender')({
 const $ = Backbone.$;
 
 module.exports = Backbone.Model.extend({
-  defaults: {
-    clipboard: null,
-    designerMode: false,
-    selectedComponent: null,
-    componentHovered: null,
-    previousModel: null,
-    changesCount: 0,
-    storables: [],
-    modules: [],
-    toLoad: [],
-    opened: {},
-    device: ''
+  defaults() {
+    return {
+      selected: new Collection(),
+      clipboard: null,
+      designerMode: false,
+      selectedComponent: null,
+      componentHovered: null,
+      previousModel: null,
+      changesCount: 0,
+      storables: [],
+      modules: [],
+      toLoad: [],
+      opened: {},
+      device: ''
+    };
   },
 
   initialize(c = {}) {
@@ -239,6 +243,47 @@ module.exports = Backbone.Model.extend({
     if (model && !model.get('selectable')) return;
     opts.forceChange && this.set('selectedComponent', '');
     this.set('selectedComponent', model, opts);
+  },
+
+  /**
+   * Add component to selection
+   * @param  {Component|HTMLElement} el Component to select
+   * @param  {Object} [opts={}] Options, optional
+   * @private
+   */
+  addSelected(el, opts = {}) {
+    let model = el;
+    isElement(el) && (model = $(el).data('model'));
+    if (model && !model.get('selectable')) return;
+    this.get('selected').push(model, opts);
+  },
+
+  /**
+   * Remove component from selection
+   * @param  {Component|HTMLElement} el Component to select
+   * @param  {Object} [opts={}] Options, optional
+   * @private
+   */
+  removeSelected(el, opts = {}) {
+    let model = el;
+    isElement(el) && (model = $(el).data('model'));
+    this.get('selected').remove(model, opts);
+  },
+
+  /**
+   * Toggle component selection
+   * @param  {Component|HTMLElement} el Component to select
+   * @param  {Object} [opts={}] Options, optional
+   * @private
+   */
+  toggleSelected(el, opts = {}) {
+    let model = el;
+    isElement(el) && (model = $(el).data('model'));
+    if (this.get('selected').contains(model)) {
+      this.removeSelected(model, opts);
+    } else {
+      this.addSelected(model, opts);
+    }
   },
 
   /**

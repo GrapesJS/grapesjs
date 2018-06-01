@@ -405,6 +405,42 @@ module.exports = config => {
     },
 
     /**
+     * Add component to selection
+     * @param  {Component|HTMLElement} el Component to select
+     * @return {this}
+     * @example
+     * editor.selectAdd(model);
+     */
+    selectAdd(el) {
+      em.addSelected(el);
+      return this;
+    },
+
+    /**
+     * Remove component from selection
+     * @param  {Component|HTMLElement} el Component to select
+     * @return {this}
+     * @example
+     * editor.selectRemove(model);
+     */
+    selectRemove(el) {
+      em.removeSelected(el);
+      return this;
+    },
+
+    /**
+     * Toggle component selection
+     * @param  {Component|HTMLElement} el Component to select
+     * @return {this}
+     * @example
+     * editor.selectToggle(model);
+     */
+    selectToggle(el) {
+      em.toggleSelected(el);
+      return this;
+    },
+
+    /**
      * Set device to the editor. If the device exists it will
      * change the canvas to the proper width
      * @param {string} name Name of the device

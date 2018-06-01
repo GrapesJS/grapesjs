@@ -8,6 +8,15 @@ module.exports = Backbone.View.extend({
     const coll = this.collection;
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.resetChildren);
+    this.listenTo(coll, 'remove', this.removeChildren);
+  },
+
+  removeChildren(removed) {
+    console.log('removed', removed);
+    const view = removed.view;
+    view.prototype.remove.apply(view);
+    const children = view.childrenView;
+    children && children.stopListening();
   },
 
   /**

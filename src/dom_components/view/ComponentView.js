@@ -24,7 +24,7 @@ module.exports = Backbone.View.extend({
     this.classe = this.attr.class || [];
     const $el = this.$el;
     const classes = model.get('classes');
-    this.listenTo(model, 'destroy remove', this.remove);
+    //this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model, 'change:style', this.updateStyle);
     this.listenTo(model, 'change:attributes', this.updateAttributes);
     this.listenTo(model, 'change:highlightable', this.updateHighlight);
