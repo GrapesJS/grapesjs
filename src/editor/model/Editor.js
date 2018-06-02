@@ -64,7 +64,6 @@ module.exports = Backbone.Model.extend({
 
     // Load modules
     deps.forEach(name => this.loadModule(name));
-    this.on('change:selectedComponent', this.componentSelected, this);
     this.on('change:componentHovered', this.componentHovered, this);
     this.on('change:changesCount', this.updateChanges, this);
   },
@@ -198,19 +197,6 @@ module.exports = Backbone.Model.extend({
   },
 
   /**
-   * Callback on component selection
-   * @param   {Object}   Model
-   * @param   {Mixed}   New value
-   * @param   {Object}   Options
-   * @private
-   * */
-  componentSelected(editor, selected, options) {
-    const prev = this.previous('selectedComponent');
-    prev && this.trigger('component:deselected', prev, options);
-    selected && this.trigger('component:selected', selected, options);
-  },
-
-  /**
    * Callback on component hover
    * @param   {Object}   Model
    * @param   {Mixed}   New value
@@ -229,7 +215,7 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   getSelected() {
-    return this.get('selectedComponent');
+    return this.get('selected').last();
   },
 
   /**
@@ -244,7 +230,7 @@ module.exports = Backbone.Model.extend({
     opts.forceChange && this.set('selectedComponent', '');
     const selected = this.get('selected');
     selected.remove(selected.filter(sel => sel !== model));
-    this.set('selectedComponent', model, opts);
+    // this.set('selectedComponent', model, opts);
     this.addSelected(model, opts);
   },
 

@@ -174,6 +174,7 @@ module.exports = () => {
     init(config) {
       c = config || {};
       em = c.em;
+      this.em = em;
 
       if (em) {
         c.components = em.config.components || c.components;
@@ -195,8 +196,12 @@ module.exports = () => {
         em.on('change:componentHovered', this.componentHovered, this);
 
         const selected = em.get('selected');
-        em.listenTo(selected, 'add', this.selectAdd);
-        em.listenTo(selected, 'remove', this.selectRemove);
+        em.listenTo(selected, 'add', (sel, c, opts) =>
+          this.selectAdd(sel, opts)
+        );
+        em.listenTo(selected, 'remove', (sel, c, opts) =>
+          this.selectRemove(sel, opts)
+        );
       }
 
       // Build wrapper
@@ -515,21 +520,25 @@ module.exports = () => {
       return;
     },
 
-    selectAdd(component) {
+    selectAdd(component, opts = {}) {
       console.log('ADDED', component);
-      component &&
+      if (component) {
         component.set({
           status: 'selected'
         });
+        this.em.trigger('component:selected', component, opts);
+      }
     },
 
-    selectRemove(component) {
+    selectRemove(component, opts = {}) {
       console.log('REMOVED', component);
-      component &&
+      if (component) {
         component.set({
           status: '',
           state: ''
         });
+        this.em.trigger('component:deselected', component, opts);
+      }
     },
 
     /**
