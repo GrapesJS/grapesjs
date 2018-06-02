@@ -67,7 +67,6 @@ module.exports = require('backbone').View.extend({
     const components = model.get('components');
     model.set('open', false);
     this.listenTo(components, 'remove add change reset', this.checkChildren);
-    this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model, 'change:status', this.updateStatus);
     this.listenTo(model, 'change:open', this.updateOpening);
     this.listenTo(model, 'change:style:display', this.updateVisibility);
