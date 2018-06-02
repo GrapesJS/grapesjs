@@ -195,8 +195,8 @@ module.exports = () => {
         em.on('change:componentHovered', this.componentHovered, this);
 
         const selected = em.get('selected');
-        em.listenTo(selected, 'add', this.selectAdded);
-        em.listenTo(selected, 'remove', this.selectRemoved);
+        em.listenTo(selected, 'add', this.selectAdd);
+        em.listenTo(selected, 'remove', this.selectRemove);
       }
 
       // Build wrapper
@@ -515,18 +515,21 @@ module.exports = () => {
       return;
     },
 
-    selectAdded(component) {
+    selectAdd(component) {
       console.log('ADDED', component);
-      const status = 'selected';
-      component.set({ status });
+      component &&
+        component.set({
+          status: 'selected'
+        });
     },
 
-    selectRemoved(component) {
-      console.log('Removed', component);
-      component.set({
-        status: '',
-        state: ''
-      });
+    selectRemove(component) {
+      console.log('REMOVED', component);
+      component &&
+        component.set({
+          status: '',
+          state: ''
+        });
     },
 
     /**
@@ -535,17 +538,8 @@ module.exports = () => {
      */
     componentChanged() {
       const em = c.em;
-      const model = em.get('selectedComponent');
-      const previousModel = em.previous('selectedComponent');
-
-      // Deselect the previous component
-      previousModel &&
-        previousModel.set({
-          status: '',
-          state: ''
-        });
-
-      model && model.set('status', 'selected');
+      this.selectRemove(em.previous('selectedComponent'));
+      this.selectAdd(em.get('selectedComponent'));
     },
 
     /**

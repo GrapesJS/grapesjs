@@ -243,8 +243,9 @@ module.exports = Backbone.Model.extend({
     if (model && !model.get('selectable')) return;
     opts.forceChange && this.set('selectedComponent', '');
     const selected = this.get('selected');
-    selected.remove(selected.models);
+    selected.remove(selected.filter(sel => sel !== model));
     this.set('selectedComponent', model, opts);
+    this.addSelected(model, opts);
   },
 
   /**

@@ -12,9 +12,8 @@ module.exports = Backbone.View.extend({
   },
 
   removeChildren(removed) {
-    console.log('removed', removed);
     const view = removed.view;
-    view.prototype.remove.apply(view);
+    view.remove.apply(view);
     const children = view.childrenView;
     children && children.stopListening();
   },
