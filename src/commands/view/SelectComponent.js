@@ -54,7 +54,7 @@ module.exports = {
     methods[method](body, 'click', this.onClick);
     methods[method](win, 'scroll resize', this.onFrameScroll);
     methods[method](win, 'keydown', this.onKeyPress);
-    em[method]('change:selectedComponent', this.onSelect, this);
+    em[method]('component:toggled', this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
   },
 
@@ -64,7 +64,7 @@ module.exports = {
    * */
   onKeyPress(e) {
     var key = e.which || e.keyCode;
-    var comp = this.editorModel.get('selectedComponent');
+    var comp = this.editorModel.getSelected();
     var focused = this.frameEl.contentDocument.activeElement.tagName !== 'BODY';
 
     // On CANC (46) or Backspace (8)
@@ -431,7 +431,7 @@ module.exports = {
    */
   updateToolbar(mod) {
     var em = this.config.em;
-    var model = mod == em ? em.get('selectedComponent') : mod;
+    var model = mod == em ? em.getSelected() : mod;
     var toolbarEl = this.canvas.getToolbarEl();
     var toolbarStyle = toolbarEl.style;
 
@@ -525,7 +525,7 @@ module.exports = {
     if (el) {
       var elPos = this.getElementPos(el);
       this.updateBadge(el, elPos);
-      var model = this.em.get('selectedComponent');
+      var model = this.em.getSelected();
 
       if (model) {
         this.updateToolbarPos(model.view.el);
@@ -603,6 +603,5 @@ module.exports = {
 
     em.off('component:update', this.updateAttached, this);
     em.off('change:canvasOffset', this.updateAttached, this);
-    em.off('change:selectedComponent', this.updateToolbar, this);
   }
 };
