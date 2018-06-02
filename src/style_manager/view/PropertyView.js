@@ -413,7 +413,7 @@ module.exports = Backbone.View.extend({
    */
   isComponentStylable() {
     const em = this.em;
-    const component = em && em.get('selectedComponent');
+    const component = em && em.getSelected();
 
     if (!component) {
       return true;

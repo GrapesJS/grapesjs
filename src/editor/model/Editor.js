@@ -41,7 +41,6 @@ module.exports = Backbone.Model.extend({
       selected: new Collection(),
       clipboard: null,
       designerMode: false,
-      selectedComponent: null,
       componentHovered: null,
       previousModel: null,
       changesCount: 0,
@@ -227,10 +226,8 @@ module.exports = Backbone.Model.extend({
   setSelected(el, opts = {}) {
     const model = getModel(el, $);
     if (model && !model.get('selectable')) return;
-    opts.forceChange && this.set('selectedComponent', '');
     const selected = this.get('selected');
     selected.remove(selected.filter(sel => sel !== model));
-    // this.set('selectedComponent', model, opts);
     this.addSelected(model, opts);
   },
 
