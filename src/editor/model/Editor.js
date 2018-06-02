@@ -1,4 +1,5 @@
-import { isUndefined, isElement, defaults } from 'underscore';
+import { isUndefined, defaults } from 'underscore';
+import { getModel } from 'utils/mixins';
 
 const deps = [
   require('utils'),
@@ -238,10 +239,11 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   setSelected(el, opts = {}) {
-    let model = el;
-    isElement(el) && (model = $(el).data('model'));
+    const model = getModel(el, $);
     if (model && !model.get('selectable')) return;
     opts.forceChange && this.set('selectedComponent', '');
+    const selected = this.get('selected');
+    selected.remove(selected.models);
     this.set('selectedComponent', model, opts);
   },
 
@@ -252,8 +254,7 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   addSelected(el, opts = {}) {
-    let model = el;
-    isElement(el) && (model = $(el).data('model'));
+    const model = getModel(el, $);
     if (model && !model.get('selectable')) return;
     this.get('selected').push(model, opts);
   },
@@ -265,9 +266,7 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   removeSelected(el, opts = {}) {
-    let model = el;
-    isElement(el) && (model = $(el).data('model'));
-    this.get('selected').remove(model, opts);
+    this.get('selected').remove(getModel(el, $), opts);
   },
 
   /**
@@ -277,8 +276,7 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   toggleSelected(el, opts = {}) {
-    let model = el;
-    isElement(el) && (model = $(el).data('model'));
+    const model = getModel(el, $);
     if (this.get('selected').contains(model)) {
       this.removeSelected(model, opts);
     } else {
@@ -293,8 +291,7 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   setHovered(el, opts = {}) {
-    let model = el;
-    isElement(el) && (model = $(el).data('model'));
+    const model = getModel(el, $);
     if (model && !model.get('hoverable')) return;
     opts.forceChange && this.set('componentHovered', '');
     this.set('componentHovered', model, opts);

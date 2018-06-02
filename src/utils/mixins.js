@@ -110,12 +110,24 @@ const getElement = el => {
   }
 };
 
+/**
+ * Ensure to fetch the model from the input argument
+ * @param  {HTMLElement|Component} el Component or HTML element
+ * @return {Component}
+ */
+const getModel = (el, $) => {
+  let model = el;
+  isElement(el) && (model = $(el).data('model'));
+  return model;
+};
+
 export {
   on,
   off,
   hasDnd,
   upFirst,
   matches,
+  getModel,
   camelCase,
   getElement,
   shallowDiff,

@@ -219,8 +219,8 @@ module.exports = {
   select(model, event = {}) {
     if (!model) return;
     const ctrlKey = event.ctrlKey || event.metaKey;
+    const shiftKey = event.shiftKey;
     const { editor } = this;
-    console.log('shiftKey', event.shiftKey, 'ctrlKey', ctrlKey);
 
     if (ctrlKey) {
       editor.selectToggle(model);
