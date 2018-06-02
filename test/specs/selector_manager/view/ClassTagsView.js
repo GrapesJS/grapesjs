@@ -114,7 +114,7 @@ module.exports = {
 
       test('Collection changes on update of target', () => {
         coll.add({ name: 'test' });
-        target.trigger('change:selectedComponent');
+        target.trigger('component:toggled');
         expect(coll.length).toEqual(0);
       });
 
