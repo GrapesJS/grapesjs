@@ -192,7 +192,6 @@ module.exports = () => {
         c.modal = em.get('Modal') || '';
         c.am = em.get('AssetManager') || '';
         em.get('Parser').compTypes = componentTypes;
-        em.on('change:selectedComponent', this.componentChanged, this);
         em.on('change:componentHovered', this.componentHovered, this);
 
         const selected = em.get('selected');
@@ -544,16 +543,6 @@ module.exports = () => {
           this.em.trigger(event, component, opts)
         );
       }
-    },
-
-    /**
-     * Triggered when the selected component is changed
-     * @private
-     */
-    componentChanged() {
-      const em = c.em;
-      this.selectRemove(em.previous('selectedComponent'));
-      this.selectAdd(em.get('selectedComponent'));
     },
 
     /**
