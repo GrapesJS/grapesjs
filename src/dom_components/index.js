@@ -526,18 +526,23 @@ module.exports = () => {
         component.set({
           status: 'selected'
         });
-        this.em.trigger('component:selected', component, opts);
+        ['component:selected', 'component:toggled'].forEach(event =>
+          this.em.trigger(event, component, opts)
+        );
       }
     },
 
     selectRemove(component, opts = {}) {
       console.log('REMOVED', component);
       if (component) {
+        const { em } = this;
         component.set({
           status: '',
           state: ''
         });
-        this.em.trigger('component:deselected', component, opts);
+        ['component:deselected', 'component:toggled'].forEach(event =>
+          this.em.trigger(event, component, opts)
+        );
       }
     },
 
