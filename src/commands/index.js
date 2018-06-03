@@ -38,7 +38,7 @@
  * },
  * ...
  */
-import { isFunction, isArray } from 'underscore';
+import { isFunction, isArray, contains } from 'underscore';
 
 module.exports = () => {
   let em;
@@ -118,18 +118,8 @@ module.exports = () => {
 
       defaultCommands['tlb-clone'] = {
         run(ed) {
-          var sel = ed.getSelected();
-
-          if (!sel || !sel.get('copyable')) {
-            console.warn('The element is not clonable');
-            return;
-          }
-
-          var collection = sel.collection;
-          var index = collection.indexOf(sel);
-          const added = collection.add(sel.clone(), { at: index + 1 });
-          sel.emitUpdate();
-          ed.trigger('component:clone', added);
+          ed.runCommand('core:copy');
+          ed.runCommand('core:paste');
         }
       };
 
@@ -210,23 +200,40 @@ module.exports = () => {
       };
       defaultCommands['core:copy'] = ed => {
         const em = ed.getModel();
-        const model = ed.getSelected();
+        const models = [...ed.getSelectedAll()];
 
-        if (model && model.get('copyable') && !ed.Canvas.isInputFocused()) {
-          em.set('clipboard', model);
+        if (models.length && !ed.Canvas.isInputFocused()) {
+          em.set('clipboard', models);
         }
       };
+
       defaultCommands['core:paste'] = ed => {
         const em = ed.getModel();
         const clp = em.get('clipboard');
-        const model = ed.getSelected();
-        const coll = model && model.collection;
+        const selected = ed.getSelected();
 
-        if (coll && clp && !ed.Canvas.isInputFocused()) {
-          const at = coll.indexOf(model) + 1;
-          coll.add(clp.clone(), { at });
+        if (selected && !ed.Canvas.isInputFocused()) {
+          ed.getSelectedAll().forEach(comp => {
+            if (!comp) return;
+            const coll = comp.collection;
+            const at = coll.indexOf(comp) + 1;
+            const copyable = clp.filter(cop => cop.get('copyable'));
+            let added;
+
+            if (contains(clp, comp) && comp.get('copyable')) {
+              added = coll.add(comp.clone(), { at });
+            } else {
+              added = coll.add(copyable.map(cop => cop.clone()), { at });
+            }
+
+            added = isArray(added) ? added : [added];
+            added.forEach(add => ed.trigger('component:clone', add));
+          });
+
+          selected.emitUpdate();
         }
       };
+
       defaultCommands['core:component-delete'] = (ed, sender, opts = {}) => {
         let components = opts.component || ed.getSelectedAll();
         components = isArray(components) ? [...components] : [components];
