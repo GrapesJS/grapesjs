@@ -129,6 +129,7 @@ module.exports = () => {
           const em = ed.getModel();
           const event = opts && opts.event;
           const sel = ed.getSelected();
+          const selAll = [...ed.getSelectedAll()];
           const toolbarStyle = ed.Canvas.getToolbarEl().style;
           const nativeDrag = event && event.type == 'dragstart';
 
@@ -155,7 +156,7 @@ module.exports = () => {
 
           const onEnd = (e, opts) => {
             em.runDefault();
-            em.setSelected(sel);
+            ed.select(selAll);
             sel.emitUpdate();
             dragger && dragger.blur();
           };
@@ -184,7 +185,8 @@ module.exports = () => {
 
             const cmdMove = ed.Commands.get('move-comp');
             cmdMove.onEndMoveFromModel = onEnd;
-            cmdMove.initSorterFromModel(sel);
+            // cmdMove.initSorterFromModel(sel);
+            cmdMove.initSorterFromModels(selAll);
           }
 
           sel.set('status', 'freezed-selected');

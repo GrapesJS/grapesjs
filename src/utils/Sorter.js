@@ -1,6 +1,6 @@
 import Backbone from 'backbone';
-import { isString, isFunction } from 'underscore';
-import { on, off, matches } from 'utils/mixins';
+import { isString, isFunction, isArray } from 'underscore';
+import { on, off, matches, getElement } from 'utils/mixins';
 const $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
@@ -482,9 +482,9 @@ module.exports = Backbone.View.extend({
    * @param  {HTMLElement} trg
    * @return {Boolean}
    */
-  validTarget(trg) {
-    let srcModel = this.getSourceModel();
-    let src = srcModel && srcModel.view && srcModel.view.el;
+  validTarget(trg, src) {
+    let srcModel = this.getSourceModel(src);
+    src = srcModel && srcModel.view && srcModel.view.el;
     let trgModel = this.getTargetModel(trg);
     trg = trgModel && trgModel.view && trgModel.view.el;
     let result = {
@@ -925,11 +925,23 @@ module.exports = Backbone.View.extend({
     }
 
     if (this.moved) {
-      created = this.move(this.target, src, this.lastPos);
+      const toMove = this.toMove;
+      const onEndMove = this.onEndMove;
+
+      if (!toMove || !toMove.length) {
+        created = this.move(this.target, src, this.lastPos);
+        isFunction(onEndMove) && onEndMove(created, this);
+      } else {
+        const toMoveArr = isArray(toMove) ? toMove : [toMove];
+        toMoveArr.forEach(model => {
+          console.log('toMove', model);
+          created = this.move(this.target, model, this.lastPos);
+          isFunction(onEndMove) && onEndMove(created, this);
+        });
+      }
     }
 
     if (this.plh) this.plh.style.display = 'none';
-    if (isFunction(this.onEndMove)) this.onEndMove(created, this);
     var dragHelper = this.dragHelper;
 
     if (dragHelper) {
@@ -949,11 +961,12 @@ module.exports = Backbone.View.extend({
    * */
   move(dst, src, pos) {
     var em = this.em;
-    em && em.trigger('component:dragEnd:before', dst, src, pos); // @depricated
+    const srcEl = getElement(src);
+    em && em.trigger('component:dragEnd:before', dst, srcEl, pos); // @depricated
     var warns = [];
     var index = pos.index;
     var modelToDrop, modelTemp, created;
-    var validResult = this.validTarget(dst);
+    var validResult = this.validTarget(dst, srcEl);
     var targetCollection = $(dst).data('collection');
     var model = validResult.srcModel;
     var droppable = validResult.droppable;

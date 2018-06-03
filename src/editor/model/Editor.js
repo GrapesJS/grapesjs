@@ -1,4 +1,4 @@
-import { isUndefined, defaults } from 'underscore';
+import { isUndefined, defaults, isArray } from 'underscore';
 import { getModel } from 'utils/mixins';
 
 const deps = [
@@ -233,11 +233,17 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   setSelected(el, opts = {}) {
-    const model = getModel(el, $);
-    if (model && !model.get('selectable')) return;
+    const multiple = isArray(el);
+    const els = multiple ? el : [el];
     const selected = this.get('selected');
-    selected.remove(selected.filter(sel => sel !== model));
-    this.addSelected(model, opts);
+    multiple && selected.remove(selected.models);
+
+    els.forEach(el => {
+      const model = getModel(el, $);
+      if (model && !model.get('selectable')) return;
+      !multiple && selected.remove(selected.filter(sel => sel !== model));
+      this.addSelected(model, opts);
+    });
   },
 
   /**
