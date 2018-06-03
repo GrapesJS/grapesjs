@@ -218,6 +218,15 @@ module.exports = Backbone.Model.extend({
   },
 
   /**
+   * Returns an array of all selected components
+   * @return {Array}
+   * @private
+   */
+  getSelectedAll() {
+    return this.get('selected').models;
+  },
+
+  /**
    * Select a component
    * @param  {Component|HTMLElement} el Component to select
    * @param  {Object} [opts={}] Options, optional

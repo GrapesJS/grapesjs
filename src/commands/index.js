@@ -38,7 +38,7 @@
  * },
  * ...
  */
-import { isFunction } from 'underscore';
+import { isFunction, isArray } from 'underscore';
 
 module.exports = () => {
   let em;
@@ -228,16 +228,25 @@ module.exports = () => {
         }
       };
       defaultCommands['core:component-delete'] = (ed, sender, opts = {}) => {
-        let component = opts.component || ed.getSelected();
+        let components = opts.component || ed.getSelectedAll();
+        components = isArray(components) ? [...components] : [components];
 
-        if (!component || !component.get('removable')) {
-          console.warn('The element is not removable');
-          return;
-        }
-
+        // It's important to deselect components first otherwise,
+        // with undo, the component will be set with the wrong `collection`
         ed.select(null);
-        component.destroy();
-        return component;
+
+        components.forEach(component => {
+          if (!component || !component.get('removable')) {
+            console.warn('The element is not removable', component);
+            return;
+          }
+          if (component) {
+            const coll = component.collection;
+            coll && coll.remove(component);
+          }
+        });
+
+        return components;
       };
 
       if (c.em) c.model = c.em.get('Canvas');

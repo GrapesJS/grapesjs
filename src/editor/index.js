@@ -367,11 +367,19 @@ module.exports = config => {
     },
 
     /**
-     * Returns selected component, if there is one
+     * Returns the last selected component, if there is one
      * @return {Model}
      */
     getSelected() {
       return em.getSelected();
+    },
+
+    /**
+     * Returns an array of all selected components
+     * @return {Array}
+     */
+    getSelectedAll() {
+      return em.getSelectedAll();
     },
 
     /**
