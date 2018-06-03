@@ -38,7 +38,7 @@
  * },
  * ...
  */
-import { isFunction, isArray, contains } from 'underscore';
+import { isFunction, isArray } from 'underscore';
 
 module.exports = () => {
   let em;
@@ -194,46 +194,12 @@ module.exports = () => {
       // Core commands
       defaultCommands['core:undo'] = e => e.UndoManager.undo();
       defaultCommands['core:redo'] = e => e.UndoManager.redo();
+      defaultCommands['core:copy'] = require('./view/CopyComponent').run;
+      defaultCommands['core:paste'] = require('./view/PasteComponent').run;
       defaultCommands['core:canvas-clear'] = e => {
         e.DomComponents.clear();
         e.CssComposer.clear();
       };
-      defaultCommands['core:copy'] = ed => {
-        const em = ed.getModel();
-        const models = [...ed.getSelectedAll()];
-
-        if (models.length && !ed.Canvas.isInputFocused()) {
-          em.set('clipboard', models);
-        }
-      };
-
-      defaultCommands['core:paste'] = ed => {
-        const em = ed.getModel();
-        const clp = em.get('clipboard');
-        const selected = ed.getSelected();
-
-        if (selected && !ed.Canvas.isInputFocused()) {
-          ed.getSelectedAll().forEach(comp => {
-            if (!comp) return;
-            const coll = comp.collection;
-            const at = coll.indexOf(comp) + 1;
-            const copyable = clp.filter(cop => cop.get('copyable'));
-            let added;
-
-            if (contains(clp, comp) && comp.get('copyable')) {
-              added = coll.add(comp.clone(), { at });
-            } else {
-              added = coll.add(copyable.map(cop => cop.clone()), { at });
-            }
-
-            added = isArray(added) ? added : [added];
-            added.forEach(add => ed.trigger('component:clone', add));
-          });
-
-          selected.emitUpdate();
-        }
-      };
-
       defaultCommands['core:component-delete'] = (ed, sender, opts = {}) => {
         let components = opts.component || ed.getSelectedAll();
         components = isArray(components) ? [...components] : [components];
