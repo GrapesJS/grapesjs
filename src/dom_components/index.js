@@ -470,8 +470,7 @@ module.exports = () => {
      * @return {this}
      */
     clear() {
-      var c = this.getComponents();
-      for (var i = 0, len = c.length; i < len; i++) c.pop();
+      this.getComponents().reset();
       return this;
     },
 
