@@ -1,4 +1,4 @@
-import { isUndefined, defaults, isArray } from 'underscore';
+import { isUndefined, defaults, isArray, contains } from 'underscore';
 import { getModel } from 'utils/mixins';
 
 const deps = [
@@ -236,7 +236,9 @@ module.exports = Backbone.Model.extend({
     const multiple = isArray(el);
     const els = multiple ? el : [el];
     const selected = this.get('selected');
-    multiple && selected.remove(selected.models);
+
+    // Don't remove alredy selected components
+    multiple && selected.remove(selected.filter(sel => !contains(els, sel)));
 
     els.forEach(el => {
       const model = getModel(el, $);

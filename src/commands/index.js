@@ -132,10 +132,11 @@ module.exports = () => {
           const selAll = [...ed.getSelectedAll()];
           const toolbarStyle = ed.Canvas.getToolbarEl().style;
           const nativeDrag = event && event.type == 'dragstart';
+          const defComOptions = { preserveSelected: 1 };
 
           const hideTlb = () => {
             toolbarStyle.display = 'none';
-            em.stopDefault();
+            em.stopDefault(defComOptions);
           };
 
           if (!sel || !sel.get('draggable')) {
@@ -155,7 +156,8 @@ module.exports = () => {
           };
 
           const onEnd = (e, opts) => {
-            em.runDefault();
+            em.runDefault(defComOptions);
+            selAll.forEach(sel => sel.set('status', 'selected'));
             ed.select(selAll);
             sel.emitUpdate();
             dragger && dragger.blur();
