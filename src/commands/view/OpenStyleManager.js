@@ -45,7 +45,7 @@ module.exports = {
       this.panel.set('appendContent', this.$cn).trigger('change:appendContent');
 
       this.target = em.editor;
-      this.listenTo(this.target, 'component:selected', this.toggleSm);
+      this.listenTo(this.target, 'component:toggled', this.toggleSm);
     }
     this.toggleSm();
   },
@@ -55,10 +55,10 @@ module.exports = {
    * @private
    */
   toggleSm() {
-    const sender = this.sender;
+    const { target, sender } = this;
     if (sender && sender.get && !sender.get('active')) return;
 
-    if (this.target.getSelected()) {
+    if (target.getSelectedAll().length === 1) {
       this.$cn2.show();
       this.$header.hide();
     } else {
