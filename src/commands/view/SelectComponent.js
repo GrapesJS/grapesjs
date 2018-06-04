@@ -221,8 +221,9 @@ module.exports = {
     const ctrlKey = event.ctrlKey || event.metaKey;
     const shiftKey = event.shiftKey;
     const { editor } = this;
+    const multiple = editor.getConfig('multipleSelection');
 
-    if (ctrlKey) {
+    if (ctrlKey && multiple) {
       editor.selectToggle(model);
       // else if (shiftKey) // multiple selection
     } else {

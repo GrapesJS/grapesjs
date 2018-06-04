@@ -185,11 +185,10 @@ module.exports = () => {
 
             const cmdMove = ed.Commands.get('move-comp');
             cmdMove.onEndMoveFromModel = onEnd;
-            // cmdMove.initSorterFromModel(sel);
             cmdMove.initSorterFromModels(selAll);
           }
 
-          sel.set('status', 'freezed-selected');
+          selAll.forEach(sel => sel.set('status', 'freezed-selected'));
         }
       };
 

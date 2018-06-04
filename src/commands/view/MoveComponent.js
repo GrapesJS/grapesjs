@@ -90,12 +90,11 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
     // TODO: if one only check for `draggable`
     // Avoid badge showing on move
     this.cacheEl = null;
-    models = [...models];
     const lastModel = models[models.length - 1];
     const doc = this.frameEl.contentDocument;
     this.startSelectPosition(lastModel.view.el, doc);
     this.sorter.draggable = lastModel.get('draggable');
-    this.sorter.toMove = models.reverse();
+    this.sorter.toMove = models;
     this.sorter.onEndMove = this.onEndMoveFromModel.bind(this);
     this.stopSelectComponent();
     on(this.getContentWindow(), 'keydown', this.rollback);
