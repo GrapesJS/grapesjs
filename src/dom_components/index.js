@@ -519,7 +519,6 @@ module.exports = () => {
     },
 
     selectAdd(component, opts = {}) {
-      console.log('ADDED', component);
       if (component) {
         component.set({
           status: 'selected'
@@ -531,7 +530,6 @@ module.exports = () => {
     },
 
     selectRemove(component, opts = {}) {
-      console.log('REMOVED', component);
       if (component) {
         const { em } = this;
         component.set({

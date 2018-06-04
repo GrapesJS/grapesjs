@@ -905,8 +905,11 @@ module.exports = Backbone.View.extend({
    * */
   endMove(e) {
     var created;
+    const moved = [];
     const docs = this.getDocuments();
     const container = this.getContainerEl();
+    const onEndMove = this.onEndMove;
+    const { target, lastPos } = this;
     off(container, 'mousemove dragover', this.onMove);
     off(docs, 'mouseup dragend', this.endMove);
     off(docs, 'keydown', this.rollback);
@@ -926,19 +929,10 @@ module.exports = Backbone.View.extend({
 
     if (this.moved) {
       const toMove = this.toMove;
-      const onEndMove = this.onEndMove;
-
-      if (!toMove || !toMove.length) {
-        created = this.move(this.target, src, this.lastPos);
-        isFunction(onEndMove) && onEndMove(created, this);
-      } else {
-        const toMoveArr = isArray(toMove) ? toMove : [toMove];
-        toMoveArr.forEach(model => {
-          console.log('toMove', model);
-          created = this.move(this.target, model, this.lastPos);
-          isFunction(onEndMove) && onEndMove(created, this);
-        });
-      }
+      const toMoveArr = isArray(toMove) ? toMove : toMove ? [toMove] : [src];
+      toMoveArr.forEach(model => {
+        moved.push(this.move(target, model, lastPos));
+      });
     }
 
     if (this.plh) this.plh.style.display = 'none';
@@ -951,6 +945,9 @@ module.exports = Backbone.View.extend({
 
     this.selectTargetModel();
     this.toggleSortCursor();
+
+    this.toMove = null;
+    isFunction(onEndMove) && onEndMove(moved, this);
   },
 
   /**

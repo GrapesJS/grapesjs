@@ -82,7 +82,7 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
   },
 
   /**
-   * Init sorter from model
+   * Init sorter from models
    * @param  {Object} model
    * @private
    */
@@ -97,6 +97,8 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
     this.sorter.draggable = lastModel.get('draggable');
     this.sorter.toMove = models.reverse();
     this.sorter.onEndMove = this.onEndMoveFromModel.bind(this);
+    this.stopSelectComponent();
+    on(this.getContentWindow(), 'keydown', this.rollback);
   },
 
   onEndMoveFromModel() {
