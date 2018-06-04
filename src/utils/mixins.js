@@ -105,7 +105,7 @@ const hasDnd = em => {
 const getElement = el => {
   if (isElement(el)) {
     return el;
-  } else if (el.getEl) {
+  } else if (el && el.getEl) {
     return el.getEl();
   }
 };
