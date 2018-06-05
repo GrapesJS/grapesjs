@@ -199,6 +199,18 @@ module.exports = () => {
       defaultCommands['core:redo'] = e => e.UndoManager.redo();
       defaultCommands['core:copy'] = require('./view/CopyComponent').run;
       defaultCommands['core:paste'] = require('./view/PasteComponent').run;
+      defaultCommands[
+        'core:component-next'
+      ] = require('./view/ComponentNext').run;
+      defaultCommands[
+        'core:component-prev'
+      ] = require('./view/ComponentPrev').run;
+      defaultCommands[
+        'core:component-enter'
+      ] = require('./view/ComponentEnter').run;
+      defaultCommands[
+        'core:component-exit'
+      ] = require('./view/ComponentExit').run;
       defaultCommands['core:canvas-clear'] = e => {
         e.DomComponents.clear();
         e.CssComposer.clear();
