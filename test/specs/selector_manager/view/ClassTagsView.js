@@ -131,7 +131,6 @@ module.exports = {
       });
 
       test('Accept new tags', () => {
-        sinon.stub(target, 'get').returns(testContext.targetStub);
         view.compTarget = testContext.compTargetStub;
         view.addNewTag('test');
         view.compTarget = testContext.compTargetStub;
@@ -170,7 +169,6 @@ module.exports = {
       });
 
       test('Update state visibility on removing of the tag', () => {
-        sinon.stub(target, 'get').returns(testContext.targetStub);
         view.compTarget = testContext.compTargetStub;
         view.addNewTag('test');
         sinon.stub(view, 'updateStateVis');

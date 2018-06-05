@@ -1,3 +1,4 @@
+const EditorModel = require('editor/model/Editor');
 const ClassTagView = require('selector_manager/view/ClassTagView');
 const Selectors = require('selector_manager/model/Selectors');
 
@@ -17,12 +18,14 @@ module.exports = {
           label: testLabel
         });
         obj = new ClassTagView({
-          config: {},
+          config: {
+            em: new EditorModel()
+          },
           model,
           coll
         });
-        obj.target = { get() {} };
-        _.extend(obj.target, Backbone.Events);
+        //obj.target = { get() {} };
+        //_.extend(obj.target, Backbone.Events);
         document.body.innerHTML = '<div id="fixtures"></div>';
         fixtures = document.body.querySelector('#fixtures');
         fixtures.appendChild(obj.render().el);
