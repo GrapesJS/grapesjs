@@ -237,13 +237,14 @@ module.exports = Backbone.Model.extend({
     const els = multiple ? el : [el];
     const selected = this.get('selected');
 
-    // Don't remove alredy selected components
-    multiple && selected.remove(selected.filter(sel => !contains(els, sel)));
+    // If an array is passed remove all selected
+    // expect those yet to be selected
+    multiple && this.removeSelected(selected.filter(s => !contains(els, s)));
 
     els.forEach(el => {
       const model = getModel(el, $);
       if (model && !model.get('selectable')) return;
-      !multiple && selected.remove(selected.filter(sel => sel !== model));
+      !multiple && this.removeSelected(selected.filter(s => s !== model));
       this.addSelected(model, opts);
     });
   },
@@ -256,8 +257,12 @@ module.exports = Backbone.Model.extend({
    */
   addSelected(el, opts = {}) {
     const model = getModel(el, $);
-    if (model && !model.get('selectable')) return;
-    this.get('selected').push(model, opts);
+    const models = isArray(model) ? model : [model];
+
+    models.forEach(model => {
+      if (model && !model.get('selectable')) return;
+      this.get('selected').push(model, opts);
+    });
   },
 
   /**
@@ -278,11 +283,15 @@ module.exports = Backbone.Model.extend({
    */
   toggleSelected(el, opts = {}) {
     const model = getModel(el, $);
-    if (this.get('selected').contains(model)) {
-      this.removeSelected(model, opts);
-    } else {
-      this.addSelected(model, opts);
-    }
+    const models = isArray(model) ? model : [model];
+
+    models.forEach(model => {
+      if (this.get('selected').contains(model)) {
+        this.removeSelected(model, opts);
+      } else {
+        this.addSelected(model, opts);
+      }
+    });
   },
 
   /**

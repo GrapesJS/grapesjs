@@ -415,7 +415,7 @@ module.exports = config => {
 
     /**
      * Add component to selection
-     * @param  {Component|HTMLElement} el Component to select
+     * @param  {Component|HTMLElement|Array} el Component to select
      * @return {this}
      * @example
      * editor.selectAdd(model);
@@ -427,7 +427,7 @@ module.exports = config => {
 
     /**
      * Remove component from selection
-     * @param  {Component|HTMLElement} el Component to select
+     * @param  {Component|HTMLElement|Array} el Component to select
      * @return {this}
      * @example
      * editor.selectRemove(model);
@@ -439,7 +439,7 @@ module.exports = config => {
 
     /**
      * Toggle component selection
-     * @param  {Component|HTMLElement} el Component to select
+     * @param  {Component|HTMLElement|Array} el Component to select
      * @return {this}
      * @example
      * editor.selectToggle(model);
