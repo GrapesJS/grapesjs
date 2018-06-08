@@ -23,14 +23,35 @@ module.exports = () => {
     onLoad() {
       const collection = em.get('DomComponents').getComponents();
       const parent = collection.parent;
+      let rootNode;
+
+      function recursiveFind(object) {
+        if (
+          object.attributes &&
+          object.attributes.attributes.id === config.rootNodeId
+        ) {
+          return object;
+        } else if (object.get('components')) {
+          return object
+            .get('components')
+            .models.map(recursiveFind)
+            .filter(function(n) {
+              return n != null;
+            })[0];
+        }
+      }
+
       const options = {
         level: 0,
         config,
         opened: config.opened || {}
       };
 
-      // Show wrapper if requested
-      if (config.showWrapper && parent) {
+      if (config.rootNodeId) rootNode = recursiveFind(parent);
+      if (config.rootNodeId && rootNode) {
+        View = ItemView;
+        options.model = rootNode;
+      } else if (config.showWrapper && parent) {
         View = ItemView;
         options.model = parent;
       } else {

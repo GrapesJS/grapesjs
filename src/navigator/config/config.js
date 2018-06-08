@@ -14,6 +14,9 @@ module.exports = {
   // Hide textnodes
   hideTextnode: 1,
 
+  // Optionally specify the id of the node to show as root
+  rootNodeId: null,
+
   // Indicates if the wrapper is visible in layers
   showWrapper: 1,
 
