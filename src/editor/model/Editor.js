@@ -65,6 +65,20 @@ module.exports = Backbone.Model.extend({
     deps.forEach(name => this.loadModule(name));
     this.on('change:componentHovered', this.componentHovered, this);
     this.on('change:changesCount', this.updateChanges, this);
+
+    // Deprecations
+    [{ from: 'change:selectedComponent', to: 'component:toggled' }].forEach(
+      event => {
+        const eventFrom = event.from;
+        const eventTo = event.to;
+        this.listenTo(this, eventFrom, (...args) => {
+          this.trigger(eventTo, ...args);
+          console.warn(
+            `The event '${eventFrom}' is deprecated, replace it with '${eventTo}'`
+          );
+        });
+      }
+    );
   },
 
   /**
