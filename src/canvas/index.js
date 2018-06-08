@@ -350,6 +350,14 @@ module.exports = () => {
     },
 
     /**
+     * Check if the canvas is focused
+     * @return {Boolean}
+     */
+    hasFocus() {
+      return this.getDocument().hasFocus();
+    },
+
+    /**
      * Detects if some input is focused (input elements, text components, etc.)
      * Used internally, for example, to avoid undo/redo in text editing mode
      * @return {Boolean}

@@ -1,5 +1,6 @@
 module.exports = {
   run(ed) {
+    if (!ed.Canvas.hasFocus()) return;
     const toSelect = [];
 
     ed.getSelectedAll().forEach(component => {
