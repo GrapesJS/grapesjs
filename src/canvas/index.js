@@ -95,6 +95,14 @@ module.exports = () => {
     },
 
     /**
+     * Returns the frame's window
+     * @return {HTMLElement}
+     */
+    getWindow() {
+      return this.getFrameEl().contentWindow;
+    },
+
+    /**
      * Returns body element of the frame
      * @return {HTMLElement}
      */

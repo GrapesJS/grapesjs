@@ -1,4 +1,4 @@
-import { bindAll, isElement } from 'underscore';
+import { bindAll, isElement, isUndefined } from 'underscore';
 import { on, off, getUnitFromValue } from 'utils/mixins';
 
 const ToolbarView = require('dom_components/view/ToolbarView');
@@ -222,10 +222,47 @@ module.exports = {
     const shiftKey = event.shiftKey;
     const { editor } = this;
     const multiple = editor.getConfig('multipleSelection');
+    const em = this.em;
 
     if (ctrlKey && multiple) {
       editor.selectToggle(model);
-      // else if (shiftKey) // multiple selection
+    } else if (shiftKey && multiple) {
+      em.clearSelection(editor.Canvas.getWindow());
+      const coll = model.collection;
+      const index = coll.indexOf(model);
+      const selAll = editor.getSelectedAll();
+      let min, max;
+
+      // Fin min and max siblings
+      editor.getSelectedAll().forEach(sel => {
+        const selColl = sel.collection;
+        const selIndex = selColl.indexOf(sel);
+        if (selColl === coll) {
+          if (selIndex < index) {
+            // First model BEFORE the selected one
+            min = isUndefined(min) ? selIndex : Math.max(min, selIndex);
+          } else if (selIndex > index) {
+            // First model AFTER the selected one
+            max = isUndefined(max) ? selIndex : Math.min(max, selIndex);
+          }
+        }
+      });
+
+      if (!isUndefined(min)) {
+        while (min !== index) {
+          editor.selectAdd(coll.at(min));
+          min++;
+        }
+      }
+
+      if (!isUndefined(max)) {
+        while (max !== index) {
+          editor.selectAdd(coll.at(max));
+          max--;
+        }
+      }
+
+      editor.selectAdd(model);
     } else {
       editor.select(model);
     }
