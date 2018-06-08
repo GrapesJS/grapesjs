@@ -60,6 +60,10 @@ module.exports = Backbone.Model.extend({
     this.set('storables', []);
 
     if (c.el && c.fromElement) this.config.components = c.el.innerHTML;
+    this.attrsOrig = [...c.el.attributes].reduce((res, next) => {
+      res[next.nodeName] = next.nodeValue;
+      return res;
+    }, {});
 
     // Load modules
     deps.forEach(name => this.loadModule(name));
@@ -569,6 +573,29 @@ module.exports = Backbone.Model.extend({
    */
   getDirtyCount() {
     return this.get('changesCount');
+  },
+
+  /**
+   * Destroy editor
+   */
+  destroyAll() {
+    const {
+      DomComponents,
+      CssComposer,
+      UndoManager,
+      Panels,
+      Canvas
+    } = this.attributes;
+    DomComponents.clear();
+    CssComposer.clear();
+    UndoManager.clear().removeAll();
+    Panels.getPanels().reset();
+    Canvas.getCanvasView().remove();
+    this.view.remove();
+    this.stopListening();
+    $(this.config.el)
+      .empty()
+      .attr(this.attrsOrig);
   },
 
   /**

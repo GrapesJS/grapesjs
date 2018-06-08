@@ -619,6 +619,13 @@ module.exports = config => {
     },
 
     /**
+     * Destroy the editor
+     */
+    destroy() {
+      return em.destroyAll();
+    },
+
+    /**
      * Returns editor element
      * @return {HTMLElement}
      * @private
