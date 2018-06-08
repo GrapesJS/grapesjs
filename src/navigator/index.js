@@ -1,13 +1,11 @@
 import defaults from './config/config';
 import ItemView from './view/ItemView';
-import ItemsView from './view/ItemsView';
 import { isElement } from 'underscore';
 
 module.exports = () => {
   let em;
   let layers;
   let config = {};
-  let View = ItemsView;
 
   return {
     name: 'LayerManager',
@@ -20,7 +18,12 @@ module.exports = () => {
       return this;
     },
 
+    getConfig() {
+      return config;
+    },
+
     onLoad() {
+      /*
       const collection = em.get('DomComponents').getComponents();
       const parent = collection.parent;
       const options = {
@@ -36,14 +39,23 @@ module.exports = () => {
       } else {
         options.collection = collection;
       }
+      */
 
-      layers = new View(options);
+      layers = new ItemView({
+        level: 0,
+        config,
+        opened: config.opened || {},
+        model: em.get('DomComponents').getWrapper()
+      });
       em && em.on('component:selected', this.componentChanged);
       this.componentChanged();
     },
 
     postRender() {
       const elTo = config.appendTo;
+
+      if (config.root) {
+      }
 
       if (elTo) {
         const el = isElement(elTo) ? elTo : document.querySelector(elTo);

@@ -25,6 +25,7 @@ module.exports = require('backbone').View.extend({
     const clsCaret = `${this.clsCaret} fa fa-chevron-right`;
     const clsInput = `${this.inputNameCls} ${ppfx}no-app`;
     const level = this.level + 1;
+    const hideWrapper = !this.config.showWrapper && level === 1;
     const gut = `${30 + level * 10}px`;
     const name = model.getName();
     return `
@@ -35,20 +36,25 @@ module.exports = require('backbone').View.extend({
             }" data-toggle-visible></i>`
           : ''
       }
-
-      <div class="${clsTitleC}">
-        <div class="${clsTitle}" style="padding-left: ${gut}" data-toggle-select>
-          <div class="${pfx}layer-title-inn">
-            <i class="${clsCaret}" data-toggle-open></i>
-            ${model.getIcon()}
-            <span class="${clsInput}" data-name>${name}</span>
+      ${
+        !hideWrapper
+          ? `
+          <div class="${clsTitleC}">
+            <div class="${clsTitle}" style="padding-left: ${gut}" data-toggle-select>
+              <div class="${pfx}layer-title-inn">
+                <i class="${clsCaret}" data-toggle-open></i>
+                ${model.getIcon()}
+                <span class="${clsInput}" data-name>${name}</span>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      <div class="${this.clsCount}">${count || ''}</div>
-      <div class="${this.clsMove}" data-toggle-move>
-        <i class="fa fa-arrows"></i>
-      </div>
+          <div class="${this.clsCount}">${count || ''}</div>
+          <div class="${this.clsMove}" data-toggle-move>
+            <i class="fa fa-arrows"></i>
+          </div>
+        `
+          : ''
+      }
       <div class="${this.clsChildren}"></div>
     `;
   },
@@ -314,7 +320,7 @@ module.exports = require('backbone').View.extend({
   },
 
   getCaret() {
-    if (!this.caret) {
+    if (!this.caret || !this.caret.length) {
       const pfx = this.pfx;
       this.caret = this.$el
         .children(`.${this.clsTitleC}`)
