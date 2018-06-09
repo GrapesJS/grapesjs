@@ -38,6 +38,7 @@ const $ = Backbone.$;
 module.exports = Backbone.Model.extend({
   defaults() {
     return {
+      editing: 0,
       selected: new Collection(),
       clipboard: null,
       designerMode: false,
@@ -606,6 +607,15 @@ module.exports = Backbone.Model.extend({
     $(this.config.el)
       .empty()
       .attr(this.attrsOrig);
+  },
+
+  setEditing(value) {
+    this.set('editing', value);
+    return this;
+  },
+
+  isEditing() {
+    return !!this.get('editing');
   },
 
   /**

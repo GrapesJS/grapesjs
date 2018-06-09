@@ -1,6 +1,6 @@
 module.exports = {
   run(ed) {
-    if (!ed.Canvas.hasFocus()) return;
+    if (!ed.Canvas.hasFocus() || ed.getModel().isEditing()) return;
     const toSelect = [];
 
     ed.getSelectedAll().forEach(component => {
