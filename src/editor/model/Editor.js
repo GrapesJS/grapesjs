@@ -60,10 +60,12 @@ module.exports = Backbone.Model.extend({
     this.set('storables', []);
 
     if (c.el && c.fromElement) this.config.components = c.el.innerHTML;
-    this.attrsOrig = [...c.el.attributes].reduce((res, next) => {
-      res[next.nodeName] = next.nodeValue;
-      return res;
-    }, {});
+    this.attrsOrig = c.el
+      ? [...c.el.attributes].reduce((res, next) => {
+          res[next.nodeName] = next.nodeValue;
+          return res;
+        }, {})
+      : '';
 
     // Load modules
     deps.forEach(name => this.loadModule(name));
