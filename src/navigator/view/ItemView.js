@@ -1,9 +1,12 @@
-import { isUndefined } from 'underscore';
+import { isUndefined, isString } from 'underscore';
+import { getModel } from 'utils/mixins';
+import Backbone from 'backbone';
 const ComponentView = require('dom_components/view/ComponentView');
 const inputProp = 'contentEditable';
+const $ = Backbone.$;
 let ItemsView;
 
-module.exports = require('backbone').View.extend({
+module.exports = Backbone.View.extend({
   events: {
     'mousedown [data-toggle-move]': 'startSort',
     'click [data-toggle-visible]': 'toggleVisibility',
@@ -323,7 +326,10 @@ module.exports = require('backbone').View.extend({
     return this.caret;
   },
 
-  setRoot(model) {
+  setRoot(el) {
+    el = isString(el) ? this.em.getWrapper().find(el)[0] : el;
+    const model = getModel(el, $);
+    if (!model) return;
     this.stopListening();
     this.model = model;
     this.initialize(this.opt);

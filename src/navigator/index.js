@@ -35,9 +35,8 @@ module.exports = () => {
 
     postRender() {
       const elTo = config.appendTo;
-
-      if (config.root) {
-      }
+      const root = config.root;
+      root && this.setRoot(root);
 
       if (elTo) {
         const el = isElement(elTo) ? elTo : document.querySelector(elTo);
@@ -56,7 +55,7 @@ module.exports = () => {
     },
 
     /**
-     * Get root of layers
+     * Get the root of layers
      * @return {Component}
      */
     getRoot() {

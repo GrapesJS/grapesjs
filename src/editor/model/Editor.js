@@ -567,6 +567,14 @@ module.exports = Backbone.Model.extend({
   },
 
   /**
+   * Return the component wrapper
+   * @return {Component}
+   */
+  getWrapper() {
+    return this.get('DomComponents').getWrapper();
+  },
+
+  /**
    * Return the count of changes made to the content and not yet stored.
    * This count resets at any `store()`
    * @return {number}
