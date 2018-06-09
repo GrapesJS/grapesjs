@@ -25,9 +25,9 @@ module.exports = require('backbone').View.extend({
     const clsCaret = `${this.clsCaret} fa fa-chevron-right`;
     const clsInput = `${this.inputNameCls} ${ppfx}no-app`;
     const level = this.level + 1;
-    const hideWrapper = !this.config.showWrapper && level === 1;
     const gut = `${30 + level * 10}px`;
     const name = model.getName();
+
     return `
       ${
         hidable
@@ -36,27 +36,20 @@ module.exports = require('backbone').View.extend({
             }" data-toggle-visible></i>`
           : ''
       }
-      ${
-        !hideWrapper
-          ? `
-          <div class="${clsTitleC}">
-            <div class="${clsTitle}" style="padding-left: ${gut}" data-toggle-select>
-              <div class="${pfx}layer-title-inn">
-                <i class="${clsCaret}" data-toggle-open></i>
-                ${model.getIcon()}
-                <span class="${clsInput}" data-name>${name}</span>
-              </div>
-            </div>
+      <div class="${clsTitleC}">
+        <div class="${clsTitle}" style="padding-left: ${gut}" data-toggle-select>
+          <div class="${pfx}layer-title-inn">
+            <i class="${clsCaret}" data-toggle-open></i>
+            ${model.getIcon()}
+            <span class="${clsInput}" data-name>${name}</span>
           </div>
-          <div class="${this.clsCount}">${count || ''}</div>
-          <div class="${this.clsMove}" data-toggle-move>
-            <i class="fa fa-arrows"></i>
-          </div>
-        `
-          : ''
-      }
-      <div class="${this.clsChildren}"></div>
-    `;
+        </div>
+      </div>
+      <div class="${this.clsCount}">${count || ''}</div>
+      <div class="${this.clsMove}" data-toggle-move>
+        <i class="fa fa-arrows"></i>
+      </div>
+      <div class="${this.clsChildren}"></div>`;
   },
 
   initialize(o = {}) {
@@ -330,13 +323,19 @@ module.exports = require('backbone').View.extend({
     return this.caret;
   },
 
+  setRoot(model) {
+    this.stopListening();
+    this.model = model;
+    this.initialize(this.opt);
+    this.render();
+  },
+
   render() {
     const model = this.model;
     var pfx = this.pfx;
     var vis = this.isVisible();
-    const el = this.$el;
+    const el = this.$el.empty();
     const level = this.level + 1;
-    el.html(this.template(model));
 
     if (isUndefined(ItemsView)) {
       ItemsView = require('./ItemsView');
@@ -350,7 +349,13 @@ module.exports = require('backbone').View.extend({
       parent: model,
       level
     }).render().$el;
-    el.find(`.${this.clsChildren}`).append(children);
+
+    if (!this.config.showWrapper && level === 1) {
+      el.append(children);
+    } else {
+      el.html(this.template(model));
+      el.find(`.${this.clsChildren}`).append(children);
+    }
 
     if (!model.get('draggable') || !this.config.sortable) {
       el.children(`.${this.clsMove}`).remove();

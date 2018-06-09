@@ -23,24 +23,6 @@ module.exports = () => {
     },
 
     onLoad() {
-      /*
-      const collection = em.get('DomComponents').getComponents();
-      const parent = collection.parent;
-      const options = {
-        level: 0,
-        config,
-        opened: config.opened || {}
-      };
-
-      // Show wrapper if requested
-      if (config.showWrapper && parent) {
-        View = ItemView;
-        options.model = parent;
-      } else {
-        options.collection = collection;
-      }
-      */
-
       layers = new ItemView({
         level: 0,
         config,
@@ -61,6 +43,16 @@ module.exports = () => {
         const el = isElement(elTo) ? elTo : document.querySelector(elTo);
         el.appendChild(this.render());
       }
+    },
+
+    /**
+     * Set new root of layers
+     * @param {HTMLElement|Component|String} el Component to be selected a the root
+     * @return {self}
+     */
+    setRoot(el) {
+      layers.setRoot(el);
+      return this;
     },
 
     /**
