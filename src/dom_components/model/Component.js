@@ -744,7 +744,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
         const defaults = this.defaults;
 
         forEach(defaults, (value, key) => {
-          if (key !== 'type' && obj[key] === value) {
+          if (['type', 'content'].indexOf(key) === -1 && obj[key] === value) {
             delete obj[key];
           }
         });
