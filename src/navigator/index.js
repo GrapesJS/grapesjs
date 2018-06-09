@@ -46,13 +46,21 @@ module.exports = () => {
     },
 
     /**
-     * Set new root of layers
-     * @param {HTMLElement|Component|String} el Component to be selected a the root
+     * Set new root for layers
+     * @param {HTMLElement|Component|String} el Component to be set as the root
      * @return {self}
      */
     setRoot(el) {
       layers.setRoot(el);
       return this;
+    },
+
+    /**
+     * Get root of layers
+     * @return {Component}
+     */
+    getRoot() {
+      return layers.model;
     },
 
     /**
