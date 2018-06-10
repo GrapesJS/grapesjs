@@ -5016,7 +5016,7 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
       var defaults = this.defaults;
 
       (0, _underscore.forEach)(defaults, function (value, key) {
-        if (key !== 'type' && obj[key] === value) {
+        if (['type', 'content'].indexOf(key) === -1 && obj[key] === value) {
           delete obj[key];
         }
       });
@@ -24515,6 +24515,7 @@ module.exports = _backbone2.default.View.extend({
   },
   removeChildren: function removeChildren(removed) {
     var view = removed.view;
+    if (!view) return;
     view.remove.apply(view);
     var children = view.childrenView;
     children && children.stopListening();
@@ -24793,6 +24794,7 @@ module.exports = ComponentView.extend({
   toggleEvents: function toggleEvents(enable) {
     var method = enable ? 'on' : 'off';
     var mixins = { on: _mixins.on, off: _mixins.off };
+    this.em.setEditing(enable);
 
     // The ownerDocument is from the frame
     var elDocs = [this.el.ownerDocument, document];
@@ -26611,6 +26613,7 @@ var $ = Backbone.$;
 module.exports = Backbone.Model.extend({
   defaults: function defaults() {
     return {
+      editing: 0,
       selected: new Collection(),
       clipboard: null,
       designerMode: false,
@@ -27258,6 +27261,13 @@ module.exports = Backbone.Model.extend({
     this.view.remove();
     this.stopListening();
     $(this.config.el).empty().attr(this.attrsOrig);
+  },
+  setEditing: function setEditing(value) {
+    this.set('editing', value);
+    return this;
+  },
+  isEditing: function isEditing() {
+    return !!this.get('editing');
   },
 
 
@@ -42578,7 +42588,7 @@ module.exports = _backbone2.default.View.extend({
     body.removeChild(dummy);
     this.propTarget = target;
     var coll = this.collection;
-    var events = 'component:selected component:update:classes component:update:state change:device';
+    var events = 'component:toggled component:update:classes component:update:state change:device';
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.render);
     this.listenTo(this.target, events, this.targetUpdated);
@@ -46694,6 +46704,7 @@ module.exports = __webpack_require__(0).View.extend({
   },
   removeChildren: function removeChildren(removed) {
     var view = removed.viewLayer;
+    if (!view) return;
     view.remove.apply(view);
   },
 
@@ -49799,7 +49810,7 @@ module.exports = {
 
 module.exports = {
   run: function run(ed) {
-    if (!ed.Canvas.hasFocus()) return;
+    if (!ed.Canvas.hasFocus() || ed.getModel().isEditing()) return;
     var toSelect = [];
 
     ed.getSelectedAll().forEach(function (component) {
@@ -49822,7 +49833,7 @@ module.exports = {
 
 module.exports = {
   run: function run(ed) {
-    if (!ed.Canvas.hasFocus()) return;
+    if (!ed.Canvas.hasFocus() || ed.getModel().isEditing()) return;
     var toSelect = [];
 
     ed.getSelectedAll().forEach(function (component) {
@@ -49845,7 +49856,7 @@ module.exports = {
 
 module.exports = {
   run: function run(ed) {
-    if (!ed.Canvas.hasFocus()) return;
+    if (!ed.Canvas.hasFocus() || ed.getModel().isEditing()) return;
     var toSelect = [];
 
     ed.getSelectedAll().forEach(function (component) {
@@ -49867,7 +49878,7 @@ module.exports = {
 
 module.exports = {
   run: function run(ed) {
-    if (!ed.Canvas.hasFocus()) return;
+    if (!ed.Canvas.hasFocus() || ed.getModel().isEditing()) return;
     var toSelect = [];
 
     ed.getSelectedAll().forEach(function (component) {
