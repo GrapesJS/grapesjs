@@ -105,6 +105,9 @@ module.exports = {
   // Enable native HTML5 drag and drop
   nativeDnD: 1,
 
+  // Enable multiple selection
+  multipleSelection: 1,
+
   // Show the wrapper component in the final code, eg. in editor.getHtml()
   exportWrapper: 0,
 

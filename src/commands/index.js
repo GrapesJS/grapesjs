@@ -38,7 +38,7 @@
  * },
  * ...
  */
-import { isFunction } from 'underscore';
+import { isFunction, isArray } from 'underscore';
 
 module.exports = () => {
   let em;
@@ -118,18 +118,8 @@ module.exports = () => {
 
       defaultCommands['tlb-clone'] = {
         run(ed) {
-          var sel = ed.getSelected();
-
-          if (!sel || !sel.get('copyable')) {
-            console.warn('The element is not clonable');
-            return;
-          }
-
-          var collection = sel.collection;
-          var index = collection.indexOf(sel);
-          const added = collection.add(sel.clone(), { at: index + 1 });
-          sel.emitUpdate();
-          ed.trigger('component:clone', added);
+          ed.runCommand('core:copy');
+          ed.runCommand('core:paste');
         }
       };
 
@@ -139,12 +129,14 @@ module.exports = () => {
           const em = ed.getModel();
           const event = opts && opts.event;
           const sel = ed.getSelected();
+          const selAll = [...ed.getSelectedAll()];
           const toolbarStyle = ed.Canvas.getToolbarEl().style;
           const nativeDrag = event && event.type == 'dragstart';
+          const defComOptions = { preserveSelected: 1 };
 
           const hideTlb = () => {
             toolbarStyle.display = 'none';
-            em.stopDefault();
+            em.stopDefault(defComOptions);
           };
 
           if (!sel || !sel.get('draggable')) {
@@ -164,8 +156,9 @@ module.exports = () => {
           };
 
           const onEnd = (e, opts) => {
-            em.runDefault();
-            em.setSelected(sel);
+            em.runDefault(defComOptions);
+            selAll.forEach(sel => sel.set('status', 'selected'));
+            ed.select(selAll);
             sel.emitUpdate();
             dragger && dragger.blur();
           };
@@ -194,50 +187,54 @@ module.exports = () => {
 
             const cmdMove = ed.Commands.get('move-comp');
             cmdMove.onEndMoveFromModel = onEnd;
-            cmdMove.initSorterFromModel(sel);
+            cmdMove.initSorterFromModels(selAll);
           }
 
-          sel.set('status', 'freezed-selected');
+          selAll.forEach(sel => sel.set('status', 'freezed-selected'));
         }
       };
 
       // Core commands
       defaultCommands['core:undo'] = e => e.UndoManager.undo();
       defaultCommands['core:redo'] = e => e.UndoManager.redo();
+      defaultCommands['core:copy'] = require('./view/CopyComponent').run;
+      defaultCommands['core:paste'] = require('./view/PasteComponent').run;
+      defaultCommands[
+        'core:component-next'
+      ] = require('./view/ComponentNext').run;
+      defaultCommands[
+        'core:component-prev'
+      ] = require('./view/ComponentPrev').run;
+      defaultCommands[
+        'core:component-enter'
+      ] = require('./view/ComponentEnter').run;
+      defaultCommands[
+        'core:component-exit'
+      ] = require('./view/ComponentExit').run;
       defaultCommands['core:canvas-clear'] = e => {
         e.DomComponents.clear();
         e.CssComposer.clear();
       };
-      defaultCommands['core:copy'] = ed => {
-        const em = ed.getModel();
-        const model = ed.getSelected();
-
-        if (model && model.get('copyable') && !ed.Canvas.isInputFocused()) {
-          em.set('clipboard', model);
-        }
-      };
-      defaultCommands['core:paste'] = ed => {
-        const em = ed.getModel();
-        const clp = em.get('clipboard');
-        const model = ed.getSelected();
-        const coll = model && model.collection;
-
-        if (coll && clp && !ed.Canvas.isInputFocused()) {
-          const at = coll.indexOf(model) + 1;
-          coll.add(clp.clone(), { at });
-        }
-      };
       defaultCommands['core:component-delete'] = (ed, sender, opts = {}) => {
-        let component = opts.component || ed.getSelected();
+        let components = opts.component || ed.getSelectedAll();
+        components = isArray(components) ? [...components] : [components];
 
-        if (!component || !component.get('removable')) {
-          console.warn('The element is not removable');
-          return;
-        }
-
+        // It's important to deselect components first otherwise,
+        // with undo, the component will be set with the wrong `collection`
         ed.select(null);
-        component.destroy();
-        return component;
+
+        components.forEach(component => {
+          if (!component || !component.get('removable')) {
+            console.warn('The element is not removable', component);
+            return;
+          }
+          if (component) {
+            const coll = component.collection;
+            coll && coll.remove(component);
+          }
+        });
+
+        return components;
       };
 
       if (c.em) c.model = c.em.get('Canvas');

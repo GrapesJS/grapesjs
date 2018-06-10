@@ -1,4 +1,5 @@
-import { isUndefined, isElement, defaults } from 'underscore';
+import { isUndefined, defaults, isArray, contains } from 'underscore';
+import { getModel } from 'utils/mixins';
 
 const deps = [
   require('utils'),
@@ -24,6 +25,7 @@ const deps = [
 ];
 
 const Backbone = require('backbone');
+const { Collection } = Backbone;
 let timedInterval;
 
 require('utils/extender')({
@@ -34,18 +36,21 @@ require('utils/extender')({
 const $ = Backbone.$;
 
 module.exports = Backbone.Model.extend({
-  defaults: {
-    clipboard: null,
-    designerMode: false,
-    selectedComponent: null,
-    componentHovered: null,
-    previousModel: null,
-    changesCount: 0,
-    storables: [],
-    modules: [],
-    toLoad: [],
-    opened: {},
-    device: ''
+  defaults() {
+    return {
+      editing: 0,
+      selected: new Collection(),
+      clipboard: null,
+      designerMode: false,
+      componentHovered: null,
+      previousModel: null,
+      changesCount: 0,
+      storables: [],
+      modules: [],
+      toLoad: [],
+      opened: {},
+      device: ''
+    };
   },
 
   initialize(c = {}) {
@@ -56,12 +61,31 @@ module.exports = Backbone.Model.extend({
     this.set('storables', []);
 
     if (c.el && c.fromElement) this.config.components = c.el.innerHTML;
+    this.attrsOrig = c.el
+      ? [...c.el.attributes].reduce((res, next) => {
+          res[next.nodeName] = next.nodeValue;
+          return res;
+        }, {})
+      : '';
 
     // Load modules
     deps.forEach(name => this.loadModule(name));
-    this.on('change:selectedComponent', this.componentSelected, this);
     this.on('change:componentHovered', this.componentHovered, this);
     this.on('change:changesCount', this.updateChanges, this);
+
+    // Deprecations
+    [{ from: 'change:selectedComponent', to: 'component:toggled' }].forEach(
+      event => {
+        const eventFrom = event.from;
+        const eventTo = event.to;
+        this.listenTo(this, eventFrom, (...args) => {
+          this.trigger(eventTo, ...args);
+          console.warn(
+            `The event '${eventFrom}' is deprecated, replace it with '${eventTo}'`
+          );
+        });
+      }
+    );
   },
 
   /**
@@ -193,19 +217,6 @@ module.exports = Backbone.Model.extend({
   },
 
   /**
-   * Callback on component selection
-   * @param   {Object}   Model
-   * @param   {Mixed}   New value
-   * @param   {Object}   Options
-   * @private
-   * */
-  componentSelected(editor, selected, options) {
-    const prev = this.previous('selectedComponent');
-    prev && this.trigger('component:deselected', prev, options);
-    selected && this.trigger('component:selected', selected, options);
-  },
-
-  /**
    * Callback on component hover
    * @param   {Object}   Model
    * @param   {Mixed}   New value
@@ -224,7 +235,16 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   getSelected() {
-    return this.get('selectedComponent');
+    return this.get('selected').last();
+  },
+
+  /**
+   * Returns an array of all selected components
+   * @return {Array}
+   * @private
+   */
+  getSelectedAll() {
+    return this.get('selected').models;
   },
 
   /**
@@ -234,11 +254,65 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   setSelected(el, opts = {}) {
-    let model = el;
-    isElement(el) && (model = $(el).data('model'));
-    if (model && !model.get('selectable')) return;
-    opts.forceChange && this.set('selectedComponent', '');
-    this.set('selectedComponent', model, opts);
+    const multiple = isArray(el);
+    const els = multiple ? el : [el];
+    const selected = this.get('selected');
+
+    // If an array is passed remove all selected
+    // expect those yet to be selected
+    multiple && this.removeSelected(selected.filter(s => !contains(els, s)));
+
+    els.forEach(el => {
+      const model = getModel(el, $);
+      if (model && !model.get('selectable')) return;
+      !multiple && this.removeSelected(selected.filter(s => s !== model));
+      this.addSelected(model, opts);
+    });
+  },
+
+  /**
+   * Add component to selection
+   * @param  {Component|HTMLElement} el Component to select
+   * @param  {Object} [opts={}] Options, optional
+   * @private
+   */
+  addSelected(el, opts = {}) {
+    const model = getModel(el, $);
+    const models = isArray(model) ? model : [model];
+
+    models.forEach(model => {
+      if (model && !model.get('selectable')) return;
+      this.get('selected').push(model, opts);
+    });
+  },
+
+  /**
+   * Remove component from selection
+   * @param  {Component|HTMLElement} el Component to select
+   * @param  {Object} [opts={}] Options, optional
+   * @private
+   */
+  removeSelected(el, opts = {}) {
+    this.get('selected').remove(getModel(el, $), opts);
+  },
+
+  /**
+   * Toggle component selection
+   * @param  {Component|HTMLElement} el Component to select
+   * @param  {Object} [opts={}] Options, optional
+   * @private
+   */
+  toggleSelected(el, opts = {}) {
+    const model = getModel(el, $);
+    const models = isArray(model) ? model : [model];
+
+    models.forEach(model => {
+      if (this.get('selected').contains(model)) {
+        this.removeSelected(model, opts);
+      } else {
+        this.addSelected(model, opts);
+      }
+    });
   },
 
   /**
@@ -248,8 +322,7 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   setHovered(el, opts = {}) {
-    let model = el;
-    isElement(el) && (model = $(el).data('model'));
+    const model = getModel(el, $);
     if (model && !model.get('hoverable')) return;
     opts.forceChange && this.set('componentHovered', '');
     this.set('componentHovered', model, opts);
@@ -497,12 +570,52 @@ module.exports = Backbone.Model.extend({
   },
 
   /**
+   * Return the component wrapper
+   * @return {Component}
+   */
+  getWrapper() {
+    return this.get('DomComponents').getWrapper();
+  },
+
+  /**
    * Return the count of changes made to the content and not yet stored.
    * This count resets at any `store()`
    * @return {number}
    */
   getDirtyCount() {
     return this.get('changesCount');
+  },
+
+  /**
+   * Destroy editor
+   */
+  destroyAll() {
+    const {
+      DomComponents,
+      CssComposer,
+      UndoManager,
+      Panels,
+      Canvas
+    } = this.attributes;
+    DomComponents.clear();
+    CssComposer.clear();
+    UndoManager.clear().removeAll();
+    Panels.getPanels().reset();
+    Canvas.getCanvasView().remove();
+    this.view.remove();
+    this.stopListening();
+    $(this.config.el)
+      .empty()
+      .attr(this.attrsOrig);
+  },
+
+  setEditing(value) {
+    this.set('editing', value);
+    return this;
+  },
+
+  isEditing() {
+    return !!this.get('editing');
   },
 
   /**

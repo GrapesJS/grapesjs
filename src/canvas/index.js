@@ -95,6 +95,14 @@ module.exports = () => {
     },
 
     /**
+     * Returns the frame's window
+     * @return {HTMLElement}
+     */
+    getWindow() {
+      return this.getFrameEl().contentWindow;
+    },
+
+    /**
      * Returns body element of the frame
      * @return {HTMLElement}
      */
@@ -339,6 +347,14 @@ module.exports = () => {
         y: e.clientY + addTop + yOffset,
         x: e.clientX + addLeft + xOffset
       };
+    },
+
+    /**
+     * Check if the canvas is focused
+     * @return {Boolean}
+     */
+    hasFocus() {
+      return this.getDocument().hasFocus();
     },
 
     /**

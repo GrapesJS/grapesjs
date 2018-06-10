@@ -81,6 +81,25 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
     on(this.getContentWindow(), 'keydown', this.rollback);
   },
 
+  /**
+   * Init sorter from models
+   * @param  {Object} model
+   * @private
+   */
+  initSorterFromModels(models) {
+    // TODO: if one only check for `draggable`
+    // Avoid badge showing on move
+    this.cacheEl = null;
+    const lastModel = models[models.length - 1];
+    const doc = this.frameEl.contentDocument;
+    this.startSelectPosition(lastModel.view.el, doc);
+    this.sorter.draggable = lastModel.get('draggable');
+    this.sorter.toMove = models;
+    this.sorter.onEndMove = this.onEndMoveFromModel.bind(this);
+    this.stopSelectComponent();
+    on(this.getContentWindow(), 'keydown', this.rollback);
+  },
+
   onEndMoveFromModel() {
     off(this.getContentWindow(), 'keydown', this.rollback);
   },
@@ -142,8 +161,7 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
     this.getBadgeEl().removeClass(this.badgeClass);
     this.getHighlighterEl().removeClass(this.hoverClass);
     var wp = this.$wrapper;
-    wp
-      .css('cursor', '')
+    wp.css('cursor', '')
       .unbind()
       .removeClass(this.noSelClass);
   }

@@ -1,4 +1,4 @@
-import { isUndefined } from 'underscore';
+import { isUndefined, isString } from 'underscore';
 
 module.exports = require('backbone').Model.extend({
   defaults: {
@@ -13,6 +13,9 @@ module.exports = require('backbone').Model.extend({
     status: '',
     visible: true,
     fixedValues: ['initial', 'inherit'],
+
+    // If true to the value will be added '!important'
+    important: 0,
 
     // If true, will be hidden by default and will show up only for targets
     // which require this property (via `stylable-require`)
@@ -89,13 +92,19 @@ module.exports = require('backbone').Model.extend({
    */
   parseValue(value) {
     const result = { value };
+    const imp = '!important';
+
+    if (isString(value) && value.indexOf(imp) !== -1) {
+      result.value = value.replace(imp, '').trim();
+      result.important = 1;
+    }
 
     if (!this.get('functionName')) {
       return result;
     }
 
     const args = [];
-    let valueStr = `${value}`;
+    let valueStr = `${result.value}`;
     let start = valueStr.indexOf('(') + 1;
     let end = valueStr.lastIndexOf(')');
     args.push(start);
@@ -132,6 +141,10 @@ module.exports = require('backbone').Model.extend({
 
     if (fn && !isUndefined(value)) {
       value = `${fn}(${value})`;
+    }
+
+    if (this.get('important')) {
+      value = `${value} !important`;
     }
 
     return value || '';

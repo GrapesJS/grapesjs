@@ -414,5 +414,96 @@ describe('GrapesJS', () => {
       expect(editor.getStyle().length).toEqual(2);
       expect(css).toEqual(`${protCss}.test2{color:red;}.test3{color:blue;}`);
     });
+
+    describe('Component selection', () => {
+      let editor, wrapper, el1, el2, el3;
+
+      beforeEach(() => {
+        config.storageManager = { type: 0 };
+        config.components = `<div>
+          <div id="el1"></div>
+          <div id="el2"></div>
+          <div id="el3"></div>
+        </div>`;
+        editor = obj.init(config);
+        wrapper = editor.DomComponents.getWrapper();
+        el1 = wrapper.find('#el1')[0];
+        el2 = wrapper.find('#el2')[0];
+        el3 = wrapper.find('#el3')[0];
+      });
+
+      test('Select a single component', () => {
+        expect(editor.getSelected()).toBeFalsy();
+        expect(editor.getSelectedAll().length).toBe(0);
+        // Select via component
+        editor.select(el1);
+        expect(editor.getSelected()).toBe(el1);
+        expect(editor.getSelectedAll().length).toBe(1);
+        // Select via element
+        editor.select(el2.getEl());
+        expect(editor.getSelected()).toBe(el2);
+        expect(editor.getSelectedAll().length).toBe(1);
+        // Deselect via empty array
+        editor.select([]);
+        expect(editor.getSelected()).toBeFalsy();
+        expect(editor.getSelectedAll().length).toBe(0);
+      });
+
+      test('Select multiple components', () => {
+        // Select at first el1 and el3
+        editor.select([el1, el3.getEl()]);
+        expect(editor.getSelected()).toBe(el3);
+        expect(editor.getSelectedAll().length).toBe(2);
+        // Add el2
+        editor.selectAdd(el2);
+        expect(editor.getSelected()).toBe(el2);
+        expect(editor.getSelectedAll().length).toBe(3);
+        // Remove el1
+        editor.selectRemove(el1);
+        expect(editor.getSelected()).toBe(el2);
+        expect(editor.getSelectedAll().length).toBe(2);
+        // Add el1 via toggle
+        editor.selectToggle(el1);
+        expect(editor.getSelected()).toBe(el1);
+        expect(editor.getSelectedAll().length).toBe(3);
+        // Leave selected only el3
+        editor.selectRemove([el1, el2]);
+        expect(editor.getSelected()).toBe(el3);
+        expect(editor.getSelectedAll().length).toBe(1);
+        // Toggle all
+        editor.selectToggle([el1, el2, el3]);
+        expect(editor.getSelected()).toBe(el2);
+        expect(editor.getSelectedAll().length).toBe(2);
+        // Add mutiple
+        editor.selectAdd([el2, el3]);
+        expect(editor.getSelected()).toBe(el3);
+        expect(editor.getSelectedAll().length).toBe(3);
+      });
+
+      test('Selection events', () => {
+        const toSpy = {
+          selected() {},
+          deselected() {},
+          toggled() {}
+        };
+        const selected = jest.spyOn(toSpy, 'selected');
+        const deselected = jest.spyOn(toSpy, 'deselected');
+        const toggled = jest.spyOn(toSpy, 'toggled');
+        editor.on('component:selected', selected);
+        editor.on('component:deselected', deselected);
+        editor.on('component:toggled', toggled);
+
+        editor.select(el1); // selected=1
+        editor.selectAdd(el1); // selected=1
+        editor.selectAdd([el2, el3]); // selected=3
+        editor.selectToggle([el1, el3]); // deselected=2
+        editor.selectRemove(el2); // deselected=3
+        editor.select(el1); // selected=4
+
+        expect(selected).toBeCalledTimes(4);
+        expect(deselected).toBeCalledTimes(3);
+        expect(toggled).toBeCalledTimes(7);
+      });
+    });
   });
 });

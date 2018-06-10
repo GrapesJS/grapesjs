@@ -105,9 +105,20 @@ const hasDnd = em => {
 const getElement = el => {
   if (isElement(el)) {
     return el;
-  } else if (el.getEl) {
+  } else if (el && el.getEl) {
     return el.getEl();
   }
+};
+
+/**
+ * Ensure to fetch the model from the input argument
+ * @param  {HTMLElement|Component} el Component or HTML element
+ * @return {Component}
+ */
+const getModel = (el, $) => {
+  let model = el;
+  isElement(el) && (model = $(el).data('model'));
+  return model;
 };
 
 export {
@@ -116,6 +127,7 @@ export {
   hasDnd,
   upFirst,
   matches,
+  getModel,
   camelCase,
   getElement,
   shallowDiff,

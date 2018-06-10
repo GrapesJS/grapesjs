@@ -32,6 +32,22 @@ module.exports = () => {
       'core:paste': {
         keys: '⌘+v, ctrl+v',
         handler: 'core:paste'
+      },
+      'core:component-next': {
+        keys: 's',
+        handler: 'core:component-next'
+      },
+      'core:component-prev': {
+        keys: 'w',
+        handler: 'core:component-prev'
+      },
+      'core:component-enter': {
+        keys: 'd',
+        handler: 'core:component-enter'
+      },
+      'core:component-exit': {
+        keys: 'a',
+        handler: 'core:component-exit'
       }
     }
   };

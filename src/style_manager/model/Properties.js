@@ -119,6 +119,7 @@ module.exports = require('backbone')
       const values = value.split(' ');
       values.forEach((value, i) => {
         const property = this.at(i);
+        if (!property) return;
         properties.push({ ...property.attributes, ...{ value } });
       });
       return properties;

@@ -14,6 +14,10 @@ module.exports = {
   // Hide textnodes
   hideTextnode: 1,
 
+  // Indicate a query string of the element to be selected as the root of layers.
+  // By default the root is the wrapper
+  root: '',
+
   // Indicates if the wrapper is visible in layers
   showWrapper: 1,
 

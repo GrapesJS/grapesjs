@@ -16,6 +16,7 @@ module.exports = require('backbone').View.extend({
     const coll = this.collection;
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset resetNavigator', this.render);
+    this.listenTo(coll, 'remove', this.removeChildren);
     this.className = `${pfx}layers`;
     const em = config.em;
 
@@ -42,6 +43,12 @@ module.exports = require('backbone').View.extend({
     // For the sorter
     this.$el.data('collection', coll);
     parent && this.$el.data('model', parent);
+  },
+
+  removeChildren(removed) {
+    const view = removed.viewLayer;
+    if (!view) return;
+    view.remove.apply(view);
   },
 
   /**

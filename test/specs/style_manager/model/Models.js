@@ -159,6 +159,18 @@ module.exports = {
         expect(obj.parseValue('fn(testValue)')).toEqual(result);
         expect(obj.parseValue('fn(testValue')).toEqual(result);
       });
+
+      test('Parse correctly a value with !important', () => {
+        const result = { value: 'red', important: 1 };
+        expect(obj.parseValue('red !important ')).toEqual(result);
+      });
+
+      test('getFullValue', () => {
+        obj = new Property({ functionName: 'fn', value: 'red' });
+        expect(obj.getFullValue()).toEqual('fn(red)');
+        obj = new Property({ functionName: 'fn', value: '#123', important: 1 });
+        expect(obj.getFullValue()).toEqual('fn(#123) !important');
+      });
     });
 
     describe('PropertyInteger', () => {

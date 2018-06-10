@@ -1,4 +1,4 @@
-import { bindAll, isElement } from 'underscore';
+import { bindAll, isElement, isUndefined } from 'underscore';
 import { on, off, getUnitFromValue } from 'utils/mixins';
 
 const ToolbarView = require('dom_components/view/ToolbarView');
@@ -54,7 +54,7 @@ module.exports = {
     methods[method](body, 'click', this.onClick);
     methods[method](win, 'scroll resize', this.onFrameScroll);
     methods[method](win, 'keydown', this.onKeyPress);
-    em[method]('change:selectedComponent', this.onSelect, this);
+    em[method]('component:toggled', this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
   },
 
@@ -64,7 +64,7 @@ module.exports = {
    * */
   onKeyPress(e) {
     var key = e.which || e.keyCode;
-    var comp = this.editorModel.get('selectedComponent');
+    var comp = this.editorModel.getSelected();
     var focused = this.frameEl.contentDocument.activeElement.tagName !== 'BODY';
 
     // On CANC (46) or Backspace (8)
@@ -202,14 +202,72 @@ module.exports = {
 
     if (model) {
       if (model.get('selectable')) {
-        editor.select(model);
-        this.initResize(model);
+        this.select(model, e);
       } else {
         let parent = model.parent();
         while (parent && !parent.get('selectable')) parent = parent.parent();
-        parent && editor.select(parent);
+        this.select(parent, e);
       }
     }
+  },
+
+  /**
+   * Select component
+   * @param  {Component} model
+   * @param  {Event} event
+   */
+  select(model, event = {}) {
+    if (!model) return;
+    const ctrlKey = event.ctrlKey || event.metaKey;
+    const shiftKey = event.shiftKey;
+    const { editor } = this;
+    const multiple = editor.getConfig('multipleSelection');
+    const em = this.em;
+
+    if (ctrlKey && multiple) {
+      editor.selectToggle(model);
+    } else if (shiftKey && multiple) {
+      em.clearSelection(editor.Canvas.getWindow());
+      const coll = model.collection;
+      const index = coll.indexOf(model);
+      const selAll = editor.getSelectedAll();
+      let min, max;
+
+      // Fin min and max siblings
+      editor.getSelectedAll().forEach(sel => {
+        const selColl = sel.collection;
+        const selIndex = selColl.indexOf(sel);
+        if (selColl === coll) {
+          if (selIndex < index) {
+            // First model BEFORE the selected one
+            min = isUndefined(min) ? selIndex : Math.max(min, selIndex);
+          } else if (selIndex > index) {
+            // First model AFTER the selected one
+            max = isUndefined(max) ? selIndex : Math.min(max, selIndex);
+          }
+        }
+      });
+
+      if (!isUndefined(min)) {
+        while (min !== index) {
+          editor.selectAdd(coll.at(min));
+          min++;
+        }
+      }
+
+      if (!isUndefined(max)) {
+        while (max !== index) {
+          editor.selectAdd(coll.at(max));
+          max--;
+        }
+      }
+
+      editor.selectAdd(model);
+    } else {
+      editor.select(model);
+    }
+
+    this.initResize(model);
   },
 
   /**
@@ -411,7 +469,7 @@ module.exports = {
    */
   updateToolbar(mod) {
     var em = this.config.em;
-    var model = mod == em ? em.get('selectedComponent') : mod;
+    var model = mod == em ? em.getSelected() : mod;
     var toolbarEl = this.canvas.getToolbarEl();
     var toolbarStyle = toolbarEl.style;
 
@@ -505,7 +563,7 @@ module.exports = {
     if (el) {
       var elPos = this.getElementPos(el);
       this.updateBadge(el, elPos);
-      var model = this.em.get('selectedComponent');
+      var model = this.em.getSelected();
 
       if (model) {
         this.updateToolbarPos(model.view.el);
@@ -583,6 +641,5 @@ module.exports = {
 
     em.off('component:update', this.updateAttached, this);
     em.off('change:canvasOffset', this.updateAttached, this);
-    em.off('change:selectedComponent', this.updateToolbar, this);
   }
 };

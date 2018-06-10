@@ -18,6 +18,7 @@
  * * `component:styleUpdate:{propertyName}` - Listen for a specific style property change, the model is passed as an argument to the callback
  * * `component:selected` - New component selected, the selected model is passed as an argument to the callback
  * * `component:deselected` - Component deselected, the deselected model is passed as an argument to the callback
+ * * `component:toggled` - Component selection changed, toggled model is passed as an argument to the callback
  * ## Blocks
  * * `block:add` - New block added
  * * `block:remove` - Block removed
@@ -366,11 +367,19 @@ module.exports = config => {
     },
 
     /**
-     * Returns selected component, if there is one
+     * Returns the last selected component, if there is one
      * @return {Model}
      */
     getSelected() {
       return em.getSelected();
+    },
+
+    /**
+     * Returns an array of all selected components
+     * @return {Array}
+     */
+    getSelectedAll() {
+      return em.getSelectedAll();
     },
 
     /**
@@ -401,6 +410,42 @@ module.exports = config => {
      */
     select(el) {
       em.setSelected(el);
+      return this;
+    },
+
+    /**
+     * Add component to selection
+     * @param  {Component|HTMLElement|Array} el Component to select
+     * @return {this}
+     * @example
+     * editor.selectAdd(model);
+     */
+    selectAdd(el) {
+      em.addSelected(el);
+      return this;
+    },
+
+    /**
+     * Remove component from selection
+     * @param  {Component|HTMLElement|Array} el Component to select
+     * @return {this}
+     * @example
+     * editor.selectRemove(model);
+     */
+    selectRemove(el) {
+      em.removeSelected(el);
+      return this;
+    },
+
+    /**
+     * Toggle component selection
+     * @param  {Component|HTMLElement|Array} el Component to select
+     * @return {this}
+     * @example
+     * editor.selectToggle(model);
+     */
+    selectToggle(el) {
+      em.toggleSelected(el);
       return this;
     },
 
@@ -571,6 +616,13 @@ module.exports = config => {
      */
     trigger(event) {
       return em.trigger.apply(em, arguments);
+    },
+
+    /**
+     * Destroy the editor
+     */
+    destroy() {
+      return em.destroyAll();
     },
 
     /**

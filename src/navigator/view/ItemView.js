@@ -1,9 +1,12 @@
-import { isUndefined } from 'underscore';
+import { isUndefined, isString } from 'underscore';
+import { getModel } from 'utils/mixins';
+import Backbone from 'backbone';
 const ComponentView = require('dom_components/view/ComponentView');
 const inputProp = 'contentEditable';
+const $ = Backbone.$;
 let ItemsView;
 
-module.exports = require('backbone').View.extend({
+module.exports = Backbone.View.extend({
   events: {
     'mousedown [data-toggle-move]': 'startSort',
     'click [data-toggle-visible]': 'toggleVisibility',
@@ -27,6 +30,7 @@ module.exports = require('backbone').View.extend({
     const level = this.level + 1;
     const gut = `${30 + level * 10}px`;
     const name = model.getName();
+
     return `
       ${
         hidable
@@ -35,7 +39,6 @@ module.exports = require('backbone').View.extend({
             }" data-toggle-visible></i>`
           : ''
       }
-
       <div class="${clsTitleC}">
         <div class="${clsTitle}" style="padding-left: ${gut}" data-toggle-select>
           <div class="${pfx}layer-title-inn">
@@ -49,8 +52,7 @@ module.exports = require('backbone').View.extend({
       <div class="${this.clsMove}" data-toggle-move>
         <i class="fa fa-arrows"></i>
       </div>
-      <div class="${this.clsChildren}"></div>
-    `;
+      <div class="${this.clsChildren}"></div>`;
   },
 
   initialize(o = {}) {
@@ -67,7 +69,6 @@ module.exports = require('backbone').View.extend({
     const components = model.get('components');
     model.set('open', false);
     this.listenTo(components, 'remove add change reset', this.checkChildren);
-    this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model, 'change:status', this.updateStatus);
     this.listenTo(model, 'change:open', this.updateOpening);
     this.listenTo(model, 'change:style:display', this.updateVisibility);
@@ -315,7 +316,7 @@ module.exports = require('backbone').View.extend({
   },
 
   getCaret() {
-    if (!this.caret) {
+    if (!this.caret || !this.caret.length) {
       const pfx = this.pfx;
       this.caret = this.$el
         .children(`.${this.clsTitleC}`)
@@ -325,13 +326,22 @@ module.exports = require('backbone').View.extend({
     return this.caret;
   },
 
+  setRoot(el) {
+    el = isString(el) ? this.em.getWrapper().find(el)[0] : el;
+    const model = getModel(el, $);
+    if (!model) return;
+    this.stopListening();
+    this.model = model;
+    this.initialize(this.opt);
+    this.render();
+  },
+
   render() {
     const model = this.model;
     var pfx = this.pfx;
     var vis = this.isVisible();
-    const el = this.$el;
+    const el = this.$el.empty();
     const level = this.level + 1;
-    el.html(this.template(model));
 
     if (isUndefined(ItemsView)) {
       ItemsView = require('./ItemsView');
@@ -345,7 +355,13 @@ module.exports = require('backbone').View.extend({
       parent: model,
       level
     }).render().$el;
-    el.find(`.${this.clsChildren}`).append(children);
+
+    if (!this.config.showWrapper && level === 1) {
+      el.append(children);
+    } else {
+      el.html(this.template(model));
+      el.find(`.${this.clsChildren}`).append(children);
+    }
 
     if (!model.get('draggable') || !this.config.sortable) {
       el.children(`.${this.clsMove}`).remove();

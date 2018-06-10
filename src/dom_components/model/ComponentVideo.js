@@ -125,7 +125,7 @@ module.exports = Component.extend(
           this.set('tagName', 'video');
       }
       this.loadTraits(traits);
-      this.em.trigger('change:selectedComponent');
+      this.em.trigger('component:toggled');
     },
 
     // Listen provider change and switch traits, in TraitView listen traits change

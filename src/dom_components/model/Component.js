@@ -460,10 +460,10 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @param {Object} [opts={}] Options, same as in `model.add()`(from backbone)
      * @return {Array} Array of appended components
      * @example
-     * someModel.get('components').lenght // -> 0
+     * someModel.get('components').length // -> 0
      * const videoComponent = someModel.append('<video></video><div></div>')[0];
      * // This will add 2 components (`video` and `div`) to your `someModel`
-     * someModel.get('components').lenght // -> 2
+     * someModel.get('components').length // -> 2
      * // You can pass components directly
      * otherModel.append(otherModel2);
      * otherModel.append([otherModel3, otherModel4]);
@@ -652,7 +652,10 @@ const Component = Backbone.Model.extend(Styleable).extend(
         attr.style = style;
       }
 
-      return new this.constructor(attr, opts);
+      return new this.constructor(
+        attr,
+        opts
+      );
     },
 
     /**
@@ -741,7 +744,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
         const defaults = this.defaults;
 
         forEach(defaults, (value, key) => {
-          if (key !== 'type' && obj[key] === value) {
+          if (['type', 'content'].indexOf(key) === -1 && obj[key] === value) {
             delete obj[key];
           }
         });

@@ -1,13 +1,11 @@
 import defaults from './config/config';
 import ItemView from './view/ItemView';
-import ItemsView from './view/ItemsView';
 import { isElement } from 'underscore';
 
 module.exports = () => {
   let em;
   let layers;
   let config = {};
-  let View = ItemsView;
 
   return {
     name: 'LayerManager',
@@ -20,35 +18,48 @@ module.exports = () => {
       return this;
     },
 
+    getConfig() {
+      return config;
+    },
+
     onLoad() {
-      const collection = em.get('DomComponents').getComponents();
-      const parent = collection.parent;
-      const options = {
+      layers = new ItemView({
         level: 0,
         config,
-        opened: config.opened || {}
-      };
-
-      // Show wrapper if requested
-      if (config.showWrapper && parent) {
-        View = ItemView;
-        options.model = parent;
-      } else {
-        options.collection = collection;
-      }
-
-      layers = new View(options);
+        opened: config.opened || {},
+        model: em.get('DomComponents').getWrapper()
+      });
       em && em.on('component:selected', this.componentChanged);
       this.componentChanged();
     },
 
     postRender() {
       const elTo = config.appendTo;
+      const root = config.root;
+      root && this.setRoot(root);
 
       if (elTo) {
         const el = isElement(elTo) ? elTo : document.querySelector(elTo);
         el.appendChild(this.render());
       }
+    },
+
+    /**
+     * Set new root for layers
+     * @param {HTMLElement|Component|String} el Component to be set as the root
+     * @return {self}
+     */
+    setRoot(el) {
+      layers.setRoot(el);
+      return this;
+    },
+
+    /**
+     * Get the root of layers
+     * @return {Component}
+     */
+    getRoot() {
+      return layers.model;
     },
 
     /**

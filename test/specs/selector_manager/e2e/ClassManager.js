@@ -83,7 +83,7 @@ module.exports = {
 
         test('Can assign only one time the same class on selected component and the class viewer', () => {
           var model = components.add({});
-          gjs.editor.set('selectedComponent', model);
+          gjs.editor.setSelected(model);
           tagEl.addNewTag('test');
           tagEl.addNewTag('test');
           expect(model.get('classes').length).toEqual(1);
@@ -99,7 +99,7 @@ module.exports = {
 
         test('Removing from container removes also from selected component', () => {
           var model = components.add({});
-          gjs.editor.set('selectedComponent', model);
+          gjs.editor.setSelected(model);
           tagEl.addNewTag('test');
           tagEl
             .getClasses()
@@ -111,7 +111,7 @@ module.exports = {
         test('Trigger correctly event on target with new class add', () => {
           var spy = sinon.spy();
           var model = components.add({});
-          gjs.editor.set('selectedComponent', model);
+          gjs.editor.setSelected(model);
           tagEl.addNewTag('test');
           gjs.editor.on('component:update:classes', spy);
           tagEl.addNewTag('test');

@@ -22,7 +22,7 @@ module.exports = Backbone.View.extend({
     this.propTarget = target;
     const coll = this.collection;
     const events =
-      'change:selectedComponent component:update:classes component:update:state change:device';
+      'component:toggled component:update:classes component:update:state change:device';
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.render);
     this.listenTo(this.target, events, this.targetUpdated);

@@ -174,6 +174,7 @@ module.exports = () => {
     init(config) {
       c = config || {};
       em = c.em;
+      this.em = em;
 
       if (em) {
         c.components = em.config.components || c.components;
@@ -191,8 +192,15 @@ module.exports = () => {
         c.modal = em.get('Modal') || '';
         c.am = em.get('AssetManager') || '';
         em.get('Parser').compTypes = componentTypes;
-        em.on('change:selectedComponent', this.componentChanged, this);
         em.on('change:componentHovered', this.componentHovered, this);
+
+        const selected = em.get('selected');
+        em.listenTo(selected, 'add', (sel, c, opts) =>
+          this.selectAdd(sel, opts)
+        );
+        em.listenTo(selected, 'remove', (sel, c, opts) =>
+          this.selectRemove(sel, opts)
+        );
       }
 
       // Build wrapper
@@ -462,8 +470,7 @@ module.exports = () => {
      * @return {this}
      */
     clear() {
-      var c = this.getComponents();
-      for (var i = 0, len = c.length; i < len; i++) c.pop();
+      this.getComponents().reset();
       return this;
     },
 
@@ -511,23 +518,28 @@ module.exports = () => {
       return;
     },
 
-    /**
-     * Triggered when the selected component is changed
-     * @private
-     */
-    componentChanged() {
-      const em = c.em;
-      const model = em.get('selectedComponent');
-      const previousModel = em.previous('selectedComponent');
+    selectAdd(component, opts = {}) {
+      if (component) {
+        component.set({
+          status: 'selected'
+        });
+        ['component:selected', 'component:toggled'].forEach(event =>
+          this.em.trigger(event, component, opts)
+        );
+      }
+    },
 
-      // Deselect the previous component
-      previousModel &&
-        previousModel.set({
+    selectRemove(component, opts = {}) {
+      if (component) {
+        const { em } = this;
+        component.set({
           status: '',
           state: ''
         });
-
-      model && model.set('status', 'selected');
+        ['component:deselected', 'component:toggled'].forEach(event =>
+          this.em.trigger(event, component, opts)
+        );
+      }
     },
 
     /**

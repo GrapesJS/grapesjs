@@ -120,6 +120,7 @@ module.exports = ComponentView.extend({
   toggleEvents(enable) {
     var method = enable ? 'on' : 'off';
     const mixins = { on, off };
+    this.em.setEditing(enable);
 
     // The ownerDocument is from the frame
     var elDocs = [this.el.ownerDocument, document];
