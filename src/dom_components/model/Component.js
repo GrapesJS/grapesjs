@@ -368,8 +368,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.get('classes').each(cls => classes.push(cls.get('name')));
       classes.length && (attributes.class = classes.join(' '));
 
-      // If style is not empty I need an ID attached to the component
-      if (!isEmpty(this.getStyle()) && !has(attributes, 'id')) {
+      // If the rule is setted we need an ID attached to the component
+      if (!has(attributes, 'id') && this.rule) {
         attributes.id = this.getId();
       }
 
