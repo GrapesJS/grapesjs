@@ -947,7 +947,7 @@ module.exports = Backbone.View.extend({
     this.toggleSortCursor();
 
     this.toMove = null;
-    isFunction(onEndMove) && onEndMove(moved, this);
+    isFunction(onEndMove) && moved.forEach(m => onEndMove(m, this));
   },
 
   /**
