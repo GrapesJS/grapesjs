@@ -1,5 +1,7 @@
 import {
   isUndefined,
+  isFunction,
+  isObject,
   isArray,
   isEmpty,
   isBoolean,
@@ -686,13 +688,23 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @return {string} HTML string
      * @private
      */
-    toHTML(opts) {
+    toHTML(opts = {}) {
       const model = this;
       const attrs = [];
       const classes = [];
       const tag = model.get('tagName');
       const sTag = model.get('void');
-      const attributes = this.getAttrToHTML();
+      const customAttr = opts.attributes;
+      let attributes = this.getAttrToHTML();
+
+      // Get custom attributes if requested
+      if (customAttr) {
+        if (isFunction(customAttr)) {
+          attributes = customAttr(model, attributes) || {};
+        } else if (isObject(customAttr)) {
+          attributes = customAttr;
+        }
+      }
 
       for (let attr in attributes) {
         const val = attributes[attr];
@@ -711,7 +723,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       let code = `<${tag}${attrString}${sTag ? '/' : ''}>${model.get(
         'content'
       )}`;
-      model.get('components').each(comp => (code += comp.toHTML()));
+      model.get('components').each(comp => (code += comp.toHTML(opts)));
       !sTag && (code += `</${tag}>`);
 
       return code;
