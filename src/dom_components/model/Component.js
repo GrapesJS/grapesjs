@@ -9,6 +9,7 @@ import {
   clone,
   isString,
   forEach,
+  result,
   keys
 } from 'underscore';
 import { shallowDiff, hasDnd } from 'utils/mixins';
@@ -753,7 +754,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       delete obj.toolbar;
 
       if (this.em.getConfig('avoidDefaults')) {
-        const defaults = this.defaults;
+        const defaults = result(this, 'defaults');
 
         forEach(defaults, (value, key) => {
           if (['type', 'content'].indexOf(key) === -1 && obj[key] === value) {
