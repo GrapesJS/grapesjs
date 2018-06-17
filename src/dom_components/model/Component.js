@@ -792,6 +792,18 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     /**
+     * Return model id
+     * @param {String} id
+     * @return {self}
+     */
+    setId(id) {
+      const attrs = { ...this.get('attributes') };
+      attrs.id = id;
+      this.set('attributes', attrs);
+      return this;
+    },
+
+    /**
      * Get the DOM element of the model. This works only of the
      * model is alredy rendered
      * @return {HTMLElement}
@@ -853,6 +865,23 @@ const Component = Backbone.Model.extend(Styleable).extend(
         clb(this);
         this.components().forEach(model => model.onAll(clb));
       }
+      return this;
+    },
+
+    /**
+     * Reset id of the component and any of its style rule
+     * @param {Object} [opts={}] Options
+     * @return {self}
+     */
+    resetId(opts = {}) {
+      const { em } = this;
+      const oldId = this.getId();
+      if (!oldId) return;
+      const newId = Component.createId(this);
+      this.setId(newId);
+      const rule = em && em.get('CssComposer').getIdRule(oldId);
+      const selector = rule && rule.get('selectors').at(0);
+      selector && selector.set('name', newId);
       return this;
     }
   },

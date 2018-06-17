@@ -64,9 +64,7 @@ module.exports = Backbone.View.extend({
       }
 
       if (model.get('resetId')) {
-        result.onAll(model => {
-          console.log(model, model.get);
-        });
+        result.onAll(model => model.resetId());
       }
     }
 
