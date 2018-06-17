@@ -3,6 +3,10 @@ var Category = require('./Category');
 
 module.exports = Backbone.Model.extend({
   defaults: {
+    // If true, triggers an 'active' event on dropped component
+    activate: 0,
+    // If true, the dropped component will be selected
+    select: 0,
     label: '',
     content: '',
     category: '',
