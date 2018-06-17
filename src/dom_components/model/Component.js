@@ -841,6 +841,19 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const em = this.em;
       const event = 'component:update' + (property ? `:${property}` : '');
       em && em.trigger(event, this);
+    },
+
+    /**
+     * Execute callback function on all components
+     * @param  {Function} clb Callback function, the model is passed as an argument
+     * @return {self}
+     */
+    onAll(clb) {
+      if (isFunction(clb)) {
+        clb(this);
+        this.components().forEach(model => model.onAll(clb));
+      }
+      return this;
     }
   },
   {

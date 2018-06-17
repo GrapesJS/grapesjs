@@ -62,6 +62,12 @@ module.exports = Backbone.View.extend({
       if (model.get('select')) {
         em.setSelected(result);
       }
+
+      if (model.get('resetId')) {
+        result.onAll(model => {
+          console.log(model, model.get);
+        });
+      }
     }
 
     em.set({
