@@ -1,7 +1,8 @@
 import Backbone from 'backbone';
+import PropertyView from './PropertyView';
 const $ = Backbone.$;
 
-module.exports = require('./PropertyView').extend({
+module.exports = PropertyView.extend({
   templateInput() {
     const pfx = this.pfx;
     const ppfx = this.ppfx;
@@ -15,10 +16,19 @@ module.exports = require('./PropertyView').extend({
     `;
   },
 
+  initialize(...args) {
+    PropertyView.prototype.initialize.apply(this, args);
+    this.listenTo(this.model, 'change:options', this.updateOptions);
+  },
+
+  updateOptions() {
+    this.input = null;
+    this.onRender();
+  },
+
   onRender() {
     var pfx = this.pfx;
-    const model = this.model;
-    const options = model.get('list') || model.get('options') || [];
+    const options = this.model.getOptions();
 
     if (!this.input) {
       let optionsStr = '';
