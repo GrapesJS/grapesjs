@@ -364,15 +364,18 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @return {Object}
      */
     getAttributes() {
+      const { em } = this;
       const classes = [];
       const attributes = { ...this.get('attributes') };
+      const sm = em && em.get('SelectorManager');
+      const id = this.getId();
 
       // Add classes
       this.get('classes').each(cls => classes.push(cls.get('name')));
       classes.length && (attributes.class = classes.join(' '));
 
       // If the rule is setted we need an ID attached to the component
-      if (!has(attributes, 'id') && this.rule) {
+      if (!has(attributes, 'id') && sm.get(id, sm.Selector.TYPE_ID)) {
         attributes.id = this.getId();
       }
 
