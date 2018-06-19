@@ -180,7 +180,6 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.config = opt.config || {};
       this.ccid = Component.createId(this);
       this.set('attributes', this.get('attributes') || {});
-      this.on('remove', this.handleRemove);
       this.listenTo(this, 'change:script', this.scriptUpdated);
       this.listenTo(this, 'change:traits', this.traitsUpdated);
       this.listenTo(this, 'change:tagName', this.tagUpdated);
@@ -198,16 +197,6 @@ const Component = Backbone.Model.extend(Styleable).extend(
         )
       );
       this.init();
-    },
-
-    /**
-     * Triggered on model remove
-     * @param {Model} removed Removed model
-     * @private
-     */
-    handleRemove(removed) {
-      const em = this.em;
-      em && em.trigger('component:remove', removed);
     },
 
     /**
