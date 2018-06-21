@@ -30,6 +30,7 @@ module.exports = Backbone.View.extend({
     this.listenTo(model, 'change:status', this.updateStatus);
     this.listenTo(model, 'change:state', this.updateState);
     this.listenTo(model, 'change:script', this.render);
+    this.listenTo(model, 'change:content', this.updateContent);
     this.listenTo(model, 'change', this.handleChange);
     this.listenTo(classes, 'add remove change', this.updateClasses);
     $el.data('model', model);
