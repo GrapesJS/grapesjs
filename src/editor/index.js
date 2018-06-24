@@ -22,8 +22,9 @@
  * ## Blocks
  * * `block:add` - New block added
  * * `block:remove` - Block removed
- * * `block:drag:start` - Started dragging new block, Event object is passed as an argument
- * * `block:drag:stop` - Block dropped inside canvas, the new model is passed as an argument to the callback
+ * * `block:drag:start` - Started dragging block, model of the block is passed as an argument
+ * * `block:drag` - Dragging block, the block's model and the drag event are passed as arguments
+ * * `block:drag:stop` - Dragging of the block is stopped. As agruments for the callback you get, the dropped component model (if dropped successfully) and the model of the block
  * ## Assets
  * * `asset:add` - New asset added
  * * `asset:remove` - Asset removed
