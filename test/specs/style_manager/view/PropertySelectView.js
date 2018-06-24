@@ -1,5 +1,5 @@
 const PropertySelectView = require('style_manager/view/PropertySelectView');
-const Property = require('style_manager/model/Property');
+const Property = require('style_manager/model/PropertyRadio');
 const Editor = require('editor/model/Editor');
 const DomComponents = require('dom_components');
 const Component = require('dom_components/model/Component');

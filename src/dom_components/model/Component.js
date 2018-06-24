@@ -364,7 +364,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       classes.length && (attributes.class = classes.join(' '));
 
       // If the rule is setted we need an ID attached to the component
-      if (!has(attributes, 'id') && sm.get(id, sm.Selector.TYPE_ID)) {
+      if (!has(attributes, 'id') && sm && sm.get(id, sm.Selector.TYPE_ID)) {
         attributes.id = this.getId();
       }
 
