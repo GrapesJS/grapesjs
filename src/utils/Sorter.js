@@ -905,7 +905,7 @@ module.exports = Backbone.View.extend({
    * */
   endMove(e) {
     var created;
-    const moved = [];
+    const moved = [null];
     const docs = this.getDocuments();
     const container = this.getContainerEl();
     const onEndMove = this.onEndMove;
@@ -947,7 +947,7 @@ module.exports = Backbone.View.extend({
     this.toggleSortCursor();
 
     this.toMove = null;
-    isFunction(onEndMove) && onEndMove(moved, this);
+    isFunction(onEndMove) && moved.forEach(m => onEndMove(m, this));
   },
 
   /**

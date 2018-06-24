@@ -72,12 +72,7 @@ export default class Droppable {
       onStart: () => em.stopDefault(),
       onEndMove: model => {
         em.runDefault();
-
-        if (model && model.get && model.get('activeOnRender')) {
-          model.trigger('active');
-          model.set('activeOnRender', 0);
-        }
-
+        em.set('dragResult', model);
         model && em.trigger('canvas:drop', dt, model);
       },
       document: canvas.getFrameEl().contentDocument

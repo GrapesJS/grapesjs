@@ -3898,6 +3898,7 @@ module.exports = _backbone2.default.View.extend({
     this.listenTo(model, 'change:status', this.updateStatus);
     this.listenTo(model, 'change:state', this.updateState);
     this.listenTo(model, 'change:script', this.render);
+    this.listenTo(model, 'change:content', this.updateContent);
     this.listenTo(model, 'change', this.handleChange);
     this.listenTo(classes, 'add remove change', this.updateClasses);
     $el.data('model', model);
@@ -4408,7 +4409,6 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
     this.config = opt.config || {};
     this.ccid = Component.createId(this);
     this.set('attributes', this.get('attributes') || {});
-    this.on('remove', this.handleRemove);
     this.listenTo(this, 'change:script', this.scriptUpdated);
     this.listenTo(this, 'change:traits', this.traitsUpdated);
     this.listenTo(this, 'change:tagName', this.tagUpdated);
@@ -4426,17 +4426,6 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
       });
     });
     this.init();
-  },
-
-
-  /**
-   * Triggered on model remove
-   * @param {Model} removed Removed model
-   * @private
-   */
-  handleRemove: function handleRemove(removed) {
-    var em = this.em;
-    em && em.trigger('component:remove', removed);
   },
 
 
@@ -4611,8 +4600,12 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
    * @return {Object}
    */
   getAttributes: function getAttributes() {
+    var em = this.em;
+
     var classes = [];
     var attributes = _extends({}, this.get('attributes'));
+    var sm = em && em.get('SelectorManager');
+    var id = this.getId();
 
     // Add classes
     this.get('classes').each(function (cls) {
@@ -4620,8 +4613,8 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
     });
     classes.length && (attributes.class = classes.join(' '));
 
-    // If style is not empty I need an ID attached to the component
-    if (!(0, _underscore.isEmpty)(this.getStyle()) && !(0, _underscore.has)(attributes, 'id')) {
+    // If the rule is setted we need an ID attached to the component
+    if (!(0, _underscore.has)(attributes, 'id') && sm && sm.get(id, sm.Selector.TYPE_ID)) {
       attributes.id = this.getId();
     }
 
@@ -4952,13 +4945,25 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
    * @return {string} HTML string
    * @private
    */
-  toHTML: function toHTML(opts) {
+  toHTML: function toHTML() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
     var model = this;
     var attrs = [];
     var classes = [];
     var tag = model.get('tagName');
     var sTag = model.get('void');
+    var customAttr = opts.attributes;
     var attributes = this.getAttrToHTML();
+
+    // Get custom attributes if requested
+    if (customAttr) {
+      if ((0, _underscore.isFunction)(customAttr)) {
+        attributes = customAttr(model, attributes) || {};
+      } else if ((0, _underscore.isObject)(customAttr)) {
+        attributes = customAttr;
+      }
+    }
 
     for (var attr in attributes) {
       var val = attributes[attr];
@@ -4976,7 +4981,7 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
     var attrString = attrs.length ? ' ' + attrs.join(' ') : '';
     var code = '<' + tag + attrString + (sTag ? '/' : '') + '>' + model.get('content');
     model.get('components').each(function (comp) {
-      return code += comp.toHTML();
+      return code += comp.toHTML(opts);
     });
     !sTag && (code += '</' + tag + '>');
 
@@ -5013,7 +5018,7 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
     delete obj.toolbar;
 
     if (this.em.getConfig('avoidDefaults')) {
-      var defaults = this.defaults;
+      var defaults = (0, _underscore.result)(this, 'defaults');
 
       (0, _underscore.forEach)(defaults, function (value, key) {
         if (['type', 'content'].indexOf(key) === -1 && obj[key] === value) {
@@ -5049,6 +5054,19 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
   getId: function getId() {
     var attrs = this.get('attributes') || {};
     return attrs.id || this.ccid || this.cid;
+  },
+
+
+  /**
+   * Return model id
+   * @param {String} id
+   * @return {self}
+   */
+  setId: function setId(id) {
+    var attrs = _extends({}, this.get('attributes'));
+    attrs.id = id;
+    this.set('attributes', attrs);
+    return this;
   },
 
 
@@ -5102,6 +5120,42 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
     var em = this.em;
     var event = 'component:update' + (property ? ':' + property : '');
     em && em.trigger(event, this);
+  },
+
+
+  /**
+   * Execute callback function on all components
+   * @param  {Function} clb Callback function, the model is passed as an argument
+   * @return {self}
+   */
+  onAll: function onAll(clb) {
+    if ((0, _underscore.isFunction)(clb)) {
+      clb(this);
+      this.components().forEach(function (model) {
+        return model.onAll(clb);
+      });
+    }
+    return this;
+  },
+
+
+  /**
+   * Reset id of the component and any of its style rule
+   * @param {Object} [opts={}] Options
+   * @return {self}
+   */
+  resetId: function resetId() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var em = this.em;
+
+    var oldId = this.getId();
+    if (!oldId) return;
+    var newId = Component.createId(this);
+    this.setId(newId);
+    var rule = em && em.get('CssComposer').getIdRule(oldId);
+    var selector = rule && rule.get('selectors').at(0);
+    selector && selector.set('name', newId);
+    return this;
   }
 }, {
   /**
@@ -17121,10 +17175,13 @@ module.exports = ComponentView.extend({
    * @private
    * */
   updateSrc: function updateSrc() {
-    var src = this.model.get('src');
-    var el = this.$el;
-    el.attr('src', src);
-    el[src ? 'removeClass' : 'addClass'](this.classEmpty);
+    var model = this.model,
+        classEmpty = this.classEmpty,
+        $el = this.$el;
+
+    var src = model.get('src');
+    model.addAttributes({ src: src });
+    $el[src ? 'removeClass' : 'addClass'](classEmpty);
   },
 
 
@@ -20731,15 +20788,21 @@ module.exports = function (config) {
         // Start with understanding what kind of component it is
         if (ct) {
           var obj = '';
+          var type = node.getAttribute && node.getAttribute(modelAttrStart + 'type');
 
-          // Iterate over all available Component Types and
-          // the first with a valid result will be that component
-          for (var it = 0; it < ct.length; it++) {
-            obj = ct[it].model.isComponent(node);
-            if (obj) break;
+          // If the type is already defined, use it
+          if (type) {
+            model = { type: type };
+          } else {
+            // Iterate over all available Component Types and
+            // the first with a valid result will be that component
+            for (var it = 0; it < ct.length; it++) {
+              obj = ct[it].model.isComponent(node);
+              if (obj) break;
+            }
+
+            model = obj;
           }
-
-          model = obj;
         }
 
         // Set tag name if not yet done
@@ -22995,20 +23058,35 @@ var _backbone = __webpack_require__(0);
 
 var _backbone2 = _interopRequireDefault(_backbone);
 
+var _PropertyView = __webpack_require__(5);
+
+var _PropertyView2 = _interopRequireDefault(_PropertyView);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var $ = _backbone2.default.$;
 
-module.exports = __webpack_require__(5).extend({
+module.exports = _PropertyView2.default.extend({
   templateInput: function templateInput() {
     var pfx = this.pfx;
     var ppfx = this.ppfx;
     return '\n      <div class="' + ppfx + 'field ' + ppfx + 'select">\n        <span id="' + pfx + 'input-holder"></span>\n        <div class="' + ppfx + 'sel-arrow">\n          <div class="' + ppfx + 'd-s-arrow"></div>\n        </div>\n      </div>\n    ';
   },
+  initialize: function initialize() {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _PropertyView2.default.prototype.initialize.apply(this, args);
+    this.listenTo(this.model, 'change:options', this.updateOptions);
+  },
+  updateOptions: function updateOptions() {
+    this.input = null;
+    this.onRender();
+  },
   onRender: function onRender() {
     var pfx = this.pfx;
-    var model = this.model;
-    var options = model.get('list') || model.get('options') || [];
+    var options = this.model.getOptions();
 
     if (!this.input) {
       var optionsStr = '';
@@ -23349,13 +23427,49 @@ module.exports = PropertyView.extend({
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 var Property = __webpack_require__(13);
 
 module.exports = Property.extend({
-  defaults: _extends({}, Property.prototype.defaults, {
-    // Array of options, eg. [{name: 'Label ', value: '100'}]
-    options: []
-  })
+  defaults: function defaults() {
+    return _extends({}, Property.prototype.defaults, {
+      // Array of options, eg. [{name: 'Label ', value: '100'}]
+      options: []
+    });
+  },
+
+  initialize: function initialize() {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    Property.prototype.initialize.apply(this, args);
+    this.listenTo(this, 'change:options', this.onOptionChange);
+  },
+  onOptionChange: function onOptionChange() {
+    this.set('list', this.get('options'));
+  },
+  getOptions: function getOptions() {
+    var _attributes = this.attributes,
+        options = _attributes.options,
+        list = _attributes.list;
+
+    return options && options.length ? options : list;
+  },
+  setOptions: function setOptions() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+    this.set('options', opts);
+    return this;
+  },
+  addOption: function addOption(opt) {
+    if (opt) {
+      var opts = this.getOptions();
+      this.setOptions([].concat(_toConsumableArray(opts), [opt]));
+    }
+    return this;
+  }
 });
 
 /***/ }),
@@ -24514,11 +24628,13 @@ module.exports = _backbone2.default.View.extend({
     this.listenTo(coll, 'remove', this.removeChildren);
   },
   removeChildren: function removeChildren(removed) {
+    var em = this.config.em;
     var view = removed.view;
     if (!view) return;
     view.remove.apply(view);
     var children = view.childrenView;
     children && children.stopListening();
+    em && em.trigger('component:remove', removed);
   },
 
 
@@ -24687,7 +24803,8 @@ module.exports = ComponentView.extend({
    * Enable element content editing
    * @private
    * */
-  enableEditing: function enableEditing() {
+  enableEditing: function enableEditing(e) {
+    e && e.stopPropagation && e.stopPropagation();
     var rte = this.rte;
 
     if (this.rteEnabled || !this.model.get('editable')) {
@@ -25598,7 +25715,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.14.20',
+    version: '0.14.21',
 
     /**
      * Initializes an editor based on passed options
@@ -26280,8 +26397,9 @@ module.exports = function (config) {
     * ## Blocks
     * * `block:add` - New block added
     * * `block:remove` - Block removed
-    * * `block:drag:start` - Started dragging new block, Event object is passed as an argument
-    * * `block:drag:stop` - Block dropped inside canvas, the new model is passed as an argument to the callback
+    * * `block:drag:start` - Started dragging block, model of the block is passed as an argument
+    * * `block:drag` - Dragging block, the block's model and the drag event are passed as arguments
+    * * `block:drag:stop` - Dragging of the block is stopped. As agruments for the callback you get, the dropped component model (if dropped successfully) and the model of the block
     * ## Assets
     * * `asset:add` - New asset added
     * * `asset:remove` - Asset removed
@@ -28276,7 +28394,7 @@ module.exports = _backbone2.default.View.extend({
     var _this = this;
 
     var created;
-    var moved = [];
+    var moved = [null];
     var docs = this.getDocuments();
     var container = this.getContainerEl();
     var onEndMove = this.onEndMove;
@@ -28320,7 +28438,9 @@ module.exports = _backbone2.default.View.extend({
     this.toggleSortCursor();
 
     this.toMove = null;
-    (0, _underscore.isFunction)(onEndMove) && onEndMove(moved, this);
+    (0, _underscore.isFunction)(onEndMove) && moved.forEach(function (m) {
+      return onEndMove(m, _this);
+    });
   },
 
 
@@ -35752,6 +35872,8 @@ module.exports = _backbone2.default.Model.extend({
 "use strict";
 
 
+var _underscore = __webpack_require__(1);
+
 module.exports = __webpack_require__(0).Model.extend({
   initialize: function initialize() {
     this.compCls = [];
@@ -35806,6 +35928,7 @@ module.exports = __webpack_require__(0).Model.extend({
     this.compCls = [];
     this.ids = [];
     var code = this.buildFromModel(model, opts);
+    var clearStyles = (0, _underscore.isUndefined)(opts.clearStyles) && em ? em.getConfig('clearStyles') : opts.clearStyles;
 
     if (cssc) {
       (function () {
@@ -35842,7 +35965,7 @@ module.exports = __webpack_require__(0).Model.extend({
           }
         }
 
-        em && em.getConfig('clearStyles') && rules.remove(dump);
+        em && clearStyles && rules.remove(dump);
       })();
     }
 
@@ -47391,12 +47514,7 @@ var Droppable = function () {
         },
         onEndMove: function onEndMove(model) {
           em.runDefault();
-
-          if (model && model.get && model.get('activeOnRender')) {
-            model.trigger('active');
-            model.set('activeOnRender', 0);
-          }
-
+          em.set('dragResult', model);
           model && em.trigger('canvas:drop', dt, model);
         },
         document: canvas.getFrameEl().contentDocument
@@ -49751,7 +49869,7 @@ module.exports = {
     var em = ed.getModel();
     var models = [].concat(_toConsumableArray(ed.getSelectedAll()));
 
-    if (models.length && !ed.Canvas.isInputFocused()) {
+    if (models.length && !em.isEditing()) {
       em.set('clipboard', models);
     }
   }
@@ -49772,7 +49890,7 @@ module.exports = {
     var clp = em.get('clipboard');
     var selected = ed.getSelected();
 
-    if (clp && selected && !ed.Canvas.isInputFocused()) {
+    if (clp && selected && !em.isEditing()) {
       ed.getSelectedAll().forEach(function (comp) {
         if (!comp) return;
         var coll = comp.collection;
@@ -50196,6 +50314,12 @@ var Category = __webpack_require__(59);
 
 module.exports = _backbone2.default.Model.extend({
   defaults: {
+    // If true, triggers an 'active' event on dropped component
+    activate: 0,
+    // If true, the dropped component will be selected
+    select: 0,
+    // If true, all IDs of dropped component and its style will be changed
+    resetId: 0,
     label: '',
     content: '',
     category: '',
@@ -50449,6 +50573,7 @@ module.exports = _backbone2.default.View.extend({
   events: {
     mousedown: 'startDrag',
     dragstart: 'handleDragStart',
+    drag: 'handleDrag',
     dragend: 'handleDragEnd'
   },
 
@@ -50479,7 +50604,10 @@ module.exports = _backbone2.default.View.extend({
     (0, _mixins.on)(document, 'mouseup', this.endDrag);
   },
   handleDragStart: function handleDragStart(ev) {
-    var content = this.model.get('content');
+    var em = this.em,
+        model = this.model;
+
+    var content = model.get('content');
     var isObj = (0, _underscore.isObject)(content);
     var type = isObj ? 'text/json' : 'text';
     var data = isObj ? JSON.stringify(content) : content;
@@ -50488,10 +50616,44 @@ module.exports = _backbone2.default.View.extend({
     // but will use dragContent as I need it for the Sorter context
     // IE11 supports only 'text' data type
     ev.dataTransfer.setData('text', data);
-    this.em.set('dragContent', content);
+    em.set('dragContent', content);
+    em.trigger('block:drag:start', model, ev);
+  },
+  handleDrag: function handleDrag(ev) {
+    this.em.trigger('block:drag', this.model, ev);
   },
   handleDragEnd: function handleDragEnd() {
-    this.em.set('dragContent', '');
+    var em = this.em,
+        model = this.model;
+
+    var result = em.get('dragResult');
+
+    if (result) {
+      var oldKey = 'activeOnRender';
+      var oldActive = result.get && result.get(oldKey);
+
+      if (model.get('activate') || oldActive) {
+        result.trigger('active');
+        result.set(oldKey, 0);
+      }
+
+      if (model.get('select')) {
+        em.setSelected(result);
+      }
+
+      if (model.get('resetId')) {
+        result.onAll(function (model) {
+          return model.resetId();
+        });
+      }
+    }
+
+    em.set({
+      dragResult: null,
+      dragContent: null
+    });
+
+    em.trigger('block:drag:stop', result, model);
   },
 
 

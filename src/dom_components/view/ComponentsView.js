@@ -12,11 +12,13 @@ module.exports = Backbone.View.extend({
   },
 
   removeChildren(removed) {
+    const em = this.config.em;
     const view = removed.view;
     if (!view) return;
     view.remove.apply(view);
     const children = view.childrenView;
     children && children.stopListening();
+    em && em.trigger('component:remove', removed);
   },
 
   /**

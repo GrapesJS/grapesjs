@@ -1,3 +1,5 @@
+import { isUndefined } from 'underscore';
+
 module.exports = require('backbone').Model.extend({
   initialize() {
     this.compCls = [];
@@ -40,6 +42,10 @@ module.exports = require('backbone').Model.extend({
     this.compCls = [];
     this.ids = [];
     var code = this.buildFromModel(model, opts);
+    const clearStyles =
+      isUndefined(opts.clearStyles) && em
+        ? em.getConfig('clearStyles')
+        : opts.clearStyles;
 
     if (cssc) {
       const rules = cssc.getAll();
@@ -75,7 +81,7 @@ module.exports = require('backbone').Model.extend({
         }
       }
 
-      em && em.getConfig('clearStyles') && rules.remove(dump);
+      em && clearStyles && rules.remove(dump);
     }
 
     return code;

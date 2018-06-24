@@ -6,7 +6,7 @@ module.exports = {
     const clp = em.get('clipboard');
     const selected = ed.getSelected();
 
-    if (clp && selected && !ed.Canvas.isInputFocused()) {
+    if (clp && selected && !em.isEditing()) {
       ed.getSelectedAll().forEach(comp => {
         if (!comp) return;
         const coll = comp.collection;

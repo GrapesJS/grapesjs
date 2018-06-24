@@ -1,5 +1,7 @@
 import {
   isUndefined,
+  isFunction,
+  isObject,
   isArray,
   isEmpty,
   isBoolean,
@@ -7,6 +9,7 @@ import {
   clone,
   isString,
   forEach,
+  result,
   keys
 } from 'underscore';
 import { shallowDiff, hasDnd } from 'utils/mixins';
@@ -177,7 +180,6 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.config = opt.config || {};
       this.ccid = Component.createId(this);
       this.set('attributes', this.get('attributes') || {});
-      this.on('remove', this.handleRemove);
       this.listenTo(this, 'change:script', this.scriptUpdated);
       this.listenTo(this, 'change:traits', this.traitsUpdated);
       this.listenTo(this, 'change:tagName', this.tagUpdated);
@@ -195,16 +197,6 @@ const Component = Backbone.Model.extend(Styleable).extend(
         )
       );
       this.init();
-    },
-
-    /**
-     * Triggered on model remove
-     * @param {Model} removed Removed model
-     * @private
-     */
-    handleRemove(removed) {
-      const em = this.em;
-      em && em.trigger('component:remove', removed);
     },
 
     /**
@@ -361,15 +353,18 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @return {Object}
      */
     getAttributes() {
+      const { em } = this;
       const classes = [];
       const attributes = { ...this.get('attributes') };
+      const sm = em && em.get('SelectorManager');
+      const id = this.getId();
 
       // Add classes
       this.get('classes').each(cls => classes.push(cls.get('name')));
       classes.length && (attributes.class = classes.join(' '));
 
-      // If style is not empty I need an ID attached to the component
-      if (!isEmpty(this.getStyle()) && !has(attributes, 'id')) {
+      // If the rule is setted we need an ID attached to the component
+      if (!has(attributes, 'id') && sm && sm.get(id, sm.Selector.TYPE_ID)) {
         attributes.id = this.getId();
       }
 
@@ -686,13 +681,23 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @return {string} HTML string
      * @private
      */
-    toHTML(opts) {
+    toHTML(opts = {}) {
       const model = this;
       const attrs = [];
       const classes = [];
       const tag = model.get('tagName');
       const sTag = model.get('void');
-      const attributes = this.getAttrToHTML();
+      const customAttr = opts.attributes;
+      let attributes = this.getAttrToHTML();
+
+      // Get custom attributes if requested
+      if (customAttr) {
+        if (isFunction(customAttr)) {
+          attributes = customAttr(model, attributes) || {};
+        } else if (isObject(customAttr)) {
+          attributes = customAttr;
+        }
+      }
 
       for (let attr in attributes) {
         const val = attributes[attr];
@@ -711,7 +716,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       let code = `<${tag}${attrString}${sTag ? '/' : ''}>${model.get(
         'content'
       )}`;
-      model.get('components').each(comp => (code += comp.toHTML()));
+      model.get('components').each(comp => (code += comp.toHTML(opts)));
       !sTag && (code += `</${tag}>`);
 
       return code;
@@ -741,7 +746,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       delete obj.toolbar;
 
       if (this.em.getConfig('avoidDefaults')) {
-        const defaults = this.defaults;
+        const defaults = result(this, 'defaults');
 
         forEach(defaults, (value, key) => {
           if (['type', 'content'].indexOf(key) === -1 && obj[key] === value) {
@@ -776,6 +781,18 @@ const Component = Backbone.Model.extend(Styleable).extend(
     getId() {
       let attrs = this.get('attributes') || {};
       return attrs.id || this.ccid || this.cid;
+    },
+
+    /**
+     * Return model id
+     * @param {String} id
+     * @return {self}
+     */
+    setId(id) {
+      const attrs = { ...this.get('attributes') };
+      attrs.id = id;
+      this.set('attributes', attrs);
+      return this;
     },
 
     /**
@@ -828,6 +845,36 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const em = this.em;
       const event = 'component:update' + (property ? `:${property}` : '');
       em && em.trigger(event, this);
+    },
+
+    /**
+     * Execute callback function on all components
+     * @param  {Function} clb Callback function, the model is passed as an argument
+     * @return {self}
+     */
+    onAll(clb) {
+      if (isFunction(clb)) {
+        clb(this);
+        this.components().forEach(model => model.onAll(clb));
+      }
+      return this;
+    },
+
+    /**
+     * Reset id of the component and any of its style rule
+     * @param {Object} [opts={}] Options
+     * @return {self}
+     */
+    resetId(opts = {}) {
+      const { em } = this;
+      const oldId = this.getId();
+      if (!oldId) return;
+      const newId = Component.createId(this);
+      this.setId(newId);
+      const rule = em && em.get('CssComposer').getIdRule(oldId);
+      const selector = rule && rule.get('selectors').at(0);
+      selector && selector.set('name', newId);
+      return this;
     }
   },
   {

@@ -22,7 +22,8 @@ module.exports = ComponentView.extend({
    * Enable element content editing
    * @private
    * */
-  enableEditing() {
+  enableEditing(e) {
+    e && e.stopPropagation && e.stopPropagation();
     const rte = this.rte;
 
     if (this.rteEnabled || !this.model.get('editable')) {
