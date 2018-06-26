@@ -38,7 +38,7 @@
  * },
  * ...
  */
-import { isFunction, isArray } from 'underscore';
+import { isFunction } from 'underscore';
 
 module.exports = () => {
   let em;
@@ -197,45 +197,21 @@ module.exports = () => {
       // Core commands
       defaultCommands['core:undo'] = e => e.UndoManager.undo();
       defaultCommands['core:redo'] = e => e.UndoManager.redo();
-      defaultCommands['core:copy'] = require('./view/CopyComponent').run;
-      defaultCommands['core:paste'] = require('./view/PasteComponent').run;
-      defaultCommands[
-        'core:component-next'
-      ] = require('./view/ComponentNext').run;
-      defaultCommands[
-        'core:component-prev'
-      ] = require('./view/ComponentPrev').run;
-      defaultCommands[
-        'core:component-enter'
-      ] = require('./view/ComponentEnter').run;
-      defaultCommands[
-        'core:component-exit'
-      ] = require('./view/ComponentExit').run;
-      defaultCommands['core:canvas-clear'] = e => {
-        e.DomComponents.clear();
-        e.CssComposer.clear();
-      };
-      defaultCommands['core:component-delete'] = (ed, sender, opts = {}) => {
-        let components = opts.component || ed.getSelectedAll();
-        components = isArray(components) ? [...components] : [components];
-
-        // It's important to deselect components first otherwise,
-        // with undo, the component will be set with the wrong `collection`
-        ed.select(null);
-
-        components.forEach(component => {
-          if (!component || !component.get('removable')) {
-            console.warn('The element is not removable', component);
-            return;
-          }
-          if (component) {
-            const coll = component.collection;
-            coll && coll.remove(component);
-          }
-        });
-
-        return components;
-      };
+      [
+        ['copy', 'CopyComponent'],
+        ['paste', 'PasteComponent'],
+        ['component-next', 'ComponentNext'],
+        ['component-prev', 'ComponentPrev'],
+        ['component-enter', 'ComponentEnter'],
+        ['component-exit', 'ComponentExit'],
+        ['canvas-clear', 'CanvasClear'],
+        ['component-delete', 'ComponentRemove']
+      ].forEach(
+        item =>
+          (defaultCommands[`core:${item[0]}`] = require(`./view/${
+            item[1]
+          }`).run)
+      );
 
       if (c.em) c.model = c.em.get('Canvas');
 
