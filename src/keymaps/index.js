@@ -48,6 +48,10 @@ module.exports = () => {
       'core:component-exit': {
         keys: 'a',
         handler: 'core:component-exit'
+      },
+      'core:component-delete': {
+        keys: 'backspace, delete',
+        handler: 'core:component-delete'
       }
     }
   };
