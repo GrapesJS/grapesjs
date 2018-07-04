@@ -37,8 +37,9 @@
     "prettier": "^1.13.0",
     "sinon": "^5.0.10",
     "string-replace-loader": "^2.1.1",
-    "webpack": "^3.10.0",
-    "webpack-dev-server": "^2.11.1",
+    "webpack": "^4.14.0",
+    "webpack-cli": "^3.0.8",
+    "webpack-dev-server": "^3.1.4",
     "whatwg-fetch": "^2.0.4"
   },
   "keywords": [
