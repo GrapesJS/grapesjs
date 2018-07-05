@@ -39,6 +39,7 @@ module.exports = env => {
     output: output,
     plugins: plugins,
     mode: isProd ? 'production' : 'development',
+    devtool: isProd ? 'source-map' : (!env ? 'cheap-module-eval-source-map' : false),
     module: {
       rules: [{
         test: /\/index\.js$/,
