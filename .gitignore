@@ -12,7 +12,6 @@ stats.json
 img/
 images/
 private/
-docs/
 vendor/
 coverage/
 node_modules/

@@ -37,6 +37,7 @@
     "node-sass": "^4.9.1",
     "prettier": "^1.13.7",
     "string-replace-loader": "^2.1.1",
+    "vuepress": "^0.10.2",
     "webpack": "^4.15.1",
     "webpack-cli": "^3.0.8",
     "webpack-dev-server": "^3.1.4",
@@ -89,6 +90,8 @@
     }
   },
   "scripts": {
+    "docs:dev": "vuepress dev docs",
+    "docs:build": "vuepress build docs",
     "lint": "eslint src",
     "check": "npm run lint && npm run test",
     "precommit": "lint-staged",
