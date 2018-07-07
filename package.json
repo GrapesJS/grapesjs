@@ -90,6 +90,7 @@
     }
   },
   "scripts": {
+    "docs:api": "node docs/api.js",
     "docs:dev": "vuepress dev docs",
     "docs:build": "vuepress build docs",
     "lint": "eslint src",

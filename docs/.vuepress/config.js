@@ -53,8 +53,10 @@ module.exports = {
     sidebar: {
       '/api/': [
         '',
-        '/api/editor.md',
-        '/api/assets.md',
+        ['/api/editor', 'Editor'],
+        ['/api/assets', 'Asset Manager'],
+        ['/api/block_manager', 'Block Manager'],
+        ['/api/commands', 'Commands'],
       ],
       '/': [
         '',
