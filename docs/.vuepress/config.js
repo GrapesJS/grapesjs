@@ -71,6 +71,12 @@ module.exports = {
             ['/modules/Storage', 'Storage'],
             ['/modules/Plugins', 'Plugins'],
           ]
+        }, {
+          title: 'Guides',
+          collapsable: false,
+          children: [
+            ['/guides/Replace-Rich-Text-Editor', 'Replace Rich Text Editor'],
+          ]
         }
       ],
     }
