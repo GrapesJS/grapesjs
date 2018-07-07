@@ -59,6 +59,19 @@ module.exports = {
       '/': [
         '',
         ['/getting-started', 'Getting Started'],
+        {
+          title: 'Modules',
+          collapsable: false,
+          children: [
+            ['/modules/Assets', 'Assets'],
+            ['/modules/Blocks', 'Blocks'],
+            ['/modules/Components', 'Components'],
+            ['/modules/Components-js', 'Components & JS'],
+            ['/modules/Traits', 'Traits'],
+            ['/modules/Storage', 'Storage'],
+            ['/modules/Plugins', 'Plugins'],
+          ]
+        }
       ],
     }
   },
