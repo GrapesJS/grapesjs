@@ -4,6 +4,11 @@ module.exports = {
   base: '/docs/',
   ga: '', // Google Analytics ID
   serviceWorker: false, // Enable Service Worker for offline usage
+  head: [
+    ['link', { rel: 'icon', href: '/logo-icon.png' }],
+    ['link', { rel: 'stylesheet', href: 'https://unpkg.com/grapesjs/dist/css/grapes.min.css' }], // dev https://localhost:8080/dist/css/grapes.min.css
+    ['script', { src: '/grapes.min.js' }], // dev https://localhost:8080/dist/grapes.min.js
+  ],
   localesSKIP: {
     '/': {
       lang: 'en-US',
@@ -14,7 +19,14 @@ module.exports = {
     }
   },
   themeConfig: {
-    lastUpdated: 'Lastttt Updated',
+    editLinks: true,
+    docsDir: 'docs',
+    docsBranch: 'dev',
+    repo: 'artf/grapesjs',
+    editLinkText: 'Edit this page on GitHub',
+
+    logo: '/logo.png',
+    lastUpdated: 'Last Updated',
     locales: {
       '/': {
         selectText: 'EN',
@@ -33,10 +45,10 @@ module.exports = {
       }
     },
     nav: [
+      { text: 'Docs', link: '/' },
       { text: 'API Reference', link: '/api/' },
-      { text: 'Support ❤️', link: 'https://opencollective.com/grapesjs' },
+      { text: 'Support Us', link: 'https://opencollective.com/grapesjs' },
       { text: 'Twitter', link: 'https://twitter.com/grapesjs' },
-      { text: 'Github', link: 'https://github.com/artf/grapesjs' },
     ],
     sidebar: {
       '/api/': [
