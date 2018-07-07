@@ -59,6 +59,7 @@ module.exports = {
       '/': [
         '',
         ['/getting-started', 'Getting Started'],
+        ['/faq', 'FAQ'],
         {
           title: 'Modules',
           collapsable: false,
