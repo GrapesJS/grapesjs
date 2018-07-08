@@ -2,19 +2,29 @@
 
 ## Modal
 
--   [open][1]
--   [close][2]
--   [isOpen][3]
--   [setTitle][4]
--   [getTitle][5]
--   [setContent][6]
--   [getContent][7]
-
-Before using the methods you should get first the module from the editor instance, in this way:
+You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object][1]
 
 ```js
-var modal = editor.Modal;
+const editor = grapesjs.init({
+ modal: {
+   // options
+ }
+})
 ```
+
+Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+
+```js
+const modal = editor.Modal;
+```
+
+-   [open][2]
+-   [close][3]
+-   [isOpen][4]
+-   [setTitle][5]
+-   [getTitle][6]
+-   [setContent][7]
+-   [getContent][8]
 
 ## open
 
@@ -32,7 +42,7 @@ Returns **this**
 
 Checks if the modal window is open
 
-Returns **[Boolean][8]** 
+Returns **[Boolean][9]** 
 
 ## setTitle
 
@@ -40,7 +50,7 @@ Set the title to the modal window
 
 ### Parameters
 
--   `title` **[string][9]** Title
+-   `title` **[string][10]** Title
 
 ### Examples
 
@@ -54,7 +64,7 @@ Returns **this**
 
 Returns the title of the modal window
 
-Returns **[string][9]** 
+Returns **[string][10]** 
 
 ## setContent
 
@@ -62,7 +72,7 @@ Set the content of the modal window
 
 ### Parameters
 
--   `content` **([string][9] \| [HTMLElement][10])** Content
+-   `content` **([string][10] \| [HTMLElement][11])** Content
 
 ### Examples
 
@@ -76,24 +86,26 @@ Returns **this**
 
 Get the content of the modal window
 
-Returns **[string][9]** 
+Returns **[string][10]** 
 
-[1]: #open
+[1]: https://github.com/artf/grapesjs/blob/master/src/modal_dialog/config/config.js
 
-[2]: #close
+[2]: #open
 
-[3]: #isopen
+[3]: #close
 
-[4]: #settitle
+[4]: #isopen
 
-[5]: #gettitle
+[5]: #settitle
 
-[6]: #setcontent
+[6]: #gettitle
 
-[7]: #getcontent
+[7]: #setcontent
 
-[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[8]: #getcontent
 
-[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[10]: https://developer.mozilla.org/docs/Web/HTML/Element
+[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[11]: https://developer.mozilla.org/docs/Web/HTML/Element
