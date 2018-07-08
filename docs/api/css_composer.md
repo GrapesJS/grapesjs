@@ -2,26 +2,33 @@
 
 ## CssComposer
 
-This module contains and manage CSS rules for the template inside the canvas
-Before using the methods you should get first the module from the editor instance, in this way:
+This module contains and manage CSS rules for the template inside the canvas.
+You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object][1]
 
 ```js
-var cssComposer = editor.CssComposer;
+const editor = grapesjs.init({
+ cssComposer: {
+   // options
+ }
+})
 ```
 
-### Parameters
+Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
 
--   `config` **[Object][1]** Configurations
-    -   `config.rules` **([string][2] \| [Array][3]&lt;[Object][1]>)** CSS string or an array of rule objects (optional, default `[]`)
-
-### Examples
-
-```javascript
-...
-CssComposer: {
-   rules: '.myClass{ color: red}',
-}
+```js
+const cssComposer = editor.CssComposer;
 ```
+
+-   [load][2]
+-   [store][3]
+-   [add][4]
+-   [get][5]
+-   [getAll][6]
+-   [clear][7]
+-   [setIdRule][8]
+-   [getIdRule][9]
+-   [setClassRule][10]
+-   [getClassRule][11]
 
 ## load
 
@@ -31,9 +38,9 @@ The fetched data will be added to the collection
 
 ### Parameters
 
--   `data` **[Object][1]** Object of data to load
+-   `data` **[Object][12]** Object of data to load
 
-Returns **[Object][1]** Loaded rules
+Returns **[Object][12]** Loaded rules
 
 ## store
 
@@ -41,9 +48,9 @@ Store data to the selected storage
 
 ### Parameters
 
--   `noStore` **[Boolean][4]** If true, won't store
+-   `noStore` **[Boolean][13]** If true, won't store
 
-Returns **[Object][1]** Data to store
+Returns **[Object][12]** Data to store
 
 ## add
 
@@ -51,10 +58,10 @@ Add new rule to the collection, if not yet exists with the same selectors
 
 ### Parameters
 
--   `selectors` **[Array][3]&lt;Selector>** Array of selectors
--   `state` **[String][2]** Css rule state
--   `width` **[String][2]** For which device this style is oriented
--   `opts` **[Object][1]** Other options for the rule (optional, default `{}`)
+-   `selectors` **[Array][14]&lt;Selector>** Array of selectors
+-   `state` **[String][15]** Css rule state
+-   `width` **[String][15]** For which device this style is oriented
+-   `opts` **[Object][12]** Other options for the rule (optional, default `{}`)
 
 ### Examples
 
@@ -77,10 +84,10 @@ Get the rule
 
 ### Parameters
 
--   `selectors` **[Array][3]&lt;Selector>** Array of selectors
--   `state` **[String][2]** Css rule state
--   `width` **[String][2]** For which device this style is oriented
--   `ruleProps` **[Object][1]** Other rule props
+-   `selectors` **[Array][14]&lt;Selector>** Array of selectors
+-   `state` **[String][15]** Css rule state
+-   `width` **[String][15]** For which device this style is oriented
+-   `ruleProps` **[Object][12]** Other rule props
 
 ### Examples
 
@@ -116,9 +123,9 @@ Add/update the CSS rule with id selector
 
 ### Parameters
 
--   `name` **[string][2]** Id selector name, eg. 'my-id'
--   `style` **[Object][1]** Style properties and values (optional, default `{}`)
--   `opts` **[Object][1]** Custom options, like `state` and `mediaText` (optional, default `{}`)
+-   `name` **[string][15]** Id selector name, eg. 'my-id'
+-   `style` **[Object][12]** Style properties and values (optional, default `{}`)
+-   `opts` **[Object][12]** Custom options, like `state` and `mediaText` (optional, default `{}`)
 
 ### Examples
 
@@ -138,8 +145,8 @@ Get the CSS rule by id selector
 
 ### Parameters
 
--   `name` **[string][2]** Id selector name, eg. 'my-id'
--   `opts` **[Object][1]** Custom options, like `state` and `mediaText` (optional, default `{}`)
+-   `name` **[string][15]** Id selector name, eg. 'my-id'
+-   `opts` **[Object][12]** Custom options, like `state` and `mediaText` (optional, default `{}`)
 
 ### Examples
 
@@ -156,9 +163,9 @@ Add/update the CSS rule with class selector
 
 ### Parameters
 
--   `name` **[string][2]** Class selector name, eg. 'my-class'
--   `style` **[Object][1]** Style properties and values (optional, default `{}`)
--   `opts` **[Object][1]** Custom options, like `state` and `mediaText` (optional, default `{}`)
+-   `name` **[string][15]** Class selector name, eg. 'my-class'
+-   `style` **[Object][12]** Style properties and values (optional, default `{}`)
+-   `opts` **[Object][12]** Custom options, like `state` and `mediaText` (optional, default `{}`)
 
 ### Examples
 
@@ -178,8 +185,8 @@ Get the CSS rule by class selector
 
 ### Parameters
 
--   `name` **[string][2]** Class selector name, eg. 'my-class'
--   `opts` **[Object][1]** Custom options, like `state` and `mediaText` (optional, default `{}`)
+-   `name` **[string][15]** Class selector name, eg. 'my-class'
+-   `opts` **[Object][12]** Custom options, like `state` and `mediaText` (optional, default `{}`)
 
 ### Examples
 
@@ -190,10 +197,32 @@ const ruleHover = cc.getClassRule('myclass', { state: 'hover' });
 
 Returns **CssRule** 
 
-[1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[1]: https://github.com/artf/grapesjs/blob/master/src/css_composer/config/config.js
 
-[2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[2]: #load
 
-[3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[3]: #store
 
-[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[4]: #add
+
+[5]: #get
+
+[6]: #getall
+
+[7]: #clear
+
+[8]: #setidrule
+
+[9]: #getidrule
+
+[10]: #setclassrule
+
+[11]: #getclassrule
+
+[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+
+[13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+
+[14]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+
+[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String

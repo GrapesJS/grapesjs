@@ -63,6 +63,7 @@ module.exports = {
         ['/api/storage_manager', 'Storage Manager'],
         ['/api/device_manager', 'Device Manager'],
         ['/api/selector_manager', 'Selector Manager'],
+        ['/api/css_composer', 'CSS Composer'],
       ],
       '/': [
         '',
