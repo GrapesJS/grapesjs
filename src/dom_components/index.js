@@ -1,4 +1,18 @@
 /**
+ * With this module is possible to manage components inside the canvas. You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/dom_components/config/config.js)
+ * ```js
+ * const editor = grapesjs.init({
+ *  domComponents: {
+ *    // options
+ *  }
+ * })
+ * ```
+ *
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ *
+ * ```js
+ * const domComponents = editor.DomComponents;
+ * ```
  *
  * * [getWrapper](#getwrapper)
  * * [getComponents](#getcomponents)
@@ -8,30 +22,9 @@
  * * [store](#store)
  * * [render](#render)
  *
- * With this module is possible to manage components inside the canvas.
- * Before using methods you should get first the module from the editor instance, in this way:
- *
- * ```js
- * var domComponents = editor.DomComponents;
- * ```
- *
  * @module DomComponents
- * @param {Object} config Configurations
- * @param {string|Array<Object>} [config.components=[]] HTML string or an array of possible components
- * @example
- * ...
- * domComponents: {
- *    components: '<div>Hello world!</div>',
- * }
- * // Or
- * domComponents: {
- *    components: [
- *      { tagName: 'span', style: {color: 'red'}, content: 'Hello'},
- *      { style: {width: '100px', content: 'world!'}}
- *    ],
- * }
- * ...
  */
+
 import { isEmpty } from 'underscore';
 
 module.exports = () => {
@@ -378,7 +371,7 @@ module.exports = () => {
     },
 
     /**
-     * Returns root component inside the canvas. Something like <body> inside HTML page
+     * Returns root component inside the canvas. Something like `<body>` inside HTML page
      * The wrapper doesn't differ from the original Component Model
      * @return {Component} Root Component
      * @example

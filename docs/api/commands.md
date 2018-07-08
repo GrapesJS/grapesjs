@@ -2,48 +2,25 @@
 
 ## Commands
 
--   [add][1]
--   [get][2]
--   [has][3]
-
-You can init the editor with all necessary commands via configuration
+You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object][1]
 
 ```js
-var editor = grapesjs.init({
-	...
- commands: {...} // Check below for the properties
-	...
-});
+const editor = grapesjs.init({
+ commands: {
+   // options
+ }
+})
 ```
 
-Before using methods you should get first the module from the editor instance, in this way:
+Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
 
 ```js
-var commands = editor.Commands;
+const commands = editor.Commands;
 ```
 
-### Parameters
-
--   `config` **[Object][4]** Configurations
-    -   `config.defaults` **[Array][5]&lt;[Object][4]>** Array of possible commands (optional, default `[]`)
-
-### Examples
-
-```javascript
-...
-commands: {
-	defaults: [{
-		id: 'helloWorld',
-		run:  function(editor, sender){
-			alert('Hello world!');
-		},
-		stop:  function(editor, sender){
-			alert('Stop!');
-		},
-	}],
-},
-...
-```
+-   [add][2]
+-   [get][3]
+-   [has][4]
 
 ## add
 
@@ -51,8 +28,8 @@ Add new command to the collection
 
 ### Parameters
 
--   `id` **[string][6]** Command's ID
--   `command` **([Object][4] \| [Function][7])** Object representing your command,
+-   `id` **[string][5]** Command's ID
+-   `command` **([Object][6] \| [Function][7])** Object representing your command,
      By passing just a function it's intended as a stateless command
      (just like passing an object with only `run` method).
 
@@ -78,7 +55,7 @@ Get command by ID
 
 ### Parameters
 
--   `id` **[string][6]** Command's ID
+-   `id` **[string][5]** Command's ID
 
 ### Examples
 
@@ -87,7 +64,7 @@ var myCommand = commands.get('myCommand');
 myCommand.run();
 ```
 
-Returns **[Object][4]** Object representing the command
+Returns **[Object][6]** Object representing the command
 
 ## has
 
@@ -95,21 +72,21 @@ Check if command exists
 
 ### Parameters
 
--   `id` **[string][6]** Command's ID
+-   `id` **[string][5]** Command's ID
 
 Returns **[Boolean][8]** 
 
-[1]: #add
+[1]: https://github.com/artf/grapesjs/blob/master/src/commands/config/config.js
 
-[2]: #get
+[2]: #add
 
-[3]: #has
+[3]: #get
 
-[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[4]: #has
 
-[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
 [7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 

@@ -2,42 +2,29 @@
 
 ## DomComponents
 
--   [getWrapper][1]
--   [getComponents][2]
--   [addComponent][3]
--   [clear][4]
--   [load][5]
--   [store][6]
--   [render][7]
-
-With this module is possible to manage components inside the canvas.
-Before using methods you should get first the module from the editor instance, in this way:
+With this module is possible to manage components inside the canvas. You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object][1]
 
 ```js
-var domComponents = editor.DomComponents;
+const editor = grapesjs.init({
+ domComponents: {
+   // options
+ }
+})
 ```
 
-### Parameters
+Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
 
--   `config` **[Object][8]** Configurations
-    -   `config.components` **([string][9] \| [Array][10]&lt;[Object][8]>)** HTML string or an array of possible components (optional, default `[]`)
-
-### Examples
-
-```javascript
-...
-domComponents: {
-   components: '<div>Hello world!</div>',
-}
-// Or
-domComponents: {
-   components: [
-     { tagName: 'span', style: {color: 'red'}, content: 'Hello'},
-     { style: {width: '100px', content: 'world!'}}
-   ],
-}
-...
+```js
+const domComponents = editor.DomComponents;
 ```
+
+-   [getWrapper][2]
+-   [getComponents][3]
+-   [addComponent][4]
+-   [clear][5]
+-   [load][6]
+-   [store][7]
+-   [render][8]
 
 ## load
 
@@ -47,9 +34,9 @@ The fetched data will be added to the collection
 
 ### Parameters
 
--   `data` **[Object][8]** Object of data to load (optional, default `''`)
+-   `data` **[Object][9]** Object of data to load (optional, default `''`)
 
-Returns **[Object][8]** Loaded data
+Returns **[Object][9]** Loaded data
 
 ## store
 
@@ -57,13 +44,13 @@ Store components on the selected storage
 
 ### Parameters
 
--   `noStore` **[Boolean][11]** If true, won't store
+-   `noStore` **[Boolean][10]** If true, won't store
 
-Returns **[Object][8]** Data to store
+Returns **[Object][9]** Data to store
 
 ## getWrapper
 
-Returns root component inside the canvas. Something like <body> inside HTML page
+Returns root component inside the canvas. Something like `<body>` inside HTML page
 The wrapper doesn't differ from the original Component Model
 
 ### Examples
@@ -117,18 +104,18 @@ as 'domComponents.getComponents().add(...)'
 
 ### Parameters
 
--   `component` **([Object][8] | Component | [Array][10]&lt;[Object][8]>)** Component/s to add
-    -   `component.tagName` **[string][9]** Tag name (optional, default `'div'`)
-    -   `component.type` **[string][9]** Type of the component. Available: ''(default), 'text', 'image' (optional, default `''`)
-    -   `component.removable` **[boolean][11]** If component is removable (optional, default `true`)
-    -   `component.draggable` **[boolean][11]** If is possible to move the component around the structure (optional, default `true`)
-    -   `component.droppable` **[boolean][11]** If is possible to drop inside other components (optional, default `true`)
-    -   `component.badgable` **[boolean][11]** If the badge is visible when the component is selected (optional, default `true`)
-    -   `component.stylable` **[boolean][11]** If is possible to style component (optional, default `true`)
-    -   `component.copyable` **[boolean][11]** If is possible to copy&paste the component (optional, default `true`)
-    -   `component.content` **[string][9]** String inside component (optional, default `''`)
-    -   `component.style` **[Object][8]** Style object (optional, default `{}`)
-    -   `component.attributes` **[Object][8]** Attribute object (optional, default `{}`)
+-   `component` **([Object][9] | Component | [Array][11]&lt;[Object][9]>)** Component/s to add
+    -   `component.tagName` **[string][12]** Tag name (optional, default `'div'`)
+    -   `component.type` **[string][12]** Type of the component. Available: ''(default), 'text', 'image' (optional, default `''`)
+    -   `component.removable` **[boolean][10]** If component is removable (optional, default `true`)
+    -   `component.draggable` **[boolean][10]** If is possible to move the component around the structure (optional, default `true`)
+    -   `component.droppable` **[boolean][10]** If is possible to drop inside other components (optional, default `true`)
+    -   `component.badgable` **[boolean][10]** If the badge is visible when the component is selected (optional, default `true`)
+    -   `component.stylable` **[boolean][10]** If is possible to style component (optional, default `true`)
+    -   `component.copyable` **[boolean][10]** If is possible to copy&paste the component (optional, default `true`)
+    -   `component.content` **[string][12]** String inside component (optional, default `''`)
+    -   `component.style` **[Object][9]** Style object (optional, default `{}`)
+    -   `component.attributes` **[Object][9]** Attribute object (optional, default `{}`)
 
 ### Examples
 
@@ -145,7 +132,7 @@ var comp1 = domComponents.addComponent({
 });
 ```
 
-Returns **(Component | [Array][10]&lt;Component>)** Component/s added
+Returns **(Component | [Array][11]&lt;Component>)** Component/s added
 
 ## render
 
@@ -154,7 +141,7 @@ Once the wrapper is rendered, and it's what happens when you init the editor,
 the all new components will be added automatically and property changes are all
 updated immediately
 
-Returns **[HTMLElement][12]** 
+Returns **[HTMLElement][13]** 
 
 ## clear
 
@@ -162,26 +149,28 @@ Remove all components
 
 Returns **this** 
 
-[1]: #getwrapper
+[1]: https://github.com/artf/grapesjs/blob/master/src/dom_components/config/config.js
 
-[2]: #getcomponents
+[2]: #getwrapper
 
-[3]: #addcomponent
+[3]: #getcomponents
 
-[4]: #clear
+[4]: #addcomponent
 
-[5]: #load
+[5]: #clear
 
-[6]: #store
+[6]: #load
 
-[7]: #render
+[7]: #store
 
-[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[8]: #render
 
-[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[12]: https://developer.mozilla.org/docs/Web/HTML/Element
+[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[13]: https://developer.mozilla.org/docs/Web/HTML/Element

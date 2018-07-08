@@ -1,42 +1,24 @@
 /**
+ * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/commands/config/config.js)
+ * ```js
+ * const editor = grapesjs.init({
+ *  commands: {
+ *    // options
+ *  }
+ * })
+ * ```
+ *
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ *
+ * ```js
+ * const commands = editor.Commands;
+ * ```
  *
  * * [add](#add)
  * * [get](#get)
  * * [has](#has)
  *
- * You can init the editor with all necessary commands via configuration
- *
- * ```js
- * var editor = grapesjs.init({
- * 	...
- *  commands: {...} // Check below for the properties
- * 	...
- * });
- * ```
- *
- * Before using methods you should get first the module from the editor instance, in this way:
- *
- * ```js
- * var commands = editor.Commands;
- * ```
- *
  * @module Commands
- * @param {Object} config Configurations
- * @param {Array<Object>} [config.defaults=[]] Array of possible commands
- * @example
- * ...
- * commands: {
- * 	defaults: [{
- * 		id: 'helloWorld',
- * 		run:  function(editor, sender){
- * 			alert('Hello world!');
- * 		},
- * 		stop:  function(editor, sender){
- * 			alert('Stop!');
- * 		},
- * 	}],
- * },
- * ...
  */
 import { isFunction } from 'underscore';
 

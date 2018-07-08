@@ -57,6 +57,8 @@ module.exports = {
         ['/api/assets', 'Asset Manager'],
         ['/api/block_manager', 'Block Manager'],
         ['/api/commands', 'Commands'],
+        ['/api/components', 'DOM Components'],
+        ['/api/panels', 'Panels'],
       ],
       '/': [
         '',

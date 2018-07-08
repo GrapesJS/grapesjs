@@ -2,45 +2,37 @@
 
 ## BlockManager
 
--   [add][1]
--   [get][2]
--   [getAll][3]
--   [getAllVisible][4]
--   [getCategories][5]
--   [getContainer][6]
--   [render][7]
-
-Block manager helps managing various, draggable, piece of contents that could be easily reused inside templates.
-
-Before using methods you should get first the module from the editor instance, in this way:
+You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object][1]
 
 ```js
-var blockManager = editor.BlockManager;
+const editor = grapesjs.init({
+ blockManager: {
+   // options
+ }
+})
 ```
 
-### Parameters
+Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
 
--   `config` **[Object][8]** Configurations
-    -   `config.blocks` **[Array][9]&lt;[Object][8]>** Default blocks (optional, default `[]`)
-
-### Examples
-
-```javascript
-...
-{
-    blocks: [
-     {id:'h1-block' label: 'Heading', content:'<h1>...</h1>'},
-     ...
-   ],
-}
-...
+```js
+const blockManager = editor.BlockManager;
 ```
+
+-   [add][2]
+-   [get][3]
+-   [getAll][4]
+-   [getAllVisible][5]
+-   [remove][6]
+-   [getConfig][7]
+-   [getCategories][8]
+-   [getContainer][9]
+-   [render][10]
 
 ## getConfig
 
 Get configuration object
 
-Returns **[Object][8]** 
+Returns **[Object][11]** 
 
 ## onLoad
 
@@ -52,16 +44,16 @@ Add new block to the collection.
 
 ### Parameters
 
--   `id` **[string][10]** Block id
--   `opts` **[Object][8]** Options
-    -   `opts.label` **[string][10]** Name of the block
-    -   `opts.content` **[string][10]** HTML content
-    -   `opts.category` **([string][10] \| [Object][8])** Group the block inside a catgegory.
+-   `id` **[string][12]** Block id
+-   `opts` **[Object][11]** Options
+    -   `opts.label` **[string][12]** Name of the block
+    -   `opts.content` **[string][12]** HTML content
+    -   `opts.category` **([string][12] \| [Object][11])** Group the block inside a catgegory.
                                              You should pass objects with id property, eg:
                                              {id: 'some-uid', label: 'My category'}
                                              The string will be converted in:
                                              'someid' => {id: 'someid', label: 'someid'}
-    -   `opts.attributes` **[Object][8]** Block attributes (optional, default `{}`)
+    -   `opts.attributes` **[Object][11]** Block attributes (optional, default `{}`)
 
 ### Examples
 
@@ -84,7 +76,7 @@ Return the block by id
 
 ### Parameters
 
--   `id` **[string][10]** Block id
+-   `id` **[string][12]** Block id
 
 ### Examples
 
@@ -120,7 +112,7 @@ Remove a block by id
 
 ### Parameters
 
--   `id` **[string][10]** Block id
+-   `id` **[string][12]** Block id
 
 Returns **Block** Removed block
 
@@ -129,13 +121,13 @@ Returns **Block** Removed block
 Get all available categories.
 It's possible to add categories only within blocks via 'add()' method
 
-Returns **([Array][9] | Collection)** 
+Returns **([Array][13] | Collection)** 
 
 ## getContainer
 
 Return the Blocks container element
 
-Returns **[HTMLElement][11]** 
+Returns **[HTMLElement][14]** 
 
 ## render
 
@@ -143,7 +135,7 @@ Render blocks
 
 ### Parameters
 
--   `blocks` **[Array][9]** Blocks to render, without the argument will render
+-   `blocks` **[Array][13]** Blocks to render, without the argument will render
                            all global blocks
 
 ### Examples
@@ -166,26 +158,32 @@ blockManager.render([
 blockManager.render();
 ```
 
-Returns **[HTMLElement][11]** Rendered element
+Returns **[HTMLElement][14]** Rendered element
 
-[1]: #add
+[1]: https://github.com/artf/grapesjs/blob/master/src/block_manager/config/config.js
 
-[2]: #get
+[2]: #add
 
-[3]: #getall
+[3]: #get
 
-[4]: #getallvisible
+[4]: #getall
 
-[5]: #getcategories
+[5]: #getallvisible
 
-[6]: #getcontainer
+[6]: #remove
 
-[7]: #render
+[7]: #getconfig
 
-[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[8]: #getcategories
 
-[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[9]: #getcontainer
 
-[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[10]: #render
 
-[11]: https://developer.mozilla.org/docs/Web/HTML/Element
+[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+
+[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+
+[14]: https://developer.mozilla.org/docs/Web/HTML/Element

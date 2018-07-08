@@ -2,49 +2,34 @@
 
 ## AssetManager
 
--   [add][1]
--   [get][2]
--   [getAll][3]
--   [getAllVisible][4]
--   [remove][5]
--   [getContainer][6]
--   [getAssetsEl][7]
--   [addType][8]
--   [getType][9]
--   [getTypes][10]
--   [store][11]
--   [load][12]
-
-Before using this methods you should get first the module from the editor instance, in this way:
+You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object][1]
 
 ```js
-var assetManager = editor.AssetManager;
+const editor = grapesjs.init({
+ assetManager: {
+   // options
+ }
+})
 ```
 
-### Parameters
+Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
 
--   `config` **[Object][13]** Configurations
-    -   `config.assets` **[Array][14]&lt;[Object][13]>** Default assets (optional, default `[]`)
-    -   `config.uploadText` **[String][15]** Upload text (optional, default `'Drop files here or click to upload'`)
-    -   `config.addBtnText` **[String][15]** Text for the add button (optional, default `'Add image'`)
-    -   `config.upload` **[String][15]** Where to send upload data. Expects as return a JSON with asset/s object
-        as: {data: [{src:'...'}, {src:'...'}]} (optional, default `''`)
-
-### Examples
-
-```javascript
-...
-{
-	assets: [
- 	{src:'path/to/image.png'},
-    ...
- ],
- upload: 'http://dropbox/path', // Set to false to disable it
- uploadText: 'Drop files here or click to upload',
-}
+```js
+const assetManager = editor.AssetManager;
 ```
 
-Returns **this** 
+-   [add][2]
+-   [get][3]
+-   [getAll][4]
+-   [getAllVisible][5]
+-   [remove][6]
+-   [store][7]
+-   [load][8]
+-   [getContainer][9]
+-   [getAssetsEl][10]
+-   [addType][11]
+-   [getType][12]
+-   [getTypes][13]
 
 ## add
 
@@ -52,8 +37,8 @@ Add new asset/s to the collection. URLs are supposed to be unique
 
 ### Parameters
 
--   `asset` **([string][15] \| [Object][13] \| [Array][14]&lt;[string][15]> | [Array][14]&lt;[Object][13]>)** URL strings or an objects representing the resource.
--   `opts` **[Object][13]?** Options (optional, default `{}`)
+-   `asset` **([string][14] \| [Object][15] \| [Array][16]&lt;[string][14]> | [Array][16]&lt;[Object][15]>)** URL strings or an objects representing the resource.
+-   `opts` **[Object][15]?** Options (optional, default `{}`)
 
 ### Examples
 
@@ -84,7 +69,7 @@ Returns the asset by URL
 
 ### Parameters
 
--   `src` **[string][15]** URL of the asset
+-   `src` **[string][14]** URL of the asset
 
 ### Examples
 
@@ -92,7 +77,7 @@ Returns the asset by URL
 var asset = assetManager.get('http://img.jpg');
 ```
 
-Returns **[Object][13]** Object representing the asset
+Returns **[Object][15]** Object representing the asset
 
 ## getAll
 
@@ -112,7 +97,7 @@ Remove the asset by its URL
 
 ### Parameters
 
--   `src` **[string][15]** URL of the asset
+-   `src` **[string][14]** URL of the asset
 
 ### Examples
 
@@ -128,7 +113,7 @@ Store assets data to the selected storage
 
 ### Parameters
 
--   `noStore` **[Boolean][16]** If true, won't store
+-   `noStore` **[Boolean][17]** If true, won't store
 
 ### Examples
 
@@ -136,7 +121,7 @@ Store assets data to the selected storage
 var assets = assetManager.store();
 ```
 
-Returns **[Object][13]** Data to store
+Returns **[Object][15]** Data to store
 
 ## load
 
@@ -145,7 +130,7 @@ The fetched data will be added to the collection.
 
 ### Parameters
 
--   `data` **[Object][13]** Object of data to load (optional, default `{}`)
+-   `data` **[Object][15]** Object of data to load (optional, default `{}`)
 
 ### Examples
 
@@ -155,19 +140,19 @@ var assets = assetManager.load({
 })
 ```
 
-Returns **[Object][13]** Loaded assets
+Returns **[Object][15]** Loaded assets
 
 ## getContainer
 
 Return the Asset Manager Container
 
-Returns **[HTMLElement][17]** 
+Returns **[HTMLElement][18]** 
 
 ## getAssetsEl
 
 Get assets element container
 
-Returns **[HTMLElement][17]** 
+Returns **[HTMLElement][18]** 
 
 ## render
 
@@ -175,7 +160,7 @@ Render assets
 
 ### Parameters
 
--   `assets` **[array][14]** Assets to render, without the argument will render
+-   `assets` **[array][16]** Assets to render, without the argument will render
                            all global assets
 
 ### Examples
@@ -191,24 +176,29 @@ assetManager.render(assets.filter(
 ));
 ```
 
-Returns **[HTMLElement][17]** 
+Returns **[HTMLElement][18]** 
 
 ## addType
 
-Add new type
+Add new type. If you want to get more about type definition we suggest to read the [module's page][19]
 
 ### Parameters
 
--   `id` **[string][15]** Type ID
--   `definition` **[Object][13]** Definition of the type. Each definition contains
+-   `id` **[string][14]** Type ID
+-   `definition` **[Object][15]** Definition of the type. Each definition contains
                                `model` (business logic), `view` (presentation logic)
                                and `isType` function which recognize the type of the
                                passed entity
-    addType('my-type', {
-     model: {},
-     view: {},
-     isType: (value) => {},
-    })
+
+### Examples
+
+```javascript
+assetManager.addType('my-type', {
+ model: {},
+ view: {},
+ isType: (value) => {},
+})
+```
 
 ## getType
 
@@ -216,46 +206,50 @@ Get type
 
 ### Parameters
 
--   `id` **[string][15]** Type ID
+-   `id` **[string][14]** Type ID
 
-Returns **[Object][13]** Type definition
+Returns **[Object][15]** Type definition
 
 ## getTypes
 
 Get types
 
-Returns **[Array][14]** 
+Returns **[Array][16]** 
 
-[1]: #add
+[1]: https://github.com/artf/grapesjs/blob/master/src/asset_manager/config/config.js
 
-[2]: #get
+[2]: #add
 
-[3]: #getall
+[3]: #get
 
-[4]: #getallvisible
+[4]: #getall
 
-[5]: #remove
+[5]: #getallvisible
 
-[6]: #getcontainer
+[6]: #remove
 
-[7]: #getassetsel
+[7]: #store
 
-[8]: #addtype
+[8]: #load
 
-[9]: #gettype
+[9]: #getcontainer
 
-[10]: #gettypes
+[10]: #getassetsel
 
-[11]: #store
+[11]: #addtype
 
-[12]: #load
+[12]: #gettype
 
-[13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[13]: #gettypes
 
-[14]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[14]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[16]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[16]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[17]: https://developer.mozilla.org/docs/Web/HTML/Element
+[17]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+
+[18]: https://developer.mozilla.org/docs/Web/HTML/Element
+
+[19]: /modules/Assets.html
