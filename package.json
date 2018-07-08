@@ -92,7 +92,7 @@
   "scripts": {
     "docs:api": "node docs/api.js",
     "docs:dev": "vuepress dev docs",
-    "docs:build": "vuepress build docs",
+    "docs:build": "npm run docs:api && vuepress build docs",
     "lint": "eslint src",
     "check": "npm run lint && npm run test",
     "precommit": "lint-staged",
