@@ -17,10 +17,9 @@ const cmds = [
   // ['selector_manager/index.js', 'selector_manager.md'],
   // ['css_composer/index.js', 'css_composer.md'],
   // ['modal_dialog/index.js', 'modal_dialog.md'],
-  ['rich_text_editor/index.js', 'rich_text_editor.md'],
-  /*
-  ['rich_text_editor/index.js', 'rich_text_editor.md'],
+  // ['rich_text_editor/index.js', 'rich_text_editor.md'],
   ['keymaps/index.js', 'keymaps.md'],
+  /*
   ['undo_manager/index.js', 'undo_manager.md'],*/
 ].map(entry =>
   `${binRoot}documentation build ${srcRoot}/${entry[0]} -o ${docRoot}/api/${entry[1]} -f md --shallow --markdown-toc false`)
