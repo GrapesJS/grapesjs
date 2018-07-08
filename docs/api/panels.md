@@ -2,54 +2,32 @@
 
 ## Panels
 
--   [addPanel][1]
--   [addButton][2]
--   [removeButton][3]
--   [getButton][4]
--   [getPanel][5]
--   [getPanels][6]
--   [render][7]
-
-This module manages panels and buttons inside the editor.
-You can init the editor with all panels and buttons necessary via configuration
+You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object][1]
 
 ```js
-var editor = grapesjs.init({
-  ...
- panels: {...} // Check below for the possible properties
-  ...
-});
+const editor = grapesjs.init({
+ panels: {
+   // options
+ }
+})
 ```
 
-Before using methods you should get first the module from the editor instance, in this way:
+Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
 
 ```js
-var panelManager = editor.Panels;
+const panelManager = editor.Panels;
 ```
 
-### Parameters
-
--   `config` **[Object][8]** Configurations
-    -   `config.defaults` **[Array][9]&lt;[Object][8]>** Array of possible panels (optional, default `[]`)
-
-### Examples
-
-```javascript
-...
-panels: {
-   defaults: [{
-     id: 'main-toolbar',
-     buttons: [{
-       id: 'btn-id',
-       className: 'some',
-       attributes: {
-         title: 'MyTitle'
-       }
-     }],
-    }],
-}
-...
-```
+-   [addPanel][2]
+-   [addButton][3]
+-   [removeButton][4]
+-   [getButton][5]
+-   [getPanel][6]
+-   [getPanels][7]
+-   [getPanelsEl][8]
+-   [removePanel][9]
+-   [removeButton][10]
+-   [render][11]
 
 ## init
 
@@ -57,7 +35,7 @@ Initialize module. Automatically called with a new instance of the editor
 
 ### Parameters
 
--   `config` **[Object][8]** Configurations
+-   `config` **[Object][12]** Configurations
 
 ## getPanels
 
@@ -69,7 +47,7 @@ Returns **Collection** Collection of panel
 
 Returns panels element
 
-Returns **[HTMLElement][10]** 
+Returns **[HTMLElement][13]** 
 
 ## addPanel
 
@@ -77,7 +55,7 @@ Add new panel to the collection
 
 ### Parameters
 
--   `panel` **([Object][8] | Panel)** Object with right properties or an instance of Panel
+-   `panel` **([Object][12] | Panel)** Object with right properties or an instance of Panel
 
 ### Examples
 
@@ -97,7 +75,7 @@ Remove a panel from the collection
 
 ### Parameters
 
--   `panel` **([Object][8] | Panel | [String][11])** Object with right properties or an instance of Panel or Painel id
+-   `panel` **([Object][12] | Panel | [String][14])** Object with right properties or an instance of Panel or Painel id
 
 ### Examples
 
@@ -119,7 +97,7 @@ Get panel by ID
 
 ### Parameters
 
--   `id` **[string][11]** Id string
+-   `id` **[string][14]** Id string
 
 ### Examples
 
@@ -135,8 +113,8 @@ Add button to the panel
 
 ### Parameters
 
--   `panelId` **[string][11]** Panel's ID
--   `button` **([Object][8] | Button)** Button object or instance of Button
+-   `panelId` **[string][14]** Panel's ID
+-   `button` **([Object][12] | Button)** Button object or instance of Button
 
 ### Examples
 
@@ -174,8 +152,8 @@ Remove button from the panel
 
 ### Parameters
 
--   `panelId` **[string][11]** Panel's ID
--   `button` **([Object][8] | Button | [String][11])** Button object or instance of Button or button id
+-   `panelId` **[string][14]** Panel's ID
+-   `button` **([Object][12] | Button | [String][14])** Button object or instance of Button or button id
 
 ### Examples
 
@@ -200,8 +178,8 @@ Get button from the panel
 
 ### Parameters
 
--   `panelId` **[string][11]** Panel's ID
--   `id` **[string][11]** Button's ID
+-   `panelId` **[string][14]** Panel's ID
+-   `id` **[string][14]** Button's ID
 
 ### Examples
 
@@ -215,26 +193,32 @@ Returns **(Button | null)**
 
 Render panels and buttons
 
-Returns **[HTMLElement][10]** 
+Returns **[HTMLElement][13]** 
 
-[1]: #addpanel
+[1]: https://github.com/artf/grapesjs/blob/master/src/panels/config/config.js
 
-[2]: #addbutton
+[2]: #addpanel
 
-[3]: #removebutton
+[3]: #addbutton
 
-[4]: #getbutton
+[4]: #removebutton
 
-[5]: #getpanel
+[5]: #getbutton
 
-[6]: #getpanels
+[6]: #getpanel
 
-[7]: #render
+[7]: #getpanels
 
-[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[8]: #getpanelsel
 
-[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[9]: #removepanel
 
-[10]: https://developer.mozilla.org/docs/Web/HTML/Element
+[10]: #removeButton
 
-[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[11]: #render
+
+[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+
+[13]: https://developer.mozilla.org/docs/Web/HTML/Element
+
+[14]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String

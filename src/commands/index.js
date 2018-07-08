@@ -20,6 +20,7 @@
  *
  * @module Commands
  */
+
 import { isFunction } from 'underscore';
 
 module.exports = () => {

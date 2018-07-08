@@ -59,6 +59,7 @@ module.exports = {
         ['/api/commands', 'Commands'],
         ['/api/components', 'DOM Components'],
         ['/api/panels', 'Panels'],
+        ['/api/style_manager', 'Style Manager'],
       ],
       '/': [
         '',
