@@ -61,6 +61,7 @@ module.exports = {
         ['/api/panels', 'Panels'],
         ['/api/style_manager', 'Style Manager'],
         ['/api/storage_manager', 'Storage Manager'],
+        ['/api/device_manager', 'Device Manager'],
       ],
       '/': [
         '',

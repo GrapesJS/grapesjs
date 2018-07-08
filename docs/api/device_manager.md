@@ -2,11 +2,25 @@
 
 ## DeviceManager
 
-Before using methods you should get first the module from the editor instance, in this way:
+You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object][1]
 
 ```js
-var deviceManager = editor.DeviceManager;
+const editor = grapesjs.init({
+ deviceManager: {
+   // options
+ }
+})
 ```
+
+Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+
+```js
+const deviceManager = editor.DeviceManager;
+```
+
+-   [add][2]
+-   [get][3]
+-   [getAll][4]
 
 ## add
 
@@ -14,9 +28,9 @@ Add new device to the collection. URLs are supposed to be unique
 
 ### Parameters
 
--   `name` **[string][1]** Device name
--   `width` **[string][1]** Width of the device
--   `opts` **[Object][2]** Custom options
+-   `name` **[string][5]** Device name
+-   `width` **[string][5]** Width of the device
+-   `opts` **[Object][6]** Custom options
 
 ### Examples
 
@@ -36,7 +50,7 @@ Return device by name
 
 ### Parameters
 
--   `name` **[string][1]** Name of the device
+-   `name` **[string][5]** Name of the device
 
 ### Examples
 
@@ -60,6 +74,14 @@ console.log(JSON.stringify(devices));
 
 Returns **Collection** 
 
-[1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[1]: https://github.com/artf/grapesjs/blob/master/src/device_manager/config/config.js
 
-[2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[2]: #add
+
+[3]: #get
+
+[4]: #getAll
+
+[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
