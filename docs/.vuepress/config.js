@@ -36,7 +36,7 @@ module.exports = {
         selectText: 'IT',
         label: 'Italiano',
         nav: [
-          { text: 'Supporto ❤️', link: 'https://opencollective.com/grapesjs' },
+          { text: 'Supportaci', link: 'https://opencollective.com/grapesjs' },
         ],
         sidebar: [
           '/',

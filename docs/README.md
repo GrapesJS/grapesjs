@@ -17,21 +17,22 @@ Mainly, GrapesJS was designed to be used inside some CMS to speed up the creatio
 
 
 
-## Demos
-To show up of what GrapesJS is capable of we have created some presets to use as official demos.
+## Quick Start
+To show up of what GrapesJS is capable of we have created some presets.
 
 * [grapesjs-preset-webpage](https://github.com/artf/grapesjs-preset-webpage) - [Webpage Builder](http://artf.github.io/grapesjs/demo.html)
 * [grapesjs-preset-newsletter](https://github.com/artf/grapesjs-preset-newsletter) - [Newsletter Builder](http://artf.github.io/grapesjs/demo-newsletter-editor.html)
 * [grapesjs-mjml](https://github.com/artf/grapesjs-mjml) - [Newsletter Builder with MJML](http://artf.github.io/grapesjs/demo-mjml.html)
 
-You can actually use them as a starting point for your editors, so, just clone and extend them as you wish.
-For a quick start with GrapesJS check the section below.
+You can actually use them as a starting point for your editors, so, just follow the instructions on the repository to get a quick start for your builder.
 
 
 
 
 
 ## Download
+
+Latest version: [![npm](https://img.shields.io/npm/v/grapesjs.svg?colorB=e67891)](https://www.npmjs.com/package/grapesjs)
 
 You can download GrapesJS from one of this sources
 
