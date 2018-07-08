@@ -60,6 +60,7 @@ module.exports = {
         ['/api/components', 'DOM Components'],
         ['/api/panels', 'Panels'],
         ['/api/style_manager', 'Style Manager'],
+        ['/api/storage_manager', 'Storage Manager'],
       ],
       '/': [
         '',
