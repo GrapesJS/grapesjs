@@ -18,45 +18,40 @@ span > #send-btn.btn{
 ```
 
 In this scenario we get:
-span     -> selector of type `tag`
-send-btn -> selector of type `id`
-btn      -> selector of type `class`
+
+-   span     -> selector of type `tag`
+-   send-btn -> selector of type `id`
+-   btn      -> selector of type `class`
 
 So, for example, being `btn` the same class entity it'll be easier to refactor and track things.
 
-Before using methods you should get first the module from the editor instance, in this way:
+You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object][1]
 
 ```js
-var selectorManager = editor.SelectorManager;
+const editor = grapesjs.init({
+ selectorManager: {
+   // options
+ }
+})
 ```
 
-### Parameters
+Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
 
--   `config` **[Object][1]** Configurations
-    -   `config.selectors` **[Array][2]&lt;[Object][1]>** Default selectors (optional, default `[]`)
-    -   `config.states` **[Array][2]&lt;[Object][1]>** Default states (optional, default `[]`)
-    -   `config.label` **[String][3]** Classes label (optional, default `'Classes'`)
-    -   `config.statesLabel` **[String][3]** The empty state label (optional, default `'- State -'`)
-
-### Examples
-
-```javascript
-...
-{
- selectors: [
-   {name:'myselector1'},
-    ...
- ],
- states: [{
-   name: 'hover', label: 'Hover'
- },{
-   name: 'active', label: 'Click'
- }],
- statesLabel: '- Selecte State -',
-}
+```js
+const selectorManager = editor.SelectorManager;
 ```
 
-Returns **this** 
+-   [getConfig][2]
+-   [add][3]
+-   [addClass][4]
+-   [get][5]
+-   [getAll][6]
+
+## getConfig
+
+Get configuration object
+
+Returns **[Object][7]** 
 
 ## add
 
@@ -64,10 +59,10 @@ Add a new selector to collection if it's not already exists. Class type is a def
 
 ### Parameters
 
--   `name` **[String][3]** Selector name
--   `opts` **[Object][1]** Selector options (optional, default `{}`)
-    -   `opts.label` **[String][3]** Label for the selector, if it's not provided the label will be the same as the name (optional, default `''`)
-    -   `opts.type` **[String][3]** Type of the selector. At the moment, only 'class' (1) is available (optional, default `1`)
+-   `name` **[String][8]** Selector name
+-   `opts` **[Object][7]** Selector options (optional, default `{}`)
+    -   `opts.label` **[String][8]** Label for the selector, if it's not provided the label will be the same as the name (optional, default `''`)
+    -   `opts.type` **[String][8]** Type of the selector. At the moment, only 'class' (1) is available (optional, default `1`)
 
 ### Examples
 
@@ -88,7 +83,7 @@ Add class selectors
 
 ### Parameters
 
--   `classes` **([Array][2] \| [string][3])** Array or string of classes
+-   `classes` **([Array][9] \| [string][8])** Array or string of classes
 
 ### Examples
 
@@ -99,7 +94,7 @@ sm.addClass(['class1', 'class2']);
 // -> [SelectorObject, ...]
 ```
 
-Returns **[Array][2]** Array of added selectors
+Returns **[Array][9]** Array of added selectors
 
 ## get
 
@@ -107,9 +102,9 @@ Get the selector by its name
 
 ### Parameters
 
--   `name` **[String][3]** Selector name
+-   `name` **[String][8]** Selector name
 -   `type`   (optional, default `Selector.TYPE_CLASS`)
--   `tyoe` **[String][3]** Selector type
+-   `tyoe` **[String][8]** Selector type
 
 ### Examples
 
@@ -125,8 +120,20 @@ Get all selectors
 
 Returns **Collection** 
 
-[1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[1]: https://github.com/artf/grapesjs/blob/master/src/selector_manager/config/config.js
 
-[2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[2]: #getconfig
 
-[3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[3]: #add
+
+[4]: #addclass
+
+[5]: #get
+
+[6]: #getAll
+
+[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+
+[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
