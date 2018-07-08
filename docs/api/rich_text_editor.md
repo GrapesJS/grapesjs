@@ -2,18 +2,30 @@
 
 ## RichTextEditor
 
-This module allows to customize the toolbar of the Rich Text Editor and use commands from the HTML Editing APIs.
-For more info about HTML Editing APIs check here:
-[https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand][1]
+This module allows to customize the built-in toolbar of the Rich Text Editor and use commands from the [HTML Editing APIs][1].
+It's highly recommended to keep this toolbar as small as possible, especially from styling commands (eg. 'fontSize') and leave this task to the Style Manager
 
-It's highly recommended to keep this toolbar as small as possible, especially from styling commands (eg. 'fontSize')
-and leave this task to the Style Manager.
-
-Before using methods you should get first the module from the editor instance, in this way:
+You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object][2]
 
 ```js
-var rte = editor.RichTextEditor;
+const editor = grapesjs.init({
+ rte: {
+   // options
+ }
+})
 ```
+
+Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+
+```js
+const rte = editor.RichTextEditor;
+```
+
+-   [add][3]
+-   [get][4]
+-   [getAll][5]
+-   [remove][6]
+-   [getToolbarEl][7]
 
 ## add
 
@@ -21,8 +33,8 @@ Add a new action to the built-in RTE toolbar
 
 ### Parameters
 
--   `name` **[string][2]** Action name
--   `action` **[Object][3]** Action options (optional, default `{}`)
+-   `name` **[string][8]** Action name
+-   `action` **[Object][9]** Action options (optional, default `{}`)
 
 ### Examples
 
@@ -64,7 +76,7 @@ Get the action by its name
 
 ### Parameters
 
--   `name` **[string][2]** Action name
+-   `name` **[string][8]** Action name
 
 ### Examples
 
@@ -73,13 +85,13 @@ const action = rte.get('bold');
 // {name: 'bold', ...}
 ```
 
-Returns **[Object][3]** 
+Returns **[Object][9]** 
 
 ## getAll
 
 Get all actions
 
-Returns **[Array][4]** 
+Returns **[Array][10]** 
 
 ## remove
 
@@ -87,7 +99,7 @@ Remove the action from the toolbar
 
 ### Parameters
 
--   `name` **[string][2]** 
+-   `name` **[string][8]** 
 
 ### Examples
 
@@ -96,20 +108,32 @@ const action = rte.remove('bold');
 // {name: 'bold', ...}
 ```
 
-Returns **[Object][3]** Removed action
+Returns **[Object][9]** Removed action
 
 ## getToolbarEl
 
 Get the toolbar element
 
-Returns **[HTMLElement][5]** 
+Returns **[HTMLElement][11]** 
 
 [1]: https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand
 
-[2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[2]: https://github.com/artf/grapesjs/blob/master/src/rich_text_editor/config/config.js
 
-[3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[3]: #add
 
-[4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[4]: #get
 
-[5]: https://developer.mozilla.org/docs/Web/HTML/Element
+[5]: #getall
+
+[6]: #remove
+
+[7]: #gettoolbarel
+
+[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+
+[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+
+[11]: https://developer.mozilla.org/docs/Web/HTML/Element

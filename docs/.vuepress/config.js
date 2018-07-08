@@ -65,6 +65,7 @@ module.exports = {
         ['/api/selector_manager', 'Selector Manager'],
         ['/api/css_composer', 'CSS Composer'],
         ['/api/modal_dialog', 'Modal'],
+        ['/api/rich_text_editor', 'Rich Text Editor'],
       ],
       '/': [
         '',

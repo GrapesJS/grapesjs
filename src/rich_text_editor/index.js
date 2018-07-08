@@ -1,18 +1,31 @@
 /**
- * This module allows to customize the toolbar of the Rich Text Editor and use commands from the HTML Editing APIs.
- * For more info about HTML Editing APIs check here:
- * https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand
+ * This module allows to customize the built-in toolbar of the Rich Text Editor and use commands from the [HTML Editing APIs](https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand).
+ * It's highly recommended to keep this toolbar as small as possible, especially from styling commands (eg. 'fontSize') and leave this task to the Style Manager
  *
- * It's highly recommended to keep this toolbar as small as possible, especially from styling commands (eg. 'fontSize')
- * and leave this task to the Style Manager.
+ * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/rich_text_editor/config/config.js)
+ * ```js
+ * const editor = grapesjs.init({
+ *  rte: {
+ *    // options
+ *  }
+ * })
+ * ```
  *
- * Before using methods you should get first the module from the editor instance, in this way:
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
  *
  * ```js
- * var rte = editor.RichTextEditor;
+ * const rte = editor.RichTextEditor;
  * ```
+ *
+ * * [add](#add)
+ * * [get](#get)
+ * * [getAll](#getall)
+ * * [remove](#remove)
+ * * [getToolbarEl](#gettoolbarel)
+ *
  * @module RichTextEditor
  */
+
 import RichTextEditor from './model/RichTextEditor';
 import { on, off } from 'utils/mixins';
 
