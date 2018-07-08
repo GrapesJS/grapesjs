@@ -67,6 +67,7 @@ module.exports = {
         ['/api/modal_dialog', 'Modal'],
         ['/api/rich_text_editor', 'Rich Text Editor'],
         ['/api/keymaps', 'Keymaps'],
+        ['/api/undo_manager', 'Undo Manager'],
       ],
       '/': [
         '',

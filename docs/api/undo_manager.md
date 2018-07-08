@@ -2,13 +2,27 @@
 
 ## UndoManager
 
-This module allows to manage the stack of changes applied in canvas
-
-You can access the module in this way
+This module allows to manage the stack of changes applied in canvas.
+Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
 
 ```js
 const um = editor.UndoManager;
 ```
+
+-   [getConfig][1]
+-   [add][2]
+-   [remove][3]
+-   [removeAll][4]
+-   [start][5]
+-   [stop][6]
+-   [undo][7]
+-   [undoAll][8]
+-   [redo][9]
+-   [redoAll][10]
+-   [hasUndo][11]
+-   [hasRedo][12]
+-   [getStack][13]
+-   [clear][14]
 
 ## getConfig
 
@@ -21,7 +35,7 @@ const config = um.getConfig();
 // { ... }
 ```
 
-Returns **[Object][1]** Configuration object
+Returns **[Object][15]** Configuration object
 
 ## add
 
@@ -150,7 +164,7 @@ Checks if exists an available undo
 um.hasUndo();
 ```
 
-Returns **[Boolean][2]** 
+Returns **[Boolean][16]** 
 
 ## hasRedo
 
@@ -162,7 +176,7 @@ Checks if exists an available redo
 um.hasRedo();
 ```
 
-Returns **[Boolean][2]** 
+Returns **[Boolean][16]** 
 
 ## getStack
 
@@ -189,6 +203,34 @@ um.clear();
 
 Returns **this** 
 
-[1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[1]: #getconfig
 
-[2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[2]: #add
+
+[3]: #remove
+
+[4]: #removeall
+
+[5]: #start
+
+[6]: #stop
+
+[7]: #undo
+
+[8]: #undoall
+
+[9]: #redo
+
+[10]: #redoall
+
+[11]: #hasundo
+
+[12]: #hasredo
+
+[13]: #getstack
+
+[14]: #clear
+
+[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+
+[16]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean

@@ -1,12 +1,29 @@
 /**
- * This module allows to manage the stack of changes applied in canvas
+ * This module allows to manage the stack of changes applied in canvas.
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
  *
- * You can access the module in this way
  * ```js
  * const um = editor.UndoManager;
  * ```
  *
+ * * [getConfig](#getconfig)
+ * * [add](#add)
+ * * [remove](#remove)
+ * * [removeAll](#removeall)
+ * * [start](#start)
+ * * [stop](#stop)
+ * * [undo](#undo)
+ * * [undoAll](#undoall)
+ * * [redo](#redo)
+ * * [redoAll](#redoall)
+ * * [hasUndo](#hasundo)
+ * * [hasRedo](#hasredo)
+ * * [getStack](#getstack)
+ * * [clear](#clear)
+ *
+ * @module UndoManager
  */
+
 import UndoManager from 'backbone-undo';
 
 module.exports = () => {
