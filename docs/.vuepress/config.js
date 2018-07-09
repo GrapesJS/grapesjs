@@ -6,9 +6,10 @@ module.exports = {
   serviceWorker: false, // Enable Service Worker for offline usage
   head: [
     ['link', { rel: 'icon', href: '/logo-icon.png' }],
-    ['link', { rel: 'stylesheet', href: 'https://unpkg.com/grapesjs/dist/css/grapes.min.css' }], // dev https://localhost:8080/dist/css/grapes.min.css
+    //['link', { rel: 'stylesheet', href: 'https://unpkg.com/grapesjs/dist/css/grapes.min.css' }], // dev https://localhost:8080/dist/css/grapes.min.css
     // ['script', { src: '/grapes.min.js' }], // dev https://localhost:8080/dist/grapes.min.js
-    ['script', { src: 'https://localhost:8080/dist/grapes.min.js' }], // dev https://localhost:8080/dist/grapes.min.js
+    ['link', { rel: 'stylesheet', href: 'https://localhost:8080/dist/css/grapes.min.css' }],
+    ['script', { src: 'https://localhost:8080/dist/grapes.min.js' }],
   ],
   localesSKIP: {
     '/': {
