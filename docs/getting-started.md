@@ -20,7 +20,7 @@ At first, let's import the latest version of the library
 ## Start from the canvas
 
 The first step is to define the interface of our editor and for this purpose we gonna start from basic HTML layouts.
-Finding a common structure for the UI of any project is not an easy task that's why GrapesJS prefers to keep this process as simple as possible, by providing just few helpers but letting the user define the interface in a more flexible way.
+Finding a common structure for the UI of any project is not an easy task that's why GrapesJS prefers to keep this process as simple as possible, by providing just few helpers but letting the user define the whole interface, this guarantees maximum flexibility.
 The main part of the GrapesJS editor is the canvas, this is where you gonna create the whole structure of your templates and you definitely can't miss it. Let's try to initiate the editor with just the canvas and no panels.
 
 <<< @/docs/.vuepress/components/demos/DemoCanvasOnly.html
@@ -33,19 +33,71 @@ The main part of the GrapesJS editor is the canvas, this is where you gonna crea
 With just the canvas you're already able to move, copy and delete components from the structure (when you select components in the canvas, the toolbar is shown). For now we just see the example template taken from the container. Let's see now how can we create and drag custom blocks into our canvas.
 
 ## Add Blocks
-The Block in GrapesJS is just a draggable peace of HTML, so it can be an image, a button, or an entire section with videos, forms and iframes. Let's start from creating another container and append inside it few basic blocks which we can later use to build more complex structures.
+The block in GrapesJS is just a reusable piece of HTML that you can drop in the canvas. A block can be an image, a button, or an entire section with videos, forms and iframes. Let's start from creating another container and append inside it few basic blocks which we can later use to build more complex structures.
 
+```html
+<div id="gjs">
+  ...
+</div>
+<div id="blocks"></div>
+```
+```js
+const editor = grapesjs.init({
+  // ...
+  blockManager: {
+    appendTo: '#blocks',
+    blocks: [
+      {
+        id: 'section', // id is mandatory
+        label: '<b>Section</b>', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-block-section' },
+        content: `<section>
+          <h1>This is a simple title</h1>
+          <div>This is just a Lorem text: Lorem ipsum dolor sit amet</div>
+        </section>`,
+      }, {
+        id: 'text',
+        label: 'Text',
+        content: '<div data-gjs-type="text">Insert your text here</div>',
+      }, {
+        id: 'image',
+        label: 'Image',
+        // Select the component once it's dropped
+        select: true,
+        // You can pass components as a JSON instead of a simple HTML string,
+        // in this case we also use a defined component type `image`
+        content: { type: 'image' },
+        // This triggers `active` event on dropped components and the `image`
+        // reacts by opening the AssetManager
+        activate: true,
+      }
+    ]
+  },
+});
+```
+```css
+.gjs-block {
+  width: auto;
+  height: auto;
+  min-height: auto;
+}
+```
 <Demo>
  <DemoBasicBlocks/>
 </Demo>
--- add block, image, text and button blocks, put the block container under the canvas
 
-As you see we added our blocks via the initial configuration, which is ok, but obviously there might be the case you would like to add them dynamically, in this case you have to use the [Block Manager API](api/block_manager.html)
+As you see we add our blocks via the initial configuration, which is ok, but obviously there might be the case you would like to add them dynamically, in this case you have to use the [Block Manager API](api/block_manager.html)
 
--- show how to add a block via API
---TODO: components as blocks
-
-Now that we have blocks we can drag them inside our canvas and building complex structures.
+```js
+editor.BlockManager.add('my-block-id', {
+  label: '...',
+  category: '...',
+  // ...
+})
+```
+::: tip
+If you want to get more about blocks we suggest to read its dedicated page: [Block Module](modules/Blocks.html)
+:::
 
 ## Components
 Tecnically, once you drop your HTML block inside the canvas each element of the content is transformed in Grapesjs Component, which is an object containing informations about how the element is rendered in the canvas (managed in the View) and how it might look its final code (created by the properties in the Model). Generally, all Model properties are reflected to the View, so, for example, if you add a new attribute to the model, not only it will be available in the export code (will see later how to get it) but also the element you see in the canvas is updated with new attributes.
