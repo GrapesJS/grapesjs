@@ -7,7 +7,8 @@ meta:
 
 # Getting Started
 
-In this guide we'll see how to create a completely customized page builder from scratch. You can check the final result [here](##).
+In this guide we'll see how to create a completely customized page builder from scratch.
+Here you can check the final result: [demo](##).
 
 At first, let's import the latest version of the library
 
@@ -16,26 +17,30 @@ At first, let's import the latest version of the library
 <script src="//unpkg.com/grapesjs"></script>
 ```
 
-## Canvas
+## Start from the canvas
 
-The first step is to define the interface of our editor and for this purpose we gonna use Panels API.
+The first step is to define the interface of our editor and for this purpose we gonna start from basic HTML layouts.
 Finding a common structure for the UI of any project is not an easy task that's why GrapesJS prefers to keep this process as simple as possible, by providing just few helpers but letting the user define the interface in a more flexible way.
 The main part of the GrapesJS editor is the canvas, this is where you gonna create the whole structure of your templates and you definitely can't miss it. Let's try to initiate the editor with just the canvas and no panels.
 
 <<< @/docs/.vuepress/components/demos/DemoCanvasOnly.html
 <<< @/docs/.vuepress/components/demos/DemoCanvasOnly.js
+<<< @/docs/.vuepress/components/demos/DemoCanvasOnly.css
 <Demo>
  <DemoCanvasOnly/>
 </Demo>
 
-With just the canvas you're already able to move, copy and delete components on the structure. For now we just see the example template taken from the container. Let's see now how can we create and drag custom blocks into our canvas.
+With just the canvas you're already able to move, copy and delete components from the structure (when you select components in the canvas, the toolbar is shown). For now we just see the example template taken from the container. Let's see now how can we create and drag custom blocks into our canvas.
 
-## Blocks
-A block in Grapesjs is just a draggable peace of HTML, so it can be an image, a button, or an entire section with videos, forms and iframes. Let's start from creating another container and append inside ir few basic blocks which we can later use to build more complex structures.
+## Add Blocks
+The Block in GrapesJS is just a draggable peace of HTML, so it can be an image, a button, or an entire section with videos, forms and iframes. Let's start from creating another container and append inside it few basic blocks which we can later use to build more complex structures.
 
+<Demo>
+ <DemoBasicBlocks/>
+</Demo>
 -- add block, image, text and button blocks, put the block container under the canvas
 
-As you see we added our blocks via the initial configuration, which is ok, but obviously there might be the case you would like to add them dynamically, in this case you have to use the Block's API
+As you see we added our blocks via the initial configuration, which is ok, but obviously there might be the case you would like to add them dynamically, in this case you have to use the [Block Manager API](api/block_manager.html)
 
 -- show how to add a block via API
 --TODO: components as blocks
