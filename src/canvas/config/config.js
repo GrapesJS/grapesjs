@@ -30,5 +30,16 @@ module.exports = {
    *  return ComponentModel.getName();
    * }
    */
-  customBadgeLabel: ''
+  customBadgeLabel: '',
+
+  /**
+   * Is called after the iframe component has been loaded
+   * @example
+   * onIframeLoad: function(FramveView) {
+   *  // do something
+   * }
+   */
+  onIframeLoad: function(iframe) {
+    console.log('iframe loaded');
+  }
 };
