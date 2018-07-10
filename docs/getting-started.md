@@ -141,8 +141,16 @@ myComponent.components().forEach(component => /* ... do something ... */);
 myComponent.components('<div>New content</div>');
 ```
 
-## Panels
-Now that we have a canvas and custom blocks let's see how to create a new panel with some buttons inside which trigger commands (from the core or custom one).
+## Panels & Buttons
+Now that we have a canvas and custom blocks let's see how to create a new custom panel with some buttons inside (using [Panels API](api/panels.html)) which trigger commands (from the core or custom one).
+
+```js
+editor
+```
+
+<Demo>
+ <DemoCustomPanels/>
+</Demo>
 
 -- show addPanel with toggle-borders, export-code and custom alert show selected JSON + panel style
 

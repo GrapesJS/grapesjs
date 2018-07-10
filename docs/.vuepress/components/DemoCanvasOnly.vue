@@ -2,11 +2,10 @@
 </template>
 
 <script>
-var utils = require('./demos/utils.js');
-
 module.exports = {
   mounted() {
-    const editor = grapesjs.init(utils.gjsConfig);
+    const utils = require('./demos/utils.js');
+    const editor = grapesjs.init(utils.gjsConfigStart);
   }
 }
 </script>

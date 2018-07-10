@@ -51,8 +51,8 @@
 
   &btn {
     box-sizing: border-box;
-    height: 30px;
-    width: 30px;
+    min-height: 30px;
+    min-width: 30px;
     line-height: 21px;
     background-color: transparent;
     border: none;
