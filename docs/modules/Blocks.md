@@ -1,8 +1,8 @@
 ---
-title: Blocks
+title: Block Manager
 ---
 
-# Blocks
+# Block Manager
 
 <p align="center"><img src="http://grapesjs.com/img/sc-grapesjs-blocks-prp.jpg" alt="GrapesJS - Block Manager" height="400" align="center"/></p>
 

@@ -1,8 +1,8 @@
 ---
-title: Storage
+title: Storage Manager
 ---
 
-# Storage
+# Storage Manager
 
 The aim of this guide is to show how to setup correctly your storage configuration for common usages of the editor and explain also some additional advanced settings
 

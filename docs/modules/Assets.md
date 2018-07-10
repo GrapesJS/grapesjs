@@ -1,8 +1,8 @@
 ---
-title: Assets
+title: Asset Manager
 ---
 
-# Assets
+# Asset Manager
 
 <p align="center"><img src="http://grapesjs.com/img/sc-grapesjs-assets-1.jpg" alt="GrapesJS - Asset Manager" align="center"/></p>
 

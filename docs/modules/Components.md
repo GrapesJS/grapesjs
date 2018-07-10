@@ -1,8 +1,8 @@
 ---
-title: Components
+title: Component Manager
 ---
 
-# Components
+# Component Manager
 
 The Component is the base element for the template composition and, usually, elements like images, text boxes, maps, etc. fit perfectly in this concept. The concept of the component was made to allow the developer to bind different behaviors to different elements. Like for example, opening the Asset Manager on double click of the image.
 

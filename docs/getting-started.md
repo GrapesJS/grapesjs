@@ -8,7 +8,7 @@ meta:
 # Getting Started
 
 In this guide we'll see how to create a completely customized page builder from scratch.
-Here you can check the final result: [demo](##).
+Here you can find the final result: [demo](##).
 
 At first, let's import the latest version of the library
 
@@ -96,19 +96,50 @@ editor.BlockManager.add('my-block-id', {
 })
 ```
 ::: tip
-If you want to get more about blocks we suggest to read its dedicated page: [Block Module](modules/Blocks.html)
+If you want to get more about blocks we suggest to read its dedicated page: [Block Manager Module](modules/Blocks.html)
 :::
 
-## Components
-Tecnically, once you drop your HTML block inside the canvas each element of the content is transformed in Grapesjs Component, which is an object containing informations about how the element is rendered in the canvas (managed in the View) and how it might look its final code (created by the properties in the Model). Generally, all Model properties are reflected to the View, so, for example, if you add a new attribute to the model, not only it will be available in the export code (will see later how to get it) but also the element you see in the canvas is updated with new attributes.
-While this is a common behaviour what is cool about the Components is that you can create a totally decoupled view and show to the editor user what you desire, like for example, just by dragging a placeholder text you can fetch and show instead a dynamic content in the canvas. If want to get more about Custom Components and how to create and extend them, we recommend to checke Component GUIDE.
-Grapesjs comes already with few [Built-in Components] which enabel different core features once rendered in canvas. Just to mention few of them, by double clicking on the image component you will see show up the default [Asset Manager], which you can customize or integrate you own, by double clicking on the text component you're able to edit it via the built-in Rich Text Editor, which is also customizable and replaceable.
+## Define Components
+Technically, once you drop your HTML block inside the canvas each element of the content is transformed in GrapesJS Component, which is an object containing informations about how the element is rendered in the canvas (managed in the View) and how it might look its final code (created by the properties in the Model). Generally, all Model properties are reflected in the View, so, for example, if you add a new attribute to the model, not only it will be available in the export code (will see later how to get it) but also the element you see in the canvas is updated with new attributes.
+While this is a common behavior what it's cool about Components that you can create a totally decoupled view and show to the user whatever you desire (so not necessary reflecting the model). For example, by dragging a placeholder text you can fetch and show instead a dynamic content. If want to get more about Custom Components and how to create and extend them, we recommend to check out [Component Manager Module](modules/Components.html).
 
---TODO: block hooks
+GrapesJS comes along with few [built-in Components](modules/Components.html#built-in-components) which enable different core features once rendered in canvas. Just to mention few of them, by double clicking on the image component you will see show up the default [Asset Manager](modules/Assets.html), which you can customize or integrate you own, by double clicking on the text component you're able to edit it via the built-in Rich Text Editor, which is also customizable and [replaceable](guides/Replace-Rich-Text-Editor.html).
 
-If you prefer you can also create Blocks directly with the component type by passing an object
+As we have seen before you can create Blocks directly as Components
+```js
+editor.BlockManager.add('my-block-id', {
+  // ...
+  content: {
+    tagName: 'div',
+    draggable: false,
+    attributes: { 'some-attribute': 'some-value' },
+    components: [
+      {
+        tagName: 'span',
+        content: '<b>Some static content</b>',
+      }, {
+        tagName: 'div',
+        // use `content` for static strings, `components` string will be parsed
+        // and transformed in Components
+        components: '<span>HTML at some point</span>',
+      }      
+    ]
+  }
+})
+```
+::: tip
+Check the [Components API](api/components.html) and see how to interact with components dynamically
+:::
 
--- add block as image type object
+An example on how to select some inner component and replace its children with new contents
+
+```js
+// The wrapper is the root Component
+const wrapper = editor.DomComponents.getWrapper();
+const myComponent = wrapper.find('div.my-component')[0];
+myComponent.components().forEach(component => /* ... do something ... */);
+myComponent.components('<div>New content</div>');
+```
 
 ## Panels
 Now that we have a canvas and custom blocks let's see how to create a new panel with some buttons inside which trigger commands (from the core or custom one).

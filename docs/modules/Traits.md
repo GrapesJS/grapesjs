@@ -1,8 +1,8 @@
 ---
-title: Traits
+title: Trait Manager
 ---
 
-# Traits
+# Trait Manager
 
 In GrapesJS, Traits could define different parameters and behaviors of a single component. The user generally will see traits as *Settings* of each component. A common use of traits is to customize element attributes (eg. `placeholder` for inputs) and in this case the editor comes already with some built-in, easy configurable, types.
 

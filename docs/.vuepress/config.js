@@ -79,12 +79,12 @@ module.exports = {
           title: 'Modules',
           collapsable: false,
           children: [
-            ['/modules/Assets', 'Assets'],
-            ['/modules/Blocks', 'Blocks'],
-            ['/modules/Components', 'Components'],
+            ['/modules/Assets', 'Asset Manager'],
+            ['/modules/Blocks', 'Block Manager'],
+            ['/modules/Components', 'Component Manager'],
             ['/modules/Components-js', 'Components & JS'],
-            ['/modules/Traits', 'Traits'],
-            ['/modules/Storage', 'Storage'],
+            ['/modules/Traits', 'Trait Manager'],
+            ['/modules/Storage', 'Storag Manager'],
             ['/modules/Plugins', 'Plugins'],
           ]
         }, {
