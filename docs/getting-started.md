@@ -189,12 +189,10 @@ editor3.Panels.addPanel({
  <DemoCustomPanels/>
 </Demo>
 
-So, first of all, we have defined where to render the panel and then for each button we added a command property. The command could be the id, an object with run and stop functions or simply a single function.
-Try to use Commands when it's possible because you are able to track them globally and so execute callbacks before and after their execution.
+So, we have defined where to render the panel with `el: '#basic-panel'` and then for each button we added a `command` property. The command could be the id, an object with `run` and `stop` functions or simply a single function.
+Try to use [Commands](api/commands.html) when possible, they allow you to track actions globally and also execute callbacks before and after their execution (or even interrupt them).
 
 -- show commands events
-
-Check the [Commands page] to learn more about their creation.
 
 ## Layers
 -- show image
