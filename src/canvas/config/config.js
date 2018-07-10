@@ -35,7 +35,7 @@ module.exports = {
   /**
    * Is called after the iframe component has been loaded
    * @example
-   * onIframeLoad: function(FramveView) {
+   * onIframeLoad: function(Event) {
    *  // do something
    * }
    */
