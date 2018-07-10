@@ -58,6 +58,7 @@ module.exports = require('backbone').View.extend({
 
   render() {
     this.$el.attr({ class: this.ppfx + 'frame' });
+    this.$el.on('load', x => this.config.onIframeLoad(x));
     return this;
   }
 });
