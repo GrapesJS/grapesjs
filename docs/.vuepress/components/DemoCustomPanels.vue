@@ -33,6 +33,17 @@ module.exports = {
           command: 'export-template',
           // For grouping context of buttons in the same panel
           context: 'export-template',
+        }, {
+          id: 'show-json',
+          className: 'btn-show-json',
+          label: 'JSON',
+          command(editor) {
+            editor.Modal.setTitle('Components JSON')
+              .setContent(`<textarea style="width:100%; height: 250px;">
+                ${JSON.stringify(editor.getComponents())}
+              </textarea>`)
+              .open();
+          },
         }
       ],
     });

@@ -142,17 +142,52 @@ myComponent.components('<div>New content</div>');
 ```
 
 ## Panels & Buttons
-Now that we have a canvas and custom blocks let's see how to create a new custom panel with some buttons inside (using [Panels API](api/panels.html)) which trigger commands (from the core or custom one).
+Now that we have a canvas and custom blocks let's see how to create a new custom panel with some buttons inside (using [Panels API](api/panels.html)) which trigger commands (the core one or custom).
+
+```html
+<div id="basic-panel"></div>
+<div id="gjs">
+  ...
+</div>
+<div id="blocks"></div>
+```
 
 ```js
-editor
+editor3.Panels.addPanel({
+  id: 'custom-panel',
+  el: '#basic-panel',
+  buttons: [
+    {
+      id: 'visibility',
+      active: true, // active by default
+      className: 'btn-toggle-borders',
+      label: '<u>B</u>',
+      command: 'sw-visibility', // Built-in command
+    }, {
+      id: 'export',
+      className: 'btn-open-export',
+      label: 'Exp',
+      command: 'export-template',
+      context: 'export-template', // For grouping context of buttons from the same panel
+    }, {
+      id: 'show-json',
+      className: 'btn-show-json',
+      label: 'JSON',
+      command(editor) {
+        editor.Modal.setTitle('Components JSON')
+          .setContent(`<textarea style="width:100%; height: 250px;">
+            ${JSON.stringify(editor.getComponents())}
+          </textarea>`)
+          .open();
+      },
+    }
+  ],
+});
 ```
 
 <Demo>
  <DemoCustomPanels/>
 </Demo>
-
--- show addPanel with toggle-borders, export-code and custom alert show selected JSON + panel style
 
 So, first of all, we have defined where to render the panel and then for each button we added a command property. The command could be the id, an object with run and stop functions or simply a single function.
 Try to use Commands when it's possible because you are able to track them globally and so execute callbacks before and after their execution.
