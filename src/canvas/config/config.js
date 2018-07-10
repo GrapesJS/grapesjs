@@ -39,7 +39,5 @@ module.exports = {
    *  // do something
    * }
    */
-  onIframeLoad: function(iframe) {
-    console.log('iframe loaded');
-  }
+  onIframeLoad: function(iframe) {}
 };
