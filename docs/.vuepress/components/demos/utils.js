@@ -67,6 +67,8 @@ var panelSidebar = {
   id: 'layers',
   // Make the panel resizable
   resizable: {
+    maxDim: 350,
+    minDim: 200,
     tc: 0, // Top handler
     cl: 1, // Left handler
     cr: 0, // Right handler

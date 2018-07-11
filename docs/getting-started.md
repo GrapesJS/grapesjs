@@ -248,6 +248,8 @@ const editor = grapesjs.init({
       el: '.editor-sidebar',
       // Make the panel resizable
       resizable: {
+        maxDim: 350,
+        minDim: 200,
         tc: 0, // Top handler
         cl: 1, // Left handler
         cr: 0, // Right handler
@@ -265,7 +267,7 @@ const editor = grapesjs.init({
 </Demo>
 
 ## Style Manager
-An important step in any web project is the style definition and with the built-in style manager module you're able to do so freely and quickly.
+An important step in any web project is the style definition and with the built-in style manager module you're able to do it easily and quickly.
 The style manager is composed by style properties and grouped by sectors, so let's see how to define a basic set of them.
 
 -- show how to render SM and show style for width, height, padding, Typography, shadows
