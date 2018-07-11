@@ -48,6 +48,8 @@ module.exports = {
       ],
     });
     window.editor3 = editor3;
+    editor3.on('run:export-template:before', () => console.log('Before the command run'));
+    editor3.on('run:export-template', () => console.log('After the command run'));
   }
 }
 </script>

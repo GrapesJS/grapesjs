@@ -71,6 +71,7 @@ module.exports = Backbone.View.extend({
   updateActive() {
     const model = this.model;
     const context = model.get('context');
+    const options = model.get('options');
     let command = {};
     var editor = this.em && this.em.get ? this.em.get('Editor') : null;
     var commandName = model.get('command');
@@ -88,8 +89,7 @@ module.exports = Backbone.View.extend({
       model.set('active', true, { silent: true }).trigger('checkActive');
 
       if (command.run) {
-        command.run(editor, model, model.get('options'));
-        editor.trigger('run:' + commandName);
+        command.callRun(editor, { ...options, sender: model });
       }
 
       // Disable button if there is no stop method
@@ -99,8 +99,7 @@ module.exports = Backbone.View.extend({
       model.collection.deactivateAll(context);
 
       if (command.stop) {
-        command.stop(editor, model, model.get('options'));
-        editor.trigger('stop:' + commandName);
+        command.callStop(editor, { ...options, sender: model });
       }
     }
   },

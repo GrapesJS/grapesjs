@@ -192,7 +192,17 @@ editor3.Panels.addPanel({
 So, we have defined where to render the panel with `el: '#basic-panel'` and then for each button we added a `command` property. The command could be the id, an object with `run` and `stop` functions or simply a single function.
 Try to use [Commands](api/commands.html) when possible, they allow you to track actions globally and also execute callbacks before and after their execution (or even interrupt them).
 
--- show commands events
+```js
+/*
+* * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
+* * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
+* * `run:{commandName}:before` - Triggered before the command is called
+* * `stop:{commandName}:before` - Triggered before the command is called to stop
+* * `abort:{commandName}` - Triggered when the command execution is aborted (`editor.on(`run:preview:before`, opts => opts.abort = 1);`)
+ */
+editor.on('run:export-template:before', () => console.log('Before the command run'));
+editor.on('run:export-template', () => console.log('After the command run'));
+```
 
 ## Layers
 -- show image
