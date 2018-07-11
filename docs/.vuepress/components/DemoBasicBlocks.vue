@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="gjs2">
+    <div class="gjs" id="gjs2">
       <h1>Hello World Component!</h1>
     </div>
     <div id="blocks2"></div>
@@ -17,7 +17,7 @@ module.exports = {
 </script>
 
 <style>
-  #gjs2 {
+  .gjs {
     border: 3px solid #444;
   }
   .gjs-block {

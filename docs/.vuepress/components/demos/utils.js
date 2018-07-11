@@ -29,6 +29,54 @@ var blockManager = {
   ]
 };
 
+var customPanel = {
+  id: 'custom-panel',
+  buttons: [
+    {
+      id: 'visibility',
+      // active by default
+      active: true,
+      className: 'btn-toggle-borders',
+      label: '<u>B</u>',
+      // Built-in command
+      command: 'sw-visibility',
+    }, {
+      id: 'export',
+      className: 'btn-open-export',
+      label: 'Exp',
+      command: 'export-template',
+      // For grouping context of buttons in the same panel
+      context: 'export-template',
+    }, {
+      id: 'show-json',
+      className: 'btn-show-json',
+      label: 'JSON',
+      command(editor) {
+        editor.Modal.setTitle('Components JSON')
+          .setContent(`<textarea style="width:100%; height: 250px;">
+            ${JSON.stringify(editor.getComponents())}
+          </textarea>`)
+          .open();
+      },
+    }
+  ],
+};
+
+var panelSidebar = {
+  el: '#editor-sidebar',
+  id: 'layers',
+  // Make the panel resizable
+  resizable: {
+    tc: 0, // Top handler
+    cl: 1, // Left handler
+    cr: 0, // Right handler
+    bc: 0, // Bottom handler
+    // Being a flex child we need to change `flex-basis` property
+    // instead of the `width` (default)
+    keyWidth: 'flex-basis',
+  },
+};
+
 var gjsConfigStart = {
   // Indicate where to init the editor. It's also possible to pass an HTMLElement
   container: '#gjs',
@@ -54,8 +102,17 @@ var gjsConfigPanels = Object.assign({}, gjsConfigBlocks, {
   blockManager: Object.assign({}, blockManager, { appendTo: '#blocks3' }),
 });
 
+var gjsConfigLayers = Object.assign({}, gjsConfigBlocks, {
+  container: '#gjs4',
+  blockManager: Object.assign({}, blockManager, { appendTo: '#blocks4' }),
+  layerManager: { appendTo: '#layers-container', scrollLayers: 0 },
+  panels: { defaults: [panelSidebar] }
+});
+
 module.exports = {
   gjsConfigStart,
   gjsConfigBlocks,
   gjsConfigPanels,
+  gjsConfigLayers,
+  customPanel,
 };

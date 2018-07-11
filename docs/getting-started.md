@@ -153,7 +153,7 @@ Now that we have a canvas and custom blocks let's see how to create a new custom
 ```
 
 ```js
-editor3.Panels.addPanel({
+editor.Panels.addPanel({
   id: 'custom-panel',
   el: '#basic-panel',
   buttons: [
@@ -190,26 +190,79 @@ editor3.Panels.addPanel({
 </Demo>
 
 So, we have defined where to render the panel with `el: '#basic-panel'` and then for each button we added a `command` property. The command could be the id, an object with `run` and `stop` functions or simply a single function.
-Try to use [Commands](api/commands.html) when possible, they allow you to track actions globally and also execute callbacks before and after their execution (or even interrupt them).
+Try to use [Commands](api/commands.html) when possible, they allow you to track actions globally and execute also callbacks before and after their execution (you can even interrupt them).
 
 ```js
-/*
-* * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
-* * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
-* * `run:{commandName}:before` - Triggered before the command is called
-* * `stop:{commandName}:before` - Triggered before the command is called to stop
-* * `abort:{commandName}` - Triggered when the command execution is aborted (`editor.on(`run:preview:before`, opts => opts.abort = 1);`)
- */
-editor.on('run:export-template:before', () => console.log('Before the command run'));
+editor.on('run:export-template:before', opts => {
+  console.log('Before the command run');
+  if (0 /* some condition */) {
+    opts.abort = 1;
+  }
+});
 editor.on('run:export-template', () => console.log('After the command run'));
+editor.on('abort:export-template', () => console.log('Command aborted'));
 ```
 
 ## Layers
--- show image
 Another utility tool you might find useful when working with web elements is a layer manger. It's just a tree overview of the structure nodes and enables you to manage it easier. To enable it you just have to specify where to render it
 
--- show how to enable LM
--- HINT: create resizable panels
+```html
+<div id="basic-panel"></div>
+<div class="editor-row">
+  <div class="editor-canvas">
+    <div id="gjs">...</div>
+  </div>
+  <div class="editor-sidebar">
+    <div id="layers-container"></div>
+  </div>
+</div>
+<div id="blocks"></div>
+```
+
+```css
+.editor-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: stretch;
+  flex-wrap: nowrap;
+}
+.editor-canvas {
+  flex-grow: 1;
+}
+.editor-sidebar {
+  flex-basis: 230px;
+  position: relative;
+}
+```
+
+```js
+const editor = grapesjs.init({
+  // ...
+  layerManager: {
+    appendTo: '#layers-container'
+  },
+  // We define a default panel as a sidebar to contain layers
+  panels: {
+    defaults: [{
+      id: 'layers',
+      el: '.editor-sidebar',
+      // Make the panel resizable
+      resizable: {
+        tc: 0, // Top handler
+        cl: 1, // Left handler
+        cr: 0, // Right handler
+        bc: 0, // Bottom handler
+        // Being a flex child we need to change `flex-basis` property
+        // instead of the `width` (default)
+        keyWidth: 'flex-basis',
+      },
+    }]
+  }
+});
+```
+<Demo>
+ <DemoLayers/>
+</Demo>
 
 ## Style Manager
 An important step in any web project is the style definition and with the built-in style manager module you're able to do so freely and quickly.

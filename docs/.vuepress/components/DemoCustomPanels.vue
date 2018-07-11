@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div id="basic-panel3"></div>
-    <div id="gjs3">
+    <div class="basic-panel" id="basic-panel3"></div>
+    <div class="gjs" id="gjs3">
       <h1>Hello World Component!</h1>
     </div>
     <div id="blocks3"></div>
@@ -11,54 +11,18 @@
 <script>
 module.exports = {
   mounted() {
-    // show addPanel with toggle-borders, export-code and custom alert show selected JSON + panel style
     const utils = require('./demos/utils.js');
     const editor3 = grapesjs.init(utils.gjsConfigPanels);
-    editor3.Panels.addPanel({
-      id: 'custom-panel',
-      el: '#basic-panel3',
-      buttons: [
-        {
-          id: 'visibility',
-          // active by default
-          active: true,
-          className: 'btn-toggle-borders',
-          label: '<u>B</u>',
-          // Built-in command
-          command: 'sw-visibility',
-        }, {
-          id: 'export',
-          className: 'btn-open-export',
-          label: 'Exp',
-          command: 'export-template',
-          // For grouping context of buttons in the same panel
-          context: 'export-template',
-        }, {
-          id: 'show-json',
-          className: 'btn-show-json',
-          label: 'JSON',
-          command(editor) {
-            editor.Modal.setTitle('Components JSON')
-              .setContent(`<textarea style="width:100%; height: 250px;">
-                ${JSON.stringify(editor.getComponents())}
-              </textarea>`)
-              .open();
-          },
-        }
-      ],
-    });
+    editor3.Panels.addPanel(Object.assign({}, utils.customPanel, {
+      el: '#basic-panel3'
+    }));
     window.editor3 = editor3;
-    editor3.on('run:export-template:before', () => console.log('Before the command run'));
-    editor3.on('run:export-template', () => console.log('After the command run'));
   }
 }
 </script>
 
 <style>
-  #gjs3 {
-    border: 3px solid #444;
-  }
-  #basic-panel3 {
+  .basic-panel {
     width: 100%;
     display: flex;
     justify-content: center;
