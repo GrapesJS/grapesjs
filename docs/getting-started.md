@@ -35,7 +35,7 @@ With just the canvas you're already able to move, copy and delete components fro
 ## Add Blocks
 The block in GrapesJS is just a reusable piece of HTML that you can drop in the canvas. A block can be an image, a button, or an entire section with videos, forms and iframes. Let's start from creating another container and append inside it few basic blocks which we can later use to build more complex structures.
 
-```html
+```html{4}
 <div id="gjs">
   ...
 </div>
@@ -144,18 +144,38 @@ myComponent.components('<div>New content</div>');
 ## Panels & Buttons
 Now that we have a canvas and custom blocks let's see how to create a new custom panel with some buttons inside (using [Panels API](api/panels.html)) which trigger commands (the core one or custom).
 
-```html
-<div id="basic-panel"></div>
+```html{1,2,3}
+<div class="panel__top">
+    <div class="panel__basic-actions"></div>
+</div>
 <div id="gjs">
   ...
 </div>
 <div id="blocks"></div>
 ```
 
+```css
+.panel__top {
+  padding: 0;
+  width: 100%;
+  display: flex;
+  position: initial;
+  justify-content: center;
+  justify-content: space-between;
+}
+.panel__basic-actions {
+  position: initial;
+}
+```
+
 ```js
 editor.Panels.addPanel({
-  id: 'custom-panel',
-  el: '#basic-panel',
+  id: 'panel-top',
+  el: '.panel__top',
+});
+editor.Panels.addPanel({
+  id: 'basic-actions',
+  el: '.panel__basic-actions',
   buttons: [
     {
       id: 'visibility',
@@ -206,46 +226,33 @@ editor.on('abort:export-template', () => console.log('Command aborted'));
 ## Layers
 Another utility tool you might find useful when working with web elements is a layer manger. It's just a tree overview of the structure nodes and enables you to manage it easier. To enable it you just have to specify where you want to render it
 
-```html
-<div id="basic-panel"></div>
+```html{4,5,6,7,8,9,10,11}
+<div class="panel__top">
+    <div class="panel__basic-actions"></div>
+</div>
 <div class="editor-row">
   <div class="editor-canvas">
     <div id="gjs">...</div>
   </div>
-  <div class="editor-sidebar">
-    <div id="layers-container"></div>
+  <div class="panel__right">
+    <div class="layers-container"></div>
   </div>
 </div>
 <div id="blocks"></div>
 ```
-
-```css
-.editor-row {
-  display: flex;
-  justify-content: flex-start;
-  align-items: stretch;
-  flex-wrap: nowrap;
-}
-.editor-canvas {
-  flex-grow: 1;
-}
-.editor-sidebar {
-  flex-basis: 230px;
-  position: relative;
-}
-```
+<<< @/docs/.vuepress/components/demos/DemoLayers.css
 
 ```js
 const editor = grapesjs.init({
   // ...
   layerManager: {
-    appendTo: '#layers-container'
+    appendTo: '.layers-container'
   },
   // We define a default panel as a sidebar to contain layers
   panels: {
     defaults: [{
       id: 'layers',
-      el: '.editor-sidebar',
+      el: '.panel__right',
       // Make the panel resizable
       resizable: {
         maxDim: 350,
@@ -268,7 +275,7 @@ const editor = grapesjs.init({
 
 ## Style Manager
 An important step in any web project is the style definition and with the built-in style manager module you're able to do it easily and quickly.
-The style manager is composed by style properties and grouped by sectors, so let's see how to define a basic set of them.
+The style manager is composed by style properties and are grouped by sectors, let's see how to define a basic set of them.
 
 -- show how to render SM and show style for width, height, padding, Typography, shadows
 

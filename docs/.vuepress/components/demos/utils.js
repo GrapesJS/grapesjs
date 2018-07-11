@@ -29,8 +29,9 @@ var blockManager = {
   ]
 };
 
-var customPanel = {
-  id: 'custom-panel',
+var panelTop = { id: 'panel-top' };
+var panelBasicActions = {
+  id: 'panel-basic',
   buttons: [
     {
       id: 'visibility',
@@ -61,9 +62,8 @@ var customPanel = {
     }
   ],
 };
-
 var panelSidebar = {
-  el: '#editor-sidebar',
+  el: '#panel__right4',
   id: 'layers',
   // Make the panel resizable
   resizable: {
@@ -116,5 +116,6 @@ module.exports = {
   gjsConfigBlocks,
   gjsConfigPanels,
   gjsConfigLayers,
-  customPanel,
+  panelTop,
+  panelBasicActions,
 };

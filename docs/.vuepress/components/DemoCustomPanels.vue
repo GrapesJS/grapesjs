@@ -1,6 +1,8 @@
 <template>
   <div>
-    <div class="basic-panel" id="basic-panel3"></div>
+    <div class="panel__top" id="panel__top3">
+        <div class="panel__basic-actions" id="panel__basic-actions3"></div>
+    </div>
     <div class="gjs" id="gjs3">
       <h1>Hello World Component!</h1>
     </div>
@@ -13,8 +15,11 @@ module.exports = {
   mounted() {
     const utils = require('./demos/utils.js');
     const editor3 = grapesjs.init(utils.gjsConfigPanels);
-    editor3.Panels.addPanel(Object.assign({}, utils.customPanel, {
-      el: '#basic-panel3'
+    editor3.Panels.addPanel(Object.assign({}, utils.panelTop, {
+      el: '#panel__top3'
+    }));
+    editor3.Panels.addPanel(Object.assign({}, utils.panelBasicActions, {
+      el: '#panel__basic-actions3'
     }));
     window.editor3 = editor3;
   }
@@ -22,10 +27,15 @@ module.exports = {
 </script>
 
 <style>
-  .basic-panel {
+  .panel__top {
+    padding: 0;
     width: 100%;
     display: flex;
+    position: initial;
     justify-content: center;
+    justify-content: space-between;
+  }
+  .panel__basic-actions {
     position: initial;
   }
   .content pre {
