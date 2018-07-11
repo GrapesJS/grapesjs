@@ -204,7 +204,7 @@ editor.on('abort:export-template', () => console.log('Command aborted'));
 ```
 
 ## Layers
-Another utility tool you might find useful when working with web elements is a layer manger. It's just a tree overview of the structure nodes and enables you to manage it easier. To enable it you just have to specify where to render it
+Another utility tool you might find useful when working with web elements is a layer manger. It's just a tree overview of the structure nodes and enables you to manage it easier. To enable it you just have to specify where you want to render it
 
 ```html
 <div id="basic-panel"></div>

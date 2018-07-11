@@ -29,7 +29,7 @@ module.exports = () => {
     commands = {},
     defaultCommands = {},
     defaults = require('./config/config'),
-    AbsCommands = require('./view/CommandAbstract');
+    CommandAbstract = require('./view/CommandAbstract');
 
   // Need it here as it would be used below
   var add = function(id, obj) {
@@ -39,11 +39,13 @@ module.exports = () => {
 
     delete obj.initialize;
     obj.id = id;
-    commands[id] = AbsCommands.extend(obj);
+    commands[id] = CommandAbstract.extend(obj);
     return this;
   };
 
   return {
+    CommandAbstract,
+
     /**
      * Name of the module
      * @type {String}
@@ -262,6 +264,17 @@ module.exports = () => {
       }
 
       return this;
+    },
+
+    /**
+     * Create anonymous Command instance
+     * @param {Object} command Command object
+     * @return {Command}
+     * @private
+     * */
+    create(command) {
+      const cmd = CommandAbstract.extend(command);
+      return new cmd(c);
     }
   };
 };

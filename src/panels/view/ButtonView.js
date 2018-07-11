@@ -69,17 +69,18 @@ module.exports = Backbone.View.extend({
    * @return   void
    * */
   updateActive() {
-    const model = this.model;
+    const { model, commands, em } = this;
     const context = model.get('context');
     const options = model.get('options');
     let command = {};
-    var editor = this.em && this.em.get ? this.em.get('Editor') : null;
+    var editor = em && em.get ? em.get('Editor') : null;
     var commandName = model.get('command');
+    var cmdIsFunc = isFunction(commandName);
 
-    if (this.commands && isString(commandName)) {
-      command = this.commands.get(commandName) || {};
-    } else if (isFunction(commandName)) {
-      command = { run: commandName };
+    if (commands && isString(commandName)) {
+      command = commands.get(commandName) || {};
+    } else if (cmdIsFunc) {
+      command = commands.create({ run: commandName });
     } else if (commandName !== null && isObject(commandName)) {
       command = commandName;
     }
@@ -92,8 +93,8 @@ module.exports = Backbone.View.extend({
         command.callRun(editor, { ...options, sender: model });
       }
 
-      // Disable button if there is no stop method
-      !command.stop && model.set('active', false);
+      // Disable button if the command was just a function
+      cmdIsFunc && model.set('active', false);
     } else {
       this.$el.removeClass(this.activeCls);
       model.collection.deactivateAll(context);
