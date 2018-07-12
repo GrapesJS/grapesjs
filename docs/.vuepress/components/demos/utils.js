@@ -70,6 +70,9 @@ var styleManager = {
     }]
 };
 
+var layerManager = { scrollLayers: 0 };
+var traitManager = {};
+
 var panelTop = { id: 'panel-top' };
 var panelBasicActions = {
   id: 'panel-basic',
@@ -119,50 +122,81 @@ var panelSidebar = {
     keyWidth: 'flex-basis',
   },
 };
+
+var buttonShowLayers = {
+  id: 'show-layers',
+  active: true,
+  label: 'Layers',
+  command: {
+    getRowEl(editor) { return editor.getContainer().parentNode.parentNode; },
+    getLayersEl(row) { return row.querySelector('.layers-container') },
+    getStyleEl(row) { return row.querySelector('.styles-container') },
+
+    run(editor, sender) {
+      const row = this.getRowEl(editor);
+      const lmEl = this.getLayersEl(row);
+      lmEl.style.display = '';
+    },
+    stop(editor, sender) {
+      const row = this.getRowEl(editor);
+      const lmEl = this.getLayersEl(row);
+      lmEl.style.display = 'none';
+    },
+  },
+};
+var buttonShowStyle = {
+  id: 'show-style',
+  label: 'Styles',
+  active: true,
+  command: {
+    getRowEl(editor) { return editor.getContainer().parentNode.parentNode; },
+    getLayersEl(row) { return row.querySelector('.layers-container') },
+    getStyleEl(row) { return row.querySelector('.styles-container') },
+
+    run(editor, sender) {
+      const row = this.getRowEl(editor);
+      const smEl = this.getStyleEl(row);
+      smEl.style.display = '';
+    },
+    stop(editor, sender) {
+      const row = this.getRowEl(editor);
+      const smEl = this.getStyleEl(row);
+      smEl.style.display = 'none';
+    },
+  },
+};
+var buttonShowTraits = {
+  id: 'show-traits',
+  label: 'Traits',
+  active: true,
+  command: {
+    getTraitsEl(editor) {
+      const row = editor.getContainer().closest('.editor-row');
+      return row.querySelector('.traits-container');
+    },
+    run(editor, sender) {
+      this.getTraitsEl(editor).style.display = '';
+    },
+    stop(editor, sender) {
+      this.getTraitsEl(editor).style.display = 'none';
+    },
+  },
+};
+
 var panelSwitcher = {
   id: 'panel-switcher',
   buttons: [
-    {
-      id: 'show-layers',
-      active: true,
-      label: 'Layers',
-      command: {
-        getRowEl(editor) { return editor.getContainer().parentNode.parentNode; },
-        getLayersEl(row) { return row.querySelector('.layers-container') },
-        getStyleEl(row) { return row.querySelector('.styles-container') },
+    buttonShowLayers,
+    buttonShowStyle,
+  ],
+};
 
-        run(editor, sender) {
-          const row = this.getRowEl(editor);
-          const lmEl = this.getLayersEl(row);
-          lmEl.style.display = '';
-        },
-        stop(editor, sender) {
-          const row = this.getRowEl(editor);
-          const lmEl = this.getLayersEl(row);
-          lmEl.style.display = 'none';
-        },
-      },
-    }, {
-      id: 'show-style',
-      label: 'Styles',
-      active: true,
-      command: {
-        getRowEl(editor) { return editor.getContainer().parentNode.parentNode; },
-        getLayersEl(row) { return row.querySelector('.layers-container') },
-        getStyleEl(row) { return row.querySelector('.styles-container') },
-
-        run(editor, sender) {
-          const row = this.getRowEl(editor);
-          const smEl = this.getStyleEl(row);
-          smEl.style.display = '';
-        },
-        stop(editor, sender) {
-          const row = this.getRowEl(editor);
-          const smEl = this.getStyleEl(row);
-          smEl.style.display = 'none';
-        },
-      },
-    }
+var panelSwitcherTraits = {
+  id: 'panel-switcher',
+  buttons: [
+    buttonShowLayers,
+    buttonShowStyle,
+    buttonShowTraits,
   ],
 };
 
@@ -205,14 +239,24 @@ var gjsConfigStyle = Object.assign({}, gjsConfigBlocks, {
   styleManager: Object.assign({}, styleManager, { appendTo: '#styles-container5' }),
 });
 
+var gjsConfigTraits = Object.assign({}, gjsConfigBlocks, {
+  container: '#gjs6',
+  blockManager: Object.assign({}, blockManager, { appendTo: '#blocks6' }),
+  layerManager: Object.assign({}, layerManager, { appendTo: '#layers-container6' }),
+  styleManager: Object.assign({}, styleManager, { appendTo: '#styles-container6' }),
+  traitManager: Object.assign({}, traitManager, { appendTo: '#traits-container6' }),
+});
+
 module.exports = {
   gjsConfigStart,
   gjsConfigBlocks,
   gjsConfigPanels,
   gjsConfigLayers,
   gjsConfigStyle,
+  gjsConfigTraits,
   panelTop,
   panelBasicActions,
   panelSidebar,
   panelSwitcher,
+  panelSwitcherTraits,
 };

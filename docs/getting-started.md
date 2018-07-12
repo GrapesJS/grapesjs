@@ -409,7 +409,72 @@ Each component can also indicate what to style and what not.
 -->
 
 ## Traits
-Most of them time you would style your components and you would place them somewhere in the structure, but sometimes your components might need custom attributes or even custom behaviors and for this need you can make use of traits
+Most of the time you would style your components and place them somewhere in the structure, but sometimes your components might need custom attributes or even custom behaviors and for this need you can make use of traits. A common use of traits is the ability to update HTML element attributes (eg. `placeholder` for inputs or `alt` for images) but you can also define your own custom traits, access the selected Component model and do whatever you want. For this guide we just gonna show you how to render available traits, for more details on how to extend them we suggest to read the [Trait Manager Module page](modules/Traits.html).
+
+Let's create a new container for traits, tell the editor where to render it and update the sidebar switcher
+
+```html{12}
+<div class="panel__top">
+    <div class="panel__basic-actions"></div>
+    <div class="panel__switcher"></div>
+</div>
+<div class="editor-row">
+  <div class="editor-canvas">
+    <div id="gjs">...</div>
+  </div>
+  <div class="panel__right">
+    <div class="layers-container"></div>
+    <div class="styles-container"></div>
+    <div class="traits-container"></div>
+  </div>
+</div>
+<div id="blocks"></div>
+```
+
+```js
+const editor = grapesjs.init({
+  // ...
+  panels: {
+    defaults: [
+      // ...
+      {
+        id: 'panel-switcher',
+        el: '.panel__switcher',
+        buttons: [
+          // ...
+          {
+            id: 'show-traits',
+            active: true,
+            label: 'Traits',
+            command: 'show-traits',
+        }],
+      }
+    ]
+  },
+  traitManager: {
+    appendTo: '.traits-container',
+  },
+});
+
+// Define command
+// ...
+editor.Commands.add('show-traits', {
+  getTraitsEl(editor) {
+    const row = editor.getContainer().closest('.editor-row');
+    return row.querySelector('.traits-container');
+  },
+  run(editor, sender) {
+    this.getTraitsEl(editor).style.display = '';
+  },
+  stop(editor, sender) {
+    this.getTraitsEl(editor).style.display = 'none';
+  },
+});
+```
+
+<Demo>
+  <DemoTraits/>
+</Demo>
 
 ## Devices
 Grapesjs implements also a built-in module witch allows you to work with responsive templates easily. Let's see how to define different devices
