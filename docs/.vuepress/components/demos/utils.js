@@ -72,6 +72,16 @@ var styleManager = {
 
 var layerManager = { scrollLayers: 0 };
 var traitManager = {};
+var deviceManager = {
+  devices: [{
+      name: 'Desktop',
+      width: '', // default size
+    }, {
+      name: 'Mobile',
+      width: '320px', // this value will be used on canvas width
+      widthMedia: '480px', // this value will be used in CSS @media
+  }]
+};
 
 var panelTop = { id: 'panel-top' };
 var panelBasicActions = {
@@ -200,6 +210,20 @@ var panelSwitcherTraits = {
   ],
 };
 
+var panelDevices = {
+  id: 'panel-devices',
+  buttons: [{
+      id: 'device-desktop',
+      label: 'D',
+      command: { run: editor => editor.setDevice('Desktop') },
+      active: true,
+    }, {
+      id: 'device-mobile',
+      label: 'M',
+      command: { run: editor => editor.setDevice('Mobile') },
+  }],
+};
+
 var gjsConfigStart = {
   // Indicate where to init the editor. It's also possible to pass an HTMLElement
   container: '#gjs',
@@ -247,6 +271,15 @@ var gjsConfigTraits = Object.assign({}, gjsConfigBlocks, {
   traitManager: Object.assign({}, traitManager, { appendTo: '#traits-container6' }),
 });
 
+var gjsConfigDevices = Object.assign({}, gjsConfigBlocks, {
+  container: '#gjs7',
+  blockManager: Object.assign({}, blockManager, { appendTo: '#blocks7' }),
+  layerManager: Object.assign({}, layerManager, { appendTo: '#layers-container7' }),
+  styleManager: Object.assign({}, styleManager, { appendTo: '#styles-container7' }),
+  traitManager: Object.assign({}, traitManager, { appendTo: '#traits-container7' }),
+  deviceManager,
+});
+
 module.exports = {
   gjsConfigStart,
   gjsConfigBlocks,
@@ -254,9 +287,11 @@ module.exports = {
   gjsConfigLayers,
   gjsConfigStyle,
   gjsConfigTraits,
+  gjsConfigDevices,
   panelTop,
   panelBasicActions,
   panelSidebar,
   panelSwitcher,
   panelSwitcherTraits,
+  panelDevices,
 };

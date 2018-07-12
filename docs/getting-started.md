@@ -1,10 +1,10 @@
 ---
 title: Getting Started
+pageClass: page__getting-started
 meta:
   - name: keywords
     content: grapesjs getting started
 ---
-TODO: webpage preset link
 
 # Getting Started
 
@@ -224,6 +224,11 @@ editor.on('run:export-template', () => console.log('After the command run'));
 editor.on('abort:export-template', () => console.log('Command aborted'));
 ```
 
+::: tip
+Check the [Panels API](api/panels.html) to see all the available methods
+:::
+
+
 ## Layers
 Another utility tool you might find useful when working with web elements is a layer manger. It's just a tree overview of the structure nodes and enables you to manage it easier. To enable it you just have to specify where you want to render it
 
@@ -279,21 +284,17 @@ Once you have defined the structure of the template probably the next step is th
 
 Let's start from adding one more panel inside the `panel__right` and another one in `panel__top` which will contain a Layer/Style Manager switcher
 
-```html{3,11}
+```html{3,8}
 <div class="panel__top">
     <div class="panel__basic-actions"></div>
     <div class="panel__switcher"></div>
 </div>
-<div class="editor-row">
-  <div class="editor-canvas">
-    <div id="gjs">...</div>
-  </div>
+...
   <div class="panel__right">
     <div class="layers-container"></div>
     <div class="styles-container"></div>
   </div>
-</div>
-<div id="blocks"></div>
+...
 ```
 ```css
 .panel__switcher {
@@ -399,7 +400,11 @@ editor.Commands.add('show-styles', {
   <DemoStyle/>
 </Demo>
 
-Inside Style Manager definition we use `buildProps` to create properties from [available built-in objects](modules/Style-manager.html#built-in-properties) then in `properties` we can override same objects (eg. passing another `name` to change the label) identified by `property` name. As you can see from `custom-prop` example it's a matter of defining the CSS `property` and the input `type`. We suggest to check a more complete example of Style Manager properties usage from the [webpage preset](##)
+Inside Style Manager definition we use `buildProps` which helps us create common properties from [available built-in objects](modules/Style-manager.html#built-in-properties) then in `properties` we can override same objects (eg. passing another `name` to change the label) identified by `property` name. As you can see from `custom-prop` example it's a matter of defining the CSS `property` and the input `type`. We suggest to check a more complete example of Style Manager properties usage from the [webpage preset demo](https://github.com/artf/grapesjs/blob/gh-pages/demo.html#L1000)
+
+::: tip
+Check the [Style Manager API](api/panels.html) to see how to update sectors and properties dynamically
+:::
 
 <!--
 To get more about style manager extension check out this guide.
@@ -409,26 +414,18 @@ Each component can also indicate what to style and what not.
 -->
 
 ## Traits
-Most of the time you would style your components and place them somewhere in the structure, but sometimes your components might need custom attributes or even custom behaviors and for this need you can make use of traits. A common use of traits is the ability to update HTML element attributes (eg. `placeholder` for inputs or `alt` for images) but you can also define your own custom traits, access the selected Component model and do whatever you want. For this guide we just gonna show you how to render available traits, for more details on how to extend them we suggest to read the [Trait Manager Module page](modules/Traits.html).
+Most of the time you would style your components and place them somewhere in the structure, but sometimes your components might need custom attributes or even custom behaviors and for this need you can make use of traits. A common use of traits is the ability to update HTML element attributes (eg. `placeholder` for inputs or `alt` for images) but you can also define your own custom traits, access the selected Component model and do whatever you want. For this guide, we just gonna show you how to render available traits, for more details on how to extend them we suggest to read the [Trait Manager Module page](modules/Traits.html).
 
 Let's create a new container for traits, tell the editor where to render it and update the sidebar switcher
 
-```html{12}
-<div class="panel__top">
-    <div class="panel__basic-actions"></div>
-    <div class="panel__switcher"></div>
-</div>
-<div class="editor-row">
-  <div class="editor-canvas">
-    <div id="gjs">...</div>
-  </div>
+```html{5}
+...
   <div class="panel__right">
     <div class="layers-container"></div>
     <div class="styles-container"></div>
     <div class="traits-container"></div>
   </div>
-</div>
-<div id="blocks"></div>
+...
 ```
 
 ```js
@@ -476,22 +473,105 @@ editor.Commands.add('show-traits', {
   <DemoTraits/>
 </Demo>
 
+Now if you switch to the Trait panel and select some of the inner component you should see its default traits.
+
 ## Devices
-Grapesjs implements also a built-in module witch allows you to work with responsive templates easily. Let's see how to define different devices
+GrapesJS implements also a module which allows you to work with responsive templates easily. Let's see how to define different devices and some button for device switching
 
--- config devices, desktop, tablet and mobile
+```html{3}
+<div class="panel__top">
+    <div class="panel__basic-actions"></div>
+    <div class="panel__devices"></div>
+    <div class="panel__switcher"></div>
+</div>
+...
+```
+```css
+.panel__devices {
+  position: initial;
+}
+```
+```js
+const editor = grapesjs.init({
+  // ...
+  deviceManager: {
+    devices: [{
+        name: 'Desktop',
+        width: '', // default size
+      }, {
+        name: 'Mobile',
+        width: '320px', // this value will be used on canvas width
+        widthMedia: '480px', // this value will be used in CSS @media
+    }]
+  },
+  // ...
+  panels: {
+    defaults: [
+      // ...
+      {
+        id: 'panel-devices',
+        el: '.panel__devices',
+        buttons: [{
+            id: 'device-desktop',
+            label: 'D',
+            command: 'set-device-desktop',
+            active: true,
+          }, {
+            id: 'device-mobile',
+            label: 'M',
+            command: 'set-device-mobile',
+        }],
+      }
+    ]
+  },
+});
 
-On the UI side you will not see differences, but you can already use Devices API to toggle them.
+// Commands
+editor.Commands.add('set-device-desktop', {
+  run: editor => editor.setDevice('Desktop')
+});
+editor.Commands.add('set-device-mobile', {
+  run: editor => editor.setDevice('Mobile')
+});
+```
 
---  show devices api and events
+<Demo>
+  <DemoDevices/>
+</Demo>
 
-To help the user resize the canvas easily let's add a set of buttons
+As you can see from the commands definition we just use the `editor.setDevice` method to change the size of the viewport. In case you need to trigger some action on device change you can setup a listener like this:
 
--- add responsive buttons
+```js
+editor.on('change:device', () => console.log('Current device: ', editor.getDevice()));
+```
 
-If you want to enable a mobile-first approch just change your configurations in this way
+What about the mobile-first approach? You can achieve it by changing your configurations in this way:
 
--- show mobile first config
+```js
+const editor = grapesjs.init({
+  // ...
+  mediaCondition: 'min-width', // default is `max-width`
+  deviceManager: {
+    devices: [{
+        name: 'Mobile',
+        width: '320',
+        widthMedia: '',
+      }, {
+        name: 'Desktop',
+        width: '',
+        widthMedia:'1024',
+    }]
+  },
+  // ...
+});
+
+// Set initial device as Mobile
+editor.setDevice('Mobile');
+```
+
+::: tip
+Check the [Device Manager API](api/panels.html) to get all available methods
+:::
 
 ## Storage
 Once you get all the tools you need for styling and managing your components the last part would to setup the storing and loading process.
