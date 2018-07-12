@@ -84,6 +84,7 @@ module.exports = {
             ['/modules/Components', 'Component Manager'],
             ['/modules/Components-js', 'Components & JS'],
             ['/modules/Traits', 'Trait Manager'],
+            ['/modules/Style-manager', 'Style Manager'],
             ['/modules/Storage', 'Storag Manager'],
             ['/modules/Plugins', 'Plugins'],
           ]

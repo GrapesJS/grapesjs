@@ -82,7 +82,7 @@ module.exports = Backbone.View.extend({
     } else if (cmdIsFunc) {
       command = commands.create({ run: commandName });
     } else if (commandName !== null && isObject(commandName)) {
-      command = commandName;
+      command = commands.create(commandName);
     }
 
     if (model.get('active')) {

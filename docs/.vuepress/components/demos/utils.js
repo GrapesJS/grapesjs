@@ -29,6 +29,47 @@ var blockManager = {
   ]
 };
 
+var styleManager = {
+  sectors: [{
+      name: 'Dimension',
+      open: false,
+      // Use built-in properties
+      buildProps: ['width', 'min-height', 'padding'],
+      // Use `properties` to define/override single property
+      properties: [
+        {
+          // Type of the input,
+          // options: integer | radio | select | color | slider | file | composite | stack
+          type: 'integer',
+          name: 'The width', // Label for the property
+          property: 'width', // CSS property (if buildProps contains it will be extended)
+          units: ['px', '%'], // Units, available only for 'integer' types
+          defaults: 'auto', // Default value
+          min: 0, // Min value, available only for 'integer' types
+        }
+      ]
+    },{
+      name: 'Extra',
+      open: false,
+      buildProps: ['background-color', 'box-shadow', 'custom-prop'],
+      properties: [
+        {
+          id: 'custom-prop',
+          name: 'Custom Label',
+          property: 'font-size',
+          type: 'select',
+          defaults: '32px',
+          // List of options, available only for 'select' and 'radio'  types
+          options: [
+            { value: '12px', name: 'Tiny' },
+            { value: '18px', name: 'Medium' },
+            { value: '32px', name: 'Big' },
+          ],
+       }
+      ]
+    }]
+};
+
 var panelTop = { id: 'panel-top' };
 var panelBasicActions = {
   id: 'panel-basic',
@@ -78,6 +119,54 @@ var panelSidebar = {
     keyWidth: 'flex-basis',
   },
 };
+var panelSwitcher = {
+  id: 'panel-switcher',
+  buttons: [
+    {
+      id: 'show-layers',
+      active: true,
+      label: 'Layers',
+      command: {
+        getRowEl(editor) { return editor.getContainer().parentNode.parentNode; },
+        getLayersEl(row) { return row.querySelector('.layers-container') },
+        getStyleEl(row) { return row.querySelector('.styles-container') },
+
+        run(editor, sender) {
+          const row = this.getRowEl(editor);
+          const lmEl = this.getLayersEl(row);
+          lmEl.style.display = '';
+        },
+        stop(editor, sender) {
+          const row = this.getRowEl(editor);
+          const lmEl = this.getLayersEl(row);
+          lmEl.style.display = 'none';
+          sender && sender.set('active', false);
+        },
+      },
+    }, {
+      id: 'show-style',
+      label: 'Styles',
+      active: true,
+      command: {
+        getRowEl(editor) { return editor.getContainer().parentNode.parentNode; },
+        getLayersEl(row) { return row.querySelector('.layers-container') },
+        getStyleEl(row) { return row.querySelector('.styles-container') },
+
+        run(editor, sender) {
+          const row = this.getRowEl(editor);
+          const smEl = this.getStyleEl(row);
+          smEl.style.display = '';
+        },
+        stop(editor, sender) {
+          const row = this.getRowEl(editor);
+          const smEl = this.getStyleEl(row);
+          smEl.style.display = 'none';
+          sender && sender.set('active', false);
+        },
+      },
+    }
+  ],
+};
 
 var gjsConfigStart = {
   // Indicate where to init the editor. It's also possible to pass an HTMLElement
@@ -111,11 +200,21 @@ var gjsConfigLayers = Object.assign({}, gjsConfigBlocks, {
   panels: { defaults: [panelSidebar] }
 });
 
+var gjsConfigStyle = Object.assign({}, gjsConfigBlocks, {
+  container: '#gjs5',
+  blockManager: Object.assign({}, blockManager, { appendTo: '#blocks5' }),
+  layerManager: { appendTo: '#layers-container5', scrollLayers: 0 },
+  styleManager: Object.assign({}, styleManager, { appendTo: '#styles-container5' }),
+});
+
 module.exports = {
   gjsConfigStart,
   gjsConfigBlocks,
   gjsConfigPanels,
   gjsConfigLayers,
+  gjsConfigStyle,
   panelTop,
   panelBasicActions,
+  panelSidebar,
+  panelSwitcher,
 };

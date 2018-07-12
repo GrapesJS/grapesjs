@@ -274,15 +274,139 @@ const editor = grapesjs.init({
 </Demo>
 
 ## Style Manager
-An important step in any web project is the style definition and with the built-in style manager module you're able to do it easily and quickly.
-The style manager is composed by style properties and are grouped by sectors, let's see how to define a basic set of them.
+Once you have defined the structure of the template probably the next step is the ability to style it. To meet this need GrapesJS includes the Style Manager module which is composed by CSS style properties and sectors. To make it more clear, let's see how to define a basic set.
 
--- show how to render SM and show style for width, height, padding, Typography, shadows
+Let's start from adding one more panel inside the `panel__right` and another one in `panel__top` which will contain a Layer/Style Manager switcher
 
-Now any component could be defined with its own style, you can add any other CSS property to your sectors and configure it by your needs. To get more about style manager extension check out this guide.
+```html{3,11}
+<div class="panel__top">
+    <div class="panel__basic-actions"></div>
+    <div class="panel__switcher"></div>
+</div>
+<div class="editor-row">
+  <div class="editor-canvas">
+    <div id="gjs">...</div>
+  </div>
+  <div class="panel__right">
+    <div class="layers-container"></div>
+    <div class="styles-container"></div>
+  </div>
+</div>
+<div id="blocks"></div>
+```
+```css
+.panel__switcher {
+  position: initial;
+}
+```
+```js
+const editor = grapesjs.init({
+  // ...
+  panels: {
+    defaults: [
+      // ...
+      {
+        id: 'panel-switcher',
+        el: '.panel__switcher',
+        buttons: [{
+            id: 'show-layers',
+            active: true,
+            label: 'Layers',
+            command: 'commandShowLayers',
+          }, {
+            id: 'show-style',
+            active: true,
+            label: 'Styles',
+            command: 'commandShowStyle',
+        }],
+      }
+    ]
+  },
+  styleManager: {
+    appendTo: '.styles-container',
+    sectors: [{
+        name: 'Dimension',
+        open: false,
+        // Use built-in properties
+        buildProps: ['width', 'min-height', 'padding'],
+        // Use `properties` to define/override single property
+        properties: [
+          {
+            // Type of the input,
+            // options: integer | radio | select | color | slider | file | composite | stack
+            type: 'integer',
+            name: 'The width', // Label for the property
+            property: 'width', // CSS property (if buildProps contains it will be extended)
+            units: ['px', '%'], // Units, available only for 'integer' types
+            defaults: 'auto', // Default value
+            min: 0, // Min value, available only for 'integer' types
+          }
+        ]
+      },{
+        name: 'Extra',
+        open: false,
+        buildProps: ['background-color', 'box-shadow', 'custom-prop'],
+        properties: [
+          {
+            id: 'custom-prop',
+            name: 'Custom Label',
+            property: 'font-size',
+            type: 'select',
+            defaults: '32px',
+            // List of options, available only for 'select' and 'radio'  types
+            options: [
+              { value: '12px', name: 'Tiny' },
+              { value: '18px', name: 'Medium' },
+              { value: '32px', name: 'Big' },
+            ],
+         }
+        ]
+      }]
+  },
+});
+
+// Define commands
+editor.Commands.add('commandShowLayers', {
+  getRowEl(editor) { return editor.getContainer().closest('.editor-row'); },
+  getLayersEl(row) { return row.querySelector('.layers-container') },
+
+  run(editor, sender) {
+    const lmEl = this.getLayersEl(this.getRowEl(editor));
+    lmEl.style.display = '';
+  },
+  stop(editor, sender) {
+    const lmEl = this.getLayersEl(this.getRowEl(editor));
+    lmEl.style.display = 'none';
+    sender && sender.set('active', false);
+  },
+});
+editor.Commands.add('commandShowStyle', {
+  getRowEl(editor) { return editor.getContainer().closest('.editor-row'); },
+  getStyleEl(row) { return row.querySelector('.styles-container') },
+
+  run(editor, sender) {
+    const smEl = this.getStyleEl(this.getRowEl(editor));
+    smEl.style.display = '';
+  },
+  stop(editor, sender) {
+    const smEl = this.getStyleEl(this.getRowEl(editor));
+    smEl.style.display = 'none';
+    sender && sender.set('active', false);
+  },
+});
+```
+
+<Demo>
+  <DemoStyle/>
+</Demo>
+
+Now any component could be defined with its own style, you can add any other CSS property to your sectors and configure it by your needs.
+
+<!-- To get more about style manager extension check out this guide.
 Each component can also indicate what to style and what not.
 
 -- Example component with limit styles
+-->
 
 ## Traits
 Most of them time you would style your components and you would place them somewhere in the structure, but sometimes your components might need custom attributes or even behaviours
