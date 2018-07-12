@@ -4,6 +4,7 @@ meta:
   - name: keywords
     content: grapesjs getting started
 ---
+TODO: webpage preset link
 
 # Getting Started
 
@@ -312,12 +313,12 @@ const editor = grapesjs.init({
             id: 'show-layers',
             active: true,
             label: 'Layers',
-            command: 'commandShowLayers',
+            command: 'show-layers',
           }, {
             id: 'show-style',
             active: true,
             label: 'Styles',
-            command: 'commandShowStyle',
+            command: 'show-styles',
         }],
       }
     ]
@@ -366,7 +367,7 @@ const editor = grapesjs.init({
 });
 
 // Define commands
-editor.Commands.add('commandShowLayers', {
+editor.Commands.add('show-layers', {
   getRowEl(editor) { return editor.getContainer().closest('.editor-row'); },
   getLayersEl(row) { return row.querySelector('.layers-container') },
 
@@ -377,10 +378,9 @@ editor.Commands.add('commandShowLayers', {
   stop(editor, sender) {
     const lmEl = this.getLayersEl(this.getRowEl(editor));
     lmEl.style.display = 'none';
-    sender && sender.set('active', false);
   },
 });
-editor.Commands.add('commandShowStyle', {
+editor.Commands.add('show-styles', {
   getRowEl(editor) { return editor.getContainer().closest('.editor-row'); },
   getStyleEl(row) { return row.querySelector('.styles-container') },
 
@@ -391,7 +391,6 @@ editor.Commands.add('commandShowStyle', {
   stop(editor, sender) {
     const smEl = this.getStyleEl(this.getRowEl(editor));
     smEl.style.display = 'none';
-    sender && sender.set('active', false);
   },
 });
 ```
@@ -400,16 +399,17 @@ editor.Commands.add('commandShowStyle', {
   <DemoStyle/>
 </Demo>
 
-Now any component could be defined with its own style, you can add any other CSS property to your sectors and configure it by your needs.
+Inside Style Manager definition we use `buildProps` to create properties from [available built-in objects](modules/Style-manager.html#built-in-properties) then in `properties` we can override same objects (eg. passing another `name` to change the label) identified by `property` name. As you can see from `custom-prop` example it's a matter of defining the CSS `property` and the input `type`. We suggest to check a more complete example of Style Manager properties usage from the [webpage preset](##)
 
-<!-- To get more about style manager extension check out this guide.
+<!--
+To get more about style manager extension check out this guide.
 Each component can also indicate what to style and what not.
 
 -- Example component with limit styles
 -->
 
 ## Traits
-Most of them time you would style your components and you would place them somewhere in the structure, but sometimes your components might need custom attributes or even behaviours
+Most of them time you would style your components and you would place them somewhere in the structure, but sometimes your components might need custom attributes or even custom behaviors and for this need you can make use of traits
 
 ## Devices
 Grapesjs implements also a built-in module witch allows you to work with responsive templates easily. Let's see how to define different devices

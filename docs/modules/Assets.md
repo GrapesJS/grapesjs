@@ -153,7 +153,7 @@ If you want a complete list of available properties check the source [AssetImage
 The built-in Asset Manager modal is implemented and is showing up when requested. By default, you can make it appear by dragging Image Components in canvas, double clicking on images and all other stuff related to images (eg. CSS styling)
 
 
-[[img/assets-builtin-modal.png]]
+<img :src="$withBase('/assets-builtin-modal.png')">
 
 
 Showing up of the modal is registered with a command, so you can make it appear with this
@@ -315,7 +315,7 @@ am.render(am.getAll().filter(
 
 You should see something like this
 
-[[img/assets-empty-view.png]]
+<img :src="$withBase('/assets-empty-view.png')">
 
 
 The SVG asset is not correctly rendered and this is because we haven't yet configured its view
@@ -349,7 +349,7 @@ am.addType('svg-icon', {
 
 This is the result
 
-[[img/assets-svg-view.png]]
+<img :src="$withBase('/assets-svg-view.png')">
 
 
 Now we have to deal with how to assign our `svgContent` to the selected element
@@ -465,7 +465,7 @@ am.addType('image', {
 Asset Manager includes an easy to use, drag and drop, uploader and integrates few UI helpers. The default uploader is already visible when you open the Asset Manager.
 
 
-[[img/assets-uploader.png]]
+<img :src="$withBase('/assets-uploader.png')">
 
 
 You can click on the uploader to start select your files or just drag them directly from your computer to trigger the uploader. Obviously, before make it work you have to setup your server in order to receive your assets and specify the upload endpoint in configurations
@@ -552,8 +552,7 @@ When the uploading is over, by default (via config parameter `autoAdd: 1`), the 
 
 There is also another helper which improve the uploading of assets, a full-width editor dropzone.
 
-
-[[img/assets-full-dropzone.gif]]
+<img :src="$withBase('/assets-full-dropzone.gif')">
 
 
 All you have to do is to activate it and possibly set a custom content (you might also want to hide the default uploader)

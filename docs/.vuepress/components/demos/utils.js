@@ -140,7 +140,6 @@ var panelSwitcher = {
           const row = this.getRowEl(editor);
           const lmEl = this.getLayersEl(row);
           lmEl.style.display = 'none';
-          sender && sender.set('active', false);
         },
       },
     }, {
@@ -161,7 +160,6 @@ var panelSwitcher = {
           const row = this.getRowEl(editor);
           const smEl = this.getStyleEl(row);
           smEl.style.display = 'none';
-          sender && sender.set('active', false);
         },
       },
     }

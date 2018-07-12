@@ -25,7 +25,7 @@ In GrapesJS, Traits could define different parameters and behaviors of a single 
 
 You can add traits to the component by extending them or while creating a new one. Let's see in this example how to make inputs more customizable by the editor. All components, by default, contain 2 traits: id and title (at the moment of writing). So, if you select an input and open the Settings panel you will see just this:
 
-[[img/default-traits.png]]
+<img :src="$withBase('/default-traits.png')">
 
 In this case we gonna create a new Component ([check here](Components) for more details about the creation of new components) with a new set of traits
 
@@ -73,7 +73,7 @@ domComps.addType('input', {
 
 Now the result will be
 
-[[img/input-custom-traits.png]]
+<img :src="$withBase('/input-custom-traits.png')">
 
 By default, traits modify attributes of the model (which than reflected in canvas) but you can also have traits which change the property
 
