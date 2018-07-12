@@ -475,7 +475,7 @@ editor.Commands.add('show-traits', {
 
 Now if you switch to the Trait panel and select some of the inner component you should see its default traits.
 
-## Devices
+## Responsive templates
 GrapesJS implements also a module which allows you to work with responsive templates easily. Let's see how to define different devices and some button for device switching
 
 ```html{3}
@@ -573,14 +573,71 @@ editor.setDevice('Mobile');
 Check the [Device Manager API](api/panels.html) to get all available methods
 :::
 
-## Storage
-Once you get all the tools you need for styling and managing your components the last part would to setup the storing and loading process.
-Grapesjs implements 2 simple type of storages, the local (by using localStorage, active by default) and the remote one.
-Those are enough to cover most of the cases, but it's also possible to add new storage implementations (eg. think about IndexedDB), if you want you can read more about [Storages here].
-Let's see how can we setup a simple remote storage.
+## Store & load data
+Once you finished with defining you builder interface the next step would be to setup the storing and loading process.
+GrapesJS implements 2 simple type of storages inside its Storage Manager, the local (by using `localStorage`, active by default) and the remote one. Those are enough to cover most of the cases, but it's also possible to add new implementations ([grapesjs-indexeddb](https://github.com/artf/grapesjs-indexeddb) is a good example).
+Let's see how the default options looks like
 
--- Add remote storage, see old getting started
+```js
+grapesjs.init({
+    // ...
+    storageManager: {
+      id: 'gjs-',             // Prefix identifier that will be used inside storing and loading
+      type: 'local',          // Type of the storage
+      autosave: true,         // Store data automatically
+      autoload: true,         // Autoload stored data on init
+      stepsBeforeSave: 1,     // If autosave enabled, indicates how many changes are necessary before store method is triggered
+      storeComponents: true,  // Enable/Disable storing of components in JSON format
+      storeStyles: true,      // Enable/Disable storing of rules in JSON format
+      storeHtml: true,        // Enable/Disable storing of components as HTML string
+      storeCss: true,         // Enable/Disable storing of rules as CSS string
+    }
+});
+```
 
+Worth noting the default `id` parameter which adds a prefix for all keys to store. If you check the `localStorage` inside the devtool panel you'll see something like `{ 'gjs-components': '....' ...}` in this way it prevents the risk of collisions.
+
+Let's check also the configuration required to setup the remote storage
+
+```js
+grapesjs.init({
+    // ...
+    storageManager: {
+      type: 'remote',
+      stepsBeforeSave: 10,
+      urlStore: 'http://store/endpoint',
+      urlLoad: 'http://load/endpoint',
+      params: {}, // Custom parameters to pass with the remote storage request, eg. CSRF token
+      headers: {}, // Custom headers for the remote storage request
+    }
+});
+```
+As you might noticed, we've left some default option unchanged, increased changes necessary for autosave triggering and passed remote endpoints.
+If you prefer you could also disable the autosaving and do it by yourself using some custom command
+
+```js
+// ...
+  storageManager: {
+    type: 'remote',
+    autosave: false,
+    // ...
+  },
+  // ...
+  commands: {
+    defaults: [
+      // ...
+      {
+        id: 'store-data',
+        run(editor) {
+          editor.store();
+        },
+      }
+    ]
+  }
+// ...
+```
+
+To get a better overview of the Storage Manager, how correctly you should store/load the template and how to define new storages you have to read the [Storage Manager Module](modules/Storage.html) page
 
 ## Theming
 One last step that might actually improve a lot the personality of you editor is how it's look visually. To achive an easy to use theming we have adapted an atomic design for this purpose. To customize the main palette of colors all you have to do is to change some CSS, or variables if you work in SCSS
