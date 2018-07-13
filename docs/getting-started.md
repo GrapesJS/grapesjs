@@ -5,6 +5,9 @@ meta:
   - name: keywords
     content: grapesjs getting started
 ---
+TODO:
+- svg icons
+- Selectors
 
 # Getting Started
 
@@ -640,6 +643,57 @@ If you prefer you could also disable the autosaving and do it by yourself using 
 To get a better overview of the Storage Manager, how correctly you should store/load the template and how to define new storages you have to read the [Storage Manager Module](modules/Storage.html) page
 
 ## Theming
-One last step that might actually improve a lot the personality of you editor is how it's look visually. To achive an easy to use theming we have adapted an atomic design for this purpose. To customize the main palette of colors all you have to do is to change some CSS, or variables if you work in SCSS
+One last step that might actually improve a lot your editor personality is how it's look visually. To achieve an easy theming we have adapted an atomic design for this purpose. To customize the main palette of colors all you have to do is to change few CSS rules or if you include GrapesJS styles via SCSS you can make use of its [internal variables](https://github.com/artf/grapesjs/blob/dev/src/styles/scss/_gjs_variables.scss) and declare yours before the import
 
--- show import in SCSS and CSS
+```scss
+// Put your variables before the grapesjs style import
+
+// Palette variables
+$primaryColor: #444;
+$secondaryColor: #ddd;
+$tertiaryColor: #804f7b;
+$quaternaryColor: #d278c9;
+
+// ...
+
+@import "grapesjs/src/styles/scss/main.scss";
+```
+
+In case of a simple CSS you just have to put your rules after the GrapesJS styles.
+To complete our builder let's customize its color palette and to make it more visually "readable" we gonna replace all button labels with SVG icons
+
+```css
+/* We can remove the border we've set at the beginnig */
+#gjs {
+  border: none;
+}
+/* Theming */
+
+/* Primary color for the background */
+.gjs-one-bg {
+  background-color: #78366a;
+}
+
+/* Secondary color for the text color */
+.gjs-two-color {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Tertiary color for the background */
+.gjs-three-bg {
+  background-color: #ec5896;
+  color: white;
+}
+
+/* Quaternary color for the text color */
+.gjs-four-color,
+.gjs-four-color-h:hover {
+  color: #ec5896;
+}
+```
+
+and here is our final result
+
+<Demo>
+  <DemoTheme/>
+</Demo>

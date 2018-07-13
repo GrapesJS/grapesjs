@@ -280,6 +280,15 @@ var gjsConfigDevices = Object.assign({}, gjsConfigBlocks, {
   deviceManager,
 });
 
+var gjsConfigTheme = Object.assign({}, gjsConfigBlocks, {
+  container: '#gjs8',
+  blockManager: Object.assign({}, blockManager, { appendTo: '#blocks8' }),
+  layerManager: Object.assign({}, layerManager, { appendTo: '#layers-container8' }),
+  styleManager: Object.assign({}, styleManager, { appendTo: '#styles-container8' }),
+  traitManager: Object.assign({}, traitManager, { appendTo: '#traits-container8' }),
+  deviceManager,
+});
+
 module.exports = {
   gjsConfigStart,
   gjsConfigBlocks,
@@ -288,6 +297,7 @@ module.exports = {
   gjsConfigStyle,
   gjsConfigTraits,
   gjsConfigDevices,
+  gjsConfigTheme,
   panelTop,
   panelBasicActions,
   panelSidebar,
