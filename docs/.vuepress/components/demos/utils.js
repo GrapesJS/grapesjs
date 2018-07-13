@@ -85,6 +85,7 @@ var styleManager = {
 };
 
 var layerManager = { scrollLayers: 0 };
+var selectorManager = {};
 var traitManager = {};
 var deviceManager = {
   devices: [{
@@ -320,6 +321,7 @@ var gjsConfigStyle = Object.assign({}, gjsConfigBlocks, {
   blockManager: Object.assign({}, blockManager, { appendTo: '#blocks5' }),
   layerManager: { appendTo: '#layers-container5', scrollLayers: 0 },
   styleManager: Object.assign({}, styleManager, { appendTo: '#styles-container5' }),
+  selectorManager: Object.assign({}, selectorManager, { appendTo: '#styles-container5' }),
 });
 
 var gjsConfigTraits = Object.assign({}, gjsConfigBlocks, {
@@ -328,6 +330,7 @@ var gjsConfigTraits = Object.assign({}, gjsConfigBlocks, {
   layerManager: Object.assign({}, layerManager, { appendTo: '#layers-container6' }),
   styleManager: Object.assign({}, styleManager, { appendTo: '#styles-container6' }),
   traitManager: Object.assign({}, traitManager, { appendTo: '#traits-container6' }),
+  selectorManager: Object.assign({}, selectorManager, { appendTo: '#styles-container6' }),
 });
 
 var gjsConfigDevices = Object.assign({}, gjsConfigBlocks, {
@@ -336,6 +339,7 @@ var gjsConfigDevices = Object.assign({}, gjsConfigBlocks, {
   layerManager: Object.assign({}, layerManager, { appendTo: '#layers-container7' }),
   styleManager: Object.assign({}, styleManager, { appendTo: '#styles-container7' }),
   traitManager: Object.assign({}, traitManager, { appendTo: '#traits-container7' }),
+  selectorManager: Object.assign({}, selectorManager, { appendTo: '#styles-container7' }),
   deviceManager,
 });
 
@@ -345,6 +349,7 @@ var gjsConfigTheme = Object.assign({}, gjsConfigBlocks, {
   layerManager: Object.assign({}, layerManager, { appendTo: '#layers-container8' }),
   styleManager: Object.assign({}, styleManager, { appendTo: '#styles-container8' }),
   traitManager: Object.assign({}, traitManager, { appendTo: '#traits-container8' }),
+  selectorManager: Object.assign({}, selectorManager, { appendTo: '#styles-container8' }),
   deviceManager,
 });
 

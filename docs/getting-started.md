@@ -343,6 +343,13 @@ const editor = grapesjs.init({
       }
     ]
   },
+  // The Selector Manager allows to assign classes and
+  // different states (eg. :hover) on components.
+  // Generally, it's used in conjunction with Style Manager
+  // but it's not mandatory
+  selectorManager: {
+    appendTo: '.styles-container'
+  },
   styleManager: {
     appendTo: '.styles-container',
     sectors: [{
