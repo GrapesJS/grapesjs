@@ -136,6 +136,7 @@ var panelSidebar = {
 var buttonShowLayers = {
   id: 'show-layers',
   active: true,
+  togglable: false,
   label: 'Layers',
   command: {
     getRowEl(editor) { return editor.getContainer().parentNode.parentNode; },
@@ -157,6 +158,7 @@ var buttonShowLayers = {
 var buttonShowStyle = {
   id: 'show-style',
   label: 'Styles',
+  togglable: false,
   active: true,
   command: {
     getRowEl(editor) { return editor.getContainer().parentNode.parentNode; },
@@ -178,6 +180,7 @@ var buttonShowStyle = {
 var buttonShowTraits = {
   id: 'show-traits',
   label: 'Traits',
+  togglable: false,
   active: true,
   command: {
     getTraitsEl(editor) {
@@ -217,10 +220,12 @@ var panelDevices = {
       label: 'D',
       command: { run: editor => editor.setDevice('Desktop') },
       active: true,
+      togglable: false,
     }, {
       id: 'device-mobile',
       label: 'M',
       command: { run: editor => editor.setDevice('Mobile') },
+      togglable: false,
   }],
 };
 

@@ -12,6 +12,7 @@ module.exports = Backbone.Model.extend({
     options: {},
     active: false,
     dragDrop: false,
+    togglable: true,
     runDefaultCommand: true,
     stopDefaultCommand: false,
     disable: false

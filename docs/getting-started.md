@@ -318,11 +318,14 @@ const editor = grapesjs.init({
             active: true,
             label: 'Layers',
             command: 'show-layers',
+            // Once activated disable the possibility to turn it off
+            togglable: false,
           }, {
             id: 'show-style',
             active: true,
             label: 'Styles',
             command: 'show-styles',
+            togglable: false,
         }],
       }
     ]
@@ -447,6 +450,7 @@ const editor = grapesjs.init({
             active: true,
             label: 'Traits',
             command: 'show-traits',
+            togglable: false,
         }],
       }
     ]
@@ -519,10 +523,12 @@ const editor = grapesjs.init({
             label: 'D',
             command: 'set-device-desktop',
             active: true,
+            togglable: false,
           }, {
             id: 'device-mobile',
             label: 'M',
             command: 'set-device-mobile',
+            togglable: false,
         }],
       }
     ]
