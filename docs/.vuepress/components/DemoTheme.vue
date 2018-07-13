@@ -31,16 +31,16 @@ module.exports = {
     editor8.Panels.addPanel(Object.assign({}, utils.panelTop, {
       el: '#panel__top8'
     }));
-    editor8.Panels.addPanel(Object.assign({}, utils.panelBasicActions, {
+    editor8.Panels.addPanel(Object.assign({}, utils.panelBasicActionsIcons, {
       el: '#panel__basic-actions8'
     }));
     editor8.Panels.addPanel(Object.assign({}, utils.panelSidebar, {
       el: '#panel__right8'
     }));
-    editor8.Panels.addPanel(Object.assign({}, utils.panelSwitcherTraits, {
+    editor8.Panels.addPanel(Object.assign({}, utils.panelSwitcherTraitsIcons, {
       el: '#panel__switcher8'
     }));
-    editor8.Panels.addPanel(Object.assign({}, utils.panelDevices, {
+    editor8.Panels.addPanel(Object.assign({}, utils.panelDevicesIcons, {
       el: '#panel__devices8'
     }));
     window.editor8 = editor8;

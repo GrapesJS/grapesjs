@@ -5,20 +5,32 @@ meta:
   - name: keywords
     content: grapesjs getting started
 ---
-TODO:
-- svg icons
-- Selectors
 
 # Getting Started
 
-In this guide we'll see how to create a completely customized page builder from scratch.
-Here you can find the final result: [demo](##).
+This guide is a step-by-step introduction for everyone who wants to start creating its own builder with GrapesJS. This is not a complete guide of all functionalities but just a concise overview of most common modules.
+Let's see how to create a completely customized page builder from scratch. The last demo of this page represents the [final result](#final-result)
 
-At first, let's import the latest version of the library
+## Import the library
+
+Before start using GrapesJS you have to import it inside your project, so let's import its latest version
 
 ```html
 <link rel="stylesheet" href="//unpkg.com/grapesjs/dist/css/grapes.min.css">
 <script src="//unpkg.com/grapesjs"></script>
+<!--
+If you need plugins, put them below the main grapesjs script
+<script src="/path/to/some/plugin.min.js"></script>
+-->
+```
+
+or if you're in node environment
+
+```js
+import 'grapesjs/dist/css/grapes.min.css';
+import grapesjs from 'grapesjs';
+// If you need plugins, put them below the main grapesjs script
+// import 'grapesjs-some-plugin';
 ```
 
 ## Start from the canvas
@@ -197,6 +209,7 @@ editor.Panels.addPanel({
       id: 'show-json',
       className: 'btn-show-json',
       label: 'JSON',
+      context: 'show-json',
       command(editor) {
         editor.Modal.setTitle('Components JSON')
           .setContent(`<textarea style="width:100%; height: 250px;">
@@ -700,6 +713,6 @@ To complete our builder let's customize its color palette and to make it more vi
 
 and here is our final result
 
-<Demo>
+<Demo id="final-result">
   <DemoTheme/>
 </Demo>
