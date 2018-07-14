@@ -1,15 +1,17 @@
+const version = require('./../../package.json').version;
+const isDev = process.argv[2] === 'dev';
+const devPath = 'https://localhost:8080/dist';
+
 module.exports = {
   title: 'GrapesJS',
   description: 'GrapesJS documentation',
   base: '/docs/',
-  ga: '', // Google Analytics ID
+  ga: 'UA-74284223-1',
   serviceWorker: false, // Enable Service Worker for offline usage
   head: [
     ['link', { rel: 'icon', href: '/logo-icon.png' }],
-    //['link', { rel: 'stylesheet', href: 'https://unpkg.com/grapesjs/dist/css/grapes.min.css' }], // dev https://localhost:8080/dist/css/grapes.min.css
-    // ['script', { src: '/grapes.min.js' }], // dev https://localhost:8080/dist/grapes.min.js
-    ['link', { rel: 'stylesheet', href: 'https://localhost:8080/dist/css/grapes.min.css' }],
-    ['script', { src: 'https://localhost:8080/dist/grapes.min.js' }],
+    ['link', { rel: 'stylesheet', href: isDev ? `${devPath}/css/grapes.min.css` : `../stylesheets/grapes.min.css?v${version}` }],
+    ['script', { src: isDev ? `${devPath}/grapes.min.js` : `../js/grapes.min.js?v${version}` }],
   ],
   localesSKIP: {
     '/': {
