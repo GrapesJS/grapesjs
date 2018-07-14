@@ -282,7 +282,9 @@ module.exports = Backbone.Model.extend({
 
     models.forEach(model => {
       if (model && !model.get('selectable')) return;
-      this.get('selected').push(model, opts);
+      const selected = this.get('selected');
+      opts.forceChange && selected.remove(model, opts);
+      selected.push(model, opts);
     });
   },
 
