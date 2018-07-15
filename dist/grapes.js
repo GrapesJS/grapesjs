@@ -36561,8 +36561,6 @@ var _underscore = __webpack_require__(/*! underscore */ "./node_modules/undersco
 
 var _mixins = __webpack_require__(/*! utils/mixins */ "./src/utils/mixins.js");
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 var deps = [__webpack_require__(/*! utils */ "./src/utils/index.js"), __webpack_require__(/*! keymaps */ "./src/keymaps/index.js"), __webpack_require__(/*! undo_manager */ "./src/undo_manager/index.js"), __webpack_require__(/*! storage_manager */ "./src/storage_manager/index.js"), __webpack_require__(/*! device_manager */ "./src/device_manager/index.js"), __webpack_require__(/*! parser */ "./src/parser/index.js"), __webpack_require__(/*! selector_manager */ "./src/selector_manager/index.js"), __webpack_require__(/*! modal_dialog */ "./src/modal_dialog/index.js"), __webpack_require__(/*! code_manager */ "./src/code_manager/index.js"), __webpack_require__(/*! panels */ "./src/panels/index.js"), __webpack_require__(/*! rich_text_editor */ "./src/rich_text_editor/index.js"), __webpack_require__(/*! style_manager */ "./src/style_manager/index.js"), __webpack_require__(/*! asset_manager */ "./src/asset_manager/index.js"), __webpack_require__(/*! css_composer */ "./src/css_composer/index.js"), __webpack_require__(/*! trait_manager */ "./src/trait_manager/index.js"), __webpack_require__(/*! dom_components */ "./src/dom_components/index.js"), __webpack_require__(/*! navigator */ "./src/navigator/index.js"), __webpack_require__(/*! canvas */ "./src/canvas/index.js"), __webpack_require__(/*! commands */ "./src/commands/index.js"), __webpack_require__(/*! block_manager */ "./src/block_manager/index.js")];
 
 var Backbone = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
@@ -36604,9 +36602,10 @@ module.exports = Backbone.Model.extend({
     this.set('modules', []);
     this.set('toLoad', []);
     this.set('storables', []);
+    var el = c.el;
 
-    if (c.el && c.fromElement) this.config.components = c.el.innerHTML;
-    this.attrsOrig = c.el ? [].concat(_toConsumableArray(c.el.attributes)).reduce(function (res, next) {
+    if (el && c.fromElement) this.config.components = el.innerHTML;
+    this.attrsOrig = el ? (0, _underscore.toArray)(el.attributes).reduce(function (res, next) {
       res[next.nodeName] = next.nodeValue;
       return res;
     }, {}) : '';
@@ -37374,7 +37373,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.14.22',
+    version: '0.14.23',
 
     /**
      * Initializes an editor based on passed options
