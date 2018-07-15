@@ -2,6 +2,7 @@ const Component = require('./ComponentImage');
 const OComponent = require('./Component');
 const yt = 'yt';
 const vi = 'vi';
+const ytnc = 'ytnc';
 
 module.exports = Component.extend(
   {
@@ -13,12 +14,15 @@ module.exports = Component.extend(
       void: 0,
       provider: '', // on change of provider, traits are switched
       ytUrl: 'https://www.youtube.com/embed/',
+      ytncUrl: 'https://www.youtube-nocookie.com/embed/',
       viUrl: 'https://player.vimeo.com/video/',
       loop: 0,
       muted: 0,
       autoplay: 0,
       controls: 1,
       color: '',
+      rel: 1, // YT related videos
+      modestbranding: 0, // YT modest branding
       sources: [],
       attributes: { allowfullscreen: 'allowfullscreen' },
       toolbar: OComponent.prototype.defaults.toolbar
@@ -29,6 +33,7 @@ module.exports = Component.extend(
       var prov = this.get('provider');
       switch (prov) {
         case yt:
+        case ytnc:
           traits = this.getYoutubeTraits();
           break;
         case vi:
@@ -41,7 +46,7 @@ module.exports = Component.extend(
       this.set('traits', traits);
       Component.prototype.initialize.apply(this, arguments);
       this.listenTo(this, 'change:provider', this.updateTraits);
-      this.listenTo(this, 'change:videoId', this.updateSrc);
+      this.listenTo(this, 'change:videoId change:provider', this.updateSrc);
     },
 
     initToolbar(...args) {
@@ -57,6 +62,7 @@ module.exports = Component.extend(
       var qr = uri.query;
       switch (prov) {
         case yt:
+        case ytnc:
         case vi:
           var videoId = uri.pathname.split('/').pop();
           this.set('videoId', videoId);
@@ -64,6 +70,8 @@ module.exports = Component.extend(
           if (qr.loop) this.set('loop', 1);
           if (parseInt(qr.controls) === 0) this.set('controls', 0);
           if (qr.color) this.set('color', qr.color);
+          if (qr.rel === '0') this.set('rel', 0);
+          if (qr.modestbranding === '1') this.set('modestbranding', 1);
           break;
         default:
       }
@@ -78,6 +86,9 @@ module.exports = Component.extend(
       switch (prov) {
         case yt:
           this.set('src', this.getYoutubeSrc());
+          break;
+        case ytnc:
+          this.set('src', this.getYoutubeNoCookieSrc());
           break;
         case vi:
           this.set('src', this.getVimeoSrc());
@@ -95,6 +106,7 @@ module.exports = Component.extend(
       var prov = this.get('provider');
       switch (prov) {
         case yt:
+        case ytnc:
         case vi:
           break;
         default:
@@ -114,6 +126,7 @@ module.exports = Component.extend(
       var traits = this.getSourceTraits();
       switch (prov) {
         case yt:
+        case ytnc:
           this.set('tagName', 'iframe');
           traits = this.getYoutubeTraits();
           break;
@@ -145,6 +158,7 @@ module.exports = Component.extend(
         options: [
           { value: 'so', name: 'HTML5 Source' },
           { value: yt, name: 'Youtube' },
+          { value: ytnc, name: 'Youtube (no cookie)' },
           { value: vi, name: 'Vimeo' }
         ]
       };
@@ -185,7 +199,19 @@ module.exports = Component.extend(
         },
         this.getAutoplayTrait(),
         this.getLoopTrait(),
-        this.getControlsTrait()
+        this.getControlsTrait(),
+        {
+          type: 'checkbox',
+          label: 'Related',
+          name: 'rel',
+          changeProp: 1
+        },
+        {
+          type: 'checkbox',
+          label: 'Modest',
+          name: 'modestbranding',
+          changeProp: 1
+        }
       ];
     },
 
@@ -270,6 +296,19 @@ module.exports = Component.extend(
       // Loop works only with playlist enabled
       // https://stackoverflow.com/questions/25779966/youtube-iframe-loop-doesnt-work
       url += this.get('loop') ? `&loop=1&playlist=${id}` : '';
+      url += this.get('rel') ? '' : '&rel=0';
+      url += this.get('modestbranding') ? '&modestbranding=1' : '';
+      return url;
+    },
+
+    /**
+     * Returns url to youtube no cookie video
+     * @return {string}
+     * @private
+     */
+    getYoutubeNoCookieSrc() {
+      let url = this.getYoutubeSrc();
+      url = url.replace(this.get('ytUrl'), this.get('ytncUrl'));
       return url;
     },
 
@@ -300,13 +339,15 @@ module.exports = Component.extend(
     isComponent(el) {
       var result = '';
       var isYtProv = /youtube\.com\/embed/.test(el.src);
+      var isYtncProv = /youtube-nocookie\.com\/embed/.test(el.src);
       var isViProv = /player\.vimeo\.com\/video/.test(el.src);
-      var isExtProv = isYtProv || isViProv;
+      var isExtProv = isYtProv || isYtncProv || isViProv;
       if (el.tagName == 'VIDEO' || (el.tagName == 'IFRAME' && isExtProv)) {
         result = { type: 'video' };
         if (el.src) result.src = el.src;
         if (isExtProv) {
           if (isYtProv) result.provider = yt;
+          else if (isYtncProv) result.provider = ytnc;
           else if (isViProv) result.provider = vi;
         }
       }
