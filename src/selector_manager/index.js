@@ -14,39 +14,34 @@
  * ```
  *
  * In this scenario we get:
- * span     -> selector of type `tag`
- * send-btn -> selector of type `id`
- * btn      -> selector of type `class`
+ * * span     -> selector of type `tag`
+ * * send-btn -> selector of type `id`
+ * * btn      -> selector of type `class`
  *
  * So, for example, being `btn` the same class entity it'll be easier to refactor and track things.
  *
- * Before using methods you should get first the module from the editor instance, in this way:
- *
+ * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/selector_manager/config/config.js)
  * ```js
- * var selectorManager = editor.SelectorManager;
+ * const editor = grapesjs.init({
+ *  selectorManager: {
+ *    // options
+ *  }
+ * })
  * ```
  *
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ *
+ * ```js
+ * const selectorManager = editor.SelectorManager;
+ * ```
+ *
+ * * [getConfig](#getconfig)
+ * * [add](#add)
+ * * [addClass](#addclass)
+ * * [get](#get)
+ * * [getAll](#getAll)
+ *
  * @module SelectorManager
- * @param {Object} config Configurations
- * @param {Array<Object>} [config.selectors=[]] Default selectors
- * @param {Array<Object>} [config.states=[]] Default states
- * @param {String} [config.label='Classes'] Classes label
- * @param {String} [config.statesLabel='- State -'] The empty state label
- * @return {this}
- * @example
- * ...
- * {
- *  selectors: [
- *    {name:'myselector1'},
- *     ...
- *  ],
- *  states: [{
- *    name: 'hover', label: 'Hover'
- *  },{
- *    name: 'active', label: 'Click'
- *  }],
- *  statesLabel: '- Selecte State -',
- * }
  */
 
 import { isString, isElement, isObject } from 'underscore';
@@ -73,16 +68,11 @@ module.exports = config => {
      * @private
      */
     name: 'SelectorManager',
-    
+
     /**
      * Get configuration object
      * @return {Object}
-     * @private
      */
-    getConfig() {
-      return c;
-    },
-
     getConfig() {
       return c;
     },

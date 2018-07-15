@@ -12,7 +12,7 @@ module.exports = ComponentView.extend({
     this.listenTo(this.model, 'change:src', this.updateSrc);
     this.listenTo(
       this.model,
-      'change:loop change:autoplay change:controls change:color',
+      'change:loop change:autoplay change:controls change:color change:rel change:modestbranding',
       this.updateVideo
     );
     this.listenTo(this.model, 'change:provider', this.updateProvider);
@@ -39,6 +39,9 @@ module.exports = ComponentView.extend({
       case 'yt':
         src = this.model.getYoutubeSrc();
         break;
+      case 'ytnc':
+        src = this.model.getYoutubeNoCookieSrc();
+        break;
       case 'vi':
         src = this.model.getVimeoSrc();
         break;
@@ -56,6 +59,7 @@ module.exports = ComponentView.extend({
     var md = this.model;
     switch (prov) {
       case 'yt':
+      case 'ytnc':
       case 'vi':
         this.model.trigger('change:videoId');
         break;
@@ -71,6 +75,9 @@ module.exports = ComponentView.extend({
     switch (prov) {
       case 'yt':
         videoEl = this.renderYoutube();
+        break;
+      case 'ytnc':
+        videoEl = this.renderYoutubeNoCookie();
         break;
       case 'vi':
         videoEl = this.renderVimeo();
@@ -92,6 +99,15 @@ module.exports = ComponentView.extend({
   renderYoutube() {
     var el = document.createElement('iframe');
     el.src = this.model.getYoutubeSrc();
+    el.frameBorder = 0;
+    el.setAttribute('allowfullscreen', true);
+    this.initVideoEl(el);
+    return el;
+  },
+
+  renderYoutubeNoCookie() {
+    var el = document.createElement('iframe');
+    el.src = this.model.getYoutubeNoCookieSrc();
     el.frameBorder = 0;
     el.setAttribute('allowfullscreen', true);
     this.initVideoEl(el);

@@ -1,4 +1,19 @@
 /**
+ * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/modal_dialog/config/config.js)
+ * ```js
+ * const editor = grapesjs.init({
+ *  modal: {
+ *    // options
+ *  }
+ * })
+ * ```
+ *
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ *
+ * ```js
+ * const modal = editor.Modal;
+ * ```
+ *
  * * [open](#open)
  * * [close](#close)
  * * [isOpen](#isopen)
@@ -7,13 +22,9 @@
  * * [setContent](#setcontent)
  * * [getContent](#getcontent)
  *
- * Before using the methods you should get first the module from the editor instance, in this way:
- *
- * ```js
- * var modal = editor.Modal;
- * ```
  * @module Modal
  */
+
 module.exports = () => {
   var c = {},
     defaults = require('./config/config'),

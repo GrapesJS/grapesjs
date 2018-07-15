@@ -9,7 +9,7 @@ let showOffsets;
 
 module.exports = {
   init(o) {
-    bindAll(this, 'onHover', 'onOut', 'onClick', 'onKeyPress', 'onFrameScroll');
+    bindAll(this, 'onHover', 'onOut', 'onClick', 'onFrameScroll');
   },
 
   enable() {
@@ -53,27 +53,8 @@ module.exports = {
     methods[method](body, 'mouseout', this.onOut);
     methods[method](body, 'click', this.onClick);
     methods[method](win, 'scroll resize', this.onFrameScroll);
-    methods[method](win, 'keydown', this.onKeyPress);
     em[method]('component:toggled', this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
-  },
-
-  /**
-   * On key press event
-   * @private
-   * */
-  onKeyPress(e) {
-    var key = e.which || e.keyCode;
-    var comp = this.editorModel.getSelected();
-    var focused = this.frameEl.contentDocument.activeElement.tagName !== 'BODY';
-
-    // On CANC (46) or Backspace (8)
-    if (key == 8 || key == 46) {
-      if (!focused) e.preventDefault();
-      if (comp && !focused) {
-        this.editor.runCommand('core:component-delete');
-      }
-    }
   },
 
   /**
@@ -95,7 +76,7 @@ module.exports = {
 
     if (model && !model.get('hoverable')) {
       let parent = model && model.parent();
-      while (parent && !parent.get('hoverable')) parent = comp.parent();
+      while (parent && !parent.get('hoverable')) parent = parent.parent();
       model = parent;
     }
 

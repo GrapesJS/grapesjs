@@ -1,4 +1,4 @@
-import { isUndefined, defaults, isArray, contains } from 'underscore';
+import { isUndefined, defaults, isArray, contains, toArray } from 'underscore';
 import { getModel } from 'utils/mixins';
 
 const deps = [
@@ -59,10 +59,11 @@ module.exports = Backbone.Model.extend({
     this.set('modules', []);
     this.set('toLoad', []);
     this.set('storables', []);
+    const el = c.el;
 
-    if (c.el && c.fromElement) this.config.components = c.el.innerHTML;
-    this.attrsOrig = c.el
-      ? [...c.el.attributes].reduce((res, next) => {
+    if (el && c.fromElement) this.config.components = el.innerHTML;
+    this.attrsOrig = el
+      ? toArray(el.attributes).reduce((res, next) => {
           res[next.nodeName] = next.nodeValue;
           return res;
         }, {})
@@ -282,7 +283,9 @@ module.exports = Backbone.Model.extend({
 
     models.forEach(model => {
       if (model && !model.get('selectable')) return;
-      this.get('selected').push(model, opts);
+      const selected = this.get('selected');
+      opts.forceChange && selected.remove(model, opts);
+      selected.push(model, opts);
     });
   },
 

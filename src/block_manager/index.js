@@ -1,32 +1,29 @@
 /**
+ * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/block_manager/config/config.js)
+ * ```js
+ * const editor = grapesjs.init({
+ *  blockManager: {
+ *    // options
+ *  }
+ * })
+ * ```
+ *
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ *
+ * ```js
+ * const blockManager = editor.BlockManager;
+ * ```
  * * [add](#add)
  * * [get](#get)
  * * [getAll](#getall)
  * * [getAllVisible](#getallvisible)
+ * * [remove](#remove)
+ * * [getConfig](#getconfig)
  * * [getCategories](#getcategories)
  * * [getContainer](#getcontainer)
  * * [render](#render)
  *
- * Block manager helps managing various, draggable, piece of contents that could be easily reused inside templates.
- *
- * Before using methods you should get first the module from the editor instance, in this way:
- *
- * ```js
- * var blockManager = editor.BlockManager;
- * ```
- *
  * @module BlockManager
- * @param {Object} config Configurations
- * @param {Array<Object>} [config.blocks=[]] Default blocks
- * @example
- * ...
- * {
- *     blocks: [
- *      {id:'h1-block' label: 'Heading', content:'<h1>...</h1>'},
- *      ...
- *    ],
- * }
- * ...
  */
 import { isElement } from 'underscore';
 
