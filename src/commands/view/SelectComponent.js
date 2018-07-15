@@ -76,7 +76,7 @@ module.exports = {
 
     if (model && !model.get('hoverable')) {
       let parent = model && model.parent();
-      while (parent && !parent.get('hoverable')) parent = comp.parent();
+      while (parent && !parent.get('hoverable')) parent = parent.parent();
       model = parent;
     }
 
