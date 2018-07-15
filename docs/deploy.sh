@@ -4,7 +4,7 @@
 set -e
 
 # build
-npm run docs:build-vp
+npm run docs:build
 
 # navigate into the build output directory
 cd docs/.vuepress/dist
@@ -23,6 +23,6 @@ mv ./docs-new ./docs
 # stage all and commit
 git add -A
 git commit -m 'deploy docs'
-git push git@github.com:artf/grapesjs.git gh-pages
+git push https://github.com/artf/grapesjs.git gh-pages
 # surge --domain grapesjs.surge.sh
 cd -
