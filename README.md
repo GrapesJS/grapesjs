@@ -73,12 +73,12 @@ Newsletter Demo - http://grapesjs.com/demo-newsletter-editor.html
 ## Download
 
 * CDNs
-  * UNPKG
+  * UNPKG (resolves to the latest version)
     * `https://unpkg.com/grapesjs`
     * `https://unpkg.com/grapesjs/dist/css/grapes.min.css`
-  * CDNJS
-    * `https://cdnjs.cloudflare.com/ajax/libs/grapesjs/0.12.17/grapes.min.js`
-    * `https://cdnjs.cloudflare.com/ajax/libs/grapesjs/0.12.17/css/grapes.min.css`
+  * CDNJS (replace `X.X.X` with the current version)
+    * `https://cdnjs.cloudflare.com/ajax/libs/grapesjs/X.X.X/grapes.min.js`
+    * `https://cdnjs.cloudflare.com/ajax/libs/grapesjs/X.X.X/css/grapes.min.css`
 * NPM
   * `npm i grapesjs`
 * GIT
@@ -152,7 +152,7 @@ Once the development server is started you should be able to reach the demo page
 
 ## Documentation
 
-Check the getting started guide here: [wiki]
+Check the getting started guide here: [Documentation]
 
 
 
@@ -248,6 +248,6 @@ Thanks to [BrowserStack](https://www.browserstack.com) for providing us browser 
 BSD 3-clause
 
 
-[wiki]: <https://github.com/artf/grapesjs/wiki>
-[API-Reference]: <https://github.com/artf/grapesjs/wiki/API-Reference>
+[Documentation]: <https://grapesjs.com/docs/>
+[API-Reference]: <https://grapesjs.com/docs/api/>
 [CMS]: <https://it.wikipedia.org/wiki/Content_management_system>
