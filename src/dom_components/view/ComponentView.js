@@ -32,6 +32,7 @@ module.exports = Backbone.View.extend({
     this.listenTo(model, 'change:script', this.render);
     this.listenTo(model, 'change:content', this.updateContent);
     this.listenTo(model, 'change', this.handleChange);
+    this.listenTo(model, 'active', this.onActive);
     this.listenTo(classes, 'add remove change', this.updateClasses);
     $el.data('model', model);
     $el.data('collection', model.get('components'));
@@ -44,6 +45,11 @@ module.exports = Backbone.View.extend({
    * Initialize callback
    */
   init() {},
+
+  /**
+   * Callback executed when the `active` event is triggered on component
+   */
+  onActive() {},
 
   /**
    * Handle any property change
