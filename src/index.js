@@ -58,6 +58,8 @@ module.exports = (() => {
 
         if (plugin) {
           plugin(editor, config.pluginsOpts[pluginId] || {});
+        } else if (typeof pluginId === 'function') {
+          pluginId(editor, config.pluginsOpts[pluginId] || {});
         } else {
           console.warn(`Plugin ${pluginId} not found`);
         }
