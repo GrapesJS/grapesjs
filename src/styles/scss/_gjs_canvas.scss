@@ -88,7 +88,14 @@ $canvasTop: 40px;
   padding: 5px 7px;
   font-size: 0.8rem;
   cursor: pointer;
-  fill: currentColor;
+  width: 26px;
+  vertical-align: middle;
+  display: inline-block;
+
+  svg {
+    fill: currentColor;
+    vertical-align: middle;
+  }
 }
 
 .#{$app-prefix}resizer-c {
