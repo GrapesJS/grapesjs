@@ -17,6 +17,8 @@
  *
  * @module CodeManager
  */
+import { isUndefined } from 'underscore';
+
 module.exports = () => {
   var c = {},
     defaults = require('./config/config'),
@@ -31,6 +33,8 @@ module.exports = () => {
     defGenerators = {},
     viewers = {},
     defViewers = {};
+
+  const defaultViewer = 'CodeMirror';
 
   return {
     getConfig() {
@@ -151,6 +155,19 @@ module.exports = () => {
      * */
     getViewers() {
       return viewers;
+    },
+
+    createViewer(opts = {}) {
+      const type = !isUndefined(opts.type) ? opts.type : defaultViewer;
+      const viewer = this.getViewer(type) && this.getViewer(type).clone();
+      const cont = document.createElement('div');
+      const txtarea = document.createElement('textarea');
+      cont.appendChild(txtarea);
+      viewer.set(opts);
+      viewer.init(txtarea);
+      viewer.setElement(cont);
+
+      return viewer;
     },
 
     /**

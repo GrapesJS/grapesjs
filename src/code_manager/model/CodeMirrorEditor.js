@@ -22,8 +22,38 @@ module.exports = Backbone.Model.extend({
       mode: this.get('codeName'),
       ...this.attributes
     });
+    this.element = el;
 
     return this;
+  },
+
+  getEditor() {
+    return this.editor;
+  },
+
+  /**
+   * The element where the viewer is attached
+   * @return {HTMLElement}
+   */
+  getElement() {
+    return this.element;
+  },
+
+  /**
+   * Set the element which contains the viewer attached.
+   * Generally, it should be just a textarea, but some editor might require
+   * a container for it some in that case this method can be used
+   * @param {HTMLElement} el
+   * @return {self}
+   */
+  setElement(el) {
+    this.element = el;
+    return this;
+  },
+
+  getContent() {
+    const ed = this.getEditor();
+    return ed && ed.getValue();
   },
 
   /** @inheritdoc */
