@@ -70,9 +70,14 @@ module.exports = () => {
 
     /**
      * Open the modal window
+     * @param {Object} [opts={}] Options
+     * @param {String|HTMLElement} [opts.title] Title to set for the modal
+     * @param {String|HTMLElement} [opts.content] Content to set for the modal
      * @return {this}
      */
-    open() {
+    open(opts = {}) {
+      opts.title && this.setTitle(opts.title);
+      opts.content && this.setContent(opts.content);
       modal.show();
       return this;
     },
