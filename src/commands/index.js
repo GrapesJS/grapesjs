@@ -17,6 +17,8 @@
  * * [add](#add)
  * * [get](#get)
  * * [has](#has)
+ * * [run](#run)
+ * * [stop](#stop)
  *
  * @module Commands
  */
@@ -251,6 +253,40 @@ module.exports = () => {
      * */
     has(id) {
       return !!commands[id];
+    },
+
+    /**
+     * Execute the command
+     * @param {String} id Command ID
+     * @param {Object} [options={}] Options
+     * @return {*} The return is defined by the command
+     * @example
+     * commands.run('myCommand', { someOption: 1 });
+     */
+    run(id, options = {}) {
+      let result;
+      const command = this.get(id);
+      const editor = em.get('Editor');
+      if (command) result = command.callRun(editor, options);
+
+      return result;
+    },
+
+    /**
+     * Stop the command
+     * @param {String} id Command ID
+     * @param {Object} [options={}] Options
+     * @return {*} The return is defined by the command
+     * @example
+     * commands.stop('myCommand', { someOption: 1 });
+     */
+    stop(id, options = {}) {
+      let result;
+      const command = this.get(id);
+      const editor = em.get('Editor');
+      if (command) result = command.callStop(editor, options);
+
+      return result;
     },
 
     /**
