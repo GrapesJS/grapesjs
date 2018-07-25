@@ -51,6 +51,24 @@ module.exports = Backbone.Model.extend({
     return this;
   },
 
+  /**
+   * Refresh the viewer
+   * @return {self}
+   */
+  refresh() {
+    this.getEditor().refresh();
+    return this;
+  },
+
+  /**
+   * Focus the viewer
+   * @return {self}
+   */
+  focus() {
+    this.getEditor().focus();
+    return this;
+  },
+
   getContent() {
     const ed = this.getEditor();
     return ed && ed.getValue();
