@@ -22816,6 +22816,8 @@ module.exports = __webpack_require__(/*! backbone */ "./node_modules/backbone/ba
 "use strict";
 
 
+var _underscore = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+
 module.exports = __webpack_require__(/*! ./AssetView */ "./src/asset_manager/view/AssetView.js").extend({
   events: {
     'click [data-toggle=asset-remove]': 'onRemove',
@@ -22855,7 +22857,7 @@ module.exports = __webpack_require__(/*! ./AssetView */ "./src/asset_manager/vie
     this.collection.trigger('deselectAll');
     this.$el.addClass(this.pfx + 'highlight');
 
-    if (typeof onClick === 'function') {
+    if ((0, _underscore.isFunction)(onClick)) {
       onClick(model);
     } else {
       this.updateTarget(this.collection.target);
@@ -22868,11 +22870,12 @@ module.exports = __webpack_require__(/*! ./AssetView */ "./src/asset_manager/vie
    * @private
    * */
   onDblClick: function onDblClick() {
-    var em = this.em;
-    var onDblClick = this.config.onDblClick;
-    var model = this.model;
+    var em = this.em,
+        model = this.model;
 
-    if (typeof onDblClick === 'function') {
+    var onDblClick = this.config.onDblClick;
+
+    if ((0, _underscore.isFunction)(onDblClick)) {
       onDblClick(model);
     } else {
       this.updateTarget(this.collection.target);
@@ -22880,9 +22883,7 @@ module.exports = __webpack_require__(/*! ./AssetView */ "./src/asset_manager/vie
     }
 
     var onSelect = this.collection.onSelect;
-    if (typeof onSelect == 'function') {
-      onSelect(this.model);
-    }
+    (0, _underscore.isFunction)(onSelect) && onSelect(model);
   },
 
 
@@ -25437,25 +25438,8 @@ module.exports = {
 "use strict";
 
 
-/**
- * - [addGenerator](#addgenerator)
- * - [getGenerator](#getgenerator)
- * - [getGenerators](#getgenerators)
- * - [addViewer](#addviewer)
- * - [getViewer](#getviewer)
- * - [getViewers](#getviewers)
- * - [updateViewer](#updateviewer)
- * - [getCode](#getcode)
- *
- *
- * Before using methods you should get first the module from the editor instance, in this way:
- *
- * ```js
- * var codeManager = editor.CodeManager;
- * ```
- *
- * @module CodeManager
- */
+var _underscore = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+
 module.exports = function () {
   var c = {},
       defaults = __webpack_require__(/*! ./config/config */ "./src/code_manager/config/config.js"),
@@ -25470,6 +25454,8 @@ module.exports = function () {
       defGenerators = {},
       viewers = {},
       defViewers = {};
+
+  var defaultViewer = 'CodeMirror';
 
   return {
     getConfig: function getConfig() {
@@ -25598,6 +25584,20 @@ module.exports = function () {
     getViewers: function getViewers() {
       return viewers;
     },
+    createViewer: function createViewer() {
+      var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+      var type = !(0, _underscore.isUndefined)(opts.type) ? opts.type : defaultViewer;
+      var viewer = this.getViewer(type) && this.getViewer(type).clone();
+      var cont = document.createElement('div');
+      var txtarea = document.createElement('textarea');
+      cont.appendChild(txtarea);
+      viewer.set(opts);
+      viewer.init(txtarea);
+      viewer.setElement(cont);
+
+      return viewer;
+    },
 
 
     /**
@@ -25657,7 +25657,25 @@ module.exports = function () {
       }return this;
     }
   };
-};
+}; /**
+    * - [addGenerator](#addgenerator)
+    * - [getGenerator](#getgenerator)
+    * - [getGenerators](#getgenerators)
+    * - [addViewer](#addviewer)
+    * - [getViewer](#getviewer)
+    * - [getViewers](#getviewers)
+    * - [updateViewer](#updateviewer)
+    * - [getCode](#getcode)
+    *
+    *
+    * Before using methods you should get first the module from the editor instance, in this way:
+    *
+    * ```js
+    * var codeManager = editor.CodeManager;
+    * ```
+    *
+    * @module CodeManager
+    */
 
 /***/ }),
 
@@ -25701,8 +25719,58 @@ module.exports = _backbone2.default.Model.extend({
       lineWrapping: true,
       mode: this.get('codeName')
     }, this.attributes));
+    this.element = el;
 
     return this;
+  },
+  getEditor: function getEditor() {
+    return this.editor;
+  },
+
+
+  /**
+   * The element where the viewer is attached
+   * @return {HTMLElement}
+   */
+  getElement: function getElement() {
+    return this.element;
+  },
+
+
+  /**
+   * Set the element which contains the viewer attached.
+   * Generally, it should be just a textarea, but some editor might require
+   * a container for it some in that case this method can be used
+   * @param {HTMLElement} el
+   * @return {self}
+   */
+  setElement: function setElement(el) {
+    this.element = el;
+    return this;
+  },
+
+
+  /**
+   * Refresh the viewer
+   * @return {self}
+   */
+  refresh: function refresh() {
+    this.getEditor().refresh();
+    return this;
+  },
+
+
+  /**
+   * Focus the viewer
+   * @return {self}
+   */
+  focus: function focus() {
+    this.getEditor().focus();
+    return this;
+  },
+  getContent: function getContent() {
+    var ed = this.getEditor();
+    return ed && ed.getValue();
   },
 
 
@@ -26140,6 +26208,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                                                                                                                                                                                                      * * [add](#add)
                                                                                                                                                                                                      * * [get](#get)
                                                                                                                                                                                                      * * [has](#has)
+                                                                                                                                                                                                     * * [run](#run)
+                                                                                                                                                                                                     * * [stop](#stop)
                                                                                                                                                                                                      *
                                                                                                                                                                                                      * @module Commands
                                                                                                                                                                                                      */
@@ -26372,6 +26442,46 @@ module.exports = function () {
      * */
     has: function has(id) {
       return !!commands[id];
+    },
+
+
+    /**
+     * Execute the command
+     * @param {String} id Command ID
+     * @param {Object} [options={}] Options
+     * @return {*} The return is defined by the command
+     * @example
+     * commands.run('myCommand', { someOption: 1 });
+     */
+    run: function run(id) {
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+      var result = void 0;
+      var command = this.get(id);
+      var editor = em.get('Editor');
+      if (command) result = command.callRun(editor, options);
+
+      return result;
+    },
+
+
+    /**
+     * Stop the command
+     * @param {String} id Command ID
+     * @param {Object} [options={}] Options
+     * @return {*} The return is defined by the command
+     * @example
+     * commands.stop('myCommand', { someOption: 1 });
+     */
+    stop: function stop(id) {
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+      var result = void 0;
+      var command = this.get(id);
+      var editor = em.get('Editor');
+      if (command) result = command.callStop(editor, options);
+
+      return result;
     },
 
 
@@ -26712,7 +26822,7 @@ module.exports = {
   run: function run(ed, sender) {
     var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-    if (!ed.Canvas.hasFocus() || ed.getModel().isEditing()) return;
+    if (ed.getModel().isEditing()) return;
     var components = opts.component || ed.getSelectedAll();
     components = (0, _underscore.isArray)(components) ? [].concat(_toConsumableArray(components)) : [components];
 
@@ -28329,7 +28439,6 @@ module.exports = {
     // Adjust tools scroll top
     if (!this.adjScroll) {
       this.adjScroll = 1;
-      this.onFrameScroll(e);
       this.updateAttached();
     }
 
@@ -28724,6 +28833,8 @@ module.exports = {
    * @param {Object} mod
    */
   updateToolbar: function updateToolbar(mod) {
+    var _this = this;
+
     var em = this.config.em;
     var model = mod == em ? em.getSelected() : mod;
     var toolbarEl = this.canvas.getToolbarEl();
@@ -28756,7 +28867,11 @@ module.exports = {
 
       this.toolbar.reset(toolbar);
       var view = model.view;
-      view && this.updateToolbarPos(view.el);
+      toolbarStyle.top = '-100px';
+      toolbarStyle.left = 0;
+      setTimeout(function () {
+        return view && _this.updateToolbarPos(view.el);
+      }, 0);
     } else {
       toolbarStyle.display = 'none';
     }
@@ -28772,8 +28887,7 @@ module.exports = {
     var unit = 'px';
     var toolbarEl = this.canvas.getToolbarEl();
     var toolbarStyle = toolbarEl.style;
-    var origDisp = toolbarStyle.display;
-    toolbarStyle.display = 'block';
+    toolbarStyle.opacity = 0;
     var pos = this.canvas.getTargetToElementDim(toolbarEl, el, {
       elPos: elPos,
       event: 'toolbarPosUpdate'
@@ -28782,7 +28896,7 @@ module.exports = {
       var leftPos = pos.left + pos.elementWidth - pos.targetWidth;
       toolbarStyle.top = pos.top + unit;
       toolbarStyle.left = (leftPos < 0 ? 0 : leftPos) + unit;
-      toolbarStyle.display = origDisp;
+      toolbarStyle.opacity = '';
     }
   },
 
@@ -28835,7 +28949,6 @@ module.exports = {
 
   /**
    * Update attached elements, eg. component toolbar
-   * @return {[type]} [description]
    */
   updateAttached: function updateAttached(updated) {
     var model = this.em.getSelected();
@@ -34151,6 +34264,7 @@ module.exports = _backbone2.default.View.extend({
     this.listenTo(model, 'change:script', this.render);
     this.listenTo(model, 'change:content', this.updateContent);
     this.listenTo(model, 'change', this.handleChange);
+    this.listenTo(model, 'active', this.onActive);
     this.listenTo(classes, 'add remove change', this.updateClasses);
     $el.data('model', model);
     $el.data('collection', model.get('components'));
@@ -34164,6 +34278,12 @@ module.exports = _backbone2.default.View.extend({
    * Initialize callback
    */
   init: function init() {},
+
+
+  /**
+   * Callback executed when the `active` event is triggered on component
+   */
+  onActive: function onActive() {},
 
 
   /**
@@ -34667,8 +34787,16 @@ module.exports = Backbone.View.extend({
     }
   },
   render: function render() {
-    var config = this.editor.getConfig();
-    this.el.className += ' ' + config.stylePrefix + 'toolbar-item';
+    var editor = this.editor,
+        $el = this.$el,
+        model = this.model;
+
+    var id = model.get('id');
+    var label = model.get('label');
+    var pfx = editor.getConfig('stylePrefix');
+    $el.addClass(pfx + 'toolbar-item');
+    id && $el.addClass(pfx + 'toolbar-item__' + id);
+    label && $el.append(label);
     return this;
   }
 });
@@ -37373,7 +37501,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.14.23',
+    version: '0.14.25',
 
     /**
      * Initializes an editor based on passed options
@@ -37748,9 +37876,16 @@ module.exports = function () {
 
     /**
      * Open the modal window
+     * @param {Object} [opts={}] Options
+     * @param {String|HTMLElement} [opts.title] Title to set for the modal
+     * @param {String|HTMLElement} [opts.content] Content to set for the modal
      * @return {this}
      */
     open: function open() {
+      var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+      opts.title && this.setTitle(opts.title);
+      opts.content && this.setContent(opts.content);
       modal.show();
       return this;
     },
@@ -45258,18 +45393,21 @@ module.exports = PropertyView.extend({
    * */
   openAssetManager: function openAssetManager(e) {
     var that = this;
-    var em = this.em;
+    var em = this.em,
+        modal = this.modal;
+
     var editor = em ? em.get('Editor') : '';
 
     if (editor) {
-      this.modal.setTitle('Select image');
-      this.modal.setContent(this.am.getContainer());
-      this.am.setTarget(null);
       editor.runCommand('open-assets', {
-        target: this.model,
-        onSelect: function onSelect(target) {
-          that.modal.close();
-          that.spreadUrl(target.get('src'));
+        types: ['image'],
+        accept: 'image/*',
+        target: this.getTargetModel(),
+        onClick: function onClick() {},
+        onDblClick: function onDblClick() {},
+        onSelect: function onSelect(asset) {
+          modal.close();
+          that.spreadUrl(asset.get('src'));
         }
       });
     }
@@ -47247,6 +47385,7 @@ module.exports = Backbone.View.extend({
       var input = $('<input type="' + type + '" placeholder="' + plh + '">');
 
       if (value) {
+        md.set({ value: value }, { silent: true });
         input.prop('value', value);
       }
 
