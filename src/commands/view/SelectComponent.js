@@ -480,7 +480,7 @@ module.exports = {
 
       this.toolbar.reset(toolbar);
       const view = model.view;
-      toolbarStyle.top = '100px';
+      toolbarStyle.top = '-100px';
       toolbarStyle.left = 0;
       setTimeout(() => view && this.updateToolbarPos(view.el), 0);
     } else {
