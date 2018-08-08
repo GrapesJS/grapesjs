@@ -79,6 +79,7 @@
     ]
   },
   "jest": {
+    "testURL": "http://localhost/",
     "modulePaths": [
       "./src"
     ],
