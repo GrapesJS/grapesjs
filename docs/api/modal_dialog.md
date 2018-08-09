@@ -30,6 +30,12 @@ const modal = editor.Modal;
 
 Open the modal window
 
+### Parameters
+
+-   `opts` **[Object][9]** Options (optional, default `{}`)
+    -   `opts.title` **([String][10] \| [HTMLElement][11])?** Title to set for the modal
+    -   `opts.content` **([String][10] \| [HTMLElement][11])?** Content to set for the modal
+
 Returns **this** 
 
 ## close
@@ -42,7 +48,7 @@ Returns **this**
 
 Checks if the modal window is open
 
-Returns **[Boolean][9]** 
+Returns **[Boolean][12]** 
 
 ## setTitle
 
@@ -104,8 +110,10 @@ Returns **[string][10]**
 
 [8]: #getcontent
 
-[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
 [10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
 [11]: https://developer.mozilla.org/docs/Web/HTML/Element
+
+[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean

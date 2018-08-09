@@ -21,6 +21,8 @@ const commands = editor.Commands;
 -   [add][2]
 -   [get][3]
 -   [has][4]
+-   [run][5]
+-   [stop][6]
 
 ## add
 
@@ -28,8 +30,8 @@ Add new command to the collection
 
 ### Parameters
 
--   `id` **[string][5]** Command's ID
--   `command` **([Object][6] \| [Function][7])** Object representing your command,
+-   `id` **[string][7]** Command's ID
+-   `command` **([Object][8] \| [Function][9])** Object representing your command,
      By passing just a function it's intended as a stateless command
      (just like passing an object with only `run` method).
 
@@ -55,7 +57,7 @@ Get command by ID
 
 ### Parameters
 
--   `id` **[string][5]** Command's ID
+-   `id` **[string][7]** Command's ID
 
 ### Examples
 
@@ -64,7 +66,7 @@ var myCommand = commands.get('myCommand');
 myCommand.run();
 ```
 
-Returns **[Object][6]** Object representing the command
+Returns **[Object][8]** Object representing the command
 
 ## has
 
@@ -72,9 +74,43 @@ Check if command exists
 
 ### Parameters
 
--   `id` **[string][5]** Command's ID
+-   `id` **[string][7]** Command's ID
 
-Returns **[Boolean][8]** 
+Returns **[Boolean][10]** 
+
+## run
+
+Execute the command
+
+### Parameters
+
+-   `id` **[String][7]** Command ID
+-   `options` **[Object][8]** Options (optional, default `{}`)
+
+### Examples
+
+```javascript
+commands.run('myCommand', { someOption: 1 });
+```
+
+Returns **any** The return is defined by the command
+
+## stop
+
+Stop the command
+
+### Parameters
+
+-   `id` **[String][7]** Command ID
+-   `options` **[Object][8]** Options (optional, default `{}`)
+
+### Examples
+
+```javascript
+commands.stop('myCommand', { someOption: 1 });
+```
+
+Returns **any** The return is defined by the command
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/commands/config/config.js
 
@@ -84,10 +120,14 @@ Returns **[Boolean][8]**
 
 [4]: #has
 
-[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[5]: #run
 
-[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[6]: #stop
 
-[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+
+[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+
+[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
