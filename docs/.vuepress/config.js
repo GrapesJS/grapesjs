@@ -63,6 +63,7 @@ module.exports = {
         ['/api/block_manager', 'Block Manager'],
         ['/api/commands', 'Commands'],
         ['/api/components', 'DOM Components'],
+        ['/api/component', ' - Component'],
         ['/api/panels', 'Panels'],
         ['/api/style_manager', 'Style Manager'],
         ['/api/storage_manager', 'Storage Manager'],

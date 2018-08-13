@@ -10,6 +10,7 @@ const cmds = [
   ['block_manager/index.js', 'block_manager.md'],
   ['commands/index.js', 'commands.md'],
   ['dom_components/index.js', 'components.md'],
+  ['dom_components/model/Component.js', 'component.md'],
   ['panels/index.js', 'panels.md'],
   ['style_manager/index.js', 'style_manager.md'],
   ['storage_manager/index.js', 'storage_manager.md'],
