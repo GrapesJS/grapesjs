@@ -363,7 +363,11 @@ module.exports = () => {
      * @return {Boolean}
      */
     isInputFocused() {
-      return this.getFrameEl().contentDocument.activeElement.tagName !== 'BODY';
+      let contentDocument = this.getFrameEl().contentDocument;
+      return (
+        contentDocument.activeElement &&
+        contentDocument.activeElement.tagName !== 'BODY'
+      );
     },
 
     /**
