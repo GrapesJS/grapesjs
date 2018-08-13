@@ -181,7 +181,7 @@ module.exports = () => {
      * um.undo();
      */
     undo() {
-      if (!em.get('Canvas').isInputFocused()) um.undo(1);
+      !em.isEditing() && um.undo(1);
       return this;
     },
 
@@ -203,7 +203,7 @@ module.exports = () => {
      * um.redo();
      */
     redo() {
-      if (!em.get('Canvas').isInputFocused()) um.redo(1);
+      !em.isEditing() && um.redo(1);
       return this;
     },
 
