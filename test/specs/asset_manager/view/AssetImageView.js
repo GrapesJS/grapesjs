@@ -1,80 +1,71 @@
-define(['AssetManager/view/AssetImageView', 'AssetManager/model/AssetImage', 'AssetManager/model/Assets'],
-	function(AssetImageView, AssetImage, Assets) {
+var AssetImageView = require('asset_manager/view/AssetImageView');
+var AssetImage = require('asset_manager/model/AssetImage');
+var Assets = require('asset_manager/model/Assets');
 
-		return {
-			run: function() {
+module.exports = {
+  run() {
+    let obj;
 
-				describe('AssetImageView', function() {
+    describe('AssetImageView', () => {
+      beforeEach(() => {
+        var coll = new Assets();
+        var model = coll.add({ type: 'image', src: '/test' });
+        obj = new AssetImageView({
+          collection: new Assets(),
+          config: {},
+          model
+        });
+        document.body.innerHTML = '<div id="fixtures"></div>';
+        document.body.querySelector('#fixtures').appendChild(obj.render().el);
+      });
 
-					before(function () {
-						this.$fixtures 	= $("#fixtures");
-						this.$fixture 	= $('<div class="asset-fixture"></div>');
-					});
+      afterEach(() => {
+        obj = null;
+        document.body.innerHTML = '';
+      });
 
-					beforeEach(function () {
-						var coll 	= new Assets();
-						var model = coll.add({ type:'image', src: '/test' });
-						this.view = new AssetImageView({
-							config : {},
-							model: model
-						});
-						this.$fixture.empty().appendTo(this.$fixtures);
-						this.$fixture.html(this.view.render().el);
-					});
+      test('Object exists', () => {
+        expect(AssetImageView).toBeTruthy();
+      });
 
-					afterEach(function () {
-						delete this.view;
-					});
+      describe('Asset should be rendered correctly', () => {
+        test('Has preview box', () => {
+          var $asset = obj.$el;
+          expect($asset.find('.preview').length).toEqual(1);
+        });
 
-					after(function () {
-						this.$fixture.remove();
-					});
+        test('Has meta box', () => {
+          var $asset = obj.$el;
+          expect($asset.find('.meta').length).toEqual(1);
+        });
 
-					it('Object exists', function() {
-						AssetImageView.should.be.exist;
-					});
+        test('Has close button', () => {
+          var $asset = obj.$el;
+          expect($asset.find('[data-toggle=asset-remove]').length).toEqual(1);
+        });
+      });
 
-					describe('Asset should be rendered correctly', function() {
+      test('Could be selected', () => {
+        var spy = jest.spyOn(obj, 'updateTarget');
+        obj.$el.trigger('click');
+        expect(obj.$el.attr('class')).toContain('highlight');
+        expect(spy).toHaveBeenCalled();
+      });
 
-							it('Has preview box', function() {
-								var $asset = this.view.$el;
-								$asset.find('#preview').should.have.property(0);
-							});
+      test('Could be chosen', () => {
+        sinon.stub(obj, 'updateTarget');
+        var spy = jest.spyOn(obj, 'updateTarget');
+        obj.$el.trigger('dblclick');
+        expect(spy).toHaveBeenCalled();
+        //obj.updateTarget.calledOnce.should.equal(true);
+      });
 
-							it('Has meta box', function() {
-								var $asset = this.view.$el;
-								$asset.find('#meta').should.have.property(0);
-							});
-
-							it('Has close button', function() {
-								var $asset = this.view.$el;
-								$asset.find('#close').should.have.property(0);
-							});
-
-					});
-
-					it('Could be selected', function() {
-						sinon.stub(this.view, 'updateTarget');
-						this.view.$el.trigger('click');
-						this.view.$el.attr('class').should.contain('highlight');
-						this.view.updateTarget.calledOnce.should.equal(true);
-					});
-
-					it('Could be chosen', function() {
-						sinon.stub(this.view, 'updateTarget');
-						this.view.$el.trigger('dblclick');
-						this.view.updateTarget.calledOnce.should.equal(true);
-					});
-
-					it('Could be removed', function() {
-						var spy 		= sinon.spy();
-						this.view.model.on("remove", spy);
-						this.view.$el.find('#close').trigger('click');
-						spy.called.should.equal(true);
-					});
-
-				});
-
-			}
-		};
-});
+      test('Could be removed', () => {
+        var spy = sinon.spy();
+        obj.model.on('remove', spy);
+        obj.onRemove({ stopImmediatePropagation() {} });
+        expect(spy.called).toEqual(true);
+      });
+    });
+  }
+};

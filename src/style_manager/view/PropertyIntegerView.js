@@ -1,40 +1,40 @@
-define(['backbone','./PropertyView', 'Abstract/ui/InputNumber'],
-	function (Backbone, PropertyView, InputNumber) {
+import Backbone from 'backbone';
+const InputNumber = require('domain_abstract/ui/InputNumber');
+const PropertyView = require('./PropertyView');
+const $ = Backbone.$;
+let timeout;
 
-	return PropertyView.extend({
+module.exports = PropertyView.extend({
+  templateInput() {
+    return '';
+  },
 
-		initialize: function(options) {
-			PropertyView.prototype.initialize.apply(this, arguments);
-			this.listenTo( this.model ,'change:unit', this.valueChanged);
-		},
+  init() {
+    const model = this.model;
+    this.listenTo(model, 'change:unit', this.modelValueChanged);
+    this.listenTo(model, 'el:change', this.elementUpdated);
+  },
 
-		/**
-		 * Returns value from inputs
-		 * @return {string}
-		 */
-		getValueForTarget: function(){
-			return this.model.get('value') + this.model.get('unit');
-		},
+  setValue(value) {
+    const parsed = this.model.parseValue(value);
+    value = `${parsed.value}${parsed.unit}`;
+    this.inputInst.setValue(value, { silent: 1 });
+  },
 
-		renderInput: function() {
-			if (!this.input) {
-				var inputNumber = new InputNumber({
-					model: this.model,
-					ppfx: this.ppfx
-				});
-				this.input = inputNumber.render();
-				this.$el.append(this.input.$el);
-				this.$input = this.input.inputEl;
-				this.$unit = this.input.unitEl;
-			}
-			this.setValue(this.componentValue);
-		},
+  onRender() {
+    const ppfx = this.ppfx;
 
-		renderTemplate: function(){},
-
-		setValue: function(value) {
-			this.input.setValue(value, {silent: 1});
-		},
-
-	});
+    if (!this.input) {
+      const input = this.model.input;
+      input.ppfx = ppfx;
+      input.render();
+      const fields = this.el.querySelector(`.${ppfx}fields`);
+      fields.appendChild(input.el);
+      this.$input = input.inputEl;
+      this.unit = input.unitEl;
+      this.$unit = $(this.unit);
+      this.input = this.$input.get(0);
+      this.inputInst = input;
+    }
+  }
 });

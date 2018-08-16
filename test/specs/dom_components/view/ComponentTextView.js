@@ -1,58 +1,46 @@
-var path = 'DomComponents/view/';
-define([path + 'ComponentTextView', 'DomComponents/model/Component'],
-  function(ComponentTextView, Component) {
+const ComponentTextView = require('dom_components/view/ComponentTextView');
+const Component = require('dom_components/model/Component');
 
-    return {
-      run : function(){
+module.exports = {
+  run() {
+    describe('ComponentTextView', () => {
+      var fixtures;
+      var model;
+      var view;
 
-          describe('ComponentTextView', function() {
-
-            var $fixtures;
-            var $fixture;
-            var model;
-            var view;
-
-            before(function () {
-              $fixtures = $("#fixtures");
-              $fixture = $('<div class="components-fixture"></div>');
-            });
-
-            beforeEach(function () {
-              model = new Component();
-              view = new ComponentTextView({
-                model: model
-              });
-              $fixture.empty().appendTo($fixtures);
-              $fixture.html(view.render().el);
-            });
-
-            afterEach(function () {
-              view.remove();
-            });
-
-            after(function () {
-              $fixture.remove();
-            });
-
-            it('Component empty', function() {
-              $fixture.html().should.equal('<div></div>');
-            });
-
-            it('Input content is stored in model', function() {
-              //view.enableEditing();
-              view.el.innerHTML = 'test';
-              //view.disableEditing();
-              //model.get('content').should.equal('test');
-            });
-
-            it('Init with content', function() {
-              model = new Component({ content: 'test' });
-              view = new ComponentTextView({ model: model });
-              view.render().el.innerHTML.should.equal('test');
-            });
-
+      beforeEach(() => {
+        model = new Component();
+        view = new ComponentTextView({
+          model
         });
-      }
-    };
+        document.body.innerHTML = '<div id="fixtures"></div>';
+        fixtures = document.body.querySelector('#fixtures');
+        fixtures.appendChild(view.render().el);
+      });
 
-});
+      afterEach(() => {
+        view.remove();
+      });
+
+      test('Component empty', () => {
+        expect(fixtures.innerHTML).toEqual(
+          '<div data-gjs-type="default" data-highlightable="1"></div>'
+        );
+      });
+
+      test('Input content is stored in model', () => {
+        //view.enableEditing();
+        view.el.innerHTML = 'test';
+        //view.disableEditing();
+        //model.get('content').should.equal('test');
+      });
+
+      test('Init with content', () => {
+        model = new Component({ content: 'test' });
+        view = new ComponentTextView({ model });
+        fixtures.appendChild(view.render().el);
+        expect(view.el.innerHTML).toEqual('test');
+      });
+    });
+  }
+};

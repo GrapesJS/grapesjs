@@ -1,67 +1,65 @@
-define(['backbone','./PropertyView', './PropertyIntegerView', './PropertyRadioView', './PropertySelectView',
-        './PropertyColorView', './PropertyFileView', './PropertyCompositeView', './PropertyStackView'],
-	function (Backbone, PropertyView, PropertyIntegerView, PropertyRadioView, PropertySelectView,
-			PropertyColorView, PropertyFileView, PropertyCompositeView, PropertyStackView) {
-	/**
-	 * @class PropertiesView
-	 * */
-	return Backbone.View.extend({
+import Backbone from 'backbone';
+const PropertyView = require('./PropertyView');
+const PropertyIntegerView = require('./PropertyIntegerView');
+const PropertyRadioView = require('./PropertyRadioView');
+const PropertySelectView = require('./PropertySelectView');
+const PropertyColorView = require('./PropertyColorView');
+const PropertyFileView = require('./PropertyFileView');
+const PropertyCompositeView = require('./PropertyCompositeView');
+const PropertyStackView = require('./PropertyStackView');
 
-		initialize: function(o) {
-			this.config 		= o.config || {};
-			this.pfx 			= this.config.stylePrefix || '';
-			this.target			= o.target || {};
-			this.propTarget = o.propTarget || {};
-			this.onChange		= o.onChange || {};
-			this.onInputRender	= o.onInputRender || {};
-			this.customValue	= o.customValue || {};
-		},
+module.exports = Backbone.View.extend({
+  initialize(o) {
+    this.config = o.config || {};
+    this.pfx = this.config.stylePrefix || '';
+    this.target = o.target || {};
+    this.propTarget = o.propTarget || {};
+    this.onChange = o.onChange;
+    this.onInputRender = o.onInputRender || {};
+    this.customValue = o.customValue || {};
+    this.properties = [];
+    const coll = this.collection;
+    this.listenTo(coll, 'add', this.addTo);
+    this.listenTo(coll, 'reset', this.render);
+  },
 
-		render: function() {
-			var fragment = document.createDocumentFragment();
+  addTo(model) {
+    this.add(model);
+  },
 
-			this.collection.each(function(model){
-				var objView	= PropertyView;
+  add(model, frag) {
+    var view = new model.typeView({
+      model,
+      name: model.get('name'),
+      id: this.pfx + model.get('property'),
+      target: this.target,
+      propTarget: this.propTarget,
+      onChange: this.onChange,
+      onInputRender: this.onInputRender,
+      config: this.config
+    });
 
-				switch(model.get('type')){
-					case 'integer':
-						objView	= PropertyIntegerView; 	break;
-					case 'radio':
-						objView	= PropertyRadioView;	break;
-					case 'select':
-						objView	= PropertySelectView;	break;
-					case 'color':
-						objView	= PropertyColorView;	break;
-					case 'file':
-						objView	= PropertyFileView;		break;
-					case 'composite':
-						objView	= PropertyCompositeView;break;
-					case 'stack':
-						objView	= PropertyStackView;	break;
-				}
+    if (model.get('type') != 'composite') {
+      view.customValue = this.customValue;
+    }
 
-				var view = new objView({
-					model: model,
-					name: model.get('name'),
-					id: this.pfx + model.get('property'),
-					target: this.target,
-					propTarget: this.propTarget,
-					onChange: this.onChange,
-					onInputRender: this.onInputRender,
-					config: this.config,
-				});
+    view.render();
+    const el = view.el;
+    this.properties.push(view);
 
-				if(model.get('type') != 'composite'){
-					view.customValue = this.customValue;
-				}
+    if (frag) {
+      frag.appendChild(el);
+    } else {
+      this.el.appendChild(el);
+    }
+  },
 
-				fragment.appendChild(view.render().el);
-			},this);
-
-			this.$el.append(fragment);
-			this.$el.append($('<div>', {class: "clear"}));
-			this.$el.attr('class', this.pfx + 'properties');
-			return this;
-		}
-	});
+  render() {
+    this.properties = [];
+    const fragment = document.createDocumentFragment();
+    this.collection.each(model => this.add(model, fragment));
+    this.$el.append(fragment);
+    this.$el.attr('class', `${this.pfx}properties`);
+    return this;
+  }
 });

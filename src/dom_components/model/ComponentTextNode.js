@@ -1,29 +1,27 @@
-define(['./Component'],
-	function (Component) {
+const Component = require('./Component');
 
-		return Component.extend({
+module.exports = Component.extend(
+  {
+    defaults: {
+      ...Component.prototype.defaults,
+      droppable: false,
+      editable: true
+    },
 
-			defaults: _.extend({}, Component.prototype.defaults, {
-				droppable: false,
-				editable: true,
-			}),
-
-			toHTML: function() {
-				return this.get('content');
-			},
-
-		}, {
-
-			isComponent: function(el) {
-				var result = '';
-				if(el.nodeType === 3){
-					result = {
-						type: 'textnode',
-						content: el.textContent
-					};
-				}
-				return result;
-			},
-
-		});
-});
+    toHTML() {
+      return this.get('content');
+    }
+  },
+  {
+    isComponent(el) {
+      var result = '';
+      if (el.nodeType === 3) {
+        result = {
+          type: 'textnode',
+          content: el.textContent
+        };
+      }
+      return result;
+    }
+  }
+);

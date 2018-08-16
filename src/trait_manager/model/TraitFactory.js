@@ -1,60 +1,48 @@
-define(['backbone'],
-  function(Backbone) {
+module.exports = (config = {}) => ({
+  /**
+   * Build props object by their name
+   * @param  {Array<string>|string} props Array of properties name
+   * @return {Array<Object>}
+   */
+  build(props) {
+    var objs = [];
 
-    return function() {
+    if (typeof props === 'string') props = [props];
 
-      return {
-        /**
-         * Build props object by their name
-         * @param  {Array<string>|string} props Array of properties name
-         * @return {Array<Object>}
-         */
-        build: function(props){
-          var objs = [];
+    for (var i = 0; i < props.length; i++) {
+      var obj = {};
+      var prop = props[i];
+      obj.name = prop;
 
-          if(typeof props === 'string')
-            props = [props];
+      // Define type
+      switch (prop) {
+        case 'target':
+          obj.type = 'select';
+          break;
+      }
 
-          for (var i = 0; i < props.length; i++) {
-            var obj = {};
-            var prop = props[i];
-            obj.name = prop;
+      // Define placeholder
+      switch (prop) {
+        case 'title':
+        case 'alt':
+        case 'id':
+          obj.placeholder = config.labelPlhText;
+          break;
+        case 'href':
+          obj.placeholder = config.labelPlhHref;
+          break;
+      }
 
-            // Define type
-            switch (prop) {
-              case 'target':
-                obj.type = 'select';
-                break;
-            }
+      // Define options
+      switch (prop) {
+        case 'target':
+          obj.options = config.optionsTarget;
+          break;
+      }
 
-            // Define placeholder
-            switch (prop) {
-              case 'title': case 'alt': case 'id':
-                obj.placeholder = 'eg. Text here';
-                break;
-              case 'href':
-                obj.placeholder = 'eg. https://google.com';
-                break;
-            }
+      objs.push(obj);
+    }
 
-
-            // Define options
-            switch (prop) {
-              case 'target':
-                obj.options = [
-                  {value: '', name: 'This window'},
-                  {value: '_blank', name: 'New window'}
-                ];
-                break;
-            }
-
-            objs.push(obj);
-          }
-
-          return objs;
-        },
-
-      };
-
-    }();
+    return objs;
+  }
 });

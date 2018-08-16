@@ -1,22 +1,14 @@
-/*jshint scripturl:true*/
-define(['backbone', './ComponentTextView'],
-	function (Backbone, ComponentView) {
+var Backbone = require('backbone');
+var ComponentView = require('./ComponentTextView');
 
-	return ComponentView.extend({
+module.exports = ComponentView.extend({
+  render(...args) {
+    ComponentView.prototype.render.apply(this, args);
 
-		events: {
-			'dblclick': 'enableEditing',
-		},
+    // I need capturing instead of bubbling as bubbled clicks from other
+    // children will execute the link event
+    this.el.addEventListener('click', this.prevDef, true);
 
-		render: function() {
-			ComponentView.prototype.render.apply(this, arguments);
-
-			// I need capturing instead of bubbling as bubbled clicks from other
-			// children will execute the link event
-			this.el.addEventListener('click', this.prevDef, true);
-
-			return this;
-		},
-
-	});
+    return this;
+  }
 });

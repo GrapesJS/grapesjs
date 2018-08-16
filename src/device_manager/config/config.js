@@ -1,9 +1,5 @@
-define(function () {
-	return {
+module.exports = {
+  devices: [],
 
-    devices: [],
-
-    deviceLabel: 'Device',
-
-	};
-});
+  deviceLabel: 'Device'
+};

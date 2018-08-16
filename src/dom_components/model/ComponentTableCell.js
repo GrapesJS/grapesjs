@@ -1,35 +1,27 @@
-define(['./Component'],
-	function (Component) {
+const Component = require('./Component');
 
-		return Component.extend({
+module.exports = Component.extend(
+  {
+    defaults: {
+      ...Component.prototype.defaults,
+      type: 'cell',
+      tagName: 'td',
+      draggable: ['tr']
+    }
+  },
+  {
+    isComponent(el) {
+      let result = '';
+      const tag = el.tagName;
 
-			defaults: _.extend({}, Component.prototype.defaults, {
-					type: 'cell',
-					tagName: 'td',
-					draggable: ['tr'],
-			}),
+      if (tag == 'TD' || tag == 'TH') {
+        result = {
+          type: 'cell',
+          tagName: tag.toLowerCase()
+        };
+      }
 
-		},{
-
-			/**
-			 * Detect if the passed element is a valid component.
-			 * In case the element is valid an object abstracted
-			 * from the element will be returned
-			 * @param {HTMLElement}
-			 * @return {Object}
-			 * @private
-			 */
-			isComponent: function(el) {
-				var result = '';
-				var tag = el.tagName;
-				if(tag == 'TD' || tag == 'TH'){
-					result = {
-						type: 'cell',
-						tagName: tag.toLowerCase()
-					};
-				}
-				return result;
-			},
-
-		});
-});
+      return result;
+    }
+  }
+);

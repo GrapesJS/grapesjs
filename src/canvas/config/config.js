@@ -1,16 +1,34 @@
-define(function () {
-	return {
+module.exports = {
+  stylePrefix: 'cv-',
 
-		stylePrefix: 'cv-',
+  // Coming soon
+  rulers: false,
 
-		// Coming soon
-		rulers: false,
+  /*
+   * Append external scripts in head of the iframe before renderBody content
+   * In this case, you have to add them manually later in the final HTML page
+   * @example
+   * scripts: [
+   *  'https://...',
+   * ]
+  */
+  scripts: [],
 
-		/*
-		 * append scripts in head of iframe before renderBody content
-		 * need to manually maintain the same scripts in cms's render template
-		*/ 
-		scripts: []
+  /*
+   * Append external styles. This styles won't be added to the final HTML/CSS
+   * @example
+   * styles: [
+   *  'https://...',
+   * ]
+  */
+  styles: [],
 
-	};
-});
+  /**
+   * Add custom badge naming strategy
+   * @example
+   * customBadgeLabel: function(ComponentModel) {
+   *  return ComponentModel.getName();
+   * }
+   */
+  customBadgeLabel: ''
+};

@@ -1,0 +1,75 @@
+.#{$pn-prefix} {
+  &panel {
+    display: inline-block;
+    position: absolute;
+    box-sizing: border-box;
+    text-align: center;
+    padding: 5px;
+    z-index: 3;
+
+    .icon-undo,
+    .icon-redo {
+      font-size: 20px;
+      height: 30px;
+      width: 25px;
+    }
+  }
+
+  &commands {
+    width: (100% - $leftWidth);
+    left: 0;
+    top: 0;
+    box-shadow: 0 0 5px $mainDkColor;
+  }
+
+  &options {
+    right: $leftWidth;
+    top: 0;
+  }
+
+  &views {
+    border-bottom: 2px solid $mainDkColor;
+    right: 0;
+    width: $leftWidth;
+    z-index: 4;
+
+    &-container {
+      height: 100%;
+      padding: 42px 0 0;
+      right: 0;
+      width: $leftWidth;
+      overflow: auto;
+      box-shadow: 0 0 5px $mainDkColor;
+    }
+  }
+
+  &buttons {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &btn {
+    box-sizing: border-box;
+    min-height: 30px;
+    min-width: 30px;
+    line-height: 21px;
+    background-color: transparent;
+    border: none;
+    font-size: 18px;
+    margin-right: 5px;
+    border-radius: 2px;
+    padding: 4px;
+    position: relative;
+    cursor: pointer;
+
+    &.#{$pn-prefix}active {
+      background-color: rgba(0, 0, 0, 0.15);
+      box-shadow: 0 0 3px rgba(0, 0, 0, 0.25) inset;
+    }
+
+    svg {
+      fill: currentColor;
+    }
+  }
+}

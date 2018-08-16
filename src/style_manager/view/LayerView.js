@@ -1,175 +1,171 @@
-define(['backbone', 'text!./../templates/layer.html'],
-	function (Backbone, layerTemplate) {
-	/**
-	 * @class LayerView
-	 * */
-	return Backbone.View.extend({
+import Backbone from 'backbone';
 
-		events:{
-			'click': 'updateIndex',
-		},
+module.exports = Backbone.View.extend({
+  events: {
+    click: 'active',
+    'click [data-close-layer]': 'remove',
+    'mousedown [data-move-layer]': 'initSorter'
+  },
 
-		template: _.template(layerTemplate),
+  template(model) {
+    const pfx = this.pfx;
+    const label = `Layer ${model.get('index')}`;
 
-		initialize: function(o) {
-			this.stackModel = o.stackModel || {};
-			this.config = o.config || {};
-			this.pfx = this.config.stylePrefix || '';
-			this.className = this.pfx + 'layer';
-			this.sorter = o.sorter || null;
-			this.listenTo(this.model, 'destroy remove', this.remove);
-			this.listenTo(this.model, 'change:value', this.valueChanged);
-			this.listenTo(this.model, 'change:props', this.showProps);
-			this.events['click #' + this.pfx + 'close-layer'] = 'remove';
-			this.events['mousedown > #' + this.pfx + 'move'] = 'initSorter';
+    return `
+      <div id="${pfx}move" data-move-layer>
+        <i class="fa fa-arrows"></i>
+      </div>
+      <div id="${pfx}label">${label}</div>
+      <div id="${pfx}preview-box">
+      	<div id="${pfx}preview" data-preview></div>
+      </div>
+      <div id="${pfx}close-layer" class="${pfx}btn-close" data-close-layer>
+        &Cross;
+      </div>
+      <div id="${pfx}inputs" data-properties></div>
+      <div style="clear:both"></div>
+    `;
+  },
 
-			if( !this.model.get('preview') ){
-				this.$el.addClass(this.pfx + 'no-preview');
-			}
-			this.$el.data('model', this.model);
-			this.delegateEvents();
-		},
+  initialize(o = {}) {
+    let model = this.model;
+    this.stackModel = o.stackModel || {};
+    this.config = o.config || {};
+    this.pfx = this.config.stylePrefix || '';
+    this.sorter = o.sorter || null;
+    this.propsConfig = o.propsConfig || {};
+    this.customPreview = o.onPreview;
+    this.listenTo(model, 'destroy remove', this.remove);
+    this.listenTo(model, 'change:active', this.updateVisibility);
+    this.listenTo(model.get('properties'), 'change', this.updatePreview);
 
-		/**
-		 * Delegate sorting
-		 * @param	{Event} e
-		 * */
-		initSorter: function(e){
-			if(this.sorter)
-				this.sorter.startSort(this.el);
-		},
+    if (!model.get('preview')) {
+      this.$el.addClass(this.pfx + 'no-preview');
+    }
 
-		/**
-		 * Returns properties
-		 * @return {Collection|null}
-		 */
-		getProps: function(){
-			if(this.stackModel.get)
-				return this.stackModel.get('properties');
-			else
-				return null;
-		},
+    // For the sorter
+    model.view = this;
+    model.set({ droppable: 0, draggable: 1 });
+    this.$el.data('model', model);
+  },
 
-		/**
-		 * Emitted when the value is changed
-		 */
-		valueChanged: function(){
-			var preview = this.model.get('preview');
+  /**
+   * Delegate sorting
+   * @param  {Event} e
+   * */
+  initSorter(e) {
+    if (this.sorter) this.sorter.startSort(this.el);
+  },
 
-			if(!preview)
-				return;
+  remove(e) {
+    if (e && e.stopPropagation) e.stopPropagation();
 
-			if(!this.$preview)
-					this.$preview = this.$el.find('#' + this.pfx + 'preview');
+    const model = this.model;
+    const collection = model.collection;
+    const stackModel = this.stackModel;
 
-			var prw = '';
-			if(typeof preview === "function")
-				preview(this.getProps(), this.$preview);
-			else
-				this.onPreview(this.getProps(), this.$preview);
-		},
+    Backbone.View.prototype.remove.apply(this, arguments);
 
-		/**
-		 * Default method for changing preview box
-		 * @param {Collection} props
-		 * @param {Element} $el
-		 */
-		onPreview: function(props, $el){
-			var	aV = this.model.get('value').split(' ');
-			var lim = 3;
-			var nV = '';
-			props.each(function(p, index){
-				var v = aV[index] || '';
-				if(v){
-					if(p.get('type') == 'integer'){
-						var vI	= parseInt(v, 10),
-						u	= v.replace(vI,'');
-						vI	= !isNaN(vI) ? vI : 0;
-						if(vI > lim)
-							vI = lim;
-						if(vI < -lim)
-							vI = -lim;
-						v = vI + u;
-					}
-				}
-				nV	+= v + ' ';
-			});
+    if (collection.contains(model)) {
+      collection.remove(model);
+    }
 
-			if(this.stackModel.get){
-				var property = this.stackModel.get('property');
-				if(property)
-					this.$preview.get(0).style[property] = nV;
-			}
-		},
+    if (stackModel && stackModel.set) {
+      stackModel.set({ stackIndex: null }, { silent: true });
+      stackModel.trigger('updateValue');
+    }
+  },
 
-		/**
-		 * Show inputs on this layer
-		 * */
-		showProps:function(){
-			this.$props = this.model.get('props');
-			this.$el.find('#' + this.pfx + 'inputs').html(this.$props.show());
-			this.model.set({props: null }, {silent: true });
-		},
+  /**
+   * Default method for changing preview box
+   * @param {Collection} props
+   * @param {Element} $el
+   */
+  onPreview(value) {
+    const values = value.split(' ');
+    const lim = 3;
+    const result = [];
+    this.model.get('properties').each((prop, index) => {
+      var value = values[index] || '';
 
-		/** @inheritdoc */
-		remove: function(e){
-			// Prevent from revoming all events on props
-			if(this.$props)
-				this.$props.detach();
+      if (value) {
+        if (prop.get('type') == 'integer') {
+          let valueInt = parseInt(value, 10);
+          let unit = value.replace(valueInt, '');
+          valueInt = !isNaN(valueInt) ? valueInt : 0;
+          valueInt = valueInt > lim ? lim : valueInt;
+          valueInt = valueInt < -lim ? -lim : valueInt;
+          value = valueInt + unit;
+        }
+      }
 
-			if(e && e.stopPropagation)
-				e.stopPropagation();
+      result.push(value);
+    });
 
-			Backbone.View.prototype.remove.apply(this, arguments);
+    return result.join(' ');
+  },
 
-			//---
-			if(this.model.collection.contains(this.model))
-				this.model.collection.remove(this.model);
+  updatePreview() {
+    const stackModel = this.stackModel;
+    const customPreview = this.customPreview;
+    const previewEl = this.getPreviewEl();
+    const value = this.model.getFullValue();
+    const preview = customPreview
+      ? customPreview(value)
+      : this.onPreview(value);
 
-			if(this.stackModel && this.stackModel.set){
-				this.stackModel.set({stackIndex: null}, {silent: true});
-				this.stackModel.trigger('updateValue');
-			}
-		},
+    if (preview && stackModel && previewEl) {
+      previewEl.style[stackModel.get('property')] = preview;
+    }
+  },
 
-		/**
-		 * Update index
-		 * @param Event
-		 *
-		 * @return void
-		 * */
-		updateIndex: function(e){
-			var i = this.getIndex();
-			this.stackModel.set('stackIndex', i);
+  getPropertiesWrapper() {
+    if (!this.propsWrapEl) {
+      this.propsWrapEl = this.el.querySelector('[data-properties]');
+    }
+    return this.propsWrapEl;
+  },
 
-			if(this.model.collection)
-				this.model.collection.trigger('deselectAll');
+  getPreviewEl() {
+    if (!this.previewEl) {
+      this.previewEl = this.el.querySelector('[data-preview]');
+    }
+    return this.previewEl;
+  },
 
-			this.$el.addClass(this.pfx + 'active');
-		},
+  active() {
+    const model = this.model;
+    const collection = model.collection;
+    collection.active(collection.indexOf(model));
+  },
 
-		/**
-		 * Fetch model index
-		 * @return {number} Index
-		 */
-		getIndex: function(){
-			var index = 0;
+  updateVisibility() {
+    const pfx = this.pfx;
+    const wrapEl = this.getPropertiesWrapper();
+    const active = this.model.get('active');
+    wrapEl.style.display = active ? '' : 'none';
+    this.$el[active ? 'addClass' : 'removeClass'](`${pfx}active`);
+  },
 
-			if(this.model.collection)
-				index = this.model.collection.indexOf(this.model);
-
-			return index;
-		},
-
-		render : function(){
-			this.$el.html( this.template({
-				label: 'Layer ' + this.model.get('index'),
-				pfx: this.pfx,
-			}));
-			this.$el.attr('class', this.className);
-			this.valueChanged();
-			return this;
-		},
-
-	});
+  render() {
+    const PropertiesView = require('./PropertiesView');
+    const propsConfig = this.propsConfig;
+    const className = `${this.pfx}layer`;
+    const model = this.model;
+    const el = this.el;
+    const properties = new PropertiesView({
+      collection: model.get('properties'),
+      config: this.config,
+      target: propsConfig.target,
+      customValue: propsConfig.customValue,
+      propTarget: propsConfig.propTarget,
+      onChange: propsConfig.onChange
+    }).render().el;
+    el.innerHTML = this.template(model);
+    el.className = className;
+    this.getPropertiesWrapper().appendChild(properties);
+    this.updateVisibility();
+    this.updatePreview();
+    return this;
+  }
 });

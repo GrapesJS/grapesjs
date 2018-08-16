@@ -1,7 +1,3 @@
-define(function () {
-  return {
-
-    plugins: []
-
-  };
-});
+module.exports = {
+  plugins: []
+};

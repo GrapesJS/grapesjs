@@ -1,0 +1,78 @@
+/* Class names prefixes */
+
+$app-prefix:        'gjs-' !default;
+$nv-prefix:         $app-prefix !default;
+$rte-prefix:        $app-prefix + 'rte-' !default;
+$comp-prefix:       $app-prefix + 'comp-' !default;
+$mdl-prefix:        $app-prefix + 'mdl-' !default;
+$am-prefix:         $app-prefix + 'am-' !default;
+$cm-prefix:         $app-prefix + 'cm-' !default;
+$pn-prefix:         $app-prefix + 'pn-' !default;
+$com-prefix:        $app-prefix + 'com-' !default;
+$sm-prefix:         $app-prefix + 'sm-' !default;
+$cv-prefix:         $app-prefix + 'cv-' !default;
+$clm-prefix:        $app-prefix + 'clm-' !default;
+$trt-prefix:        $app-prefix + 'trt-' !default;
+
+/*
+  New Pattern Color System
+  With this should be easier to overwrite colors
+  not only in SCSS but even CSS
+*/
+$primaryColor:      #444 !default;
+$secondaryColor:    #ddd !default;
+$tertiaryColor:     #804f7b !default;
+$quaternaryColor:   #d278c9 !default;
+
+/* Dark theme */
+$mainColor:         #444 !default; /* Light: #573454 Dark: #3b2639 -moz-linear-gradient(top, #fca99b 0%, #6e2842 100%) */
+$fontColor:         #ddd !default; /* l: #d8d7db */
+$fontColorActive:   #f8f8f8 !default;
+
+$mainDkColor:       rgba(0, 0, 0, 0.2) !default;/* darken($mainColor, 4%) - #383838 */
+$mainDklColor:      rgba(0, 0, 0, 0.1) !default;
+$mainLhColor:       rgba(255, 255, 255, 0.1) !default; /* #515151 */
+$mainLhlColor:      rgba(255, 255, 255, 0.7) !default;
+$fontColorDk:       #777 !default;
+$colorBlue:         #3b97e3 !default;
+$colorRed:          #dd3636 !default;
+$colorYell:         #ffca6f !default;
+$colorGreen:        #62c462 !default;
+$tagBg:             #804f7b !default;
+$secColor:          $tagBg !default;
+$imageCompDim:      50px !default;
+$leftWidth:         15% !default;
+
+/* Color Helpers */
+$colorHighlight:    #71b7f1 !default;
+$colorWarn:         #ffca6f !default;
+
+/* Canvas */
+$hndlMargin:        -5px !default;
+
+/* Components / Inputs */
+$lightBorder:       rgba(255, 255, 255, 0.05) !default;
+$inputFontColor:    $mainLhlColor !default; /* #d5d5d5 */
+$arrowColor:        $mainLhlColor !default; /* b1b1b1 */
+$darkTextShadow:    $mainDkColor !default; /* #252525 */
+$darkBorder:        rgba(0, 0, 0, 0.15) !default; /* 303030 */
+$colorpSize:        22px !default;
+$inputPadding:      5px !default; // Has to be a single value
+
+/* Class manager */
+$addBtnBg:          lighten($mainDkColor, 10%) !default;
+$paddElClm:         5px 6px !default;
+
+/* File uploader */
+$uploadPadding:     150px 10px !default;
+
+/* Commands */
+$animSpeed:         0.2s !default;
+
+/* Fonts */
+$mainFont:          Helvetica, sans-serif !default;
+$fontPath:          '../fonts' !default;
+$fontName:          'main-fonts' !default;
+$fontSize:           0.7rem !default;
+$fontSizeS:          0.75rem !default;
+$fontV:              20 !default;//random(1000)

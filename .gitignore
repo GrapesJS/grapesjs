@@ -2,15 +2,20 @@
 .settings/
 .sass-cache/
 .project
-.eslintrc
-npm-debug.log
+.idea
+npm-debug.log*
+yarn-error.log
+yarn.lock
 style/.sass-cache/
+stats.json
 
 img/
 images/
 private/
-docs/
 vendor/
 coverage/
 node_modules/
 bower_components/
+grapesjs-*.tgz
+_index.html
+docs/.vuepress/dist

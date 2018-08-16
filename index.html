@@ -3,39 +3,87 @@
   <head>
     <meta charset="utf-8">
     <title>GrapesJS</title>
-    <link rel="stylesheet" href="styles/css/main.css">
-    <link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css">
-    <link rel="stylesheet" href="node_modules/codemirror/theme/hopscotch.css">
+    <link rel="stylesheet" href="dist/css/grapes.min.css">
+    <script src="dist/grapes.min.js"></script>
+
+    <script src="https://unpkg.com/grapesjs-blocks-basic"></script>
+    <script src="private/grapesjs-blocks-basic.min.js"></script>
+    <script src="https://unpkg.com/grapesjs-plugin-forms"></script>
+    <script src="https://unpkg.com/grapesjs-component-countdown"></script>
+    <script src="private/grapesjs-lory-slider.min.js"></script>
+
   </head>
   <style>
-    body, html{ height: 100%; margin: 0;}
+    body,
+    html {
+      height: 100%;
+      margin: 0;
+    }
+
+    .gjs-row {
+      display: flex;
+      justify-content: flex-start;
+      align-items: stretch;
+      flex-wrap: nowrap;
+      padding: 10px;
+    }
+
+    .gjs-column {
+      min-height: 75px;
+      flex-grow: 1;
+      flex-basis: 100%;
+    }
+    /*
+    .gjs-pn-panel {
+      position: relative;
+    }*/
   </style>
   <body>
+    <div class="gjs-row" style="display: none;">
+      <div id="layers" class="gjs-column" style="flex-basis: 800px;">
+        Layers header
+        <div id="layers-container"></div>
+        Layers footer
+      </div>
 
-    <div id="gjs" style="height:0px; overflow:hidden">
+      <div class="gjs-column">
+        <div id="panel-tools">
+
+        </div>
+        <div id="gjs2" style="overflow:hidden; margin: 0 auto;">
+          <div style="color:red; padding: 50px 100px" data-gjs-name="Text1">
+            Text
+          </div>
+          <div style="color:red; padding: 50px 100px" data-gjs-name="Text2">
+            Text2
+          </div>
+        </div>
+
+        <div id="blocks"></div>
+      </div>
+
+      <div id="style-manager" class="gjs-column" style="flex-basis: 800px;">
+        Here Style Manager
+        <br>
+        <div id="selectors-container"></div>
+        <div id="traits-container"></div>
+        <div id="style-manager-container"></div>
+      </div>
+    </div>
+
+    <div id="gjs" style="height:0px; overflow:hidden; displayZ: none">
+      <div style="color:red; padding: 50px 100px" data-gjs-stylable='["width"]' data-gjs-traits='[{"type":"colours","name":"llll"}]'>
+        Text
+      </div>
+      <div>
+        <div class="glyphicon glyphicon-asterisk"></div> Try to edit me
+      </div>
+      <div data-gjs-type="void-component">
+        <div>Text 1</div>
+        <div>Text 2</div>
+      </div>
       <header class="header-banner">
         <div class="container-width">
-          <!--
-          <table>
-            <thead>
-              <tr> <th>Header1</th> <th>Header2</th> <th>Header3</th> </tr>
-            </thead>
-            <tbody>
-              <tr> <td>Row11</td> <td>Row12</td> <td>Row13</td> </tr>
-              <tr> <td>Row21</td> <td>Row22</td> <td>Row23</td> </tr>
-              <tr> <td>Row31</td> <td>Row32</td> <td>Row33</td> </tr>
-            </tbody>
-          </table>
-          <br/>
-          <br/>
-          <table>
-              <tr> <td>Row11</td> <td>Row12</td> <td>Row13</td> </tr>
-              <tr> <td>Row21</td> <td>Row22</td> <td>Row23</td> </tr>
-              <tr> <td>Row31</td> <td>Row32</td> <td><div>Div Content Row33</div></td> </tr>
-          </table>
-          <iframe class="iframe" src="http://player.vimeo.com/video/2?&controls=0&loop=1&color=ff0000"></iframe>
-          <iframe class="iframe" src="https://maps.google.com/maps?&q=London, UK&z=11&t=q&output=embed"></iframe>
-        -->
           <div class="logo-container">
             <div class="logo">GrapesJS</div>
           </div>
@@ -45,7 +93,7 @@
             <div class="menu-item">WEB</div>
           </nav>
           <div class="clearfix"></div>
-          <div class="lead-title">Build your templates without coding</div>
+          <div class="lead-title" data-gjs-selectable="false">Build your templates without coding</div>
           <div class="sub-lead-title">All text blocks could be edited easily with double clicking on it. You can create new text blocks with the command from the left panel</div>
           <div class="lead-btn">Hover me</div>
         </div>
@@ -270,7 +318,7 @@
           font-family: Helvetica, serif;
           font-weight: 100;
           background-image:url("http://grapesjs.com/img/bg-gr-v.png"), url("http://grapesjs.com/img/work-desk.jpg");
-          background-attachment:scroll, scroll;
+          background-attachment: fixed, scroll;
           background-position:left top, center center;
           background-repeat:repeat-y, no-repeat;
           background-size: contain, cover;
@@ -795,12 +843,37 @@
           width: 500px;
         }
 
+        .row {
+          display: table;
+          padding: 10px;
+          width: 100%;
+        }
+
+        .cell {
+          width: 8%;
+          display: table-cell;
+          height: 75px;
+        }
+
+        .cell30 {
+          width: 30%;
+        }
+
+        .cell70 {
+          width: 70%;
+        }
+
         @media (max-width: 768px){
           .foot-form-cont{
             width:400px;
           }
           .foot-form-title{
             width: auto;
+          }
+
+          .cell, .cell30, .cell70 {
+            width: 100%;
+            display: block;
           }
         }
 
@@ -812,6 +885,678 @@
       </style>
     </div>
 
-    <script data-main="src/demo" src="node_modules/requirejs/require.js"></script>
+    <script type="text/javascript">
+    //grapesjs.plugins.add('testplug', (editor, config) => {});
+    var blkStyle = '.blk-row::after{ content: ""; clear: both; display: block;} .blk-row{padding: 10px;}';
+    var sectors = [{
+      name: 'General',
+      open: false,
+      buildProps: ['float', 'display', 'position', 'top', 'right', 'left', 'bottom']
+    },{
+      name: 'Dimension',
+      open: false,
+      buildProps: [ 'width', 'flex-width', 'height', 'max-width', 'min-height', 'margin', 'padding'],
+      properties: [{
+        id: 'flex-width',
+        type: 'integer',
+        name: 'Width',
+        units: ['px', '%'],
+        property: 'flex-basis',
+        toRequire: 1,
+      }]
+    },{
+      name: 'Typography',
+      open: false,
+      buildProps: ['font-family', 'font-size', 'font-weight', 'letter-spacing', 'color', 'line-height', 'text-align', 'text-shadow'],
+      properties: [{
+        property: 'text-align',
+        list    : [
+          {value: 'left', className: 'fa fa-align-left'},
+          {value: 'center', className: 'fa fa-align-center' },
+          {value: 'right', className: 'fa fa-align-right'},
+          {value: 'justify', className: 'fa fa-align-justify'}
+        ],
+      }]
+    },{
+      name: 'Decorations',
+      open: false,
+      buildProps: ['border-radius-c', 'background-color', 'border-radius', 'border', 'box-shadow', 'background'],
+    },{
+      name: 'Extra',
+      open: false,
+      buildProps: ['opacity', 'transition', 'perspective', 'transform'],
+      properties: [{
+        type: 'slider',
+        property: 'opacity',
+        defaults: 1,
+        step: 0.01,
+        max: 1,
+        min:0,
+      }]
+    },{
+        name: 'Flex',
+        open: false,
+        properties: [{
+          name    : 'Flex Container',
+          property  : 'display',
+          type    : 'select',
+          defaults  : 'block',
+          list    : [{
+                    value     : 'block',
+                    name   : 'Disable',
+                  },{
+                    value   : 'flex',
+                    name   : 'Enable',
+                  }],
+        },{
+          name: 'Flex Parent',
+          property: 'label-parent-flex',
+        },{
+          name      : 'Direction',
+          property  : 'flex-direction',
+          type    : 'radio',
+          defaults  : 'row',
+          list    : [{
+                    value   : 'row',
+                    name    : 'Row',
+                    className : 'icons-flex icon-dir-row',
+                    title   : 'Row',
+                  },{
+                    value   : 'row-reverse',
+                    name    : 'Row reverse',
+                    className : 'icons-flex icon-dir-row-rev',
+                    title   : 'Row reverse',
+                  },{
+                    value   : 'column',
+                    name    : 'Column',
+                    title   : 'Column',
+                    className : 'icons-flex icon-dir-col',
+                  },{
+                    value   : 'column-reverse',
+                    name    : 'Column reverse',
+                    title   : 'Column reverse',
+                    className : 'icons-flex icon-dir-col-rev',
+                  }],
+        },{
+          name      : 'Wrap',
+          property  : 'flex-wrap',
+          type    : 'radio',
+          defaults  : 'nowrap',
+          list    : [{
+                    value   : 'nowrap',
+                    title   : 'Single line',
+                  },{
+                    value   : 'wrap',
+                    title   : 'Multiple lines',
+                  },{
+                    value   : 'wrap-reverse',
+                    title   : 'Multiple lines reverse',
+                  }],
+        },{
+          name      : 'Justify',
+          property  : 'justify-content',
+          type    : 'radio',
+          defaults  : 'flex-start',
+          list    : [{
+                    value   : 'flex-start',
+                    className : 'icons-flex icon-just-start',
+                    title   : 'Start',
+                  },{
+                    value   : 'flex-end',
+                    title    : 'End',
+                    className : 'icons-flex icon-just-end',
+                  },{
+                    value   : 'space-between',
+                    title    : 'Space between',
+                    className : 'icons-flex icon-just-sp-bet',
+                  },{
+                    value   : 'space-around',
+                    title    : 'Space around',
+                    className : 'icons-flex icon-just-sp-ar',
+                  },{
+                    value   : 'center',
+                    title    : 'Center',
+                    className : 'icons-flex icon-just-sp-cent',
+                  }],
+        },{
+          name      : 'Align',
+          property  : 'align-items',
+          type    : 'radio',
+          defaults  : 'center',
+          list    : [{
+                    value   : 'flex-start',
+                    title    : 'Start',
+                    className : 'icons-flex icon-al-start',
+                  },{
+                    value   : 'flex-end',
+                    title    : 'End',
+                    className : 'icons-flex icon-al-end',
+                  },{
+                    value   : 'stretch',
+                    title    : 'Stretch',
+                    className : 'icons-flex icon-al-str',
+                  },{
+                    value   : 'center',
+                    title    : 'Center',
+                    className : 'icons-flex icon-al-center',
+                  }],
+        },{
+          name: 'Flex Children',
+          property: 'label-parent-flex',
+        },{
+          name:     'Order',
+          property:   'order',
+          type:     'integer',
+          defaults :  0,
+          min: 0
+        },{
+          name    : 'Flex',
+          property  : 'flex',
+          type    : 'composite',
+          properties  : [{
+                  name:     'Grow',
+                  property:   'flex-grow',
+                  type:     'integer',
+                  defaults :  0,
+                  min: 0
+                },{
+                  name:     'Shrink',
+                  property:   'flex-shrink',
+                  type:     'integer',
+                  defaults :  0,
+                  min: 0
+                },{
+                  name:     'Basis',
+                  property:   'flex-basis',
+                  type:     'integer',
+                  units:    ['px','%',''],
+                  unit: '',
+                  defaults :  'auto',
+                }],
+        },{
+          name      : 'Align',
+          property  : 'align-self',
+          type      : 'radio',
+          defaults  : 'auto',
+          list    : [{
+                    value   : 'auto',
+                    name    : 'Auto',
+                  },{
+                    value   : 'flex-start',
+                    title    : 'Start',
+                    className : 'icons-flex icon-al-start',
+                  },{
+                    value   : 'flex-end',
+                    title    : 'End',
+                    className : 'icons-flex icon-al-end',
+                  },{
+                    value   : 'stretch',
+                    title    : 'Stretch',
+                    className : 'icons-flex icon-al-str',
+                  },{
+                    value   : 'center',
+                    title    : 'Center',
+                    className : 'icons-flex icon-al-center',
+                  }],
+        }]
+      }
+
+    ];
+    /*
+    var editor2  = grapesjs.init({
+      container  : '#gjs2',
+      height: '450px',
+      fromElement: true,
+      storageManager: { type: 0 },
+      plugins: ['testplug', 'gjs-blocks-basic', 'gjs-plugin-forms', 'grapesjs-lory-slider'],
+
+      width: '500px',
+      layerManager: {
+        appendTo: '#layers-container'
+      },
+      blockManager: {
+        appendTo: '#blocks'//blocks
+      },
+      styleManager: {
+        appendTo: '#style-manager-container',
+        sectors: sectors,
+      },
+      selectorManager: {
+        appendTo: '#selectors-container',
+      },
+      traitManager: {
+        appendTo: '#traits-container',
+      },
+      panels: {
+        defaults: [{
+          id: 'layers',
+          el: '#layers',
+          resizable: {
+            tc: 0,
+            cr: 1,
+            bc: 0,
+            keyWidth: 'flex-basis',
+          },
+        },{
+          id: 'styles',
+          el: '#style-manager',
+          resizable: {
+            tc: 0,
+            cr: 0,
+            cl: 1,
+            bc: 0,
+            keyWidth: 'flex-basis',
+          },
+        }]
+      }
+    });
+    */
+
+    var editor  = grapesjs.init(
+
+
+    {
+      container  : '#gjs',
+      height: '100%',
+      fromElement: true,
+      plugins: ['testplug', 'gjs-blocks-basic', /*'gjs-plugin-forms'*/, 'grapesjs-lory-slider', 'gjs-component-countdown'],
+      autorender: 0,
+      allowScripts: 1,
+      showOffsets: 1,
+      noticeOnUnload: 0,
+      avoidInlineStyle: 1,
+      avoidDefaults: 1,
+      // forceClass: 0,
+      storageManager: { autoload: 0 },
+      // storageManager: { type: 'firebase-firestore' },
+
+      layerManager: {
+        showWrapper: 0,
+      },
+      assetManager: {
+        embedAsBase64: 1,
+        upload: 'https://test.page',
+        params: {
+          _token: 'pCYrSwjuiV0t5NVtZpQDY41Gn5lNUwo3it1FIkAj',
+        },
+        assets: [
+           { type: 'image', src : 'http://placehold.it/350x250/78c5d6/fff/image1.jpg', height:350, width:250},
+           { type: 'image', src : 'http://placehold.it/350x250/459ba8/fff/image2.jpg', height:350, width:250},
+           { type: 'image', src : 'http://placehold.it/350x250/79c267/fff/image3.jpg', height:350, width:250},
+           { type: 'image', src : 'http://placehold.it/350x250/c5d647/fff/image4.jpg', height:350, width:250},
+           { type: 'image', src : 'http://placehold.it/350x250/f28c33/fff/image5.jpg', height:350, width:250},
+           { type: 'image', src : 'http://placehold.it/350x250/e868a2/fff/image6.jpg', height:350, width:250},
+           { type: 'image', src : 'http://placehold.it/350x250/cc4360/fff/image7.jpg', height:350, width:250},
+           { type: 'image', src : './img/work desk.jpg', date: '2015-02-01',height:1080, width:1728},
+           { type: 'image', src : './img/phone-app.png', date: '2015-02-01',height:650, width:320},
+           { type: 'image', src : './img/bg-gr-v.png', date: '2015-02-01',height:1, width:1728},
+         ]
+      },
+
+      blockManager: {
+        blocks: [/*{
+            id: 'b1',
+            label: '1 Block',
+            category: 'Basic',
+            attributes: {class:'gjs-fonts gjs-f-b1'},
+            content: `<div class="row" data-gjs-droppable=".cell" data-gjs-custom-name="Row">
+                <div class="cell" data-gjs-draggable=".row" data-gjs-custom-name="Cell"></div>
+              </div>`
+          },{
+            id: 'b2',
+            label: '2 Blocks',
+            category: 'Basic',
+            attributes: {class:'gjs-fonts gjs-f-b2'},
+            content: `<div class="row" data-gjs-droppable=".cell" data-gjs-custom-name="Row">
+                <div class="cell" data-gjs-draggable=".row" data-gjs-custom-name="Cell"></div>
+                <div class="cell" data-gjs-draggable=".row" data-gjs-custom-name="Cell"></div>
+              </div>`
+          },{
+            id: 'b3',
+            label: '3 Blocks',
+            category: 'Basic',
+            attributes: {class:'gjs-fonts gjs-f-b3'},
+            content: `<div class="row" data-gjs-droppable=".cell" data-gjs-custom-name="Row">
+                <div class="cell" data-gjs-draggable=".row" data-gjs-custom-name="Cell"></div>
+                <div class="cell" data-gjs-draggable=".row" data-gjs-custom-name="Cell"></div>
+                <div class="cell" data-gjs-draggable=".row" data-gjs-custom-name="Cell"></div>
+              </div>`
+          },{
+            id: 'b4',
+            label: '3/7 Block',
+            category: 'Basic',
+            attributes: {class:'gjs-fonts gjs-f-b37'},
+            content: `<div class="row" data-gjs-droppable=".cell" data-gjs-custom-name="Row">
+                <div class="cell cell30" data-gjs-draggable=".row" data-gjs-custom-name="Cell"></div>
+                <div class="cell cell70" data-gjs-draggable=".row" data-gjs-custom-name="Cell"></div>
+              </div>`,
+          },{
+            id: 'hero',
+            label: 'Hero section',
+            category: 'Section',
+            content: '<header class="header-banner"> <div class="container-width">'+
+                '<div class="logo-container"><div class="logo">GrapesJS</div></div>'+
+                '<nav class="navbar">'+
+                  '<div class="menu-item">BUILDER</div><div class="menu-item">TEMPLATE</div><div class="menu-item">WEB</div>'+
+                '</nav><div class="clearfix"></div>'+
+                '<div class="lead-title">Build your templates without coding</div>'+
+                '<div class="lead-btn">Try it now</div></div></header>',
+            attributes: {class:'gjs-fonts gjs-f-hero'}
+          },{
+            id: 'h1p',
+            label: 'Text section',
+            category: 'Typography',
+            content: `<div>
+              <h1 class="heading">Insert title here</h1>
+              <p class="paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
+              </div>`,
+            attributes: {class:'gjs-fonts gjs-f-h1p'}
+          },*/{
+            id: '3ba',
+            label: 'Badges',
+            category: 'Section',
+            content: '<div class="badges">'+
+              '<div class="badge">'+
+                '<div class="badge-header"></div>'+
+                '<img class="badge-avatar" src="img/team1.jpg">'+
+                '<div class="badge-body">'+
+                  '<div class="badge-name">Adam Smith</div><div class="badge-role">CEO</div><div class="badge-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore ipsum dolor sit</div>'+
+                '</div>'+
+                '<div class="badge-foot"><span class="badge-link">f</span><span class="badge-link">t</span><span class="badge-link">ln</span></div>'+
+              '</div>'+
+              '<div class="badge">'+
+                '<div class="badge-header"></div>'+
+                '<img class="badge-avatar" src="img/team2.jpg">'+
+                '<div class="badge-body">'+
+                  '<div class="badge-name">John Black</div><div class="badge-role">Software Engineer</div><div class="badge-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore ipsum dolor sit</div>'+
+                '</div>'+
+                '<div class="badge-foot"><span class="badge-link">f</span><span class="badge-link">t</span><span class="badge-link">ln</span></div>'+
+              '</div>'+
+              '<div class="badge">'+
+                '<div class="badge-header"></div>'+
+                '<img class="badge-avatar" src="img/team3.jpg">'+
+                '<div class="badge-body">'+
+                  '<div class="badge-name">Jessica White</div><div class="badge-role">Web Designer</div><div class="badge-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore ipsum dolor sit</div>'+
+                '</div>'+
+                '<div class="badge-foot"><span class="badge-link">f</span><span class="badge-link">t</span><span class="badge-link">ln</span>'+
+                '</div>'+
+              '</div></div>',
+            attributes: {class:'gjs-fonts gjs-f-3ba'}
+          },{
+            id: 'text',
+            label: 'Text',
+            attributes: {class:'gjs-fonts gjs-f-text'},
+            category: 'Basic',
+            content: {
+              type:'text',
+              content:'Insert your text here',
+              style: {padding: '10px' },
+              activeOnRender: 1
+            },
+          },{
+            id: 'image',
+            label: 'Image',
+            category: 'Basic',
+            attributes: {class:'gjs-fonts gjs-f-image'},
+            content: {
+              style: {color: 'black'},
+              type:'image',
+              activeOnRender: 1
+            },
+          },{
+            id: 'quo',
+            label: 'Quote',
+            category: 'Typography',
+            content: '<blockquote class="quote">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore ipsum dolor sit</blockquote>',
+            attributes: {class:'fa fa-quote-right'}
+          },{
+            id: 'link',
+            label: 'Link',
+            category: 'Basic',
+            attributes: {class:'fa fa-link'},
+            content: {
+              type:'link',
+              content:'Link',
+              style:{color: '#d983a6'}
+            },
+          },{
+            id: 'map',
+            label: 'Map',
+            category: 'Extra',
+            attributes: {class:'fa fa-map-o'},
+            content: {
+              type: 'map',
+              style: {height: '350px'}
+            },
+          },{
+            id: 'video',
+            label: 'Video',
+            category: 'Basic',
+            attributes: {class:'fa fa-youtube-play'},
+            content: {
+              type: 'video',
+              src: 'img/video2.webm',
+              style: {
+                height: '350px',
+                width: '615px',
+              }
+            },
+          }],
+      },
+      /*
+      ztyleManager : {
+        clearProperties: 1,
+        sectors: [{
+          name: 'General',
+          open: false,
+          buildProps: ['gigi', 'width'],
+          properties: [{
+            id: 'gigi',
+            name: 'My prop',
+            property: 'custom-prop',
+          }]
+        }]
+      },*/
+
+      styleManager : {
+        clearProperties: 1,
+        sectors: sectors,
+      },
+
+
+    });
+
+
+    window.editor = editor;
+
+    var pnm = editor.Panels;
+    pnm.addButton('options', [{
+      id: 'undo',
+      className: 'fa fa-undo icon-undo',
+      command: function(e) { return e.runCommand('core:undo') },
+    },{
+      id: 'redo',
+      className: 'fa fa-repeat icon-redo',
+      command: function(e) { return e.runCommand('core:redo') },
+    },{
+      id: 'clear-all',
+      className: 'fa fa-trash icon-blank',
+      command: function(e) { return e.runCommand('core:canvas-clear') },
+    }]);
+
+    var bm = editor.BlockManager;
+
+    bm.add('link-block', {
+      label: 'Link Block',
+      attributes: {class:'fa fa-link'},
+      category: 'Basic',
+      content: {
+        type:'link',
+        editable: false,
+        draggable: '#wrapper',
+        style:{
+          display: 'inline-block',
+          padding: '5px',
+          'min-height': '50px',
+          'min-width': '50px'
+        }
+      },
+    });
+
+    editor.on('selector:add', function(selector) {
+      if (['.row-flex', '.cell-flex', '.cell-gut'].indexOf(selector.getFullName()) >= 0 ) {
+        selector.set({private: 1});
+      }
+    });
+    /*
+    bm.add('b1-2', {
+      label: 'Flex Block',
+      category: 'Basic',
+      attributes: { class:'gjs-fonts gjs-f-b1' },
+      content: `
+        <div class="row-flex" data-columns="1" style="text-align: center" data-gjs-droppable="[data-column]" data-gjs-highlightable="false" data-gjs-resizable='{"tl":0,"tc":0,"tr":0,"cl":0,"cr":0,"bl":0,"br":0}' data-gjs-custom-name="Row">
+          <div class="cell-flex" data-column="1" style="letter-spacing: normal; flex-basis: 100%" data-gjs-draggable="[data-columns]" data-gjs-resizable='{"tl":0,"tc":0,"tr":0,"cl":0,"bl":0,"br":0,"bc": 0, "keyWidth": "flex-basis", "currentUnit": 1, "minDim": 1, "maxDim": 100, "step": 0.2}' data-gjs-unstylable='["width"]' data-gjs-stylable-require='["flex-basis"]'></div>
+          <div class="cell-flex" data-column="1" style="letter-spacing: normal; flex-basis: 100%" data-gjs-draggable="[data-columns]" data-gjs-resizable='{"tl":0,"tc":0,"tr":0,"cl":0,"bl":0,"br":0,"bc": 0, "keyWidth": "flex-basis", "currentUnit": 1, "minDim": 1, "maxDim": 100, "step": 0.2}' data-gjs-unstylable='["width"]' data-gjs-stylable-require='["flex-basis"]'></div>
+        </div>
+        <style>
+          .row-flex {
+              display: flex;
+              justify-content: flex-start;
+              align-items: stretch;
+              flex-wrap: nowrap;
+              padding: 10px;
+          }
+
+          .cell-flex {
+            min-height: 75px;
+            flex-grow: 1;
+            flex-basis: 100%;
+          }
+        </style>
+        `
+    });
+    */
+
+    bm.add('TEST', {
+      label: 'TEST JS LOAD',
+      category: 'Basic',
+      attributes: { class:'gjs-fonts gjs-f-b1' },
+      content: {
+        script: function() {
+          console.log(this);
+          this.addEventListener('click', function(e) {
+            console.log('clicked');
+          })
+        },
+        style: {padding: '25px'},
+        components: '<div style="padding: 10px"></div>'
+      }
+    });
+
+    var domc = editor.DomComponents;
+    var defaultType = domc.getType('default');
+    var defaultModel = defaultType.model;
+    var defaultView = defaultType.view;
+    var textType = domc.getType('text');
+
+    /*
+    domc.addType('void-component', {
+      model: defaultModel.extend({
+        defaults: { ...defaultModel.prototype.defaults,
+          style: { 'pointer-events': 'none' }
+        },
+        toHTML() {
+          return '';
+        }
+      }, {
+        isComponent: function(el) {},
+      }),
+      view: defaultView,
+    });
+*/
+    /*
+    domc.addType('raw-text', {
+      model: textType.model.extend({
+        },{
+          isComponent: function(el) {
+            if (el.hasAttribute && el.hasAttribute('data-raw-text')) {
+              return {
+                type: 'raw-text',
+                content: el.innerHTML,
+                components: []
+              };
+            }
+          }
+        }
+      ),
+      view: textType.view.extend({
+        disableEditing() {
+          const model = this.model;
+          const rte = this.rte;
+
+          if (rte && model.get('editable')) {
+            rte.disable(this, this.activeRte);
+            model.set('content', this.getChildrenContainer().innerHTML)
+            .trigger('change:content', model);
+          }
+
+          this.rteEnabled = 0;
+          this.toggleEvents();
+        },
+      })
+    });
+    */
+
+    /*
+    domc.addType('default', {
+      model: defaultModel.extend({
+        defaults: Object.assign({}, defaultModel.prototype.defaults, {
+          'custom-name': 'testiiing',
+          traits: [{
+            name: 'title',
+            label: 'Título',
+            placeholder: 'Insira um texto aqui'
+          }]
+        }),
+      }),
+    });
+    */
+
+
+
+
+    // Store and load events
+    editor.on('storage:load', function(e) {
+      console.log('LOAD ', e);
+    });
+    editor.on('storage:store', function(e) {
+      console.log('STORE ', e);
+    });
+
+    // Canvas DND
+    /*
+    editor.on('canvas:dragenter', (dt, content) => console.log('DRAG-ENTER', content));
+    editor.on('canvas:dragover', dt => console.log('DRAG-OVER')); // As orignal dragover
+    editor.on('canvas:drop', (dt, model) => console.log('DRAG-DROP', model)); // When something is dropped on canvas
+    editor.on('canvas:dragend', dt => console.log('DRAG-END')); // Fired when a drag operation is being ended
+    editor.on('canvas:dragdata', (dt, result) => {
+      console.group('DRAG-DATA');
+      console.log('Files', dt.files);
+      console.log('Types', dt.types);
+      console.log('Content', result.content);
+      console.groupEnd();
+    });
+    */
+
+    //editor.on('component:remove', m => console.log('Removed', m, m.getEl()));
+    //editor.on('component:add', m => console.log('Added', m, m.getEl()));
+
+    editor.on('traverse:html', function (node, resultNode) {
+
+    });
+    editor.on('load', () => {
+    });
+    editor.render();
+    </script>
   </body>
 </html>

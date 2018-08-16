@@ -1,84 +1,127 @@
-var path = 'CssComposer/model/';
-define([path + 'CssRule',
-        path + 'CssRules',
-        path + 'Selectors',
-        'SelectorManager/model/Selector'],
-	function(CssRule, CssRules, Selectors, Selector) {
+var CssRule = require('css_composer/model/CssRule');
+var CssRules = require('css_composer/model/CssRules');
+var Selectors = require('selector_manager/model/Selectors');
+var Selector = require('selector_manager/model/Selector');
 
-    return {
-      run : function(){
-          describe('CssRule', function() {
+module.exports = {
+  run() {
+    describe('CssRule', () => {
+      let obj;
 
-            beforeEach(function () {
-              this.obj  = new CssRule();
-            });
+      beforeEach(() => {
+        obj = new CssRule();
+      });
 
-            afterEach(function () {
-              delete this.obj;
-            });
+      afterEach(() => {
+        obj = null;
+      });
 
-            it('Has selectors property', function() {
-              this.obj.has('selectors').should.equal(true);
-            });
+      test('Has selectors property', () => {
+        expect(obj.has('selectors')).toEqual(true);
+      });
 
-            it('Has style property', function() {
-              this.obj.has('style').should.equal(true);
-            });
+      test('Has style property', () => {
+        expect(obj.has('style')).toEqual(true);
+      });
 
-            it('Has state property', function() {
-              this.obj.has('state').should.equal(true);
-            });
+      test('Has state property', () => {
+        expect(obj.has('state')).toEqual(true);
+      });
 
-            it('No default selectors', function() {
-              this.obj.get('selectors').length.should.equal(0);
-            });
+      test('No default selectors', () => {
+        expect(obj.get('selectors').length).toEqual(0);
+      });
 
-            it('Compare returns true with the same selectors', function() {
-              var s1 = this.obj.get('selectors').add({ name: 'test1' });
-              var s2 = this.obj.get('selectors').add({ name: 'test2' });
-              this.obj.compare([s1, s2]).should.equal(true);
-            });
+      test('Compare returns true with the same selectors', () => {
+        var s1 = obj.get('selectors').add({ name: 'test1' });
+        var s2 = obj.get('selectors').add({ name: 'test2' });
+        expect(obj.compare([s1, s2])).toEqual(true);
+      });
 
-            it('Compare with different state', function() {
-              var s1 = this.obj.get('selectors').add({ name: 'test1' });
-              var s2 = this.obj.get('selectors').add({ name: 'test2' });
-              this.obj.set('state','hover');
-              this.obj.compare([s1, s2]).should.equal(false);
-              this.obj.compare([s1, s2], 'hover').should.equal(true);
-            });
+      test('Compare with different state', () => {
+        var s1 = obj.get('selectors').add({ name: 'test1' });
+        var s2 = obj.get('selectors').add({ name: 'test2' });
+        obj.set('state', 'hover');
+        expect(obj.compare([s1, s2])).toEqual(false);
+        expect(obj.compare([s1, s2], 'hover')).toEqual(true);
+      });
 
-            it('Compare with different maxWidth', function() {
-              var s1 = this.obj.get('selectors').add({ name: 'test1' });
-              var s2 = this.obj.get('selectors').add({ name: 'test2' });
-              this.obj.set('state','hover');
-              this.obj.set('maxWidth','1000');
-              this.obj.compare([s1, s2]).should.equal(false);
-              this.obj.compare([s1, s2], 'hover').should.equal(false);
-              this.obj.compare([s2, s1], 'hover', '1000').should.equal(true);
-            });
+      test('Compare with different mediaText', () => {
+        var s1 = obj.get('selectors').add({ name: 'test1' });
+        var s2 = obj.get('selectors').add({ name: 'test2' });
+        obj.set('state', 'hover');
+        obj.set('mediaText', '1000');
+        expect(obj.compare([s1, s2])).toEqual(false);
+        expect(obj.compare([s1, s2], 'hover')).toEqual(false);
+        expect(obj.compare([s2, s1], 'hover', '1000')).toEqual(true);
+      });
 
-        });
+      test('toCSS returns empty if there is no style', () => {
+        var s1 = obj.get('selectors').add({ name: 'test1' });
+        expect(obj.toCSS()).toEqual('');
+      });
 
-        describe('CssRules', function() {
+      test('toCSS returns empty if there is no selectors', () => {
+        obj.setStyle({ color: 'red' });
+        expect(obj.toCSS()).toEqual('');
+      });
 
-            it('Creates collection item correctly', function() {
-              var c = new CssRules();
-              var m = c.add({});
-              m.should.be.an.instanceOf(CssRule);
-            });
+      test('toCSS returns simple CSS', () => {
+        obj.get('selectors').add({ name: 'test1' });
+        obj.setStyle({ color: 'red' });
+        expect(obj.toCSS()).toEqual(`.test1{color:red;}`);
+      });
 
-        });
+      test('toCSS wraps correctly inside media rule', () => {
+        const media = '(max-width: 768px)';
+        obj.set('atRuleType', 'media');
+        obj.set('mediaText', media);
+        obj.get('selectors').add({ name: 'test1' });
+        obj.setStyle({ color: 'red' });
+        expect(obj.toCSS()).toEqual(`@media ${media}{.test1{color:red;}}`);
+      });
 
-         describe('Selectors', function() {
+      test('toCSS with a generic at-rule', () => {
+        obj.set('atRuleType', 'supports');
+        obj.get('selectors').add({ name: 'test1' });
+        obj.setStyle({ 'font-family': 'Open Sans' });
+        expect(obj.toCSS()).toEqual(
+          `@supports{.test1{font-family:Open Sans;}}`
+        );
+      });
 
-            it('Creates collection item correctly', function() {
-              var c = new Selectors();
-              var m = c.add({});
-              m.should.be.an.instanceOf(Selector);
-            });
+      test('toCSS with a generic single at-rule', () => {
+        obj.set('atRuleType', 'font-face');
+        obj.set('singleAtRule', 1);
+        obj.setStyle({ 'font-family': 'Sans' });
+        expect(obj.toCSS()).toEqual(`@font-face{font-family:Sans;}`);
+      });
 
-        });
-      }
-    };
+      test('toCSS with a generic at-rule and condition', () => {
+        obj.set('atRuleType', 'font-face');
+        obj.set('mediaText', 'some-condition');
+        obj.get('selectors').add({ name: 'test1' });
+        obj.setStyle({ 'font-family': 'Open Sans' });
+        expect(obj.toCSS()).toEqual(
+          `@font-face some-condition{.test1{font-family:Open Sans;}}`
+        );
+      });
+    });
 
-});
+    describe('CssRules', () => {
+      test('Creates collection item correctly', () => {
+        var c = new CssRules();
+        var m = c.add({});
+        expect(m instanceof CssRule).toEqual(true);
+      });
+    });
+
+    describe('Selectors', () => {
+      test('Creates collection item correctly', () => {
+        var c = new Selectors();
+        var m = c.add({});
+        expect(m instanceof Selector).toEqual(true);
+      });
+    });
+  }
+};

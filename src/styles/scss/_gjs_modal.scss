@@ -1,0 +1,61 @@
+.#{$mdl-prefix} {
+  &container {
+    font-family: $mainFont;
+    overflow-y: auto;
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+  }
+
+  &dialog {
+    text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.05);
+    animation: #{$app-prefix}slide-down 0.215s;
+    margin: auto;
+    max-width: 850px;
+    width: 90%;
+    border-radius: 3px;
+    font-weight: lighter;
+    position: relative;
+    z-index: 2;
+  }
+
+  &title {
+    font-size: 1rem;
+  }
+
+  &btn-close {
+    @extend .btn-cl;
+
+    position: absolute;
+    right: 15px;
+    top: 5px;
+  }
+
+  &active .#{$mdl-prefix}dialog {
+    animation: #{$mdl-prefix}slide-down 0.216s;
+  }
+
+  &header,
+  &content {
+    padding: 10px 15px;
+    clear: both;
+  }
+
+  &header {
+    position: relative;
+    border-bottom: 1px solid $mainDkColor;
+    padding: 15px 15px 7px;
+  }
+}
+
+.#{$app-prefix}export-dl::after {
+  content: "";
+  clear: both;
+  display: block;
+  margin-bottom: 10px;
+}

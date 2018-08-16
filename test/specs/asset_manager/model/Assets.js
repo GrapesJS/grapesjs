@@ -1,53 +1,25 @@
-define(['AssetManager/model/Assets'],
-	function(Assets) {
+var Assets = require('asset_manager/model/Assets');
 
-		return {
-      run: function() {
-        describe('Assets', function() {
+module.exports = {
+  run() {
+    describe('Assets', () => {
+      var obj;
 
-          var obj;
+      beforeEach(() => {
+        obj = new Assets();
+      });
 
-          beforeEach(function () {
-            obj = new Assets();
-          });
+      afterEach(() => {
+        obj = null;
+      });
 
-          afterEach(function () {
-            delete obj;
-          });
+      test('Object exists', () => {
+        expect(obj).toBeTruthy();
+      });
 
-          it('Object exists', function() {
-            obj.should.be.exist;
-          });
-
-          it('Collection is empty', function() {
-            obj.length.should.equal(0);
-          });
-
-          it("Can't insert assets without src", function() {
-            obj.add({});
-            obj.length.should.equal(0);
-            obj.add([{},{},{}]);
-            obj.length.should.equal(0);
-          });
-
-          it("Insert assets only with src", function() {
-            obj.add([{},{src:'test'},{}]);
-            obj.length.should.equal(1);
-          });
-
-          it('addImg creates new asset', function() {
-            obj.addImg('/img/path');
-            obj.length.should.equal(1);
-          });
-
-          it('addImg asset is correct', function() {
-            obj.addImg('/img/path');
-            var asset = obj.at(0);
-            asset.get('type').should.equal('image');
-            asset.get('src').should.equal('/img/path');
-          });
-
-        });
-      }
-    };
-});
+      test('Collection is empty', () => {
+        expect(obj.length).toEqual(0);
+      });
+    });
+  }
+};

@@ -1,37 +1,50 @@
-define(['backbone'],
-	function (Backbone) {
+var Backbone = require('backbone');
 
-		return Backbone.View.extend({
+module.exports = Backbone.View.extend({
+  events() {
+    return (
+      this.model.get('events') || {
+        mousedown: 'handleClick'
+      }
+    );
+  },
 
-      events: {
-        'mousedown': 'handleClick',
-      },
+  attributes() {
+    return this.model.get('attributes');
+  },
 
-      attributes: function () {
-        return this.model.get('attributes');
-      },
+  initialize(opts) {
+    this.editor = opts.config.editor;
+  },
 
-      initialize: function(opts) {
-        this.editor = opts.config.editor;
-			},
+  handleClick(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.execCommand(event);
+  },
 
-      handleClick: function() {
-        var command = this.model.get('command');
+  execCommand(event) {
+    const opts = { event };
+    const command = this.model.get('command');
+    const editor = this.editor;
 
-        if (typeof command === 'function') {
-          command(this.editor);
-        }
+    if (typeof command === 'function') {
+      command(editor, null, opts);
+    }
 
-        if (typeof command === 'string') {
-          this.editor.runCommand(command);
-        }
-      },
+    if (typeof command === 'string') {
+      editor.runCommand(command, opts);
+    }
+  },
 
-      render: function () {
-        var config = this.editor.getConfig();
-        this.el.className += ' ' + config.stylePrefix + 'toolbar-item';
-        return this;
-      },
-
-		});
+  render() {
+    const { editor, $el, model } = this;
+    const id = model.get('id');
+    const label = model.get('label');
+    const pfx = editor.getConfig('stylePrefix');
+    $el.addClass(`${pfx}toolbar-item`);
+    id && $el.addClass(`${pfx}toolbar-item__${id}`);
+    label && $el.append(label);
+    return this;
+  }
 });

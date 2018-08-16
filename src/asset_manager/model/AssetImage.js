@@ -1,13 +1,11 @@
-define(['backbone', './Asset'],
-	function (Backbone, Asset) {
-		return Asset.extend({
+const Asset = require('./Asset');
 
-			defaults: _.extend({}, Asset.prototype.defaults, {
-				type: 		'image',
-				unitDim:	'px',
-				height:		0,
-				width:		0,
-			}),
-
-		});
+module.exports = Asset.extend({
+  defaults: {
+    ...Asset.prototype.defaults,
+    type: 'image',
+    unitDim: 'px',
+    height: 0,
+    width: 0
+  },
 });

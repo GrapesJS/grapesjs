@@ -1,45 +1,40 @@
-define(['AssetManager/view/AssetView', 'AssetManager/model/Asset', 'AssetManager/model/Assets'],
-	function(AssetView, Asset, Assets) {
+var AssetView = require('asset_manager/view/AssetView');
+var Asset = require('asset_manager/model/Asset');
+var Assets = require('asset_manager/model/Assets');
 
-		return {
-			run: function() {
+module.exports = {
+  run() {
+    describe('AssetView', () => {
+      let testContext;
 
-				describe('AssetView', function() {
+      beforeEach(() => {
+        testContext = {};
+      });
 
-					before(function () {
-						this.$fixtures 	= $("#fixtures");
-						this.$fixture 	= $('<div class="asset-fixture"></div>');
-					});
+      beforeEach(() => {
+        var coll = new Assets();
+        var model = coll.add({ src: 'test' });
+        testContext.view = new AssetView({
+          config: {},
+          model
+        });
+        document.body.innerHTML = '<div id="fixtures"></div>';
+        document.body
+          .querySelector('#fixtures')
+          .appendChild(testContext.view.render().el);
+      });
 
-					beforeEach(function () {
-						var coll 	= new Assets();
-						var model = coll.add({src: 'test'});
-						this.view = new AssetView({
-							config : {},
-							model: model
-						});
-						this.$fixture.empty().appendTo(this.$fixtures);
-						this.$fixture.html(this.view.render().el);
-					});
+      afterEach(() => {
+        testContext.view.remove();
+      });
 
-					afterEach(function () {
-						this.view.remove();
-					});
+      test('Object exists', () => {
+        expect(AssetView).toBeTruthy();
+      });
 
-					after(function () {
-						this.$fixture.remove();
-					});
-
-					it('Object exists', function() {
-						AssetView.should.be.exist;
-					});
-
-					it('Has correct prefix', function() {
-						this.view.pfx.should.equal('');
-					});
-
-				});
-
-			}
-		}
-});
+      test('Has correct prefix', () => {
+        expect(testContext.view.pfx).toEqual('');
+      });
+    });
+  }
+};

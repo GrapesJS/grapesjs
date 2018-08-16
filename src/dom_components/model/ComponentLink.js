@@ -1,42 +1,53 @@
-define(['./ComponentText'],
-	function (Component) {
+const Component = require('./ComponentText');
 
-		return Component.extend({
+module.exports = Component.extend(
+  {
+    defaults: {
+      ...Component.prototype.defaults,
+      type: 'link',
+      tagName: 'a',
+      traits: ['title', 'href', 'target']
+    },
 
-			defaults: _.extend({}, Component.prototype.defaults, {
-					type: 'link',
-					tagName: 'a',
-					traits: ['title', 'href', 'target'],
-			}),
+    /**
+     * Returns object of attributes for HTML
+     * @return {Object}
+     * @private
+     */
+    getAttrToHTML(...args) {
+      const attr = Component.prototype.getAttrToHTML.apply(this, args);
+      delete attr.onmousedown;
+      return attr;
+    }
+  },
+  {
+    isComponent(el) {
+      let result;
+      let avoidEdit;
 
-			/**
-			 * Returns object of attributes for HTML
-			 * @return {Object}
-			 * @private
-			 */
-			getAttrToHTML: function() {
-				var attr = Component.prototype.getAttrToHTML.apply(this, arguments);
-				delete attr.onmousedown;
-				return attr;
-			},
+      if (el.tagName == 'A') {
+        result = {
+          type: 'link',
+          editable: 0
+        };
 
-		},{
+        // The link is editable only if, at least, one of its
+        // children is a text node (not empty one)
+        const children = el.childNodes;
+        const len = children.length;
+        if (!len) delete result.editable;
 
-			/**
-			 * Detect if the passed element is a valid component.
-			 * In case the element is valid an object abstracted
-			 * from the element will be returned
-			 * @param {HTMLElement}
-			 * @return {Object}
-			 * @private
-			 */
-			isComponent: function(el) {
-				var result = '';
-				if(el.tagName == 'A'){
-					result = {type: 'link'};
-				}
-				return result;
-			},
+        for (let i = 0; i < len; i++) {
+          const child = children[i];
 
-		});
-});
+          if (child.nodeType == 3 && child.textContent.trim() != '') {
+            delete result.editable;
+            break;
+          }
+        }
+      }
+
+      return result;
+    }
+  }
+);

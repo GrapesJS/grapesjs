@@ -1,354 +1,929 @@
-define(['backbone','./Components', 'SelectorManager/model/Selectors', 'TraitManager/model/Traits'],
-  function (Backbone, Components, Selectors, Traits) {
+import {
+  isUndefined,
+  isFunction,
+  isObject,
+  isArray,
+  isEmpty,
+  isBoolean,
+  has,
+  clone,
+  isString,
+  forEach,
+  result,
+  keys
+} from 'underscore';
+import { shallowDiff, hasDnd } from 'utils/mixins';
+import Styleable from 'domain_abstract/model/Styleable';
 
-    return Backbone.Model.extend({
+const Backbone = require('backbone');
+const Components = require('./Components');
+const Selector = require('selector_manager/model/Selector');
+const Selectors = require('selector_manager/model/Selectors');
+const Traits = require('trait_manager/model/Traits');
+const componentList = {};
+let componentIndex = 0;
 
-      defaults: {
-        // HTML tag of the component
-        tagName: 'div',
+const escapeRegExp = str => {
+  return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
+};
 
-        // Component type, eg. 'text', 'image', 'video', etc.
-        type: '',
+const avoidInline = em => em && em.getConfig('avoidInlineStyle');
 
-        // True if the component is removable from the canvas
-        removable: true,
+const Component = Backbone.Model.extend(Styleable).extend(
+  {
+    defaults: {
+      // HTML tag of the component
+      tagName: 'div',
 
-        // Indicates if it's possible to drag the component inside other
-        // Tip: Indicate an array of selectors where it could be dropped inside
-        draggable: true,
+      // Component type, eg. 'text', 'image', 'video', etc.
+      type: '',
 
-        // Indicates if it's possible to drop other components inside
-        // Tip: Indicate an array of selectors which could be dropped inside
-        droppable: true,
+      // Name of the component. Will be used, for example, in layers and badges
+      name: '',
 
-        // Set false if don't want to see the badge (with the name) over the component
-        badgable: true,
+      // True if the component is removable from the canvas
+      removable: true,
 
-        // True if it's possible to style it
-        // Tip:  Indicate an array of CSS properties which is possible to style
-        stylable: true,
+      // Indicates if it's possible to drag the component inside others
+      // Tip: Indicate an array of selectors where it could be dropped inside
+      draggable: true,
 
-        // True if it's possible to clone the component
-        copyable: true,
+      // Indicates if it's possible to drop other components inside
+      // Tip: Indicate an array of selectors which could be dropped inside
+      droppable: true,
 
-        // Indicates if it's possible to resize the component (at the moment implemented only on Image Components)
-        resizable: false,
+      // Set false if don't want to see the badge (with the name) over the component
+      badgable: true,
 
-        // Allow to edit the content of the component (used on Text components)
-        editable: false,
+      // True if it's possible to style it
+      // Tip:
+      // Indicate an array of CSS properties which is possible to style, eg. ['color', 'width']
+      // All other properties will be hidden from the style manager
+      stylable: true,
 
-        // Hide the component inside Layers
-        hiddenLayer: false,
+      // Indicate an array of style properties to show up which has been marked as `toRequire`
+      'stylable-require': '',
 
-        // This property is used by the HTML exporter as void elements do not
-        // have closing tag, eg. <br/>, <hr/>, etc.
-        void: false,
+      // Indicate an array of style properties which should be hidden from the style manager
+      unstylable: '',
 
-        // Indicates if the component is in some CSS state like ':hover', ':active', etc.
-        state: '',
+      // Highlightable with 'dotted' style if true
+      highlightable: true,
 
-        // State, eg. 'selected'
-        status: '',
+      // True if it's possible to clone the component
+      copyable: true,
 
-        // Content of the component (not escaped) which will be appended before children rendering
-        content: '',
+      // Indicates if it's possible to resize the component (at the moment implemented only on Image Components)
+      // It's also possible to pass an object as options for the Resizer
+      resizable: false,
 
-        // Component related style
-        style: {},
+      // Allow to edit the content of the component (used on Text components)
+      editable: false,
 
-        // Key-value object of the component's attributes
-        attributes: '',
+      // Hide the component inside Layers
+      layerable: true,
 
-        // Array of classes
-        classes: '',
+      // Allow component to be selected when clicked
+      selectable: true,
 
-        // Component's javascript
-        script: '',
+      // Shows a highlight outline when hovering on the element if true
+      hoverable: true,
 
-        // Traits
-        traits: ['id', 'title'],
+      // This property is used by the HTML exporter as void elements do not
+      // have closing tag, eg. <br/>, <hr/>, etc.
+      void: false,
 
-        /**
-          * Set an array of items to show up inside the toolbar (eg. move, clone, delete)
-          * when the component is selected
-          * toolbar: [{
-          *     attributes: {class: 'fa fa-arrows'},
-          *     command: 'tlb-move',
-          *   },{
-          *     attributes: {class: 'fa fa-clone'},
-          *     command: 'tlb-clone',
-          * }]
-        */
-        toolbar: null,
+      // Indicates if the component is in some CSS state like ':hover', ':active', etc.
+      state: '',
 
-        // TODO
-        previousModel: '',
-        mirror: '',
-      },
+      // State, eg. 'selected'
+      status: '',
 
-      initialize: function(o, opt) {
-        // Check void elements
-        if(opt && opt.config && opt.config.voidElements.indexOf(this.get('tagName')) >= 0)
-          this.set('void', true);
+      // Content of the component (not escaped) which will be appended before children rendering
+      content: '',
 
-        this.opt = opt;
-        this.sm = opt ? opt.sm || {} : {};
-        this.config = o || {};
-        this.defaultC = this.config.components || [];
-        this.defaultCl = this.normalizeClasses(this.get('classes') || this.config.classes || []);
-        this.components	= new Components(this.defaultC, opt);
-        this.components.parent = this;
-        this.listenTo(this, 'change:script', this.scriptUpdated);
-        this.set('attributes', this.get('attributes') || {});
-        this.set('components', this.components);
-        this.set('classes', new Selectors(this.defaultCl));
-        var traits = new Traits();
-        traits.setTarget(this);
-        traits.add(this.get('traits'));
-        this.set('traits', traits);
-        this.initToolbar();
-        this.init();
-      },
+      // Component icon, this string will be inserted before the name, eg. '<i class="fa fa-square-o"></i>'
+      icon: '',
+
+      // Component related style
+      style: '',
+
+      // Key-value object of the component's attributes
+      attributes: '',
+
+      // Array of classes
+      classes: '',
+
+      // Component's javascript
+      script: '',
+
+      // Traits
+      traits: ['id', 'title'],
+
+      // Indicates an array of properties which will be inhereted by
+      // all NEW appended children
+      //
+      // If you create a model likes this
+      //  removable: false,
+      //  draggable: false,
+      //  propagate: ['removable', 'draggable']
+      // When you append some new component inside, the new added model
+      // will get the exact same properties indicated in `propagate` array
+      // (as the `propagate` property itself)
+      //
+      propagate: '',
 
       /**
-       * Initialize callback
+       * Set an array of items to show up inside the toolbar (eg. move, clone, delete)
+       * when the component is selected
+       * toolbar: [{
+       *     attributes: {class: 'fa fa-arrows'},
+       *     command: 'tlb-move',
+       *   },{
+       *     attributes: {class: 'fa fa-clone'},
+       *     command: 'tlb-clone',
+       * }]
        */
-      init: function () {},
+      toolbar: null
+    },
 
-      /**
-       * Script updated
-       */
-      scriptUpdated: function() {
-        this.set('scriptUpdated', 1);
-      },
+    initialize(props = {}, opt = {}) {
+      const em = opt.em;
 
-      /**
-       * Init toolbar
-       */
-       initToolbar: function () {
-        var model = this;
-        if(!model.get('toolbar')) {
-          var tb = [];
-          if(model.get('draggable')) {
-            tb.push({
-              attributes: {class: 'fa fa-arrows'},
-              command: 'tlb-move',
-            });
-          }
-          if(model.get('copyable')) {
-            tb.push({
-              attributes: {class: 'fa fa-clone'},
-              command: 'tlb-clone',
-            });
-          }
-          if(model.get('removable')) {
-            tb.push({
-              attributes: {class: 'fa fa-trash-o'},
-              command: 'tlb-delete',
-            });
-          }
-          model.set('toolbar', tb);
+      // Propagate properties from parent if indicated
+      const parent = this.parent();
+      const parentAttr = parent && parent.attributes;
+
+      if (parentAttr && parentAttr.propagate) {
+        let newAttr = {};
+        const toPropagate = parentAttr.propagate;
+        toPropagate.forEach(prop => (newAttr[prop] = parent.get(prop)));
+        newAttr.propagate = toPropagate;
+        newAttr = { ...newAttr, ...props };
+        this.set(newAttr);
+      }
+
+      const propagate = this.get('propagate');
+      propagate &&
+        this.set('propagate', isArray(propagate) ? propagate : [propagate]);
+
+      // Check void elements
+      if (
+        opt &&
+        opt.config &&
+        opt.config.voidElements.indexOf(this.get('tagName')) >= 0
+      ) {
+        this.set('void', true);
+      }
+
+      opt.em = em;
+      this.opt = opt;
+      this.em = em;
+      this.config = opt.config || {};
+      this.ccid = Component.createId(this);
+      this.set('attributes', this.get('attributes') || {});
+      this.listenTo(this, 'change:script', this.scriptUpdated);
+      this.listenTo(this, 'change:traits', this.traitsUpdated);
+      this.listenTo(this, 'change:tagName', this.tagUpdated);
+      this.listenTo(this, 'change:attributes', this.attrUpdated);
+      this.initClasses();
+      this.loadTraits();
+      this.initComponents();
+      this.initToolbar();
+      this.set('status', '');
+
+      // Register global updates for collection properties
+      ['classes', 'traits'].forEach(name =>
+        this.listenTo(this.get(name), 'add remove change', () =>
+          this.emitUpdate(name)
+        )
+      );
+      this.init();
+    },
+
+    /**
+     * Check component's type
+     * @param  {string}  type Component type
+     * @return {Boolean}
+     * @example
+     * model.is('image')
+     * // -> false
+     */
+    is(type) {
+      return !!(this.get('type') == type);
+    },
+
+    /**
+     * Find inner models by query string
+     * ATTENTION: this method works only with alredy rendered component
+     * @param  {string}  query Query string
+     * @return {Array} Array of models
+     * @example
+     * model.find('div > .class');
+     * // -> [Component, Component, ...]
+     */
+    find(query) {
+      const result = [];
+
+      this.view.$el.find(query).each((el, i, $els) => {
+        const $el = $els.eq(i);
+        const model = $el.data('model');
+        model && result.push(model);
+      });
+
+      return result;
+    },
+
+    /**
+     * Find closest model by query string
+     * ATTENTION: this method works only with alredy rendered component
+     * @param  {string}  query Query string
+     * @return {Component}
+     * @example
+     * model.closest('div');
+     */
+    closest(query) {
+      const result = this.view.$el.closest(query);
+      return result.length && result.data('model');
+    },
+
+    /**
+     * Once the tag is updated I have to remove the node and replace it
+     */
+    tagUpdated() {
+      const coll = this.collection;
+      const at = coll.indexOf(this);
+      coll.remove(this);
+      coll.add(this, { at });
+    },
+
+    /**
+     * Replace a component with another one
+     * @param {String|Component} el Component or HTML string
+     * @return {Array|Component} New added component/s
+     * @private
+     */
+    replaceWith(el) {
+      const coll = this.collection;
+      const at = coll.indexOf(this);
+      coll.remove(this);
+      return coll.add(el, { at });
+    },
+
+    /**
+     * Emit changes for each updated attribute
+     */
+    attrUpdated() {
+      const attrPrev = { ...this.previous('attributes') };
+      const attrCurrent = { ...this.get('attributes') };
+      const diff = shallowDiff(attrPrev, attrCurrent);
+      keys(diff).forEach(pr => this.trigger(`change:attributes:${pr}`));
+    },
+
+    /**
+     * Update attributes of the model
+     * @param {Object} attrs Key value attributes
+     * @example
+     * model.setAttributes({id: 'test', 'data-key': 'value'});
+     */
+    setAttributes(attrs) {
+      attrs = { ...attrs };
+
+      // Handle classes
+      const classes = attrs.class;
+      classes && this.setClass(classes);
+      delete attrs.class;
+
+      // Handle style
+      const style = attrs.style;
+      style && this.setStyle(style);
+      delete attrs.style;
+
+      this.set('attributes', attrs);
+    },
+
+    /**
+     * Add attributes to the model
+     * @param {Object} attrs Key value attributes
+     * @example
+     * model.addAttributes({id: 'test'});
+     */
+    addAttributes(attrs) {
+      const newAttrs = { ...this.getAttributes(), ...attrs };
+      this.setAttributes(newAttrs);
+    },
+
+    getStyle() {
+      const em = this.em;
+
+      if (em && em.getConfig('avoidInlineStyle')) {
+        const state = this.get('state');
+        const cc = em.get('CssComposer');
+        const rule = cc.getIdRule(this.getId(), { state });
+        this.rule = rule;
+
+        if (rule) {
+          return rule.getStyle();
         }
-      },
+      }
 
-      /**
-       * Load traits
-       * @param  {Array} traits
-       * @private
-       */
-      loadTraits: function(traits) {
-        var trt = new Traits();
-        trt.setTarget(this);
+      return Styleable.getStyle.call(this);
+    },
+
+    setStyle(prop = {}, opts = {}) {
+      const em = this.em;
+
+      if (em && em.getConfig('avoidInlineStyle')) {
+        prop = isString(prop) ? this.parseStyle(prop) : prop;
+        prop = { ...prop, ...this.get('style') };
+        const state = this.get('state');
+        const cc = em.get('CssComposer');
+        const propOrig = this.getStyle();
+        this.rule = cc.setIdRule(this.getId(), prop, { ...opts, state });
+        const diff = shallowDiff(propOrig, prop);
+        this.set('style', {}, { silent: 1 });
+        keys(diff).forEach(pr => this.trigger(`change:style:${pr}`));
+      } else {
+        prop = Styleable.setStyle.apply(this, arguments);
+      }
+
+      return prop;
+    },
+
+    /**
+     * Return attributes
+     * @return {Object}
+     */
+    getAttributes() {
+      const { em } = this;
+      const classes = [];
+      const attributes = { ...this.get('attributes') };
+      const sm = em && em.get('SelectorManager');
+      const id = this.getId();
+
+      // Add classes
+      this.get('classes').each(cls => classes.push(cls.get('name')));
+      classes.length && (attributes.class = classes.join(' '));
+
+      // Check if we need an ID on the component
+      if (!has(attributes, 'id')) {
+        let hasStyle;
+
+        // If we don't rely on inline styling we have to check
+        // for the ID selector
+        if (avoidInline(em)) {
+          hasStyle = sm && sm.get(id, sm.Selector.TYPE_ID);
+        } else if (!isEmpty(this.getStyle())) {
+          hasStyle = 1;
+        }
+
+        if (hasStyle) {
+          attributes.id = this.getId();
+        }
+      }
+
+      return attributes;
+    },
+
+    /**
+     * Add classes
+     * @param {Array|string} classes Array or string of classes
+     * @return {Array} Array of added selectors
+     * @example
+     * model.addClass('class1');
+     * model.addClass('class1 class2');
+     * model.addClass(['class1', 'class2']);
+     * // -> [SelectorObject, ...]
+     */
+    addClass(classes) {
+      const added = this.em.get('SelectorManager').addClass(classes);
+      return this.get('classes').add(added);
+    },
+
+    /**
+     * Set classes (resets current collection)
+     * @param {Array|string} classes Array or string of classes
+     * @return {Array} Array of added selectors
+     * @example
+     * model.setClass('class1');
+     * model.setClass('class1 class2');
+     * model.setClass(['class1', 'class2']);
+     * // -> [SelectorObject, ...]
+     */
+    setClass(classes) {
+      this.get('classes').reset();
+      return this.addClass(classes);
+    },
+
+    /**
+     * Remove classes
+     * @param {Array|string} classes Array or string of classes
+     * @return {Array} Array of removed selectors
+     * @example
+     * model.removeClass('class1');
+     * model.removeClass('class1 class2');
+     * model.removeClass(['class1', 'class2']);
+     * // -> [SelectorObject, ...]
+     */
+    removeClass(classes) {
+      const removed = [];
+      classes = isArray(classes) ? classes : [classes];
+      const selectors = this.get('classes');
+      const type = Selector.TYPE_CLASS;
+
+      classes.forEach(classe => {
+        const classes = classe.split(' ');
+        classes.forEach(name => {
+          const selector = selectors.where({ name, type })[0];
+          selector && removed.push(selectors.remove(selector));
+        });
+      });
+
+      return removed;
+    },
+
+    initClasses() {
+      const classes = this.normalizeClasses(this.get('classes') || []);
+      this.set('classes', new Selectors(classes));
+      return this;
+    },
+
+    initComponents() {
+      // Have to add components after the init, otherwise the parent
+      // is not visible
+      const comps = new Components(null, this.opt);
+      comps.parent = this;
+      !this.opt.avoidChildren && comps.reset(this.get('components'));
+      this.set('components', comps);
+      return this;
+    },
+
+    /**
+     * Initialize callback
+     */
+    init() {},
+
+    /**
+     * Add new component children
+     * @param  {Component|string} components Component to add
+     * @param {Object} [opts={}] Options, same as in `model.add()`(from backbone)
+     * @return {Array} Array of appended components
+     * @example
+     * someModel.get('components').length // -> 0
+     * const videoComponent = someModel.append('<video></video><div></div>')[0];
+     * // This will add 2 components (`video` and `div`) to your `someModel`
+     * someModel.get('components').length // -> 2
+     * // You can pass components directly
+     * otherModel.append(otherModel2);
+     * otherModel.append([otherModel3, otherModel4]);
+     */
+    append(components, opts = {}) {
+      const result = this.components().add(components, opts);
+      return isArray(result) ? result : [result];
+    },
+
+    /**
+     * Set new collection if `components` are provided, otherwise the
+     * current collection is returned
+     * @param  {Component|string} [components] Components to set
+     * @return {Collection|undefined}
+     * @example
+     * // Get current collection
+     * const collection = model.components();
+     * // Set new collection
+     * model.components('<span></span><div></div>');
+     */
+    components(components) {
+      const coll = this.get('components');
+
+      if (isUndefined(components)) {
+        return coll;
+      } else {
+        coll.reset();
+        components && this.append(components);
+      }
+    },
+
+    /**
+     * Get parent model
+     * @return {Component}
+     */
+    parent() {
+      const coll = this.collection;
+      return coll && coll.parent;
+    },
+
+    /**
+     * Script updated
+     */
+    scriptUpdated() {
+      this.set('scriptUpdated', 1);
+    },
+
+    /**
+     * Once traits are updated I have to populates model's attributes
+     */
+    traitsUpdated() {
+      let found = 0;
+      const attrs = { ...this.get('attributes') };
+      const traits = this.get('traits');
+
+      if (!(traits instanceof Traits)) {
+        this.loadTraits();
+        return;
+      }
+
+      traits.each(trait => {
+        found = 1;
+        if (!trait.get('changeProp')) {
+          const name = trait.get('name');
+          const value = trait.getInitValue();
+          if (name && value) {
+            attrs[name] = value;
+          }
+        }
+      });
+
+      found && this.set('attributes', attrs);
+    },
+
+    /**
+     * Init toolbar
+     */
+    initToolbar() {
+      var model = this;
+      if (!model.get('toolbar')) {
+        var tb = [];
+        if (model.collection) {
+          tb.push({
+            attributes: { class: 'fa fa-arrow-up' },
+            command: 'select-parent'
+          });
+        }
+        if (model.get('draggable')) {
+          tb.push({
+            attributes: { class: 'fa fa-arrows', draggable: true },
+            //events: hasDnd(this.em) ? { dragstart: 'execCommand' } : '',
+            command: 'tlb-move'
+          });
+        }
+        if (model.get('copyable')) {
+          tb.push({
+            attributes: { class: 'fa fa-clone' },
+            command: 'tlb-clone'
+          });
+        }
+        if (model.get('removable')) {
+          tb.push({
+            attributes: { class: 'fa fa-trash-o' },
+            command: 'tlb-delete'
+          });
+        }
+        model.set('toolbar', tb);
+      }
+    },
+
+    /**
+     * Load traits
+     * @param  {Array} traits
+     * @private
+     */
+    loadTraits(traits, opts = {}) {
+      var trt = new Traits([], this.opt);
+      trt.setTarget(this);
+      traits = traits || this.get('traits');
+
+      if (traits.length) {
         trt.add(traits);
-        this.set('traits', trt);
-      },
+      }
 
-      /**
-       * Normalize input classes from array to array of objects
-       * @param {Array} arr
-       * @return {Array}
-       * @private
-       */
-      normalizeClasses: function(arr) {
-         var res = [];
+      this.set('traits', trt, opts);
+      return this;
+    },
 
-         if(!this.sm.get)
-          return;
+    /**
+     * Normalize input classes from array to array of objects
+     * @param {Array} arr
+     * @return {Array}
+     * @private
+     */
+    normalizeClasses(arr) {
+      var res = [];
+      const em = this.em;
 
-        var clm = this.sm.get('SelectorManager');
-        if(!clm)
-          return;
+      if (!em) return;
 
-        arr.forEach(function(val){
-          var name = '';
+      var clm = em.get('SelectorManager');
+      if (!clm) return;
 
-          if(typeof val === 'string')
-            name = val;
-          else
-            name = val.name;
+      arr.forEach(val => {
+        var name = '';
 
-          var model = clm.add(name);
-          res.push(model);
+        if (typeof val === 'string') name = val;
+        else name = val.name;
+
+        var model = clm.add(name);
+        res.push(model);
+      });
+      return res;
+    },
+
+    /**
+     * Override original clone method
+     * @private
+     */
+    clone() {
+      const em = this.em;
+      const style = this.getStyle();
+      const attr = { ...this.attributes };
+      const opts = { ...this.opt };
+      attr.attributes = { ...attr.attributes };
+      delete attr.attributes.id;
+      attr.components = [];
+      attr.classes = [];
+      attr.traits = [];
+
+      this.get('components').each((md, i) => {
+        attr.components[i] = md.clone();
+      });
+      this.get('traits').each((md, i) => {
+        attr.traits[i] = md.clone();
+      });
+      this.get('classes').each((md, i) => {
+        attr.classes[i] = md.get('name');
+      });
+
+      attr.status = '';
+      attr.view = '';
+      opts.collection = null;
+
+      if (em && em.getConfig('avoidInlineStyle') && !isEmpty(style)) {
+        attr.style = style;
+      }
+
+      return new this.constructor(
+        attr,
+        opts
+      );
+    },
+
+    /**
+     * Get the name of the component
+     * @return {string}
+     * */
+    getName() {
+      let customName = this.get('name') || this.get('custom-name');
+      let tag = this.get('tagName');
+      tag = tag == 'div' ? 'box' : tag;
+      let name = this.get('type') || tag;
+      name = name.charAt(0).toUpperCase() + name.slice(1);
+      return customName || name;
+    },
+
+    /**
+     * Get the icon string
+     * @return {string}
+     */
+    getIcon() {
+      let icon = this.get('icon');
+      return icon ? icon + ' ' : '';
+    },
+
+    /**
+     * Return HTML string of the component
+     * @param {Object} opts Options
+     * @return {string} HTML string
+     * @private
+     */
+    toHTML(opts = {}) {
+      const model = this;
+      const attrs = [];
+      const classes = [];
+      const tag = model.get('tagName');
+      const sTag = model.get('void');
+      const customAttr = opts.attributes;
+      let attributes = this.getAttrToHTML();
+
+      // Get custom attributes if requested
+      if (customAttr) {
+        if (isFunction(customAttr)) {
+          attributes = customAttr(model, attributes) || {};
+        } else if (isObject(customAttr)) {
+          attributes = customAttr;
+        }
+      }
+
+      for (let attr in attributes) {
+        const val = attributes[attr];
+        const value = isString(val) ? val.replace(/"/g, '&quot;') : val;
+
+        if (!isUndefined(value)) {
+          if (isBoolean(value)) {
+            value && attrs.push(attr);
+          } else {
+            attrs.push(`${attr}="${value}"`);
+          }
+        }
+      }
+
+      let attrString = attrs.length ? ` ${attrs.join(' ')}` : '';
+      let code = `<${tag}${attrString}${sTag ? '/' : ''}>${model.get(
+        'content'
+      )}`;
+      model.get('components').each(comp => (code += comp.toHTML(opts)));
+      !sTag && (code += `</${tag}>`);
+
+      return code;
+    },
+
+    /**
+     * Returns object of attributes for HTML
+     * @return {Object}
+     * @private
+     */
+    getAttrToHTML() {
+      var attr = this.getAttributes();
+      delete attr.style;
+      return attr;
+    },
+
+    /**
+     * Return a shallow copy of the model's attributes for JSON
+     * stringification.
+     * @return {Object}
+     * @private
+     */
+    toJSON(...args) {
+      const obj = Backbone.Model.prototype.toJSON.apply(this, args);
+      obj.attributes = this.getAttributes();
+      delete obj.attributes.class;
+      delete obj.toolbar;
+
+      if (this.em.getConfig('avoidDefaults')) {
+        const defaults = result(this, 'defaults');
+
+        forEach(defaults, (value, key) => {
+          if (['type', 'content'].indexOf(key) === -1 && obj[key] === value) {
+            delete obj[key];
+          }
         });
-        return res;
-      },
 
-      /**
-       * Override original clone method
-       * @private
-       */
-      clone: function(reset) {
-        var attr = _.clone(this.attributes),
-        comp = this.get('components'),
-        traits = this.get('traits'),
-        cls = this.get('classes');
-        attr.components = [];
-        attr.classes = [];
-        attr.traits = [];
-
-        comp.each(function(md,i) {
-          attr.components[i]	= md.clone(1);
-        });
-        traits.each(function(md, i) {
-          attr.traits[i] = md.clone();
-        });
-        cls.each(function(md,i) {
-          attr.classes[i]	= md.get('name');
-        });
-
-        attr.status = '';
-        attr.view = '';
-
-        if(reset){
-          this.opt.collection = null;
+        if (isEmpty(obj.type)) {
+          delete obj.type;
         }
 
-        return new this.constructor(attr, this.opt);
-      },
-
-      /**
-       * Get name of the component
-       * @return {string}
-       * @private
-       * */
-      getName: function() {
-        if(!this.name){
-          var id = this.cid.replace(/\D/g,''),
-          type = this.get('type');
-          var tag = this.get('tagName');
-          tag = tag == 'div' ? 'box' : tag;
-          tag = type ? type : tag;
-          this.name 	= tag.charAt(0).toUpperCase() + tag.slice(1);
-        }
-        return this.name;
-      },
-
-      /**
-       * Return HTML string of the component
-       * @param {Object} opts Options
-       * @return {string} HTML string
-       * @private
-       */
-      toHTML: function(opts) {
-        var code = '';
-        var m = this;
-        var tag = m.get('tagName'),
-        sTag = m.get('void'),
-        attrId = '';
-        // Build the string of attributes
-        var strAttr = '';
-        var attr = this.getAttrToHTML();
-        for(var prop in attr){
-          var val = attr[prop];
-          strAttr += typeof val !== undefined && val !== '' ?
-            ' ' + prop + '="' + val + '"' : '';
-        }
-        // Build the string of classes
-        var strCls = '';
-        m.get('classes').each(function(m){
-          strCls += ' ' + m.get('name');
-        });
-        strCls = strCls !== '' ? ' class="' + strCls.trim() + '"' : '';
-
-        // If style is not empty I need an ID attached to the component
-        // TODO: need to refactor in case of 'ID Trait'
-        if(!_.isEmpty(m.get('style')))
-          attrId = ' id="' + m.cid + '" ';
-
-        code += '<' + tag + strCls + attrId + strAttr + (sTag ? '/' : '') + '>' + m.get('content');
-
-        m.get('components').each(function(m) {
-          code += m.toHTML();
+        forEach(['attributes', 'style'], prop => {
+          if (isEmpty(defaults[prop]) && isEmpty(obj[prop])) {
+            delete obj[prop];
+          }
         });
 
-        if(!sTag)
-          code += '</'+tag+'>';
+        forEach(['classes', 'components'], prop => {
+          if (isEmpty(defaults[prop]) && !obj[prop].length) {
+            delete obj[prop];
+          }
+        });
+      }
 
-        return code;
-      },
+      return obj;
+    },
 
-      /**
-       * Returns object of attributes for HTML
-       * @return {Object}
-       * @private
-       */
-      getAttrToHTML: function() {
-        var attr = this.get('attributes') || {};
-        delete attr.style;
-        return attr;
-      },
+    /**
+     * Return model id
+     * @return {string}
+     */
+    getId() {
+      let attrs = this.get('attributes') || {};
+      return attrs.id || this.ccid || this.cid;
+    },
 
-      /**
-       * Return a shallow copy of the model's attributes for JSON
-       * stringification.
-       * @return {Object}
-       * @private
-       */
-      toJSON: function() {
-        var obj = Backbone.Model.prototype.toJSON.apply(this, arguments);
-        var scriptStr = this.getScriptString();
+    /**
+     * Return model id
+     * @param {String} id
+     * @return {self}
+     */
+    setId(id) {
+      const attrs = { ...this.get('attributes') };
+      attrs.id = id;
+      this.set('attributes', attrs);
+      return this;
+    },
 
-        if (scriptStr) {
-          obj.script = scriptStr;
-        }
+    /**
+     * Get the DOM element of the model. This works only of the
+     * model is alredy rendered
+     * @return {HTMLElement}
+     */
+    getEl() {
+      return this.view && this.view.el;
+    },
 
-        return obj;
-      },
+    /**
+     * Return script in string format, cleans 'function() {..' from scripts
+     * if it's a function
+     * @param {string|Function} script
+     * @return {string}
+     * @private
+     */
+    getScriptString(script) {
+      var scr = script || this.get('script');
 
-      /**
-       * Return script in string format, cleans 'function() {..' from scripts
-       * if it's a function
-       * @param {string|Function} script
-       * @return {string}
-       * @private
-       */
-      getScriptString: function (script) {
-        var scr = script || this.get('script');
-
-        // Need to cast script functions to string
-        if (typeof scr == 'function') {
-          var scrStr = script.toString().trim();
-          scrStr = scrStr.replace(/^function\s?\(\)\s?\{/, '');
-          scrStr = scrStr.replace(/\}$/, '');
-          scr = scrStr;
-        }
-
+      if (!scr) {
         return scr;
       }
 
-    },{
+      // Need to convert script functions to strings
+      if (typeof scr == 'function') {
+        var scrStr = scr.toString().trim();
+        scrStr = scrStr
+          .replace(/^function[\s\w]*\(\)\s?\{/, '')
+          .replace(/\}$/, '');
+        scr = scrStr.trim();
+      }
 
-      /**
-       * Detect if the passed element is a valid component.
-       * In case the element is valid an object abstracted
-       * from the element will be returned
-       * @param {HTMLElement}
-       * @return {Object}
-       * @private
-       */
-      isComponent: function(el) {
-        return {tagName: el.tagName ? el.tagName.toLowerCase() : ''};
-      },
+      var config = this.em.getConfig();
+      var tagVarStart = escapeRegExp(config.tagVarStart || '{[ ');
+      var tagVarEnd = escapeRegExp(config.tagVarEnd || ' ]}');
+      var reg = new RegExp(`${tagVarStart}([\\w\\d-]*)${tagVarEnd}`, 'g');
+      scr = scr.replace(reg, (match, v) => {
+        // If at least one match is found I have to track this change for a
+        // better optimization inside JS generator
+        this.scriptUpdated();
+        return this.attributes[v] || '';
+      });
 
-    });
-});
+      return scr;
+    },
+
+    emitUpdate(property) {
+      const em = this.em;
+      const event = 'component:update' + (property ? `:${property}` : '');
+      em && em.trigger(event, this);
+    },
+
+    /**
+     * Execute callback function on all components
+     * @param  {Function} clb Callback function, the model is passed as an argument
+     * @return {self}
+     */
+    onAll(clb) {
+      if (isFunction(clb)) {
+        clb(this);
+        this.components().forEach(model => model.onAll(clb));
+      }
+      return this;
+    },
+
+    /**
+     * Reset id of the component and any of its style rule
+     * @param {Object} [opts={}] Options
+     * @return {self}
+     */
+    resetId(opts = {}) {
+      const { em } = this;
+      const oldId = this.getId();
+      if (!oldId) return;
+      const newId = Component.createId(this);
+      this.setId(newId);
+      const rule = em && em.get('CssComposer').getIdRule(oldId);
+      const selector = rule && rule.get('selectors').at(0);
+      selector && selector.set('name', newId);
+      return this;
+    }
+  },
+  {
+    /**
+     * Detect if the passed element is a valid component.
+     * In case the element is valid an object abstracted
+     * from the element will be returned
+     * @param {HTMLElement}
+     * @return {Object}
+     * @private
+     */
+    isComponent(el) {
+      return { tagName: el.tagName ? el.tagName.toLowerCase() : '' };
+    },
+
+    /**
+     * Relying simply on the number of components becomes a problem when you
+     * store and load them back, you might hit collisions with new components
+     * @param  {Model} model
+     * @return {string}
+     */
+    createId(model) {
+      componentIndex++;
+      // Testing 1000000 components with `+ 2` returns 0 collisions
+      const ilen = componentIndex.toString().length + 2;
+      const uid = (Math.random() + 1.1).toString(36).slice(-ilen);
+      const nextId = 'i' + uid;
+      componentList[nextId] = model;
+      return nextId;
+    },
+
+    getList() {
+      return componentList;
+    }
+  }
+);
+
+module.exports = Component;

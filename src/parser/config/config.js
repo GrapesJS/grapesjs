@@ -1,7 +1,3 @@
-define(function () {
-  return {
-
-    textTags: ['br', 'b', 'i', 'u'],
-
-  };
-});
+module.exports = {
+  textTags: ['br', 'b', 'i', 'u', 'a', 'ul', 'ol']
+};

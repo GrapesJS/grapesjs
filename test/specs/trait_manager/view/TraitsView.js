@@ -1,76 +1,70 @@
-var modulePath = 'TraitManager';
-define([modulePath+'/view/TraitView',
-modulePath+'/model/Trait',
-'DomComponents/model/Component'],
-	function(TraitView, Trait, Component) {
+const Trait = require('trait_manager/model/Trait');
+const TraitView = require('trait_manager/view/TraitView');
+const Component = require('dom_components/model/Component');
 
-		return {
-			run: function(){
+module.exports = {
+  run() {
+    describe('TraitView', () => {
+      var obj;
+      var model;
+      var modelName = 'title';
+      var target;
 
-				describe('TraitView', function() {
+      beforeEach(() => {
+        target = new Component();
+        model = new Trait({
+          name: modelName,
+          target
+        });
+        obj = new TraitView({
+          model
+        });
+      });
 
-          var obj;
-					var model;
-					var modelName = 'title';
-					var target;
+      afterEach(() => {
+        obj = null;
+        model = null;
+        target = null;
+      });
 
-          beforeEach(function () {
-						target = new Component();
-						model = new Trait({
-							name: modelName,
-							target: target,
-						});
-            obj = new TraitView({
-							model: model,
-						});
-          });
+      test('Object exists', () => {
+        expect(Trait).toBeTruthy();
+      });
 
-          afterEach(function () {
-            delete obj;
-						delete model;
-						delete target;
-          });
+      test('Target has no attributes on init', () => {
+        expect(target.get('attributes')).toEqual({});
+      });
 
-					it('Object exists', function() {
-						Trait.should.be.exist;
-					});
+      test('On update of the value updates the target attributes', () => {
+        model.set('value', 'test');
+        var eq = {};
+        eq[modelName] = 'test';
+        expect(target.get('attributes')).toEqual(eq);
+      });
 
-					it('Target has no attributes on init', function() {
-						target.get('attributes').should.deep.equal({});
-					});
+      test('Updates on different models do not alter other targets', () => {
+        var target1 = new Component();
+        var target2 = new Component();
+        var model1 = new Trait({
+          name: modelName,
+          target: target1
+        });
+        var model2 = new Trait({
+          name: modelName,
+          target: target2
+        });
+        var obj1 = new TraitView({ model: model1 });
+        var obj2 = new TraitView({ model: model2 });
 
-					it('On update of the value updates the target attributes', function() {
-						model.set('value', 'test');
-						var eq = {};
-						eq[modelName] = 'test';
-						target.get('attributes').should.deep.equal(eq);
-					});
-
-					it('Updates on different models do not alter other targets', function() {
-						var target1 = new Component();
-						var target2 = new Component();
-						var model1 = new Trait({
-							name: modelName,
-							target: target1,
-						});
-						var model2 = new Trait({
-							name: modelName,
-							target: target2,
-						});
-						var obj1 = new TraitView({model: model1});
-						var obj2 = new TraitView({model: model2});
-
-						model1.set('value', 'test1');
-						model2.set('value', 'test2');
-						var eq1 = {};
-						eq1[modelName] = 'test1';
-						var eq2 = {};
-						eq2[modelName] = 'test2';
-						target1.get('attributes').should.deep.equal(eq1);
-						target2.get('attributes').should.deep.equal(eq2);
-					});
-
-				});
-			}
-		}
-});
+        model1.set('value', 'test1');
+        model2.set('value', 'test2');
+        var eq1 = {};
+        eq1[modelName] = 'test1';
+        var eq2 = {};
+        eq2[modelName] = 'test2';
+        expect(target1.get('attributes')).toEqual(eq1);
+        expect(target2.get('attributes')).toEqual(eq2);
+      });
+    });
+  }
+};

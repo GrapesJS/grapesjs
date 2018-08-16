@@ -1,23 +1,23 @@
-define(['backbone'],
-	function (Backbone) {
-		/**
-		 * @class HtmlGenerator
-		 * */
-		return Backbone.Model.extend({
+import Backbone from 'backbone';
 
-			/** @inheritdoc */
-			build: function(model, cssc){
-				var coll = model.get('components') || model,
-					code = '';
+module.exports = Backbone.Model.extend({
+  build(model, opts = {}) {
+    const models = model.get('components');
 
-				coll.each(function(m){
-					code += m.toHTML({
-						cssc: cssc
-					});
-				}, this);
+    if (opts.exportWrapper) {
+      return opts.wrappesIsBody
+        ? `<body>${this.buildModels(models)}</body>`
+        : model.toHTML();
+    }
 
-				return code;
-			},
+    return this.buildModels(models);
+  },
 
-		});
+  buildModels(models) {
+    let code = '';
+    models.each(model => {
+      code += model.toHTML();
+    });
+    return code;
+  }
 });

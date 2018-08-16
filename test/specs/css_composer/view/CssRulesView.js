@@ -1,54 +1,107 @@
-var path = 'CssComposer/view/';
-define([path + 'CssRulesView', 'CssComposer/model/CssRules'],
-  function(CssRulesView, CssRules) {
+const CssRulesView = require('css_composer/view/CssRulesView');
+const CssRules = require('css_composer/model/CssRules');
+const Editor = require('editor/model/Editor');
 
-    return {
-      run : function(){
-          describe('CssRulesView', function() {
+module.exports = {
+  run() {
+    describe('CssRulesView', () => {
+      let obj;
+      const prefix = 'rules';
+      const devices = [
+        {
+          name: 'Mobile portrait',
+          width: '320px',
+          widthMedia: '480px'
+        },
+        {
+          name: 'Tablet',
+          width: '768px',
+          widthMedia: '992px'
+        },
+        {
+          name: 'Desktop',
+          width: '',
+          widthMedia: ''
+        }
+      ];
 
-            before(function () {
-              this.$fixtures  = $("#fixtures");
-              this.$fixture   = $('<div class="cssrules-fixture"></div>');
-            });
-
-            beforeEach(function () {
-              var col = new CssRules([]);
-              this.view = new CssRulesView({
-                collection: col
-              });
-              this.$fixture.empty().appendTo(this.$fixtures);
-              this.$fixture.html(this.view.render().el);
-            });
-
-            afterEach(function () {
-              this.view.collection.reset();
-            });
-
-            after(function () {
-              this.$fixture.remove();
-            });
-
-            it('Object exists', function() {
-              CssRulesView.should.be.exist;
-            });
-
-            it("Collection is empty", function (){
-              this.view.$el.html().should.be.empty;
-            });
-
-            it("Add new rule", function (){
-              sinon.stub(this.view, "addToCollection");
-              this.view.collection.add({});
-              this.view.addToCollection.calledOnce.should.equal(true);
-            });
-
-            it("Render new rule", function (){
-              this.view.collection.add({});
-              this.view.$el.html().should.not.be.empty;
-            });
-
+      beforeEach(() => {
+        const col = new CssRules([]);
+        obj = new CssRulesView({
+          collection: col,
+          config: {
+            em: new Editor({
+              deviceManager: {
+                devices
+              }
+            })
+          }
         });
-      }
-    };
+        document.body.innerHTML = '<div id="fixtures"></div>';
+        document.body.querySelector('#fixtures').appendChild(obj.render().el);
+      });
 
-});
+      afterEach(() => {
+        obj.collection.reset();
+      });
+
+      test('Object exists', () => {
+        expect(CssRulesView).toBeTruthy();
+      });
+
+      test('Collection is empty. Styles structure bootstraped', () => {
+        expect(obj.$el.html()).toBeTruthy();
+        const foundStylesContainers = obj.$el.find('div');
+        expect(foundStylesContainers.length).toEqual(devices.length);
+
+        const sortedDevicesWidthMedia = devices
+          .map(dvc => dvc.widthMedia)
+          .sort((left, right) => {
+            return (
+              ((right && right.replace('px', '')) || Number.MAX_VALUE) -
+              ((left && left.replace('px', '')) || Number.MAX_VALUE)
+            );
+          });
+        foundStylesContainers.each(($styleC, idx) => {
+          const width = sortedDevicesWidthMedia[idx];
+          expect($styleC.id).toEqual(`${prefix}${width ? `-${width}` : ''}`);
+        });
+      });
+
+      test('Add new rule', () => {
+        sinon.stub(obj, 'addToCollection');
+        obj.collection.add({});
+        expect(obj.addToCollection.calledOnce).toBeTruthy();
+      });
+
+      test('Add correctly rules with different media queries', () => {
+        const foundStylesContainers = obj.$el.find('div');
+        const rules = [
+          {
+            selectorsAdd: '#testid'
+          },
+          {
+            selectorsAdd: '#testid2',
+            mediaText: '(max-width: 1000px)'
+          },
+          {
+            selectorsAdd: '#testid3',
+            mediaText: '(min-width: 900px)'
+          },
+          {
+            selectorsAdd: '#testid4',
+            mediaText: 'screen and (max-width: 900px) and (min-width: 600px)'
+          }
+        ];
+        obj.collection.add(rules);
+        const stylesCont = obj.el.querySelector(`#${obj.className}`);
+        expect(stylesCont.children.length).toEqual(rules.length);
+      });
+
+      test('Render new rule', () => {
+        obj.collection.add({});
+        expect(obj.$el.find(`#${prefix}`).html()).toBeTruthy();
+      });
+    });
+  }
+};

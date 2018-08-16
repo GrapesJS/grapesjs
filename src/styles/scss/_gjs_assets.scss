@@ -1,0 +1,130 @@
+.#{$app-prefix}dropzone {
+  display: none;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 11;
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.25s;
+  pointer-events: none;
+}
+
+.#{$app-prefix}dropzone-active {
+  .#{$app-prefix}dropzone {
+    display: block;
+    opacity: 1;
+  }
+}
+
+.#{$am-prefix}assets {
+  height: 290px;
+  overflow: auto;
+  clear: both;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  align-content: flex-start;
+}
+
+.#{$am-prefix}assets-header {
+  padding: 5px;
+}
+
+.#{$am-prefix}add-asset {
+  .#{$am-prefix}add-field {
+    width: 70%;
+    float: left;
+  }
+
+  button {
+    width: 25%;
+    float: right;
+  }
+}
+
+.#{$am-prefix}preview-cont {
+  position: relative;
+  height: 70px;
+  width: 30%;
+  background-color: $mainColor;
+  border-radius: 2px;
+  float: left;
+  overflow: hidden;
+}
+
+.#{$am-prefix}preview {
+  position: absolute;
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+}
+
+.#{$am-prefix}preview-bg {
+  @include opacity(0.5);
+
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  z-index: 0;
+}
+
+.#{$am-prefix}dimensions {
+  @include opacity(0.5);
+
+  font-size: 10px;
+}
+
+.#{$am-prefix}meta {
+  width: 70%;
+  float: left;
+  font-size: 12px;
+  padding: 5px 0 0 5px;
+  box-sizing: border-box;
+
+  > div {
+    margin-bottom: 5px;
+  }
+}
+
+.#{$am-prefix}close {
+  @extend .btn-cl;
+
+  cursor: pointer;
+  position: absolute;
+  right: 5px;
+  top: 0;
+  display: none;
+}
+
+.#{$am-prefix}asset {
+  border-bottom: 1px solid darken($mainDkColor, 3%);
+  padding: 5px;
+  cursor: pointer;
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+
+  &:hover .#{$am-prefix}close {
+    display: block;
+  }
+}
+
+.#{$am-prefix}highlight {
+  background-color: $mainLhColor;
+}
+
+.#{$am-prefix}assets-cont {
+  background-color: $mainDklColor;
+  border-radius: 3px;
+  box-sizing: border-box;
+  padding: 10px;
+  width: 45%;
+  float: right;
+  height: 325px;
+  overflow: hidden;
+}

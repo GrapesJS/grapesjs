@@ -1,29 +1,27 @@
-define(['./Component'],
-  function (Component) {
+const Component = require('./Component');
 
-    return Component.extend({
+module.exports = Component.extend(
+  {
+    defaults: {
+      ...Component.prototype.defaults,
+      type: 'script',
+      droppable: false,
+      draggable: false,
+      layerable: false
+    }
+  },
+  {
+    isComponent(el) {
+      if (el.tagName == 'SCRIPT') {
+        var result = { type: 'script' };
 
-      defaults: _.extend({}, Component.prototype.defaults, {
-        type: 'script',
-        droppable: false,
-        draggable: false,
-        hiddenLayer: true,
-      }),
-
-    }, {
-
-      isComponent: function(el) {
-        if (el.tagName == 'SCRIPT') {
-          var result = {type: 'script'};
-
-          if (el.src) {
-            result.src = el.src;
-            result.onload = el.onload;
-          }
-
-          return result;
+        if (el.src) {
+          result.src = el.src;
+          result.onload = el.onload;
         }
-      },
 
-    });
-});
+        return result;
+      }
+    }
+  }
+);

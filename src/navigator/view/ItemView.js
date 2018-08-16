@@ -1,287 +1,377 @@
-define(['backbone', 'text!./../template/item.html','require'], function (Backbone, ItemTemplate, require) {
-  return Backbone.View.extend({
+import { isUndefined, isString } from 'underscore';
+import { getModel } from 'utils/mixins';
+import Backbone from 'backbone';
+const ComponentView = require('dom_components/view/ComponentView');
+const inputProp = 'contentEditable';
+const $ = Backbone.$;
+let ItemsView;
 
-    template: _.template(ItemTemplate),
+module.exports = Backbone.View.extend({
+  events: {
+    'mousedown [data-toggle-move]': 'startSort',
+    'click [data-toggle-visible]': 'toggleVisibility',
+    'click [data-toggle-select]': 'handleSelect',
+    'mouseover [data-toggle-select]': 'handleHover',
+    'click [data-toggle-open]': 'toggleOpening',
+    'dblclick [data-name]': 'handleEdit',
+    'focusout [data-name]': 'handleEditEnd'
+  },
 
-    initialize: function(o) {
-      this.opt = o;
-      this.config = o.config;
-      this.em = o.config.em;
-      this.ppfx = this.em.get('Config').stylePrefix;
-      this.sorter = o.sorter || {};
-      this.pfx = this.config.stylePrefix;
-      if(typeof this.model.get('open') == 'undefined')
-        this.model.set('open',false);
-      this.listenTo(this.model.components, 'remove add change reset', this.checkChildren);
-      this.listenTo(this.model, 'destroy remove', this.remove);
-      this.listenTo(this.model, 'change:status', this.updateStatus);
-      this.listenTo(this.model, 'change:open', this.updateOpening);
-      this.className	= this.pfx + 'item no-select';
-      this.editBtnCls = this.pfx + 'nav-item-edit';
-      this.inputNameCls = this.ppfx + 'nav-comp-name';
-      this.caretCls = this.ppfx + 'nav-item-caret';
-      this.titleCls = this.pfx + 'title';
-      this.customNameProp = 'custom-name';
-      this.events = {};
-      this.events['click > #'+this.pfx+'btn-eye'] = 'toggleVisibility';
-      this.events['click .' + this.caretCls] = 'toggleOpening';
-      this.events['click .' + this.titleCls] = 'handleSelect';
-      this.events['click .' + this.editBtnCls] = 'handleEdit';
-      this.events['blur .' + this.inputNameCls] = 'handleEditEnd';
+  template(model) {
+    const pfx = this.pfx;
+    const ppfx = this.ppfx;
+    const hidable = this.config.hidable;
+    const count = this.countChildren(model);
+    const addClass = !count ? this.clsNoChild : '';
+    const clsTitle = `${this.clsTitle} ${addClass}`;
+    const clsTitleC = `${this.clsTitleC} ${ppfx}one-bg`;
+    const clsCaret = `${this.clsCaret} fa fa-chevron-right`;
+    const clsInput = `${this.inputNameCls} ${ppfx}no-app`;
+    const level = this.level + 1;
+    const gut = `${30 + level * 10}px`;
+    const name = model.getName();
 
-      this.$el.data('model', this.model);
-      this.$el.data('collection', this.model.get('components'));
-
-      if(o.config.sortable)
-        this.events['mousedown > #'+this.pfx+'move']	= 'startSort';
-
-      this.delegateEvents();
-    },
-
-    /**
-     * Handle the edit of the component name
-     */
-    handleEdit: function(e) {
-      e.stopPropagation();
-      var inputName = this.getInputName();
-      inputName.readOnly = false;
-      inputName.focus();
-    },
-
-    /**
-     * Handle with the end of editing of the component name
-     */
-    handleEditEnd: function (e) {
-      e.stopPropagation();
-      var inputName = this.getInputName();
-      inputName.readOnly = true;
-      this.model.set(this.customNameProp, inputName.value);
-    },
-
-    /**
-     * Get the input containing the name of the component
-     * @return {HTMLElement}
-     */
-    getInputName: function () {
-      if(!this.inputName) {
-        this.inputName = this.el.querySelector('.' + this.inputNameCls);
+    return `
+      ${
+        hidable
+          ? `<i class="${pfx}layer-vis fa fa-eye ${
+              this.isVisible() ? '' : 'fa-eye-slash'
+            }" data-toggle-visible></i>`
+          : ''
       }
-      return this.inputName;
-    },
+      <div class="${clsTitleC}">
+        <div class="${clsTitle}" style="padding-left: ${gut}" data-toggle-select>
+          <div class="${pfx}layer-title-inn">
+            <i class="${clsCaret}" data-toggle-open></i>
+            ${model.getIcon()}
+            <span class="${clsInput}" data-name>${name}</span>
+          </div>
+        </div>
+      </div>
+      <div class="${this.clsCount}">${count || ''}</div>
+      <div class="${this.clsMove}" data-toggle-move>
+        <i class="fa fa-arrows"></i>
+      </div>
+      <div class="${this.clsChildren}"></div>`;
+  },
 
-    /**
-     * Update item opening
-     *
-     * @return void
-     * */
-    updateOpening: function (){
-      var opened = this.opt.opened || {};
-      var model = this.model;
-      if(model.get('open')){
-        this.$el.addClass("open");
-        this.$caret.addClass('fa-chevron-down');
-        opened[model.cid] = model;
-      }else{
-        this.$el.removeClass("open");
-        this.$caret.removeClass('fa-chevron-down');
-        delete opened[model.cid];
+  initialize(o = {}) {
+    this.opt = o;
+    this.level = o.level;
+    this.config = o.config;
+    this.em = o.config.em;
+    this.ppfx = this.em.get('Config').stylePrefix;
+    this.sorter = o.sorter || '';
+    this.pfx = this.config.stylePrefix;
+    const pfx = this.pfx;
+    const ppfx = this.ppfx;
+    const model = this.model;
+    const components = model.get('components');
+    model.set('open', false);
+    this.listenTo(components, 'remove add reset', this.checkChildren);
+    this.listenTo(model, 'change:status', this.updateStatus);
+    this.listenTo(model, 'change:open', this.updateOpening);
+    this.listenTo(model, 'change:style:display', this.updateVisibility);
+    this.className = `${pfx}layer no-select ${ppfx}two-color`;
+    this.inputNameCls = `${ppfx}layer-name`;
+    this.clsTitleC = `${pfx}layer-title-c`;
+    this.clsTitle = `${pfx}layer-title`;
+    this.clsCaret = `${pfx}layer-caret`;
+    this.clsCount = `${pfx}layer-count`;
+    this.clsMove = `${pfx}layer-move`;
+    this.clsChildren = `${pfx}layer-children`;
+    this.clsNoChild = `${pfx}layer-no-chld`;
+    this.$el.data('model', model);
+    this.$el.data('collection', components);
+    model.viewLayer = this;
+  },
+
+  getVisibilityEl() {
+    if (!this.eyeEl) {
+      this.eyeEl = this.$el.children(`.${this.pfx}layer-vis`);
+    }
+
+    return this.eyeEl;
+  },
+
+  updateVisibility() {
+    const pfx = this.pfx;
+    const model = this.model;
+    const hClass = `${pfx}layer-hidden`;
+    const hideIcon = 'fa-eye-slash';
+    const hidden = model.getStyle().display == 'none';
+    const method = hidden ? 'addClass' : 'removeClass';
+    this.$el[method](hClass);
+    this.getVisibilityEl()[method](hideIcon);
+  },
+
+  /**
+   * Toggle visibility
+   * @param	Event
+   *
+   * @return 	void
+   * */
+  toggleVisibility(e) {
+    e && e.stopPropagation();
+    const model = this.model;
+    const style = model.getStyle();
+    const hidden = style.display == 'none';
+
+    if (hidden) {
+      delete style.display;
+    } else {
+      style.display = 'none';
+    }
+
+    model.setStyle(style);
+  },
+
+  /**
+   * Handle the edit of the component name
+   */
+  handleEdit(e) {
+    e && e.stopPropagation();
+    const inputEl = this.getInputName();
+    inputEl[inputProp] = true;
+    inputEl.focus();
+  },
+
+  /**
+   * Handle with the end of editing of the component name
+   */
+  handleEditEnd(e) {
+    e && e.stopPropagation();
+    const inputEl = this.getInputName();
+    const name = inputEl.textContent;
+    inputEl[inputProp] = false;
+    this.model.set({ name });
+  },
+
+  /**
+   * Get the input containing the name of the component
+   * @return {HTMLElement}
+   */
+  getInputName() {
+    if (!this.inputName) {
+      this.inputName = this.el.querySelector(`.${this.inputNameCls}`);
+    }
+    return this.inputName;
+  },
+
+  /**
+   * Update item opening
+   *
+   * @return void
+   * */
+  updateOpening() {
+    var opened = this.opt.opened || {};
+    var model = this.model;
+    const chvDown = 'fa-chevron-down';
+
+    if (model.get('open')) {
+      this.$el.addClass('open');
+      this.getCaret().addClass(chvDown);
+      opened[model.cid] = model;
+    } else {
+      this.$el.removeClass('open');
+      this.getCaret().removeClass(chvDown);
+      delete opened[model.cid];
+    }
+  },
+
+  /**
+   * Toggle item opening
+   * @param {Object}	e
+   *
+   * @return void
+   * */
+  toggleOpening(e) {
+    e.stopPropagation();
+
+    if (!this.model.get('components').length) return;
+
+    this.model.set('open', !this.model.get('open'));
+  },
+
+  /**
+   * Handle component selection
+   */
+  handleSelect(e) {
+    e.stopPropagation();
+    const { em, config } = this;
+
+    if (em) {
+      const model = this.model;
+      em.setSelected(model, { fromLayers: 1 });
+      const scroll = config.scrollCanvas;
+      scroll && em.get('Canvas').scrollTo(model, scroll);
+    }
+  },
+
+  /**
+   * Handle component selection
+   */
+  handleHover(e) {
+    e.stopPropagation();
+    const { em, config, model } = this;
+    em && config.showHover && em.setHovered(model, { fromLayers: 1 });
+  },
+
+  /**
+   * Delegate to sorter
+   * @param	Event
+   * */
+  startSort(e) {
+    e.stopPropagation();
+    const sorter = this.sorter;
+    // Right or middel click
+    if (e.button !== 0) return;
+    sorter && sorter.startSort(e.target);
+  },
+
+  /**
+   * Freeze item
+   * @return	void
+   * */
+  freeze() {
+    this.$el.addClass(this.pfx + 'opac50');
+    this.model.set('open', 0);
+  },
+
+  /**
+   * Unfreeze item
+   * @return	void
+   * */
+  unfreeze() {
+    this.$el.removeClass(this.pfx + 'opac50');
+  },
+
+  /**
+   * Update item on status change
+   * @param	Event
+   * */
+  updateStatus(e) {
+    ComponentView.prototype.updateStatus.apply(this, [
+      {
+        avoidHover: !this.config.highlightHover
       }
-    },
+    ]);
+  },
 
-    /**
-     * Toggle item opening
-     * @param {Object}	e
-     *
-     * @return void
-     * */
-    toggleOpening: function(e){
-      e.stopPropagation();
+  /**
+   * Check if component is visible
+   *
+   * @return bool
+   * */
+  isVisible() {
+    var css = this.model.get('style'),
+      pr = css.display;
+    if (pr && pr == 'none') return;
+    return 1;
+  },
 
-      if(!this.model.components.length)
-        return;
+  /**
+   * Update item aspect after children changes
+   *
+   * @return void
+   * */
+  checkChildren() {
+    const model = this.model;
+    const count = this.countChildren(model);
+    const pfx = this.pfx;
+    const noChildCls = this.clsNoChild;
+    const title = this.$el
+      .children(`.${this.clsTitleC}`)
+      .children(`.${this.clsTitle}`);
 
-      this.model.set('open', !this.model.get('open') );
-    },
+    if (!this.cnt) {
+      this.cnt = this.$el.children(`.${this.clsCount}`);
+    }
 
-    /**
-     * Handle component selection
-     * @return {[type]} [description]
-     */
-    handleSelect: function (e) {
-      e.stopPropagation();
-      var em = this.em;
+    if (count) {
+      title.removeClass(noChildCls);
+      this.cnt.html(count);
+    } else {
+      title.addClass(noChildCls);
+      this.cnt.empty();
+      model.set('open', 0);
+    }
+  },
 
-      if(em){
-        var model = em.get('selectedComponent');
-        if(model){
-          model.set('status', '');
-        }
-        this.model.set('status', 'selected');
-        em.set('selectedComponent', this.model);
-      }
-    },
+  /**
+   * Count children inside model
+   * @param  {Object} model
+   * @return {number}
+   * @private
+   */
+  countChildren(model) {
+    var count = 0;
+    model.get('components').each(function(m) {
+      var isCountable = this.opt.isCountable;
+      var hide = this.config.hideTextnode;
+      if (isCountable && !isCountable(m, hide)) return;
+      count++;
+    }, this);
+    return count;
+  },
 
-    /**
-     * Delegate to sorter
-     * @param	Event
-     * */
-    startSort: function(e){
-      if (this.sorter) {
-        this.sorter.startSort(e.target);
-      }
-    },
+  getCaret() {
+    if (!this.caret || !this.caret.length) {
+      const pfx = this.pfx;
+      this.caret = this.$el
+        .children(`.${this.clsTitleC}`)
+        .find(`.${this.clsCaret}`);
+    }
 
-    /**
-     * Freeze item
-     * @return	void
-     * */
-    freeze: function(){
-      this.$el.addClass(this.pfx + 'opac50');
-      this.model.set('open',0);
-    },
+    return this.caret;
+  },
 
-    /**
-     * Unfreeze item
-     * @return	void
-     * */
-    unfreeze: function(){
-      this.$el.removeClass(this.pfx + 'opac50');
-    },
+  setRoot(el) {
+    el = isString(el) ? this.em.getWrapper().find(el)[0] : el;
+    const model = getModel(el, $);
+    if (!model) return;
+    this.stopListening();
+    this.model = model;
+    this.initialize(this.opt);
+    this.render();
+  },
 
-    /**
-     * Update item on status change
-     * @param	Event
-     * */
-    updateStatus: function(e) {
-      var status = this.model.get('status');
-      var cls = this.pfx + 'selected';
-      var el = this.$el;
-      switch(status) {
-        case 'selected':
-          el.addClass(cls);
-            break;
-        case 'moving':
-            break;
-        default:
-          el.removeClass(cls);
-      }
-    },
+  render() {
+    const model = this.model;
+    var pfx = this.pfx;
+    var vis = this.isVisible();
+    const el = this.$el.empty();
+    const level = this.level + 1;
 
-    /**
-     * Toggle visibility
-     * @param	Event
-     *
-     * @return 	void
-     * */
-    toggleVisibility: function(e){
-      if(!this.$eye)
-        this.$eye = this.$el.find('> #'+this.pfx+'btn-eye');
+    if (isUndefined(ItemsView)) {
+      ItemsView = require('./ItemsView');
+    }
 
-      var cCss = _.clone(this.model.get('style')),
-      hClass = this.pfx + 'hide';
-      if(this.isVisible()){
-        this.$el.addClass(hClass);
-        this.$eye.addClass('fa-eye-slash');
-        cCss.display = 'none';
-      }else{
-        this.$el.removeClass(hClass);
-        this.$eye.removeClass('fa-eye-slash');
-        delete cCss.display;
-      }
-      this.model.set('style', cCss);
-    },
+    const children = new ItemsView({
+      collection: model.get('components'),
+      config: this.config,
+      sorter: this.sorter,
+      opened: this.opt.opened,
+      parent: model,
+      level
+    }).render().$el;
 
-    /**
-     * Check if component is visible
-     *
-     * @return bool
-     * */
-    isVisible: function(){
-      var css = this.model.get('style'),
-        pr = css.display;
-      if(pr && pr == 'none' )
-        return;
-      return 1;
-    },
+    if (!this.config.showWrapper && level === 1) {
+      el.append(children);
+    } else {
+      el.html(this.template(model));
+      el.find(`.${this.clsChildren}`).append(children);
+    }
 
-    /**
-     * Update item aspect after children changes
-     *
-     * @return void
-     * */
-    checkChildren: function(){
-      var c = this.countChildren(this.model),
-      pfx = this.pfx,
-      tC = '> .' + pfx + 'title-c > .' + pfx + 'title';
-      if(!this.$counter)
-        this.$counter	= this.$el.find('> #' + pfx + 'counter');
-      if(c){
-        this.$el.find(tC).removeClass(pfx + 'no-chld');
-        this.$counter.html(c);
-      }else{
-        this.$el.find(tC).addClass(pfx + 'no-chld');
-        this.$counter.empty();
-        this.model.set('open',0);
-      }
-    },
+    if (!model.get('draggable') || !this.config.sortable) {
+      el.children(`.${this.clsMove}`).remove();
+    }
 
-    /**
-     * Count children inside model
-     * @param  {Object} model
-     * @return {number}
-     * @private
-     */
-    countChildren: function(model){
-      var count = 0;
-      model.components.each(function(m){
-        var isCountable = this.opt.isCountable;
-        var hide = this.config.hideTextnode;
-        if(isCountable && !isCountable(m, hide))
-          return;
-        count++;
-      }, this);
-      return count;
-    },
-
-    render: function(){
-      var pfx = this.pfx;
-      var vis = this.isVisible();
-      var count = this.countChildren(this.model);
-
-      this.$el.html( this.template({
-        title: this.model.get(this.customNameProp) || this.model.getName(),
-        addClass: (count ? '' : pfx+'no-chld'),
-        editBtnCls: this.editBtnCls,
-        inputNameCls: this.inputNameCls,
-        caretCls: this.caretCls,
-        count: count,
-        visible: vis,
-        hidable: this.config.hidable,
-        prefix: pfx,
-        ppfx: this.ppfx
-      }));
-
-      if(typeof ItemsView == 'undefined')
-      	ItemsView = require('./ItemsView');
-      this.$components = new ItemsView({
-        collection 	: this.model.components,
-        config: this.config,
-        sorter: this.sorter,
-        opened: this.opt.opened,
-        parent: this.model
-      }).render().$el;
-      this.$el.find('.'+ pfx +'children').html(this.$components);
-      this.$caret = this.$el.find('> .' + pfx + 'title-c > .' + pfx + 'title > #' + pfx + 'caret');
-      if(!this.model.get('draggable') || !this.config.sortable){
-      	this.$el.find('> #' + pfx + 'move').detach();
-      }
-      if(!vis)
-        this.className += ' ' + pfx + 'hide';
-      this.$el.attr('class', _.result(this, 'className'));
-      this.updateOpening();
-      this.updateStatus();
-      return this;
-    },
-
-  });
+    !vis && (this.className += ` ${pfx}hide`);
+    el.attr('class', this.className);
+    this.updateOpening();
+    this.updateStatus();
+    this.updateVisibility();
+    return this;
+  }
 });

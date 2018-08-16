@@ -1,0 +1,91 @@
+.#{$clm-prefix}field {
+  @extend .#{$sm-prefix}field
+}
+
+.#{$clm-prefix}select {
+  @extend .#{$sm-prefix}field.#{$sm-prefix}select;
+}
+
+.#{$clm-prefix}tags {
+  @extend .#{$sm-prefix}sector;
+
+  font-size: $fontSizeS;
+  padding: 10px 5px;
+
+  ##{$clm-prefix}label,
+  ##{$clm-prefix}sel {
+    padding: 7px 0;
+    float: left;
+  }
+
+  ##{$clm-prefix}sel {
+    font-style: italic;
+    margin-left: 5px;
+  }
+
+  ##{$clm-prefix}status-c {
+    float: right;
+  }
+
+  ##{$clm-prefix}tags-field {
+    clear: both;
+    padding: 5px;
+    margin-bottom: 5px;
+  }
+
+  ##{$clm-prefix}tags-c {
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  ##{$clm-prefix}add-tag {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 2px;
+    padding: $paddElClm;
+    box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.2) inset;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+  }
+
+  ##{$clm-prefix}new {
+    @extend  .#{$app-prefix}invis-invis;
+
+    color: $fontColor;
+    padding: $paddElClm;
+    display: none;
+  }
+
+  .#{$clm-prefix}tag {
+    display: inline-block;
+    border-radius: 3px;
+    margin: 0 3px 3px 0;
+    padding: 5px;
+    cursor: default;
+  }
+
+  ##{$clm-prefix}close {
+    @extend  .opac50;
+
+    font-size: 20px;
+    line-height: 0;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.9);
+    @extend  .no-select;
+
+    &:hover {
+      @include opacity(0.7);
+    }
+  }
+
+  ##{$clm-prefix}checkbox {
+    color: rgba(255, 255, 255, 0.9);
+    vertical-align: middle;
+    cursor: pointer;
+    font-size: 9px;
+  }
+
+  ##{$clm-prefix}tag-label {
+    padding: 0 3px;
+    cursor: text;
+  }
+}

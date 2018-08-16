@@ -1,11 +1,6 @@
-define([ 'backbone','./Command'], 
-	function (Backbone, Command) {
-		/**
-		 * @class Commands
-		 * */
-		return Backbone.Collection.extend({
-			
-			model: Command,
-			
-		});
+import Backbone from 'backbone';
+var Command = require('./Command');
+
+module.exports = Backbone.Collection.extend({
+  model: Command
 });

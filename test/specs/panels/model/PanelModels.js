@@ -1,123 +1,135 @@
-var path = 'Panels/model/';
-define([path + 'Button',
-        path + 'Buttons',
-        path + 'Panel',
-        path + 'Panels'],
-	function(Button, Buttons, Panel, Panels) {
+const Panels = require('panels');
+const Button = require('panels/model/Button');
+const Buttons = require('panels/model/Buttons');
+const Panel = require('panels/model/Panel');
 
-    return {
-      run : function(){
-        describe('Button', function() {
+module.exports = {
+  run() {
+    describe('Button', () => {
+      var obj;
 
-          var obj;
+      beforeEach(() => {
+        obj = new Button();
+      });
 
-          beforeEach(function () {
-            obj = new Button();
-          });
+      afterEach(() => {
+        obj = null;
+      });
 
-          afterEach(function () {
-            delete obj;
-          });
+      test('Has buttons instance', () => {
+        expect(obj.has('buttons')).toEqual(true);
+      });
 
-          it('Has buttons instance', function() {
-            obj.has('buttons').should.equal(true);
-          });
+      test('Has no buttons', () => {
+        expect(obj.get('buttons').length).toEqual(0);
+      });
 
-          it('Has no buttons', function() {
-            obj.get('buttons').length.should.equal(0);
-          });
-
-          it('Init with other buttons inside correctly', function() {
-            obj = new Button({
-              buttons: [{}]
-            });
-            obj.get('buttons').should.be.instanceOf(Buttons);
-            obj.get('buttons').length.should.equal(1);
-          });
-
+      test('Init with other buttons inside correctly', () => {
+        obj = new Button({
+          buttons: [{}]
         });
+        expect(obj.get('buttons') instanceof Buttons).toEqual(true);
+        expect(obj.get('buttons').length).toEqual(1);
+      });
 
-        describe('Buttons', function() {
-          var obj;
+      test('Has a disable attribute with default value as false', () => {
+        expect(obj.get('disable')).toEqual(false);
+      });
+    });
 
-          beforeEach(function () {
-            obj = new Buttons();
-          });
+    describe('Buttons', () => {
+      var obj;
 
-          afterEach(function () {
-            delete obj;
-          });
+      beforeEach(() => {
+        obj = new Buttons();
+      });
 
-          it('Deactivates buttons', function() {
-            obj.add({ active: true });
-            obj.deactivateAll();
-            obj.at(0).get('active').should.equal(false);
-          });
+      afterEach(() => {
+        obj = null;
+      });
 
-          it('Deactivates buttons with context', function() {
-            obj.add({ active: true });
-            obj.deactivateAll('someContext');
-            obj.at(0).get('active').should.equal(true);
-          });
+      test('Deactivates buttons', () => {
+        obj.add({ active: true });
+        obj.deactivateAll();
+        expect(obj.at(0).get('active')).toEqual(false);
+      });
 
-          it('Deactivates except one', function() {
-            var btn = obj.add({ active: true });
-            obj.deactivateAllExceptOne();
-            obj.at(0).get('active').should.equal(false);
-          });
+      test('Deactivates buttons with context', () => {
+        obj.add({ active: true });
+        obj.deactivateAll('someContext');
+        expect(obj.at(0).get('active')).toEqual(true);
+      });
 
-          it('Deactivates except one with model', function() {
-            var btn = obj.add({ active: true });
-            obj.deactivateAllExceptOne(btn);
-            obj.at(0).get('active').should.equal(true);
-          });
+      test('Deactivates except one', () => {
+        var btn = obj.add({ active: true });
+        obj.deactivateAllExceptOne();
+        expect(obj.at(0).get('active')).toEqual(false);
+      });
 
+      test('Deactivates except one with model', () => {
+        var btn = obj.add({ active: true });
+        obj.deactivateAllExceptOne(btn);
+        expect(obj.at(0).get('active')).toEqual(true);
+      });
+
+      test('Disable all buttons', () => {
+        obj.add({ disable: false });
+        obj.disableAllButtons();
+        expect(obj.at(0).get('disable')).toEqual(true);
+      });
+
+      test('Disables buttons with context', () => {
+        obj.add({ disable: false, context: 'someContext' });
+        obj.disableAllButtons('someContext');
+        expect(obj.at(0).get('disable')).toEqual(true);
+      });
+
+      test('Disables except one', () => {
+        var btn = obj.add({ disable: false });
+        obj.disableAllButtonsExceptOne(btn);
+        expect(obj.at(0).get('disable')).toEqual(false);
+      });
+    });
+
+    describe('Panel', () => {
+      var obj;
+
+      beforeEach(() => {
+        obj = new Panel();
+      });
+
+      afterEach(() => {
+        obj = null;
+      });
+
+      test('Has buttons instance', () => {
+        expect(obj.has('buttons')).toEqual(true);
+        expect(obj.get('buttons') instanceof Buttons).toEqual(true);
+      });
+
+      test('Has no buttons', () => {
+        expect(obj.get('buttons').length).toEqual(0);
+      });
+
+      test('Init with buttons inside correctly', () => {
+        obj = new Panel({
+          buttons: [{}]
         });
+        expect(obj.get('buttons') instanceof Buttons).toEqual(true);
+        expect(obj.get('buttons').length).toEqual(1);
+      });
+    });
 
-        describe('Panel', function() {
-          var obj;
+    describe('Panels', () => {
+      var obj;
 
-          beforeEach(function () {
-            obj = new Panel();
-          });
+      beforeEach(() => {
+        obj = new Panel();
+      });
 
-          afterEach(function () {
-            delete obj;
-          });
-
-          it('Has buttons instance', function() {
-            obj.has('buttons').should.equal(true);
-            obj.get('buttons').should.be.instanceOf(Buttons);
-          });
-
-          it('Has no buttons', function() {
-            obj.get('buttons').length.should.equal(0);
-          });
-
-          it('Init with buttons inside correctly', function() {
-            obj = new Panel({
-              buttons: [{}]
-            });
-            obj.get('buttons').should.be.instanceOf(Buttons);
-            obj.get('buttons').length.should.equal(1);
-          });
-
-        });
-
-        describe('Panels', function() {
-          var obj;
-
-          beforeEach(function () {
-            obj = new Panel();
-          });
-
-          afterEach(function () {
-            delete obj;
-          });
-
-        });
-
-      }
-    };
-
-});
+      afterEach(() => {
+        obj = null;
+      });
+    });
+  }
+};

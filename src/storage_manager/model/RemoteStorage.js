@@ -1,72 +1,136 @@
-define(['backbone'],
-  function (Backbone) {
-    /**
-     * @class RemoteStorage
-     * */
-    return Backbone.Model.extend({
+import fetch from 'utils/fetch';
+import { isUndefined } from 'underscore';
 
-      defaults: {
-        urlStore: '',
-        urlLoad: '',
-        params: {},
-        beforeSend: function(){},
-        onComplete: function(){},
-        contentTypeJson: false
-      },
+module.exports = require('backbone').Model.extend({
+  fetch,
 
-      /**
-       * @private
-       */
-      store: function(data, clb) {
-        var fd = {},
-        params = this.get('params');
+  defaults: {
+    urlStore: '',
+    urlLoad: '',
+    params: {},
+    beforeSend() {},
+    onComplete() {},
+    contentTypeJson: false
+  },
 
-        for(var k in data)
-          fd[k] = data[k];
+  /**
+   * Triggered before the request is started
+   * @private
+   */
+  onStart() {
+    const em = this.get('em');
+    const before = this.get('beforeSend');
+    before && before();
+  },
 
-        for(var key in params)
-          fd[key] = params[key];
+  /**
+   * Triggered on request error
+   * @param  {Object} err Error
+   * @param  {Function} [clbErr] Error callback
+   * @private
+   */
+  onError(err, clbErr) {
+    if (clbErr) {
+      clbErr(err);
+    } else {
+      const em = this.get('em');
+      console.error(err);
+      em && em.trigger('storage:error', err);
+    }
+  },
 
-        $.ajax({
-          url: this.get('urlStore'),
-          beforeSend: this.get('beforeSend'),
-          complete: this.get('onComplete'),
-          method: 'POST',
-          dataType: 'json',
-          contentType: this.get('contentTypeJson') ? 'application/json; charset=utf-8': 'x-www-form-urlencoded',
-          data: this.get('contentTypeJson') ? JSON.stringify(fd): fd,
-        }).always(function(){
-          if (typeof clb == 'function') {
-            clb();
-          }
-        });
-      },
+  /**
+   * Triggered on request response
+   * @param  {string} text Response text
+   * @private
+   */
+  onResponse(text, clb) {
+    const em = this.get('em');
+    const complete = this.get('onComplete');
+    const typeJson = this.get('contentTypeJson');
+    const parsable = text && typeof text === 'string';
+    const res = typeJson && parsable ? JSON.parse(text) : text;
+    complete && complete(res);
+    clb && clb(res);
+    em && em.trigger('storage:response', res);
+  },
 
-      /**
-       * @private
-       */
-      load: function(keys){
-        var result = {},
-        fd = {},
-        params = this.get('params');
+  store(data, clb, clbErr) {
+    const body = {};
 
-        for(var key in params)
-          fd[key] = params[key];
+    for (let key in data) {
+      body[key] = data[key];
+    }
 
-        fd.keys = keys;
+    this.request(this.get('urlStore'), { body }, clb, clbErr);
+  },
 
-        $.ajax({
-          url: this.get('urlLoad'),
-          beforeSend: this.get('beforeSend'),
-          complete: this.get('onComplete'),
-          data: fd,
-          async: false,
-          method: 'GET',
-        }).done(function(d){
-          result = d;
-        });
-        return result;
-      },
+  load(keys, clb, clbErr) {
+    this.request(this.get('urlLoad'), { method: 'get' }, clb, clbErr);
+  },
 
-    });
+  /**
+   * Execute remote request
+   * @param  {string} url Url
+   * @param  {Object} [opts={}] Options
+   * @param  {Function} [clb=null] Callback
+   * @param  {Function} [clbErr=null] Error callback
+   * @private
+   */
+  request(url, opts = {}, clb = null, clbErr = null) {
+    const typeJson = this.get('contentTypeJson');
+    const headers = this.get('headers') || {};
+    const params = this.get('params');
+    const reqHead = 'X-Requested-With';
+    const typeHead = 'Content-Type';
+    const bodyObj = opts.body || {};
+    let fetchOptions;
+    let body;
+
+    for (let param in params) {
+      bodyObj[param] = params[param];
+    }
+
+    if (isUndefined(headers[reqHead])) {
+      headers[reqHead] = 'XMLHttpRequest';
+    }
+
+    // With `fetch`, have to send FormData without any 'Content-Type'
+    // https://stackoverflow.com/questions/39280438/fetch-missing-boundary-in-multipart-form-data-post
+
+    if (isUndefined(headers[typeHead]) && typeJson) {
+      headers[typeHead] = 'application/json; charset=utf-8';
+    }
+
+    if (typeJson) {
+      body = JSON.stringify(bodyObj);
+    } else {
+      body = new FormData();
+
+      for (let bodyKey in bodyObj) {
+        body.append(bodyKey, bodyObj[bodyKey]);
+      }
+    }
+    fetchOptions = {
+      method: opts.method || 'post',
+      credentials: 'include',
+      headers
+    };
+
+    // Body should only be included on POST method
+    if (fetchOptions.method === 'post') {
+      fetchOptions.body = body;
+    }
+
+    this.onStart();
+    this.fetch(url, fetchOptions)
+      .then(
+        res =>
+          ((res.status / 200) | 0) == 1
+            ? res.text()
+            : res.text().then(text => Promise.reject(text))
+      )
+      .then(text => this.onResponse(text, clb))
+      .catch(err => this.onError(err, clbErr));
+  }
 });

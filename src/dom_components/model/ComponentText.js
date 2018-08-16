@@ -1,13 +1,10 @@
-define(['./Component'],
-	function (Component) {
+const Component = require('./Component');
 
-		return Component.extend({
-
-			defaults: _.extend({}, Component.prototype.defaults, {
-				type: 'text',
-				droppable: false,
-				editable: true,
-			}),
-
-		});
+module.exports = Component.extend({
+  defaults: {
+    ...Component.prototype.defaults,
+    type: 'text',
+    droppable: false,
+    editable: true
+  }
 });

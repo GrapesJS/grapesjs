@@ -1,55 +1,39 @@
-define(['backbone'],
-function(Backbone){
+const $ = Backbone.$;
 
-  return Backbone.View.extend({
+module.exports = Backbone.View.extend({
+  initialize() {
+    const model = this.model;
+    model.view = this;
+    this.conf = model.config;
+    this.pn = model.get('Panels');
+    model.on('loaded', () => {
+      this.pn.active();
+      this.pn.disableButtons();
+      model.runDefault();
+      setTimeout(() => model.trigger('load'), 0);
+    });
+  },
 
-    initialize: function() {
-      this.pn = this.model.get('Panels');
-      this.conf = this.model.config;
-      this.className = this.conf.stylePrefix + 'editor';
-      this.model.on('loaded', function(){
-        this.pn.active();
-        this.model.runDefault();
-        this.model.trigger('load');
-      }, this);
-    },
+  render() {
+    const model = this.model;
+    const el = this.$el;
+    const conf = this.conf;
+    const contEl = $(conf.el || `body ${conf.container}`);
+    const pfx = conf.stylePrefix;
+    el.empty();
 
-    render: function() {
-      var model = this.model;
-      var um = model.get('UndoManager');
-      var dComps = model.get('DomComponents');
-      var config = model.get('Config');
+    if (conf.width) contEl.css('width', conf.width);
 
-      if(config.loadCompsOnRender) {
-        if (config.clearOnRender) {
-          dComps.clear();
-        }
-        dComps.getComponents().add(config.components);
-        um.clear();
-        dComps.onLoad();
-      }
+    if (conf.height) contEl.css('height', conf.height);
 
-      var conf = this.conf;
-      var contEl = $(conf.el || ('body ' + conf.container));
-      this.$el.empty();
+    el.append(model.get('Canvas').render());
+    el.append(this.pn.render());
+    el.attr('class', `${pfx}editor ${pfx}one-bg ${pfx}two-color`);
+    contEl
+      .addClass(`${pfx}editor-cont`)
+      .empty()
+      .append(el);
 
-      if(conf.width)
-        contEl.css('width', conf.width);
-
-      if(conf.height)
-        contEl.css('height', conf.height);
-
-      // Canvas
-      this.$el.append(model.get('Canvas').render());
-
-      // Panels
-      this.$el.append(this.pn.render());
-      this.$el.attr('class', this.className);
-
-      contEl.addClass(conf.stylePrefix + 'editor-cont');
-      contEl.html(this.$el);
-
-      return this;
-    }
-  });
+    return this;
+  }
 });

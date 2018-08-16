@@ -1,38 +1,49 @@
-define(['backbone','./PropertyView', 'text!./../templates/propertySelect.html'],
-	function (Backbone, PropertyView, propertyTemplate) {
-	/**
-	 * @class PropertySelectView
-	 * */
-	return PropertyView.extend({
+import Backbone from 'backbone';
+import PropertyView from './PropertyView';
+const $ = Backbone.$;
 
-		template: _.template(propertyTemplate),
+module.exports = PropertyView.extend({
+  templateInput() {
+    const pfx = this.pfx;
+    const ppfx = this.ppfx;
+    return `
+      <div class="${ppfx}field ${ppfx}select">
+        <span id="${pfx}input-holder"></span>
+        <div class="${ppfx}sel-arrow">
+          <div class="${ppfx}d-s-arrow"></div>
+        </div>
+      </div>
+    `;
+  },
 
-		initialize: function(options) {
-			PropertyView.prototype.initialize.apply(this, arguments);
-			this.list = this.model.get('list') || [];
-		},
+  initialize(...args) {
+    PropertyView.prototype.initialize.apply(this, args);
+    this.listenTo(this.model, 'change:options', this.updateOptions);
+  },
 
-		/** @inheritdoc */
-		renderInput: function() {
-			var pfx	= this.pfx;
-			if(!this.$input){
-				this.input = '<select>';
+  updateOptions() {
+    this.input = null;
+    this.onRender();
+  },
 
-				if(this.list && this.list.length){
-					_.each(this.list,function(el){
-						var name = el.name ? el.name : el.value;
-						var style = el.style ? el.style.replace(/"/g,'&quot;') : '';
-						var styleAttr = style ? 'style="' + style + '"' : '';
-						this.input += '<option value="'+el.value.replace(/"/g,'&quot;')+'" ' + styleAttr + '>'+name+'</option>';
-					}, this);
-				}
+  onRender() {
+    var pfx = this.pfx;
+    const options = this.model.getOptions();
 
-				this.input 	+= '</select>';
-				this.$input = $(this.input);
-				this.$el.find('#'+ pfx +'input-holder').html(this.$input);
-			}
-			this.setValue(this.componentValue, 0);
-		},
+    if (!this.input) {
+      let optionsStr = '';
 
-	});
+      options.forEach(option => {
+        let name = option.name || option.value;
+        let style = option.style ? option.style.replace(/"/g, '&quot;') : '';
+        let styleAttr = style ? `style="${style}"` : '';
+        let value = option.value.replace(/"/g, '&quot;');
+        optionsStr += `<option value="${value}" ${styleAttr}>${name}</option>`;
+      });
+
+      const inputH = this.el.querySelector(`#${pfx}input-holder`);
+      inputH.innerHTML = `<select>${optionsStr}</select>`;
+      this.input = inputH.firstChild;
+    }
+  }
 });

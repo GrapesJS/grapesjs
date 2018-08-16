@@ -1,136 +1,163 @@
-define(['backbone'], function (Backbone) {
+import { isUndefined, clone } from 'underscore';
 
-  return Backbone.View.extend({
+const Backbone = require('backbone');
+const $ = Backbone.$;
 
-    events:{
-      'change': 'onChange'
-    },
+module.exports = Backbone.View.extend({
+  events: {
+    change: 'onChange'
+  },
 
-    initialize: function(o) {
-      var md = this.model;
-      this.config = o.config || {};
-      this.pfx = this.config.stylePrefix || '';
-      this.ppfx = this.config.pStylePrefix || '';
-      this.target = md.target;
-      this.className = this.pfx + 'trait';
-      this.labelClass = this.ppfx + 'label';
-      this.fieldClass = this.ppfx + 'field ' + this.ppfx + 'field-' + md.get('type');
-      this.inputhClass = this.ppfx + 'input-holder';
-      md.off('change:value', this.onValueChange);
-      this.listenTo(md, 'change:value', this.onValueChange);
-      this.tmpl = '<div class="' + this.fieldClass +'"><div class="' + this.inputhClass +'"></div></div>';
-    },
+  attributes() {
+    return this.model.get('attributes');
+  },
 
-    /**
-     * Fires when the input is changed
-     * @private
-     */
-    onChange: function() {
-      this.model.set('value', this.getInputEl().value);
-    },
+  initialize(o) {
+    const model = this.model;
+    const name = model.get('name');
+    const target = model.target;
+    this.config = o.config || {};
+    this.pfx = this.config.stylePrefix || '';
+    this.ppfx = this.config.pStylePrefix || '';
+    this.target = target;
+    this.className = this.pfx + 'trait';
+    this.labelClass = this.ppfx + 'label';
+    this.fieldClass =
+      this.ppfx + 'field ' + this.ppfx + 'field-' + model.get('type');
+    this.inputhClass = this.ppfx + 'input-holder';
+    model.off('change:value', this.onValueChange);
+    this.listenTo(model, 'change:value', this.onValueChange);
+    model.view = this;
+    this.tmpl =
+      '<div class="' +
+      this.fieldClass +
+      '"><div class="' +
+      this.inputhClass +
+      '"></div></div>';
+  },
 
-    /**
-     * On change callback
-     * @private
-     */
-    onValueChange: function() {
-      var m = this.model;
-      var trg = this.target;
-      var name = m.get('name');
-      var value = m.get('value');
-      // Chabge property if requested otherwise attributes
-      if(m.get('changeProp')){
-        trg.set(name, value);
-      }else{
-        var attrs = _.clone(trg.get('attributes'));
-        attrs[name] = value;
-        trg.set('attributes', attrs);
+  /**
+   * Fires when the input is changed
+   * @private
+   */
+  onChange() {
+    this.model.set('value', this.getInputEl().value);
+  },
+
+  getValueForTarget() {
+    return this.model.get('value');
+  },
+
+  setInputValue(value) {
+    this.getInputEl().value = value;
+  },
+
+  /**
+   * On change callback
+   * @private
+   */
+  onValueChange(model, value, opts = {}) {
+    const mod = this.model;
+    const trg = this.target;
+    const name = mod.get('name');
+
+    if (opts.fromTarget) {
+      this.setInputValue(mod.get('value'));
+    } else {
+      const value = this.getValueForTarget();
+      mod.setTargetValue(value, opts);
+    }
+  },
+
+  /**
+   * Render label
+   * @private
+   */
+  renderLabel() {
+    const label = this.getLabel();
+    this.$el.html(
+      `<div class="${this.labelClass}" title="${label}">${label}</div>`
+    );
+  },
+
+  /**
+   * Returns label for the input
+   * @return {string}
+   * @private
+   */
+  getLabel() {
+    var model = this.model;
+    var label = model.get('label') || model.get('name');
+    return label.charAt(0).toUpperCase() + label.slice(1).replace(/-/g, ' ');
+  },
+
+  /**
+   * Returns input element
+   * @return {HTMLElement}
+   * @private
+   */
+  getInputEl() {
+    if (!this.$input) {
+      const md = this.model;
+      const plh = md.get('placeholder') || md.get('default') || '';
+      const type = md.get('type') || 'text';
+      const min = md.get('min');
+      const max = md.get('max');
+      const value = this.getModelValue();
+      const input = $(`<input type="${type}" placeholder="${plh}">`);
+
+      if (value) {
+        md.set({ value }, { silent: true });
+        input.prop('value', value);
       }
-    },
 
-    /**
-     * Render label
-     * @private
-     */
-    renderLabel: function() {
-      this.$el.html('<div class="' + this.labelClass + '">' + this.getLabel() + '</div>');
-    },
-
-    /**
-     * Returns label for the input
-     * @return {string}
-     * @private
-     */
-    getLabel: function() {
-      var model = this.model;
-      var label = model.get('label') || model.get('name');
-      return label.charAt(0).toUpperCase() + label.slice(1).replace(/-/g,' ');
-    },
-
-    /**
-     * Returns input element
-     * @return {HTMLElement}
-     * @private
-     */
-    getInputEl: function() {
-      if(!this.$input) {
-        var md = this.model;
-        var trg = this.target;
-        var name = md.get('name');
-        var opts = {
-          placeholder: md.get('placeholder') || md.get('default'),
-          type: md.get('type') || 'text'
-        };
-        if(md.get('changeProp')){
-          opts.value = trg.get(name);
-        }else{
-          var attrs = trg.get('attributes');
-          opts.value = md.get('value') || attrs[name];
-        }
-        if(md.get('min'))
-          opts.min = md.get('min');
-        if(md.get('max'))
-          opts.max = md.get('max');
-        this.$input = $('<input>', opts);
-      }
-      return this.$input.get(0);
-    },
-
-    getModelValue: function () {
-      var value;
-      var model = this.model;
-      var target = this.target;
-      var name = model.get('name');
-
-      if (model.get('changeProp')) {
-        value = target.get(name);
-      } else {
-        var attrs = target.get('attributes');
-        value = model.get('value') || attrs[name];
+      if (min) {
+        input.prop('min', min);
       }
 
-      return value;
-    },
-
-    /**
-     * Renders input
-     * @private
-     * */
-    renderField: function(){
-      if(!this.$input){
-        this.$el.append(this.tmpl);
-        var el = this.getInputEl();
-        this.$el.find('.' + this.inputhClass).prepend(el);
+      if (max) {
+        input.prop('max', max);
       }
-    },
 
-    render : function() {
-      this.renderLabel();
-      this.renderField();
-      this.el.className = this.className;
-      return this;
-    },
+      this.$input = input;
+    }
+    return this.$input.get(0);
+  },
 
-  });
+  getModelValue() {
+    let value;
+    const model = this.model;
+    const target = this.target;
+    const name = model.get('name');
 
+    if (model.get('changeProp')) {
+      value = target.get(name);
+    } else {
+      const attrs = target.get('attributes');
+      value = model.get('value') || attrs[name];
+    }
+
+    return !isUndefined(value) ? value : '';
+  },
+
+  /**
+   * Renders input
+   * @private
+   * */
+  renderField() {
+    if (!this.$input) {
+      this.$el.append(this.tmpl);
+      const el = this.getInputEl();
+      // I use prepand expecially for checkbox traits
+      const inputWrap = this.el.querySelector(`.${this.inputhClass}`);
+      inputWrap.insertBefore(el, inputWrap.childNodes[0]);
+    }
+  },
+
+  render() {
+    this.renderLabel();
+    this.renderField();
+    this.el.className = this.className;
+    return this;
+  }
 });

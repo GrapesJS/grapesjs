@@ -1,194 +1,199 @@
-var path = 'StyleManager/view/';
-define([path + 'PropertySelectView', 'StyleManager/model/Property', 'DomComponents/model/Component'],
-  function(PropertySelectView, Property, Component) {
+const PropertySelectView = require('style_manager/view/PropertySelectView');
+const Property = require('style_manager/model/PropertyRadio');
+const Editor = require('editor/model/Editor');
+const DomComponents = require('dom_components');
+const Component = require('dom_components/model/Component');
 
-    return {
-      run : function(){
+module.exports = {
+  run() {
+    describe('PropertySelectView', () => {
+      let em;
+      let dcomp;
+      let compOpts;
+      var component;
+      var fixtures;
+      var target;
+      var model;
+      var view;
+      var propTarget;
+      var options;
+      var propName = 'testprop';
+      var propValue = 'test1value';
+      var defValue = 'test2value';
+      var options = [
+        { value: 'test1value', style: 'test:style' },
+        { name: 'test2', value: 'test2value' }
+      ];
 
-          describe('PropertySelectView', function() {
-
-            var component;
-            var $fixtures;
-            var $fixture;
-            var target;
-            var model;
-            var view;
-            var propName = 'testprop';
-            var propValue = 'test1value';
-            var defValue = 'test2value';
-            var options = [
-                  {value: 'test1value', style: 'test:style'},
-                  {name: 'test2', value: 'test2value'}
-                ];
-
-            before(function () {
-              $fixtures  = $("#fixtures");
-              $fixture   = $('<div class="sm-fixture"></div>');
-            });
-
-            beforeEach(function () {
-              target = new Component();
-              component = new Component();
-              model = new Property({
-                type: 'select',
-                list: options,
-                property: propName
-              });
-              view = new PropertySelectView({
-                model: model
-              });
-              $fixture.empty().appendTo($fixtures);
-              $fixture.html(view.render().el);
-            });
-
-            afterEach(function () {
-              //view.remove(); // strange errors ???
-            });
-
-            after(function () {
-              $fixture.remove();
-              delete component;
-            });
-
-            it('Rendered correctly', function() {
-              var prop = view.el;
-              $fixture.get(0).querySelector('.property').should.be.ok;
-              prop.querySelector('.label').should.be.ok;
-              prop.querySelector('.field').should.be.ok;
-            });
-
-            it('Select rendered', function() {
-              var prop = view.el;
-              prop.querySelector('select').should.be.ok;
-            });
-
-            it('Options rendered', function() {
-              var select = view.el.querySelector('select');
-              select.children.length.should.equal(options.length);
-            });
-
-            it('Options rendered correctly', function() {
-              var select = view.el.querySelector('select');
-              var children = select.children;
-              children[0].value.should.equal(options[0].value);
-              children[1].value.should.equal(options[1].value);
-              children[0].textContent.should.equal(options[0].value);
-              children[1].textContent.should.equal(options[1].name);
-              children[0].getAttribute('style').should.equal(options[0].style);
-              (children[1].getAttribute('style') == null).should.equal(true);
-            });
-
-            it('Input should exist', function() {
-              view.$input.should.be.ok;
-            });
-
-            it('Input value is empty', function() {
-              view.model.get('value').should.be.empty;
-            });
-
-            it('Update model on input change', function() {
-              view.$input.val(propValue).trigger('change');
-              view.model.get('value').should.equal(propValue);
-            });
-
-            it('Update input on value change', function() {
-              view.model.set('value', propValue);
-              view.$input.val().should.equal(propValue);
-            });
-
-            it('Update target on value change', function() {
-              view.selectedComponent = component;
-              view.model.set('value', propValue);
-              var compStyle = view.selectedComponent.get('style');
-              var assertStyle = {};
-              assertStyle[propName] = propValue;
-              compStyle.should.deep.equal(assertStyle);
-            });
-
-            describe('With target setted', function() {
-
-              beforeEach(function () {
-                target.model = component;
-                view = new PropertySelectView({
-                  model: model,
-                  propTarget: target
-                });
-                $fixture.empty().appendTo($fixtures);
-                $fixture.html(view.render().el);
-              });
-
-              it('Update value and input on target swap', function() {
-                var style = {};
-                style[propName] = propValue;
-                component.set('style', style);
-                view.propTarget.trigger('update');
-                view.model.get('value').should.equal(propValue);
-                view.$input.val().should.equal(propValue);
-              });
-
-              it('Update value after multiple swaps', function() {
-                var style = {};
-                style[propName] = propValue;
-                component.set('style', style);
-                view.propTarget.trigger('update');
-                style[propName] = 'test2value';
-                component.set('style', style);
-                view.propTarget.trigger('update');
-                view.model.get('value').should.equal('test2value');
-                view.$input.val().should.equal('test2value');
-              });
-
-            })
-
-            describe('Init property', function() {
-
-              beforeEach(function () {
-                component = new Component();
-                model = new Property({
-                  type: 'select',
-                  list: options,
-                  defaults: defValue,
-                  property: propName
-                });
-                view = new PropertySelectView({
-                  model: model
-                });
-                $fixture.empty().appendTo($fixtures);
-                $fixture.html(view.render().el);
-              });
-
-              it('Value as default', function() {
-                view.model.get('value').should.equal(defValue);
-              });
-
-              it('Empty value as default', function() {
-                options = [
-                    {value: 'test1value', name: 'test1'},
-                    {value: 'test2value', name: 'test2'},
-                    {value: '', name: 'TestDef'}
-                  ];
-                component = new Component();
-                model = new Property({
-                  type: 'select',
-                  list: options,
-                  defaults: '',
-                  property: 'emptyDefault'
-                });
-                view = new PropertySelectView({
-                  model: model
-                });
-                $fixture.html(view.render().el);
-                view.$input.val().should.equal('');
-              });
-
-              it('Input value is as default', function() {
-                view.$input.val().should.equal(defValue);
-              });
-
-            });
-
+      beforeEach(() => {
+        em = new Editor({});
+        dcomp = new DomComponents();
+        compOpts = { em, componentTypes: dcomp.componentTypes };
+        propTarget = { ...Backbone.Events };
+        target = new Component({}, compOpts);
+        component = new Component({}, compOpts);
+        model = new Property({
+          type: 'select',
+          list: options,
+          property: propName
         });
-      }
-    };
+        propTarget.model = component;
+        view = new PropertySelectView({
+          model,
+          propTarget
+        });
+        document.body.innerHTML = '<div id="fixtures"></div>';
+        fixtures = document.body.firstChild;
+        view.render();
+        fixtures.appendChild(view.el);
+      });
 
-});
+      afterEach(() => {
+        //view.remove(); // strange errors ???
+      });
+
+      afterAll(() => {
+        component = null;
+      });
+
+      test('Rendered correctly', () => {
+        var prop = view.el;
+        expect(fixtures.querySelector('.property')).toBeTruthy();
+        expect(prop.querySelector('.label')).toBeTruthy();
+        expect(prop.querySelector('.field')).toBeTruthy();
+      });
+
+      test('Select rendered', () => {
+        var prop = view.el;
+        expect(prop.querySelector('select')).toBeTruthy();
+      });
+
+      test('Options rendered', () => {
+        var select = view.el.querySelector('select');
+        expect(select.children.length).toEqual(options.length);
+      });
+
+      test('Options rendered correctly', () => {
+        var select = view.el.querySelector('select');
+        var children = select.children;
+        expect(children[0].value).toEqual(options[0].value);
+        expect(children[1].value).toEqual(options[1].value);
+        expect(children[0].textContent).toEqual(options[0].value);
+        expect(children[1].textContent).toEqual(options[1].name);
+        expect(children[0].getAttribute('style')).toEqual(options[0].style);
+        expect(children[1].getAttribute('style')).toEqual(null);
+      });
+
+      test('Input should exist', () => {
+        expect(view.input).toBeTruthy();
+      });
+
+      test('Input value is empty', () => {
+        expect(view.model.get('value')).toBeFalsy();
+      });
+
+      test('Update model on input change', () => {
+        view.getInputEl().value = propValue;
+        view.inputValueChanged();
+        expect(view.model.get('value')).toEqual(propValue);
+      });
+
+      test('Update input on value change', () => {
+        view.model.set('value', propValue);
+        expect(view.getInputValue()).toEqual(propValue);
+      });
+
+      test('Update target on value change', () => {
+        view.selectedComponent = component;
+        view.model.set('value', propValue);
+        var compStyle = view.selectedComponent.get('style');
+        var assertStyle = {};
+        assertStyle[propName] = propValue;
+        expect(compStyle).toEqual(assertStyle);
+      });
+
+      describe('With target setted', () => {
+        beforeEach(() => {
+          target.model = component;
+          view = new PropertySelectView({
+            model,
+            propTarget: target
+          });
+          fixtures.innerHTML = '';
+          view.render();
+          fixtures.appendChild(view.el);
+        });
+
+        test('Update value and input on target swap', () => {
+          var style = {};
+          style[propName] = propValue;
+          component.set('style', style);
+          view.propTarget.trigger('update');
+          expect(view.model.get('value')).toEqual(propValue);
+          expect(view.getInputValue()).toEqual(propValue);
+        });
+
+        test('Update value after multiple swaps', () => {
+          var style = {};
+          style[propName] = propValue;
+          component.set('style', style);
+          view.propTarget.trigger('update');
+          style[propName] = 'test2value';
+          component.set('style', style);
+          view.propTarget.trigger('update');
+          expect(view.model.get('value')).toEqual('test2value');
+          expect(view.getInputValue()).toEqual('test2value');
+        });
+      });
+
+      describe('Init property', () => {
+        beforeEach(() => {
+          component = new Component();
+          model = new Property({
+            type: 'select',
+            list: options,
+            defaults: defValue,
+            property: propName
+          });
+          view = new PropertySelectView({
+            model
+          });
+          fixtures.innerHTML = '';
+          view.render();
+          fixtures.appendChild(view.el);
+        });
+
+        test('Value as default', () => {
+          expect(view.model.get('value')).toEqual(defValue);
+        });
+
+        test('Empty value as default', () => {
+          options = [
+            { value: '', name: 'test' },
+            { value: 'test1value', name: 'test1' },
+            { value: 'test2value', name: 'test2' },
+            { value: '', name: 'TestDef' }
+          ];
+          component = new Component();
+          model = new Property({
+            type: 'select',
+            list: options,
+            defaults: '',
+            property: 'emptyDefault'
+          });
+          view = new PropertySelectView({
+            model
+          });
+          view.render();
+          fixtures.innerHTML = '';
+          fixtures.appendChild(view.el);
+          expect(view.getInputValue()).toEqual('');
+        });
+
+        test('Input value is as default', () => {
+          expect(view.model.getDefaultValue()).toEqual(defValue);
+        });
+      });
+    });
+  }
+};

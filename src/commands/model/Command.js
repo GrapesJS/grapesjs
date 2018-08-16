@@ -1,13 +1,7 @@
-define([ 'backbone'], 
-	function (Backbone) {
-	/**
-	 * @class Command
-	 * */
-	return Backbone.Model.extend({
-		
-		defaults :{
-			id 			: '',
-		}
-	
-	});
+import Backbone from 'backbone';
+
+module.exports = Backbone.Model.extend({
+  defaults: {
+    id: ''
+  }
 });

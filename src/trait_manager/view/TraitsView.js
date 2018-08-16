@@ -1,44 +1,45 @@
-define(function(require) {
+var DomainViews = require('domain_abstract/view/DomainViews');
+var TraitView = require('./TraitView');
+var TraitSelectView = require('./TraitSelectView');
+var TraitCheckboxView = require('./TraitCheckboxView');
+var TraitNumberView = require('./TraitNumberView');
+var TraitColorView = require('./TraitColorView');
 
-    var DomainViews = require('Abstract/view/DomainViews');
-    var TraitView = require('./TraitView');
-    var TraitSelectView = require('./TraitSelectView');
-    var TraitCheckboxView = require('./TraitCheckboxView');
-    var TraitNumberView = require('./TraitNumberView');
+module.exports = DomainViews.extend({
+  itemView: TraitView,
 
-    return DomainViews.extend({
+  itemsView: {
+    text: TraitView,
+    number: TraitNumberView,
+    select: TraitSelectView,
+    checkbox: TraitCheckboxView,
+    color: TraitColorView
+  },
 
-      itemView: TraitView,
+  initialize(o = {}) {
+    const config = o.config || {};
+    this.config = config;
+    this.em = o.editor;
+    this.pfx = config.stylePrefix || '';
+    this.ppfx = config.pStylePrefix || '';
+    this.className = this.pfx + 'traits';
+    const toListen = 'component:toggled';
+    this.listenTo(this.em, toListen, this.updatedCollection);
+    this.updatedCollection();
+  },
 
-      itemsView: {
-        'text': TraitView,
-        'number': TraitNumberView,
-        'select': TraitSelectView,
-        'checkbox': TraitCheckboxView,
-      },
+  /**
+   * Update view collection
+   * @private
+   */
+  updatedCollection() {
+    const ppfx = this.ppfx;
+    const comp = this.em.getSelected();
+    this.el.className = `${this.className} ${ppfx}one-bg ${ppfx}two-color`;
 
-      initialize: function(o) {
-        this.config = o.config || {};
-        this.em = o.editor;
-        this.pfx = this.config.stylePrefix || '';
-        this.className = this.pfx + 'traits';
-        this.listenTo(this.em, 'change:selectedComponent', this.updatedCollection);
-        this.updatedCollection();
-      },
-
-      /**
-       * Update view collection
-       * @private
-       */
-      updatedCollection: function() {
-        this.el.className = this.className;
-        var comp = this.em.get('selectedComponent');
-        if(comp){
-          this.collection = comp.get('traits');
-          this.render();
-        }
-      },
-
-    });
-
+    if (comp) {
+      this.collection = comp.get('traits');
+      this.render();
+    }
+  }
 });

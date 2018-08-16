@@ -1,13 +1,9 @@
-define(function() {
-		return {
+module.exports = {
+  run(ed) {
+    ed.Canvas.getBody().className = this.ppfx + 'dashed';
+  },
 
-			run: function(ed) {
-				ed.Canvas.getBody().className = this.ppfx + 'dashed';
-			},
-
-			stop: function(ed) {
-				ed.Canvas.getBody().className = "";
-			}
-
-		};
-	});
+  stop(ed) {
+    ed.Canvas.getBody().className = '';
+  }
+};

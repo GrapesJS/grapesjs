@@ -1,0 +1,38 @@
+.#{$rte-prefix} {
+  &toolbar {
+    @extend .#{$app-prefix}no-user-select;
+
+    border: 1px solid $mainDkColor;
+    position: absolute;
+    border-radius: 3px;
+    z-index: 10;
+  }
+
+  &actionbar {
+    display: flex;
+  }
+
+  &action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    min-width: 25px;
+    border-right: 1px solid $mainDkColor;
+    text-align: center;
+    cursor: pointer;
+    outline: none;
+
+    &:last-child {
+      border-right: none;
+    }
+
+    &:hover {
+      background-color: $mainLhColor;
+    }
+  }
+
+  &active {
+    background-color: $mainDkColor;
+  }
+}

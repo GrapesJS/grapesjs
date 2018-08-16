@@ -1,58 +1,42 @@
-var path = 'DomComponents/view/';
-define([path + 'ComponentImageView', 'DomComponents/model/Component'],
-  function(ComponentImageView, Component) {
+const ComponentImageView = require('dom_components/view/ComponentImageView');
+const Component = require('dom_components/model/Component');
 
-    return {
-      run : function(){
+module.exports = {
+  run() {
+    describe('ComponentImageView', () => {
+      var model;
+      var view;
 
-          describe('ComponentImageView', function() {
-
-            var $fixtures;
-            var $fixture;
-            var model;
-            var view;
-
-            before(function () {
-              $fixtures = $("#fixtures");
-              $fixture = $('<div class="components-fixture"></div>');
-            });
-
-            beforeEach(function () {
-              model = new Component();
-              view = new ComponentImageView({
-                model: model
-              });
-              $fixture.empty().appendTo($fixtures);
-              $fixture.html(view.render().el);
-            });
-
-            afterEach(function () {
-              view.remove();
-            });
-
-            after(function () {
-              $fixture.remove();
-            });
-
-            it('Component empty', function() {
-              view.el.getAttribute('onmousedown').should.equal('return false');
-              view.el.getAttribute('class').should.equal(view.classEmpty);
-            });
-
-            it('TagName is <img>', function() {
-              view.el.tagName.should.equal('IMG');
-            });
-
-            it('Update src attribute', function() {
-              model.set('src','./');
-              view.el.getAttribute('src').should.equal('./');
-            });
-
-            it('Renders correctly', function() {
-              view.render().should.be.ok;
-            });
+      beforeEach(() => {
+        model = new Component();
+        view = new ComponentImageView({
+          model
         });
-      }
-    };
+        document.body.innerHTML = '<div id="fixtures"></div>';
+        document.body.querySelector('#fixtures').appendChild(view.render().el);
+      });
 
-});
+      afterEach(() => {
+        view.remove();
+      });
+
+      test('Component empty', () => {
+        expect(view.el.getAttribute('onmousedown')).toEqual('return false');
+        expect(view.el.getAttribute('class')).toEqual(view.classEmpty);
+      });
+
+      test('TagName is <img>', () => {
+        expect(view.el.tagName).toEqual('IMG');
+      });
+
+      test('Update src attribute', () => {
+        model.set('src', './');
+        expect(view.el.getAttribute('src')).toEqual('./');
+      });
+
+      test('Renders correctly', () => {
+        expect(view.render()).toBeTruthy();
+      });
+    });
+  }
+};

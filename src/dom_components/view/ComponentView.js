@@ -1,319 +1,351 @@
-define(['backbone', './ComponentsView'],
-  function (Backbone, ComponentsView) {
+import Backbone from 'backbone';
+import { isArray, isEmpty } from 'underscore';
 
-    return Backbone.View.extend({
+const ComponentsView = require('./ComponentsView');
 
-      events: {
-        'click': 'initResize',
-      },
+module.exports = Backbone.View.extend({
+  className() {
+    return this.getClasses();
+  },
 
-      className : function(){
-        return this.getClasses();
-      },
+  tagName() {
+    return this.model.get('tagName');
+  },
 
-      tagName: function(){
-        return this.model.get('tagName');
-      },
+  initialize(opt = {}) {
+    const model = this.model;
+    const config = opt.config || {};
+    this.opts = opt;
+    this.config = config;
+    this.em = config.em || '';
+    this.pfx = config.stylePrefix || '';
+    this.ppfx = config.pStylePrefix || '';
+    this.attr = model.get('attributes');
+    this.classe = this.attr.class || [];
+    const $el = this.$el;
+    const classes = model.get('classes');
+    this.listenTo(model, 'change:style', this.updateStyle);
+    this.listenTo(model, 'change:attributes', this.updateAttributes);
+    this.listenTo(model, 'change:highlightable', this.updateHighlight);
+    this.listenTo(model, 'change:status', this.updateStatus);
+    this.listenTo(model, 'change:state', this.updateState);
+    this.listenTo(model, 'change:script', this.render);
+    this.listenTo(model, 'change:content', this.updateContent);
+    this.listenTo(model, 'change', this.handleChange);
+    this.listenTo(model, 'active', this.onActive);
+    this.listenTo(classes, 'add remove change', this.updateClasses);
+    $el.data('model', model);
+    $el.data('collection', model.get('components'));
+    model.view = this;
+    classes.length && this.importClasses();
+    this.init();
+  },
 
-      initialize: function(opt) {
-        var model = this.model;
-        this.opts = opt || {};
-        this.config = this.opts.config || {};
-        this.em = this.config.em || '';
-        this.pfx = this.config.stylePrefix || '';
-        this.ppfx = this.config.pStylePrefix || '';
-        this.components = model.get('components');
-        this.attr = model.get("attributes");
-        this.classe = this.attr.class || [];
-        this.listenTo(model, 'destroy remove', this.remove);
-        this.listenTo(model, 'change:style', this.updateStyle);
-        this.listenTo(model, 'change:attributes', this.updateAttributes);
-        this.listenTo(model, 'change:status', this.updateStatus);
-        this.listenTo(model, 'change:state', this.updateState);
-        this.listenTo(model, 'change:script', this.render);
-        this.listenTo(model, 'change', this.handleChange);
-        this.listenTo(model.get('classes'), 'add remove change', this.updateClasses);
-        this.$el.data('model', model);
-        model.view = this;
-        this.$el.data("collection", this.components);
+  /**
+   * Initialize callback
+   */
+  init() {},
 
-        if(model.get('classes').length)
-          this.importClasses();
+  /**
+   * Callback executed when the `active` event is triggered on component
+   */
+  onActive() {},
 
-        this.init();
-      },
+  /**
+   * Handle any property change
+   * @private
+   */
+  handleChange() {
+    const model = this.model;
+    model.emitUpdate();
 
-      /**
-       * Initialize callback
-       */
-      init: function () {},
+    for (let prop in model.changed) {
+      model.emitUpdate(prop);
+    }
+  },
 
-      /**
-       * Handle any property change
-       * @private
-       */
-      handleChange: function () {
-        var em = this.em;
-        if(em) {
-          var model = this.model;
-          em.trigger('component:update', model);
+  /**
+   * Import, if possible, classes inside main container
+   * @private
+   * */
+  importClasses() {
+    var clm = this.config.em.get('SelectorManager');
 
-          for(var prop in model.changed) {
-            em.trigger('component:update:' + prop, model);
-          }
-        }
-      },
+    if (clm) {
+      this.model.get('classes').each(m => {
+        clm.add(m.get('name'));
+      });
+    }
+  },
 
-      /**
-       * Import, if possible, classes inside main container
-       * @private
-       * */
-      importClasses: function(){
-        var clm = this.config.em.get('SelectorManager');
+  /**
+   * Fires on state update. If the state is not empty will add a helper class
+   * @param  {Event} e
+   * @private
+   * */
+  updateState(e) {
+    var cl = 'hc-state';
+    var state = this.model.get('state');
 
-        if(clm){
-          this.model.get('classes').each(function(m){
-              clm.add(m.get('name'));
-          });
-        }
-      },
+    if (state) {
+      this.$el.addClass(cl);
+    } else {
+      this.$el.removeClass(cl);
+    }
+  },
 
-      /**
-       * Fires on state update. If the state is not empty will add a helper class
-       * @param  {Event} e
-       * @private
-       * */
-      updateState: function(e){
-        var cl = 'hc-state';
-        var state = this.model.get('state');
+  /**
+   * Update item on status change
+   * @param  {Event} e
+   * @private
+   * */
+  updateStatus(opts = {}) {
+    const em = this.em;
+    const el = this.el;
+    const status = this.model.get('status');
+    const pfx = this.pfx;
+    const ppfx = this.ppfx;
+    const selectedCls = `${pfx}selected`;
+    const selectedParentCls = `${selectedCls}-parent`;
+    const freezedCls = `${ppfx}freezed`;
+    const hoveredCls = `${ppfx}hovered`;
+    const toRemove = [selectedCls, selectedParentCls, freezedCls, hoveredCls];
+    this.$el.removeClass(toRemove.join(' '));
+    var actualCls = el.getAttribute('class') || '';
+    var cls = '';
 
-        if(state){
-          this.$el.addClass(cl);
-        }else{
-          this.$el.removeClass(cl);
-        }
-      },
+    switch (status) {
+      case 'selected':
+        cls = `${actualCls} ${selectedCls}`;
+        break;
+      case 'selected-parent':
+        cls = `${actualCls} ${selectedParentCls}`;
+        break;
+      case 'freezed':
+        cls = `${actualCls} ${freezedCls}`;
+        break;
+      case 'freezed-selected':
+        cls = `${actualCls} ${freezedCls} ${selectedCls}`;
+        break;
+      case 'hovered':
+        cls = !opts.avoidHover ? `${actualCls} ${hoveredCls}` : '';
+        break;
+    }
 
-      /**
-       * Update item on status change
-       * @param  {Event} e
-       * @private
-       * */
-      updateStatus: function(e){
-        var s = this.model.get('status'),
-            pfx = this.pfx;
-        switch(s) {
-            case 'selected':
-              this.$el.addClass(pfx + 'selected');
-                break;
-            case 'moving':
-                break;
-            default:
-              this.$el.removeClass(pfx + 'selected');
-        }
-      },
+    cls = cls.trim();
+    cls && el.setAttribute('class', cls);
+  },
 
-      /**
-       * Get classes from attributes.
-       * This method is called before initialize
-       *
-       * @return  {Array}|null
-       * @private
-       * */
-      getClasses: function(){
-        var attr = this.model.get("attributes"),
-          classes  = attr['class'] || [];
-        if(classes.length){
-          return classes.join(" ");
-        }else
-          return null;
-      },
+  /**
+   * Update highlight attribute
+   * @private
+   * */
+  updateHighlight() {
+    const hl = this.model.get('highlightable');
+    this.setAttribute('data-highlightable', hl ? 1 : '');
+  },
 
-      /**
-       * Update attributes
-       * @private
-       * */
-      updateAttributes: function(){
-        var attributes = {},
-          attr = this.model.get("attributes");
-        for(var key in attr) {
-            if(attr.hasOwnProperty(key))
-              attributes[key] = attr[key];
-        }
-        // Update src
-        if(this.model.get("src"))
-          attributes.src = this.model.get("src");
+  /**
+   * Update style attribute
+   * @private
+   * */
+  updateStyle() {
+    const em = this.em;
+    const model = this.model;
 
-        var styleStr = this.getStyleString();
+    if (em && em.get('avoidInlineStyle')) {
+      this.el.id = model.getId();
+      const style = model.getStyle();
+      !isEmpty(style) && model.setStyle(style);
+    } else {
+      this.setAttribute('style', model.styleToString());
+    }
+  },
 
-        if(styleStr)
-          attributes.style = styleStr;
+  /**
+   * Update classe attribute
+   * @private
+   * */
+  updateClasses() {
+    const str = this.model
+      .get('classes')
+      .pluck('name')
+      .join(' ');
+    this.setAttribute('class', str);
 
-        this.$el.attr(attributes);
-      },
+    // Regenerate status class
+    this.updateStatus();
+  },
 
-      /**
-       * Update style attribute
-       * @private
-       * */
-      updateStyle: function(){
-        this.$el.attr('style', this.getStyleString());
-      },
+  /**
+   * Update single attribute
+   * @param {[type]} name  [description]
+   * @param {[type]} value [description]
+   */
+  setAttribute(name, value) {
+    const el = this.$el;
+    value ? el.attr(name, value) : el.removeAttr(name);
+  },
 
-      /**
-       * Return style string
-       * @return  {string}
-       * @private
-       * */
-      getStyleString: function(){
-        var style  = '';
-        this.style = this.model.get('style');
-        for(var key in this.style) {
-            if(this.style.hasOwnProperty(key))
-              style += key + ':' + this.style[key] + ';';
-        }
+  /**
+   * Get classes from attributes.
+   * This method is called before initialize
+   *
+   * @return  {Array}|null
+   * @private
+   * */
+  getClasses() {
+    var attr = this.model.get('attributes'),
+      classes = attr['class'] || [];
+    classes = isArray(classes) ? classes : [classes];
 
-        return style;
-      },
+    if (classes.length) {
+      return classes.join(' ');
+    } else {
+      return null;
+    }
+  },
 
-      /**
-       * Update classe attribute
-       * @private
-       * */
-      updateClasses: function(){
-        var str = '';
+  /**
+   * Update attributes
+   * @private
+   * */
+  updateAttributes() {
+    const model = this.model;
+    const attrs = { 'data-gjs-type': model.get('type') || 'default' };
+    const attr = model.get('attributes');
+    const src = model.get('src');
 
-        this.model.get('classes').each(function(model){
-          str += model.get('name') + ' ';
-        });
-        str = str.trim();
+    for (let key in attr) {
+      attrs[key] = attr[key];
+    }
 
-        if(str)
-          this.$el.attr('class', str);
-        else
-          this.$el.removeAttr('class');
+    src && (attrs.src = src);
+    this.$el.attr(attrs);
+    this.updateHighlight();
+    this.updateStyle();
+  },
 
-        // Regenerate status class
-        this.updateStatus();
-      },
+  /**
+   * Update component content
+   * @private
+   * */
+  updateContent() {
+    this.getChildrenContainer().innerHTML = this.model.get('content');
+  },
 
-      /**
-       * Reply to event call
-       * @param object Event that generated the request
-       * @private
-       * */
-      eventCall: function(event){
-        event.viewResponse = this;
-      },
+  /**
+   * Prevent default helper
+   * @param  {Event} e
+   * @private
+   */
+  prevDef(e) {
+    e.preventDefault();
+  },
 
-      /**
-       * Init component for resizing
-       */
-      initResize: function () {
-        var em = this.opts.config.em;
-        var editor = em ? em.get('Editor') : '';
-        var config = em ? em.get('Config') : '';
-        var pfx = config.stylePrefix || '';
-        var attrName = 'data-' + pfx + 'handler';
-        var resizeClass = pfx + 'resizing';
-        var model = this.model;
-        var modelToStyle;
+  /**
+   * Render component's script
+   * @private
+   */
+  updateScript() {
+    if (!this.model.get('script')) {
+      return;
+    }
 
-        var toggleBodyClass = function(method, e, opts) {
-          var handlerAttr = e.target.getAttribute(attrName);
-          var resizeHndClass = pfx + 'resizing-' + handlerAttr;
-          var classToAdd = resizeClass;// + ' ' +resizeHndClass;
-          if (opts.docs) {
-            opts.docs.find('body')[method](classToAdd);
-          }
-        };
+    var em = this.em;
+    if (em) {
+      var canvas = em.get('Canvas');
+      canvas.getCanvasView().updateScript(this);
+    }
+  },
 
-        if(editor && this.model.get('resizable')) {
-          editor.runCommand('resize', {
-            el: this.el,
-            options: {
-              onStart: function (e, opts) {
-                toggleBodyClass('addClass', e, opts);
-                modelToStyle = em.get('StyleManager').getModelToStyle(model);
-              },
-              // Update all positioned elements (eg. component toolbar)
-              onMove: function () {
-                editor.trigger('change:canvasOffset');
-              },
-              onEnd: function (e, opts) {
-                toggleBodyClass('removeClass', e, opts);
-                editor.trigger('change:canvasOffset');
-              },
-              updateTarget: function(el, rect, store) {
-                if (!modelToStyle) {
-                  return;
-                }
-                var unit = 'px';
-                var style = _.clone(modelToStyle.get('style'));
-                var width = rect.w + (store ? 1 : 0);
-                style.width = width + unit;
-                style.height = rect.h + unit;
-                modelToStyle.set('style', style, {avoidStore: 1});
-                em.trigger('targetStyleUpdated');
+  /**
+   * Return children container
+   * Differently from a simple component where children container is the
+   * component itself
+   * <my-comp>
+   *  <!--
+   *    <child></child> ...
+   *   -->
+   * </my-comp>
+   * You could have the children container more deeper
+   * <my-comp>
+   *  <div></div>
+   *  <div></div>
+   *  <div>
+   *    <div>
+   *      <!--
+   *        <child></child> ...
+   *      -->
+   *    </div>
+   *  </div>
+   * </my-comp>
+   * @return HTMLElement
+   * @private
+   */
+  getChildrenContainer() {
+    var container = this.el;
 
-                // This trick will trigger the Undo Manager. To trigger "change:style"
-                // on the Model you need to provide a new object and after that
-                // Undo Manager will trigger only if values are different (this is why
-                // above I've added + 1 to width if store required)
-                if(store) {
-                  var style3 = _.clone(style);
-                  style3.width = (width - 1) + unit;
-                  modelToStyle.set('style', style3);
-                }
-              }
-            }
-          });
-        }
-      },
+    if (typeof this.getChildrenSelector == 'function') {
+      container = this.el.querySelector(this.getChildrenSelector());
+    } else if (typeof this.getTemplate == 'function') {
+      // Need to find deepest first child
+    }
 
-      /**
-       * Prevent default helper
-       * @param  {Event} e
-       * @private
-       */
-      prevDef: function (e) {
-        e.preventDefault();
-      },
+    return container;
+  },
 
-      /**
-       * Render component's script
-       * @private
-       */
-      updateScript: function () {
-        var em = this.em;
-        if(em) {
-          var canvas = em.get('Canvas');
-          canvas.getCanvasView().updateScript(this);
-        }
-      },
-
-      render: function() {
-        var model = this.model;
-        this.updateAttributes();
-        this.updateClasses();
-        this.$el.html(this.model.get('content'));
-        var view = new ComponentsView({
-          collection: this.model.get('components'),
-          config: this.config,
-          defaultTypes: this.opts.defaultTypes,
-          componentTypes: this.opts.componentTypes,
-        });
-
-        // With childNodes lets avoid wrapping 'div'
-        this.$el.append(view.render(this.$el).el.childNodes);
-
-        // Render script
-        if(model.get('script')) {
-          this.updateScript();
-        }
-
-        return this;
-      },
-
+  /**
+   * Render children components
+   * @private
+   */
+  renderChildren() {
+    const container = this.getChildrenContainer();
+    const view = new ComponentsView({
+      collection: this.model.get('components'),
+      config: this.config,
+      componentTypes: this.opts.componentTypes
     });
+
+    view.render(container);
+    this.childrenView = view;
+    const childNodes = Array.prototype.slice.call(view.el.childNodes);
+
+    for (var i = 0, len = childNodes.length; i < len; i++) {
+      container.appendChild(childNodes.shift());
+    }
+
+    // If the children container is not the same as the component
+    // (so likely fetched with getChildrenSelector()) is necessary
+    // to disable pointer-events for all nested components as they
+    // might prevent the component to be selected
+    if (container !== this.el) {
+      var disableNode = el => {
+        var children = Array.prototype.slice.call(el.children);
+        children.forEach(el => {
+          el.style['pointer-events'] = 'none';
+          if (container !== el) {
+            disableNode(el);
+          }
+        });
+      };
+      disableNode(this.el);
+    }
+  },
+
+  renderAttributes() {
+    this.updateAttributes();
+    this.updateClasses();
+  },
+
+  render() {
+    this.renderAttributes();
+    this.updateContent();
+    this.renderChildren();
+    this.updateScript();
+    this.onRender();
+    return this;
+  },
+
+  onRender() {}
 });

@@ -1,132 +1,97 @@
-var path = 'SelectorManager/view/';
-define([path + 'ClassTagView', 'SelectorManager/model/Selectors'],
-	function(ClassTagView, Selectors) {
+const EditorModel = require('editor/model/Editor');
+const ClassTagView = require('selector_manager/view/ClassTagView');
+const Selectors = require('selector_manager/model/Selectors');
 
-    return {
-      run : function(){
-          describe('ClassTagView', function() {
+module.exports = {
+  run() {
+    describe('ClassTagView', () => {
+      var obj;
+      var fixtures;
+      var testLabel;
+      var coll;
 
-            var obj;
-            var fixture;
-            var fixtures;
-            var testLabel;
-            var coll;
-
-            before(function () {
-              fixtures = $("#fixtures");
-              fixture = $('<div class="classtag-fixture"></div>');
-            });
-
-            beforeEach(function () {
-              coll  = new Selectors();
-              testLabel = 'TestLabel';
-              var model = coll.add({
-                name: 'test',
-                label: testLabel,
-              });
-              obj = new ClassTagView({
-                config : {},
-                model: model,
-                coll: coll
-              });
-              obj.target = { get:function(){} };
-              _.extend(obj.target, Backbone.Events);
-              fixture.empty().appendTo(fixtures);
-              fixture.html(obj.render().el);
-            });
-
-            afterEach(function () {
-              delete obj.model;
-            });
-
-            after(function () {
-              fixture.remove();
-            });
-
-            it('Object exists', function() {
-              ClassTagView.should.be.exist;
-            });
-
-            it('Not empty', function() {
-              var $el = obj.$el;
-              $el.html().should.not.be.empty;
-            });
-
-            it('Not empty', function() {
-              var $el = obj.$el;
-              $el.html().should.contain(testLabel);
-            });
-
-            describe('Should be rendered correctly', function() {
-
-                it('Has close button', function() {
-                  var $el = obj.$el;
-                  $el.find('#close').should.have.property(0);
-                });
-                it('Has checkbox', function() {
-                  var $el = obj.$el;
-                  $el.find('#checkbox').should.have.property(0);
-                });
-                it('Has label', function() {
-                  var $el = obj.$el;
-                  $el.find('#tag-label').should.have.property(0);
-                });
-
-            });
-
-            it('Could be removed', function() {
-              var spy = sinon.spy();
-              obj.config.target = { get:function(){} };
-              sinon.stub(obj.config.target, 'get').returns(0);
-              obj.$el.find('#close').trigger('click');
-              fixture.html().should.be.empty;
-            });
-
-            it('On remove triggers event', function() {
-              var spy = sinon.spy();
-              sinon.stub(obj.target, 'get').returns(0);
-              obj.target.on("targetClassRemoved", spy);
-              obj.$el.find('#close').trigger('click');
-              spy.called.should.equal(true);
-            });
-
-            it('Checkbox toggles status', function() {
-              var spy     = sinon.spy();
-              obj.model.on("change:active", spy);
-              obj.model.set('active', true);
-              obj.$el.find('#checkbox').trigger('click');
-              obj.model.get('active').should.equal(false);
-              spy.called.should.equal(true);
-            });
-
-            it('On toggle triggers event', function() {
-              var spy = sinon.spy();
-              sinon.stub(obj.target, 'get').returns(0);
-              obj.target.on("targetClassUpdated", spy);
-              obj.$el.find('#checkbox').trigger('click');
-              spy.called.should.equal(true);
-            });
-
-            it('Label input is disabled', function() {
-              var inputProp = obj.inputProp;
-              obj.$labelInput.prop(inputProp).should.equal(true);
-            });
-
-            it('On double click label input is enable', function() {
-              var inputProp = obj.inputProp;
-              obj.$el.find('#tag-label').trigger('dblclick');
-              obj.$labelInput.prop(inputProp).should.equal(false);
-            });
-
-            it('On blur label input turns back disabled', function() {
-              var inputProp = obj.inputProp;
-              obj.$el.find('#tag-label').trigger('dblclick');
-              obj.endEditTag();
-              obj.$labelInput.prop(inputProp).should.equal(true);
-            });
-
+      beforeEach(() => {
+        coll = new Selectors();
+        testLabel = 'TestLabel';
+        var model = coll.add({
+          name: 'test',
+          label: testLabel
         });
-      }
-    };
+        obj = new ClassTagView({
+          config: {
+            em: new EditorModel()
+          },
+          model,
+          coll
+        });
+        //obj.target = { get() {} };
+        //_.extend(obj.target, Backbone.Events);
+        document.body.innerHTML = '<div id="fixtures"></div>';
+        fixtures = document.body.querySelector('#fixtures');
+        fixtures.appendChild(obj.render().el);
+      });
 
-});
+      afterEach(() => {
+        obj.model = null;
+      });
+
+      test('Object exists', () => {
+        expect(ClassTagView).toBeTruthy();
+      });
+
+      test('Not empty', () => {
+        var $el = obj.$el;
+        expect($el.html()).toBeTruthy();
+      });
+
+      test('Not empty', () => {
+        var $el = obj.$el;
+        expect($el.html()).toContain(testLabel);
+      });
+
+      describe('Should be rendered correctly', () => {
+        test('Has close button', () => {
+          var $el = obj.$el;
+          expect($el.find('#close')[0]).toBeTruthy();
+        });
+        test('Has checkbox', () => {
+          var $el = obj.$el;
+          expect($el.find('#checkbox')[0]).toBeTruthy();
+        });
+        test('Has label', () => {
+          var $el = obj.$el;
+          expect($el.find('#tag-label')[0]).toBeTruthy();
+        });
+      });
+
+      test('Could be removed', () => {
+        obj.$el.find('#close').trigger('click');
+        setTimeout(() => expect(fixtures.innerHTML).toBeFalsy(), 5);
+      });
+
+      test('Checkbox toggles status', () => {
+        var spy = sinon.spy();
+        obj.model.on('change:active', spy);
+        obj.model.set('active', true);
+        obj.$el.find('#checkbox').trigger('click');
+        expect(obj.model.get('active')).toEqual(false);
+        expect(spy.called).toEqual(true);
+      });
+
+      test('Label input is disabled', () => {
+        expect(obj.getInputEl().contentEditable).toBeFalsy();
+      });
+
+      test('On double click label input is enable', () => {
+        obj.$el.find('#tag-label').trigger('dblclick');
+        expect(obj.getInputEl().contentEditable).toEqual(true);
+      });
+
+      test('On blur label input turns back disabled', () => {
+        obj.$el.find('#tag-label').trigger('dblclick');
+        obj.endEditTag();
+        expect(obj.getInputEl().contentEditable).toEqual(false);
+      });
+    });
+  }
+};

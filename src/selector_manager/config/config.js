@@ -1,24 +1,26 @@
-define(function () {
-	return {
+module.exports = {
+  // Style prefix
+  stylePrefix: 'clm-',
 
-    // Style prefix
-    stylePrefix     : 'clm-',
+  // Specify the element to use as a container, string (query) or HTMLElement
+  // With the empty value, nothing will be rendered
+  appendTo: '',
 
-    // Default classes
-    selectors : [],
+  // Default selectors
+  selectors: [],
 
-    // Label for classes
-    label: 'Classes',
+  // Label for selectors
+  label: 'Classes',
 
-    // Label for states
-    statesLabel: '- State -',
+  // Label for states
+  statesLabel: '- State -',
 
-    // States
-    states: [
-        { name: 'hover', label: 'Hover' },
-        { name: 'active', label: 'Click' },
-        { name: 'nth-of-type(2n)', label: 'Even/Odd' }
-    ],
+  selectedLabel: 'Selected',
 
-	};
-});
+  // States
+  states: [
+    { name: 'hover', label: 'Hover' },
+    { name: 'active', label: 'Click' },
+    { name: 'nth-of-type(2n)', label: 'Even/Odd' }
+  ]
+};

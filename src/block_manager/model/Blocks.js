@@ -1,9 +1,6 @@
-define(['backbone','./Block'],
-  function (Backbone, Block) {
+import Backbone from 'backbone';
+var Block = require('./Block');
 
-    return Backbone.Collection.extend({
-
-      model: Block,
-
-    });
+module.exports = Backbone.Collection.extend({
+  model: Block
 });

@@ -1,0 +1,36 @@
+.#{$app-prefix} {
+  &traits-label {
+    border-bottom: 1px solid $mainDkColor;
+    font-weight: lighter;
+    margin-bottom: 5px;
+    padding: 10px;
+    text-align: left;
+  }
+}
+
+.#{$trt-prefix}header {
+  font-weight: lighter;
+  padding: 10px;
+}
+
+.#{$trt-prefix}trait {
+  display: flex;
+  justify-content: start;
+  padding: 5px 10px;
+  font-weight: lighter;
+
+  &s {
+    font-size: $fontSizeS;
+  }
+
+  .#{$app-prefix}label {
+    width: 30%;
+    text-align: left;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  .#{$app-prefix}field {
+    width: 70%;
+  }
+}

@@ -1,14 +1,10 @@
-define(['backbone'],
-  function(Backbone){
+import Backbone from 'backbone';
 
-    return Backbone.Model.extend({
-
-      defaults :{
-        wrapper: '',
-        width: '',
-        height: '',
-        attributes: {},
-      },
-
-    });
-  });
+module.exports = Backbone.Model.extend({
+  defaults: {
+    wrapper: '',
+    width: '',
+    height: '',
+    attributes: {}
+  }
+});

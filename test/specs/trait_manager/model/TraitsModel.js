@@ -1,32 +1,28 @@
-define(['TraitManager/model/Trait', 'DomComponents/model/Component'],
-	function(Trait, Component) {
+const Trait = require('trait_manager/model/Trait');
+const Component = require('dom_components/model/Component');
 
-		return {
-			run: function(){
+module.exports = {
+  run() {
+    describe('TraitModels', () => {
+      var obj;
+      var target;
+      var modelName = 'title';
 
-				describe('TraitModels', function() {
+      beforeEach(() => {
+        target = new Component();
+        obj = new Trait({
+          name: modelName,
+          target
+        });
+      });
 
-          var obj;
-					var target;
-					var modelName = 'title';
+      afterEach(() => {
+        obj = null;
+      });
 
-          beforeEach(function () {
-						target = new Component();
-            obj = new Trait({
-							name: modelName,
-							target: target,
-						});
-          });
-
-          afterEach(function () {
-            delete obj;
-          });
-
-					it('Object exists', function() {
-						Trait.should.be.exist;
-					});
-
-				});
-			}
-		}
-});
+      test('Object exists', () => {
+        expect(Trait).toBeTruthy();
+      });
+    });
+  }
+};

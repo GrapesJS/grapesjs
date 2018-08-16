@@ -1,96 +1,87 @@
-define(['AssetManager/view/AssetsView', 'AssetManager/model/Assets'],
-	function(AssetsView, Assets) {
+var AssetsView = require('asset_manager/view/AssetsView');
+var FileUploader = require('asset_manager/view/FileUploader');
+var Assets = require('asset_manager/model/Assets');
 
-		return {
-			run: function() {
+module.exports = {
+  run() {
+    describe('AssetsView', () => {
+      var obj;
+      var coll;
 
-				describe('AssetsView', function() {
+      beforeEach(() => {
+        coll = new Assets([]);
+        obj = new AssetsView({
+          config: {},
+          collection: coll,
+          globalCollection: new Assets([]),
+          fu: new FileUploader({})
+        });
+        obj = obj;
+        document.body.innerHTML = '<div id="fixtures"></div>';
+        obj.render();
+        document.body.querySelector('#fixtures').appendChild(obj.el);
+      });
 
-					var obj;
+      afterEach(() => {
+        obj.collection.reset();
+      });
 
-					before(function () {
-						this.$fixtures 	= $("#fixtures");
-						this.$fixture 	= $('<div class="assets-fixture"></div>');
-					});
+      test('Object exists', () => {
+        expect(AssetsView).toBeTruthy();
+      });
 
-					beforeEach(function () {
-						this.coll 	= new Assets([]);
-						this.view = new AssetsView({
-							config : {},
-							collection: this.coll
-						});
-						obj = this.view;
-						this.$fixture.empty().appendTo(this.$fixtures);
-						this.$fixture.html(this.view.render().el);
-					});
+      test('Collection is empty', () => {
+        expect(obj.getAssetsEl().innerHTML).toBeFalsy();
+      });
 
-					afterEach(function () {
-						this.view.collection.reset();
-					});
+      test('Add new asset', () => {
+        sinon.stub(obj, 'addAsset');
+        coll.add({ src: 'test' });
+        expect(obj.addAsset.calledOnce).toEqual(true);
+      });
 
-					after(function () {
-						this.$fixture.remove();
-					});
+      test('Render new asset', () => {
+        coll.add({ src: 'test' });
+        expect(obj.getAssetsEl().innerHTML).toBeTruthy();
+      });
 
-					it('Object exists', function() {
-						AssetsView.should.be.exist;
-					});
+      test('Render correctly new image asset', () => {
+        coll.add({ type: 'image', src: 'test' });
+        var asset = obj.getAssetsEl().firstChild;
+        expect(asset.tagName).toEqual('DIV');
+        expect(asset.innerHTML).toBeTruthy();
+      });
 
-					it("Collection is empty", function (){
-						this.view.getAssetsEl().innerHTML.should.be.empty;
-					});
+      test('Clean collection from asset', () => {
+        var model = coll.add({ src: 'test' });
+        coll.remove(model);
+        expect(obj.getAssetsEl().innerHTML).toBeFalsy();
+      });
 
-					it("Add new asset", function (){
-						sinon.stub(this.view, "addAsset");
-						this.coll.add({src: 'test'});
-						this.view.addAsset.calledOnce.should.equal(true);
-					});
+      test('Deselect works', () => {
+        coll.add([{}, {}]);
+        var $asset = obj.$el.children().first();
+        $asset.attr('class', obj.pfx + 'highlight');
+        coll.trigger('deselectAll');
+        expect($asset.attr('class')).toBeFalsy();
+      });
 
-					it("Render new asset", function (){
-						this.coll.add({src: 'test'});
-						this.view.getAssetsEl().innerHTML.should.not.be.empty;
-					});
+      test('Returns not empty assets element', () => {
+        expect(obj.getAssetsEl()).toBeTruthy();
+      });
 
-					it("Render correctly new image asset", function (){
-						this.coll.add({ type: 'image', src: 'test'});
-						var asset = this.view.getAssetsEl().firstChild;
-						asset.tagName.should.equal('DIV');
-						asset.innerHTML.should.not.be.empty;
-					});
+      test('Returns not empty url input', () => {
+        expect(obj.getAddInput()).toBeTruthy();
+      });
 
-					it("Clean collection from asset", function (){
-						var model = this.coll.add({src: 'test'});
-						this.coll.remove(model);
-						this.view.getAssetsEl().innerHTML.should.be.empty;
-					});
-
-					it("Deselect works", function (){
-						this.coll.add([{},{}]);
-						var $asset = this.view.$el.children().first();
-						$asset.attr('class', this.view.pfx + 'highlight');
-						this.coll.trigger('deselectAll');
-						$asset.attr('class').should.be.empty;
-					});
-
-					it("Returns not empty assets element", function (){
-						obj.getAssetsEl().should.be.ok;
-					});
-
-					it("Returns not empty url input", function (){
-						obj.getInputUrl().should.be.ok;
-					});
-
-					it("Add image asset from input string", function (){
-						obj.getInputUrl().value = "test";
-						obj.addFromStr({
-							preventDefault: function(){}
-						});
-						var asset = obj.collection.at(0);
-						asset.get('src').should.equal('test');
-					});
-
-				});
-
-			}
-		}
-});
+      test('Add image asset from input string', () => {
+        obj.getAddInput().value = 'test';
+        obj.handleSubmit({
+          preventDefault() {}
+        });
+        var asset = obj.options.globalCollection.at(0);
+        expect(asset.get('src')).toEqual('test');
+      });
+    });
+  }
+};

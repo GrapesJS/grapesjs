@@ -1,55 +1,41 @@
-var path = 'Panels/view/';
-define([path + 'ButtonsView', 'Panels/model/Buttons'],
-  function(ButtonsView, Buttons) {
+const ButtonsView = require('panels/view/ButtonsView');
+const Buttons = require('panels/model/Buttons');
 
-    return {
-      run : function(){
-          describe('ButtonsView', function() {
+module.exports = {
+  run() {
+    describe('ButtonsView', () => {
+      var fixtures;
+      var model;
+      var view;
 
-            var $fixtures;
-            var $fixture;
-            var model;
-            var view;
-
-            before(function () {
-              $fixtures  = $("#fixtures");
-              $fixture   = $('<div class="cssrules-fixture"></div>');
-            });
-
-            beforeEach(function () {
-              model = new Buttons([]);
-              view = new ButtonsView({
-                collection: model
-              });
-              $fixture.empty().appendTo($fixtures);
-              $fixture.html(view.render().el);
-            });
-
-            afterEach(function () {
-              view.collection.reset();
-            });
-
-            after(function () {
-              $fixture.remove();
-            });
-
-            it("Collection is empty", function (){
-              view.$el.html().should.be.empty;
-            });
-
-            it("Add new button", function (){
-              sinon.stub(view, "addToCollection");
-              view.collection.add({});
-              view.addToCollection.calledOnce.should.equal(true);
-            });
-
-            it("Render new button", function (){
-              view.collection.add({});
-              view.$el.html().should.not.be.empty;
-            });
-
+      beforeEach(() => {
+        model = new Buttons([]);
+        view = new ButtonsView({
+          collection: model
         });
-      }
-    };
+        document.body.innerHTML = '<div id="fixtures"></div>';
+        fixtures = document.body.querySelector('#fixtures');
+        fixtures.appendChild(view.render().el);
+      });
 
-});
+      afterEach(() => {
+        view.collection.reset();
+      });
+
+      test('Collection is empty', () => {
+        expect(view.$el.html()).toEqual('');
+      });
+
+      test('Add new button', () => {
+        sinon.stub(view, 'addToCollection');
+        view.collection.add({});
+        expect(view.addToCollection.calledOnce).toEqual(true);
+      });
+
+      test('Render new button', () => {
+        view.collection.add({});
+        expect(view.$el.html()).toBeTruthy();
+      });
+    });
+  }
+};

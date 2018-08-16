@@ -1,13 +1,30 @@
-define(['backbone'],
-  function(Backbone){
+import Backbone from 'backbone';
+var Category = require('./Category');
 
-    return Backbone.Model.extend({
+module.exports = Backbone.Model.extend({
+  defaults: {
+    // If true, triggers an 'active' event on dropped component
+    activate: 0,
+    // If true, the dropped component will be selected
+    select: 0,
+    // If true, all IDs of dropped component and its style will be changed
+    resetId: 0,
+    label: '',
+    content: '',
+    category: '',
+    attributes: {}
+  },
 
-      defaults :{
-        label: '',
-        content: '',
-        attributes: {},
-      },
+  initialize(opts = {}) {
+    let category = this.get('category');
 
-    });
-  });
+    if (category) {
+      if (typeof category == 'string') {
+        var catObj = new Category({
+          id: category,
+          label: category
+        });
+      }
+    }
+  }
+});

@@ -1,83 +1,76 @@
-define(['backbone', './CreateComponent'],
-	function(Backbone, CreateComponent) {
-		/**
-		 * @class InsertCustom
-		 * @private
-		 * */
-		return _.extend({}, CreateComponent, {
+import _ from 'underscore';
+import Backbone from 'backbone';
+var CreateComponent = require('./CreateComponent');
 
-			init: function(){
-				CreateComponent.init.apply(this, arguments);
-				_.bindAll(this, 'insertComponent');
-				this.allowDraw = 0;
-			},
+module.exports = _.extend({}, CreateComponent, {
+  init(...args) {
+    CreateComponent.init.apply(this, args);
+    _.bindAll(this, 'insertComponent');
+    this.allowDraw = 0;
+  },
 
-			/**
-			 * Run method
-			 * @private
-			 * */
-			run: function(em, sender, options) {
-				this.em = em;
-				this.sender = sender;
-				this.opt = options || {};
-				this.$wr = this.$wrapper;
-				this.enable();
-			},
+  /**
+   * Run method
+   * @private
+   * */
+  run(em, sender, options) {
+    this.em = em;
+    this.sender = sender;
+    this.opt = options || {};
+    this.$wr = this.$wrapper;
+    this.enable();
+  },
 
-			enable: function(){
-				CreateComponent.enable.apply(this, arguments);
-				this.$wr.on('click', this.insertComponent);
-			},
+  enable(...args) {
+    CreateComponent.enable.apply(this, args);
+    this.$wr.on('click', this.insertComponent);
+  },
 
-			/**
-			 * Start insert event
-			 * @private
-			 * */
-			insertComponent: function(){
-				this.$wr.off('click', this.insertComponent);
-				this.stopSelectPosition();
-				var object = this.buildContent();
-				this.beforeInsert(object);
-				var index = this.sorter.lastPos.index;
-				// By default, collections do not trigger add event, so silent is used
-				var model = this.create(this.sorter.target, object, index, null, {silent: false});
+  /**
+   * Start insert event
+   * @private
+   * */
+  insertComponent() {
+    this.$wr.off('click', this.insertComponent);
+    this.stopSelectPosition();
+    var object = this.buildContent();
+    this.beforeInsert(object);
+    var index = this.sorter.lastPos.index;
+    // By default, collections do not trigger add event, so silent is used
+    var model = this.create(this.sorter.target, object, index, null, {
+      silent: false
+    });
 
-				if(this.opt.terminateAfterInsert && this.sender)
-					this.sender.set('active', false);
-				else
-					this.enable();
+    if (this.opt.terminateAfterInsert && this.sender)
+      this.sender.set('active', false);
+    else this.enable();
 
-				if(!model)
-					return;
+    if (!model) return;
 
-				if(this.em)
-						this.em.editor.initChildrenComp(model);
+    this.afterInsert(model, this);
+  },
 
-				this.afterInsert(model, this);
-			},
+  /**
+   * Trigger before insert
+   * @param   {Object}  obj
+   * @private
+   * */
+  beforeInsert(obj) {},
 
-			/**
-			 * Trigger before insert
-			 * @param 	{Object}	obj
-			 * @private
-			 * */
-			beforeInsert: function(obj){},
+  /**
+   * Trigger after insert
+   * @param  {Object}  model  Model created after insert
+   * @private
+   * */
+  afterInsert(model) {},
 
-			/**
-			 * Trigger after insert
-			 * @param	{Object}	model	Model created after insert
-			 * @private
-			 * */
-			afterInsert: function(model){},
-
-			/**
-			 * Create different object, based on content, to insert inside canvas
-			 *
-			 * @return 	{Object}
-			 * @private
-			 * */
-			buildContent: function(){
-				return this.opt.content || {};
-			},
-		});
-	});
+  /**
+   * Create different object, based on content, to insert inside canvas
+   *
+   * @return   {Object}
+   * @private
+   * */
+  buildContent() {
+    return this.opt.content || {};
+  }
+});

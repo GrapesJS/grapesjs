@@ -1,87 +1,186 @@
-define(['backbone', './Selectors'],
-    function (Backbone, Selectors) {
-    	return Backbone.Model.extend({
+import _ from 'underscore';
+import Backbone from 'backbone';
+import Styleable from 'domain_abstract/model/Styleable';
+import { isEmpty, forEach } from 'underscore';
 
-    		defaults: {
-                // Css selectors
-                selectors: {},
+var Selectors = require('selector_manager/model/Selectors');
 
-                // Additional string css selectors
-                selectorsAdd: '',
+module.exports = Backbone.Model.extend(Styleable).extend({
+  defaults: {
+    // Css selectors
+    selectors: {},
 
-                // Css properties style
-                style: {},
+    // Additional string css selectors
+    selectorsAdd: '',
 
-                // On which device width this rule should be rendered, eg. @media (max-width: 1000px)
-                maxWidth: '',
+    // Css properties style
+    style: {},
 
-                // State of the rule, eg: hover | pressed | focused
-                state: '',
+    // On which device width this rule should be rendered, eg. @media (max-width: 1000px)
+    mediaText: '',
 
-                // Indicates if the rule is stylable
-                stylable: true,
-    		},
+    // State of the rule, eg: hover | pressed | focused
+    state: '',
 
-            initialize: function(c, opt) {
-                this.config   = c || {};
-                this.sm = opt ? opt.sm || {} : {};
-                this.slct = this.config.selectors || [];
+    // Indicates if the rule is stylable
+    stylable: true,
 
-                if(this.sm.get){
-                    var slct = [];
-                    for(var i = 0; i < this.slct.length; i++)
-                        slct.push(this.sm.get('SelectorManager').add(this.slct[i].name || this.slct[i]));
-                    this.slct = slct;
-                }
+    // Type of at-rule, eg. 'media', 'font-face', etc.
+    atRuleType: '',
 
-                this.set('selectors', new Selectors(this.slct));
-            },
+    // This particolar property is used only on at-rules, like 'page' or
+    // 'font-face', where the block containes only style declarations
+    singleAtRule: 0,
 
-            /**
-             * Compare the actual model with parameters
-             * @param   {Object} selectors Collection of selectors
-             * @param   {String} state Css rule state
-             * @param   {String} width For which device this style is oriented
-             * @return  {Boolean}
-             * @private
-             */
-            compare: function(selectors, state, width){
-                var st = state || '';
-                var wd = width || '';
-                var cId = 'cid';
-                //var a1 = _.pluck(selectors.models || selectors, cId);
-                //var a2 = _.pluck(this.get('selectors').models, cId);
-                if(!(selectors instanceof Array) && !selectors.models)
-                  selectors = [selectors];
-                var a1 = _.map((selectors.models || selectors), function(model) {
-                  return model.get('name');
-                });
-                var a2 = _.map(this.get('selectors').models, function(model) {
-                  return model.get('name');
-                });
-                var f = false;
+    // If true, sets '!important' on all properties
+    // You can use an array to specify properties to set important
+    // Used in view
+    important: 0
+  },
 
-                if(a1.length !== a2.length)
-                    return f;
+  initialize(c, opt = {}) {
+    this.config = c || {};
+    const em = opt.em;
+    let selectors = this.config.selectors || [];
+    this.em = em;
 
-                for (var i = 0; i < a1.length; i++) {
-                    var re = 0;
-                    for (var j = 0; j < a2.length; j++) {
-                        if (a1[i] === a2[j])
-                            re = 1;
-                    }
-                    if(re === 0)
-                      return f;
-                }
+    if (em) {
+      const sm = em.get('SelectorManager');
+      const slct = [];
+      selectors.forEach(selector => {
+        slct.push(sm.add(selector));
+      });
+      selectors = slct;
+    }
 
-                if(this.get('state') !== st)
-                    return f;
+    this.set('selectors', new Selectors(selectors));
+  },
 
-                if(this.get('maxWidth') !== wd)
-                    return f;
+  /**
+   * Returns an at-rule statement if possible, eg. '@media (...)', '@keyframes'
+   * @return {string}
+   */
+  getAtRule() {
+    const type = this.get('atRuleType');
+    const condition = this.get('mediaText');
+    // Avoid breaks with the last condition
+    const typeStr = type ? `@${type}` : condition ? '@media' : '';
 
-                return true;
-            },
+    return typeStr + (condition && typeStr ? ` ${condition}` : '');
+  },
 
-    	});
+  /**
+   * Return selectors fo the rule as a string
+   * @return {string}
+   */
+  selectorsToString(opts = {}) {
+    const result = [];
+    const state = this.get('state');
+    const addSelector = this.get('selectorsAdd');
+    const selectors = this.get('selectors').getFullString();
+    const stateStr = state ? `:${state}` : '';
+    selectors && result.push(`${selectors}${stateStr}`);
+    addSelector && !opts.skipAdd && result.push(addSelector);
+    return result.join(', ');
+  },
+
+  /**
+   * Get declaration block
+   * @param {Object} [opts={}] Options
+   * @return {string}
+   */
+  getDeclaration(opts = {}) {
+    let result = '';
+    const selectors = this.selectorsToString();
+    const style = this.styleToString(opts);
+    const singleAtRule = this.get('singleAtRule');
+
+    if ((selectors || singleAtRule) && style) {
+      result = singleAtRule ? style : `${selectors}{${style}}`;
+    }
+
+    return result;
+  },
+
+  /**
+   * Returns CSS string of the rule
+   * @param {Object} [opts={}] Options
+   * @return {string}
+   */
+  toCSS(opts = {}) {
+    let result = '';
+    const atRule = this.getAtRule();
+    const block = this.getDeclaration(opts);
+    block && (result = block);
+
+    if (atRule && result) {
+      result = `${atRule}{${result}}`;
+    }
+
+    return result;
+  },
+
+  toJSON(...args) {
+    const obj = Backbone.Model.prototype.toJSON.apply(this, args);
+
+    if (this.em.getConfig('avoidDefaults')) {
+      const defaults = this.defaults;
+
+      forEach(defaults, (value, key) => {
+        if (obj[key] === value) {
+          delete obj[key];
+        }
+      });
+
+      if (isEmpty(obj.selectors)) delete obj.selectors;
+      if (isEmpty(obj.style)) delete obj.style;
+    }
+
+    return obj;
+  },
+
+  /**
+   * Compare the actual model with parameters
+   * @param   {Object} selectors Collection of selectors
+   * @param   {String} state Css rule state
+   * @param   {String} width For which device this style is oriented
+   * @param {Object} ruleProps Other rule props
+   * @return  {Boolean}
+   * @private
+   */
+  compare(selectors, state, width, ruleProps = {}) {
+    var st = state || '';
+    var wd = width || '';
+    var selectorsAdd = ruleProps.selectorsAdd || '';
+    var atRuleType = ruleProps.atRuleType || '';
+    var cId = 'cid';
+    //var a1 = _.pluck(selectors.models || selectors, cId);
+    //var a2 = _.pluck(this.get('selectors').models, cId);
+    if (!(selectors instanceof Array) && !selectors.models)
+      selectors = [selectors];
+    var a1 = _.map(selectors.models || selectors, model => model.get('name'));
+    var a2 = _.map(this.get('selectors').models, model => model.get('name'));
+    var f = false;
+
+    if (a1.length !== a2.length) return f;
+
+    for (var i = 0; i < a1.length; i++) {
+      var re = 0;
+      for (var j = 0; j < a2.length; j++) {
+        if (a1[i] === a2[j]) re = 1;
+      }
+      if (re === 0) return f;
+    }
+
+    if (
+      this.get('state') !== st ||
+      this.get('mediaText') !== wd ||
+      this.get('selectorsAdd') !== selectorsAdd ||
+      this.get('atRuleType') !== atRuleType
+    ) {
+      return f;
+    }
+
+    return true;
+  }
 });

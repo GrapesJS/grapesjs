@@ -1,0 +1,121 @@
+.#{$nv-prefix} {
+  &selected-parent {
+    border: 1px solid $colorYell;
+  }
+
+  &opac50 {
+    @include opacity(0.5);
+  }
+
+  &layer {
+    font-weight: lighter;
+    text-align: left;
+    position: relative;
+    background-color: rgba(0, 0, 0, 0.1);
+    font-size: $fontSizeS;
+
+    &-hidden {
+      @include opacity(0.55);
+    }
+
+    &-count {
+      position: absolute;
+      right: 27px;
+      top: 9px;
+    }
+
+    &-vis {
+      height: auto !important;
+      width: auto !important;
+      left: 0;
+      top: 0;
+      padding: 7px 5px 7px 10px;
+      position: absolute;
+      cursor: pointer;
+      z-index: 1;
+    }
+
+    &-caret {
+      font-size: 0.5rem;
+      width: 8px;
+      padding: 2px;
+      cursor: pointer;
+      position: absolute;
+      left: -9px;
+      top: 6px;
+      @include opacity(0.7);
+
+      &:hover {
+        @include opacity(1);
+      }
+    }
+
+    &-title {
+      @extend .#{$app-prefix}category-title;
+
+      padding: 3px 10px 5px 30px;
+      display: flex;
+      align-items: center;
+
+      &-inn {
+        position: relative;
+      }
+    }
+
+    &-name {
+      padding: 5px;
+      display: inline-block;
+      box-sizing: content-box;
+      @extend .#{$app-prefix}no-user-select;
+    }
+
+    > .#{$nv-prefix}layer-children {
+      display: none;
+    }
+
+    &.open > .#{$nv-prefix}layer-children {
+      display: block;
+    }
+
+    &-no-chld > .#{$nv-prefix}layer-title-inn > .#{$nv-prefix}layer-caret {
+      display: none;
+    }
+
+    &-move {
+      padding: 7px 10px 7px 5px;
+      position: absolute;
+      font-size: 12px;
+      cursor: move;
+      right: 0;
+      top: 0;
+    }
+
+    &.#{$nv-prefix}hovered .#{$nv-prefix}layer-title {
+      background-color: rgba(255, 255, 255, 0.015);
+    }
+
+    &.#{$nv-prefix}selected .#{$nv-prefix}layer-title {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
+
+.#{$app-prefix}layers {
+  position: relative;
+  height: 100%;
+
+  ##{$nv-prefix}placeholder {
+    width: 100%;
+    position: absolute;
+
+    ##{$nv-prefix}plh-int {
+      height: 100%;
+      padding: 1px;
+
+      &.#{$nv-prefix}insert {
+        background-color: $colorGreen;
+      }
+    }
+  }
+}
