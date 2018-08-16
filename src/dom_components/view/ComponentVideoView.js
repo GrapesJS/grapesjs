@@ -12,7 +12,7 @@ module.exports = ComponentView.extend({
     this.listenTo(this.model, 'change:src', this.updateSrc);
     this.listenTo(
       this.model,
-      'change:loop change:autoplay change:controls change:color change:rel change:modestbranding',
+      'change:loop change:autoplay change:controls change:color change:rel change:modestbranding change:poster',
       this.updateVideo
     );
     this.listenTo(this.model, 'change:provider', this.updateProvider);
@@ -67,6 +67,7 @@ module.exports = ComponentView.extend({
         videoEl.loop = md.get('loop');
         videoEl.autoplay = md.get('autoplay');
         videoEl.controls = md.get('controls');
+        videoEl.poster = md.get('poster');
     }
   },
 
