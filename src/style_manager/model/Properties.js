@@ -66,6 +66,16 @@ module.exports = require('backbone')
         }
       },
       {
+        id: 'checkbox',
+        model: require('./PropertyCheckbox'),
+        view: require('./../view/PropertyCheckboxView'),
+        isType(value) {
+          if (value && value.type == 'checkbox') {
+            return value;
+          }
+        }
+      },
+      {
         id: 'slider',
         model: require('./PropertySlider'),
         view: require('./../view/PropertySliderView'),
