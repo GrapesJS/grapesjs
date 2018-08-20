@@ -182,7 +182,7 @@ module.exports = Component.extend(
         {
           label: 'Poster',
           name: 'poster',
-          placeholder: '',
+          placeholder: 'eg. ./media/image.jpg',
           changeProp: 1
         },
         this.getAutoplayTrait(),
