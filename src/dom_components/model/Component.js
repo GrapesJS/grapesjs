@@ -590,6 +590,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       traits = traits || this.get('traits');
 
       if (traits.length) {
+        traits.forEach(tr => tr.attributes && delete tr.attributes.value);
         trt.add(traits);
       }
 
