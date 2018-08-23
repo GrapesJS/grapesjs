@@ -310,6 +310,18 @@ describe('GrapesJS', () => {
       expect(editor.customValue).toEqual('TEST');
     });
 
+    test('Use plugins defined on window, with custom options', () => {
+      window.globalPlugin = (edt, opts) => {
+        var opts = opts || {};
+        edt.customValue = opts.cVal || '';
+      };
+      config.plugins = ['globalPlugin'];
+      config.pluginsOpts = {};
+      config.pluginsOpts['globalPlugin'] = { cVal: 'TEST' };
+      var editor = obj.init(config);
+      expect(editor.customValue).toEqual('TEST');
+    });
+
     test('Execute custom command', () => {
       var editor = obj.init(config);
       editor.testVal = '';
