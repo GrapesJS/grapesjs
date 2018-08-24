@@ -3,7 +3,7 @@ var Commands = require('commands');
 var Models = require('./model/CommandModels');
 var CommandAbstract = require('./view/CommandAbstract');
 
-describe.only('Commands', () => {
+describe('Commands', () => {
   describe('Main', () => {
     let obj,
       commSimple,
