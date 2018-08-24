@@ -21,7 +21,7 @@
  * * [run](#run)
  * * [stop](#stop)
  * * [isActive](#isactive)
- * * [getactive](#getactive)
+ * * [getActive](#getactive)
  *
  * @module Commands
  */
@@ -274,19 +274,7 @@ module.exports = () => {
      * commands.run('myCommand', { someOption: 1 });
      */
     run(id, options = {}) {
-      let result;
-      const command = this.get(id);
-      const editor = em.get('Editor');
-      if (command) {
-        result = command.callRun(editor, options);
-
-        // Check if the command is stoppable to add it as an active
-        if (command.stop && !command.noStop) {
-          active[id] = result;
-        }
-      }
-
-      return result;
+      return this.runCommand(this.get(id), options);
     },
 
     /**
@@ -298,15 +286,7 @@ module.exports = () => {
      * commands.stop('myCommand', { someOption: 1 });
      */
     stop(id, options = {}) {
-      let result;
-      const command = this.get(id);
-      const editor = em.get('Editor');
-      if (command) {
-        result = command.callStop(editor, options);
-        delete active[id];
-      }
-
-      return result;
+      return this.runCommand(this.get(id), options);
     },
 
     /**
@@ -350,6 +330,49 @@ module.exports = () => {
       }
 
       return this;
+    },
+
+    /**
+     * Run command via its object
+     * @param  {Object} command
+     * @param {Object} options
+     * @return {*} Result of the command
+     * @private
+     */
+    runCommand(command, options = {}) {
+      let result;
+
+      if (command && command.run) {
+        const id = command.id;
+        const editor = em.get('Editor');
+        result = command.callRun(editor, options);
+
+        if (id && command.stop && !command.noStop) {
+          active[id] = result;
+        }
+      }
+
+      return result;
+    },
+
+    /**
+     * [runCommand description]
+     * @param  {Object} command
+     * @param {Object} options
+     * @return {*} Result of the command
+     * @private
+     */
+    stopCommand(command, options = {}) {
+      let result;
+
+      if (command && command.run) {
+        const id = command.id;
+        const editor = em.get('Editor');
+        result = command.callStop(editor, options);
+        if (id) delete active[id];
+      }
+
+      return result;
     },
 
     /**

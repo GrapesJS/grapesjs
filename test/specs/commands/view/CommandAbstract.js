@@ -1,4 +1,4 @@
-const CommandAbstract = require('commands/view/CommandAbstract');
+import CommandAbstract from 'commands/view/CommandAbstract';
 const Editor = require('editor/model/Editor');
 
 module.exports = {
