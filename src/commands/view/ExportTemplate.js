@@ -19,9 +19,13 @@ module.exports = {
       this.$editors = $editors;
     }
 
-    modal.setTitle(config.textViewCode);
-    modal.setContent(this.$editors);
-    modal.open();
+    modal
+      .open({
+        title: config.textViewCode,
+        content: this.$editors
+      })
+      .getModel()
+      .once('change:open', () => editor.stopCommand(this.id));
     this.htmlEditor.setContent(editor.getHtml());
     this.cssEditor.setContent(editor.getCss());
   },
