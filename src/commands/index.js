@@ -286,7 +286,7 @@ module.exports = () => {
      * commands.stop('myCommand', { someOption: 1 });
      */
     stop(id, options = {}) {
-      return this.runCommand(this.get(id), options);
+      return this.stopCommand(this.get(id), options);
     },
 
     /**
