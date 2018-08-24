@@ -16,29 +16,31 @@
  *
  * * [add](#add)
  * * [get](#get)
+ * * [getAll](#getall)
  * * [has](#has)
  * * [run](#run)
  * * [stop](#stop)
+ * * [isActive](#isactive)
+ * * [getactive](#getactive)
  *
  * @module Commands
  */
 
-import { isFunction } from 'underscore';
+import { isFunction, isUndefined } from 'underscore';
+import CommandAbstract from './view/CommandAbstract';
 
 module.exports = () => {
   let em;
   var c = {},
     commands = {},
     defaultCommands = {},
-    defaults = require('./config/config'),
-    CommandAbstract = require('./view/CommandAbstract');
+    defaults = require('./config/config');
+  const active = {};
 
   // Need it here as it would be used below
-  var add = function(id, obj) {
-    if (isFunction(obj)) {
-      obj = { run: obj };
-    }
-
+  const add = function(id, obj) {
+    if (isFunction(obj)) obj = { run: obj };
+    if (!obj.stop) obj.noStop = 1;
     delete obj.initialize;
     obj.id = id;
     commands[id] = CommandAbstract.extend(obj);
@@ -256,6 +258,14 @@ module.exports = () => {
     },
 
     /**
+     * Get an object containing all the commands
+     * @return {Object}
+     */
+    getAll() {
+      return commands;
+    },
+
+    /**
      * Execute the command
      * @param {String} id Command ID
      * @param {Object} [options={}] Options
@@ -267,7 +277,14 @@ module.exports = () => {
       let result;
       const command = this.get(id);
       const editor = em.get('Editor');
-      if (command) result = command.callRun(editor, options);
+      if (command) {
+        result = command.callRun(editor, options);
+
+        // Check if the command is stoppable to add it as an active
+        if (command.stop && !command.noStop) {
+          active[id] = result;
+        }
+      }
 
       return result;
     },
@@ -284,9 +301,42 @@ module.exports = () => {
       let result;
       const command = this.get(id);
       const editor = em.get('Editor');
-      if (command) result = command.callStop(editor, options);
+      if (command) {
+        result = command.callStop(editor, options);
+        delete active[id];
+      }
 
       return result;
+    },
+
+    /**
+     * Check if the command is active. You activate commands with `run`
+     * and disable them with `stop`. If the command was created without `stop`
+     * method it can't be registered as active
+     * @param  {String}  id Command id
+     * @return {Boolean}
+     * @example
+     * const cId = 'some-command';
+     * commands.run(cId);
+     * commands.isActive(cId);
+     * // -> true
+     * commands.stop(cId);
+     * commands.isActive(cId);
+     * // -> false
+     */
+    isActive(id) {
+      return this.getActive().hasOwnProperty(id);
+    },
+
+    /**
+     * Get all active commands
+     * @return {Object}
+     * @example
+     * console.log(commands.getActive());
+     * // -> { someCommand: itsLastReturn, anotherOne: ... };
+     */
+    getActive() {
+      return active;
     },
 
     /**

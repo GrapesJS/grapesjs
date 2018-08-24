@@ -1,7 +1,7 @@
 import Backbone from 'backbone';
 const $ = Backbone.$;
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   /**
    * Initialize method that can't be removed
    * @param  {Object}  o Options
