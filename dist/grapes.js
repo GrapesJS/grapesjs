@@ -13108,7 +13108,7 @@ LineWidget.prototype.changed = function () {
   this.height = null;
   var diff = widgetHeight(this) - oldH;
   if (!diff) { return }
-  updateLineHeight(line, line.height + diff);
+  if (!lineIsHidden(this.doc, line)) { updateLineHeight(line, line.height + diff); }
   if (cm) {
     runInOp(cm, function () {
       cm.curOp.forceUpdate = true;
@@ -14035,7 +14035,7 @@ keyMap.pcDefault = {
   "Ctrl-G": "findNext", "Shift-Ctrl-G": "findPrev", "Shift-Ctrl-F": "replace", "Shift-Ctrl-R": "replaceAll",
   "Ctrl-[": "indentLess", "Ctrl-]": "indentMore",
   "Ctrl-U": "undoSelection", "Shift-Ctrl-U": "redoSelection", "Alt-U": "redoSelection",
-  fallthrough: "basic"
+  "fallthrough": "basic"
 };
 // Very basic readline/emacs-style bindings, which are standard on Mac.
 keyMap.emacsy = {
@@ -14053,7 +14053,7 @@ keyMap.macDefault = {
   "Cmd-G": "findNext", "Shift-Cmd-G": "findPrev", "Cmd-Alt-F": "replace", "Shift-Cmd-Alt-F": "replaceAll",
   "Cmd-[": "indentLess", "Cmd-]": "indentMore", "Cmd-Backspace": "delWrappedLineLeft", "Cmd-Delete": "delWrappedLineRight",
   "Cmd-U": "undoSelection", "Shift-Cmd-U": "redoSelection", "Ctrl-Up": "goDocStart", "Ctrl-Down": "goDocEnd",
-  fallthrough: ["basic", "emacsy"]
+  "fallthrough": ["basic", "emacsy"]
 };
 keyMap["default"] = mac ? keyMap.macDefault : keyMap.pcDefault;
 
@@ -15186,6 +15186,7 @@ function CodeMirror$1(place, options) {
 
   var doc = options.value;
   if (typeof doc == "string") { doc = new Doc(doc, options.mode, null, options.lineSeparator, options.direction); }
+  else if (options.mode) { doc.modeOption = options.mode; }
   this.doc = doc;
 
   var input = new CodeMirror$1.inputStyles[options.inputStyle](this);
@@ -17089,7 +17090,7 @@ CodeMirror$1.fromTextArea = fromTextArea;
 
 addLegacyProps(CodeMirror$1);
 
-CodeMirror$1.version = "5.39.0";
+CodeMirror$1.version = "5.39.2";
 
 return CodeMirror$1;
 
@@ -19719,10 +19720,10 @@ if (!CodeMirror.mimeModes.hasOwnProperty("text/html"))
 
 /***/ }),
 
-/***/ "./node_modules/process/browser.js":
-/*!*****************************************!*\
-  !*** ./node_modules/process/browser.js ***!
-  \*****************************************/
+/***/ "./node_modules/node-libs-browser/node_modules/process/browser.js":
+/*!************************************************************************!*\
+  !*** ./node_modules/node-libs-browser/node_modules/process/browser.js ***!
+  \************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -20373,7 +20374,7 @@ exports.default = Promise;
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js"), __webpack_require__(/*! ./../process/browser.js */ "./node_modules/process/browser.js")))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js"), __webpack_require__(/*! ./../node-libs-browser/node_modules/process/browser.js */ "./node_modules/node-libs-browser/node_modules/process/browser.js")))
 
 /***/ }),
 
@@ -24391,33 +24392,27 @@ module.exports = _backbone2.default.View.extend({
 module.exports = {
   stylePrefix: 'cv-',
 
-  // Coming soon
-  rulers: false,
-
   /*
-   * Append external scripts in head of the iframe before renderBody content
-   * In this case, you have to add them manually later in the final HTML page
+   * Append external scripts to the `<head>` of the iframe.
+   * Be aware that these scripts will not be printed in the export code
    * @example
-   * scripts: [
-   *  'https://...',
-   * ]
+   * scripts: [ 'https://...1.js', 'https://...2.js' ]
   */
   scripts: [],
 
   /*
-   * Append external styles. This styles won't be added to the final HTML/CSS
+   * Append external styles to the `<head>` of the iframe
+   * Be aware that these styles will not be printed in the export code
    * @example
-   * styles: [
-   *  'https://...',
-   * ]
+   * styles: [ 'https://...1.css', 'https://...2.css' ]
   */
   styles: [],
 
   /**
    * Add custom badge naming strategy
    * @example
-   * customBadgeLabel: function(ComponentModel) {
-   *  return ComponentModel.getName();
+   * customBadgeLabel: function(component) {
+   *  return component.getName();
    * }
    */
   customBadgeLabel: ''
@@ -24442,6 +24437,36 @@ var _Droppable = __webpack_require__(/*! utils/Droppable */ "./src/utils/Droppab
 var _Droppable2 = _interopRequireDefault(_Droppable);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/canvas/config/config.js)
+ * ```js
+ * const editor = grapesjs.init({
+ *  canvas: {
+ *    // options
+ *  }
+ * })
+ * ```
+ *
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ *
+ * ```js
+ * const canvas = editor.Canvas;
+ * ```
+ *
+ * * [getConfig](#getconfig)
+ * * [getElement](#getelement)
+ * * [getFrameEl](#getframeel)
+ * * [getWindow](#getwindow)
+ * * [getDocument](#getdocument)
+ * * [getBody](#getbody)
+ * * [getWrapperEl](#getwrapperel)
+ * * [setCustomBadgeLabel](#setcustombadgelabel)
+ * * [hasFocus](#hasfocus)
+ * * [scrollTo](#scrollto)
+ *
+ * @module Canvas
+ */
 
 module.exports = function () {
   var c = {},
@@ -24471,6 +24496,7 @@ module.exports = function () {
     /**
      * Initialize module. Automatically called with a new instance of the editor
      * @param {Object} config Configurations
+     * @private
      */
     init: function init(config) {
       c = config || {};
@@ -24498,7 +24524,7 @@ module.exports = function () {
 
 
     /**
-     * Return config object
+     * Get the configuration object
      * @return {Object}
      */
     getConfig: function getConfig() {
@@ -24509,7 +24535,7 @@ module.exports = function () {
     /**
      * Add wrapper
      * @param	{Object}	wrp Wrapper
-     *
+     * @private
      * */
     setWrapper: function setWrapper(wrp) {
       canvas.set('wrapper', wrp);
@@ -24517,7 +24543,7 @@ module.exports = function () {
 
 
     /**
-     * Returns canvas element
+     * Get the canvas element
      * @return {HTMLElement}
      */
     getElement: function getElement() {
@@ -24526,8 +24552,8 @@ module.exports = function () {
 
 
     /**
-     * Returns frame element of the canvas
-     * @return {HTMLElement}
+     * Get the iframe element of the canvas
+     * @return {HTMLIFrameElement}
      */
     getFrameEl: function getFrameEl() {
       return CanvasView.frame.el;
@@ -24535,17 +24561,8 @@ module.exports = function () {
 
 
     /**
-     * Returns the frame document
-     * @return {HTMLElement}
-     */
-    getDocument: function getDocument() {
-      return this.getFrameEl().contentDocument;
-    },
-
-
-    /**
-     * Returns the frame's window
-     * @return {HTMLElement}
+     * Get the window instance of the iframe element
+     * @return {Window}
      */
     getWindow: function getWindow() {
       return this.getFrameEl().contentWindow;
@@ -24553,16 +24570,25 @@ module.exports = function () {
 
 
     /**
-     * Returns body element of the frame
-     * @return {HTMLElement}
+     * Get the document of the iframe element
+     * @return {HTMLDocument}
      */
-    getBody: function getBody() {
-      return CanvasView.frame.el.contentDocument.body;
+    getDocument: function getDocument() {
+      return this.getFrameEl().contentDocument;
     },
 
 
     /**
-     * Returns body wrapper element of the frame
+     * Get the body of the iframe element
+     * @return {HTMLBodyElement}
+     */
+    getBody: function getBody() {
+      return this.getDocument().body;
+    },
+
+
+    /**
+     * Get the wrapper element containing all the components
      * @return {HTMLElement}
      */
     getWrapperEl: function getWrapperEl() {
@@ -24573,6 +24599,7 @@ module.exports = function () {
     /**
      * Returns element containing all canvas tools
      * @return {HTMLElement}
+     * @private
      */
     getToolsEl: function getToolsEl() {
       return CanvasView.toolsEl;
@@ -24582,6 +24609,7 @@ module.exports = function () {
     /**
      * Returns highlighter element
      * @return {HTMLElement}
+     * @private
      */
     getHighlighter: function getHighlighter() {
       return CanvasView.hlEl;
@@ -24591,6 +24619,7 @@ module.exports = function () {
     /**
      * Returns badge element
      * @return {HTMLElement}
+     * @private
      */
     getBadgeEl: function getBadgeEl() {
       return CanvasView.badgeEl;
@@ -24600,6 +24629,7 @@ module.exports = function () {
     /**
      * Returns placer element
      * @return {HTMLElement}
+     * @private
      */
     getPlacerEl: function getPlacerEl() {
       return CanvasView.placerEl;
@@ -24619,6 +24649,7 @@ module.exports = function () {
     /**
      * Returns toolbar element
      * @return {HTMLElement}
+     * @private
      */
     getToolbarEl: function getToolbarEl() {
       return CanvasView.toolbarEl;
@@ -24628,6 +24659,7 @@ module.exports = function () {
     /**
      * Returns resizer element
      * @return {HTMLElement}
+     * @private
      */
     getResizerEl: function getResizerEl() {
       return CanvasView.resizerEl;
@@ -24637,6 +24669,7 @@ module.exports = function () {
     /**
      * Returns offset viewer element
      * @return {HTMLElement}
+     * @private
      */
     getOffsetViewerEl: function getOffsetViewerEl() {
       return CanvasView.offsetEl;
@@ -24646,6 +24679,7 @@ module.exports = function () {
     /**
      * Returns fixed offset viewer element
      * @return {HTMLElement}
+     * @private
      */
     getFixedOffsetViewerEl: function getFixedOffsetViewerEl() {
       return CanvasView.fixedOffsetEl;
@@ -24654,6 +24688,7 @@ module.exports = function () {
 
     /**
      * Render canvas
+     * @private
      * */
     render: function render() {
       return CanvasView.render().el;
@@ -24676,7 +24711,7 @@ module.exports = function () {
 
 
     /**
-     * Get the offset of the element
+     * Get the offset of the passed component element
      * @param  {HTMLElement} el
      * @return {Object}
      * @private
@@ -24690,8 +24725,8 @@ module.exports = function () {
      * Set custom badge naming strategy
      * @param  {Function} f
      * @example
-     * canvas.setCustomBadgeLabel(function(model){
-     *  return ComponentModel.getName();
+     * canvas.setCustomBadgeLabel(function(component){
+     *  return component.getName();
      * });
      */
     setCustomBadgeLabel: function setCustomBadgeLabel(f) {
@@ -24703,6 +24738,7 @@ module.exports = function () {
      * Get element position relative to the canvas
      * @param {HTMLElement} el
      * @return {Object}
+     * @private
      */
     getElementPos: function getElementPos(el, opts) {
       return CanvasView.getElementPos(el, opts);
@@ -24723,6 +24759,7 @@ module.exports = function () {
      * @param {Object} options Custom options
      * @param {Boolean} options.toRight Set to true if you want the toolbar attached to the right
      * @return {Object}
+     * @private
      */
     getTargetToElementDim: function getTargetToElementDim(target, element, options) {
       var opts = options || {};
@@ -24772,6 +24809,7 @@ module.exports = function () {
      * canvas area, which is in the iframe
      * @param {Event} e
      * @return {Object}
+     * @private
      */
     getMouseRelativePos: function getMouseRelativePos(e, options) {
       var opts = options || {};
@@ -24801,6 +24839,7 @@ module.exports = function () {
      * X and Y mouse position relative to the canvas
      * @param {Event} e
      * @return {Object}
+     * @private
      */
     getMouseRelativeCanvas: function getMouseRelativeCanvas(e, options) {
       var opts = options || {};
@@ -24829,27 +24868,29 @@ module.exports = function () {
 
     /**
      * Detects if some input is focused (input elements, text components, etc.)
-     * Used internally, for example, to avoid undo/redo in text editing mode
      * @return {Boolean}
+     * @private
      */
     isInputFocused: function isInputFocused() {
-      return this.getFrameEl().contentDocument.activeElement.tagName !== 'BODY';
+      var contentDocument = this.getFrameEl().contentDocument;
+      return contentDocument.activeElement && contentDocument.activeElement.tagName !== 'BODY';
     },
 
 
     /**
      * Scroll canvas to the element if it's not visible. The scrolling is
      * executed via `scrollIntoView` API and options of this method are
-     * passed to it. For instance, you can scroll smoothly  with
-     * `{ behavior: 'smooth' }`. You can also force the scroll
+     * passed to it. For instance, you can scroll smoothly by using
+     * `{ behavior: 'smooth' }`.
      * @param  {HTMLElement|Component} el
      * @param  {Object} [opts={}] Options, same as options for `scrollIntoView`
+     * @param  {Boolean} [opts.force=false] Force the scroll, even if the element is already visible
      * @example
      * const selected = editor.getSelected();
      * // Scroll smoothly (this behavior can be polyfilled)
-     * cv.scrollTo(selected, { behavior: 'smooth' });
+     * canvas.scrollTo(selected, { behavior: 'smooth' });
      * // Force the scroll, even if the element is alredy visible
-     * cv.scrollTo(selected, { force: true });
+     * canvas.scrollTo(selected, { force: true });
      */
     scrollTo: function scrollTo(el) {
       var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -24865,6 +24906,7 @@ module.exports = function () {
 
     /**
      * Start autoscroll
+     * @private
      */
     startAutoscroll: function startAutoscroll() {
       var _this = this;
@@ -24880,6 +24922,11 @@ module.exports = function () {
         (0, _mixins.on)(toListen, 'mouseup', _this.stopAutoscroll);
       }, 0);
     },
+
+
+    /**
+     * @private
+     */
     autoscroll: function autoscroll(e) {
       e.preventDefault();
       if (this.dragging) {
@@ -24906,6 +24953,7 @@ module.exports = function () {
 
     /**
      * Stop autoscroll
+     * @private
      */
     stopAutoscroll: function stopAutoscroll() {
       this.dragging = 0;
@@ -24925,6 +24973,7 @@ module.exports = function () {
      * Returns wrapper element
      * @return {HTMLElement}
      * ????
+     * @private
      */
     getFrameWrapperEl: function getFrameWrapperEl() {
       return CanvasView.frame.getWrapper();
@@ -26189,6 +26238,12 @@ module.exports = {
 
 var _underscore = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
 
+var _CommandAbstract = __webpack_require__(/*! ./view/CommandAbstract */ "./src/commands/view/CommandAbstract.js");
+
+var _CommandAbstract2 = _interopRequireDefault(_CommandAbstract);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } } /**
                                                                                                                                                                                                      * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/commands/config/config.js)
                                                                                                                                                                                                      * ```js
@@ -26207,9 +26262,12 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                                                                                                                                                                                                      *
                                                                                                                                                                                                      * * [add](#add)
                                                                                                                                                                                                      * * [get](#get)
+                                                                                                                                                                                                     * * [getAll](#getall)
                                                                                                                                                                                                      * * [has](#has)
                                                                                                                                                                                                      * * [run](#run)
                                                                                                                                                                                                      * * [stop](#stop)
+                                                                                                                                                                                                     * * [isActive](#isactive)
+                                                                                                                                                                                                     * * [getActive](#getactive)
                                                                                                                                                                                                      *
                                                                                                                                                                                                      * @module Commands
                                                                                                                                                                                                      */
@@ -26219,23 +26277,21 @@ module.exports = function () {
   var c = {},
       commands = {},
       defaultCommands = {},
-      defaults = __webpack_require__(/*! ./config/config */ "./src/commands/config/config.js"),
-      CommandAbstract = __webpack_require__(/*! ./view/CommandAbstract */ "./src/commands/view/CommandAbstract.js");
+      defaults = __webpack_require__(/*! ./config/config */ "./src/commands/config/config.js");
+  var active = {};
 
   // Need it here as it would be used below
   var add = function add(id, obj) {
-    if ((0, _underscore.isFunction)(obj)) {
-      obj = { run: obj };
-    }
-
+    if ((0, _underscore.isFunction)(obj)) obj = { run: obj };
+    if (!obj.stop) obj.noStop = 1;
     delete obj.initialize;
     obj.id = id;
-    commands[id] = CommandAbstract.extend(obj);
+    commands[id] = _CommandAbstract2.default.extend(obj);
     return this;
   };
 
   return {
-    CommandAbstract: CommandAbstract,
+    CommandAbstract: _CommandAbstract2.default,
 
     /**
      * Name of the module
@@ -26446,6 +26502,15 @@ module.exports = function () {
 
 
     /**
+     * Get an object containing all the commands
+     * @return {Object}
+     */
+    getAll: function getAll() {
+      return commands;
+    },
+
+
+    /**
      * Execute the command
      * @param {String} id Command ID
      * @param {Object} [options={}] Options
@@ -26456,12 +26521,7 @@ module.exports = function () {
     run: function run(id) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-      var result = void 0;
-      var command = this.get(id);
-      var editor = em.get('Editor');
-      if (command) result = command.callRun(editor, options);
-
-      return result;
+      return this.runCommand(this.get(id), options);
     },
 
 
@@ -26476,12 +26536,39 @@ module.exports = function () {
     stop: function stop(id) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-      var result = void 0;
-      var command = this.get(id);
-      var editor = em.get('Editor');
-      if (command) result = command.callStop(editor, options);
+      return this.stopCommand(this.get(id), options);
+    },
 
-      return result;
+
+    /**
+     * Check if the command is active. You activate commands with `run`
+     * and disable them with `stop`. If the command was created without `stop`
+     * method it can't be registered as active
+     * @param  {String}  id Command id
+     * @return {Boolean}
+     * @example
+     * const cId = 'some-command';
+     * commands.run(cId);
+     * commands.isActive(cId);
+     * // -> true
+     * commands.stop(cId);
+     * commands.isActive(cId);
+     * // -> false
+     */
+    isActive: function isActive(id) {
+      return this.getActive().hasOwnProperty(id);
+    },
+
+
+    /**
+     * Get all active commands
+     * @return {Object}
+     * @example
+     * console.log(commands.getActive());
+     * // -> { someCommand: itsLastReturn, anotherOne: ... };
+     */
+    getActive: function getActive() {
+      return active;
     },
 
 
@@ -26500,13 +26587,62 @@ module.exports = function () {
 
 
     /**
+     * Run command via its object
+     * @param  {Object} command
+     * @param {Object} options
+     * @return {*} Result of the command
+     * @private
+     */
+    runCommand: function runCommand(command) {
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+      var result = void 0;
+
+      if (command && command.run) {
+        var id = command.id;
+        var _editor = em.get('Editor');
+        result = command.callRun(_editor, options);
+
+        if (id && command.stop && !command.noStop) {
+          active[id] = result;
+        }
+      }
+
+      return result;
+    },
+
+
+    /**
+     * [runCommand description]
+     * @param  {Object} command
+     * @param {Object} options
+     * @return {*} Result of the command
+     * @private
+     */
+    stopCommand: function stopCommand(command) {
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+      var result = void 0;
+
+      if (command && command.run) {
+        var id = command.id;
+        var _editor2 = em.get('Editor');
+        result = command.callStop(_editor2, options);
+        if (id) delete active[id];
+      }
+
+      return result;
+    },
+
+
+    /**
      * Create anonymous Command instance
      * @param {Object} command Command object
      * @return {Command}
      * @private
      * */
     create: function create(command) {
-      var cmd = CommandAbstract.extend(command);
+      var cmd = _CommandAbstract2.default.extend(command);
       return new cmd(c);
     }
   };
@@ -26636,6 +26772,10 @@ module.exports = {
 "use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _backbone = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
 
 var _backbone2 = _interopRequireDefault(_backbone);
@@ -26644,7 +26784,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var $ = _backbone2.default.$;
 
-module.exports = _backbone2.default.View.extend({
+exports.default = _backbone2.default.View.extend({
   /**
    * Initialize method that can't be removed
    * @param  {Object}  o Options
@@ -27396,6 +27536,8 @@ var $ = _backbone2.default.$;
 
 module.exports = {
   run: function run(editor, sender) {
+    var _this = this;
+
     var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
     sender && sender.set && sender.set('active', 0);
@@ -27414,9 +27556,12 @@ module.exports = {
       this.$editors = $editors;
     }
 
-    modal.setTitle(config.textViewCode);
-    modal.setContent(this.$editors);
-    modal.open();
+    modal.open({
+      title: config.textViewCode,
+      content: this.$editors
+    }).getModel().once('change:open', function () {
+      return editor.stopCommand(_this.id);
+    });
     this.htmlEditor.setContent(editor.getHtml());
     this.cssEditor.setContent(editor.getCss());
   },
@@ -27899,6 +28044,8 @@ module.exports = _underscore2.default.extend({}, SelectPosition, SelectComponent
 
 module.exports = {
   run: function run(editor, sender) {
+    var _this = this;
+
     var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
     var modal = editor.Modal;
@@ -27932,9 +28079,17 @@ module.exports = {
       uploadEl && uploadEl.setAttribute('accept', accept);
     }
 
-    modal.setTitle(title);
-    modal.setContent(amContainer);
-    modal.open();
+    modal.open({
+      title: title,
+      content: amContainer
+    }).getModel().once('change:open', function () {
+      return editor.stopCommand(_this.id);
+    });
+    return this;
+  },
+  stop: function stop(editor) {
+    editor.Modal.close();
+    return this;
   }
 };
 
@@ -31337,120 +31492,89 @@ var avoidInline = function avoidInline(em) {
   return em && em.getConfig('avoidInlineStyle');
 };
 
+/**
+ * The Component object represents a single node of our template structure, so when you update its properties the changes are
+ * immediatly reflected on the canvas and in the code to export (indeed, when you ask to export the code we just go through all
+ * the tree of nodes).
+ * An example on how to update properties:
+ * ```js
+ * component.set({
+ *  tagName: 'span',
+ *  attributes: { ... },
+ *  removable: false,
+ * });
+ * component.get('tagName');
+ * // -> 'span'
+ * ```
+ *
+ * @typedef Component
+ * @property {String} [type=''] Component type, eg. `text`, `image`, `video`, etc.
+ * @property {String} [tagName='div'] HTML tag of the component, eg. `span`. Default: `div`
+ * @property {Object} [attributes={}] Key-value object of the component's attributes, eg. `{ title: 'Hello' }` Default: `{}`
+ * @property {String} [name=''] Name of the component. Will be used, for example, in Layers and badges
+ * @property {Boolean} [removable=true] When `true` the component is removable from the canvas, default: `true`
+ * @property {Boolean|String} [draggable=true] Indicates if it's possible to drag the component inside others.
+ *  You can also specify a query string to indentify elements,
+ *  eg. `'.some-class[title=Hello], [data-gjs-type=column]'` means you can drag the component only inside elements
+ *  containing `some-class` class and `Hello` title, and `column` components. Default: `true`
+ * @property {Boolean|String} [droppable=true] Indicates if it's possible to drop other components inside. You can use
+ * a query string as with `draggable`. Default: `true`
+ * @property {Boolean} [badgable=true] Set to false if you don't want to see the badge (with the name) over the component. Default: `true`
+ * @property {Boolean|Array<String>} [stylable=true] True if it's possible to style the component.
+ * You can also indicate an array of CSS properties which is possible to style, eg. `['color', 'width']`, all other properties
+ * will be hidden from the style manager. Default: `true`
+ * @property {Array<String>} [stylable-require=[]] Indicate an array of style properties to show up which has been marked as `toRequire`. Default: `[]`
+ * @property {Array<String>} [unstylable=[]] Indicate an array of style properties which should be hidden from the style manager. Default: `[]`
+ * @property {Boolean} [highlightable=true] It can be highlighted with 'dotted' borders if true. Default: `true`
+ * @property {Boolean} [copyable=true] True if it's possible to clone the component. Default: `true`
+ * @property {Boolean} [resizable=false] Indicates if it's possible to resize the component. It's also possible to pass an object as [options for the Resizer](https://github.com/artf/grapesjs/blob/master/src/utils/Resizer.js). Default: `false`
+ * @property {Boolean} [editable=false] Allow to edit the content of the component (used on Text components). Default: `false`
+ * @property {Boolean} [layerable=true] Set to `false` if you need to hide the component inside Layers. Default: `true`
+ * @property {Boolean} [selectable=true] Allow component to be selected when clicked. Default: `true`
+ * @property {Boolean} [hoverable=true] Shows a highlight outline when hovering on the element if `true`. Default: `true`
+ * @property {Boolean} [void=false] This property is used by the HTML exporter as void elements don't have closing tags, eg. `<br/>`, `<hr/>`, etc. Default: `false`
+ * @property {String} [content=''] Content of the component (not escaped) which will be appended before children rendering. Default: `''`
+ * @property {String} [icon=''] Component's icon, this string will be inserted before the name (in Layers and badge), eg. it can be an HTML string '<i class="fa fa-square-o"></i>'. Default: `''`
+ * @property {String|Function} [script=''] Component's javascript. More about it [here](/modules/Components-js.html). Default: `''`
+ * @property {Array<Object|String>} [traits=''] Component's traits. More about it [here](/modules/Traits.html). Default: `['id', 'title']`
+ * @property {Array<String>} [propagate=[]] Indicates an array of properties which will be inhereted by all NEW appended children.
+ *  For example if you create a component likes this: `{ removable: false, draggable: false, propagate: ['removable', 'draggable'] }`
+ *  and append some new component inside, the new added component will get the exact same properties indicated in the `propagate` array (and the `propagate` property itself). Default: `[]`
+ * @property {Array<Object>} [toolbar=null] Set an array of items to show up inside the toolbar when the component is selected (move, clone, delete).
+ * Eg. `toolbar: [ { attributes: {class: 'fa fa-arrows'}, command: 'tlb-move' }, ... ]`.
+ * By default, when `toolbar` property is falsy the editor will add automatically commands like `move`, `delete`, etc. based on its properties.
+ * @property {Collection<Component>} [components=null] Children components. Default: `null`
+ */
 var Component = Backbone.Model.extend(_Styleable2.default).extend({
   defaults: {
-    // HTML tag of the component
     tagName: 'div',
-
-    // Component type, eg. 'text', 'image', 'video', etc.
     type: '',
-
-    // Name of the component. Will be used, for example, in layers and badges
     name: '',
-
-    // True if the component is removable from the canvas
     removable: true,
-
-    // Indicates if it's possible to drag the component inside others
-    // Tip: Indicate an array of selectors where it could be dropped inside
     draggable: true,
-
-    // Indicates if it's possible to drop other components inside
-    // Tip: Indicate an array of selectors which could be dropped inside
     droppable: true,
-
-    // Set false if don't want to see the badge (with the name) over the component
     badgable: true,
-
-    // True if it's possible to style it
-    // Tip:
-    // Indicate an array of CSS properties which is possible to style, eg. ['color', 'width']
-    // All other properties will be hidden from the style manager
     stylable: true,
-
-    // Indicate an array of style properties to show up which has been marked as `toRequire`
     'stylable-require': '',
-
-    // Indicate an array of style properties which should be hidden from the style manager
     unstylable: '',
-
-    // Highlightable with 'dotted' style if true
     highlightable: true,
-
-    // True if it's possible to clone the component
     copyable: true,
-
-    // Indicates if it's possible to resize the component (at the moment implemented only on Image Components)
-    // It's also possible to pass an object as options for the Resizer
     resizable: false,
-
-    // Allow to edit the content of the component (used on Text components)
     editable: false,
-
-    // Hide the component inside Layers
     layerable: true,
-
-    // Allow component to be selected when clicked
     selectable: true,
-
-    // Shows a highlight outline when hovering on the element if true
     hoverable: true,
-
-    // This property is used by the HTML exporter as void elements do not
-    // have closing tag, eg. <br/>, <hr/>, etc.
     void: false,
-
-    // Indicates if the component is in some CSS state like ':hover', ':active', etc.
-    state: '',
-
-    // State, eg. 'selected'
-    status: '',
-
-    // Content of the component (not escaped) which will be appended before children rendering
+    state: '', // Indicates if the component is in some CSS state like ':hover', ':active', etc.
+    status: '', // State, eg. 'selected'
     content: '',
-
-    // Component icon, this string will be inserted before the name, eg. '<i class="fa fa-square-o"></i>'
     icon: '',
-
-    // Component related style
-    style: '',
-
-    // Key-value object of the component's attributes
-    attributes: '',
-
-    // Array of classes
-    classes: '',
-
-    // Component's javascript
+    style: '', // Component related style
+    classes: '', // Array of classes
     script: '',
-
-    // Traits
+    attributes: '',
     traits: ['id', 'title'],
-
-    // Indicates an array of properties which will be inhereted by
-    // all NEW appended children
-    //
-    // If you create a model likes this
-    //  removable: false,
-    //  draggable: false,
-    //  propagate: ['removable', 'draggable']
-    // When you append some new component inside, the new added model
-    // will get the exact same properties indicated in `propagate` array
-    // (as the `propagate` property itself)
-    //
     propagate: '',
-
-    /**
-     * Set an array of items to show up inside the toolbar (eg. move, clone, delete)
-     * when the component is selected
-     * toolbar: [{
-     *     attributes: {class: 'fa fa-arrows'},
-     *     command: 'tlb-move',
-     *   },{
-     *     attributes: {class: 'fa fa-clone'},
-     *     command: 'tlb-clone',
-     * }]
-     */
     toolbar: null
   },
 
@@ -31516,7 +31640,7 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
    * @param  {string}  type Component type
    * @return {Boolean}
    * @example
-   * model.is('image')
+   * component.is('image')
    * // -> false
    */
   is: function is(type) {
@@ -31525,12 +31649,12 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
 
 
   /**
-   * Find inner models by query string
-   * ATTENTION: this method works only with alredy rendered component
-   * @param  {string}  query Query string
-   * @return {Array} Array of models
+   * Find inner components by query string.
+   * **ATTENTION**: this method works only with already rendered component
+   * @param  {String} query Query string
+   * @return {Array} Array of components
    * @example
-   * model.find('div > .class');
+   * component.find('div > .class');
    * // -> [Component, Component, ...]
    */
   find: function find(query) {
@@ -31547,12 +31671,13 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
 
 
   /**
-   * Find closest model by query string
-   * ATTENTION: this method works only with alredy rendered component
-   * @param  {string}  query Query string
+   * Find the closest parent component by query string.
+   * **ATTENTION**: this method works only with already rendered component
+   * @param  {string} query Query string
    * @return {Component}
    * @example
-   * model.closest('div');
+   * component.closest('div.some-class');
+   * // -> Component
    */
   closest: function closest(query) {
     var result = this.view.$el.closest(query);
@@ -31562,6 +31687,7 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
 
   /**
    * Once the tag is updated I have to remove the node and replace it
+   * @private
    */
   tagUpdated: function tagUpdated() {
     var coll = this.collection;
@@ -31574,8 +31700,10 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
   /**
    * Replace a component with another one
    * @param {String|Component} el Component or HTML string
-   * @return {Array|Component} New added component/s
-   * @private
+   * @return {Component|Array<Component>} New added component/s
+   * @example
+   * component.replaceWith('<div>Some new content</div>');
+   * // -> Component
    */
   replaceWith: function replaceWith(el) {
     var coll = this.collection;
@@ -31587,6 +31715,7 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
 
   /**
    * Emit changes for each updated attribute
+   * @private
    */
   attrUpdated: function attrUpdated() {
     var _this2 = this;
@@ -31601,10 +31730,11 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
 
 
   /**
-   * Update attributes of the model
+   * Update attributes of the component
    * @param {Object} attrs Key value attributes
+   * @return {this}
    * @example
-   * model.setAttributes({id: 'test', 'data-key': 'value'});
+   * component.setAttributes({ id: 'test', 'data-key': 'value' });
    */
   setAttributes: function setAttributes(attrs) {
     attrs = _extends({}, attrs);
@@ -31620,19 +31750,30 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
     delete attrs.style;
 
     this.set('attributes', attrs);
+
+    return this;
   },
 
 
   /**
-   * Add attributes to the model
+   * Add attributes to the component
    * @param {Object} attrs Key value attributes
+   * @return {this}
    * @example
-   * model.addAttributes({id: 'test'});
+   * component.addAttributes({ 'data-key': 'value' });
    */
   addAttributes: function addAttributes(attrs) {
     var newAttrs = _extends({}, this.getAttributes(), attrs);
     this.setAttributes(newAttrs);
+
+    return this;
   },
+
+
+  /**
+   * Get the style of the component
+   * @return {Object}
+   */
   getStyle: function getStyle() {
     var em = this.em;
 
@@ -31649,6 +31790,15 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
 
     return _Styleable2.default.getStyle.call(this);
   },
+
+
+  /**
+   * Set the style on the component
+   * @param {Object} prop Key value style object
+   * @return {Object}
+   * @example
+   * component.setStyle({ color: 'red' });
+   */
   setStyle: function setStyle() {
     var _this3 = this;
 
@@ -31678,7 +31828,7 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
 
 
   /**
-   * Return attributes
+   * Return all component's attributes
    * @return {Object}
    */
   getAttributes: function getAttributes() {
@@ -31718,7 +31868,7 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
 
   /**
    * Add classes
-   * @param {Array|string} classes Array or string of classes
+   * @param {Array<String>|String} classes Array or string of classes
    * @return {Array} Array of added selectors
    * @example
    * model.addClass('class1');
@@ -31734,7 +31884,7 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
 
   /**
    * Set classes (resets current collection)
-   * @param {Array|string} classes Array or string of classes
+   * @param {Array<String>|String} classes Array or string of classes
    * @return {Array} Array of added selectors
    * @example
    * model.setClass('class1');
@@ -31750,7 +31900,7 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
 
   /**
    * Remove classes
-   * @param {Array|string} classes Array or string of classes
+   * @param {Array<String>|String} classes Array or string of classes
    * @return {Array} Array of removed selectors
    * @example
    * model.removeClass('class1');
@@ -31788,27 +31938,22 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
     this.set('components', comps);
     return this;
   },
-
-
-  /**
-   * Initialize callback
-   */
   init: function init() {},
 
 
   /**
    * Add new component children
-   * @param  {Component|string} components Component to add
+   * @param  {Component|String} components Component to add
    * @param {Object} [opts={}] Options, same as in `model.add()`(from backbone)
    * @return {Array} Array of appended components
    * @example
-   * someModel.get('components').length // -> 0
-   * const videoComponent = someModel.append('<video></video><div></div>')[0];
-   * // This will add 2 components (`video` and `div`) to your `someModel`
-   * someModel.get('components').length // -> 2
+   * someComponent.get('components').length // -> 0
+   * const videoComponent = someComponent.append('<video></video><div></div>')[0];
+   * // This will add 2 components (`video` and `div`) to your `someComponent`
+   * someComponent.get('components').length // -> 2
    * // You can pass components directly
-   * otherModel.append(otherModel2);
-   * otherModel.append([otherModel3, otherModel4]);
+   * otherComponent.append(otherComponent2);
+   * otherComponent.append([otherComponent3, otherComponent4]);
    */
   append: function append(components) {
     var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -31821,13 +31966,15 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
   /**
    * Set new collection if `components` are provided, otherwise the
    * current collection is returned
-   * @param  {Component|string} [components] Components to set
-   * @return {Collection|undefined}
+   * @param  {Component|String} [components] Components to set
+   * @return {Collection|Array<Component>}
    * @example
-   * // Get current collection
-   * const collection = model.components();
    * // Set new collection
-   * model.components('<span></span><div></div>');
+   * component.components('<span></span><div></div>');
+   * // Get current collection
+   * const collection = component.components();
+   * console.log(collection.length);
+   * // -> 2
    */
   components: function components(_components) {
     var coll = this.get('components');
@@ -31836,14 +31983,17 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
       return coll;
     } else {
       coll.reset();
-      _components && this.append(_components);
+      return _components && this.append(_components);
     }
   },
 
 
   /**
-   * Get parent model
+   * Get the parent component, if exists
    * @return {Component}
+   * @example
+   * component.parent();
+   * // -> Component
    */
   parent: function parent() {
     var coll = this.collection;
@@ -31853,6 +32003,7 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
 
   /**
    * Script updated
+   * @private
    */
   scriptUpdated: function scriptUpdated() {
     this.set('scriptUpdated', 1);
@@ -31861,6 +32012,7 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
 
   /**
    * Once traits are updated I have to populates model's attributes
+   * @private
    */
   traitsUpdated: function traitsUpdated() {
     var found = 0;
@@ -31889,6 +32041,7 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
 
   /**
    * Init toolbar
+   * @private
    */
   initToolbar: function initToolbar() {
     var model = this;
@@ -31937,6 +32090,9 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
     traits = traits || this.get('traits');
 
     if (traits.length) {
+      traits.forEach(function (tr) {
+        return tr.attributes && delete tr.attributes.value;
+      });
       trt.add(traits);
     }
 
@@ -32011,7 +32167,7 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
 
   /**
    * Get the name of the component
-   * @return {string}
+   * @return {String}
    * */
   getName: function getName() {
     var customName = this.get('name') || this.get('custom-name');
@@ -32025,7 +32181,7 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
 
   /**
    * Get the icon string
-   * @return {string}
+   * @return {String}
    */
   getIcon: function getIcon() {
     var icon = this.get('icon');
@@ -32035,9 +32191,31 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
 
   /**
    * Return HTML string of the component
-   * @param {Object} opts Options
-   * @return {string} HTML string
-   * @private
+   * @param {Object} [opts={}] Options
+   * @param {Object|Function} [opts.attributes=null] You can pass an object of custom attributes to replace
+   * with the current one or you can even pass a function to generate attributes dynamically
+   * @return {String} HTML string
+   * @example
+   * // Simple HTML return
+   * component.set({ tagName: 'span' });
+   * component.setAttributes({ title: 'Hello' });
+   * component.toHTML();
+   * // -> <span title="Hello"></span>
+   *
+   * // Custom attributes
+   * component.toHTML({ attributes: { 'data-test': 'Hello' } });
+   * // -> <span data-test="Hello"></span>
+   *
+   * // Custom dynamic attributes
+   * component.toHTML({
+   *  attributes(component, attributes) {
+   *    if (component.get('tagName') == 'span') {
+   *      attributes.title = 'Custom attribute';
+   *    }
+   *    return attributes;
+   *  },
+   * });
+   * // -> <span title="Custom attribute"></span>
    */
   toHTML: function toHTML() {
     var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -32142,8 +32320,8 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
 
 
   /**
-   * Return model id
-   * @return {string}
+   * Return the component id
+   * @return {String}
    */
   getId: function getId() {
     var attrs = this.get('attributes') || {};
@@ -32152,9 +32330,9 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
 
 
   /**
-   * Return model id
+   * Set new id on the component
    * @param {String} id
-   * @return {self}
+   * @return {this}
    */
   setId: function setId(id) {
     var attrs = _extends({}, this.get('attributes'));
@@ -32165,8 +32343,8 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
 
 
   /**
-   * Get the DOM element of the model. This works only of the
-   * model is alredy rendered
+   * Get the DOM element of the component. This works only of the
+   * component is already rendered
    * @return {HTMLElement}
    */
   getEl: function getEl() {
@@ -32218,9 +32396,13 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
 
 
   /**
-   * Execute callback function on all components
+   * Execute callback function on itself and all inner components
    * @param  {Function} clb Callback function, the model is passed as an argument
-   * @return {self}
+   * @return {this}
+   * @example
+   * component.onAll(component => {
+   *  // do something with component
+   * })
    */
   onAll: function onAll(clb) {
     if ((0, _underscore.isFunction)(clb)) {
@@ -32236,7 +32418,8 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
   /**
    * Reset id of the component and any of its style rule
    * @param {Object} [opts={}] Options
-   * @return {self}
+   * @return {this}
+   * @private
    */
   resetId: function resetId() {
     var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -32270,6 +32453,7 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
    * store and load them back, you might hit collisions with new components
    * @param  {Model} model
    * @return {string}
+   * @private
    */
   createId: function createId(model) {
     componentIndex++;
@@ -33066,6 +33250,7 @@ module.exports = Component.extend({
     ytncUrl: 'https://www.youtube-nocookie.com/embed/',
     viUrl: 'https://player.vimeo.com/video/',
     loop: 0,
+    poster: '',
     muted: 0,
     autoplay: 0,
     controls: 1,
@@ -33231,6 +33416,11 @@ module.exports = Component.extend({
       label: 'Source',
       name: 'src',
       placeholder: 'eg. ./media/video.mp4',
+      changeProp: 1
+    }, {
+      label: 'Poster',
+      name: 'poster',
+      placeholder: 'eg. ./media/image.jpg',
       changeProp: 1
     }, this.getAutoplayTrait(), this.getLoopTrait(), this.getControlsTrait()];
   },
@@ -34089,7 +34279,7 @@ module.exports = ComponentView.extend({
   initialize: function initialize(o) {
     OComponentView.prototype.initialize.apply(this, arguments);
     this.listenTo(this.model, 'change:src', this.updateSrc);
-    this.listenTo(this.model, 'change:loop change:autoplay change:controls change:color change:rel change:modestbranding', this.updateVideo);
+    this.listenTo(this.model, 'change:loop change:autoplay change:controls change:color change:rel change:modestbranding change:poster', this.updateVideo);
     this.listenTo(this.model, 'change:provider', this.updateProvider);
   },
 
@@ -34145,6 +34335,7 @@ module.exports = ComponentView.extend({
         videoEl.loop = md.get('loop');
         videoEl.autoplay = md.get('autoplay');
         videoEl.controls = md.get('controls');
+        videoEl.poster = md.get('poster');
     }
   },
   renderByProvider: function renderByProvider(prov) {
@@ -36385,11 +36576,7 @@ module.exports = function (config) {
     runCommand: function runCommand(id) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-      var result = void 0;
-      var command = em.get('Commands').get(id);
-      if (command) result = command.callRun(this, options);
-
-      return result;
+      return em.get('Commands').run(id, options);
     },
 
 
@@ -36404,11 +36591,7 @@ module.exports = function (config) {
     stopCommand: function stopCommand(id) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-      var result = void 0;
-      var command = em.get('Commands').get(id);
-      if (command) result = command.callStop(this, options);
-
-      return result;
+      return em.get('Commands').stop(id, options);
     },
 
 
@@ -37501,7 +37684,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.14.25',
+    version: '0.14.27',
 
     /**
      * Initializes an editor based on passed options
@@ -37530,9 +37713,18 @@ module.exports = function () {
       // Load plugins
       config.plugins.forEach(function (pluginId) {
         var plugin = plugins.get(pluginId);
+        var plgOptions = config.pluginsOpts[pluginId] || {};
+
+        // Try to search in global context
+        if (!plugin) {
+          var wplg = window[pluginId];
+          plugin = wplg && wplg.defaults ? wplg.defaults : wplg;
+        }
 
         if (plugin) {
-          plugin(editor, config.pluginsOpts[pluginId] || {});
+          plugin(editor, plgOptions);
+        } else if ((0, _underscore.isFunction)(pluginId)) {
+          pluginId(editor, plgOptions);
         } else {
           console.warn('Plugin ' + pluginId + ' not found');
         }
@@ -38401,7 +38593,7 @@ module.exports = _backbone2.default.View.extend({
     var model = this.model;
     var components = model.get('components');
     model.set('open', false);
-    this.listenTo(components, 'remove add change reset', this.checkChildren);
+    this.listenTo(components, 'remove add reset', this.checkChildren);
     this.listenTo(model, 'change:status', this.updateStatus);
     this.listenTo(model, 'change:open', this.updateOpening);
     this.listenTo(model, 'change:style:display', this.updateVisibility);
@@ -38625,7 +38817,7 @@ module.exports = _backbone2.default.View.extend({
    * */
   checkChildren: function checkChildren() {
     var model = this.model;
-    var c = this.countChildren(model);
+    var count = this.countChildren(model);
     var pfx = this.pfx;
     var noChildCls = this.clsNoChild;
     var title = this.$el.children('.' + this.clsTitleC).children('.' + this.clsTitle);
@@ -38634,9 +38826,9 @@ module.exports = _backbone2.default.View.extend({
       this.cnt = this.$el.children('.' + this.clsCount);
     }
 
-    if (c) {
+    if (count) {
       title.removeClass(noChildCls);
-      this.cnt.html(c);
+      this.cnt.html(count);
     } else {
       title.addClass(noChildCls);
       this.cnt.empty();
@@ -39523,20 +39715,14 @@ module.exports = _backbone2.default.View.extend({
     if (model.get('active')) {
       model.collection.deactivateAll(context);
       model.set('active', true, { silent: true }).trigger('checkActive');
-
-      if (command.run) {
-        command.callRun(editor, _extends({}, options, { sender: model }));
-      }
+      commands.runCommand(command, _extends({}, options, { sender: model }));
 
       // Disable button if the command was just a function
       cmdIsFunc && model.set('active', false);
     } else {
       this.$el.removeClass(this.activeCls);
       model.collection.deactivateAll(context);
-
-      if (command.stop) {
-        command.callStop(editor, _extends({}, options, { sender: model }));
-      }
+      commands.stopCommand(command, _extends({}, options, { sender: model }));
     }
   },
   updateDisable: function updateDisable() {
@@ -45649,7 +45835,7 @@ module.exports = Property.extend({
     this.elementUpdated();
   },
   setValue: function setValue(value) {
-    this.getSliderEl().value = value;
+    this.getSliderEl().value = parseInt(value, 10);
     this.inputInst.setValue(value, { silent: 1 });
   },
   onRender: function onRender() {
@@ -47718,7 +47904,7 @@ module.exports = function () {
      * um.undo();
      */
     undo: function undo() {
-      if (!em.get('Canvas').isInputFocused()) um.undo(1);
+      !em.isEditing() && um.undo(1);
       return this;
     },
 
@@ -47742,7 +47928,7 @@ module.exports = function () {
      * um.redo();
      */
     redo: function redo() {
-      if (!em.get('Canvas').isInputFocused()) um.redo(1);
+      !em.isEditing() && um.redo(1);
       return this;
     },
 
@@ -51566,6 +51752,7 @@ module.exports = _backbone2.default.View.extend({
     var target = this.target;
     var targetModel = this.getTargetModel(target);
     this.selectTargetModel(targetModel);
+    if (!targetModel) plh.style.display = 'none';
 
     this.lastDims = dims;
     var pos = this.findPosition(dims, rX, rY);
