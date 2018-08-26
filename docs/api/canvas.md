@@ -15,7 +15,7 @@ const editor = grapesjs.init({
 Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
 
 ```js
-const blockManager = editor.Canvas;
+const canvas = editor.Canvas;
 ```
 
 -   [getConfig][2]
