@@ -47,3 +47,10 @@ You can download GrapesJS from one of this sources
   * `npm i grapesjs`
 * git
   * `git clone https://github.com/artf/grapesjs.git`
+
+
+
+
+## Changelog
+
+To track changes made in the library we rely on [Github Releases](https://github.com/artf/grapesjs/releases)

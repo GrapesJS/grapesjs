@@ -10,14 +10,46 @@ Creating plugins in GrapesJS is pretty straightforward and here you'll get how t
 
 ## Basic plugin
 
-Generally, you would make plugins in separated files to keep thing cleaner, so you'll probably get a similar structure:
+The most simple plugins are just functions that are run when the editor is being built.
+
+```js
+  function myPlugin(editor){
+      editor.BlockManager.add('my-first-block', {
+        label: 'Simple block',
+        content: '<div class="my-block">This is a simple block</div>',
+      });
+  }
+
+  var editor = grapesjs.init({
+      container : '#gjs',
+      plugins: [myPlugin]
+  });
+```
+
+This means that plugins can be moved to separate folders to keep thing cleaner or imported from NPM.
+
+```js
+  import myPlugin from './plugins/myPlugin'
+  import npmPackage from '@npm/package'
+
+  var editor = grapesjs.init({
+      container : '#gjs',
+      plugins: [myPlugin, npmPackage]
+  });
+```
+
+
+
+## Named plugin
+
+If you're distributing your plugin globally, you may want to make a named plugin. To keep thing cleaner, so you'll probably get a similar structure:
 
 ```
 /your/path/to/grapesjs.min.js
 /your/path/to/grapesjs-plugin.js
 ```
 
-The order is important as before loading your plugin, GrapesJS have to be loaded first.
+**Important:** The order that you load files matters. GrapesJS has to be loaded before the plugin. This sets up the `grapejs` global variable.
 
 So, in your `grapesjs-plugin.js` file:
 
@@ -58,10 +90,9 @@ Here is a complete generic example:
 
 ## Plugins with options
 
-It's also possible to pass custom parameters to plugins in the way to make them more flexible.
+It's also possible to pass custom parameters to plugins in to make them more flexible.
 
-```html
-<script type="text/javascript">
+```js
   var editor = grapesjs.init({
       container : '#gjs',
       plugins: ['my-plugin-name'],
@@ -71,7 +102,6 @@ It's also possible to pass custom parameters to plugins in the way to make them 
         }
       }
   });
-</script>
 ```
 
 Inside you plugin you'll get those options via `options` argument
@@ -83,10 +113,39 @@ export default grapesjs.plugins.add('my-plugin-name', (editor, options) => {
 })
 ```
 
+This also works with plugins that aren't named.
+
+```js
+  import myPlugin from '../plugin'
+
+  var editor = grapesjs.init({
+      container : '#gjs',
+      plugins: [myPlugin],
+      pluginsOpts: {
+        [myPlugin]: {
+          customField: 'customValue'
+        }
+      }
+  });
+```
 
 
+## Named Plugins vs Non-Named Plugins
 
+When you use a named plugin, then that name must be unique across all other plugins.
+
+```js
+grapesjs.plugins.add('my-plugin-name', fn);
+```
+
+In this example, the plugin name is `my-plugin-name` and can't be used by other plugins. To avoid namespace restrictions use basic plugins that are purely functional.
 
 ## Boilerplate
 
-If you want to start with a production-ready boilerplate, you might want to try  [grapesjs-plugin-boilerplate](https://github.com/artf/grapesjs-plugin-boilerplate) which you can clone and start developing a plugin immediately. For more informations check the repository
+If you want to start with a production-ready boilerplate for a named plugin, you might want to try  [grapesjs-plugin-boilerplate](https://github.com/artf/grapesjs-plugin-boilerplate) which you can clone and start developing a named plugin immediately. For more informations check the repository
+
+
+## Popular Plugins
+
+ - https://github.com/artf/grapesjs-preset-webpage
+ - https://github.com/artf/grapesjs-preset-newsletter

@@ -1,6 +1,6 @@
 import $ from 'cash-dom';
 import Editor from './editor';
-import { isElement } from 'underscore';
+import { isElement, isFunction } from 'underscore';
 import polyfills from 'utils/polyfills';
 import PluginManager from './plugin_manager';
 
@@ -54,10 +54,19 @@ module.exports = (() => {
 
       // Load plugins
       config.plugins.forEach(pluginId => {
-        const plugin = plugins.get(pluginId);
+        let plugin = plugins.get(pluginId);
+        const plgOptions = config.pluginsOpts[pluginId] || {};
+
+        // Try to search in global context
+        if (!plugin) {
+          const wplg = window[pluginId];
+          plugin = wplg && wplg.defaults ? wplg.defaults : wplg;
+        }
 
         if (plugin) {
-          plugin(editor, config.pluginsOpts[pluginId] || {});
+          plugin(editor, plgOptions);
+        } else if (isFunction(pluginId)) {
+          pluginId(editor, plgOptions);
         } else {
           console.warn(`Plugin ${pluginId} not found`);
         }

@@ -1,3 +1,33 @@
+/**
+ * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/canvas/config/config.js)
+ * ```js
+ * const editor = grapesjs.init({
+ *  canvas: {
+ *    // options
+ *  }
+ * })
+ * ```
+ *
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ *
+ * ```js
+ * const canvas = editor.Canvas;
+ * ```
+ *
+ * * [getConfig](#getconfig)
+ * * [getElement](#getelement)
+ * * [getFrameEl](#getframeel)
+ * * [getWindow](#getwindow)
+ * * [getDocument](#getdocument)
+ * * [getBody](#getbody)
+ * * [getWrapperEl](#getwrapperel)
+ * * [setCustomBadgeLabel](#setcustombadgelabel)
+ * * [hasFocus](#hasfocus)
+ * * [scrollTo](#scrollto)
+ *
+ * @module Canvas
+ */
+
 import { on, off, hasDnd, getElement } from 'utils/mixins';
 import Droppable from 'utils/Droppable';
 
@@ -28,6 +58,7 @@ module.exports = () => {
     /**
      * Initialize module. Automatically called with a new instance of the editor
      * @param {Object} config Configurations
+     * @private
      */
     init(config) {
       c = config || {};
@@ -54,7 +85,7 @@ module.exports = () => {
     },
 
     /**
-     * Return config object
+     * Get the configuration object
      * @return {Object}
      */
     getConfig() {
@@ -64,14 +95,14 @@ module.exports = () => {
     /**
      * Add wrapper
      * @param	{Object}	wrp Wrapper
-     *
+     * @private
      * */
     setWrapper(wrp) {
       canvas.set('wrapper', wrp);
     },
 
     /**
-     * Returns canvas element
+     * Get the canvas element
      * @return {HTMLElement}
      */
     getElement() {
@@ -79,39 +110,39 @@ module.exports = () => {
     },
 
     /**
-     * Returns frame element of the canvas
-     * @return {HTMLElement}
+     * Get the iframe element of the canvas
+     * @return {HTMLIFrameElement}
      */
     getFrameEl() {
       return CanvasView.frame.el;
     },
 
     /**
-     * Returns the frame document
-     * @return {HTMLElement}
-     */
-    getDocument() {
-      return this.getFrameEl().contentDocument;
-    },
-
-    /**
-     * Returns the frame's window
-     * @return {HTMLElement}
+     * Get the window instance of the iframe element
+     * @return {Window}
      */
     getWindow() {
       return this.getFrameEl().contentWindow;
     },
 
     /**
-     * Returns body element of the frame
-     * @return {HTMLElement}
+     * Get the document of the iframe element
+     * @return {HTMLDocument}
      */
-    getBody() {
-      return CanvasView.frame.el.contentDocument.body;
+    getDocument() {
+      return this.getFrameEl().contentDocument;
     },
 
     /**
-     * Returns body wrapper element of the frame
+     * Get the body of the iframe element
+     * @return {HTMLBodyElement}
+     */
+    getBody() {
+      return this.getDocument().body;
+    },
+
+    /**
+     * Get the wrapper element containing all the components
      * @return {HTMLElement}
      */
     getWrapperEl() {
@@ -121,6 +152,7 @@ module.exports = () => {
     /**
      * Returns element containing all canvas tools
      * @return {HTMLElement}
+     * @private
      */
     getToolsEl() {
       return CanvasView.toolsEl;
@@ -129,6 +161,7 @@ module.exports = () => {
     /**
      * Returns highlighter element
      * @return {HTMLElement}
+     * @private
      */
     getHighlighter() {
       return CanvasView.hlEl;
@@ -137,6 +170,7 @@ module.exports = () => {
     /**
      * Returns badge element
      * @return {HTMLElement}
+     * @private
      */
     getBadgeEl() {
       return CanvasView.badgeEl;
@@ -145,6 +179,7 @@ module.exports = () => {
     /**
      * Returns placer element
      * @return {HTMLElement}
+     * @private
      */
     getPlacerEl() {
       return CanvasView.placerEl;
@@ -162,6 +197,7 @@ module.exports = () => {
     /**
      * Returns toolbar element
      * @return {HTMLElement}
+     * @private
      */
     getToolbarEl() {
       return CanvasView.toolbarEl;
@@ -170,6 +206,7 @@ module.exports = () => {
     /**
      * Returns resizer element
      * @return {HTMLElement}
+     * @private
      */
     getResizerEl() {
       return CanvasView.resizerEl;
@@ -178,6 +215,7 @@ module.exports = () => {
     /**
      * Returns offset viewer element
      * @return {HTMLElement}
+     * @private
      */
     getOffsetViewerEl() {
       return CanvasView.offsetEl;
@@ -186,6 +224,7 @@ module.exports = () => {
     /**
      * Returns fixed offset viewer element
      * @return {HTMLElement}
+     * @private
      */
     getFixedOffsetViewerEl() {
       return CanvasView.fixedOffsetEl;
@@ -193,6 +232,7 @@ module.exports = () => {
 
     /**
      * Render canvas
+     * @private
      * */
     render() {
       return CanvasView.render().el;
@@ -213,7 +253,7 @@ module.exports = () => {
     },
 
     /**
-     * Get the offset of the element
+     * Get the offset of the passed component element
      * @param  {HTMLElement} el
      * @return {Object}
      * @private
@@ -226,8 +266,8 @@ module.exports = () => {
      * Set custom badge naming strategy
      * @param  {Function} f
      * @example
-     * canvas.setCustomBadgeLabel(function(model){
-     *  return ComponentModel.getName();
+     * canvas.setCustomBadgeLabel(function(component){
+     *  return component.getName();
      * });
      */
     setCustomBadgeLabel(f) {
@@ -238,6 +278,7 @@ module.exports = () => {
      * Get element position relative to the canvas
      * @param {HTMLElement} el
      * @return {Object}
+     * @private
      */
     getElementPos(el, opts) {
       return CanvasView.getElementPos(el, opts);
@@ -257,6 +298,7 @@ module.exports = () => {
      * @param {Object} options Custom options
      * @param {Boolean} options.toRight Set to true if you want the toolbar attached to the right
      * @return {Object}
+     * @private
      */
     getTargetToElementDim(target, element, options) {
       var opts = options || {};
@@ -305,6 +347,7 @@ module.exports = () => {
      * canvas area, which is in the iframe
      * @param {Event} e
      * @return {Object}
+     * @private
      */
     getMouseRelativePos(e, options) {
       var opts = options || {};
@@ -333,6 +376,7 @@ module.exports = () => {
      * X and Y mouse position relative to the canvas
      * @param {Event} e
      * @return {Object}
+     * @private
      */
     getMouseRelativeCanvas(e, options) {
       var opts = options || {};
@@ -359,26 +403,31 @@ module.exports = () => {
 
     /**
      * Detects if some input is focused (input elements, text components, etc.)
-     * Used internally, for example, to avoid undo/redo in text editing mode
      * @return {Boolean}
+     * @private
      */
     isInputFocused() {
-      return this.getFrameEl().contentDocument.activeElement.tagName !== 'BODY';
+      let contentDocument = this.getFrameEl().contentDocument;
+      return (
+        contentDocument.activeElement &&
+        contentDocument.activeElement.tagName !== 'BODY'
+      );
     },
 
     /**
      * Scroll canvas to the element if it's not visible. The scrolling is
      * executed via `scrollIntoView` API and options of this method are
-     * passed to it. For instance, you can scroll smoothly  with
-     * `{ behavior: 'smooth' }`. You can also force the scroll
+     * passed to it. For instance, you can scroll smoothly by using
+     * `{ behavior: 'smooth' }`.
      * @param  {HTMLElement|Component} el
      * @param  {Object} [opts={}] Options, same as options for `scrollIntoView`
+     * @param  {Boolean} [opts.force=false] Force the scroll, even if the element is already visible
      * @example
      * const selected = editor.getSelected();
      * // Scroll smoothly (this behavior can be polyfilled)
-     * cv.scrollTo(selected, { behavior: 'smooth' });
+     * canvas.scrollTo(selected, { behavior: 'smooth' });
      * // Force the scroll, even if the element is alredy visible
-     * cv.scrollTo(selected, { force: true });
+     * canvas.scrollTo(selected, { force: true });
      */
     scrollTo(el, opts = {}) {
       const elem = getElement(el);
@@ -391,6 +440,7 @@ module.exports = () => {
 
     /**
      * Start autoscroll
+     * @private
      */
     startAutoscroll() {
       this.dragging = 1;
@@ -405,6 +455,9 @@ module.exports = () => {
       }, 0);
     },
 
+    /**
+     * @private
+     */
     autoscroll(e) {
       e.preventDefault();
       if (this.dragging) {
@@ -430,6 +483,7 @@ module.exports = () => {
 
     /**
      * Stop autoscroll
+     * @private
      */
     stopAutoscroll() {
       this.dragging = 0;
@@ -450,6 +504,7 @@ module.exports = () => {
      * Returns wrapper element
      * @return {HTMLElement}
      * ????
+     * @private
      */
     getFrameWrapperEl() {
       return CanvasView.frame.getWrapper();

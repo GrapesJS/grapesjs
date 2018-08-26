@@ -1,33 +1,27 @@
 module.exports = {
   stylePrefix: 'cv-',
 
-  // Coming soon
-  rulers: false,
-
   /*
-   * Append external scripts in head of the iframe before renderBody content
-   * In this case, you have to add them manually later in the final HTML page
+   * Append external scripts to the `<head>` of the iframe.
+   * Be aware that these scripts will not be printed in the export code
    * @example
-   * scripts: [
-   *  'https://...',
-   * ]
+   * scripts: [ 'https://...1.js', 'https://...2.js' ]
   */
   scripts: [],
 
   /*
-   * Append external styles. This styles won't be added to the final HTML/CSS
+   * Append external styles to the `<head>` of the iframe
+   * Be aware that these styles will not be printed in the export code
    * @example
-   * styles: [
-   *  'https://...',
-   * ]
+   * styles: [ 'https://...1.css', 'https://...2.css' ]
   */
   styles: [],
 
   /**
    * Add custom badge naming strategy
    * @example
-   * customBadgeLabel: function(ComponentModel) {
-   *  return ComponentModel.getName();
+   * customBadgeLabel: function(component) {
+   *  return component.getName();
    * }
    */
   customBadgeLabel: ''

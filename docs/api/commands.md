@@ -20,7 +20,12 @@ const commands = editor.Commands;
 
 -   [add][2]
 -   [get][3]
--   [has][4]
+-   [getAll][4]
+-   [has][5]
+-   [run][6]
+-   [stop][7]
+-   [isActive][8]
+-   [getActive][9]
 
 ## add
 
@@ -28,8 +33,8 @@ Add new command to the collection
 
 ### Parameters
 
--   `id` **[string][5]** Command's ID
--   `command` **([Object][6] \| [Function][7])** Object representing your command,
+-   `id` **[string][10]** Command's ID
+-   `command` **([Object][11] \| [Function][12])** Object representing your command,
      By passing just a function it's intended as a stateless command
      (just like passing an object with only `run` method).
 
@@ -55,7 +60,7 @@ Get command by ID
 
 ### Parameters
 
--   `id` **[string][5]** Command's ID
+-   `id` **[string][10]** Command's ID
 
 ### Examples
 
@@ -64,7 +69,7 @@ var myCommand = commands.get('myCommand');
 myCommand.run();
 ```
 
-Returns **[Object][6]** Object representing the command
+Returns **[Object][11]** Object representing the command
 
 ## has
 
@@ -72,9 +77,86 @@ Check if command exists
 
 ### Parameters
 
--   `id` **[string][5]** Command's ID
+-   `id` **[string][10]** Command's ID
 
-Returns **[Boolean][8]** 
+Returns **[Boolean][13]** 
+
+## getAll
+
+Get an object containing all the commands
+
+Returns **[Object][11]** 
+
+## run
+
+Execute the command
+
+### Parameters
+
+-   `id` **[String][10]** Command ID
+-   `options` **[Object][11]** Options (optional, default `{}`)
+
+### Examples
+
+```javascript
+commands.run('myCommand', { someOption: 1 });
+```
+
+Returns **any** The return is defined by the command
+
+## stop
+
+Stop the command
+
+### Parameters
+
+-   `id` **[String][10]** Command ID
+-   `options` **[Object][11]** Options (optional, default `{}`)
+
+### Examples
+
+```javascript
+commands.stop('myCommand', { someOption: 1 });
+```
+
+Returns **any** The return is defined by the command
+
+## isActive
+
+Check if the command is active. You activate commands with `run`
+and disable them with `stop`. If the command was created without `stop`
+method it can't be registered as active
+
+### Parameters
+
+-   `id` **[String][10]** Command id
+
+### Examples
+
+```javascript
+const cId = 'some-command';
+commands.run(cId);
+commands.isActive(cId);
+// -> true
+commands.stop(cId);
+commands.isActive(cId);
+// -> false
+```
+
+Returns **[Boolean][13]** 
+
+## getActive
+
+Get all active commands
+
+### Examples
+
+```javascript
+console.log(commands.getActive());
+// -> { someCommand: itsLastReturn, anotherOne: ... };
+```
+
+Returns **[Object][11]** 
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/commands/config/config.js
 
@@ -82,12 +164,22 @@ Returns **[Boolean][8]**
 
 [3]: #get
 
-[4]: #has
+[4]: #getall
 
-[5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[5]: #has
 
-[6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[6]: #run
 
-[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+[7]: #stop
 
-[8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[8]: #isactive
+
+[9]: #getactive
+
+[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+
+[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+
+[13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean

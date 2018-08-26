@@ -107,6 +107,7 @@ module.exports = Backbone.View.extend({
       const input = $(`<input type="${type}" placeholder="${plh}">`);
 
       if (value) {
+        md.set({ value }, { silent: true });
         input.prop('value', value);
       }
 

@@ -385,6 +385,7 @@ module.exports = Backbone.View.extend({
     const target = this.target;
     const targetModel = this.getTargetModel(target);
     this.selectTargetModel(targetModel);
+    if (!targetModel) plh.style.display = 'none';
 
     this.lastDims = dims;
     var pos = this.findPosition(dims, rX, rY);

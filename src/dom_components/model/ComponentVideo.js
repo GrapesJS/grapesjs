@@ -17,6 +17,7 @@ module.exports = Component.extend(
       ytncUrl: 'https://www.youtube-nocookie.com/embed/',
       viUrl: 'https://player.vimeo.com/video/',
       loop: 0,
+      poster: '',
       muted: 0,
       autoplay: 0,
       controls: 1,
@@ -176,6 +177,12 @@ module.exports = Component.extend(
           label: 'Source',
           name: 'src',
           placeholder: 'eg. ./media/video.mp4',
+          changeProp: 1
+        },
+        {
+          label: 'Poster',
+          name: 'poster',
+          placeholder: 'eg. ./media/image.jpg',
           changeProp: 1
         },
         this.getAutoplayTrait(),

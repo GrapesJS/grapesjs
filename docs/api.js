@@ -10,6 +10,7 @@ const cmds = [
   ['block_manager/index.js', 'block_manager.md'],
   ['commands/index.js', 'commands.md'],
   ['dom_components/index.js', 'components.md'],
+  ['dom_components/model/Component.js', 'component.md'],
   ['panels/index.js', 'panels.md'],
   ['style_manager/index.js', 'style_manager.md'],
   ['storage_manager/index.js', 'storage_manager.md'],
@@ -20,6 +21,7 @@ const cmds = [
   ['rich_text_editor/index.js', 'rich_text_editor.md'],
   ['keymaps/index.js', 'keymaps.md'],
   ['undo_manager/index.js', 'undo_manager.md'],
+  ['canvas/index.js', 'canvas.md'],
 ].map(entry =>
   `${binRoot}documentation build ${srcRoot}/${entry[0]} -o ${docRoot}/api/${entry[1]} -f md --shallow --markdown-toc false`)
 .join(' && ');

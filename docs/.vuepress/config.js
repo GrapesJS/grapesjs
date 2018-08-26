@@ -58,10 +58,12 @@ module.exports = {
       '/api/': [
         '',
         ['/api/editor', 'Editor'],
+        ['/api/canvas', 'Canvas'],
         ['/api/assets', 'Asset Manager'],
         ['/api/block_manager', 'Block Manager'],
         ['/api/commands', 'Commands'],
         ['/api/components', 'DOM Components'],
+        ['/api/component', ' - Component'],
         ['/api/panels', 'Panels'],
         ['/api/style_manager', 'Style Manager'],
         ['/api/storage_manager', 'Storage Manager'],
@@ -87,7 +89,7 @@ module.exports = {
             ['/modules/Components-js', 'Components & JS'],
             ['/modules/Traits', 'Trait Manager'],
             ['/modules/Style-manager', 'Style Manager'],
-            ['/modules/Storage', 'Storag Manager'],
+            ['/modules/Storage', 'Storage Manager'],
             ['/modules/Plugins', 'Plugins'],
           ]
         }, {

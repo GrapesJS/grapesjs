@@ -70,7 +70,6 @@ module.exports = {
     // Adjust tools scroll top
     if (!this.adjScroll) {
       this.adjScroll = 1;
-      this.onFrameScroll(e);
       this.updateAttached();
     }
 
@@ -481,7 +480,9 @@ module.exports = {
 
       this.toolbar.reset(toolbar);
       const view = model.view;
-      view && this.updateToolbarPos(view.el);
+      toolbarStyle.top = '-100px';
+      toolbarStyle.left = 0;
+      setTimeout(() => view && this.updateToolbarPos(view.el), 0);
     } else {
       toolbarStyle.display = 'none';
     }
@@ -496,8 +497,7 @@ module.exports = {
     var unit = 'px';
     var toolbarEl = this.canvas.getToolbarEl();
     var toolbarStyle = toolbarEl.style;
-    const origDisp = toolbarStyle.display;
-    toolbarStyle.display = 'block';
+    toolbarStyle.opacity = 0;
     var pos = this.canvas.getTargetToElementDim(toolbarEl, el, {
       elPos,
       event: 'toolbarPosUpdate'
@@ -506,7 +506,7 @@ module.exports = {
       var leftPos = pos.left + pos.elementWidth - pos.targetWidth;
       toolbarStyle.top = pos.top + unit;
       toolbarStyle.left = (leftPos < 0 ? 0 : leftPos) + unit;
-      toolbarStyle.display = origDisp;
+      toolbarStyle.opacity = '';
     }
   },
 
@@ -554,7 +554,6 @@ module.exports = {
 
   /**
    * Update attached elements, eg. component toolbar
-   * @return {[type]} [description]
    */
   updateAttached(updated) {
     const model = this.em.getSelected();

@@ -88,20 +88,14 @@ module.exports = Backbone.View.extend({
     if (model.get('active')) {
       model.collection.deactivateAll(context);
       model.set('active', true, { silent: true }).trigger('checkActive');
-
-      if (command.run) {
-        command.callRun(editor, { ...options, sender: model });
-      }
+      commands.runCommand(command, { ...options, sender: model });
 
       // Disable button if the command was just a function
       cmdIsFunc && model.set('active', false);
     } else {
       this.$el.removeClass(this.activeCls);
       model.collection.deactivateAll(context);
-
-      if (command.stop) {
-        command.callStop(editor, { ...options, sender: model });
-      }
+      commands.stopCommand(command, { ...options, sender: model });
     }
   },
 
