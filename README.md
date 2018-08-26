@@ -191,6 +191,7 @@ $ npm test
 * [grapesjs-blocks-flexbox](https://github.com/artf/grapesjs-blocks-flexbox) - Add the flexbox block
 * [grapesjs-lory-slider](https://github.com/artf/grapesjs-lory-slider) - Slider component by using [lory](https://github.com/meandmax/lory)
 * [grapesjs-tabs](https://github.com/artf/grapesjs-tabs) - Simple tabs component
+* [grapesjs-custom-code](https://github.com/artf/grapesjs-custom-code) - Embed custom code
 * [grapesjs-indexeddb](https://github.com/artf/grapesjs-indexeddb) - Storage wrapper for IndexedDB
 * [grapesjs-firestore](https://github.com/artf/grapesjs-firestore) - Storage wrapper for [Cloud Firestore](https://firebase.google.com/docs/firestore)
 
