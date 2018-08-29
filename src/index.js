@@ -60,7 +60,7 @@ module.exports = (() => {
         // Try to search in global context
         if (!plugin) {
           const wplg = window[pluginId];
-          plugin = wplg && wplg.defaults ? wplg.defaults : wplg;
+          plugin = wplg && wplg.default ? wplg.default : wplg;
         }
 
         if (plugin) {
