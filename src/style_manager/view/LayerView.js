@@ -4,7 +4,8 @@ module.exports = Backbone.View.extend({
   events: {
     click: 'active',
     'click [data-close-layer]': 'remove',
-    'mousedown [data-move-layer]': 'initSorter'
+    'mousedown [data-move-layer]': 'initSorter',
+    'touchstart [data-move-layer]': 'initSorter'
   },
 
   template(model) {
