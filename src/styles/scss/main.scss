@@ -213,12 +213,18 @@ $prefix: $app-prefix;
  	@include user-select(none);
 }
 
-.#{$app-prefix}editor {
-  font-family: $mainFont;
-  font-size: $fontSizeS;
-  position: relative;
-  box-sizing: border-box;
-  height: 100%;
+.#{$app-prefix} {
+  &no-touch-actions {
+    touch-action: none;
+  }
+
+  &editor {
+    font-family: $mainFont;
+    font-size: $fontSizeS;
+    position: relative;
+    box-sizing: border-box;
+    height: 100%;
+  }
 }
 
 .#{$app-prefix}freezed,

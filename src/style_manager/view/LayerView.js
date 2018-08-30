@@ -8,11 +8,11 @@ module.exports = Backbone.View.extend({
   },
 
   template(model) {
-    const pfx = this.pfx;
+    const { pfx, ppfx } = this;
     const label = `Layer ${model.get('index')}`;
 
     return `
-      <div id="${pfx}move" data-move-layer>
+      <div id="${pfx}move" class="${ppfx}no-touch-actions" data-move-layer>
         <i class="fa fa-arrows"></i>
       </div>
       <div id="${pfx}label">${label}</div>
@@ -32,6 +32,7 @@ module.exports = Backbone.View.extend({
     this.stackModel = o.stackModel || {};
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
+    this.ppfx = this.config.pStylePrefix || '';
     this.sorter = o.sorter || null;
     this.propsConfig = o.propsConfig || {};
     this.customPreview = o.onPreview;
