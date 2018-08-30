@@ -223,7 +223,6 @@ module.exports = Backbone.View.extend({
    * @param	Event
    * */
   startSort(e) {
-    console.log('starting startSort', e.type);
     e.stopPropagation();
     const sorter = this.sorter;
     // Right or middel click
