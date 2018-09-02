@@ -135,7 +135,7 @@ editor.TraitManager.addType('content', {
   /**
    * Triggered when the value of the model is changed
    */
-  onValueChange: function () {
+  onChange: function () {
     this.target.set('content', this.model.get('value'));
   }
 });
