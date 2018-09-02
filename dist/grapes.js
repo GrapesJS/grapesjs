@@ -37691,10 +37691,10 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.14.28-rc.2-touch',
+    version: '0.14.29',
 
     /**
-     * Initializes an editor based on passed options
+     * Initialize the editor with passed options
      * @param {Object} config Configuration object
      * @param {string|HTMLElement} config.container Selector which indicates where render the editor
      * @param {Boolean} [config.autorender=true] If true, auto-render the content
