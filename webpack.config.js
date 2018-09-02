@@ -40,6 +40,7 @@ module.exports = env => {
     plugins: plugins,
     mode: isProd ? 'production' : 'development',
     devtool: isProd ? 'source-map' : (!env ? 'cheap-module-eval-source-map' : false),
+    devServer: { headers: { 'Access-Control-Allow-Origin': '*' } },
     module: {
       rules: [{
         test: /\/index\.js$/,

@@ -32044,7 +32044,11 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
    * @private
    */
   initToolbar: function initToolbar() {
+    var em = this.em;
+
     var model = this;
+    var ppfx = em && em.getConfig('stylePrefix') || '';
+
     if (!model.get('toolbar')) {
       var tb = [];
       if (model.collection) {
@@ -32055,7 +32059,10 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
       }
       if (model.get('draggable')) {
         tb.push({
-          attributes: { class: 'fa fa-arrows', draggable: true },
+          attributes: {
+            class: 'fa fa-arrows ' + ppfx + 'no-touch-actions',
+            draggable: true
+          },
           //events: hasDnd(this.em) ? { dragstart: 'execCommand' } : '',
           command: 'tlb-move'
         });
@@ -37684,7 +37691,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.14.27',
+    version: '0.14.28-rc.2-touch',
 
     /**
      * Initializes an editor based on passed options
@@ -37718,7 +37725,7 @@ module.exports = function () {
         // Try to search in global context
         if (!plugin) {
           var wplg = window[pluginId];
-          plugin = wplg && wplg.defaults ? wplg.defaults : wplg;
+          plugin = wplg && wplg.default ? wplg.default : wplg;
         }
 
         if (plugin) {
@@ -38554,6 +38561,7 @@ var ItemsView = void 0;
 module.exports = _backbone2.default.View.extend({
   events: {
     'mousedown [data-toggle-move]': 'startSort',
+    'touchstart [data-toggle-move]': 'startSort',
     'click [data-toggle-visible]': 'toggleVisibility',
     'click [data-toggle-select]': 'handleSelect',
     'mouseover [data-toggle-select]': 'handleHover',
@@ -38762,7 +38770,7 @@ module.exports = _backbone2.default.View.extend({
     e.stopPropagation();
     var sorter = this.sorter;
     // Right or middel click
-    if (e.button !== 0) return;
+    if (e.button && e.button !== 0) return;
     sorter && sorter.startSort(e.target);
   },
 
@@ -44897,14 +44905,17 @@ module.exports = _backbone2.default.View.extend({
   events: {
     click: 'active',
     'click [data-close-layer]': 'remove',
-    'mousedown [data-move-layer]': 'initSorter'
+    'mousedown [data-move-layer]': 'initSorter',
+    'touchstart [data-move-layer]': 'initSorter'
   },
 
   template: function template(model) {
-    var pfx = this.pfx;
+    var pfx = this.pfx,
+        ppfx = this.ppfx;
+
     var label = 'Layer ' + model.get('index');
 
-    return '\n      <div id="' + pfx + 'move" data-move-layer>\n        <i class="fa fa-arrows"></i>\n      </div>\n      <div id="' + pfx + 'label">' + label + '</div>\n      <div id="' + pfx + 'preview-box">\n      \t<div id="' + pfx + 'preview" data-preview></div>\n      </div>\n      <div id="' + pfx + 'close-layer" class="' + pfx + 'btn-close" data-close-layer>\n        &Cross;\n      </div>\n      <div id="' + pfx + 'inputs" data-properties></div>\n      <div style="clear:both"></div>\n    ';
+    return '\n      <div id="' + pfx + 'move" class="' + ppfx + 'no-touch-actions" data-move-layer>\n        <i class="fa fa-arrows"></i>\n      </div>\n      <div id="' + pfx + 'label">' + label + '</div>\n      <div id="' + pfx + 'preview-box">\n      \t<div id="' + pfx + 'preview" data-preview></div>\n      </div>\n      <div id="' + pfx + 'close-layer" class="' + pfx + 'btn-close" data-close-layer>\n        &Cross;\n      </div>\n      <div id="' + pfx + 'inputs" data-properties></div>\n      <div style="clear:both"></div>\n    ';
   },
   initialize: function initialize() {
     var o = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -44913,6 +44924,7 @@ module.exports = _backbone2.default.View.extend({
     this.stackModel = o.stackModel || {};
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';
+    this.ppfx = this.config.pStylePrefix || '';
     this.sorter = o.sorter || null;
     this.propsConfig = o.propsConfig || {};
     this.customPreview = o.onPreview;
@@ -48994,7 +49006,7 @@ exports.default = function ($, undefined) {
           return stop();
         }
 
-        var t0 = e.originalEvent && e.originalEvent.touches && e.originalEvent.touches[0];
+        var t0 = e && e.touches && e.touches[0];
         var pageX = t0 && t0.pageX || e.pageX;
         var pageY = t0 && t0.pageY || e.pageY;
 
@@ -50720,7 +50732,7 @@ var Droppable = function () {
     value: function getContentByData(dataTransfer) {
       var em = this.em;
       var types = dataTransfer.types;
-      var files = dataTransfer.files;
+      var files = dataTransfer.files || [];
       var dragContent = em.get('dragContent');
       var content = dataTransfer.getData('text');
 
@@ -51642,7 +51654,7 @@ module.exports = _backbone2.default.View.extend({
     }
 
     (0, _mixins.on)(container, 'mousemove dragover', this.onMove);
-    (0, _mixins.on)(docs, 'mouseup dragend', this.endMove);
+    (0, _mixins.on)(docs, 'mouseup dragend touchend', this.endMove);
     (0, _mixins.on)(docs, 'keydown', this.rollback);
     onStart && onStart();
 
@@ -52278,7 +52290,7 @@ module.exports = _backbone2.default.View.extend({
         lastPos = this.lastPos;
 
     (0, _mixins.off)(container, 'mousemove dragover', this.onMove);
-    (0, _mixins.off)(docs, 'mouseup dragend', this.endMove);
+    (0, _mixins.off)(docs, 'mouseup dragend touchend', this.endMove);
     (0, _mixins.off)(docs, 'keydown', this.rollback);
     //this.$document.off('mouseup', this.endMove);
     //this.$document.off('keydown', this.rollback);
