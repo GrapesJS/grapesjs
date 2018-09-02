@@ -22,6 +22,7 @@ module.exports = Backbone.View.extend({
     this.disableCls = pfx + 'active';
     this.btnsVisCls = pfx + 'visible';
     this.className = pfx + 'btn' + (cls ? ' ' + cls : '');
+    this.listenTo(this.model, 'change', this.render);
     this.listenTo(this.model, 'change:active updateActive', this.updateActive);
     this.listenTo(this.model, 'checkActive', this.checkActive);
     this.listenTo(this.model, 'change:bntsVis', this.updateBtnsVis);
@@ -113,8 +114,8 @@ module.exports = Backbone.View.extend({
    * @return   void
    * */
   checkActive() {
-    if (this.model.get('active')) this.$el.addClass(this.activeCls);
-    else this.$el.removeClass(this.activeCls);
+    const { model, $el, activeCls } = this;
+    model.get('active') ? $el.addClass(activeCls) : $el.removeClass(activeCls);
   },
 
   /**
@@ -151,10 +152,12 @@ module.exports = Backbone.View.extend({
 
   render() {
     const label = this.model.get('label');
-    const $el = this.$el;
+    const { $el } = this;
+    $el.empty();
     this.updateAttributes();
     $el.attr('class', this.className);
     label && $el.append(label);
+    this.checkActive();
 
     return this;
   }
