@@ -547,7 +547,10 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @private
      */
     initToolbar() {
-      var model = this;
+      const { em } = this;
+      const model = this;
+      const ppfx = (em && em.getConfig('stylePrefix')) || '';
+
       if (!model.get('toolbar')) {
         var tb = [];
         if (model.collection) {
@@ -558,7 +561,10 @@ const Component = Backbone.Model.extend(Styleable).extend(
         }
         if (model.get('draggable')) {
           tb.push({
-            attributes: { class: 'fa fa-arrows', draggable: true },
+            attributes: {
+              class: `fa fa-arrows ${ppfx}no-touch-actions`,
+              draggable: true
+            },
             //events: hasDnd(this.em) ? { dragstart: 'execCommand' } : '',
             command: 'tlb-move'
           });
