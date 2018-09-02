@@ -23,12 +23,13 @@ module.exports = ComponentView.extend({
    * @private
    * */
   enableEditing(e) {
-    e && e.stopPropagation && e.stopPropagation();
-    const rte = this.rte;
-
+    // We place this before stopPropagation in case of nested
+    // text components will not block the editing (#1394)
     if (this.rteEnabled || !this.model.get('editable')) {
       return;
     }
+    e && e.stopPropagation && e.stopPropagation();
+    const rte = this.rte;
 
     if (rte) {
       try {
@@ -77,6 +78,8 @@ module.exports = ComponentView.extend({
             removable: 0,
             draggable: 0,
             copyable: 0,
+            selectable: 0,
+            hoverable: 0,
             toolbar: ''
           });
           model.get('components').each(model => clean(model));
