@@ -114,6 +114,11 @@ module.exports = () => {
       view: require('./view/ComponentTextView')
     },
     {
+      id: 'wrapper',
+      model: require('./model/ComponentWrapper'),
+      view: ComponentView
+    },
+    {
       id: 'default',
       model: Component,
       view: ComponentView
@@ -201,6 +206,7 @@ module.exports = () => {
       let wrapper = { ...c.wrapper };
       wrapper['custom-name'] = c.wrapperName;
       wrapper.wrapper = 1;
+      wrapper.type = 'wrapper';
 
       // Components might be a wrapper
       if (
