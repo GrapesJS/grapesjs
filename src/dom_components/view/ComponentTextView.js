@@ -72,14 +72,15 @@ module.exports = ComponentView.extend({
         model.set('content', content);
       } else {
         const clean = model => {
+          const selectable = !model.is('text');
           model.set({
             editable: 0,
             highlightable: 0,
             removable: 0,
             draggable: 0,
             copyable: 0,
-            selectable: 0,
-            hoverable: 0,
+            selectable: selectable,
+            hoverable: selectable,
             toolbar: ''
           });
           model.get('components').each(model => clean(model));
