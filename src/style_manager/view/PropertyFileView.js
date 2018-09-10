@@ -51,6 +51,12 @@ module.exports = PropertyView.extend({
     this.setValue(this.componentValue, 0);
   },
 
+  clearCached() {
+    PropertyView.prototype.clearCached.apply(this, arguments);
+    this.$preview = null;
+    this.$previewBox = null;
+  },
+
   setValue(value, f) {
     PropertyView.prototype.setValue.apply(this, arguments);
     this.setPreviewView(value && value != this.model.getDefaultValue());

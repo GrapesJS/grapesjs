@@ -56,5 +56,10 @@ module.exports = Property.extend({
     if (!this.model.get('showInput')) {
       this.inputInst.el.style.display = 'none';
     }
+  },
+
+  clearCached() {
+    Property.prototype.clearCached.apply(this, arguments);
+    this.slider = null;
   }
 });

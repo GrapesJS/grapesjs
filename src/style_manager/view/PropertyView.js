@@ -473,7 +473,14 @@ module.exports = Backbone.View.extend({
     this.setValue('');
   },
 
+  clearCached() {
+    this.clearEl = null;
+    this.input = null;
+    this.$input = null;
+  },
+
   render() {
+    this.clearCached();
     const pfx = this.pfx;
     const model = this.model;
     const el = this.el;
