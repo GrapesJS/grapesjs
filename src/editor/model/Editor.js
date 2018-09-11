@@ -641,5 +641,9 @@ module.exports = Backbone.Model.extend({
     } else {
       el[varName][name] = value;
     }
+  },
+
+  getCustomParserCss() {
+    return null;
   }
 });
