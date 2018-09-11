@@ -1,13 +1,21 @@
+import { parseSelector } from 'parser/model/BrowserParserCss';
 const ParserCss = require('parser/model/ParserCss');
 const Selector = require('selector_manager/model/Selector');
 
 module.exports = {
   run() {
-    describe('ParserCss', () => {
-      var obj;
+    describe.only('ParserCss', () => {
+      let obj;
+      let config;
+      let customParser;
 
       beforeEach(() => {
-        obj = new ParserCss();
+        config = {
+          em: {
+            getCustomParserCss: () => customParser
+          }
+        };
+        obj = new ParserCss(config);
       });
 
       afterEach(() => {
@@ -17,26 +25,26 @@ module.exports = {
       test('Parse selector', () => {
         var str = '.test';
         var result = [['test']];
-        expect(obj.parseSelector(str).result).toEqual(result);
+        expect(parseSelector(str).result).toEqual(result);
       });
 
       test('Parse selectors', () => {
         var str = '.test1, .test1.test2, .test2.test3';
         var result = [['test1'], ['test1', 'test2'], ['test2', 'test3']];
-        expect(obj.parseSelector(str).result).toEqual(result);
+        expect(parseSelector(str).result).toEqual(result);
       });
 
       test('Ignore not valid selectors', () => {
         var str =
           '.test1.test2, .test2 .test3, div > .test4, #test.test5, .test6';
         var result = [['test1', 'test2'], ['test6']];
-        expect(obj.parseSelector(str).result).toEqual(result);
+        expect(parseSelector(str).result).toEqual(result);
       });
 
       test('Parse selectors with state', () => {
         var str = '.test1. test2, .test2>test3, .test4.test5:hover';
         var result = [['test4', 'test5:hover']];
-        expect(obj.parseSelector(str).result).toEqual(result);
+        expect(parseSelector(str).result).toEqual(result);
       });
 
       test('Parse simple rule', () => {
@@ -48,7 +56,7 @@ module.exports = {
             width: '50px'
           }
         };
-        expect(obj.parse(str)).toEqual(result);
+        expect(obj.parse(str)).toEqual([result]);
       });
 
       test('Parse rule with more selectors', () => {
@@ -57,7 +65,7 @@ module.exports = {
           selectors: ['test1', 'test2'],
           style: { color: 'red', test: 'value' }
         };
-        expect(obj.parse(str)).toEqual(result);
+        expect(obj.parse(str)).toEqual([result]);
       });
 
       test('Parse same rule with more selectors', () => {
@@ -106,7 +114,7 @@ module.exports = {
           style: { color: 'red' },
           state: 'hover'
         };
-        expect(obj.parse(str)).toEqual(result);
+        expect(obj.parse(str)).toEqual([result]);
       });
 
       test('Parse rule with state like after', () => {
@@ -116,7 +124,7 @@ module.exports = {
           style: { color: 'red' },
           state: ':after'
         };
-        expect(obj.parse(str)).toEqual(result);
+        expect(obj.parse(str)).toEqual([result]);
       });
 
       test('Parse rule with nth-x state', () => {
@@ -126,7 +134,7 @@ module.exports = {
           style: { color: 'red' },
           state: 'nth-of-type(2n)'
         };
-        expect(obj.parse(str)).toEqual(result);
+        expect(obj.parse(str)).toEqual([result]);
       });
 
       // Phantom don't find 'node.conditionText' so will skip it
@@ -140,7 +148,7 @@ module.exports = {
           state: 'hover',
           mediaText: 'only screen and (max-width: 992px)'
         };
-        expect(obj.parse(str)).toEqual(result);
+        expect(obj.parse(str)).toEqual([result]);
       });
 
       // Phantom don't find 'node.conditionText' so will skip it
@@ -153,7 +161,7 @@ module.exports = {
           state: 'hover',
           mediaText: '(max-width: 992px)'
         };
-        expect(obj.parse(str)).toEqual(result);
+        expect(obj.parse(str)).toEqual([result]);
       });
 
       // Phantom doesn't find 'node.conditionText' so will skip it
@@ -190,7 +198,7 @@ module.exports = {
           selectorsAdd: '.class1 .class2, div > .class3',
           style: { color: 'red' }
         };
-        expect(obj.parse(str)).toEqual(result);
+        expect(obj.parse(str)).toEqual([result]);
       });
 
       test('Parse rule with mixed selectors', () => {
@@ -221,7 +229,7 @@ module.exports = {
             width: '100px'
           }
         };
-        expect(obj.parse(str)).toEqual(result);
+        expect(obj.parse(str)).toEqual([result]);
       });
 
       test('Parse rule with CSS variables', () => {
@@ -237,7 +245,7 @@ module.exports = {
             '--some-width': '55px'
           }
         };
-        expect(obj.parse(str)).toEqual(result);
+        expect(obj.parse(str)).toEqual([result]);
       });
 
       // Can't test keyframes https://github.com/NV/CSSOM/issues/95
@@ -274,7 +282,7 @@ module.exports = {
           singleAtRule: 1,
           style: { 'font-family': '"Open Sans"' }
         };
-        expect(obj.parse(str)).toEqual(result);
+        expect(obj.parse(str)).toEqual([result]);
       });
 
       test('Parses multiple font-face at-rules', () => {
@@ -316,7 +324,7 @@ module.exports = {
           selectors: ['#test'],
           style: { color: 'red' }
         };
-        expect(obj.parse(str)).toEqual(result);
+        expect(obj.parse(str)).toEqual([result]);
       });
 
       test('Parse ID rule with state', () => {
@@ -326,7 +334,7 @@ module.exports = {
           state: 'hover',
           style: { color: 'red' }
         };
-        expect(obj.parse(str)).toEqual(result);
+        expect(obj.parse(str)).toEqual([result]);
       });
 
       test('Avoid composed selectors with ID', () => {
@@ -336,7 +344,7 @@ module.exports = {
           selectorsAdd: '#test.class, #test.class:hover',
           style: { color: 'red' }
         };
-        expect(obj.parse(str)).toEqual(result);
+        expect(obj.parse(str)).toEqual([result]);
       });
     });
   }
