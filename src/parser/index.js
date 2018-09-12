@@ -1,12 +1,16 @@
 module.exports = () => {
-  var c = {},
+  let conf = {},
     defaults = require('./config/config'),
     parserCss = require('./model/ParserCss'),
     parserHtml = require('./model/ParserHtml');
-  var pHtml, pCss;
+  let pHtml, pCss;
 
   return {
     compTypes: '',
+
+    parserCss: null,
+
+    parserHtml: null,
 
     /**
      * Name of the module
@@ -30,13 +34,12 @@ module.exports = () => {
      * }
      * ...
      */
-    init(config) {
-      c = config || {};
-      for (var name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
-      }
-      pHtml = new parserHtml(c);
-      pCss = new parserCss(c);
+    init(config = {}) {
+      conf = { ...defaults, ...config };
+      this.parserCss = conf.parserCss || null;
+      this.parserHtml = conf.parserHtml || null;
+      pHtml = new parserHtml(conf);
+      pCss = new parserCss(conf);
       return this;
     },
 

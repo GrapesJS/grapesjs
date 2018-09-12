@@ -568,13 +568,38 @@ module.exports = config => {
     },
 
     /**
+     * Replace the default CSS parser with a custom one.
+     * The parser function receives a CSS string as a parameter and expects
+     * an array of CSSRule objects as a result. If you need to remove the
+     * custom parser, pass the `null` to this method
+     * @param {Function|null} parser Parser function
+     * @return {this}
+     * @example
+     * editor.setCustomParserCss(css => {
+     *  const result = [];
+     *  // ... parse the CSS string
+     *  result.push({
+     *    selectors: '.someclass, div .otherclass',
+     *    style: { color: 'red' }
+     *  })
+     *  // ...
+     *  return result;
+     * });
+     */
+    setCustomParserCss(parser) {
+      em.setCustomParserCss(parser);
+      return this;
+    },
+
+    /**
      * Attach event
      * @param  {string} event Event name
      * @param  {Function} callback Callback function
      * @return {this}
      */
     on(event, callback) {
-      return em.on(event, callback);
+      em.on(event, callback);
+      return this;
     },
 
     /**
@@ -584,7 +609,8 @@ module.exports = config => {
      * @return {this}
      */
     off(event, callback) {
-      return em.off(event, callback);
+      em.off(event, callback);
+      return this;
     },
 
     /**
@@ -593,7 +619,8 @@ module.exports = config => {
      * @return {this}
      */
     trigger(event) {
-      return em.trigger.apply(em, arguments);
+      em.trigger.apply(em, arguments);
+      return this;
     },
 
     /**

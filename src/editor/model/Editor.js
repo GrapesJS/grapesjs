@@ -644,6 +644,10 @@ module.exports = Backbone.Model.extend({
   },
 
   getCustomParserCss() {
-    return null;
+    return this.get('Parser').parserCss;
+  },
+
+  setCustomParserCss(parser) {
+    this.get('Parser').parserCss = parser;
   }
 });

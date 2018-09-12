@@ -4,7 +4,7 @@ const Selector = require('selector_manager/model/Selector');
 
 module.exports = {
   run() {
-    describe.only('ParserCss', () => {
+    describe('ParserCss', () => {
       let obj;
       let config;
       let customParser;
@@ -345,6 +345,41 @@ module.exports = {
           style: { color: 'red' }
         };
         expect(obj.parse(str)).toEqual([result]);
+      });
+
+      test('Parse CSS with custom parser', () => {
+        var str = '.test1 { color:red }';
+        var result = {
+          selectors: ['test1'],
+          style: { color: 'red' }
+        };
+        obj = new ParserCss({
+          em: {
+            getCustomParserCss: () => () => [result]
+          }
+        });
+        expect(obj.parse(str)).toEqual([result]);
+      });
+
+      test.only('Parse CSS with custom async parser', done => {
+        var str = '.test1 { color:red }';
+        var result = {
+          selectors: ['test1'],
+          style: { color: 'red' }
+        };
+        obj = new ParserCss({
+          em: {
+            getCustomParserCss: () => {
+              return async function() {
+                return [result];
+              };
+            }
+          }
+        });
+        obj.parse(str).then(res => {
+          expect(res).toEqual([result]);
+          done();
+        });
       });
     });
   }
