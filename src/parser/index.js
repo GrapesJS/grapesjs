@@ -20,6 +20,14 @@ module.exports = () => {
     name: 'Parser',
 
     /**
+     * Get config object
+     * @return {Object}
+     */
+    getConfig() {
+      return conf;
+    },
+
+    /**
      * Initialize module. Automatically called with a new instance of the editor
      * @param {Object} config Configurations
      * @param {Array<Object>} [config.blocks=[]] Default blocks
@@ -36,8 +44,7 @@ module.exports = () => {
      */
     init(config = {}) {
       conf = { ...defaults, ...config };
-      this.parserCss = conf.parserCss || null;
-      this.parserHtml = conf.parserHtml || null;
+      conf.Parser = this;
       pHtml = new parserHtml(conf);
       pCss = new parserCss(conf);
       return this;

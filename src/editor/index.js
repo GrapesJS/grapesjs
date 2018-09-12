@@ -224,6 +224,12 @@ module.exports = config => {
     RichTextEditor: em.get('RichTextEditor'),
 
     /**
+     * @property {Parser}
+     * @private
+     */
+    Parser: em.get('Parser'),
+
+    /**
      * @property {Utils}
      * @private
      */
@@ -571,7 +577,7 @@ module.exports = config => {
      * Replace the default CSS parser with a custom one.
      * The parser function receives a CSS string as a parameter and expects
      * an array of CSSRule objects as a result. If you need to remove the
-     * custom parser, pass the `null` to this method
+     * custom parser, pass `null` as the argument
      * @param {Function|null} parser Parser function
      * @return {this}
      * @example
@@ -587,7 +593,7 @@ module.exports = config => {
      * });
      */
     setCustomParserCss(parser) {
-      em.setCustomParserCss(parser);
+      this.Parser.getConfig().parserCss = parser;
       return this;
     },
 

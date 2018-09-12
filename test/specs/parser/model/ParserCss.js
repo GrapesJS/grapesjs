@@ -351,35 +351,25 @@ module.exports = {
         var str = '.test1 { color:red }';
         var result = {
           selectors: ['test1'],
-          style: { color: 'red' }
+          style: { color: 'blue' }
         };
         obj = new ParserCss({
-          em: {
-            getCustomParserCss: () => () => [result]
-          }
+          parserCss: () => [result]
         });
         expect(obj.parse(str)).toEqual([result]);
       });
 
-      test.only('Parse CSS with custom async parser', done => {
+      test('Parse CSS with custom async parser', async () => {
         var str = '.test1 { color:red }';
         var result = {
           selectors: ['test1'],
-          style: { color: 'red' }
+          style: { color: 'blue' }
         };
         obj = new ParserCss({
-          em: {
-            getCustomParserCss: () => {
-              return async function() {
-                return [result];
-              };
-            }
-          }
+          parserCss: async () => [result]
         });
-        obj.parse(str).then(res => {
-          expect(res).toEqual([result]);
-          done();
-        });
+        const cssResult = await obj.parse(str);
+        expect(cssResult).toEqual([result]);
       });
     });
   }
