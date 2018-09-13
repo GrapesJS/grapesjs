@@ -60,6 +60,11 @@ module.exports = () => {
       return pHtml.parse(str, pCss);
     },
 
+    /**
+     * Parse CSS string and return valid model
+     * @param  {string} str CSS string
+     * @return {Array<Object>}
+     */
     parseCss(str) {
       return pCss.parse(str);
     }

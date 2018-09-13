@@ -1,3 +1,4 @@
+import { isString } from 'underscore';
 import BrowserCssParser from './BrowserParserCss';
 
 module.exports = (config = {}) => ({
@@ -7,7 +8,23 @@ module.exports = (config = {}) => ({
    * @return {Array<Object>}
    */
   parse(str) {
+    let result = [];
     const customParser = config.parserCss;
-    return customParser ? customParser(str) : BrowserCssParser(str);
+    const nodes = customParser ? customParser(str) : BrowserCssParser(str);
+    nodes.forEach(node => (result = result.concat(this.checkNode(node))));
+
+    return result;
+  },
+
+  /**
+   * Check the returned node from a custom parser and transforms it to
+   * a valid object for the CSS composer
+   * @return {[type]}
+   */
+  checkNode(node) {
+    if (isString(node.selectors)) {
+    }
+
+    return node;
   }
 });
