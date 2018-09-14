@@ -598,6 +598,26 @@ module.exports = config => {
     },
 
     /**
+     * Trigger event log message
+     * @param  {String} msg String to log
+     * @param  {Object} [opts={}] Custom options
+     * @param  {String} [opts.ns=''] Namespace of the log (eg. to use in plugins)
+     * @param  {String} [opts.level='debug'] Level of the log, `debug`, `info`, `warning`, `error`
+     * @return {this}
+     * @example
+     * editor.log('Something done!', { ns: 'from-plugin-x', level: 'info' });
+     * // This will trigger following events
+     * // `log`, `log:info`, `log-from-plugin-x`, `log-from-plugin-x:info`
+     * // Callbacks of those events will always receive the message and
+     * // options, as arguments, eg:
+     * // editor.on('log:info', (msg, opts) => console.info(msg, opts))
+     */
+    log(msg, opts = {}) {
+      em.log(msg, opts);
+      return this;
+    },
+
+    /**
      * Attach event
      * @param  {string} event Event name
      * @param  {Function} callback Callback function
