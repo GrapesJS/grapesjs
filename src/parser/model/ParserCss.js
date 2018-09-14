@@ -31,9 +31,9 @@ module.exports = (config = {}) => ({
       const nodes = [];
       const selsParsed = parseSelector(selectors);
       const classSets = selsParsed.result;
+      const selectorsAdd = selsParsed.add.join(', ');
       const opts = {
         atRule: node.atRule,
-        selectorsAdd: selsParsed.add.join(', '),
         mediaText: node.params
       };
 
@@ -43,6 +43,11 @@ module.exports = (config = {}) => ({
         });
       } else {
         nodes.push(createNode([], style, opts));
+      }
+
+      if (selectorsAdd) {
+        const lastNode = nodes[nodes.length - 1];
+        lastNode.selectorsAdd = selectorsAdd;
       }
 
       node = nodes;

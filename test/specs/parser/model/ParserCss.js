@@ -4,7 +4,7 @@ const Selector = require('selector_manager/model/Selector');
 
 module.exports = {
   run() {
-    describe.only('ParserCss', () => {
+    describe('ParserCss', () => {
       let obj;
       let config;
       let customParser;
@@ -436,20 +436,61 @@ module.exports = {
       });
 
       test('Check node with a rule containing id', () => {
-        const style = { color: 'blue' };
+        const style = { border: '1px solid black !important' };
         expect(
           obj.checkNode({
-            selectors: '#main',
-            style: { border: '1px solid black' }
+            selectors: '#main:hover',
+            style
           })
         ).toEqual([
           {
-            atRuleType: 'media',
-            selectors: ['class-test', 'class2'],
-            selectorsAdd: 'div > span',
-            style: style,
+            selectors: ['#main'],
             state: 'hover',
-            mediaText: 'screen and (min-width: 480px)'
+            style: style
+          }
+        ]);
+      });
+
+      test('Check node with multiple class selectors', () => {
+        const style = {
+          border: '1px solid black !important',
+          'background-repeat': 'repeat-y, no-repeat'
+        };
+        expect(
+          obj.checkNode({
+            selectors:
+              '.class1, .class1.class2:hover, div > .test:hover, span.test2',
+            style
+          })
+        ).toEqual([
+          {
+            selectors: ['class1'],
+            style: style
+          },
+          {
+            selectors: ['class1', 'class2'],
+            state: 'hover',
+            selectorsAdd: 'div > .test:hover, span.test2',
+            style: style
+          }
+        ]);
+      });
+
+      test('Check node with a rule containing CSS variables', () => {
+        const style = {
+          '--some-color': 'red',
+          '--some-width': '55px'
+        };
+        expect(
+          obj.checkNode({
+            selectors: ':root',
+            style
+          })
+        ).toEqual([
+          {
+            selectors: [],
+            selectorsAdd: ':root',
+            style: style
           }
         ]);
       });
