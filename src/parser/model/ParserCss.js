@@ -13,7 +13,7 @@ module.exports = (config = {}) => ({
   parse(str) {
     let result = [];
     const { parserCss, em = {} } = config;
-    const editor = em && em.get('Editor');
+    const editor = em && em.get && em.get('Editor');
     const nodes = parserCss ? parserCss(str, editor) : BrowserCssParser(str);
     nodes.forEach(node => (result = result.concat(this.checkNode(node))));
 
