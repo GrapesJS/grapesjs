@@ -12,8 +12,9 @@ module.exports = (config = {}) => ({
    */
   parse(str) {
     let result = [];
-    const customParser = config.parserCss;
-    const nodes = customParser ? customParser(str) : BrowserCssParser(str);
+    const { parserCss, em = {} } = config;
+    const editor = em && em.get('Editor');
+    const nodes = parserCss ? parserCss(str, editor) : BrowserCssParser(str);
     nodes.forEach(node => (result = result.concat(this.checkNode(node))));
 
     return result;

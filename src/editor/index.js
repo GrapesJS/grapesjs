@@ -599,7 +599,7 @@ module.exports = config => {
 
     /**
      * Trigger event log message
-     * @param  {String} msg String to log
+     * @param  {*} msg Message to log
      * @param  {Object} [opts={}] Custom options
      * @param  {String} [opts.ns=''] Namespace of the log (eg. to use in plugins)
      * @param  {String} [opts.level='debug'] Level of the log, `debug`, `info`, `warning`, `error`
