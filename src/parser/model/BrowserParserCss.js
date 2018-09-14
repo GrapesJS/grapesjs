@@ -15,6 +15,7 @@ const atRules = {
 };
 const atRuleKeys = keys(atRules);
 const singleAtRules = ['5', '6', '11', '15'];
+const singleAtRulesNames = ['font-face', 'page', 'counter-style', 'viewport'];
 
 /**
  * Parse selector string to array.
@@ -95,6 +96,38 @@ export const parseCondition = node => {
 };
 
 /**
+ * Create node for the editor
+ * @param  {Array<String>} selectors Array containing strings of classes
+ * @param {Object} style Key-value object of style declarations
+ * @return {Object}
+ */
+export const createNode = (selectors, style, opts = {}) => {
+  const node = {};
+  const selLen = selectors.length;
+  const lastClass = selectors[selLen - 1];
+  const stateArr = lastClass ? lastClass.split(/:(.+)/) : [];
+  const state = stateArr[1];
+  const { atRule, selectorsAdd, mediaText } = opts;
+  const singleAtRule = singleAtRulesNames.indexOf(atRule) >= 0;
+  singleAtRule && (node.singleAtRule = 1);
+  atRule && (node.atRuleType = atRule);
+  selectorsAdd && (node.selectorsAdd = selectorsAdd);
+  mediaText && (node.mediaText = mediaText);
+
+  // Isolate the state from selectors
+  if (state) {
+    selectors[selLen - 1] = stateArr[0];
+    node.state = state;
+    stateArr.splice(stateArr.length - 1, 1);
+  }
+
+  node.selectors = selectors;
+  node.style = style;
+
+  return node;
+};
+
+/**
  * Fetch data from node
  * @param  {StyleSheet|CSSRule} el
  * @return {Array<Object>}
@@ -139,23 +172,11 @@ export const parseNode = el => {
     let lastRule;
     // For each group of selectors
     for (var k = 0, len3 = sels.length; k < len3; k++) {
-      var selArr = sels[k];
-      var model = {};
-      singleAtRule && (model.singleAtRule = singleAtRule);
-      atRuleType && (model.atRuleType = atRuleType);
-
-      //Isolate state from selector
-      var stateArr = selArr[selArr.length - 1].split(/:(.+)/);
-      if (stateArr[1]) {
-        selArr[selArr.length - 1] = stateArr[0];
-        model.state = stateArr[1];
-        stateArr.splice(stateArr.length - 1, 1);
-      }
-
-      model.selectors = selArr;
-      model.style = style;
-      lastRule = model;
+      const model = createNode(sels[k], style, {
+        atRule: atRules[type]
+      });
       result.push(model);
+      lastRule = model;
     }
 
     // Need to push somewhere not class-based selectors, if some rule was

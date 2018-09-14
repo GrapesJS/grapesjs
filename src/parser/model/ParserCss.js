@@ -1,5 +1,8 @@
 import { isString } from 'underscore';
-import BrowserCssParser from './BrowserParserCss';
+import BrowserCssParser, {
+  parseSelector,
+  createNode
+} from './BrowserParserCss';
 
 module.exports = (config = {}) => ({
   /**
@@ -22,7 +25,27 @@ module.exports = (config = {}) => ({
    * @return {[type]}
    */
   checkNode(node) {
-    if (isString(node.selectors)) {
+    const { selectors, style } = node;
+
+    if (isString(selectors)) {
+      const nodes = [];
+      const selsParsed = parseSelector(selectors);
+      const classSets = selsParsed.result;
+      const opts = {
+        atRule: node.atRule,
+        selectorsAdd: selsParsed.add.join(', '),
+        mediaText: node.params
+      };
+
+      if (classSets.length) {
+        classSets.forEach(classSet => {
+          nodes.push(createNode(classSet, style, opts));
+        });
+      } else {
+        nodes.push(createNode([], style, opts));
+      }
+
+      node = nodes;
     }
 
     return node;

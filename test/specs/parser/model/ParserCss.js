@@ -4,7 +4,7 @@ const Selector = require('selector_manager/model/Selector');
 
 module.exports = {
   run() {
-    describe('ParserCss', () => {
+    describe.only('ParserCss', () => {
       let obj;
       let config;
       let customParser;
@@ -359,7 +359,7 @@ module.exports = {
         expect(obj.parse(str)).toEqual([result]);
       });
 
-      test('Parse CSS with custom async parser', async () => {
+      test.skip('Parse CSS with custom async parser', async () => {
         var str = '.test1 { color:red }';
         var result = {
           selectors: ['test1'],
@@ -370,6 +370,88 @@ module.exports = {
         });
         const cssResult = await obj.parse(str);
         expect(cssResult).toEqual([result]);
+      });
+
+      test('Check node with font-face rule', () => {
+        const style = {
+          'font-family': '"Glyphicons Halflings"',
+          src:
+            'url("https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot")'
+        };
+        expect(
+          obj.checkNode({
+            atRule: 'font-face',
+            selectors: '',
+            style: style
+          })
+        ).toEqual([
+          {
+            style: style,
+            atRuleType: 'font-face',
+            singleAtRule: 1,
+            selectors: []
+          }
+        ]);
+      });
+
+      test('Check node with keyframes rule', () => {
+        const style = { opacity: 0 };
+        expect(
+          obj.checkNode({
+            atRule: 'keyframes',
+            params: 'name',
+            selectors: 'from',
+            style: style
+          })
+        ).toEqual([
+          {
+            selectors: [],
+            atRuleType: 'keyframes',
+            selectorsAdd: 'from',
+            style: style,
+            mediaText: 'name'
+          }
+        ]);
+      });
+
+      test('Check node with media rule', () => {
+        const style = { color: 'blue' };
+        expect(
+          obj.checkNode({
+            atRule: 'media',
+            params: 'screen and (min-width: 480px)',
+            selectors: '.class-test.class2:hover, div > span ',
+            style
+          })
+        ).toEqual([
+          {
+            atRuleType: 'media',
+            selectors: ['class-test', 'class2'],
+            selectorsAdd: 'div > span',
+            style: style,
+            state: 'hover',
+            mediaText: 'screen and (min-width: 480px)'
+          }
+        ]);
+      });
+
+      test('Check node with a rule containing id', () => {
+        const style = { color: 'blue' };
+        expect(
+          obj.checkNode({
+            selectors: '#main',
+            style: { border: '1px solid black' }
+          })
+        ).toEqual([
+          {
+            atRuleType: 'media',
+            selectors: ['class-test', 'class2'],
+            selectorsAdd: 'div > span',
+            style: style,
+            state: 'hover',
+            mediaText: 'screen and (min-width: 480px)'
+          }
+        ]);
       });
     });
   }
