@@ -224,6 +224,12 @@ module.exports = config => {
     RichTextEditor: em.get('RichTextEditor'),
 
     /**
+     * @property {Parser}
+     * @private
+     */
+    Parser: em.get('Parser'),
+
+    /**
      * @property {Utils}
      * @private
      */
@@ -568,13 +574,58 @@ module.exports = config => {
     },
 
     /**
+     * Replace the default CSS parser with a custom one.
+     * The parser function receives a CSS string as a parameter and expects
+     * an array of CSSRule objects as a result. If you need to remove the
+     * custom parser, pass `null` as the argument
+     * @param {Function|null} parser Parser function
+     * @return {this}
+     * @example
+     * editor.setCustomParserCss(css => {
+     *  const result = [];
+     *  // ... parse the CSS string
+     *  result.push({
+     *    selectors: '.someclass, div .otherclass',
+     *    style: { color: 'red' }
+     *  })
+     *  // ...
+     *  return result;
+     * });
+     */
+    setCustomParserCss(parser) {
+      this.Parser.getConfig().parserCss = parser;
+      return this;
+    },
+
+    /**
+     * Trigger event log message
+     * @param  {*} msg Message to log
+     * @param  {Object} [opts={}] Custom options
+     * @param  {String} [opts.ns=''] Namespace of the log (eg. to use in plugins)
+     * @param  {String} [opts.level='debug'] Level of the log, `debug`, `info`, `warning`, `error`
+     * @return {this}
+     * @example
+     * editor.log('Something done!', { ns: 'from-plugin-x', level: 'info' });
+     * // This will trigger following events
+     * // `log`, `log:info`, `log-from-plugin-x`, `log-from-plugin-x:info`
+     * // Callbacks of those events will always receive the message and
+     * // options, as arguments, eg:
+     * // editor.on('log:info', (msg, opts) => console.info(msg, opts))
+     */
+    log(msg, opts = {}) {
+      em.log(msg, opts);
+      return this;
+    },
+
+    /**
      * Attach event
      * @param  {string} event Event name
      * @param  {Function} callback Callback function
      * @return {this}
      */
     on(event, callback) {
-      return em.on(event, callback);
+      em.on(event, callback);
+      return this;
     },
 
     /**
@@ -584,7 +635,8 @@ module.exports = config => {
      * @return {this}
      */
     off(event, callback) {
-      return em.off(event, callback);
+      em.off(event, callback);
+      return this;
     },
 
     /**
@@ -593,7 +645,8 @@ module.exports = config => {
      * @return {this}
      */
     trigger(event) {
-      return em.trigger.apply(em, arguments);
+      em.trigger.apply(em, arguments);
+      return this;
     },
 
     /**

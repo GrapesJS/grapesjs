@@ -621,6 +621,18 @@ module.exports = Backbone.Model.extend({
     return !!this.get('editing');
   },
 
+  log(msg, opts = {}) {
+    const { ns, level = 'debug' } = opts;
+    this.trigger('log', msg, opts);
+    level && this.trigger(`log:${level}`, msg, opts);
+
+    if (ns) {
+      const logNs = `log-${ns}`;
+      this.trigger(logNs, msg, opts);
+      level && this.trigger(`${logNs}:${level}`, msg, opts);
+    }
+  },
+
   /**
    * Set/get data from the HTMLElement
    * @param  {HTMLElement} el
