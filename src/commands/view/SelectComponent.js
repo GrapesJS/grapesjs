@@ -421,17 +421,24 @@ module.exports = {
           }
 
           const { store, selectedHandler, config } = options;
-          const { keyHeight, keyWidth, autoHeight, autoWidth } = config;
+          const {
+            keyHeight,
+            keyWidth,
+            autoHeight,
+            autoWidth,
+            unitWidth,
+            unitHeight
+          } = config;
           const onlyHeight = ['tc', 'bc'].indexOf(selectedHandler) >= 0;
           const onlyWidth = ['cl', 'cr'].indexOf(selectedHandler) >= 0;
           const style = modelToStyle.getStyle();
 
           if (!onlyHeight) {
-            style[keyWidth] = autoWidth ? 'auto' : rect.w + config.unitWidth;
+            style[keyWidth] = autoWidth ? 'auto' : `${rect.w}${unitWidth}`;
           }
 
           if (!onlyWidth) {
-            style[keyHeight] = autoHeight ? 'auto' : rect.h + config.unitHeight;
+            style[keyHeight] = autoHeight ? 'auto' : `${rect.h}${unitHeight}`;
           }
 
           modelToStyle.setStyle(style, { avoidStore: 1 });
