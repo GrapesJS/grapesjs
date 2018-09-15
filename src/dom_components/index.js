@@ -25,7 +25,7 @@
  * @module DomComponents
  */
 
-import { isEmpty } from 'underscore';
+import { isEmpty, isString, isObject, isArray } from 'underscore';
 
 module.exports = () => {
   var c = {};
@@ -301,18 +301,27 @@ module.exports = () => {
      * @return {Object} Loaded data
      */
     load(data = '') {
+      const { em } = this;
       let result = '';
 
       if (!data && c.stm) {
         data = c.em.getCacheLoad();
       }
 
-      if (data.components) {
-        try {
-          result = JSON.parse(data.components);
-        } catch (err) {}
-      } else if (data.html) {
-        result = data.html;
+      const { components, html } = data;
+
+      if (components) {
+        if (isObject(components) || isArray(components)) {
+          result = components;
+        } else {
+          try {
+            result = JSON.parse(components);
+          } catch (err) {
+            em && em.logError(err);
+          }
+        }
+      } else if (html) {
+        result = html;
       }
 
       const isObj = result && result.constructor === Object;

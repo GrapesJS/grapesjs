@@ -98,6 +98,33 @@ describe('DOM Components', () => {
       expect(obj.load()).toEqual([{ test: 1 }]);
     });
 
+    test('Load data with components as a string', () => {
+      const result = [{}, {}];
+      expect(
+        obj.load({
+          components: '[{}, {}]'
+        })
+      ).toEqual(result);
+    });
+
+    test('Load data with components as an array', () => {
+      const result = [{}, {}];
+      expect(
+        obj.load({
+          components: result
+        })
+      ).toEqual(result);
+    });
+
+    test('Load data with components as an object', () => {
+      const result = {};
+      expect(
+        obj.load({
+          components: result
+        })
+      ).toEqual(result);
+    });
+
     test('Wrapper exists', () => {
       expect(obj.getWrapper()).toBeTruthy();
     });

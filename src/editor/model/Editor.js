@@ -631,6 +631,18 @@ module.exports = Backbone.Model.extend({
     }
   },
 
+  logInfo(msg, opts) {
+    this.log(msg, { ...opts, level: 'info' });
+  },
+
+  logWarning(msg, opts) {
+    this.log(msg, { ...opts, level: 'warning' });
+  },
+
+  logError(msg, opts) {
+    this.log(msg, { ...opts, level: 'error' });
+  },
+
   /**
    * Set/get data from the HTMLElement
    * @param  {HTMLElement} el
