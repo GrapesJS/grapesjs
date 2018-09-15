@@ -218,6 +218,11 @@ $prefix: $app-prefix;
     touch-action: none;
   }
 
+  &disabled {
+    @include user-select(none);
+    @include opacity(0.50);
+  }
+
   &editor {
     font-family: $mainFont;
     font-size: $fontSizeS;
