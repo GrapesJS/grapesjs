@@ -137,10 +137,8 @@ module.exports = Backbone.Model.extend({
     const stm = this.get('StorageManager');
     const changes = this.get('changesCount');
 
-    if (this.config.noticeOnUnload && changes) {
-      window.onbeforeunload = e => 1;
-    } else {
-      window.onbeforeunload = null;
+    if (this.config.noticeOnUnload) {
+      window.onbeforeunload = changes ? e => 1 : null;
     }
 
     if (stm.isAutosave() && changes >= stm.getStepsBeforeSave()) {
