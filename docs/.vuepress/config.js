@@ -97,6 +97,7 @@ module.exports = {
           collapsable: false,
           children: [
             ['/guides/Replace-Rich-Text-Editor', 'Replace Rich Text Editor'],
+            ['/guides/Custom-CSS-parser', 'Use Custom CSS Parser'],
           ]
         }
       ],
