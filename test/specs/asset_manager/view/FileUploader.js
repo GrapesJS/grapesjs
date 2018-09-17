@@ -67,6 +67,18 @@ module.exports = {
           );
         });
 
+        test('Handles multiUpload false', () => {
+          var view = new FileUploader({
+            config: {
+              multiUpload: false
+            }
+          });
+          view.render();
+          expect(
+            view.$el.find('input[type=file]').prop('multiple')
+          ).toBeFalsy();
+        });
+
         test('Handles embedAsBase64 parameter', () => {
           var view = new FileUploader({
             config: {
