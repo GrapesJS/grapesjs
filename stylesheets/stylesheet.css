@@ -931,3 +931,17 @@ a {
     display: none;
   }
 }
+
+.product-promo {
+  background: #3e1c30;
+  color: white;
+  padding: 8px 0px;
+  text-align: center;
+  font-weight: 400;
+}
+
+.product-promo__logo {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+}
