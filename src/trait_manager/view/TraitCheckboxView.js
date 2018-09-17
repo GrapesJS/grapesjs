@@ -3,15 +3,12 @@ var TraitView = require('./TraitView');
 module.exports = TraitView.extend({
   initialize(o) {
     TraitView.prototype.initialize.apply(this, arguments);
-    var iconCls = this.ppfx + 'chk-icon';
-    this.tmpl =
-      '<div class="' +
-      this.fieldClass +
-      '"><label class="' +
-      this.inputhClass +
-      '"><i class="' +
-      iconCls +
-      '"></i></label></div>';
+    const { ppfx, fieldClass, inputhClass } = this;
+    this.tmpl = `<div class="${fieldClass}">
+        <label class="${inputhClass}">
+          <i class="${ppfx}chk-icon"></i>
+        </label>
+      </div>`;
   },
 
   /**
@@ -28,20 +25,24 @@ module.exports = TraitView.extend({
    * @private
    */
   getInputEl(...args) {
-    var first;
-    if (!this.$input) first = 1;
-    var el = TraitView.prototype.getInputEl.apply(this, args);
-    if (first) {
-      var md = this.model;
-      var name = md.get('name');
-      var target = this.target;
-      if (md.get('changeProp')) {
-        el.checked = target.get(name);
+    const toInit = !this.$input;
+    const el = TraitView.prototype.getInputEl.apply(this, args);
+
+    if (toInit) {
+      let checked;
+      const { model, target } = this;
+      const name = model.get('name');
+
+      if (model.get('changeProp')) {
+        checked = target.get(name);
       } else {
-        var attrs = target.get('attributes');
-        el.checked = !!attrs[name];
+        checked = target.get('attributes')[name];
+        checked = checked || checked === '' ? !0 : !1;
       }
+
+      el.checked = checked;
     }
+
     return el;
   }
 });
