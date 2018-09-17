@@ -122,7 +122,7 @@ module.exports = Backbone.View.extend(
         this.onUploadStart();
         return fetch(url, {
           method: 'post',
-          credentials: 'include',
+          credentials: config.credentials || 'include',
           headers,
           body
         })
