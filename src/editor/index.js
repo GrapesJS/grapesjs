@@ -1,14 +1,23 @@
 /**
- * Editor class contains the top level API which you'll probably use to custom the editor or extend it with plugins.
- * You get the Editor instance on init method
+ * Editor contains the top level API which you'll probably use to customize the editor or extend it with plugins.
+ * You get the Editor instance on init method and you can pass options via its [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/editor/config/config.js)
  *
  * ```js
- * var editor = grapesjs.init({...});
+ * const editor = grapesjs.init({
+ *    // options
+ * });
  * ```
  *
- * # Available Events
+ * ## Available Events
  *
- * ## Components
+ * You can make use of available events in this way
+ * ```js
+ * editor.on('EVENT-NAME', (some, argument) => {
+ *    // do something
+ * })
+ * ```
+ *
+ * ### Components
  * * `component:add` - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
  * * `component:remove` - Triggered when a component is removed, the model is passed as an argument to the callback
  * * `component:clone` - Triggered when a new component is added by a clone command, the model is passed as an argument to the callback
@@ -19,28 +28,28 @@
  * * `component:selected` - New component selected, the selected model is passed as an argument to the callback
  * * `component:deselected` - Component deselected, the deselected model is passed as an argument to the callback
  * * `component:toggled` - Component selection changed, toggled model is passed as an argument to the callback
- * ## Blocks
+ * ### Blocks
  * * `block:add` - New block added
  * * `block:remove` - Block removed
  * * `block:drag:start` - Started dragging block, model of the block is passed as an argument
  * * `block:drag` - Dragging block, the block's model and the drag event are passed as arguments
  * * `block:drag:stop` - Dragging of the block is stopped. As agruments for the callback you get, the dropped component model (if dropped successfully) and the model of the block
- * ## Assets
+ * ### Assets
  * * `asset:add` - New asset added
  * * `asset:remove` - Asset removed
  * * `asset:upload:start` - Before the upload is started
  * * `asset:upload:end` - After the upload is ended
  * * `asset:upload:error` - On any error in upload, passes the error as an argument
  * * `asset:upload:response` - On upload response, passes the result as an argument
- * ## Keymaps
+ * ### Keymaps
  * * `keymap:add` - New keymap added. The new keyamp object is passed as an argument
  * * `keymap:remove` - Keymap removed. The removed keyamp object is passed as an argument
  * * `keymap:emit` - Some keymap emitted, in arguments you get keymapId, shortcutUsed, Event
  * * `keymap:emit:{keymapId}` - `keymapId` emitted, in arguments you get keymapId, shortcutUsed, Event
- * ## Style Manager
+ * ### Style Manager
  * * `styleManager:change` - Triggered on style property change from new selected component, the view of the property is passed as an argument to the callback
  * * `styleManager:change:{propertyName}` - As above but for a specific style property
- * ## Storages
+ * ### Storages
  * * `storage:start` - Before the storage request is started
  * * `storage:start:store` - Before the store request. The object to store is passed as an argumnet (which you can edit)
  * * `storage:start:load` - Before the load request. Items to load are passed as an argumnet (which you can edit)
@@ -52,56 +61,31 @@
  * * `storage:error` - On any error on storage request, passes the error as an argument
  * * `storage:error:store` - Error on store request, passes the error as an argument
  * * `storage:error:load` - Error on load request, passes the error as an argument
- * ## Canvas
+ * ### Canvas
  * * `canvas:dragenter` - When something is dragged inside the canvas, `DataTransfer` instance passed as an argument
  * * `canvas:dragover` - When something is dragging on canvas, `DataTransfer` instance passed as an argument
  * * `canvas:drop` - Something is dropped in canvas, `DataTransfer` instance and the dropped model are passed as arguments
  * * `canvas:dragend` - When a drag operation is ended, `DataTransfer` instance passed as an argument
  * * `canvas:dragdata` - On any dataTransfer parse, `DataTransfer` instance and the `result` are passed as arguments.
  *  By changing `result.content` you're able to customize what is dropped
- * ## Selectors
+ * ### Selectors
  * * `selector:add` - Triggers when a new selector/class is created
- * ## RTE
+ * ### RTE
  * * `rte:enable` - RTE enabled. The view, on which RTE is enabled, is passed as an argument
  * * `rte:disable` - RTE disabled. The view, on which RTE is disabled, is passed as an argument
- * ## Commands
+ * ### Commands
  * * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
  * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
  * * `run:{commandName}:before` - Triggered before the command is called
  * * `stop:{commandName}:before` - Triggered before the command is called to stop
  * * `abort:{commandName}` - Triggered when the command execution is aborted (`editor.on(`run:preview:before`, opts => opts.abort = 1);`)
- * ## General
+ * ### General
  * * `canvasScroll` - Triggered when the canvas is scrolle
  * * `undo` - Undo executed
  * * `redo` - Redo executed
  * * `load` - When the editor is loaded
  *
- * @param {Object} config Configurations
- * @param {string} config.container='' Selector for the editor container, eg. '#myEditor'
- * @param {string|Array<Object>} [config.components=''] HTML string or object of components
- * @param {string|Array<Object>} [config.style=''] CSS string or object of rules
- * @param {Boolean} [config.fromElement=false] If true, will fetch HTML and CSS from selected container
- * @param {Boolean} [config.undoManager=true] Enable/Disable undo manager
- * @param {Boolean} [config.autorender=true] If true renders editor on init
- * @param {Boolean} [config.noticeOnUnload=true] Enable/Disable alert message before unload the page
- * @param {string} [config.height='900px'] Height for the editor container
- * @param {string} [config.width='100%'] Width for the editor container
- * @param {Object} [config.storage={}] Storage manager configuration, see the relative documentation
- * @param {Object} [config.styleManager={}] Style manager configuration, see the relative documentation
- * @param {Object} [config.commands={}] Commands configuration, see the relative documentation
- * @param {Object} [config.domComponents={}] Components configuration, see the relative documentation
- * @param {Object} [config.panels={}] Panels configuration, see the relative documentation
- * @param {Object} [config.showDevices=true] If true render a select of available devices inside style manager panel
- * @param {Boolean} [config.keepEmptyTextNodes=false] If false, removes empty text nodes when parsed (unless they contain a space)
- * @param {string} [config.defaultCommand='select-comp'] Command to execute when no other command is running
- * @param {Array} [config.plugins=[]] Array of plugins to execute on start
- * @param {Object} [config.pluginsOpts={}] Custom options for plugins
- * @example
- * var editor = grapesjs.init({
- *   container : '#gjs',
- *   components: '<div class="txt-red">Hello world!</div>',
- *   style: '.txt-red{color: red}',
- * });
+ * @module Editor
  */
 import $ from 'cash-dom';
 
@@ -157,6 +141,7 @@ module.exports = config => {
 
     /**
      * @property {AssetManager}
+     * @private
      */
     AssetManager: em.get('AssetManager'),
 
@@ -237,6 +222,12 @@ module.exports = config => {
      * @private
      */
     RichTextEditor: em.get('RichTextEditor'),
+
+    /**
+     * @property {Parser}
+     * @private
+     */
+    Parser: em.get('Parser'),
 
     /**
      * @property {Utils}
@@ -484,11 +475,7 @@ module.exports = config => {
      * editor.runCommand('myCommand', {someValue: 1});
      */
     runCommand(id, options = {}) {
-      let result;
-      const command = em.get('Commands').get(id);
-      if (command) result = command.callRun(this, options);
-
-      return result;
+      return em.get('Commands').run(id, options);
     },
 
     /**
@@ -500,11 +487,7 @@ module.exports = config => {
      * editor.stopCommand('myCommand', {someValue: 1});
      */
     stopCommand(id, options = {}) {
-      let result;
-      const command = em.get('Commands').get(id);
-      if (command) result = command.callStop(this, options);
-
-      return result;
+      return em.get('Commands').stop(id, options);
     },
 
     /**
@@ -591,13 +574,58 @@ module.exports = config => {
     },
 
     /**
+     * Replace the default CSS parser with a custom one.
+     * The parser function receives a CSS string as a parameter and expects
+     * an array of CSSRule objects as a result. If you need to remove the
+     * custom parser, pass `null` as the argument
+     * @param {Function|null} parser Parser function
+     * @return {this}
+     * @example
+     * editor.setCustomParserCss(css => {
+     *  const result = [];
+     *  // ... parse the CSS string
+     *  result.push({
+     *    selectors: '.someclass, div .otherclass',
+     *    style: { color: 'red' }
+     *  })
+     *  // ...
+     *  return result;
+     * });
+     */
+    setCustomParserCss(parser) {
+      this.Parser.getConfig().parserCss = parser;
+      return this;
+    },
+
+    /**
+     * Trigger event log message
+     * @param  {*} msg Message to log
+     * @param  {Object} [opts={}] Custom options
+     * @param  {String} [opts.ns=''] Namespace of the log (eg. to use in plugins)
+     * @param  {String} [opts.level='debug'] Level of the log, `debug`, `info`, `warning`, `error`
+     * @return {this}
+     * @example
+     * editor.log('Something done!', { ns: 'from-plugin-x', level: 'info' });
+     * // This will trigger following events
+     * // `log`, `log:info`, `log-from-plugin-x`, `log-from-plugin-x:info`
+     * // Callbacks of those events will always receive the message and
+     * // options, as arguments, eg:
+     * // editor.on('log:info', (msg, opts) => console.info(msg, opts))
+     */
+    log(msg, opts = {}) {
+      em.log(msg, opts);
+      return this;
+    },
+
+    /**
      * Attach event
      * @param  {string} event Event name
      * @param  {Function} callback Callback function
      * @return {this}
      */
     on(event, callback) {
-      return em.on(event, callback);
+      em.on(event, callback);
+      return this;
     },
 
     /**
@@ -607,7 +635,8 @@ module.exports = config => {
      * @return {this}
      */
     off(event, callback) {
-      return em.off(event, callback);
+      em.off(event, callback);
+      return this;
     },
 
     /**
@@ -616,7 +645,8 @@ module.exports = config => {
      * @return {this}
      */
     trigger(event) {
-      return em.trigger.apply(em, arguments);
+      em.trigger.apply(em, arguments);
+      return this;
     },
 
     /**

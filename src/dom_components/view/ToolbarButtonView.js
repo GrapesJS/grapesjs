@@ -38,8 +38,13 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    var config = this.editor.getConfig();
-    this.el.className += ' ' + config.stylePrefix + 'toolbar-item';
+    const { editor, $el, model } = this;
+    const id = model.get('id');
+    const label = model.get('label');
+    const pfx = editor.getConfig('stylePrefix');
+    $el.addClass(`${pfx}toolbar-item`);
+    id && $el.addClass(`${pfx}toolbar-item__${id}`);
+    label && $el.append(label);
     return this;
   }
 });

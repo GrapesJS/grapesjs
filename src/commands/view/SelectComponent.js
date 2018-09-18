@@ -9,7 +9,7 @@ let showOffsets;
 
 module.exports = {
   init(o) {
-    bindAll(this, 'onHover', 'onOut', 'onClick', 'onKeyPress', 'onFrameScroll');
+    bindAll(this, 'onHover', 'onOut', 'onClick', 'onFrameScroll');
   },
 
   enable() {
@@ -53,27 +53,8 @@ module.exports = {
     methods[method](body, 'mouseout', this.onOut);
     methods[method](body, 'click', this.onClick);
     methods[method](win, 'scroll resize', this.onFrameScroll);
-    methods[method](win, 'keydown', this.onKeyPress);
     em[method]('component:toggled', this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
-  },
-
-  /**
-   * On key press event
-   * @private
-   * */
-  onKeyPress(e) {
-    var key = e.which || e.keyCode;
-    var comp = this.editorModel.getSelected();
-    var focused = this.frameEl.contentDocument.activeElement.tagName !== 'BODY';
-
-    // On CANC (46) or Backspace (8)
-    if (key == 8 || key == 46) {
-      if (!focused) e.preventDefault();
-      if (comp && !focused) {
-        this.editor.runCommand('core:component-delete');
-      }
-    }
   },
 
   /**
@@ -89,13 +70,12 @@ module.exports = {
     // Adjust tools scroll top
     if (!this.adjScroll) {
       this.adjScroll = 1;
-      this.onFrameScroll(e);
       this.updateAttached();
     }
 
     if (model && !model.get('hoverable')) {
       let parent = model && model.parent();
-      while (parent && !parent.get('hoverable')) parent = comp.parent();
+      while (parent && !parent.get('hoverable')) parent = parent.parent();
       model = parent;
     }
 
@@ -390,14 +370,30 @@ module.exports = {
         // Here the resizer is updated with the current element height and width
         onStart(e, opts = {}) {
           const { el, config, resizer } = opts;
-          const { keyHeight, keyWidth, currentUnit } = config;
+          const {
+            keyHeight,
+            keyWidth,
+            currentUnit,
+            keepAutoHeight,
+            keepAutoWidth
+          } = config;
           toggleBodyClass('add', e, opts);
           modelToStyle = em.get('StyleManager').getModelToStyle(model);
           const computedStyle = getComputedStyle(el);
           const modelStyle = modelToStyle.getStyle();
-          const currentWidth = modelStyle[keyWidth] || computedStyle[keyWidth];
-          const currentHeight =
-            modelStyle[keyHeight] || computedStyle[keyHeight];
+
+          let currentWidth = modelStyle[keyWidth];
+          config.autoWidth = keepAutoWidth && currentWidth === 'auto';
+          if (isNaN(parseFloat(currentWidth))) {
+            currentWidth = computedStyle[keyWidth];
+          }
+
+          let currentHeight = modelStyle[keyHeight];
+          config.autoHeight = keepAutoHeight && currentHeight === 'auto';
+          if (isNaN(parseFloat(currentHeight))) {
+            currentHeight = computedStyle[keyHeight];
+          }
+
           resizer.startDim.w = parseFloat(currentWidth);
           resizer.startDim.h = parseFloat(currentHeight);
           showOffsets = 0;
@@ -425,17 +421,24 @@ module.exports = {
           }
 
           const { store, selectedHandler, config } = options;
-          const { keyHeight, keyWidth } = config;
+          const {
+            keyHeight,
+            keyWidth,
+            autoHeight,
+            autoWidth,
+            unitWidth,
+            unitHeight
+          } = config;
           const onlyHeight = ['tc', 'bc'].indexOf(selectedHandler) >= 0;
           const onlyWidth = ['cl', 'cr'].indexOf(selectedHandler) >= 0;
           const style = modelToStyle.getStyle();
 
           if (!onlyHeight) {
-            style[keyWidth] = rect.w + config.unitWidth;
+            style[keyWidth] = autoWidth ? 'auto' : `${rect.w}${unitWidth}`;
           }
 
           if (!onlyWidth) {
-            style[keyHeight] = rect.h + config.unitHeight;
+            style[keyHeight] = autoHeight ? 'auto' : `${rect.h}${unitHeight}`;
           }
 
           modelToStyle.setStyle(style, { avoidStore: 1 });
@@ -500,7 +503,9 @@ module.exports = {
 
       this.toolbar.reset(toolbar);
       const view = model.view;
-      view && this.updateToolbarPos(view.el);
+      toolbarStyle.top = '-100px';
+      toolbarStyle.left = 0;
+      setTimeout(() => view && this.updateToolbarPos(view.el), 0);
     } else {
       toolbarStyle.display = 'none';
     }
@@ -515,8 +520,7 @@ module.exports = {
     var unit = 'px';
     var toolbarEl = this.canvas.getToolbarEl();
     var toolbarStyle = toolbarEl.style;
-    const origDisp = toolbarStyle.display;
-    toolbarStyle.display = 'block';
+    toolbarStyle.opacity = 0;
     var pos = this.canvas.getTargetToElementDim(toolbarEl, el, {
       elPos,
       event: 'toolbarPosUpdate'
@@ -525,7 +529,7 @@ module.exports = {
       var leftPos = pos.left + pos.elementWidth - pos.targetWidth;
       toolbarStyle.top = pos.top + unit;
       toolbarStyle.left = (leftPos < 0 ? 0 : leftPos) + unit;
-      toolbarStyle.display = origDisp;
+      toolbarStyle.opacity = '';
     }
   },
 
@@ -573,7 +577,6 @@ module.exports = {
 
   /**
    * Update attached elements, eg. component toolbar
-   * @return {[type]} [description]
    */
   updateAttached(updated) {
     const model = this.em.getSelected();

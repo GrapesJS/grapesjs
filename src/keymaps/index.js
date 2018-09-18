@@ -1,12 +1,35 @@
 /**
- * This module allows to create shortcuts for functions and commands (via command id)
+ * You can customize the initial state of the module from the editor initialization
+ * ```js
+ * const editor = grapesjs.init({
+ *  keymaps: {
+ *     // Object of keymaps
+ *    defaults: {
+ *      'your-namespace:keymap-name' {
+ *        keys: '⌘+z, ctrl+z',
+ *        handler: 'some-command-id'
+ *      },
+ *      ...
+ *    }
+ *  }
+ * })
+ * ```
  *
- * You can access the module in this way
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ *
  * ```js
  * const keymaps = editor.Keymaps;
  * ```
  *
+ * * [getConfig](#getconfig)
+ * * [add](#add)
+ * * [get](#get)
+ * * [getAll](#getAll)
+ * * [remove](#remove)
+ *
+ * @module Keymaps
  */
+
 import { isString } from 'underscore';
 
 const keymaster = require('keymaster');
@@ -48,6 +71,10 @@ module.exports = () => {
       'core:component-exit': {
         keys: 'a',
         handler: 'core:component-exit'
+      },
+      'core:component-delete': {
+        keys: 'backspace, delete',
+        handler: 'core:component-delete'
       }
     }
   };

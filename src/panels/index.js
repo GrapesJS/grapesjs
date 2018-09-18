@@ -1,4 +1,18 @@
 /**
+ * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/panels/config/config.js)
+ * ```js
+ * const editor = grapesjs.init({
+ *  panels: {
+ *    // options
+ *  }
+ * })
+ * ```
+ *
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ *
+ * ```js
+ * const panelManager = editor.Panels;
+ * ```
  *
  * * [addPanel](#addpanel)
  * * [addButton](#addbutton)
@@ -6,45 +20,13 @@
  * * [getButton](#getbutton)
  * * [getPanel](#getpanel)
  * * [getPanels](#getpanels)
- * * [render](#render)
- *
- * This module manages panels and buttons inside the editor.
- * You can init the editor with all panels and buttons necessary via configuration
- *
- * ```js
- * var editor = grapesjs.init({
- *   ...
- *  panels: {...} // Check below for the possible properties
- *   ...
- * });
- * ```
- *
- *
- * Before using methods you should get first the module from the editor instance, in this way:
- *
- * ```js
- * var panelManager = editor.Panels;
- * ```
+ * * [getPanelsEl](#getpanelsel)
+ * * [removePanel](#removepanel)
+ * * [removeButton](#removeButton)
  *
  * @module Panels
- * @param {Object} config Configurations
- * @param {Array<Object>} [config.defaults=[]] Array of possible panels
- * @example
- * ...
- * panels: {
- *    defaults: [{
- *      id: 'main-toolbar',
- *      buttons: [{
- *        id: 'btn-id',
- *        className: 'some',
- *        attributes: {
- *          title: 'MyTitle'
- *        }
- *      }],
- *     }],
- * }
- * ...
  */
+
 module.exports = () => {
   var c = {},
     defaults = require('./config/config'),
@@ -65,6 +47,7 @@ module.exports = () => {
     /**
      * Initialize module. Automatically called with a new instance of the editor
      * @param {Object} config Configurations
+     * @private
      */
     init(config) {
       c = config || {};
@@ -222,6 +205,7 @@ module.exports = () => {
     /**
      * Render panels and buttons
      * @return {HTMLElement}
+     * @private
      */
     render() {
       return PanelsViewObj.render().el;

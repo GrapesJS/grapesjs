@@ -1,43 +1,39 @@
 /**
- * With Style Manager you basically build categories (called sectors) of CSS properties which could
- * be used to custom components and classes.
- * You can init the editor with all sectors and properties via configuration
- *
+ * With Style Manager you build categories (called sectors) of CSS properties which could be used to customize the style of components.
+ * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/style_manager/config/config.js)
  * ```js
- * var editor = grapesjs.init({
- *   ...
- *  styleManager: {...} // Check below for the possible properties
- *   ...
- * });
+ * const editor = grapesjs.init({
+ *  styleManager: {
+ *    // options
+ *  }
+ * })
  * ```
  *
- * Before using methods you should get first the module from the editor instance, in this way:
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
  *
  * ```js
- * var styleManager = editor.StyleManager;
+ * const styleManager = editor.StyleManager;
  * ```
+ *
+ * * [getConfig](#getconfig)
+ * * [addSector](#addsector)
+ * * [getSector](#getsector)
+ * * [removeSector](#removesector)
+ * * [getSectors](#getsectors)
+ * * [addProperty](#addproperty)
+ * * [getProperty](#getproperty)
+ * * [removeProperty](#removeproperty)
+ * * [getProperties](#getproperties)
+ * * [getModelToStyle](#getmodeltostyle)
+ * * [getModelToStyle](#getmodeltostyle)
+ * * [addType](#addtype)
+ * * [getType](#gettype)
+ * * [getTypes](#gettypes)
+ * * [createType](#createtype)
  *
  * @module StyleManager
- * @param {Object} config Configurations
- * @param {Array<Object>} [config.sectors=[]] Array of possible sectors
- * @example
- * ...
- * styleManager: {
- *    sectors: [{
- *      id: 'dim',
- *      name: 'Dimension',
- *      properties: [{
- *        name: 'Width',
- *        property: 'width',
- *        type: 'integer',
- *        units: ['px', '%'],
- *        defaults: 'auto',
- *        min: 0,
-          }],
- *     }],
- * }
- * ...
  */
+
 import { isElement } from 'underscore';
 
 module.exports = () => {
@@ -60,7 +56,6 @@ module.exports = () => {
     /**
      * Get configuration object
      * @return {Object}
-     * @private
      */
     getConfig() {
       return c;
@@ -69,6 +64,7 @@ module.exports = () => {
     /**
      * Initialize module. Automatically called with a new instance of the editor
      * @param {Object} config Configurations
+     * @private
      */
     init(config) {
       c = config || {};
@@ -304,7 +300,8 @@ module.exports = () => {
      *                            `model` (business logic), `view` (presentation logic)
      *                            and `isType` function which recognize the type of the
      *                            passed entity
-     * addType('my-type', {
+     *@example
+     * styleManager.addType('my-type', {
      *  model: {},
      *  view: {},
      *  isType: (value) => {
@@ -365,6 +362,7 @@ module.exports = () => {
     /**
      * Render sectors and properties
      * @return  {HTMLElement}
+     * @private
      * */
     render() {
       return SectView.render().el;

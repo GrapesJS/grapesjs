@@ -82,12 +82,22 @@ $canvasTop: 40px;
   background-color: $colorBlue;
   color: white;
   z-index: 10;
+  top: 0;
+  left: 0;
 }
 
 .#{$app-prefix}toolbar-item {
   padding: 5px 7px;
   font-size: 0.8rem;
   cursor: pointer;
+  width: 26px;
+  vertical-align: middle;
+  display: inline-block;
+
+  svg {
+    fill: currentColor;
+    vertical-align: middle;
+  }
 }
 
 .#{$app-prefix}resizer-c {

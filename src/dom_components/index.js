@@ -1,4 +1,18 @@
 /**
+ * With this module is possible to manage components inside the canvas. You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/dom_components/config/config.js)
+ * ```js
+ * const editor = grapesjs.init({
+ *  domComponents: {
+ *    // options
+ *  }
+ * })
+ * ```
+ *
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ *
+ * ```js
+ * const domComponents = editor.DomComponents;
+ * ```
  *
  * * [getWrapper](#getwrapper)
  * * [getComponents](#getcomponents)
@@ -8,31 +22,10 @@
  * * [store](#store)
  * * [render](#render)
  *
- * With this module is possible to manage components inside the canvas.
- * Before using methods you should get first the module from the editor instance, in this way:
- *
- * ```js
- * var domComponents = editor.DomComponents;
- * ```
- *
  * @module DomComponents
- * @param {Object} config Configurations
- * @param {string|Array<Object>} [config.components=[]] HTML string or an array of possible components
- * @example
- * ...
- * domComponents: {
- *    components: '<div>Hello world!</div>',
- * }
- * // Or
- * domComponents: {
- *    components: [
- *      { tagName: 'span', style: {color: 'red'}, content: 'Hello'},
- *      { style: {width: '100px', content: 'world!'}}
- *    ],
- * }
- * ...
  */
-import { isEmpty } from 'underscore';
+
+import { isEmpty, isString, isObject, isArray } from 'underscore';
 
 module.exports = () => {
   var c = {};
@@ -119,6 +112,11 @@ module.exports = () => {
       id: 'text',
       model: require('./model/ComponentText'),
       view: require('./view/ComponentTextView')
+    },
+    {
+      id: 'wrapper',
+      model: require('./model/ComponentWrapper'),
+      view: ComponentView
     },
     {
       id: 'default',
@@ -208,6 +206,7 @@ module.exports = () => {
       let wrapper = { ...c.wrapper };
       wrapper['custom-name'] = c.wrapperName;
       wrapper.wrapper = 1;
+      wrapper.type = 'wrapper';
 
       // Components might be a wrapper
       if (
@@ -302,18 +301,27 @@ module.exports = () => {
      * @return {Object} Loaded data
      */
     load(data = '') {
+      const { em } = this;
       let result = '';
 
       if (!data && c.stm) {
         data = c.em.getCacheLoad();
       }
 
-      if (data.components) {
-        try {
-          result = JSON.parse(data.components);
-        } catch (err) {}
-      } else if (data.html) {
-        result = data.html;
+      const { components, html } = data;
+
+      if (components) {
+        if (isObject(components) || isArray(components)) {
+          result = components;
+        } else {
+          try {
+            result = JSON.parse(components);
+          } catch (err) {
+            em && em.logError(err);
+          }
+        }
+      } else if (html) {
+        result = html;
       }
 
       const isObj = result && result.constructor === Object;
@@ -378,7 +386,7 @@ module.exports = () => {
     },
 
     /**
-     * Returns root component inside the canvas. Something like <body> inside HTML page
+     * Returns root component inside the canvas. Something like `<body>` inside HTML page
      * The wrapper doesn't differ from the original Component Model
      * @return {Component} Root Component
      * @example

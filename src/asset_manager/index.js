@@ -1,41 +1,33 @@
 /**
+ * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/asset_manager/config/config.js)
+ * ```js
+ * const editor = grapesjs.init({
+ *  assetManager: {
+ *    // options
+ *  }
+ * })
+ * ```
+ *
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+ *
+ * ```js
+ * const assetManager = editor.AssetManager;
+ * ```
+ *
  * * [add](#add)
  * * [get](#get)
  * * [getAll](#getall)
  * * [getAllVisible](#getallvisible)
  * * [remove](#remove)
+ * * [store](#store)
+ * * [load](#load)
  * * [getContainer](#getcontainer)
  * * [getAssetsEl](#getassetsel)
  * * [addType](#addtype)
  * * [getType](#gettype)
  * * [getTypes](#gettypes)
- * * [store](#store)
- * * [load](#load)
- *
- * Before using this methods you should get first the module from the editor instance, in this way:
- *
- * ```js
- * var assetManager = editor.AssetManager;
- * ```
  *
  * @module AssetManager
- * @param {Object} config Configurations
- * @param {Array<Object>} [config.assets=[]] Default assets
- * @param {String} [config.uploadText='Drop files here or click to upload'] Upload text
- * @param {String} [config.addBtnText='Add image'] Text for the add button
- * @param {String} [config.upload=''] Where to send upload data. Expects as return a JSON with asset/s object
- * as: {data: [{src:'...'}, {src:'...'}]}
- * @return {this}
- * @example
- * ...
- * {
- * 	assets: [
- *  	{src:'path/to/image.png'},
- *     ...
- *  ],
- *  upload: 'http://dropbox/path', // Set to false to disable it
- *  uploadText: 'Drop files here or click to upload',
- * }
  */
 
 module.exports = () => {
@@ -268,13 +260,14 @@ module.exports = () => {
     },
 
     /**
-     * Add new type
+     * Add new type. If you want to get more about type definition we suggest to read the [module's page](/modules/Assets.html)
      * @param {string} id Type ID
      * @param {Object} definition Definition of the type. Each definition contains
      *                            `model` (business logic), `view` (presentation logic)
      *                            and `isType` function which recognize the type of the
      *                            passed entity
-     * addType('my-type', {
+     * @example
+     * assetManager.addType('my-type', {
      *  model: {},
      *  view: {},
      *  isType: (value) => {},

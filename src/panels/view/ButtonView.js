@@ -19,9 +19,10 @@ module.exports = Backbone.View.extend({
     this.ppfx = this.config.pStylePrefix || '';
     this.id = pfx + this.model.get('id');
     this.activeCls = `${pfx}active ${ppfx}four-color`;
-    this.disableCls = pfx + 'active';
-    this.btnsVisCls = pfx + 'visible';
+    this.disableCls = `${ppfx}disabled`;
+    this.btnsVisCls = `${pfx}visible`;
     this.className = pfx + 'btn' + (cls ? ' ' + cls : '');
+    this.listenTo(this.model, 'change', this.render);
     this.listenTo(this.model, 'change:active updateActive', this.updateActive);
     this.listenTo(this.model, 'checkActive', this.checkActive);
     this.listenTo(this.model, 'change:bntsVis', this.updateBtnsVis);
@@ -69,48 +70,40 @@ module.exports = Backbone.View.extend({
    * @return   void
    * */
   updateActive() {
-    const model = this.model;
+    const { model, commands, em } = this;
     const context = model.get('context');
+    const options = model.get('options');
     let command = {};
-    var editor = this.em && this.em.get ? this.em.get('Editor') : null;
+    var editor = em && em.get ? em.get('Editor') : null;
     var commandName = model.get('command');
+    var cmdIsFunc = isFunction(commandName);
 
-    if (this.commands && isString(commandName)) {
-      command = this.commands.get(commandName) || {};
-    } else if (isFunction(commandName)) {
-      command = { run: commandName };
+    if (commands && isString(commandName)) {
+      command = commands.get(commandName) || {};
+    } else if (cmdIsFunc) {
+      command = commands.create({ run: commandName });
     } else if (commandName !== null && isObject(commandName)) {
-      command = commandName;
+      command = commands.create(commandName);
     }
 
     if (model.get('active')) {
       model.collection.deactivateAll(context);
       model.set('active', true, { silent: true }).trigger('checkActive');
+      commands.runCommand(command, { ...options, sender: model });
 
-      if (command.run) {
-        command.run(editor, model, model.get('options'));
-        editor.trigger('run:' + commandName);
-      }
-
-      // Disable button if there is no stop method
-      !command.stop && model.set('active', false);
+      // Disable button if the command was just a function
+      cmdIsFunc && model.set('active', false);
     } else {
       this.$el.removeClass(this.activeCls);
       model.collection.deactivateAll(context);
-
-      if (command.stop) {
-        command.stop(editor, model, model.get('options'));
-        editor.trigger('stop:' + commandName);
-      }
+      commands.stopCommand(command, { ...options, sender: model });
     }
   },
 
   updateDisable() {
-    if (this.model.get('disable')) {
-      this.$el.addClass(this.disableCls);
-    } else {
-      this.$el.removeClass(this.disableCls);
-    }
+    const { disableCls, model } = this;
+    const disable = model.get('disable');
+    this.$el[disable ? 'addClass' : 'removeClass'](disableCls);
   },
 
   /**
@@ -119,8 +112,8 @@ module.exports = Backbone.View.extend({
    * @return   void
    * */
   checkActive() {
-    if (this.model.get('active')) this.$el.addClass(this.activeCls);
-    else this.$el.removeClass(this.activeCls);
+    const { model, $el, activeCls } = this;
+    model.get('active') ? $el.addClass(activeCls) : $el.removeClass(activeCls);
   },
 
   /**
@@ -138,25 +131,32 @@ module.exports = Backbone.View.extend({
   },
 
   toogleActive() {
-    var active = this.model.get('active');
-    this.model.set('active', !active);
+    const { model } = this;
+    const { active, togglable } = model.attributes;
+
+    if (active && !togglable) return;
+
+    model.set('active', !active);
 
     // If the stop is requested
     var command = this.em.get('Commands').get('select-comp');
 
     if (active) {
-      if (this.model.get('runDefaultCommand')) this.em.runDefault();
+      if (model.get('runDefaultCommand')) this.em.runDefault();
     } else {
-      if (this.model.get('stopDefaultCommand')) this.em.stopDefault();
+      if (model.get('stopDefaultCommand')) this.em.stopDefault();
     }
   },
 
   render() {
     const label = this.model.get('label');
-    const $el = this.$el;
+    const { $el } = this;
+    $el.empty();
     this.updateAttributes();
     $el.attr('class', this.className);
     label && $el.append(label);
+    this.checkActive();
+    this.updateDisable();
 
     return this;
   }

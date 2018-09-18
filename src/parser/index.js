@@ -1,12 +1,16 @@
 module.exports = () => {
-  var c = {},
+  let conf = {},
     defaults = require('./config/config'),
     parserCss = require('./model/ParserCss'),
     parserHtml = require('./model/ParserHtml');
-  var pHtml, pCss;
+  let pHtml, pCss;
 
   return {
     compTypes: '',
+
+    parserCss: null,
+
+    parserHtml: null,
 
     /**
      * Name of the module
@@ -14,6 +18,14 @@ module.exports = () => {
      * @private
      */
     name: 'Parser',
+
+    /**
+     * Get config object
+     * @return {Object}
+     */
+    getConfig() {
+      return conf;
+    },
 
     /**
      * Initialize module. Automatically called with a new instance of the editor
@@ -30,13 +42,11 @@ module.exports = () => {
      * }
      * ...
      */
-    init(config) {
-      c = config || {};
-      for (var name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
-      }
-      pHtml = new parserHtml(c);
-      pCss = new parserCss(c);
+    init(config = {}) {
+      conf = { ...defaults, ...config };
+      conf.Parser = this;
+      pHtml = new parserHtml(conf);
+      pCss = new parserCss(conf);
       return this;
     },
 
@@ -50,6 +60,11 @@ module.exports = () => {
       return pHtml.parse(str, pCss);
     },
 
+    /**
+     * Parse CSS string and return valid model
+     * @param  {string} str CSS string
+     * @return {Array<Object>}
+     */
     parseCss(str) {
       return pCss.parse(str);
     }

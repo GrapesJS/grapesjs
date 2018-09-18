@@ -1,12 +1,26 @@
 /**
- * Before using methods you should get first the module from the editor instance, in this way:
+ * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/device_manager/config/config.js)
+ * ```js
+ * const editor = grapesjs.init({
+ *  deviceManager: {
+ *    // options
+ *  }
+ * })
+ * ```
+ *
+ * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
  *
  * ```js
- * var deviceManager = editor.DeviceManager;
+ * const deviceManager = editor.DeviceManager;
  * ```
+ *
+ * * [add](#add)
+ * * [get](#get)
+ * * [getAll](#getAll)
  *
  * @module DeviceManager
  */
+
 module.exports = () => {
   var c = {},
     defaults = require('./config/config'),

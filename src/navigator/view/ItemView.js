@@ -9,6 +9,7 @@ let ItemsView;
 module.exports = Backbone.View.extend({
   events: {
     'mousedown [data-toggle-move]': 'startSort',
+    'touchstart [data-toggle-move]': 'startSort',
     'click [data-toggle-visible]': 'toggleVisibility',
     'click [data-toggle-select]': 'handleSelect',
     'mouseover [data-toggle-select]': 'handleHover',
@@ -68,7 +69,7 @@ module.exports = Backbone.View.extend({
     const model = this.model;
     const components = model.get('components');
     model.set('open', false);
-    this.listenTo(components, 'remove add change reset', this.checkChildren);
+    this.listenTo(components, 'remove add reset', this.checkChildren);
     this.listenTo(model, 'change:status', this.updateStatus);
     this.listenTo(model, 'change:open', this.updateOpening);
     this.listenTo(model, 'change:style:display', this.updateVisibility);
@@ -225,7 +226,7 @@ module.exports = Backbone.View.extend({
     e.stopPropagation();
     const sorter = this.sorter;
     // Right or middel click
-    if (e.button !== 0) return;
+    if (e.button && e.button !== 0) return;
     sorter && sorter.startSort(e.target);
   },
 
@@ -277,7 +278,7 @@ module.exports = Backbone.View.extend({
    * */
   checkChildren() {
     const model = this.model;
-    const c = this.countChildren(model);
+    const count = this.countChildren(model);
     const pfx = this.pfx;
     const noChildCls = this.clsNoChild;
     const title = this.$el
@@ -288,9 +289,9 @@ module.exports = Backbone.View.extend({
       this.cnt = this.$el.children(`.${this.clsCount}`);
     }
 
-    if (c) {
+    if (count) {
       title.removeClass(noChildCls);
-      this.cnt.html(c);
+      this.cnt.html(count);
     } else {
       title.addClass(noChildCls);
       this.cnt.empty();

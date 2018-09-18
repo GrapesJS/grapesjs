@@ -51,21 +51,25 @@
 
   &btn {
     box-sizing: border-box;
-    height: 30px;
-    width: 30px;
+    min-height: 30px;
+    min-width: 30px;
     line-height: 21px;
     background-color: transparent;
     border: none;
     font-size: 18px;
     margin-right: 5px;
     border-radius: 2px;
-    padding: 5px;
+    padding: 4px;
     position: relative;
     cursor: pointer;
 
     &.#{$pn-prefix}active {
       background-color: rgba(0, 0, 0, 0.15);
       box-shadow: 0 0 3px rgba(0, 0, 0, 0.25) inset;
+    }
+
+    svg {
+      fill: currentColor;
     }
   }
 }

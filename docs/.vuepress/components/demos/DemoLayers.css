@@ -1,0 +1,17 @@
+.editor-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: stretch;
+  flex-wrap: nowrap;
+  height: 300px;
+}
+
+.editor-canvas {
+  flex-grow: 1;
+}
+
+.panel__right {
+  flex-basis: 230px;
+  position: relative;
+  overflow-y: auto;
+}

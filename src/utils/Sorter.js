@@ -279,7 +279,7 @@ module.exports = Backbone.View.extend({
     }
 
     on(container, 'mousemove dragover', this.onMove);
-    on(docs, 'mouseup dragend', this.endMove);
+    on(docs, 'mouseup dragend touchend', this.endMove);
     on(docs, 'keydown', this.rollback);
     onStart && onStart();
 
@@ -385,6 +385,7 @@ module.exports = Backbone.View.extend({
     const target = this.target;
     const targetModel = this.getTargetModel(target);
     this.selectTargetModel(targetModel);
+    if (!targetModel) plh.style.display = 'none';
 
     this.lastDims = dims;
     var pos = this.findPosition(dims, rX, rY);
@@ -911,7 +912,7 @@ module.exports = Backbone.View.extend({
     const onEndMove = this.onEndMove;
     const { target, lastPos } = this;
     off(container, 'mousemove dragover', this.onMove);
-    off(docs, 'mouseup dragend', this.endMove);
+    off(docs, 'mouseup dragend touchend', this.endMove);
     off(docs, 'keydown', this.rollback);
     //this.$document.off('mouseup', this.endMove);
     //this.$document.off('keydown', this.rollback);

@@ -1,7 +1,7 @@
 import Backbone from 'backbone';
 const $ = Backbone.$;
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   /**
    * Initialize method that can't be removed
    * @param  {Object}  o Options
@@ -106,7 +106,8 @@ module.exports = Backbone.View.extend({
       return;
     }
 
-    const result = this.run(editor, editor, options);
+    const sender = options.sender || editor;
+    const result = this.run(editor, sender, options);
     editor.trigger(`run:${id}`, result, options);
     return result;
   },
@@ -119,8 +120,9 @@ module.exports = Backbone.View.extend({
    * */
   callStop(editor, options = {}) {
     const id = this.id;
+    const sender = options.sender || editor;
     editor.trigger(`stop:${id}:before`, options);
-    const result = this.stop(editor, editor, options);
+    const result = this.stop(editor, sender, options);
     editor.trigger(`stop:${id}`, result, options);
     return result;
   },

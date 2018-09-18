@@ -113,7 +113,7 @@ export default class Droppable {
   getContentByData(dataTransfer) {
     const em = this.em;
     const types = dataTransfer.types;
-    const files = dataTransfer.files;
+    const files = dataTransfer.files || [];
     const dragContent = em.get('dragContent');
     let content = dataTransfer.getData('text');
 

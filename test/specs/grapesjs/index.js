@@ -164,18 +164,19 @@ describe('GrapesJS', () => {
         `
       <style>
         @font-face {
-          font-family: 'Glyphicons Halflings';
-          src: url(https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff2) format('woff2');
+          font-family: 'A';
+          src: url('http://a.link') format('woff2');
         }
         @font-face {
-          font-family: 'Droid Sans';
-          src: url(https://fonts.gstatic.com/s/droidsans/v8/SlGVmQWMvZQIdix7AFxXkHNSbRYXags.woff2) format('woff2');
+          font-family: 'B';
+          src: url('http://b.link') format('woff2');
         }
       </style>` + htmlString;
       const editor = obj.init(config);
       const css = editor.getCss();
       const styles = editor.getStyle();
       expect(styles.length).toEqual(2);
+      expect((css.match(/@font-face/g) || []).length).toEqual(2);
     });
 
     test('Set components as HTML', () => {
@@ -284,6 +285,40 @@ describe('GrapesJS', () => {
       config.plugins = [pluginName];
       config.pluginsOpts = {};
       config.pluginsOpts[pluginName] = { cVal: 'TEST' };
+      var editor = obj.init(config);
+      expect(editor.customValue).toEqual('TEST');
+    });
+
+    test('Execute inline plugins with custom options', () => {
+      const inlinePlugin = (edt, opts) => {
+        var opts = opts || {};
+        edt.customValue = opts.cVal || '';
+      };
+      config.plugins = [inlinePlugin];
+      config.pluginsOpts = {};
+      config.pluginsOpts[inlinePlugin] = { cVal: 'TEST' };
+      var editor = obj.init(config);
+      expect(editor.customValue).toEqual('TEST');
+    });
+
+    test('Execute inline plugins without any options', () => {
+      const inlinePlugin = edt => {
+        edt.customValue = 'TEST';
+      };
+      config.plugins = [inlinePlugin];
+      config.pluginsOpts = {};
+      var editor = obj.init(config);
+      expect(editor.customValue).toEqual('TEST');
+    });
+
+    test('Use plugins defined on window, with custom options', () => {
+      window.globalPlugin = (edt, opts) => {
+        var opts = opts || {};
+        edt.customValue = opts.cVal || '';
+      };
+      config.plugins = ['globalPlugin'];
+      config.pluginsOpts = {};
+      config.pluginsOpts['globalPlugin'] = { cVal: 'TEST' };
       var editor = obj.init(config);
       expect(editor.customValue).toEqual('TEST');
     });
