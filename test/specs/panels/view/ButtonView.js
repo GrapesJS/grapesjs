@@ -3,7 +3,7 @@ const Button = require('panels/model/Button');
 
 module.exports = {
   run() {
-    describe.only('ButtonView', () => {
+    describe('ButtonView', () => {
       var fixtures;
       var model;
       var view;
@@ -58,13 +58,12 @@ module.exports = {
       test('Disable the button', () => {
         model.set('disable', true, { silent: true });
         view.updateDisable();
-        expect(view.el.getAttribute('class')).toEqual(btnClass + ' active');
+        expect(view.el.getAttribute('class')).toEqual(btnClass + ' disabled');
       });
 
       test('Enable the disabled button', () => {
         model.set('disable', true, { silent: true });
         view.updateDisable();
-        expect(view.el.getAttribute('class')).toEqual(btnClass + ' active');
         model.set('disable', false, { silent: true });
         view.updateDisable();
         expect(view.el.getAttribute('class')).toEqual(btnClass);
