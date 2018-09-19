@@ -37,8 +37,14 @@ const defActions = {
       style: 'font-size:1.4rem;padding:0 4px 2px;',
       title: 'Link'
     },
-    result: rte =>
-      rte.insertHTML(`<a class="link" href="">${rte.selection()}</a>`)
+    result: rte => {
+      const nextSibling = rte.selection().anchorNode.nextSibling;
+      if (nextSibling && nextSibling.nodeName == 'A') {
+        rte.exec('unlink');
+      } else {
+        rte.insertHTML(`<a class="link" href="">${rte.selection()}</a>`);
+      }
+    }
   }
 };
 
