@@ -901,6 +901,14 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     /**
+     * Remove the component
+     * @return {this}
+     */
+    remove() {
+      return this.collection.remove(this);
+    },
+
+    /**
      * Reset id of the component and any of its style rule
      * @param {Object} [opts={}] Options
      * @return {this}
