@@ -39,8 +39,9 @@ module.exports = Backbone.View.extend({
    * @return   void
    * */
   updateClassName() {
-    var cls = this.model.get('className');
-    this.$el.attr('class', this.pfx + 'btn' + (cls ? ' ' + cls : ''));
+    const { model, pfx } = this;
+    const cls = model.get('className');
+    this.$el.attr('class', `${pfx}btn ${cls ? cls : ''}`.trim());
   },
 
   /**
@@ -157,6 +158,7 @@ module.exports = Backbone.View.extend({
     label && $el.append(label);
     this.checkActive();
     this.updateDisable();
+    this.updateClassName();
 
     return this;
   }

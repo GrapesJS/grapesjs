@@ -3,7 +3,7 @@ const Button = require('panels/model/Button');
 
 module.exports = {
   run() {
-    describe('ButtonView', () => {
+    describe.only('ButtonView', () => {
       var fixtures;
       var model;
       var view;
