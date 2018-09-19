@@ -38,7 +38,8 @@ const defActions = {
       title: 'Link'
     },
     result: rte => {
-      const nextSibling = rte.selection().anchorNode.nextSibling;
+      const anchor = rte.selection().anchorNode;
+      const nextSibling = anchor && anchor.nextSibling;
       if (nextSibling && nextSibling.nodeName == 'A') {
         rte.exec('unlink');
       } else {
