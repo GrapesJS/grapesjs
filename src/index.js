@@ -31,7 +31,7 @@ module.exports = (() => {
     version: '<# VERSION #>',
 
     /**
-     * Initializes an editor based on passed options
+     * Initialize the editor with passed options
      * @param {Object} config Configuration object
      * @param {string|HTMLElement} config.container Selector which indicates where render the editor
      * @param {Boolean} [config.autorender=true] If true, auto-render the content
@@ -60,7 +60,7 @@ module.exports = (() => {
         // Try to search in global context
         if (!plugin) {
           const wplg = window[pluginId];
-          plugin = wplg && wplg.defaults ? wplg.defaults : wplg;
+          plugin = wplg && wplg.default ? wplg.default : wplg;
         }
 
         if (plugin) {

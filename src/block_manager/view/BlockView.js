@@ -11,11 +11,13 @@ module.exports = Backbone.View.extend({
   },
 
   initialize(o, config = {}) {
+    const { model } = this;
     this.em = config.em;
     this.config = config;
     this.endDrag = this.endDrag.bind(this);
     this.ppfx = config.pStylePrefix || '';
-    this.listenTo(this.model, 'destroy remove', this.remove);
+    this.listenTo(model, 'destroy remove', this.remove);
+    this.listenTo(model, 'change', this.render);
   },
 
   /**

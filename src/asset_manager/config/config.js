@@ -29,6 +29,13 @@ module.exports = {
   // Custom parameters to pass with the upload request, eg. csrf token
   params: {},
 
+  // The credentials setting for the upload request, eg. 'include', 'omit'
+  credentials: 'include',
+
+  // Allow uploading multiple files per request.
+  // If disabled filename will not have '[]' appended
+  multiUpload: true,
+
   // If true, tries to add automatically uploaded assets.
   // To make it work the server should respond with a JSON containing assets
   // in a data key, eg:

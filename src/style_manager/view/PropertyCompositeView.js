@@ -123,5 +123,12 @@ module.exports = PropertyView.extend({
     }
 
     return value;
+  },
+
+  clearCached() {
+    PropertyView.prototype.clearCached.apply(this, arguments);
+    this.$input = null;
+    this.props = null;
+    this.$props = null;
   }
 });

@@ -46,7 +46,7 @@ module.exports = Property.extend({
   },
 
   setValue(value) {
-    this.getSliderEl().value = parseInt(value, 10);
+    this.getSliderEl().value = parseFloat(value);
     this.inputInst.setValue(value, { silent: 1 });
   },
 
@@ -56,5 +56,10 @@ module.exports = Property.extend({
     if (!this.model.get('showInput')) {
       this.inputInst.el.style.display = 'none';
     }
+  },
+
+  clearCached() {
+    Property.prototype.clearCached.apply(this, arguments);
+    this.slider = null;
   }
 });

@@ -453,6 +453,58 @@ editor.setCustomRte({
 });
 ```
 
+## setCustomParserCss
+
+Replace the default CSS parser with a custom one.
+The parser function receives a CSS string as a parameter and expects
+an array of CSSRule objects as a result. If you need to remove the
+custom parser, pass `null` as the argument
+
+### Parameters
+
+-   `parser` **([Function][7] | null)** Parser function
+
+### Examples
+
+```javascript
+editor.setCustomParserCss(css => {
+ const result = [];
+ // ... parse the CSS string
+ result.push({
+   selectors: '.someclass, div .otherclass',
+   style: { color: 'red' }
+ })
+ // ...
+ return result;
+});
+```
+
+Returns **this** 
+
+## log
+
+Trigger event log message
+
+### Parameters
+
+-   `msg` **any** Message to log
+-   `opts` **[Object][3]** Custom options (optional, default `{}`)
+    -   `opts.ns` **[String][2]** Namespace of the log (eg. to use in plugins) (optional, default `''`)
+    -   `opts.level` **[String][2]** Level of the log, `debug`, `info`, `warning`, `error` (optional, default `'debug'`)
+
+### Examples
+
+```javascript
+editor.log('Something done!', { ns: 'from-plugin-x', level: 'info' });
+// This will trigger following events
+// `log`, `log:info`, `log-from-plugin-x`, `log-from-plugin-x:info`
+// Callbacks of those events will always receive the message and
+// options, as arguments, eg:
+// editor.on('log:info', (msg, opts) => console.info(msg, opts))
+```
+
+Returns **this** 
+
 ## on
 
 Attach event

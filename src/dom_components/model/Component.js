@@ -162,11 +162,12 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.set('status', '');
 
       // Register global updates for collection properties
-      ['classes', 'traits'].forEach(name =>
-        this.listenTo(this.get(name), 'add remove change', () =>
-          this.emitUpdate(name)
-        )
-      );
+      ['classes', 'traits', 'components'].forEach(name => {
+        const events = `add remove ${name !== 'components' ? 'change' : ''}`;
+        this.listenTo(this.get(name), events.trim(), (...args) =>
+          this.emitUpdate(name, ...args)
+        );
+      });
       this.init();
     },
 
@@ -547,7 +548,10 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @private
      */
     initToolbar() {
-      var model = this;
+      const { em } = this;
+      const model = this;
+      const ppfx = (em && em.getConfig('stylePrefix')) || '';
+
       if (!model.get('toolbar')) {
         var tb = [];
         if (model.collection) {
@@ -558,7 +562,10 @@ const Component = Backbone.Model.extend(Styleable).extend(
         }
         if (model.get('draggable')) {
           tb.push({
-            attributes: { class: 'fa fa-arrows', draggable: true },
+            attributes: {
+              class: `fa fa-arrows ${ppfx}no-touch-actions`,
+              draggable: true
+            },
             //events: hasDnd(this.em) ? { dragstart: 'execCommand' } : '',
             command: 'tlb-move'
           });
@@ -871,10 +878,10 @@ const Component = Backbone.Model.extend(Styleable).extend(
       return scr;
     },
 
-    emitUpdate(property) {
+    emitUpdate(property, ...args) {
       const em = this.em;
       const event = 'component:update' + (property ? `:${property}` : '');
-      em && em.trigger(event, this);
+      em && em.trigger(event, this, ...args);
     },
 
     /**
@@ -892,6 +899,14 @@ const Component = Backbone.Model.extend(Styleable).extend(
         this.components().forEach(model => model.onAll(clb));
       }
       return this;
+    },
+
+    /**
+     * Remove the component
+     * @return {this}
+     */
+    remove() {
+      return this.collection.remove(this);
     },
 
     /**

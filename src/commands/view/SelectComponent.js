@@ -370,14 +370,30 @@ module.exports = {
         // Here the resizer is updated with the current element height and width
         onStart(e, opts = {}) {
           const { el, config, resizer } = opts;
-          const { keyHeight, keyWidth, currentUnit } = config;
+          const {
+            keyHeight,
+            keyWidth,
+            currentUnit,
+            keepAutoHeight,
+            keepAutoWidth
+          } = config;
           toggleBodyClass('add', e, opts);
           modelToStyle = em.get('StyleManager').getModelToStyle(model);
           const computedStyle = getComputedStyle(el);
           const modelStyle = modelToStyle.getStyle();
-          const currentWidth = modelStyle[keyWidth] || computedStyle[keyWidth];
-          const currentHeight =
-            modelStyle[keyHeight] || computedStyle[keyHeight];
+
+          let currentWidth = modelStyle[keyWidth];
+          config.autoWidth = keepAutoWidth && currentWidth === 'auto';
+          if (isNaN(parseFloat(currentWidth))) {
+            currentWidth = computedStyle[keyWidth];
+          }
+
+          let currentHeight = modelStyle[keyHeight];
+          config.autoHeight = keepAutoHeight && currentHeight === 'auto';
+          if (isNaN(parseFloat(currentHeight))) {
+            currentHeight = computedStyle[keyHeight];
+          }
+
           resizer.startDim.w = parseFloat(currentWidth);
           resizer.startDim.h = parseFloat(currentHeight);
           showOffsets = 0;
@@ -405,17 +421,24 @@ module.exports = {
           }
 
           const { store, selectedHandler, config } = options;
-          const { keyHeight, keyWidth } = config;
+          const {
+            keyHeight,
+            keyWidth,
+            autoHeight,
+            autoWidth,
+            unitWidth,
+            unitHeight
+          } = config;
           const onlyHeight = ['tc', 'bc'].indexOf(selectedHandler) >= 0;
           const onlyWidth = ['cl', 'cr'].indexOf(selectedHandler) >= 0;
           const style = modelToStyle.getStyle();
 
           if (!onlyHeight) {
-            style[keyWidth] = rect.w + config.unitWidth;
+            style[keyWidth] = autoWidth ? 'auto' : `${rect.w}${unitWidth}`;
           }
 
           if (!onlyWidth) {
-            style[keyHeight] = rect.h + config.unitHeight;
+            style[keyHeight] = autoHeight ? 'auto' : `${rect.h}${unitHeight}`;
           }
 
           modelToStyle.setStyle(style, { avoidStore: 1 });

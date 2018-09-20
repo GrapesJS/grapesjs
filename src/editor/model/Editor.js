@@ -137,10 +137,8 @@ module.exports = Backbone.Model.extend({
     const stm = this.get('StorageManager');
     const changes = this.get('changesCount');
 
-    if (this.config.noticeOnUnload && changes) {
-      window.onbeforeunload = e => 1;
-    } else {
-      window.onbeforeunload = null;
+    if (this.config.noticeOnUnload) {
+      window.onbeforeunload = changes ? e => 1 : null;
     }
 
     if (stm.isAutosave() && changes >= stm.getStepsBeforeSave()) {
@@ -619,6 +617,30 @@ module.exports = Backbone.Model.extend({
 
   isEditing() {
     return !!this.get('editing');
+  },
+
+  log(msg, opts = {}) {
+    const { ns, level = 'debug' } = opts;
+    this.trigger('log', msg, opts);
+    level && this.trigger(`log:${level}`, msg, opts);
+
+    if (ns) {
+      const logNs = `log-${ns}`;
+      this.trigger(logNs, msg, opts);
+      level && this.trigger(`${logNs}:${level}`, msg, opts);
+    }
+  },
+
+  logInfo(msg, opts) {
+    this.log(msg, { ...opts, level: 'info' });
+  },
+
+  logWarning(msg, opts) {
+    this.log(msg, { ...opts, level: 'warning' });
+  },
+
+  logError(msg, opts) {
+    this.log(msg, { ...opts, level: 'error' });
   },
 
   /**

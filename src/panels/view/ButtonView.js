@@ -19,9 +19,10 @@ module.exports = Backbone.View.extend({
     this.ppfx = this.config.pStylePrefix || '';
     this.id = pfx + this.model.get('id');
     this.activeCls = `${pfx}active ${ppfx}four-color`;
-    this.disableCls = pfx + 'active';
-    this.btnsVisCls = pfx + 'visible';
+    this.disableCls = `${ppfx}disabled`;
+    this.btnsVisCls = `${pfx}visible`;
     this.className = pfx + 'btn' + (cls ? ' ' + cls : '');
+    this.listenTo(this.model, 'change', this.render);
     this.listenTo(this.model, 'change:active updateActive', this.updateActive);
     this.listenTo(this.model, 'checkActive', this.checkActive);
     this.listenTo(this.model, 'change:bntsVis', this.updateBtnsVis);
@@ -38,8 +39,11 @@ module.exports = Backbone.View.extend({
    * @return   void
    * */
   updateClassName() {
-    var cls = this.model.get('className');
-    this.$el.attr('class', this.pfx + 'btn' + (cls ? ' ' + cls : ''));
+    const { model, pfx } = this;
+    const cls = model.get('className');
+    const attrCls = model.get('attributes').class;
+    const classStr = `${attrCls ? attrCls : ''} ${pfx}btn ${cls ? cls : ''}`;
+    this.$el.attr('class', classStr.trim());
   },
 
   /**
@@ -49,6 +53,7 @@ module.exports = Backbone.View.extend({
    * */
   updateAttributes() {
     this.$el.attr(this.model.get('attributes'));
+    this.updateClassName();
   },
 
   /**
@@ -100,11 +105,9 @@ module.exports = Backbone.View.extend({
   },
 
   updateDisable() {
-    if (this.model.get('disable')) {
-      this.$el.addClass(this.disableCls);
-    } else {
-      this.$el.removeClass(this.disableCls);
-    }
+    const { disableCls, model } = this;
+    const disable = model.get('disable');
+    this.$el[disable ? 'addClass' : 'removeClass'](disableCls);
   },
 
   /**
@@ -113,8 +116,8 @@ module.exports = Backbone.View.extend({
    * @return   void
    * */
   checkActive() {
-    if (this.model.get('active')) this.$el.addClass(this.activeCls);
-    else this.$el.removeClass(this.activeCls);
+    const { model, $el, activeCls } = this;
+    model.get('active') ? $el.addClass(activeCls) : $el.removeClass(activeCls);
   },
 
   /**
@@ -151,10 +154,12 @@ module.exports = Backbone.View.extend({
 
   render() {
     const label = this.model.get('label');
-    const $el = this.$el;
+    const { $el } = this;
+    $el.empty();
     this.updateAttributes();
-    $el.attr('class', this.className);
     label && $el.append(label);
+    this.checkActive();
+    this.updateDisable();
 
     return this;
   }
