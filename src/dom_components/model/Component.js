@@ -162,11 +162,12 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.set('status', '');
 
       // Register global updates for collection properties
-      ['classes', 'traits', 'components'].forEach(name =>
-        this.listenTo(this.get(name), 'add remove change', (...args) =>
+      ['classes', 'traits', 'components'].forEach(name => {
+        const events = `add remove ${name !== 'components' ? 'change' : ''}`;
+        this.listenTo(this.get(name), events.trim(), (...args) =>
           this.emitUpdate(name, ...args)
-        )
-      );
+        );
+      });
       this.init();
     },
 
