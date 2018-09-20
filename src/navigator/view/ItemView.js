@@ -149,7 +149,7 @@ module.exports = Backbone.View.extend({
     const name = inputEl.textContent;
     inputEl[inputProp] = false;
     this.model.set({ name });
-    em && em.setEditing(1);
+    em && em.setEditing(0);
   },
 
   /**
