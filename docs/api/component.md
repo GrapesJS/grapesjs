@@ -392,6 +392,12 @@ component.onAll(component => {
 
 Returns **this** 
 
+## remove
+
+Remove the component
+
+Returns **this** 
+
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
 [2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
