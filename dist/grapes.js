@@ -22263,6 +22263,13 @@ module.exports = {
   // Custom parameters to pass with the upload request, eg. csrf token
   params: {},
 
+  // The credentials setting for the upload request, eg. 'include', 'omit'
+  credentials: 'include',
+
+  // Allow uploading multiple files per request.
+  // If disabled filename will not have '[]' appended
+  multiUpload: true,
+
   // If true, tries to add automatically uploaded assets.
   // To make it work the server should respond with a JSON containing assets
   // in a data key, eg:
@@ -23190,7 +23197,7 @@ var _fetch2 = _interopRequireDefault(_fetch);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports = _backbone2.default.View.extend({
-  template: _underscore2.default.template('\n  <form>\n    <div id="<%= pfx %>title"><%= title %></div>\n    <input type="file" id="<%= uploadId %>" name="file" accept="*/*" <%= disabled ? \'disabled\' : \'\' %> multiple/>\n    <div style="clear:both;"></div>\n  </form>\n  '),
+  template: _underscore2.default.template('\n  <form>\n    <div id="<%= pfx %>title"><%= title %></div>\n    <input type="file" id="<%= uploadId %>" name="file" accept="*/*" <%= disabled ? \'disabled\' : \'\' %> <%= multiUpload ? \'multiple\' : \'\' %>/>\n    <div style="clear:both;"></div>\n  </form>\n  '),
 
   events: {},
 
@@ -23205,6 +23212,7 @@ module.exports = _backbone2.default.View.extend({
     this.target = this.options.globalCollection || {};
     this.uploadId = this.pfx + 'uploadFile';
     this.disabled = c.disableUpload !== undefined ? c.disableUpload : !c.upload && !c.embedAsBase64;
+    this.multiUpload = c.multiUpload !== undefined ? c.multiUpload : true;
     this.events['change #' + this.uploadId] = 'uploadFile';
     var uploadFile = c.uploadFile;
 
@@ -23261,7 +23269,13 @@ module.exports = _backbone2.default.View.extend({
     var em = this.config.em;
     var config = this.config;
     var target = this.target;
-    var json = typeof text === 'string' ? JSON.parse(text) : text;
+    var json = void 0;
+    try {
+      json = typeof text === 'string' ? JSON.parse(text) : text;
+    } catch (e) {
+      json = text;
+    }
+
     em && em.trigger('asset:upload:response', json);
 
     if (config.autoAdd && target) {
@@ -23287,12 +23301,16 @@ module.exports = _backbone2.default.View.extend({
     var config = this.config;
     var params = config.params;
 
-    for (var i = 0; i < files.length; i++) {
-      body.append(config.uploadName + '[]', files[i]);
-    }
-
     for (var param in params) {
       body.append(param, params[param]);
+    }
+
+    if (this.multiUpload) {
+      for (var i = 0; i < files.length; i++) {
+        body.append(config.uploadName + '[]', files[i]);
+      }
+    } else if (files.length) {
+      body.append(config.uploadName, files[0]);
     }
 
     var target = this.target;
@@ -23308,7 +23326,7 @@ module.exports = _backbone2.default.View.extend({
       this.onUploadStart();
       return (0, _fetch2.default)(url, {
         method: 'post',
-        credentials: 'include',
+        credentials: config.credentials || 'include',
         headers: headers,
         body: body
       }).then(function (res) {
@@ -23415,6 +23433,7 @@ module.exports = _backbone2.default.View.extend({
       title: this.config.uploadText,
       uploadId: this.uploadId,
       disabled: this.disabled,
+      multiUpload: this.multiUpload,
       pfx: this.pfx
     }));
     this.initDrop();
@@ -23984,12 +24003,14 @@ module.exports = _backbone2.default.View.extend({
 
   initialize: function initialize(o) {
     var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var model = this.model;
 
     this.em = config.em;
     this.config = config;
     this.endDrag = this.endDrag.bind(this);
     this.ppfx = config.pStylePrefix || '';
-    this.listenTo(this.model, 'destroy remove', this.remove);
+    this.listenTo(model, 'destroy remove', this.remove);
+    this.listenTo(model, 'change', this.render);
   },
 
 
@@ -25928,16 +25949,28 @@ module.exports = __webpack_require__(/*! backbone */ "./node_modules/backbone/ba
         });
 
         // Get at-rules
-        for (var atRule in atRules) {
+
+        var _loop = function _loop(atRule) {
           var rulesStr = '';
           var mRules = atRules[atRule];
+
           mRules.forEach(function (rule) {
-            return rulesStr += _this2.buildFromRule(rule, dump, opts);
+            var ruleStr = _this2.buildFromRule(rule, dump, opts);
+
+            if (rule.get('singleAtRule')) {
+              code += atRule + '{' + ruleStr + '}';
+            } else {
+              rulesStr += ruleStr;
+            }
           });
 
           if (rulesStr) {
             code += atRule + '{' + rulesStr + '}';
           }
+        };
+
+        for (var atRule in atRules) {
+          _loop(atRule);
         }
 
         em && clearStyles && rules.remove(dump);
@@ -28062,9 +28095,11 @@ module.exports = {
     am.onSelect(opts.onSelect);
 
     if (!this.rendered || types) {
-      var assets = am.getAll();
+      var assets = am.getAll().filter(function (i) {
+        return 1;
+      });
 
-      if (types) {
+      if (types && types.length) {
         assets = assets.filter(function (a) {
           return types.indexOf(a.get('type')) !== -1;
         });
@@ -28907,14 +28942,27 @@ module.exports = {
               resizer = opts.resizer;
           var keyHeight = config.keyHeight,
               keyWidth = config.keyWidth,
-              currentUnit = config.currentUnit;
+              currentUnit = config.currentUnit,
+              keepAutoHeight = config.keepAutoHeight,
+              keepAutoWidth = config.keepAutoWidth;
 
           toggleBodyClass('add', e, opts);
           modelToStyle = em.get('StyleManager').getModelToStyle(model);
           var computedStyle = getComputedStyle(el);
           var modelStyle = modelToStyle.getStyle();
-          var currentWidth = modelStyle[keyWidth] || computedStyle[keyWidth];
-          var currentHeight = modelStyle[keyHeight] || computedStyle[keyHeight];
+
+          var currentWidth = modelStyle[keyWidth];
+          config.autoWidth = keepAutoWidth && currentWidth === 'auto';
+          if (isNaN(parseFloat(currentWidth))) {
+            currentWidth = computedStyle[keyWidth];
+          }
+
+          var currentHeight = modelStyle[keyHeight];
+          config.autoHeight = keepAutoHeight && currentHeight === 'auto';
+          if (isNaN(parseFloat(currentHeight))) {
+            currentHeight = computedStyle[keyHeight];
+          }
+
           resizer.startDim.w = parseFloat(currentWidth);
           resizer.startDim.h = parseFloat(currentHeight);
           showOffsets = 0;
@@ -28946,18 +28994,22 @@ module.exports = {
               selectedHandler = options.selectedHandler,
               config = options.config;
           var keyHeight = config.keyHeight,
-              keyWidth = config.keyWidth;
+              keyWidth = config.keyWidth,
+              autoHeight = config.autoHeight,
+              autoWidth = config.autoWidth,
+              unitWidth = config.unitWidth,
+              unitHeight = config.unitHeight;
 
           var onlyHeight = ['tc', 'bc'].indexOf(selectedHandler) >= 0;
           var onlyWidth = ['cl', 'cr'].indexOf(selectedHandler) >= 0;
           var style = modelToStyle.getStyle();
 
           if (!onlyHeight) {
-            style[keyWidth] = rect.w + config.unitWidth;
+            style[keyWidth] = autoWidth ? 'auto' : '' + rect.w + unitWidth;
           }
 
           if (!onlyWidth) {
-            style[keyHeight] = rect.h + config.unitHeight;
+            style[keyHeight] = autoHeight ? 'auto' : '' + rect.h + unitHeight;
           }
 
           modelToStyle.setStyle(style, { avoidStore: 1 });
@@ -30989,6 +31041,10 @@ module.exports = function () {
     model: __webpack_require__(/*! ./model/ComponentText */ "./src/dom_components/model/ComponentText.js"),
     view: __webpack_require__(/*! ./view/ComponentTextView */ "./src/dom_components/view/ComponentTextView.js")
   }, {
+    id: 'wrapper',
+    model: __webpack_require__(/*! ./model/ComponentWrapper */ "./src/dom_components/model/ComponentWrapper.js"),
+    view: ComponentView
+  }, {
     id: 'default',
     model: Component,
     view: ComponentView
@@ -31079,6 +31135,7 @@ module.exports = function () {
       var wrapper = _extends({}, c.wrapper);
       wrapper['custom-name'] = c.wrapperName;
       wrapper.wrapper = 1;
+      wrapper.type = 'wrapper';
 
       // Components might be a wrapper
       if (components && components.constructor === Object && components.wrapper) {
@@ -31178,6 +31235,7 @@ module.exports = function () {
      */
     load: function load() {
       var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+      var em = this.em;
 
       var result = '';
 
@@ -31185,12 +31243,23 @@ module.exports = function () {
         data = c.em.getCacheLoad();
       }
 
-      if (data.components) {
-        try {
-          result = JSON.parse(data.components);
-        } catch (err) {}
-      } else if (data.html) {
-        result = data.html;
+      var _data = data,
+          components = _data.components,
+          html = _data.html;
+
+
+      if (components) {
+        if ((0, _underscore.isObject)(components) || (0, _underscore.isArray)(components)) {
+          result = components;
+        } else {
+          try {
+            result = JSON.parse(components);
+          } catch (err) {
+            em && em.logError(err);
+          }
+        }
+      } else if (html) {
+        result = html;
       }
 
       var isObj = result && result.constructor === Object;
@@ -31476,6 +31545,8 @@ var _Styleable2 = _interopRequireDefault(_Styleable);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 var Backbone = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
 var Components = __webpack_require__(/*! ./Components */ "./src/dom_components/model/Components.js");
 var Selector = __webpack_require__(/*! selector_manager/model/Selector */ "./src/selector_manager/model/Selector.js");
@@ -31626,9 +31697,14 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
     this.set('status', '');
 
     // Register global updates for collection properties
-    ['classes', 'traits'].forEach(function (name) {
-      return _this.listenTo(_this.get(name), 'add remove change', function () {
-        return _this.emitUpdate(name);
+    ['classes', 'traits', 'components'].forEach(function (name) {
+      var events = 'add remove ' + (name !== 'components' ? 'change' : '');
+      _this.listenTo(_this.get(name), events.trim(), function () {
+        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+          args[_key] = arguments[_key];
+        }
+
+        return _this.emitUpdate.apply(_this, [name].concat(args));
       });
     });
     this.init();
@@ -32287,8 +32363,8 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
    * @private
    */
   toJSON: function toJSON() {
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
+    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      args[_key2] = arguments[_key2];
     }
 
     var obj = Backbone.Model.prototype.toJSON.apply(this, args);
@@ -32398,7 +32474,12 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
   emitUpdate: function emitUpdate(property) {
     var em = this.em;
     var event = 'component:update' + (property ? ':' + property : '');
-    em && em.trigger(event, this);
+
+    for (var _len3 = arguments.length, args = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
+      args[_key3 - 1] = arguments[_key3];
+    }
+
+    em && em.trigger.apply(em, [event, this].concat(_toConsumableArray(args)));
   },
 
 
@@ -32419,6 +32500,15 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
       });
     }
     return this;
+  },
+
+
+  /**
+   * Remove the component
+   * @return {this}
+   */
+  remove: function remove() {
+    return this.collection.remove(this);
   },
 
 
@@ -33596,6 +33686,30 @@ module.exports = Component.extend({
 
 /***/ }),
 
+/***/ "./src/dom_components/model/ComponentWrapper.js":
+/*!******************************************************!*\
+  !*** ./src/dom_components/model/ComponentWrapper.js ***!
+  \******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _Component = __webpack_require__(/*! ./Component */ "./src/dom_components/model/Component.js");
+
+var _Component2 = _interopRequireDefault(_Component);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = _Component2.default.extend({}, {
+  isComponent: function isComponent() {
+    return false;
+  }
+}); // We need this one just to identify better the wrapper type
+
+/***/ }),
+
 /***/ "./src/dom_components/model/Components.js":
 /*!************************************************!*\
   !*** ./src/dom_components/model/Components.js ***!
@@ -34142,12 +34256,13 @@ module.exports = ComponentView.extend({
    * @private
    * */
   enableEditing: function enableEditing(e) {
-    e && e.stopPropagation && e.stopPropagation();
-    var rte = this.rte;
-
+    // We place this before stopPropagation in case of nested
+    // text components will not block the editing (#1394)
     if (this.rteEnabled || !this.model.get('editable')) {
       return;
     }
+    e && e.stopPropagation && e.stopPropagation();
+    var rte = this.rte;
 
     if (rte) {
       try {
@@ -34191,12 +34306,15 @@ module.exports = ComponentView.extend({
         model.set('content', content);
       } else {
         var clean = function clean(model) {
+          var selectable = !model.is('text');
           model.set({
             editable: 0,
             highlightable: 0,
             removable: 0,
             draggable: 0,
             copyable: 0,
+            selectable: selectable,
+            hoverable: selectable,
             toolbar: ''
           });
           model.get('components').each(function (model) {
@@ -36317,6 +36435,12 @@ module.exports = function (config) {
     RichTextEditor: em.get('RichTextEditor'),
 
     /**
+     * @property {Parser}
+     * @private
+     */
+    Parser: em.get('Parser'),
+
+    /**
      * @property {Utils}
      * @private
      */
@@ -36692,13 +36816,62 @@ module.exports = function (config) {
 
 
     /**
+     * Replace the default CSS parser with a custom one.
+     * The parser function receives a CSS string as a parameter and expects
+     * an array of CSSRule objects as a result. If you need to remove the
+     * custom parser, pass `null` as the argument
+     * @param {Function|null} parser Parser function
+     * @return {this}
+     * @example
+     * editor.setCustomParserCss(css => {
+     *  const result = [];
+     *  // ... parse the CSS string
+     *  result.push({
+     *    selectors: '.someclass, div .otherclass',
+     *    style: { color: 'red' }
+     *  })
+     *  // ...
+     *  return result;
+     * });
+     */
+    setCustomParserCss: function setCustomParserCss(parser) {
+      this.Parser.getConfig().parserCss = parser;
+      return this;
+    },
+
+
+    /**
+     * Trigger event log message
+     * @param  {*} msg Message to log
+     * @param  {Object} [opts={}] Custom options
+     * @param  {String} [opts.ns=''] Namespace of the log (eg. to use in plugins)
+     * @param  {String} [opts.level='debug'] Level of the log, `debug`, `info`, `warning`, `error`
+     * @return {this}
+     * @example
+     * editor.log('Something done!', { ns: 'from-plugin-x', level: 'info' });
+     * // This will trigger following events
+     * // `log`, `log:info`, `log-from-plugin-x`, `log-from-plugin-x:info`
+     * // Callbacks of those events will always receive the message and
+     * // options, as arguments, eg:
+     * // editor.on('log:info', (msg, opts) => console.info(msg, opts))
+     */
+    log: function log(msg) {
+      var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+      em.log(msg, opts);
+      return this;
+    },
+
+
+    /**
      * Attach event
      * @param  {string} event Event name
      * @param  {Function} callback Callback function
      * @return {this}
      */
     on: function on(event, callback) {
-      return em.on(event, callback);
+      em.on(event, callback);
+      return this;
     },
 
 
@@ -36709,7 +36882,8 @@ module.exports = function (config) {
      * @return {this}
      */
     off: function off(event, callback) {
-      return em.off(event, callback);
+      em.off(event, callback);
+      return this;
     },
 
 
@@ -36719,7 +36893,8 @@ module.exports = function (config) {
      * @return {this}
      */
     trigger: function trigger(event) {
-      return em.trigger.apply(em, arguments);
+      em.trigger.apply(em, arguments);
+      return this;
     },
 
 
@@ -37007,12 +37182,10 @@ module.exports = Backbone.Model.extend({
     var stm = this.get('StorageManager');
     var changes = this.get('changesCount');
 
-    if (this.config.noticeOnUnload && changes) {
-      window.onbeforeunload = function (e) {
+    if (this.config.noticeOnUnload) {
+      window.onbeforeunload = changes ? function (e) {
         return 1;
-      };
-    } else {
-      window.onbeforeunload = null;
+      } : null;
     }
 
     if (stm.isAutosave() && changes >= stm.getStepsBeforeSave()) {
@@ -37555,6 +37728,30 @@ module.exports = Backbone.Model.extend({
   isEditing: function isEditing() {
     return !!this.get('editing');
   },
+  log: function log(msg) {
+    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var ns = opts.ns,
+        _opts$level = opts.level,
+        level = _opts$level === undefined ? 'debug' : _opts$level;
+
+    this.trigger('log', msg, opts);
+    level && this.trigger('log:' + level, msg, opts);
+
+    if (ns) {
+      var logNs = 'log-' + ns;
+      this.trigger(logNs, msg, opts);
+      level && this.trigger(logNs + ':' + level, msg, opts);
+    }
+  },
+  logInfo: function logInfo(msg, opts) {
+    this.log(msg, _extends({}, opts, { level: 'info' }));
+  },
+  logWarning: function logWarning(msg, opts) {
+    this.log(msg, _extends({}, opts, { level: 'warning' }));
+  },
+  logError: function logError(msg, opts) {
+    this.log(msg, _extends({}, opts, { level: 'error' }));
+  },
 
 
   /**
@@ -37691,7 +37888,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.14.29',
+    version: '0.14.33',
 
     /**
      * Initialize the editor with passed options
@@ -38664,9 +38861,11 @@ module.exports = _backbone2.default.View.extend({
    */
   handleEdit: function handleEdit(e) {
     e && e.stopPropagation();
+    var em = this.em;
     var inputEl = this.getInputName();
     inputEl[inputProp] = true;
     inputEl.focus();
+    em && em.setEditing(1);
   },
 
 
@@ -38675,10 +38874,12 @@ module.exports = _backbone2.default.View.extend({
    */
   handleEditEnd: function handleEditEnd(e) {
     e && e.stopPropagation();
+    var em = this.em;
     var inputEl = this.getInputName();
     var name = inputEl.textContent;
     inputEl[inputProp] = false;
     this.model.set({ name: name });
+    em && em.setEditing(0);
   },
 
 
@@ -39648,9 +39849,10 @@ module.exports = _backbone2.default.View.extend({
     this.ppfx = this.config.pStylePrefix || '';
     this.id = pfx + this.model.get('id');
     this.activeCls = pfx + 'active ' + ppfx + 'four-color';
-    this.disableCls = pfx + 'active';
+    this.disableCls = ppfx + 'disabled';
     this.btnsVisCls = pfx + 'visible';
     this.className = pfx + 'btn' + (cls ? ' ' + cls : '');
+    this.listenTo(this.model, 'change', this.render);
     this.listenTo(this.model, 'change:active updateActive', this.updateActive);
     this.listenTo(this.model, 'checkActive', this.checkActive);
     this.listenTo(this.model, 'change:bntsVis', this.updateBtnsVis);
@@ -39668,8 +39870,13 @@ module.exports = _backbone2.default.View.extend({
    * @return   void
    * */
   updateClassName: function updateClassName() {
-    var cls = this.model.get('className');
-    this.$el.attr('class', this.pfx + 'btn' + (cls ? ' ' + cls : ''));
+    var model = this.model,
+        pfx = this.pfx;
+
+    var cls = model.get('className');
+    var attrCls = model.get('attributes').class;
+    var classStr = (attrCls ? attrCls : '') + ' ' + pfx + 'btn ' + (cls ? cls : '');
+    this.$el.attr('class', classStr.trim());
   },
 
 
@@ -39680,6 +39887,7 @@ module.exports = _backbone2.default.View.extend({
    * */
   updateAttributes: function updateAttributes() {
     this.$el.attr(this.model.get('attributes'));
+    this.updateClassName();
   },
 
 
@@ -39734,11 +39942,11 @@ module.exports = _backbone2.default.View.extend({
     }
   },
   updateDisable: function updateDisable() {
-    if (this.model.get('disable')) {
-      this.$el.addClass(this.disableCls);
-    } else {
-      this.$el.removeClass(this.disableCls);
-    }
+    var disableCls = this.disableCls,
+        model = this.model;
+
+    var disable = model.get('disable');
+    this.$el[disable ? 'addClass' : 'removeClass'](disableCls);
   },
 
 
@@ -39748,7 +39956,11 @@ module.exports = _backbone2.default.View.extend({
    * @return   void
    * */
   checkActive: function checkActive() {
-    if (this.model.get('active')) this.$el.addClass(this.activeCls);else this.$el.removeClass(this.activeCls);
+    var model = this.model,
+        $el = this.$el,
+        activeCls = this.activeCls;
+
+    model.get('active') ? $el.addClass(activeCls) : $el.removeClass(activeCls);
   },
 
 
@@ -39788,9 +40000,12 @@ module.exports = _backbone2.default.View.extend({
   render: function render() {
     var label = this.model.get('label');
     var $el = this.$el;
+
+    $el.empty();
     this.updateAttributes();
-    $el.attr('class', this.className);
     label && $el.append(label);
+    this.checkActive();
+    this.updateDisable();
 
     return this;
   }
@@ -40120,7 +40335,13 @@ module.exports = Backbone.View.extend({
 
 
 module.exports = {
-  textTags: ['br', 'b', 'i', 'u', 'a', 'ul', 'ol']
+  textTags: ['br', 'b', 'i', 'u', 'a', 'ul', 'ol'],
+
+  // Custom CSS parser
+  parserCss: null,
+
+  // Custom HTML parser
+  parserHtml: null
 };
 
 /***/ }),
@@ -40135,15 +40356,22 @@ module.exports = {
 "use strict";
 
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 module.exports = function () {
-  var c = {},
+  var conf = {},
       defaults = __webpack_require__(/*! ./config/config */ "./src/parser/config/config.js"),
       parserCss = __webpack_require__(/*! ./model/ParserCss */ "./src/parser/model/ParserCss.js"),
       parserHtml = __webpack_require__(/*! ./model/ParserHtml */ "./src/parser/model/ParserHtml.js");
-  var pHtml, pCss;
+  var pHtml = void 0,
+      pCss = void 0;
 
   return {
     compTypes: '',
+
+    parserCss: null,
+
+    parserHtml: null,
 
     /**
      * Name of the module
@@ -40151,6 +40379,15 @@ module.exports = function () {
      * @private
      */
     name: 'Parser',
+
+    /**
+     * Get config object
+     * @return {Object}
+     */
+    getConfig: function getConfig() {
+      return conf;
+    },
+
 
     /**
      * Initialize module. Automatically called with a new instance of the editor
@@ -40167,13 +40404,13 @@ module.exports = function () {
      * }
      * ...
      */
-    init: function init(config) {
-      c = config || {};
-      for (var name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
-      }
-      pHtml = new parserHtml(c);
-      pCss = new parserCss(c);
+    init: function init() {
+      var config = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+      conf = _extends({}, defaults, config);
+      conf.Parser = this;
+      pHtml = new parserHtml(conf);
+      pCss = new parserCss(conf);
       return this;
     },
 
@@ -40187,6 +40424,13 @@ module.exports = function () {
       pHtml.compTypes = this.compTypes;
       return pHtml.parse(str, pCss);
     },
+
+
+    /**
+     * Parse CSS string and return valid model
+     * @param  {string} str CSS string
+     * @return {Array<Object>}
+     */
     parseCss: function parseCss(str) {
       return pCss.parse(str);
     }
@@ -40195,15 +40439,20 @@ module.exports = function () {
 
 /***/ }),
 
-/***/ "./src/parser/model/ParserCss.js":
-/*!***************************************!*\
-  !*** ./src/parser/model/ParserCss.js ***!
-  \***************************************/
+/***/ "./src/parser/model/BrowserParserCss.js":
+/*!**********************************************!*\
+  !*** ./src/parser/model/BrowserParserCss.js ***!
+  \**********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.parseNode = exports.createNode = exports.parseCondition = exports.parseStyle = exports.parseSelector = undefined;
 
 var _underscore = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
 
@@ -40222,189 +40471,295 @@ var atRules = {
 };
 var atRuleKeys = (0, _underscore.keys)(atRules);
 var singleAtRules = ['5', '6', '11', '15'];
+var singleAtRulesNames = ['font-face', 'page', 'counter-style', 'viewport'];
 
-module.exports = function (config) {
+/**
+ * Parse selector string to array.
+ * Only classe based are valid as CSS rules inside editor, not valid
+ * selectors will be dropped as additional
+ * It's ok with the last part of the string as state (:hover, :active)
+ * @param  {string} str Selectors string
+ * @return {Object}
+ * @example
+ * var res = parseSelector('.test1, .test1.test2, .test2 .test3');
+ * console.log(res);
+ * // {
+ * //result: [['test1'], ['test1', 'test2']],
+ * //add: ['.test2 .test3']
+ * //}
+ */
+var parseSelector = exports.parseSelector = function parseSelector() {
+  var str = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
+  var add = [];
+  var result = [];
+  var sels = str.split(',');
+
+  for (var i = 0, len = sels.length; i < len; i++) {
+    var sel = sels[i].trim();
+
+    // Will accept only concatenated classes and last
+    // class might be with state (eg. :hover), nothing else.
+    // Can also accept SINGLE ID selectors, eg. `#myid`, `#myid:hover`
+    // Composed are not valid: `#myid.some-class`, `#myid.some-class:hover`
+    if (/^(\.{1}[\w\-]+)+(:{1,2}[\w\-()]+)?$/gi.test(sel) || /^(#{1}[\w\-]+){1}(:{1,2}[\w\-()]+)?$/gi.test(sel)) {
+      var cls = sel.split('.').filter(Boolean);
+      result.push(cls);
+    } else {
+      add.push(sel);
+    }
+  }
+
+  return {
+    result: result,
+    add: add
+  };
+};
+
+/**
+ * Parse style declarations of the node
+ * @param {CSSRule} node
+ * @return {Object}
+ */
+var parseStyle = exports.parseStyle = function parseStyle(node) {
+  var stl = node.style;
+  var style = {};
+
+  for (var i = 0, len = stl.length; i < len; i++) {
+    var propName = stl[i];
+    var propValue = stl.getPropertyValue(propName);
+    var important = stl.getPropertyPriority(propName);
+    style[propName] = '' + propValue + (important ? ' !' + important : '');
+  }
+
+  return style;
+};
+
+/**
+ * Get the condition when possible
+ * @param  {CSSRule} node
+ * @return {string}
+ */
+var parseCondition = exports.parseCondition = function parseCondition(node) {
+  var condition = node.conditionText || node.media && node.media.mediaText || node.name || node.selectorText || '';
+  return condition.trim();
+};
+
+/**
+ * Create node for the editor
+ * @param  {Array<String>} selectors Array containing strings of classes
+ * @param {Object} style Key-value object of style declarations
+ * @return {Object}
+ */
+var createNode = exports.createNode = function createNode(selectors, style) {
+  var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+  var node = {};
+  var selLen = selectors.length;
+  var lastClass = selectors[selLen - 1];
+  var stateArr = lastClass ? lastClass.split(/:(.+)/) : [];
+  var state = stateArr[1];
+  var atRule = opts.atRule,
+      selectorsAdd = opts.selectorsAdd,
+      mediaText = opts.mediaText;
+
+  var singleAtRule = singleAtRulesNames.indexOf(atRule) >= 0;
+  singleAtRule && (node.singleAtRule = 1);
+  atRule && (node.atRuleType = atRule);
+  selectorsAdd && (node.selectorsAdd = selectorsAdd);
+  mediaText && (node.mediaText = mediaText);
+
+  // Isolate the state from selectors
+  if (state) {
+    selectors[selLen - 1] = stateArr[0];
+    node.state = state;
+    stateArr.splice(stateArr.length - 1, 1);
+  }
+
+  node.selectors = selectors;
+  node.style = style;
+
+  return node;
+};
+
+/**
+ * Fetch data from node
+ * @param  {StyleSheet|CSSRule} el
+ * @return {Array<Object>}
+ */
+var parseNode = exports.parseNode = function parseNode(el) {
+  var result = [];
+  var nodes = el.cssRules || [];
+
+  for (var i = 0, len = nodes.length; i < len; i++) {
+    var node = nodes[i];
+    var type = node.type.toString();
+    var singleAtRule = 0;
+    var atRuleType = '';
+    var condition = '';
+    // keyText is for CSSKeyframeRule
+    var sels = node.selectorText || node.keyText;
+    var isSingleAtRule = singleAtRules.indexOf(type) >= 0;
+
+    // Check if the node is an at-rule
+    if (isSingleAtRule) {
+      singleAtRule = 1;
+      atRuleType = atRules[type];
+      condition = parseCondition(node);
+    } else if (atRuleKeys.indexOf(type) >= 0) {
+      var subRules = parseNode(node);
+      condition = parseCondition(node);
+
+      for (var s = 0, lens = subRules.length; s < lens; s++) {
+        var subRule = subRules[s];
+        condition && (subRule.mediaText = condition);
+        subRule.atRuleType = atRules[type];
+      }
+      result = result.concat(subRules);
+    }
+
+    if (!sels && !isSingleAtRule) continue;
+    var style = parseStyle(node);
+    var selsParsed = parseSelector(sels);
+    var selsAdd = selsParsed.add;
+    sels = selsParsed.result;
+
+    var lastRule = void 0;
+    // For each group of selectors
+    for (var k = 0, len3 = sels.length; k < len3; k++) {
+      var model = createNode(sels[k], style, {
+        atRule: atRules[type]
+      });
+      result.push(model);
+      lastRule = model;
+    }
+
+    // Need to push somewhere not class-based selectors, if some rule was
+    // created will push them there, otherwise will create a new rule
+    if (selsAdd.length) {
+      var selsAddStr = selsAdd.join(', ');
+      if (lastRule) {
+        lastRule.selectorsAdd = selsAddStr;
+      } else {
+        var _model = {
+          selectors: [],
+          selectorsAdd: selsAddStr,
+          style: style
+        };
+        singleAtRule && (_model.singleAtRule = singleAtRule);
+        atRuleType && (_model.atRuleType = atRuleType);
+        condition && (_model.mediaText = condition);
+        result.push(_model);
+      }
+    }
+    // console.log('LAST PUSH', result[result.length - 1]);
+  }
+
+  return result;
+};
+
+/**
+ * Parse CSS string and return the array of objects
+ * @param  {String} str CSS string
+ * @return {Array<Object>} Array of objects for the definition of CSSRules
+ */
+
+exports.default = function (str) {
+  var el = document.createElement('style');
+  el.innerHTML = str;
+
+  // There is no .sheet before adding it to the <head>
+  document.head.appendChild(el);
+  var sheet = el.sheet;
+  document.head.removeChild(el);
+
+  return parseNode(sheet);
+};
+
+/***/ }),
+
+/***/ "./src/parser/model/ParserCss.js":
+/*!***************************************!*\
+  !*** ./src/parser/model/ParserCss.js ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _underscore = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+
+var _BrowserParserCss = __webpack_require__(/*! ./BrowserParserCss */ "./src/parser/model/BrowserParserCss.js");
+
+var _BrowserParserCss2 = _interopRequireDefault(_BrowserParserCss);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = function () {
+  var config = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   return {
     /**
-     * Parse selector string to array.
-     * Only classe based are valid as CSS rules inside editor, not valid
-     * selectors will be dropped as additional
-     * It's ok with the last part of the string as state (:hover, :active)
-     * @param  {string} str Selectors string
-     * @return {Object}
-     * @example
-     * var res = ParserCss.parseSelector('.test1, .test1.test2, .test2 .test3');
-     * console.log(res);
-     * // {
-     * //result: [['test1'], ['test1', 'test2']],
-     * //add: ['.test2 .test3']
-     * //}
-     */
-    parseSelector: function parseSelector() {
-      var str = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-
-      var add = [];
-      var result = [];
-      var sels = str.split(',');
-
-      for (var i = 0, len = sels.length; i < len; i++) {
-        var sel = sels[i].trim();
-
-        // Will accept only concatenated classes and last
-        // class might be with state (eg. :hover), nothing else.
-        // Can also accept SINGLE ID selectors, eg. `#myid`, `#myid:hover`
-        // Composed are not valid: `#myid.some-class`, `#myid.some-class:hover`
-        if (/^(\.{1}[\w\-]+)+(:{1,2}[\w\-()]+)?$/gi.test(sel) || /^(#{1}[\w\-]+){1}(:{1,2}[\w\-()]+)?$/gi.test(sel)) {
-          var cls = sel.split('.').filter(Boolean);
-          result.push(cls);
-        } else {
-          add.push(sel);
-        }
-      }
-
-      return {
-        result: result,
-        add: add
-      };
-    },
-
-
-    /**
-     * Parse style declarations of the node
-     * @param {CSSRule} node
-     * @return {Object}
-     */
-    parseStyle: function parseStyle(node) {
-      var stl = node.style;
-      var style = {};
-
-      for (var i = 0, len = stl.length; i < len; i++) {
-        var propName = stl[i];
-        var propValue = stl.getPropertyValue(propName);
-        var important = stl.getPropertyPriority(propName);
-        style[propName] = '' + propValue + (important ? ' !' + important : '');
-      }
-
-      return style;
-    },
-
-
-    /**
-     * Get the condition when possible
-     * @param  {CSSRule} node
-     * @return {string}
-     */
-    parseCondition: function parseCondition(node) {
-      var condition = node.conditionText || node.media && node.media.mediaText || node.name || node.selectorText || '';
-      return condition.trim();
-    },
-
-
-    /**
-     * Fetch data from node
-     * @param  {StyleSheet|CSSRule} el
+     * Parse CSS string to a desired model object
+     * @param  {String} str CSS string
      * @return {Array<Object>}
      */
-    parseNode: function parseNode(el) {
+    parse: function parse(str) {
+      var _this = this;
+
       var result = [];
-      var nodes = el.cssRules || [];
+      var parserCss = config.parserCss,
+          _config$em = config.em,
+          em = _config$em === undefined ? {} : _config$em;
 
-      for (var i = 0, len = nodes.length; i < len; i++) {
-        var node = nodes[i];
-        var type = node.type.toString();
-        var singleAtRule = 0;
-        var atRuleType = '';
-        var condition = '';
-        // keyText is for CSSKeyframeRule
-        var sels = node.selectorText || node.keyText;
-        var isSingleAtRule = singleAtRules.indexOf(type) >= 0;
-
-        // Check if the node is an at-rule
-        if (isSingleAtRule) {
-          singleAtRule = 1;
-          atRuleType = atRules[type];
-          condition = this.parseCondition(node);
-        } else if (atRuleKeys.indexOf(type) >= 0) {
-          var subRules = this.parseNode(node);
-          condition = this.parseCondition(node);
-
-          for (var s = 0, lens = subRules.length; s < lens; s++) {
-            var subRule = subRules[s];
-            condition && (subRule.mediaText = condition);
-            subRule.atRuleType = atRules[type];
-          }
-          result = result.concat(subRules);
-        }
-
-        if (!sels && !isSingleAtRule) continue;
-        var style = this.parseStyle(node);
-        var selsParsed = this.parseSelector(sels);
-        var selsAdd = selsParsed.add;
-        sels = selsParsed.result;
-
-        var lastRule = void 0;
-        // For each group of selectors
-        for (var k = 0, len3 = sels.length; k < len3; k++) {
-          var selArr = sels[k];
-          var model = {};
-          singleAtRule && (model.singleAtRule = singleAtRule);
-          atRuleType && (model.atRuleType = atRuleType);
-
-          //Isolate state from selector
-          var stateArr = selArr[selArr.length - 1].split(/:(.+)/);
-          if (stateArr[1]) {
-            selArr[selArr.length - 1] = stateArr[0];
-            model.state = stateArr[1];
-            stateArr.splice(stateArr.length - 1, 1);
-          }
-
-          model.selectors = selArr;
-          model.style = style;
-          lastRule = model;
-          result.push(model);
-        }
-
-        // Need to push somewhere not class-based selectors, if some rule was
-        // created will push them there, otherwise will create a new rule
-        if (selsAdd.length) {
-          var selsAddStr = selsAdd.join(', ');
-          if (lastRule) {
-            lastRule.selectorsAdd = selsAddStr;
-          } else {
-            var _model = {
-              selectors: [],
-              selectorsAdd: selsAddStr,
-              style: style
-            };
-            singleAtRule && (_model.singleAtRule = singleAtRule);
-            atRuleType && (_model.atRuleType = atRuleType);
-            condition && (_model.mediaText = condition);
-            result.push(_model);
-          }
-        }
-        // console.log('LAST PUSH', result[result.length - 1]);
-      }
+      var editor = em && em.get && em.get('Editor');
+      var nodes = parserCss ? parserCss(str, editor) : (0, _BrowserParserCss2.default)(str);
+      nodes.forEach(function (node) {
+        return result = result.concat(_this.checkNode(node));
+      });
 
       return result;
     },
 
 
     /**
-     * Parse CSS string to a desired model object
-     * @param  {string} str HTML string
-     * @return {Object|Array<Object>}
+     * Check the returned node from a custom parser and transforms it to
+     * a valid object for the CSS composer
+     * @return {[type]}
      */
-    parse: function parse(str) {
-      var el = document.createElement('style');
-      el.innerHTML = str;
+    checkNode: function checkNode(node) {
+      var _node = node,
+          selectors = _node.selectors,
+          style = _node.style;
 
-      // There is no .sheet before adding it to the <head>
-      document.head.appendChild(el);
-      var sheet = el.sheet;
-      document.head.removeChild(el);
-      var result = this.parseNode(sheet);
 
-      return result.length == 1 ? result[0] : result;
+      if ((0, _underscore.isString)(selectors)) {
+        var nodes = [];
+        var selsParsed = (0, _BrowserParserCss.parseSelector)(selectors);
+        var classSets = selsParsed.result;
+        var selectorsAdd = selsParsed.add.join(', ');
+        var opts = {
+          atRule: node.atRule,
+          mediaText: node.params
+        };
+
+        if (classSets.length) {
+          classSets.forEach(function (classSet) {
+            nodes.push((0, _BrowserParserCss.createNode)(classSet, style, opts));
+          });
+        } else {
+          nodes.push((0, _BrowserParserCss.createNode)([], style, opts));
+        }
+
+        if (selectorsAdd) {
+          var lastNode = nodes[nodes.length - 1];
+          lastNode.selectorsAdd = selectorsAdd;
+        }
+
+        node = nodes;
+      }
+
+      return node;
     }
   };
 };
@@ -41184,7 +41539,13 @@ var defActions = {
       title: 'Link'
     },
     result: function result(rte) {
-      return rte.insertHTML('<a class="link" href="">' + rte.selection() + '</a>');
+      var anchor = rte.selection().anchorNode;
+      var nextSibling = anchor && anchor.nextSibling;
+      if (nextSibling && nextSibling.nodeName == 'A') {
+        rte.exec('unlink');
+      } else {
+        rte.insertHTML('<a class="link" href="">' + rte.selection() + '</a>');
+      }
     }
   }
 };
@@ -45462,6 +45823,12 @@ module.exports = PropertyView.extend({
     }
 
     return value;
+  },
+  clearCached: function clearCached() {
+    PropertyView.prototype.clearCached.apply(this, arguments);
+    this.$input = null;
+    this.props = null;
+    this.$props = null;
   }
 });
 
@@ -45516,6 +45883,11 @@ module.exports = PropertyView.extend({
     }
 
     this.setValue(this.componentValue, 0);
+  },
+  clearCached: function clearCached() {
+    PropertyView.prototype.clearCached.apply(this, arguments);
+    this.$preview = null;
+    this.$previewBox = null;
   },
   setValue: function setValue(value, f) {
     PropertyView.prototype.setValue.apply(this, arguments);
@@ -45847,7 +46219,7 @@ module.exports = Property.extend({
     this.elementUpdated();
   },
   setValue: function setValue(value) {
-    this.getSliderEl().value = parseInt(value, 10);
+    this.getSliderEl().value = parseFloat(value);
     this.inputInst.setValue(value, { silent: 1 });
   },
   onRender: function onRender() {
@@ -45856,6 +46228,10 @@ module.exports = Property.extend({
     if (!this.model.get('showInput')) {
       this.inputInst.el.style.display = 'none';
     }
+  },
+  clearCached: function clearCached() {
+    Property.prototype.clearCached.apply(this, arguments);
+    this.slider = null;
   }
 });
 
@@ -46551,7 +46927,13 @@ module.exports = _backbone2.default.View.extend({
   cleanValue: function cleanValue() {
     this.setValue('');
   },
+  clearCached: function clearCached() {
+    this.clearEl = null;
+    this.input = null;
+    this.$input = null;
+  },
   render: function render() {
+    this.clearCached();
     var pfx = this.pfx;
     var model = this.model;
     var el = this.el;
@@ -47236,8 +47618,11 @@ var TraitView = __webpack_require__(/*! ./TraitView */ "./src/trait_manager/view
 module.exports = TraitView.extend({
   initialize: function initialize(o) {
     TraitView.prototype.initialize.apply(this, arguments);
-    var iconCls = this.ppfx + 'chk-icon';
-    this.tmpl = '<div class="' + this.fieldClass + '"><label class="' + this.inputhClass + '"><i class="' + iconCls + '"></i></label></div>';
+    var ppfx = this.ppfx,
+        fieldClass = this.fieldClass,
+        inputhClass = this.inputhClass;
+
+    this.tmpl = '<div class="' + fieldClass + '">\n        <label class="' + inputhClass + '">\n          <i class="' + ppfx + 'chk-icon"></i>\n        </label>\n      </div>';
   },
 
 
@@ -47256,25 +47641,31 @@ module.exports = TraitView.extend({
    * @private
    */
   getInputEl: function getInputEl() {
-    var first;
-    if (!this.$input) first = 1;
+    var toInit = !this.$input;
 
     for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
 
     var el = TraitView.prototype.getInputEl.apply(this, args);
-    if (first) {
-      var md = this.model;
-      var name = md.get('name');
-      var target = this.target;
-      if (md.get('changeProp')) {
-        el.checked = target.get(name);
+
+    if (toInit) {
+      var checked = void 0;
+      var model = this.model,
+          target = this.target;
+
+      var name = model.get('name');
+
+      if (model.get('changeProp')) {
+        checked = target.get(name);
       } else {
-        var attrs = target.get('attributes');
-        el.checked = !!attrs[name];
+        checked = target.get('attributes')[name];
+        checked = checked || checked === '' ? !0 : !1;
       }
+
+      el.checked = checked;
     }
+
     return el;
   }
 });
@@ -50840,6 +51231,18 @@ var defaultOpts = {
 
   // If true the container of handlers won't be updated
   avoidContainerUpdate: 0,
+
+  // If height is 'auto', this setting will preserve it and only update  width
+  keepAutoHeight: false,
+
+  // If width is 'auto', this setting will preserve it and only update height
+  keepAutoWidth: false,
+
+  // When keepAutoHeight is true and the height has the value 'auto', this is set to true and height isn't updated
+  autoHeight: false,
+
+  // When keepAutoWidth is true and the width has the value 'auto', this is set to true and width isn't updated
+  autoWidth: false,
 
   // Handlers
   tl: 1, // Top left
