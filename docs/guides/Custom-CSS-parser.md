@@ -5,6 +5,10 @@ title: Use Custom CSS Parser
 
 If you just use GrapesJS for building templates from scratch, so you start from an empty canvas and for editing you strictly rely  on the generated JSON (final HTML/CSS only for end-users) then, probably, you might skip this guide. On the other hand, if you import templates from already defined HTML/CSS or let the user embed custom codes (eg. using the [grapesjs-custom-code](https://github.com/artf/grapesjs-custom-code) plugin), then you have to know that you might face strange behaviors.
 
+::: warning
+This guide requires GrapesJS v0.14.33 or higher
+:::
+
 [[toc]]
 
 
