@@ -21,6 +21,7 @@
     <script src="js/grapesjs-tabs.min.js?0.1.1"></script>
     <script src="js/grapesjs-custom-code.min.js?0.1.1"></script>
     <script src="js/grapesjs-touch.min.js?0.1.1"></script>
+    <script src="js/grapesjs-parser-postcss.min.js?0.1.1"></script>
 
     <style type="text/css">
         .icon-add-comp::before, .icon-comp100::before,.icon-comp50::before,.icon-comp30::before,.icon-rm::before{ content: '';}
@@ -984,6 +985,7 @@
           'grapesjs-tabs',
           'grapesjs-custom-code',
           'grapesjs-touch',
+          'grapesjs-parser-postcss',
         ],
         pluginsOpts: {
           'grapesjs-lory-slider': {
@@ -1002,7 +1004,7 @@
             modalImportContent: function(editor) {
               return editor.getHtml() + '<style>'+editor.getCss()+'</style>'
             },
-            filestackOpts: { key: 'AYmqZc2e8RLGLE7TGkX3Hz' },
+            filestackOpts: null, //{ key: 'AYmqZc2e8RLGLE7TGkX3Hz' },
             aviaryOpts: false,
             blocksBasicOpts: { flexGrid: 1 },
             customStyleManager: [{
