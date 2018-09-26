@@ -24,7 +24,7 @@ module.exports = require('backbone').Model.extend({
     // Let's know what classes I've found
     classes.each(model => this.compCls.push(model.getFullName()));
 
-    if ((!avoidInline || isWrapper) && style) {
+    if (!avoidInline && style) {
       let selector = `#${model.getId()}`;
       selector = wrappesIsBody && isWrapper ? 'body' : selector;
       code = `${selector}{${style}}`;
