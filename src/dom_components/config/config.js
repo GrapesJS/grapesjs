@@ -32,9 +32,11 @@ module.exports = {
   // Open assets manager on create of image component
   oAssetsOnCreate: true,
 
-  // TODO to remove
-  // Editor should also store the wrapper informations, but as this change might
-  // break stuff I set ii as an opt-in option, for now.
+  // Generally, if you don't edit the wrapper in the editor, like
+  // custom attributes, you don't need the wrapper stored in your JSON
+  // structure, but in case you need it you can use this option.
+  // If you have `config.avoidInlineStyle` disabled the wrapper will be stored
+  // as we need to store inlined style.
   storeWrapper: 0,
 
   // List of void elements

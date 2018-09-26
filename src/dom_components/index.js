@@ -363,9 +363,10 @@ module.exports = () => {
       }
 
       if (keys.indexOf('components') >= 0) {
-        const toStore = c.storeWrapper
-          ? this.getWrapper()
-          : this.getComponents();
+        const { em } = this;
+        const storeWrap =
+          (em && !em.getConfig('avoidInlineStyle')) || c.storeWrapper;
+        const toStore = storeWrap ? this.getWrapper() : this.getComponents();
         obj.components = JSON.stringify(toStore);
       }
 
