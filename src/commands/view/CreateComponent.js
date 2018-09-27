@@ -12,7 +12,7 @@ module.exports = _.extend({}, SelectPosition, {
   },
 
   /**
-   * Start with enabling to select position and listening to start drawning
+   * Start with enabling to select position and listening to start drawing
    * @private
    * */
   enable(...args) {
