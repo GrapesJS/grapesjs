@@ -1,3 +1,4 @@
+import { isString } from 'underscore';
 import Backbone from 'backbone';
 const PropertyView = require('./PropertyView');
 const $ = Backbone.$;
@@ -119,7 +120,6 @@ module.exports = PropertyView.extend({
    * @return void
    * */
   openAssetManager(e) {
-    const that = this;
     const { em, modal } = this;
     const editor = em ? em.get('Editor') : '';
 
@@ -130,9 +130,10 @@ module.exports = PropertyView.extend({
         target: this.getTargetModel(),
         onClick() {},
         onDblClick() {},
-        onSelect(asset) {
+        onSelect: asset => {
           modal.close();
-          that.spreadUrl(asset.get('src'));
+          const url = isString(asset) ? asset : asset.get('src');
+          this.spreadUrl(url);
         }
       });
     }
