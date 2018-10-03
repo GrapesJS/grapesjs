@@ -53,7 +53,7 @@ module.exports = Backbone.Model.extend({
           var mPProps = mProp.properties;
           if (mPProps && mPProps.length) {
             mProp.properties = this.extendProperties(
-              prop.properties,
+              prop.properties || [],
               mPProps,
               1
             );
