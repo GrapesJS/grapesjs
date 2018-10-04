@@ -314,23 +314,6 @@ module.exports = Backbone.View.extend({
     for (var i = 0, len = childNodes.length; i < len; i++) {
       container.appendChild(childNodes.shift());
     }
-
-    // If the children container is not the same as the component
-    // (so likely fetched with getChildrenSelector()) is necessary
-    // to disable pointer-events for all nested components as they
-    // might prevent the component to be selected
-    if (container !== this.el) {
-      var disableNode = el => {
-        var children = Array.prototype.slice.call(el.children);
-        children.forEach(el => {
-          el.style['pointer-events'] = 'none';
-          if (container !== el) {
-            disableNode(el);
-          }
-        });
-      };
-      disableNode(this.el);
-    }
   },
 
   renderAttributes() {

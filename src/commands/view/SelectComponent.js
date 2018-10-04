@@ -65,7 +65,16 @@ module.exports = {
   onHover(e) {
     e.stopPropagation();
     let trg = e.target;
-    let model = $(trg).data('model');
+    let $el = $(trg);
+    let model = $el.data('model');
+
+    if (!model) {
+      let parent = $el.parent();
+      while (!model && parent) {
+        model = parent.data('model');
+        parent = parent.parent();
+      }
+    }
 
     // Adjust tools scroll top
     if (!this.adjScroll) {
