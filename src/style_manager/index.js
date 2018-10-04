@@ -74,15 +74,19 @@ module.exports = () => {
 
       var ppfx = c.pStylePrefix;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
-
       properties = new Properties();
-      sectors = new Sectors(c.sectors, c);
+      sectors = new Sectors([], c);
       SectView = new SectorsView({
         collection: sectors,
         target: c.em,
         config: c
       });
+
       return this;
+    },
+
+    onLoad() {
+      sectors.add(c.sectors);
     },
 
     postRender() {
