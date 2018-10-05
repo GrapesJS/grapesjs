@@ -11,8 +11,8 @@ module.exports = Property.extend({
     preview: 0
   },
 
-  init() {
-    Property.prototype.init.apply(this, arguments);
+  initialize(props = {}, opts = {}) {
+    Property.prototype.initialize.apply(this, arguments);
     const layers = this.get('layers');
     const layersColl = new Layers(layers);
     layersColl.properties = this.get('properties');

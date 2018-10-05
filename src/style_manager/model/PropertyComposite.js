@@ -21,11 +21,19 @@ module.exports = Property.extend({
     separator: ' '
   },
 
-  init() {
+  initialize(props = {}, opts = {}) {
+    Property.prototype.initialize.apply(this, [
+      props,
+      {
+        ...opts,
+        skipInit: 1
+      }
+    ]);
     const properties = this.get('properties') || [];
     const Properties = require('./Properties');
     this.set('properties', new Properties(properties));
     this.listenTo(this, 'change:value', this.updateValues);
+    this.init(props, opts);
   },
 
   /**
@@ -48,7 +56,7 @@ module.exports = Property.extend({
       // 11px -> 11px 11px 11px 11xp
       // 11px 22px -> 11px 22px 11px 22xp
       const value =
-        values[i] || values[i % len + (len != 1 && len % 2 ? 1 : 0)];
+        values[i] || values[(i % len) + (len != 1 && len % 2 ? 1 : 0)];
       // There some issue with UndoManager
       //property.setValue(value, 0, {fromParent: 1});
     });

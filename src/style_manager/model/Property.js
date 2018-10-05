@@ -25,8 +25,7 @@ module.exports = require('backbone').Model.extend({
     toRequire: 0
   },
 
-  initialize(opt) {
-    var o = opt || {};
+  initialize(props = {}, opts = {}) {
     var name = this.get('name');
     var prop = this.get('property');
 
@@ -37,9 +36,10 @@ module.exports = require('backbone').Model.extend({
       );
     }
 
-    const init = this.init && this.init.bind(this);
-    init && init();
+    !opts.skipInit && this.init(props, opts);
   },
+
+  init() {},
 
   /**
    * Clear the value
