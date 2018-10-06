@@ -75,6 +75,7 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
+    this.inputEl = null;
     const el = this.$el;
     el.addClass(this.inputClass());
     el.html(this.template());

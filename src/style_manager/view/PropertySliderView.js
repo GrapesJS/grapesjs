@@ -46,8 +46,9 @@ module.exports = Property.extend({
   },
 
   setValue(value) {
-    this.getSliderEl().value = parseFloat(value);
-    this.inputInst.setValue(value, { silent: 1 });
+    const parsed = this.model.parseValue(value);
+    this.getSliderEl().value = parseFloat(parsed.value);
+    Property.prototype.setValue.apply(this, arguments);
   },
 
   onRender() {

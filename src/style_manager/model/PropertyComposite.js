@@ -86,5 +86,14 @@ module.exports = Property.extend({
     }
 
     return this.get('properties').getFullValue();
+  },
+
+  /**
+   * Get property at some index
+   * @param  {Number} index
+   * @return {Object}
+   */
+  getPropertyAt(index) {
+    return this.get('properties').at(index);
   }
 });
