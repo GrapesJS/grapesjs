@@ -20,6 +20,14 @@ module.exports = Property.extend({
     Property.callInit(this, props, opts);
   },
 
+  getLayers() {
+    return this.get('layers');
+  },
+
+  getCurrentLayer() {
+    return this.getLayers().filter(layer => layer.get('active'))[0];
+  },
+
   getFullValue() {
     return this.get('detached') ? '' : this.get('layers').getFullValue();
   }
