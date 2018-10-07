@@ -15,6 +15,9 @@ const Property = require('backbone').Model.extend(
       visible: true,
       fixedValues: ['initial', 'inherit'],
 
+      // If true, the property will be forced to be full width
+      full: 0,
+
       // If true to the value will be added '!important'
       important: 0,
 

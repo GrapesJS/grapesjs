@@ -484,8 +484,14 @@ module.exports = Backbone.View.extend({
     const pfx = this.pfx;
     const model = this.model;
     const el = this.el;
+    const property = model.get('property');
+    const full = model.get('full');
+    const className = `${pfx}property`;
     el.innerHTML = this.template(model);
-    el.className = `${pfx}property ${pfx}${model.get('type')}`;
+    el.className = `${className} ${pfx}${model.get(
+      'type'
+    )} ${className}__${property}`;
+    el.className += full ? ` ${className}--full` : '';
     this.updateStatus();
 
     const onRender = this.onRender && this.onRender.bind(this);
