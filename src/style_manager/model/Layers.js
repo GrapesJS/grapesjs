@@ -19,7 +19,8 @@ module.exports = Backbone.Collection.extend({
   },
 
   getSeparator() {
-    return this.property.get('layerSeparator');
+    const { property } = this;
+    return property ? property.get('layerSeparator') : ', ';
   },
 
   /**
