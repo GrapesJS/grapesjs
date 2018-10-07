@@ -117,10 +117,10 @@ module.exports = PropertyCompositeView.extend({
     const model = this.model;
     const layers = this.getLayers();
     const detached = model.get('detached');
+    const target = this.getTarget();
 
     // With detached layers values will be assigned to their properties
     if (detached) {
-      const target = this.getTarget();
       const style = target ? target.getStyle() : {};
       layersObj = layers.getLayersFromStyle(style);
     } else {
@@ -129,8 +129,9 @@ module.exports = PropertyCompositeView.extend({
       layersObj = layers.getLayersFromValue(value);
     }
 
+    const toAdd = model.getLayersFromTarget(target) || layersObj;
     layers.reset();
-    layers.add(layersObj);
+    layers.add(toAdd);
     model.set({ stackIndex: null }, { silent: true });
   },
 

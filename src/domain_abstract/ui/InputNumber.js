@@ -269,6 +269,7 @@ module.exports = Input.extend({
 
   render() {
     Input.prototype.render.call(this);
+    this.unitEl = null;
     const unit = this.getUnitEl();
     unit &&
       this.$el

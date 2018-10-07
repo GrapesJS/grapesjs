@@ -155,7 +155,7 @@ module.exports = {
 
       test('parseValue with function and functionName', () => {
         obj = new Property({ functionName: 'fn' });
-        const result = { value: 'testValue' };
+        const result = { value: 'testValue', functionName: 'fn' };
         expect(obj.parseValue('fn(testValue)')).toEqual(result);
         expect(obj.parseValue('fn(testValue')).toEqual(result);
       });
@@ -194,7 +194,7 @@ module.exports = {
           units: ['px', 'deg'],
           functionName: 'test'
         });
-        const result = { value: 55, unit: 'deg' };
+        const result = { value: 55, unit: 'deg', functionName: 'test' };
         expect(obj.parseValue('test(55deg)')).toEqual(result);
       });
 

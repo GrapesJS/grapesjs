@@ -41,10 +41,6 @@ module.exports = Backbone.View.extend({
     this.listenTo(model, 'change:active', this.updateVisibility);
     this.listenTo(model.get('properties'), 'change', this.updatePreview);
 
-    if (!model.get('preview')) {
-      this.$el.addClass(this.pfx + 'no-preview');
-    }
-
     // For the sorter
     model.view = this;
     model.set({ droppable: 0, draggable: 1 });
@@ -152,9 +148,8 @@ module.exports = Backbone.View.extend({
   render() {
     const PropertiesView = require('./PropertiesView');
     const propsConfig = this.propsConfig;
-    const className = `${this.pfx}layer`;
-    const model = this.model;
-    const el = this.el;
+    const { model, el, pfx } = this;
+    const preview = model.get('preview');
     const properties = new PropertiesView({
       collection: model.get('properties'),
       config: this.config,
@@ -163,8 +158,9 @@ module.exports = Backbone.View.extend({
       propTarget: propsConfig.propTarget,
       onChange: propsConfig.onChange
     }).render().el;
+
     el.innerHTML = this.template(model);
-    el.className = className;
+    el.className = `${pfx}layer${!preview ? ` ${pfx}no-preview` : ''}`;
     this.getPropertiesWrapper().appendChild(properties);
     this.updateVisibility();
     this.updatePreview();
