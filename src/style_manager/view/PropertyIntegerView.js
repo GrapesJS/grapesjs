@@ -26,11 +26,6 @@ module.exports = PropertyView.extend({
     const ppfx = this.ppfx;
 
     if (!this.input) {
-      console.log(
-        'onRender',
-        this.model.get('property'),
-        this.model.get('units')
-      );
       const input = this.model.input;
       input.ppfx = ppfx;
       input.render();

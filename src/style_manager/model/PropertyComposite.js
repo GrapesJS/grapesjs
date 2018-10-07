@@ -22,18 +22,12 @@ module.exports = Property.extend({
   },
 
   initialize(props = {}, opts = {}) {
-    Property.prototype.initialize.apply(this, [
-      props,
-      {
-        ...opts,
-        skipInit: 1
-      }
-    ]);
+    Property.callParentInit(Property, this, props, opts);
     const properties = this.get('properties') || [];
     const Properties = require('./Properties');
     this.set('properties', new Properties(properties));
     this.listenTo(this, 'change:value', this.updateValues);
-    this.init(props, opts);
+    Property.callInit(this, props, opts);
   },
 
   /**

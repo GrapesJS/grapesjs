@@ -12,11 +12,12 @@ module.exports = Property.extend({
   },
 
   initialize(props = {}, opts = {}) {
-    Property.prototype.initialize.apply(this, arguments);
+    Property.callParentInit(Property, this, props, opts);
     const layers = this.get('layers');
     const layersColl = new Layers(layers);
     layersColl.properties = this.get('properties');
     this.set('layers', layersColl);
+    Property.callInit(this, props, opts);
   },
 
   getFullValue() {
