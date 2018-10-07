@@ -90,7 +90,7 @@ const Property = require('backbone').Model.extend(
      * // -> { value: 10, unit: 'deg', functionName: 'translateX' }
      *
      */
-    parseValue(value) {
+    parseValue(value, opts = {}) {
       const result = { value };
       const imp = '!important';
 
@@ -99,7 +99,7 @@ const Property = require('backbone').Model.extend(
         result.important = 1;
       }
 
-      if (!this.get('functionName')) {
+      if (!this.get('functionName') && !opts.complete) {
         return result;
       }
 
@@ -107,6 +107,7 @@ const Property = require('backbone').Model.extend(
       let valueStr = `${result.value}`;
       let start = valueStr.indexOf('(') + 1;
       let end = valueStr.lastIndexOf(')');
+      result.functionName = valueStr.substring(0, start - 1);
       args.push(start);
 
       // Will try even if the last closing parentheses is not found
@@ -115,6 +116,13 @@ const Property = require('backbone').Model.extend(
       }
 
       result.value = String.prototype.substring.apply(valueStr, args);
+
+      if (opts.numeric) {
+        const num = parseFloat(result.value);
+        result.unit = result.value.replace(num, '');
+        result.value = num;
+      }
+
       return result;
     },
 

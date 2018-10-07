@@ -18,6 +18,10 @@ module.exports = Backbone.Collection.extend({
     this.idx = 1;
   },
 
+  getSeparator() {
+    return this.property.get('layerSeparator');
+  },
+
   /**
    * Get layers from a value string (for not detached properties),
    * example of input:
@@ -35,7 +39,7 @@ module.exports = Backbone.Collection.extend({
       var cleaned = match.replace(/,\s*/g, ',');
       value = value.replace(match, cleaned);
     });
-    const layerValues = value ? value.split(', ') : [];
+    const layerValues = value ? value.split(this.getSeparator()) : [];
     layerValues.forEach(layerValue => {
       layers.push({ properties: this.properties.parseValue(layerValue) });
     });
@@ -101,7 +105,7 @@ module.exports = Backbone.Collection.extend({
   getFullValue() {
     let result = [];
     this.each(layer => result.push(layer.getFullValue()));
-    return result.join(', ');
+    return result.join(this.getSeparator());
   },
 
   getPropertyValues(property) {
