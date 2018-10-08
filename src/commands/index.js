@@ -194,7 +194,8 @@ module.exports = () => {
         ['component-enter', 'ComponentEnter'],
         ['component-exit', 'ComponentExit'],
         ['canvas-clear', 'CanvasClear'],
-        ['component-delete', 'ComponentDelete']
+        ['component-delete', 'ComponentDelete'],
+        ['component-style-clear', 'ComponentStyleClear']
       ].forEach(
         item =>
           (defaultCommands[`core:${item[0]}`] = require(`./view/${
