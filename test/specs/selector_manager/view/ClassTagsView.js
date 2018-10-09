@@ -1,5 +1,6 @@
 const ClassTagsView = require('selector_manager/view/ClassTagsView');
 const Selectors = require('selector_manager/model/Selectors');
+const Component = require('dom_components/model/Component');
 const Editor = require('editor/model/Editor');
 
 module.exports = {
@@ -43,11 +44,7 @@ module.exports = {
           }
         };
 
-        testContext.compTargetStub = {
-          get() {
-            return { add() {} };
-          }
-        };
+        testContext.compTargetStub = new Component();
 
         fixtures.innerHTML = '';
         fixture.empty().appendTo(fixtures);

@@ -1,9 +1,9 @@
-import _ from 'underscore';
+import { template } from 'underscore';
 import Backbone from 'backbone';
 var ClassTagView = require('./ClassTagView');
 
 module.exports = Backbone.View.extend({
-  template: _.template(`
+  template: template(`
   <div id="<%= pfx %>up">
     <div id="<%= pfx %>label"><%= label %></div>
     <div id="<%= pfx %>status-c">
@@ -52,6 +52,7 @@ module.exports = Backbone.View.extend({
     this.target = this.config.em;
     this.em = this.target;
 
+    //this.listenTo(this.getStyleEmitter(), 'update', this.componentChanged);
     this.listenTo(this.target, 'component:toggled', this.componentChanged);
     this.listenTo(this.target, 'component:update:classes', this.updateSelector);
 
@@ -60,6 +61,13 @@ module.exports = Backbone.View.extend({
     this.listenTo(this.collection, 'remove', this.tagRemoved);
 
     this.delegateEvents();
+  },
+
+  getStyleEmitter() {
+    const { em } = this;
+    const sm = em && em.get('StyleManager');
+    const emitter = sm && sm.getEmitter();
+    return emitter || {};
   },
 
   /**
@@ -134,17 +142,25 @@ module.exports = Backbone.View.extend({
    * @private
    */
   componentChanged(e) {
-    this.compTarget = this.target.getSelected();
+    console.log('componentChanged');
+    this.compTarget = this.getTarget();
     const target = this.compTarget;
     let validSelectors = [];
 
     if (target) {
-      this.getStates().val(target.get('state'));
-      validSelectors = target.get('classes').getValid();
+      const state = target.get('state');
+      state && this.getStates().val(state);
+      const selectors = target.getSelectors();
+      validSelectors = selectors.getValid();
     }
 
     this.collection.reset(validSelectors);
     this.updateStateVis();
+  },
+
+  getTarget() {
+    const targetStyle = this.getStyleEmitter().model;
+    return this.target.getSelected();
   },
 
   /**
@@ -155,10 +171,8 @@ module.exports = Backbone.View.extend({
   updateStateVis() {
     const em = this.em;
     const avoidInline = em && em.getConfig('avoidInlineStyle');
-
-    if (this.collection.length || avoidInline)
-      this.getStatesC().css('display', 'block');
-    else this.getStatesC().css('display', 'none');
+    const display = this.collection.length || avoidInline ? 'block' : 'none';
+    this.getStatesC().css('display', display);
     this.updateSelector();
   },
 
@@ -168,20 +182,21 @@ module.exports = Backbone.View.extend({
    * @private
    */
   updateSelector() {
-    const selected = this.target.getSelected();
+    const { pfx, collection, el } = this;
+    const selected = this.getTarget();
     this.compTarget = selected;
-
-    if (!selected || !selected.get) {
-      return;
-    }
+    if (!selected || !selected.get) return;
 
     const state = selected.get('state');
-    const coll = this.collection;
+    const coll = collection;
     let result = coll.getFullString(coll.getStyleable());
-    result = result || `#${selected.getId()}`;
+    result =
+      result ||
+      selected.get('selectorsAdd') ||
+      (selected.getId ? `#${selected.getId()}` : '');
     result += state ? `:${state}` : '';
-    const el = this.el.querySelector('#' + this.pfx + 'sel');
-    el && (el.innerHTML = result);
+    const elSel = el.querySelector(`#${pfx}sel`);
+    elSel && (elSel.innerHTML = result);
   },
 
   /**
@@ -211,13 +226,11 @@ module.exports = Backbone.View.extend({
 
     if (target) {
       const sm = target.get('SelectorManager');
-      var model = sm.add({ label });
+      const model = sm.add({ label });
 
       if (component) {
-        var compCls = component.get('classes');
-        var lenB = compCls.length;
+        const compCls = component.getSelectors();
         compCls.add(model);
-        var lenA = compCls.length;
         this.collection.add(model);
         this.updateStateVis();
       }

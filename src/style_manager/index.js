@@ -374,6 +374,10 @@ module.exports = () => {
       return SectView.setTarget(target, opts);
     },
 
+    getEmitter() {
+      return SectView.propTarget;
+    },
+
     /**
      * Render sectors and properties
      * @return  {HTMLElement}
