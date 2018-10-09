@@ -365,6 +365,16 @@ module.exports = () => {
     },
 
     /**
+     * Select different target for the Style Manager.
+     * It could be a Component, CSSRule, or a string of any CSS selector
+     * @param {Component|CSSRule|String} target
+     * @return {Styleable} A Component or CSSRule
+     */
+    setTarget(target, opts) {
+      return SectView.setTarget(target, opts);
+    },
+
+    /**
      * Render sectors and properties
      * @return  {HTMLElement}
      * @private
