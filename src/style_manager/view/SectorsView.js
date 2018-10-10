@@ -118,7 +118,7 @@ module.exports = Backbone.View.extend({
     const state = !config.devicePreviewMode ? model.get('state') : '';
     const pt = this.propTarget;
     pt.model = model;
-    pt.trigger('update');
+    pt.trigger('styleManager:update', model);
     return model;
   },
 

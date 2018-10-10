@@ -52,7 +52,11 @@ module.exports = Backbone.View.extend({
     this.target = this.config.em;
     this.em = this.target;
 
-    //this.listenTo(this.getStyleEmitter(), 'update', this.componentChanged);
+    this.listenTo(
+      this.getStyleEmitter(),
+      'styleManager:update',
+      this.componentChanged
+    );
     this.listenTo(this.target, 'component:toggled', this.componentChanged);
     this.listenTo(this.target, 'component:update:classes', this.updateSelector);
 
@@ -141,10 +145,8 @@ module.exports = Backbone.View.extend({
    * @param  {Object} e
    * @private
    */
-  componentChanged(e) {
-    console.log('componentChanged');
-    this.compTarget = this.getTarget();
-    const target = this.compTarget;
+  componentChanged(target) {
+    this.compTarget = target;
     let validSelectors = [];
 
     if (target) {
@@ -155,7 +157,7 @@ module.exports = Backbone.View.extend({
     }
 
     this.collection.reset(validSelectors);
-    this.updateStateVis();
+    this.updateStateVis(target);
   },
 
   getTarget() {
@@ -168,12 +170,12 @@ module.exports = Backbone.View.extend({
    * inside collection
    * @private
    */
-  updateStateVis() {
+  updateStateVis(target) {
     const em = this.em;
     const avoidInline = em && em.getConfig('avoidInlineStyle');
     const display = this.collection.length || avoidInline ? 'block' : 'none';
     this.getStatesC().css('display', display);
-    this.updateSelector();
+    this.updateSelector(target);
   },
 
   /**
@@ -181,9 +183,9 @@ module.exports = Backbone.View.extend({
    * @return {this}
    * @private
    */
-  updateSelector() {
+  updateSelector(target) {
     const { pfx, collection, el } = this;
-    const selected = this.getTarget();
+    const selected = target || this.getTarget();
     this.compTarget = selected;
     if (!selected || !selected.get) return;
 
