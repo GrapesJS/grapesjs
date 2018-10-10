@@ -191,7 +191,7 @@ module.exports = Backbone.View.extend({
 
     const state = selected.get('state');
     const coll = collection;
-    let result = coll.getFullString(coll.getStyleable());
+    let result = coll.getFullString(selected.getSelectors().getStyleable());
     result =
       result ||
       selected.get('selectorsAdd') ||

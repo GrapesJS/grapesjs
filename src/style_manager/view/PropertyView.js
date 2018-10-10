@@ -68,7 +68,11 @@ module.exports = Backbone.View.extend({
 
     em && em.on(`update:component:style:${this.property}`, this.targetUpdated);
     //em && em.on(`styleable:change:${this.property}`, this.targetUpdated);
-    this.listenTo(this.propTarget, 'update', this.targetUpdated);
+    this.listenTo(
+      this.propTarget,
+      'update styleManager:update',
+      this.targetUpdated
+    );
     this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model, 'change:value', this.modelValueChanged);
     this.listenTo(model, 'targetUpdated', this.targetUpdated);

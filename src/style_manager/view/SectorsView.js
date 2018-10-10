@@ -94,17 +94,20 @@ module.exports = Backbone.View.extend({
   setTarget(target, opts = {}) {
     const em = this.target;
     const config = em.get('Config');
+    const { targetIsClass, stylable } = opts;
     let model = target;
 
     if (isString(target)) {
       let rule;
       const rules = em.get('CssComposer').getAll();
 
-      if (opts.targetIsClass) {
+      if (targetIsClass) {
         rule = rules.filter(
           rule => rule.get('selectors').getFullString() === target
         )[0];
-      } else {
+      }
+
+      if (!rule) {
         rule = rules.filter(rule => rule.get('selectorsAdd') === target)[0];
       }
 
@@ -112,6 +115,7 @@ module.exports = Backbone.View.extend({
         rule = rules.add({ selectors: [], selectorsAdd: target });
       }
 
+      stylable && rule.set({ stylable });
       model = rule;
     }
 
