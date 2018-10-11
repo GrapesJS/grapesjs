@@ -608,6 +608,20 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     /**
+     * Get the trait by id/name
+     * @param  {String} id The `id` or `name` of the trait
+     * @return {Trait} Trait model
+     * @example
+     * const traitTitle = component.getTrait('title');
+     * traitTitle && traitTitle.set('label', 'New label');
+     */
+    getTrait(id) {
+      return this.get('traits').filter(trait => {
+        return trait.get('id') === id || trait.get('name') === id;
+      })[0];
+    },
+
+    /**
      * Normalize input classes from array to array of objects
      * @param {Array} arr
      * @return {Array}
