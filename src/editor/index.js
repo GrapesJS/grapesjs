@@ -630,6 +630,17 @@ module.exports = config => {
     },
 
     /**
+     * Attach event and detach it after the first run
+     * @param  {string} event Event name
+     * @param  {Function} callback Callback function
+     * @return {this}
+     */
+    once(event, callback) {
+      em.once(event, callback);
+      return this;
+    },
+
+    /**
      * Detach event
      * @param  {string} event Event name
      * @param  {Function} callback Callback function
