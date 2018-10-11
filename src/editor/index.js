@@ -47,6 +47,7 @@
  * * `keymap:emit` - Some keymap emitted, in arguments you get keymapId, shortcutUsed, Event
  * * `keymap:emit:{keymapId}` - `keymapId` emitted, in arguments you get keymapId, shortcutUsed, Event
  * ### Style Manager
+ * * `styleManager:update:target` - The target (Component or CSSRule) is changed
  * * `styleManager:change` - Triggered on style property change from new selected component, the view of the property is passed as an argument to the callback
  * * `styleManager:change:{propertyName}` - As above but for a specific style property
  * ### Storages

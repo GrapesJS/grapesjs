@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-import { bindAll, isArray, isUndefined } from 'underscore';
+import { bindAll, isArray, isUndefined, debounce } from 'underscore';
 import { camelCase } from 'utils/mixins';
 
 const clearProp = 'data-clear-style';
@@ -182,10 +182,17 @@ module.exports = Backbone.View.extend({
     parent && parent.set('status', value);
   },
 
+  emitUpdateTarget: debounce(function() {
+    const em = this.config.em;
+    em && em.trigger('styleManager:update:target', this.getTarget());
+  }),
+
   /**
    * Fired when the target is changed
    * */
   targetUpdated() {
+    this.emitUpdateTarget();
+
     if (!this.checkVisibility()) {
       return;
     }
