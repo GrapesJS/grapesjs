@@ -319,17 +319,23 @@
   }
 }
 
-.#{$app-prefix}btn-prim {
-  color: inherit;
-  background-color: $mainLhColor;
-  border-radius: 2px;
-  padding: 3px 6px;
-  padding: $inputPadding;
-  cursor: pointer;
-  border: none;
-
-  &:active {
+.#{$app-prefix}btn {
+  &-prim {
+    color: inherit;
     background-color: $mainLhColor;
+    border-radius: 2px;
+    padding: 3px 6px;
+    padding: $inputPadding;
+    cursor: pointer;
+    border: none;
+
+    &:active {
+      background-color: $mainLhColor;
+    }
+  }
+
+  &--full {
+    width: 100%;
   }
 }
 

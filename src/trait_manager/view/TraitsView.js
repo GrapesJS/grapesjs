@@ -1,9 +1,10 @@
-var DomainViews = require('domain_abstract/view/DomainViews');
-var TraitView = require('./TraitView');
-var TraitSelectView = require('./TraitSelectView');
-var TraitCheckboxView = require('./TraitCheckboxView');
-var TraitNumberView = require('./TraitNumberView');
-var TraitColorView = require('./TraitColorView');
+const DomainViews = require('domain_abstract/view/DomainViews');
+const TraitView = require('./TraitView');
+const TraitSelectView = require('./TraitSelectView');
+const TraitCheckboxView = require('./TraitCheckboxView');
+const TraitNumberView = require('./TraitNumberView');
+const TraitColorView = require('./TraitColorView');
+const TraitButtonView = require('./TraitButtonView');
 
 module.exports = DomainViews.extend({
   itemView: TraitView,
@@ -13,7 +14,8 @@ module.exports = DomainViews.extend({
     number: TraitNumberView,
     select: TraitSelectView,
     checkbox: TraitCheckboxView,
-    color: TraitColorView
+    color: TraitColorView,
+    button: TraitButtonView
   },
 
   initialize(o = {}) {
