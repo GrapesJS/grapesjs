@@ -1,4 +1,11 @@
-import { isUndefined, defaults, isArray, contains, toArray } from 'underscore';
+import {
+  isUndefined,
+  defaults,
+  isArray,
+  contains,
+  toArray,
+  keys
+} from 'underscore';
 import { getModel } from 'utils/mixins';
 
 const deps = [
@@ -34,6 +41,12 @@ require('utils/extender')({
 });
 
 const $ = Backbone.$;
+const logs = {
+  debug: console.log,
+  info: console.info,
+  warning: console.warn,
+  error: console.error
+};
 
 module.exports = Backbone.Model.extend({
   defaults() {
@@ -61,6 +74,7 @@ module.exports = Backbone.Model.extend({
     this.set('storables', []);
     const el = c.el;
     const log = c.log;
+    const toLog = log === true ? keys(logs) : isArray(log) ? log : [];
 
     if (el && c.fromElement) this.config.components = el.innerHTML;
     this.attrsOrig = el
@@ -74,13 +88,7 @@ module.exports = Backbone.Model.extend({
     deps.forEach(name => this.loadModule(name));
     this.on('change:componentHovered', this.componentHovered, this);
     this.on('change:changesCount', this.updateChanges, this);
-
-    if (log === true) {
-      this.listenTo(this, 'log:debug', console.log);
-      this.listenTo(this, 'log:info', console.info);
-      this.listenTo(this, 'log:warning', console.warn);
-      this.listenTo(this, 'log:error', console.error);
-    }
+    toLog.forEach(e => this.listenLog(e));
 
     // Deprecations
     [{ from: 'change:selectedComponent', to: 'component:toggled' }].forEach(
@@ -89,12 +97,16 @@ module.exports = Backbone.Model.extend({
         const eventTo = event.to;
         this.listenTo(this, eventFrom, (...args) => {
           this.trigger(eventTo, ...args);
-          console.warn(
+          this.logWarning(
             `The event '${eventFrom}' is deprecated, replace it with '${eventTo}'`
           );
         });
       }
     );
+  },
+
+  listenLog(event) {
+    this.listenTo(this, `log:${event}`, logs[event]);
   },
 
   /**
