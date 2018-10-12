@@ -288,11 +288,19 @@ module.exports = config => {
     },
 
     /**
-     * Returns components in JSON format object
-     * @return {Object}
+     * Return the complete tree of components. Use `getWrapper` to include also the wrapper
+     * @return {Components}
      */
     getComponents() {
       return em.get('DomComponents').getComponents();
+    },
+
+    /**
+     * Return the wrapper and its all components
+     * @return {Component}
+     */
+    getWrapper() {
+      return em.get('DomComponents').getWrapper();
     },
 
     /**
