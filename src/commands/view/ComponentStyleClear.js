@@ -10,7 +10,7 @@ module.exports = {
 
     if (!len) {
       const rules = ed.CssComposer.getAll();
-      let toClear = target.get('style-clear');
+      let toClear = target.get('style-signature');
       toClear = isArray(toClear) ? toClear : [toClear];
 
       rules.forEach(rule => {

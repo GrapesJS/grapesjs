@@ -19,7 +19,7 @@ module.exports = Backbone.View.extend({
     const children = view.childrenView;
     children && children.stopListening();
     if (em) {
-      removed.get('style-clear') &&
+      removed.get('style-signature') &&
         em
           .get('Commands')
           .run('core:component-style-clear', { target: removed });
