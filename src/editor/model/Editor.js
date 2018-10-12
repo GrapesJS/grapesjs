@@ -60,6 +60,7 @@ module.exports = Backbone.Model.extend({
     this.set('toLoad', []);
     this.set('storables', []);
     const el = c.el;
+    const log = c.log;
 
     if (el && c.fromElement) this.config.components = el.innerHTML;
     this.attrsOrig = el
@@ -73,6 +74,13 @@ module.exports = Backbone.Model.extend({
     deps.forEach(name => this.loadModule(name));
     this.on('change:componentHovered', this.componentHovered, this);
     this.on('change:changesCount', this.updateChanges, this);
+
+    if (log === true) {
+      this.listenTo(this, 'log:debug', console.log);
+      this.listenTo(this, 'log:info', console.info);
+      this.listenTo(this, 'log:warning', console.warn);
+      this.listenTo(this, 'log:error', console.error);
+    }
 
     // Deprecations
     [{ from: 'change:selectedComponent', to: 'component:toggled' }].forEach(
