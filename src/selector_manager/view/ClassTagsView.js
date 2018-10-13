@@ -150,6 +150,7 @@ module.exports = Backbone.View.extend({
    * @private
    */
   componentChanged(target) {
+    target = target || this.getTarget();
     this.compTarget = target;
     let validSelectors = [];
 

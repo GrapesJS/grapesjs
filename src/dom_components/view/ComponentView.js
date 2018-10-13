@@ -25,7 +25,6 @@ module.exports = Backbone.View.extend({
     this.attr = model.get('attributes');
     this.classe = this.attr.class || [];
     const $el = this.$el;
-    //const classes = model.get('classes');
     this.listenTo(model, 'change:style', this.updateStyle);
     this.listenTo(model, 'change:attributes', this.updateAttributes);
     this.listenTo(model, 'change:highlightable', this.updateHighlight);
@@ -35,10 +34,8 @@ module.exports = Backbone.View.extend({
     this.listenTo(model, 'change:content', this.updateContent);
     this.listenTo(model, 'change', this.handleChange);
     this.listenTo(model, 'active', this.onActive);
-    //this.listenTo(classes, 'add remove change', this.updateClasses);
     $el.data('model', model);
     model.view = this;
-    //classes.length && this.importClasses();
     this.initClasses();
     this.initComponents({ avoidRender: 1 });
     this.init();
