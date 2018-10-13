@@ -65,12 +65,13 @@ module.exports = Backbone.View.extend({
   },
 
   initComponents(opts = {}) {
-    const { model, $el } = this;
+    const { model, $el, childrenView } = this;
     const event = 'change:components';
-    const components = model.get('components');
+    const comps = model.get('components');
 
-    if (components instanceof Components) {
-      $el.data('collection', components);
+    if (comps instanceof Components) {
+      $el.data('collection', comps);
+      childrenView && childrenView.remove();
       this.stopListening(model, event, this.initComponents);
       this.listenTo(model, event, this.initComponents);
       !opts.avoidRender && this.renderChildren();

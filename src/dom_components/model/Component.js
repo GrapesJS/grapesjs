@@ -458,7 +458,6 @@ const Component = Backbone.Model.extend(Styleable).extend(
       comps.parent = this;
       const components = this.get('components');
       const addChild = !this.opt.avoidChildren;
-      addChild && comps.reset();
       this.set('components', comps);
       addChild && comps.add(components);
       this.listenTo(...toListen);
