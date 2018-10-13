@@ -57,7 +57,11 @@ module.exports = Backbone.View.extend({
       'styleManager:update',
       this.componentChanged
     );
-    this.listenTo(this.target, 'component:toggled', this.componentChanged);
+    this.listenTo(
+      this.target,
+      'component:toggled component:update:classes',
+      this.componentChanged
+    );
     this.listenTo(this.target, 'component:update:classes', this.updateSelector);
 
     this.listenTo(this.collection, 'add', this.addNew);

@@ -162,6 +162,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.initComponents();
       this.initToolbar();
       this.set('status', '');
+      //this.listenTo(this, 'change:components', this.initComponents);
 
       // Register global updates for collection properties
       ['classes', 'traits', 'components'].forEach(name => {
@@ -437,8 +438,14 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     initClasses() {
+      const event = 'change:classes';
+      const toListen = [this, event, this.initClasses];
+      this.stopListening(...toListen);
       const classes = this.normalizeClasses(this.get('classes') || []);
-      this.set('classes', new Selectors(classes));
+      const selectors = new Selectors([]);
+      this.set('classes', selectors);
+      selectors.add(classes);
+      this.listenTo(...toListen);
       return this;
     },
 

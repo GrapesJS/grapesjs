@@ -328,15 +328,13 @@ module.exports = () => {
 
       if ((result && result.length) || isObj) {
         this.clear();
-        this.getComponents().reset();
 
         // If the result is an object I consider it the wrapper
         if (isObj) {
-          this.getWrapper()
-            .set(result)
-            .initComponents()
-            .initClasses()
-            .loadTraits();
+          this.getWrapper().set(result);
+          // .initClasses()
+          // .loadTraits()
+          // .initComponents();
         } else {
           this.getComponents().add(result);
         }

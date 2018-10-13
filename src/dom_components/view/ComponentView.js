@@ -2,6 +2,7 @@ import Backbone from 'backbone';
 import { isArray, isEmpty } from 'underscore';
 
 const ComponentsView = require('./ComponentsView');
+const Selectors = require('selector_manager/model/Selectors');
 
 module.exports = Backbone.View.extend({
   className() {
@@ -23,7 +24,7 @@ module.exports = Backbone.View.extend({
     this.attr = model.get('attributes');
     this.classe = this.attr.class || [];
     const $el = this.$el;
-    const classes = model.get('classes');
+    //const classes = model.get('classes');
     this.listenTo(model, 'change:style', this.updateStyle);
     this.listenTo(model, 'change:attributes', this.updateAttributes);
     this.listenTo(model, 'change:highlightable', this.updateHighlight);
@@ -33,11 +34,12 @@ module.exports = Backbone.View.extend({
     this.listenTo(model, 'change:content', this.updateContent);
     this.listenTo(model, 'change', this.handleChange);
     this.listenTo(model, 'active', this.onActive);
-    this.listenTo(classes, 'add remove change', this.updateClasses);
+    //this.listenTo(classes, 'add remove change', this.updateClasses);
     $el.data('model', model);
     $el.data('collection', model.get('components'));
     model.view = this;
-    classes.length && this.importClasses();
+    //classes.length && this.importClasses();
+    this.initClasses();
     this.init();
   },
 
@@ -50,6 +52,19 @@ module.exports = Backbone.View.extend({
    * Callback executed when the `active` event is triggered on component
    */
   onActive() {},
+
+  initClasses() {
+    const { model } = this;
+    const event = 'change:classes';
+    const classes = model.get('classes');
+
+    if (classes instanceof Selectors) {
+      this.stopListening(model, event, this.initClasses);
+      this.listenTo(model, event, this.initClasses);
+      this.listenTo(classes, 'add remove change', this.updateClasses);
+      classes.length && this.importClasses();
+    }
+  },
 
   /**
    * Handle any property change
