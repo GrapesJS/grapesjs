@@ -273,6 +273,7 @@ module.exports = () => {
 
       [
         [model, evn, handleUpdates],
+        [model, 'change:components', handleChanges],
         [comps, 'add', handleChanges],
         [comps, 'remove', handleRemoves],
         [model.get('classes'), 'add remove', handleUpdates]
