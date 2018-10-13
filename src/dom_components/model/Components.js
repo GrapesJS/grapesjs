@@ -1,4 +1,4 @@
-import { isEmpty } from 'underscore';
+import { isEmpty, isArray, isString } from 'underscore';
 
 const Backbone = require('backbone');
 
@@ -32,19 +32,31 @@ module.exports = Backbone.Collection.extend({
     };
   },
 
-  add(models, opt = {}) {
-    if (typeof models === 'string') {
-      const cssc = this.em.get('CssComposer');
-      const parsed = this.em.get('Parser').parseHtml(models);
-      models = parsed.html;
+  parseString(value, opt = {}) {
+    const { em } = this;
+    const cssc = em.get('CssComposer');
+    const parsed = em.get('Parser').parseHtml(value);
 
-      if (parsed.css && cssc) {
-        const { avoidUpdateStyle } = opt;
-        const added = cssc.addCollection(parsed.css, {
-          extend: 1,
-          avoidUpdateStyle
-        });
-      }
+    if (parsed.css && cssc) {
+      const { avoidUpdateStyle } = opt;
+      cssc.addCollection(parsed.css, {
+        extend: 1,
+        avoidUpdateStyle
+      });
+    }
+
+    return parsed.html;
+  },
+
+  add(models, opt = {}) {
+    if (isString(models)) {
+      models = this.parseString(models, opt);
+    } else if (isArray(models)) {
+      models.forEach((item, index) => {
+        if (isString(item)) {
+          models[index] = this.parseString(item);
+        }
+      });
     }
 
     return Backbone.Collection.prototype.add.apply(this, [models, opt]);

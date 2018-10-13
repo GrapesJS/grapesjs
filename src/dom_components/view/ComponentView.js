@@ -1,6 +1,7 @@
 import Backbone from 'backbone';
 import { isArray, isEmpty } from 'underscore';
 
+const Components = require('../model/Components');
 const ComponentsView = require('./ComponentsView');
 const Selectors = require('selector_manager/model/Selectors');
 
@@ -36,10 +37,10 @@ module.exports = Backbone.View.extend({
     this.listenTo(model, 'active', this.onActive);
     //this.listenTo(classes, 'add remove change', this.updateClasses);
     $el.data('model', model);
-    $el.data('collection', model.get('components'));
     model.view = this;
     //classes.length && this.importClasses();
     this.initClasses();
+    this.initComponents({ avoidRender: 1 });
     this.init();
   },
 
@@ -63,6 +64,19 @@ module.exports = Backbone.View.extend({
       this.listenTo(model, event, this.initClasses);
       this.listenTo(classes, 'add remove change', this.updateClasses);
       classes.length && this.importClasses();
+    }
+  },
+
+  initComponents(opts = {}) {
+    const { model, $el } = this;
+    const event = 'change:components';
+    const components = model.get('components');
+
+    if (components instanceof Components) {
+      $el.data('collection', components);
+      this.stopListening(model, event, this.initComponents);
+      this.listenTo(model, event, this.initComponents);
+      !opts.avoidRender && this.renderChildren();
     }
   },
 
@@ -315,6 +329,7 @@ module.exports = Backbone.View.extend({
    * @private
    */
   renderChildren() {
+    this.updateContent();
     const container = this.getChildrenContainer();
     const view = new ComponentsView({
       collection: this.model.get('components'),
@@ -338,7 +353,6 @@ module.exports = Backbone.View.extend({
 
   render() {
     this.renderAttributes();
-    this.updateContent();
     this.renderChildren();
     this.updateScript();
     this.onRender();
