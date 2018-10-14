@@ -154,11 +154,10 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.ccid = Component.createId(this);
       this.set('attributes', this.get('attributes') || {});
       this.listenTo(this, 'change:script', this.scriptUpdated);
-      this.listenTo(this, 'change:traits', this.traitsUpdated);
       this.listenTo(this, 'change:tagName', this.tagUpdated);
       this.listenTo(this, 'change:attributes', this.attrUpdated);
       this.initClasses();
-      this.loadTraits();
+      this.initTraits();
       this.initComponents();
       this.initToolbar();
       this.set('status', '');
@@ -464,6 +463,25 @@ const Component = Backbone.Model.extend(Styleable).extend(
       return this;
     },
 
+    initTraits() {
+      const event = 'change:traits';
+      const toListen = [this, event, this.initTraits];
+      this.stopListening(...toListen);
+      this.loadTraits();
+      const attrs = { ...this.get('attributes') };
+      const traits = this.get('traits');
+      traits.each(trait => {
+        if (!trait.get('changeProp')) {
+          const name = trait.get('name');
+          const value = trait.getInitValue();
+          if (name && value) attrs[name] = value;
+        }
+      });
+      traits.length && this.set('attributes', attrs);
+      this.listenTo(...toListen);
+      return this;
+    },
+
     init() {},
 
     /**
@@ -527,34 +545,6 @@ const Component = Backbone.Model.extend(Styleable).extend(
      */
     scriptUpdated() {
       this.set('scriptUpdated', 1);
-    },
-
-    /**
-     * Once traits are updated I have to populates model's attributes
-     * @private
-     */
-    traitsUpdated() {
-      let found = 0;
-      const attrs = { ...this.get('attributes') };
-      const traits = this.get('traits');
-
-      if (!(traits instanceof Traits)) {
-        this.loadTraits();
-        return;
-      }
-
-      traits.each(trait => {
-        found = 1;
-        if (!trait.get('changeProp')) {
-          const name = trait.get('name');
-          const value = trait.getInitValue();
-          if (name && value) {
-            attrs[name] = value;
-          }
-        }
-      });
-
-      found && this.set('attributes', attrs);
     },
 
     /**
