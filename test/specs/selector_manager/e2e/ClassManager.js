@@ -97,7 +97,7 @@ module.exports = {
           expect(tagEl.collection.at(0).get('name')).toEqual('test');
         });
 
-        test('Removing from container removes also from selected component', () => {
+        test.only('Removing from container removes also from selected component', () => {
           var model = components.add({});
           gjs.editor.setSelected(model);
           tagEl.addNewTag('test');

@@ -250,10 +250,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @private
      */
     attrUpdated() {
-      const attrPrev = { ...this.previous('attributes') };
-      const attrCurrent = { ...this.get('attributes') };
-      const diff = shallowDiff(attrPrev, attrCurrent);
-      keys(diff).forEach(pr => this.trigger(`change:attributes:${pr}`));
+      this.setAttributes(this.get('attributes'));
     },
 
     /**
@@ -263,7 +260,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @example
      * component.setAttributes({ id: 'test', 'data-key': 'value' });
      */
-    setAttributes(attrs) {
+    setAttributes(attrs, opts = {}) {
       attrs = { ...attrs };
 
       // Handle classes
@@ -276,7 +273,10 @@ const Component = Backbone.Model.extend(Styleable).extend(
       style && this.setStyle(style);
       delete attrs.style;
 
-      this.set('attributes', attrs);
+      this.set('attributes', attrs, { silent: 1 });
+      const attrPrev = { ...this.previous('attributes') };
+      const diff = shallowDiff(attrPrev, attrs);
+      keys(diff).forEach(pr => this.trigger(`change:attributes:${pr}`));
 
       return this;
     },
