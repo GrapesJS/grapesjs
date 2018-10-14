@@ -93,14 +93,9 @@ module.exports = require('backbone').View.extend({
    * @private
    */
   removeTag(e) {
-    const em = this.em;
-    const model = this.model;
-    const coll = this.coll;
-    const el = this.el;
+    const { em, model } = this;
     const sel = em && em.getSelected();
-    sel && sel.get & sel.get('classes').remove(model);
-    coll && coll.remove(model);
-    setTimeout(() => this.remove(), 0);
+    sel && setTimeout(() => sel.getSelectors().remove(model));
   },
 
   /**

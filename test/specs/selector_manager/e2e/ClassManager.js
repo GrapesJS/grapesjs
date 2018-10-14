@@ -97,7 +97,7 @@ module.exports = {
           expect(tagEl.collection.at(0).get('name')).toEqual('test');
         });
 
-        test.only('Removing from container removes also from selected component', () => {
+        test('Removing from container removes also from selected component', () => {
           var model = components.add({});
           gjs.editor.setSelected(model);
           tagEl.addNewTag('test');
@@ -105,7 +105,7 @@ module.exports = {
             .getClasses()
             .find('.tag #close')
             .trigger('click');
-          expect(model.get('classes').length).toEqual(0);
+          setTimeout(() => expect(model.get('classes').length).toEqual(0));
         });
 
         test('Trigger correctly event on target with new class add', () => {
