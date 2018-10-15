@@ -94,7 +94,7 @@ In this way you're able to listen this changes and react with your own logic
 editor.DomComponents.addType('input', {
     model: dModel.extend({
       init() {
-        this.listenTo(this, 'change:model-prop-name', this.doStuff);
+        this.listenTo(this, 'change:attributes:model-prop-name', this.doStuff);
       },
 
       doStuff() {}
