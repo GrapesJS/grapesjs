@@ -349,9 +349,6 @@ module.exports = () => {
         // If the result is an object I consider it the wrapper
         if (isObj) {
           this.getWrapper().set(result);
-          // .initClasses()
-          // .loadTraits()
-          // .initComponents();
         } else {
           this.getComponents().add(result);
         }
@@ -379,8 +376,8 @@ module.exports = () => {
 
       if (keys.indexOf('components') >= 0) {
         const { em } = this;
-        const storeWrap =
-          (em && !em.getConfig('avoidInlineStyle')) || c.storeWrapper;
+        // const storeWrap = (em && !em.getConfig('avoidInlineStyle')) || c.storeWrapper;
+        const storeWrap = c.storeWrapper;
         const toStore = storeWrap ? this.getWrapper() : this.getComponents();
         obj.components = JSON.stringify(toStore);
       }

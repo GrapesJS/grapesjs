@@ -37,7 +37,7 @@ module.exports = {
   // structure, but in case you need it you can use this option.
   // If you have `config.avoidInlineStyle` disabled the wrapper will be stored
   // as we need to store inlined style.
-  storeWrapper: 0,
+  storeWrapper: 1,
 
   // List of void elements
   voidElements: [
