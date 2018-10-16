@@ -110,7 +110,8 @@ const Property = require('backbone').Model.extend(
       let valueStr = `${result.value}`;
       let start = valueStr.indexOf('(') + 1;
       let end = valueStr.lastIndexOf(')');
-      result.functionName = valueStr.substring(0, start - 1);
+      const functionName = valueStr.substring(0, start - 1);
+      if (functionName) result.functionName = functionName;
       args.push(start);
 
       // Will try even if the last closing parentheses is not found
