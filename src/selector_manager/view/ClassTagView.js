@@ -95,6 +95,7 @@ module.exports = require('backbone').View.extend({
   removeTag(e) {
     const { em, model } = this;
     const sel = em && em.getSelected();
+    // Prevent weird erros on remove
     sel && setTimeout(() => sel.getSelectors().remove(model));
   },
 

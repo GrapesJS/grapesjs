@@ -131,7 +131,7 @@ module.exports = {
         fixtures.innerHTML = '';
         fixtures.appendChild(view.render().el);
         expect(view.$el.html()).toEqual(
-          '<span data-gjs-type="default" data-highlightable="1"></span><div data-gjs-type="default" title="test" data-highlightable="1"></div>'
+          '<span data-gjs-type="default" data-highlightable="1"></span><div data-gjs-type="default" data-highlightable="1" title="test"></div>'
         );
       });
 

@@ -26,7 +26,7 @@ module.exports = Backbone.View.extend({
     this.classe = this.attr.class || [];
     const $el = this.$el;
     this.listenTo(model, 'change:style', this.updateStyle);
-    this.listenTo(model, 'change:attributes', this.updateAttributes);
+    this.listenTo(model, 'change:attributes', this.renderAttributes);
     this.listenTo(model, 'change:highlightable', this.updateHighlight);
     this.listenTo(model, 'change:status', this.updateStatus);
     this.listenTo(model, 'change:state', this.updateState);
@@ -223,15 +223,7 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   getClasses() {
-    var attr = this.model.get('attributes'),
-      classes = attr['class'] || [];
-    classes = isArray(classes) ? classes : [classes];
-
-    if (classes.length) {
-      return classes.join(' ');
-    } else {
-      return null;
-    }
+    return this.model.getClasses().join(' ');
   },
 
   /**
@@ -240,17 +232,14 @@ module.exports = Backbone.View.extend({
    * */
   updateAttributes() {
     const model = this.model;
-    const attrs = { 'data-gjs-type': model.get('type') || 'default' };
-    const attr = model.get('attributes');
-    const src = model.get('src');
-
-    for (let key in attr) {
-      attrs[key] = attr[key];
-    }
-
-    src && (attrs.src = src);
-    this.$el.attr(attrs);
-    this.updateHighlight();
+    const defaultAttr = {
+      'data-gjs-type': model.get('type') || 'default',
+      'data-highlightable': model.get('highlightable') ? 1 : ''
+    };
+    this.$el.attr({
+      ...defaultAttr,
+      ...model.getAttributes()
+    });
     this.updateStyle();
   },
 
