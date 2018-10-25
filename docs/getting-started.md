@@ -8,12 +8,11 @@ meta:
 
 # Getting Started
 
-This guide is a step-by-step introduction for everyone who wants to start creating its own builder with GrapesJS. This is not a complete guide of all functionalities but just a concise overview of most common modules.
-Let's see how to create a completely customized page builder from scratch. The last demo of this page represents the [final result](#final-result)
+This is a step-by-step guide for anyone who wants to create their own builder with GrapesJS. This is not a comprehensive guide, just a concise overview of most common modules. Follow along to create a page builder from scratch. Skip to the end of this page to see the [final result](#final-result)
 
 ## Import the library
 
-Before start using GrapesJS you have to import it inside your project, so let's import its latest version
+Before you start using GrapesJS, you'll have to import it. Let's import the latest version
 
 ```html
 <link rel="stylesheet" href="//unpkg.com/grapesjs/dist/css/grapes.min.css">
@@ -24,7 +23,7 @@ If you need plugins, put them below the main grapesjs script
 -->
 ```
 
-or if you're in node environment
+or if you're in a Node environment
 
 ```js
 import 'grapesjs/dist/css/grapes.min.css';
@@ -35,9 +34,8 @@ import grapesjs from 'grapesjs';
 
 ## Start from the canvas
 
-The first step is to define the interface of our editor and for this purpose we gonna start from basic HTML layouts.
-Finding a common structure for the UI of any project is not an easy task that's why GrapesJS prefers to keep this process as simple as possible, by providing just few helpers but letting the user define the whole interface, this guarantees maximum flexibility.
-The main part of the GrapesJS editor is the canvas, this is where you gonna create the whole structure of your templates and you definitely can't miss it. Let's try to initiate the editor with just the canvas and no panels.
+The first step is to define the interface of our editor. For this purpose we gonna start with basic HTML layouts. Finding a common structure for the UI of any project is not an easy task. That's why GrapesJS prefers to keep this process as simple as possible. We provide a few helpers, but let the user define the interface. This guarantees maximum flexibility.
+The main part of the GrapesJS editor is the canvas, this is where you create the structure of your templates and you can't miss it. Let's try to initiate the editor with the canvas and no panels.
 
 <<< @/docs/.vuepress/components/demos/DemoCanvasOnly.html
 <<< @/docs/.vuepress/components/demos/DemoCanvasOnly.js
@@ -46,10 +44,10 @@ The main part of the GrapesJS editor is the canvas, this is where you gonna crea
  <DemoCanvasOnly/>
 </Demo>
 
-With just the canvas you're already able to move, copy and delete components from the structure (when you select components in the canvas, the toolbar is shown). For now we just see the example template taken from the container. Let's see now how can we create and drag custom blocks into our canvas.
+With just the canvas you're already able to move, copy and delete components from the structure. For now, we see the example template taken from the container. Next let's look at how to create and drag custom blocks into our canvas.
 
 ## Add Blocks
-The block in GrapesJS is just a reusable piece of HTML that you can drop in the canvas. A block can be an image, a button, or an entire section with videos, forms and iframes. Let's start from creating another container and append inside it few basic blocks which we can later use to build more complex structures.
+The block in GrapesJS is just a reusable piece of HTML that you can drop in the canvas. A block can be an image, a button, or an entire section with videos, forms and iframes. Let's start by creating another container and append a few basic blocks inside of it. Later we can use this technique to build more complex structures.
 
 ```html{4}
 <div id="gjs">
@@ -102,7 +100,7 @@ const editor = grapesjs.init({
  <DemoBasicBlocks/>
 </Demo>
 
-As you see we add our blocks via the initial configuration, which is ok, but obviously there might be the case you would like to add them dynamically, in this case you have to use the [Block Manager API](api/block_manager.html)
+As you can see we add our blocks via the initial configuration. Obviously there might be a case in which you would like to add them dynamically, in this case you have to use the [Block Manager API](api/block_manager.html)
 
 ```js
 editor.BlockManager.add('my-block-id', {
@@ -112,11 +110,11 @@ editor.BlockManager.add('my-block-id', {
 })
 ```
 ::: tip
-If you want to get more about blocks we suggest to read its dedicated page: [Block Manager Module](modules/Blocks.html)
+If you want to learn more about blocks we suggest to read its dedicated article: [Block Manager Module](modules/Blocks.html)
 :::
 
 ## Define Components
-Technically, once you drop your HTML block inside the canvas each element of the content is transformed in GrapesJS Component, which is an object containing informations about how the element is rendered in the canvas (managed in the View) and how it might look its final code (created by the properties in the Model). Generally, all Model properties are reflected in the View, so, for example, if you add a new attribute to the model, not only it will be available in the export code (will see later how to get it) but also the element you see in the canvas is updated with new attributes.
+Technically, once you drop your HTML block inside the canvas each element of the content is transformed into a GrapesJS Component. A GrapesJS Component is an object containing information about how the element is rendered in the canvas (managed in the View) and how it might look its final code (created by the properties in the Model). Generally, all Model properties are reflected in the View, so, for example, if you add a new attribute to the model, not only it will be available in the export code (will see later how to get it) but also the element you see in the canvas is updated with new attributes.
 While this is a common behavior what it's cool about Components that you can create a totally decoupled view and show to the user whatever you desire (so not necessary reflecting the model). For example, by dragging a placeholder text you can fetch and show instead a dynamic content. If want to get more about Custom Components and how to create and extend them, we recommend to check out [Component Manager Module](modules/Components.html).
 
 GrapesJS comes along with few [built-in Components](modules/Components.html#built-in-components) which enable different core features once rendered in canvas. Just to mention few of them, by double clicking on the image component you will see show up the default [Asset Manager](modules/Assets.html), which you can customize or integrate you own, by double clicking on the text component you're able to edit it via the built-in Rich Text Editor, which is also customizable and [replaceable](guides/Replace-Rich-Text-Editor.html).
@@ -723,3 +721,4 @@ and here is our final result
 <Demo id="final-result">
   <DemoTheme/>
 </Demo>
+
