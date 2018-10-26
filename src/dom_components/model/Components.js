@@ -37,11 +37,10 @@ module.exports = Backbone.Collection.extend({
     const cssc = em.get('CssComposer');
     const parsed = em.get('Parser').parseHtml(value);
 
-    if (parsed.css && cssc) {
-      const { avoidUpdateStyle } = opt;
+    if (parsed.css && cssc && !opt.temporary) {
       cssc.addCollection(parsed.css, {
-        extend: 1,
-        avoidUpdateStyle
+        ...opt,
+        extend: 1
       });
     }
 
@@ -62,7 +61,7 @@ module.exports = Backbone.Collection.extend({
     return Backbone.Collection.prototype.add.apply(this, [models, opt]);
   },
 
-  onAdd(model, c, opts) {
+  onAdd(model, c, opts = {}) {
     const em = this.em;
     const style = model.getStyle();
     const avoidInline = em && em.getConfig('avoidInlineStyle');
@@ -72,7 +71,8 @@ module.exports = Backbone.Collection.extend({
       !avoidInline &&
       em &&
       em.get &&
-      em.getConfig('forceClass')
+      em.getConfig('forceClass') &&
+      !opts.temporary
     ) {
       const name = model.cid;
       const rule = em.get('CssComposer').setClassRule(name, style);
