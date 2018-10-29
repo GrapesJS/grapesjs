@@ -325,8 +325,9 @@ const Component = Backbone.Model.extend(Styleable).extend(
      */
     setStyle(prop = {}, opts = {}) {
       const em = this.em;
+      const { opt } = this;
 
-      if (em && em.getConfig('avoidInlineStyle')) {
+      if (em && em.getConfig('avoidInlineStyle') && !opt.temporary) {
         prop = isString(prop) ? this.parseStyle(prop) : prop;
         prop = { ...prop, ...this.get('style') };
         const state = this.get('state');
