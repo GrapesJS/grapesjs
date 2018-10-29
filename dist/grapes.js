@@ -29920,9 +29920,9 @@ module.exports = function () {
       var rule = this.get(selectors, s, w, opt);
 
       // do not create rules that were found before
-      // unless this is an at-rule, for which multiple declarations
+      // unless this is a single at-rule, for which multiple declarations
       // make sense (e.g. multiple `@font-type`s)
-      if (rule && rule.config && !rule.config.atRuleType) {
+      if (rule && rule.config && !rule.config.singleAtRule) {
         return rule;
       } else {
         opt.state = s;
@@ -31779,13 +31779,13 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
     this.config = opt.config || {};
     this.ccid = Component.createId(this);
     this.set('attributes', this.get('attributes') || {});
-    this.listenTo(this, 'change:script', this.scriptUpdated);
-    this.listenTo(this, 'change:tagName', this.tagUpdated);
-    this.listenTo(this, 'change:attributes', this.attrUpdated);
     this.initClasses();
     this.initTraits();
     this.initComponents();
     this.initToolbar();
+    this.listenTo(this, 'change:script', this.scriptUpdated);
+    this.listenTo(this, 'change:tagName', this.tagUpdated);
+    this.listenTo(this, 'change:attributes', this.attrUpdated);
     this.set('status', '');
 
     // Register global updates for collection properties
@@ -31976,8 +31976,10 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
     var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
     var em = this.em;
+    var opt = this.opt;
 
-    if (em && em.getConfig('avoidInlineStyle')) {
+
+    if (em && em.getConfig('avoidInlineStyle') && !opt.temporary) {
       prop = (0, _underscore.isString)(prop) ? this.parseStyle(prop) : prop;
       prop = _extends({}, prop, this.get('style'));
       var state = this.get('state');
@@ -32010,8 +32012,8 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
     var id = this.getId();
 
     // Add classes
-    this.get('classes').each(function (cls) {
-      return classes.push(cls.get('name'));
+    this.get('classes').forEach(function (cls) {
+      return classes.push((0, _underscore.isString)(cls) ? cls : cls.get('name'));
     });
     classes.length && (attributes.class = classes.join(' '));
 
@@ -33841,6 +33843,8 @@ module.exports = _Component2.default.extend({}, {
 "use strict";
 
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _underscore = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
 
 var Backbone = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
@@ -33883,13 +33887,10 @@ module.exports = Backbone.Collection.extend({
     var cssc = em.get('CssComposer');
     var parsed = em.get('Parser').parseHtml(value);
 
-    if (parsed.css && cssc) {
-      var avoidUpdateStyle = opt.avoidUpdateStyle;
-
-      cssc.addCollection(parsed.css, {
-        extend: 1,
-        avoidUpdateStyle: avoidUpdateStyle
-      });
+    if (parsed.css && cssc && !opt.temporary) {
+      cssc.addCollection(parsed.css, _extends({}, opt, {
+        extend: 1
+      }));
     }
 
     return parsed.html;
@@ -33911,12 +33912,14 @@ module.exports = Backbone.Collection.extend({
 
     return Backbone.Collection.prototype.add.apply(this, [models, opt]);
   },
-  onAdd: function onAdd(model, c, opts) {
+  onAdd: function onAdd(model, c) {
+    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
     var em = this.em;
     var style = model.getStyle();
     var avoidInline = em && em.getConfig('avoidInlineStyle');
 
-    if (!(0, _underscore.isEmpty)(style) && !avoidInline && em && em.get && em.getConfig('forceClass')) {
+    if (!(0, _underscore.isEmpty)(style) && !avoidInline && em && em.get && em.getConfig('forceClass') && !opts.temporary) {
       var name = model.cid;
       var rule = em.get('CssComposer').setClassRule(name, style);
       model.setStyle({});
