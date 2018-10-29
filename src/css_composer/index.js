@@ -203,7 +203,7 @@ module.exports = () => {
       // do not create rules that were found before
       // unless this is an at-rule, for which multiple declarations
       // make sense (e.g. multiple `@font-type`s)
-      if (rule && rule.config && !rule.config.atRuleType) {
+      if (rule && rule.config && !rule.config.singleAtRule) {
         return rule;
       } else {
         opt.state = s;
