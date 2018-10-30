@@ -4,7 +4,7 @@ title: Component Manager
 
 # Component Manager
 
-The Component is the base element for the template composition and, usually, elements like images, text boxes, maps, etc. fit perfectly in this concept. The concept of the component was made to allow the developer to bind different behaviors to different elements. Like for example, opening the Asset Manager on double click of the image.
+The Component is the base element for template composition. It is atomic, so elements like images, text boxes, maps, etc. fit the definition of a Component. The concept of the component was made to allow the developer to bind different behaviors to different elements. Like for example, opening the Asset Manager on double click of the image.
 
 [[toc]]
 
@@ -33,7 +33,7 @@ When we pass an HTML string to the editor like this:
 </div>
 ```
 
-The editor will create and store, for each DOM element, its object representation and all next changes to the template will be made on top of this structure, which will then reflect on canvas. So, each object, usually called *Model* (or state/store), will be the source of truth for the template, but what exactly does it mean? For instance, in more practical way, once the template is rendered on the canvas, if you try to remove one of the elements using the browser inspector and then ask the editor to print the HTML (using `editor.getHtml()`) you'll see, from the code, that the element will still be there, this because the editor relies on Models and not on the DOM inside the canvas. This approach allows us to be extremely flexible on how to generate the final code (from the *Model*) and how to render it inside the canvas (from the *View*).
+For each DOM element the editor will create and store an object representation. Every future change to the template will be made on top of this structure, which will then reflect on the canvas. So each object, usually called *Model* (or state/store), will be the source of truth for the template, but what exactly does that mean? In more practical example, once the template is rendered on the canvas, if you try to remove one of the elements using the browser inspector and then ask the editor to print the HTML (using `editor.getHtml()`) you'll see that the element will still be present. This is because the editor relies on Models and not on the DOM inside the canvas. This approach allows us to be extremely flexible on how we generate the final code (from the *Model*) and how to render it inside the canvas (from the *View*).
 
 
 
@@ -54,7 +54,7 @@ isComponent: function(el) {
 }
 ```
 
-This method gives us the possibility to recognize and bind component types to each HTMLElement (div, img, iframe, etc.). Each HTML element introduced inside the canvas will be processed by `isComponent` of all available types and if it matches, the object represented the type should be returned. So, for example, with the image component this method looks like:
+This method gives us the possibility to recognize and bind component types to each HTMLElement (div, img, iframe, etc.). Each HTML element introduced inside the canvas will be processed by `isComponent` of all available types and if it matches, the object represented the type should be returned. For example, with the image component this method looks like:
 
 ```js
 // Image component
@@ -64,7 +64,7 @@ isComponent: function(el) {
 }
 ```
 
-Let's try with something that might look a little bit tricky. What about a Google's Map?!? Google's maps are generally embedded as `iframe`s, but the template can be composed by a lot of different `iframe`s, how can I tell the editor that a particular iframe is actually a Google's Map. Well, this part is up to you to understand which is the right pattern to choose, you have the `HTMLElement` so you can make all checks you want and in this particular case this pattern is used:
+Let's try with something that might look a little bit tricky. What about a Google Map?!? Google Maps are generally embedded as `iframe`s, but the template can be composed by a lot of different `iframe`s. How can I tell the editor that a particular iframe is actually a Google's Map? Well, you'll have to figure out the right pattern, you have the `HTMLElement` so you can make all the checks you want. In this particular case this pattern is used:
 
 ```js
 // Map component
@@ -75,17 +75,17 @@ isComponent: function(el) {
 },
 ```
 
-So, as you see, in addition to `tagName` check, we also used the `src` property, but, as you'll see, you can actually override it with your own logic by extending the built-in component.
+In addition to `tagName` check, we also used the `src` property, but you can actually override it with your own logic by extending the built-in component.
 
 
 
 ## Define new Component
 
-Let's see now an example, with another HTML element, which is not handled by default Component types. What about `input` elements?
+Let's see an example with another HTML element that is not handled by default Component types. What about `input` elements?
 
-With the default GrapesJS configuration `input`s are treated just like any other element, you can move it around, style it, etc., but usually we'd like to handle this type of element more specifically. In this case, we have to create a new Component type.
+With the default GrapesJS configuration `input`s are treated like any other element; you can move it around, style it, etc. However, we'd like to handle this type of element more specifically. In this case, we have to create a new Component type.
 
-Let's define just few specs for our new *Input* type:
+Let's define few specs for our new *Input* type:
 
 * Can be dropped only inside `form` elements
 * Can't drop other elements inside it
@@ -268,3 +268,4 @@ Solution 1: turn off `autorender`
 </script>
 ```
 Solution 2: put all the stuff inside a plugin ([Creating plugins](https://github.com/artf/grapesjs/wiki/Creating-plugins))
+
