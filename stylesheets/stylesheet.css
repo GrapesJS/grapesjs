@@ -206,7 +206,13 @@ a {
   z-index: -1;
 }
 
-.card-image-cont33 {  left: -50%;  max-width: 277px;  position: absolute;  top: 15%;  z-index: -2;}
+.card-image-cont33 {
+  left: -50%;
+  max-width: 277px;
+  position: absolute;
+  top: 15%;
+  z-index: -2;
+}
 
 .card-image-cont4 {
   margin: 0 auto;
@@ -318,7 +324,8 @@ a {
 }
 
 .top-nav-link {
-  color: inherit;  text-decoration: none !important;
+  color: inherit;
+  text-decoration: none !important;
 }
 
 @media screen and (min-width: 64em) {
@@ -659,6 +666,12 @@ a {
 
 .sponsors, .backers {
   margin: 50px 0 0;
+}
+
+.sponsors__link,
+.sponsors__link:hover {
+  text-decoration: none;
+  margin-right: 15px;
 }
 
 .footer-content {
