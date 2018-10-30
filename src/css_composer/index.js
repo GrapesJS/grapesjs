@@ -201,9 +201,9 @@ module.exports = () => {
       var rule = this.get(selectors, s, w, opt);
 
       // do not create rules that were found before
-      // unless this is an at-rule, for which multiple declarations
+      // unless this is a single at-rule, for which multiple declarations
       // make sense (e.g. multiple `@font-type`s)
-      if (rule && rule.config && !rule.config.atRuleType) {
+      if (rule && rule.config && !rule.config.singleAtRule) {
         return rule;
       } else {
         opt.state = s;

@@ -153,13 +153,13 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.config = opt.config || {};
       this.ccid = Component.createId(this);
       this.set('attributes', this.get('attributes') || {});
-      this.listenTo(this, 'change:script', this.scriptUpdated);
-      this.listenTo(this, 'change:tagName', this.tagUpdated);
-      this.listenTo(this, 'change:attributes', this.attrUpdated);
       this.initClasses();
       this.initTraits();
       this.initComponents();
       this.initToolbar();
+      this.listenTo(this, 'change:script', this.scriptUpdated);
+      this.listenTo(this, 'change:tagName', this.tagUpdated);
+      this.listenTo(this, 'change:attributes', this.attrUpdated);
       this.set('status', '');
 
       // Register global updates for collection properties
@@ -325,8 +325,9 @@ const Component = Backbone.Model.extend(Styleable).extend(
      */
     setStyle(prop = {}, opts = {}) {
       const em = this.em;
+      const { opt } = this;
 
-      if (em && em.getConfig('avoidInlineStyle')) {
+      if (em && em.getConfig('avoidInlineStyle') && !opt.temporary) {
         prop = isString(prop) ? this.parseStyle(prop) : prop;
         prop = { ...prop, ...this.get('style') };
         const state = this.get('state');
@@ -355,7 +356,9 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const id = this.getId();
 
       // Add classes
-      this.get('classes').each(cls => classes.push(cls.get('name')));
+      this.get('classes').forEach(cls =>
+        classes.push(isString(cls) ? cls : cls.get('name'))
+      );
       classes.length && (attributes.class = classes.join(' '));
 
       // Check if we need an ID on the component

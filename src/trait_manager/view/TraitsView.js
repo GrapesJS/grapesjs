@@ -38,10 +38,7 @@ module.exports = DomainViews.extend({
     const ppfx = this.ppfx;
     const comp = this.em.getSelected();
     this.el.className = `${this.className} ${ppfx}one-bg ${ppfx}two-color`;
-
-    if (comp) {
-      this.collection = comp.get('traits');
-      this.render();
-    }
+    this.collection = comp ? comp.get('traits') : [];
+    this.render();
   }
 });
