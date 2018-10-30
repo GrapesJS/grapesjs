@@ -30991,7 +30991,7 @@ module.exports = {
   // structure, but in case you need it you can use this option.
   // If you have `config.avoidInlineStyle` disabled the wrapper will be stored
   // as we need to store inlined style.
-  storeWrapper: 1,
+  storeWrapper: 0,
 
   // List of void elements
   voidElements: ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'menuitem', 'meta', 'param', 'source', 'track', 'wbr']
@@ -38082,7 +38082,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.15.3',
+    version: '0.14.40',
 
     /**
      * Initialize the editor with passed options
@@ -48566,11 +48566,8 @@ module.exports = DomainViews.extend({
     var ppfx = this.ppfx;
     var comp = this.em.getSelected();
     this.el.className = this.className + ' ' + ppfx + 'one-bg ' + ppfx + 'two-color';
-
-    if (comp) {
-      this.collection = comp.get('traits');
-      this.render();
-    }
+    this.collection = comp ? comp.get('traits') : [];
+    this.render();
   }
 });
 
