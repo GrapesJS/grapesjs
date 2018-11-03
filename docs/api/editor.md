@@ -60,6 +60,7 @@ editor.on('EVENT-NAME', (some, argument) => {
 
 ### Style Manager
 
+-   `styleManager:update:target` - The target (Component or CSSRule) is changed
 -   `styleManager:change` - Triggered on style property change from new selected component, the view of the property is passed as an argument to the callback
 -   `styleManager:change:{propertyName}` - As above but for a specific style property
 
@@ -149,9 +150,15 @@ Returns **[string][2]** JS string
 
 ## getComponents
 
-Returns components in JSON format object
+Return the complete tree of components. Use `getWrapper` to include also the wrapper
 
-Returns **[Object][3]** 
+Returns **Components** 
+
+## getWrapper
+
+Return the wrapper and its all components
+
+Returns **Component** 
 
 ## setComponents
 
@@ -508,6 +515,17 @@ Returns **this**
 ## on
 
 Attach event
+
+### Parameters
+
+-   `event` **[string][2]** Event name
+-   `callback` **[Function][7]** Callback function
+
+Returns **this** 
+
+## once
+
+Attach event and detach it after the first run
 
 ### Parameters
 

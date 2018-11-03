@@ -3,7 +3,7 @@
 ## Component
 
 The Component object represents a single node of our template structure, so when you update its properties the changes are
-immediatly reflected on the canvas and in the code to export (indeed, when you ask to export the code we just go through all
+immediately reflected on the canvas and in the code to export (indeed, when you ask to export the code we just go through all
 the tree of nodes).
 An example on how to update properties:
 
@@ -36,6 +36,7 @@ component.get('tagName');
     will be hidden from the style manager. Default: `true`
 -   `stylable-require` **[Array][4]&lt;[String][1]>?** Indicate an array of style properties to show up which has been marked as `toRequire`. Default: `[]`
 -   `unstylable` **[Array][4]&lt;[String][1]>?** Indicate an array of style properties which should be hidden from the style manager. Default: `[]`
+-   `style-signature` **[Array][4]&lt;[String][1]>?** This option comes handy when you need to remove or export strictly component-specific rules. Be default, if this option is not empty, the editor will remove rules when there are no components, of that type, in the canvas. Eg. '\['.navbar', '[navbar-']'. Default: `''`
 -   `highlightable` **[Boolean][3]?** It can be highlighted with 'dotted' borders if true. Default: `true`
 -   `copyable` **[Boolean][3]?** True if it's possible to clone the component. Default: `true`
 -   `resizable` **[Boolean][3]?** Indicates if it's possible to resize the component. It's also possible to pass an object as [options for the Resizer][5]. Default: `false`
@@ -133,6 +134,7 @@ Update attributes of the component
 ### Parameters
 
 -   `attrs` **[Object][2]** Key value attributes
+-   `opts`   (optional, default `{}`)
 
 ### Examples
 
@@ -244,6 +246,12 @@ model.removeClass(['class1', 'class2']);
 
 Returns **[Array][4]** Array of removed selectors
 
+## getClasses
+
+Returns component's classes as an array of strings
+
+Returns **[Array][4]** 
+
 ## append
 
 Add new component children
@@ -301,6 +309,23 @@ component.parent();
 ```
 
 Returns **[Component][9]** 
+
+## getTrait
+
+Get the trait by id/name
+
+### Parameters
+
+-   `id` **[String][1]** The `id` or `name` of the trait
+
+### Examples
+
+```javascript
+const traitTitle = component.getTrait('title');
+traitTitle && traitTitle.set('label', 'New label');
+```
+
+Returns **Trait** Trait model
 
 ## getName
 
