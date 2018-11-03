@@ -4,7 +4,7 @@ title: Trait Manager
 
 # Trait Manager
 
-In GrapesJS, Traits could define different parameters and behaviors of a single component. The user generally will see traits as *Settings* of each component. A common use of traits is to customize element attributes (eg. `placeholder` for inputs) and in this case the editor comes already with some built-in, easy configurable, types.
+In GrapesJS, Traits can define different parameters and behaviors of a component. The user generally will see traits as the *Settings* of a component. A common use of traits is to customize element attributes (eg. `placeholder` for inputs) and in this case the editor comes already with some built-in, easy configurable, types.
 
 [[toc]]
 
@@ -23,11 +23,11 @@ In GrapesJS, Traits could define different parameters and behaviors of a single 
 
 ## Add Traits to Components
 
-You can add traits to the component by extending them or while creating a new one. Let's see in this example how to make inputs more customizable by the editor. All components, by default, contain 2 traits: id and title (at the moment of writing). So, if you select an input and open the Settings panel you will see just this:
+You can add traits to the component by extending them or while creating a new one. Let's see in this example how to make inputs more customizable by the editor. All components, by default, contain two traits: id and title (at the moment of writing). So, if you select an input and open the Settings panel you will see this:
 
 <img :src="$withBase('/default-traits.png')">
 
-In this case we gonna create a new Component ([check here](Components) for more details about the creation of new components) with a new set of traits
+In this example we are going to create a new Component. ([Check here](Components) for more details about the creation of new components with a new set of traits
 
 ```js
 var editor = grapesjs.init({...});
@@ -75,7 +75,7 @@ Now the result will be
 
 <img :src="$withBase('/input-custom-traits.png')">
 
-By default, traits modify attributes of the model (which than reflected in canvas) but you can also have traits which change the property
+Traits modify attributes of the model (which than reflected in canvas), but you can also have traits which change the property
 
 ```js
 ...
@@ -88,7 +88,7 @@ traits: [{
 ...
 ```
 
-In this way you're able to listen this changes and react with your own logic
+In this way you're able to listen for changes and react with your own logic
 
 ```js
 editor.DomComponents.addType('input', {
@@ -147,3 +147,4 @@ traits: [{
 }],
 ...
 ```
+
