@@ -66,10 +66,9 @@ blockManager.add('the-row-block', {
 
 In the example above you're defining a row component which will accept only elements which match '.row-cell' selector and cells which could be dragged only inside '.row' elements. We're also defining the custom name which will be seen inside the Layers panel.
 If you want to check the complete list of available Component's properties, check directly the Component model source:
-https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/Component.js
+[https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/Component.js](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/Component.js)
 
 
-[Component]: <Component>
-[Components]: <Components>
-[Blocks API]: <API-Block-Manager>
-
+[Component]: </api/component.html>
+[Components]: <Components.html>
+[Blocks API]: </api/block_manager.html>
