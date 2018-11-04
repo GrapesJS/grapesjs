@@ -232,10 +232,12 @@ module.exports = Backbone.View.extend({
    * */
   updateAttributes() {
     const model = this.model;
-    const defaultAttr = {
-      'data-gjs-type': model.get('type') || 'default',
-      'data-highlightable': model.get('highlightable') ? 1 : ''
-    };
+    const defaultAttr = { 'data-gjs-type': model.get('type') || 'default' };
+
+    if (model.get('highlightable')) {
+      defaultAttr['data-highlightable'] = 1;
+    }
+
     this.$el.attr({
       ...defaultAttr,
       ...model.getAttributes()
