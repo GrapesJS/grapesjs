@@ -27685,6 +27685,8 @@ module.exports = {
 "use strict";
 
 
+var _underscore = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+
 module.exports = {
   /**
    * Check if fullscreen mode is enabled
@@ -27738,11 +27740,16 @@ module.exports = {
     }
   },
   run: function run(editor, sender) {
+    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
     this.sender = sender;
-    var pfx = this.enable(editor.getContainer());
+    var target = opts.target;
+
+    var targetEl = (0, _underscore.isElement)(target) ? target : document.querySelector(target);
+    var pfx = this.enable(targetEl || editor.getContainer());
     this.fsChanged = this.fsChanged.bind(this, pfx);
     document.addEventListener(pfx + 'fullscreenchange', this.fsChanged);
-    if (editor) editor.trigger('change:canvasOffset');
+    editor.trigger('change:canvasOffset');
   },
   stop: function stop(editor, sender) {
     if (sender && sender.set) sender.set('active', false);
@@ -34936,10 +34943,12 @@ module.exports = _backbone2.default.View.extend({
    * */
   updateAttributes: function updateAttributes() {
     var model = this.model;
-    var defaultAttr = {
-      'data-gjs-type': model.get('type') || 'default',
-      'data-highlightable': model.get('highlightable') ? 1 : ''
-    };
+    var defaultAttr = { 'data-gjs-type': model.get('type') || 'default' };
+
+    if (model.get('highlightable')) {
+      defaultAttr['data-highlightable'] = 1;
+    }
+
     this.$el.attr(_extends({}, defaultAttr, model.getAttributes()));
     this.updateStyle();
   },
@@ -38082,7 +38091,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.14.40',
+    version: '0.14.41',
 
     /**
      * Initialize the editor with passed options
@@ -42366,7 +42375,7 @@ var Selector = Backbone.Model.extend({
    * @private
    */
   escapeName: function escapeName(name) {
-    return ('' + name).trim().replace(/([^a-z0-9\w-]+)/gi, '-');
+    return ('' + name).trim().replace(/([^a-z0-9\w-\:]+)/gi, '-');
   }
 });
 

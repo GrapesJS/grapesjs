@@ -392,6 +392,7 @@ module.exports = Backbone.View.extend({
   isTargetStylable(target) {
     const trg = target || this.getTarget();
     const model = this.model;
+    const id = model.get('id');
     const property = model.get('property');
     const toRequire = model.get('toRequire');
     const unstylable = trg.get('unstylable');
@@ -411,7 +412,10 @@ module.exports = Backbone.View.extend({
 
     // Check if the property is available only if requested
     if (toRequire) {
-      stylable = (stylableReq && stylableReq.indexOf(property) >= 0) || !target;
+      stylable =
+        !target ||
+        (stylableReq &&
+          (stylableReq.indexOf(id) >= 0 || stylableReq.indexOf(property) >= 0));
     }
 
     return stylable;

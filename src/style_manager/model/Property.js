@@ -30,8 +30,9 @@ const Property = require('backbone').Model.extend(
     },
 
     initialize(props = {}, opts = {}) {
-      var name = this.get('name');
-      var prop = this.get('property');
+      const name = this.get('name');
+      const prop = this.get('property');
+      !this.get('id') && this.set('id', prop);
 
       if (!name) {
         this.set(
@@ -39,6 +40,7 @@ const Property = require('backbone').Model.extend(
           prop.charAt(0).toUpperCase() + prop.slice(1).replace(/-/g, ' ')
         );
       }
+
       Property.callInit(this, props, opts);
     },
 
