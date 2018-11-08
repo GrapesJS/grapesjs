@@ -16,13 +16,12 @@
  *
  * * [addPanel](#addpanel)
  * * [addButton](#addbutton)
- * * [removeButton](#removebutton)
  * * [getButton](#getbutton)
  * * [getPanel](#getpanel)
  * * [getPanels](#getpanels)
  * * [getPanelsEl](#getpanelsel)
  * * [removePanel](#removepanel)
- * * [removeButton](#removeButton)
+ * * [removeButton](#removebutton)
  *
  * @module Panels
  */
@@ -164,11 +163,11 @@ module.exports = () => {
 
     /**
      * Remove button from the panel
-     * @param {string} panelId Panel's ID
-     * @param {Object|Button|String} button Button object or instance of Button or button id
+     * @param {String} panelId Panel's ID
+     * @param {String} buttonId Button's ID
      * @return {Button|null} Removed button.
      * @example
-     * const removedButton = panelManager.removeButton('myNewPanel',{
+     * const removedButton = panelManager.addButton('myNewPanel',{
      *   id: 'myNewButton',
      *   className: 'someClass',
      *   command: 'someCommand',
@@ -176,8 +175,7 @@ module.exports = () => {
      *   active: false,
      * });
      *
-     * // It's also possible to use the button id
-     * const removedButton = panelManager.removeButton('myNewPanel','myNewButton');
+     * const removedButton = panelManager.removeButton('myNewPanel', 'myNewButton');
      *
      */
     removeButton(panelId, button) {
