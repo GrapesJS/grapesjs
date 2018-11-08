@@ -609,16 +609,20 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @private
      */
     loadTraits(traits, opts = {}) {
-      var trt = new Traits([], this.opt);
-      trt.setTarget(this);
       traits = traits || this.get('traits');
 
-      if (traits.length) {
-        traits.forEach(tr => tr.attributes && delete tr.attributes.value);
-        trt.add(traits);
+      if (!(traits instanceof Traits)) {
+        const trt = new Traits([], this.opt);
+        trt.setTarget(this);
+
+        if (traits.length) {
+          traits.forEach(tr => tr.attributes && delete tr.attributes.value);
+          trt.add(traits);
+        }
+
+        this.set('traits', trt, opts);
       }
 
-      this.set('traits', trt, opts);
       return this;
     },
 
