@@ -32283,18 +32283,22 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
   loadTraits: function loadTraits(traits) {
     var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-    var trt = new Traits([], this.opt);
-    trt.setTarget(this);
     traits = traits || this.get('traits');
 
-    if (traits.length) {
-      traits.forEach(function (tr) {
-        return tr.attributes && delete tr.attributes.value;
-      });
-      trt.add(traits);
+    if (!(traits instanceof Traits)) {
+      var trt = new Traits([], this.opt);
+      trt.setTarget(this);
+
+      if (traits.length) {
+        traits.forEach(function (tr) {
+          return tr.attributes && delete tr.attributes.value;
+        });
+        trt.add(traits);
+      }
+
+      this.set('traits', trt, opts);
     }
 
-    this.set('traits', trt, opts);
     return this;
   },
 
@@ -38091,7 +38095,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.14.41',
+    version: '0.14.42',
 
     /**
      * Initialize the editor with passed options
@@ -39600,13 +39604,12 @@ module.exports = {
  *
  * * [addPanel](#addpanel)
  * * [addButton](#addbutton)
- * * [removeButton](#removebutton)
  * * [getButton](#getbutton)
  * * [getPanel](#getpanel)
  * * [getPanels](#getpanels)
  * * [getPanelsEl](#getpanelsel)
  * * [removePanel](#removepanel)
- * * [removeButton](#removeButton)
+ * * [removeButton](#removebutton)
  *
  * @module Panels
  */
@@ -39755,11 +39758,11 @@ module.exports = function () {
 
     /**
      * Remove button from the panel
-     * @param {string} panelId Panel's ID
-     * @param {Object|Button|String} button Button object or instance of Button or button id
+     * @param {String} panelId Panel's ID
+     * @param {String} buttonId Button's ID
      * @return {Button|null} Removed button.
      * @example
-     * const removedButton = panelManager.removeButton('myNewPanel',{
+     * const removedButton = panelManager.addButton('myNewPanel',{
      *   id: 'myNewButton',
      *   className: 'someClass',
      *   command: 'someCommand',
@@ -39767,8 +39770,7 @@ module.exports = function () {
      *   active: false,
      * });
      *
-     * // It's also possible to use the button id
-     * const removedButton = panelManager.removeButton('myNewPanel','myNewButton');
+     * const removedButton = panelManager.removeButton('myNewPanel', 'myNewButton');
      *
      */
     removeButton: function removeButton(panelId, button) {
@@ -44321,7 +44323,7 @@ module.exports = __webpack_require__(/*! backbone */ "./node_modules/backbone/ba
     }
   }, {
     id: 'select',
-    model: __webpack_require__(/*! ./PropertyRadio */ "./src/style_manager/model/PropertyRadio.js"),
+    model: __webpack_require__(/*! ./PropertySelect */ "./src/style_manager/model/PropertySelect.js").default,
     view: __webpack_require__(/*! ./../view/PropertySelectView */ "./src/style_manager/view/PropertySelectView.js"),
     isType: function isType(value) {
       if (value && value.type == 'select') {
@@ -44453,10 +44455,12 @@ var Property = __webpack_require__(/*! backbone */ "./node_modules/backbone/back
 
     var name = this.get('name');
     var prop = this.get('property');
+    !this.get('id') && this.set('id', prop);
 
     if (!name) {
       this.set('name', prop.charAt(0).toUpperCase() + prop.slice(1).replace(/-/g, ' '));
     }
+
     Property.callInit(this, props, opts);
   },
   init: function init() {},
@@ -45317,7 +45321,8 @@ module.exports = Property.extend({
   defaults: function defaults() {
     return _extends({}, Property.prototype.defaults, {
       // Array of options, eg. [{name: 'Label ', value: '100'}]
-      options: []
+      options: [],
+      full: 1
     });
   },
 
@@ -45351,6 +45356,38 @@ module.exports = Property.extend({
       this.setOptions([].concat(_toConsumableArray(opts), [opt]));
     }
     return this;
+  }
+});
+
+/***/ }),
+
+/***/ "./src/style_manager/model/PropertySelect.js":
+/*!***************************************************!*\
+  !*** ./src/style_manager/model/PropertySelect.js ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _PropertyRadio = __webpack_require__(/*! ./PropertyRadio */ "./src/style_manager/model/PropertyRadio.js");
+
+var _PropertyRadio2 = _interopRequireDefault(_PropertyRadio);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = _PropertyRadio2.default.extend({
+  defaults: function defaults() {
+    return _extends({}, _PropertyRadio2.default.prototype.defaults, {
+      full: 0
+    });
   }
 });
 
@@ -47184,6 +47221,7 @@ module.exports = _backbone2.default.View.extend({
   isTargetStylable: function isTargetStylable(target) {
     var trg = target || this.getTarget();
     var model = this.model;
+    var id = model.get('id');
     var property = model.get('property');
     var toRequire = model.get('toRequire');
     var unstylable = trg.get('unstylable');
@@ -47203,7 +47241,7 @@ module.exports = _backbone2.default.View.extend({
 
     // Check if the property is available only if requested
     if (toRequire) {
-      stylable = stylableReq && stylableReq.indexOf(property) >= 0 || !target;
+      stylable = !target || stylableReq && (stylableReq.indexOf(id) >= 0 || stylableReq.indexOf(property) >= 0);
     }
 
     return stylable;

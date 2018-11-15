@@ -330,6 +330,7 @@ module.exports = Backbone.View.extend({
     const model = this.model;
     const value = model.getFullValue();
     const target = this.getTarget();
+    const prop = model.get('property');
     const onChange = this.onChange;
 
     // Avoid element update if the change comes from it
@@ -353,10 +354,12 @@ module.exports = Backbone.View.extend({
       }
     }
 
-    if (em) {
-      em.trigger('component:update', target);
-      em.trigger('component:styleUpdate', target);
-      em.trigger('component:styleUpdate:' + model.get('property'), target);
+    const component = em && em.getSelected();
+
+    if (em && component) {
+      em.trigger('component:update', component);
+      em.trigger('component:styleUpdate', component, prop);
+      em.trigger(`component:styleUpdate:${prop}`, component);
     }
   },
 
