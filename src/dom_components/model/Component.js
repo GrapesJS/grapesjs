@@ -170,6 +170,10 @@ const Component = Backbone.Model.extend(Styleable).extend(
         );
       });
       this.init();
+
+      if (em) {
+        em.trigger('component:create', this);
+      }
     },
 
     /**
@@ -868,12 +872,21 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     /**
-     * Get the DOM element of the component. This works only of the
-     * component is already rendered
+     * Get the DOM element of the component.
+     * This works only if the component is already rendered
      * @return {HTMLElement}
      */
     getEl() {
       return this.view && this.view.el;
+    },
+
+    /**
+     * Get the View of the component.
+     * This works only if the component is already rendered
+     * @return {ComponentView}
+     */
+    getView() {
+      return this.view;
     },
 
     /**

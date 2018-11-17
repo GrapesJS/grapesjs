@@ -78,15 +78,14 @@ module.exports = ComponentView.extend({
   },
 
   render() {
-    this.updateAttributes();
-    this.updateClasses();
+    this.renderAttributes();
+    const { $el, model } = this;
+    const cls = $el.attr('class') || '';
+    !model.get('src') && $el.attr('class', `${cls} ${this.classEmpty}`.trim());
+    // Avoid strange behaviours with drag and drop
+    $el.attr('onmousedown', 'return false');
+    this.postRender();
 
-    var actCls = this.$el.attr('class') || '';
-    if (!this.model.get('src'))
-      this.$el.attr('class', (actCls + ' ' + this.classEmpty).trim());
-
-    // Avoid strange behaviours while try to drag
-    this.$el.attr('onmousedown', 'return false');
     return this;
   }
 });
