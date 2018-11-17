@@ -18,6 +18,8 @@
  * ```
  *
  * ### Components
+ * * `component:create` - Component is created (only the model, is not yet mounted in the canvas)
+ * * `component:mount` - Component is monted to an element and rendered in canvas
  * * `component:add` - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
  * * `component:remove` - Triggered when a component is removed, the model is passed as an argument to the callback
  * * `component:clone` - Triggered when a new component is added by a clone command, the model is passed as an argument to the callback
