@@ -89,7 +89,6 @@ module.exports = Backbone.View.extend({
       // Try to find a specific container for the rule (if it
       // containes a media query), otherwise get the default one
       try {
-        console.log('try to find ID', blockId);
         contRules = container.querySelector(`#${blockId}`);
       } catch (e) {}
 

@@ -1,5 +1,7 @@
 import { isUndefined } from 'underscore';
 
+const maxValue = Number.MAX_VALUE;
+
 module.exports = require('backbone').Model.extend({
   initialize() {
     this.compCls = [];
@@ -68,6 +70,8 @@ module.exports = require('backbone').Model.extend({
         code += this.buildFromRule(rule, dump, opts);
       });
 
+      console.log('at rules', atRules);
+
       // Get at-rules
       for (let atRule in atRules) {
         let rulesStr = '';
@@ -126,5 +130,17 @@ module.exports = require('backbone').Model.extend({
     }
 
     return result;
+  },
+
+  /**
+   * Get the numeric length of the media query string
+   * @param  {String} mediaQuery Media query string
+   * @return {Number}
+   */
+  getQueryLength(mediaQuery) {
+    const length = /(-?\d*\.?\d+)\w{0,}/.exec(mediaQuery);
+    if (!length) return maxValue;
+
+    return parseFloat(length[1]);
   }
 });

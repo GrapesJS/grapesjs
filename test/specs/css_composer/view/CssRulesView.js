@@ -61,7 +61,9 @@ module.exports = {
               ((right && right.replace('px', '')) || Number.MAX_VALUE) -
               ((left && left.replace('px', '')) || Number.MAX_VALUE)
             );
-          });
+          })
+          .map(widthMedia => parseFloat(widthMedia));
+
         foundStylesContainers.each(($styleC, idx) => {
           const width = sortedDevicesWidthMedia[idx];
           expect($styleC.id).toEqual(`${prefix}${width ? `-${width}` : ''}`);
