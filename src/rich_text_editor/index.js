@@ -36,7 +36,7 @@ module.exports = () => {
 
   const hideToolbar = () => {
     const style = toolbar.style;
-    const size = '-100px';
+    const size = '-1000px';
     style.top = size;
     style.left = size;
     style.display = 'none';
