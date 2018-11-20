@@ -1,4 +1,4 @@
-import { isUndefined } from 'underscore';
+import { isUndefined, each } from 'underscore';
 
 const maxValue = Number.MAX_VALUE;
 
@@ -70,12 +70,10 @@ module.exports = require('backbone').Model.extend({
         code += this.buildFromRule(rule, dump, opts);
       });
 
-      console.log('at rules', atRules);
-
-      // Get at-rules
-      for (let atRule in atRules) {
+      this.sortMediaObject(atRules).forEach(item => {
         let rulesStr = '';
-        const mRules = atRules[atRule];
+        const atRule = item.key;
+        const mRules = item.value;
 
         mRules.forEach(rule => {
           const ruleStr = this.buildFromRule(rule, dump, opts);
@@ -90,7 +88,7 @@ module.exports = require('backbone').Model.extend({
         if (rulesStr) {
           code += `${atRule}{${rulesStr}}`;
         }
-      }
+      });
 
       em && clearStyles && rules.remove(dump);
     }
@@ -142,5 +140,19 @@ module.exports = require('backbone').Model.extend({
     if (!length) return maxValue;
 
     return parseFloat(length[1]);
+  },
+
+  /**
+   * Return a sorted array from media query object
+   * @param  {Object} items
+   * @return {Array}
+   */
+  sortMediaObject(items = {}) {
+    const result = {};
+    const itemsArr = [];
+    each(items, (value, key) => itemsArr.push({ key, value }));
+    return itemsArr.sort(
+      (a, b) => this.getQueryLength(b.key) - this.getQueryLength(a.key)
+    );
   }
 });

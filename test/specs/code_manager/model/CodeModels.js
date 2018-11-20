@@ -296,6 +296,34 @@ module.exports = {
         const result = `#${id}{color:blue;}#${id}:${state}{color:red;}`;
         expect(obj.build(comp, { cssc: cc, em })).toEqual(result);
       });
+
+      test('Media queries are correctly cleaned for the length', () => {
+        [
+          ['@media (max-width: 999px)', 999],
+          ['@media (min-width: 123%)', 123],
+          ['@media (min-width: 1040rem)', 1040]
+        ].forEach(item => {
+          expect(obj.getQueryLength(item[0])).toBe(item[1]);
+        });
+      });
+
+      test('The media objects are correctly sorted', () => {
+        expect(
+          obj.sortMediaObject({
+            '@media (max-width: 480px)': 1,
+            '@font-face': 2,
+            '@media (max-width: 768px)': 3,
+            '@media (max-width: 1020ch)': 4,
+            '@media (max-width: 10%)': 5
+          })
+        ).toEqual([
+          { key: '@font-face', value: 2 },
+          { key: '@media (max-width: 1020ch)', value: 4 },
+          { key: '@media (max-width: 768px)', value: 3 },
+          { key: '@media (max-width: 480px)', value: 1 },
+          { key: '@media (max-width: 10%)', value: 5 }
+        ]);
+      });
     });
   }
 };
