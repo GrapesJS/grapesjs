@@ -18,7 +18,13 @@ module.exports = Backbone.View.extend({
     view.remove.apply(view);
     const children = view.childrenView;
     children && children.stopListening();
-    em && em.trigger('component:remove', removed);
+    if (em) {
+      removed.get('style-signature') &&
+        em
+          .get('Commands')
+          .run('core:component-style-clear', { target: removed });
+      em.trigger('component:remove', removed);
+    }
   },
 
   /**

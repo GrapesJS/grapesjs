@@ -47,7 +47,7 @@ module.exports = require('backbone')
       },
       {
         id: 'select',
-        model: require('./PropertyRadio'),
+        model: require('./PropertySelect').default,
         view: require('./../view/PropertySelectView'),
         isType(value) {
           if (value && value.type == 'select') {

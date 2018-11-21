@@ -86,10 +86,10 @@ module.exports = {
           gjs.editor.setSelected(model);
           tagEl.addNewTag('test');
           tagEl.addNewTag('test');
-          expect(model.get('classes').length).toEqual(1);
+          expect(model.getSelectors().length).toEqual(1);
           expect(
             model
-              .get('classes')
+              .getSelectors()
               .at(0)
               .get('name')
           ).toEqual('test');
@@ -105,7 +105,7 @@ module.exports = {
             .getClasses()
             .find('.tag #close')
             .trigger('click');
-          expect(model.get('classes').length).toEqual(0);
+          setTimeout(() => expect(model.get('classes').length).toEqual(0));
         });
 
         test('Trigger correctly event on target with new class add', () => {

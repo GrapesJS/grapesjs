@@ -74,15 +74,19 @@ module.exports = () => {
 
       var ppfx = c.pStylePrefix;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
-
       properties = new Properties();
-      sectors = new Sectors(c.sectors, c);
+      sectors = new Sectors([], c);
       SectView = new SectorsView({
         collection: sectors,
         target: c.em,
         config: c
       });
+
       return this;
+    },
+
+    onLoad() {
+      sectors.add(c.sectors);
     },
 
     postRender() {
@@ -284,6 +288,7 @@ module.exports = () => {
         } else if (config.avoidInlineStyle) {
           rule = cssC.getIdRule(id, opts);
           !rule && (rule = cssC.setIdRule(id, {}, opts));
+          if (model.is('wrapper')) rule.set('wrapper', 1);
         }
 
         rule && (model = rule);
@@ -357,6 +362,20 @@ module.exports = () => {
           ...view
         });
       }
+    },
+
+    /**
+     * Select different target for the Style Manager.
+     * It could be a Component, CSSRule, or a string of any CSS selector
+     * @param {Component|CSSRule|String} target
+     * @return {Styleable} A Component or CSSRule
+     */
+    setTarget(target, opts) {
+      return SectView.setTarget(target, opts);
+    },
+
+    getEmitter() {
+      return SectView.propTarget;
     },
 
     /**

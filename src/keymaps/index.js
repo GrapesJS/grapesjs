@@ -26,6 +26,7 @@
  * * [get](#get)
  * * [getAll](#getAll)
  * * [remove](#remove)
+ * * [removeAll](#removeall)
  *
  * @module Keymaps
  */
@@ -194,6 +195,15 @@ module.exports = () => {
         em && em.trigger('keymap:remove', keymap);
         return keymap;
       }
+    },
+
+    /**
+     * Remove all binded keymaps
+     * @return {this}
+     */
+    removeAll() {
+      Object.keys(keymaps).forEach(keymap => this.remove(keymap));
+      return this;
     }
   };
 };

@@ -13,6 +13,7 @@ module.exports = PropertyView.extend({
     const model = this.model;
     this.listenTo(model, 'change:unit', this.modelValueChanged);
     this.listenTo(model, 'el:change', this.elementUpdated);
+    this.listenTo(model, 'change:units', this.render);
   },
 
   setValue(value) {
@@ -36,5 +37,11 @@ module.exports = PropertyView.extend({
       this.input = this.$input.get(0);
       this.inputInst = input;
     }
+  },
+
+  clearCached() {
+    PropertyView.prototype.clearCached.apply(this, arguments);
+    this.unit = null;
+    this.$unit = null;
   }
 });

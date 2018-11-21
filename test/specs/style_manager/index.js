@@ -155,6 +155,7 @@ describe('StyleManager', () => {
             }
           ]
         });
+        obj.onLoad();
       });
 
       afterEach(() => {

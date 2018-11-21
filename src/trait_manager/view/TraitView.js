@@ -17,6 +17,7 @@ module.exports = Backbone.View.extend({
     const name = model.get('name');
     const target = model.target;
     this.config = o.config || {};
+    this.em = this.config.em;
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
     this.target = target;

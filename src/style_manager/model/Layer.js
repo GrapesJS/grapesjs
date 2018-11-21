@@ -33,6 +33,15 @@ module.exports = Backbone.Model.extend({
     }
   },
 
+  /**
+   * Get property at some index
+   * @param  {Number} index
+   * @return {Object}
+   */
+  getPropertyAt(index) {
+    return this.get('properties').at(index);
+  },
+
   getPropertyValue(property) {
     let result = '';
     this.get('properties').each(prop => {

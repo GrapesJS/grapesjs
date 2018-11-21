@@ -18,6 +18,8 @@
  * ```
  *
  * ### Components
+ * * `component:create` - Component is created (only the model, is not yet mounted in the canvas)
+ * * `component:mount` - Component is monted to an element and rendered in canvas
  * * `component:add` - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
  * * `component:remove` - Triggered when a component is removed, the model is passed as an argument to the callback
  * * `component:clone` - Triggered when a new component is added by a clone command, the model is passed as an argument to the callback
@@ -47,6 +49,7 @@
  * * `keymap:emit` - Some keymap emitted, in arguments you get keymapId, shortcutUsed, Event
  * * `keymap:emit:{keymapId}` - `keymapId` emitted, in arguments you get keymapId, shortcutUsed, Event
  * ### Style Manager
+ * * `styleManager:update:target` - The target (Component or CSSRule) is changed
  * * `styleManager:change` - Triggered on style property change from new selected component, the view of the property is passed as an argument to the callback
  * * `styleManager:change:{propertyName}` - As above but for a specific style property
  * ### Storages
@@ -287,11 +290,19 @@ module.exports = config => {
     },
 
     /**
-     * Returns components in JSON format object
-     * @return {Object}
+     * Return the complete tree of components. Use `getWrapper` to include also the wrapper
+     * @return {Components}
      */
     getComponents() {
       return em.get('DomComponents').getComponents();
+    },
+
+    /**
+     * Return the wrapper and its all components
+     * @return {Component}
+     */
+    getWrapper() {
+      return em.get('DomComponents').getWrapper();
     },
 
     /**
@@ -625,6 +636,17 @@ module.exports = config => {
      */
     on(event, callback) {
       em.on(event, callback);
+      return this;
+    },
+
+    /**
+     * Attach event and detach it after the first run
+     * @param  {string} event Event name
+     * @param  {Function} callback Callback function
+     * @return {this}
+     */
+    once(event, callback) {
+      em.once(event, callback);
       return this;
     },
 

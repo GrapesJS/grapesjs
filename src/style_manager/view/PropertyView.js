@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-import { bindAll, isArray, isUndefined } from 'underscore';
+import { bindAll, isArray, isUndefined, debounce } from 'underscore';
 import { camelCase } from 'utils/mixins';
 
 const clearProp = 'data-clear-style';
@@ -68,7 +68,11 @@ module.exports = Backbone.View.extend({
 
     em && em.on(`update:component:style:${this.property}`, this.targetUpdated);
     //em && em.on(`styleable:change:${this.property}`, this.targetUpdated);
-    this.listenTo(this.propTarget, 'update', this.targetUpdated);
+    this.listenTo(
+      this.propTarget,
+      'update styleManager:update',
+      this.targetUpdated
+    );
     this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model, 'change:value', this.modelValueChanged);
     this.listenTo(model, 'targetUpdated', this.targetUpdated);
@@ -178,10 +182,17 @@ module.exports = Backbone.View.extend({
     parent && parent.set('status', value);
   },
 
+  emitUpdateTarget: debounce(function() {
+    const em = this.config.em;
+    em && em.trigger('styleManager:update:target', this.getTarget());
+  }),
+
   /**
    * Fired when the target is changed
    * */
   targetUpdated() {
+    this.emitUpdateTarget();
+
     if (!this.checkVisibility()) {
       return;
     }
@@ -319,6 +330,7 @@ module.exports = Backbone.View.extend({
     const model = this.model;
     const value = model.getFullValue();
     const target = this.getTarget();
+    const prop = model.get('property');
     const onChange = this.onChange;
 
     // Avoid element update if the change comes from it
@@ -342,10 +354,12 @@ module.exports = Backbone.View.extend({
       }
     }
 
-    if (em) {
-      em.trigger('component:update', target);
-      em.trigger('component:styleUpdate', target);
-      em.trigger('component:styleUpdate:' + model.get('property'), target);
+    const component = em && em.getSelected();
+
+    if (em && component) {
+      em.trigger('component:update', component);
+      em.trigger('component:styleUpdate', component, prop);
+      em.trigger(`component:styleUpdate:${prop}`, component);
     }
   },
 
@@ -381,6 +395,7 @@ module.exports = Backbone.View.extend({
   isTargetStylable(target) {
     const trg = target || this.getTarget();
     const model = this.model;
+    const id = model.get('id');
     const property = model.get('property');
     const toRequire = model.get('toRequire');
     const unstylable = trg.get('unstylable');
@@ -400,7 +415,10 @@ module.exports = Backbone.View.extend({
 
     // Check if the property is available only if requested
     if (toRequire) {
-      stylable = (stylableReq && stylableReq.indexOf(property) >= 0) || !target;
+      stylable =
+        !target ||
+        (stylableReq &&
+          (stylableReq.indexOf(id) >= 0 || stylableReq.indexOf(property) >= 0));
     }
 
     return stylable;
@@ -484,8 +502,14 @@ module.exports = Backbone.View.extend({
     const pfx = this.pfx;
     const model = this.model;
     const el = this.el;
+    const property = model.get('property');
+    const full = model.get('full');
+    const className = `${pfx}property`;
     el.innerHTML = this.template(model);
-    el.className = `${pfx}property ${pfx}${model.get('type')}`;
+    el.className = `${className} ${pfx}${model.get(
+      'type'
+    )} ${className}__${property}`;
+    el.className += full ? ` ${className}--full` : '';
     this.updateStatus();
 
     const onRender = this.onRender && this.onRender.bind(this);

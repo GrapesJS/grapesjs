@@ -4,7 +4,7 @@ const ComponentView = require('./ComponentView');
 
 module.exports = ComponentView.extend({
   events: {
-    dblclick: 'enableEditing',
+    dblclick: 'onActive',
     input: 'onInput'
   },
 
@@ -13,16 +13,20 @@ module.exports = ComponentView.extend({
     this.disableEditing = this.disableEditing.bind(this);
     const model = this.model;
     const em = this.em;
-    this.listenTo(model, 'focus active', this.enableEditing);
-    this.listenTo(model, 'change:content', this.updateContent);
+    this.listenTo(model, 'focus', this.onActive);
+    this.listenTo(model, 'change:content', this.updateContentText);
     this.rte = em && em.get('RichTextEditor');
+  },
+
+  updateContentText(m, v, opts = {}) {
+    !opts.fromDisable && this.disableEditing();
   },
 
   /**
    * Enable element content editing
    * @private
    * */
-  enableEditing(e) {
+  onActive(e) {
     // We place this before stopPropagation in case of nested
     // text components will not block the editing (#1394)
     if (this.rteEnabled || !this.model.get('editable')) {
@@ -51,6 +55,7 @@ module.exports = ComponentView.extend({
     const model = this.model;
     const editable = model.get('editable');
     const rte = this.rte;
+    const contentOpt = { fromDisable: 1 };
 
     if (rte && editable) {
       try {
@@ -62,19 +67,21 @@ module.exports = ComponentView.extend({
       const content = this.getChildrenContainer().innerHTML;
       const comps = model.get('components');
       comps.length && comps.reset();
-      model.set('content', '');
+      model.set('content', '', contentOpt);
 
       // If there is a custom RTE the content is just baked staticly
       // inside 'content'
       if (rte.customRte) {
         // Avoid double content by removing its children components
         // and force to trigger change
-        model.set('content', content);
+        model.set('content', content, contentOpt);
       } else {
         const clean = model => {
-          const selectable = !model.is('text');
+          const selectable = !['text', 'default', ''].some(type =>
+            model.is(type)
+          );
           model.set({
-            editable: 0,
+            editable: selectable && model.get('editable'),
             highlightable: 0,
             removable: 0,
             draggable: 0,
@@ -87,7 +94,7 @@ module.exports = ComponentView.extend({
         };
 
         // Avoid re-render on reset with silent option
-        model.trigger('change:content', model);
+        model.trigger('change:content', model, '', contentOpt);
         comps.add(content);
         comps.each(model => clean(model));
         comps.trigger('resetNavigator');

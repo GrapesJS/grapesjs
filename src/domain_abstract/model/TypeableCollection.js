@@ -1,3 +1,4 @@
+import { isFunction } from 'underscore';
 const Model = Backbone.Model;
 const View = Backbone.View;
 
@@ -112,8 +113,14 @@ export default {
     const ModelInst = type ? type.model : baseType.model;
     const ViewInst = type ? type.view : baseType.view;
     let { model, view, isType } = definition;
-    model = model instanceof Model ? model : ModelInst.extend(model || {});
-    view = view instanceof View ? view : ViewInst.extend(view || {});
+    model =
+      model instanceof Model || isFunction(model)
+        ? model
+        : ModelInst.extend(model || {});
+    view =
+      view instanceof View || isFunction(view)
+        ? view
+        : ViewInst.extend(view || {});
 
     if (type) {
       type.model = model;

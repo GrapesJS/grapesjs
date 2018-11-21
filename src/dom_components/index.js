@@ -24,7 +24,7 @@
  *
  * @module DomComponents
  */
-
+import Backbone from 'backbone';
 import { isEmpty, isString, isObject, isArray } from 'underscore';
 
 module.exports = () => {
@@ -266,6 +266,7 @@ module.exports = () => {
       const um = em.get('UndoManager');
       const handleUpdates = em.handleUpdates.bind(em);
       const handleChanges = this.handleChanges.bind(this);
+      const handleChangesColl = this.handleChangesColl.bind(this);
       const handleRemoves = this.handleRemoves.bind(this);
       um && um.add(model);
       um && comps && um.add(comps);
@@ -273,6 +274,7 @@ module.exports = () => {
 
       [
         [model, evn, handleUpdates],
+        [model, 'change:components', handleChangesColl],
         [comps, 'add', handleChanges],
         [comps, 'remove', handleRemoves],
         [model.get('classes'), 'add remove', handleUpdates]
@@ -283,6 +285,21 @@ module.exports = () => {
 
       !opts.avoidStore && handleUpdates('', '', opts);
       comps.each(model => this.handleChanges(model, value, opts));
+    },
+
+    handleChangesColl(model, coll) {
+      const um = em.get('UndoManager');
+      if (um && coll instanceof Backbone.Collection) {
+        const handleChanges = this.handleChanges.bind(this);
+        const handleRemoves = this.handleRemoves.bind(this);
+        um.add(coll);
+        [[coll, 'add', handleChanges], [coll, 'remove', handleRemoves]].forEach(
+          els => {
+            em.stopListening(els[0], els[1], els[2]);
+            em.listenTo(els[0], els[1], els[2]);
+          }
+        );
+      }
     },
 
     /**
@@ -328,15 +345,10 @@ module.exports = () => {
 
       if ((result && result.length) || isObj) {
         this.clear();
-        this.getComponents().reset();
 
         // If the result is an object I consider it the wrapper
         if (isObj) {
-          this.getWrapper()
-            .set(result)
-            .initComponents()
-            .initClasses()
-            .loadTraits();
+          this.getWrapper().set(result);
         } else {
           this.getComponents().add(result);
         }
@@ -363,9 +375,10 @@ module.exports = () => {
       }
 
       if (keys.indexOf('components') >= 0) {
-        const toStore = c.storeWrapper
-          ? this.getWrapper()
-          : this.getComponents();
+        const { em } = this;
+        // const storeWrap = (em && !em.getConfig('avoidInlineStyle')) || c.storeWrapper;
+        const storeWrap = c.storeWrapper;
+        const toStore = storeWrap ? this.getWrapper() : this.getComponents();
         obj.components = JSON.stringify(toStore);
       }
 

@@ -1,3 +1,5 @@
+import { isElement } from 'underscore';
+
 module.exports = {
   /**
    * Check if fullscreen mode is enabled
@@ -59,12 +61,16 @@ module.exports = {
     }
   },
 
-  run(editor, sender) {
+  run(editor, sender, opts = {}) {
     this.sender = sender;
-    var pfx = this.enable(editor.getContainer());
+    const { target } = opts;
+    const targetEl = isElement(target)
+      ? target
+      : document.querySelector(target);
+    const pfx = this.enable(targetEl || editor.getContainer());
     this.fsChanged = this.fsChanged.bind(this, pfx);
     document.addEventListener(pfx + 'fullscreenchange', this.fsChanged);
-    if (editor) editor.trigger('change:canvasOffset');
+    editor.trigger('change:canvasOffset');
   },
 
   stop(editor, sender) {

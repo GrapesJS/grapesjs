@@ -65,7 +65,16 @@ module.exports = {
   onHover(e) {
     e.stopPropagation();
     let trg = e.target;
-    let model = $(trg).data('model');
+    let $el = $(trg);
+    let model = $el.data('model');
+
+    if (!model) {
+      let parent = $el.parent();
+      while (!model && parent) {
+        model = parent.data('model');
+        parent = parent.parent();
+      }
+    }
 
     // Adjust tools scroll top
     if (!this.adjScroll) {
@@ -321,10 +330,11 @@ module.exports = {
     // Get the selected model directly from the Editor as the event might
     // be triggered manually without the model
     const model = this.em.getSelected();
+    const view = model && model.view;
     this.updateToolbar(model);
 
-    if (model) {
-      const el = model.view.el;
+    if (view) {
+      const { el } = view;
       this.showFixedElementOffset(el);
       this.hideElementOffset();
       this.hideHighlighter();
@@ -580,11 +590,12 @@ module.exports = {
    */
   updateAttached(updated) {
     const model = this.em.getSelected();
+    const view = model && model.view;
 
-    if (model) {
-      var view = model.view;
-      this.updateToolbarPos(view.el);
-      this.showFixedElementOffset(view.el);
+    if (view) {
+      const { el } = view;
+      this.updateToolbarPos(el);
+      this.showFixedElementOffset(el);
     }
   },
 

@@ -17,6 +17,7 @@ module.exports = {
       }
       if (component) {
         const coll = component.collection;
+        component.trigger('component:destroy');
         coll && coll.remove(component);
       }
     });

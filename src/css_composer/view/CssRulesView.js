@@ -3,9 +3,8 @@ const CssRuleView = require('./CssRuleView');
 const CssGroupRuleView = require('./CssGroupRuleView');
 const $ = Backbone.$;
 
-// % is not a valid character for classes
-const getBlockId = (pfx, widthMedia) =>
-  `${pfx}${widthMedia ? `-${widthMedia.replace('%', 'pc')}` : ''}`;
+const getBlockId = (pfx, order) =>
+  `${pfx}${order ? `-${parseFloat(order)}` : ''}`;
 
 module.exports = Backbone.View.extend({
   initialize(o) {
@@ -124,16 +123,9 @@ module.exports = Backbone.View.extend({
     this.em
       .get('DeviceManager')
       .getAll()
-      .map(model => model.get('widthMedia'))
-      .sort(
-        (left, right) =>
-          ((right && right.replace('px', '')) || Number.MAX_VALUE) -
-          ((left && left.replace('px', '')) || Number.MAX_VALUE)
-      )
-      .forEach(widthMedia => {
-        $(`<div id="${getBlockId(className, widthMedia)}"></div>`).appendTo(
-          frag
-        );
+      .pluck('priority')
+      .forEach(priority => {
+        $(`<div id="${getBlockId(className, priority)}"></div>`).appendTo(frag);
       });
 
     this.collection.each(model => this.addToCollection(model, frag));

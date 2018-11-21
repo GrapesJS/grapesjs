@@ -252,10 +252,10 @@
     margin-bottom: 5px;
     padding: 0 5px;
 
+    &--full,
     &.#{$sm-prefix}composite,
     &.#{$sm-prefix}file,
     &.#{$sm-prefix}list,
-    &.#{$sm-prefix}radio,
     &.#{$sm-prefix}stack,
     &.#{$sm-prefix}slider,
     &.#{$sm-prefix}color {

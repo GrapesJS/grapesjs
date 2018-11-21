@@ -27,7 +27,7 @@ module.exports = require('backbone').View.extend({
     this.coll = o.coll || null;
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
-    this.target = this.config.em;
+    this.em = this.config.em;
     this.listenTo(this.model, 'change:active', this.updateStatus);
   },
 
@@ -48,9 +48,11 @@ module.exports = require('backbone').View.extend({
    * @private
    */
   startEditTag() {
+    const { em } = this;
     const inputEl = this.getInputEl();
     inputEl[inputProp] = true;
     inputEl.focus();
+    em && em.setEditing(1);
   },
 
   /**
@@ -63,9 +65,10 @@ module.exports = require('backbone').View.extend({
     const inputEl = this.getInputEl();
     const label = inputEl.textContent;
     const name = Selector.escapeName(label);
-    const em = this.target;
+    const em = this.em;
     const sm = em && em.get('SelectorManager');
     inputEl[inputProp] = false;
+    em && em.setEditing(0);
 
     if (sm) {
       if (sm.get(name)) {
@@ -90,14 +93,10 @@ module.exports = require('backbone').View.extend({
    * @private
    */
   removeTag(e) {
-    const em = this.target;
-    const model = this.model;
-    const coll = this.coll;
-    const el = this.el;
+    const { em, model } = this;
     const sel = em && em.getSelected();
-    sel && sel.get & sel.get('classes').remove(model);
-    coll && coll.remove(model);
-    setTimeout(() => this.remove(), 0);
+    // Prevent weird erros on remove
+    sel && setTimeout(() => sel.getSelectors().remove(model));
   },
 
   /**

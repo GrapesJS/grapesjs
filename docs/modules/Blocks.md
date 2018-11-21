@@ -8,9 +8,9 @@ title: Block Manager
 
 The Block is a group of [Components] and can be easily reused inside templates.
 
-To better understand the difference between components and blocks, the component is more atomic so, for example, a single image,  a text box or a map fits perfectly in this concept. The block is what the end user will drag inside the canvas, so it could contain a single image (single Component) or the entire section like, for example, the footer with a lot of components inside (texts, images, inputs, etc).
+The difference between components and blocks: The component is more atomic, so a single image,  a text box or a map is a component. The block is what the end user will drag inside the canvas, so it could contain a single image (single Component) or the entire section like, for example, the footer with a lot of components inside (texts, images, inputs, etc).
 
-Check [Components] page to see the list of built-in components and how to create your own.
+Check out the [Components] page to see the list of built-in components and how to create your own.
 
 Let's see how to add a new block to the editor using the [Blocks API]
 
@@ -52,7 +52,7 @@ blockManager.add('my-map-block', {
 })
 ```
 
-From the v0.3.70 it's also possible to pass the HTML string with Component's properties as attributes.
+From v0.3.70 it's also possible to pass the HTML string with Component's properties as attributes.
 
 ```js
 blockManager.add('the-row-block', {
@@ -66,9 +66,9 @@ blockManager.add('the-row-block', {
 
 In the example above you're defining a row component which will accept only elements which match '.row-cell' selector and cells which could be dragged only inside '.row' elements. We're also defining the custom name which will be seen inside the Layers panel.
 If you want to check the complete list of available Component's properties, check directly the Component model source:
-https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/Component.js
+[https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/Component.js](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/Component.js)
 
 
-[Component]: <Component>
-[Components]: <Components>
-[Blocks API]: <API-Block-Manager>
+[Component]: </api/component.html>
+[Components]: <Components.html>
+[Blocks API]: </api/block_manager.html>

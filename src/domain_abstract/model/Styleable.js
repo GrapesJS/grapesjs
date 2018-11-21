@@ -99,5 +99,9 @@ export default {
     }
 
     return result.join('');
+  },
+
+  getSelectors() {
+    return this.get('selectors') || this.get('classes');
   }
 };

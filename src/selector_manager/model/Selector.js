@@ -72,7 +72,7 @@ const Selector = Backbone.Model.extend(
      * @private
      */
     escapeName(name) {
-      return `${name}`.trim().replace(/([^a-z0-9\w-]+)/gi, '-');
+      return `${name}`.trim().replace(/([^a-z0-9\w-\:]+)/gi, '-');
     }
   }
 );

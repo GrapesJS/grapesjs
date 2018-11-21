@@ -21,11 +21,13 @@ module.exports = Property.extend({
     separator: ' '
   },
 
-  init() {
+  initialize(props = {}, opts = {}) {
+    Property.callParentInit(Property, this, props, opts);
     const properties = this.get('properties') || [];
     const Properties = require('./Properties');
     this.set('properties', new Properties(properties));
     this.listenTo(this, 'change:value', this.updateValues);
+    Property.callInit(this, props, opts);
   },
 
   /**
@@ -48,7 +50,7 @@ module.exports = Property.extend({
       // 11px -> 11px 11px 11px 11xp
       // 11px 22px -> 11px 22px 11px 22xp
       const value =
-        values[i] || values[i % len + (len != 1 && len % 2 ? 1 : 0)];
+        values[i] || values[(i % len) + (len != 1 && len % 2 ? 1 : 0)];
       // There some issue with UndoManager
       //property.setValue(value, 0, {fromParent: 1});
     });
@@ -78,5 +80,14 @@ module.exports = Property.extend({
     }
 
     return this.get('properties').getFullValue();
+  },
+
+  /**
+   * Get property at some index
+   * @param  {Number} index
+   * @return {Object}
+   */
+  getPropertyAt(index) {
+    return this.get('properties').at(index);
   }
 });

@@ -187,10 +187,12 @@ $ npm test
 * [grapesjs-plugin-forms](https://github.com/artf/grapesjs-plugin-forms) - Set of form components and blocks
 * [grapesjs-navbar](https://github.com/artf/grapesjs-navbar) - Simple navbar component
 * [grapesjs-component-countdown](https://github.com/artf/grapesjs-component-countdown) - Simple countdown component
-* [grapesjs-style-gradient](https://github.com/artf/grapesjs-style-gradient) - Add a gradient type input
+* [grapesjs-style-gradient](https://github.com/artf/grapesjs-style-gradient) - Add `gradient` type input to the Style Manager
+* [grapesjs-style-filter](https://github.com/artf/grapesjs-style-filter) - Add `filter` type input to the Style Manager
 * [grapesjs-blocks-flexbox](https://github.com/artf/grapesjs-blocks-flexbox) - Add the flexbox block
 * [grapesjs-lory-slider](https://github.com/artf/grapesjs-lory-slider) - Slider component by using [lory](https://github.com/meandmax/lory)
 * [grapesjs-tabs](https://github.com/artf/grapesjs-tabs) - Simple tabs component
+* [grapesjs-tooltip](https://github.com/artf/grapesjs-tooltip) - Simple, CSS only, tooltip component for GrapesJS
 * [grapesjs-custom-code](https://github.com/artf/grapesjs-custom-code) - Embed custom code
 * [grapesjs-touch](https://github.com/artf/grapesjs-touch) - Enable touch support
 * [grapesjs-indexeddb](https://github.com/artf/grapesjs-indexeddb) - Storage wrapper for IndexedDB
