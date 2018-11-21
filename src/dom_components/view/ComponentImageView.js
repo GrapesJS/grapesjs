@@ -5,15 +5,15 @@ module.exports = ComponentView.extend({
   tagName: 'img',
 
   events: {
-    dblclick: 'openModal',
+    dblclick: 'onActive',
     click: 'initResize'
   },
 
   initialize(o) {
+    console.log('init image', this.el);
     const model = this.model;
     ComponentView.prototype.initialize.apply(this, arguments);
     this.listenTo(model, 'change:src', this.updateSrc);
-    this.listenTo(model, 'dblclick active', this.openModal);
     this.classEmpty = `${this.ppfx}plh-image`;
     const config = this.config;
     config.modal && (this.modal = config.modal);
@@ -60,7 +60,8 @@ module.exports = ComponentView.extend({
    * @param  {Object}  e  Event
    * @private
    * */
-  openModal(e) {
+  onActive(ev) {
+    ev && ev.stopPropagation();
     var em = this.opts.config.em;
     var editor = em ? em.get('Editor') : '';
 

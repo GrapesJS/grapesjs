@@ -77,9 +77,11 @@ module.exports = ComponentView.extend({
         model.set('content', content, contentOpt);
       } else {
         const clean = model => {
-          const selectable = !model.is('text');
+          const selectable = !['text', 'default', ''].some(type =>
+            model.is(type)
+          );
           model.set({
-            editable: 0,
+            editable: selectable && model.get('editable'),
             highlightable: 0,
             removable: 0,
             draggable: 0,
