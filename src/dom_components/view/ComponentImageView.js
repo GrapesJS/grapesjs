@@ -10,7 +10,6 @@ module.exports = ComponentView.extend({
   },
 
   initialize(o) {
-    console.log('init image', this.el);
     const model = this.model;
     ComponentView.prototype.initialize.apply(this, arguments);
     this.listenTo(model, 'change:src', this.updateSrc);

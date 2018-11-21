@@ -138,7 +138,8 @@ module.exports = () => {
      * @return {HTMLBodyElement}
      */
     getBody() {
-      return this.getDocument().body;
+      const doc = this.getDocument();
+      return doc && doc.body;
     },
 
     /**
@@ -146,7 +147,8 @@ module.exports = () => {
      * @return {HTMLElement}
      */
     getWrapperEl() {
-      return this.getBody().querySelector('#wrapper');
+      const body = this.getBody();
+      return body && body.querySelector('#wrapper');
     },
 
     /**

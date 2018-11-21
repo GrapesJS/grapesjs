@@ -616,13 +616,15 @@ module.exports = Backbone.Model.extend({
       CssComposer,
       UndoManager,
       Panels,
-      Canvas
+      Canvas,
+      Keymaps
     } = this.attributes;
     DomComponents.clear();
     CssComposer.clear();
     UndoManager.clear().removeAll();
     Panels.getPanels().reset();
     Canvas.getCanvasView().remove();
+    Keymaps.removeAll();
     this.view.remove();
     this.stopListening();
     $(this.config.el)
