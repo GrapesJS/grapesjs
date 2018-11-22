@@ -394,10 +394,17 @@ Returns **this**
 
 ## getEl
 
-Get the DOM element of the component. This works only of the
-component is already rendered
+Get the DOM element of the component.
+This works only if the component is already rendered
 
 Returns **[HTMLElement][10]** 
+
+## getView
+
+Get the View of the component.
+This works only if the component is already rendered
+
+Returns **ComponentView** 
 
 ## onAll
 
