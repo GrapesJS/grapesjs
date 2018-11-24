@@ -39,6 +39,19 @@ module.exports = {
         expect(view.$el.html()).toEqual('test2');
       });
 
+      test('Hide panel', () => {
+        expect(view.$el.hasClass('hidden')).toBeFalsy();
+        model.set('visible', false);
+        expect(view.$el.hasClass('hidden')).toBeTruthy();
+      });
+
+      test('Show panel', () => {
+        model.set('visible', false);
+        expect(view.$el.hasClass('hidden')).toBeTruthy();
+        model.set('visible', true);
+        expect(view.$el.hasClass('hidden')).toBeFalsy();
+      });
+
       describe('Init with options', () => {
         beforeEach(() => {
           model = new Panel({
