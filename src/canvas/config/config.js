@@ -24,5 +24,12 @@ module.exports = {
    *  return component.getName();
    * }
    */
-  customBadgeLabel: ''
+  customBadgeLabel: '',
+
+  /**
+   * When some textable component is selected and focused (eg. input or text component) the editor
+   * stops some commands (eg. disables the copy/paste of components with CTRL+C/V to allow the copy/paste of the text).
+   * This option allows to customize, by a selector, which element should not be considered textable
+   */
+  notTextable: ['button', 'input[type=checkbox]', 'input[type=radio]']
 };

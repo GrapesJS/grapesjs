@@ -409,11 +409,11 @@ module.exports = () => {
      * @private
      */
     isInputFocused() {
-      let contentDocument = this.getFrameEl().contentDocument;
-      return (
-        contentDocument.activeElement &&
-        contentDocument.activeElement.tagName !== 'BODY'
-      );
+      const doc = this.getDocument();
+      const toIgnore = ['body', ...this.getConfig().notTextable];
+      const focused = doc && doc.activeElement;
+
+      return focused && !toIgnore.some(item => focused.matches(item));
     },
 
     /**
