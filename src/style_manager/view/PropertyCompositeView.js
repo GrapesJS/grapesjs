@@ -111,7 +111,7 @@ module.exports = PropertyView.extend({
     // the corresponding value from the requested index, otherwise try
     // to get the value of the sub-property
     if (targetValue) {
-      const values = targetValue.split(' ');
+      const values = targetValue.split(this.model.getSplitSeparator());
       value = values[index];
     } else {
       value =

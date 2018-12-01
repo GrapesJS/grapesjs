@@ -43,7 +43,7 @@ module.exports = Property.extend({
    * Update property values
    */
   updateValues() {
-    const values = this.getFullValue().split(this.get('separator'));
+    const values = this.getFullValue().split(this.getSplitSeparator());
     this.get('properties').each((property, i) => {
       const len = values.length;
       // Try to get value from a shorthand:
@@ -54,6 +54,14 @@ module.exports = Property.extend({
       // There some issue with UndoManager
       //property.setValue(value, 0, {fromParent: 1});
     });
+  },
+
+  /**
+   * Split by sperator but avoid it inside parenthesis
+   * @return {RegExp}
+   */
+  getSplitSeparator() {
+    return new RegExp(`${this.get('separator')}(?![^\\(]*\\))`);
   },
 
   /**
