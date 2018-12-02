@@ -73,7 +73,7 @@ const getUnitFromValue = value => {
 const upFirst = value => value[0].toUpperCase() + value.toLowerCase().slice(1);
 
 const camelCase = value => {
-  const values = value.split('-');
+  const values = value.split('-').filter(String);
   return values[0].toLowerCase() + values.slice(1).map(upFirst);
 };
 
