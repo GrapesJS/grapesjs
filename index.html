@@ -4,7 +4,10 @@
     <meta charset="utf-8">
     <title>GrapesJS</title>
     <link rel="stylesheet" href="dist/css/grapes.min.css">
+    <link rel="stylesheet" href="node_modules/grapesjs-preset-webpage/dist/grapesjs-preset-webpage.min.css">
     <script src="dist/grapes.min.js"></script>
+    <script src="node_modules/grapesjs-plugin-forms/dist/grapesjs-plugin-forms.min.js"></script>
+    <script src="node_modules/grapesjs-preset-webpage/dist/grapesjs-preset-webpage.min.js"></script>
     <style>
       body,
       html {
@@ -86,6 +89,11 @@
         height: '100%',
         fromElement: true,
         storageManager: { autoload: 0 },
+        plugins: ['grapesjs-plugin-forms', 'gjs-preset-webpage'],
+        pluginsOpts: {
+            'grapesjs-plugin-forms': {},
+            'gjs-preset-webpage': {}
+        },
         styleManager : {
           sectors: [{
               name: 'General',
@@ -110,12 +118,6 @@
             }
           ],
         },
-      });
-
-      editor.BlockManager.add('testBlock', {
-        label: 'Block',
-        attributes: { class:'gjs-fonts gjs-f-b1' },
-        content: `<div style="padding-top:50px; padding-bottom:50px; text-align:center">Test block</div>`
       })
     </script>
   </body>

@@ -27,8 +27,11 @@
     "babel-loader": "^7.1.5",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.7.0",
+    "babel-register": "^6.26.0",
     "documentation": "^8.1.2",
     "eslint": "^5.9.0",
+    "grapesjs-plugin-forms": "^1.0.1",
+    "grapesjs-preset-webpage": "^0.1.10",
     "html-webpack-plugin": "^3.2.0",
     "husky": "^1.2.0",
     "jest": "^23.6.0",
@@ -114,6 +117,7 @@
     "start:js": "webpack-dev-server --open --progress --colors",
     "format": "prettier --single-quote --write './{src,test}/**/*.js'",
     "test": "jest",
-    "test:dev": "jest --watch"
+    "test:dev": "jest --watch",
+    "buildProps": "node build/index.js"
   }
 }
