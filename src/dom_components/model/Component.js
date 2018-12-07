@@ -189,6 +189,15 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     /**
+     * Get the index of the component in the parent collection.
+     * @return {Number}
+     */
+    index() {
+      const { collection } = this;
+      return collection && collection.indexOf(this);
+    },
+
+    /**
      * Find inner components by query string.
      * **ATTENTION**: this method works only with already rendered component
      * @param  {String} query Query string
