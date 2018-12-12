@@ -391,42 +391,60 @@ module.exports = {
         ]);
       });
 
-      test('Build top, left, right, bottom', () => {
+      test('Build left, right', () => {
         var res = {
           type: 'integer',
-          units: ['px', '%'],
+          units: ['px', '%', 'vw'],
           defaults: 0
         };
-        res.property = 'top';
-        expect(obj.build('top')).toEqual([res]);
         res.property = 'right';
         expect(obj.build('right')).toEqual([res]);
-        res.property = 'bottom';
-        expect(obj.build('bottom')).toEqual([res]);
         res.property = 'left';
         expect(obj.build('left')).toEqual([res]);
       });
 
-      test('Build width and height family', () => {
+      test('Build top, bottom', () => {
         var res = {
           type: 'integer',
-          units: ['px', '%'],
+          units: ['px', '%', 'vh'],
+          defaults: 0
+        };
+        res.property = 'top';
+        expect(obj.build('top')).toEqual([res]);
+        res.property = 'bottom';
+        expect(obj.build('bottom')).toEqual([res]);
+      });
+
+      test('Build width family', () => {
+        var res = {
+          type: 'integer',
+          units: ['px', '%', 'vw'],
           defaults: 'auto',
           fixedValues: ['initial', 'inherit', 'auto'],
           min: 0
         };
         res.property = 'width';
         expect(obj.build('width')).toEqual([res]);
+        res.property = 'min-width';
+        expect(obj.build('min-width')).toEqual([res]);
+        res.property = 'max-width';
+        expect(obj.build('max-width')).toEqual([res]);
+      });
+
+      test('Build height family', () => {
+        var res = {
+          type: 'integer',
+          units: ['px', '%', 'vh'],
+          defaults: 'auto',
+          fixedValues: ['initial', 'inherit', 'auto'],
+          min: 0
+        };
         res.property = 'height';
         expect(obj.build('height')).toEqual([res]);
         res.property = 'min-height';
         expect(obj.build('min-height')).toEqual([res]);
         res.property = 'max-height';
         expect(obj.build('max-height')).toEqual([res]);
-        res.property = 'min-width';
-        expect(obj.build('min-width')).toEqual([res]);
-        res.property = 'max-width';
-        expect(obj.build('max-width')).toEqual([res]);
       });
 
       test('Build margin', () => {
@@ -438,28 +456,28 @@ module.exports = {
               fixedValues: ['initial', 'inherit', 'auto'],
               property: 'margin-top',
               type: 'integer',
-              units: ['px', '%'],
+              units: ['px', '%', 'vh'],
               defaults: 0
             },
             {
               fixedValues: ['initial', 'inherit', 'auto'],
               property: 'margin-right',
               type: 'integer',
-              units: ['px', '%'],
+              units: ['px', '%', 'vw'],
               defaults: 0
             },
             {
               fixedValues: ['initial', 'inherit', 'auto'],
               property: 'margin-bottom',
               type: 'integer',
-              units: ['px', '%'],
+              units: ['px', '%', 'vh'],
               defaults: 0
             },
             {
               fixedValues: ['initial', 'inherit', 'auto'],
               property: 'margin-left',
               type: 'integer',
-              units: ['px', '%'],
+              units: ['px', '%', 'vw'],
               defaults: 0
             }
           ]
@@ -476,7 +494,7 @@ module.exports = {
               property: 'padding-top',
               fixedValues: ['initial', 'inherit', 'auto'],
               type: 'integer',
-              units: ['px', '%'],
+              units: ['px', '%', 'vh'],
               defaults: 0,
               min: 0
             },
@@ -484,7 +502,7 @@ module.exports = {
               property: 'padding-right',
               fixedValues: ['initial', 'inherit', 'auto'],
               type: 'integer',
-              units: ['px', '%'],
+              units: ['px', '%', 'vw'],
               defaults: 0,
               min: 0
             },
@@ -492,7 +510,7 @@ module.exports = {
               property: 'padding-bottom',
               fixedValues: ['initial', 'inherit', 'auto'],
               type: 'integer',
-              units: ['px', '%'],
+              units: ['px', '%', 'vh'],
               defaults: 0,
               min: 0
             },
@@ -500,7 +518,7 @@ module.exports = {
               property: 'padding-left',
               fixedValues: ['initial', 'inherit', 'auto'],
               type: 'integer',
-              units: ['px', '%'],
+              units: ['px', '%', 'vw'],
               defaults: 0,
               min: 0
             }
