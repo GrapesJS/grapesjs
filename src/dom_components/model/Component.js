@@ -714,9 +714,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
       }
 
       const cloned = new this.constructor(attr, opts);
-      if (em) {
-        em.trigger('component:clone', cloned);
-      }
+      em && em.trigger('component:clone', cloned);
+
       return cloned;
     },
 

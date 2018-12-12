@@ -21,7 +21,7 @@ module.exports = {
         }
 
         added = isArray(added) ? added : [added];
-        added.forEach(add => ed.trigger('component:clone', add));
+        added.forEach(add => ed.trigger('component:paste', add));
       });
 
       selected.emitUpdate();
