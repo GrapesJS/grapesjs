@@ -18,6 +18,7 @@ module.exports = Backbone.Model.extend({
       'properties',
       properties instanceof Properties ? properties : new Properties(properties)
     );
+    this.get('properties').forEach(item => item.parent = this.collection.property);
 
     // If there is no value I'll try to get it from values
     // I need value setted to make preview working
