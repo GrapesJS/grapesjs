@@ -271,25 +271,29 @@ module.exports = () => ({
       // Units
       switch (prop) {
         case 'top':
-        case 'right':
         case 'bottom':
-        case 'left':
         case 'margin-top':
-        case 'margin-right':
         case 'margin-bottom':
-        case 'margin-left':
         case 'padding-top':
-        case 'padding-right':
         case 'padding-bottom':
-        case 'padding-left':
         case 'min-height':
-        case 'min-width':
         case 'max-height':
+        case 'height':
+          obj.units = ['px', '%', 'vh'];
+          break;
+        case 'right':
+        case 'left':
+        case 'margin-right':
+        case 'margin-left':
+        case 'padding-right':
+        case 'padding-left':
+        case 'min-width':
         case 'max-width':
         case 'width':
-        case 'height':
-        case 'text-shadow-h':
+          obj.units = ['px', '%', 'vw'];
+          break;
         case 'text-shadow-v':
+        case 'text-shadow-h':
         case 'text-shadow-blur':
         case 'border-radius-c':
         case 'border-top-left-radius':
