@@ -33,7 +33,9 @@ When we pass an HTML string to the editor like this:
 </div>
 ```
 
-For each DOM element the editor will create and store an object representation. Every future change to the template will be made on top of this structure, which will then reflect on the canvas. So each object, usually called *Model* (or state/store), will be the source of truth for the template, but what exactly does that mean? In more practical example, once the template is rendered on the canvas, if you try to remove one of the elements using the browser inspector and then ask the editor to print the HTML (using `editor.getHtml()`) you'll see that the element will still be present. This is because the editor relies on Models and not on the DOM inside the canvas. This approach allows us to be extremely flexible on how we generate the final code (from the *Model*) and how to render it inside the canvas (from the *View*).
+For each DOM element (`div`, `img`, `span`, etc.) the editor will create and store an object representation. Every future change to the template will be made on top of this structure, which will then reflect on the canvas. So each object, usually called *Model* (or state/store), will be the source of truth for the template, but what exactly does that mean?
+
+In more practical example, once the template is rendered on the canvas, if you try to remove one of its elements (eg. by using using the browser inspector) and ask the editor to print the HTML (using `editor.getHtml()`) you'll see that the element will still be there. This is because the editor relies on Models and not on the DOM elements inside the canvas. This approach allows us to be extremely flexible on how we generate the final code (from the *Model*) and how to render it inside the canvas (from the *View*).
 
 
 
@@ -54,7 +56,9 @@ isComponent: function(el) {
 }
 ```
 
-This method gives us the possibility to recognize and bind component types to each HTMLElement (div, img, iframe, etc.). Each HTML element introduced inside the canvas will be processed by `isComponent` of all available types and if it matches, the object represented the type should be returned. For example, with the image component this method looks like:
+This method gives us the possibility to recognize and bind component types to each HTMLElement (div, img, iframe, etc.). Each **HTML string/element** introduced inside the canvas will be processed by `isComponent` of all available types and if it matches, the object represented the type should be returned. The method `isComponent` **is skipped** if you add the component object (`{ type: 'my-custom-type', tagName: 'div', attribute: {...}, ...}`) or declare the type explicitly on the element (`<div data-gjs-type="my-custom-type">...</div>`)
+
+For example, with the image component this method looks like:
 
 ```js
 // Image component
