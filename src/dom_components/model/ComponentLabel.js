@@ -1,4 +1,4 @@
-import Component from './ComponentText';
+const Component = require('./ComponentText');
 
 module.exports = Component.extend(
   {

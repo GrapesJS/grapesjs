@@ -92,7 +92,7 @@
  */
 import $ from 'cash-dom';
 
-module.exports = config => {
+export default config => {
   var c = config || {},
     defaults = require('./config/config'),
     EditorModel = require('./model/Editor'),
