@@ -703,7 +703,7 @@ module.exports = {
               property: 'border-top-left-radius',
               type: 'integer',
               units: ['px', '%'],
-              defaults: 0,
+              defaults: '0px',
               min: 0
             },
             {
@@ -711,21 +711,21 @@ module.exports = {
               type: 'integer',
               units: ['px', '%'],
               min: 0,
-              defaults: 0
+              defaults: '0px'
             },
             {
               property: 'border-bottom-left-radius',
               type: 'integer',
               units: ['px', '%'],
               min: 0,
-              defaults: 0
+              defaults: '0px'
             },
             {
               property: 'border-bottom-right-radius',
               type: 'integer',
               units: ['px', '%'],
               min: 0,
-              defaults: 0
+              defaults: '0px'
             }
           ]
         };
