@@ -185,10 +185,6 @@ module.exports = () => ({
         case 'text-shadow-v':
         case 'text-shadow-blur':
         case 'border-radius-c':
-        case 'border-top-left-radius':
-        case 'border-top-right-radius':
-        case 'border-bottom-left-radius':
-        case 'border-bottom-right-radius':
         case 'box-shadow-h':
         case 'box-shadow-v':
         case 'box-shadow-spread':
@@ -197,6 +193,12 @@ module.exports = () => ({
         case 'transform-rotate-y':
         case 'transform-rotate-z':
           obj.defaults = 0;
+          break;
+        case 'border-top-left-radius':
+        case 'border-top-right-radius':
+        case 'border-bottom-left-radius':
+        case 'border-bottom-right-radius':
+          obj.defaults = '0px';
           break;
         case 'transform-scale-x':
         case 'transform-scale-y':

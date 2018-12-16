@@ -21,11 +21,13 @@ module.exports = Backbone.View.extend({
     const pfx = this.pfx;
     const icon = model.get('icon');
     const info = model.get('info');
+    const parent = model.parent;
+
     return `
       <span class="${pfx}icon ${icon}" title="${info}">
         ${model.get('name')}
       </span>
-      <b class="${pfx}clear" ${clearProp}>&Cross;</b>
+      ${!parent ? `<b class="${pfx}clear" ${clearProp}>&Cross;</b>` : ''}
     `;
   },
 
@@ -89,20 +91,23 @@ module.exports = Backbone.View.extend({
    * @private
    */
   updateStatus() {
-    const status = this.model.get('status');
+    const { model } = this;
+    const status = model.get('status');
+    const parent = model.parent;
     const pfx = this.pfx;
     const ppfx = this.ppfx;
     const config = this.config;
     const updatedCls = `${ppfx}four-color`;
     const computedCls = `${ppfx}color-warn`;
     const labelEl = this.$el.children(`.${pfx}label`);
-    const clearStyle = this.getClearEl().style;
+    const clearStyleEl = this.getClearEl();
+    const clearStyle = clearStyleEl ? clearStyleEl.style : {};
     labelEl.removeClass(`${updatedCls} ${computedCls}`);
     clearStyle.display = 'none';
 
     switch (status) {
       case 'updated':
-        labelEl.addClass(updatedCls);
+        !parent && labelEl.addClass(updatedCls);
 
         if (config.clearProperties) {
           clearStyle.display = 'inline';
@@ -120,7 +125,8 @@ module.exports = Backbone.View.extend({
   clear(e) {
     e && e.stopPropagation();
     this.model.clearValue();
-    this.targetUpdated();
+    // Skip one stack with setTimeout to avoid inconsistencies
+    setTimeout(() => this.targetUpdated());
   },
 
   /**
@@ -179,7 +185,7 @@ module.exports = Backbone.View.extend({
   setStatus(value) {
     this.model.set('status', value);
     const parent = this.model.parent;
-    parent && parent.set('status', value);
+    parent && value && parent.set('status', value);
   },
 
   emitUpdateTarget: debounce(function() {
