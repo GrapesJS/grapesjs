@@ -27,7 +27,7 @@ module.exports = Backbone.View.extend({
       <span class="${pfx}icon ${icon}" title="${info}">
         ${model.get('name')}
       </span>
-      ${ !parent ? `<b class="${pfx}clear" ${clearProp}>&Cross;</b>` : '' }
+      ${!parent ? `<b class="${pfx}clear" ${clearProp}>&Cross;</b>` : ''}
     `;
   },
 
@@ -184,7 +184,7 @@ module.exports = Backbone.View.extend({
   setStatus(value) {
     this.model.set('status', value);
     const parent = this.model.parent;
-    parent && parent.set('status', value);
+    parent && value && parent.set('status', value);
   },
 
   emitUpdateTarget: debounce(function() {
