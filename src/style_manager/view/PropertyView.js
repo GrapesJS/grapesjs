@@ -125,7 +125,8 @@ module.exports = Backbone.View.extend({
   clear(e) {
     e && e.stopPropagation();
     this.model.clearValue();
-    this.targetUpdated();
+    // Skip one stack with setTimeout to avoid inconsistencies
+    setTimeout(() => this.targetUpdated());
   },
 
   /**
