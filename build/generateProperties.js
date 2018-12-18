@@ -14,11 +14,11 @@ try {
   let editor = utils.getGrapesJSEditor();
 
   let componentList = [
-    {
+    /*{
       name: "image",
       filePath: "./../src/dom_components/model/ComponentImage",
       externalComponent: false
-    },
+    },*/
     {
       name: "link",
       filePath: "./../src/dom_components/model/ComponentLink",
@@ -60,8 +60,16 @@ try {
     }
   });
 
-  utils.exportJsonToFile('build/dist/grapes-properties.js', properties);
+  let anchorTagProperties = properties.find(property => property.type === 'link');
+  let elementProperties = properties.filter(property => property.type !== 'link');
+
+  utils.exportJsonToFile('build/dist/grapes-properties.js', elementProperties);
   console.log('Properties exported successfully');
+
+  anchorTagProperties.type = 'a';
+  utils.exportJsonToFile('build/dist/grapes-properties-anchortag.js', anchorTagProperties);
+  console.log('Anchor tag properties exported successfully');
+
 } catch(e) {
   console.log(e);
 } finally {

@@ -1,0 +1,1 @@
+define([], function() { return {"type":"a","props":[{"name":"title","type":"text","label":"","options":[]},{"name":"href","type":"text","label":"","options":[]},{"name":"target","type":"select","label":"","options":[]}]} });
