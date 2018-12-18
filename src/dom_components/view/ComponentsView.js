@@ -18,6 +18,8 @@ module.exports = Backbone.View.extend({
     view.remove.apply(view);
     const children = view.childrenView;
     children && children.stopListening();
+    removed.components().forEach(this.removeChildren.bind(this));
+    removed.removed();
     if (em) {
       removed.get('style-signature') &&
         em
