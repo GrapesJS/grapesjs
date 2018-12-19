@@ -67,7 +67,8 @@ try {
   console.log('Properties exported successfully');
 
   anchorTagProperties.type = 'a';
-  utils.exportJsonToFile('build/dist/grapes-properties-anchortag.js', anchorTagProperties);
+  anchorTagProperties.props = anchorTagProperties.props.filter(property => property.name !== 'title');
+  utils.exportJsonToFile('build/dist/grapes-properties-anchortag.js', [anchorTagProperties]);
   console.log('Anchor tag properties exported successfully');
 
 } catch(e) {
