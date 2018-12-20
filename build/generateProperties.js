@@ -60,12 +60,20 @@ try {
     }
   });
 
-  let anchorTagProperties = properties.find(property => property.type === 'link');
+  //Export all properties except anchor in a js file
   let elementProperties = properties.filter(property => property.type !== 'link');
 
+  //add an exception for SELECT element -> Remove options property
+  elementProperties.forEach(property => {
+    if (property.type === 'select') {
+      property.props = property.props.filter(prop => prop.label !== 'Options');
+    }
+  });
   utils.exportJsonToFile('build/dist/grapes-properties.js', elementProperties);
   console.log('Properties exported successfully');
 
+  //Export anchor tag properties in a separate file
+  let anchorTagProperties = properties.find(property => property.type === 'link');
   anchorTagProperties.type = 'a';
   anchorTagProperties.props = anchorTagProperties.props.filter(property => property.name !== 'title');
   utils.exportJsonToFile('build/dist/grapes-properties-anchortag.js', [anchorTagProperties]);
