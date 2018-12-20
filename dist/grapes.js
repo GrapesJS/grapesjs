@@ -27813,7 +27813,9 @@ module.exports = {
    */
   disable: function disable() {
     var d = document;
-    if (d.exitFullscreen) d.exitFullscreen();else if (d.webkitExitFullscreen) d.webkitExitFullscreen();else if (d.mozCancelFullScreen) d.mozCancelFullScreen();else if (d.msExitFullscreen) d.msExitFullscreen();
+    if (this.isEnabled()) {
+      if (d.exitFullscreen) d.exitFullscreen();else if (d.webkitExitFullscreen) d.webkitExitFullscreen();else if (d.mozCancelFullScreen) d.mozCancelFullScreen();else if (d.msExitFullscreen) d.msExitFullscreen();
+    }
   },
 
 
@@ -28554,7 +28556,7 @@ module.exports = {
 
         added = (0, _underscore.isArray)(added) ? added : [added];
         added.forEach(function (add) {
-          return ed.trigger('component:clone', add);
+          return ed.trigger('component:paste', add);
         });
       });
 
@@ -31852,6 +31854,25 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
     toolbar: null
   },
 
+  /**
+   * Hook method, called once the model is created
+   */
+  init: function init() {},
+
+
+  /**
+   * Hook method, called when the model has been updated (eg. updated some model's property)
+   * @param {String} property Property name, if triggered after some property update
+   * @param {*} value Property value, if triggered after some property update
+   * @param {*} previous Property previous value, if triggered after some property update
+   */
+  updated: function updated(property, value, previous) {},
+
+
+  /**
+   * Hook method, called once the model has been removed
+   */
+  removed: function removed() {},
   initialize: function initialize() {
     var _this = this;
 
@@ -31910,10 +31931,7 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
       });
     });
     this.init();
-
-    if (em) {
-      em.trigger('component:create', this);
-    }
+    em && em.trigger('component:create', this);
   },
 
 
@@ -31927,6 +31945,17 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
    */
   is: function is(type) {
     return !!(this.get('type') == type);
+  },
+
+
+  /**
+   * Get the index of the component in the parent collection.
+   * @return {Number}
+   */
+  index: function index() {
+    var collection = this.collection;
+
+    return collection && collection.indexOf(this);
   },
 
 
@@ -32265,7 +32294,6 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
     this.listenTo.apply(this, toListen);
     return this;
   },
-  init: function init() {},
 
 
   /**
@@ -32485,7 +32513,10 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
       attr.style = style;
     }
 
-    return new this.constructor(attr, opts);
+    var cloned = new this.constructor(attr, opts);
+    em && em.trigger('component:clone', cloned);
+
+    return cloned;
   },
 
 
@@ -32730,6 +32761,8 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
       args[_key3 - 1] = arguments[_key3];
     }
 
+    this.updated.apply(this, [property, property && this.get(property), property && this.previous(property)].concat(_toConsumableArray(args)));
+    this.trigger.apply(this, [event].concat(_toConsumableArray(args)));
     em && em.trigger.apply(em, [event, this].concat(_toConsumableArray(args)));
   },
 
@@ -32968,14 +33001,10 @@ module.exports = Component.extend({
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _ComponentText = __webpack_require__(/*! ./ComponentText */ "./src/dom_components/model/ComponentText.js");
+var Component = __webpack_require__(/*! ./ComponentText */ "./src/dom_components/model/ComponentText.js");
 
-var _ComponentText2 = _interopRequireDefault(_ComponentText);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-module.exports = _ComponentText2.default.extend({
-  defaults: _extends({}, _ComponentText2.default.prototype.defaults, {
+module.exports = Component.extend({
+  defaults: _extends({}, Component.prototype.defaults, {
     tagName: 'label',
     traits: ['id', 'title', 'for']
   })
@@ -33947,17 +33976,12 @@ module.exports = Component.extend({
 "use strict";
 
 
-var _Component = __webpack_require__(/*! ./Component */ "./src/dom_components/model/Component.js");
-
-var _Component2 = _interopRequireDefault(_Component);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-module.exports = _Component2.default.extend({}, {
+// We need this one just to identify better the wrapper type
+module.exports = __webpack_require__(/*! ./Component */ "./src/dom_components/model/Component.js").extend({}, {
   isComponent: function isComponent() {
     return false;
   }
-}); // We need this one just to identify better the wrapper type
+});
 
 /***/ }),
 
@@ -35220,6 +35244,8 @@ module.exports = _backbone2.default.View.extend({
     view.remove.apply(view);
     var children = view.childrenView;
     children && children.stopListening();
+    removed.components().forEach(this.removeChildren.bind(this));
+    removed.removed();
     if (em) {
       removed.get('style-signature') && em.get('Commands').run('core:component-style-clear', { target: removed });
       em.trigger('component:remove', removed);
@@ -36583,13 +36609,17 @@ module.exports = {
 "use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _cashDom = __webpack_require__(/*! cash-dom */ "./node_modules/cash-dom/dist/cash.js");
 
 var _cashDom2 = _interopRequireDefault(_cashDom);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-module.exports = function (config) {
+exports.default = function (config) {
   var c = config || {},
       defaults = __webpack_require__(/*! ./config/config */ "./src/editor/config/config.js"),
       EditorModel = __webpack_require__(/*! ./model/Editor */ "./src/editor/model/Editor.js"),
@@ -37276,11 +37306,11 @@ module.exports = function (config) {
     * ```
     *
     * ### Components
-    * * `component:create` - Component is created (only the model, is not yet mounted in the canvas)
+    * * `component:create` - Component is created (only the model, is not yet mounted in the canvas), called after the init() method
     * * `component:mount` - Component is monted to an element and rendered in canvas
     * * `component:add` - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
     * * `component:remove` - Triggered when a component is removed, the model is passed as an argument to the callback
-    * * `component:clone` - Triggered when a new component is added by a clone command, the model is passed as an argument to the callback
+    * * `component:clone` - Triggered when a component is cloned, the new model is passed as an argument to the callback
     * * `component:update` - Triggered when a component is updated (moved, styled, etc.), the model is passed as an argument to the callback
     * * `component:update:{propertyName}` - Listen any property change, the model is passed as an argument to the callback
     * * `component:styleUpdate` - Triggered when the style of the component is updated, the model is passed as an argument to the callback
@@ -38217,7 +38247,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.14.47',
+    version: '0.14.48',
 
     /**
      * Initialize the editor with passed options
@@ -39084,6 +39114,10 @@ module.exports = function () {
 "use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _underscore = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
 
 var _mixins = __webpack_require__(/*! utils/mixins */ "./src/utils/mixins.js");
@@ -39099,7 +39133,7 @@ var inputProp = 'contentEditable';
 var $ = _backbone2.default.$;
 var ItemsView = void 0;
 
-module.exports = _backbone2.default.View.extend({
+exports.default = _backbone2.default.View.extend({
   events: {
     'mousedown [data-toggle-move]': 'startSort',
     'touchstart [data-toggle-move]': 'startSort',
@@ -43805,7 +43839,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
                                                                                                                                                                                                                                                                    * * [removeProperty](#removeproperty)
                                                                                                                                                                                                                                                                    * * [getProperties](#getproperties)
                                                                                                                                                                                                                                                                    * * [getModelToStyle](#getmodeltostyle)
-                                                                                                                                                                                                                                                                   * * [getModelToStyle](#getmodeltostyle)
                                                                                                                                                                                                                                                                    * * [addType](#addtype)
                                                                                                                                                                                                                                                                    * * [getType](#gettype)
                                                                                                                                                                                                                                                                    * * [getTypes](#gettypes)
@@ -44216,10 +44249,17 @@ module.exports = _backbone2.default.Model.extend({
   },
 
   initialize: function initialize() {
+    var _this = this;
+
     var Properties = __webpack_require__(/*! ./Properties */ "./src/style_manager/model/Properties.js");
     var properties = this.get('properties');
     var value = this.get('value');
     this.set('properties', properties instanceof Properties ? properties : new Properties(properties));
+    this.get('properties').forEach(function (item) {
+      var collection = _this.collection;
+
+      item.parent = collection && collection.property;
+    });
 
     // If there is no value I'll try to get it from values
     // I need value setted to make preview working
@@ -45073,10 +45113,6 @@ module.exports = function () {
           case 'text-shadow-v':
           case 'text-shadow-blur':
           case 'border-radius-c':
-          case 'border-top-left-radius':
-          case 'border-top-right-radius':
-          case 'border-bottom-left-radius':
-          case 'border-bottom-right-radius':
           case 'box-shadow-h':
           case 'box-shadow-v':
           case 'box-shadow-spread':
@@ -45085,6 +45121,12 @@ module.exports = function () {
           case 'transform-rotate-y':
           case 'transform-rotate-z':
             obj.defaults = 0;
+            break;
+          case 'border-top-left-radius':
+          case 'border-top-right-radius':
+          case 'border-bottom-left-radius':
+          case 'border-bottom-right-radius':
+            obj.defaults = '0px';
             break;
           case 'transform-scale-x':
           case 'transform-scale-y':
@@ -45159,25 +45201,29 @@ module.exports = function () {
         // Units
         switch (prop) {
           case 'top':
-          case 'right':
           case 'bottom':
-          case 'left':
           case 'margin-top':
-          case 'margin-right':
           case 'margin-bottom':
-          case 'margin-left':
           case 'padding-top':
-          case 'padding-right':
           case 'padding-bottom':
-          case 'padding-left':
           case 'min-height':
-          case 'min-width':
           case 'max-height':
+          case 'height':
+            obj.units = ['px', '%', 'vh'];
+            break;
+          case 'right':
+          case 'left':
+          case 'margin-right':
+          case 'margin-left':
+          case 'padding-right':
+          case 'padding-left':
+          case 'min-width':
           case 'max-width':
           case 'width':
-          case 'height':
-          case 'text-shadow-h':
+            obj.units = ['px', '%', 'vw'];
+            break;
           case 'text-shadow-v':
+          case 'text-shadow-h':
           case 'text-shadow-blur':
           case 'border-radius-c':
           case 'border-top-left-radius':
@@ -45531,15 +45577,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _PropertyRadio = __webpack_require__(/*! ./PropertyRadio */ "./src/style_manager/model/PropertyRadio.js");
+var Property = __webpack_require__(/*! ./PropertyRadio */ "./src/style_manager/model/PropertyRadio.js");
 
-var _PropertyRadio2 = _interopRequireDefault(_PropertyRadio);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = _PropertyRadio2.default.extend({
+exports.default = Property.extend({
   defaults: function defaults() {
-    return _extends({}, _PropertyRadio2.default.prototype.defaults, {
+    return _extends({}, Property.prototype.defaults, {
       full: 0
     });
   }
@@ -46652,15 +46694,12 @@ var _backbone = __webpack_require__(/*! backbone */ "./node_modules/backbone/bac
 
 var _backbone2 = _interopRequireDefault(_backbone);
 
-var _PropertyView = __webpack_require__(/*! ./PropertyView */ "./src/style_manager/view/PropertyView.js");
-
-var _PropertyView2 = _interopRequireDefault(_PropertyView);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var PropertyView = __webpack_require__(/*! ./PropertyView */ "./src/style_manager/view/PropertyView.js");
 var $ = _backbone2.default.$;
 
-module.exports = _PropertyView2.default.extend({
+module.exports = PropertyView.extend({
   templateInput: function templateInput() {
     var pfx = this.pfx;
     var ppfx = this.ppfx;
@@ -46671,7 +46710,7 @@ module.exports = _PropertyView2.default.extend({
       args[_key] = arguments[_key];
     }
 
-    _PropertyView2.default.prototype.initialize.apply(this, args);
+    PropertyView.prototype.initialize.apply(this, args);
     this.listenTo(this.model, 'change:options', this.updateOptions);
   },
   updateOptions: function updateOptions() {
@@ -47000,7 +47039,9 @@ module.exports = _backbone2.default.View.extend({
     var pfx = this.pfx;
     var icon = model.get('icon');
     var info = model.get('info');
-    return '\n      <span class="' + pfx + 'icon ' + icon + '" title="' + info + '">\n        ' + model.get('name') + '\n      </span>\n      <b class="' + pfx + 'clear" ' + clearProp + '>&Cross;</b>\n    ';
+    var parent = model.parent;
+
+    return '\n      <span class="' + pfx + 'icon ' + icon + '" title="' + info + '">\n        ' + model.get('name') + '\n      </span>\n      ' + (!parent ? '<b class="' + pfx + 'clear" ' + clearProp + '>&Cross;</b>' : '') + '\n    ';
   },
   templateInput: function templateInput(model) {
     return '\n      <div class="' + this.ppfx + 'field">\n        <input placeholder="' + model.getDefaultValue() + '"/>\n      </div>\n    ';
@@ -47057,20 +47098,24 @@ module.exports = _backbone2.default.View.extend({
    * @private
    */
   updateStatus: function updateStatus() {
-    var status = this.model.get('status');
+    var model = this.model;
+
+    var status = model.get('status');
+    var parent = model.parent;
     var pfx = this.pfx;
     var ppfx = this.ppfx;
     var config = this.config;
     var updatedCls = ppfx + 'four-color';
     var computedCls = ppfx + 'color-warn';
     var labelEl = this.$el.children('.' + pfx + 'label');
-    var clearStyle = this.getClearEl().style;
+    var clearStyleEl = this.getClearEl();
+    var clearStyle = clearStyleEl ? clearStyleEl.style : {};
     labelEl.removeClass(updatedCls + ' ' + computedCls);
     clearStyle.display = 'none';
 
     switch (status) {
       case 'updated':
-        labelEl.addClass(updatedCls);
+        !parent && labelEl.addClass(updatedCls);
 
         if (config.clearProperties) {
           clearStyle.display = 'inline';
@@ -47087,9 +47132,14 @@ module.exports = _backbone2.default.View.extend({
    * Clear the property from the target
    */
   clear: function clear(e) {
+    var _this = this;
+
     e && e.stopPropagation();
     this.model.clearValue();
-    this.targetUpdated();
+    // Skip one stack with setTimeout to avoid inconsistencies
+    setTimeout(function () {
+      return _this.targetUpdated();
+    });
   },
 
 
@@ -47153,7 +47203,7 @@ module.exports = _backbone2.default.View.extend({
   setStatus: function setStatus(value) {
     this.model.set('status', value);
     var parent = this.model.parent;
-    parent && parent.set('status', value);
+    parent && value && parent.set('status', value);
   },
 
 
@@ -52915,9 +52965,11 @@ module.exports = _backbone2.default.View.extend({
   styleInFlow: function styleInFlow(el, parent) {
     var style = el.style;
     var $el = $(el);
+    var $parent = parent && $(parent);
+
     if (style.overflow && style.overflow !== 'visible') return;
     if ($el.css('float') !== 'none') return;
-    if (parent && $(parent).css('display') == 'flex') return;
+    if ($parent && $parent.css('display') == 'flex' && $parent.css('flex-direction') !== 'column') return;
     switch (style.position) {
       case 'static':
       case 'relative':
@@ -54055,7 +54107,7 @@ var upFirst = function upFirst(value) {
 };
 
 var camelCase = function camelCase(value) {
-  var values = value.split('-');
+  var values = value.split('-').filter(String);
   return values[0].toLowerCase() + values.slice(1).map(upFirst);
 };
 
