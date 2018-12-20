@@ -38247,7 +38247,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.14.48',
+    version: '0.14.49',
 
     /**
      * Initialize the editor with passed options
@@ -39509,7 +39509,11 @@ exports.default = _backbone2.default.View.extend({
 "use strict";
 
 
-var ItemView = __webpack_require__(/*! ./ItemView */ "./src/navigator/view/ItemView.js");
+var _ItemView = __webpack_require__(/*! ./ItemView */ "./src/navigator/view/ItemView.js");
+
+var _ItemView2 = _interopRequireDefault(_ItemView);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 module.exports = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js").View.extend({
   initialize: function initialize() {
@@ -39588,7 +39592,7 @@ module.exports = __webpack_require__(/*! backbone */ "./node_modules/backbone/ba
   addToCollection: function addToCollection(model, fragmentEl, index) {
     var level = this.level;
     var fragment = fragmentEl || null;
-    var viewObject = ItemView;
+    var viewObject = _ItemView2.default;
 
     if (!this.isCountable(model, this.config.hideTextnode)) {
       return;
