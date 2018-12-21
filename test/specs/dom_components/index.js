@@ -9,7 +9,7 @@ const Editor = require('editor/model/Editor');
 const utils = require('./../test_utils.js');
 
 describe('DOM Components', () => {
-  describe('Main', () => {
+  describe.only('Main', () => {
     var em;
     var obj;
     var config;
@@ -169,6 +169,25 @@ describe('DOM Components', () => {
         padding: '50px 100px',
         margin: '10px'
       });
+    });
+
+    test('Add new component type with simple model', () => {
+      obj = em.get('DomComponents');
+      const id = 'test-type';
+      const testProp = 'testValue';
+      const initialTypes = obj.componentTypes.length;
+      obj.addType(id, {
+        model: {
+          defaults: {
+            testProp,
+          }
+        }
+      });
+      expect(obj.componentTypes.length).toEqual(initialTypes + 1);
+      obj.addComponent(`<div data-gjs-type="${id}"></div>`);
+      const comp = obj.getComponents().at(0);
+      expect(comp.get('type')).toEqual(id);
+      expect(comp.get('testProp')).toEqual(testProp);
     });
   });
 

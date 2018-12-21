@@ -509,10 +509,31 @@ module.exports = () => {
      * Add new component type
      * @param {string} type
      * @param {Object} methods
-     * @private
      */
     addType(type, methods) {
-      var compType = this.getType(type);
+      const compType = this.getType(type);
+      const typeToExtend = compType ? compType : this.getType('default');
+      const modelToExt = typeToExtend.model;
+      const viewToExt = typeToExtend.view;
+      const { model = {}, view = {}, isComponent } = methods;
+
+      // If the model/view is a simple object I need to extend it
+      if (typeof model === 'object') {
+        methods.model = modelToExt.extend({
+          ...model,
+          defaults: {
+            ...modelToExt.prototype.defaults,
+            ...(model.defaults || {}),
+          },
+        }, {
+          isComponent: isComponent || (() => 0),
+        });
+      }
+
+      if (typeof view === 'object') {
+        methods.view = viewToExt.extend({ ...view });
+      }
+
       if (compType) {
         compType.model = methods.model;
         compType.view = methods.view;
@@ -525,7 +546,6 @@ module.exports = () => {
     /**
      * Get component type
      * @param {string} type
-     * @private
      */
     getType(type) {
       var df = componentTypes;
