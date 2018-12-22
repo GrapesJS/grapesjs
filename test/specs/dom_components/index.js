@@ -205,6 +205,47 @@ describe('DOM Components', () => {
       expect(comp.get('type')).toEqual(id);
       expect(comp.getAttributes()['test-prop']).toEqual(testProp);
     });
+
+    test('Extend component type with custom model and view', () => {
+      obj = em.get('DomComponents');
+      const id = 'text';
+      const testProp = 'testValue';
+      const testText = 'Some text';
+      const initialTypes = obj.getTypes().length;
+      obj.addType('text', {
+        model: {
+          defaults: {
+            testProp
+          }
+        },
+        view: {
+          onRender() {
+            this.el.style.backgroundColor = 'red';
+          }
+        }
+      });
+      expect(obj.getTypes().length).toBe(initialTypes);
+      obj.addComponent(`<div>${testText}</div>`);
+      const comp = obj.getComponents().at(0);
+      expect(comp.get('type')).toBe(id);
+      expect(comp.get('testProp')).toBe(testProp);
+      expect(comp.get('editable')).toBe(true);
+    });
+
+    test('Add new component type by extending another one', () => {
+      obj = em.get('DomComponents');
+      const id = 'test-type';
+      const testProp = 'testValue';
+      obj.addType(id, {
+        extend: 'text',
+        isComponent: el => el.getAttribute('test-prop') === testProp
+      });
+      obj.addComponent(`<div test-prop="${testProp}"></div>`);
+      expect(obj.getTypes()[0].id).toEqual(id);
+      const comp = obj.getComponents().at(0);
+      expect(comp.get('type')).toBe(id);
+      expect(comp.get('editable')).toBe(true);
+    });
   });
 
   ComponentModels.run();

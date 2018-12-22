@@ -516,11 +516,25 @@ module.exports = () => {
      * @return {this}
      */
     addType(type, methods) {
+      const {
+        model = {},
+        view = {},
+        isComponent,
+        extend,
+        extendView
+      } = methods;
       const compType = this.getType(type);
-      const typeToExtend = compType ? compType : this.getType('default');
+      const extendType = this.getType(extend);
+      const extendViewType = this.getType(extendView);
+      const typeToExtend = extendType
+        ? extendType
+        : compType
+        ? compType
+        : this.getType('default');
       const modelToExt = typeToExtend.model;
-      const viewToExt = typeToExtend.view;
-      const { model = {}, view = {}, isComponent } = methods;
+      const viewToExt = extendViewType
+        ? extendViewType.view
+        : typeToExtend.view;
 
       // If the model/view is a simple object I need to extend it
       if (typeof model === 'object') {
