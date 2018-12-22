@@ -9,7 +9,7 @@ const Editor = require('editor/model/Editor');
 const utils = require('./../test_utils.js');
 
 describe('DOM Components', () => {
-  describe.only('Main', () => {
+  describe('Main', () => {
     var em;
     var obj;
     var config;
