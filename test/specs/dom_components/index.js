@@ -179,7 +179,7 @@ describe('DOM Components', () => {
       obj.addType(id, {
         model: {
           defaults: {
-            testProp,
+            testProp
           }
         }
       });
@@ -188,6 +188,22 @@ describe('DOM Components', () => {
       const comp = obj.getComponents().at(0);
       expect(comp.get('type')).toEqual(id);
       expect(comp.get('testProp')).toEqual(testProp);
+    });
+
+    test('Add new component type with custom isComponent', () => {
+      obj = em.get('DomComponents');
+      const id = 'test-type';
+      const testProp = 'testValue';
+      obj.addType(id, {
+        isComponent: el => {
+          return el.getAttribute('test-prop') === testProp;
+        }
+      });
+      expect(obj.componentTypes[0].id).toEqual(id);
+      obj.addComponent(`<div test-prop="${testProp}"></div>`);
+      const comp = obj.getComponents().at(0);
+      expect(comp.get('type')).toEqual(id);
+      expect(comp.getAttributes()['test-prop']).toEqual(testProp);
     });
   });
 

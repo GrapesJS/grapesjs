@@ -81,8 +81,15 @@ module.exports = config => {
             // Iterate over all available Component Types and
             // the first with a valid result will be that component
             for (let it = 0; it < ct.length; it++) {
-              obj = ct[it].model.isComponent(node);
-              if (obj) break;
+              const compType = ct[it];
+              obj = compType.model.isComponent(node);
+
+              if (obj) {
+                if (typeof obj !== 'object') {
+                  obj = { type: compType.id };
+                }
+                break;
+              }
             }
 
             model = obj;
