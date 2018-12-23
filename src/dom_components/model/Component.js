@@ -170,7 +170,10 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.em = em;
       this.config = opt.config || {};
       this.ccid = Component.createId(this);
-      this.set('attributes', this.get('attributes') || {});
+      this.set('attributes', {
+        ...(this.defaults.attributes || {}),
+        ...(this.get('attributes') || {})
+      });
       this.initClasses();
       this.initTraits();
       this.initComponents();
