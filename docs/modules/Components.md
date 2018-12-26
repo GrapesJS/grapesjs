@@ -304,6 +304,7 @@ comps.addType('map', {
   extend: 'other-defined-component',
   model: { ... }, // Will extend 'other-defined-component'
   view: { ... }, // Will extend 'other-defined-component'
+  // `isComponent` will be taken from `map`
 });
 ```
 ```js
@@ -312,8 +313,82 @@ comps.addType('map', {
   model: { ... }, // Will extend 'other-defined-component'
   extendView: 'other-defined-component-2',
   view: { ... }, // Will extend 'other-defined-component-2'
+  // `isComponent` will be taken from `map`
 });
 ```
+
+## Component Lifecycle Hooks
+
+Each component triggers different lifecycle hooks, which allows you to add custom actions at their specific stages.
+We can distinguish 2 different types of hooks: **global** and **local**.
+You define **local** hooks when you create/extend a component type (usually via some `model`/`view` method) and the reason is to react to an event of that
+particular component type. Instead, the **global** one, will be called indistinctly on any component (you listen to them via `editor.on`) and you can make
+use of them for a more generic use case or also listen to them inside other components.
+
+Let's see below the flow of all hooks:
+
+* **Local hook**: `model.init()` method, executed once the model of the component is initiliazed
+* **Global hook**: `component:create` event, called right after `model.init()`. The model is passed as an argument to the callback function.
+  Es. `editor.on('component:create', model => console.log('created', model))`
+* **Local hook**: `view.init()` method, executed once the view of the component is initiliazed
+* **Local hook**: `view.onRender()` method, executed once the component is rendered on the canvas
+* **Global hook**: `component:mount` event, called right after `view.onRender()`. The model is passed as an argument to the callback function.
+* **Local hook**: `model.updated()` method, executes when some property of the model is updated.
+* **Global hook**: `component:update` event, called after `model.updated()`. The model is passed as an argument to the callback function.
+  You can also listen to specific property change via `component:update:{propertyName}`
+* **Local hook**: `model.removed()` method, executed when the component is removed.
+* **Global hook**: `component:remove` event, called after `model.removed()`. The model is passed as an argument to the callback function.
+
+Below you can find an example usage of all the hooks
+
+```js
+editor.DomComponents.addType('test-component', {
+  model: {
+    defaults: {
+      testprop: 1,
+    },
+    init() {
+      console.log('Local hook: model.init');
+      this.listenTo(this, 'change:testprop', this.handlePropChange);
+      // Here we can listen global hooks with editor.on('...')
+    },
+    updated(property, value, prevValue) {
+      console.log('Local hook: model.updated',
+        'property', property, 'value', value, 'prevValue', prevValue);
+    },
+    removed() {
+      console.log('Local hook: model.removed');
+    },
+    handlePropChange() {
+      console.log('The value of testprop', this.get('testprop'));
+    }
+  },
+  view: {
+    init() {
+      console.log('Local hook: view.init');
+    },
+    onRender() {
+      console.log('Local hook: view.onRender');
+    },
+  },
+});
+
+// A block for the custom component
+editor.BlockManager.add('test-component', {
+  label: 'Test Component',
+  content: '<div data-gjs-type="test-component">Test Component</div>',
+});
+
+// Global hooks
+editor.on(`component:create`, model => console.log('Global hook: component:create', model.get('type')));
+editor.on(`component:mount`, model => console.log('Global hook: component:mount', model.get('type')));
+editor.on(`component:update:testprop`, model => console.log('Global hook: component:update:testprop', model.get('type')));
+editor.on(`component:remove`, model => console.log('Global hook: component:remove', model.get('type')));
+```
+
+
+
+
 
 ## Components & JS
 
