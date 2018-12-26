@@ -224,7 +224,96 @@ comps.addType('map', {
 });
 ```
 
+## Improvement over addType <Badge text="0.14.50+"/>
 
+Now, with the [0.14.50](https://github.com/artf/grapesjs/releases/tag/v0.14.50) release, defining new components or extending them is a bit easier (without breaking the old process)
+
+* If you don't specify the type to extend, the `default` one will be used. In that case, you just
+use objects for `model` and `view`
+* The `defaults` property, in the `model`, will be merged automatically with defaults of the parent component
+* If you use an object in `model` you can specify `isComponent` outside or omit it. In this case,
+the `isComponent` is not mandatory but without it means the parser won't be able to identify the component
+if not explicitly declared (eg. `<div data-gjs-type="new-component">...</div>`)
+
+**Before**
+```js
+const defaultType = comps.getType('default');
+
+comps.addType('new-component', {
+  model: defaultType.model.extend({
+    defaults: {
+      ...defaultType.model.prototype.defaults,
+      someprop: 'somevalue',
+    },
+    ...
+  }, {
+    // Even if it returns false, declaring isComponent is mandatory
+    isComponent(el) {
+      return false;
+    },
+  }),
+  view: defaultType.view.extend({ ... });
+});
+```
+
+**After**
+```js
+comps.addType('new-component', {
+  // We can even omit isComponent here, as `false` return will be the default behavior
+  isComponent: el => false,
+  model: {
+    defaults: {
+      someprop: 'somevalue',
+    },
+    ...
+  },
+  view: { ... };
+});
+```
+* If you need to extend some component, you can use `extend` and `extendView` property.
+* You can now omit `view` property if you don't need to change it
+
+**Before**
+```js
+const originalMap = comps.getType('map');
+
+comps.addType('map', {
+  model: originalMap.model.extend({
+    ...
+  }, {
+    isComponent(el) {
+      // ... new logic for isComponent
+    },
+  }),
+  // Even if I do nothing in view, I have to specify it
+  view: originalMap.view
+});
+```
+**After**
+
+The `map` type is already defined, so it will be used as a base for the model and view
+```js
+comps.addType('map', {
+  isComponent(el) { ... } // ... new logic for isComponent
+  model: { ... },
+});
+```
+Extend the model and view with some other, already defined, components.
+```js
+comps.addType('map', {
+  extend: 'other-defined-component',
+  model: { ... }, // Will extend 'other-defined-component'
+  view: { ... }, // Will extend 'other-defined-component'
+});
+```
+```js
+comps.addType('map', {
+  extend: 'other-defined-component',
+  model: { ... }, // Will extend 'other-defined-component'
+  extendView: 'other-defined-component-2',
+  view: { ... }, // Will extend 'other-defined-component-2'
+});
+```
 
 ## Components & JS
 
