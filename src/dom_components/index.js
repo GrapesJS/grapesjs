@@ -547,7 +547,10 @@ module.exports = () => {
             }
           },
           {
-            isComponent: isComponent || (() => 0)
+            isComponent:
+              compType && !extendType && !isComponent
+                ? modelToExt.isComponent
+                : isComponent || (() => 0)
           }
         );
       }

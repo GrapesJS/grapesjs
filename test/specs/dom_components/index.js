@@ -208,11 +208,10 @@ describe('DOM Components', () => {
 
     test('Extend component type with custom model and view', () => {
       obj = em.get('DomComponents');
-      const id = 'text';
+      const id = 'image';
       const testProp = 'testValue';
-      const testText = 'Some text';
       const initialTypes = obj.getTypes().length;
-      obj.addType('text', {
+      obj.addType(id, {
         model: {
           defaults: {
             testProp
@@ -225,26 +224,47 @@ describe('DOM Components', () => {
         }
       });
       expect(obj.getTypes().length).toBe(initialTypes);
-      obj.addComponent(`<div>${testText}</div>`);
+      obj.addComponent(`<img src="##"/>`);
       const comp = obj.getComponents().at(0);
       expect(comp.get('type')).toBe(id);
       expect(comp.get('testProp')).toBe(testProp);
-      expect(comp.get('editable')).toBe(true);
+      expect(comp.get('editable')).toBe(1);
     });
 
-    test('Add new component type by extending another one', () => {
+    test('Add new component type by extending another one, without isComponent', () => {
       obj = em.get('DomComponents');
       const id = 'test-type';
       const testProp = 'testValue';
       obj.addType(id, {
-        extend: 'text',
+        extend: 'image',
+        model: {
+          defaults: {
+            testProp
+          }
+        }
+      });
+      obj.addComponent(`<img src="##"/>`);
+      expect(obj.getTypes()[0].id).toEqual(id);
+      const comp = obj.getComponents().at(0);
+      // I'm not specifying the isComponent
+      expect(comp.get('type')).toBe('image');
+      expect(comp.get('editable')).toBe(1);
+      expect(comp.get('testProp')).toBeFalsy();
+    });
+
+    test('Add new component type by extending another one, with custom isComponent', () => {
+      obj = em.get('DomComponents');
+      const id = 'test-type';
+      const testProp = 'testValue';
+      obj.addType(id, {
+        extend: 'image',
         isComponent: el => el.getAttribute('test-prop') === testProp
       });
-      obj.addComponent(`<div test-prop="${testProp}"></div>`);
+      obj.addComponent(`<img src="##" test-prop="${testProp}"/>`);
       expect(obj.getTypes()[0].id).toEqual(id);
       const comp = obj.getComponents().at(0);
       expect(comp.get('type')).toBe(id);
-      expect(comp.get('editable')).toBe(true);
+      expect(comp.get('editable')).toBe(1);
     });
   });
 

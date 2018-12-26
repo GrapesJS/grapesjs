@@ -282,7 +282,7 @@ comps.addType('map', {
     ...
   }, {
     isComponent(el) {
-      // ... new logic for isComponent
+      // ... usually, you'd reuse the same logic
     },
   }),
   // Even if I do nothing in view, I have to specify it
@@ -291,14 +291,14 @@ comps.addType('map', {
 ```
 **After**
 
-The `map` type is already defined, so it will be used as a base for the model and view
+The `map` type is already defined, so it will be used as a base for the model and view.
+We can skip `isComponent` if the recognition logic is the same of the extended component.
 ```js
 comps.addType('map', {
-  isComponent(el) { ... } // ... new logic for isComponent
   model: { ... },
 });
 ```
-Extend the model and view with some other, already defined, components.
+Extend the `model` and `view` with some other, already defined, components.
 ```js
 comps.addType('map', {
   extend: 'other-defined-component',
