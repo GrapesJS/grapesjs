@@ -10,15 +10,20 @@ The Component is the base element for template composition. It is atomic, so ele
 
 
 ## Built-in components
-* Default (Basic)
-* Text
-* Image
-* Video
-* Link
-* Map
-* Table
-* Row (for the table)
-* Cell (for the table)
+* default (Basic)
+* wrapper
+* text
+* textnode
+* svg
+* script
+* image
+* video
+* label
+* link
+* map
+* table
+* row (for the table)
+* cell (for the table)
 
 
 
@@ -317,7 +322,7 @@ comps.addType('map', {
 });
 ```
 
-## Component Lifecycle Hooks
+## Lifecycle Hooks
 
 Each component triggers different lifecycle hooks, which allows you to add custom actions at their specific stages.
 We can distinguish 2 different types of hooks: **global** and **local**.

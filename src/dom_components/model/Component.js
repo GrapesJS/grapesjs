@@ -190,8 +190,11 @@ const Component = Backbone.Model.extend(Styleable).extend(
           this.emitUpdate(name, ...args)
         );
       });
-      this.init();
-      em && em.trigger('component:create', this);
+
+      if (!opt.temporary) {
+        this.init();
+        em && em.trigger('component:create', this);
+      }
     },
 
     /**
@@ -959,12 +962,13 @@ const Component = Backbone.Model.extend(Styleable).extend(
     emitUpdate(property, ...args) {
       const em = this.em;
       const event = 'component:update' + (property ? `:${property}` : '');
-      this.updated(
-        property,
-        property && this.get(property),
-        property && this.previous(property),
-        ...args
-      );
+      property &&
+        this.updated(
+          property,
+          property && this.get(property),
+          property && this.previous(property),
+          ...args
+        );
       this.trigger(event, ...args);
       em && em.trigger(event, this, ...args);
     },

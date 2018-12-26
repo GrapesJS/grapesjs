@@ -18,7 +18,9 @@ module.exports = Backbone.View.extend({
     const model = this.model;
     const config = opt.config || {};
     const em = config.em;
+    const modelOpt = model.opt || {};
     this.opts = opt;
+    this.modelOpt = modelOpt;
     this.config = config;
     this.em = em || '';
     this.pfx = config.stylePrefix || '';
@@ -39,7 +41,7 @@ module.exports = Backbone.View.extend({
     model.view = this;
     this.initClasses();
     this.initComponents({ avoidRender: 1 });
-    this.init();
+    !modelOpt.temporary && this.init();
   },
 
   /**
@@ -361,9 +363,12 @@ module.exports = Backbone.View.extend({
   },
 
   postRender() {
-    const { em, model } = this;
-    this.onRender();
-    em && em.trigger('component:mount', model);
+    const { em, model, modelOpt } = this;
+
+    if (!modelOpt.temporary) {
+      this.onRender();
+      em && em.trigger('component:mount', model);
+    }
   },
 
   onRender() {}
