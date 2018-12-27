@@ -31121,6 +31121,8 @@ module.exports = {
 "use strict";
 
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /**
                                                                                                                                                                                                                                                                    * With this module is possible to manage components inside the canvas. You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/dom_components/config/config.js)
                                                                                                                                                                                                                                                                    * ```js
@@ -31143,6 +31145,9 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
                                                                                                                                                                                                                                                                    * * [clear](#clear)
                                                                                                                                                                                                                                                                    * * [load](#load)
                                                                                                                                                                                                                                                                    * * [store](#store)
+                                                                                                                                                                                                                                                                   * * [addType](#addtype)
+                                                                                                                                                                                                                                                                   * * [getType](#gettype)
+                                                                                                                                                                                                                                                                   * * [getTypes](#gettypes)
                                                                                                                                                                                                                                                                    * * [render](#render)
                                                                                                                                                                                                                                                                    *
                                                                                                                                                                                                                                                                    * @module DomComponents
@@ -31637,13 +31642,43 @@ module.exports = function () {
 
 
     /**
-     * Add new component type
-     * @param {string} type
-     * @param {Object} methods
-     * @private
+     * Add new component type.
+     * Read more about this in [Define New Component](https://grapesjs.com/docs/modules/Components.html#define-new-component)
+     * @param {string} type Component ID
+     * @param {Object} methods Component methods
+     * @return {this}
      */
     addType: function addType(type, methods) {
+      var _methods$model = methods.model,
+          model = _methods$model === undefined ? {} : _methods$model,
+          _methods$view = methods.view,
+          view = _methods$view === undefined ? {} : _methods$view,
+          isComponent = methods.isComponent,
+          extend = methods.extend,
+          extendView = methods.extendView;
+
       var compType = this.getType(type);
+      var extendType = this.getType(extend);
+      var extendViewType = this.getType(extendView);
+      var typeToExtend = extendType ? extendType : compType ? compType : this.getType('default');
+      var modelToExt = typeToExtend.model;
+      var viewToExt = extendViewType ? extendViewType.view : typeToExtend.view;
+
+      // If the model/view is a simple object I need to extend it
+      if ((typeof model === 'undefined' ? 'undefined' : _typeof(model)) === 'object') {
+        methods.model = modelToExt.extend(_extends({}, model, {
+          defaults: _extends({}, modelToExt.prototype.defaults, model.defaults || {})
+        }), {
+          isComponent: compType && !extendType && !isComponent ? modelToExt.isComponent : isComponent || function () {
+            return 0;
+          }
+        });
+      }
+
+      if ((typeof view === 'undefined' ? 'undefined' : _typeof(view)) === 'object') {
+        methods.view = viewToExt.extend(_extends({}, view));
+      }
+
       if (compType) {
         compType.model = methods.model;
         compType.view = methods.view;
@@ -31651,13 +31686,16 @@ module.exports = function () {
         methods.id = type;
         componentTypes.unshift(methods);
       }
+
+      return this;
     },
 
 
     /**
-     * Get component type
-     * @param {string} type
-     * @private
+     * Get component type.
+     * Read more about this in [Define New Component](https://grapesjs.com/docs/modules/Components.html#define-new-component)
+     * @param {string} type Component ID
+     * @return {Object} Component type defintion, eg. `{ model: ..., view: ... }`
      */
     getType: function getType(type) {
       var df = componentTypes;
@@ -31669,6 +31707,15 @@ module.exports = function () {
         }
       }
       return;
+    },
+
+
+    /**
+     * Return the array of all types
+     * @return {Array}
+     */
+    getTypes: function getTypes() {
+      return componentTypes;
     },
     selectAdd: function selectAdd(component) {
       var _this3 = this;
@@ -31909,7 +31956,7 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
     this.em = em;
     this.config = opt.config || {};
     this.ccid = Component.createId(this);
-    this.set('attributes', this.get('attributes') || {});
+    this.set('attributes', _extends({}, this.defaults.attributes || {}, this.get('attributes') || {}));
     this.initClasses();
     this.initTraits();
     this.initComponents();
@@ -31930,8 +31977,11 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
         return _this.emitUpdate.apply(_this, [name].concat(args));
       });
     });
-    this.init();
-    em && em.trigger('component:create', this);
+
+    if (!opt.temporary) {
+      this.init();
+      em && em.trigger('component:create', this);
+    }
   },
 
 
@@ -32514,7 +32564,9 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
     }
 
     var cloned = new this.constructor(attr, opts);
-    em && em.trigger('component:clone', cloned);
+    var event = 'component:clone';
+    em && em.trigger(event, cloned);
+    this.trigger(event, cloned);
 
     return cloned;
   },
@@ -32761,7 +32813,7 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
       args[_key3 - 1] = arguments[_key3];
     }
 
-    this.updated.apply(this, [property, property && this.get(property), property && this.previous(property)].concat(_toConsumableArray(args)));
+    property && this.updated.apply(this, [property, property && this.get(property), property && this.previous(property)].concat(_toConsumableArray(args)));
     this.trigger.apply(this, [event].concat(_toConsumableArray(args)));
     em && em.trigger.apply(em, [event, this].concat(_toConsumableArray(args)));
   },
@@ -34253,7 +34305,6 @@ module.exports = __webpack_require__(/*! ./ComponentLinkView */ "./src/dom_compo
 "use strict";
 
 
-var Backbone = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
 var ComponentView = __webpack_require__(/*! ./ComponentTextView */ "./src/dom_components/view/ComponentTextView.js");
 
 module.exports = ComponentView.extend({
@@ -34852,7 +34903,9 @@ module.exports = _backbone2.default.View.extend({
     var model = this.model;
     var config = opt.config || {};
     var em = config.em;
+    var modelOpt = model.opt || {};
     this.opts = opt;
+    this.modelOpt = modelOpt;
     this.config = config;
     this.em = em || '';
     this.pfx = config.stylePrefix || '';
@@ -34873,7 +34926,7 @@ module.exports = _backbone2.default.View.extend({
     model.view = this;
     this.initClasses();
     this.initComponents({ avoidRender: 1 });
-    this.init();
+    !modelOpt.temporary && this.init();
   },
 
 
@@ -35080,14 +35133,32 @@ module.exports = _backbone2.default.View.extend({
    * @private
    * */
   updateAttributes: function updateAttributes() {
-    var model = this.model;
+    var attrs = [];
+    var model = this.model,
+        $el = this.$el,
+        el = this.el;
+
     var defaultAttr = { 'data-gjs-type': model.get('type') || 'default' };
 
     if (model.get('highlightable')) {
       defaultAttr['data-highlightable'] = 1;
     }
 
-    this.$el.attr(_extends({}, defaultAttr, model.getAttributes()));
+    // Remove all current attributes
+    (0, _underscore.each)(el.attributes, function (attr) {
+      return attrs.push(attr.nodeName);
+    });
+    attrs.forEach(function (attr) {
+      return $el.removeAttr(attr);
+    });
+    var attr = _extends({}, defaultAttr, model.getAttributes());
+
+    // Remove all `false` attributes
+    (0, _underscore.keys)(attr).forEach(function (key) {
+      return attr[key] === false && delete attr[key];
+    });
+
+    $el.attr(attr);
     this.updateStyle();
   },
 
@@ -35200,10 +35271,14 @@ module.exports = _backbone2.default.View.extend({
   },
   postRender: function postRender() {
     var em = this.em,
-        model = this.model;
+        model = this.model,
+        modelOpt = this.modelOpt;
 
-    this.onRender();
-    em && em.trigger('component:mount', model);
+
+    if (!modelOpt.temporary) {
+      this.onRender();
+      em && em.trigger('component:mount', model);
+    }
   },
   onRender: function onRender() {}
 });
@@ -35240,15 +35315,16 @@ module.exports = _backbone2.default.View.extend({
   removeChildren: function removeChildren(removed) {
     var em = this.config.em;
     var view = removed.view;
+    var temp = removed.opt.temporary;
     if (!view) return;
     view.remove.apply(view);
     var children = view.childrenView;
     children && children.stopListening();
     removed.components().forEach(this.removeChildren.bind(this));
-    removed.removed();
+    !temp && removed.removed();
     if (em) {
       removed.get('style-signature') && em.get('Commands').run('core:component-style-clear', { target: removed });
-      em.trigger('component:remove', removed);
+      !temp && em.trigger('component:remove', removed);
     }
   },
 
@@ -38247,7 +38323,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.14.49',
+    version: '0.14.50',
 
     /**
      * Initialize the editor with passed options
@@ -40799,6 +40875,7 @@ module.exports = function () {
       conf.Parser = this;
       pHtml = new parserHtml(conf);
       pCss = new parserCss(conf);
+      this.em = conf.em;
       return this;
     },
 
@@ -40809,7 +40886,10 @@ module.exports = function () {
      * @return {Object}
      */
     parseHtml: function parseHtml(str) {
-      pHtml.compTypes = this.compTypes;
+      var em = this.em,
+          compTypes = this.compTypes;
+
+      pHtml.compTypes = em ? em.get('DomComponents').getTypes() : compTypes;
       return pHtml.parse(str, pCss);
     },
 
@@ -41164,6 +41244,8 @@ module.exports = function () {
 "use strict";
 
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 module.exports = function (config) {
   var TEXT_NODE = 'span';
   var c = config;
@@ -41245,8 +41327,15 @@ module.exports = function (config) {
             // Iterate over all available Component Types and
             // the first with a valid result will be that component
             for (var it = 0; it < ct.length; it++) {
-              obj = ct[it].model.isComponent(node);
-              if (obj) break;
+              var compType = ct[it];
+              obj = compType.model.isComponent(node);
+
+              if (obj) {
+                if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) !== 'object') {
+                  obj = { type: compType.id };
+                }
+                break;
+              }
             }
 
             model = obj;
