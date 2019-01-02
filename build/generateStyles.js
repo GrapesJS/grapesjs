@@ -5,7 +5,8 @@ let PropertyFactory = require('../src/style_manager/model/PropertyFactory')();
 let sectors = [{
   name: 'Text',
   open: false,
-  buildProps: ['font-family', 'font-size', 'font-weight', 'font-style', 'font-size-adjust', 'color', 'text-transform', 'text-decoration', 'letter-spacing', 'word-spacing', 'line-height', 'text-align', 'vertical-align', 'direction', 'text-shadow-h', 'text-shadow-v', 'text-shadow-blur', 'text-shadow-color']
+  //buildProps: ['font-family', 'font-size', 'font-weight', 'font-style', 'font-size-adjust', 'color', 'text-transform', 'text-decoration', 'letter-spacing', 'word-spacing', 'line-height', 'text-align', 'vertical-align', 'direction', 'text-shadow-h', 'text-shadow-v', 'text-shadow-blur', 'text-shadow-color']
+  buildProps: ['font-family', 'font-size', 'font-weight', 'font-style', 'font-size-adjust', 'color', 'text-transform', 'text-decoration', 'letter-spacing', 'word-spacing', 'line-height', 'text-align', 'vertical-align', 'direction']
 },{
   name: 'Background',
   open: false,
