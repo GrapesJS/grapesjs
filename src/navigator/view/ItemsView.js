@@ -1,4 +1,4 @@
-const ItemView = require('./ItemView');
+import ItemView from './ItemView';
 
 module.exports = require('backbone').View.extend({
   initialize(o = {}) {

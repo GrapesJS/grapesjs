@@ -448,11 +448,18 @@ module.exports = Backbone.View.extend({
    * @private
    */
   styleInFlow(el, parent) {
-    var style = el.style;
-    var $el = $(el);
+    const style = el.style;
+    const $el = $(el);
+    const $parent = parent && $(parent);
+
     if (style.overflow && style.overflow !== 'visible') return;
     if ($el.css('float') !== 'none') return;
-    if (parent && $(parent).css('display') == 'flex') return;
+    if (
+      $parent &&
+      $parent.css('display') == 'flex' &&
+      $parent.css('flex-direction') !== 'column'
+    )
+      return;
     switch (style.position) {
       case 'static':
       case 'relative':

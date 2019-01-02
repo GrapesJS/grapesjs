@@ -47,6 +47,7 @@ module.exports = () => {
       conf.Parser = this;
       pHtml = new parserHtml(conf);
       pCss = new parserCss(conf);
+      this.em = conf.em;
       return this;
     },
 
@@ -56,7 +57,8 @@ module.exports = () => {
      * @return {Object}
      */
     parseHtml(str) {
-      pHtml.compTypes = this.compTypes;
+      const { em, compTypes } = this;
+      pHtml.compTypes = em ? em.get('DomComponents').getTypes() : compTypes;
       return pHtml.parse(str, pCss);
     },
 

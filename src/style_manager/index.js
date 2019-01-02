@@ -25,7 +25,6 @@
  * * [removeProperty](#removeproperty)
  * * [getProperties](#getproperties)
  * * [getModelToStyle](#getmodeltostyle)
- * * [getModelToStyle](#getmodeltostyle)
  * * [addType](#addtype)
  * * [getType](#gettype)
  * * [getTypes](#gettypes)

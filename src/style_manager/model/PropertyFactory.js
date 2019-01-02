@@ -185,10 +185,6 @@ module.exports = () => ({
         case 'text-shadow-v':
         case 'text-shadow-blur':
         case 'border-radius-c':
-        case 'border-top-left-radius':
-        case 'border-top-right-radius':
-        case 'border-bottom-left-radius':
-        case 'border-bottom-right-radius':
         case 'box-shadow-h':
         case 'box-shadow-v':
         case 'box-shadow-spread':
@@ -197,6 +193,12 @@ module.exports = () => ({
         case 'transform-rotate-y':
         case 'transform-rotate-z':
           obj.defaults = 0;
+          break;
+        case 'border-top-left-radius':
+        case 'border-top-right-radius':
+        case 'border-bottom-left-radius':
+        case 'border-bottom-right-radius':
+          obj.defaults = '0px';
           break;
         case 'transform-scale-x':
         case 'transform-scale-y':
@@ -271,25 +273,29 @@ module.exports = () => ({
       // Units
       switch (prop) {
         case 'top':
-        case 'right':
         case 'bottom':
-        case 'left':
         case 'margin-top':
-        case 'margin-right':
         case 'margin-bottom':
-        case 'margin-left':
         case 'padding-top':
-        case 'padding-right':
         case 'padding-bottom':
-        case 'padding-left':
         case 'min-height':
-        case 'min-width':
         case 'max-height':
+        case 'height':
+          obj.units = ['px', '%', 'vh'];
+          break;
+        case 'right':
+        case 'left':
+        case 'margin-right':
+        case 'margin-left':
+        case 'padding-right':
+        case 'padding-left':
+        case 'min-width':
         case 'max-width':
         case 'width':
-        case 'height':
-        case 'text-shadow-h':
+          obj.units = ['px', '%', 'vw'];
+          break;
         case 'text-shadow-v':
+        case 'text-shadow-h':
         case 'text-shadow-blur':
         case 'border-radius-c':
         case 'border-top-left-radius':

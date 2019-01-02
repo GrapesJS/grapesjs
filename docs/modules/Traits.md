@@ -27,7 +27,7 @@ You can add traits to the component by extending them or while creating a new on
 
 <img :src="$withBase('/default-traits.png')">
 
-In this example we are going to create a new Component. ([Check here](Components) for more details about the creation of new components with a new set of traits
+In this example we are going to create a new Component. ([Check here](Components.html) for more details about the creation of new components with a new set of traits
 
 ```js
 var editor = grapesjs.init({...});

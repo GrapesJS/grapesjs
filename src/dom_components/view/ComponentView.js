@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-import { isArray, isEmpty } from 'underscore';
+import { isArray, isEmpty, each, keys } from 'underscore';
 
 const Components = require('../model/Components');
 const ComponentsView = require('./ComponentsView');
@@ -18,7 +18,9 @@ module.exports = Backbone.View.extend({
     const model = this.model;
     const config = opt.config || {};
     const em = config.em;
+    const modelOpt = model.opt || {};
     this.opts = opt;
+    this.modelOpt = modelOpt;
     this.config = config;
     this.em = em || '';
     this.pfx = config.stylePrefix || '';
@@ -39,7 +41,7 @@ module.exports = Backbone.View.extend({
     model.view = this;
     this.initClasses();
     this.initComponents({ avoidRender: 1 });
-    this.init();
+    !modelOpt.temporary && this.init();
   },
 
   /**
@@ -232,17 +234,26 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   updateAttributes() {
-    const model = this.model;
+    const attrs = [];
+    const { model, $el, el } = this;
     const defaultAttr = { 'data-gjs-type': model.get('type') || 'default' };
 
     if (model.get('highlightable')) {
       defaultAttr['data-highlightable'] = 1;
     }
 
-    this.$el.attr({
+    // Remove all current attributes
+    each(el.attributes, attr => attrs.push(attr.nodeName));
+    attrs.forEach(attr => $el.removeAttr(attr));
+    const attr = {
       ...defaultAttr,
       ...model.getAttributes()
-    });
+    };
+
+    // Remove all `false` attributes
+    keys(attr).forEach(key => attr[key] === false && delete attr[key]);
+
+    $el.attr(attr);
     this.updateStyle();
   },
 
@@ -352,9 +363,12 @@ module.exports = Backbone.View.extend({
   },
 
   postRender() {
-    const { em, model } = this;
-    this.onRender();
-    em && em.trigger('component:mount', model);
+    const { em, model, modelOpt } = this;
+
+    if (!modelOpt.temporary) {
+      this.onRender();
+      em && em.trigger('component:mount', model);
+    }
   },
 
   onRender() {}
