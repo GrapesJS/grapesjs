@@ -72,6 +72,7 @@ module.exports = () => ({
           obj.type = 'radio';
           break;
         case 'display':
+        case 'flex-direction':
         case 'font-family':
         case 'font-weight':
         case 'border-style':
@@ -165,6 +166,9 @@ module.exports = () => ({
           break;
         case 'display':
           obj.defaults = 'block';
+          break;
+        case 'flex-direction':
+          obj.defaults = 'row';
           break;
         case 'position':
           obj.defaults = 'static';
@@ -409,6 +413,14 @@ module.exports = () => ({
             { value: 'inline-block' },
             { value: 'flex' },
             { value: 'none' }
+          ];
+          break;
+        case 'flex-direction':
+          obj.list = [
+            { value: 'row' },
+            { value: 'row-reverse' },
+            { value: 'column' },
+            { value: 'column-reverse' }
           ];
           break;
         case 'position':
