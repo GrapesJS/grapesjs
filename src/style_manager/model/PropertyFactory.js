@@ -407,6 +407,7 @@ module.exports = () => ({
             { value: 'block' },
             { value: 'inline' },
             { value: 'inline-block' },
+            { value: 'flex' },
             { value: 'none' }
           ];
           break;
