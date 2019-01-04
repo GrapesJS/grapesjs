@@ -216,16 +216,22 @@ module.exports = {
         buildProps: [
           'float',
           'display',
-          'flex-direction',
-          'flex-wrap',
-          'justify-content',
-          'align-items',
-          'align-content',
           'position',
           'top',
           'right',
           'left',
           'bottom'
+        ]
+      },
+      {
+        name: 'Flex',
+        open: false,
+        buildProps: [
+          'flex-direction',
+          'flex-wrap',
+          'justify-content',
+          'align-items',
+          'align-content'
         ]
       },
       {
