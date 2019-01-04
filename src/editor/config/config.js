@@ -220,6 +220,7 @@ module.exports = {
           'flex-wrap',
           'justify-content',
           'align-items',
+          'align-content',
           'position',
           'top',
           'right',
