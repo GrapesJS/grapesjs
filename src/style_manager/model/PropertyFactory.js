@@ -133,6 +133,8 @@ module.exports = () => ({
         case 'transform-scale-x':
         case 'transform-scale-y':
         case 'transform-scale-z':
+        case 'order':
+        case 'flex-grow':
           obj.type = 'integer';
           break;
         case 'margin':
@@ -212,6 +214,8 @@ module.exports = () => ({
         case 'transform-rotate-x':
         case 'transform-rotate-y':
         case 'transform-rotate-z':
+        case 'order':
+        case 'flex-grow':
           obj.defaults = 0;
           break;
         case 'border-top-left-radius':
@@ -304,6 +308,10 @@ module.exports = () => ({
         case 'align-items':
         case 'align-content':
           obj.requires = { display: ['flex'] };
+          break;
+        case 'order':
+        case 'flex-grow':
+          obj.requiresParent = { display: ['flex'] };
           break;
       }
 

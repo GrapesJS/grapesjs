@@ -231,7 +231,9 @@ module.exports = {
           'flex-wrap',
           'justify-content',
           'align-items',
-          'align-content'
+          'align-content',
+          'order',
+          'flex-grow'
         ]
       },
       {
