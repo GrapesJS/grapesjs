@@ -121,6 +121,13 @@ const getModel = (el, $) => {
   return model;
 };
 
+/**
+ * Get cross-device pointer event
+ * @param  {Event} ev
+ * @return {Event}
+ */
+const getPointerEvent = (ev) => ev.touches && ev.touches[0] ? ev.touches[0] : ev;
+
 export {
   on,
   off,
@@ -132,5 +139,6 @@ export {
   getElement,
   shallowDiff,
   normalizeFloat,
-  getUnitFromValue
+  getPointerEvent,
+  getUnitFromValue,
 };

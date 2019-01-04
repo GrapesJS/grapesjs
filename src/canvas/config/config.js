@@ -27,6 +27,11 @@ module.exports = {
   customBadgeLabel: '',
 
   /**
+   * Indicate when to start the auto scroll of the canvas on component/block dragging (value in px )
+   */
+  autoscrollLimit: 50,
+
+  /**
    * When some textable component is selected and focused (eg. input or text component) the editor
    * stops some commands (eg. disables the copy/paste of components with CTRL+C/V to allow the copy/paste of the text).
    * This option allows to customize, by a selector, which element should not be considered textable
