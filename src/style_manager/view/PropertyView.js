@@ -70,6 +70,15 @@ module.exports = Backbone.View.extend({
 
     em && em.on(`update:component:style:${this.property}`, this.targetUpdated);
     //em && em.on(`styleable:change:${this.property}`, this.targetUpdated);
+
+    // Listening to changes of properties in this.requires, so that styleable
+    // changes based on other properties are propagated
+    const requires = model.get('requires');
+    requires &&
+      Object.keys(requires).forEach(property => {
+        em && em.on(`component:styleUpdate:${property}`, this.targetUpdated);
+      });
+
     this.listenTo(
       this.propTarget,
       'update styleManager:update',
@@ -406,6 +415,8 @@ module.exports = Backbone.View.extend({
     const toRequire = model.get('toRequire');
     const unstylable = trg.get('unstylable');
     const stylableReq = trg.get('stylable-require');
+    const requires = model.get('requires');
+    const sectors = this.sector ? this.sector.collection : null;
     let stylable = trg.get('stylable');
 
     // Stylable could also be an array indicating with which property
@@ -425,6 +436,19 @@ module.exports = Backbone.View.extend({
         !target ||
         (stylableReq &&
           (stylableReq.indexOf(id) >= 0 || stylableReq.indexOf(property) >= 0));
+    }
+
+    // Check if the property is available based on other property's values
+    if (sectors && requires) {
+      const properties = Object.keys(requires);
+      sectors.each(sector => {
+        sector.get('properties').each(model => {
+          if (properties.includes(model.id)) {
+            const values = requires[model.id];
+            stylable = stylable && values.includes(model.get('value'));
+          }
+        });
+      });
     }
 
     return stylable;

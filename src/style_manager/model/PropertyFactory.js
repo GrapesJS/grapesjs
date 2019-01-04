@@ -274,6 +274,19 @@ module.exports = () => ({
           break;
       }
 
+      /*
+       * Add styleable dependency on other properties. Allows properties to be
+       * dynamically hidden or shown based on values of other properties.
+       *
+       * Property will be styleable if all of the properties (keys) in the
+       * requires object have any of the values specified in the array.
+       */
+      switch (prop) {
+        case 'flex-direction':
+          obj.requires = { display: ['flex'] };
+          break;
+      }
+
       // Units
       switch (prop) {
         case 'top':

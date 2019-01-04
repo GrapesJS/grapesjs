@@ -216,6 +216,7 @@ module.exports = {
         buildProps: [
           'float',
           'display',
+          'flex-direction',
           'position',
           'top',
           'right',
