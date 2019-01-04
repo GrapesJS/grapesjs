@@ -218,6 +218,7 @@ module.exports = {
           'display',
           'flex-direction',
           'flex-wrap',
+          'justify-content',
           'position',
           'top',
           'right',

@@ -74,6 +74,7 @@ module.exports = () => ({
         case 'display':
         case 'flex-direction':
         case 'flex-wrap':
+        case 'justify-content':
         case 'font-family':
         case 'font-weight':
         case 'border-style':
@@ -173,6 +174,9 @@ module.exports = () => ({
           break;
         case 'flex-wrap':
           obj.defaults = 'nowrap';
+          break;
+        case 'justify-content':
+          obj.defaults = 'flex-start';
           break;
         case 'position':
           obj.defaults = 'static';
@@ -288,6 +292,7 @@ module.exports = () => ({
       switch (prop) {
         case 'flex-direction':
         case 'flex-wrap':
+        case 'justify-content':
           obj.requires = { display: ['flex'] };
           break;
       }
@@ -446,6 +451,16 @@ module.exports = () => ({
             { value: 'nowrap' },
             { value: 'wrap' },
             { value: 'wrap-reverse' }
+          ];
+          break;
+        case 'justify-content':
+          obj.list = [
+            { value: 'flex-start' },
+            { value: 'flex-end' },
+            { value: 'center' },
+            { value: 'space-between' },
+            { value: 'space-around' },
+            { value: 'space-evenly' }
           ];
           break;
         case 'position':
