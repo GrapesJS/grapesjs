@@ -416,6 +416,7 @@ module.exports = Backbone.View.extend({
     const unstylable = trg.get('unstylable');
     const stylableReq = trg.get('stylable-require');
     const requires = model.get('requires');
+    const requiresParent = model.get('requiresParent');
     const sectors = this.sector ? this.sector.collection : null;
     let stylable = trg.get('stylable');
 
@@ -449,6 +450,24 @@ module.exports = Backbone.View.extend({
           }
         });
       });
+    }
+
+    // Check if the property is available based on parent's property values
+    if (requiresParent) {
+      if (
+        trg.view &&
+        trg.view.$el &&
+        trg.view.$el[0] &&
+        trg.view.$el[0].parentNode
+      ) {
+        const styles = window.getComputedStyle(trg.view.$el[0].parentNode);
+        Object.entries(requiresParent).forEach(([property, values]) => {
+          stylable =
+            stylable && styles[property] && values.includes(styles[property]);
+        });
+      } else {
+        stylable = false;
+      }
     }
 
     return stylable;
