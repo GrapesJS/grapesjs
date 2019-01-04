@@ -217,6 +217,7 @@ module.exports = {
           'float',
           'display',
           'flex-direction',
+          'flex-wrap',
           'position',
           'top',
           'right',

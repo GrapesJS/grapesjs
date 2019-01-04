@@ -73,6 +73,7 @@ module.exports = () => ({
           break;
         case 'display':
         case 'flex-direction':
+        case 'flex-wrap':
         case 'font-family':
         case 'font-weight':
         case 'border-style':
@@ -169,6 +170,9 @@ module.exports = () => ({
           break;
         case 'flex-direction':
           obj.defaults = 'row';
+          break;
+        case 'flex-wrap':
+          obj.defaults = 'nowrap';
           break;
         case 'position':
           obj.defaults = 'static';
@@ -283,6 +287,7 @@ module.exports = () => ({
        */
       switch (prop) {
         case 'flex-direction':
+        case 'flex-wrap':
           obj.requires = { display: ['flex'] };
           break;
       }
@@ -434,6 +439,13 @@ module.exports = () => ({
             { value: 'row-reverse' },
             { value: 'column' },
             { value: 'column-reverse' }
+          ];
+          break;
+        case 'flex-wrap':
+          obj.list = [
+            { value: 'nowrap' },
+            { value: 'wrap' },
+            { value: 'wrap-reverse' }
           ];
           break;
         case 'position':
