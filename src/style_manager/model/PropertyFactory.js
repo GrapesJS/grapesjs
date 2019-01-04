@@ -77,6 +77,7 @@ module.exports = () => ({
         case 'justify-content':
         case 'align-items':
         case 'align-content':
+        case 'align-self':
         case 'font-family':
         case 'font-weight':
         case 'border-style':
@@ -188,6 +189,9 @@ module.exports = () => ({
           break;
         case 'align-content':
           obj.defaults = 'stretch';
+          break;
+        case 'align-self':
+          obj.defaults = 'auto';
           break;
         case 'position':
           obj.defaults = 'static';
@@ -314,6 +318,7 @@ module.exports = () => ({
         case 'order':
         case 'flex-grow':
         case 'flex-shrink':
+        case 'align-self':
           obj.requiresParent = { display: ['flex'] };
           break;
       }
@@ -500,6 +505,16 @@ module.exports = () => ({
             { value: 'center' },
             { value: 'space-between' },
             { value: 'space-around' },
+            { value: 'stretch' }
+          ];
+          break;
+        case 'align-self':
+          obj.list = [
+            { value: 'auto' },
+            { value: 'flex-start' },
+            { value: 'flex-end' },
+            { value: 'center' },
+            { value: 'baseline' },
             { value: 'stretch' }
           ];
           break;

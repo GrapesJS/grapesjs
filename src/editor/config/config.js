@@ -234,7 +234,8 @@ module.exports = {
           'align-content',
           'order',
           'flex-grow',
-          'flex-shrink'
+          'flex-shrink',
+          'align-self'
         ]
       },
       {
