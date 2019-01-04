@@ -233,7 +233,8 @@ module.exports = {
           'align-items',
           'align-content',
           'order',
-          'flex-grow'
+          'flex-grow',
+          'flex-shrink'
         ]
       },
       {

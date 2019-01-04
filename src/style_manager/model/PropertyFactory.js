@@ -135,6 +135,7 @@ module.exports = () => ({
         case 'transform-scale-z':
         case 'order':
         case 'flex-grow':
+        case 'flex-shrink':
           obj.type = 'integer';
           break;
         case 'margin':
@@ -227,6 +228,7 @@ module.exports = () => ({
         case 'transform-scale-x':
         case 'transform-scale-y':
         case 'transform-scale-z':
+        case 'flex-shrink':
           obj.defaults = 1;
           break;
         case 'box-shadow-blur':
@@ -311,6 +313,7 @@ module.exports = () => ({
           break;
         case 'order':
         case 'flex-grow':
+        case 'flex-shrink':
           obj.requiresParent = { display: ['flex'] };
           break;
       }
