@@ -75,6 +75,7 @@ module.exports = () => ({
         case 'flex-direction':
         case 'flex-wrap':
         case 'justify-content':
+        case 'align-items':
         case 'font-family':
         case 'font-weight':
         case 'border-style':
@@ -177,6 +178,9 @@ module.exports = () => ({
           break;
         case 'justify-content':
           obj.defaults = 'flex-start';
+          break;
+        case 'align-items':
+          obj.defaults = 'stretch';
           break;
         case 'position':
           obj.defaults = 'static';
@@ -293,6 +297,7 @@ module.exports = () => ({
         case 'flex-direction':
         case 'flex-wrap':
         case 'justify-content':
+        case 'align-items':
           obj.requires = { display: ['flex'] };
           break;
       }
@@ -461,6 +466,15 @@ module.exports = () => ({
             { value: 'space-between' },
             { value: 'space-around' },
             { value: 'space-evenly' }
+          ];
+          break;
+        case 'align-items':
+          obj.list = [
+            { value: 'flex-start' },
+            { value: 'flex-end' },
+            { value: 'center' },
+            { value: 'baseline' },
+            { value: 'stretch' }
           ];
           break;
         case 'position':
