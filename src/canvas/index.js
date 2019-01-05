@@ -28,8 +28,10 @@
  * @module Canvas
  */
 
-import { on, off, hasDnd, getElement } from 'utils/mixins';
+import { on, off, hasDnd, getElement, getPointerEvent } from 'utils/mixins';
 import Droppable from 'utils/Droppable';
+
+const { requestAnimationFrame } = window;
 
 module.exports = () => {
   var c = {},
@@ -81,6 +83,7 @@ module.exports = () => {
       this.startAutoscroll = this.startAutoscroll.bind(this);
       this.stopAutoscroll = this.stopAutoscroll.bind(this);
       this.autoscroll = this.autoscroll.bind(this);
+      this.updateClientY = this.updateClientY.bind(this);
       return this;
     },
 
@@ -452,22 +455,27 @@ module.exports = () => {
       // By detaching those from the stack avoid browsers lags
       // Noticeable with "fast" drag of blocks
       setTimeout(() => {
-        on(toListen, 'mousemove', this.autoscroll);
+        on(toListen, 'mousemove dragover', this.updateClientY);
         on(toListen, 'mouseup', this.stopAutoscroll);
+        requestAnimationFrame(this.autoscroll);
       }, 0);
+    },
+
+    updateClientY(ev) {
+      ev.preventDefault();
+      this.lastClientY = getPointerEvent(ev).clientY;
     },
 
     /**
      * @private
      */
-    autoscroll(e) {
-      e.preventDefault();
+    autoscroll() {
       if (this.dragging) {
         let frameWindow = this.getFrameEl().contentWindow;
         let actualTop = frameWindow.document.body.scrollTop;
         let nextTop = actualTop;
-        let clientY = e.clientY;
-        let limitTop = 50;
+        let clientY = this.lastClientY;
+        let limitTop = this.getConfig().autoscrollLimit;
         let limitBottom = frameRect.height - limitTop;
 
         if (clientY < limitTop) {
@@ -478,8 +486,8 @@ module.exports = () => {
           nextTop += clientY - limitBottom;
         }
 
-        //console.log(`actualTop: ${actualTop} clientY: ${clientY} nextTop: ${nextTop} frameHeigh: ${frameRect.height}`);
         frameWindow.scrollTo(0, nextTop);
+        requestAnimationFrame(this.autoscroll);
       }
     },
 
@@ -490,7 +498,7 @@ module.exports = () => {
     stopAutoscroll() {
       this.dragging = 0;
       let toListen = this.getScrollListeners();
-      off(toListen, 'mousemove', this.autoscroll);
+      off(toListen, 'mousemove dragover', this.updateClientY);
       off(toListen, 'mouseup', this.stopAutoscroll);
     },
 
