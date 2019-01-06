@@ -10,7 +10,8 @@ module.exports = require('backbone').Model.extend({
     params: {},
     beforeSend() {},
     onComplete() {},
-    contentTypeJson: false
+    contentTypeJson: false,
+    credentials: 'include'
   },
 
   /**
@@ -113,7 +114,7 @@ module.exports = require('backbone').Model.extend({
     }
     fetchOptions = {
       method: opts.method || 'post',
-      credentials: 'include',
+      credentials: this.get('credentials'),
       headers
     };
 
@@ -124,11 +125,10 @@ module.exports = require('backbone').Model.extend({
 
     this.onStart();
     this.fetch(url, fetchOptions)
-      .then(
-        res =>
-          ((res.status / 200) | 0) == 1
-            ? res.text()
-            : res.text().then(text => Promise.reject(text))
+      .then(res =>
+        ((res.status / 200) | 0) == 1
+          ? res.text()
+          : res.text().then(text => Promise.reject(text))
       )
       .then(text => this.onResponse(text, clb))
       .catch(err => this.onError(err, clbErr));
