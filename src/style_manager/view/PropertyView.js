@@ -1,6 +1,7 @@
 import Backbone from 'backbone';
 import { bindAll, isArray, isUndefined, debounce } from 'underscore';
 import { camelCase } from 'utils/mixins';
+import { includes } from 'underscore';
 
 const clearProp = 'data-clear-style';
 
@@ -444,9 +445,9 @@ module.exports = Backbone.View.extend({
       const properties = Object.keys(requires);
       sectors.each(sector => {
         sector.get('properties').each(model => {
-          if (properties.includes(model.id)) {
+          if (includes(properties, model.id)) {
             const values = requires[model.id];
-            stylable = stylable && values.includes(model.get('value'));
+            stylable = stylable && includes(values, model.get('value'));
           }
         });
       });
@@ -463,7 +464,7 @@ module.exports = Backbone.View.extend({
         const styles = window.getComputedStyle(trg.view.$el[0].parentNode);
         Object.entries(requiresParent).forEach(([property, values]) => {
           stylable =
-            stylable && styles[property] && values.includes(styles[property]);
+            stylable && styles[property] && includes(values, styles[property]);
         });
       } else {
         stylable = false;
