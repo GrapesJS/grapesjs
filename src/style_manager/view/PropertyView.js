@@ -1,7 +1,7 @@
 import Backbone from 'backbone';
 import { bindAll, isArray, isUndefined, debounce } from 'underscore';
 import { camelCase } from 'utils/mixins';
-import { includes } from 'underscore';
+import { includes, each } from 'underscore';
 
 const clearProp = 'data-clear-style';
 
@@ -462,7 +462,7 @@ module.exports = Backbone.View.extend({
         trg.view.$el[0].parentNode
       ) {
         const styles = window.getComputedStyle(trg.view.$el[0].parentNode);
-        Object.entries(requiresParent).forEach(([property, values]) => {
+        each(requiresParent, (values, property) => {
           stylable =
             stylable && styles[property] && includes(values, styles[property]);
         });
