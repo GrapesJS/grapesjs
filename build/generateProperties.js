@@ -60,6 +60,17 @@ try {
     }
   });
 
+  //Run the properties through trait factory to add some default values like values for target attribute etc.
+  let TraitManagerConfig = require('../src/trait_manager/config/config');
+  let TraitsFactory = require('../src/trait_manager/model/TraitFactory')(TraitManagerConfig);
+  properties.forEach(property => {
+    property.props.forEach(prop => {
+      if (prop.name) {
+        Object.assign(prop, TraitsFactory.build(prop.name)[0]);
+      }
+    })
+  });
+
   //Export all properties except anchor in a js file
   let elementProperties = properties.filter(property => property.type !== 'link');
 

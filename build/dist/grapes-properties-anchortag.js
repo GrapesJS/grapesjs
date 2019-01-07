@@ -1,1 +1,1 @@
-define([], function() { return [{"type":"a","props":[{"name":"href","type":"text","label":"","options":[]},{"name":"target","type":"select","label":"","options":[]}]}] });
+define([], function() { return [{"type":"a","props":[{"name":"href","type":"text","label":"","options":[],"placeholder":"eg. https://google.com"},{"name":"target","type":"select","label":"","options":[{"value":"","name":"This window"},{"value":"_blank","name":"New window"}]}]}] });
