@@ -40,6 +40,7 @@ module.exports = () => ({
         case 'height':
         case 'max-height':
         case 'min-height':
+        case 'flex-basis':
           obj.fixedValues = ['initial', 'inherit', 'auto'];
           break;
         case 'font-size':
@@ -137,6 +138,7 @@ module.exports = () => ({
         case 'order':
         case 'flex-grow':
         case 'flex-shrink':
+        case 'flex-basis':
           obj.type = 'integer';
           break;
         case 'margin':
@@ -246,6 +248,7 @@ module.exports = () => ({
         case 'height':
         case 'background-size':
         case 'cursor':
+        case 'flex-basis':
           obj.defaults = 'auto';
           break;
         case 'font-family':
@@ -316,6 +319,7 @@ module.exports = () => ({
           obj.requires = { display: ['flex'] };
           break;
         case 'order':
+        case 'flex-basis':
         case 'flex-grow':
         case 'flex-shrink':
         case 'align-self':
@@ -346,6 +350,9 @@ module.exports = () => ({
         case 'max-width':
         case 'width':
           obj.units = ['px', '%', 'vw'];
+          break;
+        case 'flex-basis':
+          obj.units = ['px', '%', 'vw', 'vh'];
           break;
         case 'text-shadow-v':
         case 'text-shadow-h':
@@ -405,6 +412,7 @@ module.exports = () => ({
         case 'box-shadow-blur':
         case 'transition-duration':
         case 'perspective':
+        case 'flex-basis':
           obj.min = 0;
           break;
       }

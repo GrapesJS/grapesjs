@@ -541,6 +541,19 @@ module.exports = {
         expect(obj.build('max-width')).toEqual([res]);
       });
 
+      test('Build flex-basis', () => {
+        var res = {
+          type: 'integer',
+          units: ['px', '%', 'vw', 'vh'],
+          defaults: 'auto',
+          fixedValues: ['initial', 'inherit', 'auto'],
+          requiresParent: { display: ['flex'] },
+          min: 0
+        };
+        res.property = 'flex-basis';
+        expect(obj.build('flex-basis')).toEqual([res]);
+      });
+
       test('Build height family', () => {
         var res = {
           type: 'integer',

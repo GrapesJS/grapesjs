@@ -233,6 +233,7 @@ module.exports = {
           'align-items',
           'align-content',
           'order',
+          'flex-basis',
           'flex-grow',
           'flex-shrink',
           'align-self'
