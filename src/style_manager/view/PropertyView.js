@@ -419,6 +419,7 @@ module.exports = Backbone.View.extend({
     const requires = model.get('requires');
     const requiresParent = model.get('requiresParent');
     const sectors = this.sector ? this.sector.collection : null;
+    const selected = this.em ? this.em.getSelected() : null;
     let stylable = trg.get('stylable');
 
     // Stylable could also be an array indicating with which property
@@ -456,12 +457,13 @@ module.exports = Backbone.View.extend({
     // Check if the property is available based on parent's property values
     if (requiresParent) {
       if (
-        trg.view &&
-        trg.view.$el &&
-        trg.view.$el[0] &&
-        trg.view.$el[0].parentNode
+        selected &&
+        selected.view &&
+        selected.view.$el &&
+        selected.view.$el[0] &&
+        selected.view.$el[0].parentNode
       ) {
-        const styles = window.getComputedStyle(trg.view.$el[0].parentNode);
+        const styles = window.getComputedStyle(selected.view.$el[0].parentNode);
         each(requiresParent, (values, property) => {
           stylable =
             stylable && styles[property] && includes(values, styles[property]);
