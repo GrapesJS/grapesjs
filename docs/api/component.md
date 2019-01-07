@@ -57,6 +57,24 @@ component.get('tagName');
     By default, when `toolbar` property is falsy the editor will add automatically commands like `move`, `delete`, etc. based on its properties.
 -   `components` **Collection&lt;[Component][9]>?** Children components. Default: `null`
 
+## init
+
+Hook method, called once the model is created
+
+## updated
+
+Hook method, called when the model has been updated (eg. updated some model's property)
+
+### Parameters
+
+-   `property` **[String][1]** Property name, if triggered after some property update
+-   `value` **any** Property value, if triggered after some property update
+-   `previous` **any** Property previous value, if triggered after some property update
+
+## removed
+
+Hook method, called once the model has been removed
+
 ## is
 
 Check component's type
@@ -73,6 +91,12 @@ component.is('image')
 ```
 
 Returns **[Boolean][3]** 
+
+## index
+
+Get the index of the component in the parent collection.
+
+Returns **[Number][10]** 
 
 ## find
 
@@ -397,7 +421,7 @@ Returns **this**
 Get the DOM element of the component.
 This works only if the component is already rendered
 
-Returns **[HTMLElement][10]** 
+Returns **[HTMLElement][11]** 
 
 ## getView
 
@@ -448,4 +472,6 @@ Returns **this**
 
 [9]: #component
 
-[10]: https://developer.mozilla.org/docs/Web/HTML/Element
+[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+
+[11]: https://developer.mozilla.org/docs/Web/HTML/Element
