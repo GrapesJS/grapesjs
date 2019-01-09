@@ -87,6 +87,11 @@ try {
   let anchorTagProperties = properties.find(property => property.type === 'link');
   anchorTagProperties.type = 'a';
   anchorTagProperties.props = anchorTagProperties.props.filter(property => property.name !== 'title');
+  anchorTagProperties.props.forEach(property => {
+    if (property.name === 'href') {
+      property.displayName = 'URL';
+    }
+  });
   utils.exportJsonToFile('build/dist/grapes-properties-anchortag.js', [anchorTagProperties]);
   console.log('Anchor tag properties exported successfully');
 
