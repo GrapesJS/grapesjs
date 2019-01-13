@@ -382,6 +382,28 @@ module.exports = () => {
       return selector && this.get(selector, state, media);
     },
 
+    setRule(selectors, style, opts = {}) {
+      const node = em.get('Parser').parserCss.checkNode({
+        selectors,
+        style,
+        atRule: null,
+        params: null
+      })[0];
+      const sm = em.get('SelectorManager');
+      const selector = sm.add(node.selectors);
+      const rule = this.add(selector, node.state);
+      rule.setStyle(style, opts);
+      throw rule.toCSS();
+      return rule;
+    },
+
+    getRule(selectors, opts = {}) {
+      const sm = em.get('SelectorManager');
+      const node = em.get('Parser').parserCss.checkNode({ selectors })[0];
+      const selector = sm.get(node.selectors);
+      return selector && this.get(selector, node.state);
+    },
+
     /**
      * Render the block of CSS rules
      * @return {HTMLElement}

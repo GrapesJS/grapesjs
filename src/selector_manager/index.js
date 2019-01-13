@@ -44,7 +44,7 @@
  * @module SelectorManager
  */
 
-import { isString, isElement, isObject } from 'underscore';
+import { isString, isElement, isObject, isArray } from 'underscore';
 
 const isId = str => isString(str) && str[0] == '#';
 const isClass = str => isString(str) && str[0] == '.';
@@ -118,22 +118,9 @@ module.exports = config => {
       }
     },
 
-    /**
-     * Add a new selector to collection if it's not already exists. Class type is a default one
-     * @param {String} name Selector name
-     * @param {Object} opts Selector options
-     * @param {String} [opts.label=''] Label for the selector, if it's not provided the label will be the same as the name
-     * @param {String} [opts.type=1] Type of the selector. At the moment, only 'class' (1) is available
-     * @return {Model}
-     * @example
-     * var selector = selectorManager.add('selectorName');
-     * // Same as
-     * var selector = selectorManager.add('selectorName', {
-     *   type: 1,
-     *   label: 'selectorName'
-     * });
-     * */
-    add(name, opts = {}) {
+    addSelector(name, opt = {}) {
+      let opts = { ...opt };
+
       if (isObject(name)) {
         opts = name;
       } else {
@@ -143,6 +130,8 @@ module.exports = config => {
       if (isId(opts.name)) {
         opts.name = opts.name.substr(1);
         opts.type = Selector.TYPE_ID;
+      } else if (isClass(opts.name)) {
+        opts.name = opts.name.substr(1);
       }
 
       if (opts.label && !opts.name) {
@@ -162,6 +151,31 @@ module.exports = config => {
     },
 
     /**
+     * Add a new selector to collection if it's not already exists. Class type is a default one
+     * @param {String|Array} name Selector/s name
+     * @param {Object} opts Selector options
+     * @param {String} [opts.label=''] Label for the selector, if it's not provided the label will be the same as the name
+     * @param {String} [opts.type=1] Type of the selector. At the moment, only 'class' (1) is available
+     * @return {Model|Array}
+     * @example
+     * const selector = selectorManager.add('selectorName');
+     * // Same as
+     * const selector = selectorManager.add('selectorName', {
+     *   type: 1,
+     *   label: 'selectorName'
+     * });
+     * // Multiple selectors
+     * const selectors = selectorManager.add(['.class1', '.class2', '#id1']);
+     * */
+    add(name, opts = {}) {
+      if (isArray(name)) {
+        return name.map(item => this.addSelector(item, opts));
+      } else {
+        return this.addSelector(name, opts);
+      }
+    },
+
+    /**
      * Add class selectors
      * @param {Array|string} classes Array or string of classes
      * @return {Array} Array of added selectors
@@ -178,7 +192,14 @@ module.exports = config => {
         classes = classes.trim().split(' ');
       }
 
-      classes.forEach(name => added.push(selectors.add({ name })));
+      classes.forEach(name =>
+        added.push(
+          selectors.add({
+            name,
+            type: Selector.TYPE_ID
+          })
+        )
+      );
       return added;
     },
 

@@ -7,7 +7,7 @@ const utils = require('./../test_utils.js');
 const Editor = require('editor/model/Editor');
 
 describe('Css Composer', () => {
-  describe('Main', () => {
+  describe.only('Main', () => {
     var obj;
     var em;
     var config;
@@ -206,6 +206,15 @@ describe('Css Composer', () => {
       expect(obj.getAll().length).toEqual(1);
       const rule = obj.getClassRule(name, { state });
       expect(rule.selectorsToString()).toEqual(`.${name}:${state}`);
+    });
+
+    test('Create a simple class-based rule with setRule', () => {
+      const selector = '.test';
+      obj.setRule(selector, { color: 'red' });
+      expect(obj.getAll().length).toEqual(1);
+      const rule = obj.getRule(selector);
+      expect(rule.selectorsToString()).toEqual(selector);
+      expect(rule.styleToString()).toEqual(`color:red;`);
     });
   });
 
