@@ -398,7 +398,7 @@ editor.on(`component:remove`, model => console.log('Global hook: component:remov
 ## Components & JS
 
 If you want to know how to create Components with javascript attached (eg. counters, galleries, slideshows, etc.) check the dedicated page
-[Components & JS](Components-&-JS)
+[Components & JS](Components-js.html)
 
 
 
