@@ -40,17 +40,22 @@ module.exports = () => {
      */
     name: 'Modal',
 
+    getConfig() {
+      return c;
+    },
+
     /**
      * Initialize module. Automatically called with a new instance of the editor
      * @param {Object} config Configurations
      * @private
      */
-    init(config) {
-      c = config || {};
-      for (var name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
-      }
+    init(config = {}) {
+      c = {
+        ...defaults,
+        ...config
+      };
 
+      this.em = c.em;
       var ppfx = c.pStylePrefix;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
 
@@ -68,6 +73,11 @@ module.exports = () => {
       this.render().appendTo(el);
     },
 
+    triggerEvent(event) {
+      const { em } = this;
+      em && em.trigger(`modal:${event}`);
+    },
+
     /**
      * Open the modal window
      * @param {Object} [opts={}] Options
@@ -79,6 +89,7 @@ module.exports = () => {
       opts.title && this.setTitle(opts.title);
       opts.content && this.setContent(opts.content);
       modal.show();
+      this.triggerEvent('open');
       return this;
     },
 
@@ -88,6 +99,7 @@ module.exports = () => {
      */
     close() {
       modal.hide();
+      this.triggerEvent('close');
       return this;
     },
 
