@@ -393,7 +393,6 @@ module.exports = () => {
       const selector = sm.add(node.selectors);
       const rule = this.add(selector, node.state);
       rule.setStyle(style, opts);
-      throw rule.toCSS();
       return rule;
     },
 

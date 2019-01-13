@@ -210,7 +210,7 @@ describe('Css Composer', () => {
 
     test('Create a simple class-based rule with setRule', () => {
       const selector = '.test';
-      obj.setRule(selector, { color: 'red' });
+      const result = obj.setRule(selector, { color: 'red' });
       expect(obj.getAll().length).toEqual(1);
       const rule = obj.getRule(selector);
       expect(rule.selectorsToString()).toEqual(selector);

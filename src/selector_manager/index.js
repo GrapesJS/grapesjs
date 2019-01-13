@@ -150,6 +150,17 @@ module.exports = config => {
       return selector;
     },
 
+    getSelector(name, type = Selector.TYPE_CLASS) {
+      if (isId(name)) {
+        name = name.substr(1);
+        type = Selector.TYPE_ID;
+      } else if (isClass(name)) {
+        name = name.substr(1);
+      }
+
+      return selectors.where({ name, type })[0];
+    },
+
     /**
      * Add a new selector to collection if it's not already exists. Class type is a default one
      * @param {String|Array} name Selector/s name
@@ -205,18 +216,27 @@ module.exports = config => {
 
     /**
      * Get the selector by its name
-     * @param {String} name Selector name
+     * @param {String|Array} name Selector name
      * @param {String} tyoe Selector type
-     * @return {Model|null}
+     * @return {Model|Array}
      * @example
-     * var selector = selectorManager.get('selectorName');
+     * const selector = selectorManager.get('selectorName');
+     * // or get an array
+     * const selectors = selectorManager.get(['class1', 'class2']);
      * */
-    get(name, type = Selector.TYPE_CLASS) {
-      if (isId(name)) {
-        name = name.substr(1);
-        type = Selector.TYPE_ID;
+    get(name, type) {
+      if (isArray(name)) {
+        const result = [];
+        const selectors = name
+          .map(item => this.getSelector(item))
+          .filter(item => item);
+        selectors.forEach(
+          item => result.indexOf(item) < 0 && result.push(item)
+        );
+        return result;
+      } else {
+        return this.getSelector(name, type);
       }
-      return selectors.where({ name, type })[0];
     },
 
     /**

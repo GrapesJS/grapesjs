@@ -7,7 +7,7 @@ var e2e = require('./e2e/ClassManager');
 var Editor = require('editor/model/Editor');
 
 describe('SelectorManager', () => {
-  describe('Main', () => {
+  describe.only('Main', () => {
     var obj;
     let em;
 
@@ -80,7 +80,7 @@ describe('SelectorManager', () => {
     });
 
     test('Add multiple selectors', () => {
-      const result = obj.add([
+      const cls = [
         '.test1',
         'test1',
         '.test2',
@@ -89,8 +89,14 @@ describe('SelectorManager', () => {
         'test3',
         'test3',
         '#test3'
-      ]);
+      ];
+      const result = obj.add(cls);
       expect(Array.isArray(result)).toEqual(true);
+      const concat = obj
+        .getAll()
+        .map(item => item.getFullName())
+        .join('');
+      expect(concat).toEqual('.test1.test2#test3.test3');
       expect(obj.getAll().length).toEqual(4);
       expect(
         obj
@@ -116,6 +122,14 @@ describe('SelectorManager', () => {
           .at(3)
           .getFullName()
       ).toEqual('.test3');
+
+      expect(obj.get(cls).length).toEqual(4);
+      expect(
+        obj
+          .get(cls)
+          .map(item => item.getFullName())
+          .join('')
+      ).toEqual(concat);
     });
 
     test('Get selector', () => {
