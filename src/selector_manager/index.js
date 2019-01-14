@@ -203,14 +203,7 @@ module.exports = config => {
         classes = classes.trim().split(' ');
       }
 
-      classes.forEach(name =>
-        added.push(
-          selectors.add({
-            name,
-            type: Selector.TYPE_ID
-          })
-        )
-      );
+      classes.forEach(name => added.push(selectors.add({ name })));
       return added;
     },
 
