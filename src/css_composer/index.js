@@ -304,6 +304,38 @@ module.exports = () => {
       return result;
     },
 
+    setRule(selectors, style, opts = {}) {
+      const { atRuleType, atRuleParams } = opts;
+      const node = em.get('Parser').parserCss.checkNode({
+        selectors,
+        style
+      })[0];
+      const { state, selectorsAdd } = node;
+      const sm = em.get('SelectorManager');
+      const selector = sm.add(node.selectors);
+      const rule = this.add(selector, state, atRuleParams, {
+        selectorsAdd,
+        atRule: atRuleType
+      });
+      rule.setStyle(style, opts);
+      return rule;
+    },
+
+    getRule(selectors, opts = {}) {
+      const sm = em.get('SelectorManager');
+      const node = em.get('Parser').parserCss.checkNode({ selectors })[0];
+      const selector = sm.get(node.selectors);
+      const { state, selectorsAdd } = node;
+      const { atRuleType, atRuleParams } = opts;
+      return (
+        selector &&
+        this.get(selector, state, atRuleParams, {
+          selectorsAdd,
+          atRule: atRuleType
+        })
+      );
+    },
+
     /**
      * Add/update the CSS rule with id selector
      * @param {string} name Id selector name, eg. 'my-id'
@@ -380,27 +412,6 @@ module.exports = () => {
       const media = opts.mediaText || em.getCurrentMedia();
       const selector = em.get('SelectorManager').get(name, Selector.TYPE_CLASS);
       return selector && this.get(selector, state, media);
-    },
-
-    setRule(selectors, style, opts = {}) {
-      const node = em.get('Parser').parserCss.checkNode({
-        selectors,
-        style,
-        atRule: null,
-        params: null
-      })[0];
-      const sm = em.get('SelectorManager');
-      const selector = sm.add(node.selectors);
-      const rule = this.add(selector, node.state);
-      rule.setStyle(style, opts);
-      return rule;
-    },
-
-    getRule(selectors, opts = {}) {
-      const sm = em.get('SelectorManager');
-      const node = em.get('Parser').parserCss.checkNode({ selectors })[0];
-      const selector = sm.get(node.selectors);
-      return selector && this.get(selector, node.state);
     },
 
     /**
