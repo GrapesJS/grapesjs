@@ -7,7 +7,7 @@ var e2e = require('./e2e/ClassManager');
 var Editor = require('editor/model/Editor');
 
 describe('SelectorManager', () => {
-  describe.only('Main', () => {
+  describe('Main', () => {
     var obj;
     let em;
 

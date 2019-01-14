@@ -21,10 +21,8 @@
  * * [get](#get)
  * * [getAll](#getall)
  * * [clear](#clear)
- * * [setIdRule](#setidrule)
- * * [getIdRule](#getidrule)
- * * [setClassRule](#setclassrule)
- * * [getClassRule](#getclassrule)
+ * * [setRule](#setrule)
+ * * [getRule](#getrule)
  *
  * @module CssComposer
  */
@@ -304,6 +302,28 @@ module.exports = () => {
       return result;
     },
 
+    /**
+     * Add/update the CSS rule with a generic selector
+     * @param {string} selectors Selector, eg. '.myclass'
+     * @param {Object} style  Style properties and values
+     * @param {Object} [opts={}]  Additional properties
+     * @param {String} [opts.atRuleType='']  At-rule type, eg. 'media'
+     * @param {String} [opts.atRuleParams='']  At-rule parameters, eg. '(min-width: 500px)'
+     * @return {CssRule} The new/updated rule
+     * @example
+     * // Simple class-based rule
+     * const rule = cc.setRule('.class1.class2', { color: 'red' });
+     * console.log(rule.toCSS()) // output: .class1.class2 { color: red }
+     * // With state and other mixed selector
+     * const rule = cc.setRule('.class1.class2:hover, div#myid', { color: 'red' });
+     * // output: .class1.class2:hover, div#myid { color: red }
+     * // With media
+     * const rule = cc.setRule('.class1:hover', { color: 'red' }, {
+     *  atRuleType: 'media',
+     *  atRuleParams: '(min-width: 500px)',
+     * });
+     * // output: @media (min-width: 500px) { .class1:hover { color: red } }
+     */
     setRule(selectors, style, opts = {}) {
       const { atRuleType, atRuleParams } = opts;
       const node = em.get('Parser').parserCss.checkNode({
@@ -321,6 +341,20 @@ module.exports = () => {
       return rule;
     },
 
+    /**
+     * Get the CSS rule by a generic selector
+     * @param {string} selectors Selector, eg. '.myclass:hover'
+     * @param {String} [opts.atRuleType='']  At-rule type, eg. 'media'
+     * @param {String} [opts.atRuleParams='']  At-rule parameters, eg. '(min-width: 500px)'
+     * @return {CssRule}
+     * @example
+     * const rule = cc.getRule('.myclass1:hover');
+     * const rule2 = cc.getRule('.myclass1:hover, div#myid');
+     * const rule3 = cc.getRule('.myclass1', {
+     *  atRuleType: 'media',
+     *  atRuleParams: '(min-width: 500px)',
+     * });
+     */
     getRule(selectors, opts = {}) {
       const sm = em.get('SelectorManager');
       const node = em.get('Parser').parserCss.checkNode({ selectors })[0];
@@ -342,6 +376,7 @@ module.exports = () => {
      * @param {Object} style  Style properties and values
      * @param {Object} [opts={}]  Custom options, like `state` and `mediaText`
      * @return {CssRule} The new/updated rule
+     * @private
      * @example
      * const rule = cc.setIdRule('myid', { color: 'red' });
      * const ruleHover = cc.setIdRule('myid', { color: 'blue' }, { state: 'hover' });
@@ -364,6 +399,7 @@ module.exports = () => {
      * @param {string} name Id selector name, eg. 'my-id'
      * @param  {Object} [opts={}]  Custom options, like `state` and `mediaText`
      * @return {CssRule}
+     * @private
      * @example
      * const rule = cc.getIdRule('myid');
      * const ruleHover = cc.setIdRule('myid', { state: 'hover' });
@@ -381,6 +417,7 @@ module.exports = () => {
      * @param {Object} style  Style properties and values
      * @param {Object} [opts={}]  Custom options, like `state` and `mediaText`
      * @return {CssRule} The new/updated rule
+     * @private
      * @example
      * const rule = cc.setClassRule('myclass', { color: 'red' });
      * const ruleHover = cc.setClassRule('myclass', { color: 'blue' }, { state: 'hover' });
@@ -403,6 +440,7 @@ module.exports = () => {
      * @param {string} name Class selector name, eg. 'my-class'
      * @param  {Object} [opts={}]  Custom options, like `state` and `mediaText`
      * @return {CssRule}
+     * @private
      * @example
      * const rule = cc.getClassRule('myclass');
      * const ruleHover = cc.getClassRule('myclass', { state: 'hover' });
