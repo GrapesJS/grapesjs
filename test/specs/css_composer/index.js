@@ -207,6 +207,120 @@ describe('Css Composer', () => {
       const rule = obj.getClassRule(name, { state });
       expect(rule.selectorsToString()).toEqual(`.${name}:${state}`);
     });
+
+    test('Create a simple class-based rule with setRule', () => {
+      const selector = '.test';
+      const result = obj.setRule(selector, { color: 'red' });
+      expect(obj.getAll().length).toEqual(1);
+      const rule = obj.getRule(selector);
+      expect(rule.selectorsToString()).toEqual(selector);
+      expect(rule.styleToString()).toEqual(`color:red;`);
+    });
+
+    test('Avoid creating multiple rules with the same selector', () => {
+      const selector = '.test';
+      obj.setRule(selector, { color: 'red' });
+      obj.setRule(selector, { color: 'blue' });
+      expect(obj.getAll().length).toEqual(1);
+      const rule = obj.getRule(selector);
+      expect(rule.selectorsToString()).toEqual(selector);
+      expect(rule.styleToString()).toEqual(`color:blue;`);
+    });
+
+    test('Create a class-based rule with setRule', () => {
+      const selector = '.test.test2';
+      const result = obj.setRule(selector, { color: 'red' });
+      expect(obj.getAll().length).toEqual(1);
+      const rule = obj.getRule(selector);
+      expect(rule.selectorsToString()).toEqual(selector);
+      expect(rule.styleToString()).toEqual(`color:red;`);
+    });
+
+    test('Create a class-based rule with a state, by using setRule', () => {
+      const selector = '.test.test2:hover';
+      const result = obj.setRule(selector, { color: 'red' });
+      expect(obj.getAll().length).toEqual(1);
+      const rule = obj.getRule(selector);
+      expect(rule.selectorsToString()).toEqual(selector);
+      expect(rule.styleToString()).toEqual(`color:red;`);
+    });
+
+    test('Create a rule with class-based and mixed selectors', () => {
+      const selector = '.test.test2:hover, #test .selector';
+      obj.setRule(selector, { color: 'red' });
+      expect(obj.getAll().length).toEqual(1);
+      const rule = obj.getRule(selector);
+      expect(rule.selectorsToString()).toEqual(selector);
+      expect(rule.styleToString()).toEqual(`color:red;`);
+    });
+
+    test('Create a rule with only mixed selectors', () => {
+      const selector = '#test1 .class1, .class2 > #id2';
+      obj.setRule(selector, { color: 'red' });
+      expect(obj.getAll().length).toEqual(1);
+      const rule = obj.getRule(selector);
+      expect(rule.get('selectors').length).toEqual(0);
+      expect(rule.selectorsToString()).toEqual(selector);
+      expect(rule.styleToString()).toEqual(`color:red;`);
+    });
+
+    test('Create a rule with atRule', () => {
+      const toTest = [
+        {
+          selector: '.class1:hover',
+          style: { color: 'blue' },
+          opts: {
+            atRuleType: 'media',
+            atRuleParams: 'screen and (min-width: 480px)'
+          }
+        },
+        {
+          selector: '.class1:hover',
+          style: { color: 'red' },
+          opts: {
+            atRuleType: 'media',
+            atRuleParams: 'screen and (min-width: 480px)'
+          }
+        }
+      ];
+      toTest.forEach(test => {
+        const { selector, style, opts } = test;
+        const result = obj.setRule(selector, style, opts);
+        expect(obj.getAll().length).toEqual(1);
+        const rule = obj.getRule(selector, opts);
+        expect(rule.getAtRule()).toEqual(
+          `@${opts.atRuleType} ${opts.atRuleParams}`
+        );
+        expect(rule.selectorsToString()).toEqual(selector);
+        expect(rule.getStyle()).toEqual(style);
+      });
+    });
+
+    test('Create different rules by using setRule', () => {
+      const toTest = [
+        { selector: '.class1:hover', style: { color: '#111' } },
+        { selector: '.class1.class2', style: { color: '#222' } },
+        { selector: '.class1, .class2 .class3', style: { color: 'red' } },
+        { selector: '.class1, .class2 .class4', style: { color: 'green' } },
+        { selector: '.class4, .class1 .class2', style: { color: 'blue' } },
+        {
+          selector: '.class4, .class1 .class2',
+          style: { color: 'blue' },
+          opt: { atRuleType: 'media', atRuleParams: '(min-width: 480px)' }
+        }
+      ];
+      toTest.forEach(test => {
+        const { selector, style, opt = {} } = test;
+        obj.setRule(selector, style, opt);
+        const rule = obj.getRule(selector, opt);
+        const atRule = `${opt.atRuleType || ''} ${opt.atRuleParams ||
+          ''}`.trim();
+        expect(rule.getAtRule()).toEqual(atRule ? `@${atRule}` : '');
+        expect(rule.selectorsToString()).toEqual(selector);
+        expect(rule.getStyle()).toEqual(style);
+      });
+      expect(obj.getAll().length).toEqual(toTest.length);
+    });
   });
 
   Models.run();

@@ -48,6 +48,8 @@ module.exports = () => {
       pHtml = new parserHtml(conf);
       pCss = new parserCss(conf);
       this.em = conf.em;
+      this.parserCss = pCss;
+      this.parserHtml = pHtml;
       return this;
     },
 
