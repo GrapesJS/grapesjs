@@ -207,6 +207,7 @@ module.exports = () => {
      * @param  {Array} blocks Blocks to render, without the argument will render all global blocks
      * @param  {Object} [opts={}] Options
      * @param  {Boolean} [opts.external] Render blocks in a new container (HTMLElement will be returned)
+     * @param  {Boolean} [opts.ignoreCategories] Render blocks without categories
      * @return {HTMLElement} Rendered element
      * @example
      * // Render all blocks (inside the global collection)
@@ -238,7 +239,10 @@ module.exports = () => {
             collection: new Blocks(toRender),
             categories
           },
-          c
+          {
+            ...c,
+            ...opts
+          }
         ).render().el;
       }
 
@@ -247,6 +251,7 @@ module.exports = () => {
         blocksView.rendered = 1;
       }
 
+      blocksView.updateConfig(opts);
       blocksView.collection.reset(toRender);
       return this.getContainer();
     }
