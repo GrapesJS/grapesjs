@@ -527,21 +527,25 @@ module.exports = {
    * @param {Object} pos
    */
   updateToolbarPos(el, elPos) {
-    const frameOffset = this.canvas.getCanvasView().getFrameOffset();
+    const { canvas } = this;
     const unit = 'px';
-    const toolbarEl = this.canvas.getToolbarEl();
+    const toolbarEl = canvas.getToolbarEl();
     const toolbarStyle = toolbarEl.style;
     toolbarStyle.opacity = 0;
-    const pos = this.canvas.getTargetToElementDim(toolbarEl, el, {
+    const pos = canvas.getTargetToElementDim(toolbarEl, el, {
       elPos,
       event: 'toolbarPosUpdate'
     });
 
     if (pos) {
-      const isElementBiggerThanCanvas =
-        pos.elementHeight + pos.targetHeight >= frameOffset.height;
+      const frameOffset = canvas.getCanvasView().getFrameOffset();
 
-      if (pos.top <= pos.canvasTop && !isElementBiggerThanCanvas) {
+      // Scroll with the window if the top edge is reached and the
+      // element is bigger than the canvas
+      if (
+        pos.top <= pos.canvasTop &&
+        !(pos.elementHeight + pos.targetHeight >= frameOffset.height)
+      ) {
         pos.top = pos.elementTop + pos.elementHeight;
       }
 
