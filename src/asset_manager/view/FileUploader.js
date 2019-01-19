@@ -104,9 +104,9 @@ module.exports = Backbone.View.extend(
      * */
     uploadFile(e, clb) {
       const files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
+      const { config } = this;
       const body = new FormData();
-      const config = this.config;
-      const params = config.params;
+      const { params, customFetch } = config;
 
       for (let param in params) {
         body.append(param, params[param]);
@@ -131,18 +131,20 @@ module.exports = Backbone.View.extend(
 
       if (url) {
         this.onUploadStart();
-        return fetch(url, {
+        const fetchOpts = {
           method: 'post',
           credentials: config.credentials || 'include',
           headers,
           body
-        })
-          .then(
-            res =>
+        };
+        const fetchResult = customFetch
+          ? customFetch(url, fetchOpts)
+          : fetch(url, fetchOpts).then(res =>
               ((res.status / 200) | 0) == 1
                 ? res.text()
                 : res.text().then(text => Promise.reject(text))
-          )
+            );
+        return fetchResult
           .then(text => this.onUploadResponse(text, clb))
           .catch(err => this.onUploadError(err));
       }
