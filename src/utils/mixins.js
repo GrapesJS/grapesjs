@@ -126,7 +126,8 @@ const getModel = (el, $) => {
  * @param  {Event} ev
  * @return {Event}
  */
-const getPointerEvent = (ev) => ev.touches && ev.touches[0] ? ev.touches[0] : ev;
+const getPointerEvent = ev =>
+  ev.touches && ev.touches[0] ? ev.touches[0] : ev;
 
 export {
   on,
@@ -140,5 +141,5 @@ export {
   shallowDiff,
   normalizeFloat,
   getPointerEvent,
-  getUnitFromValue,
+  getUnitFromValue
 };

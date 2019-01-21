@@ -26,7 +26,19 @@ const Property = require('backbone').Model.extend(
       // Use case:
       // you can add all SVG CSS properties with toRequire as true
       // and then require them on SVG Components
-      toRequire: 0
+      toRequire: 0,
+
+      // Specifies dependency on other properties of the selected object.
+      // Property is shown only when all conditions are matched.
+      //
+      // example: { display: ['flex', 'block'], position: ['absolute'] };
+      //          in this case the property is only shown when display is
+      //          of value 'flex' or 'block' AND position is 'absolute'
+      requires: null,
+
+      // Specifies dependency on properties of the parent of the selected object.
+      // Property is shown only when all conditions are matched.
+      requiresParent: null
     },
 
     initialize(props = {}, opts = {}) {
