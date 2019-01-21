@@ -350,7 +350,7 @@ module.exports = {
    * @private
    */
   initResize(elem) {
-    const em = this.em;
+    const { em, canvas } = this;
     const editor = em ? em.get('Editor') : '';
     const config = em ? em.get('Config') : '';
     const pfx = config.stylePrefix || '';
@@ -444,7 +444,13 @@ module.exports = {
           const style = modelToStyle.getStyle();
 
           if (!onlyHeight) {
-            style[keyWidth] = autoWidth ? 'auto' : `${rect.w}${unitWidth}`;
+            const padding = 10;
+            const frameOffset = canvas.getCanvasView().getFrameOffset();
+            const width =
+              rect.w < frameOffset.width - padding
+                ? rect.w
+                : frameOffset.width - padding;
+            style[keyWidth] = autoWidth ? 'auto' : `${width}${unitWidth}`;
           }
 
           if (!onlyWidth) {
