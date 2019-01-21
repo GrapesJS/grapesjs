@@ -527,15 +527,33 @@ module.exports = {
    * @param {Object} pos
    */
   updateToolbarPos(el, elPos) {
-    var unit = 'px';
-    var toolbarEl = this.canvas.getToolbarEl();
-    var toolbarStyle = toolbarEl.style;
+    const { canvas } = this;
+    const unit = 'px';
+    const toolbarEl = canvas.getToolbarEl();
+    const toolbarStyle = toolbarEl.style;
     toolbarStyle.opacity = 0;
-    var pos = this.canvas.getTargetToElementDim(toolbarEl, el, {
+    const pos = canvas.getTargetToElementDim(toolbarEl, el, {
       elPos,
       event: 'toolbarPosUpdate'
     });
+
     if (pos) {
+      const frameOffset = canvas.getCanvasView().getFrameOffset();
+
+      // Scroll with the window if the top edge is reached and the
+      // element is bigger than the canvas
+      if (
+        pos.top <= pos.canvasTop &&
+        !(pos.elementHeight + pos.targetHeight >= frameOffset.height)
+      ) {
+        pos.top = pos.elementTop + pos.elementHeight;
+      }
+
+      // Check if not outside of the canvas
+      if (pos.left < pos.canvasLeft) {
+        pos.left = pos.canvasLeft;
+      }
+
       var leftPos = pos.left + pos.elementWidth - pos.targetWidth;
       toolbarStyle.top = pos.top + unit;
       toolbarStyle.left = (leftPos < 0 ? 0 : leftPos) + unit;

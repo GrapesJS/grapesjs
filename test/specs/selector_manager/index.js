@@ -60,6 +60,13 @@ describe('SelectorManager', () => {
       expect(sel.get('label')).toEqual(name);
     });
 
+    test('Check name property by adding as class', () => {
+      var name = 'test';
+      var sel = obj.add(`.${name}`);
+      expect(sel.get('name')).toEqual(name);
+      expect(sel.get('label')).toEqual(name);
+    });
+
     test('Add 2 selectors', () => {
       obj.add('test');
       obj.add('test2');
@@ -70,6 +77,59 @@ describe('SelectorManager', () => {
       obj.add('test');
       obj.add('test');
       expect(obj.getAll().length).toEqual(1);
+    });
+
+    test('Add multiple selectors', () => {
+      const cls = [
+        '.test1',
+        'test1',
+        '.test2',
+        '.test2',
+        '#test3',
+        'test3',
+        'test3',
+        '#test3'
+      ];
+      const result = obj.add(cls);
+      expect(Array.isArray(result)).toEqual(true);
+      const concat = obj
+        .getAll()
+        .map(item => item.getFullName())
+        .join('');
+      expect(concat).toEqual('.test1.test2#test3.test3');
+      expect(obj.getAll().length).toEqual(4);
+      expect(
+        obj
+          .getAll()
+          .at(0)
+          .getFullName()
+      ).toEqual('.test1');
+      expect(
+        obj
+          .getAll()
+          .at(1)
+          .getFullName()
+      ).toEqual('.test2');
+      expect(
+        obj
+          .getAll()
+          .at(2)
+          .getFullName()
+      ).toEqual('#test3');
+      expect(
+        obj
+          .getAll()
+          .at(3)
+          .getFullName()
+      ).toEqual('.test3');
+
+      expect(obj.get(cls).length).toEqual(4);
+      expect(
+        obj
+          .get(cls)
+          .map(item => item.getFullName())
+          .join('')
+      ).toEqual(concat);
     });
 
     test('Get selector', () => {

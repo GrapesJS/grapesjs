@@ -91,6 +91,8 @@ module.exports = () => ({
         case 'transition-timing-function':
         case 'cursor':
         case 'overflow':
+        case 'overflow-x':
+        case 'overflow-y':
           obj.type = 'select';
           break;
         case 'top':
@@ -299,6 +301,8 @@ module.exports = () => ({
           obj.defaults = 'ease';
           break;
         case 'overflow':
+        case 'overflow-x':
+        case 'overflow-y':
           obj.defaults = 'visible';
           break;
       }
@@ -668,6 +672,8 @@ module.exports = () => ({
           ];
           break;
         case 'overflow':
+        case 'overflow-x':
+        case 'overflow-y':
           obj.list = [
             { value: 'visible' },
             { value: 'hidden' },

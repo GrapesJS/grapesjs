@@ -1155,6 +1155,36 @@ module.exports = {
         };
         expect(obj.build('overflow')).toEqual([res]);
       });
+
+      test('Build overflow-x', () => {
+        var res = {
+          type: 'select',
+          property: 'overflow-x',
+          defaults: 'visible',
+          list: [
+            { value: 'visible' },
+            { value: 'hidden' },
+            { value: 'scroll' },
+            { value: 'auto' }
+          ]
+        };
+        expect(obj.build('overflow-x')).toEqual([res]);
+      });
+
+      test('Build overflow-y', () => {
+        var res = {
+          type: 'select',
+          property: 'overflow-y',
+          defaults: 'visible',
+          list: [
+            { value: 'visible' },
+            { value: 'hidden' },
+            { value: 'scroll' },
+            { value: 'auto' }
+          ]
+        };
+        expect(obj.build('overflow-y')).toEqual([res]);
+      });
     });
   }
 };

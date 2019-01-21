@@ -96,6 +96,51 @@ module.exports = {
         expect(callResult.called).toEqual(true);
         expect(callResult.firstCall.args[0]).toEqual(endpointLoad);
       });
+
+      test("Load data with credentials option as 'include' by default", () => {
+        obj.load(['item1', 'item2']);
+        const callResult = obj.fetch;
+        expect(callResult.called).toEqual(true);
+        expect(callResult.firstCall.args[1]).toMatchObject({
+          credentials: 'include'
+        });
+      });
+
+      test("Store data with credentials option as 'include' by default", () => {
+        obj.store(data);
+        const callResult = obj.fetch;
+        expect(callResult.called).toEqual(true);
+        expect(callResult.firstCall.args[1]).toMatchObject({
+          credentials: 'include'
+        });
+      });
+
+      test('Store data with credentials option as false ', () => {
+        obj = new RemoteStorage({ ...storageOptions, credentials: false });
+        sinon
+          .stub(obj, 'fetch')
+          .returns(Promise.resolve(mockResponse({ data: 1 })));
+
+        obj.store(data);
+        const callResult = obj.fetch;
+        expect(callResult.called).toEqual(true);
+        expect(callResult.firstCall.args[1]).toMatchObject({
+          credentials: false
+        });
+      });
+
+      test('Load data with credentials option as false', () => {
+        obj = new RemoteStorage({ ...storageOptions, credentials: false });
+        sinon
+          .stub(obj, 'fetch')
+          .returns(Promise.resolve(mockResponse({ data: 1 })));
+        obj.load(['item1', 'item2']);
+        const callResult = obj.fetch;
+        expect(callResult.called).toEqual(true);
+        expect(callResult.firstCall.args[1]).toMatchObject({
+          credentials: false
+        });
+      });
     });
   }
 };

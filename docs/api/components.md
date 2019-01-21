@@ -24,7 +24,10 @@ const domComponents = editor.DomComponents;
 -   [clear][5]
 -   [load][6]
 -   [store][7]
--   [render][8]
+-   [addType][8]
+-   [getType][9]
+-   [getTypes][10]
+-   [render][11]
 
 ## load
 
@@ -34,9 +37,9 @@ The fetched data will be added to the collection
 
 ### Parameters
 
--   `data` **[Object][9]** Object of data to load (optional, default `''`)
+-   `data` **[Object][12]** Object of data to load (optional, default `''`)
 
-Returns **[Object][9]** Loaded data
+Returns **[Object][12]** Loaded data
 
 ## store
 
@@ -44,9 +47,9 @@ Store components on the selected storage
 
 ### Parameters
 
--   `noStore` **[Boolean][10]** If true, won't store
+-   `noStore` **[Boolean][13]** If true, won't store
 
-Returns **[Object][9]** Data to store
+Returns **[Object][12]** Data to store
 
 ## getWrapper
 
@@ -104,18 +107,18 @@ as 'domComponents.getComponents().add(...)'
 
 ### Parameters
 
--   `component` **([Object][9] | Component | [Array][11]&lt;[Object][9]>)** Component/s to add
-    -   `component.tagName` **[string][12]** Tag name (optional, default `'div'`)
-    -   `component.type` **[string][12]** Type of the component. Available: ''(default), 'text', 'image' (optional, default `''`)
-    -   `component.removable` **[boolean][10]** If component is removable (optional, default `true`)
-    -   `component.draggable` **[boolean][10]** If is possible to move the component around the structure (optional, default `true`)
-    -   `component.droppable` **[boolean][10]** If is possible to drop inside other components (optional, default `true`)
-    -   `component.badgable` **[boolean][10]** If the badge is visible when the component is selected (optional, default `true`)
-    -   `component.stylable` **[boolean][10]** If is possible to style component (optional, default `true`)
-    -   `component.copyable` **[boolean][10]** If is possible to copy&paste the component (optional, default `true`)
-    -   `component.content` **[string][12]** String inside component (optional, default `''`)
-    -   `component.style` **[Object][9]** Style object (optional, default `{}`)
-    -   `component.attributes` **[Object][9]** Attribute object (optional, default `{}`)
+-   `component` **([Object][12] | Component | [Array][14]&lt;[Object][12]>)** Component/s to add
+    -   `component.tagName` **[string][15]** Tag name (optional, default `'div'`)
+    -   `component.type` **[string][15]** Type of the component. Available: ''(default), 'text', 'image' (optional, default `''`)
+    -   `component.removable` **[boolean][13]** If component is removable (optional, default `true`)
+    -   `component.draggable` **[boolean][13]** If is possible to move the component around the structure (optional, default `true`)
+    -   `component.droppable` **[boolean][13]** If is possible to drop inside other components (optional, default `true`)
+    -   `component.badgable` **[boolean][13]** If the badge is visible when the component is selected (optional, default `true`)
+    -   `component.stylable` **[boolean][13]** If is possible to style component (optional, default `true`)
+    -   `component.copyable` **[boolean][13]** If is possible to copy&paste the component (optional, default `true`)
+    -   `component.content` **[string][15]** String inside component (optional, default `''`)
+    -   `component.style` **[Object][12]** Style object (optional, default `{}`)
+    -   `component.attributes` **[Object][12]** Attribute object (optional, default `{}`)
 
 ### Examples
 
@@ -132,7 +135,7 @@ var comp1 = domComponents.addComponent({
 });
 ```
 
-Returns **(Component | [Array][11]&lt;Component>)** Component/s added
+Returns **(Component | [Array][14]&lt;Component>)** Component/s added
 
 ## render
 
@@ -141,13 +144,42 @@ Once the wrapper is rendered, and it's what happens when you init the editor,
 the all new components will be added automatically and property changes are all
 updated immediately
 
-Returns **[HTMLElement][13]** 
+Returns **[HTMLElement][16]** 
 
 ## clear
 
 Remove all components
 
 Returns **this** 
+
+## addType
+
+Add new component type.
+Read more about this in [Define New Component][17]
+
+### Parameters
+
+-   `type` **[string][15]** Component ID
+-   `methods` **[Object][12]** Component methods
+
+Returns **this** 
+
+## getType
+
+Get component type.
+Read more about this in [Define New Component][17]
+
+### Parameters
+
+-   `type` **[string][15]** Component ID
+
+Returns **[Object][12]** Component type defintion, eg. `{ model: ..., view: ... }`
+
+## getTypes
+
+Return the array of all types
+
+Returns **[Array][14]** 
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/dom_components/config/config.js
 
@@ -163,14 +195,22 @@ Returns **this**
 
 [7]: #store
 
-[8]: #render
+[8]: #addtype
 
-[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[9]: #gettype
 
-[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[10]: #gettypes
 
-[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[11]: #render
 
-[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[13]: https://developer.mozilla.org/docs/Web/HTML/Element
+[13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+
+[14]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+
+[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[16]: https://developer.mozilla.org/docs/Web/HTML/Element
+
+[17]: https://grapesjs.com/docs/modules/Components.html#define-new-component

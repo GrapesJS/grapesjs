@@ -563,6 +563,7 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   refreshCanvas() {
+    this.set('canvasOffset', null);
     this.set('canvasOffset', this.get('Canvas').getOffset());
   },
 
