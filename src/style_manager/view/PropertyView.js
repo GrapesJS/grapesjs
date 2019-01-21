@@ -456,14 +456,10 @@ module.exports = Backbone.View.extend({
 
     // Check if the property is available based on parent's property values
     if (requiresParent) {
-      if (
-        selected &&
-        selected.view &&
-        selected.view.$el &&
-        selected.view.$el[0] &&
-        selected.view.$el[0].parentNode
-      ) {
-        const styles = window.getComputedStyle(selected.view.$el[0].parentNode);
+      const parent = selected && selected.parent();
+      const parentEl = parent && parent.getEl();
+      if (parentEl) {
+        const styles = window.getComputedStyle(parentEl);
         each(requiresParent, (values, property) => {
           stylable =
             stylable && styles[property] && includes(values, styles[property]);
