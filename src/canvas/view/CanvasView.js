@@ -5,7 +5,7 @@ const $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
   events: {
-    mousewheel: 'onMouseWheel'
+    wheel: 'onWheel'
   },
 
   initialize(o) {
@@ -23,14 +23,14 @@ module.exports = Backbone.View.extend({
     });
   },
 
-  onMouseWheel(ev) {
-    ev.preventDefault();
-
+  onWheel(ev) {
     if (ev.ctrlKey || ev.metaKey) {
+      ev.preventDefault();
+      ev._parentEvent && ev._parentEvent.preventDefault();
       const { em } = this;
       const delta = Math.max(-1, Math.min(1, ev.wheelDelta || -ev.detail));
       const zoom = em.get('zoom');
-      em.set('zoom', zoom + delta);
+      em.set('zoom', zoom + delta * 2);
     }
   },
 
@@ -215,6 +215,7 @@ module.exports = Backbone.View.extend({
           oEvent.initEvent(e.type, true, true);
         }
         oEvent.keyCodeVal = e.keyCode;
+        oEvent._parentEvent = e;
         ['keyCode', 'which'].forEach(prop => {
           Object.defineProperty(oEvent, prop, {
             get() {
@@ -226,12 +227,12 @@ module.exports = Backbone.View.extend({
       };
 
       [
-        { event: 'keydown keyup', class: 'KeyboardEvent' }
-        //{ event: 'mousedown mousemove mouseup', class: 'MouseEvent' },
+        { event: 'keydown keyup', class: 'KeyboardEvent' },
+        { event: 'wheel', class: 'WheelEvent' }
       ].forEach(obj =>
         obj.event.split(' ').forEach(event => {
           fdoc.addEventListener(event, e =>
-            doc.dispatchEvent(createCustomEvent(e, obj.class))
+            this.el.dispatchEvent(createCustomEvent(e, obj.class))
           );
         })
       );
