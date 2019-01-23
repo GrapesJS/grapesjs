@@ -62,13 +62,14 @@ module.exports = () => {
      * @param {Object} config Configurations
      * @private
      */
-    init(config) {
-      c = config || {};
-      for (var name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
-      }
+    init(config = {}) {
+      c = {
+        ...defaults,
+        ...config
+      };
 
-      var ppfx = c.pStylePrefix;
+      this.em = c.em;
+      const ppfx = c.pStylePrefix;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
 
       canvas = new Canvas(config);
@@ -463,7 +464,7 @@ module.exports = () => {
 
     updateClientY(ev) {
       ev.preventDefault();
-      this.lastClientY = getPointerEvent(ev).clientY;
+      this.lastClientY = getPointerEvent(ev).clientY * this.em.getZoomDecimal();
     },
 
     /**
@@ -503,7 +504,7 @@ module.exports = () => {
     },
 
     getScrollListeners() {
-      return [this.getFrameEl().contentWindow, this.getElement()];
+      return [this.getFrameEl().contentWindow];
     },
 
     postRender() {

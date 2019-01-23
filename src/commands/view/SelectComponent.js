@@ -266,7 +266,6 @@ module.exports = {
    * @private
    * */
   updateBadge(el, pos) {
-    const { em } = this;
     var $el = $(el);
     var canvas = this.canvas;
     var config = canvas.getConfig();
@@ -281,7 +280,7 @@ module.exports = {
     var bStyle = badge.style;
     var u = 'px';
     bStyle.display = 'block';
-    var canvasPos = canvas.getCanvasView().getPosition();
+    var canvasPos = this.getCanvasPosition();
 
     if (canvasPos) {
       const canvasTop = canvasPos.top;
