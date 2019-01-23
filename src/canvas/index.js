@@ -291,6 +291,16 @@ module.exports = () => {
     },
 
     /**
+     * Returns element's offsets like margins and paddings
+     * @param {HTMLElement} el
+     * @return {Object}
+     * @private
+     */
+    getElementOffsets(el) {
+      return CanvasView.getElementOffsets(el);
+    },
+
+    /**
      * This method comes handy when you need to attach something like toolbars
      * to elements inside the canvas, dealing with all relative position,
      * offsets, etc. and returning as result the object with positions which are
@@ -380,22 +390,17 @@ module.exports = () => {
 
     /**
      * X and Y mouse position relative to the canvas
-     * @param {Event} e
+     * @param {Event} ev
      * @return {Object}
      * @private
      */
-    getMouseRelativeCanvas(e, options) {
-      var opts = options || {};
-      var frame = this.getFrameEl();
-      var body = this.getBody();
-      var addTop = frame.offsetTop || 0;
-      var addLeft = frame.offsetLeft || 0;
-      var yOffset = body.scrollTop || 0;
-      var xOffset = body.scrollLeft || 0;
+    getMouseRelativeCanvas(ev) {
+      const zoom = this.em.getZoomDecimal();
+      const { top, left } = CanvasView.getPosition();
 
       return {
-        y: e.clientY + addTop + yOffset,
-        x: e.clientX + addLeft + xOffset
+        y: ev.clientY * zoom + top,
+        x: ev.clientX * zoom + left
       };
     },
 

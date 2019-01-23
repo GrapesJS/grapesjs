@@ -22,7 +22,8 @@ module.exports = {
         wmargin: 1,
         nested: 1,
         em: this.editorModel,
-        canvasRelative: 1
+        canvasRelative: 1,
+        scale: () => this.em.getZoomDecimal()
       });
     trg && this.sorter.startSort(trg);
   },
@@ -63,8 +64,8 @@ module.exports = {
         this.cDim.length === 0
           ? $(this.outsideElem)
           : !this.posIsLastEl && this.cDim[this.posIndex]
-            ? $(this.cDim[this.posIndex][5]).parent()
-            : $(this.outsideElem);
+          ? $(this.cDim[this.posIndex][5]).parent()
+          : $(this.outsideElem);
       this.posTargetModel = this.posTargetEl.data('model');
       this.posTargetCollection = this.posTargetEl.data('model-comp');
     }

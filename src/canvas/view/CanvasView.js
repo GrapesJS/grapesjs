@@ -309,6 +309,31 @@ module.exports = Backbone.View.extend({
   },
 
   /**
+   * Returns element's offsets like margins and paddings
+   * @param {HTMLElement} el
+   * @return {Object}
+   * @private
+   */
+  getElementOffsets(el) {
+    const result = {};
+    const styles = window.getComputedStyle(el);
+    [
+      'marginTop',
+      'marginRight',
+      'marginBottom',
+      'marginLeft',
+      'paddingTop',
+      'paddingRight',
+      'paddingBottom',
+      'paddingLeft'
+    ].forEach(offset => {
+      result[offset] = parseFloat(styles[offset]) * this.getZoom();
+    });
+
+    return result;
+  },
+
+  /**
    * Returns position data of the canvas element
    * @return {Object} obj Position object
    * @private
@@ -320,6 +345,7 @@ module.exports = Backbone.View.extend({
     const zoom = this.getZoom();
     const fo = this.getFrameOffset();
     const co = this.getCanvasOffset();
+
     return {
       top: fo.top + bEl.scrollTop * zoom - co.top,
       left: fo.left + bEl.scrollLeft * zoom - co.left
