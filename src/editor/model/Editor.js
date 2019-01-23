@@ -609,6 +609,10 @@ module.exports = Backbone.Model.extend({
     return this.get('changesCount');
   },
 
+  getZoomDecimal() {
+    return this.get('zoom') / 100;
+  },
+
   /**
    * Destroy editor
    */
