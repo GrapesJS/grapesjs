@@ -4,6 +4,10 @@ const FrameView = require('./FrameView');
 const $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
+  events: {
+    mousewheel: 'onMouseWheel'
+  },
+
   initialize(o) {
     _.bindAll(this, 'renderBody', 'onFrameScroll', 'clearOff');
     on(window, 'scroll resize', this.clearOff);
@@ -12,10 +16,32 @@ module.exports = Backbone.View.extend({
     this.ppfx = this.config.pStylePrefix || '';
     this.className = this.config.stylePrefix + 'canvas';
     this.listenTo(this.em, 'change:canvasOffset', this.clearOff);
+    this.listenTo(this.em, 'change:zoom', this.onZoomChange);
     this.frame = new FrameView({
       model: this.model.get('frame'),
       config: this.config
     });
+  },
+
+  onMouseWheel(ev) {
+    ev.preventDefault();
+
+    if (ev.ctrlKey || ev.metaKey) {
+      const { em } = this;
+      const delta = Math.max(-1, Math.min(1, ev.wheelDelta || -ev.detail));
+      const zoom = em.get('zoom');
+      em.set('zoom', zoom + delta);
+    }
+  },
+
+  onZoomChange() {
+    this.frame.el.style.transform = `scale(${this.getZoom()})`;
+    this.clearOff();
+    this.onFrameScroll();
+  },
+
+  getZoom() {
+    return this.em.get('zoom') / 100;
   },
 
   /**
@@ -43,8 +69,9 @@ module.exports = Backbone.View.extend({
   onFrameScroll() {
     var u = 'px';
     var body = this.frame.el.contentDocument.body;
-    this.toolsEl.style.top = '-' + body.scrollTop + u;
-    this.toolsEl.style.left = '-' + body.scrollLeft + u;
+    const zoom = this.getZoom();
+    this.toolsEl.style.top = '-' + body.scrollTop * zoom + u;
+    this.toolsEl.style.left = '-' + body.scrollLeft * zoom + u;
     this.em.trigger('canvasScroll');
   },
 
@@ -263,6 +290,7 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getElementPos(el, opts) {
+    const zoom = this.getZoom();
     var opt = opts || {};
     var frmOff = this.getFrameOffset();
     var cvsOff = this.getCanvasOffset();
@@ -271,11 +299,10 @@ module.exports = Backbone.View.extend({
     var frmTop = opt.avoidFrameOffset ? 0 : frmOff.top;
     var frmLeft = opt.avoidFrameOffset ? 0 : frmOff.left;
 
-    const top = eo.top + frmTop - cvsOff.top;
-    const left = eo.left + frmLeft - cvsOff.left;
-    // clientHeight/clientWidth are for SVGs
-    const height = el.offsetHeight || el.clientHeight;
-    const width = el.offsetWidth || el.clientWidth;
+    const top = eo.top * zoom + frmTop - cvsOff.top;
+    const left = eo.left * zoom + frmLeft - cvsOff.left;
+    const height = eo.height * zoom;
+    const width = eo.width * zoom;
 
     return { top, left, height, width };
   },
