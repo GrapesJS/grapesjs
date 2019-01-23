@@ -266,6 +266,7 @@ module.exports = {
    * @private
    * */
   updateBadge(el, pos) {
+    const { em } = this;
     var $el = $(el);
     var canvas = this.canvas;
     var config = canvas.getConfig();
@@ -281,12 +282,14 @@ module.exports = {
     var u = 'px';
     bStyle.display = 'block';
     var canvasPos = canvas.getCanvasView().getPosition();
+
     if (canvasPos) {
-      var badgeH = badge ? badge.offsetHeight : 0;
-      var badgeW = badge ? badge.offsetWidth : 0;
-      var top =
-        pos.top - badgeH < canvasPos.top ? canvasPos.top : pos.top - badgeH;
-      var left = pos.left + badgeW < canvasPos.left ? canvasPos.left : pos.left;
+      const canvasTop = canvasPos.top;
+      const canvasLeft = canvasPos.left;
+      const posTop = pos.top - (badge ? badge.offsetHeight : 0);
+      const badgeW = badge ? badge.offsetWidth : 0;
+      var top = posTop < canvasTop ? canvasTop : posTop;
+      var left = pos.left + badgeW < canvasLeft ? canvasLeft : pos.left;
       bStyle.top = top + u;
       bStyle.left = left + u;
     }

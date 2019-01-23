@@ -317,11 +317,12 @@ module.exports = Backbone.View.extend({
     const doc = this.frame.el.contentDocument;
     if (!doc) return;
     const bEl = doc.body;
+    const zoom = this.getZoom();
     const fo = this.getFrameOffset();
     const co = this.getCanvasOffset();
     return {
-      top: fo.top + bEl.scrollTop - co.top,
-      left: fo.left + bEl.scrollLeft - co.left
+      top: fo.top + bEl.scrollTop * zoom - co.top,
+      left: fo.left + bEl.scrollLeft * zoom - co.left
     };
   },
 
