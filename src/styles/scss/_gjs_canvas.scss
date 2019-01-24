@@ -13,6 +13,15 @@ $canvasTop: 40px;
   left: 0;
   top: 40px;
 
+  &__area,
+  &__frames {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
   .#{$app-prefix}ghost {
     display: none;
     pointer-events: none;
@@ -49,13 +58,13 @@ $canvasTop: 40px;
   }
 
   /* This simulate body behaviour */
-  > div:first-child {
-    background-color: #fff;
-    position: relative;
-    height: 100%;
-    overflow: auto;
-    width: 100%;
-  }
+  // > div:first-child {
+  //   background-color: #fff;
+  //   position: relative;
+  //   height: 100%;
+  //   overflow: auto;
+  //   width: 100%;
+  // }
 }
 
 .#{$cv-prefix}canvas * {

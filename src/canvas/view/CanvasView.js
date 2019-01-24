@@ -9,11 +9,20 @@ module.exports = Backbone.View.extend({
     wheel: 'onWheel'
   },
 
+  template() {
+    const { pfx } = this;
+    return `<div class="${pfx}canvas__area">
+      <div class="${pfx}canvas__frames" data-frames></div>
+      <div id="${pfx}tools" class="${pfx}canvas__tools" data-tools></div>
+    </div>`;
+  },
+
   initialize(o) {
     _.bindAll(this, 'renderBody', 'onFrameScroll', 'clearOff');
     on(window, 'scroll resize', this.clearOff);
     this.config = o.config || {};
     this.em = this.config.em || {};
+    this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
     this.className = this.config.stylePrefix + 'canvas';
     this.listenTo(this.em, 'change:canvasOffset', this.clearOff);
@@ -38,7 +47,7 @@ module.exports = Backbone.View.extend({
   onZoomChange() {
     const { em } = this;
     const defOpts = { preserveSelected: 1 };
-    this.frame.el.style.transform = `scale(${this.getZoom()})`;
+    this.framesArea.style.transform = `scale(${this.getZoom()})`;
     this.clearOff();
     this.onFrameScroll();
     em.stopDefault(defOpts);
@@ -401,11 +410,15 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    this.wrapper = this.model.get('wrapper');
+    const { el, $el, ppfx, model } = this;
+    this.wrapper = model.get('wrapper');
+    $el.html(this.template());
+    const $frames = $el.find('[data-frames]');
+    this.framesArea = $frames.get(0);
 
     if (this.wrapper && typeof this.wrapper.render == 'function') {
-      this.model.get('frame').set('wrapper', this.wrapper);
-      this.$el.append(this.frame.render().el);
+      model.get('frame').set('wrapper', this.wrapper);
+      $frames.append(this.frame.render().el);
       var frame = this.frame;
       if (this.config.scripts.length === 0) {
         frame.el.onload = this.renderBody;
@@ -413,8 +426,7 @@ module.exports = Backbone.View.extend({
         this.renderScripts(); // will call renderBody later
       }
     }
-    var ppfx = this.ppfx;
-    this.$el.append(`
+    $el.find('[data-tools]').append(`
       <div id="${ppfx}tools" style="pointer-events:none">
         <div class="${ppfx}highlighter"></div>
         <div class="${ppfx}badge"></div>
@@ -428,7 +440,6 @@ module.exports = Backbone.View.extend({
         <div class="${ppfx}offset-fixed-v"></div>
       </div>
     `);
-    const el = this.el;
     const toolsEl = el.querySelector(`#${ppfx}tools`);
     this.hlEl = el.querySelector(`.${ppfx}highlighter`);
     this.badgeEl = el.querySelector(`.${ppfx}badge`);
