@@ -67,11 +67,11 @@ module.exports = () => ({
 
       // Type
       switch (prop) {
-        case 'float':
-        case 'position':
         case 'text-align':
           obj.type = 'radio';
           break;
+        case 'float':
+        case 'position':
         case 'display':
         case 'flex-direction':
         case 'flex-wrap':
@@ -165,6 +165,9 @@ module.exports = () => ({
           break;
         case 'background-image':
           obj.type = 'file';
+          break;
+        case 'opacity':
+          obj.type = 'slider';
           break;
       }
 
@@ -305,6 +308,9 @@ module.exports = () => ({
         case 'overflow-y':
           obj.defaults = 'visible';
           break;
+        case 'opacity':
+          obj.defaults = 1;
+          break;
       }
 
       /*
@@ -419,6 +425,9 @@ module.exports = () => ({
         case 'flex-basis':
           obj.min = 0;
           break;
+        case 'opacity':
+          obj.min = 0;
+          obj.max = 1;
       }
 
       // Preview
@@ -759,6 +768,13 @@ module.exports = () => ({
             'transform-scale-y',
             'transform-scale-z'
           ]);
+          break;
+      }
+
+      //step
+      switch (prop) {
+        case 'opacity':
+          obj.step = 0.01;
           break;
       }
 
