@@ -101,7 +101,7 @@ export const parseCondition = node => {
  * @param {Object} style Key-value object of style declarations
  * @return {Object}
  */
-export const createNode = (selectors, style, opts = {}) => {
+export const createNode = (selectors, style = {}, opts = {}) => {
   const node = {};
   const selLen = selectors.length;
   const lastClass = selectors[selLen - 1];

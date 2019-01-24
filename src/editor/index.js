@@ -76,6 +76,9 @@
  * ### RTE
  * * `rte:enable` - RTE enabled. The view, on which RTE is enabled, is passed as an argument
  * * `rte:disable` - RTE disabled. The view, on which RTE is disabled, is passed as an argument
+ * ### Modal
+ * * `modal:open` - Modal is opened
+ * * `modal:close` - Modal is closed
  * ### Commands
  * * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
  * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))

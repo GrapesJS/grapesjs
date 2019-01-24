@@ -27,6 +27,13 @@ module.exports = require('backbone').View.extend({
     }
   },
 
+  updateConfig(opts = {}) {
+    this.config = {
+      ...this.config,
+      ...opts
+    };
+  },
+
   /**
    * Get sorter
    * @private
@@ -103,19 +110,20 @@ module.exports = require('backbone').View.extend({
    * @private
    * */
   add(model, fragment) {
+    const { config } = this;
     var frag = fragment || null;
     var view = new BlockView(
       {
         model,
         attributes: model.get('attributes')
       },
-      this.config
+      config
     );
     var rendered = view.render().el;
     var category = model.get('category');
 
     // Check for categories
-    if (category && this.categories) {
+    if (category && this.categories && !config.ignoreCategories) {
       if (isString(category)) {
         category = {
           id: category,

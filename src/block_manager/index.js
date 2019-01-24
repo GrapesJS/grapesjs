@@ -63,15 +63,14 @@ module.exports = () => {
       // Global blocks collection
       blocks = new Blocks([]);
       blocksVisible = new Blocks([]);
-      (categories = new BlockCategories()),
-        (blocksView = new BlocksView(
-          {
-            // Visible collection
-            collection: blocksVisible,
-            categories
-          },
-          c
-        ));
+      categories = new BlockCategories();
+      blocksView = new BlocksView(
+        {
+          collection: blocksVisible,
+          categories
+        },
+        c
+      );
 
       // Setup the sync between the global and public collections
       blocks.listenTo(blocks, 'add', model => {
@@ -205,8 +204,10 @@ module.exports = () => {
 
     /**
      * Render blocks
-     * @param  {Array} blocks Blocks to render, without the argument will render
-     *                        all global blocks
+     * @param  {Array} blocks Blocks to render, without the argument will render all global blocks
+     * @param  {Object} [opts={}] Options
+     * @param  {Boolean} [opts.external] Render blocks in a new container (HTMLElement will be returned)
+     * @param  {Boolean} [opts.ignoreCategories] Render blocks without categories
      * @return {HTMLElement} Rendered element
      * @example
      * // Render all blocks (inside the global collection)
@@ -214,9 +215,9 @@ module.exports = () => {
      *
      * // Render new set of blocks
      * const blocks = blockManager.getAll();
-     * blockManager.render(blocks.filter(
-     *  block => block.get('category') == 'sections'
-     * ));
+     * const filtered = blocks.filter(block => block.get('category') == 'sections')
+     *
+     * blockManager.render(filtered);
      * // Or a new set from an array
      * blockManager.render([
      *  {label: 'Label text', content: '<div>Content</div>'}
@@ -224,15 +225,33 @@ module.exports = () => {
      *
      * // Back to blocks from the global collection
      * blockManager.render();
+     *
+     * // You can also render your blocks outside of the main block container
+     * const newBlocksEl = blockManager.render(filtered, { external: true });
+     * document.getElementById('some-id').appendChild(newBlocksEl);
      */
-    render(blocks) {
+    render(blocks, opts = {}) {
       const toRender = blocks || this.getAll().models;
+
+      if (opts.external) {
+        return new BlocksView(
+          {
+            collection: new Blocks(toRender),
+            categories
+          },
+          {
+            ...c,
+            ...opts
+          }
+        ).render().el;
+      }
 
       if (!blocksView.rendered) {
         blocksView.render();
         blocksView.rendered = 1;
       }
 
+      blocksView.updateConfig(opts);
       blocksView.collection.reset(toRender);
       return this.getContainer();
     }
