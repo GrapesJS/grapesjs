@@ -106,8 +106,8 @@ module.exports = {
    * @param {Object}  e
    * @private
    */
-  onOut(e) {
-    e.stopPropagation();
+  onOut(ev) {
+    ev && ev.stopPropagation();
     this.hideBadge();
     this.hideHighlighter();
     this.hideElementOffset();
@@ -138,7 +138,8 @@ module.exports = {
    * @param {Object} pos
    */
   hideElementOffset(el, pos) {
-    this.editor.stopCommand('show-offset');
+    const { editor } = this;
+    editor && editor.stopCommand('show-offset');
   },
 
   /**
@@ -669,7 +670,7 @@ module.exports = {
     this.stopSelectComponent();
     !opts.preserveSelected && em.setSelected(null);
     this.clean();
-    this.hideBadge();
+    this.onOut();
     this.hideFixedElementOffset();
     this.canvas.getToolbarEl().style.display = 'none';
 

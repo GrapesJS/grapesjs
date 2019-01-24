@@ -2,6 +2,7 @@ import Backbone from 'backbone';
 import { on, off, getElement } from 'utils/mixins';
 const FrameView = require('./FrameView');
 const $ = Backbone.$;
+let timerZoom;
 
 module.exports = Backbone.View.extend({
   events: {
@@ -35,9 +36,14 @@ module.exports = Backbone.View.extend({
   },
 
   onZoomChange() {
+    const { em } = this;
+    const defOpts = { preserveSelected: 1 };
     this.frame.el.style.transform = `scale(${this.getZoom()})`;
     this.clearOff();
     this.onFrameScroll();
+    em.stopDefault(defOpts);
+    timerZoom && clearTimeout(timerZoom);
+    timerZoom = setTimeout(() => em.runDefault(defOpts));
   },
 
   getZoom() {
