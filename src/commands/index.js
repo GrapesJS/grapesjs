@@ -26,7 +26,7 @@
  * @module Commands
  */
 
-import { isFunction, isUndefined } from 'underscore';
+import { isFunction } from 'underscore';
 import CommandAbstract from './view/CommandAbstract';
 
 module.exports = () => {
@@ -239,11 +239,13 @@ module.exports = () => {
      * myCommand.run();
      * */
     get(id) {
-      var el = commands[id];
+      let el = commands[id];
 
-      if (typeof el == 'function') {
+      if (isFunction(el)) {
         el = new el(c);
         commands[id] = el;
+      } else if (!el) {
+        em.logWarning(`'${id}' command not found`);
       }
 
       return el;

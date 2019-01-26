@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-import { on, off, getElement } from 'utils/mixins';
+import { on, off, getElement, getKeyChar } from 'utils/mixins';
 const FrameView = require('./FrameView');
 const $ = Backbone.$;
 let timerZoom;
@@ -18,7 +18,7 @@ module.exports = Backbone.View.extend({
   },
 
   initialize(o) {
-    _.bindAll(this, 'renderBody', 'onFrameScroll', 'clearOff');
+    _.bindAll(this, 'renderBody', 'onFrameScroll', 'clearOff', 'onKeyPress');
     on(window, 'scroll resize', this.clearOff);
     this.config = o.config || {};
     this.em = this.config.em || {};
@@ -27,16 +27,44 @@ module.exports = Backbone.View.extend({
     this.className = this.config.stylePrefix + 'canvas';
     this.listenTo(this.em, 'change:canvasOffset', this.clearOff);
     this.listenTo(this.em, 'change:zoom', this.onZoomChange);
+    this.toggleListeners(1);
     this.frame = new FrameView({
       model: this.model.get('frame'),
       config: this.config
     });
   },
 
-  onWheel(ev) {
-    if (ev.ctrlKey || ev.metaKey) {
+  remove() {
+    Backbone.View.prototype.remove.apply(this, arguments);
+    this.toggleListeners();
+  },
+
+  toggleListeners(enable) {
+    const method = enable ? 'on' : 'off';
+    const methods = { on, off };
+    methods[method](document, 'keypress', this.onKeyPress);
+  },
+
+  onKeyPress(ev) {
+    const { em } = this;
+    const key = getKeyChar(ev);
+
+    if (key === ' ' && em.getZoomDecimal() !== 1) {
+      this.preventDefault(ev);
+      em.get('Editor').runCommand('core:canvas-drag');
+    }
+  },
+
+  preventDefault(ev) {
+    if (ev) {
       ev.preventDefault();
       ev._parentEvent && ev._parentEvent.preventDefault();
+    }
+  },
+
+  onWheel(ev) {
+    if (ev.ctrlKey || ev.metaKey) {
+      this.preventDefault(ev);
       const { em } = this;
       const delta = Math.max(-1, Math.min(1, ev.wheelDelta || -ev.detail));
       const zoom = em.get('zoom');
@@ -242,7 +270,7 @@ module.exports = Backbone.View.extend({
       };
 
       [
-        { event: 'keydown keyup', class: 'KeyboardEvent' },
+        { event: 'keydown keyup keypress', class: 'KeyboardEvent' },
         { event: 'wheel', class: 'WheelEvent' }
       ].forEach(obj =>
         obj.event.split(' ').forEach(event => {

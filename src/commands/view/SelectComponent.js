@@ -3,7 +3,6 @@ import { on, off, getUnitFromValue } from 'utils/mixins';
 
 const ToolbarView = require('dom_components/view/ToolbarView');
 const Toolbar = require('dom_components/model/Toolbar');
-const key = require('keymaster');
 const $ = require('backbone').$;
 let showOffsets;
 
@@ -44,7 +43,7 @@ module.exports = {
    * @private
    * */
   toggleSelectComponent(enable) {
-    const em = this.em;
+    const { em } = this;
     const method = enable ? 'on' : 'off';
     const methods = { on, off };
     const body = this.getCanvasBody();

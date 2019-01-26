@@ -126,7 +126,16 @@ const getModel = (el, $) => {
  * @param  {Event} ev
  * @return {Event}
  */
-const getPointerEvent = (ev) => ev.touches && ev.touches[0] ? ev.touches[0] : ev;
+const getPointerEvent = ev =>
+  ev.touches && ev.touches[0] ? ev.touches[0] : ev;
+
+/**
+ * Get cross-browser keycode
+ * @param  {Event} ev
+ * @return {Number}
+ */
+const getKeyCode = ev => ev.which || ev.keyCode;
+const getKeyChar = ev => String.fromCharCode(getKeyCode(ev));
 
 export {
   on,
@@ -136,9 +145,11 @@ export {
   matches,
   getModel,
   camelCase,
+  getKeyCode,
+  getKeyChar,
   getElement,
   shallowDiff,
   normalizeFloat,
   getPointerEvent,
-  getUnitFromValue,
+  getUnitFromValue
 };
