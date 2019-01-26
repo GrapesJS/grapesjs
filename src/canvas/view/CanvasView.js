@@ -39,6 +39,13 @@ module.exports = Backbone.View.extend({
     this.toggleListeners();
   },
 
+  preventDefault(ev) {
+    if (ev) {
+      ev.preventDefault();
+      ev._parentEvent && ev._parentEvent.preventDefault();
+    }
+  },
+
   toggleListeners(enable) {
     const method = enable ? 'on' : 'off';
     const methods = { on, off };
@@ -51,14 +58,7 @@ module.exports = Backbone.View.extend({
 
     if (key === ' ' && em.getZoomDecimal() !== 1) {
       this.preventDefault(ev);
-      em.get('Editor').runCommand('core:canvas-drag');
-    }
-  },
-
-  preventDefault(ev) {
-    if (ev) {
-      ev.preventDefault();
-      ev._parentEvent && ev._parentEvent.preventDefault();
+      em.get('Editor').runCommand('core:canvas-move');
     }
   },
 

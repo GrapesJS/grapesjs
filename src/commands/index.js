@@ -189,6 +189,7 @@ module.exports = () => {
       [
         ['copy', 'CopyComponent'],
         ['paste', 'PasteComponent'],
+        ['canvas-move', 'CanvasMove'],
         ['component-next', 'ComponentNext'],
         ['component-prev', 'ComponentPrev'],
         ['component-enter', 'ComponentEnter'],
@@ -198,9 +199,7 @@ module.exports = () => {
         ['component-style-clear', 'ComponentStyleClear']
       ].forEach(
         item =>
-          (defaultCommands[`core:${item[0]}`] = require(`./view/${
-            item[1]
-          }`).run)
+          (defaultCommands[`core:${item[0]}`] = require(`./view/${item[1]}`))
       );
 
       if (c.em) c.model = c.em.get('Canvas');
@@ -348,10 +347,13 @@ module.exports = () => {
       if (command && command.run) {
         const id = command.id;
         const editor = em.get('Editor');
-        result = command.callRun(editor, options);
 
-        if (id && command.stop && !command.noStop) {
-          active[id] = result;
+        if (!this.isActive(id)) {
+          result = command.callRun(editor, options);
+
+          if (id && command.stop && !command.noStop) {
+            active[id] = result;
+          }
         }
       }
 
@@ -359,7 +361,7 @@ module.exports = () => {
     },
 
     /**
-     * [runCommand description]
+     * Stop the command
      * @param  {Object} command
      * @param {Object} options
      * @return {*} Result of the command
