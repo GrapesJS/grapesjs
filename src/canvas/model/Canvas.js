@@ -5,11 +5,19 @@ module.exports = Backbone.Model.extend({
   defaults: {
     frame: '',
     wrapper: '',
-    rulers: false
+    rulers: false,
+    zoom: 100,
+    x: 0,
+    y: 0
   },
 
-  initialize(config) {
-    var conf = this.conf || {};
-    this.set('frame', new Frame(conf.frame));
+  initialize() {
+    this.set('frame', new Frame());
+    this.listenTo(this, 'change:zoom', this.onZoomChange);
+  },
+
+  onZoomChange() {
+    const zoom = this.get('zoom');
+    zoom < 1 && this.set('zoom', 1);
   }
 });

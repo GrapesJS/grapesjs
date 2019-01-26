@@ -13,6 +13,13 @@ $canvasTop: 40px;
   left: 0;
   top: 40px;
 
+  &#{gjs-is(grab)},
+  &#{gjs-is(grabbing)} {
+    .#{$cv-prefix}canvas__area {
+      pointer-events: none;
+    }
+  }
+
   &__area,
   &__frames {
     position: absolute;

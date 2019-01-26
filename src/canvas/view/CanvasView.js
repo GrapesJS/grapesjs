@@ -11,7 +11,7 @@ module.exports = Backbone.View.extend({
 
   template() {
     const { pfx } = this;
-    return `<div class="${pfx}canvas__area">
+    return `<div class="${pfx}canvas__area" data-canvas-area>
       <div class="${pfx}canvas__frames" data-frames></div>
       <div id="${pfx}tools" class="${pfx}canvas__tools" data-tools></div>
     </div>`;
@@ -20,13 +20,15 @@ module.exports = Backbone.View.extend({
   initialize(o) {
     _.bindAll(this, 'renderBody', 'onFrameScroll', 'clearOff', 'onKeyPress');
     on(window, 'scroll resize', this.clearOff);
+    const { model } = this;
     this.config = o.config || {};
     this.em = this.config.em || {};
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
     this.className = this.config.stylePrefix + 'canvas';
     this.listenTo(this.em, 'change:canvasOffset', this.clearOff);
-    this.listenTo(this.em, 'change:zoom', this.onZoomChange);
+    this.listenTo(model, 'change:zoom', this.onZoomChange);
+    this.listenTo(model, 'change:x change:y', this.onPosChange);
     this.toggleListeners(1);
     this.frame = new FrameView({
       model: this.model.get('frame'),
@@ -65,10 +67,10 @@ module.exports = Backbone.View.extend({
   onWheel(ev) {
     if (ev.ctrlKey || ev.metaKey) {
       this.preventDefault(ev);
-      const { em } = this;
+      const { model } = this;
       const delta = Math.max(-1, Math.min(1, ev.wheelDelta || -ev.detail));
-      const zoom = em.get('zoom');
-      em.set('zoom', zoom + delta * 2);
+      const zoom = model.get('zoom');
+      model.set('zoom', zoom + delta * 2);
     }
   },
 
@@ -83,8 +85,13 @@ module.exports = Backbone.View.extend({
     timerZoom = setTimeout(() => em.runDefault(defOpts));
   },
 
+  onPosChange() {
+    const { x, y } = this.model.attributes;
+    this.canvasAreaEl.style.transform = `translate(${x}px, ${y}px)`;
+  },
+
   getZoom() {
-    return this.em.get('zoom') / 100;
+    return this.em.getZoomDecimal();
   },
 
   /**
@@ -477,6 +484,7 @@ module.exports = Backbone.View.extend({
     this.resizerEl = el.querySelector(`.${ppfx}resizer`);
     this.offsetEl = el.querySelector(`.${ppfx}offset-v`);
     this.fixedOffsetEl = el.querySelector(`.${ppfx}offset-fixed-v`);
+    this.canvasAreaEl = $el.find('[data-canvas-area]').get(0);
     this.toolsEl = toolsEl;
     this.el.className = this.className;
     return this;

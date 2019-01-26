@@ -51,7 +51,6 @@ const logs = {
 module.exports = Backbone.Model.extend({
   defaults() {
     return {
-      zoom: 100,
       editing: 0,
       selected: new Collection(),
       clipboard: null,
@@ -610,7 +609,7 @@ module.exports = Backbone.Model.extend({
   },
 
   getZoomDecimal() {
-    return this.get('zoom') / 100;
+    return this.get('Canvas').getZoomDecimal();
   },
 
   /**

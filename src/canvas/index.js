@@ -516,6 +516,14 @@ module.exports = () => {
       if (hasDnd(c.em)) this.droppable = new Droppable(c.em);
     },
 
+    getZoom() {
+      return parseFloat(canvas.get('zoom'));
+    },
+
+    getZoomDecimal() {
+      return this.getZoom() / 100;
+    },
+
     /**
      * Returns wrapper element
      * @return {HTMLElement}
