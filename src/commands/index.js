@@ -81,10 +81,7 @@ module.exports = () => {
       defaultCommands['select-comp'] = require('./view/SelectComponent');
       defaultCommands['create-comp'] = require('./view/CreateComponent');
       defaultCommands['delete-comp'] = require('./view/DeleteComponent');
-      defaultCommands['image-comp'] = require('./view/ImageComponent');
       defaultCommands['move-comp'] = require('./view/MoveComponent');
-      defaultCommands['text-comp'] = require('./view/TextComponent');
-      defaultCommands['insert-custom'] = require('./view/InsertCustom');
       defaultCommands['export-template'] = ViewCode;
       defaultCommands['sw-visibility'] = require('./view/SwitchVisibility');
       defaultCommands['open-layers'] = require('./view/OpenLayers');
