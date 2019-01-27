@@ -11,10 +11,10 @@ module.exports = Backbone.View.extend({
 
   template() {
     const { pfx } = this;
-    return `<div class="${pfx}canvas__area" data-canvas-area>
+    return `
       <div class="${pfx}canvas__frames" data-frames></div>
       <div id="${pfx}tools" class="${pfx}canvas__tools" data-tools></div>
-    </div>`;
+    `;
   },
 
   initialize(o) {
@@ -482,7 +482,6 @@ module.exports = Backbone.View.extend({
     this.resizerEl = el.querySelector(`.${ppfx}resizer`);
     this.offsetEl = el.querySelector(`.${ppfx}offset-v`);
     this.fixedOffsetEl = el.querySelector(`.${ppfx}offset-fixed-v`);
-    this.canvasAreaEl = $el.find('[data-canvas-area]').get(0);
     this.toolsEl = toolsEl;
     this.el.className = this.className;
     return this;
