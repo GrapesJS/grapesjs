@@ -17,6 +17,7 @@ module.exports = {
       !config.showOffsets ||
       (!config.showOffsetsSelected && state == 'Fixed')
     ) {
+      editor.stopCommand(this.id, opts);
       return;
     }
 

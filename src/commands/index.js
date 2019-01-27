@@ -349,11 +349,10 @@ module.exports = () => {
         const editor = em.get('Editor');
 
         if (!this.isActive(id)) {
-          result = command.callRun(editor, options);
-
           if (id && command.stop && !command.noStop) {
             active[id] = result;
           }
+          result = command.callRun(editor, options);
         }
       }
 
@@ -373,8 +372,11 @@ module.exports = () => {
       if (command && command.run) {
         const id = command.id;
         const editor = em.get('Editor');
-        result = command.callStop(editor, options);
-        if (id) delete active[id];
+
+        if (this.isActive(id)) {
+          if (id) delete active[id];
+          result = command.callStop(editor, options);
+        }
       }
 
       return result;
