@@ -27,8 +27,7 @@ module.exports = Backbone.View.extend({
     this.ppfx = this.config.pStylePrefix || '';
     this.className = this.config.stylePrefix + 'canvas';
     this.listenTo(this.em, 'change:canvasOffset', this.clearOff);
-    this.listenTo(model, 'change:zoom', this.onZoomChange);
-    this.listenTo(model, 'change:x change:y', this.onPosChange);
+    this.listenTo(model, 'change:zoom change:x change:y', this.updateFrames);
     this.toggleListeners(1);
     this.frame = new FrameView({
       model: this.model.get('frame'),
@@ -74,20 +73,19 @@ module.exports = Backbone.View.extend({
     }
   },
 
-  onZoomChange() {
-    const { em } = this;
+  updateFrames() {
+    const { em, model } = this;
+    const { x, y } = model.attributes;
+    const zoom = this.getZoom();
     const defOpts = { preserveSelected: 1 };
-    this.framesArea.style.transform = `scale(${this.getZoom()})`;
+    const mpl = zoom ? 1 / zoom : 1;
+    this.framesArea.style.transform = `scale(${zoom}) translate(${x *
+      mpl}px, ${y * mpl}px)`;
     this.clearOff();
     this.onFrameScroll();
     em.stopDefault(defOpts);
     timerZoom && clearTimeout(timerZoom);
     timerZoom = setTimeout(() => em.runDefault(defOpts));
-  },
-
-  onPosChange() {
-    const { x, y } = this.model.attributes;
-    this.canvasAreaEl.style.transform = `translate(${x}px, ${y}px)`;
   },
 
   getZoom() {

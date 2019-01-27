@@ -516,6 +516,10 @@ module.exports = () => {
       if (hasDnd(c.em)) this.droppable = new Droppable(c.em);
     },
 
+    setZoom(value) {
+      return canvas.set('zoom', parseFloat(value));
+    },
+
     getZoom() {
       return parseFloat(canvas.get('zoom'));
     },
