@@ -26239,7 +26239,7 @@ module.exports = _backbone2.default.Model.extend({
       // If the component has scripts we need to expose his ID
       var attr = model.get('attributes');
       attr = (0, _underscore.extend)({}, attr, { id: id });
-      model.set('attributes', attr);
+      model.set('attributes', attr, { silent: 1 });
       var scrStr = model.getScriptString();
 
       // If the script was updated, I'll put its code in a separate container
@@ -29129,7 +29129,9 @@ module.exports = {
    * @private
    */
   initResize: function initResize(elem) {
-    var em = this.em;
+    var em = this.em,
+        canvas = this.canvas;
+
     var editor = em ? em.get('Editor') : '';
     var config = em ? em.get('Config') : '';
     var pfx = config.stylePrefix || '';
@@ -29223,7 +29225,10 @@ module.exports = {
           var style = modelToStyle.getStyle();
 
           if (!onlyHeight) {
-            style[keyWidth] = autoWidth ? 'auto' : '' + rect.w + unitWidth;
+            var padding = 10;
+            var frameOffset = canvas.getCanvasView().getFrameOffset();
+            var width = rect.w < frameOffset.width - padding ? rect.w : frameOffset.width - padding;
+            style[keyWidth] = autoWidth ? 'auto' : '' + width + unitWidth;
           }
 
           if (!onlyWidth) {
@@ -36790,6 +36795,10 @@ module.exports = {
       open: false,
       buildProps: ['float', 'display', 'position', 'top', 'right', 'left', 'bottom']
     }, {
+      name: 'Flex',
+      open: false,
+      buildProps: ['flex-direction', 'flex-wrap', 'justify-content', 'align-items', 'align-content', 'order', 'flex-basis', 'flex-grow', 'flex-shrink', 'align-self']
+    }, {
       name: 'Dimension',
       open: false,
       buildProps: ['width', 'height', 'max-width', 'min-height', 'margin', 'padding']
@@ -38480,7 +38489,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.14.51',
+    version: '0.14.52',
 
     /**
      * Initialize the editor with passed options
@@ -44948,7 +44957,19 @@ var Property = __webpack_require__(/*! backbone */ "./node_modules/backbone/back
     // Use case:
     // you can add all SVG CSS properties with toRequire as true
     // and then require them on SVG Components
-    toRequire: 0
+    toRequire: 0,
+
+    // Specifies dependency on other properties of the selected object.
+    // Property is shown only when all conditions are matched.
+    //
+    // example: { display: ['flex', 'block'], position: ['absolute'] };
+    //          in this case the property is only shown when display is
+    //          of value 'flex' or 'block' AND position is 'absolute'
+    requires: null,
+
+    // Specifies dependency on properties of the parent of the selected object.
+    // Property is shown only when all conditions are matched.
+    requiresParent: null
   },
 
   initialize: function initialize() {
@@ -45298,6 +45319,7 @@ module.exports = function () {
           case 'height':
           case 'max-height':
           case 'min-height':
+          case 'flex-basis':
             obj.fixedValues = ['initial', 'inherit', 'auto'];
             break;
           case 'font-size':
@@ -45317,6 +45339,12 @@ module.exports = function () {
             obj.type = 'radio';
             break;
           case 'display':
+          case 'flex-direction':
+          case 'flex-wrap':
+          case 'justify-content':
+          case 'align-items':
+          case 'align-content':
+          case 'align-self':
           case 'font-family':
           case 'font-weight':
           case 'border-style':
@@ -45329,6 +45357,8 @@ module.exports = function () {
           case 'transition-timing-function':
           case 'cursor':
           case 'overflow':
+          case 'overflow-x':
+          case 'overflow-y':
             obj.type = 'select';
             break;
           case 'top':
@@ -45373,6 +45403,10 @@ module.exports = function () {
           case 'transform-scale-x':
           case 'transform-scale-y':
           case 'transform-scale-z':
+          case 'order':
+          case 'flex-grow':
+          case 'flex-shrink':
+          case 'flex-basis':
             obj.type = 'integer';
             break;
           case 'margin':
@@ -45411,6 +45445,24 @@ module.exports = function () {
           case 'display':
             obj.defaults = 'block';
             break;
+          case 'flex-direction':
+            obj.defaults = 'row';
+            break;
+          case 'flex-wrap':
+            obj.defaults = 'nowrap';
+            break;
+          case 'justify-content':
+            obj.defaults = 'flex-start';
+            break;
+          case 'align-items':
+            obj.defaults = 'stretch';
+            break;
+          case 'align-content':
+            obj.defaults = 'stretch';
+            break;
+          case 'align-self':
+            obj.defaults = 'auto';
+            break;
           case 'position':
             obj.defaults = 'static';
             break;
@@ -45437,6 +45489,8 @@ module.exports = function () {
           case 'transform-rotate-x':
           case 'transform-rotate-y':
           case 'transform-rotate-z':
+          case 'order':
+          case 'flex-grow':
             obj.defaults = 0;
             break;
           case 'border-top-left-radius':
@@ -45448,6 +45502,7 @@ module.exports = function () {
           case 'transform-scale-x':
           case 'transform-scale-y':
           case 'transform-scale-z':
+          case 'flex-shrink':
             obj.defaults = 1;
             break;
           case 'box-shadow-blur':
@@ -45461,6 +45516,7 @@ module.exports = function () {
           case 'height':
           case 'background-size':
           case 'cursor':
+          case 'flex-basis':
             obj.defaults = 'auto';
             break;
           case 'font-family':
@@ -45511,7 +45567,33 @@ module.exports = function () {
             obj.defaults = 'ease';
             break;
           case 'overflow':
+          case 'overflow-x':
+          case 'overflow-y':
             obj.defaults = 'visible';
+            break;
+        }
+
+        /*
+         * Add styleable dependency on other properties. Allows properties to be
+         * dynamically hidden or shown based on values of other properties.
+         *
+         * Property will be styleable if all of the properties (keys) in the
+         * requires object have any of the values specified in the array.
+         */
+        switch (prop) {
+          case 'flex-direction':
+          case 'flex-wrap':
+          case 'justify-content':
+          case 'align-items':
+          case 'align-content':
+            obj.requires = { display: ['flex'] };
+            break;
+          case 'order':
+          case 'flex-basis':
+          case 'flex-grow':
+          case 'flex-shrink':
+          case 'align-self':
+            obj.requiresParent = { display: ['flex'] };
             break;
         }
 
@@ -45538,6 +45620,9 @@ module.exports = function () {
           case 'max-width':
           case 'width':
             obj.units = ['px', '%', 'vw'];
+            break;
+          case 'flex-basis':
+            obj.units = ['px', '%', 'vw', 'vh'];
             break;
           case 'text-shadow-v':
           case 'text-shadow-h':
@@ -45597,6 +45682,7 @@ module.exports = function () {
           case 'box-shadow-blur':
           case 'transition-duration':
           case 'perspective':
+          case 'flex-basis':
             obj.min = 0;
             break;
         }
@@ -45648,7 +45734,25 @@ module.exports = function () {
             obj.list = [{ value: 'none' }, { value: 'left' }, { value: 'right' }];
             break;
           case 'display':
-            obj.list = [{ value: 'block' }, { value: 'inline' }, { value: 'inline-block' }, { value: 'none' }];
+            obj.list = [{ value: 'block' }, { value: 'inline' }, { value: 'inline-block' }, { value: 'flex' }, { value: 'none' }];
+            break;
+          case 'flex-direction':
+            obj.list = [{ value: 'row' }, { value: 'row-reverse' }, { value: 'column' }, { value: 'column-reverse' }];
+            break;
+          case 'flex-wrap':
+            obj.list = [{ value: 'nowrap' }, { value: 'wrap' }, { value: 'wrap-reverse' }];
+            break;
+          case 'justify-content':
+            obj.list = [{ value: 'flex-start' }, { value: 'flex-end' }, { value: 'center' }, { value: 'space-between' }, { value: 'space-around' }, { value: 'space-evenly' }];
+            break;
+          case 'align-items':
+            obj.list = [{ value: 'flex-start' }, { value: 'flex-end' }, { value: 'center' }, { value: 'baseline' }, { value: 'stretch' }];
+            break;
+          case 'align-content':
+            obj.list = [{ value: 'flex-start' }, { value: 'flex-end' }, { value: 'center' }, { value: 'space-between' }, { value: 'space-around' }, { value: 'stretch' }];
+            break;
+          case 'align-self':
+            obj.list = [{ value: 'auto' }, { value: 'flex-start' }, { value: 'flex-end' }, { value: 'center' }, { value: 'baseline' }, { value: 'stretch' }];
             break;
           case 'position':
             obj.list = [{ value: 'static' }, { value: 'relative' }, { value: 'absolute' }, { value: 'fixed' }];
@@ -45698,6 +45802,8 @@ module.exports = function () {
             obj.list = [{ value: 'auto' }, { value: 'pointer' }, { value: 'copy' }, { value: 'crosshair' }, { value: 'grab' }, { value: 'grabbing' }, { value: 'help' }, { value: 'move' }, { value: 'text' }];
             break;
           case 'overflow':
+          case 'overflow-x':
+          case 'overflow-y':
             obj.list = [{ value: 'visible' }, { value: 'hidden' }, { value: 'scroll' }, { value: 'auto' }];
             break;
         }
@@ -46030,9 +46136,10 @@ module.exports = Backbone.Model.extend({
 
   initialize: function initialize(opts) {
     var o = opts || {};
-    var props = [];
     var builded = this.buildProperties(o.buildProps);
-    !this.get('id') && this.set('id', this.get('name'));
+    var name = this.get('name') || '';
+    var props = [];
+    !this.get('id') && this.set('id', name.replace(/ /g, '_').toLowerCase());
 
     if (!builded) props = this.get('properties');else props = this.extendProperties(builded);
 
@@ -47370,6 +47477,8 @@ module.exports = _backbone2.default.View.extend({
   }, 'click [' + clearProp + ']', 'clear'),
 
   initialize: function initialize() {
+    var _this = this;
+
     var o = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
     (0, _underscore.bindAll)(this, 'targetUpdated');
@@ -47397,6 +47506,14 @@ module.exports = _backbone2.default.View.extend({
 
     em && em.on('update:component:style:' + this.property, this.targetUpdated);
     //em && em.on(`styleable:change:${this.property}`, this.targetUpdated);
+
+    // Listening to changes of properties in this.requires, so that styleable
+    // changes based on other properties are propagated
+    var requires = model.get('requires');
+    requires && Object.keys(requires).forEach(function (property) {
+      em && em.on('component:styleUpdate:' + property, _this.targetUpdated);
+    });
+
     this.listenTo(this.propTarget, 'update styleManager:update', this.targetUpdated);
     this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model, 'change:value', this.modelValueChanged);
@@ -47449,13 +47566,13 @@ module.exports = _backbone2.default.View.extend({
    * Clear the property from the target
    */
   clear: function clear(e) {
-    var _this = this;
+    var _this2 = this;
 
     e && e.stopPropagation();
     this.model.clearValue();
     // Skip one stack with setTimeout to avoid inconsistencies
     setTimeout(function () {
-      return _this.targetUpdated();
+      return _this2.targetUpdated();
     });
   },
 
@@ -47750,6 +47867,10 @@ module.exports = _backbone2.default.View.extend({
     var toRequire = model.get('toRequire');
     var unstylable = trg.get('unstylable');
     var stylableReq = trg.get('stylable-require');
+    var requires = model.get('requires');
+    var requiresParent = model.get('requiresParent');
+    var sectors = this.sector ? this.sector.collection : null;
+    var selected = this.em ? this.em.getSelected() : null;
     var stylable = trg.get('stylable');
 
     // Stylable could also be an array indicating with which property
@@ -47766,6 +47887,33 @@ module.exports = _backbone2.default.View.extend({
     // Check if the property is available only if requested
     if (toRequire) {
       stylable = !target || stylableReq && (stylableReq.indexOf(id) >= 0 || stylableReq.indexOf(property) >= 0);
+    }
+
+    // Check if the property is available based on other property's values
+    if (sectors && requires) {
+      var properties = Object.keys(requires);
+      sectors.each(function (sector) {
+        sector.get('properties').each(function (model) {
+          if ((0, _underscore.includes)(properties, model.id)) {
+            var values = requires[model.id];
+            stylable = stylable && (0, _underscore.includes)(values, model.get('value'));
+          }
+        });
+      });
+    }
+
+    // Check if the property is available based on parent's property values
+    if (requiresParent) {
+      var parent = selected && selected.parent();
+      var parentEl = parent && parent.getEl();
+      if (parentEl) {
+        var styles = window.getComputedStyle(parentEl);
+        (0, _underscore.each)(requiresParent, function (values, property) {
+          stylable = stylable && styles[property] && (0, _underscore.includes)(values, styles[property]);
+        });
+      } else {
+        stylable = false;
+      }
     }
 
     return stylable;
@@ -47959,13 +48107,17 @@ module.exports = _backbone2.default.View.extend({
     this.model.set('open', v);
   },
   render: function render() {
+    var pfx = this.pfx,
+        model = this.model;
+    var id = model.attributes.id;
+
     this.$el.html(this.template({
-      pfx: this.pfx,
-      label: this.model.get('name')
+      pfx: pfx,
+      label: model.get('name')
     }));
-    this.$caret = this.$el.find('#' + this.pfx + 'caret');
+    this.$caret = this.$el.find('#' + pfx + 'caret');
     this.renderProperties();
-    this.$el.attr('class', this.pfx + 'sector no-select');
+    this.$el.attr('class', pfx + 'sector ' + pfx + 'sector__' + id + ' no-select');
     this.updateOpen();
     return this;
   },
@@ -48152,15 +48304,20 @@ module.exports = _backbone2.default.View.extend({
    * @private
    * */
   addToCollection: function addToCollection(model, fragmentEl) {
+    var pfx = this.pfx,
+        target = this.target,
+        propTarget = this.propTarget,
+        config = this.config;
+
     var fragment = fragmentEl || null;
     var view = new SectorView({
       model: model,
-      id: this.pfx + model.get('name').replace(' ', '_').toLowerCase(),
+      id: '' + pfx + model.get('id'),
       name: model.get('name'),
       properties: model.get('properties'),
-      target: this.target,
-      propTarget: this.propTarget,
-      config: this.config
+      target: target,
+      propTarget: propTarget,
+      config: config
     });
     var rendered = view.render().el;
 
