@@ -15,15 +15,16 @@ module.exports = Backbone.Model.extend({
   },
 
   initialize(opts) {
-    var o = opts || {};
-    var props = [];
-    var builded = this.buildProperties(o.buildProps);
-    !this.get('id') && this.set('id', this.get('name'));
+    const o = opts || {};
+    const builded = this.buildProperties(o.buildProps);
+    const name = this.get('name') || '';
+    let props = [];
+    !this.get('id') && this.set('id', name.replace(/ /g, '_').toLowerCase());
 
     if (!builded) props = this.get('properties');
     else props = this.extendProperties(builded);
 
-    var propsModel = new Properties(props);
+    const propsModel = new Properties(props);
     propsModel.sector = this;
     this.set('properties', propsModel);
   },

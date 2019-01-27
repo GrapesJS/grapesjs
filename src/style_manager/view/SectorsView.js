@@ -134,20 +134,16 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   addToCollection(model, fragmentEl) {
+    const { pfx, target, propTarget, config } = this;
     var fragment = fragmentEl || null;
     var view = new SectorView({
       model,
-      id:
-        this.pfx +
-        model
-          .get('name')
-          .replace(' ', '_')
-          .toLowerCase(),
+      id: `${pfx}${model.get('id')}`,
       name: model.get('name'),
       properties: model.get('properties'),
-      target: this.target,
-      propTarget: this.propTarget,
-      config: this.config
+      target,
+      propTarget,
+      config
     });
     var rendered = view.render().el;
 
