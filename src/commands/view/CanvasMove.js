@@ -29,7 +29,7 @@ module.exports = {
   },
 
   toggleDragger(enable, ev) {
-    const { canvasModel } = this;
+    const { canvasModel, em } = this;
     let { dragger } = this;
     const methodCls = enable ? 'add' : 'remove';
     this.getCanvas().classList[methodCls](`${this.ppfx}is__grabbing`);
@@ -44,19 +44,16 @@ module.exports = {
         },
         setPosition({ x, y }) {
           canvasModel.set({ x, y });
+        },
+        onStart(ev, dragger) {
+          em.trigger('canvas:move:start', dragger);
+        },
+        onDrag(ev, dragger) {
+          em.trigger('canvas:move', dragger);
+        },
+        onEnd(ev, dragger) {
+          em.trigger('canvas:move:end', dragger);
         }
-        // onStart(ev, dragger) {
-        //   console.log('START');
-        //   console.log('pointer start', dragger.startPointer, 'position start', dragger.startPosition);
-        // },
-        // onDrag(ev, dragger) {
-        //   console.log('DRAG');
-        //   console.log('pointer', dragger.currentPointer, 'position', dragger.position, 'delta', dragger.delta);
-        // },
-        // onEnd(ev, dragger) {
-        //   console.log('END');
-        //   console.log('pointer', dragger.currentPointer, 'position', dragger.position, 'delta', dragger.delta);
-        // },
       });
       this.dragger = dragger;
     }
