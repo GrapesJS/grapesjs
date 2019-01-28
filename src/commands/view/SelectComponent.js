@@ -3,7 +3,6 @@ import { on, off, getUnitFromValue } from 'utils/mixins';
 
 const ToolbarView = require('dom_components/view/ToolbarView');
 const Toolbar = require('dom_components/model/Toolbar');
-const key = require('keymaster');
 const $ = require('backbone').$;
 let showOffsets;
 
@@ -44,7 +43,7 @@ module.exports = {
    * @private
    * */
   toggleSelectComponent(enable) {
-    const em = this.em;
+    const { em } = this;
     const method = enable ? 'on' : 'off';
     const methods = { on, off };
     const body = this.getCanvasBody();
@@ -106,8 +105,8 @@ module.exports = {
    * @param {Object}  e
    * @private
    */
-  onOut(e) {
-    e.stopPropagation();
+  onOut(ev) {
+    ev && ev.stopPropagation();
     this.hideBadge();
     this.hideHighlighter();
     this.hideElementOffset();
@@ -138,7 +137,8 @@ module.exports = {
    * @param {Object} pos
    */
   hideElementOffset(el, pos) {
-    this.editor.stopCommand('show-offset');
+    const { editor } = this;
+    editor && editor.stopCommand('show-offset');
   },
 
   /**
@@ -280,13 +280,15 @@ module.exports = {
     var bStyle = badge.style;
     var u = 'px';
     bStyle.display = 'block';
-    var canvasPos = canvas.getCanvasView().getPosition();
+    var canvasPos = this.getCanvasPosition();
+
     if (canvasPos) {
-      var badgeH = badge ? badge.offsetHeight : 0;
-      var badgeW = badge ? badge.offsetWidth : 0;
-      var top =
-        pos.top - badgeH < canvasPos.top ? canvasPos.top : pos.top - badgeH;
-      var left = pos.left + badgeW < canvasPos.left ? canvasPos.left : pos.left;
+      const canvasTop = canvasPos.top;
+      const canvasLeft = canvasPos.left;
+      const posTop = pos.top - (badge ? badge.offsetHeight : 0);
+      const badgeW = badge ? badge.offsetWidth : 0;
+      var top = posTop < canvasTop ? canvasTop : posTop;
+      var left = pos.left + badgeW < canvasLeft ? canvasLeft : pos.left;
       bStyle.top = top + u;
       bStyle.left = left + u;
     }
@@ -673,7 +675,7 @@ module.exports = {
     this.stopSelectComponent();
     !opts.preserveSelected && em.setSelected(null);
     this.clean();
-    this.hideBadge();
+    this.onOut();
     this.hideFixedElementOffset();
     this.canvas.getToolbarEl().style.display = 'none';
 

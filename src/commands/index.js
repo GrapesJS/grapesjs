@@ -26,7 +26,7 @@
  * @module Commands
  */
 
-import { isFunction, isUndefined } from 'underscore';
+import { isFunction } from 'underscore';
 import CommandAbstract from './view/CommandAbstract';
 
 module.exports = () => {
@@ -81,10 +81,7 @@ module.exports = () => {
       defaultCommands['select-comp'] = require('./view/SelectComponent');
       defaultCommands['create-comp'] = require('./view/CreateComponent');
       defaultCommands['delete-comp'] = require('./view/DeleteComponent');
-      defaultCommands['image-comp'] = require('./view/ImageComponent');
       defaultCommands['move-comp'] = require('./view/MoveComponent');
-      defaultCommands['text-comp'] = require('./view/TextComponent');
-      defaultCommands['insert-custom'] = require('./view/InsertCustom');
       defaultCommands['export-template'] = ViewCode;
       defaultCommands['sw-visibility'] = require('./view/SwitchVisibility');
       defaultCommands['open-layers'] = require('./view/OpenLayers');
@@ -189,6 +186,7 @@ module.exports = () => {
       [
         ['copy', 'CopyComponent'],
         ['paste', 'PasteComponent'],
+        ['canvas-move', 'CanvasMove'],
         ['component-next', 'ComponentNext'],
         ['component-prev', 'ComponentPrev'],
         ['component-enter', 'ComponentEnter'],
@@ -198,9 +196,7 @@ module.exports = () => {
         ['component-style-clear', 'ComponentStyleClear']
       ].forEach(
         item =>
-          (defaultCommands[`core:${item[0]}`] = require(`./view/${
-            item[1]
-          }`).run)
+          (defaultCommands[`core:${item[0]}`] = require(`./view/${item[1]}`))
       );
 
       if (c.em) c.model = c.em.get('Canvas');
@@ -239,11 +235,13 @@ module.exports = () => {
      * myCommand.run();
      * */
     get(id) {
-      var el = commands[id];
+      let el = commands[id];
 
-      if (typeof el == 'function') {
+      if (isFunction(el)) {
         el = new el(c);
         commands[id] = el;
+      } else if (!el) {
+        em.logWarning(`'${id}' command not found`);
       }
 
       return el;
@@ -346,10 +344,12 @@ module.exports = () => {
       if (command && command.run) {
         const id = command.id;
         const editor = em.get('Editor');
-        result = command.callRun(editor, options);
 
-        if (id && command.stop && !command.noStop) {
-          active[id] = result;
+        if (!this.isActive(id)) {
+          if (id && command.stop && !command.noStop) {
+            active[id] = result;
+          }
+          result = command.callRun(editor, options);
         }
       }
 
@@ -357,7 +357,7 @@ module.exports = () => {
     },
 
     /**
-     * [runCommand description]
+     * Stop the command
      * @param  {Object} command
      * @param {Object} options
      * @return {*} Result of the command
@@ -369,8 +369,11 @@ module.exports = () => {
       if (command && command.run) {
         const id = command.id;
         const editor = em.get('Editor');
-        result = command.callStop(editor, options);
-        if (id) delete active[id];
+
+        if (this.isActive(id)) {
+          if (id) delete active[id];
+          result = command.callStop(editor, options);
+        }
       }
 
       return result;

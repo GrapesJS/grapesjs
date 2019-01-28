@@ -11,11 +11,13 @@ module.exports = {
     var opt = opts || {};
     var state = opt.state || '';
     var config = editor.getConfig();
+    const zoom = this.em.getZoomDecimal();
 
     if (
       !config.showOffsets ||
       (!config.showOffsetsSelected && state == 'Fixed')
     ) {
+      editor.stopCommand(this.id, opts);
       return;
     }
 
@@ -78,9 +80,11 @@ module.exports = {
     }
 
     var unit = 'px';
-    var marginLeftSt = style.marginLeft.replace(unit, '');
-    var marginTopSt = parseInt(style.marginTop.replace(unit, ''));
-    var marginBottomSt = parseInt(style.marginBottom.replace(unit, ''));
+    var marginLeftSt = parseFloat(style.marginLeft.replace(unit, '')) * zoom;
+    var marginRightSt = parseFloat(style.marginRight.replace(unit, '')) * zoom;
+    var marginTopSt = parseFloat(style.marginTop.replace(unit, '')) * zoom;
+    var marginBottomSt =
+      parseFloat(style.marginBottom.replace(unit, '')) * zoom;
     var mtStyle = marginT.style;
     var mbStyle = marginB.style;
     var mlStyle = marginL.style;
@@ -89,54 +93,55 @@ module.exports = {
     var pbStyle = padB.style;
     var plStyle = padL.style;
     var prStyle = padR.style;
-    var posLeft = parseInt(pos.left);
+    var posLeft = parseFloat(pos.left);
+    var widthEl = parseFloat(style.width) * zoom + unit;
 
     // Margin style
-    mtStyle.height = style.marginTop;
-    mtStyle.width = style.width;
-    mtStyle.top = pos.top - style.marginTop.replace(unit, '') + unit;
+    mtStyle.height = marginTopSt + unit;
+    mtStyle.width = widthEl;
+    mtStyle.top = pos.top - marginTopSt + unit;
     mtStyle.left = posLeft + unit;
 
-    mbStyle.height = style.marginBottom;
-    mbStyle.width = style.width;
+    mbStyle.height = marginBottomSt + unit;
+    mbStyle.width = widthEl;
     mbStyle.top = pos.top + pos.height + unit;
     mbStyle.left = posLeft + unit;
 
     var marginSideH = pos.height + marginTopSt + marginBottomSt + unit;
     var marginSideT = pos.top - marginTopSt + unit;
     mlStyle.height = marginSideH;
-    mlStyle.width = style.marginLeft;
+    mlStyle.width = marginLeftSt + unit;
     mlStyle.top = marginSideT;
     mlStyle.left = posLeft - marginLeftSt + unit;
 
     mrStyle.height = marginSideH;
-    mrStyle.width = style.marginRight;
+    mrStyle.width = marginRightSt + unit;
     mrStyle.top = marginSideT;
     mrStyle.left = posLeft + pos.width + unit;
 
     // Padding style
-    var padTop = parseInt(style.paddingTop.replace(unit, ''));
-    ptStyle.height = style.paddingTop;
-    ptStyle.width = style.width;
+    var padTop = parseFloat(style.paddingTop) * zoom;
+    ptStyle.height = padTop + unit;
+    ptStyle.width = widthEl;
     ptStyle.top = pos.top + unit;
     ptStyle.left = posLeft + unit;
 
-    var padBot = parseInt(style.paddingBottom.replace(unit, ''));
-    pbStyle.height = style.paddingBottom;
-    pbStyle.width = style.width;
+    var padBot = parseFloat(style.paddingBottom) * zoom;
+    pbStyle.height = padBot + unit;
+    pbStyle.width = widthEl;
     pbStyle.top = pos.top + pos.height - padBot + unit;
     pbStyle.left = posLeft + unit;
 
     var padSideH = pos.height - padBot - padTop + unit;
     var padSideT = pos.top + padTop + unit;
     plStyle.height = padSideH;
-    plStyle.width = style.paddingLeft;
+    plStyle.width = parseFloat(style.paddingLeft) * zoom + unit;
     plStyle.top = padSideT;
     plStyle.left = pos.left + unit;
 
-    var padRight = parseInt(style.paddingRight.replace(unit, ''));
+    var padRight = parseFloat(style.paddingRight) * zoom;
     prStyle.height = padSideH;
-    prStyle.width = style.paddingRight;
+    prStyle.width = padRight + unit;
     prStyle.top = padSideT;
     prStyle.left = pos.left + pos.width - padRight + unit;
   },
