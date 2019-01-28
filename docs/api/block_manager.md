@@ -135,8 +135,10 @@ Render blocks
 
 ### Parameters
 
--   `blocks` **[Array][13]** Blocks to render, without the argument will render
-                           all global blocks
+-   `blocks` **[Array][13]** Blocks to render, without the argument will render all global blocks
+-   `opts` **[Object][11]** Options (optional, default `{}`)
+    -   `opts.external` **[Boolean][15]?** Render blocks in a new container (HTMLElement will be returned)
+    -   `opts.ignoreCategories` **[Boolean][15]?** Render blocks without categories
 
 ### Examples
 
@@ -146,9 +148,9 @@ blockManager.render();
 
 // Render new set of blocks
 const blocks = blockManager.getAll();
-blockManager.render(blocks.filter(
- block => block.get('category') == 'sections'
-));
+const filtered = blocks.filter(block => block.get('category') == 'sections')
+
+blockManager.render(filtered);
 // Or a new set from an array
 blockManager.render([
  {label: 'Label text', content: '<div>Content</div>'}
@@ -156,6 +158,10 @@ blockManager.render([
 
 // Back to blocks from the global collection
 blockManager.render();
+
+// You can also render your blocks outside of the main block container
+const newBlocksEl = blockManager.render(filtered, { external: true });
+document.getElementById('some-id').appendChild(newBlocksEl);
 ```
 
 Returns **[HTMLElement][14]** Rendered element
@@ -187,3 +193,5 @@ Returns **[HTMLElement][14]** Rendered element
 [13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
 [14]: https://developer.mozilla.org/docs/Web/HTML/Element
+
+[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean

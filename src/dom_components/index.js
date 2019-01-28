@@ -28,7 +28,7 @@
  * @module DomComponents
  */
 import Backbone from 'backbone';
-import { isEmpty, isString, isObject, isArray } from 'underscore';
+import { isEmpty, isString, isObject, isArray, result } from 'underscore';
 
 module.exports = () => {
   var c = {};
@@ -543,7 +543,7 @@ module.exports = () => {
             ...model,
             defaults: {
               ...modelToExt.prototype.defaults,
-              ...(model.defaults || {})
+              ...(result(model, 'defaults') || {})
             }
           },
           {
