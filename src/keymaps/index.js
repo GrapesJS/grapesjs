@@ -119,6 +119,7 @@ module.exports = () => {
      * @param {string} id Keymap id
      * @param {string} keys Keymap keys, eg. `ctrl+a`, `⌘+z, ctrl+z`
      * @param {Function|string} handler Keymap handler, might be a function
+     * @param {Object} [opts={}] Options
      * @return {Object} Added keymap
      *  or just a command id as a string
      * @example
@@ -134,7 +135,7 @@ module.exports = () => {
      *  // ...
      * })
      */
-    add(id, keys, handler) {
+    add(id, keys, handler, opts = {}) {
       const em = this.em;
       const editor = em.getEditor();
       const cmd = em.get('Commands');
@@ -145,9 +146,12 @@ module.exports = () => {
       keymaps[id] = keymap;
       keymaster(keys, (e, h) => {
         // It's safer putting handlers resolution inside the callback
+        const opt = { event: e, h };
         handler = isString(handler) ? cmd.get(handler) : handler;
-        !handler.avoidPrevent && canvas.getCanvasView().preventDefault(e);
-        typeof handler == 'object' ? handler.run(editor) : handler(editor);
+        opts.prevent && canvas.getCanvasView().preventDefault(e);
+        typeof handler == 'object'
+          ? handler.run(editor, 0, opt)
+          : handler(editor, 0, opt);
         const args = [id, h.shortcut, e];
         em.trigger('keymap:emit', ...args);
         em.trigger(`keymap:emit:${id}`, ...args);
