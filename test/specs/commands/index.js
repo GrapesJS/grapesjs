@@ -29,7 +29,8 @@ describe('Commands', () => {
           default:
         }
         return null;
-      }
+      },
+      logWarning() {}
     };
 
     beforeEach(() => {
@@ -65,10 +66,7 @@ describe('Commands', () => {
       expect(obj.get('select-comp')).not.toBeUndefined();
       expect(obj.get('create-comp')).not.toBeUndefined();
       expect(obj.get('delete-comp')).not.toBeUndefined();
-      expect(obj.get('image-comp')).not.toBeUndefined();
       expect(obj.get('move-comp')).not.toBeUndefined();
-      expect(obj.get('text-comp')).not.toBeUndefined();
-      expect(obj.get('insert-custom')).not.toBeUndefined();
       expect(obj.get('export-template')).not.toBeUndefined();
       expect(obj.get('sw-visibility')).not.toBeUndefined();
       expect(obj.get('open-layers')).not.toBeUndefined();

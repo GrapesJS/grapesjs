@@ -345,7 +345,7 @@ describe('GrapesJS', () => {
           ed.testVal = ed.getHtml() + opts.val;
         }
       });
-      editor.stopCommand('test-command', { val: 5 });
+      editor.stopCommand('test-command', { val: 5, force: 1 });
       expect(editor.testVal).toEqual(htmlString + '5');
     });
 
