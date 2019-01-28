@@ -136,8 +136,9 @@ module.exports = () => {
      */
     add(id, keys, handler) {
       const em = this.em;
-      const cmd = em.get('Commands');
       const editor = em.getEditor();
+      const cmd = em.get('Commands');
+      const canvas = em.get('Canvas');
       const keymap = { id, keys, handler };
       const pk = keymaps[id];
       pk && this.remove(id);
@@ -145,6 +146,7 @@ module.exports = () => {
       keymaster(keys, (e, h) => {
         // It's safer putting handlers resolution inside the callback
         handler = isString(handler) ? cmd.get(handler) : handler;
+        !handler.avoidPrevent && canvas.getCanvasView().preventDefault(e);
         typeof handler == 'object' ? handler.run(editor) : handler(editor);
         const args = [id, h.shortcut, e];
         em.trigger('keymap:emit', ...args);
