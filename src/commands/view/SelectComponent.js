@@ -178,7 +178,6 @@ module.exports = {
   onClick(e) {
     e.stopPropagation();
     const $el = $(e.target);
-    const editor = this.editor;
     let model = $el.data('model');
 
     if (!model) {
@@ -475,7 +474,8 @@ module.exports = {
       if (typeof resizable == 'object') {
         options = { ...options, ...resizable };
       }
-      editor.runCommand('resize', { el, options });
+
+      editor.runCommand('resize', { el, options, force: 1 });
 
       // On undo/redo the resizer rect is not updating, need somehow to call
       // this.updateRect on undo/redo action
