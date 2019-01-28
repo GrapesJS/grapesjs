@@ -64,7 +64,7 @@ module.exports = Backbone.View.extend({
   },
 
   onWheel(ev) {
-    if (ev.ctrlKey || ev.metaKey) {
+    if ((ev.ctrlKey || ev.metaKey) && this.em.getConfig('multiFrames')) {
       this.preventDefault(ev);
       const { model } = this;
       const delta = Math.max(-1, Math.min(1, ev.wheelDelta || -ev.detail));
