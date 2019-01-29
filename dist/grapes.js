@@ -38527,7 +38527,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.14.53',
+    version: '0.14.54',
 
     /**
      * Initialize the editor with passed options
@@ -38723,6 +38723,7 @@ module.exports = function () {
      * @param {string} id Keymap id
      * @param {string} keys Keymap keys, eg. `ctrl+a`, `⌘+z, ctrl+z`
      * @param {Function|string} handler Keymap handler, might be a function
+     * @param {Object} [opts={}] Options
      * @return {Object} Added keymap
      *  or just a command id as a string
      * @example
@@ -38739,6 +38740,8 @@ module.exports = function () {
      * })
      */
     add: function add(id, keys, handler) {
+      var opts = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
       var em = this.em;
       var editor = em.getEditor();
       var cmd = em.get('Commands');
@@ -38749,9 +38752,10 @@ module.exports = function () {
       keymaps[id] = keymap;
       keymaster(keys, function (e, h) {
         // It's safer putting handlers resolution inside the callback
+        var opt = { event: e, h: h };
         handler = (0, _underscore.isString)(handler) ? cmd.get(handler) : handler;
-        !handler.avoidPrevent && canvas.getCanvasView().preventDefault(e);
-        (typeof handler === 'undefined' ? 'undefined' : _typeof(handler)) == 'object' ? handler.run(editor) : handler(editor);
+        opts.prevent && canvas.getCanvasView().preventDefault(e);
+        (typeof handler === 'undefined' ? 'undefined' : _typeof(handler)) == 'object' ? handler.run(editor, 0, opt) : handler(editor, 0, opt);
         var args = [id, h.shortcut, e];
         em.trigger.apply(em, ['keymap:emit'].concat(args));
         em.trigger.apply(em, ['keymap:emit:' + id].concat(args));
