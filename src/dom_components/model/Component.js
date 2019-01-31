@@ -1037,37 +1037,40 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @private
      */
     createId(model) {
-      if (window.stoop) debugger;
+      const list = Component.getList(model);
       let { id } = model.get('attributes');
       let nextId;
 
       if (id) {
-        nextId = Component.getIncrementId(id);
+        nextId = Component.getIncrementId(id, list);
         model.setId(nextId);
       } else {
-        nextId = Component.getNewId();
+        nextId = Component.getNewId(list);
       }
 
-      componentList[nextId] = model;
+      list[nextId] = model;
       return nextId;
     },
 
-    getNewId() {
-      componentIndex++;
+    getNewId(list) {
+      const count = Object.keys(list).length;
       // Testing 1000000 components with `+ 2` returns 0 collisions
-      const ilen = componentIndex.toString().length + 2;
+      const ilen = count.toString().length + 2;
       const uid = (Math.random() + 1.1).toString(36).slice(-ilen);
       let newId = `i${uid}`;
-      while (componentList[newId]) newId = Component.getNewId();
+
+      while (list[newId]) {
+        newId = Component.getNewId(list);
+      }
 
       return newId;
     },
 
-    getIncrementId(id) {
+    getIncrementId(id, list) {
       let counter = 1;
       let newId = id;
 
-      while (componentList[newId]) {
+      while (list[newId]) {
         counter++;
         newId = `${id}-${counter}`;
       }
@@ -1075,8 +1078,14 @@ const Component = Backbone.Model.extend(Styleable).extend(
       return newId;
     },
 
-    getList() {
-      return componentList;
+    /**
+     * The list of components is taken from the Components module.
+     * Initially, the list, was set statically on the Component object but it was
+     * not ok, as it was shared between multiple editor instances
+     */
+    getList(model) {
+      const domc = model.opt && model.opt.domc;
+      return domc ? domc.componentsById : {};
     },
 
     /**
@@ -1084,18 +1093,18 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * (are not Components/CSSRules yet), for duplicated id and fixes them
      *
      */
-    checkId(components, styles = []) {
+    checkId(components, styles = [], list = {}) {
       const comps = isArray(components) ? components : [components];
       comps.forEach(comp => {
         const { attributes = {} } = comp;
         const { id } = attributes;
 
         // Check if we have collisions with current components
-        if (id && componentList[id]) {
-          const newId = Component.getIncrementId(id);
+        if (id && list[id]) {
+          const newId = Component.getIncrementId(id, list);
           attributes.id = newId;
           // Update passed styles
-          styles &&
+          isArray(styles) &&
             styles.forEach(style => {
               const { selectors } = style;
               selectors.forEach((sel, idx) => {

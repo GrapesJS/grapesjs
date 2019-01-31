@@ -5,6 +5,7 @@ let Component;
 
 module.exports = Backbone.Collection.extend({
   initialize(models, opt = {}) {
+    this.opt = opt;
     this.listenTo(this, 'add', this.onAdd);
     this.config = opt.config;
     this.em = opt.em;
@@ -15,6 +16,7 @@ module.exports = Backbone.Collection.extend({
       options.em = opt.em;
       options.config = opt.config;
       options.componentTypes = df;
+      options.domc = opt.domc;
 
       for (var it = 0; it < df.length; it++) {
         var dfId = df[it].id;
@@ -37,8 +39,9 @@ module.exports = Backbone.Collection.extend({
     const { em } = this;
     const cssc = em.get('CssComposer');
     const parsed = em.get('Parser').parseHtml(value);
+    // We need this to avoid duplicate IDs
     if (!Component) Component = require('./Component');
-    Component.checkId(parsed.html, parsed.css);
+    Component.checkId(parsed.html, parsed.css, this.opt.domc.componentsById);
 
     if (parsed.css && cssc && !opt.temporary) {
       cssc.addCollection(parsed.css, {

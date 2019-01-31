@@ -450,7 +450,7 @@ describe('GrapesJS', () => {
       expect(css).toEqual(`${protCss}.test2{color:red;}.test3{color:blue;}`);
     });
 
-    describe.only('Component selection', () => {
+    describe('Component selection', () => {
       let editor, wrapper, el1, el2, el3;
 
       beforeEach(() => {

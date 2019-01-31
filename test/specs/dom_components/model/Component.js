@@ -24,7 +24,8 @@ module.exports = {
         dcomp = new DomComponents();
         compOpts = {
           em,
-          componentTypes: dcomp.componentTypes
+          componentTypes: dcomp.componentTypes,
+          domc: dcomp
         };
         obj = new Component({}, compOpts);
       });
