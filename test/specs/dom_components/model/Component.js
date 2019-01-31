@@ -526,6 +526,7 @@ module.exports = {
 
     describe('Components', () => {
       beforeEach(() => {
+        em = new Editor({});
         dcomp = new DomComponents();
         compOpts = {
           componentTypes: dcomp.componentTypes
@@ -548,6 +549,58 @@ module.exports = {
         var c = new Components({}, compOpts);
         var m = c.add({ type: 'text' });
         expect(m instanceof ComponentText).toEqual(true);
+      });
+
+      test('Avoid conflicting components with the same ID', () => {
+        const em = new Editor({});
+        dcomp = new DomComponents();
+        dcomp.init({ em });
+        const id = 'myid';
+        const block = `
+          <div id="${id}">Test</div>
+          <style>
+            #${id} {
+              color: red;
+            }
+            #${id}:hover {
+              color: blue;
+            }
+          </style>
+        `;
+        const added = dcomp.addComponent(block);
+        expect(dcomp.getComponents().length).toBe(1);
+        expect(added.getId()).toBe(id);
+        const cc = em.get('CssComposer');
+        expect(cc.getAll().length).toBe(2);
+        expect(
+          cc
+            .getAll()
+            .at(0)
+            .selectorsToString()
+        ).toBe(`#${id}`);
+        expect(
+          cc
+            .getAll()
+            .at(1)
+            .selectorsToString()
+        ).toBe(`#${id}:hover`);
+        const added2 = dcomp.addComponent(block);
+        const id2 = added2.getId();
+        const newId = `${id}-2`;
+        expect(id2).toBe(newId);
+        expect(cc.getAll().length).toBe(4);
+        expect(
+          cc
+            .getAll()
+            .at(2)
+            .selectorsToString()
+        ).toBe(`#${newId}`);
+        expect(
+          cc
+            .getAll()
+            .at(3)
+            .selectorsToString()
+        ).toBe(`#${newId}:hover`);
       });
     });
   }

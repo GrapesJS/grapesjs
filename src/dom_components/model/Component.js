@@ -169,11 +169,11 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.opt = opt;
       this.em = em;
       this.config = opt.config || {};
-      this.ccid = Component.createId(this);
       this.set('attributes', {
         ...(this.defaults.attributes || {}),
         ...(this.get('attributes') || {})
       });
+      this.ccid = Component.createId(this);
       this.initClasses();
       this.initTraits();
       this.initComponents();
@@ -1037,17 +1037,73 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @private
      */
     createId(model) {
-      componentIndex++;
-      // Testing 1000000 components with `+ 2` returns 0 collisions
-      const ilen = componentIndex.toString().length + 2;
-      const uid = (Math.random() + 1.1).toString(36).slice(-ilen);
-      const nextId = 'i' + uid;
+      if (window.stoop) debugger;
+      let { id } = model.get('attributes');
+      let nextId;
+
+      if (id) {
+        nextId = Component.getIncrementId(id);
+        model.setId(nextId);
+      } else {
+        nextId = Component.getNewId();
+      }
+
       componentList[nextId] = model;
       return nextId;
     },
 
+    getNewId() {
+      componentIndex++;
+      // Testing 1000000 components with `+ 2` returns 0 collisions
+      const ilen = componentIndex.toString().length + 2;
+      const uid = (Math.random() + 1.1).toString(36).slice(-ilen);
+      let newId = `i${uid}`;
+      while (componentList[newId]) newId = Component.getNewId();
+
+      return newId;
+    },
+
+    getIncrementId(id) {
+      let counter = 1;
+      let newId = id;
+
+      while (componentList[newId]) {
+        counter++;
+        newId = `${id}-${counter}`;
+      }
+
+      return newId;
+    },
+
     getList() {
       return componentList;
+    },
+
+    /**
+     * This method checks, for each parsed component and style object
+     * (are not Components/CSSRules yet), for duplicated id and fixes them
+     *
+     */
+    checkId(components, styles = []) {
+      const comps = isArray(components) ? components : [components];
+      comps.forEach(comp => {
+        const { attributes = {} } = comp;
+        const { id } = attributes;
+
+        // Check if we have collisions with current components
+        if (id && componentList[id]) {
+          const newId = Component.getIncrementId(id);
+          attributes.id = newId;
+          // Update passed styles
+          styles &&
+            styles.forEach(style => {
+              const { selectors } = style;
+              selectors.forEach((sel, idx) => {
+                if (sel === `#${id}`) selectors[idx] = `#${newId}`;
+              });
+            });
+        }
+      });
     }
   }
 );

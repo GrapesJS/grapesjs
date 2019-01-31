@@ -1,6 +1,7 @@
 import { isEmpty, isArray, isString } from 'underscore';
 
 const Backbone = require('backbone');
+let Component;
 
 module.exports = Backbone.Collection.extend({
   initialize(models, opt = {}) {
@@ -36,6 +37,8 @@ module.exports = Backbone.Collection.extend({
     const { em } = this;
     const cssc = em.get('CssComposer');
     const parsed = em.get('Parser').parseHtml(value);
+    if (!Component) Component = require('./Component');
+    Component.checkId(parsed.html, parsed.css);
 
     if (parsed.css && cssc && !opt.temporary) {
       cssc.addCollection(parsed.css, {
