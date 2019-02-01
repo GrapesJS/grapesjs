@@ -1091,12 +1091,12 @@ const Component = Backbone.Model.extend(Styleable).extend(
     /**
      * This method checks, for each parsed component and style object
      * (are not Components/CSSRules yet), for duplicated id and fixes them
-     *
+     * This method is used in Components.js just after the parsing
      */
     checkId(components, styles = [], list = {}) {
       const comps = isArray(components) ? components : [components];
       comps.forEach(comp => {
-        const { attributes = {} } = comp;
+        const { attributes = {}, components } = comp;
         const { id } = attributes;
 
         // Check if we have collisions with current components
@@ -1112,6 +1112,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
               });
             });
         }
+
+        components && Component.checkId(components, styles, list);
       });
     }
   }

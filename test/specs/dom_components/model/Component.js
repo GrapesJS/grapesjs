@@ -557,8 +557,11 @@ module.exports = {
         dcomp = new DomComponents();
         dcomp.init({ em });
         const id = 'myid';
+        const idB = 'myid2';
         const block = `
-          <div id="${id}">Test</div>
+          <div id="${id}">
+            <div id="${idB}"></div>
+          </div>
           <style>
             #${id} {
               color: red;
@@ -566,13 +569,23 @@ module.exports = {
             #${id}:hover {
               color: blue;
             }
+            #${idB} {
+              color: yellow;
+            }
           </style>
         `;
         const added = dcomp.addComponent(block);
-        expect(dcomp.getComponents().length).toBe(1);
+        // Let's check if everthing is working as expected
+        expect(Object.keys(dcomp.componentsById).length).toBe(3); // + 1 wrapper
         expect(added.getId()).toBe(id);
+        expect(
+          added
+            .components()
+            .at(0)
+            .getId()
+        ).toBe(idB);
         const cc = em.get('CssComposer');
-        expect(cc.getAll().length).toBe(2);
+        expect(cc.getAll().length).toBe(3);
         expect(
           cc
             .getAll()
@@ -585,23 +598,43 @@ module.exports = {
             .at(1)
             .selectorsToString()
         ).toBe(`#${id}:hover`);
-        const added2 = dcomp.addComponent(block);
-        const id2 = added2.getId();
-        const newId = `${id}-2`;
-        expect(id2).toBe(newId);
-        expect(cc.getAll().length).toBe(4);
         expect(
           cc
             .getAll()
             .at(2)
             .selectorsToString()
-        ).toBe(`#${newId}`);
+        ).toBe(`#${idB}`);
+        // Now let's add the same block
+        const added2 = dcomp.addComponent(block);
+        const id2 = added2.getId();
+        const newId = `${id}-2`;
+        const newIdB = `${idB}-2`;
+        expect(id2).toBe(newId);
+        expect(
+          added2
+            .components()
+            .at(0)
+            .getId()
+        ).toBe(newIdB);
+        expect(cc.getAll().length).toBe(6);
         expect(
           cc
             .getAll()
             .at(3)
             .selectorsToString()
+        ).toBe(`#${newId}`);
+        expect(
+          cc
+            .getAll()
+            .at(4)
+            .selectorsToString()
         ).toBe(`#${newId}:hover`);
+        expect(
+          cc
+            .getAll()
+            .at(5)
+            .selectorsToString()
+        ).toBe(`#${newIdB}`);
       });
     });
   }
