@@ -310,7 +310,9 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.set('attributes', attrs, opts);
       const attrPrev = { ...this.previous('attributes') };
       const diff = shallowDiff(attrPrev, attrs);
-      keys(diff).forEach(pr => this.trigger(`change:attributes:${pr}`));
+      keys(diff).forEach(pr =>
+        this.trigger(`change:attributes:${pr}`, this, diff[pr])
+      );
 
       return this;
     },
