@@ -38,6 +38,7 @@ module.exports = () => {
   const ComponentView = require('./view/ComponentView');
   const Components = require('./model/Components');
   const ComponentsView = require('./view/ComponentsView');
+  const componentsById = {};
 
   var component, componentView;
   var componentTypes = [
@@ -137,6 +138,8 @@ module.exports = () => {
 
     componentTypes,
 
+    componentsById,
+
     /**
      * Name of the module
      * @type {String}
@@ -231,7 +234,8 @@ module.exports = () => {
       component = new Component(wrapper, {
         em,
         config: c,
-        componentTypes
+        componentTypes,
+        domc: this
       });
       component.set({ attributes: { id: 'wrapper' } });
 

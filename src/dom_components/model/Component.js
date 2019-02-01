@@ -169,11 +169,11 @@ const Component = Backbone.Model.extend(Styleable).extend(
       this.opt = opt;
       this.em = em;
       this.config = opt.config || {};
-      this.ccid = Component.createId(this);
       this.set('attributes', {
         ...(this.defaults.attributes || {}),
         ...(this.get('attributes') || {})
       });
+      this.ccid = Component.createId(this);
       this.initClasses();
       this.initTraits();
       this.initComponents();
@@ -1037,17 +1037,84 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @private
      */
     createId(model) {
-      componentIndex++;
-      // Testing 1000000 components with `+ 2` returns 0 collisions
-      const ilen = componentIndex.toString().length + 2;
-      const uid = (Math.random() + 1.1).toString(36).slice(-ilen);
-      const nextId = 'i' + uid;
-      componentList[nextId] = model;
+      const list = Component.getList(model);
+      let { id } = model.get('attributes');
+      let nextId;
+
+      if (id) {
+        nextId = Component.getIncrementId(id, list);
+        model.setId(nextId);
+      } else {
+        nextId = Component.getNewId(list);
+      }
+
+      list[nextId] = model;
       return nextId;
     },
 
-    getList() {
-      return componentList;
+    getNewId(list) {
+      const count = Object.keys(list).length;
+      // Testing 1000000 components with `+ 2` returns 0 collisions
+      const ilen = count.toString().length + 2;
+      const uid = (Math.random() + 1.1).toString(36).slice(-ilen);
+      let newId = `i${uid}`;
+
+      while (list[newId]) {
+        newId = Component.getNewId(list);
+      }
+
+      return newId;
+    },
+
+    getIncrementId(id, list) {
+      let counter = 1;
+      let newId = id;
+
+      while (list[newId]) {
+        counter++;
+        newId = `${id}-${counter}`;
+      }
+
+      return newId;
+    },
+
+    /**
+     * The list of components is taken from the Components module.
+     * Initially, the list, was set statically on the Component object but it was
+     * not ok, as it was shared between multiple editor instances
+     */
+    getList(model) {
+      const domc = model.opt && model.opt.domc;
+      return domc ? domc.componentsById : {};
+    },
+
+    /**
+     * This method checks, for each parsed component and style object
+     * (are not Components/CSSRules yet), for duplicated id and fixes them
+     * This method is used in Components.js just after the parsing
+     */
+    checkId(components, styles = [], list = {}) {
+      const comps = isArray(components) ? components : [components];
+      comps.forEach(comp => {
+        const { attributes = {}, components } = comp;
+        const { id } = attributes;
+
+        // Check if we have collisions with current components
+        if (id && list[id]) {
+          const newId = Component.getIncrementId(id, list);
+          attributes.id = newId;
+          // Update passed styles
+          isArray(styles) &&
+            styles.forEach(style => {
+              const { selectors } = style;
+              selectors.forEach((sel, idx) => {
+                if (sel === `#${id}`) selectors[idx] = `#${newId}`;
+              });
+            });
+        }
+
+        components && Component.checkId(components, styles, list);
+      });
     }
   }
 );

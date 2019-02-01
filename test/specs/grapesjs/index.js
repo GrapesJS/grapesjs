@@ -465,6 +465,7 @@ describe('GrapesJS', () => {
         el1 = wrapper.find('#el1')[0];
         el2 = wrapper.find('#el2')[0];
         el3 = wrapper.find('#el3')[0];
+        // console.log('wrapper', wrapper.getEl().innerHTML);
       });
 
       test('Select a single component', () => {
