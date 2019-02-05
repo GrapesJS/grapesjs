@@ -1,5 +1,4 @@
-var Backbone = require('backbone');
-var ComponentView = require('./ComponentTextView');
+const ComponentView = require('./ComponentTextView');
 
 module.exports = ComponentView.extend({
   render(...args) {

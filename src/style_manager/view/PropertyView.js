@@ -1,6 +1,7 @@
 import Backbone from 'backbone';
 import { bindAll, isArray, isUndefined, debounce } from 'underscore';
 import { camelCase } from 'utils/mixins';
+import { includes, each } from 'underscore';
 
 const clearProp = 'data-clear-style';
 
@@ -21,11 +22,13 @@ module.exports = Backbone.View.extend({
     const pfx = this.pfx;
     const icon = model.get('icon');
     const info = model.get('info');
+    const parent = model.parent;
+
     return `
       <span class="${pfx}icon ${icon}" title="${info}">
         ${model.get('name')}
       </span>
-      <b class="${pfx}clear" ${clearProp}>&Cross;</b>
+      ${!parent ? `<b class="${pfx}clear" ${clearProp}>&Cross;</b>` : ''}
     `;
   },
 
@@ -68,6 +71,15 @@ module.exports = Backbone.View.extend({
 
     em && em.on(`update:component:style:${this.property}`, this.targetUpdated);
     //em && em.on(`styleable:change:${this.property}`, this.targetUpdated);
+
+    // Listening to changes of properties in this.requires, so that styleable
+    // changes based on other properties are propagated
+    const requires = model.get('requires');
+    requires &&
+      Object.keys(requires).forEach(property => {
+        em && em.on(`component:styleUpdate:${property}`, this.targetUpdated);
+      });
+
     this.listenTo(
       this.propTarget,
       'update styleManager:update',
@@ -89,20 +101,23 @@ module.exports = Backbone.View.extend({
    * @private
    */
   updateStatus() {
-    const status = this.model.get('status');
+    const { model } = this;
+    const status = model.get('status');
+    const parent = model.parent;
     const pfx = this.pfx;
     const ppfx = this.ppfx;
     const config = this.config;
     const updatedCls = `${ppfx}four-color`;
     const computedCls = `${ppfx}color-warn`;
     const labelEl = this.$el.children(`.${pfx}label`);
-    const clearStyle = this.getClearEl().style;
+    const clearStyleEl = this.getClearEl();
+    const clearStyle = clearStyleEl ? clearStyleEl.style : {};
     labelEl.removeClass(`${updatedCls} ${computedCls}`);
     clearStyle.display = 'none';
 
     switch (status) {
       case 'updated':
-        labelEl.addClass(updatedCls);
+        !parent && labelEl.addClass(updatedCls);
 
         if (config.clearProperties) {
           clearStyle.display = 'inline';
@@ -120,7 +135,8 @@ module.exports = Backbone.View.extend({
   clear(e) {
     e && e.stopPropagation();
     this.model.clearValue();
-    this.targetUpdated();
+    // Skip one stack with setTimeout to avoid inconsistencies
+    setTimeout(() => this.targetUpdated());
   },
 
   /**
@@ -179,7 +195,7 @@ module.exports = Backbone.View.extend({
   setStatus(value) {
     this.model.set('status', value);
     const parent = this.model.parent;
-    parent && parent.set('status', value);
+    parent && value && parent.set('status', value);
   },
 
   emitUpdateTarget: debounce(function() {
@@ -400,6 +416,10 @@ module.exports = Backbone.View.extend({
     const toRequire = model.get('toRequire');
     const unstylable = trg.get('unstylable');
     const stylableReq = trg.get('stylable-require');
+    const requires = model.get('requires');
+    const requiresParent = model.get('requiresParent');
+    const sectors = this.sector ? this.sector.collection : null;
+    const selected = this.em ? this.em.getSelected() : null;
     let stylable = trg.get('stylable');
 
     // Stylable could also be an array indicating with which property
@@ -419,6 +439,34 @@ module.exports = Backbone.View.extend({
         !target ||
         (stylableReq &&
           (stylableReq.indexOf(id) >= 0 || stylableReq.indexOf(property) >= 0));
+    }
+
+    // Check if the property is available based on other property's values
+    if (sectors && requires) {
+      const properties = Object.keys(requires);
+      sectors.each(sector => {
+        sector.get('properties').each(model => {
+          if (includes(properties, model.id)) {
+            const values = requires[model.id];
+            stylable = stylable && includes(values, model.get('value'));
+          }
+        });
+      });
+    }
+
+    // Check if the property is available based on parent's property values
+    if (requiresParent) {
+      const parent = selected && selected.parent();
+      const parentEl = parent && parent.getEl();
+      if (parentEl) {
+        const styles = window.getComputedStyle(parentEl);
+        each(requiresParent, (values, property) => {
+          stylable =
+            stylable && styles[property] && includes(values, styles[property]);
+        });
+      } else {
+        stylable = false;
+      }
     }
 
     return stylable;

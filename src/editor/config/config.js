@@ -224,6 +224,22 @@ module.exports = {
         ]
       },
       {
+        name: 'Flex',
+        open: false,
+        buildProps: [
+          'flex-direction',
+          'flex-wrap',
+          'justify-content',
+          'align-items',
+          'align-content',
+          'order',
+          'flex-basis',
+          'flex-grow',
+          'flex-shrink',
+          'align-self'
+        ]
+      },
+      {
         name: 'Dimension',
         open: false,
         buildProps: [

@@ -53,5 +53,7 @@ module.exports = {
   // set contentType paramater of $.ajax
   // true: application/json; charset=utf-8'
   // false: 'x-www-form-urlencoded'
-  contentTypeJson: false
+  contentTypeJson: true,
+
+  credentials: 'include'
 };

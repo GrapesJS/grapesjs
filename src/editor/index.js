@@ -18,11 +18,11 @@
  * ```
  *
  * ### Components
- * * `component:create` - Component is created (only the model, is not yet mounted in the canvas)
+ * * `component:create` - Component is created (only the model, is not yet mounted in the canvas), called after the init() method
  * * `component:mount` - Component is monted to an element and rendered in canvas
  * * `component:add` - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
  * * `component:remove` - Triggered when a component is removed, the model is passed as an argument to the callback
- * * `component:clone` - Triggered when a new component is added by a clone command, the model is passed as an argument to the callback
+ * * `component:clone` - Triggered when a component is cloned, the new model is passed as an argument to the callback
  * * `component:update` - Triggered when a component is updated (moved, styled, etc.), the model is passed as an argument to the callback
  * * `component:update:{propertyName}` - Listen any property change, the model is passed as an argument to the callback
  * * `component:styleUpdate` - Triggered when the style of the component is updated, the model is passed as an argument to the callback
@@ -76,6 +76,9 @@
  * ### RTE
  * * `rte:enable` - RTE enabled. The view, on which RTE is enabled, is passed as an argument
  * * `rte:disable` - RTE disabled. The view, on which RTE is disabled, is passed as an argument
+ * ### Modal
+ * * `modal:open` - Modal is opened
+ * * `modal:close` - Modal is closed
  * ### Commands
  * * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
  * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
@@ -92,7 +95,7 @@
  */
 import $ from 'cash-dom';
 
-module.exports = config => {
+export default config => {
   var c = config || {},
     defaults = require('./config/config'),
     EditorModel = require('./model/Editor'),

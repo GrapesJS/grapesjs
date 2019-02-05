@@ -29,7 +29,6 @@ const styleManager = editor.StyleManager;
 -   [removeProperty][9]
 -   [getProperties][10]
 -   [getModelToStyle][11]
--   [getModelToStyle][11]
 -   [addType][12]
 -   [getType][13]
 -   [getTypes][14]

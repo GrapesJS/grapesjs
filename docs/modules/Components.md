@@ -10,15 +10,20 @@ The Component is the base element for template composition. It is atomic, so ele
 
 
 ## Built-in components
-* Default (Basic)
-* Text
-* Image
-* Video
-* Link
-* Map
-* Table
-* Row (for the table)
-* Cell (for the table)
+* default (Basic)
+* wrapper
+* text
+* textnode
+* svg
+* script
+* image
+* video
+* label
+* link
+* map
+* table
+* row (for the table)
+* cell (for the table)
 
 
 
@@ -33,7 +38,9 @@ When we pass an HTML string to the editor like this:
 </div>
 ```
 
-For each DOM element the editor will create and store an object representation. Every future change to the template will be made on top of this structure, which will then reflect on the canvas. So each object, usually called *Model* (or state/store), will be the source of truth for the template, but what exactly does that mean? In more practical example, once the template is rendered on the canvas, if you try to remove one of the elements using the browser inspector and then ask the editor to print the HTML (using `editor.getHtml()`) you'll see that the element will still be present. This is because the editor relies on Models and not on the DOM inside the canvas. This approach allows us to be extremely flexible on how we generate the final code (from the *Model*) and how to render it inside the canvas (from the *View*).
+For each DOM element (`div`, `img`, `span`, etc.) the editor will create and store an object representation. Every future change to the template will be made on top of this structure, which will then reflect on the canvas. So each object, usually called *Model* (or state/store), will be the source of truth for the template, but what exactly does that mean?
+
+In more practical example, once the template is rendered on the canvas, if you try to remove one of its elements (eg. by using using the browser inspector) and ask the editor to print the HTML (using `editor.getHtml()`) you'll see that the element will still be there. This is because the editor relies on Models and not on the DOM elements inside the canvas. This approach allows us to be extremely flexible on how we generate the final code (from the *Model*) and how to render it inside the canvas (from the *View*).
 
 
 
@@ -54,7 +61,9 @@ isComponent: function(el) {
 }
 ```
 
-This method gives us the possibility to recognize and bind component types to each HTMLElement (div, img, iframe, etc.). Each HTML element introduced inside the canvas will be processed by `isComponent` of all available types and if it matches, the object represented the type should be returned. For example, with the image component this method looks like:
+This method gives us the possibility to recognize and bind component types to each HTMLElement (div, img, iframe, etc.). Each **HTML string/element** introduced inside the canvas will be processed by `isComponent` of all available types and if it matches, the object represented the type should be returned. The method `isComponent` **is skipped** if you add the component object (`{ type: 'my-custom-type', tagName: 'div', attribute: {...}, ...}`) or declare the type explicitly on the element (`<div data-gjs-type="my-custom-type">...</div>`)
+
+For example, with the image component this method looks like:
 
 ```js
 // Image component
@@ -220,12 +229,176 @@ comps.addType('map', {
 });
 ```
 
+## Improvement over addType <Badge text="0.14.50+"/>
+
+Now, with the [0.14.50](https://github.com/artf/grapesjs/releases/tag/v0.14.50) release, defining new components or extending them is a bit easier (without breaking the old process)
+
+* If you don't specify the type to extend, the `default` one will be used. In that case, you just
+use objects for `model` and `view`
+* The `defaults` property, in the `model`, will be merged automatically with defaults of the parent component
+* If you use an object in `model` you can specify `isComponent` outside or omit it. In this case,
+the `isComponent` is not mandatory but without it means the parser won't be able to identify the component
+if not explicitly declared (eg. `<div data-gjs-type="new-component">...</div>`)
+
+**Before**
+```js
+const defaultType = comps.getType('default');
+
+comps.addType('new-component', {
+  model: defaultType.model.extend({
+    defaults: {
+      ...defaultType.model.prototype.defaults,
+      someprop: 'somevalue',
+    },
+    ...
+  }, {
+    // Even if it returns false, declaring isComponent is mandatory
+    isComponent(el) {
+      return false;
+    },
+  }),
+  view: defaultType.view.extend({ ... });
+});
+```
+
+**After**
+```js
+comps.addType('new-component', {
+  // We can even omit isComponent here, as `false` return will be the default behavior
+  isComponent: el => false,
+  model: {
+    defaults: {
+      someprop: 'somevalue',
+    },
+    ...
+  },
+  view: { ... };
+});
+```
+* If you need to extend some component, you can use `extend` and `extendView` property.
+* You can now omit `view` property if you don't need to change it
+
+**Before**
+```js
+const originalMap = comps.getType('map');
+
+comps.addType('map', {
+  model: originalMap.model.extend({
+    ...
+  }, {
+    isComponent(el) {
+      // ... usually, you'd reuse the same logic
+    },
+  }),
+  // Even if I do nothing in view, I have to specify it
+  view: originalMap.view
+});
+```
+**After**
+
+The `map` type is already defined, so it will be used as a base for the model and view.
+We can skip `isComponent` if the recognition logic is the same of the extended component.
+```js
+comps.addType('map', {
+  model: { ... },
+});
+```
+Extend the `model` and `view` with some other, already defined, components.
+```js
+comps.addType('map', {
+  extend: 'other-defined-component',
+  model: { ... }, // Will extend 'other-defined-component'
+  view: { ... }, // Will extend 'other-defined-component'
+  // `isComponent` will be taken from `map`
+});
+```
+```js
+comps.addType('map', {
+  extend: 'other-defined-component',
+  model: { ... }, // Will extend 'other-defined-component'
+  extendView: 'other-defined-component-2',
+  view: { ... }, // Will extend 'other-defined-component-2'
+  // `isComponent` will be taken from `map`
+});
+```
+
+## Lifecycle Hooks
+
+Each component triggers different lifecycle hooks, which allows you to add custom actions at their specific stages.
+We can distinguish 2 different types of hooks: **global** and **local**.
+You define **local** hooks when you create/extend a component type (usually via some `model`/`view` method) and the reason is to react to an event of that
+particular component type. Instead, the **global** one, will be called indistinctly on any component (you listen to them via `editor.on`) and you can make
+use of them for a more generic use case or also listen to them inside other components.
+
+Let's see below the flow of all hooks:
+
+* **Local hook**: `model.init()` method, executed once the model of the component is initiliazed
+* **Global hook**: `component:create` event, called right after `model.init()`. The model is passed as an argument to the callback function.
+  Es. `editor.on('component:create', model => console.log('created', model))`
+* **Local hook**: `view.init()` method, executed once the view of the component is initiliazed
+* **Local hook**: `view.onRender()` method, executed once the component is rendered on the canvas
+* **Global hook**: `component:mount` event, called right after `view.onRender()`. The model is passed as an argument to the callback function.
+* **Local hook**: `model.updated()` method, executes when some property of the model is updated.
+* **Global hook**: `component:update` event, called after `model.updated()`. The model is passed as an argument to the callback function.
+  You can also listen to specific property change via `component:update:{propertyName}`
+* **Local hook**: `model.removed()` method, executed when the component is removed.
+* **Global hook**: `component:remove` event, called after `model.removed()`. The model is passed as an argument to the callback function.
+
+Below you can find an example usage of all the hooks
+
+```js
+editor.DomComponents.addType('test-component', {
+  model: {
+    defaults: {
+      testprop: 1,
+    },
+    init() {
+      console.log('Local hook: model.init');
+      this.listenTo(this, 'change:testprop', this.handlePropChange);
+      // Here we can listen global hooks with editor.on('...')
+    },
+    updated(property, value, prevValue) {
+      console.log('Local hook: model.updated',
+        'property', property, 'value', value, 'prevValue', prevValue);
+    },
+    removed() {
+      console.log('Local hook: model.removed');
+    },
+    handlePropChange() {
+      console.log('The value of testprop', this.get('testprop'));
+    }
+  },
+  view: {
+    init() {
+      console.log('Local hook: view.init');
+    },
+    onRender() {
+      console.log('Local hook: view.onRender');
+    },
+  },
+});
+
+// A block for the custom component
+editor.BlockManager.add('test-component', {
+  label: 'Test Component',
+  content: '<div data-gjs-type="test-component">Test Component</div>',
+});
+
+// Global hooks
+editor.on(`component:create`, model => console.log('Global hook: component:create', model.get('type')));
+editor.on(`component:mount`, model => console.log('Global hook: component:mount', model.get('type')));
+editor.on(`component:update:testprop`, model => console.log('Global hook: component:update:testprop', model.get('type')));
+editor.on(`component:remove`, model => console.log('Global hook: component:remove', model.get('type')));
+```
+
+
+
 
 
 ## Components & JS
 
 If you want to know how to create Components with javascript attached (eg. counters, galleries, slideshows, etc.) check the dedicated page
-[Components & JS](Components-&-JS)
+[Components & JS](Components-js.html)
 
 
 

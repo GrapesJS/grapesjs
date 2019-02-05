@@ -6,7 +6,7 @@ const inputProp = 'contentEditable';
 const $ = Backbone.$;
 let ItemsView;
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   events: {
     'mousedown [data-toggle-move]': 'startSort',
     'touchstart [data-toggle-move]': 'startSort',

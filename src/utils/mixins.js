@@ -73,7 +73,7 @@ const getUnitFromValue = value => {
 const upFirst = value => value[0].toUpperCase() + value.toLowerCase().slice(1);
 
 const camelCase = value => {
-  const values = value.split('-');
+  const values = value.split('-').filter(String);
   return values[0].toLowerCase() + values.slice(1).map(upFirst);
 };
 
@@ -121,6 +121,14 @@ const getModel = (el, $) => {
   return model;
 };
 
+/**
+ * Get cross-device pointer event
+ * @param  {Event} ev
+ * @return {Event}
+ */
+const getPointerEvent = ev =>
+  ev.touches && ev.touches[0] ? ev.touches[0] : ev;
+
 export {
   on,
   off,
@@ -132,5 +140,6 @@ export {
   getElement,
   shallowDiff,
   normalizeFloat,
+  getPointerEvent,
   getUnitFromValue
 };

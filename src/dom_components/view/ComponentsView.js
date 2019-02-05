@@ -14,16 +14,19 @@ module.exports = Backbone.View.extend({
   removeChildren(removed) {
     const em = this.config.em;
     const view = removed.view;
+    const temp = removed.opt.temporary;
     if (!view) return;
     view.remove.apply(view);
     const children = view.childrenView;
     children && children.stopListening();
+    removed.components().forEach(this.removeChildren.bind(this));
+    !temp && removed.removed();
     if (em) {
       removed.get('style-signature') &&
         em
           .get('Commands')
           .run('core:component-style-clear', { target: removed });
-      em.trigger('component:remove', removed);
+      !temp && em.trigger('component:remove', removed);
     }
   },
 

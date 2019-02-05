@@ -1,7 +1,7 @@
 {
   "name": "grapesjs",
   "description": "Free and Open Source Web Builder Framework",
-  "version": "0.14.43",
+  "version": "0.14.52",
   "author": "Artur Arseniev",
   "license": "BSD-3-Clause",
   "homepage": "http://grapesjs.com",
@@ -14,11 +14,11 @@
     "backbone": "^1.3.3",
     "backbone-undo": "^0.2.5",
     "cash-dom": "^1.3.7",
-    "codemirror": "^5.39.0",
+    "codemirror": "^5.42.0",
     "codemirror-formatting": "^1.0.0",
     "font-awesome": "^4.7.0",
     "keymaster": "^1.6.2",
-    "promise-polyfill": "^8.0.0",
+    "promise-polyfill": "^8.1.0",
     "spectrum-colorpicker": "^1.8.0",
     "underscore": "^1.9.1"
   },
@@ -27,22 +27,22 @@
     "babel-loader": "^7.1.5",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.7.0",
-    "documentation": "^8.0.0",
-    "eslint": "^4.19.1",
+    "documentation": "^8.1.2",
+    "eslint": "^5.9.0",
     "html-webpack-plugin": "^3.2.0",
-    "husky": "^0.14.3",
-    "jest": "^23.3.0",
-    "lint-staged": "^7.2.0",
-    "node-sass": "^4.9.1",
-    "npm-run-all": "^4.1.3",
-    "prettier": "^1.13.7",
-    "sinon": "^6.1.0",
+    "husky": "^1.2.0",
+    "jest": "^23.6.0",
+    "lint-staged": "^8.1.0",
+    "node-sass": "^4.10.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^1.15.3",
+    "sinon": "^7.1.1",
     "string-replace-loader": "^2.1.1",
     "vuepress": "^0.10.2",
-    "webpack": "^4.15.1",
-    "webpack-cli": "^3.0.8",
-    "webpack-dev-server": "^3.1.4",
-    "whatwg-fetch": "^2.0.4"
+    "webpack": "^4.26.1",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.10",
+    "whatwg-fetch": "^3.0.0"
   },
   "keywords": [
     "grapes",
@@ -91,6 +91,11 @@
       "^jquery$": "cash-dom"
     }
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "scripts": {
     "docs": "vuepress dev docs",
     "docs:api": "node docs/api.js",
@@ -99,7 +104,6 @@
     "docs:deploy": "docs/deploy.sh",
     "lint": "eslint src",
     "check": "npm run lint && npm run test",
-    "precommit": "lint-staged",
     "build": "npm run check && npm run v:patch && npm run build-dev && webpack --env=prod",
     "build-n": "npm run check && npm run build:css && webpack --env=prod",
     "build-dev": "webpack --env=dev && npm run build:css",

@@ -4,6 +4,8 @@ const Selector = require('./Selector');
 module.exports = require('backbone').Collection.extend({
   model: Selector,
 
+  modelId: attr => `${attr.name}_${attr.type || Selector.TYPE_CLASS}`,
+
   getStyleable() {
     return filter(
       this.models,

@@ -20,13 +20,12 @@ const panelManager = editor.Panels;
 
 -   [addPanel][2]
 -   [addButton][3]
--   [removeButton][4]
--   [getButton][5]
--   [getPanel][6]
--   [getPanels][7]
--   [getPanelsEl][8]
--   [removePanel][9]
--   [removeButton][10]
+-   [getButton][4]
+-   [getPanel][5]
+-   [getPanels][6]
+-   [getPanelsEl][7]
+-   [removePanel][8]
+-   [removeButton][9]
 
 ## getPanels
 
@@ -38,7 +37,7 @@ Returns **Collection** Collection of panel
 
 Returns panels element
 
-Returns **[HTMLElement][11]** 
+Returns **[HTMLElement][10]** 
 
 ## addPanel
 
@@ -46,7 +45,7 @@ Add new panel to the collection
 
 ### Parameters
 
--   `panel` **([Object][12] | Panel)** Object with right properties or an instance of Panel
+-   `panel` **([Object][11] | Panel)** Object with right properties or an instance of Panel
 
 ### Examples
 
@@ -66,7 +65,7 @@ Remove a panel from the collection
 
 ### Parameters
 
--   `panel` **([Object][12] | Panel | [String][13])** Object with right properties or an instance of Panel or Painel id
+-   `panel` **([Object][11] | Panel | [String][12])** Object with right properties or an instance of Panel or Painel id
 
 ### Examples
 
@@ -88,7 +87,7 @@ Get panel by ID
 
 ### Parameters
 
--   `id` **[string][13]** Id string
+-   `id` **[string][12]** Id string
 
 ### Examples
 
@@ -104,8 +103,8 @@ Add button to the panel
 
 ### Parameters
 
--   `panelId` **[string][13]** Panel's ID
--   `button` **([Object][12] | Button)** Button object or instance of Button
+-   `panelId` **[string][12]** Panel's ID
+-   `button` **([Object][11] | Button)** Button object or instance of Button
 
 ### Examples
 
@@ -143,13 +142,14 @@ Remove button from the panel
 
 ### Parameters
 
--   `panelId` **[string][13]** Panel's ID
--   `button` **([Object][12] | Button | [String][13])** Button object or instance of Button or button id
+-   `panelId` **[String][12]** Panel's ID
+-   `button`  
+-   `buttonId` **[String][12]** Button's ID
 
 ### Examples
 
 ```javascript
-const removedButton = panelManager.removeButton('myNewPanel',{
+const removedButton = panelManager.addButton('myNewPanel',{
   id: 'myNewButton',
   className: 'someClass',
   command: 'someCommand',
@@ -157,8 +157,7 @@ const removedButton = panelManager.removeButton('myNewPanel',{
   active: false,
 });
 
-// It's also possible to use the button id
-const removedButton = panelManager.removeButton('myNewPanel','myNewButton');
+const removedButton = panelManager.removeButton('myNewPanel', 'myNewButton');
 ```
 
 Returns **(Button | null)** Removed button.
@@ -169,8 +168,8 @@ Get button from the panel
 
 ### Parameters
 
--   `panelId` **[string][13]** Panel's ID
--   `id` **[string][13]** Button's ID
+-   `panelId` **[string][12]** Panel's ID
+-   `id` **[string][12]** Button's ID
 
 ### Examples
 
@@ -186,22 +185,20 @@ Returns **(Button | null)**
 
 [3]: #addbutton
 
-[4]: #removebutton
+[4]: #getbutton
 
-[5]: #getbutton
+[5]: #getpanel
 
-[6]: #getpanel
+[6]: #getpanels
 
-[7]: #getpanels
+[7]: #getpanelsel
 
-[8]: #getpanelsel
+[8]: #removepanel
 
-[9]: #removepanel
+[9]: #removebutton
 
-[10]: #removeButton
+[10]: https://developer.mozilla.org/docs/Web/HTML/Element
 
-[11]: https://developer.mozilla.org/docs/Web/HTML/Element
+[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
-
-[13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String

@@ -25,7 +25,7 @@ module.exports = Backbone.View.extend({
    */
   isElInViewport(el) {
     const rect = getElement(el).getBoundingClientRect();
-    const frameRect = this.getFrameOffset(1);
+    const frameRect = this.getFrameOffset();
     const rTop = rect.top;
     const rLeft = rect.left;
     return (
