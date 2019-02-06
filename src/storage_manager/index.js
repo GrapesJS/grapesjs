@@ -71,14 +71,10 @@ module.exports = () => {
      * }
      * ...
      */
-    init(config) {
-      c = config || {};
+    init(config = {}) {
+      c = { ...defaults, ...config };
       em = c.em;
-
-      for (var name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
-      }
-
+      if (c._disable) c.type = 0;
       defaultStorages.remote = new RemoteStorage(c);
       defaultStorages.local = new LocalStorage(c);
       c.currentStorage = c.type;

@@ -95,15 +95,14 @@
  */
 import $ from 'cash-dom';
 
-export default config => {
-  var c = config || {},
-    defaults = require('./config/config'),
-    EditorModel = require('./model/Editor'),
-    EditorView = require('./view/EditorView');
-
-  for (var name in defaults) {
-    if (!(name in c)) c[name] = defaults[name];
-  }
+export default (config = {}) => {
+  const defaults = require('./config/config');
+  const EditorModel = require('./model/Editor');
+  const EditorView = require('./view/EditorView');
+  const c = {
+    ...defaults,
+    ...config
+  };
 
   c.pStylePrefix = c.stylePrefix;
   var em = new EditorModel(c);

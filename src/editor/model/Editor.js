@@ -173,18 +173,23 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   loadModule(moduleName) {
-    var c = this.config;
-    var Mod = new moduleName();
-    var name = Mod.name.charAt(0).toLowerCase() + Mod.name.slice(1);
-    var cfg = c[name] || c[Mod.name] || {};
-    cfg.pStylePrefix = c.pStylePrefix || '';
+    const { config } = this;
+    const Mod = new moduleName();
+    const name = Mod.name.charAt(0).toLowerCase() + Mod.name.slice(1);
+    const cfgParent = !isUndefined(config[name])
+      ? config[name]
+      : config[Mod.name];
+    const cfg = cfgParent || {};
+    const sm = this.get('StorageManager');
+    cfg.pStylePrefix = config.pStylePrefix || '';
 
-    // Check if module is storable
-    var sm = this.get('StorageManager');
+    if (!isUndefined(cfgParent) && !cfgParent) {
+      cfg._disable = 1;
+    }
 
     if (Mod.storageKey && Mod.store && Mod.load && sm) {
       cfg.stm = sm;
-      var storables = this.get('storables');
+      const storables = this.get('storables');
       storables.push(Mod);
       this.set('storables', storables);
     }
