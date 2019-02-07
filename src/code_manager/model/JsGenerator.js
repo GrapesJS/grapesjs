@@ -13,7 +13,7 @@ module.exports = Backbone.Model.extend({
       // If the component has scripts we need to expose his ID
       var attr = model.get('attributes');
       attr = extend({}, attr, { id });
-      model.set('attributes', attr);
+      model.set('attributes', attr, { silent: 1 });
       var scrStr = model.getScriptString();
 
       // If the script was updated, I'll put its code in a separate container

@@ -60,6 +60,7 @@ module.exports = {
             { value: 'block' },
             { value: 'inline' },
             { value: 'inline-block' },
+            { value: 'flex' },
             { value: 'none' }
           ]
         });
@@ -369,8 +370,117 @@ module.exports = {
               { value: 'block' },
               { value: 'inline' },
               { value: 'inline-block' },
+              { value: 'flex' },
               { value: 'none' }
             ]
+          }
+        ]);
+      });
+
+      test('Build flex-direction', () => {
+        expect(obj.build('flex-direction')).toEqual([
+          {
+            property: 'flex-direction',
+            type: 'select',
+            defaults: 'row',
+            list: [
+              { value: 'row' },
+              { value: 'row-reverse' },
+              { value: 'column' },
+              { value: 'column-reverse' }
+            ],
+            requires: { display: ['flex'] }
+          }
+        ]);
+      });
+
+      test('Build flex-wrap', () => {
+        expect(obj.build('flex-wrap')).toEqual([
+          {
+            property: 'flex-wrap',
+            type: 'select',
+            defaults: 'nowrap',
+            list: [
+              { value: 'nowrap' },
+              { value: 'wrap' },
+              { value: 'wrap-reverse' }
+            ],
+            requires: { display: ['flex'] }
+          }
+        ]);
+      });
+
+      test('Build justify-content', () => {
+        expect(obj.build('justify-content')).toEqual([
+          {
+            property: 'justify-content',
+            type: 'select',
+            defaults: 'flex-start',
+            list: [
+              { value: 'flex-start' },
+              { value: 'flex-end' },
+              { value: 'center' },
+              { value: 'space-between' },
+              { value: 'space-around' },
+              { value: 'space-evenly' }
+            ],
+            requires: { display: ['flex'] }
+          }
+        ]);
+      });
+
+      test('Build align-items', () => {
+        expect(obj.build('align-items')).toEqual([
+          {
+            property: 'align-items',
+            type: 'select',
+            defaults: 'stretch',
+            list: [
+              { value: 'flex-start' },
+              { value: 'flex-end' },
+              { value: 'center' },
+              { value: 'baseline' },
+              { value: 'stretch' }
+            ],
+            requires: { display: ['flex'] }
+          }
+        ]);
+      });
+
+      test('Build align-content', () => {
+        expect(obj.build('align-content')).toEqual([
+          {
+            property: 'align-content',
+            type: 'select',
+            defaults: 'stretch',
+            list: [
+              { value: 'flex-start' },
+              { value: 'flex-end' },
+              { value: 'center' },
+              { value: 'space-between' },
+              { value: 'space-around' },
+              { value: 'stretch' }
+            ],
+            requires: { display: ['flex'] }
+          }
+        ]);
+      });
+
+      test('Build align-self', () => {
+        expect(obj.build('align-self')).toEqual([
+          {
+            property: 'align-self',
+            type: 'select',
+            defaults: 'auto',
+            list: [
+              { value: 'auto' },
+              { value: 'flex-start' },
+              { value: 'flex-end' },
+              { value: 'center' },
+              { value: 'baseline' },
+              { value: 'stretch' }
+            ],
+            requiresParent: { display: ['flex'] }
           }
         ]);
       });
@@ -429,6 +539,19 @@ module.exports = {
         expect(obj.build('min-width')).toEqual([res]);
         res.property = 'max-width';
         expect(obj.build('max-width')).toEqual([res]);
+      });
+
+      test('Build flex-basis', () => {
+        var res = {
+          type: 'integer',
+          units: ['px', '%', 'vw', 'vh'],
+          defaults: 'auto',
+          fixedValues: ['initial', 'inherit', 'auto'],
+          requiresParent: { display: ['flex'] },
+          min: 0
+        };
+        res.property = 'flex-basis';
+        expect(obj.build('flex-basis')).toEqual([res]);
       });
 
       test('Build height family', () => {

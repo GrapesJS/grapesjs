@@ -22338,7 +22338,17 @@ module.exports = {
   // Label for the add button
   addBtnText: 'Add image',
 
-  // Custom uploadFile function
+  // To upload your assets, the module uses Fetch API, with this option you
+  // overwrite it with something else.
+  // It should return a Promise
+  // @example
+  // customFetch: (url, options) => axios(url, { data: options.body }),
+  customFetch: '',
+
+  // Custom uploadFile function.
+  // Differently from the `customFetch` option, this gives a total control
+  // over the uploading process, but you also have to emit all `asset:upload:*` events
+  // by yourself (if you need to use them somewhere)
   // @example
   // uploadFile: (e) => {
   //   var files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
@@ -23346,9 +23356,12 @@ module.exports = _backbone2.default.View.extend({
     var _this = this;
 
     var files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
-    var body = new FormData();
     var config = this.config;
-    var params = config.params;
+
+    var body = new FormData();
+    var params = config.params,
+        customFetch = config.customFetch;
+
 
     for (var param in params) {
       body.append(param, params[param]);
@@ -23373,16 +23386,18 @@ module.exports = _backbone2.default.View.extend({
 
     if (url) {
       this.onUploadStart();
-      return (0, _fetch2.default)(url, {
+      var fetchOpts = {
         method: 'post',
         credentials: config.credentials || 'include',
         headers: headers,
         body: body
-      }).then(function (res) {
+      };
+      var fetchResult = customFetch ? customFetch(url, fetchOpts) : (0, _fetch2.default)(url, fetchOpts).then(function (res) {
         return (res.status / 200 | 0) == 1 ? res.text() : res.text().then(function (text) {
           return Promise.reject(text);
         });
-      }).then(function (text) {
+      });
+      return fetchResult.then(function (text) {
         return _this.onUploadResponse(text, clb);
       }).catch(function (err) {
         return _this.onUploadError(err);
@@ -23652,6 +23667,35 @@ module.exports = {
 "use strict";
 
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /**
+                                                                                                                                                                                                                                                                   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/block_manager/config/config.js)
+                                                                                                                                                                                                                                                                   * ```js
+                                                                                                                                                                                                                                                                   * const editor = grapesjs.init({
+                                                                                                                                                                                                                                                                   *  blockManager: {
+                                                                                                                                                                                                                                                                   *    // options
+                                                                                                                                                                                                                                                                   *  }
+                                                                                                                                                                                                                                                                   * })
+                                                                                                                                                                                                                                                                   * ```
+                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                   * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                   * ```js
+                                                                                                                                                                                                                                                                   * const blockManager = editor.BlockManager;
+                                                                                                                                                                                                                                                                   * ```
+                                                                                                                                                                                                                                                                   * * [add](#add)
+                                                                                                                                                                                                                                                                   * * [get](#get)
+                                                                                                                                                                                                                                                                   * * [getAll](#getall)
+                                                                                                                                                                                                                                                                   * * [getAllVisible](#getallvisible)
+                                                                                                                                                                                                                                                                   * * [remove](#remove)
+                                                                                                                                                                                                                                                                   * * [getConfig](#getconfig)
+                                                                                                                                                                                                                                                                   * * [getCategories](#getcategories)
+                                                                                                                                                                                                                                                                   * * [getContainer](#getcontainer)
+                                                                                                                                                                                                                                                                   * * [render](#render)
+                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                   * @module BlockManager
+                                                                                                                                                                                                                                                                   */
+
+
 var _underscore = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
 
 module.exports = function () {
@@ -23690,8 +23734,8 @@ module.exports = function () {
       // Global blocks collection
       blocks = new Blocks([]);
       blocksVisible = new Blocks([]);
-      categories = new BlockCategories(), blocksView = new BlocksView({
-        // Visible collection
+      categories = new BlockCategories();
+      blocksView = new BlocksView({
         collection: blocksVisible,
         categories: categories
       }, c);
@@ -23837,8 +23881,10 @@ module.exports = function () {
 
     /**
      * Render blocks
-     * @param  {Array} blocks Blocks to render, without the argument will render
-     *                        all global blocks
+     * @param  {Array} blocks Blocks to render, without the argument will render all global blocks
+     * @param  {Object} [opts={}] Options
+     * @param  {Boolean} [opts.external] Render blocks in a new container (HTMLElement will be returned)
+     * @param  {Boolean} [opts.ignoreCategories] Render blocks without categories
      * @return {HTMLElement} Rendered element
      * @example
      * // Render all blocks (inside the global collection)
@@ -23846,9 +23892,9 @@ module.exports = function () {
      *
      * // Render new set of blocks
      * const blocks = blockManager.getAll();
-     * blockManager.render(blocks.filter(
-     *  block => block.get('category') == 'sections'
-     * ));
+     * const filtered = blocks.filter(block => block.get('category') == 'sections')
+     *
+     * blockManager.render(filtered);
      * // Or a new set from an array
      * blockManager.render([
      *  {label: 'Label text', content: '<div>Content</div>'}
@@ -23856,46 +23902,34 @@ module.exports = function () {
      *
      * // Back to blocks from the global collection
      * blockManager.render();
+     *
+     * // You can also render your blocks outside of the main block container
+     * const newBlocksEl = blockManager.render(filtered, { external: true });
+     * document.getElementById('some-id').appendChild(newBlocksEl);
      */
     render: function render(blocks) {
+      var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
       var toRender = blocks || this.getAll().models;
+
+      if (opts.external) {
+        return new BlocksView({
+          collection: new Blocks(toRender),
+          categories: categories
+        }, _extends({}, c, opts)).render().el;
+      }
 
       if (!blocksView.rendered) {
         blocksView.render();
         blocksView.rendered = 1;
       }
 
+      blocksView.updateConfig(opts);
       blocksView.collection.reset(toRender);
       return this.getContainer();
     }
   };
-}; /**
-    * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/block_manager/config/config.js)
-    * ```js
-    * const editor = grapesjs.init({
-    *  blockManager: {
-    *    // options
-    *  }
-    * })
-    * ```
-    *
-    * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
-    *
-    * ```js
-    * const blockManager = editor.BlockManager;
-    * ```
-    * * [add](#add)
-    * * [get](#get)
-    * * [getAll](#getall)
-    * * [getAllVisible](#getallvisible)
-    * * [remove](#remove)
-    * * [getConfig](#getconfig)
-    * * [getCategories](#getcategories)
-    * * [getContainer](#getcontainer)
-    * * [render](#render)
-    *
-    * @module BlockManager
-    */
+};
 
 /***/ }),
 
@@ -24172,6 +24206,8 @@ module.exports = _backbone2.default.View.extend({
 "use strict";
 
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _underscore = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
 
 var BlockView = __webpack_require__(/*! ./BlockView */ "./src/block_manager/view/BlockView.js");
@@ -24199,6 +24235,11 @@ module.exports = __webpack_require__(/*! backbone */ "./node_modules/backbone/ba
       this.config.getSorter = this.getSorter;
       this.canvas = this.em.get('Canvas');
     }
+  },
+  updateConfig: function updateConfig() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    this.config = _extends({}, this.config, opts);
   },
 
 
@@ -24281,16 +24322,18 @@ module.exports = __webpack_require__(/*! backbone */ "./node_modules/backbone/ba
    * @private
    * */
   add: function add(model, fragment) {
+    var config = this.config;
+
     var frag = fragment || null;
     var view = new BlockView({
       model: model,
       attributes: model.get('attributes')
-    }, this.config);
+    }, config);
     var rendered = view.render().el;
     var category = model.get('category');
 
     // Check for categories
-    if (category && this.categories) {
+    if (category && this.categories && !config.ignoreCategories) {
       if ((0, _underscore.isString)(category)) {
         category = {
           id: category,
@@ -24467,7 +24510,7 @@ module.exports = {
    * Be aware that these scripts will not be printed in the export code
    * @example
    * scripts: [ 'https://...1.js', 'https://...2.js' ]
-  */
+   */
   scripts: [],
 
   /*
@@ -24475,7 +24518,7 @@ module.exports = {
    * Be aware that these styles will not be printed in the export code
    * @example
    * styles: [ 'https://...1.css', 'https://...2.css' ]
-  */
+   */
   styles: [],
 
   /**
@@ -24488,11 +24531,16 @@ module.exports = {
   customBadgeLabel: '',
 
   /**
+   * Indicate when to start the auto scroll of the canvas on component/block dragging (value in px )
+   */
+  autoscrollLimit: 50,
+
+  /**
    * When some textable component is selected and focused (eg. input or text component) the editor
    * stops some commands (eg. disables the copy/paste of components with CTRL+C/V to allow the copy/paste of the text).
    * This option allows to customize, by a selector, which element should not be considered textable
    */
-  notTextable: ['button', 'input[type=checkbox]', 'input[type=radio]']
+  notTextable: ['button', 'a', 'input[type=checkbox]', 'input[type=radio]']
 };
 
 /***/ }),
@@ -24545,6 +24593,10 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                                                                                                                                                                                                      * @module Canvas
                                                                                                                                                                                                      */
 
+var _window = window,
+    requestAnimationFrame = _window.requestAnimationFrame;
+
+
 module.exports = function () {
   var c = {},
       defaults = __webpack_require__(/*! ./config/config */ "./src/canvas/config/config.js"),
@@ -24596,6 +24648,7 @@ module.exports = function () {
       this.startAutoscroll = this.startAutoscroll.bind(this);
       this.stopAutoscroll = this.stopAutoscroll.bind(this);
       this.autoscroll = this.autoscroll.bind(this);
+      this.updateClientY = this.updateClientY.bind(this);
       return this;
     },
 
@@ -25002,23 +25055,27 @@ module.exports = function () {
       // By detaching those from the stack avoid browsers lags
       // Noticeable with "fast" drag of blocks
       setTimeout(function () {
-        (0, _mixins.on)(toListen, 'mousemove', _this.autoscroll);
+        (0, _mixins.on)(toListen, 'mousemove dragover', _this.updateClientY);
         (0, _mixins.on)(toListen, 'mouseup', _this.stopAutoscroll);
+        requestAnimationFrame(_this.autoscroll);
       }, 0);
+    },
+    updateClientY: function updateClientY(ev) {
+      ev.preventDefault();
+      this.lastClientY = (0, _mixins.getPointerEvent)(ev).clientY;
     },
 
 
     /**
      * @private
      */
-    autoscroll: function autoscroll(e) {
-      e.preventDefault();
+    autoscroll: function autoscroll() {
       if (this.dragging) {
         var frameWindow = this.getFrameEl().contentWindow;
         var actualTop = frameWindow.document.body.scrollTop;
         var nextTop = actualTop;
-        var clientY = e.clientY;
-        var limitTop = 50;
+        var clientY = this.lastClientY;
+        var limitTop = this.getConfig().autoscrollLimit;
         var limitBottom = frameRect.height - limitTop;
 
         if (clientY < limitTop) {
@@ -25029,8 +25086,8 @@ module.exports = function () {
           nextTop += clientY - limitBottom;
         }
 
-        //console.log(`actualTop: ${actualTop} clientY: ${clientY} nextTop: ${nextTop} frameHeigh: ${frameRect.height}`);
         frameWindow.scrollTo(0, nextTop);
+        requestAnimationFrame(this.autoscroll);
       }
     },
 
@@ -25042,7 +25099,7 @@ module.exports = function () {
     stopAutoscroll: function stopAutoscroll() {
       this.dragging = 0;
       var toListen = this.getScrollListeners();
-      (0, _mixins.off)(toListen, 'mousemove', this.autoscroll);
+      (0, _mixins.off)(toListen, 'mousemove dragover', this.updateClientY);
       (0, _mixins.off)(toListen, 'mouseup', this.stopAutoscroll);
     },
     getScrollListeners: function getScrollListeners() {
@@ -25171,7 +25228,7 @@ module.exports = _backbone2.default.View.extend({
    */
   isElInViewport: function isElInViewport(el) {
     var rect = (0, _mixins.getElement)(el).getBoundingClientRect();
-    var frameRect = this.getFrameOffset(1);
+    var frameRect = this.getFrameOffset();
     var rTop = rect.top;
     var rLeft = rect.left;
     return rTop >= 0 && rLeft >= 0 && rTop <= frameRect.height && rLeft <= frameRect.width;
@@ -26182,7 +26239,7 @@ module.exports = _backbone2.default.Model.extend({
       // If the component has scripts we need to expose his ID
       var attr = model.get('attributes');
       attr = (0, _underscore.extend)({}, attr, { id: id });
-      model.set('attributes', attr);
+      model.set('attributes', attr, { silent: 1 });
       var scrStr = model.getScriptString();
 
       // If the script was updated, I'll put its code in a separate container
@@ -29072,7 +29129,9 @@ module.exports = {
    * @private
    */
   initResize: function initResize(elem) {
-    var em = this.em;
+    var em = this.em,
+        canvas = this.canvas;
+
     var editor = em ? em.get('Editor') : '';
     var config = em ? em.get('Config') : '';
     var pfx = config.stylePrefix || '';
@@ -29166,7 +29225,10 @@ module.exports = {
           var style = modelToStyle.getStyle();
 
           if (!onlyHeight) {
-            style[keyWidth] = autoWidth ? 'auto' : '' + rect.w + unitWidth;
+            var padding = 10;
+            var frameOffset = canvas.getCanvasView().getFrameOffset();
+            var width = rect.w < frameOffset.width - padding ? rect.w : frameOffset.width - padding;
+            style[keyWidth] = autoWidth ? 'auto' : '' + width + unitWidth;
           }
 
           if (!onlyWidth) {
@@ -29252,15 +29314,31 @@ module.exports = {
    * @param {Object} pos
    */
   updateToolbarPos: function updateToolbarPos(el, elPos) {
+    var canvas = this.canvas;
+
     var unit = 'px';
-    var toolbarEl = this.canvas.getToolbarEl();
+    var toolbarEl = canvas.getToolbarEl();
     var toolbarStyle = toolbarEl.style;
     toolbarStyle.opacity = 0;
-    var pos = this.canvas.getTargetToElementDim(toolbarEl, el, {
+    var pos = canvas.getTargetToElementDim(toolbarEl, el, {
       elPos: elPos,
       event: 'toolbarPosUpdate'
     });
+
     if (pos) {
+      var frameOffset = canvas.getCanvasView().getFrameOffset();
+
+      // Scroll with the window if the top edge is reached and the
+      // element is bigger than the canvas
+      if (pos.top <= pos.canvasTop && !(pos.elementHeight + pos.targetHeight >= frameOffset.height)) {
+        pos.top = pos.elementTop + pos.elementHeight;
+      }
+
+      // Check if not outside of the canvas
+      if (pos.left < pos.canvasLeft) {
+        pos.left = pos.canvasLeft;
+      }
+
       var leftPos = pos.left + pos.elementWidth - pos.targetWidth;
       toolbarStyle.top = pos.top + unit;
       toolbarStyle.left = (leftPos < 0 ? 0 : leftPos) + unit;
@@ -29826,10 +29904,8 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
                                                                                                                                                                                                                                                                    * * [get](#get)
                                                                                                                                                                                                                                                                    * * [getAll](#getall)
                                                                                                                                                                                                                                                                    * * [clear](#clear)
-                                                                                                                                                                                                                                                                   * * [setIdRule](#setidrule)
-                                                                                                                                                                                                                                                                   * * [getIdRule](#getidrule)
-                                                                                                                                                                                                                                                                   * * [setClassRule](#setclassrule)
-                                                                                                                                                                                                                                                                   * * [getClassRule](#getclassrule)
+                                                                                                                                                                                                                                                                   * * [setRule](#setrule)
+                                                                                                                                                                                                                                                                   * * [getRule](#getrule)
                                                                                                                                                                                                                                                                    *
                                                                                                                                                                                                                                                                    * @module CssComposer
                                                                                                                                                                                                                                                                    */
@@ -30130,11 +30206,89 @@ module.exports = function () {
 
 
     /**
+     * Add/update the CSS rule with a generic selector
+     * @param {string} selectors Selector, eg. '.myclass'
+     * @param {Object} style  Style properties and values
+     * @param {Object} [opts={}]  Additional properties
+     * @param {String} [opts.atRuleType='']  At-rule type, eg. 'media'
+     * @param {String} [opts.atRuleParams='']  At-rule parameters, eg. '(min-width: 500px)'
+     * @return {CssRule} The new/updated rule
+     * @example
+     * // Simple class-based rule
+     * const rule = cc.setRule('.class1.class2', { color: 'red' });
+     * console.log(rule.toCSS()) // output: .class1.class2 { color: red }
+     * // With state and other mixed selector
+     * const rule = cc.setRule('.class1.class2:hover, div#myid', { color: 'red' });
+     * // output: .class1.class2:hover, div#myid { color: red }
+     * // With media
+     * const rule = cc.setRule('.class1:hover', { color: 'red' }, {
+     *  atRuleType: 'media',
+     *  atRuleParams: '(min-width: 500px)',
+     * });
+     * // output: @media (min-width: 500px) { .class1:hover { color: red } }
+     */
+    setRule: function setRule(selectors, style) {
+      var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+      var atRuleType = opts.atRuleType,
+          atRuleParams = opts.atRuleParams;
+
+      var node = em.get('Parser').parserCss.checkNode({
+        selectors: selectors,
+        style: style
+      })[0];
+      var state = node.state,
+          selectorsAdd = node.selectorsAdd;
+
+      var sm = em.get('SelectorManager');
+      var selector = sm.add(node.selectors);
+      var rule = this.add(selector, state, atRuleParams, {
+        selectorsAdd: selectorsAdd,
+        atRule: atRuleType
+      });
+      rule.setStyle(style, opts);
+      return rule;
+    },
+
+
+    /**
+     * Get the CSS rule by a generic selector
+     * @param {string} selectors Selector, eg. '.myclass:hover'
+     * @param {String} [opts.atRuleType='']  At-rule type, eg. 'media'
+     * @param {String} [opts.atRuleParams='']  At-rule parameters, eg. '(min-width: 500px)'
+     * @return {CssRule}
+     * @example
+     * const rule = cc.getRule('.myclass1:hover');
+     * const rule2 = cc.getRule('.myclass1:hover, div#myid');
+     * const rule3 = cc.getRule('.myclass1', {
+     *  atRuleType: 'media',
+     *  atRuleParams: '(min-width: 500px)',
+     * });
+     */
+    getRule: function getRule(selectors) {
+      var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+      var sm = em.get('SelectorManager');
+      var node = em.get('Parser').parserCss.checkNode({ selectors: selectors })[0];
+      var selector = sm.get(node.selectors);
+      var state = node.state,
+          selectorsAdd = node.selectorsAdd;
+      var atRuleType = opts.atRuleType,
+          atRuleParams = opts.atRuleParams;
+
+      return selector && this.get(selector, state, atRuleParams, {
+        selectorsAdd: selectorsAdd,
+        atRule: atRuleType
+      });
+    },
+
+
+    /**
      * Add/update the CSS rule with id selector
      * @param {string} name Id selector name, eg. 'my-id'
      * @param {Object} style  Style properties and values
      * @param {Object} [opts={}]  Custom options, like `state` and `mediaText`
      * @return {CssRule} The new/updated rule
+     * @private
      * @example
      * const rule = cc.setIdRule('myid', { color: 'red' });
      * const ruleHover = cc.setIdRule('myid', { color: 'blue' }, { state: 'hover' });
@@ -30161,6 +30315,7 @@ module.exports = function () {
      * @param {string} name Id selector name, eg. 'my-id'
      * @param  {Object} [opts={}]  Custom options, like `state` and `mediaText`
      * @return {CssRule}
+     * @private
      * @example
      * const rule = cc.getIdRule('myid');
      * const ruleHover = cc.setIdRule('myid', { state: 'hover' });
@@ -30181,6 +30336,7 @@ module.exports = function () {
      * @param {Object} style  Style properties and values
      * @param {Object} [opts={}]  Custom options, like `state` and `mediaText`
      * @return {CssRule} The new/updated rule
+     * @private
      * @example
      * const rule = cc.setClassRule('myclass', { color: 'red' });
      * const ruleHover = cc.setClassRule('myclass', { color: 'blue' }, { state: 'hover' });
@@ -30207,6 +30363,7 @@ module.exports = function () {
      * @param {string} name Class selector name, eg. 'my-class'
      * @param  {Object} [opts={}]  Custom options, like `state` and `mediaText`
      * @return {CssRule}
+     * @private
      * @example
      * const rule = cc.getClassRule('myclass');
      * const ruleHover = cc.getClassRule('myclass', { state: 'hover' });
@@ -36638,6 +36795,10 @@ module.exports = {
       open: false,
       buildProps: ['float', 'display', 'position', 'top', 'right', 'left', 'bottom']
     }, {
+      name: 'Flex',
+      open: false,
+      buildProps: ['flex-direction', 'flex-wrap', 'justify-content', 'align-items', 'align-content', 'order', 'flex-basis', 'flex-grow', 'flex-shrink', 'align-self']
+    }, {
       name: 'Dimension',
       open: false,
       buildProps: ['width', 'height', 'max-width', 'min-height', 'margin', 'padding']
@@ -37440,6 +37601,9 @@ exports.default = function (config) {
     * ### RTE
     * * `rte:enable` - RTE enabled. The view, on which RTE is enabled, is passed as an argument
     * * `rte:disable` - RTE disabled. The view, on which RTE is disabled, is passed as an argument
+    * ### Modal
+    * * `modal:open` - Modal is opened
+    * * `modal:close` - Modal is closed
     * ### Commands
     * * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
     * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
@@ -38085,6 +38249,7 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   refreshCanvas: function refreshCanvas() {
+    this.set('canvasOffset', null);
     this.set('canvasOffset', this.get('Canvas').getOffset());
   },
 
@@ -38231,6 +38396,7 @@ module.exports = Backbone.View.extend({
     var _this = this;
 
     var model = this.model;
+
     model.view = this;
     this.conf = model.config;
     this.pn = model.get('Panels');
@@ -38239,8 +38405,8 @@ module.exports = Backbone.View.extend({
       _this.pn.disableButtons();
       model.runDefault();
       setTimeout(function () {
-        return model.trigger('load');
-      }, 0);
+        return model.trigger('load', model.get('Editor'));
+      });
     });
   },
   render: function render() {
@@ -38323,7 +38489,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.14.50',
+    version: '0.14.52',
 
     /**
      * Initialize the editor with passed options
@@ -38650,6 +38816,8 @@ module.exports = {
 "use strict";
 
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 /**
  * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/modal_dialog/config/config.js)
  * ```js
@@ -38692,17 +38860,22 @@ module.exports = function () {
      */
     name: 'Modal',
 
+    getConfig: function getConfig() {
+      return c;
+    },
+
+
     /**
      * Initialize module. Automatically called with a new instance of the editor
      * @param {Object} config Configurations
      * @private
      */
-    init: function init(config) {
-      c = config || {};
-      for (var name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
-      }
+    init: function init() {
+      var config = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
+      c = _extends({}, defaults, config);
+
+      this.em = c.em;
       var ppfx = c.pStylePrefix;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
 
@@ -38717,6 +38890,11 @@ module.exports = function () {
     postRender: function postRender(view) {
       var el = view.model.getConfig().el || view.el;
       this.render().appendTo(el);
+    },
+    triggerEvent: function triggerEvent(event) {
+      var em = this.em;
+
+      em && em.trigger('modal:' + event);
     },
 
 
@@ -38733,6 +38911,7 @@ module.exports = function () {
       opts.title && this.setTitle(opts.title);
       opts.content && this.setContent(opts.content);
       modal.show();
+      this.triggerEvent('open');
       return this;
     },
 
@@ -38743,6 +38922,7 @@ module.exports = function () {
      */
     close: function close() {
       modal.hide();
+      this.triggerEvent('close');
       return this;
     },
 
@@ -40876,6 +41056,8 @@ module.exports = function () {
       pHtml = new parserHtml(conf);
       pCss = new parserCss(conf);
       this.em = conf.em;
+      this.parserCss = pCss;
+      this.parserHtml = pHtml;
       return this;
     },
 
@@ -41019,7 +41201,8 @@ var parseCondition = exports.parseCondition = function parseCondition(node) {
  * @param {Object} style Key-value object of style declarations
  * @return {Object}
  */
-var createNode = exports.createNode = function createNode(selectors, style) {
+var createNode = exports.createNode = function createNode(selectors) {
+  var style = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
   var node = {};
@@ -42324,56 +42507,57 @@ module.exports = {
 "use strict";
 
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /**
+                                                                                                                                                                                                                                                                   * Selectors in GrapesJS are used in CSS Composer inside Rules and in Components as classes. To get better this concept let's take
+                                                                                                                                                                                                                                                                   * a look at this code:
+                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                   * ```css
+                                                                                                                                                                                                                                                                   * span > #send-btn.btn{
+                                                                                                                                                                                                                                                                   *  ...
+                                                                                                                                                                                                                                                                   * }
+                                                                                                                                                                                                                                                                   * ```
+                                                                                                                                                                                                                                                                   * ```html
+                                                                                                                                                                                                                                                                   * <span>
+                                                                                                                                                                                                                                                                   *   <button id="send-btn" class="btn"></button>
+                                                                                                                                                                                                                                                                   * </span>
+                                                                                                                                                                                                                                                                   * ```
+                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                   * In this scenario we get:
+                                                                                                                                                                                                                                                                   * * span     -> selector of type `tag`
+                                                                                                                                                                                                                                                                   * * send-btn -> selector of type `id`
+                                                                                                                                                                                                                                                                   * * btn      -> selector of type `class`
+                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                   * So, for example, being `btn` the same class entity it'll be easier to refactor and track things.
+                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                   * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/selector_manager/config/config.js)
+                                                                                                                                                                                                                                                                   * ```js
+                                                                                                                                                                                                                                                                   * const editor = grapesjs.init({
+                                                                                                                                                                                                                                                                   *  selectorManager: {
+                                                                                                                                                                                                                                                                   *    // options
+                                                                                                                                                                                                                                                                   *  }
+                                                                                                                                                                                                                                                                   * })
+                                                                                                                                                                                                                                                                   * ```
+                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                   * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
+                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                   * ```js
+                                                                                                                                                                                                                                                                   * const selectorManager = editor.SelectorManager;
+                                                                                                                                                                                                                                                                   * ```
+                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                   * * [getConfig](#getconfig)
+                                                                                                                                                                                                                                                                   * * [add](#add)
+                                                                                                                                                                                                                                                                   * * [addClass](#addclass)
+                                                                                                                                                                                                                                                                   * * [get](#get)
+                                                                                                                                                                                                                                                                   * * [getAll](#getAll)
+                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                   * @module SelectorManager
+                                                                                                                                                                                                                                                                   */
+
 var _underscore = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
 
 var isId = function isId(str) {
   return (0, _underscore.isString)(str) && str[0] == '#';
-}; /**
-    * Selectors in GrapesJS are used in CSS Composer inside Rules and in Components as classes. To get better this concept let's take
-    * a look at this code:
-    *
-    * ```css
-    * span > #send-btn.btn{
-    *  ...
-    * }
-    * ```
-    * ```html
-    * <span>
-    *   <button id="send-btn" class="btn"></button>
-    * </span>
-    * ```
-    *
-    * In this scenario we get:
-    * * span     -> selector of type `tag`
-    * * send-btn -> selector of type `id`
-    * * btn      -> selector of type `class`
-    *
-    * So, for example, being `btn` the same class entity it'll be easier to refactor and track things.
-    *
-    * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/selector_manager/config/config.js)
-    * ```js
-    * const editor = grapesjs.init({
-    *  selectorManager: {
-    *    // options
-    *  }
-    * })
-    * ```
-    *
-    * Once the editor is instantiated you can use its API. Before using these methods you should get the module from the instance
-    *
-    * ```js
-    * const selectorManager = editor.SelectorManager;
-    * ```
-    *
-    * * [getConfig](#getconfig)
-    * * [add](#add)
-    * * [addClass](#addclass)
-    * * [get](#get)
-    * * [getAll](#getAll)
-    *
-    * @module SelectorManager
-    */
-
+};
 var isClass = function isClass(str) {
   return (0, _underscore.isString)(str) && str[0] == '.';
 };
@@ -42448,25 +42632,10 @@ module.exports = function (config) {
         el.appendChild(this.render([]));
       }
     },
+    addSelector: function addSelector(name) {
+      var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-
-    /**
-     * Add a new selector to collection if it's not already exists. Class type is a default one
-     * @param {String} name Selector name
-     * @param {Object} opts Selector options
-     * @param {String} [opts.label=''] Label for the selector, if it's not provided the label will be the same as the name
-     * @param {String} [opts.type=1] Type of the selector. At the moment, only 'class' (1) is available
-     * @return {Model}
-     * @example
-     * var selector = selectorManager.add('selectorName');
-     * // Same as
-     * var selector = selectorManager.add('selectorName', {
-     *   type: 1,
-     *   label: 'selectorName'
-     * });
-     * */
-    add: function add(name) {
-      var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var opts = _extends({}, opt);
 
       if ((0, _underscore.isObject)(name)) {
         opts = name;
@@ -42477,6 +42646,8 @@ module.exports = function (config) {
       if (isId(opts.name)) {
         opts.name = opts.name.substr(1);
         opts.type = Selector.TYPE_ID;
+      } else if (isClass(opts.name)) {
+        opts.name = opts.name.substr(1);
       }
 
       if (opts.label && !opts.name) {
@@ -42491,6 +42662,50 @@ module.exports = function (config) {
       }
 
       return selector;
+    },
+    getSelector: function getSelector(name) {
+      var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : Selector.TYPE_CLASS;
+
+      if (isId(name)) {
+        name = name.substr(1);
+        type = Selector.TYPE_ID;
+      } else if (isClass(name)) {
+        name = name.substr(1);
+      }
+
+      return selectors.where({ name: name, type: type })[0];
+    },
+
+
+    /**
+     * Add a new selector to collection if it's not already exists. Class type is a default one
+     * @param {String|Array} name Selector/s name
+     * @param {Object} opts Selector options
+     * @param {String} [opts.label=''] Label for the selector, if it's not provided the label will be the same as the name
+     * @param {String} [opts.type=1] Type of the selector. At the moment, only 'class' (1) is available
+     * @return {Model|Array}
+     * @example
+     * const selector = selectorManager.add('selectorName');
+     * // Same as
+     * const selector = selectorManager.add('selectorName', {
+     *   type: 1,
+     *   label: 'selectorName'
+     * });
+     * // Multiple selectors
+     * const selectors = selectorManager.add(['.class1', '.class2', '#id1']);
+     * */
+    add: function add(name) {
+      var _this = this;
+
+      var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+      if ((0, _underscore.isArray)(name)) {
+        return name.map(function (item) {
+          return _this.addSelector(item, opts);
+        });
+      } else {
+        return this.addSelector(name, opts);
+      }
     },
 
 
@@ -42520,20 +42735,31 @@ module.exports = function (config) {
 
     /**
      * Get the selector by its name
-     * @param {String} name Selector name
+     * @param {String|Array} name Selector name
      * @param {String} tyoe Selector type
-     * @return {Model|null}
+     * @return {Model|Array}
      * @example
-     * var selector = selectorManager.get('selectorName');
+     * const selector = selectorManager.get('selectorName');
+     * // or get an array
+     * const selectors = selectorManager.get(['class1', 'class2']);
      * */
-    get: function get(name) {
-      var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : Selector.TYPE_CLASS;
+    get: function get(name, type) {
+      var _this2 = this;
 
-      if (isId(name)) {
-        name = name.substr(1);
-        type = Selector.TYPE_ID;
+      if ((0, _underscore.isArray)(name)) {
+        var result = [];
+        var _selectors = name.map(function (item) {
+          return _this2.getSelector(item);
+        }).filter(function (item) {
+          return item;
+        });
+        _selectors.forEach(function (item) {
+          return result.indexOf(item) < 0 && result.push(item);
+        });
+        return result;
+      } else {
+        return this.getSelector(name, type);
       }
-      return selectors.where({ name: name, type: type })[0];
     },
 
 
@@ -42673,6 +42899,10 @@ var Selector = __webpack_require__(/*! ./Selector */ "./src/selector_manager/mod
 
 module.exports = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js").Collection.extend({
   model: Selector,
+
+  modelId: function modelId(attr) {
+    return attr.name + '_' + (attr.type || Selector.TYPE_CLASS);
+  },
 
   getStyleable: function getStyleable() {
     return (0, _underscore.filter)(this.models, function (item) {
@@ -43243,7 +43473,9 @@ module.exports = {
   // set contentType paramater of $.ajax
   // true: application/json; charset=utf-8'
   // false: 'x-www-form-urlencoded'
-  contentTypeJson: false
+  contentTypeJson: true,
+
+  credentials: 'include'
 };
 
 /***/ }),
@@ -43715,7 +43947,8 @@ module.exports = __webpack_require__(/*! backbone */ "./node_modules/backbone/ba
     beforeSend: function beforeSend() {},
     onComplete: function onComplete() {},
 
-    contentTypeJson: false
+    contentTypeJson: false,
+    credentials: 'include'
   },
 
   /**
@@ -43826,7 +44059,7 @@ module.exports = __webpack_require__(/*! backbone */ "./node_modules/backbone/ba
     }
     fetchOptions = {
       method: opts.method || 'post',
-      credentials: 'include',
+      credentials: this.get('credentials'),
       headers: headers
     };
 
@@ -44724,7 +44957,19 @@ var Property = __webpack_require__(/*! backbone */ "./node_modules/backbone/back
     // Use case:
     // you can add all SVG CSS properties with toRequire as true
     // and then require them on SVG Components
-    toRequire: 0
+    toRequire: 0,
+
+    // Specifies dependency on other properties of the selected object.
+    // Property is shown only when all conditions are matched.
+    //
+    // example: { display: ['flex', 'block'], position: ['absolute'] };
+    //          in this case the property is only shown when display is
+    //          of value 'flex' or 'block' AND position is 'absolute'
+    requires: null,
+
+    // Specifies dependency on properties of the parent of the selected object.
+    // Property is shown only when all conditions are matched.
+    requiresParent: null
   },
 
   initialize: function initialize() {
@@ -45074,6 +45319,7 @@ module.exports = function () {
           case 'height':
           case 'max-height':
           case 'min-height':
+          case 'flex-basis':
             obj.fixedValues = ['initial', 'inherit', 'auto'];
             break;
           case 'font-size':
@@ -45093,6 +45339,12 @@ module.exports = function () {
             obj.type = 'radio';
             break;
           case 'display':
+          case 'flex-direction':
+          case 'flex-wrap':
+          case 'justify-content':
+          case 'align-items':
+          case 'align-content':
+          case 'align-self':
           case 'font-family':
           case 'font-weight':
           case 'border-style':
@@ -45105,6 +45357,8 @@ module.exports = function () {
           case 'transition-timing-function':
           case 'cursor':
           case 'overflow':
+          case 'overflow-x':
+          case 'overflow-y':
             obj.type = 'select';
             break;
           case 'top':
@@ -45149,6 +45403,10 @@ module.exports = function () {
           case 'transform-scale-x':
           case 'transform-scale-y':
           case 'transform-scale-z':
+          case 'order':
+          case 'flex-grow':
+          case 'flex-shrink':
+          case 'flex-basis':
             obj.type = 'integer';
             break;
           case 'margin':
@@ -45187,6 +45445,24 @@ module.exports = function () {
           case 'display':
             obj.defaults = 'block';
             break;
+          case 'flex-direction':
+            obj.defaults = 'row';
+            break;
+          case 'flex-wrap':
+            obj.defaults = 'nowrap';
+            break;
+          case 'justify-content':
+            obj.defaults = 'flex-start';
+            break;
+          case 'align-items':
+            obj.defaults = 'stretch';
+            break;
+          case 'align-content':
+            obj.defaults = 'stretch';
+            break;
+          case 'align-self':
+            obj.defaults = 'auto';
+            break;
           case 'position':
             obj.defaults = 'static';
             break;
@@ -45213,6 +45489,8 @@ module.exports = function () {
           case 'transform-rotate-x':
           case 'transform-rotate-y':
           case 'transform-rotate-z':
+          case 'order':
+          case 'flex-grow':
             obj.defaults = 0;
             break;
           case 'border-top-left-radius':
@@ -45224,6 +45502,7 @@ module.exports = function () {
           case 'transform-scale-x':
           case 'transform-scale-y':
           case 'transform-scale-z':
+          case 'flex-shrink':
             obj.defaults = 1;
             break;
           case 'box-shadow-blur':
@@ -45237,6 +45516,7 @@ module.exports = function () {
           case 'height':
           case 'background-size':
           case 'cursor':
+          case 'flex-basis':
             obj.defaults = 'auto';
             break;
           case 'font-family':
@@ -45287,7 +45567,33 @@ module.exports = function () {
             obj.defaults = 'ease';
             break;
           case 'overflow':
+          case 'overflow-x':
+          case 'overflow-y':
             obj.defaults = 'visible';
+            break;
+        }
+
+        /*
+         * Add styleable dependency on other properties. Allows properties to be
+         * dynamically hidden or shown based on values of other properties.
+         *
+         * Property will be styleable if all of the properties (keys) in the
+         * requires object have any of the values specified in the array.
+         */
+        switch (prop) {
+          case 'flex-direction':
+          case 'flex-wrap':
+          case 'justify-content':
+          case 'align-items':
+          case 'align-content':
+            obj.requires = { display: ['flex'] };
+            break;
+          case 'order':
+          case 'flex-basis':
+          case 'flex-grow':
+          case 'flex-shrink':
+          case 'align-self':
+            obj.requiresParent = { display: ['flex'] };
             break;
         }
 
@@ -45314,6 +45620,9 @@ module.exports = function () {
           case 'max-width':
           case 'width':
             obj.units = ['px', '%', 'vw'];
+            break;
+          case 'flex-basis':
+            obj.units = ['px', '%', 'vw', 'vh'];
             break;
           case 'text-shadow-v':
           case 'text-shadow-h':
@@ -45373,6 +45682,7 @@ module.exports = function () {
           case 'box-shadow-blur':
           case 'transition-duration':
           case 'perspective':
+          case 'flex-basis':
             obj.min = 0;
             break;
         }
@@ -45424,7 +45734,25 @@ module.exports = function () {
             obj.list = [{ value: 'none' }, { value: 'left' }, { value: 'right' }];
             break;
           case 'display':
-            obj.list = [{ value: 'block' }, { value: 'inline' }, { value: 'inline-block' }, { value: 'none' }];
+            obj.list = [{ value: 'block' }, { value: 'inline' }, { value: 'inline-block' }, { value: 'flex' }, { value: 'none' }];
+            break;
+          case 'flex-direction':
+            obj.list = [{ value: 'row' }, { value: 'row-reverse' }, { value: 'column' }, { value: 'column-reverse' }];
+            break;
+          case 'flex-wrap':
+            obj.list = [{ value: 'nowrap' }, { value: 'wrap' }, { value: 'wrap-reverse' }];
+            break;
+          case 'justify-content':
+            obj.list = [{ value: 'flex-start' }, { value: 'flex-end' }, { value: 'center' }, { value: 'space-between' }, { value: 'space-around' }, { value: 'space-evenly' }];
+            break;
+          case 'align-items':
+            obj.list = [{ value: 'flex-start' }, { value: 'flex-end' }, { value: 'center' }, { value: 'baseline' }, { value: 'stretch' }];
+            break;
+          case 'align-content':
+            obj.list = [{ value: 'flex-start' }, { value: 'flex-end' }, { value: 'center' }, { value: 'space-between' }, { value: 'space-around' }, { value: 'stretch' }];
+            break;
+          case 'align-self':
+            obj.list = [{ value: 'auto' }, { value: 'flex-start' }, { value: 'flex-end' }, { value: 'center' }, { value: 'baseline' }, { value: 'stretch' }];
             break;
           case 'position':
             obj.list = [{ value: 'static' }, { value: 'relative' }, { value: 'absolute' }, { value: 'fixed' }];
@@ -45474,6 +45802,8 @@ module.exports = function () {
             obj.list = [{ value: 'auto' }, { value: 'pointer' }, { value: 'copy' }, { value: 'crosshair' }, { value: 'grab' }, { value: 'grabbing' }, { value: 'help' }, { value: 'move' }, { value: 'text' }];
             break;
           case 'overflow':
+          case 'overflow-x':
+          case 'overflow-y':
             obj.list = [{ value: 'visible' }, { value: 'hidden' }, { value: 'scroll' }, { value: 'auto' }];
             break;
         }
@@ -45806,9 +46136,10 @@ module.exports = Backbone.Model.extend({
 
   initialize: function initialize(opts) {
     var o = opts || {};
-    var props = [];
     var builded = this.buildProperties(o.buildProps);
-    !this.get('id') && this.set('id', this.get('name'));
+    var name = this.get('name') || '';
+    var props = [];
+    !this.get('id') && this.set('id', name.replace(/ /g, '_').toLowerCase());
 
     if (!builded) props = this.get('properties');else props = this.extendProperties(builded);
 
@@ -47146,6 +47477,8 @@ module.exports = _backbone2.default.View.extend({
   }, 'click [' + clearProp + ']', 'clear'),
 
   initialize: function initialize() {
+    var _this = this;
+
     var o = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
     (0, _underscore.bindAll)(this, 'targetUpdated');
@@ -47173,6 +47506,14 @@ module.exports = _backbone2.default.View.extend({
 
     em && em.on('update:component:style:' + this.property, this.targetUpdated);
     //em && em.on(`styleable:change:${this.property}`, this.targetUpdated);
+
+    // Listening to changes of properties in this.requires, so that styleable
+    // changes based on other properties are propagated
+    var requires = model.get('requires');
+    requires && Object.keys(requires).forEach(function (property) {
+      em && em.on('component:styleUpdate:' + property, _this.targetUpdated);
+    });
+
     this.listenTo(this.propTarget, 'update styleManager:update', this.targetUpdated);
     this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model, 'change:value', this.modelValueChanged);
@@ -47225,13 +47566,13 @@ module.exports = _backbone2.default.View.extend({
    * Clear the property from the target
    */
   clear: function clear(e) {
-    var _this = this;
+    var _this2 = this;
 
     e && e.stopPropagation();
     this.model.clearValue();
     // Skip one stack with setTimeout to avoid inconsistencies
     setTimeout(function () {
-      return _this.targetUpdated();
+      return _this2.targetUpdated();
     });
   },
 
@@ -47526,6 +47867,10 @@ module.exports = _backbone2.default.View.extend({
     var toRequire = model.get('toRequire');
     var unstylable = trg.get('unstylable');
     var stylableReq = trg.get('stylable-require');
+    var requires = model.get('requires');
+    var requiresParent = model.get('requiresParent');
+    var sectors = this.sector ? this.sector.collection : null;
+    var selected = this.em ? this.em.getSelected() : null;
     var stylable = trg.get('stylable');
 
     // Stylable could also be an array indicating with which property
@@ -47542,6 +47887,33 @@ module.exports = _backbone2.default.View.extend({
     // Check if the property is available only if requested
     if (toRequire) {
       stylable = !target || stylableReq && (stylableReq.indexOf(id) >= 0 || stylableReq.indexOf(property) >= 0);
+    }
+
+    // Check if the property is available based on other property's values
+    if (sectors && requires) {
+      var properties = Object.keys(requires);
+      sectors.each(function (sector) {
+        sector.get('properties').each(function (model) {
+          if ((0, _underscore.includes)(properties, model.id)) {
+            var values = requires[model.id];
+            stylable = stylable && (0, _underscore.includes)(values, model.get('value'));
+          }
+        });
+      });
+    }
+
+    // Check if the property is available based on parent's property values
+    if (requiresParent) {
+      var parent = selected && selected.parent();
+      var parentEl = parent && parent.getEl();
+      if (parentEl) {
+        var styles = window.getComputedStyle(parentEl);
+        (0, _underscore.each)(requiresParent, function (values, property) {
+          stylable = stylable && styles[property] && (0, _underscore.includes)(values, styles[property]);
+        });
+      } else {
+        stylable = false;
+      }
     }
 
     return stylable;
@@ -47735,13 +48107,17 @@ module.exports = _backbone2.default.View.extend({
     this.model.set('open', v);
   },
   render: function render() {
+    var pfx = this.pfx,
+        model = this.model;
+    var id = model.attributes.id;
+
     this.$el.html(this.template({
-      pfx: this.pfx,
-      label: this.model.get('name')
+      pfx: pfx,
+      label: model.get('name')
     }));
-    this.$caret = this.$el.find('#' + this.pfx + 'caret');
+    this.$caret = this.$el.find('#' + pfx + 'caret');
     this.renderProperties();
-    this.$el.attr('class', this.pfx + 'sector no-select');
+    this.$el.attr('class', pfx + 'sector ' + pfx + 'sector__' + id + ' no-select');
     this.updateOpen();
     return this;
   },
@@ -47928,15 +48304,20 @@ module.exports = _backbone2.default.View.extend({
    * @private
    * */
   addToCollection: function addToCollection(model, fragmentEl) {
+    var pfx = this.pfx,
+        target = this.target,
+        propTarget = this.propTarget,
+        config = this.config;
+
     var fragment = fragmentEl || null;
     var view = new SectorView({
       model: model,
-      id: this.pfx + model.get('name').replace(' ', '_').toLowerCase(),
+      id: '' + pfx + model.get('id'),
       name: model.get('name'),
       properties: model.get('properties'),
-      target: this.target,
-      propTarget: this.propTarget,
-      config: this.config
+      target: target,
+      propTarget: propTarget,
+      config: config
     });
     var rendered = view.render().el;
 
@@ -54113,7 +54494,7 @@ module.exports = function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getUnitFromValue = exports.normalizeFloat = exports.shallowDiff = exports.getElement = exports.camelCase = exports.getModel = exports.matches = exports.upFirst = exports.hasDnd = exports.off = exports.on = undefined;
+exports.getUnitFromValue = exports.getPointerEvent = exports.normalizeFloat = exports.shallowDiff = exports.getElement = exports.camelCase = exports.getModel = exports.matches = exports.upFirst = exports.hasDnd = exports.off = exports.on = undefined;
 
 var _underscore = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
 
@@ -54248,6 +54629,15 @@ var getModel = function getModel(el, $) {
   return model;
 };
 
+/**
+ * Get cross-device pointer event
+ * @param  {Event} ev
+ * @return {Event}
+ */
+var getPointerEvent = function getPointerEvent(ev) {
+  return ev.touches && ev.touches[0] ? ev.touches[0] : ev;
+};
+
 exports.on = on;
 exports.off = off;
 exports.hasDnd = hasDnd;
@@ -54258,6 +54648,7 @@ exports.camelCase = camelCase;
 exports.getElement = getElement;
 exports.shallowDiff = shallowDiff;
 exports.normalizeFloat = normalizeFloat;
+exports.getPointerEvent = getPointerEvent;
 exports.getUnitFromValue = getUnitFromValue;
 
 /***/ }),

@@ -55,7 +55,17 @@ module.exports = {
   // Label for the add button
   addBtnText: 'Add image',
 
-  // Custom uploadFile function
+  // To upload your assets, the module uses Fetch API, with this option you
+  // overwrite it with something else.
+  // It should return a Promise
+  // @example
+  // customFetch: (url, options) => axios(url, { data: options.body }),
+  customFetch: '',
+
+  // Custom uploadFile function.
+  // Differently from the `customFetch` option, this gives a total control
+  // over the uploading process, but you also have to emit all `asset:upload:*` events
+  // by yourself (if you need to use them somewhere)
   // @example
   // uploadFile: (e) => {
   //   var files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
