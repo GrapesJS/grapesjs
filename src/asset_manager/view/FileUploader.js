@@ -32,7 +32,7 @@ module.exports = Backbone.View.extend(
 
       if (uploadFile) {
         this.uploadFile = uploadFile.bind(this);
-      } else if (c.embedAsBase64) {
+      } else if (!c.upload && c.embedAsBase64) {
         this.uploadFile = this.constructor.embedAsBase64;
       }
 
@@ -137,11 +137,10 @@ module.exports = Backbone.View.extend(
           headers,
           body
         })
-          .then(
-            res =>
-              ((res.status / 200) | 0) == 1
-                ? res.text()
-                : res.text().then(text => Promise.reject(text))
+          .then(res =>
+            ((res.status / 200) | 0) == 1
+              ? res.text()
+              : res.text().then(text => Promise.reject(text))
           )
           .then(text => this.onUploadResponse(text, clb))
           .catch(err => this.onUploadError(err));
