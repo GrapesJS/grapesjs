@@ -79,8 +79,10 @@ module.exports = Backbone.View.extend({
    */
   udpateOffset() {
     var offset = this.em.get('canvasOffset');
-    this.offTop = offset.top;
-    this.offLeft = offset.left;
+    if (offset) {
+      this.offTop = offset.top;
+      this.offLeft = offset.left;
+    }
   },
 
   /**
