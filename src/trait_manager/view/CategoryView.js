@@ -3,25 +3,25 @@ import Backbone from 'backbone';
 
 module.exports = Backbone.View.extend({
   template: _.template(`
-  <div class="<%= pfx %>title">
-    <i class="<%= pfx %>caret-icon"></i>
+  <div class="<%= ppfx %>title">
+    <i class="<%= ppfx %>caret-icon"></i>
     <%= label %>
   </div>
-  <div class="<%= pfx %>blocks-c"></div>
+  <div class="<%= pfx %>traits"></div>
   `),
 
   events: {},
 
   initialize(o = {}, config = {}) {
     this.config = config;
-    const pfx = this.config.pStylePrefix || '';
-    this.pfx = pfx;
+    this.pfx = config.stylePrefix || '';
+    this.ppfx = config.pStylePrefix || '';
     this.caretR = 'fa fa-caret-right';
     this.caretD = 'fa fa-caret-down';
-    this.iconClass = `${pfx}caret-icon`;
-    this.activeClass = `${pfx}open`;
-    this.className = `${pfx}block-category`;
-    this.events[`click .${pfx}title`] = 'toggle';
+    this.iconClass = `${this.ppfx}caret-icon`;
+    this.activeClass = `${this.ppfx}open`;
+    this.className = `${this.ppfx}trait-category`;
+    this.events[`click .${this.ppfx}title`] = 'toggle';
     this.listenTo(this.model, 'change:open', this.updateVisibility);
     this.delegateEvents();
   },
@@ -34,13 +34,13 @@ module.exports = Backbone.View.extend({
   open() {
     this.el.className = `${this.className} ${this.activeClass}`;
     this.getIconEl().className = `${this.iconClass} ${this.caretD}`;
-    this.getBlocksEl().style.display = '';
+    this.getTraitsEl().style.display = '';
   },
 
   close() {
     this.el.className = this.className;
     this.getIconEl().className = `${this.iconClass} ${this.caretR}`;
-    this.getBlocksEl().style.display = 'none';
+    this.getTraitsEl().style.display = 'none';
   },
 
   toggle() {
@@ -56,21 +56,22 @@ module.exports = Backbone.View.extend({
     return this.iconEl;
   },
 
-  getBlocksEl() {
+  getTraitsEl() {
     if (!this.blocksEl) {
-      this.blocksEl = this.el.querySelector('.' + this.pfx + 'blocks-c');
+      this.blocksEl = this.el.querySelector('.' + this.pfx + 'traits');
     }
 
     return this.blocksEl;
   },
 
   append(el) {
-    this.getBlocksEl().appendChild(el);
+    this.getTraitsEl().appendChild(el);
   },
 
   render() {
     this.el.innerHTML = this.template({
       pfx: this.pfx,
+      ppfx: this.ppfx,
       label: this.model.get('label')
     });
     this.el.className = this.className;

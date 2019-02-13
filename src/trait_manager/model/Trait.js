@@ -13,6 +13,7 @@ module.exports = require('backbone').Model.extend({
     target: '',
     default: '',
     placeholder: '',
+    category: '',
     changeProp: 0,
     options: []
   },

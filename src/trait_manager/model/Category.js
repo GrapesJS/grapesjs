@@ -4,7 +4,7 @@ module.exports = Backbone.Model.extend({
   defaults: {
     id: '',
     label: '',
-    open: true,
+    open: false,
     attributes: {}
   }
 });

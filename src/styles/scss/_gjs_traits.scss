@@ -34,3 +34,24 @@
     width: 70%;
   }
 }
+
+.#{$app-prefix}traits-categories {
+  display: flex;
+  flex-direction: column;
+}
+
+.#{$app-prefix}trait-category {
+  width: 100%;
+
+  &.#{$app-prefix}open {
+    @extend .#{$app-prefix}category-open;
+  }
+
+  .#{$app-prefix}title {
+    @extend .#{$app-prefix}category-title;
+  }
+
+  .#{$app-prefix}caret-icon {
+    margin-right: 5px;
+  }
+}
