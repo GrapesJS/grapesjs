@@ -3,7 +3,9 @@ import { isString, isObject, isFunction } from 'underscore';
 const $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
-  tagName: 'span',
+  tagName() {
+    return this.model.get('tagName');
+  },
 
   events: {
     click: 'clicked'
