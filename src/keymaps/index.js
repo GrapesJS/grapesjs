@@ -110,7 +110,7 @@ module.exports = () => {
 
       for (let id in defKeys) {
         const value = defKeys[id];
-        this.add(id, value.keys, value.handler);
+        this.add(id, value.keys, value.handler, { force: false });
       }
     },
 
@@ -137,8 +137,9 @@ module.exports = () => {
      */
     add(id, keys, handler, opts = {}) {
       const em = this.em;
-      const editor = em.getEditor();
+      const force = opts.force || false;
       const cmd = em.get('Commands');
+      const editor = em.getEditor();
       const canvas = em.get('Canvas');
       const keymap = { id, keys, handler };
       const pk = keymaps[id];
@@ -149,12 +150,15 @@ module.exports = () => {
         const opt = { event: e, h };
         handler = isString(handler) ? cmd.get(handler) : handler;
         opts.prevent && canvas.getCanvasView().preventDefault(e);
-        typeof handler == 'object'
-          ? handler.run(editor, 0, opt)
-          : handler(editor, 0, opt);
-        const args = [id, h.shortcut, e];
-        em.trigger('keymap:emit', ...args);
-        em.trigger(`keymap:emit:${id}`, ...args);
+        const ableTorun = !em.isEditing() && !editor.Canvas.isInputFocused();
+        if (ableTorun || force) {
+          typeof handler == 'object'
+            ? handler.run(editor, 0, opt)
+            : handler(editor, 0, opt);
+          const args = [id, h.shortcut, e];
+          em.trigger('keymap:emit', ...args);
+          em.trigger(`keymap:emit:${id}`, ...args);
+        }
       });
       em.trigger('keymap:add', keymap);
       return keymap;
