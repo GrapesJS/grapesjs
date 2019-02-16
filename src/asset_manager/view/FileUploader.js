@@ -32,7 +32,7 @@ module.exports = Backbone.View.extend(
 
       if (uploadFile) {
         this.uploadFile = uploadFile.bind(this);
-      } else if (c.embedAsBase64) {
+      } else if (!c.upload && c.embedAsBase64) {
         this.uploadFile = this.constructor.embedAsBase64;
       }
 

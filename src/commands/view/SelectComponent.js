@@ -69,7 +69,7 @@ module.exports = {
 
     if (!model) {
       let parent = $el.parent();
-      while (!model && parent) {
+      while (!model && parent.length > 0) {
         model = parent.data('model');
         parent = parent.parent();
       }
@@ -182,7 +182,7 @@ module.exports = {
 
     if (!model) {
       let parent = $el.parent();
-      while (!model && parent) {
+      while (!model && parent.length > 0) {
         model = parent.data('model');
         parent = parent.parent();
       }

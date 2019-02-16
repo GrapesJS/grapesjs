@@ -73,6 +73,9 @@ module.exports = {
   // }
   uploadFile: '',
 
+  // In the absence of 'uploadFile' or 'upload' assets will be embedded as Base64
+  embedAsBase64: 1,
+
   // Handle the image url submit from the built-in 'Add image' form
   // @example
   // handleAdd: (textFromInput) => {
