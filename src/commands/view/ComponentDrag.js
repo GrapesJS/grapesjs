@@ -39,24 +39,65 @@ module.exports = {
     this.toggleDrag();
   },
 
+  getTransform(transform, axis = 'x') {
+    let result = 0;
+    (transform || '').split(' ').forEach(item => {
+      const itemStr = item.trim();
+      const fn = `translate${axis.toUpperCase()}(`;
+      if (itemStr.indexOf(fn) === 0)
+        result = parseFloat(itemStr.replace(fn, ''));
+    });
+    return result;
+  },
+
+  setTransform(transform, axis, value) {
+    const fn = `translate${axis.toUpperCase()}(`;
+    const val = `${fn}${value})`;
+    let result = (transform || '')
+      .split(' ')
+      .map(item => {
+        const itemStr = item.trim();
+        if (itemStr.indexOf(fn) === 0) item = val;
+        return item;
+      })
+      .join(' ');
+    if (result.indexOf(fn) < 0) result += ` ${val}`;
+
+    return result;
+  },
+
   getPosition() {
-    const { target } = this;
-    const { left, top } = target.getStyle();
-    return {
-      x: parseFloat(left),
-      y: parseFloat(top)
-    };
+    const { target, isTran } = this;
+    const { left, top, transform } = target.getStyle();
+    let x = 0;
+    let y = 0;
+
+    if (isTran) {
+      x = this.getTransform(transform);
+      y = this.getTransform(transform, 'y');
+    } else {
+      (x = parseFloat(left)), (y = parseFloat(top));
+    }
+
+    return { x, y };
   },
 
   setPosition({ x, y, end, position, width, height }) {
-    const { target } = this;
+    const { target, isTran } = this;
     const unit = 'px';
+    const en = !end ? 1 : ''; // this will trigger the final change
+    const left = `${x}${unit}`;
+    const top = `${y}${unit}`;
+
+    if (isTran) {
+      let transform = target.getStyle()['transform'] || '';
+      transform = this.setTransform(transform, 'x', left);
+      transform = this.setTransform(transform, 'y', top);
+      return target.addStyle({ transform, en }, { avoidStore: !end });
+    }
+
     const adds = { position, width, height };
-    const style = {
-      left: `${x}${unit}`,
-      top: `${y}${unit}`,
-      e: !end ? 1 : '' // this will trigger the final change
-    };
+    const style = { left, top, en };
     keys(adds).forEach(add => {
       const prop = adds[add];
       if (prop) style[add] = prop;
@@ -65,9 +106,10 @@ module.exports = {
   },
 
   onStart() {
-    const { target, editor } = this;
+    const { target, editor, isTran } = this;
     const style = target.getStyle();
     const position = 'absolute';
+    if (isTran) return;
 
     if (style.position !== position) {
       const { left, top, width, height } = editor.Canvas.offset(target.getEl());
