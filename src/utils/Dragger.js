@@ -1,55 +1,56 @@
 import { bindAll, isFunction } from 'underscore';
 import { on, off } from 'utils/mixins';
 
-const options = {
+export default class Dragger {
   /**
-   * Callback on start
-   * onStart(ev, dragger) {
-   *  console.log('pointer start', dragger.startPointer, 'position start', dragger.startPosition);
-   * },
-   */
-  onStart: null,
-  /**
-   * Callback on drag
-   * onDrag(ev, dragger) {
-   *  console.log('pointer', dragger.currentPointer, 'position', dragger.position, 'delta', dragger.delta);
-   * },
-   */
-  onDrag: null,
-  /**
-   * Callback on drag
-   * onEnd(ev, dragger) {
-   *  console.log('pointer', dragger.currentPointer, 'position', dragger.position, 'delta', dragger.delta);
-   * },
-   */
-  onEnd: null,
-  /**
-   * Indicate a callback where to pass an object with new coordinates
-   */
-  setPosition: null,
-  /**
-   * Indicate a callback where to get initial coordinates.
-   * getPosition: () => {
-   *  ...
-   *  return { x: 10, y: 100 }
-   * }
-   */
-  getPosition: null
-};
-
-module.exports = {
-  /**
-   * Init the resizer
+   * Init the dragger
    * @param  {Object} opts
    */
-  init(opts) {
+  constructor(opts = {}) {
+    this.opts = {
+      /**
+       * Callback on start
+       * onStart(ev, dragger) {
+       *  console.log('pointer start', dragger.startPointer, 'position start', dragger.startPosition);
+       * },
+       */
+      onStart: null,
+      /**
+       * Callback on drag
+       * onDrag(ev, dragger) {
+       *  console.log('pointer', dragger.currentPointer, 'position', dragger.position, 'delta', dragger.delta);
+       * },
+       */
+      onDrag: null,
+      /**
+       * Callback on drag
+       * onEnd(ev, dragger) {
+       *  console.log('pointer', dragger.currentPointer, 'position', dragger.position, 'delta', dragger.delta);
+       * },
+       */
+      onEnd: null,
+      /**
+       * Indicate a callback where to pass an object with new coordinates
+       */
+      setPosition: null,
+      /**
+       * Indicate a callback where to get initial coordinates.
+       * getPosition: () => {
+       *  ...
+       *  return { x: 10, y: 100 }
+       * }
+       */
+      getPosition: null,
+
+      // Document on which listen to pointer events
+      doc: 0
+    };
     bindAll(this, 'drag', 'stop');
-    this.opts = options;
     this.setOptions(opts);
     this.delta = { x: 0, y: 0 };
     this.startPosition = this.getStartPosition();
     return this;
-  },
+  }
 
   /**
    * Update options
@@ -60,7 +61,7 @@ module.exports = {
       ...this.opts,
       ...opts
     };
-  },
+  }
 
   toggleDrag(enable) {
     const docs = this.getDocumentEl();
@@ -68,7 +69,7 @@ module.exports = {
     const methods = { on, off };
     methods[method](docs, 'mousemove', this.drag);
     methods[method](docs, 'mouseup', this.stop);
-  },
+  }
 
   /**
    * Start dragging
@@ -81,7 +82,7 @@ module.exports = {
     this.startPosition = this.getStartPosition();
     isFunction(onStart) && onStart(ev, this);
     this.drag(ev);
-  },
+  }
 
   /**
    * Drag event
@@ -118,7 +119,7 @@ module.exports = {
 
     // In case the mouse button was released outside of the window
     ev.which === 0 && this.stop(ev);
-  },
+  }
 
   /**
    * Stop dragging
@@ -130,14 +131,14 @@ module.exports = {
     this.move(delta.x, delta.y, 1);
     const { onEnd } = this.opts;
     isFunction(onEnd) && onEnd(ev, this);
-  },
+  }
 
   /**
    * Move the element
    * @param  {integer} x
    * @param  {integer} y
    */
-  move: function(x, y, end) {
+  move(x, y, end) {
     const { el, opts } = this;
     const pos = this.startPosition;
     const { setPosition } = opts;
@@ -155,22 +156,24 @@ module.exports = {
       el.style.left = `${xPos}px`;
       el.style.top = `${yPos}px`;
     }
-  },
+  }
 
   /**
    * Returns documents
    */
   getDocumentEl(el) {
+    const { doc } = this.opts;
     el = el || this.el;
 
     if (!this.docs) {
       const docs = [document];
       el && docs.push(el.ownerDocument);
+      doc && docs.push(doc);
       this.docs = docs;
     }
 
     return this.docs;
-  },
+  }
 
   /**
    * Get mouse coordinates
@@ -185,7 +188,7 @@ module.exports = {
           x: ev.clientX,
           y: ev.clientY
         };
-  },
+  }
 
   getStartPosition() {
     const { el, opts } = this;
@@ -202,7 +205,7 @@ module.exports = {
     }
 
     return result;
-  },
+  }
 
   detectAxisLock(x, y) {
     const relX = x;
@@ -217,4 +220,4 @@ module.exports = {
       return 'y';
     }
   }
-};
+}

@@ -133,35 +133,20 @@ module.exports = () => {
           // Without setTimeout the ghost image disappears
           nativeDrag ? setTimeout(() => hideTlb, 0) : hideTlb();
 
-          const onStart = (e, opts) => {
-            console.log('start mouse pos ', opts.start);
-            console.log('el rect ', opts.elRect);
-            var el = opts.el;
-            el.style.position = 'absolute';
-            el.style.margin = 0;
-          };
-
           const onEnd = (e, opts) => {
             em.runDefault(defComOptions);
             selAll.forEach(sel => sel.set('status', 'selected'));
             ed.select(selAll);
             sel.emitUpdate();
-            dragger && dragger.blur();
-          };
-
-          const onDrag = (e, opts) => {
-            console.log('Delta ', opts.delta);
-            console.log('Current ', opts.current);
           };
 
           if (em.get('designerMode')) {
             // TODO move grabbing func in editor/canvas from the Sorter
             dragger = editor.runCommand('drag', {
+              target: sel,
               el: sel.view.el,
               options: {
                 event,
-                onStart,
-                onDrag,
                 onEnd
               }
             });

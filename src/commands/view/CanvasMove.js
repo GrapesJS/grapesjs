@@ -35,7 +35,7 @@ module.exports = {
     this.getCanvas().classList[methodCls](`${this.ppfx}is__grabbing`);
 
     if (!dragger) {
-      dragger = Dragger.init({
+      dragger = new Dragger({
         getPosition() {
           return {
             x: canvasModel.get('x'),

@@ -1,5 +1,9 @@
+import { isUndefined } from 'underscore';
+import Dragger from 'utils/Dragger';
+
 module.exports = {
-  run(editor, sender, opts) {
+  run(editor, sender, opts = {}) {
+    const { target } = opts;
     var el = (opts && opts.el) || '';
     var canvas = editor.Canvas;
     var dragger = this.dragger;
@@ -11,21 +15,51 @@ module.exports = {
 
     // Create the resizer for the canvas if not yet created
     if (!dragger) {
-      dragger = editor.Utils.Dragger.init(options);
+      dragger = new Dragger({
+        ...options,
+        doc: target.getEl().ownerDocument,
+        onStart() {
+          target.addStyle({ position: 'absolute' });
+        },
+        getPosition() {
+          const style = target.getStyle();
+          let { left, top } = style;
+
+          if (isUndefined(left) || isUndefined(top)) {
+            const rect = target.getEl().getBoundingClientRect();
+            left = rect.left;
+            top = rect.top;
+          }
+
+          const result = {
+            x: parseFloat(left),
+            y: parseFloat(top)
+          };
+
+          return result;
+        },
+        setPosition({ x, y, end }) {
+          const unit = 'px';
+
+          target.addStyle(
+            {
+              left: `${x}${unit}`,
+              top: `${y}${unit}`,
+              e: !end ? 1 : '' // this will trigger the final change
+            },
+            { avoidStore: !end }
+          );
+        }
+      });
       this.dragger = dragger;
     }
 
     dragger.setOptions(options);
-    dragger.focus(el);
 
     if (options.event) {
       dragger.start(options.event);
     }
 
     return dragger;
-  },
-
-  stop() {
-    if (this.canvasResizer) this.canvasResizer.blur();
   }
 };

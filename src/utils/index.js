@@ -1,7 +1,8 @@
+import Dragger from './Dragger';
+
 module.exports = () => {
   const Sorter = require('./Sorter');
   const Resizer = require('./Resizer');
-  const Dragger = require('./Dragger');
 
   return {
     /**
