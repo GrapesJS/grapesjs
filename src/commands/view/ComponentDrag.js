@@ -39,7 +39,7 @@ module.exports = {
     this.toggleDrag();
   },
 
-  getTransform(transform, axis = 'x') {
+  getTranslate(transform, axis = 'x') {
     let result = 0;
     (transform || '').split(' ').forEach(item => {
       const itemStr = item.trim();
@@ -50,7 +50,7 @@ module.exports = {
     return result;
   },
 
-  setTransform(transform, axis, value) {
+  setTranslate(transform, axis, value) {
     const fn = `translate${axis.toUpperCase()}(`;
     const val = `${fn}${value})`;
     let result = (transform || '')
@@ -73,8 +73,8 @@ module.exports = {
     let y = 0;
 
     if (isTran) {
-      x = this.getTransform(transform);
-      y = this.getTransform(transform, 'y');
+      x = this.getTranslate(transform);
+      y = this.getTranslate(transform, 'y');
     } else {
       (x = parseFloat(left)), (y = parseFloat(top));
     }
@@ -91,8 +91,8 @@ module.exports = {
 
     if (isTran) {
       let transform = target.getStyle()['transform'] || '';
-      transform = this.setTransform(transform, 'x', left);
-      transform = this.setTransform(transform, 'y', top);
+      transform = this.setTranslate(transform, 'x', left);
+      transform = this.setTranslate(transform, 'y', top);
       return target.addStyle({ transform, en }, { avoidStore: !end });
     }
 
