@@ -26,7 +26,7 @@
  * @module Commands
  */
 
-import { isFunction } from 'underscore';
+import { isFunction, includes } from 'underscore';
 import CommandAbstract from './view/CommandAbstract';
 
 module.exports = () => {
@@ -118,6 +118,8 @@ module.exports = () => {
           const toolbarStyle = ed.Canvas.getToolbarEl().style;
           const nativeDrag = event && event.type == 'dragstart';
           const defComOptions = { preserveSelected: 1 };
+          const modes = ['absolute', 'translate'];
+          const mode = sel.get('dmode') || em.get('dmode');
 
           const hideTlb = () => {
             toolbarStyle.display = 'none';
@@ -139,14 +141,13 @@ module.exports = () => {
             sel.emitUpdate();
           };
 
-          if (em.get('designerMode')) {
+          if (includes(modes, mode)) {
             // TODO move grabbing func in editor/canvas from the Sorter
             dragger = editor.runCommand('core:component-drag', {
+              mode,
               target: sel,
-              options: {
-                event,
-                onEnd
-              }
+              onEnd,
+              event
             });
           } else {
             if (nativeDrag) {

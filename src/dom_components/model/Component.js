@@ -115,6 +115,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       attributes: '',
       traits: ['id', 'title'],
       propagate: '',
+      dmode: '',
       toolbar: null
     },
 

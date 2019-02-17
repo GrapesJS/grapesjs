@@ -54,7 +54,7 @@ module.exports = Backbone.Model.extend({
       editing: 0,
       selected: new Collection(),
       clipboard: null,
-      designerMode: false,
+      dmode: 0,
       componentHovered: null,
       previousModel: null,
       changesCount: 0,
