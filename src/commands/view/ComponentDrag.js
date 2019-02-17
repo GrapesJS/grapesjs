@@ -51,7 +51,7 @@ module.exports = {
       },
       setPosition
     };
-
+    this.editor = editor;
     let dragger = this.dragger;
 
     if (!dragger) {
@@ -71,11 +71,12 @@ module.exports = {
     this.toggleDrag();
   },
 
-  toggleDrag(enable) {
-    const { ppfx } = this;
-    const methodCls = enable ? 'add' : 'remove';
+  toggleDrag(on) {
+    const { ppfx, editor } = this;
+    const methodCls = on ? 'add' : 'remove';
     const canvas = this.getCanvas();
     const classes = [`${ppfx}is__grabbing`];
     classes.forEach(cls => canvas.classList[methodCls](cls));
+    editor.Canvas[on ? 'startAutoscroll' : 'stopAutoscroll']();
   }
 };

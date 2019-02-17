@@ -143,7 +143,6 @@ module.exports = () => {
             // TODO move grabbing func in editor/canvas from the Sorter
             dragger = editor.runCommand('core:component-drag', {
               target: sel,
-              el: sel.view.el,
               options: {
                 event,
                 onEnd
