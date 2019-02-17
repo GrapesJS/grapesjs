@@ -395,7 +395,7 @@ module.exports = () => {
      * @private
      */
     getMouseRelativeCanvas(ev) {
-      const zoom = this.em.getZoomDecimal();
+      const zoom = this.getZoomDecimal();
       const { top, left } = CanvasView.getPosition();
 
       return {
@@ -469,7 +469,7 @@ module.exports = () => {
 
     updateClientY(ev) {
       ev.preventDefault();
-      this.lastClientY = getPointerEvent(ev).clientY * this.em.getZoomDecimal();
+      this.lastClientY = getPointerEvent(ev).clientY * this.getZoomDecimal();
     },
 
     /**
@@ -526,6 +526,11 @@ module.exports = () => {
 
     getZoomDecimal() {
       return this.getZoom() / 100;
+    },
+
+    getZoomMultiplier() {
+      const zoom = this.getZoomDecimal();
+      return zoom ? 1 / zoom : 1;
     },
 
     /**

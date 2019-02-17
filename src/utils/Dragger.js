@@ -1,4 +1,4 @@
-import { bindAll, isFunction } from 'underscore';
+import { bindAll, isFunction, result } from 'underscore';
 import { on, off } from 'utils/mixins';
 
 export default class Dragger {
@@ -43,12 +43,14 @@ export default class Dragger {
       getPosition: null,
 
       // Document on which listen to pointer events
-      doc: 0
+      doc: 0,
+
+      // Scale result points, can also be a function
+      scale: 1
     };
     bindAll(this, 'drag', 'stop');
     this.setOptions(opts);
     this.delta = { x: 0, y: 0 };
-    this.startPosition = this.getStartPosition();
     return this;
   }
 
@@ -79,8 +81,8 @@ export default class Dragger {
     const { onStart } = this.opts;
     this.toggleDrag(1);
     this.startPointer = this.getPointerPos(ev);
-    this.startPosition = this.getStartPosition();
     isFunction(onStart) && onStart(ev, this);
+    this.startPosition = this.getStartPosition();
     this.drag(ev);
   }
 
@@ -141,12 +143,14 @@ export default class Dragger {
   move(x, y, end) {
     const { el, opts } = this;
     const pos = this.startPosition;
+    if (!pos) return;
     const { setPosition } = opts;
     const xPos = pos.x + x;
     const yPos = pos.y + y;
+    const scale = result(opts, 'scale');
     this.position = {
-      x: xPos,
-      y: yPos,
+      x: xPos * scale,
+      y: yPos * scale,
       end
     };
 

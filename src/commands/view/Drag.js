@@ -1,5 +1,3 @@
-import { isUndefined } from 'underscore';
-import { on, off } from 'utils/mixins';
 import Dragger from 'utils/Dragger';
 
 module.exports = {
@@ -7,26 +5,38 @@ module.exports = {
     const { id } = this;
     const { target, options = {} } = opts;
     const { onEnd, event } = options;
+    const scale = editor.Canvas.getZoomMultiplier();
+    const setPosition = ({ x, y, end }) => {
+      const unit = 'px';
+      target.addStyle(
+        {
+          left: `${x}${unit}`,
+          top: `${y}${unit}`,
+          e: !end ? 1 : '' // this will trigger the final change
+        },
+        { avoidStore: !end }
+      );
+    };
     const config = {
       ...options,
+      scale,
       doc: target.getEl().ownerDocument,
       onStart() {
-        target.addStyle({ position: 'absolute' });
+        const style = target.getStyle();
+        const position = 'absolute';
+
+        if (style.position !== position) {
+          const { left, top } = target.getEl().getBoundingClientRect();
+          target.addStyle({ position });
+          setPosition({ x: left, y: top });
+        }
       },
       onEnd() {
         onEnd && onEnd();
         editor.stopCommand(id);
       },
       getPosition() {
-        const style = target.getStyle();
-        let { left, top } = style;
-
-        if (isUndefined(left) || isUndefined(top)) {
-          const rect = target.getEl().getBoundingClientRect();
-          left = rect.left;
-          top = rect.top;
-        }
-
+        const { left, top } = target.getStyle();
         const result = {
           x: parseFloat(left),
           y: parseFloat(top)
@@ -34,18 +44,7 @@ module.exports = {
 
         return result;
       },
-      setPosition({ x, y, end }) {
-        const unit = 'px';
-
-        target.addStyle(
-          {
-            left: `${x}${unit}`,
-            top: `${y}${unit}`,
-            e: !end ? 1 : '' // this will trigger the final change
-          },
-          { avoidStore: !end }
-        );
-      }
+      setPosition
     };
 
     let dragger = this.dragger;
