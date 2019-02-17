@@ -91,6 +91,8 @@ export default class Dragger {
    * @param  {Event} event
    */
   drag(ev) {
+    const { opts } = this;
+    const { onDrag } = opts;
     const { startPointer } = this;
     const currentPos = this.getPointerPos(ev);
     const delta = {
@@ -112,11 +114,11 @@ export default class Dragger {
       delta.y = startPointer.y;
     }
 
+    ['x', 'y'].forEach(co => (delta[co] = delta[co] * result(opts, 'scale')));
     this.lockedAxis = lockedAxis;
     this.delta = delta;
     this.move(delta.x, delta.y);
     this.currentPointer = currentPos;
-    const { onDrag } = this.opts;
     isFunction(onDrag) && onDrag(ev, this);
 
     // In case the mouse button was released outside of the window
@@ -147,10 +149,9 @@ export default class Dragger {
     const { setPosition } = opts;
     const xPos = pos.x + x;
     const yPos = pos.y + y;
-    const scale = result(opts, 'scale');
     this.position = {
-      x: xPos * scale,
-      y: yPos * scale,
+      x: xPos,
+      y: yPos,
       end
     };
 

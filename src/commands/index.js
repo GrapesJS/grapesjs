@@ -94,7 +94,6 @@ module.exports = () => {
       defaultCommands.fullscreen = require('./view/Fullscreen');
       defaultCommands.preview = require('./view/Preview');
       defaultCommands.resize = require('./view/Resize');
-      defaultCommands.drag = require('./view/Drag');
 
       defaultCommands['tlb-delete'] = {
         run(ed) {
@@ -142,7 +141,7 @@ module.exports = () => {
 
           if (em.get('designerMode')) {
             // TODO move grabbing func in editor/canvas from the Sorter
-            dragger = editor.runCommand('drag', {
+            dragger = editor.runCommand('core:component-drag', {
               target: sel,
               el: sel.view.el,
               options: {
@@ -172,13 +171,14 @@ module.exports = () => {
         ['copy', 'CopyComponent'],
         ['paste', 'PasteComponent'],
         ['canvas-move', 'CanvasMove'],
+        ['canvas-clear', 'CanvasClear'],
         ['component-next', 'ComponentNext'],
         ['component-prev', 'ComponentPrev'],
         ['component-enter', 'ComponentEnter'],
         ['component-exit', 'ComponentExit'],
-        ['canvas-clear', 'CanvasClear'],
         ['component-delete', 'ComponentDelete'],
-        ['component-style-clear', 'ComponentStyleClear']
+        ['component-style-clear', 'ComponentStyleClear'],
+        ['component-drag', 'ComponentDrag']
       ].forEach(
         item =>
           (defaultCommands[`core:${item[0]}`] = require(`./view/${item[1]}`))
