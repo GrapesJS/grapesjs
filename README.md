@@ -216,6 +216,7 @@ Find out more about plugins here: [Creating plugins](https://github.com/artf/gra
 If you like the project support it with a donation of your choice or become a backer/sponsor via [Open Collective](https://opencollective.com/grapesjs)
 
 [![PayPalMe](http://grapesjs.com/img/ppme.png)](https://paypal.me/grapesjs)
+[![Bitcoin](https://user-images.githubusercontent.com/11614725/52977952-87235f80-33cf-11e9-9607-7a9a354e1155.png)](https://commerce.coinbase.com/checkout/fc90b940-558d-408b-a166-28a823c98173)
 
 <a href="https://opencollective.com/grapesjs/sponsors/0/website"><img src="https://opencollective.com/grapesjs/sponsors/0/avatar"></a>
 <a href="https://opencollective.com/grapesjs/sponsors/1/website"><img src="https://opencollective.com/grapesjs/sponsors/1/avatar"></a>
