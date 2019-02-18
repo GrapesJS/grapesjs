@@ -83,7 +83,7 @@ module.exports = Backbone.View.extend({
    * Triggered when the offset of the editro is changed
    */
   udpateOffset() {
-    var offset = this.em.get('canvasOffset');
+    const offset = this.em.get('canvasOffset') || {};
     this.offTop = offset.top;
     this.offLeft = offset.left;
   },
