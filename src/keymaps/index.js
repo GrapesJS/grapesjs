@@ -110,7 +110,7 @@ module.exports = () => {
 
       for (let id in defKeys) {
         const value = defKeys[id];
-        this.add(id, value.keys, value.handler, { force: false });
+        this.add(id, value.keys, value.handler);
       }
     },
 
@@ -136,8 +136,7 @@ module.exports = () => {
      * })
      */
     add(id, keys, handler, opts = {}) {
-      const em = this.em;
-      const force = opts.force || false;
+      const { em } = this;
       const cmd = em.get('Commands');
       const editor = em.getEditor();
       const canvas = em.get('Canvas');
@@ -151,7 +150,7 @@ module.exports = () => {
         handler = isString(handler) ? cmd.get(handler) : handler;
         opts.prevent && canvas.getCanvasView().preventDefault(e);
         const ableTorun = !em.isEditing() && !editor.Canvas.isInputFocused();
-        if (ableTorun || force) {
+        if (ableTorun || opts.force) {
           typeof handler == 'object'
             ? handler.run(editor, 0, opt)
             : handler(editor, 0, opt);
