@@ -3,7 +3,7 @@ module.exports = {
     const em = ed.getModel();
     const models = [...ed.getSelectedAll()];
 
-    if (models.length && !em.isEditing() && !ed.Canvas.isInputFocused()) {
+    if (models.length) {
       em.set('clipboard', models);
     }
   }
