@@ -156,6 +156,7 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
+    this.$input = null;
     this.renderLabel();
     this.renderField();
     this.el.className = this.className;
