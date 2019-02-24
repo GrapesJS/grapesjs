@@ -102,14 +102,16 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    const el = this.el;
-    const pfx = this.ppfx;
-    const className = `${pfx}block`;
-    const label = this.model.get('label');
-    el.className += ` ${className} ${pfx}one-bg ${pfx}four-color-h`;
+    const { em, el, ppfx, model } = this;
+    const className = `${ppfx}block`;
+    const label = model.get('label');
+    const render = model.get('render');
+    el.className += ` ${className} ${ppfx}one-bg ${ppfx}four-color-h`;
     el.innerHTML = `<div class="${className}-label">${label}</div>`;
     el.title = el.textContent.trim();
-    hasDnd(this.em) && el.setAttribute('draggable', true);
+    hasDnd(em) && el.setAttribute('draggable', true);
+    const result = render && render({ el, model, className, prefix: ppfx });
+    if (result) el.innerHTML = result;
     return this;
   }
 });
