@@ -137,6 +137,8 @@ const getPointerEvent = ev =>
 const getKeyCode = ev => ev.which || ev.keyCode;
 const getKeyChar = ev => String.fromCharCode(getKeyCode(ev));
 
+const capitalize = str => str.charAt(0).toUpperCase() + str.substring(1);
+
 export {
   on,
   off,
@@ -151,5 +153,6 @@ export {
   shallowDiff,
   normalizeFloat,
   getPointerEvent,
-  getUnitFromValue
+  getUnitFromValue,
+  capitalize
 };
