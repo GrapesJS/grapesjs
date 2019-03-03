@@ -1,3 +1,4 @@
+import { isUndefined } from 'underscore';
 import Backbone from 'backbone';
 
 module.exports = Backbone.Model.extend({
@@ -21,12 +22,9 @@ module.exports = Backbone.Model.extend({
   },
 
   initialize() {
-    if (this.get('widthMedia') == null) {
+    this.get('widthMedia') === null &&
       this.set('widthMedia', this.get('width'));
-    }
-
-    if (!this.get('priority')) {
+    !this.get('priority') &&
       this.set('priority', parseFloat(this.get('widthMedia')) || 0);
-    }
   }
 });
