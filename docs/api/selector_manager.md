@@ -105,8 +105,7 @@ Get the selector by its name
 ### Parameters
 
 -   `name` **([String][8] \| [Array][9])** Selector name
--   `type`  
--   `tyoe` **[String][8]** Selector type
+-   `type` **[String][8]** Selector type
 
 ### Examples
 
