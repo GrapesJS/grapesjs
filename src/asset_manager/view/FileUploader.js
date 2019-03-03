@@ -54,8 +54,11 @@ module.exports = Backbone.View.extend(
      * @private
      */
     onUploadEnd(res) {
-      const em = this.config.em;
+      const { $el, config } = this;
+      const em = config.em;
       em && em.trigger('asset:upload:end', res);
+      const input = $el.find('input');
+      input && input.val('');
     },
 
     /**
