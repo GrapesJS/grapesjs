@@ -316,7 +316,7 @@ module.exports = () => {
      * @return {Object}
      * @private
      */
-    getTargetToElementDim(target, element, options) {
+    getTargetToElementDim(target, element, options = {}) {
       var opts = options || {};
       var canvasPos = CanvasView.getPosition();
       if (!canvasPos) return;
