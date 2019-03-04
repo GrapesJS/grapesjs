@@ -11,7 +11,7 @@ module.exports = Component.extend(
       droppable: 0,
       editable: 1,
       highlightable: 0,
-      resizable: 1,
+      resizable: { ratioDefault: 1 },
       traits: ['alt'],
 
       // File to load asynchronously once the model is rendered

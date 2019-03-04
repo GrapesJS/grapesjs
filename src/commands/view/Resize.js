@@ -6,7 +6,6 @@ module.exports = {
     var canvasResizer = this.canvasResizer;
     var options = opt.options || {};
     var canvasView = canvas.getCanvasView();
-    options.ratioDefault = 1;
     options.appendTo = canvas.getResizerEl();
     options.prefix = editor.getConfig().stylePrefix;
     options.posFetcher = canvasView.getElementPos.bind(canvasView);
