@@ -127,7 +127,8 @@ module.exports = {
 
     this.editor.runCommand('show-offset', {
       el,
-      elPos: pos
+      elPos: pos,
+      force: 1
     });
   },
 
