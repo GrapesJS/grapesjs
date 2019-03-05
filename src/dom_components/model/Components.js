@@ -59,7 +59,7 @@ module.exports = Backbone.Collection.extend({
     } else if (isArray(models)) {
       models.forEach((item, index) => {
         if (isString(item)) {
-          models[index] = this.parseString(item);
+          models[index] = this.parseString(item, opt);
         }
       });
     }
