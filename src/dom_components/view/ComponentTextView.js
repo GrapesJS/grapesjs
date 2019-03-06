@@ -109,7 +109,7 @@ module.exports = ComponentView.extend({
    * Callback on input event
    * @param  {Event} e
    */
-  onInput(e) {
+  onInput() {
     const { em } = this;
 
     // Update toolbars

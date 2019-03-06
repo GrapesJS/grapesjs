@@ -13,9 +13,8 @@ module.exports = {
 
   enable() {
     this.frameOff = this.canvasOff = this.adjScroll = null;
-    var config = this.config.em.get('Config');
     this.startSelectComponent();
-    var em = this.config.em;
+    const { em } = this.config;
     showOffsets = 1;
 
     em.on('component:update', this.updateAttached, this);
@@ -476,12 +475,10 @@ module.exports = {
         options = { ...options, ...resizable };
       }
 
-      editor.runCommand('resize', { el, options, force: 1 });
-
-      // On undo/redo the resizer rect is not updating, need somehow to call
-      // this.updateRect on undo/redo action
+      this.resizer = editor.runCommand('resize', { el, options, force: 1 });
     } else {
       editor.stopCommand('resize');
+      this.resizer = null;
     }
   },
 
@@ -615,14 +612,16 @@ module.exports = {
   /**
    * Update attached elements, eg. component toolbar
    */
-  updateAttached(updated) {
-    const model = this.em.getSelected();
+  updateAttached() {
+    const { resizer, em } = this;
+    const model = em.getSelected();
     const view = model && model.view;
 
     if (view) {
       const { el } = view;
       this.updateToolbarPos(el);
       this.showFixedElementOffset(el);
+      resizer && resizer.updateContainer();
     }
   },
 

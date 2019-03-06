@@ -218,22 +218,8 @@ class Resizer {
       return;
     }
 
-    // Show the handlers
     this.el = el;
-    const config = this.opts;
-    const unit = 'px';
-    const rect = this.getElementPos(el, { target: 'container' });
-    const container = this.container;
-    const contStyle = container.style;
-
-    if (!config.avoidContainerUpdate) {
-      contStyle.left = rect.left + unit;
-      contStyle.top = rect.top + unit;
-      contStyle.width = rect.width + unit;
-      contStyle.height = rect.height + unit;
-      contStyle.display = 'block';
-    }
-
+    this.updateContainer({ forceShow: 1 });
     on(this.getDocumentEl(), 'mousedown', this.handleMouseDown);
   }
 
@@ -353,7 +339,6 @@ class Resizer {
     const resizer = this;
     const config = this.opts;
     const rect = this.rectDim;
-    const conStyle = this.container.style;
     const updateTarget = this.updateTarget;
     const selectedHandler = this.getSelectedHandler();
     const { unitHeight, unitWidth, keyWidth, keyHeight } = config;
@@ -372,13 +357,18 @@ class Resizer {
       elStyle[keyHeight] = rect.h + unitHeight;
     }
 
-    const unitRect = 'px';
-    const rectEl = this.getElementPos(el, { target: 'container' });
-    if (!config.avoidContainerUpdate) {
-      conStyle.left = rectEl.left + unitRect;
-      conStyle.top = rectEl.top + unitRect;
-      conStyle.width = rectEl.width + unitRect;
-      conStyle.height = rectEl.height + unitRect;
+    this.updateContainer();
+  }
+
+  updateContainer(opt = {}) {
+    const { opts, container, el } = this;
+    const { style } = container;
+
+    if (!opts.avoidContainerUpdate && el) {
+      const toUpdate = ['left', 'top', 'width', 'height'];
+      const rectEl = this.getElementPos(el, { target: 'container' });
+      toUpdate.forEach(pos => (style[pos] = `${rectEl[pos]}px`));
+      if (opt.forceShow) style.display = 'block';
     }
   }
 
