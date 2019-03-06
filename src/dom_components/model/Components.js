@@ -1,4 +1,4 @@
-import { isEmpty, isArray, isString } from 'underscore';
+import { isEmpty, isArray, isString, isObject } from 'underscore';
 
 const Backbone = require('backbone');
 let Component;
@@ -62,6 +62,8 @@ module.exports = Backbone.Collection.extend({
           models[index] = this.parseString(item);
         }
       });
+    } else if (isObject(models) && models.content) {
+      this.add(models.content);
     }
 
     return Backbone.Collection.prototype.add.apply(this, [models, opt]);
