@@ -33,20 +33,24 @@ module.exports = ComponentView.extend({
    * @private
    */
   updateSrc() {
-    var prov = this.model.get('provider');
-    var src = this.model.get('src');
+    const { model, videoEl } = this;
+    if (!videoEl) return;
+    const prov = model.get('provider');
+    let src = model.get('src');
+
     switch (prov) {
       case 'yt':
-        src = this.model.getYoutubeSrc();
+        src = model.getYoutubeSrc();
         break;
       case 'ytnc':
-        src = this.model.getYoutubeNoCookieSrc();
+        src = model.getYoutubeNoCookieSrc();
         break;
       case 'vi':
-        src = this.model.getVimeoSrc();
+        src = model.getVimeoSrc();
         break;
     }
-    this.videoEl.src = src;
+
+    videoEl.src = src;
   },
 
   /**
