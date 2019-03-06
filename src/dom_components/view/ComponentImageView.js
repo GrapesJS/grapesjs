@@ -1,12 +1,13 @@
 import { isString } from 'underscore';
-var ComponentView = require('./ComponentView');
+const ComponentView = require('./ComponentView');
 
 module.exports = ComponentView.extend({
   tagName: 'img',
 
   events: {
     dblclick: 'onActive',
-    click: 'initResize'
+    click: 'initResize',
+    error: 'onError'
   },
 
   initialize(o) {
@@ -49,9 +50,10 @@ module.exports = ComponentView.extend({
    * */
   updateSrc() {
     const { model, classEmpty, $el } = this;
-    const src = model.get('src');
+    const src = model.getSrcResult();
+    const srcExists = src && !model.isDefaultSrc();
     model.addAttributes({ src });
-    $el[src ? 'removeClass' : 'addClass'](classEmpty);
+    $el[srcExists ? 'removeClass' : 'addClass'](classEmpty);
   },
 
   /**
@@ -77,8 +79,14 @@ module.exports = ComponentView.extend({
     }
   },
 
+  onError() {
+    const fallback = this.model.getSrcResult({ fallback: 1 });
+    if (fallback) this.el.src = fallback;
+  },
+
   render() {
     this.renderAttributes();
+    this.updateSrc();
     const { $el, model } = this;
     const cls = $el.attr('class') || '';
     !model.get('src') && $el.attr('class', `${cls} ${this.classEmpty}`.trim());

@@ -217,8 +217,8 @@ module.exports = Backbone.View.extend({
         .${ppfx}plh-image {
           background: #f5f5f5;
           border: none;
-          height: 50px;
-          width: 50px;
+          height: 100px;
+          width: 100px;
           display: block;
           outline: 3px solid #ffca6f;
           cursor: pointer;
