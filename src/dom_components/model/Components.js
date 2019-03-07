@@ -63,7 +63,7 @@ module.exports = Backbone.Collection.extend({
         }
       });
     } else if (isObject(models) && models.content) {
-      this.add(models.content);
+      return this.add(models.content);
     }
 
     return Backbone.Collection.prototype.add.apply(this, [models, opt]);
