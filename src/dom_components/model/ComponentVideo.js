@@ -12,7 +12,7 @@ module.exports = Component.extend(
       tagName: 'video',
       videoId: '',
       void: 0,
-      provider: '', // on change of provider, traits are switched
+      provider: 'so', // on change of provider, traits are switched
       ytUrl: 'https://www.youtube.com/embed/',
       ytncUrl: 'https://www.youtube-nocookie.com/embed/',
       viUrl: 'https://player.vimeo.com/video/',
@@ -155,7 +155,6 @@ module.exports = Component.extend(
         label: 'Provider',
         name: 'provider',
         changeProp: 1,
-        value: this.get('provider'),
         options: [
           { value: 'so', name: 'HTML5 Source' },
           { value: yt, name: 'Youtube' },
