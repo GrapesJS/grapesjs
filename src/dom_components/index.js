@@ -520,6 +520,7 @@ module.exports = () => {
      * @return {this}
      */
     addType(type, methods) {
+      const { em } = this;
       const {
         model = {},
         view = {},
@@ -570,6 +571,9 @@ module.exports = () => {
         methods.id = type;
         componentTypes.unshift(methods);
       }
+
+      const event = `component:type:${compType ? 'update' : 'add'}`;
+      em && em.trigger(event, compType || methods);
 
       return this;
     },
