@@ -62,8 +62,9 @@ module.exports = Backbone.Collection.extend({
           models[index] = this.parseString(item);
         }
       });
-    } else if (isObject(models) && models.content) {
-      return this.add(models.content);
+    } else if (isObject(models) && isString(models.content)) {
+      const parsed = this.parseString(models.content, opt);
+      models = { ...models, ...parsed };
     }
 
     return Backbone.Collection.prototype.add.apply(this, [models, opt]);
