@@ -371,6 +371,7 @@ module.exports = () => {
      * @private
      * */
     create(command) {
+      if (!command.stop) command.noStop = 1;
       const cmd = CommandAbstract.extend(command);
       return new cmd(c);
     }
