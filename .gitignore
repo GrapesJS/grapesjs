@@ -8,6 +8,7 @@ yarn-error.log
 yarn.lock
 style/.sass-cache/
 stats.json
+package-lock.json
 
 img/
 images/

@@ -11,6 +11,11 @@ module.exports = Backbone.View.extend({
   template(view) {
     const pfx = view.pfx;
     const ppfx = view.ppfx;
+
+    if (view.config.useCustomAssetsTemplate !== '') {
+      return view.config.useCustomAssetsTemplate;
+    }
+
     return `
     <div class="${pfx}assets-cont">
       <div class="${pfx}assets-header">
@@ -175,6 +180,9 @@ module.exports = Backbone.View.extend({
   render() {
     const fuRendered = this.options.fu.render().el;
     this.$el.empty();
+
+    if (this.config.hideFileUploader) fuRendered.style.display = 'none';
+
     this.$el.append(fuRendered).append(this.template(this));
     this.el.className = `${this.ppfx}asset-manager`;
     this.renderAssets();

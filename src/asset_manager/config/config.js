@@ -97,5 +97,13 @@ module.exports = {
   modalTitle: 'Select Image',
 
   //Default placeholder for input
-  inputPlaceholder: 'http://path/to/the/image.jpg'
+  inputPlaceholder: 'http://path/to/the/image.jpg',
+
+  // Template for using a custom assets template
+  useCustomAssetsTemplate: '',
+
+  // Hide File uploader, it could be useful to render a file upload button block
+  // in custom assets template and keeping upload logic using html elements in
+  // FileUploader view
+  hideFileUploader: 0
 };
