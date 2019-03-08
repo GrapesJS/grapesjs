@@ -234,6 +234,16 @@ module.exports = () => {
     },
 
     /**
+     *  Get assets element container
+     * @param {string} template
+     * @param {boolean} hideFileUploader
+     */
+    useCustomAssetsTemplate(template, hideFileUploader = false) {
+      if (template !== '') c.useCustomAssetsTemplate = template;
+      c.hideFileUploader = hideFileUploader;
+    },
+
+    /**
      * Render assets
      * @param  {array} assets Assets to render, without the argument will render
      *                        all global assets
