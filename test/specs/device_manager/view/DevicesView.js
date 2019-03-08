@@ -9,6 +9,7 @@ module.exports = {
       var model;
       var view;
       var editorModel;
+      var em;
 
       beforeEach(() => {
         model = new Devices([]);

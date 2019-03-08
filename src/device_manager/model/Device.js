@@ -32,7 +32,7 @@ module.exports = Backbone.Model.extend({
   },
 
   checkUnit(prop) {
-    const pr = this.get(prop);
+    const pr = this.get(prop) || '';
     const noUnit = (parseFloat(pr) || 0).toString() === pr.toString();
     noUnit && this.set(prop, `${pr}px`);
   }

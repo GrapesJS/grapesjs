@@ -1,5 +1,5 @@
 const ComponentImageView = require('dom_components/view/ComponentImageView');
-const Component = require('dom_components/model/Component');
+const Component = require('dom_components/model/ComponentImage');
 
 module.exports = {
   run() {
@@ -21,7 +21,6 @@ module.exports = {
       });
 
       test('Component empty', () => {
-        expect(view.el.getAttribute('onmousedown')).toEqual('return false');
         expect(view.el.getAttribute('class')).toEqual(view.classEmpty);
       });
 

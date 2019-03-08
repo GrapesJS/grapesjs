@@ -389,7 +389,7 @@ module.exports = {
       });
 
       test('ComponentImage toHTML', () => {
-        obj = new ComponentImage();
+        obj = new ComponentImage({ src: '' });
         expect(obj.toHTML()).toEqual('<img/>');
       });
 

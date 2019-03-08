@@ -43,8 +43,8 @@ const Property = require('backbone').Model.extend(
     },
 
     initialize(props = {}, opts = {}) {
-      const id = this.get('id');
-      const name = this.get('name');
+      const id = this.get('id') || '';
+      const name = this.get('name') || '';
       !this.get('property') &&
         this.set('property', (name || id).replace(/ /g, '-'));
       const prop = this.get('property');
