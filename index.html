@@ -115,7 +115,7 @@
             ]
         },
         assetManager: {
-          useCustomAssetsTemplate: `<p>TEST</p>`,
+          //useCustomAssetsTemplate: `<p>TEST</p>`,
           hideFileUploader: 1
         },
         styleManager : {
@@ -147,6 +147,8 @@
           ],
         },
       });
+
+      editor.AssetManager.useCustomAssetsTemplate("<p>TEST</p>", true);
 
       editor.BlockManager.add('testBlock', {
         label: 'Block',
