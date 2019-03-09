@@ -24,6 +24,8 @@
  * * [setCustomBadgeLabel](#setcustombadgelabel)
  * * [hasFocus](#hasfocus)
  * * [scrollTo](#scrollto)
+ * * [setZoom](#setzoom)
+ * * [getZoom](#getzoom)
  *
  * @module Canvas
  */
@@ -516,10 +518,20 @@ module.exports = () => {
       if (hasDnd(c.em)) this.droppable = new Droppable(c.em);
     },
 
+    /**
+     * Set zoom value
+     * @param {Number} value The zoom value, from 0 to 100
+     * @returns {this}
+     */
     setZoom(value) {
-      return canvas.set('zoom', parseFloat(value));
+      canvas.set('zoom', parseFloat(value));
+      return this;
     },
 
+    /**
+     * Get zoom value
+     * @returns {Number}
+     */
     getZoom() {
       return parseFloat(canvas.get('zoom'));
     },
