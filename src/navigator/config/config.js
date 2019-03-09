@@ -25,12 +25,13 @@ module.exports = {
   showHover: 1,
 
   // Scroll to selected component in Canvas when it's selected in Layers
-  // true, false or `scrollIntoView`-like options
-  scrollCanvas: { behavior: 'smooth' },
+  // true, false or `scrollIntoView`-like options,
+  // `block: 'nearest'` avoids the issue of window scolling
+  scrollCanvas: { behavior: 'smooth', block: 'nearest' },
 
   // Scroll to selected component in Layers when it's selected in Canvas
   // true, false or `scrollIntoView`-like options
-  scrollLayers: 1,
+  scrollLayers: { behavior: 'auto', block: 'nearest' },
 
   // Highlight when a layer component is hovered
   highlightHover: 1
