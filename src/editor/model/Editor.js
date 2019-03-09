@@ -34,6 +34,7 @@ const deps = [
 const Backbone = require('backbone');
 const { Collection } = Backbone;
 let timedInterval;
+let updateItr;
 
 require('utils/extender')({
   Backbone: Backbone,
@@ -156,6 +157,8 @@ module.exports = Backbone.Model.extend({
   updateChanges() {
     const stm = this.get('StorageManager');
     const changes = this.get('changesCount');
+    updateItr && clearTimeout(updateItr);
+    updateItr = setTimeout(() => this.trigger('update'));
 
     if (this.config.noticeOnUnload) {
       window.onbeforeunload = changes ? e => 1 : null;

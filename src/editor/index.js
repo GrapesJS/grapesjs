@@ -88,10 +88,11 @@
  * * `stop:{commandName}:before` - Triggered before the command is called to stop
  * * `abort:{commandName}` - Triggered when the command execution is aborted (`editor.on(`run:preview:before`, opts => opts.abort = 1);`)
  * ### General
- * * `canvasScroll` - Triggered when the canvas is scrolle
+ * * `canvasScroll` - Canvas is scrolled
+ * * `update` - The structure of the template is updated (its HTML/CSS)
  * * `undo` - Undo executed
  * * `redo` - Redo executed
- * * `load` - When the editor is loaded
+ * * `load` - Editor is loaded
  *
  * @module Editor
  */
