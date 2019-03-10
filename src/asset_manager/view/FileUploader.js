@@ -32,7 +32,7 @@ module.exports = Backbone.View.extend(
 
       if (uploadFile) {
         this.uploadFile = uploadFile.bind(this);
-      } else if (c.embedAsBase64) {
+      } else if (!c.upload && c.embedAsBase64) {
         this.uploadFile = this.constructor.embedAsBase64;
       }
 
@@ -54,8 +54,11 @@ module.exports = Backbone.View.extend(
      * @private
      */
     onUploadEnd(res) {
-      const em = this.config.em;
+      const { $el, config } = this;
+      const em = config.em;
       em && em.trigger('asset:upload:end', res);
+      const input = $el.find('input');
+      input && input.val('');
     },
 
     /**

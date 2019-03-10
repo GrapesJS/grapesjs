@@ -22,10 +22,10 @@ module.exports = require('backbone').View.extend({
    * Update dimensions of the frame
    * @private
    */
-  updateDim(model) {
-    const em = this.em;
+  updateDim() {
+    const { em, el, $el } = this;
+    const { style } = el;
     const device = em.getDeviceModel();
-    const style = this.el.style;
     const currW = style.width || '';
     const currH = style.height || '';
     const newW = device ? device.get('width') : '';
@@ -37,7 +37,7 @@ module.exports = require('backbone').View.extend({
     // Prevent fixed highlighting box which appears when on
     // component hover during the animation
     em.stopDefault({ preserveSelected: 1 });
-    noChanges ? this.udpateOffset() : this.$el.on(motionsEv, this.udpateOffset);
+    noChanges ? this.udpateOffset() : $el.on(motionsEv, this.udpateOffset);
   },
 
   udpateOffset() {

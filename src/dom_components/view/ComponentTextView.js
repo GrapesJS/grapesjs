@@ -15,6 +15,7 @@ module.exports = ComponentView.extend({
     const em = this.em;
     this.listenTo(model, 'focus', this.onActive);
     this.listenTo(model, 'change:content', this.updateContentText);
+    this.listenTo(model, 'sync:content', this.syncContent);
     this.rte = em && em.get('RichTextEditor');
   },
 
@@ -52,53 +53,17 @@ module.exports = ComponentView.extend({
    * @private
    * */
   disableEditing() {
-    const model = this.model;
+    const { model, rte, activeRte } = this;
     const editable = model.get('editable');
-    const rte = this.rte;
-    const contentOpt = { fromDisable: 1 };
 
     if (rte && editable) {
       try {
-        rte.disable(this, this.activeRte);
+        rte.disable(this, activeRte);
       } catch (err) {
         console.error(err);
       }
 
-      const content = this.getChildrenContainer().innerHTML;
-      const comps = model.get('components');
-      comps.length && comps.reset();
-      model.set('content', '', contentOpt);
-
-      // If there is a custom RTE the content is just baked staticly
-      // inside 'content'
-      if (rte.customRte) {
-        // Avoid double content by removing its children components
-        // and force to trigger change
-        model.set('content', content, contentOpt);
-      } else {
-        const clean = model => {
-          const selectable = !['text', 'default', ''].some(type =>
-            model.is(type)
-          );
-          model.set({
-            editable: selectable && model.get('editable'),
-            highlightable: 0,
-            removable: 0,
-            draggable: 0,
-            copyable: 0,
-            selectable: selectable,
-            hoverable: selectable,
-            toolbar: ''
-          });
-          model.get('components').each(model => clean(model));
-        };
-
-        // Avoid re-render on reset with silent option
-        model.trigger('change:content', model, '', contentOpt);
-        comps.add(content);
-        comps.each(model => clean(model));
-        comps.trigger('resetNavigator');
-      }
+      this.syncContent();
     }
 
     this.rteEnabled = 0;
@@ -106,10 +71,55 @@ module.exports = ComponentView.extend({
   },
 
   /**
+   * Merge content from the DOM to the model
+   */
+  syncContent(opts = {}) {
+    const { model, rte, rteEnabled } = this;
+    if (!rteEnabled && !opts.force) return;
+    const content = this.getChildrenContainer().innerHTML;
+    const comps = model.components();
+    const contentOpt = { fromDisable: 1, ...opts };
+    comps.length && comps.reset(null, opts);
+    model.set('content', '', contentOpt);
+
+    // If there is a custom RTE the content is just baked staticly
+    // inside 'content'
+    if (rte.customRte) {
+      model.set('content', content, contentOpt);
+    } else {
+      const clean = model => {
+        const selectable = !['text', 'default', ''].some(type =>
+          model.is(type)
+        );
+        model.set(
+          {
+            editable: selectable && model.get('editable'),
+            selectable: selectable,
+            hoverable: selectable,
+            highlightable: 0,
+            removable: 0,
+            draggable: 0,
+            copyable: 0,
+            toolbar: ''
+          },
+          opts
+        );
+        model.get('components').each(model => clean(model));
+      };
+
+      // Avoid re-render on reset with silent option
+      !opts.silent && model.trigger('change:content', model, '', contentOpt);
+      comps.add(content, opts);
+      comps.each(model => clean(model));
+      comps.trigger('resetNavigator');
+    }
+  },
+
+  /**
    * Callback on input event
    * @param  {Event} e
    */
-  onInput(e) {
+  onInput() {
     const { em } = this;
 
     // Update toolbars

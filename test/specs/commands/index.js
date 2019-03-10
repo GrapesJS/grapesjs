@@ -29,7 +29,8 @@ describe('Commands', () => {
           default:
         }
         return null;
-      }
+      },
+      logWarning() {}
     };
 
     beforeEach(() => {
@@ -59,32 +60,6 @@ describe('Commands', () => {
       expect(obj.has('test')).toBe(true);
       expect(Object.keys(obj.getAll()).length).toBe(len + 1);
       expect(obj.get('test').test).toEqual('test');
-    });
-
-    test('Load default commands at init', () => {
-      expect(obj.get('select-comp')).not.toBeUndefined();
-      expect(obj.get('create-comp')).not.toBeUndefined();
-      expect(obj.get('delete-comp')).not.toBeUndefined();
-      expect(obj.get('image-comp')).not.toBeUndefined();
-      expect(obj.get('move-comp')).not.toBeUndefined();
-      expect(obj.get('text-comp')).not.toBeUndefined();
-      expect(obj.get('insert-custom')).not.toBeUndefined();
-      expect(obj.get('export-template')).not.toBeUndefined();
-      expect(obj.get('sw-visibility')).not.toBeUndefined();
-      expect(obj.get('open-layers')).not.toBeUndefined();
-      expect(obj.get('open-sm')).not.toBeUndefined();
-      expect(obj.get('open-tm')).not.toBeUndefined();
-      expect(obj.get('open-blocks')).not.toBeUndefined();
-      expect(obj.get('open-assets')).not.toBeUndefined();
-      expect(obj.get('show-offset')).not.toBeUndefined();
-      expect(obj.get('select-parent')).not.toBeUndefined();
-      expect(obj.get('tlb-delete')).not.toBeUndefined();
-      expect(obj.get('tlb-clone')).not.toBeUndefined();
-      expect(obj.get('tlb-move')).not.toBeUndefined();
-      expect(obj.get('fullscreen')).not.toBeUndefined();
-      expect(obj.get('preview')).not.toBeUndefined();
-      expect(obj.get('resize')).not.toBeUndefined();
-      expect(obj.get('drag')).not.toBeUndefined();
     });
 
     test('Default commands after loadDefaultCommands', () => {

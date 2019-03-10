@@ -50,6 +50,8 @@
 
 $prefix: $app-prefix;
 
+@import "gjs_status";
+
 .#{$prefix} {
   @each $cnum, $ccol in (one, $primaryColor), (two, $secondaryColor), (three, $tertiaryColor), (four, $quaternaryColor) {
     &#{$cnum} {

@@ -213,9 +213,9 @@ describe('DOM Components', () => {
       const initialTypes = obj.getTypes().length;
       obj.addType(id, {
         model: {
-          defaults: {
+          defaults: () => ({
             testProp
-          }
+          })
         },
         view: {
           onRender() {

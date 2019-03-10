@@ -306,5 +306,8 @@ module.exports = {
   textViewCode: 'Code',
 
   // Keep unused styles within the editor
-  keepUnusedStyles: 0
+  keepUnusedStyles: 0,
+
+  // TODO
+  multiFrames: 0
 };

@@ -1,21 +1,95 @@
 import Backbone from 'backbone';
-import { on, off, getElement } from 'utils/mixins';
+import { on, off, getElement, getKeyChar } from 'utils/mixins';
 const FrameView = require('./FrameView');
 const $ = Backbone.$;
+let timerZoom;
 
 module.exports = Backbone.View.extend({
+  events: {
+    wheel: 'onWheel'
+  },
+
+  template() {
+    const { pfx } = this;
+    return `
+      <div class="${pfx}canvas__frames" data-frames></div>
+      <div id="${pfx}tools" class="${pfx}canvas__tools" data-tools></div>
+    `;
+  },
+
   initialize(o) {
-    _.bindAll(this, 'renderBody', 'onFrameScroll', 'clearOff');
+    _.bindAll(this, 'renderBody', 'onFrameScroll', 'clearOff', 'onKeyPress');
     on(window, 'scroll resize', this.clearOff);
+    const { model } = this;
     this.config = o.config || {};
     this.em = this.config.em || {};
+    this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
     this.className = this.config.stylePrefix + 'canvas';
     this.listenTo(this.em, 'change:canvasOffset', this.clearOff);
+    this.listenTo(model, 'change:zoom change:x change:y', this.updateFrames);
+    this.toggleListeners(1);
     this.frame = new FrameView({
       model: this.model.get('frame'),
       config: this.config
     });
+  },
+
+  remove() {
+    Backbone.View.prototype.remove.apply(this, arguments);
+    this.toggleListeners();
+  },
+
+  preventDefault(ev) {
+    if (ev) {
+      ev.preventDefault();
+      ev._parentEvent && ev._parentEvent.preventDefault();
+    }
+  },
+
+  toggleListeners(enable) {
+    const method = enable ? 'on' : 'off';
+    const methods = { on, off };
+    methods[method](document, 'keypress', this.onKeyPress);
+  },
+
+  onKeyPress(ev) {
+    const { em } = this;
+    const key = getKeyChar(ev);
+
+    if (key === ' ' && em.getZoomDecimal() !== 1) {
+      this.preventDefault(ev);
+      em.get('Editor').runCommand('core:canvas-move');
+    }
+  },
+
+  onWheel(ev) {
+    if ((ev.ctrlKey || ev.metaKey) && this.em.getConfig('multiFrames')) {
+      this.preventDefault(ev);
+      const { model } = this;
+      const delta = Math.max(-1, Math.min(1, ev.wheelDelta || -ev.detail));
+      const zoom = model.get('zoom');
+      model.set('zoom', zoom + delta * 2);
+    }
+  },
+
+  updateFrames() {
+    const { em, model } = this;
+    const { x, y } = model.attributes;
+    const zoom = this.getZoom();
+    const defOpts = { preserveSelected: 1 };
+    const mpl = zoom ? 1 / zoom : 1;
+    this.framesArea.style.transform = `scale(${zoom}) translate(${x *
+      mpl}px, ${y * mpl}px)`;
+    this.clearOff();
+    this.onFrameScroll();
+    em.stopDefault(defOpts);
+    timerZoom && clearTimeout(timerZoom);
+    timerZoom = setTimeout(() => em.runDefault(defOpts));
+  },
+
+  getZoom() {
+    return this.em.getZoomDecimal();
   },
 
   /**
@@ -43,8 +117,9 @@ module.exports = Backbone.View.extend({
   onFrameScroll() {
     var u = 'px';
     var body = this.frame.el.contentDocument.body;
-    this.toolsEl.style.top = '-' + body.scrollTop + u;
-    this.toolsEl.style.left = '-' + body.scrollLeft + u;
+    const zoom = this.getZoom();
+    this.toolsEl.style.top = '-' + body.scrollTop * zoom + u;
+    this.toolsEl.style.left = '-' + body.scrollLeft * zoom + u;
     this.em.trigger('canvasScroll');
   },
 
@@ -142,8 +217,8 @@ module.exports = Backbone.View.extend({
         .${ppfx}plh-image {
           background: #f5f5f5;
           border: none;
-          height: 50px;
-          width: 50px;
+          height: 100px;
+          width: 100px;
           display: block;
           outline: 3px solid #ffca6f;
           cursor: pointer;
@@ -188,6 +263,7 @@ module.exports = Backbone.View.extend({
           oEvent.initEvent(e.type, true, true);
         }
         oEvent.keyCodeVal = e.keyCode;
+        oEvent._parentEvent = e;
         ['keyCode', 'which'].forEach(prop => {
           Object.defineProperty(oEvent, prop, {
             get() {
@@ -199,12 +275,12 @@ module.exports = Backbone.View.extend({
       };
 
       [
-        { event: 'keydown keyup', class: 'KeyboardEvent' }
-        //{ event: 'mousedown mousemove mouseup', class: 'MouseEvent' },
+        { event: 'keydown keyup keypress', class: 'KeyboardEvent' },
+        { event: 'wheel', class: 'WheelEvent' }
       ].forEach(obj =>
         obj.event.split(' ').forEach(event => {
           fdoc.addEventListener(event, e =>
-            doc.dispatchEvent(createCustomEvent(e, obj.class))
+            this.el.dispatchEvent(createCustomEvent(e, obj.class))
           );
         })
       );
@@ -263,6 +339,7 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getElementPos(el, opts) {
+    const zoom = this.getZoom();
     var opt = opts || {};
     var frmOff = this.getFrameOffset();
     var cvsOff = this.getCanvasOffset();
@@ -271,13 +348,37 @@ module.exports = Backbone.View.extend({
     var frmTop = opt.avoidFrameOffset ? 0 : frmOff.top;
     var frmLeft = opt.avoidFrameOffset ? 0 : frmOff.left;
 
-    const top = eo.top + frmTop - cvsOff.top;
-    const left = eo.left + frmLeft - cvsOff.left;
-    // clientHeight/clientWidth are for SVGs
-    const height = el.offsetHeight || el.clientHeight;
-    const width = el.offsetWidth || el.clientWidth;
+    const top = eo.top * zoom + frmTop - cvsOff.top;
+    const left = eo.left * zoom + frmLeft - cvsOff.left;
+    const height = eo.height * zoom;
+    const width = eo.width * zoom;
 
     return { top, left, height, width };
+  },
+
+  /**
+   * Returns element's offsets like margins and paddings
+   * @param {HTMLElement} el
+   * @return {Object}
+   * @private
+   */
+  getElementOffsets(el) {
+    const result = {};
+    const styles = window.getComputedStyle(el);
+    [
+      'marginTop',
+      'marginRight',
+      'marginBottom',
+      'marginLeft',
+      'paddingTop',
+      'paddingRight',
+      'paddingBottom',
+      'paddingLeft'
+    ].forEach(offset => {
+      result[offset] = parseFloat(styles[offset]) * this.getZoom();
+    });
+
+    return result;
   },
 
   /**
@@ -289,11 +390,13 @@ module.exports = Backbone.View.extend({
     const doc = this.frame.el.contentDocument;
     if (!doc) return;
     const bEl = doc.body;
+    const zoom = this.getZoom();
     const fo = this.getFrameOffset();
     const co = this.getCanvasOffset();
+
     return {
-      top: fo.top + bEl.scrollTop - co.top,
-      left: fo.left + bEl.scrollLeft - co.left
+      top: fo.top + bEl.scrollTop * zoom - co.top,
+      left: fo.left + bEl.scrollLeft * zoom - co.left
     };
   },
 
@@ -340,11 +443,15 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    this.wrapper = this.model.get('wrapper');
+    const { el, $el, ppfx, model } = this;
+    this.wrapper = model.get('wrapper');
+    $el.html(this.template());
+    const $frames = $el.find('[data-frames]');
+    this.framesArea = $frames.get(0);
 
     if (this.wrapper && typeof this.wrapper.render == 'function') {
-      this.model.get('frame').set('wrapper', this.wrapper);
-      this.$el.append(this.frame.render().el);
+      model.get('frame').set('wrapper', this.wrapper);
+      $frames.append(this.frame.render().el);
       var frame = this.frame;
       if (this.config.scripts.length === 0) {
         frame.el.onload = this.renderBody;
@@ -352,8 +459,7 @@ module.exports = Backbone.View.extend({
         this.renderScripts(); // will call renderBody later
       }
     }
-    var ppfx = this.ppfx;
-    this.$el.append(`
+    $el.find('[data-tools]').append(`
       <div id="${ppfx}tools" style="pointer-events:none">
         <div class="${ppfx}highlighter"></div>
         <div class="${ppfx}badge"></div>
@@ -367,7 +473,6 @@ module.exports = Backbone.View.extend({
         <div class="${ppfx}offset-fixed-v"></div>
       </div>
     `);
-    const el = this.el;
     const toolsEl = el.querySelector(`#${ppfx}tools`);
     this.hlEl = el.querySelector(`.${ppfx}highlighter`);
     this.badgeEl = el.querySelector(`.${ppfx}badge`);

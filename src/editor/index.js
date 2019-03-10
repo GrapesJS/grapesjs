@@ -30,6 +30,8 @@
  * * `component:selected` - New component selected, the selected model is passed as an argument to the callback
  * * `component:deselected` - Component deselected, the deselected model is passed as an argument to the callback
  * * `component:toggled` - Component selection changed, toggled model is passed as an argument to the callback
+ * * `component:type:add` - New component type added, the new type is passed as an argument to the callback
+ * * `component:type:update` - Component type updated, the updated type is passed as an argument to the callback
  * ### Blocks
  * * `block:add` - New block added
  * * `block:remove` - Block removed
@@ -86,24 +88,24 @@
  * * `stop:{commandName}:before` - Triggered before the command is called to stop
  * * `abort:{commandName}` - Triggered when the command execution is aborted (`editor.on(`run:preview:before`, opts => opts.abort = 1);`)
  * ### General
- * * `canvasScroll` - Triggered when the canvas is scrolle
+ * * `canvasScroll` - Canvas is scrolled
+ * * `update` - The structure of the template is updated (its HTML/CSS)
  * * `undo` - Undo executed
  * * `redo` - Redo executed
- * * `load` - When the editor is loaded
+ * * `load` - Editor is loaded
  *
  * @module Editor
  */
 import $ from 'cash-dom';
 
-export default config => {
-  var c = config || {},
-    defaults = require('./config/config'),
-    EditorModel = require('./model/Editor'),
-    EditorView = require('./view/EditorView');
-
-  for (var name in defaults) {
-    if (!(name in c)) c[name] = defaults[name];
-  }
+export default (config = {}) => {
+  const defaults = require('./config/config');
+  const EditorModel = require('./model/Editor');
+  const EditorView = require('./view/EditorView');
+  const c = {
+    ...defaults,
+    ...config
+  };
 
   c.pStylePrefix = c.stylePrefix;
   var em = new EditorModel(c);

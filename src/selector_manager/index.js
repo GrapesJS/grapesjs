@@ -210,7 +210,7 @@ module.exports = config => {
     /**
      * Get the selector by its name
      * @param {String|Array} name Selector name
-     * @param {String} tyoe Selector type
+     * @param {String} type Selector type
      * @return {Model|Array}
      * @example
      * const selector = selectorManager.get('selectorName');

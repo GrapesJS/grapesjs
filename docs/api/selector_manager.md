@@ -59,7 +59,7 @@ Add a new selector to collection if it's not already exists. Class type is a def
 
 ### Parameters
 
--   `name` **[String][8]** Selector name
+-   `name` **([String][8] \| [Array][9])** Selector/s name
 -   `opts` **[Object][7]** Selector options (optional, default `{}`)
     -   `opts.label` **[String][8]** Label for the selector, if it's not provided the label will be the same as the name (optional, default `''`)
     -   `opts.type` **[String][8]** Type of the selector. At the moment, only 'class' (1) is available (optional, default `1`)
@@ -67,15 +67,17 @@ Add a new selector to collection if it's not already exists. Class type is a def
 ### Examples
 
 ```javascript
-var selector = selectorManager.add('selectorName');
+const selector = selectorManager.add('selectorName');
 // Same as
-var selector = selectorManager.add('selectorName', {
+const selector = selectorManager.add('selectorName', {
   type: 1,
   label: 'selectorName'
 });
+// Multiple selectors
+const selectors = selectorManager.add(['.class1', '.class2', '#id1']);
 ```
 
-Returns **Model** 
+Returns **(Model | [Array][9])** 
 
 ## addClass
 
@@ -102,17 +104,18 @@ Get the selector by its name
 
 ### Parameters
 
--   `name` **[String][8]** Selector name
--   `type`   (optional, default `Selector.TYPE_CLASS`)
--   `tyoe` **[String][8]** Selector type
+-   `name` **([String][8] \| [Array][9])** Selector name
+-   `type` **[String][8]** Selector type
 
 ### Examples
 
 ```javascript
-var selector = selectorManager.get('selectorName');
+const selector = selectorManager.get('selectorName');
+// or get an array
+const selectors = selectorManager.get(['class1', 'class2']);
 ```
 
-Returns **(Model | null)** 
+Returns **(Model | [Array][9])** 
 
 ## getAll
 

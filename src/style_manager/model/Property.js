@@ -1,4 +1,5 @@
 import { isUndefined, isString } from 'underscore';
+import { capitalize } from 'utils/mixins';
 
 const Property = require('backbone').Model.extend(
   {
@@ -42,17 +43,13 @@ const Property = require('backbone').Model.extend(
     },
 
     initialize(props = {}, opts = {}) {
-      const name = this.get('name');
+      const id = this.get('id') || '';
+      const name = this.get('name') || '';
+      !this.get('property') &&
+        this.set('property', (name || id).replace(/ /g, '-'));
       const prop = this.get('property');
       !this.get('id') && this.set('id', prop);
-
-      if (!name) {
-        this.set(
-          'name',
-          prop.charAt(0).toUpperCase() + prop.slice(1).replace(/-/g, ' ')
-        );
-      }
-
+      !name && this.set('name', capitalize(prop).replace(/-/g, ' '));
       Property.callInit(this, props, opts);
     },
 

@@ -13,6 +13,21 @@ $canvasTop: 40px;
   left: 0;
   top: 40px;
 
+  &#{gjs-is(grab)},
+  &#{gjs-is(grabbing)} {
+    .#{$cv-prefix}canvas__frames {
+      pointer-events: none;
+    }
+  }
+
+  &__frames {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
   .#{$app-prefix}ghost {
     display: none;
     pointer-events: none;
@@ -46,16 +61,17 @@ $canvasTop: 40px;
     top: 0;
     left: 0;
     outline: none;
+    z-index: 1;
   }
 
   /* This simulate body behaviour */
-  > div:first-child {
-    background-color: #fff;
-    position: relative;
-    height: 100%;
-    overflow: auto;
-    width: 100%;
-  }
+  // > div:first-child {
+  //   background-color: #fff;
+  //   position: relative;
+  //   height: 100%;
+  //   overflow: auto;
+  //   width: 100%;
+  // }
 }
 
 .#{$cv-prefix}canvas * {

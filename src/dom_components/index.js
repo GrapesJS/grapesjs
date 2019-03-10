@@ -28,7 +28,7 @@
  * @module DomComponents
  */
 import Backbone from 'backbone';
-import { isEmpty, isString, isObject, isArray } from 'underscore';
+import { isEmpty, isString, isObject, isArray, result } from 'underscore';
 
 module.exports = () => {
   var c = {};
@@ -38,6 +38,7 @@ module.exports = () => {
   const ComponentView = require('./view/ComponentView');
   const Components = require('./model/Components');
   const ComponentsView = require('./view/ComponentsView');
+  const componentsById = {};
 
   var component, componentView;
   var componentTypes = [
@@ -137,6 +138,8 @@ module.exports = () => {
 
     componentTypes,
 
+    componentsById,
+
     /**
      * Name of the module
      * @type {String}
@@ -231,7 +234,8 @@ module.exports = () => {
       component = new Component(wrapper, {
         em,
         config: c,
-        componentTypes
+        componentTypes,
+        domc: this
       });
       component.set({ attributes: { id: 'wrapper' } });
 
@@ -516,6 +520,7 @@ module.exports = () => {
      * @return {this}
      */
     addType(type, methods) {
+      const { em } = this;
       const {
         model = {},
         view = {},
@@ -543,7 +548,7 @@ module.exports = () => {
             ...model,
             defaults: {
               ...modelToExt.prototype.defaults,
-              ...(model.defaults || {})
+              ...(result(model, 'defaults') || {})
             }
           },
           {
@@ -566,6 +571,9 @@ module.exports = () => {
         methods.id = type;
         componentTypes.unshift(methods);
       }
+
+      const event = `component:type:${compType ? 'update' : 'add'}`;
+      em && em.trigger(event, compType || methods);
 
       return this;
     },

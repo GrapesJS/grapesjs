@@ -24,7 +24,8 @@ module.exports = {
         dcomp = new DomComponents();
         compOpts = {
           em,
-          componentTypes: dcomp.componentTypes
+          componentTypes: dcomp.componentTypes,
+          domc: dcomp
         };
         obj = new Component({}, compOpts);
       });
@@ -388,7 +389,7 @@ module.exports = {
       });
 
       test('ComponentImage toHTML', () => {
-        obj = new ComponentImage();
+        obj = new ComponentImage({ src: '' });
         expect(obj.toHTML()).toEqual('<img/>');
       });
 
@@ -526,6 +527,7 @@ module.exports = {
 
     describe('Components', () => {
       beforeEach(() => {
+        em = new Editor({});
         dcomp = new DomComponents();
         compOpts = {
           componentTypes: dcomp.componentTypes
@@ -548,6 +550,91 @@ module.exports = {
         var c = new Components({}, compOpts);
         var m = c.add({ type: 'text' });
         expect(m instanceof ComponentText).toEqual(true);
+      });
+
+      test('Avoid conflicting components with the same ID', () => {
+        const em = new Editor({});
+        dcomp = new DomComponents();
+        dcomp.init({ em });
+        const id = 'myid';
+        const idB = 'myid2';
+        const block = `
+          <div id="${id}">
+            <div id="${idB}"></div>
+          </div>
+          <style>
+            #${id} {
+              color: red;
+            }
+            #${id}:hover {
+              color: blue;
+            }
+            #${idB} {
+              color: yellow;
+            }
+          </style>
+        `;
+        const added = dcomp.addComponent(block);
+        // Let's check if everthing is working as expected
+        expect(Object.keys(dcomp.componentsById).length).toBe(3); // + 1 wrapper
+        expect(added.getId()).toBe(id);
+        expect(
+          added
+            .components()
+            .at(0)
+            .getId()
+        ).toBe(idB);
+        const cc = em.get('CssComposer');
+        expect(cc.getAll().length).toBe(3);
+        expect(
+          cc
+            .getAll()
+            .at(0)
+            .selectorsToString()
+        ).toBe(`#${id}`);
+        expect(
+          cc
+            .getAll()
+            .at(1)
+            .selectorsToString()
+        ).toBe(`#${id}:hover`);
+        expect(
+          cc
+            .getAll()
+            .at(2)
+            .selectorsToString()
+        ).toBe(`#${idB}`);
+        // Now let's add the same block
+        const added2 = dcomp.addComponent(block);
+        const id2 = added2.getId();
+        const newId = `${id}-2`;
+        const newIdB = `${idB}-2`;
+        expect(id2).toBe(newId);
+        expect(
+          added2
+            .components()
+            .at(0)
+            .getId()
+        ).toBe(newIdB);
+        expect(cc.getAll().length).toBe(6);
+        expect(
+          cc
+            .getAll()
+            .at(3)
+            .selectorsToString()
+        ).toBe(`#${newId}`);
+        expect(
+          cc
+            .getAll()
+            .at(4)
+            .selectorsToString()
+        ).toBe(`#${newId}:hover`);
+        expect(
+          cc
+            .getAll()
+            .at(5)
+            .selectorsToString()
+        ).toBe(`#${newIdB}`);
       });
     });
   }

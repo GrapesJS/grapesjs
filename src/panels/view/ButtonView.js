@@ -3,7 +3,9 @@ import { isString, isObject, isFunction } from 'underscore';
 const $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
-  tagName: 'span',
+  tagName() {
+    return this.model.get('tagName');
+  },
 
   events: {
     click: 'clicked'
@@ -95,8 +97,8 @@ module.exports = Backbone.View.extend({
       model.set('active', true, { silent: true }).trigger('checkActive');
       commands.runCommand(command, { ...options, sender: model });
 
-      // Disable button if the command was just a function
-      cmdIsFunc && model.set('active', false);
+      // Disable button if the command has no stop method
+      command.noStop && model.set('active', false);
     } else {
       this.$el.removeClass(this.activeCls);
       model.collection.deactivateAll(context);
