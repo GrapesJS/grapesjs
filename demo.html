@@ -1313,16 +1313,29 @@
 
       var pn = editor.Panels;
       var modal = editor.Modal;
-      editor.Commands.add('canvas-clear', function() {
+      var cmdm = editor.Commands;
+      cmdm.add('canvas-clear', function() {
         if(confirm('Areeee you sure to clean the canvas?')) {
           var comps = editor.DomComponents.clear();
           setTimeout(function(){ localStorage.clear()}, 0)
         }
       });
+      cmdm.add('set-device-desktop', {
+        run: ed => ed.setDevice('Desktop'),
+        stop() {},
+      });
+      cmdm.add('set-device-tablet', {
+        run: ed => ed.setDevice('Tablet'),
+        stop() {},
+      });
+      cmdm.add('set-device-mobile', {
+        run: ed => ed.setDevice('Mobile'),
+        stop() {},
+      });
+
 
 
       // Add info command
-      var cmdm = editor.Commands;
       var mdlClass = 'gjs-mdl-dialog-sm';
       var infoContainer = document.getElementById('info-panel');
       cmdm.add('open-info', function() {
