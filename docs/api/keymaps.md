@@ -47,6 +47,7 @@ Add new keymap
 -   `id` **[string][8]** Keymap id
 -   `keys` **[string][8]** Keymap keys, eg. `ctrl+a`, `⌘+z, ctrl+z`
 -   `handler` **([Function][9] \| [string][8])** Keymap handler, might be a function
+-   `opts` **[Object][7]** Options (optional, default `{}`)
 
 ### Examples
 

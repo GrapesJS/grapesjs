@@ -28,30 +28,32 @@ const canvas = editor.Canvas;
 -   [setCustomBadgeLabel][9]
 -   [hasFocus][10]
 -   [scrollTo][11]
+-   [setZoom][12]
+-   [getZoom][13]
 
 ## getConfig
 
 Get the configuration object
 
-Returns **[Object][12]** 
+Returns **[Object][14]** 
 
 ## getElement
 
 Get the canvas element
 
-Returns **[HTMLElement][13]** 
+Returns **[HTMLElement][15]** 
 
 ## getFrameEl
 
 Get the iframe element of the canvas
 
-Returns **[HTMLIFrameElement][14]** 
+Returns **[HTMLIFrameElement][16]** 
 
 ## getWindow
 
 Get the window instance of the iframe element
 
-Returns **[Window][15]** 
+Returns **[Window][17]** 
 
 ## getDocument
 
@@ -63,13 +65,13 @@ Returns **HTMLDocument**
 
 Get the body of the iframe element
 
-Returns **[HTMLBodyElement][16]** 
+Returns **[HTMLBodyElement][18]** 
 
 ## getWrapperEl
 
 Get the wrapper element containing all the components
 
-Returns **[HTMLElement][13]** 
+Returns **[HTMLElement][15]** 
 
 ## setCustomBadgeLabel
 
@@ -77,7 +79,7 @@ Set custom badge naming strategy
 
 ### Parameters
 
--   `f` **[Function][17]** 
+-   `f` **[Function][19]** 
 
 ### Examples
 
@@ -91,7 +93,7 @@ canvas.setCustomBadgeLabel(function(component){
 
 Check if the canvas is focused
 
-Returns **[Boolean][18]** 
+Returns **[Boolean][20]** 
 
 ## scrollTo
 
@@ -102,9 +104,9 @@ passed to it. For instance, you can scroll smoothly by using
 
 ### Parameters
 
--   `el` **([HTMLElement][13] | Component)** 
--   `opts` **[Object][12]** Options, same as options for `scrollIntoView` (optional, default `{}`)
-    -   `opts.force` **[Boolean][18]** Force the scroll, even if the element is already visible (optional, default `false`)
+-   `el` **([HTMLElement][15] | Component)** 
+-   `opts` **[Object][14]** Options, same as options for `scrollIntoView` (optional, default `{}`)
+    -   `opts.force` **[Boolean][20]** Force the scroll, even if the element is already visible (optional, default `false`)
 
 ### Examples
 
@@ -115,6 +117,22 @@ canvas.scrollTo(selected, { behavior: 'smooth' });
 // Force the scroll, even if the element is alredy visible
 canvas.scrollTo(selected, { force: true });
 ```
+
+## setZoom
+
+Set zoom value
+
+### Parameters
+
+-   `value` **[Number][21]** The zoom value, from 0 to 100
+
+Returns **this** 
+
+## getZoom
+
+Get zoom value
+
+Returns **[Number][21]** 
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/canvas/config/config.js
 
@@ -138,16 +156,22 @@ canvas.scrollTo(selected, { force: true });
 
 [11]: #scrollto
 
-[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[12]: #setzoom
 
-[13]: https://developer.mozilla.org/docs/Web/HTML/Element
+[13]: #getzoom
 
-[14]: https://developer.mozilla.org/docs/Web/API/HTMLIFrameElement
+[14]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[15]: https://developer.mozilla.org/docs/Web/API/Window
+[15]: https://developer.mozilla.org/docs/Web/HTML/Element
 
-[16]: https://developer.mozilla.org/docs/Web/HTML/Element/body
+[16]: https://developer.mozilla.org/docs/Web/API/HTMLIFrameElement
 
-[17]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+[17]: https://developer.mozilla.org/docs/Web/API/Window
 
-[18]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[18]: https://developer.mozilla.org/docs/Web/HTML/Element/body
+
+[19]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+
+[20]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+
+[21]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
