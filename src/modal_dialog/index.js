@@ -65,7 +65,7 @@ module.exports = () => {
         config: c
       });
 
-      modal.listenTo(model, 'change:open', this.onViewClose);
+      modal.listenTo(model, 'change:open', this.onViewClose.bind(this));
 
       return this;
     },
