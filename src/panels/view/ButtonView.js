@@ -102,7 +102,7 @@ module.exports = Backbone.View.extend({
     } else {
       this.$el.removeClass(this.activeCls);
       model.collection.deactivateAll(context);
-      commands.stopCommand(command, { ...options, sender: model });
+      commands.stopCommand(command, { ...options, sender: model, force: 1 });
     }
   },
 
