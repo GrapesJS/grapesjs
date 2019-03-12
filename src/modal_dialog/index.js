@@ -65,7 +65,13 @@ module.exports = () => {
         config: c
       });
 
+      modal.listenTo(model, 'change:open', this.onViewClose);
+
       return this;
+    },
+
+    onViewClose() {
+      this.triggerEvent(model.get('open') ? 'open' : 'close');
     },
 
     postRender(view) {
