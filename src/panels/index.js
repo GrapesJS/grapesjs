@@ -216,7 +216,7 @@ module.exports = () => {
     active() {
       this.getPanels().each(p => {
         p.get('buttons').each(btn => {
-          if (btn.get('active')) btn.trigger('updateActive');
+          btn.get('active') && btn.trigger('updateActive');
         });
       });
     },
