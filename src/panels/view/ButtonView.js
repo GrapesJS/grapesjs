@@ -99,7 +99,6 @@ module.exports = Backbone.View.extend({
       // Disable button if the command has no stop method
       command.noStop && model.set('active', false);
     } else {
-      !fromCollection && model.collection.deactivateAll(context, model);
       $el.removeClass(activeCls);
       commands.stopCommand(command, { ...options, sender: model, force: 1 });
     }
