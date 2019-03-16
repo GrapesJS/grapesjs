@@ -1,9 +1,19 @@
-import { keys, bindAll } from 'underscore';
+import { keys, bindAll, each } from 'underscore';
 import Dragger from 'utils/Dragger';
 
 module.exports = {
   run(editor, sender, opts = {}) {
-    bindAll(this, 'setPosition', 'onStart', 'onEnd', 'getPosition');
+    bindAll(
+      this,
+      'setPosition',
+      'onStart',
+      'onDrag',
+      'onEnd',
+      'getPosition',
+      'getGuidesStatic',
+      'renderGuide',
+      'getGuidesTarget'
+    );
     const { target, event, mode } = opts;
     const { Canvas } = editor;
     const el = target.getEl();
@@ -13,13 +23,21 @@ module.exports = {
       doc: el.ownerDocument,
       onStart: this.onStart,
       onEnd: this.onEnd,
+      onDrag: this.onDrag,
       getPosition: this.getPosition,
-      setPosition: this.setPosition
+      setPosition: this.setPosition,
+      getGuidesStatic: () => this.guidesStatic,
+      getGuidesTarget: () => this.guidesTarget
     };
+    this.setupGuides();
     this.opts = opts;
     this.editor = editor;
+    this.em = editor.getModel();
     this.target = target;
     this.isTran = mode == 'translate';
+    this.guidesContainer = this.getGuidesContainer();
+    this.guidesTarget = this.getGuidesTarget();
+    this.guidesStatic = []; // this.getGuidesStatic();
     let dragger = this.dragger;
 
     if (!dragger) {
@@ -37,6 +55,114 @@ module.exports = {
 
   stop() {
     this.toggleDrag();
+  },
+
+  setupGuides() {
+    (this.guides || []).forEach(item => {
+      const { guide } = item;
+      guide.parentNode.removeChild(guide);
+    });
+    this.guides = [];
+  },
+
+  getGuidesContainer() {
+    let { guidesEl } = this;
+
+    if (!guidesEl) {
+      const { editor, em } = this;
+      const pfx = editor.getConfig('stylePrefix');
+      guidesEl = document.createElement('div');
+      guidesEl.className = `${pfx}guides`;
+      editor.Canvas.getToolsEl().appendChild(guidesEl);
+      this.guidesEl = guidesEl;
+      em.on('canvas:update', () => {
+        this.updateGuides();
+        this.guides.forEach(item => this.renderGuide(item));
+      });
+    }
+
+    return guidesEl;
+  },
+
+  getGuidesStatic() {
+    let result = [];
+    const el = this.target.getEl();
+    each(
+      el.parentNode.children,
+      item =>
+        (result = result.concat(el !== item ? this.getElementGuides(item) : []))
+    );
+    return result;
+  },
+
+  getGuidesTarget() {
+    return this.getElementGuides(this.target.getEl());
+  },
+
+  updateGuides(guides) {
+    (guides || this.guides).forEach(item => {
+      const { origin } = item;
+      const { top, height, left, width } = editor.Canvas.getElementPos(origin);
+
+      switch (item.type) {
+        case 't':
+          return (item.y = top);
+        case 'b':
+          return (item.y = top + height);
+        case 'l':
+          return (item.x = left);
+        case 'r':
+          return (item.x = left + width);
+        case 'x':
+          return (item.x = left + width / 2);
+        case 'y':
+          return (item.y = top + height / 2);
+      }
+    });
+  },
+
+  renderGuide(item = {}) {
+    const el = item.guide || document.createElement('div');
+    const { Canvas } = this.editor;
+    const { topScroll, top } = Canvas.getRect();
+    const frameTop = Canvas.getCanvasView().getFrameOffset().top;
+    const un = 'px';
+    el.style = 'position: absolute; background-color: red;';
+
+    if (item.y) {
+      el.style.width = '100%';
+      el.style.height = `1${un}`;
+      el.style.top = `${item.y}${un}`;
+      el.style.left = 0;
+    } else {
+      el.style.width = `1${un}`;
+      el.style.height = '100%';
+      el.style.left = `${item.x}${un}`;
+      el.style.top = `${topScroll - frameTop + top}${un}`;
+    }
+
+    !item.guide && this.guidesContainer.appendChild(el);
+    return el;
+  },
+
+  getElementGuides(el) {
+    const { editor } = this;
+    const { top, height, left, width } = editor.Canvas.getElementPos(el);
+    const guides = [
+      { type: 't', y: top }, // Top
+      { type: 'b', y: top + height }, // Bottom
+      { type: 'l', x: left }, // Left
+      { type: 'r', x: left + width }, // Right
+      { type: 'x', x: left + width / 2 }, // Mid x
+      { type: 'y', y: top + height / 2 } // Mid y
+    ].map(item => ({
+      ...item,
+      origin: el,
+      guide: this.renderGuide(item)
+    }));
+    guides.forEach(item => this.guides.push(item));
+
+    return guides;
   },
 
   getTranslate(transform, axis = 'x') {
@@ -115,6 +241,12 @@ module.exports = {
       const { left, top, width, height } = editor.Canvas.offset(target.getEl());
       this.setPosition({ x: left, y: top, position, width, height });
     }
+  },
+
+  onDrag() {
+    const { guidesTarget } = this;
+    this.updateGuides(guidesTarget);
+    guidesTarget.forEach(item => this.renderGuide(item));
   },
 
   onEnd() {

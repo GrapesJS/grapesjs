@@ -42,6 +42,16 @@ export default class Dragger {
        */
       getPosition: null,
 
+      /**
+       * Get static guides
+       */
+      getGuidesStatic: () => [],
+
+      /**
+       * Get target guides
+       */
+      getGuidesTarget: () => [],
+
       // Document on which listen to pointer events
       doc: 0,
 
@@ -78,11 +88,13 @@ export default class Dragger {
    * @param  {Event} e
    */
   start(ev) {
-    const { onStart } = this.opts;
+    const { onStart, getGuidesStatic, getGuidesTarget } = this.opts;
     this.toggleDrag(1);
     this.startPointer = this.getPointerPos(ev);
     isFunction(onStart) && onStart(ev, this);
     this.startPosition = this.getStartPosition();
+    this.guidesStatic = getGuidesStatic();
+    this.guidesTarget = getGuidesTarget();
     this.drag(ev);
   }
 
