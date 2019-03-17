@@ -37,7 +37,7 @@ module.exports = {
     this.isTran = mode == 'translate';
     this.guidesContainer = this.getGuidesContainer();
     this.guidesTarget = this.getGuidesTarget();
-    this.guidesStatic = []; // this.getGuidesStatic();
+    this.guidesStatic = this.getGuidesStatic();
     let dragger = this.dragger;
 
     if (!dragger) {
@@ -121,24 +121,66 @@ module.exports = {
     });
   },
 
+  getGuidePosUpdate(item, rect) {
+    const result = {};
+    const { top, height, left, width } = rect;
+
+    switch (item.type) {
+      case 't':
+        result.y = top;
+        break;
+      case 'b':
+        result.y = top + height;
+        break;
+      case 'l':
+        result.x = left;
+        break;
+      case 'r':
+        result.x = left + width;
+        break;
+      case 'x':
+        result.x = left + width / 2;
+        break;
+      case 'y':
+        result.y = top + height / 2;
+        break;
+    }
+
+    return result;
+  },
+
   renderGuide(item = {}) {
     const el = item.guide || document.createElement('div');
     const { Canvas } = this.editor;
     const { topScroll, top } = Canvas.getRect();
     const frameTop = Canvas.getCanvasView().getFrameOffset().top;
+    // const elRect = this.getGuidePosUpdate(item, el.getBoundingClientRect());
+    // console.log('elRect', item.type, elRect);
     const un = 'px';
-    el.style = 'position: absolute; background-color: red;';
+    let numEl = el.children[0];
+    el.style = `position: absolute; background-color: ${
+      el.active ? 'green' : 'red'
+    };`;
+
+    if (!el.children.length) {
+      numEl = document.createElement('div');
+      numEl.style =
+        'position: absolute; color: red; padding: 5px; top: 0; left: 0;';
+      el.appendChild(numEl);
+    }
 
     if (item.y) {
       el.style.width = '100%';
       el.style.height = `1${un}`;
       el.style.top = `${item.y}${un}`;
       el.style.left = 0;
+      // numEl.innerHTML = elRect.y;
     } else {
       el.style.width = `1${un}`;
       el.style.height = '100%';
       el.style.left = `${item.x}${un}`;
       el.style.top = `${topScroll - frameTop + top}${un}`;
+      // numEl.innerHTML = elRect.x;
     }
 
     !item.guide && this.guidesContainer.appendChild(el);
