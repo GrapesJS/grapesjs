@@ -113,7 +113,6 @@ module.exports = {
         case 'l':
           return (item.x = left);
         case 'r':
-          console.log('left', left, 'width', width, 'x: ', left + width);
           return (item.x = left + width);
         case 'x':
           return (item.x = left + width / 2);

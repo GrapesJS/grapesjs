@@ -126,6 +126,7 @@ export default class Dragger {
       delta.y = startPointer.y;
     }
 
+    /*
     let { trgX, trgY } = this;
     this.guidesTarget.forEach(trg => {
       // Skip the guide if its locked axis already exists
@@ -137,8 +138,8 @@ export default class Dragger {
       this.guidesStatic.forEach(stat => {
         if ((trg.y && stat.x) || (trg.x && stat.y)) return;
         const isY = trg.y && stat.y;
-        const axs = isY ? 'y' : 'x';
-        const dirX = this.delta ? (delta[axs] < this.delta[axs] ? -1 : 1) : 0;
+        const axs =  isY ? 'y' : 'x';
+        const dirX = 0; // this.delta ? (delta[axs] < this.delta[axs] ? -1 : 1) : 0;
         const trgPoint = isY ? trg.y : trg.x + dirX;
         const statPoint = isY ? stat.y : stat.x;
         const deltaPoint = isY ? delta.y : delta.x;
@@ -146,12 +147,7 @@ export default class Dragger {
 
         if (this.isPointIn(trgPoint, statPoint)) {
           if (isUndefined(trgGuide)) {
-            console.log(
-              `LOCK ${
-                isY ? 'Y' : 'X'
-              } trgPoint: ${trgPoint} statPoint ${statPoint} diff: ${trgPoint -
-                statPoint} delta.x: ${delta.x}`
-            );
+            console.log(`LOCK ${isY ? 'Y' : 'X'} trgPoint: ${trgPoint} statPoint ${statPoint} diff: ${ trgPoint - statPoint } delta.x: ${delta.x}`);
             const trgValue = deltaPoint - (trgPoint - statPoint);
             this.setGuideLock(trg, trgValue);
           }
@@ -182,20 +178,81 @@ export default class Dragger {
         delta[co] = trg.lock;
       }
     });
+    */
 
+    const moveDelta = delta => {
+      ['x', 'y'].forEach(co => (delta[co] = delta[co] * result(opts, 'scale')));
+      this.delta = delta;
+      this.move(delta.x, delta.y);
+      isFunction(onDrag) && onDrag(ev, this);
+    };
     const deltaPre = { ...delta };
-    ['x', 'y'].forEach(co => (delta[co] = delta[co] * result(opts, 'scale')));
-    this.lockedAxis = lockedAxis;
-    this.delta = delta;
-    this.move(delta.x, delta.y);
     this.currentPointer = currentPos;
-    isFunction(onDrag) && onDrag(ev, this);
+    this.lockedAxis = lockedAxis;
+    moveDelta(delta);
+
+    let { trgX, trgY } = this;
+    this.guidesTarget.forEach(trg => {
+      // Skip the guide if its locked axis already exists
+      // TODO: allow near axis change (using diff)
+      if ((trg.x && this.trgX) || (trg.y && this.trgY)) return;
+
+      trg.active = 0;
+
+      this.guidesStatic.forEach(stat => {
+        if ((trg.y && stat.x) || (trg.x && stat.y)) return;
+        const isY = trg.y && stat.y;
+        const trgPoint = isY ? trg.y : trg.x;
+        const statPoint = isY ? stat.y : stat.x;
+        const deltaPoint = isY ? deltaPre.y : deltaPre.x;
+        const trgGuide = isY ? trgY : trgX;
+
+        if (this.isPointIn(trgPoint, statPoint)) {
+          if (isUndefined(trgGuide)) {
+            console.log(
+              `LOCK ${
+                isY ? 'Y' : 'X'
+              } trgPoint: ${trgPoint} statPoint ${statPoint} diff: ${trgPoint -
+                statPoint} delta.x: ${deltaPre.x}`
+            );
+            const trgValue = deltaPoint - (trgPoint - statPoint);
+            this.setGuideLock(trg, trgValue);
+          }
+        }
+      });
+    });
+
+    trgX = this.trgX;
+    trgY = this.trgY;
+
+    ['x', 'y'].forEach(co => {
+      const axis = co.toUpperCase();
+      let trg = this[`trg${axis}`];
+
+      if (trg && !this.isPointIn(deltaPre[co], trg.lock)) {
+        this.setGuideLock(trg, null);
+        trg = null;
+      }
+
+      if (trg && !isUndefined(trg.lock)) {
+        const offset = 4;
+        console.log(
+          `locked ${axis} at: ${trg.lock}`,
+          `(type: ${trg.type})`,
+          `delta: ${delta[co]}`,
+          `range (${trg.lock - offset} - ${trg.lock + offset})`
+        );
+        deltaPre[co] = trg.lock;
+      }
+    });
+
+    (this.trgX || this.trgY) && moveDelta(deltaPre);
 
     // In case the mouse button was released outside of the window
     ev.which === 0 && this.stop(ev);
   }
 
-  isPointIn(src, trg, offset = 20) {
+  isPointIn(src, trg, offset = 5) {
     return (
       (src >= trg && src <= trg + offset) || (src <= trg && src >= trg - offset)
     );
