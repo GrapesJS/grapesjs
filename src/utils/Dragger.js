@@ -127,24 +127,31 @@ export default class Dragger {
     }
 
     let { trgX, trgY } = this;
-    const offset = 20;
     this.guidesTarget.forEach(trg => {
-      trg.active = 0;
-
       // Skip the guide if its locked axis already exists
       // TODO: allow near axis change (using diff)
       if ((trg.x && this.trgX) || (trg.y && this.trgY)) return;
 
+      trg.active = 0;
+
       this.guidesStatic.forEach(stat => {
         if ((trg.y && stat.x) || (trg.x && stat.y)) return;
         const isY = trg.y && stat.y;
-        const trgPoint = isY ? trg.y : trg.x;
+        const axs = isY ? 'y' : 'x';
+        const dirX = this.delta ? (delta[axs] < this.delta[axs] ? -1 : 1) : 0;
+        const trgPoint = isY ? trg.y : trg.x + dirX;
         const statPoint = isY ? stat.y : stat.x;
         const deltaPoint = isY ? delta.y : delta.x;
         const trgGuide = isY ? trgY : trgX;
 
         if (this.isPointIn(trgPoint, statPoint)) {
           if (isUndefined(trgGuide)) {
+            console.log(
+              `LOCK ${
+                isY ? 'Y' : 'X'
+              } trgPoint: ${trgPoint} statPoint ${statPoint} diff: ${trgPoint -
+                statPoint} delta.x: ${delta.x}`
+            );
             const trgValue = deltaPoint - (trgPoint - statPoint);
             this.setGuideLock(trg, trgValue);
           }
@@ -165,6 +172,7 @@ export default class Dragger {
       }
 
       if (trg && !isUndefined(trg.lock)) {
+        const offset = 20;
         console.log(
           `locked ${axis} at: ${trg.lock}`,
           `(type: ${trg.type})`,
@@ -175,6 +183,7 @@ export default class Dragger {
       }
     });
 
+    const deltaPre = { ...delta };
     ['x', 'y'].forEach(co => (delta[co] = delta[co] * result(opts, 'scale')));
     this.lockedAxis = lockedAxis;
     this.delta = delta;
