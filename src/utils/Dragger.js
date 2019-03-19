@@ -1,4 +1,4 @@
-import { bindAll, isFunction, result } from 'underscore';
+import { bindAll, isFunction, result, isUndefined } from 'underscore';
 import { on, off } from 'utils/mixins';
 
 export default class Dragger {
@@ -126,6 +126,78 @@ export default class Dragger {
       delta.y = startPointer.y;
     }
 
+    let diffY = 0;
+    let diffX = 0;
+    let { trgX, trgY } = this;
+    const offset = 20;
+    this.guidesTarget.forEach(trg => {
+      trg.active = 0;
+
+      this.guidesStatic.forEach(stat => {
+        if (trg.y && stat.y) {
+          // if (
+          //   (trg.y >= stat.y && trg.y <= stat.y + offset) ||
+          //   (trg.y <= stat.y && trg.y >= stat.y - offset)
+          // ) {
+          //   console.log('trg.y', trg.y, 'stat.y', stat.y, 'diff', trg.y - stat.y)
+          //   diffY = (trg.y - stat.y);
+          // }
+          if (this.isPointIn(trg.y, stat.y)) {
+            if (isUndefined(trgY)) {
+              trgY = this.setGuideLock(trg, delta.y - (trg.y - stat.y));
+            }
+          }
+        } else {
+          if (this.isPointIn(trg.x, stat.x)) {
+            if (isUndefined(trgX)) {
+              trgX = this.setGuideLock(trg, delta.x - (trg.x - stat.x));
+            }
+          }
+        }
+      });
+
+      if (trg.lock) trg.active = 1;
+    });
+
+    // if (diffY) {
+    //   console.log( 'delta.y before', delta.y, 'diff Y ', diffY, 'delta.t after', delta.y - diffY);
+    //   delta.y = delta.y - diffY;
+    // }
+
+    if (trgX && !this.isPointIn(delta.x, trgX.lock)) {
+      this.setGuideLock(trgX, null);
+      trgX = null;
+    }
+
+    if (trgY && !this.isPointIn(delta.y, trgY.lock)) {
+      this.setGuideLock(trgY, null);
+      trgY = null;
+    }
+
+    if (trgX && !isUndefined(trgX.lock)) {
+      console.log(
+        'locked X at:',
+        trgX.lock,
+        `(type: ${trgX.type})`,
+        'delta.x: ',
+        delta.x,
+        `range (${trgX.lock - offset} - ${trgX.lock + offset})`
+      );
+      delta.x = trgX.lock;
+    }
+
+    if (trgY && !isUndefined(trgY.lock)) {
+      console.log(
+        'locked Y at:',
+        trgY.lock,
+        `(type: ${trgY.type})`,
+        'delta.y: ',
+        delta.y,
+        `range (${trgY.lock - offset} - ${trgY.lock + offset})`
+      );
+      delta.y = trgY.lock;
+    }
+
     ['x', 'y'].forEach(co => (delta[co] = delta[co] * result(opts, 'scale')));
     this.lockedAxis = lockedAxis;
     this.delta = delta;
@@ -135,6 +207,35 @@ export default class Dragger {
 
     // In case the mouse button was released outside of the window
     ev.which === 0 && this.stop(ev);
+  }
+
+  isPointIn(src, trg, offset = 20) {
+    return (
+      (src >= trg && src <= trg + offset) || (src <= trg && src >= trg - offset)
+    );
+  }
+
+  getGuideLock(axis = 'x') {
+    const trgName = `trg${axis.toUpperCase()}`;
+    return this[trgName];
+  }
+
+  setGuideLock(guide, value) {
+    const axis = !isUndefined(guide.x) ? 'X' : 'Y';
+    const trgName = `trg${axis}`;
+
+    if (value !== null) {
+      guide.active = 1;
+      guide.lock = value;
+      this[trgName] = guide;
+    } else {
+      console.log(`UNLOCK ${axis}`, guide.lock);
+      guide.active = 0;
+      delete guide.lock;
+      delete this[trgName];
+    }
+
+    return guide;
   }
 
   /**

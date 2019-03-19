@@ -38,6 +38,7 @@ module.exports = {
     this.guidesContainer = this.getGuidesContainer();
     this.guidesTarget = this.getGuidesTarget();
     this.guidesStatic = this.getGuidesStatic();
+    window.guidesTarget = this.guidesTarget;
     let dragger = this.dragger;
 
     if (!dragger) {
@@ -157,9 +158,10 @@ module.exports = {
     // const elRect = this.getGuidePosUpdate(item, el.getBoundingClientRect());
     // console.log('elRect', item.type, elRect);
     const un = 'px';
+    const guideSize = item.active ? 2 : 1;
     let numEl = el.children[0];
     el.style = `position: absolute; background-color: ${
-      el.active ? 'green' : 'red'
+      item.active ? 'green' : 'red'
     };`;
 
     if (!el.children.length) {
@@ -171,16 +173,17 @@ module.exports = {
 
     if (item.y) {
       el.style.width = '100%';
-      el.style.height = `1${un}`;
+      el.style.height = `${guideSize}${un}`;
       el.style.top = `${item.y}${un}`;
       el.style.left = 0;
       // numEl.innerHTML = elRect.y;
     } else {
-      el.style.width = `1${un}`;
+      el.style.width = `${guideSize}${un}`;
       el.style.height = '100%';
       el.style.left = `${item.x}${un}`;
       el.style.top = `${topScroll - frameTop + top}${un}`;
       // numEl.innerHTML = elRect.x;
+      // numEl.innerHTML = el.style.left;
     }
 
     !item.guide && this.guidesContainer.appendChild(el);
