@@ -140,8 +140,20 @@ export default class Dragger {
     this.lockedAxis = lockedAxis;
     moveDelta(delta);
 
-    // Check if to snap on guides
+    const { newDelta, trgX, trgY } = this.snapGuides(deltaPre);
+    (trgX || trgY) && moveDelta(newDelta);
+
+    // In case the mouse button was released outside of the window
+    ev.which === 0 && this.stop(ev);
+  }
+
+  /**
+   * Check if the delta hits some guide
+   */
+  snapGuides(delta) {
+    const newDelta = delta;
     let { trgX, trgY } = this;
+
     this.guidesTarget.forEach(trg => {
       // Skip the guide if its locked axis already exists
       if ((trg.x && this.trgX) || (trg.y && this.trgY)) return;
@@ -150,9 +162,10 @@ export default class Dragger {
       this.guidesStatic.forEach(stat => {
         if ((trg.y && stat.x) || (trg.x && stat.y)) return;
         const isY = trg.y && stat.y;
-        const trgPoint = isY ? trg.y : trg.x;
-        const statPoint = isY ? stat.y : stat.x;
-        const deltaPoint = isY ? deltaPre.y : deltaPre.x;
+        const axs = isY ? 'y' : 'x';
+        const trgPoint = trg[axs];
+        const statPoint = stat[axs];
+        const deltaPoint = delta[axs];
         const trgGuide = isY ? trgY : trgX;
 
         if (this.isPointIn(trgPoint, statPoint)) {
@@ -171,20 +184,21 @@ export default class Dragger {
       const axis = co.toUpperCase();
       let trg = this[`trg${axis}`];
 
-      if (trg && !this.isPointIn(deltaPre[co], trg.lock)) {
+      if (trg && !this.isPointIn(delta[co], trg.lock)) {
         this.setGuideLock(trg, null);
         trg = null;
       }
 
       if (trg && !isUndefined(trg.lock)) {
-        deltaPre[co] = trg.lock;
+        newDelta[co] = trg.lock;
       }
     });
 
-    (this.trgX || this.trgY) && moveDelta(deltaPre);
-
-    // In case the mouse button was released outside of the window
-    ev.which === 0 && this.stop(ev);
+    return {
+      newDelta,
+      trgX: this.trgX,
+      trgY: this.trgY
+    };
   }
 
   isPointIn(src, trg, { offset } = {}) {
