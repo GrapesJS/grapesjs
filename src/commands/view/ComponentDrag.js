@@ -14,7 +14,7 @@ module.exports = {
       'renderGuide',
       'getGuidesTarget'
     );
-    const { target, event, mode } = opts;
+    const { target, event, mode, dragger = {} } = opts;
     const { Canvas } = editor;
     const el = target.getEl();
     const scale = Canvas.getZoomMultiplier();
@@ -27,7 +27,8 @@ module.exports = {
       getPosition: this.getPosition,
       setPosition: this.setPosition,
       getGuidesStatic: () => this.guidesStatic,
-      getGuidesTarget: () => this.guidesTarget
+      getGuidesTarget: () => this.guidesTarget,
+      ...dragger
     };
     this.setupGuides();
     this.opts = opts;
@@ -39,19 +40,19 @@ module.exports = {
     this.guidesTarget = this.getGuidesTarget();
     this.guidesStatic = this.getGuidesStatic();
     window.guidesTarget = this.guidesTarget;
-    let dragger = this.dragger;
+    let drg = this.dragger;
 
-    if (!dragger) {
-      dragger = new Dragger(config);
-      this.dragger = dragger;
+    if (!drg) {
+      drg = new Dragger(config);
+      this.dragger = drg;
     } else {
-      dragger.setOptions(config);
+      drg.setOptions(config);
     }
 
-    event && dragger.start(event);
+    event && drg.start(event);
     this.toggleDrag(1);
 
-    return dragger;
+    return drg;
   },
 
   stop() {

@@ -42,6 +42,12 @@ export default class Dragger {
        */
       getPosition: null,
 
+      // Offset before snap to guides
+      snapGuides: 1,
+
+      // Offset before snap to guides
+      snapOffset: 5,
+
       /**
        * Get static guides
        */
@@ -51,9 +57,6 @@ export default class Dragger {
        * Get target guides
        */
       getGuidesTarget: () => [],
-
-      // Offset before snap to guides
-      snapOffset: 5,
 
       // Document on which listen to pointer events
       doc: 0,
@@ -107,7 +110,7 @@ export default class Dragger {
    */
   drag(ev) {
     const { opts } = this;
-    const { onDrag } = opts;
+    const { onDrag, snapGuides } = opts;
     const { startPointer } = this;
     const currentPos = this.getPointerPos(ev);
     const delta = {
@@ -140,8 +143,10 @@ export default class Dragger {
     this.lockedAxis = lockedAxis;
     moveDelta(delta);
 
-    const { newDelta, trgX, trgY } = this.snapGuides(deltaPre);
-    (trgX || trgY) && moveDelta(newDelta);
+    if (snapGuides) {
+      const { newDelta, trgX, trgY } = this.snapGuides(deltaPre);
+      (trgX || trgY) && moveDelta(newDelta);
+    }
 
     // In case the mouse button was released outside of the window
     ev.which === 0 && this.stop(ev);
