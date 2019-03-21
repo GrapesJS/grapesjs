@@ -1,4 +1,4 @@
-import { keys, bindAll, each } from 'underscore';
+import { keys, bindAll, each, isUndefined } from 'underscore';
 import Dragger from 'utils/Dragger';
 
 module.exports = {
@@ -62,7 +62,7 @@ module.exports = {
   setupGuides() {
     (this.guides || []).forEach(item => {
       const { guide } = item;
-      guide.parentNode.removeChild(guide);
+      guide && guide.parentNode.removeChild(guide);
     });
     this.guides = [];
   },
@@ -71,15 +71,28 @@ module.exports = {
     let { guidesEl } = this;
 
     if (!guidesEl) {
-      const { editor, em } = this;
+      const { editor, em, opts } = this;
       const pfx = editor.getConfig('stylePrefix');
+      const elInfoX = document.createElement('div');
+      const elInfoY = document.createElement('div');
+      const guideContent = `<div class="${pfx}guide-info__line">
+        <div class="${pfx}guide-info__content"></div>
+      </div>`;
       guidesEl = document.createElement('div');
       guidesEl.className = `${pfx}guides`;
+      elInfoX.className = `${pfx}guide-info ${pfx}guide-info__x`;
+      elInfoY.className = `${pfx}guide-info ${pfx}guide-info__y`;
+      elInfoX.innerHTML = guideContent;
+      elInfoY.innerHTML = guideContent;
+      guidesEl.appendChild(elInfoX);
+      guidesEl.appendChild(elInfoY);
       editor.Canvas.getToolsEl().appendChild(guidesEl);
       this.guidesEl = guidesEl;
+      this.elGuideInfoX = elInfoX;
+      this.elGuideInfoY = elInfoY;
       em.on('canvas:update', () => {
         this.updateGuides();
-        this.guides.forEach(item => this.renderGuide(item));
+        opts.debug && this.guides.forEach(item => this.renderGuide(item));
       });
     }
 
@@ -157,7 +170,6 @@ module.exports = {
     const { topScroll, top } = Canvas.getRect();
     const frameTop = Canvas.getCanvasView().getFrameOffset().top;
     // const elRect = this.getGuidePosUpdate(item, el.getBoundingClientRect());
-    // console.log('elRect', item.type, elRect);
     const un = 'px';
     const guideSize = item.active ? 2 : 1;
     let numEl = el.children[0];
@@ -192,7 +204,7 @@ module.exports = {
   },
 
   getElementGuides(el) {
-    const { editor } = this;
+    const { editor, opts } = this;
     const { top, height, left, width } = editor.Canvas.getElementPos(el);
     const guides = [
       { type: 't', y: top }, // Top
@@ -204,7 +216,8 @@ module.exports = {
     ].map(item => ({
       ...item,
       origin: el,
-      guide: this.renderGuide(item)
+      originRect: editor.Canvas.offset(el),
+      guide: opts.debug && this.renderGuide(item)
     }));
     guides.forEach(item => this.guides.push(item));
 
@@ -290,9 +303,62 @@ module.exports = {
   },
 
   onDrag() {
-    const { guidesTarget } = this;
+    const { guidesTarget, guidesStatic, opts, editor } = this;
     this.updateGuides(guidesTarget);
-    guidesTarget.forEach(item => this.renderGuide(item));
+    opts.debug && guidesTarget.forEach(item => this.renderGuide(item));
+    const active = guidesTarget.filter(item => item.active);
+    this.elGuideInfoY.style.display = 'none';
+    this.elGuideInfoX.style.display = 'none';
+    active.forEach(item => {
+      const { origin, x } = item;
+      const rectOrigin = editor.Canvas.offset(origin);
+      const axis = isUndefined(x) ? 'y' : 'x';
+      const isY = axis === 'y';
+      const origEdge1 = rectOrigin[isY ? 'left' : 'top'];
+      const origEdge2 = isY
+        ? origEdge1 + rectOrigin.width
+        : origEdge1 + rectOrigin.height;
+      const elGuideInfo = this[`elGuideInfo${axis.toUpperCase()}`];
+      const guideInfoStyle = elGuideInfo.style;
+      const res = guidesStatic
+        .filter(stat => stat[axis] === item[axis])
+        .map(stat => {
+          const { left, width, top, height } = stat.originRect;
+          const statEdge1 = isY ? left : top;
+          const statEdge2 = isY ? left + width : top + height;
+          return {
+            gap:
+              statEdge2 < origEdge1
+                ? origEdge1 - statEdge2
+                : statEdge1 - origEdge2,
+            guide: stat
+          };
+        })
+        .filter(item => item.gap > 0)
+        .sort((a, b) => a.gap - b.gap)
+        .map(item => item.guide)[0];
+
+      let siz;
+
+      if (res) {
+        const { left, width, top, height } = res.originRect;
+        const isEdge1 = isY ? left < rectOrigin.left : top < rectOrigin.top;
+        const statEdge1 = isY ? left : top;
+        const statEdge2 = isY ? left + width : top + height;
+        const pos2 = `${isY ? top : rectOrigin.left}px`;
+        const size = isEdge1 ? origEdge1 - statEdge2 : statEdge1 - origEdge2;
+        siz = size;
+        guideInfoStyle.display = '';
+        guideInfoStyle[isY ? 'top' : 'left'] = pos2;
+        guideInfoStyle[isY ? 'left' : 'top'] = `${
+          isEdge1 ? statEdge2 : origEdge2
+        }px`;
+        guideInfoStyle[isY ? 'width' : 'height'] = `${size}px`;
+      }
+
+      console.log('axis', axis, 'guide', res, 'size', siz);
+      // elGuideInfo.innerHTML = length
+    });
   },
 
   onEnd() {
