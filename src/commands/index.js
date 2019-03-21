@@ -330,7 +330,7 @@ module.exports = () => {
         const id = command.id;
         const editor = em.get('Editor');
 
-        if (!this.isActive(id) || options.force) {
+        if (!this.isActive(id) || options.force || !c.strict) {
           if (id && command.stop && !command.noStop) {
             active[id] = result;
           }
@@ -355,7 +355,7 @@ module.exports = () => {
         const id = command.id;
         const editor = em.get('Editor');
 
-        if (this.isActive(id) || options.force) {
+        if (this.isActive(id) || options.force || !c.strict) {
           if (id) delete active[id];
           result = command.callStop(editor, options);
         }
