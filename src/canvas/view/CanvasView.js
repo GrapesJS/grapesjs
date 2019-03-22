@@ -354,7 +354,7 @@ module.exports = Backbone.View.extend({
     const height = eo.height * zoom;
     const width = eo.width * zoom;
 
-    return { top, left, height, width };
+    return { top, left, height, width, zoom, rect: eo };
   },
 
   /**

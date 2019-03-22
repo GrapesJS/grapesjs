@@ -90,6 +90,12 @@ module.exports = {
       this.guidesEl = guidesEl;
       this.elGuideInfoX = elInfoX;
       this.elGuideInfoY = elInfoY;
+      this.elGuideInfoContentX = elInfoX.querySelector(
+        `.${pfx}guide-info__content`
+      );
+      this.elGuideInfoContentY = elInfoY.querySelector(
+        `.${pfx}guide-info__content`
+      );
       em.on('canvas:update', () => {
         this.updateGuides();
         opts.debug && this.guides.forEach(item => this.renderGuide(item));
@@ -338,10 +344,15 @@ module.exports = {
       const axis = isUndefined(x) ? 'y' : 'x';
       const isY = axis === 'y';
       const origEdge1 = rectOrigin[isY ? 'left' : 'top'];
+      const origEdge1Raw = rectOrigin.rect[isY ? 'left' : 'top'];
       const origEdge2 = isY
         ? origEdge1 + rectOrigin.width
         : origEdge1 + rectOrigin.height;
+      const origEdge2Raw = isY
+        ? origEdge1Raw + rectOrigin.rect.width
+        : origEdge1Raw + rectOrigin.rect.height;
       const elGuideInfo = this[`elGuideInfo${axis.toUpperCase()}`];
+      const elGuideInfoCnt = this[`elGuideInfoContent${axis.toUpperCase()}`];
       const guideInfoStyle = elGuideInfo.style;
       const res = guidesStatic
         .filter(stat => stat[axis] === item[axis])
@@ -361,22 +372,28 @@ module.exports = {
         .sort((a, b) => a.gap - b.gap)
         .map(item => item.guide)[0];
 
-      let siz;
-
       if (res) {
-        const { left, width, top, height } = res.originRect;
+        const { left, width, top, height, rect } = res.originRect;
         const isEdge1 = isY ? left < rectOrigin.left : top < rectOrigin.top;
         const statEdge1 = isY ? left : top;
+        const statEdge1Raw = isY ? rect.left : rect.top;
         const statEdge2 = isY ? left + width : top + height;
+        const statEdge2Raw = isY
+          ? rect.left + rect.width
+          : rect.top + rect.height;
         const pos2 = `${isY ? item.y : item.x}px`;
         const size = isEdge1 ? origEdge1 - statEdge2 : statEdge1 - origEdge2;
-        siz = size;
+        const sizeRaw = isEdge1
+          ? origEdge1Raw - statEdge2Raw
+          : statEdge1Raw - origEdge2Raw;
         guideInfoStyle.display = '';
         guideInfoStyle[isY ? 'top' : 'left'] = pos2;
         guideInfoStyle[isY ? 'left' : 'top'] = `${
           isEdge1 ? statEdge2 : origEdge2
         }px`;
         guideInfoStyle[isY ? 'width' : 'height'] = `${size}px`;
+        elGuideInfoCnt.innerHTML = `${Math.round(sizeRaw)}px`;
+        console.log('size', size, 'sizeRaw', sizeRaw);
       }
       // elGuideInfo.innerHTML = length
     });

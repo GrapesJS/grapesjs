@@ -6,6 +6,15 @@ $guide_pad: 5px;
   &guide-info {
     position: absolute;
 
+    &__content {
+      color: red;
+      position: absolute;
+      height: 100%;
+      display: flex;
+      width: 100%;
+      padding: 5px;
+    }
+
     &__line {
       position: relative;
       background-color: red;
@@ -24,6 +33,10 @@ $guide_pad: 5px;
       padding: 0 $guide_pad;
 
       .#{$prefix}guide-info {
+        &__content {
+          justify-content: center;
+        }
+
         &__line {
           width: 100%;
           height: 1px;
@@ -50,6 +63,10 @@ $guide_pad: 5px;
       padding: $guide_pad 0;
 
       .#{$prefix}guide-info {
+        &__content {
+          align-items: center;
+        }
+
         &__line {
           height: 100%;
           width: 1px;
