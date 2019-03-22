@@ -216,7 +216,7 @@ module.exports = {
     ].map(item => ({
       ...item,
       origin: el,
-      originRect: editor.Canvas.offset(el),
+      originRect: editor.Canvas.getElementPos(el),
       guide: opts.debug && this.renderGuide(item)
     }));
     guides.forEach(item => this.guides.push(item));
@@ -315,11 +315,13 @@ module.exports = {
     const { onEnd } = opts;
     onEnd && onEnd();
     editor.stopCommand(id);
+    this.hideGuidesInfo();
   },
 
   hideGuidesInfo() {
     ['X', 'Y'].forEach(item => {
-      this[`elGuideInfo${item}`].style.display = 'none';
+      const guide = this[`elGuideInfo${item}`];
+      if (guide) guide.style.display = 'none';
     });
   },
 
@@ -332,7 +334,7 @@ module.exports = {
 
     guides.forEach(item => {
       const { origin, x } = item;
-      const rectOrigin = editor.Canvas.offset(origin);
+      const rectOrigin = editor.Canvas.getElementPos(origin);
       const axis = isUndefined(x) ? 'y' : 'x';
       const isY = axis === 'y';
       const origEdge1 = rectOrigin[isY ? 'left' : 'top'];
