@@ -321,7 +321,7 @@ module.exports = {
     const { onEnd } = opts;
     onEnd && onEnd();
     editor.stopCommand(id);
-    // this.hideGuidesInfo();
+    this.hideGuidesInfo();
   },
 
   hideGuidesInfo() {
@@ -354,6 +354,8 @@ module.exports = {
       const elGuideInfo = this[`elGuideInfo${axis.toUpperCase()}`];
       const elGuideInfoCnt = this[`elGuideInfoContent${axis.toUpperCase()}`];
       const guideInfoStyle = elGuideInfo.style;
+
+      // Find the nearest element
       const res = guidesStatic
         .filter(stat => stat[axis] === item[axis])
         .map(stat => {
@@ -393,9 +395,7 @@ module.exports = {
         }px`;
         guideInfoStyle[isY ? 'width' : 'height'] = `${size}px`;
         elGuideInfoCnt.innerHTML = `${Math.round(sizeRaw)}px`;
-        console.log('size', size, 'sizeRaw', sizeRaw);
       }
-      // elGuideInfo.innerHTML = length
     });
   },
 
