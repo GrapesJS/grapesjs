@@ -108,12 +108,14 @@ module.exports = {
   getGuidesStatic() {
     let result = [];
     const el = this.target.getEl();
+    const { parentNode = {} } = el;
     each(
-      el.parentNode.children,
+      parentNode.children,
       item =>
         (result = result.concat(el !== item ? this.getElementGuides(item) : []))
     );
-    return result;
+
+    return result.concat(this.getElementGuides(parentNode));
   },
 
   getGuidesTarget() {
