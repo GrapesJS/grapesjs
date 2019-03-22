@@ -315,7 +315,7 @@ module.exports = {
     const { onEnd } = opts;
     onEnd && onEnd();
     editor.stopCommand(id);
-    this.hideGuidesInfo();
+    // this.hideGuidesInfo();
   },
 
   hideGuidesInfo() {
@@ -368,7 +368,7 @@ module.exports = {
         const isEdge1 = isY ? left < rectOrigin.left : top < rectOrigin.top;
         const statEdge1 = isY ? left : top;
         const statEdge2 = isY ? left + width : top + height;
-        const pos2 = `${isY ? top : rectOrigin.left}px`;
+        const pos2 = `${isY ? item.y : item.x}px`;
         const size = isEdge1 ? origEdge1 - statEdge2 : statEdge1 - origEdge2;
         siz = size;
         guideInfoStyle.display = '';
@@ -378,8 +378,6 @@ module.exports = {
         }px`;
         guideInfoStyle[isY ? 'width' : 'height'] = `${size}px`;
       }
-
-      console.log('axis', axis, 'guide', res, 'size', siz);
       // elGuideInfo.innerHTML = length
     });
   },
