@@ -303,13 +303,34 @@ module.exports = {
   },
 
   onDrag() {
-    const { guidesTarget, guidesStatic, opts, editor } = this;
+    const { guidesTarget, opts } = this;
     this.updateGuides(guidesTarget);
     opts.debug && guidesTarget.forEach(item => this.renderGuide(item));
-    const active = guidesTarget.filter(item => item.active);
-    this.elGuideInfoY.style.display = 'none';
-    this.elGuideInfoX.style.display = 'none';
-    active.forEach(item => {
+    opts.guidesInfo &&
+      this.renderGuideInfo(guidesTarget.filter(item => item.active));
+  },
+
+  onEnd() {
+    const { editor, opts, id } = this;
+    const { onEnd } = opts;
+    onEnd && onEnd();
+    editor.stopCommand(id);
+  },
+
+  hideGuidesInfo() {
+    ['X', 'Y'].forEach(item => {
+      this[`elGuideInfo${item}`].style.display = 'none';
+    });
+  },
+
+  /**
+   * Render guides with spacing information
+   */
+  renderGuideInfo(guides = []) {
+    const { guidesStatic, editor } = this;
+    this.hideGuidesInfo();
+
+    guides.forEach(item => {
       const { origin, x } = item;
       const rectOrigin = editor.Canvas.offset(origin);
       const axis = isUndefined(x) ? 'y' : 'x';
@@ -359,13 +380,6 @@ module.exports = {
       console.log('axis', axis, 'guide', res, 'size', siz);
       // elGuideInfo.innerHTML = length
     });
-  },
-
-  onEnd() {
-    const { editor, opts, id } = this;
-    const { onEnd } = opts;
-    onEnd && onEnd();
-    editor.stopCommand(id);
   },
 
   toggleDrag(on) {

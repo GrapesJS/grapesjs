@@ -144,6 +144,7 @@ module.exports = () => {
           if (includes(modes, mode)) {
             // TODO move grabbing func in editor/canvas from the Sorter
             dragger = editor.runCommand('core:component-drag', {
+              guidesInfo: 1,
               mode,
               target: sel,
               onEnd,
