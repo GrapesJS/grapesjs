@@ -75,8 +75,8 @@ module.exports = {
       const pfx = editor.getConfig('stylePrefix');
       const elInfoX = document.createElement('div');
       const elInfoY = document.createElement('div');
-      const guideContent = `<div class="${pfx}guide-info__line">
-        <div class="${pfx}guide-info__content"></div>
+      const guideContent = `<div class="${pfx}guide-info__line ${pfx}danger-bg">
+        <div class="${pfx}guide-info__content ${pfx}danger-color"></div>
       </div>`;
       guidesEl = document.createElement('div');
       guidesEl.className = `${pfx}guides`;

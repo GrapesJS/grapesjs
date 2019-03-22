@@ -7,7 +7,6 @@ $guide_pad: 5px;
     position: absolute;
 
     &__content {
-      color: red;
       position: absolute;
       height: 100%;
       display: flex;
@@ -17,7 +16,6 @@ $guide_pad: 5px;
 
     &__line {
       position: relative;
-      background-color: red;
       margin: auto;
 
       &::before,

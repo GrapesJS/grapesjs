@@ -52,8 +52,14 @@ $prefix: $app-prefix;
 
 @import "gjs_status";
 
+$colorsAll: (one, $primaryColor),
+  (two, $secondaryColor),
+  (three, $tertiaryColor),
+  (four, $quaternaryColor),
+  (danger, $colorRed);
+
 .#{$prefix} {
-  @each $cnum, $ccol in (one, $primaryColor), (two, $secondaryColor), (three, $tertiaryColor), (four, $quaternaryColor) {
+  @each $cnum, $ccol in $colorsAll {
     &#{$cnum} {
       &-bg {
         background-color: $ccol;
