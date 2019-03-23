@@ -6,6 +6,7 @@ module.exports = Component.extend(
     defaults: {
       ...Component.prototype.defaults,
       type: 'map',
+      src: '',
       void: 0,
       mapUrl: 'https://maps.google.com/maps',
       tagName: 'iframe',
