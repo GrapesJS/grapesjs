@@ -73,7 +73,7 @@ module.exports = Backbone.View.extend({
     }
   },
 
-  updateFrames() {
+  updateFrames(ev) {
     const { em, model } = this;
     const { x, y } = model.attributes;
     const zoom = this.getZoom();
@@ -84,6 +84,7 @@ module.exports = Backbone.View.extend({
     this.clearOff();
     this.onFrameScroll();
     em.stopDefault(defOpts);
+    em.trigger('canvas:update', ev);
     timerZoom && clearTimeout(timerZoom);
     timerZoom = setTimeout(() => em.runDefault(defOpts));
   },
@@ -353,7 +354,7 @@ module.exports = Backbone.View.extend({
     const height = eo.height * zoom;
     const width = eo.width * zoom;
 
-    return { top, left, height, width };
+    return { top, left, height, width, zoom, rect: eo };
   },
 
   /**
