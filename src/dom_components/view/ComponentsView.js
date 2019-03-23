@@ -22,6 +22,19 @@ module.exports = Backbone.View.extend({
     removed.components().forEach(this.removeChildren.bind(this));
     !temp && removed.removed();
     if (em) {
+      // Remove all related CSS rules
+      const id = removed.getId();
+      const allRules = em.get('CssComposer').getAll();
+      allRules.remove(
+        allRules.filter(
+          rule => rule.getSelectors().getFullString() === `#${id}`
+        )
+      );
+
+      // Remove the component from the global list
+      const domc = em.get('DomComponents');
+      delete domc.componentsById[id];
+
       removed.get('style-signature') &&
         em
           .get('Commands')
