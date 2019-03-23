@@ -11,19 +11,24 @@ module.exports = Backbone.View.extend({
     this.listenTo(coll, 'remove', this.removeChildren);
   },
 
-  removeChildren(removed) {
+  removeChildren(removed, coll, opts = {}) {
     const em = this.config.em;
     const view = removed.view;
-    const temp = removed.opt.temporary;
+    const tempComp = removed.opt.temporary;
+    const tempRemove = opts.temporary;
     if (!view) return;
     view.remove.apply(view);
     const children = view.childrenView;
     children && children.stopListening();
-    removed.components().forEach(this.removeChildren.bind(this));
-    !temp && removed.removed();
-    if (em) {
-      // Remove all related CSS rules
+    removed.components().forEach(it => this.removeChildren(it, coll, opts));
+
+    if (em && !tempRemove) {
+      // Remove the component from the global list
       const id = removed.getId();
+      const domc = em.get('DomComponents');
+      delete domc.componentsById[id];
+
+      // Remove all related CSS rules
       const allRules = em.get('CssComposer').getAll();
       allRules.remove(
         allRules.filter(
@@ -31,15 +36,14 @@ module.exports = Backbone.View.extend({
         )
       );
 
-      // Remove the component from the global list
-      const domc = em.get('DomComponents');
-      delete domc.componentsById[id];
-
-      removed.get('style-signature') &&
-        em
-          .get('Commands')
-          .run('core:component-style-clear', { target: removed });
-      !temp && em.trigger('component:remove', removed);
+      if (!tempComp) {
+        const cm = em.get('Commands');
+        const hasSign = removed.get('style-signature');
+        const optStyle = { target: removed };
+        hasSign && cm.run('core:component-style-clear', optStyle);
+        removed.removed();
+        em.trigger('component:remove', removed);
+      }
     }
   },
 
