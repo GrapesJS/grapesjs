@@ -42,17 +42,14 @@ export default class Dragger {
        */
       getPosition: null,
 
-      // Offset before snap to guides
-      snapGuides: 1,
-
-      // Offset before snap to guides
-      snapOffset: 5,
-
       // Static guides to be snapped
       guidesStatic: null,
 
       // Target guides that will snap to static one
       guidesTarget: null,
+
+      // Offset before snap to guides
+      snapOffset: 5,
 
       // Document on which listen to pointer events
       doc: 0,
@@ -107,7 +104,7 @@ export default class Dragger {
    */
   drag(ev) {
     const { opts } = this;
-    const { onDrag, snapGuides } = opts;
+    const { onDrag } = opts;
     const { startPointer } = this;
     const currentPos = this.getPointerPos(ev);
     const delta = {
@@ -140,7 +137,7 @@ export default class Dragger {
     this.lockedAxis = lockedAxis;
     moveDelta(delta);
 
-    if (snapGuides) {
+    if (this.guidesTarget.length) {
       const { newDelta, trgX, trgY } = this.snapGuides(deltaPre);
       (trgX || trgY) && moveDelta(newDelta);
     }
