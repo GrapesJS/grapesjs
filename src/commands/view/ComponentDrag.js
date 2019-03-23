@@ -26,8 +26,8 @@ module.exports = {
       onDrag: this.onDrag,
       getPosition: this.getPosition,
       setPosition: this.setPosition,
-      getGuidesStatic: () => this.guidesStatic,
-      getGuidesTarget: () => this.guidesTarget,
+      guidesStatic: () => this.guidesStatic,
+      guidesTarget: () => this.guidesTarget,
       ...dragger
     };
     this.setupGuides();

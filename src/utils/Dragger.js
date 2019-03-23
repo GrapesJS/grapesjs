@@ -48,15 +48,11 @@ export default class Dragger {
       // Offset before snap to guides
       snapOffset: 5,
 
-      /**
-       * Get static guides
-       */
-      getGuidesStatic: () => [],
+      // Static guides to be snapped
+      guidesStatic: null,
 
-      /**
-       * Get target guides
-       */
-      getGuidesTarget: () => [],
+      // Target guides that will snap to static one
+      guidesTarget: null,
 
       // Document on which listen to pointer events
       doc: 0,
@@ -94,13 +90,14 @@ export default class Dragger {
    * @param  {Event} e
    */
   start(ev) {
-    const { onStart, getGuidesStatic, getGuidesTarget } = this.opts;
+    const { opts } = this;
+    const { onStart } = opts;
     this.toggleDrag(1);
     this.startPointer = this.getPointerPos(ev);
     isFunction(onStart) && onStart(ev, this);
     this.startPosition = this.getStartPosition();
-    this.guidesStatic = getGuidesStatic();
-    this.guidesTarget = getGuidesTarget();
+    this.guidesStatic = result(opts, 'guidesStatic') || [];
+    this.guidesTarget = result(opts, 'guidesTarget') || [];
     this.drag(ev);
   }
 
