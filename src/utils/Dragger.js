@@ -91,10 +91,10 @@ export default class Dragger {
     const { onStart } = opts;
     this.toggleDrag(1);
     this.startPointer = this.getPointerPos(ev);
-    isFunction(onStart) && onStart(ev, this);
-    this.startPosition = this.getStartPosition();
     this.guidesStatic = result(opts, 'guidesStatic') || [];
     this.guidesTarget = result(opts, 'guidesTarget') || [];
+    isFunction(onStart) && onStart(ev, this);
+    this.startPosition = this.getStartPosition();
     this.drag(ev);
   }
 
