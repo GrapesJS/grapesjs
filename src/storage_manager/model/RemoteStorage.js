@@ -1,5 +1,5 @@
 import fetch from 'utils/fetch';
-import { isUndefined } from 'underscore';
+import { isUndefined, isFunction } from 'underscore';
 
 module.exports = require('backbone').Model.extend({
   fetch,
@@ -11,7 +11,8 @@ module.exports = require('backbone').Model.extend({
     beforeSend() {},
     onComplete() {},
     contentTypeJson: false,
-    credentials: 'include'
+    credentials: 'include',
+    fetchOptions: ''
   },
 
   /**
@@ -123,8 +124,16 @@ module.exports = require('backbone').Model.extend({
       fetchOptions.body = body;
     }
 
+    const fetchOpts = this.get('fetchOptions') || {};
+    const addOpts = isFunction(fetchOpts)
+      ? fetchOpts(fetchOptions)
+      : fetchOptions;
+
     this.onStart();
-    this.fetch(url, fetchOptions)
+    this.fetch(url, {
+      ...fetchOptions,
+      ...(addOpts || {})
+    })
       .then(res =>
         ((res.status / 200) | 0) == 1
           ? res.text()
