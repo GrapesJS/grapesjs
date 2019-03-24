@@ -24907,6 +24907,22 @@ module.exports = function () {
 
 
     /**
+     * Get canvas rectangular data
+     * @returns {Object}
+     */
+    getRect: function getRect() {
+      var _CanvasView$getPositi = CanvasView.getPosition(),
+          top = _CanvasView$getPositi.top,
+          left = _CanvasView$getPositi.left;
+
+      return _extends({}, CanvasView.getCanvasOffset(), {
+        topScroll: top,
+        leftScroll: left
+      });
+    },
+
+
+    /**
      * This method comes handy when you need to attach something like toolbars
      * to elements inside the canvas, dealing with all relative position,
      * offsets, etc. and returning as result the object with positions which are
@@ -25007,9 +25023,9 @@ module.exports = function () {
     getMouseRelativeCanvas: function getMouseRelativeCanvas(ev) {
       var zoom = this.getZoomDecimal();
 
-      var _CanvasView$getPositi = CanvasView.getPosition(),
-          top = _CanvasView$getPositi.top,
-          left = _CanvasView$getPositi.left;
+      var _CanvasView$getPositi2 = CanvasView.getPosition(),
+          top = _CanvasView$getPositi2.top,
+          left = _CanvasView$getPositi2.left;
 
       return {
         y: ev.clientY * zoom + top,
@@ -25332,7 +25348,7 @@ module.exports = _backbone2.default.View.extend({
       model.set('zoom', zoom + delta * 2);
     }
   },
-  updateFrames: function updateFrames() {
+  updateFrames: function updateFrames(ev) {
     var em = this.em,
         model = this.model;
     var _model$attributes = model.attributes,
@@ -25346,6 +25362,7 @@ module.exports = _backbone2.default.View.extend({
     this.clearOff();
     this.onFrameScroll();
     em.stopDefault(defOpts);
+    em.trigger('canvas:update', ev);
     timerZoom && clearTimeout(timerZoom);
     timerZoom = setTimeout(function () {
       return em.runDefault(defOpts);
@@ -25574,7 +25591,7 @@ module.exports = _backbone2.default.View.extend({
     var height = eo.height * zoom;
     var width = eo.width * zoom;
 
-    return { top: top, left: left, height: height, width: width };
+    return { top: top, left: left, height: height, width: width, zoom: zoom, rect: eo };
   },
 
 
@@ -26572,6 +26589,10 @@ module.exports = {
 
   defaults: [],
 
+  // If true, stateful commands (with `run` and `stop` methods) can't be runned multiple times.
+  // So, if the command is already active, running it again will not execute the `run` method
+  strict: 1,
+
   // Editor model
   // @deprecated
   em: null,
@@ -26760,6 +26781,7 @@ module.exports = function () {
           if ((0, _underscore.includes)(modes, mode)) {
             // TODO move grabbing func in editor/canvas from the Sorter
             dragger = editor.runCommand('core:component-drag', {
+              guidesInfo: 1,
               mode: mode,
               target: sel,
               onEnd: onEnd,
@@ -26954,7 +26976,7 @@ module.exports = function () {
         var id = command.id;
         var _editor = em.get('Editor');
 
-        if (!this.isActive(id) || options.force) {
+        if (!this.isActive(id) || options.force || !c.strict) {
           if (id && command.stop && !command.noStop) {
             active[id] = result;
           }
@@ -26982,7 +27004,7 @@ module.exports = function () {
         var id = command.id;
         var _editor2 = em.get('Editor');
 
-        if (this.isActive(id) || options.force) {
+        if (this.isActive(id) || options.force || !c.strict) {
           if (id) delete active[id];
           result = command.callStop(_editor2, options);
         }
@@ -27454,6 +27476,8 @@ module.exports = {
 "use strict";
 
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _underscore = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
 
 var _Dragger = __webpack_require__(/*! utils/Dragger */ "./src/utils/Dragger.js");
@@ -27464,44 +27488,254 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 module.exports = {
   run: function run(editor, sender) {
+    var _this = this;
+
     var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-    (0, _underscore.bindAll)(this, 'setPosition', 'onStart', 'onEnd', 'getPosition');
+    (0, _underscore.bindAll)(this, 'setPosition', 'onStart', 'onDrag', 'onEnd', 'getPosition', 'getGuidesStatic', 'renderGuide', 'getGuidesTarget');
     var target = opts.target,
         event = opts.event,
-        mode = opts.mode;
+        mode = opts.mode,
+        _opts$dragger = opts.dragger,
+        dragger = _opts$dragger === undefined ? {} : _opts$dragger;
     var Canvas = editor.Canvas;
 
     var el = target.getEl();
     var scale = Canvas.getZoomMultiplier();
-    var config = {
+    var config = _extends({
       scale: scale,
       doc: el.ownerDocument,
       onStart: this.onStart,
       onEnd: this.onEnd,
+      onDrag: this.onDrag,
       getPosition: this.getPosition,
-      setPosition: this.setPosition
-    };
+      setPosition: this.setPosition,
+      guidesStatic: function guidesStatic() {
+        return _this.guidesStatic;
+      },
+      guidesTarget: function guidesTarget() {
+        return _this.guidesTarget;
+      }
+    }, dragger);
+    this.setupGuides();
     this.opts = opts;
     this.editor = editor;
+    this.em = editor.getModel();
     this.target = target;
     this.isTran = mode == 'translate';
-    var dragger = this.dragger;
+    this.guidesContainer = this.getGuidesContainer();
+    this.guidesTarget = this.getGuidesTarget();
+    this.guidesStatic = this.getGuidesStatic();
+    window.guidesTarget = this.guidesTarget;
+    var drg = this.dragger;
 
-    if (!dragger) {
-      dragger = new _Dragger2.default(config);
-      this.dragger = dragger;
+    if (!drg) {
+      drg = new _Dragger2.default(config);
+      this.dragger = drg;
     } else {
-      dragger.setOptions(config);
+      drg.setOptions(config);
     }
 
-    event && dragger.start(event);
+    event && drg.start(event);
     this.toggleDrag(1);
 
-    return dragger;
+    return drg;
   },
   stop: function stop() {
     this.toggleDrag();
+  },
+  setupGuides: function setupGuides() {
+    (this.guides || []).forEach(function (item) {
+      var guide = item.guide;
+
+      guide && guide.parentNode.removeChild(guide);
+    });
+    this.guides = [];
+  },
+  getGuidesContainer: function getGuidesContainer() {
+    var _this2 = this;
+
+    var guidesEl = this.guidesEl;
+
+
+    if (!guidesEl) {
+      var _editor = this.editor,
+          em = this.em,
+          opts = this.opts;
+
+      var pfx = _editor.getConfig('stylePrefix');
+      var elInfoX = document.createElement('div');
+      var elInfoY = document.createElement('div');
+      var guideContent = '<div class="' + pfx + 'guide-info__line ' + pfx + 'danger-bg">\n        <div class="' + pfx + 'guide-info__content ' + pfx + 'danger-color"></div>\n      </div>';
+      guidesEl = document.createElement('div');
+      guidesEl.className = pfx + 'guides';
+      elInfoX.className = pfx + 'guide-info ' + pfx + 'guide-info__x';
+      elInfoY.className = pfx + 'guide-info ' + pfx + 'guide-info__y';
+      elInfoX.innerHTML = guideContent;
+      elInfoY.innerHTML = guideContent;
+      guidesEl.appendChild(elInfoX);
+      guidesEl.appendChild(elInfoY);
+      _editor.Canvas.getToolsEl().appendChild(guidesEl);
+      this.guidesEl = guidesEl;
+      this.elGuideInfoX = elInfoX;
+      this.elGuideInfoY = elInfoY;
+      this.elGuideInfoContentX = elInfoX.querySelector('.' + pfx + 'guide-info__content');
+      this.elGuideInfoContentY = elInfoY.querySelector('.' + pfx + 'guide-info__content');
+      em.on('canvas:update', function () {
+        _this2.updateGuides();
+        opts.debug && _this2.guides.forEach(function (item) {
+          return _this2.renderGuide(item);
+        });
+      });
+    }
+
+    return guidesEl;
+  },
+  getGuidesStatic: function getGuidesStatic() {
+    var _this3 = this;
+
+    var result = [];
+    var el = this.target.getEl();
+    var _el$parentNode = el.parentNode,
+        parentNode = _el$parentNode === undefined ? {} : _el$parentNode;
+
+    (0, _underscore.each)(parentNode.children, function (item) {
+      return result = result.concat(el !== item ? _this3.getElementGuides(item) : []);
+    });
+
+    return result.concat(this.getElementGuides(parentNode));
+  },
+  getGuidesTarget: function getGuidesTarget() {
+    return this.getElementGuides(this.target.getEl());
+  },
+  updateGuides: function updateGuides(guides) {
+    (guides || this.guides).forEach(function (item) {
+      var origin = item.origin;
+
+      var _editor$Canvas$getEle = editor.Canvas.getElementPos(origin),
+          top = _editor$Canvas$getEle.top,
+          height = _editor$Canvas$getEle.height,
+          left = _editor$Canvas$getEle.left,
+          width = _editor$Canvas$getEle.width;
+
+      switch (item.type) {
+        case 't':
+          return item.y = top;
+        case 'b':
+          return item.y = top + height;
+        case 'l':
+          return item.x = left;
+        case 'r':
+          return item.x = left + width;
+        case 'x':
+          return item.x = left + width / 2;
+        case 'y':
+          return item.y = top + height / 2;
+      }
+    });
+  },
+  getGuidePosUpdate: function getGuidePosUpdate(item, rect) {
+    var result = {};
+    var top = rect.top,
+        height = rect.height,
+        left = rect.left,
+        width = rect.width;
+
+
+    switch (item.type) {
+      case 't':
+        result.y = top;
+        break;
+      case 'b':
+        result.y = top + height;
+        break;
+      case 'l':
+        result.x = left;
+        break;
+      case 'r':
+        result.x = left + width;
+        break;
+      case 'x':
+        result.x = left + width / 2;
+        break;
+      case 'y':
+        result.y = top + height / 2;
+        break;
+    }
+
+    return result;
+  },
+  renderGuide: function renderGuide() {
+    var item = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    var el = item.guide || document.createElement('div');
+    var Canvas = this.editor.Canvas;
+
+    var _Canvas$getRect = Canvas.getRect(),
+        topScroll = _Canvas$getRect.topScroll,
+        top = _Canvas$getRect.top;
+
+    var frameTop = Canvas.getCanvasView().getFrameOffset().top;
+    // const elRect = this.getGuidePosUpdate(item, el.getBoundingClientRect());
+    var un = 'px';
+    var guideSize = item.active ? 2 : 1;
+    var numEl = el.children[0];
+    el.style = 'position: absolute; background-color: ' + (item.active ? 'green' : 'red') + ';';
+
+    if (!el.children.length) {
+      numEl = document.createElement('div');
+      numEl.style = 'position: absolute; color: red; padding: 5px; top: 0; left: 0;';
+      el.appendChild(numEl);
+    }
+
+    if (item.y) {
+      el.style.width = '100%';
+      el.style.height = '' + guideSize + un;
+      el.style.top = '' + item.y + un;
+      el.style.left = 0;
+      // numEl.innerHTML = elRect.y;
+    } else {
+      el.style.width = '' + guideSize + un;
+      el.style.height = '100%';
+      el.style.left = '' + item.x + un;
+      el.style.top = '' + (topScroll - frameTop + top) + un;
+      // numEl.innerHTML = elRect.x;
+      // numEl.innerHTML = el.style.left;
+    }
+
+    !item.guide && this.guidesContainer.appendChild(el);
+    return el;
+  },
+  getElementGuides: function getElementGuides(el) {
+    var _this4 = this;
+
+    var editor = this.editor,
+        opts = this.opts;
+
+    var _editor$Canvas$getEle2 = editor.Canvas.getElementPos(el),
+        top = _editor$Canvas$getEle2.top,
+        height = _editor$Canvas$getEle2.height,
+        left = _editor$Canvas$getEle2.left,
+        width = _editor$Canvas$getEle2.width;
+
+    var guides = [{ type: 't', y: top }, // Top
+    { type: 'b', y: top + height }, // Bottom
+    { type: 'l', x: left }, // Left
+    { type: 'r', x: left + width }, // Right
+    { type: 'x', x: left + width / 2 }, // Mid x
+    { type: 'y', y: top + height / 2 // Mid y
+    }].map(function (item) {
+      return _extends({}, item, {
+        origin: el,
+        originRect: editor.Canvas.getElementPos(el),
+        guide: opts.debug && _this4.renderGuide(item)
+      });
+    });
+    guides.forEach(function (item) {
+      return _this4.guides.push(item);
+    });
+
+    return guides;
   },
   getTranslate: function getTranslate(transform) {
     var axis = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'x';
@@ -27596,6 +27830,20 @@ module.exports = {
       this.setPosition({ x: left, y: top, position: position, width: width, height: height });
     }
   },
+  onDrag: function onDrag() {
+    var _this5 = this;
+
+    var guidesTarget = this.guidesTarget,
+        opts = this.opts;
+
+    this.updateGuides(guidesTarget);
+    opts.debug && guidesTarget.forEach(function (item) {
+      return _this5.renderGuide(item);
+    });
+    opts.guidesInfo && this.renderGuideInfo(guidesTarget.filter(function (item) {
+      return item.active;
+    }));
+  },
   onEnd: function onEnd() {
     var editor = this.editor,
         opts = this.opts,
@@ -27604,6 +27852,92 @@ module.exports = {
 
     onEnd && onEnd();
     editor.stopCommand(id);
+    this.hideGuidesInfo();
+  },
+  hideGuidesInfo: function hideGuidesInfo() {
+    var _this6 = this;
+
+    ['X', 'Y'].forEach(function (item) {
+      var guide = _this6['elGuideInfo' + item];
+      if (guide) guide.style.display = 'none';
+    });
+  },
+
+
+  /**
+   * Render guides with spacing information
+   */
+  renderGuideInfo: function renderGuideInfo() {
+    var _this7 = this;
+
+    var guides = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    var guidesStatic = this.guidesStatic,
+        editor = this.editor;
+
+    this.hideGuidesInfo();
+
+    guides.forEach(function (item) {
+      var origin = item.origin,
+          x = item.x;
+
+      var rectOrigin = editor.Canvas.getElementPos(origin);
+      var axis = (0, _underscore.isUndefined)(x) ? 'y' : 'x';
+      var isY = axis === 'y';
+      var origEdge1 = rectOrigin[isY ? 'left' : 'top'];
+      var origEdge1Raw = rectOrigin.rect[isY ? 'left' : 'top'];
+      var origEdge2 = isY ? origEdge1 + rectOrigin.width : origEdge1 + rectOrigin.height;
+      var origEdge2Raw = isY ? origEdge1Raw + rectOrigin.rect.width : origEdge1Raw + rectOrigin.rect.height;
+      var elGuideInfo = _this7['elGuideInfo' + axis.toUpperCase()];
+      var elGuideInfoCnt = _this7['elGuideInfoContent' + axis.toUpperCase()];
+      var guideInfoStyle = elGuideInfo.style;
+
+      // Find the nearest element
+      var res = guidesStatic.filter(function (stat) {
+        return stat[axis] === item[axis];
+      }).map(function (stat) {
+        var _stat$originRect = stat.originRect,
+            left = _stat$originRect.left,
+            width = _stat$originRect.width,
+            top = _stat$originRect.top,
+            height = _stat$originRect.height;
+
+        var statEdge1 = isY ? left : top;
+        var statEdge2 = isY ? left + width : top + height;
+        return {
+          gap: statEdge2 < origEdge1 ? origEdge1 - statEdge2 : statEdge1 - origEdge2,
+          guide: stat
+        };
+      }).filter(function (item) {
+        return item.gap > 0;
+      }).sort(function (a, b) {
+        return a.gap - b.gap;
+      }).map(function (item) {
+        return item.guide;
+      })[0];
+
+      if (res) {
+        var _res$originRect = res.originRect,
+            left = _res$originRect.left,
+            width = _res$originRect.width,
+            top = _res$originRect.top,
+            height = _res$originRect.height,
+            rect = _res$originRect.rect;
+
+        var isEdge1 = isY ? left < rectOrigin.left : top < rectOrigin.top;
+        var statEdge1 = isY ? left : top;
+        var statEdge1Raw = isY ? rect.left : rect.top;
+        var statEdge2 = isY ? left + width : top + height;
+        var statEdge2Raw = isY ? rect.left + rect.width : rect.top + rect.height;
+        var pos2 = (isY ? item.y : item.x) + 'px';
+        var size = isEdge1 ? origEdge1 - statEdge2 : statEdge1 - origEdge2;
+        var sizeRaw = isEdge1 ? origEdge1Raw - statEdge2Raw : statEdge1Raw - origEdge2Raw;
+        guideInfoStyle.display = '';
+        guideInfoStyle[isY ? 'top' : 'left'] = pos2;
+        guideInfoStyle[isY ? 'left' : 'top'] = (isEdge1 ? statEdge2 : origEdge2) + 'px';
+        guideInfoStyle[isY ? 'width' : 'height'] = size + 'px';
+        elGuideInfoCnt.innerHTML = Math.round(sizeRaw) + 'px';
+      }
+    });
   },
   toggleDrag: function toggleDrag(on) {
     var ppfx = this.ppfx,
@@ -32014,7 +32348,11 @@ module.exports = function () {
      * @return {this}
      */
     clear: function clear() {
-      this.getComponents().reset();
+      this.getComponents().map(function (i) {
+        return i;
+      }).forEach(function (i) {
+        return i.remove();
+      });
       return this;
     },
 
@@ -33651,6 +33989,7 @@ var OComponent = __webpack_require__(/*! ./Component */ "./src/dom_components/mo
 module.exports = Component.extend({
   defaults: _extends({}, Component.prototype.defaults, {
     type: 'map',
+    src: '',
     void: 0,
     mapUrl: 'https://maps.google.com/maps',
     tagName: 'iframe',
@@ -35059,7 +35398,14 @@ module.exports = __webpack_require__(/*! ./ComponentView */ "./src/dom_component
 "use strict";
 
 
-module.exports = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js").View.extend({});
+module.exports = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js").View.extend({
+  initialize: function initialize() {
+    this.model.view = this;
+  },
+  _createElement: function _createElement() {
+    return document.createTextNode(this.model.get('content'));
+  }
+});
 
 /***/ }),
 
@@ -35851,19 +36197,43 @@ module.exports = _backbone2.default.View.extend({
     this.listenTo(coll, 'reset', this.resetChildren);
     this.listenTo(coll, 'remove', this.removeChildren);
   },
-  removeChildren: function removeChildren(removed) {
+  removeChildren: function removeChildren(removed, coll) {
+    var _this = this;
+
+    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
     var em = this.config.em;
     var view = removed.view;
-    var temp = removed.opt.temporary;
+    var tempComp = removed.opt.temporary;
+    var tempRemove = opts.temporary;
     if (!view) return;
     view.remove.apply(view);
     var children = view.childrenView;
     children && children.stopListening();
-    removed.components().forEach(this.removeChildren.bind(this));
-    !temp && removed.removed();
-    if (em) {
-      removed.get('style-signature') && em.get('Commands').run('core:component-style-clear', { target: removed });
-      !temp && em.trigger('component:remove', removed);
+    removed.components().forEach(function (it) {
+      return _this.removeChildren(it, coll, opts);
+    });
+
+    if (em && !tempRemove) {
+      // Remove the component from the global list
+      var id = removed.getId();
+      var domc = em.get('DomComponents');
+      delete domc.componentsById[id];
+
+      // Remove all related CSS rules
+      var allRules = em.get('CssComposer').getAll();
+      allRules.remove(allRules.filter(function (rule) {
+        return rule.getSelectors().getFullString() === '#' + id;
+      }));
+
+      if (!tempComp) {
+        var cm = em.get('Commands');
+        var hasSign = removed.get('style-signature');
+        var optStyle = { target: removed };
+        hasSign && cm.run('core:component-style-clear', optStyle);
+        removed.removed();
+        em.trigger('component:remove', removed);
+      }
     }
   },
 
@@ -35900,29 +36270,27 @@ module.exports = _backbone2.default.View.extend({
    * */
   addToCollection: function addToCollection(model, fragmentEl, index) {
     if (!this.compView) this.compView = __webpack_require__(/*! ./ComponentView */ "./src/dom_components/view/ComponentView.js");
-    var fragment = fragmentEl || null,
-        viewObject = this.compView;
+    var config = this.config,
+        opts = this.opts;
 
-    var dt = this.opts.componentTypes;
-
+    var fragment = fragmentEl || null;
+    var dt = opts.componentTypes;
     var type = model.get('type');
+    var viewObject = this.compView;
 
     for (var it = 0; it < dt.length; it++) {
-      var dtId = dt[it].id;
-      if (dtId == type) {
+      if (dt[it].id == type) {
         viewObject = dt[it].view;
         break;
       }
     }
-    //viewObject = dt[type] ? dt[type].view : dt.default.view;
 
     var view = new viewObject({
       model: model,
-      config: this.config,
+      config: config,
       componentTypes: dt
     });
     var rendered = view.render().el;
-    if (view.model.get('type') == 'textnode') rendered = document.createTextNode(view.model.get('content'));
 
     if (fragment) {
       fragment.appendChild(rendered);
@@ -35953,21 +36321,21 @@ module.exports = _backbone2.default.View.extend({
     return rendered;
   },
   resetChildren: function resetChildren() {
-    var _this = this;
+    var _this2 = this;
 
     this.parentEl.innerHTML = '';
     this.collection.each(function (model) {
-      return _this.addToCollection(model);
+      return _this2.addToCollection(model);
     });
   },
   render: function render(parent) {
-    var _this2 = this;
+    var _this3 = this;
 
     var el = this.el;
     var frag = document.createDocumentFragment();
     this.parentEl = parent || this.el;
     this.collection.each(function (model) {
-      return _this2.addToCollection(model, frag);
+      return _this3.addToCollection(model, frag);
     });
     el.innerHTML = '';
     el.appendChild(frag);
@@ -38893,7 +39261,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.14.56',
+    version: '0.14.57',
 
     /**
      * Initialize the editor with passed options
@@ -43923,7 +44291,15 @@ module.exports = {
   // false: 'x-www-form-urlencoded'
   contentTypeJson: true,
 
-  credentials: 'include'
+  credentials: 'include',
+
+  // Pass custom options to fetch API (remote storage)
+  // You can pass a simple object: { someOption: 'someValue' }
+  // or a function wich returns and object to add:
+  // currentOpts => {
+  //  return currentOpts.method === 'post' ?  { method: 'patch' } : {};
+  // }
+  fetchOptions: ''
 };
 
 /***/ }),
@@ -44377,6 +44753,8 @@ module.exports = Backbone.Model.extend({
 "use strict";
 
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _fetch = __webpack_require__(/*! utils/fetch */ "./src/utils/fetch.js");
 
 var _fetch2 = _interopRequireDefault(_fetch);
@@ -44396,7 +44774,8 @@ module.exports = __webpack_require__(/*! backbone */ "./node_modules/backbone/ba
     onComplete: function onComplete() {},
 
     contentTypeJson: false,
-    credentials: 'include'
+    credentials: 'include',
+    fetchOptions: ''
   },
 
   /**
@@ -44516,8 +44895,11 @@ module.exports = __webpack_require__(/*! backbone */ "./node_modules/backbone/ba
       fetchOptions.body = body;
     }
 
+    var fetchOpts = this.get('fetchOptions') || {};
+    var addOpts = (0, _underscore.isFunction)(fetchOpts) ? fetchOpts(fetchOptions) : fetchOptions;
+
     this.onStart();
-    this.fetch(url, fetchOptions).then(function (res) {
+    this.fetch(url, _extends({}, fetchOptions, addOpts || {})).then(function (res) {
       return (res.status / 200 | 0) == 1 ? res.text() : res.text().then(function (text) {
         return Promise.reject(text);
       });
@@ -46636,7 +47018,9 @@ module.exports = Backbone.Model.extend({
       }
     }
 
-    return ex ? isolated : props;
+    return ex ? isolated.filter(function (i) {
+      return i;
+    }) : props;
   },
 
 
@@ -52356,6 +52740,15 @@ var Dragger = function () {
        */
       getPosition: null,
 
+      // Static guides to be snapped
+      guidesStatic: null,
+
+      // Target guides that will snap to static one
+      guidesTarget: null,
+
+      // Offset before snap to guides
+      snapOffset: 5,
+
       // Document on which listen to pointer events
       doc: 0,
 
@@ -52399,10 +52792,13 @@ var Dragger = function () {
   }, {
     key: 'start',
     value: function start(ev) {
-      var onStart = this.opts.onStart;
+      var opts = this.opts;
+      var onStart = opts.onStart;
 
       this.toggleDrag(1);
       this.startPointer = this.getPointerPos(ev);
+      this.guidesStatic = (0, _underscore.result)(opts, 'guidesStatic') || [];
+      this.guidesTarget = (0, _underscore.result)(opts, 'guidesTarget') || [];
       (0, _underscore.isFunction)(onStart) && onStart(ev, this);
       this.startPosition = this.getStartPosition();
       this.drag(ev);
@@ -52416,6 +52812,8 @@ var Dragger = function () {
   }, {
     key: 'drag',
     value: function drag(ev) {
+      var _this = this;
+
       var opts = this.opts;
       var onDrag = opts.onDrag;
       var startPointer = this.startPointer;
@@ -52441,17 +52839,118 @@ var Dragger = function () {
         delta.y = startPointer.y;
       }
 
-      ['x', 'y'].forEach(function (co) {
-        return delta[co] = delta[co] * (0, _underscore.result)(opts, 'scale');
-      });
-      this.lockedAxis = lockedAxis;
-      this.delta = delta;
-      this.move(delta.x, delta.y);
+      var moveDelta = function moveDelta(delta) {
+        ['x', 'y'].forEach(function (co) {
+          return delta[co] = delta[co] * (0, _underscore.result)(opts, 'scale');
+        });
+        _this.delta = delta;
+        _this.move(delta.x, delta.y);
+        (0, _underscore.isFunction)(onDrag) && onDrag(ev, _this);
+      };
+      var deltaPre = _extends({}, delta);
       this.currentPointer = currentPos;
-      (0, _underscore.isFunction)(onDrag) && onDrag(ev, this);
+      this.lockedAxis = lockedAxis;
+      moveDelta(delta);
+
+      if (this.guidesTarget.length) {
+        var _snapGuides = this.snapGuides(deltaPre),
+            newDelta = _snapGuides.newDelta,
+            trgX = _snapGuides.trgX,
+            trgY = _snapGuides.trgY;
+
+        (trgX || trgY) && moveDelta(newDelta);
+      }
 
       // In case the mouse button was released outside of the window
       ev.which === 0 && this.stop(ev);
+    }
+
+    /**
+     * Check if the delta hits some guide
+     */
+
+  }, {
+    key: 'snapGuides',
+    value: function snapGuides(delta) {
+      var _this2 = this;
+
+      var newDelta = delta;
+      var trgX = this.trgX,
+          trgY = this.trgY;
+
+
+      this.guidesTarget.forEach(function (trg) {
+        // Skip the guide if its locked axis already exists
+        if (trg.x && _this2.trgX || trg.y && _this2.trgY) return;
+        trg.active = 0;
+
+        _this2.guidesStatic.forEach(function (stat) {
+          if (trg.y && stat.x || trg.x && stat.y) return;
+          var isY = trg.y && stat.y;
+          var axs = isY ? 'y' : 'x';
+          var trgPoint = trg[axs];
+          var statPoint = stat[axs];
+          var deltaPoint = delta[axs];
+          var trgGuide = isY ? trgY : trgX;
+
+          if (_this2.isPointIn(trgPoint, statPoint)) {
+            if ((0, _underscore.isUndefined)(trgGuide)) {
+              var trgValue = deltaPoint - (trgPoint - statPoint);
+              _this2.setGuideLock(trg, trgValue);
+            }
+          }
+        });
+      });
+
+      trgX = this.trgX;
+      trgY = this.trgY;
+
+      ['x', 'y'].forEach(function (co) {
+        var axis = co.toUpperCase();
+        var trg = _this2['trg' + axis];
+
+        if (trg && !_this2.isPointIn(delta[co], trg.lock)) {
+          _this2.setGuideLock(trg, null);
+          trg = null;
+        }
+
+        if (trg && !(0, _underscore.isUndefined)(trg.lock)) {
+          newDelta[co] = trg.lock;
+        }
+      });
+
+      return {
+        newDelta: newDelta,
+        trgX: this.trgX,
+        trgY: this.trgY
+      };
+    }
+  }, {
+    key: 'isPointIn',
+    value: function isPointIn(src, trg) {
+      var _ref = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
+          offset = _ref.offset;
+
+      var ofst = offset || this.opts.snapOffset;
+      return src >= trg && src <= trg + ofst || src <= trg && src >= trg - ofst;
+    }
+  }, {
+    key: 'setGuideLock',
+    value: function setGuideLock(guide, value) {
+      var axis = !(0, _underscore.isUndefined)(guide.x) ? 'X' : 'Y';
+      var trgName = 'trg' + axis;
+
+      if (value !== null) {
+        guide.active = 1;
+        guide.lock = value;
+        this[trgName] = guide;
+      } else {
+        delete guide.active;
+        delete guide.lock;
+        delete this[trgName];
+      }
+
+      return guide;
     }
 
     /**
@@ -53693,10 +54192,9 @@ module.exports = _backbone2.default.View.extend({
         var opts = {
           avoidStore: 1,
           avoidChildren: 1,
-          avoidUpdateStyle: 1,
-          temporary: 1
+          avoidUpdateStyle: 1
         };
-        var tempModel = comps.add(dropContent, opts);
+        var tempModel = comps.add(dropContent, _extends({}, opts, { temporary: 1 }));
         dropModel = comps.remove(tempModel, opts);
         this.dropModel = dropModel instanceof Array ? dropModel[0] : dropModel;
       }
@@ -54368,7 +54866,7 @@ module.exports = _backbone2.default.View.extend({
         modelTemp = targetCollection.add({}, _extends({}, opts));
 
         if (model) {
-          modelToDrop = model.collection.remove(model);
+          modelToDrop = model.collection.remove(model, { temporary: 1 });
         }
       } else {
         modelToDrop = dropContent;
