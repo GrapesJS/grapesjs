@@ -320,10 +320,9 @@ module.exports = Backbone.View.extend({
         const opts = {
           avoidStore: 1,
           avoidChildren: 1,
-          avoidUpdateStyle: 1,
-          temporary: 1
+          avoidUpdateStyle: 1
         };
-        let tempModel = comps.add(dropContent, opts);
+        let tempModel = comps.add(dropContent, { ...opts, temporary: 1 });
         dropModel = comps.remove(tempModel, opts);
         this.dropModel = dropModel instanceof Array ? dropModel[0] : dropModel;
       }
@@ -995,7 +994,7 @@ module.exports = Backbone.View.extend({
         modelTemp = targetCollection.add({}, { ...opts });
 
         if (model) {
-          modelToDrop = model.collection.remove(model);
+          modelToDrop = model.collection.remove(model, { temporary: 1 });
         }
       } else {
         modelToDrop = dropContent;

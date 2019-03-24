@@ -21,6 +21,8 @@
  * * [getTitle](#gettitle)
  * * [setContent](#setcontent)
  * * [getContent](#getcontent)
+ * * [onceClose](#onceclose)
+ * * [onceOpen](#onceopen)
  *
  * @module Modal
  */
@@ -31,6 +33,10 @@ module.exports = () => {
     ModalM = require('./model/Modal'),
     ModalView = require('./view/ModalView');
   var model, modal;
+
+  const triggerEvent = (enable, em) => {
+    em && em.trigger(`modal:${enable ? 'open' : 'close'}`);
+  };
 
   return {
     /**
@@ -55,11 +61,13 @@ module.exports = () => {
         ...config
       };
 
-      this.em = c.em;
+      const em = c.em;
+      this.em = em;
       var ppfx = c.pStylePrefix;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
 
       model = new ModalM(c);
+      model.on('change:open', (m, enb) => triggerEvent(enb, em));
       modal = new ModalView({
         model,
         config: c
@@ -73,11 +81,6 @@ module.exports = () => {
       this.render().appendTo(el);
     },
 
-    triggerEvent(event) {
-      const { em } = this;
-      em && em.trigger(`modal:${event}`);
-    },
-
     /**
      * Open the modal window
      * @param {Object} [opts={}] Options
@@ -89,7 +92,6 @@ module.exports = () => {
       opts.title && this.setTitle(opts.title);
       opts.content && this.setContent(opts.content);
       modal.show();
-      this.triggerEvent('open');
       return this;
     },
 
@@ -99,7 +101,28 @@ module.exports = () => {
      */
     close() {
       modal.hide();
-      this.triggerEvent('close');
+      return this;
+    },
+
+    /**
+     * Execute callback when the modal will be closed.
+     * The callback will be called one only time
+     * @param {Function} clb
+     * @returns {this}
+     */
+    onceClose(clb) {
+      this.em.once('modal:close', clb);
+      return this;
+    },
+
+    /**
+     * Execute callback when the modal will be opened.
+     * The callback will be called one only time
+     * @param {Function} clb
+     * @returns {this}
+     */
+    onceOpen(clb) {
+      this.em.once('modal:open', clb);
       return this;
     },
 

@@ -55,5 +55,13 @@ module.exports = {
   // false: 'x-www-form-urlencoded'
   contentTypeJson: true,
 
-  credentials: 'include'
+  credentials: 'include',
+
+  // Pass custom options to fetch API (remote storage)
+  // You can pass a simple object: { someOption: 'someValue' }
+  // or a function wich returns and object to add:
+  // currentOpts => {
+  //  return currentOpts.method === 'post' ?  { method: 'patch' } : {};
+  // }
+  fetchOptions: ''
 };

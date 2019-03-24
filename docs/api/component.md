@@ -454,6 +454,28 @@ Remove the component
 
 Returns **this** 
 
+## getList
+
+The list of components is taken from the Components module.
+Initially, the list, was set statically on the Component object but it was
+not ok, as it was shared between multiple editor instances
+
+### Parameters
+
+-   `model`  
+
+## checkId
+
+This method checks, for each parsed component and style object
+(are not Components/CSSRules yet), for duplicated id and fixes them
+This method is used in Components.js just after the parsing
+
+### Parameters
+
+-   `components`  
+-   `styles`   (optional, default `[]`)
+-   `list`   (optional, default `{}`)
+
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
 [2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object

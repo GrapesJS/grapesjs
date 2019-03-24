@@ -11,22 +11,39 @@ module.exports = Backbone.View.extend({
     this.listenTo(coll, 'remove', this.removeChildren);
   },
 
-  removeChildren(removed) {
+  removeChildren(removed, coll, opts = {}) {
     const em = this.config.em;
     const view = removed.view;
-    const temp = removed.opt.temporary;
+    const tempComp = removed.opt.temporary;
+    const tempRemove = opts.temporary;
     if (!view) return;
     view.remove.apply(view);
     const children = view.childrenView;
     children && children.stopListening();
-    removed.components().forEach(this.removeChildren.bind(this));
-    !temp && removed.removed();
-    if (em) {
-      removed.get('style-signature') &&
-        em
-          .get('Commands')
-          .run('core:component-style-clear', { target: removed });
-      !temp && em.trigger('component:remove', removed);
+    removed.components().forEach(it => this.removeChildren(it, coll, opts));
+
+    if (em && !tempRemove) {
+      // Remove the component from the global list
+      const id = removed.getId();
+      const domc = em.get('DomComponents');
+      delete domc.componentsById[id];
+
+      // Remove all related CSS rules
+      const allRules = em.get('CssComposer').getAll();
+      allRules.remove(
+        allRules.filter(
+          rule => rule.getSelectors().getFullString() === `#${id}`
+        )
+      );
+
+      if (!tempComp) {
+        const cm = em.get('Commands');
+        const hasSign = removed.get('style-signature');
+        const optStyle = { target: removed };
+        hasSign && cm.run('core:component-style-clear', optStyle);
+        removed.removed();
+        em.trigger('component:remove', removed);
+      }
     }
   },
 
@@ -58,30 +75,25 @@ module.exports = Backbone.View.extend({
    * */
   addToCollection(model, fragmentEl, index) {
     if (!this.compView) this.compView = require('./ComponentView');
-    var fragment = fragmentEl || null,
-      viewObject = this.compView;
+    const { config, opts } = this;
+    const fragment = fragmentEl || null;
+    const dt = opts.componentTypes;
+    const type = model.get('type');
+    let viewObject = this.compView;
 
-    var dt = this.opts.componentTypes;
-
-    var type = model.get('type');
-
-    for (var it = 0; it < dt.length; it++) {
-      var dtId = dt[it].id;
-      if (dtId == type) {
+    for (let it = 0; it < dt.length; it++) {
+      if (dt[it].id == type) {
         viewObject = dt[it].view;
         break;
       }
     }
-    //viewObject = dt[type] ? dt[type].view : dt.default.view;
 
-    var view = new viewObject({
+    const view = new viewObject({
       model,
-      config: this.config,
+      config,
       componentTypes: dt
     });
-    var rendered = view.render().el;
-    if (view.model.get('type') == 'textnode')
-      rendered = document.createTextNode(view.model.get('content'));
+    let rendered = view.render().el;
 
     if (fragment) {
       fragment.appendChild(rendered);

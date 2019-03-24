@@ -72,7 +72,7 @@ module.exports = Backbone.Model.extend({
       }
     }
 
-    return ex ? isolated : props;
+    return ex ? isolated.filter(i => i) : props;
   },
 
   /**

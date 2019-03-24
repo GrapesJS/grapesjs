@@ -498,7 +498,9 @@ module.exports = () => {
      * @return {this}
      */
     clear() {
-      this.getComponents().reset();
+      this.getComponents()
+        .map(i => i)
+        .forEach(i => i.remove());
       return this;
     },
 

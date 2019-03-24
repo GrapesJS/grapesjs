@@ -141,6 +141,23 @@ module.exports = {
           credentials: false
         });
       });
+
+      test('Load data with custom fetch options as function', () => {
+        const customOpts = { customOpt: 'customValue' };
+        obj = new RemoteStorage({
+          ...storageOptions,
+          fetchOptions: () => {
+            return customOpts;
+          }
+        });
+        sinon
+          .stub(obj, 'fetch')
+          .returns(Promise.resolve(mockResponse({ data: 1 })));
+        obj.load(['item1', 'item2']);
+        const callResult = obj.fetch;
+        expect(callResult.called).toEqual(true);
+        expect(callResult.firstCall.args[1]).toMatchObject(customOpts);
+      });
     });
   }
 };

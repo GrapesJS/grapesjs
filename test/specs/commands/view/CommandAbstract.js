@@ -24,14 +24,19 @@ module.exports = {
         const runStub = sinon.stub(command, 'run').returns('result');
 
         const result = command.callRun(editor);
-
-        expect(editorTriggerSpy.calledTwice).toEqual(true);
+        expect(editorTriggerSpy.callCount).toEqual(3);
         expect(editorTriggerSpy.getCall(0).args).toEqual([
           'run:test:before',
           {}
         ]);
         expect(editorTriggerSpy.getCall(1).args).toEqual([
           'run:test',
+          'result',
+          {}
+        ]);
+        expect(editorTriggerSpy.getCall(2).args).toEqual([
+          'run',
+          'test',
           'result',
           {}
         ]);
@@ -64,13 +69,19 @@ module.exports = {
 
         const result = command.callStop(editor);
 
-        expect(editorTriggerSpy.calledTwice).toEqual(true);
+        expect(editorTriggerSpy.callCount).toEqual(3);
         expect(editorTriggerSpy.getCall(0).args).toEqual([
           'stop:test:before',
           {}
         ]);
         expect(editorTriggerSpy.getCall(1).args).toEqual([
           'stop:test',
+          'stopped',
+          {}
+        ]);
+        expect(editorTriggerSpy.getCall(2).args).toEqual([
+          'stop',
+          'test',
           'stopped',
           {}
         ]);

@@ -303,6 +303,19 @@ module.exports = () => {
     },
 
     /**
+     * Get canvas rectangular data
+     * @returns {Object}
+     */
+    getRect() {
+      const { top, left } = CanvasView.getPosition();
+      return {
+        ...CanvasView.getCanvasOffset(),
+        topScroll: top,
+        leftScroll: left
+      };
+    },
+
+    /**
      * This method comes handy when you need to attach something like toolbars
      * to elements inside the canvas, dealing with all relative position,
      * offsets, etc. and returning as result the object with positions which are
