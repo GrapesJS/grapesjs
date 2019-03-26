@@ -119,7 +119,6 @@ module.exports = () => {
           const nativeDrag = event && event.type == 'dragstart';
           const defComOptions = { preserveSelected: 1 };
           const modes = ['absolute', 'translate'];
-          const mode = sel.get('dmode') || em.get('dmode');
 
           const hideTlb = () => {
             toolbarStyle.display = 'none';
@@ -130,6 +129,8 @@ module.exports = () => {
             console.warn('The element is not draggable');
             return;
           }
+
+          const mode = sel.get('dmode') || em.get('dmode');
 
           // Without setTimeout the ghost image disappears
           nativeDrag ? setTimeout(() => hideTlb, 0) : hideTlb();
