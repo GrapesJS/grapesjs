@@ -73,6 +73,7 @@ $animSpeed:         0.2s !default;
 $mainFont:          Helvetica, sans-serif !default;
 $fontPath:          '../fonts' !default;
 $fontName:          'main-fonts' !default;
-$fontSize:           0.7rem !default;
-$fontSizeS:          0.75rem !default;
+$fontSize:           0.7em !default;
+$fontSizeS:          0.75em !default;
+$fontSizeEditor:     16px !default; // base editor font size for all calculations
 $fontV:              20 !default;//random(1000)

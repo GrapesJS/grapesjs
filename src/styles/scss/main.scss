@@ -111,7 +111,7 @@ $colorsAll: (one, $primaryColor),
   text-rendering: auto; // optimizelegibility throws things off #1094
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-size: 5em;
+  font-size: 3.45em;
 }
 .#{$app-prefix}f-b1::before { content: 'Q'; }
 .#{$app-prefix}f-b2::before { content: 'W'; }
@@ -233,7 +233,7 @@ $colorsAll: (one, $primaryColor),
 
   &editor {
     font-family: $mainFont;
-    font-size: $fontSizeS;
+    font-size: $fontSizeEditor;
     position: relative;
     box-sizing: border-box;
     height: 100%;
@@ -368,6 +368,7 @@ $colorsAll: (one, $primaryColor),
   text-align: left;
   position: relative;
   cursor: pointer;
+  font-size: $fontSizeS;
 }
 
 @import "gjs_style_manager";
@@ -523,7 +524,7 @@ $colorsAll: (one, $primaryColor),
 
 @keyframes #{$app-prefix}slide-down {
   0% {
-      transform: translate(0, -3rem);
+      transform: translate(0, -3em);
       opacity: 0;
   }
   100% {
@@ -538,7 +539,7 @@ $colorsAll: (one, $primaryColor),
     opacity: 1;
   }
   100% {
-    transform: translate(0, -3rem);
+    transform: translate(0, -3em);
     opacity: 0;
   }
 }

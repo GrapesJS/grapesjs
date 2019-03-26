@@ -5,12 +5,14 @@
     margin-bottom: 5px;
     padding: 10px;
     text-align: left;
+    font-size: $fontSizeS;
   }
 }
 
 .#{$trt-prefix}header {
   font-weight: lighter;
   padding: 10px;
+  font-size: $fontSizeS;
 }
 
 .#{$trt-prefix}trait {
@@ -28,6 +30,7 @@
     text-align: left;
     text-overflow: ellipsis;
     overflow: hidden;
+    font-size: 1em;
   }
 
   .#{$app-prefix}field {

@@ -12,7 +12,6 @@
     text-align: left;
     position: relative;
     background-color: rgba(0, 0, 0, 0.1);
-    font-size: $fontSizeS;
 
     &-hidden {
       @include opacity(0.55);
@@ -20,6 +19,7 @@
 
     &-count {
       position: absolute;
+      font-size: $fontSizeS;
       right: 27px;
       top: 9px;
     }
@@ -36,7 +36,7 @@
     }
 
     &-caret {
-      font-size: 0.5rem;
+      font-size: 0.67em;
       width: 8px;
       padding: 2px;
       cursor: pointer;

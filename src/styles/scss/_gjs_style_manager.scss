@@ -8,6 +8,7 @@
   &header {
     font-weight: lighter;
     padding: 10px;
+    font-size: $fontSizeS;
   }
 
   &properties {
@@ -18,6 +19,9 @@
     align-items: flex-end;
     box-sizing: border-box;
     width: 100%;
+    .#{$sm-prefix}properties {
+      font-size: 1em;
+    }
   }
 
   &label {
