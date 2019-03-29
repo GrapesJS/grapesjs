@@ -1,0 +1,13 @@
+
+
+.icon-visible-open {
+  display: none;
+}
+
+.open .icon-visible-open {
+  display: inherit;
+}
+
+.open .icon-visible-not-open {
+  display: none;
+}

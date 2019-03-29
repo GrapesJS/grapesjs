@@ -7,6 +7,7 @@
 
 @import "gjs_variables.scss";
 
+@import "gjs_icon.scss";
 
 @font-face {
   font-family: 'font3336';
@@ -546,3 +547,4 @@ $colorsAll: (one, $primaryColor),
 .cm-s-hopscotch span.cm-error {
     color: #ffffff;
 }
+

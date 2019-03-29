@@ -1,6 +1,7 @@
 import { isUndefined, isString } from 'underscore';
 import { getModel } from 'utils/mixins';
 import Backbone from 'backbone';
+import icon from 'utils/icon';
 const ComponentView = require('dom_components/view/ComponentView');
 const inputProp = 'contentEditable';
 const $ = Backbone.$;
@@ -26,7 +27,7 @@ export default Backbone.View.extend({
     const addClass = !count ? this.clsNoChild : '';
     const clsTitle = `${this.clsTitle} ${addClass}`;
     const clsTitleC = `${this.clsTitleC} ${ppfx}one-bg`;
-    const clsCaret = `${this.clsCaret} fa fa-chevron-right`;
+    const clsCaret = this.clsCaret;
     const clsInput = `${this.inputNameCls} ${ppfx}no-app`;
     const level = this.level + 1;
     const gut = `${30 + level * 10}px`;
@@ -36,14 +37,16 @@ export default Backbone.View.extend({
       ${
         hidable
           ? `<i class="${pfx}layer-vis fa fa-eye ${
-              this.isVisible() ? '' : 'fa-eye-slash'
+              this.isVisible() ? '' : icon.eyeSlash()
             }" data-toggle-visible></i>`
           : ''
       }
       <div class="${clsTitleC}">
         <div class="${clsTitle}" style="padding-left: ${gut}" data-toggle-select>
           <div class="${pfx}layer-title-inn">
-            <i class="${clsCaret}" data-toggle-open></i>
+            <div data-toggle-open class="${clsCaret}">
+                ${icon.smartChevron()}
+            </div>
             ${model.getIcon()}
             <span class="${clsInput}" data-name>${name}</span>
           </div>
@@ -51,7 +54,7 @@ export default Backbone.View.extend({
       </div>
       <div class="${this.clsCount}">${count || ''}</div>
       <div class="${this.clsMove}" data-toggle-move>
-        <i class="fa fa-arrows"></i>
+         ${icon.arrows}
       </div>
       <div class="${this.clsChildren}"></div>`;
   },
@@ -96,12 +99,14 @@ export default Backbone.View.extend({
   },
 
   updateVisibility() {
+    console.log('updateVisibility');
     const pfx = this.pfx;
     const model = this.model;
     const hClass = `${pfx}layer-hidden`;
     const hideIcon = 'fa-eye-slash';
     const hidden = model.getStyle().display == 'none';
     const method = hidden ? 'addClass' : 'removeClass';
+    console.log(method, hideIcon);
     this.$el[method](hClass);
     this.getVisibilityEl()[method](hideIcon);
   },
@@ -171,15 +176,11 @@ export default Backbone.View.extend({
   updateOpening() {
     var opened = this.opt.opened || {};
     var model = this.model;
-    const chvDown = 'fa-chevron-down';
-
     if (model.get('open')) {
       this.$el.addClass('open');
-      this.getCaret().addClass(chvDown);
       opened[model.cid] = model;
     } else {
       this.$el.removeClass('open');
-      this.getCaret().removeClass(chvDown);
       delete opened[model.cid];
     }
   },
