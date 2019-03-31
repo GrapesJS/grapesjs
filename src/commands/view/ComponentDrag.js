@@ -306,7 +306,13 @@ module.exports = {
 
     if (style.position !== position) {
       const { left, top, width, height } = editor.Canvas.offset(target.getEl());
-      this.setPosition({ x: left, y: top, position, width, height });
+      this.setPosition({
+        x: left,
+        y: top,
+        width: `${width}px`,
+        height: `${height}px`,
+        position
+      });
     }
   },
 
