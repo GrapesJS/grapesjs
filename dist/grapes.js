@@ -26752,7 +26752,6 @@ module.exports = function () {
           var nativeDrag = event && event.type == 'dragstart';
           var defComOptions = { preserveSelected: 1 };
           var modes = ['absolute', 'translate'];
-          var mode = sel.get('dmode') || em.get('dmode');
 
           var hideTlb = function hideTlb() {
             toolbarStyle.display = 'none';
@@ -26763,6 +26762,8 @@ module.exports = function () {
             console.warn('The element is not draggable');
             return;
           }
+
+          var mode = sel.get('dmode') || em.get('dmode');
 
           // Without setTimeout the ghost image disappears
           nativeDrag ? setTimeout(function () {
@@ -39261,7 +39262,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.14.57',
+    version: '0.14.58',
 
     /**
      * Initialize the editor with passed options
