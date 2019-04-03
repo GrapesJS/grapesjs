@@ -596,16 +596,15 @@ module.exports = {
    * On frame scroll callback
    * @private
    */
-  onFrameScroll(e) {
-    var el = this.cacheEl;
-    if (el) {
-      var elPos = this.getElementPos(el);
-      this.updateBadge(el, elPos);
-      var model = this.em.getSelected();
+  onFrameScroll() {
+    const el = this.cacheEl;
 
-      if (model) {
-        this.updateToolbarPos(model.view.el);
-      }
+    if (el) {
+      const elPos = this.getElementPos(el);
+      this.updateBadge(el, elPos);
+      const model = this.em.getSelected();
+      const viewEl = model && model.getEl();
+      viewEl && this.updateToolbarPos(viewEl);
     }
   },
 
