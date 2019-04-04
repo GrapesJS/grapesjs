@@ -30,8 +30,6 @@ import { isFunction, includes } from 'underscore';
 import CommandAbstract from './view/CommandAbstract';
 import defaults from './config/config';
 
-console.log('defaults', defaults);
-
 module.exports = () => {
   let em;
   var c = {},
