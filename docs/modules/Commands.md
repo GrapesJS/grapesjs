@@ -106,15 +106,12 @@ GrapesJS comes along with some default set of commands and you can get a list of
 * `core:redo` - Call redo operation
 
 export-template
-move-comp
-my-command-id
 open-assets
-open-blocks:
-open-layers:
+open-blocks
+open-layers
 open-sm
 open-tm
 select-comp
-select-parent
 show-offset
 sw-visibility
 tlb-clone

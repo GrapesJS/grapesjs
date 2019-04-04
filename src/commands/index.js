@@ -88,7 +88,6 @@ module.exports = () => {
       defaultCommands['open-blocks'] = require('./view/OpenBlocks');
       defaultCommands['open-assets'] = require('./view/OpenAssets');
       defaultCommands['show-offset'] = require('./view/ShowOffset');
-      defaultCommands['select-parent'] = require('./view/SelectParent');
 
       defaultCommands['tlb-delete'] = {
         run(ed) {
