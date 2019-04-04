@@ -194,7 +194,7 @@ module.exports = _.extend({}, SelectPosition, {
    * */
   rollback(e, force) {
     var key = e.which || e.keyCode;
-    if (key == this.config.ESCAPE_KEY || force) {
+    if (key == 27 || force) {
       this.isDragged = false;
       this.endDraw();
     }

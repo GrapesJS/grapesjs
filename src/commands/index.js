@@ -28,13 +28,15 @@
 
 import { isFunction, includes } from 'underscore';
 import CommandAbstract from './view/CommandAbstract';
+import defaults from './config/config';
+
+console.log('defaults', defaults);
 
 module.exports = () => {
   let em;
   var c = {},
     commands = {},
-    defaultCommands = {},
-    defaults = require('./config/config');
+    defaultCommands = {};
   const active = {};
 
   // Need it here as it would be used below
