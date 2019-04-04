@@ -100,9 +100,30 @@ GrapesJS comes along with some default set of commands and you can get a list of
 * [`core:component-prev`](https://github.com/artf/grapesjs/blob/dev/src/commands/view/ComponentPrev.js) - Select the previous sibling component
 * [`core:copy`](https://github.com/artf/grapesjs/blob/dev/src/commands/view/CopyComponent.js) - Copy the current selected component
 * [`core:paste`](https://github.com/artf/grapesjs/blob/dev/src/commands/view/PasteComponent.js) - Paste copied component
-* `core:undo` - Call undo function
-* `core:redo` - Call redo function
+* [`core:preview`](https://github.com/artf/grapesjs/blob/dev/src/commands/view/Preview.js) - Show the preview of the template in canvas
+* [`core:fullscreen`](https://github.com/artf/grapesjs/blob/dev/src/commands/view/Fullscreen.js) - Set the editor fullscreen
+* `core:undo` - Call undo operation
+* `core:redo` - Call redo operation
 
-
+export-template
+move-comp
+my-command-id
+open-assets
+open-blocks:
+open-layers:
+open-sm
+open-tm
+select-comp
+select-parent
+show-offset
+sw-visibility
+tlb-clone
+tlb-delete
+tlb-move
 
 ## Statefull commands
+
+
+
+
+## Events

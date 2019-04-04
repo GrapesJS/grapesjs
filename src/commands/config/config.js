@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   stylePrefix: 'com-',
 
   // Default array of commands
