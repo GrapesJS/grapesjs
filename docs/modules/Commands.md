@@ -98,25 +98,29 @@ GrapesJS comes along with some default set of commands and you can get a list of
 * [`core:component-exit`](https://github.com/artf/grapesjs/blob/dev/src/commands/view/ComponentExit.js) - Select the parent component of the current selected one
 * [`core:component-next`](https://github.com/artf/grapesjs/blob/dev/src/commands/view/ComponentNext.js) - Select the next sibling component
 * [`core:component-prev`](https://github.com/artf/grapesjs/blob/dev/src/commands/view/ComponentPrev.js) - Select the previous sibling component
+* [`core:component-outline`](https://github.com/artf/grapesjs/blob/dev/src/commands/view/SwitchVisibility.js) - Enable outline border on components
+* [`core:component-offset`](https://github.com/artf/grapesjs/blob/dev/src/commands/view/ShowOffset.js) - Enable components offset (margins, paddings)
+* [`core:component-select`](https://github.com/artf/grapesjs/blob/dev/src/commands/view/SelectComponent.js) - Enable the process of selecting components in the canvas
 * [`core:copy`](https://github.com/artf/grapesjs/blob/dev/src/commands/view/CopyComponent.js) - Copy the current selected component
 * [`core:paste`](https://github.com/artf/grapesjs/blob/dev/src/commands/view/PasteComponent.js) - Paste copied component
 * [`core:preview`](https://github.com/artf/grapesjs/blob/dev/src/commands/view/Preview.js) - Show the preview of the template in canvas
 * [`core:fullscreen`](https://github.com/artf/grapesjs/blob/dev/src/commands/view/Fullscreen.js) - Set the editor fullscreen
+* [`core:open-code`](https://github.com/artf/grapesjs/blob/dev/src/commands/view/ExportTemplate.js) - Open a default panel with the template code
+* [`core:open-layers`](https://github.com/artf/grapesjs/blob/dev/src/commands/view/OpenLayers.js) - Open a default panel with layers
+* [`core:open-styles`](https://github.com/artf/grapesjs/blob/dev/src/commands/view/OpenStyleManager.js) - Open a default panel with the style manager
+* [`core:open-traits`](https://github.com/artf/grapesjs/blob/dev/src/commands/view/OpenTraitManager.js) - Open a default panel with the trait manager
+* [`core:open-blocks`](https://github.com/artf/grapesjs/blob/dev/src/commands/view/OpenBlocks.js) - Open a default panel with the blocks
+* [`core:open-assets`](https://github.com/artf/grapesjs/blob/dev/src/commands/view/OpenAssets.js) - Open a default panel with the assets
 * `core:undo` - Call undo operation
 * `core:redo` - Call redo operation
 
-export-template
-open-assets
-open-blocks
-open-layers
-open-sm
-open-tm
-select-comp
-show-offset
-sw-visibility
 tlb-clone
 tlb-delete
 tlb-move
+
+
+
+
 
 ## Statefull commands
 

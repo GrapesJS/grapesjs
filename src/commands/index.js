@@ -77,18 +77,6 @@ module.exports = () => {
         if (obj.id) this.add(obj.id, obj);
       }
 
-      const ViewCode = require('./view/ExportTemplate');
-      defaultCommands['select-comp'] = require('./view/SelectComponent');
-      defaultCommands['move-comp'] = require('./view/MoveComponent');
-      defaultCommands['export-template'] = ViewCode;
-      defaultCommands['sw-visibility'] = require('./view/SwitchVisibility');
-      defaultCommands['open-layers'] = require('./view/OpenLayers');
-      defaultCommands['open-sm'] = require('./view/OpenStyleManager');
-      defaultCommands['open-tm'] = require('./view/OpenTraitManager');
-      defaultCommands['open-blocks'] = require('./view/OpenBlocks');
-      defaultCommands['open-assets'] = require('./view/OpenAssets');
-      defaultCommands['show-offset'] = require('./view/ShowOffset');
-
       defaultCommands['tlb-delete'] = {
         run(ed) {
           return ed.runCommand('core:component-delete');
@@ -171,6 +159,16 @@ module.exports = () => {
         ['paste', 'PasteComponent'],
         ['canvas-move', 'CanvasMove'],
         ['canvas-clear', 'CanvasClear'],
+        ['open-code', 'ExportTemplate', 'export-template'],
+        ['open-layers', 'OpenLayers', 'open-layers'],
+        ['open-styles', 'OpenStyleManager', 'open-sm'],
+        ['open-traits', 'OpenTraitManager', 'open-tm'],
+        ['open-blocks', 'OpenBlocks', 'open-blocks'],
+        ['open-assets', 'OpenAssets', 'open-assets'],
+        ['component-select', 'SelectComponent', 'select-comp'],
+        ['component-outline', 'SwitchVisibility', 'sw-visibility'],
+        ['component-offset', 'ShowOffset', 'show-offset'],
+        ['component-move', 'MoveComponent', 'move-comp'],
         ['component-next', 'ComponentNext'],
         ['component-prev', 'ComponentPrev'],
         ['component-enter', 'ComponentEnter'],
