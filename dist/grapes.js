@@ -25079,6 +25079,7 @@ module.exports = function () {
 
       var elem = (0, _mixins.getElement)(el);
       var cv = this.getCanvasView();
+      if (!elem) return;
 
       if (!cv.isElInViewport(elem) || opts.force) {
         elem.scrollIntoView(opts);
@@ -27828,7 +27829,13 @@ module.exports = {
           width = _editor$Canvas$offset.width,
           height = _editor$Canvas$offset.height;
 
-      this.setPosition({ x: left, y: top, position: position, width: width, height: height });
+      this.setPosition({
+        x: left,
+        y: top,
+        width: width + 'px',
+        height: height + 'px',
+        position: position
+      });
     }
   },
   onDrag: function onDrag() {
@@ -29962,16 +29969,15 @@ module.exports = {
    * On frame scroll callback
    * @private
    */
-  onFrameScroll: function onFrameScroll(e) {
+  onFrameScroll: function onFrameScroll() {
     var el = this.cacheEl;
+
     if (el) {
       var elPos = this.getElementPos(el);
       this.updateBadge(el, elPos);
       var model = this.em.getSelected();
-
-      if (model) {
-        this.updateToolbarPos(model.view.el);
-      }
+      var viewEl = model && model.getEl();
+      viewEl && this.updateToolbarPos(viewEl);
     }
   },
 
@@ -39262,7 +39268,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.14.58',
+    version: '0.14.59',
 
     /**
      * Initialize the editor with passed options

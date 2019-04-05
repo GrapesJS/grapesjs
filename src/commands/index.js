@@ -28,13 +28,13 @@
 
 import { isFunction, includes } from 'underscore';
 import CommandAbstract from './view/CommandAbstract';
+import defaults from './config/config';
 
 module.exports = () => {
   let em;
-  var c = {},
-    commands = {},
-    defaultCommands = {},
-    defaults = require('./config/config');
+  let c = {};
+  const commands = {};
+  const defaultCommands = {};
   const active = {};
 
   // Need it here as it would be used below
@@ -62,38 +62,20 @@ module.exports = () => {
      * @param {Object} config Configurations
      * @private
      */
-    init(config) {
-      c = config || {};
-      for (var name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
-      }
+    init(config = {}) {
+      c = {
+        ...defaults,
+        ...config
+      };
       em = c.em;
-      var ppfx = c.pStylePrefix;
+      const ppfx = c.pStylePrefix;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
 
       // Load commands passed via configuration
-      for (var k in c.defaults) {
-        var obj = c.defaults[k];
+      for (let k in c.defaults) {
+        const obj = c.defaults[k];
         if (obj.id) this.add(obj.id, obj);
       }
-
-      const ViewCode = require('./view/ExportTemplate');
-      defaultCommands['select-comp'] = require('./view/SelectComponent');
-      defaultCommands['create-comp'] = require('./view/CreateComponent');
-      defaultCommands['delete-comp'] = require('./view/DeleteComponent');
-      defaultCommands['move-comp'] = require('./view/MoveComponent');
-      defaultCommands['export-template'] = ViewCode;
-      defaultCommands['sw-visibility'] = require('./view/SwitchVisibility');
-      defaultCommands['open-layers'] = require('./view/OpenLayers');
-      defaultCommands['open-sm'] = require('./view/OpenStyleManager');
-      defaultCommands['open-tm'] = require('./view/OpenTraitManager');
-      defaultCommands['open-blocks'] = require('./view/OpenBlocks');
-      defaultCommands['open-assets'] = require('./view/OpenAssets');
-      defaultCommands['show-offset'] = require('./view/ShowOffset');
-      defaultCommands['select-parent'] = require('./view/SelectParent');
-      defaultCommands.fullscreen = require('./view/Fullscreen');
-      defaultCommands.preview = require('./view/Preview');
-      defaultCommands.resize = require('./view/Resize');
 
       defaultCommands['tlb-delete'] = {
         run(ed) {
@@ -170,10 +152,23 @@ module.exports = () => {
       defaultCommands['core:undo'] = e => e.UndoManager.undo();
       defaultCommands['core:redo'] = e => e.UndoManager.redo();
       [
+        ['preview', 'Preview', 'preview'],
+        ['resize', 'Resize', 'resize'],
+        ['fullscreen', 'Fullscreen', 'fullscreen'],
         ['copy', 'CopyComponent'],
         ['paste', 'PasteComponent'],
         ['canvas-move', 'CanvasMove'],
         ['canvas-clear', 'CanvasClear'],
+        ['open-code', 'ExportTemplate', 'export-template'],
+        ['open-layers', 'OpenLayers', 'open-layers'],
+        ['open-styles', 'OpenStyleManager', 'open-sm'],
+        ['open-traits', 'OpenTraitManager', 'open-tm'],
+        ['open-blocks', 'OpenBlocks', 'open-blocks'],
+        ['open-assets', 'OpenAssets', 'open-assets'],
+        ['component-select', 'SelectComponent', 'select-comp'],
+        ['component-outline', 'SwitchVisibility', 'sw-visibility'],
+        ['component-offset', 'ShowOffset', 'show-offset'],
+        ['component-move', 'MoveComponent', 'move-comp'],
         ['component-next', 'ComponentNext'],
         ['component-prev', 'ComponentPrev'],
         ['component-enter', 'ComponentEnter'],
@@ -181,10 +176,13 @@ module.exports = () => {
         ['component-delete', 'ComponentDelete'],
         ['component-style-clear', 'ComponentStyleClear'],
         ['component-drag', 'ComponentDrag']
-      ].forEach(
-        item =>
-          (defaultCommands[`core:${item[0]}`] = require(`./view/${item[1]}`))
-      );
+      ].forEach(item => {
+        const oldCmd = item[2];
+        const cmd = require(`./view/${item[1]}`);
+        const cmdName = `core:${item[0]}`;
+        defaultCommands[cmdName] = cmd;
+        if (oldCmd) defaultCommands[oldCmd] = cmd;
+      });
 
       if (c.em) c.model = c.em.get('Canvas');
 
