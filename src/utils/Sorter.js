@@ -584,9 +584,7 @@ module.exports = Backbone.View.extend({
     result.dropInfo = droppable;
     droppable = isString(droppable) ? this.matches(src, droppable) : droppable;
     droppable =
-      trgModel.is('text') && draggable && srcModel.get('textable')
-        ? 1
-        : droppable;
+      draggable && this.isTextableActive(srcModel, trgModel) ? 1 : droppable;
     result.droppable = droppable;
 
     if (!droppable || !draggable) {
