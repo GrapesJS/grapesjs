@@ -589,17 +589,6 @@ module.exports = Backbone.View.extend({
         : droppable;
     result.droppable = droppable;
 
-    console.log(
-      `trgModel.is('text')`,
-      trgModel.is('text'),
-      `srcModel.get('textable')`,
-      srcModel.get('textable'),
-      'droppable',
-      droppable,
-      'draggable',
-      draggable
-    );
-
     if (!droppable || !draggable) {
       result.valid = false;
     }
@@ -987,7 +976,6 @@ module.exports = Backbone.View.extend({
    * @return void
    * */
   endMove(e) {
-    var created;
     const moved = [null];
     const docs = this.getDocuments();
     const container = this.getContainerEl();
@@ -996,10 +984,7 @@ module.exports = Backbone.View.extend({
     off(container, 'mousemove dragover', this.onMove);
     off(docs, 'mouseup dragend touchend', this.endMove);
     off(docs, 'keydown', this.rollback);
-    //this.$document.off('mouseup', this.endMove);
-    //this.$document.off('keydown', this.rollback);
     this.plh.style.display = 'none';
-    var clsReg = new RegExp('(?:^|\\s)' + this.freezeClass + '(?!\\S)', 'gi');
     let src = this.eV;
 
     if (src && this.selectOnEnd) {
@@ -1059,17 +1044,6 @@ module.exports = Backbone.View.extend({
     droppable = trgModel instanceof Backbone.Collection ? 1 : droppable;
     const modelIsTextable = model.get('textable');
     const targetIsTextView = trgModel && trgModel.is('text');
-
-    console.log(
-      'droppable',
-      droppable,
-      'draggable',
-      draggable,
-      'modelIsTextable',
-      modelIsTextable,
-      'targetIsTextView',
-      targetIsTextView
-    );
 
     if (targetCollection && droppable && draggable) {
       index = pos.method === 'after' ? index + 1 : index;
