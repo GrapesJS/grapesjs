@@ -342,30 +342,40 @@ module.exports = Backbone.View.extend({
    * Get the model of the current source element (element to drag)
    * @return {Model}
    */
-  getSourceModel(source) {
-    var src = source || this.eV;
-    let dropContent = this.dropContent;
-    let dropModel = this.dropModel;
-    const em = this.em;
+  getSourceModel(source, { target, avoidChildren = 1 } = {}) {
+    const { em, eV } = this;
+    const src = source || eV;
+    let { dropModel, dropContent } = this;
+    const isTextable = src =>
+      src &&
+      target &&
+      src.opt.avoidChildren &&
+      this.isTextableActive(src, target);
 
     if (dropContent && em) {
+      if (isTextable(dropModel)) {
+        dropModel = null;
+      }
+
       if (!dropModel) {
-        let comps = em.get('DomComponents').getComponents();
+        const comps = em.get('DomComponents').getComponents();
         const opts = {
+          avoidChildren,
           avoidStore: 1,
-          avoidChildren: 1,
           avoidUpdateStyle: 1
         };
-        let tempModel = comps.add(dropContent, { ...opts, temporary: 1 });
+        const tempModel = comps.add(dropContent, { ...opts, temporary: 1 });
         dropModel = comps.remove(tempModel, opts);
         this.dropModel = dropModel instanceof Array ? dropModel[0] : dropModel;
+
+        if (isTextable(dropModel)) {
+          return this.getSourceModel(src, { target, avoidChildren: 0 });
+        }
       }
       return dropModel;
     }
 
-    if (src) {
-      return $(src).data('model');
-    }
+    return src && $(src).data('model');
   },
 
   /**
@@ -553,9 +563,9 @@ module.exports = Backbone.View.extend({
    * @return {Boolean}
    */
   validTarget(trg, src) {
-    let srcModel = this.getSourceModel(src);
+    const trgModel = this.getTargetModel(trg);
+    const srcModel = this.getSourceModel(src, { target: trgModel });
     src = srcModel && srcModel.view && srcModel.view.el;
-    let trgModel = this.getTargetModel(trg);
     trg = trgModel && trgModel.view && trgModel.view.el;
     let result = {
       valid: true,
@@ -1040,8 +1050,7 @@ module.exports = Backbone.View.extend({
     var dropContent = this.dropContent;
     const { trgModel } = validResult;
     droppable = trgModel instanceof Backbone.Collection ? 1 : droppable;
-    const modelIsTextable = model.get('textable');
-    const targetIsTextView = trgModel && trgModel.is('text');
+    const isTextableActive = this.isTextableActive(model, trgModel);
 
     if (targetCollection && droppable && draggable) {
       index = pos.method === 'after' ? index + 1 : index;
@@ -1061,10 +1070,18 @@ module.exports = Backbone.View.extend({
         opts.avoidUpdateStyle = 1;
       }
 
-      if (targetIsTextView && modelIsTextable) {
+      if (isTextableActive) {
         const viewActive = activeTextModel.getView();
         activeTextModel.trigger('active');
         const { activeRte } = viewActive;
+        console.log(
+          'model.toHTML()',
+          model.toHTML(),
+          'el',
+          model.getEl().outerHTML,
+          'model',
+          model
+        );
         activeRte.insertHTML && activeRte.insertHTML(model.toHTML());
       } else {
         created = targetCollection.add(modelToDrop, opts);
@@ -1076,7 +1093,7 @@ module.exports = Backbone.View.extend({
         this.dropContent = null;
       }
 
-      if (targetIsTextView && modelIsTextable) {
+      if (isTextableActive) {
         this.disableEditingOn(activeTextModel); // TODO disableEditingOn is used only here
       }
 
