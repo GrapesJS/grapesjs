@@ -88,19 +88,19 @@ module.exports = ComponentView.extend({
       model.set('content', content, contentOpt);
     } else {
       const clean = model => {
-        const selectable = !['text', 'default', ''].some(type =>
-          model.is(type)
-        );
+        const textable = !!model.get('textable');
+        const selectable =
+          !['text', 'default', ''].some(type => model.is(type)) || textable;
         model.set(
           {
             editable: selectable && model.get('editable'),
             selectable: selectable,
             hoverable: selectable,
+            removable: textable,
+            draggable: textable,
             highlightable: 0,
-            removable: 0,
-            draggable: 0,
-            copyable: 0,
-            toolbar: ''
+            copyable: textable,
+            ...(!textable && { toolbar: '' })
           },
           opts
         );
