@@ -119,10 +119,6 @@ module.exports = Backbone.View.extend({
     sel.addRange(range);
   },
 
-  disableEditingOn(model) {
-    model && model.getView().disableEditing();
-  },
-
   setContentEditable(model, mode) {
     if (model) {
       const el = model.getEl();
@@ -404,11 +400,10 @@ module.exports = Backbone.View.extend({
    * */
   onMove(e) {
     const ev = e;
-    const { em, onMoveClb, activeTextModel } = this;
+    const { em, onMoveClb, plh } = this;
     this.moved = 1;
 
     // Turn placeholder visibile
-    var plh = this.plh;
     var dsp = plh.style.display;
     if (!dsp || dsp === 'none') plh.style.display = 'block';
 
@@ -489,7 +484,7 @@ module.exports = Backbone.View.extend({
 
   disableTextable() {
     const { activeTextModel } = this;
-    activeTextModel && this.setContentEditable(activeTextModel, false);
+    activeTextModel && activeTextModel.getView().disableEditing();
   },
 
   /**
@@ -1074,15 +1069,19 @@ module.exports = Backbone.View.extend({
         const viewActive = activeTextModel.getView();
         activeTextModel.trigger('active');
         const { activeRte } = viewActive;
+        const modelEl = model.getEl();
+        model.getView().render();
+        modelEl.setAttribute('data-gjs-textable', 'true');
+        const { outerHTML } = modelEl;
         console.log(
           'model.toHTML()',
           model.toHTML(),
-          'el',
-          model.getEl().outerHTML,
           'model',
-          model
+          model,
+          'outerHTML',
+          outerHTML
         );
-        activeRte.insertHTML && activeRte.insertHTML(model.toHTML());
+        activeRte.insertHTML && activeRte.insertHTML(outerHTML);
       } else {
         created = targetCollection.add(modelToDrop, opts);
       }
@@ -1091,10 +1090,6 @@ module.exports = Backbone.View.extend({
         targetCollection.remove(modelTemp);
       } else {
         this.dropContent = null;
-      }
-
-      if (isTextableActive) {
-        this.disableEditingOn(activeTextModel); // TODO disableEditingOn is used only here
       }
 
       // This will cause to recalculate children dimensions
