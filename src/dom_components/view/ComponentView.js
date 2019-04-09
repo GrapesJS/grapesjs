@@ -236,11 +236,14 @@ module.exports = Backbone.View.extend({
   updateAttributes() {
     const attrs = [];
     const { model, $el, el } = this;
-    const defaultAttr = { 'data-gjs-type': model.get('type') || 'default' };
-
-    if (model.get('highlightable')) {
-      defaultAttr['data-highlightable'] = 1;
-    }
+    const defaultAttr = {
+      'data-gjs-type': model.get('type') || 'default',
+      ...(model.get('highlightable') && { 'data-highlightable': 1 }),
+      ...(model.get('textable') && {
+        contenteditable: 'false',
+        'data-gjs-textable': 'true'
+      })
+    };
 
     // Remove all current attributes
     each(el.attributes, attr => attrs.push(attr.nodeName));
