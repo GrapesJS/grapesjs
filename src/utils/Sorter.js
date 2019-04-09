@@ -98,14 +98,13 @@ module.exports = Backbone.View.extend({
   },
 
   updateTextViewCursorPosition(e) {
-    const { em } = this;
-    const Canvas = em.get('Canvas');
+    const Canvas = this.em.get('Canvas');
     const targetDoc = Canvas.getDocument();
-    const poiner = getPointerEvent(e);
     let range = null;
 
     if (targetDoc.caretRangeFromPoint) {
       // Chrome
+      const poiner = getPointerEvent(e);
       range = targetDoc.caretRangeFromPoint(poiner.clientX, poiner.clientY);
     } else if (e.rangeParent) {
       // Firefox
@@ -116,7 +115,7 @@ module.exports = Backbone.View.extend({
     const sel = Canvas.getWindow().getSelection();
     Canvas.getFrameEl().focus();
     sel.removeAllRanges();
-    sel.addRange(range);
+    range && sel.addRange(range);
   },
 
   setContentEditable(model, mode) {
@@ -1073,14 +1072,6 @@ module.exports = Backbone.View.extend({
         model.getView().render();
         modelEl.setAttribute('data-gjs-textable', 'true');
         const { outerHTML } = modelEl;
-        console.log(
-          'model.toHTML()',
-          model.toHTML(),
-          'model',
-          model,
-          'outerHTML',
-          outerHTML
-        );
         activeRte.insertHTML && activeRte.insertHTML(outerHTML);
       } else {
         created = targetCollection.add(modelToDrop, opts);
