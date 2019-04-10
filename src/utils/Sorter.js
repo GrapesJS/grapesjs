@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-import { isString, isFunction, isArray, result, indexOf } from 'underscore';
+import { isString, isFunction, isArray, result, each } from 'underscore';
 import {
   on,
   off,
@@ -811,28 +811,25 @@ module.exports = Backbone.View.extend({
    * @retun {Array}
    * */
   getChildrenDim(trg) {
-    var dims = [];
+    const dims = [];
     if (!trg) return dims;
 
     // Get children based on getChildrenContainer
-    var trgModel = this.getTargetModel(trg);
+    const trgModel = this.getTargetModel(trg);
     if (trgModel && trgModel.view && !this.ignoreViewChildren) {
       trg = trgModel.view.getChildrenContainer();
     }
 
-    var ch = trg.children;
-
-    for (var i = 0, len = ch.length; i < len; i++) {
-      var el = ch[i];
+    each(trg.children, (el, i) => {
       const model = getModel(el, $);
-      const elIndex = model ? model.index() : i;
+      const elIndex = model && model.index ? model.index() : i;
 
       if (!isTextNode(el) && !this.matches(el, this.itemSel)) {
-        continue;
+        return;
       }
 
-      var dim = this.getDim(el);
-      var dir = this.direction;
+      const dim = this.getDim(el);
+      let dir = this.direction;
 
       if (dir == 'v') dir = true;
       else if (dir == 'h') dir = false;
@@ -840,7 +837,7 @@ module.exports = Backbone.View.extend({
 
       dim.push(dir, el, elIndex);
       dims.push(dim);
-    }
+    });
 
     return dims;
   },
