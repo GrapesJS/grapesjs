@@ -331,10 +331,10 @@ module.exports = () => {
         const editor = em.get('Editor');
 
         if (!this.isActive(id) || options.force || !c.strict) {
+          result = command.callRun(editor, options);
           if (id && command.stop && !command.noStop) {
             active[id] = result;
           }
-          result = command.callRun(editor, options);
         }
       }
 

@@ -87,12 +87,9 @@ Until now there is nothing exiting except a common entry point for functions, bu
 
 ## Default commands
 
-GrapesJS comes along with some default set of commands and you can get a list of all currently availlable commands via `editor.Commands.getAll()`. This will give you an object of all available commands, so, for example, also those added via plugins. You can recognize default commands by their namespace `core:*`, we also recommend to use namepsaces in your own custom commands, but let's get a look more in detail here:
+GrapesJS comes along with some default set of commands and you can get a list of all currently availlable commands via `editor.Commands.getAll()`. This will give you an object of all available commands, so, also those added later, like via plugins. You can recognize default commands by their namespace `core:*`, we also recommend to use namepsaces in your own custom commands, but let's get a look more in detail here:
 
 * [`core:canvas-clear`](https://github.com/artf/grapesjs/blob/dev/src/commands/view/CanvasClear.js) - Clear all the content from the canvas (HTML and CSS)
-<!-- * `core:canvas-move` -->
-<!-- * `core:component-drag` -->
-<!-- * `core:component-style-clear` -->
 * [`core:component-delete`](https://github.com/artf/grapesjs/blob/dev/src/commands/view/ComponentDelete.js) - Delete a component
 * [`core:component-enter`](https://github.com/artf/grapesjs/blob/dev/src/commands/view/ComponentEnter.js) - Select the first children component of the selected one
 * [`core:component-exit`](https://github.com/artf/grapesjs/blob/dev/src/commands/view/ComponentExit.js) - Select the parent component of the current selected one
@@ -113,18 +110,53 @@ GrapesJS comes along with some default set of commands and you can get a list of
 * [`core:open-assets`](https://github.com/artf/grapesjs/blob/dev/src/commands/view/OpenAssets.js) - Open a default panel with the assets
 * `core:undo` - Call undo operation
 * `core:redo` - Call redo operation
-
-tlb-clone
-tlb-delete
-tlb-move
-
-
+<!-- * `core:canvas-move` -->
+<!-- * `core:component-drag` -->
+<!-- * `core:component-style-clear` -->
+<!-- tlb-clone tlb-delete tlb-move -->
 
 
 
-## Statefull commands
 
 
+## Stateful commands
+
+As we've already seen the command is just a function and once executed nothing is left behined, but in some cases we'd like to keep a track of executed commands. GrapesJS can handle by default this case and to enable it you just need to declare a command as an object with `run` and `stop` methods
+
+```js
+commands.add('my-command-state', {
+  run(editor) {
+    alert('This command is now active');
+  },
+  stop(editor) {
+    alert('This command is disabled');
+  },
+});
+```
+
+So if we now run `editor.runCommand('my-command-state')` the command will be registered as active. To check the state of the command you can use `commands.isActive('my-command-state')` or you can even get the list of all active commands via `commands.getActive()`, it our case the result would be something like this
+
+```js
+{
+  ...
+  'my-command-state': undefined
+}
+```
+
+The key of the result object tells you the active command, the value is the last return of the `run` command, in our case is `undefined` because we don't return anything, but it's up to your implementation decide what to return and if you actually need it.
+
+```js
+// Let's return something
+...
+run(editor) {
+    alert('This command is now active');
+    return {
+      activated: new Date(),
+    }
+},
+...
+// Now instead of the `undefined` you'll see object from the run method
+```
 
 
 ## Events
