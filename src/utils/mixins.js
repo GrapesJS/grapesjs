@@ -111,6 +111,13 @@ const getElement = el => {
 };
 
 /**
+ * Check if element is a text node
+ * @param  {HTMLElement} el
+ * @return {Boolean}
+ */
+const isTextNode = el => el && el.nodeType === 3;
+
+/**
  * Ensure to fetch the model from the input argument
  * @param  {HTMLElement|Component} el Component or HTML element
  * @return {Component}
@@ -147,6 +154,7 @@ export {
   matches,
   getModel,
   camelCase,
+  isTextNode,
   getKeyCode,
   getKeyChar,
   getElement,

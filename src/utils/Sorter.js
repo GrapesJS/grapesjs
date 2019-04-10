@@ -1,6 +1,13 @@
 import Backbone from 'backbone';
-import { isString, isFunction, isArray, result } from 'underscore';
-import { on, off, matches, getElement, getPointerEvent } from 'utils/mixins';
+import { isString, isFunction, isArray, result, indexOf } from 'underscore';
+import {
+  on,
+  off,
+  matches,
+  getElement,
+  getPointerEvent,
+  isTextNode
+} from 'utils/mixins';
 const $ = Backbone.$;
 
 module.exports = Backbone.View.extend({
@@ -514,7 +521,8 @@ module.exports = Backbone.View.extend({
    * @private
    */
   styleInFlow(el, parent) {
-    const style = el.style;
+    if (isTextNode(el)) return;
+    const style = el.style || {};
     const $el = $(el);
     const $parent = parent && $(parent);
 
@@ -816,7 +824,7 @@ module.exports = Backbone.View.extend({
     for (var i = 0, len = ch.length; i < len; i++) {
       var el = ch[i];
 
-      if (!this.matches(el, this.itemSel)) {
+      if (!isTextNode(el) && !this.matches(el, this.itemSel)) {
         continue;
       }
 
@@ -827,8 +835,7 @@ module.exports = Backbone.View.extend({
       else if (dir == 'h') dir = false;
       else dir = this.isInFlow(el, trg);
 
-      dim.push(dir);
-      dim.push(el);
+      dim.push(dir, el, indexOf(trg.childNodes, el));
       dims.push(dim);
     }
 
@@ -865,7 +872,7 @@ module.exports = Backbone.View.extend({
    * @retun {Object}
    * */
   findPosition(dims, posX, posY) {
-    var result = { index: 0, method: 'before' };
+    var result = { index: 0, indexEl: 0, method: 'before' };
     var leftLimit = 0,
       xLimit = 0,
       dimRight = 0,
@@ -893,6 +900,7 @@ module.exports = Backbone.View.extend({
       )
         continue;
       result.index = i;
+      result.indexEl = dim[6];
       // If it's not in flow (like 'float' element)
       if (!dim[4]) {
         if (posY < dimDown) yLimit = dimDown;
@@ -1032,7 +1040,7 @@ module.exports = Backbone.View.extend({
     const srcEl = getElement(src);
     em && em.trigger('component:dragEnd:before', dst, srcEl, pos); // @depricated
     var warns = [];
-    var index = pos.index;
+    var index = pos.indexEl;
     var modelToDrop, modelTemp, created;
     var validResult = this.validTarget(dst, srcEl);
     var targetCollection = $(dst).data('collection');
