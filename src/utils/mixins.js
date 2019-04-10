@@ -103,7 +103,7 @@ const hasDnd = em => {
  * @return {HTMLElement}
  */
 const getElement = el => {
-  if (isElement(el)) {
+  if (isElement(el) || isTextNode(el)) {
     return el;
   } else if (el && el.getEl) {
     return el.getEl();
@@ -126,6 +126,20 @@ const getModel = (el, $) => {
   let model = el;
   isElement(el) && (model = $(el).data('model'));
   return model;
+};
+
+const getElRect = el => {
+  if (!el) return;
+  let rectText;
+
+  if (isTextNode(el)) {
+    const range = document.createRange();
+    range.selectNode(el);
+    rectText = range.getBoundingClientRect();
+    range.detach();
+  }
+
+  return rectText || el.getBoundingClientRect();
 };
 
 /**
@@ -153,6 +167,7 @@ export {
   upFirst,
   matches,
   getModel,
+  getElRect,
   camelCase,
   isTextNode,
   getKeyCode,

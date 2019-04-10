@@ -68,12 +68,13 @@ export default Backbone.View.extend({
     const ppfx = this.ppfx;
     const model = this.model;
     const components = model.get('components');
+    const type = model.get('type') || 'default';
     model.set('open', false);
     this.listenTo(components, 'remove add reset', this.checkChildren);
     this.listenTo(model, 'change:status', this.updateStatus);
     this.listenTo(model, 'change:open', this.updateOpening);
     this.listenTo(model, 'change:style:display', this.updateVisibility);
-    this.className = `${pfx}layer no-select ${ppfx}two-color`;
+    this.className = `${pfx}layer ${pfx}layer__${type} no-select ${ppfx}two-color`;
     this.inputNameCls = `${ppfx}layer-name`;
     this.clsTitleC = `${pfx}layer-title-c`;
     this.clsTitle = `${pfx}layer-title`;
@@ -342,9 +343,9 @@ export default Backbone.View.extend({
   },
 
   render() {
-    const model = this.model;
-    var pfx = this.pfx;
-    var vis = this.isVisible();
+    const { model, config, pfx, ppfx } = this;
+    const hidden = config.hideTextnode && model.is('textnode');
+    const vis = this.isVisible();
     const el = this.$el.empty();
     const level = this.level + 1;
 
@@ -373,6 +374,7 @@ export default Backbone.View.extend({
     }
 
     !vis && (this.className += ` ${pfx}hide`);
+    hidden && (this.className += ` ${ppfx}hidden`);
     el.attr('class', this.className);
     this.updateOpening();
     this.updateStatus();

@@ -1,5 +1,12 @@
 import Backbone from 'backbone';
-import { on, off, getElement, getKeyChar, isTextNode } from 'utils/mixins';
+import {
+  on,
+  off,
+  getElement,
+  getKeyChar,
+  isTextNode,
+  getElRect
+} from 'utils/mixins';
 const FrameView = require('./FrameView');
 const $ = Backbone.$;
 let timerZoom;
@@ -99,7 +106,7 @@ module.exports = Backbone.View.extend({
    * @return {Boolean}
    */
   isElInViewport(el) {
-    const rect = getElement(el).getBoundingClientRect();
+    const rect = getElRect(getElement(el));
     const frameRect = this.getFrameOffset();
     const rTop = rect.top;
     const rLeft = rect.left;
@@ -294,16 +301,7 @@ module.exports = Backbone.View.extend({
    * @return {Object}
    */
   offset(el) {
-    let rectText;
-
-    if (isTextNode(el)) {
-      const range = document.createRange();
-      range.selectNode(el);
-      rectText = range.getBoundingClientRect();
-      range.detach();
-    }
-
-    var rect = rectText || el.getBoundingClientRect();
+    var rect = getElRect(el);
     var docBody = el.ownerDocument.body;
     return {
       top: rect.top + docBody.scrollTop,

@@ -1,5 +1,5 @@
 import { bindAll, isElement, isUndefined } from 'underscore';
-import { on, off, getUnitFromValue } from 'utils/mixins';
+import { on, off, getUnitFromValue, isTextNode } from 'utils/mixins';
 
 const ToolbarView = require('dom_components/view/ToolbarView');
 const Toolbar = require('dom_components/model/Toolbar');
@@ -357,7 +357,8 @@ module.exports = {
     const pfx = config.stylePrefix || '';
     const attrName = `data-${pfx}handler`;
     const resizeClass = `${pfx}resizing`;
-    const model = !isElement(elem) ? elem : em.getSelected();
+    const model =
+      !isElement(elem) && !isTextNode(elem) ? elem : em.getSelected();
     const resizable = model.get('resizable');
     const el = isElement(elem) ? elem : model.getEl();
     let options = {};

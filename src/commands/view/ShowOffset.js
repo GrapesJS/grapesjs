@@ -1,4 +1,5 @@
 import Backbone from 'backbone';
+import { isTextNode } from 'utils/mixins';
 const $ = Backbone.$;
 
 module.exports = {
@@ -12,9 +13,11 @@ module.exports = {
     var state = opt.state || '';
     var config = editor.getConfig();
     const zoom = this.em.getZoomDecimal();
+    const el = opt.el || '';
 
     if (
       !config.showOffsets ||
+      isTextNode(el) ||
       (!config.showOffsetsSelected && state == 'Fixed')
     ) {
       editor.stopCommand(this.id, opts);
@@ -22,7 +25,6 @@ module.exports = {
     }
 
     var canvas = editor.Canvas;
-    var el = opt.el || '';
     var pos = opt.elPos || canvas.getElementPos(el);
     var style = window.getComputedStyle(el);
     var ppfx = this.ppfx;

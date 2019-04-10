@@ -75,10 +75,6 @@ module.exports = require('backbone').View.extend({
     var fragment = fragmentEl || null;
     var viewObject = ItemView;
 
-    if (!this.isCountable(model, this.config.hideTextnode)) {
-      return;
-    }
-
     var view = new viewObject({
       level,
       model,
