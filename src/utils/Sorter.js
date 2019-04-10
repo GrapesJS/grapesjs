@@ -6,7 +6,8 @@ import {
   matches,
   getElement,
   getPointerEvent,
-  isTextNode
+  isTextNode,
+  getModel
 } from 'utils/mixins';
 const $ = Backbone.$;
 
@@ -823,6 +824,8 @@ module.exports = Backbone.View.extend({
 
     for (var i = 0, len = ch.length; i < len; i++) {
       var el = ch[i];
+      const model = getModel(el, $);
+      const elIndex = model ? model.index() : i;
 
       if (!isTextNode(el) && !this.matches(el, this.itemSel)) {
         continue;
@@ -835,7 +838,7 @@ module.exports = Backbone.View.extend({
       else if (dir == 'h') dir = false;
       else dir = this.isInFlow(el, trg);
 
-      dim.push(dir, el, indexOf(trg.childNodes, el));
+      dim.push(dir, el, elIndex);
       dims.push(dim);
     }
 
