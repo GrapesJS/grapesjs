@@ -172,7 +172,7 @@ module.exports = () => {
         ['component-next', 'ComponentNext'],
         ['component-prev', 'ComponentPrev'],
         ['component-enter', 'ComponentEnter'],
-        ['component-exit', 'ComponentExit'],
+        ['component-exit', 'ComponentExit', 'select-parent'],
         ['component-delete', 'ComponentDelete'],
         ['component-style-clear', 'ComponentStyleClear'],
         ['component-drag', 'ComponentDrag']

@@ -130,6 +130,13 @@ export default Backbone.View.extend({
   },
 
   /**
+   * Stop current command
+   */
+  stopCommand() {
+    this.em.get('Commands').stop(this.id);
+  },
+
+  /**
    * Method that run command
    * @param  {Object}  em     Editor model
    * @param  {Object}  sender  Button sender

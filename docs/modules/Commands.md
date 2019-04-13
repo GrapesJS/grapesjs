@@ -63,6 +63,10 @@ Now if you want to call that command you should just run this
 editor.runCommand('my-command-id');
 ```
 
+::: tip
+The method `editor.runCommand` is an alias of `editor.Commands.run`
+:::
+
 You could also pass options if you need
 
 ```js
@@ -143,7 +147,7 @@ So if we now run `editor.runCommand('my-command-state')` the command will be reg
 }
 ```
 
-The key of the result object tells you the active command, the value is the last return of the `run` command, in our case is `undefined` because we don't return anything, but it's up to your implementation decide what to return and if you actually need it.
+The key of the result object tells you the active command, the value is the last return of the `run` command, in our case is `undefined` because we didn't return anything, but it's up to your implementation decide what to return and if you actually need it.
 
 ```js
 // Let's return something
@@ -157,6 +161,60 @@ run(editor) {
 ...
 // Now instead of the `undefined` you'll see object from the run method
 ```
+
+To disable the command use `editor.runCommand` method, so in our case it'll be `editor.runCommand('my-command-state')`. As for the `runCoomand` you can pass options object as a second argument and use them in your `stop` method.
+
+Once the command is active, if you try to run `editor.runCommand('my-command-state')` again you'll notice that that the `run` is not triggering. This behavior is useful to prevent executing multiple times the activation process which might lead to an inconsitent state (think about, for instance, having a counter, which should be increased on `run` and decreased on `stop`). If you need to run a command multiple times probably you're dealing with a not stateful command, so try to use it without the `stop` method, but in case you're aware of your application state you can actually force the execution with `editor.runCommand('my-command-state', { force: true })`. The same logic applies to the `stopCommand` method.
+
+
+### WARNING
+If you deal with UI in your stateful commands, be careful to keep the state coherent with your logic. Let's take, for example, the use of a modal as an indicator of the command state.
+
+```js
+commands.add('my-command-modal', {
+  run(editor) {
+    editor.Modal.open({
+      title: 'Modal example',
+      content: 'My content',
+    });
+  },
+  stop(editor) {
+    editor.Modal.close();
+  },
+});
+```
+
+If you run it, close the modal (eg. by clicking the 'x' on top) and then try to run it again you'll see that the modal is not opening anymore. This happenes because the command is still active (you should see it in `commands.getActive()`) and to fix it you have to disable it once the modal is closed.
+
+```js
+...
+  run(editor) {
+    editor.Modal.open({
+      title: 'Modal example',
+      content: 'My content',
+    }).onceClose(() => this.stopCommand());
+  },
+...
+```
+
+In the example above, we make use of few helper methods from the Modal module (`onceClose`) and the commmand itself (`stopCommand`) but obviosly the logic might be different due to your requirements and specific UI.
+
+
+
+
+
+## Extending commands
+
+Another big advantage of commands it's how easily you're able to extand/ovverride them.
+Let's take a simple command
+
+```js
+commands.add('my-command-1', editor => {
+  alert('This is command 1');
+});
+```
+
+
 
 
 ## Events
