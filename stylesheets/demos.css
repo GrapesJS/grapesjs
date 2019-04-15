@@ -97,6 +97,11 @@ html {
   padding: 20px 10px;
 }
 
+.carbon-link {
+  text-decoration: none;
+  font: caption;
+}
+
 .carbon-img {
   float: right;
   margin-left: 10px;
@@ -110,14 +115,25 @@ html {
 
 .carbon-text {
   color: rgba(255, 255, 255, 0.75);
-  font: caption;
   text-decoration: none;
   font-weight: lighter;
 }
 
 .carbon-poweredby {
-  font: caption;
   color: rgba(255, 255, 255, 0.55);
   text-decoration: none;
   float: right;
+}
+
+.carbon-cta-c {
+  text-align: right;
+  padding-top: 5px;
+}
+
+.carbon-cta {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 3px;
+  font-weight: bold;
+  font-size: 12px;
 }
