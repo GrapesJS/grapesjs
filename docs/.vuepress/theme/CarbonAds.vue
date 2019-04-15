@@ -1,7 +1,7 @@
 <script>
 module.exports = {
   render (h) {
-    return h('div', { class: 'carbon-ads' })
+    return h('div', { class: 'carbon-ads', attrs: { id: 'native-carbon' }})
   },
   mounted () {
     this.load()
@@ -18,10 +18,20 @@ module.exports = {
     }
   },
   methods: {
+    initCarbon() {
+      const { _bsa } = window;
+      if(typeof _bsa !== 'undefined' && _bsa) {
+        _bsa.init('default', 'CK7I62QJ', 'placement:grapesjscomdocs', {
+          target: '#native-carbon',
+        });
+      }
+    },
     load () {
       const s = document.createElement('script');
-      s.id = '_carbonads_js';
-      s.src = `//cdn.carbonads.com/carbon.js?serve=CKYI5KJU&placement=grapesjscom`;
+      // s.id = '_carbonads_js';
+      // s.src = `//cdn.carbonads.com/carbon.js?serve=CKYI5KJU&placement=grapesjscom`;
+      s.src = `//m.servedby-buysellads.com/monetization.js`;
+      s.onload = () => this.initCarbon();
       this.$el.appendChild(s);
     }
   }
