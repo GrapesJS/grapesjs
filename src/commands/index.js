@@ -17,6 +17,7 @@
  * * [add](#add)
  * * [get](#get)
  * * [getAll](#getall)
+ * * [extend](#extend)
  * * [has](#has)
  * * [run](#run)
  * * [stop](#stop)
@@ -230,6 +231,28 @@ module.exports = () => {
       }
 
       return el;
+    },
+
+    /**
+     * Extend the command. The command to extend should be defined as an object
+     * @param	{string}	id Command's ID
+     * @param {Object} Object with the new command functions
+     * @returns {this}
+     * @example
+     * commands.extend('old-command', {
+     *  someInnerFunction() {
+     *  // ...
+     *  }
+     * });
+     * */
+    extend(id, cmd = {}) {
+      const command = this.get(id);
+      command &&
+        this.add(id, {
+          ...command.constructor.prototype,
+          ...cmd
+        });
+      return this;
     },
 
     /**

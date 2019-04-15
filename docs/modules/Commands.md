@@ -205,8 +205,8 @@ In the example above, we make use of few helper methods from the Modal module (`
 
 ## Extending commands
 
-Another big advantage of commands it's how easily you're able to extand/ovverride them.
-Let's take a simple command
+Another big advantage of commands is the possibility to easily extand or ovverride them wit another command.
+Let's take a simple example
 
 ```js
 commands.add('my-command-1', editor => {
@@ -214,7 +214,71 @@ commands.add('my-command-1', editor => {
 });
 ```
 
+If you need to overwrite this command with another one, just add it and keep the same id.
+
+```js
+commands.add('my-command-1', editor => {
+  alert('This is command 1 overwritten');
+});
+```
+
+Let's see now instead how can we extend one
+
+```js
+commands.add('my-command-2', {
+  someFunction1() {
+    alert('This is function 1');
+  },
+  someFunction2() {
+    alert('This is function 2');
+  },
+  run() {
+    this.someFunction1();
+    this.someFunction2();
+  },
+});
+```
+
+to extend it just use `extend` method by passing the id
+
+```js
+commands.extend('my-command-2', {
+  someFunction2() {
+    alert('This is function 2 extended');
+  },
+});
+```
+
+
 
 
 
 ## Events
+
+The Commands module offers also a set of events that you can use to intercept the command flow for adding more functionality or even interrupting it.
+
+### Intercept run and stop
+
+By using our previosly created `my-command-modal` command let's see what events we can listen to
+
+```js
+editor.on('run:my-command-modal', function() {
+  console.log('After `my-command-modal` execution');
+  editor.Modal.getContent().append('<div>Some test</div>');
+});
+editor.on('run:my-command-modal:before', function() {
+  console.log('Before `my-command-modal` execution');
+});
+```
+
+
+### Interrupt command flow
+Let's use our previosly created `my-command-modal` command to describe
+
+ * * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
+ * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
+ * * `run:{commandName}:before` - Triggered before the command is called
+ * * `stop:{commandName}:before` - Triggered before the command is called to stop
+ * * `abort:{commandName}` - Triggered when the command execution is aborted (`editor.on(`run:preview:before`, opts => opts.abort = 1);`)
+ * * `run` - Triggered on run of any command. The id and the result are passed as arguments to the callback
+ * * `stop` - Triggered on stop of any command. The id and the result are passed as arguments to the callback
