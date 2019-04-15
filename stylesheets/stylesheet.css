@@ -766,7 +766,8 @@ a {
   border: 1px solid rgba(0,0,0,0.1);
 }
 
-#carbonads span {
+.carbon-wrap,
+.carbon-link {
   display: block;
   overflow: hidden;
   text-align: left;
@@ -783,6 +784,19 @@ a {
 
 .carbon-img img {
   border-radius: 3px;
+}
+
+.carbon-cta-c {
+  text-align: right;
+  padding-top: 5px;
+}
+
+.carbon-cta {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 3px;
+  font-weight: bold;
+  font-size: 12px;
 }
 
 #carbonads a {
