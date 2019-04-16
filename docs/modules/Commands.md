@@ -7,7 +7,7 @@ title: Commands
 A basic command in GrapesJS it's a simple function, but you will see in this guide how powerfull they can be. The main goal of the Command module is to centralize functions and be easily reused across the editor. Another big advantage of using commands is the ability to track them, extend or even interrupt beside some conditions.
 
 ::: warning
-This guide is referring to GrapesJS v0.14.59 or higher
+This guide is referring to GrapesJS v0.14.60 or higher
 :::
 
 [[toc]]
@@ -257,28 +257,60 @@ commands.extend('my-command-2', {
 
 The Commands module offers also a set of events that you can use to intercept the command flow for adding more functionality or even interrupting it.
 
+
 ### Intercept run and stop
 
-By using our previosly created `my-command-modal` command let's see what events we can listen to
+By using our previosly created `my-command-modal` command let's see which events we can listen to
 
 ```js
-editor.on('run:my-command-modal', function() {
+editor.on('run:my-command-modal', () => {
   console.log('After `my-command-modal` execution');
-  editor.Modal.getContent().append('<div>Some test</div>');
+  // For example, you can add extra content to the modal
+  const modalContent = editor.Modal.getContentEl();
+  modalContent.insertAdjacentHTML('beforeEnd', '<div>Some content</div>');
 });
-editor.on('run:my-command-modal:before', function() {
+editor.on('run:my-command-modal:before', () => {
   console.log('Before `my-command-modal` execution');
+});
+// for stateful commands
+editor.on('stop:my-command-modal', () => {
+  console.log('After `my-command-modal` is stopped');
+});
+editor.on('stop:my-command-modal:before', () => {
+  console.log('Before `my-command-modal` is stopped');
+});
+```
+
+If you need, you can also listen to all commands
+
+```js
+editor.on('run', commandId => {
+  console.log('Run', commandId);
+});
+
+editor.on('stop', commandId => {
+  console.log('Stop', commandId);
 });
 ```
 
 
 ### Interrupt command flow
-Let's use our previosly created `my-command-modal` command to describe
 
- * * `run:{commandName}` - Triggered when some command is called to run (eg. editor.runCommand('preview'))
- * * `stop:{commandName}` - Triggered when some command is called to stop (eg. editor.stopCommand('preview'))
- * * `run:{commandName}:before` - Triggered before the command is called
- * * `stop:{commandName}:before` - Triggered before the command is called to stop
- * * `abort:{commandName}` - Triggered when the command execution is aborted (`editor.on(`run:preview:before`, opts => opts.abort = 1);`)
- * * `run` - Triggered on run of any command. The id and the result are passed as arguments to the callback
- * * `stop` - Triggered on stop of any command. The id and the result are passed as arguments to the callback
+Sometimes you might need to interrupt the execution of an existant command due to some condition. In that case, you have to use `run:{COMMAND-ID}:before` event and set to `true` the abort option
+
+```js
+const condition = 1;
+
+editor.on('run:my-command-modal:before', options => {
+  if (condition) {
+    options.abort = true;
+    console.log('Prevent `my-command-modal` from execution');
+  }
+});
+```
+
+
+
+## Conclusion
+
+The Commands module is quite simple but, at the same time, really powerfull if used correctly. So, if you're creating a plugin for GrapesJS, use commands as much as possible, this will allow a higher reusability and control over your logic.
