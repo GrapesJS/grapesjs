@@ -282,15 +282,13 @@ module.exports = Backbone.View.extend({
    * @private
    */
   updateScript() {
-    if (!this.model.get('script')) {
-      return;
-    }
-
-    var em = this.em;
-    if (em) {
-      var canvas = em.get('Canvas');
-      canvas.getCanvasView().updateScript(this);
-    }
+    const { model, em } = this;
+    if (!model.get('script')) return;
+    em &&
+      em
+        .get('Canvas')
+        .getCanvasView()
+        .updateScript(this);
   },
 
   /**
@@ -357,6 +355,7 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
+    if (this.modelOpt.temporary) return this;
     this.renderAttributes();
     this.renderChildren();
     this.updateScript();
