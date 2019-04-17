@@ -18,8 +18,9 @@ module.exports = Backbone.View.extend({
     const tempRemove = opts.temporary;
     if (!view) return;
     view.remove.apply(view);
-    const children = view.childrenView;
-    children && children.stopListening();
+    const { childrenView, scriptContainer } = view;
+    childrenView && childrenView.stopListening();
+    scriptContainer && scriptContainer.remove();
     removed.components().forEach(it => this.removeChildren(it, coll, opts));
 
     if (em && !tempRemove) {

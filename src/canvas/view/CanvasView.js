@@ -415,13 +415,14 @@ module.exports = Backbone.View.extend({
    * @private
    */
   updateScript(view) {
+    const model = view.model;
+    const id = model.getId();
+
     if (!view.scriptContainer) {
-      view.scriptContainer = $('<div>');
+      view.scriptContainer = $(`<div id="${id}">`);
       this.getJsContainer().appendChild(view.scriptContainer.get(0));
     }
 
-    const model = view.model;
-    const id = model.getId();
     view.el.id = id;
     view.scriptContainer.html('');
     // In editor, I make use of setTimeout as during the append process of elements
