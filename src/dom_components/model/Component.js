@@ -692,6 +692,43 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     /**
+     * Remove trait/s by id/s.
+     * @param  {String|Array<String>} id The `id`/`name` of the trait (or an array)
+     * @return {Array} Array of removed traits
+     * @example
+     * component.removeTrait('title');
+     * component.removeTrait(['title', 'id']);
+     */
+    removeTrait(id) {
+      const { em } = this;
+      const ids = isArray(id) ? id : [id];
+      const toRemove = ids.map(id => this.getTrait(id));
+      const removed = this.get('traits').remove(toRemove);
+      em && em.trigger('component:toggled');
+      return removed;
+    },
+
+    /**
+     * Add trait/s by id/s.
+     * @param  {String|Object|Array<String|Object>} trait Trait to add (or an array of traits)
+     * @param  {Options} opts Options for the add
+     * @return {Array} Array of added traits
+     * @example
+     * component.addTrat('title', { at: 1 }); // Add title trait (at option is the position index)
+     * component.addTrat({
+     *  type: 'checkbox',
+     *  name: 'disabled',
+     * });
+     * component.addTrat(['title', {...}, ...]);
+     */
+    addTrait(trait, opts = {}) {
+      const { em } = this;
+      const added = this.get('traits').add(trait, opts);
+      em && em.trigger('component:toggled');
+      return added;
+    },
+
+    /**
      * Normalize input classes from array to array of objects
      * @param {Array} arr
      * @return {Array}
