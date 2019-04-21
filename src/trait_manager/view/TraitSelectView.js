@@ -35,7 +35,10 @@ module.exports = TraitView.extend({
           value = el;
         } else {
           name = el.name ? el.name : el.value;
-          value = `${el.value || el.id}`.replace(/"/g, '&quot;');
+          value = `${isUndefined(el.value) ? el.id : el.value}`.replace(
+            /"/g,
+            '&quot;'
+          );
           style = el.style ? el.style.replace(/"/g, '&quot;') : '';
           attrs += style ? ` style="${style}"` : '';
         }
