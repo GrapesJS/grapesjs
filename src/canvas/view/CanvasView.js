@@ -253,6 +253,12 @@ module.exports = Backbone.View.extend({
       this.frame.el.contentWindow.onscroll = this.onFrameScroll;
       this.frame.udpateOffset();
 
+      // Avoid the default link behaviour in the canvas
+      body.on(
+        'click',
+        ev => ev && ev.target.tagName == 'A' && ev.preventDefault()
+      );
+
       // When the iframe is focused the event dispatcher is not the same so
       // I need to delegate all events to the parent document
       const doc = document;
