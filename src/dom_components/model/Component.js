@@ -678,6 +678,20 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     /**
+     * Get the trait position index by id/name. Useful in case you want to
+     * replace some trait, at runtime, with something else.
+     * @param  {String} id The `id` or `name` of the trait
+     * @return {Number} Index position of the current trait
+     * @example
+     * const traitTitle = component.getTraitIndex('title');
+     * console.log(traitTitle); // 1
+     */
+    getTraitIndex(id) {
+      const trait = this.getTrait(id);
+      return trait ? this.get('traits').indexOf(trait) : trait;
+    },
+
+    /**
      * Normalize input classes from array to array of objects
      * @param {Array} arr
      * @return {Array}
