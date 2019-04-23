@@ -510,7 +510,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const components = this.get('components');
       const addChild = !this.opt.avoidChildren;
       this.set('components', comps);
-      addChild && comps.add(components);
+      addChild &&
+        comps.add(isFunction(components) ? components(this) : components);
       this.listenTo(...toListen);
       return this;
     },
