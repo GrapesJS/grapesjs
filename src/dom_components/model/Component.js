@@ -611,7 +611,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
         if (model.collection) {
           tb.push({
             attributes: { class: 'fa fa-arrow-up' },
-            command: 'core:component-exit'
+            command: ed => ed.runCommand('core:component-exit', { force: 1 })
           });
         }
         if (model.get('draggable')) {
