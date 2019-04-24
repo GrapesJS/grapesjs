@@ -241,6 +241,27 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     /**
+     * Find all inner components by component id.
+     * The advantage of this method over `find` is that you can use it
+     * also before rendering the component
+     * @param {String} id Component id
+     * @returns {Array<Component>}
+     * @example
+     * const allImages = component.findType('image');
+     * console.log(allImages[0]) // prints the first found component
+     */
+    findType(id) {
+      const result = [];
+      const find = components =>
+        components.forEach(item => {
+          item.is(id) && result.push(item);
+          find(item.components());
+        });
+      find(this.components());
+      return result;
+    },
+
+    /**
      * Find the closest parent component by query string.
      * **ATTENTION**: this method works only with already rendered component
      * @param  {string} query Query string
