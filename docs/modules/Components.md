@@ -440,5 +440,5 @@ Solution 1: turn off `autorender`
   editor.render();
 </script>
 ```
-Solution 2: put all the stuff inside a plugin ([Creating plugins](https://github.com/artf/grapesjs/wiki/Creating-plugins))
+Solution 2: put all the stuff inside a plugin ([Creating plugins](Plugins.html))
 
