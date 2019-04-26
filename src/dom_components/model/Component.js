@@ -700,6 +700,25 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     /**
+     * Update a trait
+     * @param  {String} id The `id` or `name` of the trait
+     * @param  {Object} props Object with the props to update
+     * @return {this}
+     * @example
+     * component.updateTrait('title', {
+     *  type: 'select',
+     *  options: [ 'Option 1', 'Option 2' ],
+     * });
+     */
+    updateTrait(id, props) {
+      const { em } = this;
+      const trait = this.getTrait(id);
+      trait && trait.set(props);
+      em && em.trigger('component:toggled');
+      return this;
+    },
+
+    /**
      * Get the trait position index by id/name. Useful in case you want to
      * replace some trait, at runtime, with something else.
      * @param  {String} id The `id` or `name` of the trait
@@ -736,7 +755,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @param  {Options} opts Options for the add
      * @return {Array} Array of added traits
      * @example
-     * component.addTrat('title', { at: 1 }); // Add title trait (at option is the position index)
+     * component.addTrat('title', { at: 1 }); // Add title trait (`at` option is the position index)
      * component.addTrat({
      *  type: 'checkbox',
      *  name: 'disabled',
