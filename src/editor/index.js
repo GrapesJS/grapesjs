@@ -411,6 +411,8 @@ export default (config = {}) => {
     /**
      * Select a component
      * @param  {Component|HTMLElement} el Component to select
+     * @param  {Object} [opts] Options
+     * @param  {Boolean} [opts.scroll] Scroll canvas to the selected element
      * @return {this}
      * @example
      * // Select dropped block
@@ -418,8 +420,8 @@ export default (config = {}) => {
      *  editor.select(model);
      * });
      */
-    select(el) {
-      em.setSelected(el);
+    select(el, opts) {
+      em.setSelected(el, opts);
       return this;
     },
 

@@ -3,5 +3,8 @@ module.exports = {
   // With the empty value, nothing will be rendered
   appendTo: '',
 
+  // Append blocks to canvas on click
+  appendOnClick: 0,
+
   blocks: []
 };

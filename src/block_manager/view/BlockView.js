@@ -4,6 +4,7 @@ import { on, off, hasDnd } from 'utils/mixins';
 
 module.exports = Backbone.View.extend({
   events: {
+    click: 'handleClick',
     mousedown: 'startDrag',
     dragstart: 'handleDragStart',
     drag: 'handleDrag',
@@ -18,6 +19,40 @@ module.exports = Backbone.View.extend({
     this.ppfx = config.pStylePrefix || '';
     this.listenTo(model, 'destroy remove', this.remove);
     this.listenTo(model, 'change', this.render);
+  },
+
+  handleClick() {
+    const { config, model, em } = this;
+    if (!config.appendOnClick) return;
+    const sorter = config.getSorter();
+    const content = model.get('content');
+    const selected = em.getSelected();
+    sorter.setDropContent(content);
+    let target, valid;
+
+    // If there is a selected component, try first to append
+    // the block inside, otherwise, try to place it as a next sibling
+    if (selected) {
+      valid = sorter.validTarget(selected.getEl(), content);
+
+      if (valid.valid) {
+        target = selected;
+      } else {
+        const parent = selected.parent();
+        valid = sorter.validTarget(parent.getEl(), content);
+        if (valid.valid) target = parent;
+      }
+    }
+
+    // If no target found yet, try to append the block to the wrapper
+    if (!target) {
+      const wrapper = em.getWrapper();
+      valid = sorter.validTarget(wrapper.getEl(), content);
+      if (valid.valid) target = wrapper;
+    }
+
+    const result = target && target.append(content)[0];
+    result && em.setSelected(result, { scroll: 1 });
   },
 
   /**

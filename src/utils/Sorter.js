@@ -102,6 +102,7 @@ module.exports = Backbone.View.extend({
    * @param {String|Object} content
    */
   setDropContent(content) {
+    this.dropModel = null;
     this.dropContent = content;
   },
 
