@@ -31,6 +31,7 @@ module.exports = Backbone.Collection.extend({
         // get the last one
         model = df[df.length - 1].model;
         em &&
+          attrs.type &&
           em.logWarning(`Component type '${attrs.type}' not found`, {
             attrs,
             options
