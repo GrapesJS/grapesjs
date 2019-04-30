@@ -262,6 +262,7 @@ module.exports = () => {
             this.onEnd('load', result);
           },
           err => {
+            clb && clb(result);
             this.onError('load', err);
           }
         );
