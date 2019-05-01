@@ -34,7 +34,6 @@ function BSANativeCallback (a) {
     script.setAttribute('id', '_carbonads_js');
     var adCont = document.getElementById('native-carbon');
     adCont && adCont.appendChild(script);
-    console.log({ script });
   }
 }
 
