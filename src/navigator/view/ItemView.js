@@ -344,7 +344,8 @@ export default Backbone.View.extend({
 
   render() {
     const { model, config, pfx, ppfx } = this;
-    const hidden = config.hideTextnode && model.is('textnode');
+    const hidden =
+      (config.hideTextnode && model.is('textnode')) || !model.get('layerable');
     const vis = this.isVisible();
     const el = this.$el.empty();
     const level = this.level + 1;
