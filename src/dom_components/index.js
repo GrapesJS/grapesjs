@@ -108,6 +108,11 @@ module.exports = () => {
       view: require('./view/ComponentSvgView')
     },
     {
+      id: 'comment',
+      model: require('./model/ComponentComment'),
+      view: require('./view/ComponentCommentView')
+    },
+    {
       id: 'textnode',
       model: require('./model/ComponentTextNode'),
       view: require('./view/ComponentTextNodeView')
