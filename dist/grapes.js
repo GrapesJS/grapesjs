@@ -31730,6 +31730,10 @@ module.exports = function () {
     model: __webpack_require__(/*! ./model/ComponentSvg */ "./src/dom_components/model/ComponentSvg.js"),
     view: __webpack_require__(/*! ./view/ComponentSvgView */ "./src/dom_components/view/ComponentSvgView.js")
   }, {
+    id: 'comment',
+    model: __webpack_require__(/*! ./model/ComponentComment */ "./src/dom_components/model/ComponentComment.js"),
+    view: __webpack_require__(/*! ./view/ComponentCommentView */ "./src/dom_components/view/ComponentCommentView.js")
+  }, {
     id: 'textnode',
     model: __webpack_require__(/*! ./model/ComponentTextNode */ "./src/dom_components/model/ComponentTextNode.js"),
     view: __webpack_require__(/*! ./view/ComponentTextNodeView */ "./src/dom_components/view/ComponentTextNodeView.js")
@@ -33631,6 +33635,40 @@ module.exports = Component;
 
 /***/ }),
 
+/***/ "./src/dom_components/model/ComponentComment.js":
+/*!******************************************************!*\
+  !*** ./src/dom_components/model/ComponentComment.js ***!
+  \******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var Component = __webpack_require__(/*! ./ComponentTextNode */ "./src/dom_components/model/ComponentTextNode.js");
+
+module.exports = Component.extend({
+  defaults: _extends({}, Component.prototype.defaults),
+
+  toHTML: function toHTML() {
+    return '<!--' + this.get('content') + '-->';
+  }
+}, {
+  isComponent: function isComponent(el) {
+    if (el.nodeType == 8) {
+      return {
+        tagName: 'NULL',
+        type: 'comment',
+        content: el.textContent
+      };
+    }
+  }
+});
+
+/***/ }),
+
 /***/ "./src/dom_components/model/ComponentImage.js":
 /*!****************************************************!*\
   !*** ./src/dom_components/model/ComponentImage.js ***!
@@ -34382,6 +34420,7 @@ var Component = __webpack_require__(/*! ./Component */ "./src/dom_components/mod
 module.exports = Component.extend({
   defaults: _extends({}, Component.prototype.defaults, {
     droppable: false,
+    layerable: false,
     editable: true
   }),
 
@@ -34814,6 +34853,8 @@ module.exports = Backbone.Collection.extend({
     this.listenTo(this, 'add', this.onAdd);
     this.config = opt.config;
     this.em = opt.em;
+    var em = this.em;
+
 
     this.model = function (attrs, options) {
       var model;
@@ -34834,6 +34875,10 @@ module.exports = Backbone.Collection.extend({
       if (!model) {
         // get the last one
         model = df[df.length - 1].model;
+        em && attrs.type && em.logWarning('Component type \'' + attrs.type + '\' not found', {
+          attrs: attrs,
+          options: options
+        });
       }
 
       return new model(attrs, options);
@@ -34925,6 +34970,26 @@ module.exports = Backbone.Model.extend({
   defaults: {
     command: '',
     attributes: {}
+  }
+});
+
+/***/ }),
+
+/***/ "./src/dom_components/view/ComponentCommentView.js":
+/*!*********************************************************!*\
+  !*** ./src/dom_components/view/ComponentCommentView.js ***!
+  \*********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var ComponentView = __webpack_require__(/*! ./ComponentTextNodeView */ "./src/dom_components/view/ComponentTextNodeView.js");
+
+module.exports = ComponentView.extend({
+  _createElement: function _createElement() {
+    return document.createComment(this.model.get('content'));
   }
 });
 
@@ -39187,7 +39252,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.14.60',
+    version: '0.14.61',
 
     /**
      * Initialize the editor with passed options
@@ -40453,9 +40518,11 @@ exports.default = _backbone2.default.View.extend({
     var model = this.model,
         config = this.config,
         pfx = this.pfx,
-        ppfx = this.ppfx;
+        ppfx = this.ppfx,
+        opt = this.opt;
+    var isCountable = opt.isCountable;
 
-    var hidden = config.hideTextnode && model.is('textnode');
+    var hidden = isCountable && !isCountable(model, config.hideTextnode);
     var vis = this.isVisible();
     var el = this.$el.empty();
     var level = this.level + 1;
@@ -42810,8 +42877,9 @@ module.exports = function () {
 
       if (pos) {
         if (config.adjustToolbar) {
+          var frameOffset = canvas.getCanvasView().getFrameOffset();
           // Move the toolbar down when the top canvas edge is reached
-          if (pos.top <= pos.canvasTop) {
+          if (pos.top <= pos.canvasTop && !(pos.elementHeight + pos.targetHeight >= frameOffset.height)) {
             pos.top = pos.elementTop + pos.elementHeight;
           }
         }
@@ -44515,6 +44583,7 @@ module.exports = function () {
           clb && clb(result);
           _this2.onEnd('load', result);
         }, function (err) {
+          clb && clb(result);
           _this2.onError('load', err);
         });
       } else {
@@ -45185,8 +45254,6 @@ module.exports = function () {
 
           if (!rule) {
             rule = cssC.add(valid, state, deviceW);
-            rule.setStyle(model.getStyle());
-            model.setStyle({});
           }
         } else if (config.avoidInlineStyle) {
           rule = cssC.getIdRule(id, opts);
