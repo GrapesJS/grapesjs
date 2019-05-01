@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Use Custom CSS Parser | GrapesJS</title>
+    <meta name="description" content="GrapesJS documentation">
+    <link rel="icon" href="/docs/logo-icon.png">
+  <link rel="stylesheet" href="../stylesheets/grapes.min.css?v0.14.61">
+  <script src="../js/grapes.min.js?v0.14.61"></script>
+    
+    <link rel="preload" href="/docs/assets/css/0.styles.82db7b1e.css" as="style"><link rel="preload" href="/docs/assets/js/app.a18f26bb.js" as="script"><link rel="preload" href="/docs/assets/js/33.5a21eeb2.js" as="script"><link rel="prefetch" href="/docs/assets/js/10.a106a5cd.js"><link rel="prefetch" href="/docs/assets/js/11.e1d01d7f.js"><link rel="prefetch" href="/docs/assets/js/12.7b5df652.js"><link rel="prefetch" href="/docs/assets/js/13.2c86d6bb.js"><link rel="prefetch" href="/docs/assets/js/14.47aa7392.js"><link rel="prefetch" href="/docs/assets/js/15.e5ae77bc.js"><link rel="prefetch" href="/docs/assets/js/16.07b42741.js"><link rel="prefetch" href="/docs/assets/js/17.2a67de0b.js"><link rel="prefetch" href="/docs/assets/js/18.11c93f1e.js"><link rel="prefetch" href="/docs/assets/js/19.7a13abf6.js"><link rel="prefetch" href="/docs/assets/js/2.434af1ad.js"><link rel="prefetch" href="/docs/assets/js/20.d98c3b22.js"><link rel="prefetch" href="/docs/assets/js/21.3e3438bd.js"><link rel="prefetch" href="/docs/assets/js/22.917f34a1.js"><link rel="prefetch" href="/docs/assets/js/23.a1fe2201.js"><link rel="prefetch" href="/docs/assets/js/24.fefe1628.js"><link rel="prefetch" href="/docs/assets/js/25.32714364.js"><link rel="prefetch" href="/docs/assets/js/26.0ba924f8.js"><link rel="prefetch" href="/docs/assets/js/27.442eb105.js"><link rel="prefetch" href="/docs/assets/js/28.3d0efde8.js"><link rel="prefetch" href="/docs/assets/js/29.81c2faa9.js"><link rel="prefetch" href="/docs/assets/js/3.651320c9.js"><link rel="prefetch" href="/docs/assets/js/30.331e996f.js"><link rel="prefetch" href="/docs/assets/js/31.456da170.js"><link rel="prefetch" href="/docs/assets/js/32.2f2eecfd.js"><link rel="prefetch" href="/docs/assets/js/34.e495786f.js"><link rel="prefetch" href="/docs/assets/js/35.e59a311f.js"><link rel="prefetch" href="/docs/assets/js/36.8c67e6e8.js"><link rel="prefetch" href="/docs/assets/js/37.ea48a200.js"><link rel="prefetch" href="/docs/assets/js/38.49bb9e38.js"><link rel="prefetch" href="/docs/assets/js/39.2eeb020a.js"><link rel="prefetch" href="/docs/assets/js/4.ccc41891.js"><link rel="prefetch" href="/docs/assets/js/40.5c633dc6.js"><link rel="prefetch" href="/docs/assets/js/41.17bf3b3b.js"><link rel="prefetch" href="/docs/assets/js/42.b82b73fe.js"><link rel="prefetch" href="/docs/assets/js/43.24b80d23.js"><link rel="prefetch" href="/docs/assets/js/5.20d1ecdf.js"><link rel="prefetch" href="/docs/assets/js/6.9af8fc3b.js"><link rel="prefetch" href="/docs/assets/js/7.224c3fec.js"><link rel="prefetch" href="/docs/assets/js/8.e9d59c3e.js"><link rel="prefetch" href="/docs/assets/js/9.9f34d8b5.js">
+    <link rel="stylesheet" href="/docs/assets/css/0.styles.82db7b1e.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div><a href="/docs/" class="home-link router-link-active"><img src="/docs/logo.png" class="logo"><span class="site-name can-hide">
+      GrapesJS
+    </span></a><div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""><!----></div><nav class="nav-links can-hide"><div class="nav-item"><a href="/docs/" class="nav-link">Docs</a></div><div class="nav-item"><a href="/docs/api/" class="nav-link">API Reference</a></div><div class="nav-item"><a href="https://opencollective.com/grapesjs" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Support Us
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div><div class="nav-item"><a href="https://twitter.com/grapesjs" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Twitter
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div><a href="https://github.com/artf/grapesjs" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav></div></header><div class="sidebar-mask"></div><div class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/docs/" class="nav-link">Docs</a></div><div class="nav-item"><a href="/docs/api/" class="nav-link">API Reference</a></div><div class="nav-item"><a href="https://opencollective.com/grapesjs" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Support Us
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div><div class="nav-item"><a href="https://twitter.com/grapesjs" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Twitter
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div><a href="https://github.com/artf/grapesjs" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav><div id="native-carbon" class="carbon-ads"></div><ul class="sidebar-links"><li><a href="/docs/" class="sidebar-link">Introduction</a></li><li><a href="/docs/getting-started.html" class="sidebar-link">Getting Started</a></li><li><div class="sidebar-group"><p class="sidebar-heading"><span>Modules</span><!----></p><ul class="sidebar-group-items"><li><a href="/docs/modules/Assets.html" class="sidebar-link">Assets</a></li><li><a href="/docs/modules/Blocks.html" class="sidebar-link">Blocks</a></li><li><a href="/docs/modules/Commands.html" class="sidebar-link">Commands</a></li><li><a href="/docs/modules/Components.html" class="sidebar-link">Components</a></li><li><a href="/docs/modules/Components-js.html" class="sidebar-link">Components &amp; JS</a></li><li><a href="/docs/modules/Traits.html" class="sidebar-link">Traits</a></li><li><a href="/docs/modules/Style-manager.html" class="sidebar-link">Style Manager</a></li><li><a href="/docs/modules/Storage.html" class="sidebar-link">Storage Manager</a></li><li><a href="/docs/modules/Plugins.html" class="sidebar-link">Plugins</a></li></ul></div></li><li><div class="sidebar-group"><p class="sidebar-heading open"><span>Guides</span><!----></p><ul class="sidebar-group-items"><li><a href="/docs/guides/Replace-Rich-Text-Editor.html" class="sidebar-link">Replace Rich Text Editor</a></li><li><a href="/docs/guides/Custom-CSS-parser.html" class="active sidebar-link">Use Custom CSS Parser</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/docs/guides/Custom-CSS-parser.html#import-html-css" class="sidebar-link">Import HTML/CSS</a></li><li class="sidebar-sub-header"><a href="/docs/guides/Custom-CSS-parser.html#cssom-results-are-inconsistent" class="sidebar-link">CSSOM results are inconsistent</a></li><li class="sidebar-sub-header"><a href="/docs/guides/Custom-CSS-parser.html#set-css-parser" class="sidebar-link">Set CSS parser</a></li><li class="sidebar-sub-header"><a href="/docs/guides/Custom-CSS-parser.html#rule-objects" class="sidebar-link">Rule Objects</a></li><li class="sidebar-sub-header"><a href="/docs/guides/Custom-CSS-parser.html#plugins" class="sidebar-link">Plugins</a></li></ul></li></ul></div></li></ul></div><div class="page"><div class="content"><h1 id="use-custom-css-parser"><a href="#use-custom-css-parser" aria-hidden="true" class="header-anchor">#</a> Use Custom CSS Parser</h1><p>If you just use GrapesJS for building templates from scratch, so you start from an empty canvas and for editing you strictly rely  on the generated JSON (final HTML/CSS only for end-users) then, probably, you might skip this guide. On the other hand, if you import templates from already defined HTML/CSS or let the user embed custom codes (eg. using the <a href="https://github.com/artf/grapesjs-custom-code" target="_blank" rel="noopener noreferrer">grapesjs-custom-code<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a> plugin), then you have to know that you might face strange behaviors.</p><div class="warning custom-block"><p class="custom-block-title">WARNING</p><p>This guide requires GrapesJS v0.14.33 or higher</p></div><p></p><div class="table-of-contents"><ul><li><a href="#import-html-css">Import HTML/CSS</a></li><li><a href="#cssom-results-are-inconsistent">CSSOM results are inconsistent</a><ul><li><a href="#results">Results</a></li></ul></li><li><a href="#set-css-parser">Set CSS parser</a></li><li><a href="#rule-objects">Rule Objects</a></li><li><a href="#plugins">Plugins</a></li></ul></div><p></p><h2 id="import-html-css"><a href="#import-html-css" aria-hidden="true" class="header-anchor">#</a> Import HTML/CSS</h2><p>Importing already defined HTML/CSS is a really good feature as it lets you start editing immediately any kind of template and obviously, GrapesJS itself promotes this kind of approach</p><div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>gjs<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>txt-red<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>Hello world!<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>style</span><span class="token punctuation">&gt;</span></span><span class="token style language-css"><span class="token selector">.txt-red</span><span class="token punctuation">{</span><span class="token property">color</span><span class="token punctuation">:</span> red<span class="token punctuation">}</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>style</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>text/javascript<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span><span class="token script language-javascript">
+  <span class="token keyword">const</span> editor <span class="token operator">=</span> grapesjs<span class="token punctuation">.</span><span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      container <span class="token punctuation">:</span> <span class="token string">'#gjs'</span><span class="token punctuation">,</span>
+      fromElement<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><p>To work fast and easier GrapesJS needs to compile a simple string (HTML/CSS) into structured nodes (nested JS objects). Fortunately, most of the hard work (parsing) is already done by the browser itself which translates that string into its own objects (<a href="https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model" target="_blank" rel="noopener noreferrer">DOM<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a>/<a href="https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model" target="_blank" rel="noopener noreferrer">CSSOM<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a>) and so we just rely on those, by traversing them and creating our nodes (unfortunately browser's objects are not enough). The fact we're able to parse our strings just by using the browser itself it's very cool, we can enable the import feature without requiring any third-party library, so... where is the problem? Well, while the generated DOM is performing quite well, as we're able to extract what we need, unfortunately, it's not the same for the CSSOM, so let's see in the next paragraph what is wrong with it.</p><h2 id="cssom-results-are-inconsistent"><a href="#cssom-results-are-inconsistent" aria-hidden="true" class="header-anchor">#</a> CSSOM results are inconsistent</h2><p>Unfortunately, we have discovered that the CSSOM generated by browsers are highly inconsistent from what we ask to parse. To demonstrate it, we gonna create a simple example by using the built-in parser and we'll check its result.
+So, for our case we just take in account a simple rule, we'll parse it and print the CSSOM result on screen.</p><div class="language-html extra-class"><pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h1</span><span class="token punctuation">&gt;</span></span>To parse<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h1</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>pre</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>css-to-parse<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+  .simple-class {
+    background-image:url(&quot;https://image1.png&quot;), url(&quot;https://image2.jpg&quot;);
+    background-attachment: fixed, scroll;
+    background-position:left top, center center;
+    background-repeat:repeat-y, no-repeat;
+    background-size: contain, cover;
+    box-shadow: 0 0 5px #9d7aa5, 0 0 10px #e6c3ee;
+    border: 2px solid #FF0000;
+  }
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>pre</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h1</span><span class="token punctuation">&gt;</span></span>Result<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h1</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>pre</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>result<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>pre</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">&gt;</span></span><span class="token script language-javascript">
+  <span class="token comment">// We use ES5 just to make it more cross-browser, without the need of being compiled</span>
+
+  <span class="token keyword">function</span> <span class="token function">parse</span><span class="token punctuation">(</span>str<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">var</span> result <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token comment">// Create the element which will contain the style to parse</span>
+    <span class="token keyword">var</span> el <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">createElement</span><span class="token punctuation">(</span><span class="token string">'style'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    el<span class="token punctuation">.</span>innerHTML <span class="token operator">=</span> str<span class="token punctuation">;</span>
+    <span class="token comment">// We have to append the style to get its CSSOM</span>
+    document<span class="token punctuation">.</span>head<span class="token punctuation">.</span><span class="token function">appendChild</span><span class="token punctuation">(</span>el<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">var</span> sheet <span class="token operator">=</span> el<span class="token punctuation">.</span>sheet<span class="token punctuation">;</span>
+    <span class="token comment">// Now we can remove it</span>
+    document<span class="token punctuation">.</span>head<span class="token punctuation">.</span><span class="token function">removeChild</span><span class="token punctuation">(</span>el<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> sheet<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">function</span> <span class="token function">CSSOMToString</span><span class="token punctuation">(</span>root<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// For the sake of brevity we just print what we need</span>
+    <span class="token keyword">var</span> styleStr <span class="token operator">=</span> <span class="token string">''</span><span class="token punctuation">;</span>
+    <span class="token keyword">var</span> rule <span class="token operator">=</span> root<span class="token punctuation">.</span>cssRules<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">var</span> style <span class="token operator">=</span> rule<span class="token punctuation">.</span>style<span class="token punctuation">;</span>
+    <span class="token comment">// The only way we have to iterate over CSSStyleDeclaration</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">var</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">,</span> len <span class="token operator">=</span> style<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i <span class="token operator">&lt;</span> len<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">var</span> property <span class="token operator">=</span> style<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+      <span class="token keyword">var</span> value <span class="token operator">=</span> style<span class="token punctuation">.</span><span class="token function">getPropertyValue</span><span class="token punctuation">(</span>property<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      styleStr <span class="token operator">+=</span> <span class="token string">&quot;\t&quot;</span> <span class="token operator">+</span> property <span class="token operator">+</span> <span class="token string">': '</span> <span class="token operator">+</span> value <span class="token operator">+</span> <span class="token string">&quot;;\n&quot;</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">var</span> result <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">'result'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    result<span class="token punctuation">.</span>innerHTML <span class="token operator">=</span> rule<span class="token punctuation">.</span>selectorText <span class="token operator">+</span> <span class="token string">&quot; {\n&quot;</span> <span class="token operator">+</span> styleStr <span class="token operator">+</span> <span class="token string">&quot;}&quot;</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">var</span> css <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">'css-to-parse'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>innerText<span class="token punctuation">;</span>
+  <span class="token function">CSSOMToString</span><span class="token punctuation">(</span><span class="token function">parse</span><span class="token punctuation">(</span>css<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><h3 id="results"><a href="#results" aria-hidden="true" class="header-anchor">#</a> Results</h3><p>Here some results (using latest versions + IE11)</p><img src="/docs/cssom-result.jpg"><p>As you see, this is what we get for asking only 7 properties, who adds more or less, someone converts colors to rgba functions and someone else changes the order of our values (eg. <code>box-shadow</code>). Webkit-based browsers attach also properties they self don't understand</p><img src="/docs/cssom-devtools.png"><p>So it's clear that we can't rely on CSSOM objects, that's why we added the possibility to set custom CSS parser via <code>editor.setCustomParserCss</code> method or <code>config.Parser.parserCss</code> option to use on initialization. Let's see in detail how it's expected to work</p><h2 id="set-css-parser"><a href="#set-css-parser" aria-hidden="true" class="header-anchor">#</a> Set CSS parser</h2><p>The custom parser you have to use it's just a function receiving 2 arguments: <code>css</code>, as the CSS string to parse, and <code>editor</code>, the instance of the current editor. As the result, you should return an array containing valid rule objects, the syntax of those objects are explained below. This is how you can set the custom parser</p><div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> <span class="token function-variable function">parserCss</span> <span class="token operator">=</span> <span class="token punctuation">(</span>css<span class="token punctuation">,</span> editor<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token comment">// ... parse the CSS string</span>
+    result<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      selectors<span class="token punctuation">:</span> <span class="token string">'.someclass, div .otherclass'</span><span class="token punctuation">,</span>
+      style<span class="token punctuation">:</span> <span class="token punctuation">{</span> color<span class="token punctuation">:</span> <span class="token string">'red'</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token comment">// ...</span>
+  <span class="token keyword">return</span> result<span class="token punctuation">;</span> <span class="token comment">// Result should be ALWAYS an array</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token comment">// On initialization</span>
+<span class="token comment">// This is the recommended way, as you gonna use the parser from the beginning</span>
+<span class="token keyword">const</span> editor <span class="token operator">=</span> grapesjs<span class="token punctuation">.</span><span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  <span class="token comment">//...</span>
+  parser<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    parserCss<span class="token punctuation">,</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// Or later, via editor API</span>
+editor<span class="token punctuation">.</span><span class="token function">setCustomParserCss</span><span class="token punctuation">(</span>parserCss<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><h2 id="rule-objects"><a href="#rule-objects" aria-hidden="true" class="header-anchor">#</a> Rule Objects</h2><p>The syntax of rule objects is pretty straightforward, each object might contain following keys</p><table><thead><tr><th>Key</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><code>selectors</code></td><td>Selectors of the rule. <br><strong>REQUIRED</strong> return an empty string in case the rule has no selectors</td><td><code>.class1, div &gt; #someid</code></td></tr><tr><td><code>style</code></td><td>Style declarations as an object</td><td><code>{ color: 'red' }</code></td></tr><tr><td><code>atRule</code></td><td>At-rule name</td><td><code>media</code></td></tr><tr><td><code>params</code></td><td>Parameters of the at-rule</td><td><code>screen and (min-width: 480px)</code></td></tr></tbody></table><p>To make it more clear let's see a few examples</p><div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// Input</span>
+<span class="token template-string"><span class="token string">`
+@font-face {
+  font-family: &quot;Font Name&quot;;
+  src: url(&quot;https://font-url.eot&quot;);
+}
+`</span></span>
+<span class="token comment">// Output</span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    selectors<span class="token punctuation">:</span> <span class="token string">''</span><span class="token punctuation">,</span>
+    atRule<span class="token punctuation">:</span> <span class="token string">'font-face'</span><span class="token punctuation">,</span>
+    style<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+      <span class="token string">'font-family'</span><span class="token punctuation">:</span> <span class="token string">'&quot;Font Name&quot;'</span><span class="token punctuation">,</span>
+      src<span class="token punctuation">:</span> <span class="token string">'url(&quot;https://font-url.eot&quot;)'</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span>
+
+<span class="token comment">// Input</span>
+<span class="token template-string"><span class="token string">`
+@keyframes keyframe-name {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+`</span></span>
+<span class="token comment">// Output</span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    params<span class="token punctuation">:</span> <span class="token string">'keyframe-name'</span><span class="token punctuation">,</span>
+    selectors<span class="token punctuation">:</span> <span class="token string">'from'</span><span class="token punctuation">,</span>
+    atRule<span class="token punctuation">:</span> <span class="token string">'keyframes'</span><span class="token punctuation">,</span>
+    style<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+      opacity<span class="token punctuation">:</span> <span class="token string">'0'</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+    params<span class="token punctuation">:</span> <span class="token string">'keyframe-name'</span><span class="token punctuation">,</span>
+    selectors<span class="token punctuation">:</span> <span class="token string">'to'</span><span class="token punctuation">,</span>
+    atRule<span class="token punctuation">:</span> <span class="token string">'keyframes'</span><span class="token punctuation">,</span>
+    style<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+      opacity<span class="token punctuation">:</span> <span class="token string">'1'</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span>
+
+<span class="token comment">// Input</span>
+<span class="token template-string"><span class="token string">`
+@media screen and (min-width: 480px) {
+    body {
+        background-color: lightgreen;
+    }
+
+    .class-test, .class-test2:hover {
+      color: blue !important;
+    }
+}
+`</span></span>
+<span class="token comment">// Output</span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    params<span class="token punctuation">:</span> <span class="token string">'screen and (min-width: 480px)'</span><span class="token punctuation">,</span>
+    selectors<span class="token punctuation">:</span> <span class="token string">'body'</span><span class="token punctuation">,</span>
+    atRule<span class="token punctuation">:</span> <span class="token string">'media'</span><span class="token punctuation">,</span>
+    style<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+      <span class="token string">'background-color'</span><span class="token punctuation">:</span> <span class="token string">'lightgreen'</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+    params<span class="token punctuation">:</span> <span class="token string">'screen and (min-width: 480px)'</span><span class="token punctuation">,</span>
+    selectors<span class="token punctuation">:</span> <span class="token string">'.class-test, .class-test2:hover'</span><span class="token punctuation">,</span>
+    atRule<span class="token punctuation">:</span> <span class="token string">'media'</span><span class="token punctuation">,</span>
+    style<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+      color<span class="token punctuation">:</span> <span class="token string">'blue !important'</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span>
+
+<span class="token comment">// Input</span>
+<span class="token template-string"><span class="token string">`
+:root {
+  --some-color: red;
+  --some-width: 55px;
+}
+`</span></span>
+<span class="token comment">// Output</span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    selectors<span class="token punctuation">:</span> <span class="token string">':root'</span><span class="token punctuation">,</span>
+    style<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+      <span class="token string">'--some-color'</span><span class="token punctuation">:</span> <span class="token string">'red'</span><span class="token punctuation">,</span>
+      <span class="token string">'--some-width'</span><span class="token punctuation">:</span> <span class="token string">'55px'</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span>
+</code></pre></div><h2 id="plugins"><a href="#plugins" aria-hidden="true" class="header-anchor">#</a> Plugins</h2><p>Below the list of current available CSS parsers as plugins, if you need to create your own we highly suggest to explore their sources</p><ul><li><a href="https://github.com/artf/grapesjs-parser-postcss" target="_blank" rel="noopener noreferrer">grapesjs-parser-postcss<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a> - Using <a href="https://github.com/postcss/postcss" target="_blank" rel="noopener noreferrer">PostCSS<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a> parser</li></ul></div><div class="page-edit"><div class="edit-link"><a href="https://github.com/artf/grapesjs/edit/dev/docs/guides/Custom-CSS-parser.md" target="_blank" rel="noopener noreferrer">Edit this page on GitHub</a><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path><polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></div><div class="last-updated"><span class="prefix">Last Updated: </span><span class="time">9/20/2018, 8:20:29 AM</span></div></div><div class="page-nav"><p class="inner"><span class="prev">
+        ← <a href="/docs/guides/Replace-Rich-Text-Editor.html" class="prev">
+          Replace Rich Text Editor
+        </a></span><!----></p></div></div></div></div>
+    <script src="/docs/assets/js/33.5a21eeb2.js" defer></script><script src="/docs/assets/js/app.a18f26bb.js" defer></script>
+  </body>
+</html>
