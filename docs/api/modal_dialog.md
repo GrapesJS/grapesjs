@@ -25,6 +25,8 @@ const modal = editor.Modal;
 -   [getTitle][6]
 -   [setContent][7]
 -   [getContent][8]
+-   [onceClose][9]
+-   [onceOpen][10]
 
 ## open
 
@@ -32,9 +34,9 @@ Open the modal window
 
 ### Parameters
 
--   `opts` **[Object][9]** Options (optional, default `{}`)
-    -   `opts.title` **([String][10] \| [HTMLElement][11])?** Title to set for the modal
-    -   `opts.content` **([String][10] \| [HTMLElement][11])?** Content to set for the modal
+-   `opts` **[Object][11]** Options (optional, default `{}`)
+    -   `opts.title` **([String][12] \| [HTMLElement][13])?** Title to set for the modal
+    -   `opts.content` **([String][12] \| [HTMLElement][13])?** Content to set for the modal
 
 Returns **this** 
 
@@ -44,11 +46,33 @@ Close the modal window
 
 Returns **this** 
 
+## onceClose
+
+Execute callback when the modal will be closed.
+The callback will be called one only time
+
+### Parameters
+
+-   `clb` **[Function][14]** 
+
+Returns **this** 
+
+## onceOpen
+
+Execute callback when the modal will be opened.
+The callback will be called one only time
+
+### Parameters
+
+-   `clb` **[Function][14]** 
+
+Returns **this** 
+
 ## isOpen
 
 Checks if the modal window is open
 
-Returns **[Boolean][12]** 
+Returns **[Boolean][15]** 
 
 ## setTitle
 
@@ -56,7 +80,7 @@ Set the title to the modal window
 
 ### Parameters
 
--   `title` **[string][10]** Title
+-   `title` **[string][12]** Title
 
 ### Examples
 
@@ -70,7 +94,7 @@ Returns **this**
 
 Returns the title of the modal window
 
-Returns **[string][10]** 
+Returns **[string][12]** 
 
 ## setContent
 
@@ -78,7 +102,7 @@ Set the content of the modal window
 
 ### Parameters
 
--   `content` **([string][10] \| [HTMLElement][11])** Content
+-   `content` **([string][12] \| [HTMLElement][13])** Content
 
 ### Examples
 
@@ -92,7 +116,7 @@ Returns **this**
 
 Get the content of the modal window
 
-Returns **[string][10]** 
+Returns **[string][12]** 
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/modal_dialog/config/config.js
 
@@ -110,10 +134,16 @@ Returns **[string][10]**
 
 [8]: #getcontent
 
-[9]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[9]: #onceclose
 
-[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[10]: #onceopen
 
-[11]: https://developer.mozilla.org/docs/Web/HTML/Element
+[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[13]: https://developer.mozilla.org/docs/Web/HTML/Element
+
+[14]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+
+[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean

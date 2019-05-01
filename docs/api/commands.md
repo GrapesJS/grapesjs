@@ -21,11 +21,12 @@ const commands = editor.Commands;
 -   [add][2]
 -   [get][3]
 -   [getAll][4]
--   [has][5]
--   [run][6]
--   [stop][7]
--   [isActive][8]
--   [getActive][9]
+-   [extend][5]
+-   [has][6]
+-   [run][7]
+-   [stop][8]
+-   [isActive][9]
+-   [getActive][10]
 
 ## add
 
@@ -33,8 +34,8 @@ Add new command to the collection
 
 ### Parameters
 
--   `id` **[string][10]** Command's ID
--   `command` **([Object][11] \| [Function][12])** Object representing your command,
+-   `id` **[string][11]** Command's ID
+-   `command` **([Object][12] \| [Function][13])** Object representing your command,
      By passing just a function it's intended as a stateless command
      (just like passing an object with only `run` method).
 
@@ -60,7 +61,7 @@ Get command by ID
 
 ### Parameters
 
--   `id` **[string][10]** Command's ID
+-   `id` **[string][11]** Command's ID
 
 ### Examples
 
@@ -69,7 +70,29 @@ var myCommand = commands.get('myCommand');
 myCommand.run();
 ```
 
-Returns **[Object][11]** Object representing the command
+Returns **[Object][12]** Object representing the command
+
+## extend
+
+Extend the command. The command to extend should be defined as an object
+
+### Parameters
+
+-   `id` **[string][11]** Command's ID
+-   `cmd`   (optional, default `{}`)
+-   `Object` **[Object][12]** with the new command functions
+
+### Examples
+
+```javascript
+commands.extend('old-command', {
+ someInnerFunction() {
+ // ...
+ }
+});
+```
+
+Returns **this** 
 
 ## has
 
@@ -77,15 +100,15 @@ Check if command exists
 
 ### Parameters
 
--   `id` **[string][10]** Command's ID
+-   `id` **[string][11]** Command's ID
 
-Returns **[Boolean][13]** 
+Returns **[Boolean][14]** 
 
 ## getAll
 
 Get an object containing all the commands
 
-Returns **[Object][11]** 
+Returns **[Object][12]** 
 
 ## run
 
@@ -93,8 +116,8 @@ Execute the command
 
 ### Parameters
 
--   `id` **[String][10]** Command ID
--   `options` **[Object][11]** Options (optional, default `{}`)
+-   `id` **[String][11]** Command ID
+-   `options` **[Object][12]** Options (optional, default `{}`)
 
 ### Examples
 
@@ -110,8 +133,8 @@ Stop the command
 
 ### Parameters
 
--   `id` **[String][10]** Command ID
--   `options` **[Object][11]** Options (optional, default `{}`)
+-   `id` **[String][11]** Command ID
+-   `options` **[Object][12]** Options (optional, default `{}`)
 
 ### Examples
 
@@ -129,7 +152,7 @@ method it can't be registered as active
 
 ### Parameters
 
--   `id` **[String][10]** Command id
+-   `id` **[String][11]** Command id
 
 ### Examples
 
@@ -143,7 +166,7 @@ commands.isActive(cId);
 // -> false
 ```
 
-Returns **[Boolean][13]** 
+Returns **[Boolean][14]** 
 
 ## getActive
 
@@ -156,7 +179,7 @@ console.log(commands.getActive());
 // -> { someCommand: itsLastReturn, anotherOne: ... };
 ```
 
-Returns **[Object][11]** 
+Returns **[Object][12]** 
 
 [1]: https://github.com/artf/grapesjs/blob/master/src/commands/config/config.js
 
@@ -166,20 +189,22 @@ Returns **[Object][11]**
 
 [4]: #getall
 
-[5]: #has
+[5]: #extend
 
-[6]: #run
+[6]: #has
 
-[7]: #stop
+[7]: #run
 
-[8]: #isactive
+[8]: #stop
 
-[9]: #getactive
+[9]: #isactive
 
-[10]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[10]: #getactive
 
-[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[11]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+[12]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+
+[14]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
