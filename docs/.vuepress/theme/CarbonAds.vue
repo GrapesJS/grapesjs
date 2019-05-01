@@ -1,4 +1,16 @@
 <script>
+window.BSANativeCallback = (a) => {
+  const total = a.ads.length;
+
+  if (!total) {
+    const src = document.createElement('script');
+    src.src = `//cdn.carbonads.com/carbon.js?zoneid=1673&serve=C6AILKT&placement=grapesjscom`;
+    src.setAttribute('id', '_carbonads_js');
+    const adCont = document.getElementById('native-carbon');
+    adCont && adCont.appendChild(src);
+  }
+}
+
 module.exports = {
   render (h) {
     return h('div', { class: 'carbon-ads', attrs: { id: 'native-carbon' }})
