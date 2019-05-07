@@ -49,7 +49,7 @@ module.exports = TraitView.extend({
       input += '</select>';
       this.input = input;
       this.$input = $(input);
-      let val = model.get('value') || model.getTargetValue();
+      let val = model.getTargetValue() || model.get('value');
       !isUndefined(val) && this.$input.val(val);
     }
 
