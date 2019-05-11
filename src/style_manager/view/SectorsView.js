@@ -1,6 +1,6 @@
 import Backbone from 'backbone';
 import { extend, isString } from 'underscore';
-import { isTextNode } from 'utils/mixins';
+import { isTaggableNode } from 'utils/mixins';
 
 const SectorView = require('./SectorView');
 
@@ -55,7 +55,7 @@ module.exports = Backbone.View.extend({
     pt.helper = null;
 
     // Create computed style container
-    if (el && !isTextNode(el)) {
+    if (el && isTaggableNode(el)) {
       const stateStr = state ? `:${state}` : null;
       pt.computed = window.getComputedStyle(el, stateStr);
     }

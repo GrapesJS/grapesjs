@@ -118,6 +118,20 @@ const getElement = el => {
 const isTextNode = el => el && el.nodeType === 3;
 
 /**
+ * Check if element is a comment node
+ * @param  {HTMLElement} el
+ * @return {Boolean}
+ */
+export const isCommentNode = el => el && el.nodeType === 8;
+
+/**
+ * Check if element is a comment node
+ * @param  {HTMLElement} el
+ * @return {Boolean}
+ */
+export const isTaggableNode = el => el && !isTextNode(el) && !isCommentNode(el);
+
+/**
  * Ensure to fetch the model from the input argument
  * @param  {HTMLElement|Component} el Component or HTML element
  * @return {Component}
