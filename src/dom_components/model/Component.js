@@ -952,6 +952,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       obj.attributes = this.getAttributes();
       delete obj.attributes.class;
       delete obj.toolbar;
+      delete obj.traits;
 
       if (this.em.getConfig('avoidDefaults')) {
         const defaults = result(this, 'defaults');
