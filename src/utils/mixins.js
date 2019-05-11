@@ -129,7 +129,13 @@ const getModel = (el, $) => {
 };
 
 const getElRect = el => {
-  if (!el) return;
+  const def = {
+    top: 0,
+    left: 0,
+    width: 0,
+    height: 0
+  };
+  if (!el) return def;
   let rectText;
 
   if (isTextNode(el)) {
@@ -139,7 +145,9 @@ const getElRect = el => {
     range.detach();
   }
 
-  return rectText || el.getBoundingClientRect();
+  return (
+    rectText || (el.getBoundingClientRect ? el.getBoundingClientRect() : def)
+  );
 };
 
 /**
