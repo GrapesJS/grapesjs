@@ -376,6 +376,7 @@ module.exports = Backbone.View.extend({
           return this.getSourceModel(src, { target, avoidChildren: 0 });
         }
       }
+
       return dropModel;
     }
 
@@ -1078,6 +1079,7 @@ module.exports = Backbone.View.extend({
         activeTextModel.trigger('active');
         const { activeRte } = viewActive;
         const modelEl = model.getEl();
+        delete model.opt.temporary;
         model.getView().render();
         modelEl.setAttribute('data-gjs-textable', 'true');
         const { outerHTML } = modelEl;
