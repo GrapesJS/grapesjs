@@ -355,8 +355,8 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    if (this.modelOpt.temporary) return this;
     this.renderAttributes();
+    if (this.modelOpt.temporary) return this;
     this.renderChildren();
     this.updateScript();
     this.postRender();

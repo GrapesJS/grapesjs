@@ -480,6 +480,7 @@ module.exports = Backbone.View.extend({
       em.trigger('sorter:drag', {
         target,
         targetModel,
+        sourceModel,
         dims,
         pos,
         x: rX,
