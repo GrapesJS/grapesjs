@@ -54,6 +54,10 @@
   svg {
     fill: currentColor;
   }
+
+  &__media {
+    margin-bottom: 10px;
+  }
 }
 
 .#{$app-prefix}block-svg {

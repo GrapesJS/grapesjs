@@ -9,7 +9,10 @@ module.exports = Backbone.Model.extend({
     select: 0,
     // If true, all IDs of dropped component and its style will be changed
     resetId: 0,
+    // Block label
     label: '',
+    // HTML string for the media of the block, eg. SVG icon, image, etc.
+    media: '',
     content: '',
     category: '',
     attributes: {}

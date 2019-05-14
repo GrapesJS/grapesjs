@@ -141,8 +141,12 @@ module.exports = Backbone.View.extend({
     const className = `${ppfx}block`;
     const label = model.get('label');
     const render = model.get('render');
+    const media = model.get('media');
     el.className += ` ${className} ${ppfx}one-bg ${ppfx}four-color-h`;
-    el.innerHTML = `<div class="${className}-label">${label}</div>`;
+    el.innerHTML = `
+      ${media ? `<div class="${className}__media">${media}</div>` : ''}
+      <div class="${className}-label">${label}</div>
+    `;
     el.title = el.textContent.trim();
     hasDnd(em) && el.setAttribute('draggable', true);
     const result = render && render({ el, model, className, prefix: ppfx });
