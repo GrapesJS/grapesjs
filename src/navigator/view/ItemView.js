@@ -31,6 +31,8 @@ export default Backbone.View.extend({
     const level = this.level + 1;
     const gut = `${30 + level * 10}px`;
     const name = model.getName();
+    const icon = model.getIcon();
+    const clsBase = `${pfx}layer`;
 
     return `
       ${
@@ -44,7 +46,7 @@ export default Backbone.View.extend({
         <div class="${clsTitle}" style="padding-left: ${gut}" data-toggle-select>
           <div class="${pfx}layer-title-inn">
             <i class="${clsCaret}" data-toggle-open></i>
-            ${model.getIcon()}
+            ${icon ? `<span class="${clsBase}__icon">${icon}</span>` : ''}
             <span class="${clsInput}" data-name>${name}</span>
           </div>
         </div>
