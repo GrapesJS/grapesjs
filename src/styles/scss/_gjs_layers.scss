@@ -83,7 +83,14 @@ $layerIconSize: 15px !default;
       padding: 5px;
       display: inline-block;
       box-sizing: content-box;
+      overflow: hidden;
+      white-space: nowrap;
+      margin-right: 20px;
       @extend .#{$app-prefix}no-user-select;
+
+      &--ell {
+        text-overflow: ellipsis;
+      }
     }
 
     > .#{$nv-prefix}layer-children {

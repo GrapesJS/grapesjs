@@ -19,15 +19,14 @@ export default Backbone.View.extend({
   },
 
   template(model) {
-    const pfx = this.pfx;
-    const ppfx = this.ppfx;
-    const hidable = this.config.hidable;
+    const { pfx, ppfx, config, clsEllip } = this;
+    const { hidable } = config;
     const count = this.countChildren(model);
     const addClass = !count ? this.clsNoChild : '';
     const clsTitle = `${this.clsTitle} ${addClass}`;
     const clsTitleC = `${this.clsTitleC} ${ppfx}one-bg`;
     const clsCaret = `${this.clsCaret} fa fa-chevron-right`;
-    const clsInput = `${this.inputNameCls} ${ppfx}no-app`;
+    const clsInput = `${this.inputNameCls} ${clsEllip} ${ppfx}no-app`;
     const level = this.level + 1;
     const gut = `${30 + level * 10}px`;
     const name = model.getName();
@@ -85,6 +84,7 @@ export default Backbone.View.extend({
     this.clsMove = `${pfx}layer-move`;
     this.clsChildren = `${pfx}layer-children`;
     this.clsNoChild = `${pfx}layer-no-chld`;
+    this.clsEllip = `${this.inputNameCls}--ell`;
     this.$el.data('model', model);
     this.$el.data('collection', components);
     model.viewLayer = this;
@@ -135,11 +135,12 @@ export default Backbone.View.extend({
    */
   handleEdit(e) {
     e && e.stopPropagation();
-    const em = this.em;
+    const { em, $el, clsEllip } = this;
     const inputEl = this.getInputName();
     inputEl[inputProp] = true;
     inputEl.focus();
     em && em.setEditing(1);
+    $el.find(`.${this.inputNameCls}`).removeClass(clsEllip);
   },
 
   /**
@@ -147,12 +148,13 @@ export default Backbone.View.extend({
    */
   handleEditEnd(e) {
     e && e.stopPropagation();
-    const em = this.em;
+    const { em, $el, clsEllip } = this;
     const inputEl = this.getInputName();
     const name = inputEl.textContent;
     inputEl[inputProp] = false;
     this.model.set({ name });
     em && em.setEditing(0);
+    $el.find(`.${this.inputNameCls}`).addClass(clsEllip);
   },
 
   /**
