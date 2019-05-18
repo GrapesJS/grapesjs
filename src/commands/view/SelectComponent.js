@@ -268,12 +268,18 @@ module.exports = {
     var $el = $(el);
     var canvas = this.canvas;
     var config = canvas.getConfig();
+    const ppfx = config.pStylePrefix || '';
     var customeLabel = config.customBadgeLabel;
     this.cacheEl = el;
     var model = $el.data('model');
     if (!model || !model.get('badgable')) return;
     var badge = this.getBadge();
-    var badgeLabel = model.getIcon() + model.getName();
+    const icon = model.getIcon();
+    const clsBadge = `${ppfx}badge`;
+    let badgeLabel = `${
+      icon ? `<div class="${clsBadge}__icon">${icon}</div>` : ''
+    }
+      <div class="${clsBadge}__name">${model.getName()}</div>`;
     badgeLabel = customeLabel ? customeLabel(model) : badgeLabel;
     badge.innerHTML = badgeLabel;
     var bStyle = badge.style;
