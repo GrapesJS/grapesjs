@@ -624,6 +624,20 @@ module.exports = () => {
     },
 
     /**
+     * Remove component type
+     * @param {string} type Component ID
+     * @returns {Object|undefined} Removed component type, undefined otherwise
+     */
+    removeType(id) {
+      const df = componentTypes;
+      const type = this.getType(id);
+      if (!type) return;
+      const index = df.indexOf(type);
+      df.splice(index, 1);
+      return type;
+    },
+
+    /**
      * Return the array of all types
      * @return {Array}
      */
