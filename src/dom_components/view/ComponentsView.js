@@ -61,7 +61,11 @@ module.exports = Backbone.View.extend({
     this.addToCollection(model, null, i);
 
     if (em && !opts.temporary) {
-      em.trigger('component:add', model);
+      const triggerAdd = model => {
+        em.trigger('component:add', model);
+        model.components().forEach(comp => triggerAdd(comp));
+      };
+      triggerAdd(model);
     }
   },
 
