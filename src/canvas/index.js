@@ -115,6 +115,10 @@ module.exports = () => {
       return CanvasView.el;
     },
 
+    getFrame() {
+      return canvas.get('frame');
+    },
+
     /**
      * Get the iframe element of the canvas
      * @return {HTMLIFrameElement}
