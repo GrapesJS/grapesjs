@@ -75,7 +75,7 @@ export default Backbone.View.extend({
     this.listenTo(model, 'change:status', this.updateStatus);
     this.listenTo(model, 'change:open', this.updateOpening);
     this.listenTo(model, 'change:style:display', this.updateVisibility);
-    this.className = `${pfx}layer ${pfx}layer__${type} no-select ${ppfx}two-color`;
+    this.className = `${pfx}layer ${pfx}layer__t-${type} no-select ${ppfx}two-color`;
     this.inputNameCls = `${ppfx}layer-name`;
     this.clsTitleC = `${pfx}layer-title-c`;
     this.clsTitle = `${pfx}layer-title`;
