@@ -14,7 +14,7 @@ module.exports = Backbone.Model.extend({
   },
 
   getHead() {
-    return this.get('head');
+    return [...this.get('head')];
   },
 
   setHead(value) {
@@ -27,14 +27,19 @@ module.exports = Backbone.Model.extend({
     this.setHead(head);
   },
 
-  removeHeadByAttr(attr, value, tag) {
+  getHeadByAttr(attr, value, tag) {
     const head = this.getHead();
-    const item = head.filter(
+    return head.filter(
       item =>
         item.attributes &&
         item.attributes[attr] == value &&
         (!tag || tag === item.tag)
     )[0];
+  },
+
+  removeHeadByAttr(attr, value, tag) {
+    const head = this.getHead();
+    const item = this.getHeadByAttr(attr, value, tag);
     const index = head.indexOf(item);
 
     if (index >= 0) {
@@ -44,13 +49,15 @@ module.exports = Backbone.Model.extend({
   },
 
   addLink(href) {
-    this.addHeadItem({
-      tag: 'link',
-      attributes: {
-        href,
-        rel: 'stylesheet'
-      }
-    });
+    const tag = 'link';
+    !this.getHeadByAttr('href', href, tag) &&
+      this.addHeadItem({
+        tag,
+        attributes: {
+          href,
+          rel: 'stylesheet'
+        }
+      });
   },
 
   removeLink(href) {
@@ -58,10 +65,12 @@ module.exports = Backbone.Model.extend({
   },
 
   addScript(src) {
-    this.addHeadItem({
-      tag: 'script',
-      attributes: { src }
-    });
+    const tag = 'script';
+    !this.getHeadByAttr('src', src, tag) &&
+      this.addHeadItem({
+        tag,
+        attributes: { src }
+      });
   },
 
   removeScript(src) {
