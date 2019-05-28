@@ -60,10 +60,10 @@ module.exports = Backbone.View.extend({
    * @private
    */
   startDrag(e) {
-    const config = this.config;
+    const { config, em } = this;
     //Right or middel click
     if (e.button !== 0 || !config.getSorter || this.el.draggable) return;
-    config.em.refreshCanvas();
+    em.refreshCanvas();
     const sorter = config.getSorter();
     sorter.setDragHelper(this.el, e);
     sorter.setDropContent(this.model.get('content'));
@@ -75,11 +75,10 @@ module.exports = Backbone.View.extend({
     const { em, model } = this;
     const content = model.get('content');
     const isObj = isObject(content);
-    const type = isObj ? 'text/json' : 'text';
     const data = isObj ? JSON.stringify(content) : content;
 
     // Note: data are not available on dragenter for security reason,
-    // but will use dragContent as I need it for the Sorter context
+    // we have to use dragContent as we need it for the Sorter context
     // IE11 supports only 'text' data type
     ev.dataTransfer.setData('text', data);
     em.set('dragContent', content);

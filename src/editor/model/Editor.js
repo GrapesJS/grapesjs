@@ -626,6 +626,14 @@ module.exports = Backbone.Model.extend({
   },
 
   /**
+   * Returns true if the editor is in absolute mode
+   * @returns {Boolean}
+   */
+  inAbsoluteMode() {
+    return this.get('dmode') === 'absolute';
+  },
+
+  /**
    * Destroy editor
    */
   destroyAll() {
