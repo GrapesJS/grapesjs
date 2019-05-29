@@ -151,8 +151,15 @@ module.exports = require('backbone').Model.extend({
     const result = {};
     const itemsArr = [];
     each(items, (value, key) => itemsArr.push({ key, value }));
+
     return itemsArr.sort(
-      (a, b) => this.getQueryLength(b.key) - this.getQueryLength(a.key)
+      (a, b) => {
+        if (a.key.includes('min-width') && b.key.includes('min-width')) {
+          return  this.getQueryLength(a.key) - this.getQueryLength(b.key);
+        } else {
+          return  this.getQueryLength(b.key) - this.getQueryLength(a.key);
+        }
+      }
     );
   }
 });
