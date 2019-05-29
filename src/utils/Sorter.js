@@ -353,6 +353,7 @@ module.exports = Backbone.View.extend({
     const isTextable = src =>
       src &&
       target &&
+      src.opt &&
       src.opt.avoidChildren &&
       this.isTextableActive(src, target);
 
@@ -370,7 +371,8 @@ module.exports = Backbone.View.extend({
         };
         const tempModel = comps.add(dropContent, { ...opts, temporary: 1 });
         dropModel = comps.remove(tempModel, opts);
-        this.dropModel = dropModel instanceof Array ? dropModel[0] : dropModel;
+        dropModel = dropModel instanceof Array ? dropModel[0] : dropModel;
+        this.dropModel = dropModel;
 
         if (isTextable(dropModel)) {
           return this.getSourceModel(src, { target, avoidChildren: 0 });
@@ -489,7 +491,7 @@ module.exports = Backbone.View.extend({
   },
 
   isTextableActive(src, trg) {
-    return src && src.get('textable') && trg && trg.is('text');
+    return src && src.get && src.get('textable') && trg && trg.is('text');
   },
 
   disableTextable() {
@@ -1039,7 +1041,7 @@ module.exports = Backbone.View.extend({
    * @param {Object} pos Object with position coordinates
    * */
   move(dst, src, pos) {
-    const { em, activeTextModel } = this;
+    const { em, activeTextModel, dropContent } = this;
     const srcEl = getElement(src);
     em && em.trigger('component:dragEnd:before', dst, srcEl, pos); // @depricated
     var warns = [];
@@ -1052,7 +1054,6 @@ module.exports = Backbone.View.extend({
     var draggable = validResult.draggable;
     var dropInfo = validResult.dropInfo;
     var dragInfo = validResult.dragInfo;
-    var dropContent = this.dropContent;
     const { trgModel } = validResult;
     droppable = trgModel instanceof Backbone.Collection ? 1 : droppable;
     const isTextableActive = this.isTextableActive(model, trgModel);
@@ -1114,7 +1115,15 @@ module.exports = Backbone.View.extend({
     }
 
     em && em.trigger('component:dragEnd', targetCollection, modelToDrop, warns); // @depricated
-    em && em.trigger('sorter:drag:end', targetCollection, modelToDrop, warns);
+    em &&
+      em.trigger('sorter:drag:end', {
+        targetCollection,
+        modelToDrop,
+        warns,
+        validResult,
+        dst,
+        srcEl
+      });
 
     return created;
   },
