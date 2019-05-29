@@ -27,6 +27,7 @@ module.exports = ComponentView.extend({
    * Fetch file if exists
    */
   fetchFile() {
+    if (this.modelOpt.temporary) return;
     const model = this.model;
     const file = model.get('file');
 
