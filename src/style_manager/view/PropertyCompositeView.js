@@ -118,10 +118,6 @@ module.exports = PropertyView.extend({
         view && view.getTargetValue({ ignoreCustomValue: 1, ignoreDefault: 1 });
     }
 
-    if (view) {
-      value = view.model.parseValue(value).value;
-    }
-
     return value;
   },
 
