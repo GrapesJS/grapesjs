@@ -50,39 +50,57 @@ export default class Droppable {
   }
 
   handleDragEnter(ev) {
-    const em = this.em;
+    const { em } = this;
     const dt = ev.dataTransfer;
     this.updateCounter(1, ev);
     if (this.over) return;
     this.over = 1;
     const utils = em.get('Utils');
     const canvas = em.get('Canvas');
-    this.sorter = new utils.Sorter({
-      em,
-      wmargin: 1,
-      nested: 1,
-      canvasRelative: 1,
-      direction: 'a',
-      container: canvas.getBody(),
-      placer: canvas.getPlacerEl(),
-      eventMoving: 'mousemove dragover',
-      containerSel: '*',
-      itemSel: '*',
-      pfx: 'gjs-',
-      onStart: () => em.stopDefault(),
-      onEndMove: model => {
-        em.runDefault();
-        em.set('dragResult', model);
-        model && em.trigger('canvas:drop', dt, model);
-      },
-      document: canvas.getFrameEl().contentDocument
-    });
     // For security reason I can't read the drag data on dragenter, but
     // as I need it for the Sorter context I will use `dragContent` or just
     // any not empty element
     const content = em.get('dragContent') || '<br>';
-    this.sorter.setDropContent(content);
-    this.sorter.startSort();
+
+    if (em.inAbsoluteMode()) {
+      console.log('im in absolute mode', content);
+      const target = {}; // create and append to Components
+      em.get('Commands').run('core:component-drag', {
+        guidesInfo: 1,
+        target,
+        onEnd: () => {
+          // em.runDefault(defComOptions);
+          // selAll.forEach(sel => sel.set('status', 'selected'));
+          // ed.select(selAll);
+          // sel.emitUpdate();
+        },
+        event: ev
+      });
+    } else {
+      this.sorter = new utils.Sorter({
+        em,
+        wmargin: 1,
+        nested: 1,
+        canvasRelative: 1,
+        direction: 'a',
+        container: canvas.getBody(),
+        placer: canvas.getPlacerEl(),
+        eventMoving: 'mousemove dragover',
+        containerSel: '*',
+        itemSel: '*',
+        pfx: 'gjs-',
+        onStart: () => em.stopDefault(),
+        onEndMove: model => {
+          em.runDefault();
+          em.set('dragResult', model);
+          model && em.trigger('canvas:drop', dt, model);
+        },
+        document: canvas.getFrameEl().contentDocument
+      });
+      this.sorter.setDropContent(content);
+      this.sorter.startSort();
+    }
+
     em.trigger('canvas:dragenter', dt, content);
   }
 
