@@ -166,7 +166,6 @@ module.exports = Backbone.View.extend({
   },
 
   getTarget() {
-    const targetStyle = this.getStyleEmitter().model;
     return this.target.getSelected();
   },
 
@@ -252,34 +251,30 @@ module.exports = Backbone.View.extend({
    * @return {Object} Object created
    * @private
    * */
-  addToClasses(model, fragmentEl) {
-    var fragment = fragmentEl || null;
-
-    var view = new ClassTagView({
+  addToClasses(model, fragmentEl = null) {
+    const fragment = fragmentEl;
+    const classes = this.getClasses();
+    const rendered = new ClassTagView({
       model,
       config: this.config,
       coll: this.collection
-    });
-    var rendered = view.render().el;
+    }).render().el;
 
-    if (fragment) fragment.appendChild(rendered);
-    else this.getClasses().append(rendered);
+    fragment ? fragment.appendChild(rendered) : classes.append(rendered);
 
     return rendered;
   },
 
   /**
    * Render the collection of classes
-   * @return {this}
    * @private
    */
   renderClasses() {
     const frag = document.createDocumentFragment();
     const classes = this.getClasses();
+    classes.empty();
     this.collection.each(model => this.addToClasses(model, frag));
-    classes.get(0) && classes.empty().append(frag);
-
-    return this;
+    classes.append(frag);
   },
 
   /**
@@ -288,8 +283,7 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getClasses() {
-    if (!this.$classes) this.$classes = this.$el.find(`#${this.pfx}tags-c`);
-    return this.$classes;
+    return this.$el.find(`#${this.pfx}tags-c`);
   },
 
   /**
