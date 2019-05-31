@@ -94,12 +94,10 @@ module.exports = require('backbone').View.extend({
    * @param {Object} e
    * @private
    */
-  removeTag(e) {
+  removeTag() {
     const { em, model } = this;
     const sel = em && em.getSelected();
-    // Prevent weird erros on remove
-    if (!model.get('protected'))
-      sel && setTimeout(() => sel.getSelectors().remove(model));
+    if (!model.get('protected') && sel) sel.getSelectors().remove(model);
   },
 
   /**
