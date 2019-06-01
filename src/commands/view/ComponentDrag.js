@@ -269,7 +269,8 @@ module.exports = {
       x = this.getTranslate(transform);
       y = this.getTranslate(transform, 'y');
     } else {
-      (x = parseFloat(left)), (y = parseFloat(top));
+      x = parseFloat(left);
+      y = parseFloat(top);
     }
 
     return { x, y };
@@ -299,14 +300,23 @@ module.exports = {
   },
 
   onStart() {
-    console.log('ComponentDrag onStart');
-    const { target, editor, isTran } = this;
+    const { target, editor, isTran, opts } = this;
+    const { center } = opts;
+    const { Canvas } = editor;
     const style = target.getStyle();
     const position = 'absolute';
     if (isTran) return;
 
     if (style.position !== position) {
-      const { left, top, width, height } = editor.Canvas.offset(target.getEl());
+      let { left, top, width, height } = Canvas.offset(target.getEl());
+
+      // Check if to center the target to the pointer position
+      if (center) {
+        const { x, y } = Canvas.getMouseRelativeCanvas(event);
+        left = x;
+        top = y;
+      }
+
       this.setPosition({
         x: left,
         y: top,
@@ -318,7 +328,6 @@ module.exports = {
   },
 
   onDrag() {
-    console.log('ComponentDrag onDrag');
     const { guidesTarget, opts } = this;
     this.updateGuides(guidesTarget);
     opts.debug && guidesTarget.forEach(item => this.renderGuide(item));
@@ -329,10 +338,9 @@ module.exports = {
   onEnd() {
     const { editor, opts, id } = this;
     const { onEnd } = opts;
-    onEnd && onEnd();
+    onEnd && onEnd({});
     editor.stopCommand(id);
     this.hideGuidesInfo();
-    console.log('ComponentDrag onEnd');
   },
 
   hideGuidesInfo() {

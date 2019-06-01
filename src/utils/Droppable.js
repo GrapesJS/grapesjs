@@ -67,19 +67,14 @@ export default class Droppable {
     const content = em.get('dragContent') || '<br>';
 
     if (em.inAbsoluteMode()) {
-      const target = em
-        .get('DomComponents')
-        .getWrapper()
-        .append(content, { at: 0 })[0];
+      const wrapper = em.get('DomComponents').getWrapper();
+      const target = wrapper.append(content)[0];
       em.get('Commands').run('core:component-drag', {
-        // guidesInfo: 1,
+        guidesInfo: 1,
+        center: 1,
         target,
-        onEnd: () => {
-          // em.runDefault(defComOptions);
-          // selAll.forEach(sel => sel.set('status', 'selected'));
-          // ed.select(selAll);
-          // sel.emitUpdate();
-        },
+        onCancel: () => target.remove(),
+        onEnd: ({ cancelled }) => em.setSelected(target),
         event: ev
       });
     } else {
