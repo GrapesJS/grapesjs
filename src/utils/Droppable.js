@@ -68,10 +68,7 @@ export default class Droppable {
 
     if (em.inAbsoluteMode()) {
       const wrapper = em.get('DomComponents').getWrapper();
-      const target = wrapper.append({
-        style: { width: '30px', height: '30px', background: 'red' }
-      })[0];
-
+      const target = wrapper.append({})[0];
       em.get('Commands').run('core:component-drag', {
         guidesInfo: 1,
         center: 1,
