@@ -299,6 +299,7 @@ module.exports = {
   },
 
   onStart() {
+    console.log('ComponentDrag onStart');
     const { target, editor, isTran } = this;
     const style = target.getStyle();
     const position = 'absolute';
@@ -317,6 +318,7 @@ module.exports = {
   },
 
   onDrag() {
+    console.log('ComponentDrag onDrag');
     const { guidesTarget, opts } = this;
     this.updateGuides(guidesTarget);
     opts.debug && guidesTarget.forEach(item => this.renderGuide(item));
@@ -330,6 +332,7 @@ module.exports = {
     onEnd && onEnd();
     editor.stopCommand(id);
     this.hideGuidesInfo();
+    console.log('ComponentDrag onEnd');
   },
 
   hideGuidesInfo() {

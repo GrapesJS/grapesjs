@@ -34,9 +34,13 @@ export default class Droppable {
     this.counter = 0;
     this.over = 0;
     // force out like in BlockView
-    const sorter = this.sorter;
-    cancel && (sorter.moved = 0);
-    sorter.endMove();
+    const { sorter } = this;
+
+    if (sorter) {
+      cancel && (sorter.moved = 0);
+      sorter.endMove();
+    }
+
     em.trigger('canvas:dragend', ev);
   }
 
@@ -63,10 +67,12 @@ export default class Droppable {
     const content = em.get('dragContent') || '<br>';
 
     if (em.inAbsoluteMode()) {
-      console.log('im in absolute mode', content);
-      const target = {}; // create and append to Components
+      const target = em
+        .get('DomComponents')
+        .getWrapper()
+        .append(content, { at: 0 })[0];
       em.get('Commands').run('core:component-drag', {
-        guidesInfo: 1,
+        // guidesInfo: 1,
         target,
         onEnd: () => {
           // em.runDefault(defComOptions);
@@ -115,14 +121,17 @@ export default class Droppable {
 
   handleDrop(ev) {
     ev.preventDefault();
+    const { sorter } = this;
     const dt = ev.dataTransfer;
     const content = this.getContentByData(dt).content;
     ev.target.style.border = '';
 
-    if (content) {
-      this.sorter.setDropContent(content);
-    } else {
-      this.sorter.moved = 0;
+    if (sorter) {
+      if (content) {
+        sorter.setDropContent(content);
+      } else {
+        sorter.moved = 0;
+      }
     }
 
     this.endDrop(0, ev);

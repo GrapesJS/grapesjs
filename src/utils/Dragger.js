@@ -78,8 +78,8 @@ export default class Dragger {
     const docs = this.getDocumentEl();
     const method = enable ? 'on' : 'off';
     const methods = { on, off };
-    methods[method](docs, 'mousemove', this.drag);
-    methods[method](docs, 'mouseup', this.stop);
+    methods[method](docs, 'mousemove dragover', this.drag);
+    methods[method](docs, 'mouseup dragend touchend', this.stop);
   }
 
   /**
