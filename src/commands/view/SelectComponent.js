@@ -678,14 +678,15 @@ module.exports = {
     this.onSelect();
   },
 
-  stop(editor, sender, opts = {}) {
-    const em = this.em;
+  stop(ed, sender, opts = {}) {
+    const { em, editor } = this;
     this.stopSelectComponent();
     !opts.preserveSelected && em.setSelected(null);
     this.clean();
     this.onOut();
     this.hideFixedElementOffset();
     this.canvas.getToolbarEl().style.display = 'none';
+    editor && editor.stopCommand('resize');
 
     em.off('component:update', this.updateAttached, this);
     em.off('change:canvasOffset', this.updateAttached, this);

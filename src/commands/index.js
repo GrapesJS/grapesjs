@@ -98,15 +98,10 @@ module.exports = () => {
           const event = opts && opts.event;
           const sel = ed.getSelected();
           const selAll = [...ed.getSelectedAll()];
-          const toolbarStyle = ed.Canvas.getToolbarEl().style;
           const nativeDrag = event && event.type == 'dragstart';
           const defComOptions = { preserveSelected: 1 };
           const modes = ['absolute', 'translate'];
-
-          const hideTlb = () => {
-            toolbarStyle.display = 'none';
-            em.stopDefault(defComOptions);
-          };
+          const hideTlb = () => em.stopDefault(defComOptions);
 
           if (!sel || !sel.get('draggable')) {
             console.warn('The element is not draggable');
