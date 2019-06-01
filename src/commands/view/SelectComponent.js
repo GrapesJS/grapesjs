@@ -561,14 +561,17 @@ module.exports = {
         pos.top = pos.elementTop + pos.elementHeight;
       }
 
-      // Check if not outside of the canvas
-      if (pos.left < pos.canvasLeft) {
-        pos.left = pos.canvasLeft;
+      // Check left position of the toolbar
+      const elRight = pos.elementLeft + pos.elementWidth;
+      let left = elRight - pos.targetWidth;
+
+      if (elRight > pos.canvasWidth) {
+        left -= elRight - pos.canvasWidth;
       }
 
-      var leftPos = pos.left + pos.elementWidth - pos.targetWidth;
-      toolbarStyle.top = pos.top + unit;
-      toolbarStyle.left = (leftPos < 0 ? 0 : leftPos) + unit;
+      left = left < 0 ? 0 : left;
+      toolbarStyle.top = `${pos.top}${unit}`;
+      toolbarStyle.left = `${left}${unit}`;
       toolbarStyle.opacity = '';
     }
   },

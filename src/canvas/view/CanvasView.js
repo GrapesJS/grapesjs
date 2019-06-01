@@ -413,7 +413,9 @@ module.exports = Backbone.View.extend({
 
     return {
       top: fo.top + bEl.scrollTop * zoom - co.top,
-      left: fo.left + bEl.scrollLeft * zoom - co.left
+      left: fo.left + bEl.scrollLeft * zoom - co.left,
+      width: co.width,
+      height: co.height
     };
   },
 
