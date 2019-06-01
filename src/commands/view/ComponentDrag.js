@@ -177,7 +177,6 @@ module.exports = {
     const { Canvas } = this.editor;
     const { topScroll, top } = Canvas.getRect();
     const frameTop = Canvas.getCanvasView().getFrameOffset().top;
-    // const elRect = this.getGuidePosUpdate(item, el.getBoundingClientRect());
     const un = 'px';
     const guideSize = item.active ? 2 : 1;
     let numEl = el.children[0];
@@ -197,14 +196,11 @@ module.exports = {
       el.style.height = `${guideSize}${un}`;
       el.style.top = `${item.y}${un}`;
       el.style.left = 0;
-      // numEl.innerHTML = elRect.y;
     } else {
       el.style.width = `${guideSize}${un}`;
       el.style.height = '100%';
       el.style.left = `${item.x}${un}`;
       el.style.top = `${topScroll - frameTop + top}${un}`;
-      // numEl.innerHTML = elRect.x;
-      // numEl.innerHTML = el.style.left;
     }
 
     !item.guide && this.guidesContainer.appendChild(el);
@@ -335,10 +331,10 @@ module.exports = {
       this.renderGuideInfo(guidesTarget.filter(item => item.active));
   },
 
-  onEnd() {
+  onEnd(...args) {
     const { editor, opts, id } = this;
     const { onEnd } = opts;
-    onEnd && onEnd({});
+    onEnd && onEnd(...args);
     editor.stopCommand(id);
     this.hideGuidesInfo();
   },

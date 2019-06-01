@@ -1,5 +1,5 @@
 import { bindAll, isFunction, result, isUndefined } from 'underscore';
-import { on, off } from 'utils/mixins';
+import { on, off, isEscKey } from 'utils/mixins';
 
 export default class Dragger {
   /**
@@ -57,7 +57,7 @@ export default class Dragger {
       // Scale result points, can also be a function
       scale: 1
     };
-    bindAll(this, 'drag', 'stop');
+    bindAll(this, 'drag', 'stop', 'cancel');
     this.setOptions(opts);
     this.delta = { x: 0, y: 0 };
     return this;
@@ -80,6 +80,7 @@ export default class Dragger {
     const methods = { on, off };
     methods[method](docs, 'mousemove dragover', this.drag);
     methods[method](docs, 'mouseup dragend touchend', this.stop);
+    methods[method](docs, 'keydown', this.cancel);
   }
 
   /**
@@ -227,13 +228,22 @@ export default class Dragger {
   /**
    * Stop dragging
    */
-  stop(ev) {
+  stop(ev, opts = {}) {
     const { delta } = this;
+    const cancelled = opts.cancel;
+    const x = cancelled ? 0 : delta.x;
+    const y = cancelled ? 0 : delta.y;
     this.toggleDrag();
     this.lockedAxis = null;
-    this.move(delta.x, delta.y, 1);
+    this.move(x, y, 1);
     const { onEnd } = this.opts;
-    isFunction(onEnd) && onEnd(ev, this);
+    isFunction(onEnd) && onEnd(ev, this, { cancelled });
+  }
+
+  cancel(ev) {
+    if (isEscKey(ev)) {
+      this.stop(ev, { cancel: 1 });
+    }
   }
 
   /**

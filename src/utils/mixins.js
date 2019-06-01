@@ -179,6 +179,7 @@ const getPointerEvent = ev =>
  */
 const getKeyCode = ev => ev.which || ev.keyCode;
 const getKeyChar = ev => String.fromCharCode(getKeyCode(ev));
+const isEscKey = ev => getKeyCode(ev) === 27;
 
 const capitalize = str => str.charAt(0).toUpperCase() + str.substring(1);
 
@@ -194,6 +195,7 @@ export {
   isTextNode,
   getKeyCode,
   getKeyChar,
+  isEscKey,
   getElement,
   shallowDiff,
   normalizeFloat,

@@ -68,13 +68,24 @@ export default class Droppable {
 
     if (em.inAbsoluteMode()) {
       const wrapper = em.get('DomComponents').getWrapper();
-      const target = wrapper.append(content)[0];
+      const target = wrapper.append({
+        style: { width: '30px', height: '30px', background: 'red' }
+      })[0];
+
       em.get('Commands').run('core:component-drag', {
         guidesInfo: 1,
         center: 1,
         target,
-        onCancel: () => target.remove(),
-        onEnd: ({ cancelled }) => em.setSelected(target),
+        onEnd: (ev, dragger, { cancelled }) => {
+          if (!cancelled) {
+            const comp = wrapper.append(content)[0];
+            const { left, top, position } = target.getStyle();
+            comp.setStyle({ left, top, position });
+            em.setSelected(comp);
+          }
+
+          target.remove();
+        },
         event: ev
       });
     } else {
