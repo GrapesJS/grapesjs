@@ -177,7 +177,15 @@ module.exports = () => {
         const cmd = require(`./view/${item[1]}`);
         const cmdName = `core:${item[0]}`;
         defaultCommands[cmdName] = cmd;
-        if (oldCmd) defaultCommands[oldCmd] = cmd;
+        if (oldCmd) {
+          defaultCommands[oldCmd] = cmd;
+          // Propogate old commands (can be removed once we stop to call old commands)
+          ['run', 'stop'].forEach(name => {
+            em.on(`${name}:${oldCmd}`, (...args) =>
+              em.trigger(`${name}:${cmdName}`, ...args)
+            );
+          });
+        }
       });
 
       if (c.em) c.model = c.em.get('Canvas');
