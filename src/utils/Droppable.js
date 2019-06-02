@@ -41,6 +41,7 @@ export default class Droppable {
       sorter.endMove();
     }
 
+    em.runDefault();
     em.trigger('canvas:dragend', ev);
   }
 
@@ -65,11 +66,14 @@ export default class Droppable {
     // as I need it for the Sorter context I will use `dragContent` or just
     // any not empty element
     const content = em.get('dragContent') || '<br>';
+    const container = canvas.getBody();
+    em.stopDefault();
 
     if (em.inAbsoluteMode()) {
       const wrapper = em.get('DomComponents').getWrapper();
       const target = wrapper.append({})[0];
       em.get('Commands').run('core:component-drag', {
+        event: ev,
         guidesInfo: 1,
         center: 1,
         target,
@@ -78,12 +82,10 @@ export default class Droppable {
             const comp = wrapper.append(content)[0];
             const { left, top, position } = target.getStyle();
             comp.setStyle({ left, top, position });
-            em.setSelected(comp);
+            this.handleDragEnd(comp, dt);
           }
-
           target.remove();
-        },
-        event: ev
+        }
       });
     } else {
       this.sorter = new utils.Sorter({
@@ -92,18 +94,12 @@ export default class Droppable {
         nested: 1,
         canvasRelative: 1,
         direction: 'a',
-        container: canvas.getBody(),
+        container,
         placer: canvas.getPlacerEl(),
-        eventMoving: 'mousemove dragover',
         containerSel: '*',
         itemSel: '*',
         pfx: 'gjs-',
-        onStart: () => em.stopDefault(),
-        onEndMove: model => {
-          em.runDefault();
-          em.set('dragResult', model);
-          model && em.trigger('canvas:drop', dt, model);
-        },
+        onEndMove: model => this.handleDragEnd(model, dt),
         document: canvas.getFrameEl().contentDocument
       });
       this.sorter.setDropContent(content);
@@ -111,6 +107,13 @@ export default class Droppable {
     }
 
     em.trigger('canvas:dragenter', dt, content);
+  }
+
+  handleDragEnd(model, dt) {
+    if (!model) return;
+    const { em } = this;
+    em.set('dragResult', model);
+    em.trigger('canvas:drop', dt, model);
   }
 
   /**
