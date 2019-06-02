@@ -9,6 +9,10 @@ export default class Dragger {
   constructor(opts = {}) {
     this.opts = {
       /**
+       * Element on which the drag will be executed. By default, the document will be used
+       */
+      container: null,
+      /**
        * Callback on start
        * onStart(ev, dragger) {
        *  console.log('pointer start', dragger.startPointer, 'position start', dragger.startPosition);
@@ -76,9 +80,10 @@ export default class Dragger {
 
   toggleDrag(enable) {
     const docs = this.getDocumentEl();
+    const container = this.getContainerEl();
     const method = enable ? 'on' : 'off';
     const methods = { on, off };
-    methods[method](docs, 'mousemove dragover', this.drag);
+    methods[method](container, 'mousemove dragover', this.drag);
     methods[method](docs, 'mouseup dragend touchend', this.stop);
     methods[method](docs, 'keydown', this.cancel);
   }
@@ -270,6 +275,11 @@ export default class Dragger {
       el.style.left = `${xPos}px`;
       el.style.top = `${yPos}px`;
     }
+  }
+
+  getContainerEl() {
+    const { container } = this.opts;
+    return container ? [container] : this.getDocumentEl();
   }
 
   /**
