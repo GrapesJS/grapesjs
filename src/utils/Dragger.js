@@ -61,7 +61,7 @@ export default class Dragger {
       // Scale result points, can also be a function
       scale: 1
     };
-    bindAll(this, 'drag', 'stop', 'cancel');
+    bindAll(this, 'drag', 'stop', 'keyHandle');
     this.setOptions(opts);
     this.delta = { x: 0, y: 0 };
     return this;
@@ -85,7 +85,7 @@ export default class Dragger {
     const methods = { on, off };
     methods[method](container, 'mousemove dragover', this.drag);
     methods[method](docs, 'mouseup dragend touchend', this.stop);
-    methods[method](docs, 'keydown', this.cancel);
+    methods[method](docs, 'keydown', this.keyHandle);
   }
 
   /**
@@ -245,7 +245,7 @@ export default class Dragger {
     isFunction(onEnd) && onEnd(ev, this, { cancelled });
   }
 
-  cancel(ev) {
+  keyHandle(ev) {
     if (isEscKey(ev)) {
       this.stop(ev, { cancel: 1 });
     }

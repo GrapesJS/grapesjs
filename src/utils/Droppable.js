@@ -30,17 +30,10 @@ export default class Droppable {
   }
 
   endDrop(cancel, ev) {
-    const em = this.em;
+    const { em, dragStop } = this;
     this.counter = 0;
     this.over = 0;
-    // force out like in BlockView
-    const { sorter } = this;
-
-    if (sorter) {
-      cancel && (sorter.moved = 0);
-      sorter.endMove();
-    }
-
+    dragStop && dragStop(cancel);
     em.runDefault();
     em.trigger('canvas:dragend', ev);
   }
@@ -68,11 +61,12 @@ export default class Droppable {
     const content = em.get('dragContent') || '<br>';
     const container = canvas.getBody();
     em.stopDefault();
+    let dragStop;
 
     if (em.inAbsoluteMode()) {
       const wrapper = em.get('DomComponents').getWrapper();
       const target = wrapper.append({})[0];
-      em.get('Commands').run('core:component-drag', {
+      const dragger = em.get('Commands').run('core:component-drag', {
         event: ev,
         guidesInfo: 1,
         center: 1,
@@ -87,8 +81,9 @@ export default class Droppable {
           target.remove();
         }
       });
+      dragStop = cancel => dragger.stop(ev, { cancel });
     } else {
-      this.sorter = new utils.Sorter({
+      const sorter = new utils.Sorter({
         em,
         wmargin: 1,
         nested: 1,
@@ -102,10 +97,16 @@ export default class Droppable {
         onEndMove: model => this.handleDragEnd(model, dt),
         document: canvas.getFrameEl().contentDocument
       });
-      this.sorter.setDropContent(content);
-      this.sorter.startSort();
+      sorter.setDropContent(content);
+      sorter.startSort();
+      this.sorter = sorter;
+      dragStop = cancel => {
+        cancel && (sorter.moved = 0);
+        sorter.endMove();
+      };
     }
 
+    this.dragStop = dragStop;
     em.trigger('canvas:dragenter', dt, content);
   }
 
