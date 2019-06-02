@@ -420,8 +420,8 @@ module.exports = {
     const { ppfx, editor } = this;
     const methodCls = on ? 'add' : 'remove';
     const canvas = this.getCanvas();
-    // const classes = [`${ppfx}is__grabbing`];
-    // classes.forEach(cls => canvas.classList[methodCls](cls));
+    const classes = [`${ppfx}is__grabbing`];
+    classes.forEach(cls => canvas.classList[methodCls](cls));
     editor.Canvas[on ? 'startAutoscroll' : 'stopAutoscroll']();
   }
 };
