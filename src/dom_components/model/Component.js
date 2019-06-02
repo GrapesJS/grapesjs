@@ -1095,7 +1095,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @return {this}
      */
     remove() {
-      return this.collection.remove(this);
+      const coll = this.collection;
+      return coll && coll.remove(this);
     },
 
     /**
