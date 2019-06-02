@@ -55,13 +55,13 @@ export default class Droppable {
     this.over = 1;
     const utils = em.get('Utils');
     const canvas = em.get('Canvas');
+    const container = canvas.getBody();
     // For security reason I can't read the drag data on dragenter, but
     // as I need it for the Sorter context I will use `dragContent` or just
     // any not empty element
-    const content = em.get('dragContent') || '<br>';
-    const container = canvas.getBody();
+    let content = em.get('dragContent') || '<br>';
+    let dragStop, dragContent;
     em.stopDefault();
-    let dragStop;
 
     if (em.inAbsoluteMode()) {
       const wrapper = em.get('DomComponents').getWrapper();
@@ -82,6 +82,7 @@ export default class Droppable {
         }
       });
       dragStop = cancel => dragger.stop(ev, { cancel });
+      dragContent = cnt => (content = cnt);
     } else {
       const sorter = new utils.Sorter({
         em,
@@ -104,9 +105,11 @@ export default class Droppable {
         cancel && (sorter.moved = 0);
         sorter.endMove();
       };
+      dragContent = content => sorter.setDropContent(content);
     }
 
     this.dragStop = dragStop;
+    this.dragContent = dragContent;
     em.trigger('canvas:dragenter', dt, content);
   }
 
@@ -128,20 +131,12 @@ export default class Droppable {
 
   handleDrop(ev) {
     ev.preventDefault();
-    const { sorter } = this;
+    const { dragContent } = this;
     const dt = ev.dataTransfer;
     const content = this.getContentByData(dt).content;
     ev.target.style.border = '';
-
-    if (sorter) {
-      if (content) {
-        sorter.setDropContent(content);
-      } else {
-        sorter.moved = 0;
-      }
-    }
-
-    this.endDrop(0, ev);
+    content && dragContent && dragContent(content);
+    this.endDrop(!content, ev);
   }
 
   getContentByData(dataTransfer) {
