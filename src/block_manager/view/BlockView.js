@@ -76,6 +76,7 @@ module.exports = Backbone.View.extend({
     const content = model.get('content');
     const isObj = isObject(content);
     const data = isObj ? JSON.stringify(content) : content;
+    em.set('dragResult');
 
     // Note: data are not available on dragenter for security reason,
     // we have to use dragContent as we need it for the Sorter context
