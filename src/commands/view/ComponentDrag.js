@@ -323,12 +323,14 @@ module.exports = {
     }
   },
 
-  onDrag() {
+  onDrag(...args) {
     const { guidesTarget, opts } = this;
+    const { onDrag } = opts;
     this.updateGuides(guidesTarget);
     opts.debug && guidesTarget.forEach(item => this.renderGuide(item));
     opts.guidesInfo &&
       this.renderGuideInfo(guidesTarget.filter(item => item.active));
+    onDrag && onDrag(...args);
   },
 
   onEnd(...args) {
