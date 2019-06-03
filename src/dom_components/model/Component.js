@@ -757,12 +757,12 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @param  {Options} opts Options for the add
      * @return {Array} Array of added traits
      * @example
-     * component.addTrat('title', { at: 1 }); // Add title trait (`at` option is the position index)
-     * component.addTrat({
+     * component.addTrait('title', { at: 1 }); // Add title trait (`at` option is the position index)
+     * component.addTrait({
      *  type: 'checkbox',
      *  name: 'disabled',
      * });
-     * component.addTrat(['title', {...}, ...]);
+     * component.addTrait(['title', {...}, ...]);
      */
     addTrait(trait, opts = {}) {
       const { em } = this;
