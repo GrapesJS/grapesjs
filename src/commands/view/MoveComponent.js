@@ -129,7 +129,7 @@ module.exports = _.extend({}, SelectPosition, SelectComponent, {
    * */
   rollback(e, force) {
     var key = e.which || e.keyCode;
-    if (key == this.opt.ESCAPE_KEY || force) {
+    if (key == 27 || force) {
       this.sorter.moved = false;
       this.sorter.endMove();
     }

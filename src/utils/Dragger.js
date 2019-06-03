@@ -1,5 +1,5 @@
 import { bindAll, isFunction, result, isUndefined } from 'underscore';
-import { on, off } from 'utils/mixins';
+import { on, off, isEscKey } from 'utils/mixins';
 
 export default class Dragger {
   /**
@@ -8,6 +8,10 @@ export default class Dragger {
    */
   constructor(opts = {}) {
     this.opts = {
+      /**
+       * Element on which the drag will be executed. By default, the document will be used
+       */
+      container: null,
       /**
        * Callback on start
        * onStart(ev, dragger) {
@@ -57,7 +61,7 @@ export default class Dragger {
       // Scale result points, can also be a function
       scale: 1
     };
-    bindAll(this, 'drag', 'stop');
+    bindAll(this, 'drag', 'stop', 'keyHandle');
     this.setOptions(opts);
     this.delta = { x: 0, y: 0 };
     return this;
@@ -76,10 +80,12 @@ export default class Dragger {
 
   toggleDrag(enable) {
     const docs = this.getDocumentEl();
+    const container = this.getContainerEl();
     const method = enable ? 'on' : 'off';
     const methods = { on, off };
-    methods[method](docs, 'mousemove', this.drag);
-    methods[method](docs, 'mouseup', this.stop);
+    methods[method](container, 'mousemove dragover', this.drag);
+    methods[method](docs, 'mouseup dragend touchend', this.stop);
+    methods[method](docs, 'keydown', this.keyHandle);
   }
 
   /**
@@ -227,13 +233,22 @@ export default class Dragger {
   /**
    * Stop dragging
    */
-  stop(ev) {
+  stop(ev, opts = {}) {
     const { delta } = this;
+    const cancelled = opts.cancel;
+    const x = cancelled ? 0 : delta.x;
+    const y = cancelled ? 0 : delta.y;
     this.toggleDrag();
     this.lockedAxis = null;
-    this.move(delta.x, delta.y, 1);
+    this.move(x, y, 1);
     const { onEnd } = this.opts;
-    isFunction(onEnd) && onEnd(ev, this);
+    isFunction(onEnd) && onEnd(ev, this, { cancelled });
+  }
+
+  keyHandle(ev) {
+    if (isEscKey(ev)) {
+      this.stop(ev, { cancel: 1 });
+    }
   }
 
   /**
@@ -260,6 +275,11 @@ export default class Dragger {
       el.style.left = `${xPos}px`;
       el.style.top = `${yPos}px`;
     }
+  }
+
+  getContainerEl() {
+    const { container } = this.opts;
+    return container ? [container] : this.getDocumentEl();
   }
 
   /**

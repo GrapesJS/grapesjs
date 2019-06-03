@@ -35,7 +35,10 @@ module.exports = TraitView.extend({
           value = el;
         } else {
           name = el.name ? el.name : el.value;
-          value = `${el.value || el.id}`.replace(/"/g, '&quot;');
+          value = `${isUndefined(el.value) ? el.id : el.value}`.replace(
+            /"/g,
+            '&quot;'
+          );
           style = el.style ? el.style.replace(/"/g, '&quot;') : '';
           attrs += style ? ` style="${style}"` : '';
         }
@@ -46,7 +49,7 @@ module.exports = TraitView.extend({
       input += '</select>';
       this.input = input;
       this.$input = $(input);
-      let val = model.get('value') || model.getTargetValue();
+      let val = model.getTargetValue() || model.get('value');
       !isUndefined(val) && this.$input.val(val);
     }
 

@@ -1,3 +1,6 @@
+$layerIconSize: 15px !default;
+$layerNameSpacing: 5px !default;
+
 .#{$nv-prefix} {
   &selected-parent {
     border: 1px solid $colorYell;
@@ -58,15 +61,37 @@
       align-items: center;
 
       &-inn {
+        align-items: center;
         position: relative;
+        display: flex;
+        width: 100%;
+      }
+    }
+
+    &__icon {
+      display: block;
+      width: 100%;
+      max-width: $layerIconSize;
+      max-height: $layerIconSize;
+      padding-left: 5px;
+
+      svg {
+        fill: currentColor;
       }
     }
 
     &-name {
-      padding: 5px;
+      padding: $layerNameSpacing 0;
       display: inline-block;
       box-sizing: content-box;
+      overflow: hidden;
+      white-space: nowrap;
+      margin: 0 30px 0 $layerNameSpacing;
       @extend .#{$app-prefix}no-user-select;
+
+      &--no-edit {
+        text-overflow: ellipsis;
+      }
     }
 
     > .#{$nv-prefix}layer-children {

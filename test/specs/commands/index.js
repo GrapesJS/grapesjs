@@ -14,6 +14,7 @@ describe('Commands', () => {
       commResultStop = 'Stop executed';
 
     const mockEditor = {
+      ...Backbone.Events,
       get(id) {
         switch (id) {
           case 'Canvas':

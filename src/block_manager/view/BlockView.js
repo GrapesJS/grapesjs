@@ -4,6 +4,7 @@ import { on, off, hasDnd } from 'utils/mixins';
 
 module.exports = Backbone.View.extend({
   events: {
+    click: 'handleClick',
     mousedown: 'startDrag',
     dragstart: 'handleDragStart',
     drag: 'handleDrag',
@@ -20,15 +21,49 @@ module.exports = Backbone.View.extend({
     this.listenTo(model, 'change', this.render);
   },
 
+  handleClick() {
+    const { config, model, em } = this;
+    if (!config.appendOnClick) return;
+    const sorter = config.getSorter();
+    const content = model.get('content');
+    const selected = em.getSelected();
+    sorter.setDropContent(content);
+    let target, valid;
+
+    // If there is a selected component, try first to append
+    // the block inside, otherwise, try to place it as a next sibling
+    if (selected) {
+      valid = sorter.validTarget(selected.getEl(), content);
+
+      if (valid.valid) {
+        target = selected;
+      } else {
+        const parent = selected.parent();
+        valid = sorter.validTarget(parent.getEl(), content);
+        if (valid.valid) target = parent;
+      }
+    }
+
+    // If no target found yet, try to append the block to the wrapper
+    if (!target) {
+      const wrapper = em.getWrapper();
+      valid = sorter.validTarget(wrapper.getEl(), content);
+      if (valid.valid) target = wrapper;
+    }
+
+    const result = target && target.append(content)[0];
+    result && em.setSelected(result, { scroll: 1 });
+  },
+
   /**
    * Start block dragging
    * @private
    */
   startDrag(e) {
-    const config = this.config;
+    const { config, em } = this;
     //Right or middel click
     if (e.button !== 0 || !config.getSorter || this.el.draggable) return;
-    config.em.refreshCanvas();
+    em.refreshCanvas();
     const sorter = config.getSorter();
     sorter.setDragHelper(this.el, e);
     sorter.setDropContent(this.model.get('content'));
@@ -40,11 +75,11 @@ module.exports = Backbone.View.extend({
     const { em, model } = this;
     const content = model.get('content');
     const isObj = isObject(content);
-    const type = isObj ? 'text/json' : 'text';
     const data = isObj ? JSON.stringify(content) : content;
+    em.set('dragResult');
 
     // Note: data are not available on dragenter for security reason,
-    // but will use dragContent as I need it for the Sorter context
+    // we have to use dragContent as we need it for the Sorter context
     // IE11 supports only 'text' data type
     ev.dataTransfer.setData('text', data);
     em.set('dragContent', content);
@@ -106,8 +141,12 @@ module.exports = Backbone.View.extend({
     const className = `${ppfx}block`;
     const label = model.get('label');
     const render = model.get('render');
+    const media = model.get('media');
     el.className += ` ${className} ${ppfx}one-bg ${ppfx}four-color-h`;
-    el.innerHTML = `<div class="${className}-label">${label}</div>`;
+    el.innerHTML = `
+      ${media ? `<div class="${className}__media">${media}</div>` : ''}
+      <div class="${className}-label">${label}</div>
+    `;
     el.title = el.textContent.trim();
     hasDnd(em) && el.setAttribute('draggable', true);
     const result = render && render({ el, model, className, prefix: ppfx });

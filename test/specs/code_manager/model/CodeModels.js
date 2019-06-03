@@ -324,6 +324,24 @@ module.exports = {
           { key: '@media (max-width: 10%)', value: 5 }
         ]);
       });
+
+      test('The media objects, for the mobile first approach, are correctly sorted', () => {
+        expect(
+          obj.sortMediaObject({
+            '@media (min-width: 480px)': 1,
+            '@font-face': 2,
+            '@media (min-width: 768px)': 3,
+            '@media (min-width: 1020ch)': 4,
+            '@media (min-width: 10%)': 5
+          })
+        ).toEqual([
+          { key: '@font-face', value: 2 },
+          { key: '@media (min-width: 10%)', value: 5 },
+          { key: '@media (min-width: 480px)', value: 1 },
+          { key: '@media (min-width: 768px)', value: 3 },
+          { key: '@media (min-width: 1020ch)', value: 4 }
+        ]);
+      });
     });
   }
 };

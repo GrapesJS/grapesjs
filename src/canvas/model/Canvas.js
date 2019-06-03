@@ -11,8 +11,12 @@ module.exports = Backbone.Model.extend({
     y: 0
   },
 
-  initialize() {
-    this.set('frame', new Frame());
+  initialize(config = {}) {
+    const { styles = [], scripts = [] } = config;
+    const frame = new Frame();
+    styles.forEach(style => frame.addLink(style));
+    scripts.forEach(script => frame.addScript(script));
+    this.set('frame', frame);
     this.listenTo(this, 'change:zoom', this.onZoomChange);
   },
 

@@ -9,6 +9,7 @@ module.exports = Backbone.Collection.extend({
     this.listenTo(this, 'add', this.onAdd);
     this.config = opt.config;
     this.em = opt.em;
+    const { em } = this;
 
     this.model = (attrs, options) => {
       var model;
@@ -29,6 +30,12 @@ module.exports = Backbone.Collection.extend({
       if (!model) {
         // get the last one
         model = df[df.length - 1].model;
+        em &&
+          attrs.type &&
+          em.logWarning(`Component type '${attrs.type}' not found`, {
+            attrs,
+            options
+          });
       }
 
       return new model(attrs, options);

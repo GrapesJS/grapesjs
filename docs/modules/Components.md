@@ -322,6 +322,28 @@ comps.addType('map', {
 });
 ```
 
+### Extend parent functions <Badge text="0.14.60+"/>
+
+When you need to reuse functions, of the parent you're extending, you can avoid writing something like this in any function:
+```js
+domc.getType('parent-type').model.prototype.init.apply(this, arguments);
+```
+by using `extendFn` and `extendFnView` arrays:
+```js
+domc.addType('new-type', {
+  extend: 'parent-type',
+  extendFn: ['init'], // array of model functions to extend
+  model: {
+    init() {
+      // do something;
+    },
+  }
+});
+```
+The same would be for the view by using `extendFnView`
+
+
+
 ## Lifecycle Hooks
 
 Each component triggers different lifecycle hooks, which allows you to add custom actions at their specific stages.
@@ -440,5 +462,5 @@ Solution 1: turn off `autorender`
   editor.render();
 </script>
 ```
-Solution 2: put all the stuff inside a plugin ([Creating plugins](https://github.com/artf/grapesjs/wiki/Creating-plugins))
+Solution 2: put all the stuff inside a plugin ([Creating plugins](Plugins.html))
 

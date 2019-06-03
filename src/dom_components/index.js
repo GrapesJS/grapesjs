@@ -108,6 +108,11 @@ module.exports = () => {
       view: require('./view/ComponentSvgView')
     },
     {
+      id: 'comment',
+      model: require('./model/ComponentComment'),
+      view: require('./view/ComponentCommentView')
+    },
+    {
       id: 'textnode',
       model: require('./model/ComponentTextNode'),
       view: require('./view/ComponentTextNodeView')
@@ -528,7 +533,9 @@ module.exports = () => {
         view = {},
         isComponent,
         extend,
-        extendView
+        extendView,
+        extendFn = [],
+        extendFnView = []
       } = methods;
       const compType = this.getType(type);
       const extendType = this.getType(extend);
@@ -543,11 +550,26 @@ module.exports = () => {
         ? extendViewType.view
         : typeToExtend.view;
 
+      // Function for extending source object methods
+      const getExtendedObj = (fns, target, srcToExt) =>
+        fns.reduce((res, next) => {
+          const fn = target[next];
+          const parentFn = srcToExt.prototype[next];
+          if (fn && parentFn) {
+            res[next] = function(...args) {
+              parentFn.bind(this)(...args);
+              fn.bind(this)(...args);
+            };
+          }
+          return res;
+        }, {});
+
       // If the model/view is a simple object I need to extend it
       if (typeof model === 'object') {
         methods.model = modelToExt.extend(
           {
             ...model,
+            ...getExtendedObj(extendFn, model, modelToExt),
             defaults: {
               ...modelToExt.prototype.defaults,
               ...(result(model, 'defaults') || {})
@@ -563,7 +585,10 @@ module.exports = () => {
       }
 
       if (typeof view === 'object') {
-        methods.view = viewToExt.extend({ ...view });
+        methods.view = viewToExt.extend({
+          ...view,
+          ...getExtendedObj(extendFnView, view, viewToExt)
+        });
       }
 
       if (compType) {
@@ -596,6 +621,20 @@ module.exports = () => {
         }
       }
       return;
+    },
+
+    /**
+     * Remove component type
+     * @param {string} type Component ID
+     * @returns {Object|undefined} Removed component type, undefined otherwise
+     */
+    removeType(id) {
+      const df = componentTypes;
+      const type = this.getType(id);
+      if (!type) return;
+      const index = df.indexOf(type);
+      df.splice(index, 1);
+      return type;
     },
 
     /**

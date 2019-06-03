@@ -1,4 +1,5 @@
 import { bindAll } from 'underscore';
+import { appendVNodes, empty } from 'utils/dom';
 
 const motionsEv =
   'transitionend oTransitionEnd transitionend webkitTransitionEnd';
@@ -15,7 +16,17 @@ module.exports = require('backbone').View.extend({
     this.config = o.config || {};
     this.ppfx = this.config.pStylePrefix || '';
     this.em = this.config.em;
+    this.listenTo(this.model, 'change:head', this.updateHead);
     this.listenTo(this.em, 'change:device', this.updateDim);
+  },
+
+  /**
+   * Update `<head>` content of the frame
+   */
+  updateHead() {
+    const headEl = this.getHead();
+    empty(headEl);
+    appendVNodes(headEl, this.model.getHead());
   },
 
   /**
@@ -48,8 +59,16 @@ module.exports = require('backbone').View.extend({
     this.$el.off(motionsEv, this.udpateOffset);
   },
 
+  getDoc() {
+    return this.$el.get(0).contentDocument;
+  },
+
+  getHead() {
+    return this.getDoc().querySelector('head');
+  },
+
   getBody() {
-    this.$el.contents().find('body');
+    return this.getDoc().querySelector('body');
   },
 
   getWrapper() {

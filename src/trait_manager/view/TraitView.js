@@ -107,7 +107,7 @@ module.exports = Backbone.View.extend({
       const value = this.getModelValue();
       const input = $(`<input type="${type}" placeholder="${plh}">`);
 
-      if (value) {
+      if (!isUndefined(value)) {
         md.set({ value }, { silent: true });
         input.prop('value', value);
       }

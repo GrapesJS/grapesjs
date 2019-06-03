@@ -281,8 +281,6 @@ module.exports = () => {
 
           if (!rule) {
             rule = cssC.add(valid, state, deviceW);
-            rule.setStyle(model.getStyle());
-            model.setStyle({});
           }
         } else if (config.avoidInlineStyle) {
           rule = cssC.getIdRule(id, opts);

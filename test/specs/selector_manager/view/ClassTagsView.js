@@ -109,10 +109,13 @@ module.exports = {
         expect(view.endNewTag.calledOnce).toEqual(true);
       });
 
-      test('Collection changes on update of target', () => {
+      test('Collection changes on update of target', done => {
         coll.add({ name: 'test' });
         target.trigger('component:toggled');
-        expect(coll.length).toEqual(0);
+        setTimeout(() => {
+          expect(coll.length).toEqual(0);
+          done();
+        });
       });
 
       test('Collection reacts on reset', () => {

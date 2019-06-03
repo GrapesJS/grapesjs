@@ -49,18 +49,21 @@ module.exports = {
           tagEl = instClassTagViewer(gjs, fixtures);
         });
 
-        test('Assign correctly new class to component', () => {
+        test('Assign correctly new class to component', done => {
           var model = components.add({});
           expect(model.get('classes').length).toEqual(0);
           gjs.select(model);
-          tagEl.addNewTag('test');
-          expect(model.get('classes').length).toEqual(1);
-          expect(
-            model
-              .get('classes')
-              .at(0)
-              .get('name')
-          ).toEqual('test');
+          setTimeout(() => {
+            tagEl.addNewTag('test');
+            expect(model.get('classes').length).toEqual(1);
+            expect(
+              model
+                .get('classes')
+                .at(0)
+                .get('name')
+            ).toEqual('test');
+            done();
+          });
         });
 
         test('Classes from components are correctly imported inside main container', () => {
@@ -81,20 +84,23 @@ module.exports = {
           expect(clModel).toEqual(clModel2);
         });
 
-        test('Can assign only one time the same class on selected component and the class viewer', () => {
+        test('Can assign only one time the same class on selected component and the class viewer', done => {
           var model = components.add({});
-          gjs.editor.setSelected(model);
-          tagEl.addNewTag('test');
-          tagEl.addNewTag('test');
-          expect(model.getSelectors().length).toEqual(1);
-          expect(
-            model
-              .getSelectors()
-              .at(0)
-              .get('name')
-          ).toEqual('test');
-          expect(tagEl.collection.length).toEqual(1);
-          expect(tagEl.collection.at(0).get('name')).toEqual('test');
+          gjs.select(model);
+          setTimeout(() => {
+            tagEl.addNewTag('test');
+            tagEl.addNewTag('test');
+            expect(model.getSelectors().length).toEqual(1);
+            expect(
+              model
+                .getSelectors()
+                .at(0)
+                .get('name')
+            ).toEqual('test');
+            expect(tagEl.collection.length).toEqual(1);
+            expect(tagEl.collection.at(0).get('name')).toEqual('test');
+            done();
+          });
         });
 
         test('Removing from container removes also from selected component', () => {
@@ -108,16 +114,19 @@ module.exports = {
           setTimeout(() => expect(model.get('classes').length).toEqual(0));
         });
 
-        test('Trigger correctly event on target with new class add', () => {
+        test('Trigger correctly event on target with new class add', done => {
           var spy = sinon.spy();
           var model = components.add({});
-          gjs.editor.setSelected(model);
-          tagEl.addNewTag('test');
-          gjs.editor.on('component:update:classes', spy);
-          tagEl.addNewTag('test');
-          expect(spy.called).toEqual(false);
-          tagEl.addNewTag('test2');
-          expect(spy.called).toEqual(true);
+          gjs.select(model);
+          setTimeout(() => {
+            tagEl.addNewTag('test');
+            gjs.editor.on('component:update:classes', spy);
+            tagEl.addNewTag('test');
+            expect(spy.called).toEqual(false);
+            tagEl.addNewTag('test2');
+            expect(spy.called).toEqual(true);
+            done();
+          });
         });
       });
     });

@@ -1,4 +1,4 @@
-import { template } from 'underscore';
+import { template, debounce } from 'underscore';
 import Backbone from 'backbone';
 var ClassTagView = require('./ClassTagView');
 
@@ -48,21 +48,18 @@ module.exports = Backbone.View.extend({
     this.events['blur #' + this.newInputId] = 'endNewTag';
     this.events['keyup #' + this.newInputId] = 'onInputKeyUp';
     this.events['change #' + this.stateInputId] = 'stateChanged';
-
+    const { em } = this.config;
+    const emitter = this.getStyleEmitter();
     this.target = this.config.em;
-    this.em = this.target;
+    this.em = em;
 
+    this.listenTo(emitter, 'styleManager:update', this.componentChanged);
     this.listenTo(
-      this.getStyleEmitter(),
-      'styleManager:update',
-      this.componentChanged
-    );
-    this.listenTo(
-      this.target,
+      em,
       'component:toggled component:update:classes',
       this.componentChanged
     );
-    this.listenTo(this.target, 'component:update:classes', this.updateSelector);
+    this.listenTo(em, 'component:update:classes', this.updateSelector);
 
     this.listenTo(this.collection, 'add', this.addNew);
     this.listenTo(this.collection, 'reset', this.renderClasses);
@@ -149,7 +146,7 @@ module.exports = Backbone.View.extend({
    * @param  {Object} e
    * @private
    */
-  componentChanged(target) {
+  componentChanged: debounce(function(target) {
     target = target || this.getTarget();
     this.compTarget = target;
     let validSelectors = [];
@@ -163,10 +160,9 @@ module.exports = Backbone.View.extend({
 
     this.collection.reset(validSelectors);
     this.updateStateVis(target);
-  },
+  }),
 
   getTarget() {
-    const targetStyle = this.getStyleEmitter().model;
     return this.target.getSelected();
   },
 
@@ -252,34 +248,30 @@ module.exports = Backbone.View.extend({
    * @return {Object} Object created
    * @private
    * */
-  addToClasses(model, fragmentEl) {
-    var fragment = fragmentEl || null;
-
-    var view = new ClassTagView({
+  addToClasses(model, fragmentEl = null) {
+    const fragment = fragmentEl;
+    const classes = this.getClasses();
+    const rendered = new ClassTagView({
       model,
       config: this.config,
       coll: this.collection
-    });
-    var rendered = view.render().el;
+    }).render().el;
 
-    if (fragment) fragment.appendChild(rendered);
-    else this.getClasses().append(rendered);
+    fragment ? fragment.appendChild(rendered) : classes.append(rendered);
 
     return rendered;
   },
 
   /**
    * Render the collection of classes
-   * @return {this}
    * @private
    */
   renderClasses() {
     const frag = document.createDocumentFragment();
     const classes = this.getClasses();
+    classes.empty();
     this.collection.each(model => this.addToClasses(model, frag));
-    classes.get(0) && classes.empty().append(frag);
-
-    return this;
+    classes.append(frag);
   },
 
   /**
@@ -288,8 +280,7 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getClasses() {
-    if (!this.$classes) this.$classes = this.$el.find(`#${this.pfx}tags-c`);
-    return this.$classes;
+    return this.$el.find(`#${this.pfx}tags-c`);
   },
 
   /**

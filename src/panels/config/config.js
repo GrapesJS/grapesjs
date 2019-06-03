@@ -1,5 +1,3 @@
-var crc = 'create-comp';
-var mvc = 'move-comp';
 var swv = 'sw-visibility';
 var expt = 'export-template';
 var osm = 'open-sm';

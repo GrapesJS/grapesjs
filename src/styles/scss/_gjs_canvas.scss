@@ -88,6 +88,23 @@ $guide_pad: 5px;
       }
     }
   }
+
+  &badge {
+    &__icon {
+      vertical-align: middle;
+      display: inline-block;
+      width: 15px;
+      height: 15px;
+
+      svg {
+        fill: currentColor;
+      }
+    }
+    &__name {
+      display: inline-block;
+      vertical-align: middle;
+    }
+  }
 }
 
 .#{$cv-prefix}canvas {

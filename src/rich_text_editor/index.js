@@ -240,8 +240,12 @@ module.exports = () => {
 
       if (pos) {
         if (config.adjustToolbar) {
+          const frameOffset = canvas.getCanvasView().getFrameOffset();
           // Move the toolbar down when the top canvas edge is reached
-          if (pos.top <= pos.canvasTop) {
+          if (
+            pos.top <= pos.canvasTop &&
+            !(pos.elementHeight + pos.targetHeight >= frameOffset.height)
+          ) {
             pos.top = pos.elementTop + pos.elementHeight;
           }
         }

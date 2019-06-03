@@ -281,9 +281,11 @@ module.exports = Backbone.Model.extend({
    * @private
    */
   setSelected(el, opts = {}) {
+    const { scroll } = opts;
     const multiple = isArray(el);
     const els = multiple ? el : [el];
     const selected = this.get('selected');
+    let added;
 
     // If an array is passed remove all selected
     // expect those yet to be selected
@@ -294,7 +296,10 @@ module.exports = Backbone.Model.extend({
       if (model && !model.get('selectable')) return;
       !multiple && this.removeSelected(selected.filter(s => s !== model));
       this.addSelected(model, opts);
+      added = model;
     });
+
+    scroll && added && this.get('Canvas').scrollTo(added, scroll);
   },
 
   /**
@@ -618,6 +623,14 @@ module.exports = Backbone.Model.extend({
 
   getZoomDecimal() {
     return this.get('Canvas').getZoomDecimal();
+  },
+
+  /**
+   * Returns true if the editor is in absolute mode
+   * @returns {Boolean}
+   */
+  inAbsoluteMode() {
+    return this.get('dmode') === 'absolute';
   },
 
   /**

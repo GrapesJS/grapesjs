@@ -24,7 +24,7 @@ editor.on('EVENT-NAME', (some, argument) => {
 ### Components
 
 -   `component:create` - Component is created (only the model, is not yet mounted in the canvas), called after the init() method
--   `component:mount` - Component is monted to an element and rendered in canvas
+-   `component:mount` - Component is mounted to an element and rendered in canvas
 -   `component:add` - Triggered when a new component is added to the editor, the model is passed as an argument to the callback
 -   `component:remove` - Triggered when a component is removed, the model is passed as an argument to the callback
 -   `component:clone` - Triggered when a component is cloned, the new model is passed as an argument to the callback
@@ -112,6 +112,8 @@ editor.on('EVENT-NAME', (some, argument) => {
 -   `run:{commandName}:before` - Triggered before the command is called
 -   `stop:{commandName}:before` - Triggered before the command is called to stop
 -   `abort:{commandName}` - Triggered when the command execution is aborted (`editor.on(`run:preview:before`, opts => opts.abort = 1);`)
+-   `run` - Triggered on run of any command. The id and the result are passed as arguments to the callback
+-   `stop` - Triggered on stop of any command. The id and the result are passed as arguments to the callback
 
 ### General
 
@@ -274,6 +276,8 @@ Select a component
 ### Parameters
 
 -   `el` **(Component | [HTMLElement][6])** Component to select
+-   `opts` **[Object][3]?** Options
+    -   `opts.scroll` **[Boolean][5]?** Scroll canvas to the selected element
 
 ### Examples
 

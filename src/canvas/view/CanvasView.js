@@ -1,5 +1,12 @@
 import Backbone from 'backbone';
-import { on, off, getElement, getKeyChar } from 'utils/mixins';
+import {
+  on,
+  off,
+  getElement,
+  getKeyChar,
+  isTextNode,
+  getElRect
+} from 'utils/mixins';
 const FrameView = require('./FrameView');
 const $ = Backbone.$;
 let timerZoom;
@@ -99,7 +106,7 @@ module.exports = Backbone.View.extend({
    * @return {Boolean}
    */
   isElInViewport(el) {
-    const rect = getElement(el).getBoundingClientRect();
+    const rect = getElRect(getElement(el));
     const frameRect = this.getFrameOffset();
     const rTop = rect.top;
     const rLeft = rect.left;
@@ -246,6 +253,14 @@ module.exports = Backbone.View.extend({
       this.frame.el.contentWindow.onscroll = this.onFrameScroll;
       this.frame.udpateOffset();
 
+      // Avoid the default link behaviour in the canvas
+      body.on(
+        'click',
+        ev => ev && ev.target.tagName == 'A' && ev.preventDefault()
+      );
+      // Avoid the default form behaviour
+      body.on('submit', ev => ev && ev.preventDefault());
+
       // When the iframe is focused the event dispatcher is not the same so
       // I need to delegate all events to the parent document
       const doc = document;
@@ -294,7 +309,7 @@ module.exports = Backbone.View.extend({
    * @return {Object}
    */
   offset(el) {
-    var rect = el.getBoundingClientRect();
+    var rect = getElRect(el);
     var docBody = el.ownerDocument.body;
     return {
       top: rect.top + docBody.scrollTop,
@@ -364,6 +379,7 @@ module.exports = Backbone.View.extend({
    * @private
    */
   getElementOffsets(el) {
+    if (!el || isTextNode(el)) return {};
     const result = {};
     const styles = window.getComputedStyle(el);
     [
@@ -397,7 +413,9 @@ module.exports = Backbone.View.extend({
 
     return {
       top: fo.top + bEl.scrollTop * zoom - co.top,
-      left: fo.left + bEl.scrollLeft * zoom - co.left
+      left: fo.left + bEl.scrollLeft * zoom - co.left,
+      width: co.width,
+      height: co.height
     };
   },
 
@@ -407,13 +425,14 @@ module.exports = Backbone.View.extend({
    * @private
    */
   updateScript(view) {
+    const model = view.model;
+    const id = model.getId();
+
     if (!view.scriptContainer) {
-      view.scriptContainer = $('<div>');
+      view.scriptContainer = $(`<div id="${id}">`);
       this.getJsContainer().appendChild(view.scriptContainer.get(0));
     }
 
-    const model = view.model;
-    const id = model.getId();
     view.el.id = id;
     view.scriptContainer.html('');
     // In editor, I make use of setTimeout as during the append process of elements

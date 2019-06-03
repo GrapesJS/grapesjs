@@ -215,7 +215,8 @@ module.exports = Backbone.View.extend({
 
     const config = this.config;
     const em = config.em;
-    const model = this.model;
+    const { model } = this;
+    const property = model.get('property');
     let value = '';
     let status = '';
     let targetValue = this.getTargetValue({ ignoreDefault: 1 });
@@ -247,8 +248,8 @@ module.exports = Backbone.View.extend({
     this.setStatus(status);
 
     if (em) {
-      em.trigger('styleManager:change', this);
-      em.trigger(`styleManager:change:${model.get('property')}`, this);
+      em.trigger('styleManager:change', this, property, value);
+      em.trigger(`styleManager:change:${property}`, this, value);
     }
   },
 

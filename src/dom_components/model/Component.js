@@ -241,6 +241,27 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     /**
+     * Find all inner components by component id.
+     * The advantage of this method over `find` is that you can use it
+     * also before rendering the component
+     * @param {String} id Component id
+     * @returns {Array<Component>}
+     * @example
+     * const allImages = component.findType('image');
+     * console.log(allImages[0]) // prints the first found component
+     */
+    findType(id) {
+      const result = [];
+      const find = components =>
+        components.forEach(item => {
+          item.is(id) && result.push(item);
+          find(item.components());
+        });
+      find(this.components());
+      return result;
+    },
+
+    /**
      * Find the closest parent component by query string.
      * **ATTENTION**: this method works only with already rendered component
      * @param  {string} query Query string
@@ -510,12 +531,14 @@ const Component = Backbone.Model.extend(Styleable).extend(
       const components = this.get('components');
       const addChild = !this.opt.avoidChildren;
       this.set('components', comps);
-      addChild && comps.add(components);
+      addChild &&
+        comps.add(isFunction(components) ? components(this) : components);
       this.listenTo(...toListen);
       return this;
     },
 
-    initTraits() {
+    initTraits(changed) {
+      const { em } = this;
       const event = 'change:traits';
       const toListen = [this, event, this.initTraits];
       this.stopListening(...toListen);
@@ -531,6 +554,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       });
       traits.length && this.set('attributes', attrs);
       this.listenTo(...toListen);
+      changed && em && em.trigger('component:toggled');
       return this;
     },
 
@@ -611,7 +635,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
         if (model.collection) {
           tb.push({
             attributes: { class: 'fa fa-arrow-up' },
-            command: 'select-parent'
+            command: ed => ed.runCommand('core:component-exit', { force: 1 })
           });
         }
         if (model.get('draggable')) {
@@ -675,6 +699,76 @@ const Component = Backbone.Model.extend(Styleable).extend(
       return this.get('traits').filter(trait => {
         return trait.get('id') === id || trait.get('name') === id;
       })[0];
+    },
+
+    /**
+     * Update a trait
+     * @param  {String} id The `id` or `name` of the trait
+     * @param  {Object} props Object with the props to update
+     * @return {this}
+     * @example
+     * component.updateTrait('title', {
+     *  type: 'select',
+     *  options: [ 'Option 1', 'Option 2' ],
+     * });
+     */
+    updateTrait(id, props) {
+      const { em } = this;
+      const trait = this.getTrait(id);
+      trait && trait.set(props);
+      em && em.trigger('component:toggled');
+      return this;
+    },
+
+    /**
+     * Get the trait position index by id/name. Useful in case you want to
+     * replace some trait, at runtime, with something else.
+     * @param  {String} id The `id` or `name` of the trait
+     * @return {Number} Index position of the current trait
+     * @example
+     * const traitTitle = component.getTraitIndex('title');
+     * console.log(traitTitle); // 1
+     */
+    getTraitIndex(id) {
+      const trait = this.getTrait(id);
+      return trait ? this.get('traits').indexOf(trait) : trait;
+    },
+
+    /**
+     * Remove trait/s by id/s.
+     * @param  {String|Array<String>} id The `id`/`name` of the trait (or an array)
+     * @return {Array} Array of removed traits
+     * @example
+     * component.removeTrait('title');
+     * component.removeTrait(['title', 'id']);
+     */
+    removeTrait(id) {
+      const { em } = this;
+      const ids = isArray(id) ? id : [id];
+      const toRemove = ids.map(id => this.getTrait(id));
+      const removed = this.get('traits').remove(toRemove);
+      em && em.trigger('component:toggled');
+      return removed;
+    },
+
+    /**
+     * Add trait/s by id/s.
+     * @param  {String|Object|Array<String|Object>} trait Trait to add (or an array of traits)
+     * @param  {Options} opts Options for the add
+     * @return {Array} Array of added traits
+     * @example
+     * component.addTrait('title', { at: 1 }); // Add title trait (`at` option is the position index)
+     * component.addTrait({
+     *  type: 'checkbox',
+     *  name: 'disabled',
+     * });
+     * component.addTrait(['title', {...}, ...]);
+     */
+    addTrait(trait, opts = {}) {
+      const { em } = this;
+      const added = this.get('traits').add(trait, opts);
+      em && em.trigger('component:toggled');
+      return added;
     },
 
     /**
@@ -858,6 +952,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       obj.attributes = this.getAttributes();
       delete obj.attributes.class;
       delete obj.toolbar;
+      delete obj.traits;
 
       if (this.em.getConfig('avoidDefaults')) {
         const defaults = result(this, 'defaults');
@@ -1000,7 +1095,8 @@ const Component = Backbone.Model.extend(Styleable).extend(
      * @return {this}
      */
     remove() {
-      return this.collection.remove(this);
+      const coll = this.collection;
+      return coll && coll.remove(this);
     },
 
     /**

@@ -19,18 +19,19 @@ export default Backbone.View.extend({
   },
 
   template(model) {
-    const pfx = this.pfx;
-    const ppfx = this.ppfx;
-    const hidable = this.config.hidable;
+    const { pfx, ppfx, config, clsNoEdit } = this;
+    const { hidable } = config;
     const count = this.countChildren(model);
     const addClass = !count ? this.clsNoChild : '';
     const clsTitle = `${this.clsTitle} ${addClass}`;
     const clsTitleC = `${this.clsTitleC} ${ppfx}one-bg`;
     const clsCaret = `${this.clsCaret} fa fa-chevron-right`;
-    const clsInput = `${this.inputNameCls} ${ppfx}no-app`;
+    const clsInput = `${this.inputNameCls} ${clsNoEdit} ${ppfx}no-app`;
     const level = this.level + 1;
     const gut = `${30 + level * 10}px`;
     const name = model.getName();
+    const icon = model.getIcon();
+    const clsBase = `${pfx}layer`;
 
     return `
       ${
@@ -44,7 +45,7 @@ export default Backbone.View.extend({
         <div class="${clsTitle}" style="padding-left: ${gut}" data-toggle-select>
           <div class="${pfx}layer-title-inn">
             <i class="${clsCaret}" data-toggle-open></i>
-            ${model.getIcon()}
+            ${icon ? `<span class="${clsBase}__icon">${icon}</span>` : ''}
             <span class="${clsInput}" data-name>${name}</span>
           </div>
         </div>
@@ -68,12 +69,13 @@ export default Backbone.View.extend({
     const ppfx = this.ppfx;
     const model = this.model;
     const components = model.get('components');
+    const type = model.get('type') || 'default';
     model.set('open', false);
     this.listenTo(components, 'remove add reset', this.checkChildren);
     this.listenTo(model, 'change:status', this.updateStatus);
     this.listenTo(model, 'change:open', this.updateOpening);
     this.listenTo(model, 'change:style:display', this.updateVisibility);
-    this.className = `${pfx}layer no-select ${ppfx}two-color`;
+    this.className = `${pfx}layer ${pfx}layer__t-${type} no-select ${ppfx}two-color`;
     this.inputNameCls = `${ppfx}layer-name`;
     this.clsTitleC = `${pfx}layer-title-c`;
     this.clsTitle = `${pfx}layer-title`;
@@ -82,6 +84,8 @@ export default Backbone.View.extend({
     this.clsMove = `${pfx}layer-move`;
     this.clsChildren = `${pfx}layer-children`;
     this.clsNoChild = `${pfx}layer-no-chld`;
+    this.clsEdit = `${this.inputNameCls}--edit`;
+    this.clsNoEdit = `${this.inputNameCls}--no-edit`;
     this.$el.data('model', model);
     this.$el.data('collection', components);
     model.viewLayer = this;
@@ -132,11 +136,15 @@ export default Backbone.View.extend({
    */
   handleEdit(e) {
     e && e.stopPropagation();
-    const em = this.em;
+    const { em, $el, clsNoEdit, clsEdit } = this;
     const inputEl = this.getInputName();
     inputEl[inputProp] = true;
     inputEl.focus();
     em && em.setEditing(1);
+    $el
+      .find(`.${this.inputNameCls}`)
+      .removeClass(clsNoEdit)
+      .addClass(clsEdit);
   },
 
   /**
@@ -144,12 +152,17 @@ export default Backbone.View.extend({
    */
   handleEditEnd(e) {
     e && e.stopPropagation();
-    const em = this.em;
+    const { em, $el, clsNoEdit, clsEdit } = this;
     const inputEl = this.getInputName();
     const name = inputEl.textContent;
+    inputEl.scrollLeft = 0;
     inputEl[inputProp] = false;
     this.model.set({ name });
     em && em.setEditing(0);
+    $el
+      .find(`.${this.inputNameCls}`)
+      .addClass(clsNoEdit)
+      .removeClass(clsEdit);
   },
 
   /**
@@ -342,9 +355,10 @@ export default Backbone.View.extend({
   },
 
   render() {
-    const model = this.model;
-    var pfx = this.pfx;
-    var vis = this.isVisible();
+    const { model, config, pfx, ppfx, opt } = this;
+    const { isCountable } = opt;
+    const hidden = isCountable && !isCountable(model, config.hideTextnode);
+    const vis = this.isVisible();
     const el = this.$el.empty();
     const level = this.level + 1;
 
@@ -373,6 +387,7 @@ export default Backbone.View.extend({
     }
 
     !vis && (this.className += ` ${pfx}hide`);
+    hidden && (this.className += ` ${ppfx}hidden`);
     el.attr('class', this.className);
     this.updateOpening();
     this.updateStatus();

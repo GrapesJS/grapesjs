@@ -89,6 +89,12 @@ canvas.setCustomBadgeLabel(function(component){
 });
 ```
 
+## getRect
+
+Get canvas rectangular data
+
+Returns **[Object][14]** 
+
 ## hasFocus
 
 Check if the canvas is focused

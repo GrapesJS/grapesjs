@@ -103,12 +103,33 @@ const hasDnd = em => {
  * @return {HTMLElement}
  */
 const getElement = el => {
-  if (isElement(el)) {
+  if (isElement(el) || isTextNode(el)) {
     return el;
   } else if (el && el.getEl) {
     return el.getEl();
   }
 };
+
+/**
+ * Check if element is a text node
+ * @param  {HTMLElement} el
+ * @return {Boolean}
+ */
+const isTextNode = el => el && el.nodeType === 3;
+
+/**
+ * Check if element is a comment node
+ * @param  {HTMLElement} el
+ * @return {Boolean}
+ */
+export const isCommentNode = el => el && el.nodeType === 8;
+
+/**
+ * Check if element is a comment node
+ * @param  {HTMLElement} el
+ * @return {Boolean}
+ */
+export const isTaggableNode = el => el && !isTextNode(el) && !isCommentNode(el);
 
 /**
  * Ensure to fetch the model from the input argument
@@ -119,6 +140,28 @@ const getModel = (el, $) => {
   let model = el;
   isElement(el) && (model = $(el).data('model'));
   return model;
+};
+
+const getElRect = el => {
+  const def = {
+    top: 0,
+    left: 0,
+    width: 0,
+    height: 0
+  };
+  if (!el) return def;
+  let rectText;
+
+  if (isTextNode(el)) {
+    const range = document.createRange();
+    range.selectNode(el);
+    rectText = range.getBoundingClientRect();
+    range.detach();
+  }
+
+  return (
+    rectText || (el.getBoundingClientRect ? el.getBoundingClientRect() : def)
+  );
 };
 
 /**
@@ -136,6 +179,7 @@ const getPointerEvent = ev =>
  */
 const getKeyCode = ev => ev.which || ev.keyCode;
 const getKeyChar = ev => String.fromCharCode(getKeyCode(ev));
+const isEscKey = ev => getKeyCode(ev) === 27;
 
 const capitalize = str => str.charAt(0).toUpperCase() + str.substring(1);
 
@@ -146,9 +190,12 @@ export {
   upFirst,
   matches,
   getModel,
+  getElRect,
   camelCase,
+  isTextNode,
   getKeyCode,
   getKeyChar,
+  isEscKey,
   getElement,
   shallowDiff,
   normalizeFloat,

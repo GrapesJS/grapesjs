@@ -5,6 +5,7 @@ module.exports = Component.extend(
     defaults: {
       ...Component.prototype.defaults,
       droppable: false,
+      layerable: false,
       editable: true
     },
 
