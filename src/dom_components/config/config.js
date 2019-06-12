@@ -26,11 +26,8 @@ module.exports = {
   // Could be used for default components
   components: [],
 
-  // Class for new image component
-  imageCompClass: 'fa fa-picture-o',
-
-  // Open assets manager on create of image component
-  oAssetsOnCreate: true,
+  // If the component is draggable you can drag the component itself (not only from the toolbar)
+  draggableComponents: 1,
 
   // Generally, if you don't edit the wrapper in the editor, like
   // custom attributes, you don't need the wrapper stored in your JSON

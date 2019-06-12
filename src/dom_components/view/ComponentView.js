@@ -19,6 +19,8 @@ module.exports = Backbone.View.extend({
     const config = opt.config || {};
     const em = config.em;
     const modelOpt = model.opt || {};
+    const { $el } = this;
+    const { draggableComponents } = config;
     this.opts = opt;
     this.modelOpt = modelOpt;
     this.config = config;
@@ -27,7 +29,6 @@ module.exports = Backbone.View.extend({
     this.ppfx = config.pStylePrefix || '';
     this.attr = model.get('attributes');
     this.classe = this.attr.class || [];
-    const $el = this.$el;
     this.listenTo(model, 'change:style', this.updateStyle);
     this.listenTo(model, 'change:attributes', this.renderAttributes);
     this.listenTo(model, 'change:highlightable', this.updateHighlight);
@@ -41,6 +42,11 @@ module.exports = Backbone.View.extend({
     model.view = this;
     this.initClasses();
     this.initComponents({ avoidRender: 1 });
+    this.events = {
+      ...this.events,
+      ...(draggableComponents && { dragstart: 'handleDragStart' })
+    };
+    this.delegateEvents();
     !modelOpt.temporary && this.init();
   },
 
@@ -53,6 +59,15 @@ module.exports = Backbone.View.extend({
    * Callback executed when the `active` event is triggered on component
    */
   onActive() {},
+
+  handleDragStart(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.em.get('Commands').run('tlb-move', {
+      target: this.model,
+      event
+    });
+  },
 
   initClasses() {
     const { model } = this;
@@ -235,11 +250,15 @@ module.exports = Backbone.View.extend({
    * */
   updateAttributes() {
     const attrs = [];
-    const { model, $el, el } = this;
+    const { model, $el, el, config } = this;
+    const { highlightable, textable, type } = model.attributes;
+    const { draggableComponents } = config;
+
     const defaultAttr = {
-      'data-gjs-type': model.get('type') || 'default',
-      ...(model.get('highlightable') && { 'data-highlightable': 1 }),
-      ...(model.get('textable') && {
+      'data-gjs-type': type || 'default',
+      ...(draggableComponents && { draggable: true }),
+      ...(highlightable && { 'data-highlightable': 1 }),
+      ...(textable && {
         contenteditable: 'false',
         'data-gjs-textable': 'true'
       })

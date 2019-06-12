@@ -118,12 +118,13 @@ module.exports = () => {
       };
 
       defaultCommands['tlb-move'] = {
-        run(ed, sender, opts) {
+        run(ed, sender, opts = {}) {
           let dragger;
           const em = ed.getModel();
           const event = opts && opts.event;
-          const sel = ed.getSelected();
-          const selAll = [...ed.getSelectedAll()];
+          const { target } = opts;
+          const sel = target || ed.getSelected();
+          const selAll = target ? [target] : [...ed.getSelectedAll()];
           const nativeDrag = event && event.type == 'dragstart';
           const defComOptions = { preserveSelected: 1 };
           const modes = ['absolute', 'translate'];
@@ -137,7 +138,7 @@ module.exports = () => {
           const mode = sel.get('dmode') || em.get('dmode');
 
           // Without setTimeout the ghost image disappears
-          nativeDrag ? setTimeout(() => hideTlb, 0) : hideTlb();
+          nativeDrag ? setTimeout(hideTlb, 0) : hideTlb();
 
           const onEnd = (e, opts) => {
             em.runDefault(defComOptions);

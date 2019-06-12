@@ -8,8 +8,7 @@ module.exports = ComponentView.extend({
     dblclick: 'onActive',
     click: 'initResize',
     error: 'onError',
-    dragstart: 'noDrag',
-    mousedown: 'noDrag'
+    dragstart: 'noDrag'
   },
 
   initialize(o) {
