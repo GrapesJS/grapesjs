@@ -26874,12 +26874,16 @@ module.exports = function () {
       };
 
       defaultCommands['tlb-move'] = {
-        run: function run(ed, sender, opts) {
+        run: function run(ed, sender) {
+          var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
           var dragger = void 0;
           var em = ed.getModel();
           var event = opts && opts.event;
-          var sel = ed.getSelected();
-          var selAll = [].concat(_toConsumableArray(ed.getSelectedAll()));
+          var target = opts.target;
+
+          var sel = target || ed.getSelected();
+          var selAll = target ? [target] : [].concat(_toConsumableArray(ed.getSelectedAll()));
           var nativeDrag = event && event.type == 'dragstart';
           var defComOptions = { preserveSelected: 1 };
           var modes = ['absolute', 'translate'];
@@ -26895,9 +26899,7 @@ module.exports = function () {
           var mode = sel.get('dmode') || em.get('dmode');
 
           // Without setTimeout the ghost image disappears
-          nativeDrag ? setTimeout(function () {
-            return hideTlb;
-          }, 0) : hideTlb();
+          nativeDrag ? setTimeout(hideTlb, 0) : hideTlb();
 
           var onEnd = function onEnd(e, opts) {
             em.runDefault(defComOptions);
@@ -31747,11 +31749,8 @@ module.exports = {
   // Could be used for default components
   components: [],
 
-  // Class for new image component
-  imageCompClass: 'fa fa-picture-o',
-
-  // Open assets manager on create of image component
-  oAssetsOnCreate: true,
+  // If the component is draggable you can drag the component itself (not only from the toolbar)
+  draggableComponents: 1,
 
   // Generally, if you don't edit the wrapper in the editor, like
   // custom attributes, you don't need the wrapper stored in your JSON
@@ -33304,12 +33303,12 @@ var Component = Backbone.Model.extend(_Styleable2.default).extend({
    * @param  {Options} opts Options for the add
    * @return {Array} Array of added traits
    * @example
-   * component.addTrat('title', { at: 1 }); // Add title trait (`at` option is the position index)
-   * component.addTrat({
+   * component.addTrait('title', { at: 1 }); // Add title trait (`at` option is the position index)
+   * component.addTrait({
    *  type: 'checkbox',
    *  name: 'disabled',
    * });
-   * component.addTrat(['title', {...}, ...]);
+   * component.addTrait(['title', {...}, ...]);
    */
   addTrait: function addTrait(trait) {
     var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -35184,8 +35183,7 @@ module.exports = ComponentView.extend({
     dblclick: 'onActive',
     click: 'initResize',
     error: 'onError',
-    dragstart: 'noDrag',
-    mousedown: 'noDrag'
+    dragstart: 'noDrag'
   },
 
   initialize: function initialize(o) {
@@ -35941,6 +35939,9 @@ module.exports = _backbone2.default.View.extend({
     var config = opt.config || {};
     var em = config.em;
     var modelOpt = model.opt || {};
+    var $el = this.$el;
+    var draggableComponents = config.draggableComponents;
+
     this.opts = opt;
     this.modelOpt = modelOpt;
     this.config = config;
@@ -35949,7 +35950,6 @@ module.exports = _backbone2.default.View.extend({
     this.ppfx = config.pStylePrefix || '';
     this.attr = model.get('attributes');
     this.classe = this.attr.class || [];
-    var $el = this.$el;
     this.listenTo(model, 'change:style', this.updateStyle);
     this.listenTo(model, 'change:attributes', this.renderAttributes);
     this.listenTo(model, 'change:highlightable', this.updateHighlight);
@@ -35963,6 +35963,8 @@ module.exports = _backbone2.default.View.extend({
     model.view = this;
     this.initClasses();
     this.initComponents({ avoidRender: 1 });
+    this.events = _extends({}, this.events, draggableComponents && { dragstart: 'handleDragStart' });
+    this.delegateEvents();
     !modelOpt.temporary && this.init();
   },
 
@@ -35977,6 +35979,14 @@ module.exports = _backbone2.default.View.extend({
    * Callback executed when the `active` event is triggered on component
    */
   onActive: function onActive() {},
+  handleDragStart: function handleDragStart(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.em.get('Commands').run('tlb-move', {
+      target: this.model,
+      event: event
+    });
+  },
   initClasses: function initClasses() {
     var model = this.model;
 
@@ -36173,11 +36183,18 @@ module.exports = _backbone2.default.View.extend({
     var attrs = [];
     var model = this.model,
         $el = this.$el,
-        el = this.el;
+        el = this.el,
+        config = this.config;
+    var _model$attributes = model.attributes,
+        highlightable = _model$attributes.highlightable,
+        textable = _model$attributes.textable,
+        type = _model$attributes.type;
+    var draggableComponents = config.draggableComponents;
+
 
     var defaultAttr = _extends({
-      'data-gjs-type': model.get('type') || 'default'
-    }, model.get('highlightable') && { 'data-highlightable': 1 }, model.get('textable') && {
+      'data-gjs-type': type || 'default'
+    }, draggableComponents && { draggable: true }, highlightable && { 'data-highlightable': 1 }, textable && {
       contenteditable: 'false',
       'data-gjs-textable': 'true'
     });
@@ -39436,7 +39453,7 @@ module.exports = function () {
     plugins: plugins,
 
     // Will be replaced on build
-    version: '0.14.62',
+    version: '0.14.63',
 
     /**
      * Initialize the editor with passed options
