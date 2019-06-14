@@ -1,5 +1,5 @@
 import { bindAll, isFunction, result, isUndefined } from 'underscore';
-import { on, off, isEscKey } from 'utils/mixins';
+import { on, off, isEscKey, getPointerEvent } from 'utils/mixins';
 
 export default class Dragger {
   /**
@@ -61,7 +61,7 @@ export default class Dragger {
       // Scale result points, can also be a function
       scale: 1
     };
-    bindAll(this, 'drag', 'stop', 'keyHandle');
+    bindAll(this, 'drag', 'stop', 'keyHandle', 'handleScroll');
     this.setOptions(opts);
     this.delta = { x: 0, y: 0 };
     return this;
@@ -81,11 +81,31 @@ export default class Dragger {
   toggleDrag(enable) {
     const docs = this.getDocumentEl();
     const container = this.getContainerEl();
+    const win = this.getWindowEl();
     const method = enable ? 'on' : 'off';
     const methods = { on, off };
     methods[method](container, 'mousemove dragover', this.drag);
     methods[method](docs, 'mouseup dragend touchend', this.stop);
     methods[method](docs, 'keydown', this.keyHandle);
+    methods[method](win, 'scroll', this.handleScroll);
+  }
+
+  handleScroll() {
+    const { lastScrollTop, lastScroll, delta } = this;
+    // const { doc } = opts;
+    // const lastPos = this.currentPointer;
+    const actualTop = this.opts.doc.body.scrollTop; // TO REMOVE
+    const diff = actualTop - lastScrollTop; // TO REMOVE
+    const actualScroll = this.getScrollInfo();
+    const scroll = {
+      x: actualScroll.x - lastScroll.x,
+      y: actualScroll.y - lastScroll.y
+    };
+    this.lastDiff = diff; // TO REMOVE
+    this.move(delta.x + scroll.x, delta.y + diff);
+    this.lastScrollDiff = scroll;
+    // console.log('handle scroll from Dragger', { actualTop, lastScrollTop, diff });
+    console.log('handle scroll from Dragger', { scroll });
   }
 
   /**
@@ -101,6 +121,10 @@ export default class Dragger {
     this.guidesTarget = result(opts, 'guidesTarget') || [];
     isFunction(onStart) && onStart(ev, this);
     this.startPosition = this.getStartPosition();
+    this.lastDiff = 0;
+    this.globDiff = 0;
+    this.lastScrollDiff = { x: 0, y: 0 };
+    this.globScrollDiff = { x: 0, y: 0 };
     this.drag(ev);
   }
 
@@ -109,14 +133,23 @@ export default class Dragger {
    * @param  {Event} event
    */
   drag(ev) {
-    const { opts } = this;
-    const { onDrag } = opts;
+    const { opts, lastDiff, globDiff, lastScrollDiff, globScrollDiff } = this;
+    const { onDrag, doc } = opts;
     const { startPointer } = this;
     const currentPos = this.getPointerPos(ev);
+    // console.log({ lastDiff, globDiff });
+    this.globDiff += lastDiff;
+    const glDiff = {
+      x: globScrollDiff.x + lastScrollDiff.x,
+      y: globScrollDiff.y + lastScrollDiff.y
+    };
+    this.globScrollDiff = glDiff;
     const delta = {
       x: currentPos.x - startPointer.x,
-      y: currentPos.y - startPointer.y
+      y: currentPos.y - startPointer.y + this.globDiff
     };
+    this.lastDiff = 0;
+    this.lastScrollDiff = { x: 0, y: 0 };
     let { lockedAxis } = this;
 
     // Lock one axis
@@ -141,6 +174,8 @@ export default class Dragger {
     const deltaPre = { ...delta };
     this.currentPointer = currentPos;
     this.lockedAxis = lockedAxis;
+    this.lastScrollTop = this.opts.doc ? this.opts.doc.body.scrollTop : 0; // TO REMOVE
+    this.lastScroll = this.getScrollInfo();
     moveDelta(delta);
 
     if (this.guidesTarget.length) {
@@ -282,6 +317,14 @@ export default class Dragger {
     return container ? [container] : this.getDocumentEl();
   }
 
+  getWindowEl() {
+    const cont = this.getContainerEl();
+    return cont.map(item => {
+      const doc = item.ownerDocument || item;
+      return doc.defaultView || doc.parentWindow;
+    });
+  }
+
   /**
    * Returns documents
    */
@@ -306,11 +349,13 @@ export default class Dragger {
    */
   getPointerPos(ev) {
     const getPos = this.opts.getPointerPosition;
+    const pEv = getPointerEvent(ev);
+
     return getPos
       ? getPos(ev)
       : {
-          x: ev.clientX,
-          y: ev.clientY
+          x: pEv.clientX,
+          y: pEv.clientY
         };
   }
 
@@ -329,6 +374,16 @@ export default class Dragger {
     }
 
     return result;
+  }
+
+  getScrollInfo() {
+    const { doc } = this.opts;
+    const body = doc && doc.body;
+
+    return {
+      y: body ? body.scrollTop : 0,
+      x: body ? body.scrollLeft : 0
+    };
   }
 
   detectAxisLock(x, y) {

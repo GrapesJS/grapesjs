@@ -1,4 +1,5 @@
 import { keys, bindAll, each, isUndefined } from 'underscore';
+import { on, off } from 'utils/mixins';
 import Dragger from 'utils/Dragger';
 
 module.exports = {
@@ -12,14 +13,12 @@ module.exports = {
       'getPosition',
       'getGuidesStatic',
       'renderGuide',
-      'getGuidesTarget'
+      'getGuidesTarget',
+      'handleScroll'
     );
     const { target, event, mode, dragger = {} } = opts;
-    const { Canvas } = editor;
     const el = target.getEl();
-    const scale = Canvas.getZoomMultiplier();
     const config = {
-      scale,
       doc: el.ownerDocument,
       onStart: this.onStart,
       onEnd: this.onEnd,
@@ -416,12 +415,23 @@ module.exports = {
     });
   },
 
-  toggleDrag(on) {
+  handleScroll(ev) {
+    console.log('Im scrolling', this.ppfx, { evY: ev.clientY, ev });
+  },
+
+  toggleDrag(enable) {
     const { ppfx, editor } = this;
-    const methodCls = on ? 'add' : 'remove';
+    const methods = { on, off };
+    const methodCls = enable ? 'add' : 'remove';
     const canvas = this.getCanvas();
     const classes = [`${ppfx}is__grabbing`];
+    const { Canvas } = editor;
     classes.forEach(cls => canvas.classList[methodCls](cls));
-    editor.Canvas[on ? 'startAutoscroll' : 'stopAutoscroll']();
+    Canvas[enable ? 'startAutoscroll' : 'stopAutoscroll']();
+    methods[enable ? 'on' : 'off'](
+      Canvas.getWindow(),
+      'scroll',
+      this.handleScroll
+    );
   }
 };
