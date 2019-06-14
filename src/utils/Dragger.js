@@ -91,21 +91,14 @@ export default class Dragger {
   }
 
   handleScroll() {
-    const { lastScrollTop, lastScroll, delta } = this;
-    // const { doc } = opts;
-    // const lastPos = this.currentPointer;
-    const actualTop = this.opts.doc.body.scrollTop; // TO REMOVE
-    const diff = actualTop - lastScrollTop; // TO REMOVE
+    const { lastScroll, delta } = this;
     const actualScroll = this.getScrollInfo();
-    const scroll = {
+    const scrollDiff = {
       x: actualScroll.x - lastScroll.x,
       y: actualScroll.y - lastScroll.y
     };
-    this.lastDiff = diff; // TO REMOVE
-    this.move(delta.x + scroll.x, delta.y + diff);
-    this.lastScrollDiff = scroll;
-    // console.log('handle scroll from Dragger', { actualTop, lastScrollTop, diff });
-    console.log('handle scroll from Dragger', { scroll });
+    this.move(delta.x + scrollDiff.x, delta.y + scrollDiff.y);
+    this.lastScrollDiff = scrollDiff;
   }
 
   /**
@@ -133,22 +126,19 @@ export default class Dragger {
    * @param  {Event} event
    */
   drag(ev) {
-    const { opts, lastDiff, globDiff, lastScrollDiff, globScrollDiff } = this;
-    const { onDrag, doc } = opts;
+    const { opts, lastScrollDiff, globScrollDiff } = this;
+    const { onDrag } = opts;
     const { startPointer } = this;
     const currentPos = this.getPointerPos(ev);
-    // console.log({ lastDiff, globDiff });
-    this.globDiff += lastDiff;
     const glDiff = {
       x: globScrollDiff.x + lastScrollDiff.x,
       y: globScrollDiff.y + lastScrollDiff.y
     };
     this.globScrollDiff = glDiff;
     const delta = {
-      x: currentPos.x - startPointer.x,
-      y: currentPos.y - startPointer.y + this.globDiff
+      x: currentPos.x - startPointer.x + glDiff.x,
+      y: currentPos.y - startPointer.y + glDiff.y
     };
-    this.lastDiff = 0;
     this.lastScrollDiff = { x: 0, y: 0 };
     let { lockedAxis } = this;
 
@@ -174,7 +164,6 @@ export default class Dragger {
     const deltaPre = { ...delta };
     this.currentPointer = currentPos;
     this.lockedAxis = lockedAxis;
-    this.lastScrollTop = this.opts.doc ? this.opts.doc.body.scrollTop : 0; // TO REMOVE
     this.lastScroll = this.getScrollInfo();
     moveDelta(delta);
 
