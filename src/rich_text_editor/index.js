@@ -138,7 +138,7 @@ module.exports = () => {
      * @example
      * rte.add('bold', {
      *   icon: '<b>B</b>',
-     *   attributes: {title: 'Bold',}
+     *   attributes: {title: 'Bold'},
      *   result: rte => rte.exec('bold')
      * });
      * rte.add('link', {
