@@ -106,6 +106,10 @@ module.exports = Backbone.Model.extend({
     );
   },
 
+  getContainer() {
+    return this.config.el;
+  },
+
   listenLog(event) {
     this.listenTo(this, `log:${event}`, logs[event]);
   },
