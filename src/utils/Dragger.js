@@ -1,6 +1,8 @@
 import { bindAll, isFunction, result, isUndefined } from 'underscore';
 import { on, off, isEscKey, getPointerEvent } from 'utils/mixins';
 
+const resetPos = () => ({ x: 0, y: 0 });
+
 export default class Dragger {
   /**
    * Init the dragger
@@ -63,7 +65,7 @@ export default class Dragger {
     };
     bindAll(this, 'drag', 'stop', 'keyHandle', 'handleScroll');
     this.setOptions(opts);
-    this.delta = { x: 0, y: 0 };
+    this.delta = resetPos();
     return this;
   }
 
@@ -114,10 +116,8 @@ export default class Dragger {
     this.guidesTarget = result(opts, 'guidesTarget') || [];
     isFunction(onStart) && onStart(ev, this);
     this.startPosition = this.getStartPosition();
-    this.lastDiff = 0;
-    this.globDiff = 0;
-    this.lastScrollDiff = { x: 0, y: 0 };
-    this.globScrollDiff = { x: 0, y: 0 };
+    this.lastScrollDiff = resetPos();
+    this.globScrollDiff = resetPos();
     this.drag(ev);
   }
 
@@ -139,7 +139,7 @@ export default class Dragger {
       x: currentPos.x - startPointer.x + glDiff.x,
       y: currentPos.y - startPointer.y + glDiff.y
     };
-    this.lastScrollDiff = { x: 0, y: 0 };
+    this.lastScrollDiff = resetPos();
     let { lockedAxis } = this;
 
     // Lock one axis
@@ -351,7 +351,7 @@ export default class Dragger {
   getStartPosition() {
     const { el, opts } = this;
     const getPos = opts.getPosition;
-    let result = { x: 0, y: 0 };
+    let result = resetPos();
 
     if (isFunction(getPos)) {
       result = getPos();
