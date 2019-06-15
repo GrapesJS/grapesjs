@@ -416,10 +416,10 @@ module.exports = {
   toggleDrag(enable) {
     const { ppfx, editor } = this;
     const methodCls = enable ? 'add' : 'remove';
-    const canvas = this.getCanvas();
     const classes = [`${ppfx}is__grabbing`];
     const { Canvas } = editor;
-    classes.forEach(cls => canvas.classList[methodCls](cls));
+    const body = Canvas.getBody();
+    classes.forEach(cls => body.classList[methodCls](cls));
     Canvas[enable ? 'startAutoscroll' : 'stopAutoscroll']();
   }
 };

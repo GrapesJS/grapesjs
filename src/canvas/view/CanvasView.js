@@ -238,6 +238,15 @@ module.exports = Backbone.View.extend({
           cursor: -webkit-grabbing;
         }
 
+        .${ppfx}is__grabbing {
+          overflow-x: hidden;
+        }
+
+        .${ppfx}is__grabbing,
+        .${ppfx}is__grabbing * {
+          cursor: grabbing !important;
+        }
+
         ${conf.canvasCss || ''}
         ${conf.protectedCss || ''}
       `;
