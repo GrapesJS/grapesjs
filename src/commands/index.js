@@ -130,6 +130,9 @@ module.exports = () => {
           const modes = ['absolute', 'translate'];
           const hideTlb = () => em.stopDefault(defComOptions);
 
+          // Dirty patch to prevent parent selection on drop (in absolute mode)
+          em.set('_cmpDrag', 1);
+
           if (!sel || !sel.get('draggable')) {
             console.warn('The element is not draggable');
             return;

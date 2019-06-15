@@ -176,7 +176,9 @@ module.exports = {
    * @private
    */
   onClick(e) {
+    const { em } = this;
     e.stopPropagation();
+    if (em.get('_cmpDrag')) return em.set('_cmpDrag');
     const $el = $(e.target);
     let model = $el.data('model');
 
