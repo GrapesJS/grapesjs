@@ -146,9 +146,11 @@ $ npm start
 
 Once the development server is started you should be able to reach the demo page (eg. `http://localhost:8080`)
 
+### Run in Gitpod
 
+You can also run the development server in Gitpod, a free online dev environment for GitHub
 
-
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/artf/grapesjs)
 
 ## Documentation
 
