@@ -6,6 +6,7 @@
   "license": "BSD-3-Clause",
   "homepage": "http://grapesjs.com",
   "main": "dist/grapes.js",
+  "sideEffects": false,
   "repository": {
     "type": "git",
     "url": "https://github.com/artf/grapesjs.git"
@@ -65,6 +66,7 @@
             "ie 11",
             "safari 8"
           ],
+          "modules": false,
           "useBuiltIns": true
         }
       ]
