@@ -52,10 +52,11 @@ module.exports = env => {
           search: '<# VERSION #>',
           replace: pkg.version
         }
-      },{
+      }, {
         test: /\.js$/,
         loader: 'babel-loader',
-        include: /src/
+        include: /src/,
+        options: { cacheDirectory: true },
       }],
     },
     resolve: {
