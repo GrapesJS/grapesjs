@@ -453,12 +453,11 @@ module.exports = {
           const style = modelToStyle.getStyle();
 
           if (!onlyHeight) {
-            const padding = 10;
             const frameOffset = canvas.getCanvasView().getFrameOffset();
             const width =
-              rect.w < frameOffset.width - padding
+              rect.w < frameOffset.width
                 ? rect.w
-                : frameOffset.width - padding;
+                : frameOffset.width;
             style[keyWidth] = autoWidth ? 'auto' : `${width}${unitWidth}`;
           }
 
