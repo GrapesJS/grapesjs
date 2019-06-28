@@ -1,7 +1,7 @@
 var Backbone = require('backbone');
 var ButtonsView = require('./ButtonsView');
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   initialize(o) {
     const config = o.config || {};
     const model = this.model;

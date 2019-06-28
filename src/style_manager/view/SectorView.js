@@ -2,7 +2,7 @@ import _ from 'underscore';
 import Backbone from 'backbone';
 var PropertiesView = require('./PropertiesView');
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   template: _.template(`
   <div class="<%= pfx %>title" data-sector-title>
     <i id="<%= pfx %>caret" class="fa"></i>

@@ -5,7 +5,7 @@ var htmlMode = require('codemirror/mode/htmlmixed/htmlmixed');
 var cssMode = require('codemirror/mode/css/css');
 var formatting = require('codemirror-formatting');
 
-module.exports = Backbone.Model.extend({
+export default Backbone.Model.extend({
   defaults: {
     input: '',
     label: '',

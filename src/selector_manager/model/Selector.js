@@ -77,4 +77,4 @@ const Selector = Backbone.Model.extend(
   }
 );
 
-module.exports = Selector;
+export default Selector;

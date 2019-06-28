@@ -2,7 +2,7 @@ import Backbone from 'backbone';
 const Layers = require('navigator');
 const $ = Backbone.$;
 
-module.exports = {
+export default {
   run(editor) {
     const lm = editor.LayerManager;
     const pn = editor.Panels;

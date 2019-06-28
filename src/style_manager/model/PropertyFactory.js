@@ -1,6 +1,6 @@
 var Backbone = require('backbone');
 
-module.exports = () => ({
+export default () => ({
   /**
    * Build props object by their name
    * @param  {Array<string>|string} props Array of properties name

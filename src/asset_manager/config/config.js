@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   // Default assets
   // eg. [
   //  'https://...image1.png',

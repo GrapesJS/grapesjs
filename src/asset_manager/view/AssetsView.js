@@ -3,7 +3,7 @@ var AssetView = require('./AssetView');
 var AssetImageView = require('./AssetImageView');
 var FileUploader = require('./FileUploader');
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   events: {
     submit: 'handleSubmit'
   },

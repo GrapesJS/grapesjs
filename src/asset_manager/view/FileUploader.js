@@ -2,7 +2,7 @@ import _ from 'underscore';
 import Backbone from 'backbone';
 import fetch from 'utils/fetch';
 
-module.exports = Backbone.View.extend(
+export default Backbone.View.extend(
   {
     template: _.template(`
   <form>

@@ -1,7 +1,7 @@
 var TraitView = require('./TraitView');
 var InputNumber = require('domain_abstract/ui/InputNumber');
 
-module.exports = TraitView.extend({
+export default TraitView.extend({
   getValueForTarget() {
     var model = this.model;
     var value = model.get('value');

@@ -32,7 +32,7 @@
  * @module StorageManager
  */
 
-module.exports = () => {
+export default () => {
   var c = {},
     defaults = require('./config/config'),
     LocalStorage = require('./model/LocalStorage'),

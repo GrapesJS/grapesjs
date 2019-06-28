@@ -35,7 +35,7 @@
 
 import { isElement } from 'underscore';
 
-module.exports = () => {
+export default () => {
   var c = {},
     defaults = require('./config/config'),
     Sectors = require('./model/Sectors'),

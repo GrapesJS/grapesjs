@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   stylePrefix: 'trt-',
 
   // Specify the element to use as a container, string (query) or HTMLElement

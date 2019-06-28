@@ -1,6 +1,6 @@
 const Component = require('./ComponentText');
 
-module.exports = Component.extend(
+export default Component.extend(
   {
     defaults: {
       ...Component.prototype.defaults,

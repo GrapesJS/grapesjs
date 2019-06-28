@@ -1,4 +1,4 @@
-module.exports = require('./PropertyView').extend({
+export default require('./PropertyView').extend({
   templateInput() {
     const pfx = this.pfx;
     const ppfx = this.ppfx;

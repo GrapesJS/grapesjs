@@ -1,7 +1,7 @@
 var Backbone = require('backbone');
 var PanelView = require('./PanelView');
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   initialize(o) {
     this.opt = o || {};
     this.config = this.opt.config || {};

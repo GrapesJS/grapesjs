@@ -1,7 +1,7 @@
 import { extend } from 'underscore';
 import Backbone from 'backbone';
 
-module.exports = Backbone.Model.extend({
+export default Backbone.Model.extend({
   mapModel(model) {
     var code = '';
     var script = model.get('script');

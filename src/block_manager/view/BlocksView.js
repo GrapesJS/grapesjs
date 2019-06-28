@@ -3,7 +3,7 @@ import { isString, isObject, bindAll } from 'underscore';
 const BlockView = require('./BlockView');
 const CategoryView = require('./CategoryView');
 
-module.exports = require('backbone').View.extend({
+export default require('backbone').View.extend({
   initialize(opts, config) {
     bindAll(this, 'getSorter', 'onDrag', 'onDrop');
     this.config = config || {};

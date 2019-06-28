@@ -1,4 +1,4 @@
-module.exports = require('backbone').View.extend({
+export default require('backbone').View.extend({
   initialize() {
     const { $el, model } = this;
     $el.data('model', model);

@@ -6,7 +6,7 @@ const TraitNumberView = require('./TraitNumberView');
 const TraitColorView = require('./TraitColorView');
 const TraitButtonView = require('./TraitButtonView');
 
-module.exports = DomainViews.extend({
+export default DomainViews.extend({
   itemView: TraitView,
 
   itemsView: {

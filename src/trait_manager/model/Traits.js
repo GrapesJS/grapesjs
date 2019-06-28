@@ -3,7 +3,7 @@ const Backbone = require('backbone');
 const Trait = require('./Trait');
 const TraitFactory = require('./TraitFactory');
 
-module.exports = Backbone.Collection.extend({
+export default Backbone.Collection.extend({
   model: Trait,
 
   initialize(coll, options = {}) {

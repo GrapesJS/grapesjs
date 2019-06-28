@@ -3,7 +3,7 @@ import { isUndefined, clone } from 'underscore';
 const Backbone = require('backbone');
 const $ = Backbone.$;
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   events: {
     change: 'onChange'
   },

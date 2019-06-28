@@ -1,3 +1,3 @@
-module.exports = require('./ComponentView').extend({
+export default require('./ComponentView').extend({
   events: {}
 });

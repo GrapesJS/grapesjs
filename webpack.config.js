@@ -12,6 +12,7 @@ module.exports = env => {
     path: path.join(__dirname),
     filename: 'dist/grapes.min.js',
     library: name,
+    libraryExport: 'default',
     libraryTarget: 'umd',
   };
 
@@ -29,10 +30,10 @@ module.exports = env => {
     plugins.push(new HtmlWebpackPlugin({ template, inject: false }));
   }
 
-  plugins.push(new webpack.ProvidePlugin({
-    _: 'underscore',
-    Backbone: 'backbone'
-  }));
+  // plugins.push(new webpack.ProvidePlugin({
+  //   _: 'underscore',
+  //   Backbone: 'backbone'
+  // }));
 
   return {
     entry: './src',

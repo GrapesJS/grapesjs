@@ -4,7 +4,7 @@ const PropertyView = require('./PropertyView');
 const $ = Backbone.$;
 let timeout;
 
-module.exports = PropertyView.extend({
+export default PropertyView.extend({
   templateInput() {
     return '';
   },

@@ -19,7 +19,7 @@
  */
 import { isUndefined } from 'underscore';
 
-module.exports = () => {
+export default () => {
   var c = {},
     defaults = require('./config/config'),
     gHtml = require('./model/HtmlGenerator'),

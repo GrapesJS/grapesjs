@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   // Style prefix
   stylePrefix: 'cm-',
 

@@ -1,6 +1,6 @@
 import { isFunction } from 'underscore';
 
-module.exports = require('./AssetView').extend({
+export default require('./AssetView').extend({
   events: {
     'click [data-toggle=asset-remove]': 'onRemove',
     click: 'onClick',

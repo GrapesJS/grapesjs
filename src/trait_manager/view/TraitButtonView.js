@@ -1,7 +1,7 @@
 import { isString, isObject } from 'underscore';
 const TraitView = require('./TraitView');
 
-module.exports = TraitView.extend({
+export default TraitView.extend({
   events: {
     'click button': 'handleClick'
   },

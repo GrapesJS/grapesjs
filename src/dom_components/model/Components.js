@@ -3,7 +3,7 @@ import { isEmpty, isArray, isString } from 'underscore';
 const Backbone = require('backbone');
 let Component;
 
-module.exports = Backbone.Collection.extend({
+export default Backbone.Collection.extend({
   initialize(models, opt = {}) {
     this.opt = opt;
     this.listenTo(this, 'add', this.onAdd);

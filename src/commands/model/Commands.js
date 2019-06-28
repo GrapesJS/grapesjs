@@ -1,6 +1,6 @@
 import Backbone from 'backbone';
 var Command = require('./Command');
 
-module.exports = Backbone.Collection.extend({
+export default Backbone.Collection.extend({
   model: Command
 });

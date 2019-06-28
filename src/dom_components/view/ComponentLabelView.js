@@ -1,1 +1,1 @@
-module.exports = require('./ComponentLinkView').extend({});
+export default require('./ComponentLinkView').extend({});

@@ -1,4 +1,4 @@
-module.exports = (config = {}) => ({
+export default (config = {}) => ({
   /**
    * Build props object by their name
    * @param  {Array<string>|string} props Array of properties name

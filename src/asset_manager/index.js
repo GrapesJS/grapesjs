@@ -30,7 +30,7 @@
  * @module AssetManager
  */
 
-module.exports = () => {
+export default () => {
   let c = {};
   const defaults = require('./config/config');
   const Assets = require('./model/Assets');

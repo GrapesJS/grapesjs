@@ -1,4 +1,4 @@
-module.exports = require('backbone').Model.extend({
+export default require('backbone').Model.extend({
   idAttribute: 'src',
 
   defaults: {

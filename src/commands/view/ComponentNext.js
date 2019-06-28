@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   run(ed) {
     if (!ed.Canvas.hasFocus()) return;
     const toSelect = [];

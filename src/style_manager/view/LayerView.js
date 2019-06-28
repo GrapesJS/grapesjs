@@ -1,6 +1,6 @@
 import Backbone from 'backbone';
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   events: {
     click: 'active',
     'click [data-close-layer]': 'remove',

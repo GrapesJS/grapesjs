@@ -4,7 +4,7 @@ const yt = 'yt';
 const vi = 'vi';
 const ytnc = 'ytnc';
 
-module.exports = Component.extend(
+export default Component.extend(
   {
     defaults: {
       ...Component.prototype.defaults,

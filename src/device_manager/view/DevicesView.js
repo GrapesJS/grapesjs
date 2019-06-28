@@ -1,7 +1,7 @@
 import _ from 'underscore';
 import Backbone from 'backbone';
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   template: _.template(`
     <div class="<%= ppfx %>device-label"><%= deviceLabel %></div>
     <div class="<%= ppfx %>field <%= ppfx %>select">

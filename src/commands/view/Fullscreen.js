@@ -1,6 +1,6 @@
 import { isElement } from 'underscore';
 
-module.exports = {
+export default {
   /**
    * Check if fullscreen mode is enabled
    * @return {Boolean}

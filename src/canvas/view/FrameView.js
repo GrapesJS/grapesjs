@@ -4,7 +4,7 @@ import { appendVNodes, empty } from 'utils/dom';
 const motionsEv =
   'transitionend oTransitionEnd transitionend webkitTransitionEnd';
 
-module.exports = require('backbone').View.extend({
+export default require('backbone').View.extend({
   tagName: 'iframe',
 
   attributes: {

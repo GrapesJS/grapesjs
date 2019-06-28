@@ -1,7 +1,7 @@
 import { keys, bindAll, each, isUndefined } from 'underscore';
 import Dragger from 'utils/Dragger';
 
-module.exports = {
+export default {
   run(editor, sender, opts = {}) {
     bindAll(
       this,

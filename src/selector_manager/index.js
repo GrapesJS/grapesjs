@@ -49,7 +49,7 @@ import { isString, isElement, isObject, isArray } from 'underscore';
 const isId = str => isString(str) && str[0] == '#';
 const isClass = str => isString(str) && str[0] == '.';
 
-module.exports = config => {
+export default config => {
   var c = config || {},
     defaults = require('./config/config'),
     Selector = require('./model/Selector'),

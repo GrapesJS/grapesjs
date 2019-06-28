@@ -1,4 +1,4 @@
-module.exports = require('backbone').View.extend({
+export default require('backbone').View.extend({
   tagName: 'style',
 
   initialize(o = {}) {

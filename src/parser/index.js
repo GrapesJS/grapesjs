@@ -1,4 +1,4 @@
-module.exports = () => {
+export default () => {
   let conf = {},
     defaults = require('./config/config'),
     parserCss = require('./model/ParserCss'),

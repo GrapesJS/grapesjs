@@ -1,6 +1,6 @@
 import { each } from 'underscore';
 
-module.exports = {
+export default {
   getPanels(editor) {
     if (!this.panels) {
       this.panels = editor.Panels.getPanelsEl();

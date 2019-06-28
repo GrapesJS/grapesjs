@@ -1,7 +1,7 @@
 import { isUndefined } from 'underscore';
 var TraitView = require('./TraitView');
 
-module.exports = TraitView.extend({
+export default TraitView.extend({
   initialize(o) {
     TraitView.prototype.initialize.apply(this, arguments);
     const { ppfx, fieldClass, inputhClass } = this;

@@ -21,7 +21,7 @@
  * @module DeviceManager
  */
 
-module.exports = () => {
+export default () => {
   var c = {},
     defaults = require('./config/config'),
     Devices = require('./model/Devices'),

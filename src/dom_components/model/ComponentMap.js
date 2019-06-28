@@ -1,7 +1,7 @@
 const Component = require('./ComponentImage');
 const OComponent = require('./Component');
 
-module.exports = Component.extend(
+export default Component.extend(
   {
     defaults: {
       ...Component.prototype.defaults,

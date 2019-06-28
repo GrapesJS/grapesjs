@@ -31,7 +31,7 @@ import { isFunction, includes } from 'underscore';
 import CommandAbstract from './view/CommandAbstract';
 import defaults from './config/config';
 
-module.exports = () => {
+export default () => {
   let em;
   let c = {};
   const commands = {};

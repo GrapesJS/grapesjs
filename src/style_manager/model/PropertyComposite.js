@@ -1,6 +1,6 @@
 const Property = require('./Property');
 
-module.exports = Property.extend({
+export default Property.extend({
   defaults: {
     ...Property.prototype.defaults,
     // 'background' is a good example where to make a difference

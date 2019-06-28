@@ -35,7 +35,7 @@ import Droppable from 'utils/Droppable';
 
 const { requestAnimationFrame } = window;
 
-module.exports = () => {
+export default () => {
   var c = {},
     defaults = require('./config/config'),
     Canvas = require('./model/Canvas'),

@@ -5,7 +5,7 @@ const Components = require('../model/Components');
 const ComponentsView = require('./ComponentsView');
 const Selectors = require('selector_manager/model/Selectors');
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   className() {
     return this.getClasses();
   },

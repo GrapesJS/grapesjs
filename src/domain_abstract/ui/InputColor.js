@@ -6,7 +6,7 @@ const Input = require('./Input');
 const $ = Backbone.$;
 ColorPicker($);
 
-module.exports = Input.extend({
+export default Input.extend({
   template() {
     const ppfx = this.ppfx;
     return `

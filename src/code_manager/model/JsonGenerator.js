@@ -1,7 +1,7 @@
 import { each } from 'underscore';
 import Backbone from 'backbone';
 
-module.exports = Backbone.Model.extend({
+export default Backbone.Model.extend({
   /** @inheritdoc */
   build(model) {
     var json = model.toJSON();

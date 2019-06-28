@@ -1,7 +1,7 @@
 var Backbone = require('backbone');
 var Button = require('./Button');
 
-module.exports = Backbone.Collection.extend({
+export default Backbone.Collection.extend({
   model: Button,
 
   /**

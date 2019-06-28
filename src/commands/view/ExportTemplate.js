@@ -1,7 +1,7 @@
 import Backbone from 'backbone';
 const $ = Backbone.$;
 
-module.exports = {
+export default {
   run(editor, sender, opts = {}) {
     sender && sender.set && sender.set('active', 0);
     const config = editor.getConfig();

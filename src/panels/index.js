@@ -26,7 +26,7 @@
  * @module Panels
  */
 
-module.exports = () => {
+export default () => {
   var c = {},
     defaults = require('./config/config'),
     Panel = require('./model/Panel'),

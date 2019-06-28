@@ -1,7 +1,7 @@
 const PropertyCompositeView = require('./PropertyCompositeView');
 const LayersView = require('./LayersView');
 
-module.exports = PropertyCompositeView.extend({
+export default PropertyCompositeView.extend({
   templateInput() {
     const pfx = this.pfx;
     const ppfx = this.ppfx;

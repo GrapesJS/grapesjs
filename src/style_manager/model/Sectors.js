@@ -1,5 +1,5 @@
 const Sector = require('./Sector');
 
-module.exports = require('backbone').Collection.extend({
+export default require('backbone').Collection.extend({
   model: Sector
 });

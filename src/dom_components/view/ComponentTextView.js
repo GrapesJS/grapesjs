@@ -2,7 +2,7 @@ import { on, off } from 'utils/mixins';
 
 const ComponentView = require('./ComponentView');
 
-module.exports = ComponentView.extend({
+export default ComponentView.extend({
   events: {
     dblclick: 'onActive',
     input: 'onInput'

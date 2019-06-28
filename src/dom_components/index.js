@@ -30,7 +30,7 @@
 import Backbone from 'backbone';
 import { isEmpty, isString, isObject, isArray, result } from 'underscore';
 
-module.exports = () => {
+export default () => {
   var c = {};
   let em;
   const defaults = require('./config/config');

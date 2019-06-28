@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   run(editor, sender, opts) {
     var opt = opts || {};
     var el = opt.el || '';

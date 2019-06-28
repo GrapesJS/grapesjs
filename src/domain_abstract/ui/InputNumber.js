@@ -4,7 +4,7 @@ const Input = require('./Input');
 const Backbone = require('backbone');
 const $ = Backbone.$;
 
-module.exports = Input.extend({
+export default Input.extend({
   events: {
     'change input': 'handleChange',
     'change select': 'handleUnitChange',

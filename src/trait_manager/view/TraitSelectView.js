@@ -2,7 +2,7 @@ import { isString, isUndefined } from 'underscore';
 const TraitView = require('./TraitView');
 const $ = require('backbone').$;
 
-module.exports = TraitView.extend({
+export default TraitView.extend({
   initialize(o) {
     TraitView.prototype.initialize.apply(this, arguments);
     const { ppfx, inputhClass, fieldClass, model } = this;

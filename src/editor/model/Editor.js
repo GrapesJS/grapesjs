@@ -49,7 +49,7 @@ const logs = {
   error: console.error
 };
 
-module.exports = Backbone.Model.extend({
+export default Backbone.Model.extend({
   defaults() {
     return {
       editing: 0,

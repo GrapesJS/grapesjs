@@ -1,4 +1,4 @@
-module.exports = config => {
+export default config => {
   var TEXT_NODE = 'span';
   var c = config;
   var modelAttrStart = 'data-gjs-';

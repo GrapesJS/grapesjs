@@ -1,7 +1,7 @@
 const Selector = require('./../model/Selector');
 const inputProp = 'contentEditable';
 
-module.exports = require('backbone').View.extend({
+export default require('backbone').View.extend({
   template() {
     const pfx = this.pfx;
     const ppfx = this.ppfx;

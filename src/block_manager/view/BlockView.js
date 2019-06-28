@@ -2,7 +2,7 @@ import Backbone from 'backbone';
 import { isObject } from 'underscore';
 import { on, off, hasDnd } from 'utils/mixins';
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   events: {
     click: 'handleClick',
     mousedown: 'startDrag',

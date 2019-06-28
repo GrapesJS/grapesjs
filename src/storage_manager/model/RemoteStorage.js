@@ -1,7 +1,7 @@
 import fetch from 'utils/fetch';
 import { isUndefined, isFunction } from 'underscore';
 
-module.exports = require('backbone').Model.extend({
+export default require('backbone').Model.extend({
   fetch,
 
   defaults: {

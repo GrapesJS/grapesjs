@@ -8,7 +8,7 @@ const PropertyFileView = require('./PropertyFileView');
 const PropertyCompositeView = require('./PropertyCompositeView');
 const PropertyStackView = require('./PropertyStackView');
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   initialize(o) {
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';

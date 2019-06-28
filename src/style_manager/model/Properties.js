@@ -1,7 +1,7 @@
 import TypeableCollection from 'domain_abstract/model/TypeableCollection';
 const Property = require('./Property');
 
-module.exports = require('backbone')
+export default require('backbone')
   .Collection.extend(TypeableCollection)
   .extend({
     types: [

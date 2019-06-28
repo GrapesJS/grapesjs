@@ -1,6 +1,6 @@
 const $ = require('backbone').$;
 
-module.exports = {
+export default {
   run(editor, sender) {
     this.sender = sender;
 

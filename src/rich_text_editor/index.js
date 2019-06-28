@@ -29,7 +29,7 @@
 import RichTextEditor from './model/RichTextEditor';
 import { on, off } from 'utils/mixins';
 
-module.exports = () => {
+export default () => {
   let config = {};
   const defaults = require('./config/config');
   let toolbar, actions, lastEl, globalRte;

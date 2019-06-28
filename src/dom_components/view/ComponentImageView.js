@@ -1,7 +1,7 @@
 import { isString } from 'underscore';
 const ComponentView = require('./ComponentView');
 
-module.exports = ComponentView.extend({
+export default ComponentView.extend({
   tagName: 'img',
 
   events: {

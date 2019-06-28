@@ -1,6 +1,6 @@
 var Backbone = require('backbone');
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   // Default view
   itemView: '',
 

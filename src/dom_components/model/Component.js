@@ -1220,4 +1220,4 @@ const Component = Backbone.Model.extend(Styleable).extend(
   }
 );
 
-module.exports = Component;
+export default Component;

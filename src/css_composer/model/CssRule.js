@@ -5,7 +5,7 @@ import { isEmpty, forEach } from 'underscore';
 
 var Selectors = require('selector_manager/model/Selectors');
 
-module.exports = Backbone.Model.extend(Styleable).extend({
+export default Backbone.Model.extend(Styleable).extend({
   defaults: {
     // Css selectors
     selectors: {},

@@ -35,7 +35,7 @@ import { isString } from 'underscore';
 
 const keymaster = require('keymaster');
 
-module.exports = () => {
+export default () => {
   let em;
   let config;
   const keymaps = {};

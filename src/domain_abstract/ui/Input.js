@@ -1,7 +1,7 @@
 const Backbone = require('backbone');
 const $ = Backbone.$;
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   events: {
     change: 'handleChange'
   },

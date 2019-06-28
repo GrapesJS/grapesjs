@@ -2,7 +2,7 @@ import { bindAll } from 'underscore';
 import { on, off, getKeyChar } from 'utils/mixins';
 import Dragger from 'utils/Dragger';
 
-module.exports = {
+export default {
   run(ed) {
     bindAll(this, 'onKeyUp', 'enableDragger', 'disableDragger');
     this.editor = ed;

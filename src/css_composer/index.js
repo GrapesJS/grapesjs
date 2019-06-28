@@ -29,7 +29,7 @@
 
 import { isArray } from 'underscore';
 
-module.exports = () => {
+export default () => {
   let em;
   var c = {},
     defaults = require('./config/config'),

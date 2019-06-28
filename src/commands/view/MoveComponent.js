@@ -6,7 +6,7 @@ const SelectComponent = require('./SelectComponent');
 const SelectPosition = require('./SelectPosition');
 const $ = Backbone.$;
 
-module.exports = _.extend({}, SelectPosition, SelectComponent, {
+export default _.extend({}, SelectPosition, SelectComponent, {
   init(o) {
     SelectComponent.init.apply(this, arguments);
     _.bindAll(this, 'initSorter', 'rollback', 'onEndMove');

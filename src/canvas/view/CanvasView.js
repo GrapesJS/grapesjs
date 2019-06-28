@@ -11,7 +11,7 @@ const FrameView = require('./FrameView');
 const $ = Backbone.$;
 let timerZoom;
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   events: {
     wheel: 'onWheel'
   },

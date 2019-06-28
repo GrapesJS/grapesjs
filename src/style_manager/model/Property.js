@@ -190,4 +190,4 @@ const Property = require('backbone').Model.extend(
   }
 );
 
-module.exports = Property;
+export default Property;

@@ -27,7 +27,7 @@
  */
 import { isElement } from 'underscore';
 
-module.exports = () => {
+export default () => {
   var c = {},
     defaults = require('./config/config'),
     Blocks = require('./model/Blocks'),

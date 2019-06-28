@@ -3,7 +3,7 @@ import { defaults, isElement } from 'underscore';
 const defaultOpts = require('./config/config');
 const TraitsView = require('./view/TraitsView');
 
-module.exports = () => {
+export default () => {
   let c = {};
   let TraitsViewer;
 

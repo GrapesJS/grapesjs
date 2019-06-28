@@ -6,7 +6,7 @@ const $ = Backbone.$;
 const getBlockId = (pfx, order) =>
   `${pfx}${order ? `-${parseFloat(order)}` : ''}`;
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   initialize(o) {
     const config = o.config || {};
     this.atRules = {};

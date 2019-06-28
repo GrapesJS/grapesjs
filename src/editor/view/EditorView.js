@@ -1,6 +1,6 @@
 const $ = Backbone.$;
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   initialize() {
     const { model } = this;
     model.view = this;

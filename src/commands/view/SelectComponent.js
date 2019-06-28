@@ -6,7 +6,7 @@ const Toolbar = require('dom_components/model/Toolbar');
 const $ = require('backbone').$;
 let showOffsets;
 
-module.exports = {
+export default {
   init(o) {
     bindAll(this, 'onHover', 'onOut', 'onClick', 'onFrameScroll');
   },

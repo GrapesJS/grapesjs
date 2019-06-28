@@ -1,4 +1,4 @@
-module.exports = config => {
+export default config => {
   var c = config || {},
     defaults = require('./config/config');
 

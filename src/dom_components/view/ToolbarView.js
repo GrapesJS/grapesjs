@@ -1,7 +1,7 @@
 const DomainViews = require('domain_abstract/view/DomainViews');
 const ToolbarButtonView = require('./ToolbarButtonView');
 
-module.exports = DomainViews.extend({
+export default DomainViews.extend({
   itemView: ToolbarButtonView,
 
   initialize(opts) {

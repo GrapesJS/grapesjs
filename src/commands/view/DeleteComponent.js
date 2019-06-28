@@ -3,7 +3,7 @@ import Backbone from 'backbone';
 const SelectComponent = require('./SelectComponent');
 const $ = Backbone.$;
 
-module.exports = _.extend({}, SelectComponent, {
+export default _.extend({}, SelectComponent, {
   init(o) {
     _.bindAll(this, 'startDelete', 'stopDelete', 'onDelete');
     this.hoverClass = this.pfx + 'hover-delete';

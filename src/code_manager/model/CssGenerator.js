@@ -2,7 +2,7 @@ import { isUndefined, each } from 'underscore';
 
 const maxValue = Number.MAX_VALUE;
 
-module.exports = require('backbone').Model.extend({
+export default require('backbone').Model.extend({
   initialize() {
     this.compCls = [];
     this.ids = [];

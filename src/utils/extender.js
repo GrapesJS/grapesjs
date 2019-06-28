@@ -1,6 +1,6 @@
 import { isObject, isString, each, isUndefined } from 'underscore';
 
-module.exports = ({ $, Backbone }) => {
+export default ({ $, Backbone }) => {
   if (Backbone) {
     const ViewProt = Backbone.View.prototype;
     const eventNsMap = {};

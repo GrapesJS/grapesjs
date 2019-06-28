@@ -4,7 +4,7 @@ import { isTaggableNode } from 'utils/mixins';
 
 const SectorView = require('./SectorView');
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   initialize(o = {}) {
     const config = o.config || {};
     this.pfx = config.stylePrefix || '';
