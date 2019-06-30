@@ -1,5 +1,5 @@
-const ComponentImageView = require('dom_components/view/ComponentImageView');
-const Component = require('dom_components/model/ComponentImage');
+import ComponentImageView from 'dom_components/view/ComponentImageView';
+import Component from 'dom_components/model/ComponentImage';
 
 module.exports = {
   run() {

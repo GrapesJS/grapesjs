@@ -1,6 +1,6 @@
-const DomComponents = require('dom_components');
-const ComponentsView = require('dom_components/view/ComponentsView');
-const Components = require('dom_components/model/Components');
+import DomComponents from 'dom_components';
+import ComponentsView from 'dom_components/view/ComponentsView';
+import Components from 'dom_components/model/Components';
 
 module.exports = {
   run() {

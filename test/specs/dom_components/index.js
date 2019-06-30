@@ -1,12 +1,12 @@
-const DomComponents = require('dom_components');
-const Components = require('dom_components/model/Components');
-const ComponentModels = require('./model/Component');
-const ComponentView = require('./view/ComponentV');
-const ComponentsView = require('./view/ComponentsView');
-const ComponentTextView = require('./view/ComponentTextView');
-const ComponentImageView = require('./view/ComponentImageView');
-const Editor = require('editor/model/Editor');
-const utils = require('./../test_utils.js');
+import DomComponents from 'dom_components';
+import Components from 'dom_components/model/Components';
+import ComponentModels from './model/Component';
+import ComponentView from './view/ComponentV';
+import ComponentsView from './view/ComponentsView';
+import ComponentTextView from './view/ComponentTextView';
+import ComponentImageView from './view/ComponentImageView';
+import Editor from 'editor/model/Editor';
+import utils from './../test_utils.js';
 
 describe('DOM Components', () => {
   describe('Main', () => {
