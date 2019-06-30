@@ -1,7 +1,7 @@
 {
   "name": "grapesjs",
   "description": "Free and Open Source Web Builder Framework",
-  "version": "0.14.65",
+  "version": "0.14.66",
   "author": "Artur Arseniev",
   "license": "BSD-3-Clause",
   "homepage": "http://grapesjs.com",
@@ -121,6 +121,7 @@
     "start": "run-p start:*",
     "start:css": "npm run build:css -- -w",
     "start:js": "webpack-dev-server --open --progress --colors",
+    "stats": "webpack --profile --json > stats.json && webpack-bundle-analyzer stats.json",
     "format": "prettier --single-quote --write './{src,test}/**/*.js'",
     "test": "jest",
     "test:dev": "jest --watch"

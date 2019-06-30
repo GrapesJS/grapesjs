@@ -3,6 +3,7 @@ const pkg = require('./package.json');
 const webpack = require('webpack');
 const path = require('path');
 const fs = require('fs');
+const rootDir = path.resolve(__dirname);
 let plugins = [];
 
 module.exports = env => {
@@ -63,7 +64,9 @@ module.exports = env => {
     resolve: {
       modules: ['src', 'node_modules'],
       alias: {
-        jquery: 'cash-dom'
+        jquery: 'cash-dom',
+        backbone: `${rootDir}/node_modules/backbone`,
+        underscore: `${rootDir}/node_modules/underscore`,
       }
     }
   };
