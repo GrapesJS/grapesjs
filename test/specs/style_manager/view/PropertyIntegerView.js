@@ -1,9 +1,8 @@
-const PropertyIntegerView = require('style_manager/view/PropertyIntegerView');
-const Property = require('style_manager/model/Property');
-const PropertyInteger = require('style_manager/model/PropertyInteger');
-const Component = require('dom_components/model/Component');
-const Editor = require('editor/model/Editor');
-const DomComponents = require('dom_components');
+import PropertyIntegerView from 'style_manager/view/PropertyIntegerView';
+import PropertyInteger from 'style_manager/model/PropertyInteger';
+import Component from 'dom_components/model/Component';
+import Editor from 'editor/model/Editor';
+import DomComponents from 'dom_components';
 
 module.exports = {
   run() {

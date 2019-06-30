@@ -1,8 +1,8 @@
-const PropertyRadioView = require('style_manager/view/PropertyRadioView');
-const Property = require('style_manager/model/Property');
-const Component = require('dom_components/model/Component');
-const Editor = require('editor/model/Editor');
-const DomComponents = require('dom_components');
+import PropertyRadioView from 'style_manager/view/PropertyRadioView';
+import Property from 'style_manager/model/Property';
+import Component from 'dom_components/model/Component';
+import Editor from 'editor/model/Editor';
+import DomComponents from 'dom_components';
 
 module.exports = {
   run() {

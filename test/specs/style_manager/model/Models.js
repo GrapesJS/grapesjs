@@ -1,11 +1,11 @@
-const Sector = require('style_manager/model/Sector');
-const Sectors = require('style_manager/model/Sectors');
-const Property = require('style_manager/model/Property');
-const PropertyInteger = require('style_manager/model/PropertyInteger');
-const Properties = require('style_manager/model/Properties');
-const Layer = require('style_manager/model/Layer');
-const Layers = require('style_manager/model/Layers');
-const PropertyFactory = require('style_manager/model/PropertyFactory');
+import Sector from 'style_manager/model/Sector';
+import Sectors from 'style_manager/model/Sectors';
+import Property from 'style_manager/model/Property';
+import PropertyInteger from 'style_manager/model/PropertyInteger';
+import Properties from 'style_manager/model/Properties';
+import Layer from 'style_manager/model/Layer';
+import Layers from 'style_manager/model/Layers';
+import PropertyFactory from 'style_manager/model/PropertyFactory';
 
 module.exports = {
   run() {
