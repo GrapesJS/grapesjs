@@ -1,4 +1,4 @@
-var FileUploader = require('asset_manager/view/FileUploader');
+import FileUploader from 'asset_manager/view/FileUploader';
 
 module.exports = {
   run() {

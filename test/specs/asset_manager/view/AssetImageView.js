@@ -1,6 +1,5 @@
-var AssetImageView = require('asset_manager/view/AssetImageView');
-var AssetImage = require('asset_manager/model/AssetImage');
-var Assets = require('asset_manager/model/Assets');
+import AssetImageView from 'asset_manager/view/AssetImageView';
+import Assets from 'asset_manager/model/Assets';
 
 module.exports = {
   run() {
