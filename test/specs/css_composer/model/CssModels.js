@@ -1,7 +1,7 @@
-var CssRule = require('css_composer/model/CssRule');
-var CssRules = require('css_composer/model/CssRules');
-var Selectors = require('selector_manager/model/Selectors');
-var Selector = require('selector_manager/model/Selector');
+import CssRule from 'css_composer/model/CssRule';
+import CssRules from 'css_composer/model/CssRules';
+import Selectors from 'selector_manager/model/Selectors';
+import Selector from 'selector_manager/model/Selector';
 
 module.exports = {
   run() {

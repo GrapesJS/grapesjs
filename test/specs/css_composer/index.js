@@ -1,10 +1,10 @@
-const Models = require('./model/CssModels');
-const CssRuleView = require('./view/CssRuleView');
-const CssRulesView = require('./view/CssRulesView');
-const CssComposer = require('css_composer');
-const e2e = require('./e2e/CssComposer');
-const utils = require('./../test_utils.js');
-const Editor = require('editor/model/Editor');
+import Models from './model/CssModels';
+import CssRuleView from './view/CssRuleView';
+import CssRulesView from './view/CssRulesView';
+import CssComposer from 'css_composer';
+import e2e from './e2e/CssComposer';
+import utils from './../test_utils.js';
+import Editor from 'editor/model/Editor';
 
 describe('Css Composer', () => {
   describe('Main', () => {

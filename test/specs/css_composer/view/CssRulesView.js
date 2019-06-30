@@ -1,6 +1,6 @@
-const CssRulesView = require('css_composer/view/CssRulesView');
-const CssRules = require('css_composer/model/CssRules');
-const Editor = require('editor/model/Editor');
+import CssRulesView from 'css_composer/view/CssRulesView';
+import CssRules from 'css_composer/model/CssRules';
+import Editor from 'editor/model/Editor';
 
 module.exports = {
   run() {
