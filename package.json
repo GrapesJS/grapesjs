@@ -1,7 +1,7 @@
 {
   "name": "grapesjs",
   "description": "Free and Open Source Web Builder Framework",
-  "version": "0.14.64",
+  "version": "0.14.65",
   "author": "Artur Arseniev",
   "license": "BSD-3-Clause",
   "homepage": "http://grapesjs.com",
@@ -76,7 +76,9 @@
     ],
     "env": {
       "test": {
-        "presets": [ "@babel/preset-env" ]
+        "presets": [
+          "@babel/preset-env"
+        ]
       }
     }
   },
