@@ -1,7 +1,7 @@
 import StorageManager from 'storage_manager';
 import AssetManager from 'asset_manager';
 
-describe.only('Asset Manager', () => {
+describe('Asset Manager', () => {
   describe('Main', () => {
     var obj;
     var imgObj;

@@ -1,5 +1,5 @@
-var BlockManager = require('block_manager');
-var BlocksView = require('./view/BlocksView');
+import BlockManager from 'block_manager';
+import BlocksView from './view/BlocksView';
 
 describe('BlockManager', () => {
   describe('Main', () => {
