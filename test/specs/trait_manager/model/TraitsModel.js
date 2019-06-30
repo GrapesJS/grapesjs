@@ -1,5 +1,5 @@
-const Trait = require('trait_manager/model/Trait');
-const Component = require('dom_components/model/Component');
+import Trait from 'trait_manager/model/Trait';
+import Component from 'dom_components/model/Component';
 
 module.exports = {
   run() {
