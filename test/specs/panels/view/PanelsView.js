@@ -1,5 +1,5 @@
-const PanelsView = require('panels/view/PanelsView');
-const Panels = require('panels/model/Panels');
+import PanelsView from 'panels/view/PanelsView';
+import Panels from 'panels/model/Panels';
 
 module.exports = {
   run() {

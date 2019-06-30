@@ -1,5 +1,5 @@
-const ButtonsView = require('panels/view/ButtonsView');
-const Buttons = require('panels/model/Buttons');
+import ButtonsView from 'panels/view/ButtonsView';
+import Buttons from 'panels/model/Buttons';
 
 module.exports = {
   run() {

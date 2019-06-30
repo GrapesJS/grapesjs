@@ -1,10 +1,10 @@
-const Panels = require('panels');
-const e2e = require('./e2e/PanelsE2e');
-const Models = require('./model/PanelModels');
-const PanelView = require('./view/PanelView');
-const PanelsView = require('./view/PanelsView');
-const ButtonView = require('./view/ButtonView');
-const ButtonsView = require('./view/ButtonsView');
+import Panels from 'panels';
+import e2e from './e2e/PanelsE2e';
+import Models from './model/PanelModels';
+import PanelView from './view/PanelView';
+import PanelsView from './view/PanelsView';
+import ButtonView from './view/ButtonView';
+import ButtonsView from './view/ButtonsView';
 
 describe('Panels', () => {
   describe('Main', () => {
