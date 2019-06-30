@@ -1,5 +1,3 @@
-const PluginManager = require('plugin_manager');
-
 describe('GrapesJS', () => {
   describe('Main', () => {
     var obj;

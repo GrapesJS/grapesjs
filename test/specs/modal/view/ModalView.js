@@ -1,5 +1,5 @@
-const ModalView = require('modal_dialog/view/ModalView');
-const Modal = require('modal_dialog/model/Modal');
+import ModalView from 'modal_dialog/view/ModalView';
+import Modal from 'modal_dialog/model/Modal';
 
 module.exports = {
   run() {
