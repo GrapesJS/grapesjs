@@ -1,4 +1,4 @@
-const Property = require('./Property');
+import Property from './Property';
 
 export default Property.extend({
   defaults: () => ({

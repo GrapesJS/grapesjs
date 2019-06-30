@@ -1,5 +1,3 @@
-var Backbone = require('backbone');
-
 export default () => ({
   /**
    * Build props object by their name

@@ -1,5 +1,12 @@
 import Backbone from 'backbone';
-import { isString, isFunction, isArray, result, each } from 'underscore';
+import {
+  isString,
+  isFunction,
+  isArray,
+  result,
+  each,
+  bindAll
+} from 'underscore';
 import {
   on,
   off,
@@ -14,7 +21,7 @@ const $ = Backbone.$;
 export default Backbone.View.extend({
   initialize(opt) {
     this.opt = opt || {};
-    _.bindAll(
+    bindAll(
       this,
       'startSort',
       'onMove',

@@ -1,4 +1,5 @@
-const Backbone = require('backbone');
+import Backbone from 'backbone';
+
 const $ = Backbone.$;
 
 export default Backbone.View.extend({

@@ -32,8 +32,7 @@
  */
 
 import { isString } from 'underscore';
-
-const keymaster = require('keymaster');
+import keymaster from 'keymaster';
 
 export default () => {
   let em;

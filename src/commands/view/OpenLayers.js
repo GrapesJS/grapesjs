@@ -1,5 +1,6 @@
 import Backbone from 'backbone';
-const Layers = require('navigator');
+import Layers from 'navigator';
+
 const $ = Backbone.$;
 
 export default {

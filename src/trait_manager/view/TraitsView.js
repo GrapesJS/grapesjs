@@ -1,10 +1,10 @@
-const DomainViews = require('domain_abstract/view/DomainViews');
-const TraitView = require('./TraitView');
-const TraitSelectView = require('./TraitSelectView');
-const TraitCheckboxView = require('./TraitCheckboxView');
-const TraitNumberView = require('./TraitNumberView');
-const TraitColorView = require('./TraitColorView');
-const TraitButtonView = require('./TraitButtonView');
+import DomainViews from 'domain_abstract/view/DomainViews';
+import TraitView from './TraitView';
+import TraitSelectView from './TraitSelectView';
+import TraitCheckboxView from './TraitCheckboxView';
+import TraitNumberView from './TraitNumberView';
+import TraitColorView from './TraitColorView';
+import TraitButtonView from './TraitButtonView';
 
 export default DomainViews.extend({
   itemView: TraitView,

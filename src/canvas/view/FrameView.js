@@ -1,10 +1,11 @@
+import Backbone from 'backbone';
 import { bindAll } from 'underscore';
 import { appendVNodes, empty } from 'utils/dom';
 
 const motionsEv =
   'transitionend oTransitionEnd transitionend webkitTransitionEnd';
 
-export default require('backbone').View.extend({
+export default Backbone.View.extend({
   tagName: 'iframe',
 
   attributes: {

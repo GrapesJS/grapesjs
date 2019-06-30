@@ -1,4 +1,5 @@
 import Backbone from 'backbone';
+import PropertiesView from './PropertiesView';
 
 export default Backbone.View.extend({
   events: {
@@ -146,7 +147,6 @@ export default Backbone.View.extend({
   },
 
   render() {
-    const PropertiesView = require('./PropertiesView');
     const propsConfig = this.propsConfig;
     const { model, el, pfx } = this;
     const preview = model.get('preview');

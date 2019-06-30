@@ -1,5 +1,5 @@
-var TraitView = require('./TraitView');
-var InputNumber = require('domain_abstract/ui/InputNumber');
+import TraitView from './TraitView';
+import InputNumber from 'domain_abstract/ui/InputNumber';
 
 export default TraitView.extend({
   getValueForTarget() {

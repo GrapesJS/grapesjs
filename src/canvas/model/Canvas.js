@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-var Frame = require('./Frame');
+import Frame from './Frame';
 
 export default Backbone.Model.extend({
   defaults: {

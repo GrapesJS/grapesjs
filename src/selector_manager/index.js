@@ -45,16 +45,16 @@
  */
 
 import { isString, isElement, isObject, isArray } from 'underscore';
+import defaults from './config/config';
+import Selector from './model/Selector';
+import Selectors from './model/Selectors';
+import ClassTagsView from './view/ClassTagsView';
 
 const isId = str => isString(str) && str[0] == '#';
 const isClass = str => isString(str) && str[0] == '.';
 
 export default config => {
-  var c = config || {},
-    defaults = require('./config/config'),
-    Selector = require('./model/Selector'),
-    Selectors = require('./model/Selectors'),
-    ClassTagsView = require('./view/ClassTagsView');
+  var c = config || {};
   var selectors, selectorTags;
 
   return {

@@ -1,4 +1,4 @@
-const Component = require('./ComponentTextNode');
+import Component from './ComponentTextNode';
 
 export default Component.extend(
   {

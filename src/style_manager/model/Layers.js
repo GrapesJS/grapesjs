@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-const Layer = require('./Layer');
+import Layer from './Layer';
 
 export default Backbone.Collection.extend({
   model: Layer,

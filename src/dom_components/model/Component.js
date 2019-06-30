@@ -6,20 +6,19 @@ import {
   isEmpty,
   isBoolean,
   has,
-  clone,
   isString,
   forEach,
   result,
   keys
 } from 'underscore';
-import { shallowDiff, hasDnd } from 'utils/mixins';
+import { shallowDiff } from 'utils/mixins';
 import Styleable from 'domain_abstract/model/Styleable';
+import Backbone from 'backbone';
+import Components from './Components';
+import Selector from 'selector_manager/model/Selector';
+import Selectors from 'selector_manager/model/Selectors';
+import Traits from 'trait_manager/model/Traits';
 
-const Backbone = require('backbone');
-const Components = require('./Components');
-const Selector = require('selector_manager/model/Selector');
-const Selectors = require('selector_manager/model/Selectors');
-const Traits = require('trait_manager/model/Traits');
 const componentList = {};
 let componentIndex = 0;
 

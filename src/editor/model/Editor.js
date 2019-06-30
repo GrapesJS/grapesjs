@@ -1,11 +1,6 @@
-import {
-  isUndefined,
-  defaults,
-  isArray,
-  contains,
-  toArray,
-  keys
-} from 'underscore';
+import { isUndefined, isArray, contains, toArray, keys } from 'underscore';
+import Backbone from 'backbone';
+import Extender from 'utils/extender';
 import { getModel } from 'utils/mixins';
 
 const deps = [
@@ -31,12 +26,11 @@ const deps = [
   require('block_manager')
 ];
 
-const Backbone = require('backbone');
 const { Collection } = Backbone;
 let timedInterval;
 let updateItr;
 
-require('utils/extender')({
+Extender({
   Backbone: Backbone,
   $: Backbone.$
 });
@@ -181,7 +175,8 @@ export default Backbone.Model.extend({
    */
   loadModule(moduleName) {
     const { config } = this;
-    const Mod = new moduleName();
+    const Module = moduleName.default || moduleName;
+    const Mod = new Module();
     const name = Mod.name.charAt(0).toLowerCase() + Mod.name.slice(1);
     const cfgParent = !isUndefined(config[name])
       ? config[name]

@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-var CssRule = require('./CssRule');
+import CssRule from './CssRule';
 
 export default Backbone.Collection.extend({
   initialize(models, opt) {

@@ -1,5 +1,6 @@
 import Backbone from 'backbone';
-const StyleManager = require('style_manager');
+import StyleManager from 'style_manager';
+
 const $ = Backbone.$;
 
 export default {

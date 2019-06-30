@@ -179,7 +179,7 @@ export default () => {
       defaultCommands['core:redo'] = e => e.UndoManager.redo();
       commandsDef.forEach(item => {
         const oldCmd = item[2];
-        const cmd = require(`./view/${item[1]}`);
+        const cmd = require(`./view/${item[1]}`).default;
         const cmdName = `core:${item[0]}`;
         defaultCommands[cmdName] = cmd;
         if (oldCmd) {

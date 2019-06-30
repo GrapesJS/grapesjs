@@ -1,4 +1,4 @@
-const ComponentView = require('./ComponentView');
+import ComponentView from './ComponentView';
 
 export default ComponentView.extend({
   _createElement: function(tagName) {

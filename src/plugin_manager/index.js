@@ -1,6 +1,7 @@
+import defaults from './config/config';
+
 export default config => {
-  var c = config || {},
-    defaults = require('./config/config');
+  var c = config || {};
 
   // Set default options
   for (var name in defaults) {

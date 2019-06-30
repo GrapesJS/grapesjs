@@ -1,4 +1,6 @@
-const $ = require('backbone').$;
+import Backbone from 'backbone';
+
+const $ = Backbone.$;
 
 export default {
   run(editor, sender) {

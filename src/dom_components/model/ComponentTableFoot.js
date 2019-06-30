@@ -1,4 +1,4 @@
-const ComponentTableBody = require('./ComponentTableBody');
+import ComponentTableBody from './ComponentTableBody';
 
 export default ComponentTableBody.extend(
   {

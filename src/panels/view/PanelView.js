@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var ButtonsView = require('./ButtonsView');
+import Backbone from 'backbone';
+import ButtonsView from './ButtonsView';
 
 export default Backbone.View.extend({
   initialize(o) {

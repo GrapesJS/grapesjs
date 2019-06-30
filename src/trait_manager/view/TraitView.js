@@ -1,6 +1,6 @@
-import { isUndefined, clone } from 'underscore';
+import Backbone from 'backbone';
+import { isUndefined } from 'underscore';
 
-const Backbone = require('backbone');
 const $ = Backbone.$;
 
 export default Backbone.View.extend({

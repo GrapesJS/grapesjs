@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-var Device = require('./Device');
+import Device from './Device';
 
 export default Backbone.Collection.extend({
   model: Device,

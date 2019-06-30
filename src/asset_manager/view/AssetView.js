@@ -1,4 +1,5 @@
 import Backbone from 'backbone';
+import { clone } from 'underscore';
 
 export default Backbone.View.extend({
   initialize(o = {}) {
@@ -38,7 +39,7 @@ export default Backbone.View.extend({
    * */
   updateTarget(target) {
     if (target && target.set) {
-      target.set('attributes', _.clone(target.get('attributes')));
+      target.set('attributes', clone(target.get('attributes')));
       target.set('src', this.model.get('src'));
     }
   },

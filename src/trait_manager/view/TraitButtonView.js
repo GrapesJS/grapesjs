@@ -1,5 +1,5 @@
-import { isString, isObject } from 'underscore';
-const TraitView = require('./TraitView');
+import { isString } from 'underscore';
+import TraitView from './TraitView';
 
 export default TraitView.extend({
   events: {

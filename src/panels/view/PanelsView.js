@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var PanelView = require('./PanelView');
+import Backbone from 'backbone';
+import PanelView from './PanelView';
 
 export default Backbone.View.extend({
   initialize(o) {

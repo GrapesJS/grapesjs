@@ -1,3 +1,5 @@
-export default require('./ComponentView').extend({
+import ComponentView from './ComponentView';
+
+export default ComponentView.extend({
   events: {}
 });

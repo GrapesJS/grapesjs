@@ -1,4 +1,4 @@
-var Backbone = require('backbone');
+import Backbone from 'backbone';
 
 export default Backbone.Model.extend({
   defaults: {

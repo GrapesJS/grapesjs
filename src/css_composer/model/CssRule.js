@@ -1,9 +1,8 @@
-import _ from 'underscore';
+import { map } from 'underscore';
 import Backbone from 'backbone';
 import Styleable from 'domain_abstract/model/Styleable';
 import { isEmpty, forEach } from 'underscore';
-
-var Selectors = require('selector_manager/model/Selectors');
+import Selectors from 'selector_manager/model/Selectors';
 
 export default Backbone.Model.extend(Styleable).extend({
   defaults: {
@@ -161,8 +160,8 @@ export default Backbone.Model.extend(Styleable).extend({
     //var a2 = _.pluck(this.get('selectors').models, cId);
     if (!(selectors instanceof Array) && !selectors.models)
       selectors = [selectors];
-    var a1 = _.map(selectors.models || selectors, model => model.get('name'));
-    var a2 = _.map(this.get('selectors').models, model => model.get('name'));
+    var a1 = map(selectors.models || selectors, model => model.get('name'));
+    var a2 = map(this.get('selectors').models, model => model.get('name'));
     var f = false;
 
     if (a1.length !== a2.length) return f;

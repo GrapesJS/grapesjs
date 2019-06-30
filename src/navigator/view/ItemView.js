@@ -1,7 +1,8 @@
 import { isUndefined, isString } from 'underscore';
 import { getModel } from 'utils/mixins';
 import Backbone from 'backbone';
-const ComponentView = require('dom_components/view/ComponentView');
+import ComponentView from 'dom_components/view/ComponentView';
+
 const inputProp = 'contentEditable';
 const $ = Backbone.$;
 let ItemsView;
@@ -363,7 +364,7 @@ export default Backbone.View.extend({
     const level = this.level + 1;
 
     if (isUndefined(ItemsView)) {
-      ItemsView = require('./ItemsView');
+      ItemsView = require('./ItemsView').default;
     }
 
     const children = new ItemsView({

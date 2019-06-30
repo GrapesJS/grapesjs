@@ -1,4 +1,6 @@
-export default require('./PropertyView').extend({
+import PropertyView from './PropertyView';
+
+export default PropertyView.extend({
   templateInput() {
     const pfx = this.pfx;
     const ppfx = this.ppfx;

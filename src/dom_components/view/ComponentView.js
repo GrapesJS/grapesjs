@@ -1,9 +1,8 @@
 import Backbone from 'backbone';
 import { isArray, isEmpty, each, keys } from 'underscore';
-
-const Components = require('../model/Components');
-const ComponentsView = require('./ComponentsView');
-const Selectors = require('selector_manager/model/Selectors');
+import Components from '../model/Components';
+import ComponentsView from './ComponentsView';
+import Selectors from 'selector_manager/model/Selectors';
 
 export default Backbone.View.extend({
   className() {

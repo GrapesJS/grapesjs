@@ -1,7 +1,6 @@
 import { isUndefined } from 'underscore';
-
-const Property = require('./Property');
-const InputNumber = require('domain_abstract/ui/InputNumber');
+import Property from './Property';
+import InputNumber from 'domain_abstract/ui/InputNumber';
 
 export default Property.extend({
   defaults: {

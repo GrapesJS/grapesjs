@@ -1,6 +1,6 @@
 import { template, debounce } from 'underscore';
 import Backbone from 'backbone';
-var ClassTagView = require('./ClassTagView');
+import ClassTagView from './ClassTagView';
 
 export default Backbone.View.extend({
   template: template(`

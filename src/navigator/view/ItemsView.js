@@ -1,6 +1,7 @@
+import Backbone from 'backbone';
 import ItemView from './ItemView';
 
-export default require('backbone').View.extend({
+export default Backbone.View.extend({
   initialize(o = {}) {
     this.opt = o;
     const config = o.config || {};

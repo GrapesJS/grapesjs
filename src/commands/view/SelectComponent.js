@@ -1,9 +1,10 @@
+import Backbone from 'backbone';
 import { bindAll, isElement, isUndefined } from 'underscore';
 import { on, off, getUnitFromValue, isTaggableNode } from 'utils/mixins';
+import ToolbarView from 'dom_components/view/ToolbarView';
+import Toolbar from 'dom_components/model/Toolbar';
 
-const ToolbarView = require('dom_components/view/ToolbarView');
-const Toolbar = require('dom_components/model/Toolbar');
-const $ = require('backbone').$;
+const $ = Backbone.$;
 let showOffsets;
 
 export default {

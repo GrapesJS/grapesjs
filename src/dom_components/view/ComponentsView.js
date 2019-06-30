@@ -79,7 +79,7 @@ export default Backbone.View.extend({
    * @private
    * */
   addToCollection(model, fragmentEl, index) {
-    if (!this.compView) this.compView = require('./ComponentView');
+    if (!this.compView) this.compView = require('./ComponentView').default;
     const { config, opts } = this;
     const fragment = fragmentEl || null;
     const dt = opts.componentTypes;

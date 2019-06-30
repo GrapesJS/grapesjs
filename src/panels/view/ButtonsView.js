@@ -1,5 +1,6 @@
-var Backbone = require('backbone');
-var ButtonView = require('./ButtonView');
+import Backbone from 'backbone';
+import ButtonView from './ButtonView';
+import { result } from 'underscore';
 
 export default Backbone.View.extend({
   initialize(o) {
@@ -58,7 +59,7 @@ export default Backbone.View.extend({
     }, this);
 
     this.$el.append(fragment);
-    this.$el.attr('class', _.result(this, 'className'));
+    this.$el.attr('class', result(this, 'className'));
     return this;
   }
 });

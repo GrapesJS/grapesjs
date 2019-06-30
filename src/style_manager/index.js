@@ -34,13 +34,13 @@
  */
 
 import { isElement } from 'underscore';
+import defaults from './config/config';
+import Sectors from './model/Sectors';
+import Properties from './model/Properties';
+import SectorsView from './view/SectorsView';
 
 export default () => {
-  var c = {},
-    defaults = require('./config/config'),
-    Sectors = require('./model/Sectors'),
-    Properties = require('./model/Properties'),
-    SectorsView = require('./view/SectorsView');
+  var c = {};
   let properties;
   var sectors, SectView;
 

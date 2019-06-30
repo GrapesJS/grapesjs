@@ -1,8 +1,9 @@
 import { isString, isArray, keys } from 'underscore';
 import { shallowDiff } from 'utils/mixins';
+import ParserHtml from 'parser/model/ParserHtml';
 
-const ParserHtml = require('parser/model/ParserHtml');
 const parseStyle = ParserHtml().parseStyle;
+
 export default {
   parseStyle,
 

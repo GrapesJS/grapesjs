@@ -28,10 +28,10 @@
 
 import RichTextEditor from './model/RichTextEditor';
 import { on, off } from 'utils/mixins';
+import defaults from './config/config';
 
 export default () => {
   let config = {};
-  const defaults = require('./config/config');
   let toolbar, actions, lastEl, globalRte;
 
   const hideToolbar = () => {

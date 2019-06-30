@@ -1,6 +1,5 @@
 import { on, off } from 'utils/mixins';
-
-const ComponentView = require('./ComponentView');
+import ComponentView from './ComponentView';
 
 export default ComponentView.extend({
   events: {

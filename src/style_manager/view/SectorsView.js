@@ -1,8 +1,7 @@
 import Backbone from 'backbone';
 import { extend, isString } from 'underscore';
 import { isTaggableNode } from 'utils/mixins';
-
-const SectorView = require('./SectorView');
+import SectorView from './SectorView';
 
 export default Backbone.View.extend({
   initialize(o = {}) {

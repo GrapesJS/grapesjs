@@ -1,5 +1,5 @@
-const Property = require('./PropertyComposite');
-const Layers = require('./Layers');
+import Property from './PropertyComposite';
+import Layers from './Layers';
 
 export default Property.extend({
   defaults: {

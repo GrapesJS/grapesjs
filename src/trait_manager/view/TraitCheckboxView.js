@@ -1,5 +1,5 @@
 import { isUndefined } from 'underscore';
-var TraitView = require('./TraitView');
+import TraitView from './TraitView';
 
 export default TraitView.extend({
   initialize(o) {

@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-var Category = require('./Category');
+import Category from './Category';
 
 export default Backbone.Model.extend({
   defaults: {

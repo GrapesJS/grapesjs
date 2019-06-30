@@ -1,5 +1,6 @@
 import Backbone from 'backbone';
-const PropertyView = require('./PropertyView');
+import PropertyView from './PropertyView';
+
 const $ = Backbone.$;
 
 export default PropertyView.extend({

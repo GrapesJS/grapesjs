@@ -1,4 +1,4 @@
-const Property = require('./Property');
+import Property from './Property';
 
 export default Property.extend({
   defaults: {
@@ -24,7 +24,7 @@ export default Property.extend({
   initialize(props = {}, opts = {}) {
     Property.callParentInit(Property, this, props, opts);
     const properties = this.get('properties') || [];
-    const Properties = require('./Properties');
+    const Properties = require('./Properties').default;
     this.set('properties', new Properties(properties));
     this.listenTo(this, 'change:value', this.updateValues);
     Property.callInit(this, props, opts);

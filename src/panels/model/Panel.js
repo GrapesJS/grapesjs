@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
-var Buttons = require('./Buttons');
+import Backbone from 'backbone';
+import Buttons from './Buttons';
 
 export default Backbone.Model.extend({
   defaults: {

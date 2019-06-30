@@ -1,6 +1,6 @@
+import Backbone from 'backbone';
 import { isEmpty, isArray, isString } from 'underscore';
 
-const Backbone = require('backbone');
 let Component;
 
 export default Backbone.Collection.extend({
@@ -47,7 +47,7 @@ export default Backbone.Collection.extend({
     const cssc = em.get('CssComposer');
     const parsed = em.get('Parser').parseHtml(value);
     // We need this to avoid duplicate IDs
-    if (!Component) Component = require('./Component');
+    if (!Component) Component = require('./Component').default;
     Component.checkId(parsed.html, parsed.css, this.opt.domc.componentsById);
 
     if (parsed.css && cssc && !opt.temporary) {

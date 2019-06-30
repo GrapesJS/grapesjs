@@ -1,5 +1,5 @@
-const Component = require('./ComponentImage');
-const OComponent = require('./Component');
+import Component from './ComponentImage';
+import OComponent from './Component';
 
 export default Component.extend(
   {

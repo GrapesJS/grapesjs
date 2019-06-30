@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-var Block = require('./Block');
+import Block from './Block';
 
 export default Backbone.Collection.extend({
   model: Block

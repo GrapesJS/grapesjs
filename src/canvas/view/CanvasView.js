@@ -1,4 +1,5 @@
 import Backbone from 'backbone';
+import { bindAll } from 'underscore';
 import {
   on,
   off,
@@ -7,7 +8,8 @@ import {
   isTextNode,
   getElRect
 } from 'utils/mixins';
-const FrameView = require('./FrameView');
+import FrameView from './FrameView';
+
 const $ = Backbone.$;
 let timerZoom;
 
@@ -25,7 +27,7 @@ export default Backbone.View.extend({
   },
 
   initialize(o) {
-    _.bindAll(this, 'renderBody', 'onFrameScroll', 'clearOff', 'onKeyPress');
+    bindAll(this, 'renderBody', 'onFrameScroll', 'clearOff', 'onKeyPress');
     on(window, 'scroll resize', this.clearOff);
     const { model } = this;
     this.config = o.config || {};

@@ -1,4 +1,4 @@
-const Component = require('./Component');
+import Component from './Component';
 
 export default Component.extend({
   defaults: {

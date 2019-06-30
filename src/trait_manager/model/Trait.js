@@ -1,6 +1,7 @@
+import Backbone from 'backbone';
 import { isUndefined } from 'underscore';
 
-export default require('backbone').Model.extend({
+export default Backbone.Model.extend({
   defaults: {
     type: 'text', // text, number, range, select
     label: '',

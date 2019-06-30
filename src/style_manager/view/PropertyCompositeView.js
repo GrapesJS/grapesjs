@@ -1,5 +1,6 @@
 import Backbone from 'backbone';
-const PropertyView = require('./PropertyView');
+import PropertyView from './PropertyView';
+
 const $ = Backbone.$;
 
 export default PropertyView.extend({
@@ -55,7 +56,7 @@ export default PropertyView.extend({
           prop.parent = model;
         }, this);
 
-        var PropertiesView = require('./PropertiesView');
+        var PropertiesView = require('./PropertiesView').default;
         var propsView = new PropertiesView(this.getPropsConfig());
         this.$props = propsView.render().$el;
         this.properties = propsView.properties;

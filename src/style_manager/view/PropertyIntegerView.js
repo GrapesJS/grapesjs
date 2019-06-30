@@ -1,8 +1,7 @@
 import Backbone from 'backbone';
-const InputNumber = require('domain_abstract/ui/InputNumber');
-const PropertyView = require('./PropertyView');
+import PropertyView from './PropertyView';
+
 const $ = Backbone.$;
-let timeout;
 
 export default PropertyView.extend({
   templateInput() {

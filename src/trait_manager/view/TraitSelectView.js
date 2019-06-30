@@ -1,6 +1,8 @@
+import Backbone from 'backbone';
 import { isString, isUndefined } from 'underscore';
-const TraitView = require('./TraitView');
-const $ = require('backbone').$;
+import TraitView from './TraitView';
+
+const $ = Backbone.$;
 
 export default TraitView.extend({
   initialize(o) {

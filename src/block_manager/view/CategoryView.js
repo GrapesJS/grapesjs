@@ -1,8 +1,8 @@
-import _ from 'underscore';
+import { template } from 'underscore';
 import Backbone from 'backbone';
 
 export default Backbone.View.extend({
-  template: _.template(`
+  template: template(`
   <div class="<%= pfx %>title">
     <i class="<%= pfx %>caret-icon"></i>
     <%= label %>

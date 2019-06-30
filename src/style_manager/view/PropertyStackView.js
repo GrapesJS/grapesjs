@@ -1,5 +1,5 @@
-const PropertyCompositeView = require('./PropertyCompositeView');
-const LayersView = require('./LayersView');
+import PropertyCompositeView from './PropertyCompositeView';
+import LayersView from './LayersView';
 
 export default PropertyCompositeView.extend({
   templateInput() {
@@ -139,7 +139,7 @@ export default PropertyCompositeView.extend({
     const self = this;
     const model = this.model;
     const fieldEl = this.el.querySelector('[data-layers-wrapper]');
-    const PropertiesView = require('./PropertiesView');
+    const PropertiesView = require('./PropertiesView').default;
     const propsConfig = {
       target: this.target,
       propTarget: this.propTarget,

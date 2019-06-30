@@ -1,4 +1,4 @@
-const Asset = require('./Asset');
+import Asset from './Asset';
 
 export default Asset.extend({
   defaults: {

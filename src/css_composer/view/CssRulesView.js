@@ -1,6 +1,7 @@
 import Backbone from 'backbone';
-const CssRuleView = require('./CssRuleView');
-const CssGroupRuleView = require('./CssGroupRuleView');
+import CssRuleView from './CssRuleView';
+import CssGroupRuleView from './CssGroupRuleView';
+
 const $ = Backbone.$;
 
 const getBlockId = (pfx, order) =>
