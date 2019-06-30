@@ -1,7 +1,7 @@
-const ClassTagsView = require('selector_manager/view/ClassTagsView');
-const Selectors = require('selector_manager/model/Selectors');
-const Component = require('dom_components/model/Component');
-const Editor = require('editor/model/Editor');
+import ClassTagsView from 'selector_manager/view/ClassTagsView';
+import Selectors from 'selector_manager/model/Selectors';
+import Component from 'dom_components/model/Component';
+import Editor from 'editor/model/Editor';
 
 module.exports = {
   run() {

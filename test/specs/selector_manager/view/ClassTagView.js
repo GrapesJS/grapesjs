@@ -1,6 +1,6 @@
-const EditorModel = require('editor/model/Editor');
-const ClassTagView = require('selector_manager/view/ClassTagView');
-const Selectors = require('selector_manager/model/Selectors');
+import EditorModel from 'editor/model/Editor';
+import ClassTagView from 'selector_manager/view/ClassTagView';
+import Selectors from 'selector_manager/model/Selectors';
 
 module.exports = {
   run() {
