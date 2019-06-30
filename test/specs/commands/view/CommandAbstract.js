@@ -1,5 +1,5 @@
 import CommandAbstract from 'commands/view/CommandAbstract';
-const Editor = require('editor/model/Editor');
+import Editor from 'editor/model/Editor';
 
 module.exports = {
   run() {
