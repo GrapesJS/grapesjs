@@ -1,5 +1,5 @@
-const DeviceManager = require('device_manager');
-const DevicesView = require('./view/DevicesView');
+import DeviceManager from 'device_manager';
+import DevicesView from './view/DevicesView';
 
 describe('DeviceManager', () => {
   describe('Main', () => {
