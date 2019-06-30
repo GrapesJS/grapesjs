@@ -1,6 +1,5 @@
 import { parseSelector } from 'parser/model/BrowserParserCss';
-const ParserCss = require('parser/model/ParserCss');
-const Selector = require('selector_manager/model/Selector');
+import ParserCss from 'parser/model/ParserCss';
 
 module.exports = {
   run() {
