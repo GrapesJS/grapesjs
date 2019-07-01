@@ -446,7 +446,8 @@ module.exports = {
             autoHeight,
             autoWidth,
             unitWidth,
-            unitHeight
+            unitHeight,
+            edgePadding
           } = config;
           const onlyHeight = ['tc', 'bc'].indexOf(selectedHandler) >= 0;
           const onlyWidth = ['cl', 'cr'].indexOf(selectedHandler) >= 0;
@@ -455,9 +456,9 @@ module.exports = {
           if (!onlyHeight) {
             const frameOffset = canvas.getCanvasView().getFrameOffset();
             const width =
-              rect.w < frameOffset.width
+              rect.w < frameOffset.width - edgePadding
                 ? rect.w
-                : frameOffset.width;
+                : frameOffset.width - edgePadding;
             style[keyWidth] = autoWidth ? 'auto' : `${width}${unitWidth}`;
           }
 

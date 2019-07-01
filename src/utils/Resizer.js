@@ -34,6 +34,9 @@ var defaultOpts = {
   // The key used for width resizing
   keyWidth: 'width',
 
+  // Number of pixels from the canvas edge to limit the resizer
+  edgePadding: 10,
+
   // If true, will override unitHeight and unitWidth, on start, with units
   // from the current focused element (currently used only in SelectComponent)
   currentUnit: 1,
