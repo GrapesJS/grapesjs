@@ -24,6 +24,10 @@ export default () => ({
 
       // Fixed values
       switch (prop) {
+        case 'top':
+        case 'right':
+        case 'bottom':
+        case 'left':
         case 'margin-top':
         case 'margin-right':
         case 'margin-bottom':
@@ -198,10 +202,6 @@ export default () => ({
         case 'position':
           obj.defaults = 'static';
           break;
-        case 'top':
-        case 'right':
-        case 'bottom':
-        case 'left':
         case 'margin-top':
         case 'margin-right':
         case 'margin-bottom':
@@ -240,6 +240,10 @@ export default () => ({
         case 'box-shadow-blur':
           obj.defaults = '5px';
           break;
+        case 'top':
+        case 'right':
+        case 'bottom':
+        case 'left':
         case 'min-height':
         case 'min-width':
         case 'max-height':

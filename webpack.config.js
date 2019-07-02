@@ -39,7 +39,6 @@ module.exports = env => {
     devtool: isProd ? 'source-map' : (!env ? 'cheap-module-eval-source-map' : false),
     devServer: {
       headers: { 'Access-Control-Allow-Origin': '*' },
-      disableHostCheck: true,
     },
     module: {
       rules: [{
