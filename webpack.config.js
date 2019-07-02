@@ -31,11 +31,6 @@ module.exports = env => {
     plugins.push(new HtmlWebpackPlugin({ template, inject: false }));
   }
 
-  // plugins.push(new webpack.ProvidePlugin({
-  //   _: 'underscore',
-  //   Backbone: 'backbone'
-  // }));
-
   return {
     entry: './src',
     output: output,
