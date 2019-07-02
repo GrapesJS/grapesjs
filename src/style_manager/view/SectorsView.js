@@ -1,6 +1,7 @@
 import Backbone from 'backbone';
 import { extend, isString } from 'underscore';
 import { isTaggableNode } from 'utils/mixins';
+import { appendAtIndex } from 'utils/dom';
 import SectorView from './SectorView';
 
 export default Backbone.View.extend({
@@ -34,8 +35,8 @@ export default Backbone.View.extend({
    * @return {Object}
    * @private
    * */
-  addTo(model) {
-    this.addToCollection(model);
+  addTo(model, coll, opts = {}) {
+    this.addToCollection(model, null, opts);
   },
 
   /**
@@ -133,10 +134,10 @@ export default Backbone.View.extend({
    * @return {Object} Object created
    * @private
    * */
-  addToCollection(model, fragmentEl) {
-    const { pfx, target, propTarget, config } = this;
-    var fragment = fragmentEl || null;
-    var view = new SectorView({
+  addToCollection(model, fragmentEl, opts = {}) {
+    const { pfx, target, propTarget, config, el } = this;
+    const appendTo = fragmentEl || el;
+    const rendered = new SectorView({
       model,
       id: `${pfx}${model.get('id')}`,
       name: model.get('name'),
@@ -144,14 +145,8 @@ export default Backbone.View.extend({
       target,
       propTarget,
       config
-    });
-    var rendered = view.render().el;
-
-    if (fragment) {
-      fragment.appendChild(rendered);
-    } else {
-      this.$el.append(rendered);
-    }
+    }).render().el;
+    appendAtIndex(appendTo, rendered, opts.at);
 
     return rendered;
   },

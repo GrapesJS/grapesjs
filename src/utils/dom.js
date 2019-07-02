@@ -1,5 +1,5 @@
 // DOM helpers
-import { each } from 'underscore';
+import { each, isUndefined } from 'underscore';
 
 const KEY_TAG = 'tag';
 const KEY_ATTR = 'attributes';
@@ -7,6 +7,18 @@ const KEY_CHILD = 'children';
 
 export const empty = node => {
   while (node.firstChild) node.removeChild(node.firstChild);
+};
+
+export const appendAtIndex = (parent, child, index) => {
+  const { childNodes } = parent;
+  const total = childNodes.length;
+  const at = isUndefined(index) ? total : index;
+
+  if (at >= total) {
+    parent.appendChild(child);
+  } else {
+    parent.insertBefore(child, childNodes[at]);
+  }
 };
 
 /**
