@@ -722,8 +722,8 @@ export default () => ({
           obj.properties = this.build([
             'border-top-left-radius',
             'border-top-right-radius',
-            'border-bottom-left-radius',
-            'border-bottom-right-radius'
+            'border-bottom-right-radius',
+            'border-bottom-left-radius'
           ]);
           break;
         case 'box-shadow':
