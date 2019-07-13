@@ -83,13 +83,11 @@ export default config => {
      * @return {this}
      * @private
      */
-    init(conf) {
-      c = conf || {};
-
-      for (var name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
-      }
-
+    init(conf = {}) {
+      c = {
+        ...defaults,
+        ...conf
+      };
       const em = c.em;
       const ppfx = c.pStylePrefix;
 
@@ -135,7 +133,7 @@ export default config => {
       }
 
       if (opts.label && !opts.name) {
-        opts.name = Selector.escapeName(opts.label);
+        opts.name = this.escapeName(opts.label);
       }
 
       const cname = opts.name;
@@ -144,7 +142,7 @@ export default config => {
         : selectors.where(opts)[0];
 
       if (!selector) {
-        return selectors.add(opts);
+        return selectors.add(opts, { config: c });
       }
 
       return selector;
@@ -203,7 +201,7 @@ export default config => {
         classes = classes.trim().split(' ');
       }
 
-      classes.forEach(name => added.push(selectors.add({ name })));
+      classes.forEach(name => added.push(this.addSelector(name)));
       return added;
     },
 
@@ -238,6 +236,16 @@ export default config => {
      * */
     getAll() {
       return selectors;
+    },
+
+    /**
+     * Return escaped selector name
+     * @param {String} name Selector name to escape
+     * @returns {String} Escaped name
+     */
+    escapeName(name) {
+      const { escapeName } = c;
+      return escapeName ? escapeName(name) : Selector.escapeName(name);
     },
 
     /**

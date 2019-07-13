@@ -22,5 +22,9 @@ export default {
     { name: 'hover', label: 'Hover' },
     { name: 'active', label: 'Click' },
     { name: 'nth-of-type(2n)', label: 'Even/Odd' }
-  ]
+  ],
+
+  // Custom selector name escaping strategy, eg.
+  // name => name.replace(' ', '_')
+  escapeName: 0
 };

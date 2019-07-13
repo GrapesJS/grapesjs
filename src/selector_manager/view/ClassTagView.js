@@ -1,5 +1,4 @@
 import Backbone from 'backbone';
-import Selector from './../model/Selector';
 
 const inputProp = 'contentEditable';
 
@@ -67,13 +66,14 @@ export default Backbone.View.extend({
     const model = this.model;
     const inputEl = this.getInputEl();
     const label = inputEl.textContent;
-    const name = Selector.escapeName(label);
     const em = this.em;
     const sm = em && em.get('SelectorManager');
     inputEl[inputProp] = false;
     em && em.setEditing(0);
 
     if (sm) {
+      const name = sm.escapeName(label);
+
       if (sm.get(name)) {
         inputEl.innerText = model.get('label');
       } else {
