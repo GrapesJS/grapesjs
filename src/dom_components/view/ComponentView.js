@@ -33,7 +33,7 @@ export default Backbone.View.extend({
     this.listenTo(model, 'change:highlightable', this.updateHighlight);
     this.listenTo(model, 'change:status', this.updateStatus);
     this.listenTo(model, 'change:state', this.updateState);
-    this.listenTo(model, 'change:script', this.render);
+    this.listenTo(model, 'change:script', this.reset);
     this.listenTo(model, 'change:content', this.updateContent);
     this.listenTo(model, 'change', this.handleChange);
     this.listenTo(model, 'active', this.onActive);
@@ -343,6 +343,19 @@ export default Backbone.View.extend({
     }
 
     return container;
+  },
+
+  /**
+   * Recreate the element of the view
+   */
+  reset() {
+    const { el, model } = this;
+    const collection = model.components();
+    this.el = '';
+    this._ensureElement();
+    this.$el.data({ model, collection });
+    el.replaceWith(this.el);
+    this.render();
   },
 
   /**
