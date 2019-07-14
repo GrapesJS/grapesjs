@@ -66,12 +66,9 @@ export default () => {
      * @private
      */
     init(config) {
-      c = config || {};
-      for (var name in defaults) {
-        if (!(name in c)) c[name] = defaults[name];
-      }
-
-      var ppfx = c.pStylePrefix;
+      c = { ...defaults, ...config };
+      const ppfx = c.pStylePrefix;
+      this.em = c.em;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
       properties = new Properties();
       sectors = new Sectors([], c);
@@ -116,11 +113,13 @@ export default () => {
      * // With `at: 0` we place the new sector at the beginning of the collection
      * */
     addSector(id, sector, opts = {}) {
-      var result = this.getSector(id);
+      let result = this.getSector(id);
+
       if (!result) {
         sector.id = id;
         result = sectors.add(sector, opts);
       }
+
       return result;
     },
 
@@ -131,9 +130,10 @@ export default () => {
      * @example
      * var sector = styleManager.getSector('mySector');
      * */
-    getSector(id) {
-      var res = sectors.where({ id });
-      return res.length ? res[0] : null;
+    getSector(id, opts = {}) {
+      const res = sectors.where({ id })[0];
+      !res && opts.warn && this._logNoSector(id);
+      return res;
     },
 
     /**
@@ -144,7 +144,7 @@ export default () => {
      * const removed = styleManager.removeSector('mySector');
      */
     removeSector(id) {
-      return this.getSectors().remove(this.getSector(id));
+      return this.getSectors().remove(this.getSector(id, { warn: 1 }));
     },
 
     /**
@@ -191,9 +191,8 @@ export default () => {
      * });
      */
     addProperty(sectorId, property) {
-      var prop = null;
-      var sector = this.getSector(sectorId);
-
+      const sector = this.getSector(sectorId, { warn: 1 });
+      let prop = null;
       if (sector) prop = sector.get('properties').add(property);
 
       return prop;
@@ -208,8 +207,8 @@ export default () => {
      * var property = styleManager.getProperty('mySector','min-height');
      */
     getProperty(sectorId, name) {
-      var prop = null;
-      var sector = this.getSector(sectorId);
+      const sector = this.getSector(sectorId, { warn: 1 });
+      let prop = null;
 
       if (sector) {
         prop = sector.get('properties').where({ property: name });
@@ -240,9 +239,8 @@ export default () => {
      * var properties = styleManager.getProperties('mySector');
      */
     getProperties(sectorId) {
-      var props = null;
-      var sector = this.getSector(sectorId);
-
+      let props = null;
+      const sector = this.getSector(sectorId, { warn: 1 });
       if (sector) props = sector.get('properties');
 
       return props;
@@ -384,6 +382,10 @@ export default () => {
      * */
     render() {
       return SectView.render().el;
+    },
+
+    _logNoSector(sectorId) {
+      this.em.logWarning(`'${sectorId}' sector not found`);
     }
   };
 };
