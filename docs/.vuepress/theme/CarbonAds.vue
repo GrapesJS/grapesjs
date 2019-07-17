@@ -1,5 +1,5 @@
 <script>
-module.exports = {
+export default {
   render (h) {
     return h('div', { class: 'carbon-ads', attrs: { id: 'native-carbon' }})
   },

@@ -353,7 +353,7 @@ var gjsConfigTheme = Object.assign({}, gjsConfigBlocks, {
   deviceManager,
 });
 
-module.exports = {
+export default {
   gjsConfigStart,
   gjsConfigBlocks,
   gjsConfigPanels,

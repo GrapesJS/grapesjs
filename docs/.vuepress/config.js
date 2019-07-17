@@ -1,6 +1,6 @@
 const version = require('./../../package.json').version;
 const isDev = process.argv[2] === 'dev';
-const devPath = 'https://localhost:8080/dist';
+const devPath = 'http://localhost:8080/dist';
 
 module.exports = {
   title: 'GrapesJS',
