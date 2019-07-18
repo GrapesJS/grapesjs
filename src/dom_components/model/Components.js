@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-import { isEmpty, isArray, isString, each, includes } from 'underscore';
+import { isEmpty, isArray, isString, each, includes, extend } from 'underscore';
 
 let Component;
 
@@ -82,9 +82,17 @@ export default Backbone.Collection.extend({
    * Process component definition.
    */
   processDef(model) {
+    const { em, config } = this;
+    const { processor } = config;
+
+    const modelPr = processor && processor(model);
+    if (modelPr) {
+      each(model, (val, key) => delete model[key]);
+      extend(model, modelPr);
+    }
+
     // React JSX
     if (model.$$typeof && typeof model.props == 'object') {
-      const { em } = this;
       const domc = em.get('DomComponents');
       const parser = em.get('Parser');
       const { parserHtml } = parser;
@@ -109,7 +117,7 @@ export default Backbone.Collection.extend({
         delete model.type;
       }
 
-      each(res.props, (val, key) => (model[key] = val));
+      extend(model, res.props);
     }
 
     return model;
