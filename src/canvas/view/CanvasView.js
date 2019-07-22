@@ -262,7 +262,7 @@ export default Backbone.View.extend({
       body.append(this.getJsContainer());
       em.trigger('loaded');
       this.frame.el.contentWindow.onscroll = this.onFrameScroll;
-      this.frame.udpateOffset();
+      this.frame.updateOffset();
 
       // Avoid the default link behaviour in the canvas
       body.on(
