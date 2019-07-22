@@ -106,7 +106,14 @@ If you're importing big chunks of HTML code you might want to improve the perfor
 
 ### Component creation and rendering
 
-Once the **Component Definition**
+Once the **Component Definition** is ready and the type is assigned, the Component intance can be created. Let's step back to our previous example with the HTML string, the result of the `append` method is an array of added components.
+
+```js
+const component = editor.addComponents(`<div>
+  <img src="https://path/image" />
+  <span title="foo">Hello world!!!</span>
+</div>`)[0];
+```
 
 --- OLD
 

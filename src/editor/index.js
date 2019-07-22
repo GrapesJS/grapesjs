@@ -337,7 +337,7 @@ export default (config = {}) => {
      * @param {Boolean} [opts.avoidUpdateStyle=false] If the HTML string contains styles,
      * by default, they will be created and, if already exist, updated. When this option
      * is true, styles already created will not be updated.
-     * @return {Model|Array<Model>}
+     * @return {Array<Component>}
      * @example
      * editor.addComponents('<div class="cls">New component</div>');
      * // or
@@ -348,7 +348,7 @@ export default (config = {}) => {
      * });
      */
     addComponents(components, opts) {
-      return this.getComponents().add(components, opts);
+      return this.getWrapper().append(components, opts);
     },
 
     /**
