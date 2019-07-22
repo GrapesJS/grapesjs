@@ -6,10 +6,15 @@ title: Component Manager
 
 The Component is the base element for template composition. It is atomic, so elements like images, text boxes, maps, etc. fit the definition of a Component. The concept of the component was made to allow the developer to bind different behaviors to different elements. Like for example, opening the Asset Manager on double click of the image.
 
+::: warning
+This guide is referring to GrapesJS v0.14.67 or higher
+:::
+
 [[toc]]
 
 
 ## Built-in components
+The list of built-in components, ordered by their position in the Component Type Stack
 * default (Basic)
 * wrapper
 * text
@@ -28,6 +33,83 @@ The Component is the base element for template composition. It is atomic, so ele
 
 
 ## How Components work?
+
+Let's see in detail how components work by looking at all steps from adding an HTML string to the editor.
+
+This is how we can add new components to the canvas:
+
+```js
+// Append components directly to the canvas
+editor.addComponents(`<div>
+  <img src="https://path/image" />
+  <span title="foo">Hello world!!!</span>
+</div>`);
+
+// or into some, already defined, component.
+// For instance, appending to a selected component would be:
+editor.getSelected().append(`<div>...`);
+
+// Actually, editor.addComponents is an alias of...
+editor.getWrapper().append(`<div>...`);
+```
+
+::: tip
+If you need to append a component in a specific position, you can use `at` option. To add a component on top of all others (in the same collection) you would use
+```js
+component.append('<div>...', { at: 0 })
+```
+or in the middle
+```js
+const { length } = component.components();
+component.append('<div>...', { at: parseInt(length / 2, 10) })
+```
+:::
+
+### Component Definition
+
+In the first step the HTML string is parsed and trasformed to what is called **Component Definition**, so the result of the input would be:
+
+```js
+{
+  tagName: 'div',
+  components: [
+    {
+      type: 'image',
+      attributes: { src: 'https://path/image' },
+    }, {
+      tagName: 'span',
+      type: 'text',
+      attributes: { title: 'foo' },
+      components: [{
+        type: 'textnode',
+        content: 'Hello wdsforld!!!'
+      }]
+    }
+  ]
+}
+```
+
+The real **Component Definition** would be a little bit bigger so we reduced the JSON for the sake of simplicity.
+
+You can notice the result is similar to what is generally called a **Virtual DOM**, a lightweight rappresentation of the DOM element. This actually helps the editor to keep track of the state of our elements and make performance-friendly changes/updates.
+The meaning of properties like `tagName`, `attributes` and `components` are quite obvious, but what about `type`?! This particular property specifies the actual **Component** of our **Component Definition** (you check the list of default components [below](#built-in-components)) and if it's omitted, the default one will be used `type: 'default'`.
+At this point, a good question would be, how the editor assignes those types by starting from a simple HTML string? This step is identified as **Component Recognition** and it's explained in detail in the next paragraph.
+
+### Component Recognition
+
+As we said before, when you pass an HTML string as a component to the editor, that string is parsed and compiled to the [Component Definition](#component-definition) with a new `type` property. To understand what `type` should be assigned, for each parsed HTML Element, the editor iterates over all the defined components, called **Component Type Stack**, and checks via `isComponent` method (we will see it later) if that component type is appropriate for that element. The Component Type Stack is a simple array of components but what is important is the order of those components. Any new added Custom Component (we'll see later how to create them) goes on top of the Component Type Stack and each element returned from the parser iterates the stack from top to bottom (the last element of the stack is the `default` one), the iteration stops once one of the component returns a truthy value from the `isComponent` method.
+
+SVG - ComponentTypeStack
+
+If you're importing big chunks of HTML code you might want to improve the performances by skipping the parsing and the component recognition steps by passing directly Component Definiton objects or using the JSX syntax. Read more about it here...TODO
+
+
+### Component creation and rendering
+
+Once the **Component Definition**
+
+--- OLD
+
 
 When we pass an HTML string to the editor like this:
 
