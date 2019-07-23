@@ -95,7 +95,7 @@ You can notice the result is similar to what is generally called a **Virtual DOM
 The meaning of properties like `tagName`, `attributes` and `components` are quite obvious, but what about `type`?! This particular property specifies the actual **Component** of our **Component Definition** (you check the list of default components [below](#built-in-components)) and if it's omitted, the default one will be used `type: 'default'`.
 At this point, a good question would be, how the editor assignes those types by starting from a simple HTML string? This step is identified as **Component Recognition** and it's explained in detail in the next paragraph.
 
-### Component Recognition
+### Component recognition
 
 As we said before, when you pass an HTML string as a component to the editor, that string is parsed and compiled to the [Component Definition](#component-definition) with a new `type` property. To understand what `type` should be assigned, for each parsed HTML Element, the editor iterates over all the defined components, called **Component Type Stack**, and checks via `isComponent` method (we will see it later) if that component type is appropriate for that element. The Component Type Stack is a simple array of components but what is important is the order of those components. Any new added Custom Component (we'll see later how to create them) goes on top of the Component Type Stack and each element returned from the parser iterates the stack from top to bottom (the last element of the stack is the `default` one), the iteration stops once one of the component returns a truthy value from the `isComponent` method.
 
@@ -158,13 +158,24 @@ The Component instance is responable for the **final data** (eg. HTML, JSON) of 
 
 ### Component rendering
 
-Another important aspect of your components is how they are rendered in the **canvas**, commonly called as the **View** of components. It has nothing to do with the **final data**, you can return a big `<div>...</div>` string as HTML of your component but render it as a simple image in the canvas (think about placeholders for complex/dynamic data).
+Another important thing of components is how they are rendered in the **canvas**, this aspect is handled by the **View** of the component. It has nothing to do with the **final data**, you can return a big `<div>...</div>` string as HTML of your component but render it as a simple image in the canvas (think about placeholders for complex/dynamic data).
 
 So, by default, the view of components is automatically synced with the data of its models (you can't have a View without a Model). If you update the attribute of the component or append a new one as a child, the view will render it in the canvas.
-Unfotunatelly, sometimes, you might need some additional logic to handle better the component result. Think about allowing a user build its `<table>` element, for this specific case you might want to add custom buttons in the canvas, so it'd be easier adding/removing columns/rows. To handle those cases you can rely on the View, you can add additional DOM component, attach events, etc.
+Unfotunatelly, sometimes, you might need some additional logic to handle better the component result. Think about allowing a user build its `<table>` element, for this specific case you might want to add custom buttons in the canvas, so it'd be easier adding/removing columns/rows. To handle those cases you can rely on the View, where you can add additional DOM component, attach events, etc. All of this will be completely unrelated with the final HTML of the `<table>` (the result the user would expect) as it handled by the Model.
+Once the component is rendered (when you actually see it in the canvas) you can always access its View and the DOM element.
+
+```js
+const component = editor.getSelected();
+// Get the View
+const view = component.getView();
+// Get the DOM element
+const el =  component.getEl();
+```
+
+So generally, the View is something you wouldn't need to change as the default one handles already the sync with the Model but in case you'd need more control over elements in the canvas (eg. custom UI over the element) you'll probably need to create a custom component and extend the default View with your logic. We'll see later how to create custom components.
 
 
-
+So far
 
 --- OLD
 
