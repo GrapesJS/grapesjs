@@ -104,9 +104,9 @@ SVG - ComponentTypeStack
 If you're importing big chunks of HTML code you might want to improve the performances by skipping the parsing and the component recognition steps by passing directly Component Definiton objects or using the JSX syntax. Read more about it here...TODO
 
 
-### Component creation and rendering
+### Component creation
 
-Once the **Component Definition** is ready and the type is assigned, the Component intance can be created. Let's step back to our previous example with the HTML string, the result of the `append` method is an array of added components.
+Once the **Component Definition** is ready and the type is assigned, the [Component](api/component.html) instance can be created (known also as the **Model**). Let's step back to our previous example with the HTML string, the result of the `append` method is an array of added components.
 
 ```js
 const component = editor.addComponents(`<div>
@@ -114,6 +114,57 @@ const component = editor.addComponents(`<div>
   <span title="foo">Hello world!!!</span>
 </div>`)[0];
 ```
+
+The Component instance contains properties and methods which allows you to obtain its data and change them.
+You can read properties with the `get` method, like, for example, the `type`
+```js
+const componentType = component.get('type'); // eg. 'image'
+```
+and to update properties you'd use `set`, which might change the way a component behavies in the canvas.
+```js
+// Make the component not draggable
+component.set('draggable', false);
+```
+You can also use methods like `getAttributes`, `setAttributes`, `components`, etc.
+
+```js
+const innerComponents = component.components();
+// Update component content
+component.components(`<div>Component 1</div><div>Component 2</div>`);
+```
+
+Each component can define its own properties and methods but all of them will always extend, at least, the `default` one (then you will see how to create new custom components and how to extend the already defined) so it's good to check the [Component API](api/component.html) to see all available properties and methods.
+
+The **main purpose of the Component** is to keep track of its data and to return them when necessary. One common thing you might need to ask from the component is to show its current HTML
+
+```js
+const componentHTML = component.toHTML();
+```
+
+This will return a string containing the HTML of the component and all of its children.
+The component implements also `toJSON` methods so you can get its JSON structure in this way
+
+```js
+JSON.stringify(component)
+```
+
+::: tip
+For storing/loading all the components you should rely on the [Storage Manager](modules/Storage.html)
+:::
+
+The Component instance is responable for the **final data** (eg. HTML, JSON) of your templates, so if you need, for example, to update/add some attribute in the HTML you need to update its component (eg. `component.addAttributes({ title: 'Title added' })`), so the Component/Model is your **Source of Truth**.
+
+
+
+### Component rendering
+
+Another important aspect of your components is how they are rendered in the **canvas**, commonly called as the **View** of components. It has nothing to do with the **final data**, you can return a big `<div>...</div>` string as HTML of your component but render it as a simple image in the canvas (think about placeholders for complex/dynamic data).
+
+So, by default, the view of components is automatically synced with the data of its models (you can't have a View without a Model). If you update the attribute of the component or append a new one as a child, the view will render it in the canvas.
+Unfotunatelly, sometimes, you might need some additional logic to handle better the component result. Think about allowing a user build its `<table>` element, for this specific case you might want to add custom buttons in the canvas, so it'd be easier adding/removing columns/rows. To handle those cases you can rely on the View, you can add additional DOM component, attach events, etc.
+
+
+
 
 --- OLD
 
