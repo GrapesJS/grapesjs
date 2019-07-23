@@ -9,6 +9,7 @@ export default Backbone.View.extend({
     this.pfx = config.stylePrefix || '';
     this.ppfx = config.pStylePrefix || '';
     this.buttons = model.get('buttons');
+    this.buttonsViewRendered = false;
     this.className = this.pfx + 'panel';
     this.id = this.pfx + model.get('id');
     this.listenTo(model, 'change:appendContent', this.appendContent);
@@ -91,7 +92,7 @@ export default Backbone.View.extend({
           const keyWidth = config.keyWidth;
           const keyHeight = config.keyHeight;
           const rect = el.getBoundingClientRect();
-          const forContainer = target == 'container';
+          const forContainer = target === 'container';
           const styleWidth = style[keyWidth];
           const styleHeight = style[keyHeight];
           const width =
@@ -120,8 +121,9 @@ export default Backbone.View.extend({
     const cls = `${this.className} ${this.id} ${ppfx}one-bg ${ppfx}two-color`;
     $el.addClass(cls);
 
-    if (this.buttons.length) {
-      var buttons = new ButtonsView({
+    if (!this.buttonsViewRendered) {
+      this.buttonsViewRendered = true;
+      let buttons = new ButtonsView({
         collection: this.buttons,
         config: this.config
       });
