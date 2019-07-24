@@ -13,25 +13,6 @@ This guide is referring to GrapesJS v0.14.67 or higher
 [[toc]]
 
 
-## Built-in components
-The list of built-in components, ordered by their position in the Component Type Stack
-* default (Basic)
-* wrapper
-* text
-* textnode
-* svg
-* script
-* image
-* video
-* label
-* link
-* map
-* table
-* row (for the table)
-* cell (for the table)
-
-
-
 ## How Components work?
 
 Let's see in detail how components work by looking at all steps from adding an HTML string to the editor.
@@ -95,16 +76,18 @@ You can notice the result is similar to what is generally called a **Virtual DOM
 The meaning of properties like `tagName`, `attributes` and `components` are quite obvious, but what about `type`?! This particular property specifies the actual **Component** of our **Component Definition** (you check the list of default components [below](#built-in-components)) and if it's omitted, the default one will be used `type: 'default'`.
 At this point, a good question would be, how the editor assignes those types by starting from a simple HTML string? This step is identified as **Component Recognition** and it's explained in detail in the next paragraph.
 
-### Component recognition
+### Component Recognition and Component Type Stack
 
-As we said before, when you pass an HTML string as a component to the editor, that string is parsed and compiled to the [Component Definition](#component-definition) with a new `type` property. To understand what `type` should be assigned, for each parsed HTML Element, the editor iterates over all the defined components, called **Component Type Stack**, and checks via `isComponent` method (we will see it later) if that component type is appropriate for that element. The Component Type Stack is a simple array of components but what is important is the order of those components. Any new added Custom Component (we'll see later how to create them) goes on top of the Component Type Stack and each element returned from the parser iterates the stack from top to bottom (the last element of the stack is the `default` one), the iteration stops once one of the component returns a truthy value from the `isComponent` method.
+As we said before, when you pass an HTML string as a component to the editor, that string is parsed and compiled to the [Component Definition](#component-definition) with a new `type` property. To understand what `type` should be assigned, for each parsed HTML Element, the editor iterates over all the defined components, called **Component Type Stack**, and checks via `isComponent` method (we will see it later) if that component type is appropriate for that element. The Component Type Stack is just a simple array of components but the important part is the order of those components. Any new added Custom Component (we'll see later how to create them) goes on top of the Component Type Stack and each element returned from the parser iterates the stack from top to bottom (the last element of the stack is the `default` one), the iteration stops once one of the component returns a truthy value from the `isComponent` method.
 
 SVG - ComponentTypeStack
 
+::: tip
 If you're importing big chunks of HTML code you might want to improve the performances by skipping the parsing and the component recognition steps by passing directly Component Definiton objects or using the JSX syntax. Read more about it here...TODO
+:::
 
 
-### Component creation
+### Component Creation
 
 Once the **Component Definition** is ready and the type is assigned, the [Component](api/component.html) instance can be created (known also as the **Model**). Let's step back to our previous example with the HTML string, the result of the `append` method is an array of added components.
 
@@ -156,7 +139,7 @@ The Component instance is responable for the **final data** (eg. HTML, JSON) of 
 
 
 
-### Component rendering
+### Component Rendering
 
 Another important thing of components is how they are rendered in the **canvas**, this aspect is handled by the **View** of the component. It has nothing to do with the **final data**, you can return a big `<div>...</div>` string as HTML of your component but render it as a simple image in the canvas (think about placeholders for complex/dynamic data).
 
@@ -172,30 +155,57 @@ const view = component.getView();
 const el =  component.getEl();
 ```
 
-So generally, the View is something you wouldn't need to change as the default one handles already the sync with the Model but in case you'd need more control over elements in the canvas (eg. custom UI over the element) you'll probably need to create a custom component and extend the default View with your logic. We'll see later how to create custom components.
+So generally, the View is something you wouldn't need to change as the default one handles already the sync with the Model but in case you'd need more control over elements (eg. custom UI in canvas) you'll probably need to create a custom component and extend the default View with your logic. We'll see later how to create custom components.
 
 
-So far
+So far we have seen the core concept behind Components and how they work. The **Model/Component** is the **source of truth** for the final code of templates (eg. the HTML export relies on it) and the *View/ComponentView* is what is used by the editor to **preview our components** to users in the canvas.
+
+
+TODO
+A more advanced use case of custom components is an implementation of a custom renderer inside of them
+
+
+
+
+
+## Built-in Components
+
+Here below you can see the list of built-in components, ordered by their position in the Component Type Stack
+
+* [`cell`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentTableCell.js) - Component for handle `<td>` and `<th>` elements
+* [`row`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentTableRow.js) - Component for handle `<tr>` elements
+* [`table`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentTable.js) - Component for handle `<table>` elements
+* [`thead`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentTableHead.js) - Component for handle `<thead>` elements
+* [`tbody`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentTableBody.js) - Component for handle `<tbody>` elements
+* [`tfoot`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentTableFoot.js) - Component for handle `<tfoot>` elements
+* [`map`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentMap.js) - Component for handle `<a>` elements
+* [`link`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentLink.js) - Component for handle `<a>` elements
+* [`label`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentLabel.js) - Component for handle properly `<label>` elements
+* [`video`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentVideo.js) - Component for videos
+* [`image`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentImage.js) - Component for images
+* [`script`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentScript.js) - Component for handle `<script>` elements
+* [`svg`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentSvg.js) - Component for handle SVG elements
+* [`comment`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentComment.js) - Component for comments (might be useful for email editors)
+* [`textnode`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentTextNode.js) - Similar to the textnode in DOM definition, so a text element without a tag element.
+* [`text`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentText.js) - A simple text component that can be edited inline
+* [`wrapper`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/ComponentWrapper.js) - The canvas need to contain a root component, a wrapper, this component was made to identify it
+* [`default`](https://github.com/artf/grapesjs/blob/dev/src/dom_components/model/Component.js) - Default base component
+
+
+
+
+
+## Define new Component
+
+Now that we know how components work, we can start exploring the process of creating new **Custom Components**.
+
+Let's say we want to make the editor understand and handle better `<input>` elements
+
+
+
+
 
 --- OLD
-
-
-When we pass an HTML string to the editor like this:
-
-```html
-<div>
-  <img src="https://path/image" />
-  <span title="foo">bar</span>
-</div>
-```
-
-For each DOM element (`div`, `img`, `span`, etc.) the editor will create and store an object representation. Every future change to the template will be made on top of this structure, which will then reflect on the canvas. So each object, usually called *Model* (or state/store), will be the source of truth for the template, but what exactly does that mean?
-
-In more practical example, once the template is rendered on the canvas, if you try to remove one of its elements (eg. by using the browser inspector) and ask the editor to print the HTML (using `editor.getHtml()`) you'll see that the element will still be there. This is because the editor relies on Models and not on the DOM elements inside the canvas. This approach allows us to be extremely flexible on how we generate the final code (from the *Model*) and how to render it inside the canvas (from the *View*).
-
-
-
-# Manage Components
 
 ## Component recognition
 
