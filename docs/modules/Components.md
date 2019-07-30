@@ -201,6 +201,7 @@ Now that we know how components work, we can start exploring the process of crea
 
 Let's say we want to make the editor understand and handle better `<input>` elements
 
+First of all, place your components inside a plugin
 
 
 
