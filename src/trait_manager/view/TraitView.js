@@ -13,28 +13,23 @@ export default Backbone.View.extend({
   },
 
   initialize(o) {
-    const model = this.model;
-    const name = model.get('name');
-    const target = model.target;
     this.config = o.config || {};
     this.em = this.config.em;
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
+    const { model, pfx, ppfx } = this;
+    const { target } = model;
     this.target = target;
-    this.className = this.pfx + 'trait';
-    this.labelClass = this.ppfx + 'label';
-    this.fieldClass =
-      this.ppfx + 'field ' + this.ppfx + 'field-' + model.get('type');
-    this.inputhClass = this.ppfx + 'input-holder';
+    this.className = `${pfx}trait`;
+    this.labelClass = `${ppfx}label`;
+    this.fieldClass = `${ppfx}field ${ppfx}field-${model.get('type')}`;
+    this.inputhClass = `${ppfx}input-holder`;
     model.off('change:value', this.onValueChange);
     this.listenTo(model, 'change:value', this.onValueChange);
     model.view = this;
-    this.tmpl =
-      '<div class="' +
-      this.fieldClass +
-      '"><div class="' +
-      this.inputhClass +
-      '"></div></div>';
+    this.tmpl = `<div class="${this.fieldClass}">
+      <div class="${this.inputhClass}"></div>
+    </div>`;
   },
 
   /**
@@ -93,11 +88,28 @@ export default Backbone.View.extend({
   },
 
   /**
+   * Returns current target component
+   */
+  getComponent() {
+    return this.target;
+  },
+
+  getEl() {
+    return this.getInputEl();
+  },
+
+  /**
    * Returns input element
    * @return {HTMLElement}
    * @private
    */
   getInputEl() {
+    if (this.createEl) {
+      if (!this.inputEl) {
+        this.inputEl = this.createEl();
+      }
+      return this.inputEl;
+    }
     if (!this.$input) {
       const md = this.model;
       const plh = md.get('placeholder') || md.get('default') || '';
