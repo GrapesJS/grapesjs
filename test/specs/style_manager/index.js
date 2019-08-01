@@ -57,7 +57,7 @@ describe('StyleManager', () => {
     });
 
     test('Get inexistent sector', () => {
-      expect(obj.getSector('test')).toEqual(null);
+      expect(obj.getSector('test')).toBeFalsy();
     });
 
     test('Get sector', () => {

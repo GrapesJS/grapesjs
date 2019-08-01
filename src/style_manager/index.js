@@ -385,7 +385,8 @@ export default () => {
     },
 
     _logNoSector(sectorId) {
-      this.em.logWarning(`'${sectorId}' sector not found`);
+      const { em } = this;
+      em && em.logWarning(`'${sectorId}' sector not found`);
     }
   };
 };

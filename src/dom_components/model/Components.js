@@ -82,7 +82,7 @@ export default Backbone.Collection.extend({
    * Process component definition.
    */
   processDef(model) {
-    const { em, config } = this;
+    const { em, config = {} } = this;
     const { processor } = config;
 
     const modelPr = processor && processor(model);

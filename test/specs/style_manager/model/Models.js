@@ -505,7 +505,8 @@ module.exports = {
         var res = {
           type: 'integer',
           units: ['px', '%', 'vw'],
-          defaults: 0
+          defaults: 'auto',
+          fixedValues: ['initial', 'inherit', 'auto']
         };
         res.property = 'right';
         expect(obj.build('right')).toEqual([res]);
@@ -517,7 +518,8 @@ module.exports = {
         var res = {
           type: 'integer',
           units: ['px', '%', 'vh'],
-          defaults: 0
+          defaults: 'auto',
+          fixedValues: ['initial', 'inherit', 'auto']
         };
         res.property = 'top';
         expect(obj.build('top')).toEqual([res]);
@@ -837,14 +839,14 @@ module.exports = {
               defaults: '0px'
             },
             {
-              property: 'border-bottom-left-radius',
+              property: 'border-bottom-right-radius',
               type: 'integer',
               units: ['px', '%'],
               min: 0,
               defaults: '0px'
             },
             {
-              property: 'border-bottom-right-radius',
+              property: 'border-bottom-left-radius',
               type: 'integer',
               units: ['px', '%'],
               min: 0,
