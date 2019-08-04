@@ -191,14 +191,12 @@ export default Backbone.View.extend({
 
   render() {
     const { $el, pfx, ppfx, model } = this;
-    const { noLabel } = model.attributes;
+    const { noLabel, type } = model.attributes;
     const cls = `${pfx}trait`;
     this.$input = null;
     let tmpl = `<div class="${cls}">
       ${!noLabel ? `<div class="${ppfx}label-wrp" data-label></div>` : ''}
-      <div class="${ppfx}field-wrp ${ppfx}field-wrp--${model.get(
-      'type'
-    )}" data-input>
+      <div class="${ppfx}field-wrp ${ppfx}field-wrp--${type}" data-input>
         ${this.templateInput && this.templateInput()}
       </div>
     </div>`;
