@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-import { isUndefined } from 'underscore';
+import { isUndefined, isString } from 'underscore';
 
 const $ = Backbone.$;
 
@@ -8,29 +8,42 @@ export default Backbone.View.extend({
     change: 'onChange'
   },
 
+  appendInput: 1,
+
   attributes() {
     return this.model.get('attributes');
   },
 
-  initialize(o) {
-    this.config = o.config || {};
-    this.em = this.config.em;
-    this.pfx = this.config.stylePrefix || '';
-    this.ppfx = this.config.pStylePrefix || '';
-    const { model, pfx, ppfx } = this;
+  templateLabel() {
+    const { ppfx } = this;
+    const label = this.getLabel();
+    return `<div class="${ppfx}label" title="${label}">${label}</div>`;
+  },
+
+  templateInput() {
+    const { clsField } = this;
+    return `<div class="${clsField}" data-input></div>`;
+  },
+
+  initialize(o = {}) {
+    const { config = {} } = o;
+    const { model } = this;
     const { target } = model;
+    const { type } = model.attributes;
+    this.config = config;
+    this.em = config.em;
+    this.pfx = config.stylePrefix || '';
+    this.ppfx = config.pStylePrefix || '';
     this.target = target;
-    this.className = `${pfx}trait`;
-    this.labelClass = `${ppfx}label`;
-    this.fieldClass = `${ppfx}field ${ppfx}field-${model.get('type')}`;
-    this.inputhClass = `${ppfx}input-holder`;
+    const { ppfx } = this;
+    this.clsField = `${ppfx}field ${ppfx}field-${type}`;
     model.off('change:value', this.onValueChange);
     this.listenTo(model, 'change:value', this.onValueChange);
     model.view = this;
-    this.tmpl = `<div class="${this.fieldClass}">
-      <div class="${this.inputhClass}"></div>
-    </div>`;
+    this.init();
   },
+
+  init() {},
 
   /**
    * Fires when the input is changed
@@ -70,10 +83,19 @@ export default Backbone.View.extend({
    * @private
    */
   renderLabel() {
+    const { $el, target } = this;
     const label = this.getLabel();
-    this.$el.html(
-      `<div class="${this.labelClass}" title="${label}">${label}</div>`
-    );
+    let tpl = this.templateLabel(target);
+
+    if (this.createLabel) {
+      tpl =
+        this.createLabel({
+          label,
+          component: target
+        }) || '';
+    }
+
+    $el.find('[data-label]').append(tpl);
   },
 
   /**
@@ -94,22 +116,12 @@ export default Backbone.View.extend({
     return this.target;
   },
 
-  getEl() {
-    return this.getInputEl();
-  },
-
   /**
    * Returns input element
    * @return {HTMLElement}
    * @private
    */
   getInputEl() {
-    if (this.createEl) {
-      if (!this.inputEl) {
-        this.inputEl = this.createEl();
-      }
-      return this.inputEl;
-    }
     if (!this.$input) {
       const md = this.model;
       const plh = md.get('placeholder') || md.get('default') || '';
@@ -158,20 +170,40 @@ export default Backbone.View.extend({
    * @private
    * */
   renderField() {
-    if (!this.$input) {
-      this.$el.append(this.tmpl);
-      const el = this.getInputEl();
-      // I use prepand expecially for checkbox traits
-      const inputWrap = this.el.querySelector(`.${this.inputhClass}`);
-      inputWrap.insertBefore(el, inputWrap.childNodes[0]);
+    const { $el, target, appendInput } = this;
+    let tpl = this.getInputEl();
+
+    if (this.createInput) {
+      tpl = this.createInput({ component: target });
+    }
+
+    const inputs = $el.find('[data-input]');
+    const el = inputs[inputs.length - 1];
+
+    if (isString(tpl)) {
+      el.innerHTML = tpl;
+    } else {
+      appendInput ? el.appendChild(tpl) : el.insertBefore(tpl, el.firstChild);
     }
   },
 
   render() {
+    const { $el, pfx, ppfx, model } = this;
+    const { noLabel } = model.attributes;
+    const cls = `${pfx}trait`;
     this.$input = null;
-    this.renderLabel();
+    let tmpl = `<div class="${cls}">
+      ${!noLabel ? `<div class="${ppfx}label-wrp" data-label></div>` : ''}
+      <div class="${ppfx}field-wrp ${ppfx}field-wrp--${model.get(
+      'type'
+    )}" data-input>
+        ${this.templateInput && this.templateInput()}
+      </div>
+    </div>`;
+    $el.empty().append(tmpl);
+    !noLabel && this.renderLabel();
     this.renderField();
-    this.el.className = this.className;
+    this.el.className = `${cls}__wrp`;
     return this;
   }
 });

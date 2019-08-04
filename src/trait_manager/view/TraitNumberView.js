@@ -29,17 +29,17 @@ export default TraitView.extend({
       this.$input.val(value);
     }
     return this.$input.get(0);
-  },
+  }
 
   /**
    * Renders input
    * @private
    * */
-  renderField() {
-    if (!this.$input) {
-      this.$el.append(this.tmpl);
-      this.getInputEl();
-      this.$el.find('.' + this.inputhClass).prepend(this.input.el);
-    }
-  }
+  // renderField() {
+  //   if (!this.$input) {
+  //     this.$el.append(this.tmpl);
+  //     this.getInputEl();
+  //     this.$el.find('.' + this.inputhClass).prepend(this.input.el);
+  //   }
+  // }
 });

@@ -5,12 +5,14 @@ import TraitView from './TraitView';
 const $ = Backbone.$;
 
 export default TraitView.extend({
-  initialize(o) {
-    TraitView.prototype.initialize.apply(this, arguments);
-    const { ppfx, inputhClass, fieldClass, model } = this;
-    this.listenTo(model, 'change:options', this.render);
-    this.tmpl = `<div class="${fieldClass}">
-      <div class="${inputhClass}"></div>
+  init() {
+    this.listenTo(this.model, 'change:options', this.render);
+  },
+
+  templateInput() {
+    const { ppfx, clsField } = this;
+    return `<div class="${clsField}">
+      <div data-input></div>
       <div class="${ppfx}sel-arrow">
         <div class="${ppfx}d-s-arrow"></div>
       </div>
@@ -36,7 +38,7 @@ export default TraitView.extend({
           name = el;
           value = el;
         } else {
-          name = el.name ? el.name : el.value;
+          name = el.name || el.label || el.value;
           value = `${isUndefined(el.value) ? el.id : el.value}`.replace(
             /"/g,
             '&quot;'
