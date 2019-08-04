@@ -50,7 +50,7 @@ export default Backbone.View.extend({
    * @private
    */
   onChange() {
-    this.model.set('value', this.getInputEl().value);
+    this.model.set('value', this.getInputElem().value);
   },
 
   getValueForTarget() {
@@ -58,7 +58,8 @@ export default Backbone.View.extend({
   },
 
   setInputValue(value) {
-    this.getInputEl().value = value;
+    const el = this.getInputElem();
+    el && (el.value = value);
   },
 
   /**
@@ -66,15 +67,11 @@ export default Backbone.View.extend({
    * @private
    */
   onValueChange(model, value, opts = {}) {
-    const mod = this.model;
-    const trg = this.target;
-    const name = mod.get('name');
-
     if (opts.fromTarget) {
-      this.setInputValue(mod.get('value'));
+      this.setInputValue(model.get('value'));
     } else {
-      const value = this.getValueForTarget();
-      mod.setTargetValue(value, opts);
+      const val = this.getValueForTarget();
+      model.setTargetValue(val, opts);
     }
   },
 
@@ -147,6 +144,11 @@ export default Backbone.View.extend({
       this.$input = input;
     }
     return this.$input.get(0);
+  },
+
+  getInputElem() {
+    const { input, $input } = this;
+    return input || ($input && $input.get(0));
   },
 
   getModelValue() {

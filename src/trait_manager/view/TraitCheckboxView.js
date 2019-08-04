@@ -5,8 +5,8 @@ export default TraitView.extend({
   appendInput: 0,
 
   templateInput() {
-    const { ppfx } = this;
-    return `<label data-input>
+    const { ppfx, clsField } = this;
+    return `<label class="${clsField}" data-input>
     <i class="${ppfx}chk-icon"></i>
   </label>`;
   },
@@ -16,7 +16,7 @@ export default TraitView.extend({
    * @private
    */
   onChange() {
-    const value = this.getInputEl().checked;
+    const value = this.getInputElem().checked;
     this.model.set('value', this.getCheckedValue(value));
   },
 
