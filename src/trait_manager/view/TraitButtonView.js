@@ -28,17 +28,13 @@ export default TraitView.extend({
   },
 
   getInputEl() {
-    if (!this.input) {
-      const { model, ppfx } = this;
-      const label = model.get('labelButton') || '';
-      const full = model.get('full');
-      const className = `${ppfx}btn`;
-      const input = `<button type="button" class="${className}-prim${
-        full ? ` ${className}--full` : ''
-      }">${label}</button>`;
-      this.input = input;
-    }
-
-    return this.input;
+    const { model, ppfx } = this;
+    const label = model.get('labelButton') || '';
+    const full = model.get('full');
+    const className = `${ppfx}btn`;
+    const input = `<button type="button" class="${className}-prim${
+      full ? ` ${className}--full` : ''
+    }">${label}</button>`;
+    return input;
   }
 });
