@@ -1,5 +1,5 @@
 import Backbone from 'backbone';
-import { isUndefined, isString } from 'underscore';
+import { isUndefined, isString, isFunction } from 'underscore';
 
 const $ = Backbone.$;
 
@@ -193,19 +193,30 @@ export default Backbone.View.extend({
     }
   },
 
+  hasLabel() {
+    return !this.model.get('noLabel');
+  },
+
   render() {
     const { $el, pfx, ppfx, model } = this;
-    const { noLabel, type } = model.attributes;
+    const { type } = model.attributes;
+    const hasLabel = this.hasLabel && this.hasLabel();
     const cls = `${pfx}trait`;
     this.$input = null;
     let tmpl = `<div class="${cls}">
-      ${!noLabel ? `<div class="${ppfx}label-wrp" data-label></div>` : ''}
+      ${hasLabel ? `<div class="${ppfx}label-wrp" data-label></div>` : ''}
       <div class="${ppfx}field-wrp ${ppfx}field-wrp--${type}" data-input>
-        ${this.templateInput && this.templateInput()}
+        ${
+          this.templateInput
+            ? isFunction(this.templateInput)
+              ? this.templateInput()
+              : this.templateInput
+            : ''
+        }
       </div>
     </div>`;
     $el.empty().append(tmpl);
-    !noLabel && this.renderLabel();
+    hasLabel && this.renderLabel();
     this.renderField();
     this.el.className = `${cls}__wrp`;
     return this;
