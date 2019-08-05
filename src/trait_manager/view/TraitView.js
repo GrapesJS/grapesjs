@@ -167,25 +167,29 @@ export default Backbone.View.extend({
     return !isUndefined(value) ? value : '';
   },
 
+  getElInput() {
+    return this.elInput;
+  },
+
   /**
    * Renders input
    * @private
    * */
   renderField() {
     const { $el, target, appendInput } = this;
-    let tpl = this.getInputEl();
-
-    if (this.createInput) {
-      tpl = this.createInput({ component: target });
-    }
-
+    const inputOpts = { component: target };
     const inputs = $el.find('[data-input]');
     const el = inputs[inputs.length - 1];
+    let tpl = this.createInput
+      ? this.createInput(inputOpts)
+      : this.getInputEl();
 
     if (isString(tpl)) {
       el.innerHTML = tpl;
+      this.elInput = el.firstChild;
     } else {
       appendInput ? el.appendChild(tpl) : el.insertBefore(tpl, el.firstChild);
+      this.elInput = tpl;
     }
   },
 
