@@ -9,6 +9,11 @@ export default Backbone.Collection.extend({
   initialize(coll, options = {}) {
     this.em = options.em || '';
     this.listenTo(this, 'add', this.handleAdd);
+    this.listenTo(this, 'reset', this.handleReset);
+  },
+
+  handleReset(coll, { previousModels = [] } = {}) {
+    previousModels.forEach(model => model.trigger('remove'));
   },
 
   handleAdd(model) {

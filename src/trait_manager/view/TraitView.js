@@ -37,20 +37,33 @@ export default Backbone.View.extend({
     this.target = target;
     const { ppfx } = this;
     this.clsField = `${ppfx}field ${ppfx}field-${type}`;
-    model.off('change:value', this.onValueChange);
-    this.listenTo(model, 'change:value', this.onValueChange);
+    [['change:value', this.onValueChange], ['remove', this.removeView]].forEach(
+      ([event, clb]) => {
+        model.off(event, clb);
+        this.listenTo(model, event, clb);
+      }
+    );
     model.view = this;
     this.init();
   },
 
+  removeView() {
+    this.remove();
+    this.removed();
+  },
+
   init() {},
+  removed() {},
 
   /**
    * Fires when the input is changed
    * @private
    */
   onChange() {
-    this.model.set('value', this.getInputElem().value);
+    const el = this.getInputElem();
+    if (el && !isUndefined(el.value)) {
+      this.model.set('value', el.value);
+    }
   },
 
   getValueForTarget() {
@@ -176,13 +189,15 @@ export default Backbone.View.extend({
    * @private
    * */
   renderField() {
-    const { $el, target, appendInput } = this;
+    const { $el, target, appendInput, model } = this;
     const inputOpts = { component: target };
     const inputs = $el.find('[data-input]');
     const el = inputs[inputs.length - 1];
-    let tpl = this.createInput
-      ? this.createInput(inputOpts)
-      : this.getInputEl();
+    let tpl = model.el;
+
+    if (!tpl) {
+      tpl = this.createInput ? this.createInput(inputOpts) : this.getInputEl();
+    }
 
     if (isString(tpl)) {
       el.innerHTML = tpl;
@@ -191,6 +206,8 @@ export default Backbone.View.extend({
       appendInput ? el.appendChild(tpl) : el.insertBefore(tpl, el.firstChild);
       this.elInput = tpl;
     }
+
+    model.el = this.elInput;
   },
 
   hasLabel() {
