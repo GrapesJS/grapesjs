@@ -54,6 +54,7 @@ export default Backbone.View.extend({
 
   init() {},
   removed() {},
+  onRender() {},
 
   /**
    * Fires when the input is changed
@@ -215,7 +216,7 @@ export default Backbone.View.extend({
   },
 
   render() {
-    const { $el, pfx, ppfx, model } = this;
+    const { $el, pfx, ppfx, model, target } = this;
     const { type } = model.attributes;
     const hasLabel = this.hasLabel && this.hasLabel();
     const cls = `${pfx}trait`;
@@ -236,6 +237,7 @@ export default Backbone.View.extend({
     hasLabel && this.renderLabel();
     this.renderField();
     this.el.className = `${cls}__wrp`;
+    this.onRender({ component: target });
     return this;
   }
 });
