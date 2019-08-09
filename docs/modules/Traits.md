@@ -14,16 +14,6 @@ To get a better understanding of the content in this guide we recommend reading 
 [[toc]]
 
 
-## Built-in trait types
-
-* text
-* number
-* checkbox
-* select
-* color
-
-
-
 
 
 ## Add Traits to Components
@@ -146,6 +136,36 @@ editor.DomComponents.addType('input', {
   }
 })
 ```
+
+## Built-in trait types
+
+GrapesJS comes along with few built-in types that you can use to define your traits:
+
+* **Text**
+Simple text input
+```js
+{
+  type: 'text',
+  name: 'my-trait', // Available for all traits
+  label: 'My trait', // The label you will see near the input
+  placeholder: 'Insert text', // Placeholder to show inside the input
+}
+```
+* **Number**
+Number input
+```js
+{
+  type: 'number',
+  // ...
+  placeholder: '0-100',
+  min: 0, // Minimum number value
+  max: 100, // Maximum number value
+  step: 5, // Number of steps
+}
+```
+* checkbox
+* select
+* color
 
 
 
