@@ -43,23 +43,25 @@ editor.DomComponents.addType('input', {
       defaults: {
         traits: [
           // Strings are automatically converted to text types
-          'name',
+          'name', // Same as: { type: 'text', name: 'name' }
           'placeholder',
           {
             type: 'select', // Type of the trait
             label: 'Type', // The label you will see in Settings
             name: 'type', // The name of the attribute/property to use on component
             options: [
-              { value: 'text', name: 'Text'},
-              { value: 'email', name: 'Email'},
-              { value: 'password', name: 'Password'},
-              { value: 'number', name: 'Number'},
+              { id: 'text', name: 'Text'},
+              { id: 'email', name: 'Email'},
+              { id: 'password', name: 'Password'},
+              { id: 'number', name: 'Number'},
             ]
           }, {
             type: 'checkbox',
-            label: 'Required',
             name: 'required',
         }],
+        // As by default, traits are binded to attributes, so to define
+        // their initial value we can use attributes
+        attributes: { type: 'text', required: true },
       },
     },
 });
@@ -69,35 +71,81 @@ Now the result will be
 
 <img :src="$withBase('/input-custom-traits.png')">
 
-Traits modify attributes of the model (which than reflected in canvas), but you can also have traits which change the property
-
-```js
-...
-traits: [{
-    type: 'text',
-    label: 'Test',
-    name: 'model-prop-name',
-    changeProp: 1,
-}],
-...
-```
-
-In this way you're able to listen for changes and react with your own logic
+If you want you can also define traits dinamically via functions, which will be created on component initialization. It might be useful if you need to create traits based on some other component characteristic.
 
 ```js
 editor.DomComponents.addType('input', {
-    model: dModel.extend({
-      init() {
-        this.listenTo(this, 'change:model-prop-name', this.doStuff);
-      },
+    isComponent: el => el.tagName == 'INPUT',
+    model: {
+      defaults: {
+        traits(component) {
+          const result = [];
 
-      doStuff() {}
-    }),
-    ...
+          // Example of some logic
+          if (component.get('draggable')) {
+            result.push('name');
+          } else {
+            result.push({
+              type: 'select',
+              // ....
+            });
+          }
+
+          return result;
+        }
+      },
+    },
 });
 ```
 
+If you need to react to some change of the trait you can subscribe to their attribute listeners
 
+```js
+editor.DomComponents.addType('input', {
+  model: {
+    defaults: {
+      // ...
+    },
+
+    init() {
+      this.on('change:attributes:type', this.handleTypeChange);
+    },
+
+    handleTypeChange() {
+      const attrs = this.getAttributes();
+      console.log('Input type changed to: ', attrs['type']);
+    },
+  }
+})
+```
+
+As already mentioned, by default, traits modify attributes of the model, but you can also bind them to the properties by using `changeProp` options.
+
+```js
+editor.DomComponents.addType('input', {
+  model: {
+    defaults: {
+      // ...
+      traits: [
+        {
+          name: 'placeholder',
+          changeProp: 1,
+        }
+        // ...
+      ],
+      // As we switched from attributes to properties the
+      // initial value should be set from the property
+      placeholder: 'Initial placeholder',
+    },
+
+    init() {
+      // Also the listener changes from `change:attributes:*` to `change:*`
+      this.on('change:placeholder', this.handlePlhChange);
+    },
+    // ...
+  }
+})
+```
 
 
 
