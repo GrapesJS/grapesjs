@@ -29,20 +29,24 @@ export default Backbone.View.extend({
    * @private
    * */
   add(model, fragment) {
+    const { config, reuseView } = this;
     var frag = fragment || null;
     var itemView = this.itemView;
     var typeField = model.get(this.itemType);
+    let view;
+
     if (this.itemsView && this.itemsView[typeField]) {
       itemView = this.itemsView[typeField];
     }
-    var view = new itemView(
-      {
-        model,
-        config: this.config
-      },
-      this.config
-    );
-    var rendered = view.render().el;
+
+    if (model.view && reuseView) {
+      view = model.view;
+    } else {
+      view = new itemView({ model, config }, config);
+      view.render();
+    }
+
+    var rendered = view.el;
 
     if (frag) frag.appendChild(rendered);
     else this.$el.append(rendered);

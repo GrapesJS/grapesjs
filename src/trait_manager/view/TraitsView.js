@@ -8,6 +8,7 @@ import TraitButtonView from './TraitButtonView';
 
 export default DomainViews.extend({
   itemView: TraitView,
+  reuseView: 1,
 
   itemsView: {
     text: TraitView,
