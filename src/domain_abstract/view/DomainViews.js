@@ -43,10 +43,9 @@ export default Backbone.View.extend({
       view = model.view;
     } else {
       view = new itemView({ model, config }, config);
-      view.render();
     }
 
-    var rendered = view.el;
+    var rendered = view.render().el;
 
     if (frag) frag.appendChild(rendered);
     else this.$el.append(rendered);
