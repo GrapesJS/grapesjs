@@ -4,7 +4,12 @@ title: Trait Manager
 
 # Trait Manager
 
-In GrapesJS, Traits can define different parameters and behaviors of a component. The user generally will see traits as the *Settings* of a component. A common use of traits is to customize element attributes (eg. `placeholder` for inputs) and in this case the editor comes already with some built-in, easy configurable, types.
+In GrapesJS, Traits define different parameters and behaviors of a component. The user generally will see traits as the *Settings* of a component. A common use of traits is to customize element attributes (eg. `placeholder` for `<input>`) or you can also bind them to the properties of your components and react on their changes.
+
+::: warning
+This guide is referring to GrapesJS v0.14.67 or higher.<br><br>
+To get a better understanding of the content in this guide we recommend reading [Components](Components.html) first
+:::
 
 [[toc]]
 
@@ -23,51 +28,40 @@ In GrapesJS, Traits can define different parameters and behaviors of a component
 
 ## Add Traits to Components
 
-You can add traits to the component by extending them or while creating a new one. Let's see in this example how to make inputs more customizable by the editor. All components, by default, contain two traits: id and title (at the moment of writing). So, if you select an input and open the Settings panel you will see this:
+Generally you define traits on the definition of your new custom components (or by extending another one). Let's see in this example how to make inputs more customizable by the editor.
+
+All components, by default, contain two traits: `id` and `title` (at the moment of writing). So, if you select an input and open the Settings panel you will see this:
 
 <img :src="$withBase('/default-traits.png')">
 
-In this example we are going to create a new Component. ([Check here](Components.html) for more details about the creation of new components with a new set of traits
+We can start by creating e new custom `input` component in this way:
 
 ```js
-var editor = grapesjs.init({...});
-var domComps = editor.DomComponents;
-var dType = domComps.getType('default');
-var dModel = dType.model;
-var dView = dType.view;
-
-domComps.addType('input', {
-    model: dModel.extend({
-      defaults: Object.assign({}, dModel.prototype.defaults, {
+editor.DomComponents.addType('input', {
+    isComponent: el => el.tagName == 'INPUT',
+    model: {
+      defaults: {
         traits: [
-          // strings are automatically converted to text types
+          // Strings are automatically converted to text types
           'name',
           'placeholder',
           {
-            type: 'select',
-            label: 'Type',
-            name: 'type',
+            type: 'select', // Type of the trait
+            label: 'Type', // The label you will see in Settings
+            name: 'type', // The name of the attribute/property to use on component
             options: [
-              {value: 'text', name: 'Text'},
-              {value: 'email', name: 'Email'},
-              {value: 'password', name: 'Password'},
-              {value: 'number', name: 'Number'},
+              { value: 'text', name: 'Text'},
+              { value: 'email', name: 'Email'},
+              { value: 'password', name: 'Password'},
+              { value: 'number', name: 'Number'},
             ]
           }, {
             type: 'checkbox',
             label: 'Required',
             name: 'required',
         }],
-      }),
-    }, {
-      isComponent: function(el) {
-        if(el.tagName == 'INPUT'){
-          return {type: 'input'};
-        }
       },
-    }),
-
-    view: dView,
+    },
 });
 ```
 

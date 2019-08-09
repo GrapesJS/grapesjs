@@ -673,6 +673,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
      */
     loadTraits(traits, opts = {}) {
       traits = traits || this.get('traits');
+      traits = isFunction(traits) ? traits(this) : traits;
 
       if (!(traits instanceof Traits)) {
         const trt = new Traits([], this.opt);
