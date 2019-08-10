@@ -264,6 +264,30 @@ component.removeTrait('type');
 
 ## Define new Trait type
 
+Generally, for most of the cases default types are enough, but sometimes you might need something more.
+In that case you can define a totally new type of trait and bind any kind of element to it.
+
+Let's update the default `link` Component with a new kind of trat. This is the default situation of traits for a simple link.
+
+<img :src="$withBase('/default-link-comp.jpg')">
+
+Let's just replace all of its traits with a new one, `href-next`, which will allow the user to select the type of href (eg. 'url', 'email', etc.)
+
+```js
+editor.DomComponents.addType('link', {
+  model: {
+    defaults: {
+      traits: [
+        {
+          type: 'href-next',
+          label: 'New href',
+        },
+      ]
+    }
+  }
+});
+```
+
 If built-in types are not enough (eg. something with more complex UI) you can define a new one.
 Let's see this simple `textarea` element which updates contents of the component.
 

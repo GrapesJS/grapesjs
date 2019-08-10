@@ -7,6 +7,7 @@ import TraitColorView from './TraitColorView';
 import TraitButtonView from './TraitButtonView';
 
 export default DomainViews.extend({
+  ns: 'Traits',
   itemView: TraitView,
   reuseView: 1,
 

@@ -22,6 +22,13 @@ export default Backbone.View.extend({
     this.add(model);
   },
 
+  itemViewNotFound(type) {
+    const { config, ns } = this;
+    const { em } = config;
+    const warn = `${ns ? `[${ns}]: ` : ''}'${type}' type not found`;
+    em && em.logWarning(warn);
+  },
+
   /**
    * Render new model inside the view
    * @param {Model} model
@@ -29,14 +36,16 @@ export default Backbone.View.extend({
    * @private
    * */
   add(model, fragment) {
-    const { config, reuseView } = this;
+    const { config, reuseView, itemsView = {} } = this;
     var frag = fragment || null;
     var itemView = this.itemView;
     var typeField = model.get(this.itemType);
     let view;
 
-    if (this.itemsView && this.itemsView[typeField]) {
-      itemView = this.itemsView[typeField];
+    if (itemsView[typeField]) {
+      itemView = itemsView[typeField];
+    } else if (typeField && !itemsView[typeField]) {
+      this.itemViewNotFound(typeField);
     }
 
     if (model.view && reuseView) {
