@@ -45,6 +45,8 @@ export default Backbone.View.extend({
       }
     );
     model.view = this;
+    this.listenTo(model, 'change:label', this.render);
+    this.listenTo(model, 'change:placeholder', this.rerender);
     this.init();
   },
 
