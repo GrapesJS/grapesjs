@@ -215,6 +215,11 @@ export default Backbone.View.extend({
     return !this.model.get('noLabel');
   },
 
+  rerender() {
+    this.model.el = null;
+    this.render();
+  },
+
   render() {
     const { $el, pfx, ppfx, model, target } = this;
     const { type } = model.attributes;

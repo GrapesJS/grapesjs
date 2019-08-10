@@ -196,8 +196,27 @@ If you need to change some trait on your component you can update it wherever yo
 The trait is a simple property of the component so to get the complete list of current traits you can use this:
 
 ```js
-const traits = editor.getSelected().get('traits');
+const component = editor.getSelected(); // Component selected in canvas
+const traits = component.get('traits');
 traits.forEach(trait => console.log(trait.props()))
+```
+
+In case you need a single one:
+
+```js
+const component = editor.getSelected();
+console.log(component.getTrait('type').props()); // Finds by the `name` of the trait
+```
+
+If you want, for example, updating some property of the trait, do this:
+
+```js
+// Let's update `options` of our `type` trait, defined in Input component
+const component = editor.getSelected();
+component.getTrait('type').set('options', [
+  { id: 'opt1', name: 'New option 1'},
+  { id: 'opt2', name: 'New option 2'},
+])
 ```
 
 

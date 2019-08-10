@@ -6,7 +6,7 @@ const $ = Backbone.$;
 
 export default TraitView.extend({
   init() {
-    this.listenTo(this.model, 'change:options', this.render);
+    this.listenTo(this.model, 'change:options', this.rerender);
   },
 
   templateInput() {
