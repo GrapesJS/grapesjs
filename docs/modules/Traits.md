@@ -141,8 +141,7 @@ editor.DomComponents.addType('input', {
 
 GrapesJS comes along with few built-in types that you can use to define your traits:
 
-* **Text**
-Simple text input
+* **Text** - Simple text input
 ```js
 {
   type: 'text',
@@ -151,8 +150,7 @@ Simple text input
   placeholder: 'Insert text', // Placeholder to show inside the input
 }
 ```
-* **Number**
-Number input
+* **Number** - Number input
 ```js
 {
   type: 'number',
@@ -163,10 +161,33 @@ Number input
   step: 5, // Number of steps
 }
 ```
-* checkbox
-* select
-* color
-
+* **Checkbox** - Simple checkbox input
+```js
+{
+  type: 'checkbox',
+  // ...
+  valueTrue: 'YES', // Value to assign when is checked, default: `true`
+  valueFalse: 'NO', // Value to assign when is unchecked, default: `false`
+}
+```
+* **Select** - Select input
+```js
+{
+  type: 'select',
+  // ...
+  options: [ // Array of options
+    { id: 'opt1', name: 'Option 1'},
+    { id: 'opt2', name: 'Option 2'},
+  ]
+}
+```
+* **Color** - Color picker
+```js
+{
+  type: 'color',
+  // ...
+}
+```
 
 
 ## Define new Trait type

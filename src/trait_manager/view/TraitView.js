@@ -1,5 +1,6 @@
 import Backbone from 'backbone';
 import { isUndefined, isString, isFunction } from 'underscore';
+import { capitalize } from 'utils/mixins';
 
 const $ = Backbone.$;
 
@@ -115,9 +116,8 @@ export default Backbone.View.extend({
    * @private
    */
   getLabel() {
-    var model = this.model;
-    var label = model.get('label') || model.get('name');
-    return label.charAt(0).toUpperCase() + label.slice(1).replace(/-/g, ' ');
+    const { label, name } = this.model.attributes;
+    return capitalize(label || name).replace(/-/g, ' ');
   },
 
   /**
