@@ -33,6 +33,14 @@ export default Backbone.Model.extend({
     }
   },
 
+  /**
+   * Return all the propeties
+   * @returns {Object}
+   */
+  props() {
+    return this.attributes;
+  },
+
   targetUpdated() {
     const value = this.getTargetValue();
     this.set({ value }, { fromTarget: 1 });

@@ -144,8 +144,8 @@ GrapesJS comes along with few built-in types that you can use to define your tra
 * **Text** - Simple text input
 ```js
 {
-  type: 'text',
-  name: 'my-trait', // Available for all traits
+  type: 'text', // If you don't specify the type, the `text` is the default one
+  name: 'my-trait', // Required and available for all traits
   label: 'My trait', // The label you will see near the input
   placeholder: 'Insert text', // Placeholder to show inside the input
 }
@@ -187,6 +187,17 @@ GrapesJS comes along with few built-in types that you can use to define your tra
   type: 'color',
   // ...
 }
+```
+
+## Updating traits at run-time
+
+If you need to change some trait on your component you can update it wherever you want by using [Component API](/api/component.html)
+
+The trait is a simple property of the component so to get the complete list of current traits you can use this:
+
+```js
+const traits = editor.getSelected().get('traits');
+traits.forEach(trait => console.log(trait.props()))
 ```
 
 
