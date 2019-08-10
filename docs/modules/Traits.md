@@ -216,8 +216,30 @@ const component = editor.getSelected();
 component.getTrait('type').set('options', [
   { id: 'opt1', name: 'New option 1'},
   { id: 'opt2', name: 'New option 2'},
-])
+]);
+// or with multiple values
+component.getTrait('type').set({
+  label: 'My type',
+  options: [...],
+});
 ```
+
+You can also easily add new traits or remove some other by using [`addTrait`](/api/component.html#addtrait)/[`removeTrait`](/api/component.html#removetrait)
+
+```js
+// Add new trait
+const component = editor.getSelected();
+component.addTrait({
+  type: 'text',
+  ...
+}, { at: 0 });
+// The `at` option indicates the index where to place the new trait,
+// without it, the trait will be appended at the end of the list
+
+// Remove trait
+component.removeTrait('type');
+```
+
 
 
 ## Define new Trait type
