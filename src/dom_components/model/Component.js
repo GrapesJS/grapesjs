@@ -213,6 +213,14 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     /**
+     * Return all the propeties
+     * @returns {Object}
+     */
+    props() {
+      return this.attributes;
+    },
+
+    /**
      * Get the index of the component in the parent collection.
      * @return {Number}
      */
