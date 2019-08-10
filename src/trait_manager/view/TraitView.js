@@ -214,7 +214,8 @@ export default Backbone.View.extend({
   },
 
   hasLabel() {
-    return !this.model.get('noLabel');
+    const { noLabel, label } = this.model.attributes;
+    return !noLabel && label !== false;
   },
 
   rerender() {

@@ -29,8 +29,8 @@ export default TraitView.extend({
 
   getInputEl() {
     const { model, ppfx } = this;
-    const label = model.get('labelButton') || '';
-    const full = model.get('full');
+    const { labelButton, text, full } = model.props();
+    const label = labelButton || text;
     const className = `${ppfx}btn`;
     const input = `<button type="button" class="${className}-prim${
       full ? ` ${className}--full` : ''

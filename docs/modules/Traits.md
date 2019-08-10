@@ -141,16 +141,19 @@ editor.DomComponents.addType('input', {
 
 GrapesJS comes along with few built-in types that you can use to define your traits:
 
-* **Text** - Simple text input
+### Text
+Simple text input
 ```js
 {
   type: 'text', // If you don't specify the type, the `text` is the default one
   name: 'my-trait', // Required and available for all traits
   label: 'My trait', // The label you will see near the input
+  // label: false, // If you set label to `false`, the label column will be removed
   placeholder: 'Insert text', // Placeholder to show inside the input
 }
 ```
-* **Number** - Number input
+### Number
+Input for numbers
 ```js
 {
   type: 'number',
@@ -161,7 +164,8 @@ GrapesJS comes along with few built-in types that you can use to define your tra
   step: 5, // Number of steps
 }
 ```
-* **Checkbox** - Simple checkbox input
+### Checkbox
+Simple checkbox input
 ```js
 {
   type: 'checkbox',
@@ -170,7 +174,8 @@ GrapesJS comes along with few built-in types that you can use to define your tra
   valueFalse: 'NO', // Value to assign when is unchecked, default: `false`
 }
 ```
-* **Select** - Select input
+### Select
+Select input with options
 ```js
 {
   type: 'select',
@@ -181,11 +186,26 @@ GrapesJS comes along with few built-in types that you can use to define your tra
   ]
 }
 ```
-* **Color** - Color picker
+### Color
+Color picker
 ```js
 {
   type: 'color',
   // ...
+}
+```
+### Button
+Button with a command to assign
+```js
+{
+  type: 'button',
+  // ...
+  text: 'Click me',
+  full: true, // Full width button
+  command: editor => alert('Hello'),
+  // or you can just specify the Command ID
+  command: 'some-command',
+
 }
 ```
 
