@@ -5,9 +5,8 @@ import { capitalize } from 'utils/mixins';
 const $ = Backbone.$;
 
 export default Backbone.View.extend({
-  events: {
-    change: 'onChange'
-  },
+  events: {},
+  eventCapture: ['change'],
 
   appendInput: 1,
 
@@ -28,7 +27,7 @@ export default Backbone.View.extend({
 
   initialize(o = {}) {
     const { config = {} } = o;
-    const { model } = this;
+    const { model, eventCapture } = this;
     const { target } = model;
     const { type } = model.attributes;
     this.config = config;
@@ -47,7 +46,17 @@ export default Backbone.View.extend({
     model.view = this;
     this.listenTo(model, 'change:label', this.render);
     this.listenTo(model, 'change:placeholder', this.rerender);
+    eventCapture.forEach(event => (this.events[event] = 'onChange'));
+    this.delegateEvents();
     this.init();
+  },
+
+  getClbOpts() {
+    return {
+      component: this.target,
+      trait: this.model,
+      elInput: this.getInputElem()
+    };
   },
 
   removeView() {
@@ -58,16 +67,21 @@ export default Backbone.View.extend({
   init() {},
   removed() {},
   onRender() {},
+  onUpdate() {},
 
   /**
    * Fires when the input is changed
    * @private
    */
-  onChange() {
+  onChange(event) {
     const el = this.getInputElem();
     if (el && !isUndefined(el.value)) {
       this.model.set('value', el.value);
     }
+    this.onUpdate({
+      ...this.getClbOpts(),
+      event
+    });
   },
 
   getValueForTarget() {
@@ -86,6 +100,7 @@ export default Backbone.View.extend({
   onValueChange(model, value, opts = {}) {
     if (opts.fromTarget) {
       this.setInputValue(model.get('value'));
+      this.postRender();
     } else {
       const val = this.getValueForTarget();
       model.setTargetValue(val, opts);
@@ -105,7 +120,8 @@ export default Backbone.View.extend({
       tpl =
         this.createLabel({
           label,
-          component: target
+          component: target,
+          trait: this
         }) || '';
     }
 
@@ -192,14 +208,15 @@ export default Backbone.View.extend({
    * @private
    * */
   renderField() {
-    const { $el, target, appendInput, model } = this;
-    const inputOpts = { component: target };
+    const { $el, appendInput, model } = this;
     const inputs = $el.find('[data-input]');
     const el = inputs[inputs.length - 1];
     let tpl = model.el;
 
     if (!tpl) {
-      tpl = this.createInput ? this.createInput(inputOpts) : this.getInputEl();
+      tpl = this.createInput
+        ? this.createInput(this.getClbOpts())
+        : this.getInputEl();
     }
 
     if (isString(tpl)) {
@@ -214,8 +231,8 @@ export default Backbone.View.extend({
   },
 
   hasLabel() {
-    const { noLabel, label } = this.model.attributes;
-    return !noLabel && label !== false;
+    const { label } = this.model.attributes;
+    return !this.noLabel && label !== false;
   },
 
   rerender() {
@@ -223,8 +240,12 @@ export default Backbone.View.extend({
     this.render();
   },
 
+  postRender() {
+    this.onRender(this.getClbOpts());
+  },
+
   render() {
-    const { $el, pfx, ppfx, model, target } = this;
+    const { $el, pfx, ppfx, model } = this;
     const { type } = model.attributes;
     const hasLabel = this.hasLabel && this.hasLabel();
     const cls = `${pfx}trait`;
@@ -235,7 +256,7 @@ export default Backbone.View.extend({
         ${
           this.templateInput
             ? isFunction(this.templateInput)
-              ? this.templateInput()
+              ? this.templateInput(this.getClbOpts())
               : this.templateInput
             : ''
         }
@@ -245,7 +266,7 @@ export default Backbone.View.extend({
     hasLabel && this.renderLabel();
     this.renderField();
     this.el.className = `${cls}__wrp`;
-    this.onRender({ component: target });
+    this.postRender();
     return this;
   }
 });

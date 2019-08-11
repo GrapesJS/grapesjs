@@ -250,7 +250,7 @@ You can also easily add new traits or remove some other by using [`addTrait`](/a
 // Add new trait
 const component = editor.getSelected();
 component.addTrait({
-  type: 'text',
+  name: 'type',
   ...
 }, { at: 0 });
 // The `at` option indicates the index where to place the new trait,
@@ -267,6 +267,8 @@ component.removeTrait('type');
 Generally, for most of the cases default types are enough, but sometimes you might need something more.
 In that case you can define a totally new type of trait and bind any kind of element to it.
 
+### Create element
+
 Let's update the default `link` Component with a new kind of trat. This is the default situation of traits for a simple link.
 
 <img :src="$withBase('/default-link-comp.jpg')">
@@ -274,12 +276,14 @@ Let's update the default `link` Component with a new kind of trat. This is the d
 Let's just replace all of its traits with a new one, `href-next`, which will allow the user to select the type of href (eg. 'url', 'email', etc.)
 
 ```js
+// Update component
 editor.DomComponents.addType('link', {
   model: {
     defaults: {
       traits: [
         {
           type: 'href-next',
+          name: 'href',
           label: 'New href',
         },
       ]
@@ -288,42 +292,186 @@ editor.DomComponents.addType('link', {
 });
 ```
 
-If built-in types are not enough (eg. something with more complex UI) you can define a new one.
-Let's see this simple `textarea` element which updates contents of the component.
+Now you'll see a simple text input because we have not yet defined our new trait type, so let's do it:
 
 ```js
-// Each new type extends the default Trait
-editor.TraitManager.addType('content', {
-  events:{
-    'keyup': 'onChange',  // trigger parent onChange method on keyup
-  },
+editor.TraitManager.addType('href-next', {
+  // Expects as return a simple HTML string or an HTML element
+  createInput({ trait }) {
+    // Here we can decide to use properties from the trait
+    const traitOpts = trait.get('options') || [];
+    const options = traitOpts.lenght ? traitOpts : [
+      { id: 'url', name: 'URL' },
+      { id: 'email', name: 'Email' },
+    ];
 
-  /**
-  * Returns the input element
-  * @return {HTMLElement}
-  */
-  getInputEl: function() {
-    if (!this.inputEl) {
-      var input = document.createElement('textarea');
-      input.value = this.target.get('content');
-      this.inputEl = input;
-    }
-    return this.inputEl;
-  },
+    // Create a new element container and add some content
+    const el = document.createElement('div');
+    el.innerHTML = `
+      <select class="href-next__type">
+        ${options.map(opt => `<option value="${opt.id}">${opt.name}</option>`).join('')}
+      </select>
+      <div class="href-next__url-inputs">
+        <input class="href-next__url" placeholder="Insert URL"/>
+      </div>
+      <div class="href-next__email-inputs">
+        <input class="href-next__email" placeholder="Insert email"/>
+        <input class="href-next__email-subject" placeholder="Insert subject"/>
+      </div>
+    `;
 
-  /**
-   * Triggered when the value of the model is changed
-   */
-  onValueChange: function () {
-    this.target.set('content', this.model.get('value'));
-  }
+    // Let's make our content alive
+    const inputsUrl = el.querySelector('.href-next__url-inputs');
+    const inputsEmail = el.querySelector('.href-next__email-inputs');
+    const inputType = el.querySelector('.href-next__type');
+    inputType.addEventListener('change', ev => {
+      switch (ev.target.value) {
+        case 'url':
+          inputsUrl.style.display = '';
+          inputsEmail.style.display = 'none';
+          break;
+        case 'email':
+          inputsUrl.style.display = 'none';
+          inputsEmail.style.display = '';
+          break;
+      }
+    });
+
+    return el;
+  },
 });
-
-// And then use it in your component
-...
-traits: [{
-    type: 'content',
-}],
-...
 ```
 
+From the example above we simple created our custom inputs (by giving also the possibility to use `option` trait property) and defined some input switch behaviour on the type change. Now the result would be something like this
+
+<img :src="$withBase('/docs-init-link-trait.jpg')">
+
+### Update layout
+
+Before going forward and making our trait work let's talk about the layout structure of a trait. You might have noticed that the trait is composed by the label and input columns, for this reason GrapesJS allows you to customize both of them.
+
+For the label customization you might use `createLabel`
+
+```js
+editor.TraitManager.addType('href-next', {
+  // Expects as return a simple HTML string or an HTML element
+  createLabel({ label }) {
+    return `<div>
+      <div>Before</div>
+      ${label}
+      <div>After</div>
+    </div>`;
+  },
+  // ...
+});
+```
+
+You've probably seen already that in trait definition you can setup `label: false` to completely remove the label column, but in case you need to force this behaviour in all istances of this trait type you can use `noLabel` property
+
+```js
+editor.TraitManager.addType('href-next', {
+  noLabel: true,
+  // ...
+});
+```
+
+You might also notice that by default GrapesJS applies kind of a wrapper around your inputs, generally is ok for simple inputs but probably is not what you need where you're creating a complex custom trait. To remove the default wrapper you can use the `templateInput` option
+
+```js
+editor.TraitManager.addType('href-next', {
+  // Completely remove the wrapper
+  templateInput: '',
+  // Use a new one, by specifying with `data-input` attribute where to place the input container
+  templateInput: `<div class="custom-input-wrapper">
+    Before input
+    <div data-input></div>
+    After input
+  </div>`,
+  // It might also be a function, expects an HTML string as the result
+  templateInput({ trait }) {
+    return '<div ...';
+  },
+});
+```
+
+<img :src="$withBase('/docs-link-trait-raw.jpg')">
+
+In this case the result will be quite raw and unstyled but the point of custom trait types is to allow you to reuse your own styled inputs, probably already designed and defined (or impliemented in some UI framework).
+For now let's keep the default input wrapper and continue with the integration of our custom trait.
+
+### Bind to component
+
+At the current state, our element created in `createInput` is not binded to the component so nothing happens when you update inputs, so let's do it now
+
+```js
+editor.TraitManager.addType('href-next', {
+  // ...
+
+  // Update the component based element changes
+  // `elInput` is the result HTMLElement you get from `createInput`
+  onUpdate({ elInput, component }) {
+    const inputType = elInput.querySelector('.href-next__type');
+    let href = '';
+
+    switch (inputType.value) {
+      case 'url':
+        const valUrl = elInput.querySelector('.href-next__url').value;
+        href = valUrl;
+        break;
+      case 'email':
+        const valEmail = elInput.querySelector('.href-next__email').value;
+        const valSubj = elInput.querySelector('.href-next__email-subject').value;
+        href = `mailto:${valEmail}${valSubj ? `?subject=${valSubj}` : ''}`;
+        break;
+    }
+
+    component.addAttributes({ href })
+  },
+});
+```
+
+Now, most of the stuff should already work (you can update the trait and check the HTML in code preview). You might wonder how the editor captures the input change and if it's possible to change it.
+By default, the base trait wrapper applies a listener on `change` event and calls `onUpdate` on any captured event (to be captured the event should be able to [bubble](https://stackoverflow.com/questions/4616694/what-is-event-bubbling-and-capturing)). If you want, for example, to update the component on `input` event you can change the `eventCapture` property
+
+```js
+editor.TraitManager.addType('href-next', {
+  eventCapture: ['input'],
+  // ...
+});
+```
+
+The last thing, you might have noticed the wrong inital render of our trait, which is not populate our inputs in case of already defined `href` attribute. This step should be done in `onRender` method
+
+```js
+editor.TraitManager.addType('href-next', {
+  // ...
+  onRender({ elInput, component }) {
+    const href = component.getAttributes()['href'] || '';
+    const inputType = elInput.querySelector('.href-next__type');
+    let type = 'url';
+
+    if (href.indexOf('mailto:') === 0) {
+      const inputEmail = elInput.querySelector('.href-next__email');
+      const inputSubject = elInput.querySelector('.href-next__email-subject');
+      const mailTo = href.replace('mailto:', '').split('?');
+      const email = mailTo[0];
+      const params = (mailTo[1] || '').split('&').reduce((acc, item) => {
+        const items = item.split('=');
+        acc[items[0]] = items[1];
+        return acc;
+      }, {});
+      type = 'email';
+
+      inputEmail.value = email || '';
+      inputSubject.value = params['subject'] || '';
+    } else {
+      elInput.querySelector('.href-next__url').value = href;
+    }
+
+    inputType.value = type;
+    inputType.dispatchEvent(new CustomEvent('change'));
+  },
+});
+```
+
+<!-- <iframe width="100%" height="500" src="//jsfiddle.net/artur_arseniev/yf6amdqb/embedded/result/dark/" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe> -->
