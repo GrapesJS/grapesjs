@@ -409,7 +409,7 @@ editor.TraitManager.addType('href-next', {
 
   // Update the component based element changes
   // `elInput` is the result HTMLElement you get from `createInput`
-  onUpdate({ elInput, component }) {
+  onEvent({ elInput, component, event }) {
     const inputType = elInput.querySelector('.href-next__type');
     let href = '';
 
@@ -430,23 +430,23 @@ editor.TraitManager.addType('href-next', {
 });
 ```
 
-Now, most of the stuff should already work (you can update the trait and check the HTML in code preview). You might wonder how the editor captures the input change and if it's possible to change it.
-By default, the base trait wrapper applies a listener on `change` event and calls `onUpdate` on any captured event (to be captured the event should be able to [bubble](https://stackoverflow.com/questions/4616694/what-is-event-bubbling-and-capturing)). If you want, for example, to update the component on `input` event you can change the `eventCapture` property
+Now, most of the stuff should already work (you can update the trait and check the HTML in code preview). You might wonder how the editor captures the input change and how is possible to change it.
+By default, the base trait wrapper applies a listener on `change` event and calls `onEvent` on any captured event (to be captured the event should be able to [bubble](https://stackoverflow.com/questions/4616694/what-is-event-bubbling-and-capturing)). If you want, for example, to update the component on `input` event you can change the `eventCapture` property
 
 ```js
 editor.TraitManager.addType('href-next', {
-  eventCapture: ['input'],
+  eventCapture: ['input'], // you can use multiple events in array
   // ...
 });
 ```
 
-The last thing, you might have noticed the wrong inital render of our trait, which is not populate our inputs in case of already defined `href` attribute. This step should be done in `onRender` method
+The last thing, you might have noticed is the wrong inital render of our trait, which is not populate inputs in case of already defined `href` attribute. This step should be done in `onUpdate` method
 
 ```js
 editor.TraitManager.addType('href-next', {
   // ...
-  onRender({ elInput, component }) {
-    const href = component.getAttributes()['href'] || '';
+  onUpdate({ elInput, component }) {
+    const href = component.getAttributes().href || '';
     const inputType = elInput.querySelector('.href-next__type');
     let type = 'url';
 
@@ -463,7 +463,7 @@ editor.TraitManager.addType('href-next', {
       type = 'email';
 
       inputEmail.value = email || '';
-      inputSubject.value = params['subject'] || '';
+      inputSubject.value = params.subject || '';
     } else {
       elInput.querySelector('.href-next__url').value = href;
     }
@@ -474,4 +474,46 @@ editor.TraitManager.addType('href-next', {
 });
 ```
 
-<!-- <iframe width="100%" height="500" src="//jsfiddle.net/artur_arseniev/yf6amdqb/embedded/result/dark/" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe> -->
+Now the trait will update even on component change like:
+```js
+editor.getSelected().addAttributes({ href: 'mailto:new-email@test.com?subject=NewSubject' })
+```
+
+To recap what we have done so far, to create a custom trait type all you will need are 3 methods:
+
+* `createInput` - Where we define our custom HTML element
+* `onEvent` - How to update the component on input changes
+* `onUpdate` - How to update the inputs on component changes
+
+### Result
+
+The final result of what we have done can be seen here
+<iframe width="100%" height="300" src="//jsfiddle.net/artur_arseniev/yf6amdqb/10/embedded/js,html,css,result" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe>
+
+### Integrate external UI components
+
+By looking at the example above might seems like a lot of code, but at the end it's just about a little bit of logic and the not super pretty native DOM API. If you use a modern UI client framework (eg. Vue, React, etc.) you could see that the integration is even easier. There is how it would be integrating a custom [Vue Slider Component](https://github.com/NightCatSama/vue-slider-component) as a trait
+
+```js
+editor.TraitManager.addType('slider', {
+  createInput({ trait }) {
+    const vueInst = new Vue({ render: h => h(VueSlider) }).$mount();
+    const sliderInst = vueInst.$children[0];
+    sliderInst.$on('change', ev => this.onChange(ev));
+    this.sliderInst = sliderInst;
+    return vueInst.$el;
+  },
+
+  onEvent({ component }) {
+    const value = this.sliderInst.getValue() || 0;
+    component.addAttributes({ value });
+  },
+
+  onUpdate({ component }) {
+    const value = component.getAttributes().value || 0;
+    this.sliderInst.setValue(value);
+  },
+});
+```
+
+<iframe width="100%" height="300" src="//jsfiddle.net/artur_arseniev/x9sw2udv/77/embedded/js,html,css,result" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe>

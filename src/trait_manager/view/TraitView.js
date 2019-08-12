@@ -68,6 +68,7 @@ export default Backbone.View.extend({
   removed() {},
   onRender() {},
   onUpdate() {},
+  onEvent() {},
 
   /**
    * Fires when the input is changed
@@ -78,7 +79,7 @@ export default Backbone.View.extend({
     if (el && !isUndefined(el.value)) {
       this.model.set('value', el.value);
     }
-    this.onUpdate({
+    this.onEvent({
       ...this.getClbOpts(),
       event
     });
@@ -100,7 +101,7 @@ export default Backbone.View.extend({
   onValueChange(model, value, opts = {}) {
     if (opts.fromTarget) {
       this.setInputValue(model.get('value'));
-      this.postRender();
+      this.postUpdate();
     } else {
       const val = this.getValueForTarget();
       model.setTargetValue(val, opts);
@@ -240,8 +241,8 @@ export default Backbone.View.extend({
     this.render();
   },
 
-  postRender() {
-    this.onRender(this.getClbOpts());
+  postUpdate() {
+    this.onUpdate(this.getClbOpts());
   },
 
   render() {
@@ -266,7 +267,8 @@ export default Backbone.View.extend({
     hasLabel && this.renderLabel();
     this.renderField();
     this.el.className = `${cls}__wrp`;
-    this.postRender();
+    this.postUpdate();
+    this.onRender(this.getClbOpts());
     return this;
   }
 });
