@@ -488,7 +488,7 @@ To recap what we have done so far, to create a custom trait type all you will ne
 ### Result
 
 The final result of what we have done can be seen here
-<iframe width="100%" height="300" src="//jsfiddle.net/artur_arseniev/yf6amdqb/10/embedded/js,html,css,result" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe>
+<demo-viewer value="yf6amdqb/10"/>
 
 ### Integrate external UI components
 
@@ -499,7 +499,7 @@ editor.TraitManager.addType('slider', {
   createInput({ trait }) {
     const vueInst = new Vue({ render: h => h(VueSlider) }).$mount();
     const sliderInst = vueInst.$children[0];
-    sliderInst.$on('change', ev => this.onChange(ev));
+    sliderInst.$on('change', ev => this.onChange(ev)); // Use onChange to trigger onEvent
     this.sliderInst = sliderInst;
     return vueInst.$el;
   },
@@ -516,4 +516,14 @@ editor.TraitManager.addType('slider', {
 });
 ```
 
-<iframe width="100%" height="300" src="//jsfiddle.net/artur_arseniev/x9sw2udv/77/embedded/js,html,css,result" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe>
+<demo-viewer value="x9sw2udv/77"/>
+
+The integration with external components is possible by following those simple core points:
+
+1. **Component rendering**: `new Vue({ render: ...`<br/>
+  Depends on the framework, for example, in React it should be `ReactDOM.render(element, ...`
+1. **Change propogation**: `sliderInst.$on('change', ev => this.onChange(ev))`<br/>
+  The framework should have a mechanism to subscribe to changes and the component [should expose that change](https://nightcatsama.github.io/vue-slider-component/#/api/events)<br/>
+  We've also used `onChange` method which comes handy when you need to trigger manually the `onEvent` event (you should never call directly `onEvent` method, but only via `onChange` when you need)
+1. **Property getters/setters**: [`sliderInst.getValue()`](https://nightcatsama.github.io/vue-slider-component/#/api/methods?hash=getvalue)/ [`sliderInst.setValue(value)`](https://nightcatsama.github.io/vue-slider-component/#/api/methods?hash=setvaluevalue)<br/>
+  The component should allow to read and write data from the instance
