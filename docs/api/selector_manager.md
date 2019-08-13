@@ -123,6 +123,16 @@ Get all selectors
 
 Returns **Collection** 
 
+## escapeName
+
+Return escaped selector name
+
+### Parameters
+
+-   `name` **[String][8]** Selector name to escape
+
+Returns **[String][8]** Escaped name
+
 [1]: https://github.com/artf/grapesjs/blob/master/src/selector_manager/config/config.js
 
 [2]: #getconfig

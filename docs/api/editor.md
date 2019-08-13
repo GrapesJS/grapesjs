@@ -218,7 +218,7 @@ editor.addComponents({
 });
 ```
 
-Returns **(Model | [Array][4]&lt;Model>)** 
+Returns **[Array][4]&lt;Component>** 
 
 ## getStyle
 
@@ -502,6 +502,17 @@ editor.setCustomParserCss(css => {
 
 Returns **this** 
 
+## setDragMode
+
+Change the global drag mode of components.
+To get more about this feature read: [https://github.com/artf/grapesjs/issues/1936][9]
+
+### Parameters
+
+-   `value` **[String][2]** Drag mode, options: 'absolute' | 'translate'
+
+Returns **this** 
+
 ## log
 
 Trigger event log message
@@ -594,3 +605,5 @@ Returns **[HTMLElement][6]**
 [7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
 [8]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+
+[9]: https://github.com/artf/grapesjs/issues/1936

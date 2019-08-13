@@ -41,7 +41,7 @@ Add a new action to the built-in RTE toolbar
 ```javascript
 rte.add('bold', {
   icon: '<b>B</b>',
-  attributes: {title: 'Bold',}
+  attributes: {title: 'Bold'},
   result: rte => rte.exec('bold')
 });
 rte.add('link', {
