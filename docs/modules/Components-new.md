@@ -89,7 +89,7 @@ If you're importing big chunks of HTML code you might want to improve the perfor
 
 ### Component Creation
 
-Once the **Component Definition** is ready and the type is assigned, the [Component](api/component.html) instance can be created (known also as the **Model**). Let's step back to our previous example with the HTML string, the result of the `append` method is an array of added components.
+Once the **Component Definition** is ready and the type is assigned, the [Component](api/component) instance can be created (known also as the **Model**). Let's step back to our previous example with the HTML string, the result of the `append` method is an array of added components.
 
 ```js
 const component = editor.addComponents(`<div>
@@ -116,7 +116,7 @@ const innerComponents = component.components();
 component.components(`<div>Component 1</div><div>Component 2</div>`);
 ```
 
-Each component can define its own properties and methods but all of them will always extend, at least, the `default` one (then you will see how to create new custom components and how to extend the already defined) so it's good to check the [Component API](api/component.html) to see all available properties and methods.
+Each component can define its own properties and methods but all of them will always extend, at least, the `default` one (then you will see how to create new custom components and how to extend the already defined) so it's good to check the [Component API](api/component) to see all available properties and methods.
 
 The **main purpose of the Component** is to keep track of its data and to return them when necessary. One common thing you might need to ask from the component is to show its current HTML
 
@@ -132,7 +132,7 @@ JSON.stringify(component)
 ```
 
 ::: tip
-For storing/loading all the components you should rely on the [Storage Manager](modules/Storage.html)
+For storing/loading all the components you should rely on the [Storage Manager](modules/storage)
 :::
 
 The Component instance is responable for the **final data** (eg. HTML, JSON) of your templates, so if you need, for example, to update/add some attribute in the HTML you need to update its component (eg. `component.addAttributes({ title: 'Title added' })`), so the Component/Model is your **Source of Truth**.

@@ -7,7 +7,7 @@ title: Trait Manager
 In GrapesJS, Traits define different parameters and behaviors of a component. The user generally will see traits as the *Settings* of a component. A common use of traits is to customize element attributes (eg. `placeholder` for `<input>`) or you can also bind them to the properties of your components and react on their changes.
 
 ::: warning
-This guide is referring to GrapesJS v0.14.67 or higher.<br><br>
+This guide is referring to GrapesJS v0.15.3 or higher.<br><br>
 To get a better understanding of the content in this guide we recommend reading [Components](Components.html) first
 :::
 
@@ -516,7 +516,7 @@ editor.TraitManager.addType('slider', {
 });
 ```
 
-<demo-viewer value="x9sw2udv/77"/>
+<demo-viewer value="x9sw2udv/79"/>
 
 The integration with external components is possible by following those simple core points:
 
