@@ -24,7 +24,7 @@ All components, by default, contain two traits: `id` and `title` (at the moment 
 
 <img :src="$withBase('/default-traits.png')">
 
-We can start by creating e new custom `input` component in this way:
+We can start by creating a new custom `input` component in this way:
 
 ```js
 editor.DomComponents.addType('input', {
@@ -61,7 +61,7 @@ Now the result will be
 
 <img :src="$withBase('/input-custom-traits.png')">
 
-If you want you can also define traits dinamically via functions, which will be created on component initialization. It might be useful if you need to create traits based on some other component characteristic.
+If you want you can also define traits dynamically via functions, which will be created on component initialization. It might be useful if you need to create traits based on some other component characteristic.
 
 ```js
 editor.DomComponents.addType('input', {
@@ -102,8 +102,7 @@ editor.DomComponents.addType('input', {
     },
 
     handleTypeChange() {
-      const attrs = this.getAttributes();
-      console.log('Input type changed to: ', attrs['type']);
+      console.log('Input type changed to: ', this.getAttributes().type);
     },
   }
 })
@@ -264,12 +263,12 @@ component.removeTrait('type');
 
 ## Define new Trait type
 
-Generally, for most of the cases default types are enough, but sometimes you might need something more.
-In that case you can define a totally new type of trait and bind any kind of element to it.
+Generally, for most of the cases, default types are enough, but sometimes you might need something more.
+In that case, you can define a totally new type of trait and bind any kind of element to it.
 
 ### Create element
 
-Let's update the default `link` Component with a new kind of trat. This is the default situation of traits for a simple link.
+Let's update the default `link` Component with a new kind of trait. This is the default situation of traits for a simple link.
 
 <img :src="$withBase('/default-link-comp.jpg')">
 
@@ -320,7 +319,7 @@ editor.TraitManager.addType('href-next', {
       </div>
     `;
 
-    // Let's make our content alive
+    // Let's make our content interactive
     const inputsUrl = el.querySelector('.href-next__url-inputs');
     const inputsEmail = el.querySelector('.href-next__email-inputs');
     const inputType = el.querySelector('.href-next__type');
@@ -342,13 +341,13 @@ editor.TraitManager.addType('href-next', {
 });
 ```
 
-From the example above we simple created our custom inputs (by giving also the possibility to use `option` trait property) and defined some input switch behaviour on the type change. Now the result would be something like this
+From the example above we simply created our custom inputs (by giving also the possibility to use `option` trait property) and defined some input switch behavior on the type change. Now the result would be something like this
 
 <img :src="$withBase('/docs-init-link-trait.jpg')">
 
 ### Update layout
 
-Before going forward and making our trait work let's talk about the layout structure of a trait. You might have noticed that the trait is composed by the label and input columns, for this reason GrapesJS allows you to customize both of them.
+Before going forward and making our trait work let's talk about the layout structure of a trait. You might have noticed that the trait is composed by the label and input columns, for this reason, GrapesJS allows you to customize both of them.
 
 For the label customization you might use `createLabel`
 
@@ -366,7 +365,7 @@ editor.TraitManager.addType('href-next', {
 });
 ```
 
-You've probably seen already that in trait definition you can setup `label: false` to completely remove the label column, but in case you need to force this behaviour in all istances of this trait type you can use `noLabel` property
+You've probably seen already that in trait definition you can setup `label: false` to completely remove the label column, but in case you need to force this behavior in all instances of this trait type you can use `noLabel` property
 
 ```js
 editor.TraitManager.addType('href-next', {
@@ -396,8 +395,8 @@ editor.TraitManager.addType('href-next', {
 
 <img :src="$withBase('/docs-link-trait-raw.jpg')">
 
-In this case the result will be quite raw and unstyled but the point of custom trait types is to allow you to reuse your own styled inputs, probably already designed and defined (or impliemented in some UI framework).
-For now let's keep the default input wrapper and continue with the integration of our custom trait.
+In this case, the result will be quite raw and unstyled but the point of custom trait types is to allow you to reuse your own styled inputs, probably already designed and defined (or implemented in some UI framework).
+For now, let's keep the default input wrapper and continue with the integration of our custom trait.
 
 ### Bind to component
 
@@ -407,7 +406,7 @@ At the current state, our element created in `createInput` is not binded to the 
 editor.TraitManager.addType('href-next', {
   // ...
 
-  // Update the component based element changes
+  // Update the component based on element changes
   // `elInput` is the result HTMLElement you get from `createInput`
   onEvent({ elInput, component, event }) {
     const inputType = elInput.querySelector('.href-next__type');
@@ -430,21 +429,23 @@ editor.TraitManager.addType('href-next', {
 });
 ```
 
-Now, most of the stuff should already work (you can update the trait and check the HTML in code preview). You might wonder how the editor captures the input change and how is possible to change it.
+Now, most of the stuff should already work (you can update the trait and check the HTML in code preview). You might wonder how the editor captures the input change and how is possible to control it.
 By default, the base trait wrapper applies a listener on `change` event and calls `onEvent` on any captured event (to be captured the event should be able to [bubble](https://stackoverflow.com/questions/4616694/what-is-event-bubbling-and-capturing)). If you want, for example, to update the component on `input` event you can change the `eventCapture` property
 
 ```js
 editor.TraitManager.addType('href-next', {
-  eventCapture: ['input'], // you can use multiple events in array
+  eventCapture: ['input'], // you can use multiple events in the array
   // ...
 });
 ```
 
-The last thing, you might have noticed is the wrong inital render of our trait, which is not populate inputs in case of already defined `href` attribute. This step should be done in `onUpdate` method
+The last thing, you might have noticed the wrong initial render of our trait, where inputs are not populated in case of already defined `href` attribute. This step should be done in `onUpdate` method
 
 ```js
 editor.TraitManager.addType('href-next', {
   // ...
+
+  // Update elements on the component change
   onUpdate({ elInput, component }) {
     const href = component.getAttributes().href || '';
     const inputType = elInput.querySelector('.href-next__type');
@@ -482,8 +483,8 @@ editor.getSelected().addAttributes({ href: 'mailto:new-email@test.com?subject=Ne
 To recap what we have done so far, to create a custom trait type all you will need are 3 methods:
 
 * `createInput` - Where we define our custom HTML element
-* `onEvent` - How to update the component on input changes
-* `onUpdate` - How to update the inputs on component changes
+* `onEvent` - How to update the component on inputs changes
+* `onUpdate` - How to update inputs on component changes
 
 ### Result
 
@@ -492,7 +493,7 @@ The final result of what we have done can be seen here
 
 ### Integrate external UI components
 
-By looking at the example above might seems like a lot of code, but at the end it's just about a little bit of logic and the not super pretty native DOM API. If you use a modern UI client framework (eg. Vue, React, etc.) you could see that the integration is even easier. There is how it would be integrating a custom [Vue Slider Component](https://github.com/NightCatSama/vue-slider-component) as a trait
+By looking at the example above might seems like a lot of code, but at the end, it's just about a little bit of logic and the native DOM API which is not super pretty. If you use a modern UI client framework (eg. Vue, React, etc.) you could see that the integration is even easier. There is how it would be integrating a custom [Vue Slider Component](https://github.com/NightCatSama/vue-slider-component) as a trait
 
 ```js
 editor.TraitManager.addType('slider', {
@@ -518,7 +519,7 @@ editor.TraitManager.addType('slider', {
 
 <demo-viewer value="x9sw2udv/79"/>
 
-The integration with external components is possible by following those simple core points:
+The integration with external components is possible by following these simple core points:
 
 1. **Component rendering**: `new Vue({ render: ...`<br/>
   Depends on the framework, for example, in React it should be `ReactDOM.render(element, ...`
