@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   stylePrefix: 'rte-',
 
   // If true, moves the toolbar below the element when the top canvas

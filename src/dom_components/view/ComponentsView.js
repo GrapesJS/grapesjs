@@ -1,7 +1,7 @@
 import Backbone from 'backbone';
 import { isUndefined } from 'underscore';
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   initialize(o) {
     this.opts = o || {};
     this.config = o.config || {};
@@ -79,7 +79,7 @@ module.exports = Backbone.View.extend({
    * @private
    * */
   addToCollection(model, fragmentEl, index) {
-    if (!this.compView) this.compView = require('./ComponentView');
+    if (!this.compView) this.compView = require('./ComponentView').default;
     const { config, opts } = this;
     const fragment = fragmentEl || null;
     const dt = opts.componentTypes;

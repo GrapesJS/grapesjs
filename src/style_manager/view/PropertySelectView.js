@@ -1,8 +1,9 @@
 import Backbone from 'backbone';
-const PropertyView = require('./PropertyView');
+import PropertyView from './PropertyView';
+
 const $ = Backbone.$;
 
-module.exports = PropertyView.extend({
+export default PropertyView.extend({
   templateInput() {
     const pfx = this.pfx;
     const ppfx = this.ppfx;

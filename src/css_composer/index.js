@@ -28,17 +28,16 @@
  */
 
 import { isArray } from 'underscore';
+import defaults from './config/config';
+import CssRule from './model/CssRule';
+import CssRules from './model/CssRules';
+import CssRulesView from './view/CssRulesView';
+import Selectors from 'selector_manager/model/Selectors';
+import Selector from 'selector_manager/model/Selector';
 
-module.exports = () => {
+export default () => {
   let em;
-  var c = {},
-    defaults = require('./config/config'),
-    CssRule = require('./model/CssRule'),
-    CssRules = require('./model/CssRules'),
-    CssRulesView = require('./view/CssRulesView');
-  const Selectors = require('selector_manager/model/Selectors');
-  const Selector = require('selector_manager/model/Selector');
-
+  var c = {};
   var rules, rulesView;
 
   return {

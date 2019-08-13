@@ -1,6 +1,6 @@
 import { isArray } from 'underscore';
 
-module.exports = {
+export default {
   run(ed, sender, opts = {}) {
     const { target } = opts;
     const dc = ed.DomComponents;

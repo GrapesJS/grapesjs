@@ -20,12 +20,12 @@
  *
  * @module DeviceManager
  */
+import defaults from './config/config';
+import Devices from './model/Devices';
+import DevicesView from './view/DevicesView';
 
-module.exports = () => {
-  var c = {},
-    defaults = require('./config/config'),
-    Devices = require('./model/Devices'),
-    DevicesView = require('./view/DevicesView');
+export default () => {
+  var c = {};
   var devices, view;
 
   return {

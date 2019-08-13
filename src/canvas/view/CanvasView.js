@@ -1,4 +1,5 @@
 import Backbone from 'backbone';
+import { bindAll } from 'underscore';
 import {
   on,
   off,
@@ -7,11 +8,12 @@ import {
   isTextNode,
   getElRect
 } from 'utils/mixins';
-const FrameView = require('./FrameView');
+import FrameView from './FrameView';
+
 const $ = Backbone.$;
 let timerZoom;
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   events: {
     wheel: 'onWheel'
   },
@@ -25,7 +27,7 @@ module.exports = Backbone.View.extend({
   },
 
   initialize(o) {
-    _.bindAll(this, 'renderBody', 'onFrameScroll', 'clearOff', 'onKeyPress');
+    bindAll(this, 'renderBody', 'onFrameScroll', 'clearOff', 'onKeyPress');
     on(window, 'scroll resize', this.clearOff);
     const { model } = this;
     this.config = o.config || {};
@@ -238,6 +240,15 @@ module.exports = Backbone.View.extend({
           cursor: -webkit-grabbing;
         }
 
+        .${ppfx}is__grabbing {
+          overflow-x: hidden;
+        }
+
+        .${ppfx}is__grabbing,
+        .${ppfx}is__grabbing * {
+          cursor: grabbing !important;
+        }
+
         ${conf.canvasCss || ''}
         ${conf.protectedCss || ''}
       `;
@@ -251,7 +262,7 @@ module.exports = Backbone.View.extend({
       body.append(this.getJsContainer());
       em.trigger('loaded');
       this.frame.el.contentWindow.onscroll = this.onFrameScroll;
-      this.frame.udpateOffset();
+      this.frame.updateOffset();
 
       // Avoid the default link behaviour in the canvas
       body.on(

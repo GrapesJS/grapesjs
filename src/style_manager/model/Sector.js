@@ -1,10 +1,9 @@
+import Backbone from 'backbone';
 import { extend } from 'underscore';
+import Properties from './Properties';
+import PropertyFactory from './PropertyFactory';
 
-const Backbone = require('backbone');
-const Properties = require('./Properties');
-const PropertyFactory = require('./PropertyFactory');
-
-module.exports = Backbone.Model.extend({
+export default Backbone.Model.extend({
   defaults: {
     id: '',
     name: '',

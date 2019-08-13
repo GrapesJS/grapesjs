@@ -1,7 +1,7 @@
 import Backbone from 'backbone';
-var Device = require('./Device');
+import Device from './Device';
 
-module.exports = Backbone.Collection.extend({
+export default Backbone.Collection.extend({
   model: Device,
 
   comparator: (left, right) => {

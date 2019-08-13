@@ -1,4 +1,4 @@
-var Backbone = require('backbone');
+import Backbone from 'backbone';
 
 const TYPE_CLASS = 1;
 const TYPE_ID = 2;
@@ -26,7 +26,8 @@ const Selector = Backbone.Model.extend(
       protected: false
     },
 
-    initialize() {
+    initialize(props, opts = {}) {
+      const { config = {} } = opts;
       const name = this.get('name');
       const label = this.get('label');
 
@@ -36,7 +37,12 @@ const Selector = Backbone.Model.extend(
         this.set('label', name);
       }
 
-      this.set('name', Selector.escapeName(this.get('name')));
+      const namePreEsc = this.get('name');
+      const { escapeName } = config;
+      const nameEsc = escapeName
+        ? escapeName(namePreEsc)
+        : Selector.escapeName(namePreEsc);
+      this.set('name', nameEsc);
     },
 
     /**
@@ -77,4 +83,4 @@ const Selector = Backbone.Model.extend(
   }
 );
 
-module.exports = Selector;
+export default Selector;

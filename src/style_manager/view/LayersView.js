@@ -1,7 +1,7 @@
-var Backbone = require('backbone');
-var LayerView = require('./LayerView');
+import Backbone from 'backbone';
+import LayerView from './LayerView';
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   initialize(o) {
     this.config = o.config || {};
     this.stackModel = o.stackModel;

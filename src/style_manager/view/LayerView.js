@@ -1,6 +1,7 @@
 import Backbone from 'backbone';
+import PropertiesView from './PropertiesView';
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   events: {
     click: 'active',
     'click [data-close-layer]': 'remove',
@@ -146,7 +147,6 @@ module.exports = Backbone.View.extend({
   },
 
   render() {
-    const PropertiesView = require('./PropertiesView');
     const propsConfig = this.propsConfig;
     const { model, el, pfx } = this;
     const preview = model.get('preview');

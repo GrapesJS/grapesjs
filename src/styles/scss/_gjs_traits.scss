@@ -6,6 +6,21 @@
     padding: 10px;
     text-align: left;
   }
+
+  &label {
+
+    &-wrp {
+      width: 30%;
+      min-width: 30%;
+    }
+  }
+
+  &field {
+
+    &-wrp {
+      flex-grow: 1;
+    }
+  }
 }
 
 .#{$trt-prefix}header {
@@ -18,19 +33,16 @@
   justify-content: flex-start;
   padding: 5px 10px;
   font-weight: lighter;
+  align-items: center;
+  text-align: left;
 
   &s {
     font-size: $fontSizeS;
   }
 
   .#{$app-prefix}label {
-    width: 30%;
     text-align: left;
     text-overflow: ellipsis;
     overflow: hidden;
-  }
-
-  .#{$app-prefix}field {
-    width: 70%;
   }
 }

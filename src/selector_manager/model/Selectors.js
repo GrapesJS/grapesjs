@@ -1,7 +1,8 @@
 import { filter } from 'underscore';
-const Selector = require('./Selector');
+import Backbone from 'backbone';
+import Selector from './Selector';
 
-module.exports = require('backbone').Collection.extend({
+export default Backbone.Collection.extend({
   model: Selector,
 
   modelId: attr => `${attr.name}_${attr.type || Selector.TYPE_CLASS}`,

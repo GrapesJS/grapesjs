@@ -26,7 +26,7 @@
 
 import UndoManager from 'backbone-undo';
 
-module.exports = () => {
+export default () => {
   let em;
   let um;
   let config;

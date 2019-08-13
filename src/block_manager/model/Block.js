@@ -1,7 +1,7 @@
 import Backbone from 'backbone';
-var Category = require('./Category');
+import Category from './Category';
 
-module.exports = Backbone.Model.extend({
+export default Backbone.Model.extend({
   defaults: {
     // If true, triggers an 'active' event on dropped component
     activate: 0,

@@ -1,8 +1,8 @@
 import { template, debounce } from 'underscore';
 import Backbone from 'backbone';
-var ClassTagView = require('./ClassTagView');
+import ClassTagView from './ClassTagView';
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   template: template(`
   <div id="<%= pfx %>up">
     <div id="<%= pfx %>label"><%= label %></div>

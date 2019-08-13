@@ -1,6 +1,6 @@
-var Backbone = require('backbone');
-var BlocksView = require('block_manager/view/BlocksView');
-var Blocks = require('block_manager/model/Blocks');
+import Backbone from 'backbone';
+import BlocksView from 'block_manager/view/BlocksView';
+import Blocks from 'block_manager/model/Blocks';
 
 module.exports = {
   run() {

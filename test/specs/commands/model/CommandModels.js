@@ -1,5 +1,5 @@
-const Command = require('commands/model/Command');
-const Commands = require('commands');
+import Command from 'commands/model/Command';
+import Commands from 'commands';
 
 module.exports = {
   run() {

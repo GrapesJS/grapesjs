@@ -1,7 +1,7 @@
-var Backbone = require('backbone');
-var Button = require('./Button');
+import Backbone from 'backbone';
+import Button from './Button';
 
-module.exports = Backbone.Collection.extend({
+export default Backbone.Collection.extend({
   model: Button,
 
   /**

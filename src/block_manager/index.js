@@ -26,13 +26,13 @@
  * @module BlockManager
  */
 import { isElement } from 'underscore';
+import defaults from './config/config';
+import Blocks from './model/Blocks';
+import BlockCategories from './model/Categories';
+import BlocksView from './view/BlocksView';
 
-module.exports = () => {
-  var c = {},
-    defaults = require('./config/config'),
-    Blocks = require('./model/Blocks'),
-    BlockCategories = require('./model/Categories'),
-    BlocksView = require('./view/BlocksView');
+export default () => {
+  var c = {};
   var blocks, blocksVisible, blocksView;
   var categories = [];
 

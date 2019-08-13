@@ -1,4 +1,4 @@
-const PluginManager = require('plugin_manager');
+import PluginManager from 'plugin_manager';
 
 describe('PluginManager', () => {
   describe('Main', () => {

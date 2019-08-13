@@ -1,5 +1,5 @@
-const SectorsView = require('style_manager/view/SectorsView');
-const Sectors = require('style_manager/model/Sectors');
+import SectorsView from 'style_manager/view/SectorsView';
+import Sectors from 'style_manager/model/Sectors';
 
 module.exports = {
   run() {

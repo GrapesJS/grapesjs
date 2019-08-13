@@ -3,6 +3,7 @@ import { shallowDiff } from 'utils/mixins';
 import ParserHtml from 'parser/model/ParserHtml';
 
 const parseStyle = ParserHtml().parseStyle;
+
 export default {
   parseStyle,
 

@@ -1,5 +1,5 @@
-const Selectors = require('selector_manager/model/Selectors');
-const ClassTagsView = require('selector_manager/view/ClassTagsView');
+import Selectors from 'selector_manager/model/Selectors';
+import ClassTagsView from 'selector_manager/view/ClassTagsView';
 
 module.exports = {
   run() {

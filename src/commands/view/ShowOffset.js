@@ -2,7 +2,7 @@ import Backbone from 'backbone';
 import { isTextNode } from 'utils/mixins';
 const $ = Backbone.$;
 
-module.exports = {
+export default {
   getOffsetMethod(state) {
     var method = state || '';
     return 'get' + method + 'OffsetViewerEl';

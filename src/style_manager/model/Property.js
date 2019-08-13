@@ -1,7 +1,8 @@
+import Backbone from 'backbone';
 import { isUndefined, isString } from 'underscore';
 import { capitalize } from 'utils/mixins';
 
-const Property = require('backbone').Model.extend(
+const Property = Backbone.Model.extend(
   {
     defaults: {
       name: '',
@@ -190,4 +191,4 @@ const Property = require('backbone').Model.extend(
   }
 );
 
-module.exports = Property;
+export default Property;

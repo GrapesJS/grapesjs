@@ -1,6 +1,6 @@
 import { each } from 'underscore';
 
-module.exports = {
+export default {
   getPanels(editor) {
     if (!this.panels) {
       this.panels = editor.Panels.getPanelsEl();
@@ -28,7 +28,7 @@ module.exports = {
       const helper = document.createElement('span');
       helper.className = `${pfx}off-prv fa fa-eye-slash`;
       editorEl.appendChild(helper);
-      helper.onclick = () => editor.stopCommand('preview');
+      helper.onclick = () => this.stopCommand();
       this.helper = helper;
     }
 

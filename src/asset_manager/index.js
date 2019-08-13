@@ -30,12 +30,13 @@
  * @module AssetManager
  */
 
-module.exports = () => {
+import defaults from './config/config';
+import Assets from './model/Assets';
+import AssetsView from './view/AssetsView';
+import FileUpload from './view/FileUploader';
+
+export default () => {
   let c = {};
-  const defaults = require('./config/config');
-  const Assets = require('./model/Assets');
-  const AssetsView = require('./view/AssetsView');
-  const FileUpload = require('./view/FileUploader');
   let assets, am, fu;
 
   return {

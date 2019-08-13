@@ -31,7 +31,7 @@ import { isFunction, includes } from 'underscore';
 import CommandAbstract from './view/CommandAbstract';
 import defaults from './config/config';
 
-module.exports = () => {
+export default () => {
   let em;
   let c = {};
   const commands = {};
@@ -118,16 +118,20 @@ module.exports = () => {
       };
 
       defaultCommands['tlb-move'] = {
-        run(ed, sender, opts) {
+        run(ed, sender, opts = {}) {
           let dragger;
           const em = ed.getModel();
           const event = opts && opts.event;
-          const sel = ed.getSelected();
-          const selAll = [...ed.getSelectedAll()];
+          const { target } = opts;
+          const sel = target || ed.getSelected();
+          const selAll = target ? [target] : [...ed.getSelectedAll()];
           const nativeDrag = event && event.type == 'dragstart';
           const defComOptions = { preserveSelected: 1 };
           const modes = ['absolute', 'translate'];
           const hideTlb = () => em.stopDefault(defComOptions);
+
+          // Dirty patch to prevent parent selection on drop (in absolute mode)
+          em.set('_cmpDrag', 1);
 
           if (!sel || !sel.get('draggable')) {
             console.warn('The element is not draggable');
@@ -137,7 +141,7 @@ module.exports = () => {
           const mode = sel.get('dmode') || em.get('dmode');
 
           // Without setTimeout the ghost image disappears
-          nativeDrag ? setTimeout(() => hideTlb, 0) : hideTlb();
+          nativeDrag ? setTimeout(hideTlb, 0) : hideTlb();
 
           const onEnd = (e, opts) => {
             em.runDefault(defComOptions);
@@ -175,7 +179,7 @@ module.exports = () => {
       defaultCommands['core:redo'] = e => e.UndoManager.redo();
       commandsDef.forEach(item => {
         const oldCmd = item[2];
-        const cmd = require(`./view/${item[1]}`);
+        const cmd = require(`./view/${item[1]}`).default;
         const cmdName = `core:${item[0]}`;
         defaultCommands[cmdName] = cmd;
         if (oldCmd) {

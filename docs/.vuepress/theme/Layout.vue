@@ -8,7 +8,7 @@
 var Layout = require('@default-theme/Layout.vue').default;
 var CarbonAds = require('./CarbonAds.vue').default;
 
-module.exports = {
+export default {
   components: {
     Layout,
     CarbonAds,

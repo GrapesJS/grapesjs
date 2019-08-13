@@ -7,7 +7,7 @@ var obl = 'open-blocks';
 var ful = 'fullscreen';
 var prv = 'preview';
 
-module.exports = {
+export default {
   stylePrefix: 'pn-',
 
   // Default panels fa-sliders for features

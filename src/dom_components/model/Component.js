@@ -6,20 +6,19 @@ import {
   isEmpty,
   isBoolean,
   has,
-  clone,
   isString,
   forEach,
   result,
   keys
 } from 'underscore';
-import { shallowDiff, hasDnd } from 'utils/mixins';
+import { shallowDiff } from 'utils/mixins';
 import Styleable from 'domain_abstract/model/Styleable';
+import Backbone from 'backbone';
+import Components from './Components';
+import Selector from 'selector_manager/model/Selector';
+import Selectors from 'selector_manager/model/Selectors';
+import Traits from 'trait_manager/model/Traits';
 
-const Backbone = require('backbone');
-const Components = require('./Components');
-const Selector = require('selector_manager/model/Selector');
-const Selectors = require('selector_manager/model/Selectors');
-const Traits = require('trait_manager/model/Traits');
 const componentList = {};
 let componentIndex = 0;
 
@@ -74,6 +73,8 @@ const avoidInline = em => em && em.getConfig('avoidInlineStyle');
  * @property {String} [content=''] Content of the component (not escaped) which will be appended before children rendering. Default: `''`
  * @property {String} [icon=''] Component's icon, this string will be inserted before the name (in Layers and badge), eg. it can be an HTML string '<i class="fa fa-square-o"></i>'. Default: `''`
  * @property {String|Function} [script=''] Component's javascript. More about it [here](/modules/Components-js.html). Default: `''`
+ * @property {String|Function} [script-export=''] You can specify javascript available only in export functions (eg. when you get the HTML).
+ * If this property is defined it will overwrite the `script` one (in export functions). Default: `''`
  * @property {Array<Object|String>} [traits=''] Component's traits. More about it [here](/modules/Traits.html). Default: `['id', 'title']`
  * @property {Array<String>} [propagate=[]] Indicates an array of properties which will be inhereted by all NEW appended children.
  *  For example if you create a component likes this: `{ removable: false, draggable: false, propagate: ['removable', 'draggable'] }`
@@ -112,6 +113,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
       style: '', // Component related style
       classes: '', // Array of classes
       script: '',
+      'script-export': '',
       attributes: '',
       traits: ['id', 'title'],
       propagate: '',
@@ -211,12 +213,30 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     /**
+     * Return all the propeties
+     * @returns {Object}
+     */
+    props() {
+      return this.attributes;
+    },
+
+    /**
      * Get the index of the component in the parent collection.
      * @return {Number}
      */
     index() {
       const { collection } = this;
       return collection && collection.indexOf(this);
+    },
+
+    /**
+     * Change the drag mode of the component.
+     * To get more about this feature read: https://github.com/artf/grapesjs/issues/1936
+     * @param {String} value Drag mode, options: 'absolute' | 'translate'
+     * @returns {this}
+     */
+    setDragMode(value) {
+      return this.set('dmode', value);
     },
 
     /**
@@ -671,6 +691,7 @@ const Component = Backbone.Model.extend(Styleable).extend(
      */
     loadTraits(traits, opts = {}) {
       traits = traits || this.get('traits');
+      traits = isFunction(traits) ? traits(this) : traits;
 
       if (!(traits instanceof Traits)) {
         const trt = new Traits([], this.opt);
@@ -1220,4 +1241,4 @@ const Component = Backbone.Model.extend(Styleable).extend(
   }
 );
 
-module.exports = Component;
+export default Component;

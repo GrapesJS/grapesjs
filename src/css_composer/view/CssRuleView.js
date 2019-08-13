@@ -1,4 +1,6 @@
-module.exports = require('backbone').View.extend({
+import Backbone from 'backbone';
+
+export default Backbone.View.extend({
   tagName: 'style',
 
   initialize(o = {}) {

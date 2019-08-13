@@ -23,9 +23,10 @@
 </template>
 
 <script>
-module.exports = {
+import utils from './demos/utils.js';
+
+export default {
   mounted() {
-    const utils = require('./demos/utils.js');
     const editor6 = grapesjs.init(utils.gjsConfigTraits);
     editor6.Panels.addPanel(Object.assign({}, utils.panelTop, {
       el: '#panel__top6'

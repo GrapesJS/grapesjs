@@ -4,7 +4,7 @@ import BrowserCssParser, {
   createNode
 } from './BrowserParserCss';
 
-module.exports = (config = {}) => ({
+export default (config = {}) => ({
   /**
    * Parse CSS string to a desired model object
    * @param  {String} str CSS string

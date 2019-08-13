@@ -32,12 +32,12 @@
  * @module StorageManager
  */
 
-module.exports = () => {
-  var c = {},
-    defaults = require('./config/config'),
-    LocalStorage = require('./model/LocalStorage'),
-    RemoteStorage = require('./model/RemoteStorage');
+import defaults from './config/config';
+import LocalStorage from './model/LocalStorage';
+import RemoteStorage from './model/RemoteStorage';
 
+export default () => {
+  var c = {};
   let em;
   var storages = {};
   var defaultStorages = {};

@@ -1,10 +1,12 @@
-import { isString, isObject } from 'underscore';
-const TraitView = require('./TraitView');
+import { isString } from 'underscore';
+import TraitView from './TraitView';
 
-module.exports = TraitView.extend({
+export default TraitView.extend({
   events: {
     'click button': 'handleClick'
   },
+
+  templateInput: '',
 
   handleClick() {
     const { model, em } = this;
@@ -26,25 +28,13 @@ module.exports = TraitView.extend({
   },
 
   getInputEl() {
-    if (!this.input) {
-      const { model, ppfx } = this;
-      const value = this.getModelValue();
-      const label = model.get('labelButton') || '';
-      const full = model.get('full');
-      const className = `${ppfx}btn`;
-      const input = `<button type="button" class="${className}-prim${
-        full ? ` ${className}--full` : ''
-      }">
-        ${label}</button>`;
-      this.input = input;
-    }
-
-    return this.input;
-  },
-
-  renderField() {
-    if (!this.$input) {
-      this.$el.append(this.getInputEl());
-    }
+    const { model, ppfx } = this;
+    const { labelButton, text, full } = model.props();
+    const label = labelButton || text;
+    const className = `${ppfx}btn`;
+    const input = `<button type="button" class="${className}-prim${
+      full ? ` ${className}--full` : ''
+    }">${label}</button>`;
+    return input;
   }
 });

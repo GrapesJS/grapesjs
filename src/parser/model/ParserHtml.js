@@ -1,10 +1,56 @@
-module.exports = config => {
+import { each, isString } from 'underscore';
+
+export default config => {
   var TEXT_NODE = 'span';
   var c = config;
   var modelAttrStart = 'data-gjs-';
 
   return {
     compTypes: '',
+
+    modelAttrStart,
+
+    /**
+     * Extract component props from an attribute object
+     * @param {Object} attr
+     * @returns {Object} An object containing props and attributes without them
+     */
+    splitPropsFromAttr(attr = {}) {
+      const props = {};
+      const attrs = {};
+
+      each(attr, (value, key) => {
+        if (key.indexOf(this.modelAttrStart) === 0) {
+          const modelAttr = key.replace(modelAttrStart, '');
+          const valueLen = value.length;
+          const valStr = value && isString(value);
+          const firstChar = valStr && value.substr(0, 1);
+          const lastChar = valStr && value.substr(valueLen - 1);
+          value = value === 'true' ? true : value;
+          value = value === 'false' ? false : value;
+
+          // Try to parse JSON where it's possible
+          // I can get false positive here (eg. a selector '[data-attr]')
+          // so put it under try/catch and let fail silently
+          try {
+            value =
+              (firstChar == '{' && lastChar == '}') ||
+              (firstChar == '[' && lastChar == ']')
+                ? JSON.parse(value)
+                : value;
+          } catch (e) {}
+
+          props[modelAttr] = value;
+        } else {
+          attrs[key] = value;
+        }
+      });
+
+      return {
+        props,
+        attrs
+      };
+    },
 
     /**
      * Parse style string to object

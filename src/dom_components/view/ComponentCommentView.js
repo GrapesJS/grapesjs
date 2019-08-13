@@ -1,6 +1,6 @@
-const ComponentView = require('./ComponentTextNodeView');
+import ComponentView from './ComponentTextNodeView';
 
-module.exports = ComponentView.extend({
+export default ComponentView.extend({
   _createElement() {
     return document.createComment(this.model.get('content'));
   }

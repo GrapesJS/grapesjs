@@ -1,6 +1,6 @@
-const ParserHtml = require('parser/model/ParserHtml');
-const ParserCss = require('parser/model/ParserCss');
-const DomComponents = require('dom_components');
+import ParserHtml from 'parser/model/ParserHtml';
+import ParserCss from 'parser/model/ParserCss';
+import DomComponents from 'dom_components';
 
 module.exports = {
   run() {

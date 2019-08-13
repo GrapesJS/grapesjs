@@ -8,9 +8,10 @@
 </template>
 
 <script>
-module.exports = {
+import utils from './demos/utils.js';
+
+export default {
   mounted() {
-    const utils = require('./demos/utils.js');
     window.editor2 = grapesjs.init(utils.gjsConfigBlocks);
   }
 }

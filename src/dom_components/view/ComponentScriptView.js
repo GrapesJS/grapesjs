@@ -1,7 +1,7 @@
-var Backbone = require('backbone');
-var ComponentView = require('./ComponentImageView');
+import Backbone from 'backbone';
+import ComponentView from './ComponentImageView';
 
-module.exports = ComponentView.extend({
+export default ComponentView.extend({
   tagName: 'script',
 
   events: {},

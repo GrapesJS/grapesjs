@@ -1,6 +1,7 @@
 import Backbone from 'backbone';
+import Properties from './Properties';
 
-module.exports = Backbone.Model.extend({
+export default Backbone.Model.extend({
   defaults: {
     index: '',
     value: '',
@@ -11,7 +12,6 @@ module.exports = Backbone.Model.extend({
   },
 
   initialize() {
-    const Properties = require('./Properties');
     const properties = this.get('properties');
     var value = this.get('value');
     this.set(

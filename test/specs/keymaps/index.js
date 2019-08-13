@@ -1,5 +1,5 @@
 import Editor from 'editor/index';
-const Keymaps = require('keymaps');
+import Keymaps from 'keymaps';
 
 describe('Keymaps', () => {
   describe('Main', () => {

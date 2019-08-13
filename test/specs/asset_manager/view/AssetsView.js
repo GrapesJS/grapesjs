@@ -1,6 +1,6 @@
-var AssetsView = require('asset_manager/view/AssetsView');
-var FileUploader = require('asset_manager/view/FileUploader');
-var Assets = require('asset_manager/model/Assets');
+import AssetsView from 'asset_manager/view/AssetsView';
+import FileUploader from 'asset_manager/view/FileUploader';
+import Assets from 'asset_manager/model/Assets';
 
 module.exports = {
   run() {

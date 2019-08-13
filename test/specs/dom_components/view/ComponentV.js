@@ -1,7 +1,7 @@
-const ComponentView = require('dom_components/view/ComponentView');
-const Component = require('dom_components/model/Component');
-const DomComponents = require('dom_components');
-const Editor = require('editor/model/Editor');
+import ComponentView from 'dom_components/view/ComponentView';
+import Component from 'dom_components/model/Component';
+import DomComponents from 'dom_components';
+import Editor from 'editor/model/Editor';
 
 module.exports = {
   run() {

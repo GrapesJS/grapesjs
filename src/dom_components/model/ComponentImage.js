@@ -1,9 +1,10 @@
 import { result } from 'underscore';
-const Component = require('./Component');
+import Component from './Component';
+
 const svgAttrs =
   'xmlns="http://www.w3.org/2000/svg" width="100" viewBox="0 0 24 24" style="fill: rgba(0,0,0,0.15); transform: scale(0.75)"';
 
-module.exports = Component.extend(
+export default Component.extend(
   {
     defaults: {
       ...Component.prototype.defaults,

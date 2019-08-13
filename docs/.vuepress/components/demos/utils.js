@@ -1,3 +1,21 @@
+export const loadScript = url => new Promise((resolve, reject) => {
+  const script = document.createElement('script');
+  script.onload = resolve;
+  script.onerror = reject;
+  script.src = url;
+  document.head.appendChild(script);
+});
+
+export const loadStyle = url => new Promise((resolve) => {
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.type = 'text/css';
+  link.href = url;
+  document.head.appendChild(link);
+  resolve();
+});
+
+
 // Don't know yet why but can't use ES6
 
 var blockManager = {
@@ -353,7 +371,7 @@ var gjsConfigTheme = Object.assign({}, gjsConfigBlocks, {
   deviceManager,
 });
 
-module.exports = {
+export default {
   gjsConfigStart,
   gjsConfigBlocks,
   gjsConfigPanels,

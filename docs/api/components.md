@@ -175,6 +175,17 @@ Read more about this in [Define New Component][17]
 
 Returns **[Object][12]** Component type defintion, eg. `{ model: ..., view: ... }`
 
+## removeType
+
+Remove component type
+
+### Parameters
+
+-   `id`  
+-   `type` **[string][15]** Component ID
+
+Returns **([Object][12] \| [undefined][18])** Removed component type, undefined otherwise
+
 ## getTypes
 
 Return the array of all types
@@ -214,3 +225,5 @@ Returns **[Array][14]**
 [16]: https://developer.mozilla.org/docs/Web/HTML/Element
 
 [17]: https://grapesjs.com/docs/modules/Components.html#define-new-component
+
+[18]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined

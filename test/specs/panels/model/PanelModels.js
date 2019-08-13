@@ -1,7 +1,6 @@
-const Panels = require('panels');
-const Button = require('panels/model/Button');
-const Buttons = require('panels/model/Buttons');
-const Panel = require('panels/model/Panel');
+import Button from 'panels/model/Button';
+import Buttons from 'panels/model/Buttons';
+import Panel from 'panels/model/Panel';
 
 module.exports = {
   run() {

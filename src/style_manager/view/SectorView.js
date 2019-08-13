@@ -1,9 +1,9 @@
-import _ from 'underscore';
 import Backbone from 'backbone';
-var PropertiesView = require('./PropertiesView');
+import { template } from 'underscore';
+import PropertiesView from './PropertiesView';
 
-module.exports = Backbone.View.extend({
-  template: _.template(`
+export default Backbone.View.extend({
+  template: template(`
   <div class="<%= pfx %>title" data-sector-title>
     <i id="<%= pfx %>caret" class="fa"></i>
     <%= label %>

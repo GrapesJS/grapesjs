@@ -18,17 +18,16 @@
  * @module CodeManager
  */
 import { isUndefined } from 'underscore';
+import defaults from './config/config';
+import gHtml from './model/HtmlGenerator';
+import gCss from './model/CssGenerator';
+import gJson from './model/JsonGenerator';
+import gJs from './model/JsGenerator';
+import eCM from './model/CodeMirrorEditor';
+import editorView from './view/EditorView';
 
-module.exports = () => {
-  var c = {},
-    defaults = require('./config/config'),
-    gHtml = require('./model/HtmlGenerator'),
-    gCss = require('./model/CssGenerator'),
-    gJson = require('./model/JsonGenerator'),
-    gJs = require('./model/JsGenerator'),
-    eCM = require('./model/CodeMirrorEditor'),
-    editorView = require('./view/EditorView');
-
+export default () => {
+  var c = {};
   var generators = {},
     defGenerators = {},
     viewers = {},

@@ -1,11 +1,6 @@
-import {
-  isUndefined,
-  defaults,
-  isArray,
-  contains,
-  toArray,
-  keys
-} from 'underscore';
+import { isUndefined, isArray, contains, toArray, keys } from 'underscore';
+import Backbone from 'backbone';
+import Extender from 'utils/extender';
 import { getModel } from 'utils/mixins';
 
 const deps = [
@@ -31,12 +26,11 @@ const deps = [
   require('block_manager')
 ];
 
-const Backbone = require('backbone');
 const { Collection } = Backbone;
 let timedInterval;
 let updateItr;
 
-require('utils/extender')({
+Extender({
   Backbone: Backbone,
   $: Backbone.$
 });
@@ -49,7 +43,7 @@ const logs = {
   error: console.error
 };
 
-module.exports = Backbone.Model.extend({
+export default Backbone.Model.extend({
   defaults() {
     return {
       editing: 0,
@@ -73,6 +67,7 @@ module.exports = Backbone.Model.extend({
     this.set('modules', []);
     this.set('toLoad', []);
     this.set('storables', []);
+    this.set('dmode', c.dragMode);
     const el = c.el;
     const log = c.log;
     const toLog = log === true ? keys(logs) : isArray(log) ? log : [];
@@ -104,6 +99,10 @@ module.exports = Backbone.Model.extend({
         });
       }
     );
+  },
+
+  getContainer() {
+    return this.config.el;
   },
 
   listenLog(event) {
@@ -177,7 +176,8 @@ module.exports = Backbone.Model.extend({
    */
   loadModule(moduleName) {
     const { config } = this;
-    const Mod = new moduleName();
+    const Module = moduleName.default || moduleName;
+    const Mod = new Module();
     const name = Mod.name.charAt(0).toLowerCase() + Mod.name.slice(1);
     const cfgParent = !isUndefined(config[name])
       ? config[name]
@@ -623,6 +623,10 @@ module.exports = Backbone.Model.extend({
 
   getZoomDecimal() {
     return this.get('Canvas').getZoomDecimal();
+  },
+
+  setDragMode(value) {
+    return this.set('dmode', value);
   },
 
   /**

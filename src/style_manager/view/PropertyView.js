@@ -5,7 +5,7 @@ import { includes, each } from 'underscore';
 
 const clearProp = 'data-clear-style';
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   template(model) {
     const pfx = this.pfx;
     return `

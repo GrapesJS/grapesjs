@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   // Prefix identifier that will be used inside storing and loading
   id: 'gjs-',
 

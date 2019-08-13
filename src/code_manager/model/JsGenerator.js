@@ -1,10 +1,10 @@
 import { extend } from 'underscore';
 import Backbone from 'backbone';
 
-module.exports = Backbone.Model.extend({
+export default Backbone.Model.extend({
   mapModel(model) {
     var code = '';
-    var script = model.get('script');
+    var script = model.get('script-export') || model.get('script');
     var type = model.get('type');
     var comps = model.get('components');
     var id = model.getId();
@@ -14,7 +14,7 @@ module.exports = Backbone.Model.extend({
       var attr = model.get('attributes');
       attr = extend({}, attr, { id });
       model.set('attributes', attr, { silent: 1 });
-      var scrStr = model.getScriptString();
+      var scrStr = model.getScriptString(script);
 
       // If the script was updated, I'll put its code in a separate container
       if (model.get('scriptUpdated')) {

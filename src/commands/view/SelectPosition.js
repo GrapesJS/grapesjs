@@ -1,7 +1,7 @@
 import Backbone from 'backbone';
 const $ = Backbone.$;
 
-module.exports = {
+export default {
   /**
    * Start select position event
    * @param {HTMLElement} trg

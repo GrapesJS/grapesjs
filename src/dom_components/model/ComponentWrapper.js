@@ -1,5 +1,7 @@
 // We need this one just to identify better the wrapper type
-module.exports = require('./Component').extend(
+import Component from './Component';
+
+export default Component.extend(
   {},
   {
     isComponent() {

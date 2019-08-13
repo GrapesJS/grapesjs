@@ -1,6 +1,6 @@
-const ComponentView = require('./ComponentTextView');
+import ComponentView from './ComponentTextView';
 
-module.exports = ComponentView.extend({
+export default ComponentView.extend({
   render(...args) {
     ComponentView.prototype.render.apply(this, args);
 

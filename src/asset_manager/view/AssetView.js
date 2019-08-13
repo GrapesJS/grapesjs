@@ -1,6 +1,7 @@
 import Backbone from 'backbone';
+import { clone } from 'underscore';
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   initialize(o = {}) {
     this.options = o;
     this.collection = o.collection;
@@ -38,7 +39,7 @@ module.exports = Backbone.View.extend({
    * */
   updateTarget(target) {
     if (target && target.set) {
-      target.set('attributes', _.clone(target.get('attributes')));
+      target.set('attributes', clone(target.get('attributes')));
       target.set('src', this.model.get('src'));
     }
   },

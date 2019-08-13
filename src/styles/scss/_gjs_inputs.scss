@@ -81,6 +81,7 @@
 }
 
 .#{$app-prefix}select option,
+.#{$app-prefix}field-select option,
 .#{$clm-prefix}select option,
 .#{$sm-prefix}select option,
 .#{$app-prefix}fields option,
@@ -190,8 +191,10 @@
 /* ??? */
 .#{$app-prefix}field-checkbox {
   padding: 0;
-  width: auto !important;
+  width: 17px;
   height: 17px;
+  display: block;
+  cursor: pointer;
 
   input {
     display: none;
@@ -347,7 +350,6 @@
   height: 14px;
   margin: 0 5px;
   width: 6px;
-  cursor: pointer;
 }
 
 .#{$app-prefix}add-trasp {

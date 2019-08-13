@@ -27,11 +27,12 @@
  * @module Modal
  */
 
-module.exports = () => {
-  var c = {},
-    defaults = require('./config/config'),
-    ModalM = require('./model/Modal'),
-    ModalView = require('./view/ModalView');
+import defaults from './config/config';
+import ModalM from './model/Modal';
+import ModalView from './view/ModalView';
+
+export default () => {
+  var c = {};
   var model, modal;
 
   const triggerEvent = (enable, em) => {

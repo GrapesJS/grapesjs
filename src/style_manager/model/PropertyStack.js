@@ -1,7 +1,7 @@
-const Property = require('./PropertyComposite');
-const Layers = require('./Layers');
+import Property from './PropertyComposite';
+import Layers from './Layers';
 
-module.exports = Property.extend({
+export default Property.extend({
   defaults: {
     ...Property.prototype.defaults,
     // Array of layers (which contain properties)

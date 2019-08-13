@@ -1,10 +1,11 @@
-const Component = require('./ComponentImage');
-const OComponent = require('./Component');
+import Component from './ComponentImage';
+import OComponent from './Component';
+
 const yt = 'yt';
 const vi = 'vi';
 const ytnc = 'ytnc';
 
-module.exports = Component.extend(
+export default Component.extend(
   {
     defaults: {
       ...Component.prototype.defaults,

@@ -1,8 +1,9 @@
+import Backbone from 'backbone';
 import { isUndefined, each } from 'underscore';
 
 const maxValue = Number.MAX_VALUE;
 
-module.exports = require('backbone').Model.extend({
+export default Backbone.Model.extend({
   initialize() {
     this.compCls = [];
     this.ids = [];

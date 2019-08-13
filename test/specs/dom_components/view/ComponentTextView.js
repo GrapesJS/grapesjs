@@ -1,5 +1,5 @@
-const ComponentTextView = require('dom_components/view/ComponentTextView');
-const Component = require('dom_components/model/Component');
+import ComponentTextView from 'dom_components/view/ComponentTextView';
+import Component from 'dom_components/model/Component';
 
 module.exports = {
   run() {

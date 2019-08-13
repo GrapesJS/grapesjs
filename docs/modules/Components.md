@@ -40,7 +40,7 @@ When we pass an HTML string to the editor like this:
 
 For each DOM element (`div`, `img`, `span`, etc.) the editor will create and store an object representation. Every future change to the template will be made on top of this structure, which will then reflect on the canvas. So each object, usually called *Model* (or state/store), will be the source of truth for the template, but what exactly does that mean?
 
-In more practical example, once the template is rendered on the canvas, if you try to remove one of its elements (eg. by using using the browser inspector) and ask the editor to print the HTML (using `editor.getHtml()`) you'll see that the element will still be there. This is because the editor relies on Models and not on the DOM elements inside the canvas. This approach allows us to be extremely flexible on how we generate the final code (from the *Model*) and how to render it inside the canvas (from the *View*).
+In more practical example, once the template is rendered on the canvas, if you try to remove one of its elements (eg. by using the browser inspector) and ask the editor to print the HTML (using `editor.getHtml()`) you'll see that the element will still be there. This is because the editor relies on Models and not on the DOM elements inside the canvas. This approach allows us to be extremely flexible on how we generate the final code (from the *Model*) and how to render it inside the canvas (from the *View*).
 
 
 

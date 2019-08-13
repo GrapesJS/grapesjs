@@ -1,5 +1,5 @@
-var CssRuleView = require('css_composer/view/CssRuleView');
-var CssRule = require('css_composer/model/CssRule');
+import CssRuleView from 'css_composer/view/CssRuleView';
+import CssRule from 'css_composer/model/CssRule';
 
 module.exports = {
   run() {

@@ -3,6 +3,7 @@ const pkg = require('./package.json');
 const webpack = require('webpack');
 const path = require('path');
 const fs = require('fs');
+const rootDir = path.resolve(__dirname);
 let plugins = [];
 
 module.exports = env => {
@@ -12,6 +13,7 @@ module.exports = env => {
     path: path.join(__dirname),
     filename: 'dist/grapes.min.js',
     library: name,
+    libraryExport: 'default',
     libraryTarget: 'umd',
   };
 
@@ -28,11 +30,6 @@ module.exports = env => {
     const template = fs.existsSync(indexDev) ? indexDev : index;
     plugins.push(new HtmlWebpackPlugin({ template, inject: false }));
   }
-
-  plugins.push(new webpack.ProvidePlugin({
-    _: 'underscore',
-    Backbone: 'backbone'
-  }));
 
   return {
     entry: './src',
@@ -52,16 +49,19 @@ module.exports = env => {
           search: '<# VERSION #>',
           replace: pkg.version
         }
-      },{
+      }, {
         test: /\.js$/,
         loader: 'babel-loader',
-        include: /src/
+        include: /src/,
+        options: { cacheDirectory: true },
       }],
     },
     resolve: {
       modules: ['src', 'node_modules'],
       alias: {
-        jquery: 'cash-dom'
+        jquery: 'cash-dom',
+        backbone: `${rootDir}/node_modules/backbone`,
+        underscore: `${rootDir}/node_modules/underscore`,
       }
     }
   };

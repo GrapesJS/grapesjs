@@ -1,14 +1,14 @@
 import Backbone from 'backbone';
-const DomComponents = require('dom_components');
-const Component = require('dom_components/model/Component');
-const ComponentImage = require('dom_components/model/ComponentImage');
-const ComponentText = require('dom_components/model/ComponentText');
-const ComponentLink = require('dom_components/model/ComponentLink');
-const ComponentMap = require('dom_components/model/ComponentMap');
-const ComponentVideo = require('dom_components/model/ComponentVideo');
-const Components = require('dom_components/model/Components');
-const Selector = require('selector_manager/model/Selector');
-const Editor = require('editor/model/Editor');
+import DomComponents from 'dom_components';
+import Component from 'dom_components/model/Component';
+import ComponentImage from 'dom_components/model/ComponentImage';
+import ComponentText from 'dom_components/model/ComponentText';
+import ComponentLink from 'dom_components/model/ComponentLink';
+import ComponentMap from 'dom_components/model/ComponentMap';
+import ComponentVideo from 'dom_components/model/ComponentVideo';
+import Components from 'dom_components/model/Components';
+import Selector from 'selector_manager/model/Selector';
+import Editor from 'editor/model/Editor';
 const $ = Backbone.$;
 
 module.exports = {

@@ -1,14 +1,6 @@
 import Backbone from 'backbone';
-const PropertyView = require('./PropertyView');
-const PropertyIntegerView = require('./PropertyIntegerView');
-const PropertyRadioView = require('./PropertyRadioView');
-const PropertySelectView = require('./PropertySelectView');
-const PropertyColorView = require('./PropertyColorView');
-const PropertyFileView = require('./PropertyFileView');
-const PropertyCompositeView = require('./PropertyCompositeView');
-const PropertyStackView = require('./PropertyStackView');
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   initialize(o) {
     this.config = o.config || {};
     this.pfx = this.config.stylePrefix || '';

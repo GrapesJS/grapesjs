@@ -1,7 +1,8 @@
-const Backbone = require('backbone');
+import Backbone from 'backbone';
+
 const $ = Backbone.$;
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   events: {
     change: 'handleChange'
   },
@@ -67,7 +68,8 @@ module.exports = Backbone.View.extend({
    */
   getInputEl() {
     if (!this.inputEl) {
-      const plh = this.model.get('defaults') || '';
+      const { model } = this;
+      const plh = model.get('placeholder') || model.get('defaults') || '';
       this.inputEl = $(`<input type="text" placeholder="${plh}">`);
     }
 

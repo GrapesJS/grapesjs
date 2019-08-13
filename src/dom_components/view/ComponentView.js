@@ -1,11 +1,10 @@
 import Backbone from 'backbone';
 import { isArray, isEmpty, each, keys } from 'underscore';
+import Components from '../model/Components';
+import ComponentsView from './ComponentsView';
+import Selectors from 'selector_manager/model/Selectors';
 
-const Components = require('../model/Components');
-const ComponentsView = require('./ComponentsView');
-const Selectors = require('selector_manager/model/Selectors');
-
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   className() {
     return this.getClasses();
   },
@@ -19,6 +18,8 @@ module.exports = Backbone.View.extend({
     const config = opt.config || {};
     const em = config.em;
     const modelOpt = model.opt || {};
+    const { $el } = this;
+    const { draggableComponents } = config;
     this.opts = opt;
     this.modelOpt = modelOpt;
     this.config = config;
@@ -27,13 +28,12 @@ module.exports = Backbone.View.extend({
     this.ppfx = config.pStylePrefix || '';
     this.attr = model.get('attributes');
     this.classe = this.attr.class || [];
-    const $el = this.$el;
     this.listenTo(model, 'change:style', this.updateStyle);
     this.listenTo(model, 'change:attributes', this.renderAttributes);
     this.listenTo(model, 'change:highlightable', this.updateHighlight);
     this.listenTo(model, 'change:status', this.updateStatus);
     this.listenTo(model, 'change:state', this.updateState);
-    this.listenTo(model, 'change:script', this.render);
+    this.listenTo(model, 'change:script', this.reset);
     this.listenTo(model, 'change:content', this.updateContent);
     this.listenTo(model, 'change', this.handleChange);
     this.listenTo(model, 'active', this.onActive);
@@ -41,6 +41,11 @@ module.exports = Backbone.View.extend({
     model.view = this;
     this.initClasses();
     this.initComponents({ avoidRender: 1 });
+    this.events = {
+      ...this.events,
+      ...(draggableComponents && { dragstart: 'handleDragStart' })
+    };
+    this.delegateEvents();
     !modelOpt.temporary && this.init();
   },
 
@@ -53,6 +58,15 @@ module.exports = Backbone.View.extend({
    * Callback executed when the `active` event is triggered on component
    */
   onActive() {},
+
+  handleDragStart(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.em.get('Commands').run('tlb-move', {
+      target: this.model,
+      event
+    });
+  },
 
   initClasses() {
     const { model } = this;
@@ -235,11 +249,15 @@ module.exports = Backbone.View.extend({
    * */
   updateAttributes() {
     const attrs = [];
-    const { model, $el, el } = this;
+    const { model, $el, el, config } = this;
+    const { highlightable, textable, type } = model.attributes;
+    const { draggableComponents } = config;
+
     const defaultAttr = {
-      'data-gjs-type': model.get('type') || 'default',
-      ...(model.get('highlightable') && { 'data-highlightable': 1 }),
-      ...(model.get('textable') && {
+      'data-gjs-type': type || 'default',
+      ...(draggableComponents && { draggable: true }),
+      ...(highlightable && { 'data-highlightable': 1 }),
+      ...(textable && {
         contenteditable: 'false',
         'data-gjs-textable': 'true'
       })
@@ -325,6 +343,19 @@ module.exports = Backbone.View.extend({
     }
 
     return container;
+  },
+
+  /**
+   * Recreate the element of the view
+   */
+  reset() {
+    const { el, model } = this;
+    const collection = model.components();
+    this.el = '';
+    this._ensureElement();
+    this.$el.data({ model, collection });
+    el.replaceWith(this.el);
+    this.render();
   },
 
   /**

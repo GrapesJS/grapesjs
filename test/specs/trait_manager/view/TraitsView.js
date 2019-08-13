@@ -1,6 +1,6 @@
-const Trait = require('trait_manager/model/Trait');
-const TraitView = require('trait_manager/view/TraitView');
-const Component = require('dom_components/model/Component');
+import Trait from 'trait_manager/model/Trait';
+import TraitView from 'trait_manager/view/TraitView';
+import Component from 'dom_components/model/Component';
 
 module.exports = {
   run() {

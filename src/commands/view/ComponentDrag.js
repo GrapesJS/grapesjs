@@ -1,7 +1,7 @@
 import { keys, bindAll, each, isUndefined } from 'underscore';
 import Dragger from 'utils/Dragger';
 
-module.exports = {
+export default {
   run(editor, sender, opts = {}) {
     bindAll(
       this,
@@ -15,11 +15,8 @@ module.exports = {
       'getGuidesTarget'
     );
     const { target, event, mode, dragger = {} } = opts;
-    const { Canvas } = editor;
     const el = target.getEl();
-    const scale = Canvas.getZoomMultiplier();
     const config = {
-      scale,
       doc: el.ownerDocument,
       onStart: this.onStart,
       onEnd: this.onEnd,
@@ -416,12 +413,13 @@ module.exports = {
     });
   },
 
-  toggleDrag(on) {
+  toggleDrag(enable) {
     const { ppfx, editor } = this;
-    const methodCls = on ? 'add' : 'remove';
-    const canvas = this.getCanvas();
+    const methodCls = enable ? 'add' : 'remove';
     const classes = [`${ppfx}is__grabbing`];
-    classes.forEach(cls => canvas.classList[methodCls](cls));
-    editor.Canvas[on ? 'startAutoscroll' : 'stopAutoscroll']();
+    const { Canvas } = editor;
+    const body = Canvas.getBody();
+    classes.forEach(cls => body.classList[methodCls](cls));
+    Canvas[enable ? 'startAutoscroll' : 'stopAutoscroll']();
   }
 };

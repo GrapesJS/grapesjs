@@ -1,5 +1,5 @@
-const LayerView = require('style_manager/view/LayerView');
-const Layers = require('style_manager/model/Layers');
+import LayerView from 'style_manager/view/LayerView';
+import Layers from 'style_manager/model/Layers';
 
 module.exports = {
   run() {

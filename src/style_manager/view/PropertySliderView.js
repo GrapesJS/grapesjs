@@ -1,6 +1,6 @@
-const Property = require('./PropertyIntegerView');
+import Property from './PropertyIntegerView';
 
-module.exports = Property.extend({
+export default Property.extend({
   events() {
     return {
       ...Property.prototype.events,

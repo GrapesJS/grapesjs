@@ -1,10 +1,11 @@
+import Backbone from 'backbone';
 import { bindAll } from 'underscore';
 import { appendVNodes, empty } from 'utils/dom';
 
 const motionsEv =
   'transitionend oTransitionEnd transitionend webkitTransitionEnd';
 
-module.exports = require('backbone').View.extend({
+export default Backbone.View.extend({
   tagName: 'iframe',
 
   attributes: {
@@ -12,7 +13,7 @@ module.exports = require('backbone').View.extend({
   },
 
   initialize(o) {
-    bindAll(this, 'udpateOffset');
+    bindAll(this, 'updateOffset');
     this.config = o.config || {};
     this.ppfx = this.config.pStylePrefix || '';
     this.em = this.config.em;
@@ -44,19 +45,19 @@ module.exports = require('backbone').View.extend({
     const noChanges = currW == newW && currH == newH;
     style.width = newW;
     style.height = newH;
-    this.udpateOffset();
+    this.updateOffset();
     // Prevent fixed highlighting box which appears when on
     // component hover during the animation
     em.stopDefault({ preserveSelected: 1 });
-    noChanges ? this.udpateOffset() : $el.on(motionsEv, this.udpateOffset);
+    noChanges ? this.updateOffset() : $el.on(motionsEv, this.updateOffset);
   },
 
-  udpateOffset() {
+  updateOffset() {
     const em = this.em;
     const offset = em.get('Canvas').getOffset();
     em.set('canvasOffset', offset);
     em.runDefault({ preserveSelected: 1 });
-    this.$el.off(motionsEv, this.udpateOffset);
+    this.$el.off(motionsEv, this.updateOffset);
   },
 
   getDoc() {

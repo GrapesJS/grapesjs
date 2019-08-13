@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   run(ed) {
     ed.Canvas.getBody().className = this.ppfx + 'dashed';
   },

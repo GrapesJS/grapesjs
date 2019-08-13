@@ -1,4 +1,4 @@
-var Assets = require('asset_manager/model/Assets');
+import Assets from 'asset_manager/model/Assets';
 
 module.exports = {
   run() {

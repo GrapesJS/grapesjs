@@ -1,11 +1,11 @@
 import { bindAll } from 'underscore';
 import Backbone from 'backbone';
-var CodeMirror = require('codemirror/lib/codemirror');
-var htmlMode = require('codemirror/mode/htmlmixed/htmlmixed');
-var cssMode = require('codemirror/mode/css/css');
-var formatting = require('codemirror-formatting');
+import CodeMirror from 'codemirror/lib/codemirror';
+import 'codemirror/mode/htmlmixed/htmlmixed';
+import 'codemirror/mode/css/css';
+import 'codemirror-formatting';
 
-module.exports = Backbone.Model.extend({
+export default Backbone.Model.extend({
   defaults: {
     input: '',
     label: '',

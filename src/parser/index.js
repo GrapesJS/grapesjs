@@ -1,8 +1,9 @@
-module.exports = () => {
-  let conf = {},
-    defaults = require('./config/config'),
-    parserCss = require('./model/ParserCss'),
-    parserHtml = require('./model/ParserHtml');
+import defaults from './config/config';
+import parserCss from './model/ParserCss';
+import parserHtml from './model/ParserHtml';
+
+export default () => {
+  let conf = {};
   let pHtml, pCss;
 
   return {

@@ -1,12 +1,13 @@
 import Backbone from 'backbone';
-const CssRuleView = require('./CssRuleView');
-const CssGroupRuleView = require('./CssGroupRuleView');
+import CssRuleView from './CssRuleView';
+import CssGroupRuleView from './CssGroupRuleView';
+
 const $ = Backbone.$;
 
 const getBlockId = (pfx, order) =>
   `${pfx}${order ? `-${parseFloat(order)}` : ''}`;
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   initialize(o) {
     const config = o.config || {};
     this.atRules = {};

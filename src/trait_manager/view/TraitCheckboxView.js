@@ -1,15 +1,14 @@
 import { isUndefined } from 'underscore';
-var TraitView = require('./TraitView');
+import TraitView from './TraitView';
 
-module.exports = TraitView.extend({
-  initialize(o) {
-    TraitView.prototype.initialize.apply(this, arguments);
-    const { ppfx, fieldClass, inputhClass } = this;
-    this.tmpl = `<div class="${fieldClass}">
-        <label class="${inputhClass}">
-          <i class="${ppfx}chk-icon"></i>
-        </label>
-      </div>`;
+export default TraitView.extend({
+  appendInput: 0,
+
+  templateInput() {
+    const { ppfx, clsField } = this;
+    return `<label class="${clsField}" data-input>
+    <i class="${ppfx}chk-icon"></i>
+  </label>`;
   },
 
   /**
@@ -17,7 +16,7 @@ module.exports = TraitView.extend({
    * @private
    */
   onChange() {
-    const value = this.getInputEl().checked;
+    const value = this.getInputElem().checked;
     this.model.set('value', this.getCheckedValue(value));
   },
 

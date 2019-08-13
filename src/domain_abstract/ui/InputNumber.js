@@ -1,10 +1,11 @@
-import { bindAll, isUndefined } from 'underscore';
+import Backbone from 'backbone';
+import { bindAll, isUndefined, indexOf } from 'underscore';
 import { on, off } from 'utils/mixins';
-const Input = require('./Input');
-const Backbone = require('backbone');
+import Input from './Input';
+
 const $ = Backbone.$;
 
-module.exports = Input.extend({
+export default Input.extend({
   events: {
     'change input': 'handleChange',
     'change select': 'handleUnitChange',
@@ -252,7 +253,7 @@ module.exports = Input.extend({
           val = !isNaN(val) ? val : defValue;
           var uN = valCopy.replace(val, '');
           // Check if exists as unit
-          if (_.indexOf(units, uN) >= 0) unit = uN;
+          if (indexOf(units, uN) >= 0) unit = uN;
         }
       }
     }

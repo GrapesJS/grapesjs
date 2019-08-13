@@ -25,14 +25,14 @@
  *
  * @module Panels
  */
+import defaults from './config/config';
+import Panel from './model/Panel';
+import Panels from './model/Panels';
+import PanelView from './view/PanelView';
+import PanelsView from './view/PanelsView';
 
-module.exports = () => {
-  var c = {},
-    defaults = require('./config/config'),
-    Panel = require('./model/Panel'),
-    Panels = require('./model/Panels'),
-    PanelView = require('./view/PanelView'),
-    PanelsView = require('./view/PanelsView');
+export default () => {
+  var c = {};
   var panels, PanelsViewObj;
 
   return {

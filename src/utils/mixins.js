@@ -1,4 +1,4 @@
-import { omit, keys, isUndefined, isElement } from 'underscore';
+import { keys, isUndefined, isElement } from 'underscore';
 
 const elProt = window.Element.prototype;
 const matches =

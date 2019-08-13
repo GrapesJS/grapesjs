@@ -1,6 +1,6 @@
 import { isArray } from 'underscore';
 
-module.exports = {
+export default {
   run(ed, sender, opts = {}) {
     let components = opts.component || ed.getSelectedAll();
     components = isArray(components) ? [...components] : [components];

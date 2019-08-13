@@ -1,4 +1,4 @@
-const Property = require('./PropertyRadio');
+import Property from './PropertyRadio';
 
 export default Property.extend({
   defaults: () => ({

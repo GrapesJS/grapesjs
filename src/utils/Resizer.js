@@ -487,7 +487,7 @@ class Resizer {
   }
 }
 
-module.exports = {
+export default {
   init(opts) {
     return new Resizer(opts);
   }

@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   run(editor, sender, opts = {}) {
     const modal = editor.Modal;
     const am = editor.AssetManager;

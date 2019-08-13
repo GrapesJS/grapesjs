@@ -1,7 +1,6 @@
 import 'whatwg-fetch';
-
-const LocalStorage = require('storage_manager/model/LocalStorage');
-const RemoteStorage = require('storage_manager/model/RemoteStorage');
+import LocalStorage from 'storage_manager/model/LocalStorage';
+import RemoteStorage from 'storage_manager/model/RemoteStorage';
 
 module.exports = {
   run() {

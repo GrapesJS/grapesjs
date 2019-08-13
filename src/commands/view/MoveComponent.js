@@ -1,15 +1,15 @@
-import _ from 'underscore';
+import { extend, bindAll } from 'underscore';
 import Backbone from 'backbone';
 import { on, off } from 'utils/mixins';
+import SelectComponent from './SelectComponent';
+import SelectPosition from './SelectPosition';
 
-const SelectComponent = require('./SelectComponent');
-const SelectPosition = require('./SelectPosition');
 const $ = Backbone.$;
 
-module.exports = _.extend({}, SelectPosition, SelectComponent, {
+export default extend({}, SelectPosition, SelectComponent, {
   init(o) {
     SelectComponent.init.apply(this, arguments);
-    _.bindAll(this, 'initSorter', 'rollback', 'onEndMove');
+    bindAll(this, 'initSorter', 'rollback', 'onEndMove');
     this.opt = o;
     this.hoverClass = this.ppfx + 'highlighter-warning';
     this.badgeClass = this.ppfx + 'badge-warning';

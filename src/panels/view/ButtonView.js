@@ -1,8 +1,9 @@
 import Backbone from 'backbone';
 import { isString, isObject, isFunction } from 'underscore';
+
 const $ = Backbone.$;
 
-module.exports = Backbone.View.extend({
+export default Backbone.View.extend({
   tagName() {
     return this.model.get('tagName');
   },

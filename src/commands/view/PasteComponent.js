@@ -1,6 +1,6 @@
 import { isArray, contains } from 'underscore';
 
-module.exports = {
+export default {
   run(ed) {
     const em = ed.getModel();
     const clp = em.get('clipboard');
