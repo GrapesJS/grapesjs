@@ -624,6 +624,10 @@ export default Backbone.Model.extend({
     return this.get('Canvas').getZoomDecimal();
   },
 
+  setDragMode(value) {
+    return this.set('dmode', value);
+  },
+
   /**
    * Returns true if the editor is in absolute mode
    * @returns {Boolean}

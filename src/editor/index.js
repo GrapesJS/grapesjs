@@ -618,6 +618,17 @@ export default (config = {}) => {
     },
 
     /**
+     * Change the global drag mode of components.
+     * To get more about this feature read: https://github.com/artf/grapesjs/issues/1936
+     * @param {String} value Drag mode, options: 'absolute' | 'translate'
+     * @returns {this}
+     */
+    setDragMode(value) {
+      em.setDragMode(value);
+      return this;
+    },
+
+    /**
      * Trigger event log message
      * @param  {*} msg Message to log
      * @param  {Object} [opts={}] Custom options

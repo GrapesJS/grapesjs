@@ -140,6 +140,13 @@ export default {
   // use it later, but this option comes really handy when deal with big templates.
   clearStyles: 0,
 
+  // Specify the global drag mode of components. By default, components are moved
+  // following the HTML flow. Two other options are available:
+  // 'absolute' - Move components absolutely (design tools way)
+  // 'translate' - Use translate CSS from transform property
+  // To get more about this feature read: https://github.com/artf/grapesjs/issues/1936
+  dragMode: 0,
+
   // Dom element
   el: '',
 
