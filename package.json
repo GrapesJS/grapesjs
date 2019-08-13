@@ -6,7 +6,7 @@
   "license": "BSD-3-Clause",
   "homepage": "http://grapesjs.com",
   "main": "dist/grapes.min.js",
-  "sideEffects": false,
+  "sideEffects": [ "*.vue", "*.css", "*.scss" ],
   "repository": {
     "type": "git",
     "url": "https://github.com/artf/grapesjs.git"
