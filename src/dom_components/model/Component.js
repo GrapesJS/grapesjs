@@ -230,6 +230,16 @@ const Component = Backbone.Model.extend(Styleable).extend(
     },
 
     /**
+     * Change the drag mode of the component.
+     * To get more about this feature read: https://github.com/artf/grapesjs/issues/1936
+     * @param {String} value Drag mode, options: 'absolute' | 'translate'
+     * @returns {this}
+     */
+    setDragMode(value) {
+      return this.set('dmode', value);
+    },
+
+    /**
      * Find inner components by query string.
      * **ATTENTION**: this method works only with already rendered component
      * @param  {String} query Query string
